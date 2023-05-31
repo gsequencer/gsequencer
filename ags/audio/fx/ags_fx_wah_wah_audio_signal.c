@@ -22,6 +22,7 @@
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_audio_buffer_util.h>
+#include <ags/audio/ags_synth_enums.h>
 #include <ags/audio/ags_volume_util.h>
 
 #include <ags/audio/fx/ags_fx_wah_wah_channel.h>
@@ -359,6 +360,7 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
 		   (GDestroyNotify) g_object_unref);
   
   wah_wah_enabled = FALSE;
+  wah_wah_length_mode = AGS_SYNTH_KEY_4_4;
   wah_wah_fixed_length = 1.0;
   wah_wah_attack = 1.0;
   wah_wah_decay = 1.0;
@@ -749,6 +751,36 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
 	  frame_count = length * buffer_size;
 	}
 
+	frame_count = wah_wah_fixed_length;
+
+	switch(wah_wah_length_mode){
+	case AGS_SYNTH_KEY_1_1:
+	  {
+	    frame_count = 16.0 * (delay * buffer_size);
+	  }
+	  break;
+	case AGS_SYNTH_KEY_2_2:
+	  {
+	    frame_count = 8.0 * (delay * buffer_size);
+	  }
+	  break;
+	case AGS_SYNTH_KEY_4_4:
+	  {
+	    frame_count = 4.0 * (delay * buffer_size);
+	  }
+	  break;
+	case AGS_SYNTH_KEY_8_8:
+	  {
+	    frame_count = 2.0 * (delay * buffer_size);
+	  }
+	  break;
+	case AGS_SYNTH_KEY_16_16:
+	  {
+	    frame_count = delay * buffer_size;
+	  }
+	  break;
+	}
+	
 #if 0
 	g_message("frame-count: %d", frame_count);
 #endif

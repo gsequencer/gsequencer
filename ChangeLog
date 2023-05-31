@@ -1,3 +1,11 @@
+ags (5.2.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags-fx-tremolo default value and range of ports
+	* fixed ags-fx-sf2-synth default value and range of ports
+	* fixed ags-fx-sfz-synth default value and range of ports
+	* fixed ags-fx-wah-wah default value and range of ports
+
 ags (5.2.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

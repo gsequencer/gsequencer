@@ -842,7 +842,7 @@ ags_fx_sfz_synth_audio_init(AgsFxSFZSynthAudio *fx_sfz_synth_audio)
 						       "port-value-length", 1,
 						       NULL);
   
-  fx_sfz_synth_audio->vibrato_lfo_depth->port_value.ags_port_float = (gfloat) 0.0;
+  fx_sfz_synth_audio->vibrato_lfo_depth->port_value.ags_port_float = (gfloat) 1.0;
 
   g_object_set(fx_sfz_synth_audio->vibrato_lfo_depth,
 	       "plugin-port", ags_fx_sfz_synth_audio_get_vibrato_lfo_depth_plugin_port(),
@@ -864,7 +864,7 @@ ags_fx_sfz_synth_audio_init(AgsFxSFZSynthAudio *fx_sfz_synth_audio)
 						      "port-value-length", 1,
 						      NULL);
   
-  fx_sfz_synth_audio->vibrato_lfo_freq->port_value.ags_port_float = (gfloat) 6.0;
+  fx_sfz_synth_audio->vibrato_lfo_freq->port_value.ags_port_float = (gfloat) 8.172;
 
   g_object_set(fx_sfz_synth_audio->vibrato_lfo_freq,
 	       "plugin-port", ags_fx_sfz_synth_audio_get_vibrato_lfo_freq_plugin_port(),
@@ -2903,7 +2903,7 @@ ags_fx_sfz_synth_audio_get_vibrato_gain_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      0.0);
+		      1.0);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
@@ -2942,7 +2942,7 @@ ags_fx_sfz_synth_audio_get_vibrato_lfo_depth_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      0.0);
+		      1.0);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
@@ -2981,7 +2981,7 @@ ags_fx_sfz_synth_audio_get_vibrato_lfo_freq_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      6.0);
+		      8.172);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
@@ -3022,9 +3022,9 @@ ags_fx_sfz_synth_audio_get_vibrato_tuning_plugin_port()
     g_value_set_float(plugin_port->default_value,
 		      0.0);
     g_value_set_float(plugin_port->lower_value,
-		      0.0);
+		      -1200.0);
     g_value_set_float(plugin_port->upper_value,
-		      100.0);
+		      1200.0);
   }
 
   g_mutex_unlock(&mutex);

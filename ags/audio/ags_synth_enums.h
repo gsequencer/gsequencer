@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -49,7 +49,26 @@ typedef enum{
   AGS_SYNTH_OSCILLATOR_LAST,
 }AgsSynthOscillatorMode;
 
+/**
+ * AgsSynthKeyMode:
+ * @AGS_SYNTH_KEY_1_1: 1/1 key
+ * @AGS_SYNTH_KEY_2_2: 2/2 key
+ * @AGS_SYNTH_KEY_4_4: 4/4 key
+ * @AGS_SYNTH_KEY_8_8: 8/8 key
+ * @AGS_SYNTH_KEY_16_16: 16/16 key
+ * 
+ * Enum values to specify key mode.
+ */
+typedef enum{
+  AGS_SYNTH_KEY_1_1,
+  AGS_SYNTH_KEY_2_2,
+  AGS_SYNTH_KEY_4_4,
+  AGS_SYNTH_KEY_8_8,
+  AGS_SYNTH_KEY_16_16,
+}AgsSynthKeyMode;
+
 GType ags_synth_oscillator_mode_get_type();
+GType ags_synth_key_mode_get_type();
 
 G_END_DECLS
 

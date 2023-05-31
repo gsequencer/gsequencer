@@ -1662,6 +1662,9 @@ ags_sf2_synth_connect(AgsConnectable *connectable)
   g_signal_connect_after(sf2_synth->chorus_delay, "value-changed",
 			 G_CALLBACK(ags_sf2_synth_chorus_delay_callback), sf2_synth);
 
+  g_signal_connect_after(sf2_synth->tremolo_enabled, "clicked",
+			 G_CALLBACK(ags_sf2_synth_tremolo_enabled_callback), sf2_synth);
+
   g_signal_connect_after(sf2_synth->tremolo_lfo_depth, "value-changed",
 			 G_CALLBACK(ags_sf2_synth_tremolo_lfo_depth_callback), sf2_synth);
 
@@ -1670,6 +1673,9 @@ ags_sf2_synth_connect(AgsConnectable *connectable)
 
   g_signal_connect_after(sf2_synth->tremolo_tuning, "value-changed",
 			 G_CALLBACK(ags_sf2_synth_tremolo_tuning_callback), sf2_synth);
+
+  g_signal_connect_after(sf2_synth->vibrato_enabled, "clicked",
+			 G_CALLBACK(ags_sf2_synth_vibrato_enabled_callback), sf2_synth);
 
   g_signal_connect_after(sf2_synth->vibrato_gain, "value-changed",
 			 G_CALLBACK(ags_sf2_synth_vibrato_gain_callback), sf2_synth);
@@ -1682,6 +1688,12 @@ ags_sf2_synth_connect(AgsConnectable *connectable)
 
   g_signal_connect_after(sf2_synth->vibrato_tuning, "value-changed",
 			 G_CALLBACK(ags_sf2_synth_vibrato_tuning_callback), sf2_synth);
+
+  g_signal_connect_after(sf2_synth->wah_wah_length, "changed",
+			 G_CALLBACK(ags_sf2_synth_wah_wah_length_callback), sf2_synth);
+
+  g_signal_connect_after(sf2_synth->wah_wah_enabled, "clicked",
+			 G_CALLBACK(ags_sf2_synth_wah_wah_enabled_callback), sf2_synth);
 
   g_signal_connect_after(sf2_synth->wah_wah_attack_x, "value-changed",
 			 G_CALLBACK(ags_sf2_synth_wah_wah_attack_callback), sf2_synth);
@@ -1812,6 +1824,12 @@ ags_sf2_synth_disconnect(AgsConnectable *connectable)
 		      (gpointer) sf2_synth,
 		      NULL);
 
+  g_object_disconnect((GObject *) sf2_synth->tremolo_enabled,
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_sf2_synth_tremolo_enabled_callback),
+		      sf2_synth,
+		      NULL);
+
   g_object_disconnect((GObject *) sf2_synth->tremolo_gain,
 		      "any_signal::value-changed",
 		      G_CALLBACK(ags_sf2_synth_tremolo_gain_callback),
@@ -1836,6 +1854,12 @@ ags_sf2_synth_disconnect(AgsConnectable *connectable)
 		      (gpointer) sf2_synth,
 		      NULL);
 
+  g_object_disconnect((GObject *) sf2_synth->vibrato_enabled,
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_sf2_synth_vibrato_enabled_callback),
+		      sf2_synth,
+		      NULL);
+
   g_object_disconnect((GObject *) sf2_synth->vibrato_gain,
 		      "any_signal::value-changed",
 		      G_CALLBACK(ags_sf2_synth_vibrato_gain_callback),
@@ -1853,56 +1877,68 @@ ags_sf2_synth_disconnect(AgsConnectable *connectable)
 		      G_CALLBACK(ags_sf2_synth_vibrato_lfo_freq_callback),
 		      (gpointer) sf2_synth,
 		      NULL);
+
+  g_object_disconnect((GObject *) sf2_synth->wah_wah_enabled,
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_sf2_synth_wah_wah_enabled_callback),
+		      sf2_synth,
+		      NULL);
+
+  g_object_disconnect((GObject *) sf2_synth->wah_wah_length,
+		      "any_signal::changed",
+		      G_CALLBACK(ags_sf2_synth_wah_wah_length_callback),
+		      sf2_synth,
+		      NULL);
   
-  g_object_disconnect(sf2_synth->wah_wah_attack_x,
+  g_object_disconnect((GObject *) sf2_synth->wah_wah_attack_x,
 		      "any_signal::value-changed",
 		      G_CALLBACK(ags_sf2_synth_wah_wah_attack_callback),
 		      sf2_synth,
 		      NULL);
 
-  g_object_disconnect(sf2_synth->wah_wah_attack_y,
+  g_object_disconnect((GObject *) sf2_synth->wah_wah_attack_y,
 		      "any_signal::value-changed",
 		      G_CALLBACK(ags_sf2_synth_wah_wah_attack_callback),
 		      sf2_synth,
 		      NULL);
   
-  g_object_disconnect(sf2_synth->wah_wah_decay_x,
+  g_object_disconnect((GObject *) sf2_synth->wah_wah_decay_x,
 		      "any_signal::value-changed",
 		      G_CALLBACK(ags_sf2_synth_wah_wah_decay_callback),
 		      sf2_synth,
 		      NULL);
 
-  g_object_disconnect(sf2_synth->wah_wah_decay_y,
+  g_object_disconnect((GObject *) sf2_synth->wah_wah_decay_y,
 		      "any_signal::value-changed",
 		      G_CALLBACK(ags_sf2_synth_wah_wah_decay_callback),
 		      sf2_synth,
 		      NULL);
   
-  g_object_disconnect(sf2_synth->wah_wah_sustain_x,
+  g_object_disconnect((GObject *) sf2_synth->wah_wah_sustain_x,
 		      "any_signal::value-changed",
 		      G_CALLBACK(ags_sf2_synth_wah_wah_sustain_callback),
 		      sf2_synth,
 		      NULL);
 
-  g_object_disconnect(sf2_synth->wah_wah_sustain_y,
+  g_object_disconnect((GObject *) sf2_synth->wah_wah_sustain_y,
 		      "any_signal::value-changed",
 		      G_CALLBACK(ags_sf2_synth_wah_wah_sustain_callback),
 		      sf2_synth,
 		      NULL);
 
-  g_object_disconnect(sf2_synth->wah_wah_release_x,
+  g_object_disconnect((GObject *) sf2_synth->wah_wah_release_x,
 		      "any_signal::value-changed",
 		      G_CALLBACK(ags_sf2_synth_wah_wah_release_callback),
 		      sf2_synth,
 		      NULL);
 
-  g_object_disconnect(sf2_synth->wah_wah_release_y,
+  g_object_disconnect((GObject *) sf2_synth->wah_wah_release_y,
 		      "any_signal::value-changed",
 		      G_CALLBACK(ags_sf2_synth_wah_wah_release_callback),
 		      sf2_synth,
 		      NULL);
 
-  g_object_disconnect(sf2_synth->wah_wah_ratio,
+  g_object_disconnect((GObject *) sf2_synth->wah_wah_ratio,
 		      "any_signal::value-changed",
 		      G_CALLBACK(ags_sf2_synth_wah_wah_ratio_callback),
 		      sf2_synth,

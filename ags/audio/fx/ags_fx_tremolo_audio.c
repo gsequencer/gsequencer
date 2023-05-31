@@ -273,7 +273,7 @@ ags_fx_tremolo_audio_init(AgsFxTremoloAudio *fx_tremolo_audio)
 						     "port-value-length", 1,
 						     NULL);
   
-  fx_tremolo_audio->tremolo_lfo_depth->port_value.ags_port_float = (gfloat) 6.0;
+  fx_tremolo_audio->tremolo_lfo_depth->port_value.ags_port_float = (gfloat) 1.0;
 
   g_object_set(fx_tremolo_audio->tremolo_lfo_depth,
 	       "plugin-port", ags_fx_tremolo_audio_get_tremolo_lfo_depth_plugin_port(),
@@ -313,7 +313,7 @@ ags_fx_tremolo_audio_init(AgsFxTremoloAudio *fx_tremolo_audio)
 						  "port-value-length", 1,
 						  NULL);
   
-  fx_tremolo_audio->tremolo_tuning->port_value.ags_port_float = (gfloat) 6.0;
+  fx_tremolo_audio->tremolo_tuning->port_value.ags_port_float = (gfloat) 0.0;
 
   g_object_set(fx_tremolo_audio->tremolo_tuning,
 	       "plugin-port", ags_fx_tremolo_audio_get_tremolo_tuning_plugin_port(),
@@ -723,7 +723,7 @@ ags_fx_tremolo_audio_get_tremolo_lfo_depth_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      0.0);
+		      1.0);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
@@ -803,7 +803,7 @@ ags_fx_tremolo_audio_get_tremolo_tuning_plugin_port()
     g_value_set_float(plugin_port->default_value,
 		      0.0);
     g_value_set_float(plugin_port->lower_value,
-		      0.0);
+		      -1200.0);
     g_value_set_float(plugin_port->upper_value,
 		      1200.0);
   }
