@@ -298,6 +298,11 @@ ags_fx_lv2_channel_notify_buffer_size_callback(GObject *gobject,
   
   fx_lv2_channel = AGS_FX_LV2_CHANNEL(gobject);
 
+  if(!ags_recall_test_state_flags(AGS_RECALL(fx_lv2_channel),
+				  AGS_SOUND_STATE_PORT_LOADED)){
+    return;
+  }
+
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_lv2_channel);
 
@@ -362,6 +367,11 @@ ags_fx_lv2_channel_notify_samplerate_callback(GObject *gobject,
   void (*cleanup)(LV2_Handle instance);
   
   fx_lv2_channel = AGS_FX_LV2_CHANNEL(gobject);
+
+  if(!ags_recall_test_state_flags(AGS_RECALL(fx_lv2_channel),
+				  AGS_SOUND_STATE_PORT_LOADED)){
+    return;
+  }
 
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_lv2_channel);
