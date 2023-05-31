@@ -139,7 +139,8 @@ ags_fluid_interpolate_4th_order_util_alloc()
   ptr->phase_increment = 0.0;
 
   ptr->vibrato_gain = 1.0;
-  ptr->vibrato_lfo_depth = 0.0;
+
+  ptr->vibrato_lfo_depth = 1.0;
   ptr->vibrato_lfo_freq = 8.172;
   ptr->vibrato_tuning = 0.0;
 
@@ -536,8 +537,8 @@ ags_fluid_interpolate_4th_order_util_set_base_key(AgsFluidInterpolate4thOrderUti
   fluid_interpolate_4th_order_util->base_key = base_key;
 
   root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
-  
-  phase_incr = (exp2(((double) base_key - 48.0 + (fluid_interpolate_4th_order_util->tuning / 100.0)) / 12.0) * 440.0) / root_pitch_hz;
+
+  phase_incr = (exp2((((double) base_key - 48.0 + (fluid_interpolate_4th_order_util->tuning / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
   if(phase_incr == 0.0){
     phase_incr = 1.0;
@@ -590,7 +591,7 @@ ags_fluid_interpolate_4th_order_util_set_tuning(AgsFluidInterpolate4thOrderUtil 
 
   root_pitch_hz = exp2(((double) fluid_interpolate_4th_order_util->base_key - 48.0) / 12.0) * 440.0;
   
-  phase_incr = (exp2(((double) fluid_interpolate_4th_order_util->base_key - 48.0 + (tuning / 100.0)) / 12.0) * 440.0) / root_pitch_hz;
+  phase_incr = (exp2((((double) fluid_interpolate_4th_order_util->base_key - 48.0 + (tuning / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
   if(phase_incr == 0.0){
     phase_incr = 1.0;
@@ -816,6 +817,7 @@ ags_fluid_interpolate_4th_order_util_pitch_s8(AgsFluidInterpolate4thOrderUtil *f
   guint destination_stride, source_stride;
   gdouble base_key;
   gdouble tuning;
+  gdouble root_pitch_hz;
   gdouble vibrato_gain;
   gdouble vibrato_lfo_depth;
   gdouble vibrato_lfo_freq;
@@ -877,16 +879,15 @@ ags_fluid_interpolate_4th_order_util_pitch_s8(AgsFluidInterpolate4thOrderUtil *f
 
   dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
+  root_pitch_hz = exp2(((double) fluid_interpolate_4th_order_util->base_key - 48.0) / 12.0) * 440.0;
+
   /* interpolate first sample point (start or loop start) if needed */
   for(; dsp_phase_index == start_index && dsp_i < buffer_length; dsp_i++){
-    gdouble root_pitch_hz;
     gdouble phase_incr;
 
     gint row;
-        
-    root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
-  
-    phase_incr = (exp2((((double) base_key - 48.0 + (tuning / 100.0)) / 12.0) * 440.0) * (sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / root_pitch_hz;
+    
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -922,14 +923,11 @@ ags_fluid_interpolate_4th_order_util_pitch_s8(AgsFluidInterpolate4thOrderUtil *f
   /* interpolate the sequence of sample points */
   for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++)
   {
-    gdouble root_pitch_hz;
     gdouble phase_incr;
 
     gint row;
     
-    root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
-  
-    phase_incr = (exp2((((double) base_key - 48.0 + (tuning / 100.0)) / 12.0) * 440.0) * (sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -982,6 +980,7 @@ ags_fluid_interpolate_4th_order_util_pitch_s16(AgsFluidInterpolate4thOrderUtil *
   guint destination_stride, source_stride;
   gdouble base_key;
   gdouble tuning;
+  gdouble root_pitch_hz;
   gdouble vibrato_gain;
   gdouble vibrato_lfo_depth;
   gdouble vibrato_lfo_freq;
@@ -1043,16 +1042,15 @@ ags_fluid_interpolate_4th_order_util_pitch_s16(AgsFluidInterpolate4thOrderUtil *
 
   dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
+  root_pitch_hz = exp2(((double) fluid_interpolate_4th_order_util->base_key - 48.0) / 12.0) * 440.0;
+
   /* interpolate first sample point (start or loop start) if needed */
   for(; dsp_phase_index == start_index && dsp_i < buffer_length; dsp_i++){
-    gdouble root_pitch_hz;
     gdouble phase_incr;
 
     gint row;
         
-    root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
-  
-    phase_incr = (exp2((((double) base_key - 48.0 + (tuning / 100.0)) / 12.0) * 440.0) * (sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -1088,14 +1086,11 @@ ags_fluid_interpolate_4th_order_util_pitch_s16(AgsFluidInterpolate4thOrderUtil *
   /* interpolate the sequence of sample points */
   for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++)
   {
-    gdouble root_pitch_hz;
     gdouble phase_incr;
 
     gint row;
     
-    root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
-  
-    phase_incr = (exp2((((double) base_key - 48.0 + (tuning / 100.0)) / 12.0) * 440.0) * (sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -1148,6 +1143,7 @@ ags_fluid_interpolate_4th_order_util_pitch_s24(AgsFluidInterpolate4thOrderUtil *
   guint destination_stride, source_stride;
   gdouble base_key;
   gdouble tuning;
+  gdouble root_pitch_hz;
   gdouble vibrato_gain;
   gdouble vibrato_lfo_depth;
   gdouble vibrato_lfo_freq;
@@ -1209,16 +1205,15 @@ ags_fluid_interpolate_4th_order_util_pitch_s24(AgsFluidInterpolate4thOrderUtil *
 
   dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
+  root_pitch_hz = exp2(((double) fluid_interpolate_4th_order_util->base_key - 48.0) / 12.0) * 440.0;
+
   /* interpolate first sample point (start or loop start) if needed */
   for(; dsp_phase_index == start_index && dsp_i < buffer_length; dsp_i++){
-    gdouble root_pitch_hz;
     gdouble phase_incr;
 
     gint row;
         
-    root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
-  
-    phase_incr = (exp2((((double) base_key - 48.0 + (tuning / 100.0)) / 12.0) * 440.0) * (sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -1254,14 +1249,11 @@ ags_fluid_interpolate_4th_order_util_pitch_s24(AgsFluidInterpolate4thOrderUtil *
   /* interpolate the sequence of sample points */
   for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++)
   {
-    gdouble root_pitch_hz;
     gdouble phase_incr;
 
     gint row;
     
-    root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
-  
-    phase_incr = (exp2((((double) base_key - 48.0 + (tuning / 100.0)) / 12.0) * 440.0) * (sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -1314,6 +1306,7 @@ ags_fluid_interpolate_4th_order_util_pitch_s32(AgsFluidInterpolate4thOrderUtil *
   guint destination_stride, source_stride;
   gdouble base_key;
   gdouble tuning;
+  gdouble root_pitch_hz;
   gdouble vibrato_gain;
   gdouble vibrato_lfo_depth;
   gdouble vibrato_lfo_freq;
@@ -1375,16 +1368,15 @@ ags_fluid_interpolate_4th_order_util_pitch_s32(AgsFluidInterpolate4thOrderUtil *
 
   dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
+  root_pitch_hz = exp2(((double) fluid_interpolate_4th_order_util->base_key - 48.0) / 12.0) * 440.0;
+
   /* interpolate first sample point (start or loop start) if needed */
   for(; dsp_phase_index == start_index && dsp_i < buffer_length; dsp_i++){
-    gdouble root_pitch_hz;
     gdouble phase_incr;
 
     gint row;
         
-    root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
-  
-    phase_incr = (exp2((((double) base_key - 48.0 + (tuning / 100.0)) / 12.0) * 440.0) * (sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -1420,14 +1412,11 @@ ags_fluid_interpolate_4th_order_util_pitch_s32(AgsFluidInterpolate4thOrderUtil *
   /* interpolate the sequence of sample points */
   for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++)
   {
-    gdouble root_pitch_hz;
     gdouble phase_incr;
 
     gint row;
     
-    root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
-  
-    phase_incr = (exp2((((double) base_key - 48.0 + (tuning / 100.0)) / 12.0) * 440.0) * (sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -1480,6 +1469,7 @@ ags_fluid_interpolate_4th_order_util_pitch_s64(AgsFluidInterpolate4thOrderUtil *
   guint destination_stride, source_stride;
   gdouble base_key;
   gdouble tuning;
+  gdouble root_pitch_hz;
   gdouble vibrato_gain;
   gdouble vibrato_lfo_depth;
   gdouble vibrato_lfo_freq;
@@ -1541,16 +1531,15 @@ ags_fluid_interpolate_4th_order_util_pitch_s64(AgsFluidInterpolate4thOrderUtil *
 
   dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
+  root_pitch_hz = exp2(((double) fluid_interpolate_4th_order_util->base_key - 48.0) / 12.0) * 440.0;
+
   /* interpolate first sample point (start or loop start) if needed */
   for(; dsp_phase_index == start_index && dsp_i < buffer_length; dsp_i++){
-    gdouble root_pitch_hz;
     gdouble phase_incr;
 
     gint row;
         
-    root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
-  
-    phase_incr = (exp2((((double) base_key - 48.0 + (tuning / 100.0)) / 12.0) * 440.0) * (sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -1586,14 +1575,11 @@ ags_fluid_interpolate_4th_order_util_pitch_s64(AgsFluidInterpolate4thOrderUtil *
   /* interpolate the sequence of sample points */
   for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++)
   {
-    gdouble root_pitch_hz;
     gdouble phase_incr;
 
     gint row;
     
-    root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
-  
-    phase_incr = (exp2((((double) base_key - 48.0 + (tuning / 100.0)) / 12.0) * 440.0) * (sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -1646,6 +1632,7 @@ ags_fluid_interpolate_4th_order_util_pitch_float(AgsFluidInterpolate4thOrderUtil
   guint destination_stride, source_stride;
   gdouble base_key;
   gdouble tuning;
+  gdouble root_pitch_hz;
   gdouble vibrato_gain;
   gdouble vibrato_lfo_depth;
   gdouble vibrato_lfo_freq;
@@ -1707,16 +1694,15 @@ ags_fluid_interpolate_4th_order_util_pitch_float(AgsFluidInterpolate4thOrderUtil
 
   dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
+  root_pitch_hz = exp2(((double) fluid_interpolate_4th_order_util->base_key - 48.0) / 12.0) * 440.0;
+
   /* interpolate first sample point (start or loop start) if needed */
   for(; dsp_phase_index == start_index && dsp_i < buffer_length; dsp_i++){
-    gdouble root_pitch_hz;
     gdouble phase_incr;
 
     gint row;
         
-    root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
-  
-    phase_incr = (exp2((((double) base_key - 48.0 + (tuning / 100.0)) / 12.0) * 440.0) * (sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -1752,14 +1738,11 @@ ags_fluid_interpolate_4th_order_util_pitch_float(AgsFluidInterpolate4thOrderUtil
   /* interpolate the sequence of sample points */
   for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++)
   {
-    gdouble root_pitch_hz;
     gdouble phase_incr;
 
     gint row;
     
-    root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
-  
-    phase_incr = (exp2((((double) base_key - 48.0 + (tuning / 100.0)) / 12.0) * 440.0) * (sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -1812,6 +1795,7 @@ ags_fluid_interpolate_4th_order_util_pitch_double(AgsFluidInterpolate4thOrderUti
   guint destination_stride, source_stride;
   gdouble base_key;
   gdouble tuning;
+  gdouble root_pitch_hz;
   gdouble vibrato_gain;
   gdouble vibrato_lfo_depth;
   gdouble vibrato_lfo_freq;
@@ -1873,16 +1857,15 @@ ags_fluid_interpolate_4th_order_util_pitch_double(AgsFluidInterpolate4thOrderUti
 
   dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
+  root_pitch_hz = exp2(((double) fluid_interpolate_4th_order_util->base_key - 48.0) / 12.0) * 440.0;
+
   /* interpolate first sample point (start or loop start) if needed */
   for(; dsp_phase_index == start_index && dsp_i < buffer_length; dsp_i++){
-    gdouble root_pitch_hz;
     gdouble phase_incr;
 
     gint row;
         
-    root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
-  
-    phase_incr = (exp2((((double) base_key - 48.0 + (tuning / 100.0)) / 12.0) * 440.0) * (sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -1918,14 +1901,11 @@ ags_fluid_interpolate_4th_order_util_pitch_double(AgsFluidInterpolate4thOrderUti
   /* interpolate the sequence of sample points */
   for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++)
   {
-    gdouble root_pitch_hz;
     gdouble phase_incr;
 
     gint row;
     
-    root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
-  
-    phase_incr = (exp2((((double) base_key - 48.0 + (tuning / 100.0)) / 12.0) * 440.0) * (sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -1978,6 +1958,7 @@ ags_fluid_interpolate_4th_order_util_pitch_complex(AgsFluidInterpolate4thOrderUt
   guint destination_stride, source_stride;
   gdouble base_key;
   gdouble tuning;
+  gdouble root_pitch_hz;
   gdouble vibrato_gain;
   gdouble vibrato_lfo_depth;
   gdouble vibrato_lfo_freq;
@@ -2039,16 +2020,15 @@ ags_fluid_interpolate_4th_order_util_pitch_complex(AgsFluidInterpolate4thOrderUt
 
   dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
+  root_pitch_hz = exp2(((double) fluid_interpolate_4th_order_util->base_key - 48.0) / 12.0) * 440.0;
+
   /* interpolate first sample point (start or loop start) if needed */
   for(; dsp_phase_index == start_index && dsp_i < buffer_length; dsp_i++){
-    gdouble root_pitch_hz;
     gdouble phase_incr;
 
     gint row;
         
-    root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
-  
-    phase_incr = (exp2((((double) base_key - 48.0 + (tuning / 100.0)) / 12.0) * 440.0) * (sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -2085,14 +2065,11 @@ ags_fluid_interpolate_4th_order_util_pitch_complex(AgsFluidInterpolate4thOrderUt
   /* interpolate the sequence of sample points */
   for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++)
   {
-    gdouble root_pitch_hz;
     gdouble phase_incr;
 
     gint row;
     
-    root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
-  
-    phase_incr = (exp2((((double) base_key - 48.0 + (tuning / 100.0)) / 12.0) * 440.0) * (sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;

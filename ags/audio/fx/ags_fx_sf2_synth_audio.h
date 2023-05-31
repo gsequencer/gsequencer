@@ -64,6 +64,8 @@ struct _AgsFxSF2SynthAudio
   AgsPort *synth_volume;  
 
   AgsPort *vibrato_enabled;
+
+  AgsPort *vibrato_gain;
   
   AgsPort *vibrato_lfo_depth;
   AgsPort *vibrato_lfo_freq;

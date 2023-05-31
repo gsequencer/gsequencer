@@ -869,6 +869,21 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   ags_dial_set_radius(sf2_synth->tremolo_gain,
 		      12);
 
+  adjustment = ags_dial_get_adjustment(sf2_synth->tremolo_gain);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+
   gtk_grid_attach(tremolo_grid,
 		  (GtkWidget *) sf2_synth->tremolo_gain,
 		  1, 1,
@@ -886,6 +901,21 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   ags_dial_set_radius(sf2_synth->tremolo_lfo_depth,
 		      12);
+
+  adjustment = ags_dial_get_adjustment(sf2_synth->tremolo_lfo_depth);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
 
   gtk_grid_attach(tremolo_grid,
 		  (GtkWidget *) sf2_synth->tremolo_lfo_depth,
@@ -905,6 +935,21 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   ags_dial_set_radius(sf2_synth->tremolo_lfo_freq,
 		      12);
 
+  adjustment = ags_dial_get_adjustment(sf2_synth->tremolo_lfo_freq);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   10.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   6.0);
+
   gtk_grid_attach(tremolo_grid,
 		  (GtkWidget *) sf2_synth->tremolo_lfo_freq,
 		  1, 3,
@@ -922,6 +967,21 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   ags_dial_set_radius(sf2_synth->tremolo_tuning,
 		      12);
+
+  adjustment = ags_dial_get_adjustment(sf2_synth->tremolo_tuning);
+
+  gtk_adjustment_set_lower(adjustment,
+			   -1200.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1200.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
 
   gtk_grid_attach(tremolo_grid,
 		  (GtkWidget *) sf2_synth->tremolo_tuning,
@@ -963,6 +1023,21 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   ags_dial_set_radius(sf2_synth->vibrato_gain,
 		      12);
 
+  adjustment = ags_dial_get_adjustment(sf2_synth->vibrato_gain);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+
   gtk_grid_attach(vibrato_grid,
 		  (GtkWidget *) sf2_synth->vibrato_gain,
 		  1, 1,
@@ -981,6 +1056,21 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   ags_dial_set_radius(sf2_synth->vibrato_lfo_depth,
 		      12);
 
+  adjustment = ags_dial_get_adjustment(sf2_synth->vibrato_lfo_depth);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+  
   gtk_grid_attach(vibrato_grid,
 		  (GtkWidget *) sf2_synth->vibrato_lfo_depth,
 		  1, 2,
@@ -998,7 +1088,22 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   ags_dial_set_radius(sf2_synth->vibrato_lfo_freq,
 		      12);
+  
+  adjustment = ags_dial_get_adjustment(sf2_synth->vibrato_lfo_freq);
 
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   10.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   8.172);
+  
   gtk_grid_attach(vibrato_grid,
 		  (GtkWidget *) sf2_synth->vibrato_lfo_freq,
 		  1, 3,
@@ -1016,6 +1121,21 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   ags_dial_set_radius(sf2_synth->vibrato_tuning,
 		      12);
+
+  adjustment = ags_dial_get_adjustment(sf2_synth->vibrato_tuning);
+
+  gtk_adjustment_set_lower(adjustment,
+			   -1200.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1200.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
 
   gtk_grid_attach(vibrato_grid,
 		  (GtkWidget *) sf2_synth->vibrato_tuning,
@@ -1351,6 +1471,21 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   ags_dial_set_radius(sf2_synth->wah_wah_lfo_depth,
 		      12);
 
+  adjustment = ags_dial_get_adjustment(sf2_synth->wah_wah_lfo_depth);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+
   gtk_grid_attach(wah_wah_grid,
 		  (GtkWidget *) sf2_synth->wah_wah_lfo_depth,
 		  6, 1,
@@ -1369,6 +1504,21 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   ags_dial_set_radius(sf2_synth->wah_wah_lfo_freq,
 		      12);
 
+  adjustment = ags_dial_get_adjustment(sf2_synth->wah_wah_lfo_freq);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   10.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   6.0);
+
   gtk_grid_attach(wah_wah_grid,
 		  (GtkWidget *) sf2_synth->wah_wah_lfo_freq,
 		  6, 2,
@@ -1386,6 +1536,21 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   ags_dial_set_radius(sf2_synth->wah_wah_tuning,
 		      12);
+
+  adjustment = ags_dial_get_adjustment(sf2_synth->wah_wah_tuning);
+
+  gtk_adjustment_set_lower(adjustment,
+			   -1200.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1200.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
 
   gtk_grid_attach(wah_wah_grid,
 		  (GtkWidget *) sf2_synth->wah_wah_tuning,
@@ -2194,6 +2359,7 @@ void
 ags_sf2_synth_refresh_port(AgsMachine *machine)
 {
   AgsSF2Synth *sf2_synth;
+  AgsChannel *start_channel, *channel;
   
   GList *start_play, *start_recall, *recall;
 
@@ -2412,8 +2578,391 @@ ags_sf2_synth_refresh_port(AgsMachine *machine)
 
       g_object_unref(port);
     }
-  }  
 
+    /* vibrato gain */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "vibrato-gain", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(sf2_synth->vibrato_gain,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* vibrato LFO depth */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "vibrato-lfo-depth", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(sf2_synth->vibrato_lfo_depth,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* vibrato LFO freq */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "vibrato-lfo-freq", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(sf2_synth->vibrato_lfo_freq,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* vibrato tuning */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "vibrato-tuning", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(sf2_synth->vibrato_tuning,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+  }
+
+  recall = start_recall;
+  
+  if((recall = ags_recall_find_type(recall, AGS_TYPE_FX_TREMOLO_AUDIO)) != NULL){
+    AgsPort *port;
+
+    /* tremolo gain */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "tremolo-gain", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(sf2_synth->tremolo_gain,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* tremolo LFO depth */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "tremolo-lfo-depth", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(sf2_synth->tremolo_lfo_depth,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* tremolo LFO freq */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "tremolo-lfo-freq", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(sf2_synth->tremolo_lfo_freq,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* tremolo tuning */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "tremolo-tuning", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(sf2_synth->tremolo_tuning,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+  }
+
+  start_channel =
+    channel = ags_audio_get_input(machine->audio);
+
+  if(channel != NULL){
+    g_object_ref(channel);
+  }
+  
+  while(channel != NULL){
+    AgsChannel *next;
+    
+    start_play = ags_channel_get_play(channel);
+    start_recall = ags_channel_get_recall(channel);
+  
+    recall =
+      start_recall = g_list_concat(start_play, start_recall);
+
+    if((recall = ags_recall_find_type(recall, AGS_TYPE_FX_WAH_WAH_CHANNEL)) != NULL){
+      AgsPort *port;
+
+      /* wah-wah attack */
+      port = NULL;
+      
+      g_object_get(recall->data,
+		   "wah-wah-attack", &port,
+		   NULL);
+
+      if(port != NULL){
+	GValue value = G_VALUE_INIT;
+
+	g_value_init(&value,
+		     G_TYPE_FLOAT);
+
+	ags_port_safe_read(port,
+			   &value);
+
+	ags_dial_set_value(sf2_synth->wah_wah_attack_x,
+			   (gdouble) creal((double _Complex) g_value_get_float(&value)));
+
+	ags_dial_set_value(sf2_synth->wah_wah_attack_y,
+			   (gdouble) cimag((double _Complex) g_value_get_float(&value)));
+	
+	g_object_unref(port);
+      }
+
+      /* wah-wah decay */
+      port = NULL;
+      
+      g_object_get(recall->data,
+		   "wah-wah-decay", &port,
+		   NULL);
+
+      if(port != NULL){
+	GValue value = G_VALUE_INIT;
+
+	g_value_init(&value,
+		     G_TYPE_FLOAT);
+
+	ags_port_safe_read(port,
+			   &value);
+
+	ags_dial_set_value(sf2_synth->wah_wah_decay_x,
+			   (gdouble) creal((double _Complex) g_value_get_float(&value)));
+
+	ags_dial_set_value(sf2_synth->wah_wah_decay_y,
+			   (gdouble) cimag((double _Complex) g_value_get_float(&value)));
+
+	g_object_unref(port);
+      }
+
+      /* wah-wah sustain */
+      port = NULL;
+      
+      g_object_get(recall->data,
+		   "wah-wah-sustain", &port,
+		   NULL);
+
+      if(port != NULL){
+	GValue value = G_VALUE_INIT;
+
+	g_value_init(&value,
+		     G_TYPE_FLOAT);
+
+	ags_port_safe_read(port,
+			   &value);
+
+	ags_dial_set_value(sf2_synth->wah_wah_sustain_x,
+			   (gdouble) creal((double _Complex) g_value_get_float(&value)));
+
+	ags_dial_set_value(sf2_synth->wah_wah_sustain_y,
+			   (gdouble) cimag((double _Complex) g_value_get_float(&value)));
+
+	g_object_unref(port);
+      }
+
+      /* wah-wah release */
+      port = NULL;
+      
+      g_object_get(recall->data,
+		   "wah-wah-release", &port,
+		   NULL);
+
+      if(port != NULL){
+	GValue value = G_VALUE_INIT;
+
+	g_value_init(&value,
+		     G_TYPE_FLOAT);
+
+	ags_port_safe_read(port,
+			   &value);
+
+	ags_dial_set_value(sf2_synth->wah_wah_release_x,
+			   (gdouble) creal((double _Complex) g_value_get_float(&value)));
+
+	ags_dial_set_value(sf2_synth->wah_wah_release_y,
+			   (gdouble) cimag((double _Complex) g_value_get_float(&value)));
+
+	g_object_unref(port);
+      }
+
+      /* wah-wah LFO depth */
+      port = NULL;
+      
+      g_object_get(recall->data,
+		   "wah-wah-lfo-depth", &port,
+		   NULL);
+
+      if(port != NULL){
+	GValue value = G_VALUE_INIT;
+
+	g_value_init(&value,
+		     G_TYPE_FLOAT);
+
+	ags_port_safe_read(port,
+			   &value);
+
+	ags_dial_set_value(sf2_synth->wah_wah_lfo_depth,
+			   (gdouble) g_value_get_float(&value));
+
+	g_object_unref(port);
+      }
+
+      /* wah-wah LFO freq */
+      port = NULL;
+      
+      g_object_get(recall->data,
+		   "wah-wah-lfo-freq", &port,
+		   NULL);
+
+      if(port != NULL){
+	GValue value = G_VALUE_INIT;
+
+	g_value_init(&value,
+		     G_TYPE_FLOAT);
+
+	ags_port_safe_read(port,
+			   &value);
+
+	ags_dial_set_value(sf2_synth->wah_wah_lfo_freq,
+			   (gdouble) g_value_get_float(&value));
+
+	g_object_unref(port);
+      }
+
+      /* wah-wah tuning */
+      port = NULL;
+      
+      g_object_get(recall->data,
+		   "wah-wah-tuning", &port,
+		   NULL);
+
+      if(port != NULL){
+	GValue value = G_VALUE_INIT;
+
+	g_value_init(&value,
+		     G_TYPE_FLOAT);
+
+	ags_port_safe_read(port,
+			   &value);
+
+	ags_dial_set_value(sf2_synth->wah_wah_tuning,
+			   (gdouble) g_value_get_float(&value));
+
+	g_object_unref(port);
+      }
+    }
+
+    g_list_free_full(start_recall,
+		     (GDestroyNotify) g_object_unref);
+
+    /**/
+    next = ags_channel_next(channel);
+
+    g_object_unref(channel);
+
+    channel = next;
+  }
+
+  if(start_channel != NULL){
+    g_object_unref(start_channel);
+  }
+  
   machine->flags &= (~AGS_MACHINE_NO_UPDATE);
 }
 
