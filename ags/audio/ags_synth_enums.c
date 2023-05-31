@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -51,6 +51,29 @@ ags_synth_oscillator_mode_get_type()
     };
 
     GType g_enum_type_id = g_enum_register_static(g_intern_static_string("AgsSynthOscillatorMode"), values);
+
+    g_once_init_leave (&g_enum_type_id__volatile, g_enum_type_id);
+  }
+  
+  return g_enum_type_id__volatile;
+}
+
+GType
+ags_synth_key_mode_get_type()
+{
+  static volatile gsize g_enum_type_id__volatile;
+
+  if(g_once_init_enter (&g_enum_type_id__volatile)){
+    static const GEnumValue values[] = {
+      { AGS_SYNTH_KEY_1_1, "AGS_SYNTH_KEY_1_+", "synth-key-1-1" },
+      { AGS_SYNTH_KEY_2_2, "AGS_SYNTH_KEY_2_2", "synth-key-2-2" },
+      { AGS_SYNTH_KEY_4_4, "AGS_SYNTH_KEY_4_4", "synth-key-4-4" },
+      { AGS_SYNTH_KEY_8_8, "AGS_SYNTH_KEY_8_8", "synth-key-8-8" },
+      { AGS_SYNTH_KEY_16_16, "AGS_SYNTH_KEY_16_16", "synth-key-16-16" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_enum_type_id = g_enum_register_static(g_intern_static_string("AgsSynthKeyMode"), values);
 
     g_once_init_leave (&g_enum_type_id__volatile, g_enum_type_id);
   }

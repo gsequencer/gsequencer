@@ -537,7 +537,7 @@ ags_fx_wah_wah_channel_init(AgsFxWahWahChannel *fx_wah_wah_channel)
 						       "port-value-length", 1,
 						       NULL);
   
-  fx_wah_wah_channel->wah_wah_lfo_depth->port_value.ags_port_float = 0.0;
+  fx_wah_wah_channel->wah_wah_lfo_depth->port_value.ags_port_float = 1.0;
 
   g_object_set(fx_wah_wah_channel->wah_wah_lfo_depth,
 	       "plugin-port", ags_fx_wah_wah_channel_get_wah_wah_lfo_depth_plugin_port(),
@@ -559,7 +559,7 @@ ags_fx_wah_wah_channel_init(AgsFxWahWahChannel *fx_wah_wah_channel)
 						       "port-value-length", 1,
 						       NULL);
   
-  fx_wah_wah_channel->wah_wah_lfo_freq->port_value.ags_port_float = 8.179;
+  fx_wah_wah_channel->wah_wah_lfo_freq->port_value.ags_port_float = 6.0;
 
   g_object_set(fx_wah_wah_channel->wah_wah_lfo_freq,
 	       "plugin-port", ags_fx_wah_wah_channel_get_wah_wah_lfo_freq_plugin_port(),
@@ -1527,7 +1527,7 @@ ags_fx_wah_wah_channel_get_wah_wah_lfo_depth_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      0.0);
+		      1.0);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
@@ -1607,7 +1607,7 @@ ags_fx_wah_wah_channel_get_wah_wah_tuning_plugin_port()
     g_value_set_float(plugin_port->default_value,
 		      0.0);
     g_value_set_float(plugin_port->lower_value,
-		      0.0);
+		      -1200.0);
     g_value_set_float(plugin_port->upper_value,
 		      1200.0);
   }
