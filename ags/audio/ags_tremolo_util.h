@@ -109,6 +109,10 @@ gdouble ags_tremolo_util_get_tremolo_tuning(AgsTremoloUtil *tremolo_util);
 void ags_tremolo_util_set_tremolo_tuning(AgsTremoloUtil *tremolo_util,
 					 gdouble tremolo_tuning);
 
+guint ags_tremolo_util_get_tremolo_lfo_offset(AgsTremoloUtil *tremolo_util);
+void ags_tremolo_util_set_tremolo_lfo_offset(AgsTremoloUtil *tremolo_util,
+					     guint tremolo_lfo_offset);
+
 /* compute */
 void ags_tremolo_util_compute_s8(AgsTremoloUtil *tremolo_util);
 void ags_tremolo_util_compute_s16(AgsTremoloUtil *tremolo_util);

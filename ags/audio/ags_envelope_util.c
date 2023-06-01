@@ -678,6 +678,46 @@ ags_envelope_util_set_wah_wah_tuning(AgsEnvelopeUtil *envelope_util,
 }
 
 /**
+ * ags_envelope_util_get_wah_wah_lfo_offset:
+ * @envelope_util: the #AgsEnvelopeUtil-struct
+ * 
+ * Get wah-wah LFO offset of @envelope_util.
+ * 
+ * Returns: the wah-wah LFO offset
+ * 
+ * Since: 5.2.4
+ */
+guint
+ags_envelope_util_get_wah_wah_lfo_offset(AgsEnvelopeUtil *envelope_util)
+{
+  if(envelope_util == NULL){
+    return(0);
+  }
+
+  return(envelope_util->wah_wah_lfo_offset);
+}
+
+/**
+ * ags_envelope_util_set_wah_wah_lfo_offset:
+ * @envelope_util: the #AgsEnvelopeUtil-struct
+ * @wah_wah_lfo_offset: the wah-wah LFO offset
+ *
+ * Set @wah_wah_lfo_offset of @envelope_util.
+ *
+ * Since: 5.2.4
+ */
+void
+ags_envelope_util_set_wah_wah_lfo_offset(AgsEnvelopeUtil *envelope_util,
+					 guint wah_wah_lfo_offset)
+{
+  if(envelope_util == NULL){
+    return;
+  }
+
+  envelope_util->wah_wah_lfo_offset = wah_wah_lfo_offset;
+}
+
+/**
  * ags_envelope_util_compute_s8:
  * @envelope_util: the #AgsEnvelopeUtil-struct
  * 

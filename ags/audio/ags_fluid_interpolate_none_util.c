@@ -808,6 +808,46 @@ ags_fluid_interpolate_none_util_set_vibrato_tuning(AgsFluidInterpolateNoneUtil *
 }
 
 /**
+ * ags_fluid_interpolate_none_util_get_vibrato_lfo_offset:
+ * @fluid_interpolate_none_util: the #AgsFluidInterpolateNoneUtil-struct
+ * 
+ * Get vibrato LFO offset of @fluid_interpolate_none_util.
+ * 
+ * Returns: the vibrato LFO offset
+ * 
+ * Since: 5.2.4
+ */
+guint
+ags_fluid_interpolate_none_util_get_vibrato_lfo_offset(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util)
+{
+  if(fluid_interpolate_none_util == NULL){
+    return(0);
+  }
+
+  return(fluid_interpolate_none_util->vibrato_lfo_offset);
+}
+
+/**
+ * ags_fluid_interpolate_none_util_set_vibrato_lfo_offset:
+ * @fluid_interpolate_none_util: the #AgsFluidInterpolateNoneUtil-struct
+ * @vibrato_lfo_offset: the vibrato LFO offset
+ *
+ * Set @vibrato_lfo_offset of @fluid_interpolate_none_util.
+ *
+ * Since: 5.2.4
+ */
+void
+ags_fluid_interpolate_none_util_set_vibrato_lfo_offset(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util,
+						       guint vibrato_lfo_offset)
+{
+  if(fluid_interpolate_none_util == NULL){
+    return;
+  }
+
+  fluid_interpolate_none_util->vibrato_lfo_offset = vibrato_lfo_offset;
+}
+
+/**
  * ags_fluid_interpolate_none_util_pitch_s8:
  * @fluid_interpolate_none_util: the #AgsFluidInterpolateNoneUtil-struct
  * 
