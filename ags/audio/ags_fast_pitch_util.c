@@ -788,6 +788,45 @@ ags_fast_pitch_util_set_vibrato_tuning(AgsFastPitchUtil *fast_pitch_util,
   fast_pitch_util->vibrato_tuning = vibrato_tuning;
 }
 
+/**
+ * ags_fast_pitch_util_get_vibrato_lfo_offset:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * 
+ * Get vibrato lfo_offset of @fast_pitch_util.
+ * 
+ * Returns: the vibrato lfo_offset
+ * 
+ * Since: 5.2.4
+ */
+guint
+ags_fast_pitch_util_get_vibrato_lfo_offset(AgsFastPitchUtil *fast_pitch_util)
+{
+  if(fast_pitch_util == NULL){
+    return(0);
+  }
+
+  return(fast_pitch_util->vibrato_lfo_offset);
+}
+
+/**
+ * ags_fast_pitch_util_set_vibrato_lfo_offset:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * @vibrato_lfo_offset: the vibrato lfo_offset
+ *
+ * Set @vibrato_lfo_offset of @fast_pitch_util.
+ *
+ * Since: 5.2.4
+ */
+void
+ags_fast_pitch_util_set_vibrato_lfo_offset(AgsFastPitchUtil *fast_pitch_util,
+					   guint vibrato_lfo_offset)
+{
+  if(fast_pitch_util == NULL){
+    return;
+  }
+
+  fast_pitch_util->vibrato_lfo_offset = vibrato_lfo_offset;
+}
 
 /**
  * ags_fast_pitch_util_pitch_s8:

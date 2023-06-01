@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -2510,7 +2510,7 @@ ags_fx_sfz_synth_audio_get_chorus_enabled_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      0.0);
+		      (gfloat) TRUE);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,

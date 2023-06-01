@@ -1410,7 +1410,7 @@ ags_sfz_synth_wah_wah_length_callback(GtkComboBox *combo_box, AgsSFZSynth *sfz_s
       port = NULL;
       
       g_object_get(recall->data,
-		   "wah-wah-length", &port,
+		   "wah-wah-length-mode", &port,
 		   NULL);
 
       if(port != NULL){

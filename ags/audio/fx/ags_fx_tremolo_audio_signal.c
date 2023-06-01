@@ -143,6 +143,12 @@ ags_fx_tremolo_audio_signal_real_run_inter(AgsRecall *recall)
   AgsFxTremoloRecycling *fx_tremolo_recycling;
   AgsFxTremoloAudioSignal *fx_tremolo_audio_signal;
   
+  GObject *output_soundcard;
+  
+  GList *start_note, *note;
+
+  guint note_offset, delay_counter;
+  gdouble delay;
   guint buffer_size;
   guint format;
   gboolean tremolo_enabled;
@@ -153,7 +159,11 @@ ags_fx_tremolo_audio_signal_real_run_inter(AgsRecall *recall)
 
   GRecMutex *stream_mutex;
 
+  output_soundcard = NULL;
+
   source = NULL;
+
+  start_note = NULL;
 
   fx_tremolo_audio = NULL;
   fx_tremolo_channel = NULL;
@@ -185,10 +195,17 @@ ags_fx_tremolo_audio_signal_real_run_inter(AgsRecall *recall)
 	       NULL);
 
   g_object_get(source,
+	       "output-soundcard", &output_soundcard,
+	       "note", &start_note,
 	       "buffer-size", &buffer_size,
 	       "format", &format,
 	       NULL);
   
+  note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
+  delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(output_soundcard));
+  
+  delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
+
   if(fx_tremolo_audio != NULL){
     AgsPort *port;
 
@@ -314,27 +331,47 @@ ags_fx_tremolo_audio_signal_real_run_inter(AgsRecall *recall)
   if(source != NULL &&
      source->stream_current != NULL &&
      tremolo_enabled){
-    stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(source);
-    
-    fx_tremolo_audio_signal->tremolo_util.destination = source->stream_current->data;
-    fx_tremolo_audio_signal->tremolo_util.destination_stride = 1;
-	
-    fx_tremolo_audio_signal->tremolo_util.source = source->stream_current->data;
-    fx_tremolo_audio_signal->tremolo_util.source_stride = 1;
-	
-    fx_tremolo_audio_signal->tremolo_util.buffer_length = buffer_size;
-    fx_tremolo_audio_signal->tremolo_util.format = format;
-	
-    fx_tremolo_audio_signal->tremolo_util.tremolo_gain = tremolo_gain;
-    fx_tremolo_audio_signal->tremolo_util.tremolo_lfo_depth = tremolo_lfo_depth;
-    fx_tremolo_audio_signal->tremolo_util.tremolo_lfo_freq = tremolo_lfo_freq;
-    fx_tremolo_audio_signal->tremolo_util.tremolo_tuning = tremolo_tuning;
-      
-    g_rec_mutex_lock(stream_mutex);
+    if(start_note != NULL){
+      note = start_note;
+  
+      while(note != NULL){
+	guint x0, x1;
 
-    ags_tremolo_util_compute(&(fx_tremolo_audio_signal->tremolo_util));
+	x0 = 0;
+	x1 = 1;
+	
+	g_object_get(note->data,
+		     "x0", &x0,
+		     "x1", &x1,
+		     NULL);
+
+	stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(source);
     
-    g_rec_mutex_unlock(stream_mutex);
+	fx_tremolo_audio_signal->tremolo_util.destination = source->stream_current->data;
+	fx_tremolo_audio_signal->tremolo_util.destination_stride = 1;
+	
+	fx_tremolo_audio_signal->tremolo_util.source = source->stream_current->data;
+	fx_tremolo_audio_signal->tremolo_util.source_stride = 1;
+	
+	fx_tremolo_audio_signal->tremolo_util.buffer_length = buffer_size;
+	fx_tremolo_audio_signal->tremolo_util.format = format;
+	
+	fx_tremolo_audio_signal->tremolo_util.tremolo_gain = tremolo_gain;
+	fx_tremolo_audio_signal->tremolo_util.tremolo_lfo_depth = tremolo_lfo_depth;
+	fx_tremolo_audio_signal->tremolo_util.tremolo_lfo_freq = tremolo_lfo_freq;
+	fx_tremolo_audio_signal->tremolo_util.tremolo_tuning = tremolo_tuning;
+
+	fx_tremolo_audio_signal->tremolo_util.tremolo_lfo_offset = (guint) floor(((gdouble) (note_offset - x0) * delay + delay_counter) * buffer_size);
+
+	g_rec_mutex_lock(stream_mutex);
+
+	ags_tremolo_util_compute(&(fx_tremolo_audio_signal->tremolo_util));
+    
+	g_rec_mutex_unlock(stream_mutex);
+
+	note = note->next;
+      }
+    }
   }
 
   if(source == NULL ||

@@ -648,6 +648,10 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
 					     channel_data->synth->pitch_type,
 					     vibrato_tuning);
 
+    ags_common_pitch_util_set_vibrato_lfo_offset(channel_data->synth->pitch_util,
+						 channel_data->synth->pitch_type,
+						 (offset_counter - x0) * delay + delay_counter);
+
     ags_audio_buffer_util_clear_buffer(source->stream_current->data, 1,
 				       buffer_size, audio_buffer_util_format);
 

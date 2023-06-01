@@ -772,6 +772,46 @@ ags_hq_pitch_util_set_vibrato_tuning(AgsHQPitchUtil *hq_pitch_util,
 }
 
 /**
+ * ags_hq_pitch_util_get_vibrato_lfo_offset:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * 
+ * Get vibrato lfo_offset of @hq_pitch_util.
+ * 
+ * Returns: the vibrato lfo_offset
+ * 
+ * Since: 5.2.4
+ */
+guint
+ags_hq_pitch_util_get_vibrato_lfo_offset(AgsHQPitchUtil *hq_pitch_util)
+{
+  if(hq_pitch_util == NULL){
+    return(0);
+  }
+
+  return(hq_pitch_util->vibrato_lfo_offset);
+}
+
+/**
+ * ags_hq_pitch_util_set_vibrato_lfo_offset:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * @vibrato_lfo_offset: the vibrato lfo_offset
+ *
+ * Set @vibrato_lfo_offset of @hq_pitch_util.
+ *
+ * Since: 5.2.4
+ */
+void
+ags_hq_pitch_util_set_vibrato_lfo_offset(AgsHQPitchUtil *hq_pitch_util,
+					 guint vibrato_lfo_offset)
+{
+  if(hq_pitch_util == NULL){
+    return;
+  }
+
+  hq_pitch_util->vibrato_lfo_offset = vibrato_lfo_offset;
+}
+
+/**
  * ags_hq_pitch_util_pitch_s8:
  * @hq_pitch_util: the #AgsHQPitchUtil-struct
  * 

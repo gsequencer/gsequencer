@@ -802,6 +802,46 @@ ags_fluid_interpolate_linear_util_set_vibrato_tuning(AgsFluidInterpolateLinearUt
 }
 
 /**
+ * ags_fluid_interpolate_linear_util_get_vibrato_lfo_offset:
+ * @fluid_interpolate_linear_util: the #AgsFluidInterpolateLinearUtil-struct
+ * 
+ * Get vibrato LFO offset of @fluid_interpolate_linear_util.
+ * 
+ * Returns: the vibrato LFO offset
+ * 
+ * Since: 5.2.4
+ */
+guint
+ags_fluid_interpolate_linear_util_get_vibrato_lfo_offset(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util)
+{
+  if(fluid_interpolate_linear_util == NULL){
+    return(0);
+  }
+
+  return(fluid_interpolate_linear_util->vibrato_lfo_offset);
+}
+
+/**
+ * ags_fluid_interpolate_linear_util_set_vibrato_lfo_offset:
+ * @fluid_interpolate_linear_util: the #AgsFluidInterpolateLinearUtil-struct
+ * @vibrato_lfo_offset: the vibrato LFO offset
+ *
+ * Set @vibrato_lfo_offset of @fluid_interpolate_linear_util.
+ *
+ * Since: 5.2.4
+ */
+void
+ags_fluid_interpolate_linear_util_set_vibrato_lfo_offset(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
+							 guint vibrato_lfo_offset)
+{
+  if(fluid_interpolate_linear_util == NULL){
+    return;
+  }
+
+  fluid_interpolate_linear_util->vibrato_lfo_offset = vibrato_lfo_offset;
+}
+
+/**
  * ags_fluid_interpolate_linear_util_get_phase_increment:
  * @fluid_interpolate_linear_util: the #AgsFluidInterpolateLinearUtil-struct
  * 

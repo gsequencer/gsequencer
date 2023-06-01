@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -135,6 +135,10 @@ void ags_hq_pitch_util_set_vibrato_lfo_freq(AgsHQPitchUtil *hq_pitch_util,
 gdouble ags_hq_pitch_util_get_vibrato_tuning(AgsHQPitchUtil *hq_pitch_util);
 void ags_hq_pitch_util_set_vibrato_tuning(AgsHQPitchUtil *hq_pitch_util,
 					  gdouble vibrato_tuning);
+
+guint ags_hq_pitch_util_get_vibrato_lfo_offset(AgsHQPitchUtil *hq_pitch_util);
+void ags_hq_pitch_util_set_vibrato_lfo_offset(AgsHQPitchUtil *hq_pitch_util,
+					      guint vibrato_lfo_offset);
 
 void ags_hq_pitch_util_pitch_s8(AgsHQPitchUtil *hq_pitch_util);
 void ags_hq_pitch_util_pitch_s16(AgsHQPitchUtil *hq_pitch_util);

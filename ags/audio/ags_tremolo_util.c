@@ -592,6 +592,46 @@ ags_tremolo_util_set_tremolo_tuning(AgsTremoloUtil *tremolo_util,
 }
 
 /**
+ * ags_tremolo_util_get_tremolo_lfo_offset:
+ * @tremolo_util: the #AgsTremoloUtil-struct
+ * 
+ * Get tremolo LFO offset of @tremolo_util.
+ * 
+ * Returns: the tremolo LFO offset
+ * 
+ * Since: 5.2.0
+ */
+guint
+ags_tremolo_util_get_tremolo_lfo_offset(AgsTremoloUtil *tremolo_util)
+{
+  if(tremolo_util == NULL){
+    return(0);
+  }
+
+  return(tremolo_util->tremolo_lfo_offset);
+}
+
+/**
+ * ags_tremolo_util_set_tremolo_lfo_offset:
+ * @tremolo_util: the #AgsTremoloUtil-struct
+ * @tremolo_lfo_offset: the tremolo LFO offset
+ *
+ * Set @tremolo_lfo_offset of @tremolo_util.
+ *
+ * Since: 5.2.0
+ */
+void
+ags_tremolo_util_set_tremolo_lfo_offset(AgsTremoloUtil *tremolo_util,
+					guint tremolo_lfo_offset)
+{
+  if(tremolo_util == NULL){
+    return;
+  }
+
+  tremolo_util->tremolo_lfo_offset = tremolo_lfo_offset;
+}
+
+/**
  * ags_tremolo_util_compute_s8:
  * @tremolo_util: the #AgsTremoloUtil-struct
  * 
