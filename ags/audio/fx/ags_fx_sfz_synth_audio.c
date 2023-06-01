@@ -430,6 +430,22 @@ ags_fx_sfz_synth_audio_class_init(AgsFxSFZSynthAudioClass *fx_sfz_synth_audio)
 				  param_spec);
 
   /**
+   * AgsFxSFZSynthAudio:vibrato-gain:
+   *
+   * The vibrato gain.
+   * 
+   * Since: 5.2.4
+   */
+  param_spec = g_param_spec_object("vibrato-gain",
+				   i18n_pspec("vibrato gain of recall"),
+				   i18n_pspec("The vibrato gain"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_VIBRATO_GAIN,
+				  param_spec);
+
+  /**
    * AgsFxSFZSynthAudio:vibrato-lfo-depth:
    *
    * The vibrato LFO depth.

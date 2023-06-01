@@ -151,6 +151,7 @@ ags_fx_tremolo_audio_signal_real_run_inter(AgsRecall *recall)
   gdouble delay;
   guint buffer_size;
   guint format;
+  guint samplerate;
   gboolean tremolo_enabled;
   gdouble tremolo_gain;
   gdouble tremolo_lfo_depth;
@@ -173,6 +174,7 @@ ags_fx_tremolo_audio_signal_real_run_inter(AgsRecall *recall)
 
   buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
   
   tremolo_enabled = FALSE;
   tremolo_gain = 1.0;
@@ -199,6 +201,7 @@ ags_fx_tremolo_audio_signal_real_run_inter(AgsRecall *recall)
 	       "note", &start_note,
 	       "buffer-size", &buffer_size,
 	       "format", &format,
+	       "samplerate", &samplerate,
 	       NULL);
   
   note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
@@ -355,6 +358,7 @@ ags_fx_tremolo_audio_signal_real_run_inter(AgsRecall *recall)
 	
 	fx_tremolo_audio_signal->tremolo_util.buffer_length = buffer_size;
 	fx_tremolo_audio_signal->tremolo_util.format = format;
+	fx_tremolo_audio_signal->tremolo_util.samplerate = samplerate;
 	
 	fx_tremolo_audio_signal->tremolo_util.tremolo_gain = tremolo_gain;
 	fx_tremolo_audio_signal->tremolo_util.tremolo_lfo_depth = tremolo_lfo_depth;
