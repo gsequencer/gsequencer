@@ -1585,7 +1585,7 @@ ags_sfz_synth_connect(AgsConnectable *connectable)
   g_signal_connect_after(sfz_synth->synth_volume, "value-changed",
 			 G_CALLBACK(ags_sfz_synth_synth_volume_callback), sfz_synth);
 
-  //  g_signal_connect_after(sfz_synth->chorus_enabled, "clicked",
+  //  g_signal_connect_after(sfz_synth->chorus_enabled, "toggled",
 //			 G_CALLBACK(ags_sfz_synth_chorus_enabled_callback), sfz_synth);
   
   g_signal_connect_after(sfz_synth->chorus_input_volume, "value-changed",
@@ -1609,7 +1609,7 @@ ags_sfz_synth_connect(AgsConnectable *connectable)
   g_signal_connect_after(sfz_synth->chorus_delay, "value-changed",
 			 G_CALLBACK(ags_sfz_synth_chorus_delay_callback), sfz_synth);
 
-  g_signal_connect_after(sfz_synth->tremolo_enabled, "clicked",
+  g_signal_connect_after(sfz_synth->tremolo_enabled, "toggled",
 			 G_CALLBACK(ags_sfz_synth_tremolo_enabled_callback), sfz_synth);
 
   g_signal_connect_after(sfz_synth->tremolo_lfo_depth, "value-changed",
@@ -1621,7 +1621,7 @@ ags_sfz_synth_connect(AgsConnectable *connectable)
   g_signal_connect_after(sfz_synth->tremolo_tuning, "value-changed",
 			 G_CALLBACK(ags_sfz_synth_tremolo_tuning_callback), sfz_synth);
 
-  g_signal_connect_after(sfz_synth->vibrato_enabled, "clicked",
+  g_signal_connect_after(sfz_synth->vibrato_enabled, "toggled",
 			 G_CALLBACK(ags_sfz_synth_vibrato_enabled_callback), sfz_synth);
 
   g_signal_connect_after(sfz_synth->vibrato_gain, "value-changed",
@@ -1636,7 +1636,7 @@ ags_sfz_synth_connect(AgsConnectable *connectable)
   g_signal_connect_after(sfz_synth->vibrato_tuning, "value-changed",
 			 G_CALLBACK(ags_sfz_synth_vibrato_tuning_callback), sfz_synth);
 
-  g_signal_connect_after(sfz_synth->wah_wah_enabled, "clicked",
+  g_signal_connect_after(sfz_synth->wah_wah_enabled, "toggled",
 			 G_CALLBACK(ags_sfz_synth_wah_wah_enabled_callback), sfz_synth);
 
   g_signal_connect_after(sfz_synth->wah_wah_length, "changed",
@@ -1766,7 +1766,7 @@ ags_sfz_synth_disconnect(AgsConnectable *connectable)
 		      NULL);
 
   g_object_disconnect((GObject *) sfz_synth->tremolo_enabled,
-		      "any_signal::clicked",
+		      "any_signal::toggled",
 		      G_CALLBACK(ags_sfz_synth_tremolo_enabled_callback),
 		      sfz_synth,
 		      NULL);
@@ -1796,7 +1796,7 @@ ags_sfz_synth_disconnect(AgsConnectable *connectable)
 		      NULL);
 
   g_object_disconnect((GObject *) sfz_synth->vibrato_enabled,
-		      "any_signal::clicked",
+		      "any_signal::toggled",
 		      G_CALLBACK(ags_sfz_synth_vibrato_enabled_callback),
 		      sfz_synth,
 		      NULL);
@@ -1820,7 +1820,7 @@ ags_sfz_synth_disconnect(AgsConnectable *connectable)
 		      NULL);
 
   g_object_disconnect((GObject *) sfz_synth->wah_wah_enabled,
-		      "any_signal::clicked",
+		      "any_signal::toggled",
 		      G_CALLBACK(ags_sfz_synth_wah_wah_enabled_callback),
 		      sfz_synth,
 		      NULL);

@@ -130,6 +130,10 @@ gdouble ags_fluid_interpolate_7th_order_util_get_vibrato_tuning(AgsFluidInterpol
 void ags_fluid_interpolate_7th_order_util_set_vibrato_tuning(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util,
 							     gdouble vibrato_tuning);
 
+guint ags_fluid_interpolate_7th_order_util_get_vibrato_lfo_offset(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util);
+void ags_fluid_interpolate_7th_order_util_set_vibrato_lfo_offset(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util,
+								 guint vibrato_lfo_offset);
+
 void ags_fluid_interpolate_7th_order_util_pitch_s8(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util);
 void ags_fluid_interpolate_7th_order_util_pitch_s16(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util);
 void ags_fluid_interpolate_7th_order_util_pitch_s24(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util);

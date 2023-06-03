@@ -398,6 +398,9 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
 	  
 	  /* get note mutex */
 	  note_mutex = AGS_NOTE_GET_OBJ_MUTEX(current_note);
+
+	  x0 = 0;
+	  x1 = 1;
 	  
 	  g_object_get(current_note,
 		       "x0", &x0,

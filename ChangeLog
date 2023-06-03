@@ -1,3 +1,17 @@
+ags (5.2.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_midi_util.c false conditions
+
+ags (5.2.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_tremolo_util.c broken LFO
+	* fixed ags-fx-tremolo missing samplerate
+	* implemented getter/setter of tremolo LFO offset
+	* implemented getter/setter of vibrato LFO offset
+	* implemented getter/setter of wah-wah LFO offset
+
 ags (5.2.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -130,6 +130,10 @@ gdouble ags_fluid_interpolate_linear_util_get_vibrato_tuning(AgsFluidInterpolate
 void ags_fluid_interpolate_linear_util_set_vibrato_tuning(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
 							  gdouble vibrato_tuning);
 
+guint ags_fluid_interpolate_linear_util_get_vibrato_lfo_offset(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+void ags_fluid_interpolate_linear_util_set_vibrato_lfo_offset(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
+							      guint vibrato_lfo_offset);
+
 void ags_fluid_interpolate_linear_util_pitch_s8(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
 void ags_fluid_interpolate_linear_util_pitch_s16(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
 void ags_fluid_interpolate_linear_util_pitch_s24(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);

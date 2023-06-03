@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -427,6 +427,22 @@ ags_fx_sfz_synth_audio_class_init(AgsFxSFZSynthAudioClass *fx_sfz_synth_audio)
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_VIBRATO_ENABLED,
+				  param_spec);
+
+  /**
+   * AgsFxSFZSynthAudio:vibrato-gain:
+   *
+   * The vibrato gain.
+   * 
+   * Since: 5.2.4
+   */
+  param_spec = g_param_spec_object("vibrato-gain",
+				   i18n_pspec("vibrato gain of recall"),
+				   i18n_pspec("The vibrato gain"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_VIBRATO_GAIN,
 				  param_spec);
 
   /**
@@ -2510,7 +2526,7 @@ ags_fx_sfz_synth_audio_get_chorus_enabled_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      0.0);
+		      (gfloat) TRUE);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
