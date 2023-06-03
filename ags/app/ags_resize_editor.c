@@ -238,6 +238,76 @@ ags_resize_editor_init(AgsResizeEditor *resize_editor)
 		  GTK_WIDGET(resize_editor->input_pads),
 		  1, 2,
 		  1, 1);
+
+  /* format */
+  label = (GtkLabel *) gtk_label_new(i18n("format"));
+
+  gtk_widget_set_valign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+
+  gtk_widget_set_margin_end((GtkWidget *) label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
+
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(label),
+		  0, 3,
+		  1, 1);
+
+  resize_editor->format = (GtkComboBox *) gtk_combo_box_text_new();
+  gtk_combo_box_text_append_text(resize_editor->format,
+				 "8 bit");
+  gtk_combo_box_text_append_text(resize_editor->format,
+				 "16 bit");
+  gtk_combo_box_text_append_text(resize_editor->format,
+				 "24 bit");
+  gtk_combo_box_text_append_text(resize_editor->format,
+				 "32 bit");
+  gtk_combo_box_text_append_text(resize_editor->format,
+				 "64 bit");
+  gtk_combo_box_text_append_text(resize_editor->format,
+				 "floating point");
+  gtk_combo_box_text_append_text(resize_editor->format,
+				 "double precision floating point");
+  gtk_combo_box_text_append_text(resize_editor->format,
+				 "complex floating point");
+  gtk_combo_box_set_active(resize_editor->format,
+			   1);
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(resize_editor->format),
+		  1, 3,
+		  1, 1);
+
+  /* samplerate */
+  label = (GtkLabel *) gtk_label_new(i18n("samplerate"));
+
+  gtk_widget_set_valign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+
+  gtk_widget_set_margin_end((GtkWidget *) label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
+
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(label),
+		  0, 4,
+		  1, 1);
+
+  resize_editor->samplerate = (GtkSpinButton *) gtk_spin_button_new_with_range(AGS_SOUNDCARD_MIN_SAMPLERATE, AGS_SOUNDCARD_MAX_SAMPLERATE, 1.0);
+  gtk_spin_button_set_value(resize_editor->samplerate,
+			    AGS_SOUNDCARD_DEFAULT_SAMPLERATE);
+  
+  gtk_widget_set_valign((GtkWidget *) resize_editor->samplerate,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) resize_editor->samplerate,
+			GTK_ALIGN_START);
+
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(resize_editor->samplerate),
+		  1, 4,
+		  1, 1);
 }
 
 void
@@ -282,11 +352,17 @@ ags_resize_editor_apply(AgsApplicable *applicable)
 
   AgsAudio *audio;
   AgsResizeAudio *resize_audio;
+  AgsSetFormat *set_format;
+  AgsSetSamplerate *set_samplerate;
+  AgsSetBufferSize *set_buffer_size;
   
   AgsApplicationContext *application_context;
 
   guint audio_channels;
   guint output_pads, input_pads;
+  guint samplerate, orig_samplerate;
+  guint format;
+  guint buffer_size;
   
   resize_editor = AGS_RESIZE_EDITOR(applicable);
 
@@ -302,6 +378,9 @@ ags_resize_editor_apply(AgsApplicable *applicable)
   /* get audio */
   audio = machine_editor->machine->audio;
 
+  buffer_size = ags_audio_get_buffer_size(audio);
+  orig_samplerate = ags_audio_get_samplerate(audio);
+
   /* create task */
   audio_channels = gtk_spin_button_get_value_as_int(resize_editor->audio_channels);
   
@@ -316,6 +395,59 @@ ags_resize_editor_apply(AgsApplicable *applicable)
   /* append AgsResizeAudio */
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) resize_audio);
+
+  /* create task */
+  switch(gtk_combo_box_get_active(resize_editor->format)){
+  case 0:
+    format = AGS_SOUNDCARD_SIGNED_8_BIT;
+    break;
+  case 1:
+    format = AGS_SOUNDCARD_SIGNED_16_BIT;
+    break;
+  case 2:
+    format = AGS_SOUNDCARD_SIGNED_24_BIT;
+    break;
+  case 3:
+    format = AGS_SOUNDCARD_SIGNED_32_BIT;
+    break;
+  case 4:
+    format = AGS_SOUNDCARD_SIGNED_64_BIT;
+    break;
+  case 5:
+    format = AGS_SOUNDCARD_FLOAT;
+    break;
+  case 6:
+    format = AGS_SOUNDCARD_DOUBLE;
+    break;
+  case 7:
+    format = AGS_SOUNDCARD_COMPLEX;
+    break;
+  }
+
+  set_format = ags_set_format_new(audio,
+				  format);
+
+  /* append AgsSetFormat */
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) set_format);
+
+  /* create task */
+  samplerate = gtk_spin_button_get_value_as_int(resize_editor->samplerate);
+
+  set_samplerate = ags_set_samplerate_new(audio,
+					  samplerate);
+
+  /* append AgsSetSamplerate */
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) set_samplerate);
+
+  /* create task */
+  set_buffer_size = ags_set_buffer_size_new(audio,
+					    (guint) floor((double) buffer_size / (double) orig_samplerate * (double) samplerate));
+
+  /* append AgsSetBuffer_Size */
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) set_buffer_size);
 }
 
 void
@@ -330,7 +462,10 @@ ags_resize_editor_reset(AgsApplicable *applicable)
   guint min_audio_channels, max_audio_channels;
   guint output_pads, input_pads;
   guint min_output_pads, max_output_pads, min_input_pads, max_input_pads;
-
+  AgsSoundcardFormat format;
+  guint samplerate;
+  gint position;
+  
   resize_editor = AGS_RESIZE_EDITOR(applicable);
 
   machine_editor = AGS_MACHINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(resize_editor),
@@ -347,6 +482,8 @@ ags_resize_editor_reset(AgsApplicable *applicable)
 	       "max-output-pads", &max_output_pads,
 	       "min-input-pads", &min_input_pads,
 	       "max-input-pads", &max_input_pads,
+	       "format", &format,
+	       "samplerate", &samplerate,
 	       NULL);
   
   /* reset - audio channels */
@@ -368,6 +505,40 @@ ags_resize_editor_reset(AgsApplicable *applicable)
 
   gtk_spin_button_set_value(resize_editor->input_pads,
 			    (gdouble) input_pads);
+
+  /*  */
+  switch(format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+    position = 0;
+    break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    position = 1;
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    position = 2;
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    position = 3;
+    break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+    position = 4;
+    break;
+  case AGS_SOUNDCARD_FLOAT:
+    position = 5;
+    break;
+  case AGS_SOUNDCARD_DOUBLE:
+    position = 6;
+    break;
+  case AGS_SOUNDCARD_COMPLEX:
+    position = 7;
+    break;
+  }
+  
+  gtk_combo_box_set_active(resize_editor->format,
+			   position);
+
+  gtk_spin_button_set_value(resize_editor->samplerate,
+			    (gdouble) samplerate);
 }
 
 /**

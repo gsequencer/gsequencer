@@ -1,3 +1,9 @@
+ags (5.3.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented per machine presets of format and samplerate in UI
+	* modified envelope functions apply LFO to amount
+
 ags (5.2.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

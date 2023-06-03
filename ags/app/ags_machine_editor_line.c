@@ -182,6 +182,10 @@ ags_machine_editor_line_init(AgsMachineEditorLine *machine_editor_line)
   gtk_box_append((GtkBox *) machine_editor_line,
 		 (GtkWidget *) machine_editor_line->link_editor);
 
+  machine_editor_line->line_preset_editor = ags_line_preset_editor_new();
+  gtk_box_append((GtkBox *) machine_editor_line,
+		 (GtkWidget *) machine_editor_line->line_preset_editor);
+
   machine_editor_line->line_member_editor = ags_line_member_editor_new();
   gtk_box_append((GtkBox *) machine_editor_line,
 		 (GtkWidget *) machine_editor_line->line_member_editor);
@@ -258,6 +262,7 @@ ags_machine_editor_line_connect(AgsConnectable *connectable)
 
   ags_connectable_connect(AGS_CONNECTABLE(machine_editor_line->link_editor));
   ags_connectable_connect(AGS_CONNECTABLE(machine_editor_line->line_member_editor));
+  ags_connectable_connect(AGS_CONNECTABLE(machine_editor_line->line_preset_editor));
 }
 
 void
@@ -275,6 +280,7 @@ ags_machine_editor_line_disconnect(AgsConnectable *connectable)
 
   ags_connectable_disconnect(AGS_CONNECTABLE(machine_editor_line->link_editor));
   ags_connectable_disconnect(AGS_CONNECTABLE(machine_editor_line->line_member_editor));
+  ags_connectable_disconnect(AGS_CONNECTABLE(machine_editor_line->line_preset_editor));
 }
 
 void
@@ -288,6 +294,8 @@ ags_machine_editor_line_set_update(AgsApplicable *applicable, gboolean update)
 			    update);
   ags_applicable_set_update(AGS_APPLICABLE(machine_editor_line->line_member_editor),
 			    update);
+  ags_applicable_set_update(AGS_APPLICABLE(machine_editor_line->line_preset_editor),
+			    update);
 }
 
 void
@@ -299,6 +307,7 @@ ags_machine_editor_line_apply(AgsApplicable *applicable)
 
   ags_applicable_apply(AGS_APPLICABLE(machine_editor_line->link_editor));
   ags_applicable_apply(AGS_APPLICABLE(machine_editor_line->line_member_editor));
+  ags_applicable_apply(AGS_APPLICABLE(machine_editor_line->line_preset_editor));
 }
 
 void
@@ -310,6 +319,7 @@ ags_machine_editor_line_reset(AgsApplicable *applicable)
   
   ags_applicable_reset(AGS_APPLICABLE(machine_editor_line->link_editor));
   ags_applicable_reset(AGS_APPLICABLE(machine_editor_line->line_member_editor));
+  ags_applicable_reset(AGS_APPLICABLE(machine_editor_line->line_preset_editor));
 }
 
 /**

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -451,7 +451,7 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 						  recycling);
 
 	  ags_audio_buffer_util_clear_buffer(tmp_buffer_source, 1,
-					     allocated_buffer_length, source_format);
+					     allocated_buffer_length, ags_audio_buffer_util_format_from_soundcard(source_format));
 
 	  g_rec_mutex_lock(source_stream_mutex);
 
@@ -523,7 +523,7 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 							   recycling);
 
 	      ags_audio_buffer_util_clear_buffer(tmp_buffer_source_prev, 1,
-						 allocated_buffer_length, source_format);
+						 allocated_buffer_length, ags_audio_buffer_util_format_from_soundcard(source_format));
 	  
 	      resample_util.secret_rabbit.src_ratio = destination_samplerate / source_samplerate;
 
@@ -644,7 +644,7 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 						    recycling);
 
 	    ags_audio_buffer_util_clear_buffer(tmp_buffer_source, 1,
-					       allocated_buffer_length, source_format);
+					       allocated_buffer_length, ags_audio_buffer_util_format_from_soundcard(source_format));
 
 	    resample_util.secret_rabbit.src_ratio = destination_samplerate / source_samplerate;
 

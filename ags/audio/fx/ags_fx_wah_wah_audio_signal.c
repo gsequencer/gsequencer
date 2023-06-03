@@ -718,7 +718,8 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
 		     "x1", &x1,
 		     NULL);
 
-	if(note_offset < x0){
+	if(note_offset < x0 ||
+	   note_offset > x1){
 	  note = note->next;
 
 	  continue;
