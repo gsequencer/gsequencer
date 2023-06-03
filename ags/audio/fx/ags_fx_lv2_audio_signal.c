@@ -480,10 +480,14 @@ ags_fx_lv2_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_
 
     input_data = channel_data->input_data[midi_note];
 
-    //    input_data->event_buffer->data.note.note = midi_note;
+    input_data->event_buffer->data.note.note = midi_note;
 
     g_rec_mutex_unlock(fx_lv2_audio_mutex);
 
+#if 0
+    g_message("midi key - %d", midi_note);
+#endif
+    
     if(delay_counter == 0.0 &&
        x0 == offset_counter){
       g_rec_mutex_lock(fx_lv2_audio_mutex);
