@@ -1331,16 +1331,19 @@ ags_thread_set_frequency(AgsThread *thread, gdouble frequency)
   thread->frequency = frequency;
 
   thread->delay = (guint) ceil((AGS_THREAD_HERTZ_JIFFIE / thread->frequency) / (AGS_THREAD_HERTZ_JIFFIE / thread->max_precision));
-  thread->tic_delay = 0.0;
 
-  if(ags_thread_test_flags(thread, AGS_THREAD_INTERMEDIATE_POST_SYNC)){
-    thread->tic_delay = thread->delay;
-  }else if(ags_thread_test_flags(thread, AGS_THREAD_INTERMEDIATE_PRE_SYNC)){
-    thread->tic_delay = 1.0;
-  }else{
+  if(!ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_RUNNING)){
     thread->tic_delay = 0.0;
-  }
 
+    if(ags_thread_test_flags(thread, AGS_THREAD_INTERMEDIATE_POST_SYNC)){
+      thread->tic_delay = thread->delay;
+    }else if(ags_thread_test_flags(thread, AGS_THREAD_INTERMEDIATE_PRE_SYNC)){
+      thread->tic_delay = 1.0;
+    }else{
+      thread->tic_delay = 0.0;
+    }
+  }
+  
   g_rec_mutex_unlock(thread_mutex);
 }
 
@@ -1407,7 +1410,7 @@ ags_thread_set_max_precision(AgsThread *thread, gdouble max_precision)
     
     return;
   }
-      
+  
   thread->max_precision = max_precision;
 
   thread->frequency = thread->frequency / old_max_precision * max_precision;

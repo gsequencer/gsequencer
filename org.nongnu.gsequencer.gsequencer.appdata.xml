@@ -40,6 +40,14 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="5.3.0" date="2023-06-03">
+      <description>
+	<p>
+	  Implemented set samplerate and format with machine property dialog in resize tab.
+	</p>
+      </description>
+    </release>
+
     <release version="5.2.1" date="2023-06-01">
       <description>
 	<p>
@@ -47,7 +55,7 @@
 	</p>
       </description>
     </release>
-
+    
     <release version="5.2.0" date="2023-05-31">
       <description>
 	<p>

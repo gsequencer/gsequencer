@@ -53,6 +53,8 @@ struct _AgsEnvelopeUtil
   gdouble amount;
 
   gboolean wah_wah_enabled;
+
+  gdouble wah_wah_delay;
   
   gdouble wah_wah_lfo_depth;
   gdouble wah_wah_lfo_freq;
