@@ -41,6 +41,10 @@ void ags_machine_editor_line_get_property(GObject *gobject,
 void ags_machine_editor_line_connect(AgsConnectable *connectable);
 void ags_machine_editor_line_disconnect(AgsConnectable *connectable);
 
+void ags_machine_editor_line_notify_channel_callback(GObject *gobject,
+						     GParamSpec *pspec,
+						     gpointer user_data);
+
 void ags_machine_editor_line_set_update(AgsApplicable *applicable, gboolean update);
 void ags_machine_editor_line_apply(AgsApplicable *applicable);
 void ags_machine_editor_line_reset(AgsApplicable *applicable);
@@ -166,6 +170,9 @@ ags_machine_editor_line_applicable_interface_init(AgsApplicableInterface *applic
 void
 ags_machine_editor_line_init(AgsMachineEditorLine *machine_editor_line)
 {
+  g_signal_connect(machine_editor_line, "notify::channel",
+		   G_CALLBACK(ags_machine_editor_line_notify_channel_callback), NULL);
+
   gtk_orientable_set_orientation(GTK_ORIENTABLE(machine_editor_line),
 				 GTK_ORIENTATION_VERTICAL);
 
@@ -181,6 +188,14 @@ ags_machine_editor_line_init(AgsMachineEditorLine *machine_editor_line)
   machine_editor_line->link_editor = ags_link_editor_new();
   gtk_box_append((GtkBox *) machine_editor_line,
 		 (GtkWidget *) machine_editor_line->link_editor);
+
+  machine_editor_line->line_preset_editor = ags_line_preset_editor_new();
+
+  gtk_widget_set_visible(machine_editor_line->line_preset_editor,
+			 FALSE);
+  
+  gtk_box_append((GtkBox *) machine_editor_line,
+		 (GtkWidget *) machine_editor_line->line_preset_editor);
 
   machine_editor_line->line_member_editor = ags_line_member_editor_new();
   gtk_box_append((GtkBox *) machine_editor_line,
@@ -258,6 +273,7 @@ ags_machine_editor_line_connect(AgsConnectable *connectable)
 
   ags_connectable_connect(AGS_CONNECTABLE(machine_editor_line->link_editor));
   ags_connectable_connect(AGS_CONNECTABLE(machine_editor_line->line_member_editor));
+  ags_connectable_connect(AGS_CONNECTABLE(machine_editor_line->line_preset_editor));
 }
 
 void
@@ -275,6 +291,38 @@ ags_machine_editor_line_disconnect(AgsConnectable *connectable)
 
   ags_connectable_disconnect(AGS_CONNECTABLE(machine_editor_line->link_editor));
   ags_connectable_disconnect(AGS_CONNECTABLE(machine_editor_line->line_member_editor));
+  ags_connectable_disconnect(AGS_CONNECTABLE(machine_editor_line->line_preset_editor));
+}
+
+void
+ags_machine_editor_line_notify_channel_callback(GObject *gobject,
+						GParamSpec *pspec,
+						gpointer user_data)
+{
+  AgsMachineEditorLine *machine_editor_line;
+
+  AgsAudio *audio;
+  AgsChannel *channel;
+
+  machine_editor_line = AGS_MACHINE_EDITOR_LINE(gobject);
+
+  /* get channel */
+  audio = NULL;
+  channel = NULL;
+
+  g_object_get(machine_editor_line,
+	       "channel", &channel,
+	       NULL);
+
+  g_object_get(channel,
+	       "audio", &audio,
+	       NULL);
+
+  if(AGS_IS_INPUT(channel) &&
+     ags_audio_test_flags(audio, AGS_AUDIO_OUTPUT_HAS_RECYCLING)){
+    gtk_widget_set_visible(machine_editor_line->line_preset_editor,
+			   TRUE);
+  }
 }
 
 void
@@ -288,6 +336,8 @@ ags_machine_editor_line_set_update(AgsApplicable *applicable, gboolean update)
 			    update);
   ags_applicable_set_update(AGS_APPLICABLE(machine_editor_line->line_member_editor),
 			    update);
+  ags_applicable_set_update(AGS_APPLICABLE(machine_editor_line->line_preset_editor),
+			    update);
 }
 
 void
@@ -299,6 +349,7 @@ ags_machine_editor_line_apply(AgsApplicable *applicable)
 
   ags_applicable_apply(AGS_APPLICABLE(machine_editor_line->link_editor));
   ags_applicable_apply(AGS_APPLICABLE(machine_editor_line->line_member_editor));
+  ags_applicable_apply(AGS_APPLICABLE(machine_editor_line->line_preset_editor));
 }
 
 void
@@ -310,6 +361,7 @@ ags_machine_editor_line_reset(AgsApplicable *applicable)
   
   ags_applicable_reset(AGS_APPLICABLE(machine_editor_line->link_editor));
   ags_applicable_reset(AGS_APPLICABLE(machine_editor_line->line_member_editor));
+  ags_applicable_reset(AGS_APPLICABLE(machine_editor_line->line_preset_editor));
 }
 
 /**

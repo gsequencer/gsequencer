@@ -85,6 +85,8 @@
 	  channels                NMTOKEN   #IMPLIED
 	  output-pads             NMTOKEN   #IMPLIED
 	  input-pads              NMTOKEN   #IMPLIED
+	  format                  NMTOKEN   #IMPLIED
+	  samplerate              NMTOKEN   #IMPLIED
 	  enable-synth-generator  CDATA     "false"
 	  pitch-type              CDATA     "fluid-4th-order-interpolate"
 	  key-count               NMTOKEN   #IMPLIED

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,6 +33,12 @@ void ags_fx_ladspa_channel_init(AgsFxLadspaChannel *fx_ladspa_channel);
 void ags_fx_ladspa_channel_dispose(GObject *gobject);
 void ags_fx_ladspa_channel_finalize(GObject *gobject);
 
+void ags_fx_ladspa_channel_notify_filename_callback(GObject *gobject,
+						    GParamSpec *pspec,
+						    gpointer user_data);
+void ags_fx_ladspa_channel_notify_effect_callback(GObject *gobject,
+						  GParamSpec *pspec,
+						  gpointer user_data);
 void ags_fx_ladspa_channel_notify_buffer_size_callback(GObject *gobject,
 						       GParamSpec *pspec,
 						       gpointer user_data);
@@ -103,6 +109,12 @@ void
 ags_fx_ladspa_channel_init(AgsFxLadspaChannel *fx_ladspa_channel)
 {
   guint i;
+
+  g_signal_connect(fx_ladspa_channel, "notify::filename",
+		   G_CALLBACK(ags_fx_ladspa_channel_notify_filename_callback), NULL);
+
+  g_signal_connect(fx_ladspa_channel, "notify::effect",
+		   G_CALLBACK(ags_fx_ladspa_channel_notify_effect_callback), NULL);
 
   g_signal_connect(fx_ladspa_channel, "notify::buffer-size",
 		   G_CALLBACK(ags_fx_ladspa_channel_notify_buffer_size_callback), NULL);
@@ -178,6 +190,92 @@ ags_fx_ladspa_channel_finalize(GObject *gobject)
 }
 
 void
+ags_fx_ladspa_channel_notify_filename_callback(GObject *gobject,
+					       GParamSpec *pspec,
+					       gpointer user_data)
+{
+  AgsFxLadspaChannel *fx_ladspa_channel;
+
+  AgsLadspaManager *ladspa_manager;
+
+  gchar *filename, *effect;
+  
+  GRecMutex *recall_mutex;
+
+  fx_ladspa_channel = AGS_FX_LADSPA_CHANNEL(gobject);
+
+  ladspa_manager = ags_ladspa_manager_get_instance();
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_ladspa_channel);
+
+  filename = NULL;
+  effect = NULL;
+
+  g_object_get(fx_ladspa_channel,
+	       "filename", &filename,
+	       "effect", &effect,
+	       NULL);
+
+  /* get ladspa plugin */
+  g_rec_mutex_lock(recall_mutex);
+
+  if(filename != NULL &&
+     effect != NULL){
+    fx_ladspa_channel->ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ladspa_manager,
+									     filename, effect);
+  }
+  
+  g_rec_mutex_unlock(recall_mutex);
+
+  g_free(filename);
+  g_free(effect);
+}
+
+void
+ags_fx_ladspa_channel_notify_effect_callback(GObject *gobject,
+					     GParamSpec *pspec,
+					     gpointer user_data)
+{
+  AgsFxLadspaChannel *fx_ladspa_channel;
+
+  AgsLadspaManager *ladspa_manager;
+
+  gchar *filename, *effect;
+
+  GRecMutex *recall_mutex;
+  
+  fx_ladspa_channel = AGS_FX_LADSPA_CHANNEL(gobject);
+
+  ladspa_manager = ags_ladspa_manager_get_instance();
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_ladspa_channel);
+
+  filename = NULL;
+  effect = NULL;
+
+  g_object_get(fx_ladspa_channel,
+	       "filename", &filename,
+	       "effect", &effect,
+	       NULL);
+
+  /* get ladspa plugin */
+  g_rec_mutex_lock(recall_mutex);
+
+  if(filename != NULL &&
+     effect != NULL){
+    fx_ladspa_channel->ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ladspa_manager,
+									     filename, effect);
+  }
+  
+  g_rec_mutex_unlock(recall_mutex);
+
+  g_free(filename);
+  g_free(effect);
+}
+
+void
 ags_fx_ladspa_channel_notify_buffer_size_callback(GObject *gobject,
 						  GParamSpec *pspec,
 						  gpointer user_data)
@@ -191,6 +289,11 @@ ags_fx_ladspa_channel_notify_buffer_size_callback(GObject *gobject,
   GRecMutex *recall_mutex;
   
   fx_ladspa_channel = AGS_FX_LADSPA_CHANNEL(gobject);
+
+  if(!ags_recall_test_state_flags(AGS_RECALL(fx_ladspa_channel),
+				  AGS_SOUND_STATE_PORT_LOADED)){
+    return;
+  }
 
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_ladspa_channel);
@@ -214,20 +317,20 @@ ags_fx_ladspa_channel_notify_buffer_size_callback(GObject *gobject,
     if(output_port_count > 0 &&
        buffer_size > 0){
       if(input_data->output == NULL){
-	input_data->output = (LADSPA_Data *) g_malloc(output_port_count * buffer_size * sizeof(LADSPA_Data));
+	input_data->output = (float *) g_malloc(output_port_count * buffer_size * sizeof(float));
       }else{
-	input_data->output = (LADSPA_Data *) g_realloc(input_data->output,
-						       output_port_count * buffer_size * sizeof(LADSPA_Data));	    
+	input_data->output = (float *) g_realloc(input_data->output,
+						 output_port_count * buffer_size * sizeof(float));	    
       }
     }
 
     if(input_port_count > 0 &&
        buffer_size > 0){
       if(input_data->input == NULL){
-	input_data->input = (LADSPA_Data *) g_malloc(input_port_count * buffer_size * sizeof(LADSPA_Data));
+	input_data->input = (float *) g_malloc(input_port_count * buffer_size * sizeof(float));
       }else{
-	input_data->input = (LADSPA_Data *) g_realloc(input_data->input,
-						      input_port_count * buffer_size * sizeof(LADSPA_Data));
+	input_data->input = (float *) g_realloc(input_data->input,
+						input_port_count * buffer_size * sizeof(float));
       }
     }
   }
@@ -244,6 +347,7 @@ ags_fx_ladspa_channel_notify_samplerate_callback(GObject *gobject,
 
   AgsLadspaPlugin *ladspa_plugin;
 
+  guint output_port_count;
   guint buffer_size;
   guint samplerate;
   guint i;
@@ -251,10 +355,15 @@ ags_fx_ladspa_channel_notify_samplerate_callback(GObject *gobject,
   GRecMutex *recall_mutex;
   GRecMutex *base_plugin_mutex;
 
-  void (*deactivate)(LADSPA_Handle Instance);
-  void (*cleanup)(LADSPA_Handle Instance);
+  void (*deactivate)(LADSPA_Handle instance);
+  void (*cleanup)(LADSPA_Handle instance);
   
   fx_ladspa_channel = AGS_FX_LADSPA_CHANNEL(gobject);
+
+  if(!ags_recall_test_state_flags(AGS_RECALL(fx_ladspa_channel),
+				  AGS_SOUND_STATE_PORT_LOADED)){
+    return;
+  }
 
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_ladspa_channel);
@@ -269,7 +378,7 @@ ags_fx_ladspa_channel_notify_samplerate_callback(GObject *gobject,
   if(ladspa_plugin == NULL){
     return;
   }
-
+  
   buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   samplerate =  AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
 
@@ -277,7 +386,7 @@ ags_fx_ladspa_channel_notify_samplerate_callback(GObject *gobject,
 	       "buffer-size", &buffer_size,
 	       "samplerate", &samplerate,
 	       NULL);
-  
+
   /* get deactivate and cleanup */
   base_plugin_mutex = NULL;
 
@@ -295,11 +404,11 @@ ags_fx_ladspa_channel_notify_samplerate_callback(GObject *gobject,
 
     deactivate = AGS_LADSPA_PLUGIN_DESCRIPTOR(plugin_descriptor)->deactivate;
     cleanup = AGS_LADSPA_PLUGIN_DESCRIPTOR(plugin_descriptor)->cleanup;
-      
+
     g_rec_mutex_unlock(base_plugin_mutex);
   }
 
-  /* reallocate buffer - apply buffer size */
+  /* reallocate buffer - apply samplerate */
   g_rec_mutex_lock(recall_mutex);
 
   for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
@@ -436,10 +545,13 @@ ags_fx_ladspa_channel_load_plugin(AgsFxLadspaChannel *fx_ladspa_channel)
 
   guint buffer_size;
   guint samplerate;
-  
+  guint i;
+    
   GRecMutex *recall_mutex;
 
-  if(!AGS_IS_FX_LADSPA_CHANNEL(fx_ladspa_channel)){
+  if(!AGS_IS_FX_LADSPA_CHANNEL(fx_ladspa_channel) ||
+     ags_recall_test_state_flags(AGS_RECALL(fx_ladspa_channel),
+				 AGS_SOUND_STATE_PLUGIN_LOADED)){
     return;
   }
 
@@ -447,14 +559,14 @@ ags_fx_ladspa_channel_load_plugin(AgsFxLadspaChannel *fx_ladspa_channel)
   
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_ladspa_channel);
-  
+
   /* get filename and effect */
   filename = NULL;
   effect = NULL;
 
   buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-
+  
   g_object_get(fx_ladspa_channel,
 	       "filename", &filename,
 	       "effect", &effect,
@@ -478,26 +590,33 @@ ags_fx_ladspa_channel_load_plugin(AgsFxLadspaChannel *fx_ladspa_channel)
   }    
   
   g_rec_mutex_unlock(recall_mutex);
-  
-  if(ladspa_plugin != NULL){
-    guint i;
+
+  if(ladspa_plugin == NULL ||
+     ags_base_plugin_test_flags((AgsBasePlugin *) ladspa_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
+    g_free(filename);
+    g_free(effect);
     
-    /* set ladspa plugin */    
-    g_rec_mutex_lock(recall_mutex);
+    return;
+  }
+    
+  /* set ladspa plugin */    
+  g_rec_mutex_lock(recall_mutex);
 
-    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
-      AgsFxLadspaChannelInputData *input_data;
+  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    AgsFxLadspaChannelInputData *input_data;
 
-      input_data = fx_ladspa_channel->input_data[i];
+    input_data = fx_ladspa_channel->input_data[i];
       
-      if(input_data->ladspa_handle == NULL){
-	input_data->ladspa_handle = ags_base_plugin_instantiate((AgsBasePlugin *) ladspa_plugin,
-								samplerate, buffer_size);
-      }
+    if(input_data->ladspa_handle == NULL){
+      input_data->ladspa_handle = ags_base_plugin_instantiate((AgsBasePlugin *) ladspa_plugin,
+							      samplerate, buffer_size);
     }
+  }
     
-    g_rec_mutex_unlock(recall_mutex);
-  }  
+  g_rec_mutex_unlock(recall_mutex);
+
+  ags_recall_set_state_flags(AGS_RECALL(fx_ladspa_channel),
+			     AGS_SOUND_STATE_PLUGIN_LOADED);
   
   g_free(filename);
   g_free(effect);
@@ -514,8 +633,9 @@ ags_fx_ladspa_channel_load_plugin(AgsFxLadspaChannel *fx_ladspa_channel)
 void
 ags_fx_ladspa_channel_load_port(AgsFxLadspaChannel *fx_ladspa_channel)
 {
+  AgsChannel *input;
   AgsPort **ladspa_port;
-
+  
   AgsLadspaPlugin *ladspa_plugin;
 
   GList *start_plugin_port, *plugin_port;
@@ -523,49 +643,88 @@ ags_fx_ladspa_channel_load_port(AgsFxLadspaChannel *fx_ladspa_channel)
   guint *output_port;
   guint *input_port;
   
-  guint output_port_count;
-  guint input_port_count;
+  guint audio_channel;
+  guint pad;
+  guint output_port_count, input_port_count;
   guint control_port_count;
+  gboolean has_midiin_event_port;
+  guint midiin_event_port;  
+  gboolean has_midiin_atom_port;
+  guint midiin_atom_port;
+  guint samplerate;
   guint buffer_size;
   guint nth;
-  guint i;
+  guint i, j;
   
-  GRecMutex *recall_mutex;
+  GRecMutex *fx_ladspa_channel_mutex;
 
-  if(!AGS_IS_FX_LADSPA_CHANNEL(fx_ladspa_channel)){
+  if(!AGS_IS_FX_LADSPA_CHANNEL(fx_ladspa_channel) ||
+     ags_recall_test_state_flags(AGS_RECALL(fx_ladspa_channel),
+				 AGS_SOUND_STATE_PORT_LOADED)){
     return;
   }
 
-  /* get recall mutex */
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_ladspa_channel);
+  fx_ladspa_channel_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_ladspa_channel);
 
-  g_rec_mutex_lock(recall_mutex);
+  g_rec_mutex_lock(fx_ladspa_channel_mutex);
 
   if(fx_ladspa_channel->ladspa_port != NULL){
-    g_rec_mutex_unlock(recall_mutex);
+    g_rec_mutex_unlock(fx_ladspa_channel_mutex);
     
     return;
   }
 
-  g_rec_mutex_unlock(recall_mutex);
+  g_rec_mutex_unlock(fx_ladspa_channel_mutex);
+  
+  samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   
   g_object_get(fx_ladspa_channel,
+	       "samplerate", &samplerate,
 	       "buffer-size", &buffer_size,
 	       NULL);
   
-  /* get LADSPA plugin and port */
-  g_rec_mutex_lock(recall_mutex);
+  /* get recall mutex */
+  input = NULL;
+
+  g_object_get(fx_ladspa_channel,
+	       "source", &input,
+	       NULL);
+
+  audio_channel = 0;
+  pad = 0;
+
+  g_object_get(input,
+	       "audio-channel", &audio_channel,
+	       "pad", &pad,
+	       NULL);
+  
+  /* get LADSPA plugin */
+  g_rec_mutex_lock(fx_ladspa_channel_mutex);
 
   ladspa_plugin = fx_ladspa_channel->ladspa_plugin;
+  
+  output_port_count = fx_ladspa_channel->output_port_count;
+  output_port = fx_ladspa_channel->output_port;
+
+  input_port_count = fx_ladspa_channel->input_port_count;
+  input_port = fx_ladspa_channel->input_port;
+
+  g_rec_mutex_unlock(fx_ladspa_channel_mutex);
+
+  /* get LADSPA port */
+  g_rec_mutex_lock(fx_ladspa_channel_mutex);
 
   ladspa_port = fx_ladspa_channel->ladspa_port;
-  
-  g_rec_mutex_unlock(recall_mutex);
+
+  g_rec_mutex_unlock(fx_ladspa_channel_mutex);
+
+  start_plugin_port = NULL;
   
   g_object_get(ladspa_plugin,
 	       "plugin-port", &start_plugin_port,
 	       NULL);
-
+  
   /* get control port count */
   plugin_port = start_plugin_port;
 
@@ -623,7 +782,7 @@ ags_fx_ladspa_channel_load_port(AgsFxLadspaChannel *fx_ladspa_channel)
 
     plugin_port = start_plugin_port;
     
-    for(nth = 0; nth < control_port_count && plugin_port != NULL; ){
+    for(nth = 0; nth < control_port_count && plugin_port != NULL;){
       if(ags_plugin_port_test_flags(plugin_port->data,
 				    AGS_PLUGIN_PORT_CONTROL)){
 	AgsPluginPort *current_plugin_port;
@@ -678,7 +837,6 @@ ags_fx_ladspa_channel_load_port(AgsFxLadspaChannel *fx_ladspa_channel)
 					"port-value-is-pointer", FALSE,
 					"port-value-type", G_TYPE_FLOAT,
 					NULL);
-	ags_port_set_flags(ladspa_port[nth], AGS_PORT_USE_LADSPA_FLOAT);
       
 	if(ags_plugin_port_test_flags(current_plugin_port,
 				      AGS_PLUGIN_PORT_OUTPUT)){
@@ -715,10 +873,15 @@ ags_fx_ladspa_channel_load_port(AgsFxLadspaChannel *fx_ladspa_channel)
 
 	  input_data = fx_ladspa_channel->input_data[i];
 
+	  if(input_data->ladspa_handle == NULL){
+	    input_data->ladspa_handle = ags_base_plugin_instantiate((AgsBasePlugin *) ladspa_plugin,
+								    samplerate, buffer_size);
+	  }
+
 	  ags_base_plugin_connect_port((AgsBasePlugin *) ladspa_plugin,
 				       input_data->ladspa_handle,
 				       port_index,
-				       &(ladspa_port[nth]->port_value.ags_port_ladspa));
+				       &(ladspa_port[nth]->port_value.ags_port_float));
 	}
       
 	g_free(plugin_name);
@@ -732,28 +895,28 @@ ags_fx_ladspa_channel_load_port(AgsFxLadspaChannel *fx_ladspa_channel)
 
       plugin_port = plugin_port->next;
     }
-    
+      
     ladspa_port[nth] = NULL;
   }
 
   /* set LADSPA output */
-  g_rec_mutex_lock(recall_mutex);
+  g_rec_mutex_lock(fx_ladspa_channel_mutex);
 
   for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
     AgsFxLadspaChannelInputData *input_data;
-
+      
     input_data = fx_ladspa_channel->input_data[i];
-
+	      
     if(input_data->output == NULL &&
        output_port_count > 0 &&
        buffer_size > 0){
-      input_data->output = (LADSPA_Data *) g_malloc(output_port_count * buffer_size * sizeof(LADSPA_Data));
+      input_data->output = (float *) g_malloc(output_port_count * buffer_size * sizeof(float));
     }
 	  
     if(input_data->input == NULL &&
        input_port_count > 0 &&
        buffer_size > 0){
-      input_data->input = (LADSPA_Data *) g_malloc(input_port_count * buffer_size * sizeof(LADSPA_Data));
+      input_data->input = (float *) g_malloc(input_port_count * buffer_size * sizeof(float));
     }
 
     for(nth = 0; nth < output_port_count; nth++){
@@ -769,20 +932,28 @@ ags_fx_ladspa_channel_load_port(AgsFxLadspaChannel *fx_ladspa_channel)
 				   input_port[nth],
 				   &(input_data->input[nth]));
     }
-
+      
     ags_base_plugin_activate((AgsBasePlugin *) ladspa_plugin,
-			       input_data->ladspa_handle);
+			     input_data->ladspa_handle);
   }
-
+  
   fx_ladspa_channel->output_port_count = output_port_count;
   fx_ladspa_channel->output_port = output_port;
 
   fx_ladspa_channel->input_port_count = input_port_count;
   fx_ladspa_channel->input_port = input_port;
+     
+  g_rec_mutex_unlock(fx_ladspa_channel_mutex);
+  
+  /* set LADSPA port */
+  g_rec_mutex_lock(fx_ladspa_channel_mutex);
 
   fx_ladspa_channel->ladspa_port = ladspa_port;
   
-  g_rec_mutex_unlock(recall_mutex);
+  g_rec_mutex_unlock(fx_ladspa_channel_mutex);
+
+  ags_recall_set_state_flags(AGS_RECALL(fx_ladspa_channel),
+			     AGS_SOUND_STATE_PORT_LOADED);
 
   /* unref */
   g_list_free_full(start_plugin_port,

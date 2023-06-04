@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -87,6 +87,9 @@ ags_resample_util_alloc()
 
   ptr->target_samplerate = AGS_RESAMPLE_UTIL_DEFAULT_TARGET_SAMPLERATE;
 
+  ptr->increment = 1;
+  ptr->coeffs = NULL;
+  
   return(ptr);
 }
 
@@ -135,6 +138,9 @@ ags_resample_util_copy(AgsResampleUtil *ptr)
   new_ptr->samplerate = ptr->samplerate;
 
   new_ptr->target_samplerate = ptr->target_samplerate;
+
+  new_ptr->increment = ptr->increment;
+  new_ptr->coeffs = ptr->coeffs;
 
   return(new_ptr);
 }

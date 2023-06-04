@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -326,7 +326,7 @@ ags_set_format_soundcard(AgsSetFormat *set_format, GObject *soundcard)
   guint channels;
   guint samplerate;
   guint buffer_size;
-  guint format;
+  AgsSoundcardFormat format;
   
   /* apply format */
   ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
@@ -355,7 +355,7 @@ ags_set_format_soundcard(AgsSetFormat *set_format, GObject *soundcard)
  */
 AgsSetFormat*
 ags_set_format_new(GObject *scope,
-		   guint format)
+		   AgsSoundcardFormat format)
 {
   AgsSetFormat *set_format;
 

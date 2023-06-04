@@ -2505,6 +2505,8 @@ libgsequencer_h_sources = \
 	ags/app/ags_line_member_editor.h \
 	ags/app/ags_line_member_editor_callbacks.h \
 	ags/app/ags_line_member_editor_entry.h \
+	ags/app/ags_line_preset_editor.h \
+	ags/app/ags_line_preset_editor_callbacks.h \
 	ags/app/ags_link_editor.h \
 	ags/app/ags_link_editor_callbacks.h \
 	ags/app/ags_input_dialog.h \
@@ -2630,6 +2632,8 @@ libgsequencer_c_sources = \
 	ags/app/ags_line_member_editor.c \
 	ags/app/ags_line_member_editor_callbacks.c \
 	ags/app/ags_line_member_editor_entry.c \
+	ags/app/ags_line_preset_editor.c \
+	ags/app/ags_line_preset_editor_callbacks.c \
 	ags/app/ags_link_editor.c \
 	ags/app/ags_link_editor_callbacks.c \
 	ags/app/ags_input_dialog.c \

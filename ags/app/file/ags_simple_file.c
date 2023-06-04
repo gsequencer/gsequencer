@@ -7417,6 +7417,28 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
     g_object_unref(playback_domain);
   }
   
+  /* format */
+  str = xmlGetProp(file_launch->node,
+		   "format");
+
+  if(str != NULL){
+    ags_audio_set_format(machine->audio,
+			 (AgsSoundcardFormat) g_ascii_strtoull(str, NULL, 10));
+
+    xmlFree(str);
+  }
+
+  /* samplerate */
+  str = xmlGetProp(file_launch->node,
+		   "samplerate");
+
+  if(str != NULL){
+    ags_audio_set_samplerate(machine->audio,
+			     (guint) g_ascii_strtoull(str, NULL, 10));
+
+    xmlFree(str);
+  }
+
   if(AGS_IS_EQUALIZER10(machine)){
     ags_simple_file_read_equalizer10_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsEqualizer10 *) machine);
   }else if(AGS_IS_DRUM(machine)){
@@ -12291,7 +12313,21 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
       g_free(audio_name);
     }    
   }
+
+  str = g_strdup_printf("%d", machine->audio->format);
+  xmlNewProp(node,
+	     (xmlChar *) "format",
+	     (xmlChar *) str);
+
+  g_free(str);
   
+  str = g_strdup_printf("%d", machine->audio->samplerate);
+  xmlNewProp(node,
+	     (xmlChar *) "samplerate",
+	     (xmlChar *) str);
+
+  g_free(str);
+    
   /* bank and mapping */
   str =  (xmlChar *) g_strdup_printf("%d",
 				     machine->bank_0);

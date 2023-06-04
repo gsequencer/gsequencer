@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,7 +43,7 @@ struct _AgsSetFormat
 
   GObject *scope;
   
-  guint format;
+  AgsSoundcardFormat format;
 };
 
 struct _AgsSetFormatClass
@@ -54,7 +54,7 @@ struct _AgsSetFormatClass
 GType ags_set_format_get_type();
 
 AgsSetFormat* ags_set_format_new(GObject *scope,
-				 guint format);
+				 AgsSoundcardFormat format);
 
 G_END_DECLS
 

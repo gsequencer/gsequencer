@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -30,6 +30,7 @@
 #include <ags/libags-gui.h>
 
 #include <ags/app/ags_link_editor.h>
+#include <ags/app/ags_line_preset_editor.h>
 #include <ags/app/ags_line_member_editor.h>
 
 G_BEGIN_DECLS
@@ -55,6 +56,8 @@ struct _AgsMachineEditorLine
   AgsChannel *channel;
   
   AgsLinkEditor *link_editor;
+  
+  AgsLinePresetEditor *line_preset_editor;
   AgsLineMemberEditor *line_member_editor;  
 };
 

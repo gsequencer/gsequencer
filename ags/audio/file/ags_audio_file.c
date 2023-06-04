@@ -83,6 +83,7 @@ enum{
   PROP_FORMAT,
   PROP_AUDIO_SIGNAL,
   PROP_WAVE,
+  PROP_SOUND_RESOURCE,
 };
 
 enum{
@@ -343,6 +344,22 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
   g_object_class_install_property(gobject,
 				  PROP_WAVE,
 				  param_spec);
+
+  /**
+   * AgsAudioFile:sound-resource:
+   *
+   * The assigned sound resource.
+   * 
+   * Since: 5.3.0
+   */
+  param_spec = g_param_spec_object("sound-resource",
+				   i18n_pspec("sound resource of audio file"),
+				   i18n_pspec("The sound resource what audio file has it's presets"),
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SOUND_RESOURCE,
+				  param_spec);
 }
 
 void
@@ -576,6 +593,33 @@ ags_audio_file_set_property(GObject *gobject,
 			      (GObject *) wave);
     }
     break;
+  case PROP_SOUND_RESOURCE:
+    {
+      GObject *sound_resource;
+      
+      sound_resource = (GObject *) g_value_get_object(value);
+
+      g_rec_mutex_lock(audio_file_mutex);
+
+      if(sound_resource == ((GObject *) audio_file->sound_resource)){
+	g_rec_mutex_unlock(audio_file_mutex);
+
+	return;
+      }
+
+      if(audio_file->sound_resource != NULL){
+	g_object_unref(audio_file->sound_resource);
+      }
+      
+      if(sound_resource != NULL){
+	g_object_ref(G_OBJECT(sound_resource));
+      }
+      
+      audio_file->sound_resource = (GObject *) sound_resource;
+
+      g_rec_mutex_unlock(audio_file_mutex);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -701,6 +745,15 @@ ags_audio_file_get_property(GObject *gobject,
       g_rec_mutex_unlock(audio_file_mutex);
     }
     break;    
+  case PROP_SOUND_RESOURCE:
+    {
+      g_rec_mutex_lock(audio_file_mutex);
+
+      g_value_set_object(value, audio_file->sound_resource);
+
+      g_rec_mutex_unlock(audio_file_mutex);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -713,6 +766,11 @@ ags_audio_file_finalize(GObject *gobject)
   AgsAudioFile *audio_file;
 
   audio_file = AGS_AUDIO_FILE(gobject);		   
+  		   
+  /* soundcard */
+  if(audio_file->soundcard != NULL){
+    g_object_unref(audio_file->soundcard);
+  }  
   		   
   /* sound resource */
   if(audio_file->sound_resource != NULL){

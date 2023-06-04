@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2023-06-03 12:00+0200\n"
+"POT-Creation-Date: 2023-06-03 22:45+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1024,6 +1024,14 @@ msgstr ""
 msgid "input pads count"
 msgstr ""
 
+#: ags/app/ags_resize_editor.c:243 ags/app/ags_soundcard_editor.c:450
+msgid "format"
+msgstr ""
+
+#: ags/app/ags_resize_editor.c:283 ags/app/ags_soundcard_editor.c:383
+msgid "samplerate"
+msgstr ""
+
 #: ags/app/ags_machine_editor_pad.c:182 ags/app/ags_connection_editor_pad.c:182
 msgid "pad"
 msgstr ""
@@ -1254,16 +1262,8 @@ msgstr ""
 msgid "audio channels"
 msgstr ""
 
-#: ags/app/ags_soundcard_editor.c:383
-msgid "samplerate"
-msgstr ""
-
 #: ags/app/ags_soundcard_editor.c:416
 msgid "buffer size"
-msgstr ""
-
-#: ags/app/ags_soundcard_editor.c:450
-msgid "format"
 msgstr ""
 
 #: ags/app/ags_soundcard_editor.c:495

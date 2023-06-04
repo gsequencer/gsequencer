@@ -45,6 +45,7 @@
 #include <ags/audio/task/ags_cancel_audio.h>
 
 #include <ags/audio/file/ags_audio_file_link.h>
+#include <ags/audio/file/ags_audio_file_manager.h>
 #include <ags/audio/file/ags_audio_file.h>
 
 #include <ags/audio/midi/ags_midi_file.h>
@@ -14972,10 +14973,13 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
 	  
 	  continue;
 	}
-
-	ags_audio_file_read_audio_signal(audio_file);
-	ags_audio_file_close(audio_file);
 	
+	ags_audio_file_read_audio_signal(audio_file);
+	//	ags_audio_file_close(audio_file);
+	
+	ags_audio_file_manager_add_audio_file(ags_audio_file_manager_get_instance(),
+					      audio_file);
+
 	audio_signal = audio_file->audio_signal;
 	
 	for(j = 0; j < audio_channels && audio_signal != NULL; j++){
@@ -15105,8 +15109,11 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
       }
       
       ags_audio_file_read_audio_signal(audio_file);
-      ags_audio_file_close(audio_file);
+      //      ags_audio_file_close(audio_file);
 	
+      ags_audio_file_manager_add_audio_file(ags_audio_file_manager_get_instance(),
+					    audio_file);
+
       audio_signal = audio_file->audio_signal;
       
       for(j = 0; j < audio_channels && audio_signal != NULL; j++){
@@ -15244,7 +15251,10 @@ ags_audio_open_audio_file_as_wave(AgsAudio *audio,
   ags_audio_file_read_wave(audio_file,
 			   0,
 			   0.0, 0);
-  ags_audio_file_close(audio_file);
+  //  ags_audio_file_close(audio_file);
+
+  ags_audio_file_manager_add_audio_file(ags_audio_file_manager_get_instance(),
+					audio_file);
 
   //TODO:JK: implement me
 }

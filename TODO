@@ -7,7 +7,7 @@ with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
 A copy of the license is included in the section entitled "GNU
 Free Documentation License".
 
-* TODO:JK: improve ags_midi_util.c return value
+* TODO:JK: improved AgsResampleUtil don't discard quality for gint32, gint64, gdouble and AgsComplex
 * TODO:JK: improve ags_midi_buffer_util.c return value
 * TODO:JK: fix ags_vst_iprocess_context.h states and flags
 * TODO:JK: rename AgsAudioThreadFlags
@@ -20,8 +20,6 @@ Free Documentation License".
 * TODO:JK: implemented pitch selection of ags-fm-synth
 * TODO:JK: implemented pitch selection of ags-sf2-synth
 * TODO:JK: implemented pitch selection of ags-sfz-synth
-* TODO:JK: fix AgsResampleUtil don't discard quality for gint32, gint64, gdouble and AgsComplex
-* TODO:JK: fix ags_turtle_test.c
 * TODO:JK: fix ags_turtle_test.c
 * TODO:JK: implemented AgsUiOscRenewController
 * TODO:JK: implemented Fx mutex per scope
@@ -35,7 +33,6 @@ Free Documentation License".
 * TODO:JK: implement ::seek() of AgsMidiParser and AgsOscParser
 * TODO:JK: implement ::seek() of AgsMidiBuilder and AgsOscBuilder
 * TODO:JK: implemented resample AgsAudioSignal on presets modified
-* TODO:JK: improve thread-safety to LADSPA and DSSI
 * TODO:JK: removed ags_id_generator.[ch]
 * TODO:JK: improved ags_audio_signal_feed() reduce over-head
 * TODO:JK: implemented AgsScaleArea properties

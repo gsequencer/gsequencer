@@ -148,7 +148,9 @@
 
 /* audio file */
 #include <ags/audio/file/ags_audio_container.h>
+#include <ags/audio/file/ags_audio_container_manager.h>
 #include <ags/audio/file/ags_audio_file.h>
+#include <ags/audio/file/ags_audio_file_manager.h>
 #include <ags/audio/file/ags_audio_file_link.h>
 #if defined(AGS_WITH_GSTREAMER)
 #include <ags/audio/file/ags_gstreamer_file.h>

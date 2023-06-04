@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -42,6 +42,12 @@ void ags_fx_vst3_channel_init(AgsFxVst3Channel *fx_vst3_channel);
 void ags_fx_vst3_channel_dispose(GObject *gobject);
 void ags_fx_vst3_channel_finalize(GObject *gobject);
 
+void ags_fx_vst3_channel_notify_filename_callback(GObject *gobject,
+						  GParamSpec *pspec,
+						  gpointer user_data);
+void ags_fx_vst3_channel_notify_effect_callback(GObject *gobject,
+						GParamSpec *pspec,
+						gpointer user_data);
 void ags_fx_vst3_channel_notify_buffer_size_callback(GObject *gobject,
 						     GParamSpec *pspec,
 						     gpointer user_data);
@@ -115,6 +121,12 @@ void
 ags_fx_vst3_channel_init(AgsFxVst3Channel *fx_vst3_channel)
 {
   guint i;
+  
+  g_signal_connect(fx_vst3_channel, "notify::filename",
+		   G_CALLBACK(ags_fx_vst3_channel_notify_filename_callback), NULL);
+
+  g_signal_connect(fx_vst3_channel, "notify::effect",
+		   G_CALLBACK(ags_fx_vst3_channel_notify_effect_callback), NULL);
   
   g_signal_connect(fx_vst3_channel, "notify::buffer-size",
 		   G_CALLBACK(ags_fx_vst3_channel_notify_buffer_size_callback), NULL);
@@ -192,6 +204,92 @@ ags_fx_vst3_channel_finalize(GObject *gobject)
 }
 
 void
+ags_fx_vst3_channel_notify_filename_callback(GObject *gobject,
+					     GParamSpec *pspec,
+					     gpointer user_data)
+{
+  AgsFxVst3Channel *fx_vst3_channel;
+
+  AgsVst3Manager *vst3_manager;
+
+  gchar *filename, *effect;
+  
+  GRecMutex *recall_mutex;
+
+  fx_vst3_channel = AGS_FX_VST3_CHANNEL(gobject);
+
+  vst3_manager = ags_vst3_manager_get_instance();
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_vst3_channel);
+
+  filename = NULL;
+  effect = NULL;
+
+  g_object_get(fx_vst3_channel,
+	       "filename", &filename,
+	       "effect", &effect,
+	       NULL);
+
+  /* get vst3 plugin */
+  g_rec_mutex_lock(recall_mutex);
+
+  if(filename != NULL &&
+     effect != NULL){
+    fx_vst3_channel->vst3_plugin = ags_vst3_manager_find_vst3_plugin(vst3_manager,
+								     filename, effect);
+  }
+  
+  g_rec_mutex_unlock(recall_mutex);
+
+  g_free(filename);
+  g_free(effect);
+}
+
+void
+ags_fx_vst3_channel_notify_effect_callback(GObject *gobject,
+					   GParamSpec *pspec,
+					   gpointer user_data)
+{
+  AgsFxVst3Channel *fx_vst3_channel;
+
+  AgsVst3Manager *vst3_manager;
+
+  gchar *filename, *effect;
+
+  GRecMutex *recall_mutex;
+  
+  fx_vst3_channel = AGS_FX_VST3_CHANNEL(gobject);
+
+  vst3_manager = ags_vst3_manager_get_instance();
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_vst3_channel);
+
+  filename = NULL;
+  effect = NULL;
+
+  g_object_get(fx_vst3_channel,
+	       "filename", &filename,
+	       "effect", &effect,
+	       NULL);
+
+  /* get vst3 plugin */
+  g_rec_mutex_lock(recall_mutex);
+
+  if(filename != NULL &&
+     effect != NULL){
+    fx_vst3_channel->vst3_plugin = ags_vst3_manager_find_vst3_plugin(vst3_manager,
+								     filename, effect);
+  }
+  
+  g_rec_mutex_unlock(recall_mutex);
+
+  g_free(filename);
+  g_free(effect);
+}
+
+void
 ags_fx_vst3_channel_notify_buffer_size_callback(GObject *gobject,
 						GParamSpec *pspec,
 						gpointer user_data)
@@ -205,6 +303,11 @@ ags_fx_vst3_channel_notify_buffer_size_callback(GObject *gobject,
   GRecMutex *recall_mutex;
   
   fx_vst3_channel = AGS_FX_VST3_CHANNEL(gobject);
+
+  if(!ags_recall_test_state_flags(AGS_RECALL(fx_vst3_channel),
+				  AGS_SOUND_STATE_PORT_LOADED)){
+    return;
+  }
 
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_vst3_channel);
@@ -225,11 +328,9 @@ ags_fx_vst3_channel_notify_buffer_size_callback(GObject *gobject,
 
     input_data = fx_vst3_channel->input_data[i];
 
-//    g_message("ags_fx_vst3_channel_notify_buffer_size_callback() - input data buffer_size = %d", buffer_size);
-    
     ags_vst_process_data_set_num_samples(input_data->process_data,
 					 buffer_size);
-    
+
     if(output_port_count > 0 &&
        buffer_size > 0){
       if(input_data->output == NULL){
