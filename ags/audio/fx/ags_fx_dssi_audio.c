@@ -35,15 +35,15 @@ void ags_fx_dssi_audio_init(AgsFxDssiAudio *fx_dssi_audio);
 void ags_fx_dssi_audio_dispose(GObject *gobject);
 void ags_fx_dssi_audio_finalize(GObject *gobject);
 
-void ags_fx_dssi_audio_notify_audio_callback(GObject *gobject,
-					     GParamSpec *pspec,
-					     gpointer user_data);
 void ags_fx_dssi_audio_notify_filename_callback(GObject *gobject,
 						GParamSpec *pspec,
 						gpointer user_data);
 void ags_fx_dssi_audio_notify_effect_callback(GObject *gobject,
 					      GParamSpec *pspec,
 					      gpointer user_data);
+void ags_fx_dssi_audio_notify_audio_callback(GObject *gobject,
+					     GParamSpec *pspec,
+					     gpointer user_data);
 void ags_fx_dssi_audio_notify_buffer_size_callback(GObject *gobject,
 						   GParamSpec *pspec,
 						   gpointer user_data);
