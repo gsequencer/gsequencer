@@ -9,7 +9,6 @@ Free Documentation License".
 
 * TODO:JK: improved AgsResampleUtil don't discard quality for gint32, gint64, gdouble and AgsComplex
 * TODO:JK: refactored ags-fx-vst3
-* TODO:JK: refactored ags-fx-dssi
 * TODO:JK: refactored ags-fx-ladspa
 * TODO:JK: improve ags_midi_buffer_util.c return value
 * TODO:JK: fix ags_vst_iprocess_context.h states and flags

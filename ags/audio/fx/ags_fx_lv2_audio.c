@@ -251,42 +251,6 @@ ags_fx_lv2_audio_finalize(GObject *gobject)
 }
 
 void
-ags_fx_lv2_audio_notify_audio_callback(GObject *gobject,
-				       GParamSpec *pspec,
-				       gpointer user_data)
-{
-  AgsAudio *audio;
-  AgsFxLv2Audio *fx_lv2_audio;
-
-  fx_lv2_audio = AGS_FX_LV2_AUDIO(gobject);
-  
-  /* get audio */
-  audio = NULL;
-
-  g_object_get(fx_lv2_audio,
-	       "audio", &audio,
-	       NULL);
-
-  g_signal_connect_after((GObject *) audio, "set-audio-channels",
-			 G_CALLBACK(ags_fx_lv2_audio_set_audio_channels_callback), fx_lv2_audio);
-
-  g_signal_connect_after((GObject *) audio, "set-pads",
-			 G_CALLBACK(ags_fx_lv2_audio_set_pads_callback), fx_lv2_audio);
-
-  if(audio != NULL){
-    guint audio_channels;
-
-    audio_channels = ags_audio_get_audio_channels(audio);
-
-    ags_fx_lv2_audio_set_audio_channels_callback(audio,
-						 audio_channels, 0,
-						 fx_lv2_audio);    
-    
-    g_object_unref(audio);
-  }
-}
-
-void
 ags_fx_lv2_audio_notify_filename_callback(GObject *gobject,
 					  GParamSpec *pspec,
 					  gpointer user_data)
@@ -378,6 +342,42 @@ ags_fx_lv2_audio_notify_effect_callback(GObject *gobject,
 
   g_free(filename);
   g_free(effect);
+}
+
+void
+ags_fx_lv2_audio_notify_audio_callback(GObject *gobject,
+				       GParamSpec *pspec,
+				       gpointer user_data)
+{
+  AgsAudio *audio;
+  AgsFxLv2Audio *fx_lv2_audio;
+
+  fx_lv2_audio = AGS_FX_LV2_AUDIO(gobject);
+  
+  /* get audio */
+  audio = NULL;
+
+  g_object_get(fx_lv2_audio,
+	       "audio", &audio,
+	       NULL);
+
+  g_signal_connect_after((GObject *) audio, "set-audio-channels",
+			 G_CALLBACK(ags_fx_lv2_audio_set_audio_channels_callback), fx_lv2_audio);
+
+  g_signal_connect_after((GObject *) audio, "set-pads",
+			 G_CALLBACK(ags_fx_lv2_audio_set_pads_callback), fx_lv2_audio);
+
+  if(audio != NULL){
+    guint audio_channels;
+
+    audio_channels = ags_audio_get_audio_channels(audio);
+
+    ags_fx_lv2_audio_set_audio_channels_callback(audio,
+						 audio_channels, 0,
+						 fx_lv2_audio);    
+    
+    g_object_unref(audio);
+  }
 }
 
 void
@@ -882,7 +882,8 @@ ags_fx_lv2_audio_set_pads_callback(AgsAudio *audio,
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_lv2_audio);
 
   /* get LV2 plugin and port */
-  is_live_instrument = ags_fx_lv2_audio_test_flags(fx_lv2_audio, AGS_FX_LV2_AUDIO_LIVE_INSTRUMENT);
+  is_live_instrument = ags_fx_lv2_audio_test_flags(fx_lv2_audio,
+						   AGS_FX_LV2_AUDIO_LIVE_INSTRUMENT);
 
   if(is_live_instrument){
     return;
@@ -914,7 +915,8 @@ ags_fx_lv2_audio_set_pads_callback(AgsAudio *audio,
 	input = ags_channel_nth(start_input,
 				k * audio_channels + j);
 
-	recall_channel = ags_recall_template_find_provider(start_recall_channel, (GObject *) input);
+	recall_channel = ags_recall_template_find_provider(start_recall_channel,
+							   (GObject *) input);
 
 	if(recall_channel != NULL){
 	  ags_fx_lv2_channel_load_port(recall_channel->data);
@@ -1822,6 +1824,14 @@ ags_fx_lv2_audio_scope_data_load_port(AgsFxLv2Audio *fx_lv2_audio,
   }
 }
 
+/**
+ * ags_fx_lv2_audio_load_port:
+ * @fx_lv2_audio: the #AgsFxLv2Audio
+ * 
+ * Load port of @fx_lv2_audio.
+ * 
+ * Since: 3.3.0
+ */
 void
 ags_fx_lv2_audio_load_port(AgsFxLv2Audio *fx_lv2_audio)
 {
