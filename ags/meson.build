@@ -923,6 +923,8 @@ libgsequencer_sources = files(
   'app/ags_line_member_editor.c',
   'app/ags_line_member_editor_callbacks.c',
   'app/ags_line_member_editor_entry.c',
+  'app/ags_line_preset_editor.c',
+  'app/ags_line_preset_editor_callbacks.c',
   'app/ags_link_editor.c',
   'app/ags_link_editor_callbacks.c',
   'app/ags_lv2_browser.c',

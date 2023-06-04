@@ -22,7 +22,7 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_machine.h>
-#include <ags/app/ags_machine_editor.h>
+#include <ags/app/ags_machine_editor_line.h>
 
 #include <ags/i18n.h>
 
@@ -148,10 +148,8 @@ ags_line_preset_editor_init(AgsLinePresetEditor *line_preset_editor)
   gtk_grid_set_row_spacing(grid,
 			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
 
-  gtk_grid_attach((GtkGrid *) line_preset_editor,
-		  (GtkWidget *) grid,
-		  0, 1,
-		  1, 1);
+  gtk_box_append((GtkGrid *) line_preset_editor,
+		 (GtkWidget *) grid);
 
   /* format */
   label = (GtkLabel *) gtk_label_new(i18n("format"));
@@ -270,16 +268,19 @@ ags_line_preset_editor_reset(AgsApplicable *applicable)
   AgsMachineEditorLine *machine_editor_line;
   AgsLinePresetEditor *line_preset_editor;
 
-  AgsSoundcardFormat format;
-  guint samplerate;
+  guint file_samplerate;
+  AgsSoundcardFormat file_format;
+  gint position;
 
   line_preset_editor = AGS_LINE_PRESET_EDITOR(applicable);
   
   machine_editor_line = (AgsMachineEditorLine *) gtk_widget_get_ancestor((GtkWidget *) line_preset_editor,
 									 AGS_TYPE_MACHINE_EDITOR_LINE);
 
-  if(AGS_IS_INPUT(machine_editor_line->channel) &&
-     AGS_INPUT(machine_editor_line->channel)->file_link != NULL){
+  file_samplerate = ags_channel_get_samplerate(machine_editor_line->channel);
+  file_format = ags_channel_get_format(machine_editor_line->channel);
+
+  if(AGS_IS_INPUT(machine_editor_line->channel)){
     AgsAudioFile *audio_file;
     
     gchar *filename;
@@ -294,54 +295,50 @@ ags_line_preset_editor_reset(AgsApplicable *applicable)
     if(audio_file != NULL){
       GObject *sound_resource;
       
-      guint file_samplerate;
-      AgsSoundcardFormat file_format;
-      gint position;
-      
       sound_resource = ags_audio_file_get_sound_resource(audio_file);
       ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(sound_resource),
 				     NULL,
 				     &file_samplerate,
 				     NULL,
 				     &file_format);
-
-      /*  */
-      position = 1;
-      
-      switch(file_format){
-      case AGS_SOUNDCARD_SIGNED_8_BIT:
-	position = 0;
-	break;
-      case AGS_SOUNDCARD_SIGNED_16_BIT:
-	position = 1;
-	break;
-      case AGS_SOUNDCARD_SIGNED_24_BIT:
-	position = 2;
-	break;
-      case AGS_SOUNDCARD_SIGNED_32_BIT:
-	position = 3;
-	break;
-      case AGS_SOUNDCARD_SIGNED_64_BIT:
-	position = 4;
-	break;
-      case AGS_SOUNDCARD_FLOAT:
-	position = 5;
-	break;
-      case AGS_SOUNDCARD_DOUBLE:
-	position = 6;
-	break;
-      case AGS_SOUNDCARD_COMPLEX:
-	position = 7;
-	break;
-      }
-  
-      gtk_combo_box_set_active(line_preset_editor->format,
-			       position);
-
-      gtk_spin_button_set_value(line_preset_editor->samplerate,
-				(gdouble) file_samplerate);
-    }
+    }  
   }
+  
+  /*  */
+  position = 1;
+  
+  switch(file_format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+    position = 0;
+    break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    position = 1;
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    position = 2;
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    position = 3;
+    break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+    position = 4;
+    break;
+  case AGS_SOUNDCARD_FLOAT:
+    position = 5;
+    break;
+  case AGS_SOUNDCARD_DOUBLE:
+    position = 6;
+    break;
+  case AGS_SOUNDCARD_COMPLEX:
+    position = 7;
+    break;
+  }
+
+  gtk_combo_box_set_active(line_preset_editor->format,
+			   position);
+
+  gtk_spin_button_set_value(line_preset_editor->samplerate,
+			    (gdouble) file_samplerate);
 }
 
 /**
