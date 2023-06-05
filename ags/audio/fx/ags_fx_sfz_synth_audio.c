@@ -803,6 +803,8 @@ ags_fx_sfz_synth_audio_init(AgsFxSFZSynthAudio *fx_sfz_synth_audio)
   ags_recall_add_port((AgsRecall *) fx_sfz_synth_audio,
 		      fx_sfz_synth_audio->chorus_delay);
 
+  position++;
+
   /* vibrato enabled */
   fx_sfz_synth_audio->vibrato_enabled = g_object_new(AGS_TYPE_PORT,
 						     "plugin-name", ags_fx_sfz_synth_audio_plugin_name,
