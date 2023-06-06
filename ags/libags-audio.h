@@ -442,6 +442,7 @@
 #include <ags/audio/task/ags_set_device.h>
 #include <ags/audio/task/ags_set_format.h>
 #include <ags/audio/task/ags_set_samplerate.h>
+#include <ags/audio/task/ags_set_presets.h>
 #include <ags/audio/task/ags_start_sequencer.h>
 #include <ags/audio/task/ags_start_soundcard.h>
 #include <ags/audio/task/ags_stop_sequencer.h>

@@ -352,9 +352,7 @@ ags_resize_editor_apply(AgsApplicable *applicable)
 
   AgsAudio *audio;
   AgsResizeAudio *resize_audio;
-  AgsSetFormat *set_format;
-  AgsSetSamplerate *set_samplerate;
-  AgsSetBufferSize *set_buffer_size;
+  AgsSetPresets *set_presets;
   
   AgsApplicationContext *application_context;
 
@@ -424,30 +422,16 @@ ags_resize_editor_apply(AgsApplicable *applicable)
     break;
   }
 
-  set_format = ags_set_format_new(audio,
-				  format);
-
-  /* append AgsSetFormat */
-  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
-				(AgsTask *) set_format);
-
-  /* create task */
   samplerate = gtk_spin_button_get_value_as_int(resize_editor->samplerate);
 
-  set_samplerate = ags_set_samplerate_new(audio,
-					  samplerate);
+  /* append AgsSetPresets */
+  set_presets = ags_set_presets_new(audio,
+				    (guint) ceil((double) buffer_size / (double) orig_samplerate * (double) samplerate),
+				    format,
+				    samplerate);
 
-  /* append AgsSetSamplerate */
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
-				(AgsTask *) set_samplerate);
-
-  /* create task */
-  set_buffer_size = ags_set_buffer_size_new(audio,
-					    (guint) floor((double) buffer_size / (double) orig_samplerate * (double) samplerate));
-
-  /* append AgsSetBuffer_Size */
-  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
-				(AgsTask *) set_buffer_size);
+				(AgsTask *) set_presets);
 }
 
 void
