@@ -496,8 +496,10 @@ ags_led_array_set_nth(AgsLedArray *led_array,
 
 /**
  * ags_led_array_new:
+ * @orientation: the orientation
  * @segment_width: the width of the segment
  * @segment_height: the height of the segment
+ * @led_count: the LED count
  *
  * Create a new instance of #AgsLedArray.
  *

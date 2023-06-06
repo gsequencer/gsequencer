@@ -64,10 +64,11 @@ ags_sfz_synth_open_clicked_callback(GtkWidget *widget, AgsSFZSynth *sfz_synth)
 				       NULL);
   
   sfz_synth->open_dialog = (GtkWidget *) file_chooser;
-  gtk_window_set_default_size((GtkWindow *) file_chooser,
-			      AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_WIDTH, AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_HEIGHT);
   gtk_widget_set_visible((GtkWidget *) file_chooser,
 			 TRUE);
+
+  gtk_widget_set_size_request(GTK_WIDGET(file_chooser),
+			      AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_WIDTH, AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_HEIGHT);
 
   g_signal_connect((GObject *) file_chooser, "response",
 		   G_CALLBACK(ags_sfz_synth_open_dialog_response_callback), AGS_MACHINE(sfz_synth));

@@ -398,6 +398,7 @@ ags_set_device_get_type
 ags_set_format_get_type
 ags_set_muted_get_type
 ags_set_samplerate_get_type
+ags_set_presets_get_type
 ags_sfz_file_get_type
 ags_sfz_group_get_type
 ags_sfz_instrument_loader_get_type

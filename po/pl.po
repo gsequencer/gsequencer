@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2023-06-03 22:45+0200\n"
+"POT-Creation-Date: 2023-06-06 12:19+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -137,7 +137,7 @@ msgstr "wybierz plik audio"
 #: ags/app/ags_machine_editor_dialog.c:102
 #: ags/app/export/ags_wave_export_dialog_callbacks.c:59
 #: ags/app/export/ags_midi_export_wizard.c:224
-#: ags/app/export/ags_wave_export_dialog.c:339 ags/app/ags_input_dialog.c:86
+#: ags/app/export/ags_wave_export_dialog.c:342 ags/app/ags_input_dialog.c:86
 #: ags/app/editor/ags_position_wave_cursor_dialog.c:189
 #: ags/app/editor/ags_position_notation_cursor_dialog.c:207
 #: ags/app/editor/ags_ramp_acceleration_dialog.c:269
@@ -153,7 +153,7 @@ msgstr "wybierz plik audio"
 #: ags/app/editor/ags_add_sheet_page_dialog.c:204
 #: ags/app/editor/ags_move_note_dialog.c:210
 #: ags/app/editor/ags_select_note_dialog.c:248 ags/app/ags_midi_dialog.c:444
-#: ags/app/machine/ags_audiorec_callbacks.c:43
+#: ags/app/machine/ags_audiorec_callbacks.c:44
 #: ags/app/machine/ags_sfz_synth_callbacks.c:55
 #: ags/app/machine/ags_ffplayer_callbacks.c:235
 #: ags/app/machine/ags_sf2_synth_callbacks.c:55
@@ -167,7 +167,7 @@ msgstr ""
 #: ags/app/ags_pcm_file_chooser_dialog.c:97
 #: ags/app/export/ags_wave_export_dialog_callbacks.c:58
 #: ags/app/export/ags_midi_export_wizard.c:225
-#: ags/app/export/ags_wave_export_dialog.c:343 ags/app/ags_input_dialog.c:88
+#: ags/app/export/ags_wave_export_dialog.c:346 ags/app/ags_input_dialog.c:88
 #: ags/app/editor/ags_position_wave_cursor_dialog.c:190
 #: ags/app/editor/ags_position_notation_cursor_dialog.c:208
 #: ags/app/editor/ags_ramp_acceleration_dialog.c:270
@@ -183,8 +183,8 @@ msgstr ""
 #: ags/app/editor/ags_add_sheet_page_dialog.c:205
 #: ags/app/editor/ags_move_note_dialog.c:211
 #: ags/app/editor/ags_select_note_dialog.c:249
-#: ags/app/ags_export_soundcard_callbacks.c:435 ags/app/ags_midi_dialog.c:449
-#: ags/app/machine/ags_audiorec_callbacks.c:44
+#: ags/app/ags_export_soundcard_callbacks.c:436 ags/app/ags_midi_dialog.c:449
+#: ags/app/machine/ags_audiorec_callbacks.c:45
 #: ags/app/machine/ags_sfz_synth_callbacks.c:56
 #: ags/app/machine/ags_ffplayer_callbacks.c:236
 #: ags/app/machine/ags_sf2_synth_callbacks.c:56
@@ -273,7 +273,7 @@ msgid "GUI scale factor"
 msgstr "Współczynnik skali GUI"
 
 #: ags/app/ags_pcm_file_chooser_dialog.c:98
-#: ags/app/ags_export_soundcard_callbacks.c:436 ags/app/machine/ags_drum.c:363
+#: ags/app/ags_export_soundcard_callbacks.c:437 ags/app/machine/ags_drum.c:363
 #: ags/app/machine/ags_sfz_synth.c:335 ags/app/machine/ags_audiorec.c:296
 #: ags/app/machine/ags_sf2_synth.c:345 ags/app/machine/ags_ffplayer.c:403
 msgid "_Open"
@@ -326,7 +326,7 @@ msgid "selector"
 msgstr "zaznacz"
 
 #: ags/app/export/ags_wave_export_dialog_callbacks.c:55
-#: ags/app/ags_export_soundcard_callbacks.c:432
+#: ags/app/ags_export_soundcard_callbacks.c:433
 #, fuzzy
 msgid "Export to file ..."
 msgstr "eksportuj do audio"
@@ -345,31 +345,31 @@ msgstr ""
 msgid "Audio fast export"
 msgstr "Szybkie eksportowanie audio"
 
-#: ags/app/export/ags_wave_export_dialog.c:219
+#: ags/app/export/ags_wave_export_dialog.c:222
 #: ags/app/machine/ags_pitch_sampler.c:311 ags/app/machine/ags_audiorec.c:273
 #: ags/app/ags_export_soundcard.c:276
 msgid "file"
 msgstr "plik"
 
-#: ags/app/export/ags_wave_export_dialog.c:232
+#: ags/app/export/ags_wave_export_dialog.c:235
 #: ags/app/ags_export_soundcard.c:323
 msgid "open"
 msgstr "otwórz"
 
-#: ags/app/export/ags_wave_export_dialog.c:242
+#: ags/app/export/ags_wave_export_dialog.c:245
 msgid "start tact"
 msgstr "start taktowania"
 
-#: ags/app/export/ags_wave_export_dialog.c:263
+#: ags/app/export/ags_wave_export_dialog.c:266
 msgid "end tact"
 msgstr "koniec taktowania"
 
-#: ags/app/export/ags_wave_export_dialog.c:297
+#: ags/app/export/ags_wave_export_dialog.c:300
 #: ags/app/ags_export_soundcard.c:328
 msgid "output format"
 msgstr "format wyjścia"
 
-#: ags/app/export/ags_wave_export_dialog.c:335
+#: ags/app/export/ags_wave_export_dialog.c:338
 #: ags/app/editor/ags_position_wave_cursor_dialog.c:188
 #: ags/app/editor/ags_position_notation_cursor_dialog.c:206
 #: ags/app/editor/ags_ramp_acceleration_dialog.c:268
@@ -1209,7 +1209,7 @@ msgstr "zmień rozmiar kanałów"
 msgid "Open file"
 msgstr "Otwórz Plik"
 
-#: ags/app/ags_app_action_util.c:488
+#: ags/app/ags_app_action_util.c:489
 #, fuzzy
 msgid "save file as"
 msgstr "Zapisz jako"
@@ -1412,7 +1412,7 @@ msgstr "zaktualizuj"
 msgid "lower"
 msgstr "niżej"
 
-#: ags/app/machine/ags_audiorec_callbacks.c:39
+#: ags/app/machine/ags_audiorec_callbacks.c:40
 #: ags/app/machine/ags_pitch_sampler_callbacks.c:40
 msgid "Open audio files"
 msgstr "Otwórz plik audio"
