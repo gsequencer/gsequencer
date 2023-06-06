@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,6 +19,7 @@
 
 #include <ags/app/machine/ags_audiorec_callbacks.h>
 
+#include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
 
 #include <ags/i18n.h>
@@ -45,7 +46,11 @@ ags_audiorec_open_callback(GtkWidget *button, AgsAudiorec *audiorec)
 								  NULL);
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(dialog),
 				       FALSE);
-  gtk_widget_show((GtkWidget *) dialog);
+  gtk_widget_set_visible((GtkWidget *) dialog,
+			 TRUE);
+  
+  gtk_widget_set_size_request(GTK_WIDGET(dialog),
+			      AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_WIDTH, AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_HEIGHT);
 
   g_signal_connect((GObject *) dialog, "response",
 		   G_CALLBACK(ags_audiorec_open_response_callback), audiorec);

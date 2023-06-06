@@ -19,6 +19,7 @@
 
 #include <ags/app/ags_export_soundcard_callbacks.h>
 
+#include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_export_window.h>
 
 #include <ags/i18n.h>
@@ -438,5 +439,9 @@ ags_export_soundcard_file_chooser_button_callback(GtkWidget *file_chooser_button
   g_signal_connect((GObject *) file_chooser, "response",
 		   G_CALLBACK(ags_export_soundcard_open_response_callback), export_soundcard);
 
-  gtk_widget_show((GtkWidget *) file_chooser);
+  gtk_widget_set_visible((GtkWidget *) file_chooser,
+			 TRUE);
+
+  gtk_widget_set_size_request(GTK_WIDGET(file_chooser),
+			      AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_WIDTH, AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_HEIGHT);
 }

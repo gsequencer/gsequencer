@@ -47,7 +47,7 @@ typedef struct _AgsSF2MidiLocaleLoaderClass AgsSF2MidiLocaleLoaderClass;
 /**
  * AgsSF2MidiLocaleLoaderFlags:
  * @AGS_SF2_MIDI_LOCALE_LOADER_HAS_COMPLETED: has completed
- * @AGS_SF2_MIDI_LOCALE_LOADER_RUN_APPLY_SYNTH: run apply synth
+ * @AGS_SF2_MIDI_LOCALE_LOADER_RUN_APPLY_MIDI_LOCALE: run apply midi locale
  * 
  * Enum values to configure Soundfont2 MIDI locale loader.
  */

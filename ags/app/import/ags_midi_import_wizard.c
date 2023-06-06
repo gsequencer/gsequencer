@@ -161,9 +161,9 @@ ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
   
   gtk_window_set_hide_on_close((GtkWindow *) midi_import_wizard,
 			       TRUE);
-
-  gtk_window_set_default_size((GtkWindow *) midi_import_wizard,
-			      600, 480);
+  
+  gtk_widget_set_size_request(GTK_WIDGET(midi_import_wizard),
+			      AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_WIDTH, AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_HEIGHT);
 
   application_context = ags_application_context_get_instance();
 

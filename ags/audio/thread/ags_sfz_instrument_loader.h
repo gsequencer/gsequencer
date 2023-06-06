@@ -47,9 +47,9 @@ typedef struct _AgsSFZInstrumentLoaderClass AgsSFZInstrumentLoaderClass;
 /**
  * AgsSFZInstrumentLoaderFlags:
  * @AGS_SFZ_INSTRUMENT_LOADER_HAS_COMPLETED: has completed
- * @AGS_SFZ_INSTRUMENT_LOADER_RUN_APPLY_SYNTH: run apply synth
+ * @AGS_SFZ_INSTRUMENT_LOADER_RUN_APPLY_INSTRUMENT: run apply instrument
  * 
- * Enum values to configure Soundfont2 MIDI locale loader.
+ * Enum values to configure SFZ instrument loader.
  */
 typedef enum{
   AGS_SFZ_INSTRUMENT_LOADER_HAS_COMPLETED               = 1,

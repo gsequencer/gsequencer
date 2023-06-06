@@ -635,6 +635,7 @@
       <xi:include href="xml/ags_set_format.xml"/>
       <xi:include href="xml/ags_set_muted.xml"/>
       <xi:include href="xml/ags_set_samplerate.xml"/>
+      <xi:include href="xml/ags_set_presets.xml"/>
       <xi:include href="xml/ags_start_audio.xml"/>
       <xi:include href="xml/ags_start_channel.xml"/>
       <xi:include href="xml/ags_start_sequencer.xml"/>
