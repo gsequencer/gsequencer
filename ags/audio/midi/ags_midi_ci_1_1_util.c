@@ -96,16 +96,16 @@ ags_midi_ci_1_1_util_generate_muid(AgsMidiCI_1_1_Util *midi_ci_1_1_util)
 }
 
 guint
-ags_midi_ci_1_1_util_generate_put_discovery(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-					    guchar *buffer,
-					    guchar version,
-					    AgsMUID source,
-					    guint32 manufacturer_id,
-					    guint32 device_family,
-					    guint32 device_family_model_number,
-					    guint32 software_revision_level,
-					    guchar capability,
-					    guint32 max_sysex_message_size)
+ags_midi_ci_1_1_util_put_discovery(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+				   guchar *buffer,
+				   guchar version,
+				   AgsMUID source,
+				   guint32 manufacturer_id,
+				   guint32 device_family,
+				   guint32 device_family_model_number,
+				   guint32 software_revision_level,
+				   guchar capability,
+				   guint32 max_sysex_message_size)
 {
   guint nth;
   
@@ -195,16 +195,16 @@ ags_midi_ci_1_1_util_generate_put_discovery(AgsMidiCI_1_1_Util *midi_ci_1_1_util
 }
 
 guint
-ags_midi_ci_1_1_util_generate_get_discovery(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-					    guchar *buffer,
-					    guchar *version,
-					    AgsMUID *source,
-					    guint32 *manufacturer_id,
-					    guint32 *device_family,
-					    guint32 *device_family_model_number,
-					    guint32 *software_revision_level,
-					    guchar *capability,
-					    guint32 *max_sysex_message_size)
+ags_midi_ci_1_1_util_get_discovery(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+				   guchar *buffer,
+				   guchar *version,
+				   AgsMUID *source,
+				   guint32 *manufacturer_id,
+				   guint32 *device_family,
+				   guint32 *device_family_model_number,
+				   guint32 *software_revision_level,
+				   guchar *capability,
+				   guint32 *max_sysex_message_size)
 {
   guint nth;
   
