@@ -658,6 +658,7 @@ libags_audio_sources = files(
   'audio/task/ags_set_format.c',
   'audio/task/ags_set_muted.c',
   'audio/task/ags_set_samplerate.c',
+  'audio/task/ags_set_presets.c',
   'audio/task/ags_start_audio.c',
   'audio/task/ags_start_channel.c',
   'audio/task/ags_start_sequencer.c',
