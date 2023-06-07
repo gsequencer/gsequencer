@@ -672,20 +672,20 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
      wah_wah_enabled){
     stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(source);
 
-    fx_wah_wah_audio_signal->envelope_util.destination_stride = 1;
+    fx_wah_wah_audio_signal->wah_wah_util.destination_stride = 1;
     
-    fx_wah_wah_audio_signal->envelope_util.source_stride = 1;
+    fx_wah_wah_audio_signal->wah_wah_util.source_stride = 1;
     
-    fx_wah_wah_audio_signal->envelope_util.format = format;
-    fx_wah_wah_audio_signal->envelope_util.samplerate = samplerate;
+    fx_wah_wah_audio_signal->wah_wah_util.format = format;
+    fx_wah_wah_audio_signal->wah_wah_util.samplerate = samplerate;
     
-    fx_wah_wah_audio_signal->envelope_util.wah_wah_enabled = wah_wah_enabled;
+    fx_wah_wah_audio_signal->wah_wah_util.wah_wah_enabled = wah_wah_enabled;
 
-    fx_wah_wah_audio_signal->envelope_util.wah_wah_lfo_depth = wah_wah_lfo_depth;
-    fx_wah_wah_audio_signal->envelope_util.wah_wah_lfo_freq = wah_wah_lfo_freq;
-    fx_wah_wah_audio_signal->envelope_util.wah_wah_tuning = wah_wah_tuning;
+    fx_wah_wah_audio_signal->wah_wah_util.wah_wah_lfo_depth = wah_wah_lfo_depth;
+    fx_wah_wah_audio_signal->wah_wah_util.wah_wah_lfo_freq = wah_wah_lfo_freq;
+    fx_wah_wah_audio_signal->wah_wah_util.wah_wah_tuning = wah_wah_tuning;
 
-    fx_wah_wah_audio_signal->envelope_util.wah_wah_lfo_frame_count = samplerate / wah_wah_lfo_freq;
+    fx_wah_wah_audio_signal->wah_wah_util.wah_wah_lfo_frame_count = samplerate / wah_wah_lfo_freq;
 
     if(start_note != NULL){
       note = start_note;
@@ -797,7 +797,7 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
 	g_message("current-frame: %d", current_frame);
 #endif
 	
- 	fx_wah_wah_audio_signal->envelope_util.wah_wah_lfo_offset = current_frame;
+ 	fx_wah_wah_audio_signal->wah_wah_util.wah_wah_lfo_offset = current_frame;
 	
 	/* special case release - #0 key offset bigger than note offset */
 	if(x1 < note_offset){
@@ -887,24 +887,24 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
 
 	  g_rec_mutex_lock(stream_mutex);
 	  
-	  fx_wah_wah_audio_signal->envelope_util.destination = source->stream_current->data + offset;
+	  fx_wah_wah_audio_signal->wah_wah_util.destination = source->stream_current->data + offset;
 	    
-	  fx_wah_wah_audio_signal->envelope_util.source = source->stream_current->data + offset;
+	  fx_wah_wah_audio_signal->wah_wah_util.source = source->stream_current->data + offset;
 	    
-	  fx_wah_wah_audio_signal->envelope_util.volume = current_volume;
+	  fx_wah_wah_audio_signal->wah_wah_util.volume = current_volume;
 
-	  fx_wah_wah_audio_signal->envelope_util.amount = current_ratio;
+	  fx_wah_wah_audio_signal->wah_wah_util.amount = current_ratio;
 	    
-	  fx_wah_wah_audio_signal->envelope_util.buffer_length = current_frame_count;
+	  fx_wah_wah_audio_signal->wah_wah_util.buffer_length = current_frame_count;
 	
-	  ags_envelope_util_compute(&(fx_wah_wah_audio_signal->envelope_util));
+	  ags_wah_wah_util_compute(&(fx_wah_wah_audio_signal->wah_wah_util));
 
 	  g_rec_mutex_unlock(stream_mutex);
 
 	  current_frame += current_frame_count;
 	  offset += current_frame_count;
 	  
-	  fx_wah_wah_audio_signal->envelope_util.wah_wah_lfo_offset += current_frame_count;
+	  fx_wah_wah_audio_signal->wah_wah_util.wah_wah_lfo_offset += current_frame_count;
 	}    
       
 	if(offset >= buffer_size){
@@ -946,24 +946,24 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
 	  
 	  g_rec_mutex_lock(stream_mutex);
 	    
-	  fx_wah_wah_audio_signal->envelope_util.destination = source->stream_current->data + offset;
+	  fx_wah_wah_audio_signal->wah_wah_util.destination = source->stream_current->data + offset;
 	    
-	  fx_wah_wah_audio_signal->envelope_util.source = source->stream_current->data + offset;
+	  fx_wah_wah_audio_signal->wah_wah_util.source = source->stream_current->data + offset;
 	    
-	  fx_wah_wah_audio_signal->envelope_util.volume = current_volume;
+	  fx_wah_wah_audio_signal->wah_wah_util.volume = current_volume;
 
-	  fx_wah_wah_audio_signal->envelope_util.amount = current_ratio;
+	  fx_wah_wah_audio_signal->wah_wah_util.amount = current_ratio;
 	    
-	  fx_wah_wah_audio_signal->envelope_util.buffer_length = current_frame_count;
+	  fx_wah_wah_audio_signal->wah_wah_util.buffer_length = current_frame_count;
 	
-	  ags_envelope_util_compute(&(fx_wah_wah_audio_signal->envelope_util));
+	  ags_wah_wah_util_compute(&(fx_wah_wah_audio_signal->wah_wah_util));
 	    
 	  g_rec_mutex_unlock(stream_mutex);
 
 	  current_frame += current_frame_count;
 	  offset += current_frame_count;
 
-	  fx_wah_wah_audio_signal->envelope_util.wah_wah_lfo_offset += current_frame_count;
+	  fx_wah_wah_audio_signal->wah_wah_util.wah_wah_lfo_offset += current_frame_count;
 	}    
 
 	if(offset >= buffer_size){
@@ -1005,24 +1005,24 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
 
 	  g_rec_mutex_lock(stream_mutex);
 	    
-	  fx_wah_wah_audio_signal->envelope_util.destination = source->stream_current->data + offset;
+	  fx_wah_wah_audio_signal->wah_wah_util.destination = source->stream_current->data + offset;
 	    
-	  fx_wah_wah_audio_signal->envelope_util.source = source->stream_current->data + offset;
+	  fx_wah_wah_audio_signal->wah_wah_util.source = source->stream_current->data + offset;
 	    
-	  fx_wah_wah_audio_signal->envelope_util.volume = current_volume;
+	  fx_wah_wah_audio_signal->wah_wah_util.volume = current_volume;
 
-	  fx_wah_wah_audio_signal->envelope_util.amount = current_ratio;
+	  fx_wah_wah_audio_signal->wah_wah_util.amount = current_ratio;
 	    
-	  fx_wah_wah_audio_signal->envelope_util.buffer_length = current_frame_count;
+	  fx_wah_wah_audio_signal->wah_wah_util.buffer_length = current_frame_count;
 	
-	  ags_envelope_util_compute(&(fx_wah_wah_audio_signal->envelope_util));
+	  ags_wah_wah_util_compute(&(fx_wah_wah_audio_signal->wah_wah_util));
 
 	  g_rec_mutex_unlock(stream_mutex);
 
 	  current_frame += current_frame_count;
 	  offset += current_frame_count;
 
-	  fx_wah_wah_audio_signal->envelope_util.wah_wah_lfo_offset += current_frame_count;
+	  fx_wah_wah_audio_signal->wah_wah_util.wah_wah_lfo_offset += current_frame_count;
 	}    
     
 	if(offset >= buffer_size){
@@ -1068,23 +1068,23 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
 
 	  g_rec_mutex_lock(stream_mutex);
 	    
-	  fx_wah_wah_audio_signal->envelope_util.destination = source->stream_current->data + offset;
+	  fx_wah_wah_audio_signal->wah_wah_util.destination = source->stream_current->data + offset;
 	    
-	  fx_wah_wah_audio_signal->envelope_util.source = source->stream_current->data + offset;
+	  fx_wah_wah_audio_signal->wah_wah_util.source = source->stream_current->data + offset;
 	    
-	  fx_wah_wah_audio_signal->envelope_util.volume = current_volume;
+	  fx_wah_wah_audio_signal->wah_wah_util.volume = current_volume;
 
-	  fx_wah_wah_audio_signal->envelope_util.amount = current_ratio;
+	  fx_wah_wah_audio_signal->wah_wah_util.amount = current_ratio;
 	    
-	  fx_wah_wah_audio_signal->envelope_util.buffer_length = current_frame_count;
+	  fx_wah_wah_audio_signal->wah_wah_util.buffer_length = current_frame_count;
 	
-	  ags_envelope_util_compute(&(fx_wah_wah_audio_signal->envelope_util));
+	  ags_wah_wah_util_compute(&(fx_wah_wah_audio_signal->wah_wah_util));
 	    
 	  g_rec_mutex_unlock(stream_mutex);
 
 	  offset += current_frame_count;
 
-	  fx_wah_wah_audio_signal->envelope_util.wah_wah_lfo_offset += current_frame_count;
+	  fx_wah_wah_audio_signal->wah_wah_util.wah_wah_lfo_offset += current_frame_count;
 
 	  if(trailing_frame_count != 0){
 	    AgsVolumeUtil volume_util;

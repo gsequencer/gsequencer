@@ -1,3 +1,9 @@
+ags (5.3.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_wah_wah_util.[ch]
+	* minor improvements
+
 ags (5.3.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
