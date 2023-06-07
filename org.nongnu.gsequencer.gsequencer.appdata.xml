@@ -40,6 +40,17 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="5.3.2" date="2023-06-07">
+      <description>
+	<p>
+	  Improved wah-wah.
+	</p>
+	<p>
+	  Fixed AgsSF2Synth and AgsSFZSynth persistence of some controls in XML read/write.
+	</p>
+      </description>
+    </release>
+
     <release version="5.3.0" date="2023-06-04">
       <description>
 	<p>

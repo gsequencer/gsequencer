@@ -5371,6 +5371,20 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
 
   /* ext */
   str = xmlGetProp(node,
+		   "tremolo-enabled");
+
+  if(str != NULL){
+    gboolean enabled;
+
+    enabled = (!g_ascii_strncasecmp(str, AGS_SIMPLE_FILE_TRUE, 5)) ? TRUE: FALSE;
+
+    gtk_check_button_set_active(sfz_synth->tremolo_enabled,
+				enabled);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
 		   "tremolo-gain");
 
   if(str != NULL){
@@ -5431,6 +5445,20 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   }
   
   str = xmlGetProp(node,
+		   "vibrato-enabled");
+
+  if(str != NULL){
+    gboolean enabled;
+
+    enabled = (!g_ascii_strncasecmp(str, AGS_SIMPLE_FILE_TRUE, 5)) ? TRUE: FALSE;
+
+    gtk_check_button_set_active(sfz_synth->vibrato_enabled,
+				enabled);
+      
+    xmlFree(str);
+  }
+  
+  str = xmlGetProp(node,
 		   "vibrato-gain");
 
   if(str != NULL){
@@ -5486,6 +5514,36 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
 
     ags_dial_set_value(sfz_synth->vibrato_tuning,
 		       tuning);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "wah-wah-enabled");
+
+  if(str != NULL){
+    gboolean enabled;
+
+    enabled = (!g_ascii_strncasecmp(str, AGS_SIMPLE_FILE_TRUE, 5)) ? TRUE: FALSE;
+
+    gtk_check_button_set_active(sfz_synth->wah_wah_enabled,
+				enabled);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "wah-wah-length");
+
+  if(str != NULL){
+    gint length;
+
+    length = (gint) g_ascii_strtoll(str,
+				    NULL,
+				    10);
+
+    gtk_combo_box_set_active(sfz_synth->wah_wah_enabled,
+			     length);
       
     xmlFree(str);
   }
@@ -6100,6 +6158,20 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
 
   /* ext */
   str = xmlGetProp(node,
+		   "tremolo-enabled");
+
+  if(str != NULL){
+    gboolean enabled;
+
+    enabled = (!g_ascii_strncasecmp(str, AGS_SIMPLE_FILE_TRUE, 5)) ? TRUE: FALSE;
+
+    gtk_check_button_set_active(sf2_synth->tremolo_enabled,
+				enabled);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
 		   "tremolo-gain");
 
   if(str != NULL){
@@ -6160,6 +6232,20 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   }
   
   str = xmlGetProp(node,
+		   "vibrato-enabled");
+
+  if(str != NULL){
+    gboolean enabled;
+
+    enabled = (!g_ascii_strncasecmp(str, AGS_SIMPLE_FILE_TRUE, 5)) ? TRUE: FALSE;
+
+    gtk_check_button_set_active(sf2_synth->vibrato_enabled,
+				enabled);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
 		   "vibrato-gain");
 
   if(str != NULL){
@@ -6219,6 +6305,36 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     xmlFree(str);
   }
   
+  str = xmlGetProp(node,
+		   "wah-wah-enabled");
+
+  if(str != NULL){
+    gboolean enabled;
+
+    enabled = (!g_ascii_strncasecmp(str, AGS_SIMPLE_FILE_TRUE, 5)) ? TRUE: FALSE;
+
+    gtk_check_button_set_active(sf2_synth->wah_wah_enabled,
+				enabled);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "wah-wah-length");
+
+  if(str != NULL){
+    gint length;
+
+    length = (gint) g_ascii_strtoll(str,
+				    NULL,
+				    10);
+
+    gtk_combo_box_set_active(sf2_synth->wah_wah_enabled,
+			     length);
+      
+    xmlFree(str);
+  }
+
   str = xmlGetProp(node,
 		   "wah-wah-attack-x");
 
@@ -13887,6 +14003,15 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     g_free(str);    
 
     /* ext */
+    str = g_strdup_printf("%s",
+			  (sfz_synth->tremolo_enabled ? "true": "false"));
+    
+    xmlNewProp(node,
+	       "tremolo-enabled",
+	       str);
+
+    g_free(str);    
+
     str = g_strdup_printf("%lf",
 			  ags_dial_get_value(sfz_synth->tremolo_gain));
     
@@ -13923,6 +14048,15 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 
     g_free(str);    
 
+    str = g_strdup_printf("%s",
+			  (sfz_synth->vibrato_enabled ? "true": "false"));
+    
+    xmlNewProp(node,
+	       "vibrato-enabled",
+	       str);
+
+    g_free(str);    
+
     str = g_strdup_printf("%lf",
 			  ags_dial_get_value(sfz_synth->vibrato_gain));
     
@@ -13955,6 +14089,24 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       "vibrato-tuning",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%s",
+			  (sfz_synth->wah_wah_enabled ? "true": "false"));
+    
+    xmlNewProp(node,
+	       "wah-wah-enabled",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%d",
+			  gtk_combo_box_get_active(sfz_synth->wah_wah_length));
+    
+    xmlNewProp(node,
+	       "wah-wah-length",
 	       str);
 
     g_free(str);    
@@ -14300,6 +14452,15 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     g_free(str);    
 
     /* ext */
+    str = g_strdup_printf("%s",
+			  (sf2_synth->tremolo_enabled ? "true": "false"));
+    
+    xmlNewProp(node,
+	       "tremolo-enabled",
+	       str);
+
+    g_free(str);    
+
     str = g_strdup_printf("%lf",
 			  ags_dial_get_value(sf2_synth->tremolo_gain));
     
@@ -14332,6 +14493,15 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       "tremolo-tuning",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%s",
+			  (sf2_synth->vibrato_enabled ? "true": "false"));
+    
+    xmlNewProp(node,
+	       "vibrato-enabled",
 	       str);
 
     g_free(str);    
@@ -14372,6 +14542,24 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 
     g_free(str);    
 
+    str = g_strdup_printf("%s",
+			  (sf2_synth->wah_wah_enabled ? "true": "false"));
+    
+    xmlNewProp(node,
+	       "wah-wah-enabled",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%d",
+			  gtk_combo_box_get_active(sf2_synth->wah_wah_length));
+    
+    xmlNewProp(node,
+	       "wah-wah-length",
+	       str);
+
+    g_free(str);    
+    
     str = g_strdup_printf("%lf",
 			  ags_dial_get_value(sf2_synth->wah_wah_attack_x));
     
