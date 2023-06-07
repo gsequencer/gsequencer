@@ -407,6 +407,7 @@ libags_audio_sources = files(
   'audio/ags_track.c',
   'audio/ags_tremolo_util.c',
   'audio/ags_volume_util.c',
+  'audio/ags_wah_wah_util.c',
   'audio/ags_wave.c',
   'audio/alsa/ags_alsa_devin.c',
   'audio/alsa/ags_alsa_devout.c',
@@ -1543,6 +1544,7 @@ libags_audio_audio_headers = [
   'audio/ags_track.h',
   'audio/ags_tremolo_util.h',
   'audio/ags_volume_util.h',
+  'audio/ags_wah_wah_util.h',
   'audio/ags_wave.h',
 ]
 

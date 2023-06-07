@@ -55,7 +55,8 @@ void ags_set_presets_soundcard(AgsSetPresets *set_presets, GObject *soundcard);
  * @section_id:
  * @include: ags/audio/task/ags_set_presets.h
  *
- * The #AgsSetPresets task modifies presets of scope.
+ * The #AgsSetPresets task modifies presets of scope. Note, the thread 
+ * frequencies won't be modified.
  */
 
 static gpointer ags_set_presets_parent_class = NULL;
@@ -394,15 +395,16 @@ ags_set_presets_channel(AgsSetPresets *set_presets, AgsChannel *channel)
 
   if(link == NULL &&
      recycling != NULL){
-    g_object_set(recycling,
-		 "samplerate", set_presets->samplerate,
-		 NULL);
+    ags_set_presets_recycling(set_presets,
+			      recycling);
   }
 }
 
 void
 ags_set_presets_audio(AgsSetPresets *set_presets, AgsAudio *audio)
 {
+  AgsChannel *start_channel, *channel;
+  
   GRecMutex *audio_mutex;
 
   /* get audio mutex */
@@ -415,6 +417,31 @@ ags_set_presets_audio(AgsSetPresets *set_presets, AgsAudio *audio)
   audio->format = set_presets->format;
 
   g_rec_mutex_unlock(audio_mutex);
+
+  start_channel = ags_audio_get_output(audio);
+
+  channel = start_channel;
+  
+  if(channel != NULL){
+    g_object_ref(channel);
+  }
+
+  while(channel != NULL){
+    AgsChannel *next;
+
+    ags_set_presets_channel(set_presets,
+			    channel);
+
+    next = ags_channel_next(channel);
+
+    g_object_unref(channel);
+    
+    channel = next;
+  }
+
+  if(start_channel != NULL){
+    g_object_ref(start_channel);
+  }
 }
 
 void

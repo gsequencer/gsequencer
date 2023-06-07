@@ -126,6 +126,7 @@
       <xi:include href="xml/ags_volume_util.xml"/>
       <xi:include href="xml/ags_tremolo_util.xml"/>
       <xi:include href="xml/ags_envelope_util.xml"/>
+      <xi:include href="xml/ags_wah_wah_util.xml"/>
       <xi:include href="xml/ags_peak_util.xml"/>
       <xi:include href="xml/ags_noise_util.xml"/>
       <xi:include href="xml/ags_resample_util.xml"/>

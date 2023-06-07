@@ -439,6 +439,7 @@ ags_track_flags_get_type
 ags_track_get_type
 ags_tremolo_util_get_type
 ags_volume_util_get_type
+ags_wah_wah_util_get_type
 ags_wasapi_devin_flags_get_type
 ags_wasapi_devin_get_type
 ags_wasapi_devout_flags_get_type

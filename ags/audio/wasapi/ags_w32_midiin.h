@@ -163,7 +163,7 @@ struct _AgsW32Midiin
   
   char **backend_buffer;
   guint backend_buffer_size[AGS_W32_MIDIIN_DEFAULT_BACKEND_BUFFER_SIZE];
-
+  
   double bpm; // beats per minute
 
   gdouble delay;
@@ -178,8 +178,10 @@ struct _AgsW32Midiin
   guint note_offset;
   guint note_offset_absolute;
 
-  guint device_fd;
   gchar *device;
+
+  HMIDIIN midi_handle;
+  MIDIHDR midi_header;
 };
 
 struct _AgsW32MidiinClass

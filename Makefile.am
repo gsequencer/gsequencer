@@ -1345,6 +1345,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_track.h \
 	ags/audio/ags_tremolo_util.h \
 	ags/audio/ags_volume_util.h \
+	ags/audio/ags_wah_wah_util.h \
 	ags/audio/ags_wave.h
 
 if WITH_LIBINSTPATCH
@@ -1436,6 +1437,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_track.c \
 	ags/audio/ags_tremolo_util.c \
 	ags/audio/ags_volume_util.c \
+	ags/audio/ags_wah_wah_util.c \
 	ags/audio/ags_wave.c
 
 if WITH_LIBINSTPATCH
