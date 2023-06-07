@@ -5542,7 +5542,7 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
 				    NULL,
 				    10);
 
-    gtk_combo_box_set_active(sfz_synth->wah_wah_enabled,
+    gtk_combo_box_set_active(sfz_synth->wah_wah_length,
 			     length);
       
     xmlFree(str);
@@ -6329,7 +6329,7 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
 				    NULL,
 				    10);
 
-    gtk_combo_box_set_active(sf2_synth->wah_wah_enabled,
+    gtk_combo_box_set_active(sf2_synth->wah_wah_length,
 			     length);
       
     xmlFree(str);
@@ -14004,7 +14004,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 
     /* ext */
     str = g_strdup_printf("%s",
-			  (sfz_synth->tremolo_enabled ? "true": "false"));
+			  (gtk_check_button_get_active(sfz_synth->tremolo_enabled) ? "true": "false"));
     
     xmlNewProp(node,
 	       "tremolo-enabled",
@@ -14049,7 +14049,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     g_free(str);    
 
     str = g_strdup_printf("%s",
-			  (sfz_synth->vibrato_enabled ? "true": "false"));
+			  (gtk_check_button_get_active(sfz_synth->vibrato_enabled) ? "true": "false"));
     
     xmlNewProp(node,
 	       "vibrato-enabled",
@@ -14094,7 +14094,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     g_free(str);    
 
     str = g_strdup_printf("%s",
-			  (sfz_synth->wah_wah_enabled ? "true": "false"));
+			  (gtk_check_button_get_active(sfz_synth->wah_wah_enabled) ? "true": "false"));
     
     xmlNewProp(node,
 	       "wah-wah-enabled",
@@ -14453,7 +14453,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 
     /* ext */
     str = g_strdup_printf("%s",
-			  (sf2_synth->tremolo_enabled ? "true": "false"));
+			  (gtk_check_button_get_active(sf2_synth->tremolo_enabled) ? "true": "false"));
     
     xmlNewProp(node,
 	       "tremolo-enabled",
@@ -14498,7 +14498,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     g_free(str);    
 
     str = g_strdup_printf("%s",
-			  (sf2_synth->vibrato_enabled ? "true": "false"));
+			  (gtk_check_button_get_active(sf2_synth->vibrato_enabled) ? "true": "false"));
     
     xmlNewProp(node,
 	       "vibrato-enabled",
@@ -14543,7 +14543,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     g_free(str);    
 
     str = g_strdup_printf("%s",
-			  (sf2_synth->wah_wah_enabled ? "true": "false"));
+			  (gtk_check_button_get_active(sf2_synth->wah_wah_enabled) ? "true": "false"));
     
     xmlNewProp(node,
 	       "wah-wah-enabled",
