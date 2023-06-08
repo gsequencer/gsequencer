@@ -2,7 +2,8 @@ ags (5.3.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* minor bug-fixes
-	* 
+	* reverted some changes in ags_hq_pitch_util.c
+	* reverted some changes in ags_fast_pitch_util.c
 
 ags (5.3.3)
 
