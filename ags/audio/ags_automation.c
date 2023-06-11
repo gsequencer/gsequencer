@@ -1600,13 +1600,22 @@ ags_automation_sort_func(gconstpointer a,
   AgsTimestamp *timestamp_a, *timestamp_b;
 
   guint64 offset_a, offset_b;
-    
+  guint line_a, line_b;
+  
+  timestamp_a = NULL;
+  timestamp_b = NULL;
+
+  line_a = 0;
+  line_b = 0;
+  
   g_object_get(a,
 	       "timestamp", &timestamp_a,
+	       "line", &line_a,
 	       NULL);
 
   g_object_get(b,
 	       "timestamp", &timestamp_b,
+	       "line", &line_b,
 	       NULL);
 
   offset_a = ags_timestamp_get_ags_offset(timestamp_a);
@@ -1616,7 +1625,13 @@ ags_automation_sort_func(gconstpointer a,
   g_object_unref(timestamp_b);
     
   if(offset_a == offset_b){
-    return(0);
+    if(line_a == line_b){
+      return(0);
+    }else if(line_a < line_b){
+      return(-1);
+    }else if(line_a > line_b){
+      return(1);
+    }
   }else if(offset_a < offset_b){
     return(-1);
   }else if(offset_a > offset_b){
@@ -1644,7 +1659,7 @@ ags_automation_add(GList *automation,
   if(!AGS_IS_AUTOMATION(new_automation)){
     return(automation);
   }
-  
+
   automation = g_list_insert_sorted(automation,
 				    new_automation,
 				    ags_automation_sort_func);
