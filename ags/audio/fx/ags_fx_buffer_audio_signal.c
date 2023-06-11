@@ -137,6 +137,7 @@ void
 ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 {
   AgsAudio *audio;
+  AgsChannel *input;
   AgsChannel *start_output;
   AgsChannel *output, *next_output;
   AgsRecycling *source_recycling;
@@ -172,7 +173,7 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
   fx_buffer_channel_mutex = NULL;
 
   fx_buffer_audio_signal = AGS_FX_BUFFER_AUDIO_SIGNAL(recall);
-
+  
   sound_scope = ags_recall_get_sound_scope(recall);
 
 //  g_message("b) sound scope = 0x%x", sound_scope);
@@ -216,6 +217,8 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
   destination_samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
   destination_buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   destination_format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+
+  input = NULL;
   
   if(source != NULL){
     g_object_get(source,
@@ -232,6 +235,7 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 	       NULL);
     
   g_object_get(fx_buffer_channel_processor,
+	       "source", &input,
 	       "recall-audio", &fx_buffer_audio,
 	       "recall-audio-run", &fx_buffer_audio_processor,
 	       "recall-channel", &fx_buffer_channel,
@@ -252,10 +256,51 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
   input_data = ags_fx_buffer_channel_get_input_data(fx_buffer_channel,
 						    sound_scope);
 
+  if(ags_recall_test_state_flags(fx_buffer_channel_processor,
+				 AGS_SOUND_STATE_RUN_COMPLETED)){
+    goto fx_buffer_audio_signal_run_inter_END;
+
+    return;
+  }
+
   if(sound_scope >= 0 &&
      sound_scope < AGS_SOUND_SCOPE_LAST &&
      fx_buffer_channel != NULL &&
      input_data != NULL){
+    GList *start_list, *list;
+      
+    list =
+      start_list = ags_channel_get_play(input);
+
+    while((list = ags_recall_find_type(list, AGS_TYPE_FX_BUFFER_CHANNEL_PROCESSOR)) != NULL){
+      if(ags_recall_test_flags(list->data, (AGS_RECALL_TEMPLATE | AGS_RECALL_DEFAULT_TEMPLATE)) == FALSE &&
+	 ags_recall_get_sound_scope(list->data) == sound_scope){
+	ags_recall_set_state_flags(list->data,
+				   AGS_SOUND_STATE_RUN_COMPLETED);
+      }
+      
+      list = list->next;
+    }
+
+    g_list_free_full(start_list,
+		     g_object_unref);
+
+    list =
+      start_list = ags_channel_get_recall(input);
+
+    while((list = ags_recall_find_type(list, AGS_TYPE_FX_BUFFER_CHANNEL_PROCESSOR)) != NULL){
+      if(ags_recall_test_flags(list->data, (AGS_RECALL_TEMPLATE | AGS_RECALL_DEFAULT_TEMPLATE)) == FALSE &&
+	 ags_recall_get_sound_scope(list->data) == sound_scope){
+	ags_recall_set_state_flags(list->data,
+				   AGS_SOUND_STATE_RUN_COMPLETED);
+      }
+      
+      list = list->next;
+    }
+
+    g_list_free_full(start_list,
+		     g_object_unref);
+    
     fx_buffer_channel_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_buffer_channel);
     
     output = ags_channel_nth(start_output,
@@ -270,7 +315,7 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
     while(output != NULL){
       AgsRecycling *recycling;
       AgsAudioSignal *destination;
-
+      
       recycling = NULL;
           
       g_object_get(output,
@@ -717,9 +762,15 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 				      source);
   }
   
+ fx_buffer_audio_signal_run_inter_END:
+
   /* unref */
   if(audio != NULL){
     g_object_unref(audio);
+  }
+
+  if(input != NULL){
+    g_object_unref(input);
   }
   
   if(start_output != NULL){

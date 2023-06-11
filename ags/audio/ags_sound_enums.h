@@ -159,6 +159,7 @@ typedef enum{
  * @AGS_SOUND_STATE_IS_TERMINATING: is terminating
  * @AGS_SOUND_STATE_PLUGIN_LOADED: plugin is loaded
  * @AGS_SOUND_STATE_PORT_LOADED: port is loaded
+ * @AGS_SOUND_STATE_RUN_COMPLETED: run completed
  * 
  * Enum values to indicate state.
  */
@@ -167,8 +168,9 @@ typedef enum{
   AGS_SOUND_STATE_IS_ACTIVE                   = 1 <<  1,
   AGS_SOUND_STATE_IS_PROCESSING               = 1 <<  2,
   AGS_SOUND_STATE_IS_TERMINATING              = 1 <<  3,
-  AGS_SOUND_STATE_PLUGIN_LOADED            = 1 <<  4,
-  AGS_SOUND_STATE_PORT_LOADED              = 1 <<  5,
+  AGS_SOUND_STATE_PLUGIN_LOADED               = 1 <<  4,
+  AGS_SOUND_STATE_PORT_LOADED                 = 1 <<  5,
+  AGS_SOUND_STATE_RUN_COMPLETED               = 1 <<  6,
 }AgsSoundStateFlags;
 
 /**
