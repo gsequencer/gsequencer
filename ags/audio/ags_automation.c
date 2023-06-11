@@ -1625,7 +1625,13 @@ ags_automation_sort_func(gconstpointer a,
   g_object_unref(timestamp_b);
     
   if(offset_a == offset_b){
-    return(0);
+    if(line_a == line_b){
+      return(0);
+    }else if(line_a < line_b){
+      return(-1);
+    }else if(line_a > line_b){
+      return(1);
+    }
   }else if(offset_a < offset_b){
     return(-1);
   }else if(offset_a > offset_b){

@@ -1,3 +1,8 @@
+ags (5.3.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_ramp_acceleration_dialog_apply()
+
 ags (5.3.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
