@@ -489,9 +489,7 @@ ags_composite_editor_init(AgsCompositeEditor *composite_editor)
   composite_editor->automation_edit = ags_composite_edit_new();
   
   ags_composite_edit_set_scrollbar(composite_editor->automation_edit,
-				   AGS_COMPOSITE_EDIT_SCROLLBAR_HORIZONTAL);
-  ags_composite_edit_set_scrollbar(composite_editor->automation_edit,
-				   AGS_COMPOSITE_EDIT_SCROLLBAR_VERTICAL);
+				   (AGS_COMPOSITE_EDIT_SCROLLBAR_HORIZONTAL | AGS_COMPOSITE_EDIT_SCROLLBAR_VERTICAL));
 
   gtk_widget_set_visible((GtkWidget *) composite_editor->automation_edit,
 			 FALSE);
@@ -523,6 +521,18 @@ ags_composite_editor_init(AgsCompositeEditor *composite_editor)
   gtk_box_append(composite_editor->automation_edit->edit_box,
 		 (GtkWidget *) composite_editor->automation_edit->edit);
 
+  adjustment = gtk_scrolled_window_get_vadjustment(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_editor->automation_edit->edit)->scrolled_window);
+  g_signal_connect(adjustment, "changed",
+		   G_CALLBACK(ags_composite_editor_edit_viewport_vadjustment_changed_callback), (gpointer) composite_editor);
+
+  adjustment = gtk_scrollbar_get_adjustment(composite_editor->automation_edit->hscrollbar);
+  g_signal_connect(adjustment, "value-changed",
+		   G_CALLBACK(ags_composite_editor_edit_hadjustment_value_changed_callback), composite_editor);
+
+  adjustment = gtk_scrollbar_get_adjustment(composite_editor->automation_edit->vscrollbar);
+  g_signal_connect(adjustment, "value-changed",
+		   G_CALLBACK(ags_composite_editor_edit_vadjustment_value_changed_callback), (gpointer) composite_editor);
+  
   /* edit - wave edit */
   composite_editor->wave_edit = ags_composite_edit_new();
   
@@ -560,6 +570,9 @@ ags_composite_editor_init(AgsCompositeEditor *composite_editor)
 			 TRUE);
   gtk_widget_set_hexpand((GtkWidget *) composite_editor->wave_edit->edit,
 			 TRUE);
+      
+  gtk_box_append(composite_editor->wave_edit->edit_box,
+		 (GtkWidget *) composite_editor->wave_edit->edit);
 
   adjustment = gtk_scrolled_window_get_vadjustment(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->scrolled_window);
   g_signal_connect(adjustment, "changed",
@@ -572,9 +585,6 @@ ags_composite_editor_init(AgsCompositeEditor *composite_editor)
   adjustment = gtk_scrollbar_get_adjustment(composite_editor->wave_edit->vscrollbar);
   g_signal_connect(adjustment, "value-changed",
 		   G_CALLBACK(ags_composite_editor_edit_vadjustment_value_changed_callback), (gpointer) composite_editor);
-      
-  gtk_box_append(composite_editor->wave_edit->edit_box,
-		 (GtkWidget *) composite_editor->wave_edit->edit);
 
   /* edit - tempo edit */
   hbox =

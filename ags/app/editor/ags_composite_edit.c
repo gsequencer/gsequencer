@@ -703,7 +703,7 @@ ags_composite_edit_test_scrollbar(AgsCompositeEdit *composite_edit, guint scroll
   }
     
   /* test */
-  retval = (scrollbar & (composite_edit->scrollbar)) ? TRUE: FALSE;
+  retval = ((scrollbar & (composite_edit->scrollbar)) != 0) ? TRUE: FALSE;
 
   return(retval);
 }
