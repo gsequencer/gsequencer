@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,6 +36,9 @@ void ags_solver_matrix_get_property(GObject *gobject,
 				    GValue *value,
 				    GParamSpec *param_spec);
 void ags_solver_matrix_finalize(GObject *gobject);
+
+void ags_solver_matrix_solve_all_by_column(AgsSolverMatrix *solver_matrix,
+					   guint *nth_column, guint column_size);
 
 /**
  * SECTION:ags_solver_matrix
@@ -773,6 +776,12 @@ ags_solver_matrix_parse(AgsSolverMatrix *solver_matrix,
     
     iter++;
   }
+
+  g_rec_mutex_lock(solver_matrix_mutex);
+
+  solver_matrix->row_count = nth_row;
+
+  g_rec_mutex_unlock(solver_matrix_mutex);
   
   g_object_set(solver_matrix,
 	       "source-function", source_function,
@@ -1098,6 +1107,98 @@ ags_solver_matrix_eliminate(AgsSolverMatrix *solver_matrix,
   if(solver_polynomial_factor != NULL){
     g_object_unref(solver_polynomial_factor);
   }
+}
+
+/**
+ * ags_solver_matrix_solve_all_by_column:
+ * @solver_matrix: the #AgsSolverMatrix
+ * @nth_column: the nth column vector
+ * @column_size: the column size
+ * 
+ * Solve all by column of @solver_matrix.
+ * 
+ * Since: 5.3.4
+ */
+void
+ags_solver_matrix_solve_all_by_column(AgsSolverMatrix *solver_matrix,
+				      guint *nth_column, guint column_size)
+{
+  guint column_count;
+  guint row_count;
+  guint i, i_stop;
+
+  g_return_if_fail(AGS_IS_SOLVER_MATRIX(solver_matrix));
+  g_return_if_fail(nth_column != NULL);
+  g_return_if_fail(column_size > 0);
+  
+  column_count = ags_solver_matrix_get_column_count(solver_matrix);
+  row_count = ags_solver_matrix_get_row_count(solver_matrix);
+
+  i_stop = column_size;
+  
+  for(i = 0; i < i_stop; i++){
+    guint current_column, current_row_a, current_row_b;
+
+    current_column = nth_column[i % column_size];
+    
+    current_row_a = (guint) floor(i / column_count);
+    current_row_b = (guint) floor(i / column_count) + (row_count - ((i + 1) % row_count));
+    
+    g_message("solve [%d] -> x,y [%d, %d %d]", i, current_column, current_row_a, current_row_b);
+  }
+}
+
+/**
+ * ags_solver_matrix_solve_default:
+ * @solver_matrix: the #AgsSolverMatrix
+ *
+ * Default solve.
+ * 
+ * Since: 5.3.4 
+ */
+void
+ags_solver_matrix_solve_default(AgsSolverMatrix *solver_matrix)
+{
+  guint *nth_column;
+
+  guint column_count;
+  guint column_size;
+  guint i, i_stop;
+  guint j;
+
+  g_return_if_fail(AGS_IS_SOLVER_MATRIX(solver_matrix));
+  
+  column_count = ags_solver_matrix_get_column_count(solver_matrix);
+
+  column_size = (column_count - 1) * (column_count - 2) / 2;
+
+  nth_column = g_malloc(column_size * sizeof(guint));
+
+  g_message("column_count = %d, column_size = %d", column_count, column_size);
+
+  i_stop = column_size;
+
+  for(i = 0, j = 0; i < i_stop; i++, j++){
+    if(j == column_count - 2){
+      j = 0;
+    }
+
+    if(i % (column_count - 2)  == column_count - 2){
+      j++;
+    }
+
+    if(i == j){
+      j++;
+    }
+    
+    //    nth_column[i] = ((column_count - 1) * (guint) floor((double) i / (double) (column_count - 1)) - (i - ((column_count - 1) * (guint) floor((double) i / (double) (column_count - 1)))) + 1) % (column_count - 1);
+    nth_column[i] = j;
+
+    g_message("nth_column[i] = %d", nth_column[i]);
+  }
+
+  ags_solver_matrix_solve_all_by_column(solver_matrix,
+					nth_column, column_size);
 }
 
 /**

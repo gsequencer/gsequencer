@@ -1,6 +1,8 @@
 ags (5.3.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_solver_matrix_solve_all_by_column()
+	* implemented ags_solver_matrix_solve_default()
 	* minor bug-fixes
 	* reverted some changes in ags_hq_pitch_util.c
 	* reverted some changes in ags_fast_pitch_util.c

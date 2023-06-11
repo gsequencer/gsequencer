@@ -8866,6 +8866,10 @@ ags_simple_file_read_line_launch(AgsFileLaunch *file_launch,
 				    file_channel);
 
     ags_audio_file_open(audio_file);
+    
+    ags_audio_file_manager_add_audio_file(ags_audio_file_manager_get_instance(),
+					  audio_file);
+    
     ags_audio_file_read_audio_signal(audio_file);
 
     /* add audio signal */
@@ -9052,6 +9056,10 @@ ags_simple_file_read_channel_line_launch(AgsFileLaunch *file_launch,
 				    file_channel);
 
     ags_audio_file_open(audio_file);
+
+    ags_audio_file_manager_add_audio_file(ags_audio_file_manager_get_instance(),
+					  audio_file);
+
     ags_audio_file_read_audio_signal(audio_file);
 
     /* add audio signal */
