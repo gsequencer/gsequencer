@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -37,11 +37,14 @@ void ags_solver_matrix_test_parse();
 void ags_solver_matrix_test_insert_vector();
 void ags_solver_matrix_test_remove_vector();
 void ags_solver_matrix_test_eliminate();
+void ags_solver_matrix_test_solve_default();
 
 #define AGS_SOLVER_MATRIX_TEST_PARSE_EQUATION_0 "-2ab+a-4b+16"
 #define AGS_SOLVER_MATRIX_TEST_PARSE_EQUATION_1 "-2a^(-3.14)b^(2.0)+a-4b+16"
 
 #define AGS_SOLVER_MATRIX_TEST_ELIMINATE_EQUATION_0 "-2a^(4.0)b^(2.0)+a-4b+16;1.5a^(4.0)b^(2.0)+8a-9b+7"
+
+#define AGS_SOLVER_MATRIX_TEST_SOLVE_DEFAULT_EQUATION_0 "a^(2.0)+2ab+b^(2.0);a-1.0;b-1.0;a+b-8;c-9"
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -282,6 +285,19 @@ ags_solver_matrix_test_eliminate()
 			      0, 1);
 }
 
+void
+ags_solver_matrix_test_solve_default()
+{
+  AgsSolverMatrix *solver_matrix;
+
+  solver_matrix = ags_solver_matrix_new();
+
+  ags_solver_matrix_parse(solver_matrix,
+			  AGS_SOLVER_MATRIX_TEST_SOLVE_DEFAULT_EQUATION_0);
+
+  ags_solver_matrix_solve_default(solver_matrix);
+}
+
 int
 main(int argc, char **argv)
 {
@@ -309,7 +325,8 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of AgsSolverMatrix parse", ags_solver_matrix_test_parse) == NULL) ||
      (CU_add_test(pSuite, "test of AgsSolverMatrix insert vector", ags_solver_matrix_test_insert_vector) == NULL) ||
      (CU_add_test(pSuite, "test of AgsSolverMatrix remove vector", ags_solver_matrix_test_remove_vector) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsSolverMatrix eliminate", ags_solver_matrix_test_eliminate) == NULL)){
+     (CU_add_test(pSuite, "test of AgsSolverMatrix eliminate", ags_solver_matrix_test_eliminate) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsSolverMatrix solve default", ags_solver_matrix_test_solve_default) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();

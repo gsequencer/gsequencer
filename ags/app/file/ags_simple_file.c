@@ -5555,7 +5555,7 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble attack_x;
 
     attack_x = g_ascii_strtod(str,
-			   NULL);
+			      NULL);
 
     ags_dial_set_value(sfz_synth->wah_wah_attack_x,
 		       attack_x);
@@ -5570,7 +5570,7 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble attack_y;
 
     attack_y = g_ascii_strtod(str,
-			   NULL);
+			      NULL);
 
     ags_dial_set_value(sfz_synth->wah_wah_attack_y,
 		       attack_y);
@@ -8866,6 +8866,10 @@ ags_simple_file_read_line_launch(AgsFileLaunch *file_launch,
 				    file_channel);
 
     ags_audio_file_open(audio_file);
+    
+    ags_audio_file_manager_add_audio_file(ags_audio_file_manager_get_instance(),
+					  audio_file);
+    
     ags_audio_file_read_audio_signal(audio_file);
 
     /* add audio signal */
@@ -9052,6 +9056,10 @@ ags_simple_file_read_channel_line_launch(AgsFileLaunch *file_launch,
 				    file_channel);
 
     ags_audio_file_open(audio_file);
+
+    ags_audio_file_manager_add_audio_file(ags_audio_file_manager_get_instance(),
+					  audio_file);
+
     ags_audio_file_read_audio_signal(audio_file);
 
     /* add audio signal */
@@ -14130,7 +14138,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     g_free(str);    
 
     str = g_strdup_printf("%lf",
-			  ags_dial_get_value(sfz_synth->wah_wah_attack_x));
+			  ags_dial_get_value(sfz_synth->wah_wah_decay_x));
     
     xmlNewProp(node,
 	       "wah-wah-decay-x",

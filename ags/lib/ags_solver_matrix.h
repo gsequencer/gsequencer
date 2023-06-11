@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -84,6 +84,8 @@ void ags_solver_matrix_remove_vector(AgsSolverMatrix *solver_matrix,
 void ags_solver_matrix_eliminate(AgsSolverMatrix *solver_matrix,
 				 guint nth_column,
 				 guint nth_row_a, guint nth_row_b);
+
+void ags_solver_matrix_solve_default(AgsSolverMatrix *solver_matrix);
 
 AgsSolverMatrix* ags_solver_matrix_new();
 
