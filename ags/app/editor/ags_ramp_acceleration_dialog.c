@@ -679,29 +679,33 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 
       timestamp->timer.ags_offset.offset = AGS_AUTOMATION_DEFAULT_OFFSET * floor(x0 / AGS_AUTOMATION_DEFAULT_OFFSET);
 
+      i = 0;
+
       for(nth_match = 0; nth_match < match_count; nth_match++){
-	list_automation = AGS_PORT(play_port->data)->automation;
-	list_automation = ags_automation_find_near_timestamp(list_automation, line,
+	start_list_automation = g_list_copy(AGS_PORT(play_port->data)->automation);
+	list_automation = ags_automation_find_near_timestamp(start_list_automation, line,
 							     timestamp);
 
 	if(list_automation == NULL){
 	  current = ags_automation_new((GObject *) machine->audio,
 				       line,
 				       channel_type, specifier);
-	  g_object_set(current,
-		       "port", play_port->data,
-		       NULL);
 
 	  current->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
 
 	  ags_audio_add_automation(machine->audio,
 				   (GObject *) current);
-	  ags_port_add_automation(AGS_PORT(play_port->data),
-				  (GObject *) current);
+	  ags_port_add_automation(play_port->data,
+				  current);
 	}else{
 	  current = list_automation->data;
 	}
 
+	g_list_free(start_list_automation);
+
+	list_automation =
+	  start_list_automation = NULL;
+	
 	upper = current->upper;
 	lower = current->lower;
 	
@@ -715,8 +719,6 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 	    
 	/* ramp value and move offset */
 	if(!success){
-	  i = 0;
-
 	  if(floor(x0 / (guint) AGS_AUTOMATION_DEFAULT_OFFSET) == floor(x1 / (guint) AGS_AUTOMATION_DEFAULT_OFFSET)){
 	    i_stop = step_count;
 
@@ -778,28 +780,32 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 
       timestamp->timer.ags_offset.offset = AGS_AUTOMATION_DEFAULT_OFFSET * floor(x0 / AGS_AUTOMATION_DEFAULT_OFFSET);
 
+      i = 0;
+
       for(nth_match = 0; nth_match < match_count; nth_match++){
-	list_automation = AGS_PORT(recall_port->data)->automation;
-	list_automation = ags_automation_find_near_timestamp(list_automation, line,
+	start_list_automation = g_list_copy(AGS_PORT(recall_port->data)->automation);
+	list_automation = ags_automation_find_near_timestamp(start_list_automation, line,
 							     timestamp);
 
 	if(list_automation == NULL){
 	  current = ags_automation_new((GObject *) machine->audio,
 				       line,
 				       channel_type, specifier);
-	  g_object_set(current,
-		       "port", recall_port->data,
-		       NULL);
 
 	  current->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
 
 	  ags_audio_add_automation(machine->audio,
 				   (GObject *) current);
-	  ags_port_add_automation(AGS_PORT(recall_port->data),
-				  (GObject *) current);
+	  ags_port_add_automation(recall_port->data,
+				  current);
 	}else{
 	  current = list_automation->data;
 	}
+
+	g_list_free(start_list_automation);
+
+	list_automation =
+	  start_list_automation = NULL;
 
 	upper = current->upper;
 	lower = current->lower;
@@ -814,8 +820,6 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 	    
 	/* ramp value and move offset */
 	if(!success){
-	  i = 0;
-
 	  if(floor(x0 / (guint) AGS_AUTOMATION_DEFAULT_OFFSET) == floor(x1 / (guint) AGS_AUTOMATION_DEFAULT_OFFSET)){
 	    i_stop = step_count;
 
@@ -873,7 +877,7 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
     line++;
   }
 
-  gtk_widget_queue_draw(composite_editor->automation_edit->focused_edit);
+  gtk_widget_queue_draw(AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->drawing_area);
 }
 
 void
