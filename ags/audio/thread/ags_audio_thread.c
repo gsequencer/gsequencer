@@ -889,6 +889,10 @@ ags_audio_thread_run(AgsThread *thread)
       input =
 	start_input = ags_audio_get_input(audio);
 
+      if(start_input != NULL){
+	g_object_ref(start_input);
+      }
+      
       while(input != NULL){
 	AgsChannel *next;
 	
