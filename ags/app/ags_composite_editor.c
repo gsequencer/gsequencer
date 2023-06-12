@@ -1913,7 +1913,7 @@ ags_composite_editor_select_all(AgsCompositeEditor *composite_editor)
       i++;
     }
 
-    gtk_widget_queue_draw(GTK_WIDGET(composite_editor->automation_edit->focused_edit));
+    gtk_widget_queue_draw(AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->drawing_area);
     
     g_list_free_full(start_automation,
 		     g_object_unref);
@@ -2001,7 +2001,7 @@ ags_composite_editor_paste_notation_all(AgsCompositeEditor *composite_editor,
 		 NULL);
       
     notation = ags_notation_find_near_timestamp(start_notation, i,
-						     timestamp);
+						timestamp);
 
     if(notation == NULL){
       current_notation = ags_notation_new((GObject *) machine->audio,
@@ -2185,7 +2185,7 @@ ags_composite_editor_paste_notation(AgsCompositeEditor *composite_editor,
 	      }     
 
 	      /* 1st attempt */
-	      timestamp->timer.ags_offset.offset = (guint64) AGS_NOTATION_DEFAULT_OFFSET * floor((double) position_x / (double) AGS_NOTATION_DEFAULT_OFFSET);
+	      timestamp->timer.ags_offset.offset = (guint64) AGS_AUTOMATION_DEFAULT_OFFSET * floor((double) position_x / (double) AGS_AUTOMATION_DEFAULT_OFFSET);
 		
 	      first_x = ags_composite_editor_paste_notation_all(composite_editor,
 								machine,
@@ -2197,7 +2197,7 @@ ags_composite_editor_paste_notation(AgsCompositeEditor *composite_editor,
 								last_x);
 
 	      /* 2nd attempt */
-	      timestamp->timer.ags_offset.offset += AGS_NOTATION_DEFAULT_OFFSET;
+	      timestamp->timer.ags_offset.offset += AGS_AUTOMATION_DEFAULT_OFFSET;
 
 	      ags_composite_editor_paste_notation_all(composite_editor,
 						      machine,
@@ -3083,7 +3083,7 @@ ags_composite_editor_paste_automation_async(GObject *source_object,
     first_x = 0;
   }
     
-  gtk_widget_queue_draw(composite_editor->automation_edit->focused_edit);
+  gtk_widget_queue_draw(AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->drawing_area);
     
   xmlFreeDoc(clipboard); 
 
@@ -3444,9 +3444,12 @@ ags_composite_editor_copy(AgsCompositeEditor *composite_editor)
     
     i = 0;
 
+    goto ags_composite_editor_copy_LOOP;
+
     while(notebook == NULL ||
 	  (i = ags_notebook_next_active_tab(notebook,
 					    i)) != -1){
+    ags_composite_editor_copy_LOOP:
       automation = start_automation;
 
       /* copy */
@@ -3723,7 +3726,7 @@ ags_composite_editor_cut(AgsCompositeEditor *composite_editor)
 
     xmlFreeDoc(clipboard);
     
-    gtk_widget_queue_draw(composite_editor->automation_edit->focused_edit);
+    gtk_widget_queue_draw(AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->drawing_area);
   }else if(composite_editor->selected_edit == composite_editor->wave_edit){
     AgsNotebook *notebook;
   
