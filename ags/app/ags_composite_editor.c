@@ -2257,7 +2257,9 @@ ags_composite_editor_paste_automation_all(AgsCompositeEditor *composite_editor,
     
   /*  */
   i = 0;
-
+  i = ags_notebook_next_active_tab(notebook,
+				   i);
+  
   goto ags_composite_editor_paste_automation_all_LOOP;
   
   while(notebook != NULL &&
@@ -3443,7 +3445,9 @@ ags_composite_editor_copy(AgsCompositeEditor *composite_editor)
 		 NULL);
     
     i = 0;
-
+    i = ags_notebook_next_active_tab(notebook,
+				     i);
+    
     goto ags_composite_editor_copy_LOOP;
 
     while(notebook == NULL ||

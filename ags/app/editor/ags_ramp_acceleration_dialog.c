@@ -453,6 +453,9 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 	       "automation", &start_list_automation,
 	       NULL);
 
+  line = ags_notebook_next_active_tab(notebook,
+				      line);
+  
   goto ags_ramp_acceleration_dialog_apply_LOOP_REMOVE;
   
   while(notebook != NULL &&
@@ -594,6 +597,9 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
   timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
   timestamp->flags |= AGS_TIMESTAMP_OFFSET;
 
+  line = ags_notebook_next_active_tab(notebook,
+				      line);
+  
   goto ags_ramp_acceleration_dialog_apply_LOOP_ADD;  
   
   while(notebook != NULL &&
