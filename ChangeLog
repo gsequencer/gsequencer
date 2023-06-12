@@ -1,3 +1,9 @@
+ags (5.3.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed automation edit ramp dialog
+	* fixed automation edit copy & paste
+
 ags (5.3.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

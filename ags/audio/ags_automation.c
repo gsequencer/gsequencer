@@ -3253,7 +3253,7 @@ ags_automation_insert_from_clipboard_version_0_4_3(AgsAutomation *automation,
   }
     
   for(; node != NULL; node = node->next){
-    if(node->type == XML_ELEMENT_NODE && !xmlStrncmp("acceleration", node->name, 5)){
+    if(node->type == XML_ELEMENT_NODE && !xmlStrncmp("acceleration", node->name, 13)){
       /* retrieve x0 offset */
       x = xmlGetProp(node, "x");
 
@@ -3344,7 +3344,7 @@ ags_automation_insert_from_clipboard_version_0_4_3(AgsAutomation *automation,
 	 (x_val >= timestamp_offset &&
 	  x_val < timestamp_offset + AGS_AUTOMATION_DEFAULT_OFFSET)){
 	acceleration = ags_acceleration_new();
-	  
+ 	  
 	acceleration->x = x_val;
 	acceleration->y = y_val;
 
@@ -3489,8 +3489,8 @@ ags_automation_insert_from_clipboard_extended(AgsAutomation *automation,
 		    format) ||
 	 !xmlStrcmp(AGS_AUTOMATION_CLIPBOARD_LEGACY_FORMAT,
 		    format)){
-	x_boundary = xmlGetProp(automation_node, "x_boundary");
-	y_boundary = xmlGetProp(automation_node, "y_boundary");
+	x_boundary = xmlGetProp(automation_node, "x-boundary");
+	y_boundary = xmlGetProp(automation_node, "y-boundary");
 
 	ags_automation_insert_native_scale_from_clipboard(automation,
 							  automation_node, version,
