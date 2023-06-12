@@ -679,7 +679,9 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
       if(x0 % (guint) AGS_AUTOMATION_DEFAULT_OFFSET != 0){
 	match_count = 1;
 
-	match_count += (guint) ceil((gdouble) (tmp - (x0 % (guint) AGS_AUTOMATION_DEFAULT_OFFSET)) / AGS_AUTOMATION_DEFAULT_OFFSET);
+	if(tmp >= AGS_AUTOMATION_DEFAULT_OFFSET){
+	  match_count += (guint) ceil((gdouble) (tmp - (x0 % (guint) AGS_AUTOMATION_DEFAULT_OFFSET)) / AGS_AUTOMATION_DEFAULT_OFFSET);
+	}
       }else{
 	match_count += (guint) ceil((gdouble) tmp / AGS_AUTOMATION_DEFAULT_OFFSET);
       }
@@ -688,8 +690,6 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 
       timestamp->timer.ags_offset.offset = AGS_AUTOMATION_DEFAULT_OFFSET * floor(x0 / AGS_AUTOMATION_DEFAULT_OFFSET);
 
-      start_list_automation = g_list_copy(AGS_PORT(play_port->data)->automation);
-      
       i = 0;
 
       for(nth_match = 0; nth_match < match_count; nth_match++){
@@ -699,6 +699,7 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 	  timestamp->timer.ags_offset.offset += (nth_match * AGS_AUTOMATION_DEFAULT_OFFSET);
 	}
 	
+	start_list_automation = g_list_copy(AGS_PORT(play_port->data)->automation);      
 	list_automation = ags_automation_find_near_timestamp(start_list_automation, line,
 							     timestamp);
 
@@ -716,6 +717,11 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 	}else{
 	  current = list_automation->data;
 	}
+
+	g_list_free(start_list_automation);
+
+	list_automation =
+	  start_list_automation = NULL;
 	
 	upper = current->upper;
 	lower = current->lower;
@@ -772,11 +778,6 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
       }
     }
 
-    g_list_free(start_list_automation);
-
-    list_automation =
-      start_list_automation = NULL;
-
     if(recall_port != NULL){
       match_count = 0;
       tmp = x1 - x0;
@@ -784,7 +785,9 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
       if(x0 % (guint) AGS_AUTOMATION_DEFAULT_OFFSET != 0){
 	match_count = 1;
 
-	match_count += (guint) ceil((gdouble) (tmp - (x0 % (guint) AGS_AUTOMATION_DEFAULT_OFFSET)) / AGS_AUTOMATION_DEFAULT_OFFSET);
+	if(tmp >= AGS_AUTOMATION_DEFAULT_OFFSET){
+	  match_count += (guint) ceil((gdouble) (tmp - (x0 % (guint) AGS_AUTOMATION_DEFAULT_OFFSET)) / AGS_AUTOMATION_DEFAULT_OFFSET);
+	}
       }else{
 	match_count += (guint) ceil((gdouble) tmp / AGS_AUTOMATION_DEFAULT_OFFSET);
       }

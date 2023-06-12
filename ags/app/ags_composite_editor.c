@@ -2257,10 +2257,13 @@ ags_composite_editor_paste_automation_all(AgsCompositeEditor *composite_editor,
     
   /*  */
   i = 0;
-		
-  while(notebook == NULL ||
+
+  goto ags_composite_editor_paste_automation_all_LOOP;
+  
+  while(notebook != NULL &&
 	(i = ags_notebook_next_active_tab(notebook,
-					  i)) != -1){		  
+					  i)) != -1){
+  ags_composite_editor_paste_automation_all_LOOP:
     g_object_get(machine->audio,
 		 "automation", &start_list_automation,
 		 NULL);
@@ -2333,10 +2336,6 @@ ags_composite_editor_paste_automation_all(AgsCompositeEditor *composite_editor,
 					AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->channel_type,
 					AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->control_name);
 	automation->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
-
-	g_object_set(automation,
-		     "port", current_port,
-		     NULL);
 	
 	/* add to audio */
 	ags_audio_add_automation(machine->audio,
@@ -2364,10 +2363,6 @@ ags_composite_editor_paste_automation_all(AgsCompositeEditor *composite_editor,
 					AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->channel_type,
 					AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->control_name);
 	automation->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
-
-	g_object_set(automation,
-		     "port", current_port,
-		     NULL);
 	
 	/* add to audio */
 	ags_audio_add_automation(machine->audio,
@@ -2438,7 +2433,7 @@ ags_composite_editor_paste_automation_all(AgsCompositeEditor *composite_editor,
 	}
 
 	x_boundary = g_ascii_strtoull((gchar *) xmlGetProp(automation_node,
-							   BAD_CAST "x_boundary"),
+							   BAD_CAST "x-boundary"),
 				      NULL,
 				      10);
 

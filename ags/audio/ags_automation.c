@@ -2213,6 +2213,8 @@ ags_automation_add_acceleration(AgsAutomation *automation,
 				AgsAcceleration *acceleration,
 				gboolean use_selection_list)
 {
+  AgsAcceleration *current;
+
   GRecMutex *automation_mutex;
 
   if(!AGS_IS_AUTOMATION(automation) ||
@@ -2227,22 +2229,33 @@ ags_automation_add_acceleration(AgsAutomation *automation,
   g_rec_mutex_lock(automation_mutex);
 
   if(use_selection_list){
-    if(g_list_find(automation->selection, acceleration) == NULL){
-      g_object_ref(acceleration);
+    if((current = ags_automation_find_point(automation, acceleration->x, acceleration->y, TRUE)) != NULL){
+      current->x = acceleration->x;
+      current->y = acceleration->y;
+    }else{
+      if(g_list_find(automation->selection, acceleration) == NULL &&
+	 ags_automation_find_point(automation, acceleration->x, acceleration->y, TRUE) == NULL){
+	g_object_ref(acceleration);
       
-      automation->selection = g_list_insert_sorted(automation->selection,
-						   acceleration,
-						   (GCompareFunc) ags_acceleration_sort_func);
-      ags_acceleration_set_flags(acceleration,
-				 AGS_ACCELERATION_IS_SELECTED);
+	automation->selection = g_list_insert_sorted(automation->selection,
+						     acceleration,
+						     (GCompareFunc) ags_acceleration_sort_func);
+	ags_acceleration_set_flags(acceleration,
+				   AGS_ACCELERATION_IS_SELECTED);
+      }
     }
   }else{
-    if(g_list_find(automation->acceleration, acceleration) == NULL){
-      g_object_ref(acceleration);
+    if((current = ags_automation_find_point(automation, acceleration->x, acceleration->y, FALSE)) != NULL){
+      current->x = acceleration->x;
+      current->y = acceleration->y;
+    }else{
+      if(g_list_find(automation->acceleration, acceleration) == NULL){
+	g_object_ref(acceleration);
   
-      automation->acceleration = g_list_insert_sorted(automation->acceleration,
-						      acceleration,
-						      (GCompareFunc) ags_acceleration_sort_func);
+	automation->acceleration = g_list_insert_sorted(automation->acceleration,
+							acceleration,
+							(GCompareFunc) ags_acceleration_sort_func);
+      }
     }
   }
 
