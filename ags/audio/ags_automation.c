@@ -1668,6 +1668,47 @@ ags_automation_add(GList *automation,
 }
 
 /**
+ * ags_automation_remove_all_empty:
+ * @automation: (element-type AgsAudio.Automation) (transfer none): the #GList-struct containing #AgsAutomation
+ * 
+ * Remove all empty @automation.
+ * 
+ * Returns: (element-type AgsAudio.Automation) (transfer none): the new beginning of @automation
+ * 
+ * Since: 5.3.8
+ */
+GList*
+ags_automation_remove_all_empty(GList *automation)
+{
+  GList *list;
+
+  list = automation;
+
+  while(list != NULL){
+    GList *next;
+
+    GRecMutex *automation_mutex;
+    
+    next = list->next;
+
+    automation_mutex = AGS_AUTOMATION_GET_OBJ_MUTEX(list->data);
+
+    g_rec_mutex_lock(automation_mutex);
+
+    if(AGS_AUTOMATION(list->data)->acceleration == NULL){
+      automation = g_list_delete_link(automation,
+				      list);
+    }
+    
+    g_rec_mutex_unlock(automation_mutex);
+    
+    list = next;
+  }
+
+  return(automation);
+}
+
+/**
  * ags_automation_get_audio:
  * @automation: the #AgsAutomation
  * 

@@ -399,8 +399,8 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
   gdouble upper, lower, range, step;
   gdouble c_upper, c_lower, c_range;
 
-  guint x0, x1;
-  gdouble y0, y1;
+  guint x0, x1, tmp_x;
+  gdouble y0, y1, tmp_y;
   guint step_count;
   gint line;
   guint i, i_start, i_stop;
@@ -443,6 +443,18 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 
   x1 = AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH * gtk_spin_button_get_value_as_int(ramp_acceleration_dialog->ramp_x1);
   y1 = gtk_spin_button_get_value(ramp_acceleration_dialog->ramp_y1);
+
+  /* make ascending x position */
+  if(x0 > x1){
+    tmp_x = x0;
+    tmp_y = y0;
+
+    x0 = x1;
+    y0 = y1;
+
+    x1 = tmp_x;
+    y1 = tmp_y;
+  }
   
   step_count = gtk_spin_button_get_value_as_int(ramp_acceleration_dialog->ramp_step_count);
 
@@ -453,6 +465,11 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 	       "automation", &start_list_automation,
 	       NULL);
 
+  if(notebook != NULL){
+    line = ags_notebook_next_active_tab(notebook,
+					line);
+  }
+  
   goto ags_ramp_acceleration_dialog_apply_LOOP_REMOVE;
   
   while(notebook != NULL &&
@@ -594,6 +611,11 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
   timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
   timestamp->flags |= AGS_TIMESTAMP_OFFSET;
 
+  if(notebook != NULL){
+    line = ags_notebook_next_active_tab(notebook,
+					line);
+  }
+  
   goto ags_ramp_acceleration_dialog_apply_LOOP_ADD;  
   
   while(notebook != NULL &&
