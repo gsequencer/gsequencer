@@ -1599,11 +1599,17 @@ ags_automation_sort_func(gconstpointer a,
 {
   AgsTimestamp *timestamp_a, *timestamp_b;
 
+  gchar *control_name_a, *control_name_b;
+  
   guint64 offset_a, offset_b;
   guint line_a, line_b;
+  gint retval;
   
   timestamp_a = NULL;
   timestamp_b = NULL;
+
+  control_name_a = NULL;
+  control_name_b = NULL;
 
   line_a = 0;
   line_b = 0;
@@ -1611,11 +1617,13 @@ ags_automation_sort_func(gconstpointer a,
   g_object_get(a,
 	       "timestamp", &timestamp_a,
 	       "line", &line_a,
+	       "control-name", &control_name_a,
 	       NULL);
 
   g_object_get(b,
 	       "timestamp", &timestamp_b,
 	       "line", &line_b,
+	       "control-name", &control_name_b,
 	       NULL);
 
   offset_a = ags_timestamp_get_ags_offset(timestamp_a);
@@ -1623,22 +1631,23 @@ ags_automation_sort_func(gconstpointer a,
 
   g_object_unref(timestamp_a);
   g_object_unref(timestamp_b);
-    
+
+  retval = 0;
+  
   if(offset_a == offset_b){
     if(line_a == line_b){
-      return(0);
-    }else if(line_a < line_b){
-      return(-1);
-    }else if(line_a > line_b){
-      return(1);
+      retval = g_strcmp0(control_name_a, control_name_b);
+    }else{
+      retval = (line_a > line_b) ? -1: 1;
     }
-  }else if(offset_a < offset_b){
-    return(-1);
-  }else if(offset_a > offset_b){
-    return(1);
+  }else{
+    retval = (offset_a > offset_b) ? -1: 1;
   }
 
-  return(0);
+  g_free(control_name_a);
+  g_free(control_name_b);
+  
+  return(retval);
 }
 
 /**

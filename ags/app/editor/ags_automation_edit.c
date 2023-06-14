@@ -2523,15 +2523,21 @@ ags_automation_edit_compare_x_offset_func(gconstpointer a,
       }
 
       if(b_offset < current_offset){
-	b_diff = current_offset - b_offset;
-
 	if(one_factor == -1){
-	  retval = -1;
+	  retval = (a_offset > b_offset) ? -1: 1;
 	}else{
+	  b_diff = current_offset - b_offset;
+	  
 	  retval = (a_diff > b_diff) ? -1: 1;
 	}
       }else{
-	retval = 1;
+	if(one_factor == -1){
+	  b_diff = current_offset - b_offset;
+
+	  retval = (a_diff > b_diff) ? -1: 1;
+	}else{
+	  retval = (a_offset < b_offset) ? -1: 1;
+	}
       }
     }
   }else if(b_offset == current_offset){
@@ -2576,15 +2582,21 @@ ags_automation_edit_compare_x_offset_func(gconstpointer a,
     }
 
     if(b_offset < current_offset){
-      b_diff = current_offset - b_offset;
-
       if(one_factor == -1){
-	retval = -1;
+	retval = (a_offset > b_offset) ? -1: 1;
       }else{
+	b_diff = current_offset - b_offset;
+
 	retval = (a_diff > b_diff) ? -1: 1;
       }
     }else{
-      retval = 1;
+      if(one_factor == -1){
+	b_diff = current_offset - b_offset;
+
+	retval = (a_diff > b_diff) ? -1: 1;
+      }else{
+	retval = (a_offset < b_offset) ? -1: 1;
+      }
     }
   }
   
