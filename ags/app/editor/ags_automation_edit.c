@@ -2514,7 +2514,32 @@ ags_automation_edit_compare_x_offset_func(gconstpointer a,
       }
     }
   }else if(b_offset == current_offset){
-    retval = 0;
+    gint line_a, line_b;
+
+    line_a = ags_automation_get_line(a);
+    line_b = ags_automation_get_line(b);
+
+    if(line_a == line_b){
+      gchar *line_a_control_name;
+      gchar *line_b_control_name;
+      
+      GType line_a_channel_type;
+      GType line_b_channel_type;
+
+      line_a_control_name = ags_automation_get_control_name(a);
+      line_b_control_name = ags_automation_get_control_name(b);
+
+      line_a_channel_type = ags_automation_get_channel_type(a);
+      line_b_channel_type = ags_automation_get_channel_type(b);
+
+      if(line_a_channel_type == line_b_channel_type){
+	retval = g_strcmp0(line_b_control_name, control_name);
+      }else{
+	retval = (line_a_channel_type > line_b_channel_type) ? -1: 1;
+      }
+    }else{
+      retval = (line_a > line_b) ? -1: 1;
+    }
   }else{
     guint64 a_diff, b_diff;
 
