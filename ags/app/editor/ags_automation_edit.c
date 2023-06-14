@@ -2528,11 +2528,7 @@ ags_automation_edit_compare_x_offset_func(gconstpointer a,
 	if(one_factor == -1){
 	  retval = -1;
 	}else{
-	  if(a_diff < b_diff){
-	    retval = 1;
-	  }else{
-	    retval = -1;
-	  }
+	  retval = (a_diff > b_diff) ? -1: 1;
 	}
       }else{
 	retval = 1;
