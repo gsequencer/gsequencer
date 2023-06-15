@@ -722,8 +722,9 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 	}
 	
 	start_list_automation = g_list_copy(AGS_PORT(play_port->data)->automation);      
-	list_automation = ags_automation_find_near_timestamp(start_list_automation, line,
-							     timestamp);
+	list_automation = ags_automation_find_near_timestamp_extended(start_list_automation, line,
+								      AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->channel_type, AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->control_name,
+								      timestamp);
 
 	if(list_automation == NULL){
 	  current = ags_automation_new((GObject *) machine->audio,
@@ -734,7 +735,11 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 
 	  ags_audio_add_automation(machine->audio,
 				   (GObject *) current);
+	  
 	  ags_port_add_automation(play_port->data,
+				  current);
+
+	  ags_port_add_automation(recall_port->data,
 				  current);
 	}else{
 	  current = list_automation->data;
@@ -828,8 +833,9 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 	}
 	
 	start_list_automation = g_list_copy(AGS_PORT(recall_port->data)->automation);
-	list_automation = ags_automation_find_near_timestamp(start_list_automation, line,
-							     timestamp);
+	list_automation = ags_automation_find_near_timestamp_extended(start_list_automation, line,
+								      AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->channel_type, AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->control_name,
+								      timestamp);
 
 	if(list_automation == NULL){
 	  current = ags_automation_new((GObject *) machine->audio,
@@ -840,6 +846,9 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 
 	  ags_audio_add_automation(machine->audio,
 				   (GObject *) current);
+
+	  ags_port_add_automation(play_port->data,
+				  current);
 	  ags_port_add_automation(recall_port->data,
 				  current);
 	}else{
