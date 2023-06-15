@@ -40,6 +40,14 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="5.3.8" date="2023-06-15">
+      <description>
+	<p>
+	  Various improvements to the automation editor.
+	</p>
+      </description>
+    </release>
+
     <release version="5.3.6" date="2023-06-11">
       <description>
 	<p>
