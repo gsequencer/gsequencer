@@ -2511,7 +2511,12 @@ ags_automation_edit_compare_x_offset_func(gconstpointer a,
 	  retval = (line_a_channel_type < line_b_channel_type) ? -1: 1;
 	}
       }else{
-	retval = (line_a < line_b) ? -1: 1;
+	gint line_diff_a, line_diff_b;
+
+	line_diff_a = (line_a > line) ? (line_a - line): (line - line_a);
+	line_diff_b = (line_b > line) ? (line_b - line): (line - line_b);
+	
+	retval = (line_diff_a < line_diff_b) ? -1: 1;
       }
     }else{
       guint64 a_diff, b_diff;
@@ -2571,10 +2576,15 @@ ags_automation_edit_compare_x_offset_func(gconstpointer a,
       if(line_a_channel_type == line_b_channel_type){
 	retval = g_strcmp0(line_a_control_name, line_b_control_name);
       }else{
-	retval = (line_a_channel_type > line_b_channel_type) ? -1: 1;
+	retval = (line_a_channel_type < line_b_channel_type) ? -1: 1;
       }
     }else{
-      retval = (line_a < line_b) ? -1: 1;
+      gint line_diff_a, line_diff_b;
+
+      line_diff_a = (line_a > line) ? (line_a - line): (line - line_a);
+      line_diff_b = (line_b > line) ? (line_b - line): (line - line_b);
+	
+      retval = (line_diff_a < line_diff_b) ? -1: 1;
     }
   }else{
     guint64 a_diff, b_diff;
@@ -3907,7 +3917,7 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
 
     list_automation = ags_automation_find_near_timestamp_extended(start_list_automation, i,
 								  automation_edit->channel_type, automation_edit->control_name,
-								  NULL);
+								  timestamp);
     
     first_match = NULL;
     
@@ -3924,7 +3934,7 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
     }
     
     while(first_acceleration != NULL){
-      if(ags_acceleration_get_x(first_acceleration->data) > x0){	
+      if(ags_acceleration_get_x(first_acceleration->data) >= x0){
 	goto ags_automation_edit_draw_automation_LOOP_FIRST_END;
       }
       
@@ -3954,7 +3964,7 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
     }
     
     while(last_acceleration != NULL){
-      if(ags_acceleration_get_x(last_acceleration->data) > x1){
+      if(ags_acceleration_get_x(last_acceleration->data) >= x1){
 	goto ags_automation_edit_draw_automation_LOOP_LAST_END;
       }
       
@@ -3965,7 +3975,6 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
 
   ags_automation_edit_draw_automation_LOOP_LAST_END:
 
-#if 1
     if(first_match != NULL &&
        first_match != last_match){
       GList *start_next_acceleration;
@@ -4015,7 +4024,6 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
       g_list_free_full(start_next_acceleration,
 		       g_object_unref);
     }
-#endif
     
     while(list_automation != NULL){
       AgsAutomation *automation;
@@ -4046,7 +4054,7 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
 	goto ags_automation_edit_draw_automation_INNER_LOOP_END;
       }
 
-      if(ags_timestamp_get_ags_offset(current_timestamp) > x1){
+      if(ags_timestamp_get_ags_offset(current_timestamp) >= x1){
 	goto ags_automation_edit_draw_automation_INNER_LOOP_END;
       }
       
@@ -4099,6 +4107,7 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
 #endif
 	
 	if(list_acceleration->data != first_match &&
+	   list_acceleration->data != last_match &&
 	   next_link != NULL){
 	  ags_automation_edit_draw_acceleration(automation_edit,
 						list_acceleration->data, next_link->data,
@@ -4126,7 +4135,6 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
 
   ags_automation_edit_draw_automation_LOOP_END:
 
-#if 1
     if(last_match != NULL){
       GList *start_next_acceleration;
       GList *next_link;
@@ -4175,7 +4183,6 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
       g_list_free_full(start_next_acceleration,
 		       g_object_unref);
     }
-#endif
     
     i++;
     

@@ -10944,6 +10944,7 @@ ags_simple_file_read_automation_fixup_1_0_to_1_3(AgsSimpleFile *simple_file, xml
 	    
 	  automation[0] = ags_automation_add(automation[0],
 					     gobject);
+
 	}
 	  
 	/* add */
@@ -10996,10 +10997,16 @@ ags_simple_file_read_automation_list_fixup_1_0_to_1_3(AgsSimpleFile *simple_file
 void
 ags_simple_file_read_automation(AgsSimpleFile *simple_file, xmlNode *node, AgsAutomation **automation)
 {
+  AgsMachine *machine;    
+  AgsChannel *start_output, *start_input;
+  AgsChannel *nth_channel;
   AgsAutomation *gobject;
   AgsAcceleration *acceleration;
 
   xmlNode *child;
+  
+  GList *start_play_port, *play_port;
+  GList *start_recall_port, *recall_port;
   
   xmlChar *str;
   gchar *control_name;
@@ -11008,52 +11015,54 @@ ags_simple_file_read_automation(AgsSimpleFile *simple_file, xmlNode *node, AgsAu
 
   guint line;
   gboolean found_timestamp;
+
+  machine = NULL;
   
-  if(*automation != NULL){
-    gobject = *automation;
-
-    line = gobject->line;
-
-    channel_type = gobject->channel_type;
-    control_name = gobject->control_name;
-  }else{
-    AgsMachine *machine;
-    
+  if(node->parent != NULL &&
+     node->parent->parent != NULL){
     AgsFileIdRef *file_id_ref;
     
     file_id_ref = (AgsFileIdRef *) ags_simple_file_find_id_ref_by_node(simple_file,
 								       node->parent->parent);
     machine = file_id_ref->ref;
+  }
 
+  line = 0;
+  str = xmlGetProp(node,
+		   "line");
+
+  if(str != NULL){
+    line = g_ascii_strtoull(str,
+			    NULL,
+			    10);
+
+    xmlFree(str);
+  }
+
+  channel_type = G_TYPE_NONE;
+    
+  str = xmlGetProp(node,
+		   "channel-type");
+
+  if(str != NULL){
+    channel_type = g_type_from_name(str);
+
+    xmlFree(str);
+  }
+    
+  control_name = xmlGetProp(node,
+			    "control-name");
+  
+  if(*automation != NULL){
     if(!AGS_IS_MACHINE(machine)){
       return;
     }
-    
-    line = 0;
-    str = xmlGetProp(node,
-		     "line");
 
-    if(str != NULL){
-      line = g_ascii_strtoull(str,
-			      NULL,
-			      10);
-
-      xmlFree(str);
+    gobject = *automation;
+  }else{
+    if(!AGS_IS_MACHINE(machine)){
+      return;
     }
-
-    channel_type = G_TYPE_NONE;
-    
-    str = xmlGetProp(node,
-		     "channel-type");
-
-    if(str != NULL){
-      channel_type = g_type_from_name(str);
-
-      xmlFree(str);
-    }
-    
-    control_name = xmlGetProp(node,
-			      "control-name");
     
     gobject = g_object_new(AGS_TYPE_AUTOMATION,
 			   "audio", machine->audio,
@@ -11065,6 +11074,58 @@ ags_simple_file_read_automation(AgsSimpleFile *simple_file, xmlNode *node, AgsAu
     *automation = gobject;
   }
 
+  start_output = ags_audio_get_output(machine->audio);
+  start_input = ags_audio_get_input(machine->audio);
+
+  play_port = NULL;
+  recall_port = NULL;
+
+  if(channel_type == AGS_TYPE_INPUT){
+    nth_channel = ags_channel_nth(start_input,
+				  line);
+
+    play_port =
+      start_play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
+										       control_name,
+										       TRUE);
+
+    recall_port =
+      start_recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
+											 control_name,
+											 FALSE);
+
+    if(nth_channel != NULL){
+      g_object_unref(nth_channel);
+    }
+  }else if(channel_type == AGS_TYPE_OUTPUT){
+    nth_channel = ags_channel_nth(start_output,
+				  line);
+	  
+    play_port =
+      start_play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
+										       control_name,
+										       TRUE);
+
+    recall_port =
+      start_recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
+											 control_name,
+											 FALSE);
+
+    if(nth_channel != NULL){
+      g_object_unref(nth_channel);
+    }
+  }else{
+    play_port =
+      start_play_port = ags_audio_collect_all_audio_ports_by_specifier_and_context(machine->audio,
+										   control_name,
+										   TRUE);
+	
+    recall_port =
+      start_recall_port = ags_audio_collect_all_audio_ports_by_specifier_and_context(machine->audio,
+										     control_name,
+										     FALSE);
+  }
+  
   /* children */
   child = node->children;
 
@@ -11093,6 +11154,27 @@ ags_simple_file_read_automation(AgsSimpleFile *simple_file, xmlNode *node, AgsAu
 
     child = child->next;
   }
+
+  play_port = start_play_port;
+  recall_port = start_recall_port;
+
+  while(play_port != NULL){
+    /* add to port */
+    ags_port_add_automation(play_port->data,
+			    (GObject *) gobject);
+	  
+    ags_port_add_automation(recall_port->data,
+			    (GObject *) gobject);
+
+    /* iterate */
+    play_port = play_port->next;
+    recall_port = recall_port->next;
+  }
+
+  g_list_free_full(start_play_port,
+		   g_object_unref);
+  g_list_free_full(start_recall_port,
+		   g_object_unref);
   
   child = node->children;
 
