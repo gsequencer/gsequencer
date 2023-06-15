@@ -176,12 +176,15 @@ void ags_automation_edit_reset_hscrollbar(AgsAutomationEdit *automation_edit);
 gint ags_automation_edit_compare_x_offset_func(gconstpointer a,
 					       gconstpointer b,
 					       AgsAutomationEdit *automation_edit,
-					       gdouble x_offset);
+					       gdouble x_offset,
+					       guint line);
 
 GList* ags_automation_edit_find_first_drawn_func(AgsAutomationEdit *automation_edit,
-						 GList *automation);
+						 GList *automation,
+						 guint line);
 GList* ags_automation_edit_find_last_drawn_func(AgsAutomationEdit *automation_edit,
-						GList *automation);
+						GList *automation,
+						guint line);
 
 /*  */
 void ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit, cairo_t *cr);

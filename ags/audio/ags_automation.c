@@ -1332,7 +1332,7 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
   current_end = g_list_last(automation);
   
   length = g_list_length(automation);
-  position = (length - 1) / 2;
+  position = (guint) floor((double) (length - 1) / 2.0);
 
   current = g_list_nth(current_start,
 		       position);
@@ -1366,8 +1366,7 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
 		 NULL);
     
     if(current_line == line &&
-       g_type_is_a(current_channel_type,
-		   channel_type) &&
+       current_channel_type == channel_type &&
        !g_strcmp0(current_control_name,
 		  control_name)){
       g_free(current_control_name);
@@ -1431,8 +1430,7 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
 		 NULL);
     
     if(current_line == line &&
-       g_type_is_a(current_channel_type,
-		   channel_type) &&
+       current_channel_type == channel_type &&
        !g_strcmp0(current_control_name,
 		  control_name)){
       g_free(current_control_name);
@@ -1498,8 +1496,7 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
 		 NULL);
     
     if(current_line == line &&
-       g_type_is_a(current_channel_type,
-		   channel_type) &&
+       current_channel_type == channel_type &&
        !g_strcmp0(current_control_name,
 		  control_name)){
       if(timestamp == NULL){
@@ -1524,8 +1521,7 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
 	if(current_x >= x &&
 	   current_x < x + AGS_AUTOMATION_DEFAULT_OFFSET &&
 	   current_line == line &&
-	   g_type_is_a(current_channel_type,
-		       channel_type) &&
+	   current_channel_type == channel_type &&
 	   !g_strcmp0(current_control_name,
 		      control_name)){
 	  retval = current;
@@ -1540,8 +1536,7 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
 	if(current_x >= x &&
 	   current_x < x + AGS_AUTOMATION_DEFAULT_DURATION &&
 	   current_line == line &&
-	   g_type_is_a(current_channel_type,
-		       channel_type) &&
+	   current_channel_type == channel_type &&
 	   !g_strcmp0(current_control_name,
 		      control_name)){
 	  retval = current;
@@ -1573,7 +1568,7 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
 
     length = g_list_position(current_start,
 			     current_end) + 1;
-    position = (length - 1) / 2;
+    position = (guint) floor((double) (length - 1) / 2.0);
 
     current = g_list_nth(current_start,
 			 position);
@@ -1601,6 +1596,9 @@ ags_automation_sort_func(gconstpointer a,
 
   gchar *control_name_a, *control_name_b;
   
+  GType line_a_channel_type;
+  GType line_b_channel_type;
+
   guint64 offset_a, offset_b;
   guint line_a, line_b;
   gint retval;
@@ -1620,11 +1618,15 @@ ags_automation_sort_func(gconstpointer a,
 	       "control-name", &control_name_a,
 	       NULL);
 
+  line_a_channel_type = ags_automation_get_channel_type(a);
+
   g_object_get(b,
 	       "timestamp", &timestamp_b,
 	       "line", &line_b,
 	       "control-name", &control_name_b,
 	       NULL);
+
+  line_b_channel_type = ags_automation_get_channel_type(b);
 
   offset_a = ags_timestamp_get_ags_offset(timestamp_a);
   offset_b = ags_timestamp_get_ags_offset(timestamp_b);
@@ -1636,12 +1638,16 @@ ags_automation_sort_func(gconstpointer a,
   
   if(offset_a == offset_b){
     if(line_a == line_b){
-      retval = g_strcmp0(control_name_a, control_name_b);
+      if(line_a_channel_type == line_b_channel_type){
+	retval = g_strcmp0(control_name_a, control_name_b);
+      }else{
+	retval = (line_a_channel_type < line_b_channel_type) ? -1: 1;
+      }
     }else{
-      retval = (line_a > line_b) ? -1: 1;
+      retval = (line_a < line_b) ? -1: 1;
     }
   }else{
-    retval = (offset_a > offset_b) ? -1: 1;
+    retval = (offset_a < offset_b) ? -1: 1;
   }
 
   g_free(control_name_a);
