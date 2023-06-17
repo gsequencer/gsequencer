@@ -2850,92 +2850,70 @@ ags_tempo_edit_draw_tempo(AgsTempoEdit *tempo_edit, cairo_t *cr)
     
     tempo = AGS_PROGRAM(list_program->data);
 
-    g_object_get(tempo,
+    current_timestamp = NULL;
+
+    control_name = NULL;
+
+    g_object_get(list_marker->data,
 		 "timestamp", &current_timestamp,
+		 "control-name", &control_name,
 		 NULL);
 
-    g_object_unref(current_timestamp);
-    
-    if(ags_timestamp_get_ags_offset(current_timestamp) > x1){
-      break;
+    start_list_marker = NULL;
+
+    if((!g_strcmp0(control_name,
+		   "tempo")) == FALSE){
+      goto ags_tempo_edit_draw_tempo_INNER_LOOP_END;
     }
 
-    if(ags_timestamp_get_ags_offset(current_timestamp) + AGS_PROGRAM_DEFAULT_OFFSET < x0){
-      list_program = list_program->next;
-
-      continue;
+    if(ags_timestamp_get_ags_offset(current_timestamp) >= x1){
+      goto ags_tempo_edit_draw_tempo_INNER_LOOP_END;
     }
 
-    g_object_get(tempo,
-		 "marker", &start_list_marker,
-		 NULL);
+    list_marker =
+      start_list_marker = ags_program_get_marker(tempo);
+
+    while(list_marker != NULL){
+      GList *start_next_marker;
+      GList *next_link;
+
+      start_next_marker = NULL;
+      next_link = list_marker->next;
+
+      if(next_link == NULL){
+	GList *tmp_list;
+
+	tmp_list = list_program->next;
+
+	while(tmp_list != NULL){
+	  control_name = NULL;
       
-    list_marker = start_list_marker;
-
-    while(list_marker != NULL){	
-      current_timestamp = NULL;
-
-      control_name = NULL;
-
-      g_object_get(list_marker->data,
-		   "timestamp", &current_timestamp,
-		   "control-name", &control_name,
-		   NULL);
-
-      start_list_marker = NULL;
-
-      if((!g_strcmp0(control_name,
-		     "tempo")) == FALSE){
-	goto ags_tempo_edit_draw_tempo_INNER_LOOP_END;
-      }
-
-      if(ags_timestamp_get_ags_offset(current_timestamp) >= x1){
-	goto ags_tempo_edit_draw_tempo_INNER_LOOP_END;
-      }
-      
-      list_marker =
-	start_list_marker = ags_program_get_marker(tempo);
-
-      while(list_marker != NULL){
-	GList *start_next_marker;
-	GList *next_link;
-
-	start_next_marker = NULL;
-	next_link = list_marker->next;
-
-	if(next_link == NULL){
-	  GList *tmp_list;
-
-	  tmp_list = list_program->next;
-
-	  while(tmp_list != NULL){
-	    control_name = NULL;
-      
-	    g_object_get(tmp_list->data,
-			 "control-name", &control_name,
-			 NULL);
+	  g_object_get(tmp_list->data,
+		       "control-name", &control_name,
+		       NULL);
 	    
-	    if((!g_strcmp0(control_name,
-			   "tempo"))){
-	      goto ags_tempo_edit_draw_tempo_FIND_FIRST_NEXT_LINK_END;
-	    }
-	    
-	    tmp_list = tmp_list->next;
+	  if((!g_strcmp0(control_name,
+			 "tempo"))){
+	    goto ags_tempo_edit_draw_tempo_FIND_FIRST_NEXT_LINK_END;
 	  }
+	    
+	  tmp_list = tmp_list->next;
+	}
 
-	ags_tempo_edit_draw_tempo_FIND_FIRST_NEXT_LINK_END:
+      ags_tempo_edit_draw_tempo_FIND_FIRST_NEXT_LINK_END:
 	  
-	  if(tmp_list != NULL){
-	    start_next_marker = ags_program_get_marker(tmp_list->data);
-	    next_link = start_next_marker;
-	  }
+	if(tmp_list != NULL){
+	  start_next_marker = ags_program_get_marker(tmp_list->data);
+	  next_link = start_next_marker;
 	}
       }
+    }            
 
 #if 0
-      g_message("found marker[%d]", AGS_MARKER(list_marker->data)->x);
+    g_message("found marker[%d]", AGS_MARKER(list_marker->data)->x);
 #endif
-      
+
+    while(list_marker != NULL){	
       if(list_marker->data != first_match &&
 	 list_marker->data != last_match &&
 	 next_link != NULL){
@@ -2950,6 +2928,8 @@ ags_tempo_edit_draw_tempo(AgsTempoEdit *tempo_edit, cairo_t *cr)
     }
 
   ags_tempo_edit_draw_tempo_INNER_LOOP_END:
+
+    g_object_unref(current_timestamp);
 
     g_list_free_full(start_list_marker,
 		     g_object_unref);
