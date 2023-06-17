@@ -1,6 +1,12 @@
 ags (5.3.9)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags_tempo_edit_draw_tempo() first, last and intersection drawing
+	* improved ags_automation_edit_compare_x_offset_func()
+	* improved avoid duplicates in AgsAutomation modified ags_automation_add()
+	* improved avoid duplicates in AgsProgram modified ags_tempo_add()
+	* improved calling property from output/input soundcard setter in ags_recall.c
+	* improved ags_program_sort_func() respect control_name field while sorting using g_strcmp0()
 	* minor improvements
 
 ags (5.3.8)

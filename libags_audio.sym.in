@@ -2070,6 +2070,8 @@ ags_program_sort_func
 ags_program_add
 ags_program_get_audio
 ags_program_set_audio
+ags_program_get_timestamp
+ags_program_set_timestamp
 ags_program_get_control_name
 ags_program_set_control_name
 ags_program_get_port

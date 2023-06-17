@@ -156,6 +156,18 @@ GType ags_tempo_edit_get_type(void);
 void ags_tempo_edit_reset_vscrollbar(AgsTempoEdit *tempo_edit);
 void ags_tempo_edit_reset_hscrollbar(AgsTempoEdit *tempo_edit);
 
+/*  */
+gint ags_tempo_edit_compare_x_offset_func(gconstpointer a,
+					  gconstpointer b,
+					  AgsTempoEdit *tempo_edit,
+					  gdouble x_offset);
+
+GList* ags_tempo_edit_find_first_drawn_func(AgsTempoEdit *tempo_edit,
+					    GList *tempo);
+GList* ags_tempo_edit_find_last_drawn_func(AgsTempoEdit *tempo_edit,
+					   GList *tempo);
+
+/*  */
 void ags_tempo_edit_draw_segment(AgsTempoEdit *tempo_edit, cairo_t *cr);
 void ags_tempo_edit_draw_position(AgsTempoEdit *tempo_edit, cairo_t *cr);
 
@@ -170,6 +182,7 @@ void ags_tempo_edit_draw_tempo(AgsTempoEdit *tempo_edit, cairo_t *cr);
 
 void ags_tempo_edit_draw(AgsTempoEdit *tempo_edit, cairo_t *cr);
 
+/*  */
 AgsTempoEdit* ags_tempo_edit_new();
 
 G_END_DECLS
