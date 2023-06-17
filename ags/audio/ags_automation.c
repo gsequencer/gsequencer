@@ -1603,29 +1603,16 @@ ags_automation_sort_func(gconstpointer a,
   guint line_a, line_b;
   gint retval;
   
-  timestamp_a = NULL;
-  timestamp_b = NULL;
+  timestamp_a = ags_automation_get_timestamp(a);
+  timestamp_b = ags_automation_get_timestamp(b);
 
-  control_name_a = NULL;
-  control_name_b = NULL;
+  control_name_a = ags_automation_get_control_name(a);
+  control_name_b = ags_automation_get_control_name(b);
 
-  line_a = 0;
-  line_b = 0;
-  
-  g_object_get(a,
-	       "timestamp", &timestamp_a,
-	       "line", &line_a,
-	       "control-name", &control_name_a,
-	       NULL);
+  line_a = ags_automation_get_line(a);
+  line_b = ags_automation_get_line(b);
 
   line_a_channel_type = ags_automation_get_channel_type(a);
-
-  g_object_get(b,
-	       "timestamp", &timestamp_b,
-	       "line", &line_b,
-	       "control-name", &control_name_b,
-	       NULL);
-
   line_b_channel_type = ags_automation_get_channel_type(b);
 
   offset_a = ags_timestamp_get_ags_offset(timestamp_a);
@@ -1670,14 +1657,38 @@ ags_automation_sort_func(gconstpointer a,
 GList*
 ags_automation_add(GList *automation,
 		   AgsAutomation *new_automation)
-{  
+{
+  AgsTimestamp *timestamp;
+
+  GType channel_type;
+  
+  gchar *control_name;
+  
+  gint line;
+  
   if(!AGS_IS_AUTOMATION(new_automation)){
     return(automation);
   }
 
-  automation = g_list_insert_sorted(automation,
-				    new_automation,
-				    ags_automation_sort_func);
+  timestamp = ags_automation_get_timestamp(new_automation);
+
+  control_name = ags_automation_get_control_name(new_automation);
+
+  channel_type = ags_automation_get_channel_type(new_automation);
+
+  line = ags_automation_get_line(new_automation);
+
+  if(ags_automation_find_near_timestamp_extended(automation, line,
+						 channel_type, control_name,
+						 timestamp) == NULL){
+    automation = g_list_insert_sorted(automation,
+				      new_automation,
+				      ags_automation_sort_func);
+  }
+  
+  g_object_unref(timestamp);
+  
+  g_free(control_name);
   
   return(automation);
 }

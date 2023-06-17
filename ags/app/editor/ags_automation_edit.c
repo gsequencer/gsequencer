@@ -2463,12 +2463,22 @@ ags_automation_edit_compare_x_offset_func(gconstpointer a,
 					  gconstpointer b,
 					  AgsAutomationEdit *automation_edit,
 					  gdouble x_offset,
-					  guint line)
+					  guint line,
+					  GType channel_type,
+					  gchar *control_name)
 {
   AgsTimestamp *timestamp_a, *timestamp_b;
+  
+  GType line_a_channel_type;
+  GType line_b_channel_type;
+
+  gchar *line_a_control_name;
+  gchar *line_b_control_name;
 
   guint64 current_offset;
   guint64 a_offset, b_offset;
+  gint line_a, line_b;
+
   gint retval;
   
   timestamp_a = ags_automation_get_timestamp(a);
@@ -2479,145 +2489,68 @@ ags_automation_edit_compare_x_offset_func(gconstpointer a,
   a_offset = ags_timestamp_get_ags_offset(timestamp_a);
   b_offset = ags_timestamp_get_ags_offset(timestamp_b);
 
+  g_object_unref(timestamp_a);
+  g_object_unref(timestamp_b);
+  
+  line_a = ags_automation_get_line(a);
+  line_b = ags_automation_get_line(b);
+	
+  line_a_control_name = ags_automation_get_control_name(a);
+  line_b_control_name = ags_automation_get_control_name(b);
+
+  line_a_channel_type = ags_automation_get_channel_type(a);
+  line_b_channel_type = ags_automation_get_channel_type(b);
+
   retval = 0;
   
   if(a_offset == current_offset){
     if(b_offset == current_offset){
-      gint line_a, line_b;
-
-      line_a = ags_automation_get_line(a);
-      line_b = ags_automation_get_line(b);
-
-      if(line_a == line_b){
-	gchar *line_a_control_name;
-	gchar *line_b_control_name;
-      
-	GType line_a_channel_type;
-	GType line_b_channel_type;
-
-	if(line != line_a){
-	  return((line_a < line) ? -1: 1);
-	}
-	
-	line_a_control_name = ags_automation_get_control_name(a);
-	line_b_control_name = ags_automation_get_control_name(b);
-
-	line_a_channel_type = ags_automation_get_channel_type(a);
-	line_b_channel_type = ags_automation_get_channel_type(b);
-
-	if(line_a_channel_type == line_b_channel_type){
-	  retval = g_strcmp0(line_a_control_name, line_b_control_name);
+      if(line_a == line){
+	if(line_b == line){
+	  if(line_a_channel_type == channel_type){
+	    if(line_b_channel_type == channel_type){
+	      if(g_strcmp0(line_b_control_name, control_name) > 0){
+		retval = g_strcmp0(line_a_control_name, control_name);
+	      }else{
+		retval = 1;
+	      }
+	    }else{
+	      retval = -1;
+	    }
+	  }else if(line_b_channel_type == channel_type){
+	    retval = 1;
+	  }else{
+	    if(line_b_channel_type > channel_type){
+	      retval = (line_a_channel_type < channel_type) ? -1: 1;
+	    }else{
+	      retval = 1;
+	    }
+	  }
 	}else{
-	  retval = (line_a_channel_type < line_b_channel_type) ? -1: 1;
+	  retval = -1;
 	}
       }else{
-	gint line_diff_a, line_diff_b;
-
-	line_diff_a = (line_a > line) ? (line_a - line): (line - line_a);
-	line_diff_b = (line_b > line) ? (line_b - line): (line - line_b);
-	
-	retval = (line_diff_a < line_diff_b) ? -1: 1;
+	if(line_b > line){
+	  retval = (line_a < line) ? -1: 1;
+	}else{
+	  retval = 1;
+	}
       }
     }else{
-      guint64 a_diff, b_diff;
-
-      gint one_factor;
-
-      one_factor = 1;
-      
-      if(a_offset < current_offset){
-	one_factor = -1;
-	a_diff = current_offset - a_offset;
-      }else{
-	a_diff = a_offset - current_offset;
-      }
-
-      if(b_offset < current_offset){
-	if(one_factor == -1){
-	  retval = (a_offset < b_offset) ? -1: 1;
-	}else{
-	  b_diff = current_offset - b_offset;
-	  
-	  retval = (a_diff < b_diff) ? -1: 1;
-	}
-      }else{
-	if(one_factor == -1){
-	  b_diff = current_offset - b_offset;
-
-	  retval = (a_diff < b_diff) ? -1: 1;
-	}else{
-	  retval = (a_offset < b_offset) ? -1: 1;
-	}
-      }
+      retval = -1;
     }
   }else if(b_offset == current_offset){
-    gint line_a, line_b;
-
-    line_a = ags_automation_get_line(a);
-    line_b = ags_automation_get_line(b);
-
-    if(line_a == line_b){
-      gchar *line_a_control_name;
-      gchar *line_b_control_name;
-      
-      GType line_a_channel_type;
-      GType line_b_channel_type;
-
-      if(line != line_a){
-	return((line_a < line) ? -1: 1);
-      }
-
-      line_a_control_name = ags_automation_get_control_name(a);
-      line_b_control_name = ags_automation_get_control_name(b);
-
-      line_a_channel_type = ags_automation_get_channel_type(a);
-      line_b_channel_type = ags_automation_get_channel_type(b);
-
-      if(line_a_channel_type == line_b_channel_type){
-	retval = g_strcmp0(line_a_control_name, line_b_control_name);
-      }else{
-	retval = (line_a_channel_type < line_b_channel_type) ? -1: 1;
-      }
-    }else{
-      gint line_diff_a, line_diff_b;
-
-      line_diff_a = (line_a > line) ? (line_a - line): (line - line_a);
-      line_diff_b = (line_b > line) ? (line_b - line): (line - line_b);
-	
-      retval = (line_diff_a < line_diff_b) ? -1: 1;
-    }
+    retval = 1;
   }else{
-    guint64 a_diff, b_diff;
-
-    gint one_factor;
-
-    one_factor = 1;
-      
-    if(a_offset < current_offset){
-      one_factor = -1;
-      a_diff = current_offset - a_offset;
+    if(b_offset > current_offset){
+      retval = (a_offset < current_offset) ? -1: 1;
     }else{
-      a_diff = a_offset - current_offset;
-    }
-
-    if(b_offset < current_offset){
-      if(one_factor == -1){
-	retval = (a_offset < b_offset) ? -1: 1;
-      }else{
-	b_diff = current_offset - b_offset;
-
-	retval = (a_diff < b_diff) ? -1: 1;
-      }
-    }else{
-      if(one_factor == -1){
-	b_diff = current_offset - b_offset;
-
-	retval = (a_diff < b_diff) ? -1: 1;
-      }else{
-	retval = (a_offset < b_offset) ? -1: 1;
-      }
+      retval = 1;
     }
   }
+
+  g_free(line_a_control_name);
+  g_free(line_b_control_name);
   
   return(retval);
 }
@@ -2636,10 +2569,14 @@ ags_automation_edit_find_first_drawn_func(AgsAutomationEdit *automation_edit,
 
   AgsApplicationContext *application_context;
 
+  GType channel_type;
+  
   GList *automation_last;
   GList *a_list, *b_list, *c_list;
   GList *retval;
 
+  gchar *control_name;
+  
   gint automation_length;
   gint bisect_steps;
   gdouble zoom_factor;
@@ -2669,6 +2606,10 @@ ags_automation_edit_find_first_drawn_func(AgsAutomationEdit *automation_edit,
     return(automation);
   }
 
+  channel_type = automation_edit->channel_type;
+
+  control_name = automation_edit->control_name;
+  
   a_list = automation;
   b_list = g_list_nth(automation,
 		      (guint) floor((double) automation_length / 2.0));
@@ -2689,7 +2630,9 @@ ags_automation_edit_find_first_drawn_func(AgsAutomationEdit *automation_edit,
 							    b_list->data,
 							    automation_edit,
 							    x_offset,
-							    line);
+							    line,
+							    channel_type,
+							    control_name);
     }else{
       break;
     }
@@ -2707,7 +2650,9 @@ ags_automation_edit_find_first_drawn_func(AgsAutomationEdit *automation_edit,
 							    c_list->data,
 							    automation_edit,
 							    x_offset,
-							    line);
+							    line,
+							    channel_type,
+							    control_name);
     }else{
       break;
     }
@@ -2756,9 +2701,13 @@ ags_automation_edit_find_last_drawn_func(AgsAutomationEdit *automation_edit,
 
   AgsApplicationContext *application_context;
 
+  GType channel_type;
+  
   GList *automation_last;
   GList *a_list, *b_list, *c_list;
   GList *retval;
+
+  gchar *control_name;
 
   guint width;
   gint automation_length;
@@ -2792,6 +2741,10 @@ ags_automation_edit_find_last_drawn_func(AgsAutomationEdit *automation_edit,
     return(automation);
   }
 
+  channel_type = automation_edit->channel_type;
+
+  control_name = automation_edit->control_name;
+  
   a_list = automation;
   b_list = g_list_nth(automation,
 		      (guint) floor((double) automation_length / 2.0));
@@ -2812,7 +2765,9 @@ ags_automation_edit_find_last_drawn_func(AgsAutomationEdit *automation_edit,
 							    b_list->data,
 							    automation_edit,
 							    x_offset,
-							    line);
+							    line,
+							    channel_type,
+							    control_name);
     }else{
       break;
     }
@@ -2830,7 +2785,9 @@ ags_automation_edit_find_last_drawn_func(AgsAutomationEdit *automation_edit,
 							    c_list->data,
 							    automation_edit,
 							    x_offset,
-							    line);
+							    line,
+							    channel_type,
+							    control_name);
     }else{
       break;
     }
@@ -3808,7 +3765,6 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
   guint offset;
   guint line;
   gint i, i_stop;
-  gboolean first_drawn;
   
   if(!AGS_IS_AUTOMATION_EDIT(automation_edit)){
     return;
@@ -4015,12 +3971,28 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
       }
 
     ags_automation_edit_draw_automation_FIRST_MATCH:
-      
-      ags_automation_edit_draw_acceleration(automation_edit,
-					    first_match, ((next_link != NULL) ? next_link->data: NULL),
-					    cr,
-					    opacity);
 
+      line = 0;
+      channel_type = G_TYPE_NONE;
+      control_name = NULL;
+      
+      g_object_get(first_drawn->data,
+		   "line", &line,
+		   "channel-type", &channel_type,
+		   "control-name", &control_name,
+		   NULL);
+
+      if(i == line &&
+	 channel_type == automation_edit->channel_type &&
+	 !g_strcmp0(control_name,
+		    automation_edit->control_name)){
+	ags_automation_edit_draw_acceleration(automation_edit,
+					      first_match, ((next_link != NULL) ? next_link->data: NULL),
+					      cr,
+					      opacity);
+
+      }
+      
       g_list_free_full(start_next_acceleration,
 		       g_object_unref);
     }

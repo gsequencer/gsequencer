@@ -177,7 +177,9 @@ gint ags_automation_edit_compare_x_offset_func(gconstpointer a,
 					       gconstpointer b,
 					       AgsAutomationEdit *automation_edit,
 					       gdouble x_offset,
-					       guint line);
+					       guint line,
+					       GType channel_type,
+					       gchar *control_name);
 
 GList* ags_automation_edit_find_first_drawn_func(AgsAutomationEdit *automation_edit,
 						 GList *automation,
