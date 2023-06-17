@@ -2204,7 +2204,6 @@ ags_automation_set_port(AgsAutomation *automation, GObject *port)
 	       NULL);
 }
 
-
 /**
  * ags_automation_get_acceleration:
  * @automation: the #AgsAutomation

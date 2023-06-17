@@ -1029,31 +1029,37 @@ ags_program_sort_func(gconstpointer a,
 {
   AgsTimestamp *timestamp_a, *timestamp_b;
 
+  gchar *control_name_a, *control_name_b;
+
   guint offset_a, offset_b;
+  gint retval;
 
-  g_object_get(a,
-	       "timestamp", &timestamp_a,
-	       NULL);
+  timestamp_a = ags_program_get_timestamp(a);
+  timestamp_b = ags_program_get_timestamp(b);
 
-  g_object_get(b,
-	       "timestamp", &timestamp_b,
-	       NULL);
+  control_name_a = ags_program_get_control_name(a);
+  control_name_b = ags_program_get_control_name(b);
     
   offset_a = ags_timestamp_get_ags_offset(timestamp_a);
   offset_b = ags_timestamp_get_ags_offset(timestamp_b);
 
   g_object_unref(timestamp_a);
   g_object_unref(timestamp_b);
+
+  retval = 0;
     
   if(offset_a == offset_b){
-    return(0);
+    retval = g_strcmp0(control_name_a, control_name_b);
   }else if(offset_a < offset_b){
-    return(-1);
+    retval = -1;
   }else if(offset_a > offset_b){
-    return(1);
+    retval = 1;
   }
 
-  return(0);
+  g_free(control_name_a);
+  g_free(control_name_b);
+
+  return(retval);
 }
 
 /**
@@ -1178,16 +1184,76 @@ GList*
 ags_program_add(GList *program,
 		AgsProgram *new_program)
 {
+  AgsTimestamp *timestamp;
+  
+  gchar *control_name;
   
   if(!AGS_IS_PROGRAM(new_program)){
     return(program);
   }
+
+  timestamp = ags_program_get_timestamp(new_program);
+
+  control_name = ags_program_get_control_name(new_program);
   
-  program = g_list_insert_sorted(program,
-				 new_program,
-				 ags_program_sort_func);
+  if(ags_program_find_near_timestamp_extended(program,
+					      control_name,
+					      timestamp) == NULL){
+    program = g_list_insert_sorted(program,
+				   new_program,
+				   ags_program_sort_func);
+  }
+
+  g_object_unref(timestamp);
   
   return(program);
+}
+
+/**
+ * ags_program_get_control_name:
+ * @program: the #AgsProgram
+ * 
+ * Get control name.
+ * 
+ * Returns: (transfer full): the control name
+ * 
+ * Since: 5.3.9
+ */
+gchar*
+ags_program_get_control_name(AgsProgram *program)
+{
+  gchar *control_name;
+
+  if(!AGS_IS_PROGRAM(program)){
+    return(NULL);
+  }
+
+  g_object_get(program,
+	       "control-name", &control_name,
+	       NULL);
+
+  return(control_name);
+}
+
+/**
+ * ags_program_set_control_name:
+ * @program: the #AgsProgram
+ * @control_name: the control name
+ * 
+ * Set control name.
+ * 
+ * Since: 5.3.9
+ */
+void
+ags_program_set_control_name(AgsProgram *program, gchar *control_name)
+{
+  if(!AGS_IS_PROGRAM(program)){
+    return;
+  }
+
+  g_object_set(program,
+	       "control-name", control_name,
+	       NULL);
 }
 
 /**

@@ -27,6 +27,12 @@
 
 #include <gdk/gdkkeysyms.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
+#include <ags/audio/ags_program.h>
+
 #include <cairo.h>
 #include <math.h>
 
@@ -1571,6 +1577,286 @@ ags_tempo_edit_reset_hscrollbar(AgsTempoEdit *tempo_edit)
   tempo_edit->flags &= (~AGS_TEMPO_EDIT_BLOCK_RESET_HSCROLLBAR);  
 }
 
+gint
+ags_tempo_edit_compare_x_offset_func(gconstpointer a,
+				     gconstpointer b,
+				     AgsTempoEdit *tempo_edit,
+				     gdouble x_offset)
+{
+  AgsTimestamp *timestamp_a, *timestamp_b;
+
+  guint64 current_offset;
+  guint64 a_offset, b_offset;
+
+  gint retval;
+
+  timestamp_a = ags_program_get_timestamp(a);
+  timestamp_b = ags_program_get_timestamp(b);
+  
+  current_offset = (guint64) ((double) AGS_PROGRAM_DEFAULT_OFFSET * floor(x_offset / AGS_PROGRAM_DEFAULT_OFFSET));
+
+  a_offset = ags_timestamp_get_ags_offset(timestamp_a);
+  b_offset = ags_timestamp_get_ags_offset(timestamp_b);
+
+  g_object_unref(timestamp_a);
+  g_object_unref(timestamp_b);
+
+  retval = 0;
+  
+  if(a_offset == current_offset){
+    if(b_offset == current_offset){
+      retval = 0; //NOTE:JK: argh - not unique
+    }else{
+      retval = 0;
+    }
+  }else if(b_offset == current_offset){
+    retval = 1;
+  }else{
+    if(b_offset > current_offset){
+      retval = (a_offset < current_offset) ? -1: 1;
+    }else{
+      retval = 1;
+    }
+  }
+  
+  return(retval);
+}
+
+GList*
+ags_tempo_edit_find_first_drawn_func(AgsTempoEdit *tempo_edit,
+				     GList *tempo)
+{
+  AgsCompositeEditor *composite_editor;
+  AgsCompositeToolbar *composite_toolbar;
+
+  GtkAdjustment *adjustment;
+
+  AgsApplicationContext *application_context;
+  
+  GList *tempo_last;
+  GList *a_list, *b_list, *c_list;
+  GList *retval;
+  
+  gint tempo_length;
+  gint bisect_steps;
+  gdouble zoom_factor;
+  gdouble x_offset;
+  gint nth_bisect;
+  
+  application_context = ags_application_context_get_instance();
+
+  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+
+  composite_toolbar = composite_editor->toolbar;
+
+  tempo_edit = composite_editor->tempo_edit;
+
+  adjustment = gtk_scrollbar_get_adjustment(tempo_edit->hscrollbar);
+
+  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) composite_toolbar->zoom));
+  
+  x_offset = (guint64) (AGS_PROGRAM_DEFAULT_OFFSET * floor(((zoom_factor * gtk_adjustment_get_value(adjustment))) / (double) AGS_PROGRAM_DEFAULT_OFFSET));
+
+  retval = tempo;
+  
+  tempo_last = g_list_last(tempo);
+  tempo_length = g_list_length(tempo);
+
+  if(tempo == tempo_last){
+    return(tempo);
+  }
+  
+  a_list = tempo;
+  b_list = g_list_nth(tempo,
+		      (guint) floor((double) tempo_length / 2.0));
+  c_list = tempo_last;
+  
+  bisect_steps = (guint) floor((tempo_length - 1) / 2.0);
+  nth_bisect = 0;
+  
+  while(bisect_steps > 0){
+    gint cmp_val_0, cmp_val_1;
+
+    cmp_val_0 = 0;
+    cmp_val_1 = 0;
+    
+    if(a_list != NULL &&
+       b_list != NULL){
+      cmp_val_0 = ags_tempo_edit_compare_x_offset_func(a_list->data,
+						       b_list->data,
+						       tempo_edit,
+						       x_offset);
+    }else{
+      break;
+    }
+
+    retval = a_list;
+    
+    if(cmp_val_0 == 0 ||
+       cmp_val_0 < 0){
+      retval = b_list;
+    }
+    
+    if(b_list != NULL &&
+       c_list != NULL){
+      cmp_val_1 = ags_tempo_edit_compare_x_offset_func(b_list->data,
+						       c_list->data,
+						       tempo_edit,
+						       x_offset);
+    }else{
+      break;
+    }
+
+    if(cmp_val_1 == 0 ||
+       cmp_val_1 < 0){
+      retval = c_list;
+    }
+
+    nth_bisect++;
+
+    if(retval == a_list){
+      tempo_length = g_list_position(a_list, b_list) + 1;
+      bisect_steps = (gint) floor((double) (tempo_length - 1) / 2.0);
+      
+      c_list = b_list->prev;
+
+      b_list = g_list_nth(a_list,
+			  bisect_steps);
+    }else if(retval == b_list){
+      tempo_length = g_list_position(a_list, b_list) + 1;
+      bisect_steps = (gint) floor((double) (tempo_length - 1) / 2.0);
+
+      a_list = b_list;
+
+      b_list = g_list_nth(a_list,
+			  bisect_steps);
+    }else if(retval == c_list){
+      break;
+    }
+  }
+  
+  return(retval);
+}
+
+GList*
+ags_tempo_edit_find_last_drawn_func(AgsTempoEdit *tempo_edit,
+				    GList *tempo)
+{
+  AgsCompositeEditor *composite_editor;
+  AgsCompositeToolbar *composite_toolbar;
+
+  GtkAdjustment *adjustment;
+
+  AgsApplicationContext *application_context;
+  
+  GList *tempo_last;
+  GList *a_list, *b_list, *c_list;
+  GList *retval;
+
+  guint width;
+  gint tempo_length;
+  gint bisect_steps;
+  gdouble zoom_factor;
+  gdouble x_offset;
+  gint nth_bisect;
+  
+  application_context = ags_application_context_get_instance();
+
+  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+
+  composite_toolbar = composite_editor->toolbar;
+
+  tempo_edit = composite_editor->tempo_edit;
+
+  adjustment = gtk_scrollbar_get_adjustment(tempo_edit->hscrollbar);
+
+  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) composite_toolbar->zoom));
+  
+  width = gtk_widget_get_width(tempo_edit->drawing_area);
+
+  x_offset = (guint64) (AGS_PROGRAM_DEFAULT_OFFSET * floor((zoom_factor * (gtk_adjustment_get_value(adjustment) + (double) width)) / (double) AGS_PROGRAM_DEFAULT_OFFSET));
+
+  retval = tempo;
+  
+  tempo_last = g_list_last(tempo);
+  tempo_length = g_list_length(tempo);
+
+  if(tempo == tempo_last){
+    return(tempo);
+  }
+  
+  a_list = tempo;
+  b_list = g_list_nth(tempo,
+		      (guint) floor((double) tempo_length / 2.0));
+  c_list = tempo_last;
+  
+  bisect_steps = (guint) floor((tempo_length - 1) / 2.0);
+  nth_bisect = 0;
+  
+  while(bisect_steps > 0){
+    gint cmp_val_0, cmp_val_1;
+
+    cmp_val_0 = 0;
+    cmp_val_1 = 0;
+    
+    if(a_list != NULL &&
+       b_list != NULL){
+      cmp_val_0 = ags_tempo_edit_compare_x_offset_func(a_list->data,
+						       b_list->data,
+						       tempo_edit,
+						       x_offset);
+    }else{
+      break;
+    }
+
+    retval = a_list;
+    
+    if(cmp_val_0 == 0 ||
+       cmp_val_0 < 0){
+      retval = b_list;
+    }
+    
+    if(b_list != NULL &&
+       c_list != NULL){
+      cmp_val_1 = ags_tempo_edit_compare_x_offset_func(b_list->data,
+						       c_list->data,
+						       tempo_edit,
+						       x_offset);
+    }else{
+      break;
+    }
+
+    if(cmp_val_1 == 0 ||
+       cmp_val_1 < 0){
+      retval = c_list;
+    }
+
+    nth_bisect++;
+
+    if(retval == a_list){
+      tempo_length = g_list_position(a_list, b_list) + 1;
+      bisect_steps = (gint) floor((double) (tempo_length - 1) / 2.0);
+      
+      c_list = b_list->prev;
+
+      b_list = g_list_nth(a_list,
+			  bisect_steps);
+    }else if(retval == b_list){
+      tempo_length = g_list_position(a_list, b_list) + 1;
+      bisect_steps = (gint) floor((double) (tempo_length - 1) / 2.0);
+
+      a_list = b_list;
+
+      b_list = g_list_nth(a_list,
+			  bisect_steps);
+    }else if(retval == c_list){
+      break;
+    }
+  }
+  
+  return(retval);
+}
+
 void
 ags_tempo_edit_draw_segment(AgsTempoEdit *tempo_edit, cairo_t *cr)
 {
@@ -2379,6 +2665,9 @@ ags_tempo_edit_draw_tempo(AgsTempoEdit *tempo_edit, cairo_t *cr)
   AgsCompositeEditor *composite_editor;
   AgsCompositeToolbar *composite_toolbar;
 
+  AgsMarker *first_match;
+  AgsMarker *last_match;
+
   AgsTimestamp *timestamp;
   AgsTimestamp *current_timestamp;    
   
@@ -2386,10 +2675,13 @@ ags_tempo_edit_draw_tempo(AgsTempoEdit *tempo_edit, cairo_t *cr)
 
   GtkAllocation allocation;
 
-  GType channel_type;
-
   GList *start_list_program, *list_program;
   GList *start_list_marker, *list_marker;
+    
+  GList *first_drawn;
+  GList *last_drawn;
+  GList *first_start_marker, *first_marker;
+  GList *last_start_marker, *last_marker;
 
   gchar *control_name;
 
@@ -2431,13 +2723,131 @@ ags_tempo_edit_draw_tempo(AgsTempoEdit *tempo_edit, cairo_t *cr)
   list_program =
     start_list_program = ags_sound_provider_get_program(AGS_SOUND_PROVIDER(application_context));
 
+    
+  first_drawn = ags_tempo_edit_find_first_drawn_func(tempo_edit,
+						     start_list_program);
+
+  last_drawn = ags_tempo_edit_find_last_drawn_func(tempo_edit,
+						   start_list_program);
+    
+  first_match = NULL;
+    
+  first_marker =
+    first_start_marker = NULL;
+    
+  if(first_drawn != NULL){
+    first_marker =
+      first_start_marker = ags_program_get_marker(first_drawn->data);
+  }
+
+  if(first_marker != NULL){
+    first_match = first_marker->data;
+  }
+    
+  while(first_marker != NULL){
+    if(ags_marker_get_x(first_marker->data) >= x0){
+      goto ags_tempo_edit_draw_tempo_LOOP_FIRST_END;
+    }
+      
+    first_match = first_marker->data;
+
+    first_marker = first_marker->next;
+  }
+
+ ags_tempo_edit_draw_tempo_LOOP_FIRST_END:
+
+  if(first_marker != NULL){
+    first_marker = first_marker->next;
+  }
+    
+  last_match = NULL;
+    
+  last_marker =
+    last_start_marker = NULL;
+
+  if(last_drawn != NULL){
+    last_marker =
+      last_start_marker = ags_program_get_marker(last_drawn->data);
+  }
+
+  if(last_marker != NULL){
+    last_match = last_marker->data;
+  }
+    
+  while(last_marker != NULL){
+    if(ags_marker_get_x(last_marker->data) >= x1){
+      goto ags_tempo_edit_draw_tempo_LOOP_LAST_END;
+    }
+      
+    last_match = last_marker->data;
+
+    last_marker = last_marker->next;
+  }
+
+ ags_tempo_edit_draw_tempo_LOOP_LAST_END:
+
+  if(first_match != NULL &&
+     first_match != last_match){
+    GList *start_next_marker;
+    GList *next_link;
+
+    next_link = first_marker;
+    start_next_marker = NULL;
+      
+    if(next_link == NULL &&
+       first_drawn != NULL){
+      GList *tmp_list;
+
+      tmp_list = first_drawn->next;
+
+      while(tmp_list != NULL){
+	control_name = NULL;
+      
+	g_object_get(tmp_list->data,
+		     "control-name", &control_name,
+		     NULL);
+	    
+	if((!g_strcmp0(control_name,
+		       "tempo"))){
+	  start_next_marker = ags_program_get_marker(tmp_list->data);
+	  next_link = start_next_marker;
+
+	  goto ags_tempo_edit_draw_tempo_FIRST_MATCH;
+	}
+	    
+	tmp_list = tmp_list->next;
+      }
+    }
+
+  ags_tempo_edit_draw_tempo_FIRST_MATCH:
+
+    control_name = NULL;
+      
+    g_object_get(first_drawn->data,
+		 "control-name", &control_name,
+		 NULL);
+
+    if(!g_strcmp0(control_name,
+		  "tempo")){
+      ags_tempo_edit_draw_marker(tempo_edit,
+				 first_match, ((next_link != NULL) ? next_link->data: NULL),
+				 cr,
+				 opacity);
+
+    }
+      
+    g_list_free_full(start_next_marker,
+		     g_object_unref);
+  }
+  
   while((list_program = ags_program_find_near_timestamp_extended(list_program,
 								 "tempo",
 								 timestamp)) != NULL){
     AgsProgram *tempo;
 
     GList *start_list_marker, *list_marker;
-
+    GList *next_link;
+    
     tempo = AGS_PROGRAM(list_program->data);
 
     g_object_get(tempo,
@@ -2462,21 +2872,133 @@ ags_tempo_edit_draw_tempo(AgsTempoEdit *tempo_edit, cairo_t *cr)
       
     list_marker = start_list_marker;
 
-    while(list_marker != NULL){
-      ags_tempo_edit_draw_marker(tempo_edit,
-				 list_marker->data, ((list_marker->next != NULL) ? list_marker->next->data: NULL),
-				 cr,
-				 opacity);
+    while(list_marker != NULL){	
+      current_timestamp = NULL;
 
+      control_name = NULL;
+
+      g_object_get(list_marker->data,
+		   "timestamp", &current_timestamp,
+		   "control-name", &control_name,
+		   NULL);
+
+      start_list_marker = NULL;
+
+      if((!g_strcmp0(control_name,
+		     "tempo")) == FALSE){
+	goto ags_tempo_edit_draw_tempo_INNER_LOOP_END;
+      }
+
+      if(ags_timestamp_get_ags_offset(current_timestamp) >= x1){
+	goto ags_tempo_edit_draw_tempo_INNER_LOOP_END;
+      }
+      
+      list_marker =
+	start_list_marker = ags_program_get_marker(tempo);
+
+      while(list_marker != NULL){
+	GList *start_next_marker;
+	GList *next_link;
+
+	start_next_marker = NULL;
+	next_link = list_marker->next;
+
+	if(next_link == NULL){
+	  GList *tmp_list;
+
+	  tmp_list = list_program->next;
+
+	  while(tmp_list != NULL){
+	    control_name = NULL;
+      
+	    g_object_get(tmp_list->data,
+			 "control-name", &control_name,
+			 NULL);
+	    
+	    if((!g_strcmp0(control_name,
+			   "tempo"))){
+	      goto ags_tempo_edit_draw_tempo_FIND_FIRST_NEXT_LINK_END;
+	    }
+	    
+	    tmp_list = tmp_list->next;
+	  }
+
+	ags_tempo_edit_draw_tempo_FIND_FIRST_NEXT_LINK_END:
+	  
+	  if(tmp_list != NULL){
+	    start_next_marker = ags_program_get_marker(tmp_list->data);
+	    next_link = start_next_marker;
+	  }
+	}
+      }
+
+#if 0
+      g_message("found marker[%d]", AGS_MARKER(list_marker->data)->x);
+#endif
+      
+      if(list_marker->data != first_match &&
+	 list_marker->data != last_match &&
+	 next_link != NULL){
+	ags_tempo_edit_draw_marker(tempo_edit,
+				   list_marker->data, ((list_marker->next != NULL) ? list_marker->next->data: NULL),
+				   cr,
+				   opacity);
+      }
+      
       /* iterate */
       list_marker = list_marker->next;
     }
+
+  ags_tempo_edit_draw_tempo_INNER_LOOP_END:
 
     g_list_free_full(start_list_marker,
 		     g_object_unref);
       
     /* iterate */
     list_program = list_program->next;
+  }
+
+  if(last_match != NULL){
+    GList *start_next_marker;
+    GList *next_link;
+
+    next_link = last_marker;
+    start_next_marker = NULL;
+      
+    if(next_link == NULL &&
+       list_program != NULL){
+      GList *tmp_list;
+
+      tmp_list = list_program->next;
+
+      while(tmp_list != NULL){
+	control_name = NULL;
+      
+	g_object_get(tmp_list->data,
+		     "control-name", &control_name,
+		     NULL);
+	    
+	if(!g_strcmp0(control_name,
+		      "tempo")){
+	  start_next_marker = ags_program_get_marker(tmp_list->data);
+	  next_link = start_next_marker;
+
+	  goto ags_tempo_edit_draw_tempo_LAST_MATCH;
+	}
+	    
+	tmp_list = tmp_list->next;
+      }
+    }
+      
+  ags_tempo_edit_draw_tempo_LAST_MATCH:
+      
+    ags_tempo_edit_draw_marker(tempo_edit,
+			       last_match, ((next_link != NULL) ? next_link->data: NULL),
+			       cr,
+			       opacity);
+
+    g_list_free_full(start_next_marker,
+		     g_object_unref);
   }
   
   g_list_free_full(start_list_program,

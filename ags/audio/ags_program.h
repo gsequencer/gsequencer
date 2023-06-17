@@ -124,6 +124,10 @@ GObject* ags_program_get_audio(AgsProgram *program);
 void ags_program_set_audio(AgsProgram *program,
 			   GObject *audio);
 
+AgsTimestamp* ags_program_get_timestamp(AgsProgram *program);
+void ags_program_set_timestamp(AgsProgram *program,
+			       AgsTimestamp *timestamp);
+
 gchar* ags_program_get_control_name(AgsProgram *program);
 void ags_program_set_control_name(AgsProgram *program,
 				  gchar *control_name);
