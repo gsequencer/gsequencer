@@ -41,9 +41,9 @@ typedef struct _AgsOscFrontControllerClass AgsOscFrontControllerClass;
 
 /**
  * AgsOscFrontControllerFlags:
- * AGS_OSC_FRONT_CONTROLLER_DELEGATE_STARTED:
- * AGS_OSC_FRONT_CONTROLLER_DELEGATE_RUNNING:
- * AGS_OSC_FRONT_CONTROLLER_DELEGATE_TERMINATING:
+ * @AGS_OSC_FRONT_CONTROLLER_DELEGATE_STARTED: delegate started
+ * @AGS_OSC_FRONT_CONTROLLER_DELEGATE_RUNNING: delegate running
+ * @AGS_OSC_FRONT_CONTROLLER_DELEGATE_TERMINATING: delegate terminating
  *
  * Enum values to control the behavior or indicate internal state of #AgsOscFrontController by
  * enable/disable as flags. 

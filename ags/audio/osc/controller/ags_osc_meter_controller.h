@@ -48,6 +48,15 @@ typedef struct _AgsOscMeterController AgsOscMeterController;
 typedef struct _AgsOscMeterControllerClass AgsOscMeterControllerClass;
 typedef struct _AgsOscMeterControllerMonitor AgsOscMeterControllerMonitor;
 
+/**
+ * AgsOscMeterControllerFlags:
+ * @AGS_OSC_METER_CONTROLLER_MONITOR_STARTED: monitor started
+ * @AGS_OSC_METER_CONTROLLER_MONITOR_RUNNING: monitor running
+ * @AGS_OSC_METER_CONTROLLER_MONITOR_TERMINATING: monitor terminating
+ *
+ * Enum values to control the behavior or indicate internal state of #AgsOscMeterController by
+ * enable/disable as flags. 
+ */
 typedef enum{
   AGS_OSC_METER_CONTROLLER_MONITOR_STARTED        = 1,
   AGS_OSC_METER_CONTROLLER_MONITOR_RUNNING        = 1 <<  1,

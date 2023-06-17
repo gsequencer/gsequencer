@@ -139,9 +139,9 @@ ags_osc_front_controller_flags_get_type()
 
   if(g_once_init_enter (&g_flags_type_id__volatile)){
     static const GFlagsValue values[] = {
-      { AGS_OSC_FRONT_CONTROLLER_DELEGATE_STARTED, "AGS_OSC_FRONT_CONTROLLER_DELEGATE_STARTED", "osc_front_controller-delegate-started" },
-      { AGS_OSC_FRONT_CONTROLLER_DELEGATE_RUNNING, "AGS_OSC_FRONT_CONTROLLER_DELEGATE_RUNNING", "osc_front_controller-delegate-running" },
-      { AGS_OSC_FRONT_CONTROLLER_DELEGATE_TERMINATING, "AGS_OSC_FRONT_CONTROLLER_DELEGATE_TERMINATING", "osc_front_controller-delegate-terminating" },
+      { AGS_OSC_FRONT_CONTROLLER_DELEGATE_STARTED, "AGS_OSC_FRONT_CONTROLLER_DELEGATE_STARTED", "osc-front-controller-delegate-started" },
+      { AGS_OSC_FRONT_CONTROLLER_DELEGATE_RUNNING, "AGS_OSC_FRONT_CONTROLLER_DELEGATE_RUNNING", "osc-front-controller-delegate-running" },
+      { AGS_OSC_FRONT_CONTROLLER_DELEGATE_TERMINATING, "AGS_OSC_FRONT_CONTROLLER_DELEGATE_TERMINATING", "osc-front-controller-delegate-terminating" },
       { 0, NULL, NULL }
     };
 
