@@ -279,7 +279,6 @@ ags_midi_preferences_reset(AgsApplicable *applicable)
   while(list != NULL){
     ags_midi_preferences_remove_sequencer_editor(midi_preferences,
 						 list->data);
-    g_object_run_dispose(list->data);
     
     list = list->next;
   }
@@ -298,8 +297,8 @@ ags_midi_preferences_reset(AgsApplicable *applicable)
     sequencer_editor->sequencer_thread = (GObject *) ags_sequencer_thread_find_sequencer((AgsSequencerThread *) sequencer_thread,
 											 list->data);
 
-    ags_midi_preferences_remove_sequencer_editor(midi_preferences,
-						 sequencer_editor);
+    ags_midi_preferences_add_sequencer_editor(midi_preferences,
+					      sequencer_editor);
     
     ags_applicable_reset(AGS_APPLICABLE(sequencer_editor));
     ags_connectable_connect(AGS_CONNECTABLE(sequencer_editor));
