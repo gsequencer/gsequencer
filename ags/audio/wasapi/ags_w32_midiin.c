@@ -30,7 +30,7 @@
 #ifdef AGS_WITH_W32
 #include <windows.h>
 #include <ole2.h>
-#include <mmeapi.h>
+#include <mmsystem.h>
 #include <wchar.h>
 #endif
 
@@ -90,6 +90,10 @@ void ags_w32_midiin_list_cards(AgsSequencer *sequencer,
 
 gboolean ags_w32_midiin_is_starting(AgsSequencer *sequencer);
 gboolean ags_w32_midiin_is_recording(AgsSequencer *sequencer);
+
+#if defined(AGS_WITH_W32)
+CALLBACK ags_w32_midiin_message_callback(HMIDIIN handle, UINT umsg, DWORD_PTR dwInstance, DWORD_PTR param1, DWORD_PTR param2);
+#endif
 
 void ags_w32_midiin_device_record_init(AgsSequencer *sequencer,
 				       GError **error);
@@ -1138,6 +1142,48 @@ ags_w32_midiin_is_recording(AgsSequencer *sequencer)
   return(is_recording);
 }
 
+#if defined(AGS_WITH_W32)
+CALLBACK
+ags_w32_midiin_message_callback(HMIDIIN handle, UINT umsg, DWORD_PTR dwInstance, DWORD_PTR param1, DWORD_PTR param2)
+{
+  AgsW32Midiin *w32_midiin;
+
+  unsigned char **backend_buffer;
+
+  guint backend_buffer_mode;
+  guint backend_buffer_size;
+  guint backend_message_count;
+  int num_read;
+
+  w32_midiin = AGS_W32_MIDIIN(dwInstance);
+
+  g_rec_mutex_lock(w32_midiin_mutex);
+
+  backend_buffer = w32_midiin->backend_buffer;
+  backend_buffer_size = w32_midiin->backend_buffer_size[backend_buffer_mode];
+
+  backend_buffer_mode = w32_midiin->backend_buffer_mode;
+  
+  g_rec_mutex_unlock(w32_midiin_mutex);
+
+  num_read = 1;
+  
+  if(backend_buffer[backend_buffer_mode] == NULL ||
+     ceil((backend_buffer_size + num_read) / AGS_W32_MIDIIN_DEFAULT_BUFFER_SIZE) > ceil(backend_buffer_size / AGS_W32_MIDIIN_DEFAULT_BUFFER_SIZE)){
+    if(backend_buffer[backend_buffer_mode] == NULL){
+      w32_midiin->backend_buffer[backend_buffer_mode] = (char *) g_malloc(AGS_W32_MIDIIN_DEFAULT_BUFFER_SIZE * sizeof(char));
+    }else{
+      w32_midiin->backend_buffer[backend_buffer_mode] = (char *) g_realloc(backend_buffer[backend_buffer_mode],
+							       (AGS_W32_MIDIIN_DEFAULT_BUFFER_SIZE * ceil(backend_buffer_size / AGS_W32_MIDIIN_DEFAULT_BUFFER_SIZE) + AGS_W32_MIDIIN_DEFAULT_BUFFER_SIZE) * sizeof(char));
+    }
+  }  
+
+  backend_buffer[backend_buffer_mode][backend_buffer_size] = umsg;
+  
+  w32_midiin->backend_buffer_size[backend_buffer_mode] += num_read;
+}
+#endif
+
 void
 ags_w32_midiin_device_record_init(AgsSequencer *sequencer,
 				  GError **error)
@@ -1147,8 +1193,10 @@ ags_w32_midiin_device_record_init(AgsSequencer *sequencer,
   gchar *str;
 
 #if defined(AGS_WITH_W32)
-  UINT product_id;
-  UINT retval;
+  MIDIINCAPS midiin_caps;
+
+  gint device_id;
+  guint i, i_stop;
 #endif
 
   gint position;
@@ -1175,27 +1223,37 @@ ags_w32_midiin_device_record_init(AgsSequencer *sequencer,
 			AGS_W32_MIDIIN_NONBLOCKING);
 
 #ifdef AGS_WITH_W32
-  if((position = strchr(w32_midiin->device, ':')) >= 0){
-    //FIXME:JK: not verified - see midiInOpen
-    product_id = (UINT) g_ascii_strtoull(w32_midiin->device + position + 1,
-					 NULL,
-					 10);
+  device_id = -1;
+
+  i_stop = midiInGetNumDevs();
   
-    CoInitialize(0);
+  for(i=0; i < i_stop; i++) {
+    int res;
 
-    //FIXME:JK: not verified
-    retval = midiInOpen(w32_midiin->device_fd,
-			product_id,
-			NULL,
-			w32_midiin,
-			CALLBACK_NULL);
-
-    if(retval != MMSYSERR_NOERROR){
-      //TODO:JK: implement me
+    res = midiInGetDevCaps(i, &midiin_caps, sizeof(MIDIINCAPS));
+    
+    if(res == MMSYSERR_NOERROR) {
+      if(!strcmp(midiincaps.szPname, w32_midiin->device)) {
+	device_id = (gint) i;
+	
+	break;
+      }
     }
-  
-    CoUninitialize();
   }
+  
+  CoInitialize(0);
+
+  retval = midiInOpen(w32_midiin->midi_handle,
+		      (UINT) device_id,
+		      ags_w32_midiin_message_callback,
+		      w32_midiin,
+		      CALLBACK_FUNCTION);
+
+  if(retval != MMSYSERR_NOERROR){
+    //TODO:JK: implement me
+  }
+  
+  CoUninitialize();
 #endif
   
   w32_midiin->tact_counter = 0.0;
@@ -1209,6 +1267,7 @@ ags_w32_midiin_device_record_init(AgsSequencer *sequencer,
 #endif
 
   w32_midiin->app_buffer_mode = AGS_W32_MIDIIN_APP_BUFFER_0;
+  w32_midiin->backend_message_count = 0;
   
   g_rec_mutex_unlock(w32_midiin_mutex);
 }

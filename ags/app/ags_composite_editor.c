@@ -489,9 +489,7 @@ ags_composite_editor_init(AgsCompositeEditor *composite_editor)
   composite_editor->automation_edit = ags_composite_edit_new();
   
   ags_composite_edit_set_scrollbar(composite_editor->automation_edit,
-				   AGS_COMPOSITE_EDIT_SCROLLBAR_HORIZONTAL);
-  ags_composite_edit_set_scrollbar(composite_editor->automation_edit,
-				   AGS_COMPOSITE_EDIT_SCROLLBAR_VERTICAL);
+				   (AGS_COMPOSITE_EDIT_SCROLLBAR_HORIZONTAL | AGS_COMPOSITE_EDIT_SCROLLBAR_VERTICAL));
 
   gtk_widget_set_visible((GtkWidget *) composite_editor->automation_edit,
 			 FALSE);
@@ -523,6 +521,18 @@ ags_composite_editor_init(AgsCompositeEditor *composite_editor)
   gtk_box_append(composite_editor->automation_edit->edit_box,
 		 (GtkWidget *) composite_editor->automation_edit->edit);
 
+  adjustment = gtk_scrolled_window_get_vadjustment(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_editor->automation_edit->edit)->scrolled_window);
+  g_signal_connect(adjustment, "changed",
+		   G_CALLBACK(ags_composite_editor_edit_viewport_vadjustment_changed_callback), (gpointer) composite_editor);
+
+  adjustment = gtk_scrollbar_get_adjustment(composite_editor->automation_edit->hscrollbar);
+  g_signal_connect(adjustment, "value-changed",
+		   G_CALLBACK(ags_composite_editor_edit_hadjustment_value_changed_callback), composite_editor);
+
+  adjustment = gtk_scrollbar_get_adjustment(composite_editor->automation_edit->vscrollbar);
+  g_signal_connect(adjustment, "value-changed",
+		   G_CALLBACK(ags_composite_editor_edit_vadjustment_value_changed_callback), (gpointer) composite_editor);
+  
   /* edit - wave edit */
   composite_editor->wave_edit = ags_composite_edit_new();
   
@@ -560,6 +570,9 @@ ags_composite_editor_init(AgsCompositeEditor *composite_editor)
 			 TRUE);
   gtk_widget_set_hexpand((GtkWidget *) composite_editor->wave_edit->edit,
 			 TRUE);
+      
+  gtk_box_append(composite_editor->wave_edit->edit_box,
+		 (GtkWidget *) composite_editor->wave_edit->edit);
 
   adjustment = gtk_scrolled_window_get_vadjustment(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->scrolled_window);
   g_signal_connect(adjustment, "changed",
@@ -572,9 +585,6 @@ ags_composite_editor_init(AgsCompositeEditor *composite_editor)
   adjustment = gtk_scrollbar_get_adjustment(composite_editor->wave_edit->vscrollbar);
   g_signal_connect(adjustment, "value-changed",
 		   G_CALLBACK(ags_composite_editor_edit_vadjustment_value_changed_callback), (gpointer) composite_editor);
-      
-  gtk_box_append(composite_editor->wave_edit->edit_box,
-		 (GtkWidget *) composite_editor->wave_edit->edit);
 
   /* edit - tempo edit */
   hbox =
@@ -1857,11 +1867,19 @@ ags_composite_editor_select_all(AgsCompositeEditor *composite_editor)
 
     ags_automation_free_all_selection(start_automation);
 
-     i = 0;
+    i = 0;
+
+    if(notebook != NULL){
+      i = ags_notebook_next_active_tab(notebook,
+				       i);
+    }
     
-    while(notebook == NULL ||
+    goto ags_composite_editor_select_all_AUTOMATION_LOOP;
+     
+    while(notebook != NULL &&
 	  (i = ags_notebook_next_active_tab(notebook,
 					    i)) != -1){
+    ags_composite_editor_select_all_AUTOMATION_LOOP:
       automation = start_automation;
       
       while(automation != NULL){
@@ -1903,7 +1921,7 @@ ags_composite_editor_select_all(AgsCompositeEditor *composite_editor)
       i++;
     }
 
-    gtk_widget_queue_draw(GTK_WIDGET(composite_editor->automation_edit->focused_edit));
+    gtk_widget_queue_draw(AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->drawing_area);
     
     g_list_free_full(start_automation,
 		     g_object_unref);
@@ -1925,10 +1943,18 @@ ags_composite_editor_select_all(AgsCompositeEditor *composite_editor)
     ags_wave_free_all_selection(start_wave);
 
     i = 0;
+
+    if(notebook != NULL){
+      i = ags_notebook_next_active_tab(notebook,
+				       i);
+    }
+
+    goto ags_composite_editor_select_all_WAVE_LOOP;
     
-    while(notebook == NULL ||
+    while(notebook != NULL &&
 	  (i = ags_notebook_next_active_tab(notebook,
 					    i)) != -1){
+    ags_composite_editor_select_all_WAVE_LOOP:
       wave = start_wave;
       
       while(wave != NULL){
@@ -1991,7 +2017,7 @@ ags_composite_editor_paste_notation_all(AgsCompositeEditor *composite_editor,
 		 NULL);
       
     notation = ags_notation_find_near_timestamp(start_notation, i,
-						     timestamp);
+						timestamp);
 
     if(notation == NULL){
       current_notation = ags_notation_new((GObject *) machine->audio,
@@ -2175,7 +2201,7 @@ ags_composite_editor_paste_notation(AgsCompositeEditor *composite_editor,
 	      }     
 
 	      /* 1st attempt */
-	      timestamp->timer.ags_offset.offset = (guint64) AGS_NOTATION_DEFAULT_OFFSET * floor((double) position_x / (double) AGS_NOTATION_DEFAULT_OFFSET);
+	      timestamp->timer.ags_offset.offset = (guint64) AGS_AUTOMATION_DEFAULT_OFFSET * floor((double) position_x / (double) AGS_AUTOMATION_DEFAULT_OFFSET);
 		
 	      first_x = ags_composite_editor_paste_notation_all(composite_editor,
 								machine,
@@ -2187,7 +2213,7 @@ ags_composite_editor_paste_notation(AgsCompositeEditor *composite_editor,
 								last_x);
 
 	      /* 2nd attempt */
-	      timestamp->timer.ags_offset.offset += AGS_NOTATION_DEFAULT_OFFSET;
+	      timestamp->timer.ags_offset.offset += AGS_AUTOMATION_DEFAULT_OFFSET;
 
 	      ags_composite_editor_paste_notation_all(composite_editor,
 						      machine,
@@ -2247,10 +2273,18 @@ ags_composite_editor_paste_automation_all(AgsCompositeEditor *composite_editor,
     
   /*  */
   i = 0;
-		
-  while(notebook == NULL ||
+
+  if(notebook != NULL){
+    i = ags_notebook_next_active_tab(notebook,
+				     i);
+  }
+  
+  goto ags_composite_editor_paste_automation_all_LOOP;
+  
+  while(notebook != NULL &&
 	(i = ags_notebook_next_active_tab(notebook,
-					  i)) != -1){		  
+					  i)) != -1){
+  ags_composite_editor_paste_automation_all_LOOP:
     g_object_get(machine->audio,
 		 "automation", &start_list_automation,
 		 NULL);
@@ -2313,6 +2347,9 @@ ags_composite_editor_paste_automation_all(AgsCompositeEditor *composite_editor,
       }
 
       /* play port */
+      play_port = start_play_port;
+      recall_port = start_recall_port;
+
       while(play_port != NULL){
 	AgsPort *current_port;
 	
@@ -2323,10 +2360,6 @@ ags_composite_editor_paste_automation_all(AgsCompositeEditor *composite_editor,
 					AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->channel_type,
 					AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->control_name);
 	automation->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
-
-	g_object_set(automation,
-		     "port", current_port,
-		     NULL);
 	
 	/* add to audio */
 	ags_audio_add_automation(machine->audio,
@@ -2336,14 +2369,21 @@ ags_composite_editor_paste_automation_all(AgsCompositeEditor *composite_editor,
 	ags_port_add_automation(current_port,
 				(GObject *) automation);
 	  
+	ags_port_add_automation(recall_port->data,
+				(GObject *) automation);
+
 	/* iterate */
 	play_port = play_port->next;
+	recall_port = recall_port->next;
       }
 
       g_list_free_full(start_play_port,
 		       g_object_unref);
       
       /* recall port */
+      play_port = start_play_port;
+      recall_port = start_recall_port;
+
       if(recall_port != NULL){
 	AgsPort *current_port;
 	
@@ -2354,20 +2394,20 @@ ags_composite_editor_paste_automation_all(AgsCompositeEditor *composite_editor,
 					AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->channel_type,
 					AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->control_name);
 	automation->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
-
-	g_object_set(automation,
-		     "port", current_port,
-		     NULL);
 	
 	/* add to audio */
 	ags_audio_add_automation(machine->audio,
 				 (GObject *) automation);
 
 	/* add to port */
+	ags_port_add_automation(play_port->data,
+				(GObject *) automation);
+
 	ags_port_add_automation(current_port,
 				(GObject *) automation);
 	  
 	/* iterate */
+	play_port = play_port->next;
 	recall_port = recall_port->next;
       }
 
@@ -2428,7 +2468,7 @@ ags_composite_editor_paste_automation_all(AgsCompositeEditor *composite_editor,
 	}
 
 	x_boundary = g_ascii_strtoull((gchar *) xmlGetProp(automation_node,
-							   BAD_CAST "x_boundary"),
+							   BAD_CAST "x-boundary"),
 				      NULL,
 				      10);
 
@@ -2642,7 +2682,7 @@ ags_composite_editor_paste_wave_all(AgsCompositeEditor *composite_editor,
   i = 0;
 		
   while((i = ags_notebook_next_active_tab(notebook,
-					  i)) != -1){		  
+					  i)) != -1){
     g_object_get(machine->audio,
 		 "wave", &start_list_wave,
 		 NULL);
@@ -3078,7 +3118,7 @@ ags_composite_editor_paste_automation_async(GObject *source_object,
     first_x = 0;
   }
     
-  gtk_widget_queue_draw(composite_editor->automation_edit->focused_edit);
+  gtk_widget_queue_draw(AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->drawing_area);
     
   xmlFreeDoc(clipboard); 
 
@@ -3439,9 +3479,17 @@ ags_composite_editor_copy(AgsCompositeEditor *composite_editor)
     
     i = 0;
 
-    while(notebook == NULL ||
+    if(notebook != NULL){
+      i = ags_notebook_next_active_tab(notebook,
+				       i);
+    }
+    
+    goto ags_composite_editor_copy_LOOP;
+
+    while(notebook != NULL &&
 	  (i = ags_notebook_next_active_tab(notebook,
 					    i)) != -1){
+    ags_composite_editor_copy_LOOP:
       automation = start_automation;
 
       /* copy */
@@ -3453,10 +3501,6 @@ ags_composite_editor_copy(AgsCompositeEditor *composite_editor)
 		    automation_node);
 	
 	automation = automation->next;
-      }
-
-      if(notebook == NULL){
-	break;
       }
       
       i++;
@@ -3683,10 +3727,18 @@ ags_composite_editor_cut(AgsCompositeEditor *composite_editor)
 		 NULL);
     
     i = 0;
-    
-    while(notebook == NULL ||
+
+    if(notebook != NULL){
+      i = ags_notebook_next_active_tab(notebook,
+				       i);
+    }
+
+    goto ags_composite_editor_cut_AUTOMATION_LOOP;
+      
+    while(notebook != NULL &&
 	  (i = ags_notebook_next_active_tab(notebook,
 					    i)) != -1){
+    ags_composite_editor_cut_AUTOMATION_LOOP:
       automation = start_automation;
 
       /* cut */
@@ -3718,7 +3770,7 @@ ags_composite_editor_cut(AgsCompositeEditor *composite_editor)
 
     xmlFreeDoc(clipboard);
     
-    gtk_widget_queue_draw(composite_editor->automation_edit->focused_edit);
+    gtk_widget_queue_draw(AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->drawing_area);
   }else if(composite_editor->selected_edit == composite_editor->wave_edit){
     AgsNotebook *notebook;
   
@@ -4342,12 +4394,19 @@ ags_composite_editor_add_acceleration(AgsCompositeEditor *composite_editor,
 
   timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
   timestamp->flags |= AGS_TIMESTAMP_OFFSET;
-    
-  timestamp->timer.ags_offset.offset = AGS_AUTOMATION_DEFAULT_OFFSET * floor(acceleration->x / AGS_AUTOMATION_DEFAULT_OFFSET);
+  
+  timestamp->timer.ags_offset.offset = (guint64) ((double) AGS_AUTOMATION_DEFAULT_OFFSET * floor((double) acceleration->x / (double) AGS_AUTOMATION_DEFAULT_OFFSET));
 
   i = 0;
 
-  while(notebook == NULL ||
+  if(notebook != NULL){
+    i = ags_notebook_next_active_tab(notebook,
+				     i);
+  }
+  
+  goto ags_composite_editor_add_acceleration_LOOP;
+  
+  while(notebook != NULL &&
 	(i = ags_notebook_next_active_tab(notebook,
 					  i)) != -1){      
     AgsAcceleration *new_acceleration;
@@ -4356,6 +4415,7 @@ ags_composite_editor_add_acceleration(AgsCompositeEditor *composite_editor,
     GList *start_recall_port, *recall_port;
     GList *start_list, *list;
 
+  ags_composite_editor_add_acceleration_LOOP:
     play_port = NULL;
     recall_port = NULL;
       
@@ -4406,17 +4466,23 @@ ags_composite_editor_add_acceleration(AgsCompositeEditor *composite_editor,
     }
 
     /* play port */
+    play_port = start_play_port;
+    recall_port = start_recall_port;
+
     while(play_port != NULL){
       AgsPort *current_port;
 	
       current_port = play_port->data;
 
+      start_list = NULL;
+
       g_object_get(current_port,
 		   "automation", &start_list,
 		   NULL);
 	
-      list = ags_automation_find_near_timestamp(start_list, i,
-						timestamp);
+      list = ags_automation_find_near_timestamp_extended(start_list, i,
+							 AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->channel_type, AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->control_name,
+							 timestamp);
 	
       if(list == NULL){
 	automation = ags_automation_new(G_OBJECT(machine->audio),
@@ -4424,15 +4490,69 @@ ags_composite_editor_add_acceleration(AgsCompositeEditor *composite_editor,
 					AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->channel_type, AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->control_name);
 	automation->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
 
-	g_object_set(automation,
-		     "port", current_port,
-		     NULL);
-
 	/* add to audio */
 	ags_audio_add_automation(machine->audio,
 				 (GObject *) automation);
 
 	/* add to port */
+	ags_port_add_automation(current_port,
+				(GObject *) automation);
+
+	ags_port_add_automation(recall_port->data,
+				(GObject *) automation);
+      }else{
+	automation = list->data;
+      }
+	
+      new_acceleration = ags_acceleration_duplicate(acceleration);
+      ags_automation_add_acceleration(automation,
+				      new_acceleration,
+				      FALSE);
+
+      g_list_free_full(start_list,
+		       g_object_unref);
+	
+      /* iterate */
+      play_port = play_port->next;
+      recall_port = recall_port->next;
+    }
+
+    g_list_free_full(start_play_port,
+		     g_object_unref);
+      
+    /* recall port */
+    play_port = start_play_port;
+    recall_port = start_recall_port;
+
+    if(recall_port != NULL){
+      AgsPort *current_port;
+	
+      current_port = recall_port->data;
+
+      start_list = NULL;
+
+      g_object_get(current_port,
+		   "automation", &start_list,
+		   NULL);
+
+      list = ags_automation_find_near_timestamp_extended(start_list, i,
+							 AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->channel_type, AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->control_name,
+							 timestamp);
+	
+      if(list == NULL){
+	automation = ags_automation_new(G_OBJECT(machine->audio),
+					i,
+					AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->channel_type, AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->control_name);
+	automation->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
+	  
+	/* add to audio */
+	ags_audio_add_automation(machine->audio,
+				 (GObject *) automation);
+
+	/* add to port */
+	ags_port_add_automation(play_port->data,
+				(GObject *) automation);
+
 	ags_port_add_automation(current_port,
 				(GObject *) automation);
       }else{
@@ -4449,62 +4569,11 @@ ags_composite_editor_add_acceleration(AgsCompositeEditor *composite_editor,
 	
       /* iterate */
       play_port = play_port->next;
-    }
-
-    g_list_free_full(start_play_port,
-		     g_object_unref);
-      
-    /* recall port */
-    if(recall_port != NULL){
-      AgsPort *current_port;
-	
-      current_port = recall_port->data;
-
-      g_object_get(current_port,
-		   "automation", &start_list,
-		   NULL);
-
-      list = ags_automation_find_near_timestamp(start_list, i,
-						timestamp);
-	
-      if(list == NULL){
-	automation = ags_automation_new(G_OBJECT(machine->audio),
-					i,
-					AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->channel_type, AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->control_name);
-	automation->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
-	g_object_set(automation,
-		     "port", current_port,
-		     NULL);
-	  
-	/* add to audio */
-	ags_audio_add_automation(machine->audio,
-				 (GObject *) automation);
-
-	/* add to port */
-	ags_port_add_automation(current_port,
-				(GObject *) automation);
-      }else{
-	automation = list->data;
-      }
-	
-      new_acceleration = ags_acceleration_duplicate(acceleration);
-      ags_automation_add_acceleration(automation,
-				      new_acceleration,
-				      FALSE);
-
-      g_list_free_full(start_list,
-		       g_object_unref);
-	
-      /* iterate */
       recall_port = recall_port->next;
     }      
 
     g_list_free_full(start_recall_port,
 		     g_object_unref);
-
-    if(notebook == NULL){
-      break;
-    }
       
     i++;
   }    
@@ -4599,9 +4668,17 @@ ags_composite_editor_delete_acceleration(AgsCompositeEditor *composite_editor,
 
   i = 0;
 
-  while(notebook == NULL ||
+  if(notebook != NULL){
+    i = ags_notebook_next_active_tab(notebook,
+				     i);
+  }
+
+  goto ags_composite_editor_delete_acceleration_LOOP;
+  
+  while(notebook != NULL &&
 	(i = ags_notebook_next_active_tab(notebook,
 					  i)) != -1){
+  ags_composite_editor_delete_acceleration_LOOP:
     automation = start_automation;
       
     while((automation = ags_automation_find_near_timestamp_extended(automation, i,
@@ -4967,9 +5044,17 @@ ags_composite_editor_select_region(AgsCompositeEditor *composite_editor,
     
     i = 0;
 
-    while(notebook == NULL ||
+    if(notebook != NULL){
+      i = ags_notebook_next_active_tab(notebook,
+				       i);
+    }
+    
+    goto ags_composite_editor_select_region_AUTOMATION_LOOP;
+    
+    while(notebook != NULL &&
 	  (i = ags_notebook_next_active_tab(notebook,
-					    i)) != -1){      
+					    i)) != -1){
+    ags_composite_editor_select_region_AUTOMATION_LOOP:
       automation = start_automation;
       
       timestamp->timer.ags_offset.offset = AGS_AUTOMATION_DEFAULT_OFFSET * floor(x0 / AGS_AUTOMATION_DEFAULT_OFFSET);

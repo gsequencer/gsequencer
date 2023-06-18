@@ -1,3 +1,75 @@
+ags (5.3.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing restore of MIDI preferences in UI
+	* minor improvements
+
+ags (5.3.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved scrolling of tempo editor
+	* minor improvements
+
+ags (5.3.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags_tempo_edit_draw_tempo() first, last and intersection drawing
+	* improved ags_automation_edit_compare_x_offset_func()
+	* improved avoid duplicates in AgsAutomation modified ags_automation_add()
+	* improved avoid duplicates in AgsProgram modified ags_tempo_add()
+	* improved calling property from output/input soundcard setter in ags_recall.c
+	* improved ags_program_sort_func() respect control_name field while sorting using g_strcmp0()
+	* minor improvements
+
+ags (5.3.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* minor bug-fixes to automation editor
+
+ags (5.3.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed automation edit ramp dialog
+	* fixed automation edit copy & paste
+
+ags (5.3.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_ramp_acceleration_dialog_apply()
+
+ags (5.3.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags-fx-buffer copied multiple times
+	* fixed missing connect composite editor automation hscrollbar
+
+ags (5.3.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_solver_matrix_solve_all_by_column()
+	* implemented ags_solver_matrix_solve_default()
+	* minor bug-fixes
+	* reverted some changes in ags_hq_pitch_util.c
+	* reverted some changes in ags_fast_pitch_util.c
+
+ags (5.3.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* minor bug-fixes
+
+ags (5.3.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_wah_wah_util.[ch]
+	* fixed some missing XML persistence of AgsSF2Synth and AgsSFZSynth effect controls
+	* minor improvements
+
+ags (5.3.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsSetPresets task
+	* minor improvements
+
 ags (5.3.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -56,7 +56,7 @@ ags_wave_edit_vscrollbar_value_changed(GtkAdjustment *adjustment, AgsWaveEdit *w
 void
 ags_wave_edit_hscrollbar_value_changed(GtkAdjustment *adjustment, AgsWaveEdit *wave_edit)
 {
-  GtkWidget *editor;
+  AgsCompositeEditor *composite_editor;
   
   AgsApplicationContext *application_context;
   
@@ -65,6 +65,8 @@ ags_wave_edit_hscrollbar_value_changed(GtkAdjustment *adjustment, AgsWaveEdit *w
 
   application_context = ags_application_context_get_instance();
 
+  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
@@ -72,13 +74,13 @@ ags_wave_edit_hscrollbar_value_changed(GtkAdjustment *adjustment, AgsWaveEdit *w
   gtk_adjustment_set_value(wave_edit->ruler->adjustment,
 			   gui_scale_factor * value);
   gtk_widget_queue_draw((GtkWidget *) wave_edit->ruler);
-
-  editor = gtk_widget_get_ancestor(GTK_WIDGET(wave_edit),
-				   AGS_TYPE_COMPOSITE_EDITOR);
     
-  gtk_adjustment_set_value(AGS_COMPOSITE_EDITOR(editor)->wave_edit->ruler->adjustment,
+  gtk_adjustment_set_value(composite_editor->wave_edit->ruler->adjustment,
 			   gui_scale_factor * value);
-  gtk_widget_queue_draw((GtkWidget *) AGS_COMPOSITE_EDITOR(editor)->wave_edit->ruler);
+  gtk_widget_queue_draw((GtkWidget *) composite_editor->wave_edit->ruler);
+
+  gtk_adjustment_set_value(gtk_scrollbar_get_adjustment(composite_editor->tempo_edit->hscrollbar),
+			   gtk_adjustment_get_value(adjustment));
   
   /* queue draw */
   gtk_widget_queue_draw((GtkWidget *) wave_edit->drawing_area);

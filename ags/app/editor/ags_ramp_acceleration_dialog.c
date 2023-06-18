@@ -399,8 +399,8 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
   gdouble upper, lower, range, step;
   gdouble c_upper, c_lower, c_range;
 
-  guint x0, x1;
-  gdouble y0, y1;
+  guint x0, x1, tmp_x;
+  gdouble y0, y1, tmp_y;
   guint step_count;
   gint line;
   guint i, i_start, i_stop;
@@ -443,6 +443,18 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 
   x1 = AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH * gtk_spin_button_get_value_as_int(ramp_acceleration_dialog->ramp_x1);
   y1 = gtk_spin_button_get_value(ramp_acceleration_dialog->ramp_y1);
+
+  /* make ascending x position */
+  if(x0 > x1){
+    tmp_x = x0;
+    tmp_y = y0;
+
+    x0 = x1;
+    y0 = y1;
+
+    x1 = tmp_x;
+    y1 = tmp_y;
+  }
   
   step_count = gtk_spin_button_get_value_as_int(ramp_acceleration_dialog->ramp_step_count);
 
@@ -452,10 +464,19 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
   g_object_get(audio,
 	       "automation", &start_list_automation,
 	       NULL);
+
+  if(notebook != NULL){
+    line = ags_notebook_next_active_tab(notebook,
+					line);
+  }
   
-  while(notebook == NULL ||
+  goto ags_ramp_acceleration_dialog_apply_LOOP_REMOVE;
+  
+  while(notebook != NULL &&
 	(line = ags_notebook_next_active_tab(notebook,
 					     line)) != -1){
+  ags_ramp_acceleration_dialog_apply_LOOP_REMOVE:
+    
     list_automation = start_list_automation;
 
     while((list_automation = ags_automation_find_specifier_with_type_and_line(list_automation,
@@ -581,14 +602,23 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 		   g_object_unref);
   
   /* ramp acceleration */
+  notebook = composite_editor->automation_edit->channel_selector;
+
   line = 0;
 
   timestamp = ags_timestamp_new();
 
   timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
   timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+
+  if(notebook != NULL){
+    line = ags_notebook_next_active_tab(notebook,
+					line);
+  }
   
-  while(notebook == NULL ||
+  goto ags_ramp_acceleration_dialog_apply_LOOP_ADD;  
+  
+  while(notebook != NULL &&
 	(line = ags_notebook_next_active_tab(notebook,
 					     line)) != -1){
     AgsChannel *start_channel;
@@ -598,6 +628,8 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 
     guint j;
     guint tmp;
+
+  ags_ramp_acceleration_dialog_apply_LOOP_ADD:
     
     play_port =
       start_play_port = NULL;
@@ -666,42 +698,58 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
       match_count = 0;
       tmp = x1 - x0;
 
-      if(x0 % (guint) AGS_AUTOMATION_DEFAULT_OFFSET != 0 &&
-	 x0 / (guint) AGS_AUTOMATION_DEFAULT_OFFSET != (x1 - AGS_AUTOMATION_DEFAULT_OFFSET) / (guint) AGS_AUTOMATION_DEFAULT_OFFSET){
+      if(x0 % (guint) AGS_AUTOMATION_DEFAULT_OFFSET != 0){
 	match_count = 1;
 
-	tmp -= (x0 % (guint) AGS_AUTOMATION_DEFAULT_OFFSET);
+	if(tmp >= AGS_AUTOMATION_DEFAULT_OFFSET){
+	  match_count += (guint) ceil((gdouble) (tmp - (x0 % (guint) AGS_AUTOMATION_DEFAULT_OFFSET)) / AGS_AUTOMATION_DEFAULT_OFFSET);
+	}
+      }else{
+	match_count += (guint) ceil((gdouble) tmp / AGS_AUTOMATION_DEFAULT_OFFSET);
       }
-
-      match_count += (guint) ceil((gdouble) tmp / AGS_AUTOMATION_DEFAULT_OFFSET);
-    
+      
       success = FALSE;
 
       timestamp->timer.ags_offset.offset = AGS_AUTOMATION_DEFAULT_OFFSET * floor(x0 / AGS_AUTOMATION_DEFAULT_OFFSET);
 
+      i = 0;
+
       for(nth_match = 0; nth_match < match_count; nth_match++){
-	list_automation = AGS_PORT(play_port->data)->automation;
-	list_automation = ags_automation_find_near_timestamp(list_automation, line,
-							     timestamp);
+	timestamp->timer.ags_offset.offset = (guint64) floor((double) x0 / (double) AGS_AUTOMATION_DEFAULT_OFFSET);
+
+	if(nth_match > 0){
+	  timestamp->timer.ags_offset.offset += (nth_match * AGS_AUTOMATION_DEFAULT_OFFSET);
+	}
+	
+	start_list_automation = g_list_copy(AGS_PORT(play_port->data)->automation);      
+	list_automation = ags_automation_find_near_timestamp_extended(start_list_automation, line,
+								      AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->channel_type, AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->control_name,
+								      timestamp);
 
 	if(list_automation == NULL){
 	  current = ags_automation_new((GObject *) machine->audio,
 				       line,
 				       channel_type, specifier);
-	  g_object_set(current,
-		       "port", play_port->data,
-		       NULL);
 
 	  current->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
 
 	  ags_audio_add_automation(machine->audio,
 				   (GObject *) current);
-	  ags_port_add_automation(AGS_PORT(play_port->data),
-				  (GObject *) current);
+	  
+	  ags_port_add_automation(play_port->data,
+				  current);
+
+	  ags_port_add_automation(recall_port->data,
+				  current);
 	}else{
 	  current = list_automation->data;
 	}
 
+	g_list_free(start_list_automation);
+
+	list_automation =
+	  start_list_automation = NULL;
+	
 	upper = current->upper;
 	lower = current->lower;
 	
@@ -715,19 +763,17 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 	    
 	/* ramp value and move offset */
 	if(!success){
-	  i = 0;
-
 	  if(floor(x0 / (guint) AGS_AUTOMATION_DEFAULT_OFFSET) == floor(x1 / (guint) AGS_AUTOMATION_DEFAULT_OFFSET)){
 	    i_stop = step_count;
 
-	    tmp += (x1 - x0);
+	    tmp = 0;
 	  }else{
-	    i_stop = tmp / (x1 - x0) * step_count;
+	    i_stop = (x1 - tmp) / (x1 - x0) * step_count;
 
-	    if(tmp + AGS_AUTOMATION_DEFAULT_OFFSET < x1 - x0){
-	      tmp += AGS_AUTOMATION_DEFAULT_OFFSET;
+	    if(tmp - AGS_AUTOMATION_DEFAULT_OFFSET >= 0){
+	      tmp -= AGS_AUTOMATION_DEFAULT_OFFSET;
 	    }else{
-	      tmp = x1 - x0;
+	      tmp = 0;
 	    }
 	  }
 	
@@ -735,10 +781,10 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 	}else{
 	  i_stop = (x1 - tmp) / (x1 - x0) * step_count;
 	
-	  if(tmp + AGS_AUTOMATION_DEFAULT_OFFSET < x1 - x0){
-	    tmp += AGS_AUTOMATION_DEFAULT_OFFSET;
+	  if(tmp - AGS_AUTOMATION_DEFAULT_OFFSET >= 0){
+	    tmp -= AGS_AUTOMATION_DEFAULT_OFFSET;
 	  }else{
-	    tmp = x1 - x0;
+	    tmp = 0;
 	  }
 	}
 	
@@ -755,9 +801,7 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 					  acceleration,
 					  FALSE);
 	
-	}
-	
-	timestamp->timer.ags_offset.offset += AGS_AUTOMATION_DEFAULT_OFFSET;
+	}	
       }
     }
 
@@ -765,41 +809,56 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
       match_count = 0;
       tmp = x1 - x0;
 
-      if(x0 % (guint) AGS_AUTOMATION_DEFAULT_OFFSET != 0 &&
-	 x0 / (guint) AGS_AUTOMATION_DEFAULT_OFFSET != (x1 - AGS_AUTOMATION_DEFAULT_OFFSET) / (guint) AGS_AUTOMATION_DEFAULT_OFFSET){
+      if(x0 % (guint) AGS_AUTOMATION_DEFAULT_OFFSET != 0){
 	match_count = 1;
 
-	tmp -= (x0 % (guint) AGS_AUTOMATION_DEFAULT_OFFSET);
+	if(tmp >= AGS_AUTOMATION_DEFAULT_OFFSET){
+	  match_count += (guint) ceil((gdouble) (tmp - (x0 % (guint) AGS_AUTOMATION_DEFAULT_OFFSET)) / AGS_AUTOMATION_DEFAULT_OFFSET);
+	}
+      }else{
+	match_count += (guint) ceil((gdouble) tmp / AGS_AUTOMATION_DEFAULT_OFFSET);
       }
-      
-      match_count += (guint) ceil((gdouble) tmp / AGS_AUTOMATION_DEFAULT_OFFSET);
       
       success = FALSE;
 
       timestamp->timer.ags_offset.offset = AGS_AUTOMATION_DEFAULT_OFFSET * floor(x0 / AGS_AUTOMATION_DEFAULT_OFFSET);
 
+      i = 0;
+
       for(nth_match = 0; nth_match < match_count; nth_match++){
-	list_automation = AGS_PORT(recall_port->data)->automation;
-	list_automation = ags_automation_find_near_timestamp(list_automation, line,
-							     timestamp);
+	timestamp->timer.ags_offset.offset = (guint64) floor((double) x0 / (double) AGS_AUTOMATION_DEFAULT_OFFSET);
+
+	if(nth_match > 0){
+	  timestamp->timer.ags_offset.offset += (nth_match * AGS_AUTOMATION_DEFAULT_OFFSET);
+	}
+	
+	start_list_automation = g_list_copy(AGS_PORT(recall_port->data)->automation);
+	list_automation = ags_automation_find_near_timestamp_extended(start_list_automation, line,
+								      AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->channel_type, AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->control_name,
+								      timestamp);
 
 	if(list_automation == NULL){
 	  current = ags_automation_new((GObject *) machine->audio,
 				       line,
 				       channel_type, specifier);
-	  g_object_set(current,
-		       "port", recall_port->data,
-		       NULL);
 
 	  current->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
 
 	  ags_audio_add_automation(machine->audio,
 				   (GObject *) current);
-	  ags_port_add_automation(AGS_PORT(recall_port->data),
-				  (GObject *) current);
+
+	  ags_port_add_automation(play_port->data,
+				  current);
+	  ags_port_add_automation(recall_port->data,
+				  current);
 	}else{
 	  current = list_automation->data;
 	}
+
+	g_list_free(start_list_automation);
+
+	list_automation =
+	  start_list_automation = NULL;
 
 	upper = current->upper;
 	lower = current->lower;
@@ -814,19 +873,17 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 	    
 	/* ramp value and move offset */
 	if(!success){
-	  i = 0;
-
 	  if(floor(x0 / (guint) AGS_AUTOMATION_DEFAULT_OFFSET) == floor(x1 / (guint) AGS_AUTOMATION_DEFAULT_OFFSET)){
 	    i_stop = step_count;
 
-	    tmp += (x1 - x0);
+	    tmp = 0;
 	  }else{
-	    i_stop = tmp / (x1 - x0) * step_count;
+	    i_stop = (x1 - tmp) / (x1 - x0) * step_count;
 
-	    if(tmp + AGS_AUTOMATION_DEFAULT_OFFSET < x1 - x0){
-	      tmp += AGS_AUTOMATION_DEFAULT_OFFSET;
+	    if(tmp - AGS_AUTOMATION_DEFAULT_OFFSET >= 0){
+	      tmp -= AGS_AUTOMATION_DEFAULT_OFFSET;
 	    }else{
-	      tmp = x1 - x0;
+	      tmp = 0;
 	    }
 	  }
 	
@@ -834,10 +891,10 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 	}else{
 	  i_stop = (x1 - tmp) / (x1 - x0) * step_count;
 	
-	  if(tmp + AGS_AUTOMATION_DEFAULT_OFFSET < x1 - x0){
-	    tmp += AGS_AUTOMATION_DEFAULT_OFFSET;
+	  if(tmp - AGS_AUTOMATION_DEFAULT_OFFSET >= 0){
+	    tmp -= AGS_AUTOMATION_DEFAULT_OFFSET;
 	  }else{
-	    tmp = x1 - x0;
+	    tmp = 0;
 	  }
 	}
 	
@@ -855,8 +912,6 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 					  FALSE);
 	
 	}
-
-	timestamp->timer.ags_offset.offset += AGS_AUTOMATION_DEFAULT_OFFSET;
       }
     }
 
@@ -873,7 +928,7 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
     line++;
   }
 
-  gtk_widget_queue_draw(composite_editor->automation_edit->focused_edit);
+  gtk_widget_queue_draw(AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->drawing_area);
 }
 
 void

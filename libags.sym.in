@@ -185,6 +185,7 @@ ags_solver_matrix_parse
 ags_solver_matrix_insert_vector
 ags_solver_matrix_remove_vector
 ags_solver_matrix_eliminate
+ags_solver_matrix_solve_default
 ags_solver_matrix_new
 ags_function_get_type
 ags_function_add_matrix

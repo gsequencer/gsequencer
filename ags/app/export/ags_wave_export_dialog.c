@@ -198,6 +198,9 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
 	       "title", i18n("Audio fast export"),
 	       NULL);
 
+  gtk_widget_set_size_request(GTK_WIDGET(wave_export_dialog),
+			      AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_WIDTH, AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_HEIGHT);
+
   content_area = (GtkBox *) gtk_dialog_get_content_area(GTK_DIALOG(wave_export_dialog));
 
   gtk_widget_set_valign((GtkWidget *) content_area,

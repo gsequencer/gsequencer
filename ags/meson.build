@@ -407,6 +407,7 @@ libags_audio_sources = files(
   'audio/ags_track.c',
   'audio/ags_tremolo_util.c',
   'audio/ags_volume_util.c',
+  'audio/ags_wah_wah_util.c',
   'audio/ags_wave.c',
   'audio/alsa/ags_alsa_devin.c',
   'audio/alsa/ags_alsa_devout.c',
@@ -658,6 +659,7 @@ libags_audio_sources = files(
   'audio/task/ags_set_format.c',
   'audio/task/ags_set_muted.c',
   'audio/task/ags_set_samplerate.c',
+  'audio/task/ags_set_presets.c',
   'audio/task/ags_start_audio.c',
   'audio/task/ags_start_channel.c',
   'audio/task/ags_start_sequencer.c',
@@ -1542,6 +1544,7 @@ libags_audio_audio_headers = [
   'audio/ags_track.h',
   'audio/ags_tremolo_util.h',
   'audio/ags_volume_util.h',
+  'audio/ags_wah_wah_util.h',
   'audio/ags_wave.h',
 ]
 

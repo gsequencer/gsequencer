@@ -1345,6 +1345,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_track.h \
 	ags/audio/ags_tremolo_util.h \
 	ags/audio/ags_volume_util.h \
+	ags/audio/ags_wah_wah_util.h \
 	ags/audio/ags_wave.h
 
 if WITH_LIBINSTPATCH
@@ -1436,6 +1437,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_track.c \
 	ags/audio/ags_tremolo_util.c \
 	ags/audio/ags_volume_util.c \
+	ags/audio/ags_wah_wah_util.c \
 	ags/audio/ags_wave.c
 
 if WITH_LIBINSTPATCH
@@ -2279,6 +2281,7 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_set_device.h \
 	ags/audio/task/ags_set_format.h \
 	ags/audio/task/ags_set_samplerate.h \
+	ags/audio/task/ags_set_presets.h \
 	ags/audio/task/ags_start_audio.h \
 	ags/audio/task/ags_start_channel.h \
 	ags/audio/task/ags_start_sequencer.h \
@@ -2359,6 +2362,7 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_set_device.c \
 	ags/audio/task/ags_set_format.c \
 	ags/audio/task/ags_set_samplerate.c \
+	ags/audio/task/ags_set_presets.c \
 	ags/audio/task/ags_start_audio.c \
 	ags/audio/task/ags_start_channel.c \
 	ags/audio/task/ags_start_sequencer.c \

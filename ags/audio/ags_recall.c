@@ -73,6 +73,10 @@ gboolean ags_recall_is_connected(AgsConnectable *connectable);
 void ags_recall_connect(AgsConnectable *connectable);
 void ags_recall_disconnect(AgsConnectable *connectable);
 
+void ags_recall_real_set_output_soundcard(AgsRecall *recall, GObject *output_soundcard);
+
+void ags_recall_real_set_input_soundcard(AgsRecall *recall, GObject *input_soundcard);
+
 void ags_recall_real_resolve_dependency(AgsRecall *recall);
 void ags_recall_real_check_rt_data(AgsRecall *recall);
 
@@ -1240,8 +1244,8 @@ ags_recall_set_property(GObject *gobject,
 
       output_soundcard = (GObject *) g_value_get_object(value);
 
-      ags_recall_set_output_soundcard(recall,
-				      output_soundcard);
+      ags_recall_real_set_output_soundcard(recall,
+					   output_soundcard);
     }
     break;
   case PROP_OUTPUT_SOUNDCARD_CHANNEL:
@@ -1259,8 +1263,8 @@ ags_recall_set_property(GObject *gobject,
 
       input_soundcard = (GObject *) g_value_get_object(value);
 
-      ags_recall_set_input_soundcard(recall,
-				     input_soundcard);
+      ags_recall_real_set_input_soundcard(recall,
+					  input_soundcard);
     }
     break;
   case PROP_INPUT_SOUNDCARD_CHANNEL:
@@ -4577,17 +4581,8 @@ ags_recall_get_output_soundcard(AgsRecall *recall)
   return(output_soundcard);
 }
 
-/**
- * ags_recall_set_output_soundcard:
- * @recall: the #AgsRecall
- * @output_soundcard: the #GObject implementing #AgsSoundcard
- * 
- * Set output soundcard of @recall.
- * 
- * Since: 3.0.0
- */
 void
-ags_recall_set_output_soundcard(AgsRecall *recall, GObject *output_soundcard)
+ags_recall_real_set_output_soundcard(AgsRecall *recall, GObject *output_soundcard)
 {
   guint samplerate;
   guint buffer_size;
@@ -4639,6 +4634,27 @@ ags_recall_set_output_soundcard(AgsRecall *recall, GObject *output_soundcard)
 }
 
 /**
+ * ags_recall_set_output_soundcard:
+ * @recall: the #AgsRecall
+ * @output_soundcard: the #GObject implementing #AgsSoundcard
+ *
+ * Set the output soundcard object of @recall.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_recall_set_output_soundcard(AgsRecall *recall, GObject *output_soundcard)
+{
+  if(!AGS_IS_RECALL(recall)){
+    return;
+  }
+
+  g_object_set(recall,
+	       "output-soundcard", output_soundcard,
+	       NULL);
+}
+
+/**
  * ags_recall_get_input_soundcard:
  * @recall: the #AgsRecall
  *
@@ -4664,17 +4680,8 @@ ags_recall_get_input_soundcard(AgsRecall *recall)
   return(input_soundcard);
 }
 
-/**
- * ags_recall_set_input_soundcard:
- * @recall: the #AgsRecall
- * @input_soundcard: the #GObject implementing #AgsSoundcard
- * 
- * Set input soundcard of @recall.
- * 
- * Since: 3.0.0
- */
 void
-ags_recall_set_input_soundcard(AgsRecall *recall, GObject *input_soundcard)
+ags_recall_real_set_input_soundcard(AgsRecall *recall, GObject *input_soundcard)
 {
   GRecMutex *recall_mutex;
 
@@ -4703,6 +4710,27 @@ ags_recall_set_input_soundcard(AgsRecall *recall, GObject *input_soundcard)
   recall->input_soundcard = input_soundcard;
   
   g_rec_mutex_unlock(recall_mutex);
+}
+
+/**
+ * ags_recall_set_input_soundcard:
+ * @recall: an #AgsRecall
+ * @input_soundcard: the #GObject implementing #AgsSoundcard
+ *
+ * Set the input soundcard object of @recall.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_recall_set_input_soundcard(AgsRecall *recall, GObject *input_soundcard)
+{
+  if(!AGS_IS_RECALL(recall)){
+    return;
+  }
+
+  g_object_set(recall,
+	       "input-soundcard", input_soundcard,
+	       NULL);
 }
 
 /**

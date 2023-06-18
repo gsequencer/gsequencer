@@ -1332,7 +1332,7 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
   current_end = g_list_last(automation);
   
   length = g_list_length(automation);
-  position = (length - 1) / 2;
+  position = (guint) floor((double) (length - 1) / 2.0);
 
   current = g_list_nth(current_start,
 		       position);
@@ -1366,8 +1366,7 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
 		 NULL);
     
     if(current_line == line &&
-       g_type_is_a(current_channel_type,
-		   channel_type) &&
+       current_channel_type == channel_type &&
        !g_strcmp0(current_control_name,
 		  control_name)){
       g_free(current_control_name);
@@ -1431,8 +1430,7 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
 		 NULL);
     
     if(current_line == line &&
-       g_type_is_a(current_channel_type,
-		   channel_type) &&
+       current_channel_type == channel_type &&
        !g_strcmp0(current_control_name,
 		  control_name)){
       g_free(current_control_name);
@@ -1498,8 +1496,7 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
 		 NULL);
     
     if(current_line == line &&
-       g_type_is_a(current_channel_type,
-		   channel_type) &&
+       current_channel_type == channel_type &&
        !g_strcmp0(current_control_name,
 		  control_name)){
       if(timestamp == NULL){
@@ -1524,8 +1521,7 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
 	if(current_x >= x &&
 	   current_x < x + AGS_AUTOMATION_DEFAULT_OFFSET &&
 	   current_line == line &&
-	   g_type_is_a(current_channel_type,
-		       channel_type) &&
+	   current_channel_type == channel_type &&
 	   !g_strcmp0(current_control_name,
 		      control_name)){
 	  retval = current;
@@ -1540,8 +1536,7 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
 	if(current_x >= x &&
 	   current_x < x + AGS_AUTOMATION_DEFAULT_DURATION &&
 	   current_line == line &&
-	   g_type_is_a(current_channel_type,
-		       channel_type) &&
+	   current_channel_type == channel_type &&
 	   !g_strcmp0(current_control_name,
 		      control_name)){
 	  retval = current;
@@ -1573,7 +1568,7 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
 
     length = g_list_position(current_start,
 			     current_end) + 1;
-    position = (length - 1) / 2;
+    position = (guint) floor((double) (length - 1) / 2.0);
 
     current = g_list_nth(current_start,
 			 position);
@@ -1599,31 +1594,53 @@ ags_automation_sort_func(gconstpointer a,
 {
   AgsTimestamp *timestamp_a, *timestamp_b;
 
-  guint64 offset_a, offset_b;
-    
-  g_object_get(a,
-	       "timestamp", &timestamp_a,
-	       NULL);
+  gchar *control_name_a, *control_name_b;
+  
+  GType line_a_channel_type;
+  GType line_b_channel_type;
 
-  g_object_get(b,
-	       "timestamp", &timestamp_b,
-	       NULL);
+  guint64 offset_a, offset_b;
+  guint line_a, line_b;
+  gint retval;
+  
+  timestamp_a = ags_automation_get_timestamp(a);
+  timestamp_b = ags_automation_get_timestamp(b);
+
+  control_name_a = ags_automation_get_control_name(a);
+  control_name_b = ags_automation_get_control_name(b);
+
+  line_a = ags_automation_get_line(a);
+  line_b = ags_automation_get_line(b);
+
+  line_a_channel_type = ags_automation_get_channel_type(a);
+  line_b_channel_type = ags_automation_get_channel_type(b);
 
   offset_a = ags_timestamp_get_ags_offset(timestamp_a);
   offset_b = ags_timestamp_get_ags_offset(timestamp_b);
 
   g_object_unref(timestamp_a);
   g_object_unref(timestamp_b);
-    
+
+  retval = 0;
+  
   if(offset_a == offset_b){
-    return(0);
-  }else if(offset_a < offset_b){
-    return(-1);
-  }else if(offset_a > offset_b){
-    return(1);
+    if(line_a == line_b){
+      if(line_a_channel_type == line_b_channel_type){
+	retval = g_strcmp0(control_name_a, control_name_b);
+      }else{
+	retval = (line_a_channel_type < line_b_channel_type) ? -1: 1;
+      }
+    }else{
+      retval = (line_a < line_b) ? -1: 1;
+    }
+  }else{
+    retval = (offset_a < offset_b) ? -1: 1;
   }
 
-  return(0);
+  g_free(control_name_a);
+  g_free(control_name_b);
+  
+  return(retval);
 }
 
 /**
@@ -1640,15 +1657,80 @@ ags_automation_sort_func(gconstpointer a,
 GList*
 ags_automation_add(GList *automation,
 		   AgsAutomation *new_automation)
-{  
+{
+  AgsTimestamp *timestamp;
+
+  GType channel_type;
+  
+  gchar *control_name;
+  
+  gint line;
+  
   if(!AGS_IS_AUTOMATION(new_automation)){
     return(automation);
   }
+
+  timestamp = ags_automation_get_timestamp(new_automation);
+
+  control_name = ags_automation_get_control_name(new_automation);
+
+  channel_type = ags_automation_get_channel_type(new_automation);
+
+  line = ags_automation_get_line(new_automation);
+
+  if(ags_automation_find_near_timestamp_extended(automation, line,
+						 channel_type, control_name,
+						 timestamp) == NULL){
+    automation = g_list_insert_sorted(automation,
+				      new_automation,
+				      ags_automation_sort_func);
+  }
   
-  automation = g_list_insert_sorted(automation,
-				    new_automation,
-				    ags_automation_sort_func);
+  g_object_unref(timestamp);
   
+  g_free(control_name);
+  
+  return(automation);
+}
+
+/**
+ * ags_automation_remove_all_empty:
+ * @automation: (element-type AgsAudio.Automation) (transfer none): the #GList-struct containing #AgsAutomation
+ * 
+ * Remove all empty @automation.
+ * 
+ * Returns: (element-type AgsAudio.Automation) (transfer none): the new beginning of @automation
+ * 
+ * Since: 5.3.8
+ */
+GList*
+ags_automation_remove_all_empty(GList *automation)
+{
+  GList *list;
+
+  list = automation;
+
+  while(list != NULL){
+    GList *next;
+
+    GRecMutex *automation_mutex;
+    
+    next = list->next;
+
+    automation_mutex = AGS_AUTOMATION_GET_OBJ_MUTEX(list->data);
+
+    g_rec_mutex_lock(automation_mutex);
+
+    if(AGS_AUTOMATION(list->data)->acceleration == NULL){
+      automation = g_list_delete_link(automation,
+				      list);
+    }
+    
+    g_rec_mutex_unlock(automation_mutex);
+    
+    list = next;
+  }
+
   return(automation);
 }
 
@@ -2122,7 +2204,6 @@ ags_automation_set_port(AgsAutomation *automation, GObject *port)
 	       NULL);
 }
 
-
 /**
  * ags_automation_get_acceleration:
  * @automation: the #AgsAutomation
@@ -2198,6 +2279,8 @@ ags_automation_add_acceleration(AgsAutomation *automation,
 				AgsAcceleration *acceleration,
 				gboolean use_selection_list)
 {
+  AgsAcceleration *current;
+
   GRecMutex *automation_mutex;
 
   if(!AGS_IS_AUTOMATION(automation) ||
@@ -2212,22 +2295,33 @@ ags_automation_add_acceleration(AgsAutomation *automation,
   g_rec_mutex_lock(automation_mutex);
 
   if(use_selection_list){
-    if(g_list_find(automation->selection, acceleration) == NULL){
-      g_object_ref(acceleration);
+    if((current = ags_automation_find_point(automation, acceleration->x, acceleration->y, TRUE)) != NULL){
+      current->x = acceleration->x;
+      current->y = acceleration->y;
+    }else{
+      if(g_list_find(automation->selection, acceleration) == NULL &&
+	 ags_automation_find_point(automation, acceleration->x, acceleration->y, TRUE) == NULL){
+	g_object_ref(acceleration);
       
-      automation->selection = g_list_insert_sorted(automation->selection,
-						   acceleration,
-						   (GCompareFunc) ags_acceleration_sort_func);
-      ags_acceleration_set_flags(acceleration,
-				 AGS_ACCELERATION_IS_SELECTED);
+	automation->selection = g_list_insert_sorted(automation->selection,
+						     acceleration,
+						     (GCompareFunc) ags_acceleration_sort_func);
+	ags_acceleration_set_flags(acceleration,
+				   AGS_ACCELERATION_IS_SELECTED);
+      }
     }
   }else{
-    if(g_list_find(automation->acceleration, acceleration) == NULL){
-      g_object_ref(acceleration);
+    if((current = ags_automation_find_point(automation, acceleration->x, acceleration->y, FALSE)) != NULL){
+      current->x = acceleration->x;
+      current->y = acceleration->y;
+    }else{
+      if(g_list_find(automation->acceleration, acceleration) == NULL){
+	g_object_ref(acceleration);
   
-      automation->acceleration = g_list_insert_sorted(automation->acceleration,
-						      acceleration,
-						      (GCompareFunc) ags_acceleration_sort_func);
+	automation->acceleration = g_list_insert_sorted(automation->acceleration,
+							acceleration,
+							(GCompareFunc) ags_acceleration_sort_func);
+      }
     }
   }
 
@@ -3225,7 +3319,7 @@ ags_automation_insert_from_clipboard_version_0_4_3(AgsAutomation *automation,
   }
     
   for(; node != NULL; node = node->next){
-    if(node->type == XML_ELEMENT_NODE && !xmlStrncmp("acceleration", node->name, 5)){
+    if(node->type == XML_ELEMENT_NODE && !xmlStrncmp("acceleration", node->name, 13)){
       /* retrieve x0 offset */
       x = xmlGetProp(node, "x");
 
@@ -3316,7 +3410,7 @@ ags_automation_insert_from_clipboard_version_0_4_3(AgsAutomation *automation,
 	 (x_val >= timestamp_offset &&
 	  x_val < timestamp_offset + AGS_AUTOMATION_DEFAULT_OFFSET)){
 	acceleration = ags_acceleration_new();
-	  
+ 	  
 	acceleration->x = x_val;
 	acceleration->y = y_val;
 
@@ -3461,8 +3555,8 @@ ags_automation_insert_from_clipboard_extended(AgsAutomation *automation,
 		    format) ||
 	 !xmlStrcmp(AGS_AUTOMATION_CLIPBOARD_LEGACY_FORMAT,
 		    format)){
-	x_boundary = xmlGetProp(automation_node, "x_boundary");
-	y_boundary = xmlGetProp(automation_node, "y_boundary");
+	x_boundary = xmlGetProp(automation_node, "x-boundary");
+	y_boundary = xmlGetProp(automation_node, "y-boundary");
 
 	ags_automation_insert_native_scale_from_clipboard(automation,
 							  automation_node, version,

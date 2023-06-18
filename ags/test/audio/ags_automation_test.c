@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -306,7 +306,7 @@ ags_automation_test_add_acceleration()
   list = automation->acceleration;
   success = TRUE;
   
-  for(i = 0; i < AGS_AUTOMATION_TEST_ADD_ACCELERATION_COUNT; i++){
+  for(i = 0; i < AGS_AUTOMATION_TEST_ADD_ACCELERATION_COUNT && list != NULL; i++){
     if(list->prev != NULL){
       if(AGS_ACCELERATION(list->prev->data)->x > AGS_ACCELERATION(list->data)->x){
 	success = FALSE;
@@ -363,17 +363,19 @@ ags_automation_test_remove_acceleration_at_position()
     nth = rand() % (AGS_AUTOMATION_TEST_REMOVE_ACCELERATION_AT_POSITION_COUNT - i);
     current = g_list_nth(automation->acceleration,
 			 nth);
-    
-    ags_automation_remove_acceleration_at_position(automation,
-						   AGS_ACCELERATION(current->data)->x,
-						   AGS_ACCELERATION(current->data)->y);
+
+    if(current != NULL){
+      ags_automation_remove_acceleration_at_position(automation,
+						     AGS_ACCELERATION(current->data)->x,
+						     AGS_ACCELERATION(current->data)->y);
+    }
   }
 
   /* assert position */
   list = automation->acceleration;
   success = TRUE;
   
-  for(i = 0; i < AGS_AUTOMATION_TEST_REMOVE_ACCELERATION_AT_POSITION_COUNT - AGS_AUTOMATION_TEST_REMOVE_ACCELERATION_AT_POSITION_COUNT; i++){
+  for(i = 0; i < AGS_AUTOMATION_TEST_REMOVE_ACCELERATION_AT_POSITION_COUNT - AGS_AUTOMATION_TEST_REMOVE_ACCELERATION_AT_POSITION_COUNT && list != NULL; i++){
     if(list->prev != NULL){
       if(AGS_ACCELERATION(list->prev->data)->x > AGS_ACCELERATION(list->data)->x){
 	success = FALSE;
@@ -433,9 +435,11 @@ ags_automation_test_is_acceleration_selected()
     current = g_list_nth(automation->acceleration,
 			 nth);
 
-    ags_automation_add_acceleration(automation,
-				    current->data,
-				    TRUE);
+    if(current != NULL){
+      ags_automation_add_acceleration(automation,
+				      current->data,
+				      TRUE);
+    }
   }
 
   /* assert position */
@@ -512,17 +516,19 @@ ags_automation_test_find_point()
     nth = rand() % count;
     current = g_list_nth(automation->acceleration,
 			 nth);
-    
-    acceleration = ags_automation_find_point(automation,
-					     AGS_ACCELERATION(current->data)->x,
-					     AGS_ACCELERATION(current->data)->y,
-					     FALSE);
 
-    if(acceleration->x != AGS_ACCELERATION(current->data)->x ||
-       acceleration->y != AGS_ACCELERATION(current->data)->y){
-      success = FALSE;
+    if(current != NULL){
+      acceleration = ags_automation_find_point(automation,
+					       AGS_ACCELERATION(current->data)->x,
+					       AGS_ACCELERATION(current->data)->y,
+					       FALSE);
 
-      break;
+      if(acceleration->x != AGS_ACCELERATION(current->data)->x ||
+	 acceleration->y != AGS_ACCELERATION(current->data)->y){
+	success = FALSE;
+
+	break;
+      }
     }
   }
 
@@ -587,24 +593,26 @@ ags_automation_test_find_region()
     nth = rand() % count;
     current = g_list_nth(automation->acceleration,
 			 nth);
-    
-    region = ags_automation_find_region(automation,
-				      AGS_ACCELERATION(current->data)->x,
-				      AGS_ACCELERATION(current->data)->y,
-				      AGS_ACCELERATION(current->data)->x + AGS_AUTOMATION_TEST_FIND_REGION_SELECTION_WIDTH,
-				      AGS_ACCELERATION(current->data)->y + AGS_AUTOMATION_TEST_FIND_REGION_SELECTION_HEIGHT,
-				      FALSE);
-    while(region != NULL){
-      if(!(AGS_ACCELERATION(region->data)->x >= AGS_ACCELERATION(current->data)->x &&
-	   AGS_ACCELERATION(current->data)->x < AGS_ACCELERATION(current->data)->x + AGS_AUTOMATION_TEST_FIND_REGION_SELECTION_WIDTH &&
-	   AGS_ACCELERATION(region->data)->y >= AGS_ACCELERATION(current->data)->y &&
-	   AGS_ACCELERATION(current->data)->y < AGS_ACCELERATION(current->data)->y + AGS_AUTOMATION_TEST_FIND_REGION_SELECTION_HEIGHT)){
-	success = FALSE;
+
+    if(current != NULL){
+      region = ags_automation_find_region(automation,
+					  AGS_ACCELERATION(current->data)->x,
+					  AGS_ACCELERATION(current->data)->y,
+					  AGS_ACCELERATION(current->data)->x + AGS_AUTOMATION_TEST_FIND_REGION_SELECTION_WIDTH,
+					  AGS_ACCELERATION(current->data)->y + AGS_AUTOMATION_TEST_FIND_REGION_SELECTION_HEIGHT,
+					  FALSE);
+      while(region != NULL){
+	if(!(AGS_ACCELERATION(region->data)->x >= AGS_ACCELERATION(current->data)->x &&
+	     AGS_ACCELERATION(current->data)->x < AGS_ACCELERATION(current->data)->x + AGS_AUTOMATION_TEST_FIND_REGION_SELECTION_WIDTH &&
+	     AGS_ACCELERATION(region->data)->y >= AGS_ACCELERATION(current->data)->y &&
+	     AGS_ACCELERATION(current->data)->y < AGS_ACCELERATION(current->data)->y + AGS_AUTOMATION_TEST_FIND_REGION_SELECTION_HEIGHT)){
+	  success = FALSE;
 	
-	break;
-      }
+	  break;
+	}
       
-      region = region->next;
+	region = region->next;
+      }
     }
   }
 
@@ -666,11 +674,13 @@ ags_automation_test_free_selection()
     current = g_list_nth(automation->acceleration,
 			 nth);
 
-    ags_automation_add_acceleration(automation,
-				    current->data,
-				    TRUE);
+    if(current != NULL){
+      ags_automation_add_acceleration(automation,
+				      current->data,
+				      TRUE);
+    }
   }
-
+  
   /* assert free slection */
   CU_ASSERT(automation->selection != NULL);
 
@@ -806,7 +816,8 @@ ags_automation_test_add_point_to_selection()
     current = g_list_nth(automation->acceleration,
 			 nth);
 
-    if(current->prev != NULL &&
+    if(current != NULL &&
+       current->prev != NULL &&
        current->next != NULL){
       ags_automation_add_point_to_selection(automation,
 					    AGS_ACCELERATION(current->data)->x, AGS_ACCELERATION(current->data)->y,

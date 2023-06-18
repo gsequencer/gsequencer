@@ -396,7 +396,7 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
 	       NULL);
 
   /* get some values */
-  copy_selection = gtk_toggle_button_get_active((GtkToggleButton *) select_acceleration_dialog->copy_selection);
+  copy_selection = gtk_check_button_get_active((GtkCheckButton *) select_acceleration_dialog->copy_selection);
 
   x0 = (AGS_SELECT_ACCELERATION_DEFAULT_WIDTH / 16) * gtk_spin_button_get_value_as_int(select_acceleration_dialog->select_x0);
 
@@ -415,17 +415,19 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
     xmlDocSetRootElement(clipboard, audio_node);
   }
 
-  model = gtk_combo_box_get_model(select_acceleration_dialog->port);
+  model = gtk_combo_box_get_model(GTK_COMBO_BOX(select_acceleration_dialog->port));
 
   scope = NULL;
   specifier = NULL;
 
-  gtk_tree_model_get(model,
-		     &iter,
-		     0, &scope,
-		     1, &specifier,
-		     -1);
-
+  if(gtk_combo_box_get_active_iter(GTK_COMBO_BOX(select_acceleration_dialog->port), &iter)){
+    gtk_tree_model_get(model,
+		       &iter,
+		       0, &scope,
+		       1, &specifier,
+		       -1);
+  }
+  
   line = 0;
 
   channel_type = G_TYPE_NONE;

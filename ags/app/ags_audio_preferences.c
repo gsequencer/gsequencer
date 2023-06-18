@@ -449,14 +449,12 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
 			       FALSE);
     }
 
-    audio_preferences->soundcard_editor = g_list_prepend(audio_preferences->soundcard_editor,
-							 soundcard_editor);
-
-    gtk_box_append((GtkBox *) audio_preferences->soundcard_editor_box,
-		   (GtkWidget *) soundcard_editor);
+    ags_audio_preferences_add_soundcard_editor(audio_preferences,
+					       soundcard_editor);
     
     ags_applicable_reset(AGS_APPLICABLE(soundcard_editor));
     ags_connectable_connect(AGS_CONNECTABLE(soundcard_editor));
+
     g_signal_connect(soundcard_editor->remove, "clicked",
 		   G_CALLBACK(ags_audio_preferences_remove_soundcard_editor_callback), audio_preferences);
     

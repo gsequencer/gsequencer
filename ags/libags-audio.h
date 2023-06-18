@@ -129,8 +129,9 @@
 #include <ags/audio/ags_sfz_synth_generator.h>
 #include <ags/audio/ags_sfz_synth_util.h>
 #include <ags/audio/ags_track.h>
-#include <ags/audio/ags_volume_util.h>
 #include <ags/audio/ags_tremolo_util.h>
+#include <ags/audio/ags_volume_util.h>
+#include <ags/audio/ags_wah_wah_util.h>
 #include <ags/audio/ags_wave.h>
 
 /* audio thread */
@@ -442,6 +443,7 @@
 #include <ags/audio/task/ags_set_device.h>
 #include <ags/audio/task/ags_set_format.h>
 #include <ags/audio/task/ags_set_samplerate.h>
+#include <ags/audio/task/ags_set_presets.h>
 #include <ags/audio/task/ags_start_sequencer.h>
 #include <ags/audio/task/ags_start_soundcard.h>
 #include <ags/audio/task/ags_stop_sequencer.h>

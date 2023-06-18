@@ -21,11 +21,15 @@
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_playback.h>
 
 #include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_channel_thread.h>
+
+#include <ags/audio/fx/ags_fx_buffer_channel.h>
+#include <ags/audio/fx/ags_fx_buffer_channel_processor.h>
 
 #include <math.h>
 
@@ -601,9 +605,11 @@ ags_audio_thread_run(AgsThread *thread)
   
   ags_task_launcher_run(task_launcher);
   
-  if(processing){
-    audio = NULL;
+  audio = NULL;
 
+  playback_domain = NULL;
+
+  if(processing){
     g_object_get(audio_thread,
 		 "audio", &audio,
 		 NULL);
@@ -875,14 +881,74 @@ ags_audio_thread_run(AgsThread *thread)
       g_mutex_unlock(&(audio_thread->done_mutex));
     }
 
-    /* unref */
-    if(audio != NULL){
-      g_object_unref(audio);
-    }
+    if(processing){
+      AgsChannel *start_input, *input;
+      
+      GList *start_list, *list;
 
-    if(playback_domain != NULL){
-      g_object_unref(playback_domain);
+      input =
+	start_input = ags_audio_get_input(audio);
+
+      if(start_input != NULL){
+	g_object_ref(start_input);
+      }
+      
+      while(input != NULL){
+	AgsChannel *next;
+	
+	if(sound_scope >= 0 &&
+	   sound_scope < AGS_SOUND_SCOPE_LAST){
+	  list =
+	    start_list = ags_channel_get_play(input);
+
+	  while((list = ags_recall_find_type(list, AGS_TYPE_FX_BUFFER_CHANNEL_PROCESSOR)) != NULL){
+	    if(ags_recall_get_sound_scope(list->data) == sound_scope){
+	      ags_recall_unset_state_flags(list->data,
+					   AGS_SOUND_STATE_RUN_COMPLETED);
+	    }
+	    
+	    list = list->next;
+	  }
+
+	  g_list_free_full(start_list,
+			   g_object_unref);
+
+	  list =
+	    start_list = ags_channel_get_recall(input);
+
+	  while((list = ags_recall_find_type(list, AGS_TYPE_FX_BUFFER_CHANNEL_PROCESSOR)) != NULL){
+	    if(ags_recall_get_sound_scope(list->data) == sound_scope){
+	      ags_recall_unset_state_flags(list->data,
+					   AGS_SOUND_STATE_RUN_COMPLETED);
+	    }
+	    
+	    list = list->next;
+	  }
+
+	  g_list_free_full(start_list,
+			   g_object_unref);
+	}
+
+	next = ags_channel_next(input);
+
+	g_object_unref(input);
+
+	input = next;
+      }
+
+      if(start_input != NULL){
+	g_object_unref(start_input);
+      }
     }
+  }
+  
+  /* unref */
+  if(audio != NULL){
+    g_object_unref(audio);
+  }
+
+  if(playback_domain != NULL){
+    g_object_unref(playback_domain);
   }
   
   if(task_launcher != NULL){

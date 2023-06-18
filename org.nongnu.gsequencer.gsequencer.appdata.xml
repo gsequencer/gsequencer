@@ -40,6 +40,55 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="5.3.10" date="2023-06-18">
+      <description>
+	<p>
+	  Fixes to automation editor.
+	</p>
+	<p>
+	  Fixes to tempo editor.
+	</p>
+      </description>
+    </release>
+
+    <release version="5.3.8" date="2023-06-15">
+      <description>
+	<p>
+	  Various improvements to the automation editor.
+	</p>
+      </description>
+    </release>
+
+    <release version="5.3.6" date="2023-06-11">
+      <description>
+	<p>
+	  Fixed bug ramp automation dialog apply.
+	</p>
+      </description>
+    </release>
+
+    <release version="5.3.5" date="2023-06-11">
+      <description>
+	<p>
+	  Fixed bug with ags-fx-buffer copy multiple times, causing random volume change.
+	</p>
+	<p>
+	  Fixed automation editor scrollbar, missing connect of callback.
+	</p>
+      </description>
+    </release>
+
+    <release version="5.3.2" date="2023-06-07">
+      <description>
+	<p>
+	  Improved wah-wah.
+	</p>
+	<p>
+	  Fixed AgsSF2Synth and AgsSFZSynth persistence of some controls in XML read/write.
+	</p>
+      </description>
+    </release>
+
     <release version="5.3.0" date="2023-06-04">
       <description>
 	<p>

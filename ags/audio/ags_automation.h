@@ -131,6 +131,8 @@ gint ags_automation_sort_func(gconstpointer a,
 GList* ags_automation_add(GList *automation,
 			  AgsAutomation *new_automation);
 
+GList* ags_automation_remove_all_empty(GList *automation);
+
 GObject* ags_automation_get_audio(AgsAutomation *automation);
 void ags_automation_set_audio(AgsAutomation *automation,
 			      GObject *audio);

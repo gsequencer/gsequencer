@@ -665,6 +665,8 @@ ags_port_set_property(GObject *gobject,
       AgsAutomation *automation;
       
       automation = g_value_get_pointer(value);
+      
+      g_rec_mutex_lock(port_mutex);
 
       if(g_list_find(port->automation, automation) != NULL){
 	g_rec_mutex_unlock(port_mutex);
@@ -674,10 +676,9 @@ ags_port_set_property(GObject *gobject,
 
       if(automation != NULL){
 	g_object_ref(automation);
+	port->automation = ags_automation_add(port->automation,
+					      automation);      
       }
-
-      port->automation = ags_automation_add(port->automation,
-					    automation);
       
       g_rec_mutex_unlock(port_mutex);
     }
