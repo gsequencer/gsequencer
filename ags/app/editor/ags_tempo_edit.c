@@ -1671,7 +1671,7 @@ ags_tempo_edit_find_first_drawn_func(AgsTempoEdit *tempo_edit,
 		      (guint) floor((double) tempo_length / 2.0));
   c_list = tempo_last;
   
-  bisect_steps = (guint) floor((tempo_length - 1) / 2.0);
+  bisect_steps = (guint) floor((tempo_length) / 2.0);
   nth_bisect = 0;
   
   while(bisect_steps > 0){
@@ -1679,6 +1679,10 @@ ags_tempo_edit_find_first_drawn_func(AgsTempoEdit *tempo_edit,
 
     cmp_val_0 = 0;
     cmp_val_1 = 0;
+
+    if(a_list == b_list){
+      b_list = b_list->next;
+    }
     
     if(a_list != NULL &&
        b_list != NULL){
@@ -1692,9 +1696,14 @@ ags_tempo_edit_find_first_drawn_func(AgsTempoEdit *tempo_edit,
 
     retval = a_list;
     
-    if(cmp_val_0 == 0 ||
-       cmp_val_0 < 0){
+    if(cmp_val_0 <= 0){
+      retval = a_list;
+    }else{
       retval = b_list;
+    }
+
+    if(b_list == c_list){
+      c_list = c_list->next;
     }
     
     if(b_list != NULL &&
@@ -1707,31 +1716,37 @@ ags_tempo_edit_find_first_drawn_func(AgsTempoEdit *tempo_edit,
       break;
     }
 
-    if(cmp_val_1 == 0 ||
-       cmp_val_1 < 0){
-      retval = c_list;
+    if(cmp_val_1 <= 0){
+      retval = b_list;
     }
 
     nth_bisect++;
 
     if(retval == a_list){
+      if(cmp_val_0 == 0){
+	break;
+      }
+
       tempo_length = g_list_position(a_list, b_list) + 1;
-      bisect_steps = (gint) floor((double) (tempo_length - 1) / 2.0);
-      
+      bisect_steps = (gint) floor((double) (tempo_length) / 2.0);
+
+      a_list = a_list->next;
       c_list = b_list->prev;
 
       b_list = g_list_nth(a_list,
 			  bisect_steps);
     }else if(retval == b_list){
+      if(cmp_val_1 == 0){
+	break;
+      }
+
       tempo_length = g_list_position(a_list, b_list) + 1;
-      bisect_steps = (gint) floor((double) (tempo_length - 1) / 2.0);
+      bisect_steps = (gint) floor((double) (tempo_length) / 2.0);
 
-      a_list = b_list;
+      a_list = b_list->next;
 
-      b_list = g_list_nth(a_list,
+      b_list = g_list_nth(b_list->next,
 			  bisect_steps);
-    }else if(retval == c_list){
-      break;
     }
   }
   

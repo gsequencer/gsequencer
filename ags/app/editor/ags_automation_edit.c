@@ -2673,29 +2673,30 @@ ags_automation_edit_find_first_drawn_func(AgsAutomationEdit *automation_edit,
     nth_bisect++;
 
     if(retval == a_list){
-      automation_length = g_list_position(a_list, b_list) + 1;
-      bisect_steps = (gint) floor((double) (automation_length) / 2.0);
-      
-      c_list = b_list;
-
-      b_list = g_list_nth(a_list,
-			  bisect_steps);
-
       if(cmp_val_0 == 0){
 	break;
       }
-    }else if(retval == b_list){
-      automation_length = g_list_position(b_list, c_list) + 1;
+
+      automation_length = g_list_position(a_list, b_list) + 1;
       bisect_steps = (gint) floor((double) (automation_length) / 2.0);
 
-      a_list = b_list;
+      a_list = a_list->next;
+      c_list = b_list->prev;
 
-      b_list = g_list_nth(b_list,
+      b_list = g_list_nth(a_list,
 			  bisect_steps);
-
+    }else if(retval == b_list){
       if(cmp_val_1 == 0){
 	break;
       }
+
+      automation_length = g_list_position(b_list->next, c_list) + 1;
+      bisect_steps = (gint) floor((double) (automation_length) / 2.0);
+
+      a_list = b_list->next;
+
+      b_list = g_list_nth(b_list->next,
+			  bisect_steps);
     }
   }
   
