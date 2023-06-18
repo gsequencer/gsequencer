@@ -2,6 +2,7 @@ ags (5.3.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed missing restore of MIDI preferences in UI
+	* minor improvements
 
 ags (5.3.10)
 
