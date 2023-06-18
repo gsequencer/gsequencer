@@ -56,6 +56,7 @@ ags_automation_edit_vscrollbar_value_changed(GtkAdjustment *adjustment, AgsAutom
 void
 ags_automation_edit_hscrollbar_value_changed(GtkAdjustment *adjustment, AgsAutomationEdit *automation_edit)
 {
+  AgsCompositeEditor *composite_editor;  
   GtkWidget *editor;
   
   AgsApplicationContext *application_context;
@@ -64,6 +65,8 @@ ags_automation_edit_hscrollbar_value_changed(GtkAdjustment *adjustment, AgsAutom
   gdouble value;
 
   application_context = ags_application_context_get_instance();
+
+  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
   
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
@@ -79,6 +82,9 @@ ags_automation_edit_hscrollbar_value_changed(GtkAdjustment *adjustment, AgsAutom
   gtk_adjustment_set_value(AGS_COMPOSITE_EDITOR(editor)->automation_edit->ruler->adjustment,
 			   gui_scale_factor * value);
   gtk_widget_queue_draw((GtkWidget *) AGS_COMPOSITE_EDITOR(editor)->automation_edit->ruler);
+
+  gtk_adjustment_set_value(gtk_scrollbar_get_adjustment(composite_editor->tempo_edit->hscrollbar),
+			   gtk_adjustment_get_value(adjustment));
   
   /* queue draw */
   gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
