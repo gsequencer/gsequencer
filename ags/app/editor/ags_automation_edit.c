@@ -2680,11 +2680,12 @@ ags_automation_edit_find_first_drawn_func(AgsAutomationEdit *automation_edit,
       automation_length = g_list_position(a_list, b_list) + 1;
       bisect_steps = (gint) floor((double) (automation_length) / 2.0);
 
-      a_list = a_list->next;
       c_list = b_list->prev;
 
       b_list = g_list_nth(a_list,
 			  bisect_steps);
+
+      a_list = a_list->next;
     }else if(retval == b_list){
       if(cmp_val_1 == 0){
 	break;
@@ -2695,7 +2696,7 @@ ags_automation_edit_find_first_drawn_func(AgsAutomationEdit *automation_edit,
 
       a_list = b_list->next;
 
-      b_list = g_list_nth(b_list->next,
+      b_list = g_list_nth(b_list,
 			  bisect_steps);
     }
   }
@@ -2773,6 +2774,10 @@ ags_automation_edit_find_last_drawn_func(AgsAutomationEdit *automation_edit,
 
     cmp_val_0 = 0;
     cmp_val_1 = 0;
+
+    if(a_list == b_list){
+      b_list = b_list->next;
+    }
     
     if(a_list != NULL &&
        b_list != NULL){
@@ -2819,29 +2824,31 @@ ags_automation_edit_find_last_drawn_func(AgsAutomationEdit *automation_edit,
     nth_bisect++;
 
     if(retval == a_list){
+      if(cmp_val_0 == 0){
+	break;
+      }
+
       automation_length = g_list_position(a_list, b_list) + 1;
       bisect_steps = (gint) floor((double) (automation_length) / 2.0);
-      
-      c_list = b_list;
+
+      c_list = b_list->prev;
 
       b_list = g_list_nth(a_list,
 			  bisect_steps);
 
-      if(cmp_val_0 == 0){
-	break;
-      }
+      a_list = a_list->next;
     }else if(retval == b_list){
-      automation_length = g_list_position(b_list, c_list) + 1;
-      bisect_steps = (gint) floor((double) (automation_length) / 2.0);
-
-      a_list = b_list;
-
-      b_list = g_list_nth(b_list,
-			  bisect_steps);
-
       if(cmp_val_1 == 0){
 	break;
       }
+
+      automation_length = g_list_position(b_list->next, c_list) + 1;
+      bisect_steps = (gint) floor((double) (automation_length) / 2.0);
+
+      a_list = b_list->next;
+
+      b_list = g_list_nth(b_list,
+			  bisect_steps);
     }
   }
   

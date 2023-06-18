@@ -1730,11 +1730,12 @@ ags_tempo_edit_find_first_drawn_func(AgsTempoEdit *tempo_edit,
       tempo_length = g_list_position(a_list, b_list) + 1;
       bisect_steps = (gint) floor((double) (tempo_length) / 2.0);
 
-      a_list = a_list->next;
       c_list = b_list->prev;
 
       b_list = g_list_nth(a_list,
 			  bisect_steps);
+
+      a_list = a_list->next;
     }else if(retval == b_list){
       if(cmp_val_1 == 0){
 	break;
@@ -1745,7 +1746,7 @@ ags_tempo_edit_find_first_drawn_func(AgsTempoEdit *tempo_edit,
 
       a_list = b_list->next;
 
-      b_list = g_list_nth(b_list->next,
+      b_list = g_list_nth(b_list,
 			  bisect_steps);
     }
   }
