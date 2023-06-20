@@ -299,14 +299,14 @@ ags_midi_preferences_reset(AgsApplicable *applicable)
 
     ags_midi_preferences_add_sequencer_editor(midi_preferences,
 					      sequencer_editor);
+
+    gtk_widget_show((GtkWidget *) sequencer_editor);
     
     ags_applicable_reset(AGS_APPLICABLE(sequencer_editor));
     ags_connectable_connect(AGS_CONNECTABLE(sequencer_editor));
 
     g_signal_connect(sequencer_editor->remove, "clicked",
 		   G_CALLBACK(ags_midi_preferences_remove_sequencer_editor_callback), midi_preferences);
-
-    gtk_widget_show((GtkWidget *) sequencer_editor);
     
     list = list->next;
   }
