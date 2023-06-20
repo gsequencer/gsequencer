@@ -1,3 +1,10 @@
+ags (5.3.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential SIGSEGV with automation editor
+	* fixed ags-fx-vst3 bug
+	* updated some screenshots of docs
+
 ags (5.3.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

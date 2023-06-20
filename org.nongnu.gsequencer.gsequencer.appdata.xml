@@ -40,6 +40,17 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="5.3.12" date="2023-06-20">
+      <description>
+	<p>
+	  Fixed potential SIGSEGV with VST3.
+	</p>
+	<p>
+	  Fixed potential SIGSEGV with automation editor.
+	</p>
+      </description>
+    </release>
+
     <release version="5.3.10" date="2023-06-18">
       <description>
 	<p>
