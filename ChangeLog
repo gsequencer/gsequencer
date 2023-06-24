@@ -1,3 +1,9 @@
+ags (5.4.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: MIDI v2.0 support
+	* TODO:JK: improved tempo program
+
 ags (5.3.12)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
