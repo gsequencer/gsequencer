@@ -4007,12 +4007,14 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
       line = 0;
       channel_type = G_TYPE_NONE;
       control_name = NULL;
-      
-      g_object_get(first_drawn->data,
-		   "line", &line,
-		   "channel-type", &channel_type,
-		   "control-name", &control_name,
-		   NULL);
+
+      if(first_drawn != NULL){
+	g_object_get(first_drawn->data,
+		     "line", &line,
+		     "channel-type", &channel_type,
+		     "control-name", &control_name,
+		     NULL);
+      }
 
       if(i == line &&
 	 channel_type == automation_edit->channel_type &&
@@ -4142,12 +4144,14 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
     line = 0;
     channel_type = G_TYPE_NONE;
     control_name = NULL;
-      
-    g_object_get(last_drawn->data,
-		 "line", &line,
-		 "channel-type", &channel_type,
-		 "control-name", &control_name,
-		 NULL);
+
+    if(last_drawn != NULL){
+      g_object_get(last_drawn->data,
+		   "line", &line,
+		   "channel-type", &channel_type,
+		   "control-name", &control_name,
+		   NULL);
+    }
     
     if(last_match != NULL &&
        i == line &&
