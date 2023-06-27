@@ -1279,6 +1279,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_audio_buffer_util.h \
 	ags/audio/ags_audio_signal.h \
 	ags/audio/ags_automation.h \
+	ags/audio/ags_automation_control_name_key_manager.h \
 	ags/audio/ags_buffer.h \
 	ags/audio/ags_channel.h \
 	ags/audio/ags_char_buffer_util.h \
@@ -1371,6 +1372,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_audio_buffer_util.c \
 	ags/audio/ags_audio_signal.c \
 	ags/audio/ags_automation.c \
+	ags/audio/ags_automation_control_name_key_manager.c \
 	ags/audio/ags_buffer.c \
 	ags/audio/ags_channel.c \
 	ags/audio/ags_char_buffer_util.c \

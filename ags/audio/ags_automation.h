@@ -87,6 +87,7 @@ struct _AgsAutomation
 
   AgsTimestamp *timestamp;
 
+  gpointer control_key;
   gchar *control_name;
 
   guint steps;
@@ -148,6 +149,10 @@ void ags_automation_set_line(AgsAutomation *automation,
 AgsTimestamp* ags_automation_get_timestamp(AgsAutomation *automation);
 void ags_automation_set_timestamp(AgsAutomation *automation,
 				  AgsTimestamp *timestamp);
+
+gpointer ags_automation_get_control_key(AgsAutomation *automation);
+void ags_automation_set_control_key(AgsAutomation *automation,
+				    gpointer control_key);
 
 gchar* ags_automation_get_control_name(AgsAutomation *automation);
 void ags_automation_set_control_name(AgsAutomation *automation,
