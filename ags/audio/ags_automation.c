@@ -3908,6 +3908,59 @@ ags_automation_find_specifier_with_type_and_line(GList *automation,
 }
 
 /**
+ * ags_automation_filter:
+ * @automation: (element-type AgsAudio.Automation) (transfer none): the #GList-struct containing #AgsAutomation
+ * @specifier: the string specifier to find
+ * @channel_type: the channel #GType
+ * @line: the line
+ *
+ * Filter @automation by @specifier, @channel_type and @line.
+ * 
+ * Returns: (element-type AgsAudio.Automation) (transfer full): the copied and filtered list
+ *
+ * Since: 5.4.0
+ */
+GList*
+ags_automation_filter(GList *automation,
+		      gchar *specifier,
+		      GType channel_type,
+		      guint line)
+{
+  GList *start_list;
+
+  start_list = NULL;
+
+  while(automation != NULL){
+    GType cmp_channel_type;
+
+    gchar *cmp_specifier;
+
+    guint cmp_line;
+
+    cmp_channel_type = ags_automation_get_channel_type(automation->data);
+    cmp_specifier = ags_automation_get_control_name(automation->data);
+    cmp_line = ags_automation_get_line(automation->data);
+
+    if(channel_type == cmp_channel_type &&
+       line == cmp_line &&
+       !g_strcmp0(specifier, cmp_specifier)){
+      start_list = g_list_prepend(start_list,
+				  automation->data);
+
+      g_object_ref(automation->data);
+    }
+
+    g_free(cmp_specifier);
+    
+    automation = automation->next;
+  }
+
+  start_list = g_list_reverse(start_list);
+
+  return(start_list);
+}
+
+/**
  * ags_automation_get_value:
  * @automation: the #AgsAutomation
  * @x: the x-offset

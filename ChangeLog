@@ -3,6 +3,7 @@ ags (5.4.0)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* TODO:JK: MIDI v2.0 support
 	* TODO:JK: improved tempo program
+	* implemented ags_automation_filter()
 	* fixed only return exact match for automation editor
 
 ags (5.3.12)
