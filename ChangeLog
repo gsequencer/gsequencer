@@ -4,6 +4,7 @@ ags (5.4.0)
 	* TODO:JK: MIDI v2.0 support
 	* TODO:JK: improved tempo program
 	* implemented ags_automation_filter()
+	* implemented ags_automation_control_name_key_manager.[ch]
 	* fixed only return exact match for automation editor
 
 ags (5.3.12)

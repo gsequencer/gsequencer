@@ -65,6 +65,7 @@
 #include <ags/audio/ags_audio_buffer_util.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_automation.h>
+#include <ags/audio/ags_automation_control_name_key_manager.h>
 #include <ags/audio/ags_buffer.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_chorus_util.h>

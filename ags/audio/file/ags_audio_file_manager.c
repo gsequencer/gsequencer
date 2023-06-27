@@ -207,6 +207,12 @@ ags_audio_file_manager_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_audio_file_manager_parent_class)->finalize(gobject);
 }
 
+GRecMutex*
+ags_audio_file_manager_get_obj_mutex(AgsAudioFileManager *audio_file_manager)
+{
+  return(&(audio_file_manager->obj_mutex));
+}
+
 /**
  * ags_audio_file_manager_add_audio_file:
  * @audio_file_manager: the #AgsAudioFileManager
