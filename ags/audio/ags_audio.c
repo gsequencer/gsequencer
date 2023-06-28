@@ -11133,6 +11133,13 @@ ags_audio_set_automation(AgsAudio *audio, GList *automation)
 void
 ags_audio_add_automation(AgsAudio *audio, GObject *automation)
 {
+  AgsTimestamp *timestamp;
+
+  GType channel_type;
+  
+  gchar *control_name;
+  
+  gint line;
   gboolean success;
   
   GRecMutex *audio_mutex;
@@ -11145,13 +11152,22 @@ ags_audio_add_automation(AgsAudio *audio, GObject *automation)
   /* get audio mutex */
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
+  timestamp = ags_automation_get_timestamp(automation);
+
+  control_name = ags_automation_get_control_name(automation);
+
+  channel_type = ags_automation_get_channel_type(automation);
+
+  line = ags_automation_get_line(automation);
+
   /* add automation */
   success = FALSE;
   
   g_rec_mutex_lock(audio_mutex);
 
-  if(g_list_find(audio->automation,
-		 automation) == NULL){
+  if(ags_automation_find_near_timestamp_extended(audio->automation, line,
+						 channel_type, control_name,
+						 timestamp) == NULL){
     success = TRUE;
     
     g_object_ref(automation);
@@ -11160,6 +11176,10 @@ ags_audio_add_automation(AgsAudio *audio, GObject *automation)
   }
   
   g_rec_mutex_unlock(audio_mutex);
+
+  g_object_unref(timestamp);
+  
+  g_free(control_name);
 
   if(success){
     g_object_set(automation,

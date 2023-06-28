@@ -18,6 +18,7 @@
  */
 
 #include <ags/audio/ags_program.h>
+#include <ags/audio/ags_program_control_name_key_manager.h>
 
 #include <ags/i18n.h>
 
@@ -70,6 +71,7 @@ void ags_program_insert_native_level_from_clipboard(AgsProgram *program,
 enum{
   PROP_0,
   PROP_TIMESTAMP,
+  PROP_CONTROL_KEY,
   PROP_CONTROL_NAME,
   PROP_MARKER,
 };
@@ -158,6 +160,21 @@ ags_program_class_init(AgsProgramClass *program)
   g_object_class_install_property(gobject,
 				  PROP_TIMESTAMP,
 				  param_spec);
+  
+  /**
+   * AgsProgram:control-key:
+   *
+   * The effect's assigned control key.
+   * 
+   * Since: 5.4.0
+   */
+  param_spec =  g_param_spec_pointer("control-key",
+				     i18n_pspec("control key"),
+				     i18n_pspec("The control key"),
+				     G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CONTROL_KEY,
+				  param_spec);
 
   /**
    * AgsProgram:control-name:
@@ -214,6 +231,7 @@ ags_program_init(AgsProgram *program)
 
   g_object_ref(program->timestamp);
 
+  program->control_key = NULL;
   program->control_name = NULL;
 
   program->port = NULL;
@@ -262,6 +280,19 @@ ags_program_set_property(GObject *gobject,
 
       program->timestamp = timestamp;
 
+      g_rec_mutex_unlock(program_mutex);
+    }
+    break;
+  case PROP_CONTROL_KEY:
+    {
+      gpointer control_key;
+
+      control_key = g_value_get_pointer(value);
+
+      g_rec_mutex_lock(program_mutex);
+
+      program->control_key = control_key;
+      
       g_rec_mutex_unlock(program_mutex);
     }
     break;
@@ -335,6 +366,15 @@ ags_program_get_property(GObject *gobject,
       g_rec_mutex_lock(program_mutex);
 
       g_value_set_object(value, program->timestamp);
+
+      g_rec_mutex_unlock(program_mutex);
+    }
+    break;
+  case PROP_CONTROL_KEY:
+    {
+      g_rec_mutex_lock(program_mutex);
+
+      g_value_set_pointer(value, program->control_key);
 
       g_rec_mutex_unlock(program_mutex);
     }
@@ -1199,6 +1239,14 @@ ags_program_add(GList *program,
   if(ags_program_find_near_timestamp_extended(program,
 					      control_name,
 					      timestamp) == NULL){
+    gpointer control_key;
+    
+    control_key = ags_program_control_name_key_manager_find_program(ags_program_control_name_key_manager_get_instance(),
+								    control_name);
+
+    ags_program_set_control_key(new_program,
+				control_key);
+    
     program = g_list_insert_sorted(program,
 				   new_program,
 				   ags_program_sort_func);
@@ -1207,6 +1255,53 @@ ags_program_add(GList *program,
   g_object_unref(timestamp);
   
   return(program);
+}
+
+/**
+ * ags_program_get_control_key:
+ * @program: the #AgsProgram
+ * 
+ * Get control key.
+ * 
+ * Returns: (transfer full): the control key
+ * 
+ * Since: 5.4.0
+ */
+gpointer
+ags_program_get_control_key(AgsProgram *program)
+{
+  gchar *control_key;
+
+  if(!AGS_IS_PROGRAM(program)){
+    return(NULL);
+  }
+
+  g_object_get(program,
+	       "control-key", &control_key,
+	       NULL);
+
+  return(control_key);
+}
+
+/**
+ * ags_program_set_control_key:
+ * @program: the #AgsProgram
+ * @control_key: the control key
+ * 
+ * Set control key.
+ * 
+ * Since: 5.4.0
+ */
+void
+ags_program_set_control_key(AgsProgram *program, gpointer control_key)
+{
+  if(!AGS_IS_PROGRAM(program)){
+    return;
+  }
+
+  g_object_set(program,
+	       "control-key", control_key,
+	       NULL);
 }
 
 /**
@@ -2734,6 +2829,50 @@ ags_program_find_control_name(GList *program,
   }
 
   return(program);
+}
+
+/**
+ * ags_program_filter:
+ * @program: (element-type AgsAudio.Program) (transfer none): the #GList-struct containing #AgsProgram
+ * @specifier: the string specifier to find
+ *
+ * Filter @program by @specifier.
+ * 
+ * Returns: (element-type AgsAudio.Program) (transfer full): the copied and filtered list
+ *
+ * Since: 5.4.0
+ */
+GList*
+ags_program_filter(GList *program,
+		   gchar *specifier)
+{
+  GList *start_list;
+
+  gpointer control_key;
+
+  start_list = NULL;
+
+  control_key = ags_program_control_name_key_manager_find_program(ags_program_control_name_key_manager_get_instance(),
+								  specifier);
+
+  while(program != NULL){
+    gpointer cmp_control_key;
+
+    cmp_control_key = ags_program_get_control_key(program->data);
+
+    if(control_key == cmp_control_key){
+      start_list = g_list_prepend(start_list,
+				  program->data);
+
+      g_object_ref(program->data);
+    }
+    
+    program = program->next;
+  }
+
+  start_list = g_list_reverse(start_list);
+
+  return(start_list);
 }
 
 /**

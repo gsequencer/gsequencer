@@ -126,6 +126,9 @@ ags_automation_control_name_key_manager_class_init(AgsAutomationControlNameKeyMa
 void
 ags_automation_control_name_key_manager_init(AgsAutomationControlNameKeyManager *automation_control_name_key_manager)
 {
+  /* add automation control name key manager mutex */
+  g_rec_mutex_init(&(automation_control_name_key_manager->obj_mutex));
+
   automation_control_name_key_manager->control_name_key = g_hash_table_new_full(g_str_hash,
 										g_str_equal,
 										g_free,
@@ -224,6 +227,9 @@ ags_automation_control_name_key_manager_find_automation(AgsAutomationControlName
 
   GRecMutex *automation_control_name_key_manager_mutex;
 
+  g_return_val_if_fail(AGS_IS_AUTOMATION_CONTROL_NAME_KEY_MANAGER(automation_control_name_key_manager), NULL);
+  g_return_val_if_fail(control_name != NULL, NULL);
+  
   /* get automation control name key manager mutex */
   automation_control_name_key_manager_mutex = AGS_AUTOMATION_CONTROL_NAME_KEY_MANAGER_GET_OBJ_MUTEX(automation_control_name_key_manager);
 
@@ -285,7 +291,7 @@ ags_automation_control_name_key_manager_new()
   AgsAutomationControlNameKeyManager *automation_control_name_key_manager;
 
   automation_control_name_key_manager = (AgsAutomationControlNameKeyManager *) g_object_new(AGS_TYPE_AUTOMATION_CONTROL_NAME_KEY_MANAGER,
-							    NULL);
+											    NULL);
   
   return(automation_control_name_key_manager);
 }

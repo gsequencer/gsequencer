@@ -18,6 +18,7 @@
  */
 
 #include <ags/audio/ags_automation.h>
+#include <ags/audio/ags_automation_control_name_key_manager.h>
 
 #include <ags/plugin/ags_base_plugin.h>
 #include <ags/plugin/ags_plugin_port.h>
@@ -243,9 +244,9 @@ ags_automation_class_init(AgsAutomationClass *automation)
    * Since: 5.4.0
    */
   param_spec =  g_param_spec_pointer("control-key",
-				    i18n_pspec("control key"),
-				    i18n_pspec("The control key"),
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+				     i18n_pspec("control key"),
+				     i18n_pspec("The control key"),
+				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_CONTROL_KEY,
 				  param_spec);
@@ -1144,11 +1145,16 @@ ags_automation_find_near_timestamp(GList *automation, guint line,
   
   while(!success && current != NULL){
     current_x = 0;
+    current_line = 0;
     
     /* check current - start */
-    g_object_get(current_start->data,
-		 "line", &current_line,
-		 NULL);
+    if(current_start != NULL){
+      g_object_get(current_start->data,
+		   "line", &current_line,
+		   NULL);
+    }else{
+      break;
+    }
     
     if(current_line == line){
       if(timestamp == NULL){
@@ -4020,13 +4026,16 @@ ags_automation_filter(GList *automation,
 		      GType channel_type,
 		      guint line)
 {
+  AgsAutomationControlNameKeyManager *automation_control_name_key_manager;
   GList *start_list;
 
   gpointer control_key;
 
   start_list = NULL;
 
-  control_key = ags_automation_control_name_key_manager_find_automation(ags_automation_control_name_key_manager_get_instance(),
+  automation_control_name_key_manager = ags_automation_control_name_key_manager_get_instance();
+  
+  control_key = ags_automation_control_name_key_manager_find_automation(automation_control_name_key_manager,
 									specifier);
 
   while(automation != NULL){

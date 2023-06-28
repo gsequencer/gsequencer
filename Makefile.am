@@ -1322,6 +1322,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_port_util.h \
 	ags/audio/ags_preset.h \
 	ags/audio/ags_program.h \
+	ags/audio/ags_program_control_name_key_manager.h \
 	ags/audio/ags_recall_audio.h \
 	ags/audio/ags_recall_audio_run.h \
 	ags/audio/ags_recall_audio_signal.h \
@@ -1415,6 +1416,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_port_util.c \
 	ags/audio/ags_preset.c \
 	ags/audio/ags_program.c \
+	ags/audio/ags_program_control_name_key_manager.c \
 	ags/audio/ags_recall_audio.c \
 	ags/audio/ags_recall_audio_run.c \
 	ags/audio/ags_recall_audio_signal.c \
