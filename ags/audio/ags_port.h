@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -134,6 +134,7 @@ void ags_port_safe_set_property(AgsPort *port, gchar *property_name, GValue *val
 GList* ags_port_find_specifier(GList *port, gchar *specifier);
 GList* ags_port_find_plugin_port(GList *port, GObject *plugin_port);
 
+GList* ags_port_get_automation(AgsPort *port);
 void ags_port_add_automation(AgsPort *port,
 			     GObject *automation);
 void ags_port_remove_automation(AgsPort *port,

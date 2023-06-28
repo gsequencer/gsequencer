@@ -3790,12 +3790,7 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
 
   GtkAllocation allocation;
 
-  GType channel_type;
-
-  GList *start_list_automation, *list_automation, *tmp_automation;
-  GList *start_list_acceleration, *list_acceleration, *tmp_acceleration;
-
-  gchar *control_name;
+  GList *start_list_automation, *list_automation;
 
   guint width;
   gdouble zoom_factor;
@@ -3874,12 +3869,15 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
   timestamp->flags |= AGS_TIMESTAMP_OFFSET;
 
   start_list_automation = ags_audio_get_automation(selected_machine->audio);
-  start_list_automation = ags_automation_remove_all_empty(start_list_automation);
+
+#if 0
+ start_list_automation = ags_automation_remove_all_empty(start_list_automation);
   
   ags_audio_set_automation(selected_machine->audio,
 			   g_list_copy_deep(start_list_automation,
 					    g_object_ref,
 					    NULL));
+#endif
   
   timestamp->timer.ags_offset.offset = (guint64) AGS_AUTOMATION_DEFAULT_OFFSET * floor((double) x0 / (double) AGS_AUTOMATION_DEFAULT_OFFSET);
     
@@ -3895,22 +3893,78 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
   while(notebook != NULL &&
 	(i = ags_notebook_next_active_tab(notebook,
 					  i)) != -1){
+    AgsChannel *start_output, *start_input;
+    AgsChannel *nth_channel;
     AgsAcceleration *first_match;
     AgsAcceleration *last_match;
 
+    GList *start_list_automation, *list_automation;
     GList *start_list, *list;
     GList *first_drawn;
     GList *last_drawn;
     GList *first_start_acceleration, *first_acceleration;
     GList *last_start_acceleration, *last_acceleration;
+    GList *start_play_port, *play_port;
+    GList *start_recall_port, *recall_port;
     
   ags_automation_edit_draw_automation_LOOP:      
 
+    start_output = ags_audio_get_output(selected_machine->audio);
+    start_input = ags_audio_get_input(selected_machine->audio);
+    
+    start_list_automation = NULL;
+	
+    play_port = NULL;
+    recall_port = NULL;
+    
+    if(automation_edit->channel_type == AGS_TYPE_OUTPUT){
+      nth_channel = ags_channel_nth(start_output,
+				    i);
+	  
+      play_port =
+	start_play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
+											 automation_edit->control_name,
+											 TRUE);
+
+      if(nth_channel != NULL){
+	g_object_unref(nth_channel);
+      }
+    }else if(automation_edit->channel_type == AGS_TYPE_INPUT){
+      nth_channel = ags_channel_nth(start_input,
+				    i);
+	  
+      play_port =
+	start_play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
+											 automation_edit->control_name,
+											 TRUE);
+
+      if(nth_channel != NULL){
+	g_object_unref(nth_channel);
+      }
+    }else{
+      play_port =
+	start_play_port = ags_audio_collect_all_audio_ports_by_specifier_and_context(selected_machine->audio,
+										     automation_edit->control_name,
+										     TRUE);
+    }
+
+    if(start_output != NULL){
+      g_object_unref(start_output);
+    }
+
+    if(start_input != NULL){
+      g_object_unref(start_input);
+    }
+
+#if 0
     start_list = ags_automation_filter(start_list_automation,
 				       automation_edit->control_name,
 				       automation_edit->channel_type,
 				       i);
-
+#else
+    start_list = ags_port_get_automation(play_port->data);
+#endif
+    
     first_drawn = ags_automation_edit_find_first_drawn_func(automation_edit,
 							    start_list);
 
