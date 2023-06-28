@@ -1722,6 +1722,34 @@ ags_port_find_plugin_port(GList *port, GObject *plugin_port)
 }
 
 /**
+ * ags_port_get_automation:
+ * @port: the #AgsPort
+ *
+ * Get automation.
+ *
+ * Returns: (element-type AgsAudio.Port) (transfer full): get automation #GList-struct
+ *
+ * Since: 5.4.0
+ */
+GList*
+ags_port_get_automation(AgsPort *port)
+{
+  GList *automation;
+  
+  if(!AGS_IS_PORT(port)){
+    return(NULL);
+  }
+
+  automation = NULL;
+
+  g_object_get(port,
+	       "automation", &automation,
+	       NULL);
+
+  return(automation);
+}
+
+/**
  * ags_port_add_automation:
  * @port: the #AgsPort
  * @automation: the #AgsAutomation

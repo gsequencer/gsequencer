@@ -2414,6 +2414,7 @@ ags_audio_get_automation_port
 ags_audio_set_automation_port
 ags_audio_add_automation_port
 ags_audio_remove_automation_port
+ags_audio_remove_all_empty_automation
 ags_audio_get_automation
 ags_audio_set_automation
 ags_audio_add_automation
@@ -2792,6 +2793,7 @@ ags_port_safe_get_property
 ags_port_safe_set_property
 ags_port_find_specifier
 ags_port_find_plugin_port
+ags_port_get_automation
 ags_port_add_automation
 ags_port_remove_automation
 ags_port_new

@@ -437,6 +437,10 @@ void ags_audio_set_automation_port(AgsAudio *audio,
 void ags_audio_add_automation_port(AgsAudio *audio, gchar *control_name);
 void ags_audio_remove_automation_port(AgsAudio *audio, gchar *control_name);
 
+void ags_audio_remove_all_empty_automation(AgsAudio *audio,
+					   guint line,
+					   GType channel_type, gchar *control_name);
+
 GList* ags_audio_get_automation(AgsAudio *audio);
 void ags_audio_set_automation(AgsAudio *audio, GList *automation);
 
