@@ -4329,8 +4329,6 @@ ags_composite_editor_add_acceleration(AgsCompositeEditor *composite_editor,
        AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->channel_type != cmp_channel_type ||
        (!g_strcmp0(AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->control_name,
 		   cmp_control_name)) == FALSE){
-      g_message("automation new");
-    
       automation = ags_automation_new(G_OBJECT(machine->audio),
 				      i,
 				      AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->channel_type, AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->control_name);
@@ -4341,8 +4339,6 @@ ags_composite_editor_add_acceleration(AgsCompositeEditor *composite_editor,
       ags_audio_add_automation(machine->audio,
 			       (GObject *) automation);
     }else{
-      g_message("automation found");
-
       automation = list->data;
     }
 	

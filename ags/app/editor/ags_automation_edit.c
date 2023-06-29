@@ -3819,22 +3819,16 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
     
   selected_machine = composite_editor->selected_machine;
 
-  if(composite_editor->automation_edit->focused_edit == (GtkWidget *) automation_edit){
-    notebook = composite_editor->automation_edit->channel_selector;
-  }else{
-    notebook = NULL;
+  notebook = NULL;
       
-    if(automation_edit->channel_type == G_TYPE_NONE){
-      notebook = NULL;
-    }else if(automation_edit->channel_type == AGS_TYPE_OUTPUT){
-      g_object_get(selected_machine->audio,
-		   "output-lines", &i_stop,
-		   NULL);
-    }else if(automation_edit->channel_type == AGS_TYPE_INPUT){
-      g_object_get(selected_machine->audio,
-		   "input-lines", &i_stop,
-		   NULL);
-    }
+  if(automation_edit->channel_type == AGS_TYPE_OUTPUT){
+    notebook = composite_editor->automation_edit->channel_selector;
+    
+    i_stop = ags_audio_get_output_lines(selected_machine->audio);
+  }else if(automation_edit->channel_type == AGS_TYPE_INPUT){
+    notebook = composite_editor->automation_edit->channel_selector;
+    
+    i_stop = ags_audio_get_input_lines(selected_machine->audio);
   }
     
   composite_toolbar = composite_editor->toolbar;
@@ -4032,18 +4026,18 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
     while(play_port != NULL){
       guint line;
 
-      line = 0;
-
-      g_object_get(play_port->data,
-		   "line", &line,
-		   NULL);
+      line = ags_port_get_line(play_port->data);
 
       if(line == i){
-	break;
+	//	g_message("port -> %d", i);
+	
+	goto ags_automation_edit_draw_automation_FOUND_PORT;
       }
       
       play_port = play_port->next;
     }
+
+  ags_automation_edit_draw_automation_FOUND_PORT:
 
     start_list = NULL;
 
@@ -4185,8 +4179,8 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
 	  }
 	}
 
-	g_message("found accel[%d] @ line = %d", AGS_ACCELERATION(list_acceleration->data)->x, automation->line);
 #if 0
+	g_message("found accel[%d] @ line = %d", AGS_ACCELERATION(list_acceleration->data)->x, automation->line);
 #endif
 	
 	if(list_acceleration->data != first_match &&
@@ -4251,8 +4245,7 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
 
     i++;
     
-    if(notebook == NULL &&
-       i >= i_stop){
+    if(i >= i_stop){
       break;
     }
   }

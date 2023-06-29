@@ -11312,8 +11312,6 @@ ags_audio_add_automation(AgsAudio *audio, GObject *automation)
 		 cmp_control_name)) == FALSE){
     success = TRUE;
 
-    g_message("audio add");
-    
     g_object_ref(automation);
     audio->automation = ags_automation_add(audio->automation,
 					   (AgsAutomation *) automation);
@@ -11388,8 +11386,6 @@ ags_audio_add_automation(AgsAudio *audio, GObject *automation)
     }
 
     while(play_port != NULL){
-      g_message("play port add");
-    
       ags_port_add_automation(play_port->data,
 			      (GObject *) automation);
 
@@ -11397,8 +11393,6 @@ ags_audio_add_automation(AgsAudio *audio, GObject *automation)
     }
 
     while(recall_port != NULL){
-      g_message("recall port add");
-    
       ags_port_add_automation(recall_port->data,
 			      (GObject *) automation);
 

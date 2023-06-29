@@ -193,7 +193,7 @@ ags_port_class_init(AgsPortClass *port)
    */
   param_spec = g_param_spec_uint("line",
 				 i18n_pspec("assigned line"),
-				 i18n_pspec("The line it is assigned with"),				  
+				 i18n_pspec("The line it is assigned with"),
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -1795,6 +1795,62 @@ ags_port_find_plugin_port(GList *port, GObject *plugin_port)
   }
 
   return(NULL);
+}
+
+/**
+ * ags_port_get_channel_type:
+ * @port: the #AgsPort
+ *
+ * Get channel type.
+ *
+ * Returns: get channel type
+ *
+ * Since: 5.4.0
+ */
+GType
+ags_port_get_channel_type(AgsPort *port)
+{
+  GType channel_type;
+  
+  if(!AGS_IS_PORT(port)){
+    return(NULL);
+  }
+
+  channel_type = G_TYPE_NONE;
+
+  g_object_get(port,
+	       "channel-type", &channel_type,
+	       NULL);
+
+  return(channel_type);
+}
+
+/**
+ * ags_port_get_line:
+ * @port: the #AgsPort
+ *
+ * Get line.
+ *
+ * Returns: get line
+ *
+ * Since: 5.4.0
+ */
+guint
+ags_port_get_line(AgsPort *port)
+{
+  guint line;
+  
+  if(!AGS_IS_PORT(port)){
+    return(NULL);
+  }
+
+  line = 0;
+
+  g_object_get(port,
+	       "line", &line,
+	       NULL);
+
+  return(line);
 }
 
 /**
