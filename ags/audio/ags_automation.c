@@ -1705,41 +1705,25 @@ ags_automation_add(GList *automation,
 {
   AgsTimestamp *timestamp;
 
-  GType channel_type;
-  
   gchar *control_name;
-  
-  gint line;
+
+  gpointer control_key;  
   
   if(!AGS_IS_AUTOMATION(new_automation)){
     return(automation);
   }
-
-  timestamp = ags_automation_get_timestamp(new_automation);
-
+  
   control_name = ags_automation_get_control_name(new_automation);
 
-  channel_type = ags_automation_get_channel_type(new_automation);
+  control_key = ags_automation_control_name_key_manager_find_automation(ags_automation_control_name_key_manager_get_instance(),
+									control_name);
 
-  line = ags_automation_get_line(new_automation);
-
-  if(ags_automation_find_near_timestamp_extended(automation, line,
-						 channel_type, control_name,
-						 timestamp) == NULL){
-    gpointer control_key;
+  ags_automation_set_control_key(new_automation,
+				 control_key);
     
-    control_key = ags_automation_control_name_key_manager_find_automation(ags_automation_control_name_key_manager_get_instance(),
-									  control_name);
-
-    ags_automation_set_control_key(new_automation,
-				   control_key);
-    
-    automation = g_list_insert_sorted(automation,
-				      new_automation,
-				      ags_automation_sort_func);
-  }
-  
-  g_object_unref(timestamp);
+  automation = g_list_insert_sorted(automation,
+				    new_automation,
+				    ags_automation_sort_func);
   
   g_free(control_name);
   
@@ -2041,6 +2025,8 @@ ags_automation_get_control_name(AgsAutomation *automation)
     return(NULL);
   }
 
+  control_name = NULL;
+  
   g_object_get(automation,
 	       "control-name", &control_name,
 	       NULL);

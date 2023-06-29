@@ -8237,6 +8237,8 @@ ags_channel_get_line(AgsChannel *channel)
     return(0);
   }
 
+  line = 0;
+  
   g_object_get(channel,
 	       "line", &line,
 	       NULL);

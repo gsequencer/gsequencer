@@ -2793,6 +2793,8 @@ ags_port_safe_get_property
 ags_port_safe_set_property
 ags_port_find_specifier
 ags_port_find_plugin_port
+ags_port_get_line
+ags_port_get_channel_type
 ags_port_get_automation
 ags_port_add_automation
 ags_port_remove_automation
