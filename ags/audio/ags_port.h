@@ -69,6 +69,10 @@ struct _AgsPort
 
   AgsUUID *uuid;
 
+  guint line;
+
+  GType channel_type;
+  
   gchar *plugin_name;
   gchar *specifier;
 

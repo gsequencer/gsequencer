@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -294,7 +294,32 @@ ags_recall_channel_set_property(GObject *gobject,
       }
 	
       if(source != NULL){
+	GType channel_type;
+
+	GList *start_port, *port;
+	
+	guint line;
+	
 	g_object_ref(source);
+
+	channel_type = (AGS_IS_OUTPUT(source) ? AGS_TYPE_OUTPUT: AGS_TYPE_INPUT);
+
+	line = ags_channel_get_line(source);
+
+	port =
+	  start_port = ags_recall_get_port(recall_channel);
+
+	while(port != NULL){
+	  g_object_set(port->data,
+		       "line", line,
+		       "channel-type", channel_type,
+		       NULL);
+	  
+	  port = port->next;
+	}
+
+	g_list_free_full(start_port,
+			 g_object_unref);
       }
        
       recall_channel->source = source;
