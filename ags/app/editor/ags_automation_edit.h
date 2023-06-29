@@ -155,6 +155,9 @@ struct _AgsAutomationEdit
   gdouble lower;
   gdouble upper;
   gdouble default_value;
+
+  GList *play_port;
+  GList *recall_port;
   
   GtkDrawingArea *drawing_area;
   

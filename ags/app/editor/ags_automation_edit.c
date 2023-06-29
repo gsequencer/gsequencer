@@ -511,6 +511,9 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
 
   automation_edit->default_value = AGS_AUTOMATION_EDIT_DEFAULT_VALUE;
 
+  automation_edit->play_port = NULL;
+  automation_edit->recall_port = NULL;
+
   automation_edit->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
   gtk_widget_set_can_focus((GtkWidget *) automation_edit->drawing_area,
 			   TRUE);
@@ -3800,6 +3803,7 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
   guint offset;
   guint line;
   gint i, i_stop;
+  gboolean initial_play_port;
   
   if(!AGS_IS_AUTOMATION_EDIT(automation_edit)){
     return;
@@ -3869,18 +3873,11 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
   timestamp->flags |= AGS_TIMESTAMP_OFFSET;
 
   start_list_automation = ags_audio_get_automation(selected_machine->audio);
-
-#if 0
- start_list_automation = ags_automation_remove_all_empty(start_list_automation);
-  
-  ags_audio_set_automation(selected_machine->audio,
-			   g_list_copy_deep(start_list_automation,
-					    g_object_ref,
-					    NULL));
-#endif
   
   timestamp->timer.ags_offset.offset = (guint64) AGS_AUTOMATION_DEFAULT_OFFSET * floor((double) x0 / (double) AGS_AUTOMATION_DEFAULT_OFFSET);
-    
+
+  initial_play_port = FALSE;
+  
   i = 0;
 
   if(notebook != NULL){
@@ -3914,56 +3911,167 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
     
     start_list_automation = NULL;
 	
-    play_port = NULL;
-    recall_port = NULL;
-    
-    if(automation_edit->channel_type == AGS_TYPE_OUTPUT){
-      nth_channel = ags_channel_nth(start_output,
-				    i);
-	  
-      play_port =
-	start_play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
-											 automation_edit->control_name,
-											 TRUE);
+    play_port =
+      start_play_port = NULL;
 
-      if(nth_channel != NULL){
-	g_object_unref(nth_channel);
-      }
-    }else if(automation_edit->channel_type == AGS_TYPE_INPUT){
-      nth_channel = ags_channel_nth(start_input,
-				    i);
-	  
-      play_port =
-	start_play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
-											 automation_edit->control_name,
-											 TRUE);
+    recall_port =
+      start_recall_port = NULL;
 
-      if(nth_channel != NULL){
-	g_object_unref(nth_channel);
+    if(initial_play_port ||
+       automation_edit->play_port == NULL){
+      initial_play_port = TRUE;
+      
+      if(automation_edit->channel_type == AGS_TYPE_OUTPUT){
+	nth_channel = ags_channel_nth(start_output,
+				      i);
+
+	/* play port */
+	play_port =
+	  start_play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
+											   automation_edit->control_name,
+											   TRUE);
+
+	while(play_port != NULL){
+	  automation_edit->play_port = g_list_prepend(automation_edit->play_port,
+						      play_port->data);
+
+	  play_port = play_port->next;
+	}
+	
+	play_port = start_play_port;
+
+	/* recall port */
+	recall_port =
+	  start_recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
+											     automation_edit->control_name,
+											     TRUE);
+
+	while(recall_port != NULL){
+	  automation_edit->recall_port = g_list_prepend(automation_edit->recall_port,
+							recall_port->data);
+
+	  recall_port = recall_port->next;
+	}
+	
+	recall_port = start_recall_port;
+
+	/* unref */
+	if(nth_channel != NULL){
+	  g_object_unref(nth_channel);
+	}
+      }else if(automation_edit->channel_type == AGS_TYPE_INPUT){
+	nth_channel = ags_channel_nth(start_input,
+				      i);
+
+	/* play port */
+	play_port =
+	  start_play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
+											   automation_edit->control_name,
+											   TRUE);
+
+	while(play_port != NULL){
+	  automation_edit->play_port = g_list_prepend(automation_edit->play_port,
+						      play_port->data);
+
+	  play_port = play_port->next;
+	}
+
+	play_port = start_play_port;
+
+	/* recall port */
+	recall_port =
+	  start_recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
+											     automation_edit->control_name,
+											     TRUE);
+
+	while(recall_port != NULL){
+	  automation_edit->recall_port = g_list_prepend(automation_edit->recall_port,
+							recall_port->data);
+
+	  recall_port = recall_port->next;
+	}
+
+	recall_port = start_recall_port;
+
+	/* unref */
+	if(nth_channel != NULL){
+	  g_object_unref(nth_channel);
+	}
+      }else{
+	/* play port */
+	play_port =
+	  start_play_port = ags_audio_collect_all_audio_ports_by_specifier_and_context(selected_machine->audio,
+										       automation_edit->control_name,
+										       TRUE);
+
+	while(play_port != NULL){
+	  automation_edit->play_port = g_list_prepend(automation_edit->play_port,
+						      play_port->data);
+
+	  play_port = play_port->next;
+	}
+
+	play_port = start_play_port;
+
+	/* recall port */
+	recall_port =
+	  start_recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
+											     automation_edit->control_name,
+											     TRUE);
+
+	while(recall_port != NULL){
+	  automation_edit->recall_port = g_list_prepend(automation_edit->recall_port,
+							recall_port->data);
+
+	  recall_port = recall_port->next;
+	}
+
+	recall_port = start_recall_port;
       }
+
+      if(start_output != NULL){
+	g_object_unref(start_output);
+      }
+
+      if(start_input != NULL){
+	g_object_unref(start_input);
+      }
+
+      g_list_free_full(start_play_port,
+		       g_object_unref);
+      g_list_free_full(start_recall_port,
+		       g_object_unref);
+
+      start_play_port = automation_edit->play_port;
+      start_recall_port = automation_edit->recall_port;
     }else{
-      play_port =
-	start_play_port = ags_audio_collect_all_audio_ports_by_specifier_and_context(selected_machine->audio,
-										     automation_edit->control_name,
-										     TRUE);
+      start_play_port = automation_edit->play_port;
+      start_recall_port = automation_edit->recall_port;
     }
 
-    if(start_output != NULL){
-      g_object_unref(start_output);
+    play_port = start_play_port;
+
+    while(play_port != NULL){
+      guint line;
+
+      line = 0;
+
+      g_object_get(play_port->data,
+		   "line", &line,
+		   NULL);
+
+      if(line == i){
+	break;
+      }
+      
+      play_port = play_port->next;
     }
 
-    if(start_input != NULL){
-      g_object_unref(start_input);
-    }
+    start_list = NULL;
 
-#if 0
-    start_list = ags_automation_filter(start_list_automation,
-				       automation_edit->control_name,
-				       automation_edit->channel_type,
-				       i);
-#else
-    start_list = ags_port_get_automation(play_port->data);
-#endif
+    if(play_port != NULL){
+      start_list = ags_port_get_automation(play_port->data);
+    }
     
     first_drawn = ags_automation_edit_find_first_drawn_func(automation_edit,
 							    start_list);

@@ -86,6 +86,8 @@ enum{
 enum{
   PROP_0,
   PROP_PLUGIN_NAME,
+  PROP_LINE,
+  PROP_CHANNEL_TYPE,
   PROP_SPECIFIER,
   PROP_CONTROL_PORT,
   PROP_PORT_VALUE_IS_POINTER,
@@ -182,6 +184,40 @@ ags_port_class_init(AgsPortClass *port)
   gobject->finalize = ags_port_finalize;
   
   /* properties */
+  /**
+   * AgsPort:line:
+   *
+   * The port's line.
+   * 
+   * Since: 5.4.0
+   */
+  param_spec = g_param_spec_uint("line",
+				 i18n_pspec("assigned line"),
+				 i18n_pspec("The line it is assigned with"),				  
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LINE,
+				  param_spec);
+
+  /**
+   * AgsPort:channel-type:
+   *
+   * The port's channel type.
+   * 
+   * Since: 5.4.0
+   */
+  param_spec = g_param_spec_gtype("channel-type",
+				  i18n_pspec("channel type"),
+				  i18n_pspec("The channel type it is assigned with"),
+				  G_TYPE_NONE,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CHANNEL_TYPE,
+				  param_spec);
+
   /**
    * AgsPort:plugin-name:
    *
@@ -464,6 +500,10 @@ ags_port_init(AgsPort *port)
   g_rec_mutex_init(&(port->obj_mutex));
 
   /* common fields */
+  port->line = 0;
+  
+  port->channel_type = G_TYPE_NONE;
+
   port->plugin_name = NULL;
   port->specifier = NULL;
 
@@ -501,6 +541,24 @@ ags_port_set_property(GObject *gobject,
   port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
   switch(prop_id){
+  case PROP_LINE:
+    {
+      g_rec_mutex_lock(port_mutex);
+
+      port->line = g_value_get_uint(value);
+
+      g_rec_mutex_unlock(port_mutex);
+    }
+    break;
+  case PROP_CHANNEL_TYPE:
+    {
+      g_rec_mutex_lock(port_mutex);
+
+      port->channel_type = g_value_get_gtype(value);
+
+      g_rec_mutex_unlock(port_mutex);
+    }
+    break;
   case PROP_PLUGIN_NAME:
     {
       gchar *plugin_name;
@@ -705,6 +763,24 @@ ags_port_get_property(GObject *gobject,
   port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
   switch(prop_id){
+  case PROP_LINE:
+    {
+      g_rec_mutex_lock(port_mutex);
+
+      g_value_set_uint(value, port->line);
+
+      g_rec_mutex_unlock(port_mutex);
+    }
+    break;
+  case PROP_CHANNEL_TYPE:
+    {
+      g_rec_mutex_lock(port_mutex);
+
+      g_value_set_gtype(value, port->channel_type);
+
+      g_rec_mutex_unlock(port_mutex);
+    }
+    break;
   case PROP_PLUGIN_NAME:
     {
       g_rec_mutex_lock(port_mutex);
