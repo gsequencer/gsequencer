@@ -4255,8 +4255,13 @@ ags_composite_editor_add_acceleration(AgsCompositeEditor *composite_editor,
  
   AgsAutomation *automation;
   
-  AgsTimestamp *timestamp;
+  AgsTimestamp *timestamp, *cmp_timestamp;
 
+  GType channel_type, cmp_channel_type;
+
+  gchar *control_name, *cmp_control_name;
+  
+  gint cmp_line;
   gint i;
   
   if(!AGS_IS_COMPOSITE_EDITOR(composite_editor) ||
@@ -4299,21 +4304,45 @@ ags_composite_editor_add_acceleration(AgsCompositeEditor *composite_editor,
   ags_composite_editor_add_acceleration_LOOP:
     
     start_list = ags_audio_get_automation(machine->audio);
-	
+    
     list = ags_automation_find_near_timestamp_extended(start_list, i,
 						       AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->channel_type, AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->control_name,
 						       timestamp);
+
+    cmp_timestamp = NULL;
+
+    cmp_line = 0;
+    cmp_channel_type = G_TYPE_NONE;
+    cmp_control_name = NULL;
+  
+    if(list != NULL){
+      cmp_timestamp = ags_automation_get_timestamp(list->data);
+    
+      cmp_line = ags_automation_get_line(list->data);
+      cmp_channel_type = ags_automation_get_channel_type(list->data);
+      cmp_control_name = ags_automation_get_control_name(list->data);
+    }
 	
-    if(list == NULL){
+    if(list == NULL ||
+       ags_timestamp_get_ags_offset(timestamp) != ags_timestamp_get_ags_offset(cmp_timestamp) ||
+       i != cmp_line ||
+       AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->channel_type != cmp_channel_type ||
+       (!g_strcmp0(AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->control_name,
+		   cmp_control_name)) == FALSE){
+      g_message("automation new");
+    
       automation = ags_automation_new(G_OBJECT(machine->audio),
 				      i,
 				      AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->channel_type, AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->control_name);
+
       automation->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
 
       /* add to audio */
       ags_audio_add_automation(machine->audio,
 			       (GObject *) automation);
     }else{
+      g_message("automation found");
+
       automation = list->data;
     }
 	
@@ -4471,14 +4500,14 @@ ags_composite_editor_delete_acceleration(AgsCompositeEditor *composite_editor,
 	
       automation = automation->next;
     }
-      
-    if(notebook == NULL){
-      break;
-    }
 
     ags_audio_remove_all_empty_automation(machine->audio,
 					  i,
 					  AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->channel_type, AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->control_name);
+      
+    if(notebook == NULL){
+      break;
+    }
     
     i++;
   }

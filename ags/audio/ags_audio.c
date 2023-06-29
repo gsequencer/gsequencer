@@ -11252,13 +11252,15 @@ ags_audio_set_automation(AgsAudio *audio, GList *automation)
 void
 ags_audio_add_automation(AgsAudio *audio, GObject *automation)
 {
-  AgsTimestamp *timestamp;
+  AgsTimestamp *timestamp, *cmp_timestamp;
 
-  GType channel_type;
+  GType channel_type, cmp_channel_type;
+
+  GList *list;
   
-  gchar *control_name;
+  gchar *control_name, *cmp_control_name;
   
-  gint line;
+  gint line, cmp_line;
   gboolean success;
   
   GRecMutex *audio_mutex;
@@ -11284,10 +11286,33 @@ ags_audio_add_automation(AgsAudio *audio, GObject *automation)
   
   g_rec_mutex_lock(audio_mutex);
 
-  if(ags_automation_find_near_timestamp_extended(audio->automation, line,
-						 channel_type, control_name,
-						 timestamp) == NULL){
+  list = ags_automation_find_near_timestamp_extended(audio->automation, line,
+						     channel_type, control_name,
+						     timestamp);
+
+  cmp_timestamp = NULL;
+
+  cmp_line = 0;
+  cmp_channel_type = G_TYPE_NONE;
+  cmp_control_name = NULL;
+  
+  if(list != NULL){
+    cmp_timestamp = ags_automation_get_timestamp(list->data);
+    
+    cmp_line = ags_automation_get_line(list->data);
+    cmp_channel_type = ags_automation_get_channel_type(list->data);
+    cmp_control_name = ags_automation_get_control_name(list->data);
+  }
+  
+  if(list == NULL ||
+     ags_timestamp_get_ags_offset(timestamp) != ags_timestamp_get_ags_offset(cmp_timestamp) ||
+     line != cmp_line ||
+     channel_type != cmp_channel_type ||
+     (!g_strcmp0(control_name,
+		 cmp_control_name)) == FALSE){
     success = TRUE;
+
+    g_message("audio add");
     
     g_object_ref(automation);
     audio->automation = ags_automation_add(audio->automation,
@@ -11296,16 +11321,16 @@ ags_audio_add_automation(AgsAudio *audio, GObject *automation)
   
   g_rec_mutex_unlock(audio_mutex);
 
-  g_object_unref(timestamp);
-  
-  g_free(control_name);
-
   if(success){
     AgsChannel *start_output, *start_input;
     AgsChannel *nth_channel;
 
     GList *start_play_port, *play_port;
     GList *start_recall_port, *recall_port;
+    
+    g_object_set(automation,
+		 "audio", audio,
+		 NULL);
 
     start_output = ags_audio_get_output(audio);
     start_input = ags_audio_get_input(audio);
@@ -11363,6 +11388,8 @@ ags_audio_add_automation(AgsAudio *audio, GObject *automation)
     }
 
     while(play_port != NULL){
+      g_message("play port add");
+    
       ags_port_add_automation(play_port->data,
 			      (GObject *) automation);
 
@@ -11370,15 +11397,13 @@ ags_audio_add_automation(AgsAudio *audio, GObject *automation)
     }
 
     while(recall_port != NULL){
+      g_message("recall port add");
+    
       ags_port_add_automation(recall_port->data,
 			      (GObject *) automation);
 
       recall_port = recall_port->next;
     }
-    
-    g_object_set(automation,
-		 "audio", audio,
-		 NULL);
 
     /* unref */
     if(start_output != NULL){
@@ -11395,6 +11420,15 @@ ags_audio_add_automation(AgsAudio *audio, GObject *automation)
     g_list_free_full(start_recall_port,
 		     g_object_unref);
   }
+
+  g_object_unref(timestamp);
+
+  if(cmp_timestamp != NULL){
+    g_object_unref(cmp_timestamp);
+  }
+  
+  g_free(control_name);
+  g_free(cmp_control_name);
 }
 
 /**

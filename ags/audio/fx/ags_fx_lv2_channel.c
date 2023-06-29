@@ -24,6 +24,8 @@
 #include <ags/plugin/ags_base_plugin.h>
 #include <ags/plugin/ags_plugin_port.h>
 
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_input.h>
 #include <ags/audio/ags_port_util.h>
 
 #include <ags/audio/fx/ags_fx_lv2_audio.h>
@@ -647,6 +649,8 @@ ags_fx_lv2_channel_load_port(AgsFxLv2Channel *fx_lv2_channel)
   
   AgsLv2Plugin *lv2_plugin;
 
+  GType channel_type;
+  
   GList *start_plugin_port, *plugin_port;
 
   guint *output_port;
@@ -654,6 +658,7 @@ ags_fx_lv2_channel_load_port(AgsFxLv2Channel *fx_lv2_channel)
   
   guint audio_channel;
   guint pad;
+  guint line;
   guint output_port_count, input_port_count;
   guint control_port_count;
   gboolean has_midiin_event_port;
@@ -720,6 +725,10 @@ ags_fx_lv2_channel_load_port(AgsFxLv2Channel *fx_lv2_channel)
   g_object_get(fx_lv2_channel,
 	       "source", &input,
 	       NULL);
+
+  line = ags_channel_get_line(input);
+
+  channel_type = (AGS_IS_OUTPUT(input)) ? AGS_TYPE_OUTPUT: AGS_TYPE_INPUT;
 
   audio_channel = 0;
   pad = 0;
@@ -836,6 +845,8 @@ ags_fx_lv2_channel_load_port(AgsFxLv2Channel *fx_lv2_channel)
 
 	  /* lv2 port */
 	  lv2_port[nth] = g_object_new(AGS_TYPE_PORT,
+				       "line", line,
+				       "channel-type", channel_type,
 				       "plugin-name", plugin_name,
 				       "specifier", specifier,
 				       "control-port", control_port,

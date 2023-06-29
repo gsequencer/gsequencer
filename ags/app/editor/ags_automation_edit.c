@@ -2724,7 +2724,7 @@ ags_automation_edit_find_last_drawn_func(AgsAutomationEdit *automation_edit,
 
   start_list = automation;
 
-  retval = start_list;
+  retval = NULL;
   
   automation_last = g_list_last(start_list);
   automation_length = g_list_length(start_list);
@@ -2737,32 +2737,24 @@ ags_automation_edit_find_last_drawn_func(AgsAutomationEdit *automation_edit,
   bisect_steps = (guint) floor((automation_length) / 2.0);
   nth_bisect = 0;
 
-  if(start_list == automation_last){
+  if(start_list == automation_last &&
+     start_list != NULL){
     AgsTimestamp *cmp_timestamp;
     
-    GList *cmp_list;
-
     guint64 cmp_offset;
 
-    retval = NULL;
-
-    cmp_list = start_list;
+    cmp_timestamp = ags_automation_get_timestamp(start_list->data);
     
-    if(cmp_list != NULL){
-      cmp_timestamp = ags_automation_get_timestamp(cmp_list->data);
-    
-      cmp_offset = ags_timestamp_get_ags_offset(cmp_timestamp);
+    cmp_offset = ags_timestamp_get_ags_offset(cmp_timestamp);
 
-      if(x_offset <= cmp_offset){
-	retval = g_list_find(automation,
-			     cmp_list->data);
-      }
-      
-      if(cmp_timestamp != NULL){
-	g_object_unref(cmp_timestamp);
-      }
+    if(x_offset <= cmp_offset){
+      retval = start_list;
     }
-
+      
+    if(cmp_timestamp != NULL){
+      g_object_unref(cmp_timestamp);
+    }
+  
     bisect_steps = 0;
   }
   
@@ -2823,8 +2815,7 @@ ags_automation_edit_find_last_drawn_func(AgsAutomationEdit *automation_edit,
       cmp_offset = ags_timestamp_get_ags_offset(cmp_timestamp);
 
       if(x_offset <= cmp_offset){
-	retval = g_list_find(automation,
-			     cmp_list->data);
+	retval = cmp_list;
       }
       
       if(cmp_timestamp != NULL){
@@ -3793,8 +3784,6 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
 
   GtkAllocation allocation;
 
-  GList *start_list_automation, *list_automation;
-
   guint width;
   gdouble zoom_factor;
   gdouble x_offset;
@@ -3872,8 +3861,6 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
   timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
   timestamp->flags |= AGS_TIMESTAMP_OFFSET;
 
-  start_list_automation = ags_audio_get_automation(selected_machine->audio);
-  
   timestamp->timer.ags_offset.offset = (guint64) AGS_AUTOMATION_DEFAULT_OFFSET * floor((double) x0 / (double) AGS_AUTOMATION_DEFAULT_OFFSET);
 
   initial_play_port = FALSE;
@@ -3895,7 +3882,6 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
     AgsAcceleration *first_match;
     AgsAcceleration *last_match;
 
-    GList *start_list_automation, *list_automation;
     GList *start_list, *list;
     GList *first_drawn;
     GList *last_drawn;
@@ -3909,8 +3895,6 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
     start_output = ags_audio_get_output(selected_machine->audio);
     start_input = ags_audio_get_input(selected_machine->audio);
     
-    start_list_automation = NULL;
-	
     play_port =
       start_play_port = NULL;
 
@@ -3934,11 +3918,10 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
 	while(play_port != NULL){
 	  automation_edit->play_port = g_list_prepend(automation_edit->play_port,
 						      play_port->data);
+	  g_object_ref(play_port->data);
 
 	  play_port = play_port->next;
 	}
-	
-	play_port = start_play_port;
 
 	/* recall port */
 	recall_port =
@@ -3949,11 +3932,10 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
 	while(recall_port != NULL){
 	  automation_edit->recall_port = g_list_prepend(automation_edit->recall_port,
 							recall_port->data);
+	  g_object_ref(recall_port->data);
 
 	  recall_port = recall_port->next;
 	}
-	
-	recall_port = start_recall_port;
 
 	/* unref */
 	if(nth_channel != NULL){
@@ -3972,11 +3954,10 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
 	while(play_port != NULL){
 	  automation_edit->play_port = g_list_prepend(automation_edit->play_port,
 						      play_port->data);
+	  g_object_ref(play_port->data);
 
 	  play_port = play_port->next;
 	}
-
-	play_port = start_play_port;
 
 	/* recall port */
 	recall_port =
@@ -3987,11 +3968,10 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
 	while(recall_port != NULL){
 	  automation_edit->recall_port = g_list_prepend(automation_edit->recall_port,
 							recall_port->data);
+	  g_object_ref(recall_port->data);
 
 	  recall_port = recall_port->next;
 	}
-
-	recall_port = start_recall_port;
 
 	/* unref */
 	if(nth_channel != NULL){
@@ -4007,11 +3987,10 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
 	while(play_port != NULL){
 	  automation_edit->play_port = g_list_prepend(automation_edit->play_port,
 						      play_port->data);
+	  g_object_ref(play_port->data);
 
 	  play_port = play_port->next;
 	}
-
-	play_port = start_play_port;
 
 	/* recall port */
 	recall_port =
@@ -4022,11 +4001,10 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
 	while(recall_port != NULL){
 	  automation_edit->recall_port = g_list_prepend(automation_edit->recall_port,
 							recall_port->data);
+	  g_object_ref(recall_port->data);
 
 	  recall_port = recall_port->next;
 	}
-
-	recall_port = start_recall_port;
       }
 
       if(start_output != NULL){
@@ -4207,8 +4185,8 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
 	  }
 	}
 
-#if 0
 	g_message("found accel[%d] @ line = %d", AGS_ACCELERATION(list_acceleration->data)->x, automation->line);
+#if 0
 #endif
 	
 	if(list_acceleration->data != first_match &&
@@ -4278,9 +4256,6 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
       break;
     }
   }
-
-  g_list_free_full(start_list_automation,
-		   g_object_unref);
   
   g_object_unref(timestamp);  
 }

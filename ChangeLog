@@ -7,6 +7,7 @@ ags (5.4.0)
 	* implemented ags_program_filter()
 	* implemented ags_automation_control_name_key_manager.[ch]
 	* implemented ags_program_control_name_key_manager.[ch]
+	* refactored AgsAutomation, AgsPort and related
 	* fixed only return exact match for automation editor
 
 ags (5.3.12)
