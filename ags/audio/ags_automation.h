@@ -87,6 +87,7 @@ struct _AgsAutomation
 
   AgsTimestamp *timestamp;
 
+  gpointer control_key;
   gchar *control_name;
 
   guint steps;
@@ -148,6 +149,10 @@ void ags_automation_set_line(AgsAutomation *automation,
 AgsTimestamp* ags_automation_get_timestamp(AgsAutomation *automation);
 void ags_automation_set_timestamp(AgsAutomation *automation,
 				  AgsTimestamp *timestamp);
+
+gpointer ags_automation_get_control_key(AgsAutomation *automation);
+void ags_automation_set_control_key(AgsAutomation *automation,
+				    gpointer control_key);
 
 gchar* ags_automation_get_control_name(AgsAutomation *automation);
 void ags_automation_set_control_name(AgsAutomation *automation,
@@ -243,6 +248,11 @@ GList* ags_automation_find_specifier_with_type_and_line(GList *automation,
 							gchar *specifier,
 							GType channel_type,
 							guint line);
+
+GList* ags_automation_filter(GList *automation,
+			     gchar *specifier,
+			     GType channel_type,
+			     guint line);
 
 guint ags_automation_get_value(AgsAutomation *automation,
 			       guint x, guint x_end,

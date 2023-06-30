@@ -11060,6 +11060,125 @@ ags_audio_remove_automation_port(AgsAudio *audio, gchar *control_name)
   g_rec_mutex_unlock(audio_mutex);
 }
 
+/**
+ * ags_audio_remove_all_empty_automation:
+ * @audio: the #AgsAudio
+ * @line: the line
+ * @channel_type: channel type
+ * @control_name: the control name
+ * 
+ * Remove all empty automation.
+ * 
+ * Since: 5.4.0
+ */
+void
+ags_audio_remove_all_empty_automation(AgsAudio *audio,
+				      guint line,
+				      GType channel_type, gchar *control_name)
+{  
+  AgsChannel *start_output, *start_input;
+  AgsChannel *nth_channel;
+
+  GList *start_play_port, *play_port;
+  GList *start_recall_port, *recall_port;
+
+  GRecMutex *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+
+  g_rec_mutex_lock(audio_mutex);
+
+  audio->automation = ags_automation_remove_all_empty(audio->automation);
+
+  g_rec_mutex_unlock(audio_mutex);
+
+  start_output = ags_audio_get_output(audio);
+  start_input = ags_audio_get_input(audio);
+
+  play_port =
+    start_play_port = NULL;
+
+  recall_port =
+    start_recall_port = NULL;
+    
+  if(channel_type == AGS_TYPE_OUTPUT){
+    nth_channel = ags_channel_nth(start_output,
+				  line);
+      
+    play_port =
+      start_play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
+										       control_name,
+										       TRUE);
+      
+    recall_port =
+      start_recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
+											 control_name,
+											 FALSE);
+
+    if(nth_channel != NULL){
+      g_object_unref(nth_channel);
+    }
+  }else if(channel_type == AGS_TYPE_INPUT){
+    nth_channel = ags_channel_nth(start_input,
+				  line);
+
+    play_port =
+      start_play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
+										       control_name,
+										       TRUE);
+
+    recall_port =
+      start_recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
+											 control_name,
+											 FALSE);
+
+    if(nth_channel != NULL){
+      g_object_unref(nth_channel);
+    }
+  }else{
+    play_port =
+      start_play_port = ags_audio_collect_all_audio_ports_by_specifier_and_context(audio,
+										   control_name,
+										   TRUE);
+	
+    recall_port =
+      start_recall_port = ags_audio_collect_all_audio_ports_by_specifier_and_context(audio,
+										     control_name,
+										     FALSE);
+  }
+
+  while(play_port != NULL){
+    AGS_PORT(play_port->data)->automation = ags_automation_remove_all_empty(AGS_PORT(play_port->data)->automation);
+
+    play_port = play_port->next;
+  }
+
+  while(recall_port != NULL){
+    AGS_PORT(recall_port->data)->automation = ags_automation_remove_all_empty(AGS_PORT(recall_port->data)->automation);
+
+    recall_port = recall_port->next;
+  }
+
+  /* unref */
+  if(start_output != NULL){
+    g_object_unref(start_output);
+  }
+
+  if(start_input != NULL){
+    g_object_unref(start_input);
+  }
+
+  g_list_free_full(start_play_port,
+		   g_object_unref);
+
+  g_list_free_full(start_recall_port,
+		   g_object_unref);
+}
 
 /**
  * ags_audio_get_automation:
@@ -11133,6 +11252,15 @@ ags_audio_set_automation(AgsAudio *audio, GList *automation)
 void
 ags_audio_add_automation(AgsAudio *audio, GObject *automation)
 {
+  AgsTimestamp *timestamp, *cmp_timestamp;
+
+  GType channel_type, cmp_channel_type;
+
+  GList *list;
+  
+  gchar *control_name, *cmp_control_name;
+  
+  gint line, cmp_line;
   gboolean success;
   
   GRecMutex *audio_mutex;
@@ -11145,15 +11273,45 @@ ags_audio_add_automation(AgsAudio *audio, GObject *automation)
   /* get audio mutex */
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
+  timestamp = ags_automation_get_timestamp(automation);
+
+  control_name = ags_automation_get_control_name(automation);
+
+  channel_type = ags_automation_get_channel_type(automation);
+
+  line = ags_automation_get_line(automation);
+
   /* add automation */
   success = FALSE;
   
   g_rec_mutex_lock(audio_mutex);
 
-  if(g_list_find(audio->automation,
-		 automation) == NULL){
-    success = TRUE;
+  list = ags_automation_find_near_timestamp_extended(audio->automation, line,
+						     channel_type, control_name,
+						     timestamp);
+
+  cmp_timestamp = NULL;
+
+  cmp_line = 0;
+  cmp_channel_type = G_TYPE_NONE;
+  cmp_control_name = NULL;
+  
+  if(list != NULL){
+    cmp_timestamp = ags_automation_get_timestamp(list->data);
     
+    cmp_line = ags_automation_get_line(list->data);
+    cmp_channel_type = ags_automation_get_channel_type(list->data);
+    cmp_control_name = ags_automation_get_control_name(list->data);
+  }
+  
+  if(list == NULL ||
+     ags_timestamp_get_ags_offset(timestamp) != ags_timestamp_get_ags_offset(cmp_timestamp) ||
+     line != cmp_line ||
+     channel_type != cmp_channel_type ||
+     (!g_strcmp0(control_name,
+		 cmp_control_name)) == FALSE){
+    success = TRUE;
+
     g_object_ref(automation);
     audio->automation = ags_automation_add(audio->automation,
 					   (AgsAutomation *) automation);
@@ -11162,10 +11320,109 @@ ags_audio_add_automation(AgsAudio *audio, GObject *automation)
   g_rec_mutex_unlock(audio_mutex);
 
   if(success){
+    AgsChannel *start_output, *start_input;
+    AgsChannel *nth_channel;
+
+    GList *start_play_port, *play_port;
+    GList *start_recall_port, *recall_port;
+    
     g_object_set(automation,
 		 "audio", audio,
 		 NULL);
+
+    start_output = ags_audio_get_output(audio);
+    start_input = ags_audio_get_input(audio);
+
+    play_port =
+      start_play_port = NULL;
+
+    recall_port =
+      start_recall_port = NULL;
+    
+    if(channel_type == AGS_TYPE_OUTPUT){
+      nth_channel = ags_channel_nth(start_output,
+				    line);
+      
+      play_port =
+	start_play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
+											 control_name,
+											 TRUE);
+      
+      recall_port =
+	start_recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
+											   control_name,
+											   FALSE);
+
+      if(nth_channel != NULL){
+	g_object_unref(nth_channel);
+      }
+    }else if(channel_type == AGS_TYPE_INPUT){
+      nth_channel = ags_channel_nth(start_input,
+				    line);
+
+      play_port =
+	start_play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
+											 control_name,
+											 TRUE);
+
+      recall_port =
+	start_recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
+											   control_name,
+											   FALSE);
+
+      if(nth_channel != NULL){
+	g_object_unref(nth_channel);
+      }
+    }else{
+      play_port =
+	start_play_port = ags_audio_collect_all_audio_ports_by_specifier_and_context(audio,
+										     control_name,
+										     TRUE);
+	
+      recall_port =
+	start_recall_port = ags_audio_collect_all_audio_ports_by_specifier_and_context(audio,
+										       control_name,
+										       FALSE);
+    }
+
+    while(play_port != NULL){
+      ags_port_add_automation(play_port->data,
+			      (GObject *) automation);
+
+      play_port = play_port->next;
+    }
+
+    while(recall_port != NULL){
+      ags_port_add_automation(recall_port->data,
+			      (GObject *) automation);
+
+      recall_port = recall_port->next;
+    }
+
+    /* unref */
+    if(start_output != NULL){
+      g_object_unref(start_output);
+    }
+
+    if(start_input != NULL){
+      g_object_unref(start_input);
+    }
+
+    g_list_free_full(start_play_port,
+		     g_object_unref);
+
+    g_list_free_full(start_recall_port,
+		     g_object_unref);
   }
+
+  g_object_unref(timestamp);
+
+  if(cmp_timestamp != NULL){
+    g_object_unref(cmp_timestamp);
+  }
+  
+  g_free(control_name);
+  g_free(cmp_control_name);
 }
 
 /**

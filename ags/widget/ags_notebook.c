@@ -371,8 +371,7 @@ ags_notebook_next_active_tab(AgsNotebook *notebook,
 
   g_return_val_if_fail(AGS_IS_NOTEBOOK(notebook), -1);
 
-  list = 
-    start_list = ags_notebook_get_tab(notebook);
+  start_list = ags_notebook_get_tab(notebook);
 
   list = g_list_nth(start_list,
 		    position);

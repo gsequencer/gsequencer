@@ -83,6 +83,7 @@ struct _AgsProgram
 
   AgsTimestamp *timestamp;
 
+  gpointer control_key;
   gchar *control_name;
 
   GObject *port;
@@ -127,6 +128,10 @@ void ags_program_set_audio(AgsProgram *program,
 AgsTimestamp* ags_program_get_timestamp(AgsProgram *program);
 void ags_program_set_timestamp(AgsProgram *program,
 			       AgsTimestamp *timestamp);
+
+gpointer ags_program_get_control_key(AgsProgram *program);
+void ags_program_set_control_key(AgsProgram *program,
+				 gpointer control_key);
 
 gchar* ags_program_get_control_name(AgsProgram *program);
 void ags_program_set_control_name(AgsProgram *program,
@@ -201,6 +206,9 @@ guint ags_program_get_value(AgsProgram *program,
 			    guint x, guint x_end,
 			    gboolean use_prev_on_failure,
 			    GValue *value);
+
+GList* ags_program_filter(GList *program,
+			  gchar *specifier);
 
 AgsProgram* ags_program_new(gchar *control_name);
 

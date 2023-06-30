@@ -155,6 +155,9 @@ struct _AgsAutomationEdit
   gdouble lower;
   gdouble upper;
   gdouble default_value;
+
+  GList *play_port;
+  GList *recall_port;
   
   GtkDrawingArea *drawing_area;
   
@@ -176,17 +179,12 @@ void ags_automation_edit_reset_hscrollbar(AgsAutomationEdit *automation_edit);
 gint ags_automation_edit_compare_x_offset_func(gconstpointer a,
 					       gconstpointer b,
 					       AgsAutomationEdit *automation_edit,
-					       gdouble x_offset,
-					       guint line,
-					       GType channel_type,
-					       gchar *control_name);
+					       gdouble x_offset);
 
 GList* ags_automation_edit_find_first_drawn_func(AgsAutomationEdit *automation_edit,
-						 GList *automation,
-						 guint line);
+						 GList *automation);
 GList* ags_automation_edit_find_last_drawn_func(AgsAutomationEdit *automation_edit,
-						GList *automation,
-						guint line);
+						GList *automation);
 
 /*  */
 void ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit, cairo_t *cr);

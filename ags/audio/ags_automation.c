@@ -18,6 +18,7 @@
  */
 
 #include <ags/audio/ags_automation.h>
+#include <ags/audio/ags_automation_control_name_key_manager.h>
 
 #include <ags/plugin/ags_base_plugin.h>
 #include <ags/plugin/ags_plugin_port.h>
@@ -90,6 +91,7 @@ enum{
   PROP_CHANNEL_TYPE,
   PROP_LINE,
   PROP_TIMESTAMP,
+  PROP_CONTROL_KEY,
   PROP_CONTROL_NAME,
   PROP_STEPS,
   PROP_UPPER,
@@ -235,6 +237,21 @@ ags_automation_class_init(AgsAutomationClass *automation)
 				  param_spec);
   
   /**
+   * AgsAutomation:control-key:
+   *
+   * The effect's assigned control key.
+   * 
+   * Since: 5.4.0
+   */
+  param_spec =  g_param_spec_pointer("control-key",
+				     i18n_pspec("control key"),
+				     i18n_pspec("The control key"),
+				     G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CONTROL_KEY,
+				  param_spec);
+  
+  /**
    * AgsAutomation:control-name:
    *
    * The effect's assigned control name.
@@ -377,6 +394,7 @@ ags_automation_init(AgsAutomation *automation)
 
   g_object_ref(automation->timestamp);
   
+  automation->control_key = NULL;
   automation->control_name = NULL;
 
   automation->steps = 8;
@@ -457,6 +475,19 @@ ags_automation_set_property(GObject *gobject,
       g_rec_mutex_lock(automation_mutex);
 
       automation->channel_type = channel_type;
+      
+      g_rec_mutex_unlock(automation_mutex);
+    }
+    break;
+  case PROP_CONTROL_KEY:
+    {
+      gpointer control_key;
+
+      control_key = g_value_get_pointer(value);
+
+      g_rec_mutex_lock(automation_mutex);
+
+      automation->control_key = control_key;
       
       g_rec_mutex_unlock(automation_mutex);
     }
@@ -711,6 +742,15 @@ ags_automation_get_property(GObject *gobject,
       g_rec_mutex_lock(automation_mutex);
 
       g_value_set_object(value, automation->timestamp);
+
+      g_rec_mutex_unlock(automation_mutex);
+    }
+    break;
+  case PROP_CONTROL_KEY:
+    {
+      g_rec_mutex_lock(automation_mutex);
+
+      g_value_set_pointer(value, automation->control_key);
 
       g_rec_mutex_unlock(automation_mutex);
     }
@@ -1105,11 +1145,16 @@ ags_automation_find_near_timestamp(GList *automation, guint line,
   
   while(!success && current != NULL){
     current_x = 0;
+    current_line = 0;
     
     /* check current - start */
-    g_object_get(current_start->data,
-		 "line", &current_line,
-		 NULL);
+    if(current_start != NULL){
+      g_object_get(current_start->data,
+		   "line", &current_line,
+		   NULL);
+    }else{
+      break;
+    }
     
     if(current_line == line){
       if(timestamp == NULL){
@@ -1660,33 +1705,25 @@ ags_automation_add(GList *automation,
 {
   AgsTimestamp *timestamp;
 
-  GType channel_type;
-  
   gchar *control_name;
-  
-  gint line;
+
+  gpointer control_key;  
   
   if(!AGS_IS_AUTOMATION(new_automation)){
     return(automation);
   }
-
-  timestamp = ags_automation_get_timestamp(new_automation);
-
+  
   control_name = ags_automation_get_control_name(new_automation);
 
-  channel_type = ags_automation_get_channel_type(new_automation);
+  control_key = ags_automation_control_name_key_manager_find_automation(ags_automation_control_name_key_manager_get_instance(),
+									control_name);
 
-  line = ags_automation_get_line(new_automation);
-
-  if(ags_automation_find_near_timestamp_extended(automation, line,
-						 channel_type, control_name,
-						 timestamp) == NULL){
-    automation = g_list_insert_sorted(automation,
-				      new_automation,
-				      ags_automation_sort_func);
-  }
-  
-  g_object_unref(timestamp);
+  ags_automation_set_control_key(new_automation,
+				 control_key);
+    
+  automation = g_list_insert_sorted(automation,
+				    new_automation,
+				    ags_automation_sort_func);
   
   g_free(control_name);
   
@@ -1923,6 +1960,53 @@ ags_automation_set_timestamp(AgsAutomation *automation, AgsTimestamp *timestamp)
 }
 
 /**
+ * ags_automation_get_control_key:
+ * @automation: the #AgsAutomation
+ * 
+ * Get control key.
+ * 
+ * Returns: (transfer full): the control key
+ * 
+ * Since: 5.4.0
+ */
+gpointer
+ags_automation_get_control_key(AgsAutomation *automation)
+{
+  gchar *control_key;
+
+  if(!AGS_IS_AUTOMATION(automation)){
+    return(NULL);
+  }
+
+  g_object_get(automation,
+	       "control-key", &control_key,
+	       NULL);
+
+  return(control_key);
+}
+
+/**
+ * ags_automation_set_control_key:
+ * @automation: the #AgsAutomation
+ * @control_key: the control key
+ * 
+ * Set control key.
+ * 
+ * Since: 5.4.0
+ */
+void
+ags_automation_set_control_key(AgsAutomation *automation, gpointer control_key)
+{
+  if(!AGS_IS_AUTOMATION(automation)){
+    return;
+  }
+
+  g_object_set(automation,
+	       "control-key", control_key,
+	       NULL);
+}
+
+/**
  * ags_automation_get_control_name:
  * @automation: the #AgsAutomation
  * 
@@ -1941,6 +2025,8 @@ ags_automation_get_control_name(AgsAutomation *automation)
     return(NULL);
   }
 
+  control_name = NULL;
+  
   g_object_get(automation,
 	       "control-name", &control_name,
 	       NULL);
@@ -3905,6 +3991,65 @@ ags_automation_find_specifier_with_type_and_line(GList *automation,
   }
 
   return(automation);
+}
+
+/**
+ * ags_automation_filter:
+ * @automation: (element-type AgsAudio.Automation) (transfer none): the #GList-struct containing #AgsAutomation
+ * @specifier: the string specifier to find
+ * @channel_type: the channel #GType
+ * @line: the line
+ *
+ * Filter @automation by @specifier, @channel_type and @line.
+ * 
+ * Returns: (element-type AgsAudio.Automation) (transfer full): the copied and filtered list
+ *
+ * Since: 5.4.0
+ */
+GList*
+ags_automation_filter(GList *automation,
+		      gchar *specifier,
+		      GType channel_type,
+		      guint line)
+{
+  AgsAutomationControlNameKeyManager *automation_control_name_key_manager;
+  GList *start_list;
+
+  gpointer control_key;
+
+  start_list = NULL;
+
+  automation_control_name_key_manager = ags_automation_control_name_key_manager_get_instance();
+  
+  control_key = ags_automation_control_name_key_manager_find_automation(automation_control_name_key_manager,
+									specifier);
+
+  while(automation != NULL){
+    GType cmp_channel_type;
+
+    gpointer cmp_control_key;
+    
+    guint cmp_line;
+
+    cmp_channel_type = ags_automation_get_channel_type(automation->data);
+    cmp_control_key = ags_automation_get_control_key(automation->data);
+    cmp_line = ags_automation_get_line(automation->data);
+
+    if(channel_type == cmp_channel_type &&
+       line == cmp_line &&
+       control_key == cmp_control_key){
+      start_list = g_list_prepend(start_list,
+				  automation->data);
+
+      g_object_ref(automation->data);
+    }
+    
+    automation = automation->next;
+  }
+
+  start_list = g_list_reverse(start_list);
+
+  return(start_list);
 }
 
 /**
