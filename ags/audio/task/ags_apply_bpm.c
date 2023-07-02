@@ -272,6 +272,10 @@ void
 ags_apply_bpm_launch(AgsTask *task)
 {
   AgsApplyBpm *apply_bpm;
+
+  AgsMessageDelivery *message_delivery;
+
+  GList *start_message_queue;
   
   apply_bpm = AGS_APPLY_BPM(task);
   
@@ -281,6 +285,69 @@ ags_apply_bpm_launch(AgsTask *task)
     application_context = (AgsApplicationContext *) apply_bpm->scope;
 
     ags_apply_bpm_application_context(apply_bpm, application_context);
+
+    /* emit message */
+    message_delivery = ags_message_delivery_get_instance();
+
+    start_message_queue = ags_message_delivery_find_sender_namespace(message_delivery,
+								     "libags-audio");
+
+    if(start_message_queue != NULL){
+      AgsMessageEnvelope *message;
+
+      xmlDoc *doc;
+      xmlNode *root_node;
+
+      /* specify message body */
+      doc = xmlNewDoc("1.0");
+
+      root_node = xmlNewNode(NULL,
+			     "ags-command");
+      xmlDocSetRootElement(doc, root_node);    
+
+      xmlNewProp(root_node,
+		 "method",
+		 "AgsApplyBpm::launch");
+
+      /* add message */
+      message = ags_message_envelope_new((GObject *) apply_bpm,
+					 NULL,
+					 doc);
+
+      /* set parameter */
+      message->n_params = 2;
+
+      message->parameter_name = (gchar **) malloc(3 * sizeof(gchar *));
+      message->value = g_new0(GValue,
+			      2);
+
+      /* application-context */
+      message->parameter_name[0] = "application-context";
+    
+      g_value_init(&(message->value[0]),
+		   G_TYPE_OBJECT);
+      g_value_set_object(&(message->value[0]),
+			 application_context);
+
+      /* bpm */
+      message->parameter_name[1] = "bpm";
+    
+      g_value_init(&(message->value[1]),
+		   G_TYPE_DOUBLE);
+      g_value_set_double(&(message->value[1]),
+			 apply_bpm->bpm);
+    
+      /* terminate string vector */
+      message->parameter_name[2] = NULL;
+    
+      /* add message */
+      ags_message_delivery_add_message_envelope(message_delivery,
+						"libags-audio",
+						message);
+
+      g_list_free_full(start_message_queue,
+		       (GDestroyNotify) g_object_unref);
+    }
   }else if(AGS_IS_SOUNDCARD(apply_bpm->scope)){
     GObject *soundcard;
 

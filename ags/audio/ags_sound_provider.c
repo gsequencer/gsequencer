@@ -418,3 +418,48 @@ ags_sound_provider_get_program(AgsSoundProvider *sound_provider)
 
   return(sound_provider_interface->get_program(sound_provider));
 }
+
+/**
+ * ags_sound_provider_set_tempo:
+ * @sound_provider: the #AgsSoundProvider
+ * @tempo: (element-type AgsTempo.Tempo) (transfer full): a #GList-struct containing #AgsTempo
+ * 
+ * Set tempo objects.
+ *
+ * Since: 5.4.1
+ */
+void
+ags_sound_provider_set_tempo(AgsSoundProvider *sound_provider,
+			     GList *tempo)
+{
+  AgsSoundProviderInterface *sound_provider_interface;
+
+  g_return_if_fail(AGS_IS_SOUND_PROVIDER(sound_provider));
+  sound_provider_interface = AGS_SOUND_PROVIDER_GET_INTERFACE(sound_provider);
+  g_return_if_fail(sound_provider_interface->set_tempo);
+
+  sound_provider_interface->set_tempo(sound_provider,
+				      tempo);
+}
+
+/**
+ * ags_sound_provider_get_tempo:
+ * @sound_provider: the #AgsSoundProvider
+ * 
+ * Get tempo objects.
+ *
+ * Returns: (element-type AgsTempo.Tempo) (transfer full): a #GList-struct containing #AgsTempo
+ * 
+ * Since: 5.4.1
+ */
+GList*
+ags_sound_provider_get_tempo(AgsSoundProvider *sound_provider)
+{
+  AgsSoundProviderInterface *sound_provider_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUND_PROVIDER(sound_provider), NULL);
+  sound_provider_interface = AGS_SOUND_PROVIDER_GET_INTERFACE(sound_provider);
+  g_return_val_if_fail(sound_provider_interface->get_tempo, NULL);
+
+  return(sound_provider_interface->get_tempo(sound_provider));
+}

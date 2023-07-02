@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,6 +19,8 @@
 
 #include <ags/audio/thread/ags_audio_loop.h>
 
+#include <ags/audio/ags_sound_provider.h>
+#include <ags/audio/ags_program.h>
 #include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_audio.h>
@@ -29,6 +31,8 @@
 #include <ags/audio/thread/ags_export_thread.h>
 #include <ags/audio/thread/ags_audio_thread.h>
 #include <ags/audio/thread/ags_channel_thread.h>
+
+#include <ags/audio/task/ags_apply_bpm.h>
 
 #include <ags/i18n.h>
 
@@ -658,9 +662,22 @@ ags_audio_loop_run(AgsThread *thread)
 {
   AgsAudioLoop *audio_loop;
 
-  GList *start_queue;
+  AgsTaskLauncher *task_launcher;
+  AgsTimestamp *timestamp;
   
+  AgsApplicationContext *application_context;
+
+  GObject *soundcard;
+
+  GList *start_queue;
+  GList *start_program, *program;
+  GList *start_marker, *marker;
+   
   guint play_audio_ref, play_channel_ref;
+
+  gdouble delay;
+  guint note_offset, delay_counter;
+  guint64 x, x_end;
   
   GRecMutex *thread_mutex;
 
@@ -739,13 +756,79 @@ ags_audio_loop_run(AgsThread *thread)
     }
   }
 
+  /* check tempo */
+  application_context = ags_application_context_get_instance();
+
+  soundcard = ags_sound_provider_get_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context));
+
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
+  
+  /* retrieve position */
+  note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(soundcard));
+  
+  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(soundcard));
+  delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(soundcard));
+
+  x = ((double) note_offset + (delay_counter / delay)) * ((1.0 / AGS_PROGRAM_MINIMUM_MARKER_LENGTH) * AGS_NOTATION_MINIMUM_NOTE_LENGTH);
+  x_end = ((double) (note_offset + 1)) * ((1.0 / AGS_PROGRAM_MINIMUM_MARKER_LENGTH) * AGS_NOTATION_MINIMUM_NOTE_LENGTH);
+
+  program =
+    start_program = ags_sound_provider_get_tempo(AGS_SOUND_PROVIDER(application_context));
+
+  timestamp = ags_timestamp_new();
+
+  timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+  timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+  
+  timestamp->timer.ags_offset.offset = AGS_PROGRAM_DEFAULT_OFFSET * floor(x / AGS_PROGRAM_DEFAULT_OFFSET);
+  
+  while((program = ags_program_find_near_timestamp(program, timestamp)) != NULL){
+    marker = 
+      start_marker = ags_program_get_marker(program->data);
+
+    while(marker != NULL){
+      if(ags_marker_get_x(marker->data) > x_end){
+	break;
+      }
+
+      if(ags_marker_get_x(marker->data) >= x &&
+	 ags_marker_get_x(marker->data) < x_end){
+	AgsApplyBpm *apply_bpm;
+
+	AgsApplicationContext *application_context;
+  
+	application_context = ags_application_context_get_instance();
+
+	/* get task thread */
+	apply_bpm = ags_apply_bpm_new((GObject *) application_context,
+				      ags_marker_get_y(marker->data));
+
+	ags_task_launcher_add_task(task_launcher,
+				   (AgsTask *) apply_bpm);
+
+      }
+      
+      marker = marker->next;
+    }
+
+    g_list_free_full(start_marker,
+		     (GDestroyNotify) g_object_unref);
+    
+    program = program->next;
+  }
+
+  g_list_free_full(start_program,
+		   (GDestroyNotify) g_object_unref);
+
+  g_object_unref(timestamp);
+  
   /* decide if we stop */
   if(play_channel_ref == 0 &&
      play_audio_ref == 0){
     AgsThread *soundcard_thread, *next_soundcard_thread;
     AgsThread *sequencer_thread, *next_sequencer_thread;
     AgsThread *export_thread, *next_export_thread;
-
+    
     gdouble frequency;
 
     /* soundcard thread */
