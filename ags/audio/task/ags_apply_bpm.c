@@ -311,7 +311,7 @@ ags_apply_bpm_launch(AgsTask *task)
 
       /* add message */
       message = ags_message_envelope_new((GObject *) apply_bpm,
-					 NULL,
+					 application_context,
 					 doc);
 
       /* set parameter */

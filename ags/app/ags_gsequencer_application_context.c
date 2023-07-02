@@ -4596,6 +4596,56 @@ ags_gsequencer_application_context_audio_main_loop_thread(GMainLoop *main_loop)
 gboolean
 ags_gsequencer_application_context_message_monitor_timeout(AgsGSequencerApplicationContext *gsequencer_application_context)
 {
+  AgsNavigation *navigation;
+  
+  AgsMessageDelivery *message_delivery;
+
+  GList *start_message_envelope, *message_envelope;
+
+  navigation = ags_ui_provider_get_navigation(AGS_UI_PROVIDER(gsequencer_application_context));
+  
+  /* retrieve message */
+  message_delivery = ags_message_delivery_get_instance();
+
+  message_envelope =
+    start_message_envelope = ags_message_delivery_find_recipient(message_delivery,
+								 "libgsequencer",
+								 (GObject *) gsequencer_application_context);
+  
+  while(message_envelope != NULL){
+    xmlNode *root_node;
+
+    root_node = xmlDocGetRootElement(AGS_MESSAGE_ENVELOPE(message_envelope->data)->doc);
+      
+    if(!xmlStrncmp(root_node->name,
+		   BAD_CAST "ags-command",
+		   12)){
+      if(!xmlStrncmp(xmlGetProp(root_node,
+				"method"),
+		     BAD_CAST "AgsApplyBpm::launch",
+		     20)){
+	gdouble bpm;
+	
+	gint position;
+	
+	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
+				  "bpm");
+	bpm = g_value_get_double(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
+
+	navigation->flags |= AGS_NAVIGATION_BLOCK_BPM;
+
+	gtk_spin_button_set_value(navigation->bpm,
+				  bpm);
+  
+	navigation->flags &= (~AGS_NAVIGATION_BLOCK_BPM);
+      }
+    }
+    
+    message_envelope = message_envelope->next;
+  }
+  
+  g_list_free_full(start_message_envelope,
+		   (GDestroyNotify) g_object_unref);
   
   ags_ui_provider_check_message(AGS_UI_PROVIDER(gsequencer_application_context));
   ags_ui_provider_clean_message(AGS_UI_PROVIDER(gsequencer_application_context));

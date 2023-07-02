@@ -55,6 +55,7 @@ typedef enum{
   AGS_NAVIGATION_BLOCK_TACT   = 1 << 1,
   AGS_NAVIGATION_BLOCK_PLAY   = 1 << 2,
   AGS_NAVIGATION_BLOCK_TIC    = 1 << 3,
+  AGS_NAVIGATION_BLOCK_BPM    = 1 << 4,
 }AgsNavigationFlags;
 
 struct _AgsNavigation
