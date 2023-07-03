@@ -4530,7 +4530,8 @@ ags_composite_editor_add_marker(AgsCompositeEditor *composite_editor,
   AgsTimestamp *timestamp;
 
   AgsApplicationContext *application_context;
-  
+
+  GList *start_program_list, *program_list;
   GList *start_list, *list;
   
   gint i;
@@ -4542,7 +4543,8 @@ ags_composite_editor_add_marker(AgsCompositeEditor *composite_editor,
 
   application_context = ags_application_context_get_instance();
   
-  start_list = ags_sound_provider_get_program(AGS_SOUND_PROVIDER(application_context));
+  start_program_list = ags_sound_provider_get_program(AGS_SOUND_PROVIDER(application_context));
+  start_list = ags_sound_provider_get_tempo(AGS_SOUND_PROVIDER(application_context));
   
   /* check tempo */
   timestamp = ags_timestamp_new();
@@ -4560,11 +4562,16 @@ ags_composite_editor_add_marker(AgsCompositeEditor *composite_editor,
     program = ags_program_new("tempo");
     program->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
 	  
-    /* add to audio */
-    start_list = g_list_prepend(start_list,
-				program);
+    /* add to sound provider */
+    start_program_list = ags_program_add(start_program_list,
+					 program);
     ags_sound_provider_set_program(AGS_SOUND_PROVIDER(application_context),
-				   start_list);
+				   start_program_list);
+
+    start_list = ags_program_add(start_list,
+				 program);
+    ags_sound_provider_set_tempo(AGS_SOUND_PROVIDER(application_context),
+				 start_list);
   }else{
     program = list->data;
   }
@@ -4605,6 +4612,7 @@ ags_composite_editor_delete_marker(AgsCompositeEditor *composite_editor,
   GtkAllocation program_edit_allocation;
 
   GList *start_program, *program;
+  GList *start_list, *list;
 
   gdouble c_range;
   guint g_range;
@@ -4620,6 +4628,7 @@ ags_composite_editor_delete_marker(AgsCompositeEditor *composite_editor,
   application_context = ags_application_context_get_instance();
 
   start_program = ags_sound_provider_get_program(AGS_SOUND_PROVIDER(application_context));
+  start_list = ags_sound_provider_get_tempo(AGS_SOUND_PROVIDER(application_context));
 
   c_range = 240.0;
 
@@ -4638,16 +4647,15 @@ ags_composite_editor_delete_marker(AgsCompositeEditor *composite_editor,
     
   timestamp->timer.ags_offset.offset = AGS_PROGRAM_DEFAULT_OFFSET * floor(x / AGS_PROGRAM_DEFAULT_OFFSET);
 
-  program = start_program;
+  list = start_list;
       
-  while((program = ags_program_find_near_timestamp_extended(program,
-							    "tempo",
-							    timestamp)) != NULL){
+  while((list = ags_program_find_near_timestamp(list,
+						timestamp)) != NULL){
       
-    if(program != NULL){
-      current_program = program->data;
+    if(list != NULL){
+      current_program = list->data;
     }else{
-      program = program->next;
+      list = list->next;
       
       continue;
     }
@@ -4675,13 +4683,18 @@ ags_composite_editor_delete_marker(AgsCompositeEditor *composite_editor,
     }
 
 	
-    program = program->next;
+    list = list->next;
   }
 
-  gtk_widget_queue_draw(composite_editor->tempo_edit->drawing_area);
+  start_program = ags_program_remove_all_empty(start_program);
+  ags_sound_provider_set_program(AGS_SOUND_PROVIDER(application_context),
+				 start_program);  
   
-  g_list_free_full(start_program,
-		   g_object_unref);
+  start_list = ags_program_remove_all_empty(start_list);
+  ags_sound_provider_set_tempo(AGS_SOUND_PROVIDER(application_context),
+			       start_list);
+
+  gtk_widget_queue_draw(composite_editor->tempo_edit->drawing_area);
 }
 
 /**

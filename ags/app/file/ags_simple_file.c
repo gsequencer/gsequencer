@@ -1298,6 +1298,9 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 
 	ags_sound_provider_set_program(AGS_SOUND_PROVIDER(application_context),
 				       program);
+
+	ags_sound_provider_set_tempo(AGS_SOUND_PROVIDER(application_context),
+				     ags_program_filter(program, "tempo"));
       }
     }
 

@@ -121,6 +121,9 @@ gint ags_program_sort_func(gconstpointer a,
 GList* ags_program_add(GList *program,
 		       AgsProgram *new_program);
 
+GList* ags_program_remove_all_empty(GList *automation);
+
+//TODO:JK: remove these 2 functions
 GObject* ags_program_get_audio(AgsProgram *program);
 void ags_program_set_audio(AgsProgram *program,
 			   GObject *audio);
