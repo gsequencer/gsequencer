@@ -1228,6 +1228,8 @@ ags_program_add(GList *program,
   
   gchar *control_name;
   
+  gpointer control_key;
+    
   if(!AGS_IS_PROGRAM(new_program)){
     return(program);
   }
@@ -1236,24 +1238,59 @@ ags_program_add(GList *program,
 
   control_name = ags_program_get_control_name(new_program);
   
-  if(ags_program_find_near_timestamp_extended(program,
-					      control_name,
-					      timestamp) == NULL){
-    gpointer control_key;
+  control_key = ags_program_control_name_key_manager_find_program(ags_program_control_name_key_manager_get_instance(),
+								  control_name);
+  
+  ags_program_set_control_key(new_program,
+			      control_key);
     
-    control_key = ags_program_control_name_key_manager_find_program(ags_program_control_name_key_manager_get_instance(),
-								    control_name);
-
-    ags_program_set_control_key(new_program,
-				control_key);
-    
-    program = g_list_insert_sorted(program,
-				   new_program,
-				   ags_program_sort_func);
-  }
-
+  program = g_list_insert_sorted(program,
+				 new_program,
+				 ags_program_sort_func);  
+  
   g_object_unref(timestamp);
   
+  return(program);
+}
+
+/**
+ * ags_program_remove_all_empty:
+ * @program: (element-type AgsAudio.Program) (transfer none): the #GList-struct containing #AgsProgram
+ * 
+ * Remove all empty @program.
+ * 
+ * Returns: (element-type AgsAudio.Program) (transfer none): the new beginning of @program
+ * 
+ * Since: 5.4.1
+ */
+GList*
+ags_program_remove_all_empty(GList *program)
+{
+  GList *list;
+
+  list = program;
+
+  while(list != NULL){
+    GList *next;
+
+    GRecMutex *program_mutex;
+    
+    next = list->next;
+
+    program_mutex = AGS_PROGRAM_GET_OBJ_MUTEX(list->data);
+
+    g_rec_mutex_lock(program_mutex);
+
+    if(AGS_PROGRAM(list->data)->marker == NULL){
+      program = g_list_delete_link(program,
+				   list);
+    }
+    
+    g_rec_mutex_unlock(program_mutex);
+    
+    list = next;
+  }
+
   return(program);
 }
 

@@ -70,6 +70,10 @@ struct _AgsSoundProviderInterface
   void (*set_program)(AgsSoundProvider *sound_provider,
 		      GList *program);
   GList* (*get_program)(AgsSoundProvider *sound_provider);
+
+  void (*set_tempo)(AgsSoundProvider *sound_provider,
+		    GList *tempo);
+  GList* (*get_tempo)(AgsSoundProvider *sound_provider);
 };
 
 GType ags_sound_provider_get_type();
@@ -105,6 +109,10 @@ GList* ags_sound_provider_get_osc_server(AgsSoundProvider *sound_provider);
 void ags_sound_provider_set_program(AgsSoundProvider *sound_provider,
 				    GList *program);
 GList* ags_sound_provider_get_program(AgsSoundProvider *sound_provider);
+
+void ags_sound_provider_set_tempo(AgsSoundProvider *sound_provider,
+				  GList *tempo);
+GList* ags_sound_provider_get_tempo(AgsSoundProvider *sound_provider);
 
 G_END_DECLS
 

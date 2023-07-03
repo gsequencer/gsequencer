@@ -160,6 +160,9 @@ void ags_audio_application_context_set_osc_server(AgsSoundProvider *sound_provid
 GList* ags_audio_application_context_get_program(AgsSoundProvider *sound_provider);
 void ags_audio_application_context_set_program(AgsSoundProvider *sound_provider,
 					       GList *program);
+GList* ags_audio_application_context_get_tempo(AgsSoundProvider *sound_provider);
+void ags_audio_application_context_set_tempo(AgsSoundProvider *sound_provider,
+					     GList *tempo);
 
 void ags_audio_application_context_prepare(AgsApplicationContext *application_context);
 void ags_audio_application_context_setup(AgsApplicationContext *application_context);
@@ -391,6 +394,9 @@ ags_audio_application_context_sound_provider_interface_init(AgsSoundProviderInte
 
   sound_provider->get_program = ags_audio_application_context_get_program;
   sound_provider->set_program = ags_audio_application_context_set_program;
+
+  sound_provider->get_tempo = ags_audio_application_context_get_tempo;
+  sound_provider->set_tempo = ags_audio_application_context_set_tempo;
 }
 
 void
@@ -442,6 +448,7 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   audio_application_context->osc_server = NULL;
 
   audio_application_context->program = NULL;
+  audio_application_context->tempo = NULL;
 
   audio_application_context->start_loader = FALSE;
 
@@ -602,6 +609,14 @@ ags_audio_application_context_dispose(GObject *gobject)
 
     audio_application_context->program = NULL;
   }
+
+  /* tempo */
+  if(audio_application_context->tempo != NULL){
+    g_list_free_full(audio_application_context->tempo,
+		     g_object_unref);
+
+    audio_application_context->tempo = NULL;
+  }
   
   /* call parent */
   G_OBJECT_CLASS(ags_audio_application_context_parent_class)->dispose(gobject);
@@ -682,6 +697,12 @@ ags_audio_application_context_finalize(GObject *gobject)
   /* program */
   if(audio_application_context->program != NULL){
     g_list_free_full(audio_application_context->program,
+		     g_object_unref);
+  }
+
+  /* tempo */
+  if(audio_application_context->tempo != NULL){
+    g_list_free_full(audio_application_context->tempo,
 		     g_object_unref);
   }
     
@@ -1718,6 +1739,62 @@ ags_audio_application_context_set_program(AgsSoundProvider *sound_provider,
 		   (GDestroyNotify) g_object_unref);
 
   AGS_AUDIO_APPLICATION_CONTEXT(application_context)->program = program;
+
+  g_rec_mutex_unlock(application_context_mutex);
+}
+
+GList*
+ags_audio_application_context_get_tempo(AgsSoundProvider *sound_provider)
+{
+  AgsApplicationContext *application_context;
+
+  GList *tempo;
+
+  GRecMutex *application_context_mutex;
+
+  application_context = AGS_APPLICATION_CONTEXT(sound_provider);
+  
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
+
+  /* get tempo */
+  g_rec_mutex_lock(application_context_mutex);
+  
+  tempo = g_list_copy_deep(AGS_AUDIO_APPLICATION_CONTEXT(application_context)->tempo,
+			   (GCopyFunc) g_object_ref,
+			   NULL);
+
+  g_rec_mutex_unlock(application_context_mutex);
+  
+  return(tempo);
+}
+
+void
+ags_audio_application_context_set_tempo(AgsSoundProvider *sound_provider,
+					GList *tempo)
+{
+  AgsApplicationContext *application_context;
+
+  GRecMutex *application_context_mutex;
+
+  application_context = AGS_APPLICATION_CONTEXT(sound_provider);
+  
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
+
+  /* set tempo */
+  g_rec_mutex_lock(application_context_mutex);
+
+  if(AGS_AUDIO_APPLICATION_CONTEXT(application_context)->tempo == tempo){
+    g_rec_mutex_unlock(application_context_mutex);
+
+    return;
+  }
+
+  g_list_free_full(AGS_AUDIO_APPLICATION_CONTEXT(application_context)->tempo,
+		   (GDestroyNotify) g_object_unref);
+
+  AGS_AUDIO_APPLICATION_CONTEXT(application_context)->tempo = tempo;
 
   g_rec_mutex_unlock(application_context_mutex);
 }

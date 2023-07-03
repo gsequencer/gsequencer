@@ -2692,7 +2692,6 @@ ags_tempo_edit_draw_tempo(AgsTempoEdit *tempo_edit, cairo_t *cr)
   GtkAllocation allocation;
 
   GList *start_list, *list;
-  GList *start_list_program, *list_program;
   GList *start_list_marker, *list_marker;
     
   GList *first_drawn;
@@ -2737,12 +2736,8 @@ ags_tempo_edit_draw_tempo(AgsTempoEdit *tempo_edit, cairo_t *cr)
   
   timestamp->timer.ags_offset.offset = (guint64) AGS_PROGRAM_DEFAULT_OFFSET * floor((double) x0 / (double) AGS_PROGRAM_DEFAULT_OFFSET);
 
-  list_program =
-    start_list_program = ags_sound_provider_get_program(AGS_SOUND_PROVIDER(application_context));
-
   list = 
-    start_list = ags_program_filter(start_list_program,
-				    "tempo");  
+    start_list = ags_sound_provider_get_tempo(AGS_SOUND_PROVIDER(application_context));
   
   first_drawn = ags_tempo_edit_find_first_drawn_func(tempo_edit,
 						     start_list);
@@ -2860,9 +2855,8 @@ ags_tempo_edit_draw_tempo(AgsTempoEdit *tempo_edit, cairo_t *cr)
 		     g_object_unref);
   }
   
-  while((list = ags_program_find_near_timestamp_extended(list,
-							 "tempo",
-							 timestamp)) != NULL){
+  while((list = ags_program_find_near_timestamp(list,
+						timestamp)) != NULL){
     AgsProgram *tempo;
 
     GList *start_list_marker, *list_marker;
@@ -3003,9 +2997,6 @@ ags_tempo_edit_draw_tempo(AgsTempoEdit *tempo_edit, cairo_t *cr)
   
   g_list_free_full(start_list,
 		   g_object_unref);
-
-  g_list_free_full(start_list_program,
-		   g_object_unref);  
 }
 
 void

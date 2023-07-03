@@ -84,6 +84,7 @@ struct _AgsAudioApplicationContext
   GList *osc_server;
 
   GList *program;
+  GList *tempo;
   
   gboolean start_loader;
   
