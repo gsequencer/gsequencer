@@ -329,7 +329,7 @@ ags_select_buffer_dialog_apply(AgsApplicable *applicable)
   delay = ags_soundcard_get_delay(AGS_SOUNDCARD(output_soundcard));
   
   /* get some values */
-  copy_selection = gtk_toggle_button_get_active((GtkToggleButton *) select_buffer_dialog->copy_selection);
+  copy_selection = gtk_check_button_get_active(select_buffer_dialog->copy_selection);
 
   x0 = gtk_spin_button_get_value_as_int(select_buffer_dialog->select_x0);
   x0 = delay * buffer_size * x0;

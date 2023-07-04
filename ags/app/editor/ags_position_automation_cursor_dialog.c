@@ -304,7 +304,7 @@ ags_position_automation_cursor_dialog_apply(AgsApplicable *applicable)
 			     ((x * 16 * 64 / zoom) * (gtk_adjustment_get_upper(hadjustment) / (AGS_AUTOMATION_DEFAULT_LENGTH / zoom))));
   }
   
-  if(gtk_toggle_button_get_active((GtkToggleButton *) position_automation_cursor_dialog->set_focus)){
+  if(gtk_check_button_get_active(position_automation_cursor_dialog->set_focus)){
     gtk_widget_grab_focus(widget);
   }
 }

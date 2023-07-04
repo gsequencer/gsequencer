@@ -297,7 +297,7 @@ ags_position_wave_cursor_dialog_apply(AgsApplicable *applicable)
 			     ((x * 16 * 64 / zoom) * (gtk_adjustment_get_upper(hadjustment) / (AGS_POSITION_WAVE_CURSOR_MAX_CONTROLS / zoom))));
   }
   
-  if(gtk_toggle_button_get_active((GtkToggleButton *) position_wave_cursor_dialog->set_focus)){
+  if(gtk_check_button_get_active(position_wave_cursor_dialog->set_focus)){
     gtk_widget_grab_focus(widget);
   }
 }
