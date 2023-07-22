@@ -759,16 +759,23 @@ ags_audio_loop_run(AgsThread *thread)
   /* check tempo */
   application_context = ags_application_context_get_instance();
 
-  soundcard = ags_sound_provider_get_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context));
+  soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
 
   task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
   
   /* retrieve position */
-  note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(soundcard));
-  
-  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(soundcard));
-  delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(soundcard));
+  note_offset = 0;
 
+  delay = 1.0;
+  delay_counter = 0.0;
+  
+  if(soundcard != NULL){
+    note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(soundcard));
+    
+    delay = ags_soundcard_get_delay(AGS_SOUNDCARD(soundcard));
+    delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(soundcard));
+  }
+  
   x = ((double) note_offset + (delay_counter / delay)) * ((1.0 / AGS_PROGRAM_MINIMUM_MARKER_LENGTH) * AGS_NOTATION_MINIMUM_NOTE_LENGTH);
   x_end = ((double) (note_offset + 1)) * ((1.0 / AGS_PROGRAM_MINIMUM_MARKER_LENGTH) * AGS_NOTATION_MINIMUM_NOTE_LENGTH);
 

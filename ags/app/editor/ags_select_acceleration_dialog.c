@@ -564,7 +564,9 @@ ags_select_acceleration_dialog_reset(AgsApplicable *applicable)
   
   machine = composite_editor->selected_machine;
   
-  if(machine == NULL){
+  if(machine == NULL ||
+     composite_editor->automation_edit == NULL ||
+     composite_editor->automation_edit->focused_edit == NULL){
     return;
   }
   

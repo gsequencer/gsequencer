@@ -967,7 +967,9 @@ ags_ramp_acceleration_dialog_reset(AgsApplicable *applicable)
   
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(ramp_acceleration_dialog->port))));
   
-  if(machine == NULL){
+  if(machine == NULL ||
+     composite_editor->automation_edit == NULL ||
+     composite_editor->automation_edit->focused_edit == NULL){
     return;
   }
   
