@@ -1,3 +1,10 @@
+ags (5.4.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved tempo program restore from XML
+	* improved AgsSelectAcceleration dialog
+	* minor bug-fixes
+
 ags (5.4.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

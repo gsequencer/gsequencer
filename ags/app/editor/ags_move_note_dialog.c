@@ -329,8 +329,8 @@ ags_move_note_dialog_apply(AgsApplicable *applicable)
   move_x = gtk_spin_button_get_value_as_int(move_note_dialog->move_x);
   move_y = gtk_spin_button_get_value_as_int(move_note_dialog->move_y);
 
-  relative = gtk_toggle_button_get_active((GtkToggleButton *) move_note_dialog->relative);
-  absolute = gtk_toggle_button_get_active((GtkToggleButton *) move_note_dialog->absolute);
+  relative = gtk_check_button_get_active(move_note_dialog->relative);
+  absolute = gtk_check_button_get_active(move_note_dialog->absolute);
   
   /* get position and move note */
   g_object_get(audio,

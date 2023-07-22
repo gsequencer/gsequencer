@@ -11478,7 +11478,8 @@ ags_simple_file_read_program_list(AgsSimpleFile *simple_file, xmlNode *node, GLi
 	}
 
 	ags_simple_file_read_program(simple_file, child, &current);
-	list = g_list_prepend(list, current);
+	list = ags_program_add(list,
+			       current);  
 	
 	i++;
       }
@@ -11487,7 +11488,6 @@ ags_simple_file_read_program_list(AgsSimpleFile *simple_file, xmlNode *node, GLi
     child = child->next;
   }
 
-  list = g_list_reverse(list);
   *program = list;
 }
 

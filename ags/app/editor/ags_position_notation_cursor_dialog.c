@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -323,7 +323,7 @@ ags_position_notation_cursor_dialog_apply(AgsApplicable *applicable)
 			     ((x * 16 * 64 / zoom) * (gtk_adjustment_get_upper(hadjustment) / (AGS_NOTATION_DEFAULT_LENGTH / zoom))));
   }
 
-  if(gtk_toggle_button_get_active((GtkToggleButton *) position_notation_cursor_dialog->set_focus)){
+  if(gtk_check_button_get_active(position_notation_cursor_dialog->set_focus)){
     gtk_widget_grab_focus(widget);
   }
   //TODO:JK: implement me

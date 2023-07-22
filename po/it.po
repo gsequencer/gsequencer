@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2023-07-03 22:05+0200\n"
+"POT-Creation-Date: 2023-07-05 16:29+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -143,7 +143,7 @@ msgstr ""
 #: ags/app/editor/ags_remove_sheet_page_dialog.c:153
 #: ags/app/editor/ags_machine_selection.c:156
 #: ags/app/editor/ags_position_automation_cursor_dialog.c:189
-#: ags/app/editor/ags_select_acceleration_dialog.c:247
+#: ags/app/editor/ags_select_acceleration_dialog.c:220
 #: ags/app/editor/ags_select_buffer_dialog.c:211
 #: ags/app/editor/ags_envelope_dialog.c:227
 #: ags/app/editor/ags_add_sheet_page_dialog.c:204
@@ -173,7 +173,7 @@ msgstr ""
 #: ags/app/editor/ags_remove_sheet_page_dialog.c:154
 #: ags/app/editor/ags_machine_selection.c:157
 #: ags/app/editor/ags_position_automation_cursor_dialog.c:190
-#: ags/app/editor/ags_select_acceleration_dialog.c:248
+#: ags/app/editor/ags_select_acceleration_dialog.c:221
 #: ags/app/editor/ags_select_buffer_dialog.c:212
 #: ags/app/editor/ags_envelope_dialog.c:231
 #: ags/app/editor/ags_add_sheet_page_dialog.c:205
@@ -368,7 +368,7 @@ msgstr ""
 #: ags/app/editor/ags_crop_note_dialog.c:212
 #: ags/app/editor/ags_remove_sheet_page_dialog.c:152
 #: ags/app/editor/ags_position_automation_cursor_dialog.c:188
-#: ags/app/editor/ags_select_acceleration_dialog.c:246
+#: ags/app/editor/ags_select_acceleration_dialog.c:219
 #: ags/app/editor/ags_select_buffer_dialog.c:210
 #: ags/app/editor/ags_envelope_dialog.c:223
 #: ags/app/editor/ags_add_sheet_page_dialog.c:203
@@ -758,7 +758,7 @@ msgid "remove page"
 msgstr ""
 
 #: ags/app/editor/ags_composite_toolbar.c:1790
-#: ags/app/editor/ags_select_acceleration_dialog.c:153
+#: ags/app/editor/ags_select_acceleration_dialog.c:149
 msgid "select accelerations"
 msgstr ""
 
@@ -862,19 +862,19 @@ msgstr ""
 msgid "select machines"
 msgstr ""
 
-#: ags/app/editor/ags_select_acceleration_dialog.c:165
+#: ags/app/editor/ags_select_acceleration_dialog.c:161
 #: ags/app/editor/ags_select_buffer_dialog.c:158
 #: ags/app/editor/ags_select_note_dialog.c:159
 msgid "copy selection"
 msgstr ""
 
-#: ags/app/editor/ags_select_acceleration_dialog.c:207
+#: ags/app/editor/ags_select_acceleration_dialog.c:180
 #: ags/app/editor/ags_select_buffer_dialog.c:171
 #: ags/app/editor/ags_select_note_dialog.c:172
 msgid "select x0"
 msgstr ""
 
-#: ags/app/editor/ags_select_acceleration_dialog.c:229
+#: ags/app/editor/ags_select_acceleration_dialog.c:202
 #: ags/app/editor/ags_select_buffer_dialog.c:193
 #: ags/app/editor/ags_select_note_dialog.c:212
 msgid "select x1"

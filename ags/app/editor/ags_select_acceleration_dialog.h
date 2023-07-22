@@ -52,7 +52,7 @@ struct _AgsSelectAccelerationDialog
   
   GtkCheckButton *copy_selection;
 
-  GtkComboBox *port;
+  GtkComboBoxText *port;
 
   GtkSpinButton *select_x0;
 

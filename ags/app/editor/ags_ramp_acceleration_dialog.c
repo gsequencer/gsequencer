@@ -427,13 +427,13 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
     
   notebook = composite_editor->automation_edit->channel_selector;
 
-  channel_type = AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->channel_type;
+  channel_type = focused_automation_edit->channel_type;
   
   if(machine == NULL){
     return;
   }
 
-  specifier = gtk_combo_box_text_get_active_text(ramp_acceleration_dialog->port);
+  specifier = AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->control_name;
   
   audio = machine->audio;
 
@@ -948,8 +948,11 @@ ags_ramp_acceleration_dialog_reset(AgsApplicable *applicable)
   GList *start_port, *port;
 
   gchar **collected_specifier;
+  gchar *control_name;
 
+  gint position;
   guint length;
+  guint i;
 
   ramp_acceleration_dialog = AGS_RAMP_ACCELERATION_DIALOG(applicable);
 
@@ -976,8 +979,14 @@ ags_ramp_acceleration_dialog_reset(AgsApplicable *applicable)
   length = 1;
   
   /* audio */
+  control_name = AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->control_name;
+
   port =
     start_port = ags_audio_collect_all_audio_ports(audio);
+
+  position = -1;
+
+  i = 0;
 
   while(port != NULL){
     AgsPluginPort *plugin_port;
@@ -1012,6 +1021,11 @@ ags_ramp_acceleration_dialog_reset(AgsApplicable *applicable)
       gtk_combo_box_text_append_text(ramp_acceleration_dialog->port,
 				     g_strdup(specifier));
 
+      if(position == -1 &&
+	 !g_strcmp0(control_name, specifier)){
+	position = i;
+      }
+
       /* add to collected specifier */
       collected_specifier = (gchar **) realloc(collected_specifier,
 				     (length + 1) * sizeof(gchar *));
@@ -1019,6 +1033,7 @@ ags_ramp_acceleration_dialog_reset(AgsApplicable *applicable)
       collected_specifier[length] = NULL;
 
       length++;
+      i++;
     }
     
     /* iterate */
@@ -1072,6 +1087,11 @@ ags_ramp_acceleration_dialog_reset(AgsApplicable *applicable)
 	gtk_combo_box_text_append_text(ramp_acceleration_dialog->port,
 				       g_strdup(specifier));
 
+	if(position == -1 &&
+	   !g_strcmp0(control_name, specifier)){
+	  position = i;
+	}
+
 	/* add to collected specifier */
 	collected_specifier = (gchar **) realloc(collected_specifier,
 						 (length + 1) * sizeof(gchar *));
@@ -1079,6 +1099,7 @@ ags_ramp_acceleration_dialog_reset(AgsApplicable *applicable)
 	collected_specifier[length] = NULL;
 
 	length++;
+	i++;
       }
     
       /* iterate */
@@ -1148,6 +1169,11 @@ ags_ramp_acceleration_dialog_reset(AgsApplicable *applicable)
 	gtk_combo_box_text_append_text(ramp_acceleration_dialog->port,
 				       g_strdup(specifier));
 
+	if(position == -1 &&
+	   !g_strcmp0(control_name, specifier)){
+	  position = i;
+	}
+
 	/* add to collected specifier */
 	collected_specifier = (gchar **) realloc(collected_specifier,
 						 (length + 1) * sizeof(gchar *));
@@ -1155,6 +1181,7 @@ ags_ramp_acceleration_dialog_reset(AgsApplicable *applicable)
 	collected_specifier[length] = NULL;
 
 	length++;
+	i++;
       }
     
       /* iterate */
@@ -1170,6 +1197,11 @@ ags_ramp_acceleration_dialog_reset(AgsApplicable *applicable)
     g_object_unref(channel);
 
     channel = next_channel;
+  }
+
+  if(position != -1){
+    gtk_combo_box_set_active(ramp_acceleration_dialog->port,
+			     position);
   }
 
   if(start_channel != NULL){

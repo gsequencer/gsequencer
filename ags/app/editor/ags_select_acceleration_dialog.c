@@ -142,10 +142,6 @@ ags_select_acceleration_dialog_init(AgsSelectAccelerationDialog *select_accelera
   GtkBox *vbox;
   GtkBox *hbox;
   GtkLabel *label;
-  GtkCellRenderer *scope_cell_renderer_text;
-  GtkCellRenderer *port_cell_renderer_text;
-
-  GtkListStore *list_store;
 
   select_acceleration_dialog->connectable_flags = 0;
 
@@ -169,30 +165,7 @@ ags_select_acceleration_dialog_init(AgsSelectAccelerationDialog *select_accelera
 		 GTK_WIDGET(select_acceleration_dialog->copy_selection));  
 
   /* automation combo box */
-  select_acceleration_dialog->port = (GtkComboBox *) gtk_combo_box_new();
-
-  list_store = gtk_list_store_new(2,
-				  G_TYPE_STRING,
-				  G_TYPE_STRING);
-  
-  gtk_combo_box_set_model(select_acceleration_dialog->port,
-			  GTK_TREE_MODEL(list_store));
-
-  scope_cell_renderer_text = gtk_cell_renderer_text_new();
-  gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(select_acceleration_dialog->port),
-			     scope_cell_renderer_text,
-			     FALSE);
-  gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(select_acceleration_dialog->port), scope_cell_renderer_text,
-				 "text", 0,
-				 NULL);
-
-  port_cell_renderer_text = gtk_cell_renderer_text_new();
-  gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(select_acceleration_dialog->port),
-			     port_cell_renderer_text,
-			     FALSE);
-  gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(select_acceleration_dialog->port), port_cell_renderer_text,
-				 "text", 1,
-				 NULL);
+  select_acceleration_dialog->port = (GtkComboBoxText *) gtk_combo_box_text_new();
 
   gtk_box_append(vbox,
 		 GTK_WIDGET(select_acceleration_dialog->port));  
@@ -344,13 +317,9 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
   xmlDoc *clipboard;
   xmlNode *audio_node, *automation_node;
 
-  GtkTreeModel *model;
-  GtkTreeIter iter;
-
   GList *start_list_automation, *list_automation;
   
   xmlChar *buffer;
-  gchar *scope;
   gchar *specifier;
   
   GType channel_type;
@@ -396,7 +365,7 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
 	       NULL);
 
   /* get some values */
-  copy_selection = gtk_check_button_get_active((GtkCheckButton *) select_acceleration_dialog->copy_selection);
+  copy_selection = gtk_check_button_get_active(select_acceleration_dialog->copy_selection);
 
   x0 = (AGS_SELECT_ACCELERATION_DEFAULT_WIDTH / 16) * gtk_spin_button_get_value_as_int(select_acceleration_dialog->select_x0);
 
@@ -415,31 +384,23 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
     xmlDocSetRootElement(clipboard, audio_node);
   }
 
-  model = gtk_combo_box_get_model(GTK_COMBO_BOX(select_acceleration_dialog->port));
-
-  scope = NULL;
-  specifier = NULL;
-
-  if(gtk_combo_box_get_active_iter(GTK_COMBO_BOX(select_acceleration_dialog->port), &iter)){
-    gtk_tree_model_get(model,
-		       &iter,
-		       0, &scope,
-		       1, &specifier,
-		       -1);
-  }
-  
   line = 0;
 
-  channel_type = G_TYPE_NONE;
+  channel_type = focused_automation_edit->channel_type;
 
-  if(!g_strcmp0(scope, "output")){
-    channel_type = AGS_TYPE_OUTPUT;
-  }else if(!g_strcmp0(scope, "input")){
-    channel_type = AGS_TYPE_INPUT;
+  specifier = focused_automation_edit->control_name;
+
+  if(notebook != NULL){
+    line = ags_notebook_next_active_tab(notebook,
+					line);
   }
+  
+  goto ags_select_acceleration_dialog_apply_LOOP;
     
   while((line = ags_notebook_next_active_tab(notebook,
 					     line)) != -1){
+  ags_select_acceleration_dialog_apply_LOOP:
+    
     list_automation = start_list_automation;
 
     while((list_automation = ags_automation_find_specifier_with_type_and_line(list_automation,
@@ -554,8 +515,6 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
 
     line++;
   }
-
-  g_free(specifier);
   
   g_list_free_full(start_list_automation,
 		   (GDestroyNotify) g_object_unref);
@@ -579,22 +538,21 @@ ags_select_acceleration_dialog_reset(AgsApplicable *applicable)
   AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
 
-  GtkListStore *list_store;
-
   AgsAudio *audio;
   AgsChannel *start_channel;
   AgsChannel *channel, *next_channel;
 
   AgsApplicationContext *application_context;
 
-  GtkTreeIter iter;
-  
   GList *start_port, *port;
 
-  gchar **collected_audio_specifier, **collected_input_specifier, **collected_output_specifier;
-
+  gchar **collected_specifier;
+  gchar *control_name;
+  
+  gint position;
   guint length;
-
+  guint i;
+  
   select_acceleration_dialog = AGS_SELECT_ACCELERATION_DIALOG(applicable);
 
   /* application context */
@@ -611,19 +569,23 @@ ags_select_acceleration_dialog_reset(AgsApplicable *applicable)
   }
   
   audio = machine->audio;
-
-  list_store = GTK_LIST_STORE(gtk_combo_box_get_model(select_acceleration_dialog->port));
   
   /*  */  
-  collected_audio_specifier = (gchar **) malloc(sizeof(gchar*));
+  collected_specifier = (gchar **) malloc(sizeof(gchar*));
 
-  collected_audio_specifier[0] = NULL;
+  collected_specifier[0] = NULL;
   length = 1;
   
   /* audio */
+  control_name = AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->control_name;
+
   port =
     start_port = ags_audio_collect_all_audio_ports(audio);
 
+  position = -1;
+
+  i = 0;
+  
   while(port != NULL){
     AgsPluginPort *plugin_port;
 
@@ -649,28 +611,31 @@ ags_select_acceleration_dialog_reset(AgsApplicable *applicable)
     }
     
 #ifdef HAVE_GLIB_2_44
-    contains_control_name = g_strv_contains(collected_audio_specifier,
+    contains_control_name = g_strv_contains(collected_specifier,
 					    specifier);
 #else
-    contains_control_name = ags_strv_contains(collected_audio_specifier,
+    contains_control_name = ags_strv_contains(collected_specifier,
 					      specifier);
 #endif
 
     if(plugin_port != NULL &&
        !contains_control_name){
-      gtk_list_store_append(list_store, &iter);
-      gtk_list_store_set(list_store, &iter,
-			 0, g_strdup("audio"),
-			 1, g_strdup(specifier),
-			 -1);      
+      gtk_combo_box_text_append_text(select_acceleration_dialog->port,
+				     g_strdup(specifier));
 
+      if(position == -1 &&
+	 !g_strcmp0(control_name, specifier)){
+	position = i;
+      }
+      
       /* add to collected specifier */
-      collected_audio_specifier = (gchar **) realloc(collected_audio_specifier,
-						     (length + 1) * sizeof(gchar *));
-      collected_audio_specifier[length - 1] = g_strdup(specifier);
-      collected_audio_specifier[length] = NULL;
+      collected_specifier = (gchar **) realloc(collected_specifier,
+					       (length + 1) * sizeof(gchar *));
+      collected_specifier[length - 1] = g_strdup(specifier);
+      collected_specifier[length] = NULL;
 
       length++;
+      i++;
     }
 
     if(plugin_port != NULL){
@@ -696,11 +661,6 @@ ags_select_acceleration_dialog_reset(AgsApplicable *applicable)
 
   next_channel = NULL;
 
-  collected_output_specifier = (gchar **) malloc(sizeof(gchar*));
-
-  collected_output_specifier[0] = NULL;
-  length = 1;
-
   while(channel != NULL){
     /* output */
     port =
@@ -724,28 +684,31 @@ ags_select_acceleration_dialog_reset(AgsApplicable *applicable)
 		   NULL);
 
 #ifdef HAVE_GLIB_2_44
-      contains_control_name = g_strv_contains(collected_output_specifier,
+      contains_control_name = g_strv_contains(collected_specifier,
 					      specifier);
 #else
-      contains_control_name = ags_strv_contains(collected_output_specifier,
+      contains_control_name = ags_strv_contains(collected_specifier,
 						specifier);
 #endif
 
       if(plugin_port != NULL &&
 	 !contains_control_name){
-	gtk_list_store_append(list_store, &iter);
-	gtk_list_store_set(list_store, &iter,
-			   0, g_strdup("output"),
-			   1, g_strdup(specifier),
-			   -1);      
+	gtk_combo_box_text_append_text(select_acceleration_dialog->port,
+				       g_strdup(specifier));
+
+	if(position == -1 &&
+	   !g_strcmp0(control_name, specifier)){
+	  position = i;
+	}
 
 	/* add to collected specifier */
-	collected_output_specifier = (gchar **) realloc(collected_output_specifier,
-							(length + 1) * sizeof(gchar *));
-	collected_output_specifier[length - 1] = g_strdup(specifier);
-	collected_output_specifier[length] = NULL;
+	collected_specifier = (gchar **) realloc(collected_specifier,
+						 (length + 1) * sizeof(gchar *));
+	collected_specifier[length - 1] = g_strdup(specifier);
+	collected_specifier[length] = NULL;
 
 	length++;
+	i++;
       }
 
       if(plugin_port != NULL){
@@ -788,11 +751,6 @@ ags_select_acceleration_dialog_reset(AgsApplicable *applicable)
 
   next_channel = NULL;
 
-  collected_input_specifier = (gchar **) malloc(sizeof(gchar*));
-
-  collected_input_specifier[0] = NULL;
-  length = 1;
-
   while(channel != NULL){
     /* input */
     port =
@@ -816,28 +774,31 @@ ags_select_acceleration_dialog_reset(AgsApplicable *applicable)
 		   NULL);
 
 #ifdef HAVE_GLIB_2_44
-      contains_control_name = g_strv_contains(collected_input_specifier,
+      contains_control_name = g_strv_contains(collected_specifier,
 					      specifier);
 #else
-      contains_control_name = ags_strv_contains(collected_input_specifier,
+      contains_control_name = ags_strv_contains(collected_specifier,
 						specifier);
 #endif
 
       if(plugin_port != NULL &&
 	 !contains_control_name){
-	gtk_list_store_append(list_store, &iter);
-	gtk_list_store_set(list_store, &iter,
-			   0, g_strdup("input"),
-			   1, g_strdup(specifier),
-			   -1);      
+	gtk_combo_box_text_append_text(select_acceleration_dialog->port,
+				       g_strdup(specifier));
+
+	if(position == -1 &&
+	   !g_strcmp0(control_name, specifier)){
+	  position = i;
+	}
 
 	/* add to collected specifier */
-	collected_input_specifier = (gchar **) realloc(collected_input_specifier,
+	collected_specifier = (gchar **) realloc(collected_specifier,
 						 (length + 1) * sizeof(gchar *));
-	collected_input_specifier[length - 1] = g_strdup(specifier);
-	collected_input_specifier[length] = NULL;
+	collected_specifier[length - 1] = g_strdup(specifier);
+	collected_specifier[length] = NULL;
 
 	length++;
+	i++;
       }
 
       if(plugin_port != NULL){
@@ -861,6 +822,11 @@ ags_select_acceleration_dialog_reset(AgsApplicable *applicable)
     channel = next_channel;
   }
 
+  if(position != -1){
+    gtk_combo_box_set_active(select_acceleration_dialog->port,
+			     position);
+  }
+  
   /* unref */
   if(start_channel != NULL){
     g_object_unref(start_channel);
@@ -870,9 +836,7 @@ ags_select_acceleration_dialog_reset(AgsApplicable *applicable)
     g_object_unref(next_channel);
   }
   
-  g_strfreev(collected_audio_specifier);
-  g_strfreev(collected_output_specifier);
-  g_strfreev(collected_input_specifier);
+  g_strfreev(collected_specifier);
 }
 
 /**
