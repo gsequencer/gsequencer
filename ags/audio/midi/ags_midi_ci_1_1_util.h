@@ -134,14 +134,25 @@ guint ags_midi_ci_1_1_util_get_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_u
 
 void ags_midi_ci_1_1_util_put_invalidate_muid(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
 					      guchar *buffer,
+					      guchar version,
 					      AgsMUID source,
-					      AgsMUID destination,
-					      AgsMUID muid);
+					      AgsMUID target_muid);
 guint ags_midi_ci_1_1_util_get_invalidate_muid(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
 					       guchar *buffer,
+					       guchar *version,
 					       AgsMUID *source,
-					       AgsMUID *destination,
-					       AgsMUID *muid);
+					       AgsMUID *target_muid);
+
+void ags_midi_ci_1_1_util_put_nak(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+				  guchar *buffer,
+				  guchar version,
+				  AgsMUID source,
+				  AgsMUID destination);
+guint ags_midi_ci_1_1_util_get_nak(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+				   guchar *buffer,
+				   guchar *version,
+				   AgsMUID *source,
+				   AgsMUID *destination);
 
 G_END_DECLS
 

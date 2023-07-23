@@ -330,6 +330,8 @@ ags_midi_ci_1_1_util_get_discovery(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   /* destination - broadcast */
   //NOTE:JK: validate first - see top of function
   
+  nth += 4;
+
   /* manufacturer */
   if(manufacturer_id != NULL){
     manufacturer_id[0] = buffer[5 + nth];
@@ -368,11 +370,15 @@ ags_midi_ci_1_1_util_get_discovery(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   }
 
   nth += 4;
-  
-  buffer[5 + nth] = 0xf7;
-  nth++;
-    
-  return(5 + nth);
+
+  /* sysex end */
+  if(buffer[5 + nth] == 0xf7){
+    nth++;
+
+    return(5 + nth);
+  }
+
+  return(0);
 }
 
 /**
@@ -505,6 +511,7 @@ ags_midi_ci_1_1_util_put_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   buffer[5 + nth] = (0xff & max_sysex_message_size) >> 24;
   nth++;
   
+  /* sysex end */
   buffer[5 + nth] = 0xf7;
   nth++;
 }
@@ -612,20 +619,24 @@ ags_midi_ci_1_1_util_get_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   }
 
   nth += 4;
-  
-  buffer[5 + nth] = 0xf7;
-  nth++;
-    
-  return(5 + nth);
+
+  /* sysex end */
+  if(buffer[5 + nth] == 0xf7){
+    nth++;
+
+    return(5 + nth);
+  }
+
+  return(0);
 }
 
 /**
  * ags_midi_ci_1_1_util_put_invalidate_muid:
  * @midi_ci_1_1_util: the MIDI CI util
  * @buffer: the buffer
+ * @version: the version
  * @source: the source
- * @destination: the destination
- * @muid: the MUID
+ * @target_muid: the MUID
  *
  * Put invalidate MUID.
  *
@@ -634,9 +645,9 @@ ags_midi_ci_1_1_util_get_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
 void
 ags_midi_ci_1_1_util_put_invalidate_muid(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
 					 guchar *buffer,
+					 guchar version,
 					 AgsMUID source,
-					 AgsMUID destination,
-					 AgsMUID muid)
+					 AgsMUID target_muid)
 {
   guint nth;
   
@@ -654,16 +665,62 @@ ags_midi_ci_1_1_util_put_invalidate_muid(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
 
   buffer[4] = 0x7e; // Sub-ID#2 - invalidate MUID
 
-  //TODO:JK: implement me
+  nth = 0;
+
+  /* version */
+  buffer[5 + nth] = version;
+
+  /* source */
+  buffer[5 + nth] = (0xff & source);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & source) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  nth++;
+
+  /* broadcast */
+  buffer[5 + nth] = 0x0f;
+  nth++;
+
+  buffer[5 + nth] = 0xff;
+  nth++;
+
+  buffer[5 + nth] = 0xff;
+  nth++;
+
+  buffer[5 + nth] = 0xff;
+  nth++;
+  
+  /* target muid */
+  buffer[5 + nth] = (0xff & target_muid);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & target_muid) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff0000 & target_muid) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff000000 & target_muid) >> 24;
+  nth++;
+
+  /* sysex end */
+  buffer[5 + nth] = 0xf7;
+  nth++;
 }
 
 /**
  * ags_midi_ci_1_1_util_get_invalidate_muid:
  * @midi_ci_1_1_util: the MIDI CI util
  * @buffer: the buffer
- * @source: the return location source
- * @destination: the return location destination
- * @muid: the return location of MUID
+ * @version: the return location of version
+ * @source: the return location of source
+ * @target_muid: the return location of MUID
  *
  * Get invalidate MUID.
  *
@@ -674,9 +731,9 @@ ags_midi_ci_1_1_util_put_invalidate_muid(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
 guint
 ags_midi_ci_1_1_util_get_invalidate_muid(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
 					 guchar *buffer,
+					 guchar *version,
 					 AgsMUID *source,
-					 AgsMUID *destination,
-					 AgsMUID *muid)
+					 AgsMUID *target_muid)
 {
   guint nth;
   
@@ -686,10 +743,177 @@ ags_midi_ci_1_1_util_get_invalidate_muid(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   g_return_val_if_fail(buffer[2] != 0x7f, 0);
   g_return_val_if_fail(buffer[3] != 0x0d, 0);
   g_return_val_if_fail(buffer[4] != 0x7e, 0);
+  g_return_val_if_fail(buffer[9] != 0x0f || buffer[10] != 0xff || buffer[11] != 0xff || buffer[12] != 0xff, 0);
 
   nth = 0;
 
-  //TODO:JK: implement me
-    
-  return(5 + nth);
+  /* version */
+  if(version != NULL){
+    version[0] = buffer[5 + nth];
+  }
+
+  nth++;
+  
+  /* source */
+  if(source != NULL){
+    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+  }
+
+  nth += 4;
+
+  /* destination - broadcast */
+  //NOTE:JK: validate first - see top of function
+
+  nth += 4;
+
+  /* target muid */
+  if(target_muid != NULL){
+    target_muid[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+  }
+
+  nth += 4;
+
+  /* sysex end */
+  if(buffer[5 + nth] == 0xf7){
+    nth++;
+
+    return(5 + nth);
+  }
+
+  return(0);
+}
+
+/**
+ * ags_midi_ci_1_1_util_put_nak:
+ * @midi_ci_1_1_util: the MIDI CI util
+ * @buffer: the buffer
+ * @version: the version
+ * @source: the source
+ * @destination: the destination
+ *
+ * Put NAK MIDI CI message.
+ *
+ * Since: 5.4.4
+ */
+void
+ags_midi_ci_1_1_util_put_nak(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+			     guchar *buffer,
+			     guchar version,
+			     AgsMUID source,
+			     AgsMUID destination)
+{
+  guint nth;
+  
+  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[0] = 0xf0;
+  buffer[1] = 0x7e;
+
+  buffer[2] = 0x7f;
+
+  buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
+
+  buffer[4] = 0x7e; // Sub-ID#2 - invalidate MUID
+
+  nth = 0;
+
+  /* version */
+  buffer[5 + nth] = version;
+
+  /* source */
+  buffer[5 + nth] = (0xff & source);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & source) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  nth++;
+
+  /* destination */
+  buffer[5 + nth] = (0xff & destination);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & destination) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff0000 & destination) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff000000 & destination) >> 24;
+  nth++;
+
+  /* sysex end */
+  buffer[5 + nth] = 0xf7;
+  nth++;
+}
+
+/**
+ * ags_midi_ci_1_1_util_get_nak:
+ * @midi_ci_1_1_util: the MIDI CI util
+ * @buffer: the buffer
+ * @version: (out): the return location of version
+ * @source: (out): the return location of source
+ * @destination: (out): the return location of destination
+ *
+ * NAK MIDI CI message.
+ *
+ * @Returns: the number of bytes read
+ * 
+ * Since: 5.4.4
+ */
+guint
+ags_midi_ci_1_1_util_get_nak(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+			     guchar *buffer,
+			     guchar *version,
+			     AgsMUID *source,
+			     AgsMUID *destination)
+{
+  guint nth;
+  
+  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(buffer[0] != 0xf0, 0);
+  g_return_val_if_fail(buffer[1] != 0x7e, 0);
+  g_return_val_if_fail(buffer[2] != 0x7f, 0);
+  g_return_val_if_fail(buffer[3] != 0x0d, 0);
+  g_return_val_if_fail(buffer[4] != 0x70, 0);
+  g_return_val_if_fail(buffer[9] != 0x0f || buffer[10] != 0xff || buffer[11] != 0xff || buffer[12] != 0xff, 0);
+
+  nth = 0;
+
+  /* version */
+  if(version != NULL){
+    version[0] = buffer[5 + nth];
+  }
+
+  nth++;
+  
+  /* source */
+  if(source != NULL){
+    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+  }
+
+  nth += 4;
+
+  /* destination */
+  if(destination != NULL){
+    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+  }
+
+  nth += 4;
+
+  /* sysex end */
+  if(buffer[5 + nth] == 0xf7){
+    nth++;
+
+    return(5 + nth);
+  }
+
+  return(0);
 }
