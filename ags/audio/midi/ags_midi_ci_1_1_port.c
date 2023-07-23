@@ -97,6 +97,20 @@ ags_midi_ci_1_1_port_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_midi_ci_1_1_port_parent_class)->finalize(gobject);
 }
 
+void
+ags_midi_ci_1_1_port_inquiry(AgsMidiCI_1_1_Port *port,
+			     JsonNode *property_data)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_midi_ci_1_1_port_respond(AgsMidiCI_1_1_Port *port,
+			     JsonNode *property_data)
+{
+  //TODO:JK: implement me
+}
+
 /**
  * ags_midi_ci_1_1_port_new:
  * 
@@ -104,7 +118,7 @@ ags_midi_ci_1_1_port_finalize(GObject *gobject)
  *
  * Returns: the new #AgsMidiCI_1_1_Port
  * 
- * Since: 5.2.0
+ * Since: 5.4.4
  */
 AgsMidiCI_1_1_Port*
 ags_midi_ci_1_1_port_new()
