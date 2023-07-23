@@ -176,78 +176,97 @@ ags_midi_ci_1_1_util_put_discovery(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
 
   buffer[2] = 0x7f;
 
-  buffer[3] = 0x0d;
+  buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
 
-  buffer[4] = version;
-
-  buffer[5] = (0xff & source);
-  buffer[6] = (0xff00 & source) >> 8;
-  buffer[7] = (0xff0000 & source) >> 16;
-  buffer[8] = (0xff000000 & source) >> 24;
-
-  /* broadcast */
-  buffer[8] = 0x0f;
-  buffer[9] = 0xff;
-  buffer[10] = 0xff;
-  buffer[11] = 0xff;
+  buffer[4] = 0x70; // Sub-ID#2 - discovery
 
   nth = 0;
 
+  /* version */
+  buffer[5 + nth] = version;
+  nth++;
+
+  /* source */
+  buffer[5 + nth] = (0xff & source);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & source) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  nth++;
+
+  /* broadcast */
+  buffer[5 + nth] = 0x0f;
+  nth++;
+
+  buffer[5 + nth] = 0xff;
+  nth++;
+
+  buffer[5 + nth] = 0xff;
+  nth++;
+
+  buffer[5 + nth] = 0xff;
+  nth++;
+
   /* manufacturer */
-  buffer[12 + nth] = (0xff & manufacturer_id);
+  buffer[5 + nth] = (0xff & manufacturer_id);
   nth++;
   
-  buffer[12 + nth] = 0x0;
+  buffer[5 + nth] = 0x0;
   nth++;
   
-  buffer[12 + nth] = 0x0;
+  buffer[5 + nth] = 0x0;
   nth++;
 
   /* device family */
-  buffer[12 + nth] = (0xff & device_family);
+  buffer[5 + nth] = (0xff & device_family);
   nth++;
   
-  buffer[12 + nth] = (0xff00 & device_family) >> 8;
+  buffer[5 + nth] = (0xff00 & device_family) >> 8;
   nth++;
 
   /* device family model number */
-  buffer[12 + nth] = (0xff & device_family_model_number);
+  buffer[5 + nth] = (0xff & device_family_model_number);
   nth++;
   
-  buffer[12 + nth] = (0xff00 & device_family_model_number) >> 8;
+  buffer[5 + nth] = (0xff00 & device_family_model_number) >> 8;
   nth++;
 
   /* software revision level */
-  buffer[12 + nth] = (0xff & software_revision_level);
+  buffer[5 + nth] = (0xff & software_revision_level);
   nth++;
   
-  buffer[12 + nth] = (0xff00 & device_family_model_number) >> 8;
+  buffer[5 + nth] = (0xff00 & device_family_model_number) >> 8;
   nth++;
   
-  buffer[12 + nth] = (0xff00 & device_family_model_number) >> 16;
+  buffer[5 + nth] = (0xff00 & device_family_model_number) >> 16;
   nth++;
   
-  buffer[12 + nth] = (0xff00 & device_family_model_number) >> 24;
+  buffer[5 + nth] = (0xff00 & device_family_model_number) >> 24;
   nth++;
 
   /* capability */
-  buffer[12 + nth] = capability;
+  buffer[5 + nth] = capability;
   nth++;
 
   /* maximum sysex message size */
-  buffer[12 + nth] = (0xff & max_sysex_message_size);
+  buffer[5 + nth] = (0xff & max_sysex_message_size);
   nth++;
   
-  buffer[12 + nth] = (0xff & max_sysex_message_size) >> 8;
+  buffer[5 + nth] = (0xff & max_sysex_message_size) >> 8;
   nth++;
 
-  buffer[12 + nth] = (0xff & max_sysex_message_size) >> 16;
+  buffer[5 + nth] = (0xff & max_sysex_message_size) >> 16;
   nth++;
 
-  buffer[12 + nth] = (0xff & max_sysex_message_size) >> 24;
+  buffer[5 + nth] = (0xff & max_sysex_message_size) >> 24;
   nth++;
   
-  buffer[12 + nth] = 0xf7;
+  buffer[5 + nth] = 0xf7;
   nth++;
 }
 
@@ -289,64 +308,71 @@ ags_midi_ci_1_1_util_get_discovery(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   g_return_val_if_fail(buffer[1] != 0x7e, 0);
   g_return_val_if_fail(buffer[2] != 0x7f, 0);
   g_return_val_if_fail(buffer[3] != 0x0d, 0);
-  g_return_val_if_fail(buffer[8] != 0x0f || buffer[9] != 0xff || buffer[10] != 0xff || buffer[11] != 0xff, 0);
+  g_return_val_if_fail(buffer[4] != 0x70, 0);
+  g_return_val_if_fail(buffer[9] != 0x0f || buffer[10] != 0xff || buffer[11] != 0xff || buffer[12] != 0xff, 0);
+
+  nth = 0;
 
   /* version */
   if(version != NULL){
-    version[0] = buffer[4];
+    version[0] = buffer[5 + nth];
   }
 
+  nth++;
+  
   /* source */
   if(source != NULL){
-    source[0] = ((buffer[5]) | (buffer[6] << 8) | (buffer[7] << 16) | (buffer[8] << 24));
+    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
   }
 
-  /* destination - broadcast */
-  nth = 0;
+  nth += 4;
 
+  /* destination - broadcast */
+  //NOTE:JK: validate first - see top of function
+  
   /* manufacturer */
   if(manufacturer_id != NULL){
-    manufacturer_id[0] = buffer[12 + nth];
+    manufacturer_id[0] = buffer[5 + nth];
   }
 
   nth++;
 
   /* device family */
   if(device_family != NULL){
-    device_family[0] = ((buffer[12 + nth]) | (buffer[12 + nth + 1] >> 8));
+    device_family[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] >> 8));
   }
   
   nth += 2;
 
   /* device family model number */
   if(device_family != NULL){
-    device_family_model_number[0] = ((buffer[12 + nth]) | (buffer[12 + nth + 1] >> 8));
+    device_family_model_number[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] >> 8));
   }
   
   nth += 2;
 
   /* software revision level */
   if(software_revision_level != NULL){
-    device_family_model_number[0] = (buffer[12 + nth]) | (buffer[12 + nth + 1]) | (buffer[12 + nth + 2]) | (buffer[12 + nth + 3]);
+    device_family_model_number[0] = (buffer[5 + nth]) | (buffer[5 + nth + 1]) | (buffer[5 + nth + 2]) | (buffer[5 + nth + 3]);
   }
 
   nth += 4;
   
   /* capability */
-  buffer[12 + nth] = capability;
+  buffer[5 + nth] = capability;
   nth++;
 
   /* maximum sysex message size */
   if(max_sysex_message_size != NULL){
-    max_sysex_message_size[0] = (buffer[12 + nth]) | (buffer[12 + nth + 1]) | (buffer[12 + nth + 2]) | (buffer[12 + nth + 3]);
+    max_sysex_message_size[0] = (buffer[5 + nth]) | (buffer[5 + nth + 1]) | (buffer[5 + nth + 2]) | (buffer[5 + nth + 3]);
   }
 
   nth += 4;
   
-  buffer[12 + nth] = 0xf7;
+  buffer[5 + nth] = 0xf7;
   nth++;
     
-  return(12 + nth);
+  return(5 + nth);
 }
 
 /**
@@ -380,7 +406,107 @@ ags_midi_ci_1_1_util_put_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
 					 guchar capability,
 					 guint32 max_sysex_message_size)
 {
-  //TODO:JK: implement me
+  guint nth;
+  
+  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  buffer[0] = 0xf0;
+  buffer[1] = 0x7e;
+
+  buffer[2] = 0x7f;
+
+  buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
+
+  buffer[4] = 0x71; // Sub-ID#2 - discovery reply
+
+  nth = 0;
+
+  /* version */
+  buffer[5 + nth] = version;
+
+  /* source */
+  buffer[5 + nth] = (0xff & source);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & source) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  nth++;
+
+  /* destination */
+  buffer[5 + nth] = (0xff & destination);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & destination) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff0000 & destination) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff000000 & destination) >> 24;
+  nth++;
+  
+  /* manufacturer */
+  buffer[5 + nth] = (0xff & manufacturer_id);
+  nth++;
+  
+  buffer[5 + nth] = 0x0;
+  nth++;
+  
+  buffer[5 + nth] = 0x0;
+  nth++;
+
+  /* device family */
+  buffer[5 + nth] = (0xff & device_family);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & device_family) >> 8;
+  nth++;
+
+  /* device family model number */
+  buffer[5 + nth] = (0xff & device_family_model_number);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & device_family_model_number) >> 8;
+  nth++;
+
+  /* software revision level */
+  buffer[5 + nth] = (0xff & software_revision_level);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & device_family_model_number) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & device_family_model_number) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & device_family_model_number) >> 24;
+  nth++;
+
+  /* capability */
+  buffer[5 + nth] = capability;
+  nth++;
+
+  /* maximum sysex message size */
+  buffer[5 + nth] = (0xff & max_sysex_message_size);
+  nth++;
+  
+  buffer[5 + nth] = (0xff & max_sysex_message_size) >> 8;
+  nth++;
+
+  buffer[5 + nth] = (0xff & max_sysex_message_size) >> 16;
+  nth++;
+
+  buffer[5 + nth] = (0xff & max_sysex_message_size) >> 24;
+  nth++;
+  
+  buffer[5 + nth] = 0xf7;
+  nth++;
 }
 
 /**
@@ -416,9 +542,81 @@ ags_midi_ci_1_1_util_get_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
 					 guchar *capability,
 					 guint32 *max_sysex_message_size)
 {
-  //TODO:JK: implement me
+  guint nth;
+  
+  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(buffer[0] != 0xf0, 0);
+  g_return_val_if_fail(buffer[1] != 0x7e, 0);
+  g_return_val_if_fail(buffer[2] != 0x7f, 0);
+  g_return_val_if_fail(buffer[3] != 0x0d, 0);
+  g_return_val_if_fail(buffer[4] != 0x71, 0);
 
-  return(0);
+  nth = 0;
+
+  /* version */
+  if(version != NULL){
+    version[0] = buffer[5 + nth];
+  }
+
+  nth++;
+  
+  /* source */
+  if(source != NULL){
+    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+  }
+
+  nth += 4;
+
+  /* destination */
+  if(destination != NULL){
+    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+  }
+
+  nth += 4;
+  
+  /* manufacturer */
+  if(manufacturer_id != NULL){
+    manufacturer_id[0] = buffer[5 + nth];
+  }
+
+  nth++;
+
+  /* device family */
+  if(device_family != NULL){
+    device_family[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] >> 8));
+  }
+  
+  nth += 2;
+
+  /* device family model number */
+  if(device_family != NULL){
+    device_family_model_number[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] >> 8));
+  }
+  
+  nth += 2;
+
+  /* software revision level */
+  if(software_revision_level != NULL){
+    device_family_model_number[0] = (buffer[5 + nth]) | (buffer[5 + nth + 1]) | (buffer[5 + nth + 2]) | (buffer[5 + nth + 3]);
+  }
+
+  nth += 4;
+  
+  /* capability */
+  buffer[5 + nth] = capability;
+  nth++;
+
+  /* maximum sysex message size */
+  if(max_sysex_message_size != NULL){
+    max_sysex_message_size[0] = (buffer[5 + nth]) | (buffer[5 + nth + 1]) | (buffer[5 + nth + 2]) | (buffer[5 + nth + 3]);
+  }
+
+  nth += 4;
+  
+  buffer[5 + nth] = 0xf7;
+  nth++;
+    
+  return(5 + nth);
 }
 
 /**
