@@ -285,7 +285,7 @@ ags_midi_ci_1_1_util_put_discovery(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
  *
  * Get discovery message.
  *
- * @Returns: the number of bytes read
+ * Returns: the number of bytes read
  * 
  * Since: 5.5.0
  */
@@ -532,7 +532,7 @@ ags_midi_ci_1_1_util_put_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
  *
  * Get discovery message.
  * 
- * @Returns: the number of bytes read
+ * Returns: the number of bytes read
  * 
  * Since: 5.5.0
  */
@@ -727,7 +727,7 @@ ags_midi_ci_1_1_util_put_invalidate_muid(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
  *
  * Get invalidate MUID.
  *
- * @Returns: the number of bytes read
+ * Returns: the number of bytes read
  * 
  * Since: 5.5.0
  */
@@ -867,7 +867,7 @@ ags_midi_ci_1_1_util_put_nak(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
  *
  * NAK MIDI CI message.
  *
- * @Returns: the number of bytes read
+ * Returns: the number of bytes read
  * 
  * Since: 5.5.0
  */
@@ -1030,7 +1030,7 @@ ags_midi_ci_1_1_util_put_initiate_protocol_negotiation(AgsMidiCI_1_1_Util *midi_
  *
  * Get initiate protocol negotiation message.
  *
- * @Returns: the number of bytes read
+ * Returns: the number of bytes read
  * 
  * Since: 5.5.0
  */
@@ -1227,7 +1227,7 @@ ags_midi_ci_1_1_util_put_initiate_protocol_negotiation_reply(AgsMidiCI_1_1_Util 
  *
  * Get initiate protocol negotiation reply message.
  *
- * @Returns: the number of bytes read
+ * Returns: the number of bytes read
  * 
  * Since: 5.5.0
  */
@@ -1415,7 +1415,7 @@ ags_midi_ci_1_1_util_put_set_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
  *
  * Get initiate protocol negotiation message.
  *
- * @Returns: the number of bytes read
+ * Returns: the number of bytes read
  * 
  * Since: 5.5.0
  */
@@ -1575,7 +1575,7 @@ ags_midi_ci_1_1_util_put_confirm_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_u
   buffer[5 + nth] = authority_level;
   nth++;
 
-  /* preferred protocol type */
+  /* test data */
   memcpy(buffer + 5 + nth, test_data, 48 * sizeof(guchar));
   
   nth += 48;
@@ -1596,7 +1596,7 @@ ags_midi_ci_1_1_util_put_confirm_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_u
  *
  * Get initiate protocol negotiation message.
  *
- * @Returns: the number of bytes read
+ * Returns: the number of bytes read
  * 
  * Since: 5.5.0
  */
@@ -1673,6 +1673,345 @@ ags_midi_ci_1_1_util_get_confirm_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_u
       return(5 + nth);
     }
   }  
+
+  return(0);
+}
+
+/**
+ * ags_midi_ci_1_1_util_put_confirm_protocol_type_reply:
+ * @midi_ci_1_1_util: the MIDI CI util
+ * @buffer: the buffer
+ * @version: the version
+ * @source: the source
+ * @destination: the destination
+ * @authority_level: the authority level
+ * @protocol_type: the new protocol type
+ *
+ * Put initiate protocol negotiation message.
+ * 
+ * Since: 5.5.0
+ */
+void
+ags_midi_ci_1_1_util_put_confirm_protocol_type_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+						     guchar *buffer,
+						     guchar version,
+						     AgsMUID source,
+						     AgsMUID destination,
+						     AgsMidiCI_1_1_AuthorityLevel authority_level)
+{
+  guint nth;
+  guint i;
+
+  static GMutex mutex = {0,};
+
+  static guchar *test_data;
+
+  static gboolean init_test_data = FALSE;
+  
+  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  if(!init_test_data){
+    for(i = 0; i < 48; i++){
+      test_data[i] = (guchar) i;
+    }
+    
+    init_test_data = TRUE;
+  }
+
+  buffer[0] = 0xf0;
+  buffer[1] = 0x7e;
+
+  buffer[2] = 0x7f;
+
+  buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
+
+  buffer[4] = 0x14; // Sub-ID#2 - confirm protocol type reply
+
+  nth = 0;
+
+  /* version */
+  buffer[5 + nth] = version;
+  nth++;
+
+  /* source */
+  buffer[5 + nth] = (0xff & source);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & source) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  nth++;
+
+  /* destination */
+  buffer[5 + nth] = (0xff & destination);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & destination) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff0000 & destination) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff000000 & destination) >> 24;
+  nth++;
+
+  /* authority level */
+  buffer[5 + nth] = authority_level;
+  nth++;
+
+  /* test data */
+  memcpy(buffer + 5 + nth, test_data, 48 * sizeof(guchar));
+  
+  nth += 48;
+  
+  /* sysex end */
+  buffer[5 + nth] = 0xf7;
+  nth++;
+}
+
+/**
+ * ags_midi_ci_1_1_util_get_confirm_protocol_type_reply:
+ * @midi_ci_1_1_util: the MIDI CI util
+ * @buffer: the buffer
+ * @version: (out): the return location of version
+ * @source: (out): the return location of source
+ * @destination: (out): the destination
+ * @authority_level: (out): the authority level
+ *
+ * Get initiate protocol negotiation message.
+ *
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.0
+ */
+guint
+ags_midi_ci_1_1_util_get_confirm_protocol_type_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+						     guchar *buffer,
+						     guchar *version,
+						     AgsMUID *source,
+						     AgsMUID *destination,
+						     AgsMidiCI_1_1_AuthorityLevel *authority_level)
+{
+  guint nth;
+  guint i;
+
+  static GMutex mutex = {0,};
+
+  static guchar *test_data;
+
+  static gboolean init_test_data = FALSE;
+  
+  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(buffer[0] != 0xf0, 0);
+  g_return_val_if_fail(buffer[1] != 0x7e, 0);
+  g_return_val_if_fail(buffer[2] != 0x7f, 0);
+  g_return_val_if_fail(buffer[3] != 0x0d, 0);
+  g_return_val_if_fail(buffer[4] != 0x14, 0);
+
+  if(!init_test_data){
+    for(i = 0; i < 48; i++){
+      test_data[i] = (guchar) i;
+    }
+    
+    init_test_data = TRUE;
+  }
+ 
+  nth = 0;
+
+  /* version */
+  if(version != NULL){
+    version[0] = buffer[5 + nth];
+  }
+
+  nth++;
+  
+  /* source */
+  if(source != NULL){
+    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+  }
+
+  nth += 4;
+
+  /* destination */
+  if(destination != NULL){
+    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+  }
+
+  nth += 4;
+  
+  /* authority level */
+  if(authority_level != NULL){
+    authority_level[0] = buffer[5 + nth];
+  }
+
+  nth++;
+
+  /* check test data */
+  if(!g_ascii_strncasecmp(buffer + 5 + nth, test_data, 48)){
+    nth += 48;
+
+    /* sysex end */
+    if(buffer[5 + nth] == 0xf7){
+      nth++;
+
+      return(5 + nth);
+    }
+  }  
+
+  return(0);
+}
+
+/**
+ * ags_midi_ci_1_1_util_put_confirm_protocol_type_established:
+ * @midi_ci_1_1_util: the MIDI CI util
+ * @buffer: the buffer
+ * @version: the version
+ * @source: the source
+ * @destination: the destination
+ * @authority_level: the authority level
+ *
+ * Put initiate protocol negotiation message.
+ * 
+ * Since: 5.5.0
+ */
+void
+ags_midi_ci_1_1_util_put_confirm_protocol_type_established(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+							   guchar *buffer,
+							   guchar version,
+							   AgsMUID source,
+							   AgsMUID destination,
+							   AgsMidiCI_1_1_AuthorityLevel authority_level)
+{
+  guint nth;
+  guint i;
+  
+  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  buffer[0] = 0xf0;
+  buffer[1] = 0x7e;
+
+  buffer[2] = 0x7f;
+
+  buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
+
+  buffer[4] = 0x15; // Sub-ID#2 - confirm protocol type established
+
+  nth = 0;
+
+  /* version */
+  buffer[5 + nth] = version;
+  nth++;
+
+  /* source */
+  buffer[5 + nth] = (0xff & source);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & source) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  nth++;
+
+  /* destination */
+  buffer[5 + nth] = (0xff & destination);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & destination) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff0000 & destination) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff000000 & destination) >> 24;
+  nth++;
+
+  /* authority level */
+  buffer[5 + nth] = authority_level;
+  nth++;
+  
+  /* sysex end */
+  buffer[5 + nth] = 0xf7;
+  nth++;
+}
+
+/**
+ * ags_midi_ci_1_1_util_get_confirm_protocol_type_established:
+ * @midi_ci_1_1_util: the MIDI CI util
+ * @buffer: the buffer
+ * @version: (out): the return location of version
+ * @source: (out): the return location of source
+ * @destination: (out): the destination
+ * @authority_level: (out): the authority level
+ *
+ * Get initiate protocol negotiation message.
+ *
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.0
+ */
+guint
+ags_midi_ci_1_1_util_get_confirm_protocol_type_established(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+							   guchar *buffer,
+							   guchar *version,
+							   AgsMUID *source,
+							   AgsMUID *destination,
+							   AgsMidiCI_1_1_AuthorityLevel *authority_level)
+{
+  guint nth;
+  guint i;
+  
+  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(buffer[0] != 0xf0, 0);
+  g_return_val_if_fail(buffer[1] != 0x7e, 0);
+  g_return_val_if_fail(buffer[2] != 0x7f, 0);
+  g_return_val_if_fail(buffer[3] != 0x0d, 0);
+  g_return_val_if_fail(buffer[4] != 0x15, 0);
+ 
+  nth = 0;
+
+  /* version */
+  if(version != NULL){
+    version[0] = buffer[5 + nth];
+  }
+
+  nth++;
+  
+  /* source */
+  if(source != NULL){
+    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+  }
+
+  nth += 4;
+
+  /* destination */
+  if(destination != NULL){
+    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+  }
+
+  nth += 4;
+  
+  /* authority level */
+  if(authority_level != NULL){
+    authority_level[0] = buffer[5 + nth];
+  }
+
+  nth++;
+
+  /* sysex end */
+  if(buffer[5 + nth] == 0xf7){
+    nth++;
+
+    return(5 + nth);
+  }
 
   return(0);
 }

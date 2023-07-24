@@ -226,6 +226,32 @@ guint ags_midi_ci_1_1_util_get_confirm_protocol_type(AgsMidiCI_1_1_Util *midi_ci
 						     AgsMUID *destination,
 						     AgsMidiCI_1_1_AuthorityLevel *authority_level);
 
+void ags_midi_ci_1_1_util_put_confirm_protocol_type_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+							  guchar *buffer,
+							  guchar version,
+							  AgsMUID source,
+							  AgsMUID destination,
+							  AgsMidiCI_1_1_AuthorityLevel authority_level);
+guint ags_midi_ci_1_1_util_get_confirm_protocol_type_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+							   guchar *buffer,
+							   guchar *version,
+							   AgsMUID *source,
+							   AgsMUID *destination,
+							   AgsMidiCI_1_1_AuthorityLevel *authority_level);
+
+void ags_midi_ci_1_1_util_put_confirm_protocol_type_established(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+								guchar *buffer,
+								guchar version,
+								AgsMUID source,
+								AgsMUID destination,
+								AgsMidiCI_1_1_AuthorityLevel authority_level);
+guint ags_midi_ci_1_1_util_get_confirm_protocol_type_established(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+								 guchar *buffer,
+								 guchar *version,
+								 AgsMUID *source,
+								 AgsMUID *destination,
+								 AgsMidiCI_1_1_AuthorityLevel *authority_level);
+
 G_END_DECLS
 
 #endif /*__AGS_MIDI_CI_1_1_UTIL_H__*/
