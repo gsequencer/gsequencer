@@ -23,7 +23,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <json-glib/json-glib.h>
+
 #include <ags/libags.h>
+
+#include <stdarg.h>
 
 G_BEGIN_DECLS
 
@@ -86,15 +90,16 @@ AgsMidiCI_1_1_Util* ags_midi_ci_1_1_util_copy(AgsMidiCI_1_1_Util *midi_ci_1_1_ut
 
 AgsMUID ags_midi_ci_1_1_util_generate_muid(AgsMidiCI_1_1_Util *midi_ci_1_1_util);
 
-guint ags_midi_ci_1_1_util_put_discovery(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-					 guchar *buffer,
-					 AgsMUID source,
-					 guint32 manufacturer_id,
-					 guint32 device_family,
-					 guint32 device_family_model_number,
-					 guint32 software_revision_level,
-					 guchar capability,
-					 guint32 max_sysex_message_size);
+void ags_midi_ci_1_1_util_put_discovery(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+					guchar *buffer,
+					guchar version,
+					AgsMUID source,
+					guint32 manufacturer_id,
+					guint32 device_family,
+					guint32 device_family_model_number,
+					guint32 software_revision_level,
+					guchar capability,
+					guint32 max_sysex_message_size);
 guint ags_midi_ci_1_1_util_get_discovery(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
 					 guchar *buffer,
 					 guchar *version,
@@ -106,17 +111,17 @@ guint ags_midi_ci_1_1_util_get_discovery(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
 					 guchar *capability,
 					 guint32 *max_sysex_message_size);
 
-guint ags_midi_ci_1_1_util_put_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-					       guchar *buffer,
-					       guchar version,
-					       AgsMUID source,
-					       AgsMUID destination,
-					       guint32 manufacturer_id,
-					       guint32 device_family,
-					       guint32 device_family_model_number,
-					       guint32 software_revision_level,
-					       guchar capability,
-					       guint32 max_sysex_message_size);
+void ags_midi_ci_1_1_util_put_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+					      guchar *buffer,
+					      guchar version,
+					      AgsMUID source,
+					      AgsMUID destination,
+					      guint32 manufacturer_id,
+					      guint32 device_family,
+					      guint32 device_family_model_number,
+					      guint32 software_revision_level,
+					      guchar capability,
+					      guint32 max_sysex_message_size);
 guint ags_midi_ci_1_1_util_get_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
 					       guchar *buffer,
 					       guchar *version,
@@ -128,6 +133,45 @@ guint ags_midi_ci_1_1_util_get_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_u
 					       guint32 *software_revision_level,
 					       guchar *capability,
 					       guint32 *max_sysex_message_size);
+
+void ags_midi_ci_1_1_util_put_invalidate_muid(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+					      guchar *buffer,
+					      guchar version,
+					      AgsMUID source,
+					      AgsMUID target_muid);
+guint ags_midi_ci_1_1_util_get_invalidate_muid(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+					       guchar *buffer,
+					       guchar *version,
+					       AgsMUID *source,
+					       AgsMUID *target_muid);
+
+void ags_midi_ci_1_1_util_put_nak(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+				  guchar *buffer,
+				  guchar version,
+				  AgsMUID source,
+				  AgsMUID destination);
+guint ags_midi_ci_1_1_util_get_nak(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+				   guchar *buffer,
+				   guchar *version,
+				   AgsMUID *source,
+				   AgsMUID *destination);
+
+void ags_midi_ci_1_1_util_put_initiate_protocol_negotiation(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+							    guchar *buffer,
+							    guchar version,
+							    AgsMUID source,
+							    AgsMUID destination,
+							    guchar authority_level,
+							    guchar number_of_supported_protocols,
+							    guchar **preferred_protocol_type);
+guint ags_midi_ci_1_1_util_get_initiate_protocol_negotiation(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+							     guchar *buffer,
+							     guchar *version,
+							     AgsMUID *source,
+							     AgsMUID *destination,
+							     guchar *authority_level,
+							     guchar *number_of_supported_protocols,
+							     guchar **preferred_protocol_type);
 
 G_END_DECLS
 

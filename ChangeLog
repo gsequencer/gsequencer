@@ -1,3 +1,26 @@
+ags (5.4.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added ags_midi_ci_1_1_util.[ch]
+
+ags (5.4.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential SIGSEGV with automation editor select dialog
+	* fixed potential SIGSEGV with automation editor ramp dialog
+
+ags (5.4.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved tempo program restore from XML
+	* improved AgsSelectAcceleration dialog
+	* minor bug-fixes
+
+ags (5.4.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved tempo program
+
 ags (5.4.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -356,7 +356,7 @@ ags_select_note_dialog_apply(AgsApplicable *applicable)
 	       NULL);
 
   /* get some values */
-  copy_selection = gtk_toggle_button_get_active((GtkToggleButton *) select_note_dialog->copy_selection);
+  copy_selection = gtk_check_button_get_active(select_note_dialog->copy_selection);
 
   x0 = gtk_spin_button_get_value_as_int(select_note_dialog->select_x0);
   y0 = gtk_spin_button_get_value_as_int(select_note_dialog->select_y0);

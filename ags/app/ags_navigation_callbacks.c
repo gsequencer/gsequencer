@@ -55,6 +55,10 @@ ags_navigation_bpm_callback(GtkWidget *widget,
   AgsApplyBpm *apply_bpm;
 
   AgsApplicationContext *application_context;
+
+  if((AGS_NAVIGATION_BLOCK_BPM & (navigation->flags)) != 0){
+    return;
+  }
   
   application_context = ags_application_context_get_instance();
 

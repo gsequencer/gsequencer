@@ -9,7 +9,7 @@ project('gsequencer', 'c', 'cpp',
         license: 'GPL3',
         default_options: [ 'buildtype=release', 'c_std=gnu99'],
         meson_version: '>=0.53.0',
-        version: '5.4.0')
+        version: '5.4.3')
 
 #note:jk: specify --buildtype=debug if needed
 gsequencer_debug = get_option('buildtype').contains('debug')
@@ -35,6 +35,7 @@ gthread_dependency = dependency('gthread-2.0', version: '>= 2.56.0')
 gio_dependency = dependency('gio-2.0', version: '>= 2.56.0')
 xml2_dependency = dependency('libxml-2.0')
 soup_dependency = dependency('libsoup-3.0')
+json_glib_dependency = dependency('json-glib-1.0')
 instpatch_dependency = dependency('libinstpatch-1.0')
 samplerate_dependency = dependency('samplerate')
 fftw3_dependency = dependency('fftw3')

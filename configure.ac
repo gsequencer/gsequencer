@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[5.4.0],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[5.4.3],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -473,7 +473,7 @@ PKG_CHECK_MODULES([GIO], [gio-2.0 >= 2.56.0])
 AC_SUBST(GIO_CFLAGS)
 AC_SUBST(GIO_LIBS)
 
-PKG_CHECK_MODULES([JSON], [json-glib-1.0 >= 1.6.0])
+PKG_CHECK_MODULES([JSON_GLIB], [json-glib-1.0 >= 1.2.0])
 AC_SUBST(JSON_GLIB_CFLAGS)
 AC_SUBST(JSON_GLIB_LIBS)
 

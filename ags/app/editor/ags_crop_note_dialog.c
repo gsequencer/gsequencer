@@ -325,10 +325,10 @@ ags_crop_note_dialog_apply(AgsApplicable *applicable)
   x_crop = gtk_spin_button_get_value_as_int(crop_note_dialog->crop_note);
   x_padding = gtk_spin_button_get_value_as_int(crop_note_dialog->padding_note);
 
-  absolute = gtk_toggle_button_get_active((GtkToggleButton *) crop_note_dialog->absolute);
+  absolute = gtk_check_button_get_active(crop_note_dialog->absolute);
 
-  in_place = gtk_toggle_button_get_active((GtkToggleButton *) crop_note_dialog->in_place);
-  do_resize = gtk_toggle_button_get_active((GtkToggleButton *) crop_note_dialog->do_resize);
+  in_place = gtk_check_button_get_active(crop_note_dialog->in_place);
+  do_resize = gtk_check_button_get_active(crop_note_dialog->do_resize);
     
   /* crop note */
   g_object_get(audio,

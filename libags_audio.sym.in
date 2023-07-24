@@ -2068,6 +2068,7 @@ ags_program_find_near_timestamp
 ags_program_find_near_timestamp_extended
 ags_program_sort_func
 ags_program_add
+ags_program_remove_all_empty
 ags_program_get_audio
 ags_program_set_audio
 ags_program_get_timestamp
@@ -4005,6 +4006,8 @@ ags_sound_provider_set_osc_server
 ags_sound_provider_get_osc_server
 ags_sound_provider_set_program
 ags_sound_provider_get_program
+ags_sound_provider_set_tempo
+ags_sound_provider_get_tempo
 ags_oss_devin_get_type
 ags_oss_devin_flags_get_type
 ags_oss_devin_error_quark

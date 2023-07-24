@@ -1298,6 +1298,9 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 
 	ags_sound_provider_set_program(AGS_SOUND_PROVIDER(application_context),
 				       program);
+
+	ags_sound_provider_set_tempo(AGS_SOUND_PROVIDER(application_context),
+				     ags_program_filter(program, "tempo"));
       }
     }
 
@@ -11475,7 +11478,8 @@ ags_simple_file_read_program_list(AgsSimpleFile *simple_file, xmlNode *node, GLi
 	}
 
 	ags_simple_file_read_program(simple_file, child, &current);
-	list = g_list_prepend(list, current);
+	list = ags_program_add(list,
+			       current);  
 	
 	i++;
       }
@@ -11484,7 +11488,6 @@ ags_simple_file_read_program_list(AgsSimpleFile *simple_file, xmlNode *node, GLi
     child = child->next;
   }
 
-  list = g_list_reverse(list);
   *program = list;
 }
 

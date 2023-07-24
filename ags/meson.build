@@ -718,6 +718,7 @@ libags_audio_dependencies = [
   common_dependencies,
   dl_dependency,
   soup_dependency,
+  json_glib_dependency,
   instpatch_dependency,
   samplerate_dependency,
   fftw3_dependency,
@@ -1182,6 +1183,7 @@ libgsequencer_dependencies = [
   common_dependencies,
   gtk_dependency,
   soup_dependency,
+  json_glib_dependency,
   xml2_dependency,
 #TODO: i think that shouldn't be dependency for app
   instpatch_dependency,
@@ -1241,6 +1243,7 @@ gsequencer_dependencies = [
   common_dependencies,
   dependency('gtk4'),
   dependency('libsoup-3.0'),
+  dependency('json-glib-1.0'),
   dependency('libinstpatch-1.0'),
 #  compiler.find_library('crypt', required: true),
   ]
