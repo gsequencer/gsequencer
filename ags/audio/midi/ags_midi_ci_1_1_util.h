@@ -27,8 +27,6 @@
 
 #include <ags/libags.h>
 
-#include <stdarg.h>
-
 G_BEGIN_DECLS
 
 #define AGS_TYPE_MIDI_CI_1_1_UTIL         (ags_midi_ci_1_1_util_get_type())
