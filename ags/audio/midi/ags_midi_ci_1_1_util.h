@@ -252,6 +252,36 @@ guint ags_midi_ci_1_1_util_get_confirm_protocol_type_established(AgsMidiCI_1_1_U
 								 AgsMUID *destination,
 								 AgsMidiCI_1_1_AuthorityLevel *authority_level);
 
+void ags_midi_ci_1_1_util_put_profile_inquiry(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+					      guchar *buffer,
+					      guchar version,
+					      AgsMUID source,
+					      AgsMUID destination);
+guint ags_midi_ci_1_1_util_get_profile_inquiry(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+					       guchar *buffer,
+					       guchar *version,
+					       AgsMUID *source,
+					       AgsMUID *destination);
+
+void ags_midi_ci_1_1_util_put_profile_inquiry_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+						    guchar *buffer,
+						    guchar version,
+						    AgsMUID source,
+						    AgsMUID destination,
+						    gint16 enabled_profile_count,
+						    guchar **enabled_profile,
+						    gint16 disabled_profile_count,
+						    guchar **disabled_profile);
+guint ags_midi_ci_1_1_util_get_profile_inquiry_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+						     guchar *buffer,
+						     guchar *version,
+						     AgsMUID *source,
+						     AgsMUID *destination,
+						     gint16 *enabled_profile_count,
+						     guchar **enabled_profile,
+						     gint16 *disabled_profile_count,
+						     guchar **disabled_profile);
+
 G_END_DECLS
 
 #endif /*__AGS_MIDI_CI_1_1_UTIL_H__*/
