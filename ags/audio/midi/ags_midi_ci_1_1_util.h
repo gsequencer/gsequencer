@@ -35,10 +35,20 @@ G_BEGIN_DECLS
 #define AGS_MIDI_CI_1_1_UTIL_MAX_BROADCAST_MESSAGE_SIZE (512)
 #define AGS_MIDI_CI_1_1_UTIL_DISCOVERY_TIMEOUT_USEC (3 * AGS_USEC_PER_SEC)
 
+#define AGS_MIDI_CI_1_1_UTIL_PROTOCOL_TYPE_MIDI_1_0 (0x01)
+#define AGS_MIDI_CI_1_1_UTIL_PROTOCOL_TYPE_MIDI_2_0 (0x02)
+
+#define AGS_MIDI_CI_1_1_UTIL_VERSION_MIDI_1_0 (0x00)
+
+#define AGS_MIDI_CI_1_1_UTIL_PROTOCOL_1_0_EXTENSIONS_SIZE_OF_PACKET(p) (((1 < 6) & ((guchar *) p)[0]) != 0 ? TRUE: FALSE)
+#define AGS_MIDI_CI_1_1_UTIL_PROTOCOL_1_0_EXTENSIONS_JITTER_REDUCTION_TIMESTAMP(p) (((1 < 7) & ((guchar *) p)[0]) != 0 ? TRUE: FALSE)
+
+#define AGS_MIDI_CI_1_1_UTIL_PROTOCOL_2_0_EXTENSIONS_JITTER_REDUCTION_TIMESTAMP(p) (((1 < 7) & ((guchar *) p)[0]) != 0 ? TRUE: FALSE)
+
 typedef struct _AgsMidiCI_1_1_Util AgsMidiCI_1_1_Util;
 typedef guint32 AgsMUID;
 
-typedef enum _AgsMidiCI_1_1_AuthorityLevel{
+typedef enum{
   /* AGS_MIDI_CI_1_1_RESERVED       = 0x00, */
   AGS_MIDI_CI_1_1_TRANSPORT         = 0x10,
   AGS_MIDI_CI_1_1_EVENT_PROCESSOR   = 0x20,
@@ -47,9 +57,9 @@ typedef enum _AgsMidiCI_1_1_AuthorityLevel{
   AGS_MIDI_CI_1_1_GATEWAY           = 0x50,
   AGS_MIDI_CI_1_1_NODE_SERVER       = 0x60,
   /* AGS_MIDI_CI_1_1_RESERVED       = 0x70, */
-};
+}AgsMidiCI_1_1_AuthorityLevel;
 
-typedef enum _AgsMidiCI_1_1_Category{
+typedef enum{
   /* AGS_MIDI_CI_1_1_RESERVED                  = 0x00, */
   AGS_MIDI_CI_1_1_PROTOCOL_NEGOTIATION         = 0x10,
   AGS_MIDI_CI_1_1_PROFILE_CONFIGURATION        = 0x20,
@@ -58,9 +68,9 @@ typedef enum _AgsMidiCI_1_1_Category{
   /* AGS_MIDI_CI_1_1_RESERVED                  = 0x50, */
   /* AGS_MIDI_CI_1_1_RESERVED                  = 0x60, */
   AGS_MIDI_CI_1_1_PROPERTY_MANAGEMENT          = 0x70,
-};
+}AgsMidiCI_1_1_Category;
 
-typedef enum _AgsMidiCI_1_1_CategorySupport{
+typedef enum{
   /* AGS_MIDI_CI_1_1_RESERVED                            = 1, */
   AGS_MIDI_CI_1_1_PROTOCOL_NEGOTIATION_SUPPORTED         = 1 <<  1,
   AGS_MIDI_CI_1_1_PROFILE_CONFIGURATION_SUPPORTED        = 1 <<  2,
@@ -68,7 +78,7 @@ typedef enum _AgsMidiCI_1_1_CategorySupport{
   /* AGS_MIDI_CI_1_1_RESERVED                            = 1 <<  4, */
   /* AGS_MIDI_CI_1_1_RESERVED                            = 1 <<  5, */
   /* AGS_MIDI_CI_1_1_RESERVED                            = 1 <<  6, */
-};
+}AgsMidiCI_1_1_CategorySupport;
 
 struct _AgsMidiCI_1_1_Util
 {
@@ -159,7 +169,7 @@ void ags_midi_ci_1_1_util_put_initiate_protocol_negotiation(AgsMidiCI_1_1_Util *
 							    guchar version,
 							    AgsMUID source,
 							    AgsMUID destination,
-							    guchar authority_level,
+							    AgsMidiCI_1_1_AuthorityLevel authority_level,
 							    guchar number_of_supported_protocols,
 							    guchar **preferred_protocol_type);
 guint ags_midi_ci_1_1_util_get_initiate_protocol_negotiation(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
@@ -167,9 +177,41 @@ guint ags_midi_ci_1_1_util_get_initiate_protocol_negotiation(AgsMidiCI_1_1_Util 
 							     guchar *version,
 							     AgsMUID *source,
 							     AgsMUID *destination,
-							     guchar *authority_level,
+							     AgsMidiCI_1_1_AuthorityLevel *authority_level,
 							     guchar *number_of_supported_protocols,
 							     guchar **preferred_protocol_type);
+
+void ags_midi_ci_1_1_util_put_initiate_protocol_negotiation_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+								  guchar *buffer,
+								  guchar version,
+								  AgsMUID source,
+								  AgsMUID destination,
+								  AgsMidiCI_1_1_AuthorityLevel authority_level,
+								  guchar number_of_supported_protocols,
+								  guchar **preferred_protocol_type);
+guint ags_midi_ci_1_1_util_get_initiate_protocol_negotiation_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+								   guchar *buffer,
+								   guchar *version,
+								   AgsMUID *source,
+								   AgsMUID *destination,
+								   AgsMidiCI_1_1_AuthorityLevel *authority_level,
+								   guchar *number_of_supported_protocols,
+								   guchar **preferred_protocol_type);
+
+void ags_midi_ci_1_1_util_put_set_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+						guchar *buffer,
+						guchar version,
+						AgsMUID source,
+						AgsMUID destination,
+						AgsMidiCI_1_1_AuthorityLevel authority_level,
+						guchar *protocol_type);
+guint ags_midi_ci_1_1_util_get_set_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+						 guchar *buffer,
+						 guchar *version,
+						 AgsMUID *source,
+						 AgsMUID *destination,
+						 AgsMidiCI_1_1_AuthorityLevel *authority_level,
+						 guchar *protocol_type);
 
 G_END_DECLS
 

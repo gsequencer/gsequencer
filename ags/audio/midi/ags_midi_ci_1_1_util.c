@@ -942,7 +942,7 @@ ags_midi_ci_1_1_util_put_initiate_protocol_negotiation(AgsMidiCI_1_1_Util *midi_
 						       guchar version,
 						       AgsMUID source,
 						       AgsMUID destination,
-						       guchar authority_level,
+						       AgsMidiCI_1_1_AuthorityLevel authority_level,
 						       guchar number_of_supported_protocols,
 						       guchar **preferred_protocol_type)
 {
@@ -1040,7 +1040,7 @@ ags_midi_ci_1_1_util_get_initiate_protocol_negotiation(AgsMidiCI_1_1_Util *midi_
 						       guchar *version,
 						       AgsMUID *source,
 						       AgsMUID *destination,
-						       guchar *authority_level,
+						       AgsMidiCI_1_1_AuthorityLevel *authority_level,
 						       guchar *number_of_supported_protocols,
 						       guchar **preferred_protocol_type)
 {
@@ -1107,6 +1107,377 @@ ags_midi_ci_1_1_util_get_initiate_protocol_negotiation(AgsMidiCI_1_1_Util *midi_
   }
   
   nth += (i_stop * 5);
+
+  /* sysex end */
+  if(buffer[5 + nth] == 0xf7){
+    nth++;
+
+    return(5 + nth);
+  }
+
+  return(0);
+}
+
+/**
+ * ags_midi_ci_1_1_util_put_initiate_protocol_negotiation_reply:
+ * @midi_ci_1_1_util: the MIDI CI util
+ * @buffer: the buffer
+ * @version: the version
+ * @source: the source
+ * @destination: the destination
+ * @authority_level: the authority level
+ * @number_of_supported_protocols: the number of supported protocols
+ * @preferred_protocol_type: the preferred protocol type
+ *
+ * Put initiate protocol negotiation reply message.
+ * 
+ * Since: 5.5.0
+ */
+void
+ags_midi_ci_1_1_util_put_initiate_protocol_negotiation_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+							     guchar *buffer,
+							     guchar version,
+							     AgsMUID source,
+							     AgsMUID destination,
+							     AgsMidiCI_1_1_AuthorityLevel authority_level,
+							     guchar number_of_supported_protocols,
+							     guchar **preferred_protocol_type)
+{
+  guint nth;
+  guint i, i_stop;
+  
+  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  buffer[0] = 0xf0;
+  buffer[1] = 0x7e;
+
+  buffer[2] = 0x7f;
+
+  buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
+
+  buffer[4] = 0x11; // Sub-ID#2 - initiate protocol negotiation reply
+
+  nth = 0;
+
+  /* version */
+  buffer[5 + nth] = version;
+  nth++;
+
+  /* source */
+  buffer[5 + nth] = (0xff & source);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & source) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  nth++;
+
+  /* destination */
+  buffer[5 + nth] = (0xff & destination);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & destination) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff0000 & destination) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff000000 & destination) >> 24;
+  nth++;
+
+  /* authority level */
+  buffer[5 + nth] = authority_level;
+  nth++;
+
+  /* number of supported protocols */
+  buffer[5 + nth] = number_of_supported_protocols;
+  nth++;
+
+  /* preferred protocol type */
+  i_stop = number_of_supported_protocols;
+  
+  for(i = 0; i < i_stop; i++){
+    buffer[5 + nth + (i * 5)] = preferred_protocol_type[i][0];
+    buffer[5 + nth + (i * 5) + 1] = preferred_protocol_type[i][1];
+    buffer[5 + nth + (i * 5) + 2] = preferred_protocol_type[i][2];
+    buffer[5 + nth + (i * 5) + 3] = preferred_protocol_type[i][3];
+    buffer[5 + nth + (i * 5) + 4] = preferred_protocol_type[i][4];
+  }
+
+  nth += (number_of_supported_protocols * 5);
+  
+  /* sysex end */
+  buffer[5 + nth] = 0xf7;
+  nth++;
+}
+
+/**
+ * ags_midi_ci_1_1_util_get_initiate_protocol_negotiation_reply:
+ * @midi_ci_1_1_util: the MIDI CI util
+ * @buffer: the buffer
+ * @version: (out): the return location of version
+ * @source: (out): the return location of source
+ * @destination: (out): the destination
+ * @authority_level: (out): the authority level
+ * @number_of_supported_protocols: (out): the number of supported protocols
+ * @preferred_protocol_type: (out): the preferred protocol type
+ *
+ * Get initiate protocol negotiation reply message.
+ *
+ * @Returns: the number of bytes read
+ * 
+ * Since: 5.5.0
+ */
+guint
+ags_midi_ci_1_1_util_get_initiate_protocol_negotiation_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+							     guchar *buffer,
+							     guchar *version,
+							     AgsMUID *source,
+							     AgsMUID *destination,
+							     AgsMidiCI_1_1_AuthorityLevel *authority_level,
+							     guchar *number_of_supported_protocols,
+							     guchar **preferred_protocol_type)
+{
+  guint nth;
+  guint i, i_stop;
+  
+  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(buffer[0] != 0xf0, 0);
+  g_return_val_if_fail(buffer[1] != 0x7e, 0);
+  g_return_val_if_fail(buffer[2] != 0x7f, 0);
+  g_return_val_if_fail(buffer[3] != 0x0d, 0);
+  g_return_val_if_fail(buffer[4] != 0x11, 0);
+
+  nth = 0;
+
+  /* version */
+  if(version != NULL){
+    version[0] = buffer[5 + nth];
+  }
+
+  nth++;
+  
+  /* source */
+  if(source != NULL){
+    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+  }
+
+  nth += 4;
+
+  /* destination */
+  if(destination != NULL){
+    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+  }
+
+  nth += 4;
+  
+  /* authority level */
+  if(authority_level != NULL){
+    authority_level[0] = buffer[5 + nth];
+  }
+
+  nth++;
+
+  /* number of supported protocols */
+  if(number_of_supported_protocols != NULL){
+    number_of_supported_protocols[0] = buffer[5 + nth];
+  }
+
+  i_stop = buffer[5 + nth];
+  
+  nth++;
+
+  /* preferred protocol type */
+  if(preferred_protocol_type != NULL){
+    for(i = 0; i < i_stop; i++){
+      if(preferred_protocol_type[i] != NULL){
+	preferred_protocol_type[i][0] = buffer[5 + nth + (i * 5)];
+	preferred_protocol_type[i][1] = buffer[5 + nth + (i * 5) + 1];
+	preferred_protocol_type[i][2] = buffer[5 + nth + (i * 5) + 2];
+	preferred_protocol_type[i][3] = buffer[5 + nth + (i * 5) + 3];
+	preferred_protocol_type[i][4] = buffer[5 + nth + (i * 5) + 4];
+      }
+    }
+  }
+  
+  nth += (i_stop * 5);
+
+  /* sysex end */
+  if(buffer[5 + nth] == 0xf7){
+    nth++;
+
+    return(5 + nth);
+  }
+
+  return(0);
+}
+
+/**
+ * ags_midi_ci_1_1_util_put_set_protocol_type:
+ * @midi_ci_1_1_util: the MIDI CI util
+ * @buffer: the buffer
+ * @version: the version
+ * @source: the source
+ * @destination: the destination
+ * @authority_level: the authority level
+ * @protocol_type: the new protocol type
+ *
+ * Put initiate protocol negotiation message.
+ * 
+ * Since: 5.5.0
+ */
+void
+ags_midi_ci_1_1_util_put_set_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+					   guchar *buffer,
+					   guchar version,
+					   AgsMUID source,
+					   AgsMUID destination,
+					   AgsMidiCI_1_1_AuthorityLevel authority_level,
+					   guchar *protocol_type)
+{
+  guint nth;
+  
+  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  buffer[0] = 0xf0;
+  buffer[1] = 0x7e;
+
+  buffer[2] = 0x7f;
+
+  buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
+
+  buffer[4] = 0x12; // Sub-ID#2 - initiate protocol negotiation
+
+  nth = 0;
+
+  /* version */
+  buffer[5 + nth] = version;
+  nth++;
+
+  /* source */
+  buffer[5 + nth] = (0xff & source);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & source) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  nth++;
+
+  /* destination */
+  buffer[5 + nth] = (0xff & destination);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & destination) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff0000 & destination) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff000000 & destination) >> 24;
+  nth++;
+
+  /* authority level */
+  buffer[5 + nth] = authority_level;
+  nth++;
+
+  /* preferred protocol type */
+  buffer[5 + nth] = protocol_type[0];
+  buffer[5 + nth + 1] = protocol_type[1];
+  buffer[5 + nth + 2] = protocol_type[2];
+  buffer[5 + nth + 3] = protocol_type[3];
+  buffer[5 + nth + 4] = protocol_type[4];
+
+  nth += 5;
+  
+  /* sysex end */
+  buffer[5 + nth] = 0xf7;
+  nth++;
+}
+
+/**
+ * ags_midi_ci_1_1_util_get_set_protocol_type:
+ * @midi_ci_1_1_util: the MIDI CI util
+ * @buffer: the buffer
+ * @version: (out): the return location of version
+ * @source: (out): the return location of source
+ * @destination: (out): the destination
+ * @authority_level: (out): the authority level
+ * @protocol_type: (out): the new protocol type
+ *
+ * Get initiate protocol negotiation message.
+ *
+ * @Returns: the number of bytes read
+ * 
+ * Since: 5.5.0
+ */
+guint
+ags_midi_ci_1_1_util_get_set_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+					   guchar *buffer,
+					   guchar *version,
+					   AgsMUID *source,
+					   AgsMUID *destination,
+					   AgsMidiCI_1_1_AuthorityLevel *authority_level,
+					   guchar *protocol_type)
+{
+  guint nth;
+  
+  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(buffer[0] != 0xf0, 0);
+  g_return_val_if_fail(buffer[1] != 0x7e, 0);
+  g_return_val_if_fail(buffer[2] != 0x7f, 0);
+  g_return_val_if_fail(buffer[3] != 0x0d, 0);
+  g_return_val_if_fail(buffer[4] != 0x12, 0);
+
+  nth = 0;
+
+  /* version */
+  if(version != NULL){
+    version[0] = buffer[5 + nth];
+  }
+
+  nth++;
+  
+  /* source */
+  if(source != NULL){
+    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+  }
+
+  nth += 4;
+
+  /* destination */
+  if(destination != NULL){
+    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+  }
+
+  nth += 4;
+  
+  /* authority level */
+  if(authority_level != NULL){
+    authority_level[0] = buffer[5 + nth];
+  }
+
+  nth++;
+
+  /* preferred protocol type */
+  if(protocol_type != NULL){
+    protocol_type[0] = buffer[5 + nth];
+    protocol_type[1] = buffer[5 + nth + 1];
+    protocol_type[2] = buffer[5 + nth + 2];
+    protocol_type[3] = buffer[5 + nth + 3];
+    protocol_type[4] = buffer[5 + nth + 4];
+  }
+  
+  nth += 5;
 
   /* sysex end */
   if(buffer[5 + nth] == 0xf7){
