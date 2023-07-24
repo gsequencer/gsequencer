@@ -60,7 +60,7 @@ ags_midi_ci_1_1_util_get_type(void)
  *
  * Returns: (transfer full): the newly allocated #AgsMidiCI_1_1_Util-struct
  * 
- * Since: 5.4.4
+ * Since: 5.5.0
  */
 AgsMidiCI_1_1_Util*
 ags_midi_ci_1_1_util_alloc()
@@ -81,7 +81,7 @@ ags_midi_ci_1_1_util_alloc()
  *
  * Free MIDI CI version 1.1 util.
  *
- * Since: 5.4.4
+ * Since: 5.5.0
  */
 void
 ags_midi_ci_1_1_util_free(AgsMidiCI_1_1_Util *midi_ci_1_1_util)
@@ -99,7 +99,7 @@ ags_midi_ci_1_1_util_free(AgsMidiCI_1_1_Util *midi_ci_1_1_util)
  *
  * Returns: (transfer full): the newly allocated #AgsMidiCI_1_1_Util-struct
  * 
- * Since: 5.4.4
+ * Since: 5.5.0
  */
 AgsMidiCI_1_1_Util*
 ags_midi_ci_1_1_util_copy(AgsMidiCI_1_1_Util *midi_ci_1_1_util)
@@ -121,7 +121,7 @@ ags_midi_ci_1_1_util_copy(AgsMidiCI_1_1_Util *midi_ci_1_1_util)
  *
  * Returns: the generated MUID
  * 
- * Since: 5.4.4
+ * Since: 5.5.0
  */
 AgsMUID
 ags_midi_ci_1_1_util_generate_muid(AgsMidiCI_1_1_Util *midi_ci_1_1_util)
@@ -152,7 +152,7 @@ ags_midi_ci_1_1_util_generate_muid(AgsMidiCI_1_1_Util *midi_ci_1_1_util)
  *
  * Put discovery message.
  * 
- * Since: 5.4.4
+ * Since: 5.5.0
  */
 void
 ags_midi_ci_1_1_util_put_discovery(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
@@ -287,7 +287,7 @@ ags_midi_ci_1_1_util_put_discovery(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
  *
  * @Returns: the number of bytes read
  * 
- * Since: 5.4.4
+ * Since: 5.5.0
  */
 guint
 ags_midi_ci_1_1_util_get_discovery(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
@@ -397,7 +397,7 @@ ags_midi_ci_1_1_util_get_discovery(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
  *
  * Put discovery message.
  *
- * Since: 5.4.4
+ * Since: 5.5.0
  */
 void
 ags_midi_ci_1_1_util_put_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
@@ -534,7 +534,7 @@ ags_midi_ci_1_1_util_put_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
  * 
  * @Returns: the number of bytes read
  * 
- * Since: 5.4.4
+ * Since: 5.5.0
  */
 guint
 ags_midi_ci_1_1_util_get_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
@@ -610,7 +610,10 @@ ags_midi_ci_1_1_util_get_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   nth += 4;
   
   /* capability */
-  buffer[5 + nth] = capability;
+  if(capability != NULL){
+    capability[0] = buffer[5 + nth];
+  }
+  
   nth++;
 
   /* maximum sysex message size */
@@ -640,7 +643,7 @@ ags_midi_ci_1_1_util_get_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
  *
  * Put invalidate MUID.
  *
- * Since: 5.4.4
+ * Since: 5.5.0
  */
 void
 ags_midi_ci_1_1_util_put_invalidate_muid(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
@@ -726,7 +729,7 @@ ags_midi_ci_1_1_util_put_invalidate_muid(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
  *
  * @Returns: the number of bytes read
  * 
- * Since: 5.4.4
+ * Since: 5.5.0
  */
 guint
 ags_midi_ci_1_1_util_get_invalidate_muid(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
@@ -793,7 +796,7 @@ ags_midi_ci_1_1_util_get_invalidate_muid(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
  *
  * Put NAK MIDI CI message.
  *
- * Since: 5.4.4
+ * Since: 5.5.0
  */
 void
 ags_midi_ci_1_1_util_put_nak(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
@@ -866,7 +869,7 @@ ags_midi_ci_1_1_util_put_nak(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
  *
  * @Returns: the number of bytes read
  * 
- * Since: 5.4.4
+ * Since: 5.5.0
  */
 guint
 ags_midi_ci_1_1_util_get_nak(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
@@ -931,7 +934,7 @@ ags_midi_ci_1_1_util_get_nak(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
  *
  * Put initiate protocol negotiation message.
  * 
- * Since: 5.4.4
+ * Since: 5.5.0
  */
 void
 ags_midi_ci_1_1_util_put_initiate_protocol_negotiation(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
@@ -943,7 +946,75 @@ ags_midi_ci_1_1_util_put_initiate_protocol_negotiation(AgsMidiCI_1_1_Util *midi_
 						       guchar number_of_supported_protocols,
 						       guchar **preferred_protocol_type)
 {
-  //TODO:JK: implement me  
+  guint nth;
+  guint i;
+  
+  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  buffer[0] = 0xf0;
+  buffer[1] = 0x7e;
+
+  buffer[2] = 0x7f;
+
+  buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
+
+  buffer[4] = 0x10; // Sub-ID#2 - initiate protocol negotiation
+
+  nth = 0;
+
+  /* version */
+  buffer[5 + nth] = version;
+  nth++;
+
+  /* source */
+  buffer[5 + nth] = (0xff & source);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & source) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  nth++;
+
+  /* destination */
+  buffer[5 + nth] = (0xff & destination);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & destination) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff0000 & destination) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff000000 & destination) >> 24;
+  nth++;
+
+  /* authority level */
+  buffer[5 + nth] = authority_level;
+  nth++;
+
+  /* number of supported protocols */
+  buffer[5 + nth] = number_of_supported_protocols;
+  nth++;
+
+  /* preferred protocol type */
+  for(i = 0; i < number_of_supported_protocols; i++){
+    buffer[5 + nth + (i * 5)] = preferred_protocol_type[i][0];
+    buffer[5 + nth + (i * 5) + 1] = preferred_protocol_type[i][1];
+    buffer[5 + nth + (i * 5) + 2] = preferred_protocol_type[i][2];
+    buffer[5 + nth + (i * 5) + 3] = preferred_protocol_type[i][3];
+    buffer[5 + nth + (i * 5) + 4] = preferred_protocol_type[i][4];
+  }
+
+  nth += (number_of_supported_protocols * 5);
+  
+  /* sysex end */
+  buffer[5 + nth] = 0xf7;
+  nth++;
 }
 
 /**
@@ -961,7 +1032,7 @@ ags_midi_ci_1_1_util_put_initiate_protocol_negotiation(AgsMidiCI_1_1_Util *midi_
  *
  * @Returns: the number of bytes read
  * 
- * Since: 5.4.4
+ * Since: 5.5.0
  */
 guint
 ags_midi_ci_1_1_util_get_initiate_protocol_negotiation(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
@@ -973,7 +1044,76 @@ ags_midi_ci_1_1_util_get_initiate_protocol_negotiation(AgsMidiCI_1_1_Util *midi_
 						       guchar *number_of_supported_protocols,
 						       guchar **preferred_protocol_type)
 {
-  //TODO:JK: implement me
+  guint nth;
+  guint i, i_stop;
   
+  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(buffer[0] != 0xf0, 0);
+  g_return_val_if_fail(buffer[1] != 0x7e, 0);
+  g_return_val_if_fail(buffer[2] != 0x7f, 0);
+  g_return_val_if_fail(buffer[3] != 0x0d, 0);
+  g_return_val_if_fail(buffer[4] != 0x10, 0);
+
+  nth = 0;
+
+  /* version */
+  if(version != NULL){
+    version[0] = buffer[5 + nth];
+  }
+
+  nth++;
+  
+  /* source */
+  if(source != NULL){
+    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+  }
+
+  nth += 4;
+
+  /* destination */
+  if(destination != NULL){
+    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+  }
+
+  nth += 4;
+  
+  /* authority level */
+  if(authority_level != NULL){
+    authority_level[0] = buffer[5 + nth];
+  }
+
+  nth++;
+
+  /* authority level */
+  if(number_of_supported_protocols != NULL){
+    number_of_supported_protocols[0] = buffer[5 + nth];
+  }
+
+  i_stop = buffer[5 + nth];
+  
+  nth++;
+
+  /* preferred protocol type */
+  if(preferred_protocol_type != NULL){
+    for(i = 0; i < i_stop; i++){
+      if(preferred_protocol_type[i] != NULL){
+	preferred_protocol_type[i][0] = buffer[5 + nth + (i * 5)];
+	preferred_protocol_type[i][1] = buffer[5 + nth + (i * 5) + 1];
+	preferred_protocol_type[i][2] = buffer[5 + nth + (i * 5) + 2];
+	preferred_protocol_type[i][3] = buffer[5 + nth + (i * 5) + 3];
+	preferred_protocol_type[i][4] = buffer[5 + nth + (i * 5) + 4];
+      }
+    }
+  }
+  
+  nth += (i_stop * 5);
+
+  /* sysex end */
+  if(buffer[5 + nth] == 0xf7){
+    nth++;
+
+    return(5 + nth);
+  }
+
   return(0);
 }

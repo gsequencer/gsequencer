@@ -1680,8 +1680,6 @@ endif
 
 # libags-audio - midi
 EXTRA_DIST += \
-	ags/audio/midi/ags_midi_ci_1_1_util.h \
-	ags/audio/midi/ags_midi_ci_1_1_util.c \
 	ags/audio/midi/ags_midi_stream_reader.h \
 	ags/audio/midi/ags_midi_ci_1_1_port.h \
 	ags/audio/midi/ags_midi_ci_1_1_port.c
@@ -1691,6 +1689,7 @@ deprecated_libags_audio_midi_h_sources =
 libags_audio_midi_h_sources = \
 	$(deprecated_libags_audio_midi_h_sources) \
 	ags/audio/midi/ags_midi_buffer_util.h \
+	ags/audio/midi/ags_midi_ci_1_1_util.h \
 	ags/audio/midi/ags_midi_util.h \
 	ags/audio/midi/ags_midi_builder.h \
 	ags/audio/midi/ags_midi_file.h \
@@ -1701,6 +1700,7 @@ deprecated_libags_audio_midi_c_sources =
 libags_audio_midi_c_sources = \
 	$(deprecated_libags_audio_midi_c_sources) \
 	ags/audio/midi/ags_midi_buffer_util.c \
+	ags/audio/midi/ags_midi_ci_1_1_util.c \
 	ags/audio/midi/ags_midi_util.c \
 	ags/audio/midi/ags_midi_builder.c \
 	ags/audio/midi/ags_midi_file.c \
