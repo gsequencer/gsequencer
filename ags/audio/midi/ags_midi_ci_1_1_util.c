@@ -917,3 +917,63 @@ ags_midi_ci_1_1_util_get_nak(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
 
   return(0);
 }
+
+/**
+ * ags_midi_ci_1_1_util_put_initiate_protocol_negotiation:
+ * @midi_ci_1_1_util: the MIDI CI util
+ * @buffer: the buffer
+ * @version: the version
+ * @source: the source
+ * @destination: the destination
+ * @authority_level: the authority level
+ * @number_of_supported_protocols: the number of supported protocols
+ * @preferred_protocol_type: the preferred protocol type
+ *
+ * Put initiate protocol negotiation message.
+ * 
+ * Since: 5.4.4
+ */
+void
+ags_midi_ci_1_1_util_put_initiate_protocol_negotiation(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+						       guchar *buffer,
+						       guchar version,
+						       AgsMUID source,
+						       AgsMUID destination,
+						       guchar authority_level,
+						       guchar number_of_supported_protocols,
+						       guchar **preferred_protocol_type)
+{
+  //TODO:JK: implement me  
+}
+
+/**
+ * ags_midi_ci_1_1_util_get_initiate_protocol_negotiation:
+ * @midi_ci_1_1_util: the MIDI CI util
+ * @buffer: the buffer
+ * @version: (out): the return location of version
+ * @source: (out): the return location of source
+ * @destination: (out): the destination
+ * @authority_level: (out): the authority level
+ * @number_of_supported_protocols: (out): the number of supported protocols
+ * @preferred_protocol_type: (out): the preferred protocol type
+ *
+ * Get initiate protocol negotiation message.
+ *
+ * @Returns: the number of bytes read
+ * 
+ * Since: 5.4.4
+ */
+guint
+ags_midi_ci_1_1_util_get_initiate_protocol_negotiation(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+						       guchar *buffer,
+						       guchar *version,
+						       AgsMUID *source,
+						       AgsMUID *destination,
+						       guchar *authority_level,
+						       guchar *number_of_supported_protocols,
+						       guchar **preferred_protocol_type)
+{
+  //TODO:JK: implement me
+  
+  return(0);
+}

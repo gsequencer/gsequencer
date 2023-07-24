@@ -52,7 +52,7 @@ struct _AgsMidiCI_1_1_Port
 
   AgsMidiCI_1_1_PortFlags flags;
   
-   AgsMidiCI_1_1_PortDirection direction;
+  AgsMidiCI_1_1_PortDirection direction;
   
   //empty
 };

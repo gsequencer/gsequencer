@@ -27,6 +27,8 @@
 
 #include <ags/libags.h>
 
+#include <stdarg.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_MIDI_CI_1_1_UTIL         (ags_midi_ci_1_1_util_get_type())
@@ -153,6 +155,23 @@ guint ags_midi_ci_1_1_util_get_nak(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
 				   guchar *version,
 				   AgsMUID *source,
 				   AgsMUID *destination);
+
+void ags_midi_ci_1_1_util_put_initiate_protocol_negotiation(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+							    guchar *buffer,
+							    guchar version,
+							    AgsMUID source,
+							    AgsMUID destination,
+							    guchar authority_level,
+							    guchar number_of_supported_protocols,
+							    guchar **preferred_protocol_type);
+guint ags_midi_ci_1_1_util_get_initiate_protocol_negotiation(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+							     guchar *buffer,
+							     guchar *version,
+							     AgsMUID *source,
+							     AgsMUID *destination,
+							     guchar *authority_level,
+							     guchar *number_of_supported_protocols,
+							     guchar **preferred_protocol_type);
 
 G_END_DECLS
 
