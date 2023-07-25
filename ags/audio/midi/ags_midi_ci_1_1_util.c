@@ -865,7 +865,7 @@ ags_midi_ci_1_1_util_put_nak(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
  * @source: (out): the return location of source
  * @destination: (out): the return location of destination
  *
- * NAK MIDI CI message.
+ * Get NAK MIDI CI message.
  *
  * Returns: the number of bytes read
  * 
@@ -2380,6 +2380,314 @@ ags_midi_ci_1_1_util_get_profile_inquiry_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_u
   
   nth += (i_stop * 5);
 
+  /* sysex end */
+  if(buffer[5 + nth] == 0xf7){
+    nth++;
+
+    return(5 + nth);
+  }
+
+  return(0);
+}
+
+/**
+ * ags_midi_ci_1_1_util_put_profile_enabled_report:
+ * @midi_ci_1_1_util: the MIDI CI util
+ * @buffer: the buffer
+ * @version: the version
+ * @source: the source
+ * @enabled_profile: the enabled profile
+ *
+ * Put profile enabled report message.
+ *
+ * Since: 5.5.0
+ */
+void
+ags_midi_ci_1_1_util_put_profile_enabled_report(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+						guchar *buffer,
+						guchar version,
+						AgsMUID source,
+						guchar *enabled_profile)
+{
+  guint nth;
+  
+  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[0] = 0xf0;
+  buffer[1] = 0x7e;
+
+  buffer[2] = 0x7f;
+
+  buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
+
+  buffer[4] = 0x24; // Sub-ID#2 - profile enabled report
+
+  nth = 0;
+
+  /* version */
+  buffer[5 + nth] = version;
+
+  /* source */
+  buffer[5 + nth] = (0xff & source);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & source) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  nth++;
+
+  /* broadcast */
+  buffer[5 + nth] = 0x0f;
+  nth++;
+
+  buffer[5 + nth] = 0xff;
+  nth++;
+
+  buffer[5 + nth] = 0xff;
+  nth++;
+
+  buffer[5 + nth] = 0xff;
+  nth++;
+
+  /* enabled profile */
+  buffer[5 + nth] = enabled_profile[0];
+  nth++;
+
+  buffer[5 + nth] = enabled_profile[1];
+  nth++;
+
+  buffer[5 + nth] = enabled_profile[2];
+  nth++;
+
+  buffer[5 + nth] = enabled_profile[3];
+  nth++;
+
+  buffer[5 + nth] = enabled_profile[4];
+  nth++;  
+}
+
+/**
+ * ags_midi_ci_1_1_util_get_profile_enabled_report:
+ * @midi_ci_1_1_util: the MIDI CI util
+ * @buffer: the buffer
+ * @version: (out): the return location of version
+ * @source: (out): the return location of source
+ * @destination: (out): the return location of destination
+ *
+ * Get profile enabled report message.
+ *
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.0
+ */
+guint
+ags_midi_ci_1_1_util_get_profile_enabled_report(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+						guchar *buffer,
+						guchar *version,
+						AgsMUID *source,
+						guchar *enabled_profile)
+{
+  guint nth;
+  
+  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(buffer[0] != 0xf0, 0);
+  g_return_val_if_fail(buffer[1] != 0x7e, 0);
+  g_return_val_if_fail(buffer[2] != 0x7f, 0);
+  g_return_val_if_fail(buffer[3] != 0x0d, 0);
+  g_return_val_if_fail(buffer[4] != 0x24, 0);
+  g_return_val_if_fail(buffer[9] != 0x0f || buffer[10] != 0xff || buffer[11] != 0xff || buffer[12] != 0xff, 0);
+
+  nth = 0;
+
+  /* version */
+  if(version != NULL){
+    version[0] = buffer[5 + nth];
+  }
+
+  nth++;
+  
+  /* source */
+  if(source != NULL){
+    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+  }
+
+  nth += 4;
+
+  /* destination - broadcast */
+  //NOTE:JK: validate first - see top of function
+  
+  nth += 4;
+
+  /* enabled profile */
+  enabled_profile[0] = buffer[5 + nth];
+  enabled_profile[1] = buffer[5 + nth + 1];
+  enabled_profile[2] = buffer[5 + nth + 2];
+  enabled_profile[3] = buffer[5 + nth + 3];
+  enabled_profile[4] = buffer[5 + nth + 4];
+
+  nth += 5;
+  
+  /* sysex end */
+  if(buffer[5 + nth] == 0xf7){
+    nth++;
+
+    return(5 + nth);
+  }
+
+  return(0);
+}
+
+/**
+ * ags_midi_ci_1_1_util_put_profile_disabled_report:
+ * @midi_ci_1_1_util: the MIDI CI util
+ * @buffer: the buffer
+ * @version: the version
+ * @source: the source
+ * @disabled_profile: the disabled profile
+ *
+ * Put profile disabled report message.
+ *
+ * Since: 5.5.0
+ */
+void
+ags_midi_ci_1_1_util_put_profile_disabled_report(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+						 guchar *buffer,
+						 guchar version,
+						 AgsMUID source,
+						 guchar *disabled_profile)
+{
+  guint nth;
+  
+  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[0] = 0xf0;
+  buffer[1] = 0x7e;
+
+  buffer[2] = 0x7f;
+
+  buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
+
+  buffer[4] = 0x25; // Sub-ID#2 - profile disabled report
+
+  nth = 0;
+
+  /* version */
+  buffer[5 + nth] = version;
+
+  /* source */
+  buffer[5 + nth] = (0xff & source);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & source) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  nth++;
+
+  /* broadcast */
+  buffer[5 + nth] = 0x0f;
+  nth++;
+
+  buffer[5 + nth] = 0xff;
+  nth++;
+
+  buffer[5 + nth] = 0xff;
+  nth++;
+
+  buffer[5 + nth] = 0xff;
+  nth++;
+
+  /* disabled profile */
+  buffer[5 + nth] = disabled_profile[0];
+  nth++;
+
+  buffer[5 + nth] = disabled_profile[1];
+  nth++;
+
+  buffer[5 + nth] = disabled_profile[2];
+  nth++;
+
+  buffer[5 + nth] = disabled_profile[3];
+  nth++;
+
+  buffer[5 + nth] = disabled_profile[4];
+  nth++;  
+}
+
+/**
+ * ags_midi_ci_1_1_util_get_profile_disabled_report:
+ * @midi_ci_1_1_util: the MIDI CI util
+ * @buffer: the buffer
+ * @version: (out): the return location of version
+ * @source: (out): the return location of source
+ * @destination: (out): the return location of destination
+ *
+ * Get profile disabled report message.
+ *
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.0
+ */
+guint
+ags_midi_ci_1_1_util_get_profile_disabled_report(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+						 guchar *buffer,
+						 guchar *version,
+						 AgsMUID *source,
+						 guchar *disabled_profile)
+{
+  guint nth;
+  
+  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(buffer[0] != 0xf0, 0);
+  g_return_val_if_fail(buffer[1] != 0x7e, 0);
+  g_return_val_if_fail(buffer[2] != 0x7f, 0);
+  g_return_val_if_fail(buffer[3] != 0x0d, 0);
+  g_return_val_if_fail(buffer[4] != 0x25, 0);
+  g_return_val_if_fail(buffer[9] != 0x0f || buffer[10] != 0xff || buffer[11] != 0xff || buffer[12] != 0xff, 0);
+
+  nth = 0;
+
+  /* version */
+  if(version != NULL){
+    version[0] = buffer[5 + nth];
+  }
+
+  nth++;
+  
+  /* source */
+  if(source != NULL){
+    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+  }
+
+  nth += 4;
+
+  /* destination - broadcast */
+  //NOTE:JK: validate first - see top of function
+  
+  nth += 4;
+
+  /* disabled profile */
+  disabled_profile[0] = buffer[5 + nth];
+  disabled_profile[1] = buffer[5 + nth + 1];
+  disabled_profile[2] = buffer[5 + nth + 2];
+  disabled_profile[3] = buffer[5 + nth + 3];
+  disabled_profile[4] = buffer[5 + nth + 4];
+
+  nth += 5;
+  
   /* sysex end */
   if(buffer[5 + nth] == 0xf7){
     nth++;
