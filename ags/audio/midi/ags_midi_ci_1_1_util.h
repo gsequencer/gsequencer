@@ -304,6 +304,23 @@ guint ags_midi_ci_1_1_util_get_profile_disabled_report(AgsMidiCI_1_1_Util *midi_
 						       AgsMUID *source,
 						       guchar *disabled_profile);
 
+void ags_midi_ci_1_1_util_put_profile_specific_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+						    guchar *buffer,
+						    guchar version,
+						    AgsMUID source,
+						    AgsMUID destination,
+						    guchar *profile_id,
+						    guint32 profile_specific_data_length,
+						    guchar *profile_specific_data);
+guint ags_midi_ci_1_1_util_get_profile_specific_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+						     guchar *buffer,
+						     guchar *version,
+						     AgsMUID *source,
+						     AgsMUID *destination,
+						     guchar *profile_id,
+						     guint32 *profile_specific_data_length,
+						     guchar *profile_specific_data);
+
 G_END_DECLS
 
 #endif /*__AGS_MIDI_CI_1_1_UTIL_H__*/
