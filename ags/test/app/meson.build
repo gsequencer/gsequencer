@@ -13,6 +13,7 @@ interactive_test_dependencies = [
   xml2_dependency,
   soup_dependency,
   instpatch_dependency,
+  json_glib_dependency,
   dependency('cairo-xlib'),
   dependency('xtst'),
   compiler.find_library('m', required: true),

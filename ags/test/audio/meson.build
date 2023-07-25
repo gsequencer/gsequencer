@@ -1,4 +1,4 @@
-# Copyright (C) 2020 Daniel Maksymow
+# Copyright (C) 2020, 2023 Daniel Maksymow, Joël Krähemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -151,6 +151,7 @@ static_tests = [
   'fx/ags_fx_volume_recycling_test',
   'midi/ags_midi_buffer_util_test',
   'midi/ags_midi_builder_test',
+  'midi/ags_midi_ci_1_1_util_test',
   'osc/ags_functional_osc_server_test',
   'osc/ags_functional_osc_xmlrpc_server_test',
   'osc/ags_osc_buffer_util_test',
@@ -211,6 +212,7 @@ static_test_dependencies = [
   xml2_dependency,
   soup_dependency,
   instpatch_dependency,
+  json_glib_dependency,
   dl_dependency,
 ]
 
