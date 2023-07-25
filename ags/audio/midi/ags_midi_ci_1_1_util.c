@@ -24,6 +24,8 @@
 
 #include <json-glib/json-glib.h>
 
+#include <string.h>
+
 /**
  * SECTION:ags_midi_ci_1_1_util
  * @short_description: MIDI CI version 1.1 util
@@ -2687,6 +2689,201 @@ ags_midi_ci_1_1_util_get_profile_disabled_report(AgsMidiCI_1_1_Util *midi_ci_1_1
   disabled_profile[4] = buffer[5 + nth + 4];
 
   nth += 5;
+  
+  /* sysex end */
+  if(buffer[5 + nth] == 0xf7){
+    nth++;
+
+    return(5 + nth);
+  }
+
+  return(0);
+}
+
+/**
+ * ags_midi_ci_1_1_util_put_profile_specific_data:
+ * @midi_ci_1_1_util: the MIDI CI util
+ * @buffer: the buffer
+ * @version: the version
+ * @source: the source
+ * @destination: the destination
+ * @profile_id: the profile ID
+ * @profile_specific_data_length: profile specific data length
+ * @profile_specific_data: profile specific data
+ *
+ * Put profile specific data message.
+ *
+ * Since: 5.5.0
+ */
+void
+ags_midi_ci_1_1_util_put_profile_specific_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+					       guchar *buffer,
+					       guchar version,
+					       AgsMUID source,
+					       AgsMUID destination,
+					       guchar *profile_id,
+					       guint32 profile_specific_data_length,
+					       guchar *profile_specific_data)
+{
+  guint nth;
+  
+  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[0] = 0xf0;
+  buffer[1] = 0x7e;
+
+  buffer[2] = 0x7f;
+
+  buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
+
+  buffer[4] = 0x2f; // Sub-ID#2 - profile specific data
+
+  nth = 0;
+
+  /* version */
+  buffer[5 + nth] = version;
+
+  /* source */
+  buffer[5 + nth] = (0xff & source);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & source) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  nth++;
+
+  /* destination */
+  buffer[5 + nth] = (0xff & destination);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & destination) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff0000 & destination) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff000000 & destination) >> 24;
+  nth++;
+
+  /* profile ID */
+  profile_id[0] = buffer[5 + nth];
+  nth++;
+  
+  profile_id[1] = buffer[5 + nth];
+  nth++;
+
+  profile_id[2] = buffer[5 + nth];
+  nth++;
+
+  profile_id[3] = buffer[5 + nth];
+  nth++;
+
+  profile_id[4] = buffer[5 + nth];
+  nth++;
+
+  /* profile specific data */
+  memcpy(buffer + 5 + nth, profile_specific_data, profile_specific_data_length * sizeof(guchar));
+  nth += profile_specific_data_length;
+  
+  /* sysex end */
+  buffer[5 + nth] = 0xf7;
+  nth++;
+}
+
+/**
+ * ags_midi_ci_1_1_util_get_profile_specific_data:
+ * @midi_ci_1_1_util: the MIDI CI util
+ * @buffer: the buffer
+ * @version: (out): the return location of version
+ * @source: (out): the return location of source
+ * @destination: (out): the return location of destination
+ * @profile_id: (out): the profile ID
+ * @profile_specific_data_length: (out): profile specific data length
+ * @profile_specific_data: (out): profile specific data
+ *
+ * Get profile specific data message.
+ *
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.0
+ */
+guint
+ags_midi_ci_1_1_util_get_profile_specific_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+					       guchar *buffer,
+					       guchar *version,
+					       AgsMUID *source,
+					       AgsMUID *destination,
+					       guchar *profile_id,
+					       guint32 *profile_specific_data_length,
+					       guchar *profile_specific_data)
+{
+  guint nth;
+  guint i_stop;
+  
+  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(buffer[0] != 0xf0, 0);
+  g_return_val_if_fail(buffer[1] != 0x7e, 0);
+  g_return_val_if_fail(buffer[2] != 0x7f, 0);
+  g_return_val_if_fail(buffer[3] != 0x0d, 0);
+  g_return_val_if_fail(buffer[4] != 0x2f, 0);
+  g_return_val_if_fail(buffer[9] != 0x0f || buffer[10] != 0xff || buffer[11] != 0xff || buffer[12] != 0xff, 0);
+
+  nth = 0;
+
+  /* version */
+  if(version != NULL){
+    version[0] = buffer[5 + nth];
+  }
+
+  nth++;
+  
+  /* source */
+  if(source != NULL){
+    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+  }
+
+  nth += 4;
+
+  /* destination */
+  if(destination != NULL){
+    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+  }
+
+  nth += 4;
+
+  /* profile ID */
+  if(profile_id != NULL){
+    profile_id[0] = buffer[5 + nth];
+    profile_id[1] = buffer[5 + nth + 1];
+    profile_id[2] = buffer[5 + nth + 2];
+    profile_id[3] = buffer[5 + nth + 3];
+    profile_id[4] = buffer[5 + nth + 4];
+  }
+
+  nth += 5;
+  
+  /* profile specific data length */
+  if(profile_specific_data_length != NULL){
+    profile_specific_data_length[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+  }
+
+  i_stop = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+
+  nth += 4;
+  
+  /* profile specific data */
+  if(profile_specific_data != NULL){
+    memcpy(profile_specific_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+  }
+
+  nth += i_stop;
   
   /* sysex end */
   if(buffer[5 + nth] == 0xf7){
