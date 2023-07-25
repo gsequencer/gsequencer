@@ -1,7 +1,8 @@
-ags (5.4.4)
+ags (5.5.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* added ags_midi_ci_1_1_util.[ch]
+	* TODO:JK: implemented ags_midi_ci_1_1_util.[ch]
+	* added ags_midi_ci_1_1_util_test.[ch]
 
 ags (5.4.3)
 
