@@ -351,7 +351,6 @@ guint ags_midi_ci_1_1_util_get_property_exchange_capabilities_reply(AgsMidiCI_1_
 								    AgsMUID *destination,
 								    guchar *supported_property_exchange_count);
 
-
 G_END_DECLS
 
 #endif /*__AGS_MIDI_CI_1_1_UTIL_H__*/

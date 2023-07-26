@@ -3061,12 +3061,12 @@ ags_midi_ci_1_1_util_get_property_exchange_capabilities(AgsMidiCI_1_1_Util *midi
  */
 void
 ags_midi_ci_1_1_util_put_property_exchange_capabilities_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-							guchar *buffer,
-							guchar midi_channel,
-							guchar version,
-							AgsMUID source,
-							AgsMUID destination,
-							guchar supported_property_exchange_count)
+							      guchar *buffer,
+							      guchar midi_channel,
+							      guchar version,
+							      AgsMUID source,
+							      AgsMUID destination,
+							      guchar supported_property_exchange_count)
 {
   guint nth;
   
@@ -3142,12 +3142,12 @@ ags_midi_ci_1_1_util_put_property_exchange_capabilities_reply(AgsMidiCI_1_1_Util
  */
 guint
 ags_midi_ci_1_1_util_get_property_exchange_capabilities_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-							guchar *buffer,
-							guchar *midi_channel,
-							guchar *version,
-							AgsMUID *source,
-							AgsMUID *destination,
-							guchar *supported_property_exchange_count)
+							      guchar *buffer,
+							      guchar *midi_channel,
+							      guchar *version,
+							      AgsMUID *source,
+							      AgsMUID *destination,
+							      guchar *supported_property_exchange_count)
 {
   guint nth;
   
