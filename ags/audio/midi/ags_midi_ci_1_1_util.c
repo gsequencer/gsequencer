@@ -2894,3 +2894,303 @@ ags_midi_ci_1_1_util_get_profile_specific_data(AgsMidiCI_1_1_Util *midi_ci_1_1_u
 
   return(0);
 }
+
+/**
+ * ags_midi_ci_1_1_util_put_property_exchange_capabilities:
+ * @midi_ci_1_1_util: the MIDI CI util
+ * @buffer: the buffer
+ * @midi_channel: the MIDI channel
+ * @version: the version
+ * @source: the source
+ * @destination: the destination
+ * @supported_property_exchange_count: the supported property exchange count
+ *
+ * Put number of supported property exchange message.
+ *
+ * Since: 5.5.0
+ */
+void
+ags_midi_ci_1_1_util_put_property_exchange_capabilities(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+							guchar *buffer,
+							guchar midi_channel,
+							guchar version,
+							AgsMUID source,
+							AgsMUID destination,
+							guchar supported_property_exchange_count)
+{
+  guint nth;
+  
+  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[0] = 0xf0;
+  buffer[1] = 0x7e;
+
+  buffer[2] = midi_channel;
+
+  buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
+
+  buffer[4] = 0x30; // Sub-ID#2 - inquiry property data exchange capabilities
+
+  nth = 0;
+
+  /* version */
+  buffer[5 + nth] = version;
+
+  /* source */
+  buffer[5 + nth] = (0xff & source);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & source) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  nth++;
+
+  /* destination */
+  buffer[5 + nth] = (0xff & destination);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & destination) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff0000 & destination) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff000000 & destination) >> 24;
+  nth++;
+
+  /* supported_property_exchange_count */
+  buffer[5 + nth] = supported_property_exchange_count;
+  nth++;
+
+  /* sysex end */
+  buffer[5 + nth] = 0xf7;
+  nth++;
+}
+
+/**
+ * ags_midi_ci_1_1_util_get_property_exchange_capabilities:
+ * @midi_ci_1_1_util: the MIDI CI util
+ * @buffer: the buffer
+ * @midi_channel: (out): the return location of MIDI channel
+ * @version: (out): the return location of version
+ * @source: (out): the return location of source
+ * @destination: (out): the return location of destination
+ * @supported_property_exchange_count: (out): the supported property exchange count
+ *
+ * Get number of supported property exchange count data message.
+ *
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.0
+ */
+guint
+ags_midi_ci_1_1_util_get_property_exchange_capabilities(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+							guchar *buffer,
+							guchar *midi_channel,
+							guchar *version,
+							AgsMUID *source,
+							AgsMUID *destination,
+							guchar *supported_property_exchange_count)
+{
+  guint nth;
+  
+  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(buffer[0] != 0xf0, 0);
+  g_return_val_if_fail(buffer[1] != 0x7e, 0);
+  g_return_val_if_fail(buffer[3] != 0x0d, 0);
+  g_return_val_if_fail(buffer[4] != 0x30, 0);
+
+  /* MIDI channel */
+  if(midi_channel != NULL){
+    midi_channel[0] = buffer[2];
+  }
+
+  nth = 0;
+
+  /* version */
+  if(version != NULL){
+    version[0] = buffer[5 + nth];
+  }
+
+  nth++;
+  
+  /* source */
+  if(source != NULL){
+    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+  }
+
+  nth += 4;
+
+  /* destination */
+  if(destination != NULL){
+    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+  }
+
+  nth += 4;
+
+  /* sysex end */
+  if(buffer[5 + nth] == 0xf7){
+    nth++;
+
+    return(5 + nth);
+  }
+
+  return(0);
+}
+
+/**
+ * ags_midi_ci_1_1_util_put_property_exchange_capabilities_reply:
+ * @midi_ci_1_1_util: the MIDI CI util
+ * @buffer: the buffer
+ * @midi_channel: the MIDI channel
+ * @version: the version
+ * @source: the source
+ * @destination: the destination
+ * @supported_property_exchange_count: the supported property exchange count
+ *
+ * Put number of supported property exchange message.
+ *
+ * Since: 5.5.0
+ */
+void
+ags_midi_ci_1_1_util_put_property_exchange_capabilities_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+							guchar *buffer,
+							guchar midi_channel,
+							guchar version,
+							AgsMUID source,
+							AgsMUID destination,
+							guchar supported_property_exchange_count)
+{
+  guint nth;
+  
+  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[0] = 0xf0;
+  buffer[1] = 0x7e;
+
+  buffer[2] = midi_channel;
+
+  buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
+
+  buffer[4] = 0x31; // Sub-ID#2 - inquiry property data exchange capabilities reply
+
+  nth = 0;
+
+  /* version */
+  buffer[5 + nth] = version;
+
+  /* source */
+  buffer[5 + nth] = (0xff & source);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & source) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  nth++;
+
+  /* destination */
+  buffer[5 + nth] = (0xff & destination);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & destination) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff0000 & destination) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff000000 & destination) >> 24;
+  nth++;
+
+  /* supported_property_exchange_count */
+  buffer[5 + nth] = supported_property_exchange_count;
+  nth++;
+
+  /* sysex end */
+  buffer[5 + nth] = 0xf7;
+  nth++;
+}
+
+/**
+ * ags_midi_ci_1_1_util_get_property_exchange_capabilities_reply:
+ * @midi_ci_1_1_util: the MIDI CI util
+ * @buffer: the buffer
+ * @midi_channel: (out): the return location of MIDI channel
+ * @version: (out): the return location of version
+ * @source: (out): the return location of source
+ * @destination: (out): the return location of destination
+ * @supported_property_exchange_count: (out): the supported property exchange count
+ *
+ * Get number of supported property exchange count data message.
+ *
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.0
+ */
+guint
+ags_midi_ci_1_1_util_get_property_exchange_capabilities_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+							guchar *buffer,
+							guchar *midi_channel,
+							guchar *version,
+							AgsMUID *source,
+							AgsMUID *destination,
+							guchar *supported_property_exchange_count)
+{
+  guint nth;
+  
+  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(buffer[0] != 0xf0, 0);
+  g_return_val_if_fail(buffer[1] != 0x7e, 0);
+  g_return_val_if_fail(buffer[3] != 0x0d, 0);
+  g_return_val_if_fail(buffer[4] != 0x31, 0);
+
+  /* MIDI channel */
+  if(midi_channel != NULL){
+    midi_channel[0] = buffer[2];
+  }
+
+  nth = 0;
+
+  /* version */
+  if(version != NULL){
+    version[0] = buffer[5 + nth];
+  }
+
+  nth++;
+  
+  /* source */
+  if(source != NULL){
+    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+  }
+
+  nth += 4;
+
+  /* destination */
+  if(destination != NULL){
+    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+  }
+
+  nth += 4;
+
+  /* sysex end */
+  if(buffer[5 + nth] == 0xf7){
+    nth++;
+
+    return(5 + nth);
+  }
+
+  return(0);
+}
