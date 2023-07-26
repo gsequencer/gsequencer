@@ -321,6 +321,37 @@ guint ags_midi_ci_1_1_util_get_profile_specific_data(AgsMidiCI_1_1_Util *midi_ci
 						     guint32 *profile_specific_data_length,
 						     guchar *profile_specific_data);
 
+void ags_midi_ci_1_1_util_put_property_exchange_capabilities(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+							     guchar *buffer,
+							     guchar midi_channel,
+							     guchar version,
+							     AgsMUID source,
+							     AgsMUID destination,
+							     guchar supported_property_exchange_count);
+guint ags_midi_ci_1_1_util_get_property_exchange_capabilities(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+							      guchar *buffer,
+							      guchar *midi_channel,
+							      guchar *version,
+							      AgsMUID *source,
+							      AgsMUID *destination,
+							      guchar *supported_property_exchange_count);
+
+void ags_midi_ci_1_1_util_put_property_exchange_capabilities_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+								   guchar *buffer,
+								   guchar midi_channel,
+								   guchar version,
+								   AgsMUID source,
+								   AgsMUID destination,
+								   guchar supported_property_exchange_count);
+guint ags_midi_ci_1_1_util_get_property_exchange_capabilities_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+								    guchar *buffer,
+								    guchar *midi_channel,
+								    guchar *version,
+								    AgsMUID *source,
+								    AgsMUID *destination,
+								    guchar *supported_property_exchange_count);
+
+
 G_END_DECLS
 
 #endif /*__AGS_MIDI_CI_1_1_UTIL_H__*/
