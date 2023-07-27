@@ -155,14 +155,14 @@ ags_midi_ci_1_1_util_test_put_discovery()
   AgsMidiCI_1_1_Util *midi_ci_1_1_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x70\x01\xef\xbe\xad\xde\x0f\xff\xff\xff\x08\x00\x00\xfe\xaf\x52\x0a\x00\x05\x00\x05\x05\x00\x02\x00\x00\xf7";
+  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x70\x01\xef\xbe\xad\xde\x7f\x7f\x7f\x7f\x08\x00\x00\xfe\xaf\x52\x0a\x00\x05\x00\x05\x05\x00\x02\x00\x00\xf7";
 
   AgsMUID source = 0xdeadbeef;
   
   guchar version = '\x01';
-  guchar manufacturer[] = "\x08\x00\x00";
-  gint16 device_family = 0xaffe;
-  gint16 device_family_model_number = 0x0a52;  
+  guchar manufacturer_id[] = "\x08\x00\x00";
+  guint16 device_family = 0xaffe;
+  guint16 device_family_model_number = 0x0a52;  
   guchar software_revision_level[] = "\x00\x05\x00\x05";
   guchar capability = '\x05';
   guint32 max_sysex_message_size = 512;
@@ -175,7 +175,7 @@ ags_midi_ci_1_1_util_test_put_discovery()
 				     buffer,
 				     version,
 				     source,
-				     manufacturer,
+				     manufacturer_id,
 				     device_family,
 				     device_family_model_number,
 				     software_revision_level,
@@ -188,7 +188,40 @@ ags_midi_ci_1_1_util_test_put_discovery()
 void
 ags_midi_ci_1_1_util_test_get_discovery()
 {
-  //TODO:JK: implement me
+  AgsMidiCI_1_1_Util *midi_ci_1_1_util;
+
+  guchar buffer[] = "\xf0\x7e\x7f\x0d\x70\x01\xef\xbe\xad\xde\x7f\x7f\x7f\x7f\x08\x00\x00\xfe\xaf\x52\x0a\x00\x05\x00\x05\x05\x00\x02\x00\x00\xf7";
+
+  AgsMUID source = 0xdeadbeef;
+  
+  guchar version;
+  guchar manufacturer_id[3];
+  guint16 device_family;
+  guint16 device_family_model_number = 0x0a52;
+  guchar software_revision_level[4];
+  guchar capability;
+  guint32 max_sysex_message_size;
+
+  midi_ci_1_1_util = ags_midi_ci_1_1_util_alloc();
+
+  ags_midi_ci_1_1_util_get_discovery(midi_ci_1_1_util,
+				     buffer,
+				     &version,
+				     &source,
+				     &manufacturer_id,
+				     &device_family,
+				     &device_family_model_number,
+				     software_revision_level,
+				     &capability,
+				     &max_sysex_message_size);
+
+  CU_ASSERT(version == 0x01);
+  CU_ASSERT(!memcmp(manufacturer_id, "\x08\x00\x00", 3 * sizeof(guchar)));
+  CU_ASSERT(device_family == 0xaffe);
+  CU_ASSERT(device_family_model_number == 0x0a52);
+  CU_ASSERT(!memcmp(software_revision_level, "\x00\x05\x00\x05", 4 * sizeof(guchar)));
+  CU_ASSERT(capability == 0x05);
+  CU_ASSERT(max_sysex_message_size == 512);
 }
 
 void

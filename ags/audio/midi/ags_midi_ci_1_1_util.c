@@ -202,16 +202,16 @@ ags_midi_ci_1_1_util_put_discovery(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   nth++;
 
   /* broadcast */
-  buffer[5 + nth] = 0x0f;
+  buffer[5 + nth] = 0x7f;
   nth++;
 
-  buffer[5 + nth] = 0xff;
+  buffer[5 + nth] = 0x7f;
   nth++;
 
-  buffer[5 + nth] = 0xff;
+  buffer[5 + nth] = 0x7f;
   nth++;
 
-  buffer[5 + nth] = 0xff;
+  buffer[5 + nth] = 0x7f;
   nth++;
 
   /* manufacturer */
@@ -306,12 +306,12 @@ ags_midi_ci_1_1_util_get_discovery(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   guint nth;
   
   g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
-  g_return_val_if_fail(buffer[0] != 0xf0, 0);
-  g_return_val_if_fail(buffer[1] != 0x7e, 0);
-  g_return_val_if_fail(buffer[2] != 0x7f, 0);
-  g_return_val_if_fail(buffer[3] != 0x0d, 0);
-  g_return_val_if_fail(buffer[4] != 0x70, 0);
-  g_return_val_if_fail(buffer[9] != 0x0f || buffer[10] != 0xff || buffer[11] != 0xff || buffer[12] != 0xff, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail(buffer[1] == 0x7e, 0);
+  g_return_val_if_fail(buffer[2] == 0x7f, 0);
+  g_return_val_if_fail(buffer[3] == 0x0d, 0);
+  g_return_val_if_fail(buffer[4] == 0x70, 0);
+  g_return_val_if_fail(buffer[9] == 0x7f || buffer[10] == 0x7f || buffer[11] == 0x7f || buffer[12] == 0x7f, 0);
 
   nth = 0;
 
@@ -343,14 +343,14 @@ ags_midi_ci_1_1_util_get_discovery(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
 
   /* device family */
   if(device_family != NULL){
-    device_family[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] >> 8));
+    device_family[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
   }
   
   nth += 2;
 
   /* device family model number */
   if(device_family_model_number != NULL){
-    device_family_model_number[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] >> 8));
+    device_family_model_number[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
   }
   
   nth += 2;
@@ -367,14 +367,14 @@ ags_midi_ci_1_1_util_get_discovery(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   
   /* capability */
   if(capability != NULL){
-    capability = buffer[5 + nth];
+    capability[0] = buffer[5 + nth];
   }
   
   nth++;
 
   /* maximum sysex message size */
   if(max_sysex_message_size != NULL){
-    max_sysex_message_size[0] = (buffer[5 + nth]) | (buffer[5 + nth + 1]) | (buffer[5 + nth + 2]) | (buffer[5 + nth + 3]);
+    max_sysex_message_size[0] = (buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24);
   }
 
   nth += 4;
@@ -413,10 +413,10 @@ ags_midi_ci_1_1_util_put_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
 					 guchar version,
 					 AgsMUID source,
 					 AgsMUID destination,
-					 guint32 manufacturer_id,
-					 guint32 device_family,
-					 guint32 device_family_model_number,
-					 guint32 software_revision_level,
+					 gchar *manufacturer_id,
+					 guint16 device_family,
+					 guint16 device_family_model_number,
+					 gchar *software_revision_level,
 					 guchar capability,
 					 guint32 max_sysex_message_size)
 {
@@ -466,7 +466,7 @@ ags_midi_ci_1_1_util_put_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   nth++;
   
   /* manufacturer */
-  buffer[5 + nth] = (0xff & manufacturer_id);
+  buffer[5 + nth] = manufacturer_id[0];
   nth++;
   
   buffer[5 + nth] = 0x0;
@@ -490,16 +490,16 @@ ags_midi_ci_1_1_util_put_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   nth++;
 
   /* software revision level */
-  buffer[5 + nth] = (0xff & software_revision_level);
+  buffer[5 + nth] = software_revision_level[0];
   nth++;
   
-  buffer[5 + nth] = (0xff00 & device_family_model_number) >> 8;
+  buffer[5 + nth] = software_revision_level[1];
   nth++;
   
-  buffer[5 + nth] = (0xff00 & device_family_model_number) >> 16;
+  buffer[5 + nth] = software_revision_level[2];
   nth++;
   
-  buffer[5 + nth] = (0xff00 & device_family_model_number) >> 24;
+  buffer[5 + nth] = software_revision_level[3];
   nth++;
 
   /* capability */
@@ -550,21 +550,21 @@ ags_midi_ci_1_1_util_get_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
 					 guchar *version,
 					 AgsMUID *source,
 					 AgsMUID *destination,
-					 guint32 *manufacturer_id,
-					 guint32 *device_family,
-					 guint32 *device_family_model_number,
-					 guint32 *software_revision_level,
+					 guchar *manufacturer_id,
+					 guint16 *device_family,
+					 guint16 *device_family_model_number,
+					 guchar *software_revision_level,
 					 guchar *capability,
 					 guint32 *max_sysex_message_size)
 {
   guint nth;
   
   g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
-  g_return_val_if_fail(buffer[0] != 0xf0, 0);
-  g_return_val_if_fail(buffer[1] != 0x7e, 0);
-  g_return_val_if_fail(buffer[2] != 0x7f, 0);
-  g_return_val_if_fail(buffer[3] != 0x0d, 0);
-  g_return_val_if_fail(buffer[4] != 0x71, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail(buffer[1] == 0x7e, 0);
+  g_return_val_if_fail(buffer[2] == 0x7f, 0);
+  g_return_val_if_fail(buffer[3] == 0x0d, 0);
+  g_return_val_if_fail(buffer[4] == 0x71, 0);
 
   nth = 0;
 
@@ -594,25 +594,28 @@ ags_midi_ci_1_1_util_get_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
     manufacturer_id[0] = buffer[5 + nth];
   }
 
-  nth++;
+  nth += 3;
 
   /* device family */
   if(device_family != NULL){
-    device_family[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] >> 8));
+    device_family[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
   }
   
   nth += 2;
 
   /* device family model number */
-  if(device_family != NULL){
-    device_family_model_number[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] >> 8));
+  if(device_family_model_number != NULL){
+    device_family_model_number[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
   }
   
   nth += 2;
 
   /* software revision level */
   if(software_revision_level != NULL){
-    device_family_model_number[0] = (buffer[5 + nth]) | (buffer[5 + nth + 1]) | (buffer[5 + nth + 2]) | (buffer[5 + nth + 3]);
+    software_revision_level[0] = buffer[5 + nth];
+    software_revision_level[1] = buffer[5 + nth + 1];
+    software_revision_level[2] = buffer[5 + nth + 2];
+    software_revision_level[3] = buffer[5 + nth + 3];
   }
 
   nth += 4;
@@ -695,16 +698,16 @@ ags_midi_ci_1_1_util_put_invalidate_muid(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   nth++;
 
   /* broadcast */
-  buffer[5 + nth] = 0x0f;
+  buffer[5 + nth] = 0x7f;
   nth++;
 
-  buffer[5 + nth] = 0xff;
+  buffer[5 + nth] = 0x7f;
   nth++;
 
-  buffer[5 + nth] = 0xff;
+  buffer[5 + nth] = 0x7f;
   nth++;
 
-  buffer[5 + nth] = 0xff;
+  buffer[5 + nth] = 0x7f;
   nth++;
   
   /* target muid */
@@ -749,12 +752,12 @@ ags_midi_ci_1_1_util_get_invalidate_muid(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   guint nth;
   
   g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
-  g_return_val_if_fail(buffer[0] != 0xf0, 0);
-  g_return_val_if_fail(buffer[1] != 0x7e, 0);
-  g_return_val_if_fail(buffer[2] != 0x7f, 0);
-  g_return_val_if_fail(buffer[3] != 0x0d, 0);
-  g_return_val_if_fail(buffer[4] != 0x7e, 0);
-  g_return_val_if_fail(buffer[9] != 0x0f || buffer[10] != 0xff || buffer[11] != 0xff || buffer[12] != 0xff, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail(buffer[1] == 0x7e, 0);
+  g_return_val_if_fail(buffer[2] == 0x7f, 0);
+  g_return_val_if_fail(buffer[3] == 0x0d, 0);
+  g_return_val_if_fail(buffer[4] == 0x7e, 0);
+  g_return_val_if_fail(buffer[9] == 0x7f || buffer[10] == 0x7f || buffer[11] == 0x7f || buffer[12] == 0x7f, 0);
 
   nth = 0;
 
@@ -889,11 +892,11 @@ ags_midi_ci_1_1_util_get_nak(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   guint nth;
   
   g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
-  g_return_val_if_fail(buffer[0] != 0xf0, 0);
-  g_return_val_if_fail(buffer[1] != 0x7e, 0);
-  g_return_val_if_fail(buffer[2] != 0x7f, 0);
-  g_return_val_if_fail(buffer[3] != 0x0d, 0);
-  g_return_val_if_fail(buffer[4] != 0x70, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail(buffer[1] == 0x7e, 0);
+  g_return_val_if_fail(buffer[2] == 0x7f, 0);
+  g_return_val_if_fail(buffer[3] == 0x0d, 0);
+  g_return_val_if_fail(buffer[4] == 0x70, 0);
 
   nth = 0;
 
@@ -1055,11 +1058,11 @@ ags_midi_ci_1_1_util_get_initiate_protocol_negotiation(AgsMidiCI_1_1_Util *midi_
   guint i, i_stop;
   
   g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
-  g_return_val_if_fail(buffer[0] != 0xf0, 0);
-  g_return_val_if_fail(buffer[1] != 0x7e, 0);
-  g_return_val_if_fail(buffer[2] != 0x7f, 0);
-  g_return_val_if_fail(buffer[3] != 0x0d, 0);
-  g_return_val_if_fail(buffer[4] != 0x10, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail(buffer[1] == 0x7e, 0);
+  g_return_val_if_fail(buffer[2] == 0x7f, 0);
+  g_return_val_if_fail(buffer[3] == 0x0d, 0);
+  g_return_val_if_fail(buffer[4] == 0x10, 0);
 
   nth = 0;
 
@@ -1252,11 +1255,11 @@ ags_midi_ci_1_1_util_get_initiate_protocol_negotiation_reply(AgsMidiCI_1_1_Util 
   guint i, i_stop;
   
   g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
-  g_return_val_if_fail(buffer[0] != 0xf0, 0);
-  g_return_val_if_fail(buffer[1] != 0x7e, 0);
-  g_return_val_if_fail(buffer[2] != 0x7f, 0);
-  g_return_val_if_fail(buffer[3] != 0x0d, 0);
-  g_return_val_if_fail(buffer[4] != 0x11, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail(buffer[1] == 0x7e, 0);
+  g_return_val_if_fail(buffer[2] == 0x7f, 0);
+  g_return_val_if_fail(buffer[3] == 0x0d, 0);
+  g_return_val_if_fail(buffer[4] == 0x11, 0);
 
   nth = 0;
 
@@ -1439,11 +1442,11 @@ ags_midi_ci_1_1_util_get_set_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   guint i;
   
   g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
-  g_return_val_if_fail(buffer[0] != 0xf0, 0);
-  g_return_val_if_fail(buffer[1] != 0x7e, 0);
-  g_return_val_if_fail(buffer[2] != 0x7f, 0);
-  g_return_val_if_fail(buffer[3] != 0x0d, 0);
-  g_return_val_if_fail(buffer[4] != 0x13, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail(buffer[1] == 0x7e, 0);
+  g_return_val_if_fail(buffer[2] == 0x7f, 0);
+  g_return_val_if_fail(buffer[3] == 0x0d, 0);
+  g_return_val_if_fail(buffer[4] == 0x13, 0);
  
   nth = 0;
 
@@ -1625,11 +1628,11 @@ ags_midi_ci_1_1_util_get_confirm_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_u
   static gboolean init_test_data = FALSE;
   
   g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
-  g_return_val_if_fail(buffer[0] != 0xf0, 0);
-  g_return_val_if_fail(buffer[1] != 0x7e, 0);
-  g_return_val_if_fail(buffer[2] != 0x7f, 0);
-  g_return_val_if_fail(buffer[3] != 0x0d, 0);
-  g_return_val_if_fail(buffer[4] != 0x13, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail(buffer[1] == 0x7e, 0);
+  g_return_val_if_fail(buffer[2] == 0x7f, 0);
+  g_return_val_if_fail(buffer[3] == 0x0d, 0);
+  g_return_val_if_fail(buffer[4] == 0x13, 0);
 
   if(!init_test_data){
     for(i = 0; i < 48; i++){
@@ -1814,11 +1817,11 @@ ags_midi_ci_1_1_util_get_confirm_protocol_type_reply(AgsMidiCI_1_1_Util *midi_ci
   static gboolean init_test_data = FALSE;
   
   g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
-  g_return_val_if_fail(buffer[0] != 0xf0, 0);
-  g_return_val_if_fail(buffer[1] != 0x7e, 0);
-  g_return_val_if_fail(buffer[2] != 0x7f, 0);
-  g_return_val_if_fail(buffer[3] != 0x0d, 0);
-  g_return_val_if_fail(buffer[4] != 0x14, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail(buffer[1] == 0x7e, 0);
+  g_return_val_if_fail(buffer[2] == 0x7f, 0);
+  g_return_val_if_fail(buffer[3] == 0x0d, 0);
+  g_return_val_if_fail(buffer[4] == 0x14, 0);
 
   if(!init_test_data){
     for(i = 0; i < 48; i++){
@@ -1977,11 +1980,11 @@ ags_midi_ci_1_1_util_get_confirm_protocol_type_established(AgsMidiCI_1_1_Util *m
   guint i;
   
   g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
-  g_return_val_if_fail(buffer[0] != 0xf0, 0);
-  g_return_val_if_fail(buffer[1] != 0x7e, 0);
-  g_return_val_if_fail(buffer[2] != 0x7f, 0);
-  g_return_val_if_fail(buffer[3] != 0x0d, 0);
-  g_return_val_if_fail(buffer[4] != 0x15, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail(buffer[1] == 0x7e, 0);
+  g_return_val_if_fail(buffer[2] == 0x7f, 0);
+  g_return_val_if_fail(buffer[3] == 0x0d, 0);
+  g_return_val_if_fail(buffer[4] == 0x15, 0);
  
   nth = 0;
 
@@ -2118,12 +2121,12 @@ ags_midi_ci_1_1_util_get_profile_inquiry(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   guint nth;
   
   g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
-  g_return_val_if_fail(buffer[0] != 0xf0, 0);
-  g_return_val_if_fail(buffer[1] != 0x7e, 0);
-  g_return_val_if_fail(buffer[2] != 0x7f, 0);
-  g_return_val_if_fail(buffer[3] != 0x0d, 0);
-  g_return_val_if_fail(buffer[4] != 0x20, 0);
-  g_return_val_if_fail(buffer[9] != 0x0f || buffer[10] != 0xff || buffer[11] != 0xff || buffer[12] != 0xff, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail(buffer[1] == 0x7e, 0);
+  g_return_val_if_fail(buffer[2] == 0x7f, 0);
+  g_return_val_if_fail(buffer[3] == 0x0d, 0);
+  g_return_val_if_fail(buffer[4] == 0x20, 0);
+  g_return_val_if_fail(buffer[9] == 0x0f || buffer[10] == 0xff || buffer[11] == 0xff || buffer[12] == 0xff, 0);
 
   nth = 0;
 
@@ -2311,12 +2314,12 @@ ags_midi_ci_1_1_util_get_profile_inquiry_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_u
   guint i, i_stop;
   
   g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
-  g_return_val_if_fail(buffer[0] != 0xf0, 0);
-  g_return_val_if_fail(buffer[1] != 0x7e, 0);
-  g_return_val_if_fail(buffer[2] != 0x7f, 0);
-  g_return_val_if_fail(buffer[3] != 0x0d, 0);
-  g_return_val_if_fail(buffer[4] != 0x20, 0);
-  g_return_val_if_fail(buffer[9] != 0x0f || buffer[10] != 0xff || buffer[11] != 0xff || buffer[12] != 0xff, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail(buffer[1] == 0x7e, 0);
+  g_return_val_if_fail(buffer[2] == 0x7f, 0);
+  g_return_val_if_fail(buffer[3] == 0x0d, 0);
+  g_return_val_if_fail(buffer[4] == 0x20, 0);
+  g_return_val_if_fail(buffer[9] == 0x0f || buffer[10] == 0xff || buffer[11] == 0xff || buffer[12] == 0xff, 0);
 
   nth = 0;
 
@@ -2451,16 +2454,16 @@ ags_midi_ci_1_1_util_put_profile_enabled_report(AgsMidiCI_1_1_Util *midi_ci_1_1_
   nth++;
 
   /* broadcast */
-  buffer[5 + nth] = 0x0f;
+  buffer[5 + nth] = 0x7f;
   nth++;
 
-  buffer[5 + nth] = 0xff;
+  buffer[5 + nth] = 0x7f;
   nth++;
 
-  buffer[5 + nth] = 0xff;
+  buffer[5 + nth] = 0x7f;
   nth++;
 
-  buffer[5 + nth] = 0xff;
+  buffer[5 + nth] = 0x7f;
   nth++;
 
   /* enabled profile */
@@ -2504,12 +2507,12 @@ ags_midi_ci_1_1_util_get_profile_enabled_report(AgsMidiCI_1_1_Util *midi_ci_1_1_
   guint nth;
   
   g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
-  g_return_val_if_fail(buffer[0] != 0xf0, 0);
-  g_return_val_if_fail(buffer[1] != 0x7e, 0);
-  g_return_val_if_fail(buffer[2] != 0x7f, 0);
-  g_return_val_if_fail(buffer[3] != 0x0d, 0);
-  g_return_val_if_fail(buffer[4] != 0x24, 0);
-  g_return_val_if_fail(buffer[9] != 0x0f || buffer[10] != 0xff || buffer[11] != 0xff || buffer[12] != 0xff, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail(buffer[1] == 0x7e, 0);
+  g_return_val_if_fail(buffer[2] == 0x7f, 0);
+  g_return_val_if_fail(buffer[3] == 0x0d, 0);
+  g_return_val_if_fail(buffer[4] == 0x24, 0);
+  g_return_val_if_fail(buffer[9] == 0x7f || buffer[10] == 0x7f || buffer[11] == 0x7f || buffer[12] == 0x7f, 0);
 
   nth = 0;
 
@@ -2605,16 +2608,16 @@ ags_midi_ci_1_1_util_put_profile_disabled_report(AgsMidiCI_1_1_Util *midi_ci_1_1
   nth++;
 
   /* broadcast */
-  buffer[5 + nth] = 0x0f;
+  buffer[5 + nth] = 0x7f;
   nth++;
 
-  buffer[5 + nth] = 0xff;
+  buffer[5 + nth] = 0x7f;
   nth++;
 
-  buffer[5 + nth] = 0xff;
+  buffer[5 + nth] = 0x7f;
   nth++;
 
-  buffer[5 + nth] = 0xff;
+  buffer[5 + nth] = 0x7f;
   nth++;
 
   /* disabled profile */
@@ -2658,12 +2661,12 @@ ags_midi_ci_1_1_util_get_profile_disabled_report(AgsMidiCI_1_1_Util *midi_ci_1_1
   guint nth;
   
   g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
-  g_return_val_if_fail(buffer[0] != 0xf0, 0);
-  g_return_val_if_fail(buffer[1] != 0x7e, 0);
-  g_return_val_if_fail(buffer[2] != 0x7f, 0);
-  g_return_val_if_fail(buffer[3] != 0x0d, 0);
-  g_return_val_if_fail(buffer[4] != 0x25, 0);
-  g_return_val_if_fail(buffer[9] != 0x0f || buffer[10] != 0xff || buffer[11] != 0xff || buffer[12] != 0xff, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail(buffer[1] == 0x7e, 0);
+  g_return_val_if_fail(buffer[2] == 0x7f, 0);
+  g_return_val_if_fail(buffer[3] == 0x0d, 0);
+  g_return_val_if_fail(buffer[4] == 0x25, 0);
+  g_return_val_if_fail(buffer[9] == 0x7f || buffer[10] == 0x7f || buffer[11] == 0x7f || buffer[12] == 0x7f, 0);
 
   nth = 0;
 
@@ -2833,12 +2836,12 @@ ags_midi_ci_1_1_util_get_profile_specific_data(AgsMidiCI_1_1_Util *midi_ci_1_1_u
   guint i_stop;
   
   g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
-  g_return_val_if_fail(buffer[0] != 0xf0, 0);
-  g_return_val_if_fail(buffer[1] != 0x7e, 0);
-  g_return_val_if_fail(buffer[2] != 0x7f, 0);
-  g_return_val_if_fail(buffer[3] != 0x0d, 0);
-  g_return_val_if_fail(buffer[4] != 0x2f, 0);
-  g_return_val_if_fail(buffer[9] != 0x0f || buffer[10] != 0xff || buffer[11] != 0xff || buffer[12] != 0xff, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail(buffer[1] == 0x7e, 0);
+  g_return_val_if_fail(buffer[2] == 0x7f, 0);
+  g_return_val_if_fail(buffer[3] == 0x0d, 0);
+  g_return_val_if_fail(buffer[4] == 0x2f, 0);
+  g_return_val_if_fail(buffer[9] == 0x0f || buffer[10] == 0xff || buffer[11] == 0xff || buffer[12] == 0xff, 0);
 
   nth = 0;
 
@@ -3007,10 +3010,10 @@ ags_midi_ci_1_1_util_get_property_exchange_capabilities(AgsMidiCI_1_1_Util *midi
   guint nth;
   
   g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
-  g_return_val_if_fail(buffer[0] != 0xf0, 0);
-  g_return_val_if_fail(buffer[1] != 0x7e, 0);
-  g_return_val_if_fail(buffer[3] != 0x0d, 0);
-  g_return_val_if_fail(buffer[4] != 0x30, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail(buffer[1] == 0x7e, 0);
+  g_return_val_if_fail(buffer[3] == 0x0d, 0);
+  g_return_val_if_fail(buffer[4] == 0x30, 0);
 
   /* MIDI channel */
   if(midi_channel != NULL){
@@ -3157,10 +3160,10 @@ ags_midi_ci_1_1_util_get_property_exchange_capabilities_reply(AgsMidiCI_1_1_Util
   guint nth;
   
   g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
-  g_return_val_if_fail(buffer[0] != 0xf0, 0);
-  g_return_val_if_fail(buffer[1] != 0x7e, 0);
-  g_return_val_if_fail(buffer[3] != 0x0d, 0);
-  g_return_val_if_fail(buffer[4] != 0x31, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail(buffer[1] == 0x7e, 0);
+  g_return_val_if_fail(buffer[3] == 0x0d, 0);
+  g_return_val_if_fail(buffer[4] == 0x31, 0);
 
   /* MIDI channel */
   if(midi_channel != NULL){
@@ -3368,10 +3371,10 @@ ags_midi_ci_1_1_util_get_get_property_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   guint i_stop;
   
   g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
-  g_return_val_if_fail(buffer[0] != 0xf0, 0);
-  g_return_val_if_fail(buffer[1] != 0x7e, 0);
-  g_return_val_if_fail(buffer[3] != 0x0d, 0);
-  g_return_val_if_fail(buffer[4] != 0x34, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail(buffer[1] == 0x7e, 0);
+  g_return_val_if_fail(buffer[3] == 0x0d, 0);
+  g_return_val_if_fail(buffer[4] == 0x34, 0);
 
   /* MIDI channel */
   if(midi_channel != NULL){
@@ -3632,10 +3635,10 @@ ags_midi_ci_1_1_util_get_get_property_data_reply(AgsMidiCI_1_1_Util *midi_ci_1_1
   guint i_stop;
   
   g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
-  g_return_val_if_fail(buffer[0] != 0xf0, 0);
-  g_return_val_if_fail(buffer[1] != 0x7e, 0);
-  g_return_val_if_fail(buffer[3] != 0x0d, 0);
-  g_return_val_if_fail(buffer[4] != 0x35, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail(buffer[1] == 0x7e, 0);
+  g_return_val_if_fail(buffer[3] == 0x0d, 0);
+  g_return_val_if_fail(buffer[4] == 0x35, 0);
 
   /* MIDI channel */
   if(midi_channel != NULL){
@@ -3896,10 +3899,10 @@ ags_midi_ci_1_1_util_get_set_property_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   guint i_stop;
   
   g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
-  g_return_val_if_fail(buffer[0] != 0xf0, 0);
-  g_return_val_if_fail(buffer[1] != 0x7e, 0);
-  g_return_val_if_fail(buffer[3] != 0x0d, 0);
-  g_return_val_if_fail(buffer[4] != 0x36, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail(buffer[1] == 0x7e, 0);
+  g_return_val_if_fail(buffer[3] == 0x0d, 0);
+  g_return_val_if_fail(buffer[4] == 0x36, 0);
 
   /* MIDI channel */
   if(midi_channel != NULL){
@@ -4160,10 +4163,10 @@ ags_midi_ci_1_1_util_get_set_property_data_reply(AgsMidiCI_1_1_Util *midi_ci_1_1
   guint i_stop;
   
   g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
-  g_return_val_if_fail(buffer[0] != 0xf0, 0);
-  g_return_val_if_fail(buffer[1] != 0x7e, 0);
-  g_return_val_if_fail(buffer[3] != 0x0d, 0);
-  g_return_val_if_fail(buffer[4] != 0x37, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail(buffer[1] == 0x7e, 0);
+  g_return_val_if_fail(buffer[3] == 0x0d, 0);
+  g_return_val_if_fail(buffer[4] == 0x37, 0);
 
   /* MIDI channel */
   if(midi_channel != NULL){
@@ -4424,10 +4427,10 @@ ags_midi_ci_1_1_util_get_subscription(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   guint i_stop;
   
   g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
-  g_return_val_if_fail(buffer[0] != 0xf0, 0);
-  g_return_val_if_fail(buffer[1] != 0x7e, 0);
-  g_return_val_if_fail(buffer[3] != 0x0d, 0);
-  g_return_val_if_fail(buffer[4] != 0x38, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail(buffer[1] == 0x7e, 0);
+  g_return_val_if_fail(buffer[3] == 0x0d, 0);
+  g_return_val_if_fail(buffer[4] == 0x38, 0);
 
   /* MIDI channel */
   if(midi_channel != NULL){
@@ -4688,10 +4691,10 @@ ags_midi_ci_1_1_util_get_subscription_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util
   guint i_stop;
   
   g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
-  g_return_val_if_fail(buffer[0] != 0xf0, 0);
-  g_return_val_if_fail(buffer[1] != 0x7e, 0);
-  g_return_val_if_fail(buffer[3] != 0x0d, 0);
-  g_return_val_if_fail(buffer[4] != 0x39, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail(buffer[1] == 0x7e, 0);
+  g_return_val_if_fail(buffer[3] == 0x0d, 0);
+  g_return_val_if_fail(buffer[4] == 0x39, 0);
 
   /* MIDI channel */
   if(midi_channel != NULL){

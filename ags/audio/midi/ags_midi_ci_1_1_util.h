@@ -32,6 +32,7 @@ G_BEGIN_DECLS
 #define AGS_TYPE_MIDI_CI_1_1_UTIL         (ags_midi_ci_1_1_util_get_type())
 
 #define AGS_MIDI_CI_1_1_UTIL_BROADCAST_MUID (0x0fffffff)
+#define AGS_MIDI_CI_1_1_UTIL_BROADCAST_MUID_ENCODED "\x7f\x7f\x7f\x7f"
 #define AGS_MIDI_CI_1_1_UTIL_MAX_BROADCAST_MESSAGE_SIZE (512)
 #define AGS_MIDI_CI_1_1_UTIL_DISCOVERY_TIMEOUT_USEC (3 * AGS_USEC_PER_SEC)
 
@@ -140,10 +141,10 @@ void ags_midi_ci_1_1_util_put_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_ut
 					      guchar version,
 					      AgsMUID source,
 					      AgsMUID destination,
-					      guint32 manufacturer_id,
-					      guint32 device_family,
-					      guint32 device_family_model_number,
-					      guint32 software_revision_level,
+					      gchar *manufacturer_id,
+					      guint16 device_family,
+					      guint16 device_family_model_number,
+					      gchar *software_revision_level,
 					      guchar capability,
 					      guint32 max_sysex_message_size);
 guint ags_midi_ci_1_1_util_get_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
@@ -151,10 +152,10 @@ guint ags_midi_ci_1_1_util_get_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_u
 					       guchar *version,
 					       AgsMUID *source,
 					       AgsMUID *destination,
-					       guint32 *manufacturer_id,
-					       guint32 *device_family,
-					       guint32 *device_family_model_number,
-					       guint32 *software_revision_level,
+					       guchar *manufacturer_id,
+					       guint16 *device_family,
+					       guint16 *device_family_model_number,
+					       guchar *software_revision_level,
 					       guchar *capability,
 					       guint32 *max_sysex_message_size);
 
