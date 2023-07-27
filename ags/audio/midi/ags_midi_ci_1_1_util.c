@@ -888,7 +888,6 @@ ags_midi_ci_1_1_util_get_nak(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   g_return_val_if_fail(buffer[2] != 0x7f, 0);
   g_return_val_if_fail(buffer[3] != 0x0d, 0);
   g_return_val_if_fail(buffer[4] != 0x70, 0);
-  g_return_val_if_fail(buffer[9] != 0x0f || buffer[10] != 0xff || buffer[11] != 0xff || buffer[12] != 0xff, 0);
 
   nth = 0;
 
@@ -3185,6 +3184,1590 @@ ags_midi_ci_1_1_util_get_property_exchange_capabilities_reply(AgsMidiCI_1_1_Util
 
   nth += 4;
 
+  /* sysex end */
+  if(buffer[5 + nth] == 0xf7){
+    nth++;
+
+    return(5 + nth);
+  }
+
+  return(0);
+}
+
+/**
+ * ags_midi_ci_1_1_util_put_get_property_data:
+ * @midi_ci_1_1_util: the MIDI CI util
+ * @buffer: the buffer
+ * @midi_channel: the MIDI channel
+ * @version: the version
+ * @source: the source
+ * @destination: the destination
+ * @request_id: the request ID
+ * @header_data_length: the header data length
+ * @header_data: the header data
+ * @chunk_count: the chunk count
+ * @nth_chunk: the nth chunk
+ * @property_data_length: the property data length
+ * @property_data: the property data
+ *
+ * Put get property data.
+ *
+ * Since: 5.5.0
+ */
+void
+ags_midi_ci_1_1_util_put_get_property_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+					   guchar *buffer,
+					   guchar midi_channel,
+					   guchar version,
+					   AgsMUID source,
+					   AgsMUID destination,
+					   guchar request_id,
+					   gint16 header_data_length,
+					   guchar *header_data,
+					   gint16 chunk_count,
+					   gint16 nth_chunk,
+					   gint16 property_data_length,
+					   guchar *property_data)
+{
+  guint nth;
+
+  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[0] = 0xf0;
+  buffer[1] = 0x7e;
+
+  buffer[2] = midi_channel;
+
+  buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
+
+  buffer[4] = 0x34; // Sub-ID#2 - get property data
+
+  nth = 0;
+
+  /* version */
+  buffer[5 + nth] = version;
+
+  /* source */
+  buffer[5 + nth] = (0xff & source);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & source) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  nth++;
+
+  /* destination */
+  buffer[5 + nth] = (0xff & destination);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & destination) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff0000 & destination) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff000000 & destination) >> 24;
+  nth++;
+
+  /* request ID */
+  buffer[5 + nth] = request_id;
+  nth++;
+
+  /* header data length */
+  buffer[5 + nth] = (0xff & header_data_length);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & header_data_length) >> 8;
+  nth++;
+
+  /* header data */
+  memcpy(buffer + 5 + nth, header_data, header_data_length *sizeof(guchar));
+  nth += header_data_length;
+
+  /* chunk count */
+  buffer[5 + nth] = (0xff & chunk_count);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & chunk_count) >> 8;
+  nth++;
+
+  /* nth chunk */
+  buffer[5 + nth] = (0xff & nth_chunk);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & nth_chunk) >> 8;
+  nth++;
+
+  /* property data length */
+  buffer[5 + nth] = (0xff & property_data_length);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & property_data_length) >> 8;
+  nth++;
+
+  /* property data */
+  memcpy(buffer + 5 + nth, property_data, property_data_length *sizeof(guchar));
+  nth += property_data_length;
+  
+  /* sysex end */
+  buffer[5 + nth] = 0xf7;
+  nth++;
+}
+
+/**
+ * ags_midi_ci_1_1_util_get_get_property_data:
+ * @midi_ci_1_1_util: the MIDI CI util
+ * @buffer: the buffer
+ * @midi_channel: (out): the MIDI channel
+ * @version: (out): the return location of version
+ * @source: (out): the return location of source
+ * @destination: (out): the return location of destination
+ * @request_id: (out): the request ID
+ * @header_data_length: (out): the header data length
+ * @header_data: (out): the header data
+ * @chunk_count: (out): the chunk count
+ * @nth_chunk: (out): the nth chunk
+ * @property_data_length: (out): the property data length
+ * @property_data: (out): the property data
+ *
+ * Get get property data.
+ *
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.0
+ */
+guint
+ags_midi_ci_1_1_util_get_get_property_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+					   guchar *buffer,
+					   guchar *midi_channel,
+					   guchar *version,
+					   AgsMUID *source,
+					   AgsMUID *destination,
+					   guchar *request_id,
+					   gint16 *header_data_length,
+					   guchar *header_data,
+					   gint16 *chunk_count,
+					   gint16 *nth_chunk,
+					   gint16 *property_data_length,
+					   guchar *property_data)
+{
+  guint nth;
+  guint i_stop;
+  
+  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(buffer[0] != 0xf0, 0);
+  g_return_val_if_fail(buffer[1] != 0x7e, 0);
+  g_return_val_if_fail(buffer[3] != 0x0d, 0);
+  g_return_val_if_fail(buffer[4] != 0x34, 0);
+
+  /* MIDI channel */
+  if(midi_channel != NULL){
+    midi_channel[0] = buffer[2];
+  }
+
+  nth = 0;
+
+  /* version */
+  if(version != NULL){
+    version[0] = buffer[5 + nth];
+  }
+
+  nth++;
+  
+  /* source */
+  if(source != NULL){
+    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+  }
+
+  nth += 4;
+
+  /* destination */
+  if(destination != NULL){
+    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+  }
+
+  nth += 4;
+
+  /* request ID */
+  if(request_id != NULL){
+    request_id[0] = buffer[5 + nth];
+  }
+
+  nth++;
+
+  /* header data length */
+  if(header_data_length != NULL){
+    header_data_length[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+  }
+
+  i_stop = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+
+  nth += 2;
+
+  /* header data */
+  if(header_data != NULL){
+    memcpy(header_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+  }
+
+  nth += i_stop;
+
+  /* chunk count */
+  if(chunk_count != NULL){
+    chunk_count[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+  }
+
+  nth += 2;
+
+  /* nth chunk */
+  if(nth_chunk != NULL){
+    nth_chunk[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+  }
+
+  nth += 2;
+
+  /* property data length */
+  if(property_data_length != NULL){
+    property_data_length[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+  }
+
+  i_stop = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+
+  nth += 2;
+
+  /* property data */
+  if(property_data != NULL){
+    memcpy(property_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+  }
+
+  nth += i_stop;
+
+  /* sysex end */
+  if(buffer[5 + nth] == 0xf7){
+    nth++;
+
+    return(5 + nth);
+  }
+
+  return(0);
+}
+
+/**
+ * ags_midi_ci_1_1_util_put_get_property_data_reply:
+ * @midi_ci_1_1_util: the MIDI CI util
+ * @buffer: the buffer
+ * @midi_channel: the MIDI channel
+ * @version: the version
+ * @source: the source
+ * @destination: the destination
+ * @request_id: the request ID
+ * @header_data_length: the header data length
+ * @header_data: the header data
+ * @chunk_count: the chunk count
+ * @nth_chunk: the nth chunk
+ * @property_data_length: the property data length
+ * @property_data: the property data
+ *
+ * Put get property data.
+ *
+ * Since: 5.5.0
+ */
+void
+ags_midi_ci_1_1_util_put_get_property_data_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+						 guchar *buffer,
+						 guchar midi_channel,
+						 guchar version,
+						 AgsMUID source,
+						 AgsMUID destination,
+						 guchar request_id,
+						 gint16 header_data_length,
+						 guchar *header_data,
+						 gint16 chunk_count,
+						 gint16 nth_chunk,
+						 gint16 property_data_length,
+						 guchar *property_data)
+{
+  guint nth;
+
+  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[0] = 0xf0;
+  buffer[1] = 0x7e;
+
+  buffer[2] = midi_channel;
+
+  buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
+
+  buffer[4] = 0x35; // Sub-ID#2 - get property data reply
+
+  nth = 0;
+
+  /* version */
+  buffer[5 + nth] = version;
+
+  /* source */
+  buffer[5 + nth] = (0xff & source);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & source) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  nth++;
+
+  /* destination */
+  buffer[5 + nth] = (0xff & destination);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & destination) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff0000 & destination) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff000000 & destination) >> 24;
+  nth++;
+
+  /* request ID */
+  buffer[5 + nth] = request_id;
+  nth++;
+
+  /* header data length */
+  buffer[5 + nth] = (0xff & header_data_length);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & header_data_length) >> 8;
+  nth++;
+
+  /* header data */
+  memcpy(buffer + 5 + nth, header_data, header_data_length *sizeof(guchar));
+  nth += header_data_length;
+
+  /* chunk count */
+  buffer[5 + nth] = (0xff & chunk_count);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & chunk_count) >> 8;
+  nth++;
+
+  /* nth chunk */
+  buffer[5 + nth] = (0xff & nth_chunk);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & nth_chunk) >> 8;
+  nth++;
+
+  /* property data length */
+  buffer[5 + nth] = (0xff & property_data_length);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & property_data_length) >> 8;
+  nth++;
+
+  /* property data */
+  memcpy(buffer + 5 + nth, property_data, property_data_length *sizeof(guchar));
+  nth += property_data_length;
+  
+  /* sysex end */
+  buffer[5 + nth] = 0xf7;
+  nth++;
+}
+
+/**
+ * ags_midi_ci_1_1_util_get_get_property_data_reply:
+ * @midi_ci_1_1_util: the MIDI CI util
+ * @buffer: the buffer
+ * @midi_channel: (out): the MIDI channel
+ * @version: (out): the return location of version
+ * @source: (out): the return location of source
+ * @destination: (out): the return location of destination
+ * @request_id: (out): the request ID
+ * @header_data_length: (out): the header data length
+ * @header_data: (out): the header data
+ * @chunk_count: (out): the chunk count
+ * @nth_chunk: (out): the nth chunk
+ * @property_data_length: (out): the property data length
+ * @property_data: (out): the property data
+ *
+ * Get get property data.
+ *
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.0
+ */
+guint
+ags_midi_ci_1_1_util_get_get_property_data_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+						 guchar *buffer,
+						 guchar *midi_channel,
+						 guchar *version,
+						 AgsMUID *source,
+						 AgsMUID *destination,
+						 guchar *request_id,
+						 gint16 *header_data_length,
+						 guchar *header_data,
+						 gint16 *chunk_count,
+						 gint16 *nth_chunk,
+						 gint16 *property_data_length,
+						 guchar *property_data)
+{
+  guint nth;
+  guint i_stop;
+  
+  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(buffer[0] != 0xf0, 0);
+  g_return_val_if_fail(buffer[1] != 0x7e, 0);
+  g_return_val_if_fail(buffer[3] != 0x0d, 0);
+  g_return_val_if_fail(buffer[4] != 0x35, 0);
+
+  /* MIDI channel */
+  if(midi_channel != NULL){
+    midi_channel[0] = buffer[2];
+  }
+
+  nth = 0;
+
+  /* version */
+  if(version != NULL){
+    version[0] = buffer[5 + nth];
+  }
+
+  nth++;
+  
+  /* source */
+  if(source != NULL){
+    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+  }
+
+  nth += 4;
+
+  /* destination */
+  if(destination != NULL){
+    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+  }
+
+  nth += 4;
+
+  /* request ID */
+  if(request_id != NULL){
+    request_id[0] = buffer[5 + nth];
+  }
+
+  nth++;
+
+  /* header data length */
+  if(header_data_length != NULL){
+    header_data_length[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+  }
+
+  i_stop = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+
+  nth += 2;
+
+  /* header data */
+  if(header_data != NULL){
+    memcpy(header_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+  }
+
+  nth += i_stop;
+
+  /* chunk count */
+  if(chunk_count != NULL){
+    chunk_count[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+  }
+
+  nth += 2;
+
+  /* nth chunk */
+  if(nth_chunk != NULL){
+    nth_chunk[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+  }
+
+  nth += 2;
+
+  /* property data length */
+  if(property_data_length != NULL){
+    property_data_length[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+  }
+
+  i_stop = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+
+  nth += 2;
+
+  /* property data */
+  if(property_data != NULL){
+    memcpy(property_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+  }
+
+  nth += i_stop;
+
+  /* sysex end */
+  if(buffer[5 + nth] == 0xf7){
+    nth++;
+
+    return(5 + nth);
+  }
+
+  return(0);
+}
+
+/**
+ * ags_midi_ci_1_1_util_put_set_property_data:
+ * @midi_ci_1_1_util: the MIDI CI util
+ * @buffer: the buffer
+ * @midi_channel: the MIDI channel
+ * @version: the version
+ * @source: the source
+ * @destination: the destination
+ * @request_id: the request ID
+ * @header_data_length: the header data length
+ * @header_data: the header data
+ * @chunk_count: the chunk count
+ * @nth_chunk: the nth chunk
+ * @property_data_length: the property data length
+ * @property_data: the property data
+ *
+ * Put set property data.
+ *
+ * Since: 5.5.0
+ */
+void
+ags_midi_ci_1_1_util_put_set_property_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+					   guchar *buffer,
+					   guchar midi_channel,
+					   guchar version,
+					   AgsMUID source,
+					   AgsMUID destination,
+					   guchar request_id,
+					   gint16 header_data_length,
+					   guchar *header_data,
+					   gint16 chunk_count,
+					   gint16 nth_chunk,
+					   gint16 property_data_length,
+					   guchar *property_data)
+{
+  guint nth;
+  
+  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[0] = 0xf0;
+  buffer[1] = 0x7e;
+
+  buffer[2] = midi_channel;
+
+  buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
+
+  buffer[4] = 0x36; // Sub-ID#2 - set property data
+
+  nth = 0;
+
+  /* version */
+  buffer[5 + nth] = version;
+
+  /* source */
+  buffer[5 + nth] = (0xff & source);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & source) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  nth++;
+
+  /* destination */
+  buffer[5 + nth] = (0xff & destination);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & destination) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff0000 & destination) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff000000 & destination) >> 24;
+  nth++;
+
+  /* request ID */
+  buffer[5 + nth] = request_id;
+  nth++;
+
+  /* header data length */
+  buffer[5 + nth] = (0xff & header_data_length);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & header_data_length) >> 8;
+  nth++;
+
+  /* header data */
+  memcpy(buffer + 5 + nth, header_data, header_data_length *sizeof(guchar));
+  nth += header_data_length;
+
+  /* chunk count */
+  buffer[5 + nth] = (0xff & chunk_count);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & chunk_count) >> 8;
+  nth++;
+
+  /* nth chunk */
+  buffer[5 + nth] = (0xff & nth_chunk);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & nth_chunk) >> 8;
+  nth++;
+
+  /* property data length */
+  buffer[5 + nth] = (0xff & property_data_length);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & property_data_length) >> 8;
+  nth++;
+
+  /* property data */
+  memcpy(buffer + 5 + nth, property_data, property_data_length *sizeof(guchar));
+  nth += property_data_length;
+
+  /* sysex end */
+  buffer[5 + nth] = 0xf7;
+  nth++;
+}
+
+/**
+ * ags_midi_ci_1_1_util_get_set_property_data:
+ * @midi_ci_1_1_util: the MIDI CI util
+ * @buffer: the buffer
+ * @midi_channel: (out): the MIDI channel
+ * @version: (out): the return location of version
+ * @source: (out): the return location of source
+ * @destination: (out): the return location of destination
+ * @request_id: (out): the request ID
+ * @header_data_length: (out): the header data length
+ * @header_data: (out): the header data
+ * @chunk_count: (out): the chunk count
+ * @nth_chunk: (out): the nth chunk
+ * @property_data_length: (out): the property data length
+ * @property_data: (out): the property data
+ *
+ * Get set property data.
+ *
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.0
+ */
+guint
+ags_midi_ci_1_1_util_get_set_property_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+					   guchar *buffer,
+					   guchar *midi_channel,
+					   guchar *version,
+					   AgsMUID *source,
+					   AgsMUID *destination,
+					   guchar *request_id,
+					   gint16 *header_data_length,
+					   guchar *header_data,
+					   gint16 *chunk_count,
+					   gint16 *nth_chunk,
+					   gint16 *property_data_length,
+					   guchar *property_data)
+{
+  guint nth;
+  guint i_stop;
+  
+  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(buffer[0] != 0xf0, 0);
+  g_return_val_if_fail(buffer[1] != 0x7e, 0);
+  g_return_val_if_fail(buffer[3] != 0x0d, 0);
+  g_return_val_if_fail(buffer[4] != 0x36, 0);
+
+  /* MIDI channel */
+  if(midi_channel != NULL){
+    midi_channel[0] = buffer[2];
+  }
+
+  nth = 0;
+
+  /* version */
+  if(version != NULL){
+    version[0] = buffer[5 + nth];
+  }
+
+  nth++;
+  
+  /* source */
+  if(source != NULL){
+    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+  }
+
+  nth += 4;
+
+  /* destination */
+  if(destination != NULL){
+    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+  }
+
+  nth += 4;
+
+  /* request ID */
+  if(request_id != NULL){
+    request_id[0] = buffer[5 + nth];
+  }
+
+  nth++;
+
+  /* header data length */
+  if(header_data_length != NULL){
+    header_data_length[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+  }
+
+  i_stop = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+
+  nth += 2;
+
+  /* header data */
+  if(header_data != NULL){
+    memcpy(header_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+  }
+
+  nth += i_stop;
+
+  /* chunk count */
+  if(chunk_count != NULL){
+    chunk_count[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+  }
+
+  nth += 2;
+
+  /* nth chunk */
+  if(nth_chunk != NULL){
+    nth_chunk[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+  }
+
+  nth += 2;
+
+  /* property data length */
+  if(property_data_length != NULL){
+    property_data_length[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+  }
+
+  i_stop = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+
+  nth += 2;
+
+  /* property data */
+  if(property_data != NULL){
+    memcpy(property_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+  }
+
+  nth += i_stop;
+  
+  /* sysex end */
+  if(buffer[5 + nth] == 0xf7){
+    nth++;
+
+    return(5 + nth);
+  }
+
+  return(0);
+}
+
+/**
+ * ags_midi_ci_1_1_util_put_set_property_data_reply:
+ * @midi_ci_1_1_util: the MIDI CI util
+ * @buffer: the buffer
+ * @midi_channel: the MIDI channel
+ * @version: the version
+ * @source: the source
+ * @destination: the destination
+ * @request_id: the request ID
+ * @header_data_length: the header data length
+ * @header_data: the header data
+ * @chunk_count: the chunk count
+ * @nth_chunk: the nth chunk
+ * @property_data_length: the property data length
+ * @property_data: the property data
+ *
+ * Put set property data.
+ *
+ * Since: 5.5.0
+ */
+void
+ags_midi_ci_1_1_util_put_set_property_data_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+						 guchar *buffer,
+						 guchar midi_channel,
+						 guchar version,
+						 AgsMUID source,
+						 AgsMUID destination,
+						 guchar request_id,
+						 gint16 header_data_length,
+						 guchar *header_data,
+						 gint16 chunk_count,
+						 gint16 nth_chunk,
+						 gint16 property_data_length,
+						 guchar *property_data)
+{
+  guint nth;
+  
+  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[0] = 0xf0;
+  buffer[1] = 0x7e;
+
+  buffer[2] = midi_channel;
+
+  buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
+
+  buffer[4] = 0x37; // Sub-ID#2 - set property data reply
+
+  nth = 0;
+
+  /* version */
+  buffer[5 + nth] = version;
+
+  /* source */
+  buffer[5 + nth] = (0xff & source);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & source) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  nth++;
+
+  /* destination */
+  buffer[5 + nth] = (0xff & destination);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & destination) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff0000 & destination) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff000000 & destination) >> 24;
+  nth++;
+
+  /* request ID */
+  buffer[5 + nth] = request_id;
+  nth++;
+
+  /* header data length */
+  buffer[5 + nth] = (0xff & header_data_length);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & header_data_length) >> 8;
+  nth++;
+
+  /* header data */
+  memcpy(buffer + 5 + nth, header_data, header_data_length *sizeof(guchar));
+  nth += header_data_length;
+
+  /* chunk count */
+  buffer[5 + nth] = (0xff & chunk_count);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & chunk_count) >> 8;
+  nth++;
+
+  /* nth chunk */
+  buffer[5 + nth] = (0xff & nth_chunk);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & nth_chunk) >> 8;
+  nth++;
+
+  /* property data length */
+  buffer[5 + nth] = (0xff & property_data_length);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & property_data_length) >> 8;
+  nth++;
+
+  /* property data */
+  memcpy(buffer + 5 + nth, property_data, property_data_length *sizeof(guchar));
+  nth += property_data_length;
+
+  /* sysex end */
+  buffer[5 + nth] = 0xf7;
+  nth++;
+}
+
+/**
+ * ags_midi_ci_1_1_util_get_set_property_data_reply:
+ * @midi_ci_1_1_util: the MIDI CI util
+ * @buffer: the buffer
+ * @midi_channel: (out): the MIDI channel
+ * @version: (out): the return location of version
+ * @source: (out): the return location of source
+ * @destination: (out): the return location of destination
+ * @request_id: (out): the request ID
+ * @header_data_length: (out): the header data length
+ * @header_data: (out): the header data
+ * @chunk_count: (out): the chunk count
+ * @nth_chunk: (out): the nth chunk
+ * @property_data_length: (out): the property data length
+ * @property_data: (out): the property data
+ *
+ * Get set property data.
+ *
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.0
+ */
+guint
+ags_midi_ci_1_1_util_get_set_property_data_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+						 guchar *buffer,
+						 guchar *midi_channel,
+						 guchar *version,
+						 AgsMUID *source,
+						 AgsMUID *destination,
+						 guchar *request_id,
+						 gint16 *header_data_length,
+						 guchar *header_data,
+						 gint16 *chunk_count,
+						 gint16 *nth_chunk,
+						 gint16 *property_data_length,
+						 guchar *property_data)
+{
+  guint nth;
+  guint i_stop;
+  
+  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(buffer[0] != 0xf0, 0);
+  g_return_val_if_fail(buffer[1] != 0x7e, 0);
+  g_return_val_if_fail(buffer[3] != 0x0d, 0);
+  g_return_val_if_fail(buffer[4] != 0x37, 0);
+
+  /* MIDI channel */
+  if(midi_channel != NULL){
+    midi_channel[0] = buffer[2];
+  }
+
+  nth = 0;
+
+  /* version */
+  if(version != NULL){
+    version[0] = buffer[5 + nth];
+  }
+
+  nth++;
+  
+  /* source */
+  if(source != NULL){
+    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+  }
+
+  nth += 4;
+
+  /* destination */
+  if(destination != NULL){
+    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+  }
+
+  nth += 4;
+
+  /* request ID */
+  if(request_id != NULL){
+    request_id[0] = buffer[5 + nth];
+  }
+
+  nth++;
+
+  /* header data length */
+  if(header_data_length != NULL){
+    header_data_length[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+  }
+
+  i_stop = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+
+  nth += 2;
+
+  /* header data */
+  if(header_data != NULL){
+    memcpy(header_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+  }
+
+  nth += i_stop;
+
+  /* chunk count */
+  if(chunk_count != NULL){
+    chunk_count[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+  }
+
+  nth += 2;
+
+  /* nth chunk */
+  if(nth_chunk != NULL){
+    nth_chunk[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+  }
+
+  nth += 2;
+
+  /* property data length */
+  if(property_data_length != NULL){
+    property_data_length[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+  }
+
+  i_stop = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+
+  nth += 2;
+
+  /* property data */
+  if(property_data != NULL){
+    memcpy(property_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+  }
+
+  nth += i_stop;
+  
+  /* sysex end */
+  if(buffer[5 + nth] == 0xf7){
+    nth++;
+
+    return(5 + nth);
+  }
+
+  return(0);
+}
+
+/**
+ * ags_midi_ci_1_1_util_put_subscription:
+ * @midi_ci_1_1_util: the MIDI CI util
+ * @buffer: the buffer
+ * @midi_channel: the MIDI channel
+ * @version: the version
+ * @source: the source
+ * @destination: the destination
+ * @request_id: the request ID
+ * @header_data_length: the header data length
+ * @header_data: the header data
+ * @chunk_count: the chunk count
+ * @nth_chunk: the nth chunk
+ * @property_data_length: the property data length
+ * @property_data: the property data
+ *
+ * Put set property data.
+ *
+ * Since: 5.5.0
+ */
+void
+ags_midi_ci_1_1_util_put_subscription(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+				      guchar *buffer,
+				      guchar midi_channel,
+				      guchar version,
+				      AgsMUID source,
+				      AgsMUID destination,
+				      guchar request_id,
+				      gint16 header_data_length,
+				      guchar *header_data,
+				      gint16 chunk_count,
+				      gint16 nth_chunk,
+				      gint16 property_data_length,
+				      guchar *property_data)
+{
+  guint nth;
+  
+  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[0] = 0xf0;
+  buffer[1] = 0x7e;
+
+  buffer[2] = midi_channel;
+
+  buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
+
+  buffer[4] = 0x38; // Sub-ID#2 - subscription
+
+  nth = 0;
+
+  /* version */
+  buffer[5 + nth] = version;
+
+  /* source */
+  buffer[5 + nth] = (0xff & source);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & source) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  nth++;
+
+  /* destination */
+  buffer[5 + nth] = (0xff & destination);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & destination) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff0000 & destination) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff000000 & destination) >> 24;
+  nth++;
+
+  /* request ID */
+  buffer[5 + nth] = request_id;
+  nth++;
+
+  /* header data length */
+  buffer[5 + nth] = (0xff & header_data_length);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & header_data_length) >> 8;
+  nth++;
+
+  /* header data */
+  memcpy(buffer + 5 + nth, header_data, header_data_length *sizeof(guchar));
+  nth += header_data_length;
+
+  /* chunk count */
+  buffer[5 + nth] = (0xff & chunk_count);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & chunk_count) >> 8;
+  nth++;
+
+  /* nth chunk */
+  buffer[5 + nth] = (0xff & nth_chunk);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & nth_chunk) >> 8;
+  nth++;
+
+  /* property data length */
+  buffer[5 + nth] = (0xff & property_data_length);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & property_data_length) >> 8;
+  nth++;
+
+  /* property data */
+  memcpy(buffer + 5 + nth, property_data, property_data_length *sizeof(guchar));
+  nth += property_data_length;
+
+  /* sysex end */
+  buffer[5 + nth] = 0xf7;
+  nth++;
+}
+
+/**
+ * ags_midi_ci_1_1_util_get_subscription:
+ * @midi_ci_1_1_util: the MIDI CI util
+ * @buffer: the buffer
+ * @midi_channel: (out): the MIDI channel
+ * @version: (out): the return location of version
+ * @source: (out): the return location of source
+ * @destination: (out): the return location of destination
+ * @request_id: (out): the request ID
+ * @header_data_length: (out): the header data length
+ * @header_data: (out): the header data
+ * @chunk_count: (out): the chunk count
+ * @nth_chunk: (out): the nth chunk
+ * @property_data_length: (out): the property data length
+ * @property_data: (out): the property data
+ *
+ * Get set property data.
+ *
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.0
+ */
+guint
+ags_midi_ci_1_1_util_get_subscription(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+				      guchar *buffer,
+				      guchar *midi_channel,
+				      guchar *version,
+				      AgsMUID *source,
+				      AgsMUID *destination,
+				      guchar *request_id,
+				      gint16 *header_data_length,
+				      guchar *header_data,
+				      gint16 *chunk_count,
+				      gint16 *nth_chunk,
+				      gint16 *property_data_length,
+				      guchar *property_data)
+{
+  guint nth;
+  guint i_stop;
+  
+  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(buffer[0] != 0xf0, 0);
+  g_return_val_if_fail(buffer[1] != 0x7e, 0);
+  g_return_val_if_fail(buffer[3] != 0x0d, 0);
+  g_return_val_if_fail(buffer[4] != 0x38, 0);
+
+  /* MIDI channel */
+  if(midi_channel != NULL){
+    midi_channel[0] = buffer[2];
+  }
+
+  nth = 0;
+
+  /* version */
+  if(version != NULL){
+    version[0] = buffer[5 + nth];
+  }
+
+  nth++;
+  
+  /* source */
+  if(source != NULL){
+    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+  }
+
+  nth += 4;
+
+  /* destination */
+  if(destination != NULL){
+    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+  }
+
+  nth += 4;
+
+  /* request ID */
+  if(request_id != NULL){
+    request_id[0] = buffer[5 + nth];
+  }
+
+  nth++;
+
+  /* header data length */
+  if(header_data_length != NULL){
+    header_data_length[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+  }
+
+  i_stop = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+
+  nth += 2;
+
+  /* header data */
+  if(header_data != NULL){
+    memcpy(header_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+  }
+
+  nth += i_stop;
+
+  /* chunk count */
+  if(chunk_count != NULL){
+    chunk_count[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+  }
+
+  nth += 2;
+
+  /* nth chunk */
+  if(nth_chunk != NULL){
+    nth_chunk[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+  }
+
+  nth += 2;
+
+  /* property data length */
+  if(property_data_length != NULL){
+    property_data_length[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+  }
+
+  i_stop = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+
+  nth += 2;
+
+  /* property data */
+  if(property_data != NULL){
+    memcpy(property_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+  }
+
+  nth += i_stop;
+  
+  /* sysex end */
+  if(buffer[5 + nth] == 0xf7){
+    nth++;
+
+    return(5 + nth);
+  }
+
+  return(0);
+}
+
+/**
+ * ags_midi_ci_1_1_util_put_subscription_reply:
+ * @midi_ci_1_1_util: the MIDI CI util
+ * @buffer: the buffer
+ * @midi_channel: the MIDI channel
+ * @version: the version
+ * @source: the source
+ * @destination: the destination
+ * @request_id: the request ID
+ * @header_data_length: the header data length
+ * @header_data: the header data
+ * @chunk_count: the chunk count
+ * @nth_chunk: the nth chunk
+ * @property_data_length: the property data length
+ * @property_data: the property data
+ *
+ * Put set property data.
+ *
+ * Since: 5.5.0
+ */
+void
+ags_midi_ci_1_1_util_put_subscription_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+					    guchar *buffer,
+					    guchar midi_channel,
+					    guchar version,
+					    AgsMUID source,
+					    AgsMUID destination,
+					    guchar request_id,
+					    gint16 header_data_length,
+					    guchar *header_data,
+					    gint16 chunk_count,
+					    gint16 nth_chunk,
+					    gint16 property_data_length,
+					    guchar *property_data)
+{
+  guint nth;
+  
+  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[0] = 0xf0;
+  buffer[1] = 0x7e;
+
+  buffer[2] = midi_channel;
+
+  buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
+
+  buffer[4] = 0x39; // Sub-ID#2 - subscription reply
+
+  nth = 0;
+
+  /* version */
+  buffer[5 + nth] = version;
+
+  /* source */
+  buffer[5 + nth] = (0xff & source);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & source) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  nth++;
+
+  /* destination */
+  buffer[5 + nth] = (0xff & destination);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & destination) >> 8;
+  nth++;
+  
+  buffer[5 + nth] = (0xff0000 & destination) >> 16;
+  nth++;
+  
+  buffer[5 + nth] = (0xff000000 & destination) >> 24;
+  nth++;
+
+  /* request ID */
+  buffer[5 + nth] = request_id;
+  nth++;
+
+  /* header data length */
+  buffer[5 + nth] = (0xff & header_data_length);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & header_data_length) >> 8;
+  nth++;
+
+  /* header data */
+  memcpy(buffer + 5 + nth, header_data, header_data_length *sizeof(guchar));
+  nth += header_data_length;
+
+  /* chunk count */
+  buffer[5 + nth] = (0xff & chunk_count);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & chunk_count) >> 8;
+  nth++;
+
+  /* nth chunk */
+  buffer[5 + nth] = (0xff & nth_chunk);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & nth_chunk) >> 8;
+  nth++;
+
+  /* property data length */
+  buffer[5 + nth] = (0xff & property_data_length);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & property_data_length) >> 8;
+  nth++;
+
+  /* property data */
+  memcpy(buffer + 5 + nth, property_data, property_data_length *sizeof(guchar));
+  nth += property_data_length;
+
+  /* sysex end */
+  buffer[5 + nth] = 0xf7;
+  nth++;
+}
+
+/**
+ * ags_midi_ci_1_1_util_get_subscription_reply:
+ * @midi_ci_1_1_util: the MIDI CI util
+ * @buffer: the buffer
+ * @midi_channel: (out): the MIDI channel
+ * @version: (out): the return location of version
+ * @source: (out): the return location of source
+ * @destination: (out): the return location of destination
+ * @request_id: (out): the request ID
+ * @header_data_length: (out): the header data length
+ * @header_data: (out): the header data
+ * @chunk_count: (out): the chunk count
+ * @nth_chunk: (out): the nth chunk
+ * @property_data_length: (out): the property data length
+ * @property_data: (out): the property data
+ *
+ * Get set property data.
+ *
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.0
+ */
+guint
+ags_midi_ci_1_1_util_get_subscription_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+					    guchar *buffer,
+					    guchar *midi_channel,
+					    guchar *version,
+					    AgsMUID *source,
+					    AgsMUID *destination,
+					    guchar *request_id,
+					    gint16 *header_data_length,
+					    guchar *header_data,
+					    gint16 *chunk_count,
+					    gint16 *nth_chunk,
+					    gint16 *property_data_length,
+					    guchar *property_data)
+{
+  guint nth;
+  guint i_stop;
+  
+  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(buffer[0] != 0xf0, 0);
+  g_return_val_if_fail(buffer[1] != 0x7e, 0);
+  g_return_val_if_fail(buffer[3] != 0x0d, 0);
+  g_return_val_if_fail(buffer[4] != 0x39, 0);
+
+  /* MIDI channel */
+  if(midi_channel != NULL){
+    midi_channel[0] = buffer[2];
+  }
+
+  nth = 0;
+
+  /* version */
+  if(version != NULL){
+    version[0] = buffer[5 + nth];
+  }
+
+  nth++;
+  
+  /* source */
+  if(source != NULL){
+    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+  }
+
+  nth += 4;
+
+  /* destination */
+  if(destination != NULL){
+    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+  }
+
+  nth += 4;
+
+  /* request ID */
+  if(request_id != NULL){
+    request_id[0] = buffer[5 + nth];
+  }
+
+  nth++;
+
+  /* header data length */
+  if(header_data_length != NULL){
+    header_data_length[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+  }
+
+  i_stop = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+
+  nth += 2;
+
+  /* header data */
+  if(header_data != NULL){
+    memcpy(header_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+  }
+
+  nth += i_stop;
+
+  /* chunk count */
+  if(chunk_count != NULL){
+    chunk_count[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+  }
+
+  nth += 2;
+
+  /* nth chunk */
+  if(nth_chunk != NULL){
+    nth_chunk[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+  }
+
+  nth += 2;
+
+  /* property data length */
+  if(property_data_length != NULL){
+    property_data_length[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+  }
+
+  i_stop = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+
+  nth += 2;
+
+  /* property data */
+  if(property_data != NULL){
+    memcpy(property_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+  }
+
+  nth += i_stop;
+  
   /* sysex end */
   if(buffer[5 + nth] == 0xf7){
     nth++;
