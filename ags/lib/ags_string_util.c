@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
+#include <math.h>
 
 gpointer ags_string_util_copy(gpointer ptr);
 void ags_string_util_free(gpointer ptr);
@@ -90,6 +91,10 @@ ags_string_util_escape_single_quote(gchar *str)
   guint n_chars;
   guint offset;
 
+  if(str == NULL){
+    return(NULL);
+  }
+  
   iter = str;
   count = 0;
   
@@ -128,6 +133,153 @@ ags_string_util_escape_single_quote(gchar *str)
   }
 
   return(retval);
+}
+
+/**
+ * ags_string_util_to_mcoded7:
+ * @str: the string to escape
+ * 
+ * String to mcoded7 encoding.
+ * 
+ * Returns: (transfer full): the newly allocated string
+ * 
+ * Since: 5.5.0
+ */
+gchar*
+ags_string_util_to_mcoded7(gchar *str)
+{
+  gchar *mcoded7_str;
+  
+  guint length;
+  guint i, i_stop;
+  guint j, k;
+
+  if(str == NULL){
+    return(NULL);
+  }
+  
+  length = strlen(str);
+
+  i_stop = 8 * ceil(length / 8);
+
+  mcoded7_str = (gchar *) malloc(i_stop * sizeof(gchar));
+  memset(mcoded7_str, 0, i_stop * sizeof(gchar));
+  
+  for(i = 0, j = 0; i < i_stop;){
+    for(k = 0; k < 8 && j + k < length; k++){
+      mcoded7_str[i] = 0x80 & (str[j]) >> (k + 1);
+    }
+    
+    mcoded7_str[i + 1] = 0x7f & (str[j]);
+
+    if(j + 1 < length){
+      mcoded7_str[i + 2] = 0x7f & (str[j + 1]);
+    }else{
+      mcoded7_str[i + 2] = 0x0;
+    }
+    
+    if(j + 1 < length){
+      mcoded7_str[i + 3] = 0x7f & (str[j + 2]);
+    }else{
+      mcoded7_str[i + 3] = 0x0;
+    }
+    
+    if(j + 1 < length){
+      mcoded7_str[i + 4] = 0x7f & (str[j + 3]);
+    }else{
+      mcoded7_str[i + 4] = 0x0;
+    }
+    
+    if(j + 1 < length){
+      mcoded7_str[i + 5] = 0x7f & (str[j + 4]);
+    }else{
+      mcoded7_str[i + 5] = 0x0;
+    }
+    
+    if(j + 1 < length){
+      mcoded7_str[i + 6] = 0x7f & (str[j + 5]);
+    }else{
+      mcoded7_str[i + 6] = 0x0;
+    }
+    
+    if(j + 1 < length){
+      mcoded7_str[i + 7] = 0x7f & (str[j + 6]);
+    }else{
+      mcoded7_str[i + 7] = 0x0;
+    }    
+    
+    i += 8;
+    j += 7;
+  }
+  
+  return(mcoded7_str);
+}
+
+/**
+ * ags_string_util_from_mcoded7:
+ * @mcoded7_str: the string to escape
+ * 
+ * String from mcoded7 encoding.
+ * 
+ * Returns: (transfer full): the newly allocated string
+ * 
+ * Since: 5.5.0
+ */
+gchar*
+ags_string_util_from_mcoded7(gchar *mcoded7_str)
+{
+  gchar *str;
+  
+  guint length;
+  guint i, i_stop;
+  guint j, k;
+
+  if(str == NULL){
+    return(NULL);
+  }
+  
+  length = strlen(mcoded7_str);
+  
+  if(length % 8 != 0){
+    g_critical("invalid mcoded7 string");
+
+    return(NULL);
+  }
+  
+  i_stop = length;
+
+  str = (gchar *) malloc((i_stop * 8) * sizeof(gchar));
+  memset(str, 0, (i_stop * 8) * sizeof(gchar));
+
+  for(i = 0, j = 0; i < i_stop;){
+    k = 1;
+    
+    str[i] = ((0x80 >> k) & (mcoded7_str[j])) | (mcoded7_str[j + 1]);
+    k++;
+    
+    str[i + 1] = ((0x80 >> k) & (mcoded7_str[j])) | (mcoded7_str[j + 1]);
+    k++;
+    
+    str[i + 2] = ((0x80 >> k) & (mcoded7_str[j])) | (mcoded7_str[j + 1]);
+    k++;
+    
+    str[i + 3] = ((0x80 >> k) & (mcoded7_str[j])) | (mcoded7_str[j + 1]);
+    k++;
+    
+    str[i + 4] = ((0x80 >> k) & (mcoded7_str[j])) | (mcoded7_str[j + 1]);
+    k++;
+    
+    str[i + 5] = ((0x80 >> k) & (mcoded7_str[j])) | (mcoded7_str[j + 1]);
+    k++;
+    
+    str[i + 6] = ((0x80 >> k) & (mcoded7_str[j])) | (mcoded7_str[j + 1]);
+    k++;
+    
+    i += 7;
+    j += 8;
+  }
+  
+  return(str);
 }
 
 /**
