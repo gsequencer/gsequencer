@@ -94,7 +94,7 @@ ags_string_util_escape_single_quote(gchar *str)
   if(str == NULL){
     return(NULL);
   }
-  
+
   iter = str;
   count = 0;
   
@@ -137,7 +137,7 @@ ags_string_util_escape_single_quote(gchar *str)
 
 /**
  * ags_string_util_to_mcoded7:
- * @str: the string to escape
+ * @str: the string to encode
  * 
  * String to mcoded7 encoding.
  * 
@@ -217,7 +217,7 @@ ags_string_util_to_mcoded7(gchar *str)
 
 /**
  * ags_string_util_from_mcoded7:
- * @mcoded7_str: the string to escape
+ * @mcoded7_str: the string to decode
  * 
  * String from mcoded7 encoding.
  * 
