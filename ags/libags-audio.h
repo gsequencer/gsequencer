@@ -175,7 +175,7 @@
 /* audio midi */
 #include <ags/audio/midi/ags_midi_buffer_util.h>
 #include <ags/audio/midi/ags_midi_builder.h>
-#include <ags/audio/midi/ags_midi_ci_1_1_util.h>
+#include <ags/audio/midi/ags_midi_ci_util.h>
 #include <ags/audio/midi/ags_midi_file.h>
 #include <ags/audio/midi/ags_midi_parser.h>
 #include <ags/audio/midi/ags_midi_util.h>

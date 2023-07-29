@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/audio/midi/ags_midi_ci_1_1_util.h>
+#include <ags/audio/midi/ags_midi_ci_util.h>
 
 #include <glib.h>
 #include <glib-object.h>
@@ -27,97 +27,97 @@
 #include <string.h>
 
 /**
- * SECTION:ags_midi_ci_1_1_util
- * @short_description: MIDI CI version 1.1 util
+ * SECTION:ags_midi_ci_util
+ * @short_description: MIDI CI util
  * @title: AgsMidiUtil
  * @section_id:
- * @include: ags/audio/midi/ags_midi_ci_1_1_util.h
+ * @include: ags/audio/midi/ags_midi_ci_util.h
  *
- * Utility functions for MIDI CI version 1.1.
+ * Utility functions for MIDI CI.
  */
 
 GType
-ags_midi_ci_1_1_util_get_type(void)
+ags_midi_ci_util_get_type(void)
 {
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_midi_ci_1_1_util = 0;
+    GType ags_type_midi_ci_util = 0;
 
-    ags_type_midi_ci_1_1_util =
-      g_boxed_type_register_static("AgsMidiCI_1_1_Util",
-				   (GBoxedCopyFunc) ags_midi_ci_1_1_util_copy,
-				   (GBoxedFreeFunc) ags_midi_ci_1_1_util_free);
+    ags_type_midi_ci_util =
+      g_boxed_type_register_static("AgsMidiCIUtil",
+				   (GBoxedCopyFunc) ags_midi_ci_util_copy,
+				   (GBoxedFreeFunc) ags_midi_ci_util_free);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_midi_ci_1_1_util);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_midi_ci_util);
   }
 
   return g_define_type_id__volatile;
 }
 
 /**
- * ags_midi_ci_1_1_util_alloc:
+ * ags_midi_ci_util_alloc:
  *
- * Allocate MIDI CI version 1.1 util.
+ * Allocate MIDI CI util.
  *
- * Returns: (transfer full): the newly allocated #AgsMidiCI_1_1_Util-struct
+ * Returns: (transfer full): the newly allocated #AgsMidiCIUtil-struct
  * 
  * Since: 5.5.0
  */
-AgsMidiCI_1_1_Util*
-ags_midi_ci_1_1_util_alloc()
+AgsMidiCIUtil*
+ags_midi_ci_util_alloc()
 {
-  AgsMidiCI_1_1_Util *midi_ci_1_1_util;
+  AgsMidiCIUtil *midi_ci_util;
 
-  midi_ci_1_1_util = g_new0(AgsMidiCI_1_1_Util,
-			    1);
+  midi_ci_util = g_new0(AgsMidiCIUtil,
+			1);
 
-  midi_ci_1_1_util->rand = g_rand_new();
+  midi_ci_util->rand = g_rand_new();
   
-  return(midi_ci_1_1_util);
+  return(midi_ci_util);
 }
 
 /**
- * ags_midi_ci_1_1_util_free:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_free:
+ * @midi_ci_util: the MIDI CI util
  *
- * Free MIDI CI version 1.1 util.
+ * Free MIDI CI util.
  *
  * Since: 5.5.0
  */
 void
-ags_midi_ci_1_1_util_free(AgsMidiCI_1_1_Util *midi_ci_1_1_util)
+ags_midi_ci_util_free(AgsMidiCIUtil *midi_ci_util)
 {
-  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(midi_ci_util != NULL);
   
-  g_free(midi_ci_1_1_util);
+  g_free(midi_ci_util);
 }
 
 /**
- * ags_midi_ci_1_1_util_copy:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_copy:
+ * @midi_ci_util: the MIDI CI util
  *
- * Copy MIDI CI version 1.1 util.
+ * Copy MIDI CI util.
  *
- * Returns: (transfer full): the newly allocated #AgsMidiCI_1_1_Util-struct
+ * Returns: (transfer full): the newly allocated #AgsMidiCIUtil-struct
  * 
  * Since: 5.5.0
  */
-AgsMidiCI_1_1_Util*
-ags_midi_ci_1_1_util_copy(AgsMidiCI_1_1_Util *midi_ci_1_1_util)
+AgsMidiCIUtil*
+ags_midi_ci_util_copy(AgsMidiCIUtil *midi_ci_util)
 {
-  AgsMidiCI_1_1_Util *retval;
+  AgsMidiCIUtil *retval;
 
-  g_return_val_if_fail(midi_ci_1_1_util != NULL, NULL);
+  g_return_val_if_fail(midi_ci_util != NULL, NULL);
 
-  retval = ags_midi_ci_1_1_util_alloc();
+  retval = ags_midi_ci_util_alloc();
   
   return(retval);
 }
 
 /**
- * ags_midi_ci_1_1_util_generate_muid:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_generate_muid:
+ * @midi_ci_util: the MIDI CI util
  *
  * Generate MUID.
  *
@@ -126,13 +126,13 @@ ags_midi_ci_1_1_util_copy(AgsMidiCI_1_1_Util *midi_ci_1_1_util)
  * Since: 5.5.0
  */
 AgsMUID
-ags_midi_ci_1_1_util_generate_muid(AgsMidiCI_1_1_Util *midi_ci_1_1_util)
+ags_midi_ci_util_generate_muid(AgsMidiCIUtil *midi_ci_util)
 {
   AgsMUID muid;
 
-  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(midi_ci_util != NULL, 0);
 
-  muid = g_rand_int_range(midi_ci_1_1_util->rand,
+  muid = g_rand_int_range(midi_ci_util->rand,
 			  0,
 			  exp2(28));
 
@@ -140,8 +140,59 @@ ags_midi_ci_1_1_util_generate_muid(AgsMidiCI_1_1_Util *midi_ci_1_1_util)
 }
 
 /**
- * ags_midi_ci_1_1_util_put_discovery:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_put_muid:
+ * @midi_ci_util: the MIDI CI util
+ * @buffer: the buffer
+ * @muid: the #AgsMUID
+ *
+ * Put MUID.
+ * 
+ * Since: 5.5.0
+ */
+void
+ags_midi_ci_util_put_muid(AgsMidiCIUtil *midi_ci_util,
+			  guchar *buffer,
+			  AgsMUID muid)
+{
+  g_return_if_fail(midi_ci_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  buffer[3] = (0x7f & muid);
+  buffer[2] = (0x7f00 & muid) >> 8;
+  buffer[1] = (0x7f0000 & muid) >> 16;
+  buffer[0] = ((0x0f000000 & muid) >> 24) | ((0x80 & muid) >> 3) | ((0x8000 & muid) >> 10) | ((0x800000 & muid) >> 17);
+}
+
+/**
+ * ags_midi_ci_util_get_muid:
+ * @midi_ci_util: the MIDI CI util
+ * @buffer: the buffer
+ * @muid: (out): the return location of #AgsMUID
+ *
+ * Get MUID.
+ *
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.0
+ */
+guint
+ags_midi_ci_util_get_muid(AgsMidiCIUtil *midi_ci_util,
+			  guchar *buffer,
+			  AgsMUID *muid)
+{
+  g_return_val_if_fail(midi_ci_util != NULL, 0);
+  g_return_val_if_fail(buffer != NULL, 0);
+
+  if(muid != NULL){
+    muid[0] = (0x7f & buffer[3]) | ((0x7f & buffer[2]) << 8) | ((0x7f & buffer[1]) << 16) | ((0x0f & buffer[0]) << 24) | ((0x10 & buffer[0]) << 3) | ((0x20 & buffer[0]) << 10) | ((0x40 & buffer[0]) << 17);
+  }
+
+  return(4);
+}
+
+/**
+ * ags_midi_ci_util_put_discovery:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @version: the version
  * @source: the source
@@ -157,20 +208,20 @@ ags_midi_ci_1_1_util_generate_muid(AgsMidiCI_1_1_Util *midi_ci_1_1_util)
  * Since: 5.5.0
  */
 void
-ags_midi_ci_1_1_util_put_discovery(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-				   guchar *buffer,
-				   guchar version,
-				   AgsMUID source,
-				   guchar *manufacturer_id,
-				   guint16 device_family,
-				   guint16 device_family_model_number,
-				   guchar *software_revision_level,
-				   guchar capability,
-				   guint32 max_sysex_message_size)
+ags_midi_ci_util_put_discovery(AgsMidiCIUtil *midi_ci_util,
+			       guchar *buffer,
+			       guchar version,
+			       AgsMUID source,
+			       guchar *manufacturer_id,
+			       guint16 device_family,
+			       guint16 device_family_model_number,
+			       guchar *software_revision_level,
+			       guchar capability,
+			       guint32 max_sysex_message_size)
 {
   guint nth;
   
-  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(midi_ci_util != NULL);
   g_return_if_fail(buffer != NULL);
 
   buffer[0] = 0xf0;
@@ -189,18 +240,11 @@ ags_midi_ci_1_1_util_put_discovery(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   nth++;
 
   /* source */
-  buffer[5 + nth] = (0xff & source);
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
   
-  buffer[5 + nth] = (0xff00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
-  nth++;
-
   /* broadcast */
   buffer[5 + nth] = 0x7f;
   nth++;
@@ -273,8 +317,8 @@ ags_midi_ci_1_1_util_put_discovery(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
 }
 
 /**
- * ags_midi_ci_1_1_util_get_discovery:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_get_discovery:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @version: (out): the return location of version
  * @source: (out): the return location of source
@@ -292,20 +336,20 @@ ags_midi_ci_1_1_util_put_discovery(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
  * Since: 5.5.0
  */
 guint
-ags_midi_ci_1_1_util_get_discovery(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-				   guchar *buffer,
-				   guchar *version,
-				   AgsMUID *source,
-				   guchar *manufacturer_id,
-				   guint16 *device_family,
-				   guint16 *device_family_model_number,
-				   guchar *software_revision_level,
-				   guchar *capability,
-				   guint32 *max_sysex_message_size)
+ags_midi_ci_util_get_discovery(AgsMidiCIUtil *midi_ci_util,
+			       guchar *buffer,
+			       guchar *version,
+			       AgsMUID *source,
+			       guchar *manufacturer_id,
+			       guint16 *device_family,
+			       guint16 *device_family_model_number,
+			       guchar *software_revision_level,
+			       guchar *capability,
+			       guint32 *max_sysex_message_size)
 {
   guint nth;
   
-  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(midi_ci_util != NULL, 0);
   g_return_val_if_fail(buffer[0] == 0xf0, 0);
   g_return_val_if_fail(buffer[1] == 0x7e, 0);
   g_return_val_if_fail(buffer[2] == 0x7f, 0);
@@ -323,11 +367,11 @@ ags_midi_ci_1_1_util_get_discovery(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
-  nth += 4;
+  nth+= 4;
 
   /* destination - broadcast */
   //NOTE:JK: validate first - see top of function
@@ -390,8 +434,8 @@ ags_midi_ci_1_1_util_get_discovery(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
 }
 
 /**
- * ags_midi_ci_1_1_util_put_discovery_reply:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_put_discovery_reply:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @version: the version
  * @source: the source
@@ -408,21 +452,21 @@ ags_midi_ci_1_1_util_get_discovery(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
  * Since: 5.5.0
  */
 void
-ags_midi_ci_1_1_util_put_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-					 guchar *buffer,
-					 guchar version,
-					 AgsMUID source,
-					 AgsMUID destination,
-					 gchar *manufacturer_id,
-					 guint16 device_family,
-					 guint16 device_family_model_number,
-					 gchar *software_revision_level,
-					 guchar capability,
-					 guint32 max_sysex_message_size)
+ags_midi_ci_util_put_discovery_reply(AgsMidiCIUtil *midi_ci_util,
+				     guchar *buffer,
+				     guchar version,
+				     AgsMUID source,
+				     AgsMUID destination,
+				     gchar *manufacturer_id,
+				     guint16 device_family,
+				     guint16 device_family_model_number,
+				     gchar *software_revision_level,
+				     guchar capability,
+				     guint32 max_sysex_message_size)
 {
   guint nth;
   
-  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(midi_ci_util != NULL);
   g_return_if_fail(buffer != NULL);
 
   buffer[0] = 0xf0;
@@ -439,31 +483,19 @@ ags_midi_ci_1_1_util_put_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   /* version */
   buffer[5 + nth] = version;
 
+  nth++;
+  
   /* source */
-  buffer[5 + nth] = (0xff & source);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
   
   /* manufacturer */
   buffer[5 + nth] = manufacturer_id[0];
@@ -525,8 +557,8 @@ ags_midi_ci_1_1_util_put_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
 }
 
 /**
- * ags_midi_ci_1_1_util_get_discovery_reply:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_get_discovery_reply:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @version: (out): the return location of version
  * @source: (out): the return location of source
@@ -545,21 +577,21 @@ ags_midi_ci_1_1_util_put_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
  * Since: 5.5.0
  */
 guint
-ags_midi_ci_1_1_util_get_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-					 guchar *buffer,
-					 guchar *version,
-					 AgsMUID *source,
-					 AgsMUID *destination,
-					 guchar *manufacturer_id,
-					 guint16 *device_family,
-					 guint16 *device_family_model_number,
-					 guchar *software_revision_level,
-					 guchar *capability,
-					 guint32 *max_sysex_message_size)
+ags_midi_ci_util_get_discovery_reply(AgsMidiCIUtil *midi_ci_util,
+				     guchar *buffer,
+				     guchar *version,
+				     AgsMUID *source,
+				     AgsMUID *destination,
+				     guchar *manufacturer_id,
+				     guint16 *device_family,
+				     guint16 *device_family_model_number,
+				     guchar *software_revision_level,
+				     guchar *capability,
+				     guint32 *max_sysex_message_size)
 {
   guint nth;
   
-  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(midi_ci_util != NULL, 0);
   g_return_val_if_fail(buffer[0] == 0xf0, 0);
   g_return_val_if_fail(buffer[1] == 0x7e, 0);
   g_return_val_if_fail(buffer[2] == 0x7f, 0);
@@ -576,16 +608,16 @@ ags_midi_ci_1_1_util_get_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
 
   nth += 4;
   
@@ -645,8 +677,8 @@ ags_midi_ci_1_1_util_get_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
 }
 
 /**
- * ags_midi_ci_1_1_util_put_invalidate_muid:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_put_invalidate_muid:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @version: the version
  * @source: the source
@@ -657,15 +689,15 @@ ags_midi_ci_1_1_util_get_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
  * Since: 5.5.0
  */
 void
-ags_midi_ci_1_1_util_put_invalidate_muid(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-					 guchar *buffer,
-					 guchar version,
-					 AgsMUID source,
-					 AgsMUID target_muid)
+ags_midi_ci_util_put_invalidate_muid(AgsMidiCIUtil *midi_ci_util,
+				     guchar *buffer,
+				     guchar version,
+				     AgsMUID source,
+				     AgsMUID target_muid)
 {
   guint nth;
   
-  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(midi_ci_util != NULL);
   g_return_if_fail(buffer != NULL);
 
   nth = 0;
@@ -684,18 +716,13 @@ ags_midi_ci_1_1_util_put_invalidate_muid(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   /* version */
   buffer[5 + nth] = version;
 
+  nth++;
+  
   /* source */
-  buffer[5 + nth] = (0xff & source);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* broadcast */
   buffer[5 + nth] = 0x7f;
@@ -729,8 +756,8 @@ ags_midi_ci_1_1_util_put_invalidate_muid(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
 }
 
 /**
- * ags_midi_ci_1_1_util_get_invalidate_muid:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_get_invalidate_muid:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @version: the return location of version
  * @source: the return location of source
@@ -743,15 +770,15 @@ ags_midi_ci_1_1_util_put_invalidate_muid(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
  * Since: 5.5.0
  */
 guint
-ags_midi_ci_1_1_util_get_invalidate_muid(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-					 guchar *buffer,
-					 guchar *version,
-					 AgsMUID *source,
-					 AgsMUID *target_muid)
+ags_midi_ci_util_get_invalidate_muid(AgsMidiCIUtil *midi_ci_util,
+				     guchar *buffer,
+				     guchar *version,
+				     AgsMUID *source,
+				     AgsMUID *target_muid)
 {
   guint nth;
   
-  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(midi_ci_util != NULL, 0);
   g_return_val_if_fail(buffer[0] == 0xf0, 0);
   g_return_val_if_fail(buffer[1] == 0x7e, 0);
   g_return_val_if_fail(buffer[2] == 0x7f, 0);
@@ -769,9 +796,9 @@ ags_midi_ci_1_1_util_get_invalidate_muid(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
@@ -798,8 +825,8 @@ ags_midi_ci_1_1_util_get_invalidate_muid(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
 }
 
 /**
- * ags_midi_ci_1_1_util_put_nak:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_put_nak:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @version: the version
  * @source: the source
@@ -810,15 +837,15 @@ ags_midi_ci_1_1_util_get_invalidate_muid(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
  * Since: 5.5.0
  */
 void
-ags_midi_ci_1_1_util_put_nak(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-			     guchar *buffer,
-			     guchar version,
-			     AgsMUID source,
-			     AgsMUID destination)
+ags_midi_ci_util_put_nak(AgsMidiCIUtil *midi_ci_util,
+			 guchar *buffer,
+			 guchar version,
+			 AgsMUID source,
+			 AgsMUID destination)
 {
   guint nth;
   
-  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(midi_ci_util != NULL);
   g_return_if_fail(buffer != NULL);
 
   nth = 0;
@@ -837,31 +864,19 @@ ags_midi_ci_1_1_util_put_nak(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   /* version */
   buffer[5 + nth] = version;
 
+  nth++;
+  
   /* source */
-  buffer[5 + nth] = (0xff & source);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
 
   /* sysex end */
   buffer[5 + nth] = 0xf7;
@@ -869,8 +884,8 @@ ags_midi_ci_1_1_util_put_nak(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
 }
 
 /**
- * ags_midi_ci_1_1_util_get_nak:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_get_nak:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @version: (out): the return location of version
  * @source: (out): the return location of source
@@ -883,15 +898,15 @@ ags_midi_ci_1_1_util_put_nak(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
  * Since: 5.5.0
  */
 guint
-ags_midi_ci_1_1_util_get_nak(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-			     guchar *buffer,
-			     guchar *version,
-			     AgsMUID *source,
-			     AgsMUID *destination)
+ags_midi_ci_util_get_nak(AgsMidiCIUtil *midi_ci_util,
+			 guchar *buffer,
+			 guchar *version,
+			 AgsMUID *source,
+			 AgsMUID *destination)
 {
   guint nth;
   
-  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(midi_ci_util != NULL, 0);
   g_return_val_if_fail(buffer[0] == 0xf0, 0);
   g_return_val_if_fail(buffer[1] == 0x7e, 0);
   g_return_val_if_fail(buffer[2] == 0x7f, 0);
@@ -908,16 +923,16 @@ ags_midi_ci_1_1_util_get_nak(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
 
   nth += 4;
 
@@ -932,8 +947,8 @@ ags_midi_ci_1_1_util_get_nak(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
 }
 
 /**
- * ags_midi_ci_1_1_util_put_initiate_protocol_negotiation:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_put_initiate_protocol_negotiation:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @version: the version
  * @source: the source
@@ -942,24 +957,24 @@ ags_midi_ci_1_1_util_get_nak(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
  * @number_of_supported_protocols: the number of supported protocols
  * @preferred_protocol_type: the preferred protocol type
  *
- * Put initiate protocol negotiation message.
+ * Put initiate protocol negotiation message. Deprecated since MIDI CI version 1.2.
  * 
  * Since: 5.5.0
  */
 void
-ags_midi_ci_1_1_util_put_initiate_protocol_negotiation(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-						       guchar *buffer,
-						       guchar version,
-						       AgsMUID source,
-						       AgsMUID destination,
-						       AgsMidiCI_1_1_AuthorityLevel authority_level,
-						       guchar number_of_supported_protocols,
-						       guchar **preferred_protocol_type)
+ags_midi_ci_util_put_initiate_protocol_negotiation(AgsMidiCIUtil *midi_ci_util,
+						   guchar *buffer,
+						   guchar version,
+						   AgsMUID source,
+						   AgsMUID destination,
+						   AgsMidiCIAuthorityLevel authority_level,
+						   guchar number_of_supported_protocols,
+						   guchar **preferred_protocol_type)
 {
   guint nth;
   guint i;
   
-  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(midi_ci_util != NULL);
   g_return_if_fail(buffer != NULL);
 
   buffer[0] = 0xf0;
@@ -978,30 +993,16 @@ ags_midi_ci_1_1_util_put_initiate_protocol_negotiation(AgsMidiCI_1_1_Util *midi_
   nth++;
 
   /* source */
-  buffer[5 + nth] = (0xff & source);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
 
   /* authority level */
   buffer[5 + nth] = authority_level;
@@ -1028,8 +1029,8 @@ ags_midi_ci_1_1_util_put_initiate_protocol_negotiation(AgsMidiCI_1_1_Util *midi_
 }
 
 /**
- * ags_midi_ci_1_1_util_get_initiate_protocol_negotiation:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_get_initiate_protocol_negotiation:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @version: (out): the return location of version
  * @source: (out): the return location of source
@@ -1038,26 +1039,26 @@ ags_midi_ci_1_1_util_put_initiate_protocol_negotiation(AgsMidiCI_1_1_Util *midi_
  * @number_of_supported_protocols: (out): the number of supported protocols
  * @preferred_protocol_type: (out): the preferred protocol type
  *
- * Get initiate protocol negotiation message.
+ * Get initiate protocol negotiation message. Deprecated since MIDI CI version 1.2.
  *
  * Returns: the number of bytes read
  * 
  * Since: 5.5.0
  */
 guint
-ags_midi_ci_1_1_util_get_initiate_protocol_negotiation(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-						       guchar *buffer,
-						       guchar *version,
-						       AgsMUID *source,
-						       AgsMUID *destination,
-						       AgsMidiCI_1_1_AuthorityLevel *authority_level,
-						       guchar *number_of_supported_protocols,
-						       guchar **preferred_protocol_type)
+ags_midi_ci_util_get_initiate_protocol_negotiation(AgsMidiCIUtil *midi_ci_util,
+						   guchar *buffer,
+						   guchar *version,
+						   AgsMUID *source,
+						   AgsMUID *destination,
+						   AgsMidiCIAuthorityLevel *authority_level,
+						   guchar *number_of_supported_protocols,
+						   guchar **preferred_protocol_type)
 {
   guint nth;
   guint i, i_stop;
   
-  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(midi_ci_util != NULL, 0);
   g_return_val_if_fail(buffer[0] == 0xf0, 0);
   g_return_val_if_fail(buffer[1] == 0x7e, 0);
   g_return_val_if_fail(buffer[2] == 0x7f, 0);
@@ -1074,16 +1075,16 @@ ags_midi_ci_1_1_util_get_initiate_protocol_negotiation(AgsMidiCI_1_1_Util *midi_
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
 
   nth += 4;
   
@@ -1129,8 +1130,8 @@ ags_midi_ci_1_1_util_get_initiate_protocol_negotiation(AgsMidiCI_1_1_Util *midi_
 }
 
 /**
- * ags_midi_ci_1_1_util_put_initiate_protocol_negotiation_reply:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_put_initiate_protocol_negotiation_reply:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @version: the version
  * @source: the source
@@ -1139,24 +1140,24 @@ ags_midi_ci_1_1_util_get_initiate_protocol_negotiation(AgsMidiCI_1_1_Util *midi_
  * @number_of_supported_protocols: the number of supported protocols
  * @preferred_protocol_type: the preferred protocol type
  *
- * Put initiate protocol negotiation reply message.
+ * Put initiate protocol negotiation reply message. Deprecated since MIDI CI version 1.2.
  * 
  * Since: 5.5.0
  */
 void
-ags_midi_ci_1_1_util_put_initiate_protocol_negotiation_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-							     guchar *buffer,
-							     guchar version,
-							     AgsMUID source,
-							     AgsMUID destination,
-							     AgsMidiCI_1_1_AuthorityLevel authority_level,
-							     guchar number_of_supported_protocols,
-							     guchar **preferred_protocol_type)
+ags_midi_ci_util_put_initiate_protocol_negotiation_reply(AgsMidiCIUtil *midi_ci_util,
+							 guchar *buffer,
+							 guchar version,
+							 AgsMUID source,
+							 AgsMUID destination,
+							 AgsMidiCIAuthorityLevel authority_level,
+							 guchar number_of_supported_protocols,
+							 guchar **preferred_protocol_type)
 {
   guint nth;
   guint i;
   
-  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(midi_ci_util != NULL);
   g_return_if_fail(buffer != NULL);
 
   buffer[0] = 0xf0;
@@ -1175,30 +1176,16 @@ ags_midi_ci_1_1_util_put_initiate_protocol_negotiation_reply(AgsMidiCI_1_1_Util 
   nth++;
 
   /* source */
-  buffer[5 + nth] = (0xff & source);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
 
   /* authority level */
   buffer[5 + nth] = authority_level;
@@ -1225,8 +1212,8 @@ ags_midi_ci_1_1_util_put_initiate_protocol_negotiation_reply(AgsMidiCI_1_1_Util 
 }
 
 /**
- * ags_midi_ci_1_1_util_get_initiate_protocol_negotiation_reply:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_get_initiate_protocol_negotiation_reply:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @version: (out): the return location of version
  * @source: (out): the return location of source
@@ -1235,26 +1222,26 @@ ags_midi_ci_1_1_util_put_initiate_protocol_negotiation_reply(AgsMidiCI_1_1_Util 
  * @number_of_supported_protocols: (out): the number of supported protocols
  * @preferred_protocol_type: (out): the preferred protocol type
  *
- * Get initiate protocol negotiation reply message.
+ * Get initiate protocol negotiation reply message. Deprecated since MIDI CI version 1.2.
  *
  * Returns: the number of bytes read
  * 
  * Since: 5.5.0
  */
 guint
-ags_midi_ci_1_1_util_get_initiate_protocol_negotiation_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-							     guchar *buffer,
-							     guchar *version,
-							     AgsMUID *source,
-							     AgsMUID *destination,
-							     AgsMidiCI_1_1_AuthorityLevel *authority_level,
-							     guchar *number_of_supported_protocols,
-							     guchar **preferred_protocol_type)
+ags_midi_ci_util_get_initiate_protocol_negotiation_reply(AgsMidiCIUtil *midi_ci_util,
+							 guchar *buffer,
+							 guchar *version,
+							 AgsMUID *source,
+							 AgsMUID *destination,
+							 AgsMidiCIAuthorityLevel *authority_level,
+							 guchar *number_of_supported_protocols,
+							 guchar **preferred_protocol_type)
 {
   guint nth;
   guint i, i_stop;
   
-  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(midi_ci_util != NULL, 0);
   g_return_val_if_fail(buffer[0] == 0xf0, 0);
   g_return_val_if_fail(buffer[1] == 0x7e, 0);
   g_return_val_if_fail(buffer[2] == 0x7f, 0);
@@ -1271,16 +1258,16 @@ ags_midi_ci_1_1_util_get_initiate_protocol_negotiation_reply(AgsMidiCI_1_1_Util 
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
 
   nth += 4;
   
@@ -1326,8 +1313,8 @@ ags_midi_ci_1_1_util_get_initiate_protocol_negotiation_reply(AgsMidiCI_1_1_Util 
 }
 
 /**
- * ags_midi_ci_1_1_util_put_set_protocol_type:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_put_set_protocol_type:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @version: the version
  * @source: the source
@@ -1335,23 +1322,23 @@ ags_midi_ci_1_1_util_get_initiate_protocol_negotiation_reply(AgsMidiCI_1_1_Util 
  * @authority_level: the authority level
  * @protocol_type: the new protocol type
  *
- * Put initiate protocol negotiation message.
+ * Put set protocol type message. Deprecated since MIDI CI version 1.2.
  * 
  * Since: 5.5.0
  */
 void
-ags_midi_ci_1_1_util_put_set_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-					   guchar *buffer,
-					   guchar version,
-					   AgsMUID source,
-					   AgsMUID destination,
-					   AgsMidiCI_1_1_AuthorityLevel authority_level,
-					   guchar *protocol_type)
+ags_midi_ci_util_put_set_protocol_type(AgsMidiCIUtil *midi_ci_util,
+				       guchar *buffer,
+				       guchar version,
+				       AgsMUID source,
+				       AgsMUID destination,
+				       AgsMidiCIAuthorityLevel authority_level,
+				       guchar *protocol_type)
 {
   guint nth;
   guint i;
   
-  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(midi_ci_util != NULL);
   g_return_if_fail(buffer != NULL);
 
   buffer[0] = 0xf0;
@@ -1370,30 +1357,16 @@ ags_midi_ci_1_1_util_put_set_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   nth++;
 
   /* source */
-  buffer[5 + nth] = (0xff & source);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
 
   /* authority level */
   buffer[5 + nth] = authority_level;
@@ -1414,8 +1387,8 @@ ags_midi_ci_1_1_util_put_set_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
 }
 
 /**
- * ags_midi_ci_1_1_util_get_set_protocol_type:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_get_set_protocol_type:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @version: (out): the return location of version
  * @source: (out): the return location of source
@@ -1423,25 +1396,25 @@ ags_midi_ci_1_1_util_put_set_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
  * @authority_level: (out): the authority level
  * @protocol_type: (out): the protocol type
  *
- * Get initiate protocol negotiation message.
+ * Get set protocol type message. Deprecated since MIDI CI version 1.2.
  *
  * Returns: the number of bytes read
  * 
  * Since: 5.5.0
  */
 guint
-ags_midi_ci_1_1_util_get_set_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-					   guchar *buffer,
-					   guchar *version,
-					   AgsMUID *source,
-					   AgsMUID *destination,
-					   AgsMidiCI_1_1_AuthorityLevel *authority_level,
-					   guchar *protocol_type)
+ags_midi_ci_util_get_set_protocol_type(AgsMidiCIUtil *midi_ci_util,
+				       guchar *buffer,
+				       guchar *version,
+				       AgsMUID *source,
+				       AgsMUID *destination,
+				       AgsMidiCIAuthorityLevel *authority_level,
+				       guchar *protocol_type)
 {
   guint nth;
   guint i;
   
-  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(midi_ci_util != NULL, 0);
   g_return_val_if_fail(buffer[0] == 0xf0, 0);
   g_return_val_if_fail(buffer[1] == 0x7e, 0);
   g_return_val_if_fail(buffer[2] == 0x7f, 0);
@@ -1458,16 +1431,16 @@ ags_midi_ci_1_1_util_get_set_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
 
   nth += 4;
   
@@ -1500,25 +1473,25 @@ ags_midi_ci_1_1_util_get_set_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
 }
 
 /**
- * ags_midi_ci_1_1_util_put_confirm_protocol_type:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_put_confirm_protocol_type:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @version: the version
  * @source: the source
  * @destination: the destination
  * @authority_level: the authority level
  *
- * Put initiate protocol negotiation message.
+ * Put confirm protocol type message. Deprecated since MIDI CI version 1.2.
  * 
  * Since: 5.5.0
  */
 void
-ags_midi_ci_1_1_util_put_confirm_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-					       guchar *buffer,
-					       guchar version,
-					       AgsMUID source,
-					       AgsMUID destination,
-					       AgsMidiCI_1_1_AuthorityLevel authority_level)
+ags_midi_ci_util_put_confirm_protocol_type(AgsMidiCIUtil *midi_ci_util,
+					   guchar *buffer,
+					   guchar version,
+					   AgsMUID source,
+					   AgsMUID destination,
+					   AgsMidiCIAuthorityLevel authority_level)
 {
   guint nth;
   guint i;
@@ -1529,7 +1502,7 @@ ags_midi_ci_1_1_util_put_confirm_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_u
 
   static gboolean init_test_data = FALSE;
   
-  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(midi_ci_util != NULL);
   g_return_if_fail(buffer != NULL);
 
   if(!init_test_data){
@@ -1556,30 +1529,16 @@ ags_midi_ci_1_1_util_put_confirm_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_u
   nth++;
 
   /* source */
-  buffer[5 + nth] = (0xff & source);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
 
   /* authority level */
   buffer[5 + nth] = authority_level;
@@ -1596,27 +1555,27 @@ ags_midi_ci_1_1_util_put_confirm_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_u
 }
 
 /**
- * ags_midi_ci_1_1_util_get_confirm_protocol_type:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_get_confirm_protocol_type:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @version: (out): the return location of version
  * @source: (out): the return location of source
  * @destination: (out): the destination
  * @authority_level: (out): the authority level
  *
- * Get initiate protocol negotiation message.
+ * Get confirm protocol type message. Deprecated since MIDI CI version 1.2.
  *
  * Returns: the number of bytes read
  * 
  * Since: 5.5.0
  */
 guint
-ags_midi_ci_1_1_util_get_confirm_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-					       guchar *buffer,
-					       guchar *version,
-					       AgsMUID *source,
-					       AgsMUID *destination,
-					       AgsMidiCI_1_1_AuthorityLevel *authority_level)
+ags_midi_ci_util_get_confirm_protocol_type(AgsMidiCIUtil *midi_ci_util,
+					   guchar *buffer,
+					   guchar *version,
+					   AgsMUID *source,
+					   AgsMUID *destination,
+					   AgsMidiCIAuthorityLevel *authority_level)
 {
   guint nth;
   guint i, i_stop;
@@ -1627,7 +1586,7 @@ ags_midi_ci_1_1_util_get_confirm_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_u
 
   static gboolean init_test_data = FALSE;
   
-  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(midi_ci_util != NULL, 0);
   g_return_val_if_fail(buffer[0] == 0xf0, 0);
   g_return_val_if_fail(buffer[1] == 0x7e, 0);
   g_return_val_if_fail(buffer[2] == 0x7f, 0);
@@ -1652,16 +1611,16 @@ ags_midi_ci_1_1_util_get_confirm_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_u
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
 
   nth += 4;
   
@@ -1688,8 +1647,8 @@ ags_midi_ci_1_1_util_get_confirm_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_u
 }
 
 /**
- * ags_midi_ci_1_1_util_put_confirm_protocol_type_reply:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_put_confirm_protocol_type_reply:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @version: the version
  * @source: the source
@@ -1697,17 +1656,17 @@ ags_midi_ci_1_1_util_get_confirm_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_u
  * @authority_level: the authority level
  * @protocol_type: the new protocol type
  *
- * Put initiate protocol negotiation message.
+ * Put confirm protocol type reply message. Deprecated since MIDI CI version 1.2.
  * 
  * Since: 5.5.0
  */
 void
-ags_midi_ci_1_1_util_put_confirm_protocol_type_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-						     guchar *buffer,
-						     guchar version,
-						     AgsMUID source,
-						     AgsMUID destination,
-						     AgsMidiCI_1_1_AuthorityLevel authority_level)
+ags_midi_ci_util_put_confirm_protocol_type_reply(AgsMidiCIUtil *midi_ci_util,
+						 guchar *buffer,
+						 guchar version,
+						 AgsMUID source,
+						 AgsMUID destination,
+						 AgsMidiCIAuthorityLevel authority_level)
 {
   guint nth;
   guint i;
@@ -1718,7 +1677,7 @@ ags_midi_ci_1_1_util_put_confirm_protocol_type_reply(AgsMidiCI_1_1_Util *midi_ci
 
   static gboolean init_test_data = FALSE;
   
-  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(midi_ci_util != NULL);
   g_return_if_fail(buffer != NULL);
 
   if(!init_test_data){
@@ -1745,30 +1704,16 @@ ags_midi_ci_1_1_util_put_confirm_protocol_type_reply(AgsMidiCI_1_1_Util *midi_ci
   nth++;
 
   /* source */
-  buffer[5 + nth] = (0xff & source);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
 
   /* authority level */
   buffer[5 + nth] = authority_level;
@@ -1785,27 +1730,27 @@ ags_midi_ci_1_1_util_put_confirm_protocol_type_reply(AgsMidiCI_1_1_Util *midi_ci
 }
 
 /**
- * ags_midi_ci_1_1_util_get_confirm_protocol_type_reply:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_get_confirm_protocol_type_reply:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @version: (out): the return location of version
  * @source: (out): the return location of source
  * @destination: (out): the destination
  * @authority_level: (out): the authority level
  *
- * Get initiate protocol negotiation message.
+ * Get confirm protocol type reply message. Deprecated since MIDI CI version 1.2.
  *
  * Returns: the number of bytes read
  * 
  * Since: 5.5.0
  */
 guint
-ags_midi_ci_1_1_util_get_confirm_protocol_type_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-						     guchar *buffer,
-						     guchar *version,
-						     AgsMUID *source,
-						     AgsMUID *destination,
-						     AgsMidiCI_1_1_AuthorityLevel *authority_level)
+ags_midi_ci_util_get_confirm_protocol_type_reply(AgsMidiCIUtil *midi_ci_util,
+						 guchar *buffer,
+						 guchar *version,
+						 AgsMUID *source,
+						 AgsMUID *destination,
+						 AgsMidiCIAuthorityLevel *authority_level)
 {
   guint nth;
   guint i;
@@ -1816,7 +1761,7 @@ ags_midi_ci_1_1_util_get_confirm_protocol_type_reply(AgsMidiCI_1_1_Util *midi_ci
 
   static gboolean init_test_data = FALSE;
   
-  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(midi_ci_util != NULL, 0);
   g_return_val_if_fail(buffer[0] == 0xf0, 0);
   g_return_val_if_fail(buffer[1] == 0x7e, 0);
   g_return_val_if_fail(buffer[2] == 0x7f, 0);
@@ -1841,16 +1786,16 @@ ags_midi_ci_1_1_util_get_confirm_protocol_type_reply(AgsMidiCI_1_1_Util *midi_ci
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
 
   nth += 4;
   
@@ -1877,30 +1822,30 @@ ags_midi_ci_1_1_util_get_confirm_protocol_type_reply(AgsMidiCI_1_1_Util *midi_ci
 }
 
 /**
- * ags_midi_ci_1_1_util_put_confirm_protocol_type_established:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_put_confirm_protocol_type_established:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @version: the version
  * @source: the source
  * @destination: the destination
  * @authority_level: the authority level
  *
- * Put initiate protocol negotiation message.
+ * Put confirm protocol type established message. Deprecated since MIDI CI version 1.2.
  * 
  * Since: 5.5.0
  */
 void
-ags_midi_ci_1_1_util_put_confirm_protocol_type_established(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-							   guchar *buffer,
-							   guchar version,
-							   AgsMUID source,
-							   AgsMUID destination,
-							   AgsMidiCI_1_1_AuthorityLevel authority_level)
+ags_midi_ci_util_put_confirm_protocol_type_established(AgsMidiCIUtil *midi_ci_util,
+						       guchar *buffer,
+						       guchar version,
+						       AgsMUID source,
+						       AgsMUID destination,
+						       AgsMidiCIAuthorityLevel authority_level)
 {
   guint nth;
   guint i;
   
-  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(midi_ci_util != NULL);
   g_return_if_fail(buffer != NULL);
 
   buffer[0] = 0xf0;
@@ -1919,30 +1864,16 @@ ags_midi_ci_1_1_util_put_confirm_protocol_type_established(AgsMidiCI_1_1_Util *m
   nth++;
 
   /* source */
-  buffer[5 + nth] = (0xff & source);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
 
   /* authority level */
   buffer[5 + nth] = authority_level;
@@ -1954,32 +1885,32 @@ ags_midi_ci_1_1_util_put_confirm_protocol_type_established(AgsMidiCI_1_1_Util *m
 }
 
 /**
- * ags_midi_ci_1_1_util_get_confirm_protocol_type_established:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_get_confirm_protocol_type_established:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @version: (out): the return location of version
  * @source: (out): the return location of source
  * @destination: (out): the destination
  * @authority_level: (out): the authority level
  *
- * Get initiate protocol negotiation message.
+ * Get confirm protocol type established message. Deprecated since MIDI CI version 1.2.
  *
  * Returns: the number of bytes read
  * 
  * Since: 5.5.0
  */
 guint
-ags_midi_ci_1_1_util_get_confirm_protocol_type_established(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-							   guchar *buffer,
-							   guchar *version,
-							   AgsMUID *source,
-							   AgsMUID *destination,
-							   AgsMidiCI_1_1_AuthorityLevel *authority_level)
+ags_midi_ci_util_get_confirm_protocol_type_established(AgsMidiCIUtil *midi_ci_util,
+						       guchar *buffer,
+						       guchar *version,
+						       AgsMUID *source,
+						       AgsMUID *destination,
+						       AgsMidiCIAuthorityLevel *authority_level)
 {
   guint nth;
   guint i;
   
-  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(midi_ci_util != NULL, 0);
   g_return_val_if_fail(buffer[0] == 0xf0, 0);
   g_return_val_if_fail(buffer[1] == 0x7e, 0);
   g_return_val_if_fail(buffer[2] == 0x7f, 0);
@@ -1996,16 +1927,16 @@ ags_midi_ci_1_1_util_get_confirm_protocol_type_established(AgsMidiCI_1_1_Util *m
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
 
   nth += 4;
   
@@ -2027,8 +1958,8 @@ ags_midi_ci_1_1_util_get_confirm_protocol_type_established(AgsMidiCI_1_1_Util *m
 }
 
 /**
- * ags_midi_ci_1_1_util_put_profile_inquiry:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_put_profile_inquiry:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @version: the version
  * @source: the source
@@ -2039,15 +1970,15 @@ ags_midi_ci_1_1_util_get_confirm_protocol_type_established(AgsMidiCI_1_1_Util *m
  * Since: 5.5.0
  */
 void
-ags_midi_ci_1_1_util_put_profile_inquiry(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-					 guchar *buffer,
-					 guchar version,
-					 AgsMUID source,
-					 AgsMUID destination)
+ags_midi_ci_util_put_profile_inquiry(AgsMidiCIUtil *midi_ci_util,
+				     guchar *buffer,
+				     guchar version,
+				     AgsMUID source,
+				     AgsMUID destination)
 {
   guint nth;
   
-  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(midi_ci_util != NULL);
   g_return_if_fail(buffer != NULL);
 
   nth = 0;
@@ -2066,31 +1997,19 @@ ags_midi_ci_1_1_util_put_profile_inquiry(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   /* version */
   buffer[5 + nth] = version;
 
+  nth++;
+  
   /* source */
-  buffer[5 + nth] = (0xff & source);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
 
   /* sysex end */
   buffer[5 + nth] = 0xf7;
@@ -2098,8 +2017,8 @@ ags_midi_ci_1_1_util_put_profile_inquiry(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
 }
 
 /**
- * ags_midi_ci_1_1_util_get_profile_inquiry:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_get_profile_inquiry:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @version: (out): the return location of version
  * @source: (out): the return location of source
@@ -2112,15 +2031,15 @@ ags_midi_ci_1_1_util_put_profile_inquiry(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
  * Since: 5.5.0
  */
 guint
-ags_midi_ci_1_1_util_get_profile_inquiry(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-					 guchar *buffer,
-					 guchar *version,
-					 AgsMUID *source,
-					 AgsMUID *destination)
+ags_midi_ci_util_get_profile_inquiry(AgsMidiCIUtil *midi_ci_util,
+				     guchar *buffer,
+				     guchar *version,
+				     AgsMUID *source,
+				     AgsMUID *destination)
 {
   guint nth;
   
-  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(midi_ci_util != NULL, 0);
   g_return_val_if_fail(buffer[0] == 0xf0, 0);
   g_return_val_if_fail(buffer[1] == 0x7e, 0);
   g_return_val_if_fail(buffer[2] == 0x7f, 0);
@@ -2138,16 +2057,16 @@ ags_midi_ci_1_1_util_get_profile_inquiry(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
 
   nth += 4;
 
@@ -2162,8 +2081,8 @@ ags_midi_ci_1_1_util_get_profile_inquiry(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
 }
 
 /**
- * ags_midi_ci_1_1_util_put_profile_inquiry_reply:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_put_profile_inquiry_reply:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @version: the version
  * @source: the source
@@ -2178,20 +2097,20 @@ ags_midi_ci_1_1_util_get_profile_inquiry(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
  * Since: 5.5.0
  */
 void
-ags_midi_ci_1_1_util_put_profile_inquiry_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-					       guchar *buffer,
-					       guchar version,
-					       AgsMUID source,
-					       AgsMUID destination,
-					       gint16 enabled_profile_count,
-					       guchar **enabled_profile,
-					       gint16 disabled_profile_count,
-					       guchar **disabled_profile)
+ags_midi_ci_util_put_profile_inquiry_reply(AgsMidiCIUtil *midi_ci_util,
+					   guchar *buffer,
+					   guchar version,
+					   AgsMUID source,
+					   AgsMUID destination,
+					   gint16 enabled_profile_count,
+					   guchar **enabled_profile,
+					   gint16 disabled_profile_count,
+					   guchar **disabled_profile)
 {
   guint nth;
   guint i, i_stop;
   
-  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(midi_ci_util != NULL);
   g_return_if_fail(buffer != NULL);
 
   nth = 0;
@@ -2210,31 +2129,19 @@ ags_midi_ci_1_1_util_put_profile_inquiry_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_u
   /* version */
   buffer[5 + nth] = version;
 
+  nth++;
+  
   /* source */
-  buffer[5 + nth] = (0xff & source);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
 
   /* enabled profile count */
   buffer[5 + nth] = (0xff & enabled_profile_count);
@@ -2282,8 +2189,8 @@ ags_midi_ci_1_1_util_put_profile_inquiry_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_u
 }
 
 /**
- * ags_midi_ci_1_1_util_get_profile_inquiry_reply:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_get_profile_inquiry_reply:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @version: (out): the return location of version
  * @source: (out): the return location of source
@@ -2300,20 +2207,20 @@ ags_midi_ci_1_1_util_put_profile_inquiry_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_u
  * Since: 5.5.0
  */
 guint
-ags_midi_ci_1_1_util_get_profile_inquiry_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-					       guchar *buffer,
-					       guchar *version,
-					       AgsMUID *source,
-					       AgsMUID *destination,
-					       gint16 *enabled_profile_count,
-					       guchar **enabled_profile,
-					       gint16 *disabled_profile_count,
-					       guchar **disabled_profile)
+ags_midi_ci_util_get_profile_inquiry_reply(AgsMidiCIUtil *midi_ci_util,
+					   guchar *buffer,
+					   guchar *version,
+					   AgsMUID *source,
+					   AgsMUID *destination,
+					   gint16 *enabled_profile_count,
+					   guchar **enabled_profile,
+					   gint16 *disabled_profile_count,
+					   guchar **disabled_profile)
 {
   guint nth;
   guint i, i_stop;
   
-  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(midi_ci_util != NULL, 0);
   g_return_val_if_fail(buffer[0] == 0xf0, 0);
   g_return_val_if_fail(buffer[1] == 0x7e, 0);
   g_return_val_if_fail(buffer[2] == 0x7f, 0);
@@ -2331,16 +2238,16 @@ ags_midi_ci_1_1_util_get_profile_inquiry_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_u
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
 
   nth += 4;
 
@@ -2401,8 +2308,8 @@ ags_midi_ci_1_1_util_get_profile_inquiry_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_u
 }
 
 /**
- * ags_midi_ci_1_1_util_put_profile_enabled_report:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_put_profile_enabled_report:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @version: the version
  * @source: the source
@@ -2413,15 +2320,15 @@ ags_midi_ci_1_1_util_get_profile_inquiry_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_u
  * Since: 5.5.0
  */
 void
-ags_midi_ci_1_1_util_put_profile_enabled_report(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-						guchar *buffer,
-						guchar version,
-						AgsMUID source,
-						guchar *enabled_profile)
+ags_midi_ci_util_put_profile_enabled_report(AgsMidiCIUtil *midi_ci_util,
+					    guchar *buffer,
+					    guchar version,
+					    AgsMUID source,
+					    guchar *enabled_profile)
 {
   guint nth;
   
-  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(midi_ci_util != NULL);
   g_return_if_fail(buffer != NULL);
 
   nth = 0;
@@ -2440,18 +2347,13 @@ ags_midi_ci_1_1_util_put_profile_enabled_report(AgsMidiCI_1_1_Util *midi_ci_1_1_
   /* version */
   buffer[5 + nth] = version;
 
+  nth++;
+  
   /* source */
-  buffer[5 + nth] = (0xff & source);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* broadcast */
   buffer[5 + nth] = 0x7f;
@@ -2484,8 +2386,8 @@ ags_midi_ci_1_1_util_put_profile_enabled_report(AgsMidiCI_1_1_Util *midi_ci_1_1_
 }
 
 /**
- * ags_midi_ci_1_1_util_get_profile_enabled_report:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_get_profile_enabled_report:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @version: (out): the return location of version
  * @source: (out): the return location of source
@@ -2498,15 +2400,15 @@ ags_midi_ci_1_1_util_put_profile_enabled_report(AgsMidiCI_1_1_Util *midi_ci_1_1_
  * Since: 5.5.0
  */
 guint
-ags_midi_ci_1_1_util_get_profile_enabled_report(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-						guchar *buffer,
-						guchar *version,
-						AgsMUID *source,
-						guchar *enabled_profile)
+ags_midi_ci_util_get_profile_enabled_report(AgsMidiCIUtil *midi_ci_util,
+					    guchar *buffer,
+					    guchar *version,
+					    AgsMUID *source,
+					    guchar *enabled_profile)
 {
   guint nth;
   
-  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(midi_ci_util != NULL, 0);
   g_return_val_if_fail(buffer[0] == 0xf0, 0);
   g_return_val_if_fail(buffer[1] == 0x7e, 0);
   g_return_val_if_fail(buffer[2] == 0x7f, 0);
@@ -2524,9 +2426,9 @@ ags_midi_ci_1_1_util_get_profile_enabled_report(AgsMidiCI_1_1_Util *midi_ci_1_1_
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
@@ -2555,8 +2457,8 @@ ags_midi_ci_1_1_util_get_profile_enabled_report(AgsMidiCI_1_1_Util *midi_ci_1_1_
 }
 
 /**
- * ags_midi_ci_1_1_util_put_profile_disabled_report:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_put_profile_disabled_report:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @version: the version
  * @source: the source
@@ -2567,15 +2469,15 @@ ags_midi_ci_1_1_util_get_profile_enabled_report(AgsMidiCI_1_1_Util *midi_ci_1_1_
  * Since: 5.5.0
  */
 void
-ags_midi_ci_1_1_util_put_profile_disabled_report(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-						 guchar *buffer,
-						 guchar version,
-						 AgsMUID source,
-						 guchar *disabled_profile)
+ags_midi_ci_util_put_profile_disabled_report(AgsMidiCIUtil *midi_ci_util,
+					     guchar *buffer,
+					     guchar version,
+					     AgsMUID source,
+					     guchar *disabled_profile)
 {
   guint nth;
   
-  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(midi_ci_util != NULL);
   g_return_if_fail(buffer != NULL);
 
   nth = 0;
@@ -2594,18 +2496,13 @@ ags_midi_ci_1_1_util_put_profile_disabled_report(AgsMidiCI_1_1_Util *midi_ci_1_1
   /* version */
   buffer[5 + nth] = version;
 
+  nth++;
+  
   /* source */
-  buffer[5 + nth] = (0xff & source);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* broadcast */
   buffer[5 + nth] = 0x7f;
@@ -2638,8 +2535,8 @@ ags_midi_ci_1_1_util_put_profile_disabled_report(AgsMidiCI_1_1_Util *midi_ci_1_1
 }
 
 /**
- * ags_midi_ci_1_1_util_get_profile_disabled_report:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_get_profile_disabled_report:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @version: (out): the return location of version
  * @source: (out): the return location of source
@@ -2652,15 +2549,15 @@ ags_midi_ci_1_1_util_put_profile_disabled_report(AgsMidiCI_1_1_Util *midi_ci_1_1
  * Since: 5.5.0
  */
 guint
-ags_midi_ci_1_1_util_get_profile_disabled_report(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-						 guchar *buffer,
-						 guchar *version,
-						 AgsMUID *source,
-						 guchar *disabled_profile)
+ags_midi_ci_util_get_profile_disabled_report(AgsMidiCIUtil *midi_ci_util,
+					     guchar *buffer,
+					     guchar *version,
+					     AgsMUID *source,
+					     guchar *disabled_profile)
 {
   guint nth;
   
-  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(midi_ci_util != NULL, 0);
   g_return_val_if_fail(buffer[0] == 0xf0, 0);
   g_return_val_if_fail(buffer[1] == 0x7e, 0);
   g_return_val_if_fail(buffer[2] == 0x7f, 0);
@@ -2678,9 +2575,9 @@ ags_midi_ci_1_1_util_get_profile_disabled_report(AgsMidiCI_1_1_Util *midi_ci_1_1
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
@@ -2709,8 +2606,8 @@ ags_midi_ci_1_1_util_get_profile_disabled_report(AgsMidiCI_1_1_Util *midi_ci_1_1
 }
 
 /**
- * ags_midi_ci_1_1_util_put_profile_specific_data:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_put_profile_specific_data:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @version: the version
  * @source: the source
@@ -2724,18 +2621,18 @@ ags_midi_ci_1_1_util_get_profile_disabled_report(AgsMidiCI_1_1_Util *midi_ci_1_1
  * Since: 5.5.0
  */
 void
-ags_midi_ci_1_1_util_put_profile_specific_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-					       guchar *buffer,
-					       guchar version,
-					       AgsMUID source,
-					       AgsMUID destination,
-					       guchar *profile_id,
-					       guint32 profile_specific_data_length,
-					       guchar *profile_specific_data)
+ags_midi_ci_util_put_profile_specific_data(AgsMidiCIUtil *midi_ci_util,
+					   guchar *buffer,
+					   guchar version,
+					   AgsMUID source,
+					   AgsMUID destination,
+					   guchar *profile_id,
+					   guint32 profile_specific_data_length,
+					   guchar *profile_specific_data)
 {
   guint nth;
   
-  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(midi_ci_util != NULL);
   g_return_if_fail(buffer != NULL);
 
   nth = 0;
@@ -2754,31 +2651,19 @@ ags_midi_ci_1_1_util_put_profile_specific_data(AgsMidiCI_1_1_Util *midi_ci_1_1_u
   /* version */
   buffer[5 + nth] = version;
 
+  nth++;
+  
   /* source */
-  buffer[5 + nth] = (0xff & source);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
 
   /* profile ID */
   profile_id[0] = buffer[5 + nth];
@@ -2806,8 +2691,8 @@ ags_midi_ci_1_1_util_put_profile_specific_data(AgsMidiCI_1_1_Util *midi_ci_1_1_u
 }
 
 /**
- * ags_midi_ci_1_1_util_get_profile_specific_data:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_get_profile_specific_data:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @version: (out): the return location of version
  * @source: (out): the return location of source
@@ -2823,19 +2708,19 @@ ags_midi_ci_1_1_util_put_profile_specific_data(AgsMidiCI_1_1_Util *midi_ci_1_1_u
  * Since: 5.5.0
  */
 guint
-ags_midi_ci_1_1_util_get_profile_specific_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-					       guchar *buffer,
-					       guchar *version,
-					       AgsMUID *source,
-					       AgsMUID *destination,
-					       guchar *profile_id,
-					       guint32 *profile_specific_data_length,
-					       guchar *profile_specific_data)
+ags_midi_ci_util_get_profile_specific_data(AgsMidiCIUtil *midi_ci_util,
+					   guchar *buffer,
+					   guchar *version,
+					   AgsMUID *source,
+					   AgsMUID *destination,
+					   guchar *profile_id,
+					   guint32 *profile_specific_data_length,
+					   guchar *profile_specific_data)
 {
   guint nth;
   guint i_stop;
   
-  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(midi_ci_util != NULL, 0);
   g_return_val_if_fail(buffer[0] == 0xf0, 0);
   g_return_val_if_fail(buffer[1] == 0x7e, 0);
   g_return_val_if_fail(buffer[2] == 0x7f, 0);
@@ -2853,16 +2738,16 @@ ags_midi_ci_1_1_util_get_profile_specific_data(AgsMidiCI_1_1_Util *midi_ci_1_1_u
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
 
   nth += 4;
 
@@ -2904,8 +2789,8 @@ ags_midi_ci_1_1_util_get_profile_specific_data(AgsMidiCI_1_1_Util *midi_ci_1_1_u
 }
 
 /**
- * ags_midi_ci_1_1_util_put_property_exchange_capabilities:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_put_property_exchange_capabilities:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @midi_channel: the MIDI channel
  * @version: the version
@@ -2918,17 +2803,17 @@ ags_midi_ci_1_1_util_get_profile_specific_data(AgsMidiCI_1_1_Util *midi_ci_1_1_u
  * Since: 5.5.0
  */
 void
-ags_midi_ci_1_1_util_put_property_exchange_capabilities(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-							guchar *buffer,
-							guchar midi_channel,
-							guchar version,
-							AgsMUID source,
-							AgsMUID destination,
-							guchar supported_property_exchange_count)
+ags_midi_ci_util_put_property_exchange_capabilities(AgsMidiCIUtil *midi_ci_util,
+						    guchar *buffer,
+						    guchar midi_channel,
+						    guchar version,
+						    AgsMUID source,
+						    AgsMUID destination,
+						    guchar supported_property_exchange_count)
 {
   guint nth;
   
-  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(midi_ci_util != NULL);
   g_return_if_fail(buffer != NULL);
 
   nth = 0;
@@ -2947,31 +2832,19 @@ ags_midi_ci_1_1_util_put_property_exchange_capabilities(AgsMidiCI_1_1_Util *midi
   /* version */
   buffer[5 + nth] = version;
 
+  nth++;
+  
   /* source */
-  buffer[5 + nth] = (0xff & source);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
 
   /* supported_property_exchange_count */
   buffer[5 + nth] = supported_property_exchange_count;
@@ -2983,8 +2856,8 @@ ags_midi_ci_1_1_util_put_property_exchange_capabilities(AgsMidiCI_1_1_Util *midi
 }
 
 /**
- * ags_midi_ci_1_1_util_get_property_exchange_capabilities:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_get_property_exchange_capabilities:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @midi_channel: (out): the return location of MIDI channel
  * @version: (out): the return location of version
@@ -2999,17 +2872,17 @@ ags_midi_ci_1_1_util_put_property_exchange_capabilities(AgsMidiCI_1_1_Util *midi
  * Since: 5.5.0
  */
 guint
-ags_midi_ci_1_1_util_get_property_exchange_capabilities(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-							guchar *buffer,
-							guchar *midi_channel,
-							guchar *version,
-							AgsMUID *source,
-							AgsMUID *destination,
-							guchar *supported_property_exchange_count)
+ags_midi_ci_util_get_property_exchange_capabilities(AgsMidiCIUtil *midi_ci_util,
+						    guchar *buffer,
+						    guchar *midi_channel,
+						    guchar *version,
+						    AgsMUID *source,
+						    AgsMUID *destination,
+						    guchar *supported_property_exchange_count)
 {
   guint nth;
   
-  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(midi_ci_util != NULL, 0);
   g_return_val_if_fail(buffer[0] == 0xf0, 0);
   g_return_val_if_fail(buffer[1] == 0x7e, 0);
   g_return_val_if_fail(buffer[3] == 0x0d, 0);
@@ -3030,16 +2903,16 @@ ags_midi_ci_1_1_util_get_property_exchange_capabilities(AgsMidiCI_1_1_Util *midi
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
 
   nth += 4;
 
@@ -3054,8 +2927,8 @@ ags_midi_ci_1_1_util_get_property_exchange_capabilities(AgsMidiCI_1_1_Util *midi
 }
 
 /**
- * ags_midi_ci_1_1_util_put_property_exchange_capabilities_reply:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_put_property_exchange_capabilities_reply:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @midi_channel: the MIDI channel
  * @version: the version
@@ -3068,17 +2941,17 @@ ags_midi_ci_1_1_util_get_property_exchange_capabilities(AgsMidiCI_1_1_Util *midi
  * Since: 5.5.0
  */
 void
-ags_midi_ci_1_1_util_put_property_exchange_capabilities_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-							      guchar *buffer,
-							      guchar midi_channel,
-							      guchar version,
-							      AgsMUID source,
-							      AgsMUID destination,
-							      guchar supported_property_exchange_count)
+ags_midi_ci_util_put_property_exchange_capabilities_reply(AgsMidiCIUtil *midi_ci_util,
+							  guchar *buffer,
+							  guchar midi_channel,
+							  guchar version,
+							  AgsMUID source,
+							  AgsMUID destination,
+							  guchar supported_property_exchange_count)
 {
   guint nth;
   
-  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(midi_ci_util != NULL);
   g_return_if_fail(buffer != NULL);
 
   nth = 0;
@@ -3097,31 +2970,19 @@ ags_midi_ci_1_1_util_put_property_exchange_capabilities_reply(AgsMidiCI_1_1_Util
   /* version */
   buffer[5 + nth] = version;
 
+  nth++;
+  
   /* source */
-  buffer[5 + nth] = (0xff & source);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
 
   /* supported_property_exchange_count */
   buffer[5 + nth] = supported_property_exchange_count;
@@ -3133,8 +2994,8 @@ ags_midi_ci_1_1_util_put_property_exchange_capabilities_reply(AgsMidiCI_1_1_Util
 }
 
 /**
- * ags_midi_ci_1_1_util_get_property_exchange_capabilities_reply:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_get_property_exchange_capabilities_reply:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @midi_channel: (out): the return location of MIDI channel
  * @version: (out): the return location of version
@@ -3149,17 +3010,17 @@ ags_midi_ci_1_1_util_put_property_exchange_capabilities_reply(AgsMidiCI_1_1_Util
  * Since: 5.5.0
  */
 guint
-ags_midi_ci_1_1_util_get_property_exchange_capabilities_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-							      guchar *buffer,
-							      guchar *midi_channel,
-							      guchar *version,
-							      AgsMUID *source,
-							      AgsMUID *destination,
-							      guchar *supported_property_exchange_count)
+ags_midi_ci_util_get_property_exchange_capabilities_reply(AgsMidiCIUtil *midi_ci_util,
+							  guchar *buffer,
+							  guchar *midi_channel,
+							  guchar *version,
+							  AgsMUID *source,
+							  AgsMUID *destination,
+							  guchar *supported_property_exchange_count)
 {
   guint nth;
   
-  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(midi_ci_util != NULL, 0);
   g_return_val_if_fail(buffer[0] == 0xf0, 0);
   g_return_val_if_fail(buffer[1] == 0x7e, 0);
   g_return_val_if_fail(buffer[3] == 0x0d, 0);
@@ -3180,16 +3041,16 @@ ags_midi_ci_1_1_util_get_property_exchange_capabilities_reply(AgsMidiCI_1_1_Util
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
 
   nth += 4;
 
@@ -3204,8 +3065,8 @@ ags_midi_ci_1_1_util_get_property_exchange_capabilities_reply(AgsMidiCI_1_1_Util
 }
 
 /**
- * ags_midi_ci_1_1_util_put_get_property_data:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_put_get_property_data:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @midi_channel: the MIDI channel
  * @version: the version
@@ -3224,23 +3085,23 @@ ags_midi_ci_1_1_util_get_property_exchange_capabilities_reply(AgsMidiCI_1_1_Util
  * Since: 5.5.0
  */
 void
-ags_midi_ci_1_1_util_put_get_property_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-					   guchar *buffer,
-					   guchar midi_channel,
-					   guchar version,
-					   AgsMUID source,
-					   AgsMUID destination,
-					   guchar request_id,
-					   gint16 header_data_length,
-					   guchar *header_data,
-					   gint16 chunk_count,
-					   gint16 nth_chunk,
-					   gint16 property_data_length,
-					   guchar *property_data)
+ags_midi_ci_util_put_get_property_data(AgsMidiCIUtil *midi_ci_util,
+				       guchar *buffer,
+				       guchar midi_channel,
+				       guchar version,
+				       AgsMUID source,
+				       AgsMUID destination,
+				       guchar request_id,
+				       gint16 header_data_length,
+				       guchar *header_data,
+				       gint16 chunk_count,
+				       gint16 nth_chunk,
+				       gint16 property_data_length,
+				       guchar *property_data)
 {
   guint nth;
 
-  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(midi_ci_util != NULL);
   g_return_if_fail(buffer != NULL);
 
   nth = 0;
@@ -3259,31 +3120,19 @@ ags_midi_ci_1_1_util_put_get_property_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   /* version */
   buffer[5 + nth] = version;
 
+  nth++;
+  
   /* source */
-  buffer[5 + nth] = (0xff & source);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
 
   /* request ID */
   buffer[5 + nth] = request_id;
@@ -3331,8 +3180,8 @@ ags_midi_ci_1_1_util_put_get_property_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
 }
 
 /**
- * ags_midi_ci_1_1_util_get_get_property_data:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_get_get_property_data:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @midi_channel: (out): the MIDI channel
  * @version: (out): the return location of version
@@ -3353,24 +3202,24 @@ ags_midi_ci_1_1_util_put_get_property_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
  * Since: 5.5.0
  */
 guint
-ags_midi_ci_1_1_util_get_get_property_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-					   guchar *buffer,
-					   guchar *midi_channel,
-					   guchar *version,
-					   AgsMUID *source,
-					   AgsMUID *destination,
-					   guchar *request_id,
-					   gint16 *header_data_length,
-					   guchar *header_data,
-					   gint16 *chunk_count,
-					   gint16 *nth_chunk,
-					   gint16 *property_data_length,
-					   guchar *property_data)
+ags_midi_ci_util_get_get_property_data(AgsMidiCIUtil *midi_ci_util,
+				       guchar *buffer,
+				       guchar *midi_channel,
+				       guchar *version,
+				       AgsMUID *source,
+				       AgsMUID *destination,
+				       guchar *request_id,
+				       gint16 *header_data_length,
+				       guchar *header_data,
+				       gint16 *chunk_count,
+				       gint16 *nth_chunk,
+				       gint16 *property_data_length,
+				       guchar *property_data)
 {
   guint nth;
   guint i_stop;
   
-  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(midi_ci_util != NULL, 0);
   g_return_val_if_fail(buffer[0] == 0xf0, 0);
   g_return_val_if_fail(buffer[1] == 0x7e, 0);
   g_return_val_if_fail(buffer[3] == 0x0d, 0);
@@ -3391,16 +3240,16 @@ ags_midi_ci_1_1_util_get_get_property_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
 
   nth += 4;
 
@@ -3468,8 +3317,8 @@ ags_midi_ci_1_1_util_get_get_property_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
 }
 
 /**
- * ags_midi_ci_1_1_util_put_get_property_data_reply:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_put_get_property_data_reply:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @midi_channel: the MIDI channel
  * @version: the version
@@ -3488,23 +3337,23 @@ ags_midi_ci_1_1_util_get_get_property_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
  * Since: 5.5.0
  */
 void
-ags_midi_ci_1_1_util_put_get_property_data_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-						 guchar *buffer,
-						 guchar midi_channel,
-						 guchar version,
-						 AgsMUID source,
-						 AgsMUID destination,
-						 guchar request_id,
-						 gint16 header_data_length,
-						 guchar *header_data,
-						 gint16 chunk_count,
-						 gint16 nth_chunk,
-						 gint16 property_data_length,
-						 guchar *property_data)
+ags_midi_ci_util_put_get_property_data_reply(AgsMidiCIUtil *midi_ci_util,
+					     guchar *buffer,
+					     guchar midi_channel,
+					     guchar version,
+					     AgsMUID source,
+					     AgsMUID destination,
+					     guchar request_id,
+					     gint16 header_data_length,
+					     guchar *header_data,
+					     gint16 chunk_count,
+					     gint16 nth_chunk,
+					     gint16 property_data_length,
+					     guchar *property_data)
 {
   guint nth;
 
-  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(midi_ci_util != NULL);
   g_return_if_fail(buffer != NULL);
 
   nth = 0;
@@ -3523,31 +3372,19 @@ ags_midi_ci_1_1_util_put_get_property_data_reply(AgsMidiCI_1_1_Util *midi_ci_1_1
   /* version */
   buffer[5 + nth] = version;
 
+  nth++;
+  
   /* source */
-  buffer[5 + nth] = (0xff & source);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
 
   /* request ID */
   buffer[5 + nth] = request_id;
@@ -3595,8 +3432,8 @@ ags_midi_ci_1_1_util_put_get_property_data_reply(AgsMidiCI_1_1_Util *midi_ci_1_1
 }
 
 /**
- * ags_midi_ci_1_1_util_get_get_property_data_reply:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_get_get_property_data_reply:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @midi_channel: (out): the MIDI channel
  * @version: (out): the return location of version
@@ -3617,24 +3454,24 @@ ags_midi_ci_1_1_util_put_get_property_data_reply(AgsMidiCI_1_1_Util *midi_ci_1_1
  * Since: 5.5.0
  */
 guint
-ags_midi_ci_1_1_util_get_get_property_data_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-						 guchar *buffer,
-						 guchar *midi_channel,
-						 guchar *version,
-						 AgsMUID *source,
-						 AgsMUID *destination,
-						 guchar *request_id,
-						 gint16 *header_data_length,
-						 guchar *header_data,
-						 gint16 *chunk_count,
-						 gint16 *nth_chunk,
-						 gint16 *property_data_length,
-						 guchar *property_data)
+ags_midi_ci_util_get_get_property_data_reply(AgsMidiCIUtil *midi_ci_util,
+					     guchar *buffer,
+					     guchar *midi_channel,
+					     guchar *version,
+					     AgsMUID *source,
+					     AgsMUID *destination,
+					     guchar *request_id,
+					     gint16 *header_data_length,
+					     guchar *header_data,
+					     gint16 *chunk_count,
+					     gint16 *nth_chunk,
+					     gint16 *property_data_length,
+					     guchar *property_data)
 {
   guint nth;
   guint i_stop;
   
-  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(midi_ci_util != NULL, 0);
   g_return_val_if_fail(buffer[0] == 0xf0, 0);
   g_return_val_if_fail(buffer[1] == 0x7e, 0);
   g_return_val_if_fail(buffer[3] == 0x0d, 0);
@@ -3655,16 +3492,16 @@ ags_midi_ci_1_1_util_get_get_property_data_reply(AgsMidiCI_1_1_Util *midi_ci_1_1
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
 
   nth += 4;
 
@@ -3732,8 +3569,8 @@ ags_midi_ci_1_1_util_get_get_property_data_reply(AgsMidiCI_1_1_Util *midi_ci_1_1
 }
 
 /**
- * ags_midi_ci_1_1_util_put_set_property_data:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_put_set_property_data:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @midi_channel: the MIDI channel
  * @version: the version
@@ -3752,23 +3589,23 @@ ags_midi_ci_1_1_util_get_get_property_data_reply(AgsMidiCI_1_1_Util *midi_ci_1_1
  * Since: 5.5.0
  */
 void
-ags_midi_ci_1_1_util_put_set_property_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-					   guchar *buffer,
-					   guchar midi_channel,
-					   guchar version,
-					   AgsMUID source,
-					   AgsMUID destination,
-					   guchar request_id,
-					   gint16 header_data_length,
-					   guchar *header_data,
-					   gint16 chunk_count,
-					   gint16 nth_chunk,
-					   gint16 property_data_length,
-					   guchar *property_data)
+ags_midi_ci_util_put_set_property_data(AgsMidiCIUtil *midi_ci_util,
+				       guchar *buffer,
+				       guchar midi_channel,
+				       guchar version,
+				       AgsMUID source,
+				       AgsMUID destination,
+				       guchar request_id,
+				       gint16 header_data_length,
+				       guchar *header_data,
+				       gint16 chunk_count,
+				       gint16 nth_chunk,
+				       gint16 property_data_length,
+				       guchar *property_data)
 {
   guint nth;
   
-  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(midi_ci_util != NULL);
   g_return_if_fail(buffer != NULL);
 
   nth = 0;
@@ -3787,31 +3624,19 @@ ags_midi_ci_1_1_util_put_set_property_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   /* version */
   buffer[5 + nth] = version;
 
+  nth++;
+  
   /* source */
-  buffer[5 + nth] = (0xff & source);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
 
   /* request ID */
   buffer[5 + nth] = request_id;
@@ -3859,8 +3684,8 @@ ags_midi_ci_1_1_util_put_set_property_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
 }
 
 /**
- * ags_midi_ci_1_1_util_get_set_property_data:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_get_set_property_data:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @midi_channel: (out): the MIDI channel
  * @version: (out): the return location of version
@@ -3881,24 +3706,24 @@ ags_midi_ci_1_1_util_put_set_property_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
  * Since: 5.5.0
  */
 guint
-ags_midi_ci_1_1_util_get_set_property_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-					   guchar *buffer,
-					   guchar *midi_channel,
-					   guchar *version,
-					   AgsMUID *source,
-					   AgsMUID *destination,
-					   guchar *request_id,
-					   gint16 *header_data_length,
-					   guchar *header_data,
-					   gint16 *chunk_count,
-					   gint16 *nth_chunk,
-					   gint16 *property_data_length,
-					   guchar *property_data)
+ags_midi_ci_util_get_set_property_data(AgsMidiCIUtil *midi_ci_util,
+				       guchar *buffer,
+				       guchar *midi_channel,
+				       guchar *version,
+				       AgsMUID *source,
+				       AgsMUID *destination,
+				       guchar *request_id,
+				       gint16 *header_data_length,
+				       guchar *header_data,
+				       gint16 *chunk_count,
+				       gint16 *nth_chunk,
+				       gint16 *property_data_length,
+				       guchar *property_data)
 {
   guint nth;
   guint i_stop;
   
-  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(midi_ci_util != NULL, 0);
   g_return_val_if_fail(buffer[0] == 0xf0, 0);
   g_return_val_if_fail(buffer[1] == 0x7e, 0);
   g_return_val_if_fail(buffer[3] == 0x0d, 0);
@@ -3919,16 +3744,16 @@ ags_midi_ci_1_1_util_get_set_property_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
 
   nth += 4;
 
@@ -3996,8 +3821,8 @@ ags_midi_ci_1_1_util_get_set_property_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
 }
 
 /**
- * ags_midi_ci_1_1_util_put_set_property_data_reply:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_put_set_property_data_reply:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @midi_channel: the MIDI channel
  * @version: the version
@@ -4016,23 +3841,23 @@ ags_midi_ci_1_1_util_get_set_property_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
  * Since: 5.5.0
  */
 void
-ags_midi_ci_1_1_util_put_set_property_data_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-						 guchar *buffer,
-						 guchar midi_channel,
-						 guchar version,
-						 AgsMUID source,
-						 AgsMUID destination,
-						 guchar request_id,
-						 gint16 header_data_length,
-						 guchar *header_data,
-						 gint16 chunk_count,
-						 gint16 nth_chunk,
-						 gint16 property_data_length,
-						 guchar *property_data)
+ags_midi_ci_util_put_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
+					     guchar *buffer,
+					     guchar midi_channel,
+					     guchar version,
+					     AgsMUID source,
+					     AgsMUID destination,
+					     guchar request_id,
+					     gint16 header_data_length,
+					     guchar *header_data,
+					     gint16 chunk_count,
+					     gint16 nth_chunk,
+					     gint16 property_data_length,
+					     guchar *property_data)
 {
   guint nth;
   
-  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(midi_ci_util != NULL);
   g_return_if_fail(buffer != NULL);
 
   nth = 0;
@@ -4051,31 +3876,19 @@ ags_midi_ci_1_1_util_put_set_property_data_reply(AgsMidiCI_1_1_Util *midi_ci_1_1
   /* version */
   buffer[5 + nth] = version;
 
+  nth++;
+  
   /* source */
-  buffer[5 + nth] = (0xff & source);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
 
   /* request ID */
   buffer[5 + nth] = request_id;
@@ -4123,8 +3936,8 @@ ags_midi_ci_1_1_util_put_set_property_data_reply(AgsMidiCI_1_1_Util *midi_ci_1_1
 }
 
 /**
- * ags_midi_ci_1_1_util_get_set_property_data_reply:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_get_set_property_data_reply:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @midi_channel: (out): the MIDI channel
  * @version: (out): the return location of version
@@ -4145,24 +3958,24 @@ ags_midi_ci_1_1_util_put_set_property_data_reply(AgsMidiCI_1_1_Util *midi_ci_1_1
  * Since: 5.5.0
  */
 guint
-ags_midi_ci_1_1_util_get_set_property_data_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-						 guchar *buffer,
-						 guchar *midi_channel,
-						 guchar *version,
-						 AgsMUID *source,
-						 AgsMUID *destination,
-						 guchar *request_id,
-						 gint16 *header_data_length,
-						 guchar *header_data,
-						 gint16 *chunk_count,
-						 gint16 *nth_chunk,
-						 gint16 *property_data_length,
-						 guchar *property_data)
+ags_midi_ci_util_get_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
+					     guchar *buffer,
+					     guchar *midi_channel,
+					     guchar *version,
+					     AgsMUID *source,
+					     AgsMUID *destination,
+					     guchar *request_id,
+					     gint16 *header_data_length,
+					     guchar *header_data,
+					     gint16 *chunk_count,
+					     gint16 *nth_chunk,
+					     gint16 *property_data_length,
+					     guchar *property_data)
 {
   guint nth;
   guint i_stop;
   
-  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(midi_ci_util != NULL, 0);
   g_return_val_if_fail(buffer[0] == 0xf0, 0);
   g_return_val_if_fail(buffer[1] == 0x7e, 0);
   g_return_val_if_fail(buffer[3] == 0x0d, 0);
@@ -4183,16 +3996,16 @@ ags_midi_ci_1_1_util_get_set_property_data_reply(AgsMidiCI_1_1_Util *midi_ci_1_1
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
 
   nth += 4;
 
@@ -4260,8 +4073,8 @@ ags_midi_ci_1_1_util_get_set_property_data_reply(AgsMidiCI_1_1_Util *midi_ci_1_1
 }
 
 /**
- * ags_midi_ci_1_1_util_put_subscription:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_put_subscription:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @midi_channel: the MIDI channel
  * @version: the version
@@ -4280,23 +4093,23 @@ ags_midi_ci_1_1_util_get_set_property_data_reply(AgsMidiCI_1_1_Util *midi_ci_1_1
  * Since: 5.5.0
  */
 void
-ags_midi_ci_1_1_util_put_subscription(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-				      guchar *buffer,
-				      guchar midi_channel,
-				      guchar version,
-				      AgsMUID source,
-				      AgsMUID destination,
-				      guchar request_id,
-				      gint16 header_data_length,
-				      guchar *header_data,
-				      gint16 chunk_count,
-				      gint16 nth_chunk,
-				      gint16 property_data_length,
-				      guchar *property_data)
+ags_midi_ci_util_put_subscription(AgsMidiCIUtil *midi_ci_util,
+				  guchar *buffer,
+				  guchar midi_channel,
+				  guchar version,
+				  AgsMUID source,
+				  AgsMUID destination,
+				  guchar request_id,
+				  gint16 header_data_length,
+				  guchar *header_data,
+				  gint16 chunk_count,
+				  gint16 nth_chunk,
+				  gint16 property_data_length,
+				  guchar *property_data)
 {
   guint nth;
   
-  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(midi_ci_util != NULL);
   g_return_if_fail(buffer != NULL);
 
   nth = 0;
@@ -4315,31 +4128,19 @@ ags_midi_ci_1_1_util_put_subscription(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   /* version */
   buffer[5 + nth] = version;
 
+  nth++;
+  
   /* source */
-  buffer[5 + nth] = (0xff & source);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
 
   /* request ID */
   buffer[5 + nth] = request_id;
@@ -4387,8 +4188,8 @@ ags_midi_ci_1_1_util_put_subscription(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
 }
 
 /**
- * ags_midi_ci_1_1_util_get_subscription:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_get_subscription:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @midi_channel: (out): the MIDI channel
  * @version: (out): the return location of version
@@ -4409,24 +4210,24 @@ ags_midi_ci_1_1_util_put_subscription(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
  * Since: 5.5.0
  */
 guint
-ags_midi_ci_1_1_util_get_subscription(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-				      guchar *buffer,
-				      guchar *midi_channel,
-				      guchar *version,
-				      AgsMUID *source,
-				      AgsMUID *destination,
-				      guchar *request_id,
-				      gint16 *header_data_length,
-				      guchar *header_data,
-				      gint16 *chunk_count,
-				      gint16 *nth_chunk,
-				      gint16 *property_data_length,
-				      guchar *property_data)
+ags_midi_ci_util_get_subscription(AgsMidiCIUtil *midi_ci_util,
+				  guchar *buffer,
+				  guchar *midi_channel,
+				  guchar *version,
+				  AgsMUID *source,
+				  AgsMUID *destination,
+				  guchar *request_id,
+				  gint16 *header_data_length,
+				  guchar *header_data,
+				  gint16 *chunk_count,
+				  gint16 *nth_chunk,
+				  gint16 *property_data_length,
+				  guchar *property_data)
 {
   guint nth;
   guint i_stop;
   
-  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(midi_ci_util != NULL, 0);
   g_return_val_if_fail(buffer[0] == 0xf0, 0);
   g_return_val_if_fail(buffer[1] == 0x7e, 0);
   g_return_val_if_fail(buffer[3] == 0x0d, 0);
@@ -4447,16 +4248,16 @@ ags_midi_ci_1_1_util_get_subscription(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
 
   nth += 4;
 
@@ -4524,8 +4325,8 @@ ags_midi_ci_1_1_util_get_subscription(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
 }
 
 /**
- * ags_midi_ci_1_1_util_put_subscription_reply:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_put_subscription_reply:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @midi_channel: the MIDI channel
  * @version: the version
@@ -4544,23 +4345,23 @@ ags_midi_ci_1_1_util_get_subscription(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
  * Since: 5.5.0
  */
 void
-ags_midi_ci_1_1_util_put_subscription_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-					    guchar *buffer,
-					    guchar midi_channel,
-					    guchar version,
-					    AgsMUID source,
-					    AgsMUID destination,
-					    guchar request_id,
-					    gint16 header_data_length,
-					    guchar *header_data,
-					    gint16 chunk_count,
-					    gint16 nth_chunk,
-					    gint16 property_data_length,
-					    guchar *property_data)
+ags_midi_ci_util_put_subscription_reply(AgsMidiCIUtil *midi_ci_util,
+					guchar *buffer,
+					guchar midi_channel,
+					guchar version,
+					AgsMUID source,
+					AgsMUID destination,
+					guchar request_id,
+					gint16 header_data_length,
+					guchar *header_data,
+					gint16 chunk_count,
+					gint16 nth_chunk,
+					gint16 property_data_length,
+					guchar *property_data)
 {
   guint nth;
   
-  g_return_if_fail(midi_ci_1_1_util != NULL);
+  g_return_if_fail(midi_ci_util != NULL);
   g_return_if_fail(buffer != NULL);
 
   nth = 0;
@@ -4579,31 +4380,19 @@ ags_midi_ci_1_1_util_put_subscription_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util
   /* version */
   buffer[5 + nth] = version;
 
+  nth++;
+  
   /* source */
-  buffer[5 + nth] = (0xff & source);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
 
   /* request ID */
   buffer[5 + nth] = request_id;
@@ -4651,8 +4440,8 @@ ags_midi_ci_1_1_util_put_subscription_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util
 }
 
 /**
- * ags_midi_ci_1_1_util_get_subscription_reply:
- * @midi_ci_1_1_util: the MIDI CI util
+ * ags_midi_ci_util_get_subscription_reply:
+ * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @midi_channel: (out): the MIDI channel
  * @version: (out): the return location of version
@@ -4673,24 +4462,24 @@ ags_midi_ci_1_1_util_put_subscription_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util
  * Since: 5.5.0
  */
 guint
-ags_midi_ci_1_1_util_get_subscription_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-					    guchar *buffer,
-					    guchar *midi_channel,
-					    guchar *version,
-					    AgsMUID *source,
-					    AgsMUID *destination,
-					    guchar *request_id,
-					    gint16 *header_data_length,
-					    guchar *header_data,
-					    gint16 *chunk_count,
-					    gint16 *nth_chunk,
-					    gint16 *property_data_length,
-					    guchar *property_data)
+ags_midi_ci_util_get_subscription_reply(AgsMidiCIUtil *midi_ci_util,
+					guchar *buffer,
+					guchar *midi_channel,
+					guchar *version,
+					AgsMUID *source,
+					AgsMUID *destination,
+					guchar *request_id,
+					gint16 *header_data_length,
+					guchar *header_data,
+					gint16 *chunk_count,
+					gint16 *nth_chunk,
+					gint16 *property_data_length,
+					guchar *property_data)
 {
   guint nth;
   guint i_stop;
   
-  g_return_val_if_fail(midi_ci_1_1_util != NULL, 0);
+  g_return_val_if_fail(midi_ci_util != NULL, 0);
   g_return_val_if_fail(buffer[0] == 0xf0, 0);
   g_return_val_if_fail(buffer[1] == 0x7e, 0);
   g_return_val_if_fail(buffer[3] == 0x0d, 0);
@@ -4711,16 +4500,16 @@ ags_midi_ci_1_1_util_get_subscription_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
 
   nth += 4;
 
