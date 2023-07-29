@@ -192,12 +192,12 @@ ags_midi_ci_util_test_get_discovery()
 
   guchar buffer[] = "\xf0\x7e\x7f\x0d\x70\x01\x7e\x2d\x3e\x6f\x7f\x7f\x7f\x7f\x08\x00\x00\xfe\xaf\x52\x0a\x00\x05\x00\x05\x05\x00\x02\x00\x00\xf7";
 
-  AgsMUID source = 0x0eadbeef;
+  AgsMUID source;
   
   guchar version;
   guchar manufacturer_id[3];
   guint16 device_family;
-  guint16 device_family_model_number = 0x0a52;
+  guint16 device_family_model_number;
   guchar software_revision_level[4];
   guchar capability;
   guint32 max_sysex_message_size;
@@ -228,13 +228,82 @@ ags_midi_ci_util_test_get_discovery()
 void
 ags_midi_ci_util_test_put_discovery_reply()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  guchar buffer[512];
+  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x71\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x08\x00\x00\xfe\xaf\x52\x0a\x00\x05\x00\x05\x05\x00\x02\x00\x00\xf7";
+
+  AgsMUID source = 0x0cafe010;
+  AgsMUID destination = 0x0eadbeef;
+  
+  guchar version = '\x01';
+  guchar manufacturer_id[] = "\x08\x00\x00";
+  guint16 device_family = 0xaffe;
+  guint16 device_family_model_number = 0x0a52;  
+  guchar software_revision_level[] = "\x00\x05\x00\x05";
+  guchar capability = '\x05';
+  guint32 max_sysex_message_size = 512;
+  
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  memset(buffer, 0, 512 * sizeof(guchar));
+
+  ags_midi_ci_util_put_discovery_reply(midi_ci_util,
+				       buffer,
+				       version,
+				       source,
+				       destination,
+				       manufacturer_id,
+				       device_family,
+				       device_family_model_number,
+				       software_revision_level,
+				       capability,
+				       max_sysex_message_size);
+
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 32 * sizeof(guchar)));
 }
 
 void
 ags_midi_ci_util_test_get_discovery_reply()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  guchar buffer[] = "\xf0\x7e\x7f\x0d\x71\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x08\x00\x00\xfe\xaf\x52\x0a\x00\x05\x00\x05\x05\x00\x02\x00\x00\xf7";
+
+  AgsMUID source;
+  AgsMUID destination;
+  
+  guchar version;
+  guchar manufacturer_id[3];
+  guint16 device_family;
+  guint16 device_family_model_number;
+  guchar software_revision_level[4];
+  guchar capability;
+  guint32 max_sysex_message_size;
+
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  ags_midi_ci_util_get_discovery_reply(midi_ci_util,
+				       buffer,
+				       &version,
+				       &source,
+				       &destination,
+				       &manufacturer_id,
+				       &device_family,
+				       &device_family_model_number,
+				       software_revision_level,
+				       &capability,
+				       &max_sysex_message_size);
+
+  CU_ASSERT(version == 0x01);
+  CU_ASSERT(source == 0x0cafe010);
+  CU_ASSERT(destination == 0x0eadbeef);
+  CU_ASSERT(!memcmp(manufacturer_id, "\x08\x00\x00", 3 * sizeof(guchar)));
+  CU_ASSERT(device_family == 0xaffe);
+  CU_ASSERT(device_family_model_number == 0x0a52);
+  CU_ASSERT(!memcmp(software_revision_level, "\x00\x05\x00\x05", 4 * sizeof(guchar)));
+  CU_ASSERT(capability == 0x05);
+  CU_ASSERT(max_sysex_message_size == 512);
 }
 
 void
