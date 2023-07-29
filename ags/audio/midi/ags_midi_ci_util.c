@@ -542,13 +542,13 @@ ags_midi_ci_util_put_discovery_reply(AgsMidiCIUtil *midi_ci_util,
   buffer[5 + nth] = (0xff & max_sysex_message_size);
   nth++;
   
-  buffer[5 + nth] = (0xff & max_sysex_message_size) >> 8;
+  buffer[5 + nth] = (0xff00 & max_sysex_message_size) >> 8;
   nth++;
 
-  buffer[5 + nth] = (0xff & max_sysex_message_size) >> 16;
+  buffer[5 + nth] = (0xff0000 & max_sysex_message_size) >> 16;
   nth++;
 
-  buffer[5 + nth] = (0xff & max_sysex_message_size) >> 24;
+  buffer[5 + nth] = (0xff000000 & max_sysex_message_size) >> 24;
   nth++;
   
   /* sysex end */
@@ -661,7 +661,7 @@ ags_midi_ci_util_get_discovery_reply(AgsMidiCIUtil *midi_ci_util,
 
   /* maximum sysex message size */
   if(max_sysex_message_size != NULL){
-    max_sysex_message_size[0] = (buffer[5 + nth]) | (buffer[5 + nth + 1]) | (buffer[5 + nth + 2]) | (buffer[5 + nth + 3]);
+    max_sysex_message_size[0] = (buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24);
   }
 
   nth += 4;

@@ -3291,7 +3291,9 @@ libags_vst_h_sources = \
 
 deprecated_libags_vst_c_sources =
 
-EXTRA_DIST +=
+EXTRA_DIST += \
+	ags/vst3-capi/host/updatehandler.h \
+	ags/vst3-capi/host/updatehandler.cpp
 
 libags_vst_c_sources = \
 	$(deprecated_libags_vst_c_sources) \
@@ -3301,8 +3303,6 @@ libags_vst_c_sources = \
 	ags/vst3-capi/host/hostcontext.h \
 	ags/vst3-capi/host/componenthandler.cpp \
 	ags/vst3-capi/host/hostcontext.cpp \
-	ags/vst3-capi/host/updatehandler.h \
-	ags/vst3-capi/host/updatehandler.cpp \
 	ags/vst3-capi/pluginterfaces/gui/ags_vst_iplug_view.cpp \
 	ags/vst3-capi/pluginterfaces/gui/ags_vst_iplug_view_content_scale_support.cpp \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iattributes.cpp \
