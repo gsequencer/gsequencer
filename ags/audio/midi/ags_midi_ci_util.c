@@ -845,7 +845,7 @@ ags_midi_ci_util_put_nak(AgsMidiCIUtil *midi_ci_util,
 
   buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
 
-  buffer[4] = 0x7e; // Sub-ID#2 - invalidate MUID
+  buffer[4] = 0x7f; // Sub-ID#2 - NAK
 
   nth = 0;
 
@@ -899,7 +899,7 @@ ags_midi_ci_util_get_nak(AgsMidiCIUtil *midi_ci_util,
   g_return_val_if_fail(buffer[1] == 0x7e, 0);
   g_return_val_if_fail(buffer[2] == 0x7f, 0);
   g_return_val_if_fail(buffer[3] == 0x0d, 0);
-  g_return_val_if_fail(buffer[4] == 0x70, 0);
+  g_return_val_if_fail(buffer[4] == 0x7f, 0);
 
   nth = 0;
 
