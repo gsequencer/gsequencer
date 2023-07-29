@@ -28,12 +28,12 @@
 
 /**
  * SECTION:ags_midi_ci_1_1_util
- * @short_description: MIDI CI version 1.1 util
+ * @short_description: MIDI CI util
  * @title: AgsMidiUtil
  * @section_id:
  * @include: ags/audio/midi/ags_midi_ci_1_1_util.h
  *
- * Utility functions for MIDI CI version 1.1.
+ * Utility functions for MIDI CI.
  */
 
 GType
@@ -58,7 +58,7 @@ ags_midi_ci_1_1_util_get_type(void)
 /**
  * ags_midi_ci_1_1_util_alloc:
  *
- * Allocate MIDI CI version 1.1 util.
+ * Allocate MIDI CI util.
  *
  * Returns: (transfer full): the newly allocated #AgsMidiCI_1_1_Util-struct
  * 
@@ -81,7 +81,7 @@ ags_midi_ci_1_1_util_alloc()
  * ags_midi_ci_1_1_util_free:
  * @midi_ci_1_1_util: the MIDI CI util
  *
- * Free MIDI CI version 1.1 util.
+ * Free MIDI CI util.
  *
  * Since: 5.5.0
  */
@@ -97,7 +97,7 @@ ags_midi_ci_1_1_util_free(AgsMidiCI_1_1_Util *midi_ci_1_1_util)
  * ags_midi_ci_1_1_util_copy:
  * @midi_ci_1_1_util: the MIDI CI util
  *
- * Copy MIDI CI version 1.1 util.
+ * Copy MIDI CI util.
  *
  * Returns: (transfer full): the newly allocated #AgsMidiCI_1_1_Util-struct
  * 
@@ -189,16 +189,16 @@ ags_midi_ci_1_1_util_put_discovery(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   nth++;
 
   /* source */
-  buffer[5 + nth] = (0xff & source);
+  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & source) >> 8;
+  buffer[5 + nth] = (0x7f00 & source) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  buffer[5 + nth] = (0x7f0000 & source) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  buffer[5 + nth] = (0x7f000000 & source) >> 24;
   nth++;
 
   /* broadcast */
@@ -324,7 +324,7 @@ ags_midi_ci_1_1_util_get_discovery(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   
   /* source */
   if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
@@ -440,30 +440,30 @@ ags_midi_ci_1_1_util_put_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   buffer[5 + nth] = version;
 
   /* source */
-  buffer[5 + nth] = (0xff & source);
+  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & source) >> 8;
+  buffer[5 + nth] = (0x7f00 & source) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  buffer[5 + nth] = (0x7f0000 & source) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  buffer[5 + nth] = (0x7f000000 & source) >> 24;
   nth++;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
+  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
+  buffer[5 + nth] = (0x7f00 & destination) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
+  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
+  nth++;  
   
   /* manufacturer */
   buffer[5 + nth] = manufacturer_id[0];
@@ -577,16 +577,16 @@ ags_midi_ci_1_1_util_get_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   
   /* source */
   if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
 
   /* destination */
   if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
-
+  
   nth += 4;
   
   /* manufacturer */
@@ -685,16 +685,16 @@ ags_midi_ci_1_1_util_put_invalidate_muid(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   buffer[5 + nth] = version;
 
   /* source */
-  buffer[5 + nth] = (0xff & source);
+  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & source) >> 8;
+  buffer[5 + nth] = (0x7f00 & source) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  buffer[5 + nth] = (0x7f0000 & source) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  buffer[5 + nth] = (0x7f000000 & source) >> 24;
   nth++;
 
   /* broadcast */
@@ -770,7 +770,7 @@ ags_midi_ci_1_1_util_get_invalidate_muid(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   
   /* source */
   if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
@@ -838,30 +838,30 @@ ags_midi_ci_1_1_util_put_nak(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   buffer[5 + nth] = version;
 
   /* source */
-  buffer[5 + nth] = (0xff & source);
+  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & source) >> 8;
+  buffer[5 + nth] = (0x7f00 & source) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  buffer[5 + nth] = (0x7f0000 & source) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  buffer[5 + nth] = (0x7f000000 & source) >> 24;
   nth++;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
+  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
+  buffer[5 + nth] = (0x7f00 & destination) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
+  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
+  nth++;  
 
   /* sysex end */
   buffer[5 + nth] = 0xf7;
@@ -909,14 +909,14 @@ ags_midi_ci_1_1_util_get_nak(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   
   /* source */
   if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
 
   /* destination */
   if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
@@ -942,7 +942,7 @@ ags_midi_ci_1_1_util_get_nak(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
  * @number_of_supported_protocols: the number of supported protocols
  * @preferred_protocol_type: the preferred protocol type
  *
- * Put initiate protocol negotiation message.
+ * Put initiate protocol negotiation message. Deprecated since MIDI CI version 1.2.
  * 
  * Since: 5.5.0
  */
@@ -978,30 +978,30 @@ ags_midi_ci_1_1_util_put_initiate_protocol_negotiation(AgsMidiCI_1_1_Util *midi_
   nth++;
 
   /* source */
-  buffer[5 + nth] = (0xff & source);
+  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & source) >> 8;
+  buffer[5 + nth] = (0x7f00 & source) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  buffer[5 + nth] = (0x7f0000 & source) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  buffer[5 + nth] = (0x7f000000 & source) >> 24;
   nth++;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
+  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
+  buffer[5 + nth] = (0x7f00 & destination) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
+  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
+  nth++;  
 
   /* authority level */
   buffer[5 + nth] = authority_level;
@@ -1038,7 +1038,7 @@ ags_midi_ci_1_1_util_put_initiate_protocol_negotiation(AgsMidiCI_1_1_Util *midi_
  * @number_of_supported_protocols: (out): the number of supported protocols
  * @preferred_protocol_type: (out): the preferred protocol type
  *
- * Get initiate protocol negotiation message.
+ * Get initiate protocol negotiation message. Deprecated since MIDI CI version 1.2.
  *
  * Returns: the number of bytes read
  * 
@@ -1075,14 +1075,14 @@ ags_midi_ci_1_1_util_get_initiate_protocol_negotiation(AgsMidiCI_1_1_Util *midi_
   
   /* source */
   if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
 
   /* destination */
   if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
@@ -1139,7 +1139,7 @@ ags_midi_ci_1_1_util_get_initiate_protocol_negotiation(AgsMidiCI_1_1_Util *midi_
  * @number_of_supported_protocols: the number of supported protocols
  * @preferred_protocol_type: the preferred protocol type
  *
- * Put initiate protocol negotiation reply message.
+ * Put initiate protocol negotiation reply message. Deprecated since MIDI CI version 1.2.
  * 
  * Since: 5.5.0
  */
@@ -1175,30 +1175,30 @@ ags_midi_ci_1_1_util_put_initiate_protocol_negotiation_reply(AgsMidiCI_1_1_Util 
   nth++;
 
   /* source */
-  buffer[5 + nth] = (0xff & source);
+  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & source) >> 8;
+  buffer[5 + nth] = (0x7f00 & source) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  buffer[5 + nth] = (0x7f0000 & source) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  buffer[5 + nth] = (0x7f000000 & source) >> 24;
   nth++;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
+  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
+  buffer[5 + nth] = (0x7f00 & destination) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
+  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
+  nth++;  
 
   /* authority level */
   buffer[5 + nth] = authority_level;
@@ -1235,7 +1235,7 @@ ags_midi_ci_1_1_util_put_initiate_protocol_negotiation_reply(AgsMidiCI_1_1_Util 
  * @number_of_supported_protocols: (out): the number of supported protocols
  * @preferred_protocol_type: (out): the preferred protocol type
  *
- * Get initiate protocol negotiation reply message.
+ * Get initiate protocol negotiation reply message. Deprecated since MIDI CI version 1.2.
  *
  * Returns: the number of bytes read
  * 
@@ -1272,14 +1272,14 @@ ags_midi_ci_1_1_util_get_initiate_protocol_negotiation_reply(AgsMidiCI_1_1_Util 
   
   /* source */
   if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
 
   /* destination */
   if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
@@ -1335,7 +1335,7 @@ ags_midi_ci_1_1_util_get_initiate_protocol_negotiation_reply(AgsMidiCI_1_1_Util 
  * @authority_level: the authority level
  * @protocol_type: the new protocol type
  *
- * Put initiate protocol negotiation message.
+ * Put set protocol type message. Deprecated since MIDI CI version 1.2.
  * 
  * Since: 5.5.0
  */
@@ -1370,30 +1370,30 @@ ags_midi_ci_1_1_util_put_set_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   nth++;
 
   /* source */
-  buffer[5 + nth] = (0xff & source);
+  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & source) >> 8;
+  buffer[5 + nth] = (0x7f00 & source) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  buffer[5 + nth] = (0x7f0000 & source) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  buffer[5 + nth] = (0x7f000000 & source) >> 24;
   nth++;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
+  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
+  buffer[5 + nth] = (0x7f00 & destination) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
+  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
+  nth++;  
 
   /* authority level */
   buffer[5 + nth] = authority_level;
@@ -1423,7 +1423,7 @@ ags_midi_ci_1_1_util_put_set_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
  * @authority_level: (out): the authority level
  * @protocol_type: (out): the protocol type
  *
- * Get initiate protocol negotiation message.
+ * Get set protocol type message. Deprecated since MIDI CI version 1.2.
  *
  * Returns: the number of bytes read
  * 
@@ -1459,14 +1459,14 @@ ags_midi_ci_1_1_util_get_set_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   
   /* source */
   if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
 
   /* destination */
   if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
@@ -1508,7 +1508,7 @@ ags_midi_ci_1_1_util_get_set_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
  * @destination: the destination
  * @authority_level: the authority level
  *
- * Put initiate protocol negotiation message.
+ * Put confirm protocol type message. Deprecated since MIDI CI version 1.2.
  * 
  * Since: 5.5.0
  */
@@ -1556,30 +1556,30 @@ ags_midi_ci_1_1_util_put_confirm_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_u
   nth++;
 
   /* source */
-  buffer[5 + nth] = (0xff & source);
+  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & source) >> 8;
+  buffer[5 + nth] = (0x7f00 & source) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  buffer[5 + nth] = (0x7f0000 & source) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  buffer[5 + nth] = (0x7f000000 & source) >> 24;
   nth++;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
+  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
+  buffer[5 + nth] = (0x7f00 & destination) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
+  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
+  nth++;  
 
   /* authority level */
   buffer[5 + nth] = authority_level;
@@ -1604,7 +1604,7 @@ ags_midi_ci_1_1_util_put_confirm_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_u
  * @destination: (out): the destination
  * @authority_level: (out): the authority level
  *
- * Get initiate protocol negotiation message.
+ * Get confirm protocol type message. Deprecated since MIDI CI version 1.2.
  *
  * Returns: the number of bytes read
  * 
@@ -1653,14 +1653,14 @@ ags_midi_ci_1_1_util_get_confirm_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_u
   
   /* source */
   if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
 
   /* destination */
   if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
@@ -1697,7 +1697,7 @@ ags_midi_ci_1_1_util_get_confirm_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_u
  * @authority_level: the authority level
  * @protocol_type: the new protocol type
  *
- * Put initiate protocol negotiation message.
+ * Put confirm protocol type reply message. Deprecated since MIDI CI version 1.2.
  * 
  * Since: 5.5.0
  */
@@ -1745,30 +1745,30 @@ ags_midi_ci_1_1_util_put_confirm_protocol_type_reply(AgsMidiCI_1_1_Util *midi_ci
   nth++;
 
   /* source */
-  buffer[5 + nth] = (0xff & source);
+  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & source) >> 8;
+  buffer[5 + nth] = (0x7f00 & source) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  buffer[5 + nth] = (0x7f0000 & source) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  buffer[5 + nth] = (0x7f000000 & source) >> 24;
   nth++;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
+  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
+  buffer[5 + nth] = (0x7f00 & destination) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
+  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
+  nth++;  
 
   /* authority level */
   buffer[5 + nth] = authority_level;
@@ -1793,7 +1793,7 @@ ags_midi_ci_1_1_util_put_confirm_protocol_type_reply(AgsMidiCI_1_1_Util *midi_ci
  * @destination: (out): the destination
  * @authority_level: (out): the authority level
  *
- * Get initiate protocol negotiation message.
+ * Get confirm protocol type reply message. Deprecated since MIDI CI version 1.2.
  *
  * Returns: the number of bytes read
  * 
@@ -1842,14 +1842,14 @@ ags_midi_ci_1_1_util_get_confirm_protocol_type_reply(AgsMidiCI_1_1_Util *midi_ci
   
   /* source */
   if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
 
   /* destination */
   if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
@@ -1885,7 +1885,7 @@ ags_midi_ci_1_1_util_get_confirm_protocol_type_reply(AgsMidiCI_1_1_Util *midi_ci
  * @destination: the destination
  * @authority_level: the authority level
  *
- * Put initiate protocol negotiation message.
+ * Put confirm protocol type established message. Deprecated since MIDI CI version 1.2.
  * 
  * Since: 5.5.0
  */
@@ -1919,30 +1919,30 @@ ags_midi_ci_1_1_util_put_confirm_protocol_type_established(AgsMidiCI_1_1_Util *m
   nth++;
 
   /* source */
-  buffer[5 + nth] = (0xff & source);
+  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & source) >> 8;
+  buffer[5 + nth] = (0x7f00 & source) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  buffer[5 + nth] = (0x7f0000 & source) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  buffer[5 + nth] = (0x7f000000 & source) >> 24;
   nth++;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
+  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
+  buffer[5 + nth] = (0x7f00 & destination) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
+  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
+  nth++;  
 
   /* authority level */
   buffer[5 + nth] = authority_level;
@@ -1962,7 +1962,7 @@ ags_midi_ci_1_1_util_put_confirm_protocol_type_established(AgsMidiCI_1_1_Util *m
  * @destination: (out): the destination
  * @authority_level: (out): the authority level
  *
- * Get initiate protocol negotiation message.
+ * Get confirm protocol type established message. Deprecated since MIDI CI version 1.2.
  *
  * Returns: the number of bytes read
  * 
@@ -1997,14 +1997,14 @@ ags_midi_ci_1_1_util_get_confirm_protocol_type_established(AgsMidiCI_1_1_Util *m
   
   /* source */
   if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
 
   /* destination */
   if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
@@ -2067,30 +2067,30 @@ ags_midi_ci_1_1_util_put_profile_inquiry(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   buffer[5 + nth] = version;
 
   /* source */
-  buffer[5 + nth] = (0xff & source);
+  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & source) >> 8;
+  buffer[5 + nth] = (0x7f00 & source) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  buffer[5 + nth] = (0x7f0000 & source) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  buffer[5 + nth] = (0x7f000000 & source) >> 24;
   nth++;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
+  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
+  buffer[5 + nth] = (0x7f00 & destination) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
+  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
+  nth++;  
 
   /* sysex end */
   buffer[5 + nth] = 0xf7;
@@ -2139,14 +2139,14 @@ ags_midi_ci_1_1_util_get_profile_inquiry(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   
   /* source */
   if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
 
   /* destination */
   if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
@@ -2211,30 +2211,30 @@ ags_midi_ci_1_1_util_put_profile_inquiry_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_u
   buffer[5 + nth] = version;
 
   /* source */
-  buffer[5 + nth] = (0xff & source);
+  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & source) >> 8;
+  buffer[5 + nth] = (0x7f00 & source) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  buffer[5 + nth] = (0x7f0000 & source) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  buffer[5 + nth] = (0x7f000000 & source) >> 24;
   nth++;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
+  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
+  buffer[5 + nth] = (0x7f00 & destination) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
+  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
+  nth++;  
 
   /* enabled profile count */
   buffer[5 + nth] = (0xff & enabled_profile_count);
@@ -2332,14 +2332,14 @@ ags_midi_ci_1_1_util_get_profile_inquiry_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_u
   
   /* source */
   if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
 
   /* destination */
   if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
@@ -2441,16 +2441,16 @@ ags_midi_ci_1_1_util_put_profile_enabled_report(AgsMidiCI_1_1_Util *midi_ci_1_1_
   buffer[5 + nth] = version;
 
   /* source */
-  buffer[5 + nth] = (0xff & source);
+  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & source) >> 8;
+  buffer[5 + nth] = (0x7f00 & source) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  buffer[5 + nth] = (0x7f0000 & source) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  buffer[5 + nth] = (0x7f000000 & source) >> 24;
   nth++;
 
   /* broadcast */
@@ -2525,7 +2525,7 @@ ags_midi_ci_1_1_util_get_profile_enabled_report(AgsMidiCI_1_1_Util *midi_ci_1_1_
   
   /* source */
   if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
@@ -2595,16 +2595,16 @@ ags_midi_ci_1_1_util_put_profile_disabled_report(AgsMidiCI_1_1_Util *midi_ci_1_1
   buffer[5 + nth] = version;
 
   /* source */
-  buffer[5 + nth] = (0xff & source);
+  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & source) >> 8;
+  buffer[5 + nth] = (0x7f00 & source) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  buffer[5 + nth] = (0x7f0000 & source) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  buffer[5 + nth] = (0x7f000000 & source) >> 24;
   nth++;
 
   /* broadcast */
@@ -2679,7 +2679,7 @@ ags_midi_ci_1_1_util_get_profile_disabled_report(AgsMidiCI_1_1_Util *midi_ci_1_1
   
   /* source */
   if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
@@ -2755,30 +2755,30 @@ ags_midi_ci_1_1_util_put_profile_specific_data(AgsMidiCI_1_1_Util *midi_ci_1_1_u
   buffer[5 + nth] = version;
 
   /* source */
-  buffer[5 + nth] = (0xff & source);
+  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & source) >> 8;
+  buffer[5 + nth] = (0x7f00 & source) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  buffer[5 + nth] = (0x7f0000 & source) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  buffer[5 + nth] = (0x7f000000 & source) >> 24;
   nth++;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
+  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
+  buffer[5 + nth] = (0x7f00 & destination) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
+  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
+  nth++;  
 
   /* profile ID */
   profile_id[0] = buffer[5 + nth];
@@ -2854,14 +2854,14 @@ ags_midi_ci_1_1_util_get_profile_specific_data(AgsMidiCI_1_1_Util *midi_ci_1_1_u
   
   /* source */
   if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
 
   /* destination */
   if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
@@ -2948,30 +2948,30 @@ ags_midi_ci_1_1_util_put_property_exchange_capabilities(AgsMidiCI_1_1_Util *midi
   buffer[5 + nth] = version;
 
   /* source */
-  buffer[5 + nth] = (0xff & source);
+  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & source) >> 8;
+  buffer[5 + nth] = (0x7f00 & source) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  buffer[5 + nth] = (0x7f0000 & source) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  buffer[5 + nth] = (0x7f000000 & source) >> 24;
   nth++;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
+  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
+  buffer[5 + nth] = (0x7f00 & destination) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
+  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
+  nth++;  
 
   /* supported_property_exchange_count */
   buffer[5 + nth] = supported_property_exchange_count;
@@ -3031,14 +3031,14 @@ ags_midi_ci_1_1_util_get_property_exchange_capabilities(AgsMidiCI_1_1_Util *midi
   
   /* source */
   if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
 
   /* destination */
   if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
@@ -3098,30 +3098,30 @@ ags_midi_ci_1_1_util_put_property_exchange_capabilities_reply(AgsMidiCI_1_1_Util
   buffer[5 + nth] = version;
 
   /* source */
-  buffer[5 + nth] = (0xff & source);
+  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & source) >> 8;
+  buffer[5 + nth] = (0x7f00 & source) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  buffer[5 + nth] = (0x7f0000 & source) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  buffer[5 + nth] = (0x7f000000 & source) >> 24;
   nth++;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
+  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
+  buffer[5 + nth] = (0x7f00 & destination) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
+  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
+  nth++;  
 
   /* supported_property_exchange_count */
   buffer[5 + nth] = supported_property_exchange_count;
@@ -3181,14 +3181,14 @@ ags_midi_ci_1_1_util_get_property_exchange_capabilities_reply(AgsMidiCI_1_1_Util
   
   /* source */
   if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
 
   /* destination */
   if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
@@ -3260,30 +3260,30 @@ ags_midi_ci_1_1_util_put_get_property_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   buffer[5 + nth] = version;
 
   /* source */
-  buffer[5 + nth] = (0xff & source);
+  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & source) >> 8;
+  buffer[5 + nth] = (0x7f00 & source) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  buffer[5 + nth] = (0x7f0000 & source) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  buffer[5 + nth] = (0x7f000000 & source) >> 24;
   nth++;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
+  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
+  buffer[5 + nth] = (0x7f00 & destination) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
+  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
+  nth++;  
 
   /* request ID */
   buffer[5 + nth] = request_id;
@@ -3392,14 +3392,14 @@ ags_midi_ci_1_1_util_get_get_property_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   
   /* source */
   if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
 
   /* destination */
   if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
@@ -3524,30 +3524,30 @@ ags_midi_ci_1_1_util_put_get_property_data_reply(AgsMidiCI_1_1_Util *midi_ci_1_1
   buffer[5 + nth] = version;
 
   /* source */
-  buffer[5 + nth] = (0xff & source);
+  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & source) >> 8;
+  buffer[5 + nth] = (0x7f00 & source) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  buffer[5 + nth] = (0x7f0000 & source) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  buffer[5 + nth] = (0x7f000000 & source) >> 24;
   nth++;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
+  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
+  buffer[5 + nth] = (0x7f00 & destination) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
+  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
+  nth++;  
 
   /* request ID */
   buffer[5 + nth] = request_id;
@@ -3656,14 +3656,14 @@ ags_midi_ci_1_1_util_get_get_property_data_reply(AgsMidiCI_1_1_Util *midi_ci_1_1
   
   /* source */
   if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
 
   /* destination */
   if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
@@ -3788,30 +3788,30 @@ ags_midi_ci_1_1_util_put_set_property_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   buffer[5 + nth] = version;
 
   /* source */
-  buffer[5 + nth] = (0xff & source);
+  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & source) >> 8;
+  buffer[5 + nth] = (0x7f00 & source) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  buffer[5 + nth] = (0x7f0000 & source) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  buffer[5 + nth] = (0x7f000000 & source) >> 24;
   nth++;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
+  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
+  buffer[5 + nth] = (0x7f00 & destination) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
+  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
+  nth++;  
 
   /* request ID */
   buffer[5 + nth] = request_id;
@@ -3920,14 +3920,14 @@ ags_midi_ci_1_1_util_get_set_property_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   
   /* source */
   if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
 
   /* destination */
   if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
@@ -4052,30 +4052,30 @@ ags_midi_ci_1_1_util_put_set_property_data_reply(AgsMidiCI_1_1_Util *midi_ci_1_1
   buffer[5 + nth] = version;
 
   /* source */
-  buffer[5 + nth] = (0xff & source);
+  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & source) >> 8;
+  buffer[5 + nth] = (0x7f00 & source) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  buffer[5 + nth] = (0x7f0000 & source) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  buffer[5 + nth] = (0x7f000000 & source) >> 24;
   nth++;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
+  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
+  buffer[5 + nth] = (0x7f00 & destination) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
+  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
+  nth++;  
 
   /* request ID */
   buffer[5 + nth] = request_id;
@@ -4184,14 +4184,14 @@ ags_midi_ci_1_1_util_get_set_property_data_reply(AgsMidiCI_1_1_Util *midi_ci_1_1
   
   /* source */
   if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
 
   /* destination */
   if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
@@ -4316,30 +4316,30 @@ ags_midi_ci_1_1_util_put_subscription(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   buffer[5 + nth] = version;
 
   /* source */
-  buffer[5 + nth] = (0xff & source);
+  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & source) >> 8;
+  buffer[5 + nth] = (0x7f00 & source) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  buffer[5 + nth] = (0x7f0000 & source) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  buffer[5 + nth] = (0x7f000000 & source) >> 24;
   nth++;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
+  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
+  buffer[5 + nth] = (0x7f00 & destination) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
+  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
+  nth++;  
 
   /* request ID */
   buffer[5 + nth] = request_id;
@@ -4448,14 +4448,14 @@ ags_midi_ci_1_1_util_get_subscription(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
   
   /* source */
   if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
 
   /* destination */
   if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
@@ -4580,30 +4580,30 @@ ags_midi_ci_1_1_util_put_subscription_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util
   buffer[5 + nth] = version;
 
   /* source */
-  buffer[5 + nth] = (0xff & source);
+  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & source) >> 8;
+  buffer[5 + nth] = (0x7f00 & source) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & source) >> 16;
+  buffer[5 + nth] = (0x7f0000 & source) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & source) >> 24;
+  buffer[5 + nth] = (0x7f000000 & source) >> 24;
   nth++;
 
   /* destination */
-  buffer[5 + nth] = (0xff & destination);
+  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
   nth++;
   
-  buffer[5 + nth] = (0xff00 & destination) >> 8;
+  buffer[5 + nth] = (0x7f00 & destination) >> 8;
   nth++;
   
-  buffer[5 + nth] = (0xff0000 & destination) >> 16;
+  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
   nth++;
   
-  buffer[5 + nth] = (0xff000000 & destination) >> 24;
-  nth++;
+  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
+  nth++;  
 
   /* request ID */
   buffer[5 + nth] = request_id;
@@ -4712,14 +4712,14 @@ ags_midi_ci_1_1_util_get_subscription_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util
   
   /* source */
   if(source != NULL){
-    source[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;
 
   /* destination */
   if(destination != NULL){
-    destination[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
   }
 
   nth += 4;

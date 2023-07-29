@@ -157,7 +157,7 @@ ags_midi_ci_1_1_util_test_put_discovery()
   guchar buffer[512];
   guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x70\x01\xef\xbe\xad\xde\x7f\x7f\x7f\x7f\x08\x00\x00\xfe\xaf\x52\x0a\x00\x05\x00\x05\x05\x00\x02\x00\x00\xf7";
 
-  AgsMUID source = 0xdeadbeef;
+  AgsMUID source = 0x0eadbeef;
   
   guchar version = '\x01';
   guchar manufacturer_id[] = "\x08\x00\x00";
@@ -192,7 +192,7 @@ ags_midi_ci_1_1_util_test_get_discovery()
 
   guchar buffer[] = "\xf0\x7e\x7f\x0d\x70\x01\xef\xbe\xad\xde\x7f\x7f\x7f\x7f\x08\x00\x00\xfe\xaf\x52\x0a\x00\x05\x00\x05\x05\x00\x02\x00\x00\xf7";
 
-  AgsMUID source = 0xdeadbeef;
+  AgsMUID source = 0x0eadbeef;
   
   guchar version;
   guchar manufacturer_id[3];

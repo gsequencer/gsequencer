@@ -1,4 +1,4 @@
-# Copyright (C) 2005-2022 Daniel Maksymow, Joël Krähemann
+# Copyright (C) 2005-2023 Daniel Maksymow, Joël Krähemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
