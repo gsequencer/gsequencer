@@ -115,6 +115,13 @@ AgsMidiCIUtil* ags_midi_ci_util_copy(AgsMidiCIUtil *midi_ci_util);
 
 AgsMUID ags_midi_ci_util_generate_muid(AgsMidiCIUtil *midi_ci_util);
 
+void ags_midi_ci_util_put_muid(AgsMidiCIUtil *midi_ci_util,
+			       guchar *buffer,
+			       AgsMUID muid);
+guint ags_midi_ci_util_get_muid(AgsMidiCIUtil *midi_ci_util,
+				guchar *buffer,
+				AgsMUID *muid);
+
 void ags_midi_ci_util_put_discovery(AgsMidiCIUtil *midi_ci_util,
 				    guchar *buffer,
 				    guchar version,

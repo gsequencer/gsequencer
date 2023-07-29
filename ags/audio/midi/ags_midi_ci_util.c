@@ -140,6 +140,57 @@ ags_midi_ci_util_generate_muid(AgsMidiCIUtil *midi_ci_util)
 }
 
 /**
+ * ags_midi_ci_util_put_muid:
+ * @midi_ci_util: the MIDI CI util
+ * @buffer: the buffer
+ * @muid: the #AgsMUID
+ *
+ * Put MUID.
+ * 
+ * Since: 5.5.0
+ */
+void
+ags_midi_ci_util_put_muid(AgsMidiCIUtil *midi_ci_util,
+			  guchar *buffer,
+			  AgsMUID muid)
+{
+  g_return_if_fail(midi_ci_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  buffer[3] = (0x7f & muid);
+  buffer[2] = (0x7f00 & muid) >> 8;
+  buffer[1] = (0x7f0000 & muid) >> 16;
+  buffer[0] = ((0x0f000000 & muid) >> 24) | ((0x80 & muid) >> 3) | ((0x8000 & muid) >> 10) | ((0x800000 & muid) >> 17);
+}
+
+/**
+ * ags_midi_ci_util_get_muid:
+ * @midi_ci_util: the MIDI CI util
+ * @buffer: the buffer
+ * @muid: (out): the return location of #AgsMUID
+ *
+ * Get MUID.
+ *
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.0
+ */
+guint
+ags_midi_ci_util_get_muid(AgsMidiCIUtil *midi_ci_util,
+			  guchar *buffer,
+			  AgsMUID *muid)
+{
+  g_return_val_if_fail(midi_ci_util != NULL, 0);
+  g_return_val_if_fail(buffer != NULL, 0);
+
+  if(muid != NULL){
+    muid[0] = (0x7f & buffer[3]) | ((0x7f & buffer[2]) << 8) | ((0x7f & buffer[1]) << 16) | ((0x0f & buffer[0]) << 24) | ((0x10 & buffer[0]) << 3) | ((0x20 & buffer[0]) << 10) | ((0x40 & buffer[0]) << 17);
+  }
+
+  return(4);
+}
+
+/**
  * ags_midi_ci_util_put_discovery:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
@@ -189,18 +240,11 @@ ags_midi_ci_util_put_discovery(AgsMidiCIUtil *midi_ci_util,
   nth++;
 
   /* source */
-  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
   
-  buffer[5 + nth] = (0x7f00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & source) >> 24;
-  nth++;
-
   /* broadcast */
   buffer[5 + nth] = 0x7f;
   nth++;
@@ -323,11 +367,11 @@ ags_midi_ci_util_get_discovery(AgsMidiCIUtil *midi_ci_util,
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
-  nth += 4;
+  nth+= 4;
 
   /* destination - broadcast */
   //NOTE:JK: validate first - see top of function
@@ -439,31 +483,19 @@ ags_midi_ci_util_put_discovery_reply(AgsMidiCIUtil *midi_ci_util,
   /* version */
   buffer[5 + nth] = version;
 
+  nth++;
+  
   /* source */
-  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
-  nth++;  
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
   
   /* manufacturer */
   buffer[5 + nth] = manufacturer_id[0];
@@ -576,17 +608,17 @@ ags_midi_ci_util_get_discovery_reply(AgsMidiCIUtil *midi_ci_util,
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
-  
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+
   nth += 4;
   
   /* manufacturer */
@@ -684,18 +716,13 @@ ags_midi_ci_util_put_invalidate_muid(AgsMidiCIUtil *midi_ci_util,
   /* version */
   buffer[5 + nth] = version;
 
+  nth++;
+  
   /* source */
-  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* broadcast */
   buffer[5 + nth] = 0x7f;
@@ -769,9 +796,9 @@ ags_midi_ci_util_get_invalidate_muid(AgsMidiCIUtil *midi_ci_util,
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
@@ -837,31 +864,19 @@ ags_midi_ci_util_put_nak(AgsMidiCIUtil *midi_ci_util,
   /* version */
   buffer[5 + nth] = version;
 
+  nth++;
+  
   /* source */
-  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
-  nth++;  
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
 
   /* sysex end */
   buffer[5 + nth] = 0xf7;
@@ -908,16 +923,16 @@ ags_midi_ci_util_get_nak(AgsMidiCIUtil *midi_ci_util,
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
 
   nth += 4;
 
@@ -978,30 +993,16 @@ ags_midi_ci_util_put_initiate_protocol_negotiation(AgsMidiCIUtil *midi_ci_util,
   nth++;
 
   /* source */
-  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
-  nth++;  
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
 
   /* authority level */
   buffer[5 + nth] = authority_level;
@@ -1074,16 +1075,16 @@ ags_midi_ci_util_get_initiate_protocol_negotiation(AgsMidiCIUtil *midi_ci_util,
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
 
   nth += 4;
   
@@ -1175,30 +1176,16 @@ ags_midi_ci_util_put_initiate_protocol_negotiation_reply(AgsMidiCIUtil *midi_ci_
   nth++;
 
   /* source */
-  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
-  nth++;  
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
 
   /* authority level */
   buffer[5 + nth] = authority_level;
@@ -1271,16 +1258,16 @@ ags_midi_ci_util_get_initiate_protocol_negotiation_reply(AgsMidiCIUtil *midi_ci_
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
 
   nth += 4;
   
@@ -1370,30 +1357,16 @@ ags_midi_ci_util_put_set_protocol_type(AgsMidiCIUtil *midi_ci_util,
   nth++;
 
   /* source */
-  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
-  nth++;  
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
 
   /* authority level */
   buffer[5 + nth] = authority_level;
@@ -1458,16 +1431,16 @@ ags_midi_ci_util_get_set_protocol_type(AgsMidiCIUtil *midi_ci_util,
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
 
   nth += 4;
   
@@ -1556,30 +1529,16 @@ ags_midi_ci_util_put_confirm_protocol_type(AgsMidiCIUtil *midi_ci_util,
   nth++;
 
   /* source */
-  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
-  nth++;  
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
 
   /* authority level */
   buffer[5 + nth] = authority_level;
@@ -1652,16 +1611,16 @@ ags_midi_ci_util_get_confirm_protocol_type(AgsMidiCIUtil *midi_ci_util,
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
 
   nth += 4;
   
@@ -1745,30 +1704,16 @@ ags_midi_ci_util_put_confirm_protocol_type_reply(AgsMidiCIUtil *midi_ci_util,
   nth++;
 
   /* source */
-  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
-  nth++;  
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
 
   /* authority level */
   buffer[5 + nth] = authority_level;
@@ -1841,16 +1786,16 @@ ags_midi_ci_util_get_confirm_protocol_type_reply(AgsMidiCIUtil *midi_ci_util,
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
 
   nth += 4;
   
@@ -1919,30 +1864,16 @@ ags_midi_ci_util_put_confirm_protocol_type_established(AgsMidiCIUtil *midi_ci_ut
   nth++;
 
   /* source */
-  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
-  nth++;  
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
 
   /* authority level */
   buffer[5 + nth] = authority_level;
@@ -1996,16 +1927,16 @@ ags_midi_ci_util_get_confirm_protocol_type_established(AgsMidiCIUtil *midi_ci_ut
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
 
   nth += 4;
   
@@ -2066,31 +1997,19 @@ ags_midi_ci_util_put_profile_inquiry(AgsMidiCIUtil *midi_ci_util,
   /* version */
   buffer[5 + nth] = version;
 
+  nth++;
+  
   /* source */
-  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
-  nth++;  
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
 
   /* sysex end */
   buffer[5 + nth] = 0xf7;
@@ -2138,16 +2057,16 @@ ags_midi_ci_util_get_profile_inquiry(AgsMidiCIUtil *midi_ci_util,
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
 
   nth += 4;
 
@@ -2210,31 +2129,19 @@ ags_midi_ci_util_put_profile_inquiry_reply(AgsMidiCIUtil *midi_ci_util,
   /* version */
   buffer[5 + nth] = version;
 
+  nth++;
+  
   /* source */
-  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
-  nth++;  
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
 
   /* enabled profile count */
   buffer[5 + nth] = (0xff & enabled_profile_count);
@@ -2331,16 +2238,16 @@ ags_midi_ci_util_get_profile_inquiry_reply(AgsMidiCIUtil *midi_ci_util,
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
 
   nth += 4;
 
@@ -2440,18 +2347,13 @@ ags_midi_ci_util_put_profile_enabled_report(AgsMidiCIUtil *midi_ci_util,
   /* version */
   buffer[5 + nth] = version;
 
+  nth++;
+  
   /* source */
-  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* broadcast */
   buffer[5 + nth] = 0x7f;
@@ -2524,9 +2426,9 @@ ags_midi_ci_util_get_profile_enabled_report(AgsMidiCIUtil *midi_ci_util,
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
@@ -2594,18 +2496,13 @@ ags_midi_ci_util_put_profile_disabled_report(AgsMidiCIUtil *midi_ci_util,
   /* version */
   buffer[5 + nth] = version;
 
+  nth++;
+  
   /* source */
-  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* broadcast */
   buffer[5 + nth] = 0x7f;
@@ -2678,9 +2575,9 @@ ags_midi_ci_util_get_profile_disabled_report(AgsMidiCIUtil *midi_ci_util,
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
@@ -2754,31 +2651,19 @@ ags_midi_ci_util_put_profile_specific_data(AgsMidiCIUtil *midi_ci_util,
   /* version */
   buffer[5 + nth] = version;
 
+  nth++;
+  
   /* source */
-  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
-  nth++;  
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
 
   /* profile ID */
   profile_id[0] = buffer[5 + nth];
@@ -2853,16 +2738,16 @@ ags_midi_ci_util_get_profile_specific_data(AgsMidiCIUtil *midi_ci_util,
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
 
   nth += 4;
 
@@ -2947,31 +2832,19 @@ ags_midi_ci_util_put_property_exchange_capabilities(AgsMidiCIUtil *midi_ci_util,
   /* version */
   buffer[5 + nth] = version;
 
+  nth++;
+  
   /* source */
-  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
-  nth++;  
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
 
   /* supported_property_exchange_count */
   buffer[5 + nth] = supported_property_exchange_count;
@@ -3030,16 +2903,16 @@ ags_midi_ci_util_get_property_exchange_capabilities(AgsMidiCIUtil *midi_ci_util,
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
 
   nth += 4;
 
@@ -3097,31 +2970,19 @@ ags_midi_ci_util_put_property_exchange_capabilities_reply(AgsMidiCIUtil *midi_ci
   /* version */
   buffer[5 + nth] = version;
 
+  nth++;
+  
   /* source */
-  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
-  nth++;  
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
 
   /* supported_property_exchange_count */
   buffer[5 + nth] = supported_property_exchange_count;
@@ -3180,16 +3041,16 @@ ags_midi_ci_util_get_property_exchange_capabilities_reply(AgsMidiCIUtil *midi_ci
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
 
   nth += 4;
 
@@ -3259,31 +3120,19 @@ ags_midi_ci_util_put_get_property_data(AgsMidiCIUtil *midi_ci_util,
   /* version */
   buffer[5 + nth] = version;
 
+  nth++;
+  
   /* source */
-  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
-  nth++;  
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
 
   /* request ID */
   buffer[5 + nth] = request_id;
@@ -3391,16 +3240,16 @@ ags_midi_ci_util_get_get_property_data(AgsMidiCIUtil *midi_ci_util,
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
 
   nth += 4;
 
@@ -3523,31 +3372,19 @@ ags_midi_ci_util_put_get_property_data_reply(AgsMidiCIUtil *midi_ci_util,
   /* version */
   buffer[5 + nth] = version;
 
+  nth++;
+  
   /* source */
-  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
-  nth++;  
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
 
   /* request ID */
   buffer[5 + nth] = request_id;
@@ -3655,16 +3492,16 @@ ags_midi_ci_util_get_get_property_data_reply(AgsMidiCIUtil *midi_ci_util,
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
 
   nth += 4;
 
@@ -3787,31 +3624,19 @@ ags_midi_ci_util_put_set_property_data(AgsMidiCIUtil *midi_ci_util,
   /* version */
   buffer[5 + nth] = version;
 
+  nth++;
+  
   /* source */
-  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
-  nth++;  
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
 
   /* request ID */
   buffer[5 + nth] = request_id;
@@ -3919,16 +3744,16 @@ ags_midi_ci_util_get_set_property_data(AgsMidiCIUtil *midi_ci_util,
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
 
   nth += 4;
 
@@ -4051,31 +3876,19 @@ ags_midi_ci_util_put_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
   /* version */
   buffer[5 + nth] = version;
 
+  nth++;
+  
   /* source */
-  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
-  nth++;  
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
 
   /* request ID */
   buffer[5 + nth] = request_id;
@@ -4183,16 +3996,16 @@ ags_midi_ci_util_get_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
 
   nth += 4;
 
@@ -4315,31 +4128,19 @@ ags_midi_ci_util_put_subscription(AgsMidiCIUtil *midi_ci_util,
   /* version */
   buffer[5 + nth] = version;
 
+  nth++;
+  
   /* source */
-  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
-  nth++;  
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
 
   /* request ID */
   buffer[5 + nth] = request_id;
@@ -4447,16 +4248,16 @@ ags_midi_ci_util_get_subscription(AgsMidiCIUtil *midi_ci_util,
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
 
   nth += 4;
 
@@ -4579,31 +4380,19 @@ ags_midi_ci_util_put_subscription_reply(AgsMidiCIUtil *midi_ci_util,
   /* version */
   buffer[5 + nth] = version;
 
+  nth++;
+  
   /* source */
-  buffer[5 + nth] = (0x0f & source) | ((0x8000 & source) >> 15) | ((0x800000 & source) >> 22) | ((0x80000000 & source) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & source) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & source) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & source) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
 
   /* destination */
-  buffer[5 + nth] = (0x0f & destination) | ((0x8000 & destination) >> 15) | ((0x800000 & destination) >> 22) | ((0x80000000 & destination) >> 29);
-  nth++;
-  
-  buffer[5 + nth] = (0x7f00 & destination) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f0000 & destination) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0x7f000000 & destination) >> 24;
-  nth++;  
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
 
   /* request ID */
   buffer[5 + nth] = request_id;
@@ -4711,16 +4500,16 @@ ags_midi_ci_util_get_subscription_reply(AgsMidiCIUtil *midi_ci_util,
   nth++;
   
   /* source */
-  if(source != NULL){
-    source[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
 
   nth += 4;
 
   /* destination */
-  if(destination != NULL){
-    destination[0] = (0x0f & buffer[5 + nth]) | ((0x7f & buffer[5 + nth + 1]) << 8) | ((0x7f & buffer[5 + nth + 2]) << 16) | ((0x7f & buffer[5 + nth + 3]) << 24) | ((0x01 & buffer[5 + nth]) << 15) | ((0x02 & buffer[5 + nth]) << 22) | ((0x04 & buffer[5 + nth]) << 29);
-  }
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
 
   nth += 4;
 
