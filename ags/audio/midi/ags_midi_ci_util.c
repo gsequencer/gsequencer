@@ -2033,7 +2033,6 @@ ags_midi_ci_util_get_profile_inquiry(AgsMidiCIUtil *midi_ci_util,
   g_return_val_if_fail(buffer[2] == 0x7f, 0);
   g_return_val_if_fail(buffer[3] == 0x0d, 0);
   g_return_val_if_fail(buffer[4] == 0x20, 0);
-  g_return_val_if_fail(buffer[9] == 0x0f || buffer[10] == 0xff || buffer[11] == 0xff || buffer[12] == 0xff, 0);
 
   nth = 0;
 
@@ -2214,7 +2213,6 @@ ags_midi_ci_util_get_profile_inquiry_reply(AgsMidiCIUtil *midi_ci_util,
   g_return_val_if_fail(buffer[2] == 0x7f, 0);
   g_return_val_if_fail(buffer[3] == 0x0d, 0);
   g_return_val_if_fail(buffer[4] == 0x20, 0);
-  g_return_val_if_fail(buffer[9] == 0x0f || buffer[10] == 0xff || buffer[11] == 0xff || buffer[12] == 0xff, 0);
 
   nth = 0;
 

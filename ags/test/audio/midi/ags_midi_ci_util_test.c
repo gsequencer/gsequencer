@@ -483,13 +483,52 @@ ags_midi_ci_util_test_get_confirm_protocol_type_established()
 void
 ags_midi_ci_util_test_put_profile_inquiry()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  guchar buffer[512];
+  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x20\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\xf7";
+
+  AgsMUID source = 0x0cafe010;
+  AgsMUID destination = 0x0eadbeef;
+  
+  guchar version = '\x01';
+  
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  memset(buffer, 0, 512 * sizeof(guchar));
+
+  ags_midi_ci_util_put_profile_inquiry(midi_ci_util,
+				       buffer,
+				       version,
+				       source,
+				       destination);
+
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 15 * sizeof(guchar)));
 }
 
 void
 ags_midi_ci_util_test_get_profile_inquiry()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  guchar buffer[] = "\xf0\x7e\x7f\x0d\x20\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\xf7";
+
+  AgsMUID source;
+  AgsMUID destination;
+  
+  guchar version;
+
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  ags_midi_ci_util_get_profile_inquiry(midi_ci_util,
+				       buffer,
+				       &version,
+				       &source,
+				       &destination);
+
+  CU_ASSERT(version == 0x01);
+  CU_ASSERT(source == 0x0cafe010);
+  CU_ASSERT(destination == 0x0eadbeef);
 }
 
 void
