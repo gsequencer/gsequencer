@@ -17,8 +17,8 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_MIDI_CI_1_1_UTIL_H__
-#define __AGS_MIDI_CI_1_1_UTIL_H__
+#ifndef __AGS_MIDI_CI_UTIL_H__
+#define __AGS_MIDI_CI_UTIL_H__
 
 #include <glib.h>
 #include <glib-object.h>
@@ -29,75 +29,75 @@
 
 G_BEGIN_DECLS
 
-#define AGS_TYPE_MIDI_CI_1_1_UTIL         (ags_midi_ci_1_1_util_get_type())
+#define AGS_TYPE_MIDI_CI_UTIL         (ags_midi_ci_util_get_type())
 
-#define AGS_MIDI_CI_1_1_UTIL_BROADCAST_MUID (0x0fffffff)
-#define AGS_MIDI_CI_1_1_UTIL_BROADCAST_MUID_ENCODED "\x7f\x7f\x7f\x7f"
-#define AGS_MIDI_CI_1_1_UTIL_MAX_BROADCAST_MESSAGE_SIZE (512)
-#define AGS_MIDI_CI_1_1_UTIL_DISCOVERY_TIMEOUT_USEC (3 * AGS_USEC_PER_SEC)
+#define AGS_MIDI_CI_UTIL_BROADCAST_MUID (0x0fffffff)
+#define AGS_MIDI_CI_UTIL_BROADCAST_MUID_ENCODED "\x7f\x7f\x7f\x7f"
+#define AGS_MIDI_CI_UTIL_MAX_BROADCAST_MESSAGE_SIZE (512)
+#define AGS_MIDI_CI_UTIL_DISCOVERY_TIMEOUT_USEC (3 * AGS_USEC_PER_SEC)
 
-#define AGS_MIDI_CI_1_1_UTIL_PROTOCOL_TYPE_MIDI_1_0 (0x01)
-#define AGS_MIDI_CI_1_1_UTIL_PROTOCOL_TYPE_MIDI_2_0 (0x02)
+#define AGS_MIDI_CI_UTIL_PROTOCOL_TYPE_MIDI_1_0 (0x01)
+#define AGS_MIDI_CI_UTIL_PROTOCOL_TYPE_MIDI_2_0 (0x02)
 
-#define AGS_MIDI_CI_1_1_UTIL_VERSION_MIDI_1_0 (0x00)
+#define AGS_MIDI_CI_UTIL_VERSION_MIDI_1_0 (0x00)
 
-#define AGS_MIDI_CI_1_1_UTIL_PROTOCOL_1_0_EXTENSIONS_SIZE_OF_PACKET(p) (((1 < 6) & ((guchar *) p)[0]) != 0 ? TRUE: FALSE)
-#define AGS_MIDI_CI_1_1_UTIL_PROTOCOL_1_0_EXTENSIONS_JITTER_REDUCTION_TIMESTAMP(p) (((1 < 7) & ((guchar *) p)[0]) != 0 ? TRUE: FALSE)
+#define AGS_MIDI_CI_UTIL_PROTOCOL_1_0_EXTENSIONS_SIZE_OF_PACKET(p) (((1 < 6) & ((guchar *) p)[0]) != 0 ? TRUE: FALSE)
+#define AGS_MIDI_CI_UTIL_PROTOCOL_1_0_EXTENSIONS_JITTER_REDUCTION_TIMESTAMP(p) (((1 < 7) & ((guchar *) p)[0]) != 0 ? TRUE: FALSE)
 
-#define AGS_MIDI_CI_1_1_UTIL_PROTOCOL_2_0_EXTENSIONS_JITTER_REDUCTION_TIMESTAMP(p) (((1 < 7) & ((guchar *) p)[0]) != 0 ? TRUE: FALSE)
+#define AGS_MIDI_CI_UTIL_PROTOCOL_2_0_EXTENSIONS_JITTER_REDUCTION_TIMESTAMP(p) (((1 < 7) & ((guchar *) p)[0]) != 0 ? TRUE: FALSE)
 
-typedef struct _AgsMidiCI_1_1_Util AgsMidiCI_1_1_Util;
+typedef struct _AgsMidiCIUtil AgsMidiCIUtil;
 typedef guint32 AgsMUID;
 
 typedef enum{
-  /* AGS_MIDI_CI_1_1_RESERVED       = 0x00, */
-  AGS_MIDI_CI_1_1_TRANSPORT         = 0x10,
-  AGS_MIDI_CI_1_1_EVENT_PROCESSOR   = 0x20,
-  AGS_MIDI_CI_1_1_ENDPOINT          = 0x30,
-  AGS_MIDI_CI_1_1_TRANSLATOR        = 0x40,
-  AGS_MIDI_CI_1_1_GATEWAY           = 0x50,
-  AGS_MIDI_CI_1_1_NODE_SERVER       = 0x60,
-  /* AGS_MIDI_CI_1_1_RESERVED       = 0x70, */
-}AgsMidiCI_1_1_AuthorityLevel;
+  /* AGS_MIDI_CI_RESERVED       = 0x00, */
+  AGS_MIDI_CI_TRANSPORT         = 0x10,
+  AGS_MIDI_CI_EVENT_PROCESSOR   = 0x20,
+  AGS_MIDI_CI_ENDPOINT          = 0x30,
+  AGS_MIDI_CI_TRANSLATOR        = 0x40,
+  AGS_MIDI_CI_GATEWAY           = 0x50,
+  AGS_MIDI_CI_NODE_SERVER       = 0x60,
+  /* AGS_MIDI_CI_RESERVED       = 0x70, */
+}AgsMidiCIAuthorityLevel;
 
 typedef enum{
-  /* AGS_MIDI_CI_1_1_RESERVED                  = 0x00, */
-  AGS_MIDI_CI_1_1_PROTOCOL_NEGOTIATION         = 0x10,
-  AGS_MIDI_CI_1_1_PROFILE_CONFIGURATION        = 0x20,
-  AGS_MIDI_CI_1_1_PROPERTY_EXCHANGE            = 0x30,
-  /* AGS_MIDI_CI_1_1_RESERVED                  = 0x40, */
-  /* AGS_MIDI_CI_1_1_RESERVED                  = 0x50, */
-  /* AGS_MIDI_CI_1_1_RESERVED                  = 0x60, */
-  AGS_MIDI_CI_1_1_PROPERTY_MANAGEMENT          = 0x70,
-}AgsMidiCI_1_1_Category;
+  /* AGS_MIDI_CI_RESERVED                  = 0x00, */
+  AGS_MIDI_CI_PROTOCOL_NEGOTIATION         = 0x10,
+  AGS_MIDI_CI_PROFILE_CONFIGURATION        = 0x20,
+  AGS_MIDI_CI_PROPERTY_EXCHANGE            = 0x30,
+  /* AGS_MIDI_CI_RESERVED                  = 0x40, */
+  /* AGS_MIDI_CI_RESERVED                  = 0x50, */
+  /* AGS_MIDI_CI_RESERVED                  = 0x60, */
+  AGS_MIDI_CI_PROPERTY_MANAGEMENT          = 0x70,
+}AgsMidiCICategory;
 
 typedef enum{
-  /* AGS_MIDI_CI_1_1_RESERVED                            = 1, */
-  AGS_MIDI_CI_1_1_PROTOCOL_NEGOTIATION_SUPPORTED         = 1 <<  1,
-  AGS_MIDI_CI_1_1_PROFILE_CONFIGURATION_SUPPORTED        = 1 <<  2,
-  AGS_MIDI_CI_1_1_PROPERTY_EXCHANGE_SUPPORTED            = 1 <<  3,
-  /* AGS_MIDI_CI_1_1_RESERVED                            = 1 <<  4, */
-  /* AGS_MIDI_CI_1_1_RESERVED                            = 1 <<  5, */
-  /* AGS_MIDI_CI_1_1_RESERVED                            = 1 <<  6, */
-}AgsMidiCI_1_1_CategorySupport;
+  /* AGS_MIDI_CI_RESERVED                            = 1, */
+  AGS_MIDI_CI_PROTOCOL_NEGOTIATION_SUPPORTED         = 1 <<  1,
+  AGS_MIDI_CI_PROFILE_CONFIGURATION_SUPPORTED        = 1 <<  2,
+  AGS_MIDI_CI_PROPERTY_EXCHANGE_SUPPORTED            = 1 <<  3,
+  /* AGS_MIDI_CI_RESERVED                            = 1 <<  4, */
+  /* AGS_MIDI_CI_RESERVED                            = 1 <<  5, */
+  /* AGS_MIDI_CI_RESERVED                            = 1 <<  6, */
+}AgsMidiCICategorySupport;
 
 typedef enum{
-  AGS_MIDI_CI_1_1_SUCCESS                = 200,
-  AGS_MIDI_CI_1_1_ACCEPTED               = 202,
-  AGS_MIDI_CI_1_1_RESOURCE_UNAVAILABLE   = 341,
-  AGS_MIDI_CI_1_1_BAD_DATA               = 342,
-  AGS_MIDI_CI_1_1_TOO_MANY_REQUESTS      = 343,
-  AGS_MIDI_CI_1_1_BAD_REQUEST            = 400,
-  AGS_MIDI_CI_1_1_REPLY_NOT_AVAILABLE    = 403,
-  AGS_MIDI_CI_1_1_RESOURCE_NOT_FOUND     = 404,
-  AGS_MIDI_CI_1_1_RESOURCE_NOT_ALLOWED   = 405,
-  AGS_MIDI_CI_1_1_PAYLOAD_TOO_LARGE      = 413,
-  AGS_MIDI_CI_1_1_UNSUPPORTED_ENCODING   = 415,
-  AGS_MIDI_CI_1_1_INVALID_VERSION        = 445,
-  AGS_MIDI_CI_1_1_INTERNAL_ERROR         = 500,  
-}AgsMidiCI_1_1_UtilStatusCode;
+  AGS_MIDI_CI_SUCCESS                = 200,
+  AGS_MIDI_CI_ACCEPTED               = 202,
+  AGS_MIDI_CI_RESOURCE_UNAVAILABLE   = 341,
+  AGS_MIDI_CI_BAD_DATA               = 342,
+  AGS_MIDI_CI_TOO_MANY_REQUESTS      = 343,
+  AGS_MIDI_CI_BAD_REQUEST            = 400,
+  AGS_MIDI_CI_REPLY_NOT_AVAILABLE    = 403,
+  AGS_MIDI_CI_RESOURCE_NOT_FOUND     = 404,
+  AGS_MIDI_CI_RESOURCE_NOT_ALLOWED   = 405,
+  AGS_MIDI_CI_PAYLOAD_TOO_LARGE      = 413,
+  AGS_MIDI_CI_UNSUPPORTED_ENCODING   = 415,
+  AGS_MIDI_CI_INVALID_VERSION        = 445,
+  AGS_MIDI_CI_INTERNAL_ERROR         = 500,  
+}AgsMidiCIUtilStatusCode;
 
-struct _AgsMidiCI_1_1_Util
+struct _AgsMidiCIUtil
 {
   guchar device_id;
   
@@ -106,430 +106,430 @@ struct _AgsMidiCI_1_1_Util
   //empty
 };
 
-GType ags_midi_ci_1_1_util_get_type(void);
+GType ags_midi_ci_util_get_type(void);
 
-AgsMidiCI_1_1_Util* ags_midi_ci_1_1_util_alloc();
-void ags_midi_ci_1_1_util_free(AgsMidiCI_1_1_Util *midi_ci_1_1_util);
+AgsMidiCIUtil* ags_midi_ci_util_alloc();
+void ags_midi_ci_util_free(AgsMidiCIUtil *midi_ci_util);
 
-AgsMidiCI_1_1_Util* ags_midi_ci_1_1_util_copy(AgsMidiCI_1_1_Util *midi_ci_1_1_util);
+AgsMidiCIUtil* ags_midi_ci_util_copy(AgsMidiCIUtil *midi_ci_util);
 
-AgsMUID ags_midi_ci_1_1_util_generate_muid(AgsMidiCI_1_1_Util *midi_ci_1_1_util);
+AgsMUID ags_midi_ci_util_generate_muid(AgsMidiCIUtil *midi_ci_util);
 
-void ags_midi_ci_1_1_util_put_discovery(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-					guchar *buffer,
-					guchar version,
-					AgsMUID source,
-					guchar *manufacturer_id,
-					guint16 device_family,
-					guint16 device_family_model_number,
-					guchar *software_revision_level,
-					guchar capability,
-					guint32 max_sysex_message_size);
-guint ags_midi_ci_1_1_util_get_discovery(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-					 guchar *buffer,
-					 guchar *version,
-					 AgsMUID *source,
-					 guchar *manufacturer_id,
-					 guint16 *device_family,
-					 guint16 *device_family_model_number,
-					 guchar *software_revision_level,
-					 guchar *capability,
-					 guint32 *max_sysex_message_size);
+void ags_midi_ci_util_put_discovery(AgsMidiCIUtil *midi_ci_util,
+				    guchar *buffer,
+				    guchar version,
+				    AgsMUID source,
+				    guchar *manufacturer_id,
+				    guint16 device_family,
+				    guint16 device_family_model_number,
+				    guchar *software_revision_level,
+				    guchar capability,
+				    guint32 max_sysex_message_size);
+guint ags_midi_ci_util_get_discovery(AgsMidiCIUtil *midi_ci_util,
+				     guchar *buffer,
+				     guchar *version,
+				     AgsMUID *source,
+				     guchar *manufacturer_id,
+				     guint16 *device_family,
+				     guint16 *device_family_model_number,
+				     guchar *software_revision_level,
+				     guchar *capability,
+				     guint32 *max_sysex_message_size);
 
-void ags_midi_ci_1_1_util_put_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-					      guchar *buffer,
-					      guchar version,
-					      AgsMUID source,
-					      AgsMUID destination,
-					      gchar *manufacturer_id,
-					      guint16 device_family,
-					      guint16 device_family_model_number,
-					      gchar *software_revision_level,
-					      guchar capability,
-					      guint32 max_sysex_message_size);
-guint ags_midi_ci_1_1_util_get_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-					       guchar *buffer,
-					       guchar *version,
-					       AgsMUID *source,
-					       AgsMUID *destination,
-					       guchar *manufacturer_id,
-					       guint16 *device_family,
-					       guint16 *device_family_model_number,
-					       guchar *software_revision_level,
-					       guchar *capability,
-					       guint32 *max_sysex_message_size);
+void ags_midi_ci_util_put_discovery_reply(AgsMidiCIUtil *midi_ci_util,
+					  guchar *buffer,
+					  guchar version,
+					  AgsMUID source,
+					  AgsMUID destination,
+					  gchar *manufacturer_id,
+					  guint16 device_family,
+					  guint16 device_family_model_number,
+					  gchar *software_revision_level,
+					  guchar capability,
+					  guint32 max_sysex_message_size);
+guint ags_midi_ci_util_get_discovery_reply(AgsMidiCIUtil *midi_ci_util,
+					   guchar *buffer,
+					   guchar *version,
+					   AgsMUID *source,
+					   AgsMUID *destination,
+					   guchar *manufacturer_id,
+					   guint16 *device_family,
+					   guint16 *device_family_model_number,
+					   guchar *software_revision_level,
+					   guchar *capability,
+					   guint32 *max_sysex_message_size);
 
-void ags_midi_ci_1_1_util_put_invalidate_muid(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-					      guchar *buffer,
-					      guchar version,
-					      AgsMUID source,
-					      AgsMUID target_muid);
-guint ags_midi_ci_1_1_util_get_invalidate_muid(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-					       guchar *buffer,
-					       guchar *version,
-					       AgsMUID *source,
-					       AgsMUID *target_muid);
+void ags_midi_ci_util_put_invalidate_muid(AgsMidiCIUtil *midi_ci_util,
+					  guchar *buffer,
+					  guchar version,
+					  AgsMUID source,
+					  AgsMUID target_muid);
+guint ags_midi_ci_util_get_invalidate_muid(AgsMidiCIUtil *midi_ci_util,
+					   guchar *buffer,
+					   guchar *version,
+					   AgsMUID *source,
+					   AgsMUID *target_muid);
 
-void ags_midi_ci_1_1_util_put_nak(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-				  guchar *buffer,
-				  guchar version,
-				  AgsMUID source,
-				  AgsMUID destination);
-guint ags_midi_ci_1_1_util_get_nak(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-				   guchar *buffer,
-				   guchar *version,
-				   AgsMUID *source,
-				   AgsMUID *destination);
+void ags_midi_ci_util_put_nak(AgsMidiCIUtil *midi_ci_util,
+			      guchar *buffer,
+			      guchar version,
+			      AgsMUID source,
+			      AgsMUID destination);
+guint ags_midi_ci_util_get_nak(AgsMidiCIUtil *midi_ci_util,
+			       guchar *buffer,
+			       guchar *version,
+			       AgsMUID *source,
+			       AgsMUID *destination);
 
-void ags_midi_ci_1_1_util_put_initiate_protocol_negotiation(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+void ags_midi_ci_util_put_initiate_protocol_negotiation(AgsMidiCIUtil *midi_ci_util,
+							guchar *buffer,
+							guchar version,
+							AgsMUID source,
+							AgsMUID destination,
+							AgsMidiCIAuthorityLevel authority_level,
+							guchar number_of_supported_protocols,
+							guchar **preferred_protocol_type);
+guint ags_midi_ci_util_get_initiate_protocol_negotiation(AgsMidiCIUtil *midi_ci_util,
+							 guchar *buffer,
+							 guchar *version,
+							 AgsMUID *source,
+							 AgsMUID *destination,
+							 AgsMidiCIAuthorityLevel *authority_level,
+							 guchar *number_of_supported_protocols,
+							 guchar **preferred_protocol_type);
+
+void ags_midi_ci_util_put_initiate_protocol_negotiation_reply(AgsMidiCIUtil *midi_ci_util,
+							      guchar *buffer,
+							      guchar version,
+							      AgsMUID source,
+							      AgsMUID destination,
+							      AgsMidiCIAuthorityLevel authority_level,
+							      guchar number_of_supported_protocols,
+							      guchar **preferred_protocol_type);
+guint ags_midi_ci_util_get_initiate_protocol_negotiation_reply(AgsMidiCIUtil *midi_ci_util,
+							       guchar *buffer,
+							       guchar *version,
+							       AgsMUID *source,
+							       AgsMUID *destination,
+							       AgsMidiCIAuthorityLevel *authority_level,
+							       guchar *number_of_supported_protocols,
+							       guchar **preferred_protocol_type);
+
+void ags_midi_ci_util_put_set_protocol_type(AgsMidiCIUtil *midi_ci_util,
+					    guchar *buffer,
+					    guchar version,
+					    AgsMUID source,
+					    AgsMUID destination,
+					    AgsMidiCIAuthorityLevel authority_level,
+					    guchar *protocol_type);
+guint ags_midi_ci_util_get_set_protocol_type(AgsMidiCIUtil *midi_ci_util,
+					     guchar *buffer,
+					     guchar *version,
+					     AgsMUID *source,
+					     AgsMUID *destination,
+					     AgsMidiCIAuthorityLevel *authority_level,
+					     guchar *protocol_type);
+
+void ags_midi_ci_util_put_confirm_protocol_type(AgsMidiCIUtil *midi_ci_util,
+						guchar *buffer,
+						guchar version,
+						AgsMUID source,
+						AgsMUID destination,
+						AgsMidiCIAuthorityLevel authority_level);
+guint ags_midi_ci_util_get_confirm_protocol_type(AgsMidiCIUtil *midi_ci_util,
+						 guchar *buffer,
+						 guchar *version,
+						 AgsMUID *source,
+						 AgsMUID *destination,
+						 AgsMidiCIAuthorityLevel *authority_level);
+
+void ags_midi_ci_util_put_confirm_protocol_type_reply(AgsMidiCIUtil *midi_ci_util,
+						      guchar *buffer,
+						      guchar version,
+						      AgsMUID source,
+						      AgsMUID destination,
+						      AgsMidiCIAuthorityLevel authority_level);
+guint ags_midi_ci_util_get_confirm_protocol_type_reply(AgsMidiCIUtil *midi_ci_util,
+						       guchar *buffer,
+						       guchar *version,
+						       AgsMUID *source,
+						       AgsMUID *destination,
+						       AgsMidiCIAuthorityLevel *authority_level);
+
+void ags_midi_ci_util_put_confirm_protocol_type_established(AgsMidiCIUtil *midi_ci_util,
 							    guchar *buffer,
 							    guchar version,
 							    AgsMUID source,
 							    AgsMUID destination,
-							    AgsMidiCI_1_1_AuthorityLevel authority_level,
-							    guchar number_of_supported_protocols,
-							    guchar **preferred_protocol_type);
-guint ags_midi_ci_1_1_util_get_initiate_protocol_negotiation(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+							    AgsMidiCIAuthorityLevel authority_level);
+guint ags_midi_ci_util_get_confirm_protocol_type_established(AgsMidiCIUtil *midi_ci_util,
 							     guchar *buffer,
 							     guchar *version,
 							     AgsMUID *source,
 							     AgsMUID *destination,
-							     AgsMidiCI_1_1_AuthorityLevel *authority_level,
-							     guchar *number_of_supported_protocols,
-							     guchar **preferred_protocol_type);
+							     AgsMidiCIAuthorityLevel *authority_level);
 
-void ags_midi_ci_1_1_util_put_initiate_protocol_negotiation_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-								  guchar *buffer,
-								  guchar version,
-								  AgsMUID source,
-								  AgsMUID destination,
-								  AgsMidiCI_1_1_AuthorityLevel authority_level,
-								  guchar number_of_supported_protocols,
-								  guchar **preferred_protocol_type);
-guint ags_midi_ci_1_1_util_get_initiate_protocol_negotiation_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-								   guchar *buffer,
-								   guchar *version,
-								   AgsMUID *source,
-								   AgsMUID *destination,
-								   AgsMidiCI_1_1_AuthorityLevel *authority_level,
-								   guchar *number_of_supported_protocols,
-								   guchar **preferred_protocol_type);
-
-void ags_midi_ci_1_1_util_put_set_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-						guchar *buffer,
-						guchar version,
-						AgsMUID source,
-						AgsMUID destination,
-						AgsMidiCI_1_1_AuthorityLevel authority_level,
-						guchar *protocol_type);
-guint ags_midi_ci_1_1_util_get_set_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-						 guchar *buffer,
-						 guchar *version,
-						 AgsMUID *source,
-						 AgsMUID *destination,
-						 AgsMidiCI_1_1_AuthorityLevel *authority_level,
-						 guchar *protocol_type);
-
-void ags_midi_ci_1_1_util_put_confirm_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-						    guchar *buffer,
-						    guchar version,
-						    AgsMUID source,
-						    AgsMUID destination,
-						    AgsMidiCI_1_1_AuthorityLevel authority_level);
-guint ags_midi_ci_1_1_util_get_confirm_protocol_type(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-						     guchar *buffer,
-						     guchar *version,
-						     AgsMUID *source,
-						     AgsMUID *destination,
-						     AgsMidiCI_1_1_AuthorityLevel *authority_level);
-
-void ags_midi_ci_1_1_util_put_confirm_protocol_type_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-							  guchar *buffer,
-							  guchar version,
-							  AgsMUID source,
-							  AgsMUID destination,
-							  AgsMidiCI_1_1_AuthorityLevel authority_level);
-guint ags_midi_ci_1_1_util_get_confirm_protocol_type_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-							   guchar *buffer,
-							   guchar *version,
-							   AgsMUID *source,
-							   AgsMUID *destination,
-							   AgsMidiCI_1_1_AuthorityLevel *authority_level);
-
-void ags_midi_ci_1_1_util_put_confirm_protocol_type_established(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-								guchar *buffer,
-								guchar version,
-								AgsMUID source,
-								AgsMUID destination,
-								AgsMidiCI_1_1_AuthorityLevel authority_level);
-guint ags_midi_ci_1_1_util_get_confirm_protocol_type_established(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-								 guchar *buffer,
-								 guchar *version,
-								 AgsMUID *source,
-								 AgsMUID *destination,
-								 AgsMidiCI_1_1_AuthorityLevel *authority_level);
-
-void ags_midi_ci_1_1_util_put_profile_inquiry(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-					      guchar *buffer,
-					      guchar version,
-					      AgsMUID source,
-					      AgsMUID destination);
-guint ags_midi_ci_1_1_util_get_profile_inquiry(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-					       guchar *buffer,
-					       guchar *version,
-					       AgsMUID *source,
-					       AgsMUID *destination);
-
-void ags_midi_ci_1_1_util_put_profile_inquiry_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-						    guchar *buffer,
-						    guchar version,
-						    AgsMUID source,
-						    AgsMUID destination,
-						    gint16 enabled_profile_count,
-						    guchar **enabled_profile,
-						    gint16 disabled_profile_count,
-						    guchar **disabled_profile);
-guint ags_midi_ci_1_1_util_get_profile_inquiry_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-						     guchar *buffer,
-						     guchar *version,
-						     AgsMUID *source,
-						     AgsMUID *destination,
-						     gint16 *enabled_profile_count,
-						     guchar **enabled_profile,
-						     gint16 *disabled_profile_count,
-						     guchar **disabled_profile);
-
-void ags_midi_ci_1_1_util_put_profile_enabled_report(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-						     guchar *buffer,
-						     guchar version,
-						     AgsMUID source,
-						     guchar *enabled_profile);
-guint ags_midi_ci_1_1_util_get_profile_enabled_report(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-						      guchar *buffer,
-						      guchar *version,
-						      AgsMUID *source,
-						      guchar *enabled_profile);
-
-void ags_midi_ci_1_1_util_put_profile_disabled_report(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-						      guchar *buffer,
-						      guchar version,
-						      AgsMUID source,
-						      guchar *disabled_profile);
-guint ags_midi_ci_1_1_util_get_profile_disabled_report(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-						       guchar *buffer,
-						       guchar *version,
-						       AgsMUID *source,
-						       guchar *disabled_profile);
-
-void ags_midi_ci_1_1_util_put_profile_specific_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-						    guchar *buffer,
-						    guchar version,
-						    AgsMUID source,
-						    AgsMUID destination,
-						    guchar *profile_id,
-						    guint32 profile_specific_data_length,
-						    guchar *profile_specific_data);
-guint ags_midi_ci_1_1_util_get_profile_specific_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-						     guchar *buffer,
-						     guchar *version,
-						     AgsMUID *source,
-						     AgsMUID *destination,
-						     guchar *profile_id,
-						     guint32 *profile_specific_data_length,
-						     guchar *profile_specific_data);
-
-void ags_midi_ci_1_1_util_put_property_exchange_capabilities(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-							     guchar *buffer,
-							     guchar midi_channel,
-							     guchar version,
-							     AgsMUID source,
-							     AgsMUID destination,
-							     guchar supported_property_exchange_count);
-guint ags_midi_ci_1_1_util_get_property_exchange_capabilities(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-							      guchar *buffer,
-							      guchar *midi_channel,
-							      guchar *version,
-							      AgsMUID *source,
-							      AgsMUID *destination,
-							      guchar *supported_property_exchange_count);
-
-void ags_midi_ci_1_1_util_put_property_exchange_capabilities_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-								   guchar *buffer,
-								   guchar midi_channel,
-								   guchar version,
-								   AgsMUID source,
-								   AgsMUID destination,
-								   guchar supported_property_exchange_count);
-guint ags_midi_ci_1_1_util_get_property_exchange_capabilities_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-								    guchar *buffer,
-								    guchar *midi_channel,
-								    guchar *version,
-								    AgsMUID *source,
-								    AgsMUID *destination,
-								    guchar *supported_property_exchange_count);
-
-void ags_midi_ci_1_1_util_put_get_property_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-						guchar *buffer,
-						guchar midi_channel,
-						guchar version,
-						AgsMUID source,
-						AgsMUID destination,
-						guchar request_id,
-						gint16 header_data_length,
-						guchar *header_data,
-						gint16 chunk_count,
-						gint16 nth_chunk,
-						gint16 property_data_length,
-						guchar *property_data);
-guint ags_midi_ci_1_1_util_get_get_property_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-						 guchar *buffer,
-						 guchar *midi_channel,
-						 guchar *version,
-						 AgsMUID *source,
-						 AgsMUID *destination,
-						 guchar *request_id,
-						 gint16 *header_data_length,
-						 guchar *header_data,
-						 gint16 *chunk_count,
-						 gint16 *nth_chunk,
-						 gint16 *property_data_length,
-						 guchar *property_data);
-
-void ags_midi_ci_1_1_util_put_get_property_data_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-						      guchar *buffer,
-						      guchar midi_channel,
-						      guchar version,
-						      AgsMUID source,
-						      AgsMUID destination,
-						      guchar request_id,
-						      gint16 header_data_length,
-						      guchar *header_data,
-						      gint16 chunk_count,
-						      gint16 nth_chunk,
-						      gint16 property_data_length,
-						      guchar *property_data);
-guint ags_midi_ci_1_1_util_get_get_property_data_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-						       guchar *buffer,
-						       guchar *midi_channel,
-						       guchar *version,
-						       AgsMUID *source,
-						       AgsMUID *destination,
-						       guchar *request_id,
-						       gint16 *header_data_length,
-						       guchar *header_data,
-						       gint16 *chunk_count,
-						       gint16 *nth_chunk,
-						       gint16 *property_data_length,
-						       guchar *property_data);
-
-void ags_midi_ci_1_1_util_put_set_property_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-						guchar *buffer,
-						guchar midi_channel,
-						guchar version,
-						AgsMUID source,
-						AgsMUID destination,
-						guchar request_id,
-						gint16 header_data_length,
-						guchar *header_data,
-						gint16 chunk_count,
-						gint16 nth_chunk,
-						gint16 property_data_length,
-						guchar *property_data);
-guint ags_midi_ci_1_1_util_get_set_property_data(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-						 guchar *buffer,
-						 guchar *midi_channel,
-						 guchar *version,
-						 AgsMUID *source,
-						 AgsMUID *destination,
-						 guchar *request_id,
-						 gint16 *header_data_length,
-						 guchar *header_data,
-						 gint16 *chunk_count,
-						 gint16 *nth_chunk,
-						 gint16 *property_data_length,
-						 guchar *property_data);
-
-void ags_midi_ci_1_1_util_put_set_property_data_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-						      guchar *buffer,
-						      guchar midi_channel,
-						      guchar version,
-						      AgsMUID source,
-						      AgsMUID destination,
-						      guchar request_id,
-						      gint16 header_data_length,
-						      guchar *header_data,
-						      gint16 chunk_count,
-						      gint16 nth_chunk,
-						      gint16 property_data_length,
-						      guchar *property_data);
-guint ags_midi_ci_1_1_util_get_set_property_data_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-						       guchar *buffer,
-						       guchar *midi_channel,
-						       guchar *version,
-						       AgsMUID *source,
-						       AgsMUID *destination,
-						       guchar *request_id,
-						       gint16 *header_data_length,
-						       guchar *header_data,
-						       gint16 *chunk_count,
-						       gint16 *nth_chunk,
-						       gint16 *property_data_length,
-						       guchar *property_data);
-
-void ags_midi_ci_1_1_util_put_subscription(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+void ags_midi_ci_util_put_profile_inquiry(AgsMidiCIUtil *midi_ci_util,
+					  guchar *buffer,
+					  guchar version,
+					  AgsMUID source,
+					  AgsMUID destination);
+guint ags_midi_ci_util_get_profile_inquiry(AgsMidiCIUtil *midi_ci_util,
 					   guchar *buffer,
-					   guchar midi_channel,
-					   guchar version,
-					   AgsMUID source,
-					   AgsMUID destination,
-					   guchar request_id,
-					   gint16 header_data_length,
-					   guchar *header_data,
-					   gint16 chunk_count,
-					   gint16 nth_chunk,
-					   gint16 property_data_length,
-					   guchar *property_data);
-guint ags_midi_ci_1_1_util_get_subscription(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
-					    guchar *buffer,
-					    guchar *midi_channel,
-					    guchar *version,
-					    AgsMUID *source,
-					    AgsMUID *destination,
-					    guchar *request_id,
-					    gint16 *header_data_length,
-					    guchar *header_data,
-					    gint16 *chunk_count,
-					    gint16 *nth_chunk,
-					    gint16 *property_data_length,
-					    guchar *property_data);
+					   guchar *version,
+					   AgsMUID *source,
+					   AgsMUID *destination);
 
-void ags_midi_ci_1_1_util_put_subscription_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+void ags_midi_ci_util_put_profile_inquiry_reply(AgsMidiCIUtil *midi_ci_util,
+						guchar *buffer,
+						guchar version,
+						AgsMUID source,
+						AgsMUID destination,
+						gint16 enabled_profile_count,
+						guchar **enabled_profile,
+						gint16 disabled_profile_count,
+						guchar **disabled_profile);
+guint ags_midi_ci_util_get_profile_inquiry_reply(AgsMidiCIUtil *midi_ci_util,
 						 guchar *buffer,
-						 guchar midi_channel,
+						 guchar *version,
+						 AgsMUID *source,
+						 AgsMUID *destination,
+						 gint16 *enabled_profile_count,
+						 guchar **enabled_profile,
+						 gint16 *disabled_profile_count,
+						 guchar **disabled_profile);
+
+void ags_midi_ci_util_put_profile_enabled_report(AgsMidiCIUtil *midi_ci_util,
+						 guchar *buffer,
 						 guchar version,
 						 AgsMUID source,
-						 AgsMUID destination,
-						 guchar request_id,
-						 gint16 header_data_length,
-						 guchar *header_data,
-						 gint16 chunk_count,
-						 gint16 nth_chunk,
-						 gint16 property_data_length,
-						 guchar *property_data);
-guint ags_midi_ci_1_1_util_get_subscription_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+						 guchar *enabled_profile);
+guint ags_midi_ci_util_get_profile_enabled_report(AgsMidiCIUtil *midi_ci_util,
 						  guchar *buffer,
-						  guchar *midi_channel,
 						  guchar *version,
 						  AgsMUID *source,
-						  AgsMUID *destination,
-						  guchar *request_id,
-						  gint16 *header_data_length,
+						  guchar *enabled_profile);
+
+void ags_midi_ci_util_put_profile_disabled_report(AgsMidiCIUtil *midi_ci_util,
+						  guchar *buffer,
+						  guchar version,
+						  AgsMUID source,
+						  guchar *disabled_profile);
+guint ags_midi_ci_util_get_profile_disabled_report(AgsMidiCIUtil *midi_ci_util,
+						   guchar *buffer,
+						   guchar *version,
+						   AgsMUID *source,
+						   guchar *disabled_profile);
+
+void ags_midi_ci_util_put_profile_specific_data(AgsMidiCIUtil *midi_ci_util,
+						guchar *buffer,
+						guchar version,
+						AgsMUID source,
+						AgsMUID destination,
+						guchar *profile_id,
+						guint32 profile_specific_data_length,
+						guchar *profile_specific_data);
+guint ags_midi_ci_util_get_profile_specific_data(AgsMidiCIUtil *midi_ci_util,
+						 guchar *buffer,
+						 guchar *version,
+						 AgsMUID *source,
+						 AgsMUID *destination,
+						 guchar *profile_id,
+						 guint32 *profile_specific_data_length,
+						 guchar *profile_specific_data);
+
+void ags_midi_ci_util_put_property_exchange_capabilities(AgsMidiCIUtil *midi_ci_util,
+							 guchar *buffer,
+							 guchar midi_channel,
+							 guchar version,
+							 AgsMUID source,
+							 AgsMUID destination,
+							 guchar supported_property_exchange_count);
+guint ags_midi_ci_util_get_property_exchange_capabilities(AgsMidiCIUtil *midi_ci_util,
+							  guchar *buffer,
+							  guchar *midi_channel,
+							  guchar *version,
+							  AgsMUID *source,
+							  AgsMUID *destination,
+							  guchar *supported_property_exchange_count);
+
+void ags_midi_ci_util_put_property_exchange_capabilities_reply(AgsMidiCIUtil *midi_ci_util,
+							       guchar *buffer,
+							       guchar midi_channel,
+							       guchar version,
+							       AgsMUID source,
+							       AgsMUID destination,
+							       guchar supported_property_exchange_count);
+guint ags_midi_ci_util_get_property_exchange_capabilities_reply(AgsMidiCIUtil *midi_ci_util,
+								guchar *buffer,
+								guchar *midi_channel,
+								guchar *version,
+								AgsMUID *source,
+								AgsMUID *destination,
+								guchar *supported_property_exchange_count);
+
+void ags_midi_ci_util_put_get_property_data(AgsMidiCIUtil *midi_ci_util,
+					    guchar *buffer,
+					    guchar midi_channel,
+					    guchar version,
+					    AgsMUID source,
+					    AgsMUID destination,
+					    guchar request_id,
+					    gint16 header_data_length,
+					    guchar *header_data,
+					    gint16 chunk_count,
+					    gint16 nth_chunk,
+					    gint16 property_data_length,
+					    guchar *property_data);
+guint ags_midi_ci_util_get_get_property_data(AgsMidiCIUtil *midi_ci_util,
+					     guchar *buffer,
+					     guchar *midi_channel,
+					     guchar *version,
+					     AgsMUID *source,
+					     AgsMUID *destination,
+					     guchar *request_id,
+					     gint16 *header_data_length,
+					     guchar *header_data,
+					     gint16 *chunk_count,
+					     gint16 *nth_chunk,
+					     gint16 *property_data_length,
+					     guchar *property_data);
+
+void ags_midi_ci_util_put_get_property_data_reply(AgsMidiCIUtil *midi_ci_util,
+						  guchar *buffer,
+						  guchar midi_channel,
+						  guchar version,
+						  AgsMUID source,
+						  AgsMUID destination,
+						  guchar request_id,
+						  gint16 header_data_length,
 						  guchar *header_data,
-						  gint16 *chunk_count,
-						  gint16 *nth_chunk,
-						  gint16 *property_data_length,
+						  gint16 chunk_count,
+						  gint16 nth_chunk,
+						  gint16 property_data_length,
 						  guchar *property_data);
+guint ags_midi_ci_util_get_get_property_data_reply(AgsMidiCIUtil *midi_ci_util,
+						   guchar *buffer,
+						   guchar *midi_channel,
+						   guchar *version,
+						   AgsMUID *source,
+						   AgsMUID *destination,
+						   guchar *request_id,
+						   gint16 *header_data_length,
+						   guchar *header_data,
+						   gint16 *chunk_count,
+						   gint16 *nth_chunk,
+						   gint16 *property_data_length,
+						   guchar *property_data);
+
+void ags_midi_ci_util_put_set_property_data(AgsMidiCIUtil *midi_ci_util,
+					    guchar *buffer,
+					    guchar midi_channel,
+					    guchar version,
+					    AgsMUID source,
+					    AgsMUID destination,
+					    guchar request_id,
+					    gint16 header_data_length,
+					    guchar *header_data,
+					    gint16 chunk_count,
+					    gint16 nth_chunk,
+					    gint16 property_data_length,
+					    guchar *property_data);
+guint ags_midi_ci_util_get_set_property_data(AgsMidiCIUtil *midi_ci_util,
+					     guchar *buffer,
+					     guchar *midi_channel,
+					     guchar *version,
+					     AgsMUID *source,
+					     AgsMUID *destination,
+					     guchar *request_id,
+					     gint16 *header_data_length,
+					     guchar *header_data,
+					     gint16 *chunk_count,
+					     gint16 *nth_chunk,
+					     gint16 *property_data_length,
+					     guchar *property_data);
+
+void ags_midi_ci_util_put_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
+						  guchar *buffer,
+						  guchar midi_channel,
+						  guchar version,
+						  AgsMUID source,
+						  AgsMUID destination,
+						  guchar request_id,
+						  gint16 header_data_length,
+						  guchar *header_data,
+						  gint16 chunk_count,
+						  gint16 nth_chunk,
+						  gint16 property_data_length,
+						  guchar *property_data);
+guint ags_midi_ci_util_get_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
+						   guchar *buffer,
+						   guchar *midi_channel,
+						   guchar *version,
+						   AgsMUID *source,
+						   AgsMUID *destination,
+						   guchar *request_id,
+						   gint16 *header_data_length,
+						   guchar *header_data,
+						   gint16 *chunk_count,
+						   gint16 *nth_chunk,
+						   gint16 *property_data_length,
+						   guchar *property_data);
+
+void ags_midi_ci_util_put_subscription(AgsMidiCIUtil *midi_ci_util,
+				       guchar *buffer,
+				       guchar midi_channel,
+				       guchar version,
+				       AgsMUID source,
+				       AgsMUID destination,
+				       guchar request_id,
+				       gint16 header_data_length,
+				       guchar *header_data,
+				       gint16 chunk_count,
+				       gint16 nth_chunk,
+				       gint16 property_data_length,
+				       guchar *property_data);
+guint ags_midi_ci_util_get_subscription(AgsMidiCIUtil *midi_ci_util,
+					guchar *buffer,
+					guchar *midi_channel,
+					guchar *version,
+					AgsMUID *source,
+					AgsMUID *destination,
+					guchar *request_id,
+					gint16 *header_data_length,
+					guchar *header_data,
+					gint16 *chunk_count,
+					gint16 *nth_chunk,
+					gint16 *property_data_length,
+					guchar *property_data);
+
+void ags_midi_ci_util_put_subscription_reply(AgsMidiCIUtil *midi_ci_util,
+					     guchar *buffer,
+					     guchar midi_channel,
+					     guchar version,
+					     AgsMUID source,
+					     AgsMUID destination,
+					     guchar request_id,
+					     gint16 header_data_length,
+					     guchar *header_data,
+					     gint16 chunk_count,
+					     gint16 nth_chunk,
+					     gint16 property_data_length,
+					     guchar *property_data);
+guint ags_midi_ci_util_get_subscription_reply(AgsMidiCIUtil *midi_ci_util,
+					      guchar *buffer,
+					      guchar *midi_channel,
+					      guchar *version,
+					      AgsMUID *source,
+					      AgsMUID *destination,
+					      guchar *request_id,
+					      gint16 *header_data_length,
+					      guchar *header_data,
+					      gint16 *chunk_count,
+					      gint16 *nth_chunk,
+					      gint16 *property_data_length,
+					      guchar *property_data);
 
 G_END_DECLS
 
-#endif /*__AGS_MIDI_CI_1_1_UTIL_H__*/
+#endif /*__AGS_MIDI_CI_UTIL_H__*/
