@@ -122,7 +122,7 @@ check_PROGRAMS += \
 	ags_track_test \
 	ags_midi_buffer_util_test \
 	ags_midi_builder_test \
-	ags_midi_ci_1_1_util_test
+	ags_midi_ci_util_test
 
 check_PROGRAMS += \
 	ags_osc_buffer_util_test \
@@ -939,11 +939,11 @@ ags_midi_builder_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(
 ags_midi_builder_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_midi_builder_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lm -lrt  $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(JSON_GLIB_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
 
-# midi ci 1.1 util unit test
-ags_midi_ci_1_1_util_test_SOURCES = ags/test/audio/midi/ags_midi_ci_1_1_util_test.c
-ags_midi_ci_1_1_util_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(JSON_GLIB_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
-ags_midi_ci_1_1_util_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_midi_ci_1_1_util_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lm -lrt  $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(JSON_GLIB_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
+# MIDI CI util unit test
+ags_midi_ci_util_test_SOURCES = ags/test/audio/midi/ags_midi_ci_util_test.c
+ags_midi_ci_util_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(JSON_GLIB_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
+ags_midi_ci_util_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_midi_ci_util_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lm -lrt  $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(JSON_GLIB_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
 
 # osc buffer util unit test
 ags_osc_buffer_util_test_SOURCES = ags/test/audio/osc/ags_osc_buffer_util_test.c

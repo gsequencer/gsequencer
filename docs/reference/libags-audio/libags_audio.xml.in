@@ -307,7 +307,7 @@
       </para>
       
       <xi:include href="xml/ags_midi_buffer_util.xml"/>
-      <xi:include href="xml/ags_midi_ci_1_1_util.xml"/>
+      <xi:include href="xml/ags_midi_ci_util.xml"/>
       <xi:include href="xml/ags_midi_file.xml"/>
       <xi:include href="xml/ags_midi_util.xml"/>
       <xi:include href="xml/ags_midi_builder.xml"/>

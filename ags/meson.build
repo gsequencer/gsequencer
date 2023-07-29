@@ -582,7 +582,7 @@ libags_audio_sources = files(
   'audio/jack/ags_jack_server.c',
   'audio/midi/ags_midi_buffer_util.c',
   'audio/midi/ags_midi_builder.c',
-  'audio/midi/ags_midi_ci_1_1_util.c',
+  'audio/midi/ags_midi_ci_util.c',
   'audio/midi/ags_midi_file.c',
   'audio/midi/ags_midi_parser.c',
   'audio/midi/ags_midi_util.c',
