@@ -725,30 +725,16 @@ ags_midi_ci_util_put_invalidate_muid(AgsMidiCIUtil *midi_ci_util,
   nth += 4;
 
   /* broadcast */
-  buffer[5 + nth] = 0x7f;
-  nth++;
-
-  buffer[5 + nth] = 0x7f;
-  nth++;
-
-  buffer[5 + nth] = 0x7f;
-  nth++;
-
-  buffer[5 + nth] = 0x7f;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    AGS_MIDI_CI_UTIL_BROADCAST_MUID);  
+  nth += 4;
   
   /* target muid */
-  buffer[5 + nth] = (0xff & target_muid);
-  nth++;
-  
-  buffer[5 + nth] = (0xff00 & target_muid) >> 8;
-  nth++;
-  
-  buffer[5 + nth] = (0xff0000 & target_muid) >> 16;
-  nth++;
-  
-  buffer[5 + nth] = (0xff000000 & target_muid) >> 24;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    target_muid);
+  nth += 4;
 
   /* sysex end */
   buffer[5 + nth] = 0xf7;
@@ -809,7 +795,9 @@ ags_midi_ci_util_get_invalidate_muid(AgsMidiCIUtil *midi_ci_util,
 
   /* target muid */
   if(target_muid != NULL){
-    target_muid[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8) | (buffer[5 + nth + 2] << 16) | (buffer[5 + nth + 3] << 24));
+    ags_midi_ci_util_get_muid(midi_ci_util,
+			      buffer + 5 + nth,
+			      target_muid);
   }
 
   nth += 4;
