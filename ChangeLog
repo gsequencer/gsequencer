@@ -1,10 +1,10 @@
 ags (5.5.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* implemented ags_midi_ci_1_1_util.[ch]
+	* implemented ags_midi_ci_util.[ch]
 	* implemented ags_string_util_to_mcoded7()
 	* implemented ags_string_util_from_mcoded7()
-	* added ags_midi_ci_1_1_util_test.[ch]
+	* added ags_midi_ci_util_test.[ch]
 
 ags (5.4.3)
 

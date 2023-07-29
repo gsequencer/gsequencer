@@ -157,10 +157,10 @@ ags_midi_ci_util_put_muid(AgsMidiCIUtil *midi_ci_util,
   g_return_if_fail(midi_ci_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  buffer[3] = (0x7f & muid);
-  buffer[2] = (0x7f00 & muid) >> 8;
+  buffer[0] = ((0x0f000000 & muid) >> 24) | ((0x800000 & muid) >> 17) | ((0x8000 & muid) >> 10) | ((0x80 & muid) >> 3);
   buffer[1] = (0x7f0000 & muid) >> 16;
-  buffer[0] = ((0x0f000000 & muid) >> 24) | ((0x80 & muid) >> 3) | ((0x8000 & muid) >> 10) | ((0x800000 & muid) >> 17);
+  buffer[2] = (0x7f00 & muid) >> 8;
+  buffer[3] = (0x7f & muid);
 }
 
 /**
@@ -184,7 +184,7 @@ ags_midi_ci_util_get_muid(AgsMidiCIUtil *midi_ci_util,
   g_return_val_if_fail(buffer != NULL, 0);
 
   if(muid != NULL){
-    muid[0] = (0x7f & buffer[3]) | ((0x7f & buffer[2]) << 8) | ((0x7f & buffer[1]) << 16) | ((0x0f & buffer[0]) << 24) | ((0x10 & buffer[0]) << 3) | ((0x20 & buffer[0]) << 10) | ((0x40 & buffer[0]) << 17);
+    muid[0] = ((0x0f & buffer[0]) << 24) | ((0x7f & buffer[1]) << 16) | ((0x7f & buffer[2]) << 8) | (0x7f & buffer[3]) | ((0x40 & buffer[0]) << 17) | ((0x20 & buffer[0]) << 10) | ((0x10 & buffer[0]) << 3);
   }
 
   return(4);
