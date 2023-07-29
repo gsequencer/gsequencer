@@ -107,7 +107,7 @@
 ./ags_check_system_track_test
 ./ags_check_system_midi_buffer_util_test
 ./ags_check_system_midi_builder_test
-./ags_check_system_midi_ci_1_1_util_test
+./ags_check_system_midi_ci_util_test
 ./ags_check_system_osc_buffer_util_test
 ./ags_check_system_osc_client_test
 ./ags_check_system_osc_connection_test
