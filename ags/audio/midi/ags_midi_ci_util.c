@@ -2090,9 +2090,9 @@ ags_midi_ci_util_put_profile_inquiry_reply(AgsMidiCIUtil *midi_ci_util,
 					   AgsMUID source,
 					   AgsMUID destination,
 					   gint16 enabled_profile_count,
-					   guchar **enabled_profile,
+					   guchar* enabled_profile[5],
 					   gint16 disabled_profile_count,
-					   guchar **disabled_profile)
+					   guchar* disabled_profile[5])
 {
   guint nth;
   guint i, i_stop;
@@ -2200,9 +2200,9 @@ ags_midi_ci_util_get_profile_inquiry_reply(AgsMidiCIUtil *midi_ci_util,
 					   AgsMUID *source,
 					   AgsMUID *destination,
 					   gint16 *enabled_profile_count,
-					   guchar **enabled_profile,
+					   guchar ***enabled_profile,
 					   gint16 *disabled_profile_count,
-					   guchar **disabled_profile)
+					   guchar ***disabled_profile)
 {
   guint nth;
   guint i, i_stop;
@@ -2212,7 +2212,7 @@ ags_midi_ci_util_get_profile_inquiry_reply(AgsMidiCIUtil *midi_ci_util,
   g_return_val_if_fail(buffer[1] == 0x7e, 0);
   g_return_val_if_fail(buffer[2] == 0x7f, 0);
   g_return_val_if_fail(buffer[3] == 0x0d, 0);
-  g_return_val_if_fail(buffer[4] == 0x20, 0);
+  g_return_val_if_fail(buffer[4] == 0x21, 0);
 
   nth = 0;
 
@@ -2243,19 +2243,19 @@ ags_midi_ci_util_get_profile_inquiry_reply(AgsMidiCIUtil *midi_ci_util,
   }
 
   i_stop = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
-  nth += 4;
+  nth += 2;
 
   /* enabled profile */
-  if(enabled_profile != NULL){
-    for(i = 0; i < i_stop; i++){
-      if(enabled_profile[i] != NULL){
-	enabled_profile[i][0] = buffer[5 + nth + (i * 5)];
-	enabled_profile[i][1] = buffer[5 + nth + (i * 5) + 1];
-	enabled_profile[i][2] = buffer[5 + nth + (i * 5) + 2];
-	enabled_profile[i][3] = buffer[5 + nth + (i * 5) + 3];
-	enabled_profile[i][4] = buffer[5 + nth + (i * 5) + 4];
-      }
-    }
+  enabled_profile[0] = (guchar **) g_malloc(i_stop * sizeof(guchar *));
+
+  for(i = 0; i < i_stop; i++){
+    enabled_profile[0][i] = (guchar *) g_malloc(5 * sizeof(guchar));
+    
+    enabled_profile[0][i][0] = buffer[5 + nth + (i * 5)];
+    enabled_profile[0][i][1] = buffer[5 + nth + (i * 5) + 1];
+    enabled_profile[0][i][2] = buffer[5 + nth + (i * 5) + 2];
+    enabled_profile[0][i][3] = buffer[5 + nth + (i * 5) + 3];
+    enabled_profile[0][i][4] = buffer[5 + nth + (i * 5) + 4];
   }
   
   nth += (i_stop * 5);
@@ -2266,19 +2266,19 @@ ags_midi_ci_util_get_profile_inquiry_reply(AgsMidiCIUtil *midi_ci_util,
   }
 
   i_stop = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
-  nth += 4;
+  nth += 2;
 
   /* disabled profile */
-  if(disabled_profile != NULL){
-    for(i = 0; i < i_stop; i++){
-      if(disabled_profile[i] != NULL){
-	disabled_profile[i][0] = buffer[5 + nth + (i * 5)];
-	disabled_profile[i][1] = buffer[5 + nth + (i * 5) + 1];
-	disabled_profile[i][2] = buffer[5 + nth + (i * 5) + 2];
-	disabled_profile[i][3] = buffer[5 + nth + (i * 5) + 3];
-	disabled_profile[i][4] = buffer[5 + nth + (i * 5) + 4];
-      }
-    }
+  disabled_profile[0] = (guchar **) g_malloc(i_stop * sizeof(guchar *));
+
+  for(i = 0; i < i_stop; i++){
+    disabled_profile[0][i] = (guchar *) g_malloc(5 * sizeof(guchar));
+    
+    disabled_profile[0][i][0] = buffer[5 + nth + (i * 5)];
+    disabled_profile[0][i][1] = buffer[5 + nth + (i * 5) + 1];
+    disabled_profile[0][i][2] = buffer[5 + nth + (i * 5) + 2];
+    disabled_profile[0][i][3] = buffer[5 + nth + (i * 5) + 3];
+    disabled_profile[0][i][4] = buffer[5 + nth + (i * 5) + 4];
   }
   
   nth += (i_stop * 5);

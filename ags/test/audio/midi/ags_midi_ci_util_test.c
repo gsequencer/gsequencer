@@ -534,13 +534,115 @@ ags_midi_ci_util_test_get_profile_inquiry()
 void
 ags_midi_ci_util_test_put_profile_inquiry_reply()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  guchar buffer[512];
+  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x21\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x03\x00\x7e\x00\x00\x01\x02\x7e\x00\x00\x01\x03\x7e\x00\x00\x01\x09\x01\x00\x7e\x00\x00\x01\x01\xf7";
+
+  const guchar* enabled_profile[5] = {
+    "\x7e\x00\x00\x01\x02",
+    "\x7e\x00\x00\x01\x03",
+    "\x7e\x00\x00\x01\x09",
+  };
+  const guchar* disabled_profile[5] = {
+    "\x7e\x00\x00\x01\x01",
+  };
+  
+  AgsMUID source = 0x0cafe010;
+  AgsMUID destination = 0x0eadbeef;
+
+  gint16 enabled_profile_count = 3;
+  gint16 disabled_profile_count = 1;
+  guchar version = '\x01';
+  
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  memset(buffer, 0, 512 * sizeof(guchar));
+
+  ags_midi_ci_util_put_profile_inquiry_reply(midi_ci_util,
+					     buffer,
+					     version,
+					     source,
+					     destination,
+					     enabled_profile_count,
+					     enabled_profile,
+					     disabled_profile_count,
+					     disabled_profile);
+
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 39 * sizeof(guchar)));
 }
 
 void
 ags_midi_ci_util_test_get_profile_inquiry_reply()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  guchar buffer[] = "\xf0\x7e\x7f\x0d\x21\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x03\x00\x7e\x00\x00\x01\x02\x7e\x00\x00\x01\x03\x7e\x00\x00\x01\x09\x01\x00\x7e\x00\x00\x01\x01\xf7";
+  guchar **enabled_profile;
+  guchar **disabled_profile;
+
+  const guchar* filled_enabled_profile[5] = {
+    "\x7e\x00\x00\x01\x02",
+    "\x7e\x00\x00\x01\x03",
+    "\x7e\x00\x00\x01\x09",
+  };
+  const guchar* filled_disabled_profile[5] = {
+    "\x7e\x00\x00\x01\x01",
+  };
+
+  AgsMUID source;
+  AgsMUID destination;
+  
+  guchar version;
+  gint16 enabled_profile_count;
+  gint16 disabled_profile_count;
+  guint i;
+  gboolean success;
+  
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  enabled_profile = NULL;
+  disabled_profile = NULL;
+
+  ags_midi_ci_util_get_profile_inquiry_reply(midi_ci_util,
+					     buffer,
+					     &version,
+					     &source,
+					     &destination,
+					     &enabled_profile_count,
+					     &enabled_profile,
+					     &disabled_profile_count,
+					     &disabled_profile);
+
+  CU_ASSERT(version == 0x01);
+  CU_ASSERT(source == 0x0cafe010);
+  CU_ASSERT(destination == 0x0eadbeef);
+  CU_ASSERT(enabled_profile_count == 3);
+  CU_ASSERT(disabled_profile_count == 1);
+
+  success = TRUE;
+
+  for(i = 0; i < 3; i++){
+    if((!memcmp(enabled_profile[i], filled_enabled_profile[i], 5 * sizeof(guchar))) == FALSE){
+      success = FALSE;
+
+      break;
+    }
+  }
+  
+  CU_ASSERT(success == TRUE);
+  
+  success = TRUE;
+
+  for(i = 0; i < 1; i++){
+    if((!memcmp(disabled_profile[i], filled_disabled_profile[i], 5 * sizeof(guchar))) == FALSE){
+      success = FALSE;
+
+      break;
+    }
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void
