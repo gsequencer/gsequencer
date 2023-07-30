@@ -1946,23 +1946,23 @@ ags_midi_ci_util_get_confirm_protocol_type_established(AgsMidiCIUtil *midi_ci_ut
 }
 
 /**
- * ags_midi_ci_util_put_profile_inquiry:
+ * ags_midi_ci_util_put_profile:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @version: the version
  * @source: the source
  * @destination: the destination
  *
- * Put profile inquiry message.
+ * Put profile message.
  *
  * Since: 5.5.0
  */
 void
-ags_midi_ci_util_put_profile_inquiry(AgsMidiCIUtil *midi_ci_util,
-				     guchar *buffer,
-				     guchar version,
-				     AgsMUID source,
-				     AgsMUID destination)
+ags_midi_ci_util_put_profile(AgsMidiCIUtil *midi_ci_util,
+			     guchar *buffer,
+			     guchar version,
+			     AgsMUID source,
+			     AgsMUID destination)
 {
   guint nth;
   
@@ -1978,7 +1978,7 @@ ags_midi_ci_util_put_profile_inquiry(AgsMidiCIUtil *midi_ci_util,
 
   buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
 
-  buffer[4] = 0x20; // Sub-ID#2 - profile inquiry message
+  buffer[4] = 0x20; // Sub-ID#2 - profile message
 
   nth = 0;
 
@@ -2005,25 +2005,25 @@ ags_midi_ci_util_put_profile_inquiry(AgsMidiCIUtil *midi_ci_util,
 }
 
 /**
- * ags_midi_ci_util_get_profile_inquiry:
+ * ags_midi_ci_util_get_profile:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @version: (out): the return location of version
  * @source: (out): the return location of source
  * @destination: (out): the return location of destination
  *
- * Profile inquiry message.
+ * Profile message.
  *
  * Returns: the number of bytes read
  * 
  * Since: 5.5.0
  */
 guint
-ags_midi_ci_util_get_profile_inquiry(AgsMidiCIUtil *midi_ci_util,
-				     guchar *buffer,
-				     guchar *version,
-				     AgsMUID *source,
-				     AgsMUID *destination)
+ags_midi_ci_util_get_profile(AgsMidiCIUtil *midi_ci_util,
+			     guchar *buffer,
+			     guchar *version,
+			     AgsMUID *source,
+			     AgsMUID *destination)
 {
   guint nth;
   
@@ -2068,7 +2068,7 @@ ags_midi_ci_util_get_profile_inquiry(AgsMidiCIUtil *midi_ci_util,
 }
 
 /**
- * ags_midi_ci_util_put_profile_inquiry_reply:
+ * ags_midi_ci_util_put_profile_reply:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @version: the version
@@ -2079,20 +2079,20 @@ ags_midi_ci_util_get_profile_inquiry(AgsMidiCIUtil *midi_ci_util,
  * @disabled_profile_count: disabled profile count
  * @disabled_profile: disabled profile
  *
- * Put profile inquiry message.
+ * Put profile message.
  *
  * Since: 5.5.0
  */
 void
-ags_midi_ci_util_put_profile_inquiry_reply(AgsMidiCIUtil *midi_ci_util,
-					   guchar *buffer,
-					   guchar version,
-					   AgsMUID source,
-					   AgsMUID destination,
-					   gint16 enabled_profile_count,
-					   guchar* enabled_profile[5],
-					   gint16 disabled_profile_count,
-					   guchar* disabled_profile[5])
+ags_midi_ci_util_put_profile_reply(AgsMidiCIUtil *midi_ci_util,
+				   guchar *buffer,
+				   guchar version,
+				   AgsMUID source,
+				   AgsMUID destination,
+				   gint16 enabled_profile_count,
+				   guchar* enabled_profile[5],
+				   gint16 disabled_profile_count,
+				   guchar* disabled_profile[5])
 {
   guint nth;
   guint i, i_stop;
@@ -2109,7 +2109,7 @@ ags_midi_ci_util_put_profile_inquiry_reply(AgsMidiCIUtil *midi_ci_util,
 
   buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
 
-  buffer[4] = 0x21; // Sub-ID#2 - profile inquiry message reply
+  buffer[4] = 0x21; // Sub-ID#2 - profile message reply
 
   nth = 0;
 
@@ -2176,7 +2176,7 @@ ags_midi_ci_util_put_profile_inquiry_reply(AgsMidiCIUtil *midi_ci_util,
 }
 
 /**
- * ags_midi_ci_util_get_profile_inquiry_reply:
+ * ags_midi_ci_util_get_profile_reply:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
  * @version: (out): the return location of version
@@ -2187,22 +2187,22 @@ ags_midi_ci_util_put_profile_inquiry_reply(AgsMidiCIUtil *midi_ci_util,
  * @disabled_profile_count: (out): disabled profile count
  * @disabled_profile: (out): disabled profile
  *
- * Profile inquiry message.
+ * Profile message.
  *
  * Returns: the number of bytes read
  * 
  * Since: 5.5.0
  */
 guint
-ags_midi_ci_util_get_profile_inquiry_reply(AgsMidiCIUtil *midi_ci_util,
-					   guchar *buffer,
-					   guchar *version,
-					   AgsMUID *source,
-					   AgsMUID *destination,
-					   gint16 *enabled_profile_count,
-					   guchar ***enabled_profile,
-					   gint16 *disabled_profile_count,
-					   guchar ***disabled_profile)
+ags_midi_ci_util_get_profile_reply(AgsMidiCIUtil *midi_ci_util,
+				   guchar *buffer,
+				   guchar *version,
+				   AgsMUID *source,
+				   AgsMUID *destination,
+				   gint16 *enabled_profile_count,
+				   guchar ***enabled_profile,
+				   gint16 *disabled_profile_count,
+				   guchar ***disabled_profile)
 {
   guint nth;
   guint i, i_stop;
@@ -2811,7 +2811,7 @@ ags_midi_ci_util_put_property_exchange_capabilities(AgsMidiCIUtil *midi_ci_util,
 
   buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
 
-  buffer[4] = 0x30; // Sub-ID#2 - inquiry property data exchange capabilities
+  buffer[4] = 0x30; // Sub-ID#2 - property data exchange capabilities
 
   nth = 0;
 
@@ -2949,7 +2949,7 @@ ags_midi_ci_util_put_property_exchange_capabilities_reply(AgsMidiCIUtil *midi_ci
 
   buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
 
-  buffer[4] = 0x31; // Sub-ID#2 - inquiry property data exchange capabilities reply
+  buffer[4] = 0x31; // Sub-ID#2 - property data exchange capabilities reply
 
   nth = 0;
 
