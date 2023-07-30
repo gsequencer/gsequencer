@@ -471,7 +471,7 @@ ags_program_finalize(GObject *gobject)
  * 
  * Get object mutex.
  * 
- * Returns: the #GRecMutex to lock @program
+ * Returns: (transfer none): the #GRecMutex to lock @program
  * 
  * Since: 3.1.0
  */
@@ -808,6 +808,18 @@ ags_program_find_near_timestamp(GList *program,
   return(retval);
 }
 
+/**
+ * ags_program_find_near_timestamp_extended:
+ * @program: (element-type AgsAudio.Program) (transfer none): the #GList-struct containing #AgsProgram
+ * @control_name: the control name
+ * @timestamp: the matching #AgsTimestamp, or %NULL to match any timestamp
+ *
+ * Retrieve appropriate program for control name and timestamp.
+ *
+ * Returns: (element-type AgsAudio.Program) (transfer none): Next matching #GList-struct or %NULL if not found
+ *
+ * Since: 5.1.0
+ */
 GList*
 ags_program_find_near_timestamp_extended(GList *program,
 					 gchar *control_name,
@@ -2037,7 +2049,7 @@ ags_program_free_selection(AgsProgram *program)
 
 /**
  * ags_program_free_all_selection:
- * @program: the #GList-struct containing #AgsProgram
+ * @program: (element-type AgsAudio.Program) (transfer none): the #GList-struct containing #AgsProgram
  *
  * Clear all selection of @program.
  *

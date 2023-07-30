@@ -276,35 +276,35 @@ guint ags_midi_ci_util_get_confirm_protocol_type_established(AgsMidiCIUtil *midi
 							     AgsMUID *destination,
 							     AgsMidiCIAuthorityLevel *authority_level);
 
-void ags_midi_ci_util_put_profile_inquiry(AgsMidiCIUtil *midi_ci_util,
-					  guchar *buffer,
-					  guchar version,
-					  AgsMUID source,
-					  AgsMUID destination);
-guint ags_midi_ci_util_get_profile_inquiry(AgsMidiCIUtil *midi_ci_util,
-					   guchar *buffer,
-					   guchar *version,
-					   AgsMUID *source,
-					   AgsMUID *destination);
+void ags_midi_ci_util_put_profile(AgsMidiCIUtil *midi_ci_util,
+				  guchar *buffer,
+				  guchar version,
+				  AgsMUID source,
+				  AgsMUID destination);
+guint ags_midi_ci_util_get_profile(AgsMidiCIUtil *midi_ci_util,
+				   guchar *buffer,
+				   guchar *version,
+				   AgsMUID *source,
+				   AgsMUID *destination);
 
-void ags_midi_ci_util_put_profile_inquiry_reply(AgsMidiCIUtil *midi_ci_util,
-						guchar *buffer,
-						guchar version,
-						AgsMUID source,
-						AgsMUID destination,
-						gint16 enabled_profile_count,
-						guchar* enabled_profile[5],
-						gint16 disabled_profile_count,
-						guchar* disabled_profile[5]);
-guint ags_midi_ci_util_get_profile_inquiry_reply(AgsMidiCIUtil *midi_ci_util,
-						 guchar *buffer,
-						 guchar *version,
-						 AgsMUID *source,
-						 AgsMUID *destination,
-						 gint16 *enabled_profile_count,
-						 guchar ***enabled_profile,
-						 gint16 *disabled_profile_count,
-						 guchar ***disabled_profile);
+void ags_midi_ci_util_put_profile_reply(AgsMidiCIUtil *midi_ci_util,
+					guchar *buffer,
+					guchar version,
+					AgsMUID source,
+					AgsMUID destination,
+					gint16 enabled_profile_count,
+					guchar* enabled_profile[5],
+					gint16 disabled_profile_count,
+					guchar* disabled_profile[5]);
+guint ags_midi_ci_util_get_profile_reply(AgsMidiCIUtil *midi_ci_util,
+					 guchar *buffer,
+					 guchar *version,
+					 AgsMUID *source,
+					 AgsMUID *destination,
+					 gint16 *enabled_profile_count,
+					 guchar ***enabled_profile,
+					 gint16 *disabled_profile_count,
+					 guchar ***disabled_profile);
 
 void ags_midi_ci_util_put_profile_enabled_report(AgsMidiCIUtil *midi_ci_util,
 						 guchar *buffer,

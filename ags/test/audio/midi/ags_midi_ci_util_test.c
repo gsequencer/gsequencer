@@ -56,10 +56,10 @@ void ags_midi_ci_util_test_put_confirm_protocol_type_reply();
 void ags_midi_ci_util_test_get_confirm_protocol_type_reply();
 void ags_midi_ci_util_test_put_confirm_protocol_type_established();
 void ags_midi_ci_util_test_get_confirm_protocol_type_established();
-void ags_midi_ci_util_test_put_profile_inquiry();
-void ags_midi_ci_util_test_get_profile_inquiry();
-void ags_midi_ci_util_test_put_profile_inquiry_reply();
-void ags_midi_ci_util_test_get_profile_inquiry_reply();
+void ags_midi_ci_util_test_put_profile();
+void ags_midi_ci_util_test_get_profile();
+void ags_midi_ci_util_test_put_profile_reply();
+void ags_midi_ci_util_test_get_profile_reply();
 void ags_midi_ci_util_test_put_profile_enabled_report();
 void ags_midi_ci_util_test_get_profile_enabled_report();
 void ags_midi_ci_util_test_put_profile_disabled_report();
@@ -481,7 +481,7 @@ ags_midi_ci_util_test_get_confirm_protocol_type_established()
 }
 
 void
-ags_midi_ci_util_test_put_profile_inquiry()
+ags_midi_ci_util_test_put_profile()
 {
   AgsMidiCIUtil *midi_ci_util;
 
@@ -497,17 +497,17 @@ ags_midi_ci_util_test_put_profile_inquiry()
 
   memset(buffer, 0, 512 * sizeof(guchar));
 
-  ags_midi_ci_util_put_profile_inquiry(midi_ci_util,
-				       buffer,
-				       version,
-				       source,
-				       destination);
+  ags_midi_ci_util_put_profile(midi_ci_util,
+			       buffer,
+			       version,
+			       source,
+			       destination);
 
   CU_ASSERT(!memcmp(buffer, filled_buffer, 15 * sizeof(guchar)));
 }
 
 void
-ags_midi_ci_util_test_get_profile_inquiry()
+ags_midi_ci_util_test_get_profile()
 {
   AgsMidiCIUtil *midi_ci_util;
 
@@ -520,11 +520,11 @@ ags_midi_ci_util_test_get_profile_inquiry()
 
   midi_ci_util = ags_midi_ci_util_alloc();
 
-  ags_midi_ci_util_get_profile_inquiry(midi_ci_util,
-				       buffer,
-				       &version,
-				       &source,
-				       &destination);
+  ags_midi_ci_util_get_profile(midi_ci_util,
+			       buffer,
+			       &version,
+			       &source,
+			       &destination);
 
   CU_ASSERT(version == 0x01);
   CU_ASSERT(source == 0x0cafe010);
@@ -532,7 +532,7 @@ ags_midi_ci_util_test_get_profile_inquiry()
 }
 
 void
-ags_midi_ci_util_test_put_profile_inquiry_reply()
+ags_midi_ci_util_test_put_profile_reply()
 {
   AgsMidiCIUtil *midi_ci_util;
 
@@ -559,21 +559,21 @@ ags_midi_ci_util_test_put_profile_inquiry_reply()
 
   memset(buffer, 0, 512 * sizeof(guchar));
 
-  ags_midi_ci_util_put_profile_inquiry_reply(midi_ci_util,
-					     buffer,
-					     version,
-					     source,
-					     destination,
-					     enabled_profile_count,
-					     enabled_profile,
-					     disabled_profile_count,
-					     disabled_profile);
+  ags_midi_ci_util_put_profile_reply(midi_ci_util,
+				     buffer,
+				     version,
+				     source,
+				     destination,
+				     enabled_profile_count,
+				     enabled_profile,
+				     disabled_profile_count,
+				     disabled_profile);
 
   CU_ASSERT(!memcmp(buffer, filled_buffer, 39 * sizeof(guchar)));
 }
 
 void
-ags_midi_ci_util_test_get_profile_inquiry_reply()
+ags_midi_ci_util_test_get_profile_reply()
 {
   AgsMidiCIUtil *midi_ci_util;
 
@@ -604,15 +604,15 @@ ags_midi_ci_util_test_get_profile_inquiry_reply()
   enabled_profile = NULL;
   disabled_profile = NULL;
 
-  ags_midi_ci_util_get_profile_inquiry_reply(midi_ci_util,
-					     buffer,
-					     &version,
-					     &source,
-					     &destination,
-					     &enabled_profile_count,
-					     &enabled_profile,
-					     &disabled_profile_count,
-					     &disabled_profile);
+  ags_midi_ci_util_get_profile_reply(midi_ci_util,
+				     buffer,
+				     &version,
+				     &source,
+				     &destination,
+				     &enabled_profile_count,
+				     &enabled_profile,
+				     &disabled_profile_count,
+				     &disabled_profile);
 
   CU_ASSERT(version == 0x01);
   CU_ASSERT(source == 0x0cafe010);
@@ -819,10 +819,10 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c get confirm protocol type", ags_midi_ci_util_test_get_confirm_protocol_type) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c put confirm protocol type reply", ags_midi_ci_util_test_put_confirm_protocol_type_reply) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c get confirm protocol type reply", ags_midi_ci_util_test_get_confirm_protocol_type_reply) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_ci_util.c put profile inquiry", ags_midi_ci_util_test_put_profile_inquiry) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_ci_util.c get profile inquiry", ags_midi_ci_util_test_get_profile_inquiry) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_ci_util.c put profile inquiry reply", ags_midi_ci_util_test_put_profile_inquiry_reply) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_ci_util.c get profile inquiry reply", ags_midi_ci_util_test_get_profile_inquiry_reply) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_ci_util.c put profile inquiry", ags_midi_ci_util_test_put_profile) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_ci_util.c get profile inquiry", ags_midi_ci_util_test_get_profile) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_ci_util.c put profile inquiry reply", ags_midi_ci_util_test_put_profile_reply) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_ci_util.c get profile inquiry reply", ags_midi_ci_util_test_get_profile_reply) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c put profile enabled report", ags_midi_ci_util_test_put_profile_enabled_report) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c get profile enabled report", ags_midi_ci_util_test_get_profile_enabled_report) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c put profile disabled report", ags_midi_ci_util_test_put_profile_disabled_report) == NULL) ||
