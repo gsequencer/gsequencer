@@ -1942,6 +1942,7 @@ ags_midi_ci_util_get_confirm_protocol_type_established(AgsMidiCIUtil *midi_ci_ut
  * ags_midi_ci_util_put_profile:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
+ * @device_id: the device ID
  * @version: the version
  * @source: the source
  * @destination: the destination
@@ -1953,6 +1954,7 @@ ags_midi_ci_util_get_confirm_protocol_type_established(AgsMidiCIUtil *midi_ci_ut
 void
 ags_midi_ci_util_put_profile(AgsMidiCIUtil *midi_ci_util,
 			     guchar *buffer,
+			     guchar device_id,
 			     guchar version,
 			     AgsMUID source,
 			     AgsMUID destination)
@@ -1967,7 +1969,7 @@ ags_midi_ci_util_put_profile(AgsMidiCIUtil *midi_ci_util,
   buffer[0] = 0xf0;
   buffer[1] = 0x7e;
 
-  buffer[2] = 0x7f;
+  buffer[2] = device_id;
 
   buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
 
@@ -2001,6 +2003,7 @@ ags_midi_ci_util_put_profile(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_get_profile:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
+ * @device_id: (out): the return location of device ID
  * @version: (out): the return location of version
  * @source: (out): the return location of source
  * @destination: (out): the return location of destination
@@ -2014,6 +2017,7 @@ ags_midi_ci_util_put_profile(AgsMidiCIUtil *midi_ci_util,
 guint
 ags_midi_ci_util_get_profile(AgsMidiCIUtil *midi_ci_util,
 			     guchar *buffer,
+			     guchar *device_id,
 			     guchar *version,
 			     AgsMUID *source,
 			     AgsMUID *destination)
@@ -2023,9 +2027,13 @@ ags_midi_ci_util_get_profile(AgsMidiCIUtil *midi_ci_util,
   g_return_val_if_fail(midi_ci_util != NULL, 0);
   g_return_val_if_fail(buffer[0] == 0xf0, 0);
   g_return_val_if_fail(buffer[1] == 0x7e, 0);
-  g_return_val_if_fail(buffer[2] == 0x7f, 0);
   g_return_val_if_fail(buffer[3] == 0x0d, 0);
   g_return_val_if_fail(buffer[4] == 0x20, 0);
+
+  /* device_id */
+  if(device_id != NULL){
+    device_id[0] = buffer[2];
+  }
 
   nth = 0;
 
@@ -2064,6 +2072,7 @@ ags_midi_ci_util_get_profile(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_put_profile_reply:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
+ * @device_id: the device ID
  * @version: the version
  * @source: the source
  * @destination: the destination
@@ -2079,6 +2088,7 @@ ags_midi_ci_util_get_profile(AgsMidiCIUtil *midi_ci_util,
 void
 ags_midi_ci_util_put_profile_reply(AgsMidiCIUtil *midi_ci_util,
 				   guchar *buffer,
+				   guchar device_id,
 				   guchar version,
 				   AgsMUID source,
 				   AgsMUID destination,
@@ -2098,7 +2108,7 @@ ags_midi_ci_util_put_profile_reply(AgsMidiCIUtil *midi_ci_util,
   buffer[0] = 0xf0;
   buffer[1] = 0x7e;
 
-  buffer[2] = 0x7f;
+  buffer[2] = device_id;
 
   buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
 
@@ -2172,6 +2182,7 @@ ags_midi_ci_util_put_profile_reply(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_get_profile_reply:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
+ * @device_id: (out): the return location of device ID
  * @version: (out): the return location of version
  * @source: (out): the return location of source
  * @destination: (out): the return location of destination
@@ -2189,6 +2200,7 @@ ags_midi_ci_util_put_profile_reply(AgsMidiCIUtil *midi_ci_util,
 guint
 ags_midi_ci_util_get_profile_reply(AgsMidiCIUtil *midi_ci_util,
 				   guchar *buffer,
+				   guchar *device_id,
 				   guchar *version,
 				   AgsMUID *source,
 				   AgsMUID *destination,
@@ -2203,9 +2215,13 @@ ags_midi_ci_util_get_profile_reply(AgsMidiCIUtil *midi_ci_util,
   g_return_val_if_fail(midi_ci_util != NULL, 0);
   g_return_val_if_fail(buffer[0] == 0xf0, 0);
   g_return_val_if_fail(buffer[1] == 0x7e, 0);
-  g_return_val_if_fail(buffer[2] == 0x7f, 0);
   g_return_val_if_fail(buffer[3] == 0x0d, 0);
   g_return_val_if_fail(buffer[4] == 0x21, 0);
+
+  /* device_id */
+  if(device_id != NULL){
+    device_id[0] = buffer[2];
+  }
 
   nth = 0;
 
