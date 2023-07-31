@@ -510,8 +510,9 @@ ags_fluid_interpolate_7th_order_util_set_samplerate(AgsFluidInterpolate7thOrderU
   }
 
   fluid_interpolate_7th_order_util->samplerate = samplerate;
-}
 
+  fluid_interpolate_7th_order_util->vibrato_lfo_frame_count = fluid_interpolate_7th_order_util->samplerate / fluid_interpolate_7th_order_util->vibrato_lfo_freq;
+}
 
 /**
  * ags_fluid_interpolate_7th_order_util_get_base_key:
