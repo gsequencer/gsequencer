@@ -551,8 +551,8 @@ ags_midi_ci_util_test_put_profile_reply()
   AgsMUID source = 0x0cafe010;
   AgsMUID destination = 0x0eadbeef;
 
-  gint16 enabled_profile_count = 3;
-  gint16 disabled_profile_count = 1;
+  guint16 enabled_profile_count = 3;
+  guint16 disabled_profile_count = 1;
   guchar version = '\x01';
   
   midi_ci_util = ags_midi_ci_util_alloc();
@@ -594,8 +594,8 @@ ags_midi_ci_util_test_get_profile_reply()
   AgsMUID destination;
   
   guchar version;
-  gint16 enabled_profile_count;
-  gint16 disabled_profile_count;
+  guint16 enabled_profile_count;
+  guint16 disabled_profile_count;
   guint i;
   gboolean success;
   
@@ -648,6 +648,30 @@ ags_midi_ci_util_test_get_profile_reply()
 void
 ags_midi_ci_util_test_put_profile_enabled_report()
 {
+  AgsMidiCIUtil *midi_ci_util;
+
+  guchar buffer[512];
+  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x24\x7f\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x03\x00\x7e\x00\x00\x01\x02\x7e\x00\x00\x01\x03\x7e\x00\x00\x01\x09\x01\x00\x7e\x00\x00\x01\x01\xf7";
+
+  const guchar add_profile[] = "\x7e\x00\x00\x01\x01";
+  
+  AgsMUID source = 0x0cafe010;
+
+  guint16 enabled_channel_count = 0;
+  guchar device_id = 0x7f;
+
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  memset(buffer, 0, 512 * sizeof(guchar));
+
+  ags_midi_ci_util_put_profile_enabled_report(midi_ci_util,
+					      buffer,
+					      device_id,
+					      version,
+					      source,
+					      add_profile);
+
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 39 * sizeof(guchar)));
   //TODO:JK: implement me
 }
 

@@ -495,6 +495,8 @@ ags_fluid_interpolate_4th_order_util_set_samplerate(AgsFluidInterpolate4thOrderU
   }
 
   fluid_interpolate_4th_order_util->samplerate = samplerate;
+
+  fluid_interpolate_4th_order_util->vibrato_lfo_frame_count = fluid_interpolate_4th_order_util->samplerate / fluid_interpolate_4th_order_util->vibrato_lfo_freq;
 }
 
 /**

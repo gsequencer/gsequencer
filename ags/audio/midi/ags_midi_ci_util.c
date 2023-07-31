@@ -246,17 +246,10 @@ ags_midi_ci_util_put_discovery(AgsMidiCIUtil *midi_ci_util,
   nth += 4;
   
   /* broadcast */
-  buffer[5 + nth] = 0x7f;
-  nth++;
-
-  buffer[5 + nth] = 0x7f;
-  nth++;
-
-  buffer[5 + nth] = 0x7f;
-  nth++;
-
-  buffer[5 + nth] = 0x7f;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    AGS_MIDI_CI_UTIL_BROADCAST_MUID);  
+  nth += 4;
 
   /* manufacturer */
   buffer[5 + nth] = manufacturer_id[0];
@@ -2089,9 +2082,9 @@ ags_midi_ci_util_put_profile_reply(AgsMidiCIUtil *midi_ci_util,
 				   guchar version,
 				   AgsMUID source,
 				   AgsMUID destination,
-				   gint16 enabled_profile_count,
+				   guint16 enabled_profile_count,
 				   guchar* enabled_profile[5],
-				   gint16 disabled_profile_count,
+				   guint16 disabled_profile_count,
 				   guchar* disabled_profile[5])
 {
   guint nth;
@@ -2199,9 +2192,9 @@ ags_midi_ci_util_get_profile_reply(AgsMidiCIUtil *midi_ci_util,
 				   guchar *version,
 				   AgsMUID *source,
 				   AgsMUID *destination,
-				   gint16 *enabled_profile_count,
+				   guint16 *enabled_profile_count,
 				   guchar ***enabled_profile,
-				   gint16 *disabled_profile_count,
+				   guint16 *disabled_profile_count,
 				   guchar ***disabled_profile)
 {
   guint nth;
@@ -2300,6 +2293,7 @@ ags_midi_ci_util_get_profile_reply(AgsMidiCIUtil *midi_ci_util,
  * @version: the version
  * @source: the source
  * @enabled_profile: the enabled profile
+ * @enabled_channel_count: the enabled channel count
  *
  * Put profile enabled report message.
  *
@@ -2310,7 +2304,8 @@ ags_midi_ci_util_put_profile_enabled_report(AgsMidiCIUtil *midi_ci_util,
 					    guchar *buffer,
 					    guchar version,
 					    AgsMUID source,
-					    guchar *enabled_profile)
+					    guchar *enabled_profile,
+					    guint16 enabled_channel_count)
 {
   guint nth;
   
@@ -2342,17 +2337,10 @@ ags_midi_ci_util_put_profile_enabled_report(AgsMidiCIUtil *midi_ci_util,
   nth += 4;
 
   /* broadcast */
-  buffer[5 + nth] = 0x7f;
-  nth++;
-
-  buffer[5 + nth] = 0x7f;
-  nth++;
-
-  buffer[5 + nth] = 0x7f;
-  nth++;
-
-  buffer[5 + nth] = 0x7f;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    AGS_MIDI_CI_UTIL_BROADCAST_MUID);  
+  nth += 4;
 
   /* enabled profile */
   buffer[5 + nth] = enabled_profile[0];
@@ -2369,6 +2357,17 @@ ags_midi_ci_util_put_profile_enabled_report(AgsMidiCIUtil *midi_ci_util,
 
   buffer[5 + nth] = enabled_profile[4];
   nth++;  
+
+  /* enabled channel count */
+  buffer[5 + nth] = (0xff & enabled_channel_count);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & enabled_channel_count) >> 8;
+  nth++;
+  
+  /* sysex end */
+  buffer[5 + nth] = 0xf7;
+  nth++;
 }
 
 /**
@@ -2377,7 +2376,8 @@ ags_midi_ci_util_put_profile_enabled_report(AgsMidiCIUtil *midi_ci_util,
  * @buffer: the buffer
  * @version: (out): the return location of version
  * @source: (out): the return location of source
- * @destination: (out): the return location of destination
+ * @enabled_profile: (out): the return location of enabled profile
+ * @enabled_channel_count: (out): the return location of enabled channel count
  *
  * Get profile enabled report message.
  *
@@ -2390,7 +2390,8 @@ ags_midi_ci_util_get_profile_enabled_report(AgsMidiCIUtil *midi_ci_util,
 					    guchar *buffer,
 					    guchar *version,
 					    AgsMUID *source,
-					    guchar *enabled_profile)
+					    guchar *enabled_profile,
+					    guint16 *enabled_channel_count)
 {
   guint nth;
   
@@ -2449,6 +2450,7 @@ ags_midi_ci_util_get_profile_enabled_report(AgsMidiCIUtil *midi_ci_util,
  * @version: the version
  * @source: the source
  * @disabled_profile: the disabled profile
+ * @disabled_channel_count: the disabled channel count
  *
  * Put profile disabled report message.
  *
@@ -2459,7 +2461,8 @@ ags_midi_ci_util_put_profile_disabled_report(AgsMidiCIUtil *midi_ci_util,
 					     guchar *buffer,
 					     guchar version,
 					     AgsMUID source,
-					     guchar *disabled_profile)
+					     guchar *disabled_profile,
+					     guint16 disabled_channel_count)
 {
   guint nth;
   
@@ -2491,17 +2494,10 @@ ags_midi_ci_util_put_profile_disabled_report(AgsMidiCIUtil *midi_ci_util,
   nth += 4;
 
   /* broadcast */
-  buffer[5 + nth] = 0x7f;
-  nth++;
-
-  buffer[5 + nth] = 0x7f;
-  nth++;
-
-  buffer[5 + nth] = 0x7f;
-  nth++;
-
-  buffer[5 + nth] = 0x7f;
-  nth++;
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    AGS_MIDI_CI_UTIL_BROADCAST_MUID);  
+  nth += 4;
 
   /* disabled profile */
   buffer[5 + nth] = disabled_profile[0];
@@ -2518,6 +2514,17 @@ ags_midi_ci_util_put_profile_disabled_report(AgsMidiCIUtil *midi_ci_util,
 
   buffer[5 + nth] = disabled_profile[4];
   nth++;  
+
+  /* disabled channel count */
+  buffer[5 + nth] = (0xff & disabled_channel_count);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & disabled_channel_count) >> 8;
+  nth++;
+  
+  /* sysex end */
+  buffer[5 + nth] = 0xf7;
+  nth++;
 }
 
 /**
@@ -2526,7 +2533,8 @@ ags_midi_ci_util_put_profile_disabled_report(AgsMidiCIUtil *midi_ci_util,
  * @buffer: the buffer
  * @version: (out): the return location of version
  * @source: (out): the return location of source
- * @destination: (out): the return location of destination
+ * @disabled_profile: (out): the return location of disabled profile
+ * @disabled_channel_count: (out): the return location of disabled channel count
  *
  * Get profile disabled report message.
  *
@@ -2539,7 +2547,8 @@ ags_midi_ci_util_get_profile_disabled_report(AgsMidiCIUtil *midi_ci_util,
 					     guchar *buffer,
 					     guchar *version,
 					     AgsMUID *source,
-					     guchar *disabled_profile)
+					     guchar *disabled_profile,
+					     guint16 *disabled_channel_count)
 {
   guint nth;
   
@@ -2578,6 +2587,314 @@ ags_midi_ci_util_get_profile_disabled_report(AgsMidiCIUtil *midi_ci_util,
   disabled_profile[2] = buffer[5 + nth + 2];
   disabled_profile[3] = buffer[5 + nth + 3];
   disabled_profile[4] = buffer[5 + nth + 4];
+
+  nth += 5;
+  
+  /* sysex end */
+  if(buffer[5 + nth] == 0xf7){
+    nth++;
+
+    return(5 + nth);
+  }
+
+  return(0);
+}
+
+/**
+ * ags_midi_ci_util_put_profile_added:
+ * @midi_ci_util: the MIDI CI util
+ * @buffer: the buffer
+ * @device_id: the device ID
+ * @version: the version
+ * @source: the source
+ * @add_profile: the profile to add
+ *
+ * Put profile added message.
+ *
+ * Since: 5.5.0
+ */
+void
+ags_midi_ci_util_put_profile_added(AgsMidiCIUtil *midi_ci_util,
+				   guchar *buffer,
+				   guchar device_id,
+				   guchar version,
+				   AgsMUID source,
+				   guchar *add_profile)
+{
+  guint nth;
+  
+  g_return_if_fail(midi_ci_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[0] = 0xf0;
+  buffer[1] = 0x7e;
+
+  buffer[2] = device_id;
+
+  buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
+
+  buffer[4] = 0x26; // Sub-ID#2 - profile added
+
+  nth = 0;
+
+  /* version */
+  buffer[5 + nth] = version;
+
+  nth++;
+  
+  /* source */
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
+
+  /* broadcast */
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    AGS_MIDI_CI_UTIL_BROADCAST_MUID);  
+  nth += 4;
+
+  /* add profile */
+  buffer[5 + nth] = add_profile[0];
+  nth++;
+
+  buffer[5 + nth] = add_profile[1];
+  nth++;
+
+  buffer[5 + nth] = add_profile[2];
+  nth++;
+
+  buffer[5 + nth] = add_profile[3];
+  nth++;
+
+  buffer[5 + nth] = add_profile[4];
+  nth++;  
+  
+  /* sysex end */
+  buffer[5 + nth] = 0xf7;
+  nth++;
+}
+
+/**
+ * ags_midi_ci_util_get_profile_added:
+ * @midi_ci_util: the MIDI CI util
+ * @buffer: the buffer
+ * @device_id: (out): the device ID
+ * @version: (out): the return location of version
+ * @source: (out): the return location of source
+ * @add_profile: (out): the return location of profile to add
+ *
+ * Get profile added message.
+ *
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.0
+ */
+guint
+ags_midi_ci_util_get_profile_added(AgsMidiCIUtil *midi_ci_util,
+				   guchar *buffer,
+				   guchar *device_id,
+				   guchar *version,
+				   AgsMUID *source,
+				   guchar *add_profile)
+{
+  guint nth;
+  
+  g_return_val_if_fail(midi_ci_util != NULL, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail(buffer[1] == 0x7e, 0);
+  g_return_val_if_fail(buffer[3] == 0x0d, 0);
+  g_return_val_if_fail(buffer[4] == 0x26, 0);
+  g_return_val_if_fail(buffer[9] == 0x7f || buffer[10] == 0x7f || buffer[11] == 0x7f || buffer[12] == 0x7f, 0);
+
+  /* device ID */
+  if(device_id != NULL){
+    device_id[0] = buffer[2];
+  }
+
+  nth = 0;
+
+  /* version */
+  if(version != NULL){
+    version[0] = buffer[5 + nth];
+  }
+
+  nth++;
+  
+  /* source */
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+
+  nth += 4;
+
+  /* destination - broadcast */
+  //NOTE:JK: validate first - see top of function
+  
+  nth += 4;
+
+  /* add profile */
+  add_profile[0] = buffer[5 + nth];
+  add_profile[1] = buffer[5 + nth + 1];
+  add_profile[2] = buffer[5 + nth + 2];
+  add_profile[3] = buffer[5 + nth + 3];
+  add_profile[4] = buffer[5 + nth + 4];
+
+  nth += 5;
+  
+  /* sysex end */
+  if(buffer[5 + nth] == 0xf7){
+    nth++;
+
+    return(5 + nth);
+  }
+
+  return(0);
+}
+
+/**
+ * ags_midi_ci_util_put_profile_removed:
+ * @midi_ci_util: the MIDI CI util
+ * @buffer: the buffer
+ * @device_id: the device ID
+ * @version: the version
+ * @source: the source
+ * @remove_profile: the profile to remove
+ *
+ * Put profile remove message.
+ *
+ * Since: 5.5.0
+ */
+void
+ags_midi_ci_util_put_profile_removed(AgsMidiCIUtil *midi_ci_util,
+				     guchar *buffer,
+				     guchar device_id,
+				     guchar version,
+				     AgsMUID source,
+				     guchar *remove_profile)
+{
+  guint nth;
+  
+  g_return_if_fail(midi_ci_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[0] = 0xf0;
+  buffer[1] = 0x7e;
+
+  buffer[2] = device_id;
+
+  buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
+
+  buffer[4] = 0x27; // Sub-ID#2 - profile removed
+
+  nth = 0;
+
+  /* version */
+  buffer[5 + nth] = version;
+
+  nth++;
+  
+  /* source */
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
+
+  /* broadcast */
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    AGS_MIDI_CI_UTIL_BROADCAST_MUID);  
+  nth += 4;
+
+  /* remove profile */
+  buffer[5 + nth] = remove_profile[0];
+  nth++;
+
+  buffer[5 + nth] = remove_profile[1];
+  nth++;
+
+  buffer[5 + nth] = remove_profile[2];
+  nth++;
+
+  buffer[5 + nth] = remove_profile[3];
+  nth++;
+
+  buffer[5 + nth] = remove_profile[4];
+  nth++;  
+  
+  /* sysex end */
+  buffer[5 + nth] = 0xf7;
+  nth++;
+}
+
+/**
+ * ags_midi_ci_util_get_profile_removed:
+ * @midi_ci_util: the MIDI CI util
+ * @buffer: the buffer
+ * @device_id: (out): the device ID
+ * @version: (out): the return location of version
+ * @source: (out): the return location of source
+ * @remove_profile: (out): the profile to remove
+ *
+ * Get profile remove message.
+ *
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.0
+ */
+guint
+ags_midi_ci_util_get_profile_removed(AgsMidiCIUtil *midi_ci_util,
+				     guchar *buffer,
+				     guchar *device_id,
+				     guchar *version,
+				     AgsMUID *source,
+				     guchar *remove_profile)
+{
+  guint nth;
+  
+  g_return_val_if_fail(midi_ci_util != NULL, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail(buffer[1] == 0x7e, 0);
+  g_return_val_if_fail(buffer[3] == 0x0d, 0);
+  g_return_val_if_fail(buffer[4] == 0x27, 0);
+  g_return_val_if_fail(buffer[9] == 0x7f || buffer[10] == 0x7f || buffer[11] == 0x7f || buffer[12] == 0x7f, 0);
+
+  /* device ID */
+  if(device_id != NULL){
+    device_id[0] = buffer[2];
+  }
+
+  nth = 0;
+
+  /* version */
+  if(version != NULL){
+    version[0] = buffer[5 + nth];
+  }
+
+  nth++;
+  
+  /* source */
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+
+  nth += 4;
+
+  /* destination - broadcast */
+  //NOTE:JK: validate first - see top of function
+  
+  nth += 4;
+
+  /* remove profile */
+  remove_profile[0] = buffer[5 + nth];
+  remove_profile[1] = buffer[5 + nth + 1];
+  remove_profile[2] = buffer[5 + nth + 2];
+  remove_profile[3] = buffer[5 + nth + 3];
+  remove_profile[4] = buffer[5 + nth + 4];
 
   nth += 5;
   
@@ -3078,11 +3395,11 @@ ags_midi_ci_util_put_get_property_data(AgsMidiCIUtil *midi_ci_util,
 				       AgsMUID source,
 				       AgsMUID destination,
 				       guchar request_id,
-				       gint16 header_data_length,
+				       guint16 header_data_length,
 				       guchar *header_data,
-				       gint16 chunk_count,
-				       gint16 nth_chunk,
-				       gint16 property_data_length,
+				       guint16 chunk_count,
+				       guint16 nth_chunk,
+				       guint16 property_data_length,
 				       guchar *property_data)
 {
   guint nth;
@@ -3195,11 +3512,11 @@ ags_midi_ci_util_get_get_property_data(AgsMidiCIUtil *midi_ci_util,
 				       AgsMUID *source,
 				       AgsMUID *destination,
 				       guchar *request_id,
-				       gint16 *header_data_length,
+				       guint16 *header_data_length,
 				       guchar *header_data,
-				       gint16 *chunk_count,
-				       gint16 *nth_chunk,
-				       gint16 *property_data_length,
+				       guint16 *chunk_count,
+				       guint16 *nth_chunk,
+				       guint16 *property_data_length,
 				       guchar *property_data)
 {
   guint nth;
@@ -3330,11 +3647,11 @@ ags_midi_ci_util_put_get_property_data_reply(AgsMidiCIUtil *midi_ci_util,
 					     AgsMUID source,
 					     AgsMUID destination,
 					     guchar request_id,
-					     gint16 header_data_length,
+					     guint16 header_data_length,
 					     guchar *header_data,
-					     gint16 chunk_count,
-					     gint16 nth_chunk,
-					     gint16 property_data_length,
+					     guint16 chunk_count,
+					     guint16 nth_chunk,
+					     guint16 property_data_length,
 					     guchar *property_data)
 {
   guint nth;
@@ -3447,11 +3764,11 @@ ags_midi_ci_util_get_get_property_data_reply(AgsMidiCIUtil *midi_ci_util,
 					     AgsMUID *source,
 					     AgsMUID *destination,
 					     guchar *request_id,
-					     gint16 *header_data_length,
+					     guint16 *header_data_length,
 					     guchar *header_data,
-					     gint16 *chunk_count,
-					     gint16 *nth_chunk,
-					     gint16 *property_data_length,
+					     guint16 *chunk_count,
+					     guint16 *nth_chunk,
+					     guint16 *property_data_length,
 					     guchar *property_data)
 {
   guint nth;
@@ -3582,11 +3899,11 @@ ags_midi_ci_util_put_set_property_data(AgsMidiCIUtil *midi_ci_util,
 				       AgsMUID source,
 				       AgsMUID destination,
 				       guchar request_id,
-				       gint16 header_data_length,
+				       guint16 header_data_length,
 				       guchar *header_data,
-				       gint16 chunk_count,
-				       gint16 nth_chunk,
-				       gint16 property_data_length,
+				       guint16 chunk_count,
+				       guint16 nth_chunk,
+				       guint16 property_data_length,
 				       guchar *property_data)
 {
   guint nth;
@@ -3699,11 +4016,11 @@ ags_midi_ci_util_get_set_property_data(AgsMidiCIUtil *midi_ci_util,
 				       AgsMUID *source,
 				       AgsMUID *destination,
 				       guchar *request_id,
-				       gint16 *header_data_length,
+				       guint16 *header_data_length,
 				       guchar *header_data,
-				       gint16 *chunk_count,
-				       gint16 *nth_chunk,
-				       gint16 *property_data_length,
+				       guint16 *chunk_count,
+				       guint16 *nth_chunk,
+				       guint16 *property_data_length,
 				       guchar *property_data)
 {
   guint nth;
@@ -3834,11 +4151,11 @@ ags_midi_ci_util_put_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
 					     AgsMUID source,
 					     AgsMUID destination,
 					     guchar request_id,
-					     gint16 header_data_length,
+					     guint16 header_data_length,
 					     guchar *header_data,
-					     gint16 chunk_count,
-					     gint16 nth_chunk,
-					     gint16 property_data_length,
+					     guint16 chunk_count,
+					     guint16 nth_chunk,
+					     guint16 property_data_length,
 					     guchar *property_data)
 {
   guint nth;
@@ -3951,11 +4268,11 @@ ags_midi_ci_util_get_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
 					     AgsMUID *source,
 					     AgsMUID *destination,
 					     guchar *request_id,
-					     gint16 *header_data_length,
+					     guint16 *header_data_length,
 					     guchar *header_data,
-					     gint16 *chunk_count,
-					     gint16 *nth_chunk,
-					     gint16 *property_data_length,
+					     guint16 *chunk_count,
+					     guint16 *nth_chunk,
+					     guint16 *property_data_length,
 					     guchar *property_data)
 {
   guint nth;
@@ -4086,11 +4403,11 @@ ags_midi_ci_util_put_subscription(AgsMidiCIUtil *midi_ci_util,
 				  AgsMUID source,
 				  AgsMUID destination,
 				  guchar request_id,
-				  gint16 header_data_length,
+				  guint16 header_data_length,
 				  guchar *header_data,
-				  gint16 chunk_count,
-				  gint16 nth_chunk,
-				  gint16 property_data_length,
+				  guint16 chunk_count,
+				  guint16 nth_chunk,
+				  guint16 property_data_length,
 				  guchar *property_data)
 {
   guint nth;
@@ -4203,11 +4520,11 @@ ags_midi_ci_util_get_subscription(AgsMidiCIUtil *midi_ci_util,
 				  AgsMUID *source,
 				  AgsMUID *destination,
 				  guchar *request_id,
-				  gint16 *header_data_length,
+				  guint16 *header_data_length,
 				  guchar *header_data,
-				  gint16 *chunk_count,
-				  gint16 *nth_chunk,
-				  gint16 *property_data_length,
+				  guint16 *chunk_count,
+				  guint16 *nth_chunk,
+				  guint16 *property_data_length,
 				  guchar *property_data)
 {
   guint nth;
@@ -4338,11 +4655,11 @@ ags_midi_ci_util_put_subscription_reply(AgsMidiCIUtil *midi_ci_util,
 					AgsMUID source,
 					AgsMUID destination,
 					guchar request_id,
-					gint16 header_data_length,
+					guint16 header_data_length,
 					guchar *header_data,
-					gint16 chunk_count,
-					gint16 nth_chunk,
-					gint16 property_data_length,
+					guint16 chunk_count,
+					guint16 nth_chunk,
+					guint16 property_data_length,
 					guchar *property_data)
 {
   guint nth;
@@ -4455,11 +4772,11 @@ ags_midi_ci_util_get_subscription_reply(AgsMidiCIUtil *midi_ci_util,
 					AgsMUID *source,
 					AgsMUID *destination,
 					guchar *request_id,
-					gint16 *header_data_length,
+					guint16 *header_data_length,
 					guchar *header_data,
-					gint16 *chunk_count,
-					gint16 *nth_chunk,
-					gint16 *property_data_length,
+					guint16 *chunk_count,
+					guint16 *nth_chunk,
+					guint16 *property_data_length,
 					guchar *property_data)
 {
   guint nth;
