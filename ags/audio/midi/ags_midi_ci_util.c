@@ -2290,6 +2290,7 @@ ags_midi_ci_util_get_profile_reply(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_put_profile_enabled_report:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
+ * @device_id: the device ID
  * @version: the version
  * @source: the source
  * @enabled_profile: the enabled profile
@@ -2302,6 +2303,7 @@ ags_midi_ci_util_get_profile_reply(AgsMidiCIUtil *midi_ci_util,
 void
 ags_midi_ci_util_put_profile_enabled_report(AgsMidiCIUtil *midi_ci_util,
 					    guchar *buffer,
+					    guchar device_id,
 					    guchar version,
 					    AgsMUID source,
 					    guchar *enabled_profile,
@@ -2317,7 +2319,7 @@ ags_midi_ci_util_put_profile_enabled_report(AgsMidiCIUtil *midi_ci_util,
   buffer[0] = 0xf0;
   buffer[1] = 0x7e;
 
-  buffer[2] = 0x7f;
+  buffer[2] = device_id;
 
   buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
 
@@ -2374,6 +2376,7 @@ ags_midi_ci_util_put_profile_enabled_report(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_get_profile_enabled_report:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
+ * @device_id: (out): the return location of device ID
  * @version: (out): the return location of version
  * @source: (out): the return location of source
  * @enabled_profile: (out): the return location of enabled profile
@@ -2388,6 +2391,7 @@ ags_midi_ci_util_put_profile_enabled_report(AgsMidiCIUtil *midi_ci_util,
 guint
 ags_midi_ci_util_get_profile_enabled_report(AgsMidiCIUtil *midi_ci_util,
 					    guchar *buffer,
+					    guchar *device_id,
 					    guchar *version,
 					    AgsMUID *source,
 					    guchar *enabled_profile,
@@ -2398,11 +2402,15 @@ ags_midi_ci_util_get_profile_enabled_report(AgsMidiCIUtil *midi_ci_util,
   g_return_val_if_fail(midi_ci_util != NULL, 0);
   g_return_val_if_fail(buffer[0] == 0xf0, 0);
   g_return_val_if_fail(buffer[1] == 0x7e, 0);
-  g_return_val_if_fail(buffer[2] == 0x7f, 0);
   g_return_val_if_fail(buffer[3] == 0x0d, 0);
   g_return_val_if_fail(buffer[4] == 0x24, 0);
   g_return_val_if_fail(buffer[9] == 0x7f || buffer[10] == 0x7f || buffer[11] == 0x7f || buffer[12] == 0x7f, 0);
 
+  /* device ID */
+  if(device_id != NULL){
+    device_id[0] = buffer[2];
+  }
+  
   nth = 0;
 
   /* version */
@@ -2447,6 +2455,7 @@ ags_midi_ci_util_get_profile_enabled_report(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_put_profile_disabled_report:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
+ * @device_id: the device ID
  * @version: the version
  * @source: the source
  * @disabled_profile: the disabled profile
@@ -2459,6 +2468,7 @@ ags_midi_ci_util_get_profile_enabled_report(AgsMidiCIUtil *midi_ci_util,
 void
 ags_midi_ci_util_put_profile_disabled_report(AgsMidiCIUtil *midi_ci_util,
 					     guchar *buffer,
+					     guchar device_id,
 					     guchar version,
 					     AgsMUID source,
 					     guchar *disabled_profile,
@@ -2474,7 +2484,7 @@ ags_midi_ci_util_put_profile_disabled_report(AgsMidiCIUtil *midi_ci_util,
   buffer[0] = 0xf0;
   buffer[1] = 0x7e;
 
-  buffer[2] = 0x7f;
+  buffer[2] = device_id;
 
   buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
 
@@ -2531,6 +2541,7 @@ ags_midi_ci_util_put_profile_disabled_report(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_get_profile_disabled_report:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
+ * @device_id: (out): the return location of device ID
  * @version: (out): the return location of version
  * @source: (out): the return location of source
  * @disabled_profile: (out): the return location of disabled profile
@@ -2545,6 +2556,7 @@ ags_midi_ci_util_put_profile_disabled_report(AgsMidiCIUtil *midi_ci_util,
 guint
 ags_midi_ci_util_get_profile_disabled_report(AgsMidiCIUtil *midi_ci_util,
 					     guchar *buffer,
+					     guchar *device_id,
 					     guchar *version,
 					     AgsMUID *source,
 					     guchar *disabled_profile,
@@ -2555,10 +2567,14 @@ ags_midi_ci_util_get_profile_disabled_report(AgsMidiCIUtil *midi_ci_util,
   g_return_val_if_fail(midi_ci_util != NULL, 0);
   g_return_val_if_fail(buffer[0] == 0xf0, 0);
   g_return_val_if_fail(buffer[1] == 0x7e, 0);
-  g_return_val_if_fail(buffer[2] == 0x7f, 0);
   g_return_val_if_fail(buffer[3] == 0x0d, 0);
   g_return_val_if_fail(buffer[4] == 0x25, 0);
   g_return_val_if_fail(buffer[9] == 0x7f || buffer[10] == 0x7f || buffer[11] == 0x7f || buffer[12] == 0x7f, 0);
+
+  /* device ID */
+  if(device_id != NULL){
+    device_id[0] = buffer[2];
+  }
 
   nth = 0;
 
