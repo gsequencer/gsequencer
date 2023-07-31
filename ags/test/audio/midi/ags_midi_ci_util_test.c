@@ -64,6 +64,10 @@ void ags_midi_ci_util_test_put_profile_enabled_report();
 void ags_midi_ci_util_test_get_profile_enabled_report();
 void ags_midi_ci_util_test_put_profile_disabled_report();
 void ags_midi_ci_util_test_get_profile_disabled_report();
+void ags_midi_ci_util_test_put_profile_added();
+void ags_midi_ci_util_test_get_profile_added();
+void ags_midi_ci_util_test_put_profile_removed();
+void ags_midi_ci_util_test_get_profile_removed();
 void ags_midi_ci_util_test_put_profile_specific_data();
 void ags_midi_ci_util_test_get_profile_specific_data();
 void ags_midi_ci_util_test_put_property_exchange_capabilities();
@@ -651,7 +655,7 @@ ags_midi_ci_util_test_put_profile_enabled_report()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x24\x7f\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x03\x00\x7e\x00\x00\x01\x02\x7e\x00\x00\x01\x03\x7e\x00\x00\x01\x09\x01\x00\x7e\x00\x00\x01\x01\xf7";
+  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x24\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x7e\x00\x00\x01\x01\x00\x00\xf7";
 
   const guchar add_profile[] = "\x7e\x00\x00\x01\x01";
   
@@ -659,6 +663,7 @@ ags_midi_ci_util_test_put_profile_enabled_report()
 
   guint16 enabled_channel_count = 0;
   guchar device_id = 0x7f;
+  guchar version = '\x01';
 
   midi_ci_util = ags_midi_ci_util_alloc();
 
@@ -669,16 +674,53 @@ ags_midi_ci_util_test_put_profile_enabled_report()
 					      device_id,
 					      version,
 					      source,
-					      add_profile);
+					      add_profile,
+					      enabled_channel_count);
 
-  CU_ASSERT(!memcmp(buffer, filled_buffer, 39 * sizeof(guchar)));
-  //TODO:JK: implement me
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 22 * sizeof(guchar)));
 }
 
 void
 ags_midi_ci_util_test_get_profile_enabled_report()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  guchar buffer[] = "\xf0\x7e\x7f\x0d\x24\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x7e\x00\x00\x01\x01\x00\x00\xf7";
+  guchar enabled_profile[5];
+
+  const guchar filled_enabled_profile[5] = "\x7e\x00\x00\x01\x01";
+
+  AgsMUID source;
+  
+  guchar device_id;
+  guchar version;
+  guint16 enabled_channel_count;
+  gboolean success;
+  
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  memset(enabled_profile, 0, 5 * sizeof(guchar));
+
+  ags_midi_ci_util_get_profile_enabled_report(midi_ci_util,
+					      buffer,
+					      &device_id,
+					      &version,
+					      &source,
+					      enabled_profile,
+					      &enabled_channel_count);
+
+  CU_ASSERT(device_id == 0x7f);
+  CU_ASSERT(version == 0x01);
+  CU_ASSERT(source == 0x0cafe010);
+  CU_ASSERT(enabled_channel_count == 0);
+
+  success = TRUE;
+
+  if((!memcmp(enabled_profile, filled_enabled_profile, 5 * sizeof(guchar))) == FALSE){
+    success = FALSE;
+  }
+    
+  CU_ASSERT(success == TRUE);
 }
 
 void
@@ -689,6 +731,30 @@ ags_midi_ci_util_test_put_profile_disabled_report()
 
 void
 ags_midi_ci_util_test_get_profile_disabled_report()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_midi_ci_util_test_put_profile_added()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_midi_ci_util_test_get_profile_added()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_midi_ci_util_test_put_profile_removed()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_midi_ci_util_test_get_profile_removed()
 {
   //TODO:JK: implement me
 }
@@ -851,6 +917,10 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c get profile enabled report", ags_midi_ci_util_test_get_profile_enabled_report) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c put profile disabled report", ags_midi_ci_util_test_put_profile_disabled_report) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c get profile disabled report", ags_midi_ci_util_test_get_profile_disabled_report) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_ci_util.c put profile added", ags_midi_ci_util_test_put_profile_added) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_ci_util.c get profile added", ags_midi_ci_util_test_get_profile_added) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_ci_util.c put profile removed", ags_midi_ci_util_test_put_profile_removed) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_ci_util.c get profile removed", ags_midi_ci_util_test_get_profile_removed) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c put profile specific data", ags_midi_ci_util_test_put_profile_specific_data) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c get profile specific data", ags_midi_ci_util_test_get_profile_specific_data) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c put property exchange capabilities", ags_midi_ci_util_test_put_property_exchange_capabilities) == NULL) ||
