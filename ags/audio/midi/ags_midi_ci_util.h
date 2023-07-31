@@ -278,17 +278,20 @@ guint ags_midi_ci_util_get_confirm_protocol_type_established(AgsMidiCIUtil *midi
 
 void ags_midi_ci_util_put_profile(AgsMidiCIUtil *midi_ci_util,
 				  guchar *buffer,
+				  guchar device_id,
 				  guchar version,
 				  AgsMUID source,
 				  AgsMUID destination);
 guint ags_midi_ci_util_get_profile(AgsMidiCIUtil *midi_ci_util,
 				   guchar *buffer,
+				   guchar *device_id,
 				   guchar *version,
 				   AgsMUID *source,
 				   AgsMUID *destination);
 
 void ags_midi_ci_util_put_profile_reply(AgsMidiCIUtil *midi_ci_util,
 					guchar *buffer,
+					guchar device_id,
 					guchar version,
 					AgsMUID source,
 					AgsMUID destination,
@@ -298,6 +301,7 @@ void ags_midi_ci_util_put_profile_reply(AgsMidiCIUtil *midi_ci_util,
 					guchar* disabled_profile[5]);
 guint ags_midi_ci_util_get_profile_reply(AgsMidiCIUtil *midi_ci_util,
 					 guchar *buffer,
+					 guchar *device_id,
 					 guchar *version,
 					 AgsMUID *source,
 					 AgsMUID *destination,
