@@ -1035,13 +1035,73 @@ ags_midi_ci_util_test_get_profile_specific_data()
 void
 ags_midi_ci_util_test_put_property_exchange_capabilities()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  guchar buffer[512];
+  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x30\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x01\x01\x00\xf7";
+  
+  AgsMUID source = 0x0cafe010;
+  AgsMUID destination = AGS_MIDI_CI_UTIL_BROADCAST_MUID;
+
+  guchar device_id = 0x7f;
+  guchar supported_property_exchange_count = '\x01';
+  guchar major = '\x01';
+  guchar minor = '\x00';
+  guchar version = '\x01';
+  
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  memset(buffer, 0, 512 * sizeof(guchar));
+  
+  ags_midi_ci_util_put_property_exchange_capabilities(midi_ci_util,
+						      buffer,
+						      device_id,
+						      version,
+						      source,
+						      destination,
+						      supported_property_exchange_count,
+						      major,
+						      minor);
+
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 18 * sizeof(guchar)));
 }
 
 void
 ags_midi_ci_util_test_get_property_exchange_capabilities()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  guchar buffer[] = "\xf0\x7e\x7f\x0d\x30\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x01\x01\x00\xf7";
+
+  AgsMUID source;
+  AgsMUID destination;
+  
+  guchar device_id;
+  guchar version;
+  guchar supported_property_exchange_count;
+  guchar major;
+  guchar minor;
+  gboolean success;
+  
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  ags_midi_ci_util_get_property_exchange_capabilities(midi_ci_util,
+						      buffer,
+						      &device_id,
+						      &version,
+						      &source,
+						      &destination,
+						      &supported_property_exchange_count,
+						      &major,
+						      &minor);
+
+  CU_ASSERT(device_id == 0x7f);
+  CU_ASSERT(version == 0x01);
+  CU_ASSERT(source == 0x0cafe010);
+  CU_ASSERT(destination == AGS_MIDI_CI_UTIL_BROADCAST_MUID);
+  CU_ASSERT(supported_property_exchange_count == 0x01);
+  CU_ASSERT(major == 0x01);
+  CU_ASSERT(minor == 0x00);
 }
 
 void
