@@ -2971,7 +2971,7 @@ ags_midi_ci_util_put_profile_specific_data(AgsMidiCIUtil *midi_ci_util,
 					   guchar version,
 					   AgsMUID source,
 					   AgsMUID destination,
-					   guchar *profile_id,
+					   guchar profile_id[5],
 					   guint32 profile_specific_data_length,
 					   guchar *profile_specific_data)
 {
@@ -3076,7 +3076,7 @@ ags_midi_ci_util_get_profile_specific_data(AgsMidiCIUtil *midi_ci_util,
 					   guchar *version,
 					   AgsMUID *source,
 					   AgsMUID *destination,
-					   guchar *profile_id,
+					   guchar profile_id[5],
 					   guint32 *profile_specific_data_length,
 					   guchar **profile_specific_data)
 {
@@ -3164,12 +3164,14 @@ ags_midi_ci_util_get_profile_specific_data(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_put_property_exchange_capabilities:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
- * @midi_channel: the MIDI channel
+ * @device_id: the device ID
  * @version: the version
  * @source: the source
  * @destination: the destination
  * @supported_property_exchange_count: the supported property exchange count
- *
+ * @property_exchange_major: the major version
+ * @property_exchange_minor: the minor version
+ * 
  * Put number of supported property exchange message.
  *
  * Since: 5.5.0
@@ -3177,23 +3179,23 @@ ags_midi_ci_util_get_profile_specific_data(AgsMidiCIUtil *midi_ci_util,
 void
 ags_midi_ci_util_put_property_exchange_capabilities(AgsMidiCIUtil *midi_ci_util,
 						    guchar *buffer,
-						    guchar midi_channel,
+						    guchar device_id,
 						    guchar version,
 						    AgsMUID source,
 						    AgsMUID destination,
-						    guchar supported_property_exchange_count)
+						    guchar supported_property_exchange_count,
+						    guchar property_exchange_major,
+						    guchar property_exchange_minor)
 {
   guint nth;
   
   g_return_if_fail(midi_ci_util != NULL);
   g_return_if_fail(buffer != NULL);
-
-  nth = 0;
   
   buffer[0] = 0xf0;
   buffer[1] = 0x7e;
 
-  buffer[2] = midi_channel;
+  buffer[2] = device_id;
 
   buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
 
@@ -3218,8 +3220,16 @@ ags_midi_ci_util_put_property_exchange_capabilities(AgsMidiCIUtil *midi_ci_util,
 			    destination);
   nth += 4;
 
-  /* supported_property_exchange_count */
+  /* supported property exchange count */
   buffer[5 + nth] = supported_property_exchange_count;
+  nth++;
+
+  /* major */
+  buffer[5 + nth] = property_exchange_major;
+  nth++;
+
+  /* minor */
+  buffer[5 + nth] = property_exchange_minor;
   nth++;
 
   /* sysex end */
@@ -3231,11 +3241,13 @@ ags_midi_ci_util_put_property_exchange_capabilities(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_get_property_exchange_capabilities:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
- * @midi_channel: (out): the return location of MIDI channel
+ * @device_id: (out): the return location of device ID
  * @version: (out): the return location of version
  * @source: (out): the return location of source
  * @destination: (out): the return location of destination
  * @supported_property_exchange_count: (out): the supported property exchange count
+ * @property_exchange_major: (out): the return location of major version
+ * @property_exchange_minor: (out): the return location of minor version
  *
  * Get number of supported property exchange count data message.
  *
@@ -3246,11 +3258,13 @@ ags_midi_ci_util_put_property_exchange_capabilities(AgsMidiCIUtil *midi_ci_util,
 guint
 ags_midi_ci_util_get_property_exchange_capabilities(AgsMidiCIUtil *midi_ci_util,
 						    guchar *buffer,
-						    guchar *midi_channel,
+						    guchar *device_id,
 						    guchar *version,
 						    AgsMUID *source,
 						    AgsMUID *destination,
-						    guchar *supported_property_exchange_count)
+						    guchar *supported_property_exchange_count,
+						    guchar *property_exchange_major,
+						    guchar *property_exchange_minor)
 {
   guint nth;
   
@@ -3260,9 +3274,9 @@ ags_midi_ci_util_get_property_exchange_capabilities(AgsMidiCIUtil *midi_ci_util,
   g_return_val_if_fail(buffer[3] == 0x0d, 0);
   g_return_val_if_fail(buffer[4] == 0x30, 0);
 
-  /* MIDI channel */
-  if(midi_channel != NULL){
-    midi_channel[0] = buffer[2];
+  /* device ID */
+  if(device_id != NULL){
+    device_id[0] = buffer[2];
   }
 
   nth = 0;
@@ -3288,6 +3302,18 @@ ags_midi_ci_util_get_property_exchange_capabilities(AgsMidiCIUtil *midi_ci_util,
 
   nth += 4;
 
+  /* supported property exchange count */
+  supported_property_exchange_count[0] = buffer[5 + nth];
+  nth++;
+
+  /* major */
+  property_exchange_major[0] = buffer[5 + nth];
+  nth++;
+
+  /* minor */
+  property_exchange_minor[0] = buffer[5 + nth];
+  nth++;
+
   /* sysex end */
   if(buffer[5 + nth] == 0xf7){
     nth++;
@@ -3302,7 +3328,7 @@ ags_midi_ci_util_get_property_exchange_capabilities(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_put_property_exchange_capabilities_reply:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
- * @midi_channel: the MIDI channel
+ * @device_id: the device ID
  * @version: the version
  * @source: the source
  * @destination: the destination
@@ -3315,7 +3341,7 @@ ags_midi_ci_util_get_property_exchange_capabilities(AgsMidiCIUtil *midi_ci_util,
 void
 ags_midi_ci_util_put_property_exchange_capabilities_reply(AgsMidiCIUtil *midi_ci_util,
 							  guchar *buffer,
-							  guchar midi_channel,
+							  guchar device_id,
 							  guchar version,
 							  AgsMUID source,
 							  AgsMUID destination,
@@ -3331,7 +3357,7 @@ ags_midi_ci_util_put_property_exchange_capabilities_reply(AgsMidiCIUtil *midi_ci
   buffer[0] = 0xf0;
   buffer[1] = 0x7e;
 
-  buffer[2] = midi_channel;
+  buffer[2] = device_id;
 
   buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
 
@@ -3369,7 +3395,7 @@ ags_midi_ci_util_put_property_exchange_capabilities_reply(AgsMidiCIUtil *midi_ci
  * ags_midi_ci_util_get_property_exchange_capabilities_reply:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
- * @midi_channel: (out): the return location of MIDI channel
+ * @device_id: (out): the return location of device ID
  * @version: (out): the return location of version
  * @source: (out): the return location of source
  * @destination: (out): the return location of destination
@@ -3384,7 +3410,7 @@ ags_midi_ci_util_put_property_exchange_capabilities_reply(AgsMidiCIUtil *midi_ci
 guint
 ags_midi_ci_util_get_property_exchange_capabilities_reply(AgsMidiCIUtil *midi_ci_util,
 							  guchar *buffer,
-							  guchar *midi_channel,
+							  guchar *device_id,
 							  guchar *version,
 							  AgsMUID *source,
 							  AgsMUID *destination,
@@ -3398,9 +3424,9 @@ ags_midi_ci_util_get_property_exchange_capabilities_reply(AgsMidiCIUtil *midi_ci
   g_return_val_if_fail(buffer[3] == 0x0d, 0);
   g_return_val_if_fail(buffer[4] == 0x31, 0);
 
-  /* MIDI channel */
-  if(midi_channel != NULL){
-    midi_channel[0] = buffer[2];
+  /* device ID */
+  if(device_id != NULL){
+    device_id[0] = buffer[2];
   }
 
   nth = 0;
@@ -3440,7 +3466,7 @@ ags_midi_ci_util_get_property_exchange_capabilities_reply(AgsMidiCIUtil *midi_ci
  * ags_midi_ci_util_put_get_property_data:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
- * @midi_channel: the MIDI channel
+ * @device_id: the device ID
  * @version: the version
  * @source: the source
  * @destination: the destination
@@ -3459,7 +3485,7 @@ ags_midi_ci_util_get_property_exchange_capabilities_reply(AgsMidiCIUtil *midi_ci
 void
 ags_midi_ci_util_put_get_property_data(AgsMidiCIUtil *midi_ci_util,
 				       guchar *buffer,
-				       guchar midi_channel,
+				       guchar device_id,
 				       guchar version,
 				       AgsMUID source,
 				       AgsMUID destination,
@@ -3481,7 +3507,7 @@ ags_midi_ci_util_put_get_property_data(AgsMidiCIUtil *midi_ci_util,
   buffer[0] = 0xf0;
   buffer[1] = 0x7e;
 
-  buffer[2] = midi_channel;
+  buffer[2] = device_id;
 
   buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
 
@@ -3555,7 +3581,7 @@ ags_midi_ci_util_put_get_property_data(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_get_get_property_data:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
- * @midi_channel: (out): the MIDI channel
+ * @device_id: (out): the device ID
  * @version: (out): the return location of version
  * @source: (out): the return location of source
  * @destination: (out): the return location of destination
@@ -3576,7 +3602,7 @@ ags_midi_ci_util_put_get_property_data(AgsMidiCIUtil *midi_ci_util,
 guint
 ags_midi_ci_util_get_get_property_data(AgsMidiCIUtil *midi_ci_util,
 				       guchar *buffer,
-				       guchar *midi_channel,
+				       guchar *device_id,
 				       guchar *version,
 				       AgsMUID *source,
 				       AgsMUID *destination,
@@ -3597,9 +3623,9 @@ ags_midi_ci_util_get_get_property_data(AgsMidiCIUtil *midi_ci_util,
   g_return_val_if_fail(buffer[3] == 0x0d, 0);
   g_return_val_if_fail(buffer[4] == 0x34, 0);
 
-  /* MIDI channel */
-  if(midi_channel != NULL){
-    midi_channel[0] = buffer[2];
+  /* device ID */
+  if(device_id != NULL){
+    device_id[0] = buffer[2];
   }
 
   nth = 0;
@@ -3692,7 +3718,7 @@ ags_midi_ci_util_get_get_property_data(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_put_get_property_data_reply:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
- * @midi_channel: the MIDI channel
+ * @device_id: the device ID
  * @version: the version
  * @source: the source
  * @destination: the destination
@@ -3711,7 +3737,7 @@ ags_midi_ci_util_get_get_property_data(AgsMidiCIUtil *midi_ci_util,
 void
 ags_midi_ci_util_put_get_property_data_reply(AgsMidiCIUtil *midi_ci_util,
 					     guchar *buffer,
-					     guchar midi_channel,
+					     guchar device_id,
 					     guchar version,
 					     AgsMUID source,
 					     AgsMUID destination,
@@ -3733,7 +3759,7 @@ ags_midi_ci_util_put_get_property_data_reply(AgsMidiCIUtil *midi_ci_util,
   buffer[0] = 0xf0;
   buffer[1] = 0x7e;
 
-  buffer[2] = midi_channel;
+  buffer[2] = device_id;
 
   buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
 
@@ -3807,7 +3833,7 @@ ags_midi_ci_util_put_get_property_data_reply(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_get_get_property_data_reply:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
- * @midi_channel: (out): the MIDI channel
+ * @device_id: (out): the device ID
  * @version: (out): the return location of version
  * @source: (out): the return location of source
  * @destination: (out): the return location of destination
@@ -3828,7 +3854,7 @@ ags_midi_ci_util_put_get_property_data_reply(AgsMidiCIUtil *midi_ci_util,
 guint
 ags_midi_ci_util_get_get_property_data_reply(AgsMidiCIUtil *midi_ci_util,
 					     guchar *buffer,
-					     guchar *midi_channel,
+					     guchar *device_id,
 					     guchar *version,
 					     AgsMUID *source,
 					     AgsMUID *destination,
@@ -3849,9 +3875,9 @@ ags_midi_ci_util_get_get_property_data_reply(AgsMidiCIUtil *midi_ci_util,
   g_return_val_if_fail(buffer[3] == 0x0d, 0);
   g_return_val_if_fail(buffer[4] == 0x35, 0);
 
-  /* MIDI channel */
-  if(midi_channel != NULL){
-    midi_channel[0] = buffer[2];
+  /* device ID */
+  if(device_id != NULL){
+    device_id[0] = buffer[2];
   }
 
   nth = 0;
@@ -3944,7 +3970,7 @@ ags_midi_ci_util_get_get_property_data_reply(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_put_set_property_data:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
- * @midi_channel: the MIDI channel
+ * @device_id: the device ID
  * @version: the version
  * @source: the source
  * @destination: the destination
@@ -3963,7 +3989,7 @@ ags_midi_ci_util_get_get_property_data_reply(AgsMidiCIUtil *midi_ci_util,
 void
 ags_midi_ci_util_put_set_property_data(AgsMidiCIUtil *midi_ci_util,
 				       guchar *buffer,
-				       guchar midi_channel,
+				       guchar device_id,
 				       guchar version,
 				       AgsMUID source,
 				       AgsMUID destination,
@@ -3985,7 +4011,7 @@ ags_midi_ci_util_put_set_property_data(AgsMidiCIUtil *midi_ci_util,
   buffer[0] = 0xf0;
   buffer[1] = 0x7e;
 
-  buffer[2] = midi_channel;
+  buffer[2] = device_id;
 
   buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
 
@@ -4059,7 +4085,7 @@ ags_midi_ci_util_put_set_property_data(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_get_set_property_data:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
- * @midi_channel: (out): the MIDI channel
+ * @device_id: (out): the device ID
  * @version: (out): the return location of version
  * @source: (out): the return location of source
  * @destination: (out): the return location of destination
@@ -4080,7 +4106,7 @@ ags_midi_ci_util_put_set_property_data(AgsMidiCIUtil *midi_ci_util,
 guint
 ags_midi_ci_util_get_set_property_data(AgsMidiCIUtil *midi_ci_util,
 				       guchar *buffer,
-				       guchar *midi_channel,
+				       guchar *device_id,
 				       guchar *version,
 				       AgsMUID *source,
 				       AgsMUID *destination,
@@ -4101,9 +4127,9 @@ ags_midi_ci_util_get_set_property_data(AgsMidiCIUtil *midi_ci_util,
   g_return_val_if_fail(buffer[3] == 0x0d, 0);
   g_return_val_if_fail(buffer[4] == 0x36, 0);
 
-  /* MIDI channel */
-  if(midi_channel != NULL){
-    midi_channel[0] = buffer[2];
+  /* device ID */
+  if(device_id != NULL){
+    device_id[0] = buffer[2];
   }
 
   nth = 0;
@@ -4196,7 +4222,7 @@ ags_midi_ci_util_get_set_property_data(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_put_set_property_data_reply:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
- * @midi_channel: the MIDI channel
+ * @device_id: the device ID
  * @version: the version
  * @source: the source
  * @destination: the destination
@@ -4215,7 +4241,7 @@ ags_midi_ci_util_get_set_property_data(AgsMidiCIUtil *midi_ci_util,
 void
 ags_midi_ci_util_put_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
 					     guchar *buffer,
-					     guchar midi_channel,
+					     guchar device_id,
 					     guchar version,
 					     AgsMUID source,
 					     AgsMUID destination,
@@ -4237,7 +4263,7 @@ ags_midi_ci_util_put_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
   buffer[0] = 0xf0;
   buffer[1] = 0x7e;
 
-  buffer[2] = midi_channel;
+  buffer[2] = device_id;
 
   buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
 
@@ -4311,7 +4337,7 @@ ags_midi_ci_util_put_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_get_set_property_data_reply:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
- * @midi_channel: (out): the MIDI channel
+ * @device_id: (out): the device ID
  * @version: (out): the return location of version
  * @source: (out): the return location of source
  * @destination: (out): the return location of destination
@@ -4332,7 +4358,7 @@ ags_midi_ci_util_put_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
 guint
 ags_midi_ci_util_get_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
 					     guchar *buffer,
-					     guchar *midi_channel,
+					     guchar *device_id,
 					     guchar *version,
 					     AgsMUID *source,
 					     AgsMUID *destination,
@@ -4353,9 +4379,9 @@ ags_midi_ci_util_get_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
   g_return_val_if_fail(buffer[3] == 0x0d, 0);
   g_return_val_if_fail(buffer[4] == 0x37, 0);
 
-  /* MIDI channel */
-  if(midi_channel != NULL){
-    midi_channel[0] = buffer[2];
+  /* device ID */
+  if(device_id != NULL){
+    device_id[0] = buffer[2];
   }
 
   nth = 0;
@@ -4448,7 +4474,7 @@ ags_midi_ci_util_get_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_put_subscription:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
- * @midi_channel: the MIDI channel
+ * @device_id: the device ID
  * @version: the version
  * @source: the source
  * @destination: the destination
@@ -4467,7 +4493,7 @@ ags_midi_ci_util_get_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
 void
 ags_midi_ci_util_put_subscription(AgsMidiCIUtil *midi_ci_util,
 				  guchar *buffer,
-				  guchar midi_channel,
+				  guchar device_id,
 				  guchar version,
 				  AgsMUID source,
 				  AgsMUID destination,
@@ -4489,7 +4515,7 @@ ags_midi_ci_util_put_subscription(AgsMidiCIUtil *midi_ci_util,
   buffer[0] = 0xf0;
   buffer[1] = 0x7e;
 
-  buffer[2] = midi_channel;
+  buffer[2] = device_id;
 
   buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
 
@@ -4563,7 +4589,7 @@ ags_midi_ci_util_put_subscription(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_get_subscription:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
- * @midi_channel: (out): the MIDI channel
+ * @device_id: (out): the device ID
  * @version: (out): the return location of version
  * @source: (out): the return location of source
  * @destination: (out): the return location of destination
@@ -4584,7 +4610,7 @@ ags_midi_ci_util_put_subscription(AgsMidiCIUtil *midi_ci_util,
 guint
 ags_midi_ci_util_get_subscription(AgsMidiCIUtil *midi_ci_util,
 				  guchar *buffer,
-				  guchar *midi_channel,
+				  guchar *device_id,
 				  guchar *version,
 				  AgsMUID *source,
 				  AgsMUID *destination,
@@ -4605,9 +4631,9 @@ ags_midi_ci_util_get_subscription(AgsMidiCIUtil *midi_ci_util,
   g_return_val_if_fail(buffer[3] == 0x0d, 0);
   g_return_val_if_fail(buffer[4] == 0x38, 0);
 
-  /* MIDI channel */
-  if(midi_channel != NULL){
-    midi_channel[0] = buffer[2];
+  /* device ID */
+  if(device_id != NULL){
+    device_id[0] = buffer[2];
   }
 
   nth = 0;
@@ -4700,7 +4726,7 @@ ags_midi_ci_util_get_subscription(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_put_subscription_reply:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
- * @midi_channel: the MIDI channel
+ * @device_id: the device ID
  * @version: the version
  * @source: the source
  * @destination: the destination
@@ -4719,7 +4745,7 @@ ags_midi_ci_util_get_subscription(AgsMidiCIUtil *midi_ci_util,
 void
 ags_midi_ci_util_put_subscription_reply(AgsMidiCIUtil *midi_ci_util,
 					guchar *buffer,
-					guchar midi_channel,
+					guchar device_id,
 					guchar version,
 					AgsMUID source,
 					AgsMUID destination,
@@ -4741,7 +4767,7 @@ ags_midi_ci_util_put_subscription_reply(AgsMidiCIUtil *midi_ci_util,
   buffer[0] = 0xf0;
   buffer[1] = 0x7e;
 
-  buffer[2] = midi_channel;
+  buffer[2] = device_id;
 
   buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
 
@@ -4815,7 +4841,7 @@ ags_midi_ci_util_put_subscription_reply(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_get_subscription_reply:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
- * @midi_channel: (out): the MIDI channel
+ * @device_id: (out): the device ID
  * @version: (out): the return location of version
  * @source: (out): the return location of source
  * @destination: (out): the return location of destination
@@ -4836,7 +4862,7 @@ ags_midi_ci_util_put_subscription_reply(AgsMidiCIUtil *midi_ci_util,
 guint
 ags_midi_ci_util_get_subscription_reply(AgsMidiCIUtil *midi_ci_util,
 					guchar *buffer,
-					guchar *midi_channel,
+					guchar *device_id,
 					guchar *version,
 					AgsMUID *source,
 					AgsMUID *destination,
@@ -4857,9 +4883,9 @@ ags_midi_ci_util_get_subscription_reply(AgsMidiCIUtil *midi_ci_util,
   g_return_val_if_fail(buffer[3] == 0x0d, 0);
   g_return_val_if_fail(buffer[4] == 0x39, 0);
 
-  /* MIDI channel */
-  if(midi_channel != NULL){
-    midi_channel[0] = buffer[2];
+  /* device ID */
+  if(device_id != NULL){
+    device_id[0] = buffer[2];
   }
 
   nth = 0;
