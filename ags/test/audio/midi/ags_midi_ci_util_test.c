@@ -948,13 +948,88 @@ ags_midi_ci_util_test_get_profile_removed()
 void
 ags_midi_ci_util_test_put_profile_specific_data()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  guchar buffer[512];
+  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x2f\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x7e\x00\x00\x01\x01\x00\x00\x00\x00\xf7";
+  guchar *profile_specific_data;
+  
+  const guchar profile_id[] = "\x7e\x00\x00\x01\x01";
+  
+  AgsMUID source = 0x0cafe010;
+  AgsMUID destination = AGS_MIDI_CI_UTIL_BROADCAST_MUID;
+
+  guchar device_id = 0x7f;
+  guchar version = '\x01';
+  guint32 profile_specific_data_length;
+  
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  memset(buffer, 0, 512 * sizeof(guchar));
+
+  profile_specific_data_length = 0;
+  profile_specific_data = NULL;
+  
+  ags_midi_ci_util_put_profile_specific_data(midi_ci_util,
+					     buffer,
+					     device_id,
+					     version,
+					     source,
+					     destination,
+					     profile_id,
+					     profile_specific_data_length,
+					     profile_specific_data);
+
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 24 * sizeof(guchar)));
 }
 
 void
 ags_midi_ci_util_test_get_profile_specific_data()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  guchar buffer[] = "\xf0\x7e\x7f\x0d\x2f\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x7e\x00\x00\x01\x01\x00\x00\x00\x00\xf7";
+  guchar profile_id[5];
+  guchar *profile_specific_data;
+
+  const guchar filled_profile_id[5] = "\x7e\x00\x00\x01\x01";
+
+  AgsMUID source;
+  AgsMUID destination;
+  
+  guchar device_id;
+  guchar version;
+  guint32 profile_specific_data_length;
+  gboolean success;
+  
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  memset(profile_id, 0, 5 * sizeof(guchar));
+
+  ags_midi_ci_util_get_profile_specific_data(midi_ci_util,
+					     buffer,
+					     &device_id,
+					     &version,
+					     &source,
+					     &destination,
+					     profile_id,
+					     &profile_specific_data_length,
+					     &profile_specific_data);
+
+  CU_ASSERT(device_id == 0x7f);
+  CU_ASSERT(version == 0x01);
+  CU_ASSERT(source == 0x0cafe010);
+  CU_ASSERT(destination == AGS_MIDI_CI_UTIL_BROADCAST_MUID);
+  CU_ASSERT(profile_specific_data_length == 0);
+  CU_ASSERT(profile_specific_data == NULL);
+
+  success = TRUE;
+
+  if((!memcmp(profile_id, filled_profile_id, 5 * sizeof(guchar))) == FALSE){
+    success = FALSE;
+  }
+    
+  CU_ASSERT(success == TRUE);
 }
 
 void

@@ -368,6 +368,7 @@ guint ags_midi_ci_util_get_profile_removed(AgsMidiCIUtil *midi_ci_util,
 
 void ags_midi_ci_util_put_profile_specific_data(AgsMidiCIUtil *midi_ci_util,
 						guchar *buffer,
+						guchar device_id,
 						guchar version,
 						AgsMUID source,
 						AgsMUID destination,
@@ -376,12 +377,13 @@ void ags_midi_ci_util_put_profile_specific_data(AgsMidiCIUtil *midi_ci_util,
 						guchar *profile_specific_data);
 guint ags_midi_ci_util_get_profile_specific_data(AgsMidiCIUtil *midi_ci_util,
 						 guchar *buffer,
+						 guchar *device_id,
 						 guchar *version,
 						 AgsMUID *source,
 						 AgsMUID *destination,
 						 guchar *profile_id,
 						 guint32 *profile_specific_data_length,
-						 guchar *profile_specific_data);
+						 guchar **profile_specific_data);
 
 void ags_midi_ci_util_put_property_exchange_capabilities(AgsMidiCIUtil *midi_ci_util,
 							 guchar *buffer,

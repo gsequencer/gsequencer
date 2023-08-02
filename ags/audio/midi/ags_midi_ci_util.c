@@ -2255,16 +2255,20 @@ ags_midi_ci_util_get_profile_reply(AgsMidiCIUtil *midi_ci_util,
   nth += 2;
 
   /* enabled profile */
-  enabled_profile[0] = (guchar **) g_malloc(i_stop * sizeof(guchar *));
+  if(i_stop > 0){
+    enabled_profile[0] = (guchar **) g_malloc(i_stop * sizeof(guchar *));
 
-  for(i = 0; i < i_stop; i++){
-    enabled_profile[0][i] = (guchar *) g_malloc(5 * sizeof(guchar));
+    for(i = 0; i < i_stop; i++){
+      enabled_profile[0][i] = (guchar *) g_malloc(5 * sizeof(guchar));
     
-    enabled_profile[0][i][0] = buffer[5 + nth + (i * 5)];
-    enabled_profile[0][i][1] = buffer[5 + nth + (i * 5) + 1];
-    enabled_profile[0][i][2] = buffer[5 + nth + (i * 5) + 2];
-    enabled_profile[0][i][3] = buffer[5 + nth + (i * 5) + 3];
-    enabled_profile[0][i][4] = buffer[5 + nth + (i * 5) + 4];
+      enabled_profile[0][i][0] = buffer[5 + nth + (i * 5)];
+      enabled_profile[0][i][1] = buffer[5 + nth + (i * 5) + 1];
+      enabled_profile[0][i][2] = buffer[5 + nth + (i * 5) + 2];
+      enabled_profile[0][i][3] = buffer[5 + nth + (i * 5) + 3];
+      enabled_profile[0][i][4] = buffer[5 + nth + (i * 5) + 4];
+    }
+  }else{
+    enabled_profile[0] = NULL;
   }
   
   nth += (i_stop * 5);
@@ -2278,16 +2282,20 @@ ags_midi_ci_util_get_profile_reply(AgsMidiCIUtil *midi_ci_util,
   nth += 2;
 
   /* disabled profile */
-  disabled_profile[0] = (guchar **) g_malloc(i_stop * sizeof(guchar *));
+  if(i_stop > 0){
+    disabled_profile[0] = (guchar **) g_malloc(i_stop * sizeof(guchar *));
 
-  for(i = 0; i < i_stop; i++){
-    disabled_profile[0][i] = (guchar *) g_malloc(5 * sizeof(guchar));
+    for(i = 0; i < i_stop; i++){
+      disabled_profile[0][i] = (guchar *) g_malloc(5 * sizeof(guchar));
     
-    disabled_profile[0][i][0] = buffer[5 + nth + (i * 5)];
-    disabled_profile[0][i][1] = buffer[5 + nth + (i * 5) + 1];
-    disabled_profile[0][i][2] = buffer[5 + nth + (i * 5) + 2];
-    disabled_profile[0][i][3] = buffer[5 + nth + (i * 5) + 3];
-    disabled_profile[0][i][4] = buffer[5 + nth + (i * 5) + 4];
+      disabled_profile[0][i][0] = buffer[5 + nth + (i * 5)];
+      disabled_profile[0][i][1] = buffer[5 + nth + (i * 5) + 1];
+      disabled_profile[0][i][2] = buffer[5 + nth + (i * 5) + 2];
+      disabled_profile[0][i][3] = buffer[5 + nth + (i * 5) + 3];
+      disabled_profile[0][i][4] = buffer[5 + nth + (i * 5) + 4];
+    }
+  }else{
+    disabled_profile[0] = NULL;
   }
   
   nth += (i_stop * 5);
@@ -2944,6 +2952,7 @@ ags_midi_ci_util_get_profile_removed(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_put_profile_specific_data:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
+ * @device_id: the device ID
  * @version: the version
  * @source: the source
  * @destination: the destination
@@ -2958,6 +2967,7 @@ ags_midi_ci_util_get_profile_removed(AgsMidiCIUtil *midi_ci_util,
 void
 ags_midi_ci_util_put_profile_specific_data(AgsMidiCIUtil *midi_ci_util,
 					   guchar *buffer,
+					   guchar device_id,
 					   guchar version,
 					   AgsMUID source,
 					   AgsMUID destination,
@@ -2975,7 +2985,7 @@ ags_midi_ci_util_put_profile_specific_data(AgsMidiCIUtil *midi_ci_util,
   buffer[0] = 0xf0;
   buffer[1] = 0x7e;
 
-  buffer[2] = 0x7f;
+  buffer[2] = device_id;
 
   buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
 
@@ -3001,23 +3011,39 @@ ags_midi_ci_util_put_profile_specific_data(AgsMidiCIUtil *midi_ci_util,
   nth += 4;
 
   /* profile ID */
-  profile_id[0] = buffer[5 + nth];
+  buffer[5 + nth] = profile_id[0];
   nth++;
   
-  profile_id[1] = buffer[5 + nth];
+  buffer[5 + nth] = profile_id[1];
   nth++;
 
-  profile_id[2] = buffer[5 + nth];
+  buffer[5 + nth] = profile_id[2];
   nth++;
 
-  profile_id[3] = buffer[5 + nth];
+  buffer[5 + nth] = profile_id[3];
   nth++;
 
-  profile_id[4] = buffer[5 + nth];
+  buffer[5 + nth] = profile_id[4];
+  nth++;
+
+  /* profile specific data length */
+  buffer[5 + nth] = (0xff & profile_specific_data_length);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & profile_specific_data_length) >> 8;
+  nth++;
+
+  buffer[5 + nth] = (0xff0000 & profile_specific_data_length) >> 16;
+  nth++;
+
+  buffer[5 + nth] = (0xff000000 & profile_specific_data_length) >> 24;
   nth++;
 
   /* profile specific data */
-  memcpy(buffer + 5 + nth, profile_specific_data, profile_specific_data_length * sizeof(guchar));
+  if(profile_specific_data != NULL){
+    memcpy(buffer + 5 + nth, profile_specific_data, profile_specific_data_length * sizeof(guchar));
+  }
+
   nth += profile_specific_data_length;
   
   /* sysex end */
@@ -3029,12 +3055,13 @@ ags_midi_ci_util_put_profile_specific_data(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_get_profile_specific_data:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
+ * @device_id: (out): the return location of device id
  * @version: (out): the return location of version
  * @source: (out): the return location of source
  * @destination: (out): the return location of destination
  * @profile_id: (out): the profile ID
- * @profile_specific_data_length: (out): profile specific data length
- * @profile_specific_data: (out): profile specific data
+ * @profile_specific_data_length: (out): the return location of profile specific data length
+ * @profile_specific_data: (out): the return location of profile specific data
  *
  * Get profile specific data message.
  *
@@ -3045,12 +3072,13 @@ ags_midi_ci_util_put_profile_specific_data(AgsMidiCIUtil *midi_ci_util,
 guint
 ags_midi_ci_util_get_profile_specific_data(AgsMidiCIUtil *midi_ci_util,
 					   guchar *buffer,
+					   guchar *device_id,
 					   guchar *version,
 					   AgsMUID *source,
 					   AgsMUID *destination,
 					   guchar *profile_id,
 					   guint32 *profile_specific_data_length,
-					   guchar *profile_specific_data)
+					   guchar **profile_specific_data)
 {
   guint nth;
   guint i_stop;
@@ -3058,10 +3086,13 @@ ags_midi_ci_util_get_profile_specific_data(AgsMidiCIUtil *midi_ci_util,
   g_return_val_if_fail(midi_ci_util != NULL, 0);
   g_return_val_if_fail(buffer[0] == 0xf0, 0);
   g_return_val_if_fail(buffer[1] == 0x7e, 0);
-  g_return_val_if_fail(buffer[2] == 0x7f, 0);
   g_return_val_if_fail(buffer[3] == 0x0d, 0);
   g_return_val_if_fail(buffer[4] == 0x2f, 0);
-  g_return_val_if_fail(buffer[9] == 0x0f || buffer[10] == 0xff || buffer[11] == 0xff || buffer[12] == 0xff, 0);
+
+  /* device ID */
+  if(device_id != NULL){
+    device_id[0] = buffer[2];
+  }
 
   nth = 0;
 
@@ -3108,7 +3139,13 @@ ags_midi_ci_util_get_profile_specific_data(AgsMidiCIUtil *midi_ci_util,
   
   /* profile specific data */
   if(profile_specific_data != NULL){
-    memcpy(profile_specific_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+    if(i_stop > 0){
+      profile_specific_data[0] = g_malloc(i_stop * sizeof(guchar));
+      
+      memcpy(profile_specific_data[0], buffer + 5 + nth, i_stop * sizeof(guchar));
+    }else{
+      profile_specific_data[0] = NULL;
+    }
   }
 
   nth += i_stop;
