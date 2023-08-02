@@ -3333,6 +3333,8 @@ ags_midi_ci_util_get_property_exchange_capabilities(AgsMidiCIUtil *midi_ci_util,
  * @source: the source
  * @destination: the destination
  * @supported_property_exchange_count: the supported property exchange count
+ * @property_exchange_major: the major version
+ * @property_exchange_minor: the minor version
  *
  * Put number of supported property exchange message.
  *
@@ -3345,7 +3347,9 @@ ags_midi_ci_util_put_property_exchange_capabilities_reply(AgsMidiCIUtil *midi_ci
 							  guchar version,
 							  AgsMUID source,
 							  AgsMUID destination,
-							  guchar supported_property_exchange_count)
+							  guchar supported_property_exchange_count,
+							  guchar property_exchange_major,
+							  guchar property_exchange_minor)
 {
   guint nth;
   
@@ -3382,8 +3386,16 @@ ags_midi_ci_util_put_property_exchange_capabilities_reply(AgsMidiCIUtil *midi_ci
 			    destination);
   nth += 4;
 
-  /* supported_property_exchange_count */
+  /* supported property exchange count */
   buffer[5 + nth] = supported_property_exchange_count;
+  nth++;
+
+  /* major */
+  buffer[5 + nth] = property_exchange_major;
+  nth++;
+
+  /* minor */
+  buffer[5 + nth] = property_exchange_minor;
   nth++;
 
   /* sysex end */
@@ -3400,6 +3412,8 @@ ags_midi_ci_util_put_property_exchange_capabilities_reply(AgsMidiCIUtil *midi_ci
  * @source: (out): the return location of source
  * @destination: (out): the return location of destination
  * @supported_property_exchange_count: (out): the supported property exchange count
+ * @property_exchange_major: (out): the return location of major version
+ * @property_exchange_minor: (out): the return location of minor version
  *
  * Get number of supported property exchange count data message.
  *
@@ -3414,7 +3428,9 @@ ags_midi_ci_util_get_property_exchange_capabilities_reply(AgsMidiCIUtil *midi_ci
 							  guchar *version,
 							  AgsMUID *source,
 							  AgsMUID *destination,
-							  guchar *supported_property_exchange_count)
+							  guchar *supported_property_exchange_count,
+							  guchar *property_exchange_major,
+							  guchar *property_exchange_minor)
 {
   guint nth;
   
@@ -3451,6 +3467,18 @@ ags_midi_ci_util_get_property_exchange_capabilities_reply(AgsMidiCIUtil *midi_ci
 			    destination);
 
   nth += 4;
+
+  /* supported property exchange count */
+  supported_property_exchange_count[0] = buffer[5 + nth];
+  nth++;
+
+  /* major */
+  property_exchange_major[0] = buffer[5 + nth];
+  nth++;
+
+  /* minor */
+  property_exchange_minor[0] = buffer[5 + nth];
+  nth++;
 
   /* sysex end */
   if(buffer[5 + nth] == 0xf7){

@@ -410,14 +410,18 @@ void ags_midi_ci_util_put_property_exchange_capabilities_reply(AgsMidiCIUtil *mi
 							       guchar version,
 							       AgsMUID source,
 							       AgsMUID destination,
-							       guchar supported_property_exchange_count);
+							       guchar supported_property_exchange_count,
+							       guchar property_exchange_major,
+							       guchar property_exchange_minor);
 guint ags_midi_ci_util_get_property_exchange_capabilities_reply(AgsMidiCIUtil *midi_ci_util,
 								guchar *buffer,
 								guchar *device_id,
 								guchar *version,
 								AgsMUID *source,
 								AgsMUID *destination,
-								guchar *supported_property_exchange_count);
+								guchar *supported_property_exchange_count,
+								guchar *property_exchange_major,
+								guchar *property_exchange_minor);
 
 void ags_midi_ci_util_put_get_property_data(AgsMidiCIUtil *midi_ci_util,
 					    guchar *buffer,
