@@ -212,7 +212,7 @@ ags_midi_ci_util_test_get_discovery()
 				 buffer,
 				 &version,
 				 &source,
-				 &manufacturer_id,
+				 manufacturer_id,
 				 &device_family,
 				 &device_family_model_number,
 				 software_revision_level,
@@ -292,7 +292,7 @@ ags_midi_ci_util_test_get_discovery_reply()
 				       &version,
 				       &source,
 				       &destination,
-				       &manufacturer_id,
+				       manufacturer_id,
 				       &device_family,
 				       &device_family_model_number,
 				       software_revision_level,
@@ -1179,13 +1179,93 @@ ags_midi_ci_util_test_get_property_exchange_capabilities_reply()
 void
 ags_midi_ci_util_test_put_get_property_data()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  guchar buffer[512];
+  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x34\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x01\x00\x00\x00\x00\x01\x00\x00\x00\xf7";
+  guchar *header_data = NULL;
+  guchar *property_data = NULL;
+  
+  AgsMUID source = 0x0cafe010;
+  AgsMUID destination = 0x0eadbeef;
+
+  guchar device_id = '\x7f';
+  guchar version = '\x01';
+  guchar request_id = '\x01';
+  guint16 header_data_length = 0;
+  guint16 property_data_length = 0;  
+  guint16 chunk_count = 0;
+  guint16 nth_chunk = 1;  
+  
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  memset(buffer, 0, 512 * sizeof(guchar));
+  
+  ags_midi_ci_util_put_get_property_data(midi_ci_util,
+					 buffer,
+					 device_id,
+					 version,
+					 source,
+					 destination,
+					 request_id,
+					 header_data_length,
+					 header_data,
+					 chunk_count,
+					 nth_chunk,
+					 property_data_length,
+					 property_data);
+
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 19 * sizeof(guchar)));
 }
 
 void
 ags_midi_ci_util_test_get_get_property_data()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  guchar buffer[] = "\xf0\x7e\x7f\x0d\x34\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x01\x00\x00\x00\x00\x01\x00\x00\x00\xf7";
+  guchar header_data_length;  
+  guchar *header_data;
+  guchar property_data_length;  
+  guchar *property_data;
+
+  AgsMUID source;
+  AgsMUID destination;
+  
+  guchar device_id;
+  guchar version;
+  guchar request_id;
+  guint16 chunk_count;
+  guint16 nth_chunk;  
+  gboolean success;
+  
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  ags_midi_ci_util_get_get_property_data(midi_ci_util,
+					 buffer,
+					 &device_id,
+					 &version,
+					 &source,
+					 &destination,
+					 &request_id,
+					 &header_data_length,
+					 &header_data,
+					 &chunk_count,
+					 &nth_chunk,
+					 &property_data_length,
+					 &property_data);
+
+  CU_ASSERT(device_id == 0x7f);
+  CU_ASSERT(version == 0x01);
+  CU_ASSERT(source == 0x0cafe010);
+  CU_ASSERT(destination == 0x0eadbeef);
+  CU_ASSERT(request_id == 0x01);
+  CU_ASSERT(header_data_length == 0x00);
+  CU_ASSERT(header_data == NULL);
+  CU_ASSERT(chunk_count == 0x00);
+  CU_ASSERT(nth_chunk == 0x01);
+  CU_ASSERT(property_data_length == 0x00);
+  CU_ASSERT(property_data == NULL);  
 }
 
 void

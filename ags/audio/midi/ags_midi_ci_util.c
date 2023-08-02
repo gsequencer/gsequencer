@@ -212,7 +212,7 @@ ags_midi_ci_util_put_discovery(AgsMidiCIUtil *midi_ci_util,
 			       guchar *buffer,
 			       guchar version,
 			       AgsMUID source,
-			       guchar *manufacturer_id,
+			       guchar manufacturer_id[3],
 			       guint16 device_family,
 			       guint16 device_family_model_number,
 			       guchar *software_revision_level,
@@ -333,7 +333,7 @@ ags_midi_ci_util_get_discovery(AgsMidiCIUtil *midi_ci_util,
 			       guchar *buffer,
 			       guchar *version,
 			       AgsMUID *source,
-			       guchar *manufacturer_id,
+			       guchar manufacturer_id[3],
 			       guint16 *device_family,
 			       guint16 *device_family_model_number,
 			       guchar *software_revision_level,
@@ -374,6 +374,8 @@ ags_midi_ci_util_get_discovery(AgsMidiCIUtil *midi_ci_util,
   /* manufacturer */
   if(manufacturer_id != NULL){
     manufacturer_id[0] = buffer[5 + nth];
+    manufacturer_id[1] = buffer[5 + nth + 1];
+    manufacturer_id[2] = buffer[5 + nth + 2];
   }
 
   nth += 3;
@@ -450,7 +452,7 @@ ags_midi_ci_util_put_discovery_reply(AgsMidiCIUtil *midi_ci_util,
 				     guchar version,
 				     AgsMUID source,
 				     AgsMUID destination,
-				     gchar *manufacturer_id,
+				     gchar manufacturer_id[3],
 				     guint16 device_family,
 				     guint16 device_family_model_number,
 				     gchar *software_revision_level,
@@ -575,7 +577,7 @@ ags_midi_ci_util_get_discovery_reply(AgsMidiCIUtil *midi_ci_util,
 				     guchar *version,
 				     AgsMUID *source,
 				     AgsMUID *destination,
-				     guchar *manufacturer_id,
+				     guchar manufacturer_id[3],
 				     guint16 *device_family,
 				     guint16 *device_family_model_number,
 				     guchar *software_revision_level,
@@ -617,6 +619,8 @@ ags_midi_ci_util_get_discovery_reply(AgsMidiCIUtil *midi_ci_util,
   /* manufacturer */
   if(manufacturer_id != NULL){
     manufacturer_id[0] = buffer[5 + nth];
+    manufacturer_id[1] = buffer[5 + nth + 1];
+    manufacturer_id[2] = buffer[5 + nth + 2];
   }
 
   nth += 3;
@@ -2464,6 +2468,12 @@ ags_midi_ci_util_get_profile_enabled_report(AgsMidiCIUtil *midi_ci_util,
   enabled_profile[4] = buffer[5 + nth + 4];
 
   nth += 5;
+
+  /* enabled channel count */
+  if(enabled_channel_count != NULL){
+    enabled_channel_count[0] = (buffer[5 + nth]) | (buffer[5 + nth + 1] << 8);
+    nth += 2;
+  }
   
   /* sysex end */
   if(buffer[5 + nth] == 0xf7){
@@ -2629,6 +2639,12 @@ ags_midi_ci_util_get_profile_disabled_report(AgsMidiCIUtil *midi_ci_util,
   disabled_profile[4] = buffer[5 + nth + 4];
 
   nth += 5;
+
+  /* disabled channel count */
+  if(disabled_channel_count != NULL){
+    disabled_channel_count[0] = (buffer[5 + nth]) | (buffer[5 + nth + 1] << 8);
+    nth += 2;
+  }
   
   /* sysex end */
   if(buffer[5 + nth] == 0xf7){
@@ -3572,9 +3588,12 @@ ags_midi_ci_util_put_get_property_data(AgsMidiCIUtil *midi_ci_util,
   nth++;
 
   /* header data */
-  memcpy(buffer + 5 + nth, header_data, header_data_length *sizeof(guchar));
-  nth += header_data_length;
-
+  if(header_data != NULL &&
+     header_data_length > 0){
+    memcpy(buffer + 5 + nth, header_data, header_data_length * sizeof(guchar));
+    nth += header_data_length;
+  }
+  
   /* chunk count */
   buffer[5 + nth] = (0xff & chunk_count);
   nth++;
@@ -3597,8 +3616,11 @@ ags_midi_ci_util_put_get_property_data(AgsMidiCIUtil *midi_ci_util,
   nth++;
 
   /* property data */
-  memcpy(buffer + 5 + nth, property_data, property_data_length *sizeof(guchar));
-  nth += property_data_length;
+  if(property_data != NULL &&
+     property_data_length > 0){
+    memcpy(buffer + 5 + nth, property_data, property_data_length * sizeof(guchar));
+    nth += property_data_length;
+  }
   
   /* sysex end */
   buffer[5 + nth] = 0xf7;
@@ -3636,11 +3658,11 @@ ags_midi_ci_util_get_get_property_data(AgsMidiCIUtil *midi_ci_util,
 				       AgsMUID *destination,
 				       guchar *request_id,
 				       guint16 *header_data_length,
-				       guchar *header_data,
+				       guchar **header_data,
 				       guint16 *chunk_count,
 				       guint16 *nth_chunk,
 				       guint16 *property_data_length,
-				       guchar *property_data)
+				       guchar **property_data)
 {
   guint nth;
   guint i_stop;
@@ -3697,7 +3719,11 @@ ags_midi_ci_util_get_get_property_data(AgsMidiCIUtil *midi_ci_util,
 
   /* header data */
   if(header_data != NULL){
-    memcpy(header_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+    if(i_stop > 0){
+      memcpy(header_data[0], buffer + 5 + nth, i_stop * sizeof(guchar));
+    }else{
+      header_data[0] = NULL;
+    }
   }
 
   nth += i_stop;
@@ -3727,7 +3753,11 @@ ags_midi_ci_util_get_get_property_data(AgsMidiCIUtil *midi_ci_util,
 
   /* property data */
   if(property_data != NULL){
-    memcpy(property_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+    if(i_stop > 0){
+      memcpy(property_data[0], buffer + 5 + nth, i_stop * sizeof(guchar));
+    }else{
+      property_data[0] = NULL;
+    }
   }
 
   nth += i_stop;
