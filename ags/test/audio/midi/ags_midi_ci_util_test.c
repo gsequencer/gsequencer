@@ -1224,9 +1224,9 @@ ags_midi_ci_util_test_get_get_property_data()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[] = "\xf0\x7e\x7f\x0d\x34\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x01\x00\x00\x00\x00\x01\x00\x00\x00\xf7";
-  guchar header_data_length;  
+  guint16 header_data_length;  
   guchar *header_data;
-  guchar property_data_length;  
+  guint16 property_data_length;  
   guchar *property_data;
 
   AgsMUID source;
