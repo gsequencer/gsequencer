@@ -15,6 +15,11 @@
   </content_rating>
   <name>GSequencer</name>
   <summary>Advanced Gtk+ Sequencer</summary>
+  <categories>
+    <category>Audio</category>
+    <category>Midi</category>
+    <category>Sequencer</category>
+  </categories>
   <description>
     <p>GSequencer provides you various tools to play, create, edit and mix your own music.
     It features a step sequencer, piano roll, automation and wave-form editor.</p>
