@@ -810,6 +810,256 @@ ags_midi_ci_util_get_invalidate_muid(AgsMidiCIUtil *midi_ci_util,
 }
 
 /**
+ * ags_midi_ci_util_put_ack:
+ * @midi_ci_util: the MIDI CI util
+ * @buffer: the buffer
+ * @version: the version
+ * @source: the source
+ * @destination: the destination
+ * @orig_transaction: the original transaction
+ * @status_code: the status code
+ * @status_data: the status data
+ * @details: the details
+ * @message_length: the message length
+ * @message: the message
+ *
+ * Put ACK MIDI CI message.
+ *
+ * Since: 5.5.0
+ */
+void
+ags_midi_ci_util_put_ack(AgsMidiCIUtil *midi_ci_util,
+			 guchar *buffer,
+			 guchar device_id,
+			 guchar version,
+			 AgsMUID source,
+			 AgsMUID destination,
+			 guchar orig_transaction,
+			 guchar status_code,
+			 guchar status_data,
+			 guchar details[5],
+			 guint16 message_length,
+			 guchar *message)
+{
+  guint nth;
+  
+  g_return_if_fail(midi_ci_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[0] = 0xf0;
+  buffer[1] = 0x7e;
+
+  buffer[2] = device_id;
+
+  buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
+
+  buffer[4] = 0x7d; // Sub-ID#2 - ACK
+
+  nth = 0;
+
+  /* version */
+  buffer[5 + nth] = version;
+
+  nth++;
+  
+  /* source */
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
+
+  /* destination */
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
+
+  /* orig transaction */
+  buffer[5 + nth] = orig_transaction;
+
+  nth++;
+
+  /* status code */
+  buffer[5 + nth] = status_code;
+
+  nth++;
+
+  /* status data */
+  buffer[5 + nth] = status_data;
+
+  nth++;
+
+  /* details */
+  buffer[5 + nth] = details[0];
+  nth++;
+
+  buffer[5 + nth] = details[1];
+  nth++;
+
+  buffer[5 + nth] = details[2];
+  nth++;
+
+  buffer[5 + nth] = details[3];
+  nth++;
+  
+  buffer[5 + nth] = details[4];
+  nth++;
+
+  /* message length */
+  buffer[5 + nth] = (0xff & message_length);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & message_length) >> 8;
+  nth++;
+
+  /* message */
+  if(message != NULL){
+    memcpy(buffer + 5 + nth, message, message_length * sizeof(guchar));
+  }
+
+  nth += message_length;
+
+  /* sysex end */
+  buffer[5 + nth] = 0xf7;
+  nth++;
+}
+
+/**
+ * ags_midi_ci_util_get_ack:
+ * @midi_ci_util: the MIDI CI util
+ * @buffer: the buffer
+ * @version: (out): the return location of version
+ * @source: (out): the return location of source
+ * @destination: (out): the return location of destination
+ * @orig_transaction: the original transaction
+ * @status_code: (out): the return location of status code
+ * @status_data: (out): the return location of status data
+ * @details: (out): the return location of details
+ * @message_length: (out): the return location of message length
+ * @message: (out): the return location of message
+ *
+ * Get ACK MIDI CI message.
+ *
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.0
+ */
+guint
+ags_midi_ci_util_get_ack(AgsMidiCIUtil *midi_ci_util,
+			 guchar *buffer,
+			 guchar *device_id,
+			 guchar *version,
+			 AgsMUID *source,
+			 AgsMUID *destination,
+			 guchar *orig_transaction,
+			 guchar *status_code,
+			 guchar *status_data,
+			 guchar details[5],
+			 guint16 *message_length,
+			 guchar **message)
+{
+  guint nth;
+  guint i_stop;
+  
+  g_return_val_if_fail(midi_ci_util != NULL, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail(buffer[1] == 0x7e, 0);
+  g_return_val_if_fail(buffer[3] == 0x0d, 0);
+  g_return_val_if_fail(buffer[4] == 0x7d, 0);
+
+  /* device ID */
+  if(device_id != NULL){
+    device_id[0] = buffer[2];
+  }
+
+  nth = 0;
+
+  /* version */
+  if(version != NULL){
+    version[0] = buffer[5 + nth];
+  }
+
+  nth++;
+  
+  /* source */
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+
+  nth += 4;
+
+  /* destination */
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+
+  nth += 4;
+
+  /* original transaction */
+  if(orig_transaction != NULL){
+    orig_transaction[0] = buffer[5 + nth];
+  }
+
+  nth++;
+
+  /* status code */
+  if(status_code != NULL){
+    status_code[0] = buffer[5 + nth];
+  }
+
+  nth++;
+
+  /* status data */
+  if(status_data != NULL){
+    status_data[0] = buffer[5 + nth];
+  }
+
+  nth++;
+
+  /* details */
+  if(details != NULL){
+    details[0] = buffer[5 + nth];
+    details[1] = buffer[5 + nth + 1];
+    details[2] = buffer[5 + nth + 2];
+    details[3] = buffer[5 + nth + 3];
+    details[4] = buffer[5 + nth + 4];
+  }
+
+  nth += 5;
+  
+  /* message length */
+  if(message_length != NULL){
+    message_length[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+  }
+
+  i_stop = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+
+  nth += 2;
+
+  /* message */
+  if(message != NULL){
+    if(i_stop > 0){
+      message[0] = g_malloc(i_stop * sizeof(guchar));
+      
+      memcpy(message[0], buffer + 5 + nth, i_stop * sizeof(guchar));
+    }else{
+      message[0] = NULL;
+    }
+  }
+
+  /* sysex end */
+  if(buffer[5 + nth] == 0xf7){
+    nth++;
+
+    return(5 + nth);
+  }
+
+  return(0);
+}
+
+/**
  * ags_midi_ci_util_put_nak:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
@@ -3854,7 +4104,7 @@ ags_midi_ci_util_put_get_property_data_reply(AgsMidiCIUtil *midi_ci_util,
   nth++;
 
   /* header data */
-  memcpy(buffer + 5 + nth, header_data, header_data_length *sizeof(guchar));
+  memcpy(buffer + 5 + nth, header_data, header_data_length * sizeof(guchar));
   nth += header_data_length;
 
   /* chunk count */
@@ -3879,7 +4129,7 @@ ags_midi_ci_util_put_get_property_data_reply(AgsMidiCIUtil *midi_ci_util,
   nth++;
 
   /* property data */
-  memcpy(buffer + 5 + nth, property_data, property_data_length *sizeof(guchar));
+  memcpy(buffer + 5 + nth, property_data, property_data_length * sizeof(guchar));
   nth += property_data_length;
   
   /* sysex end */
@@ -3895,13 +4145,13 @@ ags_midi_ci_util_put_get_property_data_reply(AgsMidiCIUtil *midi_ci_util,
  * @version: (out): the return location of version
  * @source: (out): the return location of source
  * @destination: (out): the return location of destination
- * @request_id: (out): the request ID
- * @header_data_length: (out): the header data length
- * @header_data: (out): the header data
- * @chunk_count: (out): the chunk count
- * @nth_chunk: (out): the nth chunk
- * @property_data_length: (out): the property data length
- * @property_data: (out): the property data
+ * @request_id: (out): the return location of request ID
+ * @header_data_length: (out): the return location of header data length
+ * @header_data: (out): the return location of header data
+ * @chunk_count: (out): the return location of chunk count
+ * @nth_chunk: (out): the return location of nth chunk
+ * @property_data_length: (out): the return location of property data length
+ * @property_data: (out): the return location of property data
  *
  * Get get property data.
  *
@@ -3918,11 +4168,11 @@ ags_midi_ci_util_get_get_property_data_reply(AgsMidiCIUtil *midi_ci_util,
 					     AgsMUID *destination,
 					     guchar *request_id,
 					     guint16 *header_data_length,
-					     guchar *header_data,
+					     guchar **header_data,
 					     guint16 *chunk_count,
 					     guint16 *nth_chunk,
 					     guint16 *property_data_length,
-					     guchar *property_data)
+					     guchar **property_data)
 {
   guint nth;
   guint i_stop;
@@ -3979,7 +4229,11 @@ ags_midi_ci_util_get_get_property_data_reply(AgsMidiCIUtil *midi_ci_util,
 
   /* header data */
   if(header_data != NULL){
-    memcpy(header_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+    if(i_stop > 0){
+      memcpy(header_data[0], buffer + 5 + nth, i_stop * sizeof(guchar));
+    }else{
+      header_data[0] = NULL;
+    }
   }
 
   nth += i_stop;
@@ -4009,7 +4263,11 @@ ags_midi_ci_util_get_get_property_data_reply(AgsMidiCIUtil *midi_ci_util,
 
   /* property data */
   if(property_data != NULL){
-    memcpy(property_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+    if(i_stop > 0){
+      memcpy(property_data[0], buffer + 5 + nth, i_stop * sizeof(guchar));
+    }else{
+      property_data[0] = NULL;
+    }
   }
 
   nth += i_stop;
@@ -4106,7 +4364,7 @@ ags_midi_ci_util_put_set_property_data(AgsMidiCIUtil *midi_ci_util,
   nth++;
 
   /* header data */
-  memcpy(buffer + 5 + nth, header_data, header_data_length *sizeof(guchar));
+  memcpy(buffer + 5 + nth, header_data, header_data_length * sizeof(guchar));
   nth += header_data_length;
 
   /* chunk count */
@@ -4131,7 +4389,7 @@ ags_midi_ci_util_put_set_property_data(AgsMidiCIUtil *midi_ci_util,
   nth++;
 
   /* property data */
-  memcpy(buffer + 5 + nth, property_data, property_data_length *sizeof(guchar));
+  memcpy(buffer + 5 + nth, property_data, property_data_length * sizeof(guchar));
   nth += property_data_length;
 
   /* sysex end */
@@ -4170,11 +4428,11 @@ ags_midi_ci_util_get_set_property_data(AgsMidiCIUtil *midi_ci_util,
 				       AgsMUID *destination,
 				       guchar *request_id,
 				       guint16 *header_data_length,
-				       guchar *header_data,
+				       guchar **header_data,
 				       guint16 *chunk_count,
 				       guint16 *nth_chunk,
 				       guint16 *property_data_length,
-				       guchar *property_data)
+				       guchar **property_data)
 {
   guint nth;
   guint i_stop;
@@ -4231,7 +4489,11 @@ ags_midi_ci_util_get_set_property_data(AgsMidiCIUtil *midi_ci_util,
 
   /* header data */
   if(header_data != NULL){
-    memcpy(header_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+    if(i_stop > 0){
+      memcpy(header_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+    }else{
+      header_data[0] = NULL;
+    }
   }
 
   nth += i_stop;
@@ -4261,7 +4523,11 @@ ags_midi_ci_util_get_set_property_data(AgsMidiCIUtil *midi_ci_util,
 
   /* property data */
   if(property_data != NULL){
-    memcpy(property_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+    if(i_stop > 0){
+      memcpy(property_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+    }else{
+      property_data[0] = NULL;
+    }
   }
 
   nth += i_stop;
@@ -4358,7 +4624,7 @@ ags_midi_ci_util_put_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
   nth++;
 
   /* header data */
-  memcpy(buffer + 5 + nth, header_data, header_data_length *sizeof(guchar));
+  memcpy(buffer + 5 + nth, header_data, header_data_length * sizeof(guchar));
   nth += header_data_length;
 
   /* chunk count */
@@ -4383,7 +4649,7 @@ ags_midi_ci_util_put_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
   nth++;
 
   /* property data */
-  memcpy(buffer + 5 + nth, property_data, property_data_length *sizeof(guchar));
+  memcpy(buffer + 5 + nth, property_data, property_data_length * sizeof(guchar));
   nth += property_data_length;
 
   /* sysex end */
@@ -4422,11 +4688,11 @@ ags_midi_ci_util_get_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
 					     AgsMUID *destination,
 					     guchar *request_id,
 					     guint16 *header_data_length,
-					     guchar *header_data,
+					     guchar **header_data,
 					     guint16 *chunk_count,
 					     guint16 *nth_chunk,
 					     guint16 *property_data_length,
-					     guchar *property_data)
+					     guchar **property_data)
 {
   guint nth;
   guint i_stop;
@@ -4483,7 +4749,11 @@ ags_midi_ci_util_get_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
 
   /* header data */
   if(header_data != NULL){
-    memcpy(header_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+    if(i_stop > 0){
+      memcpy(header_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+    }else{
+      header_data[0] = NULL;
+    }      
   }
 
   nth += i_stop;
@@ -4513,7 +4783,11 @@ ags_midi_ci_util_get_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
 
   /* property data */
   if(property_data != NULL){
-    memcpy(property_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+    if(i_stop > 0){
+      memcpy(property_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+    }else{
+      property_data[0] = NULL;
+    }
   }
 
   nth += i_stop;
@@ -4610,7 +4884,7 @@ ags_midi_ci_util_put_subscription(AgsMidiCIUtil *midi_ci_util,
   nth++;
 
   /* header data */
-  memcpy(buffer + 5 + nth, header_data, header_data_length *sizeof(guchar));
+  memcpy(buffer + 5 + nth, header_data, header_data_length * sizeof(guchar));
   nth += header_data_length;
 
   /* chunk count */
@@ -4635,7 +4909,7 @@ ags_midi_ci_util_put_subscription(AgsMidiCIUtil *midi_ci_util,
   nth++;
 
   /* property data */
-  memcpy(buffer + 5 + nth, property_data, property_data_length *sizeof(guchar));
+  memcpy(buffer + 5 + nth, property_data, property_data_length * sizeof(guchar));
   nth += property_data_length;
 
   /* sysex end */
@@ -4674,11 +4948,11 @@ ags_midi_ci_util_get_subscription(AgsMidiCIUtil *midi_ci_util,
 				  AgsMUID *destination,
 				  guchar *request_id,
 				  guint16 *header_data_length,
-				  guchar *header_data,
+				  guchar **header_data,
 				  guint16 *chunk_count,
 				  guint16 *nth_chunk,
 				  guint16 *property_data_length,
-				  guchar *property_data)
+				  guchar **property_data)
 {
   guint nth;
   guint i_stop;
@@ -4735,7 +5009,11 @@ ags_midi_ci_util_get_subscription(AgsMidiCIUtil *midi_ci_util,
 
   /* header data */
   if(header_data != NULL){
-    memcpy(header_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+    if(i_stop > 0){
+      memcpy(header_data[0], buffer + 5 + nth, i_stop * sizeof(guchar));
+    }else{
+      header_data[0] = NULL;
+    }
   }
 
   nth += i_stop;
@@ -4765,7 +5043,11 @@ ags_midi_ci_util_get_subscription(AgsMidiCIUtil *midi_ci_util,
 
   /* property data */
   if(property_data != NULL){
-    memcpy(property_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+    if(i_stop > 0){
+      memcpy(property_data[0], buffer + 5 + nth, i_stop * sizeof(guchar));
+    }else{
+      property_data[0] = NULL;
+    }
   }
 
   nth += i_stop;
@@ -4862,7 +5144,7 @@ ags_midi_ci_util_put_subscription_reply(AgsMidiCIUtil *midi_ci_util,
   nth++;
 
   /* header data */
-  memcpy(buffer + 5 + nth, header_data, header_data_length *sizeof(guchar));
+  memcpy(buffer + 5 + nth, header_data, header_data_length * sizeof(guchar));
   nth += header_data_length;
 
   /* chunk count */
@@ -4887,7 +5169,7 @@ ags_midi_ci_util_put_subscription_reply(AgsMidiCIUtil *midi_ci_util,
   nth++;
 
   /* property data */
-  memcpy(buffer + 5 + nth, property_data, property_data_length *sizeof(guchar));
+  memcpy(buffer + 5 + nth, property_data, property_data_length * sizeof(guchar));
   nth += property_data_length;
 
   /* sysex end */
@@ -4926,11 +5208,11 @@ ags_midi_ci_util_get_subscription_reply(AgsMidiCIUtil *midi_ci_util,
 					AgsMUID *destination,
 					guchar *request_id,
 					guint16 *header_data_length,
-					guchar *header_data,
+					guchar **header_data,
 					guint16 *chunk_count,
 					guint16 *nth_chunk,
 					guint16 *property_data_length,
-					guchar *property_data)
+					guchar **property_data)
 {
   guint nth;
   guint i_stop;
@@ -4987,7 +5269,11 @@ ags_midi_ci_util_get_subscription_reply(AgsMidiCIUtil *midi_ci_util,
 
   /* header data */
   if(header_data != NULL){
-    memcpy(header_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+    if(i_stop > 0){
+      memcpy(header_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+    }else{
+      header_data[0] = NULL;
+    }
   }
 
   nth += i_stop;
@@ -5017,7 +5303,11 @@ ags_midi_ci_util_get_subscription_reply(AgsMidiCIUtil *midi_ci_util,
 
   /* property data */
   if(property_data != NULL){
-    memcpy(property_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+    if(i_stop > 0){
+      memcpy(property_data[0], buffer + 5 + nth, i_stop * sizeof(guchar));
+    }else{
+      property_data[0] = NULL;
+    }      
   }
 
   nth += i_stop;

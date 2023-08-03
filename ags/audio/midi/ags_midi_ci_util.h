@@ -177,6 +177,31 @@ guint ags_midi_ci_util_get_invalidate_muid(AgsMidiCIUtil *midi_ci_util,
 					   AgsMUID *source,
 					   AgsMUID *target_muid);
 
+void ags_midi_ci_util_put_ack(AgsMidiCIUtil *midi_ci_util,
+			      guchar *buffer,
+			      guchar device_id,
+			      guchar version,
+			      AgsMUID source,
+			      AgsMUID destination,
+			      guchar orig_transaction,
+			      guchar status_code,
+			      guchar status_data,
+			      guchar details[5],
+			      guint16 message_length,
+			      guchar *message);
+guint ags_midi_ci_util_get_ack(AgsMidiCIUtil *midi_ci_util,
+			       guchar *buffer,
+			       guchar *device_id,
+			       guchar *version,
+			       AgsMUID *source,
+			       AgsMUID *destination,
+			       guchar *orig_transaction,
+			       guchar *status_code,
+			       guchar *status_data,
+			       guchar details[5],
+			       guint16 *message_length,
+			       guchar **message);
+
 void ags_midi_ci_util_put_nak(AgsMidiCIUtil *midi_ci_util,
 			      guchar *buffer,
 			      guchar version,
@@ -471,11 +496,11 @@ guint ags_midi_ci_util_get_get_property_data_reply(AgsMidiCIUtil *midi_ci_util,
 						   AgsMUID *destination,
 						   guchar *request_id,
 						   guint16 *header_data_length,
-						   guchar *header_data,
+						   guchar **header_data,
 						   guint16 *chunk_count,
 						   guint16 *nth_chunk,
 						   guint16 *property_data_length,
-						   guchar *property_data);
+						   guchar **property_data);
 
 void ags_midi_ci_util_put_set_property_data(AgsMidiCIUtil *midi_ci_util,
 					    guchar *buffer,
@@ -498,11 +523,11 @@ guint ags_midi_ci_util_get_set_property_data(AgsMidiCIUtil *midi_ci_util,
 					     AgsMUID *destination,
 					     guchar *request_id,
 					     guint16 *header_data_length,
-					     guchar *header_data,
+					     guchar **header_data,
 					     guint16 *chunk_count,
 					     guint16 *nth_chunk,
 					     guint16 *property_data_length,
-					     guchar *property_data);
+					     guchar **property_data);
 
 void ags_midi_ci_util_put_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
 						  guchar *buffer,
@@ -525,11 +550,11 @@ guint ags_midi_ci_util_get_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
 						   AgsMUID *destination,
 						   guchar *request_id,
 						   guint16 *header_data_length,
-						   guchar *header_data,
+						   guchar **header_data,
 						   guint16 *chunk_count,
 						   guint16 *nth_chunk,
 						   guint16 *property_data_length,
-						   guchar *property_data);
+						   guchar **property_data);
 
 void ags_midi_ci_util_put_subscription(AgsMidiCIUtil *midi_ci_util,
 				       guchar *buffer,
@@ -552,11 +577,11 @@ guint ags_midi_ci_util_get_subscription(AgsMidiCIUtil *midi_ci_util,
 					AgsMUID *destination,
 					guchar *request_id,
 					guint16 *header_data_length,
-					guchar *header_data,
+					guchar **header_data,
 					guint16 *chunk_count,
 					guint16 *nth_chunk,
 					guint16 *property_data_length,
-					guchar *property_data);
+					guchar **property_data);
 
 void ags_midi_ci_util_put_subscription_reply(AgsMidiCIUtil *midi_ci_util,
 					     guchar *buffer,
@@ -579,11 +604,11 @@ guint ags_midi_ci_util_get_subscription_reply(AgsMidiCIUtil *midi_ci_util,
 					      AgsMUID *destination,
 					      guchar *request_id,
 					      guint16 *header_data_length,
-					      guchar *header_data,
+					      guchar **header_data,
 					      guint16 *chunk_count,
 					      guint16 *nth_chunk,
 					      guint16 *property_data_length,
-					      guchar *property_data);
+					      guchar **property_data);
 
 G_END_DECLS
 
