@@ -471,11 +471,11 @@ guint ags_midi_ci_util_get_get_property_data_reply(AgsMidiCIUtil *midi_ci_util,
 						   AgsMUID *destination,
 						   guchar *request_id,
 						   guint16 *header_data_length,
-						   guchar *header_data,
+						   guchar **header_data,
 						   guint16 *chunk_count,
 						   guint16 *nth_chunk,
 						   guint16 *property_data_length,
-						   guchar *property_data);
+						   guchar **property_data);
 
 void ags_midi_ci_util_put_set_property_data(AgsMidiCIUtil *midi_ci_util,
 					    guchar *buffer,
@@ -498,11 +498,11 @@ guint ags_midi_ci_util_get_set_property_data(AgsMidiCIUtil *midi_ci_util,
 					     AgsMUID *destination,
 					     guchar *request_id,
 					     guint16 *header_data_length,
-					     guchar *header_data,
+					     guchar **header_data,
 					     guint16 *chunk_count,
 					     guint16 *nth_chunk,
 					     guint16 *property_data_length,
-					     guchar *property_data);
+					     guchar **property_data);
 
 void ags_midi_ci_util_put_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
 						  guchar *buffer,
@@ -525,11 +525,11 @@ guint ags_midi_ci_util_get_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
 						   AgsMUID *destination,
 						   guchar *request_id,
 						   guint16 *header_data_length,
-						   guchar *header_data,
+						   guchar **header_data,
 						   guint16 *chunk_count,
 						   guint16 *nth_chunk,
 						   guint16 *property_data_length,
-						   guchar *property_data);
+						   guchar **property_data);
 
 void ags_midi_ci_util_put_subscription(AgsMidiCIUtil *midi_ci_util,
 				       guchar *buffer,
@@ -552,11 +552,11 @@ guint ags_midi_ci_util_get_subscription(AgsMidiCIUtil *midi_ci_util,
 					AgsMUID *destination,
 					guchar *request_id,
 					guint16 *header_data_length,
-					guchar *header_data,
+					guchar **header_data,
 					guint16 *chunk_count,
 					guint16 *nth_chunk,
 					guint16 *property_data_length,
-					guchar *property_data);
+					guchar **property_data);
 
 void ags_midi_ci_util_put_subscription_reply(AgsMidiCIUtil *midi_ci_util,
 					     guchar *buffer,
@@ -579,11 +579,11 @@ guint ags_midi_ci_util_get_subscription_reply(AgsMidiCIUtil *midi_ci_util,
 					      AgsMUID *destination,
 					      guchar *request_id,
 					      guint16 *header_data_length,
-					      guchar *header_data,
+					      guchar **header_data,
 					      guint16 *chunk_count,
 					      guint16 *nth_chunk,
 					      guint16 *property_data_length,
-					      guchar *property_data);
+					      guchar **property_data);
 
 G_END_DECLS
 

@@ -3854,7 +3854,7 @@ ags_midi_ci_util_put_get_property_data_reply(AgsMidiCIUtil *midi_ci_util,
   nth++;
 
   /* header data */
-  memcpy(buffer + 5 + nth, header_data, header_data_length *sizeof(guchar));
+  memcpy(buffer + 5 + nth, header_data, header_data_length * sizeof(guchar));
   nth += header_data_length;
 
   /* chunk count */
@@ -3879,7 +3879,7 @@ ags_midi_ci_util_put_get_property_data_reply(AgsMidiCIUtil *midi_ci_util,
   nth++;
 
   /* property data */
-  memcpy(buffer + 5 + nth, property_data, property_data_length *sizeof(guchar));
+  memcpy(buffer + 5 + nth, property_data, property_data_length * sizeof(guchar));
   nth += property_data_length;
   
   /* sysex end */
@@ -3895,13 +3895,13 @@ ags_midi_ci_util_put_get_property_data_reply(AgsMidiCIUtil *midi_ci_util,
  * @version: (out): the return location of version
  * @source: (out): the return location of source
  * @destination: (out): the return location of destination
- * @request_id: (out): the request ID
- * @header_data_length: (out): the header data length
- * @header_data: (out): the header data
- * @chunk_count: (out): the chunk count
- * @nth_chunk: (out): the nth chunk
- * @property_data_length: (out): the property data length
- * @property_data: (out): the property data
+ * @request_id: (out): the return location of request ID
+ * @header_data_length: (out): the return location of header data length
+ * @header_data: (out): the return location of header data
+ * @chunk_count: (out): the return location of chunk count
+ * @nth_chunk: (out): the return location of nth chunk
+ * @property_data_length: (out): the return location of property data length
+ * @property_data: (out): the return location of property data
  *
  * Get get property data.
  *
@@ -3918,11 +3918,11 @@ ags_midi_ci_util_get_get_property_data_reply(AgsMidiCIUtil *midi_ci_util,
 					     AgsMUID *destination,
 					     guchar *request_id,
 					     guint16 *header_data_length,
-					     guchar *header_data,
+					     guchar **header_data,
 					     guint16 *chunk_count,
 					     guint16 *nth_chunk,
 					     guint16 *property_data_length,
-					     guchar *property_data)
+					     guchar **property_data)
 {
   guint nth;
   guint i_stop;
@@ -3979,7 +3979,11 @@ ags_midi_ci_util_get_get_property_data_reply(AgsMidiCIUtil *midi_ci_util,
 
   /* header data */
   if(header_data != NULL){
-    memcpy(header_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+    if(i_stop > 0){
+      memcpy(header_data[0], buffer + 5 + nth, i_stop * sizeof(guchar));
+    }else{
+      header_data[0] = NULL;
+    }
   }
 
   nth += i_stop;
@@ -4009,7 +4013,11 @@ ags_midi_ci_util_get_get_property_data_reply(AgsMidiCIUtil *midi_ci_util,
 
   /* property data */
   if(property_data != NULL){
-    memcpy(property_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+    if(i_stop > 0){
+      memcpy(property_data[0], buffer + 5 + nth, i_stop * sizeof(guchar));
+    }else{
+      property_data[0] = NULL;
+    }
   }
 
   nth += i_stop;
@@ -4106,7 +4114,7 @@ ags_midi_ci_util_put_set_property_data(AgsMidiCIUtil *midi_ci_util,
   nth++;
 
   /* header data */
-  memcpy(buffer + 5 + nth, header_data, header_data_length *sizeof(guchar));
+  memcpy(buffer + 5 + nth, header_data, header_data_length * sizeof(guchar));
   nth += header_data_length;
 
   /* chunk count */
@@ -4131,7 +4139,7 @@ ags_midi_ci_util_put_set_property_data(AgsMidiCIUtil *midi_ci_util,
   nth++;
 
   /* property data */
-  memcpy(buffer + 5 + nth, property_data, property_data_length *sizeof(guchar));
+  memcpy(buffer + 5 + nth, property_data, property_data_length * sizeof(guchar));
   nth += property_data_length;
 
   /* sysex end */
@@ -4170,11 +4178,11 @@ ags_midi_ci_util_get_set_property_data(AgsMidiCIUtil *midi_ci_util,
 				       AgsMUID *destination,
 				       guchar *request_id,
 				       guint16 *header_data_length,
-				       guchar *header_data,
+				       guchar **header_data,
 				       guint16 *chunk_count,
 				       guint16 *nth_chunk,
 				       guint16 *property_data_length,
-				       guchar *property_data)
+				       guchar **property_data)
 {
   guint nth;
   guint i_stop;
@@ -4231,7 +4239,11 @@ ags_midi_ci_util_get_set_property_data(AgsMidiCIUtil *midi_ci_util,
 
   /* header data */
   if(header_data != NULL){
-    memcpy(header_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+    if(i_stop > 0){
+      memcpy(header_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+    }else{
+      header_data[0] = NULL;
+    }
   }
 
   nth += i_stop;
@@ -4261,7 +4273,11 @@ ags_midi_ci_util_get_set_property_data(AgsMidiCIUtil *midi_ci_util,
 
   /* property data */
   if(property_data != NULL){
-    memcpy(property_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+    if(i_stop > 0){
+      memcpy(property_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+    }else{
+      property_data[0] = NULL;
+    }
   }
 
   nth += i_stop;
@@ -4358,7 +4374,7 @@ ags_midi_ci_util_put_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
   nth++;
 
   /* header data */
-  memcpy(buffer + 5 + nth, header_data, header_data_length *sizeof(guchar));
+  memcpy(buffer + 5 + nth, header_data, header_data_length * sizeof(guchar));
   nth += header_data_length;
 
   /* chunk count */
@@ -4383,7 +4399,7 @@ ags_midi_ci_util_put_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
   nth++;
 
   /* property data */
-  memcpy(buffer + 5 + nth, property_data, property_data_length *sizeof(guchar));
+  memcpy(buffer + 5 + nth, property_data, property_data_length * sizeof(guchar));
   nth += property_data_length;
 
   /* sysex end */
@@ -4422,11 +4438,11 @@ ags_midi_ci_util_get_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
 					     AgsMUID *destination,
 					     guchar *request_id,
 					     guint16 *header_data_length,
-					     guchar *header_data,
+					     guchar **header_data,
 					     guint16 *chunk_count,
 					     guint16 *nth_chunk,
 					     guint16 *property_data_length,
-					     guchar *property_data)
+					     guchar **property_data)
 {
   guint nth;
   guint i_stop;
@@ -4483,7 +4499,11 @@ ags_midi_ci_util_get_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
 
   /* header data */
   if(header_data != NULL){
-    memcpy(header_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+    if(i_stop > 0){
+      memcpy(header_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+    }else{
+      header_data[0] = NULL;
+    }      
   }
 
   nth += i_stop;
@@ -4513,7 +4533,11 @@ ags_midi_ci_util_get_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
 
   /* property data */
   if(property_data != NULL){
-    memcpy(property_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+    if(i_stop > 0){
+      memcpy(property_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+    }else{
+      property_data[0] = NULL;
+    }
   }
 
   nth += i_stop;
@@ -4610,7 +4634,7 @@ ags_midi_ci_util_put_subscription(AgsMidiCIUtil *midi_ci_util,
   nth++;
 
   /* header data */
-  memcpy(buffer + 5 + nth, header_data, header_data_length *sizeof(guchar));
+  memcpy(buffer + 5 + nth, header_data, header_data_length * sizeof(guchar));
   nth += header_data_length;
 
   /* chunk count */
@@ -4635,7 +4659,7 @@ ags_midi_ci_util_put_subscription(AgsMidiCIUtil *midi_ci_util,
   nth++;
 
   /* property data */
-  memcpy(buffer + 5 + nth, property_data, property_data_length *sizeof(guchar));
+  memcpy(buffer + 5 + nth, property_data, property_data_length * sizeof(guchar));
   nth += property_data_length;
 
   /* sysex end */
@@ -4674,11 +4698,11 @@ ags_midi_ci_util_get_subscription(AgsMidiCIUtil *midi_ci_util,
 				  AgsMUID *destination,
 				  guchar *request_id,
 				  guint16 *header_data_length,
-				  guchar *header_data,
+				  guchar **header_data,
 				  guint16 *chunk_count,
 				  guint16 *nth_chunk,
 				  guint16 *property_data_length,
-				  guchar *property_data)
+				  guchar **property_data)
 {
   guint nth;
   guint i_stop;
@@ -4735,7 +4759,11 @@ ags_midi_ci_util_get_subscription(AgsMidiCIUtil *midi_ci_util,
 
   /* header data */
   if(header_data != NULL){
-    memcpy(header_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+    if(i_stop > 0){
+      memcpy(header_data[0], buffer + 5 + nth, i_stop * sizeof(guchar));
+    }else{
+      header_data[0] = NULL;
+    }
   }
 
   nth += i_stop;
@@ -4765,7 +4793,11 @@ ags_midi_ci_util_get_subscription(AgsMidiCIUtil *midi_ci_util,
 
   /* property data */
   if(property_data != NULL){
-    memcpy(property_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+    if(i_stop > 0){
+      memcpy(property_data[0], buffer + 5 + nth, i_stop * sizeof(guchar));
+    }else{
+      property_data[0] = NULL;
+    }
   }
 
   nth += i_stop;
@@ -4862,7 +4894,7 @@ ags_midi_ci_util_put_subscription_reply(AgsMidiCIUtil *midi_ci_util,
   nth++;
 
   /* header data */
-  memcpy(buffer + 5 + nth, header_data, header_data_length *sizeof(guchar));
+  memcpy(buffer + 5 + nth, header_data, header_data_length * sizeof(guchar));
   nth += header_data_length;
 
   /* chunk count */
@@ -4887,7 +4919,7 @@ ags_midi_ci_util_put_subscription_reply(AgsMidiCIUtil *midi_ci_util,
   nth++;
 
   /* property data */
-  memcpy(buffer + 5 + nth, property_data, property_data_length *sizeof(guchar));
+  memcpy(buffer + 5 + nth, property_data, property_data_length * sizeof(guchar));
   nth += property_data_length;
 
   /* sysex end */
@@ -4926,11 +4958,11 @@ ags_midi_ci_util_get_subscription_reply(AgsMidiCIUtil *midi_ci_util,
 					AgsMUID *destination,
 					guchar *request_id,
 					guint16 *header_data_length,
-					guchar *header_data,
+					guchar **header_data,
 					guint16 *chunk_count,
 					guint16 *nth_chunk,
 					guint16 *property_data_length,
-					guchar *property_data)
+					guchar **property_data)
 {
   guint nth;
   guint i_stop;
@@ -4987,7 +5019,11 @@ ags_midi_ci_util_get_subscription_reply(AgsMidiCIUtil *midi_ci_util,
 
   /* header data */
   if(header_data != NULL){
-    memcpy(header_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+    if(i_stop > 0){
+      memcpy(header_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+    }else{
+      header_data[0] = NULL;
+    }
   }
 
   nth += i_stop;
@@ -5017,7 +5053,11 @@ ags_midi_ci_util_get_subscription_reply(AgsMidiCIUtil *midi_ci_util,
 
   /* property data */
   if(property_data != NULL){
-    memcpy(property_data, buffer + 5 + nth, i_stop * sizeof(guchar));
+    if(i_stop > 0){
+      memcpy(property_data[0], buffer + 5 + nth, i_stop * sizeof(guchar));
+    }else{
+      property_data[0] = NULL;
+    }      
   }
 
   nth += i_stop;
