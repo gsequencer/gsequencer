@@ -810,6 +810,256 @@ ags_midi_ci_util_get_invalidate_muid(AgsMidiCIUtil *midi_ci_util,
 }
 
 /**
+ * ags_midi_ci_util_put_ack:
+ * @midi_ci_util: the MIDI CI util
+ * @buffer: the buffer
+ * @version: the version
+ * @source: the source
+ * @destination: the destination
+ * @orig_transaction: the original transaction
+ * @status_code: the status code
+ * @status_data: the status data
+ * @details: the details
+ * @message_length: the message length
+ * @message: the message
+ *
+ * Put ACK MIDI CI message.
+ *
+ * Since: 5.5.0
+ */
+void
+ags_midi_ci_util_put_ack(AgsMidiCIUtil *midi_ci_util,
+			 guchar *buffer,
+			 guchar device_id,
+			 guchar version,
+			 AgsMUID source,
+			 AgsMUID destination,
+			 guchar orig_transaction,
+			 guchar status_code,
+			 guchar status_data,
+			 guchar details[5],
+			 guint16 message_length,
+			 guchar *message)
+{
+  guint nth;
+  
+  g_return_if_fail(midi_ci_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[0] = 0xf0;
+  buffer[1] = 0x7e;
+
+  buffer[2] = device_id;
+
+  buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
+
+  buffer[4] = 0x7d; // Sub-ID#2 - ACK
+
+  nth = 0;
+
+  /* version */
+  buffer[5 + nth] = version;
+
+  nth++;
+  
+  /* source */
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
+
+  /* destination */
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
+
+  /* orig transaction */
+  buffer[5 + nth] = orig_transaction;
+
+  nth++;
+
+  /* status code */
+  buffer[5 + nth] = status_code;
+
+  nth++;
+
+  /* status data */
+  buffer[5 + nth] = status_data;
+
+  nth++;
+
+  /* details */
+  buffer[5 + nth] = details[0];
+  nth++;
+
+  buffer[5 + nth] = details[1];
+  nth++;
+
+  buffer[5 + nth] = details[2];
+  nth++;
+
+  buffer[5 + nth] = details[3];
+  nth++;
+  
+  buffer[5 + nth] = details[4];
+  nth++;
+
+  /* message length */
+  buffer[5 + nth] = (0xff & message_length);
+  nth++;
+  
+  buffer[5 + nth] = (0xff00 & message_length) >> 8;
+  nth++;
+
+  /* message */
+  if(message != NULL){
+    memcpy(buffer + 5 + nth, message, message_length * sizeof(guchar));
+  }
+
+  nth += message_length;
+
+  /* sysex end */
+  buffer[5 + nth] = 0xf7;
+  nth++;
+}
+
+/**
+ * ags_midi_ci_util_get_ack:
+ * @midi_ci_util: the MIDI CI util
+ * @buffer: the buffer
+ * @version: (out): the return location of version
+ * @source: (out): the return location of source
+ * @destination: (out): the return location of destination
+ * @orig_transaction: the original transaction
+ * @status_code: (out): the return location of status code
+ * @status_data: (out): the return location of status data
+ * @details: (out): the return location of details
+ * @message_length: (out): the return location of message length
+ * @message: (out): the return location of message
+ *
+ * Get ACK MIDI CI message.
+ *
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.0
+ */
+guint
+ags_midi_ci_util_get_ack(AgsMidiCIUtil *midi_ci_util,
+			 guchar *buffer,
+			 guchar *device_id,
+			 guchar *version,
+			 AgsMUID *source,
+			 AgsMUID *destination,
+			 guchar *orig_transaction,
+			 guchar *status_code,
+			 guchar *status_data,
+			 guchar details[5],
+			 guint16 *message_length,
+			 guchar **message)
+{
+  guint nth;
+  guint i_stop;
+  
+  g_return_val_if_fail(midi_ci_util != NULL, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail(buffer[1] == 0x7e, 0);
+  g_return_val_if_fail(buffer[3] == 0x0d, 0);
+  g_return_val_if_fail(buffer[4] == 0x7d, 0);
+
+  /* device ID */
+  if(device_id != NULL){
+    device_id[0] = buffer[2];
+  }
+
+  nth = 0;
+
+  /* version */
+  if(version != NULL){
+    version[0] = buffer[5 + nth];
+  }
+
+  nth++;
+  
+  /* source */
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+
+  nth += 4;
+
+  /* destination */
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+
+  nth += 4;
+
+  /* original transaction */
+  if(orig_transaction != NULL){
+    orig_transaction[0] = buffer[5 + nth];
+  }
+
+  nth++;
+
+  /* status code */
+  if(status_code != NULL){
+    status_code[0] = buffer[5 + nth];
+  }
+
+  nth++;
+
+  /* status data */
+  if(status_data != NULL){
+    status_data[0] = buffer[5 + nth];
+  }
+
+  nth++;
+
+  /* details */
+  if(details != NULL){
+    details[0] = buffer[5 + nth];
+    details[1] = buffer[5 + nth + 1];
+    details[2] = buffer[5 + nth + 2];
+    details[3] = buffer[5 + nth + 3];
+    details[4] = buffer[5 + nth + 4];
+  }
+
+  nth += 5;
+  
+  /* message length */
+  if(message_length != NULL){
+    message_length[0] = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+  }
+
+  i_stop = ((buffer[5 + nth]) | (buffer[5 + nth + 1] << 8));
+
+  nth += 2;
+
+  /* message */
+  if(message != NULL){
+    if(i_stop > 0){
+      message[0] = g_malloc(i_stop * sizeof(guchar));
+      
+      memcpy(message[0], buffer + 5 + nth, i_stop * sizeof(guchar));
+    }else{
+      message[0] = NULL;
+    }
+  }
+
+  /* sysex end */
+  if(buffer[5 + nth] == 0xf7){
+    nth++;
+
+    return(5 + nth);
+  }
+
+  return(0);
+}
+
+/**
  * ags_midi_ci_util_put_nak:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
