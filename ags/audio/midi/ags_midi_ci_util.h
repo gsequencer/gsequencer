@@ -340,14 +340,14 @@ void ags_midi_ci_util_put_profile_enabled_report(AgsMidiCIUtil *midi_ci_util,
 						 guchar device_id,
 						 guchar version,
 						 AgsMUID source,
-						 guchar *enabled_profile,
+						 guchar enabled_profile[5],
 						 guint16 enabled_channel_count);
 guint ags_midi_ci_util_get_profile_enabled_report(AgsMidiCIUtil *midi_ci_util,
 						  guchar *buffer,
 						  guchar *device_id,
 						  guchar *version,
 						  AgsMUID *source,
-						  guchar *enabled_profile,
+						  guchar enabled_profile[5],
 						  guint16 *enabled_channel_count);
 
 void ags_midi_ci_util_put_profile_disabled_report(AgsMidiCIUtil *midi_ci_util,
@@ -355,14 +355,14 @@ void ags_midi_ci_util_put_profile_disabled_report(AgsMidiCIUtil *midi_ci_util,
 						  guchar device_id,
 						  guchar version,
 						  AgsMUID source,
-						  guchar *disabled_profile,
+						  guchar disabled_profile[5],
 						  guint16 disabled_channel_count);
 guint ags_midi_ci_util_get_profile_disabled_report(AgsMidiCIUtil *midi_ci_util,
 						   guchar *buffer,
 						   guchar *device_id,
 						   guchar *version,
 						   AgsMUID *source,
-						   guchar *disabled_profile,
+						   guchar disabled_profile[5],
 						   guint16 *disabled_channel_count);
 
 void ags_midi_ci_util_put_profile_added(AgsMidiCIUtil *midi_ci_util,
@@ -370,26 +370,26 @@ void ags_midi_ci_util_put_profile_added(AgsMidiCIUtil *midi_ci_util,
 					guchar device_id,
 					guchar version,
 					AgsMUID source,
-					guchar *add_profile);
+					guchar add_profile[5]);
 guint ags_midi_ci_util_get_profile_added(AgsMidiCIUtil *midi_ci_util,
 					 guchar *buffer,
 					 guchar *device_id,
 					 guchar *version,
 					 AgsMUID *source,
-					 guchar *add_profile);
+					 guchar add_profile[5]);
 
 void ags_midi_ci_util_put_profile_removed(AgsMidiCIUtil *midi_ci_util,
 					  guchar *buffer,
 					  guchar device_id,
 					  guchar version,
 					  AgsMUID source,
-					  guchar *remove_profile);
+					  guchar remove_profile[5]);
 guint ags_midi_ci_util_get_profile_removed(AgsMidiCIUtil *midi_ci_util,
 					   guchar *buffer,
 					   guchar *device_id,
 					   guchar *version,
 					   AgsMUID *source,
-					   guchar *remove_profile);
+					   guchar remove_profile[5]);
 
 void ags_midi_ci_util_put_profile_specific_data(AgsMidiCIUtil *midi_ci_util,
 						guchar *buffer,

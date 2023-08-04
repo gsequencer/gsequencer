@@ -437,6 +437,7 @@ ags_midi_ci_util_test_get_ack()
 			   &message_length,
 			   &message);
 
+  CU_ASSERT(device_id == 0x7f);
   CU_ASSERT(version == 0x01);
   CU_ASSERT(source == 0x0cafe010);
   CU_ASSERT(destination == 0x0eadbeef);
