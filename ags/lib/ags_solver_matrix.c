@@ -171,6 +171,7 @@ ags_solver_matrix_init(AgsSolverMatrix *solver_matrix)
   solver_matrix->function_history = NULL;
   
   solver_matrix->source_function = NULL;
+  solver_matrix->initial_row_count = 0;
   
   solver_matrix->term_table = NULL;
 
@@ -392,7 +393,7 @@ ags_solver_matrix_get_column_count(AgsSolverMatrix *solver_matrix)
 
   column_count = 0;
 
-  g_object_get(solver_matrix,
+2  g_object_get(solver_matrix,
 	       "column-count", &column_count,
 	       NULL);
 
@@ -412,22 +413,60 @@ ags_solver_matrix_get_column_count(AgsSolverMatrix *solver_matrix)
 gchar*
 ags_solver_matrix_to_string(AgsSolverMatrix *solver_matrix)
 {
+  gchar **function_history;
   gchar *str;
+  gchar *function_str;
+  gchar *iter;
 
-  guint row_count;
+  guint function_row_count;
+  guint function_str_length;
   guint column_count;
   guint x, y;
   guint i;
   
   str = NULL;
 
-  row_count = ags_solver_matrix_get_row_count(solver_matrix);
-  column_count = ags_solver_matrix_get_column_count(solver_matrix);
+  function_history = solver_matrix->function_history;
 
+  if(function_history != NULL && function_history[0] != NULL){
+    for(; function_history[1] != NULL; function_history++);
+  }
+
+  if(function_history == NULL ||
+     function_history[0] == NULL){
+    return(NULL);
+  }
+
+  iter =
+    function_str = function_history[0];
+  
+  function_str_length = strlen(function_str);
+
+  function_row_count = 0;
+
+  while((iter = strchr(iter, '\n')) != NULL){
+    function_row_count++;
+    iter++;
+  }
+
+  iter = function_str;
+    
+  if((iter = strrchr(iter, '\n')) != NULL){
+    iter++;
+
+    if(iter < function_str + function_str_length){
+      if(strstr(iter, " = 0") != NULL){
+	function_row_count++;
+      }
+    }
+  }
+  
+  column_count = ags_solver_matrix_get_column_count(solver_matrix);
+  
   x = 0;
   y = 0;
   
-  for(i = 0; i < row_count * column_count; i++){
+  for(i = 0; i < function_row_count * column_count; i++){
     AgsSolverVector *solver_vector;
     AgsSolverPolynomial *solver_polynomial;
 
@@ -493,7 +532,7 @@ ags_solver_matrix_to_string(AgsSolverMatrix *solver_matrix)
 
 	tmp = str;
 
-	str = g_strdup_printf("%s\n", str);
+	str = g_strdup_printf("%s = 0\n", str);
 	
 	g_free(tmp);
       }

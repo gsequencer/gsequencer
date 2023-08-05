@@ -49,7 +49,7 @@ struct _AgsSolverMatrix
   GRecMutex obj_mutex;
 
   gchar **function_history;
-
+  
   gchar *source_function;
   
   AgsSolverVector **term_table;
