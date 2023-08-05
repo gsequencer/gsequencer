@@ -200,6 +200,7 @@ ags_midi_ci_util_get_muid(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_put_discovery:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
+ * @device_id: the device ID
  * @version: the version
  * @source: the source
  * @manufacturer_id: the manufacturer ID
@@ -216,6 +217,7 @@ ags_midi_ci_util_get_muid(AgsMidiCIUtil *midi_ci_util,
 void
 ags_midi_ci_util_put_discovery(AgsMidiCIUtil *midi_ci_util,
 			       guchar *buffer,
+			       guchar device_id,
 			       guchar version,
 			       AgsMUID source,
 			       guchar manufacturer_id[3],
@@ -233,7 +235,7 @@ ags_midi_ci_util_put_discovery(AgsMidiCIUtil *midi_ci_util,
   buffer[0] = 0xf0;
   buffer[1] = 0x7e;
 
-  buffer[2] = 0x7f;
+  buffer[2] = 0x7f; // device_id - ignored
 
   buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
 
@@ -319,6 +321,7 @@ ags_midi_ci_util_put_discovery(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_get_discovery:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
+ * @device_id: (out): the return location of device ID
  * @version: (out): the return location of version
  * @source: (out): the return location of source
  * @manufacturer_id: (out): the return location of manufacturer ID
@@ -337,6 +340,7 @@ ags_midi_ci_util_put_discovery(AgsMidiCIUtil *midi_ci_util,
 guint
 ags_midi_ci_util_get_discovery(AgsMidiCIUtil *midi_ci_util,
 			       guchar *buffer,
+			       guchar *device_id,
 			       guchar *version,
 			       AgsMUID *source,
 			       guchar manufacturer_id[3],
@@ -355,6 +359,11 @@ ags_midi_ci_util_get_discovery(AgsMidiCIUtil *midi_ci_util,
   g_return_val_if_fail(buffer[3] == 0x0d, 0);
   g_return_val_if_fail(buffer[4] == 0x70, 0);
   g_return_val_if_fail(buffer[9] == 0x7f || buffer[10] == 0x7f || buffer[11] == 0x7f || buffer[12] == 0x7f, 0);
+
+  /* device id */
+  if(device_id != NULL){
+    device_id[0] = buffer[2];
+  }
 
   nth = 0;
 
@@ -438,6 +447,7 @@ ags_midi_ci_util_get_discovery(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_put_discovery_reply:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
+ * @device_id: the device ID
  * @version: the version
  * @source: the source
  * @destination: the destination
@@ -455,6 +465,7 @@ ags_midi_ci_util_get_discovery(AgsMidiCIUtil *midi_ci_util,
 void
 ags_midi_ci_util_put_discovery_reply(AgsMidiCIUtil *midi_ci_util,
 				     guchar *buffer,
+				     guchar device_id,
 				     guchar version,
 				     AgsMUID source,
 				     AgsMUID destination,
@@ -473,7 +484,7 @@ ags_midi_ci_util_put_discovery_reply(AgsMidiCIUtil *midi_ci_util,
   buffer[0] = 0xf0;
   buffer[1] = 0x7e;
 
-  buffer[2] = 0x7f;
+  buffer[2] = 0x7f; // device_id - ignored
 
   buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
 
@@ -561,6 +572,7 @@ ags_midi_ci_util_put_discovery_reply(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_get_discovery_reply:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
+ * @device_id: (out): the return location of device ID
  * @version: (out): the return location of version
  * @source: (out): the return location of source
  * @destination: (out): the return location destination
@@ -580,6 +592,7 @@ ags_midi_ci_util_put_discovery_reply(AgsMidiCIUtil *midi_ci_util,
 guint
 ags_midi_ci_util_get_discovery_reply(AgsMidiCIUtil *midi_ci_util,
 				     guchar *buffer,
+				     guchar *device_id,
 				     guchar *version,
 				     AgsMUID *source,
 				     AgsMUID *destination,
@@ -598,6 +611,11 @@ ags_midi_ci_util_get_discovery_reply(AgsMidiCIUtil *midi_ci_util,
   g_return_val_if_fail(buffer[2] == 0x7f, 0);
   g_return_val_if_fail(buffer[3] == 0x0d, 0);
   g_return_val_if_fail(buffer[4] == 0x71, 0);
+
+  /* device_id */
+  if(device_id != NULL){
+    device_id[0] = buffer[2];
+  }
 
   nth = 0;
 
@@ -683,6 +701,7 @@ ags_midi_ci_util_get_discovery_reply(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_put_invalidate_muid:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
+ * @device_id: the device ID
  * @version: the version
  * @source: the source
  * @target_muid: the MUID
@@ -694,6 +713,7 @@ ags_midi_ci_util_get_discovery_reply(AgsMidiCIUtil *midi_ci_util,
 void
 ags_midi_ci_util_put_invalidate_muid(AgsMidiCIUtil *midi_ci_util,
 				     guchar *buffer,
+				     guchar device_id,
 				     guchar version,
 				     AgsMUID source,
 				     AgsMUID target_muid)
@@ -748,6 +768,7 @@ ags_midi_ci_util_put_invalidate_muid(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_get_invalidate_muid:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
+ * @device_id: the return location of device ID
  * @version: the return location of version
  * @source: the return location of source
  * @target_muid: the return location of MUID
@@ -761,6 +782,7 @@ ags_midi_ci_util_put_invalidate_muid(AgsMidiCIUtil *midi_ci_util,
 guint
 ags_midi_ci_util_get_invalidate_muid(AgsMidiCIUtil *midi_ci_util,
 				     guchar *buffer,
+				     guchar *device_id,
 				     guchar *version,
 				     AgsMUID *source,
 				     AgsMUID *target_muid)
@@ -774,6 +796,11 @@ ags_midi_ci_util_get_invalidate_muid(AgsMidiCIUtil *midi_ci_util,
   g_return_val_if_fail(buffer[3] == 0x0d, 0);
   g_return_val_if_fail(buffer[4] == 0x7e, 0);
   g_return_val_if_fail(buffer[9] == 0x7f || buffer[10] == 0x7f || buffer[11] == 0x7f || buffer[12] == 0x7f, 0);
+
+  /* device ID */
+  if(device_id != NULL){
+    device_id[0] = buffer[2];
+  }
 
   nth = 0;
 
@@ -1069,6 +1096,7 @@ ags_midi_ci_util_get_ack(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_put_nak:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
+ * @device_id: the device ID
  * @version: the version
  * @source: the source
  * @destination: the destination
@@ -1080,6 +1108,7 @@ ags_midi_ci_util_get_ack(AgsMidiCIUtil *midi_ci_util,
 void
 ags_midi_ci_util_put_nak(AgsMidiCIUtil *midi_ci_util,
 			 guchar *buffer,
+			 guchar device_id,
 			 guchar version,
 			 AgsMUID source,
 			 AgsMUID destination)
@@ -1128,6 +1157,7 @@ ags_midi_ci_util_put_nak(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_get_nak:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
+ * @device_id: (out): the return location of device ID
  * @version: (out): the return location of version
  * @source: (out): the return location of source
  * @destination: (out): the return location of destination
@@ -1141,6 +1171,7 @@ ags_midi_ci_util_put_nak(AgsMidiCIUtil *midi_ci_util,
 guint
 ags_midi_ci_util_get_nak(AgsMidiCIUtil *midi_ci_util,
 			 guchar *buffer,
+			 guchar *device_id,
 			 guchar *version,
 			 AgsMUID *source,
 			 AgsMUID *destination)
@@ -1153,6 +1184,11 @@ ags_midi_ci_util_get_nak(AgsMidiCIUtil *midi_ci_util,
   g_return_val_if_fail(buffer[2] == 0x7f, 0);
   g_return_val_if_fail(buffer[3] == 0x0d, 0);
   g_return_val_if_fail(buffer[4] == 0x7f, 0);
+
+  /* device ID */
+  if(device_id != NULL){
+    device_id[0] = buffer[2];
+  }
 
   nth = 0;
 
@@ -1191,6 +1227,7 @@ ags_midi_ci_util_get_nak(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_put_initiate_protocol_negotiation:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
+ * @device_id: the device ID
  * @version: the version
  * @source: the source
  * @destination: the destination
@@ -1205,6 +1242,7 @@ ags_midi_ci_util_get_nak(AgsMidiCIUtil *midi_ci_util,
 void
 ags_midi_ci_util_put_initiate_protocol_negotiation(AgsMidiCIUtil *midi_ci_util,
 						   guchar *buffer,
+						   guchar device_id,
 						   guchar version,
 						   AgsMUID source,
 						   AgsMUID destination,
@@ -1273,6 +1311,7 @@ ags_midi_ci_util_put_initiate_protocol_negotiation(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_get_initiate_protocol_negotiation:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
+ * @device_id: (out): the return location of device ID
  * @version: (out): the return location of version
  * @source: (out): the return location of source
  * @destination: (out): the destination
@@ -1289,6 +1328,7 @@ ags_midi_ci_util_put_initiate_protocol_negotiation(AgsMidiCIUtil *midi_ci_util,
 guint
 ags_midi_ci_util_get_initiate_protocol_negotiation(AgsMidiCIUtil *midi_ci_util,
 						   guchar *buffer,
+						   guchar *device_id,
 						   guchar *version,
 						   AgsMUID *source,
 						   AgsMUID *destination,
@@ -1305,6 +1345,11 @@ ags_midi_ci_util_get_initiate_protocol_negotiation(AgsMidiCIUtil *midi_ci_util,
   g_return_val_if_fail(buffer[2] == 0x7f, 0);
   g_return_val_if_fail(buffer[3] == 0x0d, 0);
   g_return_val_if_fail(buffer[4] == 0x10, 0);
+
+  /* device ID */
+  if(device_id != NULL){
+    device_id[0] = buffer[2];
+  }
 
   nth = 0;
 
@@ -1374,6 +1419,7 @@ ags_midi_ci_util_get_initiate_protocol_negotiation(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_put_initiate_protocol_negotiation_reply:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
+ * @device_id: the device ID
  * @version: the version
  * @source: the source
  * @destination: the destination
@@ -1388,6 +1434,7 @@ ags_midi_ci_util_get_initiate_protocol_negotiation(AgsMidiCIUtil *midi_ci_util,
 void
 ags_midi_ci_util_put_initiate_protocol_negotiation_reply(AgsMidiCIUtil *midi_ci_util,
 							 guchar *buffer,
+							 guchar device_id,
 							 guchar version,
 							 AgsMUID source,
 							 AgsMUID destination,
@@ -1456,6 +1503,7 @@ ags_midi_ci_util_put_initiate_protocol_negotiation_reply(AgsMidiCIUtil *midi_ci_
  * ags_midi_ci_util_get_initiate_protocol_negotiation_reply:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
+ * @device_id: (out): the return location of device ID
  * @version: (out): the return location of version
  * @source: (out): the return location of source
  * @destination: (out): the destination
@@ -1472,6 +1520,7 @@ ags_midi_ci_util_put_initiate_protocol_negotiation_reply(AgsMidiCIUtil *midi_ci_
 guint
 ags_midi_ci_util_get_initiate_protocol_negotiation_reply(AgsMidiCIUtil *midi_ci_util,
 							 guchar *buffer,
+							 guchar *device_id,
 							 guchar *version,
 							 AgsMUID *source,
 							 AgsMUID *destination,
@@ -1488,6 +1537,11 @@ ags_midi_ci_util_get_initiate_protocol_negotiation_reply(AgsMidiCIUtil *midi_ci_
   g_return_val_if_fail(buffer[2] == 0x7f, 0);
   g_return_val_if_fail(buffer[3] == 0x0d, 0);
   g_return_val_if_fail(buffer[4] == 0x11, 0);
+
+  /* device ID */
+  if(device_id != NULL){
+    device_id[0] = buffer[2];
+  }
 
   nth = 0;
 
@@ -1557,6 +1611,7 @@ ags_midi_ci_util_get_initiate_protocol_negotiation_reply(AgsMidiCIUtil *midi_ci_
  * ags_midi_ci_util_put_set_protocol_type:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
+ * @device_id: the device ID
  * @version: the version
  * @source: the source
  * @destination: the destination
@@ -1570,6 +1625,7 @@ ags_midi_ci_util_get_initiate_protocol_negotiation_reply(AgsMidiCIUtil *midi_ci_
 void
 ags_midi_ci_util_put_set_protocol_type(AgsMidiCIUtil *midi_ci_util,
 				       guchar *buffer,
+				       guchar device_id,
 				       guchar version,
 				       AgsMUID source,
 				       AgsMUID destination,
@@ -1631,6 +1687,7 @@ ags_midi_ci_util_put_set_protocol_type(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_get_set_protocol_type:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
+ * @device_id: (out): the return location of device ID
  * @version: (out): the return location of version
  * @source: (out): the return location of source
  * @destination: (out): the destination
@@ -1646,6 +1703,7 @@ ags_midi_ci_util_put_set_protocol_type(AgsMidiCIUtil *midi_ci_util,
 guint
 ags_midi_ci_util_get_set_protocol_type(AgsMidiCIUtil *midi_ci_util,
 				       guchar *buffer,
+				       guchar *device_id,
 				       guchar *version,
 				       AgsMUID *source,
 				       AgsMUID *destination,
@@ -1661,6 +1719,11 @@ ags_midi_ci_util_get_set_protocol_type(AgsMidiCIUtil *midi_ci_util,
   g_return_val_if_fail(buffer[2] == 0x7f, 0);
   g_return_val_if_fail(buffer[3] == 0x0d, 0);
   g_return_val_if_fail(buffer[4] == 0x13, 0);
+
+  /* device ID */
+  if(device_id != NULL){
+    device_id[0] = buffer[2];
+  }
  
   nth = 0;
 
@@ -1717,6 +1780,7 @@ ags_midi_ci_util_get_set_protocol_type(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_put_confirm_protocol_type:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
+ * @device_id: the device ID
  * @version: the version
  * @source: the source
  * @destination: the destination
@@ -1729,6 +1793,7 @@ ags_midi_ci_util_get_set_protocol_type(AgsMidiCIUtil *midi_ci_util,
 void
 ags_midi_ci_util_put_confirm_protocol_type(AgsMidiCIUtil *midi_ci_util,
 					   guchar *buffer,
+					   guchar device_id,
 					   guchar version,
 					   AgsMUID source,
 					   AgsMUID destination,
@@ -1799,6 +1864,7 @@ ags_midi_ci_util_put_confirm_protocol_type(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_get_confirm_protocol_type:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
+ * @device_id: (out): the return location of device ID
  * @version: (out): the return location of version
  * @source: (out): the return location of source
  * @destination: (out): the destination
@@ -1813,6 +1879,7 @@ ags_midi_ci_util_put_confirm_protocol_type(AgsMidiCIUtil *midi_ci_util,
 guint
 ags_midi_ci_util_get_confirm_protocol_type(AgsMidiCIUtil *midi_ci_util,
 					   guchar *buffer,
+					   guchar *device_id,
 					   guchar *version,
 					   AgsMUID *source,
 					   AgsMUID *destination,
@@ -1840,6 +1907,11 @@ ags_midi_ci_util_get_confirm_protocol_type(AgsMidiCIUtil *midi_ci_util,
     }
     
     init_test_data = TRUE;
+  }
+
+  /* device ID */
+  if(device_id != NULL){
+    device_id[0] = buffer[2];
   }
 
   nth = 0;
@@ -1891,6 +1963,7 @@ ags_midi_ci_util_get_confirm_protocol_type(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_put_confirm_protocol_type_reply:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
+ * @device_id: the device ID
  * @version: the version
  * @source: the source
  * @destination: the destination
@@ -1904,6 +1977,7 @@ ags_midi_ci_util_get_confirm_protocol_type(AgsMidiCIUtil *midi_ci_util,
 void
 ags_midi_ci_util_put_confirm_protocol_type_reply(AgsMidiCIUtil *midi_ci_util,
 						 guchar *buffer,
+						 guchar device_id,
 						 guchar version,
 						 AgsMUID source,
 						 AgsMUID destination,
@@ -1974,6 +2048,7 @@ ags_midi_ci_util_put_confirm_protocol_type_reply(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_get_confirm_protocol_type_reply:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
+ * @device_id: (out): the return location of device ID
  * @version: (out): the return location of version
  * @source: (out): the return location of source
  * @destination: (out): the destination
@@ -1988,6 +2063,7 @@ ags_midi_ci_util_put_confirm_protocol_type_reply(AgsMidiCIUtil *midi_ci_util,
 guint
 ags_midi_ci_util_get_confirm_protocol_type_reply(AgsMidiCIUtil *midi_ci_util,
 						 guchar *buffer,
+						 guchar *device_id,
 						 guchar *version,
 						 AgsMUID *source,
 						 AgsMUID *destination,
@@ -2015,6 +2091,11 @@ ags_midi_ci_util_get_confirm_protocol_type_reply(AgsMidiCIUtil *midi_ci_util,
     }
     
     init_test_data = TRUE;
+  }
+
+  /* device ID */
+  if(device_id != NULL){
+    device_id[0] = buffer[2];
   }
  
   nth = 0;
@@ -2066,6 +2147,7 @@ ags_midi_ci_util_get_confirm_protocol_type_reply(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_put_confirm_protocol_type_established:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
+ * @device_id: the device ID
  * @version: the version
  * @source: the source
  * @destination: the destination
@@ -2078,6 +2160,7 @@ ags_midi_ci_util_get_confirm_protocol_type_reply(AgsMidiCIUtil *midi_ci_util,
 void
 ags_midi_ci_util_put_confirm_protocol_type_established(AgsMidiCIUtil *midi_ci_util,
 						       guchar *buffer,
+						       guchar device_id,
 						       guchar version,
 						       AgsMUID source,
 						       AgsMUID destination,
@@ -2129,6 +2212,7 @@ ags_midi_ci_util_put_confirm_protocol_type_established(AgsMidiCIUtil *midi_ci_ut
  * ags_midi_ci_util_get_confirm_protocol_type_established:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
+ * @device_id: (out): the return location of device ID
  * @version: (out): the return location of version
  * @source: (out): the return location of source
  * @destination: (out): the destination
@@ -2143,6 +2227,7 @@ ags_midi_ci_util_put_confirm_protocol_type_established(AgsMidiCIUtil *midi_ci_ut
 guint
 ags_midi_ci_util_get_confirm_protocol_type_established(AgsMidiCIUtil *midi_ci_util,
 						       guchar *buffer,
+						       guchar *device_id,
 						       guchar *version,
 						       AgsMUID *source,
 						       AgsMUID *destination,
@@ -2157,6 +2242,11 @@ ags_midi_ci_util_get_confirm_protocol_type_established(AgsMidiCIUtil *midi_ci_ut
   g_return_val_if_fail(buffer[2] == 0x7f, 0);
   g_return_val_if_fail(buffer[3] == 0x0d, 0);
   g_return_val_if_fail(buffer[4] == 0x15, 0);
+
+  /* device ID */
+  if(device_id != NULL){
+    device_id[0] = buffer[2];
+  }
  
   nth = 0;
 
