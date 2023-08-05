@@ -175,6 +175,7 @@ ags_midi_ci_util_test_put_discovery()
 
   AgsMUID source = 0x0eadbeef;
   
+  guchar device_id = 0x7f;
   guchar version = '\x01';
   guchar manufacturer_id[] = "\x08\x00\x00";
   guint16 device_family = 0xaffe;
@@ -189,6 +190,7 @@ ags_midi_ci_util_test_put_discovery()
 
   ags_midi_ci_util_put_discovery(midi_ci_util,
 				 buffer,
+				 device_id,
 				 version,
 				 source,
 				 manufacturer_id,
@@ -209,7 +211,8 @@ ags_midi_ci_util_test_get_discovery()
   guchar buffer[] = "\xf0\x7e\x7f\x0d\x70\x01\x7e\x2d\x3e\x6f\x7f\x7f\x7f\x7f\x08\x00\x00\xfe\xaf\x52\x0a\x00\x05\x00\x05\x05\x00\x02\x00\x00\xf7";
 
   AgsMUID source;
-  
+
+  guchar device_id;
   guchar version;
   guchar manufacturer_id[3];
   guint16 device_family;
@@ -222,6 +225,7 @@ ags_midi_ci_util_test_get_discovery()
 
   ags_midi_ci_util_get_discovery(midi_ci_util,
 				 buffer,
+				 &device_id,
 				 &version,
 				 &source,
 				 manufacturer_id,
@@ -231,6 +235,7 @@ ags_midi_ci_util_test_get_discovery()
 				 &capability,
 				 &max_sysex_message_size);
 
+  CU_ASSERT(device_id == 0x7f);
   CU_ASSERT(version == 0x01);
   CU_ASSERT(source == 0x0eadbeef);
   CU_ASSERT(!memcmp(manufacturer_id, "\x08\x00\x00", 3 * sizeof(guchar)));
@@ -252,6 +257,7 @@ ags_midi_ci_util_test_put_discovery_reply()
   AgsMUID source = 0x0cafe010;
   AgsMUID destination = 0x0eadbeef;
   
+  guchar device_id = 0x7f;
   guchar version = '\x01';
   guchar manufacturer_id[] = "\x08\x00\x00";
   guint16 device_family = 0xaffe;
@@ -266,6 +272,7 @@ ags_midi_ci_util_test_put_discovery_reply()
 
   ags_midi_ci_util_put_discovery_reply(midi_ci_util,
 				       buffer,
+				       device_id,
 				       version,
 				       source,
 				       destination,
@@ -288,7 +295,8 @@ ags_midi_ci_util_test_get_discovery_reply()
 
   AgsMUID source;
   AgsMUID destination;
-  
+
+  guchar device_id;
   guchar version;
   guchar manufacturer_id[3];
   guint16 device_family;
@@ -301,6 +309,7 @@ ags_midi_ci_util_test_get_discovery_reply()
 
   ags_midi_ci_util_get_discovery_reply(midi_ci_util,
 				       buffer,
+				       &device_id,
 				       &version,
 				       &source,
 				       &destination,
@@ -311,6 +320,7 @@ ags_midi_ci_util_test_get_discovery_reply()
 				       &capability,
 				       &max_sysex_message_size);
 
+  CU_ASSERT(device_id == 0x7f);
   CU_ASSERT(version == 0x01);
   CU_ASSERT(source == 0x0cafe010);
   CU_ASSERT(destination == 0x0eadbeef);
@@ -333,6 +343,7 @@ ags_midi_ci_util_test_put_invalidate_muid()
   AgsMUID source = 0x0cafe010;
   AgsMUID target_muid = 0x0eadbeef;
   
+  guchar device_id = '\x7f';
   guchar version = '\x01';
   
   midi_ci_util = ags_midi_ci_util_alloc();
@@ -341,6 +352,7 @@ ags_midi_ci_util_test_put_invalidate_muid()
 
   ags_midi_ci_util_put_invalidate_muid(midi_ci_util,
 				       buffer,
+				       device_id,
 				       version,
 				       source,
 				       target_muid);
@@ -358,16 +370,19 @@ ags_midi_ci_util_test_get_invalidate_muid()
   AgsMUID source;
   AgsMUID target_muid;
   
+  guchar device_id;
   guchar version;
 
   midi_ci_util = ags_midi_ci_util_alloc();
 
   ags_midi_ci_util_get_invalidate_muid(midi_ci_util,
 				       buffer,
+				       &device_id,
 				       &version,
 				       &source,
 				       &target_muid);
 
+  CU_ASSERT(device_id == 0x7f);
   CU_ASSERT(version == 0x01);
   CU_ASSERT(source == 0x0cafe010);
   CU_ASSERT(target_muid == 0x0eadbeef);
@@ -1834,25 +1849,118 @@ ags_midi_ci_util_test_get_subscription_reply()
 void
 ags_midi_ci_util_test_put_process_capabilities()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  guchar buffer[512];
+  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x40\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\xf7";
+
+  AgsMUID source = 0x0cafe010;
+  AgsMUID destination = 0x0eadbeef;
+
+  guchar device_id = '\x7f';
+  guchar version = '\x01';
+  
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  memset(buffer, 0, 512 * sizeof(guchar));
+
+  ags_midi_ci_util_put_process_capabilities(midi_ci_util,
+					    buffer,
+					    device_id,
+					    version,
+					    source,
+					    destination);
+
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 15 * sizeof(guchar)));
 }
 
 void
 ags_midi_ci_util_test_get_process_capabilities()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  guchar buffer[] = "\xf0\x7e\x7f\x0d\x40\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\xf7";
+
+  AgsMUID source;
+  AgsMUID destination;
+  
+  guchar device_id;
+  guchar version;
+
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  ags_midi_ci_util_get_process_capabilities(midi_ci_util,
+					    buffer,
+					    &device_id,
+					    &version,
+					    &source,
+					    &destination);
+
+  CU_ASSERT(device_id == 0x7f);
+  CU_ASSERT(version == 0x01);
+  CU_ASSERT(source == 0x0cafe010);
+  CU_ASSERT(destination == 0x0eadbeef);
 }
 
 void
 ags_midi_ci_util_test_put_process_capabilities_reply()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  guchar buffer[512];
+  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x41\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x00\xf7";
+
+  AgsMUID source = 0x0cafe010;
+  AgsMUID destination = 0x0eadbeef;
+
+  guchar device_id = '\x7f';
+  guchar version = '\x01';
+  guchar supported_features = '\x00';
+  
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  memset(buffer, 0, 512 * sizeof(guchar));
+
+  ags_midi_ci_util_put_process_capabilities_reply(midi_ci_util,
+						  buffer,
+						  device_id,
+						  version,
+						  source,
+						  destination,
+						  supported_features);
+
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 15 * sizeof(guchar)));
 }
 
 void
 ags_midi_ci_util_test_get_process_capabilities_reply()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  guchar buffer[] = "\xf0\x7e\x7f\x0d\x41\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x00\xf7";
+
+  AgsMUID source;
+  AgsMUID destination;
+  
+  guchar device_id;
+  guchar version;
+  guchar supported_features;
+
+  midi_ci_util = ags_midi_ci_util_alloc();
+  
+  ags_midi_ci_util_get_process_capabilities_reply(midi_ci_util,
+						  buffer,
+						  &device_id,
+						  &version,
+						  &source,
+						  &destination,
+						  &supported_features);
+
+  CU_ASSERT(device_id == 0x7f);
+  CU_ASSERT(version == 0x01);
+  CU_ASSERT(source == 0x0cafe010);
+  CU_ASSERT(destination == 0x0eadbeef);
+  CU_ASSERT(supported_features == 0x00);
 }
 
 void
@@ -1964,7 +2072,7 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c put subscription", ags_midi_ci_util_test_put_subscription) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c get subscription", ags_midi_ci_util_test_get_subscription) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c put subscription reply", ags_midi_ci_util_test_put_subscription_reply) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_ci_util.c get subscription reply", ags_midi_ci_util_test_get_subscription_reply) == NULL)
+     (CU_add_test(pSuite, "test of ags_midi_ci_util.c get subscription reply", ags_midi_ci_util_test_get_subscription_reply) == NULL) ||
 
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c put process capabilities", ags_midi_ci_util_test_put_process_capabilities) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c get process capabilities", ags_midi_ci_util_test_get_process_capabilities) == NULL) ||
