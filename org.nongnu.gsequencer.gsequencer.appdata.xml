@@ -45,6 +45,14 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="5.5.0" date="2023-08-05">
+      <description>
+	<p>
+	  Minor improvements.
+	</p>
+      </description>
+    </release>
+
     <release version="5.4.1" date="2023-07-03">
       <description>
 	<p>
@@ -52,7 +60,7 @@
 	</p>
       </description>
     </release>
-
+    
     <release version="5.4.0" date="2023-06-29">
       <description>
 	<p>
