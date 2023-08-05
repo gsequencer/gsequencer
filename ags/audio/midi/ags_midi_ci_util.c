@@ -5413,7 +5413,6 @@ ags_midi_ci_util_get_process_capabilities(AgsMidiCIUtil *midi_ci_util,
 					  AgsMUID *destination)
 {
   guint nth;
-  guint i_stop;
   
   g_return_val_if_fail(midi_ci_util != NULL, 0);
   g_return_val_if_fail(buffer[0] == 0xf0, 0);
@@ -5448,6 +5447,363 @@ ags_midi_ci_util_get_process_capabilities(AgsMidiCIUtil *midi_ci_util,
 			    destination);
 
   nth += 4;
+  
+  /* sysex end */
+  if(buffer[5 + nth] == 0xf7){
+    nth++;
+
+    return(5 + nth);
+  }
+
+  return(0);
+}
+
+/**
+ * ags_midi_ci_util_put_process_capabilities_reply:
+ * @midi_ci_util: the MIDI CI util
+ * @buffer: the buffer
+ * @device_id: the device ID
+ * @version: the version
+ * @source: the source
+ * @destination: the destination
+ * @supported_features: the supported features
+ *
+ * Put process capabilities reply.
+ *
+ * Since: 5.5.0
+ */
+void
+ags_midi_ci_util_put_process_capabilities_reply(AgsMidiCIUtil *midi_ci_util,
+						guchar *buffer,
+						guchar device_id,
+						guchar version,
+						AgsMUID source,
+						AgsMUID destination,
+						guchar supported_features)
+{
+  guint nth;
+  
+  g_return_if_fail(midi_ci_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[0] = 0xf0;
+  buffer[1] = 0x7e;
+
+  buffer[2] = device_id;
+
+  buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
+
+  buffer[4] = 0x41; // Sub-ID#2 - process capabilities reply
+
+  nth = 0;
+
+  /* version */
+  buffer[5 + nth] = version;
+
+  nth++;
+  
+  /* source */
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
+
+  /* destination */
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
+
+  /* supported features */
+  buffer[5 + nth] = supported_features;
+
+  nth++;
+
+  /* sysex end */
+  buffer[5 + nth] = 0xf7;
+  nth++;
+}
+
+/**
+ * ags_midi_ci_util_get_process_capabilities_reply:
+ * @midi_ci_util: the MIDI CI util
+ * @buffer: the buffer
+ * @device_id: (out): the device ID
+ * @version: (out): the return location of version
+ * @source: (out): the return location of source
+ * @destination: (out): the return location of destination
+ * @supported_features: (out): the return location of supported features
+ *
+ * Get process capabilities reply.
+ *
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.0
+ */
+guint
+ags_midi_ci_util_get_process_capabilities_reply(AgsMidiCIUtil *midi_ci_util,
+						guchar *buffer,
+						guchar *device_id,
+						guchar *version,
+						AgsMUID *source,
+						AgsMUID *destination,
+						guchar *supported_features)
+{
+  guint nth;
+  
+  g_return_val_if_fail(midi_ci_util != NULL, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail(buffer[1] == 0x7e, 0);
+  g_return_val_if_fail(buffer[3] == 0x0d, 0);
+  g_return_val_if_fail(buffer[4] == 0x41, 0);
+
+  /* device ID */
+  if(device_id != NULL){
+    device_id[0] = buffer[2];
+  }
+
+  nth = 0;
+
+  /* version */
+  if(version != NULL){
+    version[0] = buffer[5 + nth];
+  }
+
+  nth++;
+  
+  /* source */
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+
+  nth += 4;
+
+  /* destination */
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+
+  nth += 4;
+
+  /* supported features */
+  if(supported_features != NULL){
+    supported_features[0] = buffer[5 + nth];
+  }
+
+  nth++;
+  
+  /* sysex end */
+  if(buffer[5 + nth] == 0xf7){
+    nth++;
+
+    return(5 + nth);
+  }
+
+  return(0);
+}
+
+/**
+ * ags_midi_ci_util_put_message_report:
+ * @midi_ci_util: the MIDI CI util
+ * @buffer: the buffer
+ * @device_id: the device ID
+ * @version: the version
+ * @source: the source
+ * @destination: the destination
+ * @supported_features: the supported features
+ * @data_control: the data control
+ * @system_messages: the system messages
+ * @other_messages: the other messages
+ * @channel_controller_messages: the channel controller messages
+ * @note_data_messages: the note data messages
+ *
+ * Put message report.
+ *
+ * Since: 5.5.0
+ */
+void
+ags_midi_ci_util_put_message_report(AgsMidiCIUtil *midi_ci_util,
+				    guchar *buffer,
+				    guchar device_id,
+				    guchar version,
+				    AgsMUID source,
+				    AgsMUID destination,
+				    guchar data_control,
+				    guchar system_messages,
+				    guchar other_messages,
+				    guchar channel_controller_messages,
+				    guchar note_data_messages)
+{
+  guint nth;
+  
+  g_return_if_fail(midi_ci_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[0] = 0xf0;
+  buffer[1] = 0x7e;
+
+  buffer[2] = device_id;
+
+  buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
+
+  buffer[4] = 0x42; // Sub-ID#2 - message report
+
+  nth = 0;
+
+  /* version */
+  buffer[5 + nth] = version;
+
+  nth++;
+  
+  /* source */
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
+
+  /* destination */
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
+
+  /* data control */
+  buffer[5 + nth] = data_control;
+
+  nth++;
+
+  /* system messages */
+  buffer[5 + nth] = system_messages;
+
+  nth++;
+
+  /* other messages */
+  buffer[5 + nth] = other_messages;
+
+  nth++;
+
+  /* channel controller messages */
+  buffer[5 + nth] = channel_controller_messages;
+
+  nth++;
+
+  /* note data messages */
+  buffer[5 + nth] = note_data_messages;
+
+  nth++;
+
+  /* sysex end */
+  buffer[5 + nth] = 0xf7;
+  nth++;
+}
+
+/**
+ * ags_midi_ci_util_get_message_report:
+ * @midi_ci_util: the MIDI CI util
+ * @buffer: the buffer
+ * @device_id: (out): the device ID
+ * @version: (out): the return location of version
+ * @source: (out): the return location of source
+ * @destination: (out): the return location of destination
+ * @data_control: (out): the return location of data control
+ * @system_messages: (out): the return location of system messages
+ * @other_messages: (out): the return location of other system messages
+ * @channel_controller_messages: (out): the return location of channel controller messages
+ * @note_data_messages: (out): the return location of note data messages
+ *
+ * Get message report.
+ *
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.0
+ */
+guint
+ags_midi_ci_util_get_message_report(AgsMidiCIUtil *midi_ci_util,
+				    guchar *buffer,
+				    guchar *device_id,
+				    guchar *version,
+				    AgsMUID *source,
+				    AgsMUID *destination,
+				    guchar *data_control,
+				    guchar *system_messages,
+				    guchar *other_messages,
+				    guchar *channel_controller_messages,
+				    guchar *note_data_messages)
+{
+  guint nth;
+  
+  g_return_val_if_fail(midi_ci_util != NULL, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail(buffer[1] == 0x7e, 0);
+  g_return_val_if_fail(buffer[3] == 0x0d, 0);
+  g_return_val_if_fail(buffer[4] == 0x42, 0);
+
+  /* device ID */
+  if(device_id != NULL){
+    device_id[0] = buffer[2];
+  }
+
+  nth = 0;
+
+  /* version */
+  if(version != NULL){
+    version[0] = buffer[5 + nth];
+  }
+
+  nth++;
+  
+  /* source */
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+
+  nth += 4;
+
+  /* destination */
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+
+  nth += 4;
+
+  /* data control */
+  if(data_control != NULL){
+    data_control[0] = buffer[5 + nth];
+  }
+
+  nth++;
+
+  /* system messages */
+  if(system_messages != NULL){
+    system_messages[0] = buffer[5 + nth];
+  }
+
+  nth++;
+
+  /* other essages */
+  if(other_messages != NULL){
+    other_messages[0] = buffer[5 + nth];
+  }
+
+  nth++;
+
+  /* channel controller messages */
+  if(channel_controller_messages != NULL){
+    channel_controller_messages[0] = buffer[5 + nth];
+  }
+
+  nth++;
+
+  /* note data messages */
+  if(note_data_messages != NULL){
+    note_data_messages[0] = buffer[5 + nth];
+  }
+
+  nth++;
   
   /* sysex end */
   if(buffer[5 + nth] == 0xf7){

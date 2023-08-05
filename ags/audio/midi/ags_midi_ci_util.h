@@ -97,6 +97,16 @@ typedef enum{
   AGS_MIDI_CI_INTERNAL_ERROR         = 500,  
 }AgsMidiCIUtilStatusCode;
 
+typedef enum{
+  AGS_MIDI_CI_PROCESS_MESSAGE_REPORT   = 1,
+  /*  RESERVED   = 1 <<  1,  */
+  /*  RESERVED   = 1 <<  2,  */
+  /*  RESERVED   = 1 <<  3,  */
+  /*  RESERVED   = 1 <<  4,  */
+  /*  RESERVED   = 1 <<  5,  */
+  /*  RESERVED   = 1 <<  6,  */
+}AgsMidiCIUtilProcessSupportedFeatures;
+
 struct _AgsMidiCIUtil
 {
   GRand *rand;
@@ -621,6 +631,44 @@ guint ags_midi_ci_util_get_process_capabilities(AgsMidiCIUtil *midi_ci_util,
 						guchar *version,
 						AgsMUID *source,
 						AgsMUID *destination);
+
+void ags_midi_ci_util_put_process_capabilities_reply(AgsMidiCIUtil *midi_ci_util,
+						     guchar *buffer,
+						     guchar device_id,
+						     guchar version,
+						     AgsMUID source,
+						     AgsMUID destination,
+						     guchar supported_features);
+guint ags_midi_ci_util_get_process_capabilities_reply(AgsMidiCIUtil *midi_ci_util,
+						      guchar *buffer,
+						      guchar *device_id,
+						      guchar *version,
+						      AgsMUID *source,
+						      AgsMUID *destination,
+						      guchar *supported_features);
+
+void ags_midi_ci_util_put_message_report(AgsMidiCIUtil *midi_ci_util,
+					 guchar *buffer,
+					 guchar device_id,
+					 guchar version,
+					 AgsMUID source,
+					 AgsMUID destination,
+					 guchar data_control,
+					 guchar system_messages,
+					 guchar other_messages,
+					 guchar channel_controller_messages,
+					 guchar note_data_messages);
+guint ags_midi_ci_util_get_message_report(AgsMidiCIUtil *midi_ci_util,
+					  guchar *buffer,
+					  guchar *device_id,
+					  guchar *version,
+					  AgsMUID *source,
+					  AgsMUID *destination,
+					  guchar *data_control,
+					  guchar *system_messages,
+					  guchar *other_messages,
+					  guchar *channel_controller_messages,
+					  guchar *note_data_messages);
 
 G_END_DECLS
 
