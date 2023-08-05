@@ -195,6 +195,18 @@ guint ags_midi_ump_util_get_device_identity_notification(AgsMidiUmpUtil *midi_um
 							 gint *software_revision,
 							 guchar data[16]);
 
+/* endpoint name notification */
+gboolean ags_midi_ump_util_is_endpoint_name_notification(AgsMidiUmpUtil *midi_ump_util,
+							 guchar *buffer);
+void ags_midi_ump_util_put_endpoint_name_notification(AgsMidiUmpUtil *midi_ump_util,
+						      guchar *buffer,
+						      gchar *endpoint_name,
+						      guchar data[128]);
+guint ags_midi_ump_util_get_endpoint_name_notification(AgsMidiUmpUtil *midi_ump_util,
+						       guchar *buffer,
+						       gchar **endpoint_name,
+						       guchar data[128]);
+
 G_END_DECLS
 
 #endif /*__AGS_MIDI_UMP_UTIL_H__*/
