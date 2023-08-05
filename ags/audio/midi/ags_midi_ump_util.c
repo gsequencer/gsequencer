@@ -1,0 +1,602 @@
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2023 Joël Krähemann
+ *
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include <ags/audio/midi/ags_midi_ump_util.h>
+
+#include <glib.h>
+#include <glib-object.h>
+
+#include <json-glib/json-glib.h>
+
+#include <string.h>
+
+/**
+ * SECTION:ags_midi_ump_util
+ * @short_description: MIDI UMP util
+ * @title: AgsMidiUtil
+ * @section_id:
+ * @include: ags/audio/midi/ags_midi_ump_util.h
+ *
+ * Utility functions for MIDI UMP messages.
+ */
+
+GType
+ags_midi_ump_util_get_type(void)
+{
+  static volatile gsize g_define_type_id__volatile = 0;
+
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_midi_ump_util = 0;
+
+    ags_type_midi_ump_util =
+      g_boxed_type_register_static("AgsMidiUmpUtil",
+				   (GBoxedCopyFunc) ags_midi_ump_util_copy,
+				   (GBoxedFreeFunc) ags_midi_ump_util_free);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_midi_ump_util);
+  }
+
+  return g_define_type_id__volatile;
+}
+
+/**
+ * ags_midi_ump_util_alloc:
+ *
+ * Allocate MIDI UMP util.
+ *
+ * Returns: (transfer full): the newly allocated #AgsMidiUmpUtil-struct
+ * 
+ * Since: 5.5.1
+ */
+AgsMidiUmpUtil*
+ags_midi_ump_util_alloc()
+{
+  AgsMidiUmpUtil *midi_ump_util;
+
+  midi_ump_util = g_new0(AgsMidiUmpUtil,
+			 1);
+
+  midi_ump_util->major = 2;
+  midi_ump_util->minor = 0;
+  
+  return(midi_ump_util);
+}
+
+/**
+ * ags_midi_ump_util_free:
+ * @midi_ump_util: the MIDI UMP util
+ *
+ * Free MIDI UMP util.
+ *
+ * Since: 5.5.1
+ */
+void
+ags_midi_ump_util_free(AgsMidiUmpUtil *midi_ump_util)
+{
+  g_return_if_fail(midi_ump_util != NULL);
+  
+  g_free(midi_ump_util);
+}
+
+/**
+ * ags_midi_ump_util_copy:
+ * @midi_ump_util: the MIDI UMP util
+ *
+ * Copy MIDI UMP util.
+ *
+ * Returns: (transfer full): the newly allocated #AgsMidiUmpUtil-struct
+ * 
+ * Since: 5.5.1
+ */
+AgsMidiUmpUtil*
+ags_midi_ump_util_copy(AgsMidiUmpUtil *midi_ump_util)
+{
+  AgsMidiUmpUtil *ptr;
+
+  g_return_val_if_fail(midi_ump_util != NULL, NULL);
+
+  ptr = ags_midi_ump_util_alloc();
+
+  ptr->major = midi_ump_util->major;
+  ptr->minor = midi_ump_util->minor;
+  
+  return(ptr);
+}
+
+gboolean
+ags_midi_ump_util_is_system_common(AgsMidiUmpUtil *midi_ump_util,
+				   guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0x10){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+void
+ags_midi_ump_util_put_system_common(AgsMidiUmpUtil *midi_ump_util,
+				    guchar *buffer,
+				    gint group,
+				    gint status,
+				    guchar data[4])
+{
+  //TODO:JK: implement me
+}
+
+guint
+ags_midi_ump_util_get_system_common(AgsMidiUmpUtil *midi_ump_util,
+				    guchar *buffer,
+				    gint *group,
+				    gint *status,
+				    guchar data[4])
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+gboolean
+ags_midi_ump_util_is_midi1_channel_voice(AgsMidiUmpUtil *midi_ump_util,
+					 guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0x20){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+void
+ags_midi_ump_util_put_midi1_channel_voice(AgsMidiUmpUtil *midi_ump_util,
+					  guchar *buffer)
+{
+  //TODO:JK: implement me
+}
+
+guint
+ags_midi_ump_util_get_midi1_channel_voice(AgsMidiUmpUtil *midi_ump_util,
+					  guchar *buffer)
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+gboolean
+ags_midi_ump_util_is_data_message_with_sysex(AgsMidiUmpUtil *midi_ump_util,
+					     guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0x30){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+void
+ags_midi_ump_util_put_data_message_with_sysex(AgsMidiUmpUtil *midi_ump_util,
+					      guchar *buffer,
+					      gint group,
+					      gint status,
+					      guchar data[16])
+{
+  //TODO:JK: implement me
+}
+
+guint
+ags_midi_ump_util_get_data_message_with_sysex(AgsMidiUmpUtil *midi_ump_util,
+					      guchar *buffer,
+					      gint *group,
+					      gint *status,
+					      guchar data[16])
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+gboolean
+ags_midi_ump_util_is_data_message(AgsMidiUmpUtil *midi_ump_util,
+				  guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0x50){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+void
+ags_midi_ump_util_put_data_message(AgsMidiUmpUtil *midi_ump_util,
+				   guchar *buffer,
+				   gint group,
+				   gint status,
+				   guchar data[16])
+{
+  //TODO:JK: implement me
+}
+
+guint
+ags_midi_ump_util_get_data_message(AgsMidiUmpUtil *midi_ump_util,
+				   guchar *buffer,
+				   gint *group,
+				   gint *status,
+				   guchar data[16])
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+gboolean
+ags_midi_ump_util_is_midi2_channel_voice(AgsMidiUmpUtil *midi_ump_util,
+					 guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0x40){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+void
+ags_midi_ump_util_put_midi2_channel_voice(AgsMidiUmpUtil *midi_ump_util,
+					  guchar *buffer,
+					  gint group,
+					  gint status,
+					  gint index)
+{
+  //TODO:JK: implement me
+}
+
+guint
+ags_midi_ump_util_get_midi2_channel_voice(AgsMidiUmpUtil *midi_ump_util,
+					  guchar *buffer,
+					  gint *group,
+					  gint *status,
+					  gint *index)
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+gboolean
+ags_midi_ump_util_is_stream_message(AgsMidiUmpUtil *midi_ump_util,
+				    guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0xf0){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+void
+ags_midi_ump_util_put_stream_message(AgsMidiUmpUtil *midi_ump_util,
+				     guchar *buffer,
+				     gint format,
+				     gint status,
+				     guchar data[16])
+{
+  guint nth;
+  
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
+  nth++;
+
+  buffer[nth] = (0xff & status);
+  nth++;
+
+  memcpy(buffer + nth, data, 10 * sizeof(guchar));  
+  nth += 10;
+}
+
+guint
+ags_midi_ump_util_get_stream_message(AgsMidiUmpUtil *midi_ump_util,
+				     guchar *buffer,
+				     gint *format,
+				     gint *status,
+				     guchar data[16])
+{
+  g_return_val_if_fail(midi_ump_util != NULL, 0);
+  g_return_val_if_fail(buffer != NULL, 0);
+
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+gboolean
+ags_midi_ump_util_is_endpoint_discovery(AgsMidiUmpUtil *midi_ump_util,
+					guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0xf0 &&
+     (((0x0f & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x0){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+void
+ags_midi_ump_util_put_endpoint_discovery(AgsMidiUmpUtil *midi_ump_util,
+					 guchar *buffer,
+					 gint major,
+					 gint minor,
+					 gint filter,
+					 guchar data[16])
+{  
+  guint nth;
+  const gint status = 0x0;
+  const gint format = 0x0;
+  
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
+  nth++;
+
+  buffer[nth] = (0xff & status);
+  nth++;
+
+  buffer[nth] = (0xff & major);
+  nth++;
+
+  buffer[nth] = (0xff & minor);
+  nth++;
+
+  /* reserved */
+  memset(buffer + nth, 0, 3 * sizeof(guchar));
+  nth += 3;
+
+  /* filter bitmap */
+  buffer[nth] = (0xff & filter);
+  nth++;
+
+  /* reserved */
+  memset(buffer + nth, 0, 8 * sizeof(guchar));
+  nth += 8;
+}
+
+guint
+ags_midi_ump_util_get_endpoint_discovery(AgsMidiUmpUtil *midi_ump_util,
+					 guchar *buffer,
+					 gint *major,
+					 gint *minor,
+					 gint *filter,
+					 guchar data[16])
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+gboolean
+ags_midi_ump_util_is_endpoint_info_notification(AgsMidiUmpUtil *midi_ump_util,
+						guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0xf0 &&
+     (0x0c & (buffer[0])) == 0x0 &&
+     (((0x03 & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x1){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+void
+ags_midi_ump_util_put_endpoint_info_notification(AgsMidiUmpUtil *midi_ump_util,
+						 guchar *buffer,
+						 gint major,
+						 gint minor,
+						 gboolean static_function_blocks,
+						 gint function_block_count,
+						 gboolean midi_v2_0_support,
+						 gboolean midi_v1_0_support,
+						 gboolean rx_jitter_reduction,
+						 gboolean tx_jitter_reduction,
+						 guchar data[16])
+{  
+  guint nth;
+  const gint status = 0x1;
+  const gint format = 0x0;
+  
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
+  nth++;
+
+  buffer[nth] = (0xff & status);
+  nth++;
+
+  buffer[nth] = (0xff & major);
+  nth++;
+
+  buffer[nth] = (0xff & minor);
+  nth++;
+
+  /* function block */
+  buffer[nth] = 0x00;
+  
+  if(static_function_blocks){
+    buffer[nth] = 0x80;
+  }
+
+  buffer[nth] |= (0x7f & (function_block_count));
+  nth++;
+
+  /* reserved */
+  buffer[nth] = 0x00;
+  nth++;
+  
+  /* MIDI support */
+  buffer[nth] = 0x00;
+
+  if(midi_v2_0_support){
+    buffer[nth] |= 0x02;
+  }
+
+  if(midi_v1_0_support){
+    buffer[nth] |= 0x01;
+  }
+
+  nth++;
+
+  /* jitter reduction  */
+  buffer[nth] = 0x00;
+
+  if(rx_jitter_reduction){
+    buffer[nth] |= 0x02;
+  }
+
+  if(tx_jitter_reduction){
+    buffer[nth] |= 0x01;
+  }
+
+  nth++;
+  
+  /* reserved */
+  memset(buffer + nth, 0, 8 * sizeof(guchar));
+  nth += 8;
+}
+
+guint
+ags_midi_ump_util_get_endpoint_info_notification(AgsMidiUmpUtil *midi_ump_util,
+						 guchar *buffer,
+						 gint *major,
+						 gint *minor,
+						 gboolean *static_function_blocks,
+						 gint *function_block_count,
+						 gboolean *midi_v2_0_support,
+						 gboolean *midi_v1_0_support,
+						 gboolean *rx_jitter_reduction,
+						 gboolean *tx_jitter_reduction,
+						 guchar data[16])
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+gboolean
+ags_midi_ump_util_is_device_identity_notification(AgsMidiUmpUtil *midi_ump_util,
+						  guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0xf0 &&
+     (0x0c & (buffer[0])) == 0x0 &&
+     (((0x03 & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x2){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+void
+ags_midi_ump_util_put_device_identity_notification(AgsMidiUmpUtil *midi_ump_util,
+						   guchar *buffer,
+						   gint device_manufacturer,
+						   gint device_family,
+						   gint device_family_model,
+						   gint software_revision,
+						   guchar data[16])
+{
+  guint nth;
+  const gint status = 0x2;
+  const gint format = 0x0;
+  
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
+  nth++;
+
+  buffer[nth] = (0xff & status);
+  nth++;
+
+  /* reserved */
+  memset(buffer + nth, 0, 3 * sizeof(guchar));
+  nth += 3;
+
+  /* device manufacturer */
+  buffer[nth] = (0x7f & device_manufacturer);
+  nth++;
+
+  buffer[nth] = (0x7f00 & device_manufacturer) >> 8;
+  nth++;
+
+  buffer[nth] = (0x7f0000 & device_manufacturer) >> 16;
+  nth++;
+  
+  /* device family */
+  buffer[nth] = (0x7f & device_family);
+  nth++;
+
+  buffer[nth] = (0x7f00 & device_family) >> 8;
+  nth++;
+
+  /* device family model */
+  buffer[nth] = (0x7f & device_family_model);
+  nth++;
+
+  buffer[nth] = (0x7f00 & device_family_model) >> 8;
+  nth++;
+
+  /* software revision */
+  buffer[nth] = (0x7f & software_revision);
+  nth++;
+
+  buffer[nth] = (0x7f00 & software_revision) >> 8;
+  nth++;
+
+  buffer[nth] = (0x7f0000 & software_revision) >> 16;
+  nth++;
+
+  buffer[nth] = (0x7f0000 & software_revision) >> 24;
+  nth++;
+}
+
+guint
+ags_midi_ump_util_get_device_identity_notification(AgsMidiUmpUtil *midi_ump_util,
+						   guchar *buffer,
+						   gint *device_manufacturer,
+						   gint *device_family,
+						   gint *device_family_model,
+						   gint *software_revision,
+						   guchar data[16])
+{
+  g_return_val_if_fail(midi_ump_util != NULL, 0);
+  g_return_val_if_fail(buffer != NULL, 0);
+
+  //TODO:JK: implement me
+
+  return(0);
+}
