@@ -670,6 +670,40 @@ guint ags_midi_ci_util_get_message_report(AgsMidiCIUtil *midi_ci_util,
 					  guchar *channel_controller_messages,
 					  guchar *note_data_messages);
 
+void ags_midi_ci_util_put_message_report_reply(AgsMidiCIUtil *midi_ci_util,
+					       guchar *buffer,
+					       guchar device_id,
+					       guchar version,
+					       AgsMUID source,
+					       AgsMUID destination,
+					       guchar system_messages,
+					       guchar other_messages,
+					       guchar channel_controller_messages,
+					       guchar note_data_messages);
+guint ags_midi_ci_util_get_message_report_reply(AgsMidiCIUtil *midi_ci_util,
+						guchar *buffer,
+						guchar *device_id,
+						guchar *version,
+						AgsMUID *source,
+						AgsMUID *destination,
+						guchar *system_messages,
+						guchar *other_messages,
+						guchar *channel_controller_messages,
+						guchar *note_data_messages);
+
+void ags_midi_ci_util_put_end_of_message_report(AgsMidiCIUtil *midi_ci_util,
+						guchar *buffer,
+						guchar device_id,
+						guchar version,
+						AgsMUID source,
+						AgsMUID destination);
+guint ags_midi_ci_util_get_end_of_message_report(AgsMidiCIUtil *midi_ci_util,
+						 guchar *buffer,
+						 guchar *device_id,
+						 guchar *version,
+						 AgsMUID *source,
+						 AgsMUID *destination);
+
 G_END_DECLS
 
 #endif /*__AGS_MIDI_CI_UTIL_H__*/
