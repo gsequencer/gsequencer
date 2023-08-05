@@ -1690,6 +1690,7 @@ libags_audio_midi_h_sources = \
 	$(deprecated_libags_audio_midi_h_sources) \
 	ags/audio/midi/ags_midi_buffer_util.h \
 	ags/audio/midi/ags_midi_ci_util.h \
+	ags/audio/midi/ags_midi_ump_util.h \
 	ags/audio/midi/ags_midi_util.h \
 	ags/audio/midi/ags_midi_builder.h \
 	ags/audio/midi/ags_midi_file.h \
@@ -1701,6 +1702,7 @@ libags_audio_midi_c_sources = \
 	$(deprecated_libags_audio_midi_c_sources) \
 	ags/audio/midi/ags_midi_buffer_util.c \
 	ags/audio/midi/ags_midi_ci_util.c \
+	ags/audio/midi/ags_midi_ump_util.c \
 	ags/audio/midi/ags_midi_util.c \
 	ags/audio/midi/ags_midi_builder.c \
 	ags/audio/midi/ags_midi_file.c \
