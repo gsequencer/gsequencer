@@ -73,6 +73,9 @@ ags_midi_ci_util_alloc()
 			1);
 
   midi_ci_util->rand = g_rand_new();
+
+  midi_ci_util->major = 1;
+  midi_ci_util->minor = 2;
   
   return(midi_ci_util);
 }
@@ -106,13 +109,16 @@ ags_midi_ci_util_free(AgsMidiCIUtil *midi_ci_util)
 AgsMidiCIUtil*
 ags_midi_ci_util_copy(AgsMidiCIUtil *midi_ci_util)
 {
-  AgsMidiCIUtil *retval;
+  AgsMidiCIUtil *ptr;
 
   g_return_val_if_fail(midi_ci_util != NULL, NULL);
 
-  retval = ags_midi_ci_util_alloc();
+  ptr = ags_midi_ci_util_alloc();
+
+  ptr->major = midi_ci_util->major;
+  ptr->minor = midi_ci_util->minor;
   
-  return(retval);
+  return(ptr);
 }
 
 /**
@@ -4558,7 +4564,7 @@ ags_midi_ci_util_get_set_property_data(AgsMidiCIUtil *midi_ci_util,
  * @property_data_length: the property data length
  * @property_data: the property data
  *
- * Put set property data.
+ * Put set property data reply.
  *
  * Since: 5.5.0
  */
@@ -4673,7 +4679,7 @@ ags_midi_ci_util_put_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
  * @property_data_length: (out): the property data length
  * @property_data: (out): the property data
  *
- * Get set property data.
+ * Get set property data reply.
  *
  * Returns: the number of bytes read
  * 
@@ -4818,7 +4824,7 @@ ags_midi_ci_util_get_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
  * @property_data_length: the property data length
  * @property_data: the property data
  *
- * Put set property data.
+ * Put subscription.
  *
  * Since: 5.5.0
  */
@@ -4933,7 +4939,7 @@ ags_midi_ci_util_put_subscription(AgsMidiCIUtil *midi_ci_util,
  * @property_data_length: (out): the property data length
  * @property_data: (out): the property data
  *
- * Get set property data.
+ * Get subscription.
  *
  * Returns: the number of bytes read
  * 
@@ -5078,7 +5084,7 @@ ags_midi_ci_util_get_subscription(AgsMidiCIUtil *midi_ci_util,
  * @property_data_length: the property data length
  * @property_data: the property data
  *
- * Put set property data.
+ * Put subscription reply.
  *
  * Since: 5.5.0
  */
@@ -5193,7 +5199,7 @@ ags_midi_ci_util_put_subscription_reply(AgsMidiCIUtil *midi_ci_util,
  * @property_data_length: (out): the property data length
  * @property_data: (out): the property data
  *
- * Get set property data.
+ * Get subscription reply.
  *
  * Returns: the number of bytes read
  * 
@@ -5311,6 +5317,137 @@ ags_midi_ci_util_get_subscription_reply(AgsMidiCIUtil *midi_ci_util,
   }
 
   nth += i_stop;
+  
+  /* sysex end */
+  if(buffer[5 + nth] == 0xf7){
+    nth++;
+
+    return(5 + nth);
+  }
+
+  return(0);
+}
+
+/**
+ * ags_midi_ci_util_put_process_capabilities:
+ * @midi_ci_util: the MIDI CI util
+ * @buffer: the buffer
+ * @device_id: the device ID
+ * @version: the version
+ * @source: the source
+ * @destination: the destination
+ *
+ * Put process capabilities.
+ *
+ * Since: 5.5.0
+ */
+void
+ags_midi_ci_util_put_process_capabilities(AgsMidiCIUtil *midi_ci_util,
+					  guchar *buffer,
+					  guchar device_id,
+					  guchar version,
+					  AgsMUID source,
+					  AgsMUID destination)
+{
+  guint nth;
+  
+  g_return_if_fail(midi_ci_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[0] = 0xf0;
+  buffer[1] = 0x7e;
+
+  buffer[2] = device_id;
+
+  buffer[3] = 0x0d; // Sub-ID#1 - MIDI-CI
+
+  buffer[4] = 0x40; // Sub-ID#2 - process capabilities
+
+  nth = 0;
+
+  /* version */
+  buffer[5 + nth] = version;
+
+  nth++;
+  
+  /* source */
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+  nth += 4;
+
+  /* destination */
+  ags_midi_ci_util_put_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+  nth += 4;
+
+  /* sysex end */
+  buffer[5 + nth] = 0xf7;
+  nth++;
+}
+
+/**
+ * ags_midi_ci_util_get_process_capabilities:
+ * @midi_ci_util: the MIDI CI util
+ * @buffer: the buffer
+ * @device_id: (out): the device ID
+ * @version: (out): the return location of version
+ * @source: (out): the return location of source
+ * @destination: (out): the return location of destination
+ *
+ * Get process capabilities.
+ *
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.0
+ */
+guint
+ags_midi_ci_util_get_process_capabilities(AgsMidiCIUtil *midi_ci_util,
+					  guchar *buffer,
+					  guchar *device_id,
+					  guchar *version,
+					  AgsMUID *source,
+					  AgsMUID *destination)
+{
+  guint nth;
+  guint i_stop;
+  
+  g_return_val_if_fail(midi_ci_util != NULL, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail(buffer[1] == 0x7e, 0);
+  g_return_val_if_fail(buffer[3] == 0x0d, 0);
+  g_return_val_if_fail(buffer[4] == 0x40, 0);
+
+  /* device ID */
+  if(device_id != NULL){
+    device_id[0] = buffer[2];
+  }
+
+  nth = 0;
+
+  /* version */
+  if(version != NULL){
+    version[0] = buffer[5 + nth];
+  }
+
+  nth++;
+  
+  /* source */
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    source);
+
+  nth += 4;
+
+  /* destination */
+  ags_midi_ci_util_get_muid(midi_ci_util,
+			    buffer + 5 + nth,
+			    destination);
+
+  nth += 4;
   
   /* sysex end */
   if(buffer[5 + nth] == 0xf7){

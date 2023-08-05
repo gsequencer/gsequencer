@@ -99,11 +99,10 @@ typedef enum{
 
 struct _AgsMidiCIUtil
 {
-  guchar device_id;
-  
   GRand *rand;
-  
-  //empty
+
+  guint major;
+  guint minor;
 };
 
 GType ags_midi_ci_util_get_type(void);
@@ -609,6 +608,19 @@ guint ags_midi_ci_util_get_subscription_reply(AgsMidiCIUtil *midi_ci_util,
 					      guint16 *nth_chunk,
 					      guint16 *property_data_length,
 					      guchar **property_data);
+
+void ags_midi_ci_util_put_process_capabilities(AgsMidiCIUtil *midi_ci_util,
+					       guchar *buffer,
+					       guchar device_id,
+					       guchar version,
+					       AgsMUID source,
+					       AgsMUID destination);
+guint ags_midi_ci_util_get_process_capabilities(AgsMidiCIUtil *midi_ci_util,
+						guchar *buffer,
+						guchar *device_id,
+						guchar *version,
+						AgsMUID *source,
+						AgsMUID *destination);
 
 G_END_DECLS
 
