@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[5.4.3],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[5.5.0],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -580,7 +580,7 @@ if test "${LIBAGS_VST3_LIBS+set}" = set; then
 echo "variable \$LIBAGS_VST3_LIBS is set to: $LIBAGS_VST3_LIBS"
 else
 # -lvstgui_standalone
-LIBAGS_VST3_LIBS="-lbase -lpluginterfaces -lsdk -lsdk_common -lsdk_hosting -lvstgui -lvstgui_support -lvstgui_uidescription"
+LIBAGS_VST3_LIBS="-lbase -lpluginterfaces -lsdk -lsdk_common -lsdk_hosting"
 echo "variable \$LIBAGS_VST3_LIBS is set to: $LIBAGS_VST3_LIBS"
 fi
 

@@ -30,6 +30,7 @@ static_test_dependencies = [
   xml2_dependency,
   soup_dependency,
   instpatch_dependency,
+  json_glib_dependency,
   dl_dependency,
   m_dependency,
 ]

@@ -1,4 +1,4 @@
-# Copyright (C) 2005-2022 Daniel Maksymow, Joël Krähemann
+# Copyright (C) 2005-2023 Daniel Maksymow, Joël Krähemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -582,6 +582,7 @@ libags_audio_sources = files(
   'audio/jack/ags_jack_server.c',
   'audio/midi/ags_midi_buffer_util.c',
   'audio/midi/ags_midi_builder.c',
+  'audio/midi/ags_midi_ci_util.c',
   'audio/midi/ags_midi_file.c',
   'audio/midi/ags_midi_parser.c',
   'audio/midi/ags_midi_util.c',
@@ -1251,6 +1252,7 @@ gsequencer_dependencies = [
 midi2xml_dependencies = [
   common_dependencies,
   dependency('libsoup-3.0'),
+  dependency('json-glib-1.0'),
   dependency('libinstpatch-1.0'),
 #  compiler.find_library('crypt', required: true),
   ]

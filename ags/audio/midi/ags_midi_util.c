@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,9 +23,6 @@
 
 #include <stdlib.h>
 #include <string.h>
-
-gpointer ags_midi_util_copy(gpointer ptr);
-void ags_midi_util_free(gpointer ptr);
 
 guchar* ags_midi_util_to_smf_realloc(guchar *smf_buffer, guint smf_buffer_length);
 
@@ -58,20 +55,68 @@ ags_midi_util_get_type(void)
   return g_define_type_id__volatile;
 }
 
-gpointer
-ags_midi_util_copy(gpointer ptr)
+/**
+ * ags_midi_util_alloc:
+ *
+ * Allocate MIDI util.
+ *
+ * Returns: (transfer full): the newly allocated #AgsMidiUtil-struct
+ * 
+ * Since: 5.5.0
+ */
+AgsMidiUtil*
+ags_midi_util_alloc()
 {
-  gpointer retval;
+  AgsMidiUtil *midi_util;
 
-  retval = g_memdup(ptr, sizeof(AgsMidiUtil));
- 
-  return(retval);
+  midi_util = g_new0(AgsMidiUtil,
+		     1);
+
+  midi_util->major = 1;
+  midi_util->minor = 0;
+  
+  return(midi_util);
 }
 
+/**
+ * ags_midi_util_free:
+ * @midi_util: the MIDI util
+ *
+ * Free MIDI util.
+ *
+ * Since: 5.5.0
+ */
 void
-ags_midi_util_free(gpointer ptr)
+ags_midi_util_free(AgsMidiUtil *midi_util)
 {
-  g_free(ptr);
+  g_return_if_fail(midi_util != NULL);
+  
+  g_free(midi_util);
+}
+
+/**
+ * ags_midi_util_copy:
+ * @midi_util: the MIDI util
+ *
+ * Copy MIDI util.
+ *
+ * Returns: (transfer full): the newly allocated #AgsMidiUtil-struct
+ * 
+ * Since: 5.5.0
+ */
+AgsMidiUtil*
+ags_midi_util_copy(AgsMidiUtil *midi_util)
+{
+  AgsMidiUtil *ptr;
+
+  g_return_val_if_fail(midi_util != NULL, NULL);
+
+  ptr = ags_midi_util_alloc();
+
+  ptr->major = midi_util->major;
+  ptr->minor = midi_util->minor;
+  
+  return(ptr);
 }
 
 /**

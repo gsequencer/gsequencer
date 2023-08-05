@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,10 +33,16 @@ typedef struct _AgsMidiUtil AgsMidiUtil;
 
 struct _AgsMidiUtil
 {
-  //empty
+  guint major;
+  guint minor;
 };
 
 GType ags_midi_util_get_type(void);
+
+AgsMidiUtil* ags_midi_util_alloc();
+void ags_midi_util_free(AgsMidiUtil *midi_ci_util);
+
+AgsMidiUtil* ags_midi_util_copy(AgsMidiUtil *midi_ci_util);
 
 /* real-time channel message utility */
 gboolean ags_midi_util_is_key_on(guchar *buffer);

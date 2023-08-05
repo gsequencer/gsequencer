@@ -106,6 +106,7 @@ gboolean ags_program_test_flags(AgsProgram *program, AgsProgramFlags flags);
 void ags_program_set_flags(AgsProgram *program, AgsProgramFlags flags);
 void ags_program_unset_flags(AgsProgram *program, AgsProgramFlags flags);
 
+//TODO:JK: remove this functions
 GList* ags_program_find_port(GList *program,
 			     GObject *port);
 
@@ -121,7 +122,7 @@ gint ags_program_sort_func(gconstpointer a,
 GList* ags_program_add(GList *program,
 		       AgsProgram *new_program);
 
-GList* ags_program_remove_all_empty(GList *automation);
+GList* ags_program_remove_all_empty(GList *program);
 
 //TODO:JK: remove these 2 functions
 GObject* ags_program_get_audio(AgsProgram *program);
@@ -140,6 +141,7 @@ gchar* ags_program_get_control_name(AgsProgram *program);
 void ags_program_set_control_name(AgsProgram *program,
 				  gchar *control_name);
 
+//TODO:JK: remove these 2 functions
 GObject* ags_program_get_port(AgsProgram *program);
 void ags_program_set_port(AgsProgram *program,
 			  GObject *port);
