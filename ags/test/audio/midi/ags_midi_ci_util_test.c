@@ -88,6 +88,16 @@ void ags_midi_ci_util_test_put_subscription();
 void ags_midi_ci_util_test_get_subscription();
 void ags_midi_ci_util_test_put_subscription_reply();
 void ags_midi_ci_util_test_get_subscription_reply();
+void ags_midi_ci_util_test_put_process_capabilities();
+void ags_midi_ci_util_test_get_process_capabilities();
+void ags_midi_ci_util_test_put_process_capabilities_reply();
+void ags_midi_ci_util_test_get_process_capabilities_reply();
+void ags_midi_ci_util_test_put_message_report();
+void ags_midi_ci_util_test_get_message_report();
+void ags_midi_ci_util_test_put_message_report_reply();
+void ags_midi_ci_util_test_get_message_report_reply();
+void ags_midi_ci_util_test_put_end_of_message_report();
+void ags_midi_ci_util_test_get_end_of_message_report();
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -459,7 +469,8 @@ ags_midi_ci_util_test_put_nak()
 
   AgsMUID source = 0x0cafe010;
   AgsMUID destination = 0x0eadbeef;
-  
+
+  guchar device_id = '\x7f';
   guchar version = '\x01';
   
   midi_ci_util = ags_midi_ci_util_alloc();
@@ -468,6 +479,7 @@ ags_midi_ci_util_test_put_nak()
 
   ags_midi_ci_util_put_nak(midi_ci_util,
 			   buffer,
+			   device_id,
 			   version,
 			   source,
 			   destination);
@@ -485,16 +497,19 @@ ags_midi_ci_util_test_get_nak()
   AgsMUID source;
   AgsMUID destination;
   
+  guchar device_id;
   guchar version;
 
   midi_ci_util = ags_midi_ci_util_alloc();
 
   ags_midi_ci_util_get_nak(midi_ci_util,
 			   buffer,
+			   &device_id,
 			   &version,
 			   &source,
 			   &destination);
 
+  CU_ASSERT(device_id == 0x7f);
   CU_ASSERT(version == 0x01);
   CU_ASSERT(source == 0x0cafe010);
   CU_ASSERT(destination == 0x0eadbeef);
@@ -1816,6 +1831,66 @@ ags_midi_ci_util_test_get_subscription_reply()
   CU_ASSERT(property_data == NULL);  
 }
 
+void
+ags_midi_ci_util_test_put_process_capabilities()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_midi_ci_util_test_get_process_capabilities()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_midi_ci_util_test_put_process_capabilities_reply()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_midi_ci_util_test_get_process_capabilities_reply()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_midi_ci_util_test_put_message_report()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_midi_ci_util_test_get_message_report()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_midi_ci_util_test_put_message_report_reply()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_midi_ci_util_test_get_message_report_reply()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_midi_ci_util_test_put_end_of_message_report()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_midi_ci_util_test_get_end_of_message_report()
+{
+  //TODO:JK: implement me
+}
+
 int
 main(int argc, char **argv)
 {
@@ -1889,7 +1964,18 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c put subscription", ags_midi_ci_util_test_put_subscription) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c get subscription", ags_midi_ci_util_test_get_subscription) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c put subscription reply", ags_midi_ci_util_test_put_subscription_reply) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_ci_util.c get subscription reply", ags_midi_ci_util_test_get_subscription_reply) == NULL)){
+     (CU_add_test(pSuite, "test of ags_midi_ci_util.c get subscription reply", ags_midi_ci_util_test_get_subscription_reply) == NULL)
+
+     (CU_add_test(pSuite, "test of ags_midi_ci_util.c put process capabilities", ags_midi_ci_util_test_put_process_capabilities) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_ci_util.c get process capabilities", ags_midi_ci_util_test_get_process_capabilities) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_ci_util.c put process capabilities reply", ags_midi_ci_util_test_put_process_capabilities_reply) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_ci_util.c get process capabilities reply", ags_midi_ci_util_test_get_process_capabilities_reply) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_ci_util.c put message report", ags_midi_ci_util_test_put_message_report) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_ci_util.c get message report", ags_midi_ci_util_test_get_message_report) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_ci_util.c put message report reply", ags_midi_ci_util_test_put_message_report_reply) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_ci_util.c get message report reply", ags_midi_ci_util_test_get_message_report_reply) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_ci_util.c put end of message report", ags_midi_ci_util_test_put_end_of_message_report) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_ci_util.c get end of message report", ags_midi_ci_util_test_get_end_of_message_report) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();
