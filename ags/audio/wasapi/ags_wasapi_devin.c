@@ -2202,7 +2202,7 @@ ags_wasapi_devin_client_record(AgsSoundcard *soundcard,
       
       while(buffer_frame_count - padding_frames < wasapi_devin->buffer_size &&
 	    padding_frames != 0){
-	nanosleep(&poll_delay, NULL);
+	ags_time_nanosleep(&poll_delay);
 
 	audio_client->lpVtbl->GetCurrentPadding(audio_client, &padding_frames);
       }

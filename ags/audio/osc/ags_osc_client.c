@@ -1002,7 +1002,7 @@ ags_osc_client_real_connect(AgsOscClient *osc_client)
       break;
     }
 
-    nanosleep(osc_client->retry_delay, NULL);
+    ags_time_nanosleep(osc_client->retry_delay);
 
     i++;
   }

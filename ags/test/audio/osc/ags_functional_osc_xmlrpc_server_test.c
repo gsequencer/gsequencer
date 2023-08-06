@@ -1348,8 +1348,7 @@ ags_functional_osc_xmlrpc_server_test_meter_controller()
 			     FALSE);
     //empty
 
-    nanosleep(&idle_delay,
-	      NULL);
+    ags_time_nanosleep(&idle_delay);
   }
 
   g_message("Total received packets: %d", g_atomic_int_get(&meter_packet_count));
