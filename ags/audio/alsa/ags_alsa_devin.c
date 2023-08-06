@@ -2559,7 +2559,7 @@ ags_alsa_devin_device_record(AgsSoundcard *soundcard,
       int err;
 
       while((err = snd_pcm_resume(alsa_devin->handle)) < 0){ // == -EAGAIN
-	nanosleep(&idle, NULL); /* wait until the suspend flag is released */
+	ags_time_nanosleep(&idle); /* wait until the suspend flag is released */
       }
 	
       if(err < 0){

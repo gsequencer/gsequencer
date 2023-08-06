@@ -1775,7 +1775,7 @@ ags_osc_server_listen_thread(void *ptr)
     created_connection = ags_osc_server_listen(osc_server);
 
     if(!created_connection){
-      nanosleep(osc_server->accept_delay, NULL);
+      ags_time_nanosleep(osc_server->accept_delay);
     }
   }
   
@@ -1794,7 +1794,7 @@ ags_osc_server_dispatch_thread(void *ptr)
   while(ags_osc_server_test_flags(osc_server, AGS_OSC_SERVER_RUNNING)){
     ags_osc_server_dispatch(osc_server);
 
-    nanosleep(osc_server->dispatch_delay, NULL);
+    ags_time_nanosleep(osc_server->dispatch_delay);
   }
   
   g_thread_exit(NULL);

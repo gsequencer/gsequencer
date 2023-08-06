@@ -2125,7 +2125,7 @@ ags_pulse_devout_port_play(AgsSoundcard *soundcard,
     g_rec_mutex_unlock(pulse_port_mutex);
     
     while(write_cache == current_cache){
-      nanosleep(&idle_time, NULL);
+      ags_time_nanosleep(&idle_time);
 
       g_rec_mutex_lock(pulse_port_mutex);
 

@@ -631,8 +631,7 @@ ags_functional_osc_server_test_meter_controller()
     if(i == 16){
       i = 0;
       
-      nanosleep(&idle_delay,
-		NULL);
+      ags_time_nanosleep(&idle_delay);
     }
   }
   

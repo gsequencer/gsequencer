@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,6 +21,7 @@
 
 #include <ags/ags_api_config.h>
 
+#include <time.h>
 #include <math.h>
 
 #ifdef __APPLE__
@@ -37,6 +38,24 @@
  *
  * Functions to help you dealing with time.
  */
+
+/**
+ * ags_time_nanosleep:
+ * @req: the requisition to sleep
+ *
+ * Nanosleep.
+ *
+ * Since: 5.5.1
+ */
+void
+ags_time_nanosleep(struct timespec *req)
+{
+#if defined(AGS_W32_API)
+  Sleep((req->tv_nsec / 1000) + (req->tv_sec * 1000000));
+#else
+  nanosleep(req, NULL);
+#endif
+}
 
 /**
  * ags_time_get_uptime_from_offset:
