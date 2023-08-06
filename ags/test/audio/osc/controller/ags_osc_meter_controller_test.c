@@ -415,7 +415,7 @@ ags_osc_meter_controller_test_start_monitor()
   
   while(i < 3334 &&
        !ags_osc_meter_controller_test_flags(osc_meter_controller, AGS_OSC_METER_CONTROLLER_MONITOR_RUNNING)){
-    nanosleep(&delay, NULL);
+    ags_time_nanosleep(&delay);
     i++;
   }
 
@@ -444,7 +444,7 @@ ags_osc_meter_controller_test_stop_monitor()
   
   while(i < 3334 &&
        !ags_osc_meter_controller_test_flags(osc_meter_controller, AGS_OSC_METER_CONTROLLER_MONITOR_RUNNING)){
-    nanosleep(&delay, NULL);
+    ags_time_nanosleep(&delay);
     i++;
   }
 

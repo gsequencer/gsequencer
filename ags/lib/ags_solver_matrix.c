@@ -171,7 +171,6 @@ ags_solver_matrix_init(AgsSolverMatrix *solver_matrix)
   solver_matrix->function_history = NULL;
   
   solver_matrix->source_function = NULL;
-  solver_matrix->initial_row_count = 0;
   
   solver_matrix->term_table = NULL;
 
@@ -393,7 +392,7 @@ ags_solver_matrix_get_column_count(AgsSolverMatrix *solver_matrix)
 
   column_count = 0;
 
-2  g_object_get(solver_matrix,
+  g_object_get(solver_matrix,
 	       "column-count", &column_count,
 	       NULL);
 
@@ -479,20 +478,20 @@ ags_solver_matrix_to_string(AgsSolverMatrix *solver_matrix)
     /*  */
     solver_matrix_mutex = AGS_SOLVER_MATRIX_GET_OBJ_MUTEX(solver_matrix);
 
-    g_rec_mutex_lock(current_matrix_mutex);
+    g_rec_mutex_lock(solver_matrix_mutex);
     
     solver_vector = solver_matrix->term_table[x];
 
-    g_rec_mutex_unlock(current_matrix_mutex);
+    g_rec_mutex_unlock(solver_matrix_mutex);
 
     /*  */
     solver_vector_mutex = AGS_SOLVER_VECTOR_GET_OBJ_MUTEX(solver_vector);
 
-    g_rec_mutex_lock(current_vector_mutex);
+    g_rec_mutex_lock(solver_vector_mutex);
     
     solver_polynomial = solver_vector->polynomial_column[y];
 
-    g_rec_mutex_unlock(current_vector_mutex);
+    g_rec_mutex_unlock(solver_vector_mutex);
     
     /*  */
     polynomial = ags_solver_polynomial_get_polynomial(solver_polynomial);
@@ -505,10 +504,10 @@ ags_solver_matrix_to_string(AgsSolverMatrix *solver_matrix)
 
 	tmp = str;
 	
-	coefficient = ags_solver_polynomial_get_coefficient();
+	coefficient = ags_solver_polynomial_get_coefficient(solver_polynomial);
 	
 	if(coefficient != NULL && coefficient[0] == '-'){
-	  str = g_strdup_printf("%s - %s", str, coeffiecient);
+	  str = g_strdup_printf("%s - %s", str, coefficient);
 	}else{
 	  str = g_strdup_printf("%s + %s", str, coefficient);
 	}
