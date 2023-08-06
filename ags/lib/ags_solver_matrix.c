@@ -552,8 +552,9 @@ ags_solver_matrix_to_string(AgsSolverMatrix *solver_matrix)
  * 
  * Since: 5.5.1
  */
-gchar*
-ags_solver_matrix_to_symbolic_string(AgsSolverMatrix *solver_matrix)
+gchar**
+ags_solver_matrix_to_symbolic_string(AgsSolverMatrix *solver_matrix,
+				     guint *symbolic_strv_length)
 {
   //TODO:JK: implement me
 
