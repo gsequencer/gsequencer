@@ -39,6 +39,7 @@ void ags_solver_matrix_finalize(GObject *gobject);
 
 void ags_solver_matrix_solve_all_by_column(AgsSolverMatrix *solver_matrix,
 					   guint *nth_column, guint column_size);
+void ags_solver_matrix_solve_symbolic(AgsSolverMatrix *solver_matrix);
 
 /**
  * SECTION:ags_solver_matrix

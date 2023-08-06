@@ -90,7 +90,6 @@ void ags_solver_matrix_eliminate(AgsSolverMatrix *solver_matrix,
 				 guint nth_row_a, guint nth_row_b);
 
 void ags_solver_matrix_solve_default(AgsSolverMatrix *solver_matrix);
-void ags_solver_matrix_solve_symbolic(AgsSolverMatrix *solver_matrix);
 
 AgsSolverMatrix* ags_solver_matrix_new();
 

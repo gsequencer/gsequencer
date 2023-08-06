@@ -207,6 +207,18 @@ guint ags_midi_ump_util_get_endpoint_name_notification(AgsMidiUmpUtil *midi_ump_
 						       gchar **endpoint_name,
 						       guchar data[128]);
 
+/* product instance id notification */
+gboolean ags_midi_ump_util_is_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_util,
+							       guchar *buffer);
+void ags_midi_ump_util_put_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_util,
+							    guchar *buffer,
+							    gchar *product_instance_id,
+							    guchar data[48]);
+guint ags_midi_ump_util_get_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_util,
+							     guchar *buffer,
+							     gchar **product_instance_id,
+							     guchar data[48]);
+
 G_END_DECLS
 
 #endif /*__AGS_MIDI_UMP_UTIL_H__*/

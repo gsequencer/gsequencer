@@ -606,7 +606,6 @@ ags_midi_ump_util_is_endpoint_name_notification(AgsMidiUmpUtil *midi_ump_util,
 						guchar *buffer)
 {
   if((0xf0 & (buffer[0])) == 0xf0 &&
-     (0x0c & (buffer[0])) == 0x0 &&
      (((0x03 & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x3){
     return(TRUE);
   }
@@ -690,6 +689,8 @@ ags_midi_ump_util_put_endpoint_name_notification(AgsMidiUmpUtil *midi_ump_util,
     }
 
     /* iterate */
+    buffer += nth;
+
     if(format == 0x2){
       if(j + 14 < endpoint_name_length){
 	format = 0x2;
@@ -705,8 +706,7 @@ ags_midi_ump_util_put_endpoint_name_notification(AgsMidiUmpUtil *midi_ump_util,
 	format = 0x3;	
       }
     }
-  }
-  
+  }  
 }
 
 guint
@@ -720,3 +720,121 @@ ags_midi_ump_util_get_endpoint_name_notification(AgsMidiUmpUtil *midi_ump_util,
   return(0);
 }
 
+gboolean
+ags_midi_ump_util_is_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_util,
+						      guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0xf0 &&
+     (((0x03 & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x4){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+void
+ags_midi_ump_util_put_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_util,
+						       guchar *buffer,
+						       gchar *product_instance_id,
+						       guchar data[48])
+{
+  guint nth;
+  gint product_instance_id_length;
+  guint i;
+  guint j, j_stop;
+  gboolean is_complete, is_end;
+  gint format;
+  
+  const gint status = 0x4;
+  
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  product_instance_id_length = strlen(product_instance_id);
+  
+  g_return_if_fail(product_instance_id_length <= 42);
+
+  /* put endpoint name - may be in multiple chunks  */
+  format = 0x0;
+  is_complete = TRUE;
+
+  if(product_instance_id_length >= 15){
+    format = 0x1;
+    is_complete = FALSE;
+  }
+  
+  is_end = FALSE;
+  
+  for(i = 0, j = 0; i < 48 && !is_end;){
+    nth = 0;
+  
+    buffer[nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
+    nth++;
+    i++;
+
+    buffer[nth] = (0xff & status);
+    nth++;
+    i++;
+
+    /* fill in endpoint name */
+    if(j < product_instance_id_length){
+      if(j + 14 < product_instance_id_length){
+	j_stop = 14;
+      }else{
+	j_stop = (product_instance_id_length - j) % 14;
+      }
+      
+      memcpy(buffer + nth, product_instance_id + j, j_stop * sizeof(gchar));
+
+      if(j_stop < 14){
+	memset(buffer + nth + j_stop, 0, (14 - j_stop) * sizeof(gchar));
+      }
+    }else{
+      g_warning("malformed MIDI UMP data");
+
+      j_stop = 0;
+    }
+    
+    nth += 14;
+    j += j_stop;
+    
+    /* break condition */
+    if(is_complete){
+      is_end = TRUE;
+    }
+
+    if(format == 0x3){
+      is_end = TRUE;
+    }
+
+    /* iterate */
+    buffer += nth;
+    
+    if(format == 0x2){
+      if(j + 14 < product_instance_id_length){
+	format = 0x2;
+      }else{
+	format = 0x3;	
+      }
+    }
+
+    if(format == 0x1){
+      if(j + 14 < product_instance_id_length){
+	format = 0x2;
+      }else{
+	format = 0x3;	
+      }
+    }
+  }  
+}
+
+guint
+ags_midi_ump_util_get_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_util,
+						       guchar *buffer,
+						       gchar **product_instance_id,
+						       guchar data[48])
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
