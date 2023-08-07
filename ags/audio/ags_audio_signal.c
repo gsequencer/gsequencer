@@ -2742,13 +2742,15 @@ ags_audio_signal_set_samplerate(AgsAudioSignal *audio_signal, guint samplerate)
   resampled_data = ags_stream_alloc((guint) (samplerate * (stream_length * buffer_size / old_samplerate)),
 				    format);
 
-  resample_util.secret_rabbit.src_ratio = old_samplerate / samplerate;
+  resample_util.src_ratio = old_samplerate / samplerate;
 
-  resample_util.secret_rabbit.input_frames = stream_length * buffer_size;
-  resample_util.secret_rabbit.data_in = g_malloc(allocated_buffer_length * sizeof(gfloat));
+  resample_util.input_frames = stream_length * buffer_size;
+  resample_util.data_in = ags_stream_alloc(allocated_buffer_length,
+					   format);
 
-  resample_util.secret_rabbit.output_frames = samplerate * (stream_length * buffer_size / old_samplerate);
-  resample_util.secret_rabbit.data_out = g_malloc(allocated_buffer_length * sizeof(gfloat));
+  resample_util.output_frames = samplerate * (stream_length * buffer_size / old_samplerate);
+  resample_util.data_out = ags_stream_alloc(allocated_buffer_length,
+					    format);
   
   resample_util.destination = resampled_data;
   resample_util.destination_stride = 1;
@@ -2764,8 +2766,8 @@ ags_audio_signal_set_samplerate(AgsAudioSignal *audio_signal, guint samplerate)
 
   ags_resample_util_compute(&resample_util);  
 
-  g_free(resample_util.secret_rabbit.data_out);
-  g_free(resample_util.secret_rabbit.data_in);
+  ags_stream_free(resample_util.data_out);
+  ags_stream_free(resample_util.data_in);
 
   g_free(data);
 

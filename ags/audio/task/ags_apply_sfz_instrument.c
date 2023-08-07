@@ -343,18 +343,18 @@ ags_apply_sfz_instrument_launch(AgsTask *task)
   synth_template_resample_util = synth_template->resample_util;
   synth_resample_util = synth->resample_util;
 
-  synth_resample_util->secret_rabbit.src_ratio = synth_template_resample_util->secret_rabbit.src_ratio;
+  synth_resample_util->src_ratio = synth_template_resample_util->src_ratio;
 
-  g_free(synth_template_resample_util->secret_rabbit.data_in);
-  g_free(synth_template_resample_util->secret_rabbit.data_out);
+  g_free(synth_template_resample_util->data_in);
+  g_free(synth_template_resample_util->data_out);
   
-  synth_resample_util->secret_rabbit.input_frames = synth_template_resample_util->secret_rabbit.input_frames;
-  synth_resample_util->secret_rabbit.data_in = synth_template_resample_util->secret_rabbit.data_in;
-  synth_template_resample_util->secret_rabbit.data_in = NULL;
+  synth_resample_util->input_frames = synth_template_resample_util->input_frames;
+  synth_resample_util->data_in = synth_template_resample_util->data_in;
+  synth_template_resample_util->data_in = NULL;
   
-  synth_resample_util->secret_rabbit.output_frames = synth_template_resample_util->secret_rabbit.output_frames;
-  synth_resample_util->secret_rabbit.data_out = synth_template_resample_util->secret_rabbit.data_out;
-  synth_template_resample_util->secret_rabbit.data_out = NULL;
+  synth_resample_util->output_frames = synth_template_resample_util->output_frames;
+  synth_resample_util->data_out = synth_template_resample_util->data_out;
+  synth_template_resample_util->data_out = NULL;
   
   synth_resample_util->source_stride = synth_template_resample_util->source_stride;
   synth_resample_util->source = synth_template_resample_util->source;

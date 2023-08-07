@@ -1566,23 +1566,23 @@ ags_sf2_synth_util_load_instrument(AgsSF2SynthUtil *sf2_synth_util,
 	resample_util->source = sf2_synth_util->sf2_orig_buffer[i];
 	resample_util->source_stride = 1;
 
-	if(resample_util->secret_rabbit.data_in != NULL){
-	  g_free(resample_util->secret_rabbit.data_in);
+	if(resample_util->data_in != NULL){
+	  g_free(resample_util->data_in);
 	}
 
-	if(resample_util->secret_rabbit.data_out != NULL){
-	  g_free(resample_util->secret_rabbit.data_out);
+	if(resample_util->data_out != NULL){
+	  g_free(resample_util->data_out);
 	}
 	
-	resample_util->secret_rabbit.src_ratio = sf2_synth_util->samplerate / orig_samplerate;
+	resample_util->src_ratio = sf2_synth_util->samplerate / orig_samplerate;
 		
-	resample_util->secret_rabbit.input_frames = sample_frame_count;
+	resample_util->input_frames = sample_frame_count;
 
-	resample_util->secret_rabbit.data_in = g_malloc(sample_frame_count * sizeof(gfloat));
+	resample_util->data_in = g_malloc(sample_frame_count * sizeof(gfloat));
 
-	resample_util->secret_rabbit.output_frames = sf2_synth_util->sf2_resampled_buffer_length[i];
+	resample_util->output_frames = sf2_synth_util->sf2_resampled_buffer_length[i];
 
-	resample_util->secret_rabbit.data_out = g_malloc(sf2_synth_util->sf2_resampled_buffer_length[i] * sizeof(gfloat));
+	resample_util->data_out = g_malloc(sf2_synth_util->sf2_resampled_buffer_length[i] * sizeof(gfloat));
 		
 	resample_util->buffer_length = sf2_synth_util->sf2_orig_buffer_length[i];
 	resample_util->format = AGS_SOUNDCARD_DOUBLE;
@@ -1597,16 +1597,16 @@ ags_sf2_synth_util_load_instrument(AgsSF2SynthUtil *sf2_synth_util,
 		  
 	resample_util->source = NULL;
 
-	if(resample_util->secret_rabbit.data_in != NULL){
-	  g_free(resample_util->secret_rabbit.data_in);
+	if(resample_util->data_in != NULL){
+	  g_free(resample_util->data_in);
 
-	  resample_util->secret_rabbit.data_in = NULL;
+	  resample_util->data_in = NULL;
 	}
 
-	if(resample_util->secret_rabbit.data_out != NULL){
-	  g_free(resample_util->secret_rabbit.data_out);
+	if(resample_util->data_out != NULL){
+	  g_free(resample_util->data_out);
 
-	  resample_util->secret_rabbit.data_out = NULL;
+	  resample_util->data_out = NULL;
 	}
       }
     }
@@ -2026,23 +2026,23 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 		resample_util->source = sf2_synth_util->sf2_orig_buffer[i];
 		resample_util->source_stride = 1;
 
-		if(resample_util->secret_rabbit.data_in != NULL){
-		  g_free(resample_util->secret_rabbit.data_in);
+		if(resample_util->data_in != NULL){
+		  g_free(resample_util->data_in);
 		}
 
-		if(resample_util->secret_rabbit.data_out != NULL){
-		  g_free(resample_util->secret_rabbit.data_out);
+		if(resample_util->data_out != NULL){
+		  g_free(resample_util->data_out);
 		}
 		
-		resample_util->secret_rabbit.src_ratio = sf2_synth_util->samplerate / orig_samplerate;
+		resample_util->src_ratio = sf2_synth_util->samplerate / orig_samplerate;
 		
-		resample_util->secret_rabbit.input_frames = sample_frame_count;
+		resample_util->input_frames = sample_frame_count;
 
-		resample_util->secret_rabbit.data_in = g_malloc(sample_frame_count * sizeof(gfloat));
+		resample_util->data_in = g_malloc(sample_frame_count * sizeof(gfloat));
 
-		resample_util->secret_rabbit.output_frames = sf2_synth_util->sf2_resampled_buffer_length[i];
+		resample_util->output_frames = sf2_synth_util->sf2_resampled_buffer_length[i];
 
-		resample_util->secret_rabbit.data_out = g_malloc(sf2_synth_util->sf2_resampled_buffer_length[i] * sizeof(gfloat));
+		resample_util->data_out = g_malloc(sf2_synth_util->sf2_resampled_buffer_length[i] * sizeof(gfloat));
 		
 		resample_util->buffer_length = sf2_synth_util->sf2_orig_buffer_length[i];
 		resample_util->format = AGS_SOUNDCARD_DOUBLE;
@@ -2057,16 +2057,16 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 		  
 		resample_util->source = NULL;
 
-		if(resample_util->secret_rabbit.data_in != NULL){
-		  g_free(resample_util->secret_rabbit.data_in);
+		if(resample_util->data_in != NULL){
+		  g_free(resample_util->data_in);
 
-		  resample_util->secret_rabbit.data_in = NULL;
+		  resample_util->data_in = NULL;
 		}
 
-		if(resample_util->secret_rabbit.data_out != NULL){
-		  g_free(resample_util->secret_rabbit.data_out);
+		if(resample_util->data_out != NULL){
+		  g_free(resample_util->data_out);
 
-		  resample_util->secret_rabbit.data_out = NULL;
+		  resample_util->data_out = NULL;
 		}
 	      }
 

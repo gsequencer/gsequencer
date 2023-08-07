@@ -1338,13 +1338,13 @@ ags_wave_set_samplerate(AgsWave *wave,
   resampled_data = ags_stream_alloc(allocated_buffer_length,
 				    format);
 
-  resample_util.secret_rabbit.src_ratio = samplerate / old_samplerate;
+  resample_util.src_ratio = samplerate / old_samplerate;
 
-  resample_util.secret_rabbit.input_frames = buffer_length * buffer_size;
-  resample_util.secret_rabbit.data_in = g_malloc(allocated_buffer_length * sizeof(gfloat));
+  resample_util.input_frames = buffer_length * buffer_size;
+  resample_util.data_in = g_malloc(allocated_buffer_length * sizeof(gfloat));
 
-  resample_util.secret_rabbit.output_frames = new_buffer_length * buffer_size;
-  resample_util.secret_rabbit.data_out = g_malloc(allocated_buffer_length * sizeof(gfloat));
+  resample_util.output_frames = new_buffer_length * buffer_size;
+  resample_util.data_out = g_malloc(allocated_buffer_length * sizeof(gfloat));
   
   resample_util.destination = resampled_data;
   resample_util.destination_stride = 1;
@@ -1360,8 +1360,8 @@ ags_wave_set_samplerate(AgsWave *wave,
 
   ags_resample_util_compute(&resample_util);  
 
-  g_free(resample_util.secret_rabbit.data_in);
-  g_free(resample_util.secret_rabbit.data_out);
+  g_free(resample_util.data_in);
+  g_free(resample_util.data_out);
 
   if(data != NULL){
     free(data);
@@ -3445,13 +3445,13 @@ ags_wave_insert_native_level_from_clipboard_version_3_14_6(AgsWave *wave,
 	  resampled_clipboard_data = ags_stream_alloc(allocated_buffer_length,
 						      format_val);
 
-	  resample_util.secret_rabbit.src_ratio = wave_samplerate / samplerate_val;
+	  resample_util.src_ratio = wave_samplerate / samplerate_val;
 
-	  resample_util.secret_rabbit.input_frames = buffer_size_val;
-	  resample_util.secret_rabbit.data_in = g_malloc(allocated_buffer_length * sizeof(gfloat));
+	  resample_util.input_frames = buffer_size_val;
+	  resample_util.data_in = g_malloc(allocated_buffer_length * sizeof(gfloat));
 
-	  resample_util.secret_rabbit.output_frames = wave_buffer_size;
-	  resample_util.secret_rabbit.data_out = g_malloc(allocated_buffer_length * sizeof(gfloat));
+	  resample_util.output_frames = wave_buffer_size;
+	  resample_util.data_out = g_malloc(allocated_buffer_length * sizeof(gfloat));
   
 	  resample_util.destination = resampled_clipboard_data;
 	  resample_util.destination_stride = 1;
@@ -3467,8 +3467,8 @@ ags_wave_insert_native_level_from_clipboard_version_3_14_6(AgsWave *wave,
 
 	  ags_resample_util_compute(&resample_util);  
 
-	  g_free(resample_util.secret_rabbit.data_out);
-	  g_free(resample_util.secret_rabbit.data_in);
+	  g_free(resample_util.data_out);
+	  g_free(resample_util.data_in);
 	}else{
 	  resampled_clipboard_data = clipboard_data;
 	}
@@ -4106,13 +4106,13 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 					   format_val);
 
 
-	    resample_util.secret_rabbit.src_ratio = wave_samplerate / samplerate_val;
+	    resample_util.src_ratio = wave_samplerate / samplerate_val;
 
-	    resample_util.secret_rabbit.input_frames = buffer_size_val;
-	    resample_util.secret_rabbit.data_in = g_malloc(allocated_buffer_length * sizeof(gfloat));
+	    resample_util.input_frames = buffer_size_val;
+	    resample_util.data_in = g_malloc(allocated_buffer_length * sizeof(gfloat));
 
-	    resample_util.secret_rabbit.output_frames = wave_buffer_size;
-	    resample_util.secret_rabbit.data_out = g_malloc(allocated_buffer_length * sizeof(gfloat));
+	    resample_util.output_frames = wave_buffer_size;
+	    resample_util.data_out = g_malloc(allocated_buffer_length * sizeof(gfloat));
   
 	    resample_util.destination = target_data;
 	    resample_util.destination_stride = 1;
@@ -4128,8 +4128,8 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 
 	    ags_resample_util_compute(&resample_util);  
 
-	    g_free(resample_util.secret_rabbit.data_out);
-	    g_free(resample_util.secret_rabbit.data_in);
+	    g_free(resample_util.data_out);
+	    g_free(resample_util.data_in);
 	    
 	    if(attack + target_frame_count <= wave_buffer_size){
 	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
@@ -4211,13 +4211,13 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 	      target_data = ags_stream_alloc(wave_buffer_size,
 					     format_val);
 
-	      resample_util.secret_rabbit.src_ratio = wave_samplerate / samplerate_val;
+	      resample_util.src_ratio = wave_samplerate / samplerate_val;
 
-	      resample_util.secret_rabbit.input_frames = buffer_size_val;
-	      resample_util.secret_rabbit.data_in = g_malloc(allocated_buffer_length * sizeof(gfloat));
+	      resample_util.input_frames = buffer_size_val;
+	      resample_util.data_in = g_malloc(allocated_buffer_length * sizeof(gfloat));
 
-	      resample_util.secret_rabbit.output_frames = wave_buffer_size;
-	      resample_util.secret_rabbit.data_out = g_malloc(allocated_buffer_length * sizeof(gfloat));
+	      resample_util.output_frames = wave_buffer_size;
+	      resample_util.data_out = g_malloc(allocated_buffer_length * sizeof(gfloat));
   
 	      resample_util.destination = target_data;
 	      resample_util.destination_stride = 1;
@@ -4233,8 +4233,8 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 
 	      ags_resample_util_compute(&resample_util);  
 
-	      g_free(resample_util.secret_rabbit.data_out);
-	      g_free(resample_util.secret_rabbit.data_in);
+	      g_free(resample_util.data_out);
+	      g_free(resample_util.data_in);
 	      
 	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
 							  target_data, 1, wave_buffer_size - attack,

@@ -315,15 +315,15 @@ ags_fx_playback_audio_signal_run_inter(AgsRecall *recall)
 
       g_rec_mutex_lock(source_stream_mutex);
 
-      resample_util.secret_rabbit.src_ratio = target_samplerate / samplerate;
+      resample_util.src_ratio = target_samplerate / samplerate;
 
-      resample_util.secret_rabbit.input_frames = buffer_size;
-      resample_util.secret_rabbit.data_in = g_malloc(allocated_buffer_length * sizeof(gfloat));
+      resample_util.input_frames = buffer_size;
+      resample_util.data_in = g_malloc(allocated_buffer_length * sizeof(gfloat));
 
-      resample_util.secret_rabbit.output_frames = target_buffer_size;
-      resample_util.secret_rabbit.data_out = g_malloc(allocated_buffer_length * sizeof(gfloat));
+      resample_util.output_frames = target_buffer_size;
+      resample_util.data_out = g_malloc(allocated_buffer_length * sizeof(gfloat));
 
-      resample_util.secret_rabbit.end_of_input = 0;
+      resample_util.end_of_input = 0;
   
       resample_util.destination = audio_signal_data;
       resample_util.destination_stride = 1;
@@ -337,10 +337,12 @@ ags_fx_playback_audio_signal_run_inter(AgsRecall *recall)
   
       resample_util.target_samplerate = target_samplerate;
 
+      resample_util.bypass_cache = TRUE;
+      
       ags_resample_util_compute(&resample_util);  
 
-      g_free(resample_util.secret_rabbit.data_out);
-      g_free(resample_util.secret_rabbit.data_in);
+      g_free(resample_util.data_out);
+      g_free(resample_util.data_in);
 
       g_rec_mutex_unlock(source_stream_mutex);
 
