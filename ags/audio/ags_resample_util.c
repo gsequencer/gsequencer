@@ -209,7 +209,7 @@ ags_resample_util_alloc()
   ptr->left_calc = 0.0;
   ptr->right_calc = 0.0;
 
-  ptr->last_ratio = 0.0;
+  ptr->last_ratio = -1.0;
   ptr->last_position = 0.0;
   
   ptr->buffer = NULL;
@@ -1195,6 +1195,69 @@ printf ("data_out: %p (%p)    data_in: %p\n", (void*) resample_util->data_out,
   if (resample_util->last_ratio < (1.0 / SRC_MAX_RATIO))
     resample_util->last_ratio = resample_util->src_ratio ;
 
+  if(resample_util->bypass_cache){
+    gint length;
+    
+    resample_util->last_ratio = resample_util->src_ratio ;
+
+    if(ptr->input_frames < ptr->output_frames){
+      length = ptr->output_frames;
+    }else{
+      length = ptr->input_frames;
+    }
+
+    switch(resample_util->format){
+    case AGS_SOUNDCARD_SIGNED_8_BIT:
+      {
+	ags_audio_buffer_util_clear_buffer(((gint8 *) resample_util->buffer), 1,
+					   length, ags_audio_buffer_util_format_from_soundcard(resample_util->format));
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_16_BIT:
+      {
+	ags_audio_buffer_util_clear_buffer(((gint16 *) resample_util->buffer), 1,
+					   length, ags_audio_buffer_util_format_from_soundcard(resample_util->format));
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_24_BIT:
+      {
+	ags_audio_buffer_util_clear_buffer(((gint32 *) resample_util->buffer), 1,
+					   length, ags_audio_buffer_util_format_from_soundcard(resample_util->format));
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_32_BIT:
+      {
+	ags_audio_buffer_util_clear_buffer(((gint32 *) resample_util->buffer), 1,
+					   length, ags_audio_buffer_util_format_from_soundcard(resample_util->format));
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_64_BIT:
+      {
+	ags_audio_buffer_util_clear_buffer(((gint64 *) resample_util->buffer), 1,
+					   length, ags_audio_buffer_util_format_from_soundcard(resample_util->format));
+      }
+      break;
+    case AGS_SOUNDCARD_FLOAT:
+      {
+	ags_audio_buffer_util_clear_buffer(((gfloat *) resample_util->buffer), 1,
+					   length, ags_audio_buffer_util_format_from_soundcard(resample_util->format));
+      }
+      break;
+    case AGS_SOUNDCARD_DOUBLE:
+      {
+	ags_audio_buffer_util_clear_buffer(((gdouble *) resample_util->buffer), 1,
+					   length, ags_audio_buffer_util_format_from_soundcard(resample_util->format));
+      }
+      break;
+    case AGS_SOUNDCARD_COMPLEX:
+      {
+	ags_audio_buffer_util_clear_buffer(((AgsComplex *) resample_util->buffer), 1,
+					   length, ags_audio_buffer_util_format_from_soundcard(resample_util->format));
+      }
+      break;
+    }    
+  }
+  
   /* Now process. */
   sinc_mono_vari_process(resample_util);
 
