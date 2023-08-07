@@ -73,7 +73,8 @@ guint ags_solver_matrix_get_row_count(AgsSolverMatrix *solver_matrix);
 guint ags_solver_matrix_get_column_count(AgsSolverMatrix *solver_matrix);
 
 gchar* ags_solver_matrix_to_string(AgsSolverMatrix *solver_matrix);
-gchar* ags_solver_matrix_to_symbolic_string(AgsSolverMatrix *solver_matrix);
+gchar** ags_solver_matrix_to_symbolic_string(AgsSolverMatrix *solver_matrix,
+					     guint *symbolic_strv_length);
 
 void ags_solver_matrix_parse(AgsSolverMatrix *solver_matrix,
 			     gchar *source_function);
@@ -89,7 +90,6 @@ void ags_solver_matrix_eliminate(AgsSolverMatrix *solver_matrix,
 				 guint nth_row_a, guint nth_row_b);
 
 void ags_solver_matrix_solve_default(AgsSolverMatrix *solver_matrix);
-void ags_solver_matrix_solve_symbolic(AgsSolverMatrix *solver_matrix);
 
 AgsSolverMatrix* ags_solver_matrix_new();
 

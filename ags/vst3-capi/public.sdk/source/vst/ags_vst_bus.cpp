@@ -88,11 +88,11 @@ extern "C" {
    */
   void ags_vst_bus_set_name(AgsVstBus *bus, AgsVstString new_name)
   {
-    char16_t *wstr = g_utf8_to_utf16(new_name,
-				     -1,
-				     NULL,
-				     NULL,
-				     NULL);
+    char16_t *wstr = (char16_t *) g_utf8_to_utf16(new_name,
+						  -1,
+						  NULL,
+						  NULL,
+						  NULL);
     
     static_cast<Steinberg::Vst::Bus*>((void *) bus)->setName(wstr);
   }
