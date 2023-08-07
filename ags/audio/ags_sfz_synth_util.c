@@ -1221,11 +1221,13 @@ ags_sfz_synth_util_load_instrument(AgsSFZSynthUtil *sfz_synth_util)
 		
       resample_util->input_frames = sample_frame_count;
 
-      resample_util->data_in = g_malloc(sample_frame_count * sizeof(gfloat));
+      resample_util->data_in = ags_stream_alloc(sample_frame_count,
+						AGS_SOUNDCARD_DOUBLE);
 
       resample_util->output_frames = sfz_synth_util->sfz_resampled_buffer_length[i];
 
-      resample_util->data_out = g_malloc(sfz_synth_util->sfz_resampled_buffer_length[i] * sizeof(gfloat));
+      resample_util->data_out = ags_stream_alloc(sfz_synth_util->sfz_resampled_buffer_length[i],
+						 AGS_SOUNDCARD_DOUBLE);
 		
       resample_util->buffer_length = sfz_synth_util->sfz_orig_buffer_length[i];
       resample_util->format = AGS_SOUNDCARD_DOUBLE;
@@ -1233,6 +1235,16 @@ ags_sfz_synth_util_load_instrument(AgsSFZSynthUtil *sfz_synth_util)
 
       resample_util->target_samplerate = sfz_synth_util->samplerate;
 
+      resample_util->bypass_cache = TRUE;
+
+      if(resample_util->input_frames < resample_util->output_frames){
+	resample_util->buffer = ags_stream_alloc(resample_util->output_frames,
+						 AGS_SOUNDCARD_DOUBLE);
+      }else{
+	resample_util->buffer = ags_stream_alloc(resample_util->input_frames,
+						 AGS_SOUNDCARD_DOUBLE);
+      }
+      
       ags_resample_util_compute(resample_util);
 
       /* reset */
@@ -1241,15 +1253,21 @@ ags_sfz_synth_util_load_instrument(AgsSFZSynthUtil *sfz_synth_util)
       resample_util->source = NULL;
 
       if(resample_util->data_in != NULL){
-	g_free(resample_util->data_in);
+	ags_stream_free(resample_util->data_in);
 
 	resample_util->data_in = NULL;
       }
 
       if(resample_util->data_out != NULL){
-	g_free(resample_util->data_out);
+	ags_stream_free(resample_util->data_out);
 
 	resample_util->data_out = NULL;
+      }
+
+      if(resample_util->buffer != NULL){
+	ags_stream_free(resample_util->buffer);
+
+	resample_util->buffer = NULL;
       }
     }
 

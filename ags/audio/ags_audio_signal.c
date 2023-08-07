@@ -2742,6 +2742,8 @@ ags_audio_signal_set_samplerate(AgsAudioSignal *audio_signal, guint samplerate)
   resampled_data = ags_stream_alloc((guint) (samplerate * (stream_length * buffer_size / old_samplerate)),
 				    format);
 
+  ags_resample_util_init(&resample_util);
+  
   resample_util.src_ratio = old_samplerate / samplerate;
 
   resample_util.input_frames = stream_length * buffer_size;
@@ -2764,10 +2766,14 @@ ags_audio_signal_set_samplerate(AgsAudioSignal *audio_signal, guint samplerate)
   
   resample_util.target_samplerate = samplerate;
 
+  resample_util.buffer = ags_stream_alloc(allocated_buffer_length,
+					  format);
+
   ags_resample_util_compute(&resample_util);  
 
   ags_stream_free(resample_util.data_out);
   ags_stream_free(resample_util.data_in);
+  ags_stream_free(resample_util.buffer);
 
   g_free(data);
 

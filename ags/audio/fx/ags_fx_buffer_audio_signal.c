@@ -500,13 +500,17 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 
 	  g_rec_mutex_lock(source_stream_mutex);
 
+	  ags_resample_util_init(&resample_util);
+	  
 	  resample_util.src_ratio = destination_samplerate / source_samplerate;
 
 	  resample_util.input_frames = source_buffer_size;
-	  resample_util.data_in = g_malloc(allocated_buffer_length * sizeof(gfloat));
+	  resample_util.data_in = ags_stream_alloc(allocated_buffer_length,
+						   source_format);
 
 	  resample_util.output_frames = destination_buffer_size;
-	  resample_util.data_out = g_malloc(allocated_buffer_length * sizeof(gfloat));
+	  resample_util.data_out = ags_stream_alloc(allocated_buffer_length,
+						    source_format);
 
 	  resample_util.end_of_input = 0;
   
@@ -524,10 +528,14 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 
 	  resample_util.bypass_cache = TRUE;
 
+	  resample_util.buffer = ags_stream_alloc(allocated_buffer_length,
+						  source_format);
+
 	  ags_resample_util_compute(&resample_util);  
 
-	  g_free(resample_util.data_out);
-	  g_free(resample_util.data_in);
+	  ags_stream_free(resample_util.data_out);
+	  ags_stream_free(resample_util.data_in);
+	  ags_stream_free(resample_util.buffer);
 
 	  g_rec_mutex_unlock(source_stream_mutex);
       
@@ -572,13 +580,17 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 	      ags_audio_buffer_util_clear_buffer(tmp_buffer_source_prev, 1,
 						 allocated_buffer_length, ags_audio_buffer_util_format_from_soundcard(source_format));
 	  
+	      ags_resample_util_init(&resample_util);
+	      
 	      resample_util.src_ratio = destination_samplerate / source_samplerate;
 
 	      resample_util.input_frames = source_buffer_size;
-	      resample_util.data_in = g_malloc(allocated_buffer_length * sizeof(gfloat));
+	      resample_util.data_in = ags_stream_alloc(allocated_buffer_length,
+						       source_format);
 
 	      resample_util.output_frames = destination_buffer_size;
-	      resample_util.data_out = g_malloc(allocated_buffer_length * sizeof(gfloat));
+	      resample_util.data_out = ags_stream_alloc(allocated_buffer_length,
+							source_format);
 
 	      resample_util.end_of_input = 0;
   
@@ -596,10 +608,14 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 
 	      resample_util.bypass_cache = TRUE;
 	      
+	      resample_util.buffer = ags_stream_alloc(allocated_buffer_length,
+						      source_format);
+
 	      ags_resample_util_compute(&resample_util);  
 
-	      g_free(resample_util.data_out);
-	      g_free(resample_util.data_in);
+	      ags_stream_free(resample_util.data_out);
+	      ags_stream_free(resample_util.data_in);
+	      ags_stream_free(resample_util.buffer);
 
 	      buffer_source_prev = tmp_buffer_source_prev;
 	    }
@@ -695,13 +711,17 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 	    ags_audio_buffer_util_clear_buffer(tmp_buffer_source, 1,
 					       allocated_buffer_length, ags_audio_buffer_util_format_from_soundcard(source_format));
 
+	    ags_resample_util_init(&resample_util);
+	    
 	    resample_util.src_ratio = destination_samplerate / source_samplerate;
 
 	    resample_util.input_frames = source_buffer_size;
-	    resample_util.data_in = g_malloc(allocated_buffer_length * sizeof(gfloat));
+	    resample_util.data_in = ags_stream_alloc(allocated_buffer_length,
+						     source_format);
 
 	    resample_util.output_frames = destination_buffer_size;
-	    resample_util.data_out = g_malloc(allocated_buffer_length * sizeof(gfloat));
+	    resample_util.data_out = ags_stream_alloc(allocated_buffer_length,
+						      source_format);
 
 	    resample_util.end_of_input = 0;
   
@@ -719,10 +739,14 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 
 	    resample_util.bypass_cache = TRUE;
 
+	    resample_util.buffer = ags_stream_alloc(allocated_buffer_length,
+						    source_format);
+	    
 	    ags_resample_util_compute(&resample_util);  
 
-	    g_free(resample_util.data_out);
-	    g_free(resample_util.data_in);
+	    ags_stream_free(resample_util.data_out);
+	    ags_stream_free(resample_util.data_in);
+	    ags_stream_free(resample_util.buffer);
 	    
 	    buffer_source = tmp_buffer_source;
 	  }

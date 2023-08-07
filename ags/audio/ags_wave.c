@@ -1338,13 +1338,17 @@ ags_wave_set_samplerate(AgsWave *wave,
   resampled_data = ags_stream_alloc(allocated_buffer_length,
 				    format);
 
+  ags_resample_util_init(&resample_util);
+
   resample_util.src_ratio = samplerate / old_samplerate;
 
   resample_util.input_frames = buffer_length * buffer_size;
-  resample_util.data_in = g_malloc(allocated_buffer_length * sizeof(gfloat));
+  resample_util.data_in = ags_stream_alloc(allocated_buffer_length,
+					   format);
 
   resample_util.output_frames = new_buffer_length * buffer_size;
-  resample_util.data_out = g_malloc(allocated_buffer_length * sizeof(gfloat));
+  resample_util.data_out = ags_stream_alloc(allocated_buffer_length,
+					    format);
   
   resample_util.destination = resampled_data;
   resample_util.destination_stride = 1;
@@ -1358,10 +1362,14 @@ ags_wave_set_samplerate(AgsWave *wave,
   
   resample_util.target_samplerate = samplerate;
 
+  resample_util.buffer = ags_stream_alloc(allocated_buffer_length,
+					  format);
+
   ags_resample_util_compute(&resample_util);  
 
-  g_free(resample_util.data_in);
-  g_free(resample_util.data_out);
+  ags_stream_free(resample_util.data_out);
+  ags_stream_free(resample_util.data_in);
+  ags_stream_free(resample_util.buffer);
 
   if(data != NULL){
     free(data);
@@ -3444,14 +3452,18 @@ ags_wave_insert_native_level_from_clipboard_version_3_14_6(AgsWave *wave,
 
 	  resampled_clipboard_data = ags_stream_alloc(allocated_buffer_length,
 						      format_val);
-
+	  
+	  ags_resample_util_init(&resample_util);
+	  
 	  resample_util.src_ratio = wave_samplerate / samplerate_val;
 
 	  resample_util.input_frames = buffer_size_val;
-	  resample_util.data_in = g_malloc(allocated_buffer_length * sizeof(gfloat));
+	  resample_util.data_in = ags_stream_alloc(allocated_buffer_length,
+						   format_val);
 
 	  resample_util.output_frames = wave_buffer_size;
-	  resample_util.data_out = g_malloc(allocated_buffer_length * sizeof(gfloat));
+	  resample_util.data_out = ags_stream_alloc(allocated_buffer_length,
+						    format_val);
   
 	  resample_util.destination = resampled_clipboard_data;
 	  resample_util.destination_stride = 1;
@@ -3465,10 +3477,14 @@ ags_wave_insert_native_level_from_clipboard_version_3_14_6(AgsWave *wave,
   
 	  resample_util.target_samplerate = wave_samplerate;
 
+	  resample_util.buffer = ags_stream_alloc(allocated_buffer_length,
+						  format_val);
+	  
 	  ags_resample_util_compute(&resample_util);  
 
-	  g_free(resample_util.data_out);
-	  g_free(resample_util.data_in);
+	  ags_stream_free(resample_util.data_out);
+	  ags_stream_free(resample_util.data_in);
+	  ags_stream_free(resample_util.buffer);
 	}else{
 	  resampled_clipboard_data = clipboard_data;
 	}
@@ -4105,14 +4121,17 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 	    target_data = ags_stream_alloc(target_frame_count,
 					   format_val);
 
+	    ags_resample_util_init(&resample_util);
 
 	    resample_util.src_ratio = wave_samplerate / samplerate_val;
 
 	    resample_util.input_frames = buffer_size_val;
-	    resample_util.data_in = g_malloc(allocated_buffer_length * sizeof(gfloat));
+	    resample_util.data_in = ags_stream_alloc(allocated_buffer_length,
+						     format_val);
 
 	    resample_util.output_frames = wave_buffer_size;
-	    resample_util.data_out = g_malloc(allocated_buffer_length * sizeof(gfloat));
+	    resample_util.data_out = ags_stream_alloc(allocated_buffer_length,
+						      format_val);
   
 	    resample_util.destination = target_data;
 	    resample_util.destination_stride = 1;
@@ -4126,10 +4145,14 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
   
 	    resample_util.target_samplerate = wave_samplerate;
 
+	    resample_util.buffer = ags_stream_alloc(allocated_buffer_length,
+						    format_val);
+	    
 	    ags_resample_util_compute(&resample_util);  
 
-	    g_free(resample_util.data_out);
-	    g_free(resample_util.data_in);
+	    ags_stream_free(resample_util.data_out);
+	    ags_stream_free(resample_util.data_in);
+	    ags_stream_free(resample_util.buffer);
 	    
 	    if(attack + target_frame_count <= wave_buffer_size){
 	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
@@ -4211,13 +4234,17 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 	      target_data = ags_stream_alloc(wave_buffer_size,
 					     format_val);
 
+	      ags_resample_util_init(&resample_util);
+	      
 	      resample_util.src_ratio = wave_samplerate / samplerate_val;
 
 	      resample_util.input_frames = buffer_size_val;
-	      resample_util.data_in = g_malloc(allocated_buffer_length * sizeof(gfloat));
+	      resample_util.data_in = ags_stream_alloc(allocated_buffer_length,
+						       format_val);
 
 	      resample_util.output_frames = wave_buffer_size;
-	      resample_util.data_out = g_malloc(allocated_buffer_length * sizeof(gfloat));
+	      resample_util.data_out = ags_stream_alloc(allocated_buffer_length,
+							format_val);
   
 	      resample_util.destination = target_data;
 	      resample_util.destination_stride = 1;
@@ -4231,10 +4258,14 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
   
 	      resample_util.target_samplerate = wave_samplerate;
 
+	      resample_util.buffer = ags_stream_alloc(allocated_buffer_length,
+						      format_val);
+	      
 	      ags_resample_util_compute(&resample_util);  
 
-	      g_free(resample_util.data_out);
-	      g_free(resample_util.data_in);
+	      ags_stream_free(resample_util.data_out);
+	      ags_stream_free(resample_util.data_in);
+	      ags_stream_free(resample_util.buffer);
 	      
 	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
 							  target_data, 1, wave_buffer_size - attack,

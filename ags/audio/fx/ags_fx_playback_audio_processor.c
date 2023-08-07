@@ -1171,13 +1171,17 @@ ags_fx_playback_audio_processor_real_data_put(AgsFxPlaybackAudioProcessor *fx_pl
 
     g_rec_mutex_lock(buffer_mutex);
 
+    ags_resample_util_init(&resample_util);
+
     resample_util.src_ratio = buffer_samplerate / samplerate;
 
     resample_util.input_frames = buffer_buffer_size;
-    resample_util.data_in = g_malloc(allocated_buffer_length * sizeof(gfloat));
+    resample_util.data_in = ags_stream_alloc(allocated_buffer_length,
+					     buffer_format);
 
     resample_util.output_frames = buffer_size;
-    resample_util.data_out = g_malloc(allocated_buffer_length * sizeof(gfloat));
+    resample_util.data_out = ags_stream_alloc(allocated_buffer_length,
+					      buffer_format);
   
     resample_util.destination = buffer_data;
     resample_util.destination_stride = 1;
@@ -1192,11 +1196,15 @@ ags_fx_playback_audio_processor_real_data_put(AgsFxPlaybackAudioProcessor *fx_pl
     resample_util.target_samplerate = samplerate;
 
     resample_util.bypass_cache = TRUE;
+
+    resample_util.buffer = ags_stream_alloc(allocated_buffer_length,
+					    buffer_format);
     
     ags_resample_util_compute(&resample_util);  
 
-    g_free(resample_util.data_out);
-    g_free(resample_util.data_in);
+    ags_stream_free(resample_util.data_out);
+    ags_stream_free(resample_util.data_in);
+    ags_stream_free(resample_util.buffer);
     
     g_rec_mutex_unlock(buffer_mutex);
     

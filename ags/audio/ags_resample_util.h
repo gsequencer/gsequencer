@@ -104,6 +104,8 @@ GType ags_resample_util_get_type(void);
 
 AgsResampleUtil* ags_resample_util_alloc();
 
+void ags_resample_util_init(AgsResampleUtil *resample_util);
+
 gpointer ags_resample_util_copy(AgsResampleUtil *ptr);
 void ags_resample_util_free(AgsResampleUtil *ptr);
 

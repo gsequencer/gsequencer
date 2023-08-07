@@ -1013,19 +1013,21 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 	ags_audio_buffer_util_clear_buffer(target_data, 1,
 					   target_buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
 	
+	ags_resample_util_init(&resample_util);
+	    
 	resample_util.src_ratio = target_samplerate / samplerate;
 
 	//	g_message("buffer size -> %d", buffer_size);
 
 	resample_util.input_frames = buffer_size;
 	resample_util.data_in = ags_stream_alloc(allocated_buffer_length,
-							       AGS_SOUNDCARD_FLOAT);
+						 format);
 
 	//	g_message("target buffer size -> %d", target_buffer_size);
 	
 	resample_util.output_frames = target_buffer_size;
 	resample_util.data_out = ags_stream_alloc(allocated_buffer_length,
-								AGS_SOUNDCARD_FLOAT);
+						  format);
 
 	resample_util.end_of_input = 0;
 	
@@ -1041,10 +1043,16 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
   
 	resample_util.target_samplerate = target_samplerate;
 
+	resample_util.bypass_cache = TRUE;
+
+	resample_util.buffer = ags_stream_alloc(allocated_buffer_length,
+						format);
+	
 	ags_resample_util_compute(&resample_util);  
 
 	ags_stream_free(resample_util.data_out);
 	ags_stream_free(resample_util.data_in);
+	ags_stream_free(resample_util.buffer);
 
 	ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
 						    target_data, 1, 0,

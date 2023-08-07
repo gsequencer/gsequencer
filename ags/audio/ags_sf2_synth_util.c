@@ -2038,17 +2038,27 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 		
 		resample_util->input_frames = sample_frame_count;
 
-		resample_util->data_in = g_malloc(sample_frame_count * sizeof(gfloat));
+		resample_util->data_in = ags_stream_alloc(sample_frame_count,
+							  AGS_SOUNDCARD_DOUBLE);
 
 		resample_util->output_frames = sf2_synth_util->sf2_resampled_buffer_length[i];
 
-		resample_util->data_out = g_malloc(sf2_synth_util->sf2_resampled_buffer_length[i] * sizeof(gfloat));
+		resample_util->data_out = ags_stream_alloc(sf2_synth_util->sf2_resampled_buffer_length[i],
+							   AGS_SOUNDCARD_DOUBLE);
 		
 		resample_util->buffer_length = sf2_synth_util->sf2_orig_buffer_length[i];
 		resample_util->format = AGS_SOUNDCARD_DOUBLE;
 		resample_util->samplerate = orig_samplerate;
 
 		resample_util->target_samplerate = sf2_synth_util->samplerate;
+
+		if(resample_util->input_frames < resample_util->output_frames){
+		  resample_util->buffer = ags_stream_alloc(resample_util->output_frames,
+							   AGS_SOUNDCARD_DOUBLE);
+		}else{
+		  resample_util->buffer = ags_stream_alloc(resample_util->input_frames,
+							   AGS_SOUNDCARD_DOUBLE);
+		}
 
 		ags_resample_util_compute(resample_util);
 
@@ -2058,13 +2068,13 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 		resample_util->source = NULL;
 
 		if(resample_util->data_in != NULL){
-		  g_free(resample_util->data_in);
+		  ags_stream_free(resample_util->data_in);
 
 		  resample_util->data_in = NULL;
 		}
 
 		if(resample_util->data_out != NULL){
-		  g_free(resample_util->data_out);
+		  ags_stream_free(resample_util->data_out);
 
 		  resample_util->data_out = NULL;
 		}

@@ -381,6 +381,9 @@ ags_apply_sf2_midi_locale_launch(AgsTask *task)
 
   synth_resample_util->target_samplerate = synth_template_resample_util->target_samplerate;
 
+  synth_resample_util->buffer = synth_template_resample_util->buffer;
+  synth_template_resample_util->buffer = NULL;
+
   /* HQ pitch util */
   synth_template_pitch_util = synth_template->pitch_util;
   synth_pitch_util = synth->pitch_util;

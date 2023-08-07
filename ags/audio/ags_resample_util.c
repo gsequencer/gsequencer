@@ -218,6 +218,69 @@ ags_resample_util_alloc()
 }
 
 /**
+ * ags_resample_util_init:
+ * @resample_util: the original #AgsResampleUtil-struct
+ *
+ * Init #AgsResampleUtil-struct
+ *
+ * Since: 5.5.1
+ */
+void
+ags_resample_util_init(AgsResampleUtil *resample_util)
+{
+  resample_util->destination = NULL;
+  resample_util->destination_stride = 1;
+
+  resample_util->source = NULL;
+  resample_util->source_stride = 1;
+
+  resample_util->buffer_length = 0;
+  resample_util->format = AGS_RESAMPLE_UTIL_DEFAULT_FORMAT;
+  resample_util->samplerate = AGS_RESAMPLE_UTIL_DEFAULT_SAMPLERATE;
+
+  resample_util->target_samplerate = AGS_RESAMPLE_UTIL_DEFAULT_TARGET_SAMPLERATE;
+
+  resample_util->src_ratio = 1.0;
+
+  resample_util->input_frames = 0;
+  resample_util->data_in = NULL;
+
+  resample_util->output_frames = 0;
+  resample_util->data_out = NULL;
+  
+  resample_util->increment = 1;
+
+  resample_util->bypass_cache = FALSE;
+  
+  resample_util->in_count = 0;
+  resample_util->in_used = 0;
+  resample_util->out_count = 0;
+  resample_util->out_gen = 0;
+  
+  resample_util->coeff_half_len = ARRAY_LEN (ags_samplerate_coeffs) - 2;
+  resample_util->index_inc = 2381;
+  
+  resample_util->input_index = 0;
+  
+  resample_util->b_current = 0;
+  resample_util->b_end = 0;
+  resample_util->b_real_end = 0;
+  resample_util->b_len = 3 * (int) psf_lrint ((resample_util->coeff_half_len + 2.0) / resample_util->index_inc * SRC_MAX_RATIO + 1);
+  resample_util->b_len = MAX (resample_util->b_len, 4096);
+  resample_util->b_len += 1;
+  
+  resample_util->coeffs = ags_samplerate_coeffs;
+  
+  resample_util->left_calc = 0.0;
+  resample_util->right_calc = 0.0;
+
+  resample_util->last_ratio = -1.0;
+  resample_util->last_position = 0.0;
+  
+  resample_util->buffer = NULL;
+}
+
+/**
  * ags_resample_util_copy:
  * @ptr: the original #AgsResampleUtil-struct
  *
@@ -1200,10 +1263,10 @@ printf ("data_out: %p (%p)    data_in: %p\n", (void*) resample_util->data_out,
     
     resample_util->last_ratio = resample_util->src_ratio ;
 
-    if(ptr->input_frames < ptr->output_frames){
-      length = ptr->output_frames;
+    if(resample_util->input_frames < resample_util->output_frames){
+      length = resample_util->output_frames;
     }else{
-      length = ptr->input_frames;
+      length = resample_util->input_frames;
     }
 
     switch(resample_util->format){
