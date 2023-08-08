@@ -29,6 +29,7 @@
 #include <ags/audio/ags_audio_buffer_util.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_samplerate_coeffs.h>
+//#include <ags/audio/high_qual_coeffs.h>
 
 #include <complex.h>
 
@@ -199,7 +200,7 @@ ags_resample_util_alloc()
   
   ptr->b_current = 0;
   ptr->b_end = 0;
-  ptr->b_real_end = 0;
+  ptr->b_real_end = -1;
   ptr->b_len = 3 * (int) psf_lrint ((ptr->coeff_half_len + 2.0) / ptr->index_inc * SRC_MAX_RATIO + 1);
   ptr->b_len = MAX (ptr->b_len, 4096);
   ptr->b_len += 1;
@@ -256,7 +257,7 @@ ags_resample_util_init(AgsResampleUtil *resample_util)
   resample_util->in_used = 0;
   resample_util->out_count = 0;
   resample_util->out_gen = 0;
-  
+
   resample_util->coeff_half_len = ARRAY_LEN (ags_samplerate_coeffs) - 2;
   resample_util->index_inc = 2381;
   
@@ -264,7 +265,7 @@ ags_resample_util_init(AgsResampleUtil *resample_util)
   
   resample_util->b_current = 0;
   resample_util->b_end = 0;
-  resample_util->b_real_end = 0;
+  resample_util->b_real_end = -1;
   resample_util->b_len = 3 * (int) psf_lrint ((resample_util->coeff_half_len + 2.0) / resample_util->index_inc * SRC_MAX_RATIO + 1);
   resample_util->b_len = MAX (resample_util->b_len, 4096);
   resample_util->b_len += 1;
@@ -813,7 +814,7 @@ prepare_data(AgsResampleUtil *resample_util, int half_filter_chan_len)
   guint copy_mode;
   
   if (resample_util->b_real_end >= 0)
-    return 0 ;	/* Should be terminating. Just return. */
+    return 0;	/* Should be terminating. Just return. */
 
   if (resample_util->data_in == NULL)
     return 0;
@@ -938,7 +939,7 @@ prepare_data(AgsResampleUtil *resample_util, int half_filter_chan_len)
   return 0;
 } /* prepare_data */
 
-static inline double _Complex
+static inline double
 calc_output_single (AgsResampleUtil *resample_util, increment_t increment, increment_t start_filter_index)
 {
   double _Complex fraction, left, right, icoeff ;
@@ -1088,7 +1089,7 @@ calc_output_single (AgsResampleUtil *resample_util, increment_t increment, incre
 gint
 sinc_mono_vari_process (AgsResampleUtil *resample_util)
 {
-  double _Complex out_val;
+  double out_val;
   gdouble input_index, src_ratio, count, float_increment, terminate, rem ;
   increment_t increment, start_filter_index ;
   gint half_filter_chan_len, samples_in_hand ;
@@ -1155,43 +1156,43 @@ sinc_mono_vari_process (AgsResampleUtil *resample_util)
       switch(resample_util->format){
       case AGS_SOUNDCARD_SIGNED_8_BIT:
 	{
-	  ((gint8 *) resample_util->data_out)[resample_util->out_gen] = (gint8) ((double) G_MAXINT8 * creal(out_val));
+	  ((gint8 *) resample_util->data_out)[resample_util->out_gen] = (gint8) ((double) G_MAXINT8 * out_val);
 	}
 	break;
       case AGS_SOUNDCARD_SIGNED_16_BIT:
 	{
-	  ((gint16 *) resample_util->data_out)[resample_util->out_gen] = (gint16) ((double) G_MAXINT16 * creal(out_val));
+	  ((gint16 *) resample_util->data_out)[resample_util->out_gen] = (gint16) ((double) G_MAXINT16 * out_val);
 	}
 	break;
       case AGS_SOUNDCARD_SIGNED_24_BIT:
 	{
-	  ((gint32 *) resample_util->data_out)[resample_util->out_gen] = (gint32) ((double) (0xffffff - 1) * creal(out_val));
+	  ((gint32 *) resample_util->data_out)[resample_util->out_gen] = (gint32) ((double) (0xffffff - 1) * out_val);
 	}
 	break;
       case AGS_SOUNDCARD_SIGNED_32_BIT:
 	{
-	  ((gint32 *) resample_util->data_out)[resample_util->out_gen] = (gint32) ((double) G_MAXINT32 * creal(out_val));
+	  ((gint32 *) resample_util->data_out)[resample_util->out_gen] = (gint32) ((double) G_MAXINT32 * out_val);
 	}
 	break;
       case AGS_SOUNDCARD_SIGNED_64_BIT:
 	{
-	  ((gint64 *) resample_util->data_out)[resample_util->out_gen] = (gint64) ((double) G_MAXINT64 * creal(out_val));
+	  ((gint64 *) resample_util->data_out)[resample_util->out_gen] = (gint64) ((double) G_MAXINT64 * out_val);
 	}
 	break;
       case AGS_SOUNDCARD_FLOAT:
 	{
-	  ((gfloat *) resample_util->data_out)[resample_util->out_gen] = (gfloat) (creal(out_val));
+	  ((gfloat *) resample_util->data_out)[resample_util->out_gen] = (gfloat) (out_val);
 	}
 	break;
       case AGS_SOUNDCARD_DOUBLE:
 	{
-	  ((gdouble *) resample_util->data_out)[resample_util->out_gen] = (gdouble) (creal(out_val));
+	  ((gdouble *) resample_util->data_out)[resample_util->out_gen] = (gdouble) (out_val);
 	}
 	break;
       case AGS_SOUNDCARD_COMPLEX:
 	{
 	  ags_complex_set(((AgsComplex *) resample_util->data_out) + resample_util->out_gen,
-			  out_val);
+			  out_val + I * 0.0);
 	}
 	break;
       }
@@ -1236,6 +1237,7 @@ ags_src_process (AgsResampleUtil *resample_util)
   if (resample_util->output_frames < 0)
     resample_util->output_frames = 0 ;
 
+#if 0  
   if (resample_util->data_in < resample_util->data_out)
     {	if (resample_util->data_in + resample_util->input_frames > resample_util->data_out)
 	{	/*-printf ("\n\ndata_in: %p    data_out: %p\n",
@@ -1250,7 +1252,8 @@ printf ("data_out: %p (%p)    data_in: %p\n", (void*) resample_util->data_out,
 (void*) (resample_util->data_out + resample_util->input_frames * psrc->channels), (void*) resample_util->data_in) ;-*/
       return -1;
     } ;
-
+#endif
+  
   /* Set the input and output counts to zero. */
   resample_util->input_frames_used = 0 ;
   resample_util->output_frames_gen = 0 ;
@@ -1264,9 +1267,9 @@ printf ("data_out: %p (%p)    data_in: %p\n", (void*) resample_util->data_out,
     
     resample_util->last_ratio = resample_util->src_ratio ;
 
-    if(resample_util->input_frames < resample_util->output_frames){
-      length = resample_util->output_frames;
-    }else{
+    length = resample_util->output_frames;
+    
+    if(resample_util->input_frames > resample_util->output_frames){
       length = resample_util->input_frames;
     }
 

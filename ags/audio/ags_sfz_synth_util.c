@@ -1203,6 +1203,8 @@ ags_sfz_synth_util_load_instrument(AgsSFZSynthUtil *sfz_synth_util)
       sfz_synth_util->sfz_loop_start[i] = floor(sfz_synth_util->samplerate / orig_samplerate) * loop_start;
       sfz_synth_util->sfz_loop_end[i] = floor(sfz_synth_util->samplerate / orig_samplerate) * loop_end;
 		
+      ags_resample_util_init(resample_util);
+      
       resample_util->destination = sfz_synth_util->sfz_resampled_buffer[i];
       resample_util->destination_stride = 1;
 		  
@@ -1210,11 +1212,11 @@ ags_sfz_synth_util_load_instrument(AgsSFZSynthUtil *sfz_synth_util)
       resample_util->source_stride = 1;
 
       if(resample_util->data_in != NULL){
-	g_free(resample_util->data_in);
+	ags_stream_free(resample_util->data_in);
       }
 
       if(resample_util->data_out != NULL){
-	g_free(resample_util->data_out);
+	ags_stream_free(resample_util->data_out);
       }
 		
       resample_util->src_ratio = sfz_synth_util->samplerate / orig_samplerate;
