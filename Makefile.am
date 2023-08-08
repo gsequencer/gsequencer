@@ -1361,6 +1361,9 @@ EXTRA_DIST +=  \
 	ags/audio/ags_sf2_synth_util.h
 endif
 
+EXTRA_DIST +=  \
+	ags/audio/ags_samplerate_coeffs.h
+
 deprecated_libags_audio_c_sources =
 
 libags_audio_c_sources = \

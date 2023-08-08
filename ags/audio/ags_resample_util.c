@@ -383,10 +383,10 @@ ags_resample_util_free(AgsResampleUtil *ptr)
   ags_stream_free(ptr->data_in);
   ags_stream_free(ptr->data_out);
   
-  g_free(ptr->destination);
+  ags_stream_free(ptr->destination);
 
   if(ptr->destination != ptr->source){
-    g_free(ptr->source);
+    ags_stream_free(ptr->source);
   }
   
   ags_stream_free(ptr->buffer);
