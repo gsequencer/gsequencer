@@ -1095,7 +1095,8 @@ sinc_mono_vari_process (AgsResampleUtil *resample_util)
   
   resample_util->in_count = resample_util->input_frames;
   resample_util->out_count = resample_util->output_frames;
-  resample_util->in_used = resample_util->out_gen = 0 ;
+  resample_util->in_used =
+    resample_util->out_gen = 0 ;
 
   src_ratio = resample_util->last_ratio ;
 
@@ -1179,12 +1180,12 @@ sinc_mono_vari_process (AgsResampleUtil *resample_util)
 	break;
       case AGS_SOUNDCARD_FLOAT:
 	{
-	  ((gfloat *) resample_util->data_out)[resample_util->out_gen] = (gfloat) ((double) G_MAXINT8 * creal(out_val));
+	  ((gfloat *) resample_util->data_out)[resample_util->out_gen] = (gfloat) (creal(out_val));
 	}
 	break;
       case AGS_SOUNDCARD_DOUBLE:
 	{
-	  ((gdouble *) resample_util->data_out)[resample_util->out_gen] = (gdouble) ((double) G_MAXINT8 * creal(out_val));
+	  ((gdouble *) resample_util->data_out)[resample_util->out_gen] = (gdouble) (creal(out_val));
 	}
 	break;
       case AGS_SOUNDCARD_COMPLEX:
