@@ -183,7 +183,7 @@ ags_resample_util_alloc()
   ptr->output_frames = 0;
   ptr->data_out = NULL;
   
-  ptr->increment = 1;
+  ptr->increment = 2381;
 
   ptr->bypass_cache = FALSE;
   
@@ -248,7 +248,7 @@ ags_resample_util_init(AgsResampleUtil *resample_util)
   resample_util->output_frames = 0;
   resample_util->data_out = NULL;
   
-  resample_util->increment = 1;
+  resample_util->increment = 2381;
 
   resample_util->bypass_cache = FALSE;
   
