@@ -1,12 +1,9 @@
 ags (5.5.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: implemented ags_midi_ump_util.[ch]
 	* implemented ags_solver_matrix_to_string()
 	* implemented ags_time_nanosleep()
 	* refactored ags_resample_util.c
-	* TODO:JK: implemented ags_solver_matrix_to_symbolic_string()
-	* TODO:JK: implemented ags_solver_matrix_solve_default()
 
 ags (5.5.0)
 

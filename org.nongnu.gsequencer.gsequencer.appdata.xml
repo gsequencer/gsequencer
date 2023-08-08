@@ -45,6 +45,14 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="5.5.1" date="2023-08-08">
+      <description>
+	<p>
+	  Fixed resampling bug, artifacts from one to another sample fixed.
+	</p>
+      </description>
+    </release>
+
     <release version="5.5.0" date="2023-08-05">
       <description>
 	<p>
