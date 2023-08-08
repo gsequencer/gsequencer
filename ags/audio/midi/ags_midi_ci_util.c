@@ -846,6 +846,7 @@ ags_midi_ci_util_get_invalidate_muid(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_put_ack:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
+ * @device_id: the device ID
  * @version: the version
  * @source: the source
  * @destination: the destination
@@ -1968,7 +1969,6 @@ ags_midi_ci_util_get_confirm_protocol_type(AgsMidiCIUtil *midi_ci_util,
  * @source: the source
  * @destination: the destination
  * @authority_level: the authority level
- * @protocol_type: the new protocol type
  *
  * Put confirm protocol type reply message. Deprecated since MIDI CI version 1.2.
  * 

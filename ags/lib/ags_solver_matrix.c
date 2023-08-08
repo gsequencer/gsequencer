@@ -37,6 +37,9 @@ void ags_solver_matrix_get_property(GObject *gobject,
 				    GParamSpec *param_spec);
 void ags_solver_matrix_finalize(GObject *gobject);
 
+gchar** ags_solver_matrix_to_symbolic_string(AgsSolverMatrix *solver_matrix,
+					     guint *symbolic_strv_length);
+
 void ags_solver_matrix_solve_all_by_column(AgsSolverMatrix *solver_matrix,
 					   guint *nth_column, guint column_size);
 void ags_solver_matrix_solve_symbolic(AgsSolverMatrix *solver_matrix);

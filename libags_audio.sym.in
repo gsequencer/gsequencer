@@ -3562,6 +3562,7 @@ ags_wasapi_devin_realloc_buffer
 ags_wasapi_devin_new
 ags_resample_util_get_type
 ags_resample_util_alloc
+ags_resample_util_init
 ags_resample_util_copy
 ags_resample_util_free
 ags_resample_util_get_destination
