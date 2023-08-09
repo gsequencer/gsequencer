@@ -964,6 +964,7 @@ ags_midi_ci_util_put_ack(AgsMidiCIUtil *midi_ci_util,
  * ags_midi_ci_util_get_ack:
  * @midi_ci_util: the MIDI CI util
  * @buffer: the buffer
+ * @device_id: (out): the return location of device ID
  * @version: (out): the return location of version
  * @source: (out): the return location of source
  * @destination: (out): the return location of destination
