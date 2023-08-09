@@ -1362,7 +1362,8 @@ EXTRA_DIST +=  \
 endif
 
 EXTRA_DIST +=  \
-	ags/audio/ags_samplerate_coeffs.h
+	ags/audio/ags_samplerate_coeffs.h \
+	ags/audio/ags_samplerate_process.h
 
 deprecated_libags_audio_c_sources =
 
@@ -1433,6 +1434,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_recycling.c \
 	ags/audio/ags_recycling_context.c \
 	ags/audio/ags_resample_util.c \
+	ags/audio/ags_samplerate_process.c \
 	ags/audio/ags_sound_provider.c \
 	ags/audio/ags_sequencer_util.c \
 	ags/audio/ags_soundcard_util.c \

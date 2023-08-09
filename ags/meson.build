@@ -395,6 +395,7 @@ libags_audio_sources = files(
   'audio/ags_recycling.c',
   'audio/ags_recycling_context.c',
   'audio/ags_resample_util.c',
+  'audio/ags_samplerate_process.c',
   'audio/ags_sequencer_util.c',
   'audio/ags_sf2_synth_generator.c',
   'audio/ags_sf2_synth_util.c',
