@@ -1,3 +1,10 @@
+ags (5.5.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_resample_util.c with no resampling
+	* fixed ags_sound_resource.c missing init of resample util
+	* work-around ags_samplerate_process.c disabled prepare_data()
+
 ags (5.5.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
