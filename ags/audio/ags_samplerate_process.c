@@ -349,8 +349,11 @@ sinc_mono_vari_process (AgsResampleUtil *resample_util)
 	{
 	  //FIXME:JK: prepare data
 #if 0
-	  if ((error = prepare_data (resample_util, half_filter_chan_len)) != 0)
-	    return error ;
+	  if(!ptr->bypass_cache){
+	    if ((error = prepare_data (resample_util, half_filter_chan_len)) != 0){
+	      return error ;
+	    }
+	  }
 #endif
 	  
 	  samples_in_hand = (resample_util->b_end - resample_util->b_current + resample_util->b_len) % resample_util->b_len ;
