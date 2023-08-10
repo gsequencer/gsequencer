@@ -725,21 +725,27 @@ ags_resample_util_compute_s8(AgsResampleUtil *resample_util)
 
   destination = (gint8 *) resample_util->destination;
   source = (gint8 *) resample_util->source;
-    
-  ags_audio_buffer_util_clear_buffer(resample_util->data_in, 1,
-				     resample_util->input_frames, AGS_AUDIO_BUFFER_UTIL_S8);
 
-  ags_audio_buffer_util_copy_s8_to_s8(resample_util->data_in, 1,
-				      source, resample_util->source_stride,
-				      resample_util->input_frames);
-  
-  ags_samplerate_process_resample_util(resample_util);
+  if(resample_util->samplerate == resample_util->target_samplerate){
+    ags_audio_buffer_util_copy_s8_to_s8(destination, resample_util->destination_stride,
+					source, resample_util->source_stride,
+					resample_util->buffer_length);
+  }else{
+    ags_audio_buffer_util_clear_buffer(resample_util->data_in, 1,
+				       resample_util->input_frames, AGS_AUDIO_BUFFER_UTIL_S8);
 
-  memset(destination, 0, resample_util->output_frames * sizeof(gint8));
+    ags_audio_buffer_util_copy_s8_to_s8(resample_util->data_in, 1,
+					source, resample_util->source_stride,
+					resample_util->input_frames);
   
-  ags_audio_buffer_util_copy_s8_to_s8(destination, resample_util->destination_stride,
-				      resample_util->data_out, 1,
-				      resample_util->output_frames);
+    ags_samplerate_process_resample_util(resample_util);
+
+    memset(destination, 0, resample_util->output_frames * sizeof(gint8));
+  
+    ags_audio_buffer_util_copy_s8_to_s8(destination, resample_util->destination_stride,
+					resample_util->data_out, 1,
+					resample_util->output_frames);
+  }
 }
 
 /**
@@ -765,20 +771,26 @@ ags_resample_util_compute_s16(AgsResampleUtil *resample_util)
   destination = (gint16 *) resample_util->destination;
   source = (gint16 *) resample_util->source;
     
-  ags_audio_buffer_util_clear_buffer(resample_util->data_in, 1,
-				     resample_util->input_frames, AGS_AUDIO_BUFFER_UTIL_S16);
+  if(resample_util->samplerate == resample_util->target_samplerate){
+    ags_audio_buffer_util_copy_s16_to_s16(destination, resample_util->destination_stride,
+					  source, resample_util->source_stride,
+					  resample_util->buffer_length);
+  }else{
+    ags_audio_buffer_util_clear_buffer(resample_util->data_in, 1,
+				       resample_util->input_frames, AGS_AUDIO_BUFFER_UTIL_S16);
 
-  ags_audio_buffer_util_copy_s16_to_s16(resample_util->data_in, 1,
-					source, resample_util->source_stride,
-					resample_util->input_frames);
+    ags_audio_buffer_util_copy_s16_to_s16(resample_util->data_in, 1,
+					  source, resample_util->source_stride,
+					  resample_util->input_frames);
 
-  ags_samplerate_process_resample_util(resample_util);
+    ags_samplerate_process_resample_util(resample_util);
 
-  memset(destination, 0, resample_util->output_frames * sizeof(gint16));
+    memset(destination, 0, resample_util->output_frames * sizeof(gint16));
   
-  ags_audio_buffer_util_copy_s16_to_s16(destination, resample_util->destination_stride,
-					resample_util->data_out, 1,
-					resample_util->output_frames);
+    ags_audio_buffer_util_copy_s16_to_s16(destination, resample_util->destination_stride,
+					  resample_util->data_out, 1,
+					  resample_util->output_frames);
+  }
 }
 
 /**
@@ -804,20 +816,26 @@ ags_resample_util_compute_s24(AgsResampleUtil *resample_util)
   destination = (gint32 *) resample_util->destination;
   source = (gint32 *) resample_util->source;
   
-  ags_audio_buffer_util_clear_buffer(resample_util->data_in, 1,
-				     resample_util->input_frames, AGS_AUDIO_BUFFER_UTIL_S24);
+  if(resample_util->samplerate == resample_util->target_samplerate){
+    ags_audio_buffer_util_copy_s24_to_s24(destination, resample_util->destination_stride,
+					  source, resample_util->source_stride,
+					  resample_util->buffer_length);
+  }else{
+    ags_audio_buffer_util_clear_buffer(resample_util->data_in, 1,
+				       resample_util->input_frames, AGS_AUDIO_BUFFER_UTIL_S24);
 
-  ags_audio_buffer_util_copy_s24_to_s24(resample_util->data_in, 1,
-					source, resample_util->source_stride,
-					resample_util->input_frames);
+    ags_audio_buffer_util_copy_s24_to_s24(resample_util->data_in, 1,
+					  source, resample_util->source_stride,
+					  resample_util->input_frames);
   
-  ags_samplerate_process_resample_util(resample_util);
+    ags_samplerate_process_resample_util(resample_util);
 
-  memset(destination, 0, resample_util->output_frames * sizeof(gint32));
+    memset(destination, 0, resample_util->output_frames * sizeof(gint32));
   
-  ags_audio_buffer_util_copy_s24_to_s24(destination, resample_util->destination_stride,
-					resample_util->data_out, 1,
-					resample_util->output_frames);
+    ags_audio_buffer_util_copy_s24_to_s24(destination, resample_util->destination_stride,
+					  resample_util->data_out, 1,
+					  resample_util->output_frames);
+  }
 }
 
 /**
@@ -843,20 +861,26 @@ ags_resample_util_compute_s32(AgsResampleUtil *resample_util)
   destination = (gint32 *) resample_util->destination;
   source = (gint32 *) resample_util->source;
   
-  ags_audio_buffer_util_clear_buffer(resample_util->data_in, 1,
-				     resample_util->input_frames, AGS_AUDIO_BUFFER_UTIL_S32);
+  if(resample_util->samplerate == resample_util->target_samplerate){
+    ags_audio_buffer_util_copy_s32_to_s32(destination, resample_util->destination_stride,
+					  source, resample_util->source_stride,
+					  resample_util->buffer_length);
+  }else{
+    ags_audio_buffer_util_clear_buffer(resample_util->data_in, 1,
+				       resample_util->input_frames, AGS_AUDIO_BUFFER_UTIL_S32);
 
-  ags_audio_buffer_util_copy_s32_to_s32(resample_util->data_in, 1,
-					source, resample_util->source_stride,
-					resample_util->input_frames);
+    ags_audio_buffer_util_copy_s32_to_s32(resample_util->data_in, 1,
+					  source, resample_util->source_stride,
+					  resample_util->input_frames);
 
-  ags_samplerate_process_resample_util(resample_util);
+    ags_samplerate_process_resample_util(resample_util);
 
-  memset(destination, 0, resample_util->output_frames * sizeof(gint32));
+    memset(destination, 0, resample_util->output_frames * sizeof(gint32));
   
-  ags_audio_buffer_util_copy_s32_to_s32(destination, resample_util->destination_stride,
-					resample_util->data_out, 1,
-					resample_util->output_frames);
+    ags_audio_buffer_util_copy_s32_to_s32(destination, resample_util->destination_stride,
+					  resample_util->data_out, 1,
+					  resample_util->output_frames);
+  }
 }
 
 /**
@@ -882,20 +906,26 @@ ags_resample_util_compute_s64(AgsResampleUtil *resample_util)
   destination = (gint64 *) resample_util->destination;
   source = (gint64 *) resample_util->source;
   
-  ags_audio_buffer_util_clear_buffer(resample_util->data_in, 1,
-				     resample_util->input_frames, AGS_AUDIO_BUFFER_UTIL_S64);
+  if(resample_util->samplerate == resample_util->target_samplerate){
+    ags_audio_buffer_util_copy_s64_to_s64(destination, resample_util->destination_stride,
+					  source, resample_util->source_stride,
+					  resample_util->buffer_length);
+  }else{
+    ags_audio_buffer_util_clear_buffer(resample_util->data_in, 1,
+				       resample_util->input_frames, AGS_AUDIO_BUFFER_UTIL_S64);
 
-  ags_audio_buffer_util_copy_s64_to_s64(resample_util->data_in, 1,
-					source, resample_util->source_stride,
-					resample_util->input_frames);
+    ags_audio_buffer_util_copy_s64_to_s64(resample_util->data_in, 1,
+					  source, resample_util->source_stride,
+					  resample_util->input_frames);
 
-  ags_samplerate_process_resample_util(resample_util);
+    ags_samplerate_process_resample_util(resample_util);
 
-  memset(destination, 0, resample_util->output_frames * sizeof(gint64));
+    memset(destination, 0, resample_util->output_frames * sizeof(gint64));
   
-  ags_audio_buffer_util_copy_s64_to_s64(destination, resample_util->destination_stride,
-					resample_util->data_out, 1,
-					resample_util->output_frames);
+    ags_audio_buffer_util_copy_s64_to_s64(destination, resample_util->destination_stride,
+					  resample_util->data_out, 1,
+					  resample_util->output_frames);
+  }
 }
 
 /**
@@ -921,20 +951,26 @@ ags_resample_util_compute_float(AgsResampleUtil *resample_util)
   destination = (gfloat *) resample_util->destination;
   source = (gfloat *) resample_util->source;
   
-  ags_audio_buffer_util_clear_float(resample_util->data_in, 1,
-				    resample_util->input_frames);
+  if(resample_util->samplerate == resample_util->target_samplerate){
+    ags_audio_buffer_util_copy_float_to_float(destination, resample_util->destination_stride,
+					      source, resample_util->source_stride,
+					      resample_util->buffer_length);
+  }else{
+    ags_audio_buffer_util_clear_float(resample_util->data_in, 1,
+				      resample_util->input_frames);
 
-  ags_audio_buffer_util_copy_float_to_float(resample_util->data_in, 1,
-					    source, resample_util->source_stride,
-					    resample_util->input_frames);
+    ags_audio_buffer_util_copy_float_to_float(resample_util->data_in, 1,
+					      source, resample_util->source_stride,
+					      resample_util->input_frames);
 
-  ags_samplerate_process_resample_util(resample_util);
+    ags_samplerate_process_resample_util(resample_util);
 
-  memset(destination, 0, resample_util->output_frames * sizeof(gfloat));
+    memset(destination, 0, resample_util->output_frames * sizeof(gfloat));
   
-  ags_audio_buffer_util_copy_float_to_float(destination, resample_util->destination_stride,
-					    resample_util->data_out, 1,
-					    resample_util->output_frames);
+    ags_audio_buffer_util_copy_float_to_float(destination, resample_util->destination_stride,
+					      resample_util->data_out, 1,
+					      resample_util->output_frames);
+  }
 }
 
 /**
@@ -960,26 +996,32 @@ ags_resample_util_compute_double(AgsResampleUtil *resample_util)
   destination = (gdouble *) resample_util->destination;
   source = (gdouble *) resample_util->source;
   
-  ags_audio_buffer_util_clear_double(resample_util->data_in, 1,
-				     resample_util->input_frames);
+  if(resample_util->samplerate == resample_util->target_samplerate){
+    ags_audio_buffer_util_copy_double_to_double(destination, resample_util->destination_stride,
+						source, resample_util->source_stride,
+						resample_util->buffer_length);
+  }else{
+    ags_audio_buffer_util_clear_double(resample_util->data_in, 1,
+				       resample_util->input_frames);
 
-  ags_audio_buffer_util_copy_double_to_double(resample_util->data_in, 1,
-					      source, resample_util->source_stride,
-					      resample_util->input_frames);
+    ags_audio_buffer_util_copy_double_to_double(resample_util->data_in, 1,
+						source, resample_util->source_stride,
+						resample_util->input_frames);
 
-  //  g_message("in %d", ags_synth_util_get_xcross_count_float(resample_util->data_in,
-  //							   resample_util->input_frames));
+    //  g_message("in %d", ags_synth_util_get_xcross_count_float(resample_util->data_in,
+    //							   resample_util->input_frames));
 
-  ags_samplerate_process_resample_util(resample_util);
+    ags_samplerate_process_resample_util(resample_util);
 
-  //  g_message("out %d", ags_synth_util_get_xcross_count_float(resample_util->data_out,
-  //							    resample_util->output_frames));
+    //  g_message("out %d", ags_synth_util_get_xcross_count_float(resample_util->data_out,
+    //							    resample_util->output_frames));
   
-  memset(destination, 0, resample_util->output_frames * sizeof(gdouble));
+    memset(destination, 0, resample_util->output_frames * sizeof(gdouble));
   
-  ags_audio_buffer_util_copy_double_to_double(destination, resample_util->destination_stride,
-					      resample_util->data_out, 1,
-					      resample_util->output_frames);
+    ags_audio_buffer_util_copy_double_to_double(destination, resample_util->destination_stride,
+						resample_util->data_out, 1,
+						resample_util->output_frames);
+  }
 }
 
 /**
@@ -1005,20 +1047,26 @@ ags_resample_util_compute_complex(AgsResampleUtil *resample_util)
   destination = (AgsComplex *) resample_util->destination;
   source = (AgsComplex *) resample_util->source;
   
-  ags_audio_buffer_util_clear_complex(resample_util->data_in, 1,
-				      resample_util->input_frames);
+  if(resample_util->samplerate == resample_util->target_samplerate){
+    ags_audio_buffer_util_copy_complex_to_complex(destination, resample_util->destination_stride,
+						  source, resample_util->source_stride,
+						  resample_util->buffer_length);
+  }else{
+    ags_audio_buffer_util_clear_complex(resample_util->data_in, 1,
+					resample_util->input_frames);
 
-  ags_audio_buffer_util_copy_complex_to_complex(resample_util->data_in, 1,
-						source, resample_util->source_stride,
-						resample_util->input_frames);
+    ags_audio_buffer_util_copy_complex_to_complex(resample_util->data_in, 1,
+						  source, resample_util->source_stride,
+						  resample_util->input_frames);
 
-  ags_samplerate_process_resample_util(resample_util);
+    ags_samplerate_process_resample_util(resample_util);
 
-  memset(destination, 0, resample_util->output_frames * sizeof(AgsComplex));
+    memset(destination, 0, resample_util->output_frames * sizeof(AgsComplex));
   
-  ags_audio_buffer_util_copy_complex_to_complex(destination, resample_util->destination_stride,
-						resample_util->data_out, 1,
-						resample_util->output_frames);
+    ags_audio_buffer_util_copy_complex_to_complex(destination, resample_util->destination_stride,
+						  resample_util->data_out, 1,
+						  resample_util->output_frames);
+  }
 }
 
 /**

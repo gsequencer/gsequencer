@@ -67,6 +67,8 @@ prepare_data(AgsResampleUtil *resample_util, int half_filter_chan_len)
   if (len < 0 || resample_util->b_end + len > resample_util->b_len)
     return -1;
 
+  len = MIN (resample_util->buffer_length, len) ;
+
   ags_audio_buffer_util_copy_buffer_to_buffer(resample_util->buffer, 1, resample_util->b_end,
 					      resample_util->data_in, 1, resample_util->in_used,
 					      len, copy_mode);
@@ -154,10 +156,10 @@ prepare_data(AgsResampleUtil *resample_util, int half_filter_chan_len)
   return 0;
 } /* prepare_data */
 
-static inline double _Complex
+static inline double
 calc_output_single (AgsResampleUtil *resample_util, increment_t increment, increment_t start_filter_index)
 {
-  double _Complex fraction, left, right, icoeff ;
+  double fraction, left, right, icoeff ;
   increment_t filter_index, max_filter_index ;
   gint data_index, coeff_count, indx ;
   
@@ -177,10 +179,10 @@ calc_output_single (AgsResampleUtil *resample_util, increment_t increment, incre
       filter_index -= increment * steps ;
       data_index += steps ;
     }
-  left = 0.0 + I * 0.0 ;
+  left = 0.0 ;
   while (filter_index >= MAKE_INCREMENT_T (0))
     {
-      fraction = fp_to_double (filter_index) + I * 0.0;
+      fraction = fp_to_double (filter_index);
       indx = fp_to_int (filter_index) ;
       assert (indx >= 0 && indx + 1 < resample_util->coeff_half_len + 2) ;
       icoeff = resample_util->coeffs [indx] + fraction * (resample_util->coeffs [indx + 1] - resample_util->coeffs [indx]);
@@ -190,37 +192,37 @@ calc_output_single (AgsResampleUtil *resample_util, increment_t increment, incre
       switch(resample_util->format){
       case AGS_SOUNDCARD_SIGNED_8_BIT:
 	{
-	  left += icoeff * (((double) ((gint8 *) resample_util->buffer)[data_index] / (double) G_MAXINT8) + I * 0.0);
+	  left += icoeff * (((double) ((gint8 *) resample_util->buffer)[data_index] / (double) G_MAXINT8));
 	}
 	break;
       case AGS_SOUNDCARD_SIGNED_16_BIT:
 	{
-	  left += icoeff * (((double) ((gint16 *) resample_util->buffer)[data_index] / (double) G_MAXINT16) + I * 0.0);
+	  left += icoeff * (((double) ((gint16 *) resample_util->buffer)[data_index] / (double) G_MAXINT16));
 	}
 	break;
       case AGS_SOUNDCARD_SIGNED_24_BIT:
 	{
-	  left += icoeff * (((double) ((gint32 *) resample_util->buffer)[data_index] / (double) (0xffffff - 1)) + I * 0.0);
+	  left += icoeff * (((double) ((gint32 *) resample_util->buffer)[data_index] / (double) (0xffffff - 1)));
 	}
 	break;
       case AGS_SOUNDCARD_SIGNED_32_BIT:
 	{
-	  left += icoeff * (((double) ((gint32 *) resample_util->buffer)[data_index] / (double) G_MAXINT32) + I * 0.0);
+	  left += icoeff * (((double) ((gint32 *) resample_util->buffer)[data_index] / (double) G_MAXINT32));
 	}
 	break;
       case AGS_SOUNDCARD_SIGNED_64_BIT:
 	{
-	  left += icoeff * (((double) ((gint64 *) resample_util->buffer)[data_index] / (double) G_MAXINT64) + I * 0.0);
+	  left += icoeff * (((double) ((gint64 *) resample_util->buffer)[data_index] / (double) G_MAXINT64));
 	}
 	break;
       case AGS_SOUNDCARD_FLOAT:
 	{
-	  left += icoeff * ((double) ((gfloat *) resample_util->buffer)[data_index] + I * 0.0);
+	  left += icoeff * ((double) ((gfloat *) resample_util->buffer)[data_index]);
 	}
 	break;
       case AGS_SOUNDCARD_DOUBLE:
 	{
-	  left += icoeff * ((double) ((gdouble *) resample_util->buffer)[data_index] + I * 0.0);
+	  left += icoeff * ((double) ((gdouble *) resample_util->buffer)[data_index]);
 	}
 	break;
       case AGS_SOUNDCARD_COMPLEX:
@@ -240,10 +242,10 @@ calc_output_single (AgsResampleUtil *resample_util, increment_t increment, incre
   filter_index = filter_index + coeff_count * increment ;
   data_index = resample_util->b_current + 1 + coeff_count ;
 
-  right = 0.0 + I * 0.0 ;
+  right = 0.0 ;
   do
     {
-      fraction = fp_to_double (filter_index) + I * 0.0;
+      fraction = fp_to_double (filter_index);
       indx = fp_to_int (filter_index) ;
       assert (indx < resample_util->coeff_half_len + 2) ;
       icoeff = resample_util->coeffs [indx] + fraction * (resample_util->coeffs [indx + 1] - resample_util->coeffs [indx]) ;
@@ -253,42 +255,42 @@ calc_output_single (AgsResampleUtil *resample_util, increment_t increment, incre
       switch(resample_util->format){
       case AGS_SOUNDCARD_SIGNED_8_BIT:
 	{
-	  right += icoeff * (((double) ((gint8 *) resample_util->buffer)[data_index] / (double) G_MAXINT8) + I * 0.0);
+	  right += icoeff * (((double) ((gint8 *) resample_util->buffer)[data_index] / (double) G_MAXINT8));
 	}
 	break;
       case AGS_SOUNDCARD_SIGNED_16_BIT:
 	{
-	  right += icoeff * (((double) ((gint16 *) resample_util->buffer)[data_index] / (double) G_MAXINT16) + I * 0.0);
+	  right += icoeff * (((double) ((gint16 *) resample_util->buffer)[data_index] / (double) G_MAXINT16));
 	}
 	break;
       case AGS_SOUNDCARD_SIGNED_24_BIT:
 	{
-	  right += icoeff * (((double) ((gint32 *) resample_util->buffer)[data_index] / (double) (0xffffff - 1)) + I * 0.0);
+	  right += icoeff * (((double) ((gint32 *) resample_util->buffer)[data_index] / (double) (0xffffff - 1)));
 	}
 	break;
       case AGS_SOUNDCARD_SIGNED_32_BIT:
 	{
-	  right += icoeff * (((double) ((gint32 *) resample_util->buffer)[data_index] / (double) G_MAXINT32) + I * 0.0);
+	  right += icoeff * (((double) ((gint32 *) resample_util->buffer)[data_index] / (double) G_MAXINT32));
 	}
 	break;
       case AGS_SOUNDCARD_SIGNED_64_BIT:
 	{
-	  right += icoeff * (((double) ((gint64 *) resample_util->buffer)[data_index] / (double) G_MAXINT64) + I * 0.0);
+	  right += icoeff * (((double) ((gint64 *) resample_util->buffer)[data_index] / (double) G_MAXINT64));
 	}
 	break;
       case AGS_SOUNDCARD_FLOAT:
 	{
-	  right += icoeff * ((double) ((gfloat *) resample_util->buffer)[data_index] + I * 0.0);
+	  right += icoeff * ((double) ((gfloat *) resample_util->buffer)[data_index]);
 	}
 	break;
       case AGS_SOUNDCARD_DOUBLE:
 	{
-	  right += icoeff * ((double) ((gdouble *) resample_util->buffer)[data_index] + I * 0.0);
+	  right += icoeff * ((double) ((gdouble *) resample_util->buffer)[data_index]);
 	}
 	break;
       case AGS_SOUNDCARD_COMPLEX:
 	{
-	  right += icoeff * ags_complex_get(((AgsComplex *) resample_util->buffer) + data_index);
+	  right += icoeff * (double) ags_complex_get(((AgsComplex *) resample_util->buffer) + data_index);
 	}
 	break;
       }
@@ -304,7 +306,7 @@ calc_output_single (AgsResampleUtil *resample_util, increment_t increment, incre
 gint
 sinc_mono_vari_process (AgsResampleUtil *resample_util)
 {
-  double _Complex out_val;
+  double out_val;
   gdouble input_index, src_ratio, count, float_increment, terminate, rem ;
   increment_t increment, start_filter_index ;
   gint half_filter_chan_len, samples_in_hand ;
@@ -344,9 +346,13 @@ sinc_mono_vari_process (AgsResampleUtil *resample_util)
       samples_in_hand = (resample_util->b_end - resample_util->b_current + resample_util->b_len) % resample_util->b_len ;
 
       if (samples_in_hand <= half_filter_chan_len)
-	{	if ((error = prepare_data (resample_util, half_filter_chan_len)) != 0)
+	{
+	  //FIXME:JK: prepare data
+#if 0
+	  if ((error = prepare_data (resample_util, half_filter_chan_len)) != 0)
 	    return error ;
-
+#endif
+	  
 	  samples_in_hand = (resample_util->b_end - resample_util->b_current + resample_util->b_len) % resample_util->b_len ;
 	  if (samples_in_hand <= half_filter_chan_len)
 	    break ;
@@ -407,7 +413,7 @@ sinc_mono_vari_process (AgsResampleUtil *resample_util)
       case AGS_SOUNDCARD_COMPLEX:
 	{
 	  ags_complex_set(((AgsComplex *) resample_util->data_out) + resample_util->out_gen,
-			  out_val);
+			  out_val + I * 0.0);
 	}
 	break;
       }

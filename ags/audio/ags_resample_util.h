@@ -42,8 +42,6 @@ typedef struct _AgsResampleUtil AgsResampleUtil;
 
 struct _AgsResampleUtil
 {
-  //  SRC_DATA secret_rabbit;
-  
   gpointer destination;
   guint destination_stride;
 
