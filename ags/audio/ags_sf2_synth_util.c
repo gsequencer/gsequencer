@@ -2057,11 +2057,15 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 		resample_util->source_stride = 1;
 
 		if(resample_util->data_in != NULL){
-		  g_free(resample_util->data_in);
+		  ags_stream_free(resample_util->data_in);
 		}
 
 		if(resample_util->data_out != NULL){
-		  g_free(resample_util->data_out);
+		  ags_stream_free(resample_util->data_out);
+		}
+
+		if(resample_util->buffer != NULL){
+		  ags_stream_free(resample_util->buffer);
 		}
 
 		allocated_samples = sample_frame_count;
@@ -2074,12 +2078,12 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 		
 		resample_util->input_frames = sample_frame_count;
 
-		resample_util->data_in = ags_stream_alloc(allocated_samples,
+		resample_util->data_in = ags_stream_alloc(allocated_samples + 1,
 							  AGS_SOUNDCARD_DOUBLE);
 
 		resample_util->output_frames = sf2_synth_util->sf2_resampled_buffer_length[i];
 
-		resample_util->data_out = ags_stream_alloc(allocated_samples,
+		resample_util->data_out = ags_stream_alloc(allocated_samples + 1,
 							   AGS_SOUNDCARD_DOUBLE);
 		
 		resample_util->buffer_length = sf2_synth_util->sf2_orig_buffer_length[i];
@@ -2093,7 +2097,7 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 		resample_util->b_real_end = -1;
 		resample_util->last_ratio = -1.0;
 
-		resample_util->buffer = ags_stream_alloc(allocated_samples,
+		resample_util->buffer = ags_stream_alloc(allocated_samples + 1,
 							 AGS_SOUNDCARD_DOUBLE);
 
 		ags_resample_util_compute(resample_util);
@@ -2104,19 +2108,19 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 		resample_util->source = NULL;
 
 		if(resample_util->data_in != NULL){
-		  //		  ags_stream_free(resample_util->data_in);
+		  ags_stream_free(resample_util->data_in);
 
 		  resample_util->data_in = NULL;
 		}
 
 		if(resample_util->data_out != NULL){
-		  //		  ags_stream_free(resample_util->data_out);
+		  ags_stream_free(resample_util->data_out);
 
 		  resample_util->data_out = NULL;
 		}
 
 		if(resample_util->buffer != NULL){
-		  //		  ags_stream_free(resample_util->buffer);
+		  ags_stream_free(resample_util->buffer);
 
 		  resample_util->buffer = NULL;
 		}

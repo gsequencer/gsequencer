@@ -536,16 +536,21 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
 	ags_audio_buffer_util_clear_buffer(target_data, 1,
 					   target_buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
 
+	ags_resample_util_init(&resample_util);
+	
 	resample_util.src_ratio = target_samplerate / samplerate;
 
 	resample_util.input_frames = buffer_size;
 	resample_util.data_in = ags_stream_alloc(allocated_buffer_length,
-							       AGS_SOUNDCARD_FLOAT);
-
+						 format);
+	
 	resample_util.output_frames = target_buffer_size;
 	resample_util.data_out = ags_stream_alloc(allocated_buffer_length,
-								AGS_SOUNDCARD_FLOAT);
+						  format);
 
+	resample_util.buffer = ags_stream_alloc(allocated_buffer_length,
+						format);
+	
 	resample_util.end_of_input = 0;
 	
 	resample_util.destination = target_data;
@@ -564,6 +569,7 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
 
 	ags_stream_free(resample_util.data_out);
 	ags_stream_free(resample_util.data_in);
+	ags_stream_free(resample_util.buffer);
 
 	ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, 0,
 						    target_data, 1, 0,
@@ -762,15 +768,21 @@ ags_sound_resource_read_audio_signal_at_once(AgsSoundResource *sound_resource,
       ags_audio_buffer_util_clear_buffer(target_data, 1,
 					 target_frame_count, ags_audio_buffer_util_format_from_soundcard(format));
 
+      ags_resample_util_init(&resample_util);
+	
       resample_util.src_ratio = target_samplerate / samplerate;
 
       resample_util.input_frames = frame_count;
       resample_util.data_in = ags_stream_alloc(allocated_frame_count,
-							     AGS_SOUNDCARD_FLOAT);
-
+					       format);
+      
       resample_util.output_frames = target_frame_count;
       resample_util.data_out = ags_stream_alloc(allocated_frame_count,
-							      AGS_SOUNDCARD_FLOAT);
+						format);
+
+      resample_util.buffer = ags_stream_alloc(allocated_frame_count,
+					      format);
+	
 
       resample_util.end_of_input = 0;
 	
@@ -790,6 +802,7 @@ ags_sound_resource_read_audio_signal_at_once(AgsSoundResource *sound_resource,
 
       ags_stream_free(resample_util.data_out);
       ags_stream_free(resample_util.data_in);
+      ags_stream_free(resample_util.buffer);
     }
     
     for(j = 0; stream != NULL;){
