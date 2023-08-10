@@ -156,10 +156,10 @@ prepare_data(AgsResampleUtil *resample_util, int half_filter_chan_len)
   return 0;
 } /* prepare_data */
 
-static inline double
+static inline double _Complex
 calc_output_single (AgsResampleUtil *resample_util, increment_t increment, increment_t start_filter_index)
 {
-  double fraction, left, right, icoeff ;
+  double _Complex fraction, left, right, icoeff ;
   increment_t filter_index, max_filter_index ;
   gint data_index, coeff_count, indx ;
   
@@ -179,10 +179,10 @@ calc_output_single (AgsResampleUtil *resample_util, increment_t increment, incre
       filter_index -= increment * steps ;
       data_index += steps ;
     }
-  left = 0.0 ;
+  left = 0.0 + I * 0.0;
   while (filter_index >= MAKE_INCREMENT_T (0))
     {
-      fraction = fp_to_double (filter_index);
+      fraction = fp_to_double (filter_index) + I * 0.0;
       indx = fp_to_int (filter_index) ;
       assert (indx >= 0 && indx + 1 < resample_util->coeff_half_len + 2) ;
       icoeff = resample_util->coeffs [indx] + fraction * (resample_util->coeffs [indx + 1] - resample_util->coeffs [indx]);
@@ -242,10 +242,10 @@ calc_output_single (AgsResampleUtil *resample_util, increment_t increment, incre
   filter_index = filter_index + coeff_count * increment ;
   data_index = resample_util->b_current + 1 + coeff_count ;
 
-  right = 0.0 ;
+  right = 0.0 + I * 0.0;
   do
     {
-      fraction = fp_to_double (filter_index);
+      fraction = fp_to_double (filter_index) + I * 0.0;
       indx = fp_to_int (filter_index) ;
       assert (indx < resample_util->coeff_half_len + 2) ;
       icoeff = resample_util->coeffs [indx] + fraction * (resample_util->coeffs [indx + 1] - resample_util->coeffs [indx]) ;
@@ -306,7 +306,7 @@ calc_output_single (AgsResampleUtil *resample_util, increment_t increment, incre
 gint
 sinc_mono_vari_process (AgsResampleUtil *resample_util)
 {
-  double out_val;
+  double _Complex out_val;
   gdouble input_index, src_ratio, count, float_increment, terminate, rem ;
   increment_t increment, start_filter_index ;
   gint half_filter_chan_len, samples_in_hand ;
@@ -413,7 +413,7 @@ sinc_mono_vari_process (AgsResampleUtil *resample_util)
       case AGS_SOUNDCARD_COMPLEX:
 	{
 	  ags_complex_set(((AgsComplex *) resample_util->data_out) + resample_util->out_gen,
-			  out_val + I * 0.0);
+			  out_val);
 	}
 	break;
       }
