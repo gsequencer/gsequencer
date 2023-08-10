@@ -225,7 +225,7 @@ ags_resample_util_copy(AgsResampleUtil *ptr)
   new_ptr->data_in = NULL;
 
   if(new_ptr->input_frames > 0){
-    new_ptr->data_in = ags_stream_alloc(ptr->input_frames,
+    new_ptr->data_in = ags_stream_alloc(MAX(ptr->input_frames, 4096),
 					ptr->format);
   }
 
@@ -233,7 +233,7 @@ ags_resample_util_copy(AgsResampleUtil *ptr)
   new_ptr->data_out = NULL;
 
   if(new_ptr->output_frames > 0){
-    new_ptr->data_out = ags_stream_alloc(ptr->output_frames,
+    new_ptr->data_out = ags_stream_alloc(MAX(ptr->output_frames, 4096),
 					 ptr->format);
   }
 
@@ -267,10 +267,10 @@ ags_resample_util_copy(AgsResampleUtil *ptr)
   new_ptr->last_position = ptr->last_position;
 
   if(ptr->input_frames < ptr->output_frames){
-    new_ptr->buffer = ags_stream_alloc(ptr->output_frames,
+    new_ptr->buffer = ags_stream_alloc(MAX(ptr->output_frames, 4096),
 				       ptr->format);
   }else{
-    new_ptr->buffer = ags_stream_alloc(ptr->input_frames,
+    new_ptr->buffer = ags_stream_alloc(MAX(ptr->input_frames, 4096),
 				       ptr->format);
   }
   
@@ -511,16 +511,16 @@ ags_resample_util_set_buffer_length(AgsResampleUtil *resample_util,
     
     ags_stream_free(resample_util->buffer);
 
-    resample_util->data_in = ags_stream_alloc(resample_util->input_frames,
+    resample_util->data_in = ags_stream_alloc(MAX(resample_util->input_frames, 4096),
 					      resample_util->format);
-    resample_util->data_out = ags_stream_alloc(resample_util->output_frames,
+    resample_util->data_out = ags_stream_alloc(MAX(resample_util->output_frames, 4096),
 					       resample_util->format);
 
     if(resample_util->input_frames < resample_util->output_frames){
-      resample_util->buffer = ags_stream_alloc(resample_util->output_frames,
+      resample_util->buffer = ags_stream_alloc(MAX(resample_util->output_frames, 4096),
 					       resample_util->format);
     }else{
-      resample_util->buffer = ags_stream_alloc(resample_util->input_frames,
+      resample_util->buffer = ags_stream_alloc(MAX(resample_util->input_frames, 4096),
 					       resample_util->format);
     }
   }else{
@@ -628,14 +628,14 @@ ags_resample_util_set_samplerate(AgsResampleUtil *resample_util,
     
     ags_stream_free(resample_util->buffer);
 
-    resample_util->data_out = ags_stream_alloc(resample_util->output_frames,
+    resample_util->data_out = ags_stream_alloc(MAX(resample_util->output_frames, 4096),
 					       resample_util->format);
 
     if(resample_util->input_frames < resample_util->output_frames){
-      resample_util->buffer = ags_stream_alloc(resample_util->output_frames,
+      resample_util->buffer = ags_stream_alloc(MAX(resample_util->output_frames, 4096),
 					       resample_util->format);
     }else{
-      resample_util->buffer = ags_stream_alloc(resample_util->input_frames,
+      resample_util->buffer = ags_stream_alloc(MAX(resample_util->input_frames, 4096),
 					       resample_util->format);
     }
   }
@@ -690,14 +690,14 @@ ags_resample_util_set_target_samplerate(AgsResampleUtil *resample_util,
 
     ags_stream_free(resample_util->buffer);
     
-    resample_util->data_out = ags_stream_alloc(resample_util->output_frames,
+    resample_util->data_out = ags_stream_alloc(MAX(resample_util->output_frames, 4096),
 					       resample_util->format);
 
     if(resample_util->input_frames < resample_util->output_frames){
-      resample_util->buffer = ags_stream_alloc(resample_util->output_frames,
+      resample_util->buffer = ags_stream_alloc(MAX(resample_util->output_frames, 4096),
 					       resample_util->format);
     }else{
-      resample_util->buffer = ags_stream_alloc(resample_util->input_frames,
+      resample_util->buffer = ags_stream_alloc(MAX(resample_util->input_frames, 4096),
 					       resample_util->format);
     }
   }
