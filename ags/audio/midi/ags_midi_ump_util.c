@@ -791,7 +791,7 @@ ags_midi_ump_util_is_endpoint_name_notification(AgsMidiUmpUtil *midi_ump_util,
 						guchar *buffer)
 {
   if((0xf0 & (buffer[0])) == 0xf0 &&
-     (((0x03 & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x3){
+     (((0x03 & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x03){
     return(TRUE);
   }
   
@@ -825,7 +825,7 @@ ags_midi_ump_util_put_endpoint_name_notification(AgsMidiUmpUtil *midi_ump_util,
   gboolean is_complete, is_end;
   gint format;
   
-  const gint status = 0x3;
+  const gint status = 0x03;
   
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
@@ -1334,6 +1334,155 @@ ags_midi_ump_util_get_function_block_info_notification(AgsMidiUmpUtil *midi_ump_
 						       gint *message_version,
 						       gint *max_sysex8_stream_count,
 						       gint *filter,
+						       gchar ***extension_name, GValue **extension_value,
+						       guint *extension_count)
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+/**
+ * ags_midi_ump_util_is_function_block_name_notification:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is function block name notification.
+ * 
+ * Returns: %TRUE if is function block name notification, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
+gboolean
+ags_midi_ump_util_is_function_block_name_notification(AgsMidiUmpUtil *midi_ump_util,
+						      guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0xf0 &&
+     (((0x03 & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x12){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+/**
+ * ags_midi_ump_util_put_function_block_name_notification:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @function_block_name: the function block name
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ * @extension_count: the extension count
+ *
+ * Put function block name notification.
+ * 
+ * Since: 5.5.4
+ */
+void
+ags_midi_ump_util_put_function_block_name_notification(AgsMidiUmpUtil *midi_ump_util,
+						       guchar *buffer,
+						       gboolean function_block_active,
+						       gint function_block,
+						       gchar *function_block_name,
+						       gchar **extension_name, GValue *extension_value,
+						       guint extension_count)
+{
+  guint nth;
+  gint function_block_name_length;
+  guint i;
+  guint j, j_stop;
+  gboolean is_complete, is_end;
+  gint format;
+  
+  const gint status = 0x12;
+  
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  function_block_name_length = strlen(function_block_name);
+  
+  g_return_if_fail(function_block_name_length <= 98);
+
+  /* put function_block name - may be in multiple chunks  */
+  format = 0x0;
+  is_complete = TRUE;
+
+  if(function_block_name_length >= 15){
+    format = 0x1;
+    is_complete = FALSE;
+  }
+  
+  is_end = FALSE;
+  
+  for(i = 0, j = 0; i < 128 && !is_end;){
+    nth = 0;
+  
+    buffer[nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
+    nth++;
+    i++;
+
+    buffer[nth] = (0xff & status);
+    nth++;
+    i++;
+
+    /* fill in function_block name */
+    if(j < function_block_name_length){
+      if(j + 14 < function_block_name_length){
+	j_stop = 14;
+      }else{
+	j_stop = (function_block_name_length - j) % 14;
+      }
+      
+      memcpy(buffer + nth, function_block_name + j, j_stop * sizeof(gchar));
+
+      if(j_stop < 14){
+	memset(buffer + nth + j_stop, 0, (14 - j_stop) * sizeof(gchar));
+      }
+    }else{
+      g_warning("malformed MIDI UMP data");
+
+      j_stop = 0;
+    }
+    
+    nth += 14;
+    j += j_stop;
+    
+    /* break condition */
+    if(is_complete){
+      is_end = TRUE;
+    }
+
+    if(format == 0x3){
+      is_end = TRUE;
+    }
+
+    /* iterate */
+    buffer += nth;
+
+    if(format == 0x2){
+      if(j + 14 < function_block_name_length){
+	format = 0x2;
+      }else{
+	format = 0x3;	
+      }
+    }
+
+    if(format == 0x1){
+      if(j + 14 < function_block_name_length){
+	format = 0x2;
+      }else{
+	format = 0x3;	
+      }
+    }
+  }  
+}
+
+guint
+ags_midi_ump_util_get_function_block_name_notification(AgsMidiUmpUtil *midi_ump_util,
+						       guchar *buffer,
+						       gboolean *function_block_active,
+						       gint *function_block,
+						       gchar **function_block_name,
 						       gchar ***extension_name, GValue **extension_value,
 						       guint *extension_count)
 {
