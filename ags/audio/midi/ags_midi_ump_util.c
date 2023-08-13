@@ -363,6 +363,7 @@ ags_midi_ump_util_is_stream_message(AgsMidiUmpUtil *midi_ump_util,
  * @data: the data
  * @extension_name: the extension name string vector
  * @extension_value: the extension value array
+ * @extension_count: the extension count
  *
  * Put stream message.
  * 
@@ -443,6 +444,7 @@ ags_midi_ump_util_is_endpoint_discovery(AgsMidiUmpUtil *midi_ump_util,
  * @filter: the filter
  * @extension_name: the extension name string vector
  * @extension_value: the extension value array
+ * @extension_count: the extension count
  *
  * Put endpoint discovery.
  * 
@@ -543,6 +545,7 @@ ags_midi_ump_util_is_endpoint_info_notification(AgsMidiUmpUtil *midi_ump_util,
  * @tx_jitter_reduction: the transfering jitter reduction
  * @extension_name: the extension name string vector
  * @extension_value: the extension value array
+ * @extension_count: the extension count
  *
  * Put endpoint info notification.
  * 
@@ -681,6 +684,7 @@ ags_midi_ump_util_is_device_identity_notification(AgsMidiUmpUtil *midi_ump_util,
  * @software_revision: the software revision
  * @extension_name: the extension name string vector
  * @extension_value: the extension value array
+ * @extension_count: the extension count
  *
  * Put device identity notification.
  * 
@@ -801,6 +805,7 @@ ags_midi_ump_util_is_endpoint_name_notification(AgsMidiUmpUtil *midi_ump_util,
  * @endpoint_name: the endpoint name
  * @extension_name: the extension name string vector
  * @extension_value: the extension value array
+ * @extension_count: the extension count
  *
  * Put endpoint name notification.
  * 
@@ -945,6 +950,7 @@ ags_midi_ump_util_is_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_u
  * @product_instance_id: the product instance ID
  * @extension_name: the extension name string vector
  * @extension_value: the extension value array
+ * @extension_count: the extension count
  *
  * Put product instance ID notification.
  * 
@@ -964,7 +970,7 @@ ags_midi_ump_util_put_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_
   gboolean is_complete, is_end;
   gint format;
   
-  const gint status = 0x4;
+  const gint status = 0x04;
   
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
@@ -1053,6 +1059,90 @@ ags_midi_ump_util_get_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_
 						       gchar **product_instance_id,
 						       gchar ***extension_name, GValue **extension_value,
 						       guint *extension_count)
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+/**
+ * ags_midi_ump_util_is_stream_configuration_notification:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is stream configuration notification.
+ * 
+ * Returns: %TRUE if is stream configuration notification, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
+gboolean
+ags_midi_ump_util_is_stream_configuration_notification(AgsMidiUmpUtil *midi_ump_util,
+						       guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0xf0 &&
+     (((0x3 & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x06){
+    return(TRUE);
+  }
+
+  return(FALSE);
+}
+
+/**
+ * ags_midi_ump_util_put_product_instance_id_notification:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @protocol: the protocol
+ * @rx_jitter_reduction: %TRUE if receiving jitter reduction, otherwise %FALSE
+ * @tx_jitter_reduction: %TRUE if transfer jitter reduction, otherwise %FALSE
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ * @extension_count: the extension count
+ *
+ * Put product instance ID notification.
+ * 
+ * Since: 5.5.4
+ */
+void
+ags_midi_ump_util_put_stream_configuration_notification(AgsMidiUmpUtil *midi_ump_util,
+							guchar *buffer,
+							gint protocol,
+							gboolean rx_jitter_reduction, gboolean tx_jitter_reduction,
+							gchar **extension_name, GValue *extension_value,
+							guint extension_count)
+{
+  guint nth;
+  gint format;
+  
+  const gint status = 0x06;
+
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+  
+  format = 0x0;
+
+  nth = 0;
+  
+  buffer[nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
+  nth++;
+
+  buffer[nth] = (0xff) & (protocol);
+  nth++;
+
+  buffer[nth] = (0xff) & ((rx_jitter_reduction ? (0x1 << 1): 0x0) | (rx_jitter_reduction ? (0x1): 0x0));
+  nth++;
+
+  memset(buffer, 0, 12 * sizeof(guchar));
+  nth += 12;
+}
+
+guint
+ags_midi_ump_util_get_stream_configuration_notification(AgsMidiUmpUtil *midi_ump_util,
+							guchar *buffer,
+							gint *protocol,
+							gboolean *rx_jitter_reduction, gboolean *tx_jitter_reduction,
+							gchar ***extension_name, GValue **extension_value,
+							guint *extension_count)
 {
   //TODO:JK: implement me
 
