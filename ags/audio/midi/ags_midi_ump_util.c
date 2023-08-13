@@ -1490,3 +1490,148 @@ ags_midi_ump_util_get_function_block_name_notification(AgsMidiUmpUtil *midi_ump_
 
   return(0);
 }
+
+/**
+ * ags_midi_ump_util_is_start_of_clip:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is start of clip.
+ * 
+ * Returns: %TRUE if is start of clip, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
+gboolean
+ags_midi_ump_util_is_start_of_clip(AgsMidiUmpUtil *midi_ump_util,
+				   guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0xf0 &&
+     (((0x0f & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x20){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+/**
+ * ags_midi_ump_util_put_start_of_clip:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ * @extension_count: the extension count
+ *
+ * Put start of clip.
+ * 
+ * Since: 5.5.4
+ */
+void
+ags_midi_ump_util_put_start_of_clip(AgsMidiUmpUtil *midi_ump_util,
+				    guchar *buffer,
+				    gchar **extension_name, GValue *extension_value,
+				    guint extension_count)
+{
+  guint nth;
+  const gint status = 0x20;
+  const gint format = 0x0;
+  
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
+  nth++;
+
+  buffer[nth] = (0xff & status);
+  nth++;
+
+  /* reserved */
+  memset(buffer + nth, 0, 14 * sizeof(guchar));
+  nth += 14;
+}
+
+guint
+ags_midi_ump_util_get_start_of_clip(AgsMidiUmpUtil *midi_ump_util,
+				    guchar *buffer,
+				    gchar ***extension_name, GValue **extension_value,
+				    guint *extension_count)
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+
+/**
+ * ags_midi_ump_util_is_end_of_clip:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is end of clip.
+ * 
+ * Returns: %TRUE if is end of clip, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
+gboolean
+ags_midi_ump_util_is_end_of_clip(AgsMidiUmpUtil *midi_ump_util,
+				 guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0xf0 &&
+     (((0x0f & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x21){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+/**
+ * ags_midi_ump_util_put_end_of_clip:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ * @extension_count: the extension count
+ *
+ * Put end of clip.
+ * 
+ * Since: 5.5.4
+ */
+void
+ags_midi_ump_util_put_end_of_clip(AgsMidiUmpUtil *midi_ump_util,
+				  guchar *buffer,
+				  gchar **extension_name, GValue *extension_value,
+				  guint extension_count)
+{
+  guint nth;
+  const gint status = 0x21;
+  const gint format = 0x0;
+  
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
+  nth++;
+
+  buffer[nth] = (0xff & status);
+  nth++;
+
+  /* reserved */
+  memset(buffer + nth, 0, 14 * sizeof(guchar));
+  nth += 14;
+}
+
+guint
+ags_midi_ump_util_get_end_of_clip(AgsMidiUmpUtil *midi_ump_util,
+				  guchar *buffer,
+				  gchar ***extension_name, GValue **extension_value,
+				  guint *extension_count)
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
