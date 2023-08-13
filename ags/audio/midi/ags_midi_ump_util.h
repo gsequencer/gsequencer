@@ -355,6 +355,30 @@ guint ags_midi_ump_util_get_function_block_name_notification(AgsMidiUmpUtil *mid
 							     gchar ***extension_name, GValue **extension_value,
 							     guint *extension_count);
 
+/* start of clip */
+gboolean ags_midi_ump_util_is_start_of_clip(AgsMidiUmpUtil *midi_ump_util,
+					    guchar *buffer);
+void ags_midi_ump_util_put_start_of_clip(AgsMidiUmpUtil *midi_ump_util,
+					 guchar *buffer,
+					 gchar **extension_name, GValue *extension_value,
+					 guint extension_count);
+guint ags_midi_ump_util_get_start_of_clip(AgsMidiUmpUtil *midi_ump_util,
+					  guchar *buffer,
+					  gchar ***extension_name, GValue **extension_value,
+					  guint *extension_count);
+
+/* end of clip */
+gboolean ags_midi_ump_util_is_end_of_clip(AgsMidiUmpUtil *midi_ump_util,
+					  guchar *buffer);
+void ags_midi_ump_util_put_end_of_clip(AgsMidiUmpUtil *midi_ump_util,
+				       guchar *buffer,
+				       gchar **extension_name, GValue *extension_value,
+				       guint extension_count);
+guint ags_midi_ump_util_get_end_of_clip(AgsMidiUmpUtil *midi_ump_util,
+					guchar *buffer,
+					gchar ***extension_name, GValue **extension_value,
+					guint *extension_count);
+
 
 G_END_DECLS
 
