@@ -165,37 +165,6 @@ ags_midi_ump_util_get_system_common(AgsMidiUmpUtil *midi_ump_util,
   return(0);
 }
 
-gboolean
-ags_midi_ump_util_is_midi1_channel_voice(AgsMidiUmpUtil *midi_ump_util,
-					 guchar *buffer)
-{
-  if((0xf0 & (buffer[0])) == 0x20){
-    return(TRUE);
-  }
-  
-  return(FALSE);
-}
-
-void
-ags_midi_ump_util_put_midi1_channel_voice(AgsMidiUmpUtil *midi_ump_util,
-					  guchar *buffer,
-					  gchar **extension_name, GValue *extension_value,
-					  guint extension_count)
-{
-  //TODO:JK: implement me
-}
-
-guint
-ags_midi_ump_util_get_midi1_channel_voice(AgsMidiUmpUtil *midi_ump_util,
-					  guchar *buffer,
-					  gchar ***extension_name, GValue **extension_value,
-					  guint *extension_count)
-{
-  //TODO:JK: implement me
-
-  return(0);
-}
-
 /**
  * ags_midi_ump_util_is_data_message_with_sysex:
  * @midi_ump_util: the MIDI UMP util
@@ -1821,7 +1790,7 @@ ags_midi_ump_util_is_delta_clock_ticks_per_quarter_note(AgsMidiUmpUtil *midi_ump
  * @extension_value: the extension value array
  * @extension_count: the extension count
  *
- * Put delat clock ticks per quarter note.
+ * Put delta clock ticks per quarter note.
  * 
  * Since: 5.5.4
  */
@@ -1899,7 +1868,7 @@ ags_midi_ump_util_is_delta_clock_ticks_since_last_event(AgsMidiUmpUtil *midi_ump
  * @extension_value: the extension value array
  * @extension_count: the extension count
  *
- * Put delat clock ticks per quarter note.
+ * Put delta clock ticks per quarter note.
  * 
  * Since: 5.5.4
  */
@@ -1939,6 +1908,268 @@ ags_midi_ump_util_get_delta_clock_ticks_since_last_event(AgsMidiUmpUtil *midi_um
 							 guint16 *ticks_since_last_event_count,
 							 gchar ***extension_name, GValue **extension_value,
 							 guint *extension_count)
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+/**
+ * ags_midi_ump_util_is_midi1_channel_voice:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is MIDI version 1.0 channel voice.
+ * 
+ * Returns: %TRUE if is delta clock ticks since last event, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
+gboolean
+ags_midi_ump_util_is_midi1_channel_voice(AgsMidiUmpUtil *midi_ump_util,
+					 guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0x20){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+/**
+ * ags_midi_ump_util_put_midi1_channel_voice:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: the group
+ * @opcode: the opcode
+ * @channel_number: the channel number
+ * @index_key: the index key
+ * @data: the data
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ * @extension_count: the extension count
+ *
+ * Put MIDI version 1.0 channel voice message.
+ * 
+ * Since: 5.5.4
+ */
+void
+ags_midi_ump_util_put_midi1_channel_voice(AgsMidiUmpUtil *midi_ump_util,
+					  guchar *buffer,
+					  gint group,
+					  gint opcode,
+					  gint channel_number,
+					  gint index_key,
+					  gint data,
+					  gchar **extension_name, GValue *extension_value,
+					  guint extension_count)
+{
+  guint nth;
+  const gint mt = 0x02;
+  
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth++;
+
+  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel_number));
+  nth++;
+  
+  /* index key and data */
+  buffer[nth] = (0xff & (index_key));
+  nth++;
+  
+  buffer[nth] = (0xff & (data));
+  nth++;
+}
+
+guint
+ags_midi_ump_util_get_midi1_channel_voice(AgsMidiUmpUtil *midi_ump_util,
+					  guchar *buffer,
+					  gint *group,
+					  gint *opcode,
+					  gint *channel_number,
+					  gint *index_key,
+					  gint *data,
+					  gchar ***extension_name, GValue **extension_value,
+					  guint *extension_count)
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+/**
+ * ags_midi_ump_util_is_midi1_note_off:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is MIDI version 1.0 channel voice.
+ * 
+ * Returns: %TRUE if is delta clock ticks since last event, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
+gboolean
+ags_midi_ump_util_is_midi1_note_off(AgsMidiUmpUtil *midi_ump_util,
+				    guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0x20 &&
+     (0xf0 & (buffer[1])) == 0x80){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+/**
+ * ags_midi_ump_util_put_midi1_note_off:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: the group
+ * @channel: the channel number
+ * @key: the index key
+ * @velocity: the velocity
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ * @extension_count: the extension count
+ *
+ * Put MIDI version 1.0 channel voice message.
+ * 
+ * Since: 5.5.4
+ */
+void
+ags_midi_ump_util_put_midi1_note_off(AgsMidiUmpUtil *midi_ump_util,
+				     guchar *buffer,
+				     gint group,
+				     gint channel,
+				     gint key,
+				     gint velocity,
+				     gchar **extension_name, GValue *extension_value,
+				     guint extension_count)
+{
+  guint nth;
+  const gint opcode = 0x80;
+  const gint mt = 0x02;
+  
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth++;
+
+  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
+  nth++;
+  
+  /* index key and velocity */
+  buffer[nth] = (0xff & (key));
+  nth++;
+  
+  buffer[nth] = (0xff & (velocity));
+  nth++;
+}
+
+guint
+ags_midi_ump_util_get_midi1_note_off(AgsMidiUmpUtil *midi_ump_util,
+				     guchar *buffer,
+				     gint *group,
+				     gint *channel,
+				     gint *key,
+				     gint *velocity,
+				     gchar ***extension_name, GValue **extension_value,
+				     guint *extension_count)
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+/**
+ * ags_midi_ump_util_is_midi1_note_on:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is MIDI version 1.0 channel voice.
+ * 
+ * Returns: %TRUE if is delta clock ticks since last event, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
+gboolean
+ags_midi_ump_util_is_midi1_note_on(AgsMidiUmpUtil *midi_ump_util,
+				   guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0x20 &&
+     (0xf0 & (buffer[1])) == 0x90){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+/**
+ * ags_midi_ump_util_put_midi1_note_on:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: the group
+ * @channel: the channel number
+ * @key: the index key
+ * @velocity: the velocity
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ * @extension_count: the extension count
+ *
+ * Put MIDI version 1.0 channel voice message.
+ * 
+ * Since: 5.5.4
+ */
+void
+ags_midi_ump_util_put_midi1_note_on(AgsMidiUmpUtil *midi_ump_util,
+				    guchar *buffer,
+				    gint group,
+				    gint channel,
+				    gint key,
+				    gint velocity,
+				    gchar **extension_name, GValue *extension_value,
+				    guint extension_count)
+{
+  guint nth;
+  const gint opcode = 0x90;
+  const gint mt = 0x02;
+  
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth++;
+
+  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
+  nth++;
+  
+  /* index key and velocity */
+  buffer[nth] = (0xff & (key));
+  nth++;
+  
+  buffer[nth] = (0xff & (velocity));
+  nth++;
+}
+
+guint
+ags_midi_ump_util_get_midi1_note_on(AgsMidiUmpUtil *midi_ump_util,
+				    guchar *buffer,
+				    gint *group,
+				    gint *channel,
+				    gint *key,
+				    gint *velocity,
+				    gchar ***extension_name, GValue **extension_value,
+				    guint *extension_count)
 {
   //TODO:JK: implement me
 

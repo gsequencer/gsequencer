@@ -108,17 +108,6 @@ guint ags_midi_ump_util_get_system_common(AgsMidiUmpUtil *midi_ump_util,
 					  gchar ***extension_name, GValue **extension_value,
 					  guint *extension_count);
 
-gboolean ags_midi_ump_util_is_midi1_channel_voice(AgsMidiUmpUtil *midi_ump_util,
-						  guchar *buffer);
-void ags_midi_ump_util_put_midi1_channel_voice(AgsMidiUmpUtil *midi_ump_util,
-					       guchar *buffer,
-					       gchar **extension_name, GValue *extension_value,
-					       guint extension_count);
-guint ags_midi_ump_util_get_midi1_channel_voice(AgsMidiUmpUtil *midi_ump_util,
-						guchar *buffer,
-						gchar ***extension_name, GValue **extension_value,
-						guint *extension_count);
-
 gboolean ags_midi_ump_util_is_data_message_with_sysex(AgsMidiUmpUtil *midi_ump_util,
 						      guchar *buffer);
 void ags_midi_ump_util_put_data_message_with_sysex(AgsMidiUmpUtil *midi_ump_util,
@@ -432,6 +421,68 @@ guint ags_midi_ump_util_get_delta_clock_ticks_since_last_event(AgsMidiUmpUtil *m
 							       guint16 *ticks_since_last_event_count,
 							       gchar ***extension_name, GValue **extension_value,
 							       guint *extension_count);
+
+/* MIDI v1.0 channel voice */
+gboolean ags_midi_ump_util_is_midi1_channel_voice(AgsMidiUmpUtil *midi_ump_util,
+						  guchar *buffer);
+void ags_midi_ump_util_put_midi1_channel_voice(AgsMidiUmpUtil *midi_ump_util,
+					       guchar *buffer,
+					       gint group,
+					       gint opcode,
+					       gint channel_number,
+					       gint index_key,
+					       gint data,
+					       gchar **extension_name, GValue *extension_value,
+					       guint extension_count);
+guint ags_midi_ump_util_get_midi1_channel_voice(AgsMidiUmpUtil *midi_ump_util,
+						guchar *buffer,
+						gint *group,
+						gint *opcode,
+						gint *channel_number,
+						gint *index_key,
+						gint *data,
+						gchar ***extension_name, GValue **extension_value,
+						guint *extension_count);
+
+/* MIDI v1.0 note off */
+gboolean ags_midi_ump_util_is_midi1_note_off(AgsMidiUmpUtil *midi_ump_util,
+					     guchar *buffer);
+void ags_midi_ump_util_put_midi1_note_off(AgsMidiUmpUtil *midi_ump_util,
+					  guchar *buffer,
+					  gint group,
+					  gint channel,
+					  gint key,
+					  gint velocity,
+					  gchar **extension_name, GValue *extension_value,
+					  guint extension_count);
+guint ags_midi_ump_util_get_midi1_note_off(AgsMidiUmpUtil *midi_ump_util,
+					   guchar *buffer,
+					   gint *group,
+					   gint *channel,
+					   gint *key,
+					   gint *velocity,
+					   gchar ***extension_name, GValue **extension_value,
+					   guint *extension_count);
+
+/* MIDI v1.0 note on */
+gboolean ags_midi_ump_util_is_midi1_note_on(AgsMidiUmpUtil *midi_ump_util,
+					    guchar *buffer);
+void ags_midi_ump_util_put_midi1_note_on(AgsMidiUmpUtil *midi_ump_util,
+					 guchar *buffer,
+					 gint group,
+					 gint channel,
+					 gint key,
+					 gint velocity,
+					 gchar **extension_name, GValue *extension_value,
+					 guint extension_count);
+guint ags_midi_ump_util_get_midi1_note_on(AgsMidiUmpUtil *midi_ump_util,
+					  guchar *buffer,
+					  gint *group,
+					  gint *channel,
+					  gint *key,
+					  gint *velocity,
+					  gchar ***extension_name, GValue **extension_value,
+					  guint *extension_count);
 
 G_END_DECLS
 
