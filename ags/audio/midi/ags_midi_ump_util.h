@@ -50,6 +50,11 @@ typedef enum{
   /* reserved = 1 <<  7, */
 }AgsMidiUmpEndpointDiscoveryFilterBitmap;
 
+typedef enum{
+  AGS_MIDI_V1_0 = 0x1,
+  AGS_MIDI_V2_0 = 0x2,
+}AgsMidiProtocol;
+
 struct _AgsMidiUmpUtil
 {
   guint major;
@@ -242,6 +247,23 @@ guint ags_midi_ump_util_get_product_instance_id_notification(AgsMidiUmpUtil *mid
 							     gchar **product_instance_id,
 							     gchar ***extension_name, GValue **extension_value,
 							     guint *extension_count);
+
+/* stream configuration notification */
+gboolean ags_midi_ump_util_is_stream_configuration_notification(AgsMidiUmpUtil *midi_ump_util,
+								guchar *buffer);
+void ags_midi_ump_util_put_stream_configuration_notification(AgsMidiUmpUtil *midi_ump_util,
+							     guchar *buffer,
+							     gint protocol,
+							     gboolean rx_jitter_reduction, gboolean tx_jitter_reduction,
+							     gchar **extension_name, GValue *extension_value,
+							     guint extension_count);
+guint ags_midi_ump_util_get_stream_configuration_notification(AgsMidiUmpUtil *midi_ump_util,
+							      guchar *buffer,
+							      gint *protocol,
+							      gboolean *rx_jitter_reduction, gboolean *tx_jitter_reduction,
+							      gchar ***extension_name, GValue **extension_value,
+							      guint *extension_count);
+
 
 G_END_DECLS
 
