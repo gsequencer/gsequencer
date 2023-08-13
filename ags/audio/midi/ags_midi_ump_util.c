@@ -936,7 +936,7 @@ ags_midi_ump_util_is_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_u
 						      guchar *buffer)
 {
   if((0xf0 & (buffer[0])) == 0xf0 &&
-     (((0x03 & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x4){
+     (((0x03 & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x04){
     return(TRUE);
   }
   
@@ -1119,7 +1119,7 @@ ags_midi_ump_util_put_stream_configuration_notification(AgsMidiUmpUtil *midi_ump
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
   
-  format = 0x0;
+  format = 0x00;
 
   nth = 0;
   
@@ -1129,7 +1129,7 @@ ags_midi_ump_util_put_stream_configuration_notification(AgsMidiUmpUtil *midi_ump
   buffer[nth] = (0xff) & (protocol);
   nth++;
 
-  buffer[nth] = (0xff) & ((rx_jitter_reduction ? (0x1 << 1): 0x0) | (rx_jitter_reduction ? (0x1): 0x0));
+  buffer[nth] = (0xff) & ((rx_jitter_reduction ? (0x01 << 1): 0x0) | (rx_jitter_reduction ? (0x01): 0x0));
   nth++;
 
   memset(buffer, 0, 12 * sizeof(guchar));
@@ -1143,6 +1143,199 @@ ags_midi_ump_util_get_stream_configuration_notification(AgsMidiUmpUtil *midi_ump
 							gboolean *rx_jitter_reduction, gboolean *tx_jitter_reduction,
 							gchar ***extension_name, GValue **extension_value,
 							guint *extension_count)
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+/**
+ * ags_midi_ump_util_is_function_block_discovery:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is function block discovery.
+ * 
+ * Returns: %TRUE if is function block discovery, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
+gboolean
+ags_midi_ump_util_is_function_block_discovery(AgsMidiUmpUtil *midi_ump_util,
+					      guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0xf0 &&
+     (((0x03 & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x10){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+/**
+ * ags_midi_ump_util_put_function_block_discovery:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @function_block: the function block through 0x00 - 0x1f or 0xff to request all
+ * @filter: the filter
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ * @extension_count: the extension count
+ *
+ * Put function block discovery.
+ * 
+ * Since: 5.5.4
+ */
+void
+ags_midi_ump_util_put_function_block_discovery(AgsMidiUmpUtil *midi_ump_util,
+					       guchar *buffer,
+					       gint function_block,
+					       gint filter,
+					       gchar **extension_name, GValue *extension_value,
+					       guint extension_count)
+{
+  guint nth;
+  gint format;
+  
+  const gint status = 0x10;
+
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+  
+  format = 0x00;
+
+  nth = 0;
+  
+  buffer[nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
+  nth++;
+
+  buffer[nth] = (0xff) & (function_block);
+  nth++;
+
+  buffer[nth] = (0xff) & (filter);
+  nth++;
+
+  memset(buffer, 0, 12 * sizeof(guchar));
+  nth += 12;
+}
+
+guint
+ags_midi_ump_util_get_function_block_discovery(AgsMidiUmpUtil *midi_ump_util,
+					       guchar *buffer,
+					       gint *function_block,
+					       gint *filter,
+					       gchar ***extension_name, GValue **extension_value,
+					       guint *extension_count)
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+/**
+ * ags_midi_ump_util_is_function_block_info_notification:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is function block info notification.
+ * 
+ * Returns: %TRUE if is function block info notification, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
+gboolean
+ags_midi_ump_util_is_function_block_info_notification(AgsMidiUmpUtil *midi_ump_util,
+						      guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0xf0 &&
+     (((0x03 & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x11){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+/**
+ * ags_midi_ump_util_put_function_block_info_notification:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @function_block: the function block through 0x00 - 0x1f or 0xff to request all
+ * @filter: the filter
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ * @extension_count: the extension count
+ *
+ * Put function block info notification.
+ * 
+ * Since: 5.5.4
+ */
+void
+ags_midi_ump_util_put_function_block_info_notification(AgsMidiUmpUtil *midi_ump_util,
+						       guchar *buffer,
+						       gboolean function_block_active,
+						       gint function_block,
+						       gint direction,
+						       gint midi1_port,
+						       gint ui_hint,
+						       gint first_group,
+						       gint group_count,
+						       gint message_version,
+						       gint max_sysex8_stream_count,
+						       gchar **extension_name, GValue *extension_value,
+						       guint extension_count)
+{
+  guint nth;
+  gint format;
+  
+  const gint status = 0x11;
+
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+  
+  format = 0x00;
+
+  nth = 0;
+  
+  buffer[nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
+  nth++;
+
+  buffer[nth] = (0xff) & ((function_block_active ? (0x80): 0x00) | (function_block));
+  nth++;
+
+  buffer[nth] = (0xff) & ((direction) | (midi1_port << 2) | (ui_hint << 4));
+  nth++;
+
+  buffer[nth] = (0xff) & (first_group);
+  nth++;
+  
+  buffer[nth] = (0xff) & (group_count);
+  nth++;
+
+  buffer[nth] = (0xff) & (message_version);
+  nth++;
+
+  buffer[nth] = (0xff) & (max_sysex8_stream_count);
+  nth++;
+  
+  memset(buffer, 0, 8 * sizeof(guchar));
+  nth += 12;
+}
+
+guint
+ags_midi_ump_util_get_function_block_info_notification(AgsMidiUmpUtil *midi_ump_util,
+						       guchar *buffer,
+						       gboolean *function_block_active,
+						       gint *function_block,
+						       gint *direction,
+						       gint *midi1_port,
+						       gint *ui_hint,
+						       gint *first_group,
+						       gint *group_count,
+						       gint *message_version,
+						       gint *max_sysex8_stream_count,
+						       gint *filter,
+						       gchar ***extension_name, GValue **extension_value,
+						       guint *extension_count)
 {
   //TODO:JK: implement me
 

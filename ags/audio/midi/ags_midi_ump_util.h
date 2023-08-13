@@ -55,6 +55,31 @@ typedef enum{
   AGS_MIDI_V2_0 = 0x2,
 }AgsMidiProtocol;
 
+typedef enum{
+  AGS_MIDI_UMP_FUNCTION_BLOCK_DISCOVERY_INFO_NOTIFICATION         = 1,
+  AGS_MIDI_UMP_FUNCTION_BLOCK_DISCOVERY_NAME_NOTIFICATION         = 1 << 1,
+  /* reserved = 1 <<  2, */
+  /* reserved = 1 <<  3, */
+  /* reserved = 1 <<  4, */
+  /* reserved = 1 <<  5, */
+  /* reserved = 1 <<  6, */
+  /* reserved = 1 <<  7, */
+}AgsMidiUmpFunctionBlockDiscoveryFilterBitmap;
+
+typedef enum{
+  /* reserved = 0x00, */
+  AGS_MIDI_INPUT_RX_ONLY                   = 0x01,
+  AGS_MIDI_OUTPUT_TX_ONLY                  = 0x02,
+  AGS_MIDI_BIDIRECTIONAL_MATCHING_GROUPS   = 0x03,
+}AgsMidiDirection;
+
+typedef enum{
+  AGS_MIDI1_PORT_NOT_MIDI_1_0                  = 0x00,
+  AGS_MIDI1_PORT_YES_DONT_RESTRICT_BANDWIDTH   = 0x01,
+  AGS_MIDI1_PORT_YES_RESTRICT_BANDWIDTH        = 0x02,
+  /* reserved = 0x03, */
+}AgsMidi1PortMode;
+
 struct _AgsMidiUmpUtil
 {
   guint major;
@@ -263,6 +288,54 @@ guint ags_midi_ump_util_get_stream_configuration_notification(AgsMidiUmpUtil *mi
 							      gboolean *rx_jitter_reduction, gboolean *tx_jitter_reduction,
 							      gchar ***extension_name, GValue **extension_value,
 							      guint *extension_count);
+
+/* function block discovery */
+gboolean ags_midi_ump_util_is_function_block_discovery(AgsMidiUmpUtil *midi_ump_util,
+						       guchar *buffer);
+void ags_midi_ump_util_put_function_block_discovery(AgsMidiUmpUtil *midi_ump_util,
+						    guchar *buffer,
+						    gint function_block,
+						    gint filter,
+						    gchar **extension_name, GValue *extension_value,
+						    guint extension_count);
+guint ags_midi_ump_util_get_function_block_discovery(AgsMidiUmpUtil *midi_ump_util,
+						     guchar *buffer,
+						     gint *function_block,
+						     gint *filter,
+						     gchar ***extension_name, GValue **extension_value,
+						     guint *extension_count);
+
+
+/* function block info notification */
+gboolean ags_midi_ump_util_is_function_block_info_notification(AgsMidiUmpUtil *midi_ump_util,
+							       guchar *buffer);
+void ags_midi_ump_util_put_function_block_info_notification(AgsMidiUmpUtil *midi_ump_util,
+							    guchar *buffer,
+							    gboolean function_block_active,
+							    gint function_block,
+							    gint direction,
+							    gint midi1_port,
+							    gint ui_hint,
+							    gint first_group,
+							    gint group_count,
+							    gint message_version,
+							    gint max_sysex8_stream_count,
+							    gchar **extension_name, GValue *extension_value,
+							    guint extension_count);
+guint ags_midi_ump_util_get_function_block_info_notification(AgsMidiUmpUtil *midi_ump_util,
+							     guchar *buffer,
+							     gboolean *function_block_active,
+							     gint *function_block,
+							     gint *direction,
+							     gint *midi1_port,
+							     gint *ui_hint,
+							     gint *first_group,
+							     gint *group_count,
+							     gint *message_version,
+							     gint *max_sysex8_stream_count,
+							     gint *filter,
+							     gchar ***extension_name, GValue **extension_value,
+							     guint *extension_count);
 
 
 G_END_DECLS
