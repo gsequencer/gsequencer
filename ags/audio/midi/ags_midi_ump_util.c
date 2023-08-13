@@ -1635,3 +1635,312 @@ ags_midi_ump_util_get_end_of_clip(AgsMidiUmpUtil *midi_ump_util,
 
   return(0);
 }
+
+/**
+ * ags_midi_ump_util_is_noop:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is NOOP.
+ * 
+ * Returns: %TRUE if is NOOP, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
+gboolean
+ags_midi_ump_util_is_noop(AgsMidiUmpUtil *midi_ump_util,
+			  guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0x00 &&
+     (0x0f & (buffer[1])) == 0x00){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+/**
+ * ags_midi_ump_util_put_noop:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ * @extension_count: the extension count
+ *
+ * Put NOOP.
+ * 
+ * Since: 5.5.4
+ */
+void
+ags_midi_ump_util_put_noop(AgsMidiUmpUtil *midi_ump_util,
+			   guchar *buffer,
+			   gchar **extension_name, GValue *extension_value,
+			   guint extension_count)
+{
+  guint nth;
+  const gint status = 0x00;
+  const gint mt = 0x00;
+  
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[nth] = (0xf0) | ((0x07 & mt) << 4);
+  nth++;
+
+  buffer[nth] = (0xff) & (status << 4);
+  nth++;
+  
+  /* NOOP */
+  buffer[nth] = 0x00;
+  nth++;
+
+  buffer[nth] = 0x00;
+  nth++;
+}
+
+guint
+ags_midi_ump_util_get_noop(AgsMidiUmpUtil *midi_ump_util,
+			   guchar *buffer,
+			   gchar ***extension_name, GValue **extension_value,
+			   guint *extension_count)
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+/**
+ * ags_midi_ump_util_is_jr_clock:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is JR clock.
+ * 
+ * Returns: %TRUE if is JR clock, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
+gboolean
+ags_midi_ump_util_is_jr_clock(AgsMidiUmpUtil *midi_ump_util,
+			      guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0x00 &&
+     (0x0f & (buffer[1])) == 0x01){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+/**
+ * ags_midi_ump_util_put_jr_clock:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @sender_clock_time: sender clock time as a unsigned 16 bit integer
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ * @extension_count: the extension count
+ *
+ * Put JR clock.
+ * 
+ * Since: 5.5.4
+ */
+void
+ags_midi_ump_util_put_jr_clock(AgsMidiUmpUtil *midi_ump_util,
+			       guchar *buffer,
+			       guint16 sender_clock_time,
+			       gchar **extension_name, GValue *extension_value,
+			       guint extension_count)
+{
+  guint nth;
+  const gint status = 0x01;
+  const gint mt = 0x00;
+  
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[nth] = (0xf0) | ((0x07 & mt) << 4);
+  nth++;
+
+  buffer[nth] = (0xff) & (status << 4);
+  nth++;
+  
+  /* JR clock */
+  buffer[nth] = (0xff & (sender_clock_time));
+  nth++;
+  
+  buffer[nth] = (0xff & (sender_clock_time >> 8));
+  nth++;
+}
+
+guint
+ags_midi_ump_util_get_jr_clock(AgsMidiUmpUtil *midi_ump_util,
+			       guchar *buffer,
+			       guint16 *sender_clock_time,
+			       gchar ***extension_name, GValue **extension_value,
+			       guint *extension_count)
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+/**
+ * ags_midi_ump_util_is_delta_clock_ticks_per_quarter_note:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is delta clock ticks per quarter note.
+ * 
+ * Returns: %TRUE if is delta clock ticks per quarter note, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
+gboolean
+ags_midi_ump_util_is_delta_clock_ticks_per_quarter_note(AgsMidiUmpUtil *midi_ump_util,
+							guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0x00 &&
+     (0x0f & (buffer[1])) == 0x03){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+/**
+ * ags_midi_ump_util_put_jr_clock:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @ticks_per_quarter_note_count: ticks per quarter note count as a unsigned 16 bit integer
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ * @extension_count: the extension count
+ *
+ * Put delat clock ticks per quarter note.
+ * 
+ * Since: 5.5.4
+ */
+void
+ags_midi_ump_util_put_delta_clock_ticks_per_quarter_note(AgsMidiUmpUtil *midi_ump_util,
+							 guchar *buffer,
+							 guint16 ticks_per_quarter_note_count,
+							 gchar **extension_name, GValue *extension_value,
+							 guint extension_count)
+{
+  guint nth;
+  const gint status = 0x03;
+  const gint mt = 0x00;
+  
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[nth] = (0xf0) | ((0x07 & mt) << 4);
+  nth++;
+
+  buffer[nth] = (0xff) & (status << 4);
+  nth++;
+  
+  /* delta clock ticks per quarter note count */
+  buffer[nth] = (0xff & (ticks_per_quarter_note_count));
+  nth++;
+  
+  buffer[nth] = (0xff & (ticks_per_quarter_note_count >> 8));
+  nth++;
+}
+
+guint
+ags_midi_ump_util_get_delta_clock_ticks_per_quarter_note(AgsMidiUmpUtil *midi_ump_util,
+							 guchar *buffer,
+							 guint16 *ticks_per_quarter_note_count,
+							 gchar ***extension_name, GValue **extension_value,
+							 guint *extension_count)
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+/**
+ * ags_midi_ump_util_is_delta_clock_ticks_since_last_event:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is delta clock ticks since last event.
+ * 
+ * Returns: %TRUE if is delta clock ticks since last event, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
+gboolean
+ags_midi_ump_util_is_delta_clock_ticks_since_last_event(AgsMidiUmpUtil *midi_ump_util,
+							guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0x00 &&
+     (0x0f & (buffer[1])) == 0x04){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+/**
+ * ags_midi_ump_util_put_delta_clock_ticks_since_last_event:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @ticks_since_last_event_count: ticks since last event count as a unsigned 16 bit integer
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ * @extension_count: the extension count
+ *
+ * Put delat clock ticks per quarter note.
+ * 
+ * Since: 5.5.4
+ */
+void
+ags_midi_ump_util_put_delta_clock_ticks_since_last_event(AgsMidiUmpUtil *midi_ump_util,
+							 guchar *buffer,
+							 guint16 ticks_since_last_event_count,
+							 gchar **extension_name, GValue *extension_value,
+							 guint extension_count)
+{
+  guint nth;
+  const gint status = 0x04;
+  const gint mt = 0x00;
+  
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[nth] = (0xf0) | ((0x07 & mt) << 4);
+  nth++;
+
+  buffer[nth] = (0xff) & (status << 4);
+  nth++;
+  
+  /* delta clock ticks per quarter note count */
+  buffer[nth] = (0xff & (ticks_since_last_event_count));
+  nth++;
+  
+  buffer[nth] = (0xff & (ticks_since_last_event_count >> 8));
+  nth++;
+}
+
+guint
+ags_midi_ump_util_get_delta_clock_ticks_since_last_event(AgsMidiUmpUtil *midi_ump_util,
+							 guchar *buffer,
+							 guint16 *ticks_since_last_event_count,
+							 gchar ***extension_name, GValue **extension_value,
+							 guint *extension_count)
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
