@@ -62,7 +62,7 @@ ags_midi_ump_util_get_type(void)
  *
  * Returns: (transfer full): the newly allocated #AgsMidiUmpUtil-struct
  * 
- * Since: 5.5.1
+ * Since: 5.5.4
  */
 AgsMidiUmpUtil*
 ags_midi_ump_util_alloc()
@@ -84,7 +84,7 @@ ags_midi_ump_util_alloc()
  *
  * Free MIDI UMP util.
  *
- * Since: 5.5.1
+ * Since: 5.5.4
  */
 void
 ags_midi_ump_util_free(AgsMidiUmpUtil *midi_ump_util)
@@ -102,7 +102,7 @@ ags_midi_ump_util_free(AgsMidiUmpUtil *midi_ump_util)
  *
  * Returns: (transfer full): the newly allocated #AgsMidiUmpUtil-struct
  * 
- * Since: 5.5.1
+ * Since: 5.5.4
  */
 AgsMidiUmpUtil*
 ags_midi_ump_util_copy(AgsMidiUmpUtil *midi_ump_util)
@@ -119,6 +119,17 @@ ags_midi_ump_util_copy(AgsMidiUmpUtil *midi_ump_util)
   return(ptr);
 }
 
+/**
+ * ags_midi_ump_util_is_system_common:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is system common.
+ * 
+ * Returns: %TRUE if is system common, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
 gboolean
 ags_midi_ump_util_is_system_common(AgsMidiUmpUtil *midi_ump_util,
 				   guchar *buffer)
@@ -135,7 +146,8 @@ ags_midi_ump_util_put_system_common(AgsMidiUmpUtil *midi_ump_util,
 				    guchar *buffer,
 				    gint group,
 				    gint status,
-				    guchar data[4])
+				    gchar **extension_name, GValue *extension_value,
+				    guint extension_count)
 {
   //TODO:JK: implement me
 }
@@ -145,7 +157,8 @@ ags_midi_ump_util_get_system_common(AgsMidiUmpUtil *midi_ump_util,
 				    guchar *buffer,
 				    gint *group,
 				    gint *status,
-				    guchar data[4])
+				    gchar ***extension_name, GValue **extension_value,
+				    guint *extension_count)
 {
   //TODO:JK: implement me
 
@@ -165,20 +178,35 @@ ags_midi_ump_util_is_midi1_channel_voice(AgsMidiUmpUtil *midi_ump_util,
 
 void
 ags_midi_ump_util_put_midi1_channel_voice(AgsMidiUmpUtil *midi_ump_util,
-					  guchar *buffer)
+					  guchar *buffer,
+					  gchar **extension_name, GValue *extension_value,
+					  guint extension_count)
 {
   //TODO:JK: implement me
 }
 
 guint
 ags_midi_ump_util_get_midi1_channel_voice(AgsMidiUmpUtil *midi_ump_util,
-					  guchar *buffer)
+					  guchar *buffer,
+					  gchar ***extension_name, GValue **extension_value,
+					  guint *extension_count)
 {
   //TODO:JK: implement me
 
   return(0);
 }
 
+/**
+ * ags_midi_ump_util_is_data_message_with_sysex:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is data message with SYSEX.
+ * 
+ * Returns: %TRUE if is data message with SYSEX, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
 gboolean
 ags_midi_ump_util_is_data_message_with_sysex(AgsMidiUmpUtil *midi_ump_util,
 					     guchar *buffer)
@@ -195,7 +223,8 @@ ags_midi_ump_util_put_data_message_with_sysex(AgsMidiUmpUtil *midi_ump_util,
 					      guchar *buffer,
 					      gint group,
 					      gint status,
-					      guchar data[16])
+					      gchar **extension_name, GValue *extension_value,
+					      guint extension_count)
 {
   //TODO:JK: implement me
 }
@@ -205,13 +234,25 @@ ags_midi_ump_util_get_data_message_with_sysex(AgsMidiUmpUtil *midi_ump_util,
 					      guchar *buffer,
 					      gint *group,
 					      gint *status,
-					      guchar data[16])
+					      gchar ***extension_name, GValue **extension_value,
+					      guint *extension_count)
 {
   //TODO:JK: implement me
 
   return(0);
 }
 
+/**
+ * ags_midi_ump_util_is_data_message:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is data message.
+ * 
+ * Returns: %TRUE if is data message, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
 gboolean
 ags_midi_ump_util_is_data_message(AgsMidiUmpUtil *midi_ump_util,
 				  guchar *buffer)
@@ -228,7 +269,8 @@ ags_midi_ump_util_put_data_message(AgsMidiUmpUtil *midi_ump_util,
 				   guchar *buffer,
 				   gint group,
 				   gint status,
-				   guchar data[16])
+				   gchar **extension_name, GValue *extension_value,
+				   guint extension_count)
 {
   //TODO:JK: implement me
 }
@@ -238,13 +280,25 @@ ags_midi_ump_util_get_data_message(AgsMidiUmpUtil *midi_ump_util,
 				   guchar *buffer,
 				   gint *group,
 				   gint *status,
-				   guchar data[16])
+				   gchar ***extension_name, GValue **extension_value,
+				   guint *extension_count)
 {
   //TODO:JK: implement me
 
   return(0);
 }
 
+/**
+ * ags_midi_ump_util_is_midi2_channel_voice:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is MIDI version 2.0 channel voice.
+ * 
+ * Returns: %TRUE if is MIDI version 2.0 channel voice, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
 gboolean
 ags_midi_ump_util_is_midi2_channel_voice(AgsMidiUmpUtil *midi_ump_util,
 					 guchar *buffer)
@@ -278,6 +332,17 @@ ags_midi_ump_util_get_midi2_channel_voice(AgsMidiUmpUtil *midi_ump_util,
   return(0);
 }
 
+/**
+ * ags_midi_ump_util_is_stream_message:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is stream message.
+ * 
+ * Returns: %TRUE if is stream message, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
 gboolean
 ags_midi_ump_util_is_stream_message(AgsMidiUmpUtil *midi_ump_util,
 				    guchar *buffer)
@@ -289,12 +354,28 @@ ags_midi_ump_util_is_stream_message(AgsMidiUmpUtil *midi_ump_util,
   return(FALSE);
 }
 
+/**
+ * ags_midi_ump_util_put_stream_message:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @format: the format
+ * @status: the status
+ * @data: the data
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ *
+ * Put stream message.
+ * 
+ * Since: 5.5.4
+ */
 void
 ags_midi_ump_util_put_stream_message(AgsMidiUmpUtil *midi_ump_util,
 				     guchar *buffer,
 				     gint format,
 				     gint status,
-				     guchar data[16])
+				     guchar data[10],
+				     gchar **extension_name, GValue *extension_value,
+				     guint extension_count)
 {
   guint nth;
   
@@ -318,7 +399,9 @@ ags_midi_ump_util_get_stream_message(AgsMidiUmpUtil *midi_ump_util,
 				     guchar *buffer,
 				     gint *format,
 				     gint *status,
-				     guchar data[16])
+				     guchar data[10],
+				     gchar ***extension_name, GValue **extension_value,
+				     guint *extension_count)
 {
   g_return_val_if_fail(midi_ump_util != NULL, 0);
   g_return_val_if_fail(buffer != NULL, 0);
@@ -328,6 +411,17 @@ ags_midi_ump_util_get_stream_message(AgsMidiUmpUtil *midi_ump_util,
   return(0);
 }
 
+/**
+ * ags_midi_ump_util_is_endpoint_discovery:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is endpoint discovery.
+ * 
+ * Returns: %TRUE if is endpoint discovery, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
 gboolean
 ags_midi_ump_util_is_endpoint_discovery(AgsMidiUmpUtil *midi_ump_util,
 					guchar *buffer)
@@ -340,13 +434,28 @@ ags_midi_ump_util_is_endpoint_discovery(AgsMidiUmpUtil *midi_ump_util,
   return(FALSE);
 }
 
+/**
+ * ags_midi_ump_util_put_endpoint_discovery:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @major: the major
+ * @minor: the minor
+ * @filter: the filter
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ *
+ * Put endpoint discovery.
+ * 
+ * Since: 5.5.4
+ */
 void
 ags_midi_ump_util_put_endpoint_discovery(AgsMidiUmpUtil *midi_ump_util,
 					 guchar *buffer,
 					 gint major,
 					 gint minor,
 					 gint filter,
-					 guchar data[16])
+					 gchar **extension_name, GValue *extension_value,
+					 guint extension_count)
 {  
   guint nth;
   const gint status = 0x0;
@@ -388,13 +497,25 @@ ags_midi_ump_util_get_endpoint_discovery(AgsMidiUmpUtil *midi_ump_util,
 					 gint *major,
 					 gint *minor,
 					 gint *filter,
-					 guchar data[16])
+					 gchar ***extension_name, GValue **extension_value,
+					 guint *extension_count)
 {
   //TODO:JK: implement me
 
   return(0);
 }
 
+/**
+ * ags_midi_ump_util_is_endpoint_info_notification:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is endpoint info notification.
+ * 
+ * Returns: %TRUE if is endpoint info notification, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
 gboolean
 ags_midi_ump_util_is_endpoint_info_notification(AgsMidiUmpUtil *midi_ump_util,
 						guchar *buffer)
@@ -408,6 +529,25 @@ ags_midi_ump_util_is_endpoint_info_notification(AgsMidiUmpUtil *midi_ump_util,
   return(FALSE);
 }
 
+/**
+ * ags_midi_ump_util_put_endpoint_info_notifcation:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @major: the major
+ * @minor: the minor
+ * @static_function_blocks: the static function blocks
+ * @function_block_count: the function block count
+ * @midi_v2_0_support: has MIDI v2.0 support
+ * @midi_v1_0_support: has MIDI v1.0 support
+ * @rx_jitter_reduction: the receiving jitter reduction
+ * @tx_jitter_reduction: the transfering jitter reduction
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ *
+ * Put endpoint info notification.
+ * 
+ * Since: 5.5.4
+ */
 void
 ags_midi_ump_util_put_endpoint_info_notification(AgsMidiUmpUtil *midi_ump_util,
 						 guchar *buffer,
@@ -419,7 +559,8 @@ ags_midi_ump_util_put_endpoint_info_notification(AgsMidiUmpUtil *midi_ump_util,
 						 gboolean midi_v1_0_support,
 						 gboolean rx_jitter_reduction,
 						 gboolean tx_jitter_reduction,
-						 guchar data[16])
+						 gchar **extension_name, GValue *extension_value,
+						 guint extension_count)
 {  
   guint nth;
   const gint status = 0x1;
@@ -498,13 +639,25 @@ ags_midi_ump_util_get_endpoint_info_notification(AgsMidiUmpUtil *midi_ump_util,
 						 gboolean *midi_v1_0_support,
 						 gboolean *rx_jitter_reduction,
 						 gboolean *tx_jitter_reduction,
-						 guchar data[16])
+						 gchar ***extension_name, GValue **extension_value,
+						 guint *extension_count)
 {
   //TODO:JK: implement me
 
   return(0);
 }
 
+/**
+ * ags_midi_ump_util_is_device_identity_notification:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is device identity notification.
+ * 
+ * Returns: %TRUE if is device identity notification, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
 gboolean
 ags_midi_ump_util_is_device_identity_notification(AgsMidiUmpUtil *midi_ump_util,
 						  guchar *buffer)
@@ -518,6 +671,21 @@ ags_midi_ump_util_is_device_identity_notification(AgsMidiUmpUtil *midi_ump_util,
   return(FALSE);
 }
 
+/**
+ * ags_midi_ump_util_put_device_identity_notification:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @device_manufacturer: the device manufacturer
+ * @device_family: the device family
+ * @defice_family_model: the device family model
+ * @software_revision: the software revision
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ *
+ * Put device identity notification.
+ * 
+ * Since: 5.5.4
+ */
 void
 ags_midi_ump_util_put_device_identity_notification(AgsMidiUmpUtil *midi_ump_util,
 						   guchar *buffer,
@@ -525,7 +693,8 @@ ags_midi_ump_util_put_device_identity_notification(AgsMidiUmpUtil *midi_ump_util
 						   gint device_family,
 						   gint device_family_model,
 						   gint software_revision,
-						   guchar data[16])
+						   gchar **extension_name, GValue *extension_value,
+						   guint extension_count)
 {
   guint nth;
   const gint status = 0x2;
@@ -591,7 +760,8 @@ ags_midi_ump_util_get_device_identity_notification(AgsMidiUmpUtil *midi_ump_util
 						   gint *device_family,
 						   gint *device_family_model,
 						   gint *software_revision,
-						   guchar data[16])
+						   gchar ***extension_name, GValue **extension_value,
+						   guint *extension_count)
 {
   g_return_val_if_fail(midi_ump_util != NULL, 0);
   g_return_val_if_fail(buffer != NULL, 0);
@@ -601,6 +771,17 @@ ags_midi_ump_util_get_device_identity_notification(AgsMidiUmpUtil *midi_ump_util
   return(0);
 }
 
+/**
+ * ags_midi_ump_util_is_endpoint_name_notification:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is endpoint name notification.
+ * 
+ * Returns: %TRUE if is endpoint name notification, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
 gboolean
 ags_midi_ump_util_is_endpoint_name_notification(AgsMidiUmpUtil *midi_ump_util,
 						guchar *buffer)
@@ -613,11 +794,24 @@ ags_midi_ump_util_is_endpoint_name_notification(AgsMidiUmpUtil *midi_ump_util,
   return(FALSE);
 }
 
+/**
+ * ags_midi_ump_util_put_endpoint_name_notification:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @endpoint_name: the endpoint name
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ *
+ * Put endpoint name notification.
+ * 
+ * Since: 5.5.4
+ */
 void
 ags_midi_ump_util_put_endpoint_name_notification(AgsMidiUmpUtil *midi_ump_util,
 						 guchar *buffer,
 						 gchar *endpoint_name,
-						 guchar data[128])
+						 gchar **extension_name, GValue *extension_value,
+						 guint extension_count)
 {
   guint nth;
   gint endpoint_name_length;
@@ -713,13 +907,25 @@ guint
 ags_midi_ump_util_get_endpoint_name_notification(AgsMidiUmpUtil *midi_ump_util,
 						 guchar *buffer,
 						 gchar **endpoint_name,
-						 guchar data[128])
+						 gchar ***extension_name, GValue **extension_value,
+						 guint *extension_count)
 {
   //TODO:JK: implement me
 
   return(0);
 }
 
+/**
+ * ags_midi_ump_util_is_product_id_notification:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is product ID notification.
+ * 
+ * Returns: %TRUE if is product ID notification, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
 gboolean
 ags_midi_ump_util_is_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_util,
 						      guchar *buffer)
@@ -732,11 +938,24 @@ ags_midi_ump_util_is_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_u
   return(FALSE);
 }
 
+/**
+ * ags_midi_ump_util_put_product_instance_id_notification:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @product_instance_id: the product instance ID
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ *
+ * Put product instance ID notification.
+ * 
+ * Since: 5.5.4
+ */
 void
 ags_midi_ump_util_put_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_util,
 						       guchar *buffer,
 						       gchar *product_instance_id,
-						       guchar data[48])
+						       gchar **extension_name, GValue *extension_value,
+						       guint extension_count)
 {
   guint nth;
   gint product_instance_id_length;
@@ -832,7 +1051,8 @@ guint
 ags_midi_ump_util_get_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_util,
 						       guchar *buffer,
 						       gchar **product_instance_id,
-						       guchar data[48])
+						       gchar ***extension_name, GValue **extension_value,
+						       guint *extension_count)
 {
   //TODO:JK: implement me
 

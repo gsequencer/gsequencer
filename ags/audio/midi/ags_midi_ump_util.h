@@ -69,19 +69,25 @@ void ags_midi_ump_util_put_system_common(AgsMidiUmpUtil *midi_ump_util,
 					 guchar *buffer,
 					 gint group,
 					 gint status,
-					 guchar data[4]);
+					 gchar **extension_name, GValue *extension_value,
+					 guint extension_count);
 guint ags_midi_ump_util_get_system_common(AgsMidiUmpUtil *midi_ump_util,
 					  guchar *buffer,
 					  gint *group,
 					  gint *status,
-					  guchar data[4]);
+					  gchar ***extension_name, GValue **extension_value,
+					  guint *extension_count);
 
 gboolean ags_midi_ump_util_is_midi1_channel_voice(AgsMidiUmpUtil *midi_ump_util,
 						  guchar *buffer);
 void ags_midi_ump_util_put_midi1_channel_voice(AgsMidiUmpUtil *midi_ump_util,
-					       guchar *buffer);
+					       guchar *buffer,
+					       gchar **extension_name, GValue *extension_value,
+					       guint extension_count);
 guint ags_midi_ump_util_get_midi1_channel_voice(AgsMidiUmpUtil *midi_ump_util,
-						guchar *buffer);
+						guchar *buffer,
+						gchar ***extension_name, GValue **extension_value,
+						guint *extension_count);
 
 gboolean ags_midi_ump_util_is_data_message_with_sysex(AgsMidiUmpUtil *midi_ump_util,
 						      guchar *buffer);
@@ -89,12 +95,14 @@ void ags_midi_ump_util_put_data_message_with_sysex(AgsMidiUmpUtil *midi_ump_util
 						   guchar *buffer,
 						   gint group,
 						   gint status,
-						   guchar data[16]);
+						   gchar **extension_name, GValue *extension_value,
+						   guint extension_count);
 guint ags_midi_ump_util_get_data_message_with_sysex(AgsMidiUmpUtil *midi_ump_util,
 						    guchar *buffer,
 						    gint *group,
 						    gint *status,
-						    guchar data[16]);
+						    gchar ***extension_name, GValue **extension_value,
+						    guint *extension_count);
 
 gboolean ags_midi_ump_util_is_data_message(AgsMidiUmpUtil *midi_ump_util,
 					   guchar *buffer);
@@ -102,12 +110,14 @@ void ags_midi_ump_util_put_data_message(AgsMidiUmpUtil *midi_ump_util,
 					guchar *buffer,
 					gint group,
 					gint status,
-					guchar data[16]);
+					gchar **extension_name, GValue *extension_value,
+					guint extension_count);
 guint ags_midi_ump_util_get_data_message(AgsMidiUmpUtil *midi_ump_util,
 					 guchar *buffer,
 					 gint *group,
 					 gint *status,
-					 guchar data[16]);
+					 gchar ***extension_name, GValue **extension_value,
+					 guint *extension_count);
 
 gboolean ags_midi_ump_util_is_midi2_channel_voice(AgsMidiUmpUtil *midi_ump_util,
 						  guchar *buffer);
@@ -128,12 +138,16 @@ void ags_midi_ump_util_put_stream_message(AgsMidiUmpUtil *midi_ump_util,
 					  guchar *buffer,
 					  gint format,
 					  gint status,
-					  guchar data[16]);
+					  guchar data[10],
+					  gchar **extension_name, GValue *extension_value,
+					  guint extension_count);
 guint ags_midi_ump_util_get_stream_message(AgsMidiUmpUtil *midi_ump_util,
 					   guchar *buffer,
 					   gint *format,
 					   gint *status,
-					   guchar data[16]);
+					   guchar data[10],
+					   gchar ***extension_name, GValue **extension_value,
+					   guint *extension_count);
 
 /* endpoint discovery */
 gboolean ags_midi_ump_util_is_endpoint_discovery(AgsMidiUmpUtil *midi_ump_util,
@@ -143,13 +157,15 @@ void ags_midi_ump_util_put_endpoint_discovery(AgsMidiUmpUtil *midi_ump_util,
 					      gint major,
 					      gint minor,
 					      gint filter,
-					      guchar data[16]);
+					      gchar **extension_name, GValue *extension_value,
+					      guint extension_count);
 guint ags_midi_ump_util_get_endpoint_discovery(AgsMidiUmpUtil *midi_ump_util,
 					       guchar *buffer,
 					       gint *major,
 					       gint *minor,
 					       gint *filter,
-					       guchar data[16]);
+					       gchar ***extension_name, GValue **extension_value,
+					       guint *extension_count);
 
 /* endpoint info notification */
 gboolean ags_midi_ump_util_is_endpoint_info_notification(AgsMidiUmpUtil *midi_ump_util,
@@ -164,7 +180,8 @@ void ags_midi_ump_util_put_endpoint_info_notification(AgsMidiUmpUtil *midi_ump_u
 						      gboolean midi_v1_0_support,
 						      gboolean rx_jitter_reduction,
 						      gboolean tx_jitter_reduction,
-						      guchar data[16]);
+						      gchar **extension_name, GValue *extension_value,
+						      guint extension_count);
 guint ags_midi_ump_util_get_endpoint_info_notification(AgsMidiUmpUtil *midi_ump_util,
 						       guchar *buffer,
 						       gint *major,
@@ -175,7 +192,8 @@ guint ags_midi_ump_util_get_endpoint_info_notification(AgsMidiUmpUtil *midi_ump_
 						       gboolean *midi_v1_0_support,
 						       gboolean *rx_jitter_reduction,
 						       gboolean *tx_jitter_reduction,
-						       guchar data[16]);
+						       gchar ***extension_name, GValue **extension_value,
+						       guint *extension_count);
 
 /* device identity notification */
 gboolean ags_midi_ump_util_is_device_identity_notification(AgsMidiUmpUtil *midi_ump_util,
@@ -186,14 +204,16 @@ void ags_midi_ump_util_put_device_identity_notification(AgsMidiUmpUtil *midi_ump
 							gint device_family,
 							gint device_family_model,
 							gint software_revision,
-							guchar data[16]);
+							gchar **extension_name, GValue *extension_value,
+							guint extension_count);
 guint ags_midi_ump_util_get_device_identity_notification(AgsMidiUmpUtil *midi_ump_util,
 							 guchar *buffer,
 							 gint *device_manufacturer,
 							 gint *device_family,
 							 gint *device_family_model,
 							 gint *software_revision,
-							 guchar data[16]);
+							 gchar ***extension_name, GValue **extension_value,
+							 guint *extension_count);
 
 /* endpoint name notification */
 gboolean ags_midi_ump_util_is_endpoint_name_notification(AgsMidiUmpUtil *midi_ump_util,
@@ -201,11 +221,13 @@ gboolean ags_midi_ump_util_is_endpoint_name_notification(AgsMidiUmpUtil *midi_um
 void ags_midi_ump_util_put_endpoint_name_notification(AgsMidiUmpUtil *midi_ump_util,
 						      guchar *buffer,
 						      gchar *endpoint_name,
-						      guchar data[128]);
+						      gchar **extension_name, GValue *extension_value,
+						      guint extension_count);
 guint ags_midi_ump_util_get_endpoint_name_notification(AgsMidiUmpUtil *midi_ump_util,
 						       guchar *buffer,
 						       gchar **endpoint_name,
-						       guchar data[128]);
+						       gchar ***extension_name, GValue **extension_value,
+						       guint *extension_count);
 
 /* product instance id notification */
 gboolean ags_midi_ump_util_is_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_util,
@@ -213,11 +235,13 @@ gboolean ags_midi_ump_util_is_product_instance_id_notification(AgsMidiUmpUtil *m
 void ags_midi_ump_util_put_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_util,
 							    guchar *buffer,
 							    gchar *product_instance_id,
-							    guchar data[48]);
+							    gchar **extension_name, GValue *extension_value,
+							    guint extension_count);
 guint ags_midi_ump_util_get_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_util,
 							     guchar *buffer,
 							     gchar **product_instance_id,
-							     guchar data[48]);
+							     gchar ***extension_name, GValue **extension_value,
+							     guint *extension_count);
 
 G_END_DECLS
 
