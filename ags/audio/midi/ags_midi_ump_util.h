@@ -74,6 +74,13 @@ typedef enum{
 }AgsMidiDirection;
 
 typedef enum{
+  AGS_MIDI_ATTRIBUTE_NO_ATTRIBUTE_DATA     = 0x00,
+  AGS_MIDI_ATTRIBUTE_MANUFACTURER_SPECIFIC = 0x01,
+  AGS_MIDI_ATTRIBUTE_PROFILE_SPECIFIC      = 0x02,
+  AGS_MIDI_PITCH_7_9                       = 0x03,
+}AgsMidiAttributeType;
+
+typedef enum{
   AGS_MIDI1_PORT_NOT_MIDI_1_0                  = 0x00,
   AGS_MIDI1_PORT_YES_DONT_RESTRICT_BANDWIDTH   = 0x01,
   AGS_MIDI1_PORT_YES_RESTRICT_BANDWIDTH        = 0x02,
@@ -137,19 +144,6 @@ guint ags_midi_ump_util_get_data_message(AgsMidiUmpUtil *midi_ump_util,
 					 gint *status,
 					 gchar ***extension_name, GValue **extension_value,
 					 guint *extension_count);
-
-gboolean ags_midi_ump_util_is_midi2_channel_voice(AgsMidiUmpUtil *midi_ump_util,
-						  guchar *buffer);
-void ags_midi_ump_util_put_midi2_channel_voice(AgsMidiUmpUtil *midi_ump_util,
-					       guchar *buffer,
-					       gint group,
-					       gint status,
-					       gint index);
-guint ags_midi_ump_util_get_midi2_channel_voice(AgsMidiUmpUtil *midi_ump_util,
-						guchar *buffer,
-						gint *group,
-						gint *status,
-						gint *index);
 
 gboolean ags_midi_ump_util_is_stream_message(AgsMidiUmpUtil *midi_ump_util,
 					     guchar *buffer);
@@ -583,6 +577,96 @@ guint ags_midi_ump_util_get_midi1_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
 					     gint *data,
 					     gchar ***extension_name, GValue **extension_value,
 					     guint *extension_count);
+
+/* MIDI v2.0 channel voice */
+gboolean ags_midi_ump_util_is_midi2_channel_voice(AgsMidiUmpUtil *midi_ump_util,
+						  guchar *buffer);
+void ags_midi_ump_util_put_midi2_channel_voice(AgsMidiUmpUtil *midi_ump_util,
+					       guchar *buffer,
+					       gint group,
+					       gint opcode,
+					       gint channel_number,
+					       gint index_key,
+					       gint data,
+					       gchar **extension_name, GValue *extension_value,
+					       guint extension_count);
+guint ags_midi_ump_util_get_midi2_channel_voice(AgsMidiUmpUtil *midi_ump_util,
+						guchar *buffer,
+						gint *group,
+						gint *opcode,
+						gint *channel_number,
+						gint *index_key,
+						gint *data,
+						gchar ***extension_name, GValue **extension_value,
+						guint *extension_count);
+
+/* MIDI v2.0 note off */
+gboolean ags_midi_ump_util_is_midi2_note_off(AgsMidiUmpUtil *midi_ump_util,
+					     guchar *buffer);
+void ags_midi_ump_util_put_midi2_note_off(AgsMidiUmpUtil *midi_ump_util,
+					  guchar *buffer,
+					  gint group,
+					  gint channel_number,
+					  gint key,
+					  gint attribute_type,
+					  gint velocity,
+					  gint attribute,
+					  gchar **extension_name, GValue *extension_value,
+					  guint extension_count);
+guint ags_midi_ump_util_get_midi2_note_off(AgsMidiUmpUtil *midi_ump_util,
+					   guchar *buffer,
+					   gint *group,
+					   gint *channel_number,
+					   gint *key,
+					   gint *attribute_type,
+					   gint *velocity,
+					   gint *attribute,
+					   gchar ***extension_name, GValue **extension_value,
+					   guint *extension_count);
+
+/* MIDI v2.0 note on */
+gboolean ags_midi_ump_util_is_midi2_note_on(AgsMidiUmpUtil *midi_ump_util,
+					    guchar *buffer);
+void ags_midi_ump_util_put_midi2_note_on(AgsMidiUmpUtil *midi_ump_util,
+					 guchar *buffer,
+					 gint group,
+					 gint channel_number,
+					 gint key,
+					 gint attribute_type,
+					 gint velocity,
+					 gint attribute,
+					 gchar **extension_name, GValue *extension_value,
+					 guint extension_count);
+guint ags_midi_ump_util_get_midi2_note_on(AgsMidiUmpUtil *midi_ump_util,
+					  guchar *buffer,
+					  gint *group,
+					  gint *channel_number,
+					  gint *key,
+					  gint *attribute_type,
+					  gint *velocity,
+					  gint *attribute,
+					  gchar ***extension_name, GValue **extension_value,
+					  guint *extension_count);
+
+/* MIDI v2.0 polyphonic aftertouch */
+gboolean ags_midi_ump_util_is_midi2_polyphonic_aftertouch(AgsMidiUmpUtil *midi_ump_util,
+							  guchar *buffer);
+void ags_midi_ump_util_put_midi2_polyphonic_aftertouch(AgsMidiUmpUtil *midi_ump_util,
+						       guchar *buffer,
+						       gint group,
+						       gint channel,
+						       gint key,
+						       gint data,
+						       gchar **extension_name, GValue *extension_value,
+						       guint extension_count);
+guint ags_midi_ump_util_get_midi2_polyphonic_aftertouch(AgsMidiUmpUtil *midi_ump_util,
+							guchar *buffer,
+							gint *group,
+							gint *channel,
+							gint *key,
+							gint *data,
+							gchar ***extension_name, GValue **extension_value,
+							guint *extension_count);
 
 G_END_DECLS
 
