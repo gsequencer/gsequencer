@@ -77,7 +77,7 @@ typedef enum{
   AGS_MIDI_ATTRIBUTE_NO_ATTRIBUTE_DATA     = 0x00,
   AGS_MIDI_ATTRIBUTE_MANUFACTURER_SPECIFIC = 0x01,
   AGS_MIDI_ATTRIBUTE_PROFILE_SPECIFIC      = 0x02,
-  AGS_MIDI_PITCH_7_9                       = 0x03,
+  AGS_MIDI_ATTRIBUTE_PITCH_7_9             = 0x03,
 }AgsMidiAttributeType;
 
 typedef enum{
@@ -667,6 +667,51 @@ guint ags_midi_ump_util_get_midi2_polyphonic_aftertouch(AgsMidiUmpUtil *midi_ump
 							gint *data,
 							gchar ***extension_name, GValue **extension_value,
 							guint *extension_count);
+
+
+/* MIDI v2.0 registered per node controller */
+gboolean ags_midi_ump_util_is_midi2_registered_per_node_controller(AgsMidiUmpUtil *midi_ump_util,
+								   guchar *buffer);
+void ags_midi_ump_util_put_midi2_registered_per_node_controller(AgsMidiUmpUtil *midi_ump_util,
+								guchar *buffer,
+								gint group,
+								gint channel_number,
+								gint key,
+								gint data_index,
+								gint data,
+								gchar **extension_name, GValue *extension_value,
+								guint extension_count);
+guint ags_midi_ump_util_get_midi2_registered_per_node_controller(AgsMidiUmpUtil *midi_ump_util,
+								 guchar *buffer,
+								 gint *group,
+								 gint *channel_number,
+								 gint *key,
+								 gint *data_index,
+								 gint *data,
+								 gchar ***extension_name, GValue **extension_value,
+								 guint *extension_count);
+
+/* MIDI v2.0 assignable per node controller */
+gboolean ags_midi_ump_util_is_midi2_assignable_per_node_controller(AgsMidiUmpUtil *midi_ump_util,
+								   guchar *buffer);
+void ags_midi_ump_util_put_midi2_assignable_per_node_controller(AgsMidiUmpUtil *midi_ump_util,
+								guchar *buffer,
+								gint group,
+								gint channel_number,
+								gint key,
+								gint data_index,
+								gint data,
+								gchar **extension_name, GValue *extension_value,
+								guint extension_count);
+guint ags_midi_ump_util_get_midi2_assignable_per_node_controller(AgsMidiUmpUtil *midi_ump_util,
+								 guchar *buffer,
+								 gint *group,
+								 gint *channel_number,
+								 gint *key,
+								 gint *data_index,
+								 gint *data,
+								 gchar ***extension_name, GValue **extension_value,
+								 guint *extension_count);
 
 G_END_DECLS
 

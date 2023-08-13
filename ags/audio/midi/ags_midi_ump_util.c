@@ -2983,3 +2983,211 @@ ags_midi_ump_util_get_midi2_polyphonic_aftertouch(AgsMidiUmpUtil *midi_ump_util,
 
   return(0);
 }
+
+/**
+ * ags_midi_ump_util_is_midi2_registered_per_node_controller:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is MIDI version 1.0 note on.
+ * 
+ * Returns: %TRUE if is MIDI version 1.0 note on, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
+gboolean
+ags_midi_ump_util_is_midi2_registered_per_node_controller(AgsMidiUmpUtil *midi_ump_util,
+							  guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0x40 &&
+     (0xf0 & (buffer[1])) == 0x00){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+/**
+ * ags_midi_ump_util_put_midi2_registered_per_node_controller:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: the group
+ * @channel: the channel number
+ * @key: the index key
+ * @data_index: the data index
+ * @data: the data
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ * @extension_count: the extension count
+ *
+ * Put MIDI version 1.0 registered per node controller.
+ * 
+ * Since: 5.5.4
+ */
+void
+ags_midi_ump_util_put_midi2_registered_per_node_controller(AgsMidiUmpUtil *midi_ump_util,
+							   guchar *buffer,
+							   gint group,
+							   gint channel,
+							   gint key,
+							   gint data_index,
+							   gint data,
+							   gchar **extension_name, GValue *extension_value,
+							   guint extension_count)
+{
+  guint nth;
+  const gint opcode = 0x00;
+  const gint mt = 0x04;
+  
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth++;
+
+  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
+  nth++;
+  
+  /* key */
+  buffer[nth] = (0xff & (key));
+  nth++;
+
+  /* data index */
+  buffer[nth] = (0xff & (data_index));
+  nth++;
+
+  /* data */
+  buffer[nth] = (0xff & (data >> 24));
+  nth++;
+
+  buffer[nth] = (0xff & (data >> 16));
+  nth++;
+
+  buffer[nth] = (0xff & (data >> 8));
+  nth++;
+
+  buffer[nth] = (0xff & (data));
+  nth++;
+}
+
+guint
+ags_midi_ump_util_get_midi2_registered_per_node_controller(AgsMidiUmpUtil *midi_ump_util,
+							   guchar *buffer,
+							   gint *group,
+							   gint *channel,
+							   gint *key,
+							   gint *data_index,
+							   gint *data,
+							   gchar ***extension_name, GValue **extension_value,
+							   guint *extension_count)
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+/**
+ * ags_midi_ump_util_is_midi2_assignable_per_node_controller:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is MIDI version 1.0 note on.
+ * 
+ * Returns: %TRUE if is MIDI version 1.0 note on, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
+gboolean
+ags_midi_ump_util_is_midi2_assignable_per_node_controller(AgsMidiUmpUtil *midi_ump_util,
+							  guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0x40 &&
+     (0xf0 & (buffer[1])) == 0x01){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+/**
+ * ags_midi_ump_util_put_midi2_assignable_per_node_controller:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: the group
+ * @channel: the channel number
+ * @key: the index key
+ * @data_index: the data index
+ * @data: the data
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ * @extension_count: the extension count
+ *
+ * Put MIDI version 1.0 assignable per node controller.
+ * 
+ * Since: 5.5.4
+ */
+void
+ags_midi_ump_util_put_midi2_assignable_per_node_controller(AgsMidiUmpUtil *midi_ump_util,
+							   guchar *buffer,
+							   gint group,
+							   gint channel,
+							   gint key,
+							   gint data_index,
+							   gint data,
+							   gchar **extension_name, GValue *extension_value,
+							   guint extension_count)
+{
+  guint nth;
+  const gint opcode = 0x01;
+  const gint mt = 0x04;
+  
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth++;
+
+  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
+  nth++;
+  
+  /* key */
+  buffer[nth] = (0xff & (key));
+  nth++;
+
+  /* data index */
+  buffer[nth] = (0xff & (data_index));
+  nth++;
+
+  /* data */
+  buffer[nth] = (0xff & (data >> 24));
+  nth++;
+
+  buffer[nth] = (0xff & (data >> 16));
+  nth++;
+
+  buffer[nth] = (0xff & (data >> 8));
+  nth++;
+
+  buffer[nth] = (0xff & (data));
+  nth++;
+}
+
+guint
+ags_midi_ump_util_get_midi2_assignable_per_node_controller(AgsMidiUmpUtil *midi_ump_util,
+							   guchar *buffer,
+							   gint *group,
+							   gint *channel,
+							   gint *key,
+							   gint *data_index,
+							   gint *data,
+							   gchar ***extension_name, GValue **extension_value,
+							   guint *extension_count)
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
