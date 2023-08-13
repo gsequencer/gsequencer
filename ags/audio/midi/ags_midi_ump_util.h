@@ -379,6 +379,59 @@ guint ags_midi_ump_util_get_end_of_clip(AgsMidiUmpUtil *midi_ump_util,
 					gchar ***extension_name, GValue **extension_value,
 					guint *extension_count);
 
+/* noop */
+gboolean ags_midi_ump_util_is_noop(AgsMidiUmpUtil *midi_ump_util,
+				   guchar *buffer);
+void ags_midi_ump_util_put_noop(AgsMidiUmpUtil *midi_ump_util,
+				guchar *buffer,
+				gchar **extension_name, GValue *extension_value,
+				guint extension_count);
+guint ags_midi_ump_util_get_noop(AgsMidiUmpUtil *midi_ump_util,
+				 guchar *buffer,
+				 gchar ***extension_name, GValue **extension_value,
+				 guint *extension_count);
+
+/* JR clock */
+gboolean ags_midi_ump_util_is_jr_clock(AgsMidiUmpUtil *midi_ump_util,
+				       guchar *buffer);
+void ags_midi_ump_util_put_jr_clock(AgsMidiUmpUtil *midi_ump_util,
+				    guchar *buffer,
+				    guint16 sender_clock_time,
+				    gchar **extension_name, GValue *extension_value,
+				    guint extension_count);
+guint ags_midi_ump_util_get_jr_clock(AgsMidiUmpUtil *midi_ump_util,
+				     guchar *buffer,
+				     guint16 *sender_clock_time,
+				     gchar ***extension_name, GValue **extension_value,
+				     guint *extension_count);
+
+/* delta clockstamp ticks per quarter note */
+gboolean ags_midi_ump_util_is_delta_clock_ticks_per_quarter_note(AgsMidiUmpUtil *midi_ump_util,
+								 guchar *buffer);
+void ags_midi_ump_util_put_delta_clock_ticks_per_quarter_note(AgsMidiUmpUtil *midi_ump_util,
+							      guchar *buffer,
+							      guint16 ticks_per_quarter_note_count,
+							      gchar **extension_name, GValue *extension_value,
+							      guint extension_count);
+guint ags_midi_ump_util_get_delta_clock_ticks_per_quarter_note(AgsMidiUmpUtil *midi_ump_util,
+							       guchar *buffer,
+							       guint16 *ticks_per_quarter_note_count,
+							       gchar ***extension_name, GValue **extension_value,
+							       guint *extension_count);
+
+/* delta clockstamp ticks since last event */
+gboolean ags_midi_ump_util_is_delta_clock_ticks_since_last_event(AgsMidiUmpUtil *midi_ump_util,
+								 guchar *buffer);
+void ags_midi_ump_util_put_delta_clock_ticks_since_last_event(AgsMidiUmpUtil *midi_ump_util,
+							      guchar *buffer,
+							      guint16 ticks_since_last_event_count,
+							      gchar **extension_name, GValue *extension_value,
+							      guint extension_count);
+guint ags_midi_ump_util_get_delta_clock_ticks_since_last_event(AgsMidiUmpUtil *midi_ump_util,
+							       guchar *buffer,
+							       guint16 *ticks_since_last_event_count,
+							       gchar ***extension_name, GValue **extension_value,
+							       guint *extension_count);
 
 G_END_DECLS
 
