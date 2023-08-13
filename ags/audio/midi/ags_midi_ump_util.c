@@ -258,50 +258,6 @@ ags_midi_ump_util_get_data_message(AgsMidiUmpUtil *midi_ump_util,
 }
 
 /**
- * ags_midi_ump_util_is_midi2_channel_voice:
- * @midi_ump_util: the MIDI UMP util
- * @buffer: the buffer
- *
- * Test if is MIDI version 2.0 channel voice.
- * 
- * Returns: %TRUE if is MIDI version 2.0 channel voice, otherwise %FALSE
- * 
- * Since: 5.5.4
- */
-gboolean
-ags_midi_ump_util_is_midi2_channel_voice(AgsMidiUmpUtil *midi_ump_util,
-					 guchar *buffer)
-{
-  if((0xf0 & (buffer[0])) == 0x40){
-    return(TRUE);
-  }
-  
-  return(FALSE);
-}
-
-void
-ags_midi_ump_util_put_midi2_channel_voice(AgsMidiUmpUtil *midi_ump_util,
-					  guchar *buffer,
-					  gint group,
-					  gint status,
-					  gint index)
-{
-  //TODO:JK: implement me
-}
-
-guint
-ags_midi_ump_util_get_midi2_channel_voice(AgsMidiUmpUtil *midi_ump_util,
-					  guchar *buffer,
-					  gint *group,
-					  gint *status,
-					  gint *index)
-{
-  //TODO:JK: implement me
-
-  return(0);
-}
-
-/**
  * ags_midi_ump_util_is_stream_message:
  * @midi_ump_util: the MIDI UMP util
  * @buffer: the buffer
@@ -2605,6 +2561,423 @@ ags_midi_ump_util_get_midi1_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
 				       gint *data,
 				       gchar ***extension_name, GValue **extension_value,
 				       guint *extension_count)
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+/**
+ * ags_midi_ump_util_is_midi2_channel_voice:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is MIDI version 2.0 channel voice.
+ * 
+ * Returns: %TRUE if is MIDI version 2.0 channel voice, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
+gboolean
+ags_midi_ump_util_is_midi2_channel_voice(AgsMidiUmpUtil *midi_ump_util,
+					 guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0x40){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+/**
+ * ags_midi_ump_util_put_midi2_channel_voice:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: the group
+ * @opcode: the opcode
+ * @channel_number: the channel number
+ * @index_key: the index key
+ * @data: the data
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ * @extension_count: the extension count
+ *
+ * Put MIDI version 2.0 channel voice message.
+ * 
+ * Since: 5.5.4
+ */
+void
+ags_midi_ump_util_put_midi2_channel_voice(AgsMidiUmpUtil *midi_ump_util,
+					  guchar *buffer,
+					  gint group,
+					  gint opcode,
+					  gint channel_number,
+					  gint index_key,
+					  gint data,
+					  gchar **extension_name, GValue *extension_value,
+					  guint extension_count)
+{
+  guint nth;
+  const gint mt = 0x04;
+  
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth++;
+
+  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel_number));
+  nth++;
+  
+  /* index key */
+  buffer[nth] = (0xff & (index_key >> 8));
+  nth++;
+
+  buffer[nth] = (0xff & (index_key));
+  nth++;
+
+  /* data */
+  buffer[nth] = (0xff & (data >> 24));
+  nth++;
+
+  buffer[nth] = (0xff & (data >> 16));
+  nth++;
+
+  buffer[nth] = (0xff & (data >> 8));
+  nth++;
+
+  buffer[nth] = (0xff & (data));
+  nth++;
+}
+
+guint
+ags_midi_ump_util_get_midi2_channel_voice(AgsMidiUmpUtil *midi_ump_util,
+					  guchar *buffer,
+					  gint *group,
+					  gint *opcode,
+					  gint *channel_number,
+					  gint *index_key,
+					  gint *data,
+					  gchar ***extension_name, GValue **extension_value,
+					  guint *extension_count)
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+/**
+ * ags_midi_ump_util_is_midi2_note_off:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is MIDI version 1.0 note off.
+ * 
+ * Returns: %TRUE if is MIDI version 1.0 note off, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
+gboolean
+ags_midi_ump_util_is_midi2_note_off(AgsMidiUmpUtil *midi_ump_util,
+				    guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0x40 &&
+     (0xf0 & (buffer[1])) == 0x80){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+/**
+ * ags_midi_ump_util_put_midi2_note_off:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: the group
+ * @channel: the channel number
+ * @key: the index key
+ * @attribute_type: the attribute type
+ * @velocity: the velocity
+ * @attribute: the attribute
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ * @extension_count: the extension count
+ *
+ * Put MIDI version 1.0 note off.
+ * 
+ * Since: 5.5.4
+ */
+void
+ags_midi_ump_util_put_midi2_note_off(AgsMidiUmpUtil *midi_ump_util,
+				     guchar *buffer,
+				     gint group,
+				     gint channel,
+				     gint key,
+				     gint attribute_type,
+				     gint velocity,
+				     gint attribute,
+				     gchar **extension_name, GValue *extension_value,
+				     guint extension_count)
+{
+  guint nth;
+  const gint opcode = 0x80;
+  const gint mt = 0x04;
+  
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth++;
+
+  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
+  nth++;
+  
+  /* key */
+  buffer[nth] = (0xff & (key));
+  nth++;
+
+  /* attribute type */
+  buffer[nth] = (0xff & (attribute_type));
+  nth++;
+
+  /* velocity */
+  buffer[nth] = (0xff & (velocity >> 8));
+  nth++;
+
+  buffer[nth] = (0xff & (velocity));
+  nth++;
+
+  /* attribute */
+  buffer[nth] = (0xff & (attribute >> 8));
+  nth++;
+
+  buffer[nth] = (0xff & (attribute));
+  nth++;
+}
+
+guint
+ags_midi_ump_util_get_midi2_note_off(AgsMidiUmpUtil *midi_ump_util,
+				     guchar *buffer,
+				     gint *group,
+				     gint *channel,
+				     gint *key,
+				     gint *attribute_type,
+				     gint *velocity,
+				     gint *attribute,
+				     gchar ***extension_name, GValue **extension_value,
+				     guint *extension_count)
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+/**
+ * ags_midi_ump_util_is_midi2_note_on:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is MIDI version 1.0 note on.
+ * 
+ * Returns: %TRUE if is MIDI version 1.0 note on, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
+gboolean
+ags_midi_ump_util_is_midi2_note_on(AgsMidiUmpUtil *midi_ump_util,
+				   guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0x40 &&
+     (0xf0 & (buffer[1])) == 0x90){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+/**
+ * ags_midi_ump_util_put_midi2_note_on:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: the group
+ * @channel: the channel number
+ * @key: the index key
+ * @attribute_type: the attribute type
+ * @velocity: the velocity
+ * @attribute: the attribute
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ * @extension_count: the extension count
+ *
+ * Put MIDI version 1.0 note on.
+ * 
+ * Since: 5.5.4
+ */
+void
+ags_midi_ump_util_put_midi2_note_on(AgsMidiUmpUtil *midi_ump_util,
+				    guchar *buffer,
+				    gint group,
+				    gint channel,
+				    gint key,
+				    gint attribute_type,
+				    gint velocity,
+				    gint attribute,
+				    gchar **extension_name, GValue *extension_value,
+				    guint extension_count)
+{
+  guint nth;
+  const gint opcode = 0x90;
+  const gint mt = 0x04;
+  
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth++;
+
+  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
+  nth++;
+  
+  /* key */
+  buffer[nth] = (0xff & (key));
+  nth++;
+
+  /* attribute type */
+  buffer[nth] = (0xff & (attribute_type));
+  nth++;
+
+  /* velocity */
+  buffer[nth] = (0xff & (velocity >> 8));
+  nth++;
+
+  buffer[nth] = (0xff & (velocity));
+  nth++;
+
+  /* attribute */
+  buffer[nth] = (0xff & (attribute >> 8));
+  nth++;
+
+  buffer[nth] = (0xff & (attribute));
+  nth++;
+}
+
+guint
+ags_midi_ump_util_get_midi2_note_on(AgsMidiUmpUtil *midi_ump_util,
+				    guchar *buffer,
+				    gint *group,
+				    gint *channel,
+				    gint *key,
+				    gint *attribute_type,
+				    gint *velocity,
+				    gint *attribute,
+				    gchar ***extension_name, GValue **extension_value,
+				    guint *extension_count)
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+/**
+ * ags_midi_ump_util_is_midi2_polyphonic_aftertouch:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is MIDI version 1.0 polyphonic aftertouch.
+ * 
+ * Returns: %TRUE if is MIDI version 1.0 polyphonic aftertouch, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
+gboolean
+ags_midi_ump_util_is_midi2_polyphonic_aftertouch(AgsMidiUmpUtil *midi_ump_util,
+						 guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0x40 &&
+     (0xf0 & (buffer[1])) == 0xa0){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+/**
+ * ags_midi_ump_util_put_midi2_polyphonic_aftertouch:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: the group
+ * @channel: the channel number
+ * @key: the index key
+ * @data: the data
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ * @extension_count: the extension count
+ *
+ * Put MIDI version 1.0 polyphonic aftertouch.
+ * 
+ * Since: 5.5.4
+ */
+void
+ags_midi_ump_util_put_midi2_polyphonic_aftertouch(AgsMidiUmpUtil *midi_ump_util,
+						  guchar *buffer,
+						  gint group,
+						  gint channel,
+						  gint key,
+						  gint data,
+						  gchar **extension_name, GValue *extension_value,
+						  guint extension_count)
+{
+  guint nth;
+  const gint opcode = 0xa0;
+  const gint mt = 0x04;
+  
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth++;
+
+  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
+  nth++;
+  
+  /* index key */
+  buffer[nth] = (0xff & (key));
+  nth++;
+
+  /* reserved */
+  nth++;
+  
+  /* data */
+  buffer[nth] = (0xff & (data >> 24));
+  nth++;
+
+  buffer[nth] = (0xff & (data >> 16));
+  nth++;
+
+  buffer[nth] = (0xff & (data >> 8));
+  nth++;
+
+  buffer[nth] = (0xff & (data));
+  nth++;
+}
+
+guint
+ags_midi_ump_util_get_midi2_polyphonic_aftertouch(AgsMidiUmpUtil *midi_ump_util,
+						  guchar *buffer,
+						  gint *group,
+						  gint *channel,
+						  gint *key,
+						  gint *data,
+						  gchar ***extension_name, GValue **extension_value,
+						  guint *extension_count)
 {
   //TODO:JK: implement me
 
