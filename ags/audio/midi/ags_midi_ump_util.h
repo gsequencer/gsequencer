@@ -484,6 +484,106 @@ guint ags_midi_ump_util_get_midi1_note_on(AgsMidiUmpUtil *midi_ump_util,
 					  gchar ***extension_name, GValue **extension_value,
 					  guint *extension_count);
 
+/* MIDI v1.0 polyphonic aftertouch */
+gboolean ags_midi_ump_util_is_midi1_polyphonic_aftertouch(AgsMidiUmpUtil *midi_ump_util,
+							  guchar *buffer);
+void ags_midi_ump_util_put_midi1_polyphonic_aftertouch(AgsMidiUmpUtil *midi_ump_util,
+						       guchar *buffer,
+						       gint group,
+						       gint channel,
+						       gint key,
+						       gint data,
+						       gchar **extension_name, GValue *extension_value,
+						       guint extension_count);
+guint ags_midi_ump_util_get_midi1_polyphonic_aftertouch(AgsMidiUmpUtil *midi_ump_util,
+							guchar *buffer,
+							gint *group,
+							gint *channel,
+							gint *key,
+							gint *data,
+							gchar ***extension_name, GValue **extension_value,
+							guint *extension_count);
+
+/* MIDI v1.0 control change */
+gboolean ags_midi_ump_util_is_midi1_control_change(AgsMidiUmpUtil *midi_ump_util,
+						   guchar *buffer);
+void ags_midi_ump_util_put_midi1_control_change(AgsMidiUmpUtil *midi_ump_util,
+						guchar *buffer,
+						gint group,
+						gint channel,
+						gint index_key,
+						gint data,
+						gchar **extension_name, GValue *extension_value,
+						guint extension_count);
+guint ags_midi_ump_util_get_midi1_control_change(AgsMidiUmpUtil *midi_ump_util,
+						 guchar *buffer,
+						 gint *group,
+						 gint *channel,
+						 gint *index_key,
+						 gint *data,
+						 gchar ***extension_name, GValue **extension_value,
+						 guint *extension_count);
+
+/* MIDI v1.0 program change */
+gboolean ags_midi_ump_util_is_midi1_program_change(AgsMidiUmpUtil *midi_ump_util,
+						   guchar *buffer);
+void ags_midi_ump_util_put_midi1_program_change(AgsMidiUmpUtil *midi_ump_util,
+						guchar *buffer,
+						gint group,
+						gint channel,
+						gint program,
+						gint data,
+						gchar **extension_name, GValue *extension_value,
+						guint extension_count);
+guint ags_midi_ump_util_get_midi1_program_change(AgsMidiUmpUtil *midi_ump_util,
+						 guchar *buffer,
+						 gint *group,
+						 gint *channel,
+						 gint *program,
+						 gint *data,
+						 gchar ***extension_name, GValue **extension_value,
+						 guint *extension_count);
+
+/* MIDI v1.0 channel pressure */
+gboolean ags_midi_ump_util_is_midi1_channel_pressure(AgsMidiUmpUtil *midi_ump_util,
+						     guchar *buffer);
+void ags_midi_ump_util_put_midi1_channel_pressure(AgsMidiUmpUtil *midi_ump_util,
+						  guchar *buffer,
+						  gint group,
+						  gint channel,
+						  gint pressure,
+						  gint data,
+						  gchar **extension_name, GValue *extension_value,
+						  guint extension_count);
+guint ags_midi_ump_util_get_midi1_channel_pressure(AgsMidiUmpUtil *midi_ump_util,
+						   guchar *buffer,
+						   gint *group,
+						   gint *channel,
+						   gint *pressure,
+						   gint *data,
+						   gchar ***extension_name, GValue **extension_value,
+						   guint *extension_count);
+
+/* MIDI v1.0 pitch bend */
+gboolean ags_midi_ump_util_is_midi1_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
+					       guchar *buffer);
+void ags_midi_ump_util_put_midi1_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
+					    guchar *buffer,
+					    gint group,
+					    gint channel,
+					    gint pitch,
+					    gint data,
+					    gchar **extension_name, GValue *extension_value,
+					    guint extension_count);
+guint ags_midi_ump_util_get_midi1_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
+					     guchar *buffer,
+					     gint *group,
+					     gint *channel,
+					     gint *pitch,
+					     gint *data,
+					     gchar ***extension_name, GValue **extension_value,
+					     guint *extension_count);
+
 G_END_DECLS
 
 #endif /*__AGS_MIDI_UMP_UTIL_H__*/
