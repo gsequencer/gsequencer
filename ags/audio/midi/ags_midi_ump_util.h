@@ -768,8 +768,6 @@ void ags_midi_ump_util_put_midi2_rpn_pitch_bend_range(AgsMidiUmpUtil *midi_ump_u
 						      guchar *buffer,
 						      gint group,
 						      gint channel,
-						      gint bank,
-						      gint index_key,
 						      gint semitones,
 						      gint cents,
 						      gchar **extension_name, GValue *extension_value,
@@ -778,12 +776,46 @@ guint ags_midi_ump_util_get_midi2_rpn_pitch_bend_range(AgsMidiUmpUtil *midi_ump_
 						       guchar *buffer,
 						       gint *group,
 						       gint *channel,
-						       gint *bank,
-						       gint *index_key,
 						       gint *semitones,
 						       gint *cents,
 						       gchar ***extension_name, GValue **extension_value,
 						       guint *extension_count);
+
+/* MIDI v2.0 rpn coarse tuning */
+gboolean ags_midi_ump_util_is_midi2_rpn_coarse_tuning(AgsMidiUmpUtil *midi_ump_util,
+						      guchar *buffer);
+void ags_midi_ump_util_put_midi2_rpn_coarse_tuning(AgsMidiUmpUtil *midi_ump_util,
+						   guchar *buffer,
+						   gint group,
+						   gint channel,
+						   gint coarse_tuning,
+						   gchar **extension_name, GValue *extension_value,
+						   guint extension_count);
+guint ags_midi_ump_util_get_midi2_rpn_coarse_tuning(AgsMidiUmpUtil *midi_ump_util,
+						    guchar *buffer,
+						    gint *group,
+						    gint *channel,
+						    gint *coarse_tuning,
+						    gchar ***extension_name, GValue **extension_value,
+						    guint *extension_count);
+
+/* MIDI v2.0 rpn tuning program change */
+gboolean ags_midi_ump_util_is_midi2_rpn_tuning_program_change(AgsMidiUmpUtil *midi_ump_util,
+							      guchar *buffer);
+void ags_midi_ump_util_put_midi2_rpn_tuning_program_change(AgsMidiUmpUtil *midi_ump_util,
+							   guchar *buffer,
+							   gint group,
+							   gint channel,
+							   gint tuning_program_number,
+							   gchar **extension_name, GValue *extension_value,
+							   guint extension_count);
+guint ags_midi_ump_util_get_midi2_rpn_tuning_program_change(AgsMidiUmpUtil *midi_ump_util,
+							    guchar *buffer,
+							    gint *group,
+							    gint *channel,
+							    gint *tuning_program_number,
+							    gchar ***extension_name, GValue **extension_value,
+							    guint *extension_count);
 
 G_END_DECLS
 
