@@ -1898,7 +1898,7 @@ ags_midi_ump_util_is_midi1_channel_voice(AgsMidiUmpUtil *midi_ump_util,
  * @buffer: the buffer
  * @group: the group
  * @opcode: the opcode
- * @channel_number: the channel number
+ * @channel: the channel number
  * @index_key: the index key
  * @data: the data
  * @extension_name: the extension name string vector
@@ -1914,7 +1914,7 @@ ags_midi_ump_util_put_midi1_channel_voice(AgsMidiUmpUtil *midi_ump_util,
 					  guchar *buffer,
 					  gint group,
 					  gint opcode,
-					  gint channel_number,
+					  gint channel,
 					  gint index_key,
 					  gint data,
 					  gchar **extension_name, GValue *extension_value,
@@ -1931,7 +1931,7 @@ ags_midi_ump_util_put_midi1_channel_voice(AgsMidiUmpUtil *midi_ump_util,
   buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
   nth++;
 
-  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel_number));
+  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
   nth++;
   
   /* index key and data */
@@ -1947,7 +1947,7 @@ ags_midi_ump_util_get_midi1_channel_voice(AgsMidiUmpUtil *midi_ump_util,
 					  guchar *buffer,
 					  gint *group,
 					  gint *opcode,
-					  gint *channel_number,
+					  gint *channel,
 					  gint *index_key,
 					  gint *data,
 					  gchar ***extension_name, GValue **extension_value,
@@ -2595,7 +2595,7 @@ ags_midi_ump_util_is_midi2_channel_voice(AgsMidiUmpUtil *midi_ump_util,
  * @buffer: the buffer
  * @group: the group
  * @opcode: the opcode
- * @channel_number: the channel number
+ * @channel: the channel number
  * @index_key: the index key
  * @data: the data
  * @extension_name: the extension name string vector
@@ -2611,7 +2611,7 @@ ags_midi_ump_util_put_midi2_channel_voice(AgsMidiUmpUtil *midi_ump_util,
 					  guchar *buffer,
 					  gint group,
 					  gint opcode,
-					  gint channel_number,
+					  gint channel,
 					  gint index_key,
 					  gint data,
 					  gchar **extension_name, GValue *extension_value,
@@ -2628,7 +2628,7 @@ ags_midi_ump_util_put_midi2_channel_voice(AgsMidiUmpUtil *midi_ump_util,
   buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
   nth++;
 
-  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel_number));
+  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
   nth++;
   
   /* index key */
@@ -2657,7 +2657,7 @@ ags_midi_ump_util_get_midi2_channel_voice(AgsMidiUmpUtil *midi_ump_util,
 					  guchar *buffer,
 					  gint *group,
 					  gint *opcode,
-					  gint *channel_number,
+					  gint *channel,
 					  gint *index_key,
 					  gint *data,
 					  gchar ***extension_name, GValue **extension_value,
@@ -3389,6 +3389,110 @@ ags_midi_ump_util_get_midi2_control_change(AgsMidiUmpUtil *midi_ump_util,
 					   gint *index_key,
 					   gchar ***extension_name, GValue **extension_value,
 					   guint *extension_count)
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+/**
+ * ags_midi_ump_util_is_midi2_rpn_pitch_bend_range:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is MIDI version 2.0 RPN pitch bend range.
+ * 
+ * Returns: %TRUE if is MIDI version 2.0 RPN pitch bend range, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
+gboolean
+ags_midi_ump_util_is_midi2_rpn_pitch_bend_range(AgsMidiUmpUtil *midi_ump_util,
+						guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0x40 &&
+     (0xf0 & (buffer[1])) == 0x20){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+/**
+ * ags_midi_ump_util_put_midi2_rpn_pitch_bend_range:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: the group
+ * @channel: the channel number
+ * @index_key: the index key
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ * @extension_count: the extension count
+ *
+ * Put MIDI version 2.0 RPN pitch bend range.
+ * 
+ * Since: 5.5.4
+ */
+void
+ags_midi_ump_util_put_midi2_rpn_pitch_bend_range(AgsMidiUmpUtil *midi_ump_util,
+						 guchar *buffer,
+						 gint group,
+						 gint channel,
+						 gint bank,
+						 gint index_key,
+						 gint semitones,
+						 gint cents,
+						 gchar **extension_name, GValue *extension_value,
+						 guint extension_count)
+{
+  guint nth;
+  gint position;
+  
+  const gint opcode = 0x02;
+  const gint mt = 0x04;
+  
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth++;
+
+  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
+  nth++;
+  
+  /* bank */
+  buffer[nth] = (0xff & (bank));
+  nth++;
+
+  /* index key */
+  buffer[nth] = (0xff & (index_key));
+  nth++;
+
+  /* semitones */
+  buffer[nth] = 0xfe & ((0x7f & (semitones)) << 1) | ((0x40 & (cents)) >> 6);
+  nth++;
+
+  /* cents */
+  buffer[nth] = 0xfc & ((0x7f & (cents)) << 2);
+  nth++;
+
+  /* undefined */
+  buffer[nth] = 0x0;  
+  buffer[nth + 1] = 0x0;  
+
+  nth += 2;
+}
+
+guint
+ags_midi_ump_util_get_midi2_rpn_pitch_bend_range(AgsMidiUmpUtil *midi_ump_util,
+						 guchar *buffer,
+						 gint *group,
+						 gint *channel,
+						 gint *index_key,
+						 gchar ***extension_name, GValue **extension_value,
+						 guint *extension_count)
 {
   //TODO:JK: implement me
 

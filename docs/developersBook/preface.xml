@@ -31,7 +31,4 @@
     First output with AGS happend via Open Sound System device drivers but the entire
     application lacked of a thread safe concept. But for now you may write tasks.
   </para>
-  <para>
-    Be part of the fun.
-  </para>
 </preface>

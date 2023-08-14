@@ -1,3 +1,8 @@
+ags (5.5.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: implemented ags_midi_ump_util.[ch]
+
 ags (5.5.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
