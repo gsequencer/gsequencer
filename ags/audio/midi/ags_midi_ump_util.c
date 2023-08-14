@@ -2673,9 +2673,9 @@ ags_midi_ump_util_get_midi2_channel_voice(AgsMidiUmpUtil *midi_ump_util,
  * @midi_ump_util: the MIDI UMP util
  * @buffer: the buffer
  *
- * Test if is MIDI version 1.0 note off.
+ * Test if is MIDI version 2.0 note off.
  * 
- * Returns: %TRUE if is MIDI version 1.0 note off, otherwise %FALSE
+ * Returns: %TRUE if is MIDI version 2.0 note off, otherwise %FALSE
  * 
  * Since: 5.5.4
  */
@@ -2705,7 +2705,7 @@ ags_midi_ump_util_is_midi2_note_off(AgsMidiUmpUtil *midi_ump_util,
  * @extension_value: the extension value array
  * @extension_count: the extension count
  *
- * Put MIDI version 1.0 note off.
+ * Put MIDI version 2.0 note off.
  * 
  * Since: 5.5.4
  */
@@ -2781,9 +2781,9 @@ ags_midi_ump_util_get_midi2_note_off(AgsMidiUmpUtil *midi_ump_util,
  * @midi_ump_util: the MIDI UMP util
  * @buffer: the buffer
  *
- * Test if is MIDI version 1.0 note on.
+ * Test if is MIDI version 2.0 note on.
  * 
- * Returns: %TRUE if is MIDI version 1.0 note on, otherwise %FALSE
+ * Returns: %TRUE if is MIDI version 2.0 note on, otherwise %FALSE
  * 
  * Since: 5.5.4
  */
@@ -2813,7 +2813,7 @@ ags_midi_ump_util_is_midi2_note_on(AgsMidiUmpUtil *midi_ump_util,
  * @extension_value: the extension value array
  * @extension_count: the extension count
  *
- * Put MIDI version 1.0 note on.
+ * Put MIDI version 2.0 note on.
  * 
  * Since: 5.5.4
  */
@@ -2889,9 +2889,9 @@ ags_midi_ump_util_get_midi2_note_on(AgsMidiUmpUtil *midi_ump_util,
  * @midi_ump_util: the MIDI UMP util
  * @buffer: the buffer
  *
- * Test if is MIDI version 1.0 polyphonic aftertouch.
+ * Test if is MIDI version 2.0 polyphonic aftertouch.
  * 
- * Returns: %TRUE if is MIDI version 1.0 polyphonic aftertouch, otherwise %FALSE
+ * Returns: %TRUE if is MIDI version 2.0 polyphonic aftertouch, otherwise %FALSE
  * 
  * Since: 5.5.4
  */
@@ -2919,7 +2919,7 @@ ags_midi_ump_util_is_midi2_polyphonic_aftertouch(AgsMidiUmpUtil *midi_ump_util,
  * @extension_value: the extension value array
  * @extension_count: the extension count
  *
- * Put MIDI version 1.0 polyphonic aftertouch.
+ * Put MIDI version 2.0 polyphonic aftertouch.
  * 
  * Since: 5.5.4
  */
@@ -2985,18 +2985,18 @@ ags_midi_ump_util_get_midi2_polyphonic_aftertouch(AgsMidiUmpUtil *midi_ump_util,
 }
 
 /**
- * ags_midi_ump_util_is_midi2_registered_per_node_controller:
+ * ags_midi_ump_util_is_midi2_registered_per_note_controller:
  * @midi_ump_util: the MIDI UMP util
  * @buffer: the buffer
  *
- * Test if is MIDI version 1.0 note on.
+ * Test if is MIDI version 2.0 registered per note controller.
  * 
- * Returns: %TRUE if is MIDI version 1.0 note on, otherwise %FALSE
+ * Returns: %TRUE if is MIDI version 2.0 registered per note controller, otherwise %FALSE
  * 
  * Since: 5.5.4
  */
 gboolean
-ags_midi_ump_util_is_midi2_registered_per_node_controller(AgsMidiUmpUtil *midi_ump_util,
+ags_midi_ump_util_is_midi2_registered_per_note_controller(AgsMidiUmpUtil *midi_ump_util,
 							  guchar *buffer)
 {
   if((0xf0 & (buffer[0])) == 0x40 &&
@@ -3008,7 +3008,7 @@ ags_midi_ump_util_is_midi2_registered_per_node_controller(AgsMidiUmpUtil *midi_u
 }
 
 /**
- * ags_midi_ump_util_put_midi2_registered_per_node_controller:
+ * ags_midi_ump_util_put_midi2_registered_per_note_controller:
  * @midi_ump_util: the MIDI UMP util
  * @buffer: the buffer
  * @group: the group
@@ -3020,12 +3020,12 @@ ags_midi_ump_util_is_midi2_registered_per_node_controller(AgsMidiUmpUtil *midi_u
  * @extension_value: the extension value array
  * @extension_count: the extension count
  *
- * Put MIDI version 1.0 registered per node controller.
+ * Put MIDI version 2.0 registered per note controller.
  * 
  * Since: 5.5.4
  */
 void
-ags_midi_ump_util_put_midi2_registered_per_node_controller(AgsMidiUmpUtil *midi_ump_util,
+ags_midi_ump_util_put_midi2_registered_per_note_controller(AgsMidiUmpUtil *midi_ump_util,
 							   guchar *buffer,
 							   gint group,
 							   gint channel,
@@ -3073,7 +3073,7 @@ ags_midi_ump_util_put_midi2_registered_per_node_controller(AgsMidiUmpUtil *midi_
 }
 
 guint
-ags_midi_ump_util_get_midi2_registered_per_node_controller(AgsMidiUmpUtil *midi_ump_util,
+ags_midi_ump_util_get_midi2_registered_per_note_controller(AgsMidiUmpUtil *midi_ump_util,
 							   guchar *buffer,
 							   gint *group,
 							   gint *channel,
@@ -3089,18 +3089,18 @@ ags_midi_ump_util_get_midi2_registered_per_node_controller(AgsMidiUmpUtil *midi_
 }
 
 /**
- * ags_midi_ump_util_is_midi2_assignable_per_node_controller:
+ * ags_midi_ump_util_is_midi2_assignable_per_note_controller:
  * @midi_ump_util: the MIDI UMP util
  * @buffer: the buffer
  *
- * Test if is MIDI version 1.0 note on.
+ * Test if is MIDI version 2.0 assignable per note controller.
  * 
- * Returns: %TRUE if is MIDI version 1.0 note on, otherwise %FALSE
+ * Returns: %TRUE if is MIDI version 2.0 assignable per note controller, otherwise %FALSE
  * 
  * Since: 5.5.4
  */
 gboolean
-ags_midi_ump_util_is_midi2_assignable_per_node_controller(AgsMidiUmpUtil *midi_ump_util,
+ags_midi_ump_util_is_midi2_assignable_per_note_controller(AgsMidiUmpUtil *midi_ump_util,
 							  guchar *buffer)
 {
   if((0xf0 & (buffer[0])) == 0x40 &&
@@ -3112,7 +3112,7 @@ ags_midi_ump_util_is_midi2_assignable_per_node_controller(AgsMidiUmpUtil *midi_u
 }
 
 /**
- * ags_midi_ump_util_put_midi2_assignable_per_node_controller:
+ * ags_midi_ump_util_put_midi2_assignable_per_note_controller:
  * @midi_ump_util: the MIDI UMP util
  * @buffer: the buffer
  * @group: the group
@@ -3124,12 +3124,12 @@ ags_midi_ump_util_is_midi2_assignable_per_node_controller(AgsMidiUmpUtil *midi_u
  * @extension_value: the extension value array
  * @extension_count: the extension count
  *
- * Put MIDI version 1.0 assignable per node controller.
+ * Put MIDI version 2.0 assignable per note controller.
  * 
  * Since: 5.5.4
  */
 void
-ags_midi_ump_util_put_midi2_assignable_per_node_controller(AgsMidiUmpUtil *midi_ump_util,
+ags_midi_ump_util_put_midi2_assignable_per_note_controller(AgsMidiUmpUtil *midi_ump_util,
 							   guchar *buffer,
 							   gint group,
 							   gint channel,
@@ -3177,7 +3177,7 @@ ags_midi_ump_util_put_midi2_assignable_per_node_controller(AgsMidiUmpUtil *midi_
 }
 
 guint
-ags_midi_ump_util_get_midi2_assignable_per_node_controller(AgsMidiUmpUtil *midi_ump_util,
+ags_midi_ump_util_get_midi2_assignable_per_note_controller(AgsMidiUmpUtil *midi_ump_util,
 							   guchar *buffer,
 							   gint *group,
 							   gint *channel,
@@ -3186,6 +3186,209 @@ ags_midi_ump_util_get_midi2_assignable_per_node_controller(AgsMidiUmpUtil *midi_
 							   gint *data,
 							   gchar ***extension_name, GValue **extension_value,
 							   guint *extension_count)
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+/**
+ * ags_midi_ump_util_is_midi2_per_note_management:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is MIDI version 2.0 per note management.
+ * 
+ * Returns: %TRUE if is MIDI version 2.0 per note management, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
+gboolean
+ags_midi_ump_util_is_midi2_per_note_management(AgsMidiUmpUtil *midi_ump_util,
+					       guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0x40 &&
+     (0xf0 & (buffer[1])) == 0xf0){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+/**
+ * ags_midi_ump_util_put_midi2_per_note_management:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: the group
+ * @channel: the channel number
+ * @key: the index key
+ * @options_flags: the options flags
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ * @extension_count: the extension count
+ *
+ * Put MIDI version 2.0 registered per note management.
+ * 
+ * Since: 5.5.4
+ */
+void
+ags_midi_ump_util_put_midi2_per_note_management(AgsMidiUmpUtil *midi_ump_util,
+						guchar *buffer,
+						gint group,
+						gint channel,
+						gint key,
+						gint options_flags,
+						gchar **extension_name, GValue *extension_value,
+						guint extension_count)
+{
+  guint nth;
+  const gint opcode = 0x0f;
+  const gint mt = 0x04;
+  
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth++;
+
+  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
+  nth++;
+  
+  /* key */
+  buffer[nth] = (0xff & (key));
+  nth++;
+
+  /* options flags */
+  buffer[nth] = (0xff & (options_flags));
+  nth++;
+
+  /* reserved */
+  nth += 4;
+}
+
+guint
+ags_midi_ump_util_get_midi2_per_note_management(AgsMidiUmpUtil *midi_ump_util,
+						guchar *buffer,
+						gint *group,
+						gint *channel,
+						gint *key,
+						gint *options_flags,
+						gchar ***extension_name, GValue **extension_value,
+						guint *extension_count)
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+/**
+ * ags_midi_ump_util_is_midi2_control_change:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is MIDI version 2.0 control change.
+ * 
+ * Returns: %TRUE if is MIDI version 2.0 control change, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
+gboolean
+ags_midi_ump_util_is_midi2_control_change(AgsMidiUmpUtil *midi_ump_util,
+					  guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0x40 &&
+     (0xf0 & (buffer[1])) == 0xb0){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+/**
+ * ags_midi_ump_util_put_midi2_control_change:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: the group
+ * @channel: the channel number
+ * @index_key: the index key
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ * @extension_count: the extension count
+ *
+ * Put MIDI version 2.0 control change.
+ * 
+ * Since: 5.5.4
+ */
+void
+ags_midi_ump_util_put_midi2_control_change(AgsMidiUmpUtil *midi_ump_util,
+					   guchar *buffer,
+					   gint group,
+					   gint channel,
+					   gint index_key,
+					   gchar **extension_name, GValue *extension_value,
+					   guint extension_count)
+{
+  guint nth;
+  gint position;
+  
+  const gint opcode = 0x0b;
+  const gint mt = 0x04;
+  
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth++;
+
+  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
+  nth++;
+  
+  /* index key */
+  buffer[nth] = (0xff & (index_key));
+  nth++;
+
+  /* reserved */
+  buffer[nth] = 0x0;  
+  nth++;
+
+  /* data */
+  buffer[nth] = 0x0;  
+  buffer[nth + 1] = 0x0;  
+  buffer[nth + 2] = 0x0;  
+  buffer[nth + 3] = 0x0;  
+
+  if((position = ags_strv_index(extension_name, "portamento")) >= 0){
+    gint source_note_number;
+
+    source_note_number = g_value_get_int(extension_value + position);
+
+    buffer[nth] = 0xfe & (source_note_number << 1);
+    
+  }
+
+  if((position = ags_strv_index(extension_name, "omni-off")) >= 0){
+    gint channels_count;
+
+    channels_count = g_value_get_int(extension_value + position);
+
+    buffer[nth] = 0xfe & (channels_count << 1);
+  }
+
+  nth += 4;
+}
+
+guint
+ags_midi_ump_util_get_midi2_control_change(AgsMidiUmpUtil *midi_ump_util,
+					   guchar *buffer,
+					   gint *group,
+					   gint *channel,
+					   gint *index_key,
+					   gchar ***extension_name, GValue **extension_value,
+					   guint *extension_count)
 {
   //TODO:JK: implement me
 
