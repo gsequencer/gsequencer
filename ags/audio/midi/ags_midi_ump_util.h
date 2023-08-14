@@ -77,7 +77,7 @@ typedef enum{
   AGS_MIDI_ATTRIBUTE_NO_ATTRIBUTE_DATA     = 0x00,
   AGS_MIDI_ATTRIBUTE_MANUFACTURER_SPECIFIC = 0x01,
   AGS_MIDI_ATTRIBUTE_PROFILE_SPECIFIC      = 0x02,
-  AGS_MIDI_PITCH_7_9                       = 0x03,
+  AGS_MIDI_ATTRIBUTE_PITCH_7_9             = 0x03,
 }AgsMidiAttributeType;
 
 typedef enum{
@@ -86,6 +86,16 @@ typedef enum{
   AGS_MIDI1_PORT_YES_RESTRICT_BANDWIDTH        = 0x02,
   /* reserved = 0x03, */
 }AgsMidi1PortMode;
+
+typedef enum{
+  AGS_MIDI2_DETACH_PER_NOTE_CONTROLLERS          = 0x01,
+  AGS_MIDI2_RESET_PER_NOTE_CONTROLLERS           = 0x02,
+}AgsMidi2PerNoteManagementOptionsFlags;
+
+typedef enum{
+  AGS_MIDI2_CC_84_PORTAMENTO          = 0x54,
+  AGS_MIDI2_CC_126_OMNI_OFF           = 0x7E,
+}AgsMidi2CCIndex;
 
 struct _AgsMidiUmpUtil
 {
@@ -667,6 +677,89 @@ guint ags_midi_ump_util_get_midi2_polyphonic_aftertouch(AgsMidiUmpUtil *midi_ump
 							gint *data,
 							gchar ***extension_name, GValue **extension_value,
 							guint *extension_count);
+
+
+/* MIDI v2.0 registered per note controller */
+gboolean ags_midi_ump_util_is_midi2_registered_per_note_controller(AgsMidiUmpUtil *midi_ump_util,
+								   guchar *buffer);
+void ags_midi_ump_util_put_midi2_registered_per_note_controller(AgsMidiUmpUtil *midi_ump_util,
+								guchar *buffer,
+								gint group,
+								gint channel_number,
+								gint key,
+								gint data_index,
+								gint data,
+								gchar **extension_name, GValue *extension_value,
+								guint extension_count);
+guint ags_midi_ump_util_get_midi2_registered_per_note_controller(AgsMidiUmpUtil *midi_ump_util,
+								 guchar *buffer,
+								 gint *group,
+								 gint *channel_number,
+								 gint *key,
+								 gint *data_index,
+								 gint *data,
+								 gchar ***extension_name, GValue **extension_value,
+								 guint *extension_count);
+
+/* MIDI v2.0 assignable per note controller */
+gboolean ags_midi_ump_util_is_midi2_assignable_per_note_controller(AgsMidiUmpUtil *midi_ump_util,
+								   guchar *buffer);
+void ags_midi_ump_util_put_midi2_assignable_per_note_controller(AgsMidiUmpUtil *midi_ump_util,
+								guchar *buffer,
+								gint group,
+								gint channel_number,
+								gint key,
+								gint data_index,
+								gint data,
+								gchar **extension_name, GValue *extension_value,
+								guint extension_count);
+guint ags_midi_ump_util_get_midi2_assignable_per_note_controller(AgsMidiUmpUtil *midi_ump_util,
+								 guchar *buffer,
+								 gint *group,
+								 gint *channel_number,
+								 gint *key,
+								 gint *data_index,
+								 gint *data,
+								 gchar ***extension_name, GValue **extension_value,
+								 guint *extension_count);
+
+/* MIDI v2.0 per note management */
+gboolean ags_midi_ump_util_is_midi2_per_note_management(AgsMidiUmpUtil *midi_ump_util,
+							guchar *buffer);
+void ags_midi_ump_util_put_midi2_per_note_management(AgsMidiUmpUtil *midi_ump_util,
+						     guchar *buffer,
+						     gint group,
+						     gint channel_number,
+						     gint key,
+						     gint options_flags,
+						     gchar **extension_name, GValue *extension_value,
+						     guint extension_count);
+guint ags_midi_ump_util_get_midi2_per_note_management(AgsMidiUmpUtil *midi_ump_util,
+						      guchar *buffer,
+						      gint *group,
+						      gint *channel_number,
+						      gint *key,
+						      gint *options_flags,
+						      gchar ***extension_name, GValue **extension_value,
+						      guint *extension_count);
+
+/* MIDI v2.0 control change */
+gboolean ags_midi_ump_util_is_midi2_control_change(AgsMidiUmpUtil *midi_ump_util,
+						   guchar *buffer);
+void ags_midi_ump_util_put_midi2_control_change(AgsMidiUmpUtil *midi_ump_util,
+						guchar *buffer,
+						gint group,
+						gint channel_number,
+						gint key,
+						gchar **extension_name, GValue *extension_value,
+						guint extension_count);
+guint ags_midi_ump_util_get_midi2_control_change(AgsMidiUmpUtil *midi_ump_util,
+						 guchar *buffer,
+						 gint *group,
+						 gint *channel_number,
+						 gint *key,
+						 gchar ***extension_name, GValue **extension_value,
+						 guint *extension_count);
 
 G_END_DECLS
 
