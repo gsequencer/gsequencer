@@ -4118,3 +4118,429 @@ ags_midi_ump_util_get_midi2_channel_pressure(AgsMidiUmpUtil *midi_ump_util,
 
   return(0);
 }
+
+/**
+ * ags_midi_ump_util_is_midi2_pitch_bend:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is MIDI version 2.0 pitch bend.
+ * 
+ * Returns: %TRUE if is MIDI version 2.0 pitch bend, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
+gboolean
+ags_midi_ump_util_is_midi2_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
+				      guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0x40 &&
+     (0xf0 & (buffer[1])) == 0xe0){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+/**
+ * ags_midi_ump_util_put_midi2_pitch_bend:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: the group
+ * @channel: the channel number
+ * @data: the data
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ * @extension_count: the extension count
+ *
+ * Put MIDI version 2.0 pitch bend.
+ * 
+ * Since: 5.5.4
+ */
+void
+ags_midi_ump_util_put_midi2_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
+				       guchar *buffer,
+				       gint group,
+				       gint channel,
+				       gint data,
+				       gchar **extension_name, GValue *extension_value,
+				       guint extension_count)
+{
+  guint nth;
+  gint position;
+
+  const gint opcode = 0x0e;
+  const gint mt = 0x04;
+  
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth++;
+
+  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
+  nth++;
+
+  /* reserved */
+  buffer[nth] = 0x0;
+  nth++;
+  
+  /* reserved */
+  buffer[nth] = 0x0;
+  nth++;
+
+  /* data */
+  buffer[nth] = (0xff & (data >> 24));
+  nth++;
+
+  buffer[nth] = (0xff & (data >> 16));
+  nth++;
+
+  buffer[nth] = (0xff & (data >> 8));
+  nth++;
+
+  buffer[nth] = (0xff & (data));
+  nth++;
+}
+
+guint
+ags_midi_ump_util_get_midi2_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
+				       guchar *buffer,
+				       gint *group,
+				       gint *channel,
+				       gint *data,
+				       gchar ***extension_name, GValue **extension_value,
+				       guint *extension_count)
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+/**
+ * ags_midi_ump_util_is_midi2_per_note_pitch_bend:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is MIDI version 2.0 pitch bend.
+ * 
+ * Returns: %TRUE if is MIDI version 2.0 pitch bend, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
+gboolean
+ags_midi_ump_util_is_midi2_per_note_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
+				      guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0x40 &&
+     (0xf0 & (buffer[1])) == 0x60){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+/**
+ * ags_midi_ump_util_put_midi2_per_note_pitch_bend:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: the group
+ * @channel: the channel number
+ * @key: the key
+ * @data: the data
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ * @extension_count: the extension count
+ *
+ * Put MIDI version 2.0 pitch bend.
+ * 
+ * Since: 5.5.4
+ */
+void
+ags_midi_ump_util_put_midi2_per_note_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
+						guchar *buffer,
+						gint group,
+						gint channel,
+						gint key,
+						gint data,
+						gchar **extension_name, GValue *extension_value,
+						guint extension_count)
+{
+  guint nth;
+  gint position;
+
+  const gint opcode = 0x06;
+  const gint mt = 0x04;
+  
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth++;
+
+  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
+  nth++;
+
+  /* key */
+  buffer[nth] = 0xff & (key);
+  nth++;
+  
+  /* reserved */
+  buffer[nth] = 0x0;
+  nth++;
+
+  /* data */
+  buffer[nth] = (0xff & (data >> 24));
+  nth++;
+
+  buffer[nth] = (0xff & (data >> 16));
+  nth++;
+
+  buffer[nth] = (0xff & (data >> 8));
+  nth++;
+
+  buffer[nth] = (0xff & (data));
+  nth++;
+}
+
+guint
+ags_midi_ump_util_get_midi2_per_note_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
+						guchar *buffer,
+						gint *group,
+						gint *channel,
+						gint *key,
+						gint *data,
+						gchar ***extension_name, GValue **extension_value,
+						guint *extension_count)
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+/**
+ * ags_midi_ump_util_is_flex_set_tempo:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is MIDI version 2.0 flex set tempo.
+ * 
+ * Returns: %TRUE if is MIDI version 2.0 flex set tempo, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
+gboolean
+ags_midi_ump_util_is_flex_set_tempo(AgsMidiUmpUtil *midi_ump_util,
+				    guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0xd0 &&
+     (0x30 & (buffer[1])) == 0x10 &&
+     (0x30 & (buffer[2])) == 0x00 &&
+     (0x30 & (buffer[3])) == 0x00){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+/**
+ * ags_midi_ump_util_put_flex_set_tempo:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: the group
+ * @channel: the channel number
+ * @key: the key
+ * @data: the data
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ * @extension_count: the extension count
+ *
+ * Put MIDI version 2.0 flex set tempo.
+ * 
+ * Since: 5.5.4
+ */
+void
+ags_midi_ump_util_put_flex_set_tempo(AgsMidiUmpUtil *midi_ump_util,
+				     guchar *buffer,
+				     gint group,
+				     gint channel,
+				     gint tenth_ns_per_quarter_note,
+				     gchar **extension_name, GValue *extension_value,
+				     guint extension_count)
+{
+  guint nth;
+  gint position;
+
+  const gint status_bank = 0;
+  const gint status = 0;
+  const gint form = 0x00;
+  const gint addr = 0x01;
+  const gint mt = 0x0d;
+  
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth++;
+
+  buffer[nth] = (0xc0 & (form << 6)) | (0x30 & (addr << 4)) | (0x0f & (channel));
+  nth++;
+
+  /* status bank */
+  buffer[nth] = 0xff & (status_bank);
+  nth++;
+
+  /* status */
+  buffer[nth] = 0xff & (status);
+  nth++;
+
+  /* tenth ns per quarter note, */
+  buffer[nth] = (0xff & (tenth_ns_per_quarter_note >> 24));
+  nth++;
+
+  buffer[nth] = (0xff & (tenth_ns_per_quarter_note >> 16));
+  nth++;
+
+  buffer[nth] = (0xff & (tenth_ns_per_quarter_note >> 8));
+  nth++;
+
+  buffer[nth] = (0xff & (tenth_ns_per_quarter_note));
+  nth++;
+
+  /* reserved */
+  memset(buffer + nth, 0, 8 * sizeof(guchar));
+  nth += 8;
+}
+
+guint
+ags_midi_ump_util_get_flex_set_tempo(AgsMidiUmpUtil *midi_ump_util,
+				     guchar *buffer,
+				     gint *group,
+				     gint *channel,
+				     gint *tenth_ns_per_quarter_note,
+				     gchar ***extension_name, GValue **extension_value,
+				     guint *extension_count)
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+/**
+ * ags_midi_ump_util_is_flex_set_time_signature:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is MIDI version 2.0 flex set time_signature.
+ * 
+ * Returns: %TRUE if is MIDI version 2.0 flex set time_signature, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
+gboolean
+ags_midi_ump_util_is_flex_set_time_signature(AgsMidiUmpUtil *midi_ump_util,
+					     guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0xd0 &&
+     (0x30 & (buffer[1])) == 0x10 &&
+     (0x30 & (buffer[2])) == 0x00 &&
+     (0x30 & (buffer[3])) == 0x01){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+/**
+ * ags_midi_ump_util_put_flex_set_time_signature:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: the group
+ * @channel: the channel number
+ * @key: the key
+ * @data: the data
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ * @extension_count: the extension count
+ *
+ * Put MIDI version 2.0 flex set time_signature.
+ * 
+ * Since: 5.5.4
+ */
+void
+ags_midi_ump_util_put_flex_set_time_signature(AgsMidiUmpUtil *midi_ump_util,
+					      guchar *buffer,
+					      gint group,
+					      gint channel,
+					      gint numerator,
+					      gint denominator,
+					      gint thirty_two_ticks,
+					      gchar **extension_name, GValue *extension_value,
+					      guint extension_count)
+{
+  guint nth;
+  gint position;
+
+  const gint status_bank = 0;
+  const gint status = 1;
+  const gint form = 0x00;
+  const gint addr = 0x01;
+  const gint mt = 0x0d;
+  
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth++;
+
+  buffer[nth] = (0xc0 & (form << 6)) | (0x30 & (addr << 4)) | (0x0f & (channel));
+  nth++;
+
+  /* status bank */
+  buffer[nth] = 0xff & (status_bank);
+  nth++;
+
+  /* status */
+  buffer[nth] = 0xff & (status);
+  nth++;
+
+  /* numerator */
+  buffer[nth] = 0xff & (numerator);
+  nth++;
+
+  /* denominator */
+  buffer[nth] = 0xff & (denominator);
+  nth++;
+
+  /* 1/32 ticks */
+  buffer[nth] = 0xff & (thirty_two_ticks);
+  nth++;
+
+  /* reserved */
+  memset(buffer + nth, 0, 9 * sizeof(guchar));
+  nth += 9;
+}
+
+guint
+ags_midi_ump_util_get_flex_set_time_signature(AgsMidiUmpUtil *midi_ump_util,
+					      guchar *buffer,
+					      gint *group,
+					      gint *channel,
+					      gint *numerator,
+					      gint *denominator,
+					      gint *thirty_two_ticks,
+					      gchar ***extension_name, GValue **extension_value,
+					      guint *extension_count)
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
