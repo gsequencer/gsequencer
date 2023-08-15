@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -178,6 +178,7 @@
 #include <ags/audio/midi/ags_midi_ci_util.h>
 #include <ags/audio/midi/ags_midi_file.h>
 #include <ags/audio/midi/ags_midi_parser.h>
+#include <ags/audio/midi/ags_midi_ump_util.h>
 #include <ags/audio/midi/ags_midi_util.h>
 
 /* audio osc */

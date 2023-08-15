@@ -112,48 +112,12 @@ AgsMidiUmpUtil* ags_midi_ump_util_copy(AgsMidiUmpUtil *midi_ump_util);
 
 gboolean ags_midi_ump_util_is_system_common(AgsMidiUmpUtil *midi_ump_util,
 					    guchar *buffer);
-void ags_midi_ump_util_put_system_common(AgsMidiUmpUtil *midi_ump_util,
-					 guchar *buffer,
-					 gint group,
-					 gint status,
-					 gchar **extension_name, GValue *extension_value,
-					 guint extension_count);
-guint ags_midi_ump_util_get_system_common(AgsMidiUmpUtil *midi_ump_util,
-					  guchar *buffer,
-					  gint *group,
-					  gint *status,
-					  gchar ***extension_name, GValue **extension_value,
-					  guint *extension_count);
 
 gboolean ags_midi_ump_util_is_data_message_with_sysex(AgsMidiUmpUtil *midi_ump_util,
 						      guchar *buffer);
-void ags_midi_ump_util_put_data_message_with_sysex(AgsMidiUmpUtil *midi_ump_util,
-						   guchar *buffer,
-						   gint group,
-						   gint status,
-						   gchar **extension_name, GValue *extension_value,
-						   guint extension_count);
-guint ags_midi_ump_util_get_data_message_with_sysex(AgsMidiUmpUtil *midi_ump_util,
-						    guchar *buffer,
-						    gint *group,
-						    gint *status,
-						    gchar ***extension_name, GValue **extension_value,
-						    guint *extension_count);
 
 gboolean ags_midi_ump_util_is_data_message(AgsMidiUmpUtil *midi_ump_util,
 					   guchar *buffer);
-void ags_midi_ump_util_put_data_message(AgsMidiUmpUtil *midi_ump_util,
-					guchar *buffer,
-					gint group,
-					gint status,
-					gchar **extension_name, GValue *extension_value,
-					guint extension_count);
-guint ags_midi_ump_util_get_data_message(AgsMidiUmpUtil *midi_ump_util,
-					 guchar *buffer,
-					 gint *group,
-					 gint *status,
-					 gchar ***extension_name, GValue **extension_value,
-					 guint *extension_count);
 
 gboolean ags_midi_ump_util_is_stream_message(AgsMidiUmpUtil *midi_ump_util,
 					     guchar *buffer);

@@ -163,30 +163,6 @@ ags_midi_ump_util_is_system_common(AgsMidiUmpUtil *midi_ump_util,
   return(FALSE);
 }
 
-void
-ags_midi_ump_util_put_system_common(AgsMidiUmpUtil *midi_ump_util,
-				    guchar *buffer,
-				    gint group,
-				    gint status,
-				    gchar **extension_name, GValue *extension_value,
-				    guint extension_count)
-{
-  //TODO:JK: implement me
-}
-
-guint
-ags_midi_ump_util_get_system_common(AgsMidiUmpUtil *midi_ump_util,
-				    guchar *buffer,
-				    gint *group,
-				    gint *status,
-				    gchar ***extension_name, GValue **extension_value,
-				    guint *extension_count)
-{
-  //TODO:JK: implement me
-
-  return(0);
-}
-
 /**
  * ags_midi_ump_util_is_data_message_with_sysex:
  * @midi_ump_util: the MIDI UMP util
@@ -209,30 +185,6 @@ ags_midi_ump_util_is_data_message_with_sysex(AgsMidiUmpUtil *midi_ump_util,
   return(FALSE);
 }
 
-void
-ags_midi_ump_util_put_data_message_with_sysex(AgsMidiUmpUtil *midi_ump_util,
-					      guchar *buffer,
-					      gint group,
-					      gint status,
-					      gchar **extension_name, GValue *extension_value,
-					      guint extension_count)
-{
-  //TODO:JK: implement me
-}
-
-guint
-ags_midi_ump_util_get_data_message_with_sysex(AgsMidiUmpUtil *midi_ump_util,
-					      guchar *buffer,
-					      gint *group,
-					      gint *status,
-					      gchar ***extension_name, GValue **extension_value,
-					      guint *extension_count)
-{
-  //TODO:JK: implement me
-
-  return(0);
-}
-
 /**
  * ags_midi_ump_util_is_data_message:
  * @midi_ump_util: the MIDI UMP util
@@ -253,30 +205,6 @@ ags_midi_ump_util_is_data_message(AgsMidiUmpUtil *midi_ump_util,
   }
   
   return(FALSE);
-}
-
-void
-ags_midi_ump_util_put_data_message(AgsMidiUmpUtil *midi_ump_util,
-				   guchar *buffer,
-				   gint group,
-				   gint status,
-				   gchar **extension_name, GValue *extension_value,
-				   guint extension_count)
-{
-  //TODO:JK: implement me
-}
-
-guint
-ags_midi_ump_util_get_data_message(AgsMidiUmpUtil *midi_ump_util,
-				   guchar *buffer,
-				   gint *group,
-				   gint *status,
-				   gchar ***extension_name, GValue **extension_value,
-				   guint *extension_count)
-{
-  //TODO:JK: implement me
-
-  return(0);
 }
 
 /**
@@ -342,6 +270,20 @@ ags_midi_ump_util_put_stream_message(AgsMidiUmpUtil *midi_ump_util,
   nth += 10;
 }
 
+/**
+ * ags_midi_ump_util_get_stream_message:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @format: (out): the return location of format
+ * @status: (out): the return location of status
+ * @data: (out): the return location of data
+ * 
+ * Get stream message.
+ *
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.4
+ */
 guint
 ags_midi_ump_util_get_stream_message(AgsMidiUmpUtil *midi_ump_util,
 				     guchar *buffer,
