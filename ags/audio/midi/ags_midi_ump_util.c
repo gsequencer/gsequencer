@@ -26,6 +26,28 @@
 
 #include <string.h>
 
+/* MIDI v2.0 flex set text */
+gboolean ags_midi_ump_util_is_flex_set_text(AgsMidiUmpUtil *midi_ump_util,
+					    guchar *buffer);
+void ags_midi_ump_util_put_flex_set_text(AgsMidiUmpUtil *midi_ump_util,
+					 guchar *buffer,
+					 gint group,
+					 gint channel,
+					 gint status_bank,
+					 gint status,
+					 gchar *text,
+					 gchar **extension_name, GValue *extension_value,
+					 guint extension_count);
+guint ags_midi_ump_util_get_flex_set_text(AgsMidiUmpUtil *midi_ump_util,
+					  guchar *buffer,
+					  gint *group,
+					  gint *channel,
+					  gint *status_bank,
+					  gint *status,
+					  gchar **text,
+					  gchar ***extension_name, GValue **extension_value,
+					  guint *extension_count);
+
 /**
  * SECTION:ags_midi_ump_util
  * @short_description: MIDI UMP util
@@ -4777,6 +4799,291 @@ ags_midi_ump_util_get_flex_set_key_signature(AgsMidiUmpUtil *midi_ump_util,
 					     gint *tonic_note,
 					     gchar ***extension_name, GValue **extension_value,
 					     guint *extension_count)
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+/**
+ * ags_midi_ump_util_is_flex_set_chord_name:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is MIDI version 2.0 flex set chord name.
+ * 
+ * Returns: %TRUE if is MIDI version 2.0 flex set chord name, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
+gboolean
+ags_midi_ump_util_is_flex_set_chord_name(AgsMidiUmpUtil *midi_ump_util,
+					    guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0xd0 &&
+     (0x30 & (buffer[1])) == 0x10 &&
+     (0x30 & (buffer[2])) == 0x00 &&
+     (0x30 & (buffer[3])) == 0x06){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+/**
+ * ags_midi_ump_util_put_flex_set_chord_name:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: the group
+ * @channel: the channel number
+ * @t_sharp_flats: the t sharp flats count
+ * @chord_tonic: the chord tonic
+ * @chord_type: the chord type
+ * @alter_1_type: the alter 1 type
+ * @alter_1_degree: the alter 1 degree
+ * @alter_2_type: the alter 2 type
+ * @alter_2_degree: the alter 2 degree
+ * @alter_3_type: the alter 3 type
+ * @alter_3_degree: the alter 3 degree
+ * @alter_4_type: the alter 4 type
+ * @alter_4_degree: the alter 4 degree
+ * @bass_note: the bass note
+ * @bass_chord_type: the bass chord type
+ * @b_alter_1_type: the alter 1 type
+ * @b_alter_1_degree: the alter 1 degree
+ * @b_alter_2_type: the alter 2 type
+ * @b_alter_2_degree: the alter 2 degree
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ * @extension_count: the extension count
+ *
+ * Put MIDI version 2.0 flex set chord name.
+ * 
+ * Since: 5.5.4
+ */
+void
+ags_midi_ump_util_put_flex_set_chord_name(AgsMidiUmpUtil *midi_ump_util,
+					  guchar *buffer,
+					  gint group,
+					  gint channel,
+					  gint t_sharp_flats,
+					  gint chord_tonic,
+					  gint chord_type,
+					  gint alter_1_type,
+					  gint alter_1_degree,
+					  gint alter_2_type,
+					  gint alter_2_degree,
+					  gint alter_3_type,
+					  gint alter_3_degree,
+					  gint alter_4_type,
+					  gint alter_4_degree,
+					  gint b_sharp_flats,
+					  gint bass_note,
+					  gint bass_chord_type,
+					  gint b_alter_1_type,
+					  gint b_alter_1_degree,
+					  gint b_alter_2_type,
+					  gint b_alter_2_degree,
+					  gchar **extension_name, GValue *extension_value,
+					  guint extension_count)
+{
+  guint nth;
+  gint position;
+
+  const gint status_bank = 0x0;
+  const gint status = 0x06;
+  const gint form = 0x00;
+  const gint addr = 0x01;
+  const gint mt = 0x0d;
+  
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth++;
+
+  buffer[nth] = (0xc0 & (form << 6)) | (0x30 & (addr << 4)) | (0x0f & (channel));
+  nth++;
+
+  /* status bank */
+  buffer[nth] = 0xff & (status_bank);
+  nth++;
+
+  /* status */
+  buffer[nth] = 0xff & (status);
+  nth++;
+
+  /* sharp flats and chord tonic */
+  buffer[nth] = (0xf0 & (t_sharp_flats << 4)) | (0x0f & (chord_tonic));
+  nth++;
+
+  /* chord type */
+  buffer[nth] = 0xff & (chord_type);
+  nth++;
+
+  /* alter 1 type and degree */
+  buffer[nth] = (0xf0 & (alter_1_type << 4)) | (0x0f & (alter_1_degree));
+  nth++;
+
+  /* alter 2 type and degree */
+  buffer[nth] = (0xf0 & (alter_2_type << 4)) | (0x0f & (alter_2_degree));
+  nth++;
+
+  /* alter 3 type and degree */
+  buffer[nth] = (0xf0 & (alter_3_type << 4)) | (0x0f & (alter_3_degree));
+  nth++;
+
+  /* alter 4 type and degree */
+  buffer[nth] = (0xf0 & (alter_4_type << 4)) | (0x0f & (alter_4_degree));
+  nth++;
+
+  /* reserved */
+  buffer[nth] = 0x0;
+  nth++;
+
+  buffer[nth] = 0x0;
+  nth++;
+
+  /* b sharp flats and bass note */
+  buffer[nth] = (0xf0 & (b_sharp_flats << 4)) | (0x0f & (bass_note));
+  nth++;
+
+  /* bass chord type */
+  buffer[nth] = 0xff & (bass_chord_type);
+  nth++;
+
+  /* alter 1 type and degree */
+  buffer[nth] = (0xf0 & (b_alter_1_type << 4)) | (0x0f & (b_alter_1_degree));
+  nth++;
+
+  /* alter 2 type and degree */
+  buffer[nth] = (0xf0 & (b_alter_2_type << 4)) | (0x0f & (b_alter_2_degree));
+  nth++;
+}
+
+guint
+ags_midi_ump_util_get_flex_set_chord_name(AgsMidiUmpUtil *midi_ump_util,
+					  guchar *buffer,
+					  gint *group,
+					  gint *channel,
+					  gint *t_sharp_flats,
+					  gint *chord_tonic,
+					  gint *chord_type,
+					  gint *alter_1_type,
+					  gint *alter_1_degree,
+					  gint *alter_2_type,
+					  gint *alter_2_degree,
+					  gint *alter_3_type,
+					  gint *alter_3_degree,
+					  gint *alter_4_type,
+					  gint *alter_4_degree,
+					  gint *b_sharp_flats,
+					  gint *bass_note,
+					  gint *bass_chord_type,
+					  gint *b_alter_1_type,
+					  gint *b_alter_1_degree,
+					  gint *b_alter_2_type,
+					  gint *b_alter_2_degree,
+					  gchar ***extension_name, GValue **extension_value,
+					  guint *extension_count)
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+/**
+ * ags_midi_ump_util_is_flex_set_text:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is MIDI version 2.0 flex set text.
+ * 
+ * Returns: %TRUE if is MIDI version 2.0 flex set text, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
+gboolean
+ags_midi_ump_util_is_flex_set_text(AgsMidiUmpUtil *midi_ump_util,
+				   guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0xd0 &&
+     (0x30 & (buffer[1])) == 0x10){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+/**
+ * ags_midi_ump_util_put_flex_set_text:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: the group
+ * @channel: the channel number
+ * @status_bank: the status bank
+ * @status: the status
+ * @text: the text
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ * @extension_count: the extension count
+ *
+ * Put MIDI version 2.0 flex set text.
+ * 
+ * Since: 5.5.4
+ */
+void
+ags_midi_ump_util_put_flex_set_text(AgsMidiUmpUtil *midi_ump_util,
+				    guchar *buffer,
+				    gint group,
+				    gint channel,
+				    gint status_bank,
+				    gint status,
+				    gchar *text,
+				    gchar **extension_name, GValue *extension_value,
+				    guint extension_count)
+{
+  guint nth;
+  gint position;
+
+  const gint form = 0x00;
+  const gint addr = 0x01;
+  const gint mt = 0x0d;
+  
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth++;
+
+  buffer[nth] = (0xc0 & (form << 6)) | (0x30 & (addr << 4)) | (0x0f & (channel));
+  nth++;
+
+  /* status bank */
+  buffer[nth] = 0xff & (status_bank);
+  nth++;
+
+  /* status */
+  buffer[nth] = 0xff & (status);
+  nth++;
+
+  //TODO:JK: implement me
+}
+
+guint
+ags_midi_ump_util_get_flex_set_text(AgsMidiUmpUtil *midi_ump_util,
+				    guchar *buffer,
+				    gint *group,
+				    gint *channel,
+				    gint *status_bank,
+				    gint *status,
+				    gchar **text,
+				    gchar ***extension_name, GValue **extension_value,
+				    guint *extension_count)
 {
   //TODO:JK: implement me
 

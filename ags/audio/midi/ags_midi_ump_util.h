@@ -1021,6 +1021,58 @@ guint ags_midi_ump_util_get_flex_set_key_signature(AgsMidiUmpUtil *midi_ump_util
 						   gchar ***extension_name, GValue **extension_value,
 						   guint *extension_count);
 
+/* MIDI v2.0 flex set chord name */
+gboolean ags_midi_ump_util_is_flex_set_chord_name(AgsMidiUmpUtil *midi_ump_util,
+						  guchar *buffer);
+void ags_midi_ump_util_put_flex_set_chord_name(AgsMidiUmpUtil *midi_ump_util,
+					       guchar *buffer,
+					       gint group,
+					       gint channel,
+					       gint t_sharp_flats,
+					       gint chord_tonic,
+					       gint chord_type,
+					       gint alter_1_type,
+					       gint alter_1_degree,
+					       gint alter_2_type,
+					       gint alter_2_degree,
+					       gint alter_3_type,
+					       gint alter_3_degree,
+					       gint alter_4_type,
+					       gint alter_4_degree,
+					       gint b_sharp_flats,
+					       gint bass_note,
+					       gint bass_chord_type,
+					       gint b_alter_1_type,
+					       gint b_alter_1_degree,
+					       gint b_alter_2_type,
+					       gint b_alter_2_degree,
+					       gchar **extension_name, GValue *extension_value,
+					       guint extension_count);
+guint ags_midi_ump_util_get_flex_set_chord_name(AgsMidiUmpUtil *midi_ump_util,
+						guchar *buffer,
+						gint *group,
+						gint *channel,
+						gint *t_sharp_flats,
+						gint *chord_tonic,
+						gint *chord_type,
+						gint *alter_1_type,
+						gint *alter_1_degree,
+						gint *alter_2_type,
+						gint *alter_2_degree,
+						gint *alter_3_type,
+						gint *alter_3_degree,
+						gint *alter_4_type,
+						gint *alter_4_degree,
+						gint *b_sharp_flats,
+						gint *bass_note,
+						gint *bass_chord_type,
+						gint *b_alter_1_type,
+						gint *b_alter_1_degree,
+						gint *b_alter_2_type,
+						gint *b_alter_2_degree,
+						gchar ***extension_name, GValue **extension_value,
+						guint *extension_count);
+
 G_END_DECLS
 
 #endif /*__AGS_MIDI_UMP_UTIL_H__*/
