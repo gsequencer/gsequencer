@@ -817,6 +817,42 @@ guint ags_midi_ump_util_get_midi2_rpn_tuning_program_change(AgsMidiUmpUtil *midi
 							    gchar ***extension_name, GValue **extension_value,
 							    guint *extension_count);
 
+/* MIDI v2.0 rpn tuning bank select */
+gboolean ags_midi_ump_util_is_midi2_rpn_tuning_bank_select(AgsMidiUmpUtil *midi_ump_util,
+							   guchar *buffer);
+void ags_midi_ump_util_put_midi2_rpn_tuning_bank_select(AgsMidiUmpUtil *midi_ump_util,
+							guchar *buffer,
+							gint group,
+							gint channel,
+							gint tuning_bank_number,
+							gchar **extension_name, GValue *extension_value,
+							guint extension_count);
+guint ags_midi_ump_util_get_midi2_rpn_tuning_bank_select(AgsMidiUmpUtil *midi_ump_util,
+							 guchar *buffer,
+							 gint *group,
+							 gint *channel,
+							 gint *tuning_bank_number,
+							 gchar ***extension_name, GValue **extension_value,
+							 guint *extension_count);
+
+/* MIDI v2.0 rpn mpe mcm */
+gboolean ags_midi_ump_util_is_midi2_rpn_mpe_mcm(AgsMidiUmpUtil *midi_ump_util,
+						guchar *buffer);
+void ags_midi_ump_util_put_midi2_rpn_mpe_mcm(AgsMidiUmpUtil *midi_ump_util,
+					     guchar *buffer,
+					     gint group,
+					     gint channel,
+					     gint channel_count,
+					     gchar **extension_name, GValue *extension_value,
+					     guint extension_count);
+guint ags_midi_ump_util_get_midi2_rpn_mpe_mcm(AgsMidiUmpUtil *midi_ump_util,
+					      guchar *buffer,
+					      gint *group,
+					      gint *channel,
+					      gint *channel_count,
+					      gchar ***extension_name, GValue **extension_value,
+					      guint *extension_count);
+
 G_END_DECLS
 
 #endif /*__AGS_MIDI_UMP_UTIL_H__*/
