@@ -3448,9 +3448,9 @@ ags_midi_ump_util_put_midi2_rpn_pitch_bend_range(AgsMidiUmpUtil *midi_ump_util,
 {
   guint nth;
   gint position;
-  gint bank;
-  gint index_key;
-  
+
+  const gint bank = 0x0;
+  const gint index_key = 0x0;
   const gint opcode = 0x02;
   const gint mt = 0x04;
   
@@ -3466,14 +3466,10 @@ ags_midi_ump_util_put_midi2_rpn_pitch_bend_range(AgsMidiUmpUtil *midi_ump_util,
   nth++;
   
   /* bank */
-  bank = 0x0;
-  
   buffer[nth] = (0xff & (bank));
   nth++;
 
   /* index key */
-  index_key = 0x0;
-  
   buffer[nth] = (0xff & (index_key));
   nth++;
 
@@ -3558,9 +3554,9 @@ ags_midi_ump_util_put_midi2_rpn_coarse_tuning(AgsMidiUmpUtil *midi_ump_util,
 {
   guint nth;
   gint position;
-  gint bank;
-  gint index_key;
-  
+
+  const gint bank = 0x0;
+  const gint index_key = 0x02;
   const gint opcode = 0x02;
   const gint mt = 0x04;
   
@@ -3576,14 +3572,10 @@ ags_midi_ump_util_put_midi2_rpn_coarse_tuning(AgsMidiUmpUtil *midi_ump_util,
   nth++;
   
   /* bank */
-  bank = 0x0;
-  
   buffer[nth] = (0xff & (bank));
   nth++;
 
   /* index key */
-  index_key = 0x02;
-  
   buffer[nth] = (0xff & (index_key));
   nth++;
 
@@ -3663,9 +3655,9 @@ ags_midi_ump_util_put_midi2_rpn_tuning_program_change(AgsMidiUmpUtil *midi_ump_u
 {
   guint nth;
   gint position;
-  gint bank;
-  gint index_key;
-  
+
+  const gint bank = 0x0;
+  const gint index_key = 0x03;
   const gint opcode = 0x02;
   const gint mt = 0x04;
   
@@ -3681,14 +3673,10 @@ ags_midi_ump_util_put_midi2_rpn_tuning_program_change(AgsMidiUmpUtil *midi_ump_u
   nth++;
   
   /* bank */
-  bank = 0x0;
-  
   buffer[nth] = (0xff & (bank));
   nth++;
 
   /* index key */
-  index_key = 0x03;
-  
   buffer[nth] = (0xff & (index_key));
   nth++;
 
@@ -3711,6 +3699,208 @@ ags_midi_ump_util_get_midi2_rpn_tuning_program_change(AgsMidiUmpUtil *midi_ump_u
 						      gint *tuning_program_number,
 						      gchar ***extension_name, GValue **extension_value,
 						      guint *extension_count)
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+/**
+ * ags_midi_ump_util_is_rpn_midi2_tuning_bank_select:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is MIDI version 2.0 RPN tuning bank select.
+ * 
+ * Returns: %TRUE if is MIDI version 2.0 RPN tuning bank select, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
+gboolean
+ags_midi_ump_util_is_midi2_rpn_tuning_bank_select(AgsMidiUmpUtil *midi_ump_util,
+						  guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0x40 &&
+     (0xf0 & (buffer[1])) == 0x20 &&
+     (0xff & (buffer[2])) == 0x00 &&
+     (0xff & (buffer[3])) == 0x04){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+/**
+ * ags_midi_ump_util_put_midi2_rpn_tuning_bank_select:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: the group
+ * @channel: the channel number
+ * @tuning_bank_number: the tuning bank number
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ * @extension_count: the extension count
+ *
+ * Put MIDI version 2.0 RPN tuning bank select.
+ * 
+ * Since: 5.5.4
+ */
+void
+ags_midi_ump_util_put_midi2_rpn_tuning_bank_select(AgsMidiUmpUtil *midi_ump_util,
+						   guchar *buffer,
+						   gint group,
+						   gint channel,
+						   gint tuning_bank_number,
+						   gchar **extension_name, GValue *extension_value,
+						   guint extension_count)
+{
+  guint nth;
+  gint position;
+
+  const gint bank = 0x0;
+  const gint index_key = 0x04;
+  const gint opcode = 0x02;
+  const gint mt = 0x04;
+  
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth++;
+
+  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
+  nth++;
+  
+  /* bank */
+  buffer[nth] = (0xff & (bank));
+  nth++;
+
+  /* index key */
+  buffer[nth] = (0xff & (index_key));
+  nth++;
+
+  /* tuning bank number */
+  buffer[nth] = 0xfc & ((0x7f & (tuning_bank_number)) << 1);
+  nth++;
+
+  /* undefined */
+  buffer[nth] = 0x0;  
+  buffer[nth + 1] = 0x0;  
+
+  nth += 2;
+}
+
+guint
+ags_midi_ump_util_get_midi2_rpn_tuning_bank_select(AgsMidiUmpUtil *midi_ump_util,
+						   guchar *buffer,
+						   gint *group,
+						   gint *channel,
+						   gint *tuning_bank_number,
+						   gchar ***extension_name, GValue **extension_value,
+						   guint *extension_count)
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+/**
+ * ags_midi_ump_util_is_rpn_midi2_mpe_mcm:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is MIDI version 2.0 RPN MPE MCM.
+ * 
+ * Returns: %TRUE if is MIDI version 2.0 RPN MPE MCM, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
+gboolean
+ags_midi_ump_util_is_midi2_rpn_mpe_mcm(AgsMidiUmpUtil *midi_ump_util,
+				       guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0x40 &&
+     (0xf0 & (buffer[1])) == 0x20 &&
+     (0xff & (buffer[2])) == 0x00 &&
+     (0xff & (buffer[3])) == 0x06){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+/**
+ * ags_midi_ump_util_put_midi2_rpn_mpe_mcm:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: the group
+ * @channel: the channel number
+ * @channel_count: the tuning bank number
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ * @extension_count: the extension count
+ *
+ * Put MIDI version 2.0 RPN MPE MCM.
+ * 
+ * Since: 5.5.4
+ */
+void
+ags_midi_ump_util_put_midi2_rpn_mpe_mcm(AgsMidiUmpUtil *midi_ump_util,
+					guchar *buffer,
+					gint group,
+					gint channel,
+					gint channel_count,
+					gchar **extension_name, GValue *extension_value,
+					guint extension_count)
+{
+  guint nth;
+  gint position;
+
+  const gint bank = 0x0;
+  const gint index_key = 0x06;
+  const gint opcode = 0x02;
+  const gint mt = 0x04;
+  
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth++;
+
+  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
+  nth++;
+  
+  /* bank */
+  buffer[nth] = (0xff & (bank));
+  nth++;
+
+  /* index key */
+  buffer[nth] = (0xff & (index_key));
+  nth++;
+
+  /* channel count */
+  buffer[nth] = 0xfc & ((0x7f & (channel_count)) << 1);
+  nth++;
+
+  /* undefined */
+  buffer[nth] = 0x0;  
+  buffer[nth + 1] = 0x0;  
+
+  nth += 2;
+}
+
+guint
+ags_midi_ump_util_get_midi2_rpn_mpe_mcm(AgsMidiUmpUtil *midi_ump_util,
+					guchar *buffer,
+					gint *group,
+					gint *channel,
+					gint *channel_count,
+					gchar ***extension_name, GValue **extension_value,
+					guint *extension_count)
 {
   //TODO:JK: implement me
 
