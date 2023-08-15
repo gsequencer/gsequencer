@@ -853,6 +853,48 @@ guint ags_midi_ump_util_get_midi2_rpn_mpe_mcm(AgsMidiUmpUtil *midi_ump_util,
 					      gchar ***extension_name, GValue **extension_value,
 					      guint *extension_count);
 
+/* MIDI v2.0 program change */
+gboolean ags_midi_ump_util_is_midi2_program_change(AgsMidiUmpUtil *midi_ump_util,
+						   guchar *buffer);
+void ags_midi_ump_util_put_midi2_program_change(AgsMidiUmpUtil *midi_ump_util,
+						guchar *buffer,
+						gint group,
+						gint channel,
+						gint option_flags,
+						gint program,
+						gint bank_msb,
+						gint bank_lsb,
+						gchar **extension_name, GValue *extension_value,
+						guint extension_count);
+guint ags_midi_ump_util_get_midi2_program_change(AgsMidiUmpUtil *midi_ump_util,
+						 guchar *buffer,
+						 gint *group,
+						 gint *channel,
+						 gint *option_flags,
+						 gint *program,
+						 gint *bank_msb,
+						 gint *bank_lsb,
+						 gchar ***extension_name, GValue **extension_value,
+						 guint *extension_count);
+
+/* MIDI v2.0 channel pressure */
+gboolean ags_midi_ump_util_is_midi2_channel_pressure(AgsMidiUmpUtil *midi_ump_util,
+						     guchar *buffer);
+void ags_midi_ump_util_put_midi2_channel_pressure(AgsMidiUmpUtil *midi_ump_util,
+						  guchar *buffer,
+						  gint group,
+						  gint channel,
+						  gint data,
+						  gchar **extension_name, GValue *extension_value,
+						  guint extension_count);
+guint ags_midi_ump_util_get_midi2_channel_pressure(AgsMidiUmpUtil *midi_ump_util,
+						   guchar *buffer,
+						   gint *group,
+						   gint *channel,
+						   gint *data,
+						   gchar ***extension_name, GValue **extension_value,
+						   guint *extension_count);
+
 G_END_DECLS
 
 #endif /*__AGS_MIDI_UMP_UTIL_H__*/
