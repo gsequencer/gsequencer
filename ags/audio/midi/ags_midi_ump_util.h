@@ -973,6 +973,54 @@ guint ags_midi_ump_util_get_flex_set_time_signature(AgsMidiUmpUtil *midi_ump_uti
 						    gchar ***extension_name, GValue **extension_value,
 						    guint *extension_count);
 
+/* MIDI v2.0 flex set metronome */
+gboolean ags_midi_ump_util_is_flex_set_metronome(AgsMidiUmpUtil *midi_ump_util,
+						 guchar *buffer);
+void ags_midi_ump_util_put_flex_set_metronome(AgsMidiUmpUtil *midi_ump_util,
+					      guchar *buffer,
+					      gint group,
+					      gint channel,
+					      gint clocks_per_primary_click,
+					      gint bar_accent_part_1,
+					      gint bar_accent_part_2,
+					      gint bar_accent_part_3,
+					      gint subdivision_clicks_1,
+					      gint subdivision_clicks_2,
+					      gchar **extension_name, GValue *extension_value,
+					      guint extension_count);
+guint ags_midi_ump_util_get_flex_set_metronome(AgsMidiUmpUtil *midi_ump_util,
+					       guchar *buffer,
+					       gint *group,
+					       gint *channel,
+					       gint *clocks_per_primary_click,
+					       gint *bar_accent_part_1,
+					       gint *bar_accent_part_2,
+					       gint *bar_accent_part_3,
+					       gint *subdivision_clicks_1,
+					       gint *subdivision_clicks_2,
+					       gchar ***extension_name, GValue **extension_value,
+					       guint *extension_count);
+
+/* MIDI v2.0 flex set key signature */
+gboolean ags_midi_ump_util_is_flex_set_key_signature(AgsMidiUmpUtil *midi_ump_util,
+						     guchar *buffer);
+void ags_midi_ump_util_put_flex_set_key_signature(AgsMidiUmpUtil *midi_ump_util,
+						  guchar *buffer,
+						  gint group,
+						  gint channel,
+						  gint sharp_flats,
+						  gint tonic_note,
+						  gchar **extension_name, GValue *extension_value,
+						  guint extension_count);
+guint ags_midi_ump_util_get_flex_set_key_signature(AgsMidiUmpUtil *midi_ump_util,
+						   guchar *buffer,
+						   gint *group,
+						   gint *channel,
+						   gint *sharp_flats,
+						   gint *tonic_note,
+						   gchar ***extension_name, GValue **extension_value,
+						   guint *extension_count);
+
 G_END_DECLS
 
 #endif /*__AGS_MIDI_UMP_UTIL_H__*/

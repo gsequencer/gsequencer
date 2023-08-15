@@ -4353,8 +4353,7 @@ ags_midi_ump_util_is_flex_set_tempo(AgsMidiUmpUtil *midi_ump_util,
  * @buffer: the buffer
  * @group: the group
  * @channel: the channel number
- * @key: the key
- * @data: the data
+ * @tenth_ns_per_quarter_note: the 10 ns per quarter note
  * @extension_name: the extension name string vector
  * @extension_value: the extension value array
  * @extension_count: the extension count
@@ -4463,8 +4462,9 @@ ags_midi_ump_util_is_flex_set_time_signature(AgsMidiUmpUtil *midi_ump_util,
  * @buffer: the buffer
  * @group: the group
  * @channel: the channel number
- * @key: the key
- * @data: the data
+ * @numerator: the numerator
+ * @denominator: the denominator
+ * @thirty_two_ticks: the 1/32 ticks
  * @extension_name: the extension name string vector
  * @extension_value: the extension value array
  * @extension_count: the extension count
@@ -4539,6 +4539,244 @@ ags_midi_ump_util_get_flex_set_time_signature(AgsMidiUmpUtil *midi_ump_util,
 					      gint *thirty_two_ticks,
 					      gchar ***extension_name, GValue **extension_value,
 					      guint *extension_count)
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+/**
+ * ags_midi_ump_util_is_flex_set_metronome:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is MIDI version 2.0 flex set metronome.
+ * 
+ * Returns: %TRUE if is MIDI version 2.0 flex set metronome, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
+gboolean
+ags_midi_ump_util_is_flex_set_metronome(AgsMidiUmpUtil *midi_ump_util,
+					guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0xd0 &&
+     (0x30 & (buffer[1])) == 0x10 &&
+     (0x30 & (buffer[2])) == 0x00 &&
+     (0x30 & (buffer[3])) == 0x02){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+/**
+ * ags_midi_ump_util_put_flex_set_metronome:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: the group
+ * @channel: the channel number
+ * @clocks_per_primary_click: the clocks per primary click
+ * @bar_accent_part_1: the bar accent part 1
+ * @bar_accent_part_2: the bar accent part 2
+ * @bar_accent_part_3: the bar accent part 3
+ * @subdivision_clicks_1: the subdivision clicks 1
+ * @subdivision_clicks_2: the subdivision clicks 2
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ * @extension_count: the extension count
+ *
+ * Put MIDI version 2.0 flex set metronome.
+ * 
+ * Since: 5.5.4
+ */
+void
+ags_midi_ump_util_put_flex_set_metronome(AgsMidiUmpUtil *midi_ump_util,
+					 guchar *buffer,
+					 gint group,
+					 gint channel,
+					 gint clocks_per_primary_click,
+					 gint bar_accent_part_1,
+					 gint bar_accent_part_2,
+					 gint bar_accent_part_3,
+					 gint subdivision_clicks_1,
+					 gint subdivision_clicks_2,
+					 gchar **extension_name, GValue *extension_value,
+					 guint extension_count)
+{
+  guint nth;
+  gint position;
+
+  const gint status_bank = 0x0;
+  const gint status = 0x2;
+  const gint form = 0x00;
+  const gint addr = 0x01;
+  const gint mt = 0x0d;
+  
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth++;
+
+  buffer[nth] = (0xc0 & (form << 6)) | (0x30 & (addr << 4)) | (0x0f & (channel));
+  nth++;
+
+  /* status bank */
+  buffer[nth] = 0xff & (status_bank);
+  nth++;
+
+  /* status */
+  buffer[nth] = 0xff & (status);
+  nth++;
+
+  /* clocks per primary click */
+  buffer[nth] = 0xff & (clocks_per_primary_click);
+  nth++;
+
+  /* bar accent part 1 */
+  buffer[nth] = 0xff & (bar_accent_part_1);
+  nth++;
+
+  /* bar accent part 2 */
+  buffer[nth] = 0xff & (bar_accent_part_2);
+  nth++;
+
+  /* bar accent part 3 */
+  buffer[nth] = 0xff & (bar_accent_part_3);
+  nth++;
+
+  /* subdivision clicks 1 */
+  buffer[nth] = 0xff & (subdivision_clicks_1);
+  nth++;
+
+  /* subdivision clicks 2 */
+  buffer[nth] = 0xff & (subdivision_clicks_2);
+  nth++;
+
+  /* reserved */
+  memset(buffer + nth, 0, 6 * sizeof(guchar));
+  nth += 6;
+}
+
+guint
+ags_midi_ump_util_get_flex_set_metronome(AgsMidiUmpUtil *midi_ump_util,
+					 guchar *buffer,
+					 gint *group,
+					 gint *channel,
+					 gint *clocks_per_primary_click,
+					 gint *bar_accent_part_1,
+					 gint *bar_accent_part_2,
+					 gint *bar_accent_part_3,
+					 gint *subdivision_clicks_1,
+					 gint *subdivision_clicks_2,
+					 gchar ***extension_name, GValue **extension_value,
+					 guint *extension_count)
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+/**
+ * ags_midi_ump_util_is_flex_set_key_signature:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is MIDI version 2.0 flex set key signature.
+ * 
+ * Returns: %TRUE if is MIDI version 2.0 flex set key signature, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
+gboolean
+ags_midi_ump_util_is_flex_set_key_signature(AgsMidiUmpUtil *midi_ump_util,
+					    guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0xd0 &&
+     (0x30 & (buffer[1])) == 0x10 &&
+     (0x30 & (buffer[2])) == 0x00 &&
+     (0x30 & (buffer[3])) == 0x05){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+/**
+ * ags_midi_ump_util_put_flex_set_key_signature:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: the group
+ * @channel: the channel number
+ * @sharp_flats: the sharp flats count
+ * @tonic_note: the tonic note
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ * @extension_count: the extension count
+ *
+ * Put MIDI version 2.0 flex set key signature.
+ * 
+ * Since: 5.5.4
+ */
+void
+ags_midi_ump_util_put_flex_set_key_signature(AgsMidiUmpUtil *midi_ump_util,
+					     guchar *buffer,
+					     gint group,
+					     gint channel,
+					     gint sharp_flats,
+					     gint tonic_note,
+					     gchar **extension_name, GValue *extension_value,
+					     guint extension_count)
+{
+  guint nth;
+  gint position;
+
+  const gint status_bank = 0x0;
+  const gint status = 0x05;
+  const gint form = 0x00;
+  const gint addr = 0x01;
+  const gint mt = 0x0d;
+  
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth++;
+
+  buffer[nth] = (0xc0 & (form << 6)) | (0x30 & (addr << 4)) | (0x0f & (channel));
+  nth++;
+
+  /* status bank */
+  buffer[nth] = 0xff & (status_bank);
+  nth++;
+
+  /* status */
+  buffer[nth] = 0xff & (status);
+  nth++;
+
+  /* sharp flats and tonic note */
+  buffer[nth] = (0xf0 & (sharp_flats << 4)) | (0x0f & (tonic_note));
+  nth++;
+
+  /* reserved */
+  memset(buffer + nth, 0, 11 * sizeof(guchar));
+  nth += 11;
+}
+
+guint
+ags_midi_ump_util_get_flex_set_key_signature(AgsMidiUmpUtil *midi_ump_util,
+					     guchar *buffer,
+					     gint *group,
+					     gint *channel,
+					     gint *sharp_flats,
+					     gint *tonic_note,
+					     gchar ***extension_name, GValue **extension_value,
+					     guint *extension_count)
 {
   //TODO:JK: implement me
 
