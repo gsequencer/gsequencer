@@ -895,6 +895,84 @@ guint ags_midi_ump_util_get_midi2_channel_pressure(AgsMidiUmpUtil *midi_ump_util
 						   gchar ***extension_name, GValue **extension_value,
 						   guint *extension_count);
 
+/* MIDI v2.0 pitch bend */
+gboolean ags_midi_ump_util_is_midi2_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
+					       guchar *buffer);
+void ags_midi_ump_util_put_midi2_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
+					    guchar *buffer,
+					    gint group,
+					    gint channel,
+					    gint data,
+					    gchar **extension_name, GValue *extension_value,
+					    guint extension_count);
+guint ags_midi_ump_util_get_midi2_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
+					     guchar *buffer,
+					     gint *group,
+					     gint *channel,
+					     gint *data,
+					     gchar ***extension_name, GValue **extension_value,
+					     guint *extension_count);
+
+/* MIDI v2.0 per note pitch bend */
+gboolean ags_midi_ump_util_is_midi2_per_note_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
+							guchar *buffer);
+void ags_midi_ump_util_put_midi2_per_note_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
+						     guchar *buffer,
+						     gint group,
+						     gint channel,
+						     gint key,
+						     gint data,
+						     gchar **extension_name, GValue *extension_value,
+						     guint extension_count);
+guint ags_midi_ump_util_get_midi2_per_note_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
+						      guchar *buffer,
+						      gint *group,
+						      gint *channel,
+						      gint *key,
+						      gint *data,
+						      gchar ***extension_name, GValue **extension_value,
+						      guint *extension_count);
+
+/* MIDI v2.0 flex set tempo */
+gboolean ags_midi_ump_util_is_flex_set_tempo(AgsMidiUmpUtil *midi_ump_util,
+					     guchar *buffer);
+void ags_midi_ump_util_put_flex_set_tempo(AgsMidiUmpUtil *midi_ump_util,
+					  guchar *buffer,
+					  gint group,
+					  gint channel,
+					  gint tenth_ns_per_quarter_note,
+					  gchar **extension_name, GValue *extension_value,
+					  guint extension_count);
+guint ags_midi_ump_util_get_flex_set_tempo(AgsMidiUmpUtil *midi_ump_util,
+					   guchar *buffer,
+					   gint *group,
+					   gint *channel,
+					   gint *tenth_ns_per_quarter_note,
+					   gchar ***extension_name, GValue **extension_value,
+					   guint *extension_count);
+
+/* MIDI v2.0 flex set time signature */
+gboolean ags_midi_ump_util_is_flex_set_time_signature(AgsMidiUmpUtil *midi_ump_util,
+						      guchar *buffer);
+void ags_midi_ump_util_put_flex_set_time_signature(AgsMidiUmpUtil *midi_ump_util,
+						   guchar *buffer,
+						   gint group,
+						   gint channel,
+						   gint numerator,
+						   gint denominator,
+						   gint thirty_two_ticks,
+						   gchar **extension_name, GValue *extension_value,
+						   guint extension_count);
+guint ags_midi_ump_util_get_flex_set_time_signature(AgsMidiUmpUtil *midi_ump_util,
+						    guchar *buffer,
+						    gint *group,
+						    gint *channel,
+						    gint *numerator,
+						    gint *denominator,
+						    gint *thirty_two_ticks,
+						    gchar ***extension_name, GValue **extension_value,
+						    guint *extension_count);
+
 G_END_DECLS
 
 #endif /*__AGS_MIDI_UMP_UTIL_H__*/
