@@ -121,20 +121,6 @@ gboolean ags_midi_ump_util_is_data_message(AgsMidiUmpUtil *midi_ump_util,
 
 gboolean ags_midi_ump_util_is_stream_message(AgsMidiUmpUtil *midi_ump_util,
 					     guchar *buffer);
-void ags_midi_ump_util_put_stream_message(AgsMidiUmpUtil *midi_ump_util,
-					  guchar *buffer,
-					  gint format,
-					  gint status,
-					  guchar data[10],
-					  gchar **extension_name, GValue *extension_value,
-					  guint extension_count);
-guint ags_midi_ump_util_get_stream_message(AgsMidiUmpUtil *midi_ump_util,
-					   guchar *buffer,
-					   gint *format,
-					   gint *status,
-					   guchar data[10],
-					   gchar ***extension_name, GValue **extension_value,
-					   guint *extension_count);
 
 /* endpoint discovery */
 gboolean ags_midi_ump_util_is_endpoint_discovery(AgsMidiUmpUtil *midi_ump_util,
