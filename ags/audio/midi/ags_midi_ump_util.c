@@ -230,78 +230,6 @@ ags_midi_ump_util_is_stream_message(AgsMidiUmpUtil *midi_ump_util,
 }
 
 /**
- * ags_midi_ump_util_put_stream_message:
- * @midi_ump_util: the MIDI UMP util
- * @buffer: the buffer
- * @format: the format
- * @status: the status
- * @data: the data
- * @extension_name: the extension name string vector
- * @extension_value: the extension value array
- * @extension_count: the extension count
- *
- * Put stream message.
- * 
- * Since: 5.5.4
- */
-void
-ags_midi_ump_util_put_stream_message(AgsMidiUmpUtil *midi_ump_util,
-				     guchar *buffer,
-				     gint format,
-				     gint status,
-				     guchar data[10],
-				     gchar **extension_name, GValue *extension_value,
-				     guint extension_count)
-{
-  guint nth;
-  
-  g_return_if_fail(midi_ump_util != NULL);
-  g_return_if_fail(buffer != NULL);
-
-  nth = 0;
-  
-  buffer[nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
-  nth++;
-
-  buffer[nth] = (0xff & status);
-  nth++;
-
-  memcpy(buffer + nth, data, 10 * sizeof(guchar));  
-  nth += 10;
-}
-
-/**
- * ags_midi_ump_util_get_stream_message:
- * @midi_ump_util: the MIDI UMP util
- * @buffer: the buffer
- * @format: (out): the return location of format
- * @status: (out): the return location of status
- * @data: (out): the return location of data
- * 
- * Get stream message.
- *
- * Returns: the number of bytes read
- * 
- * Since: 5.5.4
- */
-guint
-ags_midi_ump_util_get_stream_message(AgsMidiUmpUtil *midi_ump_util,
-				     guchar *buffer,
-				     gint *format,
-				     gint *status,
-				     guchar data[10],
-				     gchar ***extension_name, GValue **extension_value,
-				     guint *extension_count)
-{
-  g_return_val_if_fail(midi_ump_util != NULL, 0);
-  g_return_val_if_fail(buffer != NULL, 0);
-
-  //TODO:JK: implement me
-
-  return(0);
-}
-
-/**
  * ags_midi_ump_util_is_endpoint_discovery:
  * @midi_ump_util: the MIDI UMP util
  * @buffer: the buffer
@@ -391,9 +319,42 @@ ags_midi_ump_util_get_endpoint_discovery(AgsMidiUmpUtil *midi_ump_util,
 					 gchar ***extension_name, GValue **extension_value,
 					 guint *extension_count)
 {
-  //TODO:JK: implement me
+  guint nth;
+  
+  g_return_val_if_fail(midi_ump_util != NULL, 0);     
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail((((0x0f & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x0, 0);
 
-  return(0);
+  nth = 2;
+
+  /* major */
+  if(major != NULL){
+    major[0] = buffer[nth];
+  }
+
+  nth++;
+
+  /* minor */
+  if(minor != NULL){
+    minor[0] = buffer[nth];
+  }
+
+  nth++;
+
+  /* reserved */
+  nth += 3;
+
+  /* filter bitmap */
+  if(filter != NULL){
+    filter[0] = buffer[nth];
+  }
+
+  nth++;
+
+  /* reserved */
+  nth += 8;
+  
+  return(nth);
 }
 
 /**
@@ -534,9 +495,68 @@ ags_midi_ump_util_get_endpoint_info_notification(AgsMidiUmpUtil *midi_ump_util,
 						 gchar ***extension_name, GValue **extension_value,
 						 guint *extension_count)
 {
-  //TODO:JK: implement me
+  guint nth;
+  
+  g_return_val_if_fail(midi_ump_util != NULL, 0);     
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail((((0x0f & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x1, 0);
 
-  return(0);
+  nth = 2;
+
+  /* major */
+  if(major != NULL){
+    major[0] = buffer[nth];
+  }
+
+  nth++;
+
+  /* minor */
+  if(minor != NULL){
+    minor[0] = buffer[nth];
+  }
+
+  nth++;
+
+  /* static function blocks and function block count */
+  if(static_function_blocks != NULL){
+    static_function_blocks[0] = ((0x80 & buffer[nth]) != 0) ? TRUE: FALSE;
+  }
+  
+  if(function_block_count != NULL){
+    function_block_count[0] = (0x7f & buffer[nth]);
+  }
+
+  nth++;
+
+  /* reserved */
+  nth++;
+
+  /* MIDI v1.0 and v2.0 support */
+  if(midi_v2_0_support != NULL){
+    midi_v2_0_support[0] = ((0x2 & buffer[nth]) != 0) ? TRUE: FALSE;
+  }
+
+  if(midi_v1_0_support != NULL){
+    midi_v1_0_support[0] = ((0x1 & buffer[nth]) != 0) ? TRUE: FALSE;
+  }
+
+  nth++;
+
+  /* RX/TX jitter reduction */
+  if(rx_jitter_reduction != NULL){
+    rx_jitter_reduction[0] = ((0x2 & buffer[0]) != 0) ? TRUE: FALSE;
+  }
+  
+  if(tx_jitter_reduction != NULL){
+    tx_jitter_reduction[0] = ((0x2 & buffer[0]) != 0) ? TRUE: FALSE;
+  }
+
+  nth++;
+  
+  /* reserved */
+  nth += 8;
+  
+  return(nth);
 }
 
 /**
