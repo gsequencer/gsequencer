@@ -310,6 +310,23 @@ ags_midi_ump_util_put_endpoint_discovery(AgsMidiUmpUtil *midi_ump_util,
   nth += 8;
 }
 
+/**
+ * ags_midi_ump_util_get_endpoint_discovery:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @major: (out): the return location of major
+ * @minor: (out): the return location of minor
+ * @filter: (out): the return location of filter
+ * @extension_name: (out): the return location of extension name string vector
+ * @extension_value: (out): the return location of extension value array
+ * @extension_count: (out): the return location of extension count
+ *
+ * Get endpoint discovery.
+ * 
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.4
+ */
 guint
 ags_midi_ump_util_get_endpoint_discovery(AgsMidiUmpUtil *midi_ump_util,
 					 guchar *buffer,
@@ -322,6 +339,7 @@ ags_midi_ump_util_get_endpoint_discovery(AgsMidiUmpUtil *midi_ump_util,
   guint nth;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
+  g_return_val_if_fail(buffer != NULL, 0);
   g_return_val_if_fail(buffer[0] == 0xf0, 0);
   g_return_val_if_fail((((0x0f & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x0, 0);
 
@@ -481,6 +499,28 @@ ags_midi_ump_util_put_endpoint_info_notification(AgsMidiUmpUtil *midi_ump_util,
   nth += 8;
 }
 
+/**
+ * ags_midi_ump_util_get_endpoint_info_notification:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @major: (out): the return location of major
+ * @minor: (out): the return location of minor
+ * @static_function_blocks: (out): the return location of static function blocks
+ * @function_block_count: (out): the return location of function block count
+ * @midi_v2_0_support: (out): the return location of MIDI v2.0 support
+ * @midi_v1_0_support: (out): the return location of MIDI v1.0 support
+ * @rx_jitter_reduction: (out): the return location of RX jitter reduction
+ * @tx_jitter_reduction: (out): the return location of TX jitter reduction
+ * @extension_name: (out): the return location of extension name string vector
+ * @extension_value: (out): the return location of extension value array
+ * @extension_count: (out): the return location of extension count
+ *
+ * Get endpoint discovery.
+ * 
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.4 
+ */
 guint
 ags_midi_ump_util_get_endpoint_info_notification(AgsMidiUmpUtil *midi_ump_util,
 						 guchar *buffer,
@@ -498,6 +538,7 @@ ags_midi_ump_util_get_endpoint_info_notification(AgsMidiUmpUtil *midi_ump_util,
   guint nth;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
+  g_return_val_if_fail(buffer != NULL, 0);
   g_return_val_if_fail(buffer[0] == 0xf0, 0);
   g_return_val_if_fail((((0x0f & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x1, 0);
 
@@ -666,6 +707,24 @@ ags_midi_ump_util_put_device_identity_notification(AgsMidiUmpUtil *midi_ump_util
   nth++;
 }
 
+/**
+ * ags_midi_ump_util_get_device_identity_notification:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @device_manufacturer: (out): the return location of device manufacturer
+ * @device_family: (out): the return location of device family
+ * @device_family_model: (out): the return location of device family model
+ * @software_revision: (out): the return location of software revision
+ * @extension_name: (out): the return location of extension name string vector
+ * @extension_value: (out): the return location of extension value array
+ * @extension_count: (out): the return location of extension count
+ *
+ * Get device identity notification.
+ * 
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.4 
+ */
 guint
 ags_midi_ump_util_get_device_identity_notification(AgsMidiUmpUtil *midi_ump_util,
 						   guchar *buffer,
@@ -676,12 +735,51 @@ ags_midi_ump_util_get_device_identity_notification(AgsMidiUmpUtil *midi_ump_util
 						   gchar ***extension_name, GValue **extension_value,
 						   guint *extension_count)
 {
-  g_return_val_if_fail(midi_ump_util != NULL, 0);
+  guint nth;
+  
+  g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail((0x0c & (buffer[0])) == 0x0, 0);
+  g_return_val_if_fail((((0x0f & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x2, 0);
 
-  //TODO:JK: implement me
+  nth = 2;
 
-  return(0);
+  /* reserved */
+  nth++;
+
+  /* reserved */
+  nth++;
+
+  /* device manufacturer */
+  if(device_manufacturer != NULL){
+    device_manufacturer[0] = (0x7f & buffer[nth] << 14) | (0x7f & buffer[nth + 1] << 7) | (0x7f & buffer[nth + 2]);
+  }
+
+  nth += 3;
+
+  /* device family */
+  if(device_family != NULL){
+    device_family[0] = (0x7f & buffer[nth + 1] << 7) | (0x7f & buffer[nth + 2]);
+  }
+
+  nth += 2;
+
+  /* device family model */
+  if(device_family_model != NULL){
+    device_family_model[0] = (0x7f & buffer[nth + 1] << 7) | (0x7f & buffer[nth + 2]);
+  }
+
+  nth += 2;
+
+  /* software revision */
+  if(software_revision != NULL){
+    software_revision[0] = (0x7f & buffer[nth] << 21) | (0x7f & buffer[nth] << 14) | (0x7f & buffer[nth + 1] << 7) | (0x7f & buffer[nth + 2]);
+  }
+
+  nth += 4;
+
+  return(nth);
 }
 
 /**
