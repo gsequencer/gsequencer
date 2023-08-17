@@ -2738,7 +2738,6 @@ ags_midi_ump_util_put_midi1_note_off(AgsMidiUmpUtil *midi_ump_util,
  * @channel: (out): the return location of channel number
  * @key: (out): the return location of index key
  * @velocity: (out): the return location of velocity
- * @ticks_since_last_event_count: (out): the return location of ticks since last event count as a unsigned 16 bit integer
  * @extension_name: (out): the return location of extension name string vector
  * @extension_value: (out): the return location of extension value array
  * @extension_count: (out): the return location of extension count
@@ -2873,7 +2872,6 @@ ags_midi_ump_util_put_midi1_note_on(AgsMidiUmpUtil *midi_ump_util,
  * @channel: (out): the return location of channel number
  * @key: (out): the return location of index key
  * @velocity: (out): the return location of velocity
- * @ticks_since_last_event_count: (out): the return location of ticks since last event count as a unsigned 16 bit integer
  * @extension_name: (out): the return location of extension name string vector
  * @extension_value: (out): the return location of extension value array
  * @extension_count: (out): the return location of extension count
@@ -3000,6 +2998,24 @@ ags_midi_ump_util_put_midi1_polyphonic_aftertouch(AgsMidiUmpUtil *midi_ump_util,
   nth++;
 }
 
+/**
+ * ags_midi_ump_util_get_midi1_polyphonic_aftertouch:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: (out): the return location of group
+ * @channel: (out): the return location of channel number
+ * @key: (out): the return location of index key
+ * @data: (out): the return location of data
+ * @extension_name: (out): the return location of extension name string vector
+ * @extension_value: (out): the return location of extension value array
+ * @extension_count: (out): the return location of extension count
+ *
+ * Get MIDI version 1.0 polyphonic aftertouch.
+ * 
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.4 
+ */
 guint
 ags_midi_ump_util_get_midi1_polyphonic_aftertouch(AgsMidiUmpUtil *midi_ump_util,
 						  guchar *buffer,
@@ -3010,9 +3026,38 @@ ags_midi_ump_util_get_midi1_polyphonic_aftertouch(AgsMidiUmpUtil *midi_ump_util,
 						  gchar ***extension_name, GValue **extension_value,
 						  guint *extension_count)
 {
-  //TODO:JK: implement me
+  gint nth;
+  
+  g_return_val_if_fail(midi_ump_util != NULL, 0);     
+  g_return_val_if_fail(buffer != NULL, 0);
+  g_return_val_if_fail((0xf0 & buffer[0]) == 0x02, 0);
+  g_return_val_if_fail((0xf0 & buffer[1]) == 0xa0, 0);
 
-  return(0);
+  if(group != NULL){
+    group[0] = 0x0f & buffer[0];
+  }
+
+  if(channel != NULL){
+    channel[0] = 0x0f & buffer[1];
+  }
+		       
+  nth = 2;
+
+  /* key */
+  if(key != NULL){
+    key[0] = 0xff & buffer[nth];
+  }
+
+  nth++;
+
+  /* data */
+  if(data != NULL){
+    data[0] = 0xff & buffer[nth];
+  }
+
+  nth++;
+
+  return(nth);
 }
 
 /**
@@ -3087,6 +3132,24 @@ ags_midi_ump_util_put_midi1_control_change(AgsMidiUmpUtil *midi_ump_util,
   nth++;
 }
 
+/**
+ * ags_midi_ump_util_get_midi1_control_change:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: (out): the return location of group
+ * @channel: (out): the return location of channel number
+ * @index_key: (out): the return location of index key
+ * @data: (out): the return location of data
+ * @extension_name: (out): the return location of extension name string vector
+ * @extension_value: (out): the return location of extension value array
+ * @extension_count: (out): the return location of extension count
+ *
+ * Get MIDI version 1.0 control change.
+ * 
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.4 
+ */
 guint
 ags_midi_ump_util_get_midi1_control_change(AgsMidiUmpUtil *midi_ump_util,
 					   guchar *buffer,
@@ -3097,9 +3160,38 @@ ags_midi_ump_util_get_midi1_control_change(AgsMidiUmpUtil *midi_ump_util,
 					   gchar ***extension_name, GValue **extension_value,
 					   guint *extension_count)
 {
-  //TODO:JK: implement me
+  gint nth;
+  
+  g_return_val_if_fail(midi_ump_util != NULL, 0);     
+  g_return_val_if_fail(buffer != NULL, 0);
+  g_return_val_if_fail((0xf0 & buffer[0]) == 0x02, 0);
+  g_return_val_if_fail((0xf0 & buffer[1]) == 0xb0, 0);
 
-  return(0);
+  if(group != NULL){
+    group[0] = 0x0f & buffer[0];
+  }
+
+  if(channel != NULL){
+    channel[0] = 0x0f & buffer[1];
+  }
+		       
+  nth = 2;
+
+  /* index key */
+  if(index_key != NULL){
+    index_key[0] = 0xff & buffer[nth];
+  }
+
+  nth++;
+
+  /* data */
+  if(data != NULL){
+    data[0] = 0xff & buffer[nth];
+  }
+
+  nth++;
+
+  return(nth);
 }
 
 /**
@@ -3174,6 +3266,24 @@ ags_midi_ump_util_put_midi1_program_change(AgsMidiUmpUtil *midi_ump_util,
   nth++;
 }
 
+/**
+ * ags_midi_ump_util_get_midi1_program_change:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: (out): the return location of group
+ * @channel: (out): the return location of channel number
+ * @program: (out): the return location of program
+ * @data: (out): the return location of data
+ * @extension_name: (out): the return location of extension name string vector
+ * @extension_value: (out): the return location of extension value array
+ * @extension_count: (out): the return location of extension count
+ *
+ * Get MIDI version 1.0 program change.
+ * 
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.4 
+ */
 guint
 ags_midi_ump_util_get_midi1_program_change(AgsMidiUmpUtil *midi_ump_util,
 					   guchar *buffer,
@@ -3184,9 +3294,38 @@ ags_midi_ump_util_get_midi1_program_change(AgsMidiUmpUtil *midi_ump_util,
 					   gchar ***extension_name, GValue **extension_value,
 					   guint *extension_count)
 {
-  //TODO:JK: implement me
+  gint nth;
+  
+  g_return_val_if_fail(midi_ump_util != NULL, 0);     
+  g_return_val_if_fail(buffer != NULL, 0);
+  g_return_val_if_fail((0xf0 & buffer[0]) == 0x02, 0);
+  g_return_val_if_fail((0xf0 & buffer[1]) == 0xc0, 0);
 
-  return(0);
+  if(group != NULL){
+    group[0] = 0x0f & buffer[0];
+  }
+
+  if(channel != NULL){
+    channel[0] = 0x0f & buffer[1];
+  }
+		       
+  nth = 2;
+
+  /* program */
+  if(program != NULL){
+    program[0] = 0xff & buffer[nth];
+  }
+
+  nth++;
+
+  /* data */
+  if(data != NULL){
+    data[0] = 0xff & buffer[nth];
+  }
+
+  nth++;
+
+  return(nth);
 }
 
 /**
