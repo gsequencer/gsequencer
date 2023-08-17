@@ -2316,6 +2316,113 @@ ags_midi_ump_util_get_jr_clock(AgsMidiUmpUtil *midi_ump_util,
 }
 
 /**
+ * ags_midi_ump_util_is_jr_timestamp:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is JR timestamp.
+ * 
+ * Returns: %TRUE if is JR timestamp, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
+gboolean
+ags_midi_ump_util_is_jr_timestamp(AgsMidiUmpUtil *midi_ump_util,
+				  guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0x00 &&
+     (0x0f & (buffer[1])) == 0x02){
+    return(TRUE);
+  }
+  
+  return(FALSE);
+}
+
+/**
+ * ags_midi_ump_util_put_jr_timestamp:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @sender_clock_timestamp: sender clock timestamp as a unsigned 16 bit integer
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ * @extension_count: the extension count
+ *
+ * Put JR timestamp.
+ * 
+ * Since: 5.5.4
+ */
+void
+ags_midi_ump_util_put_jr_timestamp(AgsMidiUmpUtil *midi_ump_util,
+				   guchar *buffer,
+				   guint16 sender_clock_timestamp,
+				   gchar **extension_name, GValue *extension_value,
+				   guint extension_count)
+{
+  guint nth;
+  const gint status = 0x02;
+  const gint mt = 0x00;
+  
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+
+  nth = 0;
+  
+  buffer[nth] = (0xf0) | ((0x07 & mt) << 4);
+  nth++;
+
+  buffer[nth] = (0xff) & (status << 4);
+  nth++;
+  
+  /* JR timestamp */
+  buffer[nth] = (0xff & (sender_clock_timestamp >> 8));
+  nth++;
+  
+  buffer[nth] = (0xff & (sender_clock_timestamp));
+  nth++;
+}
+
+/**
+ * ags_midi_ump_util_get_jr_timestamp:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @sender_clock_timestamp: (out): the return location of sender clock timestamp
+ * @extension_name: (out): the return location of extension name string vector
+ * @extension_value: (out): the return location of extension value array
+ * @extension_count: (out): the return location of extension count
+ *
+ * Get jitter reduction timestamp.
+ * 
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.4 
+ */
+guint
+ags_midi_ump_util_get_jr_timestamp(AgsMidiUmpUtil *midi_ump_util,
+				   guchar *buffer,
+				   guint16 *sender_clock_timestamp,
+				   gchar ***extension_name, GValue **extension_value,
+				   guint *extension_count)
+{
+  gint nth;
+  
+  g_return_val_if_fail(midi_ump_util != NULL, 0);     
+  g_return_val_if_fail(buffer != NULL, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail((0xf0 & (buffer[0])) == 0x00 && (0x0f & (buffer[1])) == 0x02, 0);
+
+  nth = 2;
+
+  /* sender timestamp time */
+  if(sender_clock_timestamp != NULL){
+    sender_clock_timestamp[0] = (0xff00 | (buffer[nth] << 8)) | (0xff & buffer[nth + 1]);
+  }
+
+  nth += 2;
+  
+  return(nth);
+}
+
+/**
  * ags_midi_ump_util_is_delta_clock_ticks_per_quarter_note:
  * @midi_ump_util: the MIDI UMP util
  * @buffer: the buffer
@@ -2374,13 +2481,28 @@ ags_midi_ump_util_put_delta_clock_ticks_per_quarter_note(AgsMidiUmpUtil *midi_um
   nth++;
   
   /* delta clock ticks per quarter note count */
-  buffer[nth] = (0xff & (ticks_per_quarter_note_count));
+  buffer[nth] = (0xff & (ticks_per_quarter_note_count >> 8));
   nth++;
   
-  buffer[nth] = (0xff & (ticks_per_quarter_note_count >> 8));
+  buffer[nth] = (0xff & (ticks_per_quarter_note_count));
   nth++;
 }
 
+/**
+ * ags_midi_ump_util_get_delta_clock_ticks_per_quarter_note:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @ticks_per_quarter_note_count: (out): the return location of ticks per quarter note count as a unsigned 16 bit integer
+ * @extension_name: (out): the return location of extension name string vector
+ * @extension_value: (out): the return location of extension value array
+ * @extension_count: (out): the return location of extension count
+ *
+ * Get product instance ID notification.
+ * 
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.4 
+ */
 guint
 ags_midi_ump_util_get_delta_clock_ticks_per_quarter_note(AgsMidiUmpUtil *midi_ump_util,
 							 guchar *buffer,
@@ -2388,9 +2510,23 @@ ags_midi_ump_util_get_delta_clock_ticks_per_quarter_note(AgsMidiUmpUtil *midi_um
 							 gchar ***extension_name, GValue **extension_value,
 							 guint *extension_count)
 {
-  //TODO:JK: implement me
+  gint nth;
+  
+  g_return_val_if_fail(midi_ump_util != NULL, 0);     
+  g_return_val_if_fail(buffer != NULL, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail((0xf0 & (buffer[0])) == 0x00 && (0x0f & (buffer[1])) == 0x03, 0);
 
-  return(0);
+  nth = 2;
+
+  /* ticks per quarter note count */
+  if(ticks_per_quarter_note_count != NULL){
+    ticks_per_quarter_note_count[0] = (0xff00 | (buffer[nth] << 8)) | (0xff & buffer[nth + 1]);
+  }
+
+  nth += 2;
+
+  return(nth);
 }
 
 /**
