@@ -915,6 +915,21 @@ ags_midi_ump_util_put_endpoint_name_notification(AgsMidiUmpUtil *midi_ump_util,
   }  
 }
 
+/**
+ * ags_midi_ump_util_get_endpoint_info_notification:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @endpoint_name: (out): the return location of endpoint name
+ * @extension_name: (out): the return location of extension name string vector
+ * @extension_value: (out): the return location of extension value array
+ * @extension_count: (out): the return location of extension count
+ *
+ * Get endpoint name notification.
+ * 
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.4 
+ */
 guint
 ags_midi_ump_util_get_endpoint_name_notification(AgsMidiUmpUtil *midi_ump_util,
 						 guchar *buffer,
@@ -922,9 +937,53 @@ ags_midi_ump_util_get_endpoint_name_notification(AgsMidiUmpUtil *midi_ump_util,
 						 gchar ***extension_name, GValue **extension_value,
 						 guint *extension_count)
 {
-  //TODO:JK: implement me
+  gchar *str;
+  
+  guint nth;
+  gboolean is_complete, is_end;
+  gint format;
+  guint i;
+  
+  g_return_val_if_fail(midi_ump_util != NULL, 0);     
+  g_return_val_if_fail(buffer != NULL, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail((((0x0f & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x3, 0);
 
-  return(0);
+  nth = 2;
+
+  str = (gchar *) g_malloc(99 * sizeof(gchar));
+  memset(str, 0, 99 * sizeof(gchar));
+
+  format = ((0x0c & (buffer[nth])) >> 2);
+
+  is_complete = TRUE;
+
+  if(format != 0x0){
+    is_complete = FALSE;
+  }
+
+  is_end = FALSE;
+
+  for(i = 0; i < 99 && !is_end;){
+    nth += 2;    
+    
+    memcpy(str + i, buffer + nth, 14 * sizeof(gchar));
+    nth += 14;
+    i += 14;
+    
+    format = ((0x0c & (buffer[nth])) >> 2);
+
+    /* break condition */
+    if(is_complete){
+      is_end = TRUE;
+    }
+
+    if(format == 0x03){
+      is_end = TRUE;
+    }
+  }
+  
+  return(nth);
 }
 
 /**
@@ -1060,6 +1119,21 @@ ags_midi_ump_util_put_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_
   }  
 }
 
+/**
+ * ags_midi_ump_util_get_endpoint_info_notification:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @product_instance_id_notification: (out): the return location of product instance ID notification
+ * @extension_name: (out): the return location of extension name string vector
+ * @extension_value: (out): the return location of extension value array
+ * @extension_count: (out): the return location of extension count
+ *
+ * Get product instance ID notification.
+ * 
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.4 
+ */
 guint
 ags_midi_ump_util_get_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_util,
 						       guchar *buffer,
@@ -1067,9 +1141,179 @@ ags_midi_ump_util_get_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_
 						       gchar ***extension_name, GValue **extension_value,
 						       guint *extension_count)
 {
-  //TODO:JK: implement me
+  gchar *str;
+  
+  guint nth;
+  gboolean is_complete, is_end;
+  gint format;
+  guint i;
+  
+  g_return_val_if_fail(midi_ump_util != NULL, 0);     
+  g_return_val_if_fail(buffer != NULL, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail((((0x0f & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x4, 0);
+
+  nth = 2;
+
+  str = (gchar *) g_malloc(43 * sizeof(gchar));
+  memset(str, 0, 43 * sizeof(gchar));
+
+  format = ((0x0c & (buffer[nth])) >> 2);
+
+  is_complete = TRUE;
+
+  if(format != 0x0){
+    is_complete = FALSE;
+  }
+
+  is_end = FALSE;
+
+  for(i = 0; i < 43 && !is_end;){
+    nth += 2;    
+    
+    memcpy(str + i, buffer + nth, 14 * sizeof(gchar));
+    nth += 14;
+    i += 14;
+    
+    format = ((0x0c & (buffer[nth])) >> 2);
+
+    /* break condition */
+    if(is_complete){
+      is_end = TRUE;
+    }
+
+    if(format == 0x03){
+      is_end = TRUE;
+    }
+  }
 
   return(0);
+}
+
+/**
+ * ags_midi_ump_util_is_stream_configuration_request:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ *
+ * Test if is stream configuration request.
+ * 
+ * Returns: %TRUE if is stream configuration request, otherwise %FALSE
+ * 
+ * Since: 5.5.4
+ */
+gboolean
+ags_midi_ump_util_is_stream_configuration_request(AgsMidiUmpUtil *midi_ump_util,
+						  guchar *buffer)
+{
+  if((0xf0 & (buffer[0])) == 0xf0 &&
+     (((0x3 & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x05){
+    return(TRUE);
+  }
+
+  return(FALSE);
+}
+
+/**
+ * ags_midi_ump_util_put_product_instance_id_request:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @protocol: the protocol
+ * @rx_jitter_reduction: %TRUE if receiving jitter reduction, otherwise %FALSE
+ * @tx_jitter_reduction: %TRUE if transfer jitter reduction, otherwise %FALSE
+ * @extension_name: the extension name string vector
+ * @extension_value: the extension value array
+ * @extension_count: the extension count
+ *
+ * Put product instance ID request.
+ * 
+ * Since: 5.5.4
+ */
+void
+ags_midi_ump_util_put_stream_configuration_request(AgsMidiUmpUtil *midi_ump_util,
+						   guchar *buffer,
+						   gint protocol,
+						   gboolean rx_jitter_reduction, gboolean tx_jitter_reduction,
+						   gchar **extension_name, GValue *extension_value,
+						   guint extension_count)
+{
+  guint nth;
+  gint format;
+  
+  const gint status = 0x05;
+
+  g_return_if_fail(midi_ump_util != NULL);
+  g_return_if_fail(buffer != NULL);
+  
+  format = 0x00;
+
+  nth = 0;
+  
+  buffer[nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
+  nth++;
+
+  buffer[nth] = (0xff) & (protocol);
+  nth++;
+
+  buffer[nth] = (0xff) & ((rx_jitter_reduction ? (0x01 << 1): 0x0) | (rx_jitter_reduction ? (0x01): 0x0));
+  nth++;
+
+  memset(buffer, 0, 12 * sizeof(guchar));
+  nth += 12;
+}
+
+/**
+ * ags_midi_ump_util_get_stream_configuration_request:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @protocol: (out): the return location of protocol
+ * @rx_jitter_reduction: (out): the return location of RX jitter reduction
+ * @tx_jitter_reduction: (out): the return location of TX jitter reduction
+ * @extension_name: (out): the return location of extension name string vector
+ * @extension_value: (out): the return location of extension value array
+ * @extension_count: (out): the return location of extension count
+ *
+ * Get stream configuration request.
+ * 
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.4 
+ */
+guint
+ags_midi_ump_util_get_stream_configuration_request(AgsMidiUmpUtil *midi_ump_util,
+						   guchar *buffer,
+						   gint *protocol,
+						   gboolean *rx_jitter_reduction, gboolean *tx_jitter_reduction,
+						   gchar ***extension_name, GValue **extension_value,
+						   guint *extension_count)
+{  
+  guint nth;
+
+  g_return_val_if_fail(midi_ump_util != NULL, 0);     
+  g_return_val_if_fail(buffer != NULL, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail((((0x0f & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x5, 0);
+
+  nth = 2;
+
+  /* protocol */
+  if(protocol != NULL){
+    protocol[0] = 0xff & buffer[nth];
+  }
+
+  nth++;
+
+  /* RX/TX jitter reduction */
+  if(rx_jitter_reduction != NULL){
+    rx_jitter_reduction[0] = ((0x2 & buffer[nth]) != 0) ? TRUE: FALSE;
+  }
+
+  if(tx_jitter_reduction != NULL){
+    tx_jitter_reduction[0] = ((0x1 & buffer[nth]) != 0) ? TRUE: FALSE;
+  }
+
+  nth += 12;
+  
+  return(nth);
 }
 
 /**
@@ -1143,6 +1387,23 @@ ags_midi_ump_util_put_stream_configuration_notification(AgsMidiUmpUtil *midi_ump
   nth += 12;
 }
 
+/**
+ * ags_midi_ump_util_get_stream_configuration_notification:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @protocol: (out): the return location of protocol
+ * @rx_jitter_reduction: (out): the return location of RX jitter reduction
+ * @tx_jitter_reduction: (out): the return location of TX jitter reduction
+ * @extension_name: (out): the return location of extension name string vector
+ * @extension_value: (out): the return location of extension value array
+ * @extension_count: (out): the return location of extension count
+ *
+ * Get stream configuration notification.
+ * 
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.4 
+ */
 guint
 ags_midi_ump_util_get_stream_configuration_notification(AgsMidiUmpUtil *midi_ump_util,
 							guchar *buffer,
@@ -1150,10 +1411,35 @@ ags_midi_ump_util_get_stream_configuration_notification(AgsMidiUmpUtil *midi_ump
 							gboolean *rx_jitter_reduction, gboolean *tx_jitter_reduction,
 							gchar ***extension_name, GValue **extension_value,
 							guint *extension_count)
-{
-  //TODO:JK: implement me
+{  
+  guint nth;
 
-  return(0);
+  g_return_val_if_fail(midi_ump_util != NULL, 0);     
+  g_return_val_if_fail(buffer != NULL, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail((((0x0f & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x6, 0);
+
+  nth = 2;
+
+  /* protocol */
+  if(protocol != NULL){
+    protocol[0] = 0xff & buffer[nth];
+  }
+
+  nth++;
+
+  /* RX/TX jitter reduction */
+  if(rx_jitter_reduction != NULL){
+    rx_jitter_reduction[0] = ((0x2 & buffer[nth]) != 0) ? TRUE: FALSE;
+  }
+
+  if(tx_jitter_reduction != NULL){
+    tx_jitter_reduction[0] = ((0x1 & buffer[nth]) != 0) ? TRUE: FALSE;
+  }
+
+  nth += 12;
+  
+  return(nth);
 }
 
 /**
@@ -1226,6 +1512,22 @@ ags_midi_ump_util_put_function_block_discovery(AgsMidiUmpUtil *midi_ump_util,
   nth += 12;
 }
 
+/**
+ * ags_midi_ump_util_get_function_block_discovery:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @function_block: (out): the return location of function block
+ * @filter: (out): the return location of filter
+ * @extension_name: (out): the return location of extension name string vector
+ * @extension_value: (out): the return location of extension value array
+ * @extension_count: (out): the return location of extension count
+ *
+ * Get function block discovery.
+ * 
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.4 
+ */
 guint
 ags_midi_ump_util_get_function_block_discovery(AgsMidiUmpUtil *midi_ump_util,
 					       guchar *buffer,
@@ -1234,9 +1536,35 @@ ags_midi_ump_util_get_function_block_discovery(AgsMidiUmpUtil *midi_ump_util,
 					       gchar ***extension_name, GValue **extension_value,
 					       guint *extension_count)
 {
+  guint nth;
+  
+  g_return_val_if_fail(midi_ump_util != NULL, 0);     
+  g_return_val_if_fail(buffer != NULL, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail((((0x0f & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x10, 0);
+
+  nth = 2;
+
+  /* function block */
+  if(function_block != NULL){
+    function_block[0] = buffer[nth];
+  }
+
+  nth++;
+
+  /* filter */
+  if(filter != NULL){
+    filter[0] = buffer[nth];
+  }
+
+  nth++;
+    
+  /* reserved */
+  nth += 12;
+  
   //TODO:JK: implement me
 
-  return(0);
+  return(nth);
 }
 
 /**
@@ -1344,9 +1672,73 @@ ags_midi_ump_util_get_function_block_info_notification(AgsMidiUmpUtil *midi_ump_
 						       gchar ***extension_name, GValue **extension_value,
 						       guint *extension_count)
 {
-  //TODO:JK: implement me
+  guint nth;
 
-  return(0);
+  g_return_val_if_fail(midi_ump_util != NULL, 0);     
+  g_return_val_if_fail(buffer != NULL, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail((((0x0f & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x11, 0);
+
+  nth = 2;
+
+  /* function block active and function block */
+  if(function_block_active != NULL){
+    function_block_active[0] = ((0x01 & buffer[nth]) != 0) ? TRUE: FALSE;
+  }
+
+  if(function_block != NULL){
+    function_block[0] = 0x7f & buffer[nth];
+  }
+
+  nth++;
+
+  /* direction, MIDI v1.0 port and UI hint */
+  if(direction != NULL){
+    direction = 0x3 & buffer[nth];
+  }
+
+  if(midi1_port != NULL){
+    midi1_port[0] = (0x0c & buffer[nth]) >> 2;
+  }
+
+  if(ui_hint != NULL){
+    ui_hint = (0x30 & buffer[nth]) >> 4;
+  }
+  
+  nth++;
+
+  /* first group */
+  if(first_group != NULL){
+    first_group[0] = buffer[nth];
+  }
+  
+  nth++;
+
+  /* group count */
+  if(group_count != NULL){
+    group_count[0] = buffer[nth];
+  }
+  
+  nth++;
+
+  /* message version */
+  if(message_version != NULL){
+    message_version[0] = buffer[nth];    
+  }
+  
+  nth++;
+
+  /* max SYSEX8 stream count */
+  if(max_sysex8_stream_count != NULL){
+    max_sysex8_stream_count[0] = buffer[nth];
+  }
+  
+  nth++;
+
+  /* reserved */
+  nth += 8;
+  
+  return(nth);
 }
 
 /**
