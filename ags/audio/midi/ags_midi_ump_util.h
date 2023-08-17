@@ -216,6 +216,22 @@ guint ags_midi_ump_util_get_product_instance_id_notification(AgsMidiUmpUtil *mid
 							     gchar ***extension_name, GValue **extension_value,
 							     guint *extension_count);
 
+/* stream configuration request */
+gboolean ags_midi_ump_util_is_stream_configuration_request(AgsMidiUmpUtil *midi_ump_util,
+							   guchar *buffer);
+void ags_midi_ump_util_put_stream_configuration_request(AgsMidiUmpUtil *midi_ump_util,
+							guchar *buffer,
+							gint protocol,
+							gboolean rx_jitter_reduction, gboolean tx_jitter_reduction,
+							gchar **extension_name, GValue *extension_value,
+							guint extension_count);
+guint ags_midi_ump_util_get_stream_configuration_request(AgsMidiUmpUtil *midi_ump_util,
+							 guchar *buffer,
+							 gint *protocol,
+							 gboolean *rx_jitter_reduction, gboolean *tx_jitter_reduction,
+							 gchar ***extension_name, GValue **extension_value,
+							 guint *extension_count);
+
 /* stream configuration notification */
 gboolean ags_midi_ump_util_is_stream_configuration_notification(AgsMidiUmpUtil *midi_ump_util,
 								guchar *buffer);
