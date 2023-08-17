@@ -2708,7 +2708,7 @@ ags_midi_ump_util_put_midi1_note_off(AgsMidiUmpUtil *midi_ump_util,
 				     guint extension_count)
 {
   guint nth;
-  const gint opcode = 0x80;
+  const gint opcode = 0x08;
   const gint mt = 0x02;
   
   g_return_if_fail(midi_ump_util != NULL);
@@ -2762,7 +2762,7 @@ ags_midi_ump_util_get_midi1_note_off(AgsMidiUmpUtil *midi_ump_util,
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x02, 0);
+  g_return_val_if_fail((0xf0 & buffer[0]) == 0x20, 0);
   g_return_val_if_fail((0xf0 & buffer[1]) == 0x80, 0);
 
   if(group != NULL){
@@ -2842,7 +2842,7 @@ ags_midi_ump_util_put_midi1_note_on(AgsMidiUmpUtil *midi_ump_util,
 				    guint extension_count)
 {
   guint nth;
-  const gint opcode = 0x90;
+  const gint opcode = 0x09;
   const gint mt = 0x02;
   
   g_return_if_fail(midi_ump_util != NULL);
@@ -2896,7 +2896,7 @@ ags_midi_ump_util_get_midi1_note_on(AgsMidiUmpUtil *midi_ump_util,
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x02, 0);
+  g_return_val_if_fail((0xf0 & buffer[0]) == 0x20, 0);
   g_return_val_if_fail((0xf0 & buffer[1]) == 0x90, 0);
 
   if(group != NULL){
@@ -2976,7 +2976,7 @@ ags_midi_ump_util_put_midi1_polyphonic_aftertouch(AgsMidiUmpUtil *midi_ump_util,
 						  guint extension_count)
 {
   guint nth;
-  const gint opcode = 0xa0;
+  const gint opcode = 0x0a;
   const gint mt = 0x02;
   
   g_return_if_fail(midi_ump_util != NULL);
@@ -3030,7 +3030,7 @@ ags_midi_ump_util_get_midi1_polyphonic_aftertouch(AgsMidiUmpUtil *midi_ump_util,
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x02, 0);
+  g_return_val_if_fail((0xf0 & buffer[0]) == 0x20, 0);
   g_return_val_if_fail((0xf0 & buffer[1]) == 0xa0, 0);
 
   if(group != NULL){
@@ -3110,7 +3110,7 @@ ags_midi_ump_util_put_midi1_control_change(AgsMidiUmpUtil *midi_ump_util,
 					   guint extension_count)
 {
   guint nth;
-  const gint opcode = 0xb0;
+  const gint opcode = 0x0b;
   const gint mt = 0x02;
   
   g_return_if_fail(midi_ump_util != NULL);
@@ -3164,7 +3164,7 @@ ags_midi_ump_util_get_midi1_control_change(AgsMidiUmpUtil *midi_ump_util,
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x02, 0);
+  g_return_val_if_fail((0xf0 & buffer[0]) == 0x20, 0);
   g_return_val_if_fail((0xf0 & buffer[1]) == 0xb0, 0);
 
   if(group != NULL){
@@ -3244,7 +3244,7 @@ ags_midi_ump_util_put_midi1_program_change(AgsMidiUmpUtil *midi_ump_util,
 					   guint extension_count)
 {
   guint nth;
-  const gint opcode = 0xc0;
+  const gint opcode = 0x0c;
   const gint mt = 0x02;
   
   g_return_if_fail(midi_ump_util != NULL);
@@ -3298,7 +3298,7 @@ ags_midi_ump_util_get_midi1_program_change(AgsMidiUmpUtil *midi_ump_util,
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x02, 0);
+  g_return_val_if_fail((0xf0 & buffer[0]) == 0x20, 0);
   g_return_val_if_fail((0xf0 & buffer[1]) == 0xc0, 0);
 
   if(group != NULL){
@@ -3378,7 +3378,7 @@ ags_midi_ump_util_put_midi1_channel_pressure(AgsMidiUmpUtil *midi_ump_util,
 					     guint extension_count)
 {
   guint nth;
-  const gint opcode = 0xd0;
+  const gint opcode = 0x0d;
   const gint mt = 0x02;
   
   g_return_if_fail(midi_ump_util != NULL);
@@ -3432,7 +3432,7 @@ ags_midi_ump_util_get_midi1_channel_pressure(AgsMidiUmpUtil *midi_ump_util,
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x02, 0);
+  g_return_val_if_fail((0xf0 & buffer[0]) == 0x20, 0);
   g_return_val_if_fail((0xf0 & buffer[1]) == 0xd0, 0);
 
   if(group != NULL){
@@ -3512,7 +3512,7 @@ ags_midi_ump_util_put_midi1_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
 				       guint extension_count)
 {
   guint nth;
-  const gint opcode = 0xe0;
+  const gint opcode = 0x0e;
   const gint mt = 0x02;
   
   g_return_if_fail(midi_ump_util != NULL);
@@ -3567,7 +3567,7 @@ ags_midi_ump_util_get_midi1_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x02, 0);
+  g_return_val_if_fail((0xf0 & buffer[0]) == 0x20, 0);
   g_return_val_if_fail((0xf0 & buffer[1]) == 0xe0, 0);
 
   if(group != NULL){
@@ -3673,7 +3673,7 @@ ags_midi_ump_util_put_midi2_note_off(AgsMidiUmpUtil *midi_ump_util,
 				     guint extension_count)
 {
   guint nth;
-  const gint opcode = 0x80;
+  const gint opcode = 0x08;
   const gint mt = 0x04;
   
   g_return_if_fail(midi_ump_util != NULL);
@@ -3746,7 +3746,7 @@ ags_midi_ump_util_get_midi2_note_off(AgsMidiUmpUtil *midi_ump_util,
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x04, 0);
+  g_return_val_if_fail((0xf0 & buffer[0]) == 0x40, 0);
   g_return_val_if_fail((0xf0 & buffer[1]) == 0x80, 0);
 
   if(group != NULL){
@@ -3844,7 +3844,7 @@ ags_midi_ump_util_put_midi2_note_on(AgsMidiUmpUtil *midi_ump_util,
 				    guint extension_count)
 {
   guint nth;
-  const gint opcode = 0x90;
+  const gint opcode = 0x09;
   const gint mt = 0x04;
   
   g_return_if_fail(midi_ump_util != NULL);
@@ -3917,7 +3917,7 @@ ags_midi_ump_util_get_midi2_note_on(AgsMidiUmpUtil *midi_ump_util,
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x04, 0);
+  g_return_val_if_fail((0xf0 & buffer[0]) == 0x40, 0);
   g_return_val_if_fail((0xf0 & buffer[1]) == 0x90, 0);
 
   if(group != NULL){
@@ -4011,7 +4011,7 @@ ags_midi_ump_util_put_midi2_polyphonic_aftertouch(AgsMidiUmpUtil *midi_ump_util,
 						  guint extension_count)
 {
   guint nth;
-  const gint opcode = 0xa0;
+  const gint opcode = 0x0a;
   const gint mt = 0x04;
   
   g_return_if_fail(midi_ump_util != NULL);
@@ -4078,7 +4078,7 @@ ags_midi_ump_util_get_midi2_polyphonic_aftertouch(AgsMidiUmpUtil *midi_ump_util,
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x04, 0);
+  g_return_val_if_fail((0xf0 & buffer[0]) == 0x40, 0);
   g_return_val_if_fail((0xf0 & buffer[1]) == 0xa0, 0);
 
   if(group != NULL){
@@ -4199,6 +4199,26 @@ ags_midi_ump_util_put_midi2_registered_per_note_controller(AgsMidiUmpUtil *midi_
   nth++;
 }
 
+/**
+ * ags_midi_ump_util_get_midi2_registered_per_note_controller:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: (out): the return location of group
+ * @channel: (out): the return location of channel number
+ * @key: (out): the return location of key
+ * @attribute_type: (out): the return location of attribute type
+ * @velocity: (out): the return location of velocity
+ * @attribute: (out): the return location of attribute
+ * @extension_name: (out): the return location of extension name string vector
+ * @extension_value: (out): the return location of extension value array
+ * @extension_count: (out): the return location of extension count
+ *
+ * Get MIDI version 2.0 registered per note controller.
+ * 
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.4 
+ */
 guint
 ags_midi_ump_util_get_midi2_registered_per_note_controller(AgsMidiUmpUtil *midi_ump_util,
 							   guchar *buffer,
@@ -4210,9 +4230,45 @@ ags_midi_ump_util_get_midi2_registered_per_note_controller(AgsMidiUmpUtil *midi_
 							   gchar ***extension_name, GValue **extension_value,
 							   guint *extension_count)
 {
-  //TODO:JK: implement me
+  gint nth;
+  
+  g_return_val_if_fail(midi_ump_util != NULL, 0);     
+  g_return_val_if_fail(buffer != NULL, 0);
+  g_return_val_if_fail((0xf0 & buffer[0]) == 0x40, 0);
+  g_return_val_if_fail((0xf0 & buffer[1]) == 0x00, 0);
 
-  return(0);
+  if(group != NULL){
+    group[0] = 0x0f & buffer[0];
+  }
+
+  if(channel != NULL){
+    channel[0] = 0x0f & buffer[1];
+  }
+  
+  nth = 2;
+  
+  /* key */
+  if(key != NULL){
+    key[0] = 0xff & buffer[nth];
+  }
+
+  nth++;
+
+  /* data index */
+  if(data_index != NULL){
+    data_index[0] = 0xff & buffer[nth];
+  }
+
+  nth++;
+
+  /* data */
+  if(data != NULL){
+    data[0] = (0xff000000 & (buffer[nth] << 24)) | (0xff0000 & (buffer[nth + 1] << 16)) | (0xff00 & (buffer[nth + 2] << 8)) | (0xff & buffer[nth + 3]);
+  }
+
+  nth += 4;
+
+  return(nth);
 }
 
 /**
@@ -4231,7 +4287,7 @@ ags_midi_ump_util_is_midi2_assignable_per_note_controller(AgsMidiUmpUtil *midi_u
 							  guchar *buffer)
 {
   if((0xf0 & (buffer[0])) == 0x40 &&
-     (0xf0 & (buffer[1])) == 0x01){
+     (0xf0 & (buffer[1])) == 0x10){
     return(TRUE);
   }
   
@@ -4303,6 +4359,26 @@ ags_midi_ump_util_put_midi2_assignable_per_note_controller(AgsMidiUmpUtil *midi_
   nth++;
 }
 
+/**
+ * ags_midi_ump_util_get_midi2_assignable_per_note_controller:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: (out): the return location of group
+ * @channel: (out): the return location of channel number
+ * @key: (out): the return location of key
+ * @attribute_type: (out): the return location of attribute type
+ * @velocity: (out): the return location of velocity
+ * @attribute: (out): the return location of attribute
+ * @extension_name: (out): the return location of extension name string vector
+ * @extension_value: (out): the return location of extension value array
+ * @extension_count: (out): the return location of extension count
+ *
+ * Get MIDI version 2.0 assignable per note controller.
+ * 
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.4 
+ */
 guint
 ags_midi_ump_util_get_midi2_assignable_per_note_controller(AgsMidiUmpUtil *midi_ump_util,
 							   guchar *buffer,
@@ -4314,9 +4390,45 @@ ags_midi_ump_util_get_midi2_assignable_per_note_controller(AgsMidiUmpUtil *midi_
 							   gchar ***extension_name, GValue **extension_value,
 							   guint *extension_count)
 {
-  //TODO:JK: implement me
+  gint nth;
+  
+  g_return_val_if_fail(midi_ump_util != NULL, 0);     
+  g_return_val_if_fail(buffer != NULL, 0);
+  g_return_val_if_fail((0xf0 & buffer[0]) == 0x40, 0);
+  g_return_val_if_fail((0xf0 & buffer[1]) == 0x10, 0);
 
-  return(0);
+  if(group != NULL){
+    group[0] = 0x0f & buffer[0];
+  }
+
+  if(channel != NULL){
+    channel[0] = 0x0f & buffer[1];
+  }
+  
+  nth = 2;
+  
+  /* key */
+  if(key != NULL){
+    key[0] = 0xff & buffer[nth];
+  }
+
+  nth++;
+
+  /* data index */
+  if(data_index != NULL){
+    data_index[0] = 0xff & buffer[nth];
+  }
+
+  nth++;
+
+  /* data */
+  if(data != NULL){
+    data[0] = (0xff000000 & (buffer[nth] << 24)) | (0xff0000 & (buffer[nth + 1] << 16)) | (0xff00 & (buffer[nth + 2] << 8)) | (0xff & buffer[nth + 3]);
+  }
+
+  nth += 4;
+
+  return(nth);
 }
 
 /**
@@ -4395,6 +4507,24 @@ ags_midi_ump_util_put_midi2_per_note_management(AgsMidiUmpUtil *midi_ump_util,
   nth += 4;
 }
 
+/**
+ * ags_midi_ump_util_get_midi2_per_note_management:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: (out): the return location of group
+ * @channel: (out): the return location of channel number
+ * @key: (out): the return location of key
+ * @options_flags: (out): the return location of options flags
+ * @extension_name: (out): the return location of extension name string vector
+ * @extension_value: (out): the return location of extension value array
+ * @extension_count: (out): the return location of extension count
+ *
+ * Get MIDI version 2.0 assignable per note controller.
+ * 
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.4 
+ */
 guint
 ags_midi_ump_util_get_midi2_per_note_management(AgsMidiUmpUtil *midi_ump_util,
 						guchar *buffer,
@@ -4405,9 +4535,41 @@ ags_midi_ump_util_get_midi2_per_note_management(AgsMidiUmpUtil *midi_ump_util,
 						gchar ***extension_name, GValue **extension_value,
 						guint *extension_count)
 {
-  //TODO:JK: implement me
+  gint nth;
+  
+  g_return_val_if_fail(midi_ump_util != NULL, 0);     
+  g_return_val_if_fail(buffer != NULL, 0);
+  g_return_val_if_fail((0xf0 & buffer[0]) == 0x40, 0);
+  g_return_val_if_fail((0xf0 & buffer[1]) == 0xf0, 0);
 
-  return(0);
+  if(group != NULL){
+    group[0] = 0x0f & buffer[0];
+  }
+
+  if(channel != NULL){
+    channel[0] = 0x0f & buffer[1];
+  }
+  
+  nth = 2;
+  
+  /* key */
+  if(key != NULL){
+    key[0] = 0xff & buffer[nth];
+  }
+
+  nth++;
+
+  /* options flags */
+  if(options_flags != NULL){
+    options_flags[0] = 0xff & buffer[nth];
+  }
+
+  nth++;
+
+  /* reserved */
+  nth += 4;
+
+  return(nth);
 }
 
 /**
@@ -4493,8 +4655,7 @@ ags_midi_ump_util_put_midi2_control_change(AgsMidiUmpUtil *midi_ump_util,
 
     source_note_number = g_value_get_int(extension_value + position);
 
-    buffer[nth] = 0xfe & (source_note_number << 1);
-    
+    buffer[nth] = 0xfe & (source_note_number << 1);    
   }
 
   if((position = ags_strv_index(extension_name, "omni-off")) >= 0){
@@ -4508,6 +4669,23 @@ ags_midi_ump_util_put_midi2_control_change(AgsMidiUmpUtil *midi_ump_util,
   nth += 4;
 }
 
+/**
+ * ags_midi_ump_util_get_midi2_control_change:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: (out): the return location of group
+ * @channel: (out): the return location of channel number
+ * @index_key: (out): the return location of index key
+ * @extension_name: (out): the return location of extension name string vector
+ * @extension_value: (out): the return location of extension value array
+ * @extension_count: (out): the return location of extension count
+ *
+ * Get MIDI version 2.0 control change.
+ * 
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.4 
+ */
 guint
 ags_midi_ump_util_get_midi2_control_change(AgsMidiUmpUtil *midi_ump_util,
 					   guchar *buffer,
@@ -4517,9 +4695,58 @@ ags_midi_ump_util_get_midi2_control_change(AgsMidiUmpUtil *midi_ump_util,
 					   gchar ***extension_name, GValue **extension_value,
 					   guint *extension_count)
 {
-  //TODO:JK: implement me
+  gint nth;
+  gint position;
+  
+  g_return_val_if_fail(midi_ump_util != NULL, 0);     
+  g_return_val_if_fail(buffer != NULL, 0);
+  g_return_val_if_fail((0xf0 & buffer[0]) == 0x40, 0);
+  g_return_val_if_fail((0xf0 & buffer[1]) == 0xb0, 0);
 
-  return(0);
+  if(group != NULL){
+    group[0] = 0x0f & buffer[0];
+  }
+
+  if(channel != NULL){
+    channel[0] = 0x0f & buffer[1];
+  }
+  
+  nth = 2;
+  
+  /* index key */
+  if(index_key != NULL){
+    index_key[0] = 0xff & buffer[nth];
+  }
+
+  nth++;
+
+  /* reserved */
+  nth++;
+
+  /* data */
+  if((position = ags_strv_index(extension_name, "portamento")) >= 0){
+    gpointer source_note_number;
+
+    source_note_number = g_value_get_pointer(extension_value + position);
+
+    if(source_note_number != NULL){
+      ((gint *) source_note_number)[0] = (0xfe & buffer[nth]) >> 1;
+    }
+  }
+
+  if((position = ags_strv_index(extension_name, "omni-off")) >= 0){
+    gpointer channels_count;
+
+    channels_count = g_value_get_pointer(extension_value + position);
+
+    if(channels_count != NULL){
+      ((gint *) channels_count)[0] = (0xfe & buffer[nth]) >> 1;
+    }
+  }
+
+  nth += 4;
+  
+  return(nth);
 }
 
 /**
