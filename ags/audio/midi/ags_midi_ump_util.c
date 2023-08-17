@@ -2595,6 +2595,21 @@ ags_midi_ump_util_put_delta_clock_ticks_since_last_event(AgsMidiUmpUtil *midi_um
   nth++;
 }
 
+/**
+ * ags_midi_ump_util_get_delta_clock_ticks_since_last_event:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @ticks_since_last_event_count: (out): the return location of ticks since last event count as a unsigned 16 bit integer
+ * @extension_name: (out): the return location of extension name string vector
+ * @extension_value: (out): the return location of extension value array
+ * @extension_count: (out): the return location of extension count
+ *
+ * Get product instance ID notification.
+ * 
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.4 
+ */
 guint
 ags_midi_ump_util_get_delta_clock_ticks_since_last_event(AgsMidiUmpUtil *midi_ump_util,
 							 guchar *buffer,
@@ -2602,9 +2617,23 @@ ags_midi_ump_util_get_delta_clock_ticks_since_last_event(AgsMidiUmpUtil *midi_um
 							 gchar ***extension_name, GValue **extension_value,
 							 guint *extension_count)
 {
-  //TODO:JK: implement me
+  gint nth;
+  
+  g_return_val_if_fail(midi_ump_util != NULL, 0);     
+  g_return_val_if_fail(buffer != NULL, 0);
+  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail((0xf0 & (buffer[0])) == 0x00 && (0x0f & (buffer[1])) == 0x04, 0);
 
-  return(0);
+  nth = 2;
+
+  /* ticks per quarter note count */
+  if(ticks_since_last_event_count != NULL){
+    ticks_since_last_event_count[0] = (0xff00 | (buffer[nth] << 8)) | (0xff & buffer[nth + 1]);
+  }
+
+  nth += 2;
+
+  return(nth);
 }
 
 /**
@@ -2627,72 +2656,6 @@ ags_midi_ump_util_is_midi1_channel_voice(AgsMidiUmpUtil *midi_ump_util,
   }
   
   return(FALSE);
-}
-
-/**
- * ags_midi_ump_util_put_midi1_channel_voice:
- * @midi_ump_util: the MIDI UMP util
- * @buffer: the buffer
- * @group: the group
- * @opcode: the opcode
- * @channel: the channel number
- * @index_key: the index key
- * @data: the data
- * @extension_name: the extension name string vector
- * @extension_value: the extension value array
- * @extension_count: the extension count
- *
- * Put MIDI version 1.0 channel voice message.
- * 
- * Since: 5.5.4
- */
-void
-ags_midi_ump_util_put_midi1_channel_voice(AgsMidiUmpUtil *midi_ump_util,
-					  guchar *buffer,
-					  gint group,
-					  gint opcode,
-					  gint channel,
-					  gint index_key,
-					  gint data,
-					  gchar **extension_name, GValue *extension_value,
-					  guint extension_count)
-{
-  guint nth;
-  const gint mt = 0x02;
-  
-  g_return_if_fail(midi_ump_util != NULL);
-  g_return_if_fail(buffer != NULL);
-
-  nth = 0;
-  
-  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
-  nth++;
-
-  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
-  nth++;
-  
-  /* index key and data */
-  buffer[nth] = (0xff & (index_key));
-  nth++;
-  
-  buffer[nth] = (0xff & (data));
-  nth++;
-}
-
-guint
-ags_midi_ump_util_get_midi1_channel_voice(AgsMidiUmpUtil *midi_ump_util,
-					  guchar *buffer,
-					  gint *group,
-					  gint *opcode,
-					  gint *channel,
-					  gint *index_key,
-					  gint *data,
-					  gchar ***extension_name, GValue **extension_value,
-					  guint *extension_count)
-{
-  //TODO:JK: implement me
-
-  return(0);
 }
 
 /**
@@ -2767,6 +2730,25 @@ ags_midi_ump_util_put_midi1_note_off(AgsMidiUmpUtil *midi_ump_util,
   nth++;
 }
 
+/**
+ * ags_midi_ump_util_get_midi1_note_off:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: (out): the return location of group
+ * @channel: (out): the return location of channel number
+ * @key: (out): the return location of index key
+ * @velocity: (out): the return location of velocity
+ * @ticks_since_last_event_count: (out): the return location of ticks since last event count as a unsigned 16 bit integer
+ * @extension_name: (out): the return location of extension name string vector
+ * @extension_value: (out): the return location of extension value array
+ * @extension_count: (out): the return location of extension count
+ *
+ * Get MIDI version 1.0 note off.
+ * 
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.4 
+ */
 guint
 ags_midi_ump_util_get_midi1_note_off(AgsMidiUmpUtil *midi_ump_util,
 				     guchar *buffer,
@@ -2777,9 +2759,38 @@ ags_midi_ump_util_get_midi1_note_off(AgsMidiUmpUtil *midi_ump_util,
 				     gchar ***extension_name, GValue **extension_value,
 				     guint *extension_count)
 {
-  //TODO:JK: implement me
+  gint nth;
+  
+  g_return_val_if_fail(midi_ump_util != NULL, 0);     
+  g_return_val_if_fail(buffer != NULL, 0);
+  g_return_val_if_fail((0xf0 & buffer[0]) == 0x02, 0);
+  g_return_val_if_fail((0xf0 & buffer[1]) == 0x80, 0);
 
-  return(0);
+  if(group != NULL){
+    group[0] = 0x0f & buffer[0];
+  }
+
+  if(channel != NULL){
+    channel[0] = 0x0f & buffer[1];
+  }
+		       
+  nth = 2;
+
+  /* key */
+  if(key != NULL){
+    key[0] = 0xff & buffer[nth];
+  }
+
+  nth++;
+
+  /* velocity */
+  if(velocity != NULL){
+    velocity[0] = 0xff & buffer[nth];
+  }
+
+  nth++;
+
+  return(nth);
 }
 
 /**
@@ -2854,6 +2865,25 @@ ags_midi_ump_util_put_midi1_note_on(AgsMidiUmpUtil *midi_ump_util,
   nth++;
 }
 
+/**
+ * ags_midi_ump_util_get_midi1_note_on:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: (out): the return location of group
+ * @channel: (out): the return location of channel number
+ * @key: (out): the return location of index key
+ * @velocity: (out): the return location of velocity
+ * @ticks_since_last_event_count: (out): the return location of ticks since last event count as a unsigned 16 bit integer
+ * @extension_name: (out): the return location of extension name string vector
+ * @extension_value: (out): the return location of extension value array
+ * @extension_count: (out): the return location of extension count
+ *
+ * Get MIDI version 1.0 note on.
+ * 
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.4 
+ */
 guint
 ags_midi_ump_util_get_midi1_note_on(AgsMidiUmpUtil *midi_ump_util,
 				    guchar *buffer,
@@ -2864,9 +2894,38 @@ ags_midi_ump_util_get_midi1_note_on(AgsMidiUmpUtil *midi_ump_util,
 				    gchar ***extension_name, GValue **extension_value,
 				    guint *extension_count)
 {
-  //TODO:JK: implement me
+  gint nth;
+  
+  g_return_val_if_fail(midi_ump_util != NULL, 0);     
+  g_return_val_if_fail(buffer != NULL, 0);
+  g_return_val_if_fail((0xf0 & buffer[0]) == 0x02, 0);
+  g_return_val_if_fail((0xf0 & buffer[1]) == 0x90, 0);
 
-  return(0);
+  if(group != NULL){
+    group[0] = 0x0f & buffer[0];
+  }
+
+  if(channel != NULL){
+    channel[0] = 0x0f & buffer[1];
+  }
+		       
+  nth = 2;
+
+  /* key */
+  if(key != NULL){
+    key[0] = 0xff & buffer[nth];
+  }
+
+  nth++;
+
+  /* velocity */
+  if(velocity != NULL){
+    velocity[0] = 0xff & buffer[nth];
+  }
+
+  nth++;
+
+  return(nth);
 }
 
 /**

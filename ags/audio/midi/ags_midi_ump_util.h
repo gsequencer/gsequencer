@@ -407,24 +407,6 @@ guint ags_midi_ump_util_get_delta_clock_ticks_since_last_event(AgsMidiUmpUtil *m
 /* MIDI v1.0 channel voice */
 gboolean ags_midi_ump_util_is_midi1_channel_voice(AgsMidiUmpUtil *midi_ump_util,
 						  guchar *buffer);
-void ags_midi_ump_util_put_midi1_channel_voice(AgsMidiUmpUtil *midi_ump_util,
-					       guchar *buffer,
-					       gint group,
-					       gint opcode,
-					       gint channel,
-					       gint index_key,
-					       gint data,
-					       gchar **extension_name, GValue *extension_value,
-					       guint extension_count);
-guint ags_midi_ump_util_get_midi1_channel_voice(AgsMidiUmpUtil *midi_ump_util,
-						guchar *buffer,
-						gint *group,
-						gint *opcode,
-						gint *channel,
-						gint *index_key,
-						gint *data,
-						gchar ***extension_name, GValue **extension_value,
-						guint *extension_count);
 
 /* MIDI v1.0 note off */
 gboolean ags_midi_ump_util_is_midi1_note_off(AgsMidiUmpUtil *midi_ump_util,
