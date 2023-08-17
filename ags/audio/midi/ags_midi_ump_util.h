@@ -362,6 +362,20 @@ guint ags_midi_ump_util_get_jr_clock(AgsMidiUmpUtil *midi_ump_util,
 				     gchar ***extension_name, GValue **extension_value,
 				     guint *extension_count);
 
+/* JR timestamp */
+gboolean ags_midi_ump_util_is_jr_timestamp(AgsMidiUmpUtil *midi_ump_util,
+					   guchar *buffer);
+void ags_midi_ump_util_put_jr_timestamp(AgsMidiUmpUtil *midi_ump_util,
+					guchar *buffer,
+					guint16 sender_clock_timestamp,
+					gchar **extension_name, GValue *extension_value,
+					guint extension_count);
+guint ags_midi_ump_util_get_jr_timestamp(AgsMidiUmpUtil *midi_ump_util,
+					 guchar *buffer,
+					 guint16 *sender_clock_timestamp,
+					 gchar ***extension_name, GValue **extension_value,
+					 guint *extension_count);
+
 /* delta clockstamp ticks per quarter note */
 gboolean ags_midi_ump_util_is_delta_clock_ticks_per_quarter_note(AgsMidiUmpUtil *midi_ump_util,
 								 guchar *buffer);
