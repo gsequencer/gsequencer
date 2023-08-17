@@ -551,24 +551,6 @@ guint ags_midi_ump_util_get_midi1_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
 /* MIDI v2.0 channel voice */
 gboolean ags_midi_ump_util_is_midi2_channel_voice(AgsMidiUmpUtil *midi_ump_util,
 						  guchar *buffer);
-void ags_midi_ump_util_put_midi2_channel_voice(AgsMidiUmpUtil *midi_ump_util,
-					       guchar *buffer,
-					       gint group,
-					       gint opcode,
-					       gint channel,
-					       gint index_key,
-					       gint data,
-					       gchar **extension_name, GValue *extension_value,
-					       guint extension_count);
-guint ags_midi_ump_util_get_midi2_channel_voice(AgsMidiUmpUtil *midi_ump_util,
-						guchar *buffer,
-						gint *group,
-						gint *opcode,
-						gint *channel,
-						gint *index_key,
-						gint *data,
-						gchar ***extension_name, GValue **extension_value,
-						guint *extension_count);
 
 /* MIDI v2.0 note off */
 gboolean ags_midi_ump_util_is_midi2_note_off(AgsMidiUmpUtil *midi_ump_util,
