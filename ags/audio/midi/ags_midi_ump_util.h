@@ -880,14 +880,14 @@ void ags_midi_ump_util_put_flex_set_tempo(AgsMidiUmpUtil *midi_ump_util,
 					  guchar *buffer,
 					  gint group,
 					  gint channel,
-					  gint tenth_ns_per_quarter_note,
+					  gint ten_ns_per_quarter_note,
 					  gchar **extension_name, GValue *extension_value,
 					  guint extension_count);
 guint ags_midi_ump_util_get_flex_set_tempo(AgsMidiUmpUtil *midi_ump_util,
 					   guchar *buffer,
 					   gint *group,
 					   gint *channel,
-					   gint *tenth_ns_per_quarter_note,
+					   gint *ten_ns_per_quarter_note,
 					   gchar ***extension_name, GValue **extension_value,
 					   guint *extension_count);
 
