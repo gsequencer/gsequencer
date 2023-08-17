@@ -692,14 +692,14 @@ void ags_midi_ump_util_put_midi2_control_change(AgsMidiUmpUtil *midi_ump_util,
 						guchar *buffer,
 						gint group,
 						gint channel,
-						gint key,
+						gint index_key,
 						gchar **extension_name, GValue *extension_value,
 						guint extension_count);
 guint ags_midi_ump_util_get_midi2_control_change(AgsMidiUmpUtil *midi_ump_util,
 						 guchar *buffer,
 						 gint *group,
 						 gint *channel,
-						 gint *key,
+						 gint *index_key,
 						 gchar ***extension_name, GValue **extension_value,
 						 guint *extension_count);
 

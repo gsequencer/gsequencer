@@ -627,7 +627,7 @@ ags_midi_ump_util_is_device_identity_notification(AgsMidiUmpUtil *midi_ump_util,
  * @buffer: the buffer
  * @device_manufacturer: the device manufacturer
  * @device_family: the device family
- * @defice_family_model: the device family model
+ * @device_family_model: the device family model
  * @software_revision: the software revision
  * @extension_name: the extension name string vector
  * @extension_value: the extension value array
@@ -913,7 +913,7 @@ ags_midi_ump_util_put_endpoint_name_notification(AgsMidiUmpUtil *midi_ump_util,
 }
 
 /**
- * ags_midi_ump_util_get_endpoint_info_notification:
+ * ags_midi_ump_util_get_endpoint_name_notification:
  * @midi_ump_util: the MIDI UMP util
  * @buffer: the buffer
  * @endpoint_name: (out): the return location of endpoint name
@@ -1211,7 +1211,7 @@ ags_midi_ump_util_is_stream_configuration_request(AgsMidiUmpUtil *midi_ump_util,
 }
 
 /**
- * ags_midi_ump_util_put_product_instance_id_request:
+ * ags_midi_ump_util_put_stream_configuration_request:
  * @midi_ump_util: the MIDI UMP util
  * @buffer: the buffer
  * @protocol: the protocol
@@ -1591,8 +1591,15 @@ ags_midi_ump_util_is_function_block_info_notification(AgsMidiUmpUtil *midi_ump_u
  * ags_midi_ump_util_put_function_block_info_notification:
  * @midi_ump_util: the MIDI UMP util
  * @buffer: the buffer
+ * @function_block_active: the function block active
  * @function_block: the function block through 0x00 - 0x1f or 0xff to request all
- * @filter: the filter
+ * @direction: the direction
+ * @midi1_port: the MIDI v1.0 port
+ * @ui_hint: the UI hint
+ * @first_group: the first group
+ * @group_count: the group count
+ * @message_version: the message version
+ * @max_sysex8_stream_count: the max SYSEX8 stream count
  * @extension_name: the extension name string vector
  * @extension_value: the extension value array
  * @extension_count: the extension count
@@ -2443,7 +2450,7 @@ ags_midi_ump_util_is_delta_clock_ticks_per_quarter_note(AgsMidiUmpUtil *midi_ump
 }
 
 /**
- * ags_midi_ump_util_put_jr_clock:
+ * ags_midi_ump_util_put_delta_clock_ticks_per_quarter_note:
  * @midi_ump_util: the MIDI UMP util
  * @buffer: the buffer
  * @ticks_per_quarter_note_count: ticks per quarter note count as a unsigned 16 bit integer
@@ -4203,9 +4210,8 @@ ags_midi_ump_util_put_midi2_registered_per_note_controller(AgsMidiUmpUtil *midi_
  * @group: (out): the return location of group
  * @channel: (out): the return location of channel number
  * @key: (out): the return location of key
- * @attribute_type: (out): the return location of attribute type
- * @velocity: (out): the return location of velocity
- * @attribute: (out): the return location of attribute
+ * @data_index: (out): the return location of data index
+ * @data: (out): the return location of data
  * @extension_name: (out): the return location of extension name string vector
  * @extension_value: (out): the return location of extension value array
  * @extension_count: (out): the return location of extension count
@@ -5520,8 +5526,7 @@ ags_midi_ump_util_is_midi2_program_change(AgsMidiUmpUtil *midi_ump_util,
  * @channel: the channel number
  * @option_flags: the option flags
  * @program: the program
- * @bank_msb: the bank MSB
- * @bank_lsb: the bank LSB
+ * @bank: the bank
  * @extension_name: the extension name string vector
  * @extension_value: the extension value array
  * @extension_count: the extension count
@@ -6842,6 +6847,7 @@ ags_midi_ump_util_is_flex_set_chord_name(AgsMidiUmpUtil *midi_ump_util,
  * @alter_3_degree: the alter 3 degree
  * @alter_4_type: the alter 4 type
  * @alter_4_degree: the alter 4 degree
+ * @b_sharp_flats: the b sharp flats count
  * @bass_note: the bass note
  * @bass_chord_type: the bass chord type
  * @b_alter_1_type: the alter 1 type
