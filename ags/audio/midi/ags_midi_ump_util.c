@@ -26,9 +26,6 @@
 
 #include <string.h>
 
-/* MIDI v2.0 flex set text */
-gboolean ags_midi_ump_util_is_flex_set_text(AgsMidiUmpUtil *midi_ump_util,
-					    guchar *buffer);
 void ags_midi_ump_util_put_flex_set_text(AgsMidiUmpUtil *midi_ump_util,
 					 guchar *buffer,
 					 gint group,
@@ -6961,6 +6958,40 @@ ags_midi_ump_util_put_flex_set_chord_name(AgsMidiUmpUtil *midi_ump_util,
   nth++;
 }
 
+/**
+ * ags_midi_ump_util_get_flex_set_chord_name:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: (out): the return location of group
+ * @channel: (out): the return location of channel number
+ * @t_sharp_flats: (out): the return location of t sharp flats
+ * @chord_tonic: (out): the return location of chord tonic
+ * @chord_type: (out): the return location of chord type
+ * @alter_1_type: (out): the return location of alter 1 type
+ * @alter_1_degree: (out): the return location of alter 1 degree
+ * @alter_2_type: (out): the return location of alter 2 type
+ * @alter_2_degree: (out): the return location of alter 2 degree
+ * @alter_3_type: (out): the return location of alter 3 type
+ * @alter_3_degree: (out): the return location of alter 3 degree
+ * @alter_4_type: (out): the return location of alter 4 type
+ * @alter_4_degree: (out): the return location of alter 4 degree
+ * @b_sharp_flats: (out): the return location of b sharp flats
+ * @bass_note: (out): the return location of bass note
+ * @bass_chord_type: (out): the return location of bass chord type
+ * @b_alter_1_type: (out): the return location of b alter 1 type
+ * @b_alter_1_degree: (out): the return location of b alter 1 degree
+ * @b_alter_2_type: (out): the return location of b alter 2 type
+ * @b_alter_2_degree: (out): the return location of b alter 2 degree
+ * @extension_name: (out): the return location of extension name string vector
+ * @extension_value: (out): the return location of extension value array
+ * @extension_count: (out): the return location of extension count
+ *
+ * Get flex set chord name.
+ * 
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.4 
+ */
 guint
 ags_midi_ump_util_get_flex_set_chord_name(AgsMidiUmpUtil *midi_ump_util,
 					  guchar *buffer,
@@ -6987,9 +7018,131 @@ ags_midi_ump_util_get_flex_set_chord_name(AgsMidiUmpUtil *midi_ump_util,
 					  gchar ***extension_name, GValue **extension_value,
 					  guint *extension_count)
 {
-  //TODO:JK: implement me
+  gint nth;
+  
+  g_return_val_if_fail(midi_ump_util != NULL, 0);     
+  g_return_val_if_fail(buffer != NULL, 0);
+  g_return_val_if_fail((0xf0 & buffer[0]) == 0xd0, 0);
+  g_return_val_if_fail((0x30 & buffer[1]) == 0x10, 0);
+  g_return_val_if_fail((0x30 & buffer[2]) == 0x00, 0);
+  g_return_val_if_fail((0x30 & buffer[3]) == 0x06, 0);
 
-  return(0);
+  if(group != NULL){
+    group[0] = 0x0f & buffer[0];
+  }
+
+  if(channel != NULL){
+    channel[0] = 0x0f & buffer[1];
+  }
+  
+  nth = 4;
+
+  /* sharp flats and tonic note */
+  if(t_sharp_flats != NULL){
+    t_sharp_flats[0] = 0x0f & (buffer[nth] >> 4);
+  }
+
+  if(chord_tonic != NULL){
+    chord_tonic[0] = 0x0f & buffer[nth];
+  }
+
+  nth++;
+
+  /* chord type */
+  if(chord_type != NULL){
+    chord_type[0] = 0xff & buffer[nth];
+  }
+
+  nth++;
+
+  /* alter 1 type and degree */
+  if(alter_1_type != NULL){
+    alter_1_type[0] = 0x0f & (buffer[nth] >> 4);
+  }
+
+  if(alter_1_degree != NULL){
+    alter_1_degree[0] = 0x0f & (buffer[nth]);
+  }
+
+  nth++;
+
+  /* alter 2 type and degree */
+  if(alter_2_type != NULL){
+    alter_2_type[0] = 0x0f & (buffer[nth] >> 4);
+  }
+
+  if(alter_2_degree != NULL){
+    alter_2_degree[0] = 0x0f & (buffer[nth]);
+  }
+
+  nth++;
+
+  /* alter 3 type and degree */
+  if(alter_3_type != NULL){
+    alter_3_type[0] = 0x0f & (buffer[nth] >> 4);
+  }
+
+  if(alter_3_degree != NULL){
+    alter_3_degree[0] = 0x0f & (buffer[nth]);
+  }
+
+  nth++;
+
+  /* alter 4 type and degree */
+  if(alter_4_type != NULL){
+    alter_4_type[0] = 0x0f & (buffer[nth] >> 4);
+  }
+
+  if(alter_4_degree != NULL){
+    alter_4_degree[0] = 0x0f & (buffer[nth]);
+  }
+
+  nth++;
+
+  /* reserved */
+  nth += 2;
+
+  /* b sharp flats and bass note */
+  if(b_sharp_flats != NULL){
+    b_sharp_flats[0] = 0x0f & (buffer[nth] >> 4);
+  }
+
+  if(bass_note != NULL){
+    bass_note[0] = 0x0f & buffer[nth];
+  }
+
+  nth++;
+
+  /* bass chord type */
+  if(bass_chord_type != NULL){
+    bass_chord_type[0] = 0xff & buffer[nth];
+  }
+
+  nth++;
+
+  /* b alter 1 type and degree */
+  if(b_alter_1_type != NULL){
+    b_alter_1_type[0] = 0x0f & (buffer[nth] >> 4);
+  }
+
+  if(b_alter_1_degree != NULL){
+    b_alter_1_degree[0] = 0x0f & (buffer[nth]);
+  }
+
+  nth++;
+
+  /* b alter 2 type and degree */
+  if(b_alter_2_type != NULL){
+    b_alter_2_type[0] = 0x0f & (buffer[nth] >> 4);
+  }
+
+  if(b_alter_2_degree != NULL){
+    b_alter_2_degree[0] = 0x0f & (buffer[nth]);
+  }
+
+  nth++;  
+  
+  return(nth);
 }
 
 /**

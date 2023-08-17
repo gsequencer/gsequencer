@@ -1013,6 +1013,10 @@ guint ags_midi_ump_util_get_flex_set_chord_name(AgsMidiUmpUtil *midi_ump_util,
 						gchar ***extension_name, GValue **extension_value,
 						guint *extension_count);
 
+/* MIDI v2.0 flex set text */
+gboolean ags_midi_ump_util_is_flex_set_text(AgsMidiUmpUtil *midi_ump_util,
+					    guchar *buffer);
+
 G_END_DECLS
 
 #endif /*__AGS_MIDI_UMP_UTIL_H__*/
