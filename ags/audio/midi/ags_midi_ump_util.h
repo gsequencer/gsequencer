@@ -301,14 +301,12 @@ gboolean ags_midi_ump_util_is_function_block_name_notification(AgsMidiUmpUtil *m
 							       guchar *buffer);
 void ags_midi_ump_util_put_function_block_name_notification(AgsMidiUmpUtil *midi_ump_util,
 							    guchar *buffer,
-							    gboolean function_block_active,
 							    gint function_block,
 							    gchar *function_block_name,
 							    gchar **extension_name, GValue *extension_value,
 							    guint extension_count);
 guint ags_midi_ump_util_get_function_block_name_notification(AgsMidiUmpUtil *midi_ump_util,
 							     guchar *buffer,
-							     gboolean *function_block_active,
 							     gint *function_block,
 							     gchar **function_block_name,
 							     gchar ***extension_name, GValue **extension_value,
