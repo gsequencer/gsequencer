@@ -26,9 +26,6 @@
 
 #include <string.h>
 
-/* MIDI v2.0 flex set text */
-gboolean ags_midi_ump_util_is_flex_set_text(AgsMidiUmpUtil *midi_ump_util,
-					    guchar *buffer);
 void ags_midi_ump_util_put_flex_set_text(AgsMidiUmpUtil *midi_ump_util,
 					 guchar *buffer,
 					 gint group,
@@ -6038,6 +6035,24 @@ ags_midi_ump_util_put_midi2_per_note_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
   nth++;
 }
 
+/**
+ * ags_midi_ump_util_get_midi2_per_note_pitch_bend:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: (out): the return location of group
+ * @channel: (out): the return location of channel number
+ * @key: (out): the return location of key
+ * @data: (out): the return location of data
+ * @extension_name: (out): the return location of extension name string vector
+ * @extension_value: (out): the return location of extension value array
+ * @extension_count: (out): the return location of extension count
+ *
+ * Get MIDI version 2.0 per note pitch bend.
+ * 
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.4 
+ */
 guint
 ags_midi_ump_util_get_midi2_per_note_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
 						guchar *buffer,
@@ -6048,9 +6063,42 @@ ags_midi_ump_util_get_midi2_per_note_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
 						gchar ***extension_name, GValue **extension_value,
 						guint *extension_count)
 {
-  //TODO:JK: implement me
+  gint nth;
+  gint position;
+  
+  g_return_val_if_fail(midi_ump_util != NULL, 0);     
+  g_return_val_if_fail(buffer != NULL, 0);
+  g_return_val_if_fail((0xf0 & buffer[0]) == 0x40, 0);
+  g_return_val_if_fail((0xf0 & buffer[1]) == 0x60, 0);
 
-  return(0);
+  if(group != NULL){
+    group[0] = 0x0f & buffer[0];
+  }
+
+  if(channel != NULL){
+    channel[0] = 0x0f & buffer[1];
+  }
+  
+  nth = 2;
+
+  /* key */
+  if(key != NULL){
+    key[0] = 0xff & (buffer[nth]);
+  }
+
+  nth++;
+  
+  /* reserved */
+  nth++;
+    
+  /* data */
+  if(data != NULL){
+    data[0] = (0xff000000 & (buffer[nth] << 24)) | (0xff0000 & (buffer[nth + 1] << 16)) | (0xff00 & (buffer[nth + 2] << 8)) | (0xff & (buffer[nth + 3]));
+  }
+
+  nth += 4;
+  
+  return(nth);
 }
 
 /**
@@ -6084,7 +6132,7 @@ ags_midi_ump_util_is_flex_set_tempo(AgsMidiUmpUtil *midi_ump_util,
  * @buffer: the buffer
  * @group: the group
  * @channel: the channel number
- * @tenth_ns_per_quarter_note: the 10 ns per quarter note
+ * @ten_ns_per_quarter_note: the 10 ns per quarter note
  * @extension_name: the extension name string vector
  * @extension_value: the extension value array
  * @extension_count: the extension count
@@ -6098,7 +6146,7 @@ ags_midi_ump_util_put_flex_set_tempo(AgsMidiUmpUtil *midi_ump_util,
 				     guchar *buffer,
 				     gint group,
 				     gint channel,
-				     gint tenth_ns_per_quarter_note,
+				     gint ten_ns_per_quarter_note,
 				     gchar **extension_name, GValue *extension_value,
 				     guint extension_count)
 {
@@ -6130,17 +6178,17 @@ ags_midi_ump_util_put_flex_set_tempo(AgsMidiUmpUtil *midi_ump_util,
   buffer[nth] = 0xff & (status);
   nth++;
 
-  /* tenth ns per quarter note, */
-  buffer[nth] = (0xff & (tenth_ns_per_quarter_note >> 24));
+  /* ten ns per quarter note, */
+  buffer[nth] = (0xff & (ten_ns_per_quarter_note >> 24));
   nth++;
 
-  buffer[nth] = (0xff & (tenth_ns_per_quarter_note >> 16));
+  buffer[nth] = (0xff & (ten_ns_per_quarter_note >> 16));
   nth++;
 
-  buffer[nth] = (0xff & (tenth_ns_per_quarter_note >> 8));
+  buffer[nth] = (0xff & (ten_ns_per_quarter_note >> 8));
   nth++;
 
-  buffer[nth] = (0xff & (tenth_ns_per_quarter_note));
+  buffer[nth] = (0xff & (ten_ns_per_quarter_note));
   nth++;
 
   /* reserved */
@@ -6148,18 +6196,63 @@ ags_midi_ump_util_put_flex_set_tempo(AgsMidiUmpUtil *midi_ump_util,
   nth += 8;
 }
 
+/**
+ * ags_midi_ump_util_get_flex_set_tempo:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: (out): the return location of group
+ * @channel: (out): the return location of channel number
+ * @ten_ns_per_quarter_note: (out): the return location of 10 ns per quarter note
+ * @extension_name: (out): the return location of extension name string vector
+ * @extension_value: (out): the return location of extension value array
+ * @extension_count: (out): the return location of extension count
+ *
+ * Get flex set tempo.
+ * 
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.4 
+ */
 guint
 ags_midi_ump_util_get_flex_set_tempo(AgsMidiUmpUtil *midi_ump_util,
 				     guchar *buffer,
 				     gint *group,
 				     gint *channel,
-				     gint *tenth_ns_per_quarter_note,
+				     gint *ten_ns_per_quarter_note,
 				     gchar ***extension_name, GValue **extension_value,
 				     guint *extension_count)
 {
-  //TODO:JK: implement me
+  gint nth;
+  gint position;
+  
+  g_return_val_if_fail(midi_ump_util != NULL, 0);     
+  g_return_val_if_fail(buffer != NULL, 0);
+  g_return_val_if_fail((0xf0 & buffer[0]) == 0xd0, 0);
+  g_return_val_if_fail((0x30 & buffer[1]) == 0x10, 0);
+  g_return_val_if_fail((0x30 & buffer[2]) == 0x00, 0);
+  g_return_val_if_fail((0x30 & buffer[3]) == 0x00, 0);
 
-  return(0);
+  if(group != NULL){
+    group[0] = 0x0f & buffer[0];
+  }
+
+  if(channel != NULL){
+    channel[0] = 0x0f & buffer[1];
+  }
+  
+  nth = 4;
+    
+  /* 10 ns per quarter note */
+  if(ten_ns_per_quarter_note != NULL){
+    ten_ns_per_quarter_note[0] = (0xff000000 & (buffer[nth] << 24)) | (0xff0000 & (buffer[nth + 1] << 16)) | (0xff00 & (buffer[nth + 2] << 8)) | (0xff & (buffer[nth + 3]));
+  }
+
+  nth += 4;
+
+  /* reserved */
+  nth += 8;
+  
+  return(nth);
 }
 
 /**
@@ -6260,6 +6353,25 @@ ags_midi_ump_util_put_flex_set_time_signature(AgsMidiUmpUtil *midi_ump_util,
   nth += 9;
 }
 
+/**
+ * ags_midi_ump_util_get_flex_set_time_signature:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: (out): the return location of group
+ * @channel: (out): the return location of channel number
+ * @numerator: (out): the return location of numerator
+ * @denominator: (out): the return location of denominator
+ * @thirty_two_ticks: (out): the return location of 1/32 ticks
+ * @extension_name: (out): the return location of extension name string vector
+ * @extension_value: (out): the return location of extension value array
+ * @extension_count: (out): the return location of extension count
+ *
+ * Get flex set time signature.
+ * 
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.4 
+ */
 guint
 ags_midi_ump_util_get_flex_set_time_signature(AgsMidiUmpUtil *midi_ump_util,
 					      guchar *buffer,
@@ -6271,9 +6383,50 @@ ags_midi_ump_util_get_flex_set_time_signature(AgsMidiUmpUtil *midi_ump_util,
 					      gchar ***extension_name, GValue **extension_value,
 					      guint *extension_count)
 {
-  //TODO:JK: implement me
+  gint nth;
+  
+  g_return_val_if_fail(midi_ump_util != NULL, 0);     
+  g_return_val_if_fail(buffer != NULL, 0);
+  g_return_val_if_fail((0xf0 & buffer[0]) == 0xd0, 0);
+  g_return_val_if_fail((0x30 & buffer[1]) == 0x10, 0);
+  g_return_val_if_fail((0x30 & buffer[2]) == 0x00, 0);
+  g_return_val_if_fail((0x30 & buffer[3]) == 0x01, 0);
 
-  return(0);
+  if(group != NULL){
+    group[0] = 0x0f & buffer[0];
+  }
+
+  if(channel != NULL){
+    channel[0] = 0x0f & buffer[1];
+  }
+  
+  nth = 4;
+
+  /* numerator */
+  if(numerator != NULL){
+    numerator[0] = 0xff & buffer[nth];
+  }
+
+  nth++;
+
+  /* denominator */
+  if(denominator != NULL){
+    denominator[0] = 0xff & buffer[nth];
+  }
+
+  nth++;
+
+  /* 1/32 ticks */
+  if(thirty_two_ticks != NULL){
+    thirty_two_ticks[0] = 0xff & buffer[nth];
+  }
+
+  nth++;
+  
+  /* reserved */
+  nth += 9;
+  
+  return(nth);
 }
 
 /**
@@ -6392,6 +6545,28 @@ ags_midi_ump_util_put_flex_set_metronome(AgsMidiUmpUtil *midi_ump_util,
   nth += 6;
 }
 
+/**
+ * ags_midi_ump_util_get_flex_set_metronome:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: (out): the return location of group
+ * @channel: (out): the return location of channel number
+ * @clocks_per_primary_click: (out): the return location of clocks per primary click
+ * @bar_accent_part_1: (out): the return location of bar accent part 1
+ * @bar_accent_part_2: (out): the return location of bar accent part 2
+ * @bar_accent_part_3: (out): the return location of bar accent part 3
+ * @subdivision_clicks_1: (out): the return location of subdivision clicks 1
+ * @subdivision_clicks_2: (out): the return location of subdivision clicks 2
+ * @extension_name: (out): the return location of extension name string vector
+ * @extension_value: (out): the return location of extension value array
+ * @extension_count: (out): the return location of extension count
+ *
+ * Get flex set metronome.
+ * 
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.4 
+ */
 guint
 ags_midi_ump_util_get_flex_set_metronome(AgsMidiUmpUtil *midi_ump_util,
 					 guchar *buffer,
@@ -6406,9 +6581,71 @@ ags_midi_ump_util_get_flex_set_metronome(AgsMidiUmpUtil *midi_ump_util,
 					 gchar ***extension_name, GValue **extension_value,
 					 guint *extension_count)
 {
-  //TODO:JK: implement me
+  gint nth;
+  
+  g_return_val_if_fail(midi_ump_util != NULL, 0);     
+  g_return_val_if_fail(buffer != NULL, 0);
+  g_return_val_if_fail((0xf0 & buffer[0]) == 0xd0, 0);
+  g_return_val_if_fail((0x30 & buffer[1]) == 0x10, 0);
+  g_return_val_if_fail((0x30 & buffer[2]) == 0x00, 0);
+  g_return_val_if_fail((0x30 & buffer[3]) == 0x02, 0);
 
-  return(0);
+  if(group != NULL){
+    group[0] = 0x0f & buffer[0];
+  }
+
+  if(channel != NULL){
+    channel[0] = 0x0f & buffer[1];
+  }
+  
+  nth = 4;
+
+  /* clocks per primary click */
+  if(clocks_per_primary_click != NULL){
+    clocks_per_primary_click[0] = 0xff & buffer[nth];
+  }
+
+  nth++;
+  
+  /* bar accent part 1 */
+  if(bar_accent_part_1 != NULL){
+    bar_accent_part_1[0] = 0xff & buffer[nth];
+  }
+
+  nth++;
+  
+  /* bar accent part 2 */
+  if(bar_accent_part_2 != NULL){
+    bar_accent_part_2[0] = 0xff & buffer[nth];
+  }
+
+  nth++;
+  
+  /* bar accent part 3 */
+  if(bar_accent_part_3 != NULL){
+    bar_accent_part_3[0] = 0xff & buffer[nth];
+  }
+
+  nth++;
+  
+  /* subdivision clicks 1 */
+  if(subdivision_clicks_1 != NULL){
+    subdivision_clicks_1[0] = 0xff & buffer[nth];
+  }
+
+  nth++;
+  
+  /* subdivision clicks 2 */
+  if(subdivision_clicks_2 != NULL){
+    subdivision_clicks_2[0] = 0xff & buffer[nth];
+  }
+
+  nth++;
+
+  /* reserved */
+  nth += 6;
+  
+  return(nth);
 }
 
 /**
@@ -6499,6 +6736,24 @@ ags_midi_ump_util_put_flex_set_key_signature(AgsMidiUmpUtil *midi_ump_util,
   nth += 11;
 }
 
+/**
+ * ags_midi_ump_util_get_flex_set_key_signature:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: (out): the return location of group
+ * @channel: (out): the return location of channel number
+ * @sharp_flats: (out): the return location of sharp flats
+ * @tonic_note: (out): the return location of tonic note
+ * @extension_name: (out): the return location of extension name string vector
+ * @extension_value: (out): the return location of extension value array
+ * @extension_count: (out): the return location of extension count
+ *
+ * Get flex set time signature.
+ * 
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.4 
+ */
 guint
 ags_midi_ump_util_get_flex_set_key_signature(AgsMidiUmpUtil *midi_ump_util,
 					     guchar *buffer,
@@ -6509,9 +6764,40 @@ ags_midi_ump_util_get_flex_set_key_signature(AgsMidiUmpUtil *midi_ump_util,
 					     gchar ***extension_name, GValue **extension_value,
 					     guint *extension_count)
 {
-  //TODO:JK: implement me
+  gint nth;
+  
+  g_return_val_if_fail(midi_ump_util != NULL, 0);     
+  g_return_val_if_fail(buffer != NULL, 0);
+  g_return_val_if_fail((0xf0 & buffer[0]) == 0xd0, 0);
+  g_return_val_if_fail((0x30 & buffer[1]) == 0x10, 0);
+  g_return_val_if_fail((0x30 & buffer[2]) == 0x00, 0);
+  g_return_val_if_fail((0x30 & buffer[3]) == 0x05, 0);
 
-  return(0);
+  if(group != NULL){
+    group[0] = 0x0f & buffer[0];
+  }
+
+  if(channel != NULL){
+    channel[0] = 0x0f & buffer[1];
+  }
+  
+  nth = 4;
+
+  /* sharp flats and tonic note */
+  if(sharp_flats != NULL){
+    sharp_flats[0] = 0x0f & (buffer[nth] >> 4);
+  }
+
+  if(tonic_note != NULL){
+    tonic_note[0] = 0x0f & buffer[nth];
+  }
+
+  nth++;
+
+  /* reserved */
+  nth += 13;
+  
+  return(nth);
 }
 
 /**
@@ -6672,6 +6958,40 @@ ags_midi_ump_util_put_flex_set_chord_name(AgsMidiUmpUtil *midi_ump_util,
   nth++;
 }
 
+/**
+ * ags_midi_ump_util_get_flex_set_chord_name:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @group: (out): the return location of group
+ * @channel: (out): the return location of channel number
+ * @t_sharp_flats: (out): the return location of t sharp flats
+ * @chord_tonic: (out): the return location of chord tonic
+ * @chord_type: (out): the return location of chord type
+ * @alter_1_type: (out): the return location of alter 1 type
+ * @alter_1_degree: (out): the return location of alter 1 degree
+ * @alter_2_type: (out): the return location of alter 2 type
+ * @alter_2_degree: (out): the return location of alter 2 degree
+ * @alter_3_type: (out): the return location of alter 3 type
+ * @alter_3_degree: (out): the return location of alter 3 degree
+ * @alter_4_type: (out): the return location of alter 4 type
+ * @alter_4_degree: (out): the return location of alter 4 degree
+ * @b_sharp_flats: (out): the return location of b sharp flats
+ * @bass_note: (out): the return location of bass note
+ * @bass_chord_type: (out): the return location of bass chord type
+ * @b_alter_1_type: (out): the return location of b alter 1 type
+ * @b_alter_1_degree: (out): the return location of b alter 1 degree
+ * @b_alter_2_type: (out): the return location of b alter 2 type
+ * @b_alter_2_degree: (out): the return location of b alter 2 degree
+ * @extension_name: (out): the return location of extension name string vector
+ * @extension_value: (out): the return location of extension value array
+ * @extension_count: (out): the return location of extension count
+ *
+ * Get flex set chord name.
+ * 
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.4 
+ */
 guint
 ags_midi_ump_util_get_flex_set_chord_name(AgsMidiUmpUtil *midi_ump_util,
 					  guchar *buffer,
@@ -6698,9 +7018,131 @@ ags_midi_ump_util_get_flex_set_chord_name(AgsMidiUmpUtil *midi_ump_util,
 					  gchar ***extension_name, GValue **extension_value,
 					  guint *extension_count)
 {
-  //TODO:JK: implement me
+  gint nth;
+  
+  g_return_val_if_fail(midi_ump_util != NULL, 0);     
+  g_return_val_if_fail(buffer != NULL, 0);
+  g_return_val_if_fail((0xf0 & buffer[0]) == 0xd0, 0);
+  g_return_val_if_fail((0x30 & buffer[1]) == 0x10, 0);
+  g_return_val_if_fail((0x30 & buffer[2]) == 0x00, 0);
+  g_return_val_if_fail((0x30 & buffer[3]) == 0x06, 0);
 
-  return(0);
+  if(group != NULL){
+    group[0] = 0x0f & buffer[0];
+  }
+
+  if(channel != NULL){
+    channel[0] = 0x0f & buffer[1];
+  }
+  
+  nth = 4;
+
+  /* sharp flats and tonic note */
+  if(t_sharp_flats != NULL){
+    t_sharp_flats[0] = 0x0f & (buffer[nth] >> 4);
+  }
+
+  if(chord_tonic != NULL){
+    chord_tonic[0] = 0x0f & buffer[nth];
+  }
+
+  nth++;
+
+  /* chord type */
+  if(chord_type != NULL){
+    chord_type[0] = 0xff & buffer[nth];
+  }
+
+  nth++;
+
+  /* alter 1 type and degree */
+  if(alter_1_type != NULL){
+    alter_1_type[0] = 0x0f & (buffer[nth] >> 4);
+  }
+
+  if(alter_1_degree != NULL){
+    alter_1_degree[0] = 0x0f & (buffer[nth]);
+  }
+
+  nth++;
+
+  /* alter 2 type and degree */
+  if(alter_2_type != NULL){
+    alter_2_type[0] = 0x0f & (buffer[nth] >> 4);
+  }
+
+  if(alter_2_degree != NULL){
+    alter_2_degree[0] = 0x0f & (buffer[nth]);
+  }
+
+  nth++;
+
+  /* alter 3 type and degree */
+  if(alter_3_type != NULL){
+    alter_3_type[0] = 0x0f & (buffer[nth] >> 4);
+  }
+
+  if(alter_3_degree != NULL){
+    alter_3_degree[0] = 0x0f & (buffer[nth]);
+  }
+
+  nth++;
+
+  /* alter 4 type and degree */
+  if(alter_4_type != NULL){
+    alter_4_type[0] = 0x0f & (buffer[nth] >> 4);
+  }
+
+  if(alter_4_degree != NULL){
+    alter_4_degree[0] = 0x0f & (buffer[nth]);
+  }
+
+  nth++;
+
+  /* reserved */
+  nth += 2;
+
+  /* b sharp flats and bass note */
+  if(b_sharp_flats != NULL){
+    b_sharp_flats[0] = 0x0f & (buffer[nth] >> 4);
+  }
+
+  if(bass_note != NULL){
+    bass_note[0] = 0x0f & buffer[nth];
+  }
+
+  nth++;
+
+  /* bass chord type */
+  if(bass_chord_type != NULL){
+    bass_chord_type[0] = 0xff & buffer[nth];
+  }
+
+  nth++;
+
+  /* b alter 1 type and degree */
+  if(b_alter_1_type != NULL){
+    b_alter_1_type[0] = 0x0f & (buffer[nth] >> 4);
+  }
+
+  if(b_alter_1_degree != NULL){
+    b_alter_1_degree[0] = 0x0f & (buffer[nth]);
+  }
+
+  nth++;
+
+  /* b alter 2 type and degree */
+  if(b_alter_2_type != NULL){
+    b_alter_2_type[0] = 0x0f & (buffer[nth] >> 4);
+  }
+
+  if(b_alter_2_degree != NULL){
+    b_alter_2_degree[0] = 0x0f & (buffer[nth]);
+  }
+
+  nth++;  
+  
+  return(nth);
 }
 
 /**
