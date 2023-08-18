@@ -278,7 +278,7 @@ ags_midi_ump_util_test_is_endpoint_discovery()
 
   gboolean retval;
   
-  const guchar buffer[256] = "\xf0\x00\x00\x02\x00\x00\x00\x00\x40\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\xf0\x00\x01\x01\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -293,9 +293,26 @@ ags_midi_ump_util_test_put_endpoint_discovery()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  guchar buffer[512];
+  const guchar filled_buffer[512] = "\xf0\x00\x01\x01\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00";
+  
+  gint major = 1;
+  gint minor = 1;
+  gint filter = 0x04;
+  
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  memset(buffer, 0, 512 * sizeof(guchar));
+  
+  ags_midi_ump_util_put_endpoint_discovery(midi_ump_util,
+					   buffer,
+					   major,
+					   minor,
+					   filter,
+					   NULL, NULL,
+					   0);
+  
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
 
 void
@@ -303,9 +320,25 @@ ags_midi_ump_util_test_get_endpoint_discovery()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  const guchar buffer[512] = "\xf0\x00\x01\x01\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gint major;
+  gint minor;
+  gint filter;
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  ags_midi_ump_util_get_endpoint_discovery(midi_ump_util,
+					   buffer,
+					   &major,
+					   &minor,
+					   &filter,
+					   NULL, NULL,
+					   0);
+
+  CU_ASSERT(major == 1);
+  CU_ASSERT(minor == 1);
+  CU_ASSERT(filter == 0x04);
 }
 
 void
@@ -313,9 +346,16 @@ ags_midi_ump_util_test_is_endpoint_info_notification()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  gboolean retval;
+  
+  const guchar buffer[512] = "\xf0\x01\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  retval = ags_midi_ump_util_is_endpoint_info_notification(midi_ump_util,
+							   buffer);
+
+  CU_ASSERT(retval == TRUE);
 }
 
 void
@@ -323,9 +363,36 @@ ags_midi_ump_util_test_put_endpoint_info_notification()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  guchar buffer[512];
+  const guchar filled_buffer[512] = "\xf0\x01\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  
+  gint major = 1;
+  gint minor = 1;
+  gboolean static_function_blocks = FALSE;
+  gint function_block_count = 0;
+  gboolean midi_v2_0_support = FALSE;
+  gboolean midi_v1_0_support = FALSE;
+  gboolean rx_jitter_reduction = FALSE;
+  gboolean tx_jitter_reduction = FALSE;
+  
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  memset(buffer, 0, 512 * sizeof(guchar));
+  
+  ags_midi_ump_util_put_endpoint_info_notification(midi_ump_util,
+						   buffer,
+						   major,
+						   minor,
+						   static_function_blocks,
+						   function_block_count,
+						   midi_v2_0_support,
+						   midi_v1_0_support,
+						   rx_jitter_reduction,
+						   tx_jitter_reduction,
+						   NULL, NULL,
+						   0);
+  
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
 
 void
@@ -333,9 +400,40 @@ ags_midi_ump_util_test_get_endpoint_info_notification()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  const guchar buffer[512] = "\xf0\x01\x01\x01\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gint major;
+  gint minor;
+  gboolean static_function_blocks;
+  gint function_block_count;
+  gboolean midi_v2_0_support;
+  gboolean midi_v1_0_support;
+  gboolean rx_jitter_reduction;
+  gboolean tx_jitter_reduction;
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  ags_midi_ump_util_get_endpoint_info_notification(midi_ump_util,
+						   buffer,
+						   &major,
+						   &minor,
+						   &static_function_blocks,
+						   &function_block_count,
+						   &midi_v2_0_support,
+						   &midi_v1_0_support,
+						   &rx_jitter_reduction,
+						   &tx_jitter_reduction,
+						   NULL, NULL,
+						   0);
+
+  CU_ASSERT(major == 1);
+  CU_ASSERT(minor == 1);
+  CU_ASSERT(static_function_blocks == FALSE);
+  CU_ASSERT(function_block_count == 0);
+  CU_ASSERT(midi_v2_0_support == FALSE);
+  CU_ASSERT(midi_v1_0_support == FALSE);
+  CU_ASSERT(rx_jitter_reduction == FALSE);
+  CU_ASSERT(tx_jitter_reduction == FALSE);
 }
 
 void

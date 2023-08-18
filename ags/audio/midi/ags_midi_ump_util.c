@@ -242,7 +242,7 @@ ags_midi_ump_util_is_endpoint_discovery(AgsMidiUmpUtil *midi_ump_util,
 					guchar *buffer)
 {
   if((0xf0 & (buffer[0])) == 0xf0 &&
-     (((0x0f & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x0){
+     ((0x300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x00){
     return(TRUE);
   }
   
@@ -337,8 +337,8 @@ ags_midi_ump_util_get_endpoint_discovery(AgsMidiUmpUtil *midi_ump_util,
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail(buffer[0] == 0xf0, 0);
-  g_return_val_if_fail((((0x0f & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x0, 0);
+  g_return_val_if_fail((0xf0 & buffer[0]) == 0xf0, 0);
+  g_return_val_if_fail(((0x300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x0, 0);
 
   nth = 2;
 
@@ -389,7 +389,7 @@ ags_midi_ump_util_is_endpoint_info_notification(AgsMidiUmpUtil *midi_ump_util,
 {
   if((0xf0 & (buffer[0])) == 0xf0 &&
      (0x0c & (buffer[0])) == 0x0 &&
-     (((0x03 & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x1){
+     ((0x300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x01){
     return(TRUE);
   }
   
@@ -536,8 +536,8 @@ ags_midi_ump_util_get_endpoint_info_notification(AgsMidiUmpUtil *midi_ump_util,
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail(buffer[0] == 0xf0, 0);
-  g_return_val_if_fail((((0x0f & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x1, 0);
+  g_return_val_if_fail((0xf0 & buffer[0]) == 0xf0, 0);
+  g_return_val_if_fail(((0x300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x01, 0);
 
   nth = 2;
 
