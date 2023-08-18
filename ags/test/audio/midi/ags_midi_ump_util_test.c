@@ -537,7 +537,6 @@ ags_midi_ump_util_test_put_endpoint_name_notification()
   const guchar filled_buffer[512] = "\xf0\x03\x6c\x69\x67\x68\x74\x79\x65\x61\x72\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   
   gchar *endpoint_name = "lightyear";
-
   
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -557,9 +556,19 @@ ags_midi_ump_util_test_get_endpoint_name_notification()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  const guchar buffer[512] = "\xf0\x03\x6c\x69\x67\x68\x74\x79\x65\x61\x72\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gchar *endpoint_name;
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  ags_midi_ump_util_get_endpoint_name_notification(midi_ump_util,
+						   buffer,
+						   &endpoint_name,
+						   NULL, NULL,
+						   0);
+
+  CU_ASSERT(!strncmp(endpoint_name, "lightyear", 9));
 }
 
 void
@@ -567,9 +576,16 @@ ags_midi_ump_util_test_is_product_instance_id_notification()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  gboolean retval;
+  
+  const guchar buffer[512] = "\xf0\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  retval = ags_midi_ump_util_is_product_instance_id_notification(midi_ump_util,
+								 buffer);
+
+  CU_ASSERT(retval == TRUE);
 }
 
 void
@@ -577,9 +593,22 @@ ags_midi_ump_util_test_put_product_instance_id_notification()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  guchar buffer[512];
+  const guchar filled_buffer[512] = "\xf0\x04\x62\x75\x7a\x7a\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  
+  gchar *product_instance_id = "buzz";
+  
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  memset(buffer, 0, 512 * sizeof(guchar));
+  
+  ags_midi_ump_util_put_product_instance_id_notification(midi_ump_util,
+							 buffer,
+							 product_instance_id,
+							 NULL, NULL,
+							 0);
+  
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
 
 void

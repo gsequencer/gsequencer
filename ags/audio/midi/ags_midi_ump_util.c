@@ -946,8 +946,8 @@ ags_midi_ump_util_get_endpoint_name_notification(AgsMidiUmpUtil *midi_ump_util,
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail(buffer[0] == 0xf0, 0);
-  g_return_val_if_fail((((0x0f & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x03, 0);
+  g_return_val_if_fail((0xf0 & buffer[0]) == 0xf0, 0);
+  g_return_val_if_fail(((0x0300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x3, 0);
 
   str = (gchar *) g_malloc(99 * sizeof(gchar));
   memset(str, 0, 99 * sizeof(gchar));
@@ -962,7 +962,7 @@ ags_midi_ump_util_get_endpoint_name_notification(AgsMidiUmpUtil *midi_ump_util,
 
   is_end = FALSE;
 
-  nth = 2;
+  nth = 0;
 
   for(i = 0; i < 99 && !is_end;){
     nth += 2;    
@@ -981,6 +981,12 @@ ags_midi_ump_util_get_endpoint_name_notification(AgsMidiUmpUtil *midi_ump_util,
     if(format == 0x03){
       is_end = TRUE;
     }
+  }
+
+  if(endpoint_name != NULL){
+    endpoint_name[0] = str;
+  }else{
+    g_free(str);
   }
   
   return(nth);
@@ -1002,7 +1008,7 @@ ags_midi_ump_util_is_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_u
 						      guchar *buffer)
 {
   if((0xf0 & (buffer[0])) == 0xf0 &&
-     (((0x03 & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x04){
+     ((0x0300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x04){
     return(TRUE);
   }
   
@@ -1150,8 +1156,8 @@ ags_midi_ump_util_get_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail(buffer[0] == 0xf0, 0);
-  g_return_val_if_fail((((0x0f & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x4, 0);
+  g_return_val_if_fail((0xf0 & buffer[0]) == 0xf0, 0);
+  g_return_val_if_fail(((0x0300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x04, 0);
 
   nth = 2;
 
