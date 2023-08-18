@@ -1347,7 +1347,7 @@ ags_midi_ump_util_is_stream_configuration_notification(AgsMidiUmpUtil *midi_ump_
 						       guchar *buffer)
 {
   if((0xf0 & (buffer[0])) == 0xf0 &&
-     (((0x3 & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x06){
+     ((0x300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x06){
     return(TRUE);
   }
 
