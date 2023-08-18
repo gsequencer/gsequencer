@@ -614,7 +614,7 @@ ags_midi_ump_util_is_device_identity_notification(AgsMidiUmpUtil *midi_ump_util,
 {
   if((0xf0 & (buffer[0])) == 0xf0 &&
      (0x0c & (buffer[0])) == 0x0 &&
-     (((0x03 & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x2){
+     ((0x300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x02){
     return(TRUE);
   }
   
@@ -667,40 +667,40 @@ ags_midi_ump_util_put_device_identity_notification(AgsMidiUmpUtil *midi_ump_util
   nth += 3;
 
   /* device manufacturer */
+  buffer[nth] = 0x7f & (device_manufacturer >> 14);
+  nth++;
+
+  buffer[nth] = 0x7f & (device_manufacturer >> 7);
+  nth++;
+
   buffer[nth] = (0x7f & device_manufacturer);
-  nth++;
-
-  buffer[nth] = (0x7f00 & device_manufacturer) >> 8;
-  nth++;
-
-  buffer[nth] = (0x7f0000 & device_manufacturer) >> 16;
   nth++;
   
   /* device family */
   buffer[nth] = (0x7f & device_family);
   nth++;
 
-  buffer[nth] = (0x7f00 & device_family) >> 8;
+  buffer[nth] = 0x7f & (device_family >> 7);
   nth++;
 
   /* device family model */
   buffer[nth] = (0x7f & device_family_model);
   nth++;
 
-  buffer[nth] = (0x7f00 & device_family_model) >> 8;
+  buffer[nth] = 0x7f & (device_family_model >> 7);
   nth++;
 
   /* software revision */
   buffer[nth] = (0x7f & software_revision);
   nth++;
 
-  buffer[nth] = (0x3f80 & software_revision) >> 7;
+  buffer[nth] = 0x7f & (software_revision >> 7);
   nth++;
 
-  buffer[nth] = (0x1fc000 & software_revision) >> 14;
+  buffer[nth] = 0x7f & (software_revision >> 14);
   nth++;
 
-  buffer[nth] = (0x0fe00000 & software_revision) >> 21;
+  buffer[nth] = 0x7f & (software_revision >> 21);
   nth++;
 }
 
@@ -736,9 +736,9 @@ ags_midi_ump_util_get_device_identity_notification(AgsMidiUmpUtil *midi_ump_util
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail(buffer[0] == 0xf0, 0);
+  g_return_val_if_fail((0xf0 & buffer[0]) == 0xf0, 0);
   g_return_val_if_fail((0x0c & (buffer[0])) == 0x0, 0);
-  g_return_val_if_fail((((0x0f & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x2, 0);
+  g_return_val_if_fail(((0x300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x02, 0);
 
   nth = 2;
 
@@ -748,30 +748,33 @@ ags_midi_ump_util_get_device_identity_notification(AgsMidiUmpUtil *midi_ump_util
   /* reserved */
   nth++;
 
+  /* reserved */
+  nth++;
+
   /* device manufacturer */
   if(device_manufacturer != NULL){
-    device_manufacturer[0] = (0x7f & buffer[nth] << 14) | (0x7f & buffer[nth + 1] << 7) | (0x7f & buffer[nth + 2]);
+    device_manufacturer[0] = (0x1fc000 & (buffer[nth] << 14)) | (0x03f80 & (buffer[nth + 1] << 7)) | (0x7f & buffer[nth + 2]);
   }
 
   nth += 3;
 
   /* device family */
   if(device_family != NULL){
-    device_family[0] = (0x7f & buffer[nth + 1] << 7) | (0x7f & buffer[nth + 2]);
+    device_family[0] = (0x03f80 & (buffer[nth + 1] << 7)) | (0x7f & buffer[nth]);
   }
 
   nth += 2;
 
   /* device family model */
   if(device_family_model != NULL){
-    device_family_model[0] = (0x7f & buffer[nth + 1] << 7) | (0x7f & buffer[nth + 2]);
+    device_family_model[0] = (0x03f80 & (buffer[nth + 1] << 7)) | (0x7f & buffer[nth]);
   }
 
   nth += 2;
 
   /* software revision */
   if(software_revision != NULL){
-    software_revision[0] = (0x7f & buffer[nth] << 21) | (0x7f & buffer[nth] << 14) | (0x7f & buffer[nth + 1] << 7) | (0x7f & buffer[nth + 2]);
+    software_revision[0] = (0x0fe00000 & (buffer[nth + 3]) << 21) | (0x1fc000 & (buffer[nth + 2]) << 14) | (0x03f80 & (buffer[nth + 1]) << 7) | (0x7f & buffer[nth]);
   }
 
   nth += 4;
