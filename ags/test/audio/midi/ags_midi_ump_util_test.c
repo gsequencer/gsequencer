@@ -441,9 +441,16 @@ ags_midi_ump_util_test_is_device_identity_notification()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  gboolean retval;
+  
+  const guchar buffer[512] = "\xf0\x2\x0\x0\x0\x7e\x15\x3\x2d\x3d\x6f\x7d\x0\x2\x0";
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  retval = ags_midi_ump_util_is_device_identity_notification(midi_ump_util,
+							     buffer);
+
+  CU_ASSERT(retval == TRUE);
 }
 
 void
@@ -451,9 +458,28 @@ ags_midi_ump_util_test_put_device_identity_notification()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  guchar buffer[512];
+  const guchar filled_buffer[512] = "\xf0\x2\x0\x0\x0\x3\x15\x7e\x2d\x3d\x6f\x7d\x0\x2\x0";
+  
+  gint device_manufacturer = 0xcafe;
+  gint device_family = 0xdead;
+  gint device_family_model = 0xbeef;
+  gint software_revision = 0x0100;
+  
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  memset(buffer, 0, 512 * sizeof(guchar));
+  
+  ags_midi_ump_util_put_device_identity_notification(midi_ump_util,
+						     buffer,
+						     device_manufacturer,
+						     device_family,
+						     device_family_model,
+						     software_revision,
+						     NULL, NULL,
+						     0);
+  
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
 
 void
@@ -461,9 +487,28 @@ ags_midi_ump_util_test_get_device_identity_notification()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  const guchar buffer[512] = "\xf0\x2\x0\x0\x0\x3\x15\x7e\x2d\x3d\x6f\x7d\x0\x2\x0";
+
+  gint device_manufacturer;
+  gint device_family;
+  gint device_family_model;
+  gint software_revision;
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  ags_midi_ump_util_get_device_identity_notification(midi_ump_util,
+						     buffer,
+						     &device_manufacturer,
+						     &device_family,
+						     &device_family_model,
+						     &software_revision,
+						     NULL, NULL,
+						     0);
+
+  CU_ASSERT(device_manufacturer == 0xcafe);
+  CU_ASSERT(device_family == 0x1ead);
+  CU_ASSERT(device_family_model == 0x3eef);
+  CU_ASSERT(software_revision == 0x0100);
 }
 
 void
@@ -1789,6 +1834,11 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of ags_midi_ump_util.c is endpoint info notification", ags_midi_ump_util_test_is_endpoint_info_notification) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ump_util.c put endpoint info notification", ags_midi_ump_util_test_put_endpoint_info_notification) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ump_util.c get endpoint info notification", ags_midi_ump_util_test_get_endpoint_info_notification) == NULL) ||
+
+     (CU_add_test(pSuite, "test of ags_midi_ump_util.c is device identity notification", ags_midi_ump_util_test_is_device_identity_notification) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_ump_util.c put device identity notification", ags_midi_ump_util_test_put_device_identity_notification) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_ump_util.c get device identity notification", ags_midi_ump_util_test_get_device_identity_notification) == NULL) ||
+
      (CU_add_test(pSuite, "test of ags_midi_ump_util.c is product instance ID notification", ags_midi_ump_util_test_is_product_instance_id_notification) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ump_util.c put product instance ID notification", ags_midi_ump_util_test_put_product_instance_id_notification) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ump_util.c get product instance ID notification", ags_midi_ump_util_test_get_product_instance_id_notification) == NULL) ||
