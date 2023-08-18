@@ -616,9 +616,19 @@ ags_midi_ump_util_test_get_product_instance_id_notification()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  const guchar buffer[512] = "\xf0\x04\x62\x75\x7a\x7a\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gchar *product_instance_id;
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  ags_midi_ump_util_get_product_instance_id_notification(midi_ump_util,
+							 buffer,
+							 &product_instance_id,
+							 NULL, NULL,
+							 0);
+
+  CU_ASSERT(!strncmp(product_instance_id, "buzz", 4));
 }
 
 void
@@ -626,9 +636,16 @@ ags_midi_ump_util_test_is_stream_configuration_request()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  gboolean retval;
+  
+  const guchar buffer[512] = "\xf0\x05\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  retval = ags_midi_ump_util_is_stream_configuration_request(midi_ump_util,
+							     buffer);
+
+  CU_ASSERT(retval == TRUE);
 }
 
 void
@@ -636,9 +653,25 @@ ags_midi_ump_util_test_put_stream_configuration_request()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  guchar buffer[512];
+  const guchar filled_buffer[512] = "\xf0\x05\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  
+  gint protocol = 0x2;
+  gboolean rx_jitter_reduction = FALSE;
+  gboolean tx_jitter_reduction = FALSE;
+  
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  memset(buffer, 0, 512 * sizeof(guchar));
+  
+  ags_midi_ump_util_put_stream_configuration_request(midi_ump_util,
+						     buffer,
+						     protocol,
+						     rx_jitter_reduction, tx_jitter_reduction,
+						     NULL, NULL,
+						     0);
+  
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
 
 void
@@ -646,9 +679,24 @@ ags_midi_ump_util_test_get_stream_configuration_request()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  const guchar buffer[512] = "\xf0\x05\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gint protocol;
+  gboolean rx_jitter_reduction;
+  gboolean tx_jitter_reduction;
+  
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  ags_midi_ump_util_get_stream_configuration_request(midi_ump_util,
+						     buffer,
+						     &protocol,
+						     &rx_jitter_reduction, &tx_jitter_reduction,
+						     NULL, NULL,
+						     0);
+
+  CU_ASSERT(protocol == 0x2);
+  CU_ASSERT(rx_jitter_reduction == FALSE);
+  CU_ASSERT(tx_jitter_reduction == FALSE);
 }
 
 void
