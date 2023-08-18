@@ -772,9 +772,16 @@ ags_midi_ump_util_test_is_function_block_discovery()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  gboolean retval;
+  
+  const guchar buffer[512] = "\xf0\x10\x01f\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  retval = ags_midi_ump_util_is_function_block_discovery(midi_ump_util,
+							 buffer);
+
+  CU_ASSERT(retval == TRUE);
 }
 
 void
@@ -782,9 +789,24 @@ ags_midi_ump_util_test_put_function_block_discovery()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  guchar buffer[512];
+  const guchar filled_buffer[512] = "\xf0\x10\x01f\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gint function_block = 0x1f;
+  gint filter = 0x2;
+  
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  memset(buffer, 0, 512 * sizeof(guchar));
+  
+  ags_midi_ump_util_put_function_block_discovery(midi_ump_util,
+						 buffer,
+						 function_block,
+						 filter,
+						 NULL, NULL,
+						 0);
+  
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
 
 void
@@ -792,9 +814,22 @@ ags_midi_ump_util_test_get_function_block_discovery()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  const guchar buffer[512] = "\xf0\x10\x01f\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gint function_block;
+  gint filter;
+  
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  ags_midi_ump_util_get_function_block_discovery(midi_ump_util,
+						 buffer,
+						 &function_block,
+						 &filter,
+						 NULL, NULL,
+						 0);
+
+  CU_ASSERT(function_block == 0x1f);
+  CU_ASSERT(filter == 0x02);
 }
 
 void

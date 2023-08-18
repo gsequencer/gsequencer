@@ -1392,13 +1392,16 @@ ags_midi_ump_util_put_stream_configuration_notification(AgsMidiUmpUtil *midi_ump
   buffer[nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
   nth++;
 
+  buffer[nth] = (0xff & status);
+  nth++;
+  
   buffer[nth] = (0xff) & (protocol);
   nth++;
 
   buffer[nth] = (0xff) & ((rx_jitter_reduction ? (0x01 << 1): 0x0) | (rx_jitter_reduction ? (0x01): 0x0));
   nth++;
 
-  memset(buffer, 0, 12 * sizeof(guchar));
+  memset(buffer + nth, 0, 12 * sizeof(guchar));
   nth += 12;
 }
 
@@ -1473,7 +1476,7 @@ ags_midi_ump_util_is_function_block_discovery(AgsMidiUmpUtil *midi_ump_util,
 					      guchar *buffer)
 {
   if((0xf0 & (buffer[0])) == 0xf0 &&
-     (((0x03 & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x10){
+     ((0x0300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x10){
     return(TRUE);
   }
   
@@ -1517,13 +1520,16 @@ ags_midi_ump_util_put_function_block_discovery(AgsMidiUmpUtil *midi_ump_util,
   buffer[nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
   nth++;
 
+  buffer[nth] = (0xff & status);
+  nth++;
+
   buffer[nth] = (0xff) & (function_block);
   nth++;
 
   buffer[nth] = (0xff) & (filter);
   nth++;
 
-  memset(buffer, 0, 12 * sizeof(guchar));
+  memset(buffer + nth, 0, 12 * sizeof(guchar));
   nth += 12;
 }
 
@@ -1556,7 +1562,7 @@ ags_midi_ump_util_get_function_block_discovery(AgsMidiUmpUtil *midi_ump_util,
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
   g_return_val_if_fail(buffer[0] == 0xf0, 0);
-  g_return_val_if_fail((((0x0f & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x10, 0);
+  g_return_val_if_fail(((0x0300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x10, 0);
 
   nth = 2;
 
@@ -1656,6 +1662,9 @@ ags_midi_ump_util_put_function_block_info_notification(AgsMidiUmpUtil *midi_ump_
   buffer[nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
   nth++;
 
+  buffer[nth] = (0xff & status);
+  nth++;
+
   buffer[nth] = (0xff) & ((function_block_active ? (0x80): 0x00) | (function_block));
   nth++;
 
@@ -1674,7 +1683,7 @@ ags_midi_ump_util_put_function_block_info_notification(AgsMidiUmpUtil *midi_ump_
   buffer[nth] = (0xff) & (max_sysex8_stream_count);
   nth++;
   
-  memset(buffer, 0, 8 * sizeof(guchar));
+  memset(buffer + nth, 0, 8 * sizeof(guchar));
   nth += 12;
 }
 
@@ -1975,6 +1984,12 @@ ags_midi_ump_util_get_function_block_name_notification(AgsMidiUmpUtil *midi_ump_
     if(format == 0x03){
       is_end = TRUE;
     }
+  }
+
+  if(function_block_name != NULL){
+    function_block_name[0] = str;
+  }else{
+    g_free(str);
   }
   
   return(nth);
