@@ -516,9 +516,16 @@ ags_midi_ump_util_test_is_endpoint_name_notification()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  gboolean retval;
+  
+  const guchar buffer[512] = "\xf0\x03\x6c\x69\x67\x68\x74\x79\x65\x61\x72\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  retval = ags_midi_ump_util_is_endpoint_name_notification(midi_ump_util,
+							   buffer);
+
+  CU_ASSERT(retval == TRUE);
 }
 
 void
@@ -526,9 +533,23 @@ ags_midi_ump_util_test_put_endpoint_name_notification()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  guchar buffer[512];
+  const guchar filled_buffer[512] = "\xf0\x03\x6c\x69\x67\x68\x74\x79\x65\x61\x72\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  
+  gchar *endpoint_name = "lightyear";
+
+  
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  memset(buffer, 0, 512 * sizeof(guchar));
+  
+  ags_midi_ump_util_put_endpoint_name_notification(midi_ump_util,
+						   buffer,
+						   endpoint_name,
+						   NULL, NULL,
+						   0);
+  
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
 
 void
@@ -1834,11 +1855,12 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of ags_midi_ump_util.c is endpoint info notification", ags_midi_ump_util_test_is_endpoint_info_notification) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ump_util.c put endpoint info notification", ags_midi_ump_util_test_put_endpoint_info_notification) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ump_util.c get endpoint info notification", ags_midi_ump_util_test_get_endpoint_info_notification) == NULL) ||
-
      (CU_add_test(pSuite, "test of ags_midi_ump_util.c is device identity notification", ags_midi_ump_util_test_is_device_identity_notification) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ump_util.c put device identity notification", ags_midi_ump_util_test_put_device_identity_notification) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ump_util.c get device identity notification", ags_midi_ump_util_test_get_device_identity_notification) == NULL) ||
-
+     (CU_add_test(pSuite, "test of ags_midi_ump_util.c is endpoint name notification", ags_midi_ump_util_test_is_endpoint_name_notification) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_ump_util.c put endpoint name notification", ags_midi_ump_util_test_put_endpoint_name_notification) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_ump_util.c get endpoint name notification", ags_midi_ump_util_test_get_endpoint_name_notification) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ump_util.c is product instance ID notification", ags_midi_ump_util_test_is_product_instance_id_notification) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ump_util.c put product instance ID notification", ags_midi_ump_util_test_put_product_instance_id_notification) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ump_util.c get product instance ID notification", ags_midi_ump_util_test_get_product_instance_id_notification) == NULL) ||
