@@ -798,7 +798,7 @@ ags_midi_ump_util_is_endpoint_name_notification(AgsMidiUmpUtil *midi_ump_util,
 						guchar *buffer)
 {
   if((0xf0 & (buffer[0])) == 0xf0 &&
-     (((0x03 & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x03){
+     ((0x300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x03){
     return(TRUE);
   }
   
