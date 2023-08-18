@@ -1159,12 +1159,12 @@ ags_midi_ump_util_get_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_
   g_return_val_if_fail((0xf0 & buffer[0]) == 0xf0, 0);
   g_return_val_if_fail(((0x0300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x04, 0);
 
-  nth = 2;
+  nth = 0;
 
   str = (gchar *) g_malloc(43 * sizeof(gchar));
   memset(str, 0, 43 * sizeof(gchar));
 
-  format = ((0x0c & (buffer[nth])) >> 2);
+  format = ((0x0c & (buffer[0])) >> 2);
 
   is_complete = TRUE;
 
@@ -1193,6 +1193,12 @@ ags_midi_ump_util_get_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_
     }
   }
 
+  if(product_instance_id != NULL){
+    product_instance_id[0] = str;
+  }else{
+    g_free(str);
+  }
+  
   return(0);
 }
 
@@ -1257,13 +1263,16 @@ ags_midi_ump_util_put_stream_configuration_request(AgsMidiUmpUtil *midi_ump_util
   buffer[nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
   nth++;
 
+  buffer[nth] = (0xff & status);
+  nth++;
+  
   buffer[nth] = (0xff) & (protocol);
   nth++;
 
   buffer[nth] = (0xff) & ((rx_jitter_reduction ? (0x01 << 1): 0x0) | (rx_jitter_reduction ? (0x01): 0x0));
   nth++;
 
-  memset(buffer, 0, 12 * sizeof(guchar));
+  memset(buffer + nth, 0, 12 * sizeof(guchar));
   nth += 12;
 }
 
