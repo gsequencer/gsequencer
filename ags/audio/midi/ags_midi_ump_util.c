@@ -2392,7 +2392,7 @@ ags_midi_ump_util_is_jr_timestamp(AgsMidiUmpUtil *midi_ump_util,
 				  guchar *buffer)
 {
   if((0xf0 & (buffer[0])) == 0x00 &&
-     (0x0f & (buffer[1])) == 0x02){
+     (0xf0 & (buffer[1])) == 0x20){
     return(TRUE);
   }
   
@@ -2428,7 +2428,7 @@ ags_midi_ump_util_put_jr_timestamp(AgsMidiUmpUtil *midi_ump_util,
 
   nth = 0;
   
-  buffer[nth] = (0xf0) | ((0x07 & mt) << 4);
+  buffer[nth] = ((0x07 & mt) << 4);
   nth++;
 
   buffer[nth] = (0xff) & (status << 4);
@@ -2468,14 +2468,14 @@ ags_midi_ump_util_get_jr_timestamp(AgsMidiUmpUtil *midi_ump_util,
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0xf0, 0);
-  g_return_val_if_fail((0xf0 & (buffer[0])) == 0x00 && (0x0f & (buffer[1])) == 0x02, 0);
+  g_return_val_if_fail((0xf0 & buffer[0]) == 0x00, 0);
+  g_return_val_if_fail((0xf0 & (buffer[1])) == 0x20, 0);
 
   nth = 2;
 
   /* sender timestamp time */
   if(sender_clock_timestamp != NULL){
-    sender_clock_timestamp[0] = (0xff00 | (buffer[nth] << 8)) | (0xff & buffer[nth + 1]);
+    sender_clock_timestamp[0] = (0xff00 & (buffer[nth] << 8)) | (0xff & buffer[nth + 1]);
   }
 
   nth += 2;
@@ -2499,7 +2499,7 @@ ags_midi_ump_util_is_delta_clock_ticks_per_quarter_note(AgsMidiUmpUtil *midi_ump
 							guchar *buffer)
 {
   if((0xf0 & (buffer[0])) == 0x00 &&
-     (0x0f & (buffer[1])) == 0x03){
+     (0xf0 & (buffer[1])) == 0x30){
     return(TRUE);
   }
   
@@ -2535,7 +2535,7 @@ ags_midi_ump_util_put_delta_clock_ticks_per_quarter_note(AgsMidiUmpUtil *midi_um
 
   nth = 0;
   
-  buffer[nth] = (0xf0) | ((0x07 & mt) << 4);
+  buffer[nth] = ((0x07 & mt) << 4);
   nth++;
 
   buffer[nth] = (0xff) & (status << 4);
@@ -2575,14 +2575,14 @@ ags_midi_ump_util_get_delta_clock_ticks_per_quarter_note(AgsMidiUmpUtil *midi_um
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0xf0, 0);
-  g_return_val_if_fail((0xf0 & (buffer[0])) == 0x00 && (0x0f & (buffer[1])) == 0x03, 0);
+  g_return_val_if_fail((0xf0 & buffer[0]) == 0x00, 0);
+  g_return_val_if_fail((0xf0 & (buffer[1])) == 0x30, 0);
 
   nth = 2;
 
   /* ticks per quarter note count */
   if(ticks_per_quarter_note_count != NULL){
-    ticks_per_quarter_note_count[0] = (0xff00 | (buffer[nth] << 8)) | (0xff & buffer[nth + 1]);
+    ticks_per_quarter_note_count[0] = (0xff00 & (buffer[nth] << 8)) | (0xff & buffer[nth + 1]);
   }
 
   nth += 2;
@@ -2606,7 +2606,7 @@ ags_midi_ump_util_is_delta_clock_ticks_since_last_event(AgsMidiUmpUtil *midi_ump
 							guchar *buffer)
 {
   if((0xf0 & (buffer[0])) == 0x00 &&
-     (0x0f & (buffer[1])) == 0x04){
+     (0xf0 & (buffer[1])) == 0x40){
     return(TRUE);
   }
   
@@ -2642,7 +2642,7 @@ ags_midi_ump_util_put_delta_clock_ticks_since_last_event(AgsMidiUmpUtil *midi_um
 
   nth = 0;
   
-  buffer[nth] = (0xf0) | ((0x07 & mt) << 4);
+  buffer[nth] = ((0x07 & mt) << 4);
   nth++;
 
   buffer[nth] = (0xff) & (status << 4);
@@ -2683,13 +2683,13 @@ ags_midi_ump_util_get_delta_clock_ticks_since_last_event(AgsMidiUmpUtil *midi_um
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
   g_return_val_if_fail((0xf0 & buffer[0]) == 0xf0, 0);
-  g_return_val_if_fail((0xf0 & (buffer[0])) == 0x00 && (0x0f & (buffer[1])) == 0x04, 0);
+  g_return_val_if_fail((0xf0 & (buffer[1])) == 0x40, 0);
 
   nth = 2;
 
   /* ticks per quarter note count */
   if(ticks_since_last_event_count != NULL){
-    ticks_since_last_event_count[0] = (0xff00 | (buffer[nth] << 8)) | (0xff & buffer[nth + 1]);
+    ticks_since_last_event_count[0] = (0xff00 & (buffer[nth] << 8)) | (0xff & buffer[nth + 1]);
   }
 
   nth += 2;
