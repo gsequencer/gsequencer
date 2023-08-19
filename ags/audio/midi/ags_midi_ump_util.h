@@ -292,7 +292,6 @@ guint ags_midi_ump_util_get_function_block_info_notification(AgsMidiUmpUtil *mid
 							     gint *group_count,
 							     gint *message_version,
 							     gint *max_sysex8_stream_count,
-							     gint *filter,
 							     gchar ***extension_name, GValue **extension_value,
 							     guint *extension_count);
 
