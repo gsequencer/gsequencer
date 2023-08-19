@@ -814,7 +814,7 @@ ags_midi_ump_util_test_get_function_block_discovery()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\xf0\x10\x01f\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\xf0\x10\x1f\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint function_block;
   gint filter;
@@ -837,9 +837,16 @@ ags_midi_ump_util_test_is_function_block_info_notification()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  gboolean retval;
+  
+  const guchar buffer[512] = "\xf0\x11\x9f\x00\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  retval = ags_midi_ump_util_is_function_block_info_notification(midi_ump_util,
+								 buffer);
+
+  CU_ASSERT(retval == TRUE);
 }
 
 void
@@ -847,9 +854,38 @@ ags_midi_ump_util_test_put_function_block_info_notification()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  guchar buffer[512];
+  const guchar filled_buffer[512] = "\xf0\x11\x9f\x02\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gboolean function_block_active = TRUE;
+  gint function_block = 0x1f;
+  gint direction = 0x2;
+  gint midi1 = 0x0;
+  gint ui_hint = 0x0;
+  gint first_group = 0x0;
+  gint groups_spanned = 0x0;
+  gint midi_ci_version = 0x1;
+  gint max_sysex_8_streams = 0x1;
+  
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  memset(buffer, 0, 512 * sizeof(guchar));
+  
+  ags_midi_ump_util_put_function_block_info_notification(midi_ump_util,
+							 buffer,
+							 function_block_active,
+							 function_block,
+							 direction,
+							 midi1,
+							 ui_hint,
+							 first_group,
+							 groups_spanned,
+							 midi_ci_version,
+							 max_sysex_8_streams,
+							 NULL, NULL,
+							 0);
+  
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
 
 void
@@ -857,9 +893,43 @@ ags_midi_ump_util_test_get_function_block_info_notification()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  const guchar buffer[512] = "\xf0\x11\x9f\x02\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gboolean function_block_active = TRUE;
+  gint function_block = 0x1f;
+  gint direction = 0x2;
+  gint midi1 = 0x0;
+  gint ui_hint = 0x0;
+  gint first_group = 0x0;
+  gint groups_spanned = 0x0;
+  gint midi_ci_version = 0x1;
+  gint max_sysex_8_streams = 0x1;
+  
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  ags_midi_ump_util_get_function_block_info_notification(midi_ump_util,
+							 buffer,
+							 &function_block_active,
+							 &function_block,
+							 &direction,
+							 &midi1,
+							 &ui_hint,
+							 &first_group,
+							 &groups_spanned,
+							 &midi_ci_version,
+							 &max_sysex_8_streams,
+							 NULL, NULL,
+							 0);
+
+  CU_ASSERT(function_block_active == TRUE);
+  CU_ASSERT(function_block == 0x1f);
+  CU_ASSERT(direction == 0x2);
+  CU_ASSERT(midi1 == 0x0);
+  CU_ASSERT(ui_hint == 0x0);
+  CU_ASSERT(first_group == 0x0);
+  CU_ASSERT(groups_spanned == 0x0);
+  CU_ASSERT(midi_ci_version == 0x1);
+  CU_ASSERT(max_sysex_8_streams == 0x1);
 }
 
 void

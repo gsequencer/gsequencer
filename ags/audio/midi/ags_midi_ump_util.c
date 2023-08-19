@@ -1687,6 +1687,29 @@ ags_midi_ump_util_put_function_block_info_notification(AgsMidiUmpUtil *midi_ump_
   nth += 12;
 }
 
+/**
+ * ags_midi_ump_util_get_function_block_info_notification:
+ * @midi_ump_util: the MIDI UMP util
+ * @buffer: the buffer
+ * @function_block_active: (out): the return location of function block active
+ * @function_block: (out): the return location of function block
+ * @direction: (out): the return location of direction
+ * @midi1_port: (out): the return location of MIDI v1.0 port
+ * @ui_hint: (out): the return location of UI hint
+ * @first_group: (out): the return location of first group
+ * @group_count: (out): the return location of group count
+ * @message_version: (out): the return location of MIDI CI message version
+ * @max_sysex8_stream_count: (out): the return location of max SYSEX8 stream count
+ * @extension_name: (out): the return location of extension name string vector
+ * @extension_value: (out): the return location of extension value array
+ * @extension_count: (out): the return location of extension count
+ *
+ * Get function block discovery.
+ * 
+ * Returns: the number of bytes read
+ * 
+ * Since: 5.5.4 
+ */
 guint
 ags_midi_ump_util_get_function_block_info_notification(AgsMidiUmpUtil *midi_ump_util,
 						       guchar *buffer,
@@ -1699,7 +1722,6 @@ ags_midi_ump_util_get_function_block_info_notification(AgsMidiUmpUtil *midi_ump_
 						       gint *group_count,
 						       gint *message_version,
 						       gint *max_sysex8_stream_count,
-						       gint *filter,
 						       gchar ***extension_name, GValue **extension_value,
 						       guint *extension_count)
 {
@@ -1708,7 +1730,7 @@ ags_midi_ump_util_get_function_block_info_notification(AgsMidiUmpUtil *midi_ump_
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
   g_return_val_if_fail(buffer[0] == 0xf0, 0);
-  g_return_val_if_fail((((0x0f & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x11, 0);
+  g_return_val_if_fail(((0x0300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x11, 0);
 
   nth = 2;
 
