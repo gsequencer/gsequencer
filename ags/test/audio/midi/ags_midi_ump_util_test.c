@@ -1220,9 +1220,16 @@ ags_midi_ump_util_test_is_jr_timestamp()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  gboolean retval;
+  
+  const guchar buffer[512] = "\x00\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  retval = ags_midi_ump_util_is_jr_timestamp(midi_ump_util,
+					     buffer);
+
+  CU_ASSERT(retval == TRUE);
 }
 
 void
@@ -1230,9 +1237,22 @@ ags_midi_ump_util_test_put_jr_timestamp()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  guchar buffer[512];
+  const guchar filled_buffer[512] = "\x00\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  guint16 sender_clock_time = 0;
+  
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  memset(buffer, 0, 512 * sizeof(guchar));
+  
+  ags_midi_ump_util_put_jr_timestamp(midi_ump_util,
+				     buffer,
+				     sender_clock_time,
+				     NULL, NULL,
+				     0);
+  
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
 
 void
@@ -1240,9 +1260,19 @@ ags_midi_ump_util_test_get_jr_timestamp()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  const guchar buffer[512] = "\x00\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  
+  guint16 sender_clock_time;
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  ags_midi_ump_util_get_jr_timestamp(midi_ump_util,
+				     buffer,
+				     &sender_clock_time,
+				     NULL, NULL,
+				     0);
+
+  CU_ASSERT(sender_clock_time == 0);
 }
 
 void
@@ -1250,9 +1280,16 @@ ags_midi_ump_util_test_is_delta_clock_ticks_per_quarter_note()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  gboolean retval;
+  
+  const guchar buffer[512] = "\x00\x30\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  retval = ags_midi_ump_util_is_delta_clock_ticks_per_quarter_note(midi_ump_util,
+								   buffer);
+
+  CU_ASSERT(retval == TRUE);
 }
 
 void
@@ -1260,9 +1297,22 @@ ags_midi_ump_util_test_put_delta_clock_ticks_per_quarter_note()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  guchar buffer[512];
+  const guchar filled_buffer[512] = "\x00\x30\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  guint16 ticks_per_quarter_note = 1;
+  
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  memset(buffer, 0, 512 * sizeof(guchar));
+  
+  ags_midi_ump_util_put_delta_clock_ticks_per_quarter_note(midi_ump_util,
+							   buffer,
+							   ticks_per_quarter_note,
+							   NULL, NULL,
+							   0);
+  
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
 
 void
@@ -1270,9 +1320,19 @@ ags_midi_ump_util_test_get_delta_clock_ticks_per_quarter_note()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  const guchar buffer[512] = "\x00\x30\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  
+  guint16 ticks_per_quarter_note;
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  ags_midi_ump_util_get_delta_clock_ticks_per_quarter_note(midi_ump_util,
+							   buffer,
+							   &ticks_per_quarter_note,
+							   NULL, NULL,
+							   0);
+
+  CU_ASSERT(ticks_per_quarter_note == 1);
 }
 
 void
