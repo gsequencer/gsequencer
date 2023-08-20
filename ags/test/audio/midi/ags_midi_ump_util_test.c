@@ -1928,9 +1928,16 @@ ags_midi_ump_util_test_is_midi2_channel_voice()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  gboolean retval;
+  
+  const guchar buffer[512] = "\x40\x80\x30\x00\x7f\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  retval = ags_midi_ump_util_is_midi2_channel_voice(midi_ump_util,
+						    buffer);
+
+  CU_ASSERT(retval == TRUE);
 }
 
 void
@@ -1938,9 +1945,16 @@ ags_midi_ump_util_test_is_midi2_note_off()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  gboolean retval;
+  
+  const guchar buffer[512] = "\x40\x80\x30\x00\x7f\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  retval = ags_midi_ump_util_is_midi2_note_off(midi_ump_util,
+					       buffer);
+
+  CU_ASSERT(retval == TRUE);
 }
 
 void
@@ -1948,9 +1962,28 @@ ags_midi_ump_util_test_put_midi2_note_off()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  guchar buffer[512];
+  const guchar filled_buffer[512] = "\x40\x80\x30\x00\x7f\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gint key = 48;
+  gint velocity = 0x7fff;
+  
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  memset(buffer, 0, 512 * sizeof(guchar));
+  
+  ags_midi_ump_util_put_midi2_note_off(midi_ump_util,
+				       buffer,
+				       0,
+				       0,
+				       key,
+				       0,
+				       velocity,
+				       0,
+				       NULL, NULL,
+				       0);
+  
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
 
 void
@@ -1958,9 +1991,34 @@ ags_midi_ump_util_test_get_midi2_note_off()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  const guchar buffer[512] = "\x40\x80\x30\x00\x7f\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gint group;
+  gint channel;
+  gint key;
+  gint attribute_id;
+  gint velocity;
+  gint attribute_value;
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  ags_midi_ump_util_get_midi2_note_off(midi_ump_util,
+				       buffer,
+				       &group,
+				       &channel,
+				       &key,
+				       &attribute_id,
+				       &velocity,
+				       &attribute_value,
+				       NULL, NULL,
+				       0);
+  
+  CU_ASSERT(group == 0);
+  CU_ASSERT(channel == 0);
+  CU_ASSERT(key == 48);
+  CU_ASSERT(attribute_id == 0);
+  CU_ASSERT(velocity == 0x7fff);
+  CU_ASSERT(attribute_value == 0);
 }
 
 void
@@ -1968,9 +2026,16 @@ ags_midi_ump_util_test_is_midi2_note_on()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  gboolean retval;
+  
+  const guchar buffer[512] = "\x40\x90\x30\x00\x7f\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  retval = ags_midi_ump_util_is_midi2_note_on(midi_ump_util,
+					      buffer);
+
+  CU_ASSERT(retval == TRUE);
 }
 
 void
@@ -1978,9 +2043,28 @@ ags_midi_ump_util_test_put_midi2_note_on()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  guchar buffer[512];
+  const guchar filled_buffer[512] = "\x40\x90\x30\x00\x7f\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gint key = 48;
+  gint velocity = 0x7fff;
+  
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  memset(buffer, 0, 512 * sizeof(guchar));
+  
+  ags_midi_ump_util_put_midi2_note_on(midi_ump_util,
+				      buffer,
+				      0,
+				      0,
+				      key,
+				      0,
+				      velocity,
+				      0,
+				      NULL, NULL,
+				      0);
+  
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
 
 void
@@ -1988,9 +2072,34 @@ ags_midi_ump_util_test_get_midi2_note_on()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  const guchar buffer[512] = "\x40\x90\x30\x00\x7f\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gint group;
+  gint channel;
+  gint key;
+  gint attribute_id;
+  gint data;
+  gint attribute_value;
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  ags_midi_ump_util_get_midi2_note_on(midi_ump_util,
+				      buffer,
+				      &group,
+				      &channel,
+				      &key,
+				      &attribute_id,
+				      &data,
+				      &attribute_value,
+				      NULL, NULL,
+				      0);
+  
+  CU_ASSERT(group == 0);
+  CU_ASSERT(channel == 0);
+  CU_ASSERT(key == 48);
+  CU_ASSERT(attribute_id == 0);
+  CU_ASSERT(data == 0x7fff);
+  CU_ASSERT(attribute_value == 0);
 }
 
 void
@@ -1998,9 +2107,16 @@ ags_midi_ump_util_test_is_midi2_polyphonic_aftertouch()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  gboolean retval;
+  
+  const guchar buffer[512] = "\x40\xa0\x30\x00\x00\x00\x7f\xff\x00\x00\x00\x00\x00\x00\x00\x00";
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  retval = ags_midi_ump_util_is_midi2_polyphonic_aftertouch(midi_ump_util,
+							    buffer);
+
+  CU_ASSERT(retval == TRUE);
 }
 
 void
@@ -2008,9 +2124,26 @@ ags_midi_ump_util_test_put_midi2_polyphonic_aftertouch()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  guchar buffer[512];
+  const guchar filled_buffer[512] = "\x40\xa0\x30\x00\x00\x00\x7f\xff\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gint key = 48;
+  gint data = 0x7fff;
+  
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  memset(buffer, 0, 512 * sizeof(guchar));
+  
+  ags_midi_ump_util_put_midi2_polyphonic_aftertouch(midi_ump_util,
+						    buffer,
+						    0,
+						    0,
+						    key,
+						    data,
+						    NULL, NULL,
+						    0);
+  
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
 
 void
@@ -2018,9 +2151,30 @@ ags_midi_ump_util_test_get_midi2_polyphonic_aftertouch()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  const guchar buffer[512] = "\x40\xa0\x30\x00\x00\x00\x7f\xff\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gint group;
+  gint channel;
+  gint key;
+  gint attribute_id;
+  gint data;
+  gint attribute_value;
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  ags_midi_ump_util_get_midi2_polyphonic_aftertouch(midi_ump_util,
+						    buffer,
+						    &group,
+						    &channel,
+						    &key,
+						    &data,
+						    NULL, NULL,
+						    0);
+  
+  CU_ASSERT(group == 0);
+  CU_ASSERT(channel == 0);
+  CU_ASSERT(key == 48);
+  CU_ASSERT(data == 0x7fff);
 }
 
 void
