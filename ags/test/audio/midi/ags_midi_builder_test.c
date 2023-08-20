@@ -163,7 +163,7 @@ ags_midi_builder_test_create_default(guint n_tracks)
     ags_midi_builder_append_track(midi_builder,
 				  str);
 
-    free(str);
+    g_free(str);
   }
 
   midi_builder->current_midi_track = midi_builder->midi_track->data;
@@ -176,8 +176,8 @@ ags_midi_builder_test_append_header()
 {
   AgsMidiBuilder *midi_builder;
 
-  glong offset, format;
-  glong track_count, division;
+  gint offset, format;
+  gint track_count, division;
     
   midi_builder = ags_midi_builder_new(NULL);
 
@@ -227,8 +227,8 @@ ags_midi_builder_test_append_track()
   gchar *text;
 
   guint length;
-  glong delta_time;
-  glong text_length;
+  gint delta_time;
+  gint text_length;
   
   midi_builder = ags_midi_builder_new(NULL);
 
@@ -316,10 +316,10 @@ ags_midi_builder_test_append_key_on()
   guint keys[AGS_MIDI_BUILDER_TEST_APPEND_KEY_ON_TRACK_COUNT][AGS_MIDI_BUILDER_TEST_APPEND_KEY_ON_NOTE_COUNT];
 
   guint ret_size;
-  glong delta_time;
-  glong channel;
-  glong key;
-  glong velocity;
+  gint delta_time;
+  gint channel;
+  gint key;
+  gint velocity;
   guint i, j;
   gboolean success;
   
@@ -405,10 +405,10 @@ ags_midi_builder_test_append_key_off()
   guint keys[AGS_MIDI_BUILDER_TEST_APPEND_KEY_OFF_TRACK_COUNT][AGS_MIDI_BUILDER_TEST_APPEND_KEY_OFF_NOTE_COUNT];
 
   guint ret_size;
-  glong delta_time;
-  glong channel;
-  glong key;
-  glong velocity;
+  gint delta_time;
+  gint channel;
+  gint key;
+  gint velocity;
   guint i, j;
   gboolean success;
   
@@ -491,10 +491,10 @@ ags_midi_builder_test_append_key_pressure()
   guint keys[AGS_MIDI_BUILDER_TEST_APPEND_KEY_PRESSURE_TRACK_COUNT][AGS_MIDI_BUILDER_TEST_APPEND_KEY_PRESSURE_NOTE_COUNT];
 
   guint ret_size;
-  glong delta_time;
-  glong channel;
-  glong key;
-  glong velocity;
+  gint delta_time;
+  gint channel;
+  gint key;
+  gint velocity;
   guint i, j;
   gboolean success;
   
@@ -578,10 +578,10 @@ ags_midi_builder_test_append_change_parameter()
   guint controls[AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PARAMETER_TRACK_COUNT][AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PARAMETER_CONTROL_COUNT];
 
   guint ret_size;
-  glong delta_time;
-  glong channel;
-  glong control;
-  glong value;
+  gint delta_time;
+  gint channel;
+  gint control;
+  gint value;
   guint i, j;
   gboolean success;
   
@@ -665,10 +665,10 @@ ags_midi_builder_test_append_change_pitch_bend()
   guint pitchs[AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PITCH_BEND_TRACK_COUNT][AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PITCH_BEND_PITCH_COUNT];
 
   guint ret_size;
-  glong delta_time;
-  glong channel;
-  glong pitch;
-  glong transmitter;
+  gint delta_time;
+  gint channel;
+  gint pitch;
+  gint transmitter;
   guint i, j;
   gboolean success;
   
@@ -752,9 +752,9 @@ ags_midi_builder_test_append_change_program()
   guint programs[AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PROGRAM_TRACK_COUNT][AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PROGRAM_PROGRAM_COUNT];
 
   guint ret_size;
-  glong delta_time;
-  glong channel;
-  glong program;
+  gint delta_time;
+  gint channel;
+  gint program;
   guint i, j;
   gboolean success;
   
@@ -836,9 +836,9 @@ ags_midi_builder_test_append_change_pressure()
   guint pressures[AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PRESSURE_TRACK_COUNT][AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PRESSURE_PRESSURE_COUNT];
 
   guint ret_size;
-  glong delta_time;
-  glong channel;
-  glong pressure;
+  gint delta_time;
+  gint channel;
+  gint pressure;
   guint i, j;
   gboolean success;
   

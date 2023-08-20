@@ -922,7 +922,9 @@ ags_midi_builder_header_alloc()
 {
   AgsMidiBuilderHeader *midi_builder_header;
 
-  midi_builder_header = (AgsMidiBuilderHeader *) malloc(sizeof(AgsMidiBuilderHeader));
+  midi_builder_header = (AgsMidiBuilderHeader *) g_malloc(sizeof(AgsMidiBuilderHeader));
+  
+  midi_builder_header->midi_builder = NULL;
 
   midi_builder_header->offset = 0;
   midi_builder_header->format = 1;
@@ -953,7 +955,7 @@ ags_midi_builder_header_free(AgsMidiBuilderHeader *midi_builder_header)
     return;
   }
 
-  free(midi_builder_header);
+  g_free(midi_builder_header);
 }
 
 /**
@@ -970,8 +972,10 @@ ags_midi_builder_track_alloc()
 {
   AgsMidiBuilderTrack *midi_builder_track;
 
-  midi_builder_track = (AgsMidiBuilderTrack *) malloc(sizeof(AgsMidiBuilderTrack));
+  midi_builder_track = (AgsMidiBuilderTrack *) g_malloc(sizeof(AgsMidiBuilderTrack));
   
+  midi_builder_track->midi_builder = NULL;
+
   midi_builder_track->offset = 0;
   midi_builder_track->track_name = NULL;
   
@@ -998,15 +1002,11 @@ ags_midi_builder_track_free(AgsMidiBuilderTrack *midi_builder_track)
     return;
   }
 
-  if(midi_builder_track->track_name != NULL){
-    free(midi_builder_track->track_name);
-  }
+  g_free(midi_builder_track->track_name);
 
-  if(midi_builder_track->data != NULL){
-    free(midi_builder_track->data);
-  }
+  g_free(midi_builder_track->data);
   
-  free(midi_builder_track);
+  g_free(midi_builder_track);
 }
 
 /**
@@ -1073,8 +1073,8 @@ ags_midi_builder_track_insert_midi_message(AgsMidiBuilderTrack *midi_builder_tra
   midi_builder_track->absolute_time += delta_time;
   
   /* get offset */
-  midi_builder_track->data = (guchar *) realloc(midi_builder_track->data,
-						(midi_builder_track->length + length) * sizeof(guchar));
+  midi_builder_track->data = (guchar *) g_realloc(midi_builder_track->data,
+						  (midi_builder_track->length + length) * sizeof(guchar));
 
   current = midi_builder_track->data + midi_builder_track->length;
   
@@ -1239,13 +1239,15 @@ ags_midi_builder_real_append_header(AgsMidiBuilder *midi_builder,
   
   if(midi_builder->midi_header == NULL){
     midi_builder_header = 
-      midi_builder->midi_header = ags_midi_builder_header_alloc();    
+      midi_builder->midi_header = ags_midi_builder_header_alloc();
+
+    midi_builder->midi_header->midi_builder = midi_builder;
   }else{
     midi_builder_header = midi_builder->midi_header;
   }
 
   if(midi_builder_header->data == NULL){
-    midi_builder_header->data = (guchar *) malloc(14 * sizeof(guchar));
+    midi_builder_header->data = (guchar *) g_malloc(14 * sizeof(guchar));
     midi_builder_header->length = 14;
   }
   
@@ -1308,6 +1310,9 @@ ags_midi_builder_real_append_track(AgsMidiBuilder *midi_builder,
 
   /* allocate struct */
   midi_builder_track = ags_midi_builder_track_alloc();
+
+  midi_builder_track->midi_builder = midi_builder;
+  
   midi_builder_track->track_name = g_strdup(track_name);
   
   /* fill buffer */
@@ -1320,7 +1325,7 @@ ags_midi_builder_real_append_track(AgsMidiBuilder *midi_builder,
     length = 0;
   }
   
-  midi_builder_track->data = (guchar *) malloc((8 + delta_time_size + length + 3) * sizeof(guchar));
+  midi_builder_track->data = (guchar *) g_malloc((8 + delta_time_size + length + 3) * sizeof(guchar));
   midi_builder_track->length = (4 + 4) + delta_time_size + length + 3;
 
   ags_midi_smf_util_put_track(midi_builder->midi_smf_util,
@@ -1376,7 +1381,7 @@ ags_midi_builder_real_append_key_on(AgsMidiBuilder *midi_builder,
   delta_time_size = ags_midi_smf_util_get_varlength_size(midi_builder->midi_smf_util,
 							 delta_time);
 
-  buffer = (guchar *) malloc((delta_time_size + 3) * sizeof(guchar));
+  buffer = (guchar *) g_malloc((delta_time_size + 3) * sizeof(guchar));
   ags_midi_smf_util_put_key_on(midi_builder->midi_smf_util,
 			       buffer,
 			       delta_time,
@@ -1432,7 +1437,7 @@ ags_midi_builder_real_append_key_off(AgsMidiBuilder *midi_builder,
   delta_time_size = ags_midi_smf_util_get_varlength_size(midi_builder->midi_smf_util,
 							 delta_time);
   
-  buffer = (guchar *) malloc((delta_time_size + 3) * sizeof(guchar));
+  buffer = (guchar *) g_malloc((delta_time_size + 3) * sizeof(guchar));
   ags_midi_smf_util_put_key_off(midi_builder->midi_smf_util,
 				buffer,
 				delta_time,
@@ -1488,7 +1493,7 @@ ags_midi_builder_real_append_key_pressure(AgsMidiBuilder *midi_builder,
   delta_time_size = ags_midi_smf_util_get_varlength_size(midi_builder->midi_smf_util,
 							 delta_time);
   
-  buffer = (guchar *) malloc((delta_time_size + 3) * sizeof(guchar));
+  buffer = (guchar *) g_malloc((delta_time_size + 3) * sizeof(guchar));
   ags_midi_smf_util_put_key_pressure(midi_builder->midi_smf_util,
 				     buffer,
 				     delta_time,
@@ -1545,7 +1550,7 @@ ags_midi_builder_real_append_change_parameter(AgsMidiBuilder *midi_builder,
   delta_time_size = ags_midi_smf_util_get_varlength_size(midi_builder->midi_smf_util,
 							 delta_time);
   
-  buffer = (guchar *) malloc((delta_time_size + 3) * sizeof(guchar));
+  buffer = (guchar *) g_malloc((delta_time_size + 3) * sizeof(guchar));
   ags_midi_smf_util_put_change_parameter(midi_builder->midi_smf_util,
 					 buffer,
 					 delta_time,
@@ -1601,7 +1606,7 @@ ags_midi_builder_real_append_change_pitch_bend(AgsMidiBuilder *midi_builder,
   delta_time_size = ags_midi_smf_util_get_varlength_size(midi_builder->midi_smf_util,
 							 delta_time);
   
-  buffer = (guchar *) malloc((delta_time_size + 3) * sizeof(guchar));
+  buffer = (guchar *) g_malloc((delta_time_size + 3) * sizeof(guchar));
   ags_midi_smf_util_put_pitch_bend(midi_builder->midi_smf_util,
 				   buffer,
 				   delta_time,
@@ -1656,7 +1661,7 @@ ags_midi_builder_real_append_change_program(AgsMidiBuilder *midi_builder,
   delta_time_size = ags_midi_smf_util_get_varlength_size(midi_builder->midi_smf_util,
 							 delta_time);
   
-  buffer = (guchar *) malloc((delta_time_size + 2) * sizeof(guchar));
+  buffer = (guchar *) g_malloc((delta_time_size + 2) * sizeof(guchar));
   ags_midi_smf_util_put_change_program(midi_builder->midi_smf_util,
 				       buffer,
 				       delta_time,
@@ -1707,7 +1712,7 @@ ags_midi_builder_real_append_change_pressure(AgsMidiBuilder *midi_builder,
   delta_time_size = ags_midi_smf_util_get_varlength_size(midi_builder->midi_smf_util,
 							 delta_time);
   
-  buffer = (guchar *) malloc((delta_time_size + 2) * sizeof(guchar));
+  buffer = (guchar *) g_malloc((delta_time_size + 2) * sizeof(guchar));
   ags_midi_smf_util_put_change_pressure(midi_builder->midi_smf_util,
 					buffer,
 					delta_time,
@@ -1757,7 +1762,7 @@ ags_midi_builder_real_append_sysex(AgsMidiBuilder *midi_builder,
   delta_time_size = ags_midi_smf_util_get_varlength_size(midi_builder->midi_smf_util,
 							 delta_time);
   
-  buffer = (guchar *) malloc((delta_time_size + length) * sizeof(guchar));
+  buffer = (guchar *) g_malloc((delta_time_size + length) * sizeof(guchar));
   ags_midi_smf_util_put_sysex(midi_builder->midi_smf_util,
 			      buffer,
 			      delta_time,
@@ -1805,7 +1810,7 @@ ags_midi_builder_real_append_quarter_frame(AgsMidiBuilder *midi_builder,
   delta_time_size = ags_midi_smf_util_get_varlength_size(midi_builder->midi_smf_util,
 							 delta_time);
   
-  buffer = (guchar *) malloc((delta_time_size + 2) * sizeof(guchar));
+  buffer = (guchar *) g_malloc((delta_time_size + 2) * sizeof(guchar));
   ags_midi_smf_util_put_quarter_frame(midi_builder->midi_smf_util,
 				      buffer,
 				      delta_time,
@@ -1854,7 +1859,7 @@ ags_midi_builder_real_append_song_position(AgsMidiBuilder *midi_builder,
   delta_time_size = ags_midi_smf_util_get_varlength_size(midi_builder->midi_smf_util,
 							 delta_time);
   
-  buffer = (guchar *) malloc((delta_time_size + 3) * sizeof(guchar));
+  buffer = (guchar *) g_malloc((delta_time_size + 3) * sizeof(guchar));
   ags_midi_smf_util_put_song_position(midi_builder->midi_smf_util,
 				      buffer,
 				      delta_time,
@@ -1900,7 +1905,7 @@ ags_midi_builder_real_append_song_select(AgsMidiBuilder *midi_builder,
   delta_time_size = ags_midi_smf_util_get_varlength_size(midi_builder->midi_smf_util,
 							 delta_time);
   
-  buffer = (guchar *) malloc((delta_time_size + 2) * sizeof(guchar));
+  buffer = (guchar *) g_malloc((delta_time_size + 2) * sizeof(guchar));
   ags_midi_smf_util_put_song_select(midi_builder->midi_smf_util,
 				    buffer,
 				    delta_time,
@@ -1945,7 +1950,7 @@ ags_midi_builder_real_append_tune_request(AgsMidiBuilder *midi_builder,
   delta_time_size = ags_midi_smf_util_get_varlength_size(midi_builder->midi_smf_util,
 							 delta_time);
   
-  buffer = (guchar *) malloc((delta_time_size + 1) * sizeof(guchar));
+  buffer = (guchar *) g_malloc((delta_time_size + 1) * sizeof(guchar));
   ags_midi_smf_util_put_tune_request(midi_builder->midi_smf_util,
 				     buffer,
 				     delta_time);
@@ -1987,7 +1992,7 @@ ags_midi_builder_real_append_sequence_number(AgsMidiBuilder *midi_builder,
   delta_time_size = ags_midi_smf_util_get_varlength_size(midi_builder->midi_smf_util,
 							 delta_time);
   
-  buffer = (guchar *) malloc((delta_time_size + 5) * sizeof(guchar));
+  buffer = (guchar *) g_malloc((delta_time_size + 5) * sizeof(guchar));
   ags_midi_smf_util_put_sequence_number(midi_builder->midi_smf_util,
 					buffer,
 					delta_time,
@@ -2033,7 +2038,7 @@ ags_midi_builder_real_append_smtpe(AgsMidiBuilder *midi_builder,
   delta_time_size = ags_midi_smf_util_get_varlength_size(midi_builder->midi_smf_util,
 							 delta_time);
   
-  buffer = (guchar *) malloc((delta_time_size + 8) * sizeof(guchar));
+  buffer = (guchar *) g_malloc((delta_time_size + 8) * sizeof(guchar));
   ags_midi_smf_util_put_smtpe(midi_builder->midi_smf_util,
 			      buffer,
 			      delta_time,
@@ -2083,7 +2088,7 @@ ags_midi_builder_real_append_tempo(AgsMidiBuilder *midi_builder,
   delta_time_size = ags_midi_smf_util_get_varlength_size(midi_builder->midi_smf_util,
 							 delta_time);
   
-  buffer = (guchar *) malloc((delta_time_size + 6) * sizeof(guchar));
+  buffer = (guchar *) g_malloc((delta_time_size + 6) * sizeof(guchar));
   ags_midi_smf_util_put_tempo(midi_builder->midi_smf_util,
 			      buffer,
 			      delta_time,
@@ -2130,7 +2135,7 @@ ags_midi_builder_real_append_time_signature(AgsMidiBuilder *midi_builder,
   delta_time_size = ags_midi_smf_util_get_varlength_size(midi_builder->midi_smf_util,
 							 delta_time);
   
-  buffer = (guchar *) malloc((delta_time_size + 7) * sizeof(guchar));
+  buffer = (guchar *) g_malloc((delta_time_size + 7) * sizeof(guchar));
   ags_midi_smf_util_put_time_signature(midi_builder->midi_smf_util,
 				       buffer,
 				       (glong) delta_time,
@@ -2179,7 +2184,7 @@ ags_midi_builder_real_append_key_signature(AgsMidiBuilder *midi_builder,
   delta_time_size = ags_midi_smf_util_get_varlength_size(midi_builder->midi_smf_util,
 							 delta_time);
   
-  buffer = (guchar *) malloc((delta_time_size + 5) * sizeof(guchar));
+  buffer = (guchar *) g_malloc((delta_time_size + 5) * sizeof(guchar));
   ags_midi_smf_util_put_key_signature(midi_builder->midi_smf_util,
 				      buffer,
 				      delta_time,
@@ -2226,7 +2231,7 @@ ags_midi_builder_real_append_sequencer_meta_event(AgsMidiBuilder *midi_builder,
   delta_time_size = ags_midi_smf_util_get_varlength_size(midi_builder->midi_smf_util,
 							 delta_time);
   
-  buffer = (guchar *) malloc((delta_time_size + len + 3) * sizeof(guchar));
+  buffer = (guchar *) g_malloc((delta_time_size + len + 3) * sizeof(guchar));
   ags_midi_smf_util_put_sequencer_meta_event(midi_builder->midi_smf_util,
 					     buffer,
 					     delta_time,
@@ -2280,7 +2285,7 @@ ags_midi_builder_real_append_text_event(AgsMidiBuilder *midi_builder,
   delta_time_size = ags_midi_smf_util_get_varlength_size(midi_builder->midi_smf_util,
 							 delta_time);
   
-  buffer = (guchar *) malloc((delta_time_size + length + 3) * sizeof(guchar));
+  buffer = (guchar *) g_malloc((delta_time_size + length + 3) * sizeof(guchar));
   ags_midi_smf_util_put_text_event(midi_builder->midi_smf_util,
 				   buffer,
 				   delta_time,
@@ -3193,11 +3198,11 @@ ags_midi_builder_build(AgsMidiBuilder *midi_builder)
 
   /* allocate buffer */
   if(midi_builder->data != NULL){
-    free(midi_builder->data);
+    g_free(midi_builder->data);
   }
   
   if(length > 0){
-    midi_builder->data = (guchar *) malloc(length * sizeof(guchar));
+    midi_builder->data = (guchar *) g_malloc(length * sizeof(guchar));
 
     midi_builder->length = length;
   }else{

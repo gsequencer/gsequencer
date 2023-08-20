@@ -171,6 +171,8 @@ struct _AgsMidiBuilderClass
 
 struct _AgsMidiBuilderHeader
 {
+  AgsMidiBuilder *midi_builder;
+
   guint offset;
   guint format;
   guint count;
