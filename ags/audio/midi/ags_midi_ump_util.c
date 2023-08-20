@@ -153,6 +153,8 @@ gboolean
 ags_midi_ump_util_is_system_common(AgsMidiUmpUtil *midi_ump_util,
 				   guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0x10){
     return(TRUE);
   }
@@ -175,6 +177,8 @@ gboolean
 ags_midi_ump_util_is_data_message_with_sysex(AgsMidiUmpUtil *midi_ump_util,
 					     guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0x30){
     return(TRUE);
   }
@@ -197,6 +201,8 @@ gboolean
 ags_midi_ump_util_is_data_message(AgsMidiUmpUtil *midi_ump_util,
 				  guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0x50){
     return(TRUE);
   }
@@ -219,6 +225,8 @@ gboolean
 ags_midi_ump_util_is_stream_message(AgsMidiUmpUtil *midi_ump_util,
 				    guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0xf0){
     return(TRUE);
   }
@@ -241,6 +249,8 @@ gboolean
 ags_midi_ump_util_is_endpoint_discovery(AgsMidiUmpUtil *midi_ump_util,
 					guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0xf0 &&
      ((0x300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x00){
     return(TRUE);
@@ -387,6 +397,8 @@ gboolean
 ags_midi_ump_util_is_endpoint_info_notification(AgsMidiUmpUtil *midi_ump_util,
 						guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0xf0 &&
      (0x0c & (buffer[0])) == 0x0 &&
      ((0x300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x01){
@@ -612,6 +624,8 @@ gboolean
 ags_midi_ump_util_is_device_identity_notification(AgsMidiUmpUtil *midi_ump_util,
 						  guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0xf0 &&
      (0x0c & (buffer[0])) == 0x0 &&
      ((0x300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x02){
@@ -797,6 +811,8 @@ gboolean
 ags_midi_ump_util_is_endpoint_name_notification(AgsMidiUmpUtil *midi_ump_util,
 						guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0xf0 &&
      ((0x300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x03){
     return(TRUE);
@@ -1007,6 +1023,8 @@ gboolean
 ags_midi_ump_util_is_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_util,
 						      guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0xf0 &&
      ((0x0300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x04){
     return(TRUE);
@@ -1217,6 +1235,8 @@ gboolean
 ags_midi_ump_util_is_stream_configuration_request(AgsMidiUmpUtil *midi_ump_util,
 						  guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0xf0 &&
      (((0x3 & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x05){
     return(TRUE);
@@ -1346,6 +1366,8 @@ gboolean
 ags_midi_ump_util_is_stream_configuration_notification(AgsMidiUmpUtil *midi_ump_util,
 						       guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0xf0 &&
      ((0x300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x06){
     return(TRUE);
@@ -1475,6 +1497,8 @@ gboolean
 ags_midi_ump_util_is_function_block_discovery(AgsMidiUmpUtil *midi_ump_util,
 					      guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0xf0 &&
      ((0x0300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x10){
     return(TRUE);
@@ -1603,6 +1627,8 @@ gboolean
 ags_midi_ump_util_is_function_block_info_notification(AgsMidiUmpUtil *midi_ump_util,
 						      guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0xf0 &&
      (((0x03 & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x11){
     return(TRUE);
@@ -1809,6 +1835,8 @@ gboolean
 ags_midi_ump_util_is_function_block_name_notification(AgsMidiUmpUtil *midi_ump_util,
 						      guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0xf0 &&
      (((0x03 & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x12){
     return(TRUE);
@@ -2032,6 +2060,8 @@ gboolean
 ags_midi_ump_util_is_start_of_clip(AgsMidiUmpUtil *midi_ump_util,
 				   guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0xf0 &&
      ((0x0300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x20){
     return(TRUE);
@@ -2116,6 +2146,8 @@ gboolean
 ags_midi_ump_util_is_end_of_clip(AgsMidiUmpUtil *midi_ump_util,
 				 guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0xf0 &&
      ((0x0300 & (buffer[0]) << 8)) | (0xff & (buffer[1])) == 0x21){
     return(TRUE);
@@ -2199,6 +2231,8 @@ gboolean
 ags_midi_ump_util_is_noop(AgsMidiUmpUtil *midi_ump_util,
 			  guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0x00 &&
      (0x0f & (buffer[1])) == 0x00){
     return(TRUE);
@@ -2284,6 +2318,8 @@ gboolean
 ags_midi_ump_util_is_jr_clock(AgsMidiUmpUtil *midi_ump_util,
 			      guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0x00 &&
      (0xf0 & (buffer[1])) == 0x10){
     return(TRUE);
@@ -2391,6 +2427,8 @@ gboolean
 ags_midi_ump_util_is_jr_timestamp(AgsMidiUmpUtil *midi_ump_util,
 				  guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0x00 &&
      (0xf0 & (buffer[1])) == 0x20){
     return(TRUE);
@@ -2498,6 +2536,8 @@ gboolean
 ags_midi_ump_util_is_delta_clock_ticks_per_quarter_note(AgsMidiUmpUtil *midi_ump_util,
 							guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0x00 &&
      (0xf0 & (buffer[1])) == 0x30){
     return(TRUE);
@@ -2605,6 +2645,8 @@ gboolean
 ags_midi_ump_util_is_delta_clock_ticks_since_last_event(AgsMidiUmpUtil *midi_ump_util,
 							guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0x00 &&
      (0xf0 & (buffer[1])) == 0x40){
     return(TRUE);
@@ -2649,10 +2691,10 @@ ags_midi_ump_util_put_delta_clock_ticks_since_last_event(AgsMidiUmpUtil *midi_um
   nth++;
   
   /* delta clock ticks per quarter note count */
-  buffer[nth] = (0xff & (ticks_since_last_event_count));
+  buffer[nth] = (0xff & (ticks_since_last_event_count >> 8));
   nth++;
   
-  buffer[nth] = (0xff & (ticks_since_last_event_count >> 8));
+  buffer[nth] = (0xff & (ticks_since_last_event_count));
   nth++;
 }
 
@@ -2682,7 +2724,7 @@ ags_midi_ump_util_get_delta_clock_ticks_since_last_event(AgsMidiUmpUtil *midi_um
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0xf0, 0);
+  g_return_val_if_fail((0xf0 & buffer[0]) == 0x00, 0);
   g_return_val_if_fail((0xf0 & (buffer[1])) == 0x40, 0);
 
   nth = 2;
@@ -2712,6 +2754,8 @@ gboolean
 ags_midi_ump_util_is_midi1_channel_voice(AgsMidiUmpUtil *midi_ump_util,
 					 guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0x20){
     return(TRUE);
   }
@@ -2734,6 +2778,8 @@ gboolean
 ags_midi_ump_util_is_midi1_note_off(AgsMidiUmpUtil *midi_ump_util,
 				    guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0x20 &&
      (0xf0 & (buffer[1])) == 0x80){
     return(TRUE);
@@ -2868,6 +2914,8 @@ gboolean
 ags_midi_ump_util_is_midi1_note_on(AgsMidiUmpUtil *midi_ump_util,
 				   guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0x20 &&
      (0xf0 & (buffer[1])) == 0x90){
     return(TRUE);
@@ -3002,6 +3050,8 @@ gboolean
 ags_midi_ump_util_is_midi1_polyphonic_aftertouch(AgsMidiUmpUtil *midi_ump_util,
 						 guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0x20 &&
      (0xf0 & (buffer[1])) == 0xa0){
     return(TRUE);
@@ -3136,6 +3186,8 @@ gboolean
 ags_midi_ump_util_is_midi1_control_change(AgsMidiUmpUtil *midi_ump_util,
 					  guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0x20 &&
      (0xf0 & (buffer[1])) == 0xb0){
     return(TRUE);
@@ -3270,6 +3322,8 @@ gboolean
 ags_midi_ump_util_is_midi1_program_change(AgsMidiUmpUtil *midi_ump_util,
 					  guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0x20 &&
      (0xf0 & (buffer[1])) == 0xc0){
     return(TRUE);
@@ -3404,6 +3458,8 @@ gboolean
 ags_midi_ump_util_is_midi1_channel_pressure(AgsMidiUmpUtil *midi_ump_util,
 					    guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0x20 &&
      (0xf0 & (buffer[1])) == 0xd0){
     return(TRUE);
@@ -3538,6 +3594,8 @@ gboolean
 ags_midi_ump_util_is_midi1_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
 				      guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0x20 &&
      (0xf0 & (buffer[1])) == 0xe0){
     return(TRUE);
@@ -3673,6 +3731,8 @@ gboolean
 ags_midi_ump_util_is_midi2_channel_voice(AgsMidiUmpUtil *midi_ump_util,
 					 guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0x40){
     return(TRUE);
   }
@@ -3695,6 +3755,8 @@ gboolean
 ags_midi_ump_util_is_midi2_note_off(AgsMidiUmpUtil *midi_ump_util,
 				    guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0x40 &&
      (0xf0 & (buffer[1])) == 0x80){
     return(TRUE);
@@ -3866,6 +3928,8 @@ gboolean
 ags_midi_ump_util_is_midi2_note_on(AgsMidiUmpUtil *midi_ump_util,
 				   guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0x40 &&
      (0xf0 & (buffer[1])) == 0x90){
     return(TRUE);
@@ -4037,6 +4101,8 @@ gboolean
 ags_midi_ump_util_is_midi2_polyphonic_aftertouch(AgsMidiUmpUtil *midi_ump_util,
 						 guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0x40 &&
      (0xf0 & (buffer[1])) == 0xa0){
     return(TRUE);
@@ -4187,6 +4253,8 @@ gboolean
 ags_midi_ump_util_is_midi2_registered_per_note_controller(AgsMidiUmpUtil *midi_ump_util,
 							  guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0x40 &&
      (0xf0 & (buffer[1])) == 0x00){
     return(TRUE);
@@ -4346,6 +4414,8 @@ gboolean
 ags_midi_ump_util_is_midi2_assignable_per_note_controller(AgsMidiUmpUtil *midi_ump_util,
 							  guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0x40 &&
      (0xf0 & (buffer[1])) == 0x10){
     return(TRUE);
@@ -4506,6 +4576,8 @@ gboolean
 ags_midi_ump_util_is_midi2_per_note_management(AgsMidiUmpUtil *midi_ump_util,
 					       guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0x40 &&
      (0xf0 & (buffer[1])) == 0xf0){
     return(TRUE);
@@ -4647,6 +4719,8 @@ gboolean
 ags_midi_ump_util_is_midi2_control_change(AgsMidiUmpUtil *midi_ump_util,
 					  guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0x40 &&
      (0xf0 & (buffer[1])) == 0xb0){
     return(TRUE);
@@ -4824,6 +4898,8 @@ gboolean
 ags_midi_ump_util_is_midi2_rpn_pitch_bend_range(AgsMidiUmpUtil *midi_ump_util,
 						guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0x40 &&
      (0xf0 & (buffer[1])) == 0x20 &&
      (0xff & (buffer[2])) == 0x00 &&
@@ -4982,6 +5058,8 @@ gboolean
 ags_midi_ump_util_is_midi2_rpn_coarse_tuning(AgsMidiUmpUtil *midi_ump_util,
 					     guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0x40 &&
      (0xf0 & (buffer[1])) == 0x20 &&
      (0xff & (buffer[2])) == 0x00 &&
@@ -5129,6 +5207,8 @@ gboolean
 ags_midi_ump_util_is_midi2_rpn_tuning_program_change(AgsMidiUmpUtil *midi_ump_util,
 						     guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0x40 &&
      (0xf0 & (buffer[1])) == 0x20 &&
      (0xff & (buffer[2])) == 0x00 &&
@@ -5275,6 +5355,8 @@ gboolean
 ags_midi_ump_util_is_midi2_rpn_tuning_bank_select(AgsMidiUmpUtil *midi_ump_util,
 						  guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0x40 &&
      (0xf0 & (buffer[1])) == 0x20 &&
      (0xff & (buffer[2])) == 0x00 &&
@@ -5421,6 +5503,8 @@ gboolean
 ags_midi_ump_util_is_midi2_rpn_mpe_mcm(AgsMidiUmpUtil *midi_ump_util,
 				       guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0x40 &&
      (0xf0 & (buffer[1])) == 0x20 &&
      (0xff & (buffer[2])) == 0x00 &&
@@ -5567,6 +5651,8 @@ gboolean
 ags_midi_ump_util_is_midi2_program_change(AgsMidiUmpUtil *midi_ump_util,
 					  guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0x40 &&
      (0xf0 & (buffer[1])) == 0xc0){
     return(TRUE);
@@ -5738,6 +5824,8 @@ gboolean
 ags_midi_ump_util_is_midi2_channel_pressure(AgsMidiUmpUtil *midi_ump_util,
 					    guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0x40 &&
      (0xf0 & (buffer[1])) == 0xd0){
     return(TRUE);
@@ -5881,6 +5969,8 @@ gboolean
 ags_midi_ump_util_is_midi2_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
 				      guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0x40 &&
      (0xf0 & (buffer[1])) == 0xe0){
     return(TRUE);
@@ -6024,6 +6114,8 @@ gboolean
 ags_midi_ump_util_is_midi2_per_note_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
 					       guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0x40 &&
      (0xf0 & (buffer[1])) == 0x60){
     return(TRUE);
@@ -6178,6 +6270,8 @@ gboolean
 ags_midi_ump_util_is_flex_set_tempo(AgsMidiUmpUtil *midi_ump_util,
 				    guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0xd0 &&
      (0x30 & (buffer[1])) == 0x10 &&
      (0x30 & (buffer[2])) == 0x00 &&
@@ -6332,6 +6426,8 @@ gboolean
 ags_midi_ump_util_is_flex_set_time_signature(AgsMidiUmpUtil *midi_ump_util,
 					     guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0xd0 &&
      (0x30 & (buffer[1])) == 0x10 &&
      (0x30 & (buffer[2])) == 0x00 &&
@@ -6506,6 +6602,8 @@ gboolean
 ags_midi_ump_util_is_flex_set_metronome(AgsMidiUmpUtil *midi_ump_util,
 					guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0xd0 &&
      (0x30 & (buffer[1])) == 0x10 &&
      (0x30 & (buffer[2])) == 0x00 &&
@@ -6725,6 +6823,8 @@ gboolean
 ags_midi_ump_util_is_flex_set_key_signature(AgsMidiUmpUtil *midi_ump_util,
 					    guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0xd0 &&
      (0x30 & (buffer[1])) == 0x10 &&
      (0x30 & (buffer[2])) == 0x00 &&
@@ -6877,6 +6977,8 @@ gboolean
 ags_midi_ump_util_is_flex_set_chord_name(AgsMidiUmpUtil *midi_ump_util,
 					    guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0xd0 &&
      (0x30 & (buffer[1])) == 0x10 &&
      (0x30 & (buffer[2])) == 0x00 &&
@@ -7223,6 +7325,8 @@ gboolean
 ags_midi_ump_util_is_flex_set_text(AgsMidiUmpUtil *midi_ump_util,
 				   guchar *buffer)
 {
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
   if((0xf0 & (buffer[0])) == 0xd0 &&
      (0x30 & (buffer[1])) == 0x10){
     return(TRUE);

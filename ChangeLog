@@ -1,3 +1,9 @@
+ags (5.5.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_midi_ump_util.[ch]
+	* added missing tests to ags_midi_ump_util_test.c
+
 ags (5.5.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

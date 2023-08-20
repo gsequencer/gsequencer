@@ -1340,9 +1340,16 @@ ags_midi_ump_util_test_is_delta_clock_ticks_since_last_event()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  gboolean retval;
+  
+  const guchar buffer[512] = "\x00\x40\x01\x90\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  retval = ags_midi_ump_util_is_delta_clock_ticks_since_last_event(midi_ump_util,
+								   buffer);
+
+  CU_ASSERT(retval == TRUE);
 }
 
 void
@@ -1350,9 +1357,22 @@ ags_midi_ump_util_test_put_delta_clock_ticks_since_last_event()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  guchar buffer[512];
+  const guchar filled_buffer[512] = "\x00\x40\x01\x90\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  guint16 ticks_since_last_event = 400;
+  
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  memset(buffer, 0, 512 * sizeof(guchar));
+  
+  ags_midi_ump_util_put_delta_clock_ticks_since_last_event(midi_ump_util,
+							   buffer,
+							   ticks_since_last_event,
+							   NULL, NULL,
+							   0);
+  
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
 
 void
@@ -1360,9 +1380,19 @@ ags_midi_ump_util_test_get_delta_clock_ticks_since_last_event()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  const guchar buffer[512] = "\x00\x40\x01\x90\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  
+  guint16 ticks_since_last_event;
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  ags_midi_ump_util_get_delta_clock_ticks_since_last_event(midi_ump_util,
+							   buffer,
+							   &ticks_since_last_event,
+							   NULL, NULL,
+							   0);
+
+  CU_ASSERT(ticks_since_last_event == 400);
 }
 
 void
@@ -1370,9 +1400,16 @@ ags_midi_ump_util_test_is_midi1_channel_voice()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  gboolean retval;
+  
+  const guchar buffer[512] = "\x20\x80\x30\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  retval = ags_midi_ump_util_is_midi1_channel_voice(midi_ump_util,
+						    buffer);
+
+  CU_ASSERT(retval == TRUE);
 }
 
 void
@@ -1380,9 +1417,16 @@ ags_midi_ump_util_test_is_midi1_note_off()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  gboolean retval;
+  
+  const guchar buffer[512] = "\x20\x80\x30\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  retval = ags_midi_ump_util_is_midi1_note_off(midi_ump_util,
+					       buffer);
+
+  CU_ASSERT(retval == TRUE);
 }
 
 void
@@ -1390,9 +1434,26 @@ ags_midi_ump_util_test_put_midi1_note_off()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  guchar buffer[512];
+  const guchar filled_buffer[512] = "\x20\x80\x30\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gint key = 48;
+  gint velocity = 127;
+  
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  memset(buffer, 0, 512 * sizeof(guchar));
+  
+  ags_midi_ump_util_put_midi1_note_off(midi_ump_util,
+				       buffer,
+				       0,
+				       0,
+				       key,
+				       velocity,
+				       NULL, NULL,
+				       0);
+  
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
 
 void
@@ -1400,9 +1461,28 @@ ags_midi_ump_util_test_get_midi1_note_off()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  const guchar buffer[512] = "\x20\x80\x30\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gint group;
+  gint channel;
+  gint key;
+  gint velocity;
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  ags_midi_ump_util_get_midi1_note_off(midi_ump_util,
+				       buffer,
+				       &group,
+				       &channel,
+				       &key,
+				       &velocity,
+				       NULL, NULL,
+				       0);
+  
+  CU_ASSERT(group == 0);
+  CU_ASSERT(channel == 0);
+  CU_ASSERT(key == 48);
+  CU_ASSERT(velocity == 127);
 }
 
 void
@@ -1410,9 +1490,16 @@ ags_midi_ump_util_test_is_midi1_note_on()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  gboolean retval;
+  
+  const guchar buffer[512] = "\x20\x90\x30\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  retval = ags_midi_ump_util_is_midi1_note_on(midi_ump_util,
+					      buffer);
+
+  CU_ASSERT(retval == TRUE);
 }
 
 void
@@ -1420,9 +1507,26 @@ ags_midi_ump_util_test_put_midi1_note_on()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  guchar buffer[512];
+  const guchar filled_buffer[512] = "\x20\x90\x30\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gint key = 48;
+  gint velocity = 127;
+  
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  memset(buffer, 0, 512 * sizeof(guchar));
+  
+  ags_midi_ump_util_put_midi1_note_on(midi_ump_util,
+				      buffer,
+				      0,
+				      0,
+				      key,
+				      velocity,
+				      NULL, NULL,
+				      0);
+  
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
 
 void
@@ -1430,9 +1534,28 @@ ags_midi_ump_util_test_get_midi1_note_on()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  const guchar buffer[512] = "\x20\x90\x30\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gint group;
+  gint channel;
+  gint key;
+  gint velocity;
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  ags_midi_ump_util_get_midi1_note_on(midi_ump_util,
+				      buffer,
+				      &group,
+				      &channel,
+				      &key,
+				      &velocity,
+				      NULL, NULL,
+				      0);
+  
+  CU_ASSERT(group == 0);
+  CU_ASSERT(channel == 0);
+  CU_ASSERT(key == 48);
+  CU_ASSERT(velocity == 127);
 }
 
 void
@@ -1440,9 +1563,16 @@ ags_midi_ump_util_test_is_midi1_polyphonic_aftertouch()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  gboolean retval;
+  
+  const guchar buffer[512] = "\x20\xa0\x30\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  retval = ags_midi_ump_util_is_midi1_polyphonic_aftertouch(midi_ump_util,
+							    buffer);
+
+  CU_ASSERT(retval == TRUE);
 }
 
 void
@@ -1450,9 +1580,26 @@ ags_midi_ump_util_test_put_midi1_polyphonic_aftertouch()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  guchar buffer[512];
+  const guchar filled_buffer[512] = "\x20\xa0\x30\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gint key = 48;
+  gint data = 127;
+  
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  memset(buffer, 0, 512 * sizeof(guchar));
+  
+  ags_midi_ump_util_put_midi1_polyphonic_aftertouch(midi_ump_util,
+						    buffer,
+						    0,
+						    0,
+						    key,
+						    data,
+						    NULL, NULL,
+						    0);
+  
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
 
 void
@@ -1460,9 +1607,28 @@ ags_midi_ump_util_test_get_midi1_polyphonic_aftertouch()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  const guchar buffer[512] = "\x20\xa0\x30\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gint group;
+  gint channel;
+  gint key;
+  gint velocity;
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  ags_midi_ump_util_get_midi1_polyphonic_aftertouch(midi_ump_util,
+						    buffer,
+						    &group,
+						    &channel,
+						    &key,
+						    &velocity,
+						    NULL, NULL,
+						    0);
+  
+  CU_ASSERT(group == 0);
+  CU_ASSERT(channel == 0);
+  CU_ASSERT(key == 48);
+  CU_ASSERT(velocity == 127);
 }
 
 void
