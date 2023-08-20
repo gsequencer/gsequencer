@@ -118,8 +118,7 @@ const unsigned char *varlength_buffer[] = {
   "\xff\xff\xff\x7f",
 };
 
-AgsMidiSmfUtil midi_smf_util;
-  
+AgsMidiSmfUtil midi_smf_util;  
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.

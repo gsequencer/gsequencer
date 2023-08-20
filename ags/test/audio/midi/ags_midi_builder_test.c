@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2017 Joël Krähemann
+ * Copyright (C) 2017,2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -112,6 +112,8 @@ void ags_midi_builder_test_append_text_event();
 #define AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PRESSURE_PULSE_UNIT (16.0 * AGS_MIDI_BUILDER_TEST_DEFAULT_BPM / 60.0 * 1.0 / (AGS_MIDI_BUILDER_TEST_DEFAULT_DIVISION >> 8) / (0xff & AGS_MIDI_BUILDER_TEST_DEFAULT_DIVISION) * 1000000.0)
 #define AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PRESSURE_CHANNEL (0)
 
+AgsMidiSmfUtil midi_smf_util;
+
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
  * Returns zero on success, non-zero otherwise.
@@ -119,6 +121,9 @@ void ags_midi_builder_test_append_text_event();
 int
 ags_midi_builder_test_init_suite()
 {
+  midi_smf_util.major = 1;
+  midi_smf_util.minor = 0;
+  
   return(0);
 }
 
@@ -201,9 +206,10 @@ ags_midi_builder_test_append_header()
   CU_ASSERT(midi_builder->length == 14);
 
   /* assert data */  
-  ags_midi_buffer_util_get_header(midi_builder->data,
-				  &offset, &format,
-				  &track_count, &division);
+  ags_midi_smf_util_get_header(&midi_smf_util,
+			       midi_builder->data,
+			       &offset, &format,
+			       &track_count, &division);
 
   CU_ASSERT(offset == 6);
   CU_ASSERT(format == AGS_MIDI_BUILDER_TEST_APPEND_HEADER_FORMAT);
@@ -267,9 +273,10 @@ ags_midi_builder_test_append_track()
   offset = midi_builder->data;
   offset += (14 + 8);
 
-  ags_midi_buffer_util_get_text_event(offset,
-				      &delta_time,
-				      &text, &text_length);
+  ags_midi_smf_util_get_text_event(&midi_smf_util,
+				   offset,
+				   &delta_time,
+				   &text, &text_length);
   
   
   CU_ASSERT(delta_time == 0);
@@ -284,9 +291,10 @@ ags_midi_builder_test_append_track()
 	     (1 + 3) +
 	     strlen(AGS_MIDI_BUILDER_TEST_APPEND_TRACK_SEQUENCE_0));
 
-  ags_midi_buffer_util_get_text_event(offset,
-				      &delta_time,
-				      &text, &text_length);
+  ags_midi_smf_util_get_text_event(&midi_smf_util,
+				   offset,
+				   &delta_time,
+				   &text, &text_length);
   
   
   CU_ASSERT(delta_time == 0);
@@ -347,9 +355,10 @@ ags_midi_builder_test_append_key_on()
   for(i = 0; i < AGS_MIDI_BUILDER_TEST_APPEND_KEY_ON_TRACK_COUNT; i++){
     offset += 8;
 
-    ret_size = ags_midi_buffer_util_get_text_event(offset,
-						   &delta_time,
-						   NULL, NULL);
+    ret_size = ags_midi_smf_util_get_text_event(&midi_smf_util,
+						offset,
+						&delta_time,
+						NULL, NULL);
 
     if(delta_time != 0){
       success = FALSE;
@@ -360,11 +369,12 @@ ags_midi_builder_test_append_key_on()
     offset += ret_size;
     
     for(j = 0; j < AGS_MIDI_BUILDER_TEST_APPEND_KEY_ON_NOTE_COUNT; j++){
-      ret_size = ags_midi_buffer_util_get_key_on(offset,
-						 &delta_time,
-						 &channel,
-						 &key,
-						 &velocity);
+      ret_size = ags_midi_smf_util_get_key_on(&midi_smf_util,
+					      offset,
+					      &delta_time,
+					      &channel,
+					      &key,
+					      &velocity);
 
       if(key != keys[i][j]){
 	success = FALSE;
@@ -375,8 +385,9 @@ ags_midi_builder_test_append_key_on()
       offset += ret_size;
     }
     
-    ret_size = ags_midi_buffer_util_get_end_of_track(offset,
-						     NULL);
+    ret_size = ags_midi_smf_util_get_end_of_track(&midi_smf_util,
+						  offset,
+						  NULL);
     offset += ret_size;
   }
   
@@ -433,9 +444,9 @@ ags_midi_builder_test_append_key_off()
   for(i = 0; i < AGS_MIDI_BUILDER_TEST_APPEND_KEY_OFF_TRACK_COUNT; i++){
     offset += 8;
 
-    ret_size = ags_midi_buffer_util_get_text_event(offset,
-						   &delta_time,
-						   NULL, NULL);
+    ret_size = ags_midi_smf_util_get_text_event(&midi_smf_util, offset,
+						&delta_time,
+						NULL, NULL);
 
     if(delta_time != 0){
       success = FALSE;
@@ -446,11 +457,11 @@ ags_midi_builder_test_append_key_off()
     offset += ret_size;
     
     for(j = 0; j < AGS_MIDI_BUILDER_TEST_APPEND_KEY_OFF_NOTE_COUNT; j++){
-      ret_size = ags_midi_buffer_util_get_key_off(offset,
-						  &delta_time,
-						  &channel,
-						  &key,
-						  &velocity);
+      ret_size = ags_midi_smf_util_get_key_off(&midi_smf_util, offset,
+					       &delta_time,
+					       &channel,
+					       &key,
+					       &velocity);
 
       if(key != keys[i][j]){
 	success = FALSE;
@@ -461,8 +472,8 @@ ags_midi_builder_test_append_key_off()
       offset += ret_size;
     }
     
-    ret_size = ags_midi_buffer_util_get_end_of_track(offset,
-						     NULL);
+    ret_size = ags_midi_smf_util_get_end_of_track(&midi_smf_util, offset,
+						  NULL);
     offset += ret_size;
   }
   
@@ -519,9 +530,9 @@ ags_midi_builder_test_append_key_pressure()
   for(i = 0; i < AGS_MIDI_BUILDER_TEST_APPEND_KEY_PRESSURE_TRACK_COUNT; i++){
     offset += 8;
 
-    ret_size = ags_midi_buffer_util_get_text_event(offset,
-						   &delta_time,
-						   NULL, NULL);
+    ret_size = ags_midi_smf_util_get_text_event(&midi_smf_util, offset,
+						&delta_time,
+						NULL, NULL);
 
     if(delta_time != 0){
       success = FALSE;
@@ -532,11 +543,11 @@ ags_midi_builder_test_append_key_pressure()
     offset += ret_size;
     
     for(j = 0; j < AGS_MIDI_BUILDER_TEST_APPEND_KEY_PRESSURE_NOTE_COUNT; j++){
-      ret_size = ags_midi_buffer_util_get_key_pressure(offset,
-						       &delta_time,
-						       &channel,
-						       &key,
-						       &velocity);
+      ret_size = ags_midi_smf_util_get_key_pressure(&midi_smf_util, offset,
+						    &delta_time,
+						    &channel,
+						    &key,
+						    &velocity);
 
       if(key != keys[i][j]){
 	success = FALSE;
@@ -547,8 +558,8 @@ ags_midi_builder_test_append_key_pressure()
       offset += ret_size;
     }
     
-    ret_size = ags_midi_buffer_util_get_end_of_track(offset,
-						     NULL);
+    ret_size = ags_midi_smf_util_get_end_of_track(&midi_smf_util, offset,
+						  NULL);
     offset += ret_size;
   }
   
@@ -606,9 +617,9 @@ ags_midi_builder_test_append_change_parameter()
   for(i = 0; i < AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PARAMETER_TRACK_COUNT; i++){
     offset += 8;
 
-    ret_size = ags_midi_buffer_util_get_text_event(offset,
-						   &delta_time,
-						   NULL, NULL);
+    ret_size = ags_midi_smf_util_get_text_event(&midi_smf_util, offset,
+						&delta_time,
+						NULL, NULL);
 
     if(delta_time != 0){
       success = FALSE;
@@ -619,11 +630,11 @@ ags_midi_builder_test_append_change_parameter()
     offset += ret_size;
     
     for(j = 0; j < AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PARAMETER_CONTROL_COUNT; j++){
-      ret_size = ags_midi_buffer_util_get_change_parameter(offset,
-							   &delta_time,
-							   &channel,
-							   &control,
-							   &value);
+      ret_size = ags_midi_smf_util_get_change_parameter(&midi_smf_util, offset,
+							&delta_time,
+							&channel,
+							&control,
+							&value);
 
       if(control != controls[i][j]){
 	success = FALSE;
@@ -634,8 +645,8 @@ ags_midi_builder_test_append_change_parameter()
       offset += ret_size;
     }
     
-    ret_size = ags_midi_buffer_util_get_end_of_track(offset,
-						     NULL);
+    ret_size = ags_midi_smf_util_get_end_of_track(&midi_smf_util, offset,
+						  NULL);
     offset += ret_size;
   }
   
@@ -672,10 +683,10 @@ ags_midi_builder_test_append_change_pitch_bend()
       pitchs[i][j] = rand() % 128;
       
       ags_midi_builder_append_change_pitch_bend(midi_builder,
-					       AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PITCH_BEND_PULSE_UNIT,
-					       AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PITCH_BEND_CHANNEL,
-					       pitchs[i][j],
-					       AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PITCH_BEND_TRANSMITTER);
+						AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PITCH_BEND_PULSE_UNIT,
+						AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PITCH_BEND_CHANNEL,
+						pitchs[i][j],
+						AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PITCH_BEND_TRANSMITTER);
     }
 
     current_midi_track = current_midi_track->next;
@@ -693,9 +704,9 @@ ags_midi_builder_test_append_change_pitch_bend()
   for(i = 0; i < AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PITCH_BEND_TRACK_COUNT; i++){
     offset += 8;
 
-    ret_size = ags_midi_buffer_util_get_text_event(offset,
-						   &delta_time,
-						   NULL, NULL);
+    ret_size = ags_midi_smf_util_get_text_event(&midi_smf_util, offset,
+						&delta_time,
+						NULL, NULL);
 
     if(delta_time != 0){
       success = FALSE;
@@ -706,11 +717,11 @@ ags_midi_builder_test_append_change_pitch_bend()
     offset += ret_size;
     
     for(j = 0; j < AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PITCH_BEND_PITCH_COUNT; j++){
-      ret_size = ags_midi_buffer_util_get_pitch_bend(offset,
-						     &delta_time,
-						     &channel,
-						     &pitch,
-						     &transmitter);
+      ret_size = ags_midi_smf_util_get_pitch_bend(&midi_smf_util, offset,
+						  &delta_time,
+						  &channel,
+						  &pitch,
+						  &transmitter);
 
       if(pitch != pitchs[i][j]){
 	success = FALSE;
@@ -721,8 +732,8 @@ ags_midi_builder_test_append_change_pitch_bend()
       offset += ret_size;
     }
     
-    ret_size = ags_midi_buffer_util_get_end_of_track(offset,
-						     NULL);
+    ret_size = ags_midi_smf_util_get_end_of_track(&midi_smf_util, offset,
+						  NULL);
     offset += ret_size;
   }
   
@@ -778,9 +789,9 @@ ags_midi_builder_test_append_change_program()
   for(i = 0; i < AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PROGRAM_TRACK_COUNT; i++){
     offset += 8;
 
-    ret_size = ags_midi_buffer_util_get_text_event(offset,
-						   &delta_time,
-						   NULL, NULL);
+    ret_size = ags_midi_smf_util_get_text_event(&midi_smf_util, offset,
+						&delta_time,
+						NULL, NULL);
 
     if(delta_time != 0){
       success = FALSE;
@@ -791,10 +802,10 @@ ags_midi_builder_test_append_change_program()
     offset += ret_size;
     
     for(j = 0; j < AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PROGRAM_PROGRAM_COUNT; j++){
-      ret_size = ags_midi_buffer_util_get_change_program(offset,
-							 &delta_time,
-							 &channel,
-							 &program);
+      ret_size = ags_midi_smf_util_get_change_program(&midi_smf_util, offset,
+						      &delta_time,
+						      &channel,
+						      &program);
 
       if(program != programs[i][j]){
 	success = FALSE;
@@ -805,8 +816,8 @@ ags_midi_builder_test_append_change_program()
       offset += ret_size;
     }
     
-    ret_size = ags_midi_buffer_util_get_end_of_track(offset,
-						     NULL);
+    ret_size = ags_midi_smf_util_get_end_of_track(&midi_smf_util, offset,
+						  NULL);
     offset += ret_size;
   }
   
@@ -862,9 +873,9 @@ ags_midi_builder_test_append_change_pressure()
   for(i = 0; i < AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PRESSURE_TRACK_COUNT; i++){
     offset += 8;
 
-    ret_size = ags_midi_buffer_util_get_text_event(offset,
-						   &delta_time,
-						   NULL, NULL);
+    ret_size = ags_midi_smf_util_get_text_event(&midi_smf_util, offset,
+						&delta_time,
+						NULL, NULL);
 
     if(delta_time != 0){
       success = FALSE;
@@ -875,10 +886,10 @@ ags_midi_builder_test_append_change_pressure()
     offset += ret_size;
     
     for(j = 0; j < AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PRESSURE_PRESSURE_COUNT; j++){
-      ret_size = ags_midi_buffer_util_get_change_pressure(offset,
-							  &delta_time,
-							  &channel,
-							  &pressure);
+      ret_size = ags_midi_smf_util_get_change_pressure(&midi_smf_util, offset,
+						       &delta_time,
+						       &channel,
+						       &pressure);
 
       if(pressure != pressures[i][j]){
 	success = FALSE;
@@ -889,8 +900,8 @@ ags_midi_builder_test_append_change_pressure()
       offset += ret_size;
     }
     
-    ret_size = ags_midi_buffer_util_get_end_of_track(offset,
-						     NULL);
+    ret_size = ags_midi_smf_util_get_end_of_track(&midi_smf_util, offset,
+						  NULL);
     offset += ret_size;
   }
   
