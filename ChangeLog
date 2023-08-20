@@ -1,3 +1,34 @@
+ags (5.5.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_midi_ump_util.[ch]
+	* added missing tests to ags_midi_ump_util_test.c
+
+ags (5.5.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_midi_ump_util.[ch]
+	* added ags_midi_ump_util_test.c
+
+ags (5.5.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_resample_util.c with no resampling
+	* fixed ags_sound_resource.c missing init of resample util
+	* work-around ags_samplerate_process.c respect min length of prepare_data()
+
+ags (5.5.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed gtk-doc
+
+ags (5.5.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_solver_matrix_to_string()
+	* implemented ags_time_nanosleep()
+	* refactored ags_resample_util.c
+
 ags (5.5.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

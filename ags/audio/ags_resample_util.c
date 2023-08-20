@@ -20,6 +20,11 @@
 #include <ags/audio/ags_resample_util.h>
 
 #include <ags/audio/ags_audio_buffer_util.h>
+#include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_samplerate_process.h>
+#include <ags/audio/ags_samplerate_coeffs.h>
+
+#include <complex.h>
 
 /**
  * SECTION:ags_resample_util
@@ -67,14 +72,6 @@ ags_resample_util_alloc()
   ptr = (AgsResampleUtil *) g_new(AgsResampleUtil,
 				  1);
 
-  ptr->secret_rabbit.src_ratio = 1.0;
-
-  ptr->secret_rabbit.input_frames = 0;
-  ptr->secret_rabbit.data_in = NULL;
-
-  ptr->secret_rabbit.output_frames = 0;
-  ptr->secret_rabbit.data_out = NULL;
-  
   ptr->destination = NULL;
   ptr->destination_stride = 1;
 
@@ -87,10 +84,109 @@ ags_resample_util_alloc()
 
   ptr->target_samplerate = AGS_RESAMPLE_UTIL_DEFAULT_TARGET_SAMPLERATE;
 
-  ptr->increment = 1;
-  ptr->coeffs = NULL;
+  ptr->src_ratio = 1.0;
+
+  ptr->input_frames = 0;
+  ptr->data_in = NULL;
+
+  ptr->output_frames = 0;
+  ptr->data_out = NULL;
   
+  ptr->increment = 2381;
+
+  ptr->bypass_cache = FALSE;
+  
+  ptr->in_count = 0;
+  ptr->in_used = 0;
+  ptr->out_count = 0;
+  ptr->out_gen = 0;
+  
+  ptr->coeff_half_len = ARRAY_LEN (ags_samplerate_coeffs) - 2;
+  ptr->index_inc = 2381;
+  
+  ptr->input_index = 0;
+  
+  ptr->b_current = 0;
+  ptr->b_end = 0;
+  ptr->b_real_end = -1;
+  ptr->b_len = 3 * (int) psf_lrint ((ptr->coeff_half_len + 2.0) / ptr->index_inc * SRC_MAX_RATIO + 1);
+  ptr->b_len = MAX (ptr->b_len, 4096);
+  ptr->b_len += 1;
+  
+  ptr->coeffs = ags_samplerate_coeffs;
+  
+  ptr->left_calc = 0.0;
+  ptr->right_calc = 0.0;
+
+  ptr->last_ratio = -1.0;
+  ptr->last_position = 0.0;
+  
+  ptr->buffer = NULL;
+
   return(ptr);
+}
+
+/**
+ * ags_resample_util_init:
+ * @resample_util: the original #AgsResampleUtil-struct
+ *
+ * Init #AgsResampleUtil-struct
+ *
+ * Since: 5.5.1
+ */
+void
+ags_resample_util_init(AgsResampleUtil *resample_util)
+{
+  resample_util->destination = NULL;
+  resample_util->destination_stride = 1;
+
+  resample_util->source = NULL;
+  resample_util->source_stride = 1;
+
+  resample_util->buffer_length = 0;
+  resample_util->format = AGS_RESAMPLE_UTIL_DEFAULT_FORMAT;
+  resample_util->samplerate = AGS_RESAMPLE_UTIL_DEFAULT_SAMPLERATE;
+
+  resample_util->target_samplerate = AGS_RESAMPLE_UTIL_DEFAULT_TARGET_SAMPLERATE;
+
+  resample_util->src_ratio = 1.0;
+
+  resample_util->input_frames = 0;
+  resample_util->data_in = NULL;
+
+  resample_util->output_frames = 0;
+  resample_util->data_out = NULL;
+  
+  resample_util->increment = 2381;
+
+  resample_util->bypass_cache = FALSE;
+  
+  resample_util->in_count = 0;
+  resample_util->in_used = 0;
+  resample_util->out_count = 0;
+  resample_util->out_gen = 0;
+
+  resample_util->coeff_half_len = ARRAY_LEN (ags_samplerate_coeffs) - 2;
+  resample_util->index_inc = 2381;
+  
+  resample_util->input_index = 0;
+  
+  resample_util->b_current = 0;
+  resample_util->b_end = 0;
+  resample_util->b_real_end = -1;
+  resample_util->b_len = 3 * (int) psf_lrint ((resample_util->coeff_half_len + 2.0) / resample_util->index_inc * SRC_MAX_RATIO + 1);
+  resample_util->b_len = MAX (resample_util->b_len, 4096);
+  resample_util->b_len += 1;
+  
+  resample_util->coeffs = ags_samplerate_coeffs;
+  
+  resample_util->left_calc = 0.0;
+  resample_util->right_calc = 0.0;
+
+  resample_util->last_ratio = -1.0;
+  resample_util->last_position = 0.0;
+  
+  resample_util->buffer = NULL;
 }
 
 /**
@@ -110,22 +206,6 @@ ags_resample_util_copy(AgsResampleUtil *ptr)
   
   new_ptr = (AgsResampleUtil *) g_new(AgsResampleUtil,
 				      1);
-  
-  new_ptr->secret_rabbit.src_ratio = 1.0;
-
-  new_ptr->secret_rabbit.input_frames = ptr->secret_rabbit.input_frames;
-  new_ptr->secret_rabbit.data_in = NULL;
-
-  if(new_ptr->secret_rabbit.input_frames > 0){
-    new_ptr->secret_rabbit.data_in = (gfloat *) g_malloc(new_ptr->secret_rabbit.input_frames * sizeof(gfloat));
-  }
-
-  new_ptr->secret_rabbit.output_frames = ptr->secret_rabbit.output_frames;
-  new_ptr->secret_rabbit.data_out = NULL;
-
-  if(new_ptr->secret_rabbit.output_frames > 0){
-    new_ptr->secret_rabbit.data_out = (gfloat *) g_malloc(new_ptr->secret_rabbit.output_frames * sizeof(gfloat));
-  }
 
   new_ptr->destination = ptr->destination;
   new_ptr->destination_stride = ptr->destination_stride;
@@ -139,9 +219,61 @@ ags_resample_util_copy(AgsResampleUtil *ptr)
 
   new_ptr->target_samplerate = ptr->target_samplerate;
 
+  new_ptr->src_ratio = ptr->src_ratio;
+
+  new_ptr->input_frames = ptr->input_frames;
+  new_ptr->data_in = NULL;
+
+  if(new_ptr->input_frames > 0){
+    new_ptr->data_in = ags_stream_alloc(MAX(ptr->input_frames, 4096),
+					ptr->format);
+  }
+
+  new_ptr->output_frames = ptr->output_frames;
+  new_ptr->data_out = NULL;
+
+  if(new_ptr->output_frames > 0){
+    new_ptr->data_out = ags_stream_alloc(MAX(ptr->output_frames, 4096),
+					 ptr->format);
+  }
+
   new_ptr->increment = ptr->increment;
+
+  new_ptr->bypass_cache = ptr->bypass_cache;
+  
+  new_ptr->in_count = ptr->in_count;
+  new_ptr->in_used = ptr->in_used;
+  new_ptr->out_count = ptr->out_count;
+  new_ptr->out_gen = ptr->out_gen;
+  
+  new_ptr->coeff_half_len = ptr->coeff_half_len;
+  new_ptr->index_inc = ptr->index_inc;
+  
+  new_ptr->input_index = ptr->input_index;
+  
+  new_ptr->b_current = ptr->b_current;
+  new_ptr->b_end = ptr->b_end;
+  new_ptr->b_real_end = ptr->b_real_end;
+  new_ptr->b_len = ptr->b_len;
+  
+  new_ptr->coeffs = ptr->coeffs;
+  
+  new_ptr->left_calc = ptr->left_calc;
+  new_ptr->right_calc = ptr->right_calc;
+
   new_ptr->coeffs = ptr->coeffs;
 
+  new_ptr->last_ratio = ptr->last_ratio;
+  new_ptr->last_position = ptr->last_position;
+
+  if(ptr->input_frames < ptr->output_frames){
+    new_ptr->buffer = ags_stream_alloc(MAX(ptr->output_frames, 4096),
+				       ptr->format);
+  }else{
+    new_ptr->buffer = ags_stream_alloc(MAX(ptr->input_frames, 4096),
+				       ptr->format);
+  }
+  
   return(new_ptr);
 }
 
@@ -156,14 +288,16 @@ ags_resample_util_copy(AgsResampleUtil *ptr)
 void
 ags_resample_util_free(AgsResampleUtil *ptr)
 {
-  g_free(ptr->secret_rabbit.data_in);
-  g_free(ptr->secret_rabbit.data_out);
+  ags_stream_free(ptr->data_in);
+  ags_stream_free(ptr->data_out);
   
-  g_free(ptr->destination);
+  ags_stream_free(ptr->destination);
 
   if(ptr->destination != ptr->source){
-    g_free(ptr->source);
+    ags_stream_free(ptr->source);
   }
+  
+  ags_stream_free(ptr->buffer);
   
   g_free(ptr);
 }
@@ -369,23 +503,39 @@ ags_resample_util_set_buffer_length(AgsResampleUtil *resample_util,
   resample_util->buffer_length = buffer_length;
 
   if(buffer_length > 0){
-    resample_util->secret_rabbit.input_frames = buffer_length;
-    resample_util->secret_rabbit.output_frames = ceil(resample_util->secret_rabbit.src_ratio * buffer_length);
+    resample_util->input_frames = buffer_length;
+    resample_util->output_frames = ceil(resample_util->src_ratio * buffer_length);
 
-    g_free(resample_util->secret_rabbit.data_in);
-    g_free(resample_util->secret_rabbit.data_out);
+    ags_stream_free(resample_util->data_in);
+    ags_stream_free(resample_util->data_out);
     
-    resample_util->secret_rabbit.data_in = (gfloat *) g_malloc(buffer_length * sizeof(gfloat));
-    resample_util->secret_rabbit.data_out = (gfloat *) g_malloc(resample_util->secret_rabbit.output_frames * sizeof(gfloat));
+    ags_stream_free(resample_util->buffer);
+
+    resample_util->data_in = ags_stream_alloc(MAX(resample_util->input_frames, 4096),
+					      resample_util->format);
+    resample_util->data_out = ags_stream_alloc(MAX(resample_util->output_frames, 4096),
+					       resample_util->format);
+
+    if(resample_util->input_frames < resample_util->output_frames){
+      resample_util->buffer = ags_stream_alloc(MAX(resample_util->output_frames, 4096),
+					       resample_util->format);
+    }else{
+      resample_util->buffer = ags_stream_alloc(MAX(resample_util->input_frames, 4096),
+					       resample_util->format);
+    }
   }else{
-    resample_util->secret_rabbit.input_frames = 0;
-    resample_util->secret_rabbit.output_frames = 0;
+    resample_util->input_frames = 0;
+    resample_util->output_frames = 0;
     
-    g_free(resample_util->secret_rabbit.data_out);
-    g_free(resample_util->secret_rabbit.data_in);
+    ags_stream_free(resample_util->data_out);
+    ags_stream_free(resample_util->data_in);
 
-    resample_util->secret_rabbit.data_out = NULL;
-    resample_util->secret_rabbit.data_in = NULL;
+    ags_stream_free(resample_util->buffer);
+    
+    resample_util->data_out = NULL;
+    resample_util->data_in = NULL;
+
+    resample_util->buffer = NULL;
   }
 }
 
@@ -469,14 +619,25 @@ ags_resample_util_set_samplerate(AgsResampleUtil *resample_util,
 
   resample_util->samplerate = samplerate;
 
-  resample_util->secret_rabbit.src_ratio = resample_util->target_samplerate / samplerate;
+  resample_util->src_ratio = resample_util->target_samplerate / samplerate;
 
   if(resample_util->buffer_length > 0){
-    resample_util->secret_rabbit.output_frames = ceil(resample_util->secret_rabbit.src_ratio * resample_util->buffer_length);
+    resample_util->output_frames = ceil(resample_util->src_ratio * resample_util->buffer_length);
 
-    g_free(resample_util->secret_rabbit.data_out);
+    ags_stream_free(resample_util->data_out);
     
-    resample_util->secret_rabbit.data_out = (gfloat *) g_malloc(resample_util->secret_rabbit.output_frames * sizeof(gfloat));
+    ags_stream_free(resample_util->buffer);
+
+    resample_util->data_out = ags_stream_alloc(MAX(resample_util->output_frames, 4096),
+					       resample_util->format);
+
+    if(resample_util->input_frames < resample_util->output_frames){
+      resample_util->buffer = ags_stream_alloc(MAX(resample_util->output_frames, 4096),
+					       resample_util->format);
+    }else{
+      resample_util->buffer = ags_stream_alloc(MAX(resample_util->input_frames, 4096),
+					       resample_util->format);
+    }
   }
 }
 
@@ -520,14 +681,25 @@ ags_resample_util_set_target_samplerate(AgsResampleUtil *resample_util,
 
   resample_util->target_samplerate = target_samplerate;
   
-  resample_util->secret_rabbit.src_ratio = target_samplerate / resample_util->samplerate;
+  resample_util->src_ratio = target_samplerate / resample_util->samplerate;
 
   if(resample_util->buffer_length > 0){
-    resample_util->secret_rabbit.output_frames = ceil(resample_util->secret_rabbit.src_ratio * resample_util->buffer_length);
+    resample_util->output_frames = ceil(resample_util->src_ratio * resample_util->buffer_length);
 
-    g_free(resample_util->secret_rabbit.data_out);
+    ags_stream_free(resample_util->data_out);
+
+    ags_stream_free(resample_util->buffer);
     
-    resample_util->secret_rabbit.data_out = (gfloat *) g_malloc(resample_util->secret_rabbit.output_frames * sizeof(gfloat));
+    resample_util->data_out = ags_stream_alloc(MAX(resample_util->output_frames, 4096),
+					       resample_util->format);
+
+    if(resample_util->input_frames < resample_util->output_frames){
+      resample_util->buffer = ags_stream_alloc(MAX(resample_util->output_frames, 4096),
+					       resample_util->format);
+    }else{
+      resample_util->buffer = ags_stream_alloc(MAX(resample_util->input_frames, 4096),
+					       resample_util->format);
+    }
   }
 }
 
@@ -542,8 +714,6 @@ ags_resample_util_set_target_samplerate(AgsResampleUtil *resample_util,
 void
 ags_resample_util_compute_s8(AgsResampleUtil *resample_util)
 {
-  SRC_DATA *secret_rabbit;
-
   gint8 *destination;
   gint8 *source;
 
@@ -553,27 +723,29 @@ ags_resample_util_compute_s8(AgsResampleUtil *resample_util)
     return;
   }
 
-  secret_rabbit = &(resample_util->secret_rabbit);
-  
   destination = (gint8 *) resample_util->destination;
   source = (gint8 *) resample_util->source;
-    
-  ags_audio_buffer_util_clear_float(secret_rabbit->data_in, 1,
-				    secret_rabbit->input_frames);
 
-  ags_audio_buffer_util_copy_s8_to_float(secret_rabbit->data_in, 1,
-					 source, resample_util->source_stride,
-					 secret_rabbit->input_frames);
+  if(resample_util->samplerate == resample_util->target_samplerate){
+    ags_audio_buffer_util_copy_s8_to_s8(destination, resample_util->destination_stride,
+					source, resample_util->source_stride,
+					resample_util->buffer_length);
+  }else{
+    ags_audio_buffer_util_clear_buffer(resample_util->data_in, 1,
+				       resample_util->input_frames, AGS_AUDIO_BUFFER_UTIL_S8);
 
-  src_simple(secret_rabbit,
-	     SRC_SINC_BEST_QUALITY,
-	     1);
-
-  memset(destination, 0, secret_rabbit->output_frames * sizeof(gint8));
+    ags_audio_buffer_util_copy_s8_to_s8(resample_util->data_in, 1,
+					source, resample_util->source_stride,
+					resample_util->input_frames);
   
-  ags_audio_buffer_util_copy_float_to_s8(destination, resample_util->destination_stride,
-					 secret_rabbit->data_out, 1,
-					 secret_rabbit->output_frames);
+    ags_samplerate_process_resample_util(resample_util);
+
+    memset(destination, 0, resample_util->output_frames * sizeof(gint8));
+  
+    ags_audio_buffer_util_copy_s8_to_s8(destination, resample_util->destination_stride,
+					resample_util->data_out, 1,
+					resample_util->output_frames);
+  }
 }
 
 /**
@@ -587,8 +759,6 @@ ags_resample_util_compute_s8(AgsResampleUtil *resample_util)
 void
 ags_resample_util_compute_s16(AgsResampleUtil *resample_util)
 {
-  SRC_DATA *secret_rabbit;
-
   gint16 *destination;
   gint16 *source;
 
@@ -598,27 +768,29 @@ ags_resample_util_compute_s16(AgsResampleUtil *resample_util)
     return;
   }
 
-  secret_rabbit = &(resample_util->secret_rabbit);
-  
   destination = (gint16 *) resample_util->destination;
   source = (gint16 *) resample_util->source;
     
-  ags_audio_buffer_util_clear_float(secret_rabbit->data_in, 1,
-				    secret_rabbit->input_frames);
-
-  ags_audio_buffer_util_copy_s16_to_float(secret_rabbit->data_in, 1,
+  if(resample_util->samplerate == resample_util->target_samplerate){
+    ags_audio_buffer_util_copy_s16_to_s16(destination, resample_util->destination_stride,
 					  source, resample_util->source_stride,
-					  secret_rabbit->input_frames);
+					  resample_util->buffer_length);
+  }else{
+    ags_audio_buffer_util_clear_buffer(resample_util->data_in, 1,
+				       resample_util->input_frames, AGS_AUDIO_BUFFER_UTIL_S16);
 
-  src_simple(secret_rabbit,
-	     SRC_SINC_BEST_QUALITY,
-	     1);
+    ags_audio_buffer_util_copy_s16_to_s16(resample_util->data_in, 1,
+					  source, resample_util->source_stride,
+					  resample_util->input_frames);
 
-  memset(destination, 0, secret_rabbit->output_frames * sizeof(gint16));
+    ags_samplerate_process_resample_util(resample_util);
+
+    memset(destination, 0, resample_util->output_frames * sizeof(gint16));
   
-  ags_audio_buffer_util_copy_float_to_s16(destination, resample_util->destination_stride,
-					  secret_rabbit->data_out, 1,
-					  secret_rabbit->output_frames);
+    ags_audio_buffer_util_copy_s16_to_s16(destination, resample_util->destination_stride,
+					  resample_util->data_out, 1,
+					  resample_util->output_frames);
+  }
 }
 
 /**
@@ -632,8 +804,6 @@ ags_resample_util_compute_s16(AgsResampleUtil *resample_util)
 void
 ags_resample_util_compute_s24(AgsResampleUtil *resample_util)
 {
-  SRC_DATA *secret_rabbit;
-
   gint32 *destination;
   gint32 *source;
 
@@ -643,27 +813,29 @@ ags_resample_util_compute_s24(AgsResampleUtil *resample_util)
     return;
   }
 
-  secret_rabbit = &(resample_util->secret_rabbit);
-  
   destination = (gint32 *) resample_util->destination;
   source = (gint32 *) resample_util->source;
   
-  ags_audio_buffer_util_clear_float(secret_rabbit->data_in, 1,
-				    secret_rabbit->input_frames);
-
-  ags_audio_buffer_util_copy_s24_to_float(secret_rabbit->data_in, 1,
+  if(resample_util->samplerate == resample_util->target_samplerate){
+    ags_audio_buffer_util_copy_s24_to_s24(destination, resample_util->destination_stride,
 					  source, resample_util->source_stride,
-					  secret_rabbit->input_frames);
+					  resample_util->buffer_length);
+  }else{
+    ags_audio_buffer_util_clear_buffer(resample_util->data_in, 1,
+				       resample_util->input_frames, AGS_AUDIO_BUFFER_UTIL_S24);
 
-  src_simple(secret_rabbit,
-	     SRC_SINC_BEST_QUALITY,
-	     1);
-
-  memset(destination, 0, secret_rabbit->output_frames * sizeof(gint32));
+    ags_audio_buffer_util_copy_s24_to_s24(resample_util->data_in, 1,
+					  source, resample_util->source_stride,
+					  resample_util->input_frames);
   
-  ags_audio_buffer_util_copy_float_to_s24(destination, resample_util->destination_stride,
-					  secret_rabbit->data_out, 1,
-					  secret_rabbit->output_frames);
+    ags_samplerate_process_resample_util(resample_util);
+
+    memset(destination, 0, resample_util->output_frames * sizeof(gint32));
+  
+    ags_audio_buffer_util_copy_s24_to_s24(destination, resample_util->destination_stride,
+					  resample_util->data_out, 1,
+					  resample_util->output_frames);
+  }
 }
 
 /**
@@ -677,8 +849,6 @@ ags_resample_util_compute_s24(AgsResampleUtil *resample_util)
 void
 ags_resample_util_compute_s32(AgsResampleUtil *resample_util)
 {
-  SRC_DATA *secret_rabbit;
-
   gint32 *destination;
   gint32 *source;
 
@@ -688,27 +858,29 @@ ags_resample_util_compute_s32(AgsResampleUtil *resample_util)
     return;
   }
 
-  secret_rabbit = &(resample_util->secret_rabbit);
-  
   destination = (gint32 *) resample_util->destination;
   source = (gint32 *) resample_util->source;
   
-  ags_audio_buffer_util_clear_float(secret_rabbit->data_in, 1,
-				    secret_rabbit->input_frames);
-
-  ags_audio_buffer_util_copy_s32_to_float(secret_rabbit->data_in, 1,
+  if(resample_util->samplerate == resample_util->target_samplerate){
+    ags_audio_buffer_util_copy_s32_to_s32(destination, resample_util->destination_stride,
 					  source, resample_util->source_stride,
-					  secret_rabbit->input_frames);
+					  resample_util->buffer_length);
+  }else{
+    ags_audio_buffer_util_clear_buffer(resample_util->data_in, 1,
+				       resample_util->input_frames, AGS_AUDIO_BUFFER_UTIL_S32);
 
-  src_simple(secret_rabbit,
-	     SRC_SINC_BEST_QUALITY,
-	     1);
+    ags_audio_buffer_util_copy_s32_to_s32(resample_util->data_in, 1,
+					  source, resample_util->source_stride,
+					  resample_util->input_frames);
 
-  memset(destination, 0, secret_rabbit->output_frames * sizeof(gint32));
+    ags_samplerate_process_resample_util(resample_util);
+
+    memset(destination, 0, resample_util->output_frames * sizeof(gint32));
   
-  ags_audio_buffer_util_copy_float_to_s32(destination, resample_util->destination_stride,
-					  secret_rabbit->data_out, 1,
-					  secret_rabbit->output_frames);
+    ags_audio_buffer_util_copy_s32_to_s32(destination, resample_util->destination_stride,
+					  resample_util->data_out, 1,
+					  resample_util->output_frames);
+  }
 }
 
 /**
@@ -722,8 +894,6 @@ ags_resample_util_compute_s32(AgsResampleUtil *resample_util)
 void
 ags_resample_util_compute_s64(AgsResampleUtil *resample_util)
 {
-  SRC_DATA *secret_rabbit;
-
   gint64 *destination;
   gint64 *source;
 
@@ -733,27 +903,29 @@ ags_resample_util_compute_s64(AgsResampleUtil *resample_util)
     return;
   }
 
-  secret_rabbit = &(resample_util->secret_rabbit);
-  
   destination = (gint64 *) resample_util->destination;
   source = (gint64 *) resample_util->source;
   
-  ags_audio_buffer_util_clear_float(secret_rabbit->data_in, 1,
-				    secret_rabbit->input_frames);
-
-  ags_audio_buffer_util_copy_s64_to_float(secret_rabbit->data_in, 1,
+  if(resample_util->samplerate == resample_util->target_samplerate){
+    ags_audio_buffer_util_copy_s64_to_s64(destination, resample_util->destination_stride,
 					  source, resample_util->source_stride,
-					  secret_rabbit->input_frames);
+					  resample_util->buffer_length);
+  }else{
+    ags_audio_buffer_util_clear_buffer(resample_util->data_in, 1,
+				       resample_util->input_frames, AGS_AUDIO_BUFFER_UTIL_S64);
 
-  src_simple(secret_rabbit,
-	     SRC_SINC_BEST_QUALITY,
-	     1);
+    ags_audio_buffer_util_copy_s64_to_s64(resample_util->data_in, 1,
+					  source, resample_util->source_stride,
+					  resample_util->input_frames);
 
-  memset(destination, 0, secret_rabbit->output_frames * sizeof(gint64));
+    ags_samplerate_process_resample_util(resample_util);
+
+    memset(destination, 0, resample_util->output_frames * sizeof(gint64));
   
-  ags_audio_buffer_util_copy_float_to_s64(destination, resample_util->destination_stride,
-					  secret_rabbit->data_out, 1,
-					  secret_rabbit->output_frames);
+    ags_audio_buffer_util_copy_s64_to_s64(destination, resample_util->destination_stride,
+					  resample_util->data_out, 1,
+					  resample_util->output_frames);
+  }
 }
 
 /**
@@ -767,8 +939,6 @@ ags_resample_util_compute_s64(AgsResampleUtil *resample_util)
 void
 ags_resample_util_compute_float(AgsResampleUtil *resample_util)
 {
-  SRC_DATA *secret_rabbit;
-
   gfloat *destination;
   gfloat *source;
 
@@ -778,27 +948,29 @@ ags_resample_util_compute_float(AgsResampleUtil *resample_util)
     return;
   }
 
-  secret_rabbit = &(resample_util->secret_rabbit);
-  
   destination = (gfloat *) resample_util->destination;
   source = (gfloat *) resample_util->source;
   
-  ags_audio_buffer_util_clear_float(secret_rabbit->data_in, 1,
-				    secret_rabbit->input_frames);
+  if(resample_util->samplerate == resample_util->target_samplerate){
+    ags_audio_buffer_util_copy_float_to_float(destination, resample_util->destination_stride,
+					      source, resample_util->source_stride,
+					      resample_util->buffer_length);
+  }else{
+    ags_audio_buffer_util_clear_float(resample_util->data_in, 1,
+				      resample_util->input_frames);
 
-  ags_audio_buffer_util_copy_float_to_float(secret_rabbit->data_in, 1,
-					    source, resample_util->source_stride,
-					    secret_rabbit->input_frames);
+    ags_audio_buffer_util_copy_float_to_float(resample_util->data_in, 1,
+					      source, resample_util->source_stride,
+					      resample_util->input_frames);
 
-  src_simple(secret_rabbit,
-	     SRC_SINC_BEST_QUALITY,
-	     1);
+    ags_samplerate_process_resample_util(resample_util);
 
-  memset(destination, 0, secret_rabbit->output_frames * sizeof(gfloat));
+    memset(destination, 0, resample_util->output_frames * sizeof(gfloat));
   
-  ags_audio_buffer_util_copy_float_to_float(destination, resample_util->destination_stride,
-					    secret_rabbit->data_out, 1,
-					    secret_rabbit->output_frames);
+    ags_audio_buffer_util_copy_float_to_float(destination, resample_util->destination_stride,
+					      resample_util->data_out, 1,
+					      resample_util->output_frames);
+  }
 }
 
 /**
@@ -812,8 +984,6 @@ ags_resample_util_compute_float(AgsResampleUtil *resample_util)
 void
 ags_resample_util_compute_double(AgsResampleUtil *resample_util)
 {
-  SRC_DATA *secret_rabbit;
-
   gdouble *destination;
   gdouble *source;
 
@@ -823,33 +993,35 @@ ags_resample_util_compute_double(AgsResampleUtil *resample_util)
     return;
   }
   
-  secret_rabbit = &(resample_util->secret_rabbit);
-  
   destination = (gdouble *) resample_util->destination;
   source = (gdouble *) resample_util->source;
   
-  ags_audio_buffer_util_clear_float(secret_rabbit->data_in, 1,
-				    secret_rabbit->input_frames);
+  if(resample_util->samplerate == resample_util->target_samplerate){
+    ags_audio_buffer_util_copy_double_to_double(destination, resample_util->destination_stride,
+						source, resample_util->source_stride,
+						resample_util->buffer_length);
+  }else{
+    ags_audio_buffer_util_clear_double(resample_util->data_in, 1,
+				       resample_util->input_frames);
 
-  ags_audio_buffer_util_copy_double_to_float(secret_rabbit->data_in, 1,
-					     source, resample_util->source_stride,
-					     secret_rabbit->input_frames);
+    ags_audio_buffer_util_copy_double_to_double(resample_util->data_in, 1,
+						source, resample_util->source_stride,
+						resample_util->input_frames);
 
-  //  g_message("in %d", ags_synth_util_get_xcross_count_float(secret_rabbit->data_in,
-  //							   secret_rabbit->input_frames));
+    //  g_message("in %d", ags_synth_util_get_xcross_count_float(resample_util->data_in,
+    //							   resample_util->input_frames));
 
-  src_simple(secret_rabbit,
-	     SRC_SINC_BEST_QUALITY,
-	     1);
+    ags_samplerate_process_resample_util(resample_util);
 
-  //  g_message("out %d", ags_synth_util_get_xcross_count_float(secret_rabbit->data_out,
-  //							    secret_rabbit->output_frames));
+    //  g_message("out %d", ags_synth_util_get_xcross_count_float(resample_util->data_out,
+    //							    resample_util->output_frames));
   
-  memset(destination, 0, secret_rabbit->output_frames * sizeof(gdouble));
+    memset(destination, 0, resample_util->output_frames * sizeof(gdouble));
   
-  ags_audio_buffer_util_copy_float_to_double(destination, resample_util->destination_stride,
-					     secret_rabbit->data_out, 1,
-					     secret_rabbit->output_frames);
+    ags_audio_buffer_util_copy_double_to_double(destination, resample_util->destination_stride,
+						resample_util->data_out, 1,
+						resample_util->output_frames);
+  }
 }
 
 /**
@@ -863,8 +1035,6 @@ ags_resample_util_compute_double(AgsResampleUtil *resample_util)
 void
 ags_resample_util_compute_complex(AgsResampleUtil *resample_util)
 {
-  SRC_DATA *secret_rabbit;
-
   AgsComplex *destination;
   AgsComplex *source;
 
@@ -874,27 +1044,29 @@ ags_resample_util_compute_complex(AgsResampleUtil *resample_util)
     return;
   }
   
-  secret_rabbit = &(resample_util->secret_rabbit);
-  
   destination = (AgsComplex *) resample_util->destination;
   source = (AgsComplex *) resample_util->source;
   
-  ags_audio_buffer_util_clear_float(secret_rabbit->data_in, 1,
-				    secret_rabbit->input_frames);
+  if(resample_util->samplerate == resample_util->target_samplerate){
+    ags_audio_buffer_util_copy_complex_to_complex(destination, resample_util->destination_stride,
+						  source, resample_util->source_stride,
+						  resample_util->buffer_length);
+  }else{
+    ags_audio_buffer_util_clear_complex(resample_util->data_in, 1,
+					resample_util->input_frames);
 
-  ags_audio_buffer_util_copy_complex_to_float(secret_rabbit->data_in, 1,
-					      source, resample_util->source_stride,
-					      secret_rabbit->input_frames);
+    ags_audio_buffer_util_copy_complex_to_complex(resample_util->data_in, 1,
+						  source, resample_util->source_stride,
+						  resample_util->input_frames);
 
-  src_simple(secret_rabbit,
-	     SRC_SINC_BEST_QUALITY,
-	     1);
+    ags_samplerate_process_resample_util(resample_util);
 
-  memset(destination, 0, secret_rabbit->output_frames * sizeof(AgsComplex));
+    memset(destination, 0, resample_util->output_frames * sizeof(AgsComplex));
   
-  ags_audio_buffer_util_copy_float_to_complex(destination, resample_util->destination_stride,
-					      secret_rabbit->data_out, 1,
-					      secret_rabbit->output_frames);
+    ags_audio_buffer_util_copy_complex_to_complex(destination, resample_util->destination_stride,
+						  resample_util->data_out, 1,
+						  resample_util->output_frames);
+  }
 }
 
 /**

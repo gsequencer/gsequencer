@@ -2010,7 +2010,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsMidiCI11UtilTest", ags_midi_ci_util_test_init_suite, ags_midi_ci_util_test_clean_suite);
+  pSuite = CU_add_suite("AgsMidiCIUtilTest", ags_midi_ci_util_test_init_suite, ags_midi_ci_util_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();

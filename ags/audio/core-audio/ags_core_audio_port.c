@@ -2015,7 +2015,7 @@ ags_core_audio_port_cached_handle_output_buffer(AgsCoreAudioPort *core_audio_por
     
     while(next_cache == completed_cache &&
 	  ags_soundcard_is_playing(AGS_SOUNDCARD(soundcard))){
-      nanosleep(&idle_time, NULL);
+      ags_time_nanosleep(&idle_time);
 
       g_rec_mutex_lock(core_audio_port_mutex);
 

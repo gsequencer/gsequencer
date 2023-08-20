@@ -27,8 +27,6 @@
 
 #include <ags/audio/ags_audio_buffer_util.h>
 
-#include <samplerate.h>
-
 G_BEGIN_DECLS
 
 #define AGS_TYPE_RESAMPLE_UTIL         (ags_resample_util_get_type())
@@ -44,8 +42,6 @@ typedef struct _AgsResampleUtil AgsResampleUtil;
 
 struct _AgsResampleUtil
 {
-  SRC_DATA secret_rabbit;
-
   gpointer destination;
   guint destination_stride;
 
@@ -58,13 +54,55 @@ struct _AgsResampleUtil
 
   guint target_samplerate;
 
+  gdouble src_ratio;
+
+  glong saved_frames;
+  glong	input_frames_used;
+  glong output_frames_gen;
+
+  gint end_of_input;
+
+  gint input_frames;
+  gpointer data_in;
+  
+  gint output_frames;
+  gpointer data_out;
+  
   gint increment;
+
+  gboolean bypass_cache;
+  
+  glong	in_count;
+  glong in_used;
+  glong	out_count;
+  glong out_gen ;
+
+  gint coeff_half_len;
+  gint index_inc;
+
+  gdouble input_index;
+
+  gint b_current;
+  gint b_end;
+  gint b_real_end;
+  gint b_len;
+
   gdouble *coeffs;
+  
+  gdouble left_calc;
+  gdouble right_calc;
+
+  gdouble last_ratio;
+  gdouble last_position;
+
+  gpointer buffer;  
 };
 
 GType ags_resample_util_get_type(void);
 
 AgsResampleUtil* ags_resample_util_alloc();
+
+void ags_resample_util_init(AgsResampleUtil *resample_util);
 
 gpointer ags_resample_util_copy(AgsResampleUtil *ptr);
 void ags_resample_util_free(AgsResampleUtil *ptr);

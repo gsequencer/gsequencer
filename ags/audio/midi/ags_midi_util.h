@@ -40,9 +40,9 @@ struct _AgsMidiUtil
 GType ags_midi_util_get_type(void);
 
 AgsMidiUtil* ags_midi_util_alloc();
-void ags_midi_util_free(AgsMidiUtil *midi_ci_util);
+void ags_midi_util_free(AgsMidiUtil *midi_util);
 
-AgsMidiUtil* ags_midi_util_copy(AgsMidiUtil *midi_ci_util);
+AgsMidiUtil* ags_midi_util_copy(AgsMidiUtil *midi_util);
 
 /* real-time channel message utility */
 gboolean ags_midi_util_is_key_on(guchar *buffer);

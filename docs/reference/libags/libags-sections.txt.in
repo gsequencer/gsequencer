@@ -1411,10 +1411,12 @@ ags_solver_matrix_get_source_function
 ags_solver_matrix_set_source_function
 ags_solver_matrix_get_row_count
 ags_solver_matrix_get_column_count
+ags_solver_matrix_to_string
 ags_solver_matrix_parse
 ags_solver_matrix_insert_vector
 ags_solver_matrix_remove_vector
 ags_solver_matrix_eliminate
+ags_solver_matrix_solve_default
 ags_solver_matrix_new
 <SUBSECTION Standard>
 AGS_IS_SOLVER_MATRIX
@@ -1617,6 +1619,8 @@ ags_soundcard_helper_config_get_format
 <SECTION>
 <FILE>ags_string_util</FILE>
 ags_string_util_escape_single_quote
+ags_string_util_to_mcoded7
+ags_string_util_from_mcoded7
 ags_strv_length
 ags_strv_contains
 ags_strv_index
@@ -1863,6 +1867,7 @@ ags_thread_pool_get_type
 AGS_TIME_ZERO
 AGS_USEC_PER_SEC
 AGS_NSEC_PER_SEC
+ags_time_nanosleep
 ags_time_get_uptime_from_offset
 ags_time_timeout_expired
 </SECTION>

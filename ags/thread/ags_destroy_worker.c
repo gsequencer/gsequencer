@@ -19,6 +19,8 @@
 
 #include <ags/thread/ags_destroy_worker.h>
 
+#include <ags/lib/ags_time.h>
+
 #include <ags/object/ags_connectable.h>
 
 #include <stdlib.h>
@@ -185,8 +187,7 @@ ags_destroy_worker_do_poll(AgsWorkerThread *worker_thread)
   g_list_free_full(list_start,
 		   g_free);
 
-  nanosleep(destroy_worker->destroy_interval,
-	    NULL);
+  ags_time_nanosleep(destroy_worker->destroy_interval);
 }
 
 /**

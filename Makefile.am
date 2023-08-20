@@ -1361,6 +1361,10 @@ EXTRA_DIST +=  \
 	ags/audio/ags_sf2_synth_util.h
 endif
 
+EXTRA_DIST +=  \
+	ags/audio/ags_samplerate_coeffs.h \
+	ags/audio/ags_samplerate_process.h
+
 deprecated_libags_audio_c_sources =
 
 libags_audio_c_sources = \
@@ -1430,6 +1434,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_recycling.c \
 	ags/audio/ags_recycling_context.c \
 	ags/audio/ags_resample_util.c \
+	ags/audio/ags_samplerate_process.c \
 	ags/audio/ags_sound_provider.c \
 	ags/audio/ags_sequencer_util.c \
 	ags/audio/ags_soundcard_util.c \
@@ -1693,7 +1698,8 @@ libags_audio_midi_h_sources = \
 	ags/audio/midi/ags_midi_util.h \
 	ags/audio/midi/ags_midi_builder.h \
 	ags/audio/midi/ags_midi_file.h \
-	ags/audio/midi/ags_midi_parser.h
+	ags/audio/midi/ags_midi_parser.h \
+	ags/audio/midi/ags_midi_ump_util.h
 
 deprecated_libags_audio_midi_c_sources =
 
@@ -1704,7 +1710,8 @@ libags_audio_midi_c_sources = \
 	ags/audio/midi/ags_midi_util.c \
 	ags/audio/midi/ags_midi_builder.c \
 	ags/audio/midi/ags_midi_file.c \
-	ags/audio/midi/ags_midi_parser.c
+	ags/audio/midi/ags_midi_parser.c \
+	ags/audio/midi/ags_midi_ump_util.c
 
 # libags-audio - osc
 deprecated_libags_audio_osc_h_sources =

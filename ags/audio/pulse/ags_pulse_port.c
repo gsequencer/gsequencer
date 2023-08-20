@@ -1342,7 +1342,7 @@ ags_pulse_port_cached_stream_request_callback(pa_stream *stream, size_t length, 
     
       while(next_cache == completed_cache &&
 	    ags_soundcard_is_playing(AGS_SOUNDCARD(soundcard))){
-	nanosleep(&idle_time, NULL);
+	ags_time_nanosleep(&idle_time);
 
 	g_rec_mutex_lock(pulse_port_mutex);
 

@@ -49,7 +49,7 @@ struct _AgsSolverMatrix
   GRecMutex obj_mutex;
 
   gchar **function_history;
-
+  
   gchar *source_function;
   
   AgsSolverVector **term_table;
@@ -71,6 +71,8 @@ void ags_solver_matrix_set_source_function(AgsSolverMatrix *solver_matrix,
 guint ags_solver_matrix_get_row_count(AgsSolverMatrix *solver_matrix);
 
 guint ags_solver_matrix_get_column_count(AgsSolverMatrix *solver_matrix);
+
+gchar* ags_solver_matrix_to_string(AgsSolverMatrix *solver_matrix);
 
 void ags_solver_matrix_parse(AgsSolverMatrix *solver_matrix,
 			     gchar *source_function);

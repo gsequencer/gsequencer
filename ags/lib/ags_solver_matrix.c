@@ -37,8 +37,12 @@ void ags_solver_matrix_get_property(GObject *gobject,
 				    GParamSpec *param_spec);
 void ags_solver_matrix_finalize(GObject *gobject);
 
+gchar** ags_solver_matrix_to_symbolic_string(AgsSolverMatrix *solver_matrix,
+					     guint *symbolic_strv_length);
+
 void ags_solver_matrix_solve_all_by_column(AgsSolverMatrix *solver_matrix,
 					   guint *nth_column, guint column_size);
+void ags_solver_matrix_solve_symbolic(AgsSolverMatrix *solver_matrix);
 
 /**
  * SECTION:ags_solver_matrix
@@ -397,6 +401,167 @@ ags_solver_matrix_get_column_count(AgsSolverMatrix *solver_matrix)
 	       NULL);
 
   return(column_count);
+}
+
+/**
+ * ags_solver_matrix_to_string:
+ * @solver_matrix: the #AgsSolverMatrix
+ * 
+ * To string of @solver_matrix.
+ * 
+ * Returns: (transfer full): the new string representation
+ * 
+ * Since: 5.5.1
+ */
+gchar*
+ags_solver_matrix_to_string(AgsSolverMatrix *solver_matrix)
+{
+  gchar **function_history;
+  gchar *str;
+  gchar *function_str;
+  gchar *iter;
+
+  guint function_row_count;
+  guint function_str_length;
+  guint column_count;
+  guint x, y;
+  guint i;
+  
+  str = NULL;
+
+  function_history = solver_matrix->function_history;
+
+  if(function_history != NULL && function_history[0] != NULL){
+    for(; function_history[1] != NULL; function_history++);
+  }
+
+  if(function_history == NULL ||
+     function_history[0] == NULL){
+    return(NULL);
+  }
+
+  iter =
+    function_str = function_history[0];
+  
+  function_str_length = strlen(function_str);
+
+  function_row_count = 0;
+
+  while((iter = strchr(iter, '\n')) != NULL){
+    function_row_count++;
+    iter++;
+  }
+
+  iter = function_str;
+    
+  if((iter = strrchr(iter, '\n')) != NULL){
+    iter++;
+
+    if(iter < function_str + function_str_length){
+      if(strstr(iter, " = 0") != NULL){
+	function_row_count++;
+      }
+    }
+  }
+  
+  column_count = ags_solver_matrix_get_column_count(solver_matrix);
+  
+  x = 0;
+  y = 0;
+  
+  for(i = 0; i < function_row_count * column_count; i++){
+    AgsSolverVector *solver_vector;
+    AgsSolverPolynomial *solver_polynomial;
+
+    gchar *polynomial;
+    gchar *coefficient;
+    
+    GRecMutex *solver_matrix_mutex;
+    GRecMutex *solver_vector_mutex;
+
+    /*  */
+    solver_matrix_mutex = AGS_SOLVER_MATRIX_GET_OBJ_MUTEX(solver_matrix);
+
+    g_rec_mutex_lock(solver_matrix_mutex);
+    
+    solver_vector = solver_matrix->term_table[x];
+
+    g_rec_mutex_unlock(solver_matrix_mutex);
+
+    /*  */
+    solver_vector_mutex = AGS_SOLVER_VECTOR_GET_OBJ_MUTEX(solver_vector);
+
+    g_rec_mutex_lock(solver_vector_mutex);
+    
+    solver_polynomial = solver_vector->polynomial_column[y];
+
+    g_rec_mutex_unlock(solver_vector_mutex);
+    
+    /*  */
+    polynomial = ags_solver_polynomial_get_polynomial(solver_polynomial);
+
+    if(polynomial != NULL){
+      if(str == NULL){
+	str = g_strdup_printf("%s", polynomial);
+      }else{
+	gchar *tmp;
+
+	tmp = str;
+	
+	coefficient = ags_solver_polynomial_get_coefficient(solver_polynomial);
+	
+	if(coefficient != NULL && coefficient[0] == '-'){
+	  str = g_strdup_printf("%s - %s", str, coefficient);
+	}else{
+	  str = g_strdup_printf("%s + %s", str, coefficient);
+	}
+
+	g_free(tmp);
+	g_free(coefficient);
+      }
+
+      g_free(polynomial);
+    }
+    
+    /* iterate */
+    x++;
+
+    if(x >= column_count){
+      y++;
+      x = 0;
+
+      if(str != NULL){
+	gchar *tmp;
+
+	tmp = str;
+
+	str = g_strdup_printf("%s = 0\n", str);
+	
+	g_free(tmp);
+      }
+    }
+  }
+  
+  return(str);
+}
+
+/**
+ * ags_solver_matrix_to_symbolic_string:
+ * @solver_matrix: the #AgsSolverMatrix
+ * 
+ * To symbolic string of @solver_matrix.
+ * 
+ * Returns: (transfer full): the new symbolic string representation
+ * 
+ * Since: 5.5.1
+ */
+gchar**
+ags_solver_matrix_to_symbolic_string(AgsSolverMatrix *solver_matrix,
+				     guint *symbolic_strv_length)
+{
+  //TODO:JK: implement me
+
+  return(NULL);
 }
 
 /**
@@ -1199,6 +1364,20 @@ ags_solver_matrix_solve_default(AgsSolverMatrix *solver_matrix)
 
   ags_solver_matrix_solve_all_by_column(solver_matrix,
 					nth_column, column_size);
+}
+
+/**
+ * ags_solver_matrix_solve_symbolic:
+ * @solver_matrix: the #AgsSolverMatrix
+ *
+ * Symbolic solve.
+ * 
+ * Since: 5.5.1 
+ */
+void
+ags_solver_matrix_solve_symbolic(AgsSolverMatrix *solver_matrix)
+{
+  //TODO:JK: implement me
 }
 
 /**

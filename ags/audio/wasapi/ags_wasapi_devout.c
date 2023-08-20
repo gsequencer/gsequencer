@@ -2222,7 +2222,7 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
       
       while(buffer_frame_count - padding_frames < wasapi_devout->buffer_size &&
 	    padding_frames != 0){
-	nanosleep(&poll_delay, NULL);
+	ags_time_nanosleep(&poll_delay);
 
 	audio_client->lpVtbl->GetCurrentPadding(audio_client, &padding_frames);
       }
