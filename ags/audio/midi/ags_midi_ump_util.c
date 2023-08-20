@@ -3898,17 +3898,17 @@ ags_midi_ump_util_get_midi2_note_off(AgsMidiUmpUtil *midi_ump_util,
 
   /* velocity */
   if(velocity != NULL){
-    velocity[0] = 0xff & buffer[nth];
+    velocity[0] = (0xff00 & (buffer[nth] << 8)) | (0xff & buffer[nth + 1]);
   }
 
-  nth++;
+  nth += 2;
 
   /* attribute */
   if(attribute != NULL){
-    attribute[0] = 0xff & buffer[nth];
+    attribute[0] = (0xff00 & (buffer[nth] << 8)) | (0xff & buffer[nth + 1]);
   }
 
-  nth++;
+  nth += 2;
 
   return(nth);
 }
@@ -4071,17 +4071,17 @@ ags_midi_ump_util_get_midi2_note_on(AgsMidiUmpUtil *midi_ump_util,
 
   /* velocity */
   if(velocity != NULL){
-    velocity[0] = 0xff & buffer[nth];
+    velocity[0] = (0xff00 & (buffer[nth] << 8)) | (0xff & buffer[nth + 1]);
   }
 
-  nth++;
+  nth += 2;
 
   /* attribute */
   if(attribute != NULL){
-    attribute[0] = 0xff & buffer[nth];
+    attribute[0] = (0xff00 & (buffer[nth] << 8)) | (0xff & buffer[nth + 1]);
   }
 
-  nth++;
+  nth += 2;
 
   return(nth);
 }
