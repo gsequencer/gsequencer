@@ -19,7 +19,7 @@
 
 #include <ags/audio/ags_note.h>
 
-#include <ags/audio/midi/ags_midi_buffer_util.h>
+#include <ags/audio/midi/ags_midi_smf_util.h>
 
 #include <stdlib.h>
 #include <complex.h>
@@ -1750,7 +1750,8 @@ ags_note_to_raw_midi(AgsNote *note,
   /* delta-time */
   delta_time = note->x[0] / 16.0 / bpm * 60.0 / ((AGS_USEC_PER_SEC * bpm / 4.0) / (4.0 * bpm) / AGS_USEC_PER_SEC);
   delta_time_length = 
-    current_length = ags_midi_buffer_util_get_varlength_size(delta_time);
+    current_length = ags_midi_smf_util_get_varlength_size(NULL,
+							  delta_time);
 
   /* status and channel */
   channel = 0;
@@ -1769,8 +1770,9 @@ ags_note_to_raw_midi(AgsNote *note,
   raw_midi = (guchar *) malloc(current_length * sizeof(guchar));
   length += current_length;
 
-  ags_midi_buffer_util_put_varlength(raw_midi,
-				     delta_time);
+  ags_midi_smf_util_put_varlength(NULL,
+				  raw_midi,
+				  delta_time);
   k += delta_time_length;
   
   raw_midi[k] = status;
@@ -1789,7 +1791,8 @@ ags_note_to_raw_midi(AgsNote *note,
       /* delta-time */
       delta_time = (note->x[0] + i + 1)  / 16.0 / bpm * 60.0 / ((AGS_USEC_PER_SEC * bpm / 4.0) / (4.0 * bpm) / AGS_USEC_PER_SEC);
       delta_time_length = 
-	current_length = ags_midi_buffer_util_get_varlength_size(delta_time);
+	current_length = ags_midi_smf_util_get_varlength_size(NULL,
+							      delta_time);
 
       /* status and channel */
       channel = 0;
@@ -1810,8 +1813,9 @@ ags_note_to_raw_midi(AgsNote *note,
 				    current_length * sizeof(guchar));
       length += current_length;
 
-      ags_midi_buffer_util_put_varlength(raw_midi,
-					 delta_time);
+      ags_midi_smf_util_put_varlength(NULL,
+				      raw_midi,
+				      delta_time);
       k += delta_time_length;
   
       raw_midi[k] = status;
@@ -1826,7 +1830,8 @@ ags_note_to_raw_midi(AgsNote *note,
   /* delta-time */
   delta_time = note->x[1] / 16.0 / bpm * 60.0 / ((AGS_USEC_PER_SEC * bpm / 4.0) / (4.0 * bpm) / AGS_USEC_PER_SEC);
   delta_time_length = 
-    current_length = ags_midi_buffer_util_get_varlength_size(delta_time);
+    current_length = ags_midi_smf_util_get_varlength_size(NULL,
+							  delta_time);
 
   /* status and channel */
   channel = 0;
@@ -1846,8 +1851,9 @@ ags_note_to_raw_midi(AgsNote *note,
 				current_length * sizeof(guchar));
   length += current_length;
 
-  ags_midi_buffer_util_put_varlength(raw_midi,
-				     delta_time);
+  ags_midi_smf_util_put_varlength(NULL,
+				  raw_midi,
+				  delta_time);
   k += delta_time_length;
   
   raw_midi[k] = status;

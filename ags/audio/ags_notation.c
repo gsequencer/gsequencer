@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -2960,7 +2960,8 @@ ags_notation_to_raw_midi(AgsNotation *notation,
 
   division = AGS_NOTATION_DEFAULT_DIVISION;
   
-  delta_time = ags_midi_util_offset_to_delta_time(delay_factor,
+  delta_time = ags_midi_util_offset_to_delta_time(NULL,
+						  delay_factor,
 						  division,
 						  tempo,
 						  bpm,
@@ -3016,7 +3017,8 @@ ags_notation_to_raw_midi(AgsNotation *notation,
 
   midi_track_node = xmlNewNode(NULL, "midi-track");
 
-  delta_time = ags_midi_util_offset_to_delta_time(delay_factor,
+  delta_time = ags_midi_util_offset_to_delta_time(NULL,
+						  delay_factor,
 						  division,
 						  tempo,
 						  bpm,
@@ -3096,7 +3098,8 @@ ags_notation_to_raw_midi(AgsNotation *notation,
 		 "velocity",
 		 "127");
 
-      delta_time = ags_midi_util_offset_to_delta_time(delay_factor,
+      delta_time = ags_midi_util_offset_to_delta_time(NULL,
+						      delay_factor,
 						      division,
 						      tempo,
 						      bpm,
@@ -3146,7 +3149,8 @@ ags_notation_to_raw_midi(AgsNotation *notation,
 		     "velocity",
 		     "127");
 
-	  delta_time = ags_midi_util_offset_to_delta_time(delay_factor,
+	  delta_time = ags_midi_util_offset_to_delta_time(NULL,
+							  delay_factor,
 							  division,
 							  tempo,
 							  bpm,
@@ -3194,7 +3198,8 @@ ags_notation_to_raw_midi(AgsNotation *notation,
 		 "velocity",
 		 "127");
 
-      delta_time = ags_midi_util_offset_to_delta_time(delay_factor,
+      delta_time = ags_midi_util_offset_to_delta_time(NULL,
+						      delay_factor,
 						      division,
 						      tempo,
 						      bpm,
@@ -3277,7 +3282,8 @@ ags_notation_to_raw_midi(AgsNotation *notation,
 	       "velocity",
 	       "127");
 
-    delta_time = ags_midi_util_offset_to_delta_time(delay_factor,
+    delta_time = ags_midi_util_offset_to_delta_time(NULL,
+						    delay_factor,
 						    division,
 						    tempo,
 						    bpm,
@@ -3486,7 +3492,8 @@ ags_notation_from_raw_midi(guchar *raw_midi,
 
 	      note = ags_note_new();
 	      
-	      note_x0 = ags_midi_util_delta_time_to_offset(delay_factor,
+	      note_x0 = ags_midi_util_delta_time_to_offset(NULL,
+							   delay_factor,
 							   division,
 							   tempo,
 							   bpm,
@@ -3521,7 +3528,8 @@ ags_notation_from_raw_midi(guchar *raw_midi,
 			     "note");
       
 	    if(str != NULL){	      
-	      note_x1 = ags_midi_util_delta_time_to_offset(delay_factor,
+	      note_x1 = ags_midi_util_delta_time_to_offset(NULL,
+							   delay_factor,
 							   division,
 							   tempo,
 							   bpm,

@@ -33,7 +33,7 @@
 #include <ags/plugin/ags_lv2_option_manager.h>
 #include <ags/plugin/ags_plugin_port.h>
 
-#include <ags/audio/midi/ags_midi_buffer_util.h>
+#include <ags/audio/midi/ags_midi_smf_util.h>
 
 #if defined(AGS_W32API)
 #include <windows.h>
@@ -1706,8 +1706,9 @@ ags_lv2_plugin_event_buffer_append_midi(gpointer event_buffer,
     }
 
     /* decode midi sequencer event */
-    count = ags_midi_buffer_util_decode(midi_buffer,
-					&(events[i]));
+    count = ags_midi_smf_util_decode(NULL,
+				     midi_buffer,
+				     &(events[i]));
     
     if(count < 8){
       padded_buffer_size = 8;
@@ -1956,8 +1957,9 @@ ags_lv2_plugin_atom_sequence_append_midi(gpointer atom_sequence,
     }
   
     /* decode midi sequencer event */    
-    if((count = ags_midi_buffer_util_decode(midi_buffer,
-					    &(events[i]))) <= 8){
+    if((count = ags_midi_smf_util_decode(NULL,
+					 midi_buffer,
+					 &(events[i]))) <= 8){
       //      g_message("add MIDI[%d] 0x%x 0x%x 0x%x 0x%x", count, midi_buffer[0], midi_buffer[1], midi_buffer[2], midi_buffer[3]);
       aev->time.frames = 0;
 

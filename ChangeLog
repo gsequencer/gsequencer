@@ -1,9 +1,10 @@
 ags (6.0.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* breaking ABI of ags_midi_util.h
-	* breaking ABI of renamed ags_midi_buffer_util.h to ags_midi_smf_util.h
-	* breaking ABI of ags_osc_buffer_util.h
+	* breaking ABI of ags_midi_util.h 1 additional function parameter to boxed utility type
+	* breaking ABI of renamed ags_midi_buffer_util.h to ags_midi_smf_util.h 1 additional function
+	parameter to boxed utility type, changed function prototypes glong type to gint
+	* breaking ABI of ags_osc_buffer_util.h 1 additional function parameter to boxed utility type
 	* TODO:JK: fixed ags_midi_ump_util.[ch]
 	* added missing tests to ags_midi_ump_util_test.c
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,10 +33,16 @@ typedef struct _AgsOscBufferUtil AgsOscBufferUtil;
 
 struct _AgsOscBufferUtil
 {
-  //empty
+  guint major;
+  guint minor;
 };
 
 GType ags_osc_buffer_util_get_type(void);
+
+AgsOscBufferUtil* ags_osc_buffer_util_alloc();
+void ags_osc_buffer_util_free(AgsOscBufferUtil *osc_buffer_util);
+
+AgsOscBufferUtil* ags_osc_buffer_util_copy(AgsOscBufferUtil *osc_buffer_util);
 
 void ags_osc_buffer_util_put_int32(guchar *buffer,
 				   gint32 val);

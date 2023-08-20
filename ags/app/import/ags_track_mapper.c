@@ -746,7 +746,8 @@ ags_track_mapper_map(AgsTrackMapper *track_mapper)
 
 	  xmlFree(str);
 	  
-	  x = ags_midi_util_delta_time_to_offset(delay_factor,
+	  x = ags_midi_util_delta_time_to_offset(NULL,
+						 delay_factor,
 						 track_collection->division,
 						 track_collection->tempo,
 						 (glong) track_collection->bpm,
@@ -818,7 +819,8 @@ ags_track_mapper_map(AgsTrackMapper *track_mapper)
 
 	  xmlFree(str);
 	  
-	  x = ags_midi_util_delta_time_to_offset(delay_factor,
+	  x = ags_midi_util_delta_time_to_offset(NULL,
+						 delay_factor,
 						 track_collection->division,
 						 track_collection->tempo,
 						 (glong) track_collection->bpm,
