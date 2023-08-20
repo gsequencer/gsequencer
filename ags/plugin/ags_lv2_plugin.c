@@ -1680,6 +1680,8 @@ ags_lv2_plugin_event_buffer_append_midi(gpointer event_buffer,
 					snd_seq_event_t *events,
 					guint event_count)
 {
+  AgsMidiSmfUtil midi_smf_util;
+  
   void *offset;
   
   unsigned char midi_buffer[8];
@@ -1693,6 +1695,9 @@ ags_lv2_plugin_event_buffer_append_midi(gpointer event_buffer,
     return(FALSE);
   }
 
+  midi_smf_util.major = 1;
+  midi_smf_util.minor = 0;
+  
   /* find offset */
   offset = AGS_LV2_EVENT_BUFFER(event_buffer)->data;
   offset += AGS_LV2_EVENT_BUFFER(event_buffer)->size;
@@ -1706,7 +1711,7 @@ ags_lv2_plugin_event_buffer_append_midi(gpointer event_buffer,
     }
 
     /* decode midi sequencer event */
-    count = ags_midi_smf_util_decode(NULL,
+    count = ags_midi_smf_util_decode(&midi_smf_util,
 				     midi_buffer,
 				     &(events[i]));
     
@@ -1922,6 +1927,8 @@ ags_lv2_plugin_atom_sequence_append_midi(gpointer atom_sequence,
   LV2_Atom_Sequence *aseq;
   LV2_Atom_Event *start_aev, *aev;
   
+  AgsMidiSmfUtil midi_smf_util;
+
   unsigned char midi_buffer[8];
 
   guint count, size;
@@ -1933,6 +1940,9 @@ ags_lv2_plugin_atom_sequence_append_midi(gpointer atom_sequence,
     return(FALSE);
   }
   
+  midi_smf_util.major = 1;
+  midi_smf_util.minor = 0;
+
   aseq = (LV2_Atom_Sequence *) atom_sequence;
   
   /* find offset */
@@ -1957,7 +1967,7 @@ ags_lv2_plugin_atom_sequence_append_midi(gpointer atom_sequence,
     }
   
     /* decode midi sequencer event */    
-    if((count = ags_midi_smf_util_decode(NULL,
+    if((count = ags_midi_smf_util_decode(&midi_smf_util,
 					 midi_buffer,
 					 &(events[i]))) <= 8){
       //      g_message("add MIDI[%d] 0x%x 0x%x 0x%x 0x%x", count, midi_buffer[0], midi_buffer[1], midi_buffer[2], midi_buffer[3]);
