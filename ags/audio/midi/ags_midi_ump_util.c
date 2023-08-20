@@ -3650,7 +3650,7 @@ ags_midi_ump_util_put_midi1_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
   nth++;
   
   buffer[nth] = (0xff & (data));
-  buffer[nth] = (0xff00 & (data)) >> 8;  
+  buffer[nth + 1] = (0xff00 & (data >> 8));
   nth += 2;
 }
 
