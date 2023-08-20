@@ -63,7 +63,8 @@ typedef struct _AgsOscUtil AgsOscUtil;
 
 struct _AgsOscUtil
 {
-  //empty
+  guint major;
+  guint minor;
 };
 
 GType ags_osc_util_get_type(void);

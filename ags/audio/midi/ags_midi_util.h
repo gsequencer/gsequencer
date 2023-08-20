@@ -45,70 +45,97 @@ void ags_midi_util_free(AgsMidiUtil *midi_util);
 AgsMidiUtil* ags_midi_util_copy(AgsMidiUtil *midi_util);
 
 /* real-time channel message utility */
-gboolean ags_midi_util_is_key_on(guchar *buffer);
-gboolean ags_midi_util_is_key_off(guchar *buffer);
-gboolean ags_midi_util_is_key_pressure(guchar *buffer);
-gboolean ags_midi_util_is_change_parameter(guchar *buffer);
-gboolean ags_midi_util_is_pitch_bend(guchar *buffer);
-gboolean ags_midi_util_is_change_program(guchar *buffer);
-gboolean ags_midi_util_is_change_pressure(guchar *buffer);
+gboolean ags_midi_util_is_key_on(AgsMidiUtil *midi_util,
+				 guchar *buffer);
+gboolean ags_midi_util_is_key_off(AgsMidiUtil *midi_util,
+				  guchar *buffer);
+gboolean ags_midi_util_is_key_pressure(AgsMidiUtil *midi_util,
+				       guchar *buffer);
+gboolean ags_midi_util_is_change_parameter(AgsMidiUtil *midi_util,
+					   guchar *buffer);
+gboolean ags_midi_util_is_pitch_bend(AgsMidiUtil *midi_util,
+				     guchar *buffer);
+gboolean ags_midi_util_is_change_program(AgsMidiUtil *midi_util,
+					 guchar *buffer);
+gboolean ags_midi_util_is_change_pressure(AgsMidiUtil *midi_util,
+					  guchar *buffer);
 
 /* real-time sysex utility */
-gboolean ags_midi_util_is_sysex(guchar *buffer);
+gboolean ags_midi_util_is_sysex(AgsMidiUtil *midi_util,
+				guchar *buffer);
 
 /* real-time system common utility */
-gboolean ags_midi_util_is_quarter_frame(guchar *buffer);
-gboolean ags_midi_util_is_song_position(guchar *buffer);
-gboolean ags_midi_util_is_song_select(guchar *buffer);
-gboolean ags_midi_util_is_tune_request(guchar *buffer);
+gboolean ags_midi_util_is_quarter_frame(AgsMidiUtil *midi_util,
+					guchar *buffer);
+gboolean ags_midi_util_is_song_position(AgsMidiUtil *midi_util,
+					guchar *buffer);
+gboolean ags_midi_util_is_song_select(AgsMidiUtil *midi_util,
+				      guchar *buffer);
+gboolean ags_midi_util_is_tune_request(AgsMidiUtil *midi_util,
+				       guchar *buffer);
 
 /* real-time meta event utility */
-gboolean ags_midi_util_is_meta_event(guchar *buffer);
+gboolean ags_midi_util_is_meta_event(AgsMidiUtil *midi_util,
+				     guchar *buffer);
 
 /* real-time channel message getter */
-gboolean ags_midi_util_get_key_on(guchar *buffer,
+gboolean ags_midi_util_get_key_on(AgsMidiUtil *midi_util,
+				  guchar *buffer,
 				  gint *channel, gint *key, gint *velocity);
-gboolean ags_midi_util_get_key_off(guchar *buffer,
+gboolean ags_midi_util_get_key_off(AgsMidiUtil *midi_util,
+				   guchar *buffer,
 				   gint *channel, gint *key, gint *velocity);
-gboolean ags_midi_util_get_key_pressure(guchar *buffer,
+gboolean ags_midi_util_get_key_pressure(AgsMidiUtil *midi_util,
+					guchar *buffer,
 					gint *channel, gint *key, gint *pressure);
-gboolean ags_midi_util_get_change_parameter(guchar *buffer,
+gboolean ags_midi_util_get_change_parameter(AgsMidiUtil *midi_util,
+					    guchar *buffer,
 					    gint *channel, gint *control, gint *value);
-gboolean ags_midi_util_get_pitch_bend(guchar *buffer,
+gboolean ags_midi_util_get_pitch_bend(AgsMidiUtil *midi_util,
+				      guchar *buffer,
 				      gint *channel, gint *pitch, gint *transmitter);
-gboolean ags_midi_util_get_change_program(guchar *buffer,
+gboolean ags_midi_util_get_change_program(AgsMidiUtil *midi_util,
+					  guchar *buffer,
 					  gint *channel, gint *program);
-gboolean ags_midi_util_get_change_pressure(guchar *buffer,
+gboolean ags_midi_util_get_change_pressure(AgsMidiUtil *midi_util,
+					   guchar *buffer,
 					   gint *channel, gint *pressure);
 
 /* real-time sysex gettery */
-gboolean ags_midi_util_get_sysex(guchar *buffer,
+gboolean ags_midi_util_get_sysex(AgsMidiUtil *midi_util,
+				 guchar *buffer,
 				 guchar **data, gint *length);
 
 /* real-time system common getter */
-gboolean ags_midi_util_get_quarter_frame(guchar *buffer,
+gboolean ags_midi_util_get_quarter_frame(AgsMidiUtil *midi_util,
+					 guchar *buffer,
 					 gint *message_type, gint *values);
-gboolean ags_midi_util_get_song_position(guchar *buffer,
+gboolean ags_midi_util_get_song_position(AgsMidiUtil *midi_util,
+					 guchar *buffer,
 					 gint *song_position);
-gboolean ags_midi_util_get_song_select(guchar *buffer,
+gboolean ags_midi_util_get_song_select(AgsMidiUtil *midi_util,
+				       guchar *buffer,
 				       gint *song_select);
 
 /* create Standard MIDI Format unsigned char buffer */
-guchar* ags_midi_util_to_smf(guchar *midi_buffer, guint buffer_length,
-			     glong delta_time,
+guchar* ags_midi_util_to_smf(AgsMidiUtil *midi_util,
+			     guchar *midi_buffer, guint buffer_length,
+			     gint delta_time,
 			     guint *smf_buffer_length);
 
 /* note offset to and from delta time */
-guint ags_midi_util_delta_time_to_offset(gdouble delay_factor,
-					 glong division,
-					 glong tempo,
-					 glong bpm,
-					 glong delta_time);
-glong ags_midi_util_offset_to_delta_time(gdouble delay_factor,
-					 glong division,
-					 glong tempo,
-					 glong bpm,
-					 guint x);
+guint ags_midi_util_delta_time_to_offset(AgsMidiUtil *midi_util,
+					 gdouble delay_factor,
+					 gint division,
+					 gint tempo,
+					 gint bpm,
+					 gint delta_time);
+gint ags_midi_util_offset_to_delta_time(AgsMidiUtil *midi_util,
+					gdouble delay_factor,
+					gint division,
+					gint tempo,
+					gint bpm,
+					guint x);
 
 G_END_DECLS
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -30,9 +30,6 @@
 
 #include <stdarg.h>
 
-gpointer ags_osc_buffer_util_copy(gpointer ptr);
-void ags_osc_buffer_util_free(gpointer ptr);
-
 /**
  * SECTION:ags_osc_buffer_util
  * @short_description: OSC buffer util
@@ -62,20 +59,69 @@ ags_osc_buffer_util_get_type(void)
   return g_define_type_id__volatile;
 }
 
-gpointer
-ags_osc_buffer_util_copy(gpointer ptr)
-{
-  gpointer retval;
 
-  retval = g_memdup(ptr, sizeof(AgsOscBufferUtil));
- 
-  return(retval);
+/**
+ * ags_osc_buffer_util_alloc:
+ *
+ * Allocate OSC util.
+ *
+ * Returns: (transfer full): the newly allocated #AgsOscBufferUtil-struct
+ * 
+ * Since: 6.0.0
+ */
+AgsOscBufferUtil*
+ags_osc_buffer_util_alloc()
+{
+  AgsOscBufferUtil *osc_buffer_util;
+
+  osc_buffer_util = g_new0(AgsOscBufferUtil,
+			 1);
+
+  osc_buffer_util->major = 1;
+  osc_buffer_util->minor = 0;
+  
+  return(osc_buffer_util);
 }
 
+/**
+ * ags_osc_buffer_util_free:
+ * @osc_buffer_util: the OSC util
+ *
+ * Free OSC util.
+ *
+ * Since: 6.0.0
+ */
 void
-ags_osc_buffer_util_free(gpointer ptr)
+ags_osc_buffer_util_free(AgsOscBufferUtil *osc_buffer_util)
 {
-  g_free(ptr);
+  g_return_if_fail(osc_buffer_util != NULL);
+  
+  g_free(osc_buffer_util);
+}
+
+/**
+ * ags_osc_buffer_util_copy:
+ * @osc_buffer_util: the OSC util
+ *
+ * Copy OSC util.
+ *
+ * Returns: (transfer full): the newly allocated #AgsOscBufferUtil-struct
+ * 
+ * Since: 6.0.0
+ */
+AgsOscBufferUtil*
+ags_osc_buffer_util_copy(AgsOscBufferUtil *osc_buffer_util)
+{
+  AgsOscBufferUtil *ptr;
+
+  g_return_val_if_fail(osc_buffer_util != NULL, NULL);
+
+  ptr = ags_osc_buffer_util_alloc();
+
+  ptr->major = osc_buffer_util->major;
+  ptr->minor = osc_buffer_util->minor;
+  
+  return(ptr);
 }
 
 /**

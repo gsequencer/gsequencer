@@ -1447,7 +1447,7 @@ ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_nota
     midi_iter = midi_buffer;
     
     while(midi_iter < midi_buffer + buffer_length){
-      if(ags_midi_util_is_key_on(midi_iter)){
+      if(ags_midi_util_is_key_on(NULL, midi_iter)){
 	/* check midi channel */
 	if(midi_channel == (0x0f & midi_iter[0])){
 	  AgsNote *current_note;
@@ -1554,7 +1554,7 @@ ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_nota
 	}
 
 	midi_iter += 3;
-      }else if(ags_midi_util_is_key_off(midi_iter)){
+      }else if(ags_midi_util_is_key_off(NULL, midi_iter)){
 	/* check midi channel */
 	if(midi_channel == (0x0f & midi_iter[0])){
 	  AgsNote *current_note;
@@ -1621,29 +1621,29 @@ ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_nota
 	}
 
 	midi_iter += 3;
-      }else if(ags_midi_util_is_key_pressure(midi_iter)){
+      }else if(ags_midi_util_is_key_pressure(NULL, midi_iter)){
 	midi_iter += 3;
-      }else if(ags_midi_util_is_change_parameter(midi_iter)){
+      }else if(ags_midi_util_is_change_parameter(NULL, midi_iter)){
 	/* change parameter */
 	//TODO:JK: implement me	  
 	  
 	midi_iter += 3;
-      }else if(ags_midi_util_is_pitch_bend(midi_iter)){
+      }else if(ags_midi_util_is_pitch_bend(NULL, midi_iter)){
 	/* change parameter */
 	//TODO:JK: implement me	  
 	  
 	midi_iter += 3;
-      }else if(ags_midi_util_is_change_program(midi_iter)){
+      }else if(ags_midi_util_is_change_program(NULL, midi_iter)){
 	/* change program */
 	//TODO:JK: implement me	  
 	  
 	midi_iter += 2;
-      }else if(ags_midi_util_is_change_pressure(midi_iter)){
+      }else if(ags_midi_util_is_change_pressure(NULL, midi_iter)){
 	/* change pressure */
 	//TODO:JK: implement me	  
 	  
 	midi_iter += 2;
-      }else if(ags_midi_util_is_sysex(midi_iter)){
+      }else if(ags_midi_util_is_sysex(NULL, midi_iter)){
 	guint n;
 	  
 	/* sysex */
@@ -1656,22 +1656,22 @@ ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_nota
 	//TODO:JK: implement me	  
 	  
 	midi_iter += (n + 1);
-      }else if(ags_midi_util_is_song_position(midi_iter)){
+      }else if(ags_midi_util_is_song_position(NULL, midi_iter)){
 	/* song position */
 	//TODO:JK: implement me	  
 	  
 	midi_iter += 3;
-      }else if(ags_midi_util_is_song_select(midi_iter)){
+      }else if(ags_midi_util_is_song_select(NULL, midi_iter)){
 	/* song select */
 	//TODO:JK: implement me	  
 	  
 	midi_iter += 2;
-      }else if(ags_midi_util_is_tune_request(midi_iter)){
+      }else if(ags_midi_util_is_tune_request(NULL, midi_iter)){
 	/* tune request */
 	//TODO:JK: implement me	  
 	  
 	midi_iter += 1;
-      }else if(ags_midi_util_is_meta_event(midi_iter)){
+      }else if(ags_midi_util_is_meta_event(NULL, midi_iter)){
 	/* meta event */
 	//TODO:JK: implement me	  
 	  
