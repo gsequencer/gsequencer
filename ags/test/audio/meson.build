@@ -149,7 +149,7 @@ static_tests = [
   'fx/ags_fx_volume_channel_processor_test',
   'fx/ags_fx_volume_channel_test',
   'fx/ags_fx_volume_recycling_test',
-  'midi/ags_midi_buffer_util_test',
+  'midi/ags_midi_smf_util_test',
   'midi/ags_midi_builder_test',
   'midi/ags_midi_ci_util_test',
   'osc/ags_functional_osc_server_test',
