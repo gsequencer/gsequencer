@@ -649,8 +649,10 @@ ags_track_mapper_map(AgsTrackMapper *track_mapper)
 
   AgsNotation *current_notation;
   AgsNote *note;
-  
+
   AgsTimestamp *timestamp;
+
+  AgsMidiUtil midi_util;  
 
   xmlNode *current, *child;
   GList *track, *notation_start, *notation;
@@ -671,6 +673,9 @@ ags_track_mapper_map(AgsTrackMapper *track_mapper)
 								    AGS_TYPE_TRACK_COLLECTION);
 
   track = track_mapper->track;
+
+  midi_util.major = 1;
+  midi_util.minor = 0;  
 
   /* map notation */
   notation_start =
@@ -746,7 +751,7 @@ ags_track_mapper_map(AgsTrackMapper *track_mapper)
 
 	  xmlFree(str);
 	  
-	  x = ags_midi_util_delta_time_to_offset(NULL,
+	  x = ags_midi_util_delta_time_to_offset(&midi_util,
 						 delay_factor,
 						 track_collection->division,
 						 track_collection->tempo,
@@ -819,7 +824,7 @@ ags_track_mapper_map(AgsTrackMapper *track_mapper)
 
 	  xmlFree(str);
 	  
-	  x = ags_midi_util_delta_time_to_offset(NULL,
+	  x = ags_midi_util_delta_time_to_offset(&midi_util,
 						 delay_factor,
 						 track_collection->division,
 						 track_collection->tempo,

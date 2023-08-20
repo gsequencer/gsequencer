@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,6 +29,8 @@
 #include <ags/audio/ags_recall_audio_run.h>
 #include <ags/audio/ags_note.h>
 
+#include <ags/audio/midi/ags_midi_util.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_FX_NOTATION_AUDIO_PROCESSOR                (ags_fx_notation_audio_processor_get_type())
@@ -52,6 +54,8 @@ typedef enum{
 struct _AgsFxNotationAudioProcessor
 {
   AgsRecallAudioRun recall_audio_run;
+
+  AgsMidiUtil *midi_util;
   
   gdouble delay_completion;
 

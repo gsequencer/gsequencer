@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,8 @@
 #include <libxml/tree.h>
 
 #include <ags/libags.h>
+
+#include <ags/audio/midi/ags_midi_smf_util.h>
 
 G_BEGIN_DECLS
 
@@ -58,6 +60,8 @@ struct _AgsMidiBuilder
   AgsMidiBuilderFlags flags;
 
   GRecMutex obj_mutex;
+  
+  AgsMidiSmfUtil *midi_smf_util;  
 
   guchar *data;
   guint length;

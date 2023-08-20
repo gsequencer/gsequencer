@@ -1719,6 +1719,8 @@ ags_note_to_raw_midi(AgsNote *note,
 		     gdouble bpm, gdouble delay_factor,
 		     guint *buffer_length)
 {
+  AgsMidiSmfUtil midi_smf_util;
+  
   guchar *raw_midi;
   guint length;
   guint current_length;
@@ -1742,6 +1744,9 @@ ags_note_to_raw_midi(AgsNote *note,
     return(NULL);
   }
 
+  midi_smf_util.major = 1;
+  midi_smf_util.minor = 0;
+  
   length = 0;
 
   /* key-on */
@@ -1750,7 +1755,7 @@ ags_note_to_raw_midi(AgsNote *note,
   /* delta-time */
   delta_time = note->x[0] / 16.0 / bpm * 60.0 / ((AGS_USEC_PER_SEC * bpm / 4.0) / (4.0 * bpm) / AGS_USEC_PER_SEC);
   delta_time_length = 
-    current_length = ags_midi_smf_util_get_varlength_size(NULL,
+    current_length = ags_midi_smf_util_get_varlength_size(&midi_smf_util,
 							  delta_time);
 
   /* status and channel */
@@ -1770,7 +1775,7 @@ ags_note_to_raw_midi(AgsNote *note,
   raw_midi = (guchar *) malloc(current_length * sizeof(guchar));
   length += current_length;
 
-  ags_midi_smf_util_put_varlength(NULL,
+  ags_midi_smf_util_put_varlength(&midi_smf_util,
 				  raw_midi,
 				  delta_time);
   k += delta_time_length;
@@ -1791,7 +1796,7 @@ ags_note_to_raw_midi(AgsNote *note,
       /* delta-time */
       delta_time = (note->x[0] + i + 1)  / 16.0 / bpm * 60.0 / ((AGS_USEC_PER_SEC * bpm / 4.0) / (4.0 * bpm) / AGS_USEC_PER_SEC);
       delta_time_length = 
-	current_length = ags_midi_smf_util_get_varlength_size(NULL,
+	current_length = ags_midi_smf_util_get_varlength_size(&midi_smf_util,
 							      delta_time);
 
       /* status and channel */
@@ -1813,7 +1818,7 @@ ags_note_to_raw_midi(AgsNote *note,
 				    current_length * sizeof(guchar));
       length += current_length;
 
-      ags_midi_smf_util_put_varlength(NULL,
+      ags_midi_smf_util_put_varlength(&midi_smf_util,
 				      raw_midi,
 				      delta_time);
       k += delta_time_length;
@@ -1830,7 +1835,7 @@ ags_note_to_raw_midi(AgsNote *note,
   /* delta-time */
   delta_time = note->x[1] / 16.0 / bpm * 60.0 / ((AGS_USEC_PER_SEC * bpm / 4.0) / (4.0 * bpm) / AGS_USEC_PER_SEC);
   delta_time_length = 
-    current_length = ags_midi_smf_util_get_varlength_size(NULL,
+    current_length = ags_midi_smf_util_get_varlength_size(&midi_smf_util,
 							  delta_time);
 
   /* status and channel */
@@ -1851,7 +1856,7 @@ ags_note_to_raw_midi(AgsNote *note,
 				current_length * sizeof(guchar));
   length += current_length;
 
-  ags_midi_smf_util_put_varlength(NULL,
+  ags_midi_smf_util_put_varlength(&midi_smf_util,
 				  raw_midi,
 				  delta_time);
   k += delta_time_length;
