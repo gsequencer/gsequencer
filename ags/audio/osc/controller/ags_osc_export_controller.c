@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -181,6 +181,8 @@ ags_osc_export_controller_real_do_export(AgsOscExportController *osc_export_cont
   
   AgsApplicationContext *application_context;
 
+  AgsOscBufferUtil osc_buffer_util;
+
   GList *start_response;
   GList *start_list, *list;
   
@@ -197,8 +199,12 @@ ags_osc_export_controller_real_do_export(AgsOscExportController *osc_export_cont
 
   start_response = NULL;
   
+  osc_buffer_util.major = 1;
+  osc_buffer_util.minor = 0;
+
   /* read type tag */
-  ags_osc_buffer_util_get_string(message + 8,
+  ags_osc_buffer_util_get_string(&osc_buffer_util,
+				 message + 8,
 				 &type_tag, NULL);
 
   success = (type_tag != NULL &&
@@ -228,7 +234,8 @@ ags_osc_export_controller_real_do_export(AgsOscExportController *osc_export_cont
   }
   
   /* read path */
-  ags_osc_buffer_util_get_string(message + 12,
+  ags_osc_buffer_util_get_string(&osc_buffer_util,
+				 message + 12,
 				 &path, NULL);
 
   /* check argument */
@@ -252,7 +259,8 @@ ags_osc_export_controller_real_do_export(AgsOscExportController *osc_export_cont
   length = 4 * (guint) ceil((double) (strlen(path) + 1) / 4.0);
 
   /* read filename */
-  ags_osc_buffer_util_get_string(message + 12 + length,
+  ags_osc_buffer_util_get_string(&osc_buffer_util,
+				 message + 12 + length,
 				 &filename, NULL);
 
   /* check argument */
@@ -277,7 +285,8 @@ ags_osc_export_controller_real_do_export(AgsOscExportController *osc_export_cont
   length += 4 * (guint) ceil((double) (strlen(filename) + 1) / 4.0);
 
   /* read format */
-  ags_osc_buffer_util_get_int32(message + 12 + length,
+  ags_osc_buffer_util_get_int32(&osc_buffer_util,
+				message + 12 + length,
 				&format);
 
   /* check argument */
@@ -301,7 +310,8 @@ ags_osc_export_controller_real_do_export(AgsOscExportController *osc_export_cont
   }
   
   /* read tic */
-  ags_osc_buffer_util_get_int64(message + 16 + length,
+  ags_osc_buffer_util_get_int64(&osc_buffer_util,
+				message + 16 + length,
 				&tic);
 
   /* check argument */
@@ -463,7 +473,7 @@ ags_osc_export_controller_real_do_export(AgsOscExportController *osc_export_cont
 						live_performance);
 
 	  ags_task_launcher_add_task(task_launcher,
-				      (AgsTask *) export_output);
+				     (AgsTask *) export_output);
 
 	  /* create response */
 	  osc_response = ags_osc_response_new();  
@@ -493,7 +503,7 @@ ags_osc_export_controller_real_do_export(AgsOscExportController *osc_export_cont
 						live_performance);
 
 	  ags_task_launcher_add_task(task_launcher,
-				      (AgsTask *) export_output);
+				     (AgsTask *) export_output);
 
 	  /* create response */
 	  osc_response = ags_osc_response_new();  
@@ -553,7 +563,7 @@ ags_osc_export_controller_real_do_export(AgsOscExportController *osc_export_cont
 						live_performance);
 
 	  ags_task_launcher_add_task(task_launcher,
-				      (AgsTask *) export_output);
+				     (AgsTask *) export_output);
 
 	  /* create response */
 	  osc_response = ags_osc_response_new();  

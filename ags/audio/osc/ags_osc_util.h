@@ -63,10 +63,16 @@ typedef struct _AgsOscUtil AgsOscUtil;
 
 struct _AgsOscUtil
 {
-  //empty
+  guint major;
+  guint minor;
 };
 
 GType ags_osc_util_get_type(void);
+
+AgsOscUtil* ags_osc_util_alloc();
+void ags_osc_util_free(AgsOscUtil *osc_util);
+
+AgsOscUtil* ags_osc_util_copy(AgsOscUtil *osc_util);
 
 guint ags_osc_util_type_tag_string_count_type(gchar *type_tag);
 

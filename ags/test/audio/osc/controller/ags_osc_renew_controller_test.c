@@ -69,6 +69,8 @@ AgsAudio *drum;
 
 GObject *default_soundcard;
 
+AgsOscBufferUtil osc_buffer_util;  
+
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
  * Returns zero on success, non-zero otherwise.
@@ -79,6 +81,9 @@ ags_osc_renew_controller_test_init_suite()
   AgsConfig *config;
 
   GList *start_audio;
+
+  osc_buffer_util.major = 1;
+  osc_buffer_util.minor = 0;
   
   ags_priority_load_defaults(ags_priority_get_instance());  
 
@@ -313,7 +318,8 @@ ags_osc_renew_controller_test_set_data()
   message = (guchar *) malloc(mute_message_size * sizeof(guchar));
   memcpy(message, mute_message, mute_message_size * sizeof(guchar));
 
-  ags_osc_buffer_util_put_float(message + mute_message_size - 8,
+  ags_osc_buffer_util_put_float(&osc_buffer_util,
+				message + mute_message_size - 8,
 				1.0);
   
   g_value_init(&value,
@@ -440,7 +446,8 @@ ags_osc_renew_controller_test_set_data()
   magnitude_message_size += padding;
   
   for(i = 0; i < cache_buffer_size; i++){
-    ags_osc_buffer_util_put_double(magnitude_message + magnitude_message_size + (i * 8),
+    ags_osc_buffer_util_put_double(&osc_buffer_util,
+				   magnitude_message + magnitude_message_size + (i * 8),
 				   4.0);
   }
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -226,6 +226,8 @@ ags_osc_info_controller_real_get_info(AgsOscInfoController *osc_info_controller,
 {
   AgsOscResponse *osc_response;
 
+  AgsOscBufferUtil osc_buffer_util;
+
   GList *start_response;
 
   guchar *packet;
@@ -233,6 +235,9 @@ ags_osc_info_controller_real_get_info(AgsOscInfoController *osc_info_controller,
   guint packet_size;
   
   static const guchar server_info_message[] = "/info\0\0\0,ssss\0\0\0V2.1.0\0\0osc-server\0\0Advanced Gtk+ Sequencer\02.1.0\0\0\0";
+
+  osc_buffer_util.major = 1;
+  osc_buffer_util.minor = 0;
 
   start_response = NULL;
 
@@ -243,7 +248,8 @@ ags_osc_info_controller_real_get_info(AgsOscInfoController *osc_info_controller,
   /* create packet */
   packet = (guchar *) malloc((4 * sizeof(guchar)) + sizeof(server_info_message));
 
-  ags_osc_buffer_util_put_int32(packet,
+  ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				packet,
 				sizeof(server_info_message));
   memcpy(packet + 4, server_info_message, sizeof(server_info_message));
 

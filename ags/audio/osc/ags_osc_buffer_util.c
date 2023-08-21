@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -30,9 +30,6 @@
 
 #include <stdarg.h>
 
-gpointer ags_osc_buffer_util_copy(gpointer ptr);
-void ags_osc_buffer_util_free(gpointer ptr);
-
 /**
  * SECTION:ags_osc_buffer_util
  * @short_description: OSC buffer util
@@ -62,20 +59,69 @@ ags_osc_buffer_util_get_type(void)
   return g_define_type_id__volatile;
 }
 
-gpointer
-ags_osc_buffer_util_copy(gpointer ptr)
-{
-  gpointer retval;
 
-  retval = g_memdup(ptr, sizeof(AgsOscBufferUtil));
- 
-  return(retval);
+/**
+ * ags_osc_buffer_util_alloc:
+ *
+ * Allocate OSC util.
+ *
+ * Returns: (transfer full): the newly allocated #AgsOscBufferUtil-struct
+ * 
+ * Since: 6.0.0
+ */
+AgsOscBufferUtil*
+ags_osc_buffer_util_alloc()
+{
+  AgsOscBufferUtil *osc_buffer_util;
+
+  osc_buffer_util = g_new0(AgsOscBufferUtil,
+			   1);
+
+  osc_buffer_util->major = 1;
+  osc_buffer_util->minor = 0;
+  
+  return(osc_buffer_util);
 }
 
+/**
+ * ags_osc_buffer_util_free:
+ * @osc_buffer_util: the OSC util
+ *
+ * Free OSC util.
+ *
+ * Since: 6.0.0
+ */
 void
-ags_osc_buffer_util_free(gpointer ptr)
+ags_osc_buffer_util_free(AgsOscBufferUtil *osc_buffer_util)
 {
-  g_free(ptr);
+  g_return_if_fail(osc_buffer_util != NULL);
+  
+  g_free(osc_buffer_util);
+}
+
+/**
+ * ags_osc_buffer_util_copy:
+ * @osc_buffer_util: the OSC util
+ *
+ * Copy OSC util.
+ *
+ * Returns: (transfer full): the newly allocated #AgsOscBufferUtil-struct
+ * 
+ * Since: 6.0.0
+ */
+AgsOscBufferUtil*
+ags_osc_buffer_util_copy(AgsOscBufferUtil *osc_buffer_util)
+{
+  AgsOscBufferUtil *ptr;
+
+  g_return_val_if_fail(osc_buffer_util != NULL, NULL);
+
+  ptr = ags_osc_buffer_util_alloc();
+
+  ptr->major = osc_buffer_util->major;
+  ptr->minor = osc_buffer_util->minor;
+  
+  return(ptr);
 }
 
 /**
@@ -88,7 +134,8 @@ ags_osc_buffer_util_free(gpointer ptr)
  * Since: 3.0.0
  */
 void
-ags_osc_buffer_util_put_int32(guchar *buffer,
+ags_osc_buffer_util_put_int32(AgsOscBufferUtil *osc_buffer_util,
+			      guchar *buffer,
 			      gint32 val)
 {  
   if(buffer == NULL){
@@ -111,7 +158,8 @@ ags_osc_buffer_util_put_int32(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_osc_buffer_util_get_int32(guchar *buffer,
+ags_osc_buffer_util_get_int32(AgsOscBufferUtil *osc_buffer_util,
+			      guchar *buffer,
 			      gint32 *val)
 {
   gint32 tmp;
@@ -146,7 +194,8 @@ ags_osc_buffer_util_get_int32(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_osc_buffer_util_put_timetag(guchar *buffer,
+ags_osc_buffer_util_put_timetag(AgsOscBufferUtil *osc_buffer_util,
+				guchar *buffer,
 				gint32 tv_secs, gint32 tv_fraction, gboolean immediately)
 {
   if(buffer == NULL){
@@ -180,7 +229,8 @@ ags_osc_buffer_util_put_timetag(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_osc_buffer_util_get_timetag(guchar *buffer,
+ags_osc_buffer_util_get_timetag(AgsOscBufferUtil *osc_buffer_util,
+				guchar *buffer,
 				gint32 *tv_secs, gint32 *tv_fraction, gboolean *immediately)
 {
   gint32 tmp;
@@ -238,7 +288,8 @@ ags_osc_buffer_util_get_timetag(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_osc_buffer_util_put_float(guchar *buffer,
+ags_osc_buffer_util_put_float(AgsOscBufferUtil *osc_buffer_util,
+			      guchar *buffer,
 			      gfloat val)
 {
   union{
@@ -268,7 +319,8 @@ ags_osc_buffer_util_put_float(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_osc_buffer_util_get_float(guchar *buffer,
+ags_osc_buffer_util_get_float(AgsOscBufferUtil *osc_buffer_util,
+			      guchar *buffer,
 			      gfloat *val)
 {
   union{
@@ -305,7 +357,8 @@ ags_osc_buffer_util_get_float(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_osc_buffer_util_put_string(guchar *buffer,
+ags_osc_buffer_util_put_string(AgsOscBufferUtil *osc_buffer_util,
+			       guchar *buffer,
 			       gchar *str, gsize length)
 {
   if(buffer == NULL ||
@@ -334,7 +387,8 @@ ags_osc_buffer_util_put_string(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_osc_buffer_util_get_string(guchar *buffer,
+ags_osc_buffer_util_get_string(AgsOscBufferUtil *osc_buffer_util,
+			       guchar *buffer,
 			       gchar **str, gsize *length)
 {
   gchar *tmp;
@@ -384,7 +438,8 @@ ags_osc_buffer_util_get_string(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_osc_buffer_util_put_blob(guchar *buffer,
+ags_osc_buffer_util_put_blob(AgsOscBufferUtil *osc_buffer_util,
+			     guchar *buffer,
 			     gint32 data_size, guchar *data)
 {  
   guint padding;
@@ -395,7 +450,8 @@ ags_osc_buffer_util_put_blob(guchar *buffer,
     return;
   }
 
-  ags_osc_buffer_util_put_int32(buffer,
+  ags_osc_buffer_util_put_int32(osc_buffer_util,
+				buffer,
 				data_size);
 
   memcpy(buffer + 4,
@@ -424,7 +480,8 @@ ags_osc_buffer_util_put_blob(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_osc_buffer_util_get_blob(guchar *buffer,
+ags_osc_buffer_util_get_blob(AgsOscBufferUtil *osc_buffer_util,
+			     guchar *buffer,
 			     gint32 *data_size, guchar **data)
 {
   guchar *blob;
@@ -443,7 +500,8 @@ ags_osc_buffer_util_get_blob(guchar *buffer,
     return;
   }
 
-  ags_osc_buffer_util_get_int32(buffer,
+  ags_osc_buffer_util_get_int32(osc_buffer_util,
+				buffer,
 				&tmp);
   
   if(data_size != NULL){
@@ -474,7 +532,8 @@ ags_osc_buffer_util_get_blob(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_osc_buffer_util_put_int64(guchar *buffer,
+ags_osc_buffer_util_put_int64(AgsOscBufferUtil *osc_buffer_util,
+			      guchar *buffer,
 			      gint64 val)
 {
   if(buffer == NULL){
@@ -501,7 +560,8 @@ ags_osc_buffer_util_put_int64(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_osc_buffer_util_get_int64(guchar *buffer,
+ags_osc_buffer_util_get_int64(AgsOscBufferUtil *osc_buffer_util,
+			      guchar *buffer,
 			      gint64 *val)
 {
   gint64 tmp;
@@ -538,7 +598,8 @@ ags_osc_buffer_util_get_int64(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_osc_buffer_util_put_double(guchar *buffer,
+ags_osc_buffer_util_put_double(AgsOscBufferUtil *osc_buffer_util,
+			       guchar *buffer,
 			       gdouble val)
 {
   union{
@@ -572,7 +633,8 @@ ags_osc_buffer_util_put_double(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_osc_buffer_util_get_double(guchar *buffer,
+ags_osc_buffer_util_get_double(AgsOscBufferUtil *osc_buffer_util,
+			       guchar *buffer,
 			       gdouble *val)
 {
   union{
@@ -612,7 +674,8 @@ ags_osc_buffer_util_get_double(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_osc_buffer_util_put_char(guchar *buffer,
+ags_osc_buffer_util_put_char(AgsOscBufferUtil *osc_buffer_util,
+			     guchar *buffer,
 			     gchar val)
 {
   if(buffer == NULL){
@@ -635,7 +698,8 @@ ags_osc_buffer_util_put_char(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_osc_buffer_util_get_char(guchar *buffer,
+ags_osc_buffer_util_get_char(AgsOscBufferUtil *osc_buffer_util,
+			     guchar *buffer,
 			     gchar *val)
 {
   gint32 tmp;
@@ -668,7 +732,8 @@ ags_osc_buffer_util_get_char(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_osc_buffer_util_put_rgba(guchar *buffer,
+ags_osc_buffer_util_put_rgba(AgsOscBufferUtil *osc_buffer_util,
+			     guchar *buffer,
 			     guint8 r, guint8 g, guint8 b, guint8 a)
 {
   if(buffer == NULL){
@@ -694,7 +759,8 @@ ags_osc_buffer_util_put_rgba(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_osc_buffer_util_get_rgba(guchar *buffer,
+ags_osc_buffer_util_get_rgba(AgsOscBufferUtil *osc_buffer_util,
+			     guchar *buffer,
 			     guint8 *r, guint8 *g, guint8 *b, guint8 *a)
 {  
   if(buffer == NULL){
@@ -747,7 +813,8 @@ ags_osc_buffer_util_get_rgba(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_osc_buffer_util_put_midi(guchar *buffer,
+ags_osc_buffer_util_put_midi(AgsOscBufferUtil *osc_buffer_util,
+			     guchar *buffer,
 			     guint8 port, guint8 status_byte, guint8 data0, guint8 data1)
 {
   if(buffer == NULL){
@@ -773,7 +840,8 @@ ags_osc_buffer_util_put_midi(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_osc_buffer_util_get_midi(guchar *buffer,
+ags_osc_buffer_util_get_midi(AgsOscBufferUtil *osc_buffer_util,
+			     guchar *buffer,
 			     guint8 *port, guint8 *status_byte, guint8 *data0, guint8 *data1)
 {
   if(buffer == NULL){
@@ -824,7 +892,8 @@ ags_osc_buffer_util_get_midi(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_osc_buffer_util_put_packet(guchar *buffer,
+ags_osc_buffer_util_put_packet(AgsOscBufferUtil *osc_buffer_util,
+			       guchar *buffer,
 			       gint32 packet_size, guchar *packet)
 {
   guint padding;
@@ -841,7 +910,8 @@ ags_osc_buffer_util_put_packet(guchar *buffer,
     padding = 0;
   }
 
-  ags_osc_buffer_util_put_int32(buffer,
+  ags_osc_buffer_util_put_int32(osc_buffer_util,
+				buffer,
 				packet_size + padding);
   
   memcpy(buffer + 4,
@@ -864,7 +934,8 @@ ags_osc_buffer_util_put_packet(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_osc_buffer_util_get_packet(guchar *buffer,
+ags_osc_buffer_util_get_packet(AgsOscBufferUtil *osc_buffer_util,
+			       guchar *buffer,
 			       gint32 *packet_size, guchar **packet)
 {
   guchar *data;
@@ -883,7 +954,8 @@ ags_osc_buffer_util_get_packet(guchar *buffer,
     return;
   }
 
-  ags_osc_buffer_util_get_int32(buffer,
+  ags_osc_buffer_util_get_int32(osc_buffer_util,
+				buffer,
 				&tmp);
 
   if(packet_size != NULL){
@@ -915,7 +987,8 @@ ags_osc_buffer_util_get_packet(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_osc_buffer_util_put_packets(guchar *buffer,
+ags_osc_buffer_util_put_packets(AgsOscBufferUtil *osc_buffer_util,
+				guchar *buffer,
 				gint32 packet_size, ...)
 {
   va_list var_args;
@@ -932,7 +1005,8 @@ ags_osc_buffer_util_put_packets(guchar *buffer,
   while(packet_size >= 0){
     packet = va_arg(var_args, guchar *);
 
-    ags_osc_buffer_util_put_packet(buffer,
+    ags_osc_buffer_util_put_packet(osc_buffer_util,
+				   buffer,
 				   packet_size, packet);
 
     /* iterate */
@@ -956,7 +1030,8 @@ ags_osc_buffer_util_put_packets(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_osc_buffer_util_put_message(guchar *buffer,
+ags_osc_buffer_util_put_message(AgsOscBufferUtil *osc_buffer_util,
+				guchar *buffer,
 				gchar *address_pattern, gchar *type_tag)
 {
   gsize address_pattern_length;
@@ -969,13 +1044,15 @@ ags_osc_buffer_util_put_message(guchar *buffer,
   }
 
   address_pattern_length = strlen(address_pattern);
-  ags_osc_buffer_util_put_string(buffer,
+  ags_osc_buffer_util_put_string(osc_buffer_util,
+				 buffer,
 				 address_pattern, address_pattern_length);
 
   buffer += (4 * (guint) ceil((double) (address_pattern_length + 1) / 4.0));
   
   type_tag_length = strlen(type_tag);
-  ags_osc_buffer_util_put_string(buffer,
+  ags_osc_buffer_util_put_string(osc_buffer_util,
+				 buffer,
 				 type_tag, type_tag_length);
 }
 
@@ -991,7 +1068,8 @@ ags_osc_buffer_util_put_message(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_osc_buffer_util_get_message(guchar *buffer,
+ags_osc_buffer_util_get_message(AgsOscBufferUtil *osc_buffer_util,
+				guchar *buffer,
 				gchar **address_pattern, gchar **type_tag)
 {
   gchar *str;
@@ -1012,7 +1090,8 @@ ags_osc_buffer_util_get_message(guchar *buffer,
   }
 
   if(buffer[0] == '/'){
-    ags_osc_buffer_util_get_string(buffer,
+    ags_osc_buffer_util_get_string(osc_buffer_util,
+				   buffer,
 				   &str, &length);
   }else{
     if(address_pattern != NULL){
@@ -1035,7 +1114,8 @@ ags_osc_buffer_util_get_message(guchar *buffer,
   offset = (4 * (guint) ceil((double) (length + 1) / 4.0));
 
   if(buffer[offset] == ','){
-    ags_osc_buffer_util_get_string(buffer + offset,
+    ags_osc_buffer_util_get_string(osc_buffer_util,
+				   buffer + offset,
 				   &str, &length);
   }else{
     str = NULL;
@@ -1060,7 +1140,8 @@ ags_osc_buffer_util_get_message(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_osc_buffer_util_put_bundle(guchar *buffer,
+ags_osc_buffer_util_put_bundle(AgsOscBufferUtil *osc_buffer_util,
+			       guchar *buffer,
 			       gint32 tv_secs, gint32 tv_fraction, gboolean immediately)
 {
   if(buffer == NULL){
@@ -1073,7 +1154,8 @@ ags_osc_buffer_util_put_bundle(guchar *buffer,
 
   buffer += 8;
   
-  ags_osc_buffer_util_put_timetag(buffer,
+  ags_osc_buffer_util_put_timetag(osc_buffer_util,
+				  buffer,
 				  tv_secs, tv_fraction, immediately);
 }
 
@@ -1089,7 +1171,8 @@ ags_osc_buffer_util_put_bundle(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_osc_buffer_util_get_bundle(guchar *buffer,
+ags_osc_buffer_util_get_bundle(AgsOscBufferUtil *osc_buffer_util,
+			       guchar *buffer,
 			       gint32 *tv_secs, gint32 *tv_fraction, gboolean *immediately)
 {
   gboolean success;
@@ -1130,6 +1213,7 @@ ags_osc_buffer_util_get_bundle(guchar *buffer,
 
   buffer += 8;
 
-  ags_osc_buffer_util_get_timetag(buffer,
+  ags_osc_buffer_util_get_timetag(osc_buffer_util,
+				  buffer,
 				  tv_secs, tv_fraction, immediately);
 }

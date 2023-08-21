@@ -5028,11 +5028,11 @@ ags_midi_ump_util_get_midi2_rpn_pitch_bend_range(AgsMidiUmpUtil *midi_ump_util,
   
   /* semitones and cents */
   if(semitones != NULL){
-    semitones[0] = (0xfe & buffer[nth]) >> 1;
+    semitones[0] = 0x7f & (buffer[nth] >> 1);
   }
   
   if(cents != NULL){
-    cents[0] = (0x01 & buffer[nth] >> 1) | ((0xfc & buffer[nth + 1]) >> 2);
+    cents[0] = ((0x01 & buffer[nth]) << 6) | ((0xfc & buffer[nth + 1]) >> 2);
   }
 
   nth += 2;
@@ -5181,7 +5181,7 @@ ags_midi_ump_util_get_midi2_rpn_coarse_tuning(AgsMidiUmpUtil *midi_ump_util,
   
   /* coarse tuning */
   if(coarse_tuning != NULL){
-    coarse_tuning[0] = ((0xfe & buffer[nth]) >> 1);
+    coarse_tuning[0] = (0x7f & (buffer[nth] >> 1));
   }
 
   nth += 1;
@@ -5271,7 +5271,7 @@ ags_midi_ump_util_put_midi2_rpn_tuning_program_change(AgsMidiUmpUtil *midi_ump_u
   nth++;
 
   /* tuning program number */
-  buffer[nth] = 0xfc & ((0x7f & (tuning_program_number)) << 1);
+  buffer[nth] = 0xfe & ((0x7f & (tuning_program_number)) << 1);
   nth++;
 
   /* undefined */
@@ -5329,7 +5329,7 @@ ags_midi_ump_util_get_midi2_rpn_tuning_program_change(AgsMidiUmpUtil *midi_ump_u
   
   /* tuning program number */
   if(tuning_program_number != NULL){
-    tuning_program_number[0] = ((0xfe & buffer[nth]) >> 1);
+    tuning_program_number[0] = (0x7f & (buffer[nth] >> 1));
   }
 
   nth += 1;
@@ -5419,7 +5419,7 @@ ags_midi_ump_util_put_midi2_rpn_tuning_bank_select(AgsMidiUmpUtil *midi_ump_util
   nth++;
 
   /* tuning bank number */
-  buffer[nth] = 0xfc & ((0x7f & (tuning_bank_number)) << 1);
+  buffer[nth] = 0xfe & ((tuning_bank_number) << 1);
   nth++;
 
   /* undefined */
@@ -5477,7 +5477,7 @@ ags_midi_ump_util_get_midi2_rpn_tuning_bank_select(AgsMidiUmpUtil *midi_ump_util
   
   /* tuning bank number */
   if(tuning_bank_number != NULL){
-    tuning_bank_number[0] = ((0xfe & buffer[nth]) >> 1);
+    tuning_bank_number[0] = (0x7f & (buffer[nth] >> 1));
   }
 
   nth += 1;
@@ -5567,7 +5567,7 @@ ags_midi_ump_util_put_midi2_rpn_mpe_mcm(AgsMidiUmpUtil *midi_ump_util,
   nth++;
 
   /* channel count */
-  buffer[nth] = 0xfc & ((0x7f & (channel_count)) << 1);
+  buffer[nth] = 0xfe & (channel_count << 1);
   nth++;
 
   /* undefined */
@@ -5625,7 +5625,7 @@ ags_midi_ump_util_get_midi2_rpn_mpe_mcm(AgsMidiUmpUtil *midi_ump_util,
   
   /* channel count */
   if(channel_count != NULL){
-    channel_count[0] = ((0xfe & buffer[nth]) >> 1);
+    channel_count[0] = (0x7f & (buffer[nth] >> 1));
   }
 
   nth += 1;
@@ -5723,7 +5723,7 @@ ags_midi_ump_util_put_midi2_program_change(AgsMidiUmpUtil *midi_ump_util,
   nth++;
 
   /* bank MSB */
-  buffer[nth] = (0xff00 & (bank)) >> 8;
+  buffer[nth] = (0xff & (bank >> 8));
   nth++;
 
   /* bank LSB */
@@ -6274,8 +6274,8 @@ ags_midi_ump_util_is_flex_set_tempo(AgsMidiUmpUtil *midi_ump_util,
 
   if((0xf0 & (buffer[0])) == 0xd0 &&
      (0x30 & (buffer[1])) == 0x10 &&
-     (0x30 & (buffer[2])) == 0x00 &&
-     (0x30 & (buffer[3])) == 0x00){
+     (0xff & (buffer[2])) == 0x00 &&
+     (0xff & (buffer[3])) == 0x00){
     return(TRUE);
   }
   
@@ -6385,8 +6385,8 @@ ags_midi_ump_util_get_flex_set_tempo(AgsMidiUmpUtil *midi_ump_util,
   g_return_val_if_fail(buffer != NULL, 0);
   g_return_val_if_fail((0xf0 & buffer[0]) == 0xd0, 0);
   g_return_val_if_fail((0x30 & buffer[1]) == 0x10, 0);
-  g_return_val_if_fail((0x30 & buffer[2]) == 0x00, 0);
-  g_return_val_if_fail((0x30 & buffer[3]) == 0x00, 0);
+  g_return_val_if_fail((0xff & buffer[2]) == 0x00, 0);
+  g_return_val_if_fail((0xff & buffer[3]) == 0x00, 0);
 
   if(group != NULL){
     group[0] = 0x0f & buffer[0];
@@ -6430,8 +6430,8 @@ ags_midi_ump_util_is_flex_set_time_signature(AgsMidiUmpUtil *midi_ump_util,
 
   if((0xf0 & (buffer[0])) == 0xd0 &&
      (0x30 & (buffer[1])) == 0x10 &&
-     (0x30 & (buffer[2])) == 0x00 &&
-     (0x30 & (buffer[3])) == 0x01){
+     (0xff & (buffer[2])) == 0x00 &&
+     (0xff & (buffer[3])) == 0x01){
     return(TRUE);
   }
   
@@ -6547,8 +6547,8 @@ ags_midi_ump_util_get_flex_set_time_signature(AgsMidiUmpUtil *midi_ump_util,
   g_return_val_if_fail(buffer != NULL, 0);
   g_return_val_if_fail((0xf0 & buffer[0]) == 0xd0, 0);
   g_return_val_if_fail((0x30 & buffer[1]) == 0x10, 0);
-  g_return_val_if_fail((0x30 & buffer[2]) == 0x00, 0);
-  g_return_val_if_fail((0x30 & buffer[3]) == 0x01, 0);
+  g_return_val_if_fail((0xff & buffer[2]) == 0x00, 0);
+  g_return_val_if_fail((0xff & buffer[3]) == 0x01, 0);
 
   if(group != NULL){
     group[0] = 0x0f & buffer[0];
@@ -6606,8 +6606,8 @@ ags_midi_ump_util_is_flex_set_metronome(AgsMidiUmpUtil *midi_ump_util,
 
   if((0xf0 & (buffer[0])) == 0xd0 &&
      (0x30 & (buffer[1])) == 0x10 &&
-     (0x30 & (buffer[2])) == 0x00 &&
-     (0x30 & (buffer[3])) == 0x02){
+     (0xff & (buffer[2])) == 0x00 &&
+     (0xff & (buffer[3])) == 0x02){
     return(TRUE);
   }
   
@@ -6747,8 +6747,8 @@ ags_midi_ump_util_get_flex_set_metronome(AgsMidiUmpUtil *midi_ump_util,
   g_return_val_if_fail(buffer != NULL, 0);
   g_return_val_if_fail((0xf0 & buffer[0]) == 0xd0, 0);
   g_return_val_if_fail((0x30 & buffer[1]) == 0x10, 0);
-  g_return_val_if_fail((0x30 & buffer[2]) == 0x00, 0);
-  g_return_val_if_fail((0x30 & buffer[3]) == 0x02, 0);
+  g_return_val_if_fail((0xff & buffer[2]) == 0x00, 0);
+  g_return_val_if_fail((0xff & buffer[3]) == 0x02, 0);
 
   if(group != NULL){
     group[0] = 0x0f & buffer[0];
@@ -6826,9 +6826,9 @@ ags_midi_ump_util_is_flex_set_key_signature(AgsMidiUmpUtil *midi_ump_util,
   g_return_val_if_fail(buffer != NULL, FALSE);
 
   if((0xf0 & (buffer[0])) == 0xd0 &&
-     (0x30 & (buffer[1])) == 0x10 &&
-     (0x30 & (buffer[2])) == 0x00 &&
-     (0x30 & (buffer[3])) == 0x05){
+     (0x30 & (buffer[1])) == 0x00 &&
+     (0xff & (buffer[2])) == 0x00 &&
+     (0xff & (buffer[3])) == 0x05){
     return(TRUE);
   }
   
@@ -6867,7 +6867,7 @@ ags_midi_ump_util_put_flex_set_key_signature(AgsMidiUmpUtil *midi_ump_util,
   const gint status_bank = 0x0;
   const gint status = 0x05;
   const gint form = 0x00;
-  const gint addr = 0x01;
+  const gint addr = 0x00;
   const gint mt = 0x0d;
   
   g_return_if_fail(midi_ump_util != NULL);
@@ -6931,9 +6931,9 @@ ags_midi_ump_util_get_flex_set_key_signature(AgsMidiUmpUtil *midi_ump_util,
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
   g_return_val_if_fail((0xf0 & buffer[0]) == 0xd0, 0);
-  g_return_val_if_fail((0x30 & buffer[1]) == 0x10, 0);
-  g_return_val_if_fail((0x30 & buffer[2]) == 0x00, 0);
-  g_return_val_if_fail((0x30 & buffer[3]) == 0x05, 0);
+  g_return_val_if_fail((0x30 & buffer[1]) == 0x00, 0);
+  g_return_val_if_fail((0xff & buffer[2]) == 0x00, 0);
+  g_return_val_if_fail((0xff & buffer[3]) == 0x05, 0);
 
   if(group != NULL){
     group[0] = 0x0f & buffer[0];
@@ -6975,14 +6975,14 @@ ags_midi_ump_util_get_flex_set_key_signature(AgsMidiUmpUtil *midi_ump_util,
  */
 gboolean
 ags_midi_ump_util_is_flex_set_chord_name(AgsMidiUmpUtil *midi_ump_util,
-					    guchar *buffer)
+					 guchar *buffer)
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
   if((0xf0 & (buffer[0])) == 0xd0 &&
      (0x30 & (buffer[1])) == 0x10 &&
-     (0x30 & (buffer[2])) == 0x00 &&
-     (0x30 & (buffer[3])) == 0x06){
+     (0xff & (buffer[2])) == 0x00 &&
+     (0xff & (buffer[3])) == 0x06){
     return(TRUE);
   }
   
@@ -7189,8 +7189,8 @@ ags_midi_ump_util_get_flex_set_chord_name(AgsMidiUmpUtil *midi_ump_util,
   g_return_val_if_fail(buffer != NULL, 0);
   g_return_val_if_fail((0xf0 & buffer[0]) == 0xd0, 0);
   g_return_val_if_fail((0x30 & buffer[1]) == 0x10, 0);
-  g_return_val_if_fail((0x30 & buffer[2]) == 0x00, 0);
-  g_return_val_if_fail((0x30 & buffer[3]) == 0x06, 0);
+  g_return_val_if_fail((0xff & buffer[2]) == 0x00, 0);
+  g_return_val_if_fail((0xff & buffer[3]) == 0x06, 0);
 
   if(group != NULL){
     group[0] = 0x0f & buffer[0];

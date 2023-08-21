@@ -45,6 +45,17 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="6.0.0" date="2023-08-21">
+      <description>
+	<p>
+	  Initial MIDI v2.0 support as utility functions.
+	</p>
+	<p>
+	  API improvements.
+	</p>
+      </description>
+    </release>
+
     <release version="5.5.1" date="2023-08-08">
       <description>
 	<p>

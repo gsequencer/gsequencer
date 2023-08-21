@@ -225,7 +225,7 @@ libags = library('ags',
   c_args: compiler_flags,
   include_directories: [includes],
   dependencies: libags_dependencies,
-  version: '5.0.0',
+  version: '6.0.0',
   install: true,
 )
 
@@ -259,7 +259,7 @@ libags_thread = library('ags_thread',
   link_with: [
     libags,
   ],
-  version: '5.0.0',
+  version: '6.0.0',
   install: true,
 )
 
@@ -303,7 +303,7 @@ libags_server = library('libags_server',
     libags,
     libags_thread,
   ],
-  version: '5.0.0',
+  version: '6.0.0',
   install: true,
 )
 
@@ -581,9 +581,9 @@ libags_audio_sources = files(
   'audio/jack/ags_jack_midiin.c',
   'audio/jack/ags_jack_port.c',
   'audio/jack/ags_jack_server.c',
-  'audio/midi/ags_midi_buffer_util.c',
   'audio/midi/ags_midi_builder.c',
   'audio/midi/ags_midi_ci_util.c',
+  'audio/midi/ags_midi_smf_util.c',
   'audio/midi/ags_midi_ump_util.c',
   'audio/midi/ags_midi_file.c',
   'audio/midi/ags_midi_parser.c',
@@ -758,7 +758,7 @@ libags_audio = library('ags_audio',
     libags_thread,
     libags_server,
   ],
-  version: '5.0.0',
+  version: '6.0.0',
   install: true,
 )
 
@@ -838,7 +838,7 @@ if get_option('vst3')
     cpp_args: cxx_compiler_flags,
     dependencies: libags_vst_dependencies,
     include_directories: [includes],
-    version: '5.0.0',
+    version: '6.0.0',
     install: true,
   )
 
@@ -876,7 +876,7 @@ libags_gui = library('ags_gui',
   c_args: compiler_flags,
   include_directories: [includes],
   dependencies: libags_gui_dependencies,
-  version: '5.0.0',
+  version: '6.0.0',
   install: true,
 )
 
@@ -1782,8 +1782,8 @@ libags_audio_audio_jack_headers = [
 ]
 
 libags_audio_audio_midi_headers = [
-  'audio/midi/ags_midi_buffer_util.h',
   'audio/midi/ags_midi_ci_util.h',
+  'audio/midi/ags_midi_smf_util.h',
   'audio/midi/ags_midi_ump_util.h',
   'audio/midi/ags_midi_builder.h',
   'audio/midi/ags_midi_file.h',
@@ -2115,7 +2115,7 @@ if build_gir
     [ libags, libags_thread, libags_server ],
     sources: libags_sources + libags_headers + libags_thread_sources + libags_thread_headers + libags_server_sources + libags_server_headers,
     namespace: 'Ags',
-    nsversion: '5.0',
+    nsversion: '6.0',
     identifier_prefix: 'Ags',
     symbol_prefix: 'ags_',
     export_packages: 'Ags',
@@ -2131,7 +2131,7 @@ if build_gir
     libags_audio,
     sources: libags_audio_sources + libags_audio_headers,
     namespace: 'AgsAudio',
-    nsversion: '5.0',
+    nsversion: '6.0',
     identifier_prefix: 'Ags',
     symbol_prefix: 'ags_',
     export_packages: 'AgsAudio',
@@ -2148,7 +2148,7 @@ if build_gir
     libags_gui,
     sources: libags_gui_sources + libags_gui_headers,
     namespace: 'AgsGui',
-    nsversion: '5.0',
+    nsversion: '6.0',
     identifier_prefix: 'Ags',
     symbol_prefix: 'ags_',
     export_packages: 'AgsGui',

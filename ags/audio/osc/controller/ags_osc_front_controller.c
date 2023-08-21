@@ -344,6 +344,8 @@ ags_osc_front_controller_delegate_thread(void *ptr)
   AgsOscServer *osc_server;
   AgsOscFrontController *osc_front_controller;
 
+  AgsOscBufferUtil osc_buffer_util;
+
   GList *start_controller, *controller;
   
   gint64 time_now, time_next;
@@ -352,6 +354,9 @@ ags_osc_front_controller_delegate_thread(void *ptr)
   GRecMutex *osc_controller_mutex;
 
   osc_front_controller = AGS_OSC_FRONT_CONTROLLER(ptr);
+
+  osc_buffer_util.major = 1;
+  osc_buffer_util.minor = 0;
 
   g_object_get(osc_front_controller,
 	       "osc-server", &osc_server,
@@ -442,7 +447,8 @@ ags_osc_front_controller_delegate_thread(void *ptr)
       
       gchar *path;
 
-      ags_osc_buffer_util_get_string(AGS_OSC_MESSAGE(message->data)->message,
+      ags_osc_buffer_util_get_string(&osc_buffer_util,
+				     AGS_OSC_MESSAGE(message->data)->message,
 				     &path, NULL);
 
       controller = start_controller;
@@ -815,20 +821,27 @@ ags_osc_front_controller_read_bundle(AgsOscFrontController *osc_front_controller
 				     guchar *packet, gsize packet_size,
 				     gsize offset)
 {
+  AgsOscBufferUtil osc_buffer_util;
+
   gint32 tv_sec;
   gint32 tv_fraction;
   gboolean immediately;
   gsize read_count;
   gint32 length;
 
+  osc_buffer_util.major = 1;
+  osc_buffer_util.minor = 0;
+
   read_count = 8;
     
-  ags_osc_buffer_util_get_timetag(packet + offset + read_count,
+  ags_osc_buffer_util_get_timetag(&osc_buffer_util,
+				  packet + offset + read_count,
 				  &(tv_sec), &(tv_fraction), &(immediately));
   read_count += 8;
 
   for(; offset < packet_size;){
-    ags_osc_buffer_util_get_int32(packet + offset + read_count,
+    ags_osc_buffer_util_get_int32(&osc_buffer_util,
+				  packet + offset + read_count,
 				  &length);
     read_count += 4;
 
@@ -866,6 +879,8 @@ ags_osc_front_controller_read_message(AgsOscFrontController *osc_front_controlle
 {
   AgsOscMessage *osc_message;
 
+  AgsOscBufferUtil osc_buffer_util;
+
   guchar *message;
   gchar *address_pattern;
   gchar *type_tag;
@@ -876,9 +891,13 @@ ags_osc_front_controller_read_message(AgsOscFrontController *osc_front_controlle
   gsize read_count;
   guint i;
 
+  osc_buffer_util.major = 1;
+  osc_buffer_util.minor = 0;
+
   read_count = 0;
 
-  ags_osc_buffer_util_get_string(packet + offset,
+  ags_osc_buffer_util_get_string(&osc_buffer_util,
+				 packet + offset,
 				 &address_pattern, &address_pattern_length);
     
   if(address_pattern == NULL){
@@ -892,7 +911,8 @@ ags_osc_front_controller_read_message(AgsOscFrontController *osc_front_controlle
 
   if(packet_size > offset + read_count){
     if(packet[offset + read_count] == ','){
-      ags_osc_buffer_util_get_string(packet + offset + read_count,
+      ags_osc_buffer_util_get_string(&osc_buffer_util,
+				     packet + offset + read_count,
 				     &type_tag, &type_tag_length);
 
       read_count += (4 * (gsize) ceil((double) (type_tag_length + 1) / 4.0));
@@ -910,46 +930,47 @@ ags_osc_front_controller_read_message(AgsOscFrontController *osc_front_controlle
       case AGS_OSC_UTIL_TYPE_TAG_STRING_INFINITE:
       case AGS_OSC_UTIL_TYPE_TAG_STRING_ARRAY_START:
       case AGS_OSC_UTIL_TYPE_TAG_STRING_ARRAY_END:
-      {
-	//empty
-      }
-      break;
+	{
+	  //empty
+	}
+	break;
       case AGS_OSC_UTIL_TYPE_TAG_STRING_CHAR:
       case AGS_OSC_UTIL_TYPE_TAG_STRING_INT32:
       case AGS_OSC_UTIL_TYPE_TAG_STRING_FLOAT:
       case AGS_OSC_UTIL_TYPE_TAG_STRING_RGBA:
       case AGS_OSC_UTIL_TYPE_TAG_STRING_MIDI:
-      {
-	data_length += 4;
-      }
-      break;
+	{
+	  data_length += 4;
+	}
+	break;
       case AGS_OSC_UTIL_TYPE_TAG_STRING_INT64:
       case AGS_OSC_UTIL_TYPE_TAG_STRING_DOUBLE:
       case AGS_OSC_UTIL_TYPE_TAG_STRING_TIMETAG:
-      {
-	data_length += 8;
-      }
-      break;
+	{
+	  data_length += 8;
+	}
+	break;
       case AGS_OSC_UTIL_TYPE_TAG_STRING_SYMBOL:
       case AGS_OSC_UTIL_TYPE_TAG_STRING_STRING:
-      {
-	gsize length;
+	{
+	  gsize length;
 
-	length = strlen(packet + offset + read_count + data_length);
+	  length = strlen(packet + offset + read_count + data_length);
 
-	data_length += (4 * (gsize) ceil((double) (length + 1) / 4.0));
-      }
-      break;
+	  data_length += (4 * (gsize) ceil((double) (length + 1) / 4.0));
+	}
+	break;
       case AGS_OSC_UTIL_TYPE_TAG_STRING_BLOB:
-      {
-	gint32 data_size;
+	{
+	  gint32 data_size;
 
-	ags_osc_buffer_util_get_int32(packet + offset + read_count + data_length,
-				      &data_size);
+	  ags_osc_buffer_util_get_int32(&osc_buffer_util,
+					packet + offset + read_count + data_length,
+					&data_size);
 
-	data_length += data_size;
-      }
-      break;
+	  data_length += data_size;
+	}
+	break;
       }
     }
 

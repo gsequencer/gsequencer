@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -289,6 +289,8 @@ ags_osc_node_controller_get_data_soundcard(AgsOscNodeController *osc_node_contro
 
   AgsApplicationContext *application_context;  
 
+  AgsOscBufferUtil osc_buffer_util;
+
   GList *start_response;
   GList *start_list;
   
@@ -302,6 +304,9 @@ ags_osc_node_controller_get_data_soundcard(AgsOscNodeController *osc_node_contro
   if(!AGS_IS_SOUNDCARD(soundcard)){
     return(NULL);
   }
+
+  osc_buffer_util.major = 1;
+  osc_buffer_util.minor = 0;
   
   start_response = NULL;
 
@@ -351,13 +356,15 @@ ags_osc_node_controller_get_data_soundcard(AgsOscNodeController *osc_node_contro
       /* message path */
       packet_size = 4;
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     "/node", -1);
       
       /* message type tag */
       packet_size += 8;
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     ",ss", -1);
 
       /* node path */
@@ -376,7 +383,8 @@ ags_osc_node_controller_get_data_soundcard(AgsOscNodeController *osc_node_contro
 	return(start_response);
       }
       
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     current_path, -1);
       
       /* node argument */
@@ -396,13 +404,15 @@ ags_osc_node_controller_get_data_soundcard(AgsOscNodeController *osc_node_contro
 	return(start_response);
       }
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     device, -1);
 
       packet_size += (4 * (guint) ceil((double) (length + 1) / 4.0));
 
       /* packet size */
-      ags_osc_buffer_util_put_int32(packet,
+      ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				    packet,
 				    packet_size);
     }else if(!strncmp(path + path_offset,
 		      "pcm-channels",
@@ -416,13 +426,15 @@ ags_osc_node_controller_get_data_soundcard(AgsOscNodeController *osc_node_contro
       /* message path */
       packet_size = 4;
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     "/node", -1);
       
       /* message type tag */
       packet_size += 8;
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     ",si", -1);
 
       /* node path */
@@ -441,7 +453,8 @@ ags_osc_node_controller_get_data_soundcard(AgsOscNodeController *osc_node_contro
 	return(start_response);
       }
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     current_path, -1);
       
       /* node argument */
@@ -452,13 +465,15 @@ ags_osc_node_controller_get_data_soundcard(AgsOscNodeController *osc_node_contro
 				NULL,
 				NULL,
 				NULL);	  
-      ags_osc_buffer_util_put_int32(packet + packet_size,
+      ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				    packet + packet_size,
 				    pcm_channels);
 
       packet_size += 4;
       
       /* packet size */
-      ags_osc_buffer_util_put_int32(packet,
+      ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				    packet,
 				    packet_size);
     }else if(!strncmp(path + path_offset,
 		      "samplerate",
@@ -472,13 +487,15 @@ ags_osc_node_controller_get_data_soundcard(AgsOscNodeController *osc_node_contro
       /* message path */
       packet_size = 4;
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     "/node", -1);
       
       /* message type tag */
       packet_size += 8;
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     ",si", -1);
 
       /* node path */
@@ -497,7 +514,8 @@ ags_osc_node_controller_get_data_soundcard(AgsOscNodeController *osc_node_contro
 	return(start_response);
       }
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     current_path, -1);
 
       /* node argument */
@@ -510,13 +528,15 @@ ags_osc_node_controller_get_data_soundcard(AgsOscNodeController *osc_node_contro
 				&samplerate,
 				NULL,
 				NULL);	  
-      ags_osc_buffer_util_put_int32(packet + packet_size,
+      ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				    packet + packet_size,
 				    samplerate);
 
       packet_size += 4;
       
       /* packet size */
-      ags_osc_buffer_util_put_int32(packet,
+      ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				    packet,
 				    packet_size);
     }else if(!strncmp(path + path_offset,
 		      "buffer-size",
@@ -530,13 +550,15 @@ ags_osc_node_controller_get_data_soundcard(AgsOscNodeController *osc_node_contro
       /* message path */
       packet_size = 4;
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     "/node", -1);
       
       /* message type tag */
       packet_size += 8;
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     ",si", -1);
 
       /* node path */
@@ -555,7 +577,8 @@ ags_osc_node_controller_get_data_soundcard(AgsOscNodeController *osc_node_contro
 	return(start_response);
       }
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     current_path, -1);
       
       /* node argument */
@@ -566,13 +589,15 @@ ags_osc_node_controller_get_data_soundcard(AgsOscNodeController *osc_node_contro
 				NULL,
 				&buffer_size,
 				NULL);
-      ags_osc_buffer_util_put_int32(packet + packet_size,
+      ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				    packet + packet_size,
 				    buffer_size);
 
       packet_size += 4;
       
       /* packet size */
-      ags_osc_buffer_util_put_int32(packet,
+      ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				    packet,
 				    packet_size);
     }else if(!strncmp(path + path_offset,
 		      "format",
@@ -586,7 +611,8 @@ ags_osc_node_controller_get_data_soundcard(AgsOscNodeController *osc_node_contro
       /* message path */
       packet_size = 4;
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     "/node", -1);
       
       /* message type tag */
@@ -605,13 +631,15 @@ ags_osc_node_controller_get_data_soundcard(AgsOscNodeController *osc_node_contro
 	return(start_response);
       }
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     ",si", -1);
 
       /* node path */
       packet_size += 4;
       
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     current_path, -1);
       
       /* node argument */
@@ -623,13 +651,15 @@ ags_osc_node_controller_get_data_soundcard(AgsOscNodeController *osc_node_contro
 				NULL,
 				&format);
 	  
-      ags_osc_buffer_util_put_int32(packet + packet_size,
+      ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				    packet + packet_size,
 				    format);
 
       packet_size += 4;
       
       /* packet size */
-      ags_osc_buffer_util_put_int32(packet,
+      ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				    packet,
 				    packet_size);
     }else{
       ags_osc_response_set_flags(osc_response,
@@ -675,6 +705,8 @@ ags_osc_node_controller_get_data_sequencer(AgsOscNodeController *osc_node_contro
 
   AgsApplicationContext *application_context;  
 
+  AgsOscBufferUtil osc_buffer_util;
+  
   GList *start_response;
   GList *start_list;
 
@@ -688,6 +720,9 @@ ags_osc_node_controller_get_data_sequencer(AgsOscNodeController *osc_node_contro
   if(!AGS_IS_SEQUENCER(sequencer)){
     return(NULL);
   }
+
+  osc_buffer_util.major = 1;
+  osc_buffer_util.minor = 0;
   
   start_response = NULL;
 
@@ -737,13 +772,15 @@ ags_osc_node_controller_get_data_sequencer(AgsOscNodeController *osc_node_contro
       /* message path */
       packet_size = 4;
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     "/node", -1);
       
       /* message type tag */
       packet_size += 8;
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     ",ss", -1);
 
       /* node path */
@@ -762,7 +799,8 @@ ags_osc_node_controller_get_data_sequencer(AgsOscNodeController *osc_node_contro
 	return(start_response);
       }
       
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     current_path, -1);
       
       /* node argument */
@@ -782,13 +820,15 @@ ags_osc_node_controller_get_data_sequencer(AgsOscNodeController *osc_node_contro
 	return(start_response);
       }
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     device, -1);
 
       packet_size += (4 * (guint) ceil((double) (length + 1) / 4.0));
 
       /* packet size */
-      ags_osc_buffer_util_put_int32(packet,
+      ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				    packet,
 				    packet_size);
     }else{
       ags_osc_response_set_flags(osc_response,
@@ -834,6 +874,8 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
 
   AgsApplicationContext *application_context;  
 
+  AgsOscBufferUtil osc_buffer_util;
+  
   GList *start_response;
   GList *start_list;
 
@@ -847,6 +889,9 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
   if(!AGS_IS_AUDIO(audio)){
     return(NULL);
   }
+
+  osc_buffer_util.major = 1;
+  osc_buffer_util.minor = 0;
   
   start_response = NULL;
 
@@ -897,13 +942,15 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
       /* message path */
       packet_size = 4;
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     "/node", -1);
       
       /* message type tag */
       packet_size += 8;
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     ",si", -1);
 
       /* node path */
@@ -922,7 +969,8 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
 	return(start_response);
       }
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     current_path, -1);
       
       /* node argument */
@@ -931,13 +979,15 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
       g_object_get(audio,
 		   "audio-channels", &audio_channels,
 		   NULL);
-      ags_osc_buffer_util_put_int32(packet + packet_size,
+      ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				    packet + packet_size,
 				    audio_channels);
 
       packet_size += 4;
       
       /* packet size */
-      ags_osc_buffer_util_put_int32(packet,
+      ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				    packet,
 				    packet_size);
     }else if(!strncmp(path + path_offset,
 		      "output-pads",
@@ -950,13 +1000,15 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
       /* message path */
       packet_size = 4;
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     "/node", -1);
       
       /* message type tag */
       packet_size += 8;
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     ",si", -1);
 
       /* node path */
@@ -975,7 +1027,8 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
 	return(start_response);
       }
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     current_path, -1);
       
       /* node argument */
@@ -984,13 +1037,15 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
       g_object_get(audio,
 		   "output-pads", &output_pads,
 		   NULL);
-      ags_osc_buffer_util_put_int32(packet + packet_size,
+      ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				    packet + packet_size,
 				    output_pads);
 
       packet_size += 4;
       
       /* packet size */
-      ags_osc_buffer_util_put_int32(packet,
+      ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				    packet,
 				    packet_size);
     }else if(!strncmp(path + path_offset,
 		      "input-pads",
@@ -1003,13 +1058,15 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
       /* message path */
       packet_size = 4;
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     "/node", -1);
       
       /* message type tag */
       packet_size += 8;
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     ",si", -1);
 
       /* node path */
@@ -1028,7 +1085,8 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
 	return(start_response);
       }
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     current_path, -1);
       
       /* node argument */
@@ -1037,13 +1095,15 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
       g_object_get(audio,
 		   "input-pads", &input_pads,
 		   NULL);
-      ags_osc_buffer_util_put_int32(packet + packet_size,
+      ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				    packet + packet_size,
 				    input_pads);
 
       packet_size += 4;
       
       /* packet size */
-      ags_osc_buffer_util_put_int32(packet,
+      ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				    packet,
 				    packet_size);
     }else if(!strncmp(path + path_offset,
 		      "buffer-size",
@@ -1056,13 +1116,15 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
       /* message path */
       packet_size = 4;
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     "/node", -1);
       
       /* message type tag */
       packet_size += 8;
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     ",si", -1);
 
       /* node path */
@@ -1081,7 +1143,8 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
 	return(start_response);
       }
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     current_path, -1);
       
       /* node argument */
@@ -1090,13 +1153,15 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
       g_object_get(audio,
 		   "buffer-size", &buffer_size,
 		   NULL);
-      ags_osc_buffer_util_put_int32(packet + packet_size,
+      ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				    packet + packet_size,
 				    buffer_size);
 
       packet_size += 4;
       
       /* packet size */
-      ags_osc_buffer_util_put_int32(packet,
+      ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				    packet,
 				    packet_size);
     }else if(!strncmp(path + path_offset,
 		      "samplerate",
@@ -1109,13 +1174,15 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
       /* message path */
       packet_size = 4;
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     "/node", -1);
       
       /* message type tag */
       packet_size += 8;
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     ",si", -1);
 
       /* node path */
@@ -1134,7 +1201,8 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
 	return(start_response);
       }
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     current_path, -1);
       
       /* node argument */
@@ -1143,13 +1211,15 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
       g_object_get(audio,
 		   "samplerate", &samplerate,
 		   NULL);
-      ags_osc_buffer_util_put_int32(packet + packet_size,
+      ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				    packet + packet_size,
 				    samplerate);
 
       packet_size += 4;
       
       /* packet size */
-      ags_osc_buffer_util_put_int32(packet,
+      ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				    packet,
 				    packet_size);
     }else if(!strncmp(path + path_offset,
 		      "format",
@@ -1162,13 +1232,15 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
       /* message path */
       packet_size = 4;
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     "/node", -1);
       
       /* message type tag */
       packet_size += 8;
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     ",si", -1);
 
       /* node path */
@@ -1187,7 +1259,8 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
 	return(start_response);
       }
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     current_path, -1);
       
       /* node argument */
@@ -1196,13 +1269,15 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
       g_object_get(audio,
 		   "format", &format,
 		   NULL);
-      ags_osc_buffer_util_put_int32(packet + packet_size,
+      ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				    packet + packet_size,
 				    format);
 
       packet_size += 4;
       
       /* packet size */
-      ags_osc_buffer_util_put_int32(packet,
+      ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				    packet,
 				    packet_size);
     }else{
       ags_osc_response_set_flags(osc_response,
@@ -1999,6 +2074,8 @@ ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controll
 
   AgsApplicationContext *application_context;  
 
+  AgsOscBufferUtil osc_buffer_util;
+
   GList *start_response;
   GList *start_list;
 
@@ -2013,6 +2090,9 @@ ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controll
   if(!AGS_IS_CHANNEL(channel)){
     return(NULL);
   }
+
+  osc_buffer_util.major = 1;
+  osc_buffer_util.minor = 0;
   
   start_response = NULL;
 
@@ -2072,13 +2152,15 @@ ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controll
       /* message path */
       packet_size = 4;
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     "/node", -1);
       
       /* message type tag */
       packet_size += 8;
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     ",si", -1);
 
       /* node path */
@@ -2097,7 +2179,8 @@ ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controll
 	return(start_response);
       }
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     current_path, -1);
       
       /* node argument */
@@ -2106,13 +2189,15 @@ ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controll
       g_object_get(channel,
 		   "buffer-size", &buffer_size,
 		   NULL);
-      ags_osc_buffer_util_put_int32(packet + packet_size,
+      ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				    packet + packet_size,
 				    buffer_size);
 
       packet_size += 4;
       
       /* packet size */
-      ags_osc_buffer_util_put_int32(packet,
+      ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				    packet,
 				    packet_size);
     }else if(!strncmp(path + path_offset,
 		      "samplerate",
@@ -2128,13 +2213,15 @@ ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controll
       /* message path */
       packet_size = 4;
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     "/node", -1);
       
       /* message type tag */
       packet_size += 8;
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     ",si", -1);
 
       /* node path */
@@ -2153,7 +2240,8 @@ ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controll
 	return(start_response);
       }
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     current_path, -1);
       
       /* node argument */
@@ -2162,13 +2250,15 @@ ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controll
       g_object_get(channel,
 		   "samplerate", &samplerate,
 		   NULL);
-      ags_osc_buffer_util_put_int32(packet + packet_size,
+      ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				    packet + packet_size,
 				    samplerate);
 
       packet_size += 4;
       
       /* packet size */
-      ags_osc_buffer_util_put_int32(packet,
+      ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				    packet,
 				    packet_size);
     }else if(!strncmp(path + path_offset,
 		      "format",
@@ -2184,13 +2274,15 @@ ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controll
       /* message path */
       packet_size = 4;
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     "/node", -1);
       
       /* message type tag */
       packet_size += 8;
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     ",si", -1);
 
       /* node path */
@@ -2209,7 +2301,8 @@ ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controll
 	return(start_response);
       }
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     current_path, -1);
       
       /* node argument */
@@ -2218,13 +2311,15 @@ ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controll
       g_object_get(channel,
 		   "format", &format,
 		   NULL);
-      ags_osc_buffer_util_put_int32(packet + packet_size,
+      ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				    packet + packet_size,
 				    format);
 
       packet_size += 4;
       
       /* packet size */
-      ags_osc_buffer_util_put_int32(packet,
+      ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				    packet,
 				    packet_size);
     }else{
       ags_osc_response_set_flags(osc_response,
@@ -2726,6 +2821,8 @@ ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controlle
   
   AgsApplicationContext *application_context;
 
+  AgsOscBufferUtil osc_buffer_util;
+
   GList *start_response;
   
   guchar *packet;
@@ -2737,6 +2834,9 @@ ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controlle
   if(!AGS_IS_RECALL(recall)){
     return(NULL);
   }
+
+  osc_buffer_util.major = 1;
+  osc_buffer_util.minor = 0;
 
   start_response = NULL;
   
@@ -3104,6 +3204,8 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 
   AgsApplicationContext *application_context;
 
+  AgsOscBufferUtil osc_buffer_util;
+
   GList *start_response;
   GList *start_list;
 
@@ -3119,6 +3221,9 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
   if(!AGS_IS_PORT(port)){
     return(NULL);
   }
+
+  osc_buffer_util.major = 1;
+  osc_buffer_util.minor = 0;
 
   start_response = NULL;
 
@@ -3220,7 +3325,8 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
       /* message path */
       packet_size = 4;
 
-      ags_osc_buffer_util_put_string(packet + packet_size,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     packet + packet_size,
 				     "/node", -1);
       
       packet_size += 8;
@@ -3289,14 +3395,16 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 	    return(start_response);
 	  }
 
-	  ags_osc_buffer_util_put_string(packet + packet_size,
+	  ags_osc_buffer_util_put_string(&osc_buffer_util,
+					 packet + packet_size,
 					 current_path, -1);
 
 	  /* node argument */
 	  packet_size += (4 * (guint) ceil((double) (length + 1) / 4.0));
 
 	  /* packet size */
-	  ags_osc_buffer_util_put_int32(packet,
+	  ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				     packet,
 					packet_size);
 	}else if(port_value_type == G_TYPE_INT64){
 	  for(i = 0; i < port_value_length; i++){
@@ -3319,7 +3427,8 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 	    return(start_response);
 	  }
 
-	  ags_osc_buffer_util_put_string(packet + packet_size,
+	  ags_osc_buffer_util_put_string(&osc_buffer_util,
+					 packet + packet_size,
 					 current_path, -1);
 
 	  /* node argument */
@@ -3343,14 +3452,16 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 
 	    value = port->port_value.ags_port_int_ptr[i];
 	    
-	    ags_osc_buffer_util_put_int64(packet + packet_size + 3 + (i * 8),
+	    ags_osc_buffer_util_put_int64(&osc_buffer_util,
+					  packet + packet_size + 3 + (i * 8),
 					  value);
 	  }
 
 	  g_rec_mutex_unlock(port_mutex);
 
 	  /* packet size */
-	  ags_osc_buffer_util_put_int32(packet,
+	  ags_osc_buffer_util_put_int32(&osc_buffer_util,
+					packet,
 					packet_size);
 	}else if(port_value_type == G_TYPE_UINT64){
 	  for(i = 0; i < port_value_length; i++){
@@ -3373,7 +3484,8 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 	    return(start_response);
 	  }
 
-	  ags_osc_buffer_util_put_string(packet + packet_size,
+	  ags_osc_buffer_util_put_string(&osc_buffer_util,
+					 packet + packet_size,
 					 current_path, -1);
 
 	  /* node argument */
@@ -3398,14 +3510,16 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 	    value = port->port_value.ags_port_uint_ptr[i];
 
 	    //FIXME:JK: unsafe sign
-	    ags_osc_buffer_util_put_int64(packet + packet_size + 3 + (i * 8),
+	    ags_osc_buffer_util_put_int64(&osc_buffer_util,
+					  packet + packet_size + 3 + (i * 8),
 					  value);
 	  }
 
 	  g_rec_mutex_unlock(port_mutex);
 
 	  /* packet size */
-	  ags_osc_buffer_util_put_int32(packet,
+	  ags_osc_buffer_util_put_int32(&osc_buffer_util,
+					packet,
 					packet_size);
 	}else if(port_value_type == G_TYPE_FLOAT){
 	  for(i = 0; i < port_value_length; i++){
@@ -3428,7 +3542,8 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 	    return(start_response);
 	  }
 
-	  ags_osc_buffer_util_put_string(packet + packet_size,
+	  ags_osc_buffer_util_put_string(&osc_buffer_util,
+					 packet + packet_size,
 					 current_path, -1);
 
 	  /* node argument */
@@ -3452,14 +3567,16 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 
 	    value = port->port_value.ags_port_float_ptr[i];
 	    
-	    ags_osc_buffer_util_put_float(packet + packet_size + 3 + (i * 4),
+	    ags_osc_buffer_util_put_float(&osc_buffer_util,
+					  packet + packet_size + 3 + (i * 4),
 					  value);
 	  }
 
 	  g_rec_mutex_unlock(port_mutex);
 
 	  /* packet size */
-	  ags_osc_buffer_util_put_int32(packet,
+	  ags_osc_buffer_util_put_int32(&osc_buffer_util,
+					packet,
 					packet_size);
 	}else if(port_value_type == G_TYPE_DOUBLE){
 	  for(i = 0; i < port_value_length; i++){
@@ -3482,7 +3599,8 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 	    return(start_response);
 	  }
 
-	  ags_osc_buffer_util_put_string(packet + packet_size,
+	  ags_osc_buffer_util_put_string(&osc_buffer_util,
+					 packet + packet_size,
 					 current_path, -1);
 
 	  /* node argument */
@@ -3506,14 +3624,16 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 
 	    value = port->port_value.ags_port_double_ptr[i];
 	    
-	    ags_osc_buffer_util_put_double(packet + packet_size + 3 + (i * 8),
+	    ags_osc_buffer_util_put_double(&osc_buffer_util,
+					   packet + packet_size + 3 + (i * 8),
 					   value);
 	  }
 
 	  g_rec_mutex_unlock(port_mutex);
 
 	  /* packet size */
-	  ags_osc_buffer_util_put_int32(packet,
+	  ags_osc_buffer_util_put_int32(&osc_buffer_util,
+					packet,
 					packet_size);
 	}
       }else{
@@ -3528,10 +3648,12 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 	  g_rec_mutex_unlock(port_mutex);
 
 	  if(is_active){
-	    ags_osc_buffer_util_put_string(packet + packet_size,
+	    ags_osc_buffer_util_put_string(&osc_buffer_util,
+					   packet + packet_size,
 					   ",sT", -1);
 	  }else{
-	    ags_osc_buffer_util_put_string(packet + packet_size,
+	    ags_osc_buffer_util_put_string(&osc_buffer_util,
+					   packet + packet_size,
 					   ",sF", -1);
 	  }
 
@@ -3551,14 +3673,16 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 	    return(start_response);
 	  }
 
-	  ags_osc_buffer_util_put_string(packet + packet_size,
+	  ags_osc_buffer_util_put_string(&osc_buffer_util,
+					 packet + packet_size,
 					 current_path, -1);
 
 	  /* node argument */
 	  packet_size += (4 * (guint) ceil((double) (length + 1) / 4.0));
 
 	  /* packet size */
-	  ags_osc_buffer_util_put_int32(packet,
+	  ags_osc_buffer_util_put_int32(&osc_buffer_util,
+					packet,
 					packet_size);
 	}else if(port_value_type == G_TYPE_INT64){
 	  gint64 value;
@@ -3570,7 +3694,8 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 	  
 	  g_rec_mutex_unlock(port_mutex);
 
-	  ags_osc_buffer_util_put_string(packet + packet_size,
+	  ags_osc_buffer_util_put_string(&osc_buffer_util,
+					 packet + packet_size,
 					 ",sh", -1);
 
 	  /* node path */	    
@@ -3589,19 +3714,22 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 	    return(start_response);
 	  }
 
-	  ags_osc_buffer_util_put_string(packet + packet_size,
+	  ags_osc_buffer_util_put_string(&osc_buffer_util,
+					 packet + packet_size,
 					 current_path, -1);
 
 	  /* node argument */
 	  packet_size += (4 * (guint) ceil((double) (length + 1) / 4.0));
 
-	  ags_osc_buffer_util_put_int64(packet + packet_size,
+	  ags_osc_buffer_util_put_int64(&osc_buffer_util,
+					packet + packet_size,
 					value);
 	  
 	  packet_size += 8;
 	  
 	  /* packet size */
-	  ags_osc_buffer_util_put_int32(packet,
+	  ags_osc_buffer_util_put_int32(&osc_buffer_util,
+					packet,
 					packet_size);
 	}else if(port_value_type == G_TYPE_UINT64){
 	  guint64 value;
@@ -3613,7 +3741,8 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 	  
 	  g_rec_mutex_unlock(port_mutex);
 
-	  ags_osc_buffer_util_put_string(packet + packet_size,
+	  ags_osc_buffer_util_put_string(&osc_buffer_util,
+					 packet + packet_size,
 					 ",sh", -1);
 
 	  /* node path */	    
@@ -3632,20 +3761,23 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 	    return(start_response);
 	  }
 
-	  ags_osc_buffer_util_put_string(packet + packet_size,
+	  ags_osc_buffer_util_put_string(&osc_buffer_util,
+					 packet + packet_size,
 					 current_path, -1);
 
 	  /* node argument */
 	  packet_size += (4 * (guint) ceil((double) (length + 1) / 4.0));
 
 	  //FIXME:JK: unsafe sign
-	  ags_osc_buffer_util_put_int64(packet + packet_size,
+	  ags_osc_buffer_util_put_int64(&osc_buffer_util,
+					packet + packet_size,
 					value);
 	  
 	  packet_size += 8;
 	  
 	  /* packet size */
-	  ags_osc_buffer_util_put_int32(packet,
+	  ags_osc_buffer_util_put_int32(&osc_buffer_util,
+					packet,
 					packet_size);
 	}else if(port_value_type == G_TYPE_FLOAT){
 	  gfloat value;
@@ -3657,7 +3789,8 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 	  
 	  g_rec_mutex_unlock(port_mutex);
 
-	  ags_osc_buffer_util_put_string(packet + packet_size,
+	  ags_osc_buffer_util_put_string(&osc_buffer_util,
+					 packet + packet_size,
 					 ",sf", -1);
 
 	  /* node path */	    
@@ -3676,19 +3809,22 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 	    return(start_response);
 	  }
 
-	  ags_osc_buffer_util_put_string(packet + packet_size,
+	  ags_osc_buffer_util_put_string(&osc_buffer_util,
+					 packet + packet_size,
 					 current_path, -1);
 
 	  /* node argument */
 	  packet_size += (4 * (guint) ceil((double) (length + 1) / 4.0));
 
-	  ags_osc_buffer_util_put_float(packet + packet_size,
+	  ags_osc_buffer_util_put_float(&osc_buffer_util,
+					packet + packet_size,
 					value);
 	  
 	  packet_size += 4;
 	  
 	  /* packet size */
-	  ags_osc_buffer_util_put_int32(packet,
+	  ags_osc_buffer_util_put_int32(&osc_buffer_util,
+					packet,
 					packet_size);
 	}else if(port_value_type == G_TYPE_DOUBLE){
 	  gdouble value;
@@ -3700,7 +3836,8 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 	  
 	  g_rec_mutex_unlock(port_mutex);
 
-	  ags_osc_buffer_util_put_string(packet + packet_size,
+	  ags_osc_buffer_util_put_string(&osc_buffer_util,
+					 packet + packet_size,
 					 ",sd", -1);
 
 	  /* node path */	    
@@ -3719,19 +3856,22 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 	    return(start_response);
 	  }
 
-	  ags_osc_buffer_util_put_string(packet + packet_size,
+	  ags_osc_buffer_util_put_string(&osc_buffer_util,
+					 packet + packet_size,
 					 current_path, -1);
 
 	  /* node argument */
 	  packet_size += (4 * (guint) ceil((double) (length + 1) / 4.0));
 
-	  ags_osc_buffer_util_put_double(packet + packet_size,
+	  ags_osc_buffer_util_put_double(&osc_buffer_util,
+					 packet + packet_size,
 					 value);
 	  
 	  packet_size += 8;
 	  
 	  /* packet size */
-	  ags_osc_buffer_util_put_int32(packet,
+	  ags_osc_buffer_util_put_int32(&osc_buffer_util,
+					packet,
 					packet_size);
 	}
       }
@@ -3754,6 +3894,8 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 
   AgsApplicationContext *application_context;
 
+  AgsOscBufferUtil osc_buffer_util;
+
   GList *start_response;
   
   gchar *type_tag;
@@ -3762,10 +3904,14 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
   guint path_offset;
   gboolean success;
 
+  osc_buffer_util.major = 1;
+  osc_buffer_util.minor = 0;
+
   start_response = NULL;
   
   /* read type tag */
-  ags_osc_buffer_util_get_string(message + 8,
+  ags_osc_buffer_util_get_string(&osc_buffer_util,
+				 message + 8,
 				 &type_tag, NULL);
 
   success = (type_tag != NULL &&
@@ -3791,7 +3937,8 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
   }
   
   /* read argument */
-  ags_osc_buffer_util_get_string(message + 8 + (4 * (guint) ceil((gdouble) (strlen(type_tag) + 1) / 4.0)),
+  ags_osc_buffer_util_get_string(&osc_buffer_util,
+				 message + 8 + (4 * (guint) ceil((gdouble) (strlen(type_tag) + 1) / 4.0)),
 				 &path, NULL);
 
   if(path == NULL){

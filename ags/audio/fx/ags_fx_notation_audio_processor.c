@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,8 +28,6 @@
 #include <ags/audio/ags_note.h>
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recycling_context.h>
-
-#include <ags/audio/midi/ags_midi_util.h>
 
 #include <ags/audio/fx/ags_fx_notation_audio.h>
 
@@ -224,6 +222,8 @@ ags_fx_notation_audio_processor_init(AgsFxNotationAudioProcessor *fx_notation_au
   AGS_RECALL(fx_notation_audio_processor)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(fx_notation_audio_processor)->xml_type = "ags-fx-notation-audio-processor";
 
+  fx_notation_audio_processor->midi_util = ags_midi_util_alloc();
+
   /* counter */
   fx_notation_audio_processor->delay_completion = 0.0;
 
@@ -269,6 +269,8 @@ ags_fx_notation_audio_processor_finalize(GObject *gobject)
   
   fx_notation_audio_processor = AGS_FX_NOTATION_AUDIO_PROCESSOR(gobject);  
 
+  ags_midi_util_free(fx_notation_audio_processor->midi_util);
+  
   /* timestamp */
   if(fx_notation_audio_processor->timestamp != NULL){
     g_object_unref((GObject *) fx_notation_audio_processor->timestamp);
@@ -1447,7 +1449,7 @@ ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_nota
     midi_iter = midi_buffer;
     
     while(midi_iter < midi_buffer + buffer_length){
-      if(ags_midi_util_is_key_on(midi_iter)){
+      if(ags_midi_util_is_key_on(fx_notation_audio_processor->midi_util, midi_iter)){
 	/* check midi channel */
 	if(midi_channel == (0x0f & midi_iter[0])){
 	  AgsNote *current_note;
@@ -1554,7 +1556,7 @@ ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_nota
 	}
 
 	midi_iter += 3;
-      }else if(ags_midi_util_is_key_off(midi_iter)){
+      }else if(ags_midi_util_is_key_off(fx_notation_audio_processor->midi_util, midi_iter)){
 	/* check midi channel */
 	if(midi_channel == (0x0f & midi_iter[0])){
 	  AgsNote *current_note;
@@ -1621,29 +1623,35 @@ ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_nota
 	}
 
 	midi_iter += 3;
-      }else if(ags_midi_util_is_key_pressure(midi_iter)){
+      }else if(ags_midi_util_is_key_pressure(fx_notation_audio_processor->midi_util,
+					     midi_iter)){
 	midi_iter += 3;
-      }else if(ags_midi_util_is_change_parameter(midi_iter)){
+      }else if(ags_midi_util_is_change_parameter(fx_notation_audio_processor->midi_util,
+						 midi_iter)){
 	/* change parameter */
 	//TODO:JK: implement me	  
 	  
 	midi_iter += 3;
-      }else if(ags_midi_util_is_pitch_bend(midi_iter)){
+      }else if(ags_midi_util_is_pitch_bend(fx_notation_audio_processor->midi_util,
+					   midi_iter)){
 	/* change parameter */
 	//TODO:JK: implement me	  
 	  
 	midi_iter += 3;
-      }else if(ags_midi_util_is_change_program(midi_iter)){
+      }else if(ags_midi_util_is_change_program(fx_notation_audio_processor->midi_util,
+					       midi_iter)){
 	/* change program */
 	//TODO:JK: implement me	  
 	  
 	midi_iter += 2;
-      }else if(ags_midi_util_is_change_pressure(midi_iter)){
+      }else if(ags_midi_util_is_change_pressure(fx_notation_audio_processor->midi_util,
+						midi_iter)){
 	/* change pressure */
 	//TODO:JK: implement me	  
 	  
 	midi_iter += 2;
-      }else if(ags_midi_util_is_sysex(midi_iter)){
+      }else if(ags_midi_util_is_sysex(fx_notation_audio_processor->midi_util,
+				      midi_iter)){
 	guint n;
 	  
 	/* sysex */
@@ -1656,22 +1664,26 @@ ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_nota
 	//TODO:JK: implement me	  
 	  
 	midi_iter += (n + 1);
-      }else if(ags_midi_util_is_song_position(midi_iter)){
+      }else if(ags_midi_util_is_song_position(fx_notation_audio_processor->midi_util,
+					      midi_iter)){
 	/* song position */
 	//TODO:JK: implement me	  
 	  
 	midi_iter += 3;
-      }else if(ags_midi_util_is_song_select(midi_iter)){
+      }else if(ags_midi_util_is_song_select(fx_notation_audio_processor->midi_util,
+					    midi_iter)){
 	/* song select */
 	//TODO:JK: implement me	  
 	  
 	midi_iter += 2;
-      }else if(ags_midi_util_is_tune_request(midi_iter)){
+      }else if(ags_midi_util_is_tune_request(fx_notation_audio_processor->midi_util,
+					     midi_iter)){
 	/* tune request */
 	//TODO:JK: implement me	  
 	  
 	midi_iter += 1;
-      }else if(ags_midi_util_is_meta_event(midi_iter)){
+      }else if(ags_midi_util_is_meta_event(fx_notation_audio_processor->midi_util,
+					   midi_iter)){
 	/* meta event */
 	//TODO:JK: implement me	  
 	  

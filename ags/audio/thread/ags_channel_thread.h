@@ -56,13 +56,13 @@ typedef enum{
   AGS_CHANNEL_THREAD_STATUS_WAIT            = 1 <<  1,
   AGS_CHANNEL_THREAD_STATUS_DONE_SYNC       = 1 <<  2,
   AGS_CHANNEL_THREAD_STATUS_WAIT_SYNC       = 1 <<  3,
-}AgsChannelThreadStatusFlags;
+}AgsChannelThreadNestedSyncFlags;
 
 struct _AgsChannelThread
 {
   AgsThread thread;
 
-  volatile AgsChannelThreadStatusFlags status_flags;
+  volatile AgsChannelThreadNestedSyncFlags nested_sync_flags;
 
   GObject *default_output_soundcard;
     
@@ -94,9 +94,9 @@ struct _AgsChannelThreadClass
 GType ags_channel_thread_get_type();
 
 /* flags */
-gboolean ags_channel_thread_test_status_flags(AgsChannelThread *channel_thread, AgsChannelThreadStatusFlags status_flags);
-void ags_channel_thread_set_status_flags(AgsChannelThread *channel_thread, AgsChannelThreadStatusFlags status_flags);
-void ags_channel_thread_unset_status_flags(AgsChannelThread *channel_thread, AgsChannelThreadStatusFlags status_flags);
+gboolean ags_channel_thread_test_nested_sync_flags(AgsChannelThread *channel_thread, AgsChannelThreadNestedSyncFlags nested_sync_flags);
+void ags_channel_thread_set_nested_sync_flags(AgsChannelThread *channel_thread, AgsChannelThreadNestedSyncFlags nested_sync_flags);
+void ags_channel_thread_unset_nested_sync_flags(AgsChannelThread *channel_thread, AgsChannelThreadNestedSyncFlags nested_sync_flags);
 
 gboolean ags_channel_thread_get_processing(AgsChannelThread *channel_thread);
 void ags_channel_thread_set_processing(AgsChannelThread *channel_thread,

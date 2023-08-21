@@ -363,6 +363,8 @@ ags_machine_mapper_apply(AgsApplicable *applicable)
 
   AgsMidiBuilder *midi_builder;
 
+  AgsMidiUtil midi_util;
+  
   GList *start_notation, *notation;
   
   gchar *segmentation;
@@ -380,6 +382,9 @@ ags_machine_mapper_apply(AgsApplicable *applicable)
     return;
   }
 
+  midi_util.major = 1;
+  midi_util.minor = 0;
+  
   midi_export_wizard = (AgsMidiExportWizard *) gtk_widget_get_ancestor((GtkWidget *) machine_mapper,
 								       AGS_TYPE_MIDI_EXPORT_WIZARD);
 
@@ -491,7 +496,8 @@ ags_machine_mapper_apply(AgsApplicable *applicable)
 	    key_on[active_y] -= 1;
 	    
 	    if(key_on[note_y] == 0){
-	      delta_time = ags_midi_util_offset_to_delta_time(delay_factor,
+	      delta_time = ags_midi_util_offset_to_delta_time(&midi_util,
+							      delay_factor,
 							      AGS_MIDI_EXPORT_WIZARD_DEFAULT_DIVISION,
 							      AGS_MIDI_EXPORT_WIZARD_DEFAULT_TEMPO,
 							      AGS_MIDI_EXPORT_WIZARD_DEFAULT_BPM,
@@ -522,7 +528,8 @@ ags_machine_mapper_apply(AgsApplicable *applicable)
 	  key_on[note_y] += 1;
 
 	  if(key_on[note_y] == 1){
-	    delta_time = ags_midi_util_offset_to_delta_time(delay_factor,
+	    delta_time = ags_midi_util_offset_to_delta_time(&midi_util,
+							    delay_factor,
 							    AGS_MIDI_EXPORT_WIZARD_DEFAULT_DIVISION,
 							    AGS_MIDI_EXPORT_WIZARD_DEFAULT_TEMPO,
 							    AGS_MIDI_EXPORT_WIZARD_DEFAULT_BPM,

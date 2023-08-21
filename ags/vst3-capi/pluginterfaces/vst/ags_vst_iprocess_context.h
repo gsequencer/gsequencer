@@ -48,7 +48,7 @@ extern "C" {
     AGS_VST_KCHORD_VALID                  = 1 << 18,    
     AGS_VST_KSMPTE_VALID                  = 1 << 14,
     AGS_VST_KCLOCK_VALID                  = 1 << 15
-  }AgsVstStatesAndFlags;
+  }AgsVstProcessContextStatesAndFlags;
 
   typedef struct FrameRate AgsVstFrameRate;
   typedef struct Chord AgsVstChord;

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/audio/midi/ags_midi_buffer_util.h>
+#include <ags/audio/midi/ags_midi_smf_util.h>
 
 #include <alsa/seq_midi_event.h>
 #include <alsa/seq_event.h>
@@ -26,56 +26,101 @@
 #include <string.h>
 #include <stdlib.h>
 
-gpointer ags_midi_buffer_util_copy(gpointer ptr);
-void ags_midi_buffer_util_free(gpointer ptr);
-
 /**
- * SECTION:ags_midi_buffer_util
+ * SECTION:ags_midi_smf_util
  * @short_description: MIDI buffer util
- * @title: AgsMidiBufferUtil
+ * @title: AgsMidiSmfUtil
  * @section_id:
- * @include: ags/audio/midi/ags_midi_buffer_util.h
+ * @include: ags/audio/midi/ags_midi_smf_util.h
  *
  * Utility functions for MIDI buffers.
  */
 
 GType
-ags_midi_buffer_util_get_type(void)
+ags_midi_smf_util_get_type(void)
 {
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_midi_buffer_util = 0;
+    GType ags_type_midi_smf_util = 0;
 
-    ags_type_midi_buffer_util =
-      g_boxed_type_register_static("AgsMidiBufferUtil",
-				   (GBoxedCopyFunc) ags_midi_buffer_util_copy,
-				   (GBoxedFreeFunc) ags_midi_buffer_util_free);
+    ags_type_midi_smf_util =
+      g_boxed_type_register_static("AgsMidiSmfUtil",
+				   (GBoxedCopyFunc) ags_midi_smf_util_copy,
+				   (GBoxedFreeFunc) ags_midi_smf_util_free);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_midi_buffer_util);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_midi_smf_util);
   }
 
   return g_define_type_id__volatile;
 }
 
-gpointer
-ags_midi_buffer_util_copy(gpointer ptr)
+/**
+ * ags_midi_smf_util_alloc:
+ *
+ * Allocate MIDI util.
+ *
+ * Returns: (transfer full): the newly allocated #AgsMidiSmfUtil-struct
+ * 
+ * Since: 6.0.0
+ */
+AgsMidiSmfUtil*
+ags_midi_smf_util_alloc()
 {
-  gpointer retval;
+  AgsMidiSmfUtil *midi_smf_util;
 
-  retval = g_memdup(ptr, sizeof(AgsMidiBufferUtil));
- 
-  return(retval);
-}
+  midi_smf_util = g_new0(AgsMidiSmfUtil,
+			 1);
 
-void
-ags_midi_buffer_util_free(gpointer ptr)
-{
-  g_free(ptr);
+  midi_smf_util->major = 1;
+  midi_smf_util->minor = 0;
+  
+  return(midi_smf_util);
 }
 
 /**
- * ags_midi_buffer_util_get_varlength_size:
+ * ags_midi_smf_util_free:
+ * @midi_smf_util: the MIDI util
+ *
+ * Free MIDI util.
+ *
+ * Since: 6.0.0
+ */
+void
+ags_midi_smf_util_free(AgsMidiSmfUtil *midi_smf_util)
+{
+  g_return_if_fail(midi_smf_util != NULL);
+  
+  g_free(midi_smf_util);
+}
+
+/**
+ * ags_midi_smf_util_copy:
+ * @midi_smf_util: the MIDI util
+ *
+ * Copy MIDI util.
+ *
+ * Returns: (transfer full): the newly allocated #AgsMidiSmfUtil-struct
+ * 
+ * Since: 6.0.0
+ */
+AgsMidiSmfUtil*
+ags_midi_smf_util_copy(AgsMidiSmfUtil *midi_smf_util)
+{
+  AgsMidiSmfUtil *ptr;
+
+  g_return_val_if_fail(midi_smf_util != NULL, NULL);
+
+  ptr = ags_midi_smf_util_alloc();
+
+  ptr->major = midi_smf_util->major;
+  ptr->minor = midi_smf_util->minor;
+  
+  return(ptr);
+}
+
+/**
+ * ags_midi_smf_util_get_varlength_size:
  * @varlength: the variable length
  *
  * Retrieve the size needed to store the variable length.
@@ -85,12 +130,13 @@ ags_midi_buffer_util_free(gpointer ptr)
  * Since: 3.0.0
  */
 guint
-ags_midi_buffer_util_get_varlength_size(glong varlength)
+ags_midi_smf_util_get_varlength_size(AgsMidiSmfUtil *midi_smf_util,
+				     gint varlength)
 {
   guint current;
   guchar c;
   guint i;
-  glong mask;
+  gint mask;
   
   /* retrieve new size */
   mask = 0x7f;
@@ -111,8 +157,9 @@ ags_midi_buffer_util_get_varlength_size(glong varlength)
 }
 
 /**
- * ags_midi_buffer_util_put_varlength:
- * @buffer: the character buffer
+ * ags_midi_smf_util_put_varlength:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @varlength: the value to put
  *
  * Put the variable lenght value to @buffer.
@@ -120,18 +167,19 @@ ags_midi_buffer_util_get_varlength_size(glong varlength)
  * Since: 3.0.0
  */
 void
-ags_midi_buffer_util_put_varlength(guchar *buffer,
-				   glong varlength)
+ags_midi_smf_util_put_varlength(AgsMidiSmfUtil *midi_smf_util,
+				guchar *buffer,
+				gint varlength)
 {
   guint varlength_size;
   guint i, j;
-  glong mask;
+  gint mask;
 
   if(buffer == NULL){
     return;
   }
 
-  varlength_size = ags_midi_buffer_util_get_varlength_size(varlength);
+  varlength_size = ags_midi_smf_util_get_varlength_size(midi_smf_util, varlength);
 
   /* write to internal buffer */
   mask = 0x7f;
@@ -151,8 +199,9 @@ ags_midi_buffer_util_put_varlength(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_get_varlength:
- * @buffer: the character buffer
+ * ags_midi_smf_util_get_varlength:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @varlength: the return location
  *
  * Get the variable lenght value from @buffer.
@@ -162,10 +211,11 @@ ags_midi_buffer_util_put_varlength(guchar *buffer,
  * Since: 3.0.0
  */
 guint
-ags_midi_buffer_util_get_varlength(guchar *buffer,
-				   glong *varlength)
+ags_midi_smf_util_get_varlength(AgsMidiSmfUtil *midi_smf_util,
+				guchar *buffer,
+				gint *varlength)
 {
-  glong value;
+  gint value;
   guint i;
   char c;
 
@@ -198,8 +248,9 @@ ags_midi_buffer_util_get_varlength(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_put_int16:
- * @buffer: the character buffer
+ * ags_midi_smf_util_put_int16:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @val: the integer
  * 
  * Put signed 16 bit integer.
@@ -207,8 +258,9 @@ ags_midi_buffer_util_get_varlength(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_midi_buffer_util_put_int16(guchar *buffer,
-			       glong val)
+ags_midi_smf_util_put_int16(AgsMidiSmfUtil *midi_smf_util,
+			    guchar *buffer,
+			    gint val)
 {
   if(buffer == NULL){
     return;
@@ -219,8 +271,9 @@ ags_midi_buffer_util_put_int16(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_get_int16:
- * @buffer: the character buffer
+ * ags_midi_smf_util_get_int16:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @val: return location of the integer
  *
  * Get signed 32 bit integer.
@@ -228,10 +281,11 @@ ags_midi_buffer_util_put_int16(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_midi_buffer_util_get_int16(guchar *buffer,
-			       glong *val)
+ags_midi_smf_util_get_int16(AgsMidiSmfUtil *midi_smf_util,
+			    guchar *buffer,
+			    gint *val)
 {
-  glong tmp;
+  gint tmp;
 
   if(buffer == NULL){
     if(val != NULL){
@@ -250,8 +304,9 @@ ags_midi_buffer_util_get_int16(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_put_int24:
- * @buffer: the character buffer
+ * ags_midi_smf_util_put_int24:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @val: the integer
  * 
  * Put signed 24 bit integer.
@@ -259,8 +314,9 @@ ags_midi_buffer_util_get_int16(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_midi_buffer_util_put_int24(guchar *buffer,
-			       glong val)
+ags_midi_smf_util_put_int24(AgsMidiSmfUtil *midi_smf_util,
+			    guchar *buffer,
+			    gint val)
 {
   if(buffer == NULL){
     return;
@@ -272,8 +328,9 @@ ags_midi_buffer_util_put_int24(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_get_int24:
- * @buffer: the character buffer
+ * ags_midi_smf_util_get_int24:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @val: return location of the integer
  *
  * Get signed 24 bit integer.
@@ -281,10 +338,11 @@ ags_midi_buffer_util_put_int24(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_midi_buffer_util_get_int24(guchar *buffer,
-			       glong *val)
+ags_midi_smf_util_get_int24(AgsMidiSmfUtil *midi_smf_util,
+			    guchar *buffer,
+			    gint *val)
 {
-  glong tmp;
+  gint tmp;
 
   if(buffer == NULL){
     if(val != NULL){
@@ -304,8 +362,9 @@ ags_midi_buffer_util_get_int24(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_put_int32:
- * @buffer: the character buffer
+ * ags_midi_smf_util_put_int32:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @val: the integer
  * 
  * Put signed 32 bit integer.
@@ -313,8 +372,9 @@ ags_midi_buffer_util_get_int24(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_midi_buffer_util_put_int32(guchar *buffer,
-			       glong val)
+ags_midi_smf_util_put_int32(AgsMidiSmfUtil *midi_smf_util,
+			    guchar *buffer,
+			    gint val)
 {
   if(buffer == NULL){
     return;
@@ -327,8 +387,9 @@ ags_midi_buffer_util_put_int32(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_get_int32:
- * @buffer: the character buffer
+ * ags_midi_smf_util_get_int32:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @val: return location of the integer
  *
  * Get signed 32 bit integer.
@@ -336,10 +397,11 @@ ags_midi_buffer_util_put_int32(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_midi_buffer_util_get_int32(guchar *buffer,
-			       glong *val)
+ags_midi_smf_util_get_int32(AgsMidiSmfUtil *midi_smf_util,
+			    guchar *buffer,
+			    gint *val)
 {
-  glong tmp;
+  gint tmp;
 
   if(buffer == NULL){
     if(val != NULL){
@@ -360,8 +422,9 @@ ags_midi_buffer_util_get_int32(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_put_header:
- * @buffer: the character buffer
+ * ags_midi_smf_util_put_header:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @offset: start delta-time
  * @format: either 0, 1 or 2.
  * @track_count: the number of tracks
@@ -372,9 +435,10 @@ ags_midi_buffer_util_get_int32(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_midi_buffer_util_put_header(guchar *buffer,
-				glong offset, glong format,
-				glong track_count, glong division)
+ags_midi_smf_util_put_header(AgsMidiSmfUtil *midi_smf_util,
+			     guchar *buffer,
+			     gint offset, gint format,
+			     gint track_count, gint division)
 {
   static gchar header[] = "MThd";
 
@@ -386,25 +450,26 @@ ags_midi_buffer_util_put_header(guchar *buffer,
   memcpy(buffer, header, 4 * sizeof(guchar));
 
   /* chunk length */
-  ags_midi_buffer_util_put_int32(buffer + 4,
-				 offset);
+  ags_midi_smf_util_put_int32(midi_smf_util, buffer + 4,
+			      offset);
 
   /* format */
-  ags_midi_buffer_util_put_int16(buffer + 8,
-				 format);
+  ags_midi_smf_util_put_int16(midi_smf_util, buffer + 8,
+			      format);
 
   /* track count */
-  ags_midi_buffer_util_put_int16(buffer + 10,
-				 track_count);
+  ags_midi_smf_util_put_int16(midi_smf_util, buffer + 10,
+			      track_count);
 
   /* division */
-  ags_midi_buffer_util_put_int16(buffer + 12,
-				 division);  
+  ags_midi_smf_util_put_int16(midi_smf_util, buffer + 12,
+			      division);  
 }
 
 /**
- * ags_midi_buffer_util_get_header:
- * @buffer: the character buffer
+ * ags_midi_smf_util_get_header:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @offset: start delta-time
  * @format: either 0, 1 or 2.
  * @track_count: the number of tracks
@@ -417,9 +482,10 @@ ags_midi_buffer_util_put_header(guchar *buffer,
  * Since: 3.0.0
  */
 guint
-ags_midi_buffer_util_get_header(guchar *buffer,
-				glong *offset, glong *format,
-				glong *track_count, glong *division)
+ags_midi_smf_util_get_header(AgsMidiSmfUtil *midi_smf_util,
+			     guchar *buffer,
+			     gint *offset, gint *format,
+			     gint *track_count, gint *division)
 {
   static gchar header[] = "MThd";
 
@@ -447,27 +513,28 @@ ags_midi_buffer_util_get_header(guchar *buffer,
   }
   
   /* offset */
-  ags_midi_buffer_util_get_int32(buffer + 4,
-				 offset);
+  ags_midi_smf_util_get_int32(midi_smf_util, buffer + 4,
+			      offset);
 
   /* format */
-  ags_midi_buffer_util_get_int16(buffer + 8,
-				 format);
+  ags_midi_smf_util_get_int16(midi_smf_util, buffer + 8,
+			      format);
 
   /* track count */
-  ags_midi_buffer_util_get_int16(buffer + 10,
-				 track_count);
+  ags_midi_smf_util_get_int16(midi_smf_util, buffer + 10,
+			      track_count);
 
   /* division */
-  ags_midi_buffer_util_get_int16(buffer + 12,
-				 division);
+  ags_midi_smf_util_get_int16(midi_smf_util, buffer + 12,
+			      division);
 
   return(14);
 }
 
 /**
- * ags_midi_buffer_util_put_track:
- * @buffer: the midi buffer
+ * ags_midi_smf_util_put_track:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @offset: start delta-time
  * 
  * Put track.
@@ -475,8 +542,9 @@ ags_midi_buffer_util_get_header(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_midi_buffer_util_put_track(guchar *buffer,
-			       glong offset)
+ags_midi_smf_util_put_track(AgsMidiSmfUtil *midi_smf_util,
+			    guchar *buffer,
+			    gint offset)
 {
   static gchar track[] = "MTrk";
 
@@ -488,13 +556,14 @@ ags_midi_buffer_util_put_track(guchar *buffer,
   memcpy(buffer, track, 4 * sizeof(guchar));
 
   /* offset */
-  ags_midi_buffer_util_put_int32(buffer + 4,
-				 offset);  
+  ags_midi_smf_util_put_int32(midi_smf_util, buffer + 4,
+			      offset);  
 }
 
 /**
- * ags_midi_buffer_util_get_track:
- * @buffer: the midi buffer
+ * ags_midi_smf_util_get_track:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @offset: start delta-time
  * 
  * Get track
@@ -504,8 +573,9 @@ ags_midi_buffer_util_put_track(guchar *buffer,
  * Since: 3.0.0
  */
 guint
-ags_midi_buffer_util_get_track(guchar *buffer,
-			       glong *offset)
+ags_midi_smf_util_get_track(AgsMidiSmfUtil *midi_smf_util,
+			    guchar *buffer,
+			    gint *offset)
 {
   static gchar track[] = "MTrk";
 
@@ -521,15 +591,16 @@ ags_midi_buffer_util_get_track(guchar *buffer,
   }
 
   /* offset */
-  ags_midi_buffer_util_get_int32(buffer + 4,
-				 offset);
+  ags_midi_smf_util_get_int32(midi_smf_util, buffer + 4,
+			      offset);
 
   return(8);
 }
 
 /**
- * ags_midi_buffer_util_put_key_on:
- * @buffer: the character buffer
+ * ags_midi_smf_util_put_key_on:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: timing information
  * @channel: valid channels from 0-15
  * @key: valid keys to play 0-128
@@ -540,11 +611,12 @@ ags_midi_buffer_util_get_track(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_midi_buffer_util_put_key_on(guchar *buffer,
-				glong delta_time,
-				glong channel,
-				glong key,
-				glong velocity)
+ags_midi_smf_util_put_key_on(AgsMidiSmfUtil *midi_smf_util,
+			     guchar *buffer,
+			     gint delta_time,
+			     gint channel,
+			     gint key,
+			     gint velocity)
 {
   guint delta_time_size;
 
@@ -553,9 +625,9 @@ ags_midi_buffer_util_put_key_on(guchar *buffer,
   }
   
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
-  ags_midi_buffer_util_put_varlength(buffer,
-				     delta_time);
+  delta_time_size = ags_midi_smf_util_get_varlength_size(midi_smf_util, delta_time);
+  ags_midi_smf_util_put_varlength(midi_smf_util, buffer,
+				  delta_time);
 
   /* key-on channel message */
   buffer[delta_time_size] = 0x90 | (channel & 0xf);
@@ -568,8 +640,9 @@ ags_midi_buffer_util_put_key_on(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_get_key_on:
- * @buffer: the character buffer
+ * ags_midi_smf_util_get_key_on:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: the return location of timing information
  * @channel: the return location of channel
  * @key: the return location of key
@@ -582,13 +655,14 @@ ags_midi_buffer_util_put_key_on(guchar *buffer,
  * Since: 3.0.0
  */
 guint
-ags_midi_buffer_util_get_key_on(guchar *buffer,
-				glong *delta_time,
-				glong *channel,
-				glong *key,
-				glong *velocity)
+ags_midi_smf_util_get_key_on(AgsMidiSmfUtil *midi_smf_util,
+			     guchar *buffer,
+			     gint *delta_time,
+			     gint *channel,
+			     gint *key,
+			     gint *velocity)
 {
-  glong val;
+  gint val;
   guint delta_time_size;
   
   if(buffer == NULL){
@@ -612,8 +686,8 @@ ags_midi_buffer_util_get_key_on(guchar *buffer,
   }
 
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength(buffer,
-						       &val);
+  delta_time_size = ags_midi_smf_util_get_varlength(midi_smf_util, buffer,
+						    &val);
   
   if(delta_time != NULL){
     *delta_time = val;
@@ -638,8 +712,9 @@ ags_midi_buffer_util_get_key_on(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_put_key_off:
- * @buffer: the character buffer
+ * ags_midi_smf_util_put_key_off:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: timing information
  * @channel: valid channels from 0-15
  * @key: valid keys to play 0-128
@@ -650,11 +725,12 @@ ags_midi_buffer_util_get_key_on(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_midi_buffer_util_put_key_off(guchar *buffer,
-				 glong delta_time,
-				 glong channel,
-				 glong key,
-				 glong velocity)
+ags_midi_smf_util_put_key_off(AgsMidiSmfUtil *midi_smf_util,
+			      guchar *buffer,
+			      gint delta_time,
+			      gint channel,
+			      gint key,
+			      gint velocity)
 {
   guint delta_time_size;
 
@@ -663,9 +739,9 @@ ags_midi_buffer_util_put_key_off(guchar *buffer,
   }
   
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
-  ags_midi_buffer_util_put_varlength(buffer,
-				     delta_time);
+  delta_time_size = ags_midi_smf_util_get_varlength_size(midi_smf_util, delta_time);
+  ags_midi_smf_util_put_varlength(midi_smf_util, buffer,
+				  delta_time);
 
   /* key-off channel message */
   buffer[delta_time_size] = 0x80;
@@ -679,8 +755,9 @@ ags_midi_buffer_util_put_key_off(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_get_key_off:
- * @buffer: the character buffer
+ * ags_midi_smf_util_get_key_off:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: the return location of timing information
  * @channel: the return location of channel
  * @key: the return location of key
@@ -693,13 +770,14 @@ ags_midi_buffer_util_put_key_off(guchar *buffer,
  * Since: 3.0.0
  */
 guint
-ags_midi_buffer_util_get_key_off(guchar *buffer,
-				 glong *delta_time,
-				 glong *channel,
-				 glong *key,
-				 glong *velocity)
+ags_midi_smf_util_get_key_off(AgsMidiSmfUtil *midi_smf_util,
+			      guchar *buffer,
+			      gint *delta_time,
+			      gint *channel,
+			      gint *key,
+			      gint *velocity)
 {
-  glong val;
+  gint val;
   guint delta_time_size;
   
   if(buffer == NULL){
@@ -723,8 +801,8 @@ ags_midi_buffer_util_get_key_off(guchar *buffer,
   }
 
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength(buffer,
-						       &val);
+  delta_time_size = ags_midi_smf_util_get_varlength(midi_smf_util, buffer,
+						    &val);
   
   if(delta_time != NULL){
     *delta_time = val;
@@ -749,8 +827,9 @@ ags_midi_buffer_util_get_key_off(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_put_key_pressure:
- * @buffer: the character buffer
+ * ags_midi_smf_util_put_key_pressure:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: timing information
  * @channel: valid channels from 0-15
  * @key: valid keys to play 0-128
@@ -761,11 +840,12 @@ ags_midi_buffer_util_get_key_off(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_midi_buffer_util_put_key_pressure(guchar *buffer,
-				      glong delta_time,
-				      glong channel,
-				      glong key,
-				      glong pressure)
+ags_midi_smf_util_put_key_pressure(AgsMidiSmfUtil *midi_smf_util,
+				   guchar *buffer,
+				   gint delta_time,
+				   gint channel,
+				   gint key,
+				   gint pressure)
 {
   guint delta_time_size;
 
@@ -774,9 +854,9 @@ ags_midi_buffer_util_put_key_pressure(guchar *buffer,
   }
   
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
-  ags_midi_buffer_util_put_varlength(buffer,
-				     delta_time);
+  delta_time_size = ags_midi_smf_util_get_varlength_size(midi_smf_util, delta_time);
+  ags_midi_smf_util_put_varlength(midi_smf_util, buffer,
+				  delta_time);
 
   /* key-pressure channel message */
   buffer[delta_time_size] = 0xa0;
@@ -790,8 +870,9 @@ ags_midi_buffer_util_put_key_pressure(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_get_key_pressure:
- * @buffer: the character buffer
+ * ags_midi_smf_util_get_key_pressure:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: the return location of timing information
  * @channel: the return location of channel
  * @key: the return location of key
@@ -804,13 +885,14 @@ ags_midi_buffer_util_put_key_pressure(guchar *buffer,
  * Since: 3.0.0
  */
 guint
-ags_midi_buffer_util_get_key_pressure(guchar *buffer,
-				      glong *delta_time,
-				      glong *channel,
-				      glong *key,
-				      glong *pressure)
+ags_midi_smf_util_get_key_pressure(AgsMidiSmfUtil *midi_smf_util,
+				   guchar *buffer,
+				   gint *delta_time,
+				   gint *channel,
+				   gint *key,
+				   gint *pressure)
 {
-  glong val;
+  gint val;
   guint delta_time_size;
   
   if(buffer == NULL){
@@ -834,8 +916,8 @@ ags_midi_buffer_util_get_key_pressure(guchar *buffer,
   }
 
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength(buffer,
-						       &val);
+  delta_time_size = ags_midi_smf_util_get_varlength(midi_smf_util, buffer,
+						    &val);
   
   if(delta_time != NULL){
     *delta_time = val;
@@ -860,8 +942,9 @@ ags_midi_buffer_util_get_key_pressure(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_put_change_parameter:
- * @buffer: the character buffer
+ * ags_midi_smf_util_put_change_parameter:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: timing information
  * @channel: channel
  * @control: the control
@@ -872,11 +955,12 @@ ags_midi_buffer_util_get_key_pressure(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_midi_buffer_util_put_change_parameter(guchar *buffer,
-					  glong delta_time,
-					  glong channel,
-					  glong control,
-					  glong value)
+ags_midi_smf_util_put_change_parameter(AgsMidiSmfUtil *midi_smf_util,
+				       guchar *buffer,
+				       gint delta_time,
+				       gint channel,
+				       gint control,
+				       gint value)
 {
   guint delta_time_size;
 
@@ -885,9 +969,9 @@ ags_midi_buffer_util_put_change_parameter(guchar *buffer,
   }
   
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
-  ags_midi_buffer_util_put_varlength(buffer,
-				     delta_time);
+  delta_time_size = ags_midi_smf_util_get_varlength_size(midi_smf_util, delta_time);
+  ags_midi_smf_util_put_varlength(midi_smf_util, buffer,
+				  delta_time);
 
   /* change-parameter channel message */
   buffer[delta_time_size] = 0xb0;
@@ -901,8 +985,9 @@ ags_midi_buffer_util_put_change_parameter(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_get_change_parameter:
- * @buffer: the character buffer
+ * ags_midi_smf_util_get_change_parameter:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: the return location of timing information
  * @channel: the return location of channel
  * @control: the return location of the control
@@ -915,13 +1000,14 @@ ags_midi_buffer_util_put_change_parameter(guchar *buffer,
  * Since: 3.0.0
  */
 guint
-ags_midi_buffer_util_get_change_parameter(guchar *buffer,
-					  glong *delta_time,
-					  glong *channel,
-					  glong *control,
-					  glong *value)
+ags_midi_smf_util_get_change_parameter(AgsMidiSmfUtil *midi_smf_util,
+				       guchar *buffer,
+				       gint *delta_time,
+				       gint *channel,
+				       gint *control,
+				       gint *value)
 {
-  glong val;
+  gint val;
   guint delta_time_size;
   
   if(buffer == NULL){
@@ -945,8 +1031,8 @@ ags_midi_buffer_util_get_change_parameter(guchar *buffer,
   }
 
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength(buffer,
-						       &val);
+  delta_time_size = ags_midi_smf_util_get_varlength(midi_smf_util, buffer,
+						    &val);
   
   if(delta_time != NULL){
     *delta_time = val;
@@ -971,8 +1057,9 @@ ags_midi_buffer_util_get_change_parameter(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_put_pitch_bend:
- * @buffer: the character buffer
+ * ags_midi_smf_util_put_pitch_bend:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: timing information
  * @channel: channel
  * @pitch: the pitch
@@ -983,11 +1070,12 @@ ags_midi_buffer_util_get_change_parameter(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_midi_buffer_util_put_pitch_bend(guchar *buffer,
-				    glong delta_time,
-				    glong channel,
-				    glong pitch,
-				    glong transmitter)
+ags_midi_smf_util_put_pitch_bend(AgsMidiSmfUtil *midi_smf_util,
+				 guchar *buffer,
+				 gint delta_time,
+				 gint channel,
+				 gint pitch,
+				 gint transmitter)
 {
   guint delta_time_size;
 
@@ -996,9 +1084,9 @@ ags_midi_buffer_util_put_pitch_bend(guchar *buffer,
   }
   
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
-  ags_midi_buffer_util_put_varlength(buffer,
-				     delta_time);
+  delta_time_size = ags_midi_smf_util_get_varlength_size(midi_smf_util, delta_time);
+  ags_midi_smf_util_put_varlength(midi_smf_util, buffer,
+				  delta_time);
 
   /* pitch-bend channel message */
   buffer[delta_time_size] = 0xe0;
@@ -1012,8 +1100,9 @@ ags_midi_buffer_util_put_pitch_bend(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_get_pitch_bend:
- * @buffer: the character buffer
+ * ags_midi_smf_util_get_pitch_bend:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: the return location of timing information
  * @channel: the return location of channel
  * @pitch: the return location of the pitch
@@ -1026,13 +1115,14 @@ ags_midi_buffer_util_put_pitch_bend(guchar *buffer,
  * Since: 3.0.0
  */
 guint
-ags_midi_buffer_util_get_pitch_bend(guchar *buffer,
-				    glong *delta_time,
-				    glong *channel,
-				    glong *pitch,
-				    glong *transmitter)
+ags_midi_smf_util_get_pitch_bend(AgsMidiSmfUtil *midi_smf_util,
+				 guchar *buffer,
+				 gint *delta_time,
+				 gint *channel,
+				 gint *pitch,
+				 gint *transmitter)
 {
-  glong val;
+  gint val;
   guint delta_time_size;
   
   if(buffer == NULL){
@@ -1056,8 +1146,8 @@ ags_midi_buffer_util_get_pitch_bend(guchar *buffer,
   }
 
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength(buffer,
-						       &val);
+  delta_time_size = ags_midi_smf_util_get_varlength(midi_smf_util, buffer,
+						    &val);
   
   if(delta_time != NULL){
     *delta_time = val;
@@ -1082,8 +1172,9 @@ ags_midi_buffer_util_get_pitch_bend(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_put_change_program:
- * @buffer: the character buffer
+ * ags_midi_smf_util_put_change_program:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: timing information
  * @channel: channel
  * @program: the program
@@ -1093,10 +1184,11 @@ ags_midi_buffer_util_get_pitch_bend(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_midi_buffer_util_put_change_program(guchar *buffer,
-					glong delta_time,
-					glong channel,
-					glong program)
+ags_midi_smf_util_put_change_program(AgsMidiSmfUtil *midi_smf_util,
+				     guchar *buffer,
+				     gint delta_time,
+				     gint channel,
+				     gint program)
 {
   guint delta_time_size;
 
@@ -1105,9 +1197,9 @@ ags_midi_buffer_util_put_change_program(guchar *buffer,
   }
   
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
-  ags_midi_buffer_util_put_varlength(buffer,
-				     delta_time);
+  delta_time_size = ags_midi_smf_util_get_varlength_size(midi_smf_util, delta_time);
+  ags_midi_smf_util_put_varlength(midi_smf_util, buffer,
+				  delta_time);
 
   /* change-parameter channel message */
   buffer[delta_time_size] = 0xc0;
@@ -1118,8 +1210,9 @@ ags_midi_buffer_util_put_change_program(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_get_change_program:
- * @buffer: the character buffer
+ * ags_midi_smf_util_get_change_program:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: the return location of timing information
  * @channel: the return location of channel
  * @program: the return location of the program
@@ -1131,12 +1224,13 @@ ags_midi_buffer_util_put_change_program(guchar *buffer,
  * Since: 3.0.0
  */
 guint
-ags_midi_buffer_util_get_change_program(guchar *buffer,
-					glong *delta_time,
-					glong *channel,
-					glong *program)
+ags_midi_smf_util_get_change_program(AgsMidiSmfUtil *midi_smf_util,
+				     guchar *buffer,
+				     gint *delta_time,
+				     gint *channel,
+				     gint *program)
 {
-  glong val;
+  gint val;
   guint delta_time_size;
   
   if(buffer == NULL){
@@ -1156,8 +1250,8 @@ ags_midi_buffer_util_get_change_program(guchar *buffer,
   }
 
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength(buffer,
-						       &val);
+  delta_time_size = ags_midi_smf_util_get_varlength(midi_smf_util, buffer,
+						    &val);
   
   if(delta_time != NULL){
     *delta_time = val;
@@ -1177,8 +1271,9 @@ ags_midi_buffer_util_get_change_program(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_put_change_pressure:
- * @buffer: the character buffer
+ * ags_midi_smf_util_put_change_pressure:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: timing information
  * @channel: channel
  * @pressure: the pressure
@@ -1188,10 +1283,11 @@ ags_midi_buffer_util_get_change_program(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_midi_buffer_util_put_change_pressure(guchar *buffer,
-					 glong delta_time,
-					 glong channel,
-					 glong pressure)
+ags_midi_smf_util_put_change_pressure(AgsMidiSmfUtil *midi_smf_util,
+				      guchar *buffer,
+				      gint delta_time,
+				      gint channel,
+				      gint pressure)
 {
   guint delta_time_size;
 
@@ -1200,9 +1296,9 @@ ags_midi_buffer_util_put_change_pressure(guchar *buffer,
   }
   
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
-  ags_midi_buffer_util_put_varlength(buffer,
-				     delta_time);
+  delta_time_size = ags_midi_smf_util_get_varlength_size(midi_smf_util, delta_time);
+  ags_midi_smf_util_put_varlength(midi_smf_util, buffer,
+				  delta_time);
 
   /* change-parameter channel message */
   buffer[delta_time_size] = 0xd0;
@@ -1213,8 +1309,9 @@ ags_midi_buffer_util_put_change_pressure(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_get_change_pressure:
- * @buffer: the character buffer
+ * ags_midi_smf_util_get_change_pressure:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: the return location of timing information
  * @channel: the return location of channel
  * @pressure: the return location of the pressure
@@ -1226,12 +1323,13 @@ ags_midi_buffer_util_put_change_pressure(guchar *buffer,
  * Since: 3.0.0
  */
 guint
-ags_midi_buffer_util_get_change_pressure(guchar *buffer,
-					 glong *delta_time,
-					 glong *channel,
-					 glong *pressure)
+ags_midi_smf_util_get_change_pressure(AgsMidiSmfUtil *midi_smf_util,
+				      guchar *buffer,
+				      gint *delta_time,
+				      gint *channel,
+				      gint *pressure)
 {
-  glong val;
+  gint val;
   guint delta_time_size;
   
   if(buffer == NULL){
@@ -1251,8 +1349,8 @@ ags_midi_buffer_util_get_change_pressure(guchar *buffer,
   }
 
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength(buffer,
-						       &val);
+  delta_time_size = ags_midi_smf_util_get_varlength(midi_smf_util, buffer,
+						    &val);
   
   if(delta_time != NULL){
     *delta_time = val;
@@ -1272,8 +1370,9 @@ ags_midi_buffer_util_get_change_pressure(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_put_sysex:
- * @buffer: the character buffer
+ * ags_midi_smf_util_put_sysex:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: timing information
  * @data: the data
  * @length: the data's length
@@ -1283,9 +1382,10 @@ ags_midi_buffer_util_get_change_pressure(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_midi_buffer_util_put_sysex(guchar *buffer,
-			       glong delta_time,
-			       guchar *data, glong length)
+ags_midi_smf_util_put_sysex(AgsMidiSmfUtil *midi_smf_util,
+			    guchar *buffer,
+			    gint delta_time,
+			    guchar *data, gint length)
 {
   guint delta_time_size;
 
@@ -1294,9 +1394,9 @@ ags_midi_buffer_util_put_sysex(guchar *buffer,
   }
   
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
-  ags_midi_buffer_util_put_varlength(buffer,
-				     delta_time);
+  delta_time_size = ags_midi_smf_util_get_varlength_size(midi_smf_util, delta_time);
+  ags_midi_smf_util_put_varlength(midi_smf_util, buffer,
+				  delta_time);
 
   /* status byte */
   buffer[delta_time_size] = 0xf0;
@@ -1309,8 +1409,9 @@ ags_midi_buffer_util_put_sysex(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_get_sysex:
- * @buffer: the character buffer
+ * ags_midi_smf_util_get_sysex:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: the return location of timing information
  * @data: the return location of data
  * @length: the return location of length
@@ -1322,13 +1423,14 @@ ags_midi_buffer_util_put_sysex(guchar *buffer,
  * Since: 3.0.0
  */
 guint
-ags_midi_buffer_util_get_sysex(guchar *buffer,
-			       glong *delta_time,
-			       guchar **data, glong *length)
+ags_midi_smf_util_get_sysex(AgsMidiSmfUtil *midi_smf_util,
+			    guchar *buffer,
+			    gint *delta_time,
+			    guchar **data, gint *length)
 {
   guchar *tmp_data;
 
-  glong val;
+  gint val;
   guint delta_time_size;
   guint i;
   
@@ -1349,8 +1451,8 @@ ags_midi_buffer_util_get_sysex(guchar *buffer,
   }
   
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength(buffer,
-						       &val);
+  delta_time_size = ags_midi_smf_util_get_varlength(midi_smf_util, buffer,
+						    &val);
   
   if(delta_time != NULL){
     *delta_time = val;
@@ -1378,8 +1480,9 @@ ags_midi_buffer_util_get_sysex(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_put_quarter_frame:
- * @buffer: the character buffer
+ * ags_midi_smf_util_put_quarter_frame:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: timing information
  * @message_type: the message type
  * @values: the values
@@ -1389,10 +1492,11 @@ ags_midi_buffer_util_get_sysex(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_midi_buffer_util_put_quarter_frame(guchar *buffer,
-				       glong delta_time,
-				       glong message_type,
-				       glong values)
+ags_midi_smf_util_put_quarter_frame(AgsMidiSmfUtil *midi_smf_util,
+				    guchar *buffer,
+				    gint delta_time,
+				    gint message_type,
+				    gint values)
 {
   guint delta_time_size;
 
@@ -1401,9 +1505,9 @@ ags_midi_buffer_util_put_quarter_frame(guchar *buffer,
   }
 
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
-  ags_midi_buffer_util_put_varlength(buffer,
-				     delta_time);
+  delta_time_size = ags_midi_smf_util_get_varlength_size(midi_smf_util, delta_time);
+  ags_midi_smf_util_put_varlength(midi_smf_util, buffer,
+				  delta_time);
 
   /* status byte */
   buffer[delta_time_size] = 0xf1;
@@ -1416,8 +1520,9 @@ ags_midi_buffer_util_put_quarter_frame(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_get_quarter_frame:
- * @buffer: the character buffer
+ * ags_midi_smf_util_get_quarter_frame:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: the return location of timing information
  * @message_type: the return location of the message type
  * @values: the return location of the values
@@ -1429,11 +1534,12 @@ ags_midi_buffer_util_put_quarter_frame(guchar *buffer,
  * Since: 3.0.0
  */
 guint
-ags_midi_buffer_util_get_quarter_frame(guchar *buffer,
-				       glong *delta_time,
-				       glong *message_type, glong *values)
+ags_midi_smf_util_get_quarter_frame(AgsMidiSmfUtil *midi_smf_util,
+				    guchar *buffer,
+				    gint *delta_time,
+				    gint *message_type, gint *values)
 {
-  glong val;
+  gint val;
   guint delta_time_size;
   
   if(buffer == NULL){
@@ -1453,8 +1559,8 @@ ags_midi_buffer_util_get_quarter_frame(guchar *buffer,
   }
   
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength(buffer,
-						       &val);
+  delta_time_size = ags_midi_smf_util_get_varlength(midi_smf_util, buffer,
+						    &val);
   
   if(delta_time != NULL){
     *delta_time = val;
@@ -1472,8 +1578,9 @@ ags_midi_buffer_util_get_quarter_frame(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_put_song_position:
- * @buffer: the character buffer
+ * ags_midi_smf_util_put_song_position:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: timing information
  * @song_position: the song position
  * 
@@ -1482,9 +1589,10 @@ ags_midi_buffer_util_get_quarter_frame(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_midi_buffer_util_put_song_position(guchar *buffer,
-				       glong delta_time,
-				       glong song_position)
+ags_midi_smf_util_put_song_position(AgsMidiSmfUtil *midi_smf_util,
+				    guchar *buffer,
+				    gint delta_time,
+				    gint song_position)
 {
   guint delta_time_size;
 
@@ -1493,9 +1601,9 @@ ags_midi_buffer_util_put_song_position(guchar *buffer,
   }
   
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
-  ags_midi_buffer_util_put_varlength(buffer,
-				     delta_time);
+  delta_time_size = ags_midi_smf_util_get_varlength_size(midi_smf_util, delta_time);
+  ags_midi_smf_util_put_varlength(midi_smf_util, buffer,
+				  delta_time);
 
   /* status byte */
   buffer[delta_time_size] = 0xf2;
@@ -1506,8 +1614,9 @@ ags_midi_buffer_util_put_song_position(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_get_song_position:
- * @buffer: the character buffer
+ * ags_midi_smf_util_get_song_position:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: the return location of timing information
  * @song_position: the return location of the song position
  * 
@@ -1518,11 +1627,12 @@ ags_midi_buffer_util_put_song_position(guchar *buffer,
  * Since: 3.0.0
  */
 guint
-ags_midi_buffer_util_get_song_position(guchar *buffer,
-				       glong *delta_time,
-				       glong *song_position)
+ags_midi_smf_util_get_song_position(AgsMidiSmfUtil *midi_smf_util,
+				    guchar *buffer,
+				    gint *delta_time,
+				    gint *song_position)
 {
-  glong val;
+  gint val;
   guint delta_time_size;
   
   if(buffer == NULL){
@@ -1538,8 +1648,8 @@ ags_midi_buffer_util_get_song_position(guchar *buffer,
   }
 
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength(buffer,
-						       &val);
+  delta_time_size = ags_midi_smf_util_get_varlength(midi_smf_util, buffer,
+						    &val);
   
   if(delta_time != NULL){
     *delta_time = val;
@@ -1555,8 +1665,9 @@ ags_midi_buffer_util_get_song_position(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_put_song_select:
- * @buffer: the character buffer
+ * ags_midi_smf_util_put_song_select:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: timing information
  * @song_select: the song select
  * 
@@ -1565,9 +1676,10 @@ ags_midi_buffer_util_get_song_position(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_midi_buffer_util_put_song_select(guchar *buffer,
-				     glong delta_time,
-				     glong song_select)
+ags_midi_smf_util_put_song_select(AgsMidiSmfUtil *midi_smf_util,
+				  guchar *buffer,
+				  gint delta_time,
+				  gint song_select)
 {
   guint delta_time_size;
 
@@ -1576,9 +1688,9 @@ ags_midi_buffer_util_put_song_select(guchar *buffer,
   }
   
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
-  ags_midi_buffer_util_put_varlength(buffer,
-				     delta_time);
+  delta_time_size = ags_midi_smf_util_get_varlength_size(midi_smf_util, delta_time);
+  ags_midi_smf_util_put_varlength(midi_smf_util, buffer,
+				  delta_time);
 
   /* status byte */
   buffer[delta_time_size] = 0xf3;
@@ -1588,8 +1700,9 @@ ags_midi_buffer_util_put_song_select(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_get_song_select:
- * @buffer: the character buffer
+ * ags_midi_smf_util_get_song_select:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: the return location of timing information
  * @song_select: the return location of the song select
  * 
@@ -1600,11 +1713,12 @@ ags_midi_buffer_util_put_song_select(guchar *buffer,
  * Since: 3.0.0
  */
 guint
-ags_midi_buffer_util_get_song_select(guchar *buffer,
-				     glong *delta_time,
-				     glong *song_select)
+ags_midi_smf_util_get_song_select(AgsMidiSmfUtil *midi_smf_util,
+				  guchar *buffer,
+				  gint *delta_time,
+				  gint *song_select)
 {
-  glong val;
+  gint val;
   guint delta_time_size;
   
   if(buffer == NULL){
@@ -1620,8 +1734,8 @@ ags_midi_buffer_util_get_song_select(guchar *buffer,
   }
   
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength(buffer,
-						       &val);
+  delta_time_size = ags_midi_smf_util_get_varlength(midi_smf_util, buffer,
+						    &val);
   
   if(delta_time != NULL){
     *delta_time = val;
@@ -1635,8 +1749,9 @@ ags_midi_buffer_util_get_song_select(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_put_tune_request:
- * @buffer: the character buffer
+ * ags_midi_smf_util_put_tune_request:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: timing information
  * 
  * Put tune request
@@ -1644,8 +1759,9 @@ ags_midi_buffer_util_get_song_select(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_midi_buffer_util_put_tune_request(guchar *buffer,
-				      glong delta_time)
+ags_midi_smf_util_put_tune_request(AgsMidiSmfUtil *midi_smf_util,
+				   guchar *buffer,
+				   gint delta_time)
 {
   guint delta_time_size;
 
@@ -1654,17 +1770,18 @@ ags_midi_buffer_util_put_tune_request(guchar *buffer,
   }
   
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
-  ags_midi_buffer_util_put_varlength(buffer,
-				     delta_time);
+  delta_time_size = ags_midi_smf_util_get_varlength_size(midi_smf_util, delta_time);
+  ags_midi_smf_util_put_varlength(midi_smf_util, buffer,
+				  delta_time);
   
   /* status byte */
   buffer[delta_time_size] = 0xf6;
 }
 
 /**
- * ags_midi_buffer_util_get_tune_request:
- * @buffer: the character buffer
+ * ags_midi_smf_util_get_tune_request:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: the return location of timing information
  * 
  * Get tune request.
@@ -1674,10 +1791,11 @@ ags_midi_buffer_util_put_tune_request(guchar *buffer,
  * Since: 3.0.0
  */
 guint
-ags_midi_buffer_util_get_tune_request(guchar *buffer,
-				      glong *delta_time)
+ags_midi_smf_util_get_tune_request(AgsMidiSmfUtil *midi_smf_util,
+				   guchar *buffer,
+				   gint *delta_time)
 {
-  glong val;
+  gint val;
   guint delta_time_size;
   
   if(buffer == NULL){
@@ -1689,8 +1807,8 @@ ags_midi_buffer_util_get_tune_request(guchar *buffer,
   }
   
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength(buffer,
-						       &val);
+  delta_time_size = ags_midi_smf_util_get_varlength(midi_smf_util, buffer,
+						    &val);
   
   if(delta_time != NULL){
     *delta_time = val;
@@ -1700,8 +1818,9 @@ ags_midi_buffer_util_get_tune_request(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_put_sequence_number:
- * @buffer: the character buffer
+ * ags_midi_smf_util_put_sequence_number:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: timing information
  * @sequence: the sequence
  * 
@@ -1710,9 +1829,10 @@ ags_midi_buffer_util_get_tune_request(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_midi_buffer_util_put_sequence_number(guchar *buffer,
-					 glong delta_time,
-					 glong sequence)
+ags_midi_smf_util_put_sequence_number(AgsMidiSmfUtil *midi_smf_util,
+				      guchar *buffer,
+				      gint delta_time,
+				      gint sequence)
 {
   guint delta_time_size;
 
@@ -1721,9 +1841,9 @@ ags_midi_buffer_util_put_sequence_number(guchar *buffer,
   }
   
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
-  ags_midi_buffer_util_put_varlength(buffer,
-				     delta_time);
+  delta_time_size = ags_midi_smf_util_get_varlength_size(midi_smf_util, delta_time);
+  ags_midi_smf_util_put_varlength(midi_smf_util, buffer,
+				  delta_time);
 
   /* status byte */
   buffer[delta_time_size] = 0xff;
@@ -1740,8 +1860,9 @@ ags_midi_buffer_util_put_sequence_number(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_get_sequence_number:
- * @buffer: the character buffer
+ * ags_midi_smf_util_get_sequence_number:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: the return location of timing information
  * @sequence: the return location of the sequence
  * 
@@ -1752,11 +1873,12 @@ ags_midi_buffer_util_put_sequence_number(guchar *buffer,
  * Since: 3.0.0
  */
 guint
-ags_midi_buffer_util_get_sequence_number(guchar *buffer,
-					 glong *delta_time,
-					 glong *sequence)
+ags_midi_smf_util_get_sequence_number(AgsMidiSmfUtil *midi_smf_util,
+				      guchar *buffer,
+				      gint *delta_time,
+				      gint *sequence)
 {
-  glong val;
+  gint val;
   guint delta_time_size;
   
   if(buffer == NULL){
@@ -1772,8 +1894,8 @@ ags_midi_buffer_util_get_sequence_number(guchar *buffer,
   }
   
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength(buffer,
-						       &val);
+  delta_time_size = ags_midi_smf_util_get_varlength(midi_smf_util, buffer,
+						    &val);
   
   if(delta_time != NULL){
     *delta_time = val;
@@ -1789,8 +1911,9 @@ ags_midi_buffer_util_get_sequence_number(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_put_smtpe:
- * @buffer: the character buffer
+ * ags_midi_smf_util_put_smtpe:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: timing information
  * @rr: frame rate
  * @hr: hour
@@ -1803,9 +1926,10 @@ ags_midi_buffer_util_get_sequence_number(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_midi_buffer_util_put_smtpe(guchar *buffer,
-			       glong delta_time,
-			       glong rr, glong hr, glong mn, glong se, glong fr)
+ags_midi_smf_util_put_smtpe(AgsMidiSmfUtil *midi_smf_util,
+			    guchar *buffer,
+			    gint delta_time,
+			    gint rr, gint hr, gint mn, gint se, gint fr)
 {
   guint delta_time_size;
 
@@ -1814,9 +1938,9 @@ ags_midi_buffer_util_put_smtpe(guchar *buffer,
   }
   
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
-  ags_midi_buffer_util_put_varlength(buffer,
-				     delta_time);
+  delta_time_size = ags_midi_smf_util_get_varlength_size(midi_smf_util, delta_time);
+  ags_midi_smf_util_put_varlength(midi_smf_util, buffer,
+				  delta_time);
 
   /* status byte */
   buffer[delta_time_size] = 0xff;
@@ -1844,8 +1968,9 @@ ags_midi_buffer_util_put_smtpe(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_get_smtpe:
- * @buffer: the character buffer
+ * ags_midi_smf_util_get_smtpe:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: the return location of timing information
  * @rr: the return location of frame rate
  * @hr: the return location of hour
@@ -1860,11 +1985,12 @@ ags_midi_buffer_util_put_smtpe(guchar *buffer,
  * Since: 3.0.0
  */
 guint
-ags_midi_buffer_util_get_smtpe(guchar *buffer,
-			       glong *delta_time,
-			       glong *rr, glong *hr, glong *mn, glong *se, glong *fr)
+ags_midi_smf_util_get_smtpe(AgsMidiSmfUtil *midi_smf_util,
+			    guchar *buffer,
+			    gint *delta_time,
+			    gint *rr, gint *hr, gint *mn, gint *se, gint *fr)
 {
-  glong val;
+  gint val;
   guint delta_time_size;
   
   if(buffer == NULL){
@@ -1896,8 +2022,8 @@ ags_midi_buffer_util_get_smtpe(guchar *buffer,
   }
   
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength(buffer,
-						       &val);
+  delta_time_size = ags_midi_smf_util_get_varlength(midi_smf_util, buffer,
+						    &val);
   
   if(delta_time != NULL){
     *delta_time = val;
@@ -1932,8 +2058,9 @@ ags_midi_buffer_util_get_smtpe(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_put_tempo:
- * @buffer: the character buffer
+ * ags_midi_smf_util_put_tempo:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: timing information
  * @tempo: the tempo
  * 
@@ -1942,9 +2069,10 @@ ags_midi_buffer_util_get_smtpe(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_midi_buffer_util_put_tempo(guchar *buffer,
-			       glong delta_time,
-			       glong tempo)
+ags_midi_smf_util_put_tempo(AgsMidiSmfUtil *midi_smf_util,
+			    guchar *buffer,
+			    gint delta_time,
+			    gint tempo)
 {
   guint delta_time_size;
 
@@ -1953,9 +2081,9 @@ ags_midi_buffer_util_put_tempo(guchar *buffer,
   }
   
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
-  ags_midi_buffer_util_put_varlength(buffer,
-				     delta_time);
+  delta_time_size = ags_midi_smf_util_get_varlength_size(midi_smf_util, delta_time);
+  ags_midi_smf_util_put_varlength(midi_smf_util, buffer,
+				  delta_time);
 
   /* status byte */
   buffer[delta_time_size] = 0xff;
@@ -1967,13 +2095,14 @@ ags_midi_buffer_util_put_tempo(guchar *buffer,
   buffer[delta_time_size + 2] = 0x03;
   
   /* tempo */
-  ags_midi_buffer_util_put_int24(buffer + delta_time_size + 3,
-				 tempo);
+  ags_midi_smf_util_put_int24(midi_smf_util, buffer + delta_time_size + 3,
+			      tempo);
 }
 
 /**
- * ags_midi_buffer_util_get_tempo:
- * @buffer: the character buffer
+ * ags_midi_smf_util_get_tempo:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: the return location of timing information
  * @tempo: the tempo
  * 
@@ -1984,11 +2113,12 @@ ags_midi_buffer_util_put_tempo(guchar *buffer,
  * Since: 3.0.0
  */
 guint
-ags_midi_buffer_util_get_tempo(guchar *buffer,
-			       glong *delta_time,
-			       glong *tempo)
+ags_midi_smf_util_get_tempo(AgsMidiSmfUtil *midi_smf_util,
+			    guchar *buffer,
+			    gint *delta_time,
+			    gint *tempo)
 {
-  glong val;
+  gint val;
   guint delta_time_size;
   
   if(buffer == NULL){
@@ -2004,23 +2134,24 @@ ags_midi_buffer_util_get_tempo(guchar *buffer,
   }
   
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength(buffer,
-						       &val);
+  delta_time_size = ags_midi_smf_util_get_varlength(midi_smf_util, buffer,
+						    &val);
   
   if(delta_time != NULL){
     *delta_time = val;
   }
 
   /* tempo */
-  ags_midi_buffer_util_get_int24(buffer + delta_time_size + 3,
-				 tempo);
+  ags_midi_smf_util_get_int24(midi_smf_util, buffer + delta_time_size + 3,
+			      tempo);
 
   return(delta_time_size + 6);
 }
 
 /**
- * ags_midi_buffer_util_put_time_signature:
- * @buffer: the character buffer
+ * ags_midi_smf_util_put_time_signature:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: timing information
  * @nn: numerator
  * @dd: denominator
@@ -2032,9 +2163,10 @@ ags_midi_buffer_util_get_tempo(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_midi_buffer_util_put_time_signature(guchar *buffer,
-					glong delta_time,
-					glong nn, glong dd, glong cc, glong bb)
+ags_midi_smf_util_put_time_signature(AgsMidiSmfUtil *midi_smf_util,
+				     guchar *buffer,
+				     gint delta_time,
+				     gint nn, gint dd, gint cc, gint bb)
 {
   guint delta_time_size;
 
@@ -2043,9 +2175,9 @@ ags_midi_buffer_util_put_time_signature(guchar *buffer,
   }
   
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
-  ags_midi_buffer_util_put_varlength(buffer,
-				     delta_time);
+  delta_time_size = ags_midi_smf_util_get_varlength_size(midi_smf_util, delta_time);
+  ags_midi_smf_util_put_varlength(midi_smf_util, buffer,
+				  delta_time);
 
   /* status byte */
   buffer[delta_time_size] = 0xff;
@@ -2070,8 +2202,9 @@ ags_midi_buffer_util_put_time_signature(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_get_time_signature:
- * @buffer: the character buffer
+ * ags_midi_smf_util_get_time_signature:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: the return location of timing information
  * @nn: the return location of numerator
  * @dd: the return location of denominator
@@ -2085,11 +2218,12 @@ ags_midi_buffer_util_put_time_signature(guchar *buffer,
  * Since: 3.0.0
  */
 guint
-ags_midi_buffer_util_get_time_signature(guchar *buffer,
-					glong *delta_time,
-					glong *nn, glong *dd, glong *cc, glong *bb)
+ags_midi_smf_util_get_time_signature(AgsMidiSmfUtil *midi_smf_util,
+				     guchar *buffer,
+				     gint *delta_time,
+				     gint *nn, gint *dd, gint *cc, gint *bb)
 {
-  glong val;
+  gint val;
   guint delta_time_size;
   
   if(buffer == NULL){
@@ -2117,8 +2251,8 @@ ags_midi_buffer_util_get_time_signature(guchar *buffer,
   }
   
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength(buffer,
-						       &val);
+  delta_time_size = ags_midi_smf_util_get_varlength(midi_smf_util, buffer,
+						    &val);
   
   if(delta_time != NULL){
     *delta_time = val;
@@ -2148,8 +2282,9 @@ ags_midi_buffer_util_get_time_signature(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_put_key_signature:
- * @buffer: the character buffer
+ * ags_midi_smf_util_put_key_signature:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: timing information
  * @sf: flats or sharps
  * @mi: 1 equals minor or 0 means major
@@ -2159,9 +2294,10 @@ ags_midi_buffer_util_get_time_signature(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_midi_buffer_util_put_key_signature(guchar *buffer,
-				       glong delta_time,
-				       glong sf, glong mi)
+ags_midi_smf_util_put_key_signature(AgsMidiSmfUtil *midi_smf_util,
+				    guchar *buffer,
+				    gint delta_time,
+				    gint sf, gint mi)
 {
   guint delta_time_size;
 
@@ -2170,9 +2306,9 @@ ags_midi_buffer_util_put_key_signature(guchar *buffer,
   }
   
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
-  ags_midi_buffer_util_put_varlength(buffer,
-				     delta_time);
+  delta_time_size = ags_midi_smf_util_get_varlength_size(midi_smf_util, delta_time);
+  ags_midi_smf_util_put_varlength(midi_smf_util, buffer,
+				  delta_time);
   
   /* status byte */
   buffer[delta_time_size] = 0xff;
@@ -2191,8 +2327,9 @@ ags_midi_buffer_util_put_key_signature(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_get_key_signature:
- * @buffer: the character buffer
+ * ags_midi_smf_util_get_key_signature:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: the return location of timing information
  * @sf: the return location of flats or sharps
  * @mi: the return location of minor or major
@@ -2204,11 +2341,12 @@ ags_midi_buffer_util_put_key_signature(guchar *buffer,
  * Since: 3.0.0
  */
 guint
-ags_midi_buffer_util_get_key_signature(guchar *buffer,
-				       glong *delta_time,
-				       glong *sf, glong *mi)
+ags_midi_smf_util_get_key_signature(AgsMidiSmfUtil *midi_smf_util,
+				    guchar *buffer,
+				    gint *delta_time,
+				    gint *sf, gint *mi)
 {
-  glong val;
+  gint val;
   guint delta_time_size;
   
   if(buffer == NULL){
@@ -2228,8 +2366,8 @@ ags_midi_buffer_util_get_key_signature(guchar *buffer,
   }
   
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength(buffer,
-						       &val);
+  delta_time_size = ags_midi_smf_util_get_varlength(midi_smf_util, buffer,
+						    &val);
   
   if(delta_time != NULL){
     *delta_time = val;
@@ -2249,8 +2387,9 @@ ags_midi_buffer_util_get_key_signature(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_put_sequencer_meta_event:
- * @buffer: the character buffer
+ * ags_midi_smf_util_put_sequencer_meta_event:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: timing information
  * @len: the length of data
  * @id: the manufacturer id
@@ -2261,9 +2400,10 @@ ags_midi_buffer_util_get_key_signature(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_midi_buffer_util_put_sequencer_meta_event(guchar *buffer,
-					      glong delta_time,
-					      glong len, glong id, glong data)
+ags_midi_smf_util_put_sequencer_meta_event(AgsMidiSmfUtil *midi_smf_util,
+					   guchar *buffer,
+					   gint delta_time,
+					   gint len, gint id, gint data)
 {
   guint delta_time_size;
 
@@ -2272,9 +2412,9 @@ ags_midi_buffer_util_put_sequencer_meta_event(guchar *buffer,
   }
   
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
-  ags_midi_buffer_util_put_varlength(buffer,
-				     delta_time);
+  delta_time_size = ags_midi_smf_util_get_varlength_size(midi_smf_util, delta_time);
+  ags_midi_smf_util_put_varlength(midi_smf_util, buffer,
+				  delta_time);
 
   /* status byte */
   buffer[delta_time_size] = 0xff;
@@ -2303,8 +2443,9 @@ ags_midi_buffer_util_put_sequencer_meta_event(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_get_sequencer_meta_event:
- * @buffer: the character buffer
+ * ags_midi_smf_util_get_sequencer_meta_event:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: the return location of timing information
  * @len: the return location of the length of data
  * @id: the return location of the manufacturer id
@@ -2317,11 +2458,12 @@ ags_midi_buffer_util_put_sequencer_meta_event(guchar *buffer,
  * Since: 3.0.0
  */
 guint
-ags_midi_buffer_util_get_sequencer_meta_event(guchar *buffer,
-					      glong *delta_time,
-					      glong *len, glong *id, glong *data)
+ags_midi_smf_util_get_sequencer_meta_event(AgsMidiSmfUtil *midi_smf_util,
+					   guchar *buffer,
+					   gint *delta_time,
+					   gint *len, gint *id, gint *data)
 {
-  glong val;
+  gint val;
   guint delta_time_size;
   
   if(buffer == NULL){
@@ -2345,8 +2487,8 @@ ags_midi_buffer_util_get_sequencer_meta_event(guchar *buffer,
   }
   
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength(buffer,
-						       &val);
+  delta_time_size = ags_midi_smf_util_get_varlength(midi_smf_util, buffer,
+						    &val);
   
   if(delta_time != NULL){
     *delta_time = val;
@@ -2380,8 +2522,9 @@ ags_midi_buffer_util_get_sequencer_meta_event(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_put_text_event:
- * @buffer: the character buffer
+ * ags_midi_smf_util_put_text_event:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: timing information
  * @text: the text
  * @length: the length
@@ -2391,9 +2534,10 @@ ags_midi_buffer_util_get_sequencer_meta_event(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_midi_buffer_util_put_text_event(guchar *buffer,
-				    glong delta_time,
-				    gchar *text, glong length)
+ags_midi_smf_util_put_text_event(AgsMidiSmfUtil *midi_smf_util,
+				 guchar *buffer,
+				 gint delta_time,
+				 gchar *text, gint length)
 {
   guint delta_time_size;
 
@@ -2402,9 +2546,9 @@ ags_midi_buffer_util_put_text_event(guchar *buffer,
   }
   
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
-  ags_midi_buffer_util_put_varlength(buffer,
-				     delta_time);
+  delta_time_size = ags_midi_smf_util_get_varlength_size(midi_smf_util, delta_time);
+  ags_midi_smf_util_put_varlength(midi_smf_util, buffer,
+				  delta_time);
   
   /* status byte */
   buffer[delta_time_size] = 0xff;
@@ -2420,8 +2564,9 @@ ags_midi_buffer_util_put_text_event(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_get_text_event:
- * @buffer: the character buffer
+ * ags_midi_smf_util_get_text_event:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: the return location of timing information
  * @text: the return location of the text
  * @length: the return location of the length
@@ -2433,11 +2578,12 @@ ags_midi_buffer_util_put_text_event(guchar *buffer,
  * Since: 3.0.0
  */
 guint
-ags_midi_buffer_util_get_text_event(guchar *buffer,
-				    glong *delta_time,
-				    gchar **text, glong *length)
+ags_midi_smf_util_get_text_event(AgsMidiSmfUtil *midi_smf_util,
+				 guchar *buffer,
+				 gint *delta_time,
+				 gchar **text, gint *length)
 {
-  glong val;
+  gint val;
   guint text_size;
   guint delta_time_size;
   
@@ -2458,8 +2604,8 @@ ags_midi_buffer_util_get_text_event(guchar *buffer,
   }
   
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength(buffer,
-						       &val);
+  delta_time_size = ags_midi_smf_util_get_varlength(midi_smf_util, buffer,
+						    &val);
   
   if(delta_time != NULL){
     *delta_time = val;
@@ -2482,8 +2628,9 @@ ags_midi_buffer_util_get_text_event(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_put_end_of_track:
- * @buffer: the character buffer
+ * ags_midi_smf_util_put_end_of_track:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: timing information
  * 
  * Put end of track.
@@ -2491,8 +2638,9 @@ ags_midi_buffer_util_get_text_event(guchar *buffer,
  * Since: 3.0.0
  */
 void
-ags_midi_buffer_util_put_end_of_track(guchar *buffer,
-				      glong delta_time)
+ags_midi_smf_util_put_end_of_track(AgsMidiSmfUtil *midi_smf_util,
+				   guchar *buffer,
+				   gint delta_time)
 {
   guint delta_time_size;
 
@@ -2501,9 +2649,9 @@ ags_midi_buffer_util_put_end_of_track(guchar *buffer,
   }
   
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
-  ags_midi_buffer_util_put_varlength(buffer,
-				     delta_time);
+  delta_time_size = ags_midi_smf_util_get_varlength_size(midi_smf_util, delta_time);
+  ags_midi_smf_util_put_varlength(midi_smf_util, buffer,
+				  delta_time);
 
   /* status byte */
   buffer[delta_time_size] = 0xff;
@@ -2516,8 +2664,9 @@ ags_midi_buffer_util_put_end_of_track(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_get_end_of_track:
- * @buffer: the character buffer
+ * ags_midi_smf_util_get_end_of_track:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @delta_time: the return location of timing information
  * 
  * Get end of track. 
@@ -2527,10 +2676,11 @@ ags_midi_buffer_util_put_end_of_track(guchar *buffer,
  * Since: 3.0.0
  */
 guint
-ags_midi_buffer_util_get_end_of_track(guchar *buffer,
-				      glong *delta_time)
+ags_midi_smf_util_get_end_of_track(AgsMidiSmfUtil *midi_smf_util,
+				   guchar *buffer,
+				   gint *delta_time)
 {
-  glong val;
+  gint val;
   guint delta_time_size;
   
   if(buffer == NULL){
@@ -2542,8 +2692,8 @@ ags_midi_buffer_util_get_end_of_track(guchar *buffer,
   }
 
   /* delta time */
-  delta_time_size = ags_midi_buffer_util_get_varlength(buffer,
-						       &val);
+  delta_time_size = ags_midi_smf_util_get_varlength(midi_smf_util, buffer,
+						    &val);
   
   if(delta_time != NULL){
     *delta_time = val;
@@ -2553,7 +2703,7 @@ ags_midi_buffer_util_get_end_of_track(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_seek_message:
+ * ags_midi_smf_util_seek_message:
  * @buffer: the buffer to seek
  * @message_count: seek count messages
  * @delta_time: the return location of current delta time
@@ -2565,17 +2715,18 @@ ags_midi_buffer_util_get_end_of_track(guchar *buffer,
  * Since: 3.0.0
  */
 guchar*
-ags_midi_buffer_util_seek_message(guchar *buffer,
-				  guint message_count,
-				  glong *delta_time)
+ags_midi_smf_util_seek_message(AgsMidiSmfUtil *midi_smf_util,
+			       guchar *buffer,
+			       guint message_count,
+			       gint *delta_time)
 {
   static const gchar header[] = "MThd";
   static const gchar track[] = "MTrk";
 
   guchar *offset;
   
-  glong current_delta_time, tmp_delta_time;
-  glong next_delta_time;
+  gint current_delta_time, tmp_delta_time;
+  gint next_delta_time;
   guint delta_time_size;
   guchar status, prev_status;
   guchar meta_type;
@@ -2617,8 +2768,8 @@ ags_midi_buffer_util_seek_message(guchar *buffer,
     /* read delta time */
     tmp_delta_time = 0;
     
-    delta_time_size = ags_midi_buffer_util_get_varlength(offset,
-							 &tmp_delta_time);
+    delta_time_size = ags_midi_smf_util_get_varlength(midi_smf_util, offset,
+						      &tmp_delta_time);
 
     if(delta_time_size > 0){
       current_delta_time = tmp_delta_time;
@@ -2628,7 +2779,7 @@ ags_midi_buffer_util_seek_message(guchar *buffer,
     status = offset[delta_time_size];
 
     n = 1;
-  ags_midi_buffer_util_seek_message_REPEAT_STATUS:
+  ags_midi_smf_util_seek_message_REPEAT_STATUS:
     
     if((0xf0 & status) != 0xf0){
       switch(status & 0xf0){
@@ -2688,7 +2839,7 @@ ags_midi_buffer_util_seek_message(guchar *buffer,
 #endif
 	  status = prev_status;
 	  
-	  goto ags_midi_buffer_util_seek_message_REPEAT_STATUS;
+	  goto ags_midi_smf_util_seek_message_REPEAT_STATUS;
 	}
       }
 
@@ -2697,8 +2848,8 @@ ags_midi_buffer_util_seek_message(guchar *buffer,
       /* check if status is omitted */
       next_delta_time = 0;
       
-      delta_time_size = ags_midi_buffer_util_get_varlength(offset,
-							   &next_delta_time);
+      delta_time_size = ags_midi_smf_util_get_varlength(midi_smf_util, offset,
+							&next_delta_time);
       
       if((0xf0 & offset[delta_time_size]) != 0xf0){
 	switch(status & 0xf0){
@@ -2715,7 +2866,7 @@ ags_midi_buffer_util_seek_message(guchar *buffer,
 	    n = 0;
 	    current_delta_time = next_delta_time;
 	    
-	    goto ags_midi_buffer_util_seek_message_REPEAT_STATUS;
+	    goto ags_midi_smf_util_seek_message_REPEAT_STATUS;
 	  }
 	}
       }      
@@ -2726,9 +2877,10 @@ ags_midi_buffer_util_seek_message(guchar *buffer,
       case 0xf0:
 	{
 	  /* start of system exclusive */
-	  n = ags_midi_buffer_util_get_sysex(offset,
-					     NULL,
-					     NULL, NULL);
+	  n = ags_midi_smf_util_get_sysex(NULL,
+					  offset,
+					  NULL,
+					  NULL, NULL);
 
 	  offset += n;
 	}
@@ -2736,9 +2888,10 @@ ags_midi_buffer_util_seek_message(guchar *buffer,
       case 0xf1:
 	{
 	  /* quarter frame */
-	  n = ags_midi_buffer_util_get_quarter_frame(offset,
-						     NULL,
-						     NULL, NULL);
+	  n = ags_midi_smf_util_get_quarter_frame(NULL,
+						  offset,
+						  NULL,
+						  NULL, NULL);
 
 	  offset += n;
 	}
@@ -2746,9 +2899,10 @@ ags_midi_buffer_util_seek_message(guchar *buffer,
       case 0xf2:
 	{
 	  /* song position */
-	  n = ags_midi_buffer_util_get_song_position(offset,
-						     NULL,
-						     NULL);
+	  n = ags_midi_smf_util_get_song_position(NULL,
+						  offset,
+						  NULL,
+						  NULL);
 	  
 	  offset += n;
 	}
@@ -2756,9 +2910,10 @@ ags_midi_buffer_util_seek_message(guchar *buffer,
       case 0xf3:
 	{
 	  /* song select */
-	  n = ags_midi_buffer_util_get_song_select(offset,
-						   NULL,
-						   NULL);
+	  n = ags_midi_smf_util_get_song_select(NULL,
+						offset,
+						NULL,
+						NULL);
 	  
 	  offset += n;
 	}
@@ -2776,8 +2931,9 @@ ags_midi_buffer_util_seek_message(guchar *buffer,
       case 0xf6:
 	{
 	  /* tune request */
-	  n = ags_midi_buffer_util_get_tune_request(offset,
-						    NULL);
+	  n = ags_midi_smf_util_get_tune_request(NULL,
+						 offset,
+						 NULL);
 	  
 	  offset += n;
 	}
@@ -2806,9 +2962,10 @@ ags_midi_buffer_util_seek_message(guchar *buffer,
 	      //	  c = offset[delta_time_size + 1];
 
 	      //	  if(c == 0x02){
-	      n = ags_midi_buffer_util_get_sequence_number(offset,
-							   NULL,
-							   NULL);
+	      n = ags_midi_smf_util_get_sequence_number(NULL,
+							offset,
+							NULL,
+							NULL);
 	  
 	      offset += n;
 	      //	  }
@@ -2831,9 +2988,10 @@ ags_midi_buffer_util_seek_message(guchar *buffer,
 	  case 0x0f:
 	    {
 	      /* These are all text events */
-	      n = ags_midi_buffer_util_get_text_event(offset,
-						      NULL,
-						      NULL, NULL);
+	      n = ags_midi_smf_util_get_text_event(NULL,
+						   offset,
+						   NULL,
+						   NULL, NULL);
 
 	      offset += n;
 	    }
@@ -2846,8 +3004,9 @@ ags_midi_buffer_util_seek_message(guchar *buffer,
 
 	      //	      if(c == 0x0){
 	      /* End of Track */
-	      n = ags_midi_buffer_util_get_end_of_track(offset,
-							NULL);
+	      n = ags_midi_smf_util_get_end_of_track(NULL,
+						     offset,
+						     NULL);
 
 	      offset = NULL;
 	    }
@@ -2860,9 +3019,10 @@ ags_midi_buffer_util_seek_message(guchar *buffer,
 
 	      //	      if(c == 0x03){
 	      /* Set tempo */
-	      n = ags_midi_buffer_util_get_tempo(offset,
-						 NULL,
-						 NULL);
+	      n = ags_midi_smf_util_get_tempo(NULL,
+					      offset,
+					      NULL,
+					      NULL);
 		
 	      offset += n;
 	      //	      }
@@ -2875,9 +3035,10 @@ ags_midi_buffer_util_seek_message(guchar *buffer,
 	      c = offset[delta_time_size];
 
 	      //	      if(c == 0x05){
-	      n = ags_midi_buffer_util_get_smtpe(offset,
-						 NULL,
-						 NULL, NULL, NULL, NULL, NULL);
+	      n = ags_midi_smf_util_get_smtpe(NULL,
+					      offset,
+					      NULL,
+					      NULL, NULL, NULL, NULL, NULL);
 
 	      offset += n;
 	      //	      }
@@ -2889,9 +3050,10 @@ ags_midi_buffer_util_seek_message(guchar *buffer,
 
 	      //      c = ags_midi_parser_midi_getc(midi_parser);
       
-	      n = ags_midi_buffer_util_get_time_signature(offset,
-							  NULL,
-							  NULL, NULL, NULL, NULL);
+	      n = ags_midi_smf_util_get_time_signature(NULL,
+						       offset,
+						       NULL,
+						       NULL, NULL, NULL, NULL);
 
 	      offset += n;
       
@@ -2906,9 +3068,10 @@ ags_midi_buffer_util_seek_message(guchar *buffer,
 	      //	      c = offset[delta_time_size];
 
 	      //	      if(c == 0x02){
-	      n = ags_midi_buffer_util_get_key_signature(offset,
-							 NULL,
-							 NULL, NULL);
+	      n = ags_midi_smf_util_get_key_signature(NULL,
+						      offset,
+						      NULL,
+						      NULL, NULL);
 
 	      offset += n;
 	      //	      }
@@ -2916,9 +3079,10 @@ ags_midi_buffer_util_seek_message(guchar *buffer,
 	    break;
 	  case 0x7f:
 	    {
-	      n = ags_midi_buffer_util_get_sequencer_meta_event(NULL,
-								NULL,
-								NULL, NULL, NULL);
+	      n = ags_midi_smf_util_get_sequencer_meta_event(NULL,
+							     NULL,
+							     NULL,
+							     NULL, NULL, NULL);
 	      
 	      offset += n;
 	    }
@@ -2942,8 +3106,9 @@ ags_midi_buffer_util_seek_message(guchar *buffer,
 }
 
 /**
- * ags_midi_buffer_util_decode:
- * @buffer: the midi buffer
+ * ags_midi_smf_util_decode:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
  * @event: the ALSA sequencer event
  *
  * Decode @event to @buffer
@@ -2953,8 +3118,9 @@ ags_midi_buffer_util_seek_message(guchar *buffer,
  * Since: 3.0.0
  */
 guint
-ags_midi_buffer_util_decode(guchar *buffer,
-			    snd_seq_event_t *event)
+ags_midi_smf_util_decode(AgsMidiSmfUtil *midi_smf_util,
+			 guchar *buffer,
+			 snd_seq_event_t *event)
 {
   guint count;
 
@@ -2970,13 +3136,14 @@ ags_midi_buffer_util_decode(guchar *buffer,
     {    
       guchar tmp[8];
       
-      ags_midi_buffer_util_put_key_on(tmp,
-				      0,
-				      event->data.note.channel,
-				      event->data.note.note,
-				      event->data.note.velocity);
+      ags_midi_smf_util_put_key_on(midi_smf_util,
+				   tmp,
+				   0,
+				   event->data.note.channel,
+				   event->data.note.note,
+				   event->data.note.velocity);
 
-      count = ags_midi_buffer_util_get_varlength_size(0);      
+      count = ags_midi_smf_util_get_varlength_size(midi_smf_util, 0);      
       memcpy(buffer, tmp + count, 3 * sizeof(guchar));
       
       count = 3;
@@ -2986,20 +3153,21 @@ ags_midi_buffer_util_decode(guchar *buffer,
     {
       guchar tmp[8];
 
-      ags_midi_buffer_util_put_key_off(tmp,
-				       0,
-				       event->data.note.channel,
-				       event->data.note.note,
-				       event->data.note.velocity);
+      ags_midi_smf_util_put_key_off(midi_smf_util,
+				    tmp,
+				    0,
+				    event->data.note.channel,
+				    event->data.note.note,
+				    event->data.note.velocity);
 
-      count = ags_midi_buffer_util_get_varlength_size(0);
+      count = ags_midi_smf_util_get_varlength_size(midi_smf_util, 0);
       memcpy(buffer, tmp + count, 3 * sizeof(guchar));
       
       count = 3;      
     }
     break;
   default:
-    g_warning("ags_midi_buffer_util_decode() - unsupported MIDI event");
+    g_warning("ags_midi_smf_util_decode() - unsupported MIDI event");
     break;
   }
   

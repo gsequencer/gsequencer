@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2018 Joël Krähemann
+ * Copyright (C) 2018,2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -61,6 +61,8 @@ void ags_osc_buffer_util_test_get_message();
 void ags_osc_buffer_util_test_put_bundle();
 void ags_osc_buffer_util_test_get_bundle();
 
+AgsOscBufferUtil osc_buffer_util;
+
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
  * Returns zero on success, non-zero otherwise.
@@ -68,6 +70,9 @@ void ags_osc_buffer_util_test_get_bundle();
 int
 ags_osc_buffer_util_test_init_suite()
 {
+  osc_buffer_util.major = 1;
+  osc_buffer_util.minor = 0;
+
   return(0);
 }
 
@@ -118,8 +123,9 @@ ags_osc_buffer_util_test_put_int32()
   success = TRUE;
   
   for(i = 0; i < 9 && success; i++){
-    ags_osc_buffer_util_put_int32(buffer,
-				   val[i]);
+    ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				  buffer,
+				  val[i]);
     
     for(j = 0; j < 4; j++){
       if(buffer[j] != val_buffer[i][j]){
@@ -167,8 +173,9 @@ ags_osc_buffer_util_test_get_int32()
   success = TRUE;
 
   for(i = 0; i < 9 && success; i++){
-    ags_osc_buffer_util_get_int32(val_buffer[i],
-				   &current);
+    ags_osc_buffer_util_get_int32(&osc_buffer_util,
+				  val_buffer[i],
+				  &current);
 
     if(current != val[i]){
       success = FALSE;
@@ -241,7 +248,8 @@ ags_osc_buffer_util_test_put_timetag()
   buffer = (unsigned char *) malloc(8 * sizeof(unsigned char));
 
   for(i = 0; i < 9 && success; i++){
-    ags_osc_buffer_util_put_timetag(buffer,
+    ags_osc_buffer_util_put_timetag(&osc_buffer_util,
+				    buffer,
 				    val_tv_secs[i], val_tv_fraction[i], val_immediately[i]);
     
     for(j = 0; j < 8; j++){
@@ -315,7 +323,8 @@ ags_osc_buffer_util_test_get_timetag()
   success = TRUE;
 
   for(i = 0; i < 9 && success; i++){
-    ags_osc_buffer_util_get_timetag(val_buffer[i],
+    ags_osc_buffer_util_get_timetag(&osc_buffer_util,
+				    val_buffer[i],
 				    &current_tv_secs, &current_tv_fraction, &current_immediately);
 
     if(current_tv_secs != val_tv_secs[i] ||
@@ -357,10 +366,12 @@ ags_osc_buffer_util_test_put_float()
   buffer = (unsigned char *) malloc(4 * sizeof(unsigned char));
 
   for(i = 0; i < 9 && success; i++){
-    ags_osc_buffer_util_put_float(buffer,
+    ags_osc_buffer_util_put_float(&osc_buffer_util,
+				  buffer,
 				  val[i]);
     
-    ags_osc_buffer_util_get_float(buffer,
+    ags_osc_buffer_util_get_float(&osc_buffer_util,
+				  buffer,
 				  &current);
 
     if(current != val[i]){
@@ -389,7 +400,8 @@ ags_osc_buffer_util_test_put_string()
 
   buffer = (unsigned char *) malloc(16 * sizeof(unsigned char));
   
-  ags_osc_buffer_util_put_string(buffer,
+  ags_osc_buffer_util_put_string(&osc_buffer_util,
+				 buffer,
 				 str, -1);
 
   CU_ASSERT(!g_strcmp0(buffer, str));
@@ -404,7 +416,8 @@ ags_osc_buffer_util_test_get_string()
 
   str = NULL;
   
-  ags_osc_buffer_util_get_string(str_buffer,
+  ags_osc_buffer_util_get_string(&osc_buffer_util,
+				 str_buffer,
 				 &str, NULL);
 
   CU_ASSERT(!g_strcmp0(str_buffer, str));
@@ -423,7 +436,8 @@ ags_osc_buffer_util_test_put_blob()
   
   buffer = (unsigned char *) malloc(32 * sizeof(unsigned char));
 
-  ags_osc_buffer_util_put_blob(buffer,
+  ags_osc_buffer_util_put_blob(&osc_buffer_util,
+			       buffer,
 			       16, blob);
 
   success = TRUE;
@@ -458,7 +472,8 @@ ags_osc_buffer_util_test_get_blob()
   
   static const unsigned char *buffer = "\x00\x00\x00\x10\x00\x00\x00\x00\x00\x00\x00\x01\x0e\x00\x00\x00\x00\x00\x00\x00";
 
-  ags_osc_buffer_util_get_blob(buffer,
+  ags_osc_buffer_util_get_blob(&osc_buffer_util,
+			       buffer,
 			       &data_size, &data);
 
   CU_ASSERT(data_size == 16);
@@ -517,7 +532,8 @@ ags_osc_buffer_util_test_put_int64()
   success = TRUE;
   
   for(i = 0; i < 11 && success; i++){
-    ags_osc_buffer_util_put_int64(buffer,
+    ags_osc_buffer_util_put_int64(&osc_buffer_util,
+				  buffer,
 				  val[i]);
     
     for(j = 0; j < 8; j++){
@@ -570,7 +586,8 @@ ags_osc_buffer_util_test_get_int64()
   success = TRUE;
 
   for(i = 0; i < 9 && success; i++){
-    ags_osc_buffer_util_get_int64(val_buffer[i],
+    ags_osc_buffer_util_get_int64(&osc_buffer_util,
+				  val_buffer[i],
 				  &current);
 
     if(current != val[i]){
@@ -610,10 +627,12 @@ ags_osc_buffer_util_test_put_double()
   buffer = (unsigned char *) malloc(8 * sizeof(unsigned char));
 
   for(i = 0; i < 9 && success; i++){
-    ags_osc_buffer_util_put_double(buffer,
+    ags_osc_buffer_util_put_double(&osc_buffer_util,
+				   buffer,
 				   val[i]);
     
-    ags_osc_buffer_util_get_double(buffer,
+    ags_osc_buffer_util_get_double(&osc_buffer_util,
+				   buffer,
 				   &current);
 
     if(current != val[i]){
@@ -686,7 +705,8 @@ ags_osc_buffer_util_test_put_char()
   success = TRUE;
 
   for(i = 0; i < 37 && success; i++){
-    ags_osc_buffer_util_put_char(buffer,
+    ags_osc_buffer_util_put_char(&osc_buffer_util,
+				 buffer,
 				 str[i]);
     
     for(j = 0; j < 4; j++){
@@ -752,7 +772,8 @@ ags_osc_buffer_util_test_get_char()
   success = TRUE;
 
   for(i = 0; i < 37 && success; i++){
-    ags_osc_buffer_util_get_char(val_buffer[i],
+    ags_osc_buffer_util_get_char(&osc_buffer_util,
+				 val_buffer[i],
 				 &current);
 
     if(current != str[i]){
@@ -816,7 +837,8 @@ ags_osc_buffer_util_test_put_rgba()
   success = TRUE;
 
   for(i = 0; i < 14 && success; i++){
-    ags_osc_buffer_util_put_rgba(buffer,
+    ags_osc_buffer_util_put_rgba(&osc_buffer_util,
+				 buffer,
 				 rgba[i][0], rgba[i][1], rgba[i][2], rgba[i][3]);
 
     for(j = 0; j < 4; j++){
@@ -879,7 +901,8 @@ ags_osc_buffer_util_test_get_rgba()
   success = TRUE;
 
   for(i = 0; i < 14 && success; i++){
-    ags_osc_buffer_util_get_rgba(val_rgba[i],
+    ags_osc_buffer_util_get_rgba(&osc_buffer_util,
+				 val_rgba[i],
 				 &r, &g, &b, &a);
 
     if(r != rgba[i][0] ||
@@ -918,7 +941,8 @@ ags_osc_buffer_util_test_put_midi()
   success = TRUE;
 
   for(i = 0; i < 2 && success; i++){
-    ags_osc_buffer_util_put_midi(buffer,
+    ags_osc_buffer_util_put_midi(&osc_buffer_util,
+				 buffer,
 				 midi[i][0], midi[i][1], midi[i][2], midi[i][3]);
 
     for(j = 0; j < 4; j++){
@@ -954,7 +978,8 @@ ags_osc_buffer_util_test_get_midi()
   success = TRUE;
 
   for(i = 0; i < 2 && success; i++){
-    ags_osc_buffer_util_get_midi(val_midi[i],
+    ags_osc_buffer_util_get_midi(&osc_buffer_util,
+				 val_midi[i],
 				 &port, &status_byte, &data0, &data1);
 
     if(port != midi[i][0] ||
@@ -984,7 +1009,8 @@ ags_osc_buffer_util_test_put_packet()
 
   success = TRUE;
 
-  ags_osc_buffer_util_put_packet(buffer,
+  ags_osc_buffer_util_put_packet(&osc_buffer_util,
+				 buffer,
 				 140, packet_bundle + 4);
 
   for(i = 0; i < 144 && success; i++){
@@ -1011,7 +1037,8 @@ ags_osc_buffer_util_test_get_packet()
 
   success = TRUE;
   
-  ags_osc_buffer_util_get_packet(packet_bundle,
+  ags_osc_buffer_util_get_packet(&osc_buffer_util,
+				 packet_bundle,
 				 &packet_size, &packet);
   
   CU_ASSERT(packet_size == 140);
@@ -1048,7 +1075,8 @@ ags_osc_buffer_util_test_put_message()
   
   success = TRUE;
 
-  ags_osc_buffer_util_put_message(buffer,
+  ags_osc_buffer_util_put_message(&osc_buffer_util,
+				  buffer,
 				  "/meter", ",sT");
 
   for(i = 0; i < 12 && success; i++){
@@ -1070,7 +1098,8 @@ ags_osc_buffer_util_test_get_message()
   
   static const unsigned char *message = "/meter\x00\x00,sT\x00";
 
-  ags_osc_buffer_util_get_message(message,
+  ags_osc_buffer_util_get_message(&osc_buffer_util,
+				  message,
 				  &address_pattern, &type_tag);
 
   CU_ASSERT(!g_strcmp0(address_pattern, "/meter"));
@@ -1091,7 +1120,8 @@ ags_osc_buffer_util_test_put_bundle()
 
   success = TRUE;
 
-  ags_osc_buffer_util_put_bundle(buffer,
+  ags_osc_buffer_util_put_bundle(&osc_buffer_util,
+				 buffer,
 				 0, 0, TRUE);
 
   for(i = 0; i < 16 && success; i++){
@@ -1113,7 +1143,8 @@ ags_osc_buffer_util_test_get_bundle()
   
   static const unsigned char *bundle = "#bundle\x00\x00\x00\x00\x00\x00\x00\x00\x01";
 
-  ags_osc_buffer_util_get_bundle(bundle,
+  ags_osc_buffer_util_get_bundle(&osc_buffer_util,
+				 bundle,
 				 &tv_secs, &tv_fraction, &immediately);
 
   CU_ASSERT(tv_secs == 0);

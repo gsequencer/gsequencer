@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2018 Joël Krähemann
+ * Copyright (C) 2018,2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -41,6 +41,8 @@ void ags_osc_connection_test_read_bytes();
 void ags_osc_connection_test_write_response();
 void ags_osc_connection_test_close();
 
+AgsOscBufferUtil osc_buffer_util;  
+
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
  * Returns zero on success, non-zero otherwise.
@@ -48,6 +50,9 @@ void ags_osc_connection_test_close();
 int
 ags_osc_connection_test_init_suite()
 {
+  osc_buffer_util.major = 1;
+  osc_buffer_util.minor = 0;
+
   return(0);
 }
 
@@ -91,7 +96,8 @@ ags_osc_connection_test_write_response()
   /* create packet */
   packet = (unsigned char *) malloc((4 * sizeof(unsigned char)) + sizeof(server_info_message));
 
-  ags_osc_buffer_util_put_int32(packet,
+  ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				packet,
 				sizeof(server_info_message));
   memcpy(packet + 4, server_info_message, sizeof(server_info_message));
 

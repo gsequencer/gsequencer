@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -857,11 +857,16 @@ ags_osc_builder_real_append_value(AgsOscBuilder *osc_builder,
 				  gint v_type,
 				  GValue *value)
 {
+  AgsOscBufferUtil osc_buffer_util;
+  
   if(osc_builder->offset_type_tag[0] != v_type){
     g_critical("message's value type not matching");
     
     return;
   }
+
+  osc_buffer_util.major = 1;
+  osc_buffer_util.minor = 0;
   
   switch(v_type){
   case AGS_OSC_UTIL_TYPE_TAG_STRING_INT32:
@@ -874,7 +879,8 @@ ags_osc_builder_real_append_value(AgsOscBuilder *osc_builder,
 					   message,
 					   4);
 
-      ags_osc_buffer_util_put_int32(message->data + message->data_length,
+      ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				    message->data + message->data_length,
 				    val);
 
       message->data_length += 4;
@@ -891,7 +897,8 @@ ags_osc_builder_real_append_value(AgsOscBuilder *osc_builder,
 					   message,
 					   4);
 
-      ags_osc_buffer_util_put_float(message->data + message->data_length,
+      ags_osc_buffer_util_put_float(&osc_buffer_util,
+				    message->data + message->data_length,
 				    val);
 
       message->data_length += 4;
@@ -911,7 +918,8 @@ ags_osc_builder_real_append_value(AgsOscBuilder *osc_builder,
 					   message,
 					   length + 1);
 
-      ags_osc_buffer_util_put_string(message->data + message->data_length,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				    message->data + message->data_length,
 				     str,
 				     -1);
 
@@ -932,7 +940,8 @@ ags_osc_builder_real_append_value(AgsOscBuilder *osc_builder,
 					   message,
 					   data_size + 4);
 
-      ags_osc_buffer_util_put_blob(message->data + message->data_length,
+      ags_osc_buffer_util_put_blob(&osc_buffer_util,
+				    message->data + message->data_length,
 				   data_size, data);
       
       message->data_length += (data_size + 4);
@@ -949,7 +958,8 @@ ags_osc_builder_real_append_value(AgsOscBuilder *osc_builder,
 					   message,
 					   8);
 
-      ags_osc_buffer_util_put_int64(message->data + message->data_length,
+      ags_osc_buffer_util_put_int64(&osc_buffer_util,
+				    message->data + message->data_length,
 				    val);
 
       message->data_length += 8;
@@ -970,7 +980,8 @@ ags_osc_builder_real_append_value(AgsOscBuilder *osc_builder,
 					   message,
 					   8);
 
-      ags_osc_buffer_util_put_timetag(message->data + message->data_length,
+      ags_osc_buffer_util_put_timetag(&osc_buffer_util,
+				    message->data + message->data_length,
 				      tv_secs, tv_fraction, immediately);
       
       message->data_length += 8;
@@ -987,7 +998,8 @@ ags_osc_builder_real_append_value(AgsOscBuilder *osc_builder,
 					   message,
 					   8);
 
-      ags_osc_buffer_util_put_double(message->data + message->data_length,
+      ags_osc_buffer_util_put_double(&osc_buffer_util,
+				    message->data + message->data_length,
 				     val);
 
       message->data_length += 8;
@@ -1007,7 +1019,8 @@ ags_osc_builder_real_append_value(AgsOscBuilder *osc_builder,
 					   message,
 					   length + 1);
 
-      ags_osc_buffer_util_put_string(message->data + message->data_length,
+      ags_osc_buffer_util_put_string(&osc_buffer_util,
+				     message->data + message->data_length,
 				     str,
 				     -1);
 
@@ -1025,7 +1038,8 @@ ags_osc_builder_real_append_value(AgsOscBuilder *osc_builder,
 					   message,
 					   4);
 
-      ags_osc_buffer_util_put_char(message->data + message->data_length,
+      ags_osc_buffer_util_put_char(&osc_buffer_util,
+				    message->data + message->data_length,
 				   val);
 
       message->data_length += 4;
@@ -1045,7 +1059,8 @@ ags_osc_builder_real_append_value(AgsOscBuilder *osc_builder,
 					   message,
 					   8);
 
-      ags_osc_buffer_util_put_rgba(message->data + message->data_length,
+      ags_osc_buffer_util_put_rgba(&osc_buffer_util,
+				    message->data + message->data_length,
 				   r, g, b, a);
       
       message->data_length += 8;
@@ -1067,7 +1082,8 @@ ags_osc_builder_real_append_value(AgsOscBuilder *osc_builder,
 					   message,
 					   8);
 
-      ags_osc_buffer_util_put_midi(message->data + message->data_length,
+      ags_osc_buffer_util_put_midi(&osc_buffer_util,
+				    message->data + message->data_length,
 				   port, status_byte, data0, data1);
       
       message->data_length += 8;
@@ -1149,18 +1165,25 @@ ags_osc_builder_build_bundle(AgsOscBuilder *osc_builder,
 			     guchar *data,
 			     gsize *offset)
 {
+  AgsOscBufferUtil osc_buffer_util;
+  
   GList *message_start, *message;
   GList *bundle_start, *bundle;
 
+  osc_buffer_util.major = 1;
+  osc_buffer_util.minor = 0;
+
   /* #bundle */
-  ags_osc_buffer_util_put_string(data + offset[0],
+  ags_osc_buffer_util_put_string(&osc_buffer_util,
+				 data + offset[0],
 				 "#bundle",
 				 -1);
     
   offset[0] += 8;
 
   /* time tag */
-  ags_osc_buffer_util_put_timetag(data + offset[0],
+  ags_osc_buffer_util_put_timetag(&osc_buffer_util,
+				  data + offset[0],
 				  current_bundle->tv_secs, current_bundle->tv_fraction, current_bundle->immediately);
     
   offset[0] += 8;
@@ -1209,13 +1232,19 @@ ags_osc_builder_build_message(AgsOscBuilder *osc_builder,
 			      guchar *data,
 			      gsize *offset)
 {
+  AgsOscBufferUtil osc_buffer_util;
+  
   guint64 address_pattern_length;
   guint64 type_tag_length;
+
+  osc_buffer_util.major = 1;
+  osc_buffer_util.minor = 0;
 
   /* address pattern */
   address_pattern_length = strlen(message->address_pattern);
 
-  ags_osc_buffer_util_put_string(data + offset[0],
+  ags_osc_buffer_util_put_string(&osc_buffer_util,
+				 data + offset[0],
 				 message->address_pattern,
 				 -1);
 
@@ -1224,7 +1253,8 @@ ags_osc_builder_build_message(AgsOscBuilder *osc_builder,
   /* type tag */
   type_tag_length = strlen(message->type_tag);
 
-  ags_osc_buffer_util_put_string(data + offset[0],
+  ags_osc_buffer_util_put_string(&osc_buffer_util,
+				 data + offset[0],
 				 message->type_tag,
 				 -1);
 
@@ -1249,6 +1279,8 @@ ags_osc_builder_build_message(AgsOscBuilder *osc_builder,
 void
 ags_osc_builder_build(AgsOscBuilder *osc_builder)
 {
+  AgsOscBufferUtil osc_buffer_util;
+
   GList *packet_start, *packet;
 
   guchar *data;
@@ -1259,6 +1291,9 @@ ags_osc_builder_build(AgsOscBuilder *osc_builder)
   if(!AGS_IS_OSC_BUILDER(osc_builder)){
     return;
   }
+
+  osc_buffer_util.major = 1;
+  osc_buffer_util.minor = 0;
 
   packet_start = g_list_copy(osc_builder->packet);
   packet_start = g_list_reverse(packet_start);
@@ -1287,7 +1322,8 @@ ags_osc_builder_build(AgsOscBuilder *osc_builder)
     }
 
     /* put packet size */
-    ags_osc_buffer_util_put_int32(data + offset,
+    ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				  data + offset,
 				  AGS_OSC_BUILDER_PACKET(packet->data)->packet_size);
 
     /*  */

@@ -1,8 +1,15 @@
-ags (5.5.5)
+ags (6.0.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed ags_midi_ump_util.[ch]
+	* breaking ABI of ags_midi_util.h 1 additional function parameter to boxed utility type
+	* breaking ABI of renamed ags_midi_buffer_util.h to ags_midi_smf_util.h 1 additional function
+	parameter to boxed utility type, changed function prototypes glong type to gint
+	* breaking ABI of ags_osc_buffer_util.h 1 additional function parameter to boxed utility type
+	* fixed ags_midi_ump_util.[ch] encode/decode errors
 	* added missing tests to ags_midi_ump_util_test.c
+	* refactored unit and functional tests
+	* refactored AgsAudioThreadStatusFlags to AgsAudioThreadNestedSyncFlags
+	* refactored AgsChannelThreadStatusFlags to AgsChannelThreadNestedSyncFlags
 
 ags (5.5.4)
 

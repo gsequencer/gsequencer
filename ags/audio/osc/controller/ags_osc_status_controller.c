@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -229,6 +229,8 @@ ags_osc_status_controller_real_get_status(AgsOscStatusController *osc_status_con
   AgsOscServer *osc_server;
   AgsOscResponse *osc_response;
   
+  AgsOscBufferUtil osc_buffer_util;
+
   GList *start_response;
 
   gchar *type_tag;
@@ -240,6 +242,9 @@ ags_osc_status_controller_real_get_status(AgsOscStatusController *osc_status_con
   guint length;
   gboolean success;
 
+  osc_buffer_util.major = 1;
+  osc_buffer_util.minor = 0;
+
   start_response = NULL;
 
   osc_response = ags_osc_response_new();
@@ -247,7 +252,8 @@ ags_osc_status_controller_real_get_status(AgsOscStatusController *osc_status_con
 				  osc_response);
       
   /* read type tag */
-  ags_osc_buffer_util_get_string(message + 8,
+  ags_osc_buffer_util_get_string(&osc_buffer_util,
+				 message + 8,
 				 &type_tag, NULL);
 
   success = (type_tag != NULL &&
@@ -288,12 +294,14 @@ ags_osc_status_controller_real_get_status(AgsOscStatusController *osc_status_con
   /* message path */
   packet_size = 4;
 
-  ags_osc_buffer_util_put_string(packet + packet_size,
+  ags_osc_buffer_util_put_string(&osc_buffer_util,
+				 packet + packet_size,
 				 "/status", -1);
       
   packet_size += 8;
 
-  ags_osc_buffer_util_put_string(packet + packet_size,
+  ags_osc_buffer_util_put_string(&osc_buffer_util,
+				 packet + packet_size,
 				 ",s", -1);
   
   /* status argument */
@@ -311,13 +319,15 @@ ags_osc_status_controller_real_get_status(AgsOscStatusController *osc_status_con
   
   length = strlen(status);
       
-  ags_osc_buffer_util_put_string(packet + packet_size,
+  ags_osc_buffer_util_put_string(&osc_buffer_util,
+				 packet + packet_size,
 				 status, -1);
 
   packet_size += (4 * (guint) ceil((double) (length + 1) / 4.0));
 
   /* packet size */
-  ags_osc_buffer_util_put_int32(packet,
+  ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				packet,
 				packet_size);
   
   free(type_tag);

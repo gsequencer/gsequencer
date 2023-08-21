@@ -29,9 +29,6 @@
 #include <mach/mach.h>
 #endif
 
-gpointer ags_osc_util_copy(gpointer ptr);
-void ags_osc_util_free(gpointer ptr);
-
 /**
  * SECTION:ags_osc_util
  * @short_description: OSC util
@@ -61,20 +58,68 @@ ags_osc_util_get_type(void)
   return g_define_type_id__volatile;
 }
 
-gpointer
-ags_osc_util_copy(gpointer ptr)
+/**
+ * ags_osc_util_alloc:
+ *
+ * Allocate OSC util.
+ *
+ * Returns: (transfer full): the newly allocated #AgsOscUtil-struct
+ * 
+ * Since: 6.0.0
+ */
+AgsOscUtil*
+ags_osc_util_alloc()
 {
-  gpointer retval;
+  AgsOscUtil *osc_util;
 
-  retval = g_memdup(ptr, sizeof(AgsOscUtil));
- 
-  return(retval);
+  osc_util = g_new0(AgsOscUtil,
+		    1);
+
+  osc_util->major = 1;
+  osc_util->minor = 0;
+  
+  return(osc_util);
 }
 
+/**
+ * ags_osc_util_free:
+ * @osc_util: the OSC util
+ *
+ * Free OSC util.
+ *
+ * Since: 6.0.0
+ */
 void
-ags_osc_util_free(gpointer ptr)
+ags_osc_util_free(AgsOscUtil *osc_util)
 {
-  g_free(ptr);
+  g_return_if_fail(osc_util != NULL);
+  
+  g_free(osc_util);
+}
+
+/**
+ * ags_osc_util_copy:
+ * @osc_util: the OSC util
+ *
+ * Copy OSC util.
+ *
+ * Returns: (transfer full): the newly allocated #AgsOscUtil-struct
+ * 
+ * Since: 6.0.0
+ */
+AgsOscUtil*
+ags_osc_util_copy(AgsOscUtil *osc_util)
+{
+  AgsOscUtil *ptr;
+
+  g_return_val_if_fail(osc_util != NULL, NULL);
+
+  ptr = ags_osc_util_alloc();
+
+  ptr->major = osc_util->major;
+  ptr->minor = osc_util->minor;
+  
+  return(ptr);
 }
 
 /**
