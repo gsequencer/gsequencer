@@ -5419,7 +5419,7 @@ ags_midi_ump_util_put_midi2_rpn_tuning_bank_select(AgsMidiUmpUtil *midi_ump_util
   nth++;
 
   /* tuning bank number */
-  buffer[nth] = 0xfc & ((0x7f & (tuning_bank_number)) << 1);
+  buffer[nth] = 0xfe & ((tuning_bank_number) << 1);
   nth++;
 
   /* undefined */
@@ -5477,7 +5477,7 @@ ags_midi_ump_util_get_midi2_rpn_tuning_bank_select(AgsMidiUmpUtil *midi_ump_util
   
   /* tuning bank number */
   if(tuning_bank_number != NULL){
-    tuning_bank_number[0] = ((0xfe & buffer[nth]) >> 1);
+    tuning_bank_number[0] = (0x7f & (buffer[nth] >> 1));
   }
 
   nth += 1;
@@ -5567,7 +5567,7 @@ ags_midi_ump_util_put_midi2_rpn_mpe_mcm(AgsMidiUmpUtil *midi_ump_util,
   nth++;
 
   /* channel count */
-  buffer[nth] = 0xfc & ((0x7f & (channel_count)) << 1);
+  buffer[nth] = 0xfe & (channel_count << 1);
   nth++;
 
   /* undefined */
@@ -5625,7 +5625,7 @@ ags_midi_ump_util_get_midi2_rpn_mpe_mcm(AgsMidiUmpUtil *midi_ump_util,
   
   /* channel count */
   if(channel_count != NULL){
-    channel_count[0] = ((0xfe & buffer[nth]) >> 1);
+    channel_count[0] = (0x7f & (buffer[nth] >> 1));
   }
 
   nth += 1;
@@ -5723,7 +5723,7 @@ ags_midi_ump_util_put_midi2_program_change(AgsMidiUmpUtil *midi_ump_util,
   nth++;
 
   /* bank MSB */
-  buffer[nth] = (0xff00 & (bank)) >> 8;
+  buffer[nth] = (0xff & (bank >> 8));
   nth++;
 
   /* bank LSB */
