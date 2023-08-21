@@ -7,6 +7,9 @@ ags (6.0.0)
 	* breaking ABI of ags_osc_buffer_util.h 1 additional function parameter to boxed utility type
 	* fixed ags_midi_ump_util.[ch] encode/decode errors
 	* added missing tests to ags_midi_ump_util_test.c
+	* refactored unit and functional tests
+	* refactored AgsAudioThreadFlags to AgsAudioThreadNestedSyncFlags
+	* refactored AgsChannelThreadFlags to AgsChannelThreadNestedSyncFlags
 
 ags (5.5.4)
 

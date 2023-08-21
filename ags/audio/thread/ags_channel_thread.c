@@ -237,7 +237,7 @@ ags_channel_thread_init(AgsChannelThread *channel_thread)
 	       "frequency", frequency,
 	       NULL);
 
-  g_atomic_int_set(&(channel_thread->status_flags),
+  g_atomic_int_set(&(channel_thread->nested_sync_flags),
 		   0);
 
   channel_thread->default_output_soundcard = NULL;
@@ -491,10 +491,10 @@ ags_channel_thread_start(AgsThread *thread)
 #endif
   
   /* reset status */
-  ags_channel_thread_set_status_flags(thread, (AGS_CHANNEL_THREAD_STATUS_WAIT |
-					       AGS_CHANNEL_THREAD_STATUS_DONE |
-					       AGS_CHANNEL_THREAD_STATUS_WAIT_SYNC |
-					       AGS_CHANNEL_THREAD_STATUS_DONE_SYNC));
+  ags_channel_thread_set_nested_sync_flags(thread, (AGS_CHANNEL_THREAD_STATUS_WAIT |
+						    AGS_CHANNEL_THREAD_STATUS_DONE |
+						    AGS_CHANNEL_THREAD_STATUS_WAIT_SYNC |
+						    AGS_CHANNEL_THREAD_STATUS_DONE_SYNC));
 
   AGS_THREAD_CLASS(ags_channel_thread_parent_class)->start(thread);
 }
@@ -591,19 +591,19 @@ ags_channel_thread_run(AgsThread *thread)
     /* start - wait until signaled */
     g_mutex_lock(&(channel_thread->wakeup_mutex));
 
-    if(!ags_channel_thread_test_status_flags(channel_thread, AGS_CHANNEL_THREAD_STATUS_DONE) &&
-       ags_channel_thread_test_status_flags(channel_thread, AGS_CHANNEL_THREAD_STATUS_WAIT)){
-      ags_channel_thread_unset_status_flags(channel_thread, AGS_CHANNEL_THREAD_STATUS_DONE);
+    if(!ags_channel_thread_test_nested_sync_flags(channel_thread, AGS_CHANNEL_THREAD_STATUS_DONE) &&
+       ags_channel_thread_test_nested_sync_flags(channel_thread, AGS_CHANNEL_THREAD_STATUS_WAIT)){
+      ags_channel_thread_unset_nested_sync_flags(channel_thread, AGS_CHANNEL_THREAD_STATUS_DONE);
     
-      while(!ags_channel_thread_test_status_flags(channel_thread, AGS_CHANNEL_THREAD_STATUS_DONE) &&
-	    ags_channel_thread_test_status_flags(channel_thread, AGS_CHANNEL_THREAD_STATUS_WAIT)){
+      while(!ags_channel_thread_test_nested_sync_flags(channel_thread, AGS_CHANNEL_THREAD_STATUS_DONE) &&
+	    ags_channel_thread_test_nested_sync_flags(channel_thread, AGS_CHANNEL_THREAD_STATUS_WAIT)){
 	g_cond_wait(&(channel_thread->wakeup_cond),
 		    &(channel_thread->wakeup_mutex));
       }
     }
   
-    ags_channel_thread_set_status_flags(channel_thread, (AGS_CHANNEL_THREAD_STATUS_WAIT |
-							 AGS_CHANNEL_THREAD_STATUS_DONE));
+    ags_channel_thread_set_nested_sync_flags(channel_thread, (AGS_CHANNEL_THREAD_STATUS_WAIT |
+							      AGS_CHANNEL_THREAD_STATUS_DONE));
   
     g_mutex_unlock(&(channel_thread->wakeup_mutex));
   
@@ -669,9 +669,9 @@ ags_channel_thread_run(AgsThread *thread)
     /* sync */
     g_mutex_lock(&(channel_thread->done_mutex));
   
-    ags_channel_thread_unset_status_flags(channel_thread, AGS_CHANNEL_THREAD_STATUS_WAIT_SYNC);
+    ags_channel_thread_unset_nested_sync_flags(channel_thread, AGS_CHANNEL_THREAD_STATUS_WAIT_SYNC);
   
-    if(!ags_channel_thread_test_status_flags(channel_thread, AGS_CHANNEL_THREAD_STATUS_DONE_SYNC)){
+    if(!ags_channel_thread_test_nested_sync_flags(channel_thread, AGS_CHANNEL_THREAD_STATUS_DONE_SYNC)){
       g_cond_signal(&(channel_thread->done_cond));
     }
   
@@ -714,9 +714,9 @@ ags_channel_thread_stop(AgsThread *thread)
   /* ensure synced */
   g_mutex_lock(&(channel_thread->done_mutex));
 
-  ags_channel_thread_unset_status_flags(channel_thread, AGS_CHANNEL_THREAD_STATUS_WAIT_SYNC);
+  ags_channel_thread_unset_nested_sync_flags(channel_thread, AGS_CHANNEL_THREAD_STATUS_WAIT_SYNC);
 
-  if(!ags_channel_thread_test_status_flags(channel_thread, AGS_CHANNEL_THREAD_STATUS_DONE_SYNC)){
+  if(!ags_channel_thread_test_nested_sync_flags(channel_thread, AGS_CHANNEL_THREAD_STATUS_DONE_SYNC)){
     g_cond_signal(&(channel_thread->done_cond));
   }
 
@@ -724,18 +724,18 @@ ags_channel_thread_stop(AgsThread *thread)
 }
 
 /**
- * ags_channel_thread_test_status_flags:
+ * ags_channel_thread_test_nested_sync_flags:
  * @channel_thread: the #AgsChannelThread
- * @status_flags: status flags
+ * @nested_sync_flags: nested sync flags
  * 
- * Test @status_flags of @channel_thread.
+ * Test @nested_sync_flags of @channel_thread.
  * 
  * Returns: %TRUE if status flags set, otherwise %FALSE
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 gboolean
-ags_channel_thread_test_status_flags(AgsChannelThread *channel_thread, AgsChannelThreadStatusFlags status_flags)
+ags_channel_thread_test_nested_sync_flags(AgsChannelThread *channel_thread, AgsChannelThreadNestedSyncFlags nested_sync_flags)
 {
   gboolean retval;
   
@@ -743,49 +743,49 @@ ags_channel_thread_test_status_flags(AgsChannelThread *channel_thread, AgsChanne
     return(FALSE);
   }
 
-  retval = ((status_flags & (g_atomic_int_get(&(channel_thread->status_flags)))) != 0) ? TRUE: FALSE;
+  retval = ((nested_sync_flags & (g_atomic_int_get(&(channel_thread->nested_sync_flags)))) != 0) ? TRUE: FALSE;
 
   return(retval);
 }
 
 /**
- * ags_channel_thread_set_status_flags:
+ * ags_channel_thread_set_nested_sync_flags:
  * @channel_thread: the #AgsChannelThread
- * @status_flags: status flags
+ * @nested_sync_flags: status flags
  * 
  * Set status flags.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 void
-ags_channel_thread_set_status_flags(AgsChannelThread *channel_thread, AgsChannelThreadStatusFlags status_flags)
+ags_channel_thread_set_nested_sync_flags(AgsChannelThread *channel_thread, AgsChannelThreadNestedSyncFlags nested_sync_flags)
 {
   if(!AGS_IS_CHANNEL_THREAD(channel_thread)){
     return;
   }
 
-  g_atomic_int_or(&(channel_thread->status_flags),
-		  status_flags);
+  g_atomic_int_or(&(channel_thread->nested_sync_flags),
+		  nested_sync_flags);
 }
 
 /**
- * ags_channel_thread_unset_status_flags:
+ * ags_channel_thread_unset_nested_sync_flags:
  * @channel_thread: the #AgsChannelThread
- * @status_flags: status flags
+ * @nested_sync_flags: status flags
  * 
  * Unset status flags.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 void
-ags_channel_thread_unset_status_flags(AgsChannelThread *channel_thread, AgsChannelThreadStatusFlags status_flags)
+ags_channel_thread_unset_nested_sync_flags(AgsChannelThread *channel_thread, AgsChannelThreadNestedSyncFlags nested_sync_flags)
 {
   if(!AGS_IS_CHANNEL_THREAD(channel_thread)){
     return;
   }
 
-  g_atomic_int_and(&(channel_thread->status_flags),
-		   (~status_flags));
+  g_atomic_int_and(&(channel_thread->nested_sync_flags),
+		   (~nested_sync_flags));
 }
 
 /**
@@ -825,7 +825,7 @@ ags_channel_thread_get_processing(AgsChannelThread *channel_thread)
  */
 void
 ags_channel_thread_set_processing(AgsChannelThread *channel_thread,
-				gboolean processing)
+				  gboolean processing)
 {
   if(!AGS_IS_CHANNEL_THREAD(channel_thread)){
     return;
