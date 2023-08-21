@@ -69,6 +69,8 @@ AgsAudio *drum;
 
 GObject *default_soundcard;
 
+AgsOscBufferUtil osc_buffer_util;  
+
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
  * Returns zero on success, non-zero otherwise.
@@ -80,6 +82,9 @@ ags_osc_node_controller_test_init_suite()
 
   GList *start_audio;
   
+  osc_buffer_util.major = 1;
+  osc_buffer_util.minor = 0;
+
   ags_priority_load_defaults(ags_priority_get_instance());  
 
   config = ags_config_get_instance();
@@ -314,7 +319,8 @@ ags_osc_node_controller_test_get_data()
 
     gfloat volume;
     
-    ags_osc_buffer_util_get_message(AGS_OSC_RESPONSE(osc_response->data)->packet + 4,
+    ags_osc_buffer_util_get_message(&osc_buffer_util,
+				    AGS_OSC_RESPONSE(osc_response->data)->packet + 4,
 				    &address_pattern, &type_tag);
     
     success = !g_strcmp0(address_pattern,
@@ -331,7 +337,8 @@ ags_osc_node_controller_test_get_data()
       break; 
    }
 
-    ags_osc_buffer_util_get_string(AGS_OSC_RESPONSE(osc_response->data)->packet + 16,
+    ags_osc_buffer_util_get_string(&osc_buffer_util,
+				   AGS_OSC_RESPONSE(osc_response->data)->packet + 16,
 				   &path, &length);
 
     if(path == NULL){
@@ -342,8 +349,9 @@ ags_osc_node_controller_test_get_data()
 
     length = 4 * (guint) ceil((double) (length + 1) / 4.0);
 
-    ags_osc_buffer_util_get_float(AGS_OSC_RESPONSE(osc_response->data)->packet + 16 + length,
-				   &volume);
+    ags_osc_buffer_util_get_float(&osc_buffer_util,
+				  AGS_OSC_RESPONSE(osc_response->data)->packet + 16 + length,
+				  &volume);
 
     if(volume != 1.0){
       success = FALSE;
