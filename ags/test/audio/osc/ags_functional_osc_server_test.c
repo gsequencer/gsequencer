@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -123,6 +123,8 @@ GObject *default_soundcard;
 
 GMainLoop *main_loop = NULL;
 
+AgsOscBufferUtil osc_buffer_util;  
+
 gpointer
 ags_functional_osc_server_test_add_thread(gpointer data)
 {
@@ -178,7 +180,10 @@ ags_functional_osc_server_test_init_suite()
   GList *start_audio;
 
   application_context = ags_application_context_get_instance();
-  
+
+  osc_buffer_util.major = 1;
+  osc_buffer_util.minor = 0;
+    
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
 
   /* drum */
@@ -325,11 +330,12 @@ ags_functional_osc_server_test_action_controller()
 
   CU_ASSERT(osc_server->ip4_fd != -1);
   CU_ASSERT(osc_client->ip4_fd != -1);
-  
+
   /* start soundcard */
   packet = (guchar *) malloc((4 + start_soundcard_message_size) * sizeof(guchar));
 
-  ags_osc_buffer_util_put_int32(packet,
+  ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				packet,
 				start_soundcard_message_size);
   memcpy(packet + 4, start_soundcard_message, (start_soundcard_message_size) * sizeof(guchar));
 
@@ -349,7 +355,8 @@ ags_functional_osc_server_test_action_controller()
   /* start sequencer */
   packet = (guchar *) malloc((4 + start_sequencer_message_size) * sizeof(guchar));
 
-  ags_osc_buffer_util_put_int32(packet,
+  ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				packet,
 				start_sequencer_message_size);
   memcpy(packet + 4, start_sequencer_message, (start_sequencer_message_size) * sizeof(guchar));
 
@@ -369,7 +376,8 @@ ags_functional_osc_server_test_action_controller()
   /* start audio */
   packet = (guchar *) malloc((4 + start_audio_message_size) * sizeof(guchar));
 
-  ags_osc_buffer_util_put_int32(packet,
+  ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				packet,
 				start_audio_message_size);
   memcpy(packet + 4, start_audio_message, (start_audio_message_size) * sizeof(guchar));
 
@@ -389,7 +397,8 @@ ags_functional_osc_server_test_action_controller()
   /* stop soundcard */
   packet = (guchar *) malloc((4 + stop_soundcard_message_size) * sizeof(guchar));
 
-  ags_osc_buffer_util_put_int32(packet,
+  ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				packet,
 				stop_soundcard_message_size);
   memcpy(packet + 4, stop_soundcard_message, (stop_soundcard_message_size) * sizeof(guchar));
 
@@ -409,7 +418,8 @@ ags_functional_osc_server_test_action_controller()
   /* stop sequencer */
   packet = (guchar *) malloc((4 + stop_sequencer_message_size) * sizeof(guchar));
 
-  ags_osc_buffer_util_put_int32(packet,
+  ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				packet,
 				stop_sequencer_message_size);
   memcpy(packet + 4, stop_sequencer_message, (stop_sequencer_message_size) * sizeof(guchar));
 
@@ -429,7 +439,8 @@ ags_functional_osc_server_test_action_controller()
   /* stop audio */
   packet = (guchar *) malloc((4 + stop_audio_message_size) * sizeof(guchar));
 
-  ags_osc_buffer_util_put_int32(packet,
+  ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				packet,
 				stop_audio_message_size);
   memcpy(packet + 4, stop_audio_message, (stop_audio_message_size) * sizeof(guchar));
 
@@ -479,7 +490,8 @@ ags_functional_osc_server_test_config_controller()
 
   packet = (guchar *) malloc((4 + length) * sizeof(guchar));
 
-  ags_osc_buffer_util_put_int32(packet,
+  ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				packet,
 				length);
   memcpy(packet + 4, message, (length) * sizeof(guchar));
 
@@ -515,7 +527,8 @@ ags_functional_osc_server_test_info_controller()
 
   packet = (guchar *) malloc((4 + info_message_size) * sizeof(guchar));
 
-  ags_osc_buffer_util_put_int32(packet,
+  ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				packet,
 				info_message_size);
   memcpy(packet + 4, info_message, (info_message_size) * sizeof(guchar));
 
@@ -560,7 +573,8 @@ ags_functional_osc_server_test_meter_controller()
   /* enable meter */
   packet = (guchar *) malloc((4 + enable_peak_message_size) * sizeof(guchar));
 
-  ags_osc_buffer_util_put_int32(packet,
+  ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				packet,
 				enable_peak_message_size);
   memcpy(packet + 4, enable_peak_message, (enable_peak_message_size) * sizeof(guchar));
 
@@ -614,7 +628,8 @@ ags_functional_osc_server_test_meter_controller()
 						NULL);
 
       if(data_length >= 8){
-	ags_osc_buffer_util_get_message(current_packet + 4,
+	ags_osc_buffer_util_get_message(&osc_buffer_util,
+					current_packet + 4,
 					&address_pattern, NULL);
 
 	if(!g_strcmp0(address_pattern,
@@ -640,7 +655,8 @@ ags_functional_osc_server_test_meter_controller()
   /* disable meter */
   packet = (guchar *) malloc((4 + disable_peak_message_size) * sizeof(guchar));
 
-  ags_osc_buffer_util_put_int32(packet,
+  ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				packet,
 				disable_peak_message_size);
   memcpy(packet + 4, disable_peak_message, (disable_peak_message_size) * sizeof(guchar));
 
@@ -679,7 +695,8 @@ ags_functional_osc_server_test_node_controller()
   /* volume message */
   packet = (guchar *) malloc((4 + volume_message_size) * sizeof(guchar));
 
-  ags_osc_buffer_util_put_int32(packet,
+  ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				packet,
 				volume_message_size);
   memcpy(packet + 4, volume_message, (volume_message_size) * sizeof(guchar));
 
@@ -729,7 +746,8 @@ ags_functional_osc_server_test_node_controller()
 						NULL);
 
       if(data_length >= 8){
-	ags_osc_buffer_util_get_message(current_packet + 4,
+	ags_osc_buffer_util_get_message(&osc_buffer_util,
+					current_packet + 4,
 					&address_pattern, NULL);
 
 	if(!g_strcmp0(address_pattern,
@@ -764,7 +782,8 @@ ags_functional_osc_server_test_renew_controller()
   /* mute message */
   packet = (guchar *) malloc((4 + mute_message_size) * sizeof(guchar));
 
-  ags_osc_buffer_util_put_int32(packet,
+  ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				packet,
 				mute_message_size);
   memcpy(packet + 4, mute_message, (mute_message_size) * sizeof(guchar));
 
@@ -799,7 +818,8 @@ ags_functional_osc_server_test_status_controller()
   /* status message */
   packet = (guchar *) malloc((4 + status_message_size) * sizeof(guchar));
 
-  ags_osc_buffer_util_put_int32(packet,
+  ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				packet,
 				status_message_size);
   memcpy(packet + 4, status_message, (status_message_size) * sizeof(guchar));
 

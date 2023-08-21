@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -57,13 +57,13 @@ typedef enum{
   AGS_AUDIO_THREAD_STATUS_WAIT            = 1 <<  1,
   AGS_AUDIO_THREAD_STATUS_DONE_SYNC       = 1 <<  2,
   AGS_AUDIO_THREAD_STATUS_WAIT_SYNC       = 1 <<  3,
-}AgsAudioThreadStatusFlags;
+}AgsAudioThreadNestedSyncFlags;
 
 struct _AgsAudioThread
 {
   AgsThread thread;
 
-  volatile AgsAudioThreadStatusFlags status_flags;
+  volatile AgsAudioThreadNestedSyncFlags nested_sync_flags;
 
   GObject *default_output_soundcard;
   
@@ -107,9 +107,9 @@ struct _AgsAudioThreadScopeData
 GType ags_audio_thread_get_type();
 
 /* flags */
-gboolean ags_audio_thread_test_status_flags(AgsAudioThread *audio_thread, AgsAudioThreadStatusFlags status_flags);
-void ags_audio_thread_set_status_flags(AgsAudioThread *audio_thread, AgsAudioThreadStatusFlags status_flags);
-void ags_audio_thread_unset_status_flags(AgsAudioThread *audio_thread, AgsAudioThreadStatusFlags status_flags);
+gboolean ags_audio_thread_test_nested_sync_flags(AgsAudioThread *audio_thread, AgsAudioThreadNestedSyncFlags nested_sync_flags);
+void ags_audio_thread_set_nested_sync_flags(AgsAudioThread *audio_thread, AgsAudioThreadNestedSyncFlags nested_sync_flags);
+void ags_audio_thread_unset_nested_sync_flags(AgsAudioThread *audio_thread, AgsAudioThreadNestedSyncFlags nested_sync_flags);
 
 gboolean ags_audio_thread_get_processing(AgsAudioThread *audio_thread);
 void ags_audio_thread_set_processing(AgsAudioThread *audio_thread,
