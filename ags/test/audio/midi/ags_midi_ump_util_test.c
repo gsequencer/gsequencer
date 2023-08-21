@@ -3109,9 +3109,16 @@ ags_midi_ump_util_test_is_flex_set_tempo()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  gboolean retval;
+  
+  const guchar buffer[512] = "\xd0\x10\x00\x00\x7f\xff\xca\xfe\x00\x00\x00\x00\x00\x00\x00";
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  retval = ags_midi_ump_util_is_flex_set_tempo(midi_ump_util,
+					       buffer);
+
+  CU_ASSERT(retval == TRUE);
 }
 
 void
@@ -3119,9 +3126,24 @@ ags_midi_ump_util_test_put_flex_set_tempo()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  guchar buffer[512];
+  const guchar filled_buffer[512] = "\xd0\x10\x00\x00\x7f\xff\xca\xfe\x00\x00\x00\x00\x00\x00\x00";
+
+  gint ten_ns_per_quarter_note = 0x7fffcafe;
+  
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  memset(buffer, 0, 512 * sizeof(guchar));
+  
+  ags_midi_ump_util_put_flex_set_tempo(midi_ump_util,
+				       buffer,
+				       0,
+				       0,
+				       ten_ns_per_quarter_note,
+				       NULL, NULL,
+				       0);
+  
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
 
 void
@@ -3129,9 +3151,25 @@ ags_midi_ump_util_test_get_flex_set_tempo()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  const guchar buffer[512] = "\xd0\x10\x00\x00\x7f\xff\xca\xfe\x00\x00\x00\x00\x00\x00\x00";
+
+  gint group;
+  gint channel;
+  gint ten_ns_per_quarter_note;
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  ags_midi_ump_util_get_flex_set_tempo(midi_ump_util,
+				       buffer,
+				       &group,
+				       &channel,
+				       &ten_ns_per_quarter_note,
+				       NULL, NULL,
+				       0);
+  
+  CU_ASSERT(group == 0);
+  CU_ASSERT(channel == 0);
+  CU_ASSERT(ten_ns_per_quarter_note == 0x7fffcafe);
 }
 
 void
@@ -3139,9 +3177,16 @@ ags_midi_ump_util_test_is_flex_set_time_signature()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  gboolean retval;
+  
+  const guchar buffer[512] = "\xd0\x10\x00\x01\x04\x04\x10\x00\x00\x00\x00\x00\x00\x00\x00";
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  retval = ags_midi_ump_util_is_flex_set_time_signature(midi_ump_util,
+							buffer);
+
+  CU_ASSERT(retval == TRUE);
 }
 
 void
@@ -3149,9 +3194,28 @@ ags_midi_ump_util_test_put_flex_set_time_signature()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  guchar buffer[512];
+  const guchar filled_buffer[512] = "\xd0\x10\x00\x01\x04\x04\x10\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gint numerator = 4;
+  gint denominator = 4;
+  gint thirty_two_ticks = 16;
+  
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  memset(buffer, 0, 512 * sizeof(guchar));
+  
+  ags_midi_ump_util_put_flex_set_time_signature(midi_ump_util,
+						buffer,
+						0,
+						0,
+						numerator,
+						denominator,
+						thirty_two_ticks,
+						NULL, NULL,
+						0);
+  
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
 
 void
@@ -3159,9 +3223,31 @@ ags_midi_ump_util_test_get_flex_set_time_signature()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  const guchar buffer[512] = "\xd0\x10\x00\x01\x04\x04\x10\x0\x00\x00\x00\x00\x00\x00\x00";
+
+  gint group;
+  gint channel;
+  gint numerator;
+  gint denominator;
+  gint thirty_two_ticks;
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  ags_midi_ump_util_get_flex_set_time_signature(midi_ump_util,
+						buffer,
+						&group,
+						&channel,
+						&numerator,
+						&denominator,
+						&thirty_two_ticks,
+						NULL, NULL,
+						0);
+  
+  CU_ASSERT(group == 0);
+  CU_ASSERT(channel == 0);
+  CU_ASSERT(numerator == 4);
+  CU_ASSERT(denominator == 4);
+  CU_ASSERT(thirty_two_ticks == 16);
 }
 
 void
@@ -3169,9 +3255,16 @@ ags_midi_ump_util_test_is_flex_set_metronome()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  gboolean retval;
+  
+  const guchar buffer[512] = "\xd0\x10\x00\x02\x04\x00\x00\x00\x10\x10\x00\x00\x00\x00\x00\x00";
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  retval = ags_midi_ump_util_is_flex_set_metronome(midi_ump_util,
+							buffer);
+
+  CU_ASSERT(retval == TRUE);
 }
 
 void
@@ -3179,9 +3272,34 @@ ags_midi_ump_util_test_put_flex_set_metronome()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  guchar buffer[512];
+  const guchar filled_buffer[512] = "\xd0\x10\x00\x02\x04\x00\x00\x00\x10\x10\x00\x00\x00\x00\x00\x00";
+
+  gint clocks_per_primary_click = 4;
+  gint bar_accent_part_1 = 0;
+  gint bar_accent_part_2 = 0;
+  gint bar_accent_part_3 = 0;
+  gint subdivision_clicks_1 = 16;
+  gint subdivision_clicks_2 = 16;
+  
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  memset(buffer, 0, 512 * sizeof(guchar));
+  
+  ags_midi_ump_util_put_flex_set_metronome(midi_ump_util,
+					   buffer,
+					   0,
+					   0,
+					   clocks_per_primary_click,
+					   bar_accent_part_1,
+					   bar_accent_part_2,
+					   bar_accent_part_3,
+					   subdivision_clicks_1,
+					   subdivision_clicks_2,
+					   NULL, NULL,
+					   0);
+  
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
 
 void
@@ -3189,9 +3307,40 @@ ags_midi_ump_util_test_get_flex_set_metronome()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  const guchar buffer[512] = "\xd0\x10\x00\x02\x04\x00\x00\x00\x10\x10\x00\x00\x00\x00\x00";
+
+  gint group;
+  gint channel;
+  gint clocks_per_primary_click = 4;
+  gint bar_accent_part_1 = 0;
+  gint bar_accent_part_2 = 0;
+  gint bar_accent_part_3 = 0;
+  gint subdivision_clicks_1 = 16;
+  gint subdivision_clicks_2 = 16;
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  ags_midi_ump_util_get_flex_set_metronome(midi_ump_util,
+					   buffer,
+					   &group,
+					   &channel,
+					   &clocks_per_primary_click,
+					   &bar_accent_part_1,
+					   &bar_accent_part_2,
+					   &bar_accent_part_3,
+					   &subdivision_clicks_1,
+					   &subdivision_clicks_2,
+					   NULL, NULL,
+					   0);
+  
+  CU_ASSERT(group == 0);
+  CU_ASSERT(channel == 0);
+  CU_ASSERT(clocks_per_primary_click == 4);
+  CU_ASSERT(bar_accent_part_1 == 0);
+  CU_ASSERT(bar_accent_part_2 == 0);
+  CU_ASSERT(bar_accent_part_3 == 0);
+  CU_ASSERT(subdivision_clicks_1 == 16);
+  CU_ASSERT(subdivision_clicks_2 == 16);
 }
 
 void
@@ -3199,9 +3348,16 @@ ags_midi_ump_util_test_is_flex_set_key_signature()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  gboolean retval;
+  
+  const guchar buffer[512] = "\xd0\x00\x00\x05\x73\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  retval = ags_midi_ump_util_is_flex_set_key_signature(midi_ump_util,
+						       buffer);
+
+  CU_ASSERT(retval == TRUE);
 }
 
 void
@@ -3209,9 +3365,26 @@ ags_midi_ump_util_test_put_flex_set_key_signature()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  guchar buffer[512];
+  const guchar filled_buffer[512] = "\xd0\x00\x00\x05\x73\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gint sharp_flats = 7;
+  gint tonic_note = 3;
+  
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  memset(buffer, 0, 512 * sizeof(guchar));
+  
+  ags_midi_ump_util_put_flex_set_key_signature(midi_ump_util,
+					       buffer,
+					       0,
+					       0,
+					       sharp_flats,
+					       tonic_note,
+					       NULL, NULL,
+					       0);
+  
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
 
 void
@@ -3219,9 +3392,28 @@ ags_midi_ump_util_test_get_flex_set_key_signature()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  const guchar buffer[512] = "\xd0\x00\x00\x05\x73\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gint group;
+  gint channel;
+  gint sharp_flats;
+  gint tonic_note;
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  ags_midi_ump_util_get_flex_set_key_signature(midi_ump_util,
+					       buffer,
+					       &group,
+					       &channel,
+					       &sharp_flats,
+					       &tonic_note,
+					       NULL, NULL,
+					       0);
+  
+  CU_ASSERT(group == 0);
+  CU_ASSERT(channel == 0);
+  CU_ASSERT(sharp_flats == 7);
+  CU_ASSERT(tonic_note == 3);
 }
 
 void
@@ -3229,9 +3421,16 @@ ags_midi_ump_util_test_is_flex_set_chord_name()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  gboolean retval;
+  
+  const guchar buffer[512] = "\xd0\x10\x00\x06\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  retval = ags_midi_ump_util_is_flex_set_chord_name(midi_ump_util,
+						    buffer);
+
+  CU_ASSERT(retval == TRUE);
 }
 
 void
