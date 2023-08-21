@@ -2156,9 +2156,7 @@ ags_midi_ump_util_test_get_midi2_polyphonic_aftertouch()
   gint group;
   gint channel;
   gint key;
-  gint attribute_id;
   gint data;
-  gint attribute_value;
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -2182,9 +2180,16 @@ ags_midi_ump_util_test_is_midi2_registered_per_note_controller()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  gboolean retval;
+  
+  const guchar buffer[512] = "\x40\x00\x30\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  retval = ags_midi_ump_util_is_midi2_registered_per_note_controller(midi_ump_util,
+								     buffer);
+
+  CU_ASSERT(retval == TRUE);
 }
 
 void
@@ -2192,9 +2197,28 @@ ags_midi_ump_util_test_put_midi2_registered_per_note_controller()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  guchar buffer[512];
+  const guchar filled_buffer[512] = "\x40\x00\x30\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gint key = 48;
+  gint data_index = 0x0;
+  gint data = 0x0;
+  
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  memset(buffer, 0, 512 * sizeof(guchar));
+  
+  ags_midi_ump_util_put_midi2_registered_per_note_controller(midi_ump_util,
+							     buffer,
+							     0,
+							     0,
+							     key,
+							     data_index,
+							     data,
+							     NULL, NULL,
+							     0);
+  
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
 
 void
@@ -2202,9 +2226,31 @@ ags_midi_ump_util_test_get_midi2_registered_per_note_controller()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  const guchar buffer[512] = "\x40\x00\x30\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gint group;
+  gint channel;
+  gint key;
+  gint data;
+  gint data_index;
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  ags_midi_ump_util_get_midi2_registered_per_note_controller(midi_ump_util,
+							     buffer,
+							     &group,
+							     &channel,
+							     &key,
+							     &data_index,
+							     &data,
+							     NULL, NULL,
+							     0);
+  
+  CU_ASSERT(group == 0);
+  CU_ASSERT(channel == 0);
+  CU_ASSERT(key == 48);
+  CU_ASSERT(data == 0x0);
+  CU_ASSERT(data_index == 0x0);
 }
 
 void
@@ -2212,9 +2258,16 @@ ags_midi_ump_util_test_is_midi2_assignable_per_note_controller()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  gboolean retval;
+  
+  const guchar buffer[512] = "\x40\x10\x30\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  retval = ags_midi_ump_util_is_midi2_assignable_per_note_controller(midi_ump_util,
+								     buffer);
+
+  CU_ASSERT(retval == TRUE);
 }
 
 void
@@ -2222,9 +2275,28 @@ ags_midi_ump_util_test_put_midi2_assignable_per_note_controller()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  guchar buffer[512];
+  const guchar filled_buffer[512] = "\x40\x10\x30\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gint key = 48;
+  gint data_index = 0x0;
+  gint data = 0x0;
+  
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  memset(buffer, 0, 512 * sizeof(guchar));
+  
+  ags_midi_ump_util_put_midi2_assignable_per_note_controller(midi_ump_util,
+							     buffer,
+							     0,
+							     0,
+							     key,
+							     data_index,
+							     data,
+							     NULL, NULL,
+							     0);
+  
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
 
 void
@@ -2232,9 +2304,31 @@ ags_midi_ump_util_test_get_midi2_assignable_per_note_controller()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  const guchar buffer[512] = "\x40\x10\x30\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gint group;
+  gint channel;
+  gint key;
+  gint data;
+  gint data_index;
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  ags_midi_ump_util_get_midi2_assignable_per_note_controller(midi_ump_util,
+							     buffer,
+							     &group,
+							     &channel,
+							     &key,
+							     &data_index,
+							     &data,
+							     NULL, NULL,
+							     0);
+  
+  CU_ASSERT(group == 0);
+  CU_ASSERT(channel == 0);
+  CU_ASSERT(key == 48);
+  CU_ASSERT(data == 0x0);
+  CU_ASSERT(data_index == 0x0);
 }
 
 void
@@ -2242,9 +2336,16 @@ ags_midi_ump_util_test_is_midi2_per_note_management()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  gboolean retval;
+  
+  const guchar buffer[512] = "\x40\xf0\x30\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  retval = ags_midi_ump_util_is_midi2_per_note_management(midi_ump_util,
+							  buffer);
+  
+  CU_ASSERT(retval == TRUE);
 }
 
 void
@@ -2252,9 +2353,26 @@ ags_midi_ump_util_test_put_midi2_per_note_management()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  guchar buffer[512];
+  const guchar filled_buffer[512] = "\x40\xf0\x30\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gint key = 48;
+  gint options_flags = 0x0;
+  
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  memset(buffer, 0, 512 * sizeof(guchar));
+  
+  ags_midi_ump_util_put_midi2_per_note_management(midi_ump_util,
+						  buffer,
+						  0,
+						  0,
+						  key,
+						  options_flags,
+						  NULL, NULL,
+						  0);
+  
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
 
 void
@@ -2262,9 +2380,28 @@ ags_midi_ump_util_test_get_midi2_per_note_management()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  const guchar buffer[512] = "\x40\xf0\x30\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gint group;
+  gint channel;
+  gint key;
+  gint options_flags;
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  ags_midi_ump_util_get_midi2_per_note_management(midi_ump_util,
+						  buffer,
+						  &group,
+						  &channel,
+						  &key,
+						  &options_flags,
+						  NULL, NULL,
+						  0);
+  
+  CU_ASSERT(group == 0);
+  CU_ASSERT(channel == 0);
+  CU_ASSERT(key == 48);
+  CU_ASSERT(options_flags == 0x0);
 }
 
 void
@@ -2272,9 +2409,16 @@ ags_midi_ump_util_test_is_midi2_control_change()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  gboolean retval;
+  
+  const guchar buffer[512] = "\x40\xb0\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  retval = ags_midi_ump_util_is_midi2_control_change(midi_ump_util,
+							  buffer);
+  
+  CU_ASSERT(retval == TRUE);
 }
 
 void
@@ -2282,9 +2426,24 @@ ags_midi_ump_util_test_put_midi2_control_change()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  guchar buffer[512];
+  const guchar filled_buffer[512] = "\x40\xb0\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gint index_key = 0x7f;
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  memset(buffer, 0, 512 * sizeof(guchar));
+  
+  ags_midi_ump_util_put_midi2_control_change(midi_ump_util,
+						  buffer,
+						  0,
+						  0,
+						  index_key,
+						  NULL, NULL,
+						  0);
+  
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
 
 void
@@ -2292,9 +2451,25 @@ ags_midi_ump_util_test_get_midi2_control_change()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  const guchar buffer[512] = "\x40\xb0\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gint group;
+  gint channel;
+  gint index_key;
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  ags_midi_ump_util_get_midi2_control_change(midi_ump_util,
+					     buffer,
+					     &group,
+					     &channel,
+					     &index_key,
+					     NULL, NULL,
+					     0);
+  
+  CU_ASSERT(group == 0);
+  CU_ASSERT(channel == 0);
+  CU_ASSERT(index_key == 127);
 }
 
 void
@@ -2302,9 +2477,16 @@ ags_midi_ump_util_test_is_midi2_rpn_pitch_bend_range()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  gboolean retval;
+  
+  const guchar buffer[512] = "\x40\x20\x00\x00\x1f\xc0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  retval = ags_midi_ump_util_is_midi2_rpn_pitch_bend_range(midi_ump_util,
+							   buffer);
+  
+  CU_ASSERT(retval == TRUE);
 }
 
 void
@@ -2312,9 +2494,26 @@ ags_midi_ump_util_test_put_midi2_rpn_pitch_bend_range()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  guchar buffer[512];
+  const guchar filled_buffer[512] = "\x40\x20\x00\x00\x11\xfc\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gint semitones = 8;
+  gint cents = 127;
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  memset(buffer, 0, 512 * sizeof(guchar));
+  
+  ags_midi_ump_util_put_midi2_rpn_pitch_bend_range(midi_ump_util,
+						   buffer,
+						   0,
+						   0,
+						   semitones,
+						   cents,
+						   NULL, NULL,
+						   0);
+  
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
 
 void
@@ -2322,9 +2521,28 @@ ags_midi_ump_util_test_get_midi2_rpn_pitch_bend_range()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  const guchar buffer[512] = "\x40\x20\x00\x00\x11\xfc\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gint group;
+  gint channel;
+  gint semitones;
+  gint cents;
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  ags_midi_ump_util_get_midi2_rpn_pitch_bend_range(midi_ump_util,
+						   buffer,
+						   &group,
+						   &channel,
+						   &semitones,
+						   &cents,
+						   NULL, NULL,
+						   0);
+  
+  CU_ASSERT(group == 0);
+  CU_ASSERT(channel == 0);
+  CU_ASSERT(semitones == 8);
+  CU_ASSERT(cents == 127);
 }
 
 void
@@ -2332,9 +2550,16 @@ ags_midi_ump_util_test_is_midi2_rpn_coarse_tuning()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  gboolean retval;
+  
+  const guchar buffer[512] = "\x40\x20\x00\x02\xfe\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  retval = ags_midi_ump_util_is_midi2_rpn_coarse_tuning(midi_ump_util,
+							buffer);
+  
+  CU_ASSERT(retval == TRUE);
 }
 
 void
@@ -2342,9 +2567,24 @@ ags_midi_ump_util_test_put_midi2_rpn_coarse_tuning()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  guchar buffer[512];
+  const guchar filled_buffer[512] = "\x40\x20\x00\x02\xfe\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gint coarse_tuning = 127;
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  memset(buffer, 0, 512 * sizeof(guchar));
+  
+  ags_midi_ump_util_put_midi2_rpn_coarse_tuning(midi_ump_util,
+						buffer,
+						0,
+						0,
+						coarse_tuning,
+						NULL, NULL,
+						0);
+  
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
 
 void
@@ -2352,9 +2592,25 @@ ags_midi_ump_util_test_get_midi2_rpn_coarse_tuning()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  const guchar buffer[512] = "\x40\x20\x00\x02\xfe\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gint group;
+  gint channel;
+  gint coarse_tuning;
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  ags_midi_ump_util_get_midi2_rpn_coarse_tuning(midi_ump_util,
+						buffer,
+						&group,
+						&channel,
+						&coarse_tuning,
+						NULL, NULL,
+						0);
+  
+  CU_ASSERT(group == 0);
+  CU_ASSERT(channel == 0);
+  CU_ASSERT(coarse_tuning == 127);
 }
 
 void
@@ -2362,9 +2618,16 @@ ags_midi_ump_util_test_is_midi2_rpn_tuning_program_change()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  gboolean retval;
+  
+  const guchar buffer[512] = "\x40\x20\x00\x03\xfe\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  retval = ags_midi_ump_util_is_midi2_rpn_tuning_program_change(midi_ump_util,
+								buffer);
+  
+  CU_ASSERT(retval == TRUE);
 }
 
 void
@@ -2372,9 +2635,24 @@ ags_midi_ump_util_test_put_midi2_rpn_tuning_program_change()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  guchar buffer[512];
+  const guchar filled_buffer[512] = "\x40\x20\x00\x03\xfe\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gint tuning_program_number = 127;
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  memset(buffer, 0, 512 * sizeof(guchar));
+  
+  ags_midi_ump_util_put_midi2_rpn_tuning_program_change(midi_ump_util,
+							buffer,
+							0,
+							0,
+							tuning_program_number,
+							NULL, NULL,
+							0);
+  
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
 
 void
@@ -2382,9 +2660,25 @@ ags_midi_ump_util_test_get_midi2_rpn_tuning_program_change()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
+  const guchar buffer[512] = "\x40\x20\x00\x03\xfe\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  gint group;
+  gint channel;
+  gint tuning_program_number;
+
   midi_ump_util = ags_midi_ump_util_alloc();
 
-  //TODO:JK: implement me
+  ags_midi_ump_util_get_midi2_rpn_tuning_program_change(midi_ump_util,
+							buffer,
+							&group,
+							&channel,
+							&tuning_program_number,
+							NULL, NULL,
+							0);
+  
+  CU_ASSERT(group == 0);
+  CU_ASSERT(channel == 0);
+  CU_ASSERT(tuning_program_number == 127);
 }
 
 void
