@@ -811,6 +811,7 @@ ags_input_open_file(AgsInput *input,
 
     audio_signal = audio_file->audio_signal;
     //    g_object_unref(audio_file);
+#if defined(AGS_WITH_LIBINSTPATCH)
   }else if(ags_ipatch_check_suffix(filename)){
     AgsAudioContainer *audio_container;
 
@@ -832,6 +833,7 @@ ags_input_open_file(AgsInput *input,
 
     audio_signal = audio_container->audio_signal;
     //    g_object_unref(audio_container);
+#endif
   }
 
   if(success){

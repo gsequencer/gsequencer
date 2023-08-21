@@ -1,3 +1,8 @@
+ags (6.0.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed api reference manual by rebuild gtk-doc types
+
 ags (6.0.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

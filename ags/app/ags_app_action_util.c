@@ -19,6 +19,8 @@
 
 #include <ags/app/ags_app_action_util.h>
 
+#include <ags/ags_api_config.h>
+
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_composite_editor.h>
@@ -55,7 +57,6 @@
 #include <ags/app/machine/ags_fm_syncsynth.h>
 #include <ags/app/machine/ags_hybrid_synth.h>
 #include <ags/app/machine/ags_hybrid_fm_synth.h>
-
 
 #if defined(AGS_WITH_LIBINSTPATCH)
 #include <ags/app/machine/ags_ffplayer.h>

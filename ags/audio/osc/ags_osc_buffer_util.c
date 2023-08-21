@@ -126,6 +126,7 @@ ags_osc_buffer_util_copy(AgsOscBufferUtil *osc_buffer_util)
 
 /**
  * ags_osc_buffer_util_put_int32:
+ * @osc_buffer_util: the OSC util
  * @buffer: the guchar buffer
  * @val: the 32 bit integer value
  * 
@@ -150,6 +151,7 @@ ags_osc_buffer_util_put_int32(AgsOscBufferUtil *osc_buffer_util,
 
 /**
  * ags_osc_buffer_util_get_int32:
+ * @osc_buffer_util: the OSC util
  * @buffer: the guchar buffer
  * @val: return location of the 32 bit integer value
  * 
@@ -184,6 +186,7 @@ ags_osc_buffer_util_get_int32(AgsOscBufferUtil *osc_buffer_util,
 
 /**
  * ags_osc_buffer_util_put_timetag:
+ * @osc_buffer_util: the OSC util
  * @buffer: the guchar buffer
  * @tv_secs: number of seconds since midnight on January 1, 1900
  * @tv_fraction: fraction of seconds to a precision of about 200 picoseconds
@@ -219,6 +222,7 @@ ags_osc_buffer_util_put_timetag(AgsOscBufferUtil *osc_buffer_util,
 
 /**
  * ags_osc_buffer_util_get_timetag:
+ * @osc_buffer_util: the OSC util
  * @buffer: the guchar buffer
  * @tv_secs: return location of number of seconds since midnight on January 1, 1900
  * @tv_fraction: return location of fraction of seconds to a precision of about 200 picoseconds
@@ -280,6 +284,7 @@ ags_osc_buffer_util_get_timetag(AgsOscBufferUtil *osc_buffer_util,
 
 /**
  * ags_osc_buffer_util_put_float:
+ * @osc_buffer_util: the OSC util
  * @buffer: the guchar buffer
  * @val: the float value
  * 
@@ -311,6 +316,7 @@ ags_osc_buffer_util_put_float(AgsOscBufferUtil *osc_buffer_util,
 
 /**
  * ags_osc_buffer_util_get_float:
+ * @osc_buffer_util: the OSC util
  * @buffer: the guchar buffer
  * @val: the float value
  * 
@@ -348,6 +354,7 @@ ags_osc_buffer_util_get_float(AgsOscBufferUtil *osc_buffer_util,
 
 /**
  * ags_osc_buffer_util_put_string:
+ * @osc_buffer_util: the OSC util
  * @buffer: the guchar buffer
  * @str: the ASCII string
  * @length: the length to write or -1 to write until null byte
@@ -378,6 +385,7 @@ ags_osc_buffer_util_put_string(AgsOscBufferUtil *osc_buffer_util,
 
 /**
  * ags_osc_buffer_util_get_string:
+ * @osc_buffer_util: the OSC util
  * @buffer: the guchar buffer
  * @str: the return location of ASCII string
  * @length: the return location of bytes read
@@ -429,6 +437,7 @@ ags_osc_buffer_util_get_string(AgsOscBufferUtil *osc_buffer_util,
 
 /**
  * ags_osc_buffer_util_put_blob:
+ * @osc_buffer_util: the OSC util
  * @buffer: the guchar buffer
  * @data_size: the blob's data size
  * @data: the blob's data
@@ -471,6 +480,7 @@ ags_osc_buffer_util_put_blob(AgsOscBufferUtil *osc_buffer_util,
 
 /**
  * ags_osc_buffer_util_get_blob:
+ * @osc_buffer_util: the OSC util
  * @buffer: the guchar buffer
  * @data_size: the return location of blob's data size
  * @data: the return location of blob's data
@@ -524,6 +534,7 @@ ags_osc_buffer_util_get_blob(AgsOscBufferUtil *osc_buffer_util,
 
 /**
  * ags_osc_buffer_util_put_int64:
+ * @osc_buffer_util: the OSC util
  * @buffer: the guchar buffer
  * @val: the 64 bit integer
  * 
@@ -552,6 +563,7 @@ ags_osc_buffer_util_put_int64(AgsOscBufferUtil *osc_buffer_util,
 
 /**
  * ags_osc_buffer_util_get_int64:
+ * @osc_buffer_util: the OSC util
  * @buffer: the guchar buffer
  * @val: the return location of 64 bit integer
  * 
@@ -590,6 +602,7 @@ ags_osc_buffer_util_get_int64(AgsOscBufferUtil *osc_buffer_util,
 
 /**
  * ags_osc_buffer_util_put_double:
+ * @osc_buffer_util: the OSC util
  * @buffer: the guchar buffer
  * @val: the double floating point value
  * 
@@ -625,6 +638,7 @@ ags_osc_buffer_util_put_double(AgsOscBufferUtil *osc_buffer_util,
 
 /**
  * ags_osc_buffer_util_get_double:
+ * @osc_buffer_util: the OSC util
  * @buffer: the guchar buffer
  * @val: the return location of double floating point value
  * 
@@ -666,6 +680,7 @@ ags_osc_buffer_util_get_double(AgsOscBufferUtil *osc_buffer_util,
 
 /**
  * ags_osc_buffer_util_put_char:
+ * @osc_buffer_util: the OSC util
  * @buffer: the guchar buffer
  * @val: the ASCII char
  * 
@@ -690,6 +705,7 @@ ags_osc_buffer_util_put_char(AgsOscBufferUtil *osc_buffer_util,
 
 /**
  * ags_osc_buffer_util_get_char:
+ * @osc_buffer_util: the OSC util
  * @buffer: the guchar buffer
  * @val: the return location of ASCII char
  * 
@@ -721,6 +737,7 @@ ags_osc_buffer_util_get_char(AgsOscBufferUtil *osc_buffer_util,
 
 /**
  * ags_osc_buffer_util_put_rgba:
+ * @osc_buffer_util: the OSC util
  * @buffer: the guchar buffer
  * @r: the red value
  * @g: the green value
@@ -748,6 +765,7 @@ ags_osc_buffer_util_put_rgba(AgsOscBufferUtil *osc_buffer_util,
 
 /**
  * ags_osc_buffer_util_get_rgba:
+ * @osc_buffer_util: the OSC util
  * @buffer: the guchar buffer
  * @r: the return location of red value
  * @g: the return location of green value
@@ -802,6 +820,7 @@ ags_osc_buffer_util_get_rgba(AgsOscBufferUtil *osc_buffer_util,
 
 /**
  * ags_osc_buffer_util_put_midi:
+ * @osc_buffer_util: the OSC util
  * @buffer: the guchar buffer
  * @port: the port
  * @status_byte: the status byte
@@ -829,6 +848,7 @@ ags_osc_buffer_util_put_midi(AgsOscBufferUtil *osc_buffer_util,
 
 /**
  * ags_osc_buffer_util_get_midi:
+ * @osc_buffer_util: the OSC util
  * @buffer: the guchar buffer
  * @port: the return location of port
  * @status_byte: the return location of status byte
@@ -883,6 +903,7 @@ ags_osc_buffer_util_get_midi(AgsOscBufferUtil *osc_buffer_util,
 
 /**
  * ags_osc_buffer_util_put_packet:
+ * @osc_buffer_util: the OSC util
  * @buffer: the guchar buffer
  * @packet_size: the packet's size
  * @packet: the packet
@@ -925,6 +946,7 @@ ags_osc_buffer_util_put_packet(AgsOscBufferUtil *osc_buffer_util,
 
 /**
  * ags_osc_buffer_util_get_packet:
+ * @osc_buffer_util: the OSC util
  * @buffer: the guchar buffer
  * @packet_size: the return location of packet's size
  * @packet: the return location of packet
@@ -978,6 +1000,7 @@ ags_osc_buffer_util_get_packet(AgsOscBufferUtil *osc_buffer_util,
 
 /**
  * ags_osc_buffer_util_put_packets:
+ * @osc_buffer_util: the OSC util
  * @buffer: the guchar buffer
  * @packet_size: the packet size or -1 if no packet
  * @...: the packets followed by packet size until it is -1
@@ -1020,6 +1043,7 @@ ags_osc_buffer_util_put_packets(AgsOscBufferUtil *osc_buffer_util,
 
 /**
  * ags_osc_buffer_util_put_message:
+ * @osc_buffer_util: the OSC util
  * @buffer: the guchar buffer
  * @address_pattern: the address pattern
  * @type_tag: the type tag
@@ -1058,6 +1082,7 @@ ags_osc_buffer_util_put_message(AgsOscBufferUtil *osc_buffer_util,
 
 /**
  * ags_osc_buffer_util_get_message:
+ * @osc_buffer_util: the OSC util
  * @buffer: the guchar buffer
  * @address_pattern: return location of the address pattern
  * @type_tag: return location of the type tag
@@ -1130,6 +1155,7 @@ ags_osc_buffer_util_get_message(AgsOscBufferUtil *osc_buffer_util,
 
 /**
  * ags_osc_buffer_util_put_bundle:
+ * @osc_buffer_util: the OSC util
  * @buffer: the guchar buffer
  * @tv_secs: number of seconds since midnight on January 1, 1900
  * @tv_fraction: fraction of seconds to a precision of about 200 picoseconds
@@ -1161,6 +1187,7 @@ ags_osc_buffer_util_put_bundle(AgsOscBufferUtil *osc_buffer_util,
 
 /**
  * ags_osc_buffer_util_get_bundle:
+ * @osc_buffer_util: the OSC util
  * @buffer: the guchar buffer
  * @tv_secs: return location of number of seconds since midnight on January 1, 1900
  * @tv_fraction: return location of fraction of seconds to a precision of about 200 picoseconds

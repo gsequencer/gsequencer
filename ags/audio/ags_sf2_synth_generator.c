@@ -29,6 +29,8 @@
 #include <ags/audio/file/ags_ipatch.h>
 #include <ags/audio/file/ags_ipatch_sample.h>
 
+#include <ags/ags_api_config.h>
+
 #include <math.h>
 
 #include <ags/i18n.h>
@@ -468,7 +470,11 @@ ags_sf2_synth_generator_init(AgsSF2SynthGenerator *sf2_synth_generator)
   sf2_synth_generator->base_key = AGS_SF2_SYNTH_GENERATOR_DEFAULT_BASE_KEY;
   sf2_synth_generator->tuning = AGS_SF2_SYNTH_GENERATOR_DEFAULT_TUNING;
 
+#if defined(AGS_WITH_LIBINSTPATCH)
   sf2_synth_generator->sf2_synth_util = ags_sf2_synth_util_alloc();
+#else
+  sf2_synth_generator->sf2_synth_util = NULL;
+#endif
   
   /* timestamp */
   sf2_synth_generator->timestamp = NULL;
@@ -2223,6 +2229,7 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
 
   g_rec_mutex_lock(sf2_synth_generator_mutex);
 
+#if defined(AGS_WITH_LIBINSTPATCH)
   sf2_synth_util->flags |= AGS_SF2_SYNTH_UTIL_COMPUTE_INSTRUMENT;
   
   ags_sf2_synth_util_set_sf2_file(sf2_synth_util,
@@ -2232,7 +2239,8 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
 				buffer);
   ags_sf2_synth_util_set_source_stride(sf2_synth_util,
 				       1);
-
+#endif
+  
   ags_common_pitch_util_set_source(sf2_synth_util->pitch_util,
 				   sf2_synth_util->pitch_type,
 				   sf2_synth_util->sample_buffer);
@@ -2258,6 +2266,7 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
   sf2_synth_util->volume_util->buffer_length = frame_count;
   sf2_synth_util->volume_util->format = AGS_SOUNDCARD_DOUBLE;
 
+#if defined(AGS_WITH_LIBINSTPATCH)
   ags_sf2_synth_util_set_buffer_length(sf2_synth_util,
 				       frame_count);
 
@@ -2301,7 +2310,8 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
   /* reset */
   ags_sf2_synth_util_set_source(sf2_synth_util,
 				NULL);
-
+#endif
+  
   ags_common_pitch_util_set_source(sf2_synth_util->pitch_util,
 				   sf2_synth_util->pitch_type,
 				   NULL);
@@ -2493,6 +2503,7 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
 				   ceil(requested_frame_count / buffer_size));
   }
 
+#if defined(AGS_WITH_LIBINSTPATCH)
   ipatch_sample = ags_sf2_synth_util_midi_locale_find_sample_near_midi_key(audio_container->sound_container,
 									   bank,
 									   program,
@@ -2514,7 +2525,8 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
 		 "last-frame", attack + frame_count,
 		 NULL);
   }
-
+#endif
+  
   /*  */
   g_rec_mutex_lock(stream_mutex);
 
@@ -2541,6 +2553,7 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
 
   g_rec_mutex_lock(sf2_synth_generator_mutex);
   
+#if defined(AGS_WITH_LIBINSTPATCH)
   sf2_synth_generator->sf2_synth_util->flags |= AGS_SF2_SYNTH_UTIL_COMPUTE_MIDI_LOCALE;
 
   ags_sf2_synth_util_set_sf2_file(sf2_synth_generator->sf2_synth_util,
@@ -2585,6 +2598,7 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
 				  0);
 
   ags_sf2_synth_util_compute(sf2_synth_generator->sf2_synth_util);
+#endif
   
   g_rec_mutex_unlock(sf2_synth_generator_mutex);    
 
