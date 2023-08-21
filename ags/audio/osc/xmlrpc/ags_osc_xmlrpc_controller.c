@@ -415,6 +415,8 @@ ags_osc_xmlrpc_controller_delegate_timeout(AgsOscXmlrpcController *osc_xmlrpc_co
 
   AgsOscMessage *current;
 
+  AgsOscBufferUtil osc_buffer_util;
+  
   GList *start_osc_response, *osc_response;      
   GList *start_message, *message;
   GList *start_list, *list;
@@ -424,6 +426,9 @@ ags_osc_xmlrpc_controller_delegate_timeout(AgsOscXmlrpcController *osc_xmlrpc_co
   gint64 current_time;
   
   GRecMutex *controller_mutex;
+
+  osc_buffer_util.major = 1;
+  osc_buffer_util.minor = 0;
 
   g_object_get(osc_xmlrpc_controller,
 	       "osc-xmlrpc-server", &osc_xmlrpc_server,
@@ -566,7 +571,8 @@ ags_osc_xmlrpc_controller_delegate_timeout(AgsOscXmlrpcController *osc_xmlrpc_co
   while(message != NULL){
     gchar *path;
 
-    ags_osc_buffer_util_get_string(AGS_OSC_MESSAGE(message->data)->message,
+    ags_osc_buffer_util_get_string(&osc_buffer_util,
+				   AGS_OSC_MESSAGE(message->data)->message,
 				   &path, NULL);
 
     controller = start_controller;
@@ -1012,20 +1018,27 @@ ags_osc_xmlrpc_controller_read_bundle(AgsOscXmlrpcController *osc_xmlrpc_control
 				      guchar *packet, gsize packet_size,
 				      gsize offset)
 {
+  AgsOscBufferUtil osc_buffer_util;
+
   gint32 tv_sec;
   gint32 tv_fraction;
   gboolean immediately;
   gsize read_count;
   gint32 length;
 
+  osc_buffer_util.major = 1;
+  osc_buffer_util.minor = 0;
+
   read_count = 8;
     
-  ags_osc_buffer_util_get_timetag(packet + offset + read_count,
+  ags_osc_buffer_util_get_timetag(&osc_buffer_util,
+				  packet + offset + read_count,
 				  &(tv_sec), &(tv_fraction), &(immediately));
   read_count += 8;
 
   for(; offset < packet_size;){
-    ags_osc_buffer_util_get_int32(packet + offset + read_count,
+    ags_osc_buffer_util_get_int32(&osc_buffer_util,
+				  packet + offset + read_count,
 				  &length);
     read_count += 4;
 
@@ -1069,6 +1082,8 @@ ags_osc_xmlrpc_controller_read_message(AgsOscXmlrpcController *osc_xmlrpc_contro
 {
   AgsOscMessage *osc_message;
 
+  AgsOscBufferUtil osc_buffer_util;
+  
   guchar *message;
   gchar *address_pattern;
   gchar *type_tag;
@@ -1079,9 +1094,13 @@ ags_osc_xmlrpc_controller_read_message(AgsOscXmlrpcController *osc_xmlrpc_contro
   gsize read_count;
   guint i;
 
+  osc_buffer_util.major = 1;
+  osc_buffer_util.minor = 0;
+
   read_count = 0;
 
-  ags_osc_buffer_util_get_string(packet + offset,
+  ags_osc_buffer_util_get_string(&osc_buffer_util,
+				 packet + offset,
 				 &address_pattern, &address_pattern_length);
     
   if(address_pattern == NULL){
@@ -1095,7 +1114,8 @@ ags_osc_xmlrpc_controller_read_message(AgsOscXmlrpcController *osc_xmlrpc_contro
 
   if(packet_size > offset + read_count){
     if(packet[offset + read_count] == ','){
-      ags_osc_buffer_util_get_string(packet + offset + read_count,
+      ags_osc_buffer_util_get_string(&osc_buffer_util,
+				     packet + offset + read_count,
 				     &type_tag, &type_tag_length);
 
       read_count += (4 * (gsize) ceil((double) (type_tag_length + 1) / 4.0));
@@ -1147,7 +1167,8 @@ ags_osc_xmlrpc_controller_read_message(AgsOscXmlrpcController *osc_xmlrpc_contro
       {
 	gint32 data_size;
 
-	ags_osc_buffer_util_get_int32(packet + offset + read_count + data_length,
+	ags_osc_buffer_util_get_int32(&osc_buffer_util,
+				      packet + offset + read_count + data_length,
 				      &data_size);
 
 	data_length += data_size;

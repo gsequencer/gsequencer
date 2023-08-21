@@ -1809,6 +1809,9 @@ ags_osc_server_listen
 ags_osc_server_dispatch
 ags_osc_server_new
 ags_osc_util_get_type
+ags_osc_util_alloc
+ags_osc_util_free
+ags_osc_util_copy
 ags_osc_util_type_tag_string_count_type
 ags_osc_util_meta_data
 ags_osc_util_mime_header

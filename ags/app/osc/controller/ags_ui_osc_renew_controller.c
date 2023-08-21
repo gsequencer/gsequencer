@@ -762,6 +762,8 @@ ags_ui_osc_renew_controller_real_set_data(AgsUiOscRenewController *ui_osc_renew_
 
   AgsApplicationContext *application_context;
 
+  AgsOscBufferUtil osc_buffer_util;
+
   GList *start_response;
   
   gchar *type_tag;
@@ -770,10 +772,14 @@ ags_ui_osc_renew_controller_real_set_data(AgsUiOscRenewController *ui_osc_renew_
   guint path_offset;
   gboolean success;
 
+  osc_buffer_util.major = 1;
+  osc_buffer_util.minor = 0;
+
   start_response = NULL;
   
   /* read type tag */
-  ags_osc_buffer_util_get_string(message + 8,
+  ags_osc_buffer_util_get_string(&osc_buffer_util,
+				 message + 8,
 				 &type_tag, NULL);
 
   success = (type_tag != NULL &&
@@ -799,7 +805,8 @@ ags_ui_osc_renew_controller_real_set_data(AgsUiOscRenewController *ui_osc_renew_
   }
   
   /* read argument */
-  ags_osc_buffer_util_get_string(message + 8 + (4 * (guint) ceil((gdouble) (strlen(type_tag) + 1) / 4.0)),
+  ags_osc_buffer_util_get_string(&osc_buffer_util,
+				 message + 8 + (4 * (guint) ceil((gdouble) (strlen(type_tag) + 1) / 4.0)),
 				 &path, NULL);  
 
   if(path == NULL){
@@ -996,6 +1003,8 @@ ags_ui_osc_renew_controller_check_message_callback(GObject *application_context,
 	AgsOscResponse *osc_response;
 
 	AgsApplicationContext *application_context;
+
+	AgsOscBufferUtil osc_buffer_util;
 	  
 	GList *start_response;
 
@@ -1007,6 +1016,9 @@ ags_ui_osc_renew_controller_check_message_callback(GObject *application_context,
 	guint path_offset;
 	gint position;
 	gboolean success;
+
+	osc_buffer_util.major = 1;
+	osc_buffer_util.minor = 0;
 
 	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
 				  "osc-connection");
@@ -1023,7 +1035,8 @@ ags_ui_osc_renew_controller_check_message_callback(GObject *application_context,
 	start_response = NULL;
 
 	/* read type tag */
-	ags_osc_buffer_util_get_string(duplicated_message + 8,
+	ags_osc_buffer_util_get_string(&osc_buffer_util,
+				       duplicated_message + 8,
 				       &type_tag, NULL);
 
 	success = (type_tag != NULL &&
@@ -1034,7 +1047,8 @@ ags_ui_osc_renew_controller_check_message_callback(GObject *application_context,
 	}
   
 	/* read argument */
-	ags_osc_buffer_util_get_string(duplicated_message + 8 + (4 * (guint) ceil((gdouble) (strlen(type_tag) + 1) / 4.0)),
+	ags_osc_buffer_util_get_string(&osc_buffer_util,
+				       duplicated_message + 8 + (4 * (guint) ceil((gdouble) (strlen(type_tag) + 1) / 4.0)),
 				       &path, NULL);  
 
 	if(path == NULL){

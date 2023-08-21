@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -234,6 +234,8 @@ ags_osc_config_controller_real_apply_config(AgsOscConfigController *osc_config_c
   
   AgsApplicationContext *application_context;
 
+  AgsOscBufferUtil osc_buffer_util;
+
   GList *start_response;
 
   gchar *type_tag;
@@ -242,9 +244,13 @@ ags_osc_config_controller_real_apply_config(AgsOscConfigController *osc_config_c
   gboolean success;
 
   start_response = NULL;
+
+  osc_buffer_util.major = 1;
+  osc_buffer_util.minor = 0;
   
   /* read type tag */
-  ags_osc_buffer_util_get_string(message + 8,
+  ags_osc_buffer_util_get_string(&osc_buffer_util,
+				 message + 8,
 				 &type_tag, NULL);
 
   success = (type_tag != NULL &&
@@ -270,7 +276,8 @@ ags_osc_config_controller_real_apply_config(AgsOscConfigController *osc_config_c
   }
   
   /* read config data */
-  ags_osc_buffer_util_get_string(message + 12,
+  ags_osc_buffer_util_get_string(&osc_buffer_util,
+				 message + 12,
 				 &config_data, NULL);
 
   if(config_data == NULL){
