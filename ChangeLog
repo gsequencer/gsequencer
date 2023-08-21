@@ -8,8 +8,8 @@ ags (6.0.0)
 	* fixed ags_midi_ump_util.[ch] encode/decode errors
 	* added missing tests to ags_midi_ump_util_test.c
 	* refactored unit and functional tests
-	* refactored AgsAudioThreadFlags to AgsAudioThreadNestedSyncFlags
-	* refactored AgsChannelThreadFlags to AgsChannelThreadNestedSyncFlags
+	* refactored AgsAudioThreadStatusFlags to AgsAudioThreadNestedSyncFlags
+	* refactored AgsChannelThreadStatusFlags to AgsChannelThreadNestedSyncFlags
 
 ags (5.5.4)
 
