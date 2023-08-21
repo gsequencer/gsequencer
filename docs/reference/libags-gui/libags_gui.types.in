@@ -33,3 +33,4 @@ ags_scale_get_type
 ags_scrolled_level_box_get_type
 ags_scrolled_piano_get_type
 ags_scrolled_scale_box_get_type
+ags_tempo_get_type

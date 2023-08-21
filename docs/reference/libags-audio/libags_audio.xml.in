@@ -306,12 +306,12 @@
 	Objects related to MIDI disk IO and parsing.
       </para>
       
-      <xi:include href="xml/ags_midi_buffer_util.xml"/>
       <xi:include href="xml/ags_midi_ci_util.xml"/>
       <xi:include href="xml/ags_midi_file.xml"/>
       <xi:include href="xml/ags_midi_util.xml"/>
       <xi:include href="xml/ags_midi_builder.xml"/>
       <xi:include href="xml/ags_midi_parser.xml"/>
+      <xi:include href="xml/ags_midi_smf_util.xml"/>
       <xi:include href="xml/ags_midi_ump_util.xml"/>
     </chapter>
 

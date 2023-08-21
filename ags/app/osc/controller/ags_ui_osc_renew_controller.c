@@ -19,6 +19,8 @@
 
 #include <ags/app/osc/controller/ags_ui_osc_renew_controller.h>
 
+#include <ags/ags_api_config.h>
+
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_machine.h>
 #include <ags/app/ags_effect_bridge.h>
@@ -39,7 +41,11 @@
 #include <ags/app/machine/ags_fm_synth.h>
 #include <ags/app/machine/ags_syncsynth.h>
 #include <ags/app/machine/ags_fm_syncsynth.h>
+
+#if defined(AGS_WITH_LIBINSTPATCH)
 #include <ags/app/machine/ags_ffplayer.h>
+#endif
+
 #include <ags/app/machine/ags_pitch_sampler.h>
 #include <ags/app/machine/ags_audiorec.h>
 
@@ -497,8 +503,10 @@ ags_ui_osc_renew_controller_set_data_machine(AgsUiOscRenewController *ui_osc_ren
       //TODO:JK: implement me
     }else if(AGS_IS_FM_SYNCSYNTH(machine)){
       //TODO:JK: implement me
+#if defined(AGS_WITH_LIBINSTPATCH)
     }else if(AGS_IS_FFPLAYER(machine)){
       //TODO:JK: implement me
+#endif
     }else if(AGS_IS_PITCH_SAMPLER(machine)){
       //TODO:JK: implement me
     }else if(AGS_IS_AUDIOREC(machine)){
@@ -1170,7 +1178,11 @@ ags_ui_osc_renew_controller_check_message_callback(GObject *application_context,
 			    11)){
 	    path_offset += 11;
 
+#if defined(AGS_WITH_LIBINSTPATCH)
 	    machine_type = AGS_TYPE_FFPLAYER;
+#else
+	    machine_type = G_TYPE_NONE;
+#endif
 	  }else if(!strncmp(path + path_offset,
 			    "/AgsPitchSampler",
 			    16)){

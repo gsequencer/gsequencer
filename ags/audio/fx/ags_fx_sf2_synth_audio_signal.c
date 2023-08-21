@@ -28,6 +28,8 @@
 #include <ags/audio/fx/ags_fx_sf2_synth_channel_processor.h>
 #include <ags/audio/fx/ags_fx_sf2_synth_recycling.h>
 
+#include <ags/ags_api_config.h>
+
 #include <ags/i18n.h>
 
 void ags_fx_sf2_synth_audio_signal_class_init(AgsFxSF2SynthAudioSignalClass *fx_sf2_synth_audio_signal);
@@ -310,9 +312,11 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
 
     g_value_unset(&value);
 
+#if defined(AGS_WITH_LIBINSTPATCH)
     ags_sf2_synth_util_set_note(channel_data->synth,
 				(octave * 12.0) + key);
-
+#endif
+    
     /* synth volume */    
     g_object_get(fx_sf2_synth_audio,
 		 "synth-volume", &port,
@@ -324,8 +328,10 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
       ags_port_safe_read(port,
 			 &value);
 
+#if defined(AGS_WITH_LIBINSTPATCH)
       ags_sf2_synth_util_set_volume(channel_data->synth,
 				    (gdouble) g_value_get_float(&value));
+#endif
       
       g_object_unref(port);
     }
@@ -604,6 +610,7 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
       g_rec_mutex_unlock(fx_sf2_synth_audio_mutex);
     }
 
+#if defined(AGS_WITH_LIBINSTPATCH)
     channel_data->synth->flags |= AGS_SF2_SYNTH_UTIL_COMPUTE_MIDI_LOCALE;
 
     ags_sf2_synth_util_set_source(channel_data->synth,
@@ -627,7 +634,8 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
 				       floor(((offset_counter - x0) * delay + delay_counter + 1.0) * buffer_size));
     ags_sf2_synth_util_set_offset(channel_data->synth,
 				  floor(((offset_counter - x0) * delay + delay_counter) * buffer_size));
-
+#endif
+    
     ags_common_pitch_util_set_vibrato_enabled(channel_data->synth->pitch_util,
 					      channel_data->synth->pitch_type,
 					      vibrato_enabled);
@@ -658,13 +666,17 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
     /* compute SF2 synth */
     g_rec_mutex_lock(source_stream_mutex);
     
+#if defined(AGS_WITH_LIBINSTPATCH)
     ags_sf2_synth_util_compute(channel_data->synth);
-
+#endif
+    
     g_rec_mutex_unlock(source_stream_mutex);
 
+#if defined(AGS_WITH_LIBINSTPATCH)
     ags_sf2_synth_util_set_source(channel_data->synth,
 				  NULL);
-
+#endif
+    
     /* chorus */
     if(ags_chorus_util_get_depth(channel_data->chorus_util) != 0.0 &&
        chorus_enabled){

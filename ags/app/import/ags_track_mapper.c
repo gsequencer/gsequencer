@@ -20,6 +20,8 @@
 #include <ags/app/import/ags_track_mapper.h>
 #include <ags/app/import/ags_track_mapper_callbacks.h>
 
+#include <ags/ags_api_config.h>
+
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_machine.h>

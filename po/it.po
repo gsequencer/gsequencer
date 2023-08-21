@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2023-08-21 12:06+0200\n"
+"POT-Creation-Date: 2023-08-21 15:36+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -141,7 +141,7 @@ msgstr ""
 #: ags/app/editor/ags_time_stretch_buffer_dialog.c:229
 #: ags/app/editor/ags_crop_note_dialog.c:213
 #: ags/app/editor/ags_remove_sheet_page_dialog.c:153
-#: ags/app/editor/ags_machine_selection.c:156
+#: ags/app/editor/ags_machine_selection.c:158
 #: ags/app/editor/ags_position_automation_cursor_dialog.c:189
 #: ags/app/editor/ags_select_acceleration_dialog.c:220
 #: ags/app/editor/ags_select_buffer_dialog.c:211
@@ -171,7 +171,7 @@ msgstr ""
 #: ags/app/editor/ags_time_stretch_buffer_dialog.c:230
 #: ags/app/editor/ags_crop_note_dialog.c:214
 #: ags/app/editor/ags_remove_sheet_page_dialog.c:154
-#: ags/app/editor/ags_machine_selection.c:157
+#: ags/app/editor/ags_machine_selection.c:159
 #: ags/app/editor/ags_position_automation_cursor_dialog.c:190
 #: ags/app/editor/ags_select_acceleration_dialog.c:221
 #: ags/app/editor/ags_select_buffer_dialog.c:212
@@ -312,7 +312,7 @@ msgstr ""
 msgid "Plugin file not present"
 msgstr ""
 
-#: ags/app/ags_composite_editor.c:367
+#: ags/app/ags_composite_editor.c:369
 msgid "selector"
 msgstr ""
 
@@ -386,7 +386,7 @@ msgstr ""
 #: ags/app/machine/ags_sf2_synth.c:1007 ags/app/machine/ags_sf2_synth.c:1161
 #: ags/app/machine/ags_ffplayer.c:484 ags/app/machine/ags_ffplayer.c:612
 #: ags/app/ags_machine_editor_collection.c:175
-#: ags/app/import/ags_track_mapper.c:232
+#: ags/app/import/ags_track_mapper.c:234
 #: ags/app/ags_connection_editor_listing.c:177
 #: ags/app/ags_connection_editor_collection.c:175
 #: ags/app/ags_machine_editor_listing.c:177
@@ -422,63 +422,63 @@ msgstr ""
 msgid "_Remove"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:322
+#: ags/app/editor/ags_machine_selector.c:324
 msgid "add machine"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:428
+#: ags/app/editor/ags_machine_selector.c:430
 msgid "reverse mapping"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:439
+#: ags/app/editor/ags_machine_selector.c:441
 msgid "shift piano"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:449
+#: ags/app/editor/ags_machine_selector.c:451
 msgid "A"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:454
+#: ags/app/editor/ags_machine_selector.c:456
 msgid "A#"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:459
+#: ags/app/editor/ags_machine_selector.c:461
 msgid "H"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:464
+#: ags/app/editor/ags_machine_selector.c:466
 msgid "C"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:469
+#: ags/app/editor/ags_machine_selector.c:471
 msgid "C#"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:474
+#: ags/app/editor/ags_machine_selector.c:476
 msgid "D"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:479
+#: ags/app/editor/ags_machine_selector.c:481
 msgid "D#"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:484
+#: ags/app/editor/ags_machine_selector.c:486
 msgid "E"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:489
+#: ags/app/editor/ags_machine_selector.c:491
 msgid "F"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:494
+#: ags/app/editor/ags_machine_selector.c:496
 msgid "F#"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:499
+#: ags/app/editor/ags_machine_selector.c:501
 msgid "G"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:504
+#: ags/app/editor/ags_machine_selector.c:506
 msgid "G#"
 msgstr ""
 
@@ -858,7 +858,7 @@ msgstr ""
 msgid "select"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selection.c:147
+#: ags/app/editor/ags_machine_selection.c:149
 msgid "select machines"
 msgstr ""
 
@@ -1162,11 +1162,11 @@ msgstr ""
 msgid "resize channels"
 msgstr ""
 
-#: ags/app/ags_app_action_util.c:139
+#: ags/app/ags_app_action_util.c:140
 msgid "Open file"
 msgstr ""
 
-#: ags/app/ags_app_action_util.c:489
+#: ags/app/ags_app_action_util.c:490
 msgid "save file as"
 msgstr ""
 
@@ -1865,8 +1865,8 @@ msgstr ""
 msgid "base key"
 msgstr ""
 
-#: ags/app/machine/ags_ffplayer.c:375 ags/app/import/ags_track_mapper.c:260
-#: ags/app/import/ags_track_mapper.c:394
+#: ags/app/machine/ags_ffplayer.c:375 ags/app/import/ags_track_mapper.c:262
+#: ags/app/import/ags_track_mapper.c:396
 msgid "instrument"
 msgstr ""
 
@@ -1915,7 +1915,7 @@ msgstr ""
 msgid "line"
 msgstr ""
 
-#: ags/app/import/ags_track_mapper.c:273 ags/app/import/ags_track_mapper.c:421
+#: ags/app/import/ags_track_mapper.c:275 ags/app/import/ags_track_mapper.c:423
 msgid "sequence"
 msgstr ""
 

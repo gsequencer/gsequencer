@@ -36,5 +36,6 @@ AgsLevel GtkAccessible GtkBuildable GtkConstraintTarget GtkOrientable
 AgsPiano GtkAccessible GtkBuildable GtkConstraintTarget GtkOrientable
 AgsRuler GtkAccessible GtkBuildable GtkConstraintTarget GtkOrientable
 AgsScale GtkAccessible GtkBuildable GtkConstraintTarget GtkOrientable
+AgsTempo GtkAccessible GtkBuildable GtkConstraintTarget GtkOrientable
 GListStore GListModel
 GtkBoxLayout GtkOrientable

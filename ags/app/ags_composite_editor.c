@@ -20,6 +20,8 @@
 #include <ags/app/ags_composite_editor.h>
 #include <ags/app/ags_composite_editor_callbacks.h>
 
+#include <ags/ags_api_config.h>
+
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
 

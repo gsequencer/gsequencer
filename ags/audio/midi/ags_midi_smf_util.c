@@ -28,12 +28,12 @@
 
 /**
  * SECTION:ags_midi_smf_util
- * @short_description: MIDI buffer util
+ * @short_description: MIDI SMF buffer util
  * @title: AgsMidiSmfUtil
  * @section_id:
  * @include: ags/audio/midi/ags_midi_smf_util.h
  *
- * Utility functions for MIDI buffers.
+ * Utility functions for MIDI SMF buffers.
  */
 
 GType
@@ -121,13 +121,14 @@ ags_midi_smf_util_copy(AgsMidiSmfUtil *midi_smf_util)
 
 /**
  * ags_midi_smf_util_get_varlength_size:
+ * @midi_smf_util: the MIDI util
  * @varlength: the variable length
  *
  * Retrieve the size needed to store the variable length.
  *
  * Returns: the size needed to be allocated
  *
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 guint
 ags_midi_smf_util_get_varlength_size(AgsMidiSmfUtil *midi_smf_util,
@@ -164,7 +165,7 @@ ags_midi_smf_util_get_varlength_size(AgsMidiSmfUtil *midi_smf_util,
  *
  * Put the variable lenght value to @buffer.
  *
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 void
 ags_midi_smf_util_put_varlength(AgsMidiSmfUtil *midi_smf_util,
@@ -208,7 +209,7 @@ ags_midi_smf_util_put_varlength(AgsMidiSmfUtil *midi_smf_util,
  *
  * Returns: the number of bytes read.
  *
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 guint
 ags_midi_smf_util_get_varlength(AgsMidiSmfUtil *midi_smf_util,
@@ -255,7 +256,7 @@ ags_midi_smf_util_get_varlength(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Put signed 16 bit integer.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 void
 ags_midi_smf_util_put_int16(AgsMidiSmfUtil *midi_smf_util,
@@ -278,7 +279,7 @@ ags_midi_smf_util_put_int16(AgsMidiSmfUtil *midi_smf_util,
  *
  * Get signed 32 bit integer.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 void
 ags_midi_smf_util_get_int16(AgsMidiSmfUtil *midi_smf_util,
@@ -311,7 +312,7 @@ ags_midi_smf_util_get_int16(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Put signed 24 bit integer.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 void
 ags_midi_smf_util_put_int24(AgsMidiSmfUtil *midi_smf_util,
@@ -335,7 +336,7 @@ ags_midi_smf_util_put_int24(AgsMidiSmfUtil *midi_smf_util,
  *
  * Get signed 24 bit integer.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 void
 ags_midi_smf_util_get_int24(AgsMidiSmfUtil *midi_smf_util,
@@ -369,7 +370,7 @@ ags_midi_smf_util_get_int24(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Put signed 32 bit integer.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 void
 ags_midi_smf_util_put_int32(AgsMidiSmfUtil *midi_smf_util,
@@ -394,7 +395,7 @@ ags_midi_smf_util_put_int32(AgsMidiSmfUtil *midi_smf_util,
  *
  * Get signed 32 bit integer.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 void
 ags_midi_smf_util_get_int32(AgsMidiSmfUtil *midi_smf_util,
@@ -432,7 +433,7 @@ ags_midi_smf_util_get_int32(AgsMidiSmfUtil *midi_smf_util,
  *
  * Puts the midi header.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 void
 ags_midi_smf_util_put_header(AgsMidiSmfUtil *midi_smf_util,
@@ -479,7 +480,7 @@ ags_midi_smf_util_put_header(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Returns: the number of bytes read.
  *
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 guint
 ags_midi_smf_util_get_header(AgsMidiSmfUtil *midi_smf_util,
@@ -539,7 +540,7 @@ ags_midi_smf_util_get_header(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Put track.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 void
 ags_midi_smf_util_put_track(AgsMidiSmfUtil *midi_smf_util,
@@ -570,7 +571,7 @@ ags_midi_smf_util_put_track(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Returns: the number of bytes read.
  *
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 guint
 ags_midi_smf_util_get_track(AgsMidiSmfUtil *midi_smf_util,
@@ -608,7 +609,7 @@ ags_midi_smf_util_get_track(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Puts the given values to @buffer with appropriate channel message.
  *
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 void
 ags_midi_smf_util_put_key_on(AgsMidiSmfUtil *midi_smf_util,
@@ -652,7 +653,7 @@ ags_midi_smf_util_put_key_on(AgsMidiSmfUtil *midi_smf_util,
  *
  * Returns: the number of bytes read.
  *
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 guint
 ags_midi_smf_util_get_key_on(AgsMidiSmfUtil *midi_smf_util,
@@ -722,7 +723,7 @@ ags_midi_smf_util_get_key_on(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Puts the given values to @buffer with appropriate channel message.
  *
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 void
 ags_midi_smf_util_put_key_off(AgsMidiSmfUtil *midi_smf_util,
@@ -767,7 +768,7 @@ ags_midi_smf_util_put_key_off(AgsMidiSmfUtil *midi_smf_util,
  *
  * Returns: the number of bytes read.
  *
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 guint
 ags_midi_smf_util_get_key_off(AgsMidiSmfUtil *midi_smf_util,
@@ -837,7 +838,7 @@ ags_midi_smf_util_get_key_off(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Puts the given values to @buffer with appropriate channel message.
  *
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 void
 ags_midi_smf_util_put_key_pressure(AgsMidiSmfUtil *midi_smf_util,
@@ -882,7 +883,7 @@ ags_midi_smf_util_put_key_pressure(AgsMidiSmfUtil *midi_smf_util,
  *
  * Returns: the number of bytes read.
  *
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 guint
 ags_midi_smf_util_get_key_pressure(AgsMidiSmfUtil *midi_smf_util,
@@ -952,7 +953,7 @@ ags_midi_smf_util_get_key_pressure(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Put change parameter.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 void
 ags_midi_smf_util_put_change_parameter(AgsMidiSmfUtil *midi_smf_util,
@@ -997,7 +998,7 @@ ags_midi_smf_util_put_change_parameter(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Returns: the number of bytes read.
  *
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 guint
 ags_midi_smf_util_get_change_parameter(AgsMidiSmfUtil *midi_smf_util,
@@ -1067,7 +1068,7 @@ ags_midi_smf_util_get_change_parameter(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Put pitch bend.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 void
 ags_midi_smf_util_put_pitch_bend(AgsMidiSmfUtil *midi_smf_util,
@@ -1112,7 +1113,7 @@ ags_midi_smf_util_put_pitch_bend(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Returns: the number of bytes read.
  *
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 guint
 ags_midi_smf_util_get_pitch_bend(AgsMidiSmfUtil *midi_smf_util,
@@ -1181,7 +1182,7 @@ ags_midi_smf_util_get_pitch_bend(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Put change program.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 void
 ags_midi_smf_util_put_change_program(AgsMidiSmfUtil *midi_smf_util,
@@ -1221,7 +1222,7 @@ ags_midi_smf_util_put_change_program(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Returns: the number of bytes read.
  *
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 guint
 ags_midi_smf_util_get_change_program(AgsMidiSmfUtil *midi_smf_util,
@@ -1280,7 +1281,7 @@ ags_midi_smf_util_get_change_program(AgsMidiSmfUtil *midi_smf_util,
  *
  * Put change pressure.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 void
 ags_midi_smf_util_put_change_pressure(AgsMidiSmfUtil *midi_smf_util,
@@ -1320,7 +1321,7 @@ ags_midi_smf_util_put_change_pressure(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Returns: the number of bytes read.
  *
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 guint
 ags_midi_smf_util_get_change_pressure(AgsMidiSmfUtil *midi_smf_util,
@@ -1379,7 +1380,7 @@ ags_midi_smf_util_get_change_pressure(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Put sysex.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 void
 ags_midi_smf_util_put_sysex(AgsMidiSmfUtil *midi_smf_util,
@@ -1420,7 +1421,7 @@ ags_midi_smf_util_put_sysex(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 guint
 ags_midi_smf_util_get_sysex(AgsMidiSmfUtil *midi_smf_util,
@@ -1489,7 +1490,7 @@ ags_midi_smf_util_get_sysex(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Put quarter frame.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 void
 ags_midi_smf_util_put_quarter_frame(AgsMidiSmfUtil *midi_smf_util,
@@ -1531,7 +1532,7 @@ ags_midi_smf_util_put_quarter_frame(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 guint
 ags_midi_smf_util_get_quarter_frame(AgsMidiSmfUtil *midi_smf_util,
@@ -1586,7 +1587,7 @@ ags_midi_smf_util_get_quarter_frame(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Put song position.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 void
 ags_midi_smf_util_put_song_position(AgsMidiSmfUtil *midi_smf_util,
@@ -1624,7 +1625,7 @@ ags_midi_smf_util_put_song_position(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 guint
 ags_midi_smf_util_get_song_position(AgsMidiSmfUtil *midi_smf_util,
@@ -1673,7 +1674,7 @@ ags_midi_smf_util_get_song_position(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Put song select.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 void
 ags_midi_smf_util_put_song_select(AgsMidiSmfUtil *midi_smf_util,
@@ -1710,7 +1711,7 @@ ags_midi_smf_util_put_song_select(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 guint
 ags_midi_smf_util_get_song_select(AgsMidiSmfUtil *midi_smf_util,
@@ -1756,7 +1757,7 @@ ags_midi_smf_util_get_song_select(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Put tune request
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 void
 ags_midi_smf_util_put_tune_request(AgsMidiSmfUtil *midi_smf_util,
@@ -1788,7 +1789,7 @@ ags_midi_smf_util_put_tune_request(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 guint
 ags_midi_smf_util_get_tune_request(AgsMidiSmfUtil *midi_smf_util,
@@ -1826,7 +1827,7 @@ ags_midi_smf_util_get_tune_request(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Put sequence number.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 void
 ags_midi_smf_util_put_sequence_number(AgsMidiSmfUtil *midi_smf_util,
@@ -1870,7 +1871,7 @@ ags_midi_smf_util_put_sequence_number(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 guint
 ags_midi_smf_util_get_sequence_number(AgsMidiSmfUtil *midi_smf_util,
@@ -1923,7 +1924,7 @@ ags_midi_smf_util_get_sequence_number(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Put smtpe timestamp.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 void
 ags_midi_smf_util_put_smtpe(AgsMidiSmfUtil *midi_smf_util,
@@ -1982,7 +1983,7 @@ ags_midi_smf_util_put_smtpe(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 guint
 ags_midi_smf_util_get_smtpe(AgsMidiSmfUtil *midi_smf_util,
@@ -2066,7 +2067,7 @@ ags_midi_smf_util_get_smtpe(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Put tempo.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 void
 ags_midi_smf_util_put_tempo(AgsMidiSmfUtil *midi_smf_util,
@@ -2110,7 +2111,7 @@ ags_midi_smf_util_put_tempo(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 guint
 ags_midi_smf_util_get_tempo(AgsMidiSmfUtil *midi_smf_util,
@@ -2160,7 +2161,7 @@ ags_midi_smf_util_get_tempo(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Put time signature
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 void
 ags_midi_smf_util_put_time_signature(AgsMidiSmfUtil *midi_smf_util,
@@ -2215,7 +2216,7 @@ ags_midi_smf_util_put_time_signature(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 guint
 ags_midi_smf_util_get_time_signature(AgsMidiSmfUtil *midi_smf_util,
@@ -2291,7 +2292,7 @@ ags_midi_smf_util_get_time_signature(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Put key signature.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 void
 ags_midi_smf_util_put_key_signature(AgsMidiSmfUtil *midi_smf_util,
@@ -2338,7 +2339,7 @@ ags_midi_smf_util_put_key_signature(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 guint
 ags_midi_smf_util_get_key_signature(AgsMidiSmfUtil *midi_smf_util,
@@ -2397,7 +2398,7 @@ ags_midi_smf_util_get_key_signature(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Put sequencer meta event.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 void
 ags_midi_smf_util_put_sequencer_meta_event(AgsMidiSmfUtil *midi_smf_util,
@@ -2455,7 +2456,7 @@ ags_midi_smf_util_put_sequencer_meta_event(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 guint
 ags_midi_smf_util_get_sequencer_meta_event(AgsMidiSmfUtil *midi_smf_util,
@@ -2531,7 +2532,7 @@ ags_midi_smf_util_get_sequencer_meta_event(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Put text event.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 void
 ags_midi_smf_util_put_text_event(AgsMidiSmfUtil *midi_smf_util,
@@ -2575,7 +2576,7 @@ ags_midi_smf_util_put_text_event(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 guint
 ags_midi_smf_util_get_text_event(AgsMidiSmfUtil *midi_smf_util,
@@ -2635,7 +2636,7 @@ ags_midi_smf_util_get_text_event(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Put end of track.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 void
 ags_midi_smf_util_put_end_of_track(AgsMidiSmfUtil *midi_smf_util,
@@ -2673,7 +2674,7 @@ ags_midi_smf_util_put_end_of_track(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 guint
 ags_midi_smf_util_get_end_of_track(AgsMidiSmfUtil *midi_smf_util,
@@ -2704,6 +2705,7 @@ ags_midi_smf_util_get_end_of_track(AgsMidiSmfUtil *midi_smf_util,
 
 /**
  * ags_midi_smf_util_seek_message:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
  * @buffer: the buffer to seek
  * @message_count: seek count messages
  * @delta_time: the return location of current delta time
@@ -2712,7 +2714,7 @@ ags_midi_smf_util_get_end_of_track(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Returns: the buffer at offset at @message_count ahead
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 guchar*
 ags_midi_smf_util_seek_message(AgsMidiSmfUtil *midi_smf_util,
@@ -3115,7 +3117,7 @@ ags_midi_smf_util_seek_message(AgsMidiSmfUtil *midi_smf_util,
  *
  * Returns: the bytes written
  * 
- * Since: 3.0.0
+ * Since: 6.0.0
  */
 guint
 ags_midi_smf_util_decode(AgsMidiSmfUtil *midi_smf_util,

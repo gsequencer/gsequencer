@@ -61,8 +61,6 @@ AgsFxFMSynthAudio AgsConnectable
 AgsFxLv2Audio AgsConnectable
 AgsFxSFZSynthAudio AgsConnectable
 AgsFxSynthAudio AgsConnectable
-AgsFxSF2SynthAudio AgsConnectable
-AgsFxVst3Audio AgsConnectable
 AgsFxEnvelopeAudio AgsConnectable
 AgsFxEq10Audio AgsConnectable
 AgsFxHighPassAudio AgsConnectable
@@ -85,8 +83,6 @@ AgsFxFMSynthAudioProcessor AgsConnectable AgsCountable AgsSeekable AgsTactable
 AgsFxLv2AudioProcessor AgsConnectable AgsCountable AgsSeekable AgsTactable
 AgsFxSFZSynthAudioProcessor AgsConnectable AgsCountable AgsSeekable AgsTactable
 AgsFxSynthAudioProcessor AgsConnectable AgsCountable AgsSeekable AgsTactable
-AgsFxSF2SynthAudioProcessor AgsConnectable AgsCountable AgsSeekable AgsTactable
-AgsFxVst3AudioProcessor AgsConnectable AgsCountable AgsSeekable AgsTactable
 AgsFxEnvelopeAudioProcessor AgsConnectable
 AgsFxEq10AudioProcessor AgsConnectable
 AgsFxHighPassAudioProcessor AgsConnectable
@@ -109,8 +105,6 @@ AgsFxFMSynthAudioSignal AgsConnectable
 AgsFxLv2AudioSignal AgsConnectable
 AgsFxSFZSynthAudioSignal AgsConnectable
 AgsFxSynthAudioSignal AgsConnectable
-AgsFxSF2SynthAudioSignal AgsConnectable
-AgsFxVst3AudioSignal AgsConnectable
 AgsFxEnvelopeAudioSignal AgsConnectable
 AgsFxEq10AudioSignal AgsConnectable
 AgsFxHighPassAudioSignal AgsConnectable
@@ -133,8 +127,6 @@ AgsFxFMSynthChannel AgsConnectable
 AgsFxLv2Channel AgsConnectable
 AgsFxSFZSynthChannel AgsConnectable
 AgsFxSynthChannel AgsConnectable
-AgsFxSF2SynthChannel AgsConnectable
-AgsFxVst3Channel AgsConnectable
 AgsFxEnvelopeChannel AgsConnectable
 AgsFxEq10Channel AgsConnectable
 AgsFxHighPassChannel AgsConnectable
@@ -157,8 +149,6 @@ AgsFxFMSynthChannelProcessor AgsConnectable
 AgsFxLv2ChannelProcessor AgsConnectable
 AgsFxSFZSynthChannelProcessor AgsConnectable
 AgsFxSynthChannelProcessor AgsConnectable
-AgsFxSF2SynthChannelProcessor AgsConnectable
-AgsFxVst3ChannelProcessor AgsConnectable
 AgsFxEnvelopeChannelProcessor AgsConnectable
 AgsFxEq10ChannelProcessor AgsConnectable
 AgsFxHighPassChannelProcessor AgsConnectable
@@ -182,8 +172,6 @@ AgsFxFMSynthRecycling AgsConnectable
 AgsFxLv2Recycling AgsConnectable
 AgsFxSFZSynthRecycling AgsConnectable
 AgsFxSynthRecycling AgsConnectable
-AgsFxSF2SynthRecycling AgsConnectable
-AgsFxVst3Recycling AgsConnectable
 AgsFxEnvelopeRecycling AgsConnectable
 AgsFxEq10Recycling AgsConnectable
 AgsFxHighPassRecycling AgsConnectable
@@ -231,9 +219,4 @@ AgsSFZSample AgsConnectable AgsSoundResource
 AgsSndfile AgsConnectable AgsSoundResource
 AgsWasapiDevin AgsConnectable AgsSoundcard
 AgsWasapiDevout AgsConnectable AgsSoundcard
-AgsIpatchDLS2Reader AgsConnectable
-AgsIpatch AgsConnectable AgsSoundContainer
-AgsIpatchGigReader AgsConnectable
-AgsIpatchSample AgsConnectable AgsSoundResource
-AgsIpatchSF2Reader AgsConnectable
 AgsTaskLauncher AgsConnectable
