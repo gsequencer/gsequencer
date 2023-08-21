@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -241,6 +241,8 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
   
   AgsApplicationContext *application_context;
 
+  AgsOscBufferUtil osc_buffer_util;
+
   GList *start_response;
   GList *start_list, *list;
   
@@ -253,9 +255,13 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
   gboolean success;
 
   start_response = NULL;
+
+  osc_buffer_util.major = 1;
+  osc_buffer_util.minor = 0;
   
   /* read type tag */
-  ags_osc_buffer_util_get_string(message + 8,
+  ags_osc_buffer_util_get_string(&osc_buffer_util,
+				 message + 8,
 				 &type_tag, NULL);
 
   success = (type_tag != NULL &&
@@ -281,7 +287,8 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
   }
   
   /* read path */
-  ags_osc_buffer_util_get_string(message + 12,
+  ags_osc_buffer_util_get_string(&osc_buffer_util,
+				 message + 12,
 				 &path, NULL);
 
   /* check argument */
@@ -305,7 +312,8 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
   length = strlen(path);
   
   /* read action */
-  ags_osc_buffer_util_get_string(message + 12 + (4 * (guint) ceil((double) (length + 1) / 4.0)),
+  ags_osc_buffer_util_get_string(&osc_buffer_util,
+				 message + 12 + (4 * (guint) ceil((double) (length + 1) / 4.0)),
 				 &action, NULL);
 
   /* check argument */

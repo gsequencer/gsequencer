@@ -5,7 +5,7 @@ ags (6.0.0)
 	* breaking ABI of renamed ags_midi_buffer_util.h to ags_midi_smf_util.h 1 additional function
 	parameter to boxed utility type, changed function prototypes glong type to gint
 	* breaking ABI of ags_osc_buffer_util.h 1 additional function parameter to boxed utility type
-	* TODO:JK: fixed ags_midi_ump_util.[ch] encode/decode errors
+	* fixed ags_midi_ump_util.[ch] encode/decode errors
 	* added missing tests to ags_midi_ump_util_test.c
 
 ags (5.5.4)

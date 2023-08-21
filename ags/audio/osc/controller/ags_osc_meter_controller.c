@@ -359,12 +359,17 @@ ags_osc_meter_controller_finalize(GObject *gobject)
 gboolean
 ags_osc_meter_controller_monitor_timeout(AgsOscMeterController *osc_meter_controller)
 {
+  AgsOscBufferUtil osc_buffer_util;
+
   GList *start_monitor, *monitor;
   
   GRecMutex *osc_controller_mutex;
 
   /* get OSC meter controller mutex */
   osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_meter_controller);
+
+  osc_buffer_util.major = 1;
+  osc_buffer_util.minor = 0;
 
   /* run */  
   g_rec_mutex_lock(osc_controller_mutex);
@@ -425,7 +430,8 @@ ags_osc_meter_controller_monitor_timeout(AgsOscMeterController *osc_meter_contro
     /* message path */
     packet_size = 4;
 
-    ags_osc_buffer_util_put_string(packet + packet_size,
+    ags_osc_buffer_util_put_string(&osc_buffer_util,
+				   packet + packet_size,
 				   "/meter", -1);
       
     packet_size += 8;
@@ -506,7 +512,8 @@ ags_osc_meter_controller_monitor_timeout(AgsOscMeterController *osc_meter_contro
 
 	g_rec_mutex_lock(osc_controller_mutex);
 	  
-	ags_osc_buffer_util_put_string(packet + packet_size,
+	ags_osc_buffer_util_put_string(&osc_buffer_util,
+				       packet + packet_size,
 				       path, -1);
 
 	g_rec_mutex_unlock(osc_controller_mutex);
@@ -541,7 +548,8 @@ ags_osc_meter_controller_monitor_timeout(AgsOscMeterController *osc_meter_contro
 
 	  value = port->port_value.ags_port_double_ptr[i];
 	    
-	  ags_osc_buffer_util_put_double(packet + packet_size + (i * 8),
+	  ags_osc_buffer_util_put_double(&osc_buffer_util,
+					 packet + packet_size + (i * 8),
 					 value);
 	}
 
@@ -550,7 +558,8 @@ ags_osc_meter_controller_monitor_timeout(AgsOscMeterController *osc_meter_contro
 	packet_size += (port_value_length * 8);
 	  
 	/* packet size */
-	ags_osc_buffer_util_put_int32(packet,
+	ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				      packet,
 				      packet_size);
       }else{
 	g_warning("unsupported port type");
@@ -567,7 +576,8 @@ ags_osc_meter_controller_monitor_timeout(AgsOscMeterController *osc_meter_contro
 	  
 	g_rec_mutex_unlock(port_mutex);
 
-	ags_osc_buffer_util_put_string(packet + packet_size,
+	ags_osc_buffer_util_put_string(&osc_buffer_util,
+				       packet + packet_size,
 				       ",sf", -1);
 
 	/* node path */	    
@@ -597,7 +607,8 @@ ags_osc_meter_controller_monitor_timeout(AgsOscMeterController *osc_meter_contro
 
 	g_rec_mutex_lock(osc_controller_mutex);
 	  
-	ags_osc_buffer_util_put_string(packet + packet_size,
+	ags_osc_buffer_util_put_string(&osc_buffer_util,
+				       packet + packet_size,
 				       path, -1);
 
 	g_rec_mutex_unlock(osc_controller_mutex);
@@ -605,13 +616,15 @@ ags_osc_meter_controller_monitor_timeout(AgsOscMeterController *osc_meter_contro
 	/* node argument */
 	packet_size += (4 * (guint) ceil((double) (length + 1) / 4.0));
 
-	ags_osc_buffer_util_put_float(packet + packet_size,
+	ags_osc_buffer_util_put_float(&osc_buffer_util,
+				      packet + packet_size,
 				      value);
 	  
 	packet_size += 4;
 	  
 	/* packet size */
-	ags_osc_buffer_util_put_int32(packet,
+	ags_osc_buffer_util_put_int32(&osc_buffer_util,
+				      packet,
 				      packet_size);
       }else{
 	g_warning("unsupported port type");
@@ -2390,9 +2403,9 @@ ags_osc_meter_controller_monitor_meter_channel(AgsOscMeterController *osc_meter_
     }
 
     g_list_free_full(start_play,
-		       g_object_unref);
+		     g_object_unref);
     g_list_free_full(start_recall,
-		       g_object_unref);
+		     g_object_unref);
   }else{
     osc_response = ags_osc_response_new();
     start_response = g_list_prepend(start_response,
@@ -4919,6 +4932,8 @@ ags_osc_meter_controller_real_monitor_meter(AgsOscMeterController *osc_meter_con
 
   AgsOscResponse *osc_response;
 
+  AgsOscBufferUtil osc_buffer_util;
+
   GList *start_response;
 
   gchar *type_tag;
@@ -4926,10 +4941,14 @@ ags_osc_meter_controller_real_monitor_meter(AgsOscMeterController *osc_meter_con
 
   gboolean success;
 
+  osc_buffer_util.major = 1;
+  osc_buffer_util.minor = 0;
+
   start_response = NULL;
   
   /* read type tag */
-  ags_osc_buffer_util_get_string(message + 8,
+  ags_osc_buffer_util_get_string(&osc_buffer_util,
+				 message + 8,
 				 &type_tag, NULL);
 
   success = (type_tag != NULL &&
@@ -4957,7 +4976,8 @@ ags_osc_meter_controller_real_monitor_meter(AgsOscMeterController *osc_meter_con
   }
   
   /* read argument */
-  ags_osc_buffer_util_get_string(message + 12,
+  ags_osc_buffer_util_get_string(&osc_buffer_util,
+				 message + 12,
 				 &path, NULL);
 
   if(path == NULL){

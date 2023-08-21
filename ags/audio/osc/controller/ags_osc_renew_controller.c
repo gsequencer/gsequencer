@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -295,6 +295,8 @@ ags_osc_renew_controller_set_data_soundcard(AgsOscRenewController *osc_renew_con
   AgsTaskLauncher *task_launcher;
   
   AgsApplicationContext *application_context;
+
+  AgsOscBufferUtil osc_buffer_util;
   
   GList *start_response;
 
@@ -308,6 +310,9 @@ ags_osc_renew_controller_set_data_soundcard(AgsOscRenewController *osc_renew_con
   if(!AGS_IS_SOUNDCARD(soundcard)){
     return(NULL);
   }
+
+  osc_buffer_util.major = 1;
+  osc_buffer_util.minor = 0;
 
   start_response = NULL;
   
@@ -366,13 +371,14 @@ ags_osc_renew_controller_set_data_soundcard(AgsOscRenewController *osc_renew_con
       }
       
       /* read device */
-      ags_osc_buffer_util_get_string(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
+      ags_osc_buffer_util_get_string(&osc_buffer_util,
+				     message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
 				     &device, NULL);
 
       set_device = ags_set_device_new(soundcard,
 				      device);
       ags_task_launcher_add_task(task_launcher,
-				  (AgsTask *) set_device);
+				 (AgsTask *) set_device);
 
       if(device != NULL){
 	free(device);
@@ -402,13 +408,14 @@ ags_osc_renew_controller_set_data_soundcard(AgsOscRenewController *osc_renew_con
       }
       
       /* read pcm channels */
-      ags_osc_buffer_util_get_int32(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
+      ags_osc_buffer_util_get_int32(&osc_buffer_util,
+				    message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
 				    &pcm_channels);
 
       set_audio_channels = ags_set_audio_channels_new(soundcard,
 						      pcm_channels);
       ags_task_launcher_add_task(task_launcher,
-				  (AgsTask *) set_audio_channels);
+				 (AgsTask *) set_audio_channels);
     }else if(!strncmp(path + path_offset,
 		      "samplerate",
 		      11)){
@@ -434,13 +441,14 @@ ags_osc_renew_controller_set_data_soundcard(AgsOscRenewController *osc_renew_con
       }
       
       /* read samplerate */
-      ags_osc_buffer_util_get_int32(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
+      ags_osc_buffer_util_get_int32(&osc_buffer_util,
+				    message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
 				    &samplerate);
 
       set_samplerate = ags_set_samplerate_new(soundcard,
 					      samplerate);
       ags_task_launcher_add_task(task_launcher,
-				  (AgsTask *) set_samplerate);
+				 (AgsTask *) set_samplerate);
     }else if(!strncmp(path + path_offset,
 		      "buffer-size",
 		      12)){
@@ -466,13 +474,14 @@ ags_osc_renew_controller_set_data_soundcard(AgsOscRenewController *osc_renew_con
       }
       
       /* read buffer size */
-      ags_osc_buffer_util_get_int32(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
+      ags_osc_buffer_util_get_int32(&osc_buffer_util,
+				    message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
 				    &buffer_size);
 
       set_buffer_size = ags_set_buffer_size_new(soundcard,
 						buffer_size);
       ags_task_launcher_add_task(task_launcher,
-				  (AgsTask *) set_buffer_size);
+				 (AgsTask *) set_buffer_size);
     }else if(!strncmp(path + path_offset,
 		      "format",
 		      7)){
@@ -498,13 +507,14 @@ ags_osc_renew_controller_set_data_soundcard(AgsOscRenewController *osc_renew_con
       }
       
       /* read format */
-      ags_osc_buffer_util_get_int32(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
+      ags_osc_buffer_util_get_int32(&osc_buffer_util,
+				    message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
 				    &format);
 
       set_format = ags_set_format_new(soundcard,
 				      format);
       ags_task_launcher_add_task(task_launcher,
-				  (AgsTask *) set_format);
+				 (AgsTask *) set_format);
     }else{
       ags_osc_response_set_flags(osc_response,
 				 AGS_OSC_RESPONSE_ERROR);
@@ -557,6 +567,8 @@ ags_osc_renew_controller_set_data_sequencer(AgsOscRenewController *osc_renew_con
 
   AgsApplicationContext *application_context;
   
+  AgsOscBufferUtil osc_buffer_util;
+
   GList *start_response;
 
   guchar *packet;
@@ -569,6 +581,9 @@ ags_osc_renew_controller_set_data_sequencer(AgsOscRenewController *osc_renew_con
   if(!AGS_IS_SEQUENCER(sequencer)){
     return(NULL);
   }
+
+  osc_buffer_util.major = 1;
+  osc_buffer_util.minor = 0;
 
   start_response = NULL;
 
@@ -627,13 +642,14 @@ ags_osc_renew_controller_set_data_sequencer(AgsOscRenewController *osc_renew_con
       }
       
       /* read device */
-      ags_osc_buffer_util_get_string(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
+      ags_osc_buffer_util_get_string(&osc_buffer_util,
+				     message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
 				     &device, NULL);
 
       set_device = ags_set_device_new(sequencer,
 				      device);
       ags_task_launcher_add_task(task_launcher,
-				  (AgsTask *) set_device);
+				 (AgsTask *) set_device);
 
       if(device != NULL){
 	free(device);
@@ -690,6 +706,8 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
 
   AgsApplicationContext *application_context;
   
+  AgsOscBufferUtil osc_buffer_util;
+
   GList *start_response;
 
   guchar *packet;
@@ -702,6 +720,9 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
   if(!AGS_IS_AUDIO(audio)){
     return(NULL);
   }
+
+  osc_buffer_util.major = 1;
+  osc_buffer_util.minor = 0;
 
   start_response = NULL;
 
@@ -763,7 +784,8 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
       }
       
       /* read audio channels */
-      ags_osc_buffer_util_get_int32(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
+      ags_osc_buffer_util_get_int32(&osc_buffer_util,
+				    message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
 				    &audio_channels);
 
       g_object_get(audio,
@@ -775,7 +797,7 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
 					  output_pads, input_pads,
 					  audio_channels);
       ags_task_launcher_add_task(task_launcher,
-				  (AgsTask *) resize_audio);
+				 (AgsTask *) resize_audio);
     }else if(!strncmp(path + path_offset,
 		      "output-pads",
 		      12)){
@@ -802,7 +824,8 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
       }
       
       /* read output pads */
-      ags_osc_buffer_util_get_int32(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
+      ags_osc_buffer_util_get_int32(&osc_buffer_util,
+				    message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
 				    &output_pads);
 
       g_object_get(audio,
@@ -814,7 +837,7 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
 					  output_pads, input_pads,
 					  audio_channels);
       ags_task_launcher_add_task(task_launcher,
-				  (AgsTask *) resize_audio);
+				 (AgsTask *) resize_audio);
     }else if(!strncmp(path + path_offset,
 		      "input-pads",
 		      11)){
@@ -841,7 +864,8 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
       }
       
       /* read input pads */
-      ags_osc_buffer_util_get_int32(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
+      ags_osc_buffer_util_get_int32(&osc_buffer_util,
+				    message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
 				    &input_pads);
 
       g_object_get(audio,
@@ -853,7 +877,7 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
 					  output_pads, input_pads,
 					  audio_channels);
       ags_task_launcher_add_task(task_launcher,
-				  (AgsTask *) resize_audio);
+				 (AgsTask *) resize_audio);
     }else if(!strncmp(path + path_offset,
 		      "samplerate",
 		      11)){
@@ -879,13 +903,14 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
       }
       
       /* read samplerate */
-      ags_osc_buffer_util_get_int32(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
+      ags_osc_buffer_util_get_int32(&osc_buffer_util,
+				    message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
 				    &samplerate);
 
       set_samplerate = ags_set_samplerate_new((GObject *) audio,
 					      samplerate);
       ags_task_launcher_add_task(task_launcher,
-				  (AgsTask *) set_samplerate);
+				 (AgsTask *) set_samplerate);
     }else if(!strncmp(path + path_offset,
 		      "buffer-size",
 		      12)){
@@ -911,13 +936,14 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
       }
       
       /* read buffer size */
-      ags_osc_buffer_util_get_int32(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
+      ags_osc_buffer_util_get_int32(&osc_buffer_util,
+				    message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
 				    &buffer_size);
 
       set_buffer_size = ags_set_buffer_size_new((GObject *) audio,
 						buffer_size);
       ags_task_launcher_add_task(task_launcher,
-				  (AgsTask *) set_buffer_size);
+				 (AgsTask *) set_buffer_size);
     }else if(!strncmp(path + path_offset,
 		      "format",
 		      7)){
@@ -943,13 +969,14 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
       }
       
       /* read format */
-      ags_osc_buffer_util_get_int32(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
+      ags_osc_buffer_util_get_int32(&osc_buffer_util,
+				    message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
 				    &format);
 
       set_format = ags_set_format_new((GObject *) audio,
 				      format);
       ags_task_launcher_add_task(task_launcher,
-				  (AgsTask *) set_format);
+				 (AgsTask *) set_format);
     }else{
       ags_osc_response_set_flags(osc_response,
 				 AGS_OSC_RESPONSE_ERROR);
@@ -1767,6 +1794,8 @@ ags_osc_renew_controller_set_data_channel(AgsOscRenewController *osc_renew_contr
   
   AgsApplicationContext *application_context;
 
+  AgsOscBufferUtil osc_buffer_util;
+
   GList *start_response;
   
   guchar *packet;
@@ -1779,6 +1808,9 @@ ags_osc_renew_controller_set_data_channel(AgsOscRenewController *osc_renew_contr
   if(!AGS_IS_CHANNEL(channel)){
     return(NULL);
   }
+
+  osc_buffer_util.major = 1;
+  osc_buffer_util.minor = 0;
 
   start_response = NULL;
   
@@ -1838,13 +1870,14 @@ ags_osc_renew_controller_set_data_channel(AgsOscRenewController *osc_renew_contr
       }
       
       /* read samplerate */
-      ags_osc_buffer_util_get_int32(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
+      ags_osc_buffer_util_get_int32(&osc_buffer_util,
+				    message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
 				    &samplerate);
 
       set_samplerate = ags_set_samplerate_new((GObject *) channel,
 					      samplerate);
       ags_task_launcher_add_task(task_launcher,
-				  (AgsTask *) set_samplerate);
+				 (AgsTask *) set_samplerate);
     }else if(!strncmp(path + path_offset,
 		      "buffer-size",
 		      12)){
@@ -1870,13 +1903,14 @@ ags_osc_renew_controller_set_data_channel(AgsOscRenewController *osc_renew_contr
       }
       
       /* read buffer size */
-      ags_osc_buffer_util_get_int32(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
+      ags_osc_buffer_util_get_int32(&osc_buffer_util,
+				    message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
 				    &buffer_size);
 
       set_buffer_size = ags_set_buffer_size_new((GObject *) channel,
 						buffer_size);
       ags_task_launcher_add_task(task_launcher,
-				  (AgsTask *) set_buffer_size);
+				 (AgsTask *) set_buffer_size);
     }else if(!strncmp(path + path_offset,
 		      "format",
 		      7)){
@@ -1902,13 +1936,14 @@ ags_osc_renew_controller_set_data_channel(AgsOscRenewController *osc_renew_contr
       }
       
       /* read format */
-      ags_osc_buffer_util_get_int32(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
+      ags_osc_buffer_util_get_int32(&osc_buffer_util,
+				    message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
 				    &format);
 
       set_format = ags_set_format_new((GObject *) channel,
 				      format);
       ags_task_launcher_add_task(task_launcher,
-				  (AgsTask *) set_format);
+				 (AgsTask *) set_format);
     }else{
       ags_osc_response_set_flags(osc_response,
 				 AGS_OSC_RESPONSE_ERROR);
@@ -2798,6 +2833,8 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
   
   AgsTaskLauncher *task_launcher;
   
+  AgsOscBufferUtil osc_buffer_util;
+
   GList *start_response;
 
   guchar *packet;
@@ -2810,6 +2847,9 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
   if(!AGS_IS_PORT(port)){
     return(NULL);
   }
+
+  osc_buffer_util.major = 1;
+  osc_buffer_util.minor = 0;
 
   start_response = NULL;
   
@@ -2953,7 +2993,8 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
 	  g_rec_mutex_lock(port_mutex);
 
 	  for(i = 0; path_offset + type_tag_offset + (i * 8) < message_size && i < value_count; i++){
-	    ags_osc_buffer_util_get_int64(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + path_offset + type_tag_offset + (i * 8),
+	    ags_osc_buffer_util_get_int64(&osc_buffer_util,
+					  message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + path_offset + type_tag_offset + (i * 8),
 					  &value);
 
 	    port->port_value.ags_port_int_ptr[i] = value;
@@ -2996,7 +3037,8 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
 	  g_rec_mutex_lock(port_mutex);
 
 	  for(i = 0; path_offset + type_tag_offset + (i * 8) < message_size && i < value_count; i++){
-	    ags_osc_buffer_util_get_int64(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + path_offset + type_tag_offset + (i * 8),
+	    ags_osc_buffer_util_get_int64(&osc_buffer_util,
+					  message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + path_offset + type_tag_offset + (i * 8),
 					  &value);
 
 	    port->port_value.ags_port_uint_ptr[i] = value;
@@ -3039,7 +3081,8 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
 	  g_rec_mutex_lock(port_mutex);
 
 	  for(i = 0; path_offset + type_tag_offset + (i * 4) < message_size && i < value_count; i++){
-	    ags_osc_buffer_util_get_float(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + path_offset + type_tag_offset + (i * 4),
+	    ags_osc_buffer_util_get_float(&osc_buffer_util,
+					  message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + path_offset + type_tag_offset + (i * 4),
 					  &value);
 
 	    port->port_value.ags_port_float_ptr[i] = value;
@@ -3082,7 +3125,8 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
 	  g_rec_mutex_lock(port_mutex);
 
 	  for(i = 0; path_offset + type_tag_offset + (i * 8) < message_size && i < value_count; i++){
-	    ags_osc_buffer_util_get_double(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + path_offset + type_tag_offset + (i * 8),
+	    ags_osc_buffer_util_get_double(&osc_buffer_util,
+					   message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + path_offset + type_tag_offset + (i * 8),
 					   &value);
 
 	    port->port_value.ags_port_double_ptr[i] = value;
@@ -3135,7 +3179,8 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
 	  
 	  if(message_size >= 8 + path_offset + type_tag_offset + 8){
 	    if(type_tag[2] == 'h'){
-	      ags_osc_buffer_util_get_int64(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + path_offset + type_tag_offset,
+	      ags_osc_buffer_util_get_int64(&osc_buffer_util,
+					    message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + path_offset + type_tag_offset,
 					    &value);
 
 	      /* set value */
@@ -3174,7 +3219,8 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
 	  
 	  if(message_size >= 8 + path_offset + type_tag_offset + 8){
 	    if(type_tag[2] == 'h'){
-	      ags_osc_buffer_util_get_int64(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + path_offset + type_tag_offset,
+	      ags_osc_buffer_util_get_int64(&osc_buffer_util,
+					    message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + path_offset + type_tag_offset,
 					    &value);
 
 	      /* set value */
@@ -3213,7 +3259,8 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
 
 	  if(message_size >= 8 + path_offset + type_tag_offset + 4){
 	    if(type_tag[2] == 'f'){
-	      ags_osc_buffer_util_get_float(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + path_offset + type_tag_offset,
+	      ags_osc_buffer_util_get_float(&osc_buffer_util,
+					    message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + path_offset + type_tag_offset,
 					    &value);
 
 	      /* set value */
@@ -3252,7 +3299,8 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
 	  
 	  if(message_size >= 8 + path_offset + type_tag_offset + 8){
 	    if(type_tag[2] == 'd'){
-	      ags_osc_buffer_util_get_double(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + path_offset + type_tag_offset,
+	      ags_osc_buffer_util_get_double(&osc_buffer_util,
+					     message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + path_offset + type_tag_offset,
 					     &value);
 
 	      /* set value */
@@ -3300,6 +3348,8 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 
   AgsApplicationContext *application_context;
 
+  AgsOscBufferUtil osc_buffer_util;
+
   GList *start_response;
   
   gchar *type_tag;
@@ -3308,10 +3358,14 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
   guint path_offset;
   gboolean success;
 
+  osc_buffer_util.major = 1;
+  osc_buffer_util.minor = 0;
+
   start_response = NULL;
   
   /* read type tag */
-  ags_osc_buffer_util_get_string(message + 8,
+  ags_osc_buffer_util_get_string(&osc_buffer_util,
+				 message + 8,
 				 &type_tag, NULL);
 
   success = (type_tag != NULL &&
@@ -3337,7 +3391,8 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
   }
   
   /* read argument */
-  ags_osc_buffer_util_get_string(message + 8 + (4 * (guint) ceil((gdouble) (strlen(type_tag) + 1) / 4.0)),
+  ags_osc_buffer_util_get_string(&osc_buffer_util,
+				 message + 8 + (4 * (guint) ceil((gdouble) (strlen(type_tag) + 1) / 4.0)),
 				 &path, NULL);  
 
   if(path == NULL){
