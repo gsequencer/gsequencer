@@ -5028,11 +5028,11 @@ ags_midi_ump_util_get_midi2_rpn_pitch_bend_range(AgsMidiUmpUtil *midi_ump_util,
   
   /* semitones and cents */
   if(semitones != NULL){
-    semitones[0] = (0xfe & buffer[nth]) >> 1;
+    semitones[0] = 0x7f & (buffer[nth] >> 1);
   }
   
   if(cents != NULL){
-    cents[0] = (0x01 & buffer[nth] >> 1) | ((0xfc & buffer[nth + 1]) >> 2);
+    cents[0] = ((0x01 & buffer[nth]) << 6) | ((0xfc & buffer[nth + 1]) >> 2);
   }
 
   nth += 2;
@@ -5181,7 +5181,7 @@ ags_midi_ump_util_get_midi2_rpn_coarse_tuning(AgsMidiUmpUtil *midi_ump_util,
   
   /* coarse tuning */
   if(coarse_tuning != NULL){
-    coarse_tuning[0] = ((0xfe & buffer[nth]) >> 1);
+    coarse_tuning[0] = (0x7f & (buffer[nth] >> 1));
   }
 
   nth += 1;
@@ -5271,7 +5271,7 @@ ags_midi_ump_util_put_midi2_rpn_tuning_program_change(AgsMidiUmpUtil *midi_ump_u
   nth++;
 
   /* tuning program number */
-  buffer[nth] = 0xfc & ((0x7f & (tuning_program_number)) << 1);
+  buffer[nth] = 0xfe & ((0x7f & (tuning_program_number)) << 1);
   nth++;
 
   /* undefined */
@@ -5329,7 +5329,7 @@ ags_midi_ump_util_get_midi2_rpn_tuning_program_change(AgsMidiUmpUtil *midi_ump_u
   
   /* tuning program number */
   if(tuning_program_number != NULL){
-    tuning_program_number[0] = ((0xfe & buffer[nth]) >> 1);
+    tuning_program_number[0] = (0x7f & (buffer[nth] >> 1));
   }
 
   nth += 1;

@@ -7,8 +7,7 @@ with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
 A copy of the license is included in the section entitled "GNU
 Free Documentation License".
 
-* TODO:JK: improve ags_midi_buffer_util.c return value
-* TODO:JK: fix ags_vst_iprocess_context.h states and flags
+* TODO:JK: improve ags_midi_smf_util.c return value
 * TODO:JK: rename AgsAudioThreadFlags
 * TODO:JK: rename AgsChannelThreadFlags
 * TODO:JK: refactored AgsSimpleFile improved reading XML
@@ -23,7 +22,6 @@ Free Documentation License".
 * TODO:JK: implemented AgsUiOscRenewController
 * TODO:JK: implemented Fx mutex per scope
 * TODO:JK: extended user's handbook to cover OSC server preferences
-* TODO:JK: implemented support for GtkApplication
 * TODO:JK: migrated AgsBasePlugin to GModule
 * TODO:JK: migrated to gi18n.h?
 * TODO:JK: migrated unit-tests to GTest?
