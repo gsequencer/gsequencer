@@ -3165,7 +3165,6 @@ ags_sfz_synth_sfz_loader_completed_timeout(AgsSFZSynth *sfz_synth)
 
 	if(sfz_synth->audio_container == NULL ||
 	   sfz_synth->audio_container->sound_container == NULL){
-	  g_object_run_dispose((GObject *) sfz_synth->sfz_loader);
 	  g_object_unref(sfz_synth->sfz_loader);
 
 	  sfz_synth->sfz_loader = NULL;
@@ -3216,7 +3215,6 @@ ags_sfz_synth_sfz_loader_completed_timeout(AgsSFZSynth *sfz_synth)
 	}
 	
 	/* cleanup */	
-	g_object_run_dispose((GObject *) sfz_synth->sfz_loader);
 	g_object_unref(sfz_synth->sfz_loader);
 
 	sfz_synth->sfz_loader = NULL;

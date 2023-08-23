@@ -360,7 +360,8 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   sf2_synth->sf2_loader_spinner = (GtkSpinner *) gtk_spinner_new();
   gtk_box_append(sf2_file_hbox,
 		     (GtkWidget *) sf2_synth->sf2_loader_spinner);
-  gtk_widget_hide((GtkWidget *) sf2_synth->sf2_loader_spinner);
+  gtk_widget_set_visible((GtkWidget *) sf2_synth->sf2_loader_spinner,
+			 FALSE);
 
   /* preset - bank and program */
   sf2_synth->bank = -1;
@@ -3334,9 +3335,25 @@ ags_sf2_synth_sf2_loader_completed_timeout(AgsSF2Synth *sf2_synth)
 
 	gtk_list_store_clear(bank_list_store);
 	gtk_list_store_clear(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(sf2_synth->program_tree_view))));
+
+	if(sf2_synth->audio_container == NULL ||
+	   ipatch == NULL ||
+	   ipatch->handle == NULL ||
+	   ipatch->handle->file == NULL){
+	  g_object_unref(sf2_synth->sf2_loader);
+
+	  sf2_synth->sf2_loader = NULL;
+
+	  sf2_synth->position = -1;
+
+	  gtk_spinner_stop(sf2_synth->sf2_loader_spinner);
+	  gtk_widget_hide((GtkWidget *) sf2_synth->sf2_loader_spinner);
+	  
+	  return(TRUE);
+	}
 	
 	ipatch = (AgsIpatch *) sf2_synth->audio_container->sound_container;
-
+	
 	error = NULL;
 	sf2 = (IpatchSF2 *) ipatch_convert_object_to_type((GObject *) ipatch->handle->file,
 							  IPATCH_TYPE_SF2,
@@ -3364,6 +3381,9 @@ ags_sf2_synth_sf2_loader_completed_timeout(AgsSF2Synth *sf2_synth)
 	      
 	      ipatch_item = ipatch_iter_get(&preset_iter);
 
+	      bank = 0;
+	      program = 0;
+	      
 	      ipatch_sf2_preset_get_midi_locale((IpatchSF2Preset *) ipatch_item,
 						&bank,
 						&program);
@@ -3410,7 +3430,6 @@ ags_sf2_synth_sf2_loader_completed_timeout(AgsSF2Synth *sf2_synth)
 				      NULL);
 	}
 
-	g_object_run_dispose((GObject *) sf2_synth->sf2_loader);
 	g_object_unref(sf2_synth->sf2_loader);
 
 	sf2_synth->sf2_loader = NULL;
@@ -3418,14 +3437,16 @@ ags_sf2_synth_sf2_loader_completed_timeout(AgsSF2Synth *sf2_synth)
 	sf2_synth->position = -1;
 
 	gtk_spinner_stop(sf2_synth->sf2_loader_spinner);
-	gtk_widget_hide((GtkWidget *) sf2_synth->sf2_loader_spinner);
+	gtk_widget_set_visible((GtkWidget *) sf2_synth->sf2_loader_spinner,
+			       FALSE);
 	  
 	return(TRUE);
       }else{
 	if(sf2_synth->position == -1){
 	  sf2_synth->position = 0;
 
-	  gtk_widget_show((GtkWidget *) sf2_synth->sf2_loader_spinner);
+	  gtk_widget_set_visible((GtkWidget *) sf2_synth->sf2_loader_spinner,
+				 TRUE);
 	  gtk_spinner_start(sf2_synth->sf2_loader_spinner);
 	}
 
