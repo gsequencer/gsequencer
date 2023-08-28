@@ -3336,8 +3336,13 @@ ags_sf2_synth_sf2_loader_completed_timeout(AgsSF2Synth *sf2_synth)
 	gtk_list_store_clear(bank_list_store);
 	gtk_list_store_clear(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(sf2_synth->program_tree_view))));
 
-	if(sf2_synth->audio_container == NULL ||
-	   ipatch == NULL ||
+	ipatch = NULL;
+	
+	if(sf2_synth->audio_container != NULL){
+	  ipatch = (AgsIpatch *) sf2_synth->audio_container->sound_container;
+	}
+
+	if(ipatch == NULL ||
 	   ipatch->handle == NULL ||
 	   ipatch->handle->file == NULL){
 	  g_object_unref(sf2_synth->sf2_loader);
@@ -3351,8 +3356,6 @@ ags_sf2_synth_sf2_loader_completed_timeout(AgsSF2Synth *sf2_synth)
 	  
 	  return(TRUE);
 	}
-	
-	ipatch = (AgsIpatch *) sf2_synth->audio_container->sound_container;
 	
 	error = NULL;
 	sf2 = (IpatchSF2 *) ipatch_convert_object_to_type((GObject *) ipatch->handle->file,
