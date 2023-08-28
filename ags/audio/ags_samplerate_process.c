@@ -81,7 +81,9 @@ prepare_data(AgsResampleUtil *resample_util, int half_filter_chan_len)
     offset = resample_util->in_used;
   }
 
-  if(len > offset){
+  if(len > offset &&
+     resample_util->b_end + len - offset < resample_util->buffer_length &&
+     resample_util->in_used + len - offset < resample_util->input_frames){
     ags_audio_buffer_util_copy_buffer_to_buffer(resample_util->buffer, 1, resample_util->b_end,
 						resample_util->data_in, 1, resample_util->in_used,
 						len - offset, copy_mode);

@@ -48,7 +48,7 @@ guint ags_midi_ump_util_get_flex_set_text(AgsMidiUmpUtil *midi_ump_util,
 /**
  * SECTION:ags_midi_ump_util
  * @short_description: MIDI UMP util
- * @title: AgsMidiUtil
+ * @title: AgsMidiUmpUtil
  * @section_id:
  * @include: ags/audio/midi/ags_midi_ump_util.h
  *
