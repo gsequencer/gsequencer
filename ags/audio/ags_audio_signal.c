@@ -2712,8 +2712,14 @@ ags_audio_signal_set_samplerate(AgsAudioSignal *audio_signal, guint samplerate)
       memset(data, 0, stream_length * buffer_size * sizeof(gdouble));
     }
     break;
+  case AGS_SOUNDCARD_COMPLEX:
+    {
+      data = (AgsComplex *) g_malloc(stream_length * buffer_size * sizeof(AgsComplex));
+      memset(data, 0, stream_length * buffer_size * sizeof(AgsComplex));
+    }
+    break;
   default:
-    g_warning("ags_audio_signal_set_buffer_size() - unsupported format");
+    g_warning("ags_audio_signal_set_samplerate() - unsupported format");
   }
 
   stream = audio_signal->stream;
@@ -2965,6 +2971,14 @@ ags_audio_signal_set_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size
       word_size = sizeof(gdouble);
     }
     break;
+  case AGS_SOUNDCARD_COMPLEX:
+    {
+      data = (AgsComplex *) g_malloc(stream_length * old_buffer_size * sizeof(AgsComplex));
+      memset(data, 0, stream_length * old_buffer_size * sizeof(AgsComplex));
+
+      word_size = sizeof(AgsComplex);
+    }
+    break;
   default:
     g_warning("ags_audio_signal_set_buffer_size() - unsupported format");
   }
@@ -3047,6 +3061,11 @@ ags_audio_signal_set_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size
     case AGS_SOUNDCARD_DOUBLE:
       {
 	memset(stream->data, 0, buffer_size * sizeof(gdouble));
+      }
+      break;
+    case AGS_SOUNDCARD_COMPLEX:
+      {
+	memset(stream->data, 0, buffer_size * sizeof(AgsComplex));
       }
       break;
     default:

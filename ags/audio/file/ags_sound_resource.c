@@ -551,8 +551,6 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
 	resample_util.buffer = ags_stream_alloc(allocated_buffer_length,
 						format);
 	
-	resample_util.end_of_input = 0;
-	
 	resample_util.destination = target_data;
 	resample_util.destination_stride = 1;
 
@@ -797,6 +795,8 @@ ags_sound_resource_read_audio_signal_at_once(AgsSoundResource *sound_resource,
       resample_util.samplerate = samplerate;
 
       resample_util.target_samplerate = target_samplerate;
+
+      resample_util.bypass_cache = TRUE;
 
       ags_resample_util_compute(&resample_util);  
 
