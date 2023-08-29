@@ -1182,6 +1182,9 @@ ags_fx_playback_audio_processor_real_data_put(AgsFxPlaybackAudioProcessor *fx_pl
     resample_util.output_frames = buffer_size;
     resample_util.data_out = ags_stream_alloc(allocated_buffer_length,
 					      buffer_format);
+
+    resample_util.buffer = ags_stream_alloc(allocated_buffer_length,
+					    buffer_format);
   
     resample_util.destination = buffer_data;
     resample_util.destination_stride = 1;
@@ -1196,9 +1199,6 @@ ags_fx_playback_audio_processor_real_data_put(AgsFxPlaybackAudioProcessor *fx_pl
     resample_util.target_samplerate = samplerate;
 
     resample_util.bypass_cache = TRUE;
-
-    resample_util.buffer = ags_stream_alloc(allocated_buffer_length,
-					    buffer_format);
     
     ags_resample_util_compute(&resample_util);  
 

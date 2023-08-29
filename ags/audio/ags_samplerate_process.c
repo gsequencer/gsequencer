@@ -120,60 +120,7 @@ prepare_data(AgsResampleUtil *resample_util, int half_filter_chan_len)
     
     if (len < 0 || resample_util->b_end + len > resample_util->b_len)
       len = resample_util->b_len - resample_util->b_end ;
-    
-#if 0
-    switch(resample_util->format){
-    case AGS_SOUNDCARD_SIGNED_8_BIT:
-      {
-	ags_audio_buffer_util_clear_buffer(((gint8 *) resample_util->buffer) + resample_util->b_end, 1,
-					   len, ags_audio_buffer_util_format_from_soundcard(resample_util->format));
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_16_BIT:
-      {
-	ags_audio_buffer_util_clear_buffer(((gint16 *) resample_util->buffer) + resample_util->b_end, 1,
-					   len, ags_audio_buffer_util_format_from_soundcard(resample_util->format));
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_24_BIT:
-      {
-	ags_audio_buffer_util_clear_buffer(((gint32 *) resample_util->buffer) + resample_util->b_end, 1,
-					   len, ags_audio_buffer_util_format_from_soundcard(resample_util->format));
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_32_BIT:
-      {
-	ags_audio_buffer_util_clear_buffer(((gint32 *) resample_util->buffer) + resample_util->b_end, 1,
-					   len, ags_audio_buffer_util_format_from_soundcard(resample_util->format));
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_64_BIT:
-      {
-	ags_audio_buffer_util_clear_buffer(((gint64 *) resample_util->buffer) + resample_util->b_end, 1,
-					   len, ags_audio_buffer_util_format_from_soundcard(resample_util->format));
-      }
-      break;
-    case AGS_SOUNDCARD_FLOAT:
-      {
-	ags_audio_buffer_util_clear_buffer(((gfloat *) resample_util->buffer) + resample_util->b_end, 1,
-					   len, ags_audio_buffer_util_format_from_soundcard(resample_util->format));
-      }
-      break;
-    case AGS_SOUNDCARD_DOUBLE:
-      {
-	ags_audio_buffer_util_clear_buffer(((gdouble *) resample_util->buffer) + resample_util->b_end, 1,
-					   len, ags_audio_buffer_util_format_from_soundcard(resample_util->format));
-      }
-      break;
-    case AGS_SOUNDCARD_COMPLEX:
-      {
-	ags_audio_buffer_util_clear_buffer(((AgsComplex *) resample_util->buffer) + resample_util->b_end, 1,
-					   len, ags_audio_buffer_util_format_from_soundcard(resample_util->format));
-      }
-      break;
-    }
-#endif
-    
+        
     resample_util->b_end += len ;
   }
 
@@ -230,7 +177,7 @@ calc_output_single (AgsResampleUtil *resample_util, increment_t increment, incre
 	  break;
 	case AGS_SOUNDCARD_SIGNED_24_BIT:
 	  {
-	    left += icoeff * (((double) ((gint32 *) resample_util->buffer)[data_index] / (double) (0xffffff - 1)));
+	    left += icoeff * (((double) ((gint32 *) resample_util->buffer)[data_index] / (double) (0x7fffff)));
 	  }
 	  break;
 	case AGS_SOUNDCARD_SIGNED_32_BIT:
@@ -295,7 +242,7 @@ calc_output_single (AgsResampleUtil *resample_util, increment_t increment, incre
 	  break;
 	case AGS_SOUNDCARD_SIGNED_24_BIT:
 	  {
-	    right += icoeff * (((double) ((gint32 *) resample_util->buffer)[data_index] / (double) (0xffffff - 1)));
+	    right += icoeff * (((double) ((gint32 *) resample_util->buffer)[data_index] / (double) (0x7fffff)));
 	  }
 	  break;
 	case AGS_SOUNDCARD_SIGNED_32_BIT:
@@ -419,7 +366,7 @@ sinc_mono_vari_process (AgsResampleUtil *resample_util)
 	break;
       case AGS_SOUNDCARD_SIGNED_24_BIT:
 	{
-	  ((gint32 *) resample_util->data_out)[resample_util->out_gen] = (gint32) ((double) (0xffffff - 1) * out_val);
+	  ((gint32 *) resample_util->data_out)[resample_util->out_gen] = (gint32) ((double) (0x7fffff) * out_val);
 	}
 	break;
       case AGS_SOUNDCARD_SIGNED_32_BIT:

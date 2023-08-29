@@ -1437,7 +1437,7 @@ ags_sf2_synth_util_load_instrument(AgsSF2SynthUtil *sf2_synth_util,
 	audio_channels = 1;
       }
 	      
-      switch(sample_format){
+      switch(IPATCH_SAMPLE_FORMAT_GET_WIDTH(sample_format)){
       case IPATCH_SAMPLE_8BIT:
 	{
 	  cache = ags_stream_alloc(audio_channels * sample_frame_count,
@@ -1912,7 +1912,7 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 		audio_channels = 1;
 	      }
 	      
-	      switch(sample_format){
+	      switch(IPATCH_SAMPLE_FORMAT_GET_WIDTH(sample_format)){
 	      case IPATCH_SAMPLE_8BIT:
 		{
 		  cache = ags_stream_alloc(audio_channels * sample_frame_count,
@@ -1922,7 +1922,7 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 								  AGS_AUDIO_BUFFER_UTIL_S8);
 
 		  error = NULL;
-		  ipatch_sample_read(IPATCH_SAMPLE(sample_data),
+ 		  ipatch_sample_read(IPATCH_SAMPLE(sample_data),
 				     0,
 				     audio_channels * sample_frame_count,
 				     cache,
@@ -2295,7 +2295,7 @@ ags_sf2_synth_util_compute_s8(AgsSF2SynthUtil *sf2_synth_util)
     if(i > offset){
       incr_j = TRUE;
 
-      ((gdouble *) sample_buffer)[j] = ((gdouble *) current_sample_buffer)[position];
+      ((gint8 *) sample_buffer)[j] = ((gint8 *) current_sample_buffer)[position];
     }
       
     i++;
@@ -2612,7 +2612,7 @@ ags_sf2_synth_util_compute_s16(AgsSF2SynthUtil *sf2_synth_util)
     if(i > offset){
       incr_j = TRUE;
 
-      ((gdouble *) sample_buffer)[j] = ((gdouble *) current_sample_buffer)[position];
+      ((gint16 *) sample_buffer)[j] = ((gint16 *) current_sample_buffer)[position];
     }
       
     i++;
@@ -2674,6 +2674,10 @@ ags_sf2_synth_util_compute_s16(AgsSF2SynthUtil *sf2_synth_util)
   ags_common_pitch_util_set_tuning(pitch_util,
 				   pitch_type,
 				   100.0 * (-1.0 * ((double) root_note - 69.0) + ((double) midi_key + note - 69.0)));
+
+  ags_common_pitch_util_set_format(pitch_util,
+				   pitch_type,
+				   sf2_synth_util->format);
 
   ags_audio_buffer_util_clear_buffer(im_buffer, 1,
 				     buffer_length, AGS_AUDIO_BUFFER_UTIL_DOUBLE);      
@@ -2925,7 +2929,7 @@ ags_sf2_synth_util_compute_s24(AgsSF2SynthUtil *sf2_synth_util)
     if(i > offset){
       incr_j = TRUE;
 
-      ((gdouble *) sample_buffer)[j] = ((gdouble *) current_sample_buffer)[position];
+      ((gint32 *) sample_buffer)[j] = ((gint32 *) current_sample_buffer)[position];
     }
       
     i++;
@@ -2987,6 +2991,10 @@ ags_sf2_synth_util_compute_s24(AgsSF2SynthUtil *sf2_synth_util)
   ags_common_pitch_util_set_tuning(pitch_util,
 				   pitch_type,
 				   100.0 * (-1.0 * ((double) root_note - 69.0) + ((double) midi_key + note - 69.0)));
+
+  ags_common_pitch_util_set_format(pitch_util,
+				   pitch_type,
+				   sf2_synth_util->format);
 
   ags_audio_buffer_util_clear_buffer(im_buffer, 1,
 				     buffer_length, AGS_AUDIO_BUFFER_UTIL_DOUBLE);      
@@ -3238,7 +3246,7 @@ ags_sf2_synth_util_compute_s32(AgsSF2SynthUtil *sf2_synth_util)
     if(i > offset){
       incr_j = TRUE;
 
-      ((gdouble *) sample_buffer)[j] = ((gdouble *) current_sample_buffer)[position];
+      ((gint32 *) sample_buffer)[j] = ((gint32 *) current_sample_buffer)[position];
     }
       
     i++;
@@ -3300,6 +3308,10 @@ ags_sf2_synth_util_compute_s32(AgsSF2SynthUtil *sf2_synth_util)
   ags_common_pitch_util_set_tuning(pitch_util,
 				   pitch_type,
 				   100.0 * (-1.0 * ((double) root_note - 69.0) + ((double) midi_key + note - 69.0)));
+
+  ags_common_pitch_util_set_format(pitch_util,
+				   pitch_type,
+				   sf2_synth_util->format);
 
   ags_audio_buffer_util_clear_buffer(im_buffer, 1,
 				     buffer_length, AGS_AUDIO_BUFFER_UTIL_DOUBLE);      
@@ -3551,7 +3563,7 @@ ags_sf2_synth_util_compute_s64(AgsSF2SynthUtil *sf2_synth_util)
     if(i > offset){
       incr_j = TRUE;
 
-      ((gdouble *) sample_buffer)[j] = ((gdouble *) current_sample_buffer)[position];
+      ((gint64 *) sample_buffer)[j] = ((gint64 *) current_sample_buffer)[position];
     }
       
     i++;
@@ -3613,6 +3625,10 @@ ags_sf2_synth_util_compute_s64(AgsSF2SynthUtil *sf2_synth_util)
   ags_common_pitch_util_set_tuning(pitch_util,
 				   pitch_type,
 				   100.0 * (-1.0 * ((double) root_note - 69.0) + ((double) midi_key + note - 69.0)));
+
+  ags_common_pitch_util_set_format(pitch_util,
+				   pitch_type,
+				   sf2_synth_util->format);
 
   ags_audio_buffer_util_clear_buffer(im_buffer, 1,
 				     buffer_length, AGS_AUDIO_BUFFER_UTIL_DOUBLE);      
@@ -3864,7 +3880,7 @@ ags_sf2_synth_util_compute_float(AgsSF2SynthUtil *sf2_synth_util)
     if(i > offset){
       incr_j = TRUE;
 
-      ((gdouble *) sample_buffer)[j] = ((gdouble *) current_sample_buffer)[position];
+      ((gfloat *) sample_buffer)[j] = ((gfloat *) current_sample_buffer)[position];
     }
       
     i++;
@@ -3926,6 +3942,10 @@ ags_sf2_synth_util_compute_float(AgsSF2SynthUtil *sf2_synth_util)
   ags_common_pitch_util_set_tuning(pitch_util,
 				   pitch_type,
 				   100.0 * (-1.0 * ((double) root_note - 69.0) + ((double) midi_key + note - 69.0)));
+
+  ags_common_pitch_util_set_format(pitch_util,
+				   pitch_type,
+				   sf2_synth_util->format);
 
   ags_audio_buffer_util_clear_buffer(im_buffer, 1,
 				     buffer_length, AGS_AUDIO_BUFFER_UTIL_DOUBLE);      
@@ -4240,6 +4260,10 @@ ags_sf2_synth_util_compute_double(AgsSF2SynthUtil *sf2_synth_util)
 				   pitch_type,
 				   100.0 * (-1.0 * ((double) root_note - 69.0) + ((double) midi_key + note - 69.0)));
 
+  ags_common_pitch_util_set_format(pitch_util,
+				   pitch_type,
+				   sf2_synth_util->format);
+
   ags_audio_buffer_util_clear_buffer(im_buffer, 1,
 				     buffer_length, AGS_AUDIO_BUFFER_UTIL_DOUBLE);      
     
@@ -4490,7 +4514,8 @@ ags_sf2_synth_util_compute_complex(AgsSF2SynthUtil *sf2_synth_util)
     if(i > offset){
       incr_j = TRUE;
 
-      ((gdouble *) sample_buffer)[j] = ((gdouble *) current_sample_buffer)[position];
+      ags_complex_set(((AgsComplex *) sample_buffer) + j,
+		      ags_complex_get(((AgsComplex *) current_sample_buffer) + position));
     }
       
     i++;
@@ -4552,6 +4577,10 @@ ags_sf2_synth_util_compute_complex(AgsSF2SynthUtil *sf2_synth_util)
   ags_common_pitch_util_set_tuning(pitch_util,
 				   pitch_type,
 				   100.0 * (-1.0 * ((double) root_note - 69.0) + ((double) midi_key + note - 69.0)));
+
+  ags_common_pitch_util_set_format(pitch_util,
+				   pitch_type,
+				   sf2_synth_util->format);
 
   ags_audio_buffer_util_clear_buffer(im_buffer, 1,
 				     buffer_length, AGS_AUDIO_BUFFER_UTIL_DOUBLE);      

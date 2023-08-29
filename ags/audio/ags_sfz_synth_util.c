@@ -1443,7 +1443,7 @@ ags_sfz_synth_util_compute_s8(AgsSFZSynthUtil *sfz_synth_util)
     if(i > offset){
       incr_j = TRUE;
 
-      ((gdouble *) sample_buffer)[j] = ((gdouble *) current_sample_buffer)[position];
+      ((gint8 *) sample_buffer)[j] = ((gint8 *) current_sample_buffer)[position];
     }
       
     i++;
@@ -1757,7 +1757,7 @@ ags_sfz_synth_util_compute_s16(AgsSFZSynthUtil *sfz_synth_util)
     if(i > offset){
       incr_j = TRUE;
 
-      ((gdouble *) sample_buffer)[j] = ((gdouble *) current_sample_buffer)[position];
+      ((gint16 *) sample_buffer)[j] = ((gint16 *) current_sample_buffer)[position];
     }
       
     i++;
@@ -2075,7 +2075,7 @@ ags_sfz_synth_util_compute_s24(AgsSFZSynthUtil *sfz_synth_util)
     if(i > offset){
       incr_j = TRUE;
 
-      ((gdouble *) sample_buffer)[j] = ((gdouble *) current_sample_buffer)[position];
+      ((gint32 *) sample_buffer)[j] = ((gint32 *) current_sample_buffer)[position];
     }
       
     i++;
@@ -2389,7 +2389,7 @@ ags_sfz_synth_util_compute_s32(AgsSFZSynthUtil *sfz_synth_util)
     if(i > offset){
       incr_j = TRUE;
 
-      ((gdouble *) sample_buffer)[j] = ((gdouble *) current_sample_buffer)[position];
+      ((gint32 *) sample_buffer)[j] = ((gint32 *) current_sample_buffer)[position];
     }
       
     i++;
@@ -2711,7 +2711,7 @@ ags_sfz_synth_util_compute_s64(AgsSFZSynthUtil *sfz_synth_util)
     if(i > offset){
       incr_j = TRUE;
 
-      ((gdouble *) sample_buffer)[j] = ((gdouble *) current_sample_buffer)[position];
+      ((gint64 *) sample_buffer)[j] = ((gint64 *) current_sample_buffer)[position];
     }
       
     i++;
@@ -3025,7 +3025,7 @@ ags_sfz_synth_util_compute_float(AgsSFZSynthUtil *sfz_synth_util)
     if(i > offset){
       incr_j = TRUE;
 
-      ((gdouble *) sample_buffer)[j] = ((gdouble *) current_sample_buffer)[position];
+      ((gfloat *) sample_buffer)[j] = ((gfloat *) current_sample_buffer)[position];
     }
       
     i++;
@@ -3653,7 +3653,8 @@ ags_sfz_synth_util_compute_complex(AgsSFZSynthUtil *sfz_synth_util)
     if(i > offset){
       incr_j = TRUE;
 
-      ((gdouble *) sample_buffer)[j] = ((gdouble *) current_sample_buffer)[position];
+      ags_complex_set(((AgsComplex *) sample_buffer) + j,
+		      ags_complex_get(((AgsComplex *) current_sample_buffer) + position));
     }
       
     i++;
