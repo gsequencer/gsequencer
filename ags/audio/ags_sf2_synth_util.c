@@ -165,14 +165,19 @@ ags_sf2_synth_util_alloc()
   ptr->loop_end = 0;
 
   ptr->resample_util = ags_resample_util_alloc();
-
   ags_resample_util_set_format(ptr->resample_util,
-			       AGS_SOUNDCARD_DOUBLE);  
+			       AGS_SOUNDCARD_DEFAULT_FORMAT);  
 
   ptr->pitch_type = AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL;
   ptr->pitch_util = ags_fluid_interpolate_4th_order_util_alloc();
 
+  ags_common_pitch_util_set_format(ptr->pitch_util,
+				   ptr->pitch_type,
+				   AGS_SOUNDCARD_DEFAULT_FORMAT);
+
   ptr->volume_util = ags_volume_util_alloc();
+  ags_volume_util_set_format(ptr->volume_util,
+			     AGS_SOUNDCARD_DEFAULT_FORMAT);
 
   return(ptr);
 }
@@ -1378,7 +1383,7 @@ ags_sf2_synth_util_load_instrument(AgsSF2SynthUtil *sf2_synth_util,
       
       guint sample_frame_count;
       guint sample_format;
-      guint format;
+      AgsSoundcardFormat format;
       guint orig_samplerate;
       gint loop_start, loop_end;
       guint audio_channels;
@@ -1396,7 +1401,7 @@ ags_sf2_synth_util_load_instrument(AgsSF2SynthUtil *sf2_synth_util,
 
       sample_frame_count = 0;
       
-      format = AGS_SOUNDCARD_DOUBLE;
+      format = sf2_synth_util->format;
       sample_format = ipatch_sample_get_format(sf2_sample);
 
       sample_frame_count = 0;
@@ -1563,20 +1568,6 @@ ags_sf2_synth_util_load_instrument(AgsSF2SynthUtil *sf2_synth_util,
 	sf2_synth_util->sf2_loop_end[i] = floor(sf2_synth_util->samplerate / orig_samplerate) * loop_end;
 
 	ags_resample_util_init(resample_util);
-		
-	resample_util->destination = sf2_synth_util->sf2_resampled_buffer[i];
-	resample_util->destination_stride = 1;
-		  
-	resample_util->source = sf2_synth_util->sf2_orig_buffer[i];
-	resample_util->source_stride = 1;
-
-	if(resample_util->data_in != NULL){
-	  ags_stream_free(resample_util->data_in);
-	}
-
-	if(resample_util->data_out != NULL){
-	  ags_stream_free(resample_util->data_out);
-	}
 
 	allocated_samples = sample_frame_count;
 
@@ -1589,26 +1580,29 @@ ags_sf2_synth_util_load_instrument(AgsSF2SynthUtil *sf2_synth_util,
 	resample_util->input_frames = sample_frame_count;
 
 	resample_util->data_in = ags_stream_alloc(allocated_samples,
-						  AGS_SOUNDCARD_DOUBLE);
+						  format);
 
 	resample_util->output_frames = sf2_synth_util->sf2_resampled_buffer_length[i];
 
 	resample_util->data_out = ags_stream_alloc(allocated_samples,
-						   AGS_SOUNDCARD_DOUBLE);
+						   format);
+
+	resample_util->buffer = ags_stream_alloc(allocated_samples,
+						 format);
+		
+	resample_util->destination = sf2_synth_util->sf2_resampled_buffer[i];
+	resample_util->destination_stride = 1;
+		  
+	resample_util->source = sf2_synth_util->sf2_orig_buffer[i];
+	resample_util->source_stride = 1;
 		
 	resample_util->buffer_length = sf2_synth_util->sf2_orig_buffer_length[i];
-	resample_util->format = AGS_SOUNDCARD_DOUBLE;
+	resample_util->format = format;
 	resample_util->samplerate = orig_samplerate;
 
 	resample_util->target_samplerate = sf2_synth_util->samplerate;
 
 	resample_util->bypass_cache = TRUE;
-
-	resample_util->b_real_end = -1;
-	resample_util->last_ratio = -1.0;
-
-	resample_util->buffer = ags_stream_alloc(allocated_samples,
-						 AGS_SOUNDCARD_DOUBLE);
 
 	ags_resample_util_compute(resample_util);
 
@@ -1864,7 +1858,7 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 	      
 	      guint sample_frame_count;
 	      guint sample_format;
-	      guint format;
+	      AgsSoundcardFormat format;
 	      guint orig_samplerate;
 	      gint loop_start, loop_end;
 	      guint audio_channels;
@@ -1882,7 +1876,7 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 
 	      sample_frame_count = 0;
 
-	      format = AGS_SOUNDCARD_DOUBLE;
+	      format = sf2_synth_util->format;
 	      sample_format = ipatch_sample_get_format(sf2_sample);
 
 	      sample_frame_count = 0;
@@ -2050,24 +2044,6 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 		
 		ags_resample_util_init(resample_util);
 		
-		resample_util->destination = sf2_synth_util->sf2_resampled_buffer[i];
-		resample_util->destination_stride = 1;
-		  
-		resample_util->source = sf2_synth_util->sf2_orig_buffer[i];
-		resample_util->source_stride = 1;
-
-		if(resample_util->data_in != NULL){
-		  ags_stream_free(resample_util->data_in);
-		}
-
-		if(resample_util->data_out != NULL){
-		  ags_stream_free(resample_util->data_out);
-		}
-
-		if(resample_util->buffer != NULL){
-		  ags_stream_free(resample_util->buffer);
-		}
-
 		allocated_samples = sample_frame_count;
 
 		if(allocated_samples < sf2_synth_util->sf2_resampled_buffer_length[i]){
@@ -2079,26 +2055,29 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 		resample_util->input_frames = sample_frame_count;
 
 		resample_util->data_in = ags_stream_alloc(allocated_samples + 1,
-							  AGS_SOUNDCARD_DOUBLE);
+							  format);
 
 		resample_util->output_frames = sf2_synth_util->sf2_resampled_buffer_length[i];
 
 		resample_util->data_out = ags_stream_alloc(allocated_samples + 1,
-							   AGS_SOUNDCARD_DOUBLE);
+							   format);
+
+		resample_util->buffer = ags_stream_alloc(allocated_samples + 1,
+							 format);
+
+		resample_util->destination = sf2_synth_util->sf2_resampled_buffer[i];
+		resample_util->destination_stride = 1;
+		  
+		resample_util->source = sf2_synth_util->sf2_orig_buffer[i];
+		resample_util->source_stride = 1;
 		
 		resample_util->buffer_length = sf2_synth_util->sf2_orig_buffer_length[i];
-		resample_util->format = AGS_SOUNDCARD_DOUBLE;
+		resample_util->format = format;
 		resample_util->samplerate = orig_samplerate;
 
 		resample_util->target_samplerate = sf2_synth_util->samplerate;
 
 		resample_util->bypass_cache = TRUE;
-
-		resample_util->b_real_end = -1;
-		resample_util->last_ratio = -1.0;
-
-		resample_util->buffer = ags_stream_alloc(allocated_samples + 1,
-							 AGS_SOUNDCARD_DOUBLE);
 
 		ags_resample_util_compute(resample_util);
 
@@ -2295,8 +2274,8 @@ ags_sf2_synth_util_compute_s8(AgsSF2SynthUtil *sf2_synth_util)
 	       "sample-rate", &orig_samplerate,
 	       NULL);
     
-  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
-						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(sf2_synth_util->format),
+						  ags_audio_buffer_util_format_from_soundcard(sf2_synth_util->format));
 
   pong_copy = FALSE;
 	
@@ -2379,12 +2358,16 @@ ags_sf2_synth_util_compute_s8(AgsSF2SynthUtil *sf2_synth_util)
 				   pitch_type,
 				   100.0 * (-1.0 * ((double) root_note - 69.0) + ((double) midi_key + note - 69.0)));
 
+  ags_common_pitch_util_set_format(pitch_util,
+				   pitch_type,
+				   sf2_synth_util->format);
+  
   ags_audio_buffer_util_clear_buffer(im_buffer, 1,
 				     buffer_length, AGS_AUDIO_BUFFER_UTIL_DOUBLE);      
   
   if((double) midi_key + note == (double) root_note){
-    copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
-						    AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+    copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(sf2_synth_util->format),
+						    ags_audio_buffer_util_format_from_soundcard(sf2_synth_util->format));
     
     ags_audio_buffer_util_copy_buffer_to_buffer(im_buffer, 1, 0,
 						sample_buffer, 1, 0,
@@ -2414,7 +2397,7 @@ ags_sf2_synth_util_compute_s8(AgsSF2SynthUtil *sf2_synth_util)
 						buffer_length);
 
     ags_fluid_iir_filter_util_set_format(&custom_resonant_iir_filter_util,
-					 AGS_SOUNDCARD_DOUBLE);
+					 sf2_synth_util->format);
 
     ags_fluid_iir_filter_util_set_samplerate(&custom_resonant_iir_filter_util,
 					     samplerate);
@@ -2433,7 +2416,7 @@ ags_sf2_synth_util_compute_s8(AgsSF2SynthUtil *sf2_synth_util)
     
   /* volume */
   ags_volume_util_set_format(volume_util,
-			     AGS_SOUNDCARD_DOUBLE);
+			     sf2_synth_util->format);
 
   ags_volume_util_set_source(volume_util,
 			     im_buffer);
@@ -2608,8 +2591,8 @@ ags_sf2_synth_util_compute_s16(AgsSF2SynthUtil *sf2_synth_util)
 	       "sample-rate", &orig_samplerate,
 	       NULL);
     
-  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
-						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(sf2_synth_util->format),
+						  ags_audio_buffer_util_format_from_soundcard(sf2_synth_util->format));
 
   pong_copy = FALSE;
 	
@@ -2921,8 +2904,8 @@ ags_sf2_synth_util_compute_s24(AgsSF2SynthUtil *sf2_synth_util)
 	       "sample-rate", &orig_samplerate,
 	       NULL);
     
-  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
-						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(sf2_synth_util->format),
+						  ags_audio_buffer_util_format_from_soundcard(sf2_synth_util->format));
 
   pong_copy = FALSE;
 	
@@ -3234,8 +3217,8 @@ ags_sf2_synth_util_compute_s32(AgsSF2SynthUtil *sf2_synth_util)
 	       "sample-rate", &orig_samplerate,
 	       NULL);
     
-  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
-						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(sf2_synth_util->format),
+						  ags_audio_buffer_util_format_from_soundcard(sf2_synth_util->format));
 
   pong_copy = FALSE;
 	
@@ -3547,8 +3530,8 @@ ags_sf2_synth_util_compute_s64(AgsSF2SynthUtil *sf2_synth_util)
 	       "sample-rate", &orig_samplerate,
 	       NULL);
     
-  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
-						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(sf2_synth_util->format),
+						  ags_audio_buffer_util_format_from_soundcard(sf2_synth_util->format));
 
   pong_copy = FALSE;
 	
@@ -3860,8 +3843,8 @@ ags_sf2_synth_util_compute_float(AgsSF2SynthUtil *sf2_synth_util)
 	       "sample-rate", &orig_samplerate,
 	       NULL);
     
-  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
-						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(sf2_synth_util->format),
+						  ags_audio_buffer_util_format_from_soundcard(sf2_synth_util->format));
 
   pong_copy = FALSE;
 	
@@ -4173,8 +4156,8 @@ ags_sf2_synth_util_compute_double(AgsSF2SynthUtil *sf2_synth_util)
 	       "sample-rate", &orig_samplerate,
 	       NULL);
     
-  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
-						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(sf2_synth_util->format),
+						  ags_audio_buffer_util_format_from_soundcard(sf2_synth_util->format));
 
   pong_copy = FALSE;
 	
@@ -4334,8 +4317,8 @@ ags_sf2_synth_util_compute_double(AgsSF2SynthUtil *sf2_synth_util)
   ags_volume_util_compute(volume_util);
 
   /* to source */
-  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
-						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(sf2_synth_util->format),
+						  ags_audio_buffer_util_format_from_soundcard(sf2_synth_util->format));
     
   ags_audio_buffer_util_copy_buffer_to_buffer(source, 1, 0,
 					      im_buffer, 1, 0,
@@ -4486,8 +4469,8 @@ ags_sf2_synth_util_compute_complex(AgsSF2SynthUtil *sf2_synth_util)
 	       "sample-rate", &orig_samplerate,
 	       NULL);
     
-  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
-						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(sf2_synth_util->format),
+						  ags_audio_buffer_util_format_from_soundcard(sf2_synth_util->format));
 
   pong_copy = FALSE;
 	
