@@ -183,8 +183,6 @@ ags_sf2_synth_util_alloc()
   ptr->volume_util = ags_volume_util_alloc();
   ags_volume_util_set_format(ptr->volume_util,
 			     AGS_SOUNDCARD_DEFAULT_FORMAT);
-  ags_volume_util_set_samplerate(ptr->volume_util,
-				 AGS_SOUNDCARD_DEFAULT_SAMPLERATE);
 
   return(ptr);
 }
