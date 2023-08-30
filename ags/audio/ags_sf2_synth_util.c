@@ -2044,38 +2044,26 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 		
 		ags_resample_util_init(resample_util);
 		
-		allocated_samples = sample_frame_count;
+		allocated_samples = MAX(sample_frame_count, 4096);
 
-		if(allocated_samples < sf2_synth_util->sf2_resampled_buffer_length[i]){
-		  allocated_samples = sf2_synth_util->sf2_resampled_buffer_length[i];
-		}
-		
-		resample_util->src_ratio = sf2_synth_util->samplerate / orig_samplerate;
-		
-		resample_util->input_frames = sample_frame_count;
+		ags_resample_util_set_format(resample_util,
+					     format);
+		ags_resample_util_set_buffer_length(resample_util,
+						    sample_frame_count);
+		ags_resample_util_set_samplerate(resample_util,
+						 orig_samplerate);
+		ags_resample_util_set_target_samplerate(resample_util,
+							sf2_synth_util->samplerate);
 
-		resample_util->data_in = ags_stream_alloc(allocated_samples + 1,
-							  format);
+		ags_resample_util_set_destination_stride(resample_util,
+							 1);
+		ags_resample_util_set_destination(resample_util,
+						  sf2_synth_util->sf2_resampled_buffer[i]);
 
-		resample_util->output_frames = sf2_synth_util->sf2_resampled_buffer_length[i];
-
-		resample_util->data_out = ags_stream_alloc(allocated_samples + 1,
-							   format);
-
-		resample_util->buffer = ags_stream_alloc(allocated_samples + 1,
-							 format);
-
-		resample_util->destination = sf2_synth_util->sf2_resampled_buffer[i];
-		resample_util->destination_stride = 1;
-		  
-		resample_util->source = sf2_synth_util->sf2_orig_buffer[i];
-		resample_util->source_stride = 1;
-		
-		resample_util->buffer_length = sf2_synth_util->sf2_orig_buffer_length[i];
-		resample_util->format = format;
-		resample_util->samplerate = orig_samplerate;
-
-		resample_util->target_samplerate = sf2_synth_util->samplerate;
+		ags_resample_util_set_source_stride(resample_util,
+						    1);
+		ags_resample_util_set_source(resample_util,
+					     sf2_synth_util->sf2_orig_buffer[i]);
 
 		resample_util->bypass_cache = TRUE;
 
