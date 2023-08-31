@@ -565,6 +565,9 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
 
 	ags_resample_util_compute(&resample_util);  
 
+	resample_util.destination = NULL;
+	resample_util.source = NULL;
+
 	ags_stream_free(resample_util.data_out);
 	ags_stream_free(resample_util.data_in);
 	ags_stream_free(resample_util.buffer);
@@ -800,6 +803,9 @@ ags_sound_resource_read_audio_signal_at_once(AgsSoundResource *sound_resource,
 
       ags_resample_util_compute(&resample_util);  
 
+      resample_util.destination = NULL;
+      resample_util.source = NULL;
+      
       ags_stream_free(resample_util.data_out);
       ags_stream_free(resample_util.data_in);
       ags_stream_free(resample_util.buffer);
@@ -1042,6 +1048,9 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 	resample_util.data_out = ags_stream_alloc(allocated_buffer_length,
 						  format);
 
+	resample_util.buffer = ags_stream_alloc(allocated_buffer_length,
+						format);
+
 	resample_util.end_of_input = 0;
 	
 	resample_util.destination = target_data;
@@ -1057,11 +1066,11 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 	resample_util.target_samplerate = target_samplerate;
 
 	resample_util.bypass_cache = TRUE;
-
-	resample_util.buffer = ags_stream_alloc(allocated_buffer_length,
-						format);
 	
 	ags_resample_util_compute(&resample_util);  
+
+	resample_util.destination = NULL;
+	resample_util.source = NULL;
 
 	ags_stream_free(resample_util.data_out);
 	ags_stream_free(resample_util.data_in);

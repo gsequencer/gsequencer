@@ -657,12 +657,6 @@ ags_sfz_instrument_loader_run(void *ptr)
 				      samplerate);
     ags_sfz_synth_util_set_format(synth_template,
 				  format);
-    
-    synth_template->sample_buffer = ags_stream_alloc(buffer_length,
-						     AGS_SOUNDCARD_DOUBLE);
-
-    synth_template->im_buffer = ags_stream_alloc(buffer_length,
-						 AGS_SOUNDCARD_DOUBLE);
 
     /*  */
     ags_common_pitch_util_set_source(synth_template->pitch_util,
@@ -678,7 +672,7 @@ ags_sfz_instrument_loader_run(void *ptr)
 					    buffer_length);
     ags_common_pitch_util_set_format(synth_template->pitch_util,
 				     synth_template->pitch_type,
-				     AGS_SOUNDCARD_DOUBLE);
+				     format);
     ags_common_pitch_util_set_samplerate(synth_template->pitch_util,
 					 synth_template->pitch_type,
 					 samplerate);
@@ -688,7 +682,7 @@ ags_sfz_instrument_loader_run(void *ptr)
     synth_template->volume_util->destination = synth_template->im_buffer;
 
     synth_template->volume_util->buffer_length = buffer_length;
-    synth_template->volume_util->format = AGS_SOUNDCARD_DOUBLE;
+    synth_template->volume_util->format = format;
 
     synth_template->samplerate = samplerate;
     synth_template->buffer_length = buffer_length;

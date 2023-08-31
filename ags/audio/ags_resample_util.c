@@ -572,11 +572,32 @@ void
 ags_resample_util_set_format(AgsResampleUtil *resample_util,
 			     AgsSoundcardFormat format)
 {
-  if(resample_util == NULL){
+  if(resample_util == NULL ||
+     resample_util->format == format){
     return;
   }
 
   resample_util->format = format;
+
+  if(resample_util->buffer_length > 0){
+    ags_stream_free(resample_util->data_out);
+    ags_stream_free(resample_util->data_in);
+    
+    ags_stream_free(resample_util->buffer);
+
+    resample_util->data_out = ags_stream_alloc(MAX(resample_util->output_frames, 4096),
+					       resample_util->format);
+    resample_util->data_in = ags_stream_alloc(MAX(resample_util->input_frames, 4096),
+					       resample_util->format);
+
+    if(resample_util->input_frames < resample_util->output_frames){
+      resample_util->buffer = ags_stream_alloc(MAX(resample_util->output_frames, 4096),
+					       resample_util->format);
+    }else{
+      resample_util->buffer = ags_stream_alloc(MAX(resample_util->input_frames, 4096),
+					       resample_util->format);
+    }
+  }
 }
 
 /**
