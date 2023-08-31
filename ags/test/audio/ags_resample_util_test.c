@@ -356,6 +356,15 @@ ags_resample_util_test_set_format()
   
   resample_util.format = AGS_SOUNDCARD_SIGNED_16_BIT;
 
+  resample_util.data_in = NULL;
+  resample_util.data_out = NULL;
+  
+  resample_util.src_ratio = 1.0;
+
+  resample_util.buffer = NULL;
+
+  resample_util.buffer_length = 0;
+
   ags_resample_util_set_format(&resample_util,
 			       AGS_SOUNDCARD_FLOAT);
   

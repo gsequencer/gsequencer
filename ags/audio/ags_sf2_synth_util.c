@@ -518,11 +518,24 @@ ags_sf2_synth_util_set_buffer_length(AgsSF2SynthUtil *sf2_synth_util,
 					  sf2_synth_util->pitch_type,
 					  buffer_length);
 
+  ags_common_pitch_util_set_source(sf2_synth_util->pitch_util,
+				   sf2_synth_util->pitch_type,
+				   sf2_synth_util->sample_buffer);
+
+  ags_common_pitch_util_set_destination(sf2_synth_util->pitch_util,
+					sf2_synth_util->pitch_type,
+					sf2_synth_util->im_buffer);
+
   ags_resample_util_set_buffer_length(sf2_synth_util->resample_util,
 				      buffer_length);
   
   ags_volume_util_set_buffer_length(sf2_synth_util->volume_util,
 				    buffer_length);
+  
+  ags_volume_util_set_source(sf2_synth_util->pitch_util,
+			     sf2_synth_util->im_buffer);
+  ags_volume_util_set_destination(sf2_synth_util->pitch_util,
+				  sf2_synth_util->im_buffer);
 }
 
 /**
@@ -565,6 +578,9 @@ ags_sf2_synth_util_set_format(AgsSF2SynthUtil *sf2_synth_util,
 
   sf2_synth_util->format = format;
 
+  ags_stream_free(sf2_synth_util->sample_buffer);
+  ags_stream_free(sf2_synth_util->im_buffer);
+
   if(sf2_synth_util->buffer_length > 0){
     sf2_synth_util->sample_buffer = ags_stream_alloc(sf2_synth_util->buffer_length,
 						     sf2_synth_util->format);
@@ -576,11 +592,24 @@ ags_sf2_synth_util_set_format(AgsSF2SynthUtil *sf2_synth_util,
 				   sf2_synth_util->pitch_type,
 				   format);
 
+  ags_common_pitch_util_set_source(sf2_synth_util->pitch_util,
+				   sf2_synth_util->pitch_type,
+				   sf2_synth_util->sample_buffer);
+
+  ags_common_pitch_util_set_destination(sf2_synth_util->pitch_util,
+					sf2_synth_util->pitch_type,
+					sf2_synth_util->im_buffer);
+
   ags_resample_util_set_format(sf2_synth_util->resample_util,
 			       format);
 
   ags_volume_util_set_format(sf2_synth_util->volume_util,
 			     format);
+
+  ags_volume_util_set_source(sf2_synth_util->pitch_util,
+			     sf2_synth_util->im_buffer);
+  ags_volume_util_set_destination(sf2_synth_util->pitch_util,
+				  sf2_synth_util->im_buffer);
   
   if((AGS_SF2_SYNTH_UTIL_COMPUTE_MIDI_LOCALE & (sf2_synth_util->flags)) != 0){
     ags_sf2_synth_util_load_midi_locale(sf2_synth_util,
@@ -1939,7 +1968,7 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 	      copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
 							      AGS_AUDIO_BUFFER_UTIL_S16);
 
-	      sf2_sample_format = ipatch_sample_get_format(sf2_sample);
+	      sf2_sample_format = IPATCH_SAMPLE_MONO | IPATCH_SAMPLE_SIGNED | IPATCH_SAMPLE_LENDIAN | IPATCH_SAMPLE_DOUBLE;
 	      
 	      audio_channels = IPATCH_SAMPLE_FORMAT_GET_CHANNEL_COUNT(sf2_sample_format);
 
@@ -1959,11 +1988,13 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 								  AGS_AUDIO_BUFFER_UTIL_S8);
 
 		  error = NULL;
- 		  ipatch_sample_read(IPATCH_SAMPLE(sample_data),
-				     0,
-				     audio_channels * sample_frame_count,
-				     cache,
-				     &error);
+ 		  ipatch_sample_read_transform(IPATCH_SAMPLE(sample_data),
+					       0,
+					       audio_channels * sample_frame_count,
+					       cache,
+					       sample_format,
+					       IPATCH_SAMPLE_UNITY_CHANNEL_MAP,
+					       &error);
 		}
 		break;
 	      case IPATCH_SAMPLE_16BIT:
@@ -1975,11 +2006,13 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 								  AGS_AUDIO_BUFFER_UTIL_S16);
 
 		  error = NULL;
-		  ipatch_sample_read(IPATCH_SAMPLE(sample_data),
-				     0,
-				     audio_channels * sample_frame_count,
-				     cache,
-				     &error);
+		  ipatch_sample_read_transform(IPATCH_SAMPLE(sample_data),
+					       0,
+					       audio_channels * sample_frame_count,
+					       cache,
+					       sample_format,
+					       IPATCH_SAMPLE_UNITY_CHANNEL_MAP,
+					       &error);
 		}
 		break;
 	      case IPATCH_SAMPLE_24BIT:
@@ -1991,11 +2024,13 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 								  AGS_AUDIO_BUFFER_UTIL_S24);
 
 		  error = NULL;
-		  ipatch_sample_read(IPATCH_SAMPLE(sample_data),
-				     0,
-				     audio_channels * sample_frame_count,
-				     cache,
-				     &error);
+		  ipatch_sample_read_transform(IPATCH_SAMPLE(sample_data),
+					       0,
+					       audio_channels * sample_frame_count,
+					       cache,
+					       sample_format,
+					       IPATCH_SAMPLE_UNITY_CHANNEL_MAP,
+					       &error);
 		}
 		break;
 	      case IPATCH_SAMPLE_32BIT:
@@ -2007,11 +2042,13 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 								  AGS_AUDIO_BUFFER_UTIL_S32);
 
 		  error = NULL;
-		  ipatch_sample_read(IPATCH_SAMPLE(sample_data),
-				     0,
-				     audio_channels * sample_frame_count,
-				     cache,
-				     &error);
+		  ipatch_sample_read_transform(IPATCH_SAMPLE(sample_data),
+					       0,
+					       audio_channels * sample_frame_count,
+					       cache,
+					       sample_format,
+					       IPATCH_SAMPLE_UNITY_CHANNEL_MAP,
+					       &error);
 		}
 		break;
 	      case IPATCH_SAMPLE_FLOAT:
@@ -2023,11 +2060,13 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 								  AGS_AUDIO_BUFFER_UTIL_FLOAT);
 
 		  error = NULL;
-		  ipatch_sample_read(IPATCH_SAMPLE(sample_data),
-				     0,
-				     audio_channels * sample_frame_count,
-				     cache,
-				     &error);
+		  ipatch_sample_read_transform(IPATCH_SAMPLE(sample_data),
+					       0,
+					       audio_channels * sample_frame_count,
+					       cache,
+					       sample_format,
+					       IPATCH_SAMPLE_UNITY_CHANNEL_MAP,
+					       &error);
 		}
 		break;
 	      case IPATCH_SAMPLE_DOUBLE:
@@ -2039,11 +2078,13 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 								  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
 
 		  error = NULL;
-		  ipatch_sample_read(IPATCH_SAMPLE(sample_data),
-				     0,
-				     audio_channels * sample_frame_count,
-				     cache,
-				     &error);
+		  ipatch_sample_read_transform(IPATCH_SAMPLE(sample_data),
+					       0,
+					       audio_channels * sample_frame_count,
+					       cache,
+					       sample_format,
+					       IPATCH_SAMPLE_UNITY_CHANNEL_MAP,
+					       &error);
 		}
 		break;
 	      case IPATCH_SAMPLE_REAL24BIT:

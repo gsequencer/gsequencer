@@ -547,6 +547,9 @@ ags_sfz_synth_util_set_format(AgsSFZSynthUtil *sfz_synth_util,
 
   sfz_synth_util->format = format;
 
+  ags_stream_free(sfz_synth_util->sample_buffer);
+  ags_stream_free(sfz_synth_util->im_buffer);
+
   if(sfz_synth_util->buffer_length > 0){
     sfz_synth_util->sample_buffer = ags_stream_alloc(sfz_synth_util->buffer_length,
 						     sfz_synth_util->format);
