@@ -164,18 +164,28 @@ ags_sfz_synth_util_alloc()
   ptr->loop_start = 0;
   ptr->loop_end = 0;
 
+  /* resample util */
   ptr->resample_util = ags_resample_util_alloc();
+
   ags_resample_util_set_format(ptr->resample_util,
 			       AGS_SOUNDCARD_DEFAULT_FORMAT);  
+  ags_resample_util_set_samplerate(ptr->resample_util,
+				   AGS_SOUNDCARD_DEFAULT_SAMPLERATE);  
 
+  /* pitch util */
   ptr->pitch_type = AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL;
   ptr->pitch_util = ags_fluid_interpolate_4th_order_util_alloc();
 
   ags_common_pitch_util_set_format(ptr->pitch_util,
 				   ptr->pitch_type,
 				   AGS_SOUNDCARD_DEFAULT_FORMAT);
+  ags_common_pitch_util_set_samplerate(ptr->pitch_util,
+				       ptr->pitch_type,
+				       AGS_SOUNDCARD_DEFAULT_SAMPLERATE);
 
+  /* volume util */
   ptr->volume_util = ags_volume_util_alloc();
+
   ags_volume_util_set_format(ptr->volume_util,
 			     AGS_SOUNDCARD_DEFAULT_FORMAT);
 
@@ -205,6 +215,16 @@ ags_sfz_synth_util_boxed_copy(AgsSFZSynthUtil *ptr)
   new_ptr->source = ptr->source;
   new_ptr->source_stride = ptr->source_stride;
 
+  new_ptr->sample_buffer = NULL;
+  new_ptr->im_buffer = NULL;
+
+  if(ptr->buffer_length > 0){
+    new_ptr->sample_buffer = ags_stream_alloc(ptr->buffer_length,
+					      ptr->format);
+    new_ptr->im_buffer = ags_stream_alloc(ptr->buffer_length,
+					  ptr->format);
+  }
+  
   new_ptr->buffer_length = ptr->buffer_length;
   new_ptr->format = ptr->format;
   new_ptr->samplerate = ptr->samplerate;
@@ -463,6 +483,19 @@ ags_sfz_synth_util_set_buffer_length(AgsSFZSynthUtil *sfz_synth_util,
 
   sfz_synth_util->buffer_length = buffer_length;
 
+  ags_stream_free(sfz_synth_util->sample_buffer);
+  ags_stream_free(sfz_synth_util->im_buffer);
+  
+  if(sfz_synth_util->buffer_length > 0){
+    sfz_synth_util->sample_buffer = ags_stream_alloc(sfz_synth_util->buffer_length,
+						     sfz_synth_util->format);
+    sfz_synth_util->im_buffer = ags_stream_alloc(sfz_synth_util->buffer_length,
+						 sfz_synth_util->format);
+  }else{
+    sfz_synth_util->sample_buffer = NULL;
+    sfz_synth_util->im_buffer = NULL;
+  }
+
   ags_resample_util_set_buffer_length(sfz_synth_util->resample_util,
 				      buffer_length);
 
@@ -513,6 +546,13 @@ ags_sfz_synth_util_set_format(AgsSFZSynthUtil *sfz_synth_util,
   }
 
   sfz_synth_util->format = format;
+
+  if(sfz_synth_util->buffer_length > 0){
+    sfz_synth_util->sample_buffer = ags_stream_alloc(sfz_synth_util->buffer_length,
+						     sfz_synth_util->format);
+    sfz_synth_util->im_buffer = ags_stream_alloc(sfz_synth_util->buffer_length,
+						 sfz_synth_util->format);
+  }
 
   ags_resample_util_set_format(sfz_synth_util->resample_util,
 			       format);
@@ -1565,7 +1605,7 @@ ags_sfz_synth_util_compute_s8(AgsSFZSynthUtil *sfz_synth_util)
     
   /* volume */
   ags_volume_util_set_format(volume_util,
-			     AGS_SOUNDCARD_DOUBLE);
+			     sfz_synth_util->format);
 
   ags_volume_util_set_source(volume_util,
 			     im_buffer);
@@ -1883,7 +1923,7 @@ ags_sfz_synth_util_compute_s16(AgsSFZSynthUtil *sfz_synth_util)
     
   /* volume */
   ags_volume_util_set_format(volume_util,
-			     AGS_SOUNDCARD_DOUBLE);
+			     sfz_synth_util->format);
 
   ags_volume_util_set_source(volume_util,
 			     im_buffer);
@@ -2197,7 +2237,7 @@ ags_sfz_synth_util_compute_s24(AgsSFZSynthUtil *sfz_synth_util)
     
   /* volume */
   ags_volume_util_set_format(volume_util,
-			     AGS_SOUNDCARD_DOUBLE);
+			     sfz_synth_util->format);
 
   ags_volume_util_set_source(volume_util,
 			     im_buffer);
@@ -2519,7 +2559,7 @@ ags_sfz_synth_util_compute_s32(AgsSFZSynthUtil *sfz_synth_util)
     
   /* volume */
   ags_volume_util_set_format(volume_util,
-			     AGS_SOUNDCARD_DOUBLE);
+			     sfz_synth_util->format);
 
   ags_volume_util_set_source(volume_util,
 			     im_buffer);
@@ -2833,7 +2873,7 @@ ags_sfz_synth_util_compute_s64(AgsSFZSynthUtil *sfz_synth_util)
     
   /* volume */
   ags_volume_util_set_format(volume_util,
-			     AGS_SOUNDCARD_DOUBLE);
+			     sfz_synth_util->format);
 
   ags_volume_util_set_source(volume_util,
 			     im_buffer);
@@ -3147,7 +3187,7 @@ ags_sfz_synth_util_compute_float(AgsSFZSynthUtil *sfz_synth_util)
     
   /* volume */
   ags_volume_util_set_format(volume_util,
-			     AGS_SOUNDCARD_DOUBLE);
+			     sfz_synth_util->format);
 
   ags_volume_util_set_source(volume_util,
 			     im_buffer);
@@ -3461,7 +3501,7 @@ ags_sfz_synth_util_compute_double(AgsSFZSynthUtil *sfz_synth_util)
     
   /* volume */
   ags_volume_util_set_format(volume_util,
-			     AGS_SOUNDCARD_DOUBLE);
+			     sfz_synth_util->format);
 
   ags_volume_util_set_source(volume_util,
 			     im_buffer);
@@ -3776,7 +3816,7 @@ ags_sfz_synth_util_compute_complex(AgsSFZSynthUtil *sfz_synth_util)
     
   /* volume */
   ags_volume_util_set_format(volume_util,
-			     AGS_SOUNDCARD_DOUBLE);
+			     sfz_synth_util->format);
 
   ags_volume_util_set_source(volume_util,
 			     im_buffer);

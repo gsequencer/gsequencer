@@ -164,12 +164,15 @@ ags_sf2_synth_util_alloc()
   ptr->loop_start = 0;
   ptr->loop_end = 0;
 
+  /* resample util */
   ptr->resample_util = ags_resample_util_alloc();
+
   ags_resample_util_set_format(ptr->resample_util,
 			       AGS_SOUNDCARD_DEFAULT_FORMAT);  
   ags_resample_util_set_samplerate(ptr->resample_util,
 				   AGS_SOUNDCARD_DEFAULT_SAMPLERATE);  
 
+  /* pitch util */
   ptr->pitch_type = AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL;
   ptr->pitch_util = ags_fluid_interpolate_4th_order_util_alloc();
 
@@ -180,7 +183,9 @@ ags_sf2_synth_util_alloc()
 				       ptr->pitch_type,
 				       AGS_SOUNDCARD_DEFAULT_SAMPLERATE);
   
+  /* volume util */
   ptr->volume_util = ags_volume_util_alloc();
+
   ags_volume_util_set_format(ptr->volume_util,
 			     AGS_SOUNDCARD_DEFAULT_FORMAT);
 
@@ -210,8 +215,15 @@ ags_sf2_synth_util_boxed_copy(AgsSF2SynthUtil *ptr)
   new_ptr->source = ptr->source;
   new_ptr->source_stride = ptr->source_stride;
 
-  new_ptr->sample_buffer = ptr->sample_buffer;
-  new_ptr->im_buffer = ptr->im_buffer;
+  new_ptr->sample_buffer = NULL;
+  new_ptr->im_buffer = NULL;
+
+  if(ptr->buffer_length > 0){
+    new_ptr->sample_buffer = ags_stream_alloc(ptr->buffer_length,
+					      ptr->format);
+    new_ptr->im_buffer = ags_stream_alloc(ptr->buffer_length,
+					  ptr->format);
+  }
 
   new_ptr->buffer_length = ptr->buffer_length;
   new_ptr->format = ptr->format;
@@ -489,6 +501,19 @@ ags_sf2_synth_util_set_buffer_length(AgsSF2SynthUtil *sf2_synth_util,
 
   sf2_synth_util->buffer_length = buffer_length;
 
+  ags_stream_free(sf2_synth_util->sample_buffer);
+  ags_stream_free(sf2_synth_util->im_buffer);
+  
+  if(sf2_synth_util->buffer_length > 0){
+    sf2_synth_util->sample_buffer = ags_stream_alloc(sf2_synth_util->buffer_length,
+						     sf2_synth_util->format);
+    sf2_synth_util->im_buffer = ags_stream_alloc(sf2_synth_util->buffer_length,
+						 sf2_synth_util->format);
+  }else{
+    sf2_synth_util->sample_buffer = NULL;
+    sf2_synth_util->im_buffer = NULL;
+  }
+
   ags_common_pitch_util_set_buffer_length(sf2_synth_util->pitch_util,
 					  sf2_synth_util->pitch_type,
 					  buffer_length);
@@ -540,6 +565,13 @@ ags_sf2_synth_util_set_format(AgsSF2SynthUtil *sf2_synth_util,
 
   sf2_synth_util->format = format;
 
+  if(sf2_synth_util->buffer_length > 0){
+    sf2_synth_util->sample_buffer = ags_stream_alloc(sf2_synth_util->buffer_length,
+						     sf2_synth_util->format);
+    sf2_synth_util->im_buffer = ags_stream_alloc(sf2_synth_util->buffer_length,
+						 sf2_synth_util->format);
+  }
+  
   ags_common_pitch_util_set_format(sf2_synth_util->pitch_util,
 				   sf2_synth_util->pitch_type,
 				   format);
@@ -2707,7 +2739,7 @@ ags_sf2_synth_util_compute_s16(AgsSF2SynthUtil *sf2_synth_util)
 						buffer_length);
 
     ags_fluid_iir_filter_util_set_format(&custom_resonant_iir_filter_util,
-					 AGS_SOUNDCARD_DOUBLE);
+					 sf2_synth_util->format);
 
     ags_fluid_iir_filter_util_set_samplerate(&custom_resonant_iir_filter_util,
 					     samplerate);
@@ -2726,7 +2758,7 @@ ags_sf2_synth_util_compute_s16(AgsSF2SynthUtil *sf2_synth_util)
     
   /* volume */
   ags_volume_util_set_format(volume_util,
-  			     AGS_SOUNDCARD_DOUBLE);
+  			     sf2_synth_util->format);
 
   ags_volume_util_set_source(volume_util,
 			     im_buffer);
@@ -3024,7 +3056,7 @@ ags_sf2_synth_util_compute_s24(AgsSF2SynthUtil *sf2_synth_util)
 						buffer_length);
 
     ags_fluid_iir_filter_util_set_format(&custom_resonant_iir_filter_util,
-					 AGS_SOUNDCARD_DOUBLE);
+					 sf2_synth_util->format);
 
     ags_fluid_iir_filter_util_set_samplerate(&custom_resonant_iir_filter_util,
 					     samplerate);
@@ -3341,7 +3373,7 @@ ags_sf2_synth_util_compute_s32(AgsSF2SynthUtil *sf2_synth_util)
 						buffer_length);
 
     ags_fluid_iir_filter_util_set_format(&custom_resonant_iir_filter_util,
-					 AGS_SOUNDCARD_DOUBLE);
+					 sf2_synth_util->format);
 
     ags_fluid_iir_filter_util_set_samplerate(&custom_resonant_iir_filter_util,
 					     samplerate);
@@ -3360,7 +3392,7 @@ ags_sf2_synth_util_compute_s32(AgsSF2SynthUtil *sf2_synth_util)
     
   /* volume */
   ags_volume_util_set_format(volume_util,
-			     AGS_SOUNDCARD_DOUBLE);
+			     sf2_synth_util->format);
 
   ags_volume_util_set_source(volume_util,
 			     im_buffer);
@@ -3658,7 +3690,7 @@ ags_sf2_synth_util_compute_s64(AgsSF2SynthUtil *sf2_synth_util)
 						buffer_length);
 
     ags_fluid_iir_filter_util_set_format(&custom_resonant_iir_filter_util,
-					 AGS_SOUNDCARD_DOUBLE);
+					 sf2_synth_util->format);
 
     ags_fluid_iir_filter_util_set_samplerate(&custom_resonant_iir_filter_util,
 					     samplerate);
@@ -3677,7 +3709,7 @@ ags_sf2_synth_util_compute_s64(AgsSF2SynthUtil *sf2_synth_util)
     
   /* volume */
   ags_volume_util_set_format(volume_util,
-			     AGS_SOUNDCARD_DOUBLE);
+			     sf2_synth_util->format);
 
   ags_volume_util_set_source(volume_util,
 			     im_buffer);
@@ -3975,7 +4007,7 @@ ags_sf2_synth_util_compute_float(AgsSF2SynthUtil *sf2_synth_util)
 						buffer_length);
 
     ags_fluid_iir_filter_util_set_format(&custom_resonant_iir_filter_util,
-					 AGS_SOUNDCARD_DOUBLE);
+					 sf2_synth_util->format);
 
     ags_fluid_iir_filter_util_set_samplerate(&custom_resonant_iir_filter_util,
 					     samplerate);
@@ -3994,7 +4026,7 @@ ags_sf2_synth_util_compute_float(AgsSF2SynthUtil *sf2_synth_util)
     
   /* volume */
   ags_volume_util_set_format(volume_util,
-			     AGS_SOUNDCARD_DOUBLE);
+			     sf2_synth_util->format);
 
   ags_volume_util_set_source(volume_util,
 			     im_buffer);
@@ -4292,7 +4324,7 @@ ags_sf2_synth_util_compute_double(AgsSF2SynthUtil *sf2_synth_util)
 						buffer_length);
 
     ags_fluid_iir_filter_util_set_format(&custom_resonant_iir_filter_util,
-					 AGS_SOUNDCARD_DOUBLE);
+					 sf2_synth_util->format);
 
     ags_fluid_iir_filter_util_set_samplerate(&custom_resonant_iir_filter_util,
 					     samplerate);
@@ -4311,7 +4343,7 @@ ags_sf2_synth_util_compute_double(AgsSF2SynthUtil *sf2_synth_util)
     
   /* volume */
   ags_volume_util_set_format(volume_util,
-			     AGS_SOUNDCARD_DOUBLE);
+			     sf2_synth_util->format);
 
   ags_volume_util_set_source(volume_util,
 			     im_buffer);
@@ -4610,7 +4642,7 @@ ags_sf2_synth_util_compute_complex(AgsSF2SynthUtil *sf2_synth_util)
 						buffer_length);
 
     ags_fluid_iir_filter_util_set_format(&custom_resonant_iir_filter_util,
-					 AGS_SOUNDCARD_DOUBLE);
+					 sf2_synth_util->format);
 
     ags_fluid_iir_filter_util_set_samplerate(&custom_resonant_iir_filter_util,
 					     samplerate);
@@ -4629,7 +4661,7 @@ ags_sf2_synth_util_compute_complex(AgsSF2SynthUtil *sf2_synth_util)
     
   /* volume */
   ags_volume_util_set_format(volume_util,
-			     AGS_SOUNDCARD_DOUBLE);
+			     sf2_synth_util->format);
 
   ags_volume_util_set_source(volume_util,
 			     im_buffer);
