@@ -849,14 +849,16 @@ ags_fx_playback_audio_processor_run_inter(AgsRecall *recall)
 		 "format", &format,
 		 NULL);
 
-    g_rec_mutex_lock(stream_mutex);
+    if(audio_signal->recall_id == recall_id){
+      g_rec_mutex_lock(stream_mutex);
     
-    ags_audio_buffer_util_clear_buffer(audio_signal->stream_current->data, 1,
-				       buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
+      ags_audio_buffer_util_clear_buffer(audio_signal->stream_current->data, 1,
+					 buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
 
     
-    g_rec_mutex_unlock(stream_mutex);
-
+      g_rec_mutex_unlock(stream_mutex);
+    }
+    
     playing_audio_signal = playing_audio_signal->next;
   }
 
@@ -880,14 +882,16 @@ ags_fx_playback_audio_processor_run_inter(AgsRecall *recall)
 		 "format", &format,
 		 NULL);
 
-    g_rec_mutex_lock(stream_mutex);
+    if(audio_signal->recall_id == recall_id){
+      g_rec_mutex_lock(stream_mutex);
     
-    ags_audio_buffer_util_clear_buffer(audio_signal->stream_current->data, 1,
-				       buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
+      ags_audio_buffer_util_clear_buffer(audio_signal->stream_current->data, 1,
+					 buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
 
     
-    g_rec_mutex_unlock(stream_mutex);
-
+      g_rec_mutex_unlock(stream_mutex);
+    }
+    
     recording_audio_signal = recording_audio_signal->next;
   }
   

@@ -56,6 +56,9 @@ prepare_data(AgsResampleUtil *resample_util, int half_filter_chan_len)
 
     if(half_filter_chan_len + len < resample_util->buffer_length &&
        offset + half_filter_chan_len + len < resample_util->input_frames){
+      ags_audio_buffer_util_clear_buffer(resample_util->buffer, 1,
+					 half_filter_chan_len + len, ags_audio_buffer_util_format_from_soundcard(resample_util->format));
+          
       ags_audio_buffer_util_copy_buffer_to_buffer(resample_util->buffer, 1, 0,
 						  resample_util->data_in, 1, (resample_util->b_current - half_filter_chan_len),
 						  half_filter_chan_len + len, copy_mode);
@@ -84,6 +87,57 @@ prepare_data(AgsResampleUtil *resample_util, int half_filter_chan_len)
   if(len > offset &&
      resample_util->b_end + len - offset < resample_util->buffer_length &&
      resample_util->in_used + len - offset < resample_util->input_frames){
+    switch(resample_util->format){
+    case AGS_SOUNDCARD_SIGNED_8_BIT:
+      {
+	ags_audio_buffer_util_clear_buffer(((gint8 *) resample_util->buffer) + resample_util->b_end, 1,
+					   len - offset, ags_audio_buffer_util_format_from_soundcard(resample_util->format));
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_16_BIT:
+      {
+	ags_audio_buffer_util_clear_buffer(((gint16 *) resample_util->buffer) + resample_util->b_end, 1,
+					   len - offset, ags_audio_buffer_util_format_from_soundcard(resample_util->format));
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_24_BIT:
+      {
+	ags_audio_buffer_util_clear_buffer(((gint32 *) resample_util->buffer) + resample_util->b_end, 1,
+					   len - offset, ags_audio_buffer_util_format_from_soundcard(resample_util->format));
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_32_BIT:
+      {
+	ags_audio_buffer_util_clear_buffer(((gint32 *) resample_util->buffer) + resample_util->b_end, 1,
+					   len - offset, ags_audio_buffer_util_format_from_soundcard(resample_util->format));
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_64_BIT:
+      {
+	ags_audio_buffer_util_clear_buffer(((gint64 *) resample_util->buffer) + resample_util->b_end, 1,
+					   len - offset, ags_audio_buffer_util_format_from_soundcard(resample_util->format));
+      }
+      break;
+    case AGS_SOUNDCARD_FLOAT:
+      {
+	ags_audio_buffer_util_clear_buffer(((gfloat *) resample_util->buffer) + resample_util->b_end, 1,
+					   len - offset, ags_audio_buffer_util_format_from_soundcard(resample_util->format));
+      }
+      break;
+    case AGS_SOUNDCARD_DOUBLE:
+      {
+	ags_audio_buffer_util_clear_buffer(((gdouble *) resample_util->buffer) + resample_util->b_end, 1,
+					   len - offset, ags_audio_buffer_util_format_from_soundcard(resample_util->format));
+      }
+      break;
+    case AGS_SOUNDCARD_COMPLEX:
+      {
+	ags_audio_buffer_util_clear_buffer(((AgsComplex *) resample_util->buffer) + resample_util->b_end, 1,
+					   len - offset, ags_audio_buffer_util_format_from_soundcard(resample_util->format));
+      }
+      break;
+    }
+    
     ags_audio_buffer_util_copy_buffer_to_buffer(resample_util->buffer, 1, resample_util->b_end,
 						resample_util->data_in, 1, resample_util->in_used,
 						len - offset, copy_mode);
@@ -106,6 +160,9 @@ prepare_data(AgsResampleUtil *resample_util, int half_filter_chan_len)
 
       if(half_filter_chan_len + len < resample_util->buffer_length &&
 	 offset + half_filter_chan_len + len < resample_util->input_frames){
+	ags_audio_buffer_util_clear_buffer(resample_util->buffer, 1,
+					   half_filter_chan_len + len, ags_audio_buffer_util_format_from_soundcard(resample_util->format));
+	
 	ags_audio_buffer_util_copy_buffer_to_buffer(resample_util->buffer, 1, 0,
 						    resample_util->data_in, 1, resample_util->b_current - half_filter_chan_len,
 						    half_filter_chan_len + len, copy_mode);
