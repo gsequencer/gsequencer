@@ -230,7 +230,8 @@ ags_audiorec_init(AgsAudiorec *audiorec)
   ags_audio_set_flags(audio, (AGS_AUDIO_SYNC |
 			      AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 			      AGS_AUDIO_INPUT_HAS_RECYCLING));
-  ags_audio_set_ability_flags(audio, (AGS_SOUND_ABILITY_NOTATION));
+  ags_audio_set_ability_flags(audio, (AGS_SOUND_ABILITY_PLAYBACK |
+				      AGS_SOUND_ABILITY_NOTATION));
 
   AGS_MACHINE(audiorec)->flags |= (AGS_MACHINE_IS_WAVE_PLAYER);
 
