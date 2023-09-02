@@ -8479,10 +8479,7 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 		  ags_lv2_turtle_parser_parse(lv2_turtle_parser,
 					      turtle, n_turtle);
     
-		  g_object_run_dispose(lv2_turtle_parser);
 		  g_object_unref(lv2_turtle_parser);
-	
-		  g_object_unref(manifest);
 	
 		  free(turtle);
 		}
@@ -9508,10 +9505,7 @@ ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsE
 		  ags_lv2_turtle_parser_parse(lv2_turtle_parser,
 					      turtle, n_turtle);
     
-		  g_object_run_dispose(lv2_turtle_parser);
 		  g_object_unref(lv2_turtle_parser);
-	
-		  g_object_unref(manifest);
 	
 		  free(turtle);
 		}
