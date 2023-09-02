@@ -1243,7 +1243,6 @@ ags_machine_util_new_lv2_bridge(gchar *filename, gchar *effect)
       ags_lv2_turtle_parser_parse(lv2_turtle_parser,
 				  turtle, n_turtle);
     
-      g_object_run_dispose((GObject *) lv2_turtle_parser);
       g_object_unref(lv2_turtle_parser);
 	
       g_object_unref(manifest);
@@ -1464,7 +1463,6 @@ ags_machine_util_new_live_lv2_bridge(gchar *filename, gchar *effect)
       ags_lv2_turtle_parser_parse(lv2_turtle_parser,
 				  turtle, n_turtle);
     
-      g_object_run_dispose((GObject *) lv2_turtle_parser);
       g_object_unref(lv2_turtle_parser);
 	
       g_object_unref(manifest);

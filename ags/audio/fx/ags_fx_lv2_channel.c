@@ -180,7 +180,7 @@ ags_fx_lv2_channel_finalize(GObject *gobject)
   }
   
   if(fx_lv2_channel->lv2_plugin != NULL){
-    g_object_unref(fx_lv2_channel->lv2_plugin);
+    //    g_object_unref(fx_lv2_channel->lv2_plugin);
 
     fx_lv2_channel->lv2_plugin = NULL;
   }

@@ -1219,11 +1219,8 @@ ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
 	  }
 	}
 	
-	g_object_run_dispose(lv2_turtle_parser);
 	g_object_unref(lv2_turtle_parser);
 	
-	g_object_unref(manifest);
-
 	g_free(manifest_filename);
 	
 	free(turtle);
