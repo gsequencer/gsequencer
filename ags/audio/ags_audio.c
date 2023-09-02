@@ -7092,7 +7092,7 @@ ags_audio_set_pads_grow(AgsAudio *audio,
 		 "input", &start,
 		 NULL);
   }
-
+  
   for(j = pads_old; j < pads; j++){
     AgsPlayback *playback;
       

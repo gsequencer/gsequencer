@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -377,7 +377,10 @@ ags_audio_test_set_pads()
   AgsAudio *audio;
   AgsChannel *channel, *current;
 
+  GList *start_list;
+
   guint i, j;
+  gboolean success_unique;
   
   /* instantiate */
   audio = ags_audio_new(devout);
@@ -512,6 +515,50 @@ ags_audio_test_set_pads()
 
   CU_ASSERT(i == AGS_AUDIO_TEST_SET_PADS_GROW_INPUT_PADS * AGS_AUDIO_TEST_SET_PADS_AUDIO_CHANNELS);
 
+  /* grow again */
+  ags_audio_set_pads(audio,
+		     AGS_TYPE_INPUT,
+		     2 * AGS_AUDIO_TEST_SET_PADS_GROW_INPUT_PADS, 0);
+
+  CU_ASSERT(audio->input_pads == 2 * AGS_AUDIO_TEST_SET_PADS_GROW_INPUT_PADS);
+  
+  channel = audio->input;
+
+  start_list = NULL;
+  success_unique = TRUE;
+  
+  for(i = 0; channel != NULL; i++){
+    if(g_list_find(start_list, channel) == NULL){
+      start_list = g_list_prepend(start_list,
+				  channel);
+    }else{
+      success_unique = FALSE;
+    }
+    
+    channel = channel->next;
+  }
+
+  CU_ASSERT(success_unique == TRUE);
+  CU_ASSERT(i == 2 * AGS_AUDIO_TEST_SET_PADS_GROW_INPUT_PADS * AGS_AUDIO_TEST_SET_PADS_AUDIO_CHANNELS);
+
+  channel = audio->input;
+
+  start_list = NULL;
+  success_unique = TRUE;
+  
+  for(i = 0; channel != NULL; i++){
+    if(g_list_find(start_list, channel) == NULL){
+      start_list = g_list_prepend(start_list,
+				  channel);
+    }else{
+      success_unique = FALSE;
+    }
+
+    channel = channel->next_pad;
+  }
+
+  CU_ASSERT(success_unique == TRUE);
+  CU_ASSERT(i == 2 * AGS_AUDIO_TEST_SET_PADS_GROW_INPUT_PADS);
   
   /* set output pads */
   ags_audio_set_pads(audio,
@@ -544,7 +591,7 @@ ags_audio_test_set_pads()
   }
 
   CU_ASSERT(i == AGS_AUDIO_TEST_SET_PADS_GROW_OUTPUT_PADS * AGS_AUDIO_TEST_SET_PADS_AUDIO_CHANNELS);
-
+  
   /*
    * shrink pads
    */
