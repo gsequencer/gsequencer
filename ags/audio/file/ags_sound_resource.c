@@ -511,11 +511,7 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
 
 	guint allocated_buffer_length;
 
-	allocated_buffer_length = buffer_size;
-
-	if(allocated_buffer_length < target_buffer_size){
-	  allocated_buffer_length = target_buffer_size;
-	}
+	allocated_buffer_length = MAX(buffer_size, 4096);
 
 	if(format == AGS_SOUNDCARD_DOUBLE){
 	  ags_audio_buffer_util_clear_double(data, 1,
@@ -537,40 +533,51 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
 					   target_buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
 
 	ags_resample_util_init(&resample_util);
-	
-	resample_util.src_ratio = target_samplerate / samplerate;
 
-	resample_util.input_frames = buffer_size;
-	resample_util.data_in = ags_stream_alloc(allocated_buffer_length,
-						 format);
-	
-	resample_util.output_frames = target_buffer_size;
-	resample_util.data_out = ags_stream_alloc(allocated_buffer_length,
-						  format);
+	ags_resample_util_set_format(&resample_util,
+				     format);
+	ags_resample_util_set_buffer_length(&resample_util,
+					    MAX(buffer_size, 4096));
+	ags_resample_util_set_samplerate(&resample_util,
+					 samplerate);
+	ags_resample_util_set_target_samplerate(&resample_util,
+						target_samplerate);
 
-	resample_util.buffer = ags_stream_alloc(allocated_buffer_length,
-						format);
-	
-	resample_util.destination = target_data;
-	resample_util.destination_stride = 1;
+	ags_resample_util_set_destination_stride(&resample_util,
+						 1);
+	ags_resample_util_set_destination(&resample_util,
+					  target_data);
 
-	resample_util.source = data;
-	resample_util.source_stride = 1;
+	ags_resample_util_set_source_stride(&resample_util,
+					    1);
+	ags_resample_util_set_source(&resample_util,
+				     data);
 
-	resample_util.buffer_length = allocated_buffer_length;
-	resample_util.format = format;
-	resample_util.samplerate = samplerate;
-
-	resample_util.target_samplerate = target_samplerate;
+	resample_util.bypass_cache = TRUE;
 
 	ags_resample_util_compute(&resample_util);  
 
 	resample_util.destination = NULL;
-	resample_util.source = NULL;
 
-	ags_stream_free(resample_util.data_out);
-	ags_stream_free(resample_util.data_in);
-	ags_stream_free(resample_util.buffer);
+	resample_util.source = NULL;
+	
+	if(resample_util.data_in != NULL){
+	  ags_stream_free(resample_util.data_in);
+	
+	  resample_util.data_in = NULL;
+	}
+
+	if(resample_util.data_out != NULL){
+	  ags_stream_free(resample_util.data_out);
+
+	  resample_util.data_out = NULL;
+	}
+
+	if(resample_util.buffer != NULL){
+	  ags_stream_free(resample_util.buffer);
+
+	  resample_util.buffer = NULL;
+	}
 
 	ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, 0,
 						    target_data, 1, 0,
@@ -587,13 +594,8 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
     }
   }
 
-  if(data != NULL){
-    free(data);
-  }
-
-  if(target_data != NULL){
-    free(target_data);
-  }
+  ags_stream_free(data);
+  ags_stream_free(target_data);
   
   start_list = g_list_reverse(start_list);
 
@@ -757,11 +759,7 @@ ags_sound_resource_read_audio_signal_at_once(AgsSoundResource *sound_resource,
 
       guint allocated_frame_count;
 
-      allocated_frame_count = frame_count;
-
-      if(allocated_frame_count < target_frame_count){
-	allocated_frame_count = target_frame_count;
-      }
+      allocated_frame_count = MAX(frame_count, 4096);
 
       ags_audio_buffer_util_clear_buffer(data, 1,
 					 frame_count, ags_audio_buffer_util_format_from_soundcard(format));
@@ -771,44 +769,50 @@ ags_sound_resource_read_audio_signal_at_once(AgsSoundResource *sound_resource,
 
       ags_resample_util_init(&resample_util);
 	
-      resample_util.src_ratio = target_samplerate / samplerate;
+      ags_resample_util_set_format(&resample_util,
+				   format);
+      ags_resample_util_set_buffer_length(&resample_util,
+					  MAX(frame_count, 4096));
+      ags_resample_util_set_samplerate(&resample_util,
+				       samplerate);
+      ags_resample_util_set_target_samplerate(&resample_util,
+					      target_samplerate);
 
-      resample_util.input_frames = frame_count;
-      resample_util.data_in = ags_stream_alloc(allocated_frame_count,
-					       format);
-      
-      resample_util.output_frames = target_frame_count;
-      resample_util.data_out = ags_stream_alloc(allocated_frame_count,
-						format);
+      ags_resample_util_set_destination_stride(&resample_util,
+					       1);
+      ags_resample_util_set_destination(&resample_util,
+					target_data);
 
-      resample_util.buffer = ags_stream_alloc(allocated_frame_count,
-					      format);
-	
-
-      resample_util.end_of_input = 0;
-	
-      resample_util.destination = target_data;
-      resample_util.destination_stride = 1;
-
-      resample_util.source = data;
-      resample_util.source_stride = 1;
-
-      resample_util.buffer_length = allocated_frame_count;
-      resample_util.format = format;
-      resample_util.samplerate = samplerate;
-
-      resample_util.target_samplerate = target_samplerate;
+      ags_resample_util_set_source_stride(&resample_util,
+					  1);
+      ags_resample_util_set_source(&resample_util,
+				   data);
 
       resample_util.bypass_cache = TRUE;
 
       ags_resample_util_compute(&resample_util);  
 
       resample_util.destination = NULL;
+
       resample_util.source = NULL;
       
-      ags_stream_free(resample_util.data_out);
-      ags_stream_free(resample_util.data_in);
-      ags_stream_free(resample_util.buffer);
+      if(resample_util.data_in != NULL){
+	ags_stream_free(resample_util.data_in);
+	
+	resample_util.data_in = NULL;
+      }
+
+      if(resample_util.data_out != NULL){
+	ags_stream_free(resample_util.data_out);
+
+	resample_util.data_out = NULL;
+      }
+
+      if(resample_util.buffer != NULL){
+	ags_stream_free(resample_util.buffer);
+
+	resample_util.buffer = NULL;
+      }
     }
     
     for(j = 0; stream != NULL;){
@@ -831,14 +835,10 @@ ags_sound_resource_read_audio_signal_at_once(AgsSoundResource *sound_resource,
     }
   }
 
-  if(data != NULL){
-    free(data);
-  }
+  ags_stream_free(data);
 
-  if(target_data != NULL){
-    free(target_data);
-  }
-
+  ags_stream_free(target_data);
+    
   start_list = g_list_reverse(start_list);
 
   g_list_foreach(start_list,
@@ -1007,11 +1007,8 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 
 	guint allocated_buffer_length;
 
+	allocated_buffer_length = MAX(buffer_size, 4096);
 	allocated_buffer_length = buffer_size;
-
-	if(allocated_buffer_length < target_buffer_size){
-	  allocated_buffer_length = target_buffer_size;
-	}
 
 	if(format == AGS_SOUNDCARD_DOUBLE){
 	  ags_audio_buffer_util_clear_double(data, 1,
@@ -1034,47 +1031,50 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 	
 	ags_resample_util_init(&resample_util);
 	    
-	resample_util.src_ratio = target_samplerate / samplerate;
+	ags_resample_util_set_format(&resample_util,
+				     format);
+	ags_resample_util_set_buffer_length(&resample_util,
+					    MAX(buffer_size, 4096));
+	ags_resample_util_set_samplerate(&resample_util,
+					 samplerate);
+	ags_resample_util_set_target_samplerate(&resample_util,
+						target_samplerate);
 
-	//	g_message("buffer size -> %d", buffer_size);
+	ags_resample_util_set_destination_stride(&resample_util,
+						 1);
+	ags_resample_util_set_destination(&resample_util,
+					  target_data);
 
-	resample_util.input_frames = buffer_size;
-	resample_util.data_in = ags_stream_alloc(allocated_buffer_length,
-						 format);
-
-	//	g_message("target buffer size -> %d", target_buffer_size);
-	
-	resample_util.output_frames = target_buffer_size;
-	resample_util.data_out = ags_stream_alloc(allocated_buffer_length,
-						  format);
-
-	resample_util.buffer = ags_stream_alloc(allocated_buffer_length,
-						format);
-
-	resample_util.end_of_input = 0;
-	
-	resample_util.destination = target_data;
-	resample_util.destination_stride = 1;
-
-	resample_util.source = data;
-	resample_util.source_stride = 1;
-
-	resample_util.buffer_length = allocated_buffer_length;
-	resample_util.format = format;
-	resample_util.samplerate = samplerate;
-  
-	resample_util.target_samplerate = target_samplerate;
+	ags_resample_util_set_source_stride(&resample_util,
+					    1);
+	ags_resample_util_set_source(&resample_util,
+				     data);
 
 	resample_util.bypass_cache = TRUE;
 	
 	ags_resample_util_compute(&resample_util);  
 
 	resample_util.destination = NULL;
+
 	resample_util.source = NULL;
 
-	ags_stream_free(resample_util.data_out);
-	ags_stream_free(resample_util.data_in);
-	ags_stream_free(resample_util.buffer);
+	if(resample_util.data_in != NULL){
+	  ags_stream_free(resample_util.data_in);
+	
+	  resample_util.data_in = NULL;
+	}
+
+	if(resample_util.data_out != NULL){
+	  ags_stream_free(resample_util.data_out);
+
+	  resample_util.data_out = NULL;
+	}
+
+	if(resample_util.buffer != NULL){
+	  ags_stream_free(resample_util.buffer);
+
+	  resample_util.buffer = NULL;
+	}
 
 	ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
 						    target_data, 1, 0,
@@ -1126,14 +1126,10 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
     }
   }
   
-  if(data != NULL){
-    free(data);
-  }
+  ags_stream_free(data);
   
-  if(target_data != NULL){
-    free(target_data);
-  }  
-
+  ags_stream_free(target_data);
+ 
   g_list_foreach(start_list,
 		 (GFunc) g_object_ref,
 		 NULL);

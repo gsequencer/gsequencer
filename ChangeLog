@@ -1,3 +1,9 @@
+ags (6.0.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved sndfile resampling
+	* minor improvements
+
 ags (6.0.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
