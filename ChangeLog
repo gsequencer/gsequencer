@@ -1,7 +1,7 @@
 ags (6.0.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* improved libsndfile resampling
+	* improved libsndfile resampling respect minimum buffer size
 	* minor improvements
 
 ags (6.0.6)

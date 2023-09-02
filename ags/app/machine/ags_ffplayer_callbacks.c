@@ -373,7 +373,7 @@ ags_ffplayer_update_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
 }
 
 void
-ags_ffplayer_enable_aliase_callback(GtkToggleButton *toggle, AgsFFPlayer *ffplayer)
+ags_ffplayer_enable_aliase_callback(GtkCheckButton *check_button, AgsFFPlayer *ffplayer)
 {
   AgsChannel *start_input;
   AgsChannel *channel;
@@ -382,7 +382,7 @@ ags_ffplayer_enable_aliase_callback(GtkToggleButton *toggle, AgsFFPlayer *ffplay
 
   gfloat enabled;
 
-  enabled = gtk_toggle_button_get_active(toggle) ? 1.0: 0.0;
+  enabled = gtk_check_button_get_active(check_button) ? 1.0: 0.0;
   
   start_input = NULL;
   
