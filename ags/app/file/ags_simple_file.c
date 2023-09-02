@@ -1341,15 +1341,18 @@ ags_simple_file_read(AgsSimpleFile *simple_file)
 void
 ags_simple_file_real_read_resolve(AgsSimpleFile *simple_file)
 {
-  GList *list;
+  GList *start_list, *list;
 
-  list = g_list_reverse(simple_file->lookup);
+  list =
+    start_list = g_list_reverse(g_list_copy(simple_file->lookup));
   
   while(list != NULL){
     ags_file_lookup_resolve(AGS_FILE_LOOKUP(list->data));
 
     list = list->next;
   }
+  
+  g_list_free(start_list);
 }
 
 void
@@ -1366,15 +1369,18 @@ ags_simple_file_read_resolve(AgsSimpleFile *simple_file)
 void
 ags_simple_file_real_read_start(AgsSimpleFile *simple_file)
 {
-  GList *list;
+  GList *start_list, *list;
 
-  list = g_list_reverse(simple_file->launch);
+  list = 
+    start_list = g_list_reverse(g_list_copy(simple_file->launch));
 
   while(list != NULL){
     ags_file_launch_start(AGS_FILE_LAUNCH(list->data));
 
     list = list->next;
   }
+
+  g_list_free(start_list);
 }
 
 void

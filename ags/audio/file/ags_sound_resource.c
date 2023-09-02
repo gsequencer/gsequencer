@@ -465,10 +465,10 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
 				   buffer_size,
 				   format);
     
-    data = ags_stream_alloc(buffer_size,
+    data = ags_stream_alloc(MAX(buffer_size, 4096),
 			    format);
 
-    target_data = ags_stream_alloc(target_buffer_size,
+    target_data = ags_stream_alloc(MAX(target_buffer_size, 4096),
 				   format);
   }
     
@@ -691,10 +691,10 @@ ags_sound_resource_read_audio_signal_at_once(AgsSoundResource *sound_resource,
   target_data = NULL;
 
   if(frame_count < buffer_size){
-    data = ags_stream_alloc(buffer_size,
+    data = ags_stream_alloc(MAX(buffer_size, 4096),
 			    format);
   }else{
-    data = ags_stream_alloc(buffer_size * ((guint) floor((double) frame_count / (double) buffer_size) + 1),
+    data = ags_stream_alloc(MAX(buffer_size * ((guint) floor((double) frame_count / (double) buffer_size) + 1), 4096),
 			    format);
   }
   
@@ -708,10 +708,10 @@ ags_sound_resource_read_audio_signal_at_once(AgsSoundResource *sound_resource,
 				   format);
     
     if(target_frame_count < target_buffer_size){
-      target_data = ags_stream_alloc(target_buffer_size,
+      target_data = ags_stream_alloc(MAX(target_buffer_size, 4096),
 				     format);
     }else{
-      target_data = ags_stream_alloc(target_buffer_size * ((guint) floor((double) target_frame_count / (double) target_buffer_size) + 1),
+      target_data = ags_stream_alloc(MAX(target_buffer_size * ((guint) floor((double) target_frame_count / (double) target_buffer_size) + 1), 4096),
 				     format);
     }
   }
@@ -944,9 +944,9 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 				   buffer_size,
 				   format);
     
-    data = ags_stream_alloc(buffer_size,
+    data = ags_stream_alloc(MAX(buffer_size, 4096),
 			    format);
-    target_data = ags_stream_alloc(target_buffer_size,
+    target_data = ags_stream_alloc(MAX(target_buffer_size, 4096),
 				   format);
   }
   

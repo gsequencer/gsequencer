@@ -50,7 +50,7 @@ void ags_ffplayer_hscrollbar_value_changed(GtkAdjustment *adjustment, AgsFFPlaye
 
 void ags_ffplayer_update_callback(GtkWidget *widget, AgsFFPlayer *ffplayer);
 
-void ags_ffplayer_enable_aliase_callback(GtkToggleButton *toggle, AgsFFPlayer *ffplayer);
+void ags_ffplayer_enable_aliase_callback(GtkCheckButton *check_button, AgsFFPlayer *ffplayer);
 
 void ags_ffplayer_aliase_a_amount_callback(AgsDial *dial, AgsFFPlayer *ffplayer);
 void ags_ffplayer_aliase_a_phase_callback(AgsDial *dial, AgsFFPlayer *ffplayer);
