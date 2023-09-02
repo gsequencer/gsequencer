@@ -74,7 +74,6 @@ ags_effect_bulk_remove_callback(GtkWidget *button,
       ags_effect_bulk_remove_bulk_member_entry(effect_bulk,
 					       effect_bulk_entry->data);
 
-      g_object_run_dispose(effect_bulk_entry->data);
       g_object_unref(effect_bulk_entry->data);
       
       /* remove effect */
