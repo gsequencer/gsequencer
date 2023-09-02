@@ -497,7 +497,7 @@ ags_sfz_synth_util_set_buffer_length(AgsSFZSynthUtil *sfz_synth_util,
   }
 
   ags_resample_util_set_buffer_length(sfz_synth_util->resample_util,
-				      buffer_length);
+				      MAX(buffer_length, 4096));
 
   ags_common_pitch_util_set_buffer_length(sfz_synth_util->pitch_util,
 					  sfz_synth_util->pitch_type,
@@ -1253,37 +1253,24 @@ ags_sfz_synth_util_load_instrument(AgsSFZSynthUtil *sfz_synth_util)
 		
       ags_resample_util_init(resample_util);
 		
-      resample_util->src_ratio = sfz_synth_util->samplerate / orig_samplerate;
-		
-      resample_util->input_frames = sample_frame_count;
+      ags_resample_util_set_format(resample_util,
+				   format);
+      ags_resample_util_set_buffer_length(resample_util,
+					  MAX(sample_frame_count, 4096));
+      ags_resample_util_set_samplerate(resample_util,
+				       orig_samplerate);
+      ags_resample_util_set_target_samplerate(resample_util,
+					      sfz_synth_util->samplerate);
 
-      resample_util->data_in = ags_stream_alloc(sample_frame_count,
-						format);
+      ags_resample_util_set_destination_stride(resample_util,
+					       1);
+      ags_resample_util_set_destination(resample_util,
+					sfz_synth_util->sfz_resampled_buffer[i]);
 
-      resample_util->output_frames = sfz_synth_util->sfz_resampled_buffer_length[i];
-
-      resample_util->data_out = ags_stream_alloc(sfz_synth_util->sfz_resampled_buffer_length[i],
-						 format);
-		
-      resample_util->destination = sfz_synth_util->sfz_resampled_buffer[i];
-      resample_util->destination_stride = 1;
-		  
-      resample_util->source = sfz_synth_util->sfz_orig_buffer[i];
-      resample_util->source_stride = 1;
-
-      if(resample_util->input_frames < resample_util->output_frames){
-	resample_util->buffer = ags_stream_alloc(resample_util->output_frames,
-						 format);
-      }else{
-	resample_util->buffer = ags_stream_alloc(resample_util->input_frames,
-						 format);
-      }
-
-      resample_util->buffer_length = sfz_synth_util->sfz_orig_buffer_length[i];
-      resample_util->format = format;
-      resample_util->samplerate = orig_samplerate;
-
-      resample_util->target_samplerate = sfz_synth_util->samplerate;
+      ags_resample_util_set_source_stride(resample_util,
+					  1);
+      ags_resample_util_set_source(resample_util,
+				   sfz_synth_util->sfz_orig_buffer[i]);
 
       resample_util->bypass_cache = TRUE;
       
