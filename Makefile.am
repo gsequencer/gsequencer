@@ -3471,6 +3471,14 @@ sphinx:
 	pandoc -f docbook $(top_builddir)/xml/developersBook.xml -o $(top_builddir)/sphinx/developersBook.rst
 	pandoc -f docbook $(top_builddir)/xml/oscBook.xml -o $(top_builddir)/sphinx/oscBook.rst
 
+gi-docgen:
+	gi-docgen generate --add-include-path ./ -C docs/reference/libags/Ags.conf --output-dir docs/reference/libags/ Ags-6.0.gir
+	gi-docgen generate --add-include-path ./ -C docs/reference/libags-audio/AgsAudio.conf --output-dir docs/reference/libags-audio/ AgsAudio-6.0.gir
+	gi-docgen generate --add-include-path ./ -C docs/reference/libags-gui/AgsGui.conf --output-dir docs/reference/libags-gui/ AgsGui-6.0.gir
+
+doxygen:
+	doxygen
+
 install-changelog:
 	mkdir -p $(DESTDIR)$(docdir)/
 	install -c -p -m 644 $(top_srcdir)/ChangeLog $(DESTDIR)$(docdir)/changelog
