@@ -193,6 +193,7 @@ ags_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv
 		 NULL);
 
     /* play context */
+    start_recall = NULL;
     g_object_get(AGS_MACHINE(lv2_bridge)->audio,
 		 "play", &start_recall,
 		 NULL);
@@ -212,6 +213,7 @@ ags_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv
 		     g_object_unref);
 
     /* recall context */
+    start_recall = NULL;
     g_object_get(AGS_MACHINE(lv2_bridge)->audio,
 		 "recall", &start_recall,
 		 NULL);
@@ -363,9 +365,13 @@ ags_lv2_bridge_preset_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv2
     return;
   }
 
+  start_plugin_port = NULL;
+  
   g_object_get(lv2_plugin,
 	       "plugin-port", &start_plugin_port,
 	       NULL);
+
+  start_port_preset = NULL;
   
   g_object_get(lv2_preset,
 	       "port-preset", &start_port_preset,

@@ -2002,6 +2002,8 @@ ags_lv2_turtle_parser_parse_predicate_object_list(AgsLv2TurtleParser *lv2_turtle
 		     NULL);
       }
 
+      g_object_ref(lv2_plugin);
+
       g_rec_mutex_lock(lv2_manager_mutex);
 
       lv2_manager->lv2_plugin = g_list_prepend(lv2_manager->lv2_plugin,
