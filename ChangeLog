@@ -1,3 +1,8 @@
+ags (6.0.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed bug caused muted pads in ags_fx_factory.c related to play/recall container
+
 ags (6.0.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

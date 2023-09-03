@@ -45,6 +45,14 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="6.0.8" date="2023-09-03">
+      <description>
+	<p>
+	  Fixed bug causing silent pads.
+	</p>
+      </description>
+    </release>
+
     <release version="6.0.5" date="2023-09-01">
       <description>
 	<p>
