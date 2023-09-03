@@ -153,7 +153,7 @@ ags_machine_util_new_mixer()
 
   ags_audio_set_pads(AGS_MACHINE(mixer)->audio,
 		     AGS_TYPE_INPUT,
-		     16, 0);
+		     8, 0);
   ags_audio_set_pads(AGS_MACHINE(mixer)->audio,
 		     AGS_TYPE_OUTPUT,
 		     1, 0);

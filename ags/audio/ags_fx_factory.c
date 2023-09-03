@@ -900,6 +900,10 @@ ags_fx_factory_create_playback(AgsAudio *audio,
     channel = next_channel;
       
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      /* add recall container */
+      ags_channel_add_recall_container(channel,
+				       (GObject *) recall_container);
+	
       /* AgsFxPlaybackChannel */
       fx_playback_channel = (AgsFxPlaybackChannel *) g_object_new(AGS_TYPE_FX_PLAYBACK_CHANNEL,
 								  "output-soundcard", output_soundcard,
@@ -6176,7 +6180,7 @@ ags_fx_factory_create_pattern(AgsAudio *audio,
       
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
       ags_channel_add_recall_container(channel,
-				       (GObject *) recall_container);
+				       (GObject *) play_container);
 	
       /* AgsFxPatternChannel */
       fx_pattern_channel = (AgsFxPatternChannel *) g_object_new(AGS_TYPE_FX_PATTERN_CHANNEL,
