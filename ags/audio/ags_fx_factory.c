@@ -900,6 +900,10 @@ ags_fx_factory_create_playback(AgsAudio *audio,
     channel = next_channel;
       
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      /* add recall container */
+      ags_channel_add_recall_container(channel,
+				       (GObject *) recall_container);
+	
       /* AgsFxPlaybackChannel */
       fx_playback_channel = (AgsFxPlaybackChannel *) g_object_new(AGS_TYPE_FX_PLAYBACK_CHANNEL,
 								  "output-soundcard", output_soundcard,
@@ -1556,6 +1560,10 @@ ags_fx_factory_create_volume(AgsAudio *audio,
     channel = next_channel;
       
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      /* add recall container */
+      ags_channel_add_recall_container(channel,
+				       (GObject *) play_container);
+	
       /* AgsFxVolumeChannel */
       fx_volume_channel = (AgsFxVolumeChannel *) g_object_new(AGS_TYPE_FX_VOLUME_CHANNEL,
 							      "output-soundcard", output_soundcard,
@@ -1731,6 +1739,10 @@ ags_fx_factory_create_volume(AgsAudio *audio,
     channel = next_channel;
       
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      /* add recall container */
+      ags_channel_add_recall_container(channel,
+				       (GObject *) recall_container);
+	
       /* AgsFxVolumeChannel */
       fx_volume_channel = (AgsFxVolumeChannel *) g_object_new(AGS_TYPE_FX_VOLUME_CHANNEL,
 							      "output-soundcard", output_soundcard,
@@ -1979,6 +1991,10 @@ ags_fx_factory_create_tremolo(AgsAudio *audio,
     channel = next_channel;
       
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      /* add recall container */
+      ags_channel_add_recall_container(channel,
+				       (GObject *) play_container);
+	
       /* AgsFxTremoloChannel */
       fx_tremolo_channel = (AgsFxTremoloChannel *) g_object_new(AGS_TYPE_FX_TREMOLO_CHANNEL,
 								"output-soundcard", output_soundcard,
@@ -2071,7 +2087,7 @@ ags_fx_factory_create_tremolo(AgsAudio *audio,
     fx_tremolo_audio = (AgsFxTremoloAudio *) g_object_new(AGS_TYPE_FX_TREMOLO_AUDIO,
 							  "output-soundcard", output_soundcard,
 							  "audio", audio,
-							  "recall-container", play_container,
+							  "recall-container", recall_container,
 							  NULL);
     ags_recall_set_flags((AgsRecall *) fx_tremolo_audio,
 			 (AGS_RECALL_TEMPLATE));
@@ -2100,7 +2116,7 @@ ags_fx_factory_create_tremolo(AgsAudio *audio,
 									     "output-soundcard", output_soundcard,
 									     "audio", audio,
 									     "recall-audio", fx_tremolo_audio,
-									     "recall-container", play_container,
+									     "recall-container", recall_container,
 									     NULL);
     ags_recall_set_flags((AgsRecall *) fx_tremolo_audio_processor,
 			 (AGS_RECALL_TEMPLATE));
@@ -2154,6 +2170,10 @@ ags_fx_factory_create_tremolo(AgsAudio *audio,
     channel = next_channel;
       
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      /* add recall container */
+      ags_channel_add_recall_container(channel,
+				       (GObject *) recall_container);
+	
       /* AgsFxTremoloChannel */
       fx_tremolo_channel = (AgsFxTremoloChannel *) g_object_new(AGS_TYPE_FX_TREMOLO_CHANNEL,
 								"output-soundcard", output_soundcard,
@@ -2402,6 +2422,10 @@ ags_fx_factory_create_low_pass(AgsAudio *audio,
     channel = next_channel;
       
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      /* add recall container */
+      ags_channel_add_recall_container(channel,
+				       (GObject *) play_container);
+	
       /* AgsFxLowPassChannel */
       fx_low_pass_channel = (AgsFxLowPassChannel *) g_object_new(AGS_TYPE_FX_LOW_PASS_CHANNEL,
 								 "output-soundcard", output_soundcard,
@@ -2494,7 +2518,7 @@ ags_fx_factory_create_low_pass(AgsAudio *audio,
     fx_low_pass_audio = (AgsFxLowPassAudio *) g_object_new(AGS_TYPE_FX_LOW_PASS_AUDIO,
 							   "output-soundcard", output_soundcard,
 							   "audio", audio,
-							   "recall-container", play_container,
+							   "recall-container", recall_container,
 							   NULL);
     ags_recall_set_flags((AgsRecall *) fx_low_pass_audio,
 			 (AGS_RECALL_TEMPLATE));
@@ -2523,7 +2547,7 @@ ags_fx_factory_create_low_pass(AgsAudio *audio,
 									      "output-soundcard", output_soundcard,
 									      "audio", audio,
 									      "recall-audio", fx_low_pass_audio,
-									      "recall-container", play_container,
+									      "recall-container", recall_container,
 									      NULL);
     ags_recall_set_flags((AgsRecall *) fx_low_pass_audio_processor,
 			 (AGS_RECALL_TEMPLATE));
@@ -2577,6 +2601,10 @@ ags_fx_factory_create_low_pass(AgsAudio *audio,
     channel = next_channel;
       
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      /* add recall container */
+      ags_channel_add_recall_container(channel,
+				       (GObject *) recall_container);
+	
       /* AgsFxLowPassChannel */
       fx_low_pass_channel = (AgsFxLowPassChannel *) g_object_new(AGS_TYPE_FX_LOW_PASS_CHANNEL,
 								 "output-soundcard", output_soundcard,
@@ -2825,6 +2853,10 @@ ags_fx_factory_create_high_pass(AgsAudio *audio,
     channel = next_channel;
       
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      /* add recall container */
+      ags_channel_add_recall_container(channel,
+				       (GObject *) play_container);
+      
       /* AgsFxHighPassChannel */
       fx_high_pass_channel = (AgsFxHighPassChannel *) g_object_new(AGS_TYPE_FX_HIGH_PASS_CHANNEL,
 								   "output-soundcard", output_soundcard,
@@ -2917,7 +2949,7 @@ ags_fx_factory_create_high_pass(AgsAudio *audio,
     fx_high_pass_audio = (AgsFxHighPassAudio *) g_object_new(AGS_TYPE_FX_HIGH_PASS_AUDIO,
 							     "output-soundcard", output_soundcard,
 							     "audio", audio,
-							     "recall-container", play_container,
+							     "recall-container", recall_container,
 							     NULL);
     ags_recall_set_flags((AgsRecall *) fx_high_pass_audio,
 			 (AGS_RECALL_TEMPLATE));
@@ -2946,7 +2978,7 @@ ags_fx_factory_create_high_pass(AgsAudio *audio,
 										"output-soundcard", output_soundcard,
 										"audio", audio,
 										"recall-audio", fx_high_pass_audio,
-										"recall-container", play_container,
+										"recall-container", recall_container,
 										NULL);
     ags_recall_set_flags((AgsRecall *) fx_high_pass_audio_processor,
 			 (AGS_RECALL_TEMPLATE));
@@ -3000,6 +3032,10 @@ ags_fx_factory_create_high_pass(AgsAudio *audio,
     channel = next_channel;
       
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      /* add recall container */
+      ags_channel_add_recall_container(channel,
+				       (GObject *) recall_container);
+
       /* AgsFxHighPassChannel */
       fx_high_pass_channel = (AgsFxHighPassChannel *) g_object_new(AGS_TYPE_FX_HIGH_PASS_CHANNEL,
 								   "output-soundcard", output_soundcard,
@@ -3248,6 +3284,10 @@ ags_fx_factory_create_peak(AgsAudio *audio,
     channel = next_channel;
       
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      /* add recall container */
+      ags_channel_add_recall_container(channel,
+				       (GObject *) play_container);
+
       /* AgsFxPeakChannel */
       fx_peak_channel = (AgsFxPeakChannel *) g_object_new(AGS_TYPE_FX_PEAK_CHANNEL,
 							  "output-soundcard", output_soundcard,
@@ -3413,6 +3453,10 @@ ags_fx_factory_create_peak(AgsAudio *audio,
     channel = next_channel;
       
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      /* add recall container */
+      ags_channel_add_recall_container(channel,
+				       (GObject *) recall_container);
+
       /* AgsFxPeakChannel */
       fx_peak_channel = (AgsFxPeakChannel *) g_object_new(AGS_TYPE_FX_PEAK_CHANNEL,
 							  "output-soundcard", output_soundcard,
@@ -3658,6 +3702,10 @@ ags_fx_factory_create_eq10(AgsAudio *audio,
     channel = next_channel;
       
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      /* add recall container */
+      ags_channel_add_recall_container(channel,
+				       (GObject *) play_container);
+
       /* AgsFxEq10Channel */
       fx_eq10_channel = (AgsFxEq10Channel *) g_object_new(AGS_TYPE_FX_EQ10_CHANNEL,
 							  "output-soundcard", output_soundcard,
@@ -3821,6 +3869,10 @@ ags_fx_factory_create_eq10(AgsAudio *audio,
 
   /* channel - recall context */
   for(i = 0; i < stop_pad - start_pad; i++){
+    /* add recall container */
+    ags_channel_add_recall_container(channel,
+				     (GObject *) recall_container);
+
     channel = ags_channel_pad_nth(start_input,
 				  start_pad + i);
 
@@ -4079,6 +4131,10 @@ ags_fx_factory_create_analyse(AgsAudio *audio,
     channel = next_channel;
       
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      /* add recall container */
+      ags_channel_add_recall_container(channel,
+				       (GObject *) play_container);
+
       /* AgsFxAnalyseChannel */
       fx_analyse_channel = (AgsFxAnalyseChannel *) g_object_new(AGS_TYPE_FX_ANALYSE_CHANNEL,
 								"output-soundcard", output_soundcard,
@@ -4255,6 +4311,10 @@ ags_fx_factory_create_analyse(AgsAudio *audio,
     channel = next_channel;
       
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      /* add recall container */
+      ags_channel_add_recall_container(channel,
+				       (GObject *) recall_container);
+
       /* AgsFxAnalyseChannel */
       fx_analyse_channel = (AgsFxAnalyseChannel *) g_object_new(AGS_TYPE_FX_ANALYSE_CHANNEL,
 								"output-soundcard", output_soundcard,
@@ -4500,6 +4560,10 @@ ags_fx_factory_create_two_pass_aliase(AgsAudio *audio,
     channel = next_channel;
       
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      /* add recall container */
+      ags_channel_add_recall_container(channel,
+				       (GObject *) play_container);
+
       /* AgsFxTwoPassAliaseChannel */
       fx_two_pass_aliase_channel = (AgsFxTwoPassAliaseChannel *) g_object_new(AGS_TYPE_FX_TWO_PASS_ALIASE_CHANNEL,
 									      "output-soundcard", output_soundcard,
@@ -4592,7 +4656,7 @@ ags_fx_factory_create_two_pass_aliase(AgsAudio *audio,
     fx_two_pass_aliase_audio = (AgsFxTwoPassAliaseAudio *) g_object_new(AGS_TYPE_FX_TWO_PASS_ALIASE_AUDIO,
 									"output-soundcard", output_soundcard,
 									"audio", audio,
-									"recall-container", play_container,
+									"recall-container", recall_container,
 									NULL);
     ags_recall_set_flags((AgsRecall *) fx_two_pass_aliase_audio,
 			 (AGS_RECALL_TEMPLATE));
@@ -4621,7 +4685,7 @@ ags_fx_factory_create_two_pass_aliase(AgsAudio *audio,
 											   "output-soundcard", output_soundcard,
 											   "audio", audio,
 											   "recall-audio", fx_two_pass_aliase_audio,
-											   "recall-container", play_container,
+											   "recall-container", recall_container,
 											   NULL);
     ags_recall_set_flags((AgsRecall *) fx_two_pass_aliase_audio_processor,
 			 (AGS_RECALL_TEMPLATE));
@@ -4675,6 +4739,10 @@ ags_fx_factory_create_two_pass_aliase(AgsAudio *audio,
     channel = next_channel;
       
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      /* add recall container */
+      ags_channel_add_recall_container(channel,
+				       (GObject *) recall_container);
+
       /* AgsFxTwoPassAliaseChannel */
       fx_two_pass_aliase_channel = (AgsFxTwoPassAliaseChannel *) g_object_new(AGS_TYPE_FX_TWO_PASS_ALIASE_CHANNEL,
 									      "output-soundcard", output_soundcard,
@@ -4919,6 +4987,10 @@ ags_fx_factory_create_lfo(AgsAudio *audio,
     channel = next_channel;
       
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      /* add recall container */
+      ags_channel_add_recall_container(channel,
+				       (GObject *) play_container);
+
       /* AgsFxLfoChannel */
       fx_lfo_channel = (AgsFxLfoChannel *) g_object_new(AGS_TYPE_FX_LFO_CHANNEL,
 							"output-soundcard", output_soundcard,
@@ -5011,7 +5083,7 @@ ags_fx_factory_create_lfo(AgsAudio *audio,
     fx_lfo_audio = (AgsFxLfoAudio *) g_object_new(AGS_TYPE_FX_LFO_AUDIO,
 						  "output-soundcard", output_soundcard,
 						  "audio", audio,
-						  "recall-container", play_container,
+						  "recall-container", recall_container,
 						  NULL);
     ags_recall_set_flags((AgsRecall *) fx_lfo_audio,
 			 (AGS_RECALL_TEMPLATE));
@@ -5040,7 +5112,7 @@ ags_fx_factory_create_lfo(AgsAudio *audio,
 								     "output-soundcard", output_soundcard,
 								     "audio", audio,
 								     "recall-audio", fx_lfo_audio,
-								     "recall-container", play_container,
+								     "recall-container", recall_container,
 								     NULL);
     ags_recall_set_flags((AgsRecall *) fx_lfo_audio_processor,
 			 (AGS_RECALL_TEMPLATE));
@@ -5094,6 +5166,10 @@ ags_fx_factory_create_lfo(AgsAudio *audio,
     channel = next_channel;
       
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      /* add recall container */
+      ags_channel_add_recall_container(channel,
+				       (GObject *) recall_container);
+
       /* AgsFxLfoChannel */
       fx_lfo_channel = (AgsFxLfoChannel *) g_object_new(AGS_TYPE_FX_LFO_CHANNEL,
 							"output-soundcard", output_soundcard,
@@ -5342,6 +5418,10 @@ ags_fx_factory_create_envelope(AgsAudio *audio,
     channel = next_channel;
       
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      /* add recall container */
+      ags_channel_add_recall_container(channel,
+				       (GObject *) play_container);
+
       /* AgsFxEnvelopeChannel */
       fx_envelope_channel = (AgsFxEnvelopeChannel *) g_object_new(AGS_TYPE_FX_ENVELOPE_CHANNEL,
 								  "output-soundcard", output_soundcard,
@@ -5518,6 +5598,10 @@ ags_fx_factory_create_envelope(AgsAudio *audio,
     channel = next_channel;
       
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      /* add recall container */
+      ags_channel_add_recall_container(channel,
+				       (GObject *) recall_container);
+      
       /* AgsFxEnvelopeChannel */
       fx_envelope_channel = (AgsFxEnvelopeChannel *) g_object_new(AGS_TYPE_FX_ENVELOPE_CHANNEL,
 								  "output-soundcard", output_soundcard,
@@ -5763,6 +5847,10 @@ ags_fx_factory_create_wah_wah(AgsAudio *audio,
     channel = next_channel;
       
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      /* add recall container */
+      ags_channel_add_recall_container(channel,
+				       (GObject *) play_container);
+
       /* AgsFxWahWahChannel */
       fx_wah_wah_channel = (AgsFxWahWahChannel *) g_object_new(AGS_TYPE_FX_WAH_WAH_CHANNEL,
 							       "output-soundcard", output_soundcard,
@@ -5939,6 +6027,10 @@ ags_fx_factory_create_wah_wah(AgsAudio *audio,
     channel = next_channel;
       
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      /* add recall container */
+      ags_channel_add_recall_container(channel,
+				       (GObject *) recall_container);
+
       /* AgsFxWahWahChannel */
       fx_wah_wah_channel = (AgsFxWahWahChannel *) g_object_new(AGS_TYPE_FX_WAH_WAH_CHANNEL,
 							       "output-soundcard", output_soundcard,
@@ -6176,7 +6268,7 @@ ags_fx_factory_create_pattern(AgsAudio *audio,
       
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
       ags_channel_add_recall_container(channel,
-				       (GObject *) recall_container);
+				       (GObject *) play_container);
 	
       /* AgsFxPatternChannel */
       fx_pattern_channel = (AgsFxPatternChannel *) g_object_new(AGS_TYPE_FX_PATTERN_CHANNEL,
@@ -6572,7 +6664,7 @@ ags_fx_factory_create_notation(AgsAudio *audio,
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){      
       /* add recall container */
       ags_channel_add_recall_container(channel,
-				       (GObject *) recall_container);
+				       (GObject *) play_container);
 	
       /* AgsFxNotationChannel */
       fx_notation_channel = (AgsFxNotationChannel *) g_object_new(AGS_TYPE_FX_NOTATION_CHANNEL,
@@ -6998,7 +7090,7 @@ ags_fx_factory_create_synth(AgsAudio *audio,
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
       /* add recall container */
       ags_channel_add_recall_container(channel,
-				       (GObject *) recall_container);
+				       (GObject *) play_container);
 	
       /* AgsFxSynthChannel */
       fx_synth_channel = (AgsFxSynthChannel *) g_object_new(AGS_TYPE_FX_SYNTH_CHANNEL,
@@ -7181,6 +7273,10 @@ ags_fx_factory_create_synth(AgsAudio *audio,
     channel = next_channel;
       
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      /* add recall container */
+      ags_channel_add_recall_container(channel,
+				       (GObject *) recall_container);
+
       /* AgsFxSynthChannel */
       fx_synth_channel = (AgsFxSynthChannel *) g_object_new(AGS_TYPE_FX_SYNTH_CHANNEL,
 							    "filename", filename,
@@ -7442,7 +7538,7 @@ ags_fx_factory_create_fm_synth(AgsAudio *audio,
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
       /* add recall container */
       ags_channel_add_recall_container(channel,
-				       (GObject *) recall_container);
+				       (GObject *) play_container);
 	
       /* AgsFxFMSynthChannel */
       fx_fm_synth_channel = (AgsFxFMSynthChannel *) g_object_new(AGS_TYPE_FX_FM_SYNTH_CHANNEL,
@@ -7625,6 +7721,10 @@ ags_fx_factory_create_fm_synth(AgsAudio *audio,
     channel = next_channel;
       
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      /* add recall container */
+      ags_channel_add_recall_container(channel,
+				       (GObject *) recall_container);
+
       /* AgsFxFMSynthChannel */
       fx_fm_synth_channel = (AgsFxFMSynthChannel *) g_object_new(AGS_TYPE_FX_FM_SYNTH_CHANNEL,
 								 "filename", filename,
@@ -7886,7 +7986,7 @@ ags_fx_factory_create_sf2_synth(AgsAudio *audio,
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
       /* add recall container */
       ags_channel_add_recall_container(channel,
-				       (GObject *) recall_container);
+				       (GObject *) play_container);
 	
       /* AgsFxSF2SynthChannel */
       fx_sf2_synth_channel = (AgsFxSF2SynthChannel *) g_object_new(AGS_TYPE_FX_SF2_SYNTH_CHANNEL,
@@ -8069,6 +8169,10 @@ ags_fx_factory_create_sf2_synth(AgsAudio *audio,
     channel = next_channel;
       
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      /* add recall container */
+      ags_channel_add_recall_container(channel,
+				       (GObject *) recall_container);
+
       /* AgsFxSF2SynthChannel */
       fx_sf2_synth_channel = (AgsFxSF2SynthChannel *) g_object_new(AGS_TYPE_FX_SF2_SYNTH_CHANNEL,
 								   "filename", filename,
@@ -8330,7 +8434,7 @@ ags_fx_factory_create_sfz_synth(AgsAudio *audio,
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
       /* add recall container */
       ags_channel_add_recall_container(channel,
-				       (GObject *) recall_container);
+				       (GObject *) play_container);
 	
       /* AgsFxSFZSynthChannel */
       fx_sfz_synth_channel = (AgsFxSFZSynthChannel *) g_object_new(AGS_TYPE_FX_SFZ_SYNTH_CHANNEL,
@@ -8513,6 +8617,10 @@ ags_fx_factory_create_sfz_synth(AgsAudio *audio,
     channel = next_channel;
       
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      /* add recall container */
+      ags_channel_add_recall_container(channel,
+				       (GObject *) recall_container);
+
       /* AgsFxSFZSynthChannel */
       fx_sfz_synth_channel = (AgsFxSFZSynthChannel *) g_object_new(AGS_TYPE_FX_SFZ_SYNTH_CHANNEL,
 								   "filename", filename,
@@ -8776,6 +8884,10 @@ ags_fx_factory_create_ladspa(AgsAudio *audio,
     channel = next_channel;
       
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      /* add recall container */
+      ags_channel_add_recall_container(channel,
+				       (GObject *) play_container);
+
       /* AgsFxLadspaChannel */
       fx_ladspa_channel = (AgsFxLadspaChannel *) g_object_new(AGS_TYPE_FX_LADSPA_CHANNEL,
 							      "filename", filename,
@@ -8949,8 +9061,7 @@ ags_fx_factory_create_ladspa(AgsAudio *audio,
     }
   }
 
-  /* channel - recall context */
-  
+  /* channel - recall context */  
   for(i = 0; i < stop_pad - start_pad; i++){
     if((AGS_FX_FACTORY_OUTPUT & create_flags) != 0){
       channel = ags_channel_pad_nth(start_output,
@@ -8970,6 +9081,10 @@ ags_fx_factory_create_ladspa(AgsAudio *audio,
     channel = next_channel;
       
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      /* add recall container */
+      ags_channel_add_recall_container(channel,
+				       (GObject *) recall_container);
+
       /* AgsFxLadspaChannel */
       fx_ladspa_channel = (AgsFxLadspaChannel *) g_object_new(AGS_TYPE_FX_LADSPA_CHANNEL,
 							      "filename", filename,
@@ -9248,7 +9363,7 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
       /* add recall container */
       ags_channel_add_recall_container(channel,
-				       (GObject *) recall_container);
+				       (GObject *) play_container);
 	
       /* AgsFxDssiChannel */
       fx_dssi_channel = (AgsFxDssiChannel *) g_object_new(AGS_TYPE_FX_DSSI_CHANNEL,
@@ -9443,6 +9558,10 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
     channel = next_channel;
       
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      /* add recall container */
+      ags_channel_add_recall_container(channel,
+				       (GObject *) recall_container);
+
       /* AgsFxDssiChannel */
       fx_dssi_channel = (AgsFxDssiChannel *) g_object_new(AGS_TYPE_FX_DSSI_CHANNEL,
 							  "filename", filename,
@@ -9752,7 +9871,7 @@ ags_fx_factory_create_lv2(AgsAudio *audio,
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
       /* add recall container */
       ags_channel_add_recall_container(channel,
-				       (GObject *) recall_container);
+				       (GObject *) play_container);
 	
       /* AgsFxLv2Channel */
       fx_lv2_channel = (AgsFxLv2Channel *) g_object_new(AGS_TYPE_FX_LV2_CHANNEL,
@@ -9992,6 +10111,10 @@ ags_fx_factory_create_lv2(AgsAudio *audio,
     channel = next_channel;
       
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      /* add recall container */
+      ags_channel_add_recall_container(channel,
+				       (GObject *) recall_container);
+
       /* AgsFxLv2Channel */
       fx_lv2_channel = (AgsFxLv2Channel *) g_object_new(AGS_TYPE_FX_LV2_CHANNEL,
 							"filename", filename,
@@ -10325,7 +10448,7 @@ ags_fx_factory_create_vst3(AgsAudio *audio,
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
       /* add recall container */
       ags_channel_add_recall_container(channel,
-				       (GObject *) recall_container);
+				       (GObject *) play_container);
 	
       /* AgsFxVst3Channel */
       fx_vst3_channel = (AgsFxVst3Channel *) g_object_new(AGS_TYPE_FX_VST3_CHANNEL,
@@ -10565,6 +10688,10 @@ ags_fx_factory_create_vst3(AgsAudio *audio,
     channel = next_channel;
       
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      /* add recall container */
+      ags_channel_add_recall_container(channel,
+				       (GObject *) recall_container);
+
       /* AgsFxVst3Channel */
       fx_vst3_channel = (AgsFxVst3Channel *) g_object_new(AGS_TYPE_FX_VST3_CHANNEL,
 							  "filename", filename,
