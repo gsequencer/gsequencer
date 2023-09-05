@@ -2447,11 +2447,11 @@ ags_sf2_synth_util_compute_s8(AgsSF2SynthUtil *sf2_synth_util)
   ags_common_pitch_util_set_tuning(pitch_util,
 				   pitch_type,
 				   100.0 * (-1.0 * ((double) root_note - 69.0) + ((double) midi_key + note - 69.0)));
-
+  
   ags_common_pitch_util_set_format(pitch_util,
 				   pitch_type,
 				   sf2_synth_util->format);
-  
+
   ags_audio_buffer_util_clear_buffer(im_buffer, 1,
 				     buffer_length, ags_audio_buffer_util_format_from_soundcard(sf2_synth_util->format));
   
@@ -3140,7 +3140,7 @@ ags_sf2_synth_util_compute_s24(AgsSF2SynthUtil *sf2_synth_util)
     
   /* volume */
   ags_volume_util_set_format(volume_util,
-			     AGS_SOUNDCARD_DOUBLE);
+  			     sf2_synth_util->format);
 
   ags_volume_util_set_source(volume_util,
 			     im_buffer);
