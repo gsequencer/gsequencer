@@ -768,6 +768,13 @@ libags_la_LDFLAGS += $(UUID_LIBS) $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(GIO_LIBS) $(
 
 if WITH_W32API
 libags_la_LDFLAGS += -Wl,--export-all-symbols,--out-implib=libags.dll.a
+
+libags_la_LDFLAGS += -Wl,--output-def,libags-$(DLL_VERSION).def
+
+libags-$(DLL_VERSION).def: libags.la
+defexecdir = $(libdir)
+defexec_DATA = libags-$(DLL_VERSION).def
+DISTCLEANFILES += $(defexec_DATA)
 else
 if WITH_OSXAPI
 libags_la_LDFLAGS += -Wl,-headerpad_max_install_names -export-symbols libags.sym -Wl,-install_name,libags.dylib
@@ -787,6 +794,13 @@ libags_thread_la_LDFLAGS += $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(W32API_LIBS)
 
 if WITH_W32API
 libags_thread_la_LDFLAGS += -Wl,--export-all-symbols,--out-implib=libags_thread.dll.a
+
+libags_thread_la_LDFLAGS += -Wl,--output-def,libags_thread-$(DLL_VERSION).def
+
+libags_thread-$(DLL_VERSION).def: libags_thread.la
+defexecdir = $(libdir)
+defexec_DATA = libags_thread-$(DLL_VERSION).def
+DISTCLEANFILES += $(defexec_DATA)
 else
 if WITH_OSXAPI
 libags_thread_la_LDFLAGS += -Wl,-headerpad_max_install_names -export-symbols libags_thread.sym -Wl,-install_name,libags_thread.dylib
@@ -806,6 +820,13 @@ libags_server_la_LDFLAGS += $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(W3
 
 if WITH_W32API
 libags_server_la_LDFLAGS += -Wl,--export-all-symbols,--out-implib=libags_server.dll.a
+
+libags_server_la_LDFLAGS += -Wl,--output-def,libags_server-$(DLL_VERSION).def
+
+libags_server-$(DLL_VERSION).def: libags_server.la
+defexecdir = $(libdir)
+defexec_DATA = libags_server-$(DLL_VERSION).def
+DISTCLEANFILES += $(defexec_DATA)
 else
 if WITH_OSXAPI
 libags_server_la_LDFLAGS += -Wl,-headerpad_max_install_names -export-symbols libags_server.sym -Wl,-install_name,libags_server.dylib
@@ -836,6 +857,13 @@ endif
 if WITH_W32API
 libags_audio_la_CPPFLAGS += -DAGS_VECTORIZED_BUILTIN_FUNCTIONS=1 -DAGS_W32API=1 -DAGS_LIBRARY_SUFFIX=\".dll\" -include $(top_srcdir)/ags/config.h -I$(top_srcdir) -I$(top_srcdir)/lib -I/mingw64/include -I/mingw64/include/dssi -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized
 libags_audio_la_LDFLAGS += -Wl,--export-all-symbols,--out-implib=libags_audio.dll.a
+
+libags_audio_la_LDFLAGS += -Wl,--output-def,libags_audio-$(DLL_VERSION).def
+
+libags_audio-$(DLL_VERSION).def: libags_audio.la
+defexecdir = $(libdir)
+defexec_DATA = libags_audio-$(DLL_VERSION).def
+DISTCLEANFILES += $(defexec_DATA)
 else
 if WITH_OSXAPI
 libags_audio_la_CPPFLAGS += -DAGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS=1 -DAGS_OSXAPI=1 -I/usr/include -I/opt/local/include -I/opt/local/include/dssi -DAGS_LIBRARY_SUFFIX=\".dylib\"
@@ -862,6 +890,13 @@ libags_gui_la_LDFLAGS += $(GOBJECT_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(W32API_LIBS
 
 if WITH_W32API
 libags_gui_la_LDFLAGS += -Wl,--export-all-symbols,--out-implib=libags_gui.dll.a
+
+libags_gui_la_LDFLAGS += -Wl,--output-def,libags_gui-$(DLL_VERSION).def
+
+libags_gui-$(DLL_VERSION).def: libags_gui.la
+defexecdir = $(libdir)
+defexec_DATA = libags_gui-$(DLL_VERSION).def
+DISTCLEANFILES += $(defexec_DATA)
 else
 if WITH_OSXAPI
 libags_gui_la_LDFLAGS += -Wl,-headerpad_max_install_names -export-symbols libags_gui.sym -Wl,-install_name,libags_gui.dylib
@@ -891,6 +926,13 @@ endif
 if WITH_W32API
 libgsequencer_la_CPPFLAGS += -DAGS_LIBRARY_SUFFIX=\".dll\"
 libgsequencer_la_LDFLAGS += -Wl,--export-all-symbols,--out-implib=libgsequencer.dll.a
+
+libgsequencer_thread_la_LDFLAGS += -Wl,--output-def,libgsequencer_thread-$(DLL_VERSION).def
+
+libgsequencer_thread-$(DLL_VERSION).def: libgsequencer_thread.la
+defexecdir = $(libdir)
+defexec_DATA = libgsequencer_thread-$(DLL_VERSION).def
+DISTCLEANFILES += $(defexec_DATA)
 else
 if WITH_OSXAPI
 libgsequencer_la_CPPFLAGS += -DAGS_LIBRARY_SUFFIX=\".dylib\"

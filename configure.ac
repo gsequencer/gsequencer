@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[6.0.9],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[6.0.8],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -329,6 +329,8 @@ AS_IF([test "x$enable_w32api" != xno],
 #      W32API_LIBS="-L./lib -lgnu"
       AC_SUBST(W32API_CFLAGS)
       AC_SUBST(W32API_LIBS)
+      DLL_VERSION=`expr ${LT_CURRENT} - ${LT_AGE}`
+      AC_SUBST(DLL_VERSION)
       AC_MSG_NOTICE([w32api enabled])],
       [AC_MSG_NOTICE([w32api disabled])])
 AM_CONDITIONAL([WITH_W32API], [test "x$enable_w32api" == xyes])
