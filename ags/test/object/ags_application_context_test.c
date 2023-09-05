@@ -81,8 +81,6 @@ ags_application_context_test_load_config()
   ags_application_context_load_config(application_context);
 
   CU_ASSERT(stub_load_config == TRUE);
-  
-  g_object_unref(application_context);
 }
 
 void
@@ -99,8 +97,6 @@ ags_application_context_test_register_types()
   ags_application_context_register_types(application_context);
 
   CU_ASSERT(stub_register_types == TRUE);
-  
-  g_object_unref(application_context);
 }
 
 void
@@ -141,8 +137,6 @@ ags_application_context_test_quit()
   ags_application_context_quit(application_context);
 
   CU_ASSERT(stub_quit == TRUE);
-  
-  g_object_unref(application_context);
 }
 
 void
@@ -174,7 +168,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsApplicationContextTest\0", ags_application_context_test_init_suite, ags_application_context_test_clean_suite);
+  pSuite = CU_add_suite("AgsApplicationContextTest", ags_application_context_test_init_suite, ags_application_context_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();
@@ -183,13 +177,13 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsApplicationContext load config\0", ags_application_context_test_load_config) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsApplicationContext register types\0", ags_application_context_test_register_types) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsApplicationContext add sibling\0", ags_application_context_test_add_sibling) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsApplicationContext remove sibling\0", ags_application_context_test_remove_sibling) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsApplicationContext find default\0", ags_application_context_test_find_default) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsApplicationContext find main loop\0", ags_application_context_test_find_main_loop) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsApplicationContext quit\0", ags_application_context_test_quit) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsApplicationContext load config", ags_application_context_test_load_config) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsApplicationContext register types", ags_application_context_test_register_types) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsApplicationContext add sibling", ags_application_context_test_add_sibling) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsApplicationContext remove sibling", ags_application_context_test_remove_sibling) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsApplicationContext find default", ags_application_context_test_find_default) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsApplicationContext find main loop", ags_application_context_test_find_main_loop) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsApplicationContext quit", ags_application_context_test_quit) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();

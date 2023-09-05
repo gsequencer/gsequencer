@@ -7092,7 +7092,7 @@ ags_audio_set_pads_grow(AgsAudio *audio,
 		 "input", &start,
 		 NULL);
   }
-
+  
   for(j = pads_old; j < pads; j++){
     AgsPlayback *playback;
       
@@ -10379,6 +10379,7 @@ void
 ags_audio_add_sf2_synth_generator(AgsAudio *audio,
 				  GObject *sf2_synth_generator)
 {
+#if defined(AGS_WITH_LIBINSTPATCH)
   GRecMutex *audio_mutex;
 
   if(!AGS_IS_AUDIO(audio) ||
@@ -10400,6 +10401,7 @@ ags_audio_add_sf2_synth_generator(AgsAudio *audio,
   }
   
   g_rec_mutex_unlock(audio_mutex);
+#endif
 }
 
 /**
@@ -10415,6 +10417,7 @@ void
 ags_audio_remove_sf2_synth_generator(AgsAudio *audio,
 				     GObject *sf2_synth_generator)
 {
+#if defined(AGS_WITH_LIBINSTPATCH)
   GRecMutex *audio_mutex;
 
   if(!AGS_IS_AUDIO(audio) ||
@@ -10436,6 +10439,7 @@ ags_audio_remove_sf2_synth_generator(AgsAudio *audio,
   }
   
   g_rec_mutex_unlock(audio_mutex);
+#endif
 }
 
 /**

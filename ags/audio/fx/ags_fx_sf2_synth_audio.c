@@ -816,7 +816,7 @@ ags_fx_sf2_synth_audio_init(AgsFxSF2SynthAudio *fx_sf2_synth_audio)
 						     "port-value-length", 1,
 						     NULL);
   
-  fx_sf2_synth_audio->vibrato_enabled->port_value.ags_port_float = (gfloat) TRUE;
+  fx_sf2_synth_audio->vibrato_enabled->port_value.ags_port_float = (gfloat) FALSE;
 
   g_object_set(fx_sf2_synth_audio->vibrato_enabled,
 	       "plugin-port", ags_fx_sf2_synth_audio_get_vibrato_enabled_plugin_port(),
@@ -1950,9 +1950,11 @@ ags_fx_sf2_synth_audio_notify_buffer_size_callback(GObject *gobject,
 					destination);
 
 	/* set buffer length */
+#if defined(AGS_WITH_LIBINSTPATCH)
 	ags_sf2_synth_util_set_buffer_length(channel_data->synth,
 					     buffer_size);
-
+#endif
+	
 	ags_chorus_util_set_buffer_length(channel_data->chorus_util,
 					  buffer_size);
       }
@@ -2003,9 +2005,11 @@ ags_fx_sf2_synth_audio_notify_format_callback(GObject *gobject,
 
 	channel_data = scope_data->channel_data[j];
 
+#if defined(AGS_WITH_LIBINSTPATCH)
 	ags_sf2_synth_util_set_format(channel_data->synth,
 				      format);
-
+#endif
+	
 	/* free chorus destination */
 	destination = ags_chorus_util_get_destination(channel_data->chorus_util);
 	
@@ -2066,9 +2070,11 @@ ags_fx_sf2_synth_audio_notify_samplerate_callback(GObject *gobject,
 
 	channel_data = scope_data->channel_data[j];
 
+#if defined(AGS_WITH_LIBINSTPATCH)
 	ags_sf2_synth_util_set_samplerate(channel_data->synth,
 					  samplerate);
-
+#endif
+	
 	ags_chorus_util_set_samplerate(channel_data->chorus_util,
 				       samplerate);
       }
@@ -2145,13 +2151,15 @@ ags_fx_sf2_synth_audio_set_audio_channels_callback(AgsAudio *audio,
 	  channel_data =
 	    scope_data->channel_data[j] = ags_fx_sf2_synth_audio_channel_data_alloc();
 
+#if defined(AGS_WITH_LIBINSTPATCH)
 	  ags_sf2_synth_util_set_buffer_length(channel_data->synth,
 					       buffer_size);
 	  ags_sf2_synth_util_set_format(channel_data->synth,
 					format);		
 	  ags_sf2_synth_util_set_samplerate(channel_data->synth,
 					    samplerate);
-
+#endif
+	  
 	  ags_chorus_util_set_buffer_length(channel_data->chorus_util,
 					    buffer_size);
 	  ags_chorus_util_set_format(channel_data->chorus_util,
@@ -2257,8 +2265,10 @@ ags_fx_sf2_synth_audio_channel_data_alloc()
   channel_data->parent = NULL;
 
   /* sf2 synth util */
+#if defined(AGS_WITH_LIBINSTPATCH)
   channel_data->synth = ags_sf2_synth_util_alloc();
-
+#endif
+  
   /* chorus util */
   channel_data->chorus_util = ags_chorus_util_alloc();
   
@@ -2289,8 +2299,10 @@ ags_fx_sf2_synth_audio_channel_data_free(AgsFxSF2SynthAudioChannelData *channel_
   }
 
   /* SF2 synth util */
+#if defined(AGS_WITH_LIBINSTPATCH)
   ags_sf2_synth_util_free(channel_data->synth);
-
+#endif
+  
   /* chorus util */
   ags_chorus_util_free(channel_data->chorus_util);
   

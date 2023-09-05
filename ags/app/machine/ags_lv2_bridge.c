@@ -775,8 +775,6 @@ ags_lv2_bridge_finalize(GObject *gobject)
   }
 
   if(lv2_bridge->lv2_window != NULL){
-    g_object_run_dispose(G_OBJECT(lv2_bridge->lv2_window));
-    
     g_object_unref(G_OBJECT(lv2_bridge->lv2_window));
   }
   
@@ -1334,6 +1332,7 @@ ags_lv2_bridge_load_program(AgsLv2Bridge *lv2_bridge)
       
 	guint port_count;
 
+	start_plugin_port = NULL;
 	g_object_get(lv2_plugin,
 		     "plugin-port", &start_plugin_port,
 		     NULL);

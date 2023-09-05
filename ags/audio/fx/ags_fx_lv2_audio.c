@@ -236,6 +236,8 @@ ags_fx_lv2_audio_finalize(GObject *gobject)
   
   if(fx_lv2_audio->lv2_plugin != NULL){
     g_object_unref(fx_lv2_audio->lv2_plugin);
+
+    fx_lv2_audio->lv2_plugin = NULL;
   }
   
   if(fx_lv2_audio->lv2_port != NULL){
@@ -1389,20 +1391,12 @@ ags_fx_lv2_audio_input_data_load_plugin(AgsFxLv2Audio *fx_lv2_audio,
     }
   }  
 
-  lv2_plugin = NULL;
-    
   deactivate = NULL;
   cleanup = NULL;
 
   base_plugin_mutex = NULL;
     
-  if(input_data->parent != NULL &&
-     AGS_FX_LV2_AUDIO_CHANNEL_DATA(input_data->parent)->parent != NULL &&
-     AGS_FX_LV2_AUDIO_SCOPE_DATA(AGS_FX_LV2_AUDIO_CHANNEL_DATA(input_data->parent)->parent)->parent != NULL){
-    lv2_plugin = AGS_FX_LV2_AUDIO(AGS_FX_LV2_AUDIO_CHANNEL_DATA(input_data->parent)->parent)->lv2_plugin;
-  }
-    
-  if(lv2_plugin != NULL){
+  if(AGS_IS_LV2_PLUGIN(lv2_plugin)){
     gpointer plugin_descriptor;
 
     base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(lv2_plugin);
@@ -1411,9 +1405,11 @@ ags_fx_lv2_audio_input_data_load_plugin(AgsFxLv2Audio *fx_lv2_audio,
   
     plugin_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor;
 
-    deactivate = AGS_LV2_PLUGIN_DESCRIPTOR(plugin_descriptor)->deactivate;
-    cleanup = AGS_LV2_PLUGIN_DESCRIPTOR(plugin_descriptor)->cleanup;
-      
+    if(plugin_descriptor != NULL){
+      deactivate = AGS_LV2_PLUGIN_DESCRIPTOR(plugin_descriptor)->deactivate;
+      cleanup = AGS_LV2_PLUGIN_DESCRIPTOR(plugin_descriptor)->cleanup;
+    }
+    
     g_rec_mutex_unlock(base_plugin_mutex);
   }
 
@@ -1427,8 +1423,10 @@ ags_fx_lv2_audio_input_data_load_plugin(AgsFxLv2Audio *fx_lv2_audio,
     cleanup(input_data->lv2_handle[0]);
   }
 
-  input_data->lv2_handle = ags_base_plugin_instantiate((AgsBasePlugin *) lv2_plugin,
-						       samplerate, buffer_size);
+  if(AGS_IS_LV2_PLUGIN(lv2_plugin)){
+    input_data->lv2_handle = ags_base_plugin_instantiate((AgsBasePlugin *) lv2_plugin,
+							 samplerate, buffer_size);
+  }
 }
 
 void
@@ -1532,8 +1530,10 @@ ags_fx_lv2_audio_channel_data_load_plugin(AgsFxLv2Audio *fx_lv2_audio,
       cleanup(channel_data->lv2_handle[0]);
     }	  
 
-    channel_data->lv2_handle = ags_base_plugin_instantiate((AgsBasePlugin *) lv2_plugin,
-							   samplerate, buffer_size);
+    if(AGS_IS_LV2_PLUGIN(lv2_plugin)){
+      channel_data->lv2_handle = ags_base_plugin_instantiate((AgsBasePlugin *) lv2_plugin,
+							     samplerate, buffer_size);
+    }
   }
 	
   if(!is_live_instrument){

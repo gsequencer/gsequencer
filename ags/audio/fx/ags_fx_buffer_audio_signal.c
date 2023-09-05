@@ -268,7 +268,8 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
      fx_buffer_channel != NULL &&
      input_data != NULL){
     GList *start_list, *list;
-      
+
+#if 0
     list =
       start_list = ags_channel_get_play(input);
 
@@ -300,6 +301,7 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 
     g_list_free_full(start_list,
 		     g_object_unref);
+#endif
     
     fx_buffer_channel_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_buffer_channel);
     

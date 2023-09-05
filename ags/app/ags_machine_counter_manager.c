@@ -203,19 +203,19 @@ ags_machine_counter_manager_load(AgsMachineCounterManager *machine_counter_manag
 					 ags_machine_counter_new(AGS_TYPE_HYBRID_FM_SYNTH,
 								 NULL, NULL));
 
+#if defined(AGS_WITH_LIBINSTPATCH)
   start_machine_counter = g_list_prepend(start_machine_counter,
 					 ags_machine_counter_new(AGS_TYPE_FFPLAYER,
 								 NULL, NULL));
 
-#if defined(AGS_WITH_LIBINSTPATCH)
   start_machine_counter = g_list_prepend(start_machine_counter,
 					 ags_machine_counter_new(AGS_TYPE_SF2_SYNTH,
 								 NULL, NULL));
+#endif
 
   start_machine_counter = g_list_prepend(start_machine_counter,
 					 ags_machine_counter_new(AGS_TYPE_PITCH_SAMPLER,
 								 NULL, NULL));
-#endif
   
   start_machine_counter = g_list_prepend(start_machine_counter,
 					 ags_machine_counter_new(AGS_TYPE_SFZ_SYNTH,

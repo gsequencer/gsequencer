@@ -58,7 +58,7 @@ GType ags_audio_buffer_util_get_type(void);
     l_z = ((double) x_val / (double) G_MAXINT16) + I * 0;			\
     ags_complex_set(x_retval[0], l_z); }
 #define AGS_AUDIO_BUFFER_UTIL_S24_TO_COMPLEX(x_val, x_retval) { double complex l_z; \
-    l_z = ((double) x_val / (double) (0xffffff - 1)) + I * 0;				\
+    l_z = ((double) x_val / (double) (0x7fffff)) + I * 0;				\
     ags_complex_set(x_retval[0], l_z); }
 #define AGS_AUDIO_BUFFER_UTIL_S32_TO_COMPLEX(x_val, x_retval) { double complex l_z; \
     l_z = ((double) x_val / (double) G_MAXINT32) + I * 0;				\
@@ -81,7 +81,7 @@ GType ags_audio_buffer_util_get_type(void);
     x_retval[0] = (gint16) ((double) G_MAXINT16 * creal(l_z)); }
 #define AGS_AUDIO_BUFFER_UTIL_COMPLEX_TO_S24(x_val, x_retval) { double complex l_z; \
     l_z = ags_complex_get(x_val);					\
-    x_retval[0] = (gint32) ((double) (0xffffff - 1) * creal(l_z)); }
+    x_retval[0] = (gint32) ((double) (0x7fffff) * creal(l_z)); }
 #define AGS_AUDIO_BUFFER_UTIL_COMPLEX_TO_S32(x_val, x_retval) { double complex l_z; \
     l_z = ags_complex_get(x_val);					\
     x_retval[0] = (gint32) ((double) G_MAXINT32 * creal(l_z)); }

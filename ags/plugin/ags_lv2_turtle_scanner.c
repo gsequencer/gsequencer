@@ -2461,10 +2461,6 @@ ags_lv2_turtle_scanner_quick_scan(AgsLv2TurtleScanner *lv2_turtle_scanner,
   }
 
   g_free(manifest_path);
-
-  if(manifest_file != NULL){
-    g_object_unref(manifest_file);
-  }
 }
 
 /**

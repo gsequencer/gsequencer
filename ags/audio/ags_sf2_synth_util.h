@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -74,7 +74,11 @@ struct _AgsSF2SynthUtil
   AgsAudioContainer *sf2_file;
   
   guint sf2_sample_count;
+#if defined(AGS_WITH_LIBINSTPATCH)
   IpatchSample **sf2_sample_arr;
+#else
+  gpointer *sf2_sample_arr;
+#endif
   gint **sf2_note_range;
 
   gint sf2_loop_mode[128];

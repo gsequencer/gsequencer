@@ -19,6 +19,8 @@
 
 #include <ags/app/editor/ags_machine_selection.h>
 
+#include <ags/ags_api_config.h>
+
 #include <ags/app/ags_ui_provider.h>
 
 #include <ags/app/editor/ags_machine_selector.h>

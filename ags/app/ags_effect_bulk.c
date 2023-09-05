@@ -1896,10 +1896,7 @@ ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
       ags_lv2_turtle_parser_parse(lv2_turtle_parser,
 				  turtle, n_turtle);
     
-      g_object_run_dispose((GObject *) lv2_turtle_parser);
       g_object_unref(lv2_turtle_parser);
-	
-      g_object_unref(manifest);
 	
       free(turtle);
     }
@@ -3177,7 +3174,6 @@ ags_effect_bulk_real_remove_plugin(AgsEffectBulk *effect_bulk,
     ags_effect_bulk_remove_bulk_member_entry(effect_bulk,
 					     list->data);
     
-    g_object_run_dispose(list->data);
     g_object_unref(list->data);
   }
 
@@ -3204,7 +3200,6 @@ ags_effect_bulk_real_remove_plugin(AgsEffectBulk *effect_bulk,
       ags_effect_bulk_remove_bulk_member(effect_bulk,
 					 list->data);
       
-      g_object_run_dispose(list->data);
       g_object_unref(list->data);
     }
     

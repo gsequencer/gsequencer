@@ -7,8 +7,12 @@
 # without any warranty.
 # Process this file with autoconf to produce a configure script.
 
+LT_CURRENT=6
+LT_REVISION=0
+LT_AGE=9
+
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[6.0.0],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[6.0.9],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -235,6 +239,10 @@ fi
 gl_EARLY
 
 # libtool
+AC_SUBST(LT_CURRENT)
+AC_SUBST(LT_REVISION)
+AC_SUBST(LT_AGE)
+
 LT_PREREQ([2.4.2])
 LT_INIT([win32-dll])
 AC_SUBST([LIBTOOL_DEPS])
@@ -329,6 +337,8 @@ AS_IF([test "x$enable_w32api" != xno],
 #      W32API_LIBS="-L./lib -lgnu"
       AC_SUBST(W32API_CFLAGS)
       AC_SUBST(W32API_LIBS)
+      DLL_VERSION=`expr ${LT_CURRENT} - ${LT_AGE}`
+      AC_SUBST(DLL_VERSION)
       AC_MSG_NOTICE([w32api enabled])],
       [AC_MSG_NOTICE([w32api disabled])])
 AM_CONDITIONAL([WITH_W32API], [test "x$enable_w32api" == xyes])

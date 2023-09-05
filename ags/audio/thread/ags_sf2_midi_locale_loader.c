@@ -30,6 +30,8 @@
 
 #include <ags/audio/fx/ags_fx_sf2_synth_audio.h>
 
+#include <ags/ags_api_config.h>
+
 #include <ags/i18n.h>
 
 void ags_sf2_midi_locale_loader_class_init(AgsSF2MidiLocaleLoaderClass *sf2_midi_locale_loader);
@@ -724,9 +726,14 @@ ags_sf2_midi_locale_loader_run(void *ptr)
 
     task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
 
+#if defined(AGS_WITH_LIBINSTPATCH)
     synth_template =
       sf2_midi_locale_loader->synth_template = ags_sf2_synth_util_alloc();
-
+#else
+    synth_template =
+      sf2_midi_locale_loader->synth_template = NULL;
+#endif
+    
     synth_template->flags |= AGS_SF2_SYNTH_UTIL_COMPUTE_MIDI_LOCALE;
     
     synth_template->sf2_file = sf2_midi_locale_loader->audio_container;
@@ -736,54 +743,23 @@ ags_sf2_midi_locale_loader_run(void *ptr)
     }
     
     synth_template->source = ags_stream_alloc(buffer_length,
-					format);
+					      format);
 
+#if defined(AGS_WITH_LIBINSTPATCH)
     ags_sf2_synth_util_set_buffer_length(synth_template,
 					 buffer_length);
     ags_sf2_synth_util_set_samplerate(synth_template,
 				      samplerate);
     ags_sf2_synth_util_set_format(synth_template,
 				  format);
-
-    synth_template->sample_buffer = ags_stream_alloc(buffer_length,
-					       AGS_SOUNDCARD_DOUBLE);
-
-    synth_template->im_buffer = ags_stream_alloc(buffer_length,
-					   AGS_SOUNDCARD_DOUBLE);
+#endif
 
     /*  */
-    ags_common_pitch_util_set_source(synth_template->pitch_util,
-				     synth_template->pitch_type,
-				     synth_template->sample_buffer);
-
-    ags_common_pitch_util_set_destination(synth_template->pitch_util,
-					  synth_template->pitch_type,
-					  synth_template->im_buffer);
-    
-    ags_common_pitch_util_set_buffer_length(synth_template->pitch_util,
-					    synth_template->pitch_type,
-					    buffer_length);
-    ags_common_pitch_util_set_format(synth_template->pitch_util,
-				     synth_template->pitch_type,
-				     AGS_SOUNDCARD_DOUBLE);
-    ags_common_pitch_util_set_samplerate(synth_template->pitch_util,
-					 synth_template->pitch_type,
-					 samplerate);
-
-    synth_template->volume_util->source = synth_template->im_buffer;
-    
-    synth_template->volume_util->destination = synth_template->im_buffer;
-
-    synth_template->volume_util->buffer_length = buffer_length;
-    synth_template->volume_util->format = AGS_SOUNDCARD_DOUBLE;
-    
-    synth_template->samplerate = samplerate;
-    synth_template->buffer_length = buffer_length;
-    synth_template->format = format;
-
+#if defined(AGS_WITH_LIBINSTPATCH)
     ags_sf2_synth_util_load_midi_locale(synth_template,
 					sf2_midi_locale_loader->bank,
 					sf2_midi_locale_loader->program);
+#endif
     
     apply_sf2_midi_locale = ags_apply_sf2_midi_locale_new(synth_template,
 							  sf2_midi_locale_loader->synth);

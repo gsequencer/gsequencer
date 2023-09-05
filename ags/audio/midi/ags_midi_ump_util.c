@@ -48,7 +48,7 @@ guint ags_midi_ump_util_get_flex_set_text(AgsMidiUmpUtil *midi_ump_util,
 /**
  * SECTION:ags_midi_ump_util
  * @short_description: MIDI UMP util
- * @title: AgsMidiUtil
+ * @title: AgsMidiUmpUtil
  * @section_id:
  * @include: ags/audio/midi/ags_midi_ump_util.h
  *
@@ -1144,10 +1144,10 @@ ags_midi_ump_util_put_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_
 }
 
 /**
- * ags_midi_ump_util_get_endpoint_info_notification:
+ * ags_midi_ump_util_get_product_instance_id_notification:
  * @midi_ump_util: the MIDI UMP util
  * @buffer: the buffer
- * @product_instance_id_notification: (out): the return location of product instance ID notification
+ * @product_instance_id: (out): the return location of product instance ID notification
  * @extension_name: (out): the return location of extension name string vector
  * @extension_value: (out): the return location of extension value array
  * @extension_count: (out): the return location of extension count
@@ -1377,7 +1377,7 @@ ags_midi_ump_util_is_stream_configuration_notification(AgsMidiUmpUtil *midi_ump_
 }
 
 /**
- * ags_midi_ump_util_put_product_instance_id_notification:
+ * ags_midi_ump_util_put_stream_configuration_notification:
  * @midi_ump_util: the MIDI UMP util
  * @buffer: the buffer
  * @protocol: the protocol
@@ -4496,9 +4496,8 @@ ags_midi_ump_util_put_midi2_assignable_per_note_controller(AgsMidiUmpUtil *midi_
  * @group: (out): the return location of group
  * @channel: (out): the return location of channel number
  * @key: (out): the return location of key
- * @attribute_type: (out): the return location of attribute type
- * @velocity: (out): the return location of velocity
- * @attribute: (out): the return location of attribute
+ * @data_index: (out): the return location of data index
+ * @data: (out): the return location of data
  * @extension_name: (out): the return location of extension name string vector
  * @extension_value: (out): the return location of extension value array
  * @extension_count: (out): the return location of extension count

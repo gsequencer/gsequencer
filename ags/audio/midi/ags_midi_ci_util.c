@@ -29,7 +29,7 @@
 /**
  * SECTION:ags_midi_ci_util
  * @short_description: MIDI CI util
- * @title: AgsMidiUtil
+ * @title: AgsMidiCiUtil
  * @section_id:
  * @include: ags/audio/midi/ags_midi_ci_util.h
  *

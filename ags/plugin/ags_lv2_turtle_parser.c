@@ -436,21 +436,21 @@ ags_lv2_turtle_parser_dispose(GObject *gobject)
   if(lv2_turtle_parser->plugin != NULL){
     g_list_free_full(lv2_turtle_parser->plugin,
 		     g_object_unref);
-
+    
     lv2_turtle_parser->plugin = NULL;
   }
 
   if(lv2_turtle_parser->ui_plugin != NULL){
     g_list_free_full(lv2_turtle_parser->ui_plugin,
 		     g_object_unref);
-
+    
     lv2_turtle_parser->ui_plugin = NULL;
   }
   
   if(lv2_turtle_parser->preset != NULL){
     g_list_free_full(lv2_turtle_parser->preset,
 		     g_object_unref);
-
+    
     lv2_turtle_parser->preset = NULL;
   }
 
@@ -971,7 +971,9 @@ ags_lv2_turtle_parser_parse_names_predicate_object_list(AgsLv2TurtleParser *lv2_
 		   "manifest", turtle[0],
 		   "turtle", turtle[n_turtle - 1],
 		   NULL);
-	
+
+      g_object_ref(lv2_plugin);
+      
       g_rec_mutex_lock(lv2_manager_mutex);
       
       lv2_manager->lv2_plugin = g_list_prepend(lv2_manager->lv2_plugin,
@@ -1227,8 +1229,6 @@ ags_lv2_turtle_parser_parse_names_predicate_object_list_see_also(AgsLv2TurtlePar
 				   (GObject *) next);
 
 	    skip = FALSE;
-	    
-	    g_object_unref(next);
 	  }
 	    
 	  if(next != NULL &&
@@ -2001,6 +2001,8 @@ ags_lv2_turtle_parser_parse_predicate_object_list(AgsLv2TurtleParser *lv2_turtle
 		     "turtle", turtle[n_turtle - 1],
 		     NULL);
       }
+
+      g_object_ref(lv2_plugin);
 
       g_rec_mutex_lock(lv2_manager_mutex);
 
@@ -2828,7 +2830,8 @@ ags_lv2_turtle_parser_parse_predicate_object_list(AgsLv2TurtleParser *lv2_turtle
 						    NULL,
 						    10);
 		      xmlFree(str);
-			
+
+		      start_list = NULL;
 		      g_object_get(lv2_plugin,
 				   "plugin-port", &start_list,
 				   NULL);
@@ -4609,9 +4612,7 @@ ags_lv2_turtle_parser_parse_predicate_object_list_see_also(AgsLv2TurtleParser *l
 	  ags_turtle_manager_add(ags_turtle_manager_get_instance(),
 				 (GObject *) next);
 
-	  skip = FALSE;
-	    
-	  g_object_unref(next);
+	  skip = FALSE;    
 	}
 	    
 	if(next != NULL &&
@@ -4825,10 +4826,10 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 
     g_list_free_full(start_ui_plugin,
 		     g_object_unref);
-#endif
   
     g_list_free_full(start_plugin,
 		     g_object_unref);
+#endif
   }
 
 #if 0
