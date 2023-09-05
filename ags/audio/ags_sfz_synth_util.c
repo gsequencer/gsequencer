@@ -496,15 +496,28 @@ ags_sfz_synth_util_set_buffer_length(AgsSFZSynthUtil *sfz_synth_util,
     sfz_synth_util->im_buffer = NULL;
   }
 
-  ags_resample_util_set_buffer_length(sfz_synth_util->resample_util,
-				      MAX(buffer_length, 4096));
-
   ags_common_pitch_util_set_buffer_length(sfz_synth_util->pitch_util,
 					  sfz_synth_util->pitch_type,
 					  buffer_length);
+
+  ags_common_pitch_util_set_source(sfz_synth_util->pitch_util,
+				   sfz_synth_util->pitch_type,
+				   sfz_synth_util->sample_buffer);
+
+  ags_common_pitch_util_set_destination(sfz_synth_util->pitch_util,
+					sfz_synth_util->pitch_type,
+					sfz_synth_util->im_buffer);
+
+  ags_resample_util_set_buffer_length(sfz_synth_util->resample_util,
+				      MAX(buffer_length, 4096));
   
   ags_volume_util_set_buffer_length(sfz_synth_util->volume_util,
 				    buffer_length);
+  
+  ags_volume_util_set_source(sfz_synth_util->pitch_util,
+			     sfz_synth_util->im_buffer);
+  ags_volume_util_set_destination(sfz_synth_util->pitch_util,
+				  sfz_synth_util->im_buffer);
 }
 
 /**
@@ -557,15 +570,28 @@ ags_sfz_synth_util_set_format(AgsSFZSynthUtil *sfz_synth_util,
 						 sfz_synth_util->format);
   }
 
-  ags_resample_util_set_format(sfz_synth_util->resample_util,
-			       format);
-
   ags_common_pitch_util_set_format(sfz_synth_util->pitch_util,
 				   sfz_synth_util->pitch_type,
 				   format);
-  
+
+  ags_common_pitch_util_set_source(sfz_synth_util->pitch_util,
+				   sfz_synth_util->pitch_type,
+				   sfz_synth_util->sample_buffer);
+
+  ags_common_pitch_util_set_destination(sfz_synth_util->pitch_util,
+					sfz_synth_util->pitch_type,
+					sfz_synth_util->im_buffer);
+
+  ags_resample_util_set_format(sfz_synth_util->resample_util,
+			       format);
+
   ags_volume_util_set_format(sfz_synth_util->volume_util,
 			     format);
+
+  ags_volume_util_set_source(sfz_synth_util->pitch_util,
+			     sfz_synth_util->im_buffer);
+  ags_volume_util_set_destination(sfz_synth_util->pitch_util,
+				  sfz_synth_util->im_buffer);
 
   ags_sfz_synth_util_load_instrument(sfz_synth_util);
 }
@@ -610,12 +636,12 @@ ags_sfz_synth_util_set_samplerate(AgsSFZSynthUtil *sfz_synth_util,
 
   sfz_synth_util->samplerate = samplerate;
 
-  ags_resample_util_set_target_samplerate(sfz_synth_util->resample_util,
-					  samplerate);
-
   ags_common_pitch_util_set_samplerate(sfz_synth_util->pitch_util,
 				       sfz_synth_util->pitch_type,
 				       samplerate);
+
+  ags_resample_util_set_target_samplerate(sfz_synth_util->resample_util,
+					  samplerate);
   
   ags_sfz_synth_util_load_instrument(sfz_synth_util);
 }
@@ -1452,8 +1478,8 @@ ags_sfz_synth_util_compute_s8(AgsSFZSynthUtil *sfz_synth_util)
 				 NULL,
 				 NULL);
     
-  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
-						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->format),
+						  ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->format));
 
   pong_copy = FALSE;
 	
@@ -1541,6 +1567,10 @@ ags_sfz_synth_util_compute_s8(AgsSFZSynthUtil *sfz_synth_util)
 				   pitch_type,
 				   100.0 * (-1.0 * ((double) root_note - 69.0) + ((double) midi_key + note - 69.0)));
 
+  ags_common_pitch_util_set_format(pitch_util,
+				   pitch_type,
+				   sfz_synth_util->format);
+
   ags_audio_buffer_util_clear_buffer(im_buffer, 1,
 				     buffer_length, AGS_AUDIO_BUFFER_UTIL_DOUBLE);      
     
@@ -1619,7 +1649,7 @@ ags_sfz_synth_util_compute_s8(AgsSFZSynthUtil *sfz_synth_util)
 
   /* to source */
   copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S8,
-						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+						  AGS_AUDIO_BUFFER_UTIL_S8);
     
   ags_audio_buffer_util_copy_buffer_to_buffer(source, 1, 0,
 					      im_buffer, 1, 0,
@@ -1766,8 +1796,8 @@ ags_sfz_synth_util_compute_s16(AgsSFZSynthUtil *sfz_synth_util)
 				 NULL,
 				 NULL);
     
-  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
-						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->format),
+						  ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->format));
 
   pong_copy = FALSE;
 	
@@ -1859,6 +1889,10 @@ ags_sfz_synth_util_compute_s16(AgsSFZSynthUtil *sfz_synth_util)
 				   pitch_type,
 				   100.0 * (-1.0 * ((double) root_note - 69.0) + ((double) midi_key + note - 69.0)));
 
+  ags_common_pitch_util_set_format(pitch_util,
+				   pitch_type,
+				   sfz_synth_util->format);
+
   ags_audio_buffer_util_clear_buffer(im_buffer, 1,
 				     buffer_length, AGS_AUDIO_BUFFER_UTIL_DOUBLE);      
     
@@ -1937,7 +1971,7 @@ ags_sfz_synth_util_compute_s16(AgsSFZSynthUtil *sfz_synth_util)
 
   /* to source */
   copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S16,
-						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+						  AGS_AUDIO_BUFFER_UTIL_S16);
     
   ags_audio_buffer_util_copy_buffer_to_buffer(source, 1, 0,
 					      im_buffer, 1, 0,
@@ -2084,8 +2118,8 @@ ags_sfz_synth_util_compute_s24(AgsSFZSynthUtil *sfz_synth_util)
 				 NULL,
 				 NULL);
     
-  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
-						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->format),
+						  ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->format));
 
   pong_copy = FALSE;
 	
@@ -2173,6 +2207,10 @@ ags_sfz_synth_util_compute_s24(AgsSFZSynthUtil *sfz_synth_util)
 				   pitch_type,
 				   100.0 * (-1.0 * ((double) root_note - 69.0) + ((double) midi_key + note - 69.0)));
 
+  ags_common_pitch_util_set_format(pitch_util,
+				   pitch_type,
+				   sfz_synth_util->format);
+
   ags_audio_buffer_util_clear_buffer(im_buffer, 1,
 				     buffer_length, AGS_AUDIO_BUFFER_UTIL_DOUBLE);      
     
@@ -2251,7 +2289,7 @@ ags_sfz_synth_util_compute_s24(AgsSFZSynthUtil *sfz_synth_util)
 
   /* to source */
   copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S24,
-						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+						  AGS_AUDIO_BUFFER_UTIL_S24);
     
   ags_audio_buffer_util_copy_buffer_to_buffer(source, 1, 0,
 					      im_buffer, 1, 0,
@@ -2398,8 +2436,8 @@ ags_sfz_synth_util_compute_s32(AgsSFZSynthUtil *sfz_synth_util)
 				 NULL,
 				 NULL);
     
-  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
-						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->format),
+						  ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->format));
 
   pong_copy = FALSE;
 	
@@ -2495,6 +2533,10 @@ ags_sfz_synth_util_compute_s32(AgsSFZSynthUtil *sfz_synth_util)
 				   pitch_type,
 				   100.0 * (-1.0 * ((double) root_note - 69.0) + ((double) midi_key + note - 69.0)));
 
+  ags_common_pitch_util_set_format(pitch_util,
+				   pitch_type,
+				   sfz_synth_util->format);
+
   ags_audio_buffer_util_clear_buffer(im_buffer, 1,
 				     buffer_length, AGS_AUDIO_BUFFER_UTIL_DOUBLE);      
     
@@ -2573,7 +2615,7 @@ ags_sfz_synth_util_compute_s32(AgsSFZSynthUtil *sfz_synth_util)
 
   /* to source */
   copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S32,
-						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+						  AGS_AUDIO_BUFFER_UTIL_S32);
     
   ags_audio_buffer_util_copy_buffer_to_buffer(source, 1, 0,
 					      im_buffer, 1, 0,
@@ -2720,8 +2762,8 @@ ags_sfz_synth_util_compute_s64(AgsSFZSynthUtil *sfz_synth_util)
 				 NULL,
 				 NULL);
     
-  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
-						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->format),
+						  ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->format));
 
   pong_copy = FALSE;
 	
@@ -2809,6 +2851,10 @@ ags_sfz_synth_util_compute_s64(AgsSFZSynthUtil *sfz_synth_util)
 				   pitch_type,
 				   100.0 * (-1.0 * ((double) root_note - 69.0) + ((double) midi_key + note - 69.0)));
 
+  ags_common_pitch_util_set_format(pitch_util,
+				   pitch_type,
+				   sfz_synth_util->format);
+
   ags_audio_buffer_util_clear_buffer(im_buffer, 1,
 				     buffer_length, AGS_AUDIO_BUFFER_UTIL_DOUBLE);      
     
@@ -2887,7 +2933,7 @@ ags_sfz_synth_util_compute_s64(AgsSFZSynthUtil *sfz_synth_util)
 
   /* to source */
   copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S64,
-						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+						  AGS_AUDIO_BUFFER_UTIL_S64);
     
   ags_audio_buffer_util_copy_buffer_to_buffer(source, 1, 0,
 					      im_buffer, 1, 0,
@@ -3034,8 +3080,8 @@ ags_sfz_synth_util_compute_float(AgsSFZSynthUtil *sfz_synth_util)
 				 NULL,
 				 NULL);
     
-  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
-						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->format),
+						  ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->format));
 
   pong_copy = FALSE;
 	
@@ -3123,6 +3169,10 @@ ags_sfz_synth_util_compute_float(AgsSFZSynthUtil *sfz_synth_util)
 				   pitch_type,
 				   100.0 * (-1.0 * ((double) root_note - 69.0) + ((double) midi_key + note - 69.0)));
 
+  ags_common_pitch_util_set_format(pitch_util,
+				   pitch_type,
+				   sfz_synth_util->format);
+
   ags_audio_buffer_util_clear_buffer(im_buffer, 1,
 				     buffer_length, AGS_AUDIO_BUFFER_UTIL_DOUBLE);      
     
@@ -3201,7 +3251,7 @@ ags_sfz_synth_util_compute_float(AgsSFZSynthUtil *sfz_synth_util)
 
   /* to source */
   copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_FLOAT,
-						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+						  AGS_AUDIO_BUFFER_UTIL_FLOAT);
     
   ags_audio_buffer_util_copy_buffer_to_buffer(source, 1, 0,
 					      im_buffer, 1, 0,
@@ -3348,8 +3398,8 @@ ags_sfz_synth_util_compute_double(AgsSFZSynthUtil *sfz_synth_util)
 				 NULL,
 				 NULL);
     
-  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
-						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->format),
+						  ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->format));
 
   pong_copy = FALSE;
 	
@@ -3436,6 +3486,10 @@ ags_sfz_synth_util_compute_double(AgsSFZSynthUtil *sfz_synth_util)
   ags_common_pitch_util_set_tuning(pitch_util,
 				   pitch_type,
 				   100.0 * (-1.0 * ((double) root_note - 69.0) + ((double) midi_key + note - 69.0)));
+
+  ags_common_pitch_util_set_format(pitch_util,
+				   pitch_type,
+				   sfz_synth_util->format);
 
   ags_audio_buffer_util_clear_buffer(im_buffer, 1,
 				     buffer_length, AGS_AUDIO_BUFFER_UTIL_DOUBLE);      
@@ -3662,8 +3716,8 @@ ags_sfz_synth_util_compute_complex(AgsSFZSynthUtil *sfz_synth_util)
 				 NULL,
 				 NULL);
     
-  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
-						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->format),
+						  ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->format));
 
   pong_copy = FALSE;
 	
@@ -3752,6 +3806,10 @@ ags_sfz_synth_util_compute_complex(AgsSFZSynthUtil *sfz_synth_util)
 				   pitch_type,
 				   100.0 * (-1.0 * ((double) root_note - 69.0) + ((double) midi_key + note - 69.0)));
 
+  ags_common_pitch_util_set_format(pitch_util,
+				   pitch_type,
+				   sfz_synth_util->format);
+
   ags_audio_buffer_util_clear_buffer(im_buffer, 1,
 				     buffer_length, AGS_AUDIO_BUFFER_UTIL_DOUBLE);      
     
@@ -3830,7 +3888,7 @@ ags_sfz_synth_util_compute_complex(AgsSFZSynthUtil *sfz_synth_util)
 
   /* to source */
   copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_COMPLEX,
-						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+						  AGS_AUDIO_BUFFER_UTIL_COMPLEX);
     
   ags_audio_buffer_util_copy_buffer_to_buffer(source, 1, 0,
 					      im_buffer, 1, 0,
