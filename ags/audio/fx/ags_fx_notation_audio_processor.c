@@ -249,6 +249,9 @@ ags_fx_notation_audio_processor_init(AgsFxNotationAudioProcessor *fx_notation_au
   /* feeding */
   fx_notation_audio_processor->feeding_note = NULL;
   fx_notation_audio_processor->feeding_audio_signal = NULL;
+
+  /* 256th */
+  fx_notation_audio_processor->note_256th = NULL;
 }
 
 void

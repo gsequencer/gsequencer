@@ -72,6 +72,8 @@ struct _AgsFxNotationAudioProcessor
 
   GList *feeding_note;
   GList *feeding_audio_signal;
+
+  GList *note_256th;
 };
 
 struct _AgsFxNotationAudioProcessorClass

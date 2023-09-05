@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -265,6 +265,7 @@ ags_fx_notation_audio_init(AgsFxNotationAudio *fx_notation_audio)
   fx_notation_audio->flags = 0;
 
   fx_notation_audio->pattern_mode = FALSE;
+  fx_notation_audio->note_256th_mode = TRUE;
   
   fx_notation_audio->feed_note = NULL;
 
@@ -937,6 +938,70 @@ ags_fx_notation_audio_set_pattern_mode(AgsFxNotationAudio *fx_notation_audio,
   g_rec_mutex_lock(recall_mutex);
 
   fx_notation_audio->pattern_mode = pattern_mode;
+
+  g_rec_mutex_unlock(recall_mutex);
+}
+
+/**
+ * ags_fx_notation_audio_get_note_256th_mode:
+ * @fx_notation_audio: the #AgsFxNotationAudio
+ * 
+ * Get note 256th mode of @fx_notation_audio.
+ * 
+ * Returns: %TRUE if note 256th mode, otherwise %FALSE
+ * 
+ * Since: 6.1.0
+ */
+gboolean
+ags_fx_notation_audio_get_note_256th_mode(AgsFxNotationAudio *fx_notation_audio)
+{
+  gboolean note_256th_mode;
+  
+  GRecMutex *recall_mutex;
+  
+  if(!AGS_IS_FX_NOTATION_AUDIO(fx_notation_audio)){
+    return(FALSE);
+  }
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_notation_audio);
+
+  /* test flags */
+  g_rec_mutex_lock(recall_mutex);
+
+  note_256th_mode = fx_notation_audio->note_256th_mode;
+
+  g_rec_mutex_unlock(recall_mutex);
+
+  return(note_256th_mode);
+}
+
+/**
+ * ags_fx_notation_audio_set_note_256th_mode:
+ * @fx_notation_audio: the #AgsFxNotationAudio
+ * @note_256th_mode: %TRUE if note 256th mode, otherwise %FALSE
+ * 
+ * Set @note_256th_mode of @fx_notation_audio.
+ * 
+ * Since: 6.1.0
+ */
+void
+ags_fx_notation_audio_set_note_256th_mode(AgsFxNotationAudio *fx_notation_audio,
+					  gboolean note_256th_mode)
+{
+  GRecMutex *recall_mutex;
+
+  if(!AGS_IS_FX_NOTATION_AUDIO(fx_notation_audio)){
+    return;
+  }
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_notation_audio);
+
+  /* unset flags */
+  g_rec_mutex_lock(recall_mutex);
+
+  fx_notation_audio->note_256th_mode = note_256th_mode;
 
   g_rec_mutex_unlock(recall_mutex);
 }

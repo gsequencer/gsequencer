@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -162,6 +162,7 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
   GList *start_note, *note;
 
   gboolean pattern_mode;
+  gboolean note_256th_mode;
   gdouble delay_counter;
   guint64 offset_counter;
   gdouble delay;
@@ -211,6 +212,7 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
   fx_notation_audio_processor_mutex = NULL;
 
   pattern_mode = ags_fx_notation_audio_get_pattern_mode(fx_notation_audio);
+  note_256th_mode = ags_fx_notation_audio_get_note_256th_mode(fx_notation_audio);
   
   delay_counter = 0.0;
   offset_counter = 0;
@@ -276,11 +278,14 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
 
   for(i = 0; note != NULL; i++){
     guint x0, x1;
+    guint x0_256th, x1_256th;
     guint y;
     
     g_object_get(note->data,
 		 "x0", &x0,
 		 "x1", &x1,
+		 "x0-256th", &x0_256th,
+		 "x1-256th", &x1_256th,
 		 "y", &y,
 		 NULL);
 
@@ -294,15 +299,28 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
 	
 	ags_audio_signal_add_stream(source);
 
-	ags_fx_notation_audio_signal_stream_feed((AgsFxNotationAudioSignal *) recall,
-						 source,
-						 note->data,
-						 pattern_mode,
-						 x0, x1,
-						 y,
-						 delay_counter, offset_counter,
-						 frame_count,
-						 delay, buffer_size);
+	if(!note_256th_mode){
+	  ags_fx_notation_audio_signal_stream_feed((AgsFxNotationAudioSignal *) recall,
+						   source,
+						   note->data,
+						   pattern_mode,
+						   x0, x1,
+						   y,
+						   delay_counter, offset_counter,
+						   frame_count,
+						   delay, buffer_size);
+	}else{
+	  ags_fx_notation_audio_signal_stream_feed((AgsFxNotationAudioSignal *) recall,
+						   source,
+						   note->data,
+						   pattern_mode,
+						   x0_256th, x1_256th,
+						   y,
+						   delay_counter, 16 * offset_counter,
+						   frame_count,
+						   delay, buffer_size);
+	}
+	
 	if(i == 0){
 	  g_object_set(source,
 		       "frame-count", frame_count + buffer_size,
@@ -370,32 +388,76 @@ ags_fx_notation_audio_signal_real_stream_feed(AgsFxNotationAudioSignal *fx_notat
 					      guint frame_count,
 					      gdouble delay, guint buffer_size)
 {
+  AgsFxNotationAudio *fx_notation_audio;
+  AgsFxNotationChannelProcessor *fx_notation_channel_processor;
+  AgsFxNotationRecycling *fx_notation_recycling;
+
   AgsAudioSignal *template;
+
+  gboolean note_256th_mode;
 
   template = NULL;
 
   g_object_get(source,
 	       "default-template", &template,
 	       NULL);
-		 
-  if(x0 == offset_counter &&
-     delay_counter == 0.0){
-    ags_audio_signal_open_feed(source,
-			       template,
-			       frame_count + buffer_size, frame_count);
-#if 0
-  }else if(offset_counter + 1 == x1 &&
-	   delay_counter + 1.0 >= floor(delay)){
-    ags_audio_signal_close_feed(source,
-				template,
-				frame_count + buffer_size, frame_count);
-#endif
-  }else{
-    ags_audio_signal_continue_feed(source,
-				   template,
-				   frame_count + buffer_size, frame_count);
-  }
 
+  g_object_get(fx_notation_audio_signal,
+	       "parent", &fx_notation_recycling,
+	       NULL);
+
+  g_object_get(fx_notation_recycling,
+	       "parent", &fx_notation_channel_processor,
+	       NULL);
+  
+  g_object_get(fx_notation_channel_processor,
+	       "recall-audio", &fx_notation_audio,
+	       NULL);
+
+  note_256th_mode = ags_fx_notation_audio_get_note_256th_mode(fx_notation_audio);
+  
+  if(!note_256th_mode){
+    if(x0 == offset_counter &&
+       delay_counter == 0.0){
+      ags_audio_signal_open_feed(source,
+				 template,
+				 frame_count + buffer_size, frame_count);
+#if 0
+    }else if(offset_counter + 1 == x1 &&
+	     delay_counter + 1.0 >= floor(delay)){
+      ags_audio_signal_close_feed(source,
+				  template,
+				  frame_count + buffer_size, frame_count);
+#endif
+    }else{
+      ags_audio_signal_continue_feed(source,
+				     template,
+				     frame_count + buffer_size, frame_count);
+    }
+  }else{
+    if(x0 == offset_counter + (guint) floor(delay_counter * (delay / 16.0)) &&
+       delay_counter == fmod(x0, delay)){
+      ags_audio_signal_open_feed(source,
+				 template,
+				 frame_count + buffer_size, frame_count);
+#if 0
+    }else if(offset_counter + 1 == x1 &&
+	     delay_counter + 1.0 >= floor(delay)){
+      ags_audio_signal_close_feed(source,
+				  template,
+				  frame_count + buffer_size, frame_count);
+#endif
+    }else{
+      if((x0 == offset_counter + (guint) floor(delay_counter * (delay / 16.0)) &&
+	  delay_counter >= fmod(x0, delay)) ||
+	 x0 >= offset_counter + (guint) floor(delay_counter * (delay / 16.0))){
+	ags_audio_signal_continue_feed(source,
+				       template,
+				       frame_count + buffer_size, frame_count);
+      }
+    }
+  }
+  
   g_object_set(source,
 	       "frame-count", frame_count + buffer_size,
 	       NULL);
