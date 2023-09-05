@@ -13,6 +13,8 @@ AM_DISTCHECK_CONFIGURE_FLAGS = --enable-introspection --with-poppler --with-gtk-
 
 ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 
+DISTCLEANFILES =
+
 # what flags you want to pass to the C compiler & linker
 # AM_CPPFLAGS += -march=native -O3 -ftree-vectorize -ftree-slp-vectorize -ffast-math -ftree-vectorizer-verbose=2
 CPPFLAGS = @CPPFLAGS@
@@ -758,6 +760,9 @@ libags_vst_la_HEADERS_0 += \
 	$(libags_vst_h_sources)
 endif
 
+defexecdir = $(libdir)
+defexec_DATA =
+
 # library libags
 libags_la_CPPFLAGS = -std=gnu99 $(CPPFLAGS) $(LIBAGS_CPPFLAGS)
 libags_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS) $(W32API_CFLAGS)
@@ -772,9 +777,7 @@ libags_la_LDFLAGS += -Wl,--export-all-symbols,--out-implib=libags.dll.a
 libags_la_LDFLAGS += -Wl,--output-def,libags-$(DLL_VERSION).def
 
 libags-$(DLL_VERSION).def: libags.la
-defexecdir = $(libdir)
-defexec_DATA = libags-$(DLL_VERSION).def
-DISTCLEANFILES += $(defexec_DATA)
+defexec_DATA += libags-$(DLL_VERSION).def
 else
 if WITH_OSXAPI
 libags_la_LDFLAGS += -Wl,-headerpad_max_install_names -export-symbols libags.sym -Wl,-install_name,libags.dylib
@@ -798,9 +801,7 @@ libags_thread_la_LDFLAGS += -Wl,--export-all-symbols,--out-implib=libags_thread.
 libags_thread_la_LDFLAGS += -Wl,--output-def,libags_thread-$(DLL_VERSION).def
 
 libags_thread-$(DLL_VERSION).def: libags_thread.la
-defexecdir = $(libdir)
-defexec_DATA = libags_thread-$(DLL_VERSION).def
-DISTCLEANFILES += $(defexec_DATA)
+defexec_DATA += libags_thread-$(DLL_VERSION).def
 else
 if WITH_OSXAPI
 libags_thread_la_LDFLAGS += -Wl,-headerpad_max_install_names -export-symbols libags_thread.sym -Wl,-install_name,libags_thread.dylib
@@ -824,9 +825,7 @@ libags_server_la_LDFLAGS += -Wl,--export-all-symbols,--out-implib=libags_server.
 libags_server_la_LDFLAGS += -Wl,--output-def,libags_server-$(DLL_VERSION).def
 
 libags_server-$(DLL_VERSION).def: libags_server.la
-defexecdir = $(libdir)
-defexec_DATA = libags_server-$(DLL_VERSION).def
-DISTCLEANFILES += $(defexec_DATA)
+defexec_DATA += libags_server-$(DLL_VERSION).def
 else
 if WITH_OSXAPI
 libags_server_la_LDFLAGS += -Wl,-headerpad_max_install_names -export-symbols libags_server.sym -Wl,-install_name,libags_server.dylib
@@ -861,9 +860,7 @@ libags_audio_la_LDFLAGS += -Wl,--export-all-symbols,--out-implib=libags_audio.dl
 libags_audio_la_LDFLAGS += -Wl,--output-def,libags_audio-$(DLL_VERSION).def
 
 libags_audio-$(DLL_VERSION).def: libags_audio.la
-defexecdir = $(libdir)
-defexec_DATA = libags_audio-$(DLL_VERSION).def
-DISTCLEANFILES += $(defexec_DATA)
+defexec_DATA += libags_audio-$(DLL_VERSION).def
 else
 if WITH_OSXAPI
 libags_audio_la_CPPFLAGS += -DAGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS=1 -DAGS_OSXAPI=1 -I/usr/include -I/opt/local/include -I/opt/local/include/dssi -DAGS_LIBRARY_SUFFIX=\".dylib\"
@@ -894,9 +891,7 @@ libags_gui_la_LDFLAGS += -Wl,--export-all-symbols,--out-implib=libags_gui.dll.a
 libags_gui_la_LDFLAGS += -Wl,--output-def,libags_gui-$(DLL_VERSION).def
 
 libags_gui-$(DLL_VERSION).def: libags_gui.la
-defexecdir = $(libdir)
-defexec_DATA = libags_gui-$(DLL_VERSION).def
-DISTCLEANFILES += $(defexec_DATA)
+defexec_DATA += libags_gui-$(DLL_VERSION).def
 else
 if WITH_OSXAPI
 libags_gui_la_LDFLAGS += -Wl,-headerpad_max_install_names -export-symbols libags_gui.sym -Wl,-install_name,libags_gui.dylib
@@ -927,12 +922,10 @@ if WITH_W32API
 libgsequencer_la_CPPFLAGS += -DAGS_LIBRARY_SUFFIX=\".dll\"
 libgsequencer_la_LDFLAGS += -Wl,--export-all-symbols,--out-implib=libgsequencer.dll.a
 
-libgsequencer_thread_la_LDFLAGS += -Wl,--output-def,libgsequencer_thread-$(DLL_VERSION).def
+libgsequencer_la_LDFLAGS += -Wl,--output-def,libgsequencer-$(DLL_VERSION).def
 
-libgsequencer_thread-$(DLL_VERSION).def: libgsequencer_thread.la
-defexecdir = $(libdir)
-defexec_DATA = libgsequencer_thread-$(DLL_VERSION).def
-DISTCLEANFILES += $(defexec_DATA)
+libgsequencer-$(DLL_VERSION).def: libgsequencer.la
+defexec_DATA += libgsequencer-$(DLL_VERSION).def
 else
 if WITH_OSXAPI
 libgsequencer_la_CPPFLAGS += -DAGS_LIBRARY_SUFFIX=\".dylib\"
@@ -979,6 +972,8 @@ else
 gsequencer_CPPFLAGS = -std=gnu99
 endif
 endif
+
+DISTCLEANFILES += $(defexec_DATA)
 
 gsequencer_CPPFLAGS += $(CPPFLAGS) $(libags_vst3_RELEASE_TYPE)
 

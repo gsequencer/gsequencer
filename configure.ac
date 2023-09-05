@@ -7,6 +7,10 @@
 # without any warranty.
 # Process this file with autoconf to produce a configure script.
 
+LT_CURRENT=6
+LT_REVISION=0
+LT_AGE=8
+
 AC_PREREQ([2.69])
 AC_INIT([gsequencer],[6.0.8],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
@@ -235,6 +239,10 @@ fi
 gl_EARLY
 
 # libtool
+AC_SUBST(LT_CURRENT)
+AC_SUBST(LT_REVISION)
+AC_SUBST(LT_AGE)
+
 LT_PREREQ([2.4.2])
 LT_INIT([win32-dll])
 AC_SUBST([LIBTOOL_DEPS])
