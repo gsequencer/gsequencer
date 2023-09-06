@@ -23,6 +23,7 @@
 
 #include <stdlib.h>
 #include <complex.h>
+#include <math.h>
 
 #include <ags/i18n.h>
 
@@ -70,6 +71,7 @@ enum{
   PROP_RATIO,
   PROP_NOTE_NAME,
   PROP_FREQUENCY,
+  PROP_FEED_X_256TH,
   PROP_X0_256TH,
   PROP_X1_256TH,
 };
@@ -382,6 +384,22 @@ ags_note_class_init(AgsNoteClass *note)
 				  param_spec);
 
   /**
+   * AgsNote:feed-x-256th:
+   *
+   * Feed note x as 256th.
+   * 
+   * Since: 6.1.0
+   */
+  param_spec = g_param_spec_boolean("feed-x-256th",
+				    i18n_pspec("feed x as 256th"),
+				    i18n_pspec("To feed x as 256th"),
+				    FALSE,
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FEED_X_256TH,
+				  param_spec);
+
+  /**
    * AgsNote:x0-256th:
    *
    * Note offset x0 as 256th.
@@ -462,6 +480,8 @@ ags_note_init(AgsNote *note)
   note->note_name = NULL;
   note->frequency = 440.0;
 
+  note->feed_x_256th = FALSE;
+
   note->x_256th[0] = 0;
   note->x_256th[1] = 16;
 }
@@ -488,6 +508,8 @@ ags_note_set_property(GObject *gobject,
 
     note->x[0] = g_value_get_uint(value);
 
+    note->x_256th[0] = 16 * note->x[0];
+
     g_rec_mutex_unlock(note_mutex);
   }
   break;
@@ -496,6 +518,8 @@ ags_note_set_property(GObject *gobject,
     g_rec_mutex_lock(note_mutex);
 
     note->x[1] = g_value_get_uint(value);
+
+    note->x_256th[1] = 16 * note->x[1];
 
     g_rec_mutex_unlock(note_mutex);
   }
@@ -652,6 +676,15 @@ ags_note_set_property(GObject *gobject,
     g_rec_mutex_lock(note_mutex);
 
     note->frequency = g_value_get_double(value);
+
+    g_rec_mutex_unlock(note_mutex);
+  }
+  break;
+  case PROP_FEED_X_256TH:
+  {
+    g_rec_mutex_lock(note_mutex);
+
+    note->feed_x_256th = g_value_get_boolean(value);
 
     g_rec_mutex_unlock(note_mutex);
   }
@@ -827,6 +860,15 @@ ags_note_get_property(GObject *gobject,
     g_rec_mutex_lock(note_mutex);
 
     g_value_set_double(value, note->frequency);
+
+    g_rec_mutex_unlock(note_mutex);
+  }
+  break;
+  case PROP_FEED_X_256TH:
+  {
+    g_rec_mutex_lock(note_mutex);
+
+    g_value_set_boolean(value, note->feed_x_256th);
 
     g_rec_mutex_unlock(note_mutex);
   }
@@ -1596,6 +1638,53 @@ ags_note_set_ratio(AgsNote *note, AgsComplex *ratio)
 
   g_object_set(note,
 	       "ratio", ratio,
+	       NULL);
+}
+
+/**
+ * ags_note_get_feed_x_256th:
+ * @note: the #AgsNote
+ *
+ * Gets feed x as 256th.
+ * 
+ * Returns: the feed x as 256th
+ * 
+ * Since: 6.1.0
+ */
+gboolean
+ags_note_get_feed_x_256th(AgsNote *note)
+{
+  gboolean feed_x_256th;
+  
+  if(!AGS_IS_NOTE(note)){
+    return(FALSE);
+  }
+
+  g_object_get(note,
+	       "feed-x-256th", &feed_x_256th,
+	       NULL);
+
+  return(feed_x_256th);
+}
+
+/**
+ * ags_note_set_feed_x:
+ * @note: the #AgsNote
+ * @feed_x_256th: the feed x as 256th
+ *
+ * Sets feed x as 256th.
+ * 
+ * Since: 6.1.0
+ */
+void
+ags_note_set_feed_x_256th(AgsNote *note, gboolean feed_x_256th)
+{
+  if(!AGS_IS_NOTE(note)){
+    return;
+  }
+
+  g_object_set(note,
+	       "feed-x-256th", feed_x_256th,
 	       NULL);
 }
 

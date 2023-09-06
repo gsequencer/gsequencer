@@ -40,7 +40,7 @@ G_BEGIN_DECLS
 #define	MIN(a,b)	(((a) < (b)) ? (a) : (b))
 #endif
 
-typedef int32_t increment_t;
+typedef gint32 increment_t;
 
 static inline int psf_lrint(double x)
 {

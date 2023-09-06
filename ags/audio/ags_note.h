@@ -101,6 +101,8 @@ struct _AgsNote
   gchar *note_name;
   gdouble frequency;
 
+  gboolean feed_x_256th;
+  
   guint x_256th[2];
 };
 
@@ -155,6 +157,9 @@ void ags_note_set_release(AgsNote *note, AgsComplex *release);
 
 AgsComplex* ags_note_get_ratio(AgsNote *note);
 void ags_note_set_ratio(AgsNote *note, AgsComplex *ratio);
+
+gboolean ags_note_get_feed_x_256th(AgsNote *note);
+void ags_note_set_feed_x_256th(AgsNote *note, gboolean feed_x_256th);
 
 guint ags_note_get_x0_256th(AgsNote *note);
 void ags_note_set_x0_256th(AgsNote *note, guint x0_256th);
