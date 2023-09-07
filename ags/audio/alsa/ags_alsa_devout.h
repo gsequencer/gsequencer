@@ -175,6 +175,8 @@ struct _AgsAlsaDevout
 
   guint start_note_offset;
   guint note_offset;
+  guint note_256th_offset;
+  gdouble note_256th_tic_size;
   guint note_offset_absolute;
   
   guint loop_left;

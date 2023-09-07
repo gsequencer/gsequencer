@@ -148,6 +148,10 @@ void ags_alsa_devout_set_note_offset(AgsSoundcard *soundcard,
 				     guint note_offset);
 guint ags_alsa_devout_get_note_offset(AgsSoundcard *soundcard);
 
+void ags_alsa_devout_get_note_256th_offset(AgsSoundcard *soundcard,
+					   guint *offset_lower,
+					   guint *offset_upper);
+
 void ags_alsa_devout_set_note_offset_absolute(AgsSoundcard *soundcard,
 					      guint note_offset);
 guint ags_alsa_devout_get_note_offset_absolute(AgsSoundcard *soundcard);
@@ -549,6 +553,8 @@ ags_alsa_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->set_note_offset = ags_alsa_devout_set_note_offset;
   soundcard->get_note_offset = ags_alsa_devout_get_note_offset;
 
+  soundcard->get_note_256th_offset = ags_alsa_devout_get_note_256th_offset;
+
   soundcard->set_note_offset_absolute = ags_alsa_devout_set_note_offset_absolute;
   soundcard->get_note_offset_absolute = ags_alsa_devout_get_note_offset_absolute;
 
@@ -675,6 +681,8 @@ ags_alsa_devout_init(AgsAlsaDevout *alsa_devout)
 
   alsa_devout->start_note_offset = 0;
   alsa_devout->note_offset = 0;
+  alsa_devout->note_256th_offset = 0;
+  alsa_devout->note_256th_tic_size = 1.0 / (alsa_devout->delay[0] / 16.0);
   alsa_devout->note_offset_absolute = 0;
 
   alsa_devout->loop_left = AGS_SOUNDCARD_DEFAULT_LOOP_LEFT;
@@ -3478,6 +3486,34 @@ ags_alsa_devout_get_note_offset(AgsSoundcard *soundcard)
   g_rec_mutex_unlock(alsa_devout_mutex);
 
   return(note_offset);
+}
+
+void
+ags_alsa_devout_get_note_256th_offset(AgsSoundcard *soundcard,
+				      guint *offset_lower,
+				      guint *offset_upper)
+{
+  AgsAlsaDevout *alsa_devout;
+
+  GRecMutex *alsa_devout_mutex;  
+
+  alsa_devout = AGS_ALSA_DEVOUT(soundcard);
+
+  /* get alsa devout mutex */
+  alsa_devout_mutex = AGS_ALSA_DEVOUT_GET_OBJ_MUTEX(alsa_devout);
+
+  /* set note 256th offset */
+  g_rec_mutex_lock(alsa_devout_mutex);
+
+  if(offset_lower != NULL){
+    offset_lower[0] = alsa_devout->note_256th_offset;
+  }
+
+  if(offset_upper != NULL){
+    offset_upper[0] = alsa_devout->note_256th_offset + alsa_devout->note_256th_tic_size;
+  }
+  
+  g_rec_mutex_unlock(alsa_devout_mutex);
 }
 
 void
