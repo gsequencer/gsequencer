@@ -1,7 +1,7 @@
-ags (6.1.0)
+ags (6.0.10)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: implemented 256th
+	* fixed unit integration tests
 
 ags (6.0.9)
 
