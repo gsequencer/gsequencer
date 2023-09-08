@@ -184,6 +184,10 @@ struct _AgsOssDevout
   GList *tag;
 
   gint64 poll_timeout;
+
+  guint note_256th_offset;
+  guint note_256th_offset_last;
+  gdouble note_256th_tic_size;
 };
 
 struct _AgsOssDevoutClass

@@ -73,6 +73,17 @@ struct _AgsFxNotationAudioProcessor
   GList *feeding_note;
   GList *feeding_audio_signal;
 
+  guint tic_counter; // in the range of default period
+  guint current_tic_counter;
+
+  guint64 note_256th_offset_counter;
+  guint64 note_256th_offset_counter_last;
+
+  guint64 note_256th_current_offset_counter;
+  guint64 note_256th_current_offset_counter_last;
+
+  gdouble note_256th_tic_size;
+
   GList *note_256th;
 };
 

@@ -175,9 +175,6 @@ struct _AgsAlsaDevout
 
   guint start_note_offset;
   guint note_offset;
-  guint note_256th_offset;
-  guint note_256th_offset_last;
-  gdouble note_256th_tic_size;
   guint note_offset_absolute;
   
   guint loop_left;
@@ -203,6 +200,10 @@ struct _AgsAlsaDevout
   GList *tag;
 
   gint64 poll_timeout;
+
+  guint note_256th_offset;
+  guint note_256th_offset_last;
+  gdouble note_256th_tic_size;
 };
 
 struct _AgsAlsaDevoutClass

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -179,6 +179,10 @@ struct _AgsOssDevin
   
   int device_fd;
   char *device;
+
+  guint note_256th_offset;
+  guint note_256th_offset_last;
+  gdouble note_256th_tic_size;
 };
 
 struct _AgsOssDevinClass

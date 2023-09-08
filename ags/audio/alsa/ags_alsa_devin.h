@@ -195,6 +195,10 @@ struct _AgsAlsaDevin
   gpointer ahandler;
   gpointer params;
 #endif
+
+  guint note_256th_offset;
+  guint note_256th_offset_last;
+  gdouble note_256th_tic_size;
 };
 
 struct _AgsAlsaDevinClass
