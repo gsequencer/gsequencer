@@ -553,8 +553,6 @@ ags_alsa_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->set_note_offset = ags_alsa_devout_set_note_offset;
   soundcard->get_note_offset = ags_alsa_devout_get_note_offset;
 
-  soundcard->get_note_256th_offset = ags_alsa_devout_get_note_256th_offset;
-
   soundcard->set_note_offset_absolute = ags_alsa_devout_set_note_offset_absolute;
   soundcard->get_note_offset_absolute = ags_alsa_devout_get_note_offset_absolute;
 
@@ -567,6 +565,8 @@ ags_alsa_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 
   soundcard->trylock_sub_block = ags_alsa_devout_trylock_sub_block;
   soundcard->unlock_sub_block = ags_alsa_devout_unlock_sub_block;
+
+  soundcard->get_note_256th_offset = ags_alsa_devout_get_note_256th_offset;
 }
 
 void
@@ -682,15 +682,6 @@ ags_alsa_devout_init(AgsAlsaDevout *alsa_devout)
   alsa_devout->start_note_offset = 0;
 
   alsa_devout->note_offset = 0;
-
-  alsa_devout->note_256th_offset = 0;
-  alsa_devout->note_256th_tic_size = 1.0 / (alsa_devout->delay[0] / 16.0);
-
-  if(alsa_devout->note_256th_tic_size <= 1.0){
-    alsa_devout->note_256th_offset_last = 1;
-  }else{
-    alsa_devout->note_256th_offset_last = alsa_devout->note_256th_tic_size;
-  }
   
   alsa_devout->note_offset_absolute = 0;
 
@@ -705,6 +696,15 @@ ags_alsa_devout_init(AgsAlsaDevout *alsa_devout)
   alsa_devout->tag = NULL;
 
   alsa_devout->poll_timeout = -1;
+
+  alsa_devout->note_256th_offset = 0;
+  alsa_devout->note_256th_tic_size = 1.0 / (alsa_devout->delay[0] / 16.0);
+
+  if(alsa_devout->note_256th_tic_size <= 1.0){
+    alsa_devout->note_256th_offset_last = 1;
+  }else{
+    alsa_devout->note_256th_offset_last = alsa_devout->note_256th_tic_size;
+  }
 }
 
 void
@@ -3071,7 +3071,12 @@ ags_alsa_devout_tic(AgsSoundcard *soundcard)
       g_rec_mutex_lock(alsa_devout_mutex);
       
       alsa_devout->note_256th_offset = 16 * loop_left;
-      alsa_devout->note_256th_offset_last = alsa_devout->note_256th_offset + (guint) fmod(alsa_devout->tic_counter * delay * note_256th_tic_size, note_256th_tic_size);
+
+      if(alsa_devout->note_256th_tic_size <= 1.0){
+	alsa_devout->note_256th_offset_last = alsa_devout->note_256th_offset + 1;
+      }else{
+	alsa_devout->note_256th_offset_last = alsa_devout->note_256th_offset + (guint) fmod(alsa_devout->tic_counter * delay * note_256th_tic_size, note_256th_tic_size);
+      }
 
       g_rec_mutex_unlock(alsa_devout_mutex);
     }else{
@@ -3081,8 +3086,13 @@ ags_alsa_devout_tic(AgsSoundcard *soundcard)
       g_rec_mutex_lock(alsa_devout_mutex);
       
       alsa_devout->note_256th_offset = 16 * (note_offset + 1);
-      alsa_devout->note_256th_offset_last = alsa_devout->note_256th_offset + (guint) fmod(alsa_devout->tic_counter * delay * note_256th_tic_size, note_256th_tic_size);
 
+      if(alsa_devout->note_256th_tic_size <= 1.0){
+	alsa_devout->note_256th_offset_last = alsa_devout->note_256th_offset + 1;
+      }else{
+	alsa_devout->note_256th_offset_last = alsa_devout->note_256th_offset + (guint) fmod(alsa_devout->tic_counter * delay * note_256th_tic_size, note_256th_tic_size);
+      }
+      
       g_rec_mutex_unlock(alsa_devout_mutex);
     }
     

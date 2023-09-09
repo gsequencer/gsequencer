@@ -137,6 +137,10 @@ void ags_alsa_devin_set_note_offset(AgsSoundcard *soundcard,
 				    guint note_offset);
 guint ags_alsa_devin_get_note_offset(AgsSoundcard *soundcard);
 
+void ags_alsa_devin_get_note_256th_offset(AgsSoundcard *soundcard,
+					  guint *offset_lower,
+					  guint *offset_upper);
+
 void ags_alsa_devin_set_note_offset_absolute(AgsSoundcard *soundcard,
 					     guint note_offset);
 guint ags_alsa_devin_get_note_offset_absolute(AgsSoundcard *soundcard);
@@ -538,6 +542,8 @@ ags_alsa_devin_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->get_loop = ags_alsa_devin_get_loop;
 
   soundcard->get_loop_offset = ags_alsa_devin_get_loop_offset;
+
+  soundcard->get_note_256th_offset = ags_alsa_devin_get_note_256th_offset;
 }
 
 void
@@ -660,6 +666,15 @@ ags_alsa_devin_init(AgsAlsaDevin *alsa_devin)
   alsa_devin->do_loop = FALSE;
 
   alsa_devin->loop_offset = 0;  
+
+  alsa_devin->note_256th_offset = 0;
+  alsa_devin->note_256th_tic_size = 1.0 / (alsa_devin->delay[0] / 16.0);
+
+  if(alsa_devin->note_256th_tic_size <= 1.0){
+    alsa_devin->note_256th_offset_last = 1;
+  }else{
+    alsa_devin->note_256th_offset_last = alsa_devin->note_256th_tic_size;
+  }
 }
 
 void
@@ -2669,6 +2684,14 @@ ags_alsa_devin_device_free(AgsSoundcard *soundcard)
   alsa_devin->note_offset = alsa_devin->start_note_offset;
   alsa_devin->note_offset_absolute = alsa_devin->start_note_offset;
 
+  alsa_devin->note_256th_offset = 16 * alsa_devin->start_note_offset;
+  
+  if(alsa_devin->note_256th_tic_size <= 1.0){
+    alsa_devin->note_256th_offset_last = alsa_devin->note_256th_offset + 1;
+  }else{
+    alsa_devin->note_256th_offset_last = alsa_devin->note_256th_offset + (guint) fmod(alsa_devin->tic_counter * alsa_devin->delay[alsa_devin->tic_counter] * alsa_devin->note_256th_tic_size, alsa_devin->note_256th_tic_size);
+  }
+
   g_rec_mutex_unlock(alsa_devin_mutex);
 }
 
@@ -2679,6 +2702,7 @@ ags_alsa_devin_tic(AgsSoundcard *soundcard)
 
   gdouble delay;
   gdouble delay_counter;
+  gdouble note_256th_tic_size;
   guint note_offset_absolute;
   guint note_offset;
   guint loop_left, loop_right;
@@ -2697,6 +2721,8 @@ ags_alsa_devin_tic(AgsSoundcard *soundcard)
   delay = alsa_devin->delay[alsa_devin->tic_counter];
   delay_counter = alsa_devin->delay_counter;
 
+  note_256th_tic_size = alsa_devin->note_256th_tic_size;
+
   note_offset = alsa_devin->note_offset;
   note_offset_absolute = alsa_devin->note_offset_absolute;
   
@@ -2712,9 +2738,33 @@ ags_alsa_devin_tic(AgsSoundcard *soundcard)
        note_offset + 1 == loop_right){
       ags_soundcard_set_note_offset(soundcard,
 				    loop_left);
+
+      g_rec_mutex_lock(alsa_devin_mutex);
+      
+      alsa_devin->note_256th_offset = 16 * loop_left;
+
+      if(alsa_devin->note_256th_tic_size <= 1.0){
+	alsa_devin->note_256th_offset_last = alsa_devin->note_256th_offset + 1;
+      }else{
+	alsa_devin->note_256th_offset_last = alsa_devin->note_256th_offset + (guint) fmod(alsa_devin->tic_counter * delay * note_256th_tic_size, note_256th_tic_size);
+      }
+
+      g_rec_mutex_unlock(alsa_devin_mutex);
     }else{
       ags_soundcard_set_note_offset(soundcard,
 				    note_offset + 1);
+
+      g_rec_mutex_lock(alsa_devin_mutex);
+      
+      alsa_devin->note_256th_offset = 16 * (note_offset + 1);
+
+      if(alsa_devin->note_256th_tic_size <= 1.0){
+	alsa_devin->note_256th_offset_last = alsa_devin->note_256th_offset + 1;
+      }else{
+	alsa_devin->note_256th_offset_last = alsa_devin->note_256th_offset + (guint) fmod(alsa_devin->tic_counter * delay * note_256th_tic_size, note_256th_tic_size);
+      }
+
+      g_rec_mutex_unlock(alsa_devin_mutex);
     }
     
     ags_soundcard_set_note_offset_absolute(soundcard,
@@ -3158,6 +3208,34 @@ ags_alsa_devin_get_note_offset(AgsSoundcard *soundcard)
   g_rec_mutex_unlock(alsa_devin_mutex);
 
   return(note_offset);
+}
+
+void
+ags_alsa_devin_get_note_256th_offset(AgsSoundcard *soundcard,
+				     guint *offset_lower,
+				     guint *offset_upper)
+{
+  AgsAlsaDevin *alsa_devin;
+  
+  GRecMutex *alsa_devin_mutex;  
+
+  alsa_devin = AGS_ALSA_DEVIN(soundcard);
+
+  /* get alsa devin mutex */
+  alsa_devin_mutex = AGS_ALSA_DEVIN_GET_OBJ_MUTEX(alsa_devin);
+
+  /* get note 256th offset */
+  g_rec_mutex_lock(alsa_devin_mutex);
+
+  if(offset_lower != NULL){
+    offset_lower[0] = alsa_devin->note_256th_offset;
+  }
+
+  if(offset_upper != NULL){
+    offset_upper[0] = alsa_devin->note_256th_offset_last;
+  }
+
+  g_rec_mutex_unlock(alsa_devin_mutex);
 }
 
 void
