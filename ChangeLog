@@ -2,7 +2,7 @@ ags (6.1.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented note 256th in alsa backend
-	* TODO:JK: implement note 256th
+	* TODO:JK: implement note 256th in audio-unit backend
 	* TODO:JK: implement note 256th
 	* TODO:JK: implement note 256th
 	* TODO:JK: implement note 256th

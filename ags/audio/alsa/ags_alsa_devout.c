@@ -148,10 +148,6 @@ void ags_alsa_devout_set_note_offset(AgsSoundcard *soundcard,
 				     guint note_offset);
 guint ags_alsa_devout_get_note_offset(AgsSoundcard *soundcard);
 
-void ags_alsa_devout_get_note_256th_offset(AgsSoundcard *soundcard,
-					   guint *offset_lower,
-					   guint *offset_upper);
-
 void ags_alsa_devout_set_note_offset_absolute(AgsSoundcard *soundcard,
 					      guint note_offset);
 guint ags_alsa_devout_get_note_offset_absolute(AgsSoundcard *soundcard);
@@ -171,6 +167,10 @@ gboolean ags_alsa_devout_trylock_sub_block(AgsSoundcard *soundcard,
 					   void *buffer, guint sub_block);
 void ags_alsa_devout_unlock_sub_block(AgsSoundcard *soundcard,
 				      void *buffer, guint sub_block);
+
+void ags_alsa_devout_get_note_256th_offset(AgsSoundcard *soundcard,
+					   guint *offset_lower,
+					   guint *offset_upper);
 
 /**
  * SECTION:ags_alsa_devout
