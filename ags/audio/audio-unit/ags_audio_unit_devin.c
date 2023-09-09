@@ -2271,6 +2271,9 @@ ags_audio_unit_devin_tic(AgsSoundcard *soundcard)
   }else{
     g_rec_mutex_lock(audio_unit_devin_mutex);
     
+    audio_unit_devin->note_256th_offset = 16 * audio_unit_devin->note_offset + (audio_unit_devin->delay_counter * note_256th_tic_size);
+    audio_unit_devin->note_256th_offset_last = audio_unit_devin->note_256th_offset + (guint) fmod(audio_unit_devin->tic_counter * delay * note_256th_tic_size, note_256th_tic_size);
+
     audio_unit_devin->delay_counter += 1.0;
 
     g_rec_mutex_unlock(audio_unit_devin_mutex);

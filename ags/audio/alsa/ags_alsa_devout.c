@@ -3046,11 +3046,11 @@ ags_alsa_devout_tic(AgsSoundcard *soundcard)
   delay = alsa_devout->delay[alsa_devout->tic_counter];
   delay_counter = alsa_devout->delay_counter;
 
+  note_256th_tic_size = alsa_devout->note_256th_tic_size;
+
   attack = alsa_devout->attack[alsa_devout->tic_counter];
 
   buffer_size = alsa_devout->buffer_size;
-
-  note_256th_tic_size = alsa_devout->note_256th_tic_size;
   
   note_offset = alsa_devout->note_offset;
   note_offset_absolute = alsa_devout->note_offset_absolute;
