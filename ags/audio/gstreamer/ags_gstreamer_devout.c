@@ -159,6 +159,10 @@ gboolean ags_gstreamer_devout_trylock_sub_block(AgsSoundcard *soundcard,
 void ags_gstreamer_devout_unlock_sub_block(AgsSoundcard *soundcard,
 					   void *buffer, guint sub_block);
 
+void ags_gstreamer_devout_get_note_256th_offset(AgsSoundcard *soundcard,
+						guint *offset_lower,
+						guint *offset_upper);
+
 /**
  * SECTION:ags_gstreamer_devout
  * @short_description: Output to soundcard
@@ -584,6 +588,8 @@ ags_gstreamer_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 
   soundcard->trylock_sub_block = ags_gstreamer_devout_trylock_sub_block;
   soundcard->unlock_sub_block = ags_gstreamer_devout_unlock_sub_block;
+
+  soundcard->get_note_256th_offset = ags_gstreamer_devout_get_note_256th_offset;
 }
 
 void
@@ -715,6 +721,16 @@ ags_gstreamer_devout_init(AgsGstreamerDevout *gstreamer_devout)
   g_mutex_init(&(gstreamer_devout->callback_finish_mutex));
 
   g_cond_init(&(gstreamer_devout->callback_finish_cond));
+
+  /* 256th */
+  gstreamer_devout->note_256th_offset = 0;
+  gstreamer_devout->note_256th_tic_size = 1.0 / (gstreamer_devout->delay[0] / 16.0);
+
+  if(gstreamer_devout->note_256th_tic_size <= 1.0){
+    gstreamer_devout->note_256th_offset_last = 1;
+  }else{
+    gstreamer_devout->note_256th_offset_last = gstreamer_devout->note_256th_tic_size;
+  }
 }
 
 void
@@ -2175,6 +2191,14 @@ ags_gstreamer_devout_port_free(AgsSoundcard *soundcard)
   gstreamer_devout->note_offset = gstreamer_devout->start_note_offset;
   gstreamer_devout->note_offset_absolute = gstreamer_devout->start_note_offset;
 
+  gstreamer_devout->note_256th_offset = 16 * gstreamer_devout->start_note_offset;
+  
+  if(gstreamer_devout->note_256th_tic_size <= 1.0){
+    gstreamer_devout->note_256th_offset_last = gstreamer_devout->note_256th_offset + 1;
+  }else{
+    gstreamer_devout->note_256th_offset_last = gstreamer_devout->note_256th_offset + (guint) fmod(gstreamer_devout->tic_counter * gstreamer_devout->delay[gstreamer_devout->tic_counter] * gstreamer_devout->note_256th_tic_size, gstreamer_devout->note_256th_tic_size);
+  }
+
   switch(gstreamer_devout->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
@@ -2226,6 +2250,7 @@ ags_gstreamer_devout_tic(AgsSoundcard *soundcard)
 
   gdouble delay;
   gdouble delay_counter;
+  gdouble note_256th_tic_size;
   guint note_offset_absolute;
   guint note_offset;
   guint loop_left, loop_right;
@@ -2244,6 +2269,8 @@ ags_gstreamer_devout_tic(AgsSoundcard *soundcard)
   delay = gstreamer_devout->delay[gstreamer_devout->tic_counter];
   delay_counter = gstreamer_devout->delay_counter;
 
+  note_256th_tic_size = gstreamer_devout->note_256th_tic_size;
+
   note_offset = gstreamer_devout->note_offset;
   note_offset_absolute = gstreamer_devout->note_offset_absolute;
   
@@ -2259,9 +2286,33 @@ ags_gstreamer_devout_tic(AgsSoundcard *soundcard)
        note_offset + 1 == loop_right){
       ags_soundcard_set_note_offset(soundcard,
 				    loop_left);
+
+      g_rec_mutex_lock(gstreamer_devout_mutex);
+      
+      gstreamer_devout->note_256th_offset = 16 * loop_left;
+
+      if(gstreamer_devout->note_256th_tic_size <= 1.0){
+	gstreamer_devout->note_256th_offset_last = gstreamer_devout->note_256th_offset + 1;
+      }else{
+	gstreamer_devout->note_256th_offset_last = gstreamer_devout->note_256th_offset + (guint) fmod(gstreamer_devout->tic_counter * delay * note_256th_tic_size, note_256th_tic_size);
+      }
+
+      g_rec_mutex_unlock(gstreamer_devout_mutex);
     }else{
       ags_soundcard_set_note_offset(soundcard,
 				    note_offset + 1);
+
+      g_rec_mutex_lock(gstreamer_devout_mutex);
+      
+      gstreamer_devout->note_256th_offset = 16 * (note_offset + 1);
+
+      if(gstreamer_devout->note_256th_tic_size <= 1.0){
+	gstreamer_devout->note_256th_offset_last = gstreamer_devout->note_256th_offset + 1;
+      }else{
+	gstreamer_devout->note_256th_offset_last = gstreamer_devout->note_256th_offset + (guint) fmod(gstreamer_devout->tic_counter * delay * note_256th_tic_size, note_256th_tic_size);
+      }
+      
+      g_rec_mutex_unlock(gstreamer_devout_mutex);
     }
     
     ags_soundcard_set_note_offset_absolute(soundcard,
@@ -2280,6 +2331,9 @@ ags_gstreamer_devout_tic(AgsSoundcard *soundcard)
     g_rec_mutex_unlock(gstreamer_devout_mutex);
   }else{
     g_rec_mutex_lock(gstreamer_devout_mutex);
+
+    gstreamer_devout->note_256th_offset = 16 * gstreamer_devout->note_offset + (gstreamer_devout->delay_counter * note_256th_tic_size);
+    gstreamer_devout->note_256th_offset_last = gstreamer_devout->note_256th_offset + (guint) fmod(gstreamer_devout->tic_counter * delay * note_256th_tic_size, note_256th_tic_size);
     
     gstreamer_devout->delay_counter += 1.0;
 
@@ -2769,6 +2823,14 @@ ags_gstreamer_devout_set_note_offset(AgsSoundcard *soundcard,
 
   gstreamer_devout->note_offset = note_offset;
 
+  gstreamer_devout->note_256th_offset = 16 * note_offset;
+
+  if(gstreamer_devout->note_256th_tic_size <= 1.0){
+    gstreamer_devout->note_256th_offset_last = gstreamer_devout->note_256th_offset + 1;
+  }else{
+    gstreamer_devout->note_256th_offset_last = gstreamer_devout->note_256th_offset + (guint) fmod(gstreamer_devout->tic_counter * gstreamer_devout->delay[gstreamer_devout->tic_counter] * gstreamer_devout->note_256th_tic_size, gstreamer_devout->note_256th_tic_size);
+  }
+
   g_rec_mutex_unlock(gstreamer_devout_mutex);
 }
 
@@ -2794,6 +2856,34 @@ ags_gstreamer_devout_get_note_offset(AgsSoundcard *soundcard)
   g_rec_mutex_unlock(gstreamer_devout_mutex);
 
   return(note_offset);
+}
+
+void
+ags_gstreamer_devout_get_note_256th_offset(AgsSoundcard *soundcard,
+					   guint *offset_lower,
+					   guint *offset_upper)
+{
+  AgsGstreamerDevout *gstreamer_devout;
+  
+  GRecMutex *gstreamer_devout_mutex;  
+
+  gstreamer_devout = AGS_GSTREAMER_DEVOUT(soundcard);
+
+  /* get gstreamer devout mutex */
+  gstreamer_devout_mutex = AGS_GSTREAMER_DEVOUT_GET_OBJ_MUTEX(gstreamer_devout);
+
+  /* get note 256th offset */
+  g_rec_mutex_lock(gstreamer_devout_mutex);
+
+  if(offset_lower != NULL){
+    offset_lower[0] = gstreamer_devout->note_256th_offset;
+  }
+
+  if(offset_upper != NULL){
+    offset_upper[0] = gstreamer_devout->note_256th_offset_last;
+  }
+
+  g_rec_mutex_unlock(gstreamer_devout_mutex);
 }
 
 void

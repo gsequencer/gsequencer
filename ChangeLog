@@ -4,7 +4,7 @@ ags (6.1.0)
 	* implemented note 256th in alsa backend
 	* implemented note 256th in audio-unit backend
 	* implemented note 256th CoreAudio backend
-	* TODO:JK: implement note 256th
+	* implemented note 256th gstreamer backend
 	* TODO:JK: implement note 256th
 
 ags (6.0.10)
