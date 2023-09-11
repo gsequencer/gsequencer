@@ -9,7 +9,7 @@
 
 LT_CURRENT=6
 LT_REVISION=0
-LT_AGE=9
+LT_AGE=11
 
 AC_PREREQ([2.69])
 AC_INIT([gsequencer],[6.0.11],[jkraehemann@gmail.com])
