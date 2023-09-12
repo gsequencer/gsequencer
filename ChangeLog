@@ -2,6 +2,7 @@ ags (6.0.12)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed resampling in ags-fx-buffer
+	* fixed resampling in ags-fx-playback
 
 ags (6.0.11)
 
