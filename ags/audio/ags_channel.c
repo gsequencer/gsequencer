@@ -6580,21 +6580,38 @@ ags_channel_reset_recycling(AgsChannel *channel,
 	g_object_get(prev,
 		     "last-recycling", &prev_last_recycling,
 		     NULL);
+
+	if(prev_last_recycling != NULL){
+	  g_object_set(prev_last_recycling,
+		       "next", first_recycling,
+		       NULL);
+	}
       }
 
       if(next != NULL){
 	g_object_get(next,
 		     "first-recycling", &next_first_recycling,
 		     NULL);
+
+	if(next_first_recycling != NULL){
+	  g_object_set(next_first_recycling,
+		       "prev", last_recycling,
+		       NULL);
+	}
+      }
+
+      if(first_recycling != NULL){
+	g_object_set(first_recycling,
+		     "prev", prev_last_recycling,
+		     NULL);
+      }
+
+      if(last_recycling != NULL){
+	g_object_set(last_recycling,
+		     "next", next_first_recycling,
+		     NULL);
       }
       
-      g_object_set(first_recycling,
-		   "prev", prev_last_recycling,
-		   NULL);
-      g_object_set(last_recycling,
-		   "next", next_first_recycling,
-		   NULL);
-
       if(prev != NULL){
 	g_object_unref(prev);
       }

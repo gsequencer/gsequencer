@@ -1773,7 +1773,7 @@ ags_midi_ump_util_get_function_block_info_notification(AgsMidiUmpUtil *midi_ump_
 
   /* direction, MIDI v1.0 port and UI hint */
   if(direction != NULL){
-    direction = 0x3 & buffer[nth];
+    direction[0] = 0x3 & buffer[nth];
   }
 
   if(midi1_port != NULL){
@@ -1781,7 +1781,7 @@ ags_midi_ump_util_get_function_block_info_notification(AgsMidiUmpUtil *midi_ump_
   }
 
   if(ui_hint != NULL){
-    ui_hint = (0x30 & buffer[nth]) >> 4;
+    ui_hint[0] = (0x30 & buffer[nth]) >> 4;
   }
   
   nth++;

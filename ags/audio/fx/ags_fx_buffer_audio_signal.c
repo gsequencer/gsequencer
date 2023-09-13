@@ -504,40 +504,50 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 
 	  ags_resample_util_init(&resample_util);
 	  
-	  resample_util.src_ratio = destination_samplerate / source_samplerate;
+	  ags_resample_util_set_format(&resample_util,
+				       source_format);
+	  ags_resample_util_set_buffer_length(&resample_util,
+					      MAX(allocated_buffer_length, 4096));
+	  ags_resample_util_set_samplerate(&resample_util,
+					   source_samplerate);
+	  ags_resample_util_set_target_samplerate(&resample_util,
+						  destination_samplerate);
 
-	  resample_util.input_frames = source_buffer_size;
-	  resample_util.data_in = ags_stream_alloc(allocated_buffer_length,
-						   source_format);
+	  ags_resample_util_set_destination_stride(&resample_util,
+						   1);
+	  ags_resample_util_set_destination(&resample_util,
+					    tmp_buffer_source);
 
-	  resample_util.output_frames = destination_buffer_size;
-	  resample_util.data_out = ags_stream_alloc(allocated_buffer_length,
-						    source_format);
-
-	  resample_util.end_of_input = 0;
-  
-	  resample_util.destination = tmp_buffer_source;
-	  resample_util.destination_stride = 1;
-
-	  resample_util.source = buffer_source;
-	  resample_util.source_stride = 1;
-
-	  resample_util.buffer_length = allocated_buffer_length;
-	  resample_util.format = source_format;
-	  resample_util.samplerate = source_samplerate;
-  
-	  resample_util.target_samplerate = destination_samplerate;
+	  ags_resample_util_set_source_stride(&resample_util,
+					      1);
+	  ags_resample_util_set_source(&resample_util,
+				       buffer_source);
 
 	  resample_util.bypass_cache = TRUE;
 
-	  resample_util.buffer = ags_stream_alloc(allocated_buffer_length,
-						  source_format);
-
 	  ags_resample_util_compute(&resample_util);  
 
-	  ags_stream_free(resample_util.data_out);
-	  ags_stream_free(resample_util.data_in);
-	  ags_stream_free(resample_util.buffer);
+	  resample_util.destination = NULL;
+		  
+	  resample_util.source = NULL;
+
+	  if(resample_util.data_in != NULL){
+	    ags_stream_free(resample_util.data_in);
+	
+	    resample_util.data_in = NULL;
+	  }
+
+	  if(resample_util.data_out != NULL){
+	    ags_stream_free(resample_util.data_out);
+
+	    resample_util.data_out = NULL;
+	  }
+
+	  if(resample_util.buffer != NULL){
+	    ags_stream_free(resample_util.buffer);
+
+	    resample_util.buffer = NULL;
+	  }
 
 	  g_rec_mutex_unlock(source_stream_mutex);
       
