@@ -1,3 +1,28 @@
+ags (6.0.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* reverted corrupted free
+
+ags (6.0.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed resampling in ags-fx-buffer
+	* fixed resampling in ags-fx-playback
+
+ags (6.0.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed double free in ags_fx_vst3_audio.c
+	* fixed memory leak in ags_fx_lv2_audio.c
+	* fixed memory leak in ags_fx_vst3_audio.c
+	* fixed memory leak in ags_fx_dssi_audio.c
+	* minor improvements
+
+ags (6.0.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed unit integration tests
+
 ags (6.0.9)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -9,10 +9,10 @@
 
 LT_CURRENT=6
 LT_REVISION=0
-LT_AGE=9
+LT_AGE=13
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[6.0.9],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[6.0.13],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
