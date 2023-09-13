@@ -667,6 +667,7 @@ ags_alsa_devin_init(AgsAlsaDevin *alsa_devin)
 
   alsa_devin->loop_offset = 0;  
 
+  /* 256th */
   alsa_devin->note_256th_offset = 0;
   alsa_devin->note_256th_tic_size = 1.0 / (alsa_devin->delay[0] / 16.0);
 

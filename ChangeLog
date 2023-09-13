@@ -1,13 +1,14 @@
 ags (6.1.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented note 256th extension to AgsNote
 	* implemented note 256th in alsa backend
 	* implemented note 256th in audio-unit backend
 	* implemented note 256th CoreAudio backend
 	* implemented note 256th gstreamer backend
-	* implemented note 256th jack
-	* TODO:JK: implement note 256th
-	* TODO:JK: implement note 256th
+	* implemented note 256th jack backend
+	* implemented note 256th pulseaudio backend
+	* implemented note 256th WASAPI backend
 
 ags (6.0.13)
 

@@ -697,6 +697,7 @@ ags_alsa_devout_init(AgsAlsaDevout *alsa_devout)
 
   alsa_devout->poll_timeout = -1;
 
+  /* 256th */
   alsa_devout->note_256th_offset = 0;
   alsa_devout->note_256th_tic_size = 1.0 / (alsa_devout->delay[0] / 16.0);
 
@@ -3025,9 +3026,9 @@ ags_alsa_devout_tic(AgsSoundcard *soundcard)
 
   gdouble delay;
   gdouble delay_counter;
+  gdouble note_256th_tic_size;
   guint attack;
   guint buffer_size;
-  gdouble note_256th_tic_size;
   guint note_offset_absolute;
   guint note_offset;
   guint loop_left, loop_right;
