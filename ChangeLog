@@ -9,11 +9,15 @@ ags (6.1.0)
 	* implemented note 256th pulseaudio backend
 	* implemented note 256th WASAPI backend
 	* implemented note 256th extension to AgsNote
-	* TODO:JK: implemented note 256th of AgsSynthUtil
-	* TODO:JK: implemented note 256th of AgsFMSynthUtil
-	* TODO:JK: implemented note 256th of AgsSF2SynthUtil
-	* TODO:JK: implemented note 256th of AgsSFZSynthUtil
+	* TODO:JK: implemented note 256th support of AgsSynthUtil
+	* TODO:JK: implemented note 256th support of AgsFMSynthUtil
+	* TODO:JK: implemented note 256th support of AgsSF2SynthUtil
+	* TODO:JK: implemented note 256th support of AgsSFZSynthUtil
 	* refactored ags-fx-notation to support note 256th
+	* TODO:JK: refactored ags-fx-synth to support note 256th
+	* TODO:JK: refactored ags-fx-fm-synth to support note 256th
+	* refactored ags-fx-sf2-synth to support note 256th
+	* TODO:JK: refactored ags-fx-sfz-synth to support note 256th
 	* TODO:JK: refactor AgsRecallContainer
 
 ags (6.0.13)

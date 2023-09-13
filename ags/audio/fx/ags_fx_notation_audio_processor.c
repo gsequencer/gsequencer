@@ -1388,9 +1388,7 @@ ags_fx_notation_audio_processor_real_play(AgsFxNotationAudioProcessor *fx_notati
     g_list_free_full(fx_notation_audio_processor->note_256th,
 		     (GDestroyNotify) g_object_unref);
     
-    fx_notation_audio_processor->note_256th = g_list_copy_deep(start_note,
-							       (GCopyFunc) g_object_ref,
-							       NULL);
+    fx_notation_audio_processor->note_256th = start_note;
     
     note = start_note;
 
@@ -1403,9 +1401,6 @@ ags_fx_notation_audio_processor_real_play(AgsFxNotationAudioProcessor *fx_notati
       /* iterate */
       note = note->next;
     }
-
-    g_list_free_full(start_note,
-		     (GDestroyNotify) g_object_unref);
   }
 
   if(audio != NULL){
