@@ -128,6 +128,10 @@ struct _AgsSF2SynthUtil
   gpointer pitch_util;
 
   AgsVolumeUtil *volume_util;
+
+  gboolean note_256th_mode;
+
+  guint offset_256th;
 };
 
 GType ags_sf2_synth_util_get_type(void);
@@ -226,6 +230,14 @@ void ags_sf2_synth_util_set_pitch_type(AgsSF2SynthUtil *sf2_synth_util,
 gpointer ags_sf2_synth_util_get_pitch_util(AgsSF2SynthUtil *sf2_synth_util);
 void ags_sf2_synth_util_set_pitch_util(AgsSF2SynthUtil *sf2_synth_util,
 				       gpointer pitch_util);
+
+gboolean ags_sf2_synth_util_get_note_256th_mode(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_set_note_256th_mode(AgsSF2SynthUtil *sf2_synth_util,
+					    gboolean note_256th_mode);
+
+guint ags_sf2_synth_util_get_offset_256th(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_set_offset_256th(AgsSF2SynthUtil *sf2_synth_util,
+					 guint offset_256th);
 
 void ags_sf2_synth_util_load_instrument(AgsSF2SynthUtil *sf2_synth_util,
 					gchar *preset,

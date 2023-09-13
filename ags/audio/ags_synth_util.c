@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -91,6 +91,10 @@ ags_synth_util_alloc()
   ptr->frame_count = 0;
   ptr->offset = 0;
 
+  ptr->note_256th_mode = TRUE;
+
+  ptr->offset_256th = 0;
+
   return(ptr);
 }
 
@@ -127,6 +131,10 @@ ags_synth_util_copy(AgsSynthUtil *ptr)
 
   new_ptr->frame_count = ptr->frame_count;
   new_ptr->offset = ptr->offset;
+
+  new_ptr->note_256th_mode = ptr->note_256th_mode;
+
+  new_ptr->offset_256th = ptr->offset_256th;
   
   return(new_ptr);
 }
@@ -585,6 +593,87 @@ ags_synth_util_set_offset(AgsSynthUtil *synth_util,
   }
 
   synth_util->offset = offset;
+}
+
+
+/**
+ * ags_synth_util_get_note_256th_mode:
+ * @synth_util: the #AgsSynthUtil-struct
+ * 
+ * Get note 256th mode of @synth_util.
+ * 
+ * Returns: %TRUE if note 256th mode, otherwise %FALSE
+ * 
+ * Since: 6.1.0
+ */
+gboolean
+ags_synth_util_get_note_256th_mode(AgsSynthUtil *synth_util)
+{
+  if(synth_util == NULL){
+    return(0);
+  }
+
+  return(synth_util->note_256th_mode);
+}
+
+/**
+ * ags_synth_util_set_note_256th_mode:
+ * @synth_util: the #AgsSynthUtil-struct
+ * @note_256th_mode: the note 256th mode
+ *
+ * Set @note_256th_mode of @synth_util.
+ *
+ * Since: 6.1.0
+ */
+void
+ags_synth_util_set_note_256th_mode(AgsSynthUtil *synth_util,
+				   gboolean note_256th_mode)
+{
+  if(synth_util == NULL){
+    return;
+  }
+
+  synth_util->note_256th_mode = note_256th_mode;
+}
+
+/**
+ * ags_synth_util_get_offset_256th:
+ * @synth_util: the #AgsSynthUtil-struct
+ * 
+ * Get offset as note 256th of @synth_util.
+ * 
+ * Returns: the offset as note 256th
+ * 
+ * Since: 6.1.0
+ */
+guint
+ags_synth_util_get_offset_256th(AgsSynthUtil *synth_util)
+{
+  if(synth_util == NULL){
+    return(0);
+  }
+
+  return(synth_util->offset_256th);
+}
+
+/**
+ * ags_synth_util_set_offset_256th:
+ * @synth_util: the #AgsSynthUtil-struct
+ * @offset_256th: the offset as note 256th
+ *
+ * Set @offset_256th of @synth_util.
+ *
+ * Since: 6.1.0
+ */
+void
+ags_synth_util_set_offset_256th(AgsSynthUtil *synth_util,
+				guint offset_256th)
+{
+  if(synth_util == NULL){
+    return;
+  }
+  
+  synth_util->offset_256th = offset_256th;
 }
 
 /**

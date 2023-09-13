@@ -189,6 +189,10 @@ ags_sfz_synth_util_alloc()
   ags_volume_util_set_format(ptr->volume_util,
 			     AGS_SOUNDCARD_DEFAULT_FORMAT);
 
+  ptr->note_256th_mode = TRUE;
+
+  ptr->offset_256th = 0;
+
   return(ptr);
 }
 
@@ -261,6 +265,10 @@ ags_sfz_synth_util_boxed_copy(AgsSFZSynthUtil *ptr)
   }
 
   new_ptr->volume_util = ags_hq_pitch_util_copy(ptr->volume_util);
+
+  new_ptr->note_256th_mode = ptr->note_256th_mode;
+
+  new_ptr->offset_256th = ptr->offset_256th;
   
   return(new_ptr);
 }
@@ -1044,6 +1052,86 @@ ags_sfz_synth_util_set_pitch_util(AgsSFZSynthUtil *sfz_synth_util,
   }
 
   sfz_synth_util->pitch_util = pitch_util;
+}
+
+/**
+ * ags_sfz_synth_util_get_note_256th_mode:
+ * @sfz_synth_util: the #AgsSFZSynthUtil-struct
+ * 
+ * Get note 256th mode of @sfz_synth_util.
+ * 
+ * Returns: %TRUE if note 256th mode, otherwise %FALSE
+ * 
+ * Since: 6.1.0
+ */
+gboolean
+ags_sfz_synth_util_get_note_256th_mode(AgsSFZSynthUtil *sfz_synth_util)
+{
+  if(sfz_synth_util == NULL){
+    return(0);
+  }
+
+  return(sfz_synth_util->note_256th_mode);
+}
+
+/**
+ * ags_sfz_synth_util_set_note_256th_mode:
+ * @sfz_synth_util: the #AgsSFZSynthUtil-struct
+ * @note_256th_mode: the note 256th mode
+ *
+ * Set @note_256th_mode of @sfz_synth_util.
+ *
+ * Since: 6.1.0
+ */
+void
+ags_sfz_synth_util_set_note_256th_mode(AgsSFZSynthUtil *sfz_synth_util,
+				       gboolean note_256th_mode)
+{
+  if(sfz_synth_util == NULL){
+    return;
+  }
+
+  sfz_synth_util->note_256th_mode = note_256th_mode;
+}
+
+/**
+ * ags_sfz_synth_util_get_offset_256th:
+ * @sfz_synth_util: the #AgsSFZSynthUtil-struct
+ * 
+ * Get offset as note 256th of @sfz_synth_util.
+ * 
+ * Returns: the offset as note 256th
+ * 
+ * Since: 6.1.0
+ */
+guint
+ags_sfz_synth_util_get_offset_256th(AgsSFZSynthUtil *sfz_synth_util)
+{
+  if(sfz_synth_util == NULL){
+    return(0);
+  }
+
+  return(sfz_synth_util->offset_256th);
+}
+
+/**
+ * ags_sfz_synth_util_set_offset_256th:
+ * @sfz_synth_util: the #AgsSFZSynthUtil-struct
+ * @offset_256th: the offset as note 256th
+ *
+ * Set @offset_256th of @sfz_synth_util.
+ *
+ * Since: 6.1.0
+ */
+void
+ags_sfz_synth_util_set_offset_256th(AgsSFZSynthUtil *sfz_synth_util,
+				    guint offset_256th)
+{
+  if(sfz_synth_util == NULL){
+    return;
+  }
+  
+  sfz_synth_util->offset_256th = offset_256th;
 }
 
 /**

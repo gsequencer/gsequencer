@@ -1,7 +1,6 @@
 ags (6.1.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* implemented note 256th extension to AgsNote
 	* implemented note 256th in alsa backend
 	* implemented note 256th in audio-unit backend
 	* implemented note 256th CoreAudio backend
@@ -9,6 +8,13 @@ ags (6.1.0)
 	* implemented note 256th jack backend
 	* implemented note 256th pulseaudio backend
 	* implemented note 256th WASAPI backend
+	* implemented note 256th extension to AgsNote
+	* TODO:JK: implemented note 256th of AgsSynthUtil
+	* TODO:JK: implemented note 256th of AgsFMSynthUtil
+	* TODO:JK: implemented note 256th of AgsSF2SynthUtil
+	* TODO:JK: implemented note 256th of AgsSFZSynthUtil
+	* refactored ags-fx-notation to support note 256th
+	* TODO:JK: refactor AgsRecallContainer
 
 ags (6.0.13)
 
