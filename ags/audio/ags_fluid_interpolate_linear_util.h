@@ -61,6 +61,13 @@ struct _AgsFluidInterpolateLinearUtil
   
   guint vibrato_lfo_frame_count;
   guint vibrato_lfo_offset;
+
+  guint frame_count;
+  guint offset;
+  
+  gboolean note_256th_mode;
+
+  guint offset_256th;
 };
 
 GType ags_fluid_interpolate_linear_util_get_type(void);
@@ -130,9 +137,27 @@ gdouble ags_fluid_interpolate_linear_util_get_vibrato_tuning(AgsFluidInterpolate
 void ags_fluid_interpolate_linear_util_set_vibrato_tuning(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
 							  gdouble vibrato_tuning);
 
+G_DEPRECATED_FOR(ags_fluid_interpolate_linear_util_get_offset)
 guint ags_fluid_interpolate_linear_util_get_vibrato_lfo_offset(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+G_DEPRECATED_FOR(ags_fluid_interpolate_linear_util_set_offset)
 void ags_fluid_interpolate_linear_util_set_vibrato_lfo_offset(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
 							      guint vibrato_lfo_offset);
+
+guint ags_fluid_interpolate_linear_util_get_frame_count(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+void ags_fluid_interpolate_linear_util_set_frame_count(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
+						       guint frame_count);
+
+guint ags_fluid_interpolate_linear_util_get_offset(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+void ags_fluid_interpolate_linear_util_set_offset(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
+						  guint offset);
+
+gboolean ags_fluid_interpolate_linear_util_get_note_256th_mode(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+void ags_fluid_interpolate_linear_util_set_note_256th_mode(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
+							   gboolean note_256th_mode);
+
+guint ags_fluid_interpolate_linear_util_get_offset_256th(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+void ags_fluid_interpolate_linear_util_set_offset_256th(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
+							guint offset_256th);
 
 void ags_fluid_interpolate_linear_util_pitch_s8(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
 void ags_fluid_interpolate_linear_util_pitch_s16(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);

@@ -61,6 +61,13 @@ struct _AgsFluidInterpolateNoneUtil
   
   guint vibrato_lfo_frame_count;
   guint vibrato_lfo_offset;
+
+  guint frame_count;
+  guint offset;
+  
+  gboolean note_256th_mode;
+
+  guint offset_256th;
 };
 
 GType ags_fluid_interpolate_none_util_get_type(void);
@@ -130,9 +137,27 @@ gdouble ags_fluid_interpolate_none_util_get_vibrato_tuning(AgsFluidInterpolateNo
 void ags_fluid_interpolate_none_util_set_vibrato_tuning(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util,
 							gdouble vibrato_tuning);
 
+G_DEPRECATED_FOR(ags_fluid_interpolate_none_util_get_offset)
 guint ags_fluid_interpolate_none_util_get_vibrato_lfo_offset(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
+G_DEPRECATED_FOR(ags_fluid_interpolate_none_util_set_offset)
 void ags_fluid_interpolate_none_util_set_vibrato_lfo_offset(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util,
 							    guint vibrato_lfo_offset);
+
+guint ags_fluid_interpolate_none_util_get_frame_count(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
+void ags_fluid_interpolate_none_util_set_frame_count(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util,
+						     guint frame_count);
+
+guint ags_fluid_interpolate_none_util_get_offset(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
+void ags_fluid_interpolate_none_util_set_offset(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util,
+						guint offset);
+
+gboolean ags_fluid_interpolate_none_util_get_note_256th_mode(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
+void ags_fluid_interpolate_none_util_set_note_256th_mode(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util,
+							 gboolean note_256th_mode);
+
+guint ags_fluid_interpolate_none_util_get_offset_256th(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
+void ags_fluid_interpolate_none_util_set_offset_256th(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util,
+						      guint offset_256th);
 
 void ags_fluid_interpolate_none_util_pitch_s8(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
 void ags_fluid_interpolate_none_util_pitch_s16(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);

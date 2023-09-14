@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -83,6 +83,10 @@ struct _AgsChorusUtil
 
   GType pitch_type;  
   gpointer pitch_util;
+
+  gboolean note_256th_mode;
+
+  guint offset_256th;
 };
 
 GType ags_chorus_util_get_type(void);
@@ -163,6 +167,14 @@ void ags_chorus_util_set_pitch_type(AgsChorusUtil *chorus_util,
 gpointer ags_chorus_util_get_pitch_util(AgsChorusUtil *chorus_util);
 void ags_chorus_util_set_pitch_util(AgsChorusUtil *chorus_util,
 				    gpointer pitch_util);
+
+gboolean ags_chorus_util_get_note_256th_mode(AgsChorusUtil *chorus_util);
+void ags_chorus_util_set_note_256th_mode(AgsChorusUtil *chorus_util,
+					 gboolean note_256th_mode);
+
+guint ags_chorus_util_get_offset_256th(AgsChorusUtil *chorus_util);
+void ags_chorus_util_set_offset_256th(AgsChorusUtil *chorus_util,
+				      guint offset_256th);
 
 void ags_chorus_util_compute_s8(AgsChorusUtil *chorus_util);
 void ags_chorus_util_compute_s16(AgsChorusUtil *chorus_util);

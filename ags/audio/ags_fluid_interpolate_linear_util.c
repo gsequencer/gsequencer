@@ -146,6 +146,13 @@ ags_fluid_interpolate_linear_util_alloc()
   ptr->vibrato_lfo_frame_count = ptr->samplerate / ptr->vibrato_lfo_freq;
   ptr->vibrato_lfo_offset = 0;
 
+  ptr->frame_count = 0;
+  ptr->offset = 0;
+
+  ptr->note_256th_mode = TRUE;
+
+  ptr->offset_256th = 0;
+
   return(ptr);
 }
 
@@ -191,6 +198,13 @@ ags_fluid_interpolate_linear_util_copy(AgsFluidInterpolateLinearUtil *ptr)
 
   new_ptr->vibrato_lfo_frame_count = ptr->vibrato_lfo_frame_count;
   new_ptr->vibrato_lfo_offset = ptr->vibrato_lfo_offset;
+
+  new_ptr->frame_count = ptr->frame_count;
+  new_ptr->offset = ptr->offset;
+
+  new_ptr->note_256th_mode = ptr->note_256th_mode;
+
+  new_ptr->offset_256th = ptr->offset_256th;
 
   return(new_ptr);
 }
@@ -879,6 +893,166 @@ ags_fluid_interpolate_linear_util_set_phase_increment(AgsFluidInterpolateLinearU
   }
 
   fluid_interpolate_linear_util->phase_increment = phase_increment;
+}
+
+/**
+ * ags_fluid_interpolate_linear_util_get_frame_count:
+ * @fluid_interpolate_linear_util: the #AgsFluidInterpolateLinearUtil-struct
+ * 
+ * Get frame count of @fluid_interpolate_linear_util.
+ * 
+ * Returns: the frame count
+ * 
+ * Since: 6.1.0
+ */
+guint
+ags_fluid_interpolate_linear_util_get_frame_count(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util)
+{
+  if(fluid_interpolate_linear_util == NULL){
+    return(0);
+  }
+
+  return(fluid_interpolate_linear_util->frame_count);
+}
+
+/**
+ * ags_fluid_interpolate_linear_util_set_frame_count:
+ * @fluid_interpolate_linear_util: the #AgsFluidInterpolateLinearUtil-struct
+ * @frame_count: the frame count
+ *
+ * Set @frame_count of @fluid_interpolate_linear_util.
+ *
+ * Since: 6.1.0
+ */
+void
+ags_fluid_interpolate_linear_util_set_frame_count(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
+						  guint frame_count)
+{
+  if(fluid_interpolate_linear_util == NULL){
+    return;
+  }
+
+  fluid_interpolate_linear_util->frame_count = frame_count;
+}
+
+/**
+ * ags_fluid_interpolate_linear_util_get_offset:
+ * @fluid_interpolate_linear_util: the #AgsFluidInterpolateLinearUtil-struct
+ * 
+ * Get offset of @fluid_interpolate_linear_util.
+ * 
+ * Returns: the offset
+ * 
+ * Since: 6.1.0
+ */
+guint
+ags_fluid_interpolate_linear_util_get_offset(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util)
+{
+  if(fluid_interpolate_linear_util == NULL){
+    return(0);
+  }
+
+  return(fluid_interpolate_linear_util->offset);
+}
+
+/**
+ * ags_fluid_interpolate_linear_util_set_offset:
+ * @fluid_interpolate_linear_util: the #AgsFluidInterpolateLinearUtil-struct
+ * @offset: the offset
+ *
+ * Set @offset of @fluid_interpolate_linear_util.
+ *
+ * Since: 6.1.0
+ */
+void
+ags_fluid_interpolate_linear_util_set_offset(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
+					     guint offset)
+{
+  if(fluid_interpolate_linear_util == NULL){
+    return;
+  }
+
+  fluid_interpolate_linear_util->offset = offset;
+}
+
+/**
+ * ags_fluid_interpolate_linear_util_get_note_256th_mode:
+ * @fluid_interpolate_linear_util: the #AgsFluidInterpolateLinearUtil-struct
+ * 
+ * Get note 256th mode of @fluid_interpolate_linear_util.
+ * 
+ * Returns: %TRUE if note 256th mode, otherwise %FALSE
+ * 
+ * Since: 6.1.0
+ */
+gboolean
+ags_fluid_interpolate_linear_util_get_note_256th_mode(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util)
+{
+  if(fluid_interpolate_linear_util == NULL){
+    return(0);
+  }
+
+  return(fluid_interpolate_linear_util->note_256th_mode);
+}
+
+/**
+ * ags_fluid_interpolate_linear_util_set_note_256th_mode:
+ * @fluid_interpolate_linear_util: the #AgsFluidInterpolateLinearUtil-struct
+ * @note_256th_mode: the note 256th mode
+ *
+ * Set @note_256th_mode of @fluid_interpolate_linear_util.
+ *
+ * Since: 6.1.0
+ */
+void
+ags_fluid_interpolate_linear_util_set_note_256th_mode(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
+						      gboolean note_256th_mode)
+{
+  if(fluid_interpolate_linear_util == NULL){
+    return;
+  }
+
+  fluid_interpolate_linear_util->note_256th_mode = note_256th_mode;
+}
+
+/**
+ * ags_fluid_interpolate_linear_util_get_offset_256th:
+ * @fluid_interpolate_linear_util: the #AgsFluidInterpolateLinearUtil-struct
+ * 
+ * Get offset as note 256th of @fluid_interpolate_linear_util.
+ * 
+ * Returns: the offset as note 256th
+ * 
+ * Since: 6.1.0
+ */
+guint
+ags_fluid_interpolate_linear_util_get_offset_256th(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util)
+{
+  if(fluid_interpolate_linear_util == NULL){
+    return(0);
+  }
+
+  return(fluid_interpolate_linear_util->offset_256th);
+}
+
+/**
+ * ags_fluid_interpolate_linear_util_set_offset_256th:
+ * @fluid_interpolate_linear_util: the #AgsFluidInterpolateLinearUtil-struct
+ * @offset_256th: the offset as note 256th
+ *
+ * Set @offset_256th of @fluid_interpolate_linear_util.
+ *
+ * Since: 6.1.0
+ */
+void
+ags_fluid_interpolate_linear_util_set_offset_256th(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
+						   guint offset_256th)
+{
+  if(fluid_interpolate_linear_util == NULL){
+    return;
+  }
+  
+  fluid_interpolate_linear_util->offset_256th = offset_256th;
 }
 
 /**

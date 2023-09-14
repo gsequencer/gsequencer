@@ -13,12 +13,36 @@ ags (6.1.0)
 	* TODO:JK: implemented note 256th support of AgsFMSynthUtil
 	* TODO:JK: implemented note 256th support of AgsSF2SynthUtil
 	* TODO:JK: implemented note 256th support of AgsSFZSynthUtil
+	* TODO:JK: implemented note 256th support of AgsNoiseUtil
+	* TODO:JK: implemented note 256th support of AgsChorusUtil
+	* TODO:JK: implemented note 256th support of AgsCommonPitchUtil
+	* TODO:JK: implemented note 256th support of AgsFastPitchUtil
+	* TODO:JK: implemented note 256th support of AgsHQPitchUtil
+	* TODO:JK: implemented note 256th support of AgsFluidInterpolateNoneUtil
+	* TODO:JK: implemented note 256th support of AgsFluidInterpolateLinearUtil
+	* TODO:JK: implemented note 256th support of AgsFluidInterpolate4thOrderUtil
+	* TODO:JK: implemented note 256th support of AgsFluidInterpolate7thOrderUtil
 	* refactored ags-fx-notation to support note 256th
-	* TODO:JK: refactored ags-fx-synth to support note 256th
-	* TODO:JK: refactored ags-fx-fm-synth to support note 256th
+	* refactored ags-fx-synth to support note 256th
+	* refactored ags-fx-fm-synth to support note 256th
 	* refactored ags-fx-sf2-synth to support note 256th
-	* TODO:JK: refactored ags-fx-sfz-synth to support note 256th
+	* refactored ags-fx-sfz-synth to support note 256th
 	* TODO:JK: refactor AgsRecallContainer
+	* deprecated ags_common_pitch_util_get_vibrato_lfo_offset()
+	* deprecated ags_common_pitch_util_set_vibrato_lfo_offset()
+	* deprecated ags_hq_pitch_util_get_vibrato_lfo_offset()
+	* deprecated ags_hq_pitch_util_set_vibrato_lfo_offset()
+	* deprecated ags_fast_pitch_util_get_vibrato_lfo_offset()
+	* deprecated ags_fast_pitch_util_set_vibrato_lfo_offset()
+	* deprecated ags_fluid_interpolate_none_util_get_vibrato_lfo_offset()
+	* deprecated ags_fluid_interpolate_none_util_set_vibrato_lfo_offset()
+	* deprecated ags_fluid_interpolate_linear_util_get_vibrato_lfo_offset()
+	* deprecated ags_fluid_interpolate_linear_util_set_vibrato_lfo_offset()
+	* deprecated ags_fluid_interpolate_4th_order_util_get_vibrato_lfo_offset()
+	* deprecated ags_fluid_interpolate_4th_order_util_set_vibrato_lfo_offset()
+	* deprecated ags_fluid_interpolate_7th_order_util_get_vibrato_lfo_offset()
+	* deprecated ags_fluid_interpolate_7th_order_util_set_vibrato_lfo_offset()
+	* minor improvements
 
 ags (6.0.13)
 

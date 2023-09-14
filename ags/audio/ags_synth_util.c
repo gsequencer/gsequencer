@@ -595,7 +595,6 @@ ags_synth_util_set_offset(AgsSynthUtil *synth_util,
   synth_util->offset = offset;
 }
 
-
 /**
  * ags_synth_util_get_note_256th_mode:
  * @synth_util: the #AgsSynthUtil-struct

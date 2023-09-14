@@ -71,6 +71,13 @@ struct _AgsHQPitchUtil
   
   guint vibrato_lfo_frame_count;
   guint vibrato_lfo_offset;
+
+  guint frame_count;
+  guint offset;
+  
+  gboolean note_256th_mode;
+
+  guint offset_256th;
 };
 
 GType ags_hq_pitch_util_get_type(void);
@@ -136,9 +143,27 @@ gdouble ags_hq_pitch_util_get_vibrato_tuning(AgsHQPitchUtil *hq_pitch_util);
 void ags_hq_pitch_util_set_vibrato_tuning(AgsHQPitchUtil *hq_pitch_util,
 					  gdouble vibrato_tuning);
 
+G_DEPRECATED_FOR(ags_hq_pitch_util_get_offset)
 guint ags_hq_pitch_util_get_vibrato_lfo_offset(AgsHQPitchUtil *hq_pitch_util);
+G_DEPRECATED_FOR(ags_hq_pitch_util_set_offset)
 void ags_hq_pitch_util_set_vibrato_lfo_offset(AgsHQPitchUtil *hq_pitch_util,
 					      guint vibrato_lfo_offset);
+
+guint ags_hq_pitch_util_get_frame_count(AgsHQPitchUtil *hq_pitch_util);
+void ags_hq_pitch_util_set_frame_count(AgsHQPitchUtil *hq_pitch_util,
+				       guint frame_count);
+
+guint ags_hq_pitch_util_get_offset(AgsHQPitchUtil *hq_pitch_util);
+void ags_hq_pitch_util_set_offset(AgsHQPitchUtil *hq_pitch_util,
+				  guint offset);
+
+gboolean ags_hq_pitch_util_get_note_256th_mode(AgsHQPitchUtil *hq_pitch_util);
+void ags_hq_pitch_util_set_note_256th_mode(AgsHQPitchUtil *hq_pitch_util,
+					   gboolean note_256th_mode);
+
+guint ags_hq_pitch_util_get_offset_256th(AgsHQPitchUtil *hq_pitch_util);
+void ags_hq_pitch_util_set_offset_256th(AgsHQPitchUtil *hq_pitch_util,
+					guint offset_256th);
 
 void ags_hq_pitch_util_pitch_s8(AgsHQPitchUtil *hq_pitch_util);
 void ags_hq_pitch_util_pitch_s16(AgsHQPitchUtil *hq_pitch_util);

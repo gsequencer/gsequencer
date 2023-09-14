@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -170,6 +170,9 @@ ags_fx_fm_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_a
   guint audio_start_mapping;
   guint midi_start_mapping;
   gint midi_note;
+  guint x0_256th, x1_256th;
+  guint64 note_256th_offset_counter;
+  gdouble note_256th_tic_size;
   guint format;
   guint samplerate;
   guint copy_mode_out;
@@ -179,6 +182,8 @@ ags_fx_fm_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_a
   gboolean sequencer_enabled;
   gint sequencer_sign;
   
+  gboolean note_256th_mode;
+
   gboolean low_pass_enabled;
 
   gboolean high_pass_enabled;
@@ -187,6 +192,7 @@ ags_fx_fm_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_a
 
   GRecMutex *source_stream_mutex;
   GRecMutex *fx_fm_synth_audio_mutex;
+  GRecMutex *fx_fm_synth_audio_processor_mutex;
 
   audio = NULL;
   
@@ -209,6 +215,8 @@ ags_fx_fm_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_a
   
   sequencer_enabled = FALSE;
   sequencer_sign = 0;
+
+  note_256th_mode = ags_fx_notation_audio_get_note_256th_mode((AgsFxNotationAudio *) fx_fm_synth_audio);
 
   low_pass_enabled = FALSE;
 
@@ -242,6 +250,11 @@ ags_fx_fm_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_a
 	       "samplerate", &samplerate,
 	       NULL);
 
+  g_object_get(note,
+	       "x0-256th", &x0_256th,
+	       "x1-256th", &x1_256th,
+	       NULL);
+
   audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
 
   copy_mode = ags_audio_buffer_util_get_copy_mode(audio_buffer_util_format,
@@ -249,6 +262,15 @@ ags_fx_fm_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_a
   
   /* get synth mutex */
   fx_fm_synth_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_fm_synth_audio);
+  fx_fm_synth_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_fm_synth_audio_processor);
+
+  g_rec_mutex_lock(fx_fm_synth_audio_processor_mutex);
+
+  note_256th_offset_counter = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_fm_synth_audio_processor)->note_256th_offset_counter;
+
+  note_256th_tic_size = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_fm_synth_audio_processor)->note_256th_tic_size;
+  
+  g_rec_mutex_unlock(fx_fm_synth_audio_processor_mutex);
 
   /* process data */
   source_stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(source);
@@ -1165,6 +1187,31 @@ ags_fx_fm_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_a
     ags_fm_synth_util_set_samplerate(channel_data->synth_0,
 				     samplerate);
 
+    if(!note_256th_mode){
+      ags_fm_synth_util_set_frame_count(channel_data->synth_0,
+					floor(((offset_counter - x0) * delay + delay_counter + 1.0) * buffer_size));
+
+      ags_fm_synth_util_set_offset(channel_data->synth_0,
+				   floor(((offset_counter - x0) * delay + delay_counter) * buffer_size));
+    }else{
+      g_rec_mutex_lock(fx_fm_synth_audio_processor_mutex);
+
+      note_256th_offset_counter = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_fm_synth_audio_processor)->note_256th_offset_counter;
+
+      note_256th_tic_size = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_fm_synth_audio_processor)->note_256th_tic_size;
+
+      g_rec_mutex_unlock(fx_fm_synth_audio_processor_mutex);
+
+      ags_fm_synth_util_set_frame_count(channel_data->synth_0,
+					floor((((note_256th_offset_counter - x0_256th) + delay_counter) * note_256th_tic_size + 1) * buffer_size));
+
+      ags_fm_synth_util_set_offset(channel_data->synth_0,
+				   floor(((offset_counter - x0) * delay + delay_counter) * buffer_size));
+
+      ags_fm_synth_util_set_offset_256th(channel_data->synth_0,
+					 floor(((note_256th_offset_counter - x0_256th) + delay_counter) * note_256th_tic_size * buffer_size));
+    }
+    
     ags_fm_synth_util_set_frame_count(channel_data->synth_0,
 				      floor(((offset_counter - x0) * delay + delay_counter + 1.0) * buffer_size));
     ags_fm_synth_util_set_offset(channel_data->synth_0,
@@ -1218,10 +1265,30 @@ ags_fx_fm_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_a
     ags_fm_synth_util_set_samplerate(channel_data->synth_1,
 				     samplerate);
 
-    ags_fm_synth_util_set_frame_count(channel_data->synth_1,
-				      floor(((offset_counter - x0) * delay + delay_counter + 1.0) * buffer_size));
-    ags_fm_synth_util_set_offset(channel_data->synth_1,
-				 floor(((offset_counter - x0) * delay + delay_counter) * buffer_size));
+    if(!note_256th_mode){
+      ags_fm_synth_util_set_frame_count(channel_data->synth_1,
+					floor(((offset_counter - x0) * delay + delay_counter + 1.0) * buffer_size));
+
+      ags_fm_synth_util_set_offset(channel_data->synth_1,
+				   floor(((offset_counter - x0) * delay + delay_counter) * buffer_size));
+    }else{
+      g_rec_mutex_lock(fx_fm_synth_audio_processor_mutex);
+
+      note_256th_offset_counter = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_fm_synth_audio_processor)->note_256th_offset_counter;
+
+      note_256th_tic_size = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_fm_synth_audio_processor)->note_256th_tic_size;
+
+      g_rec_mutex_unlock(fx_fm_synth_audio_processor_mutex);
+
+      ags_fm_synth_util_set_frame_count(channel_data->synth_1,
+					floor((((note_256th_offset_counter - x0_256th) + delay_counter) * note_256th_tic_size + 1) * buffer_size));
+
+      ags_fm_synth_util_set_offset(channel_data->synth_1,
+				   floor(((offset_counter - x0) * delay + delay_counter) * buffer_size));
+
+      ags_fm_synth_util_set_offset_256th(channel_data->synth_1,
+					 floor(((note_256th_offset_counter - x0_256th) + delay_counter) * note_256th_tic_size * buffer_size));
+    }
 
     g_rec_mutex_lock(source_stream_mutex);
     
@@ -1271,10 +1338,30 @@ ags_fx_fm_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_a
     ags_fm_synth_util_set_samplerate(channel_data->synth_2,
 				     samplerate);
 
-    ags_fm_synth_util_set_frame_count(channel_data->synth_2,
-				      floor(((offset_counter - x0) * delay + delay_counter + 1.0) * buffer_size));
-    ags_fm_synth_util_set_offset(channel_data->synth_2,
-				 floor(((offset_counter - x0) * delay + delay_counter) * buffer_size));
+    if(!note_256th_mode){
+      ags_fm_synth_util_set_frame_count(channel_data->synth_2,
+					floor(((offset_counter - x0) * delay + delay_counter + 1.0) * buffer_size));
+
+      ags_fm_synth_util_set_offset(channel_data->synth_2,
+				   floor(((offset_counter - x0) * delay + delay_counter) * buffer_size));
+    }else{
+      g_rec_mutex_lock(fx_fm_synth_audio_processor_mutex);
+
+      note_256th_offset_counter = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_fm_synth_audio_processor)->note_256th_offset_counter;
+
+      note_256th_tic_size = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_fm_synth_audio_processor)->note_256th_tic_size;
+
+      g_rec_mutex_unlock(fx_fm_synth_audio_processor_mutex);
+
+      ags_fm_synth_util_set_frame_count(channel_data->synth_2,
+					floor((((note_256th_offset_counter - x0_256th) + delay_counter) * note_256th_tic_size + 1) * buffer_size));
+
+      ags_fm_synth_util_set_offset(channel_data->synth_2,
+				   floor(((offset_counter - x0) * delay + delay_counter) * buffer_size));
+
+      ags_fm_synth_util_set_offset_256th(channel_data->synth_2,
+					 floor(((note_256th_offset_counter - x0_256th) + delay_counter) * note_256th_tic_size * buffer_size));
+    }
 
     g_rec_mutex_lock(source_stream_mutex);
     
@@ -1329,10 +1416,30 @@ ags_fx_fm_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_a
       ags_noise_util_set_frequency(channel_data->noise_util,
 				   exp2((midi_note - 48.0) / 12.0) * 440.0);
       
-      ags_noise_util_set_frame_count(channel_data->noise_util,
-				     floor(((offset_counter - x0) * delay + delay_counter + 1.0) * buffer_size));
-      ags_noise_util_set_offset(channel_data->noise_util,
-				floor(((offset_counter - x0) * delay + delay_counter) * buffer_size));
+      if(!note_256th_mode){
+	ags_noise_util_set_frame_count(channel_data->noise_util,
+				       floor(((offset_counter - x0) * delay + delay_counter + 1.0) * buffer_size));
+
+	ags_noise_util_set_offset(channel_data->noise_util,
+				  floor(((offset_counter - x0) * delay + delay_counter) * buffer_size));
+      }else{
+	g_rec_mutex_lock(fx_fm_synth_audio_processor_mutex);
+
+	note_256th_offset_counter = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_fm_synth_audio_processor)->note_256th_offset_counter;
+
+	note_256th_tic_size = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_fm_synth_audio_processor)->note_256th_tic_size;
+
+	g_rec_mutex_unlock(fx_fm_synth_audio_processor_mutex);
+
+	ags_noise_util_set_frame_count(channel_data->noise_util,
+				       floor((((note_256th_offset_counter - x0_256th) + delay_counter) * note_256th_tic_size + 1) * buffer_size));
+
+	ags_noise_util_set_offset(channel_data->noise_util,
+				  floor(((offset_counter - x0) * delay + delay_counter) * buffer_size));
+
+	ags_noise_util_set_offset_256th(channel_data->noise_util,
+					floor(((note_256th_offset_counter - x0_256th) + delay_counter) * note_256th_tic_size * buffer_size));
+      }
       
       ags_noise_util_compute(channel_data->noise_util);
 

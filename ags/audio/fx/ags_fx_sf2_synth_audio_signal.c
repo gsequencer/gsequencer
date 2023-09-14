@@ -188,6 +188,7 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
   guint copy_mode;
 
   gboolean note_256th_mode;
+
   gboolean chorus_enabled;
 
   GRecMutex *source_stream_mutex;
@@ -257,6 +258,14 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
   fx_sf2_synth_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_sf2_synth_audio);
   fx_sf2_synth_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_sf2_synth_audio_processor);
 
+  g_rec_mutex_lock(fx_sf2_synth_audio_processor_mutex);
+
+  note_256th_offset_counter = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_sf2_synth_audio_processor)->note_256th_offset_counter;
+
+  note_256th_tic_size = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_sf2_synth_audio_processor)->note_256th_tic_size;
+  
+  g_rec_mutex_unlock(fx_sf2_synth_audio_processor_mutex);
+  
   /* process data */
   source_stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(source);
 
@@ -646,6 +655,7 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
     if(!note_256th_mode){
       ags_sf2_synth_util_set_frame_count(channel_data->synth,
 					 floor(((offset_counter - x0) * delay + delay_counter + 1.0) * buffer_size));
+
       ags_sf2_synth_util_set_offset(channel_data->synth,
 				    floor(((offset_counter - x0) * delay + delay_counter) * buffer_size));
     }else{
@@ -659,8 +669,10 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
 
       ags_sf2_synth_util_set_frame_count(channel_data->synth,
 					 floor((((note_256th_offset_counter - x0_256th) + delay_counter) * note_256th_tic_size + 1) * buffer_size));
+
       ags_sf2_synth_util_set_offset(channel_data->synth,
 				    floor(((offset_counter - x0) * delay + delay_counter) * buffer_size));
+
       ags_sf2_synth_util_set_offset_256th(channel_data->synth,
 					  floor(((note_256th_offset_counter - x0_256th) + delay_counter) * note_256th_tic_size * buffer_size));
     }

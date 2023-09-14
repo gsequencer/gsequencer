@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -104,6 +104,10 @@ ags_chorus_util_alloc()
   ptr->pitch_type = AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL;
   ptr->pitch_util = ags_fluid_interpolate_4th_order_util_alloc();
 
+  ptr->note_256th_mode = TRUE;
+
+  ptr->offset_256th = 0;
+
   return(ptr);
 }
 
@@ -170,6 +174,10 @@ ags_chorus_util_copy(AgsChorusUtil *ptr)
   }else if(new_ptr->pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     new_ptr->pitch_util = ags_fluid_interpolate_7th_order_util_copy(ptr->pitch_util);
   }
+
+  new_ptr->note_256th_mode = ptr->note_256th_mode;
+
+  new_ptr->offset_256th = ptr->offset_256th;
   
   return(new_ptr);
 }
@@ -947,6 +955,86 @@ ags_chorus_util_set_pitch_util(AgsChorusUtil *chorus_util,
   }
 
   chorus_util->pitch_util = pitch_util;
+}
+
+/**
+ * ags_chorus_util_get_note_256th_mode:
+ * @chorus_util: the #AgsChorusUtil-struct
+ * 
+ * Get note 256th mode of @chorus_util.
+ * 
+ * Returns: %TRUE if note 256th mode, otherwise %FALSE
+ * 
+ * Since: 6.1.0
+ */
+gboolean
+ags_chorus_util_get_note_256th_mode(AgsChorusUtil *chorus_util)
+{
+  if(chorus_util == NULL){
+    return(0);
+  }
+
+  return(chorus_util->note_256th_mode);
+}
+
+/**
+ * ags_chorus_util_set_note_256th_mode:
+ * @chorus_util: the #AgsChorusUtil-struct
+ * @note_256th_mode: the note 256th mode
+ *
+ * Set @note_256th_mode of @chorus_util.
+ *
+ * Since: 6.1.0
+ */
+void
+ags_chorus_util_set_note_256th_mode(AgsChorusUtil *chorus_util,
+				    gboolean note_256th_mode)
+{
+  if(chorus_util == NULL){
+    return;
+  }
+
+  chorus_util->note_256th_mode = note_256th_mode;
+}
+
+/**
+ * ags_chorus_util_get_offset_256th:
+ * @chorus_util: the #AgsChorusUtil-struct
+ * 
+ * Get offset as note 256th of @chorus_util.
+ * 
+ * Returns: the offset as note 256th
+ * 
+ * Since: 6.1.0
+ */
+guint
+ags_chorus_util_get_offset_256th(AgsChorusUtil *chorus_util)
+{
+  if(chorus_util == NULL){
+    return(0);
+  }
+
+  return(chorus_util->offset_256th);
+}
+
+/**
+ * ags_chorus_util_set_offset_256th:
+ * @chorus_util: the #AgsChorusUtil-struct
+ * @offset_256th: the offset as note 256th
+ *
+ * Set @offset_256th of @chorus_util.
+ *
+ * Since: 6.1.0
+ */
+void
+ags_chorus_util_set_offset_256th(AgsChorusUtil *chorus_util,
+				 guint offset_256th)
+{
+  if(chorus_util == NULL){
+    return;
+  }
+  
+  chorus_util->offset_256th = offset_256th;
 }
 
 /**
