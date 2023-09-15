@@ -141,6 +141,10 @@ libags_audio_installcheck_programs += \
 	ags_check_system_midi_ump_util_test
 
 libags_audio_installcheck_programs += \
+	ags_check_system_alsa_devout_test \
+	ags_check_system_alsa_devin_test
+
+libags_audio_installcheck_programs += \
 	ags_check_system_osc_buffer_util_test \
 	ags_check_system_osc_client_test \
 	ags_check_system_osc_connection_test \
@@ -1052,6 +1056,20 @@ ags_check_system_track_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLA
 ags_check_system_track_test_CPPFLAGS = $(AGS_FEATURES)
 ags_check_system_track_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_check_system_track_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lm -lrt $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(JSON_GLIB_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
+
+# alsa devout unit test
+ags_check_system_alsa_devout_test_SOURCES = ags/test/audio/alsa/ags_alsa_devout_test.c
+ags_check_system_alsa_devout_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(JSON_GLIB_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
+ags_check_system_alsa_devout_test_CPPFLAGS = $(AGS_FEATURES)
+ags_check_system_alsa_devout_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_alsa_devout_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(JSON_GLIB_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
+
+# alsa devin unit test
+ags_check_system_alsa_devin_test_SOURCES = ags/test/audio/alsa/ags_alsa_devin_test.c
+ags_check_system_alsa_devin_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(JSON_GLIB_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
+ags_check_system_alsa_devin_test_CPPFLAGS = $(AGS_FEATURES)
+ags_check_system_alsa_devin_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_alsa_devin_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(JSON_GLIB_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
 
 # midi smf util unit test
 ags_check_system_midi_smf_util_test_SOURCES = ags/test/audio/midi/ags_midi_smf_util_test.c

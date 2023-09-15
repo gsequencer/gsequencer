@@ -1,6 +1,7 @@
 ags (6.1.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented note 256th in ags_soundcard_util.c
 	* implemented note 256th in alsa backend
 	* implemented note 256th in audio-unit backend
 	* implemented note 256th CoreAudio backend
@@ -29,6 +30,8 @@ ags (6.1.0)
 	* refactored ags-fx-fm-synth to support note 256th
 	* refactored ags-fx-sf2-synth to support note 256th
 	* refactored ags-fx-sfz-synth to support note 256th
+	* refactored ags-fx-tremolo to support note 256th
+	* refactored ags-fx-wah-wah to support note 256th
 	* TODO:JK: refactor AgsRecallContainer
 	* deprecated ags_common_pitch_util_get_vibrato_lfo_offset()
 	* deprecated ags_common_pitch_util_set_vibrato_lfo_offset()
@@ -44,6 +47,8 @@ ags (6.1.0)
 	* deprecated ags_fluid_interpolate_4th_order_util_set_vibrato_lfo_offset()
 	* deprecated ags_fluid_interpolate_7th_order_util_get_vibrato_lfo_offset()
 	* deprecated ags_fluid_interpolate_7th_order_util_set_vibrato_lfo_offset()
+	* added ags_alsa_devout_test.c
+	* added ags_alsa_devin_test.c
 	* minor improvements
 
 ags (6.0.13)
