@@ -62,6 +62,13 @@ struct _AgsWahWahUtil
 
   guint wah_wah_lfo_frame_count;
   guint wah_wah_lfo_offset;
+
+  guint frame_count;
+  guint offset;
+  
+  gboolean note_256th_mode;
+
+  guint offset_256th;
 };
 
 GType ags_wah_wah_util_get_type(void);
@@ -115,9 +122,27 @@ gdouble ags_wah_wah_util_get_wah_wah_tuning(AgsWahWahUtil *wah_wah_util);
 void ags_wah_wah_util_set_wah_wah_tuning(AgsWahWahUtil *wah_wah_util,
 					 gdouble wah_wah_tuning);
 
+G_DEPRECATED_FOR(ags_wah_wah_util_get_offset)
 guint ags_wah_wah_util_get_wah_wah_lfo_offset(AgsWahWahUtil *wah_wah_util);
+G_DEPRECATED_FOR(ags_wah_wah_util_set_offset)
 void ags_wah_wah_util_set_wah_wah_lfo_offset(AgsWahWahUtil *wah_wah_util,
 					      guint wah_wah_lfo_offset);
+
+guint ags_wah_wah_util_get_frame_count(AgsWahWahUtil *wah_wah_util);
+void ags_wah_wah_util_set_frame_count(AgsWahWahUtil *wah_wah_util,
+				      guint frame_count);
+
+guint ags_wah_wah_util_get_offset(AgsWahWahUtil *wah_wah_util);
+void ags_wah_wah_util_set_offset(AgsWahWahUtil *wah_wah_util,
+				 guint offset);
+
+gboolean ags_wah_wah_util_get_note_256th_mode(AgsWahWahUtil *wah_wah_util);
+void ags_wah_wah_util_set_note_256th_mode(AgsWahWahUtil *wah_wah_util,
+					  gboolean note_256th_mode);
+
+guint ags_wah_wah_util_get_offset_256th(AgsWahWahUtil *wah_wah_util);
+void ags_wah_wah_util_set_offset_256th(AgsWahWahUtil *wah_wah_util,
+				       guint offset_256th);
 
 void ags_wah_wah_util_compute_s8(AgsWahWahUtil *wah_wah_util);
 void ags_wah_wah_util_compute_s16(AgsWahWahUtil *wah_wah_util);

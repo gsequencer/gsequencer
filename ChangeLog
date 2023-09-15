@@ -9,19 +9,21 @@ ags (6.1.0)
 	* implemented note 256th pulseaudio backend
 	* implemented note 256th WASAPI backend
 	* implemented note 256th extension to AgsNote
-	* TODO:JK: implemented note 256th support of AgsSynthUtil
-	* TODO:JK: implemented note 256th support of AgsFMSynthUtil
-	* TODO:JK: implemented note 256th support of AgsSF2SynthUtil
-	* TODO:JK: implemented note 256th support of AgsSFZSynthUtil
-	* TODO:JK: implemented note 256th support of AgsNoiseUtil
-	* TODO:JK: implemented note 256th support of AgsChorusUtil
-	* TODO:JK: implemented note 256th support of AgsCommonPitchUtil
-	* TODO:JK: implemented note 256th support of AgsFastPitchUtil
-	* TODO:JK: implemented note 256th support of AgsHQPitchUtil
-	* TODO:JK: implemented note 256th support of AgsFluidInterpolateNoneUtil
-	* TODO:JK: implemented note 256th support of AgsFluidInterpolateLinearUtil
-	* TODO:JK: implemented note 256th support of AgsFluidInterpolate4thOrderUtil
-	* TODO:JK: implemented note 256th support of AgsFluidInterpolate7thOrderUtil
+	* implemented note 256th support of AgsSynthUtil
+	* implemented note 256th support of AgsFMSynthUtil
+	* implemented note 256th support of AgsSF2SynthUtil
+	* implemented note 256th support of AgsSFZSynthUtil
+	* implemented note 256th support of AgsNoiseUtil
+	* implemented note 256th support of AgsChorusUtil
+	* implemented note 256th support of AgsCommonPitchUtil
+	* implemented note 256th support of AgsFastPitchUtil
+	* implemented note 256th support of AgsHQPitchUtil
+	* implemented note 256th support of AgsFluidInterpolateNoneUtil
+	* implemented note 256th support of AgsFluidInterpolateLinearUtil
+	* implemented note 256th support of AgsFluidInterpolate4thOrderUtil
+	* implemented note 256th support of AgsFluidInterpolate7thOrderUtil
+	* implemented note 256th support of AgsTremoloUtil
+	* implemented note 256th support of AgsWahWahUtil
 	* refactored ags-fx-notation to support note 256th
 	* refactored ags-fx-synth to support note 256th
 	* refactored ags-fx-fm-synth to support note 256th

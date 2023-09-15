@@ -55,6 +55,13 @@ struct _AgsTremoloUtil
 
   guint tremolo_lfo_frame_count;
   guint tremolo_lfo_offset;
+
+  guint frame_count;
+  guint offset;
+
+  gboolean note_256th_mode;
+
+  guint offset_256th;
 };
 
 GType ags_tremolo_util_get_type(void);
@@ -109,9 +116,27 @@ gdouble ags_tremolo_util_get_tremolo_tuning(AgsTremoloUtil *tremolo_util);
 void ags_tremolo_util_set_tremolo_tuning(AgsTremoloUtil *tremolo_util,
 					 gdouble tremolo_tuning);
 
+G_DEPRECATED_FOR(ags_tremolo_util_get_offset)
 guint ags_tremolo_util_get_tremolo_lfo_offset(AgsTremoloUtil *tremolo_util);
+G_DEPRECATED_FOR(ags_tremolo_util_set_offset)
 void ags_tremolo_util_set_tremolo_lfo_offset(AgsTremoloUtil *tremolo_util,
 					     guint tremolo_lfo_offset);
+
+guint ags_tremolo_util_get_frame_count(AgsTremoloUtil *tremolo_util);
+void ags_tremolo_util_set_frame_count(AgsTremoloUtil *tremolo_util,
+				      guint frame_count);
+
+guint ags_tremolo_util_get_offset(AgsTremoloUtil *tremolo_util);
+void ags_tremolo_util_set_offset(AgsTremoloUtil *tremolo_util,
+				 guint offset);
+
+gboolean ags_tremolo_util_get_note_256th_mode(AgsTremoloUtil *tremolo_util);
+void ags_tremolo_util_set_note_256th_mode(AgsTremoloUtil *tremolo_util,
+					  gboolean note_256th_mode);
+
+guint ags_tremolo_util_get_offset_256th(AgsTremoloUtil *tremolo_util);
+void ags_tremolo_util_set_offset_256th(AgsTremoloUtil *tremolo_util,
+				       guint offset_256th);
 
 /* compute */
 void ags_tremolo_util_compute_s8(AgsTremoloUtil *tremolo_util);
