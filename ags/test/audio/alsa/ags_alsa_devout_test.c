@@ -336,85 +336,252 @@ ags_alsa_devout_test_get_uptime()
 void
 ags_alsa_devout_test_play_init()
 {
+  AgsAlsaDevout *alsa_devout;
+
+  GError *error;
+  
+  alsa_devout = ags_alsa_devout_new();
+
+  error = NULL;
+  ags_soundcard_play_init(AGS_SOUNDCARD(alsa_devout),
+			  &error);
+
   //TODO:JK: implement me
+
+  ags_soundcard_stop(AGS_SOUNDCARD(alsa_devout));
 }
 
 void
 ags_alsa_devout_test_play()
 {
+  AgsAlsaDevout *alsa_devout;
+
+  GError *error;
+  
+  alsa_devout = ags_alsa_devout_new();
+
+  error = NULL;
+  ags_soundcard_play_init(AGS_SOUNDCARD(alsa_devout),
+			  &error);
+
+  error = NULL;
+  ags_soundcard_play(AGS_SOUNDCARD(alsa_devout),
+		     &error);
+
   //TODO:JK: implement me
+
+  ags_soundcard_stop(AGS_SOUNDCARD(alsa_devout));
 }
 
 void
 ags_alsa_devout_test_record_init()
 {
+  AgsAlsaDevout *alsa_devout;
+
+  GError *error;
+  
+  alsa_devout = ags_alsa_devout_new();
+
+  error = NULL;
+  ags_soundcard_record_init(AGS_SOUNDCARD(alsa_devout),
+			  &error);
+
   //TODO:JK: implement me
+
+  ags_soundcard_stop(AGS_SOUNDCARD(alsa_devout));
 }
 
 void
 ags_alsa_devout_test_record()
 {
+  AgsAlsaDevout *alsa_devout;
+
+  GError *error;
+  
+  alsa_devout = ags_alsa_devout_new();
+
+  error = NULL;
+  ags_soundcard_record_init(AGS_SOUNDCARD(alsa_devout),
+			  &error);
+
+  error = NULL;
+  ags_soundcard_record(AGS_SOUNDCARD(alsa_devout),
+		     &error);
+
   //TODO:JK: implement me
+
+  ags_soundcard_stop(AGS_SOUNDCARD(alsa_devout));
 }
 
 void
 ags_alsa_devout_test_stop()
 {
+  AgsAlsaDevout *alsa_devout;
+
+  GError *error;
+  
+  alsa_devout = ags_alsa_devout_new();
+
+  error = NULL;
+  ags_soundcard_play_init(AGS_SOUNDCARD(alsa_devout),
+			  &error);
+
+  ags_soundcard_stop(AGS_SOUNDCARD(alsa_devout));
+
   //TODO:JK: implement me
 }
 
 void
 ags_alsa_devout_test_tic()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevout *alsa_devout;
+
+  guint note_offset;
+  gdouble delay;
+  gdouble delay_counter;
+  guint i;
+  
+  alsa_devout = ags_alsa_devout_new();
+
+  delay_counter = alsa_devout->delay_counter;
+  delay = alsa_devout->delay[0];
+
+  note_offset = alsa_devout->note_offset;
+  
+  ags_soundcard_tic(AGS_SOUNDCARD(alsa_devout));
+
+  CU_ASSERT(delay_counter < alsa_devout->delay_counter);
+
+  for(i = 0; i < (guint) floor(delay) + 1; i++){
+    ags_soundcard_tic(AGS_SOUNDCARD(alsa_devout));
+  }
+  
+  CU_ASSERT(note_offset < alsa_devout->note_offset);
 }
 
 void
 ags_alsa_devout_test_offset_changed()
 {
+  AgsAlsaDevout *alsa_devout;
+  
+  alsa_devout = ags_alsa_devout_new();
+
+  ags_soundcard_offset_changed(AGS_SOUNDCARD(alsa_devout),
+			       1);
+  
   //TODO:JK: implement me
 }
 
 void
 ags_alsa_devout_test_get_buffer()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevout *alsa_devout;
+
+  void *buffer;
+  
+  alsa_devout = ags_alsa_devout_new();
+  
+  buffer = ags_soundcard_get_buffer(AGS_SOUNDCARD(alsa_devout));
+
+  CU_ASSERT(buffer != NULL);
 }
 
 void
 ags_alsa_devout_test_get_next_buffer()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevout *alsa_devout;
+
+  void *next_buffer;
+  
+  alsa_devout = ags_alsa_devout_new();
+  
+  next_buffer = ags_soundcard_get_next_buffer(AGS_SOUNDCARD(alsa_devout));
+
+  CU_ASSERT(next_buffer != NULL);
 }
 
 void
 ags_alsa_devout_test_get_prev_buffer()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevout *alsa_devout;
+
+  void *prev_buffer;
+  
+  alsa_devout = ags_alsa_devout_new();
+  
+  prev_buffer = ags_soundcard_get_buffer(AGS_SOUNDCARD(alsa_devout));
+
+  CU_ASSERT(prev_buffer != NULL);
 }
 
 void
 ags_alsa_devout_test_lock_buffer()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevout *alsa_devout;
+
+  void *buffer;
+  
+  alsa_devout = ags_alsa_devout_new();
+  
+  buffer = ags_soundcard_get_buffer(AGS_SOUNDCARD(alsa_devout));
+
+  CU_ASSERT(buffer != NULL);
+
+  ags_soundcard_lock_buffer(AGS_SOUNDCARD(alsa_devout),
+			    buffer);
+  
+  ags_soundcard_unlock_buffer(AGS_SOUNDCARD(alsa_devout),
+			      buffer);
 }
 
 void
 ags_alsa_devout_test_unlock_buffer()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevout *alsa_devout;
+
+  void *buffer;
+  
+  alsa_devout = ags_alsa_devout_new();
+  
+  buffer = ags_soundcard_get_buffer(AGS_SOUNDCARD(alsa_devout));
+
+  CU_ASSERT(buffer != NULL);
+
+  ags_soundcard_lock_buffer(AGS_SOUNDCARD(alsa_devout),
+			    buffer);
+  
+  ags_soundcard_unlock_buffer(AGS_SOUNDCARD(alsa_devout),
+			      buffer);
 }
 
 void
 ags_alsa_devout_test_set_bpm()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevout *alsa_devout;
+
+  alsa_devout = ags_alsa_devout_new();
+  
+  ags_soundcard_set_bpm(AGS_SOUNDCARD(alsa_devout),
+			138.0);
+
+  CU_ASSERT(alsa_devout->bpm == 138.0);
 }
 
 void
 ags_alsa_devout_test_get_bpm()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevout *alsa_devout;
+
+  gdouble bpm;
+  
+  alsa_devout = ags_alsa_devout_new();
+  
+  ags_soundcard_set_bpm(AGS_SOUNDCARD(alsa_devout),
+			138.0);
+
+  bpm = ags_soundcard_get_bpm(AGS_SOUNDCARD(alsa_devout));
+
+  CU_ASSERT(alsa_devout->bpm == 138.0);
 }
 
 void
@@ -432,84 +599,231 @@ ags_alsa_devout_test_get_delay_factor()
 void
 ags_alsa_devout_test_get_absolute_delay()
 {
+  AgsAlsaDevout *alsa_devout;
+
+  gdouble absolute_delay;
+  
+  alsa_devout = ags_alsa_devout_new();
+  
+  absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(alsa_devout));
+
   //TODO:JK: implement me
 }
 
 void
 ags_alsa_devout_test_get_delay()
 {
+  AgsAlsaDevout *alsa_devout;
+
+  gdouble delay;
+  
+  alsa_devout = ags_alsa_devout_new();
+  
+  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(alsa_devout));
+
   //TODO:JK: implement me
 }
 
 void
 ags_alsa_devout_test_get_attack()
 {
+  AgsAlsaDevout *alsa_devout;
+
+  guint attack;
+  
+  alsa_devout = ags_alsa_devout_new();
+  
+  attack = ags_soundcard_get_attack(AGS_SOUNDCARD(alsa_devout));
+
   //TODO:JK: implement me
 }
 
 void
 ags_alsa_devout_test_get_delay_counter()
 {
+  AgsAlsaDevout *alsa_devout;
+
+  guint delay_counter;
+  
+  alsa_devout = ags_alsa_devout_new();
+  
+  delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(alsa_devout));
+
   //TODO:JK: implement me
 }
 
 void
 ags_alsa_devout_test_get_start_note_offset()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevout *alsa_devout;
+
+  guint start_note_offset;
+  
+  alsa_devout = ags_alsa_devout_new();
+
+  alsa_devout->start_note_offset = 64;
+  
+  start_note_offset = ags_soundcard_get_start_note_offset(AGS_SOUNDCARD(alsa_devout));
+
+  CU_ASSERT(start_note_offset == 64);
 }
 
 void
 ags_alsa_devout_test_set_start_note_offset()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevout *alsa_devout;
+
+  guint start_note_offset;
+  
+  alsa_devout = ags_alsa_devout_new();
+
+  start_note_offset = 64;
+
+  ags_soundcard_set_start_note_offset(AGS_SOUNDCARD(alsa_devout),
+				      start_note_offset);
+
+  CU_ASSERT(alsa_devout->start_note_offset == 64);
 }
 
 void
 ags_alsa_devout_test_get_note_offset()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevout *alsa_devout;
+
+  guint note_offset;
+  
+  alsa_devout = ags_alsa_devout_new();
+
+  alsa_devout->note_offset = 64;
+  
+  note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(alsa_devout));
+
+  CU_ASSERT(note_offset == 64);
 }
 
 void
 ags_alsa_devout_test_set_note_offset()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevout *alsa_devout;
+
+  guint note_offset;
+  
+  alsa_devout = ags_alsa_devout_new();
+
+  note_offset = 64;
+
+  ags_soundcard_set_note_offset(AGS_SOUNDCARD(alsa_devout),
+				      note_offset);
+
+  CU_ASSERT(alsa_devout->note_offset == 64);
 }
 
 void
 ags_alsa_devout_test_get_note_offset_absolute()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevout *alsa_devout;
+
+  guint note_offset_absolute;
+  
+  alsa_devout = ags_alsa_devout_new();
+
+  alsa_devout->note_offset_absolute = 64;
+  
+  note_offset_absolute = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(alsa_devout));
+
+  CU_ASSERT(note_offset_absolute == 64);
 }
 
 void
-ags_alsa_devout_test_set_note_offset_absolute()
+ags_alsa_devout_test_set_note_offset_absolute_absolute()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevout *alsa_devout;
+
+  guint note_offset_absolute;
+  
+  alsa_devout = ags_alsa_devout_new();
+
+  note_offset_absolute = 64;
+
+  ags_soundcard_set_note_offset_absolute(AGS_SOUNDCARD(alsa_devout),
+					 note_offset_absolute);
+  
+  CU_ASSERT(alsa_devout->note_offset_absolute == 64);
 }
 
 void
 ags_alsa_devout_test_set_loop()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevout *alsa_devout;
+
+  guint loop_left, loop_right;
+  gboolean do_loop;
+  
+  alsa_devout = ags_alsa_devout_new();
+
+  alsa_devout->loop_left = 64;
+  alsa_devout->loop_right = 128;
+  
+  alsa_devout->do_loop = TRUE;
+  
+  ags_soundcard_get_loop(AGS_SOUNDCARD(alsa_devout),
+			 &loop_left, &loop_right,
+			 &do_loop);
+
+  CU_ASSERT(loop_left == 64);
+  CU_ASSERT(loop_right == 128);
+  CU_ASSERT(do_loop == TRUE);
 }
 
 void
 ags_alsa_devout_test_get_loop()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevout *alsa_devout;
+
+  guint loop_left, loop_right;
+  gboolean do_loop;
+  
+  alsa_devout = ags_alsa_devout_new();
+
+  loop_left = 64;
+  loop_right = 128;
+  
+  do_loop = TRUE;
+
+  ags_soundcard_set_loop(AGS_SOUNDCARD(alsa_devout),
+			 loop_left, loop_right,
+			 do_loop);
+
+  CU_ASSERT(alsa_devout->loop_left == 64);
+  CU_ASSERT(alsa_devout->loop_right == 128);
+  CU_ASSERT(alsa_devout->do_loop == TRUE);
 }
 
 void
 ags_alsa_devout_test_get_loop_offset()
 {
+  AgsAlsaDevout *alsa_devout;
+
+  guint loop_offset;
+  
+  alsa_devout = ags_alsa_devout_new();
+
+  loop_offset = ags_soundcard_get_loop_offset(AGS_SOUNDCARD(alsa_devout));
+  
   //TODO:JK: implement me
 }
 
 void
 ags_alsa_devout_test_get_sub_block_count()
 {
+  AgsAlsaDevout *alsa_devout;
+
+  guint sub_block_count;
+  
+  alsa_devout = ags_alsa_devout_new();
+
+  sub_block_count = ags_soundcard_get_sub_block_count(AGS_SOUNDCARD(alsa_devout));
+
   //TODO:JK: implement me
 }
 
@@ -528,6 +842,15 @@ ags_alsa_devout_test_unlock_sub_block()
 void
 ags_alsa_devout_test_get_note_256th_offset()
 {
+  AgsAlsaDevout *alsa_devout;
+
+  guint note_256th_offset_lower, note_256th_offset_upper;
+  
+  alsa_devout = ags_alsa_devout_new();
+
+  ags_soundcard_get_note_256th_offset(AGS_SOUNDCARD(alsa_devout),
+				      &note_256th_offset_lower, &note_256th_offset_upper);
+
   //TODO:JK: implement me
 }
 
