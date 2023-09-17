@@ -99,55 +99,194 @@ ags_alsa_devin_test_clean_suite()
 void
 ags_alsa_devin_test_set_device()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevin *alsa_devin;
+
+  const static gchar *device = "default";
+  
+  alsa_devin = ags_alsa_devin_new();
+
+  ags_soundcard_set_device(AGS_SOUNDCARD(alsa_devin),
+			   device);
+
+  CU_ASSERT(!g_ascii_strncasecmp(alsa_devin->device,
+				 device,
+				 strlen(device)));
 }
 
 void
 ags_alsa_devin_test_get_device()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevin *alsa_devin;
+
+  gchar *device;
+  
+  alsa_devin = ags_alsa_devin_new();
+
+  alsa_devin->device = g_strdup("hw:1,0");
+  
+  device = ags_soundcard_get_device(AGS_SOUNDCARD(alsa_devin));
+
+  CU_ASSERT(!g_ascii_strncasecmp(alsa_devin->device,
+				 device,
+				 strlen(device)) == TRUE);
+
+  g_free(device);
 }
 
 void
 ags_alsa_devin_test_set_presets()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevin *alsa_devin;
+
+  const static guint channels = 2;
+  const static guint samplerate = 192000;
+  const static guint buffer_size = 2048;
+  const static AgsSoundcardFormat format = AGS_SOUNDCARD_SIGNED_32_BIT;
+  
+  alsa_devin = ags_alsa_devin_new();
+
+  ags_soundcard_set_presets(AGS_SOUNDCARD(alsa_devin),
+			    channels,
+			    samplerate,
+			    buffer_size,
+			    format);
+
+  CU_ASSERT(channels == alsa_devin->pcm_channels);
+  CU_ASSERT(samplerate == alsa_devin->samplerate);
+  CU_ASSERT(buffer_size == alsa_devin->buffer_size);
+  CU_ASSERT(format == alsa_devin->format);
 }
 
 void
 ags_alsa_devin_test_get_presets()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevin *alsa_devin;
+
+  guint channels;
+  guint samplerate;
+  guint buffer_size;
+  AgsSoundcardFormat format;
+  
+  alsa_devin = ags_alsa_devin_new();
+
+  alsa_devin->pcm_channels = 2;
+  alsa_devin->samplerate = 192000;
+  alsa_devin->buffer_size = 2048;
+  alsa_devin->format = AGS_SOUNDCARD_SIGNED_32_BIT;
+  
+  ags_soundcard_get_presets(AGS_SOUNDCARD(alsa_devin),
+			    &channels,
+			    &samplerate,
+			    &buffer_size,
+			    &format);
+
+  CU_ASSERT(channels == alsa_devin->pcm_channels);
+  CU_ASSERT(samplerate == alsa_devin->samplerate);
+  CU_ASSERT(buffer_size == alsa_devin->buffer_size);
+  CU_ASSERT(format == alsa_devin->format);
 }
 
 void
 ags_alsa_devin_test_list_cards()
 {
+  AgsAlsaDevin *alsa_devin;
+
+  GList *card_id, *card_name;
+
+  alsa_devin = ags_alsa_devin_new();
+
+  card_id = NULL;
+  card_name = NULL;
+  
+  ags_soundcard_list_cards(AGS_SOUNDCARD(alsa_devin),
+			   &card_id, &card_name);
+
   //TODO:JK: implement me
+
+  g_list_free_full(card_id,
+		   g_free);
+  g_list_free_full(card_name,
+		   g_free);
 }
 
 void
 ags_alsa_devin_test_pcm_info()
 {
+  AgsAlsaDevin *alsa_devin;
+
+  GList *card_id, *card_name;
+  guint channels_min, channels_max;
+  guint rate_min, rate_max;
+  guint buffer_size_min, buffer_size_max;
+
+  GError *error;
+  
+  alsa_devin = ags_alsa_devin_new();
+
+  card_id = NULL;
+  card_name = NULL;
+  
+  ags_soundcard_list_cards(AGS_SOUNDCARD(alsa_devin),
+			   &card_id, &card_name);
+
+  CU_ASSERT(card_id != NULL);
+
+  error = NULL;
+  ags_soundcard_pcm_info(AGS_SOUNDCARD(alsa_devin),
+			 card_id->data,
+			 &channels_min, &channels_max,
+			 &rate_min, &rate_max,
+			 &buffer_size_min, &buffer_size_max,
+			 &error);
+  
   //TODO:JK: implement me
+
+  g_list_free_full(card_id,
+		   g_free);
+  g_list_free_full(card_name,
+		   g_free);
 }
 
 void
 ags_alsa_devin_test_get_capability()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevin *alsa_devin;
+
+  guint capability;
+  
+  alsa_devin = ags_alsa_devin_new();
+
+  capability = ags_soundcard_get_capability(AGS_SOUNDCARD(alsa_devin));
+
+  CU_ASSERT(capability == AGS_SOUNDCARD_CAPABILITY_CAPTURE);
 }
 
 void
 ags_alsa_devin_test_is_available()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevin *alsa_devin;
+
+  gboolean is_available;
+  
+  alsa_devin = ags_alsa_devin_new();
+
+  is_available = ags_soundcard_is_available(AGS_SOUNDCARD(alsa_devin));
+
+  CU_ASSERT(is_available == FALSE);
 }
 
 void
 ags_alsa_devin_test_is_starting()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevin *alsa_devin;
+
+  gboolean is_starting;
+  
+  alsa_devin = ags_alsa_devin_new();
+
+  is_starting = ags_soundcard_is_starting(AGS_SOUNDCARD(alsa_devin));
+
+  CU_ASSERT(is_starting == FALSE);
 }
 
 void
