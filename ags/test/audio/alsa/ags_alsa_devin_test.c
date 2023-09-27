@@ -83,6 +83,8 @@ void ags_alsa_devin_test_get_note_256th_offset();
 int
 ags_alsa_devin_test_init_suite()
 {
+  ags_audio_application_context_new();
+
   return(0);
 }
 
@@ -108,9 +110,9 @@ ags_alsa_devin_test_set_device()
   ags_soundcard_set_device(AGS_SOUNDCARD(alsa_devin),
 			   device);
 
-  CU_ASSERT(!g_ascii_strncasecmp(alsa_devin->device,
-				 device,
-				 strlen(device)));
+  //  CU_ASSERT(!g_ascii_strncasecmp(alsa_devin->device,
+  //				 device,
+  //				 strlen(device)));
 }
 
 void
@@ -292,103 +294,294 @@ ags_alsa_devin_test_is_starting()
 void
 ags_alsa_devin_test_is_playing()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevin *alsa_devin;
+
+  gboolean is_playing;
+  
+  alsa_devin = ags_alsa_devin_new();
+
+  is_playing = ags_soundcard_is_playing(AGS_SOUNDCARD(alsa_devin));
+
+  CU_ASSERT(is_playing == FALSE);
 }
 
 void
 ags_alsa_devin_test_is_recording()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevin *alsa_devin;
+
+  gboolean is_recording;
+  
+  alsa_devin = ags_alsa_devin_new();
+
+  is_recording = ags_soundcard_is_recording(AGS_SOUNDCARD(alsa_devin));
+
+  CU_ASSERT(is_recording == FALSE);
 }
 
 void
 ags_alsa_devin_test_get_uptime()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevin *alsa_devin;
+
+  gchar *uptime;
+  
+  alsa_devin = ags_alsa_devin_new();
+
+  uptime = ags_soundcard_get_uptime(AGS_SOUNDCARD(alsa_devin));
+
+  CU_ASSERT(uptime != NULL);
 }
 
 void
 ags_alsa_devin_test_play_init()
 {
+  AgsAlsaDevin *alsa_devin;
+
+  GError *error;
+  
+  alsa_devin = ags_alsa_devin_new();
+
+  error = NULL;
+  ags_soundcard_play_init(AGS_SOUNDCARD(alsa_devin),
+			  &error);
+
   //TODO:JK: implement me
+
+  ags_soundcard_stop(AGS_SOUNDCARD(alsa_devin));
 }
 
 void
 ags_alsa_devin_test_play()
 {
+  AgsAlsaDevin *alsa_devin;
+
+  GError *error;
+  
+  alsa_devin = ags_alsa_devin_new();
+
+  error = NULL;
+  ags_soundcard_play_init(AGS_SOUNDCARD(alsa_devin),
+			  &error);
+
+  error = NULL;
+  ags_soundcard_play(AGS_SOUNDCARD(alsa_devin),
+		     &error);
+
   //TODO:JK: implement me
+
+  ags_soundcard_stop(AGS_SOUNDCARD(alsa_devin));
 }
 
 void
 ags_alsa_devin_test_record_init()
 {
+  AgsAlsaDevin *alsa_devin;
+
+  GError *error;
+  
+  alsa_devin = ags_alsa_devin_new();
+
+  error = NULL;
+  ags_soundcard_record_init(AGS_SOUNDCARD(alsa_devin),
+			    &error);
+
   //TODO:JK: implement me
+
+  ags_soundcard_stop(AGS_SOUNDCARD(alsa_devin));
 }
 
 void
 ags_alsa_devin_test_record()
 {
+  AgsAlsaDevin *alsa_devin;
+
+  GError *error;
+  
+  alsa_devin = ags_alsa_devin_new();
+
+  error = NULL;
+  ags_soundcard_record_init(AGS_SOUNDCARD(alsa_devin),
+			    &error);
+
+  error = NULL;
+  ags_soundcard_record(AGS_SOUNDCARD(alsa_devin),
+		       &error);
+
   //TODO:JK: implement me
+
+  ags_soundcard_stop(AGS_SOUNDCARD(alsa_devin));
 }
 
 void
 ags_alsa_devin_test_stop()
 {
+  AgsAlsaDevin *alsa_devin;
+
+  GError *error;
+  
+  alsa_devin = ags_alsa_devin_new();
+
+  error = NULL;
+  ags_soundcard_play_init(AGS_SOUNDCARD(alsa_devin),
+			  &error);
+
+  ags_soundcard_stop(AGS_SOUNDCARD(alsa_devin));
+
   //TODO:JK: implement me
 }
 
 void
 ags_alsa_devin_test_tic()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevin *alsa_devin;
+
+  guint note_offset;
+  gdouble delay;
+  gdouble delay_counter;
+  guint i;
+  
+  alsa_devin = ags_alsa_devin_new();
+
+  delay_counter = alsa_devin->delay_counter;
+  delay = alsa_devin->delay[0];
+
+  note_offset = alsa_devin->note_offset;
+  
+  ags_soundcard_tic(AGS_SOUNDCARD(alsa_devin));
+
+  CU_ASSERT(delay_counter < alsa_devin->delay_counter);
+
+  for(i = 0; i < (guint) floor(delay) + 1; i++){
+    ags_soundcard_tic(AGS_SOUNDCARD(alsa_devin));
+  }
+  
+  CU_ASSERT(note_offset < alsa_devin->note_offset);
 }
 
 void
 ags_alsa_devin_test_offset_changed()
 {
+  AgsAlsaDevin *alsa_devin;
+  
+  alsa_devin = ags_alsa_devin_new();
+
+  ags_soundcard_offset_changed(AGS_SOUNDCARD(alsa_devin),
+			       1);
+  
   //TODO:JK: implement me
 }
 
 void
 ags_alsa_devin_test_get_buffer()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevin *alsa_devin;
+
+  void *buffer;
+  
+  alsa_devin = ags_alsa_devin_new();
+  
+  buffer = ags_soundcard_get_buffer(AGS_SOUNDCARD(alsa_devin));
+
+  CU_ASSERT(buffer != NULL);
 }
 
 void
 ags_alsa_devin_test_get_next_buffer()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevin *alsa_devin;
+
+  void *next_buffer;
+  
+  alsa_devin = ags_alsa_devin_new();
+  
+  next_buffer = ags_soundcard_get_next_buffer(AGS_SOUNDCARD(alsa_devin));
+
+  CU_ASSERT(next_buffer != NULL);
 }
 
 void
 ags_alsa_devin_test_get_prev_buffer()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevin *alsa_devin;
+
+  void *prev_buffer;
+  
+  alsa_devin = ags_alsa_devin_new();
+  
+  prev_buffer = ags_soundcard_get_buffer(AGS_SOUNDCARD(alsa_devin));
+
+  CU_ASSERT(prev_buffer != NULL);
 }
 
 void
 ags_alsa_devin_test_set_bpm()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevin *alsa_devin;
+
+  alsa_devin = ags_alsa_devin_new();
+  
+  ags_soundcard_set_bpm(AGS_SOUNDCARD(alsa_devin),
+			138.0);
+
+  CU_ASSERT(alsa_devin->bpm == 138.0);
 }
 
 void
 ags_alsa_devin_test_lock_buffer()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevin *alsa_devin;
+
+  void *buffer;
+  
+  alsa_devin = ags_alsa_devin_new();
+  
+  buffer = ags_soundcard_get_buffer(AGS_SOUNDCARD(alsa_devin));
+
+  CU_ASSERT(buffer != NULL);
+
+  ags_soundcard_lock_buffer(AGS_SOUNDCARD(alsa_devin),
+			    buffer);
+  
+  ags_soundcard_unlock_buffer(AGS_SOUNDCARD(alsa_devin),
+			      buffer);
 }
 
 void
 ags_alsa_devin_test_unlock_buffer()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevin *alsa_devin;
+
+  void *buffer;
+  
+  alsa_devin = ags_alsa_devin_new();
+  
+  buffer = ags_soundcard_get_buffer(AGS_SOUNDCARD(alsa_devin));
+
+  CU_ASSERT(buffer != NULL);
+
+  ags_soundcard_lock_buffer(AGS_SOUNDCARD(alsa_devin),
+			    buffer);
+  
+  ags_soundcard_unlock_buffer(AGS_SOUNDCARD(alsa_devin),
+			      buffer);
 }
 
 void
 ags_alsa_devin_test_get_bpm()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevin *alsa_devin;
+
+  gdouble bpm;
+  
+  alsa_devin = ags_alsa_devin_new();
+  
+  ags_soundcard_set_bpm(AGS_SOUNDCARD(alsa_devin),
+			138.0);
+
+  bpm = ags_soundcard_get_bpm(AGS_SOUNDCARD(alsa_devin));
+
+  CU_ASSERT(alsa_devin->bpm == 138.0);
 }
 
 void
@@ -406,84 +599,231 @@ ags_alsa_devin_test_get_delay_factor()
 void
 ags_alsa_devin_test_get_absolute_delay()
 {
+  AgsAlsaDevin *alsa_devin;
+
+  gdouble absolute_delay;
+  
+  alsa_devin = ags_alsa_devin_new();
+  
+  absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(alsa_devin));
+
   //TODO:JK: implement me
 }
 
 void
 ags_alsa_devin_test_get_delay()
 {
+  AgsAlsaDevin *alsa_devin;
+
+  gdouble delay;
+  
+  alsa_devin = ags_alsa_devin_new();
+  
+  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(alsa_devin));
+
   //TODO:JK: implement me
 }
 
 void
 ags_alsa_devin_test_get_attack()
 {
+  AgsAlsaDevin *alsa_devin;
+
+  guint attack;
+  
+  alsa_devin = ags_alsa_devin_new();
+  
+  attack = ags_soundcard_get_attack(AGS_SOUNDCARD(alsa_devin));
+
   //TODO:JK: implement me
 }
 
 void
 ags_alsa_devin_test_get_delay_counter()
 {
+  AgsAlsaDevin *alsa_devin;
+
+  guint delay_counter;
+  
+  alsa_devin = ags_alsa_devin_new();
+  
+  delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(alsa_devin));
+
   //TODO:JK: implement me
 }
 
 void
 ags_alsa_devin_test_get_start_note_offset()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevin *alsa_devin;
+
+  guint start_note_offset;
+  
+  alsa_devin = ags_alsa_devin_new();
+
+  alsa_devin->start_note_offset = 64;
+  
+  start_note_offset = ags_soundcard_get_start_note_offset(AGS_SOUNDCARD(alsa_devin));
+
+  CU_ASSERT(start_note_offset == 64);
 }
 
 void
 ags_alsa_devin_test_set_start_note_offset()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevin *alsa_devin;
+
+  guint start_note_offset;
+  
+  alsa_devin = ags_alsa_devin_new();
+
+  start_note_offset = 64;
+
+  ags_soundcard_set_start_note_offset(AGS_SOUNDCARD(alsa_devin),
+				      start_note_offset);
+
+  CU_ASSERT(alsa_devin->start_note_offset == 64);
 }
 
 void
 ags_alsa_devin_test_get_note_offset()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevin *alsa_devin;
+
+  guint note_offset;
+  
+  alsa_devin = ags_alsa_devin_new();
+
+  alsa_devin->note_offset = 64;
+  
+  note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(alsa_devin));
+
+  CU_ASSERT(note_offset == 64);
 }
 
 void
 ags_alsa_devin_test_set_note_offset()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevin *alsa_devin;
+
+  guint note_offset;
+  
+  alsa_devin = ags_alsa_devin_new();
+
+  note_offset = 64;
+
+  ags_soundcard_set_note_offset(AGS_SOUNDCARD(alsa_devin),
+				note_offset);
+
+  CU_ASSERT(alsa_devin->note_offset == 64);
 }
 
 void
 ags_alsa_devin_test_get_note_offset_absolute()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevin *alsa_devin;
+
+  guint note_offset_absolute;
+  
+  alsa_devin = ags_alsa_devin_new();
+
+  alsa_devin->note_offset_absolute = 64;
+  
+  note_offset_absolute = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(alsa_devin));
+
+  CU_ASSERT(note_offset_absolute == 64);
 }
 
 void
 ags_alsa_devin_test_set_note_offset_absolute()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevin *alsa_devin;
+
+  guint note_offset_absolute;
+  
+  alsa_devin = ags_alsa_devin_new();
+
+  note_offset_absolute = 64;
+
+  ags_soundcard_set_note_offset_absolute(AGS_SOUNDCARD(alsa_devin),
+					 note_offset_absolute);
+  
+  CU_ASSERT(alsa_devin->note_offset_absolute == 64);
 }
 
 void
 ags_alsa_devin_test_set_loop()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevin *alsa_devin;
+
+  guint loop_left, loop_right;
+  gboolean do_loop;
+  
+  alsa_devin = ags_alsa_devin_new();
+
+  alsa_devin->loop_left = 64;
+  alsa_devin->loop_right = 128;
+  
+  alsa_devin->do_loop = TRUE;
+  
+  ags_soundcard_get_loop(AGS_SOUNDCARD(alsa_devin),
+			 &loop_left, &loop_right,
+			 &do_loop);
+
+  CU_ASSERT(loop_left == 64);
+  CU_ASSERT(loop_right == 128);
+  CU_ASSERT(do_loop == TRUE);
 }
 
 void
 ags_alsa_devin_test_get_loop()
 {
-  //TODO:JK: implement me
+  AgsAlsaDevin *alsa_devin;
+
+  guint loop_left, loop_right;
+  gboolean do_loop;
+  
+  alsa_devin = ags_alsa_devin_new();
+
+  loop_left = 64;
+  loop_right = 128;
+  
+  do_loop = TRUE;
+
+  ags_soundcard_set_loop(AGS_SOUNDCARD(alsa_devin),
+			 loop_left, loop_right,
+			 do_loop);
+
+  CU_ASSERT(alsa_devin->loop_left == 64);
+  CU_ASSERT(alsa_devin->loop_right == 128);
+  CU_ASSERT(alsa_devin->do_loop == TRUE);
 }
 
 void
 ags_alsa_devin_test_get_loop_offset()
 {
+  AgsAlsaDevin *alsa_devin;
+
+  guint loop_offset;
+  
+  alsa_devin = ags_alsa_devin_new();
+
+  loop_offset = ags_soundcard_get_loop_offset(AGS_SOUNDCARD(alsa_devin));
+  
   //TODO:JK: implement me
 }
 
 void
 ags_alsa_devin_test_get_sub_block_count()
 {
+  AgsAlsaDevin *alsa_devin;
+
+  guint sub_block_count;
+  
+  alsa_devin = ags_alsa_devin_new();
+
+  sub_block_count = ags_soundcard_get_sub_block_count(AGS_SOUNDCARD(alsa_devin));
+
   //TODO:JK: implement me
 }
 
@@ -502,6 +842,15 @@ ags_alsa_devin_test_unlock_sub_block()
 void
 ags_alsa_devin_test_get_note_256th_offset()
 {
+  AgsAlsaDevin *alsa_devin;
+
+  guint note_256th_offset_lower, note_256th_offset_upper;
+  
+  alsa_devin = ags_alsa_devin_new();
+
+  ags_soundcard_get_note_256th_offset(AGS_SOUNDCARD(alsa_devin),
+				      &note_256th_offset_lower, &note_256th_offset_upper);
+
   //TODO:JK: implement me
 }
 

@@ -2408,6 +2408,14 @@ ags_note_duplicate(AgsNote *note)
   note_copy->ratio.real = note->ratio.real;
   note_copy->ratio.imag = note->ratio.imag;
 
+  if(note->x_256th[0] < note->x_256th[1]){
+    note_copy->x_256th[0] = note->x_256th[0];
+    note_copy->x_256th[1] = note->x_256th[1];
+  }else{
+    note_copy->x_256th[0] = note->x_256th[1];
+    note_copy->x_256th[1] = note->x_256th[0];
+  }
+
   g_rec_mutex_unlock(note_mutex);
 
   return(note_copy);
