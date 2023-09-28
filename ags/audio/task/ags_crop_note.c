@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -539,6 +539,8 @@ ags_crop_note_launch(AgsTask *task)
     if(absolute){
       if(in_place){
 	note->x[1] = note->x[0] + x_crop;
+
+	note->x_256th[1] = note->x_256th[0] + (16 * x_crop);
       }else if(do_resize){
 	if(initial_run){
 	  x_offset = 0;
@@ -554,10 +556,15 @@ ags_crop_note_launch(AgsTask *task)
 	
 	note->x[0] = x_offset + note->x[0];
 	note->x[1] = x_offset + note->x[0] + x_crop;
+
+	note->x_256th[0] = (16 * x_offset) + note->x_256th[0];
+	note->x_256th[1] = (16 * x_offset) + note->x_256th[0] + (16 * x_crop);
       }
     }else{
       if(in_place){
 	note->x[1] = note->x[1] + x_crop;
+
+	note->x_256th[1] = note->x_256th[1] + (16 * x_crop);
       }else if(do_resize){
 	if(initial_run){
 	  x_offset = 0;
@@ -573,6 +580,9 @@ ags_crop_note_launch(AgsTask *task)
 
 	note->x[0] = x_offset + note->x[0];
 	note->x[1] = x_offset + note->x[1] + x_crop;
+
+	note->x_256th[0] = (16 * x_offset) + note->x_256th[0];
+	note->x_256th[1] = (16 * x_offset) + note->x_256th[1] + (16 * x_crop);
       }
     }
 

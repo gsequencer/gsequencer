@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -70,6 +70,8 @@ struct _AgsTrackCollection
   GList *track_mapper;
   
   GtkBox *track_mapper_box;
+
+  guint first_note_256th_offset;
 };
 
 struct _AgsTrackCollectionClass

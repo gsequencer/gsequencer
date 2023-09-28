@@ -10,6 +10,8 @@ ags (6.1.0)
 	* implemented note 256th pulseaudio backend
 	* implemented note 256th WASAPI backend
 	* implemented note 256th extension to AgsNote
+	* implemented ags_midi_util_delta_time_to_note_256th_offset()
+	* implemented ags_midi_util_note_256th_offset_to_delta_time()
 	* implemented note 256th support of AgsSynthUtil
 	* implemented note 256th support of AgsFMSynthUtil
 	* implemented note 256th support of AgsSF2SynthUtil
@@ -34,6 +36,10 @@ ags (6.1.0)
 	* refactored ags-fx-wah-wah to support note 256th
 	* refactored ags_notation_edit.c to support note 256th
 	* refactored ags_simple_file.c to support note 256th
+	* refactored AgsTrackMapper to support note 256th
+	* refactored AgsNotation to support note 256th
+	* refactored AgsCropNote to support note 256th
+	* refactored AgsMoveNote to support note 256th
 	* modified DTD ags_simple_file.dtd to support note 256th
 	* deprecated ags_common_pitch_util_get_vibrato_lfo_offset()
 	* deprecated ags_common_pitch_util_set_vibrato_lfo_offset()

@@ -447,16 +447,22 @@ ags_fx_notation_audio_signal_real_stream_feed(AgsFxNotationAudioSignal *fx_notat
     guint x0_256th, x1_256th;
     guint64 note_256th_offset_counter;
 
-    fx_notation_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_notation_audio_processor);
-    
-    g_rec_mutex_lock(fx_notation_audio_processor_mutex);
+    note_256th_offset_counter = 0;
 
-    note_256th_offset_counter = fx_notation_audio_processor->note_256th_offset_counter;
+    note_256th_tic_size = 1;
 
-    note_256th_tic_size = fx_notation_audio_processor->note_256th_tic_size;
+    if(fx_notation_audio_processor != NULL){
+      fx_notation_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_notation_audio_processor);
+
+      g_rec_mutex_lock(fx_notation_audio_processor_mutex);
+
+      note_256th_offset_counter = fx_notation_audio_processor->note_256th_offset_counter;
+
+      note_256th_tic_size = fx_notation_audio_processor->note_256th_tic_size;
   
-    g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
-
+      g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
+    }
+    
     g_object_get(note,
 		 "x0-256th", &x0_256th,
 		 "x1-256th", &x1_256th,

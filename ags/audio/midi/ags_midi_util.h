@@ -137,6 +137,20 @@ gint ags_midi_util_offset_to_delta_time(AgsMidiUtil *midi_util,
 					gint bpm,
 					guint x);
 
+/* note 256th offset to and from delta time */
+guint ags_midi_util_delta_time_to_note_256th_offset(AgsMidiUtil *midi_util,
+						    gdouble delay_factor,
+						    gint division,
+						    gint tempo,
+						    gint bpm,
+						    gint delta_time);
+gint ags_midi_util_note_256th_offset_to_delta_time(AgsMidiUtil *midi_util,
+						   gdouble delay_factor,
+						   gint division,
+						   gint tempo,
+						   gint bpm,
+						   guint x_256th);
+
 G_END_DECLS
 
 #endif /*__AGS_MIDI_UTIL_H__*/
