@@ -10544,6 +10544,29 @@ ags_simple_file_read_notation_fixup_1_0_to_1_2(AgsSimpleFile *simple_file, xmlNo
 	  notation[0] = ags_notation_add(notation[0],
 					 gobject);
 	}
+
+	/* 256th */
+	str = xmlGetProp(child,
+			 "x0-256th");
+
+	if(str != NULL){
+	  note->x_256th[0] = g_ascii_strtoull(str,
+					      NULL,
+					      10);
+	  
+	  xmlFree(str);
+	}
+	
+	str = xmlGetProp(child,
+			 "x1-256th");
+
+	if(str != NULL){
+	  note->x_256th[1] = g_ascii_strtoull(str,
+					      NULL,
+					      10);
+	  
+	  xmlFree(str);
+	}
 	  
 	/* add */
 	ags_notation_add_note(gobject,
@@ -10770,6 +10793,29 @@ ags_simple_file_read_notation(AgsSimpleFile *simple_file, xmlNode *node, AgsNota
 	if(str != NULL){
 	  sscanf(str, "%lf %lf", &(note->ratio.real), &(note->ratio.imag));
 
+	  xmlFree(str);
+	}
+
+	/* note 256th */
+	str = xmlGetProp(child,
+			 "x0-256th");
+
+	if(str != NULL){
+	  note->x_256th[0] = g_ascii_strtoull(str,
+					      NULL,
+					      10);
+	  
+	  xmlFree(str);
+	}
+	
+	str = xmlGetProp(child,
+			 "x1-256th");
+
+	if(str != NULL){
+	  note->x_256th[1] = g_ascii_strtoull(str,
+					      NULL,
+					      10);
+	  
 	  xmlFree(str);
 	}
 
@@ -16527,6 +16573,25 @@ ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsN
     
     xmlNewProp(child,
 	       "ratio",
+	       str);
+
+    g_free(str);
+
+    /* note 256th */
+    str = g_strdup_printf("%d",
+			  AGS_NOTE(list->data)->x_256th[0]);
+    
+    xmlNewProp(child,
+	       "x0-256th",
+	       str);
+
+    g_free(str);
+
+    str = g_strdup_printf("%d",
+			  AGS_NOTE(list->data)->x_256th[1]);
+    
+    xmlNewProp(child,
+	       "x1-256th",
 	       str);
 
     g_free(str);

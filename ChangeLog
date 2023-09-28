@@ -33,7 +33,8 @@ ags (6.1.0)
 	* refactored ags-fx-tremolo to support note 256th
 	* refactored ags-fx-wah-wah to support note 256th
 	* refactored ags_notation_edit.c to support note 256th
-	* TODO:JK: refactor AgsRecallContainer
+	* refactored ags_simple_file.c to support note 256th
+	* modified DTD ags_simple_file.dtd to support note 256th
 	* deprecated ags_common_pitch_util_get_vibrato_lfo_offset()
 	* deprecated ags_common_pitch_util_set_vibrato_lfo_offset()
 	* deprecated ags_hq_pitch_util_get_vibrato_lfo_offset()
