@@ -1,3 +1,8 @@
+ags (6.1.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed copy & paste compute relative note 256th
+
 ags (6.1.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
