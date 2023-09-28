@@ -1,3 +1,8 @@
+ags (6.1.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed XML restore missing note 256th field
+
 ags (6.1.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
