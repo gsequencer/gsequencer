@@ -797,7 +797,7 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
 	g_message("current-frame: %d", current_frame);
 #endif
 	
- 	fx_wah_wah_audio_signal->wah_wah_util.wah_wah_lfo_offset = current_frame;
+ 	fx_wah_wah_audio_signal->wah_wah_util.offset = current_frame;
 	
 	/* special case release - #0 key offset bigger than note offset */
 	if(x1 < note_offset){
@@ -904,7 +904,7 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
 	  current_frame += current_frame_count;
 	  offset += current_frame_count;
 	  
-	  fx_wah_wah_audio_signal->wah_wah_util.wah_wah_lfo_offset += current_frame_count;
+	  fx_wah_wah_audio_signal->wah_wah_util.offset += current_frame_count;
 	}    
       
 	if(offset >= buffer_size){
@@ -963,7 +963,7 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
 	  current_frame += current_frame_count;
 	  offset += current_frame_count;
 
-	  fx_wah_wah_audio_signal->wah_wah_util.wah_wah_lfo_offset += current_frame_count;
+	  fx_wah_wah_audio_signal->wah_wah_util.offset += current_frame_count;
 	}    
 
 	if(offset >= buffer_size){
@@ -1022,7 +1022,7 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
 	  current_frame += current_frame_count;
 	  offset += current_frame_count;
 
-	  fx_wah_wah_audio_signal->wah_wah_util.wah_wah_lfo_offset += current_frame_count;
+	  fx_wah_wah_audio_signal->wah_wah_util.offset += current_frame_count;
 	}    
     
 	if(offset >= buffer_size){
@@ -1084,7 +1084,7 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
 
 	  offset += current_frame_count;
 
-	  fx_wah_wah_audio_signal->wah_wah_util.wah_wah_lfo_offset += current_frame_count;
+	  fx_wah_wah_audio_signal->wah_wah_util.offset += current_frame_count;
 
 	  if(trailing_frame_count != 0){
 	    AgsVolumeUtil volume_util;

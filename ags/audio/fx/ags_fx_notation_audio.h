@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -65,6 +65,7 @@ struct _AgsFxNotationAudio
   guint flags;
 
   gboolean pattern_mode;
+  gboolean note_256th_mode;
   
   GList *feed_note;
   
@@ -93,6 +94,10 @@ void ags_fx_notation_audio_unset_flags(AgsFxNotationAudio *fx_notation_audio, gu
 gboolean ags_fx_notation_audio_get_pattern_mode(AgsFxNotationAudio *fx_notation_audio);
 void ags_fx_notation_audio_set_pattern_mode(AgsFxNotationAudio *fx_notation_audio,
 					    gboolean pattern_mode);
+
+gboolean ags_fx_notation_audio_get_note_256th_mode(AgsFxNotationAudio *fx_notation_audio);
+void ags_fx_notation_audio_set_note_256th_mode(AgsFxNotationAudio *fx_notation_audio,
+					       gboolean note_256th_mode);
 
 /* feed note */
 GList* ags_fx_notation_audio_get_feed_note(AgsFxNotationAudio *fx_notation_audio);

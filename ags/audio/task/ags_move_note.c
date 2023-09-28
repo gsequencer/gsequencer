@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -566,10 +566,16 @@ ags_move_note_launch(AgsTask *task)
       note->x[0] = note->x[0] + move_x;
       note->x[1] = note->x[1] + move_x;
 
+      note->x_256th[0] = note->x_256th[0] + (16 * move_x);
+      note->x_256th[1] = note->x_256th[1] + (16 * move_x);
+      
       note->y = note->y + move_y;
     }else if(absolute){
       note->x[0] = move_x + (note->x[0] - first_x);
       note->x[1] = move_x + (note->x[1] - first_x);
+
+      note->x_256th[0] = move_x + (note->x_256th[0] - (16 * first_x));
+      note->x_256th[1] = (16 * move_x) + (note->x_256th[1] - (16 * first_x));
 
       note->y = move_y + (note->y + first_y);
     }

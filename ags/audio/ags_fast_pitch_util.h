@@ -73,6 +73,13 @@ struct _AgsFastPitchUtil
   
   guint vibrato_lfo_frame_count;
   guint vibrato_lfo_offset;
+
+  guint frame_count;
+  guint offset;
+  
+  gboolean note_256th_mode;
+
+  guint offset_256th;
 };
 
 GType ags_fast_pitch_util_get_type(void);
@@ -138,9 +145,27 @@ gdouble ags_fast_pitch_util_get_vibrato_tuning(AgsFastPitchUtil *fast_pitch_util
 void ags_fast_pitch_util_set_vibrato_tuning(AgsFastPitchUtil *fast_pitch_util,
 					    gdouble vibrato_tuning);
 
+G_DEPRECATED_FOR(ags_fast_pitch_util_get_offset)
 guint ags_fast_pitch_util_get_vibrato_lfo_offset(AgsFastPitchUtil *fast_pitch_util);
+G_DEPRECATED_FOR(ags_fast_pitch_util_set_offset)
 void ags_fast_pitch_util_set_vibrato_lfo_offset(AgsFastPitchUtil *fast_pitch_util,
 						guint vibrato_lfo_offset);
+
+guint ags_fast_pitch_util_get_frame_count(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_set_frame_count(AgsFastPitchUtil *fast_pitch_util,
+					 guint frame_count);
+
+guint ags_fast_pitch_util_get_offset(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_set_offset(AgsFastPitchUtil *fast_pitch_util,
+				    guint offset);
+
+gboolean ags_fast_pitch_util_get_note_256th_mode(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_set_note_256th_mode(AgsFastPitchUtil *fast_pitch_util,
+					     gboolean note_256th_mode);
+
+guint ags_fast_pitch_util_get_offset_256th(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_set_offset_256th(AgsFastPitchUtil *fast_pitch_util,
+					  guint offset_256th);
 
 void ags_fast_pitch_util_pitch_s8(AgsFastPitchUtil *fast_pitch_util);
 void ags_fast_pitch_util_pitch_s16(AgsFastPitchUtil *fast_pitch_util);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -102,6 +102,13 @@ ags_hq_pitch_util_alloc()
 
   ptr->vibrato_lfo_frame_count = ptr->samplerate / ptr->vibrato_lfo_freq;
   ptr->vibrato_lfo_offset = 0;
+
+  ptr->frame_count = 0;
+  ptr->offset = 0;
+
+  ptr->note_256th_mode = TRUE;
+
+  ptr->offset_256th = 0;
   
   return(ptr);
 }
@@ -156,6 +163,13 @@ ags_hq_pitch_util_copy(AgsHQPitchUtil *ptr)
 
   new_ptr->vibrato_lfo_frame_count = ptr->vibrato_lfo_frame_count;
   new_ptr->vibrato_lfo_offset = ptr->vibrato_lfo_offset;
+
+  new_ptr->frame_count = ptr->frame_count;
+  new_ptr->offset = ptr->offset;
+
+  new_ptr->note_256th_mode = ptr->note_256th_mode;
+
+  new_ptr->offset_256th = ptr->offset_256th;
   
   return(new_ptr);
 }
@@ -809,6 +823,166 @@ ags_hq_pitch_util_set_vibrato_lfo_offset(AgsHQPitchUtil *hq_pitch_util,
   }
 
   hq_pitch_util->vibrato_lfo_offset = vibrato_lfo_offset;
+}
+
+/**
+ * ags_hq_pitch_util_get_frame_count:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * 
+ * Get frame count of @hq_pitch_util.
+ * 
+ * Returns: the frame count
+ * 
+ * Since: 6.1.0
+ */
+guint
+ags_hq_pitch_util_get_frame_count(AgsHQPitchUtil *hq_pitch_util)
+{
+  if(hq_pitch_util == NULL){
+    return(0);
+  }
+
+  return(hq_pitch_util->frame_count);
+}
+
+/**
+ * ags_hq_pitch_util_set_frame_count:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * @frame_count: the frame count
+ *
+ * Set @frame_count of @hq_pitch_util.
+ *
+ * Since: 6.1.0
+ */
+void
+ags_hq_pitch_util_set_frame_count(AgsHQPitchUtil *hq_pitch_util,
+				  guint frame_count)
+{
+  if(hq_pitch_util == NULL){
+    return;
+  }
+
+  hq_pitch_util->frame_count = frame_count;
+}
+
+/**
+ * ags_hq_pitch_util_get_offset:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * 
+ * Get offset of @hq_pitch_util.
+ * 
+ * Returns: the offset
+ * 
+ * Since: 6.1.0
+ */
+guint
+ags_hq_pitch_util_get_offset(AgsHQPitchUtil *hq_pitch_util)
+{
+  if(hq_pitch_util == NULL){
+    return(0);
+  }
+
+  return(hq_pitch_util->offset);
+}
+
+/**
+ * ags_hq_pitch_util_set_offset:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * @offset: the offset
+ *
+ * Set @offset of @hq_pitch_util.
+ *
+ * Since: 6.1.0
+ */
+void
+ags_hq_pitch_util_set_offset(AgsHQPitchUtil *hq_pitch_util,
+			     guint offset)
+{
+  if(hq_pitch_util == NULL){
+    return;
+  }
+
+  hq_pitch_util->offset = offset;
+}
+
+/**
+ * ags_hq_pitch_util_get_note_256th_mode:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * 
+ * Get note 256th mode of @hq_pitch_util.
+ * 
+ * Returns: %TRUE if note 256th mode, otherwise %FALSE
+ * 
+ * Since: 6.1.0
+ */
+gboolean
+ags_hq_pitch_util_get_note_256th_mode(AgsHQPitchUtil *hq_pitch_util)
+{
+  if(hq_pitch_util == NULL){
+    return(0);
+  }
+
+  return(hq_pitch_util->note_256th_mode);
+}
+
+/**
+ * ags_hq_pitch_util_set_note_256th_mode:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * @note_256th_mode: the note 256th mode
+ *
+ * Set @note_256th_mode of @hq_pitch_util.
+ *
+ * Since: 6.1.0
+ */
+void
+ags_hq_pitch_util_set_note_256th_mode(AgsHQPitchUtil *hq_pitch_util,
+				      gboolean note_256th_mode)
+{
+  if(hq_pitch_util == NULL){
+    return;
+  }
+
+  hq_pitch_util->note_256th_mode = note_256th_mode;
+}
+
+/**
+ * ags_hq_pitch_util_get_offset_256th:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * 
+ * Get offset as note 256th of @hq_pitch_util.
+ * 
+ * Returns: the offset as note 256th
+ * 
+ * Since: 6.1.0
+ */
+guint
+ags_hq_pitch_util_get_offset_256th(AgsHQPitchUtil *hq_pitch_util)
+{
+  if(hq_pitch_util == NULL){
+    return(0);
+  }
+
+  return(hq_pitch_util->offset_256th);
+}
+
+/**
+ * ags_hq_pitch_util_set_offset_256th:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * @offset_256th: the offset as note 256th
+ *
+ * Set @offset_256th of @hq_pitch_util.
+ *
+ * Since: 6.1.0
+ */
+void
+ags_hq_pitch_util_set_offset_256th(AgsHQPitchUtil *hq_pitch_util,
+				   guint offset_256th)
+{
+  if(hq_pitch_util == NULL){
+    return;
+  }
+  
+  hq_pitch_util->offset_256th = offset_256th;
 }
 
 /**

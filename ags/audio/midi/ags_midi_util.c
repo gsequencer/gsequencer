@@ -1155,7 +1155,7 @@ ags_midi_util_to_smf(AgsMidiUtil *midi_util,
  * @bpm: bpm
  * @delta_time: delta time
  *
- * Delta time to offset
+ * Delta time to offset.
  *
  * Returns: the offset
  *
@@ -1191,7 +1191,7 @@ ags_midi_util_delta_time_to_offset(AgsMidiUtil *midi_util,
  * @bpm: bpm
  * @x: note offset
  *
- * Offset to delta time
+ * Offset to delta time.
  *
  * Returns: the delta time
  *
@@ -1213,6 +1213,78 @@ ags_midi_util_offset_to_delta_time(AgsMidiUtil *midi_util,
   }else{
     /* SMTPE */
     delta_time = (60.0 * (((division * division) / 256.0) / ((gdouble) AGS_USEC_PER_SEC)) * x) / (16.0 * bpm * delay_factor * tempo);
+  }
+
+  return(delta_time);
+}
+
+/**
+ * ags_midi_util_delta_time_to_note_256th_offset:
+ * @midi_util: the #AgsMidiUtil-struct
+ * @delay_factor: delay factor
+ * @division: division
+ * @tempo: tempo
+ * @bpm: bpm
+ * @delta_time: delta time
+ *
+ * Delta time to note 256th offset.
+ *
+ * Returns: the note 256th offset
+ *
+ * Since: 6.1.0
+ */
+guint
+ags_midi_util_delta_time_to_note_256th_offset(AgsMidiUtil *midi_util,
+					      gdouble delay_factor,
+					      gint division,
+					      gint tempo,
+					      gint bpm,
+					      gint delta_time)
+{
+  guint note_256th_offset;
+
+  if(((1 << 15) & division) == 0){
+    /* ticks per quarter note */
+    note_256th_offset = (16.0 * 16.0 * bpm / 60.0) * delta_time * (tempo / division / ((gdouble) AGS_USEC_PER_SEC)) * delay_factor;
+  }else{
+    /* SMTPE */
+    note_256th_offset = (16.0 * 16.0 * bpm / 60.0) * delta_time / (((division * division) / 256.0) / ((gdouble) AGS_USEC_PER_SEC)) * delay_factor;
+  }
+
+  return(note_256th_offset);
+}
+
+/**
+ * ags_midi_util_note_256th_offset_to_delta_time:
+ * @midi_util: the #AgsMidiUtil-struct
+ * @delay_factor: delay factor
+ * @division: division
+ * @tempo: tempo
+ * @bpm: bpm
+ * @x: note offset
+ *
+ * Note 256th offset to delta time.
+ *
+ * Returns: the delta time
+ *
+ * Since: 6.1.0
+ */
+gint
+ags_midi_util_note_256th_offset_to_delta_time(AgsMidiUtil *midi_util,
+					      gdouble delay_factor,
+					      gint division,
+					      gint tempo,
+					      gint bpm,
+					      guint x_256th)
+{
+  guint delta_time;
+
+  if(((1 << 15) & division) == 0){
+    /* ticks per quarter note */
+    delta_time = (60.0 * AGS_USEC_PER_SEC * division * x_256th) / (16.0 * 16.0 * bpm * delay_factor * tempo);
+  }else{
+    /* SMTPE */
+    delta_time = (60.0 * (((division * division) / 256.0) / ((gdouble) AGS_USEC_PER_SEC)) * x_256th) / (16.0 * 16.0 * bpm * delay_factor * tempo);
   }
 
   return(delta_time);

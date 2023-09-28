@@ -94,6 +94,13 @@ ags_wah_wah_util_alloc()
   ptr->wah_wah_lfo_frame_count = (guint) (ptr->samplerate / ptr->wah_wah_lfo_freq);
   ptr->wah_wah_lfo_offset = 0;
 
+  ptr->frame_count = 0;
+  ptr->offset = 0;
+
+  ptr->note_256th_mode = TRUE;
+
+  ptr->offset_256th = 0;
+
   return(ptr);
 }
 
@@ -135,6 +142,13 @@ ags_wah_wah_util_copy(AgsWahWahUtil *ptr)
 
   new_ptr->wah_wah_lfo_frame_count = ptr->wah_wah_lfo_frame_count;
   new_ptr->wah_wah_lfo_offset = ptr->wah_wah_lfo_offset;
+
+  new_ptr->frame_count = ptr->frame_count;
+  new_ptr->offset = ptr->offset;
+
+  new_ptr->note_256th_mode = ptr->note_256th_mode;
+
+  new_ptr->offset_256th = ptr->offset_256th;
 
   return(new_ptr);
 }
@@ -720,6 +734,166 @@ ags_wah_wah_util_set_wah_wah_lfo_offset(AgsWahWahUtil *wah_wah_util,
 }
 
 /**
+ * ags_wah_wah_util_get_frame_count:
+ * @wah_wah_util: the #AgsWahWahUtil-struct
+ * 
+ * Get frame count of @wah_wah_util.
+ * 
+ * Returns: the frame count
+ * 
+ * Since: 6.1.0
+ */
+guint
+ags_wah_wah_util_get_frame_count(AgsWahWahUtil *wah_wah_util)
+{
+  if(wah_wah_util == NULL){
+    return(0);
+  }
+
+  return(wah_wah_util->frame_count);
+}
+
+/**
+ * ags_wah_wah_util_set_frame_count:
+ * @wah_wah_util: the #AgsWahWahUtil-struct
+ * @frame_count: the frame count
+ *
+ * Set @frame_count of @wah_wah_util.
+ *
+ * Since: 6.1.0
+ */
+void
+ags_wah_wah_util_set_frame_count(AgsWahWahUtil *wah_wah_util,
+				 guint frame_count)
+{
+  if(wah_wah_util == NULL){
+    return;
+  }
+
+  wah_wah_util->frame_count = frame_count;
+}
+
+/**
+ * ags_wah_wah_util_get_offset:
+ * @wah_wah_util: the #AgsWahWahUtil-struct
+ * 
+ * Get offset of @wah_wah_util.
+ * 
+ * Returns: the offset
+ * 
+ * Since: 6.1.0
+ */
+guint
+ags_wah_wah_util_get_offset(AgsWahWahUtil *wah_wah_util)
+{
+  if(wah_wah_util == NULL){
+    return(0);
+  }
+
+  return(wah_wah_util->offset);
+}
+
+/**
+ * ags_wah_wah_util_set_offset:
+ * @wah_wah_util: the #AgsWahWahUtil-struct
+ * @offset: the offset
+ *
+ * Set @offset of @wah_wah_util.
+ *
+ * Since: 6.1.0
+ */
+void
+ags_wah_wah_util_set_offset(AgsWahWahUtil *wah_wah_util,
+			    guint offset)
+{
+  if(wah_wah_util == NULL){
+    return;
+  }
+
+  wah_wah_util->offset = offset;
+}
+
+/**
+ * ags_wah_wah_util_get_note_256th_mode:
+ * @wah_wah_util: the #AgsWahWahUtil-struct
+ * 
+ * Get note 256th mode of @wah_wah_util.
+ * 
+ * Returns: %TRUE if note 256th mode, otherwise %FALSE
+ * 
+ * Since: 6.1.0
+ */
+gboolean
+ags_wah_wah_util_get_note_256th_mode(AgsWahWahUtil *wah_wah_util)
+{
+  if(wah_wah_util == NULL){
+    return(0);
+  }
+
+  return(wah_wah_util->note_256th_mode);
+}
+
+/**
+ * ags_wah_wah_util_set_note_256th_mode:
+ * @wah_wah_util: the #AgsWahWahUtil-struct
+ * @note_256th_mode: the note 256th mode
+ *
+ * Set @note_256th_mode of @wah_wah_util.
+ *
+ * Since: 6.1.0
+ */
+void
+ags_wah_wah_util_set_note_256th_mode(AgsWahWahUtil *wah_wah_util,
+				     gboolean note_256th_mode)
+{
+  if(wah_wah_util == NULL){
+    return;
+  }
+
+  wah_wah_util->note_256th_mode = note_256th_mode;
+}
+
+/**
+ * ags_wah_wah_util_get_offset_256th:
+ * @wah_wah_util: the #AgsWahWahUtil-struct
+ * 
+ * Get offset as note 256th of @wah_wah_util.
+ * 
+ * Returns: the offset as note 256th
+ * 
+ * Since: 6.1.0
+ */
+guint
+ags_wah_wah_util_get_offset_256th(AgsWahWahUtil *wah_wah_util)
+{
+  if(wah_wah_util == NULL){
+    return(0);
+  }
+
+  return(wah_wah_util->offset_256th);
+}
+
+/**
+ * ags_wah_wah_util_set_offset_256th:
+ * @wah_wah_util: the #AgsWahWahUtil-struct
+ * @offset_256th: the offset as note 256th
+ *
+ * Set @offset_256th of @wah_wah_util.
+ *
+ * Since: 6.1.0
+ */
+void
+ags_wah_wah_util_set_offset_256th(AgsWahWahUtil *wah_wah_util,
+				  guint offset_256th)
+{
+  if(wah_wah_util == NULL){
+    return;
+  }
+  
+  wah_wah_util->offset_256th = offset_256th;
+}
+
+/**
  * ags_wah_wah_util_compute_s8:
  * @wah_wah_util: the #AgsWahWahUtil-struct
  * 
@@ -741,7 +915,7 @@ ags_wah_wah_util_compute_s8(AgsWahWahUtil *wah_wah_util)
   gdouble wah_wah_lfo_freq;
   gdouble wah_wah_lfo_depth;
   gdouble wah_wah_tuning;
-  gint64 wah_wah_lfo_offset;
+  gint64 offset;
   guint i, i_stop;
 
   if(wah_wah_util == NULL ||
@@ -766,7 +940,7 @@ ags_wah_wah_util_compute_s8(AgsWahWahUtil *wah_wah_util)
   wah_wah_lfo_freq = wah_wah_util->wah_wah_lfo_freq;
   wah_wah_lfo_depth = wah_wah_util->wah_wah_lfo_depth;
   wah_wah_tuning = wah_wah_util->wah_wah_tuning;
-  wah_wah_lfo_offset = wah_wah_util->wah_wah_lfo_offset;
+  offset = wah_wah_util->offset;
 
   i = 0;
   
@@ -791,14 +965,14 @@ ags_wah_wah_util_compute_s8(AgsWahWahUtil *wah_wah_util)
     source += source_stride;
 
     v_volume = (ags_v8double) {
-			       (gdouble) (start_volume + (i) * sin((gdouble) ((wah_wah_lfo_offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 1) * sin((gdouble) ((wah_wah_lfo_offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 2) * sin((gdouble) ((wah_wah_lfo_offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 3) * sin((gdouble) ((wah_wah_lfo_offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 4) * sin((gdouble) ((wah_wah_lfo_offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 5) * sin((gdouble) ((wah_wah_lfo_offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 6) * sin((gdouble) ((wah_wah_lfo_offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 7) * sin((gdouble) ((wah_wah_lfo_offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i) * sin((gdouble) ((offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 1) * sin((gdouble) ((offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 2) * sin((gdouble) ((offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 3) * sin((gdouble) ((offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 4) * sin((gdouble) ((offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 5) * sin((gdouble) ((offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 6) * sin((gdouble) ((offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 7) * sin((gdouble) ((offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
     };
 
     v_buffer *= v_volume;
@@ -832,14 +1006,14 @@ ags_wah_wah_util_compute_s8(AgsWahWahUtil *wah_wah_util)
 			 (double) *(source += source_stride)};
 
     double v_volume[] = {(double) start_volume + i * amount,
-			 (double) (start_volume + (i) * sin((gdouble) ((wah_wah_lfo_offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 1) * sin((gdouble) ((wah_wah_lfo_offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 2) * sin((gdouble) ((wah_wah_lfo_offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 3) * sin((gdouble) ((wah_wah_lfo_offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 4) * sin((gdouble) ((wah_wah_lfo_offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 5) * sin((gdouble) ((wah_wah_lfo_offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 6) * sin((gdouble) ((wah_wah_lfo_offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 7) * sin((gdouble) ((wah_wah_lfo_offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))};
+			 (double) (start_volume + (i) * sin((gdouble) ((offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 1) * sin((gdouble) ((offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 2) * sin((gdouble) ((offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 3) * sin((gdouble) ((offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 4) * sin((gdouble) ((offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 5) * sin((gdouble) ((offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 6) * sin((gdouble) ((offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 7) * sin((gdouble) ((offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))};
 
     source += source_stride;
 
@@ -862,14 +1036,14 @@ ags_wah_wah_util_compute_s8(AgsWahWahUtil *wah_wah_util)
   i_stop = wah_wah_util->buffer_length - (wah_wah_util->buffer_length % 8);
 
   for(; i < i_stop;){
-    *(destination) = (gint8) ((gint16) ((source)[0] * (double) (start_volume + (i) * sin((gdouble) ((wah_wah_lfo_offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
-    *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * (double) (start_volume + (i + 1) * sin((gdouble) ((wah_wah_lfo_offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
-    *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * (double) (start_volume + (i + 2) * sin((gdouble) ((wah_wah_lfo_offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
-    *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * (double) (start_volume + (i + 3) * sin((gdouble) ((wah_wah_lfo_offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
-    *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * (double) (start_volume + (i + 4) * sin((gdouble) ((wah_wah_lfo_offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
-    *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * (double) (start_volume + (i + 5) * sin((gdouble) ((wah_wah_lfo_offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
-    *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * (double) (start_volume + (i + 6) * sin((gdouble) ((wah_wah_lfo_offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
-    *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * (double) (start_volume + (i + 7) * sin((gdouble) ((wah_wah_lfo_offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination) = (gint8) ((gint16) ((source)[0] * (double) (start_volume + (i) * sin((gdouble) ((offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * (double) (start_volume + (i + 1) * sin((gdouble) ((offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * (double) (start_volume + (i + 2) * sin((gdouble) ((offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * (double) (start_volume + (i + 3) * sin((gdouble) ((offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * (double) (start_volume + (i + 4) * sin((gdouble) ((offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * (double) (start_volume + (i + 5) * sin((gdouble) ((offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * (double) (start_volume + (i + 6) * sin((gdouble) ((offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * (double) (start_volume + (i + 7) * sin((gdouble) ((offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
 
     destination += destination_stride;
     source += source_stride;
@@ -880,7 +1054,7 @@ ags_wah_wah_util_compute_s8(AgsWahWahUtil *wah_wah_util)
 
   /* loop tail */
   for(; i < wah_wah_util->buffer_length;){
-    *(destination) = (gint8) ((gint16) ((source)[0] * (double) (start_volume + (i) * sin((gdouble) ((wah_wah_lfo_offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination) = (gint8) ((gint16) ((source)[0] * (double) (start_volume + (i) * sin((gdouble) ((offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
 
     destination += destination_stride;
     source += source_stride;
@@ -912,7 +1086,7 @@ ags_wah_wah_util_compute_s16(AgsWahWahUtil *wah_wah_util)
   gdouble wah_wah_lfo_freq;
   gdouble wah_wah_lfo_depth;
   gdouble wah_wah_tuning;
-  gint64 wah_wah_lfo_offset;
+  gint64 offset;
   guint i, i_stop;
 
   if(wah_wah_util == NULL ||
@@ -937,7 +1111,7 @@ ags_wah_wah_util_compute_s16(AgsWahWahUtil *wah_wah_util)
   wah_wah_lfo_freq = wah_wah_util->wah_wah_lfo_freq;
   wah_wah_lfo_depth = wah_wah_util->wah_wah_lfo_depth;
   wah_wah_tuning = wah_wah_util->wah_wah_tuning;
-  wah_wah_lfo_offset = wah_wah_util->wah_wah_lfo_offset;
+  offset = wah_wah_util->offset;
 
   i = 0;
   
@@ -962,14 +1136,14 @@ ags_wah_wah_util_compute_s16(AgsWahWahUtil *wah_wah_util)
     source += source_stride;
 
     v_volume = (ags_v8double) {
-			       (gdouble) (start_volume + (i) * sin((gdouble) ((wah_wah_lfo_offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 1) * sin((gdouble) ((wah_wah_lfo_offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 2) * sin((gdouble) ((wah_wah_lfo_offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 3) * sin((gdouble) ((wah_wah_lfo_offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 4) * sin((gdouble) ((wah_wah_lfo_offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 5) * sin((gdouble) ((wah_wah_lfo_offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 6) * sin((gdouble) ((wah_wah_lfo_offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 7) * sin((gdouble) ((wah_wah_lfo_offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))
+			       (gdouble) (start_volume + (i) * sin((gdouble) ((offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 1) * sin((gdouble) ((offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 2) * sin((gdouble) ((offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 3) * sin((gdouble) ((offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 4) * sin((gdouble) ((offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 5) * sin((gdouble) ((offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 6) * sin((gdouble) ((offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 7) * sin((gdouble) ((offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))
     };
 
     v_buffer *= v_volume;
@@ -1003,14 +1177,14 @@ ags_wah_wah_util_compute_s16(AgsWahWahUtil *wah_wah_util)
 			 (double) *(source += source_stride)};
 
     double v_volume[] = {(double) start_volume + i * amount,
-			 (double) (start_volume + (i) * sin((gdouble) ((wah_wah_lfo_offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 1) * sin((gdouble) ((wah_wah_lfo_offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 2) * sin((gdouble) ((wah_wah_lfo_offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 3) * sin((gdouble) ((wah_wah_lfo_offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 4) * sin((gdouble) ((wah_wah_lfo_offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 5) * sin((gdouble) ((wah_wah_lfo_offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 6) * sin((gdouble) ((wah_wah_lfo_offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 7) * sin((gdouble) ((wah_wah_lfo_offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))};
+			 (double) (start_volume + (i) * sin((gdouble) ((offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 1) * sin((gdouble) ((offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 2) * sin((gdouble) ((offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 3) * sin((gdouble) ((offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 4) * sin((gdouble) ((offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 5) * sin((gdouble) ((offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 6) * sin((gdouble) ((offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 7) * sin((gdouble) ((offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))};
 
     source += source_stride;
 
@@ -1033,14 +1207,14 @@ ags_wah_wah_util_compute_s16(AgsWahWahUtil *wah_wah_util)
   i_stop = wah_wah_util->buffer_length - (wah_wah_util->buffer_length % 8);
 
   for(; i < i_stop;){
-    *(destination) = (gint16) ((gint32) ((source)[0] * (double) (start_volume + (i) * sin((gdouble) ((wah_wah_lfo_offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
-    *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 1) * sin((gdouble) ((wah_wah_lfo_offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
-    *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 2) * sin((gdouble) ((wah_wah_lfo_offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
-    *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 3) * sin((gdouble) ((wah_wah_lfo_offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
-    *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 4) * sin((gdouble) ((wah_wah_lfo_offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
-    *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 5) * sin((gdouble) ((wah_wah_lfo_offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
-    *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 6) * sin((gdouble) ((wah_wah_lfo_offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
-    *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 7) * sin((gdouble) ((wah_wah_lfo_offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination) = (gint16) ((gint32) ((source)[0] * (double) (start_volume + (i) * sin((gdouble) ((offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 1) * sin((gdouble) ((offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 2) * sin((gdouble) ((offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 3) * sin((gdouble) ((offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 4) * sin((gdouble) ((offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 5) * sin((gdouble) ((offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 6) * sin((gdouble) ((offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 7) * sin((gdouble) ((offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
 
     destination += destination_stride;
     source += source_stride;
@@ -1051,7 +1225,7 @@ ags_wah_wah_util_compute_s16(AgsWahWahUtil *wah_wah_util)
 
   /* loop tail */
   for(; i < wah_wah_util->buffer_length;){
-    *(destination) = (gint16) ((gint32) ((source)[0] * (double) (start_volume + (i) * sin((gdouble) ((wah_wah_lfo_offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination) = (gint16) ((gint32) ((source)[0] * (double) (start_volume + (i) * sin((gdouble) ((offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
 
     destination += destination_stride;
     source += source_stride;
@@ -1083,7 +1257,7 @@ ags_wah_wah_util_compute_s24(AgsWahWahUtil *wah_wah_util)
   gdouble wah_wah_lfo_freq;
   gdouble wah_wah_lfo_depth;
   gdouble wah_wah_tuning;
-  gint64 wah_wah_lfo_offset;
+  gint64 offset;
   guint i, i_stop;
 
   if(wah_wah_util == NULL ||
@@ -1108,7 +1282,7 @@ ags_wah_wah_util_compute_s24(AgsWahWahUtil *wah_wah_util)
   wah_wah_lfo_freq = wah_wah_util->wah_wah_lfo_freq;
   wah_wah_lfo_depth = wah_wah_util->wah_wah_lfo_depth;
   wah_wah_tuning = wah_wah_util->wah_wah_tuning;
-  wah_wah_lfo_offset = wah_wah_util->wah_wah_lfo_offset;
+  offset = wah_wah_util->offset;
 
   i = 0;
   
@@ -1133,14 +1307,14 @@ ags_wah_wah_util_compute_s24(AgsWahWahUtil *wah_wah_util)
     source += source_stride;
 
     v_volume = (ags_v8double) {
-			       (gdouble) (start_volume + (i) * sin((gdouble) ((wah_wah_lfo_offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 1) * sin((gdouble) ((wah_wah_lfo_offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 2) * sin((gdouble) ((wah_wah_lfo_offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 3) * sin((gdouble) ((wah_wah_lfo_offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 4) * sin((gdouble) ((wah_wah_lfo_offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 5) * sin((gdouble) ((wah_wah_lfo_offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 6) * sin((gdouble) ((wah_wah_lfo_offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 7) * sin((gdouble) ((wah_wah_lfo_offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))
+			       (gdouble) (start_volume + (i) * sin((gdouble) ((offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 1) * sin((gdouble) ((offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 2) * sin((gdouble) ((offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 3) * sin((gdouble) ((offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 4) * sin((gdouble) ((offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 5) * sin((gdouble) ((offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 6) * sin((gdouble) ((offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 7) * sin((gdouble) ((offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))
     };
 
     v_buffer *= v_volume;
@@ -1174,14 +1348,14 @@ ags_wah_wah_util_compute_s24(AgsWahWahUtil *wah_wah_util)
 			 (double) *(source += source_stride)};
 
     double v_volume[] = {(double) start_volume + i * amount,
-			 (double) (start_volume + (i) * sin((gdouble) ((wah_wah_lfo_offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 1) * sin((gdouble) ((wah_wah_lfo_offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 2) * sin((gdouble) ((wah_wah_lfo_offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 3) * sin((gdouble) ((wah_wah_lfo_offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 4) * sin((gdouble) ((wah_wah_lfo_offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 5) * sin((gdouble) ((wah_wah_lfo_offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 6) * sin((gdouble) ((wah_wah_lfo_offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 7) * sin((gdouble) ((wah_wah_lfo_offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))};
+			 (double) (start_volume + (i) * sin((gdouble) ((offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 1) * sin((gdouble) ((offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 2) * sin((gdouble) ((offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 3) * sin((gdouble) ((offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 4) * sin((gdouble) ((offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 5) * sin((gdouble) ((offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 6) * sin((gdouble) ((offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 7) * sin((gdouble) ((offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))};
 
     source += source_stride;
 
@@ -1204,14 +1378,14 @@ ags_wah_wah_util_compute_s24(AgsWahWahUtil *wah_wah_util)
   i_stop = wah_wah_util->buffer_length - (wah_wah_util->buffer_length % 8);
 
   for(; i < i_stop;){
-    *(destination) = (gint32) ((gint32) ((source)[0] * (double) (start_volume + (i) * sin((gdouble) ((wah_wah_lfo_offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
-    *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 1) * sin((gdouble) ((wah_wah_lfo_offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
-    *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 2) * sin((gdouble) ((wah_wah_lfo_offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
-    *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 3) * sin((gdouble) ((wah_wah_lfo_offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
-    *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 4) * sin((gdouble) ((wah_wah_lfo_offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
-    *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 5) * sin((gdouble) ((wah_wah_lfo_offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
-    *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 6) * sin((gdouble) ((wah_wah_lfo_offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
-    *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 7) * sin((gdouble) ((wah_wah_lfo_offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination) = (gint32) ((gint32) ((source)[0] * (double) (start_volume + (i) * sin((gdouble) ((offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 1) * sin((gdouble) ((offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 2) * sin((gdouble) ((offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 3) * sin((gdouble) ((offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 4) * sin((gdouble) ((offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 5) * sin((gdouble) ((offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 6) * sin((gdouble) ((offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 7) * sin((gdouble) ((offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
 
     destination += destination_stride;
     source += source_stride;
@@ -1254,7 +1428,7 @@ ags_wah_wah_util_compute_s32(AgsWahWahUtil *wah_wah_util)
   gdouble wah_wah_lfo_freq;
   gdouble wah_wah_lfo_depth;
   gdouble wah_wah_tuning;
-  gint64 wah_wah_lfo_offset;
+  gint64 offset;
   guint i, i_stop;
 
   if(wah_wah_util == NULL ||
@@ -1279,7 +1453,7 @@ ags_wah_wah_util_compute_s32(AgsWahWahUtil *wah_wah_util)
   wah_wah_lfo_freq = wah_wah_util->wah_wah_lfo_freq;
   wah_wah_lfo_depth = wah_wah_util->wah_wah_lfo_depth;
   wah_wah_tuning = wah_wah_util->wah_wah_tuning;
-  wah_wah_lfo_offset = wah_wah_util->wah_wah_lfo_offset;
+  offset = wah_wah_util->offset;
 
   i = 0;
   
@@ -1304,14 +1478,14 @@ ags_wah_wah_util_compute_s32(AgsWahWahUtil *wah_wah_util)
     source += source_stride;
 
     v_volume = (ags_v8double) {
-			       (gdouble) (start_volume + (i) * sin((gdouble) ((wah_wah_lfo_offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 1) * sin((gdouble) ((wah_wah_lfo_offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 2) * sin((gdouble) ((wah_wah_lfo_offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 3) * sin((gdouble) ((wah_wah_lfo_offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 4) * sin((gdouble) ((wah_wah_lfo_offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 5) * sin((gdouble) ((wah_wah_lfo_offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 6) * sin((gdouble) ((wah_wah_lfo_offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 7) * sin((gdouble) ((wah_wah_lfo_offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))
+			       (gdouble) (start_volume + (i) * sin((gdouble) ((offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 1) * sin((gdouble) ((offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 2) * sin((gdouble) ((offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 3) * sin((gdouble) ((offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 4) * sin((gdouble) ((offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 5) * sin((gdouble) ((offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 6) * sin((gdouble) ((offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 7) * sin((gdouble) ((offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))
     };
 
     v_buffer *= v_volume;
@@ -1345,14 +1519,14 @@ ags_wah_wah_util_compute_s32(AgsWahWahUtil *wah_wah_util)
 			 (double) *(source += source_stride)};
 
     double v_volume[] = {(double) start_volume + i * amount,
-			 (double) (start_volume + (i) * sin((gdouble) ((wah_wah_lfo_offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 1) * sin((gdouble) ((wah_wah_lfo_offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 2) * sin((gdouble) ((wah_wah_lfo_offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 3) * sin((gdouble) ((wah_wah_lfo_offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 4) * sin((gdouble) ((wah_wah_lfo_offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 5) * sin((gdouble) ((wah_wah_lfo_offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 6) * sin((gdouble) ((wah_wah_lfo_offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 7) * sin((gdouble) ((wah_wah_lfo_offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))};
+			 (double) (start_volume + (i) * sin((gdouble) ((offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 1) * sin((gdouble) ((offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 2) * sin((gdouble) ((offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 3) * sin((gdouble) ((offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 4) * sin((gdouble) ((offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 5) * sin((gdouble) ((offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 6) * sin((gdouble) ((offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 7) * sin((gdouble) ((offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))};
 
     source += source_stride;
 
@@ -1375,14 +1549,14 @@ ags_wah_wah_util_compute_s32(AgsWahWahUtil *wah_wah_util)
   i_stop = wah_wah_util->buffer_length - (wah_wah_util->buffer_length % 8);
 
   for(; i < i_stop;){
-    *(destination) = (gint32) ((gint64) ((source)[0] * (double) (start_volume + (i) * sin((gdouble) ((wah_wah_lfo_offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
-    *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 1) * sin((gdouble) ((wah_wah_lfo_offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
-    *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 2) * sin((gdouble) ((wah_wah_lfo_offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
-    *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 3) * sin((gdouble) ((wah_wah_lfo_offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
-    *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 4) * sin((gdouble) ((wah_wah_lfo_offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
-    *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 5) * sin((gdouble) ((wah_wah_lfo_offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
-    *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 6) * sin((gdouble) ((wah_wah_lfo_offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
-    *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 7) * sin((gdouble) ((wah_wah_lfo_offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination) = (gint32) ((gint64) ((source)[0] * (double) (start_volume + (i) * sin((gdouble) ((offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 1) * sin((gdouble) ((offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 2) * sin((gdouble) ((offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 3) * sin((gdouble) ((offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 4) * sin((gdouble) ((offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 5) * sin((gdouble) ((offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 6) * sin((gdouble) ((offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 7) * sin((gdouble) ((offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
 
     destination += destination_stride;
     source += source_stride;
@@ -1393,7 +1567,7 @@ ags_wah_wah_util_compute_s32(AgsWahWahUtil *wah_wah_util)
 
   /* loop tail */
   for(; i < wah_wah_util->buffer_length;){
-    *(destination) = (gint32) ((gint64) ((source)[0] * (double) (start_volume + (i) * sin((gdouble) ((wah_wah_lfo_offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination) = (gint32) ((gint64) ((source)[0] * (double) (start_volume + (i) * sin((gdouble) ((offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
 
     destination += destination_stride;
     source += source_stride;
@@ -1425,7 +1599,7 @@ ags_wah_wah_util_compute_s64(AgsWahWahUtil *wah_wah_util)
   gdouble wah_wah_lfo_freq;
   gdouble wah_wah_lfo_depth;
   gdouble wah_wah_tuning;
-  gint64 wah_wah_lfo_offset;
+  gint64 offset;
   guint i, i_stop;
 
   if(wah_wah_util == NULL ||
@@ -1450,7 +1624,7 @@ ags_wah_wah_util_compute_s64(AgsWahWahUtil *wah_wah_util)
   wah_wah_lfo_freq = wah_wah_util->wah_wah_lfo_freq;
   wah_wah_lfo_depth = wah_wah_util->wah_wah_lfo_depth;
   wah_wah_tuning = wah_wah_util->wah_wah_tuning;
-  wah_wah_lfo_offset = wah_wah_util->wah_wah_lfo_offset;
+  offset = wah_wah_util->offset;
 
   i = 0;
   
@@ -1475,14 +1649,14 @@ ags_wah_wah_util_compute_s64(AgsWahWahUtil *wah_wah_util)
     source += source_stride;
 
     v_volume = (ags_v8double) {
-			       (gdouble) (start_volume + (i) * sin((gdouble) ((wah_wah_lfo_offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 1) * sin((gdouble) ((wah_wah_lfo_offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 2) * sin((gdouble) ((wah_wah_lfo_offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 3) * sin((gdouble) ((wah_wah_lfo_offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 4) * sin((gdouble) ((wah_wah_lfo_offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 5) * sin((gdouble) ((wah_wah_lfo_offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 6) * sin((gdouble) ((wah_wah_lfo_offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 7) * sin((gdouble) ((wah_wah_lfo_offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))
+			       (gdouble) (start_volume + (i) * sin((gdouble) ((offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 1) * sin((gdouble) ((offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 2) * sin((gdouble) ((offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 3) * sin((gdouble) ((offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 4) * sin((gdouble) ((offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 5) * sin((gdouble) ((offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 6) * sin((gdouble) ((offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 7) * sin((gdouble) ((offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))
     };
 
     v_buffer *= v_volume;
@@ -1516,14 +1690,14 @@ ags_wah_wah_util_compute_s64(AgsWahWahUtil *wah_wah_util)
 			 (double) *(source += source_stride)};
 
     double v_volume[] = {(double) start_volume + i * amount,
-			 (double) (start_volume + (i) * sin((gdouble) ((wah_wah_lfo_offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 1) * sin((gdouble) ((wah_wah_lfo_offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 2) * sin((gdouble) ((wah_wah_lfo_offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 3) * sin((gdouble) ((wah_wah_lfo_offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 4) * sin((gdouble) ((wah_wah_lfo_offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 5) * sin((gdouble) ((wah_wah_lfo_offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 6) * sin((gdouble) ((wah_wah_lfo_offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 7) * sin((gdouble) ((wah_wah_lfo_offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))};
+			 (double) (start_volume + (i) * sin((gdouble) ((offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 1) * sin((gdouble) ((offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 2) * sin((gdouble) ((offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 3) * sin((gdouble) ((offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 4) * sin((gdouble) ((offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 5) * sin((gdouble) ((offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 6) * sin((gdouble) ((offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 7) * sin((gdouble) ((offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))};
 
     source += source_stride;
 
@@ -1546,14 +1720,14 @@ ags_wah_wah_util_compute_s64(AgsWahWahUtil *wah_wah_util)
   i_stop = wah_wah_util->buffer_length - (wah_wah_util->buffer_length % 8);
 
   for(; i < i_stop;){
-    *(destination) = (gint64) ((gint64) ((source)[0] * (double) (start_volume + (i) * sin((gdouble) ((wah_wah_lfo_offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
-    *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 1) * sin((gdouble) ((wah_wah_lfo_offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
-    *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 2) * sin((gdouble) ((wah_wah_lfo_offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
-    *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 3) * sin((gdouble) ((wah_wah_lfo_offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
-    *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 4) * sin((gdouble) ((wah_wah_lfo_offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
-    *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 5) * sin((gdouble) ((wah_wah_lfo_offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
-    *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 6) * sin((gdouble) ((wah_wah_lfo_offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
-    *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 7) * sin((gdouble) ((wah_wah_lfo_offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination) = (gint64) ((gint64) ((source)[0] * (double) (start_volume + (i) * sin((gdouble) ((offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 1) * sin((gdouble) ((offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 2) * sin((gdouble) ((offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 3) * sin((gdouble) ((offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 4) * sin((gdouble) ((offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 5) * sin((gdouble) ((offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 6) * sin((gdouble) ((offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 7) * sin((gdouble) ((offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
 
     destination += destination_stride;
     source += source_stride;
@@ -1564,7 +1738,7 @@ ags_wah_wah_util_compute_s64(AgsWahWahUtil *wah_wah_util)
 
   /* loop tail */
   for(; i < wah_wah_util->buffer_length;){
-    *(destination) = (gint64) ((gint64) ((source)[0] * (double) (start_volume + (i) * sin((gdouble) ((wah_wah_lfo_offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
+    *(destination) = (gint64) ((gint64) ((source)[0] * (double) (start_volume + (i) * sin((gdouble) ((offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))));
 
     destination += destination_stride;
     source += source_stride;
@@ -1596,7 +1770,7 @@ ags_wah_wah_util_compute_float(AgsWahWahUtil *wah_wah_util)
   gdouble wah_wah_lfo_freq;
   gdouble wah_wah_lfo_depth;
   gdouble wah_wah_tuning;
-  gint64 wah_wah_lfo_offset;
+  gint64 offset;
   guint i, i_stop;
 
   if(wah_wah_util == NULL ||
@@ -1621,7 +1795,7 @@ ags_wah_wah_util_compute_float(AgsWahWahUtil *wah_wah_util)
   wah_wah_lfo_freq = wah_wah_util->wah_wah_lfo_freq;
   wah_wah_lfo_depth = wah_wah_util->wah_wah_lfo_depth;
   wah_wah_tuning = wah_wah_util->wah_wah_tuning;
-  wah_wah_lfo_offset = wah_wah_util->wah_wah_lfo_offset;
+  offset = wah_wah_util->offset;
 
   i = 0;
   
@@ -1646,14 +1820,14 @@ ags_wah_wah_util_compute_float(AgsWahWahUtil *wah_wah_util)
     source += source_stride;
 
     v_volume = (ags_v8double) {
-			       (gdouble) (start_volume + (i) * sin((gdouble) ((wah_wah_lfo_offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 1) * sin((gdouble) ((wah_wah_lfo_offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 2) * sin((gdouble) ((wah_wah_lfo_offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 3) * sin((gdouble) ((wah_wah_lfo_offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 4) * sin((gdouble) ((wah_wah_lfo_offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 5) * sin((gdouble) ((wah_wah_lfo_offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 6) * sin((gdouble) ((wah_wah_lfo_offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 7) * sin((gdouble) ((wah_wah_lfo_offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))
+			       (gdouble) (start_volume + (i) * sin((gdouble) ((offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 1) * sin((gdouble) ((offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 2) * sin((gdouble) ((offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 3) * sin((gdouble) ((offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 4) * sin((gdouble) ((offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 5) * sin((gdouble) ((offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 6) * sin((gdouble) ((offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 7) * sin((gdouble) ((offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))
     };
 
     v_buffer *= v_volume;
@@ -1687,14 +1861,14 @@ ags_wah_wah_util_compute_float(AgsWahWahUtil *wah_wah_util)
 			 (double) *(source += source_stride)};
 
     double v_volume[] = {(double) start_volume + i * amount,
-			 (double) (start_volume + (i) * sin((gdouble) ((wah_wah_lfo_offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 1) * sin((gdouble) ((wah_wah_lfo_offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 2) * sin((gdouble) ((wah_wah_lfo_offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 3) * sin((gdouble) ((wah_wah_lfo_offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 4) * sin((gdouble) ((wah_wah_lfo_offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 5) * sin((gdouble) ((wah_wah_lfo_offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 6) * sin((gdouble) ((wah_wah_lfo_offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 7) * sin((gdouble) ((wah_wah_lfo_offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))};
+			 (double) (start_volume + (i) * sin((gdouble) ((offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 1) * sin((gdouble) ((offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 2) * sin((gdouble) ((offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 3) * sin((gdouble) ((offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 4) * sin((gdouble) ((offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 5) * sin((gdouble) ((offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 6) * sin((gdouble) ((offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 7) * sin((gdouble) ((offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))};
 
     source += source_stride;
 
@@ -1717,14 +1891,14 @@ ags_wah_wah_util_compute_float(AgsWahWahUtil *wah_wah_util)
   i_stop = wah_wah_util->buffer_length - (wah_wah_util->buffer_length % 8);
 
   for(; i < i_stop;){
-    *(destination) = (gfloat) ((source)[0] * (double) (start_volume + (i) * sin((gdouble) ((wah_wah_lfo_offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
-    *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * (double) (start_volume + (i + 1) * sin((gdouble) ((wah_wah_lfo_offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
-    *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * (double) (start_volume + (i + 2) * sin((gdouble) ((wah_wah_lfo_offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
-    *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * (double) (start_volume + (i + 3) * sin((gdouble) ((wah_wah_lfo_offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
-    *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * (double) (start_volume + (i + 4) * sin((gdouble) ((wah_wah_lfo_offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
-    *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * (double) (start_volume + (i + 5) * sin((gdouble) ((wah_wah_lfo_offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
-    *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * (double) (start_volume + (i + 6) * sin((gdouble) ((wah_wah_lfo_offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
-    *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * (double) (start_volume + (i + 7) * sin((gdouble) ((wah_wah_lfo_offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
+    *(destination) = (gfloat) ((source)[0] * (double) (start_volume + (i) * sin((gdouble) ((offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
+    *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * (double) (start_volume + (i + 1) * sin((gdouble) ((offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
+    *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * (double) (start_volume + (i + 2) * sin((gdouble) ((offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
+    *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * (double) (start_volume + (i + 3) * sin((gdouble) ((offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
+    *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * (double) (start_volume + (i + 4) * sin((gdouble) ((offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
+    *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * (double) (start_volume + (i + 5) * sin((gdouble) ((offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
+    *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * (double) (start_volume + (i + 6) * sin((gdouble) ((offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
+    *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * (double) (start_volume + (i + 7) * sin((gdouble) ((offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
 
     destination += destination_stride;
     source += source_stride;
@@ -1735,7 +1909,7 @@ ags_wah_wah_util_compute_float(AgsWahWahUtil *wah_wah_util)
 
   /* loop tail */
   for(; i < wah_wah_util->buffer_length;){
-    *(destination) = (gfloat) ((source)[0] * (double) (start_volume + (i) * sin((gdouble) ((wah_wah_lfo_offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
+    *(destination) = (gfloat) ((source)[0] * (double) (start_volume + (i) * sin((gdouble) ((offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
 
     destination += destination_stride;
     source += source_stride;
@@ -1767,7 +1941,7 @@ ags_wah_wah_util_compute_double(AgsWahWahUtil *wah_wah_util)
   gdouble wah_wah_lfo_freq;
   gdouble wah_wah_lfo_depth;
   gdouble wah_wah_tuning;
-  gint64 wah_wah_lfo_offset;
+  gint64 offset;
   guint i, i_stop;
 
   if(wah_wah_util == NULL ||
@@ -1792,7 +1966,7 @@ ags_wah_wah_util_compute_double(AgsWahWahUtil *wah_wah_util)
   wah_wah_lfo_freq = wah_wah_util->wah_wah_lfo_freq;
   wah_wah_lfo_depth = wah_wah_util->wah_wah_lfo_depth;
   wah_wah_tuning = wah_wah_util->wah_wah_tuning;
-  wah_wah_lfo_offset = wah_wah_util->wah_wah_lfo_offset;
+  offset = wah_wah_util->offset;
 
   i = 0;
   
@@ -1817,14 +1991,14 @@ ags_wah_wah_util_compute_double(AgsWahWahUtil *wah_wah_util)
     source += source_stride;
 
     v_volume = (ags_v8double) {
-			       (gdouble) (start_volume + (i) * sin((gdouble) ((wah_wah_lfo_offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 1) * sin((gdouble) ((wah_wah_lfo_offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 2) * sin((gdouble) ((wah_wah_lfo_offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 3) * sin((gdouble) ((wah_wah_lfo_offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 4) * sin((gdouble) ((wah_wah_lfo_offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 5) * sin((gdouble) ((wah_wah_lfo_offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 6) * sin((gdouble) ((wah_wah_lfo_offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			       (gdouble) (start_volume + (i + 7) * sin((gdouble) ((wah_wah_lfo_offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))
+			       (gdouble) (start_volume + (i) * sin((gdouble) ((offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 1) * sin((gdouble) ((offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 2) * sin((gdouble) ((offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 3) * sin((gdouble) ((offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 4) * sin((gdouble) ((offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 5) * sin((gdouble) ((offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 6) * sin((gdouble) ((offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			       (gdouble) (start_volume + (i + 7) * sin((gdouble) ((offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))
     };
 
     v_buffer *= v_volume;
@@ -1858,14 +2032,14 @@ ags_wah_wah_util_compute_double(AgsWahWahUtil *wah_wah_util)
 			 (double) *(source += source_stride)};
 
     double v_volume[] = {(double) start_volume + i * amount,
-			 (double) (start_volume + (i) * sin((gdouble) ((wah_wah_lfo_offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 1) * sin((gdouble) ((wah_wah_lfo_offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 2) * sin((gdouble) ((wah_wah_lfo_offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 3) * sin((gdouble) ((wah_wah_lfo_offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 4) * sin((gdouble) ((wah_wah_lfo_offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 5) * sin((gdouble) ((wah_wah_lfo_offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 6) * sin((gdouble) ((wah_wah_lfo_offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
-			 (double) (start_volume + (i + 7) * sin((gdouble) ((wah_wah_lfo_offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))};
+			 (double) (start_volume + (i) * sin((gdouble) ((offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 1) * sin((gdouble) ((offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 2) * sin((gdouble) ((offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 3) * sin((gdouble) ((offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 4) * sin((gdouble) ((offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 5) * sin((gdouble) ((offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 6) * sin((gdouble) ((offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)),
+			 (double) (start_volume + (i + 7) * sin((gdouble) ((offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth))};
 
     source += source_stride;
 
@@ -1888,14 +2062,14 @@ ags_wah_wah_util_compute_double(AgsWahWahUtil *wah_wah_util)
   i_stop = wah_wah_util->buffer_length - (wah_wah_util->buffer_length % 8);
 
   for(; i < i_stop;){
-    *(destination) = (gdouble) ((source)[0] * (double) (start_volume + (i) * sin((gdouble) ((wah_wah_lfo_offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
-    *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * (double) (start_volume + (i + 1) * sin((gdouble) ((wah_wah_lfo_offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
-    *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * (double) (start_volume + (i + 2) * sin((gdouble) ((wah_wah_lfo_offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
-    *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * (double) (start_volume + (i + 3) * sin((gdouble) ((wah_wah_lfo_offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
-    *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * (double) (start_volume + (i + 4) * sin((gdouble) ((wah_wah_lfo_offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
-    *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * (double) (start_volume + (i + 5) * sin((gdouble) ((wah_wah_lfo_offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
-    *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * (double) (start_volume + (i + 6) * sin((gdouble) ((wah_wah_lfo_offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
-    *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * (double) (start_volume + (i + 7) * sin((gdouble) ((wah_wah_lfo_offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
+    *(destination) = (gdouble) ((source)[0] * (double) (start_volume + (i) * sin((gdouble) ((offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
+    *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * (double) (start_volume + (i + 1) * sin((gdouble) ((offset + i + 1) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
+    *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * (double) (start_volume + (i + 2) * sin((gdouble) ((offset + i + 2) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
+    *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * (double) (start_volume + (i + 3) * sin((gdouble) ((offset + i + 3) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
+    *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * (double) (start_volume + (i + 4) * sin((gdouble) ((offset + i + 4) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
+    *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * (double) (start_volume + (i + 5) * sin((gdouble) ((offset + i + 5) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
+    *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * (double) (start_volume + (i + 6) * sin((gdouble) ((offset + i + 6) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
+    *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * (double) (start_volume + (i + 7) * sin((gdouble) ((offset + i + 7) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
 
     destination += destination_stride;
     source += source_stride;
@@ -1906,7 +2080,7 @@ ags_wah_wah_util_compute_double(AgsWahWahUtil *wah_wah_util)
 
   /* loop tail */
   for(; i < wah_wah_util->buffer_length;){
-    *(destination) = (gdouble) ((source)[0] * (double) (start_volume + (i) * sin((gdouble) ((wah_wah_lfo_offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
+    *(destination) = (gdouble) ((source)[0] * (double) (start_volume + (i) * sin((gdouble) ((offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
 
     destination += destination_stride;
     source += source_stride;
@@ -1938,7 +2112,7 @@ ags_wah_wah_util_compute_complex(AgsWahWahUtil *wah_wah_util)
   gdouble wah_wah_lfo_freq;
   gdouble wah_wah_lfo_depth;
   gdouble wah_wah_tuning;
-  gint64 wah_wah_lfo_offset;
+  gint64 offset;
   guint i;
 
   if(wah_wah_util == NULL ||
@@ -1963,7 +2137,7 @@ ags_wah_wah_util_compute_complex(AgsWahWahUtil *wah_wah_util)
   wah_wah_lfo_freq = wah_wah_util->wah_wah_lfo_freq;
   wah_wah_lfo_depth = wah_wah_util->wah_wah_lfo_depth;
   wah_wah_tuning = wah_wah_util->wah_wah_tuning;
-  wah_wah_lfo_offset = wah_wah_util->wah_wah_lfo_offset;
+  offset = wah_wah_util->offset;
 
   i = 0;
   
@@ -1973,7 +2147,7 @@ ags_wah_wah_util_compute_complex(AgsWahWahUtil *wah_wah_util)
     z = ags_complex_get(source);
 
     ags_complex_set(destination,
-		    z * (double) (start_volume + (i) * sin((gdouble) ((wah_wah_lfo_offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
+		    z * (double) (start_volume + (i) * sin((gdouble) ((offset + i) * amount * 2.0 * M_PI * (wah_wah_lfo_freq * exp2(wah_wah_tuning / 1200.0)) / samplerate) * wah_wah_lfo_depth)));
 
     destination += destination_stride;
     source += source_stride;

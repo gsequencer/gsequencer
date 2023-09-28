@@ -52,6 +52,10 @@ struct _AgsSynthUtil
   
   guint frame_count;
   guint offset;
+
+  gboolean note_256th_mode;
+
+  guint offset_256th;
 };
 
 GType ags_synth_util_get_type(void);
@@ -104,6 +108,14 @@ void ags_synth_util_set_frame_count(AgsSynthUtil *synth_util,
 guint ags_synth_util_get_offset(AgsSynthUtil *synth_util);
 void ags_synth_util_set_offset(AgsSynthUtil *synth_util,
 			       guint offset);
+
+gboolean ags_synth_util_get_note_256th_mode(AgsSynthUtil *synth_util);
+void ags_synth_util_set_note_256th_mode(AgsSynthUtil *synth_util,
+					gboolean note_256th_mode);
+
+guint ags_synth_util_get_offset_256th(AgsSynthUtil *synth_util);
+void ags_synth_util_set_offset_256th(AgsSynthUtil *synth_util,
+				     guint offset_256th);
 
 /* zero-crossing */
 guint ags_synth_util_get_xcross_count_s8(gint8 *buffer,

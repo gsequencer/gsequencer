@@ -666,6 +666,7 @@ ags_track_mapper_map(AgsTrackMapper *track_mapper)
   guint audio_channels;
   guint n_key_on, n_key_off;
   guint x, y, velocity;
+  guint x_256th;
   guint prev_x;
   guint default_length;
   guint i;
@@ -761,6 +762,14 @@ ags_track_mapper_map(AgsTrackMapper *track_mapper)
 						 delta_time);
 	  x -= track_collection->first_offset;
 
+	  x_256th = ags_midi_util_delta_time_to_note_256th_offset(&midi_util,
+								  delay_factor,
+								  track_collection->division,
+								  track_collection->tempo,
+								  (glong) track_collection->bpm,
+								  delta_time);
+	  x_256th -= track_collection->first_note_256th_offset;
+	  
 	  str = xmlGetProp(child,
 			   BAD_CAST "note");
 	  y = (guint) g_ascii_strtoull(str,
@@ -781,6 +790,10 @@ ags_track_mapper_map(AgsTrackMapper *track_mapper)
 	    note = ags_note_new();
 	    note->x[0] = x;
 	    note->x[1] = x + default_length;
+
+	    note->x_256th[0] = x_256th;
+	    note->x_256th[1] = x_256th + 16 * default_length;
+
 	    note->y = y;
 
 	    /* velocity */
@@ -834,6 +847,14 @@ ags_track_mapper_map(AgsTrackMapper *track_mapper)
 						 delta_time);
 	  x -= track_collection->first_offset;
 
+	  x_256th = ags_midi_util_delta_time_to_note_256th_offset(&midi_util,
+								  delay_factor,
+								  track_collection->division,
+								  track_collection->tempo,
+								  (glong) track_collection->bpm,
+								  delta_time);
+	  x_256th -= track_collection->first_note_256th_offset;
+
 	  str = xmlGetProp(child,
 			   BAD_CAST "note");
 	  y = (guint) g_ascii_strtoull(str,
@@ -863,7 +884,13 @@ ags_track_mapper_map(AgsTrackMapper *track_mapper)
 		}else{
 		  note->x[1] = x;
 		}
-	      
+
+		if(note->x_256th[0] == x_256th){
+		  note->x_256th[1] = x_256th + 1;
+		}else{
+		  note->x_256th[1] = x_256th;
+		}
+		
 		note->y = y;
 
 		/* velocity */

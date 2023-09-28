@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -61,6 +61,10 @@ struct _AgsFMSynthUtil
   
   guint frame_count;
   guint offset;
+
+  gboolean note_256th_mode;
+
+  guint offset_256th;
 };
 
 GType ags_fm_synth_util_get_type(void);
@@ -129,6 +133,14 @@ void ags_fm_synth_util_set_frame_count(AgsFMSynthUtil *fm_synth_util,
 guint ags_fm_synth_util_get_offset(AgsFMSynthUtil *fm_synth_util);
 void ags_fm_synth_util_set_offset(AgsFMSynthUtil *fm_synth_util,
 				  guint offset);
+
+gboolean ags_fm_synth_util_get_note_256th_mode(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_set_note_256th_mode(AgsFMSynthUtil *fm_synth_util,
+					   gboolean note_256th_mode);
+
+guint ags_fm_synth_util_get_offset_256th(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_set_offset_256th(AgsFMSynthUtil *fm_synth_util,
+					guint offset_256th);
 
 /* fm sin oscillator */
 void ags_fm_synth_util_compute_sin_s8(AgsFMSynthUtil *fm_synth_util);

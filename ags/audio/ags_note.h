@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -100,6 +100,10 @@ struct _AgsNote
   
   gchar *note_name;
   gdouble frequency;
+
+  gboolean feed_x_256th;
+  
+  guint x_256th[2];
 };
 
 struct _AgsNoteClass
@@ -154,6 +158,16 @@ void ags_note_set_release(AgsNote *note, AgsComplex *release);
 AgsComplex* ags_note_get_ratio(AgsNote *note);
 void ags_note_set_ratio(AgsNote *note, AgsComplex *ratio);
 
+gboolean ags_note_get_feed_x_256th(AgsNote *note);
+void ags_note_set_feed_x_256th(AgsNote *note, gboolean feed_x_256th);
+
+guint ags_note_get_x0_256th(AgsNote *note);
+void ags_note_set_x0_256th(AgsNote *note, guint x0_256th);
+
+guint ags_note_get_x1_256th(AgsNote *note);
+void ags_note_set_x1_256th(AgsNote *note, guint x1_256th);
+
+/* */
 GList* ags_note_find_prev(GList *note,
 			  guint x0, guint y);
 GList* ags_note_find_next(GList *note,

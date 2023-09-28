@@ -163,6 +163,13 @@ ags_fluid_interpolate_7th_order_util_alloc()
   ptr->vibrato_lfo_frame_count = ptr->samplerate / ptr->vibrato_lfo_freq;
   ptr->vibrato_lfo_offset = 0;
 
+  ptr->frame_count = 0;
+  ptr->offset = 0;
+
+  ptr->note_256th_mode = TRUE;
+
+  ptr->offset_256th = 0;
+
   return(ptr);
 }
 
@@ -208,6 +215,13 @@ ags_fluid_interpolate_7th_order_util_copy(AgsFluidInterpolate7thOrderUtil *ptr)
 
   new_ptr->vibrato_lfo_frame_count = ptr->vibrato_lfo_frame_count;
   new_ptr->vibrato_lfo_offset = ptr->vibrato_lfo_offset;
+
+  new_ptr->frame_count = ptr->frame_count;
+  new_ptr->offset = ptr->offset;
+
+  new_ptr->note_256th_mode = ptr->note_256th_mode;
+
+  new_ptr->offset_256th = ptr->offset_256th;
 
   return(new_ptr);
 }
@@ -901,6 +915,166 @@ ags_fluid_interpolate_7th_order_util_set_vibrato_lfo_offset(AgsFluidInterpolate7
 }
 
 /**
+ * ags_fluid_interpolate_7th_order_util_get_frame_count:
+ * @fluid_interpolate_7th_order_util: the #AgsFluidInterpolate7thOrderUtil-struct
+ * 
+ * Get frame count of @fluid_interpolate_7th_order_util.
+ * 
+ * Returns: the frame count
+ * 
+ * Since: 6.1.0
+ */
+guint
+ags_fluid_interpolate_7th_order_util_get_frame_count(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util)
+{
+  if(fluid_interpolate_7th_order_util == NULL){
+    return(0);
+  }
+
+  return(fluid_interpolate_7th_order_util->frame_count);
+}
+
+/**
+ * ags_fluid_interpolate_7th_order_util_set_frame_count:
+ * @fluid_interpolate_7th_order_util: the #AgsFluidInterpolate7thOrderUtil-struct
+ * @frame_count: the frame count
+ *
+ * Set @frame_count of @fluid_interpolate_7th_order_util.
+ *
+ * Since: 6.1.0
+ */
+void
+ags_fluid_interpolate_7th_order_util_set_frame_count(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util,
+						     guint frame_count)
+{
+  if(fluid_interpolate_7th_order_util == NULL){
+    return;
+  }
+
+  fluid_interpolate_7th_order_util->frame_count = frame_count;
+}
+
+/**
+ * ags_fluid_interpolate_7th_order_util_get_offset:
+ * @fluid_interpolate_7th_order_util: the #AgsFluidInterpolate7thOrderUtil-struct
+ * 
+ * Get offset of @fluid_interpolate_7th_order_util.
+ * 
+ * Returns: the offset
+ * 
+ * Since: 6.1.0
+ */
+guint
+ags_fluid_interpolate_7th_order_util_get_offset(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util)
+{
+  if(fluid_interpolate_7th_order_util == NULL){
+    return(0);
+  }
+
+  return(fluid_interpolate_7th_order_util->offset);
+}
+
+/**
+ * ags_fluid_interpolate_7th_order_util_set_offset:
+ * @fluid_interpolate_7th_order_util: the #AgsFluidInterpolate7thOrderUtil-struct
+ * @offset: the offset
+ *
+ * Set @offset of @fluid_interpolate_7th_order_util.
+ *
+ * Since: 6.1.0
+ */
+void
+ags_fluid_interpolate_7th_order_util_set_offset(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util,
+						guint offset)
+{
+  if(fluid_interpolate_7th_order_util == NULL){
+    return;
+  }
+
+  fluid_interpolate_7th_order_util->offset = offset;
+}
+
+/**
+ * ags_fluid_interpolate_7th_order_util_get_note_256th_mode:
+ * @fluid_interpolate_7th_order_util: the #AgsFluidInterpolate7thOrderUtil-struct
+ * 
+ * Get note 256th mode of @fluid_interpolate_7th_order_util.
+ * 
+ * Returns: %TRUE if note 256th mode, otherwise %FALSE
+ * 
+ * Since: 6.1.0
+ */
+gboolean
+ags_fluid_interpolate_7th_order_util_get_note_256th_mode(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util)
+{
+  if(fluid_interpolate_7th_order_util == NULL){
+    return(0);
+  }
+
+  return(fluid_interpolate_7th_order_util->note_256th_mode);
+}
+
+/**
+ * ags_fluid_interpolate_7th_order_util_set_note_256th_mode:
+ * @fluid_interpolate_7th_order_util: the #AgsFluidInterpolate7thOrderUtil-struct
+ * @note_256th_mode: the note 256th mode
+ *
+ * Set @note_256th_mode of @fluid_interpolate_7th_order_util.
+ *
+ * Since: 6.1.0
+ */
+void
+ags_fluid_interpolate_7th_order_util_set_note_256th_mode(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util,
+							 gboolean note_256th_mode)
+{
+  if(fluid_interpolate_7th_order_util == NULL){
+    return;
+  }
+
+  fluid_interpolate_7th_order_util->note_256th_mode = note_256th_mode;
+}
+
+/**
+ * ags_fluid_interpolate_7th_order_util_get_offset_256th:
+ * @fluid_interpolate_7th_order_util: the #AgsFluidInterpolate7thOrderUtil-struct
+ * 
+ * Get offset as note 256th of @fluid_interpolate_7th_order_util.
+ * 
+ * Returns: the offset as note 256th
+ * 
+ * Since: 6.1.0
+ */
+guint
+ags_fluid_interpolate_7th_order_util_get_offset_256th(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util)
+{
+  if(fluid_interpolate_7th_order_util == NULL){
+    return(0);
+  }
+
+  return(fluid_interpolate_7th_order_util->offset_256th);
+}
+
+/**
+ * ags_fluid_interpolate_7th_order_util_set_offset_256th:
+ * @fluid_interpolate_7th_order_util: the #AgsFluidInterpolate7thOrderUtil-struct
+ * @offset_256th: the offset as note 256th
+ *
+ * Set @offset_256th of @fluid_interpolate_7th_order_util.
+ *
+ * Since: 6.1.0
+ */
+void
+ags_fluid_interpolate_7th_order_util_set_offset_256th(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util,
+						      guint offset_256th)
+{
+  if(fluid_interpolate_7th_order_util == NULL){
+    return;
+  }
+  
+  fluid_interpolate_7th_order_util->offset_256th = offset_256th;
+}
+
+/**
  * ags_fluid_interpolate_7th_order_util_pitch_s8:
  * @fluid_interpolate_7th_order_util: the #AgsFluidInterpolate7thOrderUtil-struct
  * 
@@ -922,7 +1096,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s8(AgsFluidInterpolate7thOrderUtil *f
   gdouble vibrato_lfo_depth;
   gdouble vibrato_lfo_freq;
   gdouble vibrato_tuning;
-  guint vibrato_lfo_offset;
+  guint offset;
   guint buffer_length;
   gdouble phase_incr;
   guint64 dsp_phase;
@@ -960,7 +1134,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s8(AgsFluidInterpolate7thOrderUtil *f
   vibrato_lfo_depth = fluid_interpolate_7th_order_util->vibrato_lfo_depth;
   vibrato_lfo_freq = fluid_interpolate_7th_order_util->vibrato_lfo_freq;
   vibrato_tuning = fluid_interpolate_7th_order_util->vibrato_tuning;
-  vibrato_lfo_offset = fluid_interpolate_7th_order_util->vibrato_lfo_offset;
+  offset = fluid_interpolate_7th_order_util->offset;
 
   if(fluid_interpolate_7th_order_util->vibrato_enabled == FALSE){
     vibrato_gain = 0.0;
@@ -995,7 +1169,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s8(AgsFluidInterpolate7thOrderUtil *f
 
     gint row;
     
-    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -1025,7 +1199,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s8(AgsFluidInterpolate7thOrderUtil *f
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
-    vibrato_lfo_offset += 1;
+    offset += 1;
   }
 
   start_index++;
@@ -1038,7 +1212,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s8(AgsFluidInterpolate7thOrderUtil *f
     
     root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   
-    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -1068,7 +1242,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s8(AgsFluidInterpolate7thOrderUtil *f
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
-    vibrato_lfo_offset += 1;
+    offset += 1;
   }
 
   start_index++;
@@ -1082,7 +1256,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s8(AgsFluidInterpolate7thOrderUtil *f
     
     root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   
-    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -1112,7 +1286,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s8(AgsFluidInterpolate7thOrderUtil *f
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
-    vibrato_lfo_offset += 1;
+    offset += 1;
   }
 
   /* set back to original start index */
@@ -1127,7 +1301,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s8(AgsFluidInterpolate7thOrderUtil *f
     
     root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   
-    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -1157,10 +1331,10 @@ ags_fluid_interpolate_7th_order_util_pitch_s8(AgsFluidInterpolate7thOrderUtil *f
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
-    vibrato_lfo_offset += 1;
+    offset += 1;
   }
 
-  fluid_interpolate_7th_order_util->vibrato_lfo_offset = vibrato_lfo_offset;
+  fluid_interpolate_7th_order_util->offset = offset;
 }
 
 /**
@@ -1185,7 +1359,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s16(AgsFluidInterpolate7thOrderUtil *
   gdouble vibrato_lfo_depth;
   gdouble vibrato_lfo_freq;
   gdouble vibrato_tuning;
-  guint vibrato_lfo_offset;
+  guint offset;
   guint buffer_length;
   gdouble phase_incr;
   guint64 dsp_phase;
@@ -1223,7 +1397,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s16(AgsFluidInterpolate7thOrderUtil *
   vibrato_lfo_depth = fluid_interpolate_7th_order_util->vibrato_lfo_depth;
   vibrato_lfo_freq = fluid_interpolate_7th_order_util->vibrato_lfo_freq;
   vibrato_tuning = fluid_interpolate_7th_order_util->vibrato_tuning;
-  vibrato_lfo_offset = fluid_interpolate_7th_order_util->vibrato_lfo_offset;
+  offset = fluid_interpolate_7th_order_util->offset;
 
   if(fluid_interpolate_7th_order_util->vibrato_enabled == FALSE){
     vibrato_gain = 0.0;
@@ -1260,7 +1434,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s16(AgsFluidInterpolate7thOrderUtil *
     
     root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   
-    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -1290,7 +1464,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s16(AgsFluidInterpolate7thOrderUtil *
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
-    vibrato_lfo_offset += 1;
+    offset += 1;
   }
 
   start_index++;
@@ -1303,7 +1477,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s16(AgsFluidInterpolate7thOrderUtil *
     
     root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   
-    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -1333,7 +1507,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s16(AgsFluidInterpolate7thOrderUtil *
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
-    vibrato_lfo_offset += 1;
+    offset += 1;
   }
 
   start_index++;
@@ -1347,7 +1521,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s16(AgsFluidInterpolate7thOrderUtil *
     
     root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   
-    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -1377,7 +1551,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s16(AgsFluidInterpolate7thOrderUtil *
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
-    vibrato_lfo_offset += 1;
+    offset += 1;
   }
 
   /* set back to original start index */
@@ -1392,7 +1566,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s16(AgsFluidInterpolate7thOrderUtil *
     
     root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   
-    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -1422,10 +1596,10 @@ ags_fluid_interpolate_7th_order_util_pitch_s16(AgsFluidInterpolate7thOrderUtil *
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
-    vibrato_lfo_offset += 1;
+    offset += 1;
   }
 
-  fluid_interpolate_7th_order_util->vibrato_lfo_offset = vibrato_lfo_offset;
+  fluid_interpolate_7th_order_util->offset = offset;
 }
 
 /**
@@ -1450,7 +1624,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s24(AgsFluidInterpolate7thOrderUtil *
   gdouble vibrato_lfo_depth;
   gdouble vibrato_lfo_freq;
   gdouble vibrato_tuning;
-  guint vibrato_lfo_offset;
+  guint offset;
   guint buffer_length;
   gdouble phase_incr;
   guint64 dsp_phase;
@@ -1488,7 +1662,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s24(AgsFluidInterpolate7thOrderUtil *
   vibrato_lfo_depth = fluid_interpolate_7th_order_util->vibrato_lfo_depth;
   vibrato_lfo_freq = fluid_interpolate_7th_order_util->vibrato_lfo_freq;
   vibrato_tuning = fluid_interpolate_7th_order_util->vibrato_tuning;
-  vibrato_lfo_offset = fluid_interpolate_7th_order_util->vibrato_lfo_offset;
+  offset = fluid_interpolate_7th_order_util->offset;
 
   if(fluid_interpolate_7th_order_util->vibrato_enabled == FALSE){
     vibrato_gain = 0.0;
@@ -1525,7 +1699,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s24(AgsFluidInterpolate7thOrderUtil *
     
     root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   
-    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -1555,7 +1729,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s24(AgsFluidInterpolate7thOrderUtil *
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
-    vibrato_lfo_offset += 1;
+    offset += 1;
   }
 
   start_index++;
@@ -1568,7 +1742,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s24(AgsFluidInterpolate7thOrderUtil *
     
     root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   
-    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -1598,7 +1772,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s24(AgsFluidInterpolate7thOrderUtil *
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
-    vibrato_lfo_offset += 1;
+    offset += 1;
   }
 
   start_index++;
@@ -1612,7 +1786,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s24(AgsFluidInterpolate7thOrderUtil *
     
     root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   
-    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -1642,7 +1816,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s24(AgsFluidInterpolate7thOrderUtil *
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
-    vibrato_lfo_offset += 1;
+    offset += 1;
   }
 
   /* set back to original start index */
@@ -1657,7 +1831,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s24(AgsFluidInterpolate7thOrderUtil *
     
     root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   
-    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -1687,10 +1861,10 @@ ags_fluid_interpolate_7th_order_util_pitch_s24(AgsFluidInterpolate7thOrderUtil *
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
-    vibrato_lfo_offset += 1;
+    offset += 1;
   }
 
-  fluid_interpolate_7th_order_util->vibrato_lfo_offset = vibrato_lfo_offset;
+  fluid_interpolate_7th_order_util->offset = offset;
 }
 
 /**
@@ -1715,7 +1889,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s32(AgsFluidInterpolate7thOrderUtil *
   gdouble vibrato_lfo_depth;
   gdouble vibrato_lfo_freq;
   gdouble vibrato_tuning;
-  guint vibrato_lfo_offset;
+  guint offset;
   guint buffer_length;
   gdouble phase_incr;
   guint64 dsp_phase;
@@ -1753,7 +1927,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s32(AgsFluidInterpolate7thOrderUtil *
   vibrato_lfo_depth = fluid_interpolate_7th_order_util->vibrato_lfo_depth;
   vibrato_lfo_freq = fluid_interpolate_7th_order_util->vibrato_lfo_freq;
   vibrato_tuning = fluid_interpolate_7th_order_util->vibrato_tuning;
-  vibrato_lfo_offset = fluid_interpolate_7th_order_util->vibrato_lfo_offset;
+  offset = fluid_interpolate_7th_order_util->offset;
 
   if(fluid_interpolate_7th_order_util->vibrato_enabled == FALSE){
     vibrato_gain = 0.0;
@@ -1790,7 +1964,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s32(AgsFluidInterpolate7thOrderUtil *
     
     root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   
-    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -1820,7 +1994,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s32(AgsFluidInterpolate7thOrderUtil *
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
-    vibrato_lfo_offset += 1;
+    offset += 1;
   }
 
   start_index++;
@@ -1833,7 +2007,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s32(AgsFluidInterpolate7thOrderUtil *
     
     root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   
-    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -1863,7 +2037,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s32(AgsFluidInterpolate7thOrderUtil *
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
-    vibrato_lfo_offset += 1;
+    offset += 1;
   }
 
   start_index++;
@@ -1877,7 +2051,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s32(AgsFluidInterpolate7thOrderUtil *
     
     root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   
-    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -1907,7 +2081,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s32(AgsFluidInterpolate7thOrderUtil *
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
-    vibrato_lfo_offset += 1;
+    offset += 1;
   }
 
   /* set back to original start index */
@@ -1922,7 +2096,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s32(AgsFluidInterpolate7thOrderUtil *
     
     root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   
-    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -1952,10 +2126,10 @@ ags_fluid_interpolate_7th_order_util_pitch_s32(AgsFluidInterpolate7thOrderUtil *
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
-    vibrato_lfo_offset += 1;
+    offset += 1;
   }
 
-  fluid_interpolate_7th_order_util->vibrato_lfo_offset = vibrato_lfo_offset;
+  fluid_interpolate_7th_order_util->offset = offset;
 }
 
 /**
@@ -1980,7 +2154,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s64(AgsFluidInterpolate7thOrderUtil *
   gdouble vibrato_lfo_depth;
   gdouble vibrato_lfo_freq;
   gdouble vibrato_tuning;
-  guint vibrato_lfo_offset;
+  guint offset;
   guint buffer_length;
   gdouble phase_incr;
   guint64 dsp_phase;
@@ -2018,7 +2192,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s64(AgsFluidInterpolate7thOrderUtil *
   vibrato_lfo_depth = fluid_interpolate_7th_order_util->vibrato_lfo_depth;
   vibrato_lfo_freq = fluid_interpolate_7th_order_util->vibrato_lfo_freq;
   vibrato_tuning = fluid_interpolate_7th_order_util->vibrato_tuning;
-  vibrato_lfo_offset = fluid_interpolate_7th_order_util->vibrato_lfo_offset;
+  offset = fluid_interpolate_7th_order_util->offset;
 
   if(fluid_interpolate_7th_order_util->vibrato_enabled == FALSE){
     vibrato_gain = 0.0;
@@ -2055,7 +2229,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s64(AgsFluidInterpolate7thOrderUtil *
     
     root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   
-    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -2085,7 +2259,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s64(AgsFluidInterpolate7thOrderUtil *
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
-    vibrato_lfo_offset += 1;
+    offset += 1;
   }
 
   start_index++;
@@ -2098,7 +2272,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s64(AgsFluidInterpolate7thOrderUtil *
     
     root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   
-    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -2128,7 +2302,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s64(AgsFluidInterpolate7thOrderUtil *
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
-    vibrato_lfo_offset += 1;
+    offset += 1;
   }
 
   start_index++;
@@ -2142,7 +2316,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s64(AgsFluidInterpolate7thOrderUtil *
     
     root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   
-    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -2172,7 +2346,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s64(AgsFluidInterpolate7thOrderUtil *
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
-    vibrato_lfo_offset += 1;
+    offset += 1;
   }
 
   /* set back to original start index */
@@ -2187,7 +2361,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s64(AgsFluidInterpolate7thOrderUtil *
     
     root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   
-    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -2217,10 +2391,10 @@ ags_fluid_interpolate_7th_order_util_pitch_s64(AgsFluidInterpolate7thOrderUtil *
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
-    vibrato_lfo_offset += 1;
+    offset += 1;
   }
 
-  fluid_interpolate_7th_order_util->vibrato_lfo_offset = vibrato_lfo_offset;
+  fluid_interpolate_7th_order_util->offset = offset;
 }
 
 /**
@@ -2245,7 +2419,7 @@ ags_fluid_interpolate_7th_order_util_pitch_float(AgsFluidInterpolate7thOrderUtil
   gdouble vibrato_lfo_depth;
   gdouble vibrato_lfo_freq;
   gdouble vibrato_tuning;
-  guint vibrato_lfo_offset;
+  guint offset;
   guint buffer_length;
   gdouble phase_incr;
   guint64 dsp_phase;
@@ -2283,7 +2457,7 @@ ags_fluid_interpolate_7th_order_util_pitch_float(AgsFluidInterpolate7thOrderUtil
   vibrato_lfo_depth = fluid_interpolate_7th_order_util->vibrato_lfo_depth;
   vibrato_lfo_freq = fluid_interpolate_7th_order_util->vibrato_lfo_freq;
   vibrato_tuning = fluid_interpolate_7th_order_util->vibrato_tuning;
-  vibrato_lfo_offset = fluid_interpolate_7th_order_util->vibrato_lfo_offset;
+  offset = fluid_interpolate_7th_order_util->offset;
 
   if(fluid_interpolate_7th_order_util->vibrato_enabled == FALSE){
     vibrato_gain = 0.0;
@@ -2320,7 +2494,7 @@ ags_fluid_interpolate_7th_order_util_pitch_float(AgsFluidInterpolate7thOrderUtil
     
     root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   
-    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -2350,7 +2524,7 @@ ags_fluid_interpolate_7th_order_util_pitch_float(AgsFluidInterpolate7thOrderUtil
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
-    vibrato_lfo_offset += 1;
+    offset += 1;
   }
 
   start_index++;
@@ -2363,7 +2537,7 @@ ags_fluid_interpolate_7th_order_util_pitch_float(AgsFluidInterpolate7thOrderUtil
     
     root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   
-    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -2393,7 +2567,7 @@ ags_fluid_interpolate_7th_order_util_pitch_float(AgsFluidInterpolate7thOrderUtil
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
-    vibrato_lfo_offset += 1;
+    offset += 1;
   }
 
   start_index++;
@@ -2407,7 +2581,7 @@ ags_fluid_interpolate_7th_order_util_pitch_float(AgsFluidInterpolate7thOrderUtil
     
     root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   
-    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -2437,7 +2611,7 @@ ags_fluid_interpolate_7th_order_util_pitch_float(AgsFluidInterpolate7thOrderUtil
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
-    vibrato_lfo_offset += 1;
+    offset += 1;
   }
 
   /* set back to original start index */
@@ -2452,7 +2626,7 @@ ags_fluid_interpolate_7th_order_util_pitch_float(AgsFluidInterpolate7thOrderUtil
     
     root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   
-    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -2482,10 +2656,10 @@ ags_fluid_interpolate_7th_order_util_pitch_float(AgsFluidInterpolate7thOrderUtil
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
-    vibrato_lfo_offset += 1;
+    offset += 1;
   }
 
-  fluid_interpolate_7th_order_util->vibrato_lfo_offset = vibrato_lfo_offset;
+  fluid_interpolate_7th_order_util->offset = offset;
 }
 
 /**
@@ -2510,7 +2684,7 @@ ags_fluid_interpolate_7th_order_util_pitch_double(AgsFluidInterpolate7thOrderUti
   gdouble vibrato_lfo_depth;
   gdouble vibrato_lfo_freq;
   gdouble vibrato_tuning;
-  guint vibrato_lfo_offset;
+  guint offset;
   guint buffer_length;
   gdouble phase_incr;
   guint64 dsp_phase;
@@ -2548,7 +2722,7 @@ ags_fluid_interpolate_7th_order_util_pitch_double(AgsFluidInterpolate7thOrderUti
   vibrato_lfo_depth = fluid_interpolate_7th_order_util->vibrato_lfo_depth;
   vibrato_lfo_freq = fluid_interpolate_7th_order_util->vibrato_lfo_freq;
   vibrato_tuning = fluid_interpolate_7th_order_util->vibrato_tuning;
-  vibrato_lfo_offset = fluid_interpolate_7th_order_util->vibrato_lfo_offset;
+  offset = fluid_interpolate_7th_order_util->offset;
 
   if(fluid_interpolate_7th_order_util->vibrato_enabled == FALSE){
     vibrato_gain = 0.0;
@@ -2585,7 +2759,7 @@ ags_fluid_interpolate_7th_order_util_pitch_double(AgsFluidInterpolate7thOrderUti
     
     root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   
-    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -2615,7 +2789,7 @@ ags_fluid_interpolate_7th_order_util_pitch_double(AgsFluidInterpolate7thOrderUti
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
-    vibrato_lfo_offset += 1;
+    offset += 1;
   }
 
   start_index++;
@@ -2628,7 +2802,7 @@ ags_fluid_interpolate_7th_order_util_pitch_double(AgsFluidInterpolate7thOrderUti
     
     root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   
-    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -2658,7 +2832,7 @@ ags_fluid_interpolate_7th_order_util_pitch_double(AgsFluidInterpolate7thOrderUti
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
-    vibrato_lfo_offset += 1;
+    offset += 1;
   }
 
   start_index++;
@@ -2672,7 +2846,7 @@ ags_fluid_interpolate_7th_order_util_pitch_double(AgsFluidInterpolate7thOrderUti
     
     root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   
-    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -2702,7 +2876,7 @@ ags_fluid_interpolate_7th_order_util_pitch_double(AgsFluidInterpolate7thOrderUti
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
-    vibrato_lfo_offset += 1;
+    offset += 1;
   }
 
   /* set back to original start index */
@@ -2717,7 +2891,7 @@ ags_fluid_interpolate_7th_order_util_pitch_double(AgsFluidInterpolate7thOrderUti
     
     root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   
-    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -2747,10 +2921,10 @@ ags_fluid_interpolate_7th_order_util_pitch_double(AgsFluidInterpolate7thOrderUti
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
-    vibrato_lfo_offset += 1;
+    offset += 1;
   }
 
-  fluid_interpolate_7th_order_util->vibrato_lfo_offset = vibrato_lfo_offset;
+  fluid_interpolate_7th_order_util->offset = offset;
 }
 
 /**
@@ -2775,7 +2949,7 @@ ags_fluid_interpolate_7th_order_util_pitch_complex(AgsFluidInterpolate7thOrderUt
   gdouble vibrato_lfo_depth;
   gdouble vibrato_lfo_freq;
   gdouble vibrato_tuning;
-  guint vibrato_lfo_offset;
+  guint offset;
   guint buffer_length;
   gdouble phase_incr;
   guint64 dsp_phase;
@@ -2813,7 +2987,7 @@ ags_fluid_interpolate_7th_order_util_pitch_complex(AgsFluidInterpolate7thOrderUt
   vibrato_lfo_depth = fluid_interpolate_7th_order_util->vibrato_lfo_depth;
   vibrato_lfo_freq = fluid_interpolate_7th_order_util->vibrato_lfo_freq;
   vibrato_tuning = fluid_interpolate_7th_order_util->vibrato_tuning;
-  vibrato_lfo_offset = fluid_interpolate_7th_order_util->vibrato_lfo_offset;
+  offset = fluid_interpolate_7th_order_util->offset;
 
   if(fluid_interpolate_7th_order_util->vibrato_enabled == FALSE){
     vibrato_gain = 0.0;
@@ -2850,7 +3024,7 @@ ags_fluid_interpolate_7th_order_util_pitch_complex(AgsFluidInterpolate7thOrderUt
     
     root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   
-    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -2881,7 +3055,7 @@ ags_fluid_interpolate_7th_order_util_pitch_complex(AgsFluidInterpolate7thOrderUt
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
-    vibrato_lfo_offset += 1;
+    offset += 1;
   }
 
   start_index++;
@@ -2894,7 +3068,7 @@ ags_fluid_interpolate_7th_order_util_pitch_complex(AgsFluidInterpolate7thOrderUt
     
     root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   
-    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -2925,7 +3099,7 @@ ags_fluid_interpolate_7th_order_util_pitch_complex(AgsFluidInterpolate7thOrderUt
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
-    vibrato_lfo_offset += 1;
+    offset += 1;
   }
 
   start_index++;
@@ -2939,7 +3113,7 @@ ags_fluid_interpolate_7th_order_util_pitch_complex(AgsFluidInterpolate7thOrderUt
     
     root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   
-    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -2970,7 +3144,7 @@ ags_fluid_interpolate_7th_order_util_pitch_complex(AgsFluidInterpolate7thOrderUt
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
-    vibrato_lfo_offset += 1;
+    offset += 1;
   }
 
   /* set back to original start index */
@@ -2985,7 +3159,7 @@ ags_fluid_interpolate_7th_order_util_pitch_complex(AgsFluidInterpolate7thOrderUt
     
     root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   
-    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+    phase_incr = (exp2((((double) base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
   
     if(phase_incr == 0.0){
       phase_incr = 1.0;
@@ -3016,10 +3190,10 @@ ags_fluid_interpolate_7th_order_util_pitch_complex(AgsFluidInterpolate7thOrderUt
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
-    vibrato_lfo_offset += 1;
+    offset += 1;
   }
 
-  fluid_interpolate_7th_order_util->vibrato_lfo_offset = vibrato_lfo_offset;
+  fluid_interpolate_7th_order_util->offset = offset;
 }
 
 /**

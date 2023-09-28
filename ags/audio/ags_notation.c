@@ -2275,6 +2275,7 @@ ags_notation_copy_selection(AgsNotation *notation)
   GList *selection;
 
   guint current_x0, current_x1, current_y;
+  guint current_x0_256th, current_x1_256th;
   guint x_boundary, y_boundary;
 
   GRecMutex *notation_mutex;
@@ -2342,6 +2343,8 @@ ags_notation_copy_selection(AgsNotation *notation)
 		 "x0", &current_x0,
 		 "x1", &current_x1,
 		 "y", &current_y,
+		 "x0-256th", &current_x0_256th,
+		 "x1-256th", &current_x1_256th,
 		 NULL);
 
     current_note = xmlNewChild(notation_node,
@@ -2358,6 +2361,13 @@ ags_notation_copy_selection(AgsNotation *notation)
     xmlNewProp(current_note,
 	       BAD_CAST "y",
 	       BAD_CAST (g_strdup_printf("%u", current_y)));
+
+    xmlNewProp(current_note,
+	       BAD_CAST "x-256th",
+	       BAD_CAST (g_strdup_printf("%u", current_x0_256th)));
+    xmlNewProp(current_note,
+	       BAD_CAST "x1-256th",
+	       BAD_CAST (g_strdup_printf("%u", current_x1_256th)));
 
     if(y_boundary > current_y){
       y_boundary = current_y;
@@ -2446,12 +2456,14 @@ ags_notation_insert_native_piano_from_clipboard_version_0_3_12(AgsNotation *nota
   xmlNode *node;
 
   char *x0, *x1, *y;
+  char *x0_256th, *x1_256th;
   gchar *offset;
   char *endptr;
 
   guint64 timestamp_offset;
   guint x_boundary_val, y_boundary_val;
   guint x0_val, x1_val, y_val;
+  guint x0_256th_val, x1_256th_val;
   guint base_x_difference, base_y_difference;
   gboolean subtract_x, subtract_y;
 
@@ -2575,6 +2587,42 @@ ags_notation_insert_native_piano_from_clipboard_version_0_3_12(AgsNotation *nota
 	  continue;
 	}
 
+	/* retrieve x0 256th offset */
+	x0_256th = xmlGetProp(node, "x-256th");
+
+	if(x0_256th == NULL){
+	  x0_256th_val = 16 * x0_val;
+	}else{
+	  errno = 0;
+	  x0_256th_val = strtoul(x0_256th, &endptr, 10);
+	  
+	  if(errno == ERANGE){
+	    x0_256th_val = 16 * x0_val;
+	  }
+	  
+	  if(x0_256th == endptr){
+	    x0_256th_val = 16 * x0_val;
+	  }
+	}
+	
+	/* retrieve x1 256th offset */
+	x1_256th = xmlGetProp(node, "x1-256th");
+
+	if(x1_256th == NULL){
+	  x1_256th_val = 16 * x1_val;
+	}else{
+	  errno = 0;
+	  x1_256th_val = strtoul(x1_256th, &endptr, 10);
+
+	  if(errno == ERANGE){
+	    x1_256th_val = 16 * x1_val;
+	  } 
+
+	  if(x1_256th == endptr){
+	    x1_256th_val = 16 * x1_val;
+	  }
+	}
+	
 	/* retrieve y offset */
 	y = xmlGetProp(node, "y");
 
@@ -2685,6 +2733,9 @@ ags_notation_insert_native_piano_from_clipboard_version_0_3_12(AgsNotation *nota
 
 	  note->y = y_val;
 
+	  note->x_256th[0] = x0_256th_val;
+	  note->x_256th[1] = x1_256th_val;
+
 #ifdef AGS_DEBUG
 	  g_message("adding note at: [%u,%u|%u]\n", x0_val, x1_val, y_val);
 #endif
@@ -2764,6 +2815,27 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 								   current_audio_channel,
 								   match_timestamp);
   }else if(!xmlStrncmp("1.2.0", version, 6)){
+    /* changes contain only optional informations */
+    match_timestamp = TRUE;
+
+    if(match_channel &&
+       current_audio_channel != g_ascii_strtoull(xmlGetProp(root_node,
+							    "audio-channel"),
+						 NULL,
+						 10)){
+      return;
+    }
+        
+    ags_notation_insert_native_piano_from_clipboard_version_0_3_12(notation,
+								   root_node, version,
+								   base_frequency,
+								   x_boundary, y_boundary,
+								   reset_x_offset, x_offset,
+								   reset_y_offset, y_offset,
+								   match_channel, no_duplicates,
+								   current_audio_channel,
+								   match_timestamp);
+  }else if(!xmlStrncmp("6.1.0", version, 6)){
     /* changes contain only optional informations */
     match_timestamp = TRUE;
 

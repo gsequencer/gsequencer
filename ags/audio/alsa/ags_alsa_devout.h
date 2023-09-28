@@ -167,7 +167,7 @@ struct _AgsAlsaDevout
   gdouble delay_factor;
   
   gdouble *delay; // count of tics within buffer size
-  guint *attack; // where currently tic resides in the stream's offset, measured in 1/64 of bpm
+  guint *attack; // where currently tic resides in the stream's offset, measured in 1/16 of bpm
 
   gdouble tact_counter;
   gdouble delay_counter; // next time attack changeing when delay_counter == delay
@@ -200,6 +200,10 @@ struct _AgsAlsaDevout
   GList *tag;
 
   gint64 poll_timeout;
+
+  guint note_256th_offset;
+  guint note_256th_offset_last;
+  gdouble note_256th_tic_size;
 };
 
 struct _AgsAlsaDevoutClass

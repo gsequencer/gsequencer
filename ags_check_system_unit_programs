@@ -105,6 +105,8 @@
 ./ags_check_system_buffer_test
 ./ags_check_system_midi_test
 ./ags_check_system_track_test
+./ags_check_system_alsa_devout_test
+./ags_check_system_alsa_devin_test
 ./ags_check_system_midi_smf_util_test
 ./ags_check_system_midi_builder_test
 ./ags_check_system_midi_ci_util_test

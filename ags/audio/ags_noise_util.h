@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -127,6 +127,10 @@ struct _AgsNoiseUtil
 
   guint frame_count;
   guint offset;
+
+  gboolean note_256th_mode;
+
+  guint offset_256th;
 };
 
 GType ags_noise_util_get_type(void);
@@ -179,6 +183,14 @@ void ags_noise_util_set_frame_count(AgsNoiseUtil *noise_util,
 guint ags_noise_util_get_offset(AgsNoiseUtil *noise_util);
 void ags_noise_util_set_offset(AgsNoiseUtil *noise_util,
 			       guint offset);
+
+gboolean ags_noise_util_get_note_256th_mode(AgsNoiseUtil *noise_util);
+void ags_noise_util_set_note_256th_mode(AgsNoiseUtil *noise_util,
+					gboolean note_256th_mode);
+
+guint ags_noise_util_get_offset_256th(AgsNoiseUtil *noise_util);
+void ags_noise_util_set_offset_256th(AgsNoiseUtil *noise_util,
+				     guint offset_256th);
 
 void ags_noise_util_compute_s8(AgsNoiseUtil *noise_util);
 void ags_noise_util_compute_s16(AgsNoiseUtil *noise_util);

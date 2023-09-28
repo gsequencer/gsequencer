@@ -365,7 +365,7 @@ ags_fx_tremolo_audio_signal_real_run_inter(AgsRecall *recall)
 	fx_tremolo_audio_signal->tremolo_util.tremolo_lfo_freq = tremolo_lfo_freq;
 	fx_tremolo_audio_signal->tremolo_util.tremolo_tuning = tremolo_tuning;
 
-	fx_tremolo_audio_signal->tremolo_util.tremolo_lfo_offset = (guint) floor(((gdouble) (note_offset - x0) * delay + delay_counter) * buffer_size);
+	fx_tremolo_audio_signal->tremolo_util.offset = (guint) floor(((gdouble) (note_offset - x0) * delay + delay_counter) * buffer_size);
 
 	g_rec_mutex_lock(stream_mutex);
 

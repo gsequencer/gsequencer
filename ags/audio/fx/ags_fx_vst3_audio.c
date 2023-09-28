@@ -2170,7 +2170,7 @@ ags_fx_vst3_audio_load_port(AgsFxVst3Audio *fx_vst3_audio)
     g_object_unref(recall_container);
   }
 
-  g_list_free_full(start_plugin_port,
+  g_list_free_full(start_recall_channel,
 		   (GDestroyNotify) g_object_unref);
 }
 

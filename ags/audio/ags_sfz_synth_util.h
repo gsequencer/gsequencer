@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -106,6 +106,10 @@ struct _AgsSFZSynthUtil
   gpointer pitch_util;
 
   AgsVolumeUtil *volume_util;
+
+  gboolean note_256th_mode;
+
+  guint offset_256th;
 };
 
 GType ags_sfz_synth_util_get_type(void);
@@ -180,6 +184,14 @@ void ags_sfz_synth_util_set_pitch_type(AgsSFZSynthUtil *sfz_synth_util,
 gpointer ags_sfz_synth_util_get_pitch_util(AgsSFZSynthUtil *sfz_synth_util);
 void ags_sfz_synth_util_set_pitch_util(AgsSFZSynthUtil *sfz_synth_util,
 				       gpointer pitch_util);
+
+gboolean ags_sfz_synth_util_get_note_256th_mode(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_note_256th_mode(AgsSFZSynthUtil *sfz_synth_util,
+					    gboolean note_256th_mode);
+
+guint ags_sfz_synth_util_get_offset_256th(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_offset_256th(AgsSFZSynthUtil *sfz_synth_util,
+					 guint offset_256th);
 
 void ags_sfz_synth_util_load_instrument(AgsSFZSynthUtil *sfz_synth_util);
 

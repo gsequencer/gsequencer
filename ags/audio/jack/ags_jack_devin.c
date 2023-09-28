@@ -152,6 +152,10 @@ void ags_jack_devin_get_loop(AgsSoundcard *soundcard,
 
 guint ags_jack_devin_get_loop_offset(AgsSoundcard *soundcard);
 
+void ags_jack_devin_get_note_256th_offset(AgsSoundcard *soundcard,
+					  guint *offset_lower,
+					  guint *offset_upper);
+
 /**
  * SECTION:ags_jack_devin
  * @short_description: Input from soundcard
@@ -572,6 +576,8 @@ ags_jack_devin_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->get_loop = ags_jack_devin_get_loop;
 
   soundcard->get_loop_offset = ags_jack_devin_get_loop_offset;
+
+  soundcard->get_note_256th_offset = ags_jack_devin_get_note_256th_offset;
 }
 
 void
@@ -690,6 +696,16 @@ ags_jack_devin_init(AgsJackDevin *jack_devin)
   g_mutex_init(&(jack_devin->callback_finish_mutex));
 
   g_cond_init(&(jack_devin->callback_finish_cond));
+
+  /* 256th */
+  jack_devin->note_256th_offset = 0;
+  jack_devin->note_256th_tic_size = 1.0 / (jack_devin->delay[0] / 16.0);
+
+  if(jack_devin->note_256th_tic_size <= 1.0){
+    jack_devin->note_256th_offset_last = 1;
+  }else{
+    jack_devin->note_256th_offset_last = jack_devin->note_256th_tic_size;
+  }
 }
 
 void
@@ -2127,6 +2143,14 @@ ags_jack_devin_port_free(AgsSoundcard *soundcard)
   jack_devin->note_offset = jack_devin->start_note_offset;
   jack_devin->note_offset_absolute = jack_devin->start_note_offset;
 
+  jack_devin->note_256th_offset = 16 * jack_devin->start_note_offset;
+  
+  if(jack_devin->note_256th_tic_size <= 1.0){
+    jack_devin->note_256th_offset_last = jack_devin->note_256th_offset + 1;
+  }else{
+    jack_devin->note_256th_offset_last = jack_devin->note_256th_offset + (guint) fmod(jack_devin->tic_counter * jack_devin->delay[jack_devin->tic_counter] * jack_devin->note_256th_tic_size, jack_devin->note_256th_tic_size);
+  }
+  
   switch(jack_devin->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
@@ -2174,6 +2198,7 @@ ags_jack_devin_tic(AgsSoundcard *soundcard)
 
   gdouble delay;
   gdouble delay_counter;
+  gdouble note_256th_tic_size;
   guint note_offset_absolute;
   guint note_offset;
   guint loop_left, loop_right;
@@ -2192,6 +2217,8 @@ ags_jack_devin_tic(AgsSoundcard *soundcard)
   delay = jack_devin->delay[jack_devin->tic_counter];
   delay_counter = jack_devin->delay_counter;
 
+  note_256th_tic_size = jack_devin->note_256th_tic_size;
+  
   note_offset = jack_devin->note_offset;
   note_offset_absolute = jack_devin->note_offset_absolute;
   
@@ -2207,9 +2234,33 @@ ags_jack_devin_tic(AgsSoundcard *soundcard)
        note_offset + 1 == loop_right){
       ags_soundcard_set_note_offset(soundcard,
 				    loop_left);
+
+      g_rec_mutex_lock(jack_devin_mutex);
+      
+      jack_devin->note_256th_offset = 16 * loop_left;
+
+      if(jack_devin->note_256th_tic_size <= 1.0){
+	jack_devin->note_256th_offset_last = jack_devin->note_256th_offset + 1;
+      }else{
+	jack_devin->note_256th_offset_last = jack_devin->note_256th_offset + (guint) fmod(jack_devin->tic_counter * delay * note_256th_tic_size, note_256th_tic_size);
+      }
+
+      g_rec_mutex_unlock(jack_devin_mutex);
     }else{
       ags_soundcard_set_note_offset(soundcard,
 				    note_offset + 1);
+
+      g_rec_mutex_lock(jack_devin_mutex);
+      
+      jack_devin->note_256th_offset = 16 * (note_offset + 1);
+
+      if(jack_devin->note_256th_tic_size <= 1.0){
+	jack_devin->note_256th_offset_last = jack_devin->note_256th_offset + 1;
+      }else{
+	jack_devin->note_256th_offset_last = jack_devin->note_256th_offset + (guint) fmod(jack_devin->tic_counter * delay * note_256th_tic_size, note_256th_tic_size);
+      }
+
+      g_rec_mutex_unlock(jack_devin_mutex);
     }
     
     ags_soundcard_set_note_offset_absolute(soundcard,
@@ -2229,6 +2280,9 @@ ags_jack_devin_tic(AgsSoundcard *soundcard)
   }else{
     g_rec_mutex_lock(jack_devin_mutex);
     
+    jack_devin->note_256th_offset = 16 * jack_devin->note_offset + (jack_devin->delay_counter * note_256th_tic_size);
+    jack_devin->note_256th_offset_last = jack_devin->note_256th_offset + (guint) fmod(jack_devin->tic_counter * delay * note_256th_tic_size, note_256th_tic_size);
+
     jack_devin->delay_counter += 1.0;
 
     g_rec_mutex_unlock(jack_devin_mutex);
@@ -2678,6 +2732,14 @@ ags_jack_devin_set_note_offset(AgsSoundcard *soundcard,
 
   jack_devin->note_offset = note_offset;
 
+  jack_devin->note_256th_offset = 16 * note_offset;
+
+  if(jack_devin->note_256th_tic_size <= 1.0){
+    jack_devin->note_256th_offset_last = jack_devin->note_256th_offset + 1;
+  }else{
+    jack_devin->note_256th_offset_last = jack_devin->note_256th_offset + (guint) fmod(jack_devin->tic_counter * jack_devin->delay[jack_devin->tic_counter] * jack_devin->note_256th_tic_size, jack_devin->note_256th_tic_size);
+  }
+  
   g_rec_mutex_unlock(jack_devin_mutex);
 }
 
@@ -2703,6 +2765,34 @@ ags_jack_devin_get_note_offset(AgsSoundcard *soundcard)
   g_rec_mutex_unlock(jack_devin_mutex);
 
   return(note_offset);
+}
+
+void
+ags_jack_devin_get_note_256th_offset(AgsSoundcard *soundcard,
+				     guint *offset_lower,
+				     guint *offset_upper)
+{
+  AgsJackDevin *jack_devin;
+  
+  GRecMutex *jack_devin_mutex;  
+
+  jack_devin = AGS_JACK_DEVIN(soundcard);
+
+  /* get jack devin mutex */
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
+
+  /* get note 256th offset */
+  g_rec_mutex_lock(jack_devin_mutex);
+
+  if(offset_lower != NULL){
+    offset_lower[0] = jack_devin->note_256th_offset;
+  }
+
+  if(offset_upper != NULL){
+    offset_upper[0] = jack_devin->note_256th_offset_last;
+  }
+
+  g_rec_mutex_unlock(jack_devin_mutex);
 }
 
 void

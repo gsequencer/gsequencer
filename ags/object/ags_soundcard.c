@@ -984,6 +984,32 @@ ags_soundcard_get_note_offset(AgsSoundcard *soundcard)
 }
 
 /**
+ * ags_soundcard_get_note_256th_offset:
+ * @soundcard: the #AgsSoundcard
+ * @offset_lower: the return location of offset lower range
+ * @offset_upper: the return location of offset upper range
+ *
+ * Get current playback note 256th offset. 
+ *
+ * Since: 6.1.0
+ */
+void
+ags_soundcard_get_note_256th_offset(AgsSoundcard *soundcard,
+				    guint *offset_lower,
+				    guint *offset_upper)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_if_fail(soundcard_interface->get_note_256th_offset);
+
+  soundcard_interface->get_note_256th_offset(soundcard,
+					     offset_lower,
+					     offset_upper);
+}
+
+/**
  * ags_soundcard_set_note_offset_absolute:
  * @soundcard: the #AgsSoundcard
  * @note_offset: the note offset to set

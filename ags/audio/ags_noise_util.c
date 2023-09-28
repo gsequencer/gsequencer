@@ -142,6 +142,10 @@ ags_noise_util_alloc()
   ptr->frame_count = 0;
   ptr->offset = 0;
 
+  ptr->note_256th_mode = TRUE;
+
+  ptr->offset_256th = 0;
+
   return(ptr);
 }
 
@@ -181,6 +185,10 @@ ags_noise_util_copy(AgsNoiseUtil *ptr)
 
   new_ptr->frame_count = ptr->frame_count;
   new_ptr->offset = ptr->offset;
+
+  new_ptr->note_256th_mode = ptr->note_256th_mode;
+
+  new_ptr->offset_256th = ptr->offset_256th;
   
   return(new_ptr);
 }
@@ -683,6 +691,86 @@ ags_noise_util_set_offset(AgsNoiseUtil *noise_util,
   }
 
   noise_util->offset = offset;
+}
+
+/**
+ * ags_noise_util_get_note_256th_mode:
+ * @noise_util: the #AgsNoiseUtil-struct
+ * 
+ * Get note 256th mode of @noise_util.
+ * 
+ * Returns: %TRUE if note 256th mode, otherwise %FALSE
+ * 
+ * Since: 6.1.0
+ */
+gboolean
+ags_noise_util_get_note_256th_mode(AgsNoiseUtil *noise_util)
+{
+  if(noise_util == NULL){
+    return(0);
+  }
+
+  return(noise_util->note_256th_mode);
+}
+
+/**
+ * ags_noise_util_set_note_256th_mode:
+ * @noise_util: the #AgsNoiseUtil-struct
+ * @note_256th_mode: the note 256th mode
+ *
+ * Set @note_256th_mode of @noise_util.
+ *
+ * Since: 6.1.0
+ */
+void
+ags_noise_util_set_note_256th_mode(AgsNoiseUtil *noise_util,
+				   gboolean note_256th_mode)
+{
+  if(noise_util == NULL){
+    return;
+  }
+
+  noise_util->note_256th_mode = note_256th_mode;
+}
+
+/**
+ * ags_noise_util_get_offset_256th:
+ * @noise_util: the #AgsNoiseUtil-struct
+ * 
+ * Get offset as note 256th of @noise_util.
+ * 
+ * Returns: the offset as note 256th
+ * 
+ * Since: 6.1.0
+ */
+guint
+ags_noise_util_get_offset_256th(AgsNoiseUtil *noise_util)
+{
+  if(noise_util == NULL){
+    return(0);
+  }
+
+  return(noise_util->offset_256th);
+}
+
+/**
+ * ags_noise_util_set_offset_256th:
+ * @noise_util: the #AgsNoiseUtil-struct
+ * @offset_256th: the offset as note 256th
+ *
+ * Set @offset_256th of @noise_util.
+ *
+ * Since: 6.1.0
+ */
+void
+ags_noise_util_set_offset_256th(AgsNoiseUtil *noise_util,
+				guint offset_256th)
+{
+  if(noise_util == NULL){
+    return;
+  }
+  
+  noise_util->offset_256th = offset_256th;
 }
 
 /**

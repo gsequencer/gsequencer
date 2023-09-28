@@ -398,6 +398,10 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
 		  0, 2,
 		  1, 1);
 
+  /* 256th */
+  notation_edit->note_offset_256th = 0;
+  notation_edit->note_offset_256th_absolute = 0;
+  
   /* auto-scroll */
   if(ags_notation_edit_auto_scroll == NULL){
     ags_notation_edit_auto_scroll = g_hash_table_new_full(g_direct_hash, g_direct_equal,
@@ -1026,7 +1030,9 @@ ags_notation_edit_drawing_area_motion_notify_add_note(GtkWidget *editor,
   gboolean pattern_mode;
   double zoom_factor;
   guint new_x;
-    
+  guint new_x_256th;
+  gboolean snap_to_zoom;
+  
   note = notation_edit->current_note;
     
   if(note == NULL){
@@ -1040,18 +1046,37 @@ ags_notation_edit_drawing_area_motion_notify_add_note(GtkWidget *editor,
     
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) AGS_COMPOSITE_TOOLBAR(toolbar)->zoom));
 
+  snap_to_zoom = gtk_check_button_get_active(AGS_COMPOSITE_TOOLBAR(toolbar)->snap_to_zoom);
+  
   /* new x[1] */
   if(!pattern_mode){
-    new_x = (guint) (zoom_factor * (x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->hscrollbar)))) / notation_edit->control_width;
-    new_x = zoom_factor * floor((new_x + zoom_factor) / zoom_factor);
+    if(!snap_to_zoom){
+      new_x = (guint) (zoom_factor * (x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->hscrollbar)))) / notation_edit->control_width;
     
-    if(new_x >= note->x[0] + zoom_factor){
-      note->x[1] = new_x;
+      if(new_x >= note->x[0] + 1){
+	note->x[1] = new_x;
+      }
+
+      new_x_256th = (guint) (zoom_factor * (x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->hscrollbar)))) / ((double) notation_edit->control_width / 16.0);
+
+      if(new_x_256th >= note->x_256th[0] + 1){
+	note->x_256th[1] = new_x_256th;
+      }
+    }else{
+      new_x = (guint) (zoom_factor * (x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->hscrollbar)))) / (notation_edit->control_width);
+      new_x = zoom_factor * ceil((new_x + 1) / zoom_factor);
+
+      if(new_x >= note->x[0] + zoom_factor){
+	note->x[1] = new_x;
+	
+	note->x_256th[1] = 16 * new_x;
+      }
     }
   }else{
     note->x[1] = note->x[0] + 1;
+    note->x_256th[1] = note->x_256th[0] + 16;
   }
-    
+  
 #ifdef AGS_DEBUG
   g_message("%lu-%lu %lu", note->x[0], note->x[1], note->y);
 #endif
@@ -1178,7 +1203,8 @@ ags_notation_edit_drawing_area_button_press_add_note(GtkWidget *editor,
   
   gboolean pattern_mode;
   double zoom_factor;
-    
+  gboolean snap_to_zoom;
+  
   note = ags_note_new();
 
   /* zoom */
@@ -1186,18 +1212,47 @@ ags_notation_edit_drawing_area_button_press_add_note(GtkWidget *editor,
     
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) AGS_COMPOSITE_TOOLBAR(toolbar)->zoom));
 
-  /* note */
-  note->x[0] = (guint) (zoom_factor * (x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->hscrollbar)))) / notation_edit->control_width;
-  note->x[0] = zoom_factor * floor(note->x[0] / zoom_factor);
+  snap_to_zoom = gtk_check_button_get_active(AGS_COMPOSITE_TOOLBAR(toolbar)->snap_to_zoom);
 
+  /* note */
+  note->x[0] = (guint) (zoom_factor * (x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->hscrollbar)))) / (double) notation_edit->control_width;
+  
   if(!pattern_mode){
-    note->x[1] = note->x[0] + zoom_factor;
+    if(!snap_to_zoom){
+      note->x[0] = zoom_factor * floor(note->x[0] / zoom_factor);
+      note->x[1] = (guint) (zoom_factor * (x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->hscrollbar)))) / (double) notation_edit->control_width;
+
+      if(note->x[1] <= note->x[0]){
+	note->x[1] = note->x[0] + 1;
+      }
+    }else{
+      note->x[0] = zoom_factor * floor(note->x[0] / zoom_factor);
+      
+      note->x[1] = note->x[0] + zoom_factor;
+    }
   }else{
     note->x[1] = note->x[0] + 1;
   }
     
   note->y = (guint) ((y + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->vscrollbar))) / notation_edit->control_height);
 
+  if(!pattern_mode){
+    if(!snap_to_zoom){
+      note->x_256th[0] = (guint) (zoom_factor * (x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->hscrollbar)))) / ((double) notation_edit->control_width / 16.0);
+      note->x_256th[1] = note->x_256th[0] + 16;
+
+      if(note->x_256th[1] <= note->x_256th[0]){
+	note->x_256th[1] = note->x_256th[0] + 1;
+      }
+    }else{
+      note->x_256th[0] = note->x[0] * 16;
+      note->x_256th[1] = note->x[1] * 16;
+    }
+  }else{
+    note->x_256th[0] = note->x[0] * 16;
+    note->x_256th[1] = note->x_256th[0] + 16;
+  }
+  
   /* current note */
   if(notation_edit->current_note != NULL){
     g_object_unref(notation_edit->current_note);
@@ -1265,6 +1320,8 @@ ags_notation_edit_drawing_area_button_release_add_note(GtkWidget *editor,
   gboolean pattern_mode;
   double zoom_factor;
   guint new_x;
+  guint new_x_256th;
+  gboolean snap_to_zoom;
     
   note = notation_edit->current_note;
     
@@ -1277,16 +1334,35 @@ ags_notation_edit_drawing_area_button_release_add_note(GtkWidget *editor,
 
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) AGS_COMPOSITE_TOOLBAR(toolbar)->zoom));
 
+  snap_to_zoom = gtk_check_button_get_active(AGS_COMPOSITE_TOOLBAR(toolbar)->snap_to_zoom);
+
   /* new x[1] */
   if(!pattern_mode){
-    new_x = (guint) (zoom_factor * (x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->hscrollbar)))) / notation_edit->control_width;
-    new_x = zoom_factor * floor((new_x + zoom_factor) / zoom_factor);
+    if(!snap_to_zoom){
+      new_x = (guint) (zoom_factor * (x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->hscrollbar)))) / notation_edit->control_width;
     
-    if(new_x >= note->x[0] + zoom_factor){
-      note->x[1] = new_x;
+      if(new_x >= note->x[0] + 1){
+	note->x[1] = new_x;
+      }
+
+      new_x_256th = (guint) (zoom_factor * (x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->hscrollbar)))) / ((double) notation_edit->control_width / 16.0);
+
+      if(new_x_256th >= note->x_256th[0] + 1){
+	note->x_256th[1] = new_x_256th;
+      }
+    }else{
+      new_x = (guint) (zoom_factor * (x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->hscrollbar)))) / notation_edit->control_width;
+      new_x = zoom_factor * ceil((new_x + 1) / zoom_factor);
+
+      if(new_x >= note->x[0] + zoom_factor){
+	note->x[1] = new_x;
+
+	note->x_256th[1] = 16 * new_x;
+      }
     }
   }else{
     note->x[1] = note->x[0] + 1;
+    note->x_256th[1] = note->x_256th[0] + 16;
   }
     
 #ifdef AGS_DEBUG
@@ -1655,6 +1731,10 @@ ags_notation_edit_auto_scroll_timeout(GtkWidget *widget)
     /* reset offset */
     notation_edit->note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
     notation_edit->note_offset_absolute = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(output_soundcard));
+
+    /* 256th */
+    notation_edit->note_offset_256th = 16 * notation_edit->note_offset;
+    notation_edit->note_offset_256th_absolute = 16 * notation_edit->note_offset_absolute;
 
     /* reset scrollbar */
     hscrollbar_adjustment = gtk_scrollbar_get_adjustment(notation_edit->hscrollbar);
@@ -2400,6 +2480,9 @@ ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
   double zoom_factor;
   guint channel_count;
   double viewport_x, viewport_y;
+  guint note_x0, note_x1;
+  guint note_y;
+  guint note_x0_256th, note_x1_256th;
   double x, y;
   double width, height;
   gboolean dark_theme;
@@ -2476,11 +2559,19 @@ ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
   }else{
     viewport_y = 0.0;
   }
-  
-  x = ((double) note->x[0]) * ((double) notation_edit->control_width) - viewport_x;
-  y = ((double) note->y) * ((double) notation_edit->control_height) - viewport_y;
 
-  width = ((double) (note->x[1] - note->x[0])) * ((double) notation_edit->control_width);
+  note_x0 = ags_note_get_x0(note);
+  note_x1 = ags_note_get_x1(note);
+
+  note_y = ags_note_get_y(note);
+
+  note_x0_256th = ags_note_get_x0_256th(note);
+  note_x1_256th = ags_note_get_x1_256th(note);
+  
+  x = ((double) note_x0_256th) * ((double) notation_edit->control_width / 16.0) - viewport_x;
+  y = ((double) note_y) * ((double) notation_edit->control_height) - viewport_y;
+
+  width = ((double) (note_x1_256th - note_x0_256th)) * ((double) notation_edit->control_width / 16.0);
   height = ((double) notation_edit->control_height);
 
   /* apply zoom */

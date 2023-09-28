@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -151,6 +151,10 @@ void ags_gstreamer_devin_get_loop(AgsSoundcard *soundcard,
 				  gboolean *do_loop);
 
 guint ags_gstreamer_devin_get_loop_offset(AgsSoundcard *soundcard);
+
+void ags_gstreamer_devin_get_note_256th_offset(AgsSoundcard *soundcard,
+					       guint *offset_lower,
+					       guint *offset_upper);
 
 /**
  * SECTION:ags_gstreamer_devin
@@ -572,6 +576,8 @@ ags_gstreamer_devin_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->get_loop = ags_gstreamer_devin_get_loop;
 
   soundcard->get_loop_offset = ags_gstreamer_devin_get_loop_offset;
+
+  soundcard->get_note_256th_offset = ags_gstreamer_devin_get_note_256th_offset;
 }
 
 void
@@ -703,6 +709,16 @@ ags_gstreamer_devin_init(AgsGstreamerDevin *gstreamer_devin)
   g_mutex_init(&(gstreamer_devin->callback_finish_mutex));
 
   g_cond_init(&(gstreamer_devin->callback_finish_cond));
+
+  /* 256th */
+  gstreamer_devin->note_256th_offset = 0;
+  gstreamer_devin->note_256th_tic_size = 1.0 / (gstreamer_devin->delay[0] / 16.0);
+
+  if(gstreamer_devin->note_256th_tic_size <= 1.0){
+    gstreamer_devin->note_256th_offset_last = 1;
+  }else{
+    gstreamer_devin->note_256th_offset_last = gstreamer_devin->note_256th_tic_size;
+  }
 }
 
 void
@@ -2155,6 +2171,14 @@ ags_gstreamer_devin_port_free(AgsSoundcard *soundcard)
   gstreamer_devin->note_offset = gstreamer_devin->start_note_offset;
   gstreamer_devin->note_offset_absolute = gstreamer_devin->start_note_offset;
 
+  gstreamer_devin->note_256th_offset = 16 * gstreamer_devin->start_note_offset;
+  
+  if(gstreamer_devin->note_256th_tic_size <= 1.0){
+    gstreamer_devin->note_256th_offset_last = gstreamer_devin->note_256th_offset + 1;
+  }else{
+    gstreamer_devin->note_256th_offset_last = gstreamer_devin->note_256th_offset + (guint) fmod(gstreamer_devin->tic_counter * gstreamer_devin->delay[gstreamer_devin->tic_counter] * gstreamer_devin->note_256th_tic_size, gstreamer_devin->note_256th_tic_size);
+  }
+
   switch(gstreamer_devin->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
@@ -2206,6 +2230,7 @@ ags_gstreamer_devin_tic(AgsSoundcard *soundcard)
 
   gdouble delay;
   gdouble delay_counter;
+  gdouble note_256th_tic_size;
   guint note_offset_absolute;
   guint note_offset;
   guint loop_left, loop_right;
@@ -2224,6 +2249,8 @@ ags_gstreamer_devin_tic(AgsSoundcard *soundcard)
   delay = gstreamer_devin->delay[gstreamer_devin->tic_counter];
   delay_counter = gstreamer_devin->delay_counter;
 
+  note_256th_tic_size = gstreamer_devin->note_256th_tic_size;
+
   note_offset = gstreamer_devin->note_offset;
   note_offset_absolute = gstreamer_devin->note_offset_absolute;
   
@@ -2239,9 +2266,33 @@ ags_gstreamer_devin_tic(AgsSoundcard *soundcard)
        note_offset + 1 == loop_right){
       ags_soundcard_set_note_offset(soundcard,
 				    loop_left);
+
+      g_rec_mutex_lock(gstreamer_devin_mutex);
+      
+      gstreamer_devin->note_256th_offset = 16 * loop_left;
+
+      if(gstreamer_devin->note_256th_tic_size <= 1.0){
+	gstreamer_devin->note_256th_offset_last = gstreamer_devin->note_256th_offset + 1;
+      }else{
+	gstreamer_devin->note_256th_offset_last = gstreamer_devin->note_256th_offset + (guint) fmod(gstreamer_devin->tic_counter * delay * note_256th_tic_size, note_256th_tic_size);
+      }
+
+      g_rec_mutex_unlock(gstreamer_devin_mutex);
     }else{
       ags_soundcard_set_note_offset(soundcard,
 				    note_offset + 1);
+
+      g_rec_mutex_lock(gstreamer_devin_mutex);
+      
+      gstreamer_devin->note_256th_offset = 16 * (note_offset + 1);
+
+      if(gstreamer_devin->note_256th_tic_size <= 1.0){
+	gstreamer_devin->note_256th_offset_last = gstreamer_devin->note_256th_offset + 1;
+      }else{
+	gstreamer_devin->note_256th_offset_last = gstreamer_devin->note_256th_offset + (guint) fmod(gstreamer_devin->tic_counter * delay * note_256th_tic_size, note_256th_tic_size);
+      }
+
+      g_rec_mutex_unlock(gstreamer_devin_mutex);
     }
     
     ags_soundcard_set_note_offset_absolute(soundcard,
@@ -2260,6 +2311,9 @@ ags_gstreamer_devin_tic(AgsSoundcard *soundcard)
     g_rec_mutex_unlock(gstreamer_devin_mutex);
   }else{
     g_rec_mutex_lock(gstreamer_devin_mutex);
+
+    gstreamer_devin->note_256th_offset = 16 * gstreamer_devin->note_offset + (gstreamer_devin->delay_counter * note_256th_tic_size);
+    gstreamer_devin->note_256th_offset_last = gstreamer_devin->note_256th_offset + (guint) fmod(gstreamer_devin->tic_counter * delay * note_256th_tic_size, note_256th_tic_size);
     
     gstreamer_devin->delay_counter += 1.0;
 
@@ -2749,6 +2803,14 @@ ags_gstreamer_devin_set_note_offset(AgsSoundcard *soundcard,
 
   gstreamer_devin->note_offset = note_offset;
 
+  gstreamer_devin->note_256th_offset = 16 * note_offset;
+
+  if(gstreamer_devin->note_256th_tic_size <= 1.0){
+    gstreamer_devin->note_256th_offset_last = gstreamer_devin->note_256th_offset + 1;
+  }else{
+    gstreamer_devin->note_256th_offset_last = gstreamer_devin->note_256th_offset + (guint) fmod(gstreamer_devin->tic_counter * gstreamer_devin->delay[gstreamer_devin->tic_counter] * gstreamer_devin->note_256th_tic_size, gstreamer_devin->note_256th_tic_size);
+  }
+
   g_rec_mutex_unlock(gstreamer_devin_mutex);
 }
 
@@ -2774,6 +2836,34 @@ ags_gstreamer_devin_get_note_offset(AgsSoundcard *soundcard)
   g_rec_mutex_unlock(gstreamer_devin_mutex);
 
   return(note_offset);
+}
+
+void
+ags_gstreamer_devin_get_note_256th_offset(AgsSoundcard *soundcard,
+					  guint *offset_lower,
+					  guint *offset_upper)
+{
+  AgsGstreamerDevin *gstreamer_devin;
+  
+  GRecMutex *gstreamer_devin_mutex;  
+
+  gstreamer_devin = AGS_GSTREAMER_DEVIN(soundcard);
+
+  /* get gstreamer devin mutex */
+  gstreamer_devin_mutex = AGS_GSTREAMER_DEVIN_GET_OBJ_MUTEX(gstreamer_devin);
+
+  /* get note 256th offset */
+  g_rec_mutex_lock(gstreamer_devin_mutex);
+
+  if(offset_lower != NULL){
+    offset_lower[0] = gstreamer_devin->note_256th_offset;
+  }
+
+  if(offset_upper != NULL){
+    offset_upper[0] = gstreamer_devin->note_256th_offset_last;
+  }
+
+  g_rec_mutex_unlock(gstreamer_devin_mutex);
 }
 
 void

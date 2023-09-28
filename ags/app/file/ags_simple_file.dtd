@@ -1,4 +1,4 @@
-<!-- Copyright (C) 2005-2022 Jo\u00EBl Kr\u00E4hemann -->
+<!-- Copyright (C) 2005-2023 Jo\u00EBl Kr\u00E4hemann -->
 <!-- Copying and distribution of this file, with or without modification, -->
 <!-- are permitted in any medium without royalty provided the copyright -->
 <!-- notice and this notice are preserved.  This file is offered as-is, -->
@@ -238,6 +238,8 @@
 	  sustain         NMTOKEN  #IMPLIED
 	  release         NMTOKEN  #IMPLIED
 	  ratio           NMTOKEN  #IMPLIED
+	  x0-256th        NMTOKEN  #IMPLIED
+	  x1-256th        NMTOKEN  #IMPLIED
 	  >
 
 <!-- preset -->

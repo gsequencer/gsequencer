@@ -45,6 +45,18 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="6.1.0" date="2023-09-28">
+      <description>
+	<p>
+	  Implemented support of note 256th offset support. The piano roll editor allows
+	  you to edit at a precision of a 256th of a note or at your wishes snap to zoom.
+	</p>
+	<p>
+	  Implemented support of note 256th in libags_audio.so.
+	</p>
+      </description>
+    </release>
+
     <release version="6.0.12" date="2023-09-12">
       <description>
 	<p>

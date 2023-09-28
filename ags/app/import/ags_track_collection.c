@@ -213,6 +213,8 @@ ags_track_collection_init(AgsTrackCollection *track_collection)
 							      0);
   gtk_scrolled_window_set_child(scrolled_window,
 				(GtkWidget *) track_collection->track_mapper_box);
+
+  track_collection->first_note_256th_offset = 0;
 }
 
 void
@@ -507,6 +509,8 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
   
   if(tempo_node != NULL){
     track_collection->first_offset = 0;
+    
+    track_collection->first_note_256th_offset = 0;
     
     str = xmlGetProp(tempo_node,
 		     BAD_CAST "tempo");

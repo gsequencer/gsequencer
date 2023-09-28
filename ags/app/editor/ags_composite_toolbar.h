@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -82,6 +82,7 @@ typedef enum{
   AGS_COMPOSITE_TOOLBAR_HAS_PORT           = 1 <<  3,
   AGS_COMPOSITE_TOOLBAR_HAS_BEATS          = 1 <<  4,
   AGS_COMPOSITE_TOOLBAR_HAS_BEATS_TYPE     = 1 <<  5,
+  AGS_COMPOSITE_TOOLBAR_HAS_SNAP_TO_ZOOM   = 1 <<  6,
 }AgsCompositeToolbarOption;
 
 typedef enum{
@@ -192,6 +193,8 @@ struct _AgsCompositeToolbar
   GtkDialog *wave_time_stretch_buffer;
 
   GtkDialog *program_ramp_marker;
+
+  GtkCheckButton *snap_to_zoom;
 };
 
 struct _AgsCompositeToolbarClass

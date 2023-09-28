@@ -156,6 +156,10 @@ void ags_wasapi_devin_get_loop(AgsSoundcard *soundcard,
 
 guint ags_wasapi_devin_get_loop_offset(AgsSoundcard *soundcard);
 
+void ags_wasapi_devin_get_note_256th_offset(AgsSoundcard *soundcard,
+					    guint *offset_lower,
+					    guint *offset_upper);
+
 /**
  * SECTION:ags_wasapi_devin
  * @short_description: Output to soundcard
@@ -560,6 +564,8 @@ ags_wasapi_devin_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->get_loop = ags_wasapi_devin_get_loop;
 
   soundcard->get_loop_offset = ags_wasapi_devin_get_loop_offset;
+
+  soundcard->get_note_256th_offset = ags_wasapi_devin_get_note_256th_offset;
 }
 
 void
@@ -712,6 +718,16 @@ ags_wasapi_devin_init(AgsWasapiDevin *wasapi_devin)
   g_mutex_init(&(wasapi_devin->callback_finish_mutex));
 
   g_cond_init(&(wasapi_devin->callback_finish_cond));
+
+  /* 256th */
+  wasapi_devin->note_256th_offset = 0;
+  wasapi_devin->note_256th_tic_size = 1.0 / (wasapi_devin->delay[0] / 16.0);
+
+  if(wasapi_devin->note_256th_tic_size <= 1.0){
+    wasapi_devin->note_256th_offset_last = 1;
+  }else{
+    wasapi_devin->note_256th_offset_last = wasapi_devin->note_256th_tic_size;
+  }
 }
 
 void
@@ -2410,6 +2426,14 @@ ags_wasapi_devin_client_free(AgsSoundcard *soundcard)
   wasapi_devin->note_offset = wasapi_devin->start_note_offset;
   wasapi_devin->note_offset_absolute = wasapi_devin->start_note_offset;
 
+  wasapi_devin->note_256th_offset = 16 * wasapi_devin->start_note_offset;
+  
+  if(wasapi_devin->note_256th_tic_size <= 1.0){
+    wasapi_devin->note_256th_offset_last = wasapi_devin->note_256th_offset + 1;
+  }else{
+    wasapi_devin->note_256th_offset_last = wasapi_devin->note_256th_offset + (guint) fmod(wasapi_devin->tic_counter * wasapi_devin->delay[wasapi_devin->tic_counter] * wasapi_devin->note_256th_tic_size, wasapi_devin->note_256th_tic_size);
+  }
+
   g_rec_mutex_unlock(wasapi_devin_mutex);
 }
 
@@ -2420,6 +2444,7 @@ ags_wasapi_devin_tic(AgsSoundcard *soundcard)
 
   gdouble delay;
   gdouble delay_counter;
+  gdouble note_256th_tic_size;
   guint note_offset_absolute;
   guint note_offset;
   guint loop_left, loop_right;
@@ -2438,6 +2463,8 @@ ags_wasapi_devin_tic(AgsSoundcard *soundcard)
   delay = wasapi_devin->delay[wasapi_devin->tic_counter];
   delay_counter = wasapi_devin->delay_counter;
 
+  note_256th_tic_size = wasapi_devin->note_256th_tic_size;
+
   note_offset = wasapi_devin->note_offset;
   note_offset_absolute = wasapi_devin->note_offset_absolute;
   
@@ -2453,9 +2480,33 @@ ags_wasapi_devin_tic(AgsSoundcard *soundcard)
        note_offset + 1 == loop_right){
       ags_soundcard_set_note_offset(soundcard,
 				    loop_left);
+
+      g_rec_mutex_lock(wasapi_devin_mutex);
+      
+      wasapi_devin->note_256th_offset = 16 * loop_left;
+
+      if(wasapi_devin->note_256th_tic_size <= 1.0){
+	wasapi_devin->note_256th_offset_last = wasapi_devin->note_256th_offset + 1;
+      }else{
+	wasapi_devin->note_256th_offset_last = wasapi_devin->note_256th_offset + (guint) fmod(wasapi_devin->tic_counter * delay * note_256th_tic_size, note_256th_tic_size);
+      }
+
+      g_rec_mutex_unlock(wasapi_devin_mutex);
     }else{
       ags_soundcard_set_note_offset(soundcard,
 				    note_offset + 1);
+
+      g_rec_mutex_lock(wasapi_devin_mutex);
+      
+      wasapi_devin->note_256th_offset = 16 * (note_offset + 1);
+
+      if(wasapi_devin->note_256th_tic_size <= 1.0){
+	wasapi_devin->note_256th_offset_last = wasapi_devin->note_256th_offset + 1;
+      }else{
+	wasapi_devin->note_256th_offset_last = wasapi_devin->note_256th_offset + (guint) fmod(wasapi_devin->tic_counter * delay * note_256th_tic_size, note_256th_tic_size);
+      }
+
+      g_rec_mutex_unlock(wasapi_devin_mutex);
     }
     
     ags_soundcard_set_note_offset_absolute(soundcard,
@@ -2474,6 +2525,9 @@ ags_wasapi_devin_tic(AgsSoundcard *soundcard)
     g_rec_mutex_unlock(wasapi_devin_mutex);
   }else{
     g_rec_mutex_lock(wasapi_devin_mutex);
+
+    wasapi_devin->note_256th_offset = 16 * wasapi_devin->note_offset + (wasapi_devin->delay_counter * note_256th_tic_size);
+    wasapi_devin->note_256th_offset_last = wasapi_devin->note_256th_offset + (guint) fmod(wasapi_devin->tic_counter * delay * note_256th_tic_size, note_256th_tic_size);
     
     wasapi_devin->delay_counter += 1.0;
 
@@ -2918,6 +2972,14 @@ ags_wasapi_devin_set_note_offset(AgsSoundcard *soundcard,
 
   wasapi_devin->note_offset = note_offset;
 
+  wasapi_devin->note_256th_offset = 16 * note_offset;
+
+  if(wasapi_devin->note_256th_tic_size <= 1.0){
+    wasapi_devin->note_256th_offset_last = wasapi_devin->note_256th_offset + 1;
+  }else{
+    wasapi_devin->note_256th_offset_last = wasapi_devin->note_256th_offset + (guint) fmod(wasapi_devin->tic_counter * wasapi_devin->delay[wasapi_devin->tic_counter] * wasapi_devin->note_256th_tic_size, wasapi_devin->note_256th_tic_size);
+  }
+
   g_rec_mutex_unlock(wasapi_devin_mutex);
 }
 
@@ -2988,6 +3050,34 @@ ags_wasapi_devin_get_note_offset(AgsSoundcard *soundcard)
   g_rec_mutex_unlock(wasapi_devin_mutex);
 
   return(note_offset);
+}
+
+void
+ags_wasapi_devin_get_note_256th_offset(AgsSoundcard *soundcard,
+				       guint *offset_lower,
+				       guint *offset_upper)
+{
+  AgsWasapiDevin *wasapi_devin;
+  
+  GRecMutex *wasapi_devin_mutex;  
+
+  wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
+
+  /* get wasapi devin mutex */
+  wasapi_devin_mutex = AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(wasapi_devin);
+
+  /* get note 256th offset */
+  g_rec_mutex_lock(wasapi_devin_mutex);
+
+  if(offset_lower != NULL){
+    offset_lower[0] = wasapi_devin->note_256th_offset;
+  }
+
+  if(offset_upper != NULL){
+    offset_upper[0] = wasapi_devin->note_256th_offset_last;
+  }
+
+  g_rec_mutex_unlock(wasapi_devin_mutex);
 }
 
 void
