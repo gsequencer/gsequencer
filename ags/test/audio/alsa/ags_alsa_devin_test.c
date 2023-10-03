@@ -233,13 +233,15 @@ ags_alsa_devin_test_pcm_info()
 
   CU_ASSERT(card_id != NULL);
 
-  error = NULL;
-  ags_soundcard_pcm_info(AGS_SOUNDCARD(alsa_devin),
-			 card_id->data,
-			 &channels_min, &channels_max,
-			 &rate_min, &rate_max,
-			 &buffer_size_min, &buffer_size_max,
-			 &error);
+  if(card_id != NULL){
+    error = NULL;
+    ags_soundcard_pcm_info(AGS_SOUNDCARD(alsa_devin),
+			   card_id->data,
+			   &channels_min, &channels_max,
+			   &rate_min, &rate_max,
+			   &buffer_size_min, &buffer_size_max,
+			   &error);
+  }
   
   //TODO:JK: implement me
 

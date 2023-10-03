@@ -1370,7 +1370,9 @@ ags_alsa_midiin_device_free(AgsSequencer *sequencer)
   g_rec_mutex_lock(alsa_midiin_mutex);
 
 #ifdef AGS_WITH_ALSA
-  snd_rawmidi_close(alsa_midiin->handle);
+  if(alsa_midiin->handle != NULL){
+    snd_rawmidi_close(alsa_midiin->handle);
+  }
 #endif
 
   alsa_midiin->handle = NULL;

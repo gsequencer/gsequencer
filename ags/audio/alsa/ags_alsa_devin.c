@@ -1643,7 +1643,6 @@ ags_alsa_devin_pcm_info(AgsSoundcard *soundcard,
   
   alsa_devin = AGS_ALSA_DEVIN(soundcard);
   
-
   /* get alsa devin mutex */
   alsa_devin_mutex = AGS_ALSA_DEVIN_GET_OBJ_MUTEX(alsa_devin);
 
@@ -2535,11 +2534,12 @@ ags_alsa_devin_device_record(AgsSoundcard *soundcard,
 #ifdef AGS_WITH_ALSA  
   /* write ring buffer */
 //  g_message("read %d from 0x%x -> 0x%x", alsa_devin->buffer_size, alsa_devin->backend_buffer[alsa_devin->backend_buffer_mode], alsa_devin->app_buffer[alsa_devin->app_buffer_mode]);
-  
-  alsa_devin->rc = snd_pcm_readi(alsa_devin->handle,
-				 alsa_devin->backend_buffer[alsa_devin->backend_buffer_mode],
-				 (snd_pcm_uframes_t) (alsa_devin->buffer_size));
 
+  if(alsa_devin->handle != NULL){
+    alsa_devin->rc = snd_pcm_readi(alsa_devin->handle,
+				   alsa_devin->backend_buffer[alsa_devin->backend_buffer_mode],
+				   (snd_pcm_uframes_t) (alsa_devin->buffer_size));
+  }
 
   /* fill buffer */
   ags_soundcard_lock_buffer(soundcard,
@@ -2561,8 +2561,10 @@ ags_alsa_devin_device_record(AgsSoundcard *soundcard,
   if((AGS_ALSA_DEVIN_NONBLOCKING & (alsa_devin->flags)) == 0){
     if(alsa_devin->rc == -EPIPE){
       /* EPIPE means underrun */
-      snd_pcm_prepare(alsa_devin->handle);
-
+      if(alsa_devin->handle != NULL){
+	snd_pcm_prepare(alsa_devin->handle);
+      }
+      
 #ifdef AGS_DEBUG
       g_message("underrun occurred");
 #endif
@@ -2574,12 +2576,14 @@ ags_alsa_devin_device_record(AgsSoundcard *soundcard,
 
       int err;
 
-      while((err = snd_pcm_resume(alsa_devin->handle)) < 0){ // == -EAGAIN
-	ags_time_nanosleep(&idle); /* wait until the suspend flag is released */
-      }
+      if(alsa_devin->handle != NULL){
+	while((err = snd_pcm_resume(alsa_devin->handle)) < 0){ // == -EAGAIN
+	  ags_time_nanosleep(&idle); /* wait until the suspend flag is released */
+	}
 	
-      if(err < 0){
-	err = snd_pcm_prepare(alsa_devin->handle);
+	if(err < 0){
+	  err = snd_pcm_prepare(alsa_devin->handle);
+	}
       }
     }else if(alsa_devin->rc < 0){
       str = snd_strerror(alsa_devin->rc);
@@ -2626,7 +2630,9 @@ ags_alsa_devin_device_record(AgsSoundcard *soundcard,
 				 task);
   
 #ifdef AGS_WITH_ALSA
-  snd_pcm_prepare(alsa_devin->handle);
+  if(alsa_devin->handle != NULL){
+    snd_pcm_prepare(alsa_devin->handle);
+  }
 #endif
 
   /* unref */
@@ -2660,9 +2666,11 @@ ags_alsa_devin_device_free(AgsSoundcard *soundcard)
   }
   
 #ifdef AGS_WITH_ALSA
-  //  snd_pcm_drain(alsa_devin->handle);
-  snd_pcm_close(alsa_devin->handle);
-  alsa_devin->handle = NULL;
+  if(alsa_devin->handle != NULL){
+    //  snd_pcm_drain(alsa_devin->handle);
+    snd_pcm_close(alsa_devin->handle);
+    alsa_devin->handle = NULL;
+  }
 #endif
 
   /* free backend buffer */
