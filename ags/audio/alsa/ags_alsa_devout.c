@@ -2840,17 +2840,21 @@ ags_alsa_devout_device_play(AgsSoundcard *soundcard,
 
   /* write ring buffer */
 //  g_message("write %d", alsa_devout->buffer_size);
-  
-  alsa_devout->rc = snd_pcm_writei(alsa_devout->handle,
-				   alsa_devout->backend_buffer[alsa_devout->backend_buffer_mode],
-				   (snd_pcm_uframes_t) (alsa_devout->buffer_size));
+
+  if(alsa_devout->handle != NULL){
+    alsa_devout->rc = snd_pcm_writei(alsa_devout->handle,
+				     alsa_devout->backend_buffer[alsa_devout->backend_buffer_mode],
+				     (snd_pcm_uframes_t) (alsa_devout->buffer_size));
+  }
   
   /* check error flag */
   if((AGS_ALSA_DEVOUT_NONBLOCKING & (alsa_devout->flags)) == 0){
     if(alsa_devout->rc == -EPIPE){
       /* EPIPE means underrun */
-      snd_pcm_prepare(alsa_devout->handle);
-
+      if(alsa_devout->handle != NULL){
+	snd_pcm_prepare(alsa_devout->handle);
+      }
+      
 #ifdef AGS_DEBUG
       g_message("underrun occurred");
 #endif
@@ -2861,13 +2865,15 @@ ags_alsa_devout_device_play(AgsSoundcard *soundcard,
       };
 
       int err;
-
-      while((err = snd_pcm_resume(alsa_devout->handle)) < 0){ // == -EAGAIN
-	ags_time_nanosleep(&idle); /* wait until the suspend flag is released */
-      }
-	
-      if(err < 0){
-	err = snd_pcm_prepare(alsa_devout->handle);
+      
+      if(alsa_devout->handle != NULL){
+	while((err = snd_pcm_resume(alsa_devout->handle)) < 0){ // == -EAGAIN
+	  ags_time_nanosleep(&idle); /* wait until the suspend flag is released */
+	}
+      
+	if(err < 0){
+	  err = snd_pcm_prepare(alsa_devout->handle);
+	}
       }
     }else if(alsa_devout->rc < 0){
       str = snd_strerror(alsa_devout->rc);
@@ -2922,7 +2928,9 @@ ags_alsa_devout_device_play(AgsSoundcard *soundcard,
 		   g_object_unref);
   
 #ifdef AGS_WITH_ALSA
-  snd_pcm_prepare(alsa_devout->handle);
+  if(alsa_devout->handle != NULL){
+    snd_pcm_prepare(alsa_devout->handle);
+  }
 #endif
 
   /* unref */
@@ -2957,8 +2965,11 @@ ags_alsa_devout_device_free(AgsSoundcard *soundcard)
   g_rec_mutex_unlock(alsa_devout_mutex);
   
 #ifdef AGS_WITH_ALSA
-  //  snd_pcm_drain(alsa_devout->handle);
-  snd_pcm_close(alsa_devout->handle);
+  if(alsa_devout->handle != NULL){
+    //  snd_pcm_drain(alsa_devout->handle);
+    snd_pcm_close(alsa_devout->handle);
+  }
+  
   alsa_devout->handle = NULL;
 #endif
 

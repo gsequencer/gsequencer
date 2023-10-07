@@ -10555,6 +10555,8 @@ ags_simple_file_read_notation_fixup_1_0_to_1_2(AgsSimpleFile *simple_file, xmlNo
 					      10);
 	  
 	  xmlFree(str);
+	}else{
+	  note->x_256th[0] = 16 * note->x[0];
 	}
 	
 	str = xmlGetProp(child,
@@ -10566,6 +10568,8 @@ ags_simple_file_read_notation_fixup_1_0_to_1_2(AgsSimpleFile *simple_file, xmlNo
 					      10);
 	  
 	  xmlFree(str);
+	}else{
+	  note->x_256th[1] = 16 * note->x[1];
 	}
 	  
 	/* add */
@@ -10806,6 +10810,8 @@ ags_simple_file_read_notation(AgsSimpleFile *simple_file, xmlNode *node, AgsNota
 					      10);
 	  
 	  xmlFree(str);
+	}else{
+	  note->x_256th[0] = 16 * note->x[0];
 	}
 	
 	str = xmlGetProp(child,
@@ -10817,6 +10823,8 @@ ags_simple_file_read_notation(AgsSimpleFile *simple_file, xmlNode *node, AgsNota
 					      10);
 	  
 	  xmlFree(str);
+	}else{
+	  note->x_256th[1] = 16 * note->x[1];
 	}
 
 	/* add */

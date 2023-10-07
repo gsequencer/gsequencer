@@ -442,6 +442,7 @@ ags_note_init(AgsNote *note)
   double _Complex z;
   
   note->flags = 0;
+  note->key_format = AGS_SOUND_KEY_FORMAT_256TH;
 
   /* note mutex */
   g_rec_mutex_init(&(note->obj_mutex));

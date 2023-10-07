@@ -2590,9 +2590,9 @@ ags_notation_insert_native_piano_from_clipboard_version_0_3_12(AgsNotation *nota
 	/* retrieve x0 256th offset */
 	x0_256th = xmlGetProp(node, "x-256th");
 
-	if(x0_256th == NULL){
-	  x0_256th_val = 16 * x0_val;
-	}else{
+	x0_256th_val = 16 * x0_val;
+	
+	if(x0_256th != NULL){
 	  errno = 0;
 	  x0_256th_val = strtoul(x0_256th, &endptr, 10);
 	  
@@ -2608,9 +2608,9 @@ ags_notation_insert_native_piano_from_clipboard_version_0_3_12(AgsNotation *nota
 	/* retrieve x1 256th offset */
 	x1_256th = xmlGetProp(node, "x1-256th");
 
-	if(x1_256th == NULL){
-	  x1_256th_val = 16 * x1_val;
-	}else{
+	x1_256th_val = 16 * x1_val;
+	
+	if(x1_256th != NULL){
 	  errno = 0;
 	  x1_256th_val = strtoul(x1_256th, &endptr, 10);
 
@@ -2654,6 +2654,10 @@ ags_notation_insert_native_piano_from_clipboard_version_0_3_12(AgsNotation *nota
 	  tmp = x0_val;
 	  x0_val = x1_val;
 	  x1_val = tmp;
+
+	  tmp = x0_256th_val;
+	  x0_256th_val = x1_256th_val;
+	  x1_256th_val = tmp;
 	}
 
 	/* calculate new offset */
@@ -2662,6 +2666,7 @@ ags_notation_insert_native_piano_from_clipboard_version_0_3_12(AgsNotation *nota
 
 	  if(subtract_x){
 	    x0_val -= base_x_difference;
+	    x0_256th_val -= (16 * base_x_difference);
 
 	    if(errno != 0){
 	      node = node->next;
@@ -2670,9 +2675,13 @@ ags_notation_insert_native_piano_from_clipboard_version_0_3_12(AgsNotation *nota
 	    }
 
 	    x1_val -= base_x_difference;
+	    x1_256th_val -= (16 * base_x_difference);
 	  }else{
 	    x0_val += base_x_difference;
+	    x0_256th_val += (16 * base_x_difference);
+
 	    x1_val += base_x_difference;
+	    x1_256th_val += (16 * base_x_difference);
 
 	    if(errno != 0){
 	      node = node->next;
