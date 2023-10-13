@@ -973,6 +973,7 @@ ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_nota
   guint64 offset_counter;
   guint input_pads;
   guint audio_channel;
+  guint x0_256th;
   guint y;
 
   GValue value = {0,};
@@ -1036,17 +1037,11 @@ ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_nota
     }
   }
 
-  input_pads = 0;
-  
-  g_object_get(audio,
-	       "input-pads", &input_pads,
-	       NULL);
+  input_pads = ags_audio_get_input_pads(audio);
 
-  y = 0;
+  x0_256th = ags_note_get_x0_256th(note);
   
-  g_object_get(note,
-	       "y", &y,
-	       NULL);
+  y = ags_note_get_y(note);
   
   input = ags_channel_nth(start_input,
 			  audio_channel);
@@ -1069,6 +1064,8 @@ ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_nota
 
     GList *start_list, *list;
 
+    gdouble note_256th_tic_size;
+    guint offset_lower;
     guint attack;
     
     output_soundcard = NULL;
@@ -1082,11 +1079,21 @@ ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_nota
 		 "last-recycling", &last_recycling,
 		 NULL);
 
-    attack = 0;
+    note_256th_tic_size = 1.0 / (delay / 16.0);
 
+    offset_lower = 0;
+
+    attack = 0;
+    
     if(output_soundcard != NULL){
+      ags_soundcard_get_note_256th_offset(AGS_SOUNDCARD(output_soundcard),
+					  &offset_lower,
+					  NULL);
+
       attack = ags_soundcard_get_attack(AGS_SOUNDCARD(output_soundcard));
     }
+
+    attack += ((x0_256th - offset_lower) * note_256th_tic_size);
     
     end_recycling = ags_recycling_next(last_recycling);
 
@@ -1160,7 +1167,7 @@ ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_nota
 		   NULL);
 
       ags_audio_signal_stream_resize(audio_signal,
-				     2);      
+				     (guint) floor(delay) + 2);
 
       audio_signal->stream_current = audio_signal->stream;
 
