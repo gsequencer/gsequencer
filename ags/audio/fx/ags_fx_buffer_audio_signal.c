@@ -228,6 +228,24 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 		 "format", &source_format,
 		 NULL);
   }
+
+  g_message("attack = %u", attack);
+  
+  if(attack >= source_buffer_size){
+    g_object_set(source,
+		 "attack", attack - source_buffer_size,
+		 NULL);
+    
+    if(fx_buffer_recycling != NULL){
+      g_object_unref(fx_buffer_recycling);
+    }
+    
+    if(source != NULL){
+      g_object_unref(source);
+    }
+
+    return;
+  }
   
   g_object_get(fx_buffer_recycling,
 	       "source", &source_recycling,

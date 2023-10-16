@@ -1,3 +1,8 @@
+ags (6.1.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing note 256th attack for ags-fx-buffer
+
 ags (6.1.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
