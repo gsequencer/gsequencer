@@ -1,6 +1,7 @@
-ags (6.1.4)
+ags (6.2.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed attack of all soundcard implementations
 	* fixed missing note 256th attack for ags-fx-buffer
 
 ags (6.1.3)
