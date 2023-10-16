@@ -229,6 +229,8 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 		 NULL);
   }
 
+  g_message("attack = %u", attack);
+  
   if(attack >= source_buffer_size){
     g_object_set(source,
 		 "attack", attack - source_buffer_size,

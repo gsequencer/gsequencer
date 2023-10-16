@@ -172,6 +172,7 @@ ags_soundcard_util_adjust_delay_and_attack(GObject *soundcard)
   guint default_tact_frames;
   guint total_correct_frame_count;
   gdouble correct_frame_count;
+  gint64 frame_counter;
   guint i;
 
   GRecMutex *obj_mutex;
@@ -339,28 +340,35 @@ ags_soundcard_util_adjust_delay_and_attack(GObject *soundcard)
     return;
   }
 
-  default_tact_frames = absolute_delay * buffer_size;
+  default_tact_frames = (guint) floor(absolute_delay * (gdouble) buffer_size);
 
-  total_correct_frame_count = ((guint) AGS_SOUNDCARD_DEFAULT_PERIOD * default_tact_frames) % buffer_size;
+  total_correct_frame_count = buffer_size * ((guint) floor((gdouble) ((guint) AGS_SOUNDCARD_DEFAULT_PERIOD * default_tact_frames) / (gdouble) buffer_size));
 
   correct_frame_count = (gdouble) total_correct_frame_count / AGS_SOUNDCARD_DEFAULT_PERIOD;
 
-  corrected_delay = absolute_delay + (correct_frame_count / buffer_size);
+  corrected_delay = correct_frame_count / (gdouble) buffer_size;
   
   attack[0] = 0;
   delay[0] = corrected_delay;
+
+  frame_counter = 0;
   
   for(i = 1; i < AGS_SOUNDCARD_DEFAULT_PERIOD; i++){
     gint64 current_attack;
 
-    current_attack = (default_tact_frames - buffer_size + attack[i - 1]) - (floor(corrected_delay) * buffer_size);
+    frame_counter += (guint) correct_frame_count;
 
+    current_attack = (frame_counter % (gint64) buffer_size);
+
+    //NOTE:JK: just for safety
+    if(current_attack < 0){
+      current_attack = -1 * current_attack;
+    }
+    
     if(current_attack >= buffer_size){
       attack[i] = buffer_size - 1;
-    }else if(current_attack < 0){
-      attack[i] = 0;
     }else{
-      attack[i] = current_attack;
+      attack[i] = (guint) current_attack;
     }
     
     delay[i] = corrected_delay;
@@ -369,14 +377,16 @@ ags_soundcard_util_adjust_delay_and_attack(GObject *soundcard)
   for(; i < 2 * AGS_SOUNDCARD_DEFAULT_PERIOD; i++){
     gint64 current_attack;
 
-    current_attack = attack[2 * (guint) AGS_SOUNDCARD_DEFAULT_PERIOD - i - 1];
+    current_attack = (gint64) attack[2 * (guint) AGS_SOUNDCARD_DEFAULT_PERIOD - i - 1];
 
+    if(current_attack < 0){
+      current_attack = -1 * current_attack;
+    }
+    
     if(current_attack >= buffer_size){
       attack[i] = buffer_size - 1;
-    }else if(current_attack < 0){
-      attack[i] = 0;
     }else{
-      attack[i] = current_attack;
+      attack[i] = (guint) current_attack;
     }
 
     delay[i] = corrected_delay;
