@@ -180,6 +180,8 @@ struct _AgsOssDevin
   int device_fd;
   char *device;
 
+  GList *note_256th_attack;
+
   guint note_256th_offset;
   guint note_256th_offset_last;
   gdouble note_256th_tic_size;

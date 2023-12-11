@@ -585,6 +585,8 @@ ags_gstreamer_devin_init(AgsGstreamerDevin *gstreamer_devin)
 {
   AgsConfig *config;
 
+  GList *start_note_256th_attack;
+
   gchar *str;
   gchar *segmentation;
 
@@ -681,6 +683,20 @@ ags_gstreamer_devin_init(AgsGstreamerDevin *gstreamer_devin)
   
   gstreamer_devin->attack = (guint *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
 					       sizeof(guint));
+
+  start_note_256th_attack = NULL;
+
+  for(i = 0; i < 16; i++){
+    guint *note_256th_attack;
+    
+    note_256th_attack = (guint *) malloc(2 * (int) AGS_SOUNDCARD_DEFAULT_PERIOD *
+					 sizeof(guint));
+    
+    start_note_256th_attack = g_list_prepend(start_note_256th_attack,
+					     note_256th_attack);
+  }
+
+  gstreamer_devin->note_256th_attack = start_note_256th_attack;
 
   ags_gstreamer_devin_adjust_delay_and_attack(gstreamer_devin);
   

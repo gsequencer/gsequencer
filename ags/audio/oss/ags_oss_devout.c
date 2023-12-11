@@ -591,6 +591,8 @@ ags_oss_devout_init(AgsOssDevout *oss_devout)
 {  
   AgsConfig *config;
   
+  GList *start_note_256th_attack;
+
   gchar *str;
   gchar *segmentation;
 
@@ -688,6 +690,20 @@ ags_oss_devout_init(AgsOssDevout *oss_devout)
   
   oss_devout->attack = (guint *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
 					  sizeof(guint));
+
+  start_note_256th_attack = NULL;
+
+  for(i = 0; i < 16; i++){
+    guint *note_256th_attack;
+    
+    note_256th_attack = (guint *) malloc(2 * (int) AGS_SOUNDCARD_DEFAULT_PERIOD *
+					 sizeof(guint));
+    
+    start_note_256th_attack = g_list_prepend(start_note_256th_attack,
+					     note_256th_attack);
+  }
+
+  oss_devout->note_256th_attack = start_note_256th_attack;
 
   ags_oss_devout_adjust_delay_and_attack(oss_devout);
   
