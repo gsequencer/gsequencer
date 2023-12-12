@@ -206,6 +206,26 @@ ags_audio_signal_flags_get_type()
   return g_flags_type_id__volatile;
 }
 
+GType
+ags_audio_signal_stream_mode_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_AUDIO_SIGNAL_STREAM_CONTINUES_FEED, "AGS_AUDIO_SIGNAL_STREAM_CONTINUES_FEED", "audio-signal-stream-continues-feed" },
+      { AGS_AUDIO_SIGNAL_STREAM_DUAL_BUFFERED, "AGS_AUDIO_SIGNAL_STREAM_DUAL_BUFFERED", "audio-signal-stream-dual-buffered" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsAudioSignalStreamMode"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
+}
+
 void
 ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 {
@@ -914,6 +934,12 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
   audio_signal->stream = NULL;
   audio_signal->stream_current = NULL;
   audio_signal->stream_end = NULL;
+
+  audio_signal->stream_mode = AGS_AUDIO_SIGNAL_STREAM_CONTINUES_FEED;
+
+  g_rec_mutex_init(&(audio_signal->backlog_mutex));
+
+  audio_signal->has_backlog = FALSE;
 }
 
 void
@@ -4210,6 +4236,70 @@ ags_audio_signal_set_stream(AgsAudioSignal *audio_signal, GList *stream)
     g_list_free_full(start_stream,
 		     (GDestroyNotify) ags_stream_slice_free);
   }
+}
+
+/**
+ * ags_audio_signal_test_stream_mode:
+ * @audio_signal: the #AgsAudioSignal
+ * @stream_mode: the stream mode
+ *
+ * Test @stream_mode to be set on @audio_signal.
+ * 
+ * Returns: %TRUE if stream mode are set, else %FALSE
+ *
+ * Since: 6.2.0
+ */
+gboolean
+ags_audio_signal_test_stream_mode(AgsAudioSignal *audio_signal, AgsAudioSignalStreamMode stream_mode)
+{
+  gboolean retval;  
+  
+  GRecMutex *audio_signal_mutex;
+
+  if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return(FALSE);
+  }
+
+  /* get audio_signal mutex */
+  audio_signal_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(audio_signal);
+
+  /* test */
+  g_rec_mutex_lock(audio_signal_mutex);
+
+  retval = (stream_mode == audio_signal->stream_mode) ? TRUE: FALSE;
+  
+  g_rec_mutex_unlock(audio_signal_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_audio_signal_set_stream_mode:
+ * @audio_signal: the #AgsAudioSignal
+ * @stream_mode: see #AgsAudioSignalStreamMode-enum
+ *
+ * Set stream mode of @audio_signal.
+ *
+ * Since: 6.2.0
+ */
+void
+ags_audio_signal_set_stream_mode(AgsAudioSignal *audio_signal, AgsAudioSignalStreamMode stream_mode)
+{
+  GRecMutex *audio_signal_mutex;
+
+  if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return;
+  }
+
+  /* get audio_signal mutex */
+  audio_signal_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(audio_signal);
+
+  /* set flags */
+  g_rec_mutex_lock(audio_signal_mutex);
+
+  audio_signal->stream_mode = stream_mode;
+  
+  g_rec_mutex_unlock(audio_signal_mutex);
 }
 
 /**

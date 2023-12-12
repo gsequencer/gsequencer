@@ -1,6 +1,10 @@
 ags (6.2.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented missing note 256th attack of all soundcard implementations
+	* implemented AgsAudioSignalStreamMode
+	* implemented AgsSetBacklog
+	* TODO:JK: refactored ags-fx-buffer
 	* fixed attack of all soundcard implementations
 	* fixed missing note 256th attack for ags-fx-buffer
 

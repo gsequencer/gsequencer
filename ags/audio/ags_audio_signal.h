@@ -38,6 +38,7 @@ G_BEGIN_DECLS
 
 #define AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(obj) (&(((AgsAudioSignal *) obj)->obj_mutex))
 #define AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(obj) (&(((AgsAudioSignal *) obj)->stream_mutex))
+#define AGS_AUDIO_SIGNAL_GET_BACKLOG_MUTEX(obj) (&(((AgsAudioSignal *) obj)->backlog_mutex))
 
 typedef struct _AgsAudioSignal AgsAudioSignal;
 typedef struct _AgsAudioSignalClass AgsAudioSignalClass;
@@ -64,6 +65,19 @@ typedef enum{
   AGS_AUDIO_SIGNAL_STREAM                       = 1 <<  5,
   AGS_AUDIO_SIGNAL_SLICE_ALLOC                  = 1 <<  6,            
 }AgsAudioSignalFlags;
+
+/**
+ * AgsAudioSignalStreamMode:
+ * @AGS_AUDIO_SIGNAL_CONTINUES_FEED: the audio signal is a continues feed, all streams are available
+ * @AGS_AUDIO_SIGNAL_DUAL_BUFFERED: the audio signal is dual buffered, current and next stream only available
+ * 
+ * Enum values to set the mode of #AgsAudioSignal stream behaviour by
+ * enable/disable setting mode.
+ */
+typedef enum{
+  AGS_AUDIO_SIGNAL_STREAM_CONTINUES_FEED,
+  AGS_AUDIO_SIGNAL_STREAM_DUAL_BUFFERED,
+}AgsAudioSignalStreamMode;
 
 struct _AgsAudioSignal
 {
@@ -117,6 +131,12 @@ struct _AgsAudioSignal
   GList *stream;
   GList *stream_current;
   GList *stream_end;
+
+  AgsAudioSignalStreamMode stream_mode;
+
+  GRecMutex backlog_mutex;
+
+  gboolean has_backlog;
 };
 
 struct _AgsAudioSignalClass
@@ -133,6 +153,7 @@ struct _AgsAudioSignalClass
 
 GType ags_audio_signal_get_type();
 GType ags_audio_signal_flags_get_type();
+GType ags_audio_signal_stream_mode_get_type();
 
 GRecMutex* ags_audio_signal_get_obj_mutex(AgsAudioSignal *audio_signal);
 
@@ -185,6 +206,9 @@ void ags_audio_signal_remove_note(AgsAudioSignal *audio_signal,
 
 GList* ags_audio_signal_get_stream(AgsAudioSignal *audio_signal);
 void ags_audio_signal_set_stream(AgsAudioSignal *audio_signal, GList *stream);
+
+gboolean ags_audio_signal_test_stream_mode(AgsAudioSignal *audio_signal, AgsAudioSignalStreamMode stream_mode);
+void ags_audio_signal_set_stream_mode(AgsAudioSignal *audio_signal, AgsAudioSignalStreamMode stream_mode);
 
 /* presets related */
 void ags_audio_signal_refresh_data(AgsAudioSignal *audio_signal);
