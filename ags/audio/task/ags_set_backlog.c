@@ -380,7 +380,23 @@ ags_set_backlog_get_instance()
   g_mutex_lock(&mutex);
   
   if(ags_set_backlog == NULL){
+    AgsTaskLauncher *task_launcher;
+    
+    AgsApplicationContext *application_context;
+
     ags_set_backlog = ags_set_backlog_new();
+
+    /* add cyclic task */
+    application_context = ags_application_context_get_instance();
+
+    task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
+    ags_task_launcher_add_cyclic_task(task_launcher,
+				      (AgsTask *) ags_set_backlog);
+    
+    /* unref */
+    if(task_launcher != NULL){
+      g_object_unref(task_launcher);
+    }
   }
   
   g_mutex_unlock(&mutex);

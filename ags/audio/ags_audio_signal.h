@@ -137,6 +137,8 @@ struct _AgsAudioSignal
   GRecMutex backlog_mutex;
 
   gboolean has_backlog;
+
+  guint note_256th_attack;
 };
 
 struct _AgsAudioSignalClass
@@ -195,6 +197,10 @@ void ags_audio_signal_set_buffer_size(AgsAudioSignal *audio_signal, guint buffer
 AgsSoundcardFormat ags_audio_signal_get_format(AgsAudioSignal *audio_signal);
 void ags_audio_signal_set_format(AgsAudioSignal *audio_signal, AgsSoundcardFormat format);
 
+guint ags_audio_signal_get_attack(AgsAudioSignal *audio_signal);
+void ags_audio_signal_set_attack(AgsAudioSignal *audio_signal,
+				 guint attack);
+
 /* children */
 GList* ags_audio_signal_get_note(AgsAudioSignal *audio_signal);
 void ags_audio_signal_set_note(AgsAudioSignal *audio_signal, GList *note);
@@ -209,6 +215,10 @@ void ags_audio_signal_set_stream(AgsAudioSignal *audio_signal, GList *stream);
 
 gboolean ags_audio_signal_test_stream_mode(AgsAudioSignal *audio_signal, AgsAudioSignalStreamMode stream_mode);
 void ags_audio_signal_set_stream_mode(AgsAudioSignal *audio_signal, AgsAudioSignalStreamMode stream_mode);
+
+guint ags_audio_signal_get_note_256th_attack(AgsAudioSignal *audio_signal);
+void ags_audio_signal_set_note_256th_attack(AgsAudioSignal *audio_signal,
+					    guint note_256th_attack);
 
 /* presets related */
 void ags_audio_signal_refresh_data(AgsAudioSignal *audio_signal);
