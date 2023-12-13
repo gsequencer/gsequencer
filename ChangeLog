@@ -1,3 +1,8 @@
+ags (6.2.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed memory corruption after writing project file as XML
+
 ags (6.2.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
