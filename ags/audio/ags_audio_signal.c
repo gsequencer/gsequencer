@@ -834,6 +834,7 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
 
   audio_signal->flags = 0;
   audio_signal->connectable_flags = 0;
+  audio_signal->key_format = AGS_SOUND_KEY_FORMAT_256TH;
 
   /* audio signal mutex */
   g_rec_mutex_init(&(audio_signal->obj_mutex)); 
@@ -2160,6 +2161,70 @@ ags_audio_signal_unset_flags(AgsAudioSignal *audio_signal, AgsAudioSignalFlags f
   g_rec_mutex_lock(audio_signal_mutex);
 
   audio_signal->flags &= (~flags);
+  
+  g_rec_mutex_unlock(audio_signal_mutex);
+}
+
+/**
+ * ags_audio_signal_test_key_format:
+ * @audio_signal: the #AgsAudioSignal
+ * @key_format: the key format
+ * 
+ * Test @key_format to be set on @audio_signal.
+ * 
+ * Returns: %TRUE if key format is set, else %FALSE
+ * 
+ * Since: 6.2.0
+ */
+gboolean
+ags_audio_signal_test_key_format(AgsAudioSignal *audio_signal, AgsSoundKeyFormat key_format)
+{
+  gboolean retval;
+  
+  GRecMutex *audio_signal_mutex;
+
+  if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return(FALSE);
+  }
+      
+  /* get audio_signal mutex */
+  audio_signal_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(audio_signal);
+
+  /* test */
+  g_rec_mutex_lock(audio_signal_mutex);
+
+  retval = (key_format == audio_signal->key_format) ? TRUE: FALSE;
+  
+  g_rec_mutex_unlock(audio_signal_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_audio_signal_set_key_format:
+ * @audio_signal: the #AgsAudioSignal
+ * @key_format: the key format
+ * 
+ * Set @key_format on @audio_signal.
+ * 
+ * Since: 6.2.0
+ */
+void
+ags_audio_signal_set_key_format(AgsAudioSignal *audio_signal, AgsSoundKeyFormat key_format)
+{
+  GRecMutex *audio_signal_mutex;
+
+  if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return;
+  }
+      
+  /* get audio_signal mutex */
+  audio_signal_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(audio_signal);
+
+  /* set */
+  g_rec_mutex_lock(audio_signal_mutex);
+
+  audio_signal->key_format = key_format;
   
   g_rec_mutex_unlock(audio_signal_mutex);
 }

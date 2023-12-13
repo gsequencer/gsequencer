@@ -85,6 +85,7 @@ struct _AgsAudioSignal
 
   AgsAudioSignalFlags flags;
   AgsConnectableFlags connectable_flags;
+  AgsSoundKeyFormat key_format;
   
   GRecMutex obj_mutex;
 
@@ -165,6 +166,9 @@ void ags_audio_signal_stream_unlock(AgsAudioSignal *audio_signal);
 gboolean ags_audio_signal_test_flags(AgsAudioSignal *audio_signal, AgsAudioSignalFlags flags);
 void ags_audio_signal_set_flags(AgsAudioSignal *audio_signal, AgsAudioSignalFlags flags);
 void ags_audio_signal_unset_flags(AgsAudioSignal *audio_signal, AgsAudioSignalFlags flags);
+
+gboolean ags_audio_signal_test_key_format(AgsAudioSignal *audio_signal, AgsSoundKeyFormat key_format);
+void ags_audio_signal_set_key_format(AgsAudioSignal *audio_signal, AgsSoundKeyFormat key_format);
 
 void* ags_stream_alloc(guint buffer_size,
 		       AgsSoundcardFormat format);

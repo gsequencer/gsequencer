@@ -1410,6 +1410,8 @@ ags_note_get_obj_mutex
 ags_note_test_flags
 ags_note_set_flags
 ags_note_unset_flags
+ags_note_test_key_format
+ags_note_set_key_format
 ags_note_sort_func
 ags_note_get_is_minor
 ags_note_set_is_minor
@@ -4013,6 +4015,8 @@ ags_audio_signal_stream_unlock
 ags_audio_signal_test_flags
 ags_audio_signal_set_flags
 ags_audio_signal_unset_flags
+ags_audio_signal_test_key_format
+ags_audio_signal_set_key_format
 ags_stream_alloc
 ags_stream_free
 ags_stream_slice_alloc
