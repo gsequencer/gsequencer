@@ -28,6 +28,8 @@
 #include <ags/audio/fx/ags_fx_buffer_channel_processor.h>
 #include <ags/audio/fx/ags_fx_buffer_recycling.h>
 
+#include <ags/audio/task/ags_set_backlog.h>
+
 #include <ags/i18n.h>
 
 void ags_fx_buffer_audio_signal_class_init(AgsFxBufferAudioSignalClass *fx_buffer_audio_signal);
@@ -36,6 +38,7 @@ void ags_fx_buffer_audio_signal_dispose(GObject *gobject);
 void ags_fx_buffer_audio_signal_finalize(GObject *gobject);
 
 void ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall);
+void ags_fx_buffer_audio_signal_real_done(AgsRecall *recall);
 
 /**
  * SECTION:ags_fx_buffer_audio_signal
@@ -100,6 +103,7 @@ ags_fx_buffer_audio_signal_class_init(AgsFxBufferAudioSignalClass *fx_buffer_aud
   recall = (AgsRecallClass *) fx_buffer_audio_signal;
   
   recall->run_inter = ags_fx_buffer_audio_signal_real_run_inter;
+  recall->done = ags_fx_buffer_audio_signal_real_done;
 }
 
 void
@@ -117,7 +121,7 @@ ags_fx_buffer_audio_signal_dispose(GObject *gobject)
   AgsFxBufferAudioSignal *fx_buffer_audio_signal;
   
   fx_buffer_audio_signal = AGS_FX_BUFFER_AUDIO_SIGNAL(gobject);
-  
+
   /* call parent */
   G_OBJECT_CLASS(ags_fx_buffer_audio_signal_parent_class)->dispose(gobject);
 }
@@ -152,6 +156,8 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 
   AgsFxBufferChannelInputData *input_data;
 
+  AgsSetBacklog *set_backlog;
+  
   GList *stream_destination, *stream_destination_next;
   GList *stream_source;
 
@@ -201,6 +207,8 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 
   fx_buffer_audio_signal = NULL;
 
+  set_backlog = ags_set_backlog_get_instance();
+
   input_data = NULL;
   
   fx_buffer_audio_signal = AGS_FX_BUFFER_AUDIO_SIGNAL(recall);
@@ -219,7 +227,7 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 
   attack = 0;
   destination_attack = 0;  
-
+  
   g_object_get(recall,
 	       "source", &source,
 	       "parent", &fx_buffer_recycling,
@@ -372,6 +380,9 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 
 	destination->stream_current = destination->stream;
 
+	ags_set_backlog_add(set_backlog,
+			    destination);
+	
 #ifdef AGS_DEBUG
 	g_message("ags-fx-buffer - create destination 0x%x", destination);
 #endif
@@ -662,6 +673,162 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
   
   /* call parent */
   AGS_RECALL_CLASS(ags_fx_buffer_audio_signal_parent_class)->run_inter(recall);
+}
+
+void
+ags_fx_buffer_audio_signal_real_done(AgsRecall *recall)
+{
+  AgsAudio *audio;
+  AgsChannel *start_output;
+  AgsChannel *output, *next_output;
+  AgsRecycling *recycling;
+  
+  AgsFxBufferAudio *fx_buffer_audio;
+  AgsFxBufferAudioProcessor *fx_buffer_audio_processor;
+  AgsFxBufferChannel *fx_buffer_channel;
+  AgsFxBufferChannelProcessor *fx_buffer_channel_processor;
+  AgsFxBufferRecycling *fx_buffer_recycling;
+  AgsFxBufferAudioSignal *fx_buffer_audio_signal;
+  
+  AgsFxBufferChannelInputData *input_data;
+
+  AgsSetBacklog *set_backlog;
+  
+  gint sound_scope;
+  guint audio_channel;
+
+  GRecMutex *input_data_mutex;
+  
+  fx_buffer_audio_signal = AGS_FX_BUFFER_AUDIO_SIGNAL(recall);
+
+  audio = NULL;
+  
+  start_output = NULL;
+
+  output = NULL;
+  next_output = NULL;
+
+  fx_buffer_audio = NULL;
+  fx_buffer_audio_processor = NULL;
+
+  fx_buffer_channel = NULL;
+  fx_buffer_channel_processor = NULL;
+
+  fx_buffer_recycling = NULL;
+
+  set_backlog = ags_set_backlog_get_instance();
+
+  input_data = NULL;
+
+  sound_scope = ags_recall_get_sound_scope(fx_buffer_audio_signal);
+
+  audio_channel = 0;
+
+  g_object_get(fx_buffer_audio_signal,
+	       "parent", &fx_buffer_recycling,
+	       NULL);
+
+  if(fx_buffer_recycling != NULL){
+    g_object_get(fx_buffer_recycling,
+		 "parent", &fx_buffer_channel_processor,
+		 NULL);
+  }
+
+  if(fx_buffer_channel_processor != NULL){
+    g_object_get(fx_buffer_channel_processor,
+		 "recall-audio", &fx_buffer_audio,
+		 "recall-audio-run", &fx_buffer_audio_processor,
+		 "recall-channel", &fx_buffer_channel,
+		 NULL);
+  }
+
+  if(fx_buffer_audio != NULL){
+    g_object_get(fx_buffer_audio,
+		 "audio", &audio,
+		 NULL);
+  }
+
+  if(audio != NULL){
+    g_object_get(audio,
+		 "output", &start_output,
+		 NULL);
+  }
+
+  if(fx_buffer_audio_processor != NULL){
+    g_object_get(fx_buffer_audio_processor,
+		 "audio-channel", &audio_channel,
+		 NULL);
+  }
+
+  input_data = ags_fx_buffer_channel_get_input_data(fx_buffer_channel,
+						    sound_scope);
+  
+  if(sound_scope >= 0 &&
+     sound_scope < AGS_SOUND_SCOPE_LAST &&
+     fx_buffer_channel != NULL &&
+     input_data != NULL){
+    output = ags_channel_nth(start_output,
+			     audio_channel);
+
+    input_data_mutex = NULL;
+    
+    if(input_data != NULL){
+      input_data_mutex = AGS_FX_BUFFER_CHANNEL_INPUT_DATA_GET_STRCT_MUTEX(input_data);
+    }
+
+    while(output != NULL){
+      AgsRecycling *recycling;
+      AgsAudioSignal *destination;
+      
+      recycling = NULL;
+
+      g_object_get(output,
+		   "first-recycling", &recycling,
+		   NULL);
+
+      g_rec_mutex_lock(input_data_mutex);
+      
+      destination = g_hash_table_lookup(input_data->destination,
+					recycling);
+      
+      g_rec_mutex_unlock(input_data_mutex);
+      
+      ags_set_backlog_remove(set_backlog,
+			     destination);
+
+      /* iterate */
+      next_output = ags_channel_next_pad(output);
+
+      g_object_unref(output);
+
+      output = next_output;
+    }
+  }
+
+  /* unref */
+  if(audio != NULL){
+    g_object_unref(audio);
+  }
+  
+  if(start_output != NULL){
+    g_object_unref(start_output);
+  }
+
+   if(fx_buffer_audio != NULL){
+    g_object_unref(fx_buffer_audio);
+  }
+
+  if(fx_buffer_audio_processor != NULL){
+    g_object_unref(fx_buffer_audio_processor);
+  }
+  
+  if(fx_buffer_channel_processor != NULL){
+    g_object_unref(fx_buffer_channel_processor);
+  }
+  
+  if(fx_buffer_recycling != NULL){
+    g_object_unref(fx_buffer_recycling);
+  }  
 }
 
 /**

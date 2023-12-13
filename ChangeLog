@@ -7,7 +7,7 @@ ags (6.2.0)
 	* implemented ags_audio_signal_get_note_256th_attack() and ags_audio_signal_set_note_256th_attack()
 	* implemented AgsSetBacklog
 	* TODO:JK: implemented AgsAudioSignal:note-256th-attack
-	* TODO:JK: refactored ags-fx-buffer
+	* refactored ags-fx-buffer
 	* fixed attack of all soundcard implementations
 	* fixed missing note 256th attack for ags-fx-buffer
 

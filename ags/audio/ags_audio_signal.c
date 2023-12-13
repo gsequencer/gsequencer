@@ -3329,22 +3329,17 @@ guint
 ags_audio_signal_get_attack(AgsAudioSignal *audio_signal)
 {
   guint attack;
-  
-  GRecMutex *audio_signal_mutex;
-  
+    
   if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
     return(0);
   }
 
-  /* get audio signal mutex */
-  audio_signal_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(audio_signal);
-
   /* get some fields */
-  g_rec_mutex_lock(audio_signal_mutex);
-
-  attack = audio_signal->attack;
-
-  g_rec_mutex_unlock(audio_signal_mutex);
+  attack = 0;
+  
+  g_object_get(audio_signal,
+	       "attack", &attack,
+	       NULL);
 
   return(attack);
 }
@@ -3362,21 +3357,14 @@ void
 ags_audio_signal_set_attack(AgsAudioSignal *audio_signal,
 			    guint attack)
 {
-  GRecMutex *audio_signal_mutex;
-  
   if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
     return;
   }
 
-  /* get audio signal mutex */
-  audio_signal_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(audio_signal);
-
-  /* get some fields */
-  g_rec_mutex_lock(audio_signal_mutex);
-
-  audio_signal->attack = attack;
-
-  g_rec_mutex_unlock(audio_signal_mutex);
+  /* set some fields */
+  g_object_set(audio_signal,
+	       "attack", attack,
+	       NULL);
 }
 
 /**
@@ -4423,22 +4411,17 @@ guint
 ags_audio_signal_get_note_256th_attack(AgsAudioSignal *audio_signal)
 {
   guint note_256th_attack;
-  
-  GRecMutex *audio_signal_mutex;
-  
+    
   if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
     return(0);
   }
 
-  /* get audio signal mutex */
-  audio_signal_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(audio_signal);
-
   /* get some fields */
-  g_rec_mutex_lock(audio_signal_mutex);
-
-  note_256th_attack = audio_signal->note_256th_attack;
-
-  g_rec_mutex_unlock(audio_signal_mutex);
+  note_256th_attack = 0;
+  
+  g_object_get(audio_signal,
+	       "note-256th-attack", &note_256th_attack,
+	       NULL);
 
   return(note_256th_attack);
 }
@@ -4456,21 +4439,14 @@ void
 ags_audio_signal_set_note_256th_attack(AgsAudioSignal *audio_signal,
 				       guint note_256th_attack)
 {
-  GRecMutex *audio_signal_mutex;
-  
   if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
     return;
   }
 
-  /* get audio signal mutex */
-  audio_signal_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(audio_signal);
-
-  /* get some fields */
-  g_rec_mutex_lock(audio_signal_mutex);
-
-  audio_signal->note_256th_attack = note_256th_attack;
-
-  g_rec_mutex_unlock(audio_signal_mutex);
+  /* set some fields */
+  g_object_set(audio_signal,
+	       "note-256th-attack", note_256th_attack,
+	       NULL);
 }
 
 /**
