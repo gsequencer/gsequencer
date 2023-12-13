@@ -1653,7 +1653,9 @@ ags_simple_file_read_property(AgsSimpleFile *simple_file, xmlNode *node, GParame
 		   BAD_CAST "name");
 
   if(str != NULL){
-    pointer->name = str;
+    pointer->name = g_strdup(str);
+
+    xmlFree(str);
   }
   
   str = xmlGetProp(node,
@@ -12134,6 +12136,8 @@ ags_simple_file_write_window(AgsSimpleFile *simple_file, xmlNode *parent, AgsWin
 
   g_free(str);
 
+  //  xmlSaveFormatFileEnc("-", simple_file->doc, "UTF-8", 1);
+  
   /* children */
   list = ags_window_get_machine(window);
   ags_simple_file_write_machine_list(simple_file,
@@ -12711,7 +12715,8 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 		  dialog_model);
 
       xmlAddChild(dialog_model,
-		  list->data);
+		  xmlCopyNode(list->data,
+			      1));
       
       list = list->next;
     }
@@ -16432,8 +16437,10 @@ ags_simple_file_write_composite_editor_resolve_machine(AgsFileLookup *file_looku
   }
 
   /* add to parent */
-  xmlAddChild(node,
-	      property_list);
+  if(property_list != NULL){
+    xmlAddChild(node,
+		property_list);
+  }
   
   g_list_free(start_list);
 }

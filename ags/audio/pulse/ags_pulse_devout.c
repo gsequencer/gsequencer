@@ -597,6 +597,8 @@ ags_pulse_devout_init(AgsPulseDevout *pulse_devout)
 {
   AgsConfig *config;
 
+  GList *start_note_256th_attack;
+
   gchar *str;
   gchar *segmentation;
 
@@ -686,6 +688,20 @@ ags_pulse_devout_init(AgsPulseDevout *pulse_devout)
   
   pulse_devout->attack = (guint *) malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
 					  sizeof(guint));
+
+  start_note_256th_attack = NULL;
+
+  for(i = 0; i < 16; i++){
+    guint *note_256th_attack;
+    
+    note_256th_attack = (guint *) malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
+					 sizeof(guint));
+    
+    start_note_256th_attack = g_list_prepend(start_note_256th_attack,
+					     note_256th_attack);
+  }
+
+  pulse_devout->note_256th_attack = start_note_256th_attack;
 
   ags_pulse_devout_adjust_delay_and_attack(pulse_devout);
   

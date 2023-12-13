@@ -119,6 +119,9 @@ gboolean ags_note_test_flags(AgsNote *note, AgsNoteFlags flags);
 void ags_note_set_flags(AgsNote *note, AgsNoteFlags flags);
 void ags_note_unset_flags(AgsNote *note, AgsNoteFlags flags);
 
+gboolean ags_note_test_key_format(AgsNote *note, AgsSoundKeyFormat key_format);
+void ags_note_set_key_format(AgsNote *note, AgsSoundKeyFormat key_format);
+
 gint ags_note_sort_func(gconstpointer a,
 			gconstpointer b);
 

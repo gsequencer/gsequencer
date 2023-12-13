@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -195,6 +195,8 @@ struct _AgsAlsaDevin
   gpointer ahandler;
   gpointer params;
 #endif
+
+  GList *note_256th_attack;
 
   guint note_256th_offset;
   guint note_256th_offset_last;

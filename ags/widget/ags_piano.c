@@ -1679,7 +1679,7 @@ ags_piano_get_active_key(AgsPiano *piano,
   }
   
   if(piano->active_key_count > 0){
-    active_key = (gint *) malloc(piano->active_key_count * sizeof(gint));
+    active_key = (gint *) g_malloc(piano->active_key_count * sizeof(gint));
     memcpy(active_key, piano->active_key, piano->active_key_count * sizeof(gint));
   }else{
     active_key = NULL;

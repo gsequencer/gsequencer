@@ -439,9 +439,12 @@
 #include <ags/audio/task/ags_remove_note.h>
 #include <ags/audio/task/ags_remove_soundcard.h>
 #include <ags/audio/task/ags_resize_audio.h>
+#include <ags/audio/task/ags_reset_fx_peak.h>
+#include <ags/audio/task/ags_reset_fx_analyse.h>
 #include <ags/audio/task/ags_reset_note.h>
 #include <ags/audio/task/ags_seek_soundcard.h>
 #include <ags/audio/task/ags_set_audio_channels.h>
+#include <ags/audio/task/ags_set_backlog.h>
 #include <ags/audio/task/ags_set_buffer_size.h>
 #include <ags/audio/task/ags_set_device.h>
 #include <ags/audio/task/ags_set_format.h>

@@ -1028,6 +1028,70 @@ ags_note_unset_flags(AgsNote *note, AgsNoteFlags flags)
 }
 
 /**
+ * ags_note_test_key_format:
+ * @note: the #AgsNote
+ * @key_format: the key format
+ * 
+ * Test @key_format to be set on @note.
+ * 
+ * Returns: %TRUE if key format is set, else %FALSE
+ * 
+ * Since: 6.2.0
+ */
+gboolean
+ags_note_test_key_format(AgsNote *note, AgsSoundKeyFormat key_format)
+{
+  gboolean retval;
+  
+  GRecMutex *note_mutex;
+
+  if(!AGS_IS_NOTE(note)){
+    return(FALSE);
+  }
+      
+  /* get note mutex */
+  note_mutex = AGS_NOTE_GET_OBJ_MUTEX(note);
+
+  /* test */
+  g_rec_mutex_lock(note_mutex);
+
+  retval = (key_format == note->key_format) ? TRUE: FALSE;
+  
+  g_rec_mutex_unlock(note_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_note_set_key_format:
+ * @note: the #AgsNote
+ * @key_format: the key format
+ * 
+ * Set @key_format on @note.
+ * 
+ * Since: 6.2.0
+ */
+void
+ags_note_set_key_format(AgsNote *note, AgsSoundKeyFormat key_format)
+{
+  GRecMutex *note_mutex;
+
+  if(!AGS_IS_NOTE(note)){
+    return;
+  }
+      
+  /* get note mutex */
+  note_mutex = AGS_NOTE_GET_OBJ_MUTEX(note);
+
+  /* set */
+  g_rec_mutex_lock(note_mutex);
+
+  note->key_format = key_format;
+  
+  g_rec_mutex_unlock(note_mutex);
+}
+
+/**
  * ags_note_sort_func:
  * @a: the #AgsNote
  * @b: another #AgsNote

@@ -128,6 +128,7 @@ enum{
   PROP_STREAM,
   PROP_STREAM_END,
   PROP_STREAM_CURRENT,
+  PROP_NOTE_256TH_ATTACK,
 };
 
 enum{
@@ -199,6 +200,26 @@ ags_audio_signal_flags_get_type()
     };
 
     GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsAudioSignalFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
+}
+
+GType
+ags_audio_signal_stream_mode_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_AUDIO_SIGNAL_STREAM_CONTINUES_FEED, "AGS_AUDIO_SIGNAL_STREAM_CONTINUES_FEED", "audio-signal-stream-continues-feed" },
+      { AGS_AUDIO_SIGNAL_STREAM_DUAL_BUFFERED, "AGS_AUDIO_SIGNAL_STREAM_DUAL_BUFFERED", "audio-signal-stream-dual-buffered" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsAudioSignalStreamMode"), values);
 
     g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
   }
@@ -701,6 +722,24 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 				  PROP_STREAM_CURRENT,
 				  param_spec);
 
+  /**
+   * AgsAudioSignal:note-256th-attack:
+   *
+   * The note 256th attack to be used.
+   * 
+   * Since: 6.2.0
+   */
+  param_spec = g_param_spec_uint("note-256th-attack",
+				 i18n_pspec("using note 256th attack"),
+				 i18n_pspec("The note 256th attack to be used"),
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_NOTE_256TH_ATTACK,
+				  param_spec);
+
   /* AgsAudioSignalClass */
   audio_signal->add_note = ags_audio_signal_real_add_note;
   audio_signal->remove_note = ags_audio_signal_real_remove_note;
@@ -795,6 +834,7 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
 
   audio_signal->flags = 0;
   audio_signal->connectable_flags = 0;
+  audio_signal->key_format = AGS_SOUND_KEY_FORMAT_256TH;
 
   /* audio signal mutex */
   g_rec_mutex_init(&(audio_signal->obj_mutex)); 
@@ -914,6 +954,14 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
   audio_signal->stream = NULL;
   audio_signal->stream_current = NULL;
   audio_signal->stream_end = NULL;
+
+  audio_signal->stream_mode = AGS_AUDIO_SIGNAL_STREAM_CONTINUES_FEED;
+
+  g_rec_mutex_init(&(audio_signal->backlog_mutex));
+
+  audio_signal->has_backlog = FALSE;
+
+  audio_signal->note_256th_attack = 0;
 }
 
 void
@@ -1278,6 +1326,19 @@ ags_audio_signal_set_property(GObject *gobject,
     g_rec_mutex_unlock(audio_signal_mutex);
   }
   break;
+  case PROP_NOTE_256TH_ATTACK:
+  {
+    guint note_256th_attack;
+
+    note_256th_attack = g_value_get_uint(value);
+
+    g_rec_mutex_lock(audio_signal_mutex);
+
+    audio_signal->note_256th_attack = note_256th_attack;
+
+    g_rec_mutex_unlock(audio_signal_mutex);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -1555,6 +1616,15 @@ ags_audio_signal_get_property(GObject *gobject,
     g_value_set_pointer(value, audio_signal->stream_current);
 
     g_rec_mutex_unlock(stream_mutex);
+  }
+  break;
+  case PROP_NOTE_256TH_ATTACK:
+  {
+    g_rec_mutex_lock(audio_signal_mutex);
+
+    g_value_set_uint(value, audio_signal->note_256th_attack);
+
+    g_rec_mutex_unlock(audio_signal_mutex);
   }
   break;
   default:
@@ -2091,6 +2161,70 @@ ags_audio_signal_unset_flags(AgsAudioSignal *audio_signal, AgsAudioSignalFlags f
   g_rec_mutex_lock(audio_signal_mutex);
 
   audio_signal->flags &= (~flags);
+  
+  g_rec_mutex_unlock(audio_signal_mutex);
+}
+
+/**
+ * ags_audio_signal_test_key_format:
+ * @audio_signal: the #AgsAudioSignal
+ * @key_format: the key format
+ * 
+ * Test @key_format to be set on @audio_signal.
+ * 
+ * Returns: %TRUE if key format is set, else %FALSE
+ * 
+ * Since: 6.2.0
+ */
+gboolean
+ags_audio_signal_test_key_format(AgsAudioSignal *audio_signal, AgsSoundKeyFormat key_format)
+{
+  gboolean retval;
+  
+  GRecMutex *audio_signal_mutex;
+
+  if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return(FALSE);
+  }
+      
+  /* get audio_signal mutex */
+  audio_signal_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(audio_signal);
+
+  /* test */
+  g_rec_mutex_lock(audio_signal_mutex);
+
+  retval = (key_format == audio_signal->key_format) ? TRUE: FALSE;
+  
+  g_rec_mutex_unlock(audio_signal_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_audio_signal_set_key_format:
+ * @audio_signal: the #AgsAudioSignal
+ * @key_format: the key format
+ * 
+ * Set @key_format on @audio_signal.
+ * 
+ * Since: 6.2.0
+ */
+void
+ags_audio_signal_set_key_format(AgsAudioSignal *audio_signal, AgsSoundKeyFormat key_format)
+{
+  GRecMutex *audio_signal_mutex;
+
+  if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return;
+  }
+      
+  /* get audio_signal mutex */
+  audio_signal_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(audio_signal);
+
+  /* set */
+  g_rec_mutex_lock(audio_signal_mutex);
+
+  audio_signal->key_format = key_format;
   
   g_rec_mutex_unlock(audio_signal_mutex);
 }
@@ -3247,6 +3381,58 @@ ags_audio_signal_set_format(AgsAudioSignal *audio_signal, AgsSoundcardFormat for
 }
 
 /**
+ * ags_audio_signal_get_attack:
+ * @audio_signal: the #AgsAudioSignal
+ *
+ * Get attack of @audio_signal.
+ *
+ * Returns: the attack
+ * 
+ * Since: 6.2.0
+ */
+guint
+ags_audio_signal_get_attack(AgsAudioSignal *audio_signal)
+{
+  guint attack;
+    
+  if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return(0);
+  }
+
+  /* get some fields */
+  attack = 0;
+  
+  g_object_get(audio_signal,
+	       "attack", &attack,
+	       NULL);
+
+  return(attack);
+}
+
+/**
+ * ags_audio_signal_set_attack:
+ * @audio_signal: the #AgsAudioSignal
+ * @attack: the attack
+ *
+ * Set @attack of @audio_signal.
+ * 
+ * Since: 6.2.0
+ */
+void
+ags_audio_signal_set_attack(AgsAudioSignal *audio_signal,
+			    guint attack)
+{
+  if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return;
+  }
+
+  /* set some fields */
+  g_object_set(audio_signal,
+	       "attack", attack,
+	       NULL);
+}
+
+/**
  * ags_audio_signal_get_length_till_current:
  * @audio_signal: the #AgsAudioSignal
  *
@@ -4210,6 +4396,122 @@ ags_audio_signal_set_stream(AgsAudioSignal *audio_signal, GList *stream)
     g_list_free_full(start_stream,
 		     (GDestroyNotify) ags_stream_slice_free);
   }
+}
+
+/**
+ * ags_audio_signal_test_stream_mode:
+ * @audio_signal: the #AgsAudioSignal
+ * @stream_mode: the stream mode
+ *
+ * Test @stream_mode to be set on @audio_signal.
+ * 
+ * Returns: %TRUE if stream mode are set, else %FALSE
+ *
+ * Since: 6.2.0
+ */
+gboolean
+ags_audio_signal_test_stream_mode(AgsAudioSignal *audio_signal, AgsAudioSignalStreamMode stream_mode)
+{
+  gboolean retval;  
+  
+  GRecMutex *audio_signal_mutex;
+
+  if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return(FALSE);
+  }
+
+  /* get audio_signal mutex */
+  audio_signal_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(audio_signal);
+
+  /* test */
+  g_rec_mutex_lock(audio_signal_mutex);
+
+  retval = (stream_mode == audio_signal->stream_mode) ? TRUE: FALSE;
+  
+  g_rec_mutex_unlock(audio_signal_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_audio_signal_set_stream_mode:
+ * @audio_signal: the #AgsAudioSignal
+ * @stream_mode: see #AgsAudioSignalStreamMode-enum
+ *
+ * Set stream mode of @audio_signal.
+ *
+ * Since: 6.2.0
+ */
+void
+ags_audio_signal_set_stream_mode(AgsAudioSignal *audio_signal, AgsAudioSignalStreamMode stream_mode)
+{
+  GRecMutex *audio_signal_mutex;
+
+  if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return;
+  }
+
+  /* get audio_signal mutex */
+  audio_signal_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(audio_signal);
+
+  /* set flags */
+  g_rec_mutex_lock(audio_signal_mutex);
+
+  audio_signal->stream_mode = stream_mode;
+  
+  g_rec_mutex_unlock(audio_signal_mutex);
+}
+
+/**
+ * ags_audio_signal_get_note_256th_attack:
+ * @audio_signal: the #AgsAudioSignal
+ *
+ * Get note 256th attack of @audio_signal.
+ *
+ * Returns: the note 256th attack
+ * 
+ * Since: 6.2.0
+ */
+guint
+ags_audio_signal_get_note_256th_attack(AgsAudioSignal *audio_signal)
+{
+  guint note_256th_attack;
+    
+  if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return(0);
+  }
+
+  /* get some fields */
+  note_256th_attack = 0;
+  
+  g_object_get(audio_signal,
+	       "note-256th-attack", &note_256th_attack,
+	       NULL);
+
+  return(note_256th_attack);
+}
+
+/**
+ * ags_audio_signal_set_note_256th_attack:
+ * @audio_signal: the #AgsAudioSignal
+ * @note_256th_attack: the note 256th attack
+ *
+ * Set @note_256th_attack of @audio_signal.
+ * 
+ * Since: 6.2.0
+ */
+void
+ags_audio_signal_set_note_256th_attack(AgsAudioSignal *audio_signal,
+				       guint note_256th_attack)
+{
+  if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return;
+  }
+
+  /* set some fields */
+  g_object_set(audio_signal,
+	       "note-256th-attack", note_256th_attack,
+	       NULL);
 }
 
 /**

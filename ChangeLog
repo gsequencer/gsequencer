@@ -1,6 +1,21 @@
-ags (6.1.4)
+ags (6.2.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed memory corruption after writing project file as XML
+
+ags (6.2.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented missing note 256th attack of all soundcard implementations
+	* implemented AgsAudioSignalStreamMode
+	* implemented AgsAudioSignal:note-256th-attack
+	* implemented ags_note_test_key_format() and ags_note_set_key_format()
+	* implemented ags_audio_signal_test_key_format() and ags_audio_signal_set_key_format()
+	* implemented ags_audio_signal_get_attack() and ags_audio_signal_set_attack()
+	* implemented ags_audio_signal_get_note_256th_attack() and ags_audio_signal_set_note_256th_attack()
+	* implemented AgsSetBacklog
+	* refactored ags-fx-buffer
+	* fixed attack of all soundcard implementations
 	* fixed missing note 256th attack for ags-fx-buffer
 
 ags (6.1.3)

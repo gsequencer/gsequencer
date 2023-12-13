@@ -185,6 +185,8 @@ struct _AgsOssDevout
 
   gint64 poll_timeout;
 
+  GList *note_256th_attack;
+
   guint note_256th_offset;
   guint note_256th_offset_last;
   gdouble note_256th_tic_size;
