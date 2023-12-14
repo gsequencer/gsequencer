@@ -986,8 +986,8 @@ ags_soundcard_get_note_offset(AgsSoundcard *soundcard)
 /**
  * ags_soundcard_get_note_256th_offset:
  * @soundcard: the #AgsSoundcard
- * @offset_lower: the return location of offset lower range
- * @offset_upper: the return location of offset upper range
+ * @note_256th_offset_lower: the return location of offset lower range
+ * @note_256th_offset_upper: the return location of offset upper range
  *
  * Get current playback note 256th offset. 
  *
@@ -995,8 +995,8 @@ ags_soundcard_get_note_offset(AgsSoundcard *soundcard)
  */
 void
 ags_soundcard_get_note_256th_offset(AgsSoundcard *soundcard,
-				    guint *offset_lower,
-				    guint *offset_upper)
+				    guint *note_256th_offset_lower,
+				    guint *note_256th_offset_upper)
 {
   AgsSoundcardInterface *soundcard_interface;
 
@@ -1005,8 +1005,34 @@ ags_soundcard_get_note_256th_offset(AgsSoundcard *soundcard,
   g_return_if_fail(soundcard_interface->get_note_256th_offset);
 
   soundcard_interface->get_note_256th_offset(soundcard,
-					     offset_lower,
-					     offset_upper);
+					     note_256th_offset_lower,
+					     note_256th_offset_upper);
+}
+
+/**
+ * ags_soundcard_get_note_256th_attack:
+ * @soundcard: the #AgsSoundcard
+ * @note_256th_offset_lower: the return location of offset lower range
+ * @note_256th_offset_upper: the return location of offset upper range
+ *
+ * Get current playback note 256th offset. 
+ *
+ * Since: 6.2.2
+ */
+void
+ags_soundcard_get_note_256th_attack(AgsSoundcard *soundcard,
+				    guint *note_256th_attack_lower,
+				    guint *note_256th_attack_upper)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_if_fail(soundcard_interface->get_note_256th_attack);
+
+  soundcard_interface->get_note_256th_attack(soundcard,
+					     note_256th_attack_lower,
+					     note_256th_attack_upper);
 }
 
 /**

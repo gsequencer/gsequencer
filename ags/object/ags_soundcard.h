@@ -224,8 +224,12 @@ struct _AgsSoundcardInterface
 			   void *buffer, guint sub_block);
 
   void (*get_note_256th_offset)(AgsSoundcard *soundcard,
-				guint *offset_lower,
-				guint *offset_upper);
+				guint *note_256th_offset_lower,
+				guint *note_256th_offset_upper);
+
+  void (*get_note_256th_attack)(AgsSoundcard *soundcard,
+				guint *note_256th_attack_lower,
+				guint *note_256th_attack_upper);
 };
 
 GType ags_soundcard_get_type();
@@ -314,8 +318,12 @@ void ags_soundcard_set_note_offset(AgsSoundcard *soundcard,
 guint ags_soundcard_get_note_offset(AgsSoundcard *soundcard);
 
 void ags_soundcard_get_note_256th_offset(AgsSoundcard *soundcard,
-					 guint *offset_lower,
-					 guint *offset_upper);
+					 guint *note_256th_offset_lower,
+					 guint *note_256th_offset_upper);
+
+void ags_soundcard_get_note_256th_attack(AgsSoundcard *soundcard,
+					 guint *note_256th_attack_lower,
+					 guint *note_256th_attack_upper);
 
 void ags_soundcard_set_note_offset_absolute(AgsSoundcard *soundcard,
 					    guint note_offset);
