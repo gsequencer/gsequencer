@@ -3619,14 +3619,15 @@ ags_alsa_devout_get_note_256th_attack(AgsSoundcard *soundcard,
 {
   AgsAlsaDevout *alsa_devout;
 
+  gdouble delay_counter;
   guint attack_index;
-  guint attack;
+  guint local_attack;
   guint note_256th_attack_index;
-  guint note_256th_attack;
+  guint local_note_256th_attack, local_note_256th_attack_upper;
   guint buffer_size;
   gdouble note_256th_tic_size;
   
-  guint i;
+  guint i, j;
 
   GRecMutex *alsa_devout_mutex;  
 
@@ -3638,40 +3639,45 @@ ags_alsa_devout_get_note_256th_attack(AgsSoundcard *soundcard,
   /* get note 256th attack */
   g_rec_mutex_lock(alsa_devout_mutex);
   
+  delay_counter = alsa_devout->delay_counter;
+  
   buffer_size = alsa_devout->buffer_size;
 
   note_256th_tic_size = alsa_devout->note_256th_tic_size;
 
   attack_index = alsa_devout->tic_counter;
 
-  attack = alsa_devout->attack[attack_index];
+  local_attack = alsa_devout->attack[attack_index];
 
   note_256th_attack_index = 16 * attack_index;
 
-  note_256th_attack = 16 * attack;
+  local_note_256th_attack = 16 * local_attack;
   
-  for(; note_256th_attack - (note_256th_tic_size * buffer_size) >= 0;){
+  for(; local_note_256th_attack - (note_256th_tic_size * buffer_size) >= 0;){
     note_256th_attack_index--;
 
-    note_256th_attack = note_256th_attack - (note_256th_tic_size * buffer_size);
+    local_note_256th_attack = local_note_256th_attack - (note_256th_tic_size * buffer_size);
   }
   
   if(note_256th_attack_lower != NULL){
-    note_256th_attack_lower[0] = note_256th_attack;
+    note_256th_attack_lower[0] = local_note_256th_attack;
   }
 
   if(note_256th_attack_upper != NULL){
+    local_note_256th_attack_upper = local_note_256th_attack;
+    
     if(note_256th_tic_size <= 1.0){
-      for(i = 0; i < 1.0 / note_256th_tic_size && note_256th_attack + (note_256th_tic_size * buffer_size)< buffer_size; i++){
-	note_256th_attack = note_256th_attack + (note_256th_tic_size * buffer_size);
+      for(i = 0; i < 1.0 / note_256th_tic_size && local_note_256th_attack_upper + (note_256th_tic_size * buffer_size) < delay_counter * buffer_size; i++){
+	local_note_256th_attack_upper = (local_note_256th_attack_upper + (guint) floor(note_256th_tic_size * buffer_size)) % buffer_size;
       }
 
-      note_256th_attack_upper[0] = note_256th_attack;
+      note_256th_attack_upper[0] = local_note_256th_attack_upper;
     }else{
-      note_256th_attack_upper[0] = note_256th_attack;
+      note_256th_attack_upper[0] =
+	local_note_256th_attack_upper = (local_note_256th_attack + (((guint) floor(delay_counter * buffer_size) / (guint) floor(note_256th_tic_size * buffer_size)) * buffer_size)) % buffer_size;
     }
   }
-
+  
   g_rec_mutex_unlock(alsa_devout_mutex);
 }
 
