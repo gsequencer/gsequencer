@@ -1012,10 +1012,10 @@ ags_soundcard_get_note_256th_offset(AgsSoundcard *soundcard,
 /**
  * ags_soundcard_get_note_256th_attack:
  * @soundcard: the #AgsSoundcard
- * @note_256th_offset_lower: the return location of offset lower range
- * @note_256th_offset_upper: the return location of offset upper range
+ * @note_256th_attack_lower: the return location of attack lower range
+ * @note_256th_attack_upper: the return location of attack upper range
  *
- * Get current playback note 256th offset. 
+ * Get current playback note 256th attack. 
  *
  * Since: 6.2.2
  */
@@ -1033,6 +1033,55 @@ ags_soundcard_get_note_256th_attack(AgsSoundcard *soundcard,
   soundcard_interface->get_note_256th_attack(soundcard,
 					     note_256th_attack_lower,
 					     note_256th_attack_upper);
+}
+
+/**
+ * ags_soundcard_get_note_256th_attack_at_position:
+ * @soundcard: the #AgsSoundcard
+ * @note_256th_attack_position: the note 256th attack position
+ *
+ * Get current playback note 256th attack.
+ *
+ * Since: 6.2.2
+ */
+guint
+ags_soundcard_get_note_256th_attack_at_position(AgsSoundcard *soundcard,
+						guint note_256th_attack_position)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), 0);
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_val_if_fail(soundcard_interface->get_note_256th_attack_at_position, 0);
+
+  return(soundcard_interface->get_note_256th_attack_at_position(soundcard,
+								note_256th_attack_position));
+}
+
+/**
+ * ags_soundcard_get_note_256th_attack_position:
+ * @soundcard: the #AgsSoundcard
+ * @note_256th_attack_position_lower: the return location of attack position lower range
+ * @note_256th_attack_position_upper: the return location of attack position upper range
+ *
+ * Get current playback note 256th attack position.
+ *
+ * Since: 6.2.2
+ */
+void
+ags_soundcard_get_note_256th_attack_position(AgsSoundcard *soundcard,
+					     guint *note_256th_attack_position_lower,
+					     guint *note_256th_attack_position_upper)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_if_fail(soundcard_interface->get_note_256th_attack_position);
+
+  soundcard_interface->get_note_256th_attack_position(soundcard,
+						      note_256th_attack_position_lower,
+						      note_256th_attack_position_upper);
 }
 
 /**

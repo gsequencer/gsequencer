@@ -3694,7 +3694,7 @@ ags_alsa_devout_get_note_256th_attack(AgsSoundcard *soundcard,
   for(; local_note_256th_attack_lower + (note_256th_tic_size * buffer_size) < delay_counter * buffer_size;){
     guint tmp_note_256th_attack;
 
-    if(note_256th_attack_index_lower + 1 < 16 * AGS_SOUNDCARD_DEFAULT_PERIOD){
+    if(note_256th_attack_index_lower + 1 < 16 * (guint) AGS_SOUNDCARD_DEFAULT_PERIOD){
       note_256th_attack = g_list_nth(start_note_256th_attack,
 				     (guint) floor((double) (note_256th_attack_index_lower + 1) / AGS_SOUNDCARD_DEFAULT_PERIOD));
     
@@ -3718,7 +3718,7 @@ ags_alsa_devout_get_note_256th_attack(AgsSoundcard *soundcard,
   for(i = 0; i < (guint) floor(1.0 / note_256th_tic_size); i++){
     guint tmp_note_256th_attack;
 
-    if(note_256th_attack_index_upper + 1 < 16 * AGS_SOUNDCARD_DEFAULT_PERIOD){
+    if(note_256th_attack_index_upper + 1 < 16 * (guint) AGS_SOUNDCARD_DEFAULT_PERIOD){
       note_256th_attack = g_list_nth(start_note_256th_attack,
 				     (guint) floor((double) (note_256th_attack_index_upper + 1) / AGS_SOUNDCARD_DEFAULT_PERIOD));
     
@@ -3729,6 +3729,10 @@ ags_alsa_devout_get_note_256th_attack(AgsSoundcard *soundcard,
     }else{
       g_warning("shouldn't be reachable");
     }
+  }
+
+  if(note_256th_attack_upper != NULL){
+    note_256th_attack_upper[0] = local_note_256th_attack_upper;
   }
   
   g_rec_mutex_unlock(alsa_devout_mutex);
