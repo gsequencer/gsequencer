@@ -26,6 +26,10 @@
 
 #include <ags/app/editor/ags_sheet_edit.h>
 
+#include <libxml/tree.h>
+#include <libxml/parser.h>
+#include <libxml/xpath.h>
+
 #include <ags/i18n.h>
 
 void ags_add_sheet_page_dialog_class_init(AgsAddSheetPageDialogClass *add_sheet_page_dialog);

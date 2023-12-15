@@ -27,6 +27,8 @@
 #include <ags/app/editor/ags_preset_dialog.h>
 
 #include <libxml/tree.h>
+#include <libxml/parser.h>
+#include <libxml/xpath.h>
 
 #include <ags/i18n.h>
 

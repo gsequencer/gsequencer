@@ -2,6 +2,7 @@ ags (6.2.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* TODO:JK: implemented ags_soundcard_get_note_256th_attack()
+	* fixed missing include
 
 ags (6.2.1)
 

@@ -24,6 +24,10 @@
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_effect_bridge.h>
 
+#include <libxml/tree.h>
+#include <libxml/parser.h>
+#include <libxml/xpath.h>
+
 #include <ags/i18n.h>
 
 void ags_machine_class_init(AgsMachineClass *machine);
