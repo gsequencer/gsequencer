@@ -3040,6 +3040,7 @@ ags_alsa_devout_device_free(AgsSoundcard *soundcard)
   g_rec_mutex_lock(alsa_devout_mutex);
 
   alsa_devout->note_offset = alsa_devout->start_note_offset;
+  alsa_devout->note_offset_absolute = alsa_devout->start_note_offset;
 
   alsa_devout->note_256th_offset = 16 * alsa_devout->start_note_offset;
   
@@ -3067,8 +3068,6 @@ ags_alsa_devout_device_free(AgsSoundcard *soundcard)
       }
     }
   }
-
-  alsa_devout->note_offset_absolute = alsa_devout->start_note_offset;
 
   list = alsa_devout->tag;
 
