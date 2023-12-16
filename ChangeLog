@@ -11,6 +11,12 @@ ags (6.2.2)
 	* refactored AgsCoreAudioDevout and AgsCoreAudioDevin
 	* refactored AgsWasapiDevout and AgsWasapiDevin
 	* refactored AgsGstreamerDevout and AgsGstreamerDevin
+	* refactored ags-fx-buffer
+	* refactored ags-fx-notation
+	* refactored ags-fx-synth
+	* refactored ags-fx-fm-synth
+	* refactored ags-fx-sf2-synth
+	* refactored ags-fx-sfz-synth
 	* fixed missing include
 
 ags (6.2.1)
