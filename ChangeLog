@@ -10,7 +10,7 @@ ags (6.2.2)
 	* refactored AgsJackDevout and AgsJackDevin
 	* refactored AgsCoreAudioDevout and AgsCoreAudioDevin
 	* refactored AgsWasapiDevout and AgsWasapiDevin
-	* TODO:JK: refactored AgsGstreamerDevout and AgsGstreamerDevin
+	* refactored AgsGstreamerDevout and AgsGstreamerDevin
 	* fixed missing include
 
 ags (6.2.1)

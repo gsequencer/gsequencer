@@ -2596,12 +2596,12 @@ ags_oss_devout_tic(AgsSoundcard *soundcard)
 {
   AgsOssDevout *oss_devout;
 
+  guint buffer_size;
   gdouble delay;
   gdouble delay_counter;
   guint attack;
   gdouble note_256th_delay;
   guint note_256th_attack_lower, note_256th_attack_upper;
-  guint buffer_size;
   guint note_offset_absolute;
   guint note_offset;
   guint loop_left, loop_right;
@@ -2616,6 +2616,8 @@ ags_oss_devout_tic(AgsSoundcard *soundcard)
   
   /* determine if attack should be switched */
   g_rec_mutex_lock(oss_devout_mutex);
+
+  buffer_size = oss_devout->buffer_size;
 
   delay = oss_devout->delay[oss_devout->tic_counter];
   delay_counter = oss_devout->delay_counter;
@@ -3209,9 +3211,9 @@ ags_oss_devout_get_note_256th_attack(AgsSoundcard *soundcard,
   oss_devout_mutex = AGS_OSS_DEVOUT_GET_OBJ_MUTEX(oss_devout);
 
   /* get note 256th attack lower and upper */
-  ags_oss_devout_get_note_256th_attack_position(soundcard,
-						&note_256th_attack_position_lower,
-						&note_256th_attack_position_upper);
+  ags_soundcard_get_note_256th_attack_position(soundcard,
+					       &note_256th_attack_position_lower,
+					       &note_256th_attack_position_upper);
 
   local_note_256th_attack_lower = 0;
   local_note_256th_attack_upper = 0;
@@ -3257,6 +3259,8 @@ ags_oss_devout_get_note_256th_attack_at_position(AgsSoundcard *soundcard,
   guint nth_list;
   guint current_note_256th_attack;
 
+  GRecMutex *oss_devout_mutex;  
+
   oss_devout = AGS_OSS_DEVOUT(soundcard);
   
   /* get oss devout mutex */
@@ -3296,6 +3300,8 @@ ags_oss_devout_get_note_256th_attack_position(AgsSoundcard *soundcard,
   guint position_lower, position_upper;
   guint i;
   
+  GRecMutex *oss_devout_mutex;  
+
   oss_devout = AGS_OSS_DEVOUT(soundcard);
   
   /* get oss devout mutex */

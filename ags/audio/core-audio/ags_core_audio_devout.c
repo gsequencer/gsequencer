@@ -3203,7 +3203,7 @@ ags_core_audio_devout_get_note_256th_offset(AgsSoundcard *soundcard,
 					    guint *note_256th_offset_lower,
 					    guint *note_256th_offset_upper)
 {
-  AgsCore_AudioDevout *core_audio_devout;
+  AgsCoreAudioDevout *core_audio_devout;
   
   GRecMutex *core_audio_devout_mutex;  
 
@@ -3231,7 +3231,7 @@ ags_core_audio_devout_get_note_256th_attack(AgsSoundcard *soundcard,
 					    guint *note_256th_attack_lower,
 					    guint *note_256th_attack_upper)
 {
-  AgsCore_AudioDevout *core_audio_devout;
+  AgsCoreAudioDevout *core_audio_devout;
 
   guint *note_256th_attack;
 
@@ -3288,12 +3288,14 @@ guint
 ags_core_audio_devout_get_note_256th_attack_at_position(AgsSoundcard *soundcard,
 							guint note_256th_attack_position)
 {
-  AgsCore_AudioDevout *core_audio_devout;
+  AgsCoreAudioDevout *core_audio_devout;
   
   guint *note_256th_attack;
 
   guint nth_list;
   guint current_note_256th_attack;
+
+  GRecMutex *core_audio_devout_mutex;  
 
   core_audio_devout = AGS_CORE_AUDIO_DEVOUT(soundcard);
   
@@ -3323,7 +3325,7 @@ ags_core_audio_devout_get_note_256th_attack_position(AgsSoundcard *soundcard,
 						     guint *note_256th_attack_position_lower,
 						     guint *note_256th_attack_position_upper)
 {
-  AgsCore_AudioDevout *core_audio_devout;
+  AgsCoreAudioDevout *core_audio_devout;
 
   guint buffer_size;
   guint attack_position;
@@ -3334,6 +3336,8 @@ ags_core_audio_devout_get_note_256th_attack_position(AgsSoundcard *soundcard,
   guint position_lower, position_upper;
   guint i;
   
+  GRecMutex *core_audio_devout_mutex;  
+
   core_audio_devout = AGS_CORE_AUDIO_DEVOUT(soundcard);
   
   /* get core_audio devout mutex */
@@ -3384,11 +3388,11 @@ ags_core_audio_devout_get_note_256th_attack_position(AgsSoundcard *soundcard,
       guint prev_note_256th_attack;
       guint current_note_256th_attack;
 
-      prev_note_256th_attack = ags_core_audio_devout_get_note_256th_attack_at_position(soundcard,
-										       position_upper);
+      prev_note_256th_attack = ags_soundcard_get_note_256th_attack_at_position(soundcard,
+									       position_upper);
 
-      current_note_256th_attack = ags_core_audio_devout_get_note_256th_attack_at_position(soundcard,
-											  position_upper + 1);
+      current_note_256th_attack = ags_soundcard_get_note_256th_attack_at_position(soundcard,
+										  position_upper + 1);
 
       if(prev_note_256th_attack < current_note_256th_attack){
 	position_upper++;

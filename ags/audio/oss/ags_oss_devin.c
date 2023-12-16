@@ -2485,6 +2485,7 @@ ags_oss_devin_tic(AgsSoundcard *soundcard)
 {
   AgsOssDevin *oss_devin;
 
+  guint buffer_size;
   gdouble delay;
   gdouble delay_counter;
   gdouble note_256th_delay;
@@ -2503,6 +2504,8 @@ ags_oss_devin_tic(AgsSoundcard *soundcard)
   
   /* determine if attack should be switched */
   g_rec_mutex_lock(oss_devin_mutex);
+
+  buffer_size = oss_devin->buffer_size;
 
   delay = oss_devin->delay[oss_devin->tic_counter];
   delay_counter = oss_devin->delay_counter;
@@ -3009,7 +3012,7 @@ ags_oss_devin_set_note_offset(AgsSoundcard *soundcard,
     note_256th_attack_lower = 0;
     note_256th_attack_upper = 0;
     
-    ags_oss_devin_get_note_256th_attack(AGS_SOUNDCARD(oss_devin),
+    ags_soundcard_get_note_256th_attack(soundcard,
 					&note_256th_attack_lower,
 					&note_256th_attack_upper);
 
@@ -3096,7 +3099,7 @@ ags_oss_devin_get_note_256th_attack(AgsSoundcard *soundcard,
   oss_devin_mutex = AGS_OSS_DEVIN_GET_OBJ_MUTEX(oss_devin);
 
   /* get note 256th attack lower and upper */
-  ags_oss_devin_get_note_256th_attack_position(soundcard,
+  ags_soundcard_get_note_256th_attack_position(soundcard,
 					       &note_256th_attack_position_lower,
 					       &note_256th_attack_position_upper);
 
@@ -3144,6 +3147,8 @@ ags_oss_devin_get_note_256th_attack_at_position(AgsSoundcard *soundcard,
   guint nth_list;
   guint current_note_256th_attack;
 
+  GRecMutex *oss_devin_mutex;  
+
   oss_devin = AGS_OSS_DEVIN(soundcard);
   
   /* get oss devin mutex */
@@ -3183,6 +3188,8 @@ ags_oss_devin_get_note_256th_attack_position(AgsSoundcard *soundcard,
   guint position_lower, position_upper;
   guint i;
   
+  GRecMutex *oss_devin_mutex;  
+
   oss_devin = AGS_OSS_DEVIN(soundcard);
   
   /* get oss devin mutex */
@@ -3233,10 +3240,10 @@ ags_oss_devin_get_note_256th_attack_position(AgsSoundcard *soundcard,
       guint prev_note_256th_attack;
       guint current_note_256th_attack;
 
-      prev_note_256th_attack = ags_oss_devin_get_note_256th_attack_at_position(soundcard,
+      prev_note_256th_attack = ags_soundcard_get_note_256th_attack_at_position(soundcard,
 									       position_upper);
 
-      current_note_256th_attack = ags_oss_devin_get_note_256th_attack_at_position(soundcard,
+      current_note_256th_attack = ags_soundcard_get_note_256th_attack_at_position(soundcard,
 										  position_upper + 1);
 
       if(prev_note_256th_attack < current_note_256th_attack){

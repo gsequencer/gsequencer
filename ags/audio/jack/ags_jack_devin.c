@@ -2257,6 +2257,7 @@ ags_jack_devin_tic(AgsSoundcard *soundcard)
 {
   AgsJackDevin *jack_devin;
 
+  guint buffer_size;
   gdouble delay;
   gdouble delay_counter;
   gdouble note_256th_delay;
@@ -2275,6 +2276,8 @@ ags_jack_devin_tic(AgsSoundcard *soundcard)
   
   /* determine if attack should be switched */
   g_rec_mutex_lock(jack_devin_mutex);
+
+  buffer_size = jack_devin->buffer_size;
 
   delay = jack_devin->delay[jack_devin->tic_counter];
   delay_counter = jack_devin->delay_counter;
@@ -2816,29 +2819,29 @@ ags_jack_devin_set_note_offset(AgsSoundcard *soundcard,
 
   jack_devin->note_offset = note_offset;
 
-  note_256th_delay = alsa_devin->note_256th_delay;
+  note_256th_delay = jack_devin->note_256th_delay;
 
-  alsa_devin->note_256th_offset = 16 * note_offset;
+  jack_devin->note_256th_offset = 16 * note_offset;
 
-  if(alsa_devin->note_256th_delay >= 1.0){
-    alsa_devin->note_256th_offset_last = alsa_devin->note_256th_offset;
+  if(jack_devin->note_256th_delay >= 1.0){
+    jack_devin->note_256th_offset_last = jack_devin->note_256th_offset;
   }else{
     guint buffer_size;
     guint note_256th_attack_lower, note_256th_attack_upper;
     
-    buffer_size = alsa_devin->buffer_size;
+    buffer_size = jack_devin->buffer_size;
 
     note_256th_attack_lower = 0;
     note_256th_attack_upper = 0;
     
-    ags_alsa_devin_get_note_256th_attack(AGS_SOUNDCARD(alsa_devin),
-					 &note_256th_attack_lower,
-					 &note_256th_attack_upper);
+    ags_soundcard_get_note_256th_attack(soundcard,
+					&note_256th_attack_lower,
+					&note_256th_attack_upper);
 
     if(note_256th_attack_lower + ((guint) floor(1.0 / note_256th_delay) * (note_256th_delay * buffer_size)) < buffer_size){
-      alsa_devin->note_256th_offset_last = alsa_devin->note_256th_offset + (guint) floor(1.0 / note_256th_delay);
+      jack_devin->note_256th_offset_last = jack_devin->note_256th_offset + (guint) floor(1.0 / note_256th_delay);
     }else{
-      alsa_devin->note_256th_offset_last = alsa_devin->note_256th_offset + (guint) floor(1.0 / note_256th_delay) - 1;
+      jack_devin->note_256th_offset_last = jack_devin->note_256th_offset + (guint) floor(1.0 / note_256th_delay) - 1;
     }
   }
   
@@ -2918,10 +2921,10 @@ ags_jack_devin_get_note_256th_attack(AgsSoundcard *soundcard,
   jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
   /* get note 256th attack lower and upper */
-  ags_jack_devin_get_note_256th_attack_position(soundcard,
-						&note_256th_attack_position_lower,
-						&note_256th_attack_position_upper);
-
+  ags_soundcard_get_note_256th_attack_position(soundcard,
+					       &note_256th_attack_position_lower,
+					       &note_256th_attack_position_upper);
+  
   local_note_256th_attack_lower = 0;
   local_note_256th_attack_upper = 0;
   
@@ -2966,6 +2969,8 @@ ags_jack_devin_get_note_256th_attack_at_position(AgsSoundcard *soundcard,
   guint nth_list;
   guint current_note_256th_attack;
 
+  GRecMutex *jack_devin_mutex;  
+
   jack_devin = AGS_JACK_DEVIN(soundcard);
   
   /* get jack devin mutex */
@@ -3005,6 +3010,8 @@ ags_jack_devin_get_note_256th_attack_position(AgsSoundcard *soundcard,
   guint position_lower, position_upper;
   guint i;
   
+  GRecMutex *jack_devin_mutex;  
+
   jack_devin = AGS_JACK_DEVIN(soundcard);
   
   /* get jack devin mutex */
@@ -3055,11 +3062,11 @@ ags_jack_devin_get_note_256th_attack_position(AgsSoundcard *soundcard,
       guint prev_note_256th_attack;
       guint current_note_256th_attack;
 
-      prev_note_256th_attack = ags_jack_devin_get_note_256th_attack_at_position(soundcard,
-										position_upper);
+      prev_note_256th_attack = ags_soundcard_get_note_256th_attack_at_position(soundcard,
+									       position_upper);
 
-      current_note_256th_attack = ags_jack_devin_get_note_256th_attack_at_position(soundcard,
-										   position_upper + 1);
+      current_note_256th_attack = ags_soundcard_get_note_256th_attack_at_position(soundcard,
+										  position_upper + 1);
 
       if(prev_note_256th_attack < current_note_256th_attack){
 	position_upper++;

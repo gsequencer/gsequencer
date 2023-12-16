@@ -2502,6 +2502,7 @@ ags_wasapi_devin_tic(AgsSoundcard *soundcard)
 {
   AgsWasapiDevin *wasapi_devin;
 
+  guint buffer_size;
   gdouble delay;
   gdouble delay_counter;
   gdouble note_256th_delay;
@@ -2520,6 +2521,8 @@ ags_wasapi_devin_tic(AgsSoundcard *soundcard)
   
   /* determine if attack should be switched */
   g_rec_mutex_lock(wasapi_devin_mutex);
+
+  buffer_size = wasapi_devin->buffer_size;
 
   delay = wasapi_devin->delay[wasapi_devin->tic_counter];
   delay_counter = wasapi_devin->delay_counter;
@@ -3202,9 +3205,9 @@ ags_wasapi_devin_get_note_256th_attack(AgsSoundcard *soundcard,
   wasapi_devin_mutex = AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(wasapi_devin);
 
   /* get note 256th attack lower and upper */
-  ags_wasapi_devin_get_note_256th_attack_position(soundcard,
-						  &note_256th_attack_position_lower,
-						  &note_256th_attack_position_upper);
+  ags_soundcard_get_note_256th_attack_position(soundcard,
+					       &note_256th_attack_position_lower,
+					       &note_256th_attack_position_upper);
 
   local_note_256th_attack_lower = 0;
   local_note_256th_attack_upper = 0;
@@ -3250,6 +3253,8 @@ ags_wasapi_devin_get_note_256th_attack_at_position(AgsSoundcard *soundcard,
   guint nth_list;
   guint current_note_256th_attack;
 
+  GRecMutex *wasapi_devin_mutex;  
+
   wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
   
   /* get wasapi devin mutex */
@@ -3288,6 +3293,8 @@ ags_wasapi_devin_get_note_256th_attack_position(AgsSoundcard *soundcard,
   guint *local_note_256th_attack;
   guint position_lower, position_upper;
   guint i;
+
+  GRecMutex *wasapi_devin_mutex;  
   
   wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
   
@@ -3339,11 +3346,11 @@ ags_wasapi_devin_get_note_256th_attack_position(AgsSoundcard *soundcard,
       guint prev_note_256th_attack;
       guint current_note_256th_attack;
 
-      prev_note_256th_attack = ags_wasapi_devin_get_note_256th_attack_at_position(soundcard,
-										  position_upper);
+      prev_note_256th_attack = ags_soundcard_get_note_256th_attack_at_position(soundcard,
+									       position_upper);
 
-      current_note_256th_attack = ags_wasapi_devin_get_note_256th_attack_at_position(soundcard,
-										     position_upper + 1);
+      current_note_256th_attack = ags_soundcard_get_note_256th_attack_at_position(soundcard,
+										  position_upper + 1);
 
       if(prev_note_256th_attack < current_note_256th_attack){
 	position_upper++;

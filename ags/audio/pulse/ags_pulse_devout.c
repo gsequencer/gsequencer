@@ -3283,10 +3283,10 @@ ags_pulse_devout_get_note_256th_attack(AgsSoundcard *soundcard,
   pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   /* get note 256th attack lower and upper */
-  ags_pulse_devout_get_note_256th_attack_position(soundcard,
-						  &note_256th_attack_position_lower,
-						  &note_256th_attack_position_upper);
-
+  ags_soundcard_get_note_256th_attack_position(soundcard,
+					       &note_256th_attack_position_lower,
+					       &note_256th_attack_position_upper);
+  
   local_note_256th_attack_lower = 0;
   local_note_256th_attack_upper = 0;
   
@@ -3331,6 +3331,8 @@ ags_pulse_devout_get_note_256th_attack_at_position(AgsSoundcard *soundcard,
   guint nth_list;
   guint current_note_256th_attack;
 
+  GRecMutex *pulse_devout_mutex;  
+
   pulse_devout = AGS_PULSE_DEVOUT(soundcard);
   
   /* get pulse devout mutex */
@@ -3370,6 +3372,8 @@ ags_pulse_devout_get_note_256th_attack_position(AgsSoundcard *soundcard,
   guint position_lower, position_upper;
   guint i;
   
+  GRecMutex *pulse_devout_mutex;  
+
   pulse_devout = AGS_PULSE_DEVOUT(soundcard);
   
   /* get pulse devout mutex */
@@ -3420,11 +3424,11 @@ ags_pulse_devout_get_note_256th_attack_position(AgsSoundcard *soundcard,
       guint prev_note_256th_attack;
       guint current_note_256th_attack;
 
-      prev_note_256th_attack = ags_pulse_devout_get_note_256th_attack_at_position(soundcard,
-										  position_upper);
+      prev_note_256th_attack = ags_soundcard_get_note_256th_attack_at_position(soundcard,
+									       position_upper);
 
-      current_note_256th_attack = ags_pulse_devout_get_note_256th_attack_at_position(soundcard,
-										     position_upper + 1);
+      current_note_256th_attack = ags_soundcard_get_note_256th_attack_at_position(soundcard,
+										  position_upper + 1);
 
       if(prev_note_256th_attack < current_note_256th_attack){
 	position_upper++;

@@ -2288,6 +2288,7 @@ ags_gstreamer_devin_tic(AgsSoundcard *soundcard)
 {
   AgsGstreamerDevin *gstreamer_devin;
 
+  guint buffer_size;
   gdouble delay;
   gdouble delay_counter;
   gdouble note_256th_delay;
@@ -2306,6 +2307,8 @@ ags_gstreamer_devin_tic(AgsSoundcard *soundcard)
   
   /* determine if attack should be switched */
   g_rec_mutex_lock(gstreamer_devin_mutex);
+
+  buffer_size = gstreamer_devin->buffer_size;
 
   delay = gstreamer_devin->delay[gstreamer_devin->tic_counter];
   delay_counter = gstreamer_devin->delay_counter;
@@ -2901,9 +2904,9 @@ ags_gstreamer_devin_set_note_offset(AgsSoundcard *soundcard,
     note_256th_attack_lower = 0;
     note_256th_attack_upper = 0;
     
-    ags_gstreamer_devin_get_note_256th_attack(AGS_SOUNDCARD(gstreamer_devin),
-					      &note_256th_attack_lower,
-					      &note_256th_attack_upper);
+    ags_soundcard_get_note_256th_attack(AGS_SOUNDCARD(gstreamer_devin),
+					&note_256th_attack_lower,
+					&note_256th_attack_upper);
 
     if(note_256th_attack_lower + ((guint) floor(1.0 / note_256th_delay) * (note_256th_delay * buffer_size)) < buffer_size){
       gstreamer_devin->note_256th_offset_last = gstreamer_devin->note_256th_offset + (guint) floor(1.0 / note_256th_delay);
@@ -3036,6 +3039,8 @@ ags_gstreamer_devin_get_note_256th_attack_at_position(AgsSoundcard *soundcard,
   guint nth_list;
   guint current_note_256th_attack;
 
+  GRecMutex *gstreamer_devin_mutex;  
+
   gstreamer_devin = AGS_GSTREAMER_DEVIN(soundcard);
   
   /* get gstreamer devin mutex */
@@ -3075,6 +3080,8 @@ ags_gstreamer_devin_get_note_256th_attack_position(AgsSoundcard *soundcard,
   guint position_lower, position_upper;
   guint i;
   
+  GRecMutex *gstreamer_devin_mutex;  
+
   gstreamer_devin = AGS_GSTREAMER_DEVIN(soundcard);
   
   /* get gstreamer devin mutex */

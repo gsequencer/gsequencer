@@ -3760,6 +3760,8 @@ ags_alsa_devout_get_note_256th_attack_at_position(AgsSoundcard *soundcard,
 
   guint nth_list;
   guint current_note_256th_attack;
+  
+  GRecMutex *alsa_devout_mutex;  
 
   alsa_devout = AGS_ALSA_DEVOUT(soundcard);
   
@@ -3799,6 +3801,8 @@ ags_alsa_devout_get_note_256th_attack_position(AgsSoundcard *soundcard,
   guint *local_note_256th_attack;
   guint position_lower, position_upper;
   guint i;
+  
+  GRecMutex *alsa_devout_mutex;  
   
   alsa_devout = AGS_ALSA_DEVOUT(soundcard);
   

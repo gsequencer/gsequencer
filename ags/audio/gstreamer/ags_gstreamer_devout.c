@@ -2310,12 +2310,12 @@ ags_gstreamer_devout_tic(AgsSoundcard *soundcard)
 {
   AgsGstreamerDevout *gstreamer_devout;
 
+  guint buffer_size;
   gdouble delay;
   gdouble delay_counter;
   guint attack;
   gdouble note_256th_delay;
   guint note_256th_attack_lower, note_256th_attack_upper;
-  guint buffer_size;
   guint note_offset_absolute;
   guint note_offset;
   guint loop_left, loop_right;
@@ -2331,14 +2331,14 @@ ags_gstreamer_devout_tic(AgsSoundcard *soundcard)
   /* determine if attack should be switched */
   g_rec_mutex_lock(gstreamer_devout_mutex);
 
+  buffer_size = gstreamer_devout->buffer_size;
+
   delay = gstreamer_devout->delay[gstreamer_devout->tic_counter];
   delay_counter = gstreamer_devout->delay_counter;
 
-  note_256th_delay = alsa_devout->note_256th_delay;
+  note_256th_delay = gstreamer_devout->note_256th_delay;
 
-  attack = alsa_devout->attack[alsa_devout->tic_counter];
-
-  buffer_size = alsa_devout->buffer_size;
+  attack = gstreamer_devout->attack[gstreamer_devout->tic_counter];
   
   note_offset = gstreamer_devout->note_offset;
   note_offset_absolute = gstreamer_devout->note_offset_absolute;
@@ -2363,40 +2363,40 @@ ags_gstreamer_devout_tic(AgsSoundcard *soundcard)
       ags_soundcard_set_note_offset(soundcard,
 				    loop_left);
       
-      g_rec_mutex_lock(alsa_devout_mutex);
+      g_rec_mutex_lock(gstreamer_devout_mutex);
       
-      alsa_devout->note_256th_offset = 16 * loop_left;
+      gstreamer_devout->note_256th_offset = 16 * loop_left;
 
       if(note_256th_delay >= 1.0){
-	alsa_devout->note_256th_offset_last = alsa_devout->note_256th_offset;
+	gstreamer_devout->note_256th_offset_last = gstreamer_devout->note_256th_offset;
       }else{
 	if(note_256th_attack_lower + ((guint) floor(1.0 / note_256th_delay) * (note_256th_delay * buffer_size)) < buffer_size){
-	  alsa_devout->note_256th_offset_last = alsa_devout->note_256th_offset + (guint) floor(1.0 / note_256th_delay);
+	  gstreamer_devout->note_256th_offset_last = gstreamer_devout->note_256th_offset + (guint) floor(1.0 / note_256th_delay);
 	}else{
-	  alsa_devout->note_256th_offset_last = alsa_devout->note_256th_offset + (guint) floor(1.0 / note_256th_delay) - 1;
+	  gstreamer_devout->note_256th_offset_last = gstreamer_devout->note_256th_offset + (guint) floor(1.0 / note_256th_delay) - 1;
 	}
       }
 
-      g_rec_mutex_unlock(alsa_devout_mutex);
+      g_rec_mutex_unlock(gstreamer_devout_mutex);
     }else{
       ags_soundcard_set_note_offset(soundcard,
 				    note_offset + 1);
 
-      g_rec_mutex_lock(alsa_devout_mutex);
+      g_rec_mutex_lock(gstreamer_devout_mutex);
       
-      alsa_devout->note_256th_offset = 16 * (note_offset + 1);
+      gstreamer_devout->note_256th_offset = 16 * (note_offset + 1);
 
       if(note_256th_delay >= 1.0){
-	alsa_devout->note_256th_offset_last = alsa_devout->note_256th_offset;
+	gstreamer_devout->note_256th_offset_last = gstreamer_devout->note_256th_offset;
       }else{
 	if(note_256th_attack_lower + ((guint) floor(1.0 / note_256th_delay) * (note_256th_delay * buffer_size)) < buffer_size){
-	  alsa_devout->note_256th_offset_last = alsa_devout->note_256th_offset + (guint) floor(1.0 / note_256th_delay);
+	  gstreamer_devout->note_256th_offset_last = gstreamer_devout->note_256th_offset + (guint) floor(1.0 / note_256th_delay);
 	}else{
-	  alsa_devout->note_256th_offset_last = alsa_devout->note_256th_offset + (guint) floor(1.0 / note_256th_delay) - 1;
+	  gstreamer_devout->note_256th_offset_last = gstreamer_devout->note_256th_offset + (guint) floor(1.0 / note_256th_delay) - 1;
 	}
       }
       
-      g_rec_mutex_unlock(alsa_devout_mutex);
+      g_rec_mutex_unlock(gstreamer_devout_mutex);
     }
     
     ags_soundcard_set_note_offset_absolute(soundcard,
@@ -2407,26 +2407,26 @@ ags_gstreamer_devout_tic(AgsSoundcard *soundcard)
 				 note_offset);
 
     /* reset - delay counter */
-    g_rec_mutex_lock(alsa_devout_mutex);
+    g_rec_mutex_lock(gstreamer_devout_mutex);
     
-    alsa_devout->delay_counter = delay_counter + 1.0 - delay;
-    alsa_devout->tact_counter += 1.0;
+    gstreamer_devout->delay_counter = delay_counter + 1.0 - delay;
+    gstreamer_devout->tact_counter += 1.0;
 
-    g_rec_mutex_unlock(alsa_devout_mutex);
+    g_rec_mutex_unlock(gstreamer_devout_mutex);
   }else{
-    g_rec_mutex_lock(alsa_devout_mutex);
+    g_rec_mutex_lock(gstreamer_devout_mutex);
 
-    alsa_devout->note_256th_offset = (16 * alsa_devout->note_offset) + (guint) floor((alsa_devout->delay_counter + 1.0) * (1.0 / note_256th_delay));
+    gstreamer_devout->note_256th_offset = (16 * gstreamer_devout->note_offset) + (guint) floor((gstreamer_devout->delay_counter + 1.0) * (1.0 / note_256th_delay));
 
     if(note_256th_attack_lower + ((guint) floor(1.0 / note_256th_delay) * (note_256th_delay * buffer_size)) < buffer_size){
-      alsa_devout->note_256th_offset_last = alsa_devout->note_256th_offset + (guint) floor(1.0 / note_256th_delay);
+      gstreamer_devout->note_256th_offset_last = gstreamer_devout->note_256th_offset + (guint) floor(1.0 / note_256th_delay);
     }else{
-      alsa_devout->note_256th_offset_last = alsa_devout->note_256th_offset + (guint) floor(1.0 / note_256th_delay) - 1;
+      gstreamer_devout->note_256th_offset_last = gstreamer_devout->note_256th_offset + (guint) floor(1.0 / note_256th_delay) - 1;
     }
     
-    alsa_devout->delay_counter += 1.0;
+    gstreamer_devout->delay_counter += 1.0;
 
-    g_rec_mutex_unlock(alsa_devout_mutex);
+    g_rec_mutex_unlock(gstreamer_devout_mutex);
   }
 }
 
@@ -3064,6 +3064,8 @@ ags_gstreamer_devout_get_note_256th_attack_at_position(AgsSoundcard *soundcard,
   guint nth_list;
   guint current_note_256th_attack;
 
+  GRecMutex *gstreamer_devout_mutex;  
+
   gstreamer_devout = AGS_GSTREAMER_DEVOUT(soundcard);
   
   /* get gstreamer devout mutex */
@@ -3103,6 +3105,8 @@ ags_gstreamer_devout_get_note_256th_attack_position(AgsSoundcard *soundcard,
   guint position_lower, position_upper;
   guint i;
   
+  GRecMutex *gstreamer_devout_mutex;  
+
   gstreamer_devout = AGS_GSTREAMER_DEVOUT(soundcard);
   
   /* get gstreamer devout mutex */

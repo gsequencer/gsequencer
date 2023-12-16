@@ -472,7 +472,7 @@ ags_soundcard_util_adjust_delay_and_attack(GObject *soundcard)
   if(note_256th_delay[0] >= 1.0){
     note_256th_offset_last[0] = note_256th_offset[0];
   }else{
-    note_256th_offset_last[0] = note_256th_offset[0] + (guint) floor(1.0 / alsa_devout->note_256th_delay);
+    note_256th_offset_last[0] = note_256th_offset[0] + (guint) floor(1.0 / note_256th_delay[0]);
   }
 
   g_rec_mutex_unlock(obj_mutex);  
