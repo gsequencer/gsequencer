@@ -688,7 +688,7 @@ ags_alsa_devout_init(AgsAlsaDevout *alsa_devout)
   }
 
   /* delay and attack */
-  absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(soundcard));
+  absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(alsa_devout));
   
   alsa_devout->delay = (gdouble *) malloc(2 * (int) AGS_SOUNDCARD_DEFAULT_PERIOD *
 					  sizeof(gdouble));
@@ -2985,7 +2985,7 @@ ags_alsa_devout_device_free(AgsSoundcard *soundcard)
 {
   AgsAlsaDevout *alsa_devout;
 
-  GList *start_list, *list;
+  GList *list;
   
   guint i;
   
@@ -3099,9 +3099,9 @@ ags_alsa_devout_tic(AgsSoundcard *soundcard)
 
   gdouble delay;
   gdouble delay_counter;
+  guint attack;
   gdouble note_256th_delay;
   guint note_256th_attack_lower, note_256th_attack_upper;
-  guint attack;
   guint buffer_size;
   guint note_offset_absolute;
   guint note_offset;

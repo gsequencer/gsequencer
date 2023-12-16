@@ -153,8 +153,19 @@ void ags_alsa_devin_get_loop(AgsSoundcard *soundcard,
 guint ags_alsa_devin_get_loop_offset(AgsSoundcard *soundcard);
 
 void ags_alsa_devin_get_note_256th_offset(AgsSoundcard *soundcard,
-					  guint *offset_lower,
-					  guint *offset_upper);
+					  guint *note_256th_offset_lower,
+					  guint *note_256th_offset_upper);
+
+void ags_alsa_devin_get_note_256th_attack(AgsSoundcard *soundcard,
+					  guint *note_256th_attack_lower,
+					  guint *note_256th_attack_upper);
+
+guint ags_alsa_devin_get_note_256th_attack_at_position(AgsSoundcard *soundcard,
+						       guint note_256th_attack_position);
+
+void ags_alsa_devin_get_note_256th_attack_position(AgsSoundcard *soundcard,
+						   guint *note_256th_attack_position_lower,
+						   guint *note_256th_attack_position_upper);
 
 /**
  * SECTION:ags_alsa_devin
@@ -546,6 +557,12 @@ ags_alsa_devin_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->get_loop_offset = ags_alsa_devin_get_loop_offset;
 
   soundcard->get_note_256th_offset = ags_alsa_devin_get_note_256th_offset;
+
+  soundcard->get_note_256th_attack = ags_alsa_devin_get_note_256th_attack;
+
+  soundcard->get_note_256th_attack_at_position = ags_alsa_devin_get_note_256th_attack_at_position;
+
+  soundcard->get_note_256th_attack_position = ags_alsa_devin_get_note_256th_attack_position;
 }
 
 void
@@ -558,6 +575,7 @@ ags_alsa_devin_init(AgsAlsaDevin *alsa_devin)
   gchar *str;
   gchar *segmentation;
 
+  gdouble absolute_delay;
   guint denominator, numerator;
   guint i;
   
@@ -647,6 +665,8 @@ ags_alsa_devin_init(AgsAlsaDevin *alsa_devin)
   }
 
   /* delay and attack */
+  absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(alsa_devin));
+
   alsa_devin->delay = (gdouble *) malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
 					 sizeof(gdouble));
   
