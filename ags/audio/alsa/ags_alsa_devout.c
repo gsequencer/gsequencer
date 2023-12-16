@@ -3762,7 +3762,7 @@ ags_alsa_devout_get_note_256th_attack_position(AgsSoundcard *soundcard,
   
   /* get alsa devout mutex */
   alsa_devout_mutex = AGS_ALSA_DEVOUT_GET_OBJ_MUTEX(alsa_devout);
-
+  
   /* get note 256th attack */
   g_rec_mutex_lock(alsa_devout_mutex);
 
@@ -3773,6 +3773,10 @@ ags_alsa_devout_get_note_256th_attack_position(AgsSoundcard *soundcard,
   local_attack = alsa_devout->attack[attack_position];
 
   note_256th_delay = alsa_devout->note_256th_delay;
+
+  if(1.0 / note_256th_delay >= AGS_SOUNDCARD_DEFAULT_PERIOD){
+    g_critical("unexpected time segmentation");
+  }
 
   position_lower = 16 * alsa_devout->tic_counter;
 
@@ -3789,9 +3793,30 @@ ags_alsa_devout_get_note_256th_attack_position(AgsSoundcard *soundcard,
   local_note_256th_attack = g_list_nth_data(alsa_devout->note_256th_attack,
 					    nth_list);
 
-  for(i = 1; local_note_256th_attack[position_lower % (guint) AGS_SOUNDCARD_DEFAULT_PERIOD] + (i * note_256th_delay * buffer_size) < buffer_size; i++){
+  for(i = 1; local_note_256th_attack[position_lower % (guint) AGS_SOUNDCARD_DEFAULT_PERIOD] + (guint) floor((double) i * note_256th_delay * (double) buffer_size) < buffer_size; i++){
+    if((position_upper + 1) % (guint) AGS_SOUNDCARD_DEFAULT_PERIOD == 0){
+      if(nth_list + 1 < 32){
+	local_note_256th_attack = g_list_nth_data(alsa_devout->note_256th_attack,
+						  nth_list + 1);
+      }else{
+	local_note_256th_attack = g_list_nth_data(alsa_devout->note_256th_attack,
+						  0);
+      }
+    }
+
     if(position_upper + 1 < 16 * (guint) AGS_SOUNDCARD_DEFAULT_PERIOD){
-      position_upper++;
+      guint prev_note_256th_attack;
+      guint current_note_256th_attack;
+
+      prev_note_256th_attack = ags_alsa_devout_get_note_256th_attack_at_position(soundcard,
+										 position_upper);
+
+      current_note_256th_attack = ags_alsa_devout_get_note_256th_attack_at_position(soundcard,
+										    position_upper + 1);
+
+      if(prev_note_256th_attack < current_note_256th_attack){
+	position_upper++;
+      }
     }
   }
   
