@@ -27,6 +27,8 @@
 #include <ags/audio/task/ags_clear_buffer.h>
 #include <ags/audio/task/ags_switch_buffer_flag.h>
 
+#include <math.h>
+
 #include <ags/i18n.h>
 
 void ags_alsa_devin_class_init(AgsAlsaDevinClass *alsa_devin);
@@ -651,12 +653,14 @@ ags_alsa_devin_init(AgsAlsaDevin *alsa_devin)
   alsa_devin->attack = (guint *) malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
 					sizeof(guint));
 
+  alsa_devin->note_256th_delay = absolute_delay / 16.0;
+
   start_note_256th_attack = NULL;
 
-  for(i = 0; i < 16; i++){
+  for(i = 0; i < 32; i++){
     guint *note_256th_attack;
     
-    note_256th_attack = (guint *) malloc(2 * (int) AGS_SOUNDCARD_DEFAULT_PERIOD *
+    note_256th_attack = (guint *) malloc((int) AGS_SOUNDCARD_DEFAULT_PERIOD *
 					 sizeof(guint));
     
     start_note_256th_attack = g_list_prepend(start_note_256th_attack,
@@ -684,13 +688,16 @@ ags_alsa_devin_init(AgsAlsaDevin *alsa_devin)
   alsa_devin->loop_offset = 0;  
 
   /* 256th */
-  alsa_devin->note_256th_offset = 0;
-  alsa_devin->note_256th_tic_size = 1.0 / (alsa_devin->delay[0] / 16.0);
+  //NOTE:JK: note_256th_delay was prior set
 
-  if(alsa_devin->note_256th_tic_size <= 1.0){
-    alsa_devin->note_256th_offset_last = 1;
+  //NOTE:JK: note_256th_attack was prior set
+  
+  alsa_devin->note_256th_offset = 0;
+
+  if(alsa_devin->note_256th_delay >= 1.0){
+    alsa_devin->note_256th_offset_last = 0;
   }else{
-    alsa_devin->note_256th_offset_last = alsa_devin->note_256th_tic_size;
+    alsa_devin->note_256th_offset_last = (guint) floor(1.0 / alsa_devin->note_256th_delay);
   }
 }
 
@@ -2711,10 +2718,27 @@ ags_alsa_devin_device_free(AgsSoundcard *soundcard)
 
   alsa_devin->note_256th_offset = 16 * alsa_devin->start_note_offset;
   
-  if(alsa_devin->note_256th_tic_size <= 1.0){
-    alsa_devin->note_256th_offset_last = alsa_devin->note_256th_offset + 1;
+  if(alsa_devin->note_256th_delay >= 1.0){
+    alsa_devin->note_256th_offset_last = alsa_devin->note_256th_offset;
   }else{
-    alsa_devin->note_256th_offset_last = alsa_devin->note_256th_offset + (guint) fmod(alsa_devin->tic_counter * alsa_devin->delay[alsa_devin->tic_counter] * alsa_devin->note_256th_tic_size, alsa_devin->note_256th_tic_size);
+    guint buffer_size;
+    guint note_256th_attack_lower, note_256th_attack_upper;
+    guint i;
+    
+    buffer_size = alsa_devin->buffer_size;
+
+    note_256th_attack_lower = 0;
+    note_256th_attack_upper = 0;
+    
+    ags_soundcard_get_note_256th_attack(AGS_SOUNDCARD(alsa_devin),
+					&note_256th_attack_lower,
+					&note_256th_attack_upper);
+    
+    alsa_devin->note_256th_offset_last = alsa_devin->note_256th_offset;
+    
+    for(i = 1; i < (guint) floor(1.0 / (alsa_devin->note_256th_delay)) && note_256th_attack_lower + (guint) floor((double) i * (alsa_devin->note_256th_delay * (double) buffer_size)) < buffer_size; i++){
+      alsa_devin->note_256th_offset_last = alsa_devin->note_256th_offset + i;
+    }
   }
 
   g_rec_mutex_unlock(alsa_devin_mutex);

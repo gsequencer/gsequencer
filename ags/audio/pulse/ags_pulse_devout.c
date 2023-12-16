@@ -691,10 +691,10 @@ ags_pulse_devout_init(AgsPulseDevout *pulse_devout)
 
   start_note_256th_attack = NULL;
 
-  for(i = 0; i < 16; i++){
+  for(i = 0; i < 32; i++){
     guint *note_256th_attack;
     
-    note_256th_attack = (guint *) malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
+    note_256th_attack = (guint *) malloc((int) AGS_SOUNDCARD_DEFAULT_PERIOD *
 					 sizeof(guint));
     
     start_note_256th_attack = g_list_prepend(start_note_256th_attack,

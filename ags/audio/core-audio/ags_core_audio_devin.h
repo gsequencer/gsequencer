@@ -175,11 +175,12 @@ struct _AgsCoreAudioDevin
   GMutex callback_finish_mutex;
   GCond callback_finish_cond;
 
+  gdouble note_256th_delay;
+
   GList *note_256th_attack;
 
   guint note_256th_offset;
   guint note_256th_offset_last;
-  gdouble note_256th_tic_size;
 };
 
 struct _AgsCoreAudioDevinClass
