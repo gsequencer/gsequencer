@@ -4,7 +4,13 @@ ags (6.2.2)
 	* implemented ags_soundcard_get_note_256th_offset()
 	* implemented ags_soundcard_get_note_256th_attack()
 	* implemented ags_soundcard_get_note_256th_attack_at_position()
-	* TODO:JK: refactored AgsAlsaDevout, AgsAlsaDevin, AgsOssDevout, AgsOssDevin, AgsPulseDevout, AgsPulseDevin, AgsJackDevout, AgsJackDevin, AgsCoreAudioDevout, AgsCoreAudioDevin, AgsWasapiDevout, AgsWasapiDevin, AgsGstreamerDevout and AgsGstreamerDevin
+	* refactored AgsAlsaDevout and AgsAlsaDevin
+	* refactored AgsOssDevout and AgsOssDevin
+	* refactored AgsPulseDevout and AgsPulseDevin
+	* refactored AgsJackDevout and AgsJackDevin
+	* refactored AgsCoreAudioDevout and AgsCoreAudioDevin
+	* refactored AgsWasapiDevout and AgsWasapiDevin
+	* TODO:JK: refactored AgsGstreamerDevout and AgsGstreamerDevin
 	* fixed missing include
 
 ags (6.2.1)
