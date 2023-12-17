@@ -451,9 +451,9 @@ ags_fx_notation_audio_processor_seek(AgsSeekable *seekable,
 	note_256th_attack_lower = 0;
 	note_256th_attack_upper = 0;
     
-	ags_alsa_devout_get_note_256th_attack(AGS_SOUNDCARD(output_soundcard),
-					      &note_256th_attack_lower,
-					      &note_256th_attack_upper);
+	ags_soundcard_get_note_256th_attack(AGS_SOUNDCARD(output_soundcard),
+					    &note_256th_attack_lower,
+					    &note_256th_attack_upper);
 
 	fx_notation_audio_processor->note_256th_offset_counter_last = 
 	  fx_notation_audio_processor->note_256th_current_offset_counter_last = fx_notation_audio_processor->note_256th_offset_counter;
@@ -511,9 +511,9 @@ ags_fx_notation_audio_processor_seek(AgsSeekable *seekable,
 	note_256th_attack_lower = 0;
 	note_256th_attack_upper = 0;
     
-	ags_alsa_devout_get_note_256th_attack(AGS_SOUNDCARD(output_soundcard),
-					      &note_256th_attack_lower,
-					      &note_256th_attack_upper);
+	ags_soundcard_get_note_256th_attack(AGS_SOUNDCARD(output_soundcard),
+					    &note_256th_attack_lower,
+					    &note_256th_attack_upper);
 
 	fx_notation_audio_processor->note_256th_offset_counter_last = 
 	  fx_notation_audio_processor->note_256th_current_offset_counter_last = fx_notation_audio_processor->note_256th_offset_counter;
@@ -562,9 +562,9 @@ ags_fx_notation_audio_processor_seek(AgsSeekable *seekable,
 	note_256th_attack_lower = 0;
 	note_256th_attack_upper = 0;
     
-	ags_alsa_devout_get_note_256th_attack(AGS_SOUNDCARD(output_soundcard),
-					      &note_256th_attack_lower,
-					      &note_256th_attack_upper);
+	ags_soundcard_get_note_256th_attack(AGS_SOUNDCARD(output_soundcard),
+					    &note_256th_attack_lower,
+					    &note_256th_attack_upper);
 
 	fx_notation_audio_processor->note_256th_offset_counter_last = 
 	  fx_notation_audio_processor->note_256th_current_offset_counter_last = fx_notation_audio_processor->note_256th_offset_counter;

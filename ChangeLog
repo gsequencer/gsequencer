@@ -1,3 +1,8 @@
+ags (6.2.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed interface function access ags_soundcard_get_note_256th_attack() in ags-fx-notation
+
 ags (6.2.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
