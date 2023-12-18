@@ -1908,7 +1908,7 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 	IpatchSF2Sample *lower;
 	IpatchSF2Sample *higher;
 	
-	IpatchRange *note_range;
+	IpatchRange note_range;
 
 	gint current_root_note;
 	gint lower_root_note;
@@ -1917,7 +1917,9 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 	
 	pzone = ipatch_iter_get(&pzone_iter);
 
-	note_range = NULL;
+	note_range.low = 0;
+	note_range.high = 0;
+	
 	g_object_get(pzone,
 		     "note-range", &note_range,
 		     NULL);
@@ -1958,8 +1960,8 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 			     "root-note", &root_note,
 			     NULL);
 
-		if(root_note >= note_range->low &&
-		   root_note <= note_range->high){		
+		if(root_note >= note_range.low &&
+		   root_note <= note_range.high){		
 		  success = TRUE;
 
 		  current = sf2_sample;
@@ -1970,7 +1972,7 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 		}
 
 		/* lower */
-		if(root_note < note_range->low){
+		if(root_note < note_range.low){
 		  if(lower == NULL ||
 		     root_note > lower_root_note){
 		    if(lower != NULL){
@@ -1985,7 +1987,7 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 		}
 
 		/* higher */
-		if(root_note > note_range->high){
+		if(root_note > note_range.high){
 		  if(higher == NULL ||
 		     root_note < higher_root_note){
 		    if(higher != NULL){
@@ -2035,8 +2037,8 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 	      sf2_synth_util->sf2_sample_arr[i] = sf2_sample;
 	      g_object_ref(sf2_sample);
 
-	      sf2_synth_util->sf2_note_range[i][0] = note_range->low;
-	      sf2_synth_util->sf2_note_range[i][1] = note_range->high;
+	      sf2_synth_util->sf2_note_range[i][0] = note_range.low;
+	      sf2_synth_util->sf2_note_range[i][1] = note_range.high;
 
 	      sample_data = ipatch_sf2_sample_get_data(sf2_sample);
 
@@ -4992,18 +4994,21 @@ ags_sf2_synth_util_midi_locale_find_sample_near_midi_key(AgsIpatch *ipatch,
     
     if(ipatch_iter_first(&pzone_iter) != NULL){
       do{
-	IpatchRange *note_range;
+	IpatchRange note_range;
 	
 	pzone = ipatch_iter_get(&pzone_iter);
 
+	note_range.low = 0;
+	note_range.high = 0;
+	
 	g_object_get(pzone,
 		     "note-range", &note_range,
 		     NULL);
 
 	first_sf2_sample = NULL;
 	
-	if(note_range->low <= midi_key &&
-	   note_range->high >= midi_key){
+	if(note_range.low <= midi_key &&
+	   note_range.high >= midi_key){
 	  sf2_instrument = (IpatchItem *) ipatch_sf2_pzone_get_inst(ipatch_iter_get(&pzone_iter));
 
 	  if(instrument != NULL){
