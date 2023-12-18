@@ -1,3 +1,9 @@
+ags (6.2.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential memory corruption with boxed type SF2 note-range
+	* refactored AgsSimpleFile to use g_strtod() instead of g_ascii_strtod()
+
 ags (6.2.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
