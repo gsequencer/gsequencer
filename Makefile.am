@@ -129,6 +129,7 @@ EXTRA_DIST = config.rpath \
 	COPYING.stk-4.3 \
 	ags/config.h.in \
 	ags/ags_api_config.h.in \
+	ags/gsequencer_macos_install_main.c \
 	gtk-doc.make \
 	gsequencer.share \
 	aclocal.m4 \

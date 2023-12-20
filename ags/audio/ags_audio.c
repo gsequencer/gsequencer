@@ -6371,7 +6371,8 @@ ags_audio_set_audio_channel_shrink0:
     channel->audio_channel = j;
     channel->line = i * audio_channels + j;
 
-    channel0 = channel->next;
+    channel0 =
+      channel1 = channel->next;
 
     j++;
       

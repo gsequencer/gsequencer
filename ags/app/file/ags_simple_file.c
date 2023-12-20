@@ -1471,8 +1471,8 @@ ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, AgsConfig
     gdouble max_precision;
     
     /* change max precision */
-    max_precision = g_strtod(str,
-			     NULL);
+    max_precision = g_ascii_strtod(str,
+				   NULL);
     
     ags_simple_file_read_change_max_precision(main_loop,
 					      max_precision);  
@@ -1495,8 +1495,8 @@ ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, AgsConfig
 			     "gui-scale");
 
   if(str != NULL){
-    gui_scale_factor = g_strtod(str,
-				NULL);
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
 
     g_free(str);
   }
@@ -1711,8 +1711,8 @@ ags_simple_file_read_property(AgsSimpleFile *simple_file, xmlNode *node, GParame
       g_value_init(&(pointer->value),
 		   G_TYPE_DOUBLE);
 
-      val = g_strtod((gchar *) str,
-		     NULL);
+      val = g_ascii_strtod((gchar *) str,
+			   NULL);
 
       g_value_set_double(&(pointer->value),
 			 val);
@@ -1850,8 +1850,8 @@ ags_simple_file_read_value(AgsSimpleFile *simple_file, xmlNode *node, GValue **v
       g_value_init(current,
 		   G_TYPE_DOUBLE);
 
-      val = g_strtod(str,
-		     NULL);
+      val = g_ascii_strtod(str,
+			   NULL);
 
       g_value_set_double(current,
 			 val);
@@ -2036,8 +2036,8 @@ ags_simple_file_read_window_launch(AgsFileLaunch *file_launch,
 		   BAD_CAST "bpm");
 
   if(str != NULL){
-    bpm = g_strtod(str,
-		   NULL);
+    bpm = g_ascii_strtod(str,
+			 NULL);
     gtk_spin_button_set_value(window->navigation->bpm,
 			      bpm);
 
@@ -2066,8 +2066,8 @@ ags_simple_file_read_window_launch(AgsFileLaunch *file_launch,
 		   "loop-start");
   
   if(str != NULL){
-    loop_start = g_strtod(str,
-			  NULL);
+    loop_start = g_ascii_strtod(str,
+				NULL);
     gtk_spin_button_set_value(window->navigation->loop_left_tact,
 			      loop_start);
 
@@ -2079,8 +2079,8 @@ ags_simple_file_read_window_launch(AgsFileLaunch *file_launch,
 		   "loop-end");
 
   if(str != NULL){
-    loop_end = g_strtod(str,
-			NULL);
+    loop_end = g_ascii_strtod(str,
+			      NULL);
     gtk_spin_button_set_value(window->navigation->loop_right_tact,
 			      loop_end);
 
@@ -3143,8 +3143,8 @@ ags_simple_file_read_equalizer10_launch(AgsSimpleFile *simple_file, xmlNode *nod
 	      val = 0.0;
 		
 	      if(value != NULL){
-		val = g_strtod(value,
-			       NULL);
+		val = g_ascii_strtod(value,
+				     NULL);
     
 		xmlFree(value);
 
@@ -3237,8 +3237,8 @@ ags_simple_file_read_drum_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsD
 		   "bank-0");
 
   if(str != NULL){      
-    bank_0 = g_strtod(str,
-		      NULL);
+    bank_0 = g_ascii_strtod(str,
+			    NULL);
 
     if(bank_0 < 4){
       gtk_toggle_button_set_active(drum->index0[bank_0],
@@ -3254,8 +3254,8 @@ ags_simple_file_read_drum_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsD
 		   "bank-1");
 
   if(str != NULL){      
-    bank_1 = g_strtod(str,
-		      NULL);
+    bank_1 = g_ascii_strtod(str,
+			    NULL);
 
     if(bank_1 < 12){
       gtk_toggle_button_set_active(drum->index1[bank_1],
@@ -3346,8 +3346,8 @@ ags_simple_file_read_matrix_launch(AgsSimpleFile *simple_file, xmlNode *node, Ag
 		   "bank-1");
 
   if(str != NULL){      
-    bank_1 = g_strtod(str,
-		      NULL);
+    bank_1 = g_ascii_strtod(str,
+			    NULL);
 
     if(bank_1 < 9){
       gtk_toggle_button_set_active(matrix->index[bank_1],
@@ -3395,8 +3395,8 @@ ags_simple_file_read_matrix_launch(AgsSimpleFile *simple_file, xmlNode *node, Ag
   if(str != NULL){
     gdouble volume;
 
-    volume = g_strtod(str,
-		      NULL);
+    volume = g_ascii_strtod(str,
+			    NULL);
       
     gtk_range_set_value((GtkRange *) matrix->volume,
 			volume);
@@ -3417,8 +3417,8 @@ ags_simple_file_read_synth_launch(AgsSimpleFile *simple_file, xmlNode *node, Ags
   if(str != NULL){
     gdouble base_note;
 
-    base_note = g_strtod(str,
-			 NULL);
+    base_note = g_ascii_strtod(str,
+			       NULL);
 
     if(base_note > AGS_SYNTH_BASE_NOTE_MIN &&
        base_note < AGS_SYNTH_BASE_NOTE_MAX){
@@ -3447,8 +3447,8 @@ ags_simple_file_read_syncsynth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble base_note;
 
-    base_note = g_strtod(str,
-			 NULL);
+    base_note = g_ascii_strtod(str,
+			       NULL);
 
     if(base_note > AGS_SYNCSYNTH_BASE_NOTE_MIN &&
        base_note < AGS_SYNCSYNTH_BASE_NOTE_MAX){
@@ -3503,8 +3503,8 @@ ags_simple_file_read_syncsynth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble volume;
 
-    volume = g_strtod(str,
-		      NULL);
+    volume = g_ascii_strtod(str,
+			    NULL);
       
     gtk_range_set_value((GtkRange *) syncsynth->volume,
 			volume);
@@ -3525,8 +3525,8 @@ ags_simple_file_read_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode *node, 
   if(str != NULL){
     gdouble base_note;
 
-    base_note = g_strtod(str,
-			 NULL);
+    base_note = g_ascii_strtod(str,
+			       NULL);
 
     if(base_note > AGS_FM_SYNTH_BASE_NOTE_MIN &&
        base_note < AGS_FM_SYNTH_BASE_NOTE_MAX){
@@ -3555,8 +3555,8 @@ ags_simple_file_read_fm_syncsynth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble base_note;
 
-    base_note = g_strtod(str,
-			 NULL);
+    base_note = g_ascii_strtod(str,
+			       NULL);
 
     if(base_note > AGS_FM_SYNCSYNTH_BASE_NOTE_MIN &&
        base_note < AGS_FM_SYNCSYNTH_BASE_NOTE_MAX){
@@ -3611,8 +3611,8 @@ ags_simple_file_read_fm_syncsynth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble volume;
 
-    volume = g_strtod(str,
-		      NULL);
+    volume = g_ascii_strtod(str,
+			    NULL);
       
     gtk_range_set_value((GtkRange *) fm_syncsynth->volume,
 			volume);
@@ -3649,8 +3649,8 @@ ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble octave;
 
-    octave = g_strtod(str,
-		      NULL);
+    octave = g_ascii_strtod(str,
+			    NULL);
 
     ags_dial_set_value(hybrid_synth->synth_0_octave,
 		       octave);
@@ -3664,8 +3664,8 @@ ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble key;
 
-    key = g_strtod(str,
-		   NULL);
+    key = g_ascii_strtod(str,
+			 NULL);
 
     ags_dial_set_value(hybrid_synth->synth_0_key,
 		       key);
@@ -3679,8 +3679,8 @@ ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble phase;
 
-    phase = g_strtod(str,
-		     NULL);
+    phase = g_ascii_strtod(str,
+			   NULL);
 
     ags_dial_set_value(hybrid_synth->synth_0_phase,
 		       phase);
@@ -3694,8 +3694,8 @@ ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble volume;
 
-    volume = g_strtod(str,
-		      NULL);
+    volume = g_ascii_strtod(str,
+			    NULL);
 
     ags_dial_set_value(hybrid_synth->synth_0_volume,
 		       volume);
@@ -3719,8 +3719,8 @@ ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble sync_relative_attack_factor;
 
-    sync_relative_attack_factor = g_strtod(str,
-					   NULL);
+    sync_relative_attack_factor = g_ascii_strtod(str,
+						 NULL);
 
     ags_dial_set_value(hybrid_synth->synth_0_sync_relative_attack_factor,
 		       sync_relative_attack_factor);
@@ -3734,8 +3734,8 @@ ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble sync_attack_0;
 
-    sync_attack_0 = g_strtod(str,
-			     NULL);
+    sync_attack_0 = g_ascii_strtod(str,
+				   NULL);
 
     ags_dial_set_value(hybrid_synth->synth_0_sync_attack_0,
 		       sync_attack_0);
@@ -3749,8 +3749,8 @@ ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble sync_phase_0;
 
-    sync_phase_0 = g_strtod(str,
-			    NULL);
+    sync_phase_0 = g_ascii_strtod(str,
+				  NULL);
 
     ags_dial_set_value(hybrid_synth->synth_0_sync_phase_0,
 		       sync_phase_0);
@@ -3764,8 +3764,8 @@ ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble sync_attack_1;
 
-    sync_attack_1 = g_strtod(str,
-			     NULL);
+    sync_attack_1 = g_ascii_strtod(str,
+				   NULL);
 
     ags_dial_set_value(hybrid_synth->synth_0_sync_attack_1,
 		       sync_attack_1);
@@ -3779,8 +3779,8 @@ ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble sync_phase_1;
 
-    sync_phase_1 = g_strtod(str,
-			    NULL);
+    sync_phase_1 = g_ascii_strtod(str,
+				  NULL);
 
     ags_dial_set_value(hybrid_synth->synth_0_sync_phase_1,
 		       sync_phase_1);
@@ -3794,8 +3794,8 @@ ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble sync_attack_2;
 
-    sync_attack_2 = g_strtod(str,
-			     NULL);
+    sync_attack_2 = g_ascii_strtod(str,
+				   NULL);
 
     ags_dial_set_value(hybrid_synth->synth_0_sync_attack_2,
 		       sync_attack_2);
@@ -3809,8 +3809,8 @@ ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble sync_phase_2;
 
-    sync_phase_2 = g_strtod(str,
-			    NULL);
+    sync_phase_2 = g_ascii_strtod(str,
+				  NULL);
 
     ags_dial_set_value(hybrid_synth->synth_0_sync_phase_2,
 		       sync_phase_2);
@@ -3840,8 +3840,8 @@ ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble sync_lfo_frequency;
 
-    sync_lfo_frequency = g_strtod(str,
-				  NULL);
+    sync_lfo_frequency = g_ascii_strtod(str,
+					NULL);
 
     gtk_spin_button_set_value(hybrid_synth->synth_0_sync_lfo_frequency,
 			      sync_lfo_frequency);
@@ -3872,8 +3872,8 @@ ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble octave;
 
-    octave = g_strtod(str,
-		      NULL);
+    octave = g_ascii_strtod(str,
+			    NULL);
 
     ags_dial_set_value(hybrid_synth->synth_1_octave,
 		       octave);
@@ -3887,8 +3887,8 @@ ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble key;
 
-    key = g_strtod(str,
-		   NULL);
+    key = g_ascii_strtod(str,
+			 NULL);
 
     ags_dial_set_value(hybrid_synth->synth_1_key,
 		       key);
@@ -3902,8 +3902,8 @@ ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble phase;
 
-    phase = g_strtod(str,
-		     NULL);
+    phase = g_ascii_strtod(str,
+			   NULL);
 
     ags_dial_set_value(hybrid_synth->synth_1_phase,
 		       phase);
@@ -3917,8 +3917,8 @@ ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble volume;
 
-    volume = g_strtod(str,
-		      NULL);
+    volume = g_ascii_strtod(str,
+			    NULL);
 
     ags_dial_set_value(hybrid_synth->synth_1_volume,
 		       volume);
@@ -3942,8 +3942,8 @@ ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble sync_relative_attack_factor;
 
-    sync_relative_attack_factor = g_strtod(str,
-					   NULL);
+    sync_relative_attack_factor = g_ascii_strtod(str,
+						 NULL);
 
     ags_dial_set_value(hybrid_synth->synth_1_sync_relative_attack_factor,
 		       sync_relative_attack_factor);
@@ -3957,8 +3957,8 @@ ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble sync_attack_0;
 
-    sync_attack_0 = g_strtod(str,
-			     NULL);
+    sync_attack_0 = g_ascii_strtod(str,
+				   NULL);
 
     ags_dial_set_value(hybrid_synth->synth_1_sync_attack_0,
 		       sync_attack_0);
@@ -3972,8 +3972,8 @@ ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble sync_phase_0;
 
-    sync_phase_0 = g_strtod(str,
-			    NULL);
+    sync_phase_0 = g_ascii_strtod(str,
+				  NULL);
 
     ags_dial_set_value(hybrid_synth->synth_1_sync_phase_0,
 		       sync_phase_0);
@@ -3987,8 +3987,8 @@ ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble sync_attack_1;
 
-    sync_attack_1 = g_strtod(str,
-			     NULL);
+    sync_attack_1 = g_ascii_strtod(str,
+				   NULL);
 
     ags_dial_set_value(hybrid_synth->synth_1_sync_attack_1,
 		       sync_attack_1);
@@ -4002,8 +4002,8 @@ ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble sync_phase_1;
 
-    sync_phase_1 = g_strtod(str,
-			    NULL);
+    sync_phase_1 = g_ascii_strtod(str,
+				  NULL);
 
     ags_dial_set_value(hybrid_synth->synth_1_sync_phase_1,
 		       sync_phase_1);
@@ -4017,8 +4017,8 @@ ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble sync_attack_2;
 
-    sync_attack_2 = g_strtod(str,
-			     NULL);
+    sync_attack_2 = g_ascii_strtod(str,
+				   NULL);
 
     ags_dial_set_value(hybrid_synth->synth_1_sync_attack_2,
 		       sync_attack_2);
@@ -4032,8 +4032,8 @@ ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble sync_phase_2;
 
-    sync_phase_2 = g_strtod(str,
-			    NULL);
+    sync_phase_2 = g_ascii_strtod(str,
+				  NULL);
 
     ags_dial_set_value(hybrid_synth->synth_1_sync_phase_2,
 		       sync_phase_2);
@@ -4063,8 +4063,8 @@ ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble sync_lfo_frequency;
 
-    sync_lfo_frequency = g_strtod(str,
-				  NULL);
+    sync_lfo_frequency = g_ascii_strtod(str,
+					NULL);
 
     gtk_spin_button_set_value(hybrid_synth->synth_1_sync_lfo_frequency,
 			      sync_lfo_frequency);
@@ -4079,8 +4079,8 @@ ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble tuning;
 
-    tuning = g_strtod(str,
-		      NULL);
+    tuning = g_ascii_strtod(str,
+			    NULL);
 
     ags_dial_set_value(hybrid_synth->pitch_tuning,
 		       tuning);
@@ -4094,8 +4094,8 @@ ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble gain;
 
-    gain = g_strtod(str,
-		    NULL);
+    gain = g_ascii_strtod(str,
+			  NULL);
 
     ags_dial_set_value(hybrid_synth->noise_gain,
 		       gain);
@@ -4120,8 +4120,8 @@ ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble q_lin;
 
-    q_lin = g_strtod(str,
-		     NULL);
+    q_lin = g_ascii_strtod(str,
+			   NULL);
 
     ags_dial_set_value(hybrid_synth->low_pass_q_lin,
 		       q_lin);
@@ -4135,8 +4135,8 @@ ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble filter_gain;
 
-    filter_gain = g_strtod(str,
-			   NULL);
+    filter_gain = g_ascii_strtod(str,
+				 NULL);
 
     ags_dial_set_value(hybrid_synth->low_pass_filter_gain,
 		       filter_gain);
@@ -4161,8 +4161,8 @@ ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble q_lin;
 
-    q_lin = g_strtod(str,
-		     NULL);
+    q_lin = g_ascii_strtod(str,
+			   NULL);
 
     ags_dial_set_value(hybrid_synth->high_pass_q_lin,
 		       q_lin);
@@ -4176,8 +4176,8 @@ ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble filter_gain;
 
-    filter_gain = g_strtod(str,
-			   NULL);
+    filter_gain = g_ascii_strtod(str,
+				 NULL);
 
     ags_dial_set_value(hybrid_synth->high_pass_filter_gain,
 		       filter_gain);
@@ -4192,8 +4192,8 @@ ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble input_volume;
 
-    input_volume = g_strtod(str,
-			    NULL);
+    input_volume = g_ascii_strtod(str,
+				  NULL);
 
     ags_dial_set_value(hybrid_synth->chorus_input_volume,
 		       input_volume);
@@ -4207,8 +4207,8 @@ ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble output_volume;
 
-    output_volume = g_strtod(str,
-			     NULL);
+    output_volume = g_ascii_strtod(str,
+				   NULL);
 
     ags_dial_set_value(hybrid_synth->chorus_output_volume,
 		       output_volume);
@@ -4238,8 +4238,8 @@ ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble lfo_frequency;
 
-    lfo_frequency = g_strtod(str,
-			     NULL);
+    lfo_frequency = g_ascii_strtod(str,
+				   NULL);
 
     gtk_spin_button_set_value(hybrid_synth->chorus_lfo_frequency,
 			      lfo_frequency);
@@ -4253,8 +4253,8 @@ ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble depth;
 
-    depth = g_strtod(str,
-		     NULL);
+    depth = g_ascii_strtod(str,
+			   NULL);
 
     ags_dial_set_value(hybrid_synth->chorus_depth,
 		       depth);
@@ -4268,8 +4268,8 @@ ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble mix;
 
-    mix = g_strtod(str,
-		   NULL);
+    mix = g_ascii_strtod(str,
+			 NULL);
 
     ags_dial_set_value(hybrid_synth->chorus_mix,
 		       mix);
@@ -4283,8 +4283,8 @@ ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *no
   if(str != NULL){
     gdouble delay;
 
-    delay = g_strtod(str,
-		     NULL);
+    delay = g_ascii_strtod(str,
+			   NULL);
 
     ags_dial_set_value(hybrid_synth->chorus_delay,
 		       delay);
@@ -4321,8 +4321,8 @@ ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode 
   if(str != NULL){
     gdouble octave;
 
-    octave = g_strtod(str,
-		      NULL);
+    octave = g_ascii_strtod(str,
+			    NULL);
 
     ags_dial_set_value(hybrid_fm_synth->synth_0_octave,
 		       octave);
@@ -4336,8 +4336,8 @@ ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode 
   if(str != NULL){
     gdouble key;
 
-    key = g_strtod(str,
-		   NULL);
+    key = g_ascii_strtod(str,
+			 NULL);
 
     ags_dial_set_value(hybrid_fm_synth->synth_0_key,
 		       key);
@@ -4351,8 +4351,8 @@ ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode 
   if(str != NULL){
     gdouble phase;
 
-    phase = g_strtod(str,
-		     NULL);
+    phase = g_ascii_strtod(str,
+			   NULL);
 
     ags_dial_set_value(hybrid_fm_synth->synth_0_phase,
 		       phase);
@@ -4366,8 +4366,8 @@ ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode 
   if(str != NULL){
     gdouble volume;
 
-    volume = g_strtod(str,
-		      NULL);
+    volume = g_ascii_strtod(str,
+			    NULL);
 
     ags_dial_set_value(hybrid_fm_synth->synth_0_volume,
 		       volume);
@@ -4397,8 +4397,8 @@ ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode 
   if(str != NULL){
     gdouble lfo_frequency;
 
-    lfo_frequency = g_strtod(str,
-			     NULL);
+    lfo_frequency = g_ascii_strtod(str,
+				   NULL);
 
     gtk_spin_button_set_value(hybrid_fm_synth->synth_0_lfo_frequency,
 			      lfo_frequency);
@@ -4412,8 +4412,8 @@ ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode 
   if(str != NULL){
     gdouble lfo_depth;
 
-    lfo_depth = g_strtod(str,
-			 NULL);
+    lfo_depth = g_ascii_strtod(str,
+			       NULL);
 
     ags_dial_set_value(hybrid_fm_synth->synth_0_lfo_depth,
 		       lfo_depth);
@@ -4427,8 +4427,8 @@ ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode 
   if(str != NULL){
     gdouble lfo_tuning;
 
-    lfo_tuning = g_strtod(str,
-			  NULL);
+    lfo_tuning = g_ascii_strtod(str,
+				NULL);
 
     ags_dial_set_value(hybrid_fm_synth->synth_0_lfo_tuning,
 		       lfo_tuning);
@@ -4459,8 +4459,8 @@ ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode 
   if(str != NULL){
     gdouble octave;
 
-    octave = g_strtod(str,
-		      NULL);
+    octave = g_ascii_strtod(str,
+			    NULL);
 
     ags_dial_set_value(hybrid_fm_synth->synth_1_octave,
 		       octave);
@@ -4474,8 +4474,8 @@ ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode 
   if(str != NULL){
     gdouble key;
 
-    key = g_strtod(str,
-		   NULL);
+    key = g_ascii_strtod(str,
+			 NULL);
 
     ags_dial_set_value(hybrid_fm_synth->synth_1_key,
 		       key);
@@ -4489,8 +4489,8 @@ ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode 
   if(str != NULL){
     gdouble phase;
 
-    phase = g_strtod(str,
-		     NULL);
+    phase = g_ascii_strtod(str,
+			   NULL);
 
     ags_dial_set_value(hybrid_fm_synth->synth_1_phase,
 		       phase);
@@ -4504,8 +4504,8 @@ ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode 
   if(str != NULL){
     gdouble volume;
 
-    volume = g_strtod(str,
-		      NULL);
+    volume = g_ascii_strtod(str,
+			    NULL);
 
     ags_dial_set_value(hybrid_fm_synth->synth_1_volume,
 		       volume);
@@ -4535,8 +4535,8 @@ ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode 
   if(str != NULL){
     gdouble lfo_frequency;
 
-    lfo_frequency = g_strtod(str,
-			     NULL);
+    lfo_frequency = g_ascii_strtod(str,
+				   NULL);
 
     gtk_spin_button_set_value(hybrid_fm_synth->synth_1_lfo_frequency,
 			      lfo_frequency);
@@ -4550,8 +4550,8 @@ ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode 
   if(str != NULL){
     gdouble lfo_depth;
 
-    lfo_depth = g_strtod(str,
-			 NULL);
+    lfo_depth = g_ascii_strtod(str,
+			       NULL);
 
     ags_dial_set_value(hybrid_fm_synth->synth_1_lfo_depth,
 		       lfo_depth);
@@ -4565,8 +4565,8 @@ ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode 
   if(str != NULL){
     gdouble lfo_tuning;
 
-    lfo_tuning = g_strtod(str,
-			  NULL);
+    lfo_tuning = g_ascii_strtod(str,
+				NULL);
 
     ags_dial_set_value(hybrid_fm_synth->synth_1_lfo_tuning,
 		       lfo_tuning);
@@ -4597,8 +4597,8 @@ ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode 
   if(str != NULL){
     gdouble octave;
 
-    octave = g_strtod(str,
-		      NULL);
+    octave = g_ascii_strtod(str,
+			    NULL);
 
     ags_dial_set_value(hybrid_fm_synth->synth_2_octave,
 		       octave);
@@ -4612,8 +4612,8 @@ ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode 
   if(str != NULL){
     gdouble key;
 
-    key = g_strtod(str,
-		   NULL);
+    key = g_ascii_strtod(str,
+			 NULL);
 
     ags_dial_set_value(hybrid_fm_synth->synth_2_key,
 		       key);
@@ -4627,8 +4627,8 @@ ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode 
   if(str != NULL){
     gdouble phase;
 
-    phase = g_strtod(str,
-		     NULL);
+    phase = g_ascii_strtod(str,
+			   NULL);
 
     ags_dial_set_value(hybrid_fm_synth->synth_2_phase,
 		       phase);
@@ -4642,8 +4642,8 @@ ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode 
   if(str != NULL){
     gdouble volume;
 
-    volume = g_strtod(str,
-		      NULL);
+    volume = g_ascii_strtod(str,
+			    NULL);
 
     ags_dial_set_value(hybrid_fm_synth->synth_2_volume,
 		       volume);
@@ -4673,8 +4673,8 @@ ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode 
   if(str != NULL){
     gdouble lfo_frequency;
 
-    lfo_frequency = g_strtod(str,
-			     NULL);
+    lfo_frequency = g_ascii_strtod(str,
+				   NULL);
 
     gtk_spin_button_set_value(hybrid_fm_synth->synth_2_lfo_frequency,
 			      lfo_frequency);
@@ -4688,8 +4688,8 @@ ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode 
   if(str != NULL){
     gdouble lfo_depth;
 
-    lfo_depth = g_strtod(str,
-			 NULL);
+    lfo_depth = g_ascii_strtod(str,
+			       NULL);
 
     ags_dial_set_value(hybrid_fm_synth->synth_2_lfo_depth,
 		       lfo_depth);
@@ -4703,8 +4703,8 @@ ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode 
   if(str != NULL){
     gdouble lfo_tuning;
 
-    lfo_tuning = g_strtod(str,
-			  NULL);
+    lfo_tuning = g_ascii_strtod(str,
+				NULL);
 
     ags_dial_set_value(hybrid_fm_synth->synth_2_lfo_tuning,
 		       lfo_tuning);
@@ -4719,8 +4719,8 @@ ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode 
   if(str != NULL){
     gdouble tuning;
 
-    tuning = g_strtod(str,
-		      NULL);
+    tuning = g_ascii_strtod(str,
+			    NULL);
 
     ags_dial_set_value(hybrid_fm_synth->pitch_tuning,
 		       tuning);
@@ -4734,8 +4734,8 @@ ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode 
   if(str != NULL){
     gdouble gain;
 
-    gain = g_strtod(str,
-		    NULL);
+    gain = g_ascii_strtod(str,
+			  NULL);
 
     ags_dial_set_value(hybrid_fm_synth->noise_gain,
 		       gain);
@@ -4760,8 +4760,8 @@ ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode 
   if(str != NULL){
     gdouble q_lin;
 
-    q_lin = g_strtod(str,
-		     NULL);
+    q_lin = g_ascii_strtod(str,
+			   NULL);
 
     ags_dial_set_value(hybrid_fm_synth->low_pass_q_lin,
 		       q_lin);
@@ -4775,8 +4775,8 @@ ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode 
   if(str != NULL){
     gdouble filter_gain;
 
-    filter_gain = g_strtod(str,
-			   NULL);
+    filter_gain = g_ascii_strtod(str,
+				 NULL);
 
     ags_dial_set_value(hybrid_fm_synth->low_pass_filter_gain,
 		       filter_gain);
@@ -4801,8 +4801,8 @@ ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode 
   if(str != NULL){
     gdouble q_lin;
 
-    q_lin = g_strtod(str,
-		     NULL);
+    q_lin = g_ascii_strtod(str,
+			   NULL);
 
     ags_dial_set_value(hybrid_fm_synth->high_pass_q_lin,
 		       q_lin);
@@ -4816,8 +4816,8 @@ ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode 
   if(str != NULL){
     gdouble filter_gain;
 
-    filter_gain = g_strtod(str,
-			   NULL);
+    filter_gain = g_ascii_strtod(str,
+				 NULL);
 
     ags_dial_set_value(hybrid_fm_synth->high_pass_filter_gain,
 		       filter_gain);
@@ -4832,8 +4832,8 @@ ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode 
   if(str != NULL){
     gdouble input_volume;
 
-    input_volume = g_strtod(str,
-			    NULL);
+    input_volume = g_ascii_strtod(str,
+				  NULL);
 
     ags_dial_set_value(hybrid_fm_synth->chorus_input_volume,
 		       input_volume);
@@ -4847,8 +4847,8 @@ ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode 
   if(str != NULL){
     gdouble output_volume;
 
-    output_volume = g_strtod(str,
-			     NULL);
+    output_volume = g_ascii_strtod(str,
+				   NULL);
 
     ags_dial_set_value(hybrid_fm_synth->chorus_output_volume,
 		       output_volume);
@@ -4878,8 +4878,8 @@ ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode 
   if(str != NULL){
     gdouble lfo_frequency;
 
-    lfo_frequency = g_strtod(str,
-			     NULL);
+    lfo_frequency = g_ascii_strtod(str,
+				   NULL);
 
     gtk_spin_button_set_value(hybrid_fm_synth->chorus_lfo_frequency,
 			      lfo_frequency);
@@ -4893,8 +4893,8 @@ ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode 
   if(str != NULL){
     gdouble depth;
 
-    depth = g_strtod(str,
-		     NULL);
+    depth = g_ascii_strtod(str,
+			   NULL);
 
     ags_dial_set_value(hybrid_fm_synth->chorus_depth,
 		       depth);
@@ -4908,8 +4908,8 @@ ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode 
   if(str != NULL){
     gdouble mix;
 
-    mix = g_strtod(str,
-		   NULL);
+    mix = g_ascii_strtod(str,
+			 NULL);
 
     ags_dial_set_value(hybrid_fm_synth->chorus_mix,
 		       mix);
@@ -4923,8 +4923,8 @@ ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode 
   if(str != NULL){
     gdouble delay;
 
-    delay = g_strtod(str,
-		     NULL);
+    delay = g_ascii_strtod(str,
+			   NULL);
 
     ags_dial_set_value(hybrid_fm_synth->chorus_delay,
 		       delay);
@@ -5025,19 +5025,19 @@ ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *n
 	minor == 7 &&
 	micro < 3)){
       gtk_spin_button_set_value(pitch_sampler->lower,
-				g_strtod(base_note,
-					 NULL) - 48.0);
+				g_ascii_strtod(base_note,
+					       NULL) - 48.0);
     }else{
       gtk_spin_button_set_value(pitch_sampler->lower,
-				g_strtod(base_note,
-					 NULL));
+				g_ascii_strtod(base_note,
+					       NULL));
     }
   }
 
   if(key_count != NULL){
     gtk_spin_button_set_value(pitch_sampler->key_count,
-			      g_strtod(key_count,
-				       NULL));
+			      g_ascii_strtod(key_count,
+					     NULL));
   }
 
   ags_pitch_sampler_open_filename(pitch_sampler,
@@ -5061,8 +5061,8 @@ ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *n
   if(str != NULL){
     gdouble a_amount;
 
-    a_amount = g_strtod(str,
-			NULL);
+    a_amount = g_ascii_strtod(str,
+			      NULL);
       
     gtk_adjustment_set_value(pitch_sampler->aliase_a_amount->adjustment,
 			     a_amount);
@@ -5077,8 +5077,8 @@ ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *n
   if(str != NULL){
     gdouble a_phase;
 
-    a_phase = g_strtod(str,
-		       NULL);
+    a_phase = g_ascii_strtod(str,
+			     NULL);
       
     gtk_adjustment_set_value(pitch_sampler->aliase_a_phase->adjustment,
 			     a_phase);
@@ -5093,8 +5093,8 @@ ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *n
   if(str != NULL){
     gdouble b_amount;
 
-    b_amount = g_strtod(str,
-			NULL);
+    b_amount = g_ascii_strtod(str,
+			      NULL);
       
     gtk_adjustment_set_value(pitch_sampler->aliase_b_amount->adjustment,
 			     b_amount);
@@ -5109,8 +5109,8 @@ ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *n
   if(str != NULL){
     gdouble b_phase;
 
-    b_phase = g_strtod(str,
-		       NULL);
+    b_phase = g_ascii_strtod(str,
+			     NULL);
       
     gtk_adjustment_set_value(pitch_sampler->aliase_b_phase->adjustment,
 			     b_phase);
@@ -5125,8 +5125,8 @@ ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *n
   if(str != NULL){
     gdouble volume;
 
-    volume = g_strtod(str,
-		      NULL);
+    volume = g_ascii_strtod(str,
+			    NULL);
       
     gtk_range_set_value((GtkRange *) pitch_sampler->volume,
 			volume);
@@ -5151,8 +5151,8 @@ ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *n
     
   if(str != NULL){
     gtk_spin_button_set_value(pitch_sampler->lfo_freq,
-			      g_strtod(str,
-				       NULL));
+			      g_ascii_strtod(str,
+					     NULL));
     xmlFree(str);
   }
 
@@ -5162,8 +5162,8 @@ ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *n
     
   if(str != NULL){
     gtk_spin_button_set_value(pitch_sampler->lfo_phase,
-			      g_strtod(str,
-				       NULL));
+			      g_ascii_strtod(str,
+					     NULL));
     xmlFree(str);
   }
 
@@ -5173,8 +5173,8 @@ ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *n
     
   if(str != NULL){
     gtk_spin_button_set_value(pitch_sampler->lfo_depth,
-			      g_strtod(str,
-				       NULL));
+			      g_ascii_strtod(str,
+					     NULL));
     xmlFree(str);
   }
 
@@ -5184,8 +5184,8 @@ ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *n
     
   if(str != NULL){
     gtk_spin_button_set_value(pitch_sampler->lfo_tuning,
-			      g_strtod(str,
-				       NULL));
+			      g_ascii_strtod(str,
+					     NULL));
     xmlFree(str);
   }
 
@@ -5234,8 +5234,8 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble octave;
 
-    octave = g_strtod(str,
-		      NULL);
+    octave = g_ascii_strtod(str,
+			    NULL);
 
     ags_dial_set_value(sfz_synth->synth_octave,
 		       octave);
@@ -5249,8 +5249,8 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble key;
 
-    key = g_strtod(str,
-		   NULL);
+    key = g_ascii_strtod(str,
+			 NULL);
 
     ags_dial_set_value(sfz_synth->synth_key,
 		       key);
@@ -5264,8 +5264,8 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble volume;
 
-    volume = g_strtod(str,
-		      NULL);
+    volume = g_ascii_strtod(str,
+			    NULL);
 
     ags_dial_set_value(sfz_synth->synth_volume,
 		       volume);
@@ -5280,8 +5280,8 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble input_volume;
 
-    input_volume = g_strtod(str,
-			    NULL);
+    input_volume = g_ascii_strtod(str,
+				  NULL);
 
     ags_dial_set_value(sfz_synth->chorus_input_volume,
 		       input_volume);
@@ -5295,8 +5295,8 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble output_volume;
 
-    output_volume = g_strtod(str,
-			     NULL);
+    output_volume = g_ascii_strtod(str,
+				   NULL);
 
     ags_dial_set_value(sfz_synth->chorus_output_volume,
 		       output_volume);
@@ -5326,8 +5326,8 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble lfo_frequency;
 
-    lfo_frequency = g_strtod(str,
-			     NULL);
+    lfo_frequency = g_ascii_strtod(str,
+				   NULL);
 
     gtk_spin_button_set_value(sfz_synth->chorus_lfo_frequency,
 			      lfo_frequency);
@@ -5341,8 +5341,8 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble depth;
 
-    depth = g_strtod(str,
-		     NULL);
+    depth = g_ascii_strtod(str,
+			   NULL);
 
     ags_dial_set_value(sfz_synth->chorus_depth,
 		       depth);
@@ -5356,8 +5356,8 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble mix;
 
-    mix = g_strtod(str,
-		   NULL);
+    mix = g_ascii_strtod(str,
+			 NULL);
 
     ags_dial_set_value(sfz_synth->chorus_mix,
 		       mix);
@@ -5371,8 +5371,8 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble delay;
 
-    delay = g_strtod(str,
-		     NULL);
+    delay = g_ascii_strtod(str,
+			   NULL);
 
     ags_dial_set_value(sfz_synth->chorus_delay,
 		       delay);
@@ -5401,8 +5401,8 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble gain;
 
-    gain = g_strtod(str,
-		    NULL);
+    gain = g_ascii_strtod(str,
+			  NULL);
 
     ags_dial_set_value(sfz_synth->tremolo_gain,
 		       gain);
@@ -5416,8 +5416,8 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble lfo_depth;
 
-    lfo_depth = g_strtod(str,
-			 NULL);
+    lfo_depth = g_ascii_strtod(str,
+			       NULL);
 
     ags_dial_set_value(sfz_synth->tremolo_lfo_depth,
 		       lfo_depth);
@@ -5431,8 +5431,8 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble lfo_freq;
 
-    lfo_freq = g_strtod(str,
-			NULL);
+    lfo_freq = g_ascii_strtod(str,
+			      NULL);
 
     ags_dial_set_value(sfz_synth->tremolo_lfo_freq,
 		       lfo_freq);
@@ -5446,8 +5446,8 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble tuning;
 
-    tuning = g_strtod(str,
-		      NULL);
+    tuning = g_ascii_strtod(str,
+			    NULL);
 
     ags_dial_set_value(sfz_synth->tremolo_tuning,
 		       tuning);
@@ -5475,8 +5475,8 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble gain;
 
-    gain = g_strtod(str,
-		    NULL);
+    gain = g_ascii_strtod(str,
+			  NULL);
 
     ags_dial_set_value(sfz_synth->vibrato_gain,
 		       gain);
@@ -5490,8 +5490,8 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble lfo_depth;
 
-    lfo_depth = g_strtod(str,
-			 NULL);
+    lfo_depth = g_ascii_strtod(str,
+			       NULL);
 
     ags_dial_set_value(sfz_synth->vibrato_lfo_depth,
 		       lfo_depth);
@@ -5505,8 +5505,8 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble lfo_freq;
 
-    lfo_freq = g_strtod(str,
-			NULL);
+    lfo_freq = g_ascii_strtod(str,
+			      NULL);
 
     ags_dial_set_value(sfz_synth->vibrato_lfo_freq,
 		       lfo_freq);
@@ -5520,8 +5520,8 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble tuning;
 
-    tuning = g_strtod(str,
-		      NULL);
+    tuning = g_ascii_strtod(str,
+			    NULL);
 
     ags_dial_set_value(sfz_synth->vibrato_tuning,
 		       tuning);
@@ -5565,8 +5565,8 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble attack_x;
 
-    attack_x = g_strtod(str,
-			NULL);
+    attack_x = g_ascii_strtod(str,
+			      NULL);
 
     ags_dial_set_value(sfz_synth->wah_wah_attack_x,
 		       attack_x);
@@ -5580,8 +5580,8 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble attack_y;
 
-    attack_y = g_strtod(str,
-			NULL);
+    attack_y = g_ascii_strtod(str,
+			      NULL);
 
     ags_dial_set_value(sfz_synth->wah_wah_attack_y,
 		       attack_y);
@@ -5595,8 +5595,8 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble decay_x;
 
-    decay_x = g_strtod(str,
-		       NULL);
+    decay_x = g_ascii_strtod(str,
+			     NULL);
 
     ags_dial_set_value(sfz_synth->wah_wah_decay_x,
 		       decay_x);
@@ -5610,8 +5610,8 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble decay_y;
 
-    decay_y = g_strtod(str,
-		       NULL);
+    decay_y = g_ascii_strtod(str,
+			     NULL);
 
     ags_dial_set_value(sfz_synth->wah_wah_decay_y,
 		       decay_y);
@@ -5625,8 +5625,8 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble sustain_x;
 
-    sustain_x = g_strtod(str,
-			 NULL);
+    sustain_x = g_ascii_strtod(str,
+			       NULL);
 
     ags_dial_set_value(sfz_synth->wah_wah_sustain_x,
 		       sustain_x);
@@ -5640,8 +5640,8 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble sustain_y;
 
-    sustain_y = g_strtod(str,
-			 NULL);
+    sustain_y = g_ascii_strtod(str,
+			       NULL);
 
     ags_dial_set_value(sfz_synth->wah_wah_sustain_y,
 		       sustain_y);
@@ -5655,8 +5655,8 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble release_x;
 
-    release_x = g_strtod(str,
-			 NULL);
+    release_x = g_ascii_strtod(str,
+			       NULL);
 
     ags_dial_set_value(sfz_synth->wah_wah_release_x,
 		       release_x);
@@ -5670,8 +5670,8 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble release_y;
 
-    release_y = g_strtod(str,
-			 NULL);
+    release_y = g_ascii_strtod(str,
+			       NULL);
 
     ags_dial_set_value(sfz_synth->wah_wah_release_y,
 		       release_y);
@@ -5685,8 +5685,8 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble ratio;
 
-    ratio = g_strtod(str,
-		     NULL);
+    ratio = g_ascii_strtod(str,
+			   NULL);
 
     ags_dial_set_value(sfz_synth->wah_wah_ratio,
 		       ratio);
@@ -5700,8 +5700,8 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble lfo_depth;
 
-    lfo_depth = g_strtod(str,
-			 NULL);
+    lfo_depth = g_ascii_strtod(str,
+			       NULL);
 
     ags_dial_set_value(sfz_synth->wah_wah_lfo_depth,
 		       lfo_depth);
@@ -5715,8 +5715,8 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble lfo_freq;
 
-    lfo_freq = g_strtod(str,
-			NULL);
+    lfo_freq = g_ascii_strtod(str,
+			      NULL);
 
     ags_dial_set_value(sfz_synth->wah_wah_lfo_freq,
 		       lfo_freq);
@@ -5730,8 +5730,8 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble tuning;
 
-    tuning = g_strtod(str,
-		      NULL);
+    tuning = g_ascii_strtod(str,
+			    NULL);
 
     ags_dial_set_value(sfz_synth->wah_wah_tuning,
 		       tuning);
@@ -5836,19 +5836,19 @@ ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simple_file, xmlNode *node, 
 	minor == 7 &&
 	micro < 3)){
       gtk_spin_button_set_value(ffplayer->lower,
-				g_strtod(base_note,
-					 NULL) - 48.0);
+				g_ascii_strtod(base_note,
+					       NULL) - 48.0);
     }else{
       gtk_spin_button_set_value(ffplayer->lower,
-				g_strtod(base_note,
-					 NULL));
+				g_ascii_strtod(base_note,
+					       NULL));
     }
   }
 
   if(key_count != NULL){
     gtk_spin_button_set_value(ffplayer->key_count,
-			      g_strtod(key_count,
-				       NULL));
+			      g_ascii_strtod(key_count,
+					     NULL));
   }
     
   ffplayer->load_preset = g_strdup(preset);
@@ -5875,8 +5875,8 @@ ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simple_file, xmlNode *node, 
   if(str != NULL){
     gdouble a_amount;
 
-    a_amount = g_strtod(str,
-			NULL);
+    a_amount = g_ascii_strtod(str,
+			      NULL);
       
     gtk_adjustment_set_value(ffplayer->aliase_a_amount->adjustment,
 			     a_amount);
@@ -5891,8 +5891,8 @@ ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simple_file, xmlNode *node, 
   if(str != NULL){
     gdouble a_phase;
 
-    a_phase = g_strtod(str,
-		       NULL);
+    a_phase = g_ascii_strtod(str,
+			     NULL);
       
     gtk_adjustment_set_value(ffplayer->aliase_a_phase->adjustment,
 			     a_phase);
@@ -5907,8 +5907,8 @@ ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simple_file, xmlNode *node, 
   if(str != NULL){
     gdouble b_amount;
 
-    b_amount = g_strtod(str,
-			NULL);
+    b_amount = g_ascii_strtod(str,
+			      NULL);
       
     gtk_adjustment_set_value(ffplayer->aliase_b_amount->adjustment,
 			     b_amount);
@@ -5923,8 +5923,8 @@ ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simple_file, xmlNode *node, 
   if(str != NULL){
     gdouble b_phase;
 
-    b_phase = g_strtod(str,
-		       NULL);
+    b_phase = g_ascii_strtod(str,
+			     NULL);
       
     gtk_adjustment_set_value(ffplayer->aliase_b_phase->adjustment,
 			     b_phase);
@@ -5939,8 +5939,8 @@ ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simple_file, xmlNode *node, 
   if(str != NULL){
     gdouble volume;
 
-    volume = g_strtod(str,
-		      NULL);
+    volume = g_ascii_strtod(str,
+			    NULL);
       
     gtk_range_set_value((GtkRange *) ffplayer->volume,
 			volume);
@@ -6021,8 +6021,8 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble octave;
 
-    octave = g_strtod(str,
-		      NULL);
+    octave = g_ascii_strtod(str,
+			    NULL);
 
     ags_dial_set_value(sf2_synth->synth_octave,
 		       octave);
@@ -6036,8 +6036,8 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble key;
 
-    key = g_strtod(str,
-		   NULL);
+    key = g_ascii_strtod(str,
+			 NULL);
 
     ags_dial_set_value(sf2_synth->synth_key,
 		       key);
@@ -6051,8 +6051,8 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble volume;
 
-    volume = g_strtod(str,
-		      NULL);
+    volume = g_ascii_strtod(str,
+			    NULL);
 
     ags_dial_set_value(sf2_synth->synth_volume,
 		       volume);
@@ -6067,8 +6067,8 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble input_volume;
 
-    input_volume = g_strtod(str,
-			    NULL);
+    input_volume = g_ascii_strtod(str,
+				  NULL);
 
     ags_dial_set_value(sf2_synth->chorus_input_volume,
 		       input_volume);
@@ -6082,8 +6082,8 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble output_volume;
 
-    output_volume = g_strtod(str,
-			     NULL);
+    output_volume = g_ascii_strtod(str,
+				   NULL);
 
     ags_dial_set_value(sf2_synth->chorus_output_volume,
 		       output_volume);
@@ -6113,8 +6113,8 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble lfo_frequency;
 
-    lfo_frequency = g_strtod(str,
-			     NULL);
+    lfo_frequency = g_ascii_strtod(str,
+				   NULL);
 
     gtk_spin_button_set_value(sf2_synth->chorus_lfo_frequency,
 			      lfo_frequency);
@@ -6128,8 +6128,8 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble depth;
 
-    depth = g_strtod(str,
-		     NULL);
+    depth = g_ascii_strtod(str,
+			   NULL);
 
     ags_dial_set_value(sf2_synth->chorus_depth,
 		       depth);
@@ -6143,8 +6143,8 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble mix;
 
-    mix = g_strtod(str,
-		   NULL);
+    mix = g_ascii_strtod(str,
+			 NULL);
 
     ags_dial_set_value(sf2_synth->chorus_mix,
 		       mix);
@@ -6158,8 +6158,8 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble delay;
 
-    delay = g_strtod(str,
-		     NULL);
+    delay = g_ascii_strtod(str,
+			   NULL);
 
     ags_dial_set_value(sf2_synth->chorus_delay,
 		       delay);
@@ -6188,8 +6188,8 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble gain;
 
-    gain = g_strtod(str,
-		    NULL);
+    gain = g_ascii_strtod(str,
+			  NULL);
 
     ags_dial_set_value(sf2_synth->tremolo_gain,
 		       gain);
@@ -6203,8 +6203,8 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble lfo_depth;
 
-    lfo_depth = g_strtod(str,
-			 NULL);
+    lfo_depth = g_ascii_strtod(str,
+			       NULL);
 
     ags_dial_set_value(sf2_synth->tremolo_lfo_depth,
 		       lfo_depth);
@@ -6218,8 +6218,8 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble lfo_freq;
 
-    lfo_freq = g_strtod(str,
-			NULL);
+    lfo_freq = g_ascii_strtod(str,
+			      NULL);
 
     ags_dial_set_value(sf2_synth->tremolo_lfo_freq,
 		       lfo_freq);
@@ -6233,8 +6233,8 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble tuning;
 
-    tuning = g_strtod(str,
-		      NULL);
+    tuning = g_ascii_strtod(str,
+			    NULL);
 
     ags_dial_set_value(sf2_synth->tremolo_tuning,
 		       tuning);
@@ -6262,8 +6262,8 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble gain;
 
-    gain = g_strtod(str,
-		    NULL);
+    gain = g_ascii_strtod(str,
+			  NULL);
 
     ags_dial_set_value(sf2_synth->vibrato_gain,
 		       gain);
@@ -6277,8 +6277,8 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble lfo_depth;
 
-    lfo_depth = g_strtod(str,
-			 NULL);
+    lfo_depth = g_ascii_strtod(str,
+			       NULL);
 
     ags_dial_set_value(sf2_synth->vibrato_lfo_depth,
 		       lfo_depth);
@@ -6292,8 +6292,8 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble lfo_freq;
 
-    lfo_freq = g_strtod(str,
-			NULL);
+    lfo_freq = g_ascii_strtod(str,
+			      NULL);
 
     ags_dial_set_value(sf2_synth->vibrato_lfo_freq,
 		       lfo_freq);
@@ -6307,8 +6307,8 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble tuning;
 
-    tuning = g_strtod(str,
-		      NULL);
+    tuning = g_ascii_strtod(str,
+			    NULL);
 
     ags_dial_set_value(sf2_synth->vibrato_tuning,
 		       tuning);
@@ -6352,8 +6352,8 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble attack_x;
 
-    attack_x = g_strtod(str,
-			NULL);
+    attack_x = g_ascii_strtod(str,
+			      NULL);
 
     ags_dial_set_value(sf2_synth->wah_wah_attack_x,
 		       attack_x);
@@ -6367,8 +6367,8 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble attack_y;
 
-    attack_y = g_strtod(str,
-			NULL);
+    attack_y = g_ascii_strtod(str,
+			      NULL);
 
     ags_dial_set_value(sf2_synth->wah_wah_attack_y,
 		       attack_y);
@@ -6382,8 +6382,8 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble decay_x;
 
-    decay_x = g_strtod(str,
-		       NULL);
+    decay_x = g_ascii_strtod(str,
+			     NULL);
 
     ags_dial_set_value(sf2_synth->wah_wah_decay_x,
 		       decay_x);
@@ -6397,8 +6397,8 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble decay_y;
 
-    decay_y = g_strtod(str,
-		       NULL);
+    decay_y = g_ascii_strtod(str,
+			     NULL);
 
     ags_dial_set_value(sf2_synth->wah_wah_decay_y,
 		       decay_y);
@@ -6412,8 +6412,8 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble sustain_x;
 
-    sustain_x = g_strtod(str,
-			 NULL);
+    sustain_x = g_ascii_strtod(str,
+			       NULL);
 
     ags_dial_set_value(sf2_synth->wah_wah_sustain_x,
 		       sustain_x);
@@ -6427,8 +6427,8 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble sustain_y;
 
-    sustain_y = g_strtod(str,
-			 NULL);
+    sustain_y = g_ascii_strtod(str,
+			       NULL);
 
     ags_dial_set_value(sf2_synth->wah_wah_sustain_y,
 		       sustain_y);
@@ -6442,8 +6442,8 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble release_x;
 
-    release_x = g_strtod(str,
-			 NULL);
+    release_x = g_ascii_strtod(str,
+			       NULL);
 
     ags_dial_set_value(sf2_synth->wah_wah_release_x,
 		       release_x);
@@ -6457,8 +6457,8 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble release_y;
 
-    release_y = g_strtod(str,
-			 NULL);
+    release_y = g_ascii_strtod(str,
+			       NULL);
 
     ags_dial_set_value(sf2_synth->wah_wah_release_y,
 		       release_y);
@@ -6472,8 +6472,8 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble ratio;
 
-    ratio = g_strtod(str,
-		     NULL);
+    ratio = g_ascii_strtod(str,
+			   NULL);
 
     ags_dial_set_value(sf2_synth->wah_wah_ratio,
 		       ratio);
@@ -6487,8 +6487,8 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble lfo_depth;
 
-    lfo_depth = g_strtod(str,
-			 NULL);
+    lfo_depth = g_ascii_strtod(str,
+			       NULL);
 
     ags_dial_set_value(sf2_synth->wah_wah_lfo_depth,
 		       lfo_depth);
@@ -6502,8 +6502,8 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble lfo_freq;
 
-    lfo_freq = g_strtod(str,
-			NULL);
+    lfo_freq = g_ascii_strtod(str,
+			      NULL);
 
     ags_dial_set_value(sf2_synth->wah_wah_lfo_freq,
 		       lfo_freq);
@@ -6517,8 +6517,8 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   if(str != NULL){
     gdouble tuning;
 
-    tuning = g_strtod(str,
-		      NULL);
+    tuning = g_ascii_strtod(str,
+			    NULL);
 
     ags_dial_set_value(sf2_synth->wah_wah_tuning,
 		       tuning);
@@ -7335,8 +7335,8 @@ ags_simple_file_read_bulk_member_launch(AgsSimpleFile *simple_file, xmlNode *nod
 
   if(GTK_IS_RANGE(child_widget)){    
     if(str != NULL){
-      val = g_strtod(str,
-		     NULL);
+      val = g_ascii_strtod(str,
+			   NULL);
 		      
       if(bulk_member->conversion != NULL &&
 	 (major == 1 || 
@@ -7354,8 +7354,8 @@ ags_simple_file_read_bulk_member_launch(AgsSimpleFile *simple_file, xmlNode *nod
     }      
   }else if(GTK_IS_SPIN_BUTTON(child_widget)){
     if(str != NULL){
-      val = g_strtod(str,
-		     NULL);
+      val = g_ascii_strtod(str,
+			   NULL);
 		      
       if(bulk_member->conversion != NULL &&
 	 (major == 1 || 
@@ -7373,8 +7373,8 @@ ags_simple_file_read_bulk_member_launch(AgsSimpleFile *simple_file, xmlNode *nod
     }
   }else if(AGS_IS_DIAL(child_widget)){
     if(str != NULL){
-      val = g_strtod(str,
-		     NULL);
+      val = g_ascii_strtod(str,
+			   NULL);
 		      
       if(bulk_member->conversion != NULL &&
 	 (major == 1 || 
@@ -8024,8 +8024,8 @@ ags_simple_file_read_line_member(AgsSimpleFile *simple_file, xmlNode *node, AgsL
     }
 
     if(AGS_IS_DIAL(child_widget)){
-      val = g_strtod(str,
-		     NULL);
+      val = g_ascii_strtod(str,
+			   NULL);
 
       if(line_member->conversion != NULL &&
 	 (major == 1 || 
@@ -8041,8 +8041,8 @@ ags_simple_file_read_line_member(AgsSimpleFile *simple_file, xmlNode *node, AgsL
       gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment,
 			       val);
     }else if(GTK_IS_RANGE(child_widget)){
-      val = g_strtod(str,
-		     NULL);    
+      val = g_ascii_strtod(str,
+			   NULL);    
       
       if(line_member->conversion != NULL &&
 	 (major == 1 || 
@@ -8058,8 +8058,8 @@ ags_simple_file_read_line_member(AgsSimpleFile *simple_file, xmlNode *node, AgsL
       gtk_range_set_value(GTK_RANGE(child_widget),
 			  val);
     }else if(GTK_IS_SPIN_BUTTON(child_widget)){
-      val = g_strtod(str,
-		     NULL);    
+      val = g_ascii_strtod(str,
+			   NULL);    
       
       if(line_member->conversion != NULL &&
 	 (major == 1 || 
@@ -9842,8 +9842,8 @@ ags_simple_file_read_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsOs
 		   "attack");
 
   if(str != NULL){
-    val = g_strtod(str,
-		   NULL);
+    val = g_ascii_strtod(str,
+			 NULL);
     gtk_spin_button_set_value(gobject->attack,
 			      val);
 
@@ -9854,8 +9854,8 @@ ags_simple_file_read_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsOs
 		   "frequency");
 
   if(str != NULL){
-    val = g_strtod(str,
-		   NULL);
+    val = g_ascii_strtod(str,
+			 NULL);
     gtk_spin_button_set_value(gobject->frequency,
 			      val);
 
@@ -9866,8 +9866,8 @@ ags_simple_file_read_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsOs
 		   "length");
 
   if(str != NULL){
-    val = g_strtod(str,
-		   NULL);
+    val = g_ascii_strtod(str,
+			 NULL);
     gtk_spin_button_set_value(gobject->frame_count,
 			      val);
 
@@ -9878,8 +9878,8 @@ ags_simple_file_read_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsOs
 		   "phase");
 
   if(str != NULL){
-    val = g_strtod(str,
-		   NULL);
+    val = g_ascii_strtod(str,
+			 NULL);
     gtk_spin_button_set_value(gobject->phase,
 			      val);
 
@@ -9890,8 +9890,8 @@ ags_simple_file_read_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsOs
 		   "volume");
 
   if(str != NULL){
-    val = g_strtod(str,
-		   NULL);
+    val = g_ascii_strtod(str,
+			 NULL);
     gtk_spin_button_set_value(gobject->volume,
 			      val);
 
@@ -9923,8 +9923,8 @@ ags_simple_file_read_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsOs
     endptr = str;
     
     for(i = 0; endptr[0] != '\0' && i < 2 * gobject->sync_point_count; i++){
-      current = g_strtod(endptr,
-			 &endptr);
+      current = g_ascii_strtod(endptr,
+			       &endptr);
 
       gtk_spin_button_set_value(gobject->sync_point[i],
 				current);
@@ -10021,8 +10021,8 @@ ags_simple_file_read_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *node, Ag
 		   "attack");
 
   if(str != NULL){
-    val = g_strtod(str,
-		   NULL);
+    val = g_ascii_strtod(str,
+			 NULL);
     gtk_spin_button_set_value(gobject->attack,
 			      val);
 
@@ -10033,8 +10033,8 @@ ags_simple_file_read_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *node, Ag
 		   "frequency");
 
   if(str != NULL){
-    val = g_strtod(str,
-		   NULL);
+    val = g_ascii_strtod(str,
+			 NULL);
     gtk_spin_button_set_value(gobject->frequency,
 			      val);
 
@@ -10045,8 +10045,8 @@ ags_simple_file_read_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *node, Ag
 		   "length");
 
   if(str != NULL){
-    val = g_strtod(str,
-		   NULL);
+    val = g_ascii_strtod(str,
+			 NULL);
     gtk_spin_button_set_value(gobject->frame_count,
 			      val);
 
@@ -10057,8 +10057,8 @@ ags_simple_file_read_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *node, Ag
 		   "phase");
 
   if(str != NULL){
-    val = g_strtod(str,
-		   NULL);
+    val = g_ascii_strtod(str,
+			 NULL);
     gtk_spin_button_set_value(gobject->phase,
 			      val);
 
@@ -10069,8 +10069,8 @@ ags_simple_file_read_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *node, Ag
 		   "volume");
 
   if(str != NULL){
-    val = g_strtod(str,
-		   NULL);
+    val = g_ascii_strtod(str,
+			 NULL);
     gtk_spin_button_set_value(gobject->volume,
 			      val);
 
@@ -10102,8 +10102,8 @@ ags_simple_file_read_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *node, Ag
     endptr = str;
     
     for(i = 0; endptr[0] != '\0' && i < 2 * gobject->sync_point_count; i++){
-      current = g_strtod(endptr,
-			 &endptr);
+      current = g_ascii_strtod(endptr,
+			       &endptr);
 
       gtk_spin_button_set_value(gobject->sync_point[i],
 				current);
@@ -10134,8 +10134,8 @@ ags_simple_file_read_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *node, Ag
 		   "fm-lfo-frequency");
 
   if(str != NULL){
-    val = g_strtod(str,
-		   NULL);
+    val = g_ascii_strtod(str,
+			 NULL);
     gtk_spin_button_set_value(gobject->fm_lfo_frequency,
 			      val);
 
@@ -10146,8 +10146,8 @@ ags_simple_file_read_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *node, Ag
 		   "fm-lfo-depth");
 
   if(str != NULL){
-    val = g_strtod(str,
-		   NULL);
+    val = g_ascii_strtod(str,
+			 NULL);
     gtk_spin_button_set_value(gobject->fm_lfo_depth,
 			      val);
 
@@ -10158,8 +10158,8 @@ ags_simple_file_read_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *node, Ag
 		   "fm-tuning");
 
   if(str != NULL){
-    val = g_strtod(str,
-		   NULL);
+    val = g_ascii_strtod(str,
+			 NULL);
     gtk_spin_button_set_value(gobject->fm_tuning,
 			      val);
 
@@ -11260,8 +11260,8 @@ ags_simple_file_read_automation(AgsSimpleFile *simple_file, xmlNode *node, AgsAu
 			 "y");
 
 	if(str != NULL){
-	  acceleration->y = g_strtod(str,
-				     NULL);
+	  acceleration->y = g_ascii_strtod(str,
+					   NULL);
 
 	  xmlFree(str);
 	}
@@ -11632,8 +11632,8 @@ ags_simple_file_read_program(AgsSimpleFile *simple_file, xmlNode *node, AgsProgr
 			 "y");
 
 	if(str != NULL){
-	  marker->y = g_strtod(str,
-			       NULL);
+	  marker->y = g_ascii_strtod(str,
+				     NULL);
 
 	  xmlFree(str);
 	}
