@@ -146,8 +146,6 @@ main(int argc, char **argv)
   bindtextdomain(PACKAGE, LOCALEDIR);
   textdomain(PACKAGE);
 
-  setlocale(LC_NUMERIC, "en_US.UTF-8");
-  
   builtin_theme_disabled = FALSE;
 
 //  mtrace();

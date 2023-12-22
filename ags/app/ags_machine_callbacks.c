@@ -561,7 +561,8 @@ ags_machine_destroy_callback(GAction *action, GVariant *parameter,
 			     AgsMachine *machine)
 {
   AgsWindow *window;
-
+  AgsCompositeEditor *composite_editor;
+  
   AgsApplicationContext *application_context;
 
   AgsAudio *audio;  
@@ -577,6 +578,8 @@ ags_machine_destroy_callback(GAction *action, GVariant *parameter,
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
 						 AGS_TYPE_WINDOW);
 
+  composite_editor = window->composite_editor;
+  
   ags_machine_set_run(machine,
 		      FALSE);
 
@@ -605,6 +608,11 @@ ags_machine_destroy_callback(GAction *action, GVariant *parameter,
   }
 
   g_list_free(start_list);
+
+  if(composite_editor != NULL &&
+     composite_editor->selected_machine == machine){
+    composite_editor->selected_machine = NULL;
+  }
   
   /* destroy machine */
   audio = machine->audio;

@@ -26,6 +26,8 @@
 #include <gio/gio.h>
 
 #include <libxml/tree.h>
+#include <libxml/parser.h>
+#include <libxml/xpath.h>
 
 G_BEGIN_DECLS
 
