@@ -185,11 +185,15 @@ ags_window_init(AgsWindow *window)
   /* window header bar */
   window->no_config = FALSE;
 
+#if defined(AGS_OSXAPI)
+  window->shows_menu_bar = FALSE;
+#else  
   window->shows_menu_bar = TRUE;
   
   g_object_get(settings,
 	       "gtk-shell-shows-menubar", &(window->shows_menu_bar),
 	       NULL);
+#endif
   
   window->filename = NULL;
 
@@ -207,7 +211,19 @@ ags_window_init(AgsWindow *window)
   window->app_button = NULL;
   window->add_button = NULL;
   window->edit_button = NULL;
-  
+
+#if defined(AGS_OSXAPI)
+  {
+    AgsGSequencerApplication *gsequencer_app;
+
+    gsequencer_app = (AgsGSequencerApplication *) AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->app;
+
+    if(gsequencer_app != NULL){
+      gtk_application_set_menubar((GtkApplication *) gsequencer_app,
+				  G_MENU_MODEL(gsequencer_app->menubar));
+    };
+  }
+#else
   if(!window->shows_menu_bar){
     window->header_bar = (GtkHeaderBar *) gtk_header_bar_new();
 
@@ -271,7 +287,8 @@ ags_window_init(AgsWindow *window)
 				     menu);
     }
   }
-
+#endif
+  
   /* vbox */
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);

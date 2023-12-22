@@ -1731,23 +1731,25 @@ ags_port_find_specifier(GList *port, gchar *specifier)
   GRecMutex *port_mutex;
   
   while(port != NULL){
-    current_port = port->data;
+    current_port = AGS_PORT(port->data);
 
-    /* get port mutex */
-    port_mutex = AGS_PORT_GET_OBJ_MUTEX(current_port);
+    if(AGS_IS_PORT(current_port)){
+      /* get port mutex */
+      port_mutex = AGS_PORT_GET_OBJ_MUTEX(current_port);
 
-    /* check specifier */
-    g_rec_mutex_lock(port_mutex);
+      /* check specifier */
+      g_rec_mutex_lock(port_mutex);
 
-    success = (!g_strcmp0(current_port->specifier,
-			  specifier)) ? TRUE: FALSE;
+      success = (!g_strcmp0(current_port->specifier,
+			    specifier)) ? TRUE: FALSE;
 
-    g_rec_mutex_unlock(port_mutex);
+      g_rec_mutex_unlock(port_mutex);
 
-    if(success){
-      return(port);
+      if(success){
+	return(port);
+      }
     }
-
+    
     port = port->next;
   }
 

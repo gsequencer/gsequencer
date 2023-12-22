@@ -18,9 +18,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 6.2.1\n"
+"Project-Id-Version: gsequencer 6.2.5\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2023-12-13 18:18+0100\n"
+"POT-Creation-Date: 2023-12-20 15:51+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -143,12 +143,12 @@ msgstr ""
 #: ags/app/editor/ags_remove_sheet_page_dialog.c:153
 #: ags/app/editor/ags_machine_selection.c:158
 #: ags/app/editor/ags_position_automation_cursor_dialog.c:189
-#: ags/app/editor/ags_select_acceleration_dialog.c:220
-#: ags/app/editor/ags_select_buffer_dialog.c:211
+#: ags/app/editor/ags_select_acceleration_dialog.c:224
+#: ags/app/editor/ags_select_buffer_dialog.c:215
 #: ags/app/editor/ags_envelope_dialog.c:227
-#: ags/app/editor/ags_add_sheet_page_dialog.c:204
+#: ags/app/editor/ags_add_sheet_page_dialog.c:208
 #: ags/app/editor/ags_move_note_dialog.c:210
-#: ags/app/editor/ags_select_note_dialog.c:248 ags/app/ags_midi_dialog.c:444
+#: ags/app/editor/ags_select_note_dialog.c:252 ags/app/ags_midi_dialog.c:444
 #: ags/app/machine/ags_audiorec_callbacks.c:44
 #: ags/app/machine/ags_sfz_synth_callbacks.c:55
 #: ags/app/machine/ags_ffplayer_callbacks.c:235
@@ -173,12 +173,12 @@ msgstr ""
 #: ags/app/editor/ags_remove_sheet_page_dialog.c:154
 #: ags/app/editor/ags_machine_selection.c:159
 #: ags/app/editor/ags_position_automation_cursor_dialog.c:190
-#: ags/app/editor/ags_select_acceleration_dialog.c:221
-#: ags/app/editor/ags_select_buffer_dialog.c:212
+#: ags/app/editor/ags_select_acceleration_dialog.c:225
+#: ags/app/editor/ags_select_buffer_dialog.c:216
 #: ags/app/editor/ags_envelope_dialog.c:231
-#: ags/app/editor/ags_add_sheet_page_dialog.c:205
+#: ags/app/editor/ags_add_sheet_page_dialog.c:209
 #: ags/app/editor/ags_move_note_dialog.c:211
-#: ags/app/editor/ags_select_note_dialog.c:249
+#: ags/app/editor/ags_select_note_dialog.c:253
 #: ags/app/ags_export_soundcard_callbacks.c:436 ags/app/ags_midi_dialog.c:449
 #: ags/app/machine/ags_audiorec_callbacks.c:45
 #: ags/app/machine/ags_sfz_synth_callbacks.c:56
@@ -312,7 +312,7 @@ msgstr ""
 msgid "Plugin file not present"
 msgstr ""
 
-#: ags/app/ags_composite_editor.c:369
+#: ags/app/ags_composite_editor.c:370
 msgid "selector"
 msgstr ""
 
@@ -368,12 +368,12 @@ msgstr ""
 #: ags/app/editor/ags_crop_note_dialog.c:212
 #: ags/app/editor/ags_remove_sheet_page_dialog.c:152
 #: ags/app/editor/ags_position_automation_cursor_dialog.c:188
-#: ags/app/editor/ags_select_acceleration_dialog.c:219
-#: ags/app/editor/ags_select_buffer_dialog.c:210
+#: ags/app/editor/ags_select_acceleration_dialog.c:223
+#: ags/app/editor/ags_select_buffer_dialog.c:214
 #: ags/app/editor/ags_envelope_dialog.c:223
-#: ags/app/editor/ags_add_sheet_page_dialog.c:203
+#: ags/app/editor/ags_add_sheet_page_dialog.c:207
 #: ags/app/editor/ags_move_note_dialog.c:209
-#: ags/app/editor/ags_select_note_dialog.c:247 ags/app/ags_midi_dialog.c:439
+#: ags/app/editor/ags_select_note_dialog.c:251 ags/app/ags_midi_dialog.c:439
 #: ags/app/ags_preferences.c:239
 msgid "_Apply"
 msgstr ""
@@ -749,7 +749,7 @@ msgid "move notes"
 msgstr ""
 
 #: ags/app/editor/ags_composite_toolbar.c:1763
-#: ags/app/editor/ags_select_note_dialog.c:147
+#: ags/app/editor/ags_select_note_dialog.c:151
 msgid "select notes"
 msgstr ""
 
@@ -762,7 +762,7 @@ msgid "remove page"
 msgstr ""
 
 #: ags/app/editor/ags_composite_toolbar.c:1820
-#: ags/app/editor/ags_select_acceleration_dialog.c:149
+#: ags/app/editor/ags_select_acceleration_dialog.c:153
 msgid "select accelerations"
 msgstr ""
 
@@ -772,7 +772,7 @@ msgid "position automation cursor"
 msgstr ""
 
 #: ags/app/editor/ags_composite_toolbar.c:1854
-#: ags/app/editor/ags_select_buffer_dialog.c:146
+#: ags/app/editor/ags_select_buffer_dialog.c:150
 msgid "select buffers"
 msgstr ""
 
@@ -866,21 +866,21 @@ msgstr ""
 msgid "select machines"
 msgstr ""
 
-#: ags/app/editor/ags_select_acceleration_dialog.c:161
-#: ags/app/editor/ags_select_buffer_dialog.c:158
-#: ags/app/editor/ags_select_note_dialog.c:159
+#: ags/app/editor/ags_select_acceleration_dialog.c:165
+#: ags/app/editor/ags_select_buffer_dialog.c:162
+#: ags/app/editor/ags_select_note_dialog.c:163
 msgid "copy selection"
 msgstr ""
 
-#: ags/app/editor/ags_select_acceleration_dialog.c:180
-#: ags/app/editor/ags_select_buffer_dialog.c:171
-#: ags/app/editor/ags_select_note_dialog.c:172
+#: ags/app/editor/ags_select_acceleration_dialog.c:184
+#: ags/app/editor/ags_select_buffer_dialog.c:175
+#: ags/app/editor/ags_select_note_dialog.c:176
 msgid "select x0"
 msgstr ""
 
-#: ags/app/editor/ags_select_acceleration_dialog.c:202
-#: ags/app/editor/ags_select_buffer_dialog.c:193
-#: ags/app/editor/ags_select_note_dialog.c:212
+#: ags/app/editor/ags_select_acceleration_dialog.c:206
+#: ags/app/editor/ags_select_buffer_dialog.c:197
+#: ags/app/editor/ags_select_note_dialog.c:216
 msgid "select x1"
 msgstr ""
 
@@ -965,19 +965,19 @@ msgstr ""
 msgid "current note: "
 msgstr ""
 
-#: ags/app/editor/ags_add_sheet_page_dialog.c:149
+#: ags/app/editor/ags_add_sheet_page_dialog.c:153
 msgid "Add sheet page"
 msgstr ""
 
-#: ags/app/editor/ags_add_sheet_page_dialog.c:159
+#: ags/app/editor/ags_add_sheet_page_dialog.c:163
 msgid "sheet title"
 msgstr ""
 
-#: ags/app/editor/ags_add_sheet_page_dialog.c:171
+#: ags/app/editor/ags_add_sheet_page_dialog.c:175
 msgid "notation x0"
 msgstr ""
 
-#: ags/app/editor/ags_add_sheet_page_dialog.c:185
+#: ags/app/editor/ags_add_sheet_page_dialog.c:189
 msgid "notation x1"
 msgstr ""
 
@@ -993,11 +993,11 @@ msgstr ""
 msgid "move y"
 msgstr ""
 
-#: ags/app/editor/ags_select_note_dialog.c:192
+#: ags/app/editor/ags_select_note_dialog.c:196
 msgid "select y0"
 msgstr ""
 
-#: ags/app/editor/ags_select_note_dialog.c:232
+#: ags/app/editor/ags_select_note_dialog.c:236
 msgid "select y1"
 msgstr ""
 

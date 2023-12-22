@@ -3143,8 +3143,8 @@ ags_simple_file_read_equalizer10_launch(AgsSimpleFile *simple_file, xmlNode *nod
 	      val = 0.0;
 		
 	      if(value != NULL){
-		val = g_strtod(value,
-			       NULL);
+		val = g_ascii_strtod(value,
+				     NULL);
     
 		xmlFree(value);
 
@@ -5402,7 +5402,7 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble gain;
 
     gain = g_ascii_strtod(str,
-			   NULL);
+			  NULL);
 
     ags_dial_set_value(sfz_synth->tremolo_gain,
 		       gain);
@@ -5417,7 +5417,7 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble lfo_depth;
 
     lfo_depth = g_ascii_strtod(str,
-			   NULL);
+			       NULL);
 
     ags_dial_set_value(sfz_synth->tremolo_lfo_depth,
 		       lfo_depth);
@@ -5432,7 +5432,7 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble lfo_freq;
 
     lfo_freq = g_ascii_strtod(str,
-			   NULL);
+			      NULL);
 
     ags_dial_set_value(sfz_synth->tremolo_lfo_freq,
 		       lfo_freq);
@@ -5447,7 +5447,7 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble tuning;
 
     tuning = g_ascii_strtod(str,
-			   NULL);
+			    NULL);
 
     ags_dial_set_value(sfz_synth->tremolo_tuning,
 		       tuning);
@@ -5476,7 +5476,7 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble gain;
 
     gain = g_ascii_strtod(str,
-			   NULL);
+			  NULL);
 
     ags_dial_set_value(sfz_synth->vibrato_gain,
 		       gain);
@@ -5491,7 +5491,7 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble lfo_depth;
 
     lfo_depth = g_ascii_strtod(str,
-			   NULL);
+			       NULL);
 
     ags_dial_set_value(sfz_synth->vibrato_lfo_depth,
 		       lfo_depth);
@@ -5506,7 +5506,7 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble lfo_freq;
 
     lfo_freq = g_ascii_strtod(str,
-			   NULL);
+			      NULL);
 
     ags_dial_set_value(sfz_synth->vibrato_lfo_freq,
 		       lfo_freq);
@@ -5521,7 +5521,7 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble tuning;
 
     tuning = g_ascii_strtod(str,
-			   NULL);
+			    NULL);
 
     ags_dial_set_value(sfz_synth->vibrato_tuning,
 		       tuning);
@@ -5596,7 +5596,7 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble decay_x;
 
     decay_x = g_ascii_strtod(str,
-			   NULL);
+			     NULL);
 
     ags_dial_set_value(sfz_synth->wah_wah_decay_x,
 		       decay_x);
@@ -5611,7 +5611,7 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble decay_y;
 
     decay_y = g_ascii_strtod(str,
-			   NULL);
+			     NULL);
 
     ags_dial_set_value(sfz_synth->wah_wah_decay_y,
 		       decay_y);
@@ -5626,7 +5626,7 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble sustain_x;
 
     sustain_x = g_ascii_strtod(str,
-			   NULL);
+			       NULL);
 
     ags_dial_set_value(sfz_synth->wah_wah_sustain_x,
 		       sustain_x);
@@ -5641,7 +5641,7 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble sustain_y;
 
     sustain_y = g_ascii_strtod(str,
-			   NULL);
+			       NULL);
 
     ags_dial_set_value(sfz_synth->wah_wah_sustain_y,
 		       sustain_y);
@@ -5656,7 +5656,7 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble release_x;
 
     release_x = g_ascii_strtod(str,
-			   NULL);
+			       NULL);
 
     ags_dial_set_value(sfz_synth->wah_wah_release_x,
 		       release_x);
@@ -5671,7 +5671,7 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble release_y;
 
     release_y = g_ascii_strtod(str,
-			   NULL);
+			       NULL);
 
     ags_dial_set_value(sfz_synth->wah_wah_release_y,
 		       release_y);
@@ -5701,7 +5701,7 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble lfo_depth;
 
     lfo_depth = g_ascii_strtod(str,
-			   NULL);
+			       NULL);
 
     ags_dial_set_value(sfz_synth->wah_wah_lfo_depth,
 		       lfo_depth);
@@ -5716,7 +5716,7 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble lfo_freq;
 
     lfo_freq = g_ascii_strtod(str,
-			   NULL);
+			      NULL);
 
     ags_dial_set_value(sfz_synth->wah_wah_lfo_freq,
 		       lfo_freq);
@@ -5731,7 +5731,7 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble tuning;
 
     tuning = g_ascii_strtod(str,
-			   NULL);
+			    NULL);
 
     ags_dial_set_value(sfz_synth->wah_wah_tuning,
 		       tuning);
@@ -6189,7 +6189,7 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble gain;
 
     gain = g_ascii_strtod(str,
-			   NULL);
+			  NULL);
 
     ags_dial_set_value(sf2_synth->tremolo_gain,
 		       gain);
@@ -6204,7 +6204,7 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble lfo_depth;
 
     lfo_depth = g_ascii_strtod(str,
-			   NULL);
+			       NULL);
 
     ags_dial_set_value(sf2_synth->tremolo_lfo_depth,
 		       lfo_depth);
@@ -6219,7 +6219,7 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble lfo_freq;
 
     lfo_freq = g_ascii_strtod(str,
-			   NULL);
+			      NULL);
 
     ags_dial_set_value(sf2_synth->tremolo_lfo_freq,
 		       lfo_freq);
@@ -6234,7 +6234,7 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble tuning;
 
     tuning = g_ascii_strtod(str,
-			   NULL);
+			    NULL);
 
     ags_dial_set_value(sf2_synth->tremolo_tuning,
 		       tuning);
@@ -6263,7 +6263,7 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble gain;
 
     gain = g_ascii_strtod(str,
-			   NULL);
+			  NULL);
 
     ags_dial_set_value(sf2_synth->vibrato_gain,
 		       gain);
@@ -6278,7 +6278,7 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble lfo_depth;
 
     lfo_depth = g_ascii_strtod(str,
-			   NULL);
+			       NULL);
 
     ags_dial_set_value(sf2_synth->vibrato_lfo_depth,
 		       lfo_depth);
@@ -6293,7 +6293,7 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble lfo_freq;
 
     lfo_freq = g_ascii_strtod(str,
-			   NULL);
+			      NULL);
 
     ags_dial_set_value(sf2_synth->vibrato_lfo_freq,
 		       lfo_freq);
@@ -6308,7 +6308,7 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble tuning;
 
     tuning = g_ascii_strtod(str,
-			   NULL);
+			    NULL);
 
     ags_dial_set_value(sf2_synth->vibrato_tuning,
 		       tuning);
@@ -6353,7 +6353,7 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble attack_x;
 
     attack_x = g_ascii_strtod(str,
-			   NULL);
+			      NULL);
 
     ags_dial_set_value(sf2_synth->wah_wah_attack_x,
 		       attack_x);
@@ -6368,7 +6368,7 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble attack_y;
 
     attack_y = g_ascii_strtod(str,
-			   NULL);
+			      NULL);
 
     ags_dial_set_value(sf2_synth->wah_wah_attack_y,
 		       attack_y);
@@ -6383,7 +6383,7 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble decay_x;
 
     decay_x = g_ascii_strtod(str,
-			   NULL);
+			     NULL);
 
     ags_dial_set_value(sf2_synth->wah_wah_decay_x,
 		       decay_x);
@@ -6398,7 +6398,7 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble decay_y;
 
     decay_y = g_ascii_strtod(str,
-			   NULL);
+			     NULL);
 
     ags_dial_set_value(sf2_synth->wah_wah_decay_y,
 		       decay_y);
@@ -6413,7 +6413,7 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble sustain_x;
 
     sustain_x = g_ascii_strtod(str,
-			   NULL);
+			       NULL);
 
     ags_dial_set_value(sf2_synth->wah_wah_sustain_x,
 		       sustain_x);
@@ -6428,7 +6428,7 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble sustain_y;
 
     sustain_y = g_ascii_strtod(str,
-			   NULL);
+			       NULL);
 
     ags_dial_set_value(sf2_synth->wah_wah_sustain_y,
 		       sustain_y);
@@ -6443,7 +6443,7 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble release_x;
 
     release_x = g_ascii_strtod(str,
-			   NULL);
+			       NULL);
 
     ags_dial_set_value(sf2_synth->wah_wah_release_x,
 		       release_x);
@@ -6458,7 +6458,7 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble release_y;
 
     release_y = g_ascii_strtod(str,
-			   NULL);
+			       NULL);
 
     ags_dial_set_value(sf2_synth->wah_wah_release_y,
 		       release_y);
@@ -6488,7 +6488,7 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble lfo_depth;
 
     lfo_depth = g_ascii_strtod(str,
-			   NULL);
+			       NULL);
 
     ags_dial_set_value(sf2_synth->wah_wah_lfo_depth,
 		       lfo_depth);
@@ -6503,7 +6503,7 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble lfo_freq;
 
     lfo_freq = g_ascii_strtod(str,
-			   NULL);
+			      NULL);
 
     ags_dial_set_value(sf2_synth->wah_wah_lfo_freq,
 		       lfo_freq);
@@ -6518,7 +6518,7 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     gdouble tuning;
 
     tuning = g_ascii_strtod(str,
-			   NULL);
+			    NULL);
 
     ags_dial_set_value(sf2_synth->wah_wah_tuning,
 		       tuning);
@@ -9923,8 +9923,8 @@ ags_simple_file_read_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsOs
     endptr = str;
     
     for(i = 0; endptr[0] != '\0' && i < 2 * gobject->sync_point_count; i++){
-      current = g_strtod(endptr,
-			 &endptr);
+      current = g_ascii_strtod(endptr,
+			       &endptr);
 
       gtk_spin_button_set_value(gobject->sync_point[i],
 				current);
@@ -10102,8 +10102,8 @@ ags_simple_file_read_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *node, Ag
     endptr = str;
     
     for(i = 0; endptr[0] != '\0' && i < 2 * gobject->sync_point_count; i++){
-      current = g_strtod(endptr,
-			 &endptr);
+      current = g_ascii_strtod(endptr,
+			       &endptr);
 
       gtk_spin_button_set_value(gobject->sync_point[i],
 				current);
@@ -11260,8 +11260,8 @@ ags_simple_file_read_automation(AgsSimpleFile *simple_file, xmlNode *node, AgsAu
 			 "y");
 
 	if(str != NULL){
-	  acceleration->y = g_strtod(str,
-				     NULL);
+	  acceleration->y = g_ascii_strtod(str,
+					   NULL);
 
 	  xmlFree(str);
 	}
@@ -11632,8 +11632,8 @@ ags_simple_file_read_program(AgsSimpleFile *simple_file, xmlNode *node, AgsProgr
 			 "y");
 
 	if(str != NULL){
-	  marker->y = g_strtod(str,
-			       NULL);
+	  marker->y = g_ascii_strtod(str,
+				     NULL);
 
 	  xmlFree(str);
 	}

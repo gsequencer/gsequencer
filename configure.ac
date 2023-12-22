@@ -9,9 +9,9 @@
 
 LT_CURRENT=6
 LT_REVISION=2
-LT_AGE=1
+LT_AGE=5
 
-m4_define([ags_version], [6.2.1])
+m4_define([ags_version], [6.2.5])
 
 AC_PREREQ([2.69])
 AC_INIT([gsequencer],m4_defn([ags_version]),[jkraehemann@gmail.com])
@@ -102,6 +102,11 @@ AC_ARG_ENABLE(osx-dmg-env, [AS_HELP_STRING([--enable-osx-dmg-env],
                                       [enable OS X DMG environment (default is no)])],
               [],
               [enable_osx_dmg_env=no])
+
+AC_ARG_ENABLE(uuid, [AS_HELP_STRING([--enable-uuid],
+                                    [enable uuid (default is yes)])],
+              [],
+              [enable_uuid=yes])
 
 AC_ARG_ENABLE(alsa, [AS_HELP_STRING([--enable-alsa],
                                     [enable alsa (default is yes)])],
@@ -365,10 +370,14 @@ AS_IF([test "x$enable_osx_dmg_env" != xno],
       [AC_MSG_NOTICE([OS X DMG environment disabled])])
 AM_CONDITIONAL([WITH_OSX_DMG_ENV], [test "x$enable_osx_dmg_env" == xyes])
 
-PKG_CHECK_MODULES([UUID], [uuid >= 1.0.1])
-AC_SUBST(UUID_CFLAGS)
-AC_SUBST(UUID_LIBS)
-
+AS_IF([test "x$enable_uuid" != xno],
+      [PKG_CHECK_MODULES([UUID], [uuid >= 1.0.1])
+      AC_SUBST(UUID_CFLAGS)
+      AC_SUBST(UUID_LIBS)
+      AC_DEFINE([AGS_WITH_UUID], [1], [UUID enabled])
+      AC_MSG_NOTICE([UUID enabled])],
+      [AC_MSG_NOTICE([UUID disabled])])
+      
 AS_IF([test "x$enable_alsa" != xno],
       [PKG_CHECK_MODULES([LIBASOUND2], [alsa >= 1.0.25])
        AC_SUBST(LIBASOUND2_CFLAGS)

@@ -146,7 +146,7 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 
       entry_buffer = gtk_entry_get_buffer(AGS_EXPORT_SOUNDCARD(export_soundcard->data)->filename);
 
-      filename = gtk_entry_buffer_get_text(entry_buffer);
+      filename = g_strdup(gtk_entry_buffer_get_text(entry_buffer));
       all_filename = g_list_prepend(all_filename,
 				    filename);
       
@@ -168,7 +168,7 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 	}
 
 	start_remove_filename = g_list_prepend(start_remove_filename,
-					       filename);
+					       g_strdup(filename));
 	file_exists = TRUE;
       }
       

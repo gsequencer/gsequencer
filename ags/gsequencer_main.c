@@ -145,7 +145,7 @@ main(int argc, char **argv)
   setlocale(LC_ALL, "");
   bindtextdomain(PACKAGE, LOCALEDIR);
   textdomain(PACKAGE);
-  
+
   builtin_theme_disabled = FALSE;
 
 //  mtrace();
@@ -209,7 +209,7 @@ main(int argc, char **argv)
   putenv(g_strdup_printf("GTK_EXE_PREFIX=%s/Contents/Resources", app_dir));
   putenv(g_strdup_printf("GTK_DATA_PREFIX=%s/Contents/Resources/share", app_dir));
   putenv(g_strdup_printf("GTK_PATH=%s/Contents/Resources", app_dir));
-  putenv(g_strdup_printf("GTK_IM_MODULE_FILE=%/Contents/Resourcess/lib/gtk-3.0/3.0.0/immodules.cache", app_dir));
+  putenv(g_strdup_printf("GTK_IM_MODULE_FILE=%s/Contents/Resourcess/lib/gtk-3.0/3.0.0/immodules.cache", app_dir));
 
   if(getenv("GTK_THEME") == NULL){
     putenv(g_strdup("GTK_THEME=Blue-Submarine"));
@@ -625,6 +625,64 @@ main(int argc, char **argv)
 		 NULL);
 
     ags_connectable_connect(AGS_CONNECTABLE(application_context));
+
+#if defined(AGS_OSXAPI)
+    if(window != NULL &&
+       filename == NULL){
+      GFile *file;
+      
+      GFileOutputStream *output_stream;
+      GInputStream *input_stream;
+      
+      GString *str;
+
+      gchar *default_path;
+      gchar *default_filename;
+
+      gchar *music_path = NULL;
+
+      GError *error;
+      
+      music_path = [[NSSearchPathForDirectoriesInDomains(NSMusicDirectory, NSUserDomainMask, YES) objectAtIndex:0] UTF8String];
+      
+      default_path = g_strdup_printf("%s%s",
+				     music_path,
+				     "/GSequencer/workspace/default");
+
+      g_message("check directory ~/Music/GSequencer/workspace/default [%s]", default_path);
+    
+      if(!g_file_test(default_path, G_FILE_TEST_IS_DIR)){
+	g_mkdir_with_parents(default_path,
+			     0755);
+      }
+    
+      default_filename = g_strdup_printf("%s%s",
+					 default_path,
+					 "/gsequencer-default.xml");
+
+      g_message("check default file ~/Music/GSequencer/workspace/default/gsequencer-default.xml [%s]", default_filename);
+
+      if(!g_file_test(default_filename, G_FILE_TEST_EXISTS)){
+	gchar *macos_install_cmd;
+	
+	app_dir = [[NSBundle mainBundle] bundlePath].UTF8String;
+
+	macos_install_cmd = g_strdup_printf("%s/Contents/MacOS/gsequencer_macos_install",
+					    app_dir);
+
+	error = NULL;
+	g_spawn_command_line_sync(macos_install_cmd,
+				  NULL,
+				  NULL,
+				  NULL,
+				  &error);
+      }
+      
+      AGS_WINDOW(window)->filename = default_filename;
+
+      g_free(default_path);
+    }
+#endif
   }
   
   if(handles_command_line && filename != NULL){      
