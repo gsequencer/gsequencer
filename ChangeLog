@@ -4,6 +4,7 @@ ags (6.3.0)
 	* TODO:JK: implemented ags_file_util.[ch] file read/write functions for C types
 	* TODO:JK: refactored AgsSimpleFile
 	* fixed potential SIGSEGV with destroyed machine in AgsCompositeEditor
+	* fixed potential SIGSEGV with AgsSF2Synth and AgsSFZSynth callbacks wah-wah
 
 ags (6.2.5)
 
