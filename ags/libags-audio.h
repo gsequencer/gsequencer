@@ -442,6 +442,7 @@
 #include <ags/audio/task/ags_reset_fx_peak.h>
 #include <ags/audio/task/ags_reset_fx_analyse.h>
 #include <ags/audio/task/ags_reset_note.h>
+#include <ags/audio/task/ags_reset_recall_staging.h>
 #include <ags/audio/task/ags_seek_soundcard.h>
 #include <ags/audio/task/ags_set_audio_channels.h>
 #include <ags/audio/task/ags_set_backlog.h>

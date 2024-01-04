@@ -2,9 +2,10 @@ ags (6.3.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* TODO:JK: implemented ags_file_util.[ch] file read/write functions for C types
+	* implemented AgsRecallResetStaging
 	* TODO:JK: refactored AgsSimpleFile
 	* fixed potential SIGSEGV with destroyed machine in AgsCompositeEditor
-	* fixed potential SIGSEGV with AgsSF2Synth and AgsSFZSynth callbacks wah-wah
+	* fixed potential SIGSEGV with AgsSF2Synth and AgsSFZSynth wah-wah callbacks
 
 ags (6.2.5)
 
