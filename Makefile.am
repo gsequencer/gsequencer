@@ -1,4 +1,4 @@
-#Copyright (C) 2005-2023 Joel Kraehemann
+#Copyright (C) 2005-2024 Joel Kraehemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -2354,6 +2354,7 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_reset_note.h \
 	ags/audio/task/ags_reset_fx_analyse.h \
 	ags/audio/task/ags_reset_fx_peak.h \
+	ags/audio/task/ags_reset_recall_staging.h \
 	ags/audio/task/ags_set_backlog.h \
 	ags/audio/task/ags_set_muted.h
 
@@ -2436,6 +2437,7 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_reset_note.c \
 	ags/audio/task/ags_reset_fx_analyse.c \
 	ags/audio/task/ags_reset_fx_peak.c \
+	ags/audio/task/ags_reset_recall_staging.c \
 	ags/audio/task/ags_set_backlog.c \
 	ags/audio/task/ags_set_muted.c
 

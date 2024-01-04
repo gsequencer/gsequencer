@@ -10047,9 +10047,9 @@ ags_channel_real_play_recall(AgsChannel *channel,
     /* play stages */
     ags_recall_set_staging_flags(recall,
 				 staging_flags);
-
+    
     ags_reset_recall_staging_add(reset_recall_staging,
-				 recall)
+				 recall);
 
     list = list->next;
   }

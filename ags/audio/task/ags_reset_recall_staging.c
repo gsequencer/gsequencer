@@ -101,8 +101,8 @@ void
 ags_reset_recall_staging_init(AgsResetRecallStaging *reset_recall_staging)
 {
   AGS_TASK(reset_recall_staging)->flags |= AGS_TASK_CYCLIC;
-
-  reset_recall_staging->staging_mask = (//NOTE:JK: let it be
+  
+  reset_recall_staging->staging_flags = (//NOTE:JK: let it be
 					// AGS_SOUND_STAGING_RUN_INIT_PRE |
 					// AGS_SOUND_STAGING_RUN_INIT_INTER |
 					// AGS_SOUND_STAGING_RUN_INIT_POST |
@@ -161,7 +161,7 @@ ags_reset_recall_staging_launch(AgsTask *task)
 {
   AgsResetRecallStaging *reset_recall_staging;
 
-  GList *start_recall, recall;
+  GList *start_recall, *recall;
 
   GRecMutex *task_mutex;
   
@@ -184,7 +184,7 @@ ags_reset_recall_staging_launch(AgsTask *task)
 				   reset_recall_staging->staging_flags);
 
     ags_reset_recall_staging_remove(reset_recall_staging,
-				    recall->data)
+				    recall->data);
 
     /* iterate */
     recall = recall->next;

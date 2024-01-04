@@ -13536,8 +13536,8 @@ ags_audio_real_play_recall(AgsAudio *audio,
 				 staging_flags);
 
     ags_reset_recall_staging_add(reset_recall_staging,
-				 recall)
-
+				 recall);
+    
     list = list->next;
   }
   

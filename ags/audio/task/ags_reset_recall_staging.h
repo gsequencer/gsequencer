@@ -43,7 +43,7 @@ struct _AgsResetRecallStaging
 {
   AgsTask task;
 
-  AgsSoundStagingFlags staging_mask;
+  AgsSoundStagingFlags staging_flags;
   
   GList *recall;
 };
