@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -71,6 +71,12 @@ ags_file_util_alloc(gchar *app_encoding,
   ptr->app_encoding = g_strdup(app_encoding);
   ptr->encoding = g_strdup(encoding);
 
+  ptr->converter = g_iconv_open(encoding,
+				app_encoding);
+  
+  ptr->reverse_converter = g_iconv_open(app_encoding,
+					encoding);
+  
   return(ptr);
 }
 
@@ -89,10 +95,8 @@ ags_file_util_copy(AgsFileUtil *ptr)
 {
   AgsFileUtil *new_ptr;
   
-  new_ptr = (AgsFileUtil *) g_malloc(sizeof(AgsFileUtil));
-  
-  new_ptr->app_encoding = g_strdup(ptr->app_encoding);
-  new_ptr->encoding = g_strdup(ptr->encoding);
+  new_ptr = ags_file_util_alloc(ptr->app_encoding_encoding,
+				ptr->encoding)
 
   return(new_ptr);
 }
@@ -114,28 +118,12 @@ ags_file_util_free(AgsFileUtil *ptr)
   
   g_free(ptr->app_encoding);
   g_free(ptr->encoding);
+
+  g_iconv_close(ptr->converter);
+  
+  g_iconv_close(ptr->reverse_converter);
   
   g_free(ptr);
-}
-
-/**
- * ags_file_util_set_app_encoding:
- * @file_util: the #AgsFileUtil-struct
- * @app_encoding: the application encoding
- * 
- * Set application encoding of @file_util.
- * 
- * Since: 6.3.0
- */
-void
-ags_file_util_set_app_encoding(AgsFileUtil *file_util,
-			       gchar *app_encoding)
-{
-  if(file_util == NULL){
-    return;
-  }
-
-  file_util->app_encoding = g_strdup(app_encoding);
 }
 
 /**
@@ -160,26 +148,6 @@ ags_file_util_get_app_encoding(AgsFileUtil *file_util)
   app_encoding = g_strdup(file_util->app_encoding);
 
   return(app_encoding);
-}
-
-/**
- * ags_file_util_set_app_encoding:
- * @file_util: the #AgsFileUtil-struct
- * @encoding: the encoding
- * 
- * Set encoding of @file_util.
- * 
- * Since: 6.3.0
- */
-void
-ags_file_util_set_encoding(AgsFileUtil *file_util,
-			   gchar *encoding)
-{
-  if(file_util == NULL){
-    return;
-  }
-
-  file_util->encoding = g_strdup(encoding);
 }
 
 /**
@@ -223,13 +191,14 @@ ags_file_util_get_int(AgsFileUtil *file_util,
 {
   gint value;
   
-  if(file_util == NULL){
+  if(file_util == NULL ||
+     str == NULL){
     return(0);
   }
 
-  value = (gint) g_ascii_strtoll(str,
-				 NULL,
-				 10);
+  value = 0;
+  sscanf(str, "%li",
+	 &value);
   
   return(value);
 }
@@ -255,8 +224,11 @@ ags_file_util_put_int(AgsFileUtil *file_util,
     return(NULL);
   }
 
-  str = g_strdup_printf("%d",
-			value);
+  str = g_malloc(AGS_FILE_UTIL_64BIT_MAX_STRING_LENGTH * sizeof(gchar));
+  xmlStrprintf(str,
+	       AGS_FILE_UTIL_64BIT_MAX_STRING_LENGTH,
+	       "%d",
+	       value);
   
   return(str);
 }
@@ -278,7 +250,8 @@ ags_file_util_get_uint(AgsFileUtil *file_util,
 {
   guint value;
   
-  if(file_util == NULL){
+  if(file_util == NULL ||
+     str == NULL){
     return(0);
   }
 
@@ -310,8 +283,11 @@ ags_file_util_put_uint(AgsFileUtil *file_util,
     return(NULL);
   }
 
-  str = g_strdup_printf("%u",
-			value);
+  str = g_malloc(AGS_FILE_UTIL_64BIT_MAX_STRING_LENGTH * sizeof(gchar));
+  xmlStrprintf(str,
+	       AGS_FILE_UTIL_64BIT_MAX_STRING_LENGTH,
+	       "%u",
+	       value);
   
   return(str);
 }
@@ -364,9 +340,12 @@ ags_file_util_put_int64(AgsFileUtil *file_util,
   if(file_util == NULL){
     return(NULL);
   }
-  
-  str = g_strdup_printf("%llu",
-			value);
+
+  str = g_malloc(AGS_FILE_UTIL_64BIT_MAX_STRING_LENGTH * sizeof(gchar));
+  xmlStrprintf(str,
+	       AGS_FILE_UTIL_64BIT_MAX_STRING_LENGTH,
+	       "%li",
+	       value);
   
   return(str);
 }
@@ -419,9 +398,12 @@ ags_file_util_put_uint64(AgsFileUtil *file_util,
   if(file_util == NULL){
     return(NULL);
   }
-  
-  str = g_strdup_printf("%lld",
-			value);
+
+  str = g_malloc(AGS_FILE_UTIL_64BIT_MAX_STRING_LENGTH * sizeof(gchar));
+  xmlStrprintf(str,
+	       AGS_FILE_UTIL_64BIT_MAX_STRING_LENGTH,
+	       "%lu",
+	       value);
   
   return(str);
 }
@@ -512,11 +494,11 @@ ags_file_util_put_float(AgsFileUtil *file_util,
     return(NULL);
   }
 
-  str = g_malloc(G_ASCII_DTOSTR_BUF_SIZE * sizeof(gchar));
-
-  g_ascii_dtostr(str,
-		 G_ASCII_DTOSTR_BUF_SIZE,
-		 (gdouble) value);
+  str = g_malloc(AGS_FILE_UTIL_DOUBLE_MAX_STRING_LENGTH * sizeof(gchar));
+  xmlStrprintf(str,
+	       AGS_FILE_UTIL_DOUBLE_MAX_STRING_LENGTH,
+	       "%f",
+	       value);
   
   return(str);
 }
@@ -607,11 +589,11 @@ ags_file_util_put_double(AgsFileUtil *file_util,
     return(NULL);
   }
 
-  str = g_malloc(G_ASCII_DTOSTR_BUF_SIZE * sizeof(gchar));
-
-  g_ascii_dtostr(str,
-		 G_ASCII_DTOSTR_BUF_SIZE,
-		 (gdouble) value);
+  str = g_malloc(AGS_FILE_UTIL_DOUBLE_MAX_STRING_LENGTH * sizeof(gchar));
+  xmlStrprintf(str,
+	       AGS_FILE_UTIL_DOUBLE_MAX_STRING_LENGTH,
+	       "%Lf",
+	       value);
   
   return(str);
 }
@@ -669,7 +651,13 @@ ags_file_util_get_complex(AgsFileUtil *file_util,
       tmp_str = g_strndup(str,
 			  match_arr[0].rm_eo);
 
-    str[match_arr[4].rm_so] = '.';
+    if(str[match_arr[4].rm_so] == ','){
+      str[match_arr[4].rm_so] = '.';
+    }
+
+    if(str[match_arr[9].rm_so] == ','){
+      str[match_arr[9].rm_so] = '.';
+    }
   }
 
   value = ags_complex_alloc();
@@ -712,23 +700,12 @@ ags_file_util_put_complex(AgsFileUtil *file_util,
     return(NULL);
   }
 
-  str = g_malloc(((2 * G_ASCII_DTOSTR_BUF_SIZE - 1) + 7) * sizeof(gchar));
-
-  g_ascii_dtostr(str,
-		 G_ASCII_DTOSTR_BUF_SIZE,
-		 (gdouble) value->real);
-
-  str[G_ASCII_DTOSTR_BUF_SIZE] = ' ';
-  str[G_ASCII_DTOSTR_BUF_SIZE + 1] = '+';
-  str[G_ASCII_DTOSTR_BUF_SIZE + 2] = ' ';
-  str[G_ASCII_DTOSTR_BUF_SIZE + 3] = 'I';
-  str[G_ASCII_DTOSTR_BUF_SIZE + 4] = ' ';
-  str[G_ASCII_DTOSTR_BUF_SIZE + 5] = '*';
-  str[G_ASCII_DTOSTR_BUF_SIZE + 6] = ' ';
-
-  g_ascii_dtostr(str,
-		 G_ASCII_DTOSTR_BUF_SIZE + 7,
-		 (gdouble) value->imag);
+  str = g_malloc(((2 * AGS_FILE_UTIL_DOUBLE_MAX_STRING_LENGTH) + 7) * sizeof(gchar));
+  xmlStrprintf(str,
+	       ((2 * AGS_FILE_UTIL_DOUBLE_MAX_STRING_LENGTH) + 7),
+	       "%Lf + I * %Lf",
+	       (gdouble) value->real,
+	       (gdouble) value->imag);
   
   return(str);
 }
@@ -758,7 +735,27 @@ ags_file_util_get_string(AgsFileUtil *file_util,
 
   converted_string = NULL;
 
-  //TODO:JK: implement me
+  if(file_util->app_encoding != NULL &&
+     file_util->encoding != NULL &&
+     !g_strcmp0(file_util->app_encoding,
+		file_util->encoding)){
+    converted_string = g_strndup(str,
+				 max_length);
+  }else{
+    GError *error;
+
+    error = NULL;
+    converted_string = g_convert_with_iconv(str,
+					    max_length,
+					    file_util->reverse_converter,
+					    NULL,
+					    NULL,
+					    &error);
+
+    if(error != NULL){
+      g_error_free(error);
+    }
+  }
   
   return(converted_string);
 }
@@ -788,193 +785,27 @@ ags_file_util_put_string(AgsFileUtil *file_util,
 
   converted_string = NULL;
   
-  //TODO:JK: implement me
+  if(file_util->app_encoding != NULL &&
+     file_util->encoding != NULL &&
+     !g_strcmp0(file_util->app_encoding,
+		file_util->encoding)){
+    converted_string = g_strndup(str,
+				 max_length);
+  }else{
+    GError *error;
+
+    error = NULL;
+    converted_string = g_convert_with_iconv(str,
+					    length,
+					    file_util->converter,
+					    NULL,
+					    NULL,
+					    &error);
+
+    if(error != NULL){
+      g_error_free(error);
+    }
+  }
   
   return(converted_string);
-}
-
-/**
- * ags_file_util_get_base64:
- * @file_util: the #AgsFileUtil-struct
- * @str: the string
- * @data_length: the length of data
- * 
- * Get base64 encoded data from @str.
- *
- * Returns: (transfer full): the newly allocated string
- * 
- * Since: 6.3.0
- */
-gchar*
-ags_file_util_get_base64(AgsFileUtil *file_util,
-			 gchar *str,
-			 gsize *data_length)
-{
-  gchar *converted_string;
-
-  if(file_util == NULL){
-    return(NULL);
-  }
-
-  converted_string = NULL;
-  
-  //TODO:JK: implement me
-  
-  return(converted_string);
-}
-
-/**
- * ags_file_util_put_base64:
- * @file_util: the #AgsFileUtil-struct
- * @data: the data as byte array
- * @data_length: the data length
- * 
- * Put base64 encoded @data to @str.
- *
- * Returns: (transfer full): the newly allocated string
- * 
- * Since: 6.3.0
- */
-gchar*
-ags_file_util_put_base64(AgsFileUtil *file_util,
-			 gchar *data,
-			 gsize data_length)
-{
-  gchar *converted_string;
-
-  if(file_util == NULL){
-    return(NULL);
-  }
-
-  converted_string = NULL;
-  
-  //TODO:JK: implement me
-  
-  return(converted_string);
-}
-
-/**
- * ags_file_util_printf:
- * @file_util: the #AgsFileUtil-struct
- * @str: the string to print to
- * @format: the format of string
- * @...: the variable arguments
- *
- * Printf implementation.
- *
- * Returns: the number of chars written
- *
- * Since: 6.3.0
- */
-gint
-ags_file_util_printf(AgsFileUtil *file_util,
-		     gchar *str,
-		     gchar *format,
-		     ...)
-{
-  gint num_chars;
-  
-  if(file_util == NULL){
-    return(0);
-  }
-
-  num_chars = 0;
-
-  //TODO:JK: implement me
-    
-  return(num_chars);
-}
-
-/**
- * ags_file_util_sscanf:
- * @file_util: the #AgsFileUtil-struct
- * @str: the string to print to
- * @format: the format of string
- * @...: the variable argument list
- *
- * Sscanf implementation.
- *
- * Returns: the number of items matched
- *
- * Since: 6.3.0
- */
-gint
-ags_file_util_sscanf(AgsFileUtil *file_util,
-		     gchar *str,
-		     gchar *format,
-		     ...)
-{
-  gint num_matched;
-  
-  if(file_util == NULL){
-    return(0);
-  }
-
-  num_matched = 0;
-  
-  //TODO:JK: implement me
-  
-  return(num_matched);
-}
-
-/**
- * ags_file_util_vprintf:
- * @file_util: the #AgsFileUtil-struct
- * @str: the string to print to
- * @format: the format of string
- * @args: the variable argument list
- *
- * Printf implementation.
- *
- * Returns: the number of chars written
- *
- * Since: 6.3.0
- */
-gint
-ags_file_util_vprintf(AgsFileUtil *file_util,
-		      gchar *str,
-		      gchar *format,
-		      va_list args)
-{
-  if(file_util == NULL){
-    return(0);
-  }
-  
-  num_chars = 0;
-
-  //TODO:JK: implement me
-  
-  return(num_chars);
-}
-
-/**
- * ags_file_util_vsscanf:
- * @file_util: the #AgsFileUtil-struct
- * @str: the string to print to
- * @format: the format of string
- * @args: the variable argument list
- *
- * Sscanf implementation.
- *
- * Returns: the number of items matched
- *
- * Since: 6.3.0
- */
-gint
-ags_file_util_vsscanf(AgsFileUtil *file_util,
-		      gchar *str,
-		      gchar *format,
-		      va_list args)
-{
-  gint num_matched;
-  
-  if(file_util == NULL){
-    return(0);
-  }
-
-  num_matched = 0;
-  
-  //TODO:JK: implement me
-  
-  return(num_matched);
 }
