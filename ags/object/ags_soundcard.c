@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1029,6 +1029,28 @@ ags_soundcard_get_note_256th_attack_of_16th_pulse(AgsSoundcard *soundcard)
   g_return_val_if_fail(soundcard_interface->get_note_256th_attack_of_16th_pulse, G_MAXUINT);
 
   return(soundcard_interface->get_note_256th_attack_of_16th_pulse(soundcard));
+}
+
+/**
+ * ags_soundcard_get_note_256th_attack_of_16th_pulse_position:
+ * @soundcard: the #AgsSoundcard
+ * 
+ * Get note 256th attack position of current 16th pulse.
+ * 
+ * Returns: the note 256th attack position of 16th pulse
+ * 
+ * Since: 6.3.0
+ */
+guint
+ags_soundcard_get_note_256th_attack_of_16th_pulse_position(AgsSoundcard *soundcard)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), G_MAXUINT);
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_val_if_fail(soundcard_interface->get_note_256th_attack_of_16th_pulse_position, G_MAXUINT);
+
+  return(soundcard_interface->get_note_256th_attack_of_16th_pulse_position(soundcard));
 }
 
 /**

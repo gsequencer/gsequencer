@@ -19,6 +19,9 @@
 
 #include <ags/file/ags_file_util.h>
 
+#include <sys/types.h>
+#include <regex.h>
+
 /**
  * SECTION:ags_file_util
  * @short_description: file util
@@ -95,8 +98,8 @@ ags_file_util_copy(AgsFileUtil *ptr)
 {
   AgsFileUtil *new_ptr;
   
-  new_ptr = ags_file_util_alloc(ptr->app_encoding_encoding,
-				ptr->encoding)
+  new_ptr = ags_file_util_alloc(ptr->app_encoding,
+				ptr->encoding);
 
   return(new_ptr);
 }
@@ -220,7 +223,8 @@ ags_file_util_put_int(AgsFileUtil *file_util,
 {
   gchar *str;
   
-  if(file_util == NULL){
+  if(file_util == NULL ||
+     str == NULL){
     return(NULL);
   }
 
@@ -279,7 +283,8 @@ ags_file_util_put_uint(AgsFileUtil *file_util,
 {
   gchar *str;
   
-  if(file_util == NULL){
+  if(file_util == NULL ||
+     str == NULL){
     return(NULL);
   }
 
@@ -309,7 +314,8 @@ ags_file_util_get_int64(AgsFileUtil *file_util,
 {
   gint64 value;
   
-  if(file_util == NULL){
+  if(file_util == NULL ||
+     str == NULL){
     return(0);
   }
 
@@ -337,7 +343,8 @@ ags_file_util_put_int64(AgsFileUtil *file_util,
 {
   gchar *str;
   
-  if(file_util == NULL){
+  if(file_util == NULL ||
+     str == NULL){
     return(NULL);
   }
 
@@ -367,7 +374,8 @@ ags_file_util_get_uint64(AgsFileUtil *file_util,
 {
   guint64 value;
   
-  if(file_util == NULL){
+  if(file_util == NULL ||
+     str == NULL){
     return(0);
   }
 
@@ -395,7 +403,8 @@ ags_file_util_put_uint64(AgsFileUtil *file_util,
 {
   gchar *str;
   
-  if(file_util == NULL){
+  if(file_util == NULL ||
+     str == NULL){
     return(NULL);
   }
 
@@ -439,7 +448,8 @@ ags_file_util_get_float(AgsFileUtil *file_util,
   
   static const size_t max_matches = 6;
 
-  if(file_util == NULL){
+  if(file_util == NULL ||
+     str == NULL){
     return(0.0);
   }
 
@@ -490,7 +500,8 @@ ags_file_util_put_float(AgsFileUtil *file_util,
 {
   gchar *str;
   
-  if(file_util == NULL){
+  if(file_util == NULL ||
+     str == NULL){
     return(NULL);
   }
 
@@ -534,7 +545,8 @@ ags_file_util_get_double(AgsFileUtil *file_util,
   
   static const size_t max_matches = 6;
 
-  if(file_util == NULL){
+  if(file_util == NULL ||
+     str == NULL){
     return(0.0);
   }
 
@@ -585,7 +597,8 @@ ags_file_util_put_double(AgsFileUtil *file_util,
 {
   gchar *str;
   
-  if(file_util == NULL){
+  if(file_util == NULL ||
+     str == NULL){
     return(NULL);
   }
 
@@ -630,8 +643,9 @@ ags_file_util_get_complex(AgsFileUtil *file_util,
   
   static const size_t max_matches = 12;
 
-  if(file_util == NULL){
-    return(0.0);
+  if(file_util == NULL ||
+     str == NULL){
+    return(NULL);
   }
 
   g_mutex_lock(&regex_mutex);
@@ -696,7 +710,8 @@ ags_file_util_put_complex(AgsFileUtil *file_util,
 {
   gchar *str;
   
-  if(file_util == NULL){
+  if(file_util == NULL ||
+     str == NULL){
     return(NULL);
   }
 
@@ -729,7 +744,8 @@ ags_file_util_get_string(AgsFileUtil *file_util,
 {
   gchar *converted_string;
   
-  if(file_util == NULL){
+  if(file_util == NULL ||
+     str == NULL){
     return(NULL);
   }
 
@@ -779,7 +795,8 @@ ags_file_util_put_string(AgsFileUtil *file_util,
 {
   gchar *converted_string;
 
-  if(file_util == NULL){
+  if(file_util == NULL ||
+     str == NULL){
     return(NULL);
   }
 
@@ -790,7 +807,7 @@ ags_file_util_put_string(AgsFileUtil *file_util,
      !g_strcmp0(file_util->app_encoding,
 		file_util->encoding)){
     converted_string = g_strndup(str,
-				 max_length);
+				 length);
   }else{
     GError *error;
 

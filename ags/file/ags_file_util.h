@@ -25,6 +25,8 @@
 
 #include <gio/gio.h>
 
+#include <ags/lib/ags_complex.h>
+
 #include <libxml/tree.h>
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
