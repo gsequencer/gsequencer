@@ -64,7 +64,7 @@ ags_complex_alloc()
 {
   AgsComplex *ptr;
 
-  ptr = (AgsComplex *) malloc(sizeof(AgsComplex));
+  ptr = (AgsComplex *) g_malloc(sizeof(AgsComplex));
   
   ptr[0].real = 0.0;
   ptr[0].imag = 0.0;
@@ -87,7 +87,7 @@ ags_complex_copy(AgsComplex *ptr)
 {
   AgsComplex *new_ptr;
   
-  new_ptr = (AgsComplex *) malloc(sizeof(AgsComplex));
+  new_ptr = (AgsComplex *) g_malloc(sizeof(AgsComplex));
   
   new_ptr->real = ptr->real;
   new_ptr->imag = ptr->imag;

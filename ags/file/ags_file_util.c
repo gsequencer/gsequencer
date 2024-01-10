@@ -66,10 +66,10 @@ ags_file_util_alloc(gchar *app_encoding,
 {
   AgsFileUtil *ptr;
 
-  ptr = (AgsFileUtil *) malloc(sizeof(AgsFileUtil));
+  ptr = (AgsFileUtil *) g_malloc(sizeof(AgsFileUtil));
   
-  ptr[0].app_encoding = g_strdup(app_encoding);
-  ptr[0].encoding = g_strdup(encoding);
+  ptr->app_encoding = g_strdup(app_encoding);
+  ptr->encoding = g_strdup(encoding);
 
   return(ptr);
 }
@@ -89,7 +89,7 @@ ags_file_util_copy(AgsFileUtil *ptr)
 {
   AgsFileUtil *new_ptr;
   
-  new_ptr = (AgsFileUtil *) malloc(sizeof(AgsFileUtil));
+  new_ptr = (AgsFileUtil *) g_malloc(sizeof(AgsFileUtil));
   
   new_ptr->app_encoding = g_strdup(ptr->app_encoding);
   new_ptr->encoding = g_strdup(ptr->encoding);
@@ -108,10 +108,102 @@ ags_file_util_copy(AgsFileUtil *ptr)
 void
 ags_file_util_free(AgsFileUtil *ptr)
 {
+  if(ptr == NULL){
+    return;
+  }
+  
   g_free(ptr->app_encoding);
   g_free(ptr->encoding);
   
   g_free(ptr);
+}
+
+/**
+ * ags_file_util_set_app_encoding:
+ * @file_util: the #AgsFileUtil-struct
+ * @app_encoding: the application encoding
+ * 
+ * Set application encoding of @file_util.
+ * 
+ * Since: 6.3.0
+ */
+void
+ags_file_util_set_app_encoding(AgsFileUtil *file_util,
+			       gchar *app_encoding)
+{
+  if(file_util == NULL){
+    return;
+  }
+
+  file_util->app_encoding = g_strdup(app_encoding);
+}
+
+/**
+ * ags_file_util_get_app_encoding:
+ * @file_util: the #AgsFileUtil-struct
+ * 
+ * Get application encoding of @file_util.
+ *
+ * Returns: (transfer full): the application encoding
+ * 
+ * Since: 6.3.0
+ */
+gchar*
+ags_file_util_get_app_encoding(AgsFileUtil *file_util)
+{
+  gchar *app_encoding;
+  
+  if(file_util == NULL){
+    return(NULL);
+  }
+
+  app_encoding = g_strdup(file_util->app_encoding);
+
+  return(app_encoding);
+}
+
+/**
+ * ags_file_util_set_app_encoding:
+ * @file_util: the #AgsFileUtil-struct
+ * @encoding: the encoding
+ * 
+ * Set encoding of @file_util.
+ * 
+ * Since: 6.3.0
+ */
+void
+ags_file_util_set_encoding(AgsFileUtil *file_util,
+			   gchar *encoding)
+{
+  if(file_util == NULL){
+    return;
+  }
+
+  file_util->encoding = g_strdup(encoding);
+}
+
+/**
+ * ags_file_util_get_app_encoding:
+ * @file_util: the #AgsFileUtil-struct
+ * 
+ * Get application encoding of @file_util.
+ *
+ * Returns: (transfer full): the application encoding
+ * 
+ * Since: 6.3.0
+ */
+gchar*
+ags_file_util_get_encoding(AgsFileUtil *file_util)
+{
+  gchar *encoding;
+  
+  if(file_util == NULL){
+    return(NULL);
+  }
+
+  encoding = g_strdup(file_util->encoding);
+
+  return(encoding);
 }
 
 /**
@@ -337,20 +429,66 @@ ags_file_util_put_uint64(AgsFileUtil *file_util,
 /**
  * ags_file_util_get_float:
  * @file_util: the #AgsFileUtil-struct
- * 
- * 
+ * @str: the string
  *
+ * Get arbitary size floating point number from string.
+ *
+ * Returns: the arbitary size floating point number
+ * 
  * Since: 6.3.0
  */
 gfloat
 ags_file_util_get_float(AgsFileUtil *file_util,
 			gchar *str)
 {
+  gchar *tmp_str;
+  
+  gfloat value;  
+
+  regmatch_t match_arr[6];
+    
+  static regex_t float_with_comma_regex;
+
+  static gboolean regex_compiled = FALSE;
+
+  static const char *float_with_comma_pattern = "^(([+-]?)([0-9]+)(,)([0-9]*))";
+
+  static GMutex regex_mutex;
+  
+  static const size_t max_matches = 6;
+
   if(file_util == NULL){
-    return();
+    return(0.0);
+  }
+
+  g_mutex_lock(&regex_mutex);
+
+  if(!regex_compiled){
+    regex_compiled = TRUE;
+      
+    ags_regcomp(&float_with_comma_regex, float_with_comma_pattern, REG_EXTENDED);
   }
   
-  return();
+  g_mutex_unlock(&regex_mutex);
+
+  tmp_str = NULL;
+
+  if(ags_regexec(&float_with_comma_regex, str, max_matches, match_arr, 0) == 0){
+    str = 
+      tmp_str = g_strndup(str,
+			  match_arr[0].rm_eo);
+
+    str[match_arr[4].rm_so] = '.';
+  }
+  
+  value = (gfloat) g_ascii_strtod(str,
+				  NULL);
+
+  if(tmp_str != NULL){
+    g_free(tmp_str);
+  }
+  
+  return(value);
 }
 
 /**
@@ -358,7 +496,7 @@ ags_file_util_get_float(AgsFileUtil *file_util,
  * @file_util: the #AgsFileUtil-struct
  * @value: the value
  * 
- * 
+ * Put arbitary size floating point number to string.
  *
  * Returns: (transfer full): the newly allocated string
  * 
@@ -368,18 +506,29 @@ gchar*
 ags_file_util_put_float(AgsFileUtil *file_util,
 			gfloat value)
 {
-  if(file_util == NULL){
-    return();
-  }
+  gchar *str;
   
-  return();
+  if(file_util == NULL){
+    return(NULL);
+  }
+
+  str = g_malloc(G_ASCII_DTOSTR_BUF_SIZE * sizeof(gchar));
+
+  g_ascii_dtostr(str,
+		 G_ASCII_DTOSTR_BUF_SIZE,
+		 (gdouble) value);
+  
+  return(str);
 }
 
 /**
  * ags_file_util_get_double:
  * @file_util: the #AgsFileUtil-struct
+ * @str: the string
+ *
+ * Get double precision size floating point number from string.
  * 
- * 
+ * Returns: the double precision size floating point number
  *
  * Since: 6.3.0
  */
@@ -387,11 +536,54 @@ gdouble
 ags_file_util_get_double(AgsFileUtil *file_util,
 			 gchar *str)
 {
+  gchar *tmp_str;
+  
+  gdouble value;
+
+  regmatch_t match_arr[6];
+    
+  static regex_t double_with_comma_regex;
+
+  static gboolean regex_compiled = FALSE;
+
+  static const char *double_with_comma_pattern = "^(([+-]?)([0-9]+)(,)([0-9]*))";
+
+  static GMutex regex_mutex;
+  
+  static const size_t max_matches = 6;
+
   if(file_util == NULL){
-    return();
+    return(0.0);
+  }
+
+  g_mutex_lock(&regex_mutex);
+
+  if(!regex_compiled){
+    regex_compiled = TRUE;
+      
+    ags_regcomp(&double_with_comma_regex, double_with_comma_pattern, REG_EXTENDED);
   }
   
-  return();
+  g_mutex_unlock(&regex_mutex);
+
+  tmp_str = NULL;
+
+  if(ags_regexec(&double_with_comma_regex, str, max_matches, match_arr, 0) == 0){
+    str = 
+      tmp_str = g_strndup(str,
+			  match_arr[0].rm_eo);
+
+    str[match_arr[4].rm_so] = '.';
+  }
+  
+  value = g_ascii_strtod(str,
+			 NULL);
+
+  if(tmp_str != NULL){
+    g_free(tmp_str);
+  }
+  
+  return(value);
 }
 
 /**
@@ -399,7 +591,7 @@ ags_file_util_get_double(AgsFileUtil *file_util,
  * @file_util: the #AgsFileUtil-struct
  * @value: the value
  * 
- * 
+ * Put double precision size floating point number to string.
  *
  * Returns: (transfer full): the newly allocated string
  * 
@@ -409,18 +601,29 @@ gchar*
 ags_file_util_put_double(AgsFileUtil *file_util,
 			 gdouble value)
 {
-  if(file_util == NULL){
-    return();
-  }
+  gchar *str;
   
-  return();
+  if(file_util == NULL){
+    return(NULL);
+  }
+
+  str = g_malloc(G_ASCII_DTOSTR_BUF_SIZE * sizeof(gchar));
+
+  g_ascii_dtostr(str,
+		 G_ASCII_DTOSTR_BUF_SIZE,
+		 (gdouble) value);
+  
+  return(str);
 }
 
 /**
  * ags_file_util_get_complex:
  * @file_util: the #AgsFileUtil-struct
+ * @str: the string
+ *
+ * Get complex floating point number from string.
  * 
- * 
+ * Returns: the complex floating point number
  *
  * Since: 6.3.0
  */
@@ -428,11 +631,64 @@ AgsComplex*
 ags_file_util_get_complex(AgsFileUtil *file_util,
 			  gchar *str)
 {
+  gchar *tmp_str;
+  gchar *end_str;
+  
+  AgsComplex *value;
+
+  regmatch_t match_arr[12];
+    
+  static regex_t complex_with_comma_regex;
+
+  static gboolean regex_compiled = FALSE;
+
+  static const char *complex_with_comma_pattern = "^(([+-]?)([0-9]+)(,)([0-9]*)) + I * (([+-]?)([0-9]+)(,)([0-9]*))";
+
+  static GMutex regex_mutex;
+  
+  static const size_t max_matches = 12;
+
   if(file_util == NULL){
-    return();
+    return(0.0);
+  }
+
+  g_mutex_lock(&regex_mutex);
+
+  if(!regex_compiled){
+    regex_compiled = TRUE;
+      
+    ags_regcomp(&complex_with_comma_regex, complex_with_comma_pattern, REG_EXTENDED);
   }
   
-  return();
+  g_mutex_unlock(&regex_mutex);
+
+  tmp_str = NULL;
+
+  if(ags_regexec(&complex_with_comma_regex, str, max_matches, match_arr, 0) == 0){
+    str = 
+      tmp_str = g_strndup(str,
+			  match_arr[0].rm_eo);
+
+    str[match_arr[4].rm_so] = '.';
+  }
+
+  value = ags_complex_alloc();
+
+  end_str = NULL;
+  
+  value->real = g_ascii_strtod(str,
+			       &end_str);
+
+  if(strlen(end_str) > 7){
+    value->imag = g_ascii_strtod(end_str + 7,
+				 NULL);
+  }
+  
+  if(tmp_str != NULL){
+    g_free(tmp_str);
+  }
+  
+  return(value);
 }
 
 /**
@@ -440,7 +696,7 @@ ags_file_util_get_complex(AgsFileUtil *file_util,
  * @file_util: the #AgsFileUtil-struct
  * @value: the value
  * 
- * 
+ * Put complex floating point number to string.
  *
  * Returns: (transfer full): the newly allocated string
  * 
@@ -450,18 +706,40 @@ gchar*
 ags_file_util_put_complex(AgsFileUtil *file_util,
 			  AgsComplex *value)
 {
-  if(file_util == NULL){
-    return();
-  }
+  gchar *str;
   
-  return();
+  if(file_util == NULL){
+    return(NULL);
+  }
+
+  str = g_malloc(((2 * G_ASCII_DTOSTR_BUF_SIZE - 1) + 7) * sizeof(gchar));
+
+  g_ascii_dtostr(str,
+		 G_ASCII_DTOSTR_BUF_SIZE,
+		 (gdouble) value->real);
+
+  str[G_ASCII_DTOSTR_BUF_SIZE] = ' ';
+  str[G_ASCII_DTOSTR_BUF_SIZE + 1] = '+';
+  str[G_ASCII_DTOSTR_BUF_SIZE + 2] = ' ';
+  str[G_ASCII_DTOSTR_BUF_SIZE + 3] = 'I';
+  str[G_ASCII_DTOSTR_BUF_SIZE + 4] = ' ';
+  str[G_ASCII_DTOSTR_BUF_SIZE + 5] = '*';
+  str[G_ASCII_DTOSTR_BUF_SIZE + 6] = ' ';
+
+  g_ascii_dtostr(str,
+		 G_ASCII_DTOSTR_BUF_SIZE + 7,
+		 (gdouble) value->imag);
+  
+  return(str);
 }
 
 /**
  * ags_file_util_get_string:
  * @file_util: the #AgsFileUtil-struct
- * 
- * 
+ * @str: the string
+ * @max_length: the maximum length of string
+ *
+ * Get string from @str.
  *
  * Returns: (transfer full): the newly allocated string
  * 
@@ -472,18 +750,26 @@ ags_file_util_get_string(AgsFileUtil *file_util,
 			 gchar *str,
 			 gint max_length)
 {
-  if(file_util == NULL){
-    return();
-  }
+  gchar *converted_string;
   
-  return();
+  if(file_util == NULL){
+    return(NULL);
+  }
+
+  converted_string = NULL;
+
+  //TODO:JK: implement me
+  
+  return(converted_string);
 }
 
 /**
  * ags_file_util_put_string:
  * @file_util: the #AgsFileUtil-struct
+ * @str: the string
+ * @length: the length of string
  * 
- * 
+ * Put @str to string.
  *
  * Returns: (transfer full): the newly allocated string
  * 
@@ -494,18 +780,26 @@ ags_file_util_put_string(AgsFileUtil *file_util,
 			 gchar *str,
 			 gint length)
 {
+  gchar *converted_string;
+
   if(file_util == NULL){
-    return();
+    return(NULL);
   }
+
+  converted_string = NULL;
   
-  return();
+  //TODO:JK: implement me
+  
+  return(converted_string);
 }
 
 /**
  * ags_file_util_get_base64:
  * @file_util: the #AgsFileUtil-struct
+ * @str: the string
+ * @data_length: the length of data
  * 
- * 
+ * Get base64 encoded data from @str.
  *
  * Returns: (transfer full): the newly allocated string
  * 
@@ -516,18 +810,26 @@ ags_file_util_get_base64(AgsFileUtil *file_util,
 			 gchar *str,
 			 gsize *data_length)
 {
+  gchar *converted_string;
+
   if(file_util == NULL){
-    return();
+    return(NULL);
   }
+
+  converted_string = NULL;
   
-  return();
+  //TODO:JK: implement me
+  
+  return(converted_string);
 }
 
 /**
  * ags_file_util_put_base64:
  * @file_util: the #AgsFileUtil-struct
+ * @data: the data as byte array
+ * @data_length: the data length
  * 
- * 
+ * Put base64 encoded @data to @str.
  *
  * Returns: (transfer full): the newly allocated string
  * 
@@ -538,38 +840,61 @@ ags_file_util_put_base64(AgsFileUtil *file_util,
 			 gchar *data,
 			 gsize data_length)
 {
+  gchar *converted_string;
+
   if(file_util == NULL){
-    return();
+    return(NULL);
   }
+
+  converted_string = NULL;
   
-  return();
+  //TODO:JK: implement me
+  
+  return(converted_string);
 }
 
 /**
  * ags_file_util_printf:
  * @file_util: the #AgsFileUtil-struct
- * 
- * 
+ * @str: the string to print to
+ * @format: the format of string
+ * @...: the variable arguments
+ *
+ * Printf implementation.
+ *
+ * Returns: the number of chars written
  *
  * Since: 6.3.0
  */
 gint
 ags_file_util_printf(AgsFileUtil *file_util,
+		     gchar *str,
 		     gchar *format,
 		     ...)
 {
-  if(file_util == NULL){
-    return();
-  }
+  gint num_chars;
   
-  return();
+  if(file_util == NULL){
+    return(0);
+  }
+
+  num_chars = 0;
+
+  //TODO:JK: implement me
+    
+  return(num_chars);
 }
 
 /**
  * ags_file_util_sscanf:
  * @file_util: the #AgsFileUtil-struct
- * 
- * 
+ * @str: the string to print to
+ * @format: the format of string
+ * @...: the variable argument list
+ *
+ * Sscanf implementation.
+ *
+ * Returns: the number of items matched
  *
  * Since: 6.3.0
  */
@@ -579,38 +904,59 @@ ags_file_util_sscanf(AgsFileUtil *file_util,
 		     gchar *format,
 		     ...)
 {
-  if(file_util == NULL){
-    return();
-  }
+  gint num_matched;
   
-  return();
+  if(file_util == NULL){
+    return(0);
+  }
+
+  num_matched = 0;
+  
+  //TODO:JK: implement me
+  
+  return(num_matched);
 }
 
 /**
  * ags_file_util_vprintf:
  * @file_util: the #AgsFileUtil-struct
- * 
- * 
+ * @str: the string to print to
+ * @format: the format of string
+ * @args: the variable argument list
+ *
+ * Printf implementation.
+ *
+ * Returns: the number of chars written
  *
  * Since: 6.3.0
  */
 gint
 ags_file_util_vprintf(AgsFileUtil *file_util,
+		      gchar *str,
 		      gchar *format,
 		      va_list args)
 {
   if(file_util == NULL){
-    return();
+    return(0);
   }
   
-  return();
+  num_chars = 0;
+
+  //TODO:JK: implement me
+  
+  return(num_chars);
 }
 
 /**
  * ags_file_util_vsscanf:
  * @file_util: the #AgsFileUtil-struct
- * 
- * 
+ * @str: the string to print to
+ * @format: the format of string
+ * @args: the variable argument list
+ *
+ * Sscanf implementation.
+ *
+ * Returns: the number of items matched
  *
  * Since: 6.3.0
  */
@@ -620,9 +966,15 @@ ags_file_util_vsscanf(AgsFileUtil *file_util,
 		      gchar *format,
 		      va_list args)
 {
-  if(file_util == NULL){
-    return();
-  }
+  gint num_matched;
   
-  return();
+  if(file_util == NULL){
+    return(0);
+  }
+
+  num_matched = 0;
+  
+  //TODO:JK: implement me
+  
+  return(num_matched);
 }

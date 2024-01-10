@@ -29,6 +29,8 @@
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
 
+#include <complex.h>
+
 #include <stdarg.h>
 
 G_BEGIN_DECLS
@@ -52,6 +54,14 @@ AgsFileUtil* ags_file_util_alloc(gchar *app_encoding,
 
 gpointer ags_file_util_copy(AgsFileUtil *ptr);
 void ags_file_util_free(AgsFileUtil *ptr);
+
+void ags_file_util_set_app_encoding(AgsFileUtil *file_util,
+				    gchar *app_encoding);
+gchar* ags_file_util_get_app_encoding(AgsFileUtil *file_util);
+
+void ags_file_util_set_encoding(AgsFileUtil *file_util,
+				gchar *encoding);
+gchar* ags_file_util_get_encoding(AgsFileUtil *file_util);
 
 gint ags_file_util_get_int(AgsFileUtil *file_util,
 			   gchar *str);
