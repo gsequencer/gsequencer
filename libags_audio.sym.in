@@ -1,5 +1,5 @@
 # GSequencer - Advanced GTK Sequencer 
-# Copyright (C) 2005-2023 Joël Krähemann
+# Copyright (C) 2005-2024 Joël Krähemann
 # 
 # This file is part of GSequencer.
 #
@@ -2377,6 +2377,11 @@ ags_cancel_audio_get_type
 ags_cancel_audio_new
 ags_apply_sound_config_get_type
 ags_apply_sound_config_new
+ags_reset_recall_staging_get_type
+ags_reset_recall_staging_add
+ags_reset_recall_staging_remove
+ags_reset_recall_staging_get_instance
+ags_reset_recall_staging_new
 ags_remove_soundcard_get_type
 ags_remove_soundcard_new
 ags_apply_sf2_midi_locale_get_type

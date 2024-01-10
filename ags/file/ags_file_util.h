@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,9 +25,13 @@
 
 #include <gio/gio.h>
 
+#include <ags/lib/ags_complex.h>
+
 #include <libxml/tree.h>
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
+
+#include <complex.h>
 
 #include <stdarg.h>
 
@@ -36,6 +40,9 @@ G_BEGIN_DECLS
 #define AGS_TYPE_FILE_UTIL                (ags_file_util_get_type())
 #define AGS_FILE_UTIL(ptr) ((AgsFileUtil *)(ptr))
 
+#define AGS_FILE_UTIL_64BIT_MAX_STRING_LENGTH (20)
+#define AGS_FILE_UTIL_DOUBLE_MAX_STRING_LENGTH (16)
+
 typedef struct _AgsFileUtil AgsFileUtil;
 
 struct _AgsFileUtil
@@ -43,6 +50,10 @@ struct _AgsFileUtil
   gchar *app_encoding;
   
   gchar *encoding;
+
+  GIConv *converter;
+  
+  GIConv *reverse_converter;
 };
 
 GType ags_file_util_get_type(void);
@@ -52,6 +63,10 @@ AgsFileUtil* ags_file_util_alloc(gchar *app_encoding,
 
 gpointer ags_file_util_copy(AgsFileUtil *ptr);
 void ags_file_util_free(AgsFileUtil *ptr);
+
+gchar* ags_file_util_get_app_encoding(AgsFileUtil *file_util);
+
+gchar* ags_file_util_get_encoding(AgsFileUtil *file_util);
 
 gint ags_file_util_get_int(AgsFileUtil *file_util,
 			   gchar *str);
@@ -94,29 +109,6 @@ gchar* ags_file_util_get_string(AgsFileUtil *file_util,
 gchar* ags_file_util_put_string(AgsFileUtil *file_util,
 				gchar *str,
 				gint length);
-
-gchar* ags_file_util_get_base64(AgsFileUtil *file_util,
-				gchar *str,
-				gsize *data_length);
-gchar* ags_file_util_put_base64(AgsFileUtil *file_util,
-				gchar *data,
-				gsize data_length);
-
-gint ags_file_util_printf(AgsFileUtil *file_util,
-			  gchar *format,
-			  ...) G_GNUC_PRINTF(3, 4);
-gint ags_file_util_sscanf(AgsFileUtil *file_util,
-			  gchar *str,
-			  gchar *format,
-			  ...) G_GNUC_SCANF(2, 3);
-
-gint ags_file_util_vprintf(AgsFileUtil *file_util,
-			   gchar *format,
-			   va_list args);
-gint ags_file_util_vsscanf(AgsFileUtil *file_util,
-			   gchar *str,
-			   gchar *format,
-			   va_list args);
 
 G_END_DECLS
 

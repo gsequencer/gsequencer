@@ -1,5 +1,5 @@
 # GSequencer - Advanced GTK Sequencer 
-# Copyright (C) 2005-2023 Joël Krähemann
+# Copyright (C) 2005-2024 Joël Krähemann
 # 
 # This file is part of GSequencer.
 #
@@ -427,6 +427,8 @@ ags_soundcard_get_start_note_offset
 ags_soundcard_set_note_offset
 ags_soundcard_get_note_offset
 ags_soundcard_get_note_256th_offset
+ags_soundcard_get_note_256th_attack_of_16th_pulse
+ags_soundcard_get_note_256th_attack_of_16th_pulse_position
 ags_soundcard_get_note_256th_attack
 ags_soundcard_get_note_256th_attack_at_position
 ags_soundcard_get_note_256th_attack_position
@@ -582,6 +584,28 @@ ags_file_lookup_find_by_node
 ags_file_lookup_find_by_reference
 ags_file_lookup_resolve
 ags_file_lookup_new
+ags_file_util_get_type
+ags_file_util_alloc
+ags_file_util_copy
+ags_file_util_free
+ags_file_util_get_app_encoding
+ags_file_util_get_encoding
+ags_file_util_get_int
+ags_file_util_put_int
+ags_file_util_get_uint
+ags_file_util_put_uint
+ags_file_util_get_int64
+ags_file_util_put_int64
+ags_file_util_get_uint64
+ags_file_util_put_uint64
+ags_file_util_get_float
+ags_file_util_put_float
+ags_file_util_get_double
+ags_file_util_put_double
+ags_file_util_get_complex
+ags_file_util_put_complex
+ags_file_util_get_string
+ags_file_util_put_string
 ags_file_link_get_type
 ags_file_link_set_filename
 ags_file_link_get_filename

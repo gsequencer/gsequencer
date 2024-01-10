@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,6 +18,9 @@
  */
 
 #include <ags/file/ags_file_util.h>
+
+#include <sys/types.h>
+#include <regex.h>
 
 /**
  * SECTION:ags_file_util
@@ -66,11 +69,17 @@ ags_file_util_alloc(gchar *app_encoding,
 {
   AgsFileUtil *ptr;
 
-  ptr = (AgsFileUtil *) malloc(sizeof(AgsFileUtil));
+  ptr = (AgsFileUtil *) g_malloc(sizeof(AgsFileUtil));
   
-  ptr[0].app_encoding = g_strdup(app_encoding);
-  ptr[0].encoding = g_strdup(encoding);
+  ptr->app_encoding = g_strdup(app_encoding);
+  ptr->encoding = g_strdup(encoding);
 
+  ptr->converter = g_iconv_open(encoding,
+				app_encoding);
+  
+  ptr->reverse_converter = g_iconv_open(app_encoding,
+					encoding);
+  
   return(ptr);
 }
 
@@ -89,10 +98,8 @@ ags_file_util_copy(AgsFileUtil *ptr)
 {
   AgsFileUtil *new_ptr;
   
-  new_ptr = (AgsFileUtil *) malloc(sizeof(AgsFileUtil));
-  
-  new_ptr->app_encoding = g_strdup(ptr->app_encoding);
-  new_ptr->encoding = g_strdup(ptr->encoding);
+  new_ptr = ags_file_util_alloc(ptr->app_encoding,
+				ptr->encoding);
 
   return(new_ptr);
 }
@@ -108,10 +115,66 @@ ags_file_util_copy(AgsFileUtil *ptr)
 void
 ags_file_util_free(AgsFileUtil *ptr)
 {
+  if(ptr == NULL){
+    return;
+  }
+  
   g_free(ptr->app_encoding);
   g_free(ptr->encoding);
+
+  g_iconv_close(ptr->converter);
+  
+  g_iconv_close(ptr->reverse_converter);
   
   g_free(ptr);
+}
+
+/**
+ * ags_file_util_get_app_encoding:
+ * @file_util: the #AgsFileUtil-struct
+ * 
+ * Get application encoding of @file_util.
+ *
+ * Returns: (transfer full): the application encoding
+ * 
+ * Since: 6.3.0
+ */
+gchar*
+ags_file_util_get_app_encoding(AgsFileUtil *file_util)
+{
+  gchar *app_encoding;
+  
+  if(file_util == NULL){
+    return(NULL);
+  }
+
+  app_encoding = g_strdup(file_util->app_encoding);
+
+  return(app_encoding);
+}
+
+/**
+ * ags_file_util_get_app_encoding:
+ * @file_util: the #AgsFileUtil-struct
+ * 
+ * Get application encoding of @file_util.
+ *
+ * Returns: (transfer full): the application encoding
+ * 
+ * Since: 6.3.0
+ */
+gchar*
+ags_file_util_get_encoding(AgsFileUtil *file_util)
+{
+  gchar *encoding;
+  
+  if(file_util == NULL){
+    return(NULL);
+  }
+
+  encoding = g_strdup(file_util->encoding);
+
+  return(encoding);
 }
 
 /**
@@ -131,13 +194,14 @@ ags_file_util_get_int(AgsFileUtil *file_util,
 {
   gint value;
   
-  if(file_util == NULL){
+  if(file_util == NULL ||
+     str == NULL){
     return(0);
   }
 
-  value = (gint) g_ascii_strtoll(str,
-				 NULL,
-				 10);
+  value = 0;
+  sscanf(str, "%li",
+	 &value);
   
   return(value);
 }
@@ -159,12 +223,16 @@ ags_file_util_put_int(AgsFileUtil *file_util,
 {
   gchar *str;
   
-  if(file_util == NULL){
+  if(file_util == NULL ||
+     str == NULL){
     return(NULL);
   }
 
-  str = g_strdup_printf("%d",
-			value);
+  str = g_malloc(AGS_FILE_UTIL_64BIT_MAX_STRING_LENGTH * sizeof(gchar));
+  xmlStrprintf(str,
+	       AGS_FILE_UTIL_64BIT_MAX_STRING_LENGTH,
+	       "%d",
+	       value);
   
   return(str);
 }
@@ -186,7 +254,8 @@ ags_file_util_get_uint(AgsFileUtil *file_util,
 {
   guint value;
   
-  if(file_util == NULL){
+  if(file_util == NULL ||
+     str == NULL){
     return(0);
   }
 
@@ -214,12 +283,16 @@ ags_file_util_put_uint(AgsFileUtil *file_util,
 {
   gchar *str;
   
-  if(file_util == NULL){
+  if(file_util == NULL ||
+     str == NULL){
     return(NULL);
   }
 
-  str = g_strdup_printf("%u",
-			value);
+  str = g_malloc(AGS_FILE_UTIL_64BIT_MAX_STRING_LENGTH * sizeof(gchar));
+  xmlStrprintf(str,
+	       AGS_FILE_UTIL_64BIT_MAX_STRING_LENGTH,
+	       "%u",
+	       value);
   
   return(str);
 }
@@ -241,7 +314,8 @@ ags_file_util_get_int64(AgsFileUtil *file_util,
 {
   gint64 value;
   
-  if(file_util == NULL){
+  if(file_util == NULL ||
+     str == NULL){
     return(0);
   }
 
@@ -269,12 +343,16 @@ ags_file_util_put_int64(AgsFileUtil *file_util,
 {
   gchar *str;
   
-  if(file_util == NULL){
+  if(file_util == NULL ||
+     str == NULL){
     return(NULL);
   }
-  
-  str = g_strdup_printf("%llu",
-			value);
+
+  str = g_malloc(AGS_FILE_UTIL_64BIT_MAX_STRING_LENGTH * sizeof(gchar));
+  xmlStrprintf(str,
+	       AGS_FILE_UTIL_64BIT_MAX_STRING_LENGTH,
+	       "%li",
+	       value);
   
   return(str);
 }
@@ -296,7 +374,8 @@ ags_file_util_get_uint64(AgsFileUtil *file_util,
 {
   guint64 value;
   
-  if(file_util == NULL){
+  if(file_util == NULL ||
+     str == NULL){
     return(0);
   }
 
@@ -324,12 +403,16 @@ ags_file_util_put_uint64(AgsFileUtil *file_util,
 {
   gchar *str;
   
-  if(file_util == NULL){
+  if(file_util == NULL ||
+     str == NULL){
     return(NULL);
   }
-  
-  str = g_strdup_printf("%lld",
-			value);
+
+  str = g_malloc(AGS_FILE_UTIL_64BIT_MAX_STRING_LENGTH * sizeof(gchar));
+  xmlStrprintf(str,
+	       AGS_FILE_UTIL_64BIT_MAX_STRING_LENGTH,
+	       "%lu",
+	       value);
   
   return(str);
 }
@@ -337,20 +420,67 @@ ags_file_util_put_uint64(AgsFileUtil *file_util,
 /**
  * ags_file_util_get_float:
  * @file_util: the #AgsFileUtil-struct
- * 
- * 
+ * @str: the string
  *
+ * Get arbitary size floating point number from string.
+ *
+ * Returns: the arbitary size floating point number
+ * 
  * Since: 6.3.0
  */
 gfloat
 ags_file_util_get_float(AgsFileUtil *file_util,
 			gchar *str)
 {
-  if(file_util == NULL){
-    return();
+  gchar *tmp_str;
+  
+  gfloat value;  
+
+  regmatch_t match_arr[6];
+    
+  static regex_t float_with_comma_regex;
+
+  static gboolean regex_compiled = FALSE;
+
+  static const char *float_with_comma_pattern = "^(([+-]?)([0-9]+)(,)([0-9]*))";
+
+  static GMutex regex_mutex;
+  
+  static const size_t max_matches = 6;
+
+  if(file_util == NULL ||
+     str == NULL){
+    return(0.0);
+  }
+
+  g_mutex_lock(&regex_mutex);
+
+  if(!regex_compiled){
+    regex_compiled = TRUE;
+      
+    ags_regcomp(&float_with_comma_regex, float_with_comma_pattern, REG_EXTENDED);
   }
   
-  return();
+  g_mutex_unlock(&regex_mutex);
+
+  tmp_str = NULL;
+
+  if(ags_regexec(&float_with_comma_regex, str, max_matches, match_arr, 0) == 0){
+    str = 
+      tmp_str = g_strndup(str,
+			  match_arr[0].rm_eo);
+
+    str[match_arr[4].rm_so] = '.';
+  }
+  
+  value = (gfloat) g_ascii_strtod(str,
+				  NULL);
+
+  if(tmp_str != NULL){
+    g_free(tmp_str);
+  }
+  
+  return(value);
 }
 
 /**
@@ -358,7 +488,7 @@ ags_file_util_get_float(AgsFileUtil *file_util,
  * @file_util: the #AgsFileUtil-struct
  * @value: the value
  * 
- * 
+ * Put arbitary size floating point number to string.
  *
  * Returns: (transfer full): the newly allocated string
  * 
@@ -368,18 +498,30 @@ gchar*
 ags_file_util_put_float(AgsFileUtil *file_util,
 			gfloat value)
 {
-  if(file_util == NULL){
-    return();
-  }
+  gchar *str;
   
-  return();
+  if(file_util == NULL ||
+     str == NULL){
+    return(NULL);
+  }
+
+  str = g_malloc(AGS_FILE_UTIL_DOUBLE_MAX_STRING_LENGTH * sizeof(gchar));
+  xmlStrprintf(str,
+	       AGS_FILE_UTIL_DOUBLE_MAX_STRING_LENGTH,
+	       "%f",
+	       value);
+  
+  return(str);
 }
 
 /**
  * ags_file_util_get_double:
  * @file_util: the #AgsFileUtil-struct
+ * @str: the string
+ *
+ * Get double precision size floating point number from string.
  * 
- * 
+ * Returns: the double precision size floating point number
  *
  * Since: 6.3.0
  */
@@ -387,11 +529,55 @@ gdouble
 ags_file_util_get_double(AgsFileUtil *file_util,
 			 gchar *str)
 {
-  if(file_util == NULL){
-    return();
+  gchar *tmp_str;
+  
+  gdouble value;
+
+  regmatch_t match_arr[6];
+    
+  static regex_t double_with_comma_regex;
+
+  static gboolean regex_compiled = FALSE;
+
+  static const char *double_with_comma_pattern = "^(([+-]?)([0-9]+)(,)([0-9]*))";
+
+  static GMutex regex_mutex;
+  
+  static const size_t max_matches = 6;
+
+  if(file_util == NULL ||
+     str == NULL){
+    return(0.0);
+  }
+
+  g_mutex_lock(&regex_mutex);
+
+  if(!regex_compiled){
+    regex_compiled = TRUE;
+      
+    ags_regcomp(&double_with_comma_regex, double_with_comma_pattern, REG_EXTENDED);
   }
   
-  return();
+  g_mutex_unlock(&regex_mutex);
+
+  tmp_str = NULL;
+
+  if(ags_regexec(&double_with_comma_regex, str, max_matches, match_arr, 0) == 0){
+    str = 
+      tmp_str = g_strndup(str,
+			  match_arr[0].rm_eo);
+
+    str[match_arr[4].rm_so] = '.';
+  }
+  
+  value = g_ascii_strtod(str,
+			 NULL);
+
+  if(tmp_str != NULL){
+    g_free(tmp_str);
+  }
+  
+  return(value);
 }
 
 /**
@@ -399,7 +585,7 @@ ags_file_util_get_double(AgsFileUtil *file_util,
  * @file_util: the #AgsFileUtil-struct
  * @value: the value
  * 
- * 
+ * Put double precision size floating point number to string.
  *
  * Returns: (transfer full): the newly allocated string
  * 
@@ -409,18 +595,30 @@ gchar*
 ags_file_util_put_double(AgsFileUtil *file_util,
 			 gdouble value)
 {
-  if(file_util == NULL){
-    return();
-  }
+  gchar *str;
   
-  return();
+  if(file_util == NULL ||
+     str == NULL){
+    return(NULL);
+  }
+
+  str = g_malloc(AGS_FILE_UTIL_DOUBLE_MAX_STRING_LENGTH * sizeof(gchar));
+  xmlStrprintf(str,
+	       AGS_FILE_UTIL_DOUBLE_MAX_STRING_LENGTH,
+	       "%Lf",
+	       value);
+  
+  return(str);
 }
 
 /**
  * ags_file_util_get_complex:
  * @file_util: the #AgsFileUtil-struct
+ * @str: the string
+ *
+ * Get complex floating point number from string.
  * 
- * 
+ * Returns: the complex floating point number
  *
  * Since: 6.3.0
  */
@@ -428,11 +626,71 @@ AgsComplex*
 ags_file_util_get_complex(AgsFileUtil *file_util,
 			  gchar *str)
 {
-  if(file_util == NULL){
-    return();
+  gchar *tmp_str;
+  gchar *end_str;
+  
+  AgsComplex *value;
+
+  regmatch_t match_arr[12];
+    
+  static regex_t complex_with_comma_regex;
+
+  static gboolean regex_compiled = FALSE;
+
+  static const char *complex_with_comma_pattern = "^(([+-]?)([0-9]+)(,)([0-9]*)) + I * (([+-]?)([0-9]+)(,)([0-9]*))";
+
+  static GMutex regex_mutex;
+  
+  static const size_t max_matches = 12;
+
+  if(file_util == NULL ||
+     str == NULL){
+    return(NULL);
+  }
+
+  g_mutex_lock(&regex_mutex);
+
+  if(!regex_compiled){
+    regex_compiled = TRUE;
+      
+    ags_regcomp(&complex_with_comma_regex, complex_with_comma_pattern, REG_EXTENDED);
   }
   
-  return();
+  g_mutex_unlock(&regex_mutex);
+
+  tmp_str = NULL;
+
+  if(ags_regexec(&complex_with_comma_regex, str, max_matches, match_arr, 0) == 0){
+    str = 
+      tmp_str = g_strndup(str,
+			  match_arr[0].rm_eo);
+
+    if(str[match_arr[4].rm_so] == ','){
+      str[match_arr[4].rm_so] = '.';
+    }
+
+    if(str[match_arr[9].rm_so] == ','){
+      str[match_arr[9].rm_so] = '.';
+    }
+  }
+
+  value = ags_complex_alloc();
+
+  end_str = NULL;
+  
+  value->real = g_ascii_strtod(str,
+			       &end_str);
+
+  if(strlen(end_str) > 7){
+    value->imag = g_ascii_strtod(end_str + 7,
+				 NULL);
+  }
+  
+  if(tmp_str != NULL){
+    g_free(tmp_str);
+  }
+  
+  return(value);
 }
 
 /**
@@ -440,7 +698,7 @@ ags_file_util_get_complex(AgsFileUtil *file_util,
  * @file_util: the #AgsFileUtil-struct
  * @value: the value
  * 
- * 
+ * Put complex floating point number to string.
  *
  * Returns: (transfer full): the newly allocated string
  * 
@@ -450,18 +708,30 @@ gchar*
 ags_file_util_put_complex(AgsFileUtil *file_util,
 			  AgsComplex *value)
 {
-  if(file_util == NULL){
-    return();
-  }
+  gchar *str;
   
-  return();
+  if(file_util == NULL ||
+     str == NULL){
+    return(NULL);
+  }
+
+  str = g_malloc(((2 * AGS_FILE_UTIL_DOUBLE_MAX_STRING_LENGTH) + 7) * sizeof(gchar));
+  xmlStrprintf(str,
+	       ((2 * AGS_FILE_UTIL_DOUBLE_MAX_STRING_LENGTH) + 7),
+	       "%Lf + I * %Lf",
+	       (gdouble) value->real,
+	       (gdouble) value->imag);
+  
+  return(str);
 }
 
 /**
  * ags_file_util_get_string:
  * @file_util: the #AgsFileUtil-struct
- * 
- * 
+ * @str: the string
+ * @max_length: the maximum length of string
+ *
+ * Get string from @str.
  *
  * Returns: (transfer full): the newly allocated string
  * 
@@ -472,18 +742,47 @@ ags_file_util_get_string(AgsFileUtil *file_util,
 			 gchar *str,
 			 gint max_length)
 {
-  if(file_util == NULL){
-    return();
+  gchar *converted_string;
+  
+  if(file_util == NULL ||
+     str == NULL){
+    return(NULL);
+  }
+
+  converted_string = NULL;
+
+  if(file_util->app_encoding != NULL &&
+     file_util->encoding != NULL &&
+     !g_strcmp0(file_util->app_encoding,
+		file_util->encoding)){
+    converted_string = g_strndup(str,
+				 max_length);
+  }else{
+    GError *error;
+
+    error = NULL;
+    converted_string = g_convert_with_iconv(str,
+					    max_length,
+					    file_util->reverse_converter,
+					    NULL,
+					    NULL,
+					    &error);
+
+    if(error != NULL){
+      g_error_free(error);
+    }
   }
   
-  return();
+  return(converted_string);
 }
 
 /**
  * ags_file_util_put_string:
  * @file_util: the #AgsFileUtil-struct
+ * @str: the string
+ * @length: the length of string
  * 
- * 
+ * Put @str to string.
  *
  * Returns: (transfer full): the newly allocated string
  * 
@@ -494,135 +793,36 @@ ags_file_util_put_string(AgsFileUtil *file_util,
 			 gchar *str,
 			 gint length)
 {
-  if(file_util == NULL){
-    return();
-  }
-  
-  return();
-}
+  gchar *converted_string;
 
-/**
- * ags_file_util_get_base64:
- * @file_util: the #AgsFileUtil-struct
- * 
- * 
- *
- * Returns: (transfer full): the newly allocated string
- * 
- * Since: 6.3.0
- */
-gchar*
-ags_file_util_get_base64(AgsFileUtil *file_util,
-			 gchar *str,
-			 gsize *data_length)
-{
-  if(file_util == NULL){
-    return();
+  if(file_util == NULL ||
+     str == NULL){
+    return(NULL);
   }
-  
-  return();
-}
 
-/**
- * ags_file_util_put_base64:
- * @file_util: the #AgsFileUtil-struct
- * 
- * 
- *
- * Returns: (transfer full): the newly allocated string
- * 
- * Since: 6.3.0
- */
-gchar*
-ags_file_util_put_base64(AgsFileUtil *file_util,
-			 gchar *data,
-			 gsize data_length)
-{
-  if(file_util == NULL){
-    return();
-  }
+  converted_string = NULL;
   
-  return();
-}
+  if(file_util->app_encoding != NULL &&
+     file_util->encoding != NULL &&
+     !g_strcmp0(file_util->app_encoding,
+		file_util->encoding)){
+    converted_string = g_strndup(str,
+				 length);
+  }else{
+    GError *error;
 
-/**
- * ags_file_util_printf:
- * @file_util: the #AgsFileUtil-struct
- * 
- * 
- *
- * Since: 6.3.0
- */
-gint
-ags_file_util_printf(AgsFileUtil *file_util,
-		     gchar *format,
-		     ...)
-{
-  if(file_util == NULL){
-    return();
-  }
-  
-  return();
-}
+    error = NULL;
+    converted_string = g_convert_with_iconv(str,
+					    length,
+					    file_util->converter,
+					    NULL,
+					    NULL,
+					    &error);
 
-/**
- * ags_file_util_sscanf:
- * @file_util: the #AgsFileUtil-struct
- * 
- * 
- *
- * Since: 6.3.0
- */
-gint
-ags_file_util_sscanf(AgsFileUtil *file_util,
-		     gchar *str,
-		     gchar *format,
-		     ...)
-{
-  if(file_util == NULL){
-    return();
+    if(error != NULL){
+      g_error_free(error);
+    }
   }
   
-  return();
-}
-
-/**
- * ags_file_util_vprintf:
- * @file_util: the #AgsFileUtil-struct
- * 
- * 
- *
- * Since: 6.3.0
- */
-gint
-ags_file_util_vprintf(AgsFileUtil *file_util,
-		      gchar *format,
-		      va_list args)
-{
-  if(file_util == NULL){
-    return();
-  }
-  
-  return();
-}
-
-/**
- * ags_file_util_vsscanf:
- * @file_util: the #AgsFileUtil-struct
- * 
- * 
- *
- * Since: 6.3.0
- */
-gint
-ags_file_util_vsscanf(AgsFileUtil *file_util,
-		      gchar *str,
-		      gchar *format,
-		      va_list args)
-{
-  if(file_util == NULL){
-    return();
-  }
-  
-  return();
+  return(converted_string);
 }
