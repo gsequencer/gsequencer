@@ -28,6 +28,7 @@
 #include <ags/app/ags_input_dialog.h>
 #include <ags/app/ags_machine_editor_dialog.h>
 #include <ags/app/ags_connection_editor_dialog.h>
+#include <ags/app/ags_composite_editor_callbacks.h>
 
 #include <ags/app/export/ags_wave_export_dialog.h>
 
@@ -611,6 +612,15 @@ ags_machine_destroy_callback(GAction *action, GVariant *parameter,
 
   if(composite_editor != NULL &&
      composite_editor->selected_machine == machine){
+    g_object_disconnect(machine,
+			"any_signal::resize-audio-channels",
+			G_CALLBACK(ags_composite_editor_resize_audio_channels_callback),
+			(gpointer) composite_editor,
+			"any_signal::resize-pads",
+			G_CALLBACK(ags_composite_editor_resize_pads_callback),
+			(gpointer) composite_editor,
+			NULL);
+
     composite_editor->selected_machine = NULL;
   }
   

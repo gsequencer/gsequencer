@@ -1787,42 +1787,64 @@ ags_sfz_synth_wah_wah_ratio_callback(AgsDial *dial, AgsSFZSynth *sfz_synth)
 
   wah_wah_ratio = ags_dial_get_value(sfz_synth->wah_wah_ratio);
   
-  start_play = ags_channel_get_play(channel);
-  start_recall = ags_channel_get_recall(channel);
+  start_channel =
+    channel = ags_audio_get_input(audio);
+
+  if(channel != NULL){
+    g_object_ref(channel);
+  }
+  
+  while(channel != NULL){
+    AgsChannel *next;
+
+    start_play = ags_channel_get_play(channel);
+    start_recall = ags_channel_get_recall(channel);
     
-  recall =
-    start_recall = g_list_concat(start_play, start_recall);
+    recall =
+      start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_WAH_WAH_CHANNEL)) != NULL){
-    AgsPort *port;
+    while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_WAH_WAH_CHANNEL)) != NULL){
+      AgsPort *port;
 
-    port = NULL;
+      port = NULL;
       
-    g_object_get(recall->data,
-		 "wah-wah-ratio", &port,
-		 NULL);
+      g_object_get(recall->data,
+		   "wah-wah-ratio", &port,
+		   NULL);
 
-    if(port != NULL){
-      GValue value = G_VALUE_INIT;
+      if(port != NULL){
+	GValue value = G_VALUE_INIT;
 
-      g_value_init(&value,
-		   G_TYPE_FLOAT);
+	g_value_init(&value,
+		     G_TYPE_FLOAT);
 
-      g_value_set_float(&value,
-			(gfloat) wah_wah_ratio);
+	g_value_set_float(&value,
+			  (gfloat) wah_wah_ratio);
 
-      ags_port_safe_write(port,
-			  &value);
+	ags_port_safe_write(port,
+			    &value);
 
-      g_object_unref(port);
-    }
+	g_object_unref(port);
+      }
     
-    /* iterate */
-    recall = recall->next;
+      /* iterate */
+      recall = recall->next;
+    }
+
+    g_list_free_full(start_recall,
+		     (GDestroyNotify) g_object_unref);
+
+    /**/
+    next = ags_channel_next(channel);
+
+    g_object_unref(channel);
+
+    channel = next;
   }
 
-  g_list_free_full(start_recall,
-		   (GDestroyNotify) g_object_unref);
+  if(start_channel != NULL){
+    g_object_unref(start_channel);
+  }  
 
   gtk_widget_queue_draw(sfz_synth->wah_wah_drawing_area);
 }
@@ -1845,42 +1867,64 @@ ags_sfz_synth_wah_wah_lfo_depth_callback(AgsDial *dial, AgsSFZSynth *sfz_synth)
 
   wah_wah_lfo_depth = ags_dial_get_value(dial);
   
-  start_play = ags_channel_get_play(channel);
-  start_recall = ags_channel_get_recall(channel);
+  start_channel =
+    channel = ags_audio_get_input(audio);
+
+  if(channel != NULL){
+    g_object_ref(channel);
+  }
+  
+  while(channel != NULL){
+    AgsChannel *next;
+
+    start_play = ags_channel_get_play(channel);
+    start_recall = ags_channel_get_recall(channel);
     
-  recall =
-    start_recall = g_list_concat(start_play, start_recall);
+    recall =
+      start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_WAH_WAH_CHANNEL)) != NULL){
-    AgsPort *port;
+    while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_WAH_WAH_CHANNEL)) != NULL){
+      AgsPort *port;
 
-    port = NULL;
+      port = NULL;
       
-    g_object_get(recall->data,
-		 "wah-wah-lfo-depth", &port,
-		 NULL);
+      g_object_get(recall->data,
+		   "wah-wah-lfo-depth", &port,
+		   NULL);
 
-    if(port != NULL){
-      GValue value = G_VALUE_INIT;
+      if(port != NULL){
+	GValue value = G_VALUE_INIT;
 
-      g_value_init(&value,
-		   G_TYPE_FLOAT);
+	g_value_init(&value,
+		     G_TYPE_FLOAT);
 
-      g_value_set_float(&value,
-			(gfloat) wah_wah_lfo_depth);
+	g_value_set_float(&value,
+			  (gfloat) wah_wah_lfo_depth);
 
-      ags_port_safe_write(port,
-			  &value);
+	ags_port_safe_write(port,
+			    &value);
 
-      g_object_unref(port);
-    }
+	g_object_unref(port);
+      }
     
-    /* iterate */
-    recall = recall->next;
+      /* iterate */
+      recall = recall->next;
+    }
+
+    g_list_free_full(start_recall,
+		     (GDestroyNotify) g_object_unref);
+
+    /**/
+    next = ags_channel_next(channel);
+
+    g_object_unref(channel);
+
+    channel = next;
   }
 
-  g_list_free_full(start_recall,
-		   (GDestroyNotify) g_object_unref);
+  if(start_channel != NULL){
+    g_object_unref(start_channel);
+  }  
 }
 
 void
@@ -1901,42 +1945,64 @@ ags_sfz_synth_wah_wah_lfo_freq_callback(AgsDial *dial, AgsSFZSynth *sfz_synth)
 
   wah_wah_lfo_freq = ags_dial_get_value(dial);
   
-  start_play = ags_channel_get_play(channel);
-  start_recall = ags_channel_get_recall(channel);
+  start_channel =
+    channel = ags_audio_get_input(audio);
+
+  if(channel != NULL){
+    g_object_ref(channel);
+  }
+  
+  while(channel != NULL){
+    AgsChannel *next;
+
+    start_play = ags_channel_get_play(channel);
+    start_recall = ags_channel_get_recall(channel);
     
-  recall =
-    start_recall = g_list_concat(start_play, start_recall);
+    recall =
+      start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_WAH_WAH_CHANNEL)) != NULL){
-    AgsPort *port;
+    while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_WAH_WAH_CHANNEL)) != NULL){
+      AgsPort *port;
 
-    port = NULL;
+      port = NULL;
       
-    g_object_get(recall->data,
-		 "wah-wah-lfo-freq", &port,
-		 NULL);
+      g_object_get(recall->data,
+		   "wah-wah-lfo-freq", &port,
+		   NULL);
 
-    if(port != NULL){
-      GValue value = G_VALUE_INIT;
+      if(port != NULL){
+	GValue value = G_VALUE_INIT;
 
-      g_value_init(&value,
-		   G_TYPE_FLOAT);
+	g_value_init(&value,
+		     G_TYPE_FLOAT);
 
-      g_value_set_float(&value,
-			(gfloat) wah_wah_lfo_freq);
+	g_value_set_float(&value,
+			  (gfloat) wah_wah_lfo_freq);
 
-      ags_port_safe_write(port,
-			  &value);
+	ags_port_safe_write(port,
+			    &value);
 
-      g_object_unref(port);
-    }
+	g_object_unref(port);
+      }
     
-    /* iterate */
-    recall = recall->next;
+      /* iterate */
+      recall = recall->next;
+    }
+
+    g_list_free_full(start_recall,
+		     (GDestroyNotify) g_object_unref);
+
+    /**/
+    next = ags_channel_next(channel);
+
+    g_object_unref(channel);
+
+    channel = next;
   }
 
-  g_list_free_full(start_recall,
-		   (GDestroyNotify) g_object_unref);
+  if(start_channel != NULL){
+    g_object_unref(start_channel);
+  }  
 }
 
 void
@@ -1957,40 +2023,62 @@ ags_sfz_synth_wah_wah_tuning_callback(AgsDial *dial, AgsSFZSynth *sfz_synth)
 
   wah_wah_tuning = ags_dial_get_value(dial);
   
-  start_play = ags_channel_get_play(channel);
-  start_recall = ags_channel_get_recall(channel);
+  start_channel =
+    channel = ags_audio_get_input(audio);
+
+  if(channel != NULL){
+    g_object_ref(channel);
+  }
+  
+  while(channel != NULL){
+    AgsChannel *next;
+
+    start_play = ags_channel_get_play(channel);
+    start_recall = ags_channel_get_recall(channel);
     
-  recall =
-    start_recall = g_list_concat(start_play, start_recall);
+    recall =
+      start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_WAH_WAH_CHANNEL)) != NULL){
-    AgsPort *port;
+    while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_WAH_WAH_CHANNEL)) != NULL){
+      AgsPort *port;
 
-    port = NULL;
+      port = NULL;
       
-    g_object_get(recall->data,
-		 "wah-wah-tuning", &port,
-		 NULL);
+      g_object_get(recall->data,
+		   "wah-wah-tuning", &port,
+		   NULL);
 
-    if(port != NULL){
-      GValue value = G_VALUE_INIT;
+      if(port != NULL){
+	GValue value = G_VALUE_INIT;
 
-      g_value_init(&value,
-		   G_TYPE_FLOAT);
+	g_value_init(&value,
+		     G_TYPE_FLOAT);
 
-      g_value_set_float(&value,
-			(gfloat) wah_wah_tuning);
+	g_value_set_float(&value,
+			  (gfloat) wah_wah_tuning);
 
-      ags_port_safe_write(port,
-			  &value);
+	ags_port_safe_write(port,
+			    &value);
 
-      g_object_unref(port);
-    }
+	g_object_unref(port);
+      }
     
-    /* iterate */
-    recall = recall->next;
+      /* iterate */
+      recall = recall->next;
+    }
+
+    g_list_free_full(start_recall,
+		     (GDestroyNotify) g_object_unref);
+
+    /**/
+    next = ags_channel_next(channel);
+
+    g_object_unref(channel);
+
+    channel = next;
   }
 
-  g_list_free_full(start_recall,
-		   (GDestroyNotify) g_object_unref);
+  if(start_channel != NULL){
+    g_object_unref(start_channel);
+  }  
 }
