@@ -2849,11 +2849,9 @@ ags_alsa_devin_tic(AgsSoundcard *soundcard)
       
       alsa_devin->note_256th_offset = 16 * loop_left;
 
-      if(note_256th_delay >= 1.0){
-	alsa_devin->note_256th_offset_last = alsa_devin->note_256th_offset;
-      }else{
-	alsa_devin->note_256th_offset_last = alsa_devin->note_256th_offset;
-
+      alsa_devin->note_256th_offset_last = alsa_devin->note_256th_offset;
+      
+      if(note_256th_delay < 1.0){
 	if(note_256th_attack_lower < note_256th_attack_upper){
 	  alsa_devin->note_256th_offset_last = alsa_devin->note_256th_offset + floor((note_256th_attack_upper - note_256th_attack_lower) / (alsa_devin->note_256th_delay * (double) buffer_size));
 	}
@@ -2861,9 +2859,10 @@ ags_alsa_devin_tic(AgsSoundcard *soundcard)
 
       note_256th_attack_of_16th_pulse = attack;
 
-      if(note_256th_attack_of_16th_pulse_position != 0 &&
-	 note_256th_delay < 1.0){
-	for(i = 1; i < (guint) ceil(1.0 / note_256th_delay); i++){
+      i = 1;
+      
+      if(note_256th_delay < 1.0){
+	for(; i < (guint) ceil(1.0 / note_256th_delay); i++){
 	  if(note_256th_attack_of_16th_pulse_position - i >= 0){
 	    current_note_256th_attack = ags_soundcard_get_note_256th_attack_at_position(soundcard,
 											note_256th_attack_of_16th_pulse_position - i);
@@ -2880,6 +2879,7 @@ ags_alsa_devin_tic(AgsSoundcard *soundcard)
       }
 
       alsa_devin->note_256th_attack_of_16th_pulse = note_256th_attack_of_16th_pulse;
+      alsa_devin->note_256th_attack_of_16th_pulse_position += i;
 
       g_rec_mutex_unlock(alsa_devin_mutex);
     }else{
@@ -2890,11 +2890,9 @@ ags_alsa_devin_tic(AgsSoundcard *soundcard)
       
       alsa_devin->note_256th_offset = 16 * (note_offset + 1);
 
-      if(note_256th_delay >= 1.0){
-	alsa_devin->note_256th_offset_last = alsa_devin->note_256th_offset;
-      }else{
-	alsa_devin->note_256th_offset_last = alsa_devin->note_256th_offset;
-
+      alsa_devin->note_256th_offset_last = alsa_devin->note_256th_offset;
+      
+      if(note_256th_delay < 1.0){
 	if(note_256th_attack_lower < note_256th_attack_upper){
 	  alsa_devin->note_256th_offset_last = alsa_devin->note_256th_offset + floor((note_256th_attack_upper - note_256th_attack_lower) / (alsa_devin->note_256th_delay * (double) buffer_size));
 	}
@@ -2902,9 +2900,11 @@ ags_alsa_devin_tic(AgsSoundcard *soundcard)
       
       note_256th_attack_of_16th_pulse = attack;
 
+      i = 1;
+      
       if(note_256th_attack_of_16th_pulse_position != 0 &&
 	 note_256th_delay < 1.0){
-	for(i = 1; i < (guint) ceil(1.0 / note_256th_delay); i++){
+	for(; i < (guint) ceil(1.0 / note_256th_delay); i++){
 	  if(note_256th_attack_of_16th_pulse_position - i >= 0){
 	    current_note_256th_attack = ags_soundcard_get_note_256th_attack_at_position(soundcard,
 											note_256th_attack_of_16th_pulse_position - i);
@@ -2921,6 +2921,7 @@ ags_alsa_devin_tic(AgsSoundcard *soundcard)
       }
 
       alsa_devin->note_256th_attack_of_16th_pulse = note_256th_attack_of_16th_pulse;
+      alsa_devin->note_256th_attack_of_16th_pulse_position += i;
 
       g_rec_mutex_unlock(alsa_devin_mutex);
     }
@@ -3355,9 +3356,9 @@ ags_alsa_devin_set_note_offset(AgsSoundcard *soundcard,
 
   alsa_devin->note_256th_offset = 16 * note_offset;
 
-  if(alsa_devin->note_256th_delay >= 1.0){
-    alsa_devin->note_256th_offset_last = alsa_devin->note_256th_offset;
-  }else{
+  alsa_devin->note_256th_offset_last = alsa_devin->note_256th_offset;
+  
+  if(alsa_devin->note_256th_delay < 1.0){
     guint buffer_size;
     guint note_256th_attack_lower, note_256th_attack_upper;
     
@@ -3370,10 +3371,8 @@ ags_alsa_devin_set_note_offset(AgsSoundcard *soundcard,
 					&note_256th_attack_lower,
 					&note_256th_attack_upper);
 
-    if(note_256th_attack_lower + ((guint) floor(1.0 / note_256th_delay) * (note_256th_delay * buffer_size)) < buffer_size){
-      alsa_devin->note_256th_offset_last = alsa_devin->note_256th_offset + (guint) floor(1.0 / note_256th_delay);
-    }else{
-      alsa_devin->note_256th_offset_last = alsa_devin->note_256th_offset + (guint) floor(1.0 / note_256th_delay) - 1;
+    if(note_256th_attack_lower < note_256th_attack_upper){
+      alsa_devin->note_256th_offset_last = alsa_devin->note_256th_offset + floor((note_256th_attack_upper - note_256th_attack_lower) / (alsa_devin->note_256th_delay * (double) buffer_size));
     }
   }
 
