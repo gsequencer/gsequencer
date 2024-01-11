@@ -2755,9 +2755,9 @@ ags_alsa_devin_device_free(AgsSoundcard *soundcard)
   alsa_devin->note_256th_attack_of_16th_pulse = 0;
   alsa_devin->note_256th_attack_of_16th_pulse_position = 0;
   
-  if(alsa_devin->note_256th_delay >= 1.0){
-    alsa_devin->note_256th_offset_last = alsa_devin->note_256th_offset;
-  }else{
+  alsa_devin->note_256th_offset_last = alsa_devin->note_256th_offset;
+  
+  if(alsa_devin->note_256th_delay < 1.0){
     guint buffer_size;
     guint note_256th_attack_lower, note_256th_attack_upper;
     guint i;
@@ -2770,8 +2770,6 @@ ags_alsa_devin_device_free(AgsSoundcard *soundcard)
     ags_alsa_devin_get_note_256th_attack(AGS_SOUNDCARD(alsa_devin),
 					  &note_256th_attack_lower,
 					  &note_256th_attack_upper);
-
-    alsa_devin->note_256th_offset_last = alsa_devin->note_256th_offset;
     
     if(note_256th_attack_lower < note_256th_attack_upper){
       alsa_devin->note_256th_offset_last = alsa_devin->note_256th_offset + floor((note_256th_attack_upper - note_256th_attack_lower) / (alsa_devin->note_256th_delay * (double) buffer_size));

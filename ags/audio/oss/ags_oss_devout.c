@@ -2592,8 +2592,6 @@ ags_oss_devout_device_free(AgsSoundcard *soundcard)
     ags_oss_devout_get_note_256th_attack(AGS_SOUNDCARD(oss_devout),
 					  &note_256th_attack_lower,
 					  &note_256th_attack_upper);
-
-    oss_devout->note_256th_offset_last = oss_devout->note_256th_offset;
     
     if(note_256th_attack_lower < note_256th_attack_upper){
       oss_devout->note_256th_offset_last = oss_devout->note_256th_offset + floor((note_256th_attack_upper - note_256th_attack_lower) / (oss_devout->note_256th_delay * (double) buffer_size));
@@ -3362,10 +3360,10 @@ ags_oss_devout_get_note_256th_attack_position(AgsSoundcard *soundcard,
   guint nth_list;
   guint *local_note_256th_attack;
   guint position_lower, position_upper;
-  guint i;
+  guint i, j;
   
   GRecMutex *oss_devout_mutex;  
-
+  
   oss_devout = AGS_OSS_DEVOUT(soundcard);
   
   /* get oss devout mutex */
@@ -3401,11 +3399,17 @@ ags_oss_devout_get_note_256th_attack_position(AgsSoundcard *soundcard,
   local_note_256th_attack = g_list_nth_data(oss_devout->note_256th_attack,
 					    nth_list);
 
-  for(i = 1; local_note_256th_attack[position_lower % (guint) AGS_SOUNDCARD_DEFAULT_PERIOD] + (guint) floor((double) i * note_256th_delay * (double) buffer_size) < buffer_size; i++){
-    if((position_upper + 1) % (guint) AGS_SOUNDCARD_DEFAULT_PERIOD == 0){
+  for(i = 1, j = 0; local_note_256th_attack[position_lower + i] + (note_256th_delay * buffer_size) < buffer_size &&
+	(note_256th_delay < 1.0 &&
+	 i <= (guint) floor(1.0 / note_256th_delay)) &&
+	j < 2; i++){
+    if((position_upper + 1) >= (guint) AGS_SOUNDCARD_DEFAULT_PERIOD){
       if(nth_list + 1 < 32){
 	local_note_256th_attack = g_list_nth_data(oss_devout->note_256th_attack,
 						  nth_list + 1);
+
+	i = 0;
+	j++;
       }else{
 	local_note_256th_attack = g_list_nth_data(oss_devout->note_256th_attack,
 						  0);
@@ -3416,11 +3420,11 @@ ags_oss_devout_get_note_256th_attack_position(AgsSoundcard *soundcard,
       guint prev_note_256th_attack;
       guint current_note_256th_attack;
 
-      prev_note_256th_attack = ags_oss_devout_get_note_256th_attack_at_position(soundcard,
-										position_upper);
+      prev_note_256th_attack = ags_soundcard_get_note_256th_attack_at_position(soundcard,
+									       position_upper);
 
-      current_note_256th_attack = ags_oss_devout_get_note_256th_attack_at_position(soundcard,
-										   position_upper + 1);
+      current_note_256th_attack = ags_soundcard_get_note_256th_attack_at_position(soundcard,
+										  position_upper + 1);
 
       if(prev_note_256th_attack < current_note_256th_attack){
 	position_upper++;
