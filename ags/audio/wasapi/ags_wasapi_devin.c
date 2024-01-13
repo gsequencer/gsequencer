@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -170,6 +170,9 @@ guint ags_wasapi_devin_get_note_256th_attack_at_position(AgsSoundcard *soundcard
 void ags_wasapi_devin_get_note_256th_attack_position(AgsSoundcard *soundcard,
 						     guint *note_256th_attack_position_lower,
 						     guint *note_256th_attack_position_upper);
+
+guint ags_wasapi_devin_get_note_256th_attack_of_16th_pulse(AgsSoundcard *soundcard);
+guint ags_wasapi_devin_get_note_256th_attack_of_16th_pulse_position(AgsSoundcard *soundcard);
 
 /**
  * SECTION:ags_wasapi_devin
@@ -583,6 +586,9 @@ ags_wasapi_devin_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->get_note_256th_attack_at_position = ags_wasapi_devin_get_note_256th_attack_at_position;
 
   soundcard->get_note_256th_attack_position = ags_wasapi_devin_get_note_256th_attack_position;
+
+  soundcard->get_note_256th_attack_of_16th_pulse = ags_wasapi_devin_get_note_256th_attack_of_16th_pulse;
+  soundcard->get_note_256th_attack_of_16th_pulse_position = ags_wasapi_devin_get_note_256th_attack_of_16th_pulse_position;
 }
 
 void
@@ -714,6 +720,9 @@ ags_wasapi_devin_init(AgsWasapiDevin *wasapi_devin)
 					    sizeof(guint));
 
   wasapi_devin->note_256th_delay = absolute_delay / 16.0;
+
+  wasapi_devin->note_256th_attack_of_16th_pulse = 0;
+  wasapi_devin->note_256th_attack_of_16th_pulse_position = 0;
 
   start_note_256th_attack = NULL;
 
@@ -1804,6 +1813,9 @@ ags_wasapi_devin_client_init(AgsSoundcard *soundcard,
   wasapi_devin->delay_counter = floor(ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(wasapi_devin)));
   wasapi_devin->tic_counter = 0;
   
+  wasapi_devin->note_256th_attack_of_16th_pulse = 0;
+  wasapi_devin->note_256th_attack_of_16th_pulse_position = 0;
+
 #ifdef AGS_WITH_WASAPI
   wasapi_devin->flags |= AGS_WASAPI_DEVIN_INITIALIZED;
 #endif
@@ -2468,10 +2480,13 @@ ags_wasapi_devin_client_free(AgsSoundcard *soundcard)
   wasapi_devin->note_offset_absolute = wasapi_devin->start_note_offset;
 
   wasapi_devin->note_256th_offset = 16 * wasapi_devin->start_note_offset;
+
+  wasapi_devin->note_256th_attack_of_16th_pulse = 0;
+  wasapi_devin->note_256th_attack_of_16th_pulse_position = 0;
   
-  if(wasapi_devin->note_256th_delay >= 1.0){
-    wasapi_devin->note_256th_offset_last = wasapi_devin->note_256th_offset;
-  }else{
+  wasapi_devin->note_256th_offset_last = wasapi_devin->note_256th_offset;
+  
+  if(wasapi_devin->note_256th_delay < 1.0){
     guint buffer_size;
     guint note_256th_attack_lower, note_256th_attack_upper;
     guint i;
@@ -2481,16 +2496,12 @@ ags_wasapi_devin_client_free(AgsSoundcard *soundcard)
     note_256th_attack_lower = 0;
     note_256th_attack_upper = 0;
     
-    ags_soundcard_get_note_256th_attack(soundcard,
-					&note_256th_attack_lower,
-					&note_256th_attack_upper);
+    ags_wasapi_devin_get_note_256th_attack(AGS_SOUNDCARD(wasapi_devin),
+					  &note_256th_attack_lower,
+					  &note_256th_attack_upper);
     
-    wasapi_devin->note_256th_offset_last = wasapi_devin->note_256th_offset;
-    
-    for(i = 1; i < (guint) floor(1.0 / (wasapi_devin->note_256th_delay)) && note_256th_attack_lower + (guint) floor((double) i * (wasapi_devin->note_256th_delay * (double) buffer_size)) < buffer_size; i++){
-      if(note_256th_attack_lower + (guint) floor((double) i * (wasapi_devin->note_256th_delay * (double) buffer_size)) < note_256th_attack_upper + (guint) floor(wasapi_devin->note_256th_delay * (double) buffer_size)){
-	wasapi_devin->note_256th_offset_last = wasapi_devin->note_256th_offset + i;
-      }
+    if(note_256th_attack_lower < note_256th_attack_upper){
+      wasapi_devin->note_256th_offset_last = wasapi_devin->note_256th_offset + floor((note_256th_attack_upper - note_256th_attack_lower) / (wasapi_devin->note_256th_delay * (double) buffer_size));
     }
   }
 
@@ -2505,12 +2516,17 @@ ags_wasapi_devin_tic(AgsSoundcard *soundcard)
   guint buffer_size;
   gdouble delay;
   gdouble delay_counter;
+  guint attack;
+  guint current_note_256th_attack;
   gdouble note_256th_delay;
   guint note_256th_attack_lower, note_256th_attack_upper;
+  guint note_256th_attack_of_16th_pulse;
+  guint note_256th_attack_of_16th_pulse_position;
   guint note_offset_absolute;
   guint note_offset;
   guint loop_left, loop_right;
   gboolean do_loop;
+  guint i;
   
   GRecMutex *wasapi_devin_mutex;
   
@@ -2529,6 +2545,8 @@ ags_wasapi_devin_tic(AgsSoundcard *soundcard)
 
   note_256th_delay = wasapi_devin->note_256th_delay;
 
+  attack = wasapi_devin->attack[wasapi_devin->tic_counter];
+
   note_offset = wasapi_devin->note_offset;
   note_offset_absolute = wasapi_devin->note_offset_absolute;
   
@@ -2542,6 +2560,8 @@ ags_wasapi_devin_tic(AgsSoundcard *soundcard)
   note_256th_attack_lower = 0;
   note_256th_attack_upper = 0;
 
+  note_256th_attack_of_16th_pulse_position =  ags_soundcard_get_note_256th_attack_of_16th_pulse_position(soundcard);
+  
   ags_soundcard_get_note_256th_attack(soundcard,
 				      &note_256th_attack_lower,
 				      &note_256th_attack_upper);
@@ -2556,15 +2576,37 @@ ags_wasapi_devin_tic(AgsSoundcard *soundcard)
       
       wasapi_devin->note_256th_offset = 16 * loop_left;
 
-      if(note_256th_delay >= 1.0){
-	wasapi_devin->note_256th_offset_last = wasapi_devin->note_256th_offset;
-      }else{
-	if(note_256th_attack_lower + ((guint) floor(1.0 / note_256th_delay) * (note_256th_delay * buffer_size)) < buffer_size){
-	  wasapi_devin->note_256th_offset_last = wasapi_devin->note_256th_offset + (guint) floor(1.0 / note_256th_delay);
-	}else{
-	  wasapi_devin->note_256th_offset_last = wasapi_devin->note_256th_offset + (guint) floor(1.0 / note_256th_delay) - 1;
+      wasapi_devin->note_256th_offset_last = wasapi_devin->note_256th_offset;
+
+      if(note_256th_delay < 1.0){
+	if(note_256th_attack_lower < note_256th_attack_upper){
+	  wasapi_devin->note_256th_offset_last = wasapi_devin->note_256th_offset + floor((note_256th_attack_upper - note_256th_attack_lower) / (wasapi_devin->note_256th_delay * (double) buffer_size));
 	}
       }
+
+      note_256th_attack_of_16th_pulse = attack;
+
+      i = 1;
+      
+      if(note_256th_delay < 1.0){
+	for(; i < (guint) ceil(1.0 / note_256th_delay); i++){
+	  if(note_256th_attack_of_16th_pulse_position - i >= 0){
+	    current_note_256th_attack = ags_soundcard_get_note_256th_attack_at_position(soundcard,
+											note_256th_attack_of_16th_pulse_position - i);
+
+	    if(current_note_256th_attack < note_256th_attack_of_16th_pulse){
+	      note_256th_attack_of_16th_pulse = current_note_256th_attack;
+	    }else{
+	      break;
+	    }
+	  }else{
+	    break;
+	  }
+	}
+      }
+
+      wasapi_devin->note_256th_attack_of_16th_pulse = note_256th_attack_of_16th_pulse;      
+      wasapi_devin->note_256th_attack_of_16th_pulse_position += i;
 
       g_rec_mutex_unlock(wasapi_devin_mutex);
     }else{
@@ -2575,15 +2617,37 @@ ags_wasapi_devin_tic(AgsSoundcard *soundcard)
       
       wasapi_devin->note_256th_offset = 16 * (note_offset + 1);
 
-      if(note_256th_delay >= 1.0){
-	wasapi_devin->note_256th_offset_last = wasapi_devin->note_256th_offset;
-      }else{
-	if(note_256th_attack_lower + ((guint) floor(1.0 / note_256th_delay) * (note_256th_delay * buffer_size)) < buffer_size){
-	  wasapi_devin->note_256th_offset_last = wasapi_devin->note_256th_offset + (guint) floor(1.0 / note_256th_delay);
-	}else{
-	  wasapi_devin->note_256th_offset_last = wasapi_devin->note_256th_offset + (guint) floor(1.0 / note_256th_delay) - 1;
+      wasapi_devin->note_256th_offset_last = wasapi_devin->note_256th_offset;
+      
+      if(note_256th_delay < 1.0){
+	if(note_256th_attack_lower < note_256th_attack_upper){
+	  wasapi_devin->note_256th_offset_last = wasapi_devin->note_256th_offset + floor((note_256th_attack_upper - note_256th_attack_lower) / (wasapi_devin->note_256th_delay * (double) buffer_size));
 	}
       }
+      
+      note_256th_attack_of_16th_pulse = attack;
+
+      i = 1;
+      
+      if(note_256th_delay < 1.0){
+	for(; i < (guint) ceil(1.0 / note_256th_delay); i++){
+	  if(note_256th_attack_of_16th_pulse_position - i >= 0){
+	    current_note_256th_attack = ags_soundcard_get_note_256th_attack_at_position(soundcard,
+											note_256th_attack_of_16th_pulse_position - i);
+
+	    if(current_note_256th_attack < note_256th_attack_of_16th_pulse){
+	      note_256th_attack_of_16th_pulse = current_note_256th_attack;
+	    }else{
+	      break;
+	    }
+	  }else{
+	    break;
+	  }
+	}
+      }
+
+      wasapi_devin->note_256th_attack_of_16th_pulse = note_256th_attack_of_16th_pulse;
+      wasapi_devin->note_256th_attack_of_16th_pulse_position += i;
 
       g_rec_mutex_unlock(wasapi_devin_mutex);
     }
@@ -2607,10 +2671,10 @@ ags_wasapi_devin_tic(AgsSoundcard *soundcard)
     
     wasapi_devin->note_256th_offset = (16 * wasapi_devin->note_offset) + (guint) floor((wasapi_devin->delay_counter + 1.0) * (1.0 / note_256th_delay));
 
-    if(note_256th_attack_lower + ((guint) floor(1.0 / note_256th_delay) * (note_256th_delay * buffer_size)) < buffer_size){
-      wasapi_devin->note_256th_offset_last = wasapi_devin->note_256th_offset + (guint) floor(1.0 / note_256th_delay);
-    }else{
-      wasapi_devin->note_256th_offset_last = wasapi_devin->note_256th_offset + (guint) floor(1.0 / note_256th_delay) - 1;
+    wasapi_devin->note_256th_offset_last = wasapi_devin->note_256th_offset;
+
+    if(note_256th_attack_lower < note_256th_attack_upper){
+      wasapi_devin->note_256th_offset_last = wasapi_devin->note_256th_offset + floor((note_256th_attack_upper - note_256th_attack_lower) / (wasapi_devin->note_256th_delay * (double) buffer_size));
     }
 
     wasapi_devin->delay_counter += 1.0;
@@ -3062,9 +3126,9 @@ ags_wasapi_devin_set_note_offset(AgsSoundcard *soundcard,
 
   wasapi_devin->note_256th_offset = 16 * note_offset;
 
-  if(wasapi_devin->note_256th_delay >= 1.0){
-    wasapi_devin->note_256th_offset_last = wasapi_devin->note_256th_offset;
-  }else{
+  wasapi_devin->note_256th_offset_last = wasapi_devin->note_256th_offset;
+  
+  if(note_256th_delay < 1.0){
     guint buffer_size;
     guint note_256th_attack_lower, note_256th_attack_upper;
     
@@ -3077,10 +3141,8 @@ ags_wasapi_devin_set_note_offset(AgsSoundcard *soundcard,
 					&note_256th_attack_lower,
 					&note_256th_attack_upper);
 
-    if(note_256th_attack_lower + ((guint) floor(1.0 / note_256th_delay) * (note_256th_delay * buffer_size)) < buffer_size){
-      wasapi_devin->note_256th_offset_last = wasapi_devin->note_256th_offset + (guint) floor(1.0 / note_256th_delay);
-    }else{
-      wasapi_devin->note_256th_offset_last = wasapi_devin->note_256th_offset + (guint) floor(1.0 / note_256th_delay) - 1;
+    if(note_256th_attack_lower < note_256th_attack_upper){
+      wasapi_devin->note_256th_offset_last = wasapi_devin->note_256th_offset + floor((note_256th_attack_upper - note_256th_attack_lower) / (wasapi_devin->note_256th_delay * (double) buffer_size));
     }
   }
 
@@ -3367,6 +3429,54 @@ ags_wasapi_devin_get_note_256th_attack_position(AgsSoundcard *soundcard,
   }
   
   g_rec_mutex_unlock(wasapi_devin_mutex);
+}
+
+guint
+ags_wasapi_devin_get_note_256th_attack_of_16th_pulse(AgsSoundcard *soundcard)
+{
+  AgsWasapiDevin *wasapi_devin;
+
+  guint note_256th_attack_of_16th_pulse;
+  
+  GRecMutex *wasapi_devin_mutex;  
+
+  wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
+
+  /* get wasapi devin mutex */
+  wasapi_devin_mutex = AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(wasapi_devin);
+
+  /* get note 256th attack of 16th pulse */
+  g_rec_mutex_lock(wasapi_devin_mutex);
+
+  note_256th_attack_of_16th_pulse = wasapi_devin->note_256th_attack_of_16th_pulse;
+
+  g_rec_mutex_unlock(wasapi_devin_mutex);
+
+  return(note_256th_attack_of_16th_pulse);
+}
+
+guint
+ags_wasapi_devin_get_note_256th_attack_of_16th_pulse_position(AgsSoundcard *soundcard)
+{
+  AgsWasapiDevin *wasapi_devin;
+
+  guint position;
+  
+  GRecMutex *wasapi_devin_mutex;  
+
+  wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
+
+  /* get wasapi devin mutex */
+  wasapi_devin_mutex = AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(wasapi_devin);
+
+  /* get note 256th attack position of 16th pulse */
+  g_rec_mutex_lock(wasapi_devin_mutex);
+
+  position = wasapi_devin->note_256th_attack_of_16th_pulse_position;
+
+  g_rec_mutex_unlock(wasapi_devin_mutex);
+
+  return(position);
 }
 
 void

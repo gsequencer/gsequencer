@@ -1,15 +1,15 @@
 ags (6.3.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: implemented ags_soundcard_get_note_256th_attack_of_16th_pulse() and ags_soundcard_get_note_256th_attack_of_16th_pulse_position()
+	* implemented ags_soundcard_get_note_256th_attack_of_16th_pulse() and ags_soundcard_get_note_256th_attack_of_16th_pulse_position()
 	* implemented ags_file_util.[ch] file read/write functions for C types
 	* implemented AgsRecallResetStaging
 	* refactored AgsAlsaDevout and AgsAlsaDevin
 	* refactored AgsOssDevout and AgsOssDevin
 	* refactored AgsPulseDevout and AgsPulseDevin
 	* refactored AgsJackDevout and AgsJackDevin
-	* TODO:JK: refactored AgsCoreAudioDevout and AgsCoreAudioDevin
-	* TODO:JK: refactored AgsWasapiDevout and AgsWasapiDevin
+	* refactored AgsCoreAudioDevout and AgsCoreAudioDevin
+	* refactored AgsWasapiDevout and AgsWasapiDevin
 	* TODO:JK: refactored AgsGstreamerDevout and AgsGstreamerDevin
 	* TODO:JK: refactored AgsSimpleFile
 	* fixed potential SIGSEGV with destroyed machine in AgsCompositeEditor
