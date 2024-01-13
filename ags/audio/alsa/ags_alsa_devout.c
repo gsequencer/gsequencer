@@ -3786,6 +3786,7 @@ ags_alsa_devout_get_note_256th_attack(AgsSoundcard *soundcard,
   nth_list = (guint) floor(note_256th_attack_position_lower / AGS_SOUNDCARD_DEFAULT_PERIOD);
   note_256th_attack = g_list_nth_data(alsa_devout->note_256th_attack,
 				      nth_list);
+  
   if(note_256th_attack != NULL){
     local_note_256th_attack_lower = note_256th_attack[note_256th_attack_position_lower % (guint) AGS_SOUNDCARD_DEFAULT_PERIOD];
   }

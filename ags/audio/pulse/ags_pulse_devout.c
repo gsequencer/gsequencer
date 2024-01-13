@@ -2600,6 +2600,7 @@ ags_pulse_devout_tic(AgsSoundcard *soundcard)
   guint note_offset;
   guint loop_left, loop_right;
   gboolean do_loop;
+  guint i;
   
   GRecMutex *pulse_devout_mutex;
   
@@ -2630,6 +2631,8 @@ ags_pulse_devout_tic(AgsSoundcard *soundcard)
 
   note_256th_attack_lower = 0;
   note_256th_attack_upper = 0;
+
+  note_256th_attack_of_16th_pulse_position =  ags_soundcard_get_note_256th_attack_of_16th_pulse_position(soundcard);
 
   ags_soundcard_get_note_256th_attack(soundcard,
 				      &note_256th_attack_lower,

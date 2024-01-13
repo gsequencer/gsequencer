@@ -2276,6 +2276,7 @@ ags_pulse_devin_tic(AgsSoundcard *soundcard)
   guint note_offset;
   guint loop_left, loop_right;
   gboolean do_loop;
+  guint i;
   
   GRecMutex *pulse_devin_mutex;
   
@@ -2294,6 +2295,8 @@ ags_pulse_devin_tic(AgsSoundcard *soundcard)
 
   note_256th_delay = pulse_devin->note_256th_delay;
 
+  attack = pulse_devin->attack[pulse_devin->tic_counter];
+
   note_offset = pulse_devin->note_offset;
   note_offset_absolute = pulse_devin->note_offset_absolute;
   
@@ -2306,6 +2309,8 @@ ags_pulse_devin_tic(AgsSoundcard *soundcard)
 
   note_256th_attack_lower = 0;
   note_256th_attack_upper = 0;
+
+  note_256th_attack_of_16th_pulse_position =  ags_soundcard_get_note_256th_attack_of_16th_pulse_position(soundcard);
 
   ags_soundcard_get_note_256th_attack(soundcard,
 				      &note_256th_attack_lower,

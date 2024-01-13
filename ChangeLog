@@ -7,7 +7,7 @@ ags (6.3.0)
 	* refactored AgsAlsaDevout and AgsAlsaDevin
 	* refactored AgsOssDevout and AgsOssDevin
 	* refactored AgsPulseDevout and AgsPulseDevin
-	* TODO:JK: refactored AgsJackDevout and AgsJackDevin
+	* refactored AgsJackDevout and AgsJackDevin
 	* TODO:JK: refactored AgsCoreAudioDevout and AgsCoreAudioDevin
 	* TODO:JK: refactored AgsWasapiDevout and AgsWasapiDevin
 	* TODO:JK: refactored AgsGstreamerDevout and AgsGstreamerDevin
