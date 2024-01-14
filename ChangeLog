@@ -10,7 +10,7 @@ ags (6.3.0)
 	* refactored AgsJackDevout and AgsJackDevin
 	* refactored AgsCoreAudioDevout and AgsCoreAudioDevin
 	* refactored AgsWasapiDevout and AgsWasapiDevin
-	* TODO:JK: refactored AgsGstreamerDevout and AgsGstreamerDevin
+	* refactored AgsGstreamerDevout and AgsGstreamerDevin
 	* TODO:JK: refactored AgsSimpleFile
 	* fixed potential SIGSEGV with destroyed machine in AgsCompositeEditor
 	* fixed potential SIGSEGV with AgsSF2Synth and AgsSFZSynth wah-wah callbacks

@@ -2496,9 +2496,9 @@ ags_wasapi_devin_client_free(AgsSoundcard *soundcard)
     note_256th_attack_lower = 0;
     note_256th_attack_upper = 0;
     
-    ags_wasapi_devin_get_note_256th_attack(AGS_SOUNDCARD(wasapi_devin),
-					  &note_256th_attack_lower,
-					  &note_256th_attack_upper);
+    ags_soundcard_get_note_256th_attack(AGS_SOUNDCARD(wasapi_devin),
+					&note_256th_attack_lower,
+					&note_256th_attack_upper);
     
     if(note_256th_attack_lower < note_256th_attack_upper){
       wasapi_devin->note_256th_offset_last = wasapi_devin->note_256th_offset + floor((note_256th_attack_upper - note_256th_attack_lower) / (wasapi_devin->note_256th_delay * (double) buffer_size));

@@ -2479,9 +2479,9 @@ ags_oss_devin_device_free(AgsSoundcard *soundcard)
     note_256th_attack_lower = 0;
     note_256th_attack_upper = 0;
     
-    ags_oss_devin_get_note_256th_attack(AGS_SOUNDCARD(oss_devin),
-					  &note_256th_attack_lower,
-					  &note_256th_attack_upper);
+    ags_soundcard_get_note_256th_attack(AGS_SOUNDCARD(oss_devin),
+					&note_256th_attack_lower,
+					&note_256th_attack_upper);
     
     if(note_256th_attack_lower < note_256th_attack_upper){
       oss_devin->note_256th_offset_last = oss_devin->note_256th_offset + floor((note_256th_attack_upper - note_256th_attack_lower) / (oss_devin->note_256th_delay * (double) buffer_size));

@@ -2214,9 +2214,9 @@ ags_jack_devin_port_free(AgsSoundcard *soundcard)
     note_256th_attack_lower = 0;
     note_256th_attack_upper = 0;
     
-    ags_jack_devin_get_note_256th_attack(AGS_SOUNDCARD(jack_devin),
-					  &note_256th_attack_lower,
-					  &note_256th_attack_upper);
+    ags_soundcard_get_note_256th_attack(AGS_SOUNDCARD(jack_devin),
+					&note_256th_attack_lower,
+					&note_256th_attack_upper);
     
     if(note_256th_attack_lower < note_256th_attack_upper){
       jack_devin->note_256th_offset_last = jack_devin->note_256th_offset + floor((note_256th_attack_upper - note_256th_attack_lower) / (jack_devin->note_256th_delay * (double) buffer_size));
