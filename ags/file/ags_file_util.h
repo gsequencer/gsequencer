@@ -47,6 +47,8 @@ typedef struct _AgsFileUtil AgsFileUtil;
 
 struct _AgsFileUtil
 {
+  gchar *file_version;
+  
   gchar *app_encoding;
   
   gchar *encoding;
@@ -63,6 +65,10 @@ AgsFileUtil* ags_file_util_alloc(gchar *app_encoding,
 
 gpointer ags_file_util_copy(AgsFileUtil *ptr);
 void ags_file_util_free(AgsFileUtil *ptr);
+
+gchar* ags_file_util_get_file_version(AgsFileUtil *file_util);
+void ags_file_util_set_file_version(AgsFileUtil *file_util,
+				    gchar *file_version);
 
 gchar* ags_file_util_get_app_encoding(AgsFileUtil *file_util);
 

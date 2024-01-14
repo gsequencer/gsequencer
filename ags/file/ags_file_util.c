@@ -154,12 +154,12 @@ ags_file_util_get_app_encoding(AgsFileUtil *file_util)
 }
 
 /**
- * ags_file_util_get_app_encoding:
+ * ags_file_util_get_encoding:
  * @file_util: the #AgsFileUtil-struct
  * 
- * Get application encoding of @file_util.
+ * Get encoding of @file_util.
  *
- * Returns: (transfer full): the application encoding
+ * Returns: (transfer full): the encoding
  * 
  * Since: 6.3.0
  */
@@ -175,6 +175,51 @@ ags_file_util_get_encoding(AgsFileUtil *file_util)
   encoding = g_strdup(file_util->encoding);
 
   return(encoding);
+}
+
+/**
+ * ags_file_util_get_file_version:
+ * @file_util: the #AgsFileUtil-struct
+ * 
+ * Get file version of @file_util.
+ *
+ * Returns: (transfer full): the file version
+ * 
+ * Since: 6.3.0
+ */
+gchar*
+ags_file_util_get_file_version(AgsFileUtil *file_util)
+{
+  gchar *file_version;
+  
+  if(file_util == NULL){
+    return(NULL);
+  }
+
+  file_version = g_strdup(file_util->file_version);
+
+  return(file_version);
+}
+
+/**
+ * ags_file_util_get_file_version:
+ * @file_util: the #AgsFileUtil-struct
+ * @file_version: the file version
+ * 
+ * set file version of @file_util.
+ *
+ * Since: 6.3.0
+ */
+void
+ags_file_util_set_file_version(AgsFileUtil *file_util,
+			       gchar *file_version)
+{  
+  if(file_util == NULL ||
+     file_version == NULL){
+    return;
+  }
+
+  file_util->file_version = g_strdup(file_version);
 }
 
 /**
@@ -632,12 +677,14 @@ ags_file_util_get_complex(AgsFileUtil *file_util,
   AgsComplex *value;
 
   regmatch_t match_arr[12];
-    
+
   static regex_t complex_with_comma_regex;
+  static regex_t legacy_complex_with_comma_regex;
 
   static gboolean regex_compiled = FALSE;
 
   static const char *complex_with_comma_pattern = "^(([+-]?)([0-9]+)(,)([0-9]*)) + I * (([+-]?)([0-9]+)(,)([0-9]*))";
+  static const char *legacy_complex_with_comma_pattern = "^(([+-]?)([0-9]+)(,)([0-9]*)) (([+-]?)([0-9]+)(,)([0-9]*))";
 
   static GMutex regex_mutex;
   
@@ -654,6 +701,7 @@ ags_file_util_get_complex(AgsFileUtil *file_util,
     regex_compiled = TRUE;
       
     ags_regcomp(&complex_with_comma_regex, complex_with_comma_pattern, REG_EXTENDED);
+    ags_regcomp(&legacy_complex_with_comma_regex, legacy_complex_with_comma_pattern, REG_EXTENDED);
   }
   
   g_mutex_unlock(&regex_mutex);
@@ -673,17 +721,44 @@ ags_file_util_get_complex(AgsFileUtil *file_util,
       str[match_arr[9].rm_so] = '.';
     }
   }
+  
+  if(ags_regexec(&legacy_complex_with_comma_regex, str, max_matches, match_arr, 0) == 0){
+    str = 
+      tmp_str = g_strndup(str,
+			  match_arr[0].rm_eo);
+
+    if(str[match_arr[4].rm_so] == ','){
+      str[match_arr[4].rm_so] = '.';
+    }
+
+    if(str[match_arr[9].rm_so] == ','){
+      str[match_arr[9].rm_so] = '.';
+    }
+  }
 
   value = ags_complex_alloc();
 
-  end_str = NULL;
+  /* check legacy */
+  if(strstr(str, " + I * ") == NULL){
+    end_str = NULL;
   
-  value->real = g_ascii_strtod(str,
-			       &end_str);
+    value->real = g_ascii_strtod(str,
+				 &end_str);
 
-  if(strlen(end_str) > 7){
-    value->imag = g_ascii_strtod(end_str + 7,
-				 NULL);
+    if(strlen(end_str) > 1){
+      value->imag = g_ascii_strtod(end_str + 1,
+				   NULL);
+    }
+  }else{      
+    end_str = NULL;
+  
+    value->real = g_ascii_strtod(str,
+				 &end_str);
+
+    if(strlen(end_str) > 7){
+      value->imag = g_ascii_strtod(end_str + 7,
+				   NULL);
+    }
   }
   
   if(tmp_str != NULL){

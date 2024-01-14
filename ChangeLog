@@ -11,6 +11,7 @@ ags (6.3.0)
 	* refactored AgsCoreAudioDevout and AgsCoreAudioDevin
 	* refactored AgsWasapiDevout and AgsWasapiDevin
 	* refactored AgsGstreamerDevout and AgsGstreamerDevin
+	* refactored partially AgsSimpleFile make use of AgsFileUtil
 	* fixed potential SIGSEGV with destroyed machine in AgsCompositeEditor
 	* fixed potential SIGSEGV with AgsSF2Synth and AgsSFZSynth wah-wah callbacks
 

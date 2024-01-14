@@ -45,6 +45,14 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="6.3.0" date="2024-01-14">
+      <description>
+	<p>
+	  Many improvements and fixed some potential SIGSEGV.
+	</p>
+      </description>
+    </release>
+
     <release version="6.2.5" date="2023-12-20">
       <description>
 	<p>
