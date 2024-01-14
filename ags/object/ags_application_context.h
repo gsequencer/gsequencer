@@ -42,12 +42,12 @@ G_BEGIN_DECLS
 #define AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(obj) (&(((AgsApplicationContext *) obj)->obj_mutex))
 
 #ifndef PACKAGE_VERSION
-#define AGS_VERSION "3.0.0"
+#define AGS_VERSION "6.3.0"
 #else
 #define AGS_VERSION PACKAGE_VERSION
 #endif
 
-#define AGS_BUILD_ID "Wed Nov  6 18:28:15 UTC 2019"
+#define AGS_BUILD_ID "Wed Jan 10 08:49:34 UTC 2024"
 
 #define AGS_DEFAULT_DIRECTORY ".gsequencer"
 #define AGS_DEFAULT_CONFIG "ags.conf"

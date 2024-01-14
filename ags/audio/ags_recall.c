@@ -40,6 +40,8 @@
 #include <ags/audio/ags_recall_recycling.h>
 #include <ags/audio/ags_recall_audio_signal.h>
 
+#include <ags/audio/task/ags_reset_recall_staging.h>
+
 #include <libxml/tree.h>
 
 #include <string.h>
@@ -5042,6 +5044,8 @@ ags_recall_check_rt_data(AgsRecall *recall)
 void
 ags_recall_real_run_init_pre(AgsRecall *recall)
 {
+  AgsResetRecallStaging *reset_recall_staging;
+  
   GList *list_start, *list, *next;
 
   gboolean children_lock_free;
@@ -5063,6 +5067,11 @@ ags_recall_real_run_init_pre(AgsRecall *recall)
 
     return;
   }
+
+  reset_recall_staging = ags_reset_recall_staging_get_instance();
+  ags_reset_recall_staging_add(reset_recall_staging,
+			       recall);
+    
 
   recall->flags |= AGS_RECALL_INITIAL_RUN;
   recall->staging_flags |= AGS_SOUND_STAGING_RUN_INIT_PRE;
@@ -5978,6 +5987,8 @@ ags_recall_cancel(AgsRecall *recall)
 void
 ags_recall_real_done(AgsRecall *recall)
 {
+  AgsResetRecallStaging *reset_recall_staging;
+  
   GList *list_start, *list;
 
   GRecMutex *recall_mutex;
@@ -5990,6 +6001,10 @@ ags_recall_real_done(AgsRecall *recall)
     g_message("done - %s", G_OBJECT_TYPE_NAME(recall));
   }
 #endif
+
+  reset_recall_staging = ags_reset_recall_staging_get_instance();
+  ags_reset_recall_staging_remove(reset_recall_staging,
+				  recall);
   
   /* do feedback */
   g_rec_mutex_lock(recall_mutex);

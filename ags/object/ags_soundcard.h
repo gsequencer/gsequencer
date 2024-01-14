@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -224,8 +224,22 @@ struct _AgsSoundcardInterface
 			   void *buffer, guint sub_block);
 
   void (*get_note_256th_offset)(AgsSoundcard *soundcard,
-				guint *offset_lower,
-				guint *offset_upper);
+				guint *note_256th_offset_lower,
+				guint *note_256th_offset_upper);
+
+  void (*get_note_256th_attack)(AgsSoundcard *soundcard,
+				guint *note_256th_attack_lower,
+				guint *note_256th_attack_upper);
+  
+  guint (*get_note_256th_attack_at_position)(AgsSoundcard *soundcard,
+					     guint note_256th_attack_position);
+
+  void (*get_note_256th_attack_position)(AgsSoundcard *soundcard,
+					 guint *note_256th_attack_position_lower,
+					 guint *note_256th_attack_position_upper);
+
+  guint (*get_note_256th_attack_of_16th_pulse)(AgsSoundcard *soundcard);
+  guint (*get_note_256th_attack_of_16th_pulse_position)(AgsSoundcard *soundcard);
 };
 
 GType ags_soundcard_get_type();
@@ -314,8 +328,22 @@ void ags_soundcard_set_note_offset(AgsSoundcard *soundcard,
 guint ags_soundcard_get_note_offset(AgsSoundcard *soundcard);
 
 void ags_soundcard_get_note_256th_offset(AgsSoundcard *soundcard,
-					 guint *offset_lower,
-					 guint *offset_upper);
+					 guint *note_256th_offset_lower,
+					 guint *note_256th_offset_upper);
+
+guint ags_soundcard_get_note_256th_attack_of_16th_pulse(AgsSoundcard *soundcard);
+guint ags_soundcard_get_note_256th_attack_of_16th_pulse_position(AgsSoundcard *soundcard);
+
+void ags_soundcard_get_note_256th_attack(AgsSoundcard *soundcard,
+					 guint *note_256th_attack_lower,
+					 guint *note_256th_attack_upper);
+
+guint ags_soundcard_get_note_256th_attack_at_position(AgsSoundcard *soundcard,
+						      guint note_256th_attack_position);
+
+void ags_soundcard_get_note_256th_attack_position(AgsSoundcard *soundcard,
+						  guint *note_256th_attack_position_lower,
+						  guint *note_256th_attack_position_upper);
 
 void ags_soundcard_set_note_offset_absolute(AgsSoundcard *soundcard,
 					    guint note_offset);

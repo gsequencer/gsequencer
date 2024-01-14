@@ -1,4 +1,4 @@
-#Copyright (C) 2005-2023 Joel Kraehemann
+#Copyright (C) 2005-2024 Joel Kraehemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -129,6 +129,7 @@ EXTRA_DIST = config.rpath \
 	COPYING.stk-4.3 \
 	ags/config.h.in \
 	ags/ags_api_config.h.in \
+	ags/gsequencer_macos_install_main.c \
 	gtk-doc.make \
 	gsequencer.share \
 	aclocal.m4 \
@@ -1162,7 +1163,8 @@ libags_file_h_sources = \
 	ags/file/ags_file_id_ref.h \
 	ags/file/ags_file_launch.h \
 	ags/file/ags_file_link.h \
-	ags/file/ags_file_lookup.h
+	ags/file/ags_file_lookup.h \
+	ags/file/ags_file_util.h
 
 deprecated_libags_file_c_sources =
 
@@ -1172,7 +1174,8 @@ libags_file_c_sources = \
 	ags/file/ags_file_id_ref.c \
 	ags/file/ags_file_launch.c \
 	ags/file/ags_file_link.c \
-	ags/file/ags_file_lookup.c
+	ags/file/ags_file_lookup.c \
+	ags/file/ags_file_util.c
 
 # libags-thread all files
 deprecated_libags_thread_h_sources =
@@ -2353,6 +2356,7 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_reset_note.h \
 	ags/audio/task/ags_reset_fx_analyse.h \
 	ags/audio/task/ags_reset_fx_peak.h \
+	ags/audio/task/ags_reset_recall_staging.h \
 	ags/audio/task/ags_set_backlog.h \
 	ags/audio/task/ags_set_muted.h
 
@@ -2435,6 +2439,7 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_reset_note.c \
 	ags/audio/task/ags_reset_fx_analyse.c \
 	ags/audio/task/ags_reset_fx_peak.c \
+	ags/audio/task/ags_reset_recall_staging.c \
 	ags/audio/task/ags_set_backlog.c \
 	ags/audio/task/ags_set_muted.c
 

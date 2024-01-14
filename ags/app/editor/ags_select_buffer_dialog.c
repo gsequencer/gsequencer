@@ -26,6 +26,10 @@
 
 #include <ags/app/editor/ags_wave_edit.h>
 
+#include <libxml/tree.h>
+#include <libxml/parser.h>
+#include <libxml/xpath.h>
+
 #include <ags/i18n.h>
 
 void ags_select_buffer_dialog_class_init(AgsSelectBufferDialogClass *select_buffer_dialog);

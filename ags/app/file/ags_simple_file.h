@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -100,6 +100,8 @@ struct _AgsSimpleFile
   GList *launch;
 
   gboolean no_config;
+
+  AgsFileUtil *file_util;
 };
 
 struct _AgsSimpleFileClass

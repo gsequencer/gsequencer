@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -6371,7 +6371,8 @@ ags_audio_set_audio_channel_shrink0:
     channel->audio_channel = j;
     channel->line = i * audio_channels + j;
 
-    channel0 = channel->next;
+    channel0 =
+      channel1 = channel->next;
 
     j++;
       
@@ -13383,7 +13384,7 @@ ags_audio_real_play_recall(AgsAudio *audio,
 {
   AgsRecall *recall;
   AgsRecyclingContext *parent_recycling_context, *recycling_context;
-  
+
   GList *list_start, *list;
 
   guint sound_scope;
@@ -13507,6 +13508,8 @@ ags_audio_real_play_recall(AgsAudio *audio,
       if(AGS_IS_RECALL_AUDIO(recall)){
 	ags_recall_set_staging_flags(recall,
 				     AGS_SOUND_STAGING_AUTOMATE);
+	
+	//NOTE:JK: improve me not a necessity
 	ags_recall_unset_staging_flags(recall,
 				       AGS_SOUND_STAGING_AUTOMATE);
       }
@@ -13526,8 +13529,6 @@ ags_audio_real_play_recall(AgsAudio *audio,
     /* play stages */
     ags_recall_set_staging_flags(recall,
 				 staging_flags);
-    ags_recall_unset_staging_flags(recall,
-				   staging_flags);
 
     list = list->next;
   }
@@ -13543,7 +13544,7 @@ ags_audio_real_play_recall(AgsAudio *audio,
     g_object_unref(recycling_context);
   }
 
-  //FIXME:JK: uncomment
+  //NOTE:JK: won't uncomment because of parallelism per audio channel and scope
   //  ags_audio_set_staging_flags(audio, sound_scope,
   //			      staging_flags);
 }

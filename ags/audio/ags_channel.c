@@ -10021,6 +10021,8 @@ ags_channel_real_play_recall(AgsChannel *channel,
       if(AGS_IS_RECALL_CHANNEL(recall)){
 	ags_recall_set_staging_flags(recall,
 				     AGS_SOUND_STAGING_AUTOMATE);
+
+	//NOTE:JK: improve me not a necessity
 	ags_recall_unset_staging_flags(recall,
 				       AGS_SOUND_STAGING_AUTOMATE);
       }
@@ -10040,8 +10042,6 @@ ags_channel_real_play_recall(AgsChannel *channel,
     /* play stages */
     ags_recall_set_staging_flags(recall,
 				 staging_flags);
-    ags_recall_unset_staging_flags(recall,
-				   staging_flags);
 
     list = list->next;
   }

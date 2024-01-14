@@ -1907,6 +1907,7 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 	IpatchSF2Sample *current;
 	IpatchSF2Sample *lower;
 	IpatchSF2Sample *higher;
+	IpatchSF2Sample *first;
 	
 	IpatchRange *note_range;
 
@@ -1917,11 +1918,14 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 	
 	pzone = ipatch_iter_get(&pzone_iter);
 
-	note_range = NULL;
+	note_range = ipatch_range_new(0, 127);
+	
 	g_object_get(pzone,
 		     "note-range", &note_range,
 		     NULL);
 
+	//	g_message("note-range = %d %d", note_range->low, note_range->high);
+	
 	sf2_instrument = (IpatchItem *) ipatch_sf2_pzone_get_inst(pzone);
 
 	izone_list = ipatch_sf2_inst_get_zones(sf2_instrument);
@@ -1931,6 +1935,7 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 	current = NULL;
 	lower = NULL;
 	higher = NULL;
+	first = NULL;
 
 	current_root_note = -1;
 	lower_root_note = -1;
@@ -1957,6 +1962,8 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 		g_object_get(sf2_sample,
 			     "root-note", &root_note,
 			     NULL);
+		
+		//		g_message("root-note = %d", root_note);
 
 		if(root_note >= note_range->low &&
 		   root_note <= note_range->high){		
@@ -1998,6 +2005,11 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 		    higher_root_note = root_note;
 		  }
 		}
+
+		if(first == NULL){
+		  first = sf2_sample;
+		  g_object_ref(sf2_sample);
+		}
 	      }	      
 	    }while(ipatch_iter_next(&izone_iter) != NULL && !success);
 
@@ -2014,6 +2026,13 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 	      success = TRUE;
 	      
 	      sf2_sample = higher;
+	      g_object_ref(sf2_sample);
+	    }
+	    
+	    if(!success && first != NULL){
+	      success = TRUE;
+	      
+	      sf2_sample = first;
 	      g_object_ref(sf2_sample);
 	    }
 	    
@@ -2299,6 +2318,10 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 
 	if(higher != NULL){
 	  g_object_unref(higher);
+	}
+	
+	if(first != NULL){
+	  g_object_unref(first);
 	}
       }while(ipatch_iter_next(&pzone_iter) != NULL);
     }
@@ -4996,6 +5019,8 @@ ags_sf2_synth_util_midi_locale_find_sample_near_midi_key(AgsIpatch *ipatch,
 	
 	pzone = ipatch_iter_get(&pzone_iter);
 
+	note_range = ipatch_range_new(0, 127);
+
 	g_object_get(pzone,
 		     "note-range", &note_range,
 		     NULL);
@@ -5031,7 +5056,7 @@ ags_sf2_synth_util_midi_locale_find_sample_near_midi_key(AgsIpatch *ipatch,
 			     "root-note", &root_note,
 			     NULL);
 		
-		if(root_note == 60){
+		if(root_note == midi_key){
 		  matching_sf2_sample = sf2_sample;
 
 		  break;
@@ -5074,8 +5099,8 @@ ags_sf2_synth_util_midi_locale_find_sample_near_midi_key(AgsIpatch *ipatch,
 		     (GDestroyNotify) g_object_unref);
   }
 
-  if(ipatch_sample != NULL){
-    g_object_ref(ipatch_sample);
+  if(matching_sf2_sample != NULL){
+    g_object_ref(matching_sf2_sample);
   }
   
   if(preset != NULL){
@@ -5090,5 +5115,5 @@ ags_sf2_synth_util_midi_locale_find_sample_near_midi_key(AgsIpatch *ipatch,
     sample[0] = matching_sample;
   }
   
-  return(ipatch_sample);
+  return(matching_sf2_sample);
 }

@@ -27,6 +27,10 @@
 
 #include <ags/app/editor/ags_notation_edit.h>
 
+#include <libxml/tree.h>
+#include <libxml/parser.h>
+#include <libxml/xpath.h>
+
 #include <ags/i18n.h>
 
 void ags_select_note_dialog_class_init(AgsSelectNoteDialogClass *select_note_dialog);

@@ -24,6 +24,10 @@
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_effect_bridge.h>
 
+#include <libxml/tree.h>
+#include <libxml/parser.h>
+#include <libxml/xpath.h>
+
 #include <ags/i18n.h>
 
 void ags_machine_class_init(AgsMachineClass *machine);
@@ -2446,7 +2450,7 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
 	}
       }
     }else{
-      for(i = 0; i < pads_old; i++){
+      for(i = pads; i < pads_old; i++){
 	for(j = 0; j < machine->audio_channels; j++){
 	  if(i >= pads){
 	    AgsMachineInputLine* input_line;
@@ -2454,7 +2458,8 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
 	    input_line = g_list_nth_data(machine->machine_input_line,
 					 pads * machine->audio_channels);
 
-	    if(input_line->pad >= pads){
+	    if(input_line != NULL &&
+	       input_line->pad >= pads){
 	      machine->machine_input_line = g_list_remove(machine->machine_input_line,
 							  input_line);
 	    

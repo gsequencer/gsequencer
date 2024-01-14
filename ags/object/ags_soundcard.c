@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -986,8 +986,8 @@ ags_soundcard_get_note_offset(AgsSoundcard *soundcard)
 /**
  * ags_soundcard_get_note_256th_offset:
  * @soundcard: the #AgsSoundcard
- * @offset_lower: the return location of offset lower range
- * @offset_upper: the return location of offset upper range
+ * @note_256th_offset_lower: the return location of offset lower range
+ * @note_256th_offset_upper: the return location of offset upper range
  *
  * Get current playback note 256th offset. 
  *
@@ -995,8 +995,8 @@ ags_soundcard_get_note_offset(AgsSoundcard *soundcard)
  */
 void
 ags_soundcard_get_note_256th_offset(AgsSoundcard *soundcard,
-				    guint *offset_lower,
-				    guint *offset_upper)
+				    guint *note_256th_offset_lower,
+				    guint *note_256th_offset_upper)
 {
   AgsSoundcardInterface *soundcard_interface;
 
@@ -1005,8 +1005,127 @@ ags_soundcard_get_note_256th_offset(AgsSoundcard *soundcard,
   g_return_if_fail(soundcard_interface->get_note_256th_offset);
 
   soundcard_interface->get_note_256th_offset(soundcard,
-					     offset_lower,
-					     offset_upper);
+					     note_256th_offset_lower,
+					     note_256th_offset_upper);
+}
+
+/**
+ * ags_soundcard_get_note_256th_attack_of_16th_pulse:
+ * @soundcard: the #AgsSoundcard
+ * 
+ * Get note 256th attack of current 16th pulse.
+ * 
+ * Returns: the note 256th attack of 16th pulse
+ * 
+ * Since: 6.3.0
+ */
+guint
+ags_soundcard_get_note_256th_attack_of_16th_pulse(AgsSoundcard *soundcard)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), G_MAXUINT);
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_val_if_fail(soundcard_interface->get_note_256th_attack_of_16th_pulse, G_MAXUINT);
+
+  return(soundcard_interface->get_note_256th_attack_of_16th_pulse(soundcard));
+}
+
+/**
+ * ags_soundcard_get_note_256th_attack_of_16th_pulse_position:
+ * @soundcard: the #AgsSoundcard
+ * 
+ * Get note 256th attack position of current 16th pulse.
+ * 
+ * Returns: the note 256th attack position of 16th pulse
+ * 
+ * Since: 6.3.0
+ */
+guint
+ags_soundcard_get_note_256th_attack_of_16th_pulse_position(AgsSoundcard *soundcard)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), G_MAXUINT);
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_val_if_fail(soundcard_interface->get_note_256th_attack_of_16th_pulse_position, G_MAXUINT);
+
+  return(soundcard_interface->get_note_256th_attack_of_16th_pulse_position(soundcard));
+}
+
+/**
+ * ags_soundcard_get_note_256th_attack:
+ * @soundcard: the #AgsSoundcard
+ * @note_256th_attack_lower: the return location of attack lower range
+ * @note_256th_attack_upper: the return location of attack upper range
+ *
+ * Get current playback note 256th attack. 
+ *
+ * Since: 6.2.2
+ */
+void
+ags_soundcard_get_note_256th_attack(AgsSoundcard *soundcard,
+				    guint *note_256th_attack_lower,
+				    guint *note_256th_attack_upper)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_if_fail(soundcard_interface->get_note_256th_attack);
+
+  soundcard_interface->get_note_256th_attack(soundcard,
+					     note_256th_attack_lower,
+					     note_256th_attack_upper);
+}
+
+/**
+ * ags_soundcard_get_note_256th_attack_at_position:
+ * @soundcard: the #AgsSoundcard
+ * @note_256th_attack_position: the note 256th attack position
+ *
+ * Get current playback note 256th attack position within AGS_SOUNDCARD_DEFAULT_PERIOD.
+ *
+ * Since: 6.2.2
+ */
+guint
+ags_soundcard_get_note_256th_attack_at_position(AgsSoundcard *soundcard,
+						guint note_256th_attack_position)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), 0);
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_val_if_fail(soundcard_interface->get_note_256th_attack_at_position, 0);
+
+  return(soundcard_interface->get_note_256th_attack_at_position(soundcard,
+								note_256th_attack_position));
+}
+
+/**
+ * ags_soundcard_get_note_256th_attack_position:
+ * @soundcard: the #AgsSoundcard
+ * @note_256th_attack_position_lower: the return location of attack position lower range
+ * @note_256th_attack_position_upper: the return location of attack position upper range
+ *
+ * Get current playback note 256th attack position within AGS_SOUNDCARD_DEFAULT_PERIOD.
+ *
+ * Since: 6.2.2
+ */
+void
+ags_soundcard_get_note_256th_attack_position(AgsSoundcard *soundcard,
+					     guint *note_256th_attack_position_lower,
+					     guint *note_256th_attack_position_upper)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_if_fail(soundcard_interface->get_note_256th_attack_position);
+
+  soundcard_interface->get_note_256th_attack_position(soundcard,
+						      note_256th_attack_position_lower,
+						      note_256th_attack_position_upper);
 }
 
 /**

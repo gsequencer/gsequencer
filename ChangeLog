@@ -1,3 +1,58 @@
+ags (6.3.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_soundcard_get_note_256th_attack_of_16th_pulse() and ags_soundcard_get_note_256th_attack_of_16th_pulse_position()
+	* implemented ags_file_util.[ch] file read/write functions for C types
+	* implemented AgsRecallResetStaging
+	* refactored AgsAlsaDevout and AgsAlsaDevin
+	* refactored AgsOssDevout and AgsOssDevin
+	* refactored AgsPulseDevout and AgsPulseDevin
+	* refactored AgsJackDevout and AgsJackDevin
+	* refactored AgsCoreAudioDevout and AgsCoreAudioDevin
+	* refactored AgsWasapiDevout and AgsWasapiDevin
+	* refactored AgsGstreamerDevout and AgsGstreamerDevin
+	* refactored partially AgsSimpleFile make use of AgsFileUtil
+	* fixed potential SIGSEGV with destroyed machine in AgsCompositeEditor
+	* fixed potential SIGSEGV with AgsSF2Synth and AgsSFZSynth wah-wah callbacks
+
+ags (6.2.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* reverted changes of AgsSimpleFile to g_ascii_strtod()
+	* minor bug-fixes
+
+ags (6.2.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential memory corruption with boxed type SF2 note-range
+	* refactored AgsSimpleFile to use g_strtod() instead of g_ascii_strtod()
+
+ags (6.2.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed interface function access ags_soundcard_get_note_256th_attack() in ags-fx-notation
+
+ags (6.2.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_soundcard_get_note_256th_offset()
+	* implemented ags_soundcard_get_note_256th_attack()
+	* implemented ags_soundcard_get_note_256th_attack_at_position()
+	* refactored AgsAlsaDevout and AgsAlsaDevin
+	* refactored AgsOssDevout and AgsOssDevin
+	* refactored AgsPulseDevout and AgsPulseDevin
+	* refactored AgsJackDevout and AgsJackDevin
+	* refactored AgsCoreAudioDevout and AgsCoreAudioDevin
+	* refactored AgsWasapiDevout and AgsWasapiDevin
+	* refactored AgsGstreamerDevout and AgsGstreamerDevin
+	* refactored ags-fx-buffer
+	* refactored ags-fx-notation
+	* refactored ags-fx-synth
+	* refactored ags-fx-fm-synth
+	* refactored ags-fx-sf2-synth
+	* refactored ags-fx-sfz-synth
+	* fixed missing include
+
 ags (6.2.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

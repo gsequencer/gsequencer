@@ -1639,34 +1639,38 @@ ags_line_member_find_specifier(GList *recall,
   current_port = NULL;
     
   while(recall != NULL){
-    if(ags_recall_test_behaviour_flags(recall->data, AGS_SOUND_BEHAVIOUR_BULK_MODE)){
-      recall = recall->next;
+    if(AGS_IS_RECALL(recall->data)){
+      if(ags_recall_test_behaviour_flags(recall->data, AGS_SOUND_BEHAVIOUR_BULK_MODE)){
+	recall = recall->next;
 	
-      continue;
-    }
+	continue;
+      }
 
-    g_object_get(recall->data,
-		 "port", &start_port,
-		 NULL);
+      start_port = NULL;
+    
+      g_object_get(recall->data,
+		   "port", &start_port,
+		   NULL);
 
-    port = ags_port_find_specifier(start_port,
-				   specifier);
+      port = ags_port_find_specifier(start_port,
+				     specifier);
     
 #ifdef AGS_DEBUG
-    g_message("search port in %s", G_OBJECT_TYPE_NAME(recall->data));
+      g_message("search port in %s", G_OBJECT_TYPE_NAME(recall->data));
 #endif
 
-    if(port != NULL){
-      current_port = port->data;
+      if(port != NULL){
+	current_port = port->data;
+      }
+
+      g_list_free_full(start_port,
+		       g_object_unref);
+
+      if(current_port != NULL){
+	break;
+      }
     }
-
-    g_list_free_full(start_port,
-		     g_object_unref);
-
-    if(current_port != NULL){
-      break;
-    }
-
+    
     /* iterate */
     recall = recall->next;
   }
@@ -1736,6 +1740,8 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
   port = NULL;
     
   /* play context */
+  start_list = NULL;
+  
   g_object_get(channel,
 	       "play", &start_list,
 	       NULL);
@@ -1747,6 +1753,8 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
 		   g_object_unref);  
 
   /* recall context */
+  start_list = NULL;
+  
   g_object_get(channel,
 	       "recall", &start_list,
 	       NULL);
@@ -1773,6 +1781,8 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
     GList *start_list;
 
     /* play context */
+    start_list = NULL;
+    
     g_object_get(audio,
 		 "play", &start_list,
 		 NULL);
@@ -1784,6 +1794,8 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
 		     g_object_unref);
 
     /* recall context */
+    start_list = NULL;
+    
     g_object_get(audio,
 		 "recall", &start_list,
 		 NULL);
