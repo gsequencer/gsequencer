@@ -273,11 +273,17 @@ ags_file_util_put_int(AgsFileUtil *file_util,
     return(NULL);
   }
 
+#if 0
   str = g_malloc(AGS_FILE_UTIL_64BIT_MAX_STRING_LENGTH * sizeof(gchar));
+
   xmlStrprintf(str,
 	       AGS_FILE_UTIL_64BIT_MAX_STRING_LENGTH,
 	       "%d",
 	       value);
+#else
+  str = g_strdup_printf("%d",
+			value);
+#endif
   
   return(str);
 }
@@ -333,11 +339,17 @@ ags_file_util_put_uint(AgsFileUtil *file_util,
     return(NULL);
   }
 
+#if 0
   str = g_malloc(AGS_FILE_UTIL_64BIT_MAX_STRING_LENGTH * sizeof(gchar));
+
   xmlStrprintf(str,
 	       AGS_FILE_UTIL_64BIT_MAX_STRING_LENGTH,
 	       "%u",
 	       value);
+#else
+  str = g_strdup_printf("%u",
+			value);
+#endif
   
   return(str);
 }
@@ -393,11 +405,17 @@ ags_file_util_put_int64(AgsFileUtil *file_util,
     return(NULL);
   }
 
+#if 0
   str = g_malloc(AGS_FILE_UTIL_64BIT_MAX_STRING_LENGTH * sizeof(gchar));
+
   xmlStrprintf(str,
 	       AGS_FILE_UTIL_64BIT_MAX_STRING_LENGTH,
 	       "%li",
 	       value);
+#else
+  str = g_strdup_printf("%li",
+			value);
+#endif
   
   return(str);
 }
@@ -453,11 +471,17 @@ ags_file_util_put_uint64(AgsFileUtil *file_util,
     return(NULL);
   }
 
+#if 0
   str = g_malloc(AGS_FILE_UTIL_64BIT_MAX_STRING_LENGTH * sizeof(gchar));
+
   xmlStrprintf(str,
 	       AGS_FILE_UTIL_64BIT_MAX_STRING_LENGTH,
 	       "%lu",
 	       value);
+#else
+  str = g_strdup_printf("%lu",
+			value);
+#endif
   
   return(str);
 }
@@ -550,11 +574,17 @@ ags_file_util_put_float(AgsFileUtil *file_util,
     return(NULL);
   }
 
+#if 0
   str = g_malloc(AGS_FILE_UTIL_DOUBLE_MAX_STRING_LENGTH * sizeof(gchar));
+
   xmlStrprintf(str,
 	       AGS_FILE_UTIL_DOUBLE_MAX_STRING_LENGTH,
 	       "%f",
 	       value);
+#else
+  str = g_strdup_printf("%f",
+			value);
+#endif
   
   return(str);
 }
@@ -647,11 +677,17 @@ ags_file_util_put_double(AgsFileUtil *file_util,
     return(NULL);
   }
 
+#if 0
   str = g_malloc(AGS_FILE_UTIL_DOUBLE_MAX_STRING_LENGTH * sizeof(gchar));
+
   xmlStrprintf(str,
 	       AGS_FILE_UTIL_DOUBLE_MAX_STRING_LENGTH,
 	       "%Lf",
 	       value);
+#else
+  str = g_strdup_printf("%Lf",
+			value);
+#endif
   
   return(str);
 }
@@ -790,12 +826,18 @@ ags_file_util_put_complex(AgsFileUtil *file_util,
     return(NULL);
   }
 
+#if 0
   str = g_malloc(((2 * AGS_FILE_UTIL_DOUBLE_MAX_STRING_LENGTH) + 7) * sizeof(gchar));
   xmlStrprintf(str,
 	       ((2 * AGS_FILE_UTIL_DOUBLE_MAX_STRING_LENGTH) + 7),
 	       "%Lf + I * %Lf",
 	       (gdouble) value->real,
 	       (gdouble) value->imag);
+#else
+  str = g_strdup_printf("%Lf + I * %Lf",
+			(gdouble) value->real,
+			(gdouble) value->imag);
+#endif
   
   return(str);
 }
