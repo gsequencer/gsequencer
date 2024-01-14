@@ -1,4 +1,4 @@
-# Copyright (C) 2005-2023 Daniel Maksymow, Joël Krähemann
+# Copyright (C) 2005-2024 Daniel Maksymow, Joël Krähemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -657,6 +657,7 @@ libags_audio_sources = files(
   'audio/task/ags_reset_fx_analyse.c',
   'audio/task/ags_reset_fx_peak.c',
   'audio/task/ags_reset_note.c',
+  'audio/task/ags_reset_recall_staging.c',
   'audio/task/ags_resize_audio.c',
   'audio/task/ags_seek_soundcard.c',
   'audio/task/ags_set_audio_channels.c',
@@ -1872,6 +1873,7 @@ libags_audio_audio_task_headers = [
   'audio/task/ags_reset_fx_analyse.h',
   'audio/task/ags_reset_fx_peak.h',
   'audio/task/ags_reset_note.h',
+  'audio/task/ags_reset_recall_staging.h',
   'audio/task/ags_resize_audio.h',
   'audio/task/ags_seek_soundcard.h',
   'audio/task/ags_set_audio_channels.h',
