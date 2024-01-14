@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,7 +43,6 @@
 #include <ags/audio/thread/ags_channel_thread.h>
 
 #include <ags/audio/task/ags_cancel_audio.h>
-#include <ags/audio/task/ags_reset_recall_staging.h>
 
 #include <ags/audio/file/ags_audio_file_link.h>
 #include <ags/audio/file/ags_audio_file_manager.h>
@@ -13386,8 +13385,6 @@ ags_audio_real_play_recall(AgsAudio *audio,
   AgsRecall *recall;
   AgsRecyclingContext *parent_recycling_context, *recycling_context;
 
-  AgsResetRecallStaging *reset_recall_staging;
-  
   GList *list_start, *list;
 
   guint sound_scope;
@@ -13415,8 +13412,6 @@ ags_audio_real_play_recall(AgsAudio *audio,
   if(ags_recall_id_check_state_flags(recall_id, AGS_SOUND_STATE_IS_TERMINATING)){
     return;
   }
-
-  reset_recall_staging = ags_reset_recall_staging_get_instance();
   
   /* get recall id mutex */
   recall_id_mutex = AGS_RECALL_ID_GET_OBJ_MUTEX(recall_id);
@@ -13535,9 +13530,6 @@ ags_audio_real_play_recall(AgsAudio *audio,
     ags_recall_set_staging_flags(recall,
 				 staging_flags);
 
-    ags_reset_recall_staging_add(reset_recall_staging,
-				 recall);
-    
     list = list->next;
   }
   

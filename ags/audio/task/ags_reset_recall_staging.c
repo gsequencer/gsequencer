@@ -183,9 +183,6 @@ ags_reset_recall_staging_launch(AgsTask *task)
     ags_recall_unset_staging_flags(AGS_RECALL(recall->data),
 				   reset_recall_staging->staging_flags);
 
-    ags_reset_recall_staging_remove(reset_recall_staging,
-				    recall->data);
-
     /* iterate */
     recall = recall->next;
   }
@@ -218,9 +215,11 @@ ags_reset_recall_staging_add(AgsResetRecallStaging *reset_recall_staging,
   
   g_rec_mutex_lock(task_mutex);
 
-  reset_recall_staging->recall = g_list_prepend(reset_recall_staging->recall,
-						recall);
-  g_object_ref(recall);
+  if(g_list_find(reset_recall_staging->recall, recall) == NULL){
+    reset_recall_staging->recall = g_list_prepend(reset_recall_staging->recall,
+						  recall);
+    g_object_ref(recall);
+  }
   
   g_rec_mutex_unlock(task_mutex);
 }
@@ -249,8 +248,7 @@ ags_reset_recall_staging_remove(AgsResetRecallStaging *reset_recall_staging,
 
   g_rec_mutex_lock(task_mutex);
 
-  if(g_list_find(reset_recall_staging->recall,
-		 recall) != NULL){
+  if(g_list_find(reset_recall_staging->recall, recall) != NULL){
     reset_recall_staging->recall = g_list_remove(reset_recall_staging->recall,
 						 recall);
     g_object_unref(recall);
