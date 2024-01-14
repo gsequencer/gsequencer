@@ -1,3 +1,8 @@
+ags (6.3.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* refactored ags-fx-notation regarding note 256th attack and make use of 16th pulse
+
 ags (6.3.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
