@@ -18,9 +18,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 6.2.5\n"
+"Project-Id-Version: gsequencer 6.3.0\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2023-12-20 15:51+0100\n"
+"POT-Creation-Date: 2024-01-14 02:38+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -88,32 +88,32 @@ msgstr ""
 msgid "Ports"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:730
+#: ags/app/ags_machine_callbacks.c:748
 msgid "rename machine"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:776
+#: ags/app/ags_machine_callbacks.c:794
 msgid "rename audio"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:854
+#: ags/app/ags_machine_callbacks.c:872
 msgid "reposition audio"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:860 ags/app/editor/ags_automation_meta.c:593
+#: ags/app/ags_machine_callbacks.c:878 ags/app/editor/ags_automation_meta.c:593
 #: ags/app/editor/ags_wave_meta.c:426 ags/app/editor/ags_notation_meta.c:484
 msgid "position"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:903
+#: ags/app/ags_machine_callbacks.c:921
 msgid "properties"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:982
+#: ags/app/ags_machine_callbacks.c:1000
 msgid "envelope"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:1023
+#: ags/app/ags_machine_callbacks.c:1041
 #: ags/app/editor/ags_pattern_envelope.c:251
 #: ags/app/editor/ags_envelope_editor.c:180
 #: ags/app/machine/ags_live_lv2_bridge.c:498
@@ -122,7 +122,7 @@ msgstr ""
 msgid "preset"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:1109
+#: ags/app/ags_machine_callbacks.c:1127
 msgid "connections"
 msgstr ""
 

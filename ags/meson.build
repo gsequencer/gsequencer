@@ -213,6 +213,7 @@ libags_sources = files(
   'file/ags_file_launch.c',
   'file/ags_file_link.c',
   'file/ags_file_lookup.c',
+  'file/ags_file_util.c',
 )
 
 libags_dependencies = [
@@ -1385,6 +1386,7 @@ libags_file_headers = [
   'file/ags_file_lookup.h',
   'file/ags_file_id_ref.h',
   'file/ags_file_link.h',
+  'file/ags_file_util.h',
 ]
 
 libags_headers = libags_util_headers + libags_lib_headers + libags_object_headers + libags_file_headers
