@@ -100,6 +100,8 @@ struct _AgsSimpleFile
   GList *launch;
 
   gboolean no_config;
+
+  AgsFileUtil *file_util;
 };
 
 struct _AgsSimpleFileClass

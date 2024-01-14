@@ -49,7 +49,6 @@
 #include <ags/audio/thread/ags_channel_thread.h>
 
 #include <ags/audio/task/ags_cancel_channel.h>
-#include <ags/audio/task/ags_reset_recall_staging.h>
 
 #include <ags/audio/file/ags_audio_file_link.h>
 #include <ags/audio/file/ags_audio_file.h>
@@ -9895,8 +9894,6 @@ ags_channel_real_play_recall(AgsChannel *channel,
   AgsRecall *recall;
   AgsRecyclingContext *parent_recycling_context, *recycling_context;
   
-  AgsResetRecallStaging *reset_recall_staging;
-
   GList *list_start, *list;
 
   guint sound_scope;
@@ -9929,8 +9926,6 @@ ags_channel_real_play_recall(AgsChannel *channel,
     return;
   }
 
-  reset_recall_staging = ags_reset_recall_staging_get_instance();
-  
   /* get recall id mutex */
   recall_id_mutex = AGS_RECALL_ID_GET_OBJ_MUTEX(recall_id);
 
@@ -10047,9 +10042,6 @@ ags_channel_real_play_recall(AgsChannel *channel,
     /* play stages */
     ags_recall_set_staging_flags(recall,
 				 staging_flags);
-    
-    ags_reset_recall_staging_add(reset_recall_staging,
-				 recall);
 
     list = list->next;
   }

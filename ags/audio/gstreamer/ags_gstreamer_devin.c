@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -166,6 +166,9 @@ guint ags_gstreamer_devin_get_note_256th_attack_at_position(AgsSoundcard *soundc
 void ags_gstreamer_devin_get_note_256th_attack_position(AgsSoundcard *soundcard,
 							guint *note_256th_attack_position_lower,
 							guint *note_256th_attack_position_upper);
+
+guint ags_gstreamer_devin_get_note_256th_attack_of_16th_pulse(AgsSoundcard *soundcard);
+guint ags_gstreamer_devin_get_note_256th_attack_of_16th_pulse_position(AgsSoundcard *soundcard);
 
 /**
  * SECTION:ags_gstreamer_devin
@@ -595,6 +598,9 @@ ags_gstreamer_devin_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->get_note_256th_attack_at_position = ags_gstreamer_devin_get_note_256th_attack_at_position;
 
   soundcard->get_note_256th_attack_position = ags_gstreamer_devin_get_note_256th_attack_position;
+
+  soundcard->get_note_256th_attack_of_16th_pulse = ags_gstreamer_devin_get_note_256th_attack_of_16th_pulse;
+  soundcard->get_note_256th_attack_of_16th_pulse_position = ags_gstreamer_devin_get_note_256th_attack_of_16th_pulse_position;
 }
 
 void
@@ -705,6 +711,9 @@ ags_gstreamer_devin_init(AgsGstreamerDevin *gstreamer_devin)
 					       sizeof(guint));
 
   gstreamer_devin->note_256th_delay = absolute_delay / 16.0;
+
+  gstreamer_devin->note_256th_attack_of_16th_pulse = 0;
+  gstreamer_devin->note_256th_attack_of_16th_pulse_position = 0;
 
   start_note_256th_attack = NULL;
 
@@ -1962,6 +1971,9 @@ ags_gstreamer_devin_port_init(AgsSoundcard *soundcard,
   gstreamer_devin->delay_counter = floor(ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(gstreamer_devin)));
   gstreamer_devin->tic_counter = 0;
 
+  gstreamer_devin->note_256th_attack_of_16th_pulse = 0;
+  gstreamer_devin->note_256th_attack_of_16th_pulse_position = 0;
+
   gstreamer_devin->flags |= (AGS_GSTREAMER_DEVIN_INITIALIZED |
 			     AGS_GSTREAMER_DEVIN_START_RECORD |
 			     AGS_GSTREAMER_DEVIN_RECORD);
@@ -2213,10 +2225,13 @@ ags_gstreamer_devin_port_free(AgsSoundcard *soundcard)
   gstreamer_devin->note_offset_absolute = gstreamer_devin->start_note_offset;
 
   gstreamer_devin->note_256th_offset = 16 * gstreamer_devin->start_note_offset;
+
+  gstreamer_devin->note_256th_attack_of_16th_pulse = 0;
+  gstreamer_devin->note_256th_attack_of_16th_pulse_position = 0;
+
+  gstreamer_devin->note_256th_offset_last = gstreamer_devin->note_256th_offset;
   
-  if(gstreamer_devin->note_256th_delay >= 1.0){
-    gstreamer_devin->note_256th_offset_last = gstreamer_devin->note_256th_offset;
-  }else{
+  if(gstreamer_devin->note_256th_delay < 1.0){
     guint buffer_size;
     guint note_256th_attack_lower, note_256th_attack_upper;
     guint i;
@@ -2226,16 +2241,12 @@ ags_gstreamer_devin_port_free(AgsSoundcard *soundcard)
     note_256th_attack_lower = 0;
     note_256th_attack_upper = 0;
     
-    ags_soundcard_get_note_256th_attack(soundcard,
+    ags_soundcard_get_note_256th_attack(AGS_SOUNDCARD(gstreamer_devin),
 					&note_256th_attack_lower,
 					&note_256th_attack_upper);
     
-    gstreamer_devin->note_256th_offset_last = gstreamer_devin->note_256th_offset;
-    
-    for(i = 1; i < (guint) floor(1.0 / (gstreamer_devin->note_256th_delay)) && note_256th_attack_lower + (guint) floor((double) i * (gstreamer_devin->note_256th_delay * (double) buffer_size)) < buffer_size; i++){
-      if(note_256th_attack_lower + (guint) floor((double) i * (gstreamer_devin->note_256th_delay * (double) buffer_size)) < note_256th_attack_upper + (guint) floor(gstreamer_devin->note_256th_delay * (double) buffer_size)){
-	gstreamer_devin->note_256th_offset_last = gstreamer_devin->note_256th_offset + i;
-      }
+    if(note_256th_attack_lower < note_256th_attack_upper){
+      gstreamer_devin->note_256th_offset_last = gstreamer_devin->note_256th_offset + floor((note_256th_attack_upper - note_256th_attack_lower) / (gstreamer_devin->note_256th_delay * (double) buffer_size));
     }
   }
 
@@ -2291,12 +2302,17 @@ ags_gstreamer_devin_tic(AgsSoundcard *soundcard)
   guint buffer_size;
   gdouble delay;
   gdouble delay_counter;
+  guint attack;
+  guint current_note_256th_attack;
   gdouble note_256th_delay;
   guint note_256th_attack_lower, note_256th_attack_upper;
+  guint note_256th_attack_of_16th_pulse;
+  guint note_256th_attack_of_16th_pulse_position;
   guint note_offset_absolute;
   guint note_offset;
   guint loop_left, loop_right;
   gboolean do_loop;
+  guint i;
   
   GRecMutex *gstreamer_devin_mutex;
   
@@ -2315,6 +2331,8 @@ ags_gstreamer_devin_tic(AgsSoundcard *soundcard)
 
   note_256th_delay = gstreamer_devin->note_256th_delay;
 
+  attack = gstreamer_devin->attack[gstreamer_devin->tic_counter];
+
   note_offset = gstreamer_devin->note_offset;
   note_offset_absolute = gstreamer_devin->note_offset_absolute;
   
@@ -2328,6 +2346,8 @@ ags_gstreamer_devin_tic(AgsSoundcard *soundcard)
   note_256th_attack_lower = 0;
   note_256th_attack_upper = 0;
 
+  note_256th_attack_of_16th_pulse_position =  ags_soundcard_get_note_256th_attack_of_16th_pulse_position(soundcard);
+  
   ags_soundcard_get_note_256th_attack(soundcard,
 				      &note_256th_attack_lower,
 				      &note_256th_attack_upper);
@@ -2342,15 +2362,37 @@ ags_gstreamer_devin_tic(AgsSoundcard *soundcard)
       
       gstreamer_devin->note_256th_offset = 16 * loop_left;
 
-      if(note_256th_delay >= 1.0){
-	gstreamer_devin->note_256th_offset_last = gstreamer_devin->note_256th_offset;
-      }else{
-	if(note_256th_attack_lower + ((guint) floor(1.0 / note_256th_delay) * (note_256th_delay * buffer_size)) < buffer_size){
-	  gstreamer_devin->note_256th_offset_last = gstreamer_devin->note_256th_offset + (guint) floor(1.0 / note_256th_delay);
-	}else{
-	  gstreamer_devin->note_256th_offset_last = gstreamer_devin->note_256th_offset + (guint) floor(1.0 / note_256th_delay) - 1;
+      gstreamer_devin->note_256th_offset_last = gstreamer_devin->note_256th_offset;
+
+      if(note_256th_delay < 1.0){
+	if(note_256th_attack_lower < note_256th_attack_upper){
+	  gstreamer_devin->note_256th_offset_last = gstreamer_devin->note_256th_offset + floor((note_256th_attack_upper - note_256th_attack_lower) / (gstreamer_devin->note_256th_delay * (double) buffer_size));
 	}
       }
+
+      note_256th_attack_of_16th_pulse = attack;
+
+      i = 1;
+      
+      if(note_256th_delay < 1.0){
+	for(; i < (guint) ceil(1.0 / note_256th_delay); i++){
+	  if(note_256th_attack_of_16th_pulse_position - i >= 0){
+	    current_note_256th_attack = ags_soundcard_get_note_256th_attack_at_position(soundcard,
+											note_256th_attack_of_16th_pulse_position - i);
+
+	    if(current_note_256th_attack < note_256th_attack_of_16th_pulse){
+	      note_256th_attack_of_16th_pulse = current_note_256th_attack;
+	    }else{
+	      break;
+	    }
+	  }else{
+	    break;
+	  }
+	}
+      }
+
+      gstreamer_devin->note_256th_attack_of_16th_pulse = note_256th_attack_of_16th_pulse;      
+      gstreamer_devin->note_256th_attack_of_16th_pulse_position += i;
 
       g_rec_mutex_unlock(gstreamer_devin_mutex);
     }else{
@@ -2361,15 +2403,37 @@ ags_gstreamer_devin_tic(AgsSoundcard *soundcard)
       
       gstreamer_devin->note_256th_offset = 16 * (note_offset + 1);
 
-      if(note_256th_delay >= 1.0){
-	gstreamer_devin->note_256th_offset_last = gstreamer_devin->note_256th_offset;
-      }else{
-	if(note_256th_attack_lower + ((guint) floor(1.0 / note_256th_delay) * (note_256th_delay * buffer_size)) < buffer_size){
-	  gstreamer_devin->note_256th_offset_last = gstreamer_devin->note_256th_offset + (guint) floor(1.0 / note_256th_delay);
-	}else{
-	  gstreamer_devin->note_256th_offset_last = gstreamer_devin->note_256th_offset + (guint) floor(1.0 / note_256th_delay) - 1;
+      gstreamer_devin->note_256th_offset_last = gstreamer_devin->note_256th_offset;
+      
+      if(note_256th_delay < 1.0){
+	if(note_256th_attack_lower < note_256th_attack_upper){
+	  gstreamer_devin->note_256th_offset_last = gstreamer_devin->note_256th_offset + floor((note_256th_attack_upper - note_256th_attack_lower) / (gstreamer_devin->note_256th_delay * (double) buffer_size));
 	}
       }
+      
+      note_256th_attack_of_16th_pulse = attack;
+
+      i = 1;
+      
+      if(note_256th_delay < 1.0){
+	for(; i < (guint) ceil(1.0 / note_256th_delay); i++){
+	  if(note_256th_attack_of_16th_pulse_position - i >= 0){
+	    current_note_256th_attack = ags_soundcard_get_note_256th_attack_at_position(soundcard,
+											note_256th_attack_of_16th_pulse_position - i);
+
+	    if(current_note_256th_attack < note_256th_attack_of_16th_pulse){
+	      note_256th_attack_of_16th_pulse = current_note_256th_attack;
+	    }else{
+	      break;
+	    }
+	  }else{
+	    break;
+	  }
+	}
+      }
+
+      gstreamer_devin->note_256th_attack_of_16th_pulse = note_256th_attack_of_16th_pulse;
+      gstreamer_devin->note_256th_attack_of_16th_pulse_position += i;
 
       g_rec_mutex_unlock(gstreamer_devin_mutex);
     }
@@ -2393,10 +2457,10 @@ ags_gstreamer_devin_tic(AgsSoundcard *soundcard)
     
     gstreamer_devin->note_256th_offset = (16 * gstreamer_devin->note_offset) + (guint) floor((gstreamer_devin->delay_counter + 1.0) * (1.0 / note_256th_delay));
 
-    if(note_256th_attack_lower + ((guint) floor(1.0 / note_256th_delay) * (note_256th_delay * buffer_size)) < buffer_size){
-      gstreamer_devin->note_256th_offset_last = gstreamer_devin->note_256th_offset + (guint) floor(1.0 / note_256th_delay);
-    }else{
-      gstreamer_devin->note_256th_offset_last = gstreamer_devin->note_256th_offset + (guint) floor(1.0 / note_256th_delay) - 1;
+    gstreamer_devin->note_256th_offset_last = gstreamer_devin->note_256th_offset;
+
+    if(note_256th_attack_lower < note_256th_attack_upper){
+      gstreamer_devin->note_256th_offset_last = gstreamer_devin->note_256th_offset + floor((note_256th_attack_upper - note_256th_attack_lower) / (gstreamer_devin->note_256th_delay * (double) buffer_size));
     }
 
     gstreamer_devin->delay_counter += 1.0;
@@ -2890,12 +2954,12 @@ ags_gstreamer_devin_set_note_offset(AgsSoundcard *soundcard,
   gstreamer_devin->note_offset = note_offset;
 
   note_256th_delay = gstreamer_devin->note_256th_delay;
-
+  
   gstreamer_devin->note_256th_offset = 16 * note_offset;
 
-  if(gstreamer_devin->note_256th_delay >= 1.0){
-    gstreamer_devin->note_256th_offset_last = gstreamer_devin->note_256th_offset;
-  }else{
+  gstreamer_devin->note_256th_offset_last = gstreamer_devin->note_256th_offset;
+  
+  if(note_256th_delay < 1.0){
     guint buffer_size;
     guint note_256th_attack_lower, note_256th_attack_upper;
     
@@ -2908,10 +2972,8 @@ ags_gstreamer_devin_set_note_offset(AgsSoundcard *soundcard,
 					&note_256th_attack_lower,
 					&note_256th_attack_upper);
 
-    if(note_256th_attack_lower + ((guint) floor(1.0 / note_256th_delay) * (note_256th_delay * buffer_size)) < buffer_size){
-      gstreamer_devin->note_256th_offset_last = gstreamer_devin->note_256th_offset + (guint) floor(1.0 / note_256th_delay);
-    }else{
-      gstreamer_devin->note_256th_offset_last = gstreamer_devin->note_256th_offset + (guint) floor(1.0 / note_256th_delay) - 1;
+    if(note_256th_attack_lower < note_256th_attack_upper){
+      gstreamer_devin->note_256th_offset_last = gstreamer_devin->note_256th_offset + floor((note_256th_attack_upper - note_256th_attack_lower) / (gstreamer_devin->note_256th_delay * (double) buffer_size));
     }
   }
 
@@ -3153,6 +3215,54 @@ ags_gstreamer_devin_get_note_256th_attack_position(AgsSoundcard *soundcard,
   }
   
   g_rec_mutex_unlock(gstreamer_devin_mutex);
+}
+
+guint
+ags_gstreamer_devin_get_note_256th_attack_of_16th_pulse(AgsSoundcard *soundcard)
+{
+  AgsGstreamerDevin *gstreamer_devin;
+
+  guint note_256th_attack_of_16th_pulse;
+  
+  GRecMutex *gstreamer_devin_mutex;  
+
+  gstreamer_devin = AGS_GSTREAMER_DEVIN(soundcard);
+
+  /* get gstreamer devin mutex */
+  gstreamer_devin_mutex = AGS_GSTREAMER_DEVIN_GET_OBJ_MUTEX(gstreamer_devin);
+
+  /* get note 256th attack of 16th pulse */
+  g_rec_mutex_lock(gstreamer_devin_mutex);
+
+  note_256th_attack_of_16th_pulse = gstreamer_devin->note_256th_attack_of_16th_pulse;
+
+  g_rec_mutex_unlock(gstreamer_devin_mutex);
+
+  return(note_256th_attack_of_16th_pulse);
+}
+
+guint
+ags_gstreamer_devin_get_note_256th_attack_of_16th_pulse_position(AgsSoundcard *soundcard)
+{
+  AgsGstreamerDevin *gstreamer_devin;
+
+  guint position;
+  
+  GRecMutex *gstreamer_devin_mutex;  
+
+  gstreamer_devin = AGS_GSTREAMER_DEVIN(soundcard);
+
+  /* get gstreamer devin mutex */
+  gstreamer_devin_mutex = AGS_GSTREAMER_DEVIN_GET_OBJ_MUTEX(gstreamer_devin);
+
+  /* get note 256th attack position of 16th pulse */
+  g_rec_mutex_lock(gstreamer_devin_mutex);
+
+  position = gstreamer_devin->note_256th_attack_of_16th_pulse_position;
+
+  g_rec_mutex_unlock(gstreamer_devin_mutex);
+
+  return(position);
 }
 
 void

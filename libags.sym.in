@@ -588,6 +588,8 @@ ags_file_util_get_type
 ags_file_util_alloc
 ags_file_util_copy
 ags_file_util_free
+ags_file_util_get_file_version
+ags_file_util_set_file_version
 ags_file_util_get_app_encoding
 ags_file_util_get_encoding
 ags_file_util_get_int

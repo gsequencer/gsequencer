@@ -3061,9 +3061,9 @@ ags_alsa_devout_device_free(AgsSoundcard *soundcard)
   alsa_devout->note_256th_attack_of_16th_pulse = 0;
   alsa_devout->note_256th_attack_of_16th_pulse_position = 0;
   
-  if(alsa_devout->note_256th_delay >= 1.0){
-    alsa_devout->note_256th_offset_last = alsa_devout->note_256th_offset;
-  }else{
+  alsa_devout->note_256th_offset_last = alsa_devout->note_256th_offset;
+  
+  if(alsa_devout->note_256th_delay < 1.0){
     guint buffer_size;
     guint note_256th_attack_lower, note_256th_attack_upper;
     guint i;
@@ -3073,11 +3073,9 @@ ags_alsa_devout_device_free(AgsSoundcard *soundcard)
     note_256th_attack_lower = 0;
     note_256th_attack_upper = 0;
     
-    ags_alsa_devout_get_note_256th_attack(AGS_SOUNDCARD(alsa_devout),
-					  &note_256th_attack_lower,
-					  &note_256th_attack_upper);
-
-    alsa_devout->note_256th_offset_last = alsa_devout->note_256th_offset;
+    ags_soundcard_get_note_256th_attack(AGS_SOUNDCARD(alsa_devout),
+					&note_256th_attack_lower,
+					&note_256th_attack_upper);
     
     if(note_256th_attack_lower < note_256th_attack_upper){
       alsa_devout->note_256th_offset_last = alsa_devout->note_256th_offset + floor((note_256th_attack_upper - note_256th_attack_lower) / (alsa_devout->note_256th_delay * (double) buffer_size));
@@ -3788,6 +3786,7 @@ ags_alsa_devout_get_note_256th_attack(AgsSoundcard *soundcard,
   nth_list = (guint) floor(note_256th_attack_position_lower / AGS_SOUNDCARD_DEFAULT_PERIOD);
   note_256th_attack = g_list_nth_data(alsa_devout->note_256th_attack,
 				      nth_list);
+  
   if(note_256th_attack != NULL){
     local_note_256th_attack_lower = note_256th_attack[note_256th_attack_position_lower % (guint) AGS_SOUNDCARD_DEFAULT_PERIOD];
   }
