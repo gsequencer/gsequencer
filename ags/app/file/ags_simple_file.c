@@ -9956,7 +9956,7 @@ ags_simple_file_read_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsOs
 
     endptr = str;
     
-    for(i = 0; endptr[0] != '\0' && i < 2 * gobject->sync_point_count; i++){
+    for(i = 0; endptr != NULL && endptr[0] != '\0' && i < 2 * gobject->sync_point_count; i++){
       current = ags_file_util_get_double(simple_file->file_util,
 					 endptr);
       endptr = strchr(endptr,
@@ -9965,7 +9965,7 @@ ags_simple_file_read_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsOs
       gtk_spin_button_set_value(gobject->sync_point[i],
 				current);
 
-      if(endptr[0] != '\0'){
+      if(endptr != NULL && endptr[0] != '\0'){
 	endptr++;
       }
     }
@@ -10137,7 +10137,7 @@ ags_simple_file_read_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *node, Ag
 
     endptr = str;
     
-    for(i = 0; endptr[0] != '\0' && i < 2 * gobject->sync_point_count; i++){
+    for(i = 0; endptr != NULL && endptr[0] != '\0' && i < 2 * gobject->sync_point_count; i++){
       current = ags_file_util_get_double(simple_file->file_util,
 					 endptr);
       endptr = strchr(endptr,
@@ -10146,7 +10146,7 @@ ags_simple_file_read_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *node, Ag
       gtk_spin_button_set_value(gobject->sync_point[i],
 				current);
 
-      if(endptr[0] != '\0'){
+      if(endptr != NULL && endptr[0] != '\0'){
 	endptr++;
       }
     }
