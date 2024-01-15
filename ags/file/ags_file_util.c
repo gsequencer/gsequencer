@@ -527,14 +527,14 @@ ags_file_util_get_float(AgsFileUtil *file_util,
   if(!regex_compiled){
     regex_compiled = TRUE;
       
-    ags_regcomp(&float_with_comma_regex, float_with_comma_pattern, REG_EXTENDED);
+    regcomp(&float_with_comma_regex, float_with_comma_pattern, REG_EXTENDED);
   }
   
   g_mutex_unlock(&regex_mutex);
 
   tmp_str = NULL;
 
-  if(ags_regexec(&float_with_comma_regex, str, max_matches, match_arr, 0) == 0){
+  if(regexec(&float_with_comma_regex, str, max_matches, match_arr, 0) == 0){
     str = 
       tmp_str = g_strndup(str,
 			  match_arr[0].rm_eo);
@@ -630,14 +630,14 @@ ags_file_util_get_double(AgsFileUtil *file_util,
   if(!regex_compiled){
     regex_compiled = TRUE;
       
-    ags_regcomp(&double_with_comma_regex, double_with_comma_pattern, REG_EXTENDED);
+    regcomp(&double_with_comma_regex, double_with_comma_pattern, REG_EXTENDED);
   }
   
   g_mutex_unlock(&regex_mutex);
 
   tmp_str = NULL;
 
-  if(ags_regexec(&double_with_comma_regex, str, max_matches, match_arr, 0) == 0){
+  if(regexec(&double_with_comma_regex, str, max_matches, match_arr, 0) == 0){
     str = 
       tmp_str = g_strndup(str,
 			  match_arr[0].rm_eo);
@@ -736,15 +736,15 @@ ags_file_util_get_complex(AgsFileUtil *file_util,
   if(!regex_compiled){
     regex_compiled = TRUE;
       
-    ags_regcomp(&complex_with_comma_regex, complex_with_comma_pattern, REG_EXTENDED);
-    ags_regcomp(&legacy_complex_with_comma_regex, legacy_complex_with_comma_pattern, REG_EXTENDED);
+    regcomp(&complex_with_comma_regex, complex_with_comma_pattern, REG_EXTENDED);
+    regcomp(&legacy_complex_with_comma_regex, legacy_complex_with_comma_pattern, REG_EXTENDED);
   }
   
   g_mutex_unlock(&regex_mutex);
 
   tmp_str = NULL;
 
-  if(ags_regexec(&complex_with_comma_regex, str, max_matches, match_arr, 0) == 0){
+  if(regexec(&complex_with_comma_regex, str, max_matches, match_arr, 0) == 0){
     str = 
       tmp_str = g_strndup(str,
 			  match_arr[0].rm_eo);
@@ -758,7 +758,7 @@ ags_file_util_get_complex(AgsFileUtil *file_util,
     }
   }
   
-  if(ags_regexec(&legacy_complex_with_comma_regex, str, max_matches, match_arr, 0) == 0){
+  if(regexec(&legacy_complex_with_comma_regex, str, max_matches, match_arr, 0) == 0){
     str = 
       tmp_str = g_strndup(str,
 			  match_arr[0].rm_eo);

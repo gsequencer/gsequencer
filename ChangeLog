@@ -1,3 +1,11 @@
+ags (6.3.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: implemented AgsRegexUtil
+	* deprecated ags_regexec() and ags_regcomp()
+	* added missing menu items of menubar
+	* improved ags_file_util.c to use regexec and regcomp
+
 ags (6.3.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

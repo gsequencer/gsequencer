@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,8 +34,9 @@
  * @section_id:
  * @include: ags/lib/ags_regex.h
  *
- * Wrapper around glibc regex functions to provide language coding-neutral
- * processing.
+ * Deprecated, warning uses setlocale() what is highly discouraged. Wrapper around glibc regex
+ * functions to provide language coding-neutral processing. Check #AgsRegexUtil-struct which
+ * does conversion with iconv.
  */
 
 static GMutex locale_mutex;
