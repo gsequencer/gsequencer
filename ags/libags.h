@@ -42,6 +42,7 @@
 #include <ags/lib/ags_solver_polynomial.h>
 #include <ags/lib/ags_log.h>
 #include <ags/lib/ags_regex.h>
+#include <ags/lib/ags_regex_util.h>
 #include <ags/lib/ags_string_util.h>
 #include <ags/lib/ags_time.h>
 #include <ags/lib/ags_turtle.h>

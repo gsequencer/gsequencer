@@ -51,7 +51,6 @@ ags_file_util_get_type(void)
   return g_define_type_id__volatile;
 }
 
-
 /**
  * ags_file_util_alloc:
  * @app_encoding: the application encoding

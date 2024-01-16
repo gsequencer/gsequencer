@@ -31,6 +31,8 @@
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
 
+#include <locale.h>
+
 #include <complex.h>
 
 #include <stdarg.h>
