@@ -395,6 +395,8 @@ ags_resize_editor_apply(AgsApplicable *applicable)
 				(AgsTask *) resize_audio);
 
   /* create task */
+  format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  
   switch(gtk_combo_box_get_active(resize_editor->format)){
   case 0:
     format = AGS_SOUNDCARD_SIGNED_8_BIT;
@@ -456,6 +458,22 @@ ags_resize_editor_reset(AgsApplicable *applicable)
 							      AGS_TYPE_MACHINE_EDITOR));
 
   audio = machine_editor->machine->audio;
+
+  audio_channels = 0;
+  min_audio_channels = 0;
+  max_audio_channels = 0;
+  
+  output_pads = 0;
+  min_output_pads = 0;
+  max_output_pads = 0;
+
+  input_pads = 0;
+  min_input_pads = 0;
+  max_input_pads = 0;
+
+  format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  
   g_object_get(audio,
 	       "audio-channels", &audio_channels,
 	       "min-audio-channels", &min_audio_channels,
@@ -491,6 +509,8 @@ ags_resize_editor_reset(AgsApplicable *applicable)
 			    (gdouble) input_pads);
 
   /*  */
+  position = 1;
+  
   switch(format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     position = 0;

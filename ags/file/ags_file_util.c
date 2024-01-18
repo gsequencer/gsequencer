@@ -308,8 +308,7 @@ ags_file_util_put_int(AgsFileUtil *file_util,
 {
   gchar *str;
   
-  if(file_util == NULL ||
-     str == NULL){
+  if(file_util == NULL){
     return(NULL);
   }
 
@@ -374,8 +373,7 @@ ags_file_util_put_uint(AgsFileUtil *file_util,
 {
   gchar *str;
   
-  if(file_util == NULL ||
-     str == NULL){
+  if(file_util == NULL){
     return(NULL);
   }
 
@@ -440,8 +438,7 @@ ags_file_util_put_int64(AgsFileUtil *file_util,
 {
   gchar *str;
   
-  if(file_util == NULL ||
-     str == NULL){
+  if(file_util == NULL){
     return(NULL);
   }
 
@@ -506,8 +503,7 @@ ags_file_util_put_uint64(AgsFileUtil *file_util,
 {
   gchar *str;
   
-  if(file_util == NULL ||
-     str == NULL){
+  if(file_util == NULL){
     return(NULL);
   }
 
@@ -640,8 +636,7 @@ ags_file_util_put_float(AgsFileUtil *file_util,
 {
   gchar *str;
   
-  if(file_util == NULL ||
-     str == NULL){
+  if(file_util == NULL){
     return(NULL);
   }
 
@@ -774,8 +769,7 @@ ags_file_util_put_double(AgsFileUtil *file_util,
 {
   gchar *str;
   
-  if(file_util == NULL ||
-     str == NULL){
+  if(file_util == NULL){
     return(NULL);
   }
 
@@ -986,8 +980,7 @@ ags_file_util_put_complex(AgsFileUtil *file_util,
 {
   gchar *str;
   
-  if(file_util == NULL ||
-     str == NULL){
+  if(file_util == NULL){
     return(NULL);
   }
 

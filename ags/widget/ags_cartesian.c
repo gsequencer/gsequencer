@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -2050,6 +2050,9 @@ ags_cartesian_draw(AgsCartesian *cartesian,
 
   x_offset = x_padding + cartesian->x_margin - cartesian->x_start - cartesian->center;
   y_offset = y_padding + cartesian->y_margin + cartesian->y_start + height + cartesian->center;
+
+  data = NULL;
+  stride = 4;
   
   if(cartesian->surface != NULL){
     /* clear surface */

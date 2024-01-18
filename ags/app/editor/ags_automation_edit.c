@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1003,6 +1003,8 @@ ags_automation_edit_key_released_callback(GtkEventControllerKey *event_controlle
   
   gtk_widget_get_allocation(GTK_WIDGET(automation_edit->drawing_area),
 			    &allocation);
+
+  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) AGS_COMPOSITE_TOOLBAR(composite_editor->toolbar)->zoom));
   
   if(keyval == GDK_KEY_Tab ||
      keyval == GDK_KEY_ISO_Left_Tab ||
@@ -3921,7 +3923,7 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
 	recall_port =
 	  start_recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
 											     automation_edit->control_name,
-											     TRUE);
+											     FALSE);
 
 	while(recall_port != NULL){
 	  automation_edit->recall_port = g_list_prepend(automation_edit->recall_port,
@@ -3957,7 +3959,7 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
 	recall_port =
 	  start_recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
 											     automation_edit->control_name,
-											     TRUE);
+											     FALSE);
 
 	while(recall_port != NULL){
 	  automation_edit->recall_port = g_list_prepend(automation_edit->recall_port,
@@ -3988,10 +3990,10 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
 
 	/* recall port */
 	recall_port =
-	  start_recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
-											     automation_edit->control_name,
-											     TRUE);
-
+	  start_recall_port = ags_audio_collect_all_audio_ports_by_specifier_and_context(selected_machine->audio,
+											 automation_edit->control_name,
+											 FALSE);
+	
 	while(recall_port != NULL){
 	  automation_edit->recall_port = g_list_prepend(automation_edit->recall_port,
 							recall_port->data);
