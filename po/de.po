@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-01-18 13:45+0100\n"
+"POT-Creation-Date: 2024-01-18 23:24+0100\n"
 "PO-Revision-Date: 2021-01-03 08:52+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: Deutsch <jkraehemann@gmail.com>\n"
@@ -572,7 +572,7 @@ msgid "position sheet cursor"
 msgstr "positioniere Wagenlauf"
 
 #: ags/app/editor/ags_envelope_editor_callbacks.c:48
-#: ags/app/editor/ags_pattern_envelope_callbacks.c:1047
+#: ags/app/editor/ags_pattern_envelope_callbacks.c:1050
 msgid "preset name"
 msgstr "Voreinstellungsname"
 
