@@ -37,7 +37,7 @@ G_BEGIN_DECLS
 
 #define AGS_TURTLE_GET_OBJ_MUTEX(obj) (&(((AgsTurtle *) obj)->obj_mutex))
 
-#define AGS_TURTLE_DEFAULT_ENCODING "en_GB.UTF-8"
+#define AGS_TURTLE_DEFAULT_ENCODING "UTF-8"
 
 #define AGS_TURTLE_DEFAULT_VERSION "6.3.2"
 

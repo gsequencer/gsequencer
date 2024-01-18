@@ -4,7 +4,7 @@ ags (6.3.2)
 	* implemented AgsRegexUtil
 	* deprecated ags_regexec() and ags_regcomp()
 	* refactored AgsTurtle to use AgsRegexUtil
-	* TODO:JK: refactored AgsFileUtil to use AgsRegexUtil
+	* refactored AgsFileUtil to use AgsRegexUtil
 	* refactored AgsLv2TurtleScanner to use AgsRegexUtil
 	* implemented AgsRegexUtil
 	* added missing menu items of menubar

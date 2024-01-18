@@ -4453,6 +4453,10 @@ ags_turtle_load_read_sparql_base(AgsTurtle *turtle,
 
   gchar *look_ahead;
     
+  gboolean success;
+  
+  GError *error;
+    
   static AgsRegexUtil *sparql_base_regex_util = NULL;
 
   static gboolean regex_compiled = FALSE;

@@ -27,8 +27,6 @@
 
 #include <locale.h>
 
-#include <locale.h>
-
 #include <sys/types.h>
 #include <regex.h>
 

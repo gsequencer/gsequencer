@@ -19,6 +19,7 @@
 
 #include <ags/lib/ags_regex_util.h>
 
+#include <stdlib.h>
 #include <string.h>
 
 /**
@@ -117,8 +118,23 @@ ags_regex_util_alloc(gchar *app_encoding,
 {
   AgsRegexUtil *ptr;
 
+  gchar *app_localization, *localization;
+  
   ptr = (AgsRegexUtil *) g_malloc(sizeof(AgsRegexUtil));
 
+  if(app_encoding == NULL){
+    app_encoding = setlocale(LC_ALL,
+			     NULL);    
+  }
+
+  if(app_encoding == NULL){
+    app_encoding = getenv("LANG");    
+  }
+
+  if(app_encoding == NULL){
+    app_encoding = "C.UTF-8";
+  }
+  
   ptr->app_encoding = g_strdup(app_encoding);
 
   ptr->encoding = g_strdup(encoding);
@@ -126,9 +142,30 @@ ags_regex_util_alloc(gchar *app_encoding,
   ptr->is_unichar = is_unichar;
   ptr->is_unichar2 = is_unichar2;
 
-  ptr->converter = g_iconv_open(app_encoding,
-				encoding);
+  /* iconv */
+  app_localization = strchr(app_encoding, '.');
 
+  if(app_localization == NULL){
+    app_localization = app_encoding;
+  }else{
+    app_localization++;
+  }
+
+  localization = strchr(encoding, '.');
+
+  if(localization == NULL){
+    localization = encoding;
+  }else{
+    localization++;
+  }
+
+  ptr->converter = (GIConv) -1;
+
+  if((!g_strcmp0(app_localization, localization)) == FALSE){
+    ptr->converter = g_iconv_open(app_localization,
+				  localization);
+  }
+  
   ptr->regex_str = NULL;
 
   ptr->compile_flags = 0;
@@ -177,8 +214,10 @@ ags_regex_util_free(AgsRegexUtil *ptr)
   g_free(ptr->app_encoding);
   g_free(ptr->encoding);
 
-  g_iconv_close(ptr->converter);
-
+  if(ptr->converter != (GIConv) -1){
+    g_iconv_close(ptr->converter);
+  }
+  
   regfree(&(ptr->regex));
   
   g_free(ptr->regex_str);
@@ -513,10 +552,8 @@ ags_regex_util_execute(AgsRegexUtil *regex_util,
   }
 
   local_str = NULL;
-  
-  if(regex_util->encoding != NULL &&
-     (!g_strcmp0(regex_util->encoding,
-		 regex_util->app_encoding)) == FALSE){
+
+  if(regex_util->converter != (GIConv) -1){
     local_error = NULL;
     local_str = g_convert_with_iconv(str,
 				     -1,
@@ -598,9 +635,7 @@ ags_regex_util_execute_unichar(AgsRegexUtil *regex_util,
 
   local_str = NULL;
   
-  if(regex_util->encoding != NULL &&
-     (!g_strcmp0(regex_util->encoding,
-		 regex_util->app_encoding)) == FALSE){
+  if(regex_util->converter != (GIConv) -1){
     local_error = NULL;
     local_str = g_convert_with_iconv(utf8_str,
 				     -1,
@@ -683,9 +718,7 @@ ags_regex_util_execute_unichar2(AgsRegexUtil *regex_util,
 
   local_str = NULL;
   
-  if(regex_util->encoding != NULL &&
-     (!g_strcmp0(regex_util->encoding,
-		 regex_util->app_encoding)) == FALSE){
+  if(regex_util->converter != (GIConv) -1){
     local_error = NULL;
     local_str = g_convert_with_iconv(utf8_str,
 				     -1,

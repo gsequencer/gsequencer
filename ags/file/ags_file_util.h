@@ -35,8 +35,6 @@
 
 #include <complex.h>
 
-#include <stdarg.h>
-
 G_BEGIN_DECLS
 
 #define AGS_TYPE_FILE_UTIL                (ags_file_util_get_type())
