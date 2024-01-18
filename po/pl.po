@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-01-14 19:02+0100\n"
+"POT-Creation-Date: 2024-01-18 13:45+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -637,7 +637,7 @@ msgid "position tool"
 msgstr "pozycja x"
 
 #: ags/app/editor/ags_composite_toolbar.c:907
-#: ags/app/ags_gsequencer_application.c:705
+#: ags/app/ags_gsequencer_application.c:733
 #, fuzzy
 msgid "Edit"
 msgstr "Edytuj"
@@ -1151,35 +1151,56 @@ msgid "Add"
 msgstr "Dodaj"
 
 #: ags/app/ags_gsequencer_application.c:693
+#, fuzzy
+msgid "Notation"
+msgstr "notacja"
+
+#: ags/app/ags_gsequencer_application.c:698
+msgid "Automation"
+msgstr "Automatyzacja"
+
+#: ags/app/ags_gsequencer_application.c:703
+msgid "Wave"
+msgstr "Fala"
+
+#: ags/app/ags_gsequencer_application.c:710
+msgid "Sheet"
+msgstr ""
+
+#: ags/app/ags_gsequencer_application.c:716
+msgid "Tempo"
+msgstr ""
+
+#: ags/app/ags_gsequencer_application.c:721
 msgid "Meta-data"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:698 ags/app/ags_preferences.c:159
+#: ags/app/ags_gsequencer_application.c:726 ags/app/ags_preferences.c:159
 msgid "Preferences"
 msgstr "Narzędzia"
 
-#: ags/app/ags_gsequencer_application.c:711
+#: ags/app/ags_gsequencer_application.c:739
 #, fuzzy
 msgid "SMF import"
 msgstr "importuj MIDI"
 
-#: ags/app/ags_gsequencer_application.c:716
+#: ags/app/ags_gsequencer_application.c:744
 #, fuzzy
 msgid "SMF export"
 msgstr "eksportuj MIDI"
 
-#: ags/app/ags_gsequencer_application.c:723
+#: ags/app/ags_gsequencer_application.c:751
 #, fuzzy
 msgid "MIDI"
 msgstr "karta MIDI"
 
-#: ags/app/ags_gsequencer_application.c:729
-#: ags/app/ags_gsequencer_application.c:741
+#: ags/app/ags_gsequencer_application.c:757
+#: ags/app/ags_gsequencer_application.c:769
 #, fuzzy
 msgid "Help"
 msgstr "Pomoc"
 
-#: ags/app/ags_gsequencer_application.c:734
+#: ags/app/ags_gsequencer_application.c:762
 msgid "About"
 msgstr "O Programie"
 
@@ -2195,16 +2216,6 @@ msgstr "serwer"
 
 #~ msgid "Desk"
 #~ msgstr "Warsztat"
-
-#, fuzzy
-#~ msgid "Notation"
-#~ msgstr "notacja"
-
-#~ msgid "Automation"
-#~ msgstr "Automatyzacja"
-
-#~ msgid "Wave"
-#~ msgstr "Fala"
 
 #~ msgid "import"
 #~ msgstr "importuj"
