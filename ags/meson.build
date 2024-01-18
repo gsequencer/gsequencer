@@ -182,6 +182,7 @@ libags_sources = files(
   'lib/ags_log.c',
   'lib/ags_math_util.c',
   'lib/ags_regex.c',
+  'lib/ags_regex_util.c',
   'lib/ags_solver_matrix.c',
   'lib/ags_solver_polynomial.c',
   'lib/ags_solver_vector.c',
@@ -1355,6 +1356,7 @@ libags_lib_headers = [
   'lib/ags_uuid.h',
   'lib/ags_solver_polynomial.h',
   'lib/ags_regex.h',
+  'lib/ags_regex_util.h',
   'lib/ags_conversion.h',
   'lib/ags_solver_matrix.h',
 ]

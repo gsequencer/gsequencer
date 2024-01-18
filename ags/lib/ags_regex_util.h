@@ -101,8 +101,6 @@ struct _AgsRegexUtil
   gboolean is_unichar2;
 
   GIConv *converter;
-  
-  GIConv *reverse_converter;
 
   regex_t regex;
   
@@ -147,29 +145,29 @@ AgsRegexMatch* ags_regex_util_match_alloc(AgsRegexUtil *regex_util,
 AgsRegexMatch* ags_regex_util_match_copy(AgsRegexUtil *regex_util,
 					 AgsRegexMatch *match,
 					 guint match_count);
-AgsRegexMatch* ags_regex_util_match_free(AgsRegexUtil *regex_util,
-					 AgsRegexMatch *match);
+void ags_regex_util_match_free(AgsRegexUtil *regex_util,
+			       AgsRegexMatch *match);
 
 /* regex match getter of fields */
 void ags_regex_util_match_get_offset(AgsRegexUtil *regex_util,
-				     AgsRegexMatch *regex_match,
+				     AgsRegexMatch *match,
 				     guint nth_match,
 				     gint *start_match_offset, gint *end_match_offset);
 
 /* regex execute */
 gboolean ags_regex_util_execute(AgsRegexUtil *regex_util,
-				const gchar *str, gsize_t match_count,
-				AgsRegexMatch *match_ptr,
+				const gchar *str, guint match_count,
+				AgsRegexMatch *match,
 				guint execute_flags,
 				GError **error);
 gboolean ags_regex_util_execute_unichar(AgsRegexUtil *regex_util,
-					const gunichar *str, gsize_t match_count,
-					AgsRegexMatch *match_ptr,
+					const gunichar *str, guint match_count,
+					AgsRegexMatch *match,
 					guint execute_flags,
 					GError **error);
 gboolean ags_regex_util_execute_unichar2(AgsRegexUtil *regex_util,
-					 const gunichar2 *str, gsize_t match_count,
-					 AgsRegexMatch *match_ptr,
+					 const gunichar2 *str, guint match_count,
+					 AgsRegexMatch *match,
 					 guint execute_flags,
 					 GError **error);
 

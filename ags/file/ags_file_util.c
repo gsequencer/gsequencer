@@ -885,6 +885,8 @@ ags_file_util_get_string(AgsFileUtil *file_util,
 					    &error);
 
     if(error != NULL){
+      g_warning("iconv convert failed");
+      
       g_error_free(error);
     }
   }
@@ -936,6 +938,8 @@ ags_file_util_put_string(AgsFileUtil *file_util,
 					    &error);
 
     if(error != NULL){
+      g_warning("iconv convert failed");
+      
       g_error_free(error);
     }
   }

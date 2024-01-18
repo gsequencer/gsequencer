@@ -19,6 +19,8 @@
 
 #include <ags/lib/ags_regex_util.h>
 
+#include <string.h>
+
 /**
  * SECTION:ags_regex_util
  * @short_description: regex util with locale conversion
@@ -38,7 +40,7 @@ ags_regex_util_get_type(void)
     GType ags_type_regex_util = 0;
 
     ags_type_regex_util =
-      g_boxed_type_register_static("AgsFileUtil",
+      g_boxed_type_register_static("AgsRegexUtil",
 				   (GBoxedCopyFunc) ags_regex_util_copy,
 				   (GBoxedFreeFunc) ags_regex_util_free);
 
@@ -124,13 +126,8 @@ ags_regex_util_alloc(gchar *app_encoding,
   ptr->is_unichar = is_unichar;
   ptr->is_unichar2 = is_unichar2;
 
-  ptr->converter = g_iconv_open(encoding,
-				app_encoding);
-  
-  ptr->reverse_converter = g_iconv_open(app_encoding,
-					encoding);
-
-  ptr->regex_ptr = NULL;
+  ptr->converter = g_iconv_open(app_encoding,
+				encoding);
 
   ptr->regex_str = NULL;
 
@@ -152,7 +149,7 @@ ags_regex_util_alloc(gchar *app_encoding,
 gpointer
 ags_regex_util_copy(AgsRegexUtil *ptr)
 {
-  AgsFileUtil *new_ptr;
+  AgsRegexUtil *new_ptr;
   
   new_ptr = ags_regex_util_alloc(ptr->app_encoding,
 				 ptr->encoding,
@@ -181,8 +178,6 @@ ags_regex_util_free(AgsRegexUtil *ptr)
   g_free(ptr->encoding);
 
   g_iconv_close(ptr->converter);
-  
-  g_iconv_close(ptr->reverse_converter);
 
   regfree(&(ptr->regex));
   
@@ -259,7 +254,12 @@ ags_regex_util_compile(AgsRegexUtil *regex_util,
 {
   int retval;
 
-  retval = regcomp(&(ptr->regex), regex_str,
+  if(regex_util == NULL ||
+     regex_str == NULL){
+    return(FALSE);
+  }
+  
+  retval = regcomp(&(regex_util->regex), regex_str,
 		   compile_flags);
 
   if(retval != 0){
@@ -401,19 +401,23 @@ AgsRegexMatch*
 ags_regex_util_match_alloc(AgsRegexUtil *regex_util,
 			   guint match_count)
 {
-  AgsRegexMatch *regex_match;
+  AgsRegexMatch *match;
 
-  regex_match = (AgsRegexMatch *) g_new0(AgsRegexMatch,
-					 match_count);
+  match = (AgsRegexMatch *) g_new0(AgsRegexMatch,
+				   match_count);
 
-  return(regex_match);
+  return(match);
 }
 
 /**
  * ags_regex_util_match_copy:
  * @regex_util: the #AgsRegexUtil
+ * @match: the regex match
+ * @match_count: the match count
  *
- * 
+ * Copy @match.
+ *
+ * Returns: the newly allocated #AgsRegexMatch
  *
  * Since: 6.3.2
  */
@@ -422,91 +426,293 @@ ags_regex_util_match_copy(AgsRegexUtil *regex_util,
 			  AgsRegexMatch *match,
 			  guint match_count)
 {
-  //TODO:JK: implement me
+  AgsRegexMatch *new_match;
+
+  new_match = ags_regex_util_match_alloc(regex_util,
+					 match_count);
+
+  memcpy(new_match, match, match_count * sizeof(AgsRegexMatch));
+
+  return(new_match);
 }
 
 /**
  * ags_regex_util_match_free:
  * @regex_util: the #AgsRegexUtil
+ * @match: the regex match
  *
- * 
+ * Free @match.
  *
  * Since: 6.3.2
  */
-AgsRegexMatch*
+void
 ags_regex_util_match_free(AgsRegexUtil *regex_util,
 			  AgsRegexMatch *match)
 {
-  //TODO:JK: implement me
+  g_free(match);
 }
 
 /**
  * ags_regex_util_match_get_offset:
  * @regex_util: the #AgsRegexUtil
+ * @match: the regex match
+ * @nth_match: the match position
+ * @start_match_offset: (out): the start match offset
+ * @end_match_offset: (out): the end match offset
  *
- * 
+ * Get offset of @match.
  *
  * Since: 6.3.2
  */
 void
 ags_regex_util_match_get_offset(AgsRegexUtil *regex_util,
-				AgsRegexMatch *regex_match,
+				AgsRegexMatch *match,
 				guint nth_match,
 				gint *start_match_offset, gint *end_match_offset)
 {
-  //TODO:JK: implement me
+  if(start_match_offset != NULL){
+    start_match_offset[0] = match[nth_match].start_match_offset;
+  }
+  
+  if(end_match_offset != NULL){
+    end_match_offset[0] = match[nth_match].end_match_offset;
+  }
 }
 
 /**
  * ags_regex_util_execute:
  * @regex_util: the #AgsRegexUtil
+ * @str: the input string
+ * @match_count: the match count
+ * @match: the regex match
+ * @execute_flags: the execute flags
+ * @error: an error that may occure
  *
- * 
+ * Execute @regex_util and fill @match.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
  *
  * Since: 6.3.2
  */
 gboolean
 ags_regex_util_execute(AgsRegexUtil *regex_util,
-		       const gchar *str, gsize_t match_count,
-		       AgsRegexMatch *match_ptr,
+		       const gchar *str, guint match_count,
+		       AgsRegexMatch *match,
 		       guint execute_flags,
 		       GError **error)
 {
-  //TODO:JK: implement me
+  gchar *local_str;
+  
+  int retval;
+
+  GError *local_error;
+
+  if(regex_util == NULL ||
+     str == NULL){
+    return(FALSE);
+  }
+
+  local_str = NULL;
+  
+  if(regex_util->encoding != NULL &&
+     (!g_strcmp0(regex_util->encoding,
+		 regex_util->app_encoding)) == FALSE){
+    local_error = NULL;
+    local_str = g_convert_with_iconv(str,
+				     -1,
+				     regex_util->converter,
+				     NULL,
+				     NULL,
+				     &local_error);
+
+    if(local_error != NULL){
+      g_warning("iconv convert failed");
+      
+      g_error_free(local_error);
+    }
+  }else{
+    local_str = g_strdup(str);
+  }
+  
+  retval = regexec(&(regex_util->regex), local_str,
+		   match_count, match,
+		   execute_flags);
+
+  g_free(local_str);
+
+  if(retval == REG_NOMATCH){
+    return(FALSE);
+  }
+  
+  return(TRUE);
 }
 
 /**
  * ags_regex_util_execute_unichar:
  * @regex_util: the #AgsRegexUtil
+ * @str: the input string
+ * @match_count: the match count
+ * @match: the regex match
+ * @execute_flags: the execute flags
+ * @error: an error that may occure
  *
- * 
+ * Execute @regex_util and fill @match.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
  *
  * Since: 6.3.2
  */
 gboolean
 ags_regex_util_execute_unichar(AgsRegexUtil *regex_util,
-			       const gunichar *str, gsize_t match_count,
-			       AgsRegexMatch *match_ptr,
+			       const gunichar *str, guint match_count,
+			       AgsRegexMatch *match,
 			       guint execute_flags,
 			       GError **error)
 {
-  //TODO:JK: implement me
+  gchar *utf8_str;
+  gchar *local_str;
+  
+  int retval;
+
+  GError *local_error;
+
+  if(regex_util == NULL ||
+     str == NULL){
+    return(FALSE);
+  }
+
+  local_error = NULL;
+  utf8_str = g_ucs4_to_utf8(str,
+			    -1,
+			    NULL,
+			    NULL,
+			    &local_error);
+
+  if(local_error != NULL){
+    g_warning("ucs4 conversion failed");
+      
+    g_error_free(local_error);
+
+    return(FALSE);
+  }
+
+  local_str = NULL;
+  
+  if(regex_util->encoding != NULL &&
+     (!g_strcmp0(regex_util->encoding,
+		 regex_util->app_encoding)) == FALSE){
+    local_error = NULL;
+    local_str = g_convert_with_iconv(utf8_str,
+				     -1,
+				     regex_util->converter,
+				     NULL,
+				     NULL,
+				     &local_error);
+
+    if(local_error != NULL){
+      g_warning("iconv convert failed");
+      
+      g_error_free(local_error);
+    }
+  }else{
+    local_str = g_strdup(str);
+  }
+  
+  retval = regexec(&(regex_util->regex), local_str,
+		   match_count, match,
+		   execute_flags);
+
+  g_free(utf8_str);
+  g_free(local_str);
+
+  if(retval == REG_NOMATCH){
+    return(FALSE);
+  }
+  
+  return(TRUE);
 }
 
 /**
  * ags_regex_util_execute_unichar2:
  * @regex_util: the #AgsRegexUtil
+ * @str: the input string
+ * @match_count: the match count
+ * @match: the regex match
+ * @execute_flags: the execute flags
+ * @error: an error that may occure
  *
- * 
+ * Execute @regex_util and fill @match.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
  *
  * Since: 6.3.2
  */
 gboolean
 ags_regex_util_execute_unichar2(AgsRegexUtil *regex_util,
-				const gunichar2 *str, gsize_t match_count,
-				AgsRegexMatch *match_ptr,
+				const gunichar2 *str, guint match_count,
+				AgsRegexMatch *match,
 				guint execute_flags,
 				GError **error)
 {
-  //TODO:JK: implement me
+  gchar *utf8_str;
+  gchar *local_str;
+  
+  int retval;
+
+  GError *local_error;
+
+  if(regex_util == NULL ||
+     str == NULL){
+    return(FALSE);
+  }
+
+  local_error = NULL;
+  utf8_str = g_utf16_to_utf8(str,
+			     -1,
+			     NULL,
+			     NULL,
+			     &local_error);
+
+  if(local_error != NULL){
+    g_warning("UTF-16 conversion failed");
+      
+    g_error_free(local_error);
+
+    return(FALSE);
+  }
+
+  local_str = NULL;
+  
+  if(regex_util->encoding != NULL &&
+     (!g_strcmp0(regex_util->encoding,
+		 regex_util->app_encoding)) == FALSE){
+    local_error = NULL;
+    local_str = g_convert_with_iconv(utf8_str,
+				     -1,
+				     regex_util->converter,
+				     NULL,
+				     NULL,
+				     &local_error);
+
+    if(local_error != NULL){
+      g_warning("iconv convert failed");
+      
+      g_error_free(local_error);
+    }
+  }else{
+    local_str = g_strdup(str);
+  }
+  
+  retval = regexec(&(regex_util->regex), local_str,
+		   match_count, match,
+		   execute_flags);
+
+  g_free(utf8_str);
+  g_free(local_str);
+
+  if(retval == REG_NOMATCH){
+    return(FALSE);
+  }
+  
+  return(TRUE);
 }
