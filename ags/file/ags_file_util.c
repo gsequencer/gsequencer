@@ -19,9 +19,6 @@
 
 #include <ags/file/ags_file_util.h>
 
-#include <sys/types.h>
-#include <regex.h>
-
 /**
  * SECTION:ags_file_util
  * @short_description: file util
@@ -510,7 +507,7 @@ ags_file_util_get_float(AgsFileUtil *file_util,
 
   static gboolean regex_compiled = FALSE;
 
-  static const char *float_with_comma_pattern = "^(([+-]?)([0-9]+)(,)([0-9]*))";
+  static const char *float_with_comma_pattern = "^(([+-]?)([0-9]*)(,)([0-9]+))";
 
   static GMutex regex_mutex;
   
@@ -613,7 +610,7 @@ ags_file_util_get_double(AgsFileUtil *file_util,
 
   static gboolean regex_compiled = FALSE;
 
-  static const char *double_with_comma_pattern = "^(([+-]?)([0-9]+)(,)([0-9]*))";
+  static const char *double_with_comma_pattern = "^(([+-]?)([0-9]*)(,)([0-9]+))";
 
   static GMutex regex_mutex;
   
@@ -718,8 +715,8 @@ ags_file_util_get_complex(AgsFileUtil *file_util,
 
   static gboolean regex_compiled = FALSE;
 
-  static const char *complex_with_comma_pattern = "^(([+-]?)([0-9]+)(,)([0-9]*)) + I * (([+-]?)([0-9]+)(,)([0-9]*))";
-  static const char *legacy_complex_with_comma_pattern = "^(([+-]?)([0-9]+)(,)([0-9]*)) (([+-]?)([0-9]+)(,)([0-9]*))";
+  static const char *complex_with_comma_pattern = "^(([+-]?)([0-9]*)(,)([0-9]+)) + I * (([+-]?)([0-9]*)(,)([0-9]+))";
+  static const char *legacy_complex_with_comma_pattern = "^(([+-]?)([0-9]*)(,)([0-9]+)) (([+-]?)([0-9]*)(,)([0-9]+))";
 
   static GMutex regex_mutex;
   

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -37,9 +37,9 @@ G_BEGIN_DECLS
 
 #define AGS_TURTLE_GET_OBJ_MUTEX(obj) (&(((AgsTurtle *) obj)->obj_mutex))
 
-#define AGS_TURTLE_DEFAULT_ENCODING "UTF-8"
+#define AGS_TURTLE_DEFAULT_ENCODING "en_GB.UTF-8"
 
-#define AGS_TURTLE_DEFAULT_VERSION "0.7.3"
+#define AGS_TURTLE_DEFAULT_VERSION "6.3.2"
 
 #define AGS_TURTLE_BOOLEAN_LITERAL_TRUE "true"
 #define AGS_TURTLE_BOOLEAN_LITERAL_FALSE "false"
