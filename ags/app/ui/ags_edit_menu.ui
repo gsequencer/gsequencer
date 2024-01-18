@@ -19,12 +19,12 @@
         <attribute name="action">app.edit_sheet</attribute>
       </item>
       <item>
-        <attribute name="label" translatable="yes">Meta</attribute>
-        <attribute name="action">app.edit_meta</attribute>
-      </item>
-      <item>
         <attribute name="label" translatable="yes">Tempo</attribute>
         <attribute name="action">app.edit_tempo</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Meta</attribute>
+        <attribute name="action">app.edit_meta</attribute>
       </item>
     </section>
   </menu>

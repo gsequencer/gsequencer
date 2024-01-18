@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -690,6 +690,34 @@ ags_gsequencer_application_startup(GApplication *app)
 			i18n("Add"),
 			G_MENU_MODEL(gsequencer_app->add_menu));
   
+  item = g_menu_item_new(i18n("Notation"),
+			 "app.edit_notation");
+  g_menu_append_item(gsequencer_app->edit_menu,
+		     item);  
+
+  item = g_menu_item_new(i18n("Automation"),
+			 "app.edit_automation");
+  g_menu_append_item(gsequencer_app->edit_menu,
+		     item);  
+
+  item = g_menu_item_new(i18n("Wave"),
+			 "app.edit_wave");
+  g_menu_append_item(gsequencer_app->edit_menu,
+		     item);  
+
+  //NOTE:JK: uncomment
+#if 0
+  item = g_menu_item_new(i18n("Sheet"),
+			 "app.edit_sheet");
+  g_menu_append_item(gsequencer_app->edit_menu,
+		     item);  
+#endif
+  
+  item = g_menu_item_new(i18n("Tempo"),
+			 "app.edit_tempo");
+  g_menu_append_item(gsequencer_app->edit_menu,
+		     item);  
+
   item = g_menu_item_new(i18n("Meta-data"),
 			 "app.meta_data");
   g_menu_append_item(gsequencer_app->edit_menu,
