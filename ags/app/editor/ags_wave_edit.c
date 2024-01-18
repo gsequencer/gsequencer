@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1303,6 +1303,8 @@ ags_wave_edit_size_allocate(GtkWidget *widget,
 
   wave_edit = (AgsWaveEdit *) widget;
   
+  application_context = ags_application_context_get_instance();
+
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 

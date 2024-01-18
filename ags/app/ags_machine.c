@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,6 +43,7 @@ void ags_machine_get_property(GObject *gobject,
 			      GParamSpec *param_spec);
 static void ags_machine_finalize(GObject *gobject);
 
+gboolean ags_machine_is_connected(AgsConnectable *connectable);
 void ags_machine_connect(AgsConnectable *connectable);
 void ags_machine_disconnect(AgsConnectable *connectable);
 
@@ -464,10 +465,23 @@ ags_machine_class_init(AgsMachineClass *machine)
 void
 ags_machine_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_machine_is_connected;  
   connectable->connect = ags_machine_connect;
   connectable->disconnect = ags_machine_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -1148,6 +1162,21 @@ ags_machine_finalize(GObject *gobject)
   }
 }
 
+gboolean
+ags_machine_is_connected(AgsConnectable *connectable)
+{
+  AgsMachine *machine;
+  
+  gboolean is_connected;
+  
+  machine = AGS_MACHINE(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (machine->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
+}
+
 void
 ags_machine_connect(AgsConnectable *connectable)
 {
@@ -1158,7 +1187,7 @@ ags_machine_connect(AgsConnectable *connectable)
   /* AgsMachine */
   machine = AGS_MACHINE(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (machine->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -1232,7 +1261,7 @@ ags_machine_disconnect(AgsConnectable *connectable)
   /* AgsMachine */
   machine = AGS_MACHINE(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (machine->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -2865,6 +2894,8 @@ ags_machine_real_apply_preset(AgsMachine *machine,
 			 -1);
 
       /* get start port */
+      start_port = NULL;
+      
       if(!xmlStrncmp(BAD_CAST "audio",
 		     context,
 		     6)){
