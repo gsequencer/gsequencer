@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-01-14 19:02+0100\n"
+"POT-Creation-Date: 2024-01-18 13:45+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -622,7 +622,7 @@ msgid "position tool"
 msgstr ""
 
 #: ags/app/editor/ags_composite_toolbar.c:907
-#: ags/app/ags_gsequencer_application.c:705
+#: ags/app/ags_gsequencer_application.c:733
 msgid "Edit"
 msgstr ""
 
@@ -1113,31 +1113,51 @@ msgid "Add"
 msgstr ""
 
 #: ags/app/ags_gsequencer_application.c:693
-msgid "Meta-data"
+msgid "Notation"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:698 ags/app/ags_preferences.c:159
-msgid "Preferences"
+#: ags/app/ags_gsequencer_application.c:698
+msgid "Automation"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:711
-msgid "SMF import"
+#: ags/app/ags_gsequencer_application.c:703
+msgid "Wave"
+msgstr ""
+
+#: ags/app/ags_gsequencer_application.c:710
+msgid "Sheet"
 msgstr ""
 
 #: ags/app/ags_gsequencer_application.c:716
+msgid "Tempo"
+msgstr ""
+
+#: ags/app/ags_gsequencer_application.c:721
+msgid "Meta-data"
+msgstr ""
+
+#: ags/app/ags_gsequencer_application.c:726 ags/app/ags_preferences.c:159
+msgid "Preferences"
+msgstr ""
+
+#: ags/app/ags_gsequencer_application.c:739
+msgid "SMF import"
+msgstr ""
+
+#: ags/app/ags_gsequencer_application.c:744
 msgid "SMF export"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:723
+#: ags/app/ags_gsequencer_application.c:751
 msgid "MIDI"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:729
-#: ags/app/ags_gsequencer_application.c:741
+#: ags/app/ags_gsequencer_application.c:757
+#: ags/app/ags_gsequencer_application.c:769
 msgid "Help"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:734
+#: ags/app/ags_gsequencer_application.c:762
 msgid "About"
 msgstr ""
 
