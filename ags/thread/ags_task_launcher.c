@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -888,7 +888,7 @@ ags_task_launcher_sync_run(AgsTaskLauncher *task_launcher)
     g_object_ref(task_launcher);
     g_main_context_invoke_full(main_context,
 			       G_PRIORITY_HIGH,
-			       ags_task_launcher_source_func,
+			       (GSourceFunc) ags_task_launcher_source_func,
 			       task_launcher,
 			       (GDestroyNotify) g_object_unref);
   }else{

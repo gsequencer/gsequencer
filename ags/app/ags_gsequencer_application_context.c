@@ -246,8 +246,8 @@ void ags_gsequencer_application_context_register_types(AgsApplicationContext *ap
 
 void ags_gsequencer_application_context_quit(AgsApplicationContext *application_context);
 
-void ags_gsequencer_application_context_read(AgsFile *file, xmlNode *node, GObject **application_context);
-xmlNode* ags_gsequencer_application_context_write(AgsFile *file, xmlNode *parent, GObject *application_context);
+void ags_gsequencer_application_context_read(GObject *file, xmlNode *node, GObject **application_context);
+xmlNode* ags_gsequencer_application_context_write(GObject *file, xmlNode *parent, GObject *application_context);
 
 void* ags_gsequencer_application_context_server_main_loop_thread(GMainLoop *main_loop);
 void* ags_gsequencer_application_context_audio_main_loop_thread(GMainLoop *main_loop);
@@ -4468,13 +4468,13 @@ ags_gsequencer_application_context_quit(AgsApplicationContext *application_conte
 }
 
 void
-ags_gsequencer_application_context_read(AgsFile *file, xmlNode *node, GObject **application_context)
+ags_gsequencer_application_context_read(GObject *file, xmlNode *node, GObject **application_context)
 {
   //TODO:JK: implement me
 }
 
 xmlNode*
-ags_gsequencer_application_context_write(AgsFile *file, xmlNode *parent, GObject *application_context)
+ags_gsequencer_application_context_write(GObject *file, xmlNode *parent, GObject *application_context)
 {  
   xmlNode *node;
   

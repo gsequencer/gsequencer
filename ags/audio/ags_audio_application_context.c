@@ -169,8 +169,8 @@ void ags_audio_application_context_setup(AgsApplicationContext *application_cont
 
 void ags_audio_application_context_register_types(AgsApplicationContext *application_context);
 
-void ags_audio_application_context_read(AgsFile *file, xmlNode *node, GObject **application_context);
-xmlNode* ags_audio_application_context_write(AgsFile *file, xmlNode *parent, GObject *application_context);
+void ags_audio_application_context_read(GObject *file, xmlNode *node, GObject **application_context);
+xmlNode* ags_audio_application_context_write(GObject *file, xmlNode *parent, GObject *application_context);
 
 void ags_audio_application_context_quit(AgsApplicationContext *application_context);
 
@@ -468,8 +468,8 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   audio_application_context->lv2_turtle_scanner = NULL;
   
   g_timeout_add(AGS_AUDIO_APPLICATION_CONTEXT_DEFAULT_LOADER_INTERVAL,
-		ags_audio_application_context_loader_timeout,
-		audio_application_context);
+		(GSourceFunc) ags_audio_application_context_loader_timeout,
+		(gpointer) audio_application_context);
 }
 
 void
@@ -3215,13 +3215,13 @@ ags_audio_application_context_quit(AgsApplicationContext *application_context)
 }
 
 void
-ags_audio_application_context_read(AgsFile *file, xmlNode *node, GObject **application_context)
+ags_audio_application_context_read(GObject *file, xmlNode *node, GObject **application_context)
 {
   //TODO:JK: implement me
 }
 
 xmlNode*
-ags_audio_application_context_write(AgsFile *file, xmlNode *parent, GObject *application_context)
+ags_audio_application_context_write(GObject *file, xmlNode *parent, GObject *application_context)
 {
   xmlNode *node;
 
@@ -3510,7 +3510,7 @@ ags_audio_application_context_loader_timeout(AgsAudioApplicationContext *audio_a
 			    AGS_LIBRARY_SUFFIX) &&
 	   !g_list_find_custom(ladspa_manager->ladspa_plugin_blacklist,
 			       filename,
-			       g_strcmp0)){
+			       (GCompareFunc) g_strcmp0)){
 	  audio_application_context->ladspa_loader = g_list_prepend(audio_application_context->ladspa_loader,
 								    g_strdup_printf("%s%c%s",
 										    ladspa_path[0],
@@ -3553,7 +3553,7 @@ ags_audio_application_context_loader_timeout(AgsAudioApplicationContext *audio_a
 			    AGS_LIBRARY_SUFFIX) &&
 	   !g_list_find_custom(dssi_manager->dssi_plugin_blacklist,
 			       filename,
-			       g_strcmp0)){
+			       (GCompareFunc) g_strcmp0)){
 	  audio_application_context->dssi_loader = g_list_prepend(audio_application_context->dssi_loader,
 								  g_strdup_printf("%s%c%s",
 										  dssi_path[0],
@@ -3612,7 +3612,7 @@ ags_audio_application_context_loader_timeout(AgsAudioApplicationContext *audio_a
 		       G_FILE_TEST_IS_DIR) &&
 	   !g_list_find_custom(lv2_manager->lv2_plugin_blacklist,
 			       filename,
-			       g_strcmp0)){
+			       (GCompareFunc) g_strcmp0)){
 	  audio_application_context->lv2_loader = g_list_prepend(audio_application_context->lv2_loader,
 								 g_strdup(plugin_path));
 	}
@@ -3669,7 +3669,7 @@ ags_audio_application_context_loader_timeout(AgsAudioApplicationContext *audio_a
 		       G_FILE_TEST_IS_DIR) &&
 	   !g_list_find_custom(vst3_manager->vst3_plugin_blacklist,
 			       filename,
-			       g_strcmp0)){
+			       (GCompareFunc) g_strcmp0)){
 	  audio_application_context->vst3_loader = g_list_prepend(audio_application_context->vst3_loader,
 								  g_strdup(plugin_path));
 	}
@@ -3917,7 +3917,7 @@ ags_audio_application_context_loader_timeout(AgsAudioApplicationContext *audio_a
 #if defined(AGS_OSXAPI)
 	if(!g_list_find_custom(vst3_manager->vst3_plugin_blacklist,
 			       arch_filename,
-			       g_strcmp0)){
+			       (GCompareFunc) g_strcmp0)){
 	  ags_vst3_manager_load_file(vst3_manager,
 				     arch_path,
 				     arch_filename);

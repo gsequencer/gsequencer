@@ -1142,7 +1142,7 @@ ags_server_real_start(AgsServer *server)
   
   soup_server_add_handler(server->soup_server,
 			  AGS_CONTROLLER_BASE_PATH,
-			  ags_server_xmlrpc_callback,
+			  (SoupServerCallback) ags_server_xmlrpc_callback,
 			  server,
 			  NULL);
 
@@ -1408,8 +1408,8 @@ ags_server_xmlrpc_auth_callback(SoupAuthDomain *domain,
 				"ags-srv-security-token",
 				security_token);
     
-    query = g_hash_table_new_full(g_direct_hash,
-				  g_string_equal,
+    query = g_hash_table_new_full((GHashFunc) g_direct_hash,
+				  (GEqualFunc) g_string_equal,
 				  NULL,
 				  NULL);
     

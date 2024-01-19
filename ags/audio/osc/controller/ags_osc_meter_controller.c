@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1083,7 +1083,7 @@ ags_osc_meter_controller_real_start_monitor(AgsOscMeterController *osc_meter_con
 
   timeout_source = g_timeout_source_new(monitor_timeout * G_TIME_SPAN_MILLISECOND);
   g_source_set_callback(timeout_source,
-			ags_osc_meter_controller_monitor_timeout,
+			(GSourceFunc) ags_osc_meter_controller_monitor_timeout,
 			osc_meter_controller,
 			NULL);
   g_source_attach(timeout_source,

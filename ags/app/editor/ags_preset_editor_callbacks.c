@@ -117,7 +117,7 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
 #endif
     
     if(plugin_port != NULL &&
-       g_list_find_custom(start_context_specifier, specifier, g_strcmp0) == NULL){
+       g_list_find_custom(start_context_specifier, specifier, (GCompareFunc) g_strcmp0) == NULL){
       GValue port_value = G_VALUE_INIT;
 
       start_context_specifier = g_list_prepend(start_context_specifier,
@@ -251,7 +251,7 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
 					      specifier);
 
       if(plugin_port != NULL &&
-	 g_list_find_custom(start_context_specifier, specifier, g_strcmp0) == NULL){
+	 g_list_find_custom(start_context_specifier, specifier, (GCompareFunc) g_strcmp0) == NULL){
 	start_context_specifier = g_list_prepend(start_context_specifier,
 						 specifier);
 	
@@ -393,7 +393,7 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
 					      specifier);
 
       if(plugin_port != NULL &&
-	 g_list_find_custom(start_context_specifier, specifier, g_strcmp0) == NULL){
+	 g_list_find_custom(start_context_specifier, specifier, (GCompareFunc) g_strcmp0) == NULL){
 	start_context_specifier = g_list_prepend(start_context_specifier,
 						 specifier);
 	

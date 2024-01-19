@@ -836,7 +836,7 @@ ags_server_application_context_prepare(AgsApplicationContext *application_contex
 			      TRUE);
 
   g_thread_new("Advanced Gtk+ Sequencer - server main loop",
-	       ags_server_application_context_server_main_loop_thread,
+	       (GThreadFunc) ags_server_application_context_server_main_loop_thread,
 	       main_loop);
 
   /* AgsGenericMainLoop */

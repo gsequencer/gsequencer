@@ -1091,7 +1091,7 @@ ags_pulse_client_open(AgsPulseClient *pulse_client,
 		       0,
 		       NULL);
     pa_context_set_state_callback(context,
-				  ags_pulse_client_state_callback,
+				  (pa_context_notify_cb_t) ags_pulse_client_state_callback,
 				  pulse_client);
 
     log = (GObject *) ags_log_get_instance();

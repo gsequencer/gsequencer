@@ -96,7 +96,7 @@ ags_authentication_manager_init(AgsAuthenticationManager *authentication_manager
   authentication_manager->login = g_hash_table_new_full(g_str_hash,
 							g_str_equal,
 							g_free,
-							ags_login_info_unref);
+							(GDestroyNotify) ags_login_info_unref);
 }
 
 void
@@ -108,7 +108,7 @@ ags_authentication_manager_finalize(GObject *gobject)
 
   if(authentication_manager->authentication != NULL){
     g_list_free_full(authentication_manager->authentication,
-		     g_object_unref);
+		     (GDestroyNotify) g_object_unref);
   }
 
   if(authentication_manager->login != NULL){
@@ -235,7 +235,7 @@ ags_authentication_manager_get_authentication(AgsAuthenticationManager *authenti
   g_rec_mutex_lock(authentication_manager_mutex);
 
   authentication = g_list_copy_deep(authentication_manager->authentication,
-				    g_object_ref,
+				    (GCopyFunc) g_object_ref,
 				    NULL);
 
   g_rec_mutex_unlock(authentication_manager_mutex);
@@ -552,7 +552,7 @@ ags_authentication_manager_login(AgsAuthenticationManager *authentication_manage
   }
 
   g_list_free_full(start_authentication,
-		   g_object_unref);
+		   (GDestroyNotify) g_object_unref);
   
   return(success);
 }
@@ -652,7 +652,7 @@ ags_authentication_manager_logout(AgsAuthenticationManager *authentication_manag
   }
 
   g_list_free_full(start_authentication,
-		   g_object_unref);
+		   (GDestroyNotify) g_object_unref);
 
   ags_login_info_unref(login_info);
   
@@ -723,7 +723,7 @@ ags_authentication_manager_get_digest(AgsAuthenticationManager *authentication_m
   }
 
   g_list_free_full(start_authentication,
-		   g_object_unref);
+		   (GDestroyNotify) g_object_unref);
 
   return(current_digest);
 }
@@ -785,7 +785,7 @@ ags_authentication_manager_is_session_active(AgsAuthenticationManager *authentic
   }
 
   g_list_free_full(start_authentication,
-		   g_object_unref);
+		   (GDestroyNotify) g_object_unref);
   
   return(is_session_active);
 }

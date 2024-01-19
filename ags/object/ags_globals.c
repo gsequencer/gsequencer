@@ -38,7 +38,7 @@ ags_globals_get_hash_table()
   g_mutex_lock(&ags_globals_mutex);
 
   if(ags_globals == NULL){
-    ags_globals = g_hash_table_new_full(g_direct_hash, g_string_equal,
+    ags_globals = g_hash_table_new_full(g_direct_hash, (GEqualFunc) g_string_equal,
 					NULL,
 					NULL);    
   }
