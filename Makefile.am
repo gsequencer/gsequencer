@@ -38,8 +38,8 @@ if WITH_LIBINSTPATCH
 CPPFLAGS += -DAGS_WITH_LIBINSTPATCH=1
 endif
 
-CFLAGS =  @CFLAGS@ -Werror=uninitialized -Werror=maybe-uninitialized -Werror=return-type -Werror=missing-parameter-type -Werror=int-conversion
-CXXFLAGS =  @CXXFLAGS@ -Werror=uninitialized -Werror=maybe-uninitialized -Werror=return-type -Werror=argument-mismatch -Werror=missing-parameter-type -Werror=int-conversion
+CFLAGS =  @CFLAGS@ -Werror=uninitialized -Werror=maybe-uninitialized -Werror=return-type -Werror=missing-parameter-type -Werror=int-conversion -Werror=implicit-function-declaration
+CXXFLAGS =  @CXXFLAGS@ -Werror=uninitialized -Werror=maybe-uninitialized -Werror=return-type -Werror=missing-parameter-type -Werror=int-conversion -Werror=implicit-function-declaration
 
 CFLAGS += -include errno.h
 

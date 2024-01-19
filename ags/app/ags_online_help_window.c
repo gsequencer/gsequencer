@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -241,6 +241,8 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
 		  0, 1,
 		  1, 1);
 
+  pdf_filename = NULL;
+  
 #if defined(AGS_ONLINE_HELP_A4_PDF_FILENAME) && defined(AGS_ONLINE_HELP_LETTER_PDF_FILENAME)
   if(!g_strcmp0(AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->paper_size,
 		"a4")){

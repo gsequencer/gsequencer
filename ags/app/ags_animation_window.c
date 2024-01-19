@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -108,6 +108,8 @@ ags_animation_window_init(AgsAnimationWindow *animation_window)
   animation_window->message_count = 0;
 
   /* create gdk cairo graphics context */
+  filename = NULL;
+  
 #ifdef AGS_ANIMATION_FILENAME
   filename = g_strdup(AGS_ANIMATION_FILENAME);
 #else
