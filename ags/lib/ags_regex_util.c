@@ -360,6 +360,7 @@ ags_regex_util_compile(AgsRegexUtil *regex_util,
 		      "regcomp unknown character class name");
 	}
 	break;
+#if !defined(AGS_OSXAPI)
       case REG_EEND:
 	{
 	  g_set_error(error,
@@ -368,6 +369,7 @@ ags_regex_util_compile(AgsRegexUtil *regex_util,
 		      "regcomp non specific error");
 	}
 	break;
+#endif
       case REG_EESCAPE:
 	{
 	  g_set_error(error,
@@ -392,6 +394,7 @@ ags_regex_util_compile(AgsRegexUtil *regex_util,
 		      "regcomp invalid range operator");
 	}
 	break;
+#if !defined(AGS_OSXAPI)
       case REG_ESIZE:
 	{
 	  g_set_error(error,
@@ -400,6 +403,7 @@ ags_regex_util_compile(AgsRegexUtil *regex_util,
 		      "regcomp pattern buffer larger than 64kB");
 	}
 	break;
+#endif
       case REG_ESPACE:
 	{
 	  g_set_error(error,
@@ -416,6 +420,13 @@ ags_regex_util_compile(AgsRegexUtil *regex_util,
 		      "regcomp invalid back reference");
 	}
 	break;
+      default:
+	{
+	  g_set_error(error,
+		      AGS_REGEX_UTIL_ERROR,
+		      AGS_REGEX_UTIL_ERROR_UNSPECIFIED,
+		      "regcomp unspecified error");
+	}
       }
     }
   

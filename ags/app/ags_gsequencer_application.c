@@ -20,6 +20,8 @@
 #include <ags/app/ags_gsequencer_application.h>
 #include <ags/app/ags_gsequencer_application_callbacks.h>
 
+#include "config.h"
+
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_gsequencer_application.h>
 #include <ags/app/ags_gsequencer_application_context.h>
