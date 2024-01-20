@@ -495,11 +495,11 @@ ags_regex_util_match_get_offset(AgsRegexUtil *regex_util,
 				gint *start_match_offset, gint *end_match_offset)
 {
   if(start_match_offset != NULL){
-    start_match_offset[0] = match[nth_match].start_match_offset;
+    start_match_offset[0] = (gint) match[nth_match].start_match_offset;
   }
   
   if(end_match_offset != NULL){
-    end_match_offset[0] = match[nth_match].end_match_offset;
+    end_match_offset[0] = (gint) match[nth_match].end_match_offset;
   }
 }
 
@@ -557,7 +557,7 @@ ags_regex_util_execute(AgsRegexUtil *regex_util,
   }
   
   retval = regexec(&(regex_util->regex), local_str,
-		   match_count, match,
+		   (size_t) match_count, match,
 		   execute_flags);
 
   g_free(local_str);

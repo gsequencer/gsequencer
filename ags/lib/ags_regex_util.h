@@ -110,8 +110,8 @@ struct _AgsRegexUtil
 
 struct _AgsRegexMatch
 {
-  gint start_match_offset;
-  gint end_match_offset;
+  regoff_t start_match_offset;
+  regoff_t end_match_offset;
 };
 
 GType ags_regex_util_get_type(void);
