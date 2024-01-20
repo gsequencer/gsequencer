@@ -83,7 +83,7 @@ ags_file_util_alloc(gchar *app_encoding,
   
   if(ptr->encoding != NULL &&
      ptr->app_encoding != NULL &&
-     (!g_strcmp0(app_localization, localization)) == FALSE){
+     (!g_strcmp0(ptr->app_encoding, ptr->encoding)) == FALSE){
     ptr->converter = g_iconv_open(ptr->encoding,
 				  ptr->app_encoding);
   
