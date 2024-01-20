@@ -19,8 +19,6 @@
 
 #include <ags/plugin/ags_lv2_turtle_scanner.h>
 
-#include <ags/lib/ags_regex_util.h>
-
 #include <ags/plugin/ags_lv2_manager.h>
 
 #include <stdlib.h>

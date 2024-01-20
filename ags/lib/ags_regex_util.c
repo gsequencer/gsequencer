@@ -131,7 +131,7 @@ ags_regex_util_alloc(gchar *app_encoding,
   ptr->is_unichar2 = is_unichar2;
 
   /* iconv */  
-  ptr->converter = (GIConv) -1;
+  ptr->converter = NULL;
 
   if(ptr->encoding != NULL &&
      ptr->app_encoding != NULL &&
@@ -188,7 +188,7 @@ ags_regex_util_free(AgsRegexUtil *ptr)
   g_free(ptr->app_encoding);
   g_free(ptr->encoding);
 
-  if(ptr->converter != (GIConv) -1){
+  if(ptr->converter != NULL){
     g_iconv_close(ptr->converter);
   }
   
@@ -538,7 +538,7 @@ ags_regex_util_execute(AgsRegexUtil *regex_util,
 
   local_str = NULL;
 
-  if(regex_util->converter != (GIConv) -1){
+  if(regex_util->converter != NULL){
     local_error = NULL;
     local_str = g_convert_with_iconv(str,
 				     -1,
@@ -620,7 +620,7 @@ ags_regex_util_execute_unichar(AgsRegexUtil *regex_util,
 
   local_str = NULL;
   
-  if(regex_util->converter != (GIConv) -1){
+  if(regex_util->converter != NULL){
     local_error = NULL;
     local_str = g_convert_with_iconv(utf8_str,
 				     -1,
@@ -703,7 +703,7 @@ ags_regex_util_execute_unichar2(AgsRegexUtil *regex_util,
 
   local_str = NULL;
   
-  if(regex_util->converter != (GIConv) -1){
+  if(regex_util->converter != NULL){
     local_error = NULL;
     local_str = g_convert_with_iconv(utf8_str,
 				     -1,

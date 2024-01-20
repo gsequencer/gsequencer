@@ -78,8 +78,8 @@ ags_file_util_alloc(gchar *app_encoding,
   ptr->encoding = g_strdup(encoding);
 
   /* iconv */  
-  ptr->converter = (GIConv) -1;
-  ptr->reverse_converter = (GIConv) -1;
+  ptr->converter = NULL;
+  ptr->reverse_converter = NULL;
   
   if(ptr->encoding != NULL &&
      ptr->app_encoding != NULL &&
@@ -133,7 +133,7 @@ ags_file_util_free(AgsFileUtil *ptr)
   g_free(ptr->app_encoding);
   g_free(ptr->encoding);
 
-  if(ptr->converter != (GIConv) -1){
+  if(ptr->converter != NULL){
     g_iconv_close(ptr->converter);
   
     g_iconv_close(ptr->reverse_converter);
@@ -999,7 +999,7 @@ ags_file_util_get_string(AgsFileUtil *file_util,
 
   converted_string = NULL;
 
-  if(file_util->reverse_converter != (GIConv) -1){
+  if(file_util->reverse_converter != NULL){
     GError *error;
 
     error = NULL;
@@ -1049,7 +1049,7 @@ ags_file_util_put_string(AgsFileUtil *file_util,
 
   converted_string = NULL;
   
-  if(file_util->converter != (GIConv) -1){
+  if(file_util->converter != NULL){
     GError *error;
 
     error = NULL;
