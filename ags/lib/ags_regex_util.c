@@ -21,6 +21,8 @@
 
 #include "config.h"
 
+#include <gmodule.h>
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -120,8 +122,6 @@ ags_regex_util_alloc(gchar *app_encoding,
 {
   AgsRegexUtil *ptr;
 
-  gchar *app_localization, *localization;
-  
   ptr = (AgsRegexUtil *) g_malloc(sizeof(AgsRegexUtil));
   
   ptr->app_encoding = g_strdup(app_encoding);
@@ -130,38 +130,14 @@ ags_regex_util_alloc(gchar *app_encoding,
   ptr->is_unichar = is_unichar;
   ptr->is_unichar2 = is_unichar2;
 
-  /* iconv */
-  app_localization = NULL;
-
-  if(app_encoding != NULL){
-    app_localization = strchr(app_encoding, '.');
-  }
-  
-  if(app_localization == NULL){
-    app_localization = app_encoding;
-  }else{
-    app_localization++;
-  }
-
-  localization = NULL;
-
-  if(encoding != NULL){
-    localization = strchr(encoding, '.');
-  }
-  
-  if(localization == NULL){
-    localization = encoding;
-  }else{
-    localization++;
-  }
-  
+  /* iconv */  
   ptr->converter = (GIConv) -1;
 
-  if(localization != NULL &&
-     app_localization != NULL &&
+  if(ptr->encoding != NULL &&
+     ptr->app_encoding != NULL &&
      (!g_strcmp0(app_localization, localization)) == FALSE){
-    ptr->converter = g_iconv_open(app_localization,
-				  localization);
+    ptr->converter = g_iconv_open(ptr->app_encoding,
+				  ptr->encoding);
   }
   
   ptr->regex_str = NULL;

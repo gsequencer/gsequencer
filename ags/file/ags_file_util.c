@@ -21,6 +21,8 @@
 
 #include <ags/lib/ags_regex_util.h>
 
+#include <gmodule.h>
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -70,50 +72,23 @@ ags_file_util_alloc(gchar *app_encoding,
 {
   AgsFileUtil *ptr;
 
-  gchar *app_localization, *localization;
-  gchar *lc_ctype;  
-
   ptr = (AgsFileUtil *) g_malloc(sizeof(AgsFileUtil));
   
   ptr->app_encoding = g_strdup(app_encoding);
   ptr->encoding = g_strdup(encoding);
 
-  /* iconv */
-  app_localization = NULL;
-
-  if(app_encoding != NULL){
-    app_localization = strchr(app_encoding, '.');
-  }
-  
-  if(app_localization == NULL){
-    app_localization = app_encoding;
-  }else{
-    app_localization++;
-  }
-
-  localization = NULL;
-
-  if(encoding != NULL){
-    localization = strchr(encoding, '.');
-  }
-  
-  if(localization == NULL){
-    localization = encoding;
-  }else{
-    localization++;
-  }
-  
+  /* iconv */  
   ptr->converter = (GIConv) -1;
   ptr->reverse_converter = (GIConv) -1;
   
-  if(localization != NULL &&
-     app_localization != NULL &&
+  if(ptr->encoding != NULL &&
+     ptr->app_encoding != NULL &&
      (!g_strcmp0(app_localization, localization)) == FALSE){
-    ptr->converter = g_iconv_open(localization,
-				  app_localization);
+    ptr->converter = g_iconv_open(ptr->encoding,
+				  ptr->app_encoding);
   
-    ptr->reverse_converter = g_iconv_open(app_localization,
-					  localization);
+    ptr->reverse_converter = g_iconv_open(ptr->app_encoding,
+					  ptr->encoding);
   }
   
   return(ptr);
