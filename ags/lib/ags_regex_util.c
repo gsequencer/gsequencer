@@ -121,8 +121,13 @@ ags_regex_util_alloc(gchar *app_encoding,
   AgsRegexUtil *ptr;
 
   gchar *app_localization, *localization;
+  gchar *lc_ctype;  
   
   ptr = (AgsRegexUtil *) g_malloc(sizeof(AgsRegexUtil));
+
+#if 0
+  lc_ctype = setlocale(LC_CTYPE,
+		       NULL);    
 
   if(app_encoding == NULL){
     app_encoding = setlocale(LC_ALL,
@@ -132,10 +137,7 @@ ags_regex_util_alloc(gchar *app_encoding,
   if(app_encoding == NULL){
     app_encoding = getenv("LANG");    
   }
-
-  if(app_encoding == NULL){
-    app_encoding = "C.UTF-8";
-  }
+#endif
   
   ptr->app_encoding = g_strdup(app_encoding);
 
@@ -145,6 +147,33 @@ ags_regex_util_alloc(gchar *app_encoding,
   ptr->is_unichar2 = is_unichar2;
 
   /* iconv */
+#if 0
+  app_localization = strchr(app_encoding, '.');
+
+  if(app_localization == NULL){
+    app_localization = app_encoding;
+  }else{
+    app_localization++;
+  }
+
+  if(app_localization == NULL){
+    app_localization = strchr(lc_ctype, '.');
+
+    if(app_localization == NULL){
+      app_localization = lc_ctype;
+    }else{
+      app_localization++;
+    }
+  }
+  
+  localization = strchr(encoding, '.');
+
+  if(localization == NULL){
+    localization = encoding;
+  }else{
+    localization++;
+  }
+#else
   app_localization = strchr(app_encoding, '.');
 
   if(app_localization == NULL){
@@ -160,10 +189,13 @@ ags_regex_util_alloc(gchar *app_encoding,
   }else{
     localization++;
   }
-
+#endif
+  
   ptr->converter = (GIConv) -1;
 
-  if((!g_strcmp0(app_localization, localization)) == FALSE){
+  if(localization != NULL &&
+     app_localization != NULL &&
+     (!g_strcmp0(app_localization, localization)) == FALSE){
     ptr->converter = g_iconv_open(app_localization,
 				  localization);
   }
