@@ -72,22 +72,54 @@ ags_file_util_alloc(gchar *app_encoding,
 {
   AgsFileUtil *ptr;
 
+  gchar *local_app_encoding;
+  
   ptr = (AgsFileUtil *) g_malloc(sizeof(AgsFileUtil));
   
   ptr->app_encoding = g_strdup(app_encoding);
   ptr->encoding = g_strdup(encoding);
 
-  /* iconv */  
+  /* iconv */
+  local_app_encoding = ptr->app_encoding;
+  
+  if(local_app_encoding == NULL){
+    if((!g_strcmp0("UTF-8", encoding)) == FALSE){
+      gchar *lc_info;
+      
+      lc_info = setlocale(LC_ALL,
+			  NULL);
+
+      if(lc_info == NULL){
+	lc_info = setlocale(LC_CTYPE,
+			    NULL);
+      }
+
+      if(lc_info == NULL){
+	lc_info = getenv("LANG");
+      }
+
+      if(lc_info == NULL){
+	lc_info = "UTF-8";
+      }
+
+      if((local_app_encoding = strchr(lc_info, '.')) == NULL){
+	local_app_encoding = lc_info;
+      }else{
+	local_app_encoding++;	
+      }
+    }
+  }
+  
   ptr->converter = NULL;
   ptr->reverse_converter = NULL;
   
   if(ptr->encoding != NULL &&
-     ptr->app_encoding != NULL &&
-     (!g_strcmp0(ptr->app_encoding, ptr->encoding)) == FALSE){
+     local_app_encoding != NULL &&
+     (!g_strcmp0(local_app_encoding, ptr->encoding)) == FALSE){
     ptr->converter = g_iconv_open(ptr->encoding,
-				  ptr->app_encoding);
+				  local_app_encoding);
   
-    ptr->reverse_converter = g_iconv_open(ptr->app_encoding,
+    ptr->reverse_converter = g_iconv_open(local_app_encoding,
 					  ptr->encoding);
   }
   

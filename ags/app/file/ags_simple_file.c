@@ -627,7 +627,6 @@ void
 ags_simple_file_init(AgsSimpleFile *simple_file)
 {
   gchar *app_encoding;
-  char *lc_info;
   
   simple_file->flags = 0;
 
@@ -648,28 +647,8 @@ ags_simple_file_init(AgsSimpleFile *simple_file)
   simple_file->launch = NULL;
 
   simple_file->no_config = FALSE;
-
-  lc_info = setlocale(LC_ALL,
-		      NULL);
-
-  if(lc_info == NULL){
-    lc_info = setlocale(LC_CTYPE,
-			NULL);
-  }
-
-  if(lc_info == NULL){
-    lc_info = getenv("LANG");
-  }
-
-  if(lc_info == NULL){
-    lc_info = AGS_SIMPLE_FILE_DEFAULT_ENCODING;
-  }
-
-  if((app_encoding = strchr(lc_info, '.')) == NULL){
-    app_encoding = lc_info;
-  }
   
-  simple_file->file_util = ags_file_util_alloc(app_encoding,
+  simple_file->file_util = ags_file_util_alloc(NULL,
 					       AGS_SIMPLE_FILE_DEFAULT_ENCODING);
 
   ags_file_util_set_file_version(simple_file->file_util,
