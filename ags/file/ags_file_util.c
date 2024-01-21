@@ -83,31 +83,7 @@ ags_file_util_alloc(gchar *app_encoding,
   local_app_encoding = ptr->app_encoding;
   
   if(local_app_encoding == NULL){
-    if((!g_strcmp0("UTF-8", encoding)) == FALSE){
-      gchar *lc_info;
-      
-      lc_info = setlocale(LC_ALL,
-			  NULL);
-
-      if(lc_info == NULL){
-	lc_info = setlocale(LC_CTYPE,
-			    NULL);
-      }
-
-      if(lc_info == NULL){
-	lc_info = getenv("LANG");
-      }
-
-      if(lc_info == NULL){
-	lc_info = "UTF-8";
-      }
-
-      if((local_app_encoding = strchr(lc_info, '.')) == NULL){
-	local_app_encoding = lc_info;
-      }else{
-	local_app_encoding++;	
-      }
-    }
+    local_app_encoding = "UTF-8";
   }
   
   ptr->converter = NULL;
