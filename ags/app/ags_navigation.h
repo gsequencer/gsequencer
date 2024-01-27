@@ -51,11 +51,10 @@ typedef struct _AgsNavigation AgsNavigation;
 typedef struct _AgsNavigationClass AgsNavigationClass;
 
 typedef enum{
-  AGS_NAVIGATION_CONNECTED    = 1,
-  AGS_NAVIGATION_BLOCK_TACT   = 1 << 1,
-  AGS_NAVIGATION_BLOCK_PLAY   = 1 << 2,
-  AGS_NAVIGATION_BLOCK_TIC    = 1 << 3,
-  AGS_NAVIGATION_BLOCK_BPM    = 1 << 4,
+  AGS_NAVIGATION_BLOCK_TACT   = 1,
+  AGS_NAVIGATION_BLOCK_PLAY   = 1 << 1,
+  AGS_NAVIGATION_BLOCK_TIC    = 1 << 2,
+  AGS_NAVIGATION_BLOCK_BPM    = 1 << 3,
 }AgsNavigationFlags;
 
 struct _AgsNavigation
@@ -63,6 +62,7 @@ struct _AgsNavigation
   GtkBox box;
 
   guint flags;
+  guint connectable_flags;
 
   GObject *soundcard;
   gdouble start_tact;

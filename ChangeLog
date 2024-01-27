@@ -1,3 +1,10 @@
+ags (6.4.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* refactored AgsNavigation to make use of AgsUiProvider::update-ui() event
+	* TODO:JK: refactored AgsMixerInputLine to make use of AgsUiProvider::update-ui() event
+	* TODO:JK: refactored AgsDrumInputLine to make use of AgsUiProvider::update-ui() event
+
 ags (6.3.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
