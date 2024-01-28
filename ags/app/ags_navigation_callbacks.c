@@ -23,8 +23,8 @@
 #include <ags/app/ags_window.h>
 
 void
-ags_navigation_update_ui(GObject *ui_provider,
-			 AgsNavigation *navigation)
+ags_navigation_update_ui_callback(GObject *ui_provider,
+				  AgsNavigation *navigation)
 {
   AgsApplicationContext *application_context;
 

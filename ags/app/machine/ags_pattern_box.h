@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -109,8 +109,6 @@ void ags_pattern_box_add_pad(AgsPatternBox *pattern_box,
 			     GtkToggleButton *pad);
 void ags_pattern_box_remove_pad(AgsPatternBox *pattern_box,
 				GtkToggleButton *pad);
-
-gboolean ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box);
 
 void ags_pattern_box_set_pattern(AgsPatternBox *pattern_box);
 

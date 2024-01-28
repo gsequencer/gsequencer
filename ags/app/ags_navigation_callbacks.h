@@ -33,8 +33,8 @@
 
 G_BEGIN_DECLS
 
-void ags_navigation_update_ui(GObject *ui_provider,
-			      AgsNavigation *navigation);
+void ags_navigation_update_ui_callback(GObject *ui_provider,
+				       AgsNavigation *navigation);
 
 void ags_navigation_expander_callback(GtkWidget *widget,
 				      AgsNavigation *navigation);

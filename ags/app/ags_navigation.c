@@ -318,9 +318,6 @@ ags_navigation_init(AgsNavigation *navigation)
 	       NULL);
   gtk_box_append(hbox,
 		 (GtkWidget *) navigation->duration_time);
-
-  g_signal_connect(application_context, "update-ui",
-		   G_CALLBACK(ags_navigation_update_ui), navigation);
   
   navigation->duration_tact = NULL;
   //  navigation->duration_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_NOTATION_EDITOR_MAX_CONTROLS, 1.0);
@@ -368,6 +365,9 @@ ags_navigation_init(AgsNavigation *navigation)
 			      TRUE);
   gtk_box_append(navigation->expansion_box,
 		 (GtkWidget *) navigation->exclude_sequencer);
+
+  g_signal_connect(application_context, "update-ui",
+		   G_CALLBACK(ags_navigation_update_ui_callback), navigation);
 }
 
 void
@@ -445,7 +445,7 @@ ags_navigation_finalize(GObject *gobject)
 
   g_object_disconnect(application_context,
 		      "any_signal::update-ui",
-		      G_CALLBACK(ags_navigation_update_ui),
+		      G_CALLBACK(ags_navigation_update_ui_callback),
 		      (gpointer) navigation,
 		      NULL);
   

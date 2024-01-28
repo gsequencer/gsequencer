@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,6 +32,9 @@
 #include <ags/app/machine/ags_pattern_box.h>
 
 G_BEGIN_DECLS
+
+void ags_pattern_box_update_ui_callback(GObject *ui_provider,
+					AgsPatternBox *pattern_box);
 
 /* controls */
 void ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_box);

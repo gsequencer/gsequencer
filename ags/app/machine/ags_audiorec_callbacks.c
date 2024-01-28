@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,105 @@
 
 void ags_audiorec_open_response_callback(GtkWidget *widget, gint response,
 					 AgsAudiorec *audiorec);
+
+void
+ags_audiorec_update_ui_callback(GObject *ui_provider,
+				AgsAudiorec *audiorec)
+{
+  AgsAudio *audio;
+  AgsChannel *start_channel;
+  AgsChannel *channel, *next_channel;
+    
+  GList *start_list, *list;
+
+  audio = AGS_MACHINE(audiorec)->audio;
+
+  start_channel = ags_audio_get_input(audio);
+    
+  list =
+    start_list = ags_audiorec_get_indicator(audiorec);
+    
+  /* check members */
+  channel = start_channel;
+
+  if(channel != NULL){
+    g_object_ref(channel);
+  }
+
+  next_channel = NULL;
+    
+  while(list != NULL){
+    GtkAdjustment *adjustment;
+    GtkWidget *child;
+
+    AgsPort *current;
+
+    GList *start_port;
+      
+    gdouble average_peak;
+    gdouble peak;
+	
+    GValue value = {0,};
+	
+    child = list->data;
+      
+    average_peak = 0.0;
+      
+    start_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+										"./peak[0]",
+										FALSE);
+
+    current = NULL;
+
+    if(start_port != NULL){
+      current = start_port->data;
+    }
+      
+    /* recall port - read value */
+    g_value_init(&value, G_TYPE_FLOAT);
+    ags_port_safe_read(current,
+		       &value);
+      
+    peak = g_value_get_float(&value);
+    g_value_unset(&value);
+
+    /* calculate peak */
+    average_peak += peak;
+      
+    /* apply */
+    g_object_get(child,
+		 "adjustment", &adjustment,
+		 NULL);
+	
+    gtk_adjustment_set_value(adjustment,
+			     10.0 * average_peak);
+
+    /* queue draw */
+    gtk_widget_queue_draw(child);
+
+    g_list_free_full(start_port,
+		     g_object_unref);
+      
+    /* iterate */
+    list = list->next;
+
+    next_channel = ags_channel_next(channel);
+
+    g_object_unref(channel);
+
+    channel = next_channel;
+  }
+
+  if(start_channel != NULL){
+    g_object_unref(start_channel);
+  }
+
+  if(channel != NULL){
+    g_object_unref(channel);
+  }
+    
+  g_list_free(start_list);
+}
 
 void
 ags_audiorec_open_callback(GtkWidget *button, AgsAudiorec *audiorec)

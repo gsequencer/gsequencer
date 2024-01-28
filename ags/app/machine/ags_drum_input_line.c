@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -52,8 +52,6 @@ void ags_drum_input_line_map_recall(AgsLine *line,
 
 static gpointer ags_drum_input_line_parent_class = NULL;
 static AgsConnectableInterface *ags_drum_input_line_parent_connectable_interface;
-
-extern GHashTable *ags_line_indicator_refresh;
 
 GType
 ags_drum_input_line_get_type()
@@ -168,10 +166,8 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
 			       4);
   
   AGS_LINE(drum_input_line)->indicator = widget;
-
-  g_hash_table_insert(ags_line_indicator_refresh,
-		      widget, ags_line_indicator_refresh_timeout);
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0, (GSourceFunc) ags_line_indicator_refresh_timeout, (gpointer) widget);
+  AGS_LINE(drum_input_line)->queued_refresh = g_list_prepend(AGS_LINE(drum_input_line)->queued_refresh,
+							     widget);
 
   //TODO:JK: fix me
   //  g_object_set(G_OBJECT(line_member),
@@ -222,7 +218,7 @@ ags_drum_input_line_connect(AgsConnectable *connectable)
 
   drum_input_line = AGS_DRUM_INPUT_LINE(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_LINE(drum_input_line)->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
   
@@ -238,7 +234,7 @@ ags_drum_input_line_disconnect(AgsConnectable *connectable)
 
   drum_input_line = AGS_DRUM_INPUT_LINE(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_LINE(drum_input_line)->connectable_flags)) != 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
   

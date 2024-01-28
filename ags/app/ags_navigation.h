@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -130,8 +130,6 @@ void ags_navigation_set_seeking_sensitive(AgsNavigation *navigation,
 
 void ags_navigation_change_position(AgsNavigation *navigation,
 				    gdouble tact);
-
-gboolean ags_navigation_duration_time_queue_draw_timeout(GtkWidget *widget);
 
 AgsNavigation* ags_navigation_new();
 
