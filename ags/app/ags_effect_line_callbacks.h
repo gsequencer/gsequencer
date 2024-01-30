@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,6 +32,9 @@
 #include <ags/app/ags_effect_line.h>
 
 G_BEGIN_DECLS
+
+void ags_effect_line_update_ui_callback(GObject *ui_provider,
+					AgsEffectLine *effect_line);
 
 void ags_effect_line_check_message_callback(GObject *application_context, AgsEffectLine *effect_line);
 
