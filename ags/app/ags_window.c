@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -367,7 +367,7 @@ ags_window_init(AgsWindow *window)
   g_hash_table_insert(ags_window_load_file,
 		      window, ags_window_load_file_timeout);
 
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0, (GSourceFunc) ags_window_load_file_timeout, (gpointer) window);
+  g_timeout_add(1000 / 4, (GSourceFunc) ags_window_load_file_timeout, (gpointer) window);
 }
 
 void
