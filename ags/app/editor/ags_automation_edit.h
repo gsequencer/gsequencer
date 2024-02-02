@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -163,6 +163,9 @@ struct _AgsAutomationEdit
   
   GtkScrollbar *vscrollbar;
   GtkScrollbar *hscrollbar;
+
+  guint note_offset_256th;
+  guint note_offset_256th_absolute;
 };
 
 struct _AgsAutomationEditClass

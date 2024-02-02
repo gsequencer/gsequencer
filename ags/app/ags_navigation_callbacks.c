@@ -22,6 +22,15 @@
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
 
+#include <ags/app/editor/ags_notation_edit.h>
+#include <ags/app/editor/ags_scrolled_automation_edit_box.h>
+#include <ags/app/editor/ags_automation_edit_box.h>
+#include <ags/app/editor/ags_automation_edit.h>
+#include <ags/app/editor/ags_scrolled_wave_edit_box.h>
+#include <ags/app/editor/ags_wave_edit_box.h>
+#include <ags/app/editor/ags_wave_edit.h>
+#include <ags/app/editor/ags_tempo_edit.h>
+
 void
 ags_navigation_update_ui_callback(GObject *ui_provider,
 				  AgsNavigation *navigation)
@@ -158,7 +167,7 @@ ags_navigation_play_callback(GtkWidget *widget,
 
   application_context = ags_application_context_get_instance();
 
-  window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) navigation, AGS_TYPE_WINDOW));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
   
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
   
@@ -223,7 +232,7 @@ ags_navigation_stop_callback(GtkWidget *widget,
 
   application_context = ags_application_context_get_instance();
 
-  window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) navigation, AGS_TYPE_WINDOW));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
   
@@ -343,7 +352,7 @@ ags_navigation_loop_callback(GtkWidget *widget,
 
   application_context = ags_application_context_get_instance();
   
-  window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) navigation, AGS_TYPE_WINDOW));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
 
@@ -503,6 +512,79 @@ ags_navigation_position_tact_callback(GtkWidget *widget,
 }
 
 void
+ags_navigation_scroll_callback(GtkWidget *widget,
+			       AgsNavigation *navigation)
+{
+  AgsCompositeEditor *composite_editor;
+  
+  AgsApplicationContext *application_context;
+
+  GList *start_list, *list;
+  
+  gboolean do_scroll;
+
+  application_context = ags_application_context_get_instance();
+
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+
+  do_scroll = gtk_check_button_get_active(GTK_CHECK_BUTTON(widget));
+
+  if(do_scroll){
+    AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->flags |= AGS_NOTATION_EDIT_AUTO_SCROLL;
+
+    list = 
+      start_list = ags_automation_edit_box_get_automation_edit(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_editor->automation_edit->edit)->automation_edit_box);
+
+    while(list != NULL){
+      AGS_AUTOMATION_EDIT(list->data)->flags |= AGS_AUTOMATION_EDIT_AUTO_SCROLL;
+
+      list = list->next;
+    }
+    
+    g_list_free(start_list);
+    
+    list = 
+      start_list = ags_wave_edit_box_get_wave_edit(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box);
+
+    while(list != NULL){
+      AGS_WAVE_EDIT(list->data)->flags |= AGS_WAVE_EDIT_AUTO_SCROLL;
+
+      list = list->next;
+    }
+
+    g_list_free(start_list);    
+
+    AGS_TEMPO_EDIT(composite_editor->tempo_edit)->flags |= AGS_TEMPO_EDIT_AUTO_SCROLL;
+  }else{
+    AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->flags &= (~AGS_NOTATION_EDIT_AUTO_SCROLL);
+
+    list = 
+      start_list = ags_automation_edit_box_get_automation_edit(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_editor->automation_edit->edit)->automation_edit_box);
+
+    while(list != NULL){
+      AGS_AUTOMATION_EDIT(list->data)->flags &= (~AGS_AUTOMATION_EDIT_AUTO_SCROLL);
+
+      list = list->next;
+    }
+
+    g_list_free(start_list);    
+
+    list = 
+      start_list = ags_wave_edit_box_get_wave_edit(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box);
+
+    while(list != NULL){
+      AGS_WAVE_EDIT(list->data)->flags &= (~AGS_WAVE_EDIT_AUTO_SCROLL);
+
+      list = list->next;
+    }
+
+    g_list_free(start_list);
+    
+    AGS_TEMPO_EDIT(composite_editor->tempo_edit)->flags &= (~AGS_TEMPO_EDIT_AUTO_SCROLL);
+  }
+}
+
+void
 ags_navigation_duration_tact_callback(GtkWidget *widget,
 				      AgsNavigation *navigation)
 {
@@ -531,7 +613,7 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
 
   application_context = ags_application_context_get_instance();
 
-  window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) navigation, AGS_TYPE_WINDOW));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
 
@@ -709,7 +791,7 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
 
   application_context = ags_application_context_get_instance();
 
-  window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) navigation, AGS_TYPE_WINDOW));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
 

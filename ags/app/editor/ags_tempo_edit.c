@@ -174,8 +174,6 @@ static gpointer ags_tempo_edit_parent_class = NULL;
 
 static GQuark quark_accessible_object = 0;
 
-GHashTable *ags_tempo_edit_auto_scroll = NULL;
-
 GType
 ags_tempo_edit_get_type(void)
 {
@@ -412,6 +410,10 @@ ags_tempo_edit_init(AgsTempoEdit *tempo_edit)
 		  (GtkWidget *) tempo_edit->hscrollbar,
 		  0, 2,
 		  1, 1);
+
+  /* 256th */
+  tempo_edit->note_offset_256th = 16 * tempo_edit->note_offset;
+  tempo_edit->note_offset_256th_absolute = 16 * tempo_edit->note_offset_absolute;
 
   /* auto-scroll */
   g_signal_connect(application_context, "update-ui",
@@ -2110,10 +2112,13 @@ ags_tempo_edit_draw_position(AgsTempoEdit *tempo_edit, cairo_t *cr)
   GtkStyleContext *style_context;
   GtkSettings *settings;
 
+  AgsApplicationContext *application_context;
+
   GtkAllocation allocation;
 
   GdkRGBA fg_color;
 
+  double zoom_factor;
   double position;
   double x, y;
   double width, height;
@@ -2126,6 +2131,8 @@ ags_tempo_edit_draw_position(AgsTempoEdit *tempo_edit, cairo_t *cr)
   if(!AGS_IS_TEMPO_EDIT(tempo_edit)){
     return;
   }
+
+  application_context = ags_application_context_get_instance();    
 
   gtk_widget_get_allocation(GTK_WIDGET(tempo_edit->drawing_area),
 			    &allocation);
@@ -2150,12 +2157,13 @@ ags_tempo_edit_draw_position(AgsTempoEdit *tempo_edit, cairo_t *cr)
 		   "#101010");
   }
   
-  /* get channel count */
-  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) tempo_edit,
-								    AGS_TYPE_COMPOSITE_EDITOR);
+  /*  */
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
   
+  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) AGS_COMPOSITE_TOOLBAR(composite_editor->toolbar)->zoom));
+
   /* get offset and dimensions */
-  position = ((double) tempo_edit->note_offset) * ((double) tempo_edit->control_width);
+  position = ((double) tempo_edit->note_offset) * ((double) tempo_edit->control_width) / zoom_factor;
   
   y = 0.0;
   x = (position) - (gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(tempo_edit->hscrollbar)));
