@@ -48,6 +48,8 @@ void ags_window_get_property(GObject *gobject,
 			     GValue *value,
 			     GParamSpec *param_spec);
 void ags_window_finalize(GObject *gobject);
+
+gboolean ags_window_is_connected(AgsConnectable *connectable);
 void ags_window_connect(AgsConnectable *connectable);
 void ags_window_disconnect(AgsConnectable *connectable);
 
@@ -139,10 +141,23 @@ ags_window_class_init(AgsWindowClass *window)
 void
 ags_window_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_window_is_connected;  
   connectable->connect = ags_window_connect;
   connectable->disconnect = ags_window_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -404,6 +419,21 @@ ags_window_get_property(GObject *gobject,
   }
 }
 
+gboolean
+ags_window_is_connected(AgsConnectable *connectable)
+{
+  AgsWindow *window;
+  
+  gboolean is_connected;
+  
+  window = AGS_WINDOW(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (window->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
+}
+
 void
 ags_window_connect(AgsConnectable *connectable)
 {
@@ -413,7 +443,7 @@ ags_window_connect(AgsConnectable *connectable)
 
   window = AGS_WINDOW(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (window->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -447,7 +477,7 @@ ags_window_disconnect(AgsConnectable *connectable)
 
   window = AGS_WINDOW(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (window->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
