@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,6 +27,93 @@
 
 void ags_effect_bulk_plugin_browser_response_create_entry(AgsEffectBulk *effect_bulk,
 							  gchar *filename, gchar *effect);
+
+void
+ags_effect_bulk_update_ui_callback(GObject *ui_provider,
+				   AgsEffectBulk *effect_bulk)
+{
+  GList *start_queued_refresh, *queued_refresh;
+
+  queued_refresh = 
+    start_queued_refresh = g_list_copy(effect_bulk->queued_refresh);
+
+  while(queued_refresh != NULL){
+    AgsBulkMember *bulk_member;
+    GtkWidget *child_widget;
+    
+    GList *list;
+
+    gdouble val;
+    gboolean is_double;
+    
+    child_widget = queued_refresh->data;
+
+    bulk_member = (AgsBulkMember *) gtk_widget_get_ancestor(child_widget,
+							    AGS_TYPE_BULK_MEMBER);
+
+    if(bulk_member == NULL){
+      queued_refresh = queued_refresh->next;
+
+      continue;
+    }
+
+    list = bulk_member->bulk_port;
+
+    val = 0.0;
+    
+    while(list != NULL){
+      GValue value = {0,};
+
+      GRecMutex *mutex;
+
+      mutex = AGS_PORT_GET_OBJ_MUTEX(AGS_BULK_PORT(list->data)->port);
+      
+      g_rec_mutex_lock(mutex);
+
+      is_double = (AGS_BULK_PORT(list->data)->port->port_value_type == G_TYPE_DOUBLE) ? TRUE: FALSE;
+      
+      g_rec_mutex_unlock(mutex);
+      
+      if(is_double){
+	g_value_init(&value,
+		     G_TYPE_DOUBLE);
+	
+	ags_port_safe_read(AGS_BULK_PORT(list->data)->port,
+			   &value);
+      
+	val += g_value_get_double(&value);
+      }else{
+	g_value_init(&value,
+		     G_TYPE_FLOAT);
+	
+	ags_port_safe_read(AGS_BULK_PORT(list->data)->port,
+			   &value);
+      
+	val += g_value_get_float(&value);
+      }
+      
+      list = list->next;
+    }
+
+    if(AGS_IS_LED(child_widget)){
+      if(val != 0.0){
+	ags_led_set_active((AgsLed *) child_widget,
+			   TRUE);
+      }else{
+	ags_led_set_active((AgsLed *) child_widget,
+			   FALSE);
+      }
+    }else if(AGS_IS_INDICATOR(child_widget)){
+      gtk_adjustment_set_value(AGS_INDICATOR(child_widget)->adjustment,
+			       val);
+    }
+    
+    /* iterate */
+    queued_refresh = queued_refresh->next;
+  }
+
+  g_list_free(start_queued_refresh);
+}
 
 void
 ags_effect_bulk_add_callback(GtkWidget *button,

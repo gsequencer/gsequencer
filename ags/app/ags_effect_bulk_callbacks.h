@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,6 +34,9 @@
 #include <ags/app/ags_effect_bulk.h>
 
 G_BEGIN_DECLS
+
+void ags_effect_bulk_update_ui_callback(GObject *ui_provider,
+					AgsEffectBulk *effect_bulk);
 
 void ags_effect_bulk_add_callback(GtkWidget *button,
 				  AgsEffectBulk *effect_bulk);

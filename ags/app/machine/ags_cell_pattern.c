@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -31,6 +31,7 @@ void ags_cell_pattern_connectable_interface_init(AgsConnectableInterface *connec
 void ags_cell_pattern_init(AgsCellPattern *cell_pattern);
 void ags_cell_pattern_finalize(GObject *gobject);
 
+gboolean ags_cell_pattern_is_connected(AgsConnectable *connectable);
 void ags_cell_pattern_connect(AgsConnectable *connectable);
 void ags_cell_pattern_disconnect(AgsConnectable *connectable);
 
@@ -51,8 +52,6 @@ void ags_cell_pattern_draw_func(GtkDrawingArea *drawing_area,
  */
 
 static gpointer ags_cell_pattern_parent_class = NULL;
-
-GHashTable *ags_cell_pattern_led_queue_draw = NULL;
 
 GType
 ags_cell_pattern_get_type(void)
@@ -110,8 +109,23 @@ ags_cell_pattern_class_init(AgsCellPatternClass *cell_pattern)
 void
 ags_cell_pattern_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
+  connectable->is_ready = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_cell_pattern_is_connected;  
   connectable->connect = ags_cell_pattern_connect;
   connectable->disconnect = ags_cell_pattern_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -224,25 +238,47 @@ ags_cell_pattern_init(AgsCellPattern *cell_pattern)
 		   0, 2,
 		   1, 1);
   gtk_widget_show((GtkWidget *) cell_pattern->hled_array);
-  
-  if(ags_cell_pattern_led_queue_draw == NULL){
-    ags_cell_pattern_led_queue_draw = g_hash_table_new_full(g_direct_hash, g_direct_equal,
-							   NULL,
-							   NULL);
-  }
 
-  g_hash_table_insert(ags_cell_pattern_led_queue_draw,
-		      cell_pattern, ags_cell_pattern_led_queue_draw_timeout);
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0, (GSourceFunc) ags_cell_pattern_led_queue_draw_timeout, (gpointer) cell_pattern);
+  g_signal_connect(application_context, "update-ui",
+		   G_CALLBACK(ags_cell_pattern_update_ui_callback), cell_pattern);
 }
 
 void
 ags_cell_pattern_finalize(GObject *gobject)
 {
-  g_hash_table_remove(ags_cell_pattern_led_queue_draw,
-		      gobject);
+  AgsCellPattern *cell_pattern;
+  
+  AgsApplicationContext *application_context;
 
+  cell_pattern = AGS_CELL_PATTERN(gobject);
+
+  application_context = ags_application_context_get_instance();
+
+  application_context = ags_application_context_get_instance();
+
+  g_object_disconnect(application_context,
+		      "any_signal::update-ui",
+		      G_CALLBACK(ags_cell_pattern_update_ui_callback),
+		      (gpointer) cell_pattern,
+		      NULL);
+
+  /* call parent */
   G_OBJECT_CLASS(ags_cell_pattern_parent_class)->finalize(gobject);
+}
+
+gboolean
+ags_cell_pattern_is_connected(AgsConnectable *connectable)
+{
+  AgsCellPattern *cell_pattern;
+  
+  gboolean is_connected;
+  
+  cell_pattern = AGS_CELL_PATTERN(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (cell_pattern->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
 }
 
 void
@@ -250,7 +286,7 @@ ags_cell_pattern_connect(AgsConnectable *connectable)
 {
   AgsCellPattern *cell_pattern;
 
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_CELL_PATTERN(connectable)->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -268,7 +304,7 @@ ags_cell_pattern_disconnect(AgsConnectable *connectable)
 {
   AgsCellPattern *cell_pattern;
 
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_CELL_PATTERN(connectable)->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -680,137 +716,6 @@ ags_cell_pattern_unpaint_gutter_point(AgsCellPattern *cell_pattern, cairo_t *cr,
 		  (gdouble) cell_pattern->cell_width - 1.0, (gdouble) cell_pattern->cell_height - 1.0);
 
   cairo_fill(cr);
-}
-
-/**
- * ags_cell_pattern_led_queue_draw_timeout:
- * @cell_pattern: the #AgsCellPattern
- *
- * Queue draw led.
- *
- * Returns: %TRUE if continue timeout, otherwise %FALSE
- *
- * Since: 3.0.0
- */
-gboolean
-ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
-{
-  if(g_hash_table_lookup(ags_cell_pattern_led_queue_draw,
-			 cell_pattern) != NULL){
-    AgsMachine *machine;
-
-    AgsAudio *audio;
-    AgsRecallID *recall_id;
-    
-    AgsFxPatternAudio *play_fx_pattern_audio;
-    AgsFxPatternAudioProcessor *play_fx_pattern_audio_processor;
-
-    GList *start_list, *list;
-    GList *start_recall, *recall;
-    
-    guint64 active_led_new;
-
-    GRecMutex *play_fx_pattern_audio_processor_mutex;
-    
-    machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
-						     AGS_TYPE_MACHINE);
-
-    if(machine == NULL){      
-      return(TRUE);
-    }
-
-    audio = machine->audio;
-  
-    /* get some recalls */
-    list =
-      start_list = ags_audio_get_recall_id(audio);
-
-    recall_id = NULL;
-    
-    while(list != NULL){
-      AgsRecyclingContext *current;
-
-      g_object_get(list->data,
-		   "recycling-context", &current,
-		   NULL);
-
-      g_object_unref(current);
-
-      if(current != NULL){
-	g_object_get(current,
-		     "parent", &current,
-		     NULL);
-
-	if(current != NULL){
-	  g_object_unref(current);
-	}
-	
-	if(current == NULL &&
-	   ags_recall_id_check_sound_scope(list->data, AGS_SOUND_SCOPE_SEQUENCER)){
-	  recall_id = list->data;
-
-	  g_object_get(audio,
-		       "play", &start_recall,
-		       NULL);
-
-	  play_fx_pattern_audio = NULL;
-	  play_fx_pattern_audio_processor = NULL;
-    
-	  recall = ags_recall_find_type(start_recall,
-					AGS_TYPE_FX_PATTERN_AUDIO);
-    
-	  if(recall != NULL){
-	    play_fx_pattern_audio = AGS_FX_PATTERN_AUDIO(recall->data);
-	  }
-    
-	  recall = ags_recall_find_type_with_recycling_context(start_recall,
-							       AGS_TYPE_FX_PATTERN_AUDIO_PROCESSOR,
-							       (GObject *) recall_id->recycling_context);
-    
-	  if(recall != NULL){
-	    play_fx_pattern_audio_processor = AGS_FX_PATTERN_AUDIO_PROCESSOR(recall->data);
-	  }
-
-	  g_list_free_full(start_recall,
-			   g_object_unref);
-
-	  if(play_fx_pattern_audio == NULL ||
-	     play_fx_pattern_audio_processor == NULL){
-	    recall_id = NULL;
-	  }else{
-	    break;
-	  }
-	}
-      }
-      
-      list = list->next;
-    }
-
-    g_list_free_full(start_list,
-		     g_object_unref);
-    
-    if(recall_id == NULL){
-      return(TRUE);
-    }
-
-    /* active led */
-    play_fx_pattern_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_fx_pattern_audio_processor);
-
-    g_rec_mutex_lock(play_fx_pattern_audio_processor_mutex);
-
-    active_led_new = play_fx_pattern_audio_processor->offset_counter;
-    
-    g_rec_mutex_unlock(play_fx_pattern_audio_processor_mutex);
-
-    cell_pattern->active_led = (guint) (active_led_new % cell_pattern->n_cols);
-    ags_led_array_unset_all((AgsLedArray *) cell_pattern->hled_array);
-    ags_led_array_set_nth((AgsLedArray *) cell_pattern->hled_array,
-			  cell_pattern->active_led);
-    
-    return(TRUE);
-  }else{
-    return(FALSE);
-  }
 }
 
 /**

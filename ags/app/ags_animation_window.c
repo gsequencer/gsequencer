@@ -29,6 +29,7 @@
 
 void ags_animation_window_class_init(AgsAnimationWindowClass *animation_window);
 void ags_animation_window_init(AgsAnimationWindow *animation_window);
+void ags_animation_window_finalize(GObject *gobject);
 
 void ags_animation_window_snapshot(GtkWidget *widget,
 				   GtkSnapshot *snapshot);
@@ -36,6 +37,9 @@ void ags_animation_window_snapshot(GtkWidget *widget,
 void ags_animation_window_draw(GtkWidget *widget,
 			       cairo_t *cr,
 			       gboolean is_animation);
+
+void ags_animation_window_update_ui_callback(GObject *ui_provider,
+					     AgsAnimationWindow *animation_window);
 
 static gpointer ags_animation_window_parent_class = NULL;
 
@@ -72,9 +76,15 @@ ags_animation_window_get_type()
 void
 ags_animation_window_class_init(AgsAnimationWindowClass *animation_window)
 {
+  GObjectClass *gobject;
   GtkWidgetClass *widget;
   
   ags_animation_window_parent_class = g_type_class_peek_parent(animation_window);
+
+  /* GObjectClass */
+  gobject = (GObjectClass *) animation_window;
+
+  gobject->finalize = ags_animation_window_finalize;
 
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) animation_window;
@@ -85,11 +95,11 @@ ags_animation_window_class_init(AgsAnimationWindowClass *animation_window)
 void
 ags_animation_window_init(AgsAnimationWindow *animation_window)
 {
+  AgsApplicationContext *application_context;
+
   cairo_surface_t *surface;
   
-#if defined(AGS_W32API)
-  AgsApplicationContext *application_context;
-      
+#if defined(AGS_W32API)      
   gchar *app_dir;
 #endif
   
@@ -101,10 +111,14 @@ ags_animation_window_init(AgsAnimationWindow *animation_window)
   int width, height;
   int stride;
   
+  application_context = ags_application_context_get_instance();
+  
   g_object_set(animation_window,
 	       "decorated", FALSE,
 	       NULL);
 
+  animation_window->flags = 0;
+  
   animation_window->message_count = 0;
 
   /* create gdk cairo graphics context */
@@ -115,8 +129,6 @@ ags_animation_window_init(AgsAnimationWindow *animation_window)
 #else
   if((filename = getenv("AGS_ANIMATION_FILENAME")) == NULL){
 #if defined(AGS_W32API)
-    application_context = ags_application_context_get_instance();
-
     app_dir = NULL;
           
     if(strlen(application_context->argv[0]) > strlen("\\gsequencer.exe")){
@@ -225,7 +237,29 @@ ags_animation_window_init(AgsAnimationWindow *animation_window)
   gtk_widget_set_size_request((GtkWidget *) animation_window,
 			      800, 450);
 
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0, (GSourceFunc) ags_animation_window_progress_timeout, (gpointer) animation_window);
+  g_signal_connect(application_context, "update-ui",
+		   G_CALLBACK(ags_animation_window_update_ui_callback), animation_window);
+}
+
+void
+ags_animation_window_finalize(GObject *gobject)
+{
+  AgsAnimationWindow *animation_window;
+  
+  AgsApplicationContext *application_context;
+
+  animation_window = AGS_ANIMATION_WINDOW(gobject);
+
+  application_context = ags_application_context_get_instance();
+
+  g_object_disconnect(application_context,
+		      "any_signal::update-ui",
+		      G_CALLBACK(ags_animation_window_update_ui_callback),
+		      (gpointer) animation_window,
+		      NULL);
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_animation_window_parent_class)->finalize(gobject);
 }
 
 void
@@ -393,14 +427,15 @@ ags_animation_window_draw(GtkWidget *widget,
   cairo_surface_destroy(surface);
 }
 
-gboolean
-ags_animation_window_progress_timeout(AgsAnimationWindow *animation_window)
+void
+ags_animation_window_update_ui_callback(GObject *ui_provider,
+					AgsAnimationWindow *animation_window)
 {
   AgsApplicationContext *application_context;
 
   application_context = ags_application_context_get_instance();
 
-  if(ags_ui_provider_get_show_animation(AGS_UI_PROVIDER(application_context))){
+  if(ags_ui_provider_get_show_animation(AGS_UI_PROVIDER(ui_provider))){
     AgsLog *log;
     
     GList *start_list;
@@ -416,14 +451,14 @@ ags_animation_window_progress_timeout(AgsAnimationWindow *animation_window)
     if(animation_window->message_count < i_stop){
       gtk_widget_queue_draw((GtkWidget *) animation_window);
     }
+  }else{
+    if((AGS_ANIMATION_WINDOW_SETUP_COMPLETED & (animation_window->flags)) == 0){
+      animation_window->flags |= AGS_ANIMATION_WINDOW_SETUP_COMPLETED;
 
-    return(TRUE);
-  }else{    
-    gtk_widget_hide((GtkWidget *) animation_window);
+      gtk_widget_hide((GtkWidget *) animation_window);
 
-    ags_ui_provider_setup_completed(AGS_UI_PROVIDER(application_context));
-    
-    return(FALSE);
+      ags_ui_provider_setup_completed(AGS_UI_PROVIDER(application_context));
+    }
   }
 }
 

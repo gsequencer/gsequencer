@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -38,6 +38,7 @@ void ags_navigation_get_property(GObject *gobject,
 				 GParamSpec *param_spec);
 void ags_navigation_finalize(GObject *gobject);
 
+gboolean ags_navigation_is_connected(AgsConnectable *connectable);
 void ags_navigation_connect(AgsConnectable *connectable);
 void ags_navigation_disconnect(AgsConnectable *connectable);
 
@@ -67,8 +68,6 @@ enum{
 
 static gpointer ags_navigation_parent_class = NULL;
 static guint navigation_signals[LAST_SIGNAL];
-
-GHashTable *ags_navigation_duration_queue_draw = NULL;
 
 GType
 ags_navigation_get_type(void)
@@ -170,10 +169,23 @@ ags_navigation_class_init(AgsNavigationClass *navigation)
 void
 ags_navigation_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_navigation_is_connected;  
   connectable->connect = ags_navigation_connect;
   connectable->disconnect = ags_navigation_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -181,11 +193,16 @@ ags_navigation_init(AgsNavigation *navigation)
 {
   GtkBox *hbox;
   GtkLabel *label;
+
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
   
   gtk_orientable_set_orientation(GTK_ORIENTABLE(navigation),
 				 GTK_ORIENTATION_VERTICAL);
 
   navigation->flags = AGS_NAVIGATION_BLOCK_TIC;
+  navigation->connectable_flags = 0;
 
   navigation->soundcard = NULL;
 
@@ -301,20 +318,7 @@ ags_navigation_init(AgsNavigation *navigation)
 	       NULL);
   gtk_box_append(hbox,
 		 (GtkWidget *) navigation->duration_time);
-
-  if(ags_navigation_duration_queue_draw == NULL){
-    ags_navigation_duration_queue_draw = g_hash_table_new_full(g_direct_hash, g_direct_equal,
-							       NULL,
-							       NULL);
-  }
-
-  g_hash_table_insert(ags_navigation_duration_queue_draw,
-		      navigation, ags_navigation_duration_time_queue_draw_timeout);
   
-  g_timeout_add((guint) floor(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0),
-		(GSourceFunc) ags_navigation_duration_time_queue_draw_timeout,
-		(gpointer) navigation);
-
   navigation->duration_tact = NULL;
   //  navigation->duration_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_NOTATION_EDITOR_MAX_CONTROLS, 1.0);
   //  gtk_box_append(hbox, (GtkWidget *) navigation->duration_tact, FALSE, FALSE, 2);
@@ -361,6 +365,9 @@ ags_navigation_init(AgsNavigation *navigation)
 			      TRUE);
   gtk_box_append(navigation->expansion_box,
 		 (GtkWidget *) navigation->exclude_sequencer);
+
+  g_signal_connect(application_context, "update-ui",
+		   G_CALLBACK(ags_navigation_update_ui_callback), navigation);
 }
 
 void
@@ -430,13 +437,35 @@ ags_navigation_finalize(GObject *gobject)
 {
   AgsNavigation *navigation;
   
+  AgsApplicationContext *application_context;
+
   navigation = AGS_NAVIGATION(gobject);
 
-  g_hash_table_remove(ags_navigation_duration_queue_draw,
-		      navigation);
+  application_context = ags_application_context_get_instance();
+
+  g_object_disconnect(application_context,
+		      "any_signal::update-ui",
+		      G_CALLBACK(ags_navigation_update_ui_callback),
+		      (gpointer) navigation,
+		      NULL);
   
   /* call parent */
   G_OBJECT_CLASS(ags_navigation_parent_class)->finalize(gobject);
+}
+
+gboolean
+ags_navigation_is_connected(AgsConnectable *connectable)
+{
+  AgsNavigation *navigation;
+  
+  gboolean is_connected;
+  
+  navigation = AGS_NAVIGATION(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (navigation->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
 }
 
 void
@@ -446,11 +475,11 @@ ags_navigation_connect(AgsConnectable *connectable)
 
   navigation = AGS_NAVIGATION(connectable);
 
-  if((AGS_NAVIGATION_CONNECTED & (navigation->flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
-  navigation->flags |= AGS_NAVIGATION_CONNECTED;
+  navigation->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
   
   g_signal_connect((GObject *) navigation->expander, "toggled",
 		   G_CALLBACK(ags_navigation_expander_callback), (gpointer) navigation);
@@ -509,11 +538,11 @@ ags_navigation_disconnect(AgsConnectable *connectable)
 
   navigation = AGS_NAVIGATION(connectable);
 
-  if((AGS_NAVIGATION_CONNECTED & (navigation->flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
-  navigation->flags &= (~AGS_NAVIGATION_CONNECTED);
+  navigation->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
   
   g_object_disconnect((GObject *) navigation->expander,
 		      "any_signal::toggled",
@@ -881,42 +910,6 @@ ags_navigation_set_seeking_sensitive(AgsNavigation *navigation,
 			   enabled);
   gtk_widget_set_sensitive((GtkWidget *) navigation->forward,
 			   enabled);
-}
-
-gboolean
-ags_navigation_duration_time_queue_draw_timeout(GtkWidget *widget)
-{
-  if(g_hash_table_lookup(ags_navigation_duration_queue_draw,
-			 widget) != NULL){      
-    AgsNavigation *navigation;
-
-    AgsApplicationContext *application_context;
-
-    GObject *default_soundcard;
-
-    gchar *str;
-
-    navigation = AGS_NAVIGATION(widget);
-
-    application_context = ags_application_context_get_instance();
-
-    default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
-
-    if(default_soundcard != NULL){
-      str = ags_soundcard_get_uptime(AGS_SOUNDCARD(default_soundcard));
-    
-      g_object_set(navigation->duration_time,
-		   "label", str,
-		   NULL);
-      g_free(str);
-  
-      gtk_widget_queue_draw((GtkWidget *) navigation->duration_time);
-    }
-  
-    return(TRUE);
-  }
-  
-  return(FALSE);
 }
 
 /**

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -52,6 +52,7 @@ void ags_tempo_edit_get_property(GObject *gobject,
 void ags_tempo_edit_dispose(GObject *gobject);
 void ags_tempo_edit_finalize(GObject *gobject);
 
+gboolean ags_tempo_edit_is_connected(AgsConnectable *connectable);
 void ags_tempo_edit_connect(AgsConnectable *connectable);
 void ags_tempo_edit_disconnect(AgsConnectable *connectable);
 
@@ -155,8 +156,6 @@ gboolean ags_tempo_edit_motion_callback(GtkEventControllerMotion *event_controll
 					gdouble y,
 					AgsTempoEdit *tempo_edit);
 
-gboolean ags_tempo_edit_auto_scroll_timeout(GtkWidget *widget);
-
 /**
  * SECTION:ags_tempo_edit
  * @short_description: edit tempos
@@ -254,10 +253,23 @@ ags_tempo_edit_class_init(AgsTempoEditClass *tempo_edit)
 void
 ags_tempo_edit_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_tempo_edit_is_connected;  
   connectable->connect = ags_tempo_edit_connect;
   connectable->disconnect = ags_tempo_edit_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -402,15 +414,8 @@ ags_tempo_edit_init(AgsTempoEdit *tempo_edit)
 		  1, 1);
 
   /* auto-scroll */
-  if(ags_tempo_edit_auto_scroll == NULL){
-    ags_tempo_edit_auto_scroll = g_hash_table_new_full(g_direct_hash, g_direct_equal,
-						       NULL,
-						       NULL);
-  }
-
-  g_hash_table_insert(ags_tempo_edit_auto_scroll,
-		      tempo_edit, ags_tempo_edit_auto_scroll_timeout);
-  g_timeout_add(1000 / 30, (GSourceFunc) ags_tempo_edit_auto_scroll_timeout, (gpointer) tempo_edit);
+  g_signal_connect(application_context, "update-ui",
+		   G_CALLBACK(ags_tempo_edit_update_ui_callback), tempo_edit);
 }
 
 void
@@ -463,14 +468,36 @@ ags_tempo_edit_finalize(GObject *gobject)
 {
   AgsTempoEdit *tempo_edit;
   
+  AgsApplicationContext *application_context;
+
   tempo_edit = AGS_TEMPO_EDIT(gobject);
   
+  application_context = ags_application_context_get_instance();
+
   /* remove auto scroll */
-  g_hash_table_remove(ags_tempo_edit_auto_scroll,
-		      tempo_edit);
+  g_object_disconnect(application_context,
+		      "any_signal::update-ui",
+		      G_CALLBACK(ags_tempo_edit_update_ui_callback),
+		      (gpointer) tempo_edit,
+		      NULL);
 
   /* call parent */
   G_OBJECT_CLASS(ags_tempo_edit_parent_class)->finalize(gobject);
+}
+
+gboolean
+ags_tempo_edit_is_connected(AgsConnectable *connectable)
+{
+  AgsTempoEdit *tempo_edit;
+  
+  gboolean is_connected;
+  
+  tempo_edit = AGS_TEMPO_EDIT(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (tempo_edit->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
 }
 
 void
@@ -480,7 +507,7 @@ ags_tempo_edit_connect(AgsConnectable *connectable)
 
   tempo_edit = AGS_TEMPO_EDIT(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (tempo_edit->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
   
@@ -510,7 +537,7 @@ ags_tempo_edit_disconnect(AgsConnectable *connectable)
 
   tempo_edit = AGS_TEMPO_EDIT(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (tempo_edit->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
   
@@ -1404,50 +1431,6 @@ ags_tempo_edit_frame_clock_update_callback(GdkFrameClock *frame_clock,
 					   AgsTempoEdit *tempo_edit)
 {
   gtk_widget_queue_draw((GtkWidget *) tempo_edit);
-}
-
-gboolean
-ags_tempo_edit_auto_scroll_timeout(GtkWidget *widget)
-{
-  if(g_hash_table_lookup(ags_tempo_edit_auto_scroll,
-			 widget) != NULL){
-    AgsCompositeEditor *composite_editor;  
-    AgsTempoEdit *tempo_edit;
-
-    GtkAdjustment *hscrollbar_adjustment;
-
-    GObject *output_soundcard;
-      
-    double x;
-      
-    tempo_edit = AGS_TEMPO_EDIT(widget);
-
-    if((AGS_TEMPO_EDIT_AUTO_SCROLL & (tempo_edit->flags)) == 0){
-      return(TRUE);
-    }
-
-    composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) tempo_edit,
-								      AGS_TYPE_COMPOSITE_EDITOR);
-
-    output_soundcard = NULL;
-    
-    /* reset offset */
-    tempo_edit->note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
-    tempo_edit->note_offset_absolute = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(output_soundcard));
-
-    /* reset scrollbar */
-    hscrollbar_adjustment = gtk_scrollbar_get_adjustment(tempo_edit->hscrollbar);
-    x = ((tempo_edit->note_offset * tempo_edit->control_width) / (AGS_NAVIGATION_MAX_POSITION_TICS * tempo_edit->control_width)) * gtk_adjustment_get_upper(hscrollbar_adjustment);
-    
-    gtk_adjustment_set_value(hscrollbar_adjustment,
-			     x);
-
-    g_object_unref(output_soundcard);
-    
-    return(TRUE);
-  }else{
-    return(FALSE);
-  }
 }
 
 void

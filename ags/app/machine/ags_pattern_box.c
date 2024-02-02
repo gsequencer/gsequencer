@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -35,6 +35,7 @@ void ags_pattern_box_connectable_interface_init(AgsConnectableInterface *connect
 void ags_pattern_box_init(AgsPatternBox *pattern_box);
 void ags_pattern_box_finalize(GObject *gobject);
 
+gboolean ags_pattern_box_is_connected(AgsConnectable *connectable);
 void ags_pattern_box_connect(AgsConnectable *connectable);
 void ags_pattern_box_disconnect(AgsConnectable *connectable);
 
@@ -52,8 +53,6 @@ void ags_pattern_box_show(GtkWidget *widget);
  */
 
 static gpointer ags_pattern_box_parent_class = NULL;
-
-GHashTable *ags_pattern_box_led_queue_draw = NULL;
 
 GType
 ags_pattern_box_get_type(void)
@@ -117,8 +116,23 @@ ags_pattern_box_class_init(AgsPatternBoxClass *pattern_box)
 void
 ags_pattern_box_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
+  connectable->is_ready = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_pattern_box_is_connected;  
   connectable->connect = ags_pattern_box_connect;
   connectable->disconnect = ags_pattern_box_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -171,16 +185,6 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
 		  0, 0,
 		  1, 1);
   gtk_widget_show((GtkWidget *) pattern_box->hled_array);
-  
-  if(ags_pattern_box_led_queue_draw == NULL){
-    ags_pattern_box_led_queue_draw = g_hash_table_new_full(g_direct_hash, g_direct_equal,
-							   NULL,
-							   NULL);
-  }
-
-  g_hash_table_insert(ags_pattern_box_led_queue_draw,
-		      pattern_box, ags_pattern_box_led_queue_draw_timeout);
-  g_timeout_add((guint) floor(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0), (GSourceFunc) ags_pattern_box_led_queue_draw_timeout, (gpointer) pattern_box);
   
   /* pattern */
   pattern_box->pad_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
@@ -262,15 +266,45 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
 
   gtk_box_append(offset,
 		 (GtkWidget *) pattern_box->page_48_63);
+
+  g_signal_connect(application_context, "update-ui",
+		   G_CALLBACK(ags_pattern_box_update_ui_callback), pattern_box);
 }
 
 void
 ags_pattern_box_finalize(GObject *gobject)
 {
-  g_hash_table_remove(ags_pattern_box_led_queue_draw,
-		      gobject);
+  AgsPatternBox *pattern_box;
+  
+  AgsApplicationContext *application_context;
 
+  pattern_box = AGS_PATTERN_BOX(gobject);
+
+  application_context = ags_application_context_get_instance();
+
+  g_object_disconnect(application_context,
+		      "any_signal::update-ui",
+		      G_CALLBACK(ags_pattern_box_update_ui_callback),
+		      (gpointer) pattern_box,
+		      NULL);
+  
+  /* call parent */
   G_OBJECT_CLASS(ags_pattern_box_parent_class)->finalize(gobject);
+}
+
+gboolean
+ags_pattern_box_is_connected(AgsConnectable *connectable)
+{
+  AgsPatternBox *pattern_box;
+  
+  gboolean is_connected;
+  
+  pattern_box = AGS_PATTERN_BOX(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (pattern_box->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
 }
 
 void
@@ -280,7 +314,7 @@ ags_pattern_box_connect(AgsConnectable *connectable)
 
   GList *start_list, *list;
 
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_PATTERN_BOX(connectable)->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -323,7 +357,7 @@ ags_pattern_box_disconnect(AgsConnectable *connectable)
 
   GList *start_list, *list;
 
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_PATTERN_BOX(connectable)->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -554,150 +588,6 @@ ags_pattern_box_set_pattern(AgsPatternBox *pattern_box)
   pattern_box->flags &= (~AGS_PATTERN_BOX_BLOCK_PATTERN);
 
   g_list_free(start_list);
-}
-
-/**
- * ags_pattern_box_led_queue_draw_timeout:
- * @pattern_box: the #AgsPatternBox
- *
- * Queue draw led.
- *
- * Returns: %TRUE if continue timeout, otherwise %FALSE
- *
- * Since: 3.0.0
- */
-gboolean
-ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
-{
-  if(g_hash_table_lookup(ags_pattern_box_led_queue_draw,
-			 pattern_box) != NULL){
-    AgsMachine *machine;
-
-    AgsAudio *audio;
-    AgsRecallID *recall_id;
-    
-    AgsFxPatternAudio *play_fx_pattern_audio;
-    AgsFxPatternAudioProcessor *play_fx_pattern_audio_processor;
-
-    GList *start_list, *list;
-    GList *start_recall, *recall;
-    
-    guint64 active_led_new;
-    gboolean success;
-    
-    GRecMutex *play_fx_pattern_audio_processor_mutex;
-    
-    machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pattern_box,
-						     AGS_TYPE_MACHINE);
-
-    if(machine == NULL){
-      return(TRUE);
-    }
-    
-    audio = machine->audio;
-    
-    /* get some recalls */
-    recall_id = NULL;
-    g_object_get(audio,
-		 "recall-id", &start_list,
-		 NULL);
-
-    list = start_list;
-
-    success = FALSE;
-    
-    while(list != NULL && !success){
-      AgsRecyclingContext *parent_recycling_context;
-      AgsRecyclingContext *current_recycling_context;
-
-      parent_recycling_context = NULL;
-      current_recycling_context = NULL;
-      
-      g_object_get(list->data,
-		   "recycling-context", &current_recycling_context,
-		   NULL);
-      
-      if(current_recycling_context != NULL){
-	g_object_get(current_recycling_context,
-		     "parent", &parent_recycling_context,
-		     NULL);
-
-	if(parent_recycling_context == NULL &&
-	   ags_recall_id_check_sound_scope(list->data, AGS_SOUND_SCOPE_SEQUENCER)){
-	  recall_id = list->data;
-
-	  g_object_get(audio,
-		       "play", &start_recall,
-		       NULL);
-
-	  play_fx_pattern_audio = NULL;
-	  play_fx_pattern_audio_processor = NULL;
-    
-	  recall = ags_recall_find_type(start_recall,
-					AGS_TYPE_FX_PATTERN_AUDIO);
-    
-	  if(recall != NULL){
-	    play_fx_pattern_audio = AGS_FX_PATTERN_AUDIO(recall->data);
-	  }
-    
-	  recall = ags_recall_find_type_with_recycling_context(start_recall,
-							       AGS_TYPE_FX_PATTERN_AUDIO_PROCESSOR,
-							       (GObject *) current_recycling_context);
-    
-	  if(recall != NULL){
-	    play_fx_pattern_audio_processor = AGS_FX_PATTERN_AUDIO_PROCESSOR(recall->data);
-	  }
-
-
-	  g_list_free_full(start_recall,
-			   g_object_unref);
-
-	  if(play_fx_pattern_audio == NULL ||
-	     play_fx_pattern_audio_processor == NULL){
-	    recall_id = NULL;
-	  }else{
-	    success = TRUE;
-	  }
-	}
-      }
-
-      if(parent_recycling_context != NULL){
-	g_object_unref(parent_recycling_context);
-      }
-
-      if(current_recycling_context != NULL){
-	g_object_unref(current_recycling_context);
-      }
-
-      list = list->next;
-    }
-
-    g_list_free_full(start_list,
-		     g_object_unref);
-    
-    if(recall_id == NULL){      
-      return(TRUE);
-    }
-    
-    /* active led */
-    play_fx_pattern_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_fx_pattern_audio_processor);
-
-    g_rec_mutex_lock(play_fx_pattern_audio_processor_mutex);
-
-    active_led_new = play_fx_pattern_audio_processor->offset_counter;
-    
-    g_rec_mutex_unlock(play_fx_pattern_audio_processor_mutex);
-
-    pattern_box->active_led = (guint) (active_led_new % pattern_box->n_controls);
-
-    ags_led_array_unset_all((AgsLedArray *) pattern_box->hled_array);
-    ags_led_array_set_nth((AgsLedArray *) pattern_box->hled_array,
-			  pattern_box->active_led);
-        
-    return(TRUE);
-  }else{
-    return(FALSE);
-  }
 }
 
 /**

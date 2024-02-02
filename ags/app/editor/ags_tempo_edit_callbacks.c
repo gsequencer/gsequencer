@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,10 +21,52 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_composite_editor.h>
+#include <ags/app/ags_navigation.h>
 
 #include <ags/app/editor/ags_composite_edit.h>
 
 #include <math.h>
+
+void
+ags_tempo_edit_update_ui_callback(GObject *ui_provider,
+				  AgsTempoEdit *tempo_edit)
+{
+  AgsCompositeEditor *composite_editor;  
+
+  GtkAdjustment *hscrollbar_adjustment;
+
+  AgsApplicationContext *application_context;
+
+  GObject *output_soundcard;
+
+  double x;
+
+  if((AGS_TEMPO_EDIT_AUTO_SCROLL & (tempo_edit->flags)) == 0){
+    return;
+  }
+
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) tempo_edit,
+								    AGS_TYPE_COMPOSITE_EDITOR);
+
+  application_context = ags_application_context_get_instance();
+  
+  output_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+    
+  /* reset offset */
+  tempo_edit->note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
+  tempo_edit->note_offset_absolute = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(output_soundcard));
+
+  /* reset scrollbar */
+  hscrollbar_adjustment = gtk_scrollbar_get_adjustment(tempo_edit->hscrollbar);
+  x = ((tempo_edit->note_offset * tempo_edit->control_width) / (AGS_NAVIGATION_MAX_POSITION_TICS * tempo_edit->control_width)) * gtk_adjustment_get_upper(hscrollbar_adjustment);
+    
+  gtk_adjustment_set_value(hscrollbar_adjustment,
+			   x);
+
+  if(output_soundcard != NULL){
+    g_object_unref(output_soundcard);
+  }
+}
 
 void
 ags_tempo_edit_draw_callback(GtkWidget *drawing_area,

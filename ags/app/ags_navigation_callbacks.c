@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,6 +21,32 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
+
+void
+ags_navigation_update_ui_callback(GObject *ui_provider,
+				  AgsNavigation *navigation)
+{
+  AgsApplicationContext *application_context;
+
+  GObject *default_soundcard;
+
+  gchar *str;
+
+  application_context = ags_application_context_get_instance();
+
+  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+
+  if(default_soundcard != NULL){
+    str = ags_soundcard_get_uptime(AGS_SOUNDCARD(default_soundcard));
+    
+    g_object_set(navigation->duration_time,
+		 "label", str,
+		 NULL);
+    g_free(str);
+  
+    gtk_widget_queue_draw((GtkWidget *) navigation->duration_time);
+  }
+}
 
 void
 ags_navigation_expander_callback(GtkWidget *widget,

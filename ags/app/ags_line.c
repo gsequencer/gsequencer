@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -45,6 +45,7 @@ void ags_line_get_property(GObject *gobject,
 void ags_line_dispose(GObject *gobject);
 void ags_line_finalize(GObject *gobject);
 
+gboolean ags_line_is_connected(AgsConnectable *connectable);
 void ags_line_connect(AgsConnectable *connectable);
 void ags_line_disconnect(AgsConnectable *connectable);
 
@@ -141,8 +142,6 @@ enum{
 
 static gpointer ags_line_parent_class = NULL;
 static guint line_signals[LAST_SIGNAL];
-
-GHashTable *ags_line_indicator_refresh = NULL;
 
 GType
 ags_line_get_type(void)
@@ -537,10 +536,23 @@ ags_line_class_init(AgsLineClass *line)
 void
 ags_line_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_line_is_connected;  
   connectable->connect = ags_line_connect;
   connectable->disconnect = ags_line_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -556,12 +568,6 @@ ags_line_init(AgsLine *line)
 
   g_signal_connect(application_context, "check-message",
 		   G_CALLBACK(ags_line_check_message_callback), line);
-
-  if(ags_line_indicator_refresh == NULL){
-    ags_line_indicator_refresh = g_hash_table_new_full(g_direct_hash, g_direct_equal,
-							  NULL,
-							  NULL);
-  }
   
   line->flags = 0;
   line->connectable_flags = 0;
@@ -607,6 +613,9 @@ ags_line_init(AgsLine *line)
   /* forwarded callbacks */
   g_signal_connect_after(line, "stop",
 			 G_CALLBACK(ags_line_stop_callback), NULL);
+
+  g_signal_connect(application_context, "update-ui",
+		   G_CALLBACK(ags_line_update_ui_callback), line);
 }
 
 void
@@ -790,22 +799,15 @@ ags_line_finalize(GObject *gobject)
 		      G_CALLBACK(ags_line_check_message_callback),
 		      line,
 		      NULL);
-  
-  /* remove indicator widget */
-  if(line->indicator != NULL){
-    g_hash_table_remove(ags_line_indicator_refresh,
-			line->indicator);
-  }
 
-  /* remove of the queued drawing hash */
-  list = line->queued_refresh;
+  g_list_free(line->queued_refresh);
+  line->queued_refresh = NULL;
 
-  while(list != NULL){
-    g_hash_table_remove(ags_line_indicator_refresh,
-			list->data);
-
-    list = list->next;
-  }
+  g_object_disconnect(application_context,
+		      "any_signal::update-ui",
+		      G_CALLBACK(ags_line_update_ui_callback),
+		      (gpointer) line,
+		      NULL);
 
   /* channel */
   if(line->channel != NULL){
@@ -814,6 +816,21 @@ ags_line_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_line_parent_class)->finalize(gobject);
+}
+
+gboolean
+ags_line_is_connected(AgsConnectable *connectable)
+{
+  AgsLine *line;
+  
+  gboolean is_connected;
+  
+  line = AGS_LINE(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (line->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
 }
 
 void
@@ -825,7 +842,7 @@ ags_line_connect(AgsConnectable *connectable)
 
   line = AGS_LINE(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (line->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -873,7 +890,7 @@ ags_line_disconnect(AgsConnectable *connectable)
 
   line = AGS_LINE(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (line->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -1952,13 +1969,8 @@ ags_line_add_ladspa_plugin(AgsLine *line,
 				 control_value);
       }else if(AGS_IS_INDICATOR(child_widget) ||
 	       AGS_IS_LED(child_widget)){
-	g_hash_table_insert(ags_line_indicator_refresh,
-			    child_widget, ags_line_indicator_refresh_timeout);
 	line->queued_refresh = g_list_prepend(line->queued_refresh,
 					      child_widget);
-	g_timeout_add((guint) (1000.0 * AGS_UI_PROVIDER_DEFAULT_TIMEOUT),
-		      (GSourceFunc) ags_line_indicator_refresh_timeout,
-		      (gpointer) child_widget);
       }
       
 #ifdef AGS_DEBUG
@@ -2627,15 +2639,8 @@ ags_line_add_lv2_plugin(AgsLine *line,
 	gtk_adjustment_set_value(adjustment,
 				 control_value);
       }else if(AGS_IS_INDICATOR(child_widget)){
-	g_hash_table_insert(ags_line_indicator_refresh,
-			    child_widget,
-			    ags_line_indicator_refresh_timeout);
-
 	line->queued_refresh = g_list_prepend(line->queued_refresh,
 					      child_widget);
-	g_timeout_add(1000 / 30,
-		      (GSourceFunc) ags_line_indicator_refresh_timeout,
-		      (gpointer) child_widget);
       }
 
 #ifdef AGS_DEBUG
@@ -3230,15 +3235,8 @@ ags_line_add_vst3_plugin(AgsLine *line,
 	gtk_adjustment_set_value(adjustment,
 				 control_value);
       }else if(AGS_IS_INDICATOR(child_widget)){
-	g_hash_table_insert(ags_line_indicator_refresh,
-			    child_widget,
-			    ags_line_indicator_refresh_timeout);
-
 	line->queued_refresh = g_list_prepend(line->queued_refresh,
 					      child_widget);
-	g_timeout_add(1000 / 30,
-		      (GSourceFunc) ags_line_indicator_refresh_timeout,
-		      (gpointer) child_widget);
       }
 
 #ifdef AGS_DEBUG
@@ -3623,8 +3621,8 @@ ags_line_real_remove_plugin(AgsLine *line,
       
       if(AGS_IS_INDICATOR(child_widget) ||
 	 AGS_IS_LED(child_widget)){
-	g_hash_table_remove(ags_line_indicator_refresh,
-			    child_widget);
+	line->queued_refresh = g_list_remove(line->queued_refresh,
+					     child_widget);
       }
 
       ags_line_remove_line_member(line,
@@ -4007,219 +4005,6 @@ ags_line_check_message(AgsLine *line)
     
   g_list_free_full(start_message_envelope,
 		   (GDestroyNotify) g_object_unref);
-}
-
-/**
- * ags_line_indicator_refresh_timeout:
- * @widget: the widget
- *
- * Queue draw widget
- *
- * Returns: %TRUE if proceed with redraw, otherwise %FALSE
- *
- * Since: 3.0.0
- */
-gboolean
-ags_line_indicator_refresh_timeout(GtkWidget *widget)
-{
-  AgsLine *line;
-
-  if(g_hash_table_lookup(ags_line_indicator_refresh,
-			 widget) != NULL){      
-    GList *start_list, *list;
-    
-    line = (AgsLine *) gtk_widget_get_ancestor(widget,
-					       AGS_TYPE_LINE);
-
-    if(line == NULL){
-      return(TRUE);
-    }
-    
-    list =
-      start_list = ags_line_get_line_member(line);
-    
-    /* check members */
-    while(list != NULL){
-      if(AGS_IS_LINE_MEMBER(list->data) &&
-	 (AGS_LINE_MEMBER(list->data)->widget_type == AGS_TYPE_INDICATOR ||
-	  AGS_LINE_MEMBER(list->data)->widget_type == AGS_TYPE_LED)){
-	AgsLineMember *line_member;
-	GtkAdjustment *adjustment;
-	GtkWidget *child;
-
-	AgsPort *current;
-	
-	AgsPluginPort *plugin_port;
-	
-	gdouble average_peak;
-	gdouble lower, upper;
-	gdouble range;
-	gdouble peak;
-	gboolean success;
-	
-	GValue value = {0,};
-
-	GRecMutex *port_mutex;
-	GRecMutex *plugin_port_mutex;
-	
-	line_member = AGS_LINE_MEMBER(list->data);
-	child = ags_line_member_get_widget(line_member);
-      
-	average_peak = 0.0;
-      
-	/* play port */
-	current = line_member->port;
-
-	if(current == NULL){
-	  list = list->next;
-	
-	  continue;
-	}
-	
-	/* check if output port and specifier matches */
-	if(!ags_port_test_flags(current, AGS_PORT_IS_OUTPUT)){
-	  list = list->next;
-
-	  continue;
-	}
-
-	plugin_port = NULL;
-	
-	g_object_get(current,
-		     "plugin-port", &plugin_port,
-		     NULL);
-	
-	if(plugin_port == NULL){
-	  list = list->next;
-
-	  continue;
-	}
-
-	/* get port mutex */
-	port_mutex = AGS_PORT_GET_OBJ_MUTEX(current);
-
-	/* match specifier */
-	g_rec_mutex_lock(port_mutex);
-
-	success = (!g_ascii_strcasecmp(current->specifier,
-				       line_member->specifier)) ? TRUE: FALSE;
-	
-	g_rec_mutex_unlock(port_mutex);
-
-	if(!success){
-	  list = list->next;
-
-	  g_object_unref(plugin_port);
-	
-	  continue;
-	}
-
-	/* get plugin port mutex */
-	plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(plugin_port);
-	
-	/* lower and upper */
-	g_rec_mutex_lock(plugin_port_mutex);
-	
-	lower = (gdouble) g_value_get_float(plugin_port->lower_value);
-	upper = (gdouble) g_value_get_float(plugin_port->upper_value);
-      
-	g_rec_mutex_unlock(plugin_port_mutex);
-	
-	/* get range */
-	if(line_member->conversion != NULL){
-	  lower = ags_conversion_convert(line_member->conversion,
-					 lower,
-					 TRUE);
-
-	  upper = ags_conversion_convert(line_member->conversion,
-					 upper,
-					 TRUE);
-	}
-      
-	range = upper - lower;
-      
-	/* play port - read value */
-	g_value_init(&value, G_TYPE_FLOAT);
-	ags_port_safe_read(current,
-			   &value);
-      
-	peak = (gdouble) g_value_get_float(&value);
-	g_value_unset(&value);
-
-	if(line_member->conversion != NULL){
-	  peak = ags_conversion_convert(line_member->conversion,
-					peak,
-					TRUE);
-	}
-      
-	/* calculate peak */
-	if(range == 0.0 ||
-	   current->port_value_type == G_TYPE_BOOLEAN){
-	  if(peak != 0.0){
-	    average_peak = 1.0;
-	  }
-	}else{
-	  average_peak += peak;
-	}
-
-	/* recall port */
-	current = line_member->recall_port;
-
-	/* recall port - read value */
-	g_value_init(&value, G_TYPE_FLOAT);
-	ags_port_safe_read(current,
-			   &value);
-      
-	peak = (gdouble) g_value_get_float(&value);
-	g_value_unset(&value);
-
-	if(line_member->conversion != NULL){
-	  peak = ags_conversion_convert(line_member->conversion,
-					peak,
-					TRUE);
-	}
-
-	/* calculate peak */
-	if(range == 0.0 ||
-	   current->port_value_type == G_TYPE_BOOLEAN){
-	  if(peak != 0.0){
-	    average_peak = 1.0;
-	  }
-	}else{
-	  average_peak += peak;
-	}
-      
-	/* apply */
-	if(AGS_IS_LED(child)){
-	  if(average_peak != 0.0){
-	    ags_led_set_active(AGS_LED(child),
-			       TRUE);
-	  }
-	}else{
-	  adjustment = NULL;
-	  
-	  g_object_get(child,
-		       "adjustment", &adjustment,
-		       NULL);
-
-//	  g_message("%f", average_peak);
-	  
-	  gtk_adjustment_set_value(adjustment,
-				   10.0 * average_peak);
-	}
-
-	g_object_unref(plugin_port);
-      }
-    
-      list = list->next;
-    }
-
-    g_list_free(start_list);
-    
-    return(TRUE);
-  }
-  
-  return(FALSE);
 }
 
 /**

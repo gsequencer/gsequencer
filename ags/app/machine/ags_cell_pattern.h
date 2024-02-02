@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -113,10 +113,6 @@ void ags_cell_pattern_highlight_gutter_point(AgsCellPattern *cell_pattern, cairo
 					     guint j, guint i);
 void ags_cell_pattern_unpaint_gutter_point(AgsCellPattern *cell_pattern, cairo_t *cr,
 					   guint j, guint i);
-
-void* ags_cell_pattern_blink_worker(void *data);
-
-gboolean ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern);
 
 AgsCellPattern* ags_cell_pattern_new();
 
