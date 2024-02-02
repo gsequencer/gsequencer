@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -42,6 +42,10 @@ G_BEGIN_DECLS
 typedef struct _AgsAnimationWindow AgsAnimationWindow;
 typedef struct _AgsAnimationWindowClass AgsAnimationWindowClass;
 
+typedef enum{
+  AGS_ANIMATION_WINDOW_SETUP_COMPLETED   = 1,
+}AgsAnimationWindowFlags;
+
 struct _AgsAnimationWindow
 {
   GtkWindow window;
@@ -68,8 +72,6 @@ struct _AgsAnimationWindowClass
 };
 
 GType ags_animation_window_get_type(void);
-
-gboolean ags_animation_window_progress_timeout(AgsAnimationWindow *animation_window);
 
 AgsAnimationWindow* ags_animation_window_new();
 
