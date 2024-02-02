@@ -1,6 +1,11 @@
 ags (6.4.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* refactored AgsNotationEdit auto-scroll to make use of AgsUiProvider::update-ui() event
+	* refactored AgsTempoEdit auto-scroll to make use of AgsUiProvider::update-ui() event
+	* TODO:JK: refactored AgsAutomationEdit auto-scroll to make use of AgsUiProvider::update-ui() event
+	* TODO:JK: refactored AgsWaveEdit auto-scroll to make use of AgsUiProvider::update-ui() event
+	* refactored AgsNavigation to make use of AgsUiProvider::update-ui() event
 	* refactored AgsNavigation to make use of AgsUiProvider::update-ui() event
 	* refactored AgsLine to make use of AgsUiProvider::update-ui() event
 	* refactored AgsEffectLine to make use of AgsUiProvider::update-ui() event

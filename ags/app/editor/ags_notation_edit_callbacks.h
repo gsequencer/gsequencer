@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,6 +32,9 @@
 #include <ags/app/editor/ags_notation_edit.h>
 
 G_BEGIN_DECLS
+
+void ags_notation_edit_update_ui_callback(GObject *ui_provider,
+					  AgsNotationEdit *notation_edit);
 
 void ags_notation_edit_draw_callback(GtkWidget *drawing_area,
 				     cairo_t *cr,

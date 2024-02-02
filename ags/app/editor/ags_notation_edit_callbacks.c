@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,10 +21,60 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_composite_editor.h>
+#include <ags/app/ags_navigation.h>
 
 #include <ags/app/editor/ags_composite_edit.h>
 
 #include <math.h>
+
+void
+ags_notation_edit_update_ui_callback(GObject *ui_provider,
+				     AgsNotationEdit *notation_edit)
+{
+  AgsCompositeEditor *composite_editor;  
+
+  GtkAdjustment *hscrollbar_adjustment;
+
+  AgsAudio *audio;
+    
+  GObject *output_soundcard;
+      
+  double x;
+  
+  if((AGS_NOTATION_EDIT_AUTO_SCROLL & (notation_edit->flags)) == 0){
+    return;
+  }
+
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) notation_edit,
+								    AGS_TYPE_COMPOSITE_EDITOR);
+  
+  if(composite_editor->selected_machine == NULL){
+    return;
+  }
+
+  audio = composite_editor->selected_machine->audio;      
+
+  output_soundcard = ags_audio_get_output_soundcard(audio);
+
+  /* reset offset */
+  notation_edit->note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
+  notation_edit->note_offset_absolute = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(output_soundcard));
+
+  /* 256th */
+  notation_edit->note_offset_256th = 16 * notation_edit->note_offset;
+  notation_edit->note_offset_256th_absolute = 16 * notation_edit->note_offset_absolute;
+
+  /* reset scrollbar */
+  hscrollbar_adjustment = gtk_scrollbar_get_adjustment(notation_edit->hscrollbar);
+  x = ((notation_edit->note_offset * notation_edit->control_width) / (AGS_NAVIGATION_MAX_POSITION_TICS * notation_edit->control_width)) * gtk_adjustment_get_upper(hscrollbar_adjustment);
+    
+  gtk_adjustment_set_value(hscrollbar_adjustment,
+			   x);
+
+  if(output_soundcard != NULL){
+    g_object_unref(output_soundcard);
+  }
+}
 
 void
 ags_notation_edit_draw_callback(GtkWidget *drawing_area,
