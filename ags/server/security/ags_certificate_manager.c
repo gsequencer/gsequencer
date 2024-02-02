@@ -135,7 +135,7 @@ ags_certificate_manager_get_certificate(AgsCertificateManager *certificate_manag
   g_rec_mutex_lock(certificate_manager_mutex);
 
   certificate = g_list_copy_deep(certificate_manager->certificate,
-				 g_object_ref,
+				 (GCopyFunc) g_object_ref,
 				 NULL);
 
   g_rec_mutex_unlock(certificate_manager_mutex);

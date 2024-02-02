@@ -19,8 +19,12 @@
 
 #include <ags/file/ags_file_util.h>
 
-#include <sys/types.h>
-#include <regex.h>
+#include <ags/lib/ags_regex_util.h>
+
+#include <gmodule.h>
+
+#include <stdlib.h>
+#include <string.h>
 
 /**
  * SECTION:ags_file_util
@@ -51,7 +55,6 @@ ags_file_util_get_type(void)
   return g_define_type_id__volatile;
 }
 
-
 /**
  * ags_file_util_alloc:
  * @app_encoding: the application encoding
@@ -69,16 +72,32 @@ ags_file_util_alloc(gchar *app_encoding,
 {
   AgsFileUtil *ptr;
 
+  gchar *local_app_encoding;
+  
   ptr = (AgsFileUtil *) g_malloc(sizeof(AgsFileUtil));
   
   ptr->app_encoding = g_strdup(app_encoding);
   ptr->encoding = g_strdup(encoding);
 
-  ptr->converter = g_iconv_open(encoding,
-				app_encoding);
+  /* iconv */
+  local_app_encoding = ptr->app_encoding;
   
-  ptr->reverse_converter = g_iconv_open(app_encoding,
-					encoding);
+  if(local_app_encoding == NULL){
+    local_app_encoding = "UTF-8";
+  }
+  
+  ptr->converter = NULL;
+  ptr->reverse_converter = NULL;
+  
+  if(ptr->encoding != NULL &&
+     local_app_encoding != NULL &&
+     (!g_strcmp0(local_app_encoding, ptr->encoding)) == FALSE){
+    ptr->converter = g_iconv_open(ptr->encoding,
+				  local_app_encoding);
+  
+    ptr->reverse_converter = g_iconv_open(local_app_encoding,
+					  ptr->encoding);
+  }
   
   return(ptr);
 }
@@ -122,9 +141,11 @@ ags_file_util_free(AgsFileUtil *ptr)
   g_free(ptr->app_encoding);
   g_free(ptr->encoding);
 
-  g_iconv_close(ptr->converter);
+  if(ptr->converter != NULL){
+    g_iconv_close(ptr->converter);
   
-  g_iconv_close(ptr->reverse_converter);
+    g_iconv_close(ptr->reverse_converter);
+  }
   
   g_free(ptr);
 }
@@ -245,7 +266,7 @@ ags_file_util_get_int(AgsFileUtil *file_util,
   }
 
   value = 0;
-  sscanf(str, "%li",
+  sscanf(str, "%d",
 	 &value);
   
   return(value);
@@ -268,8 +289,7 @@ ags_file_util_put_int(AgsFileUtil *file_util,
 {
   gchar *str;
   
-  if(file_util == NULL ||
-     str == NULL){
+  if(file_util == NULL){
     return(NULL);
   }
 
@@ -334,8 +354,7 @@ ags_file_util_put_uint(AgsFileUtil *file_util,
 {
   gchar *str;
   
-  if(file_util == NULL ||
-     str == NULL){
+  if(file_util == NULL){
     return(NULL);
   }
 
@@ -400,8 +419,7 @@ ags_file_util_put_int64(AgsFileUtil *file_util,
 {
   gchar *str;
   
-  if(file_util == NULL ||
-     str == NULL){
+  if(file_util == NULL){
     return(NULL);
   }
 
@@ -466,8 +484,7 @@ ags_file_util_put_uint64(AgsFileUtil *file_util,
 {
   gchar *str;
   
-  if(file_util == NULL ||
-     str == NULL){
+  if(file_util == NULL){
     return(NULL);
   }
 
@@ -505,13 +522,17 @@ ags_file_util_get_float(AgsFileUtil *file_util,
   
   gfloat value;  
 
-  regmatch_t match_arr[6];
+  AgsRegexMatch match_arr[6];
     
-  static regex_t float_with_comma_regex;
+  gboolean success;
+  
+  GError *error;
+
+  static AgsRegexUtil *float_with_comma_regex_util = NULL;
 
   static gboolean regex_compiled = FALSE;
 
-  static const char *float_with_comma_pattern = "^(([+-]?)([0-9]+)(,)([0-9]*))";
+  static const char *float_with_comma_pattern = "^(([+-]?)([0-9]*)(,)([0-9]+))";
 
   static GMutex regex_mutex;
   
@@ -527,19 +548,46 @@ ags_file_util_get_float(AgsFileUtil *file_util,
   if(!regex_compiled){
     regex_compiled = TRUE;
       
-    ags_regcomp(&float_with_comma_regex, float_with_comma_pattern, REG_EXTENDED);
+    float_with_comma_regex_util = ags_regex_util_alloc(file_util->app_encoding,
+						       file_util->encoding,
+						       FALSE, FALSE);
+
+    error = NULL;
+    ags_regex_util_compile(float_with_comma_regex_util,
+			   float_with_comma_pattern, AGS_REGEX_UTIL_POSIX_EXTENDED_SYNTAX,
+			   &error);
+
+    if(error != NULL){
+      g_warning("failed to compile regex");
+
+      g_error_free(error);
+    }
   }
   
   g_mutex_unlock(&regex_mutex);
 
   tmp_str = NULL;
 
-  if(ags_regexec(&float_with_comma_regex, str, max_matches, match_arr, 0) == 0){
+  /*  */
+  error = NULL;
+  success = ags_regex_util_execute(float_with_comma_regex_util,
+				   str, max_matches,
+				   match_arr,
+				   0,
+				   &error);
+  
+  if(error != NULL){
+    g_warning("failed to execute regex");
+
+    g_error_free(error);
+  }
+
+  if(success){
     str = 
       tmp_str = g_strndup(str,
-			  match_arr[0].rm_eo);
+			  match_arr[0].end_match_offset);
 
-    str[match_arr[4].rm_so] = '.';
+    str[match_arr[4].start_match_offset] = '.';
   }
   
   value = (gfloat) g_ascii_strtod(str,
@@ -569,8 +617,7 @@ ags_file_util_put_float(AgsFileUtil *file_util,
 {
   gchar *str;
   
-  if(file_util == NULL ||
-     str == NULL){
+  if(file_util == NULL){
     return(NULL);
   }
 
@@ -608,13 +655,17 @@ ags_file_util_get_double(AgsFileUtil *file_util,
   
   gdouble value;
 
-  regmatch_t match_arr[6];
+  AgsRegexMatch match_arr[6];
     
-  static regex_t double_with_comma_regex;
+  gboolean success;
+  
+  GError *error;
+
+  static AgsRegexUtil *double_with_comma_regex_util = NULL;
 
   static gboolean regex_compiled = FALSE;
 
-  static const char *double_with_comma_pattern = "^(([+-]?)([0-9]+)(,)([0-9]*))";
+  static const char *double_with_comma_pattern = "^(([+-]?)([0-9]*)(,)([0-9]+))";
 
   static GMutex regex_mutex;
   
@@ -630,19 +681,46 @@ ags_file_util_get_double(AgsFileUtil *file_util,
   if(!regex_compiled){
     regex_compiled = TRUE;
       
-    ags_regcomp(&double_with_comma_regex, double_with_comma_pattern, REG_EXTENDED);
+    double_with_comma_regex_util = ags_regex_util_alloc(file_util->app_encoding,
+							file_util->encoding,
+							FALSE, FALSE);
+    
+    error = NULL;
+    ags_regex_util_compile(double_with_comma_regex_util,
+			   double_with_comma_pattern, AGS_REGEX_UTIL_POSIX_EXTENDED_SYNTAX,
+			   &error);
+
+    if(error != NULL){
+      g_warning("failed to compile regex");
+
+      g_error_free(error);
+    }
   }
   
   g_mutex_unlock(&regex_mutex);
 
   tmp_str = NULL;
 
-  if(ags_regexec(&double_with_comma_regex, str, max_matches, match_arr, 0) == 0){
+  /*  */
+  error = NULL;
+  success = ags_regex_util_execute(double_with_comma_regex_util,
+				   str, max_matches,
+				   match_arr,
+				   0,
+				   &error);
+  
+  if(error != NULL){
+    g_warning("failed to execute regex");
+
+    g_error_free(error);
+  }
+
+  if(success){
     str = 
       tmp_str = g_strndup(str,
-			  match_arr[0].rm_eo);
+			  match_arr[0].end_match_offset);
 
-    str[match_arr[4].rm_so] = '.';
+    str[match_arr[4].start_match_offset] = '.';
   }
   
   value = g_ascii_strtod(str,
@@ -672,8 +750,7 @@ ags_file_util_put_double(AgsFileUtil *file_util,
 {
   gchar *str;
   
-  if(file_util == NULL ||
-     str == NULL){
+  if(file_util == NULL){
     return(NULL);
   }
 
@@ -682,10 +759,10 @@ ags_file_util_put_double(AgsFileUtil *file_util,
 
   xmlStrprintf(str,
 	       AGS_FILE_UTIL_DOUBLE_MAX_STRING_LENGTH,
-	       "%Lf",
+	       "%lf",
 	       value);
 #else
-  str = g_strdup_printf("%Lf",
+  str = g_strdup_printf("%lf",
 			value);
 #endif
   
@@ -712,15 +789,19 @@ ags_file_util_get_complex(AgsFileUtil *file_util,
   
   AgsComplex *value;
 
-  regmatch_t match_arr[12];
+  AgsRegexMatch match_arr[12];
 
-  static regex_t complex_with_comma_regex;
-  static regex_t legacy_complex_with_comma_regex;
+  gboolean success;
+  
+  GError *error;
+
+  static AgsRegexUtil *complex_with_comma_regex_util = NULL;
+  static AgsRegexUtil *legacy_complex_with_comma_regex_util = NULL;
 
   static gboolean regex_compiled = FALSE;
 
-  static const char *complex_with_comma_pattern = "^(([+-]?)([0-9]+)(,)([0-9]*)) + I * (([+-]?)([0-9]+)(,)([0-9]*))";
-  static const char *legacy_complex_with_comma_pattern = "^(([+-]?)([0-9]+)(,)([0-9]*)) (([+-]?)([0-9]+)(,)([0-9]*))";
+  static const char *complex_with_comma_pattern = "^(([+-]?)([0-9]*)(,)([0-9]+)) + I * (([+-]?)([0-9]*)(,)([0-9]+))";
+  static const char *legacy_complex_with_comma_pattern = "^(([+-]?)([0-9]*)(,)([0-9]+)) (([+-]?)([0-9]*)(,)([0-9]+))";
 
   static GMutex regex_mutex;
   
@@ -735,40 +816,99 @@ ags_file_util_get_complex(AgsFileUtil *file_util,
 
   if(!regex_compiled){
     regex_compiled = TRUE;
-      
-    ags_regcomp(&complex_with_comma_regex, complex_with_comma_pattern, REG_EXTENDED);
-    ags_regcomp(&legacy_complex_with_comma_regex, legacy_complex_with_comma_pattern, REG_EXTENDED);
+
+    /* complex */
+    complex_with_comma_regex_util = ags_regex_util_alloc(file_util->app_encoding,
+							 file_util->encoding,
+							 FALSE, FALSE);
+
+    error = NULL;
+    ags_regex_util_compile(complex_with_comma_regex_util,
+			   complex_with_comma_pattern, AGS_REGEX_UTIL_POSIX_EXTENDED_SYNTAX,
+			   &error);
+
+    if(error != NULL){
+      g_warning("failed to compile regex");
+
+      g_error_free(error);
+    }
+
+    /* legacy complex */
+    legacy_complex_with_comma_regex_util = ags_regex_util_alloc(file_util->app_encoding,
+								file_util->encoding,
+								FALSE, FALSE);
+
+    error = NULL;
+    ags_regex_util_compile(legacy_complex_with_comma_regex_util,
+			   legacy_complex_with_comma_pattern, AGS_REGEX_UTIL_POSIX_EXTENDED_SYNTAX,
+			   &error);
+
+    if(error != NULL){
+      g_warning("failed to compile regex");
+
+      g_error_free(error);
+    }
   }
   
   g_mutex_unlock(&regex_mutex);
 
   tmp_str = NULL;
 
-  if(ags_regexec(&complex_with_comma_regex, str, max_matches, match_arr, 0) == 0){
+  /* complex */
+  error = NULL;
+  success = ags_regex_util_execute(complex_with_comma_regex_util,
+				   str, max_matches,
+				   match_arr,
+				   0,
+				   &error);
+  
+  if(error != NULL){
+    g_warning("failed to execute regex");
+
+    g_error_free(error);
+  }
+
+  if(success){
     str = 
       tmp_str = g_strndup(str,
-			  match_arr[0].rm_eo);
+			  match_arr[0].end_match_offset);
 
-    if(str[match_arr[4].rm_so] == ','){
-      str[match_arr[4].rm_so] = '.';
+
+    if(str[match_arr[4].start_match_offset] == ','){
+      str[match_arr[4].start_match_offset] = '.';
     }
 
-    if(str[match_arr[9].rm_so] == ','){
-      str[match_arr[9].rm_so] = '.';
+    if(str[match_arr[9].start_match_offset] == ','){
+      str[match_arr[9].start_match_offset] = '.';
     }
   }
+
+  /* legacy complex */
+  error = NULL;
+  success = ags_regex_util_execute(legacy_complex_with_comma_regex_util,
+				   str, max_matches,
+				   match_arr,
+				   0,
+				   &error);
   
-  if(ags_regexec(&legacy_complex_with_comma_regex, str, max_matches, match_arr, 0) == 0){
+  if(error != NULL){
+    g_warning("failed to execute regex");
+
+    g_error_free(error);
+  }
+  
+  if(success){
     str = 
       tmp_str = g_strndup(str,
-			  match_arr[0].rm_eo);
+			  match_arr[0].end_match_offset);
 
-    if(str[match_arr[4].rm_so] == ','){
-      str[match_arr[4].rm_so] = '.';
+
+    if(str[match_arr[4].start_match_offset] == ','){
+      str[match_arr[4].start_match_offset] = '.';
     }
 
-    if(str[match_arr[9].rm_so] == ','){
-      str[match_arr[9].rm_so] = '.';
+    if(str[match_arr[9].start_match_offset] == ','){
+      str[match_arr[9].start_match_offset] = '.';
     }
   }
 
@@ -821,8 +961,7 @@ ags_file_util_put_complex(AgsFileUtil *file_util,
 {
   gchar *str;
   
-  if(file_util == NULL ||
-     str == NULL){
+  if(file_util == NULL){
     return(NULL);
   }
 
@@ -830,11 +969,11 @@ ags_file_util_put_complex(AgsFileUtil *file_util,
   str = g_malloc(((2 * AGS_FILE_UTIL_DOUBLE_MAX_STRING_LENGTH) + 7) * sizeof(gchar));
   xmlStrprintf(str,
 	       ((2 * AGS_FILE_UTIL_DOUBLE_MAX_STRING_LENGTH) + 7),
-	       "%Lf + I * %Lf",
+	       "%lf + I * %lf",
 	       (gdouble) value->real,
 	       (gdouble) value->imag);
 #else
-  str = g_strdup_printf("%Lf + I * %Lf",
+  str = g_strdup_printf("%lf + I * %lf",
 			(gdouble) value->real,
 			(gdouble) value->imag);
 #endif
@@ -868,13 +1007,7 @@ ags_file_util_get_string(AgsFileUtil *file_util,
 
   converted_string = NULL;
 
-  if(file_util->app_encoding != NULL &&
-     file_util->encoding != NULL &&
-     !g_strcmp0(file_util->app_encoding,
-		file_util->encoding)){
-    converted_string = g_strndup(str,
-				 max_length);
-  }else{
+  if(file_util->reverse_converter != NULL){
     GError *error;
 
     error = NULL;
@@ -886,8 +1019,13 @@ ags_file_util_get_string(AgsFileUtil *file_util,
 					    &error);
 
     if(error != NULL){
+      g_warning("iconv convert failed");
+      
       g_error_free(error);
     }
+  }else{
+    converted_string = g_strndup(str,
+				 max_length);
   }
   
   return(converted_string);
@@ -919,13 +1057,7 @@ ags_file_util_put_string(AgsFileUtil *file_util,
 
   converted_string = NULL;
   
-  if(file_util->app_encoding != NULL &&
-     file_util->encoding != NULL &&
-     !g_strcmp0(file_util->app_encoding,
-		file_util->encoding)){
-    converted_string = g_strndup(str,
-				 length);
-  }else{
+  if(file_util->converter != NULL){
     GError *error;
 
     error = NULL;
@@ -937,8 +1069,13 @@ ags_file_util_put_string(AgsFileUtil *file_util,
 					    &error);
 
     if(error != NULL){
+      g_warning("iconv convert failed");
+      
       g_error_free(error);
     }
+  }else{
+    converted_string = g_strndup(str,
+				 length);
   }
   
   return(converted_string);

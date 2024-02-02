@@ -31,9 +31,9 @@
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
 
-#include <complex.h>
+#include <locale.h>
 
-#include <stdarg.h>
+#include <complex.h>
 
 G_BEGIN_DECLS
 

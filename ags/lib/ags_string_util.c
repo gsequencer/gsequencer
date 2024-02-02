@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -234,7 +234,7 @@ ags_string_util_from_mcoded7(gchar *mcoded7_str)
   guint i, i_stop;
   guint j, k;
 
-  if(str == NULL){
+  if(mcoded7_str == NULL){
     return(NULL);
   }
   

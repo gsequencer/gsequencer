@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -859,25 +859,27 @@ ags_pattern_envelope_preset_move_up_callback(GtkWidget *button,
   model = gtk_tree_view_get_model(pattern_envelope->tree_view);
   
   /* get position */
-  do_edit = FALSE;
+  nth = -1;
   
+  do_edit = FALSE;
+
   if(gtk_tree_model_get_iter_first(model, &iter)){
     do{
       gtk_tree_model_get(model, &iter,
 			 AGS_PATTERN_ENVELOPE_COLUMN_EDIT, &do_edit,
 			 -1);
+
+      nth++;
       
       if(do_edit){
 	break;
-      }
-      
-      nth++;
+      }      
     }while(gtk_tree_model_iter_next(model, &iter));
   }
 
   /* move position */
   if(!do_edit ||
-     nth == 0){
+     nth <= 0){
     return;
   }
 
@@ -948,7 +950,7 @@ ags_pattern_envelope_preset_move_down_callback(GtkWidget *button,
 
   gchar *preset_name, *next_name;
   
-  guint nth;
+  gint nth;
   gboolean do_edit;
 
   GRecMutex *audio_mutex;
@@ -964,7 +966,8 @@ ags_pattern_envelope_preset_move_down_callback(GtkWidget *button,
   model = gtk_tree_view_get_model(pattern_envelope->tree_view);
   
   /* get position */
-  nth = 0;
+  nth = -1;
+
   do_edit = FALSE;
   
   if(gtk_tree_model_get_iter_first(model, &iter)){
@@ -972,12 +975,12 @@ ags_pattern_envelope_preset_move_down_callback(GtkWidget *button,
       gtk_tree_model_get(model, &iter,
 			 AGS_PATTERN_ENVELOPE_COLUMN_EDIT, &do_edit,
 			 -1);
+
+      nth++;
       
       if(do_edit){
 	break;
-      }
-      
-      nth++;
+      }      
     }while(gtk_tree_model_iter_next(model, &iter));
   }
 

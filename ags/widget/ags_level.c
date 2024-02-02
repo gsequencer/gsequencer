@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1058,6 +1058,8 @@ ags_level_draw(AgsLevel *level,
   cairo_stroke(cr);
 
   /* format string */
+  format_str = "signed 16 bit";
+  
   switch(level->data_format){
   case AGS_LEVEL_PCM_S8:
     {

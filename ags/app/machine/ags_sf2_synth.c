@@ -1571,7 +1571,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 		  1, 4);
 
   gtk_drawing_area_set_draw_func(sf2_synth->wah_wah_drawing_area,
-				 ags_sf2_synth_wah_wah_draw_function,
+				 (GtkDrawingAreaDrawFunc) ags_sf2_synth_wah_wah_draw_function,
 				 sf2_synth,
 				 NULL);
 

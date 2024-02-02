@@ -214,7 +214,7 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 
     list =
       start_list = g_list_sort(list,
-			       g_strcmp0);
+			       (GCompareFunc) g_strcmp0);
 
     while(list != NULL){
       GtkTreeIter tree_iter;

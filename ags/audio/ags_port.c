@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1815,7 +1815,7 @@ ags_port_get_channel_type(AgsPort *port)
   GType channel_type;
   
   if(!AGS_IS_PORT(port)){
-    return(NULL);
+    return(G_TYPE_NONE);
   }
 
   channel_type = G_TYPE_NONE;
@@ -1843,7 +1843,7 @@ ags_port_get_line(AgsPort *port)
   guint line;
   
   if(!AGS_IS_PORT(port)){
-    return(NULL);
+    return(0);
   }
 
   line = 0;

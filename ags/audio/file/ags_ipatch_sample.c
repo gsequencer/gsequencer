@@ -56,9 +56,9 @@ gboolean ags_ipatch_sample_is_connected(AgsConnectable *connectable);
 void ags_ipatch_sample_connect(AgsConnectable *connectable);
 void ags_ipatch_sample_disconnect(AgsConnectable *connectable);
 
-gboolean ags_ipatch_sample_info(AgsSoundResource *sound_resource,
-				guint *frame_count,
-				guint *loop_start, guint *loop_end);
+void ags_ipatch_sample_info(AgsSoundResource *sound_resource,
+			    guint *frame_count,
+			    guint *loop_start, guint *loop_end);
 void ags_ipatch_sample_set_presets(AgsSoundResource *sound_resource,
 				   guint channels,
 				   guint samplerate,
@@ -705,7 +705,7 @@ ags_ipatch_sample_disconnect(AgsConnectable *connectable)
   g_rec_mutex_unlock(ipatch_sample_mutex);
 }
 
-gboolean
+void
 ags_ipatch_sample_info(AgsSoundResource *sound_resource,
 		       guint *frame_count,
 		       guint *loop_start, guint *loop_end)
@@ -741,8 +741,6 @@ ags_ipatch_sample_info(AgsSoundResource *sound_resource,
   if(loop_end != NULL){
     *loop_end = sample_loop_end;
   }
-
-  return(TRUE);
 }
 
 void

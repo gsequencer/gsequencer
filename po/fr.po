@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-01-14 19:02+0100\n"
+"POT-Creation-Date: 2024-01-19 12:07+0100\n"
 "PO-Revision-Date: 2021-01-11 21:07+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: français <jkraehemann@gmail.com>\n"
@@ -572,7 +572,7 @@ msgid "position sheet cursor"
 msgstr "positionner curseur"
 
 #: ags/app/editor/ags_envelope_editor_callbacks.c:48
-#: ags/app/editor/ags_pattern_envelope_callbacks.c:1047
+#: ags/app/editor/ags_pattern_envelope_callbacks.c:1050
 msgid "preset name"
 msgstr "préposition nom"
 
@@ -637,7 +637,7 @@ msgid "position tool"
 msgstr "position x"
 
 #: ags/app/editor/ags_composite_toolbar.c:907
-#: ags/app/ags_gsequencer_application.c:705
+#: ags/app/ags_gsequencer_application.c:733
 #, fuzzy
 msgid "Edit"
 msgstr "_Édition"
@@ -1152,35 +1152,56 @@ msgid "Add"
 msgstr "Ajouter"
 
 #: ags/app/ags_gsequencer_application.c:693
+#, fuzzy
+msgid "Notation"
+msgstr "notation"
+
+#: ags/app/ags_gsequencer_application.c:698
+msgid "Automation"
+msgstr "Automation"
+
+#: ags/app/ags_gsequencer_application.c:703
+msgid "Wave"
+msgstr "Forme d'onde"
+
+#: ags/app/ags_gsequencer_application.c:710
+msgid "Sheet"
+msgstr ""
+
+#: ags/app/ags_gsequencer_application.c:716
+msgid "Tempo"
+msgstr ""
+
+#: ags/app/ags_gsequencer_application.c:721
 msgid "Meta-data"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:698 ags/app/ags_preferences.c:159
+#: ags/app/ags_gsequencer_application.c:726 ags/app/ags_preferences.c:159
 msgid "Preferences"
 msgstr "Préréglage"
 
-#: ags/app/ags_gsequencer_application.c:711
+#: ags/app/ags_gsequencer_application.c:739
 #, fuzzy
 msgid "SMF import"
 msgstr "MIDI importer"
 
-#: ags/app/ags_gsequencer_application.c:716
+#: ags/app/ags_gsequencer_application.c:744
 #, fuzzy
 msgid "SMF export"
 msgstr "MIDI exporter"
 
-#: ags/app/ags_gsequencer_application.c:723
+#: ags/app/ags_gsequencer_application.c:751
 #, fuzzy
 msgid "MIDI"
 msgstr "MIDI carte"
 
-#: ags/app/ags_gsequencer_application.c:729
-#: ags/app/ags_gsequencer_application.c:741
+#: ags/app/ags_gsequencer_application.c:757
+#: ags/app/ags_gsequencer_application.c:769
 #, fuzzy
 msgid "Help"
 msgstr "_Aide"
 
-#: ags/app/ags_gsequencer_application.c:734
+#: ags/app/ags_gsequencer_application.c:762
 msgid "About"
 msgstr "Briefer"
 
@@ -2199,16 +2220,6 @@ msgstr "serveur"
 
 #~ msgid "Desk"
 #~ msgstr "Desk"
-
-#, fuzzy
-#~ msgid "Notation"
-#~ msgstr "notation"
-
-#~ msgid "Automation"
-#~ msgstr "Automation"
-
-#~ msgid "Wave"
-#~ msgstr "Forme d'onde"
 
 #~ msgid "import"
 #~ msgstr "importer"

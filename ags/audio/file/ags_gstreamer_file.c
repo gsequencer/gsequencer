@@ -69,9 +69,9 @@ gboolean ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
 				    gchar *filename,
 				    guint audio_channels, guint samplerate,
 				    gboolean create);
-gboolean ags_gstreamer_file_info(AgsSoundResource *sound_resource,
-				 guint *frame_count,
-				 guint *loop_start, guint *loop_end);
+void ags_gstreamer_file_info(AgsSoundResource *sound_resource,
+			     guint *frame_count,
+			     guint *loop_start, guint *loop_end);
 void ags_gstreamer_file_set_presets(AgsSoundResource *sound_resource,
 				    guint channels,
 				    guint samplerate,
@@ -1661,7 +1661,7 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
   return(success);
 }
 
-gboolean
+void
 ags_gstreamer_file_info(AgsSoundResource *sound_resource,
 			guint *frame_count,
 			guint *loop_start, guint *loop_end)
@@ -1785,8 +1785,6 @@ ags_gstreamer_file_info(AgsSoundResource *sound_resource,
   if(frame_count != NULL){
     frame_count[0] = current_frame_count;
   }
-  
-  return(success);
 }
 
 void

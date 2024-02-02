@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,7 +19,7 @@
 
 #include <ags/lib/ags_turtle.h>
 
-#include <ags/lib/ags_regex.h>
+#include <ags/lib/ags_regex_util.h>
 
 #include <gmodule.h>
 
@@ -27,9 +27,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <strings.h>
-
-#include <sys/types.h>
-#include <regex.h>
 
 #include <sys/stat.h>
 #include <unistd.h>
@@ -4153,11 +4150,15 @@ ags_turtle_load_read_prefix_id(AgsTurtle *turtle,
   xmlNode *node;
   xmlNode *rdf_pname_ns_node, *rdf_iriref_node;
 
-  regmatch_t match_arr[1];
+  AgsRegexMatch match_arr[1];
 
   gchar *look_ahead;
-    
-  static regex_t prefix_id_regex;
+
+  gboolean success;
+  
+  GError *error;
+  
+  static AgsRegexUtil *prefix_id_regex_util = NULL;
 
   static gboolean regex_compiled = FALSE;
 
@@ -4172,8 +4173,21 @@ ags_turtle_load_read_prefix_id(AgsTurtle *turtle,
 
   if(!regex_compiled){
     regex_compiled = TRUE;
-      
-    ags_regcomp(&prefix_id_regex, prefix_id_pattern, REG_EXTENDED);
+
+    prefix_id_regex_util = ags_regex_util_alloc(NULL,
+						AGS_TURTLE_DEFAULT_ENCODING,
+						FALSE, FALSE);
+
+    error = NULL;
+    ags_regex_util_compile(prefix_id_regex_util,
+			   prefix_id_pattern, AGS_REGEX_UTIL_POSIX_EXTENDED_SYNTAX,
+			   &error);
+
+    if(error != NULL){
+      g_warning("failed to compile regex");
+
+      g_error_free(error);
+    }
   }
 
   g_mutex_unlock(&regex_mutex);
@@ -4184,8 +4198,21 @@ ags_turtle_load_read_prefix_id(AgsTurtle *turtle,
 							&look_ahead);
 
   /* match @prefix */
-  if(ags_regexec(&prefix_id_regex, look_ahead, max_matches, match_arr, 0) == 0){
-    look_ahead += (match_arr[0].rm_eo - match_arr[0].rm_so);
+  error = NULL;
+  success = ags_regex_util_execute(prefix_id_regex_util,
+				   look_ahead, max_matches,
+				   match_arr,
+				   0,
+				   &error);
+  
+  if(error != NULL){
+    g_warning("failed to execute regex");
+
+    g_error_free(error);
+  }
+  
+  if(success){
+    look_ahead += (match_arr[0].end_match_offset - match_arr[0].start_match_offset);
       
     rdf_pname_ns_node = ags_turtle_load_read_pname_ns(turtle,
 						      buffer, buffer_length,
@@ -4235,11 +4262,15 @@ ags_turtle_load_read_base(AgsTurtle *turtle,
   xmlNode *node;
   xmlNode *rdf_iriref_node;
 
-  regmatch_t match_arr[1];
+  AgsRegexMatch match_arr[1];
 
   gchar *look_ahead;
     
-  static regex_t base_regex;
+  gboolean success;
+  
+  GError *error;
+    
+  static AgsRegexUtil *base_regex_util = NULL;
 
   static gboolean regex_compiled = FALSE;
 
@@ -4254,8 +4285,21 @@ ags_turtle_load_read_base(AgsTurtle *turtle,
 
   if(!regex_compiled){
     regex_compiled = TRUE;
-      
-    ags_regcomp(&base_regex, base_pattern, REG_EXTENDED);      
+
+    base_regex_util = ags_regex_util_alloc(NULL,
+					   AGS_TURTLE_DEFAULT_ENCODING,
+					   FALSE, FALSE);
+
+    error = NULL;
+    ags_regex_util_compile(base_regex_util,
+			   base_pattern, AGS_REGEX_UTIL_POSIX_EXTENDED_SYNTAX,
+			   &error);
+
+    if(error != NULL){
+      g_warning("failed to compile regex");
+
+      g_error_free(error);
+    }
   }
 
   g_mutex_unlock(&regex_mutex);
@@ -4266,8 +4310,21 @@ ags_turtle_load_read_base(AgsTurtle *turtle,
 							&look_ahead);
 
   /* match @base */
-  if(ags_regexec(&base_regex, look_ahead, max_matches, match_arr, 0) == 0){
-    look_ahead += (match_arr[0].rm_eo - match_arr[0].rm_so);
+  error = NULL;
+  success = ags_regex_util_execute(base_regex_util,
+				   look_ahead, max_matches,
+				   match_arr,
+				   0,
+				   &error);
+  
+  if(error != NULL){
+    g_warning("failed to execute regex");
+
+    g_error_free(error);
+  }
+
+  if(success){
+    look_ahead += (match_arr[0].end_match_offset - match_arr[0].start_match_offset);
       
     rdf_iriref_node = ags_turtle_load_read_iriref(turtle,
 						  buffer, buffer_length,
@@ -4295,11 +4352,15 @@ ags_turtle_load_read_sparql_prefix(AgsTurtle *turtle,
   xmlNode *node;
   xmlNode *rdf_pname_ns_node, *rdf_iriref_node;
 
-  regmatch_t match_arr[1];
+  AgsRegexMatch match_arr[1];
 
   gchar *look_ahead;
     
-  static regex_t sparql_prefix_regex;
+  gboolean success;
+  
+  GError *error;
+
+  static AgsRegexUtil *sparql_prefix_regex_util = NULL;
 
   static gboolean regex_compiled = FALSE;
 
@@ -4314,8 +4375,21 @@ ags_turtle_load_read_sparql_prefix(AgsTurtle *turtle,
 
   if(!regex_compiled){
     regex_compiled = TRUE;
-      
-    ags_regcomp(&sparql_prefix_regex, sparql_prefix_pattern, REG_EXTENDED);
+
+    sparql_prefix_regex_util = ags_regex_util_alloc(NULL,
+						    AGS_TURTLE_DEFAULT_ENCODING,
+						    FALSE, FALSE);
+
+    error = NULL;
+    ags_regex_util_compile(sparql_prefix_regex_util,
+			   sparql_prefix_pattern, AGS_REGEX_UTIL_POSIX_EXTENDED_SYNTAX,
+			   &error);
+
+    if(error != NULL){
+      g_warning("failed to compile regex");
+
+      g_error_free(error);
+    }
   }
 
   g_mutex_unlock(&regex_mutex);
@@ -4325,9 +4399,22 @@ ags_turtle_load_read_sparql_prefix(AgsTurtle *turtle,
 							buffer, buffer_length,
 							&look_ahead);
 
-  /* match @prefix */
-  if(ags_regexec(&sparql_prefix_regex, look_ahead, max_matches, match_arr, 0) == 0){
-    look_ahead += (match_arr[0].rm_eo - match_arr[0].rm_so);
+  /* match "PREFIX" */
+  error = NULL;
+  success = ags_regex_util_execute(sparql_prefix_regex_util,
+				   look_ahead, max_matches,
+				   match_arr,
+				   0,
+				   &error);
+  
+  if(error != NULL){
+    g_warning("failed to execute regex");
+
+    g_error_free(error);
+  }
+
+  if(success){
+    look_ahead += (match_arr[0].end_match_offset - match_arr[0].start_match_offset);
       
     rdf_pname_ns_node = ags_turtle_load_read_pname_ns(turtle,
 						      buffer, buffer_length,
@@ -4362,11 +4449,15 @@ ags_turtle_load_read_sparql_base(AgsTurtle *turtle,
   xmlNode *node;
   xmlNode *rdf_iriref_node;
 
-  regmatch_t match_arr[1];
+  AgsRegexMatch match_arr[1];
 
   gchar *look_ahead;
     
-  static regex_t sparql_base_regex;
+  gboolean success;
+  
+  GError *error;
+    
+  static AgsRegexUtil *sparql_base_regex_util = NULL;
 
   static gboolean regex_compiled = FALSE;
 
@@ -4382,7 +4473,20 @@ ags_turtle_load_read_sparql_base(AgsTurtle *turtle,
   if(!regex_compiled){
     regex_compiled = TRUE;
       
-    ags_regcomp(&sparql_base_regex, sparql_base_pattern, REG_EXTENDED);      
+    sparql_base_regex_util = ags_regex_util_alloc(NULL,
+						  AGS_TURTLE_DEFAULT_ENCODING,
+						  FALSE, FALSE);
+
+    error = NULL;
+    ags_regex_util_compile(sparql_base_regex_util,
+			   sparql_base_pattern, AGS_REGEX_UTIL_POSIX_EXTENDED_SYNTAX,
+			   &error);
+
+    if(error != NULL){
+      g_warning("failed to compile regex");
+
+      g_error_free(error);
+    }
   }
 
   g_mutex_unlock(&regex_mutex);
@@ -4392,9 +4496,22 @@ ags_turtle_load_read_sparql_base(AgsTurtle *turtle,
 							buffer, buffer_length,
 							&look_ahead);
 
-  /* match @base */
-  if(ags_regexec(&sparql_base_regex, look_ahead, max_matches, match_arr, 0) == 0){
-    look_ahead += (match_arr[0].rm_eo - match_arr[0].rm_so);
+  /* match "BASE" */
+  error = NULL;
+  success = ags_regex_util_execute(sparql_base_regex_util,
+				   look_ahead, max_matches,
+				   match_arr,
+				   0,
+				   &error);
+  
+  if(error != NULL){
+    g_warning("failed to execute regex");
+
+    g_error_free(error);
+  }
+
+  if(success){
+    look_ahead += (match_arr[0].end_match_offset - match_arr[0].start_match_offset);
       
     rdf_iriref_node = ags_turtle_load_read_iriref(turtle,
 						  buffer, buffer_length,

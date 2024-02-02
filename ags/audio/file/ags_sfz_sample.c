@@ -65,9 +65,9 @@ gboolean ags_sfz_sample_rw_open(AgsSoundResource *sound_resource,
 				gchar *filename,
 				guint audio_channels, guint samplerate,
 				gboolean create);
-gboolean ags_sfz_sample_info(AgsSoundResource *sound_resource,
-			     guint *frame_count,
-			     guint *loop_start, guint *loop_end);
+void ags_sfz_sample_info(AgsSoundResource *sound_resource,
+			 guint *frame_count,
+			 guint *loop_start, guint *loop_end);
 void ags_sfz_sample_set_presets(AgsSoundResource *sound_resource,
 				guint channels,
 				guint samplerate,
@@ -1178,7 +1178,7 @@ ags_sfz_sample_rw_open(AgsSoundResource *sound_resource,
   return(success);
 }
 
-gboolean
+void
 ags_sfz_sample_info(AgsSoundResource *sound_resource,
 		    guint *frame_count,
 		    guint *loop_start, guint *loop_end)
@@ -1225,8 +1225,6 @@ ags_sfz_sample_info(AgsSoundResource *sound_resource,
   if(loop_end != NULL){
     loop_end[0] = sample_loop_end;
   }
-  
-  return(TRUE);
 }
 
 void

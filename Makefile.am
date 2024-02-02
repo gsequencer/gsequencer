@@ -30,7 +30,7 @@ CPPFLAGS += -D_WINSOCK_H
 else
 if WITH_OSXAPI
 else
-CPPFLAGS += -D_FORTIFY_SOURCE=2 -Wall -Wformat -Werror=format-security -Werror=return-type
+CPPFLAGS += -D_FORTIFY_SOURCE=2 -Wall -Wformat -Werror=format-security -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized -Werror=missing-parameter-type -Werror=int-conversion -Werror=implicit-function-declaration
 endif
 endif
 
@@ -1057,6 +1057,7 @@ libags_h_sources = \
 	ags/lib/ags_log.h \
 	ags/lib/ags_math_util.h \
 	ags/lib/ags_regex.h \
+	ags/lib/ags_regex_util.h \
 	ags/lib/ags_solver_matrix.h \
 	ags/lib/ags_solver_polynomial.h \
 	ags/lib/ags_solver_vector.h \
@@ -1078,6 +1079,7 @@ libags_c_sources = \
 	ags/lib/ags_log.c \
 	ags/lib/ags_math_util.c \
 	ags/lib/ags_regex.c \
+	ags/lib/ags_regex_util.c \
 	ags/lib/ags_solver_matrix.c \
 	ags/lib/ags_solver_polynomial.c \
 	ags/lib/ags_solver_vector.c \

@@ -3095,7 +3095,7 @@ ags_alsa_devout_device_free(AgsSoundcard *soundcard)
   alsa_devout->tag = NULL;
 
   g_list_free_full(alsa_devout->io_channel,
-		   g_io_channel_unref);
+		   (GDestroyNotify) g_io_channel_unref);
 
   alsa_devout->io_channel = NULL;
 

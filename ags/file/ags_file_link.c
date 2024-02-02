@@ -47,8 +47,8 @@ gchar* ags_file_link_get_build_id(AgsPlugin *plugin);
 void ags_file_link_set_build_id(AgsPlugin *plugin, gchar *build_id);
 gchar* ags_file_link_get_xml_type(AgsPlugin *plugin);
 void ags_file_link_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
-void ags_file_link_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-xmlNode* ags_file_link_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
+void ags_file_link_read(GObject *file, xmlNode *node, AgsPlugin *plugin);
+xmlNode* ags_file_link_write(GObject *file, xmlNode *parent, AgsPlugin *plugin);
 void ags_file_link_finalize(GObject *gobject);
 
 /**
@@ -370,7 +370,7 @@ ags_file_link_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
 }
 
 void
-ags_file_link_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
+ags_file_link_read(GObject *file, xmlNode *node, AgsPlugin *plugin)
 {
   AgsFileLink *file_link;
 
@@ -385,7 +385,7 @@ ags_file_link_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 }
 
 xmlNode*
-ags_file_link_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
+ags_file_link_write(GObject *file, xmlNode *parent, AgsPlugin *plugin)
 {
   AgsFileLink *file_link;
   xmlNode *node;

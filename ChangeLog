@@ -1,3 +1,30 @@
+ags (6.3.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing type casts
+
+ags (6.3.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* minor improvements
+
+ags (6.3.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* minor bug-fixes
+
+ags (6.3.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsRegexUtil
+	* deprecated ags_regexec() and ags_regcomp()
+	* refactored AgsTurtle to use AgsRegexUtil
+	* refactored AgsFileUtil to use AgsRegexUtil
+	* refactored AgsLv2TurtleScanner to use AgsRegexUtil
+	* implemented AgsRegexUtil
+	* added missing menu items of menubar
+	* improved ags_file_util.c to use regexec and regcomp
+
 ags (6.3.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

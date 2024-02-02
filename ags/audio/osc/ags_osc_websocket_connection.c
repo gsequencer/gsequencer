@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -47,7 +47,7 @@ void ags_osc_websocket_connection_get_property(GObject *gobject,
 void ags_osc_websocket_connection_dispose(GObject *gobject);
 void ags_osc_websocket_connection_finalize(GObject *gobject);
 
-gint64 ags_osc_websocket_connection_write_response(AgsOscWebsocketConnection *osc_websocket_connection,
+gint64 ags_osc_websocket_connection_write_response(AgsOscConnection *osc_websocket_connection,
 						   GObject *osc_response);
 
 /**
@@ -479,9 +479,10 @@ ags_osc_websocket_connection_finalize(GObject *gobject)
 }
 
 gint64
-ags_osc_websocket_connection_write_response(AgsOscWebsocketConnection *osc_websocket_connection,
+ags_osc_websocket_connection_write_response(AgsOscConnection *osc_connection,
 					    GObject *osc_response)
 {
+  AgsOscWebsocketConnection *osc_websocket_connection;
   SoupWebsocketConnection *websocket_connection;
   GIOStream *stream;
   GOutputStream *output_stream;
@@ -500,6 +501,8 @@ ags_osc_websocket_connection_write_response(AgsOscWebsocketConnection *osc_webso
 
   GRecMutex *osc_response_mutex;
 
+  osc_websocket_connection = AGS_OSC_WEBSOCKET_CONNECTION(osc_connection);
+  
   if(!AGS_IS_OSC_RESPONSE(osc_response)){
     return(-1);
   }

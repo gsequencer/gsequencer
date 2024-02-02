@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -548,7 +548,7 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
   guint i;
   gboolean initial_call;
 
-  LV2UI_Handle (*instantiate)(const struct _LV2UI_Descriptor* descriptor,
+  LV2UI_Handle (*instantiate)(const LV2UI_Descriptor* descriptor,
 			      const char *plugin_uri,
 			      const char *bundle_path,
 			      LV2UI_Write_Function write_function,
@@ -595,14 +595,14 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
     
 #ifdef AGS_W32API
     base_plugin->ui_plugin_handle = 
-      lv2ui_descriptor = (LV2_Descriptor_Function) GetProcAddress(ui_plugin_so,
-								  "lv2ui_descriptor");
+      lv2ui_descriptor = (LV2UI_DescriptorFunction) GetProcAddress(ui_plugin_so,
+								   "lv2ui_descriptor");
 
     success = (!lv2_descriptor) ? FALSE: TRUE;
 #else
     base_plugin->ui_plugin_handle = 
-      lv2ui_descriptor = (LV2_Descriptor_Function) dlsym(ui_plugin_so,
-							 "lv2ui_descriptor");
+      lv2ui_descriptor = (LV2UI_DescriptorFunction) dlsym(ui_plugin_so,
+							  "lv2ui_descriptor");
 
     success = (dlerror() == NULL) ? TRUE: FALSE;
 #endif
@@ -717,7 +717,7 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
     /* URI map feature */  
     uri_map_feature = (LV2_URI_Map_Feature *) malloc(sizeof(LV2_URI_Map_Feature));
     uri_map_feature->callback_data = NULL;
-    uri_map_feature->uri_to_id = ags_lv2_uri_map_manager_uri_to_id;
+    uri_map_feature->uri_to_id = (uint32_t (*)(LV2_URI_Map_Callback_Data, const char *, const char *)) ags_lv2_uri_map_manager_uri_to_id;
   
     feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
     feature[nth]->URI = LV2_URI_MAP_URI;
@@ -756,7 +756,7 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
     /* URID map feature */
     urid_map = (LV2_URID_Map *) malloc(sizeof(LV2_URID_Map));
     urid_map->handle = NULL;
-    urid_map->map = ags_lv2_urid_manager_map;
+    urid_map->map = (LV2_URID (*)(LV2_URID_Map_Handle, const char *)) ags_lv2_urid_manager_map;
   
     feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
     feature[nth]->URI = LV2_URID_MAP_URI;

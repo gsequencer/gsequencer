@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1361,16 +1361,16 @@ ags_lv2_bridge_load_program(AgsLv2Bridge *lv2_bridge)
 			 g_object_unref);
       }
 
-      if(lv2_bridge->program == NULL){
-	if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(lv2_bridge)->connectable_flags)) != 0){
-	  g_signal_connect_after(G_OBJECT(lv2_bridge->program), "changed",
-				 G_CALLBACK(ags_lv2_bridge_program_changed_callback), lv2_bridge);
-	}
-      }else{
-	model = GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(lv2_bridge->program)));
+      model = GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(lv2_bridge->program)));
       
-	gtk_list_store_clear(GTK_LIST_STORE(model));
+      gtk_list_store_clear(GTK_LIST_STORE(model));
+
+#if 0
+      if(ags_connectable_is_connected(connectable)){
+	g_signal_connect_after(G_OBJECT(lv2_bridge->program), "changed",
+			       G_CALLBACK(ags_lv2_bridge_program_changed_callback), lv2_bridge);
       }
+#endif
       
       for(i = 0; (program_descriptor = program_interface->get_program(lv2_bridge->lv2_handle[0], i)) != NULL; i++){
 	if(!success){
