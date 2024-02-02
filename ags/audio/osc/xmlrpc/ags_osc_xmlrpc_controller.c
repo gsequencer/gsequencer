@@ -950,7 +950,7 @@ ags_osc_xmlrpc_controller_real_start_delegate(AgsOscXmlrpcController *osc_xmlrpc
 
   timeout_source = g_timeout_source_new(delegate_timeout * G_TIME_SPAN_MILLISECOND);
   g_source_set_callback(timeout_source,
-			ags_osc_xmlrpc_controller_delegate_timeout,
+			(GSourceFunc) ags_osc_xmlrpc_controller_delegate_timeout,
 			osc_xmlrpc_controller,
 			NULL);
   g_source_attach(timeout_source,

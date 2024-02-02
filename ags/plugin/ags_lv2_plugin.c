@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -905,7 +905,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
   guint i;
   gboolean initial_call;
   
-  LV2_Handle (*instantiate)(const struct _LV2_Descriptor * descriptor,
+  LV2_Handle (*instantiate)(const LV2_Descriptor *descriptor,
 			    double sample_rate,
 			    const char *bundle_path,
 			    const LV2_Feature *const *features);
@@ -1014,7 +1014,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     /* URI map feature */  
     uri_map_feature = (LV2_URI_Map_Feature *) malloc(sizeof(LV2_URI_Map_Feature));
     uri_map_feature->callback_data = NULL;
-    uri_map_feature->uri_to_id = ags_lv2_uri_map_manager_uri_to_id;
+    uri_map_feature->uri_to_id = (uint32_t (*)(LV2_URI_Map_Callback_Data, const char *, const char *)) ags_lv2_uri_map_manager_uri_to_id;
   
     feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
     feature[nth]->URI = LV2_URI_MAP_URI;
@@ -1070,7 +1070,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     /* URID map feature */
     urid_map = (LV2_URID_Map *) malloc(sizeof(LV2_URID_Map));
     urid_map->handle = NULL;
-    urid_map->map = ags_lv2_urid_manager_map;
+    urid_map->map = (LV2_URID (*)(LV2_URID_Map_Handle, const char *)) ags_lv2_urid_manager_map;
   
     feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
     feature[nth]->URI = LV2_URID_MAP_URI;
@@ -1091,7 +1091,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
 
     /* Options interface */
     options_interface = (LV2_Options_Interface *) malloc(sizeof(LV2_Options_Interface));
-    options_interface->set = ags_lv2_option_manager_lv2_options_set;
+    options_interface->set = (uint32_t (*)(LV2_Handle, const LV2_Options_Option *)) ags_lv2_option_manager_lv2_options_set;
     options_interface->get = ags_lv2_option_manager_lv2_options_get;
   
     feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
@@ -1146,7 +1146,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
       base_plugin->plugin_descriptor = 
 	plugin_descriptor = lv2_descriptor(effect_index);
 
-      instantiate = plugin_descriptor->instantiate;
+      instantiate = (LV2_Handle (*)(const LV2_Descriptor *, double, const char *, const LV2_Feature *const *)) plugin_descriptor->instantiate;
       
       g_rec_mutex_unlock(base_plugin_mutex);
     }

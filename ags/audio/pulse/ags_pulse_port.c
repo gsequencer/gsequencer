@@ -1149,16 +1149,16 @@ ags_pulse_port_register(AgsPulsePort *pulse_port,
 
     if(use_cache){
       pa_stream_set_write_callback(stream,
-				   ags_pulse_port_cached_stream_request_callback,
+				   (pa_stream_request_cb_t) ags_pulse_port_cached_stream_request_callback,
 				   pulse_port);
     }else{
       pa_stream_set_write_callback(stream,
-				   ags_pulse_port_stream_request_callback,
+				   (pa_stream_request_cb_t) ags_pulse_port_stream_request_callback,
 				   pulse_port);
     }
 
     pa_stream_set_underflow_callback(stream,
-				     ags_pulse_port_stream_underflow_callback,
+				     (pa_stream_notify_cb_t) ags_pulse_port_stream_underflow_callback,
 				     pulse_port);
     
     r = pa_stream_connect_playback(stream, NULL, buffer_attr,

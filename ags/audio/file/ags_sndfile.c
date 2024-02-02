@@ -64,9 +64,9 @@ gboolean ags_sndfile_rw_open(AgsSoundResource *sound_resource,
 			     gchar *filename,
 			     guint audio_channels, guint samplerate,
 			     gboolean create);
-gboolean ags_sndfile_info(AgsSoundResource *sound_resource,
-			  guint *frame_count,
-			  guint *loop_start, guint *loop_end);
+void ags_sndfile_info(AgsSoundResource *sound_resource,
+		      guint *frame_count,
+		      guint *loop_start, guint *loop_end);
 void ags_sndfile_set_presets(AgsSoundResource *sound_resource,
 			     guint channels,
 			     guint samplerate,
@@ -94,7 +94,7 @@ sf_count_t ags_sndfile_vio_get_filelen(void *user_data);
 sf_count_t ags_sndfile_vio_seek(sf_count_t offset, int whence, void *user_data);
 sf_count_t ags_sndfile_vio_read(void *ptr, sf_count_t count, void *user_data);
 sf_count_t ags_sndfile_vio_write(const void *ptr, sf_count_t count, void *user_data);
-sf_count_t ags_sndfile_vio_tell(const void *ptr, sf_count_t count, void *user_data);
+sf_count_t ags_sndfile_vio_tell(void *user_data);
 
 /**
  * SECTION:ags_sndfile
@@ -1129,7 +1129,7 @@ ags_sndfile_rw_open(AgsSoundResource *sound_resource,
   return(success);
 }
 
-gboolean
+void
 ags_sndfile_info(AgsSoundResource *sound_resource,
 		 guint *frame_count,
 		 guint *loop_start, guint *loop_end)
@@ -1160,7 +1160,7 @@ ags_sndfile_info(AgsSoundResource *sound_resource,
       frame_count[0] = 0;
     }
 
-    return(FALSE);
+    return;
   }
 
   if(frame_count != NULL){
@@ -1172,8 +1172,6 @@ ags_sndfile_info(AgsSoundResource *sound_resource,
   }
 
   g_rec_mutex_unlock(sndfile_mutex);
-
-  return(TRUE);
 }
 
 void
@@ -1817,7 +1815,7 @@ ags_sndfile_vio_write(const void *ptr, sf_count_t count, void *user_data)
 }
 
 sf_count_t
-ags_sndfile_vio_tell(const void *ptr, sf_count_t count, void *user_data)
+ags_sndfile_vio_tell(void *user_data)
 {
   AgsSndfile *sndfile;
 

@@ -30,7 +30,7 @@ CPPFLAGS += -D_WINSOCK_H
 else
 if WITH_OSXAPI
 else
-CPPFLAGS += -D_FORTIFY_SOURCE=2 -Wall -Wformat -Werror=format-security -Werror=return-type
+CPPFLAGS += -D_FORTIFY_SOURCE=2 -Wall -Wformat -Werror=format-security -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized -Werror=missing-parameter-type -Werror=int-conversion -Werror=implicit-function-declaration
 endif
 endif
 
@@ -38,8 +38,8 @@ if WITH_LIBINSTPATCH
 CPPFLAGS += -DAGS_WITH_LIBINSTPATCH=1
 endif
 
-CFLAGS =  @CFLAGS@ -Werror=uninitialized -Werror=maybe-uninitialized -Werror=return-type -Werror=missing-parameter-type -Werror=int-conversion
-CXXFLAGS =  @CXXFLAGS@ -Werror=uninitialized -Werror=maybe-uninitialized -Werror=return-type -Werror=argument-mismatch -Werror=missing-parameter-type -Werror=int-conversion
+CFLAGS =  @CFLAGS@
+CXXFLAGS =  @CXXFLAGS@
 
 CFLAGS += -include errno.h
 

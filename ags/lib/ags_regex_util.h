@@ -87,6 +87,7 @@ typedef enum{
   AGS_REGEX_UTIL_ERROR_PATTERN_BUFFER_LARGER_THAN_64KB,
   AGS_REGEX_UTIL_ERROR_OUT_OF_MEMORY,
   AGS_REGEX_UTIL_ERROR_INVALID_BACK_REFERENCE,
+  AGS_REGEX_UTIL_ERROR_UNSPECIFIED,
 }AgsRegexUtilError;
 
 struct _AgsRegexUtil
@@ -109,8 +110,8 @@ struct _AgsRegexUtil
 
 struct _AgsRegexMatch
 {
-  gint start_match_offset;
-  gint end_match_offset;
+  regoff_t start_match_offset;
+  regoff_t end_match_offset;
 };
 
 GType ags_regex_util_get_type(void);

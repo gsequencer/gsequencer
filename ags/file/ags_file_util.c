@@ -21,6 +21,8 @@
 
 #include <ags/lib/ags_regex_util.h>
 
+#include <gmodule.h>
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -70,52 +72,31 @@ ags_file_util_alloc(gchar *app_encoding,
 {
   AgsFileUtil *ptr;
 
-  gchar *app_localization, *localization;
-
+  gchar *local_app_encoding;
+  
   ptr = (AgsFileUtil *) g_malloc(sizeof(AgsFileUtil));
-
-  if(app_encoding == NULL){
-    app_encoding = setlocale(LC_ALL,
-			     NULL);    
-  }
-
-  if(app_encoding == NULL){
-    app_encoding = getenv("LANG");    
-  }
-
-  if(app_encoding == NULL){
-    app_encoding = "C.UTF-8";
-  }
   
   ptr->app_encoding = g_strdup(app_encoding);
   ptr->encoding = g_strdup(encoding);
 
   /* iconv */
-  app_localization = strchr(app_encoding, '.');
-
-  if(app_localization == NULL){
-    app_localization = app_encoding;
-  }else{
-    app_localization++;
-  }
-
-  localization = strchr(encoding, '.');
-
-  if(localization == NULL){
-    localization = encoding;
-  }else{
-    localization++;
-  }
-
-  ptr->converter = (GIConv) -1;
-  ptr->reverse_converter = (GIConv) -1;
+  local_app_encoding = ptr->app_encoding;
   
-  if((!g_strcmp0(app_localization, localization)) == FALSE){
-    ptr->converter = g_iconv_open(localization,
-				  app_localization);
+  if(local_app_encoding == NULL){
+    local_app_encoding = "UTF-8";
+  }
   
-    ptr->reverse_converter = g_iconv_open(app_localization,
-					  localization);
+  ptr->converter = NULL;
+  ptr->reverse_converter = NULL;
+  
+  if(ptr->encoding != NULL &&
+     local_app_encoding != NULL &&
+     (!g_strcmp0(local_app_encoding, ptr->encoding)) == FALSE){
+    ptr->converter = g_iconv_open(ptr->encoding,
+				  local_app_encoding);
+  
+    ptr->reverse_converter = g_iconv_open(local_app_encoding,
+					  ptr->encoding);
   }
   
   return(ptr);
@@ -160,7 +141,7 @@ ags_file_util_free(AgsFileUtil *ptr)
   g_free(ptr->app_encoding);
   g_free(ptr->encoding);
 
-  if(ptr->converter != (GIConv) -1){
+  if(ptr->converter != NULL){
     g_iconv_close(ptr->converter);
   
     g_iconv_close(ptr->reverse_converter);
@@ -1026,7 +1007,7 @@ ags_file_util_get_string(AgsFileUtil *file_util,
 
   converted_string = NULL;
 
-  if(file_util->reverse_converter != (GIConv) -1){
+  if(file_util->reverse_converter != NULL){
     GError *error;
 
     error = NULL;
@@ -1076,7 +1057,7 @@ ags_file_util_put_string(AgsFileUtil *file_util,
 
   converted_string = NULL;
   
-  if(file_util->converter != (GIConv) -1){
+  if(file_util->converter != NULL){
     GError *error;
 
     error = NULL;

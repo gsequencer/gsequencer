@@ -1523,7 +1523,7 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
 		  1, 4);
 
   gtk_drawing_area_set_draw_func(sfz_synth->wah_wah_drawing_area,
-				 ags_sfz_synth_wah_wah_draw_function,
+				 (GtkDrawingAreaDrawFunc) ags_sfz_synth_wah_wah_draw_function,
 				 sfz_synth,
 				 NULL);
 

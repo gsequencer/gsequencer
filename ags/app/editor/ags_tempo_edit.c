@@ -2859,7 +2859,6 @@ ags_tempo_edit_draw_tempo(AgsTempoEdit *tempo_edit, cairo_t *cr)
 						timestamp)) != NULL){
     AgsProgram *tempo;
 
-    GList *start_list_marker, *list_marker;
     GList *next_link;
     
     tempo = AGS_PROGRAM(list->data);
@@ -2889,7 +2888,6 @@ ags_tempo_edit_draw_tempo(AgsTempoEdit *tempo_edit, cairo_t *cr)
 
     while(list_marker != NULL){
       GList *start_next_marker;
-      GList *next_link;
 
       start_next_marker = NULL;
       next_link = list_marker->next;

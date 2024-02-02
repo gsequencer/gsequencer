@@ -137,7 +137,7 @@ ags_password_store_manager_get_password_store(AgsPasswordStoreManager *password_
   g_rec_mutex_lock(password_store_manager_mutex);
 
   password_store = g_list_copy_deep(password_store_manager->password_store,
-				    g_object_ref,
+				    (GCopyFunc) g_object_ref,
 				    NULL);
 
   g_rec_mutex_unlock(password_store_manager_mutex);

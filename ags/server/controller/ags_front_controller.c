@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -40,7 +40,7 @@ void ags_front_controller_init(AgsFrontController *front_controller);
 void ags_front_controller_finalize(GObject *gobject);
 
 gpointer ags_front_controller_real_do_request(AgsFrontController *front_controller,
-					      SoupMessage *msg,
+					      SoupServerMessage *msg,
 					      GHashTable *query,
 					      GObject *security_context,
 					      gchar *context_path,
@@ -116,7 +116,7 @@ ags_front_controller_class_init(AgsFrontControllerClass *front_controller)
   /**
    * AgsFrontController::do-request:
    * @front_controller: the #AgsFrontController
-   * @msg: the #SoupMessage
+   * @msg: the #SoupServerMessage
    * @query: the #GHashTable
    * @security_context: the #AgsSecurityContext
    * @context_path: the context path to access
@@ -164,7 +164,7 @@ ags_front_controller_finalize(GObject *gobject)
 
 gpointer
 ags_front_controller_real_do_request(AgsFrontController *front_controller,
-				     SoupMessage *msg,
+				     SoupServerMessage *msg,
 				     GHashTable *query,
 				     GObject *security_context,
 				     gchar *path,

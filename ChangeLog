@@ -1,3 +1,13 @@
+ags (6.3.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing type casts
+
+ags (6.3.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* minor improvements
+
 ags (6.3.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

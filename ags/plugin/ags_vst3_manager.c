@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -948,7 +948,7 @@ ags_vst3_manager_load_default_directory(AgsVst3Manager *vst3_manager)
 #if defined(AGS_OSXAPI)
 	  if(!g_list_find_custom(vst3_manager->vst3_plugin_blacklist,
 				 arch_filename,
-				 strcmp)){
+				 (GCompareFunc) g_strcmp0)){
 	    ags_vst3_manager_load_file(vst3_manager,
 				       arch_path,
 				       arch_filename);
@@ -958,7 +958,7 @@ ags_vst3_manager_load_default_directory(AgsVst3Manager *vst3_manager)
 			      AGS_LIBRARY_SUFFIX) &&
 	     !g_list_find_custom(vst3_manager->vst3_plugin_blacklist,
 				 arch_filename,
-				 g_strcmp0)){
+				 (GCompareFunc) g_strcmp0)){
 	    ags_vst3_manager_load_file(vst3_manager,
 				       arch_path,
 				       arch_filename);

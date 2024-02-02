@@ -1815,6 +1815,10 @@ ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_nota
 
 	      current_note->x_256th[0] = offset_lower;
 	      current_note->x_256th[1] = offset_upper;
+
+	      if(offset_lower == offset_upper){
+		current_note->x_256th[1] = offset_lower + 1;
+	      }
 	      
 	      current_note->y = y;
 		

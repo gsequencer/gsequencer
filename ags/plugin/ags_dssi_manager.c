@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -755,7 +755,7 @@ ags_dssi_manager_load_default_directory(AgsDssiManager *dssi_manager)
 			  AGS_LIBRARY_SUFFIX) &&
 	 !g_list_find_custom(dssi_manager->dssi_plugin_blacklist,
 			     filename,
-			     g_strcmp0)){
+			     (GCompareFunc) g_strcmp0)){
 	ags_dssi_manager_load_file(dssi_manager,
 				   *dssi_path,
 				   filename);

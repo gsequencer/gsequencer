@@ -41,6 +41,7 @@
     <xi:include href="xml/ags_solver_polynomial.xml"/>
     <xi:include href="xml/ags_log.xml"/>
     <xi:include href="xml/ags_regex.xml"/>
+    <xi:include href="xml/ags_regex_util.xml"/>
     <xi:include href="xml/ags_string_util.xml"/>
     <xi:include href="xml/ags_time.xml"/>
     <xi:include href="xml/ags_turtle.xml"/>
@@ -89,6 +90,7 @@
     <xi:include href="xml/ags_file_link.xml"/>
     <xi:include href="xml/ags_file_lookup.xml"/>
     <xi:include href="xml/ags_file_launch.xml"/>
+    <xi:include href="xml/ags_file_util.xml"/>
   </part>
 
   <part id="thread">

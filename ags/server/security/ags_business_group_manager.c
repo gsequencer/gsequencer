@@ -135,7 +135,7 @@ ags_business_group_manager_get_business_group(AgsBusinessGroupManager *business_
   g_rec_mutex_lock(business_group_manager_mutex);
 
   business_group = g_list_copy_deep(business_group_manager->business_group,
-				    g_object_ref,
+				    (GCopyFunc) g_object_ref,
 				    NULL);
 
   g_rec_mutex_unlock(business_group_manager_mutex);
