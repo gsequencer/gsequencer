@@ -352,13 +352,13 @@ ags_navigation_init(AgsNavigation *navigation)
   gtk_box_append(navigation->expansion_box,
 		 (GtkWidget *) navigation->loop_right_tact);
 
-  navigation->scroll = NULL;
-  /*
-    navigation->scroll = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("auto-scroll"));
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(navigation->scroll),
-    FALSE);
-    gtk_box_append(navigation->expansion_box, (GtkWidget *) navigation->scroll, FALSE, FALSE, 2);
-  */
+  //  navigation->scroll = NULL;
+  
+  navigation->scroll = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("auto-scroll"));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(navigation->scroll),
+			       FALSE);
+  gtk_box_append(navigation->expansion_box,
+		 (GtkWidget *) navigation->scroll);
   
   navigation->exclude_sequencer = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("exclude sequencers"));
   gtk_check_button_set_active(navigation->exclude_sequencer,
@@ -513,6 +513,9 @@ ags_navigation_connect(AgsConnectable *connectable)
 
   //  g_signal_connect((GObject *) navigation->duration_tact, "value-changed",
   //		   G_CALLBACK(ags_navigation_duration_tact_callback), (gpointer) navigation);
+
+  g_signal_connect_after((GObject *) navigation->scroll, "toggled",
+			 G_CALLBACK(ags_navigation_scroll_callback), (gpointer) navigation);
 
   /* soundcard */
   //  g_signal_connect_after((GObject *) navigation->soundcard, "tic",

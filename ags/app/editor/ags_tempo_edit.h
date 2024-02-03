@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -68,13 +68,12 @@ typedef struct _AgsTempoEdit AgsTempoEdit;
 typedef struct _AgsTempoEditClass AgsTempoEditClass;
 
 typedef enum{
-  AGS_TEMPO_EDIT_CONNECTED                  = 1,
-  AGS_TEMPO_EDIT_AUTO_SCROLL                = 1 <<  1,
-  AGS_TEMPO_EDIT_SHOW_RULER                 = 1 <<  2,
-  AGS_TEMPO_EDIT_SHOW_VSCROLLBAR            = 1 <<  3,
-  AGS_TEMPO_EDIT_SHOW_HSCROLLBAR            = 1 <<  4,
-  AGS_TEMPO_EDIT_BLOCK_RESET_VSCROLLBAR     = 1 <<  5,
-  AGS_TEMPO_EDIT_BLOCK_RESET_HSCROLLBAR     = 1 <<  6,
+  AGS_TEMPO_EDIT_AUTO_SCROLL                = 1,
+  AGS_TEMPO_EDIT_SHOW_RULER                 = 1 <<  1,
+  AGS_TEMPO_EDIT_SHOW_VSCROLLBAR            = 1 <<  2,
+  AGS_TEMPO_EDIT_SHOW_HSCROLLBAR            = 1 <<  3,
+  AGS_TEMPO_EDIT_BLOCK_RESET_VSCROLLBAR     = 1 <<  4,
+  AGS_TEMPO_EDIT_BLOCK_RESET_HSCROLLBAR     = 1 <<  5,
 }AgsTempoEditFlags;
 
 typedef enum{
@@ -144,6 +143,9 @@ struct _AgsTempoEdit
   GtkEventController *key_controller;
   GtkEventController *gesture_controller;
   GtkEventController *motion_controller;
+
+  guint note_offset_256th;
+  guint note_offset_256th_absolute;
 };
 
 struct _AgsTempoEditClass

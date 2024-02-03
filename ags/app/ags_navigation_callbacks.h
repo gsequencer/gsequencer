@@ -61,6 +61,9 @@ void ags_navigation_loop_callback(GtkWidget *widget,
 void ags_navigation_position_tact_callback(GtkWidget *widget,
 					   AgsNavigation *navigation);
 
+void ags_navigation_scroll_callback(GtkWidget *widget,
+				    AgsNavigation *navigation);
+
 void ags_navigation_duration_tact_callback(GtkWidget *widget,
 					   AgsNavigation *navigation);
 

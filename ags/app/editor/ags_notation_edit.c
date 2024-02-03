@@ -2111,11 +2111,14 @@ ags_notation_edit_draw_position(AgsNotationEdit *notation_edit, cairo_t *cr)
   GtkStyleContext *style_context;
   GtkSettings *settings;
 
+  AgsApplicationContext *application_context;
+
   GtkAllocation allocation;
 
   GdkRGBA fg_color;
 
   guint channel_count;
+  double zoom_factor;
   double position;
   double x, y;
   double width, height;
@@ -2128,6 +2131,8 @@ ags_notation_edit_draw_position(AgsNotationEdit *notation_edit, cairo_t *cr)
   if(!AGS_IS_NOTATION_EDIT(notation_edit)){
     return;
   }
+
+  application_context = ags_application_context_get_instance();    
 
   gtk_widget_get_allocation(GTK_WIDGET(notation_edit->drawing_area),
 			    &allocation);
@@ -2153,12 +2158,13 @@ ags_notation_edit_draw_position(AgsNotationEdit *notation_edit, cairo_t *cr)
   }
   
   /* get channel count */
-  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) notation_edit,
-								    AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
     
   if(composite_editor->selected_machine == NULL){
     return;
   }
+
+  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) AGS_COMPOSITE_TOOLBAR(composite_editor->toolbar)->zoom));
 
   selected_machine = composite_editor->selected_machine;
 
@@ -2167,7 +2173,7 @@ ags_notation_edit_draw_position(AgsNotationEdit *notation_edit, cairo_t *cr)
 	       NULL);
   
   /* get offset and dimensions */
-  position = ((double) notation_edit->note_offset) * ((double) notation_edit->control_width);
+  position = ((double) notation_edit->note_offset) * ((double) notation_edit->control_width) / zoom_factor;
   
   y = 0.0;
   x = (position) - (gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->hscrollbar)));

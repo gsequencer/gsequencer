@@ -48,6 +48,7 @@ void ags_automation_edit_get_property(GObject *gobject,
 void ags_automation_edit_dispose(GObject *gobject);
 void ags_automation_edit_finalize(GObject *gobject);
 
+gboolean ags_automation_edit_is_connected(AgsConnectable *connectable);
 void ags_automation_edit_connect(AgsConnectable *connectable);
 void ags_automation_edit_disconnect(AgsConnectable *connectable);
 
@@ -161,8 +162,6 @@ gboolean ags_automation_edit_motion_callback(GtkEventControllerMotion *event_con
 					     gdouble y,
 					     AgsAutomationEdit *automation_edit);
 
-gboolean ags_automation_edit_auto_scroll_timeout(GtkWidget *widget);
-
 /**
  * SECTION:ags_automation_edit
  * @short_description: edit automations
@@ -188,8 +187,6 @@ enum{
 static gpointer ags_automation_edit_parent_class = NULL;
 
 static GQuark quark_accessible_object = 0;
-
-GHashTable *ags_automation_edit_auto_scroll = NULL;
 
 GType
 ags_automation_edit_get_type(void)
@@ -401,10 +398,23 @@ ags_automation_edit_class_init(AgsAutomationEditClass *automation_edit)
 void
 ags_automation_edit_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_automation_edit_is_connected;  
   connectable->connect = ags_automation_edit_connect;
   connectable->disconnect = ags_automation_edit_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -564,16 +574,13 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
 		   0, 2,
 		   1, 1);
 
-  /* auto-scroll */
-  if(ags_automation_edit_auto_scroll == NULL){
-    ags_automation_edit_auto_scroll = g_hash_table_new_full(g_direct_hash, g_direct_equal,
-							    NULL,
-							    NULL);
-  }
+  /* 256th */
+  automation_edit->note_offset_256th = 0;
+  automation_edit->note_offset_256th_absolute = 0;
 
-  g_hash_table_insert(ags_automation_edit_auto_scroll,
-		      automation_edit, ags_automation_edit_auto_scroll_timeout);
-  g_timeout_add(1000 / 30, (GSourceFunc) ags_automation_edit_auto_scroll_timeout, (gpointer) automation_edit);
+  /* auto-scroll */
+  g_signal_connect(application_context, "update-ui",
+		   G_CALLBACK(ags_automation_edit_update_ui_callback), automation_edit);
 }
 
 void
@@ -746,15 +753,37 @@ void
 ags_automation_edit_finalize(GObject *gobject)
 {
   AgsAutomationEdit *automation_edit;
+
+  AgsApplicationContext *application_context;
   
   automation_edit = AGS_AUTOMATION_EDIT(gobject);
   
+  application_context = ags_application_context_get_instance();
+
   /* remove auto scroll */
-  g_hash_table_remove(ags_automation_edit_auto_scroll,
-		      automation_edit);
+  g_object_disconnect(application_context,
+		      "any_signal::update-ui",
+		      G_CALLBACK(ags_automation_edit_update_ui_callback),
+		      (gpointer) automation_edit,
+		      NULL);
 
   /* call parent */
   G_OBJECT_CLASS(ags_automation_edit_parent_class)->finalize(gobject);
+}
+
+gboolean
+ags_automation_edit_is_connected(AgsConnectable *connectable)
+{
+  AgsAutomationEdit *automation_edit;
+  
+  gboolean is_connected;
+  
+  automation_edit = AGS_AUTOMATION_EDIT(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (automation_edit->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
 }
 
 void
@@ -764,7 +793,7 @@ ags_automation_edit_connect(AgsConnectable *connectable)
 
   automation_edit = AGS_AUTOMATION_EDIT(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (automation_edit->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
   
@@ -794,7 +823,7 @@ ags_automation_edit_disconnect(AgsConnectable *connectable)
 
   automation_edit = AGS_AUTOMATION_EDIT(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (automation_edit->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
   
@@ -2283,56 +2312,6 @@ ags_automation_edit_frame_clock_update_callback(GdkFrameClock *frame_clock,
   gtk_widget_queue_draw((GtkWidget *) automation_edit);
 }
 
-gboolean
-ags_automation_edit_auto_scroll_timeout(GtkWidget *widget)
-{
-  if(g_hash_table_lookup(ags_automation_edit_auto_scroll,
-			 widget) != NULL){
-    AgsCompositeEditor *composite_editor;
-    AgsAutomationEdit *automation_edit;
-
-    GtkAdjustment *hscrollbar_adjustment;
-    
-    GObject *output_soundcard;
-    
-    double x;
-    
-    automation_edit = AGS_AUTOMATION_EDIT(widget);
-
-    if((AGS_AUTOMATION_EDIT_AUTO_SCROLL & (automation_edit->flags)) == 0){
-      return(TRUE);
-    }
-    
-    composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_edit,
-								      AGS_TYPE_COMPOSITE_EDITOR);
-    
-    if(composite_editor->selected_machine == NULL){
-      return(TRUE);
-    }
-
-    /* reset offset */
-    g_object_get(composite_editor->selected_machine->audio,
-		 "output-soundcard", &output_soundcard,
-		 NULL);
-    
-    automation_edit->note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
-    automation_edit->note_offset_absolute = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(output_soundcard));
-
-    /* reset scrollbar */
-    hscrollbar_adjustment = gtk_scrollbar_get_adjustment(automation_edit->hscrollbar);
-    x = ((automation_edit->note_offset * automation_edit->control_width) / (AGS_AUTOMATION_DEFAULT_LENGTH * automation_edit->control_width)) * gtk_adjustment_get_upper(hscrollbar_adjustment);
-    
-    gtk_adjustment_set_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar),
-			x);
-
-    g_object_unref(output_soundcard);
-    
-    return(TRUE);
-  }else{
-    return(FALSE);
-  }
-}
-
 void
 ags_automation_edit_reset_vscrollbar(AgsAutomationEdit *automation_edit)
 {
@@ -3120,7 +3099,7 @@ ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit, cairo_t *c
 
   gdouble gui_scale_factor;
   gdouble tact;
-  guint control_width;
+  double zoom_factor;
   double position;
   double x, y;
   double width, height;
@@ -3139,10 +3118,11 @@ ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit, cairo_t *c
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
   
-  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_edit,
-								    AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   toolbar = composite_editor->toolbar;
+
+  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) toolbar->zoom));
 
   tact = exp2((double) gtk_combo_box_get_active(toolbar->zoom) - 2.0);
   
@@ -3168,9 +3148,7 @@ ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit, cairo_t *c
   }
   
   /* get offset and dimensions */
-  control_width = (gint) (gui_scale_factor * (gdouble) AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH) * (tact / (gui_scale_factor * tact));
-
-  position = ((double) automation_edit->note_offset) * ((double) control_width);
+  position = ((double) automation_edit->note_offset) * ((double) automation_edit->control_width) / zoom_factor;
   
   y = 0.0;
   x = (position) - (gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar)));
@@ -3192,7 +3170,7 @@ ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit, cairo_t *c
 		  (double) x, (double) y,
 		  (double) width, (double) height);
   cairo_fill(cr);
-
+  
   /* complete */
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);
