@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -184,6 +184,8 @@ ags_vst3_browser_plugin_effect_callback(GtkTreeView *tree_view,
 	
 	continue;
       }
+
+      flags = 0;
       
       /* get base plugin mutex */
       plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(plugin_port->data);
