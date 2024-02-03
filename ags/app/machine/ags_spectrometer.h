@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -85,8 +85,6 @@ AgsPort* ags_spectrometer_find_specifier(GList *recall, gchar *specifier);
 
 AgsPlot* ags_spectrometer_fg_plot_alloc(AgsSpectrometer *spectrometer,
 					gdouble color_r, gdouble color_g, double color_b);
-
-gboolean ags_spectrometer_cartesian_queue_draw_timeout(GtkWidget *widget);
 
 void ags_spectrometer_output_map_recall(AgsSpectrometer *spectrometer,
 					guint audio_channel_start,

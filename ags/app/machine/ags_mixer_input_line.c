@@ -53,8 +53,6 @@ void ags_mixer_input_line_map_recall(AgsLine *line,
 static gpointer ags_mixer_input_line_parent_class = NULL;
 static AgsConnectableInterface *ags_mixer_input_line_parent_connectable_interface;
 
-extern GHashTable *ags_line_indicator_refresh;
-
 GType
 ags_mixer_input_line_get_type()
 {
@@ -165,10 +163,8 @@ ags_mixer_input_line_init(AgsMixerInputLine *mixer_input_line)
 			       4);
 
   AGS_LINE(mixer_input_line)->indicator = widget;
-  
-  g_hash_table_insert(ags_line_indicator_refresh,
-		      widget, ags_line_indicator_refresh_timeout);
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0, (GSourceFunc) ags_line_indicator_refresh_timeout, (gpointer) widget);
+  AGS_LINE(mixer_input_line)->queued_refresh = g_list_prepend(AGS_LINE(mixer_input_line)->queued_refresh,
+							      widget);
 
   /* volume */
   line_member =
@@ -210,7 +206,7 @@ ags_mixer_input_line_connect(AgsConnectable *connectable)
 
   mixer_input_line = AGS_MIXER_INPUT_LINE(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_LINE(mixer_input_line)->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -224,7 +220,7 @@ ags_mixer_input_line_disconnect(AgsConnectable *connectable)
 
   mixer_input_line = AGS_MIXER_INPUT_LINE(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_LINE(mixer_input_line)->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 

@@ -2338,7 +2338,7 @@ ags_fx_vst3_audio_safe_write_callback(AgsPort *port, GValue *value,
 	  
 	  while(values != NULL){
 	    if(values->data == port->plugin_port){
-	      param_id = keys->data;
+	      param_id = GPOINTER_TO_UINT(keys->data);
 
 	      success = TRUE;
 	      

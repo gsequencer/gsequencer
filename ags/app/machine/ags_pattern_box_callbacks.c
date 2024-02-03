@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,132 @@
 #include <ags/app/ags_line.h>
 
 #include <gdk/gdkkeysyms.h>
+
+void
+ags_pattern_box_update_ui_callback(GObject *ui_provider,
+				   AgsPatternBox *pattern_box)
+{
+  AgsMachine *machine;
+
+  AgsAudio *audio;
+  AgsRecallID *recall_id;
+    
+  AgsFxPatternAudio *play_fx_pattern_audio;
+  AgsFxPatternAudioProcessor *play_fx_pattern_audio_processor;
+
+  GList *start_list, *list;
+  GList *start_recall, *recall;
+    
+  guint64 active_led_new;
+  gboolean success;
+    
+  GRecMutex *play_fx_pattern_audio_processor_mutex;
+    
+  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pattern_box,
+						   AGS_TYPE_MACHINE);
+
+  if(machine == NULL){
+    return;
+  }
+    
+  audio = machine->audio;
+    
+  /* get some recalls */
+  list = 
+    start_list = ags_audio_get_recall_id(audio);
+
+  recall_id = NULL;
+
+  success = FALSE;
+    
+  while(list != NULL && !success){
+    AgsRecyclingContext *parent_recycling_context;
+    AgsRecyclingContext *current_recycling_context;
+
+    parent_recycling_context = NULL;
+    current_recycling_context = NULL;
+      
+    g_object_get(list->data,
+		 "recycling-context", &current_recycling_context,
+		 NULL);
+      
+    if(current_recycling_context != NULL){
+      g_object_get(current_recycling_context,
+		   "parent", &parent_recycling_context,
+		   NULL);
+
+      if(parent_recycling_context == NULL &&
+	 ags_recall_id_check_sound_scope(list->data, AGS_SOUND_SCOPE_SEQUENCER)){
+	recall_id = list->data;
+
+	g_object_get(audio,
+		     "play", &start_recall,
+		     NULL);
+
+	play_fx_pattern_audio = NULL;
+	play_fx_pattern_audio_processor = NULL;
+    
+	recall = ags_recall_find_type(start_recall,
+				      AGS_TYPE_FX_PATTERN_AUDIO);
+    
+	if(recall != NULL){
+	  play_fx_pattern_audio = AGS_FX_PATTERN_AUDIO(recall->data);
+	}
+    
+	recall = ags_recall_find_type_with_recycling_context(start_recall,
+							     AGS_TYPE_FX_PATTERN_AUDIO_PROCESSOR,
+							     (GObject *) current_recycling_context);
+    
+	if(recall != NULL){
+	  play_fx_pattern_audio_processor = AGS_FX_PATTERN_AUDIO_PROCESSOR(recall->data);
+	}
+
+
+	g_list_free_full(start_recall,
+			 g_object_unref);
+
+	if(play_fx_pattern_audio == NULL ||
+	   play_fx_pattern_audio_processor == NULL){
+	  recall_id = NULL;
+	}else{
+	  success = TRUE;
+	}
+      }
+    }
+
+    if(parent_recycling_context != NULL){
+      g_object_unref(parent_recycling_context);
+    }
+
+    if(current_recycling_context != NULL){
+      g_object_unref(current_recycling_context);
+    }
+
+    list = list->next;
+  }
+
+  g_list_free_full(start_list,
+		   g_object_unref);
+    
+  if(recall_id == NULL){      
+    return;
+  }
+    
+  /* active led */
+  play_fx_pattern_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_fx_pattern_audio_processor);
+
+  g_rec_mutex_lock(play_fx_pattern_audio_processor_mutex);
+
+  active_led_new = play_fx_pattern_audio_processor->offset_counter;
+    
+  g_rec_mutex_unlock(play_fx_pattern_audio_processor_mutex);
+
+  pattern_box->active_led = (guint) (active_led_new % pattern_box->n_controls);
+
+  ags_led_array_unset_all((AgsLedArray *) pattern_box->hled_array);
+  ags_led_array_set_nth((AgsLedArray *) pattern_box->hled_array,
+			pattern_box->active_led);
+}
 
 void
 ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_box)

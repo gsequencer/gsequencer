@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -90,7 +90,7 @@ struct _AgsEffectLine
 
   GList *plugin;
 
-  GList *queued_drawing;
+  GList *queued_refresh;
 };
 
 struct _AgsEffectLineClass
@@ -209,8 +209,6 @@ void ags_effect_line_refresh_port(AgsEffectLine *effect_line);
 GList* ags_effect_line_find_next_grouped(GList *effect_line);
 
 void ags_effect_line_check_message(AgsEffectLine *effect_line);
-
-gboolean ags_effect_line_indicator_queue_draw_timeout(GtkWidget *widget);
 
 AgsEffectLine* ags_effect_line_new(AgsChannel *channel);
 

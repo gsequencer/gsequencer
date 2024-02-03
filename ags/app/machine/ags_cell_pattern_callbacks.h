@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,6 +32,9 @@
 #include <ags/app/machine/ags_cell_pattern.h>
 
 G_BEGIN_DECLS
+
+void ags_cell_pattern_update_ui_callback(GObject *ui_provider,
+					 AgsCellPattern *cell_pattern);
 
 gboolean ags_cell_pattern_gesture_click_pressed_callback(GtkGestureClick *event_controller,
 							 gint n_press,

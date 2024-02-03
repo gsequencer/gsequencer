@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -122,7 +122,6 @@ void ags_audiorec_fast_export(AgsAudiorec *audiorec,
 			      guint64 start_frame, guint64 end_frame);
 
 gboolean ags_audiorec_wave_loader_completed_timeout(AgsAudiorec *audiorec);
-gboolean ags_audiorec_indicator_queue_draw_timeout(AgsAudiorec *audiorec);
 
 AgsAudiorec* ags_audiorec_new(GObject *output_soundcard);
 

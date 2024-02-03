@@ -1,3 +1,28 @@
+ags (6.4.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed VST3 build with new CPPFLAGS warnings as errors
+
+ags (6.4.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* enabled auto-scroll
+	* refactored AgsNotationEdit auto-scroll to make use of AgsUiProvider::update-ui() event
+	* refactored AgsTempoEdit auto-scroll to make use of AgsUiProvider::update-ui() event
+	* refactored AgsAutomationEdit auto-scroll to make use of AgsUiProvider::update-ui() event
+	* refactored AgsWaveEdit auto-scroll to make use of AgsUiProvider::update-ui() event
+	* refactored AgsNavigation to make use of AgsUiProvider::update-ui() event
+	* refactored AgsNavigation to make use of AgsUiProvider::update-ui() event
+	* refactored AgsLine to make use of AgsUiProvider::update-ui() event
+	* refactored AgsEffectLine to make use of AgsUiProvider::update-ui() event
+	* refactored AgsEffectBulk to make use of AgsUiProvider::update-ui() event
+	* refactored AgsMixerInputLine to make use of AgsUiProvider::update-ui() event
+	* refactored AgsDrumInputLine to make use of AgsUiProvider::update-ui() event
+	* refactored AgsCellPattern to make use of AgsUiProvider::update-ui() event
+	* refactored AgsPatternBox to make use of AgsUiProvider::update-ui() event
+	* refactored AgsAudiorec to make use of AgsUiProvider::update-ui() event
+	* refactored AgsSpectrometer to make use of AgsUiProvider::update-ui() event
+
 ags (6.3.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

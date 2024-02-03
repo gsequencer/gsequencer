@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,6 +33,9 @@
 #include <ags/app/machine/ags_audiorec.h>
 
 G_BEGIN_DECLS
+
+void ags_audiorec_update_ui_callback(GObject *ui_provider,
+				     AgsAudiorec *audiorec);
 
 void ags_audiorec_open_callback(GtkWidget *button, AgsAudiorec *audiorec);
 

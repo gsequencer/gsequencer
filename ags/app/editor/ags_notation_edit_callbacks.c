@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,10 +21,74 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_composite_editor.h>
+#include <ags/app/ags_navigation.h>
 
 #include <ags/app/editor/ags_composite_edit.h>
 
 #include <math.h>
+
+void
+ags_notation_edit_update_ui_callback(GObject *ui_provider,
+				     AgsNotationEdit *notation_edit)
+{
+  AgsCompositeEditor *composite_editor;  
+
+  GtkAdjustment *hscrollbar_adjustment;
+
+  AgsAudio *audio;
+    
+  AgsApplicationContext *application_context;
+
+  GObject *output_soundcard;
+      
+  double zoom_factor;
+  double width;
+  double x;
+  
+  if((AGS_NOTATION_EDIT_AUTO_SCROLL & (notation_edit->flags)) == 0){
+    return;
+  }
+
+  application_context = ags_application_context_get_instance();
+    
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  
+  if(composite_editor->selected_machine == NULL){
+    return;
+  }
+
+  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) AGS_COMPOSITE_TOOLBAR(composite_editor->toolbar)->zoom));
+  
+  audio = composite_editor->selected_machine->audio;      
+
+  output_soundcard = ags_audio_get_output_soundcard(audio);
+
+  /* reset offset */
+  notation_edit->note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
+  notation_edit->note_offset_absolute = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(output_soundcard));
+
+  /* 256th */
+  notation_edit->note_offset_256th = 16 * notation_edit->note_offset;
+  notation_edit->note_offset_256th_absolute = 16 * notation_edit->note_offset_absolute;
+
+  /* reset scrollbar */
+  hscrollbar_adjustment = gtk_scrollbar_get_adjustment(notation_edit->hscrollbar);
+  x = (double) notation_edit->note_offset * (double) notation_edit->control_width / zoom_factor;
+
+  width = (double) gtk_widget_get_width(notation_edit->drawing_area);
+  
+  if(x < gtk_adjustment_get_value(hscrollbar_adjustment) ||
+     x > gtk_adjustment_get_value(hscrollbar_adjustment) + (zoom_factor * width * (3.0 / 4.0))){
+    gtk_adjustment_set_value(hscrollbar_adjustment,
+			     x);
+  }else{
+    gtk_widget_queue_draw(notation_edit->drawing_area);
+  }
+  
+  if(output_soundcard != NULL){
+    g_object_unref(output_soundcard);
+  }
+}
 
 void
 ags_notation_edit_draw_callback(GtkWidget *drawing_area,

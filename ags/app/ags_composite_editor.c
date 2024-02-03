@@ -884,6 +884,7 @@ void
 ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
 					  AgsMachine *machine)
 {
+  AgsWindow *window;
   AgsMachine *old_machine;
   AgsMachineSelector *machine_selector;
   
@@ -904,6 +905,8 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
 
   application_context = ags_application_context_get_instance();
 
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
   
@@ -1215,6 +1218,12 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
       ags_wave_edit_box_add_wave_edit(AGS_WAVE_EDIT_BOX(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box),
 				      wave_edit);
 
+      if(gtk_check_button_get_active(GTK_CHECK_BUTTON(window->navigation->scroll))){
+	wave_edit->flags |= AGS_WAVE_EDIT_AUTO_SCROLL;
+      }else{
+	wave_edit->flags &= (~AGS_WAVE_EDIT_AUTO_SCROLL);
+      }
+      
       ags_connectable_connect(AGS_CONNECTABLE(wave_edit));
       gtk_widget_show((GtkWidget *) wave_edit);
 
@@ -1393,6 +1402,7 @@ ags_composite_editor_add_automation_port(AgsCompositeEditor *composite_editor,
 					 GType channel_type,
 					 gchar *control_name)
 {
+  AgsWindow *window;
   AgsMachine *machine;
   AgsScale *scale;
   AgsAutomationEdit *automation_edit;
@@ -1425,6 +1435,8 @@ ags_composite_editor_add_automation_port(AgsCompositeEditor *composite_editor,
   }
   
   application_context = ags_application_context_get_instance();
+
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
@@ -1649,6 +1661,12 @@ ags_composite_editor_add_automation_port(AgsCompositeEditor *composite_editor,
   
   ags_automation_edit_box_add_automation_edit(AGS_AUTOMATION_EDIT_BOX(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_editor->automation_edit->edit)->automation_edit_box),
 					      automation_edit);
+
+  if(gtk_check_button_get_active(GTK_CHECK_BUTTON(window->navigation->scroll))){
+    automation_edit->flags |= AGS_AUTOMATION_EDIT_AUTO_SCROLL;
+  }else{
+    automation_edit->flags &= (~AGS_AUTOMATION_EDIT_AUTO_SCROLL);
+  }
   
   ags_connectable_connect(AGS_CONNECTABLE(automation_edit));
   gtk_widget_show((GtkWidget *) automation_edit);

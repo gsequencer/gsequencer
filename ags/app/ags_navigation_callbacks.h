@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,6 +33,9 @@
 
 G_BEGIN_DECLS
 
+void ags_navigation_update_ui_callback(GObject *ui_provider,
+				       AgsNavigation *navigation);
+
 void ags_navigation_expander_callback(GtkWidget *widget,
 				      AgsNavigation *navigation);
 
@@ -57,6 +60,9 @@ void ags_navigation_loop_callback(GtkWidget *widget,
 
 void ags_navigation_position_tact_callback(GtkWidget *widget,
 					   AgsNavigation *navigation);
+
+void ags_navigation_scroll_callback(GtkWidget *widget,
+				    AgsNavigation *navigation);
 
 void ags_navigation_duration_tact_callback(GtkWidget *widget,
 					   AgsNavigation *navigation);

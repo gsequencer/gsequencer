@@ -46,6 +46,7 @@ void ags_wave_edit_get_property(GObject *gobject,
 void ags_wave_edit_dispose(GObject *gobject);
 void ags_wave_edit_finalize(GObject *gobject);
 
+gboolean ags_wave_edit_is_connected(AgsConnectable *connectable);
 void ags_wave_edit_connect(AgsConnectable *connectable);
 void ags_wave_edit_disconnect(AgsConnectable *connectable);
 
@@ -135,8 +136,6 @@ gboolean ags_wave_edit_motion_callback(GtkEventControllerMotion *event_controlle
 				       gdouble y,
 				       AgsWaveEdit *wave_edit);
 
-gboolean ags_wave_edit_auto_scroll_timeout(GtkWidget *widget);
-
 /**
  * SECTION:ags_wave_edit
  * @short_description: edit audio data
@@ -148,8 +147,6 @@ gboolean ags_wave_edit_auto_scroll_timeout(GtkWidget *widget);
  */
 
 static gpointer ags_wave_edit_parent_class = NULL;
-
-GHashTable *ags_wave_edit_auto_scroll = NULL;
 
 enum{
   PROP_0,
@@ -250,10 +247,23 @@ ags_wave_edit_class_init(AgsWaveEditClass *wave_edit)
 void
 ags_wave_edit_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_wave_edit_is_connected;  
   connectable->connect = ags_wave_edit_connect;
   connectable->disconnect = ags_wave_edit_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -400,16 +410,13 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
 		   0, 2,
 		   1, 1);
 
-  /* auto-scroll */
-  if(ags_wave_edit_auto_scroll == NULL){
-    ags_wave_edit_auto_scroll = g_hash_table_new_full(g_direct_hash, g_direct_equal,
-						      NULL,
-						      NULL);
-  }
+  /* 256th */
+  wave_edit->note_offset_256th = 0;
+  wave_edit->note_offset_256th_absolute = 0;
 
-  g_hash_table_insert(ags_wave_edit_auto_scroll,
-		      wave_edit, ags_wave_edit_auto_scroll_timeout);
-  g_timeout_add(1000 / 30, (GSourceFunc) ags_wave_edit_auto_scroll_timeout, (gpointer) wave_edit);
+  /* auto-scroll */
+  g_signal_connect(application_context, "update-ui",
+		   G_CALLBACK(ags_wave_edit_update_ui_callback), wave_edit);
 }
 
 void
@@ -475,14 +482,36 @@ ags_wave_edit_finalize(GObject *gobject)
 {
   AgsWaveEdit *wave_edit;
   
+  AgsApplicationContext *application_context;
+
   wave_edit = AGS_WAVE_EDIT(gobject);
   
+  application_context = ags_application_context_get_instance();
+  
   /* remove auto scroll */
-  g_hash_table_remove(ags_wave_edit_auto_scroll,
-		      wave_edit);
+  g_object_disconnect(application_context,
+		      "any_signal::update-ui",
+		      G_CALLBACK(ags_wave_edit_update_ui_callback),
+		      (gpointer) wave_edit,
+		      NULL);
 
   /* call parent */
   G_OBJECT_CLASS(ags_wave_edit_parent_class)->finalize(gobject);
+}
+
+gboolean
+ags_wave_edit_is_connected(AgsConnectable *connectable)
+{
+  AgsWaveEdit *wave_edit;
+  
+  gboolean is_connected;
+  
+  wave_edit = AGS_WAVE_EDIT(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (wave_edit->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
 }
 
 void
@@ -492,7 +521,7 @@ ags_wave_edit_connect(AgsConnectable *connectable)
 
   wave_edit = AGS_WAVE_EDIT(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (wave_edit->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
   
@@ -522,7 +551,7 @@ ags_wave_edit_disconnect(AgsConnectable *connectable)
 
   wave_edit = AGS_WAVE_EDIT(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (wave_edit->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
   
@@ -1354,60 +1383,6 @@ ags_wave_edit_frame_clock_update_callback(GdkFrameClock *frame_clock,
   gtk_widget_queue_draw((GtkWidget *) wave_edit);
 }
 
-gboolean
-ags_wave_edit_auto_scroll_timeout(GtkWidget *widget)
-{
-  if(g_hash_table_lookup(ags_wave_edit_auto_scroll,
-			 widget) != NULL){
-    AgsCompositeEditor *composite_editor;
-    AgsWaveEdit *wave_edit;
-
-    GtkAdjustment *hscrollbar_adjustment;
-
-    AgsApplicationContext *application_context;
-
-    GObject *output_soundcard;
-    
-    double x;
-    
-    wave_edit = AGS_WAVE_EDIT(widget);
-
-    if((AGS_WAVE_EDIT_AUTO_SCROLL & (wave_edit->flags)) == 0){
-      return(TRUE);
-    }
-    
-    application_context = ags_application_context_get_instance();
-    
-    composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
-    
-    if(composite_editor->selected_machine == NULL){
-      return(TRUE);
-    }
-
-    hscrollbar_adjustment = gtk_scrollbar_get_adjustment(wave_edit->hscrollbar);
-    
-    /* reset offset */
-    g_object_get(composite_editor->selected_machine->audio,
-		 "output-soundcard", &output_soundcard,
-		 NULL);
-    
-    wave_edit->note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
-    wave_edit->note_offset_absolute = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(output_soundcard));
-
-    /* reset scrollbar */
-    x = ((wave_edit->note_offset * wave_edit->control_width) / (AGS_WAVE_DEFAULT_LENGTH * wave_edit->control_width)) * gtk_adjustment_get_upper(hscrollbar_adjustment);
-    
-    gtk_adjustment_set_value(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar),
-			x);
-
-    g_object_unref(output_soundcard);
-    
-    return(TRUE);
-  }else{
-    return(FALSE);
-  }
-}
-
 void
 ags_wave_edit_reset_vscrollbar(AgsWaveEdit *wave_edit)
 {
@@ -1784,7 +1759,7 @@ ags_wave_edit_draw_position(AgsWaveEdit *wave_edit, cairo_t *cr)
 
   gdouble gui_scale_factor;
   gdouble tact;
-  guint control_width;
+  double zoom_factor;
   double position;
   double x, y;
   double width, height;
@@ -1806,6 +1781,8 @@ ags_wave_edit_draw_position(AgsWaveEdit *wave_edit, cairo_t *cr)
   composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   composite_toolbar = composite_editor->toolbar;
+
+  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) composite_toolbar->zoom));
 
   tact = exp2((double) gtk_combo_box_get_active(composite_toolbar->zoom) - 2.0);
   
@@ -1831,9 +1808,7 @@ ags_wave_edit_draw_position(AgsWaveEdit *wave_edit, cairo_t *cr)
   }
 
   /* get offset and dimensions */
-  control_width = (gint) (gui_scale_factor * (gdouble) AGS_WAVE_EDIT_DEFAULT_CONTROL_WIDTH);
-
-  position = ((double) wave_edit->note_offset) * ((double) control_width);
+  position = ((double) wave_edit->note_offset) * ((double) wave_edit->control_width) / zoom_factor;
   
   y = 0.0;
   x = (position) - (gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar)));

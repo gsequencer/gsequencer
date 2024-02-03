@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -52,6 +52,7 @@ void ags_effect_bulk_get_property(GObject *gobject,
 void ags_effect_bulk_dispose(GObject *gobject);
 void ags_effect_bulk_finalize(GObject *gobject);
 
+gboolean ags_effect_bulk_is_connected(AgsConnectable *connectable);
 void ags_effect_bulk_connect(AgsConnectable *connectable);
 void ags_effect_bulk_disconnect(AgsConnectable *connectable);
 
@@ -153,8 +154,6 @@ enum{
 
 static gpointer ags_effect_bulk_parent_class = NULL;
 static guint effect_bulk_signals[LAST_SIGNAL];
-
-GHashTable *ags_effect_bulk_indicator_refresh = NULL;
 
 GType
 ags_effect_bulk_get_type(void)
@@ -409,10 +408,23 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
 void
 ags_effect_bulk_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_effect_bulk_is_connected;  
   connectable->connect = ags_effect_bulk_connect;
   connectable->disconnect = ags_effect_bulk_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -420,14 +432,12 @@ ags_effect_bulk_init(AgsEffectBulk *effect_bulk)
 {
   GtkBox *hbox;
 
+  AgsApplicationContext *application_context;
+
   gtk_orientable_set_orientation(GTK_ORIENTABLE(effect_bulk),
 				 GTK_ORIENTATION_VERTICAL);
 
-  if(ags_effect_bulk_indicator_refresh == NULL){
-    ags_effect_bulk_indicator_refresh = g_hash_table_new_full(g_direct_hash, g_direct_equal,
-								 NULL,
-								 NULL);
-  }
+  application_context = ags_application_context_get_instance();
   
   effect_bulk->flags = 0;
 
@@ -482,6 +492,9 @@ ags_effect_bulk_init(AgsEffectBulk *effect_bulk)
   effect_bulk->plugin_browser = NULL;
 
   effect_bulk->queued_refresh = NULL;
+  
+  g_signal_connect(application_context, "update-ui",
+		   G_CALLBACK(ags_effect_bulk_update_ui_callback), effect_bulk);
 }
 
 void
@@ -629,9 +642,13 @@ ags_effect_bulk_finalize(GObject *gobject)
 {
   AgsEffectBulk *effect_bulk;
 
+  AgsApplicationContext *application_context;
+
   GList *list;
   
   effect_bulk = (AgsEffectBulk *) gobject;
+
+  application_context = ags_application_context_get_instance();
 
   /* unref audio */
   if(effect_bulk->audio != NULL){
@@ -655,18 +672,33 @@ ags_effect_bulk_finalize(GObject *gobject)
     gtk_window_destroy(GTK_WINDOW(effect_bulk->plugin_browser));
   }
   
-  /* remove of the queued drawing hash */
-  list = effect_bulk->queued_refresh;
+  /* remove of the queued drawing */
+  g_object_disconnect(application_context,
+		      "any_signal::update-ui",
+		      G_CALLBACK(ags_effect_bulk_update_ui_callback),
+		      (gpointer) effect_bulk,
+		      NULL);
 
-  while(list != NULL){
-    g_hash_table_remove(ags_effect_bulk_indicator_refresh,
-			(GDestroyNotify) list->data);
-
-    list = list->next;
-  }
+  g_list_free(effect_bulk->queued_refresh);
+  effect_bulk->queued_refresh = NULL;
   
   /* call parent */  
   G_OBJECT_CLASS(ags_effect_bulk_parent_class)->finalize(gobject);
+}
+
+gboolean
+ags_effect_bulk_is_connected(AgsConnectable *connectable)
+{
+  AgsEffectBulk *effect_bulk;
+  
+  gboolean is_connected;
+  
+  effect_bulk = AGS_EFFECT_BULK(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (effect_bulk->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
 }
 
 void
@@ -679,7 +711,7 @@ ags_effect_bulk_connect(AgsConnectable *connectable)
   
   effect_bulk = AGS_EFFECT_BULK(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (effect_bulk->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -725,7 +757,7 @@ ags_effect_bulk_disconnect(AgsConnectable *connectable)
 
   effect_bulk = AGS_EFFECT_BULK(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (effect_bulk->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -1311,15 +1343,8 @@ ags_effect_bulk_add_ladspa_plugin(AgsEffectBulk *effect_bulk,
 				 control_value);
       }else if(AGS_IS_INDICATOR(child_widget) ||
 	       AGS_IS_LED(child_widget)){
-	g_hash_table_insert(ags_effect_bulk_indicator_refresh,
-			    child_widget, ags_effect_bulk_indicator_refresh_timeout);
-
 	effect_bulk->queued_refresh = g_list_prepend(effect_bulk->queued_refresh,
 						     child_widget);
-
-	g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
-		      (GSourceFunc) ags_effect_bulk_indicator_refresh_timeout,
-		      (gpointer) child_widget);
       }
 
 #ifdef AGS_DEBUG
@@ -1756,11 +1781,8 @@ ags_effect_bulk_add_dssi_plugin(AgsEffectBulk *effect_bulk,
 #endif
       }else if(AGS_IS_INDICATOR(child_widget) ||
 	       AGS_IS_LED(child_widget)){
-	g_hash_table_insert(ags_effect_bulk_indicator_refresh,
-			    child_widget, ags_effect_bulk_indicator_refresh_timeout);
 	effect_bulk->queued_refresh = g_list_prepend(effect_bulk->queued_refresh,
 						     child_widget);
-	g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0, (GSourceFunc) ags_effect_bulk_indicator_refresh_timeout, (gpointer) child_widget);
       }
 
       gtk_widget_set_halign((GtkWidget *) bulk_member,
@@ -2250,15 +2272,8 @@ ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
 				 control_value);
       }else if(AGS_IS_INDICATOR(child_widget) ||
 	       AGS_IS_LED(child_widget)){
-	g_hash_table_insert(ags_effect_bulk_indicator_refresh,
-			    child_widget, ags_effect_bulk_indicator_refresh_timeout);
-
 	effect_bulk->queued_refresh = g_list_prepend(effect_bulk->queued_refresh,
 						     child_widget);
-
-	g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
-		      (GSourceFunc) ags_effect_bulk_indicator_refresh_timeout,
-		      (gpointer) child_widget);
       }
 
 #ifdef AGS_DEBUG
@@ -2683,15 +2698,8 @@ ags_effect_bulk_add_vst3_plugin(AgsEffectBulk *effect_bulk,
 				 control_value);
       }else if(AGS_IS_INDICATOR(child_widget) ||
 	       AGS_IS_LED(child_widget)){
-	g_hash_table_insert(ags_effect_bulk_indicator_refresh,
-			    child_widget, ags_effect_bulk_indicator_refresh_timeout);
-
 	effect_bulk->queued_refresh = g_list_prepend(effect_bulk->queued_refresh,
 						     child_widget);
-
-	g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
-		      (GSourceFunc) ags_effect_bulk_indicator_refresh_timeout,
-		      (gpointer) child_widget);
       }
 
 #ifdef AGS_DEBUG
@@ -3193,8 +3201,8 @@ ags_effect_bulk_real_remove_plugin(AgsEffectBulk *effect_bulk,
       
       if(AGS_IS_INDICATOR(child_widget) ||
 	 AGS_IS_LED(child_widget)){
-	g_hash_table_remove(ags_effect_bulk_indicator_refresh,
-			    child_widget);
+	effect_bulk->queued_refresh = g_list_remove(effect_bulk->queued_refresh,
+						    child_widget);
       }
 
       ags_effect_bulk_remove_bulk_member(effect_bulk,
@@ -3586,88 +3594,6 @@ ags_effect_bulk_refresh_port(AgsEffectBulk *effect_bulk)
   g_signal_emit((GObject *) effect_bulk,
 		effect_bulk_signals[REFRESH_PORT], 0);
   g_object_unref((GObject *) effect_bulk);
-}
-
-/**
- * ags_effect_bulk_indicator_refresh_timeout:
- * @widget: the indicator widgt
- *
- * Queue draw widget
- *
- * Returns: %TRUE if proceed with redraw, otherwise %FALSE
- *
- * Since: 3.0.0
- */
-gboolean
-ags_effect_bulk_indicator_refresh_timeout(GtkWidget *widget)
-{
-  if(g_hash_table_lookup(ags_effect_bulk_indicator_refresh,
-			 widget) != NULL){
-    AgsBulkMember *bulk_member;
-
-    GList *list;
-
-    gdouble val;
-    gboolean is_double;
-    
-    bulk_member = (AgsBulkMember *) gtk_widget_get_ancestor(widget,
-							    AGS_TYPE_BULK_MEMBER);
-
-    list = bulk_member->bulk_port;
-
-    val = 0.0;
-    
-    while(list != NULL){
-      GValue value = {0,};
-
-      GRecMutex *mutex;
-
-      mutex = AGS_PORT_GET_OBJ_MUTEX(AGS_BULK_PORT(list->data)->port);
-      
-      g_rec_mutex_lock(mutex);
-
-      is_double = (AGS_BULK_PORT(list->data)->port->port_value_type == G_TYPE_DOUBLE) ? TRUE: FALSE;
-      
-      g_rec_mutex_unlock(mutex);
-      
-      if(is_double){
-	g_value_init(&value,
-		     G_TYPE_DOUBLE);
-	
-	ags_port_safe_read(AGS_BULK_PORT(list->data)->port,
-			   &value);
-      
-	val += g_value_get_double(&value);
-      }else{
-	g_value_init(&value,
-		     G_TYPE_FLOAT);
-	
-	ags_port_safe_read(AGS_BULK_PORT(list->data)->port,
-			   &value);
-      
-	val += g_value_get_float(&value);
-      }
-      
-      list = list->next;
-    }
-
-    if(AGS_IS_LED(widget)){
-      if(val != 0.0){
-	ags_led_set_active((AgsLed *) widget,
-			   TRUE);
-      }else{
-	ags_led_set_active((AgsLed *) widget,
-			   FALSE);
-      }
-    }else if(AGS_IS_INDICATOR(widget)){
-      gtk_adjustment_set_value(AGS_INDICATOR(widget)->adjustment,
-			       val);
-    }
-        
-    return(TRUE);
-  }
-  
-  return(FALSE);
 }
 
 /**

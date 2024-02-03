@@ -77,7 +77,6 @@ static gpointer ags_audiorec_parent_class = NULL;
 static AgsConnectableInterface *ags_audiorec_parent_connectable_interface;
 
 GHashTable *ags_audiorec_wave_loader_completed = NULL;
-GHashTable *ags_audiorec_indicator_queue_draw = NULL;
 
 struct _AgsAudiorecFastExport
 {
@@ -352,7 +351,7 @@ ags_audiorec_init(AgsAudiorec *audiorec)
   /* dialog */
   audiorec->open_dialog = NULL;
 
-  /* wave_loader */
+  /* wave loader */
   if(ags_audiorec_wave_loader_completed == NULL){
     ags_audiorec_wave_loader_completed = g_hash_table_new_full(g_direct_hash, g_direct_equal,
 							       NULL,
@@ -364,15 +363,8 @@ ags_audiorec_init(AgsAudiorec *audiorec)
   g_timeout_add(1000 / 4, (GSourceFunc) ags_audiorec_wave_loader_completed_timeout, (gpointer) audiorec);
 
   /* indicator */
-  if(ags_audiorec_indicator_queue_draw == NULL){
-    ags_audiorec_indicator_queue_draw = g_hash_table_new_full(g_direct_hash, g_direct_equal,
-							      NULL,
-							      NULL);
-  }
-
-  g_hash_table_insert(ags_audiorec_indicator_queue_draw,
-		      audiorec, ags_audiorec_indicator_queue_draw_timeout);
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0, (GSourceFunc) ags_audiorec_indicator_queue_draw_timeout, (gpointer) audiorec);
+  g_signal_connect(application_context, "update-ui",
+		   G_CALLBACK(ags_audiorec_update_ui_callback), audiorec);
 }
 
 void
@@ -380,12 +372,19 @@ ags_audiorec_finalize(GObject *gobject)
 {
   AgsAudiorec *audiorec;
 
+  AgsApplicationContext *application_context;
+
   audiorec = (AgsAudiorec *) gobject;
 
+  application_context = ags_application_context_get_instance();
+
+  g_object_disconnect(application_context,
+		      "any_signal::update-ui",
+		      G_CALLBACK(ags_audiorec_update_ui_callback),
+		      (gpointer) audiorec,
+		      NULL);
+
   g_hash_table_remove(ags_audiorec_wave_loader_completed,
-		      audiorec);
-  
-  g_hash_table_remove(ags_audiorec_indicator_queue_draw,
 		      audiorec);
   
   /* call parent */
@@ -1120,122 +1119,6 @@ ags_audiorec_wave_loader_completed_timeout(AgsAudiorec *audiorec)
 	}
       }
     }
-    
-    return(TRUE);
-  }else{
-    return(FALSE);
-  }
-}
-
-/**
- * ags_audiorec_indicator_queue_draw_timeout:
- * @audiorec: the #AgsAudiorec
- *
- * Queue draw widget
- *
- * Returns: %TRUE if proceed with redraw, otherwise %FALSE
- *
- * Since: 3.0.0
- */
-gboolean
-ags_audiorec_indicator_queue_draw_timeout(AgsAudiorec *audiorec)
-{
-  if(g_hash_table_lookup(ags_audiorec_indicator_queue_draw,
-			 audiorec) != NULL){
-    AgsAudio *audio;
-    AgsChannel *start_channel;
-    AgsChannel *channel, *next_channel;
-    
-    GList *start_list, *list;
-
-    audio = AGS_MACHINE(audiorec)->audio;
-    g_object_get(audio,
-		 "input", &start_channel,
-		 NULL);
-    
-    list =
-      start_list = ags_audiorec_get_indicator(audiorec);
-    
-    /* check members */
-    channel = start_channel;
-
-    if(channel != NULL){
-      g_object_ref(channel);
-    }
-
-    next_channel = NULL;
-    
-    while(list != NULL){
-      GtkAdjustment *adjustment;
-      GtkWidget *child;
-
-      AgsPort *current;
-
-      GList *start_port;
-      
-      gdouble average_peak;
-      gdouble peak;
-	
-      GValue value = {0,};
-	
-      child = list->data;
-      
-      average_peak = 0.0;
-      
-      start_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
-										  "./peak[0]",
-										  FALSE);
-
-      current = NULL;
-
-      if(start_port != NULL){
-	current = start_port->data;
-      }
-      
-      /* recall port - read value */
-      g_value_init(&value, G_TYPE_FLOAT);
-      ags_port_safe_read(current,
-			 &value);
-      
-      peak = g_value_get_float(&value);
-      g_value_unset(&value);
-
-      /* calculate peak */
-      average_peak += peak;
-      
-      /* apply */
-      g_object_get(child,
-		   "adjustment", &adjustment,
-		   NULL);
-	
-      gtk_adjustment_set_value(adjustment,
-			       10.0 * average_peak);
-
-      /* queue draw */
-      gtk_widget_queue_draw(child);
-
-      g_list_free_full(start_port,
-		       g_object_unref);
-      
-      /* iterate */
-      list = list->next;
-
-      next_channel = ags_channel_next(channel);
-
-      g_object_unref(channel);
-
-      channel = next_channel;
-    }
-
-    if(start_channel != NULL){
-      g_object_unref(start_channel);
-    }
-
-    if(channel != NULL){
-      g_object_unref(channel);
-    }
-    
-    g_list_free(start_list);
     
     return(TRUE);
   }else{

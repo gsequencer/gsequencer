@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -69,8 +69,6 @@ gchar* ags_spectrometer_y_label_func(gdouble value,
 static gpointer ags_spectrometer_parent_class = NULL;
 
 static AgsConnectableInterface *ags_spectrometer_parent_connectable_interface;
-
-GHashTable *ags_spectrometer_cartesian_queue_draw = NULL;
 
 GType
 ags_spectrometer_get_type(void)
@@ -212,12 +210,6 @@ ags_spectrometer_init(AgsSpectrometer *spectrometer)
   g_signal_connect_after(spectrometer, "buffer-size-changed",
 			 G_CALLBACK(ags_spectrometer_buffer_size_changed_callback), NULL);
 
-  if(ags_spectrometer_cartesian_queue_draw == NULL){
-    ags_spectrometer_cartesian_queue_draw = g_hash_table_new_full(g_direct_hash, g_direct_equal,
-								  NULL,
-								  NULL);
-  }
-
   spectrometer->name = NULL;
   spectrometer->xml_type = "ags-spectrometer";
 
@@ -308,10 +300,9 @@ ags_spectrometer_init(AgsSpectrometer *spectrometer)
   ags_audio_buffer_util_clear_double(spectrometer->magnitude, 1,
 				     buffer_size);
   
-  /* queue draw */
-  g_hash_table_insert(ags_spectrometer_cartesian_queue_draw,
-		      cartesian, ags_spectrometer_cartesian_queue_draw_timeout);
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0, (GSourceFunc) ags_spectrometer_cartesian_queue_draw_timeout, (gpointer) cartesian);
+  /* update-ui */
+  g_signal_connect(application_context, "update-ui",
+		   G_CALLBACK(ags_spectrometer_update_ui_callback), spectrometer);
 }
 
 void
@@ -319,10 +310,17 @@ ags_spectrometer_finalize(GObject *gobject)
 {
   AgsSpectrometer *spectrometer;
 
+  AgsApplicationContext *application_context;
+
   spectrometer = (AgsSpectrometer *) gobject;
 
-  g_hash_table_remove(ags_spectrometer_cartesian_queue_draw,
-		      spectrometer->cartesian);
+  application_context = ags_application_context_get_instance();
+
+  g_object_disconnect(application_context,
+		      "any_signal::update-ui",
+		      G_CALLBACK(ags_spectrometer_update_ui_callback),
+		      (gpointer) spectrometer,
+		      NULL);
   
   g_free(spectrometer->magnitude_cache);
   
@@ -723,192 +721,6 @@ ags_spectrometer_fg_plot_alloc(AgsSpectrometer *spectrometer,
   }
   
   return(plot);
-}
-
-/**
- * ags_spectrometer_cartesian_queue_draw_timeout:
- * @widget: the widget
- *
- * Queue draw widget
- *
- * Returns: %TRUE if proceed with redraw, otherwise %FALSE
- *
- * Since: 3.0.0
- */
-gboolean
-ags_spectrometer_cartesian_queue_draw_timeout(GtkWidget *widget)
-{
-  if(g_hash_table_lookup(ags_spectrometer_cartesian_queue_draw,
-			 widget) != NULL){    
-    AgsSpectrometer *spectrometer;
-
-    AgsPort *port;
-    
-    GList *fg_plot;
-    GList *start_recall, *recall;
-
-    guint samplerate;
-    guint buffer_size;
-    guint audio_buffer_size;
-    gdouble correction;
-    gdouble frequency;
-    gdouble gfrequency;
-    double magnitude;
-    guint copy_mode;
-    guint i;
-    guint j;
-    guint k;
-    
-    GValue value = {0,};
-
-    spectrometer = (AgsSpectrometer *) gtk_widget_get_ancestor(widget,
-							       AGS_TYPE_SPECTROMETER);
-
-    samplerate = AGS_MACHINE(spectrometer)->samplerate;
-    buffer_size = AGS_MACHINE(spectrometer)->buffer_size;
-
-    audio_buffer_size = 0;
-    
-    g_object_get(AGS_MACHINE(spectrometer)->audio,
-		 "buffer-size", &audio_buffer_size,
-		 NULL);
-
-    if(buffer_size != audio_buffer_size){
-      return(TRUE);
-    }
-    
-    ags_audio_buffer_util_clear_double(spectrometer->magnitude, 1,
-				       buffer_size);
-
-    copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_DOUBLE;
-
-    /* play context */
-    recall = ags_recall_container_get_recall_channel(spectrometer->analyse_play_container);
-
-    start_recall = g_list_copy(recall);
-    
-    recall = start_recall;
-    
-    while(recall != NULL){
-      /* get magnitude */
-      port = NULL;
-
-      g_object_get(recall->data,
-		   "magnitude", &port,
-		   NULL);
-
-      if(port != NULL){
-	g_value_init(&value, G_TYPE_POINTER);
-	
-	g_value_set_pointer(&value, spectrometer->magnitude_cache);
-	
-	ags_port_safe_read(port, &value);
-	
-	g_value_unset(&value);
-
-	g_object_unref(port);
-      }
-
-      /* copy cache */
-      ags_audio_buffer_util_copy_buffer_to_buffer(spectrometer->magnitude, 1, 0,
-						  spectrometer->magnitude_cache, 1, 0,
-						  buffer_size, copy_mode);
-      
-      recall = recall->next;
-    }
-
-    /* recall context */
-    recall = ags_recall_container_get_recall_channel(spectrometer->analyse_recall_container);
-
-    start_recall = g_list_copy(recall);
-
-    while(recall != NULL){
-      /* get magnitude */
-      port = NULL;
-
-      g_object_get(recall->data,
-		   "magnitude", &port,
-		   NULL);
-
-      if(port != NULL){
-	g_value_init(&value, G_TYPE_POINTER);
-	
-	g_value_set_pointer(&value, spectrometer->magnitude_cache);
-	
-	ags_port_safe_read(port, &value);
-	
-	g_value_unset(&value);
-
-	g_object_unref(port);
-      }
-
-      /* copy cache */
-      ags_audio_buffer_util_copy_buffer_to_buffer(spectrometer->magnitude, 1, 0,
-						  spectrometer->magnitude_cache, 1, 0,
-						  buffer_size, copy_mode);
-      
-      recall = recall->next;
-    }
-    
-    /* plot */
-    fg_plot = spectrometer->fg_plot;
-    
-    correction = (44100.0 - AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE) / (double) AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
-
-    while(fg_plot != NULL){
-      magnitude = 0.0;
-
-      frequency = 0.0;
-      gfrequency = 0.0;
-      
-      for(i = 0, j = 1; i < AGS_SPECTROMETER_PLOT_DEFAULT_POINT_COUNT && j < buffer_size / 2; i++){
-	frequency = (double) j * correction;
-
-	if(AGS_SPECTROMETER_DEFAULT_X_END >= 0.0 &&
-	   AGS_SPECTROMETER_DEFAULT_X_START < 0.0){
-	  gfrequency = (correction / 2.0) * (exp((((double) i) / (gdouble) AGS_SPECTROMETER_PLOT_DEFAULT_POINT_COUNT * ((AGS_SPECTROMETER_DEFAULT_X_END + AGS_SPECTROMETER_DEFAULT_X_START) / AGS_CARTESIAN_DEFAULT_X_STEP_WIDTH)) / 12.0) - 1.0);
-	}else if(AGS_SPECTROMETER_DEFAULT_X_END >= 0.0 &&
-		 AGS_SPECTROMETER_DEFAULT_X_START >= 0.0){
-	  gfrequency = (correction / 2.0) * (exp((((double) i) / (gdouble) AGS_SPECTROMETER_PLOT_DEFAULT_POINT_COUNT * ((AGS_SPECTROMETER_DEFAULT_X_END - AGS_SPECTROMETER_DEFAULT_X_START) / AGS_CARTESIAN_DEFAULT_X_STEP_WIDTH)) / 12.0) - 1.0);
-	}else{
-	  g_message("only positive frequencies allowed");
-	}
-
-	magnitude = 0.0;
-	
-	for(k = 0; j < buffer_size / 2 && frequency < gfrequency; j++, k++){
-	  frequency = (double) j * correction;
-
-	  magnitude += spectrometer->magnitude[j];
-	}
-
-	if(magnitude < 0.0){
-	  magnitude *= -1.0;
-	}
-	
-	if(k != 0){
-	  AGS_PLOT(fg_plot->data)->point[i][1] = 20.0 * log10(((double) magnitude / (double) k) + 1.0) * AGS_SPECTROMETER_EXTRA_SCALE;
-	}else{
-	  AGS_PLOT(fg_plot->data)->point[i][1] = 0.0;
-	}
-
-	if(frequency > samplerate ||
-	   gfrequency > samplerate){
-	  break;
-	}
-      }
-
-      /* iterate */
-      fg_plot = fg_plot->next;
-    }
-        
-    /* queue draw */
-    gtk_widget_queue_draw(widget);
-    
-    return(TRUE);
-  }else{
-    return(FALSE);
-  }
 }
 
 /**
