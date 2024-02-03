@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -38,10 +38,8 @@ G_BEGIN_DECLS
 #define AGS_IS_ENVELOPE_EDITOR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_ENVELOPE_EDITOR))
 #define AGS_ENVELOPE_EDITOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_ENVELOPE_EDITOR, AgsEnvelopeEditorClass))
 
-#define AGS_ENVELOPE_EDITOR_DEFAULT_VERSION "4.0.0"
-#define AGS_ENVELOPE_EDITOR_DEFAULT_BUILD_ID "Tue Mar 01 12:27:51 UTC 2022"
-
-#define AGS_ENVELOPE_EDITOR_SCALE_WIDTH (250)
+#define AGS_ENVELOPE_EDITOR_DEFAULT_VERSION "6.4.2"
+#define AGS_ENVELOPE_EDITOR_DEFAULT_BUILD_ID "Sat Feb  3 10:36:15 UTC 2024"
 
 typedef struct _AgsEnvelopeEditor AgsEnvelopeEditor;
 typedef struct _AgsEnvelopeEditorClass AgsEnvelopeEditorClass;
@@ -70,19 +68,19 @@ struct _AgsEnvelopeEditor
   
   AgsCartesian *cartesian;
   
-  GtkScale *attack_x;
-  GtkScale *attack_y;
+  AgsDial *attack_x;
+  AgsDial *attack_y;
   
-  GtkScale *decay_x;
-  GtkScale *decay_y;
+  AgsDial *decay_x;
+  AgsDial *decay_y;
 
-  GtkScale *sustain_x;
-  GtkScale *sustain_y;
+  AgsDial *sustain_x;
+  AgsDial *sustain_y;
 
-  GtkScale *release_x;
-  GtkScale *release_y;
+  AgsDial *release_x;
+  AgsDial *release_y;
 
-  GtkScale *ratio;
+  AgsDial *ratio;
 };
 
 struct _AgsEnvelopeEditorClass

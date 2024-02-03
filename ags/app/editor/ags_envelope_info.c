@@ -35,9 +35,12 @@ void ags_envelope_info_class_init(AgsEnvelopeInfoClass *envelope_info);
 void ags_envelope_info_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_envelope_info_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_envelope_info_init(AgsEnvelopeInfo *envelope_info);
+void ags_envelope_info_finalize(GObject *gobject);
+
+gboolean ags_envelope_info_is_connected(AgsConnectable *connectable);
 void ags_envelope_info_connect(AgsConnectable *connectable);
 void ags_envelope_info_disconnect(AgsConnectable *connectable);
-void ags_envelope_info_finalize(GObject *gobject);
+
 void ags_envelope_info_set_update(AgsApplicable *applicable, gboolean update);
 void ags_envelope_info_apply(AgsApplicable *applicable);
 void ags_envelope_info_reset(AgsApplicable *applicable);
@@ -126,10 +129,23 @@ ags_envelope_info_class_init(AgsEnvelopeInfoClass *envelope_info)
 void
 ags_envelope_info_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_envelope_info_is_connected;  
   connectable->connect = ags_envelope_info_connect;
   connectable->disconnect = ags_envelope_info_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -159,6 +175,7 @@ ags_envelope_info_init(AgsEnvelopeInfo *envelope_info)
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   envelope_info->flags = 0;
+  envelope_info->connectable_flags = 0;
 
   envelope_info->version = AGS_ENVELOPE_INFO_DEFAULT_VERSION;
   envelope_info->build_id = AGS_ENVELOPE_INFO_DEFAULT_BUILD_ID;
@@ -261,34 +278,6 @@ ags_envelope_info_init(AgsEnvelopeInfo *envelope_info)
 }
 
 void
-ags_envelope_info_connect(AgsConnectable *connectable)
-{
-  AgsEnvelopeInfo *envelope_info;
-
-  envelope_info = AGS_ENVELOPE_INFO(connectable);
-
-  if((AGS_ENVELOPE_INFO_CONNECTED & (envelope_info->flags)) != 0){
-    return;
-  }
-
-  envelope_info->flags |= AGS_ENVELOPE_INFO_CONNECTED;
-}
-
-void
-ags_envelope_info_disconnect(AgsConnectable *connectable)
-{
-  AgsEnvelopeInfo *envelope_info;
-
-  envelope_info = AGS_ENVELOPE_INFO(connectable);
-
-  if((AGS_ENVELOPE_INFO_CONNECTED & (envelope_info->flags)) == 0){
-    return;
-  }
-
-  envelope_info->flags &= (~AGS_ENVELOPE_INFO_CONNECTED);
-}
-
-void
 ags_envelope_info_finalize(GObject *gobject)
 {
   AgsEnvelopeInfo *envelope_info;
@@ -302,6 +291,49 @@ ags_envelope_info_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_envelope_info_parent_class)->finalize(gobject);
+}
+
+gboolean
+ags_envelope_info_is_connected(AgsConnectable *connectable)
+{
+  AgsEnvelopeInfo *envelope_info;
+  
+  gboolean is_connected;
+  
+  envelope_info = AGS_ENVELOPE_INFO(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (envelope_info->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
+}
+
+void
+ags_envelope_info_connect(AgsConnectable *connectable)
+{
+  AgsEnvelopeInfo *envelope_info;
+
+  envelope_info = AGS_ENVELOPE_INFO(connectable);
+
+  if(ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  envelope_info->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+}
+
+void
+ags_envelope_info_disconnect(AgsConnectable *connectable)
+{
+  AgsEnvelopeInfo *envelope_info;
+
+  envelope_info = AGS_ENVELOPE_INFO(connectable);
+
+  if(!ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  envelope_info->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 }
 
 void

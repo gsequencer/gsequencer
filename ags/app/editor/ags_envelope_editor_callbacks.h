@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -44,19 +44,19 @@ void ags_envelope_editor_preset_remove_callback(GtkWidget *button,
 void ags_envelope_editor_preset_rename_response_callback(GtkWidget *widget, gint response,
 							 AgsEnvelopeEditor *envelope_editor);
 
-void ags_envelope_editor_attack_x_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor);
-void ags_envelope_editor_attack_y_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor);
+void ags_envelope_editor_attack_x_callback(GtkWidget *dial, AgsEnvelopeEditor *envelope_editor);
+void ags_envelope_editor_attack_y_callback(GtkWidget *dial, AgsEnvelopeEditor *envelope_editor);
 
-void ags_envelope_editor_decay_x_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor);
-void ags_envelope_editor_decay_y_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor);
+void ags_envelope_editor_decay_x_callback(GtkWidget *dial, AgsEnvelopeEditor *envelope_editor);
+void ags_envelope_editor_decay_y_callback(GtkWidget *dial, AgsEnvelopeEditor *envelope_editor);
 
-void ags_envelope_editor_sustain_x_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor);
-void ags_envelope_editor_sustain_y_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor);
+void ags_envelope_editor_sustain_x_callback(GtkWidget *dial, AgsEnvelopeEditor *envelope_editor);
+void ags_envelope_editor_sustain_y_callback(GtkWidget *dial, AgsEnvelopeEditor *envelope_editor);
 
-void ags_envelope_editor_release_x_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor);
-void ags_envelope_editor_release_y_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor);
+void ags_envelope_editor_release_x_callback(GtkWidget *dial, AgsEnvelopeEditor *envelope_editor);
+void ags_envelope_editor_release_y_callback(GtkWidget *dial, AgsEnvelopeEditor *envelope_editor);
 
-void ags_envelope_editor_ratio_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor);
+void ags_envelope_editor_ratio_callback(GtkWidget *dial, AgsEnvelopeEditor *envelope_editor);
 
 G_END_DECLS
 

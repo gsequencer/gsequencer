@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -37,9 +37,12 @@ void ags_pattern_envelope_class_init(AgsPatternEnvelopeClass *pattern_envelope);
 void ags_pattern_envelope_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_pattern_envelope_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope);
+void ags_pattern_envelope_finalize(GObject *gobject);
+
+gboolean ags_pattern_envelope_is_connected(AgsConnectable *connectable);
 void ags_pattern_envelope_connect(AgsConnectable *connectable);
 void ags_pattern_envelope_disconnect(AgsConnectable *connectable);
-void ags_pattern_envelope_finalize(GObject *gobject);
+
 void ags_pattern_envelope_set_update(AgsApplicable *applicable, gboolean update);
 void ags_pattern_envelope_apply(AgsApplicable *applicable);
 void ags_pattern_envelope_reset(AgsApplicable *applicable);
@@ -128,10 +131,23 @@ ags_pattern_envelope_class_init(AgsPatternEnvelopeClass *pattern_envelope)
 void
 ags_pattern_envelope_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_pattern_envelope_is_connected;  
   connectable->connect = ags_pattern_envelope_connect;
   connectable->disconnect = ags_pattern_envelope_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -683,17 +699,39 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 }
 
 void
+ags_pattern_envelope_finalize(GObject *gobject)
+{
+  /* call parent */
+  G_OBJECT_CLASS(ags_pattern_envelope_parent_class)->finalize(gobject);
+}
+
+gboolean
+ags_pattern_envelope_is_connected(AgsConnectable *connectable)
+{
+  AgsPatternEnvelope *pattern_envelope;
+  
+  gboolean is_connected;
+  
+  pattern_envelope = AGS_PATTERN_ENVELOPE(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (pattern_envelope->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
+}
+
+void
 ags_pattern_envelope_connect(AgsConnectable *connectable)
 {
   AgsPatternEnvelope *pattern_envelope;
 
   pattern_envelope = AGS_PATTERN_ENVELOPE(connectable);
 
-  if((AGS_PATTERN_ENVELOPE_CONNECTED & (pattern_envelope->flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
-  pattern_envelope->flags |= AGS_PATTERN_ENVELOPE_CONNECTED;
+  pattern_envelope->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
   /* audio channel start/end */
   g_signal_connect((GObject *) pattern_envelope->audio_channel_start, "value-changed",
@@ -771,11 +809,11 @@ ags_pattern_envelope_disconnect(AgsConnectable *connectable)
 
   pattern_envelope = AGS_PATTERN_ENVELOPE(connectable);
 
-  if((AGS_PATTERN_ENVELOPE_CONNECTED & (pattern_envelope->flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
-  pattern_envelope->flags &= (~AGS_PATTERN_ENVELOPE_CONNECTED);
+  pattern_envelope->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   /* audio channel start/end */
   g_object_disconnect((GObject *) pattern_envelope->audio_channel_start,
@@ -898,13 +936,6 @@ ags_pattern_envelope_disconnect(AgsConnectable *connectable)
 		      G_CALLBACK(ags_pattern_envelope_preset_remove_callback),
 		      (gpointer) pattern_envelope,
 		      NULL);
-}
-
-void
-ags_pattern_envelope_finalize(GObject *gobject)
-{
-  /* call parent */
-  G_OBJECT_CLASS(ags_pattern_envelope_parent_class)->finalize(gobject);
 }
 
 void
