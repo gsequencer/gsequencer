@@ -88,19 +88,19 @@ struct _AgsPatternEnvelope
   GtkSpinButton *x_start;
   GtkSpinButton *x_end;
   
-  GtkScale *attack_x;
-  GtkScale *attack_y;
+  AgsDial *attack_x;
+  AgsDial *attack_y;
   
-  GtkScale *decay_x;
-  GtkScale *decay_y;
+  AgsDial *decay_x;
+  AgsDial *decay_y;
 
-  GtkScale *sustain_x;
-  GtkScale *sustain_y;
+  AgsDial *sustain_x;
+  AgsDial *sustain_y;
 
-  GtkScale *release_x;
-  GtkScale *release_y;
+  AgsDial *release_x;
+  AgsDial *release_y;
 
-  GtkScale *ratio;
+  AgsDial *ratio;
 
   GtkDialog *rename;
   

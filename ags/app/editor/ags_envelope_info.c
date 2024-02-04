@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -173,6 +173,14 @@ ags_envelope_info_init(AgsEnvelopeInfo *envelope_info)
 
   gtk_box_set_spacing((GtkBox *) envelope_info,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_widget_set_vexpand((GtkWidget *) envelope_info,
+			 TRUE);
+  gtk_widget_set_hexpand((GtkWidget *) envelope_info,
+			 TRUE);
+
+  gtk_widget_set_valign((GtkWidget *) envelope_info,
+			GTK_ALIGN_START);
 
   envelope_info->flags = 0;
   envelope_info->connectable_flags = 0;

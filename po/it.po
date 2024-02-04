@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-02-03 13:19+0100\n"
+"POT-Creation-Date: 2024-02-04 19:19+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -114,8 +114,8 @@ msgid "envelope"
 msgstr ""
 
 #: ags/app/ags_machine_callbacks.c:1041
-#: ags/app/editor/ags_pattern_envelope.c:267
-#: ags/app/editor/ags_envelope_editor.c:196
+#: ags/app/editor/ags_pattern_envelope.c:276
+#: ags/app/editor/ags_envelope_editor.c:205
 #: ags/app/machine/ags_live_lv2_bridge.c:498
 #: ags/app/machine/ags_lv2_bridge.c:486 ags/app/machine/ags_sf2_synth.c:443
 #: ags/app/machine/ags_ffplayer.c:364
@@ -273,7 +273,7 @@ msgid "_Open"
 msgstr ""
 
 #: ags/app/ags_pcm_file_chooser_dialog.c:158
-#: ags/app/editor/ags_envelope_info.c:242
+#: ags/app/editor/ags_envelope_info.c:250
 msgid "audio channel"
 msgstr ""
 
@@ -379,7 +379,7 @@ msgid "_Apply"
 msgstr ""
 
 #: ags/app/export/ags_machine_mapper.c:180
-#: ags/app/editor/ags_envelope_editor.c:188 ags/app/ags_resize_editor.c:135
+#: ags/app/editor/ags_envelope_editor.c:197 ags/app/ags_resize_editor.c:135
 #: ags/app/machine/ags_sfz_synth.c:806 ags/app/machine/ags_sfz_synth.c:960
 #: ags/app/machine/ags_sfz_synth.c:1114 ags/app/machine/ags_pitch_sampler.c:393
 #: ags/app/machine/ags_pitch_sampler.c:528 ags/app/machine/ags_sf2_synth.c:854
@@ -410,14 +410,14 @@ msgstr ""
 msgid "MIDI card"
 msgstr ""
 
-#: ags/app/ags_sequencer_editor.c:259 ags/app/editor/ags_pattern_envelope.c:691
-#: ags/app/editor/ags_envelope_editor.c:209 ags/app/ags_soundcard_editor.c:291
+#: ags/app/ags_sequencer_editor.c:259 ags/app/editor/ags_pattern_envelope.c:819
+#: ags/app/editor/ags_envelope_editor.c:218 ags/app/ags_soundcard_editor.c:291
 msgid "_Add"
 msgstr ""
 
 #: ags/app/ags_sequencer_editor.c:263 ags/app/ags_sequencer_editor.c:268
-#: ags/app/editor/ags_pattern_envelope.c:696
-#: ags/app/editor/ags_envelope_editor.c:213 ags/app/ags_soundcard_editor.c:295
+#: ags/app/editor/ags_pattern_envelope.c:824
+#: ags/app/editor/ags_envelope_editor.c:222 ags/app/ags_soundcard_editor.c:295
 #: ags/app/ags_soundcard_editor.c:648
 msgid "_Remove"
 msgstr ""
@@ -482,20 +482,20 @@ msgstr ""
 msgid "G#"
 msgstr ""
 
-#: ags/app/editor/ags_envelope_info.c:235
-#: ags/app/editor/ags_pattern_envelope.c:260
+#: ags/app/editor/ags_envelope_info.c:243
+#: ags/app/editor/ags_pattern_envelope.c:269
 msgid "plot"
 msgstr ""
 
-#: ags/app/editor/ags_envelope_info.c:249
+#: ags/app/editor/ags_envelope_info.c:257
 msgid "Note:x0"
 msgstr ""
 
-#: ags/app/editor/ags_envelope_info.c:256
+#: ags/app/editor/ags_envelope_info.c:264
 msgid "Note:x1"
 msgstr ""
 
-#: ags/app/editor/ags_envelope_info.c:263
+#: ags/app/editor/ags_envelope_info.c:271
 msgid "Note:y"
 msgstr ""
 
@@ -846,7 +846,7 @@ msgid "current acceleration: "
 msgstr ""
 
 #: ags/app/editor/ags_automation_meta.c:595
-#: ags/app/editor/ags_pattern_envelope.c:253
+#: ags/app/editor/ags_pattern_envelope.c:262
 #: ags/app/editor/ags_notation_meta.c:486
 #: ags/app/machine/ags_drum_input_pad.c:163
 msgid "edit"
@@ -884,68 +884,68 @@ msgstr ""
 msgid "select x1"
 msgstr ""
 
-#: ags/app/editor/ags_pattern_envelope.c:274
-#: ags/app/editor/ags_pattern_envelope.c:348
+#: ags/app/editor/ags_pattern_envelope.c:283
+#: ags/app/editor/ags_pattern_envelope.c:357
 msgid "audio channel start"
 msgstr ""
 
-#: ags/app/editor/ags_pattern_envelope.c:281
-#: ags/app/editor/ags_pattern_envelope.c:369
+#: ags/app/editor/ags_pattern_envelope.c:290
+#: ags/app/editor/ags_pattern_envelope.c:378
 msgid "audio channel end"
 msgstr ""
 
-#: ags/app/editor/ags_pattern_envelope.c:288
-#: ags/app/editor/ags_pattern_envelope.c:390
+#: ags/app/editor/ags_pattern_envelope.c:297
+#: ags/app/editor/ags_pattern_envelope.c:399
 msgid "pad start"
 msgstr ""
 
-#: ags/app/editor/ags_pattern_envelope.c:295
-#: ags/app/editor/ags_pattern_envelope.c:411
+#: ags/app/editor/ags_pattern_envelope.c:304
+#: ags/app/editor/ags_pattern_envelope.c:420
 msgid "pad end"
 msgstr ""
 
-#: ags/app/editor/ags_pattern_envelope.c:302
-#: ags/app/editor/ags_pattern_envelope.c:432
+#: ags/app/editor/ags_pattern_envelope.c:311
+#: ags/app/editor/ags_pattern_envelope.c:441
 msgid "x start"
 msgstr ""
 
-#: ags/app/editor/ags_pattern_envelope.c:309
-#: ags/app/editor/ags_pattern_envelope.c:453
+#: ags/app/editor/ags_pattern_envelope.c:318
+#: ags/app/editor/ags_pattern_envelope.c:462
 msgid "x end"
 msgstr ""
 
-#: ags/app/editor/ags_pattern_envelope.c:481
-#: ags/app/editor/ags_envelope_editor.c:320
+#: ags/app/editor/ags_pattern_envelope.c:521
+#: ags/app/editor/ags_envelope_editor.c:344
 #: ags/app/machine/ags_oscillator.c:236 ags/app/machine/ags_fm_oscillator.c:237
 msgid "attack"
 msgstr ""
 
-#: ags/app/editor/ags_pattern_envelope.c:523
-#: ags/app/editor/ags_envelope_editor.c:388
+#: ags/app/editor/ags_pattern_envelope.c:589
+#: ags/app/editor/ags_envelope_editor.c:412
 msgid "decay"
 msgstr ""
 
-#: ags/app/editor/ags_pattern_envelope.c:565
-#: ags/app/editor/ags_envelope_editor.c:442
+#: ags/app/editor/ags_pattern_envelope.c:643
+#: ags/app/editor/ags_envelope_editor.c:466
 msgid "sustain"
 msgstr ""
 
-#: ags/app/editor/ags_pattern_envelope.c:607
-#: ags/app/editor/ags_envelope_editor.c:496
+#: ags/app/editor/ags_pattern_envelope.c:697
+#: ags/app/editor/ags_envelope_editor.c:520
 msgid "release"
 msgstr ""
 
-#: ags/app/editor/ags_pattern_envelope.c:649
-#: ags/app/editor/ags_envelope_editor.c:550
+#: ags/app/editor/ags_pattern_envelope.c:751
+#: ags/app/editor/ags_envelope_editor.c:574
 #: ags/app/machine/ags_sfz_synth.c:1381 ags/app/machine/ags_sf2_synth.c:1429
 msgid "ratio"
 msgstr ""
 
-#: ags/app/editor/ags_pattern_envelope.c:681
+#: ags/app/editor/ags_pattern_envelope.c:809
 msgid "move up"
 msgstr ""
 
-#: ags/app/editor/ags_pattern_envelope.c:686
+#: ags/app/editor/ags_pattern_envelope.c:814
 msgid "move down"
 msgstr ""
 
