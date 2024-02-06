@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -45,10 +45,6 @@ typedef struct _AgsEnvelopeInfo AgsEnvelopeInfo;
 typedef struct _AgsEnvelopeInfoClass AgsEnvelopeInfoClass;
 
 typedef enum{
-  AGS_ENVELOPE_INFO_CONNECTED      = 1,
-}AgsEnvelopeInfoFlags;
-
-typedef enum{
   AGS_ENVELOPE_INFO_COLUMN_PLOT,
   AGS_ENVELOPE_INFO_COLUMN_AUDIO_CHANNEL,
   AGS_ENVELOPE_INFO_COLUMN_NOTE_X0,
@@ -62,7 +58,8 @@ struct _AgsEnvelopeInfo
   GtkBox box;
 
   guint flags;
-
+  guint connectable_flags;
+  
   gchar *version;
   gchar *build_id;
 
