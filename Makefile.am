@@ -558,7 +558,6 @@ devdocimages = \
 userdocimages = \
 	docs/images/ags_audiorec.png \
 	docs/images/ags_automation_edit.png \
-	docs/images/ags-automation-toolbar.png \
 	docs/images/ags_equalizer10.png \
 	docs/images/ags_export_window.png \
 	docs/images/ags_hybrid_fm_synth.png \
