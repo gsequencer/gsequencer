@@ -392,7 +392,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   envelope_editor->attack_y = ags_dial_new();
 
   gtk_adjustment_set_lower(envelope_editor->attack_y->adjustment,
-			   0.0);
+			   -1.0);
   gtk_adjustment_set_upper(envelope_editor->attack_y->adjustment,
 			   1.0);
   
@@ -446,7 +446,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   envelope_editor->decay_y = ags_dial_new();
 
   gtk_adjustment_set_lower(envelope_editor->decay_y->adjustment,
-			   0.0);
+			   -1.0);
   gtk_adjustment_set_upper(envelope_editor->decay_y->adjustment,
 			   1.0);
   
@@ -500,7 +500,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   envelope_editor->sustain_y = ags_dial_new();
 
   gtk_adjustment_set_lower(envelope_editor->sustain_y->adjustment,
-			   0.0);
+			   -1.0);
   gtk_adjustment_set_upper(envelope_editor->sustain_y->adjustment,
 			   1.0);
   
@@ -554,7 +554,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   envelope_editor->release_y = ags_dial_new();
 
   gtk_adjustment_set_lower(envelope_editor->release_y->adjustment,
-			   0.0);
+			   -1.0);
   gtk_adjustment_set_upper(envelope_editor->release_y->adjustment,
 			   1.0);
   
@@ -604,7 +604,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   envelope_editor->ratio = ags_dial_new();
 
   gtk_adjustment_set_lower(envelope_editor->ratio->adjustment,
-			   0.0);
+			   -1.0);
   gtk_adjustment_set_upper(envelope_editor->ratio->adjustment,
 			   1.0);
   

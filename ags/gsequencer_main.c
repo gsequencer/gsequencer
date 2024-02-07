@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -53,8 +53,12 @@
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
 
+#include <glib.h>
+
 #if defined(AGS_OSX_DMG_ENV)
 #include <Foundation/Foundation.h>
+
+#include <uuid/uuid.h>
 #endif
 
 #include <stdbool.h>
@@ -84,6 +88,92 @@
 #endif
 
 #include <ags/i18n.h>
+
+void install_data();
+
+void
+install_data()
+{
+#if defined(AGS_OSX_DMG_ENV)
+  struct passwd *pw;
+
+  gchar *music_path;
+  gchar *app_dir;
+  gchar *default_path;
+  gchar *default_filename, *template_default_filename;
+  gchar *default_dirs_mkdir_cmd;
+  gchar *default_file_cp_cmd;
+  gchar *default_file_sed_cmd;
+  gchar *free_sounds_cp_cmd;
+  
+  uid_t uid;
+
+  GError *error;
+  
+  music_path = NULL;
+  app_dir = NULL;
+
+  uid = getuid();
+  pw = getpwuid(uid);
+
+  app_dir = [[NSBundle mainBundle] bundlePath].UTF8String;
+
+  music_path = [[NSSearchPathForDirectoriesInDomains(NSMusicDirectory, NSUserDomainMask, YES) objectAtIndex:0] UTF8String];
+
+  default_path = g_strdup_printf("%s%s",
+				 music_path,
+				 "/GSequencer/workspace/default");
+
+  default_filename = g_strdup_printf("%s%s",
+				     default_path,
+				     "/gsequencer-default.xml");
+  
+  template_default_filename = g_strdup_printf("%s%s",
+					      app_dir,
+					      "/Contents/Resources/gsequencer-default.xml");
+
+  default_dirs_mkdir_cmd = g_strdup_printf("mkdir -p %s/GSequencer/workspace/default",
+					   music_path);
+
+  default_file_cp_cmd = g_strdup_printf("cp -v %s/Contents/Resources/gsequencer-default.xml.in %s/GSequencer/workspace/default/gsequencer-default.xml",
+					 app_dir,
+					 music_path);
+  
+  default_file_sed_cmd = g_strdup_printf("sed -i '' 's,@MUSIC_DIR@,%s,g' %s/GSequencer/workspace/default/gsequencer-default.xml",
+					 music_path);
+  free_sounds_cp_cmd = g_strdup_printf("cp -rv %s/Contents/Resources/free-sounds %s/GSequencer",
+				       app_dir,
+				       music_path);
+
+  error = NULL;
+  g_spawn_command_line_sync(default_dirs_mkdir_cmd,
+			    NULL,
+			    NULL,
+			    NULL,
+			    &error);
+  
+  error = NULL;
+  g_spawn_command_line_sync(default_file_cp_cmd,
+			    NULL,
+			    NULL,
+			    NULL,
+			    &error);
+  
+  error = NULL;
+  g_spawn_command_line_sync(default_file_sed_cmd,
+			    NULL,
+			    NULL,
+			    NULL,
+			    &error);
+  
+  error = NULL;
+  g_spawn_command_line_sync(free_sounds_cp_cmd,
+			    NULL,
+			    NULL,
+			    NULL,
+			    &error);
+#endif
+}
 
 int
 main(int argc, char **argv)
@@ -667,6 +757,7 @@ main(int argc, char **argv)
 	
 	app_dir = [[NSBundle mainBundle] bundlePath].UTF8String;
 
+#if 0
 	macos_install_cmd = g_strdup_printf("%s/Contents/MacOS/gsequencer_macos_install",
 					    app_dir);
 
@@ -676,6 +767,9 @@ main(int argc, char **argv)
 				  NULL,
 				  NULL,
 				  &error);
+#else
+	install_data();
+#endif
       }
       
       AGS_WINDOW(window)->filename = default_filename;

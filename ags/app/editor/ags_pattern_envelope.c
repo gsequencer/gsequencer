@@ -569,7 +569,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   pattern_envelope->attack_y = ags_dial_new();
 
   gtk_adjustment_set_lower(pattern_envelope->attack_y->adjustment,
-			   0.0);
+			   -1.0);
   gtk_adjustment_set_upper(pattern_envelope->attack_y->adjustment,
 			   1.0);
   
@@ -623,7 +623,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   pattern_envelope->decay_y = ags_dial_new();
 
   gtk_adjustment_set_lower(pattern_envelope->decay_y->adjustment,
-			   0.0);
+			   -1.0);
   gtk_adjustment_set_upper(pattern_envelope->decay_y->adjustment,
 			   1.0);
   
@@ -677,7 +677,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   pattern_envelope->sustain_y = ags_dial_new();
 
   gtk_adjustment_set_lower(pattern_envelope->sustain_y->adjustment,
-			   0.0);
+			   -1.0);
   gtk_adjustment_set_upper(pattern_envelope->sustain_y->adjustment,
 			   1.0);
   
@@ -731,7 +731,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   pattern_envelope->release_y = ags_dial_new();
 
   gtk_adjustment_set_lower(pattern_envelope->release_y->adjustment,
-			   0.0);
+			   -1.0);
   gtk_adjustment_set_upper(pattern_envelope->release_y->adjustment,
 			   1.0);
   
@@ -781,7 +781,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   pattern_envelope->ratio = ags_dial_new();
 
   gtk_adjustment_set_lower(pattern_envelope->ratio->adjustment,
-			   0.0);
+			   -1.0);
   gtk_adjustment_set_upper(pattern_envelope->ratio->adjustment,
 			   1.0);
   
