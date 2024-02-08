@@ -1,3 +1,10 @@
+ags (6.4.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* updated user manual images
+	* improved AgsEnvelopeEditor and AgsPatternEnvelope to allow negative y-values for attack, sustain, decay, release and ratio
+	* minor improvements
+
 ags (6.4.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
