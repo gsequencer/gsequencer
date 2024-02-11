@@ -46,6 +46,17 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="6.5.0" date="2024-02-11">
+      <description>
+	<p>
+	  Fixed selection of notation, automation and wave edit.
+	</p>
+	<p>
+	  Improved composite toolbar's tool dialogs.
+	</p>
+      </description>
+    </release>
+
     <release version="6.4.0" date="2024-02-03">
       <description>
 	<p>
