@@ -190,6 +190,9 @@ ags_window_init(AgsWindow *window)
   g_signal_connect(application_context, "setup-completed",
 		   G_CALLBACK(ags_window_setup_completed_callback), window);
 
+  ags_ui_provider_set_window(AGS_UI_PROVIDER(application_context),
+			     window);
+
   gsequencer_app = ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context));
   gsequencer_app = G_APPLICATION(gsequencer_app);
 
@@ -369,6 +372,10 @@ ags_window_init(AgsWindow *window)
 				    "homogeneous", FALSE,
 				    "spacing", 0,
 				    NULL);
+
+  ags_ui_provider_set_navigation(AGS_UI_PROVIDER(application_context),
+				 window->navigation);
+  
   gtk_box_append(vbox,
 		 (GtkWidget *) window->navigation);
   

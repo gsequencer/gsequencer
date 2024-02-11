@@ -2414,11 +2414,12 @@ ags_wave_find_region(AgsWave *wave,
   wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
 
   if(x0 > x1){
-    guint tmp;
+    guint tmp_x;
 
-    tmp = x1;
-    x1 = x0;
+    tmp_x = x0;
+
     x0 = x1;
+    x1 = tmp_x;
   }
   
   /* find buffer */

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -31,8 +31,11 @@ void ags_crop_note_dialog_connectable_interface_init(AgsConnectableInterface *co
 void ags_crop_note_dialog_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_crop_note_dialog_init(AgsCropNoteDialog *crop_note_dialog);
 void ags_crop_note_dialog_finalize(GObject *gobject);
+
+gboolean ags_crop_note_dialog_is_connected(AgsConnectable *connectable);
 void ags_crop_note_dialog_connect(AgsConnectable *connectable);
 void ags_crop_note_dialog_disconnect(AgsConnectable *connectable);
+
 void ags_crop_note_dialog_set_update(AgsApplicable *applicable, gboolean update);
 void ags_crop_note_dialog_apply(AgsApplicable *applicable);
 void ags_crop_note_dialog_reset(AgsApplicable *applicable);
@@ -115,10 +118,23 @@ ags_crop_note_dialog_class_init(AgsCropNoteDialogClass *crop_note_dialog)
 void
 ags_crop_note_dialog_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_crop_note_dialog_is_connected;  
   connectable->connect = ags_crop_note_dialog_connect;
   connectable->disconnect = ags_crop_note_dialog_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -136,6 +152,10 @@ ags_crop_note_dialog_init(AgsCropNoteDialog *crop_note_dialog)
   GtkBox *hbox;
   GtkLabel *label;
 
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+
   crop_note_dialog->connectable_flags = 0;
 
   g_object_set(crop_note_dialog,
@@ -146,7 +166,7 @@ ags_crop_note_dialog_init(AgsCropNoteDialog *crop_note_dialog)
 			       TRUE);
   
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) crop_note_dialog),
 		 GTK_WIDGET(vbox));  
 
@@ -169,7 +189,7 @@ ags_crop_note_dialog_init(AgsCropNoteDialog *crop_note_dialog)
 
   /* crop note - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append(vbox,
 		 GTK_WIDGET(hbox));
 
@@ -189,7 +209,7 @@ ags_crop_note_dialog_init(AgsCropNoteDialog *crop_note_dialog)
 
   /* padding note - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append(vbox,
 		 GTK_WIDGET(hbox));
 
@@ -216,13 +236,38 @@ ags_crop_note_dialog_init(AgsCropNoteDialog *crop_note_dialog)
 }
 
 void
+ags_crop_note_dialog_finalize(GObject *gobject)
+{
+  AgsCropNoteDialog *crop_note_dialog;
+
+  crop_note_dialog = (AgsCropNoteDialog *) gobject;
+  
+  G_OBJECT_CLASS(ags_crop_note_dialog_parent_class)->finalize(gobject);
+}
+
+gboolean
+ags_crop_note_dialog_is_connected(AgsConnectable *connectable)
+{
+  AgsCropNoteDialog *crop_note_dialog;
+  
+  gboolean is_connected;
+  
+  crop_note_dialog = AGS_CROP_NOTE_DIALOG(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (crop_note_dialog->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
+}
+
+void
 ags_crop_note_dialog_connect(AgsConnectable *connectable)
 {
   AgsCropNoteDialog *crop_note_dialog;
 
   crop_note_dialog = AGS_CROP_NOTE_DIALOG(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (crop_note_dialog->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -243,7 +288,7 @@ ags_crop_note_dialog_disconnect(AgsConnectable *connectable)
 
   crop_note_dialog = AGS_CROP_NOTE_DIALOG(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (crop_note_dialog->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -261,16 +306,6 @@ ags_crop_note_dialog_disconnect(AgsConnectable *connectable)
 		      G_CALLBACK(ags_crop_note_dialog_absolute_callback),
 		      crop_note_dialog,
 		      NULL);
-}
-
-void
-ags_crop_note_dialog_finalize(GObject *gobject)
-{
-  AgsCropNoteDialog *crop_note_dialog;
-
-  crop_note_dialog = (AgsCropNoteDialog *) gobject;
-  
-  G_OBJECT_CLASS(ags_crop_note_dialog_parent_class)->finalize(gobject);
 }
 
 void
@@ -387,6 +422,7 @@ ags_crop_note_dialog_reset(AgsApplicable *applicable)
 
 /**
  * ags_crop_note_dialog_new:
+ * @transient_for: the transient #AgsWindow
  *
  * Create a new #AgsCropNoteDialog.
  *
@@ -395,11 +431,12 @@ ags_crop_note_dialog_reset(AgsApplicable *applicable)
  * Since: 3.0.0
  */
 AgsCropNoteDialog*
-ags_crop_note_dialog_new()
+ags_crop_note_dialog_new(GtkWindow *transient_for)
 {
   AgsCropNoteDialog *crop_note_dialog;
 
   crop_note_dialog = (AgsCropNoteDialog *) g_object_new(AGS_TYPE_CROP_NOTE_DIALOG,
+							"transient-for", transient_for,
 							NULL);
 
   return(crop_note_dialog);

@@ -62,7 +62,7 @@ gchar* ags_config_real_get_value(AgsConfig *config, gchar *group, gchar *key);
 
 /**
  * SECTION:ags_config
- * @short_description: Config Advanced Gtk+ Sequencer
+ * @short_description: config settings of Advanced Gtk+ Sequencer
  * @title: AgsConfig
  * @section_id:
  * @include: ags/object/ags_config.h

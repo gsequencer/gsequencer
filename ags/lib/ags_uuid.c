@@ -26,7 +26,7 @@
 
 /**
  * SECTION:ags_uuid
- * @short_description: Boxed type of uuid
+ * @short_description: boxed type of uuid
  * @title: AgsUUID
  * @section_id:
  * @include: ags/lib/ags_uuid.h

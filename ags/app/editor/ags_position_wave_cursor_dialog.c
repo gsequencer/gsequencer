@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,6 +36,7 @@ void ags_position_wave_cursor_dialog_applicable_interface_init(AgsApplicableInte
 void ags_position_wave_cursor_dialog_init(AgsPositionWaveCursorDialog *position_wave_cursor_dialog);
 void ags_position_wave_cursor_dialog_finalize(GObject *gobject);
 
+gboolean ags_position_wave_cursor_dialog_is_connected(AgsConnectable *connectable);
 void ags_position_wave_cursor_dialog_connect(AgsConnectable *connectable);
 void ags_position_wave_cursor_dialog_disconnect(AgsConnectable *connectable);
 
@@ -121,10 +122,23 @@ ags_position_wave_cursor_dialog_class_init(AgsPositionWaveCursorDialogClass *pos
 void
 ags_position_wave_cursor_dialog_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_position_wave_cursor_dialog_is_connected;  
   connectable->connect = ags_position_wave_cursor_dialog_connect;
   connectable->disconnect = ags_position_wave_cursor_dialog_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -142,6 +156,10 @@ ags_position_wave_cursor_dialog_init(AgsPositionWaveCursorDialog *position_wave_
   GtkBox *hbox;
   GtkLabel *label;
 
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+
   position_wave_cursor_dialog->connectable_flags = 0;
 
   g_object_set(position_wave_cursor_dialog,
@@ -152,7 +170,7 @@ ags_position_wave_cursor_dialog_init(AgsPositionWaveCursorDialog *position_wave_
 			       TRUE);
   
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) position_wave_cursor_dialog),
 		 (GtkWidget *) vbox);
 
@@ -165,7 +183,7 @@ ags_position_wave_cursor_dialog_init(AgsPositionWaveCursorDialog *position_wave_
 
   /* position x - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append(vbox,
 		 GTK_WIDGET(hbox));
 
@@ -192,13 +210,38 @@ ags_position_wave_cursor_dialog_init(AgsPositionWaveCursorDialog *position_wave_
 }
 
 void
+ags_position_wave_cursor_dialog_finalize(GObject *gobject)
+{
+  AgsPositionWaveCursorDialog *position_wave_cursor_dialog;
+
+  position_wave_cursor_dialog = (AgsPositionWaveCursorDialog *) gobject;
+  
+  G_OBJECT_CLASS(ags_position_wave_cursor_dialog_parent_class)->finalize(gobject);
+}
+
+gboolean
+ags_position_wave_cursor_dialog_is_connected(AgsConnectable *connectable)
+{
+  AgsPositionWaveCursorDialog *position_wave_cursor_dialog;
+  
+  gboolean is_connected;
+  
+  position_wave_cursor_dialog = AGS_POSITION_WAVE_CURSOR_DIALOG(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (position_wave_cursor_dialog->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
+}
+
+void
 ags_position_wave_cursor_dialog_connect(AgsConnectable *connectable)
 {
   AgsPositionWaveCursorDialog *position_wave_cursor_dialog;
 
   position_wave_cursor_dialog = AGS_POSITION_WAVE_CURSOR_DIALOG(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (position_wave_cursor_dialog->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -215,7 +258,7 @@ ags_position_wave_cursor_dialog_disconnect(AgsConnectable *connectable)
 
   position_wave_cursor_dialog = AGS_POSITION_WAVE_CURSOR_DIALOG(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (position_wave_cursor_dialog->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -226,16 +269,6 @@ ags_position_wave_cursor_dialog_disconnect(AgsConnectable *connectable)
 		      G_CALLBACK(ags_position_wave_cursor_dialog_response_callback),
 		      position_wave_cursor_dialog,
 		      NULL);
-}
-
-void
-ags_position_wave_cursor_dialog_finalize(GObject *gobject)
-{
-  AgsPositionWaveCursorDialog *position_wave_cursor_dialog;
-
-  position_wave_cursor_dialog = (AgsPositionWaveCursorDialog *) gobject;
-  
-  G_OBJECT_CLASS(ags_position_wave_cursor_dialog_parent_class)->finalize(gobject);
 }
 
 void
@@ -310,6 +343,7 @@ ags_position_wave_cursor_dialog_reset(AgsApplicable *applicable)
 
 /**
  * ags_position_wave_cursor_dialog_new:
+ * @transient_for: the transient #AgsWindow
  *
  * Create a new #AgsPositionWaveCursorDialog.
  *
@@ -318,11 +352,12 @@ ags_position_wave_cursor_dialog_reset(AgsApplicable *applicable)
  * Since: 3.0.0
  */
 AgsPositionWaveCursorDialog*
-ags_position_wave_cursor_dialog_new()
+ags_position_wave_cursor_dialog_new(GtkWindow *transient_for)
 {
   AgsPositionWaveCursorDialog *position_wave_cursor_dialog;
 
   position_wave_cursor_dialog = (AgsPositionWaveCursorDialog *) g_object_new(AGS_TYPE_POSITION_WAVE_CURSOR_DIALOG,
+									     "transient-for", transient_for,
 									     NULL);
 
   return(position_wave_cursor_dialog);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -39,6 +39,7 @@ void ags_select_note_dialog_applicable_interface_init(AgsApplicableInterface *ap
 void ags_select_note_dialog_init(AgsSelectNoteDialog *select_note_dialog);
 void ags_select_note_dialog_finalize(GObject *gobject);
 
+gboolean ags_select_note_dialog_is_connected(AgsConnectable *connectable);
 void ags_select_note_dialog_connect(AgsConnectable *connectable);
 void ags_select_note_dialog_disconnect(AgsConnectable *connectable);
 
@@ -124,10 +125,23 @@ ags_select_note_dialog_class_init(AgsSelectNoteDialogClass *select_note_dialog)
 void
 ags_select_note_dialog_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_select_note_dialog_is_connected;  
   connectable->connect = ags_select_note_dialog_connect;
   connectable->disconnect = ags_select_note_dialog_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -145,6 +159,10 @@ ags_select_note_dialog_init(AgsSelectNoteDialog *select_note_dialog)
   GtkBox *hbox;
   GtkLabel *label;
 
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+
   select_note_dialog->connectable_flags = 0;
 
   g_object_set(select_note_dialog,
@@ -155,7 +173,7 @@ ags_select_note_dialog_init(AgsSelectNoteDialog *select_note_dialog)
 			       TRUE);
   
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) select_note_dialog),
 		 (GtkWidget *) vbox);
 
@@ -168,7 +186,7 @@ ags_select_note_dialog_init(AgsSelectNoteDialog *select_note_dialog)
 
   /* select x0 - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append(vbox,
 		 (GtkWidget *) hbox);
 
@@ -188,7 +206,7 @@ ags_select_note_dialog_init(AgsSelectNoteDialog *select_note_dialog)
   
   /* select y0 - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append(vbox,
 		 (GtkWidget *) hbox);
 
@@ -208,7 +226,7 @@ ags_select_note_dialog_init(AgsSelectNoteDialog *select_note_dialog)
 
   /* select x1 - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append(vbox,
 		 (GtkWidget *) hbox);
 
@@ -228,7 +246,7 @@ ags_select_note_dialog_init(AgsSelectNoteDialog *select_note_dialog)
 
   /* select y1 - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append(vbox,
 		 (GtkWidget *) hbox);
 
@@ -254,6 +272,21 @@ ags_select_note_dialog_init(AgsSelectNoteDialog *select_note_dialog)
 			 NULL);
 }
 
+gboolean
+ags_select_note_dialog_is_connected(AgsConnectable *connectable)
+{
+  AgsSelectNoteDialog *select_note_dialog;
+  
+  gboolean is_connected;
+  
+  select_note_dialog = AGS_SELECT_NOTE_DIALOG(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (select_note_dialog->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
+}
+
 void
 ags_select_note_dialog_connect(AgsConnectable *connectable)
 {
@@ -261,7 +294,7 @@ ags_select_note_dialog_connect(AgsConnectable *connectable)
 
   select_note_dialog = AGS_SELECT_NOTE_DIALOG(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (select_note_dialog->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -278,7 +311,7 @@ ags_select_note_dialog_disconnect(AgsConnectable *connectable)
 
   select_note_dialog = AGS_SELECT_NOTE_DIALOG(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (select_note_dialog->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -437,6 +470,7 @@ ags_select_note_dialog_reset(AgsApplicable *applicable)
 
 /**
  * ags_select_note_dialog_new:
+ * @transient_for: the transient #AgsWindow
  *
  * Create a new #AgsSelectNoteDialog.
  *
@@ -445,11 +479,12 @@ ags_select_note_dialog_reset(AgsApplicable *applicable)
  * Since: 3.0.0
  */
 AgsSelectNoteDialog*
-ags_select_note_dialog_new()
+ags_select_note_dialog_new(GtkWindow *transient_for)
 {
   AgsSelectNoteDialog *select_note_dialog;
 
   select_note_dialog = (AgsSelectNoteDialog *) g_object_new(AGS_TYPE_SELECT_NOTE_DIALOG,
+							    "transient-for", transient_for,
 							    NULL);
 
   return(select_note_dialog);

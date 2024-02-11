@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,6 +34,7 @@ void ags_ramp_acceleration_dialog_applicable_interface_init(AgsApplicableInterfa
 void ags_ramp_acceleration_dialog_init(AgsRampAccelerationDialog *ramp_acceleration_dialog);
 void ags_ramp_acceleration_dialog_finalize(GObject *gobject);
 
+gboolean ags_ramp_acceleration_dialog_is_connected(AgsConnectable *connectable);
 void ags_ramp_acceleration_dialog_connect(AgsConnectable *connectable);
 void ags_ramp_acceleration_dialog_disconnect(AgsConnectable *connectable);
 
@@ -119,10 +120,23 @@ ags_ramp_acceleration_dialog_class_init(AgsRampAccelerationDialogClass *ramp_acc
 void
 ags_ramp_acceleration_dialog_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_ramp_acceleration_dialog_is_connected;  
   connectable->connect = ags_ramp_acceleration_dialog_connect;
   connectable->disconnect = ags_ramp_acceleration_dialog_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -150,7 +164,7 @@ ags_ramp_acceleration_dialog_init(AgsRampAccelerationDialog *ramp_acceleration_d
 			       TRUE);
   
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) ramp_acceleration_dialog),
 		 GTK_WIDGET(vbox));  
 
@@ -161,7 +175,7 @@ ags_ramp_acceleration_dialog_init(AgsRampAccelerationDialog *ramp_acceleration_d
   
   /* ramp x0 - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append(vbox,
 		 GTK_WIDGET(hbox));
 
@@ -183,7 +197,7 @@ ags_ramp_acceleration_dialog_init(AgsRampAccelerationDialog *ramp_acceleration_d
 
   /* ramp y0 - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append(vbox,
 		 GTK_WIDGET(hbox));
 
@@ -203,7 +217,7 @@ ags_ramp_acceleration_dialog_init(AgsRampAccelerationDialog *ramp_acceleration_d
   
   /* ramp x1 - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append(vbox,
 		 GTK_WIDGET(hbox));
 
@@ -225,7 +239,7 @@ ags_ramp_acceleration_dialog_init(AgsRampAccelerationDialog *ramp_acceleration_d
 
   /* ramp y1 - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append(vbox,
 		 GTK_WIDGET(hbox));
 
@@ -245,7 +259,7 @@ ags_ramp_acceleration_dialog_init(AgsRampAccelerationDialog *ramp_acceleration_d
 
   /* ramp step count - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append(vbox,
 		 GTK_WIDGET(hbox));
 
@@ -272,6 +286,31 @@ ags_ramp_acceleration_dialog_init(AgsRampAccelerationDialog *ramp_acceleration_d
 }
 
 void
+ags_ramp_acceleration_dialog_finalize(GObject *gobject)
+{
+  AgsRampAccelerationDialog *ramp_acceleration_dialog;
+
+  ramp_acceleration_dialog = (AgsRampAccelerationDialog *) gobject;
+  
+  G_OBJECT_CLASS(ags_ramp_acceleration_dialog_parent_class)->finalize(gobject);
+}
+
+gboolean
+ags_ramp_acceleration_dialog_is_connected(AgsConnectable *connectable)
+{
+  AgsRampAccelerationDialog *ramp_acceleration_dialog;
+  
+  gboolean is_connected;
+  
+  ramp_acceleration_dialog = AGS_RAMP_ACCELERATION_DIALOG(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (ramp_acceleration_dialog->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
+}
+
+void
 ags_ramp_acceleration_dialog_connect(AgsConnectable *connectable)
 {
   AgsWindow *window;
@@ -282,7 +321,7 @@ ags_ramp_acceleration_dialog_connect(AgsConnectable *connectable)
   
   ramp_acceleration_dialog = AGS_RAMP_ACCELERATION_DIALOG(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (ramp_acceleration_dialog->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -317,7 +356,7 @@ ags_ramp_acceleration_dialog_disconnect(AgsConnectable *connectable)
 
   ramp_acceleration_dialog = AGS_RAMP_ACCELERATION_DIALOG(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (ramp_acceleration_dialog->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -348,16 +387,6 @@ ags_ramp_acceleration_dialog_disconnect(AgsConnectable *connectable)
 		      G_CALLBACK(ags_ramp_acceleration_dialog_machine_changed_callback),
 		      ramp_acceleration_dialog,
 		      NULL);
-}
-
-void
-ags_ramp_acceleration_dialog_finalize(GObject *gobject)
-{
-  AgsRampAccelerationDialog *ramp_acceleration_dialog;
-
-  ramp_acceleration_dialog = (AgsRampAccelerationDialog *) gobject;
-  
-  G_OBJECT_CLASS(ags_ramp_acceleration_dialog_parent_class)->finalize(gobject);
 }
 
 void
@@ -493,13 +522,15 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
       
       current = AGS_AUTOMATION(list_automation->data);
 
+      current_timestamp = NULL;
+      
       g_object_get(current,
 		   "timestamp", &current_timestamp,
 		   NULL);
 
       g_object_unref(current_timestamp);
       
-      if(ags_timestamp_get_ags_offset(current_timestamp) < x0){
+      if(ags_timestamp_get_ags_offset(current_timestamp) + AGS_AUTOMATION_DEFAULT_OFFSET < x0){
 	list_automation = list_automation->next;
 	
 	continue;
@@ -961,6 +992,11 @@ ags_ramp_acceleration_dialog_reset(AgsApplicable *applicable)
   
   window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
     
+  if(window == NULL ||
+     window->composite_editor == NULL){
+    return;
+  }
+    
   composite_editor = window->composite_editor;
 
   machine = composite_editor->selected_machine;
@@ -997,6 +1033,10 @@ ags_ramp_acceleration_dialog_reset(AgsApplicable *applicable)
 
     gboolean is_enabled;
     gboolean contains_control_name;
+
+    plugin_port = NULL;
+    
+    specifier = NULL;
     
     g_object_get(port->data,
 		 "specifier", &specifier,
@@ -1046,6 +1086,8 @@ ags_ramp_acceleration_dialog_reset(AgsApplicable *applicable)
 		   g_object_unref);
     
   /* output */
+  start_channel = NULL;
+  
   g_object_get(audio,
 	       "output", &start_channel,
 	       NULL);
@@ -1219,6 +1261,7 @@ ags_ramp_acceleration_dialog_reset(AgsApplicable *applicable)
 
 /**
  * ags_ramp_acceleration_dialog_new:
+ * @transient_for: the transient #AgsWindow
  *
  * Create a new instance of #AgsRampAccelerationDialog.
  *
@@ -1227,11 +1270,12 @@ ags_ramp_acceleration_dialog_reset(AgsApplicable *applicable)
  * Since: 3.0.0
  */
 AgsRampAccelerationDialog*
-ags_ramp_acceleration_dialog_new()
+ags_ramp_acceleration_dialog_new(GtkWindow *transient_for)
 {
   AgsRampAccelerationDialog *ramp_acceleration_dialog;
 
   ramp_acceleration_dialog = (AgsRampAccelerationDialog *) g_object_new(AGS_TYPE_RAMP_ACCELERATION_DIALOG,
+									"transient-for", transient_for,
 									NULL);
 
   return(ramp_acceleration_dialog);

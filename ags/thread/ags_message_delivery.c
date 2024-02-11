@@ -29,7 +29,7 @@ void ags_message_delivery_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_message_delivery
- * @short_description: Message delivery singleton
+ * @short_description: message delivery singleton
  * @title: AgsMessageDelivery
  * @section_id:
  * @include: ags/thread/ags_message_delivery.h

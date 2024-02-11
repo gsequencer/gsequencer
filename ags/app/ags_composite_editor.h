@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -46,8 +46,8 @@ G_BEGIN_DECLS
 #define AGS_IS_COMPOSITE_EDITOR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_COMPOSITE_EDITOR))
 #define AGS_COMPOSITE_EDITOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_COMPOSITE_EDITOR, AgsCompositeEditorClass))
   
-#define AGS_COMPOSITE_EDITOR_DEFAULT_VERSION "3.8.0"
-#define AGS_COMPOSITE_EDITOR_DEFAULT_BUILD_ID "Mon Dec 14 15:29:38 UTC 2020"
+#define AGS_COMPOSITE_EDITOR_DEFAULT_VERSION "6.5.0"
+#define AGS_COMPOSITE_EDITOR_DEFAULT_BUILD_ID "Sun Feb 11 13:42:43 UTC 2024"
 
 #define AGS_COMPOSITE_EDITOR_DEFAULT_PANED_POSITION (300)
 
@@ -145,8 +145,8 @@ void ags_composite_editor_delete_marker(AgsCompositeEditor *composite_editor,
 					guint x, gdouble y);
 
 void ags_composite_editor_select_region(AgsCompositeEditor *composite_editor,
-					guint x0, guint y0, 
-					guint x1, guint y1);
+					guint x0, gdouble y0, 
+					guint x1, gdouble y1);
 
 /* instantiate */
 AgsCompositeEditor* ags_composite_editor_new();

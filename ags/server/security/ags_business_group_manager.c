@@ -27,7 +27,7 @@ void ags_business_group_manager_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_business_group_manager
- * @short_description: Singleton pattern to organize business group
+ * @short_description: singleton pattern to organize business group
  * @title: AgsBusinessGroupManager
  * @section_id:
  * @include: ags/server/security/ags_business_group_manager.h

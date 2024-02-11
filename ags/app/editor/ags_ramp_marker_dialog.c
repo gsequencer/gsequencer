@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,6 +34,7 @@ void ags_ramp_marker_dialog_applicable_interface_init(AgsApplicableInterface *ap
 void ags_ramp_marker_dialog_init(AgsRampMarkerDialog *ramp_marker_dialog);
 void ags_ramp_marker_dialog_finalize(GObject *gobject);
 
+gboolean ags_ramp_marker_dialog_is_connected(AgsConnectable *connectable);
 void ags_ramp_marker_dialog_connect(AgsConnectable *connectable);
 void ags_ramp_marker_dialog_disconnect(AgsConnectable *connectable);
 
@@ -119,10 +120,23 @@ ags_ramp_marker_dialog_class_init(AgsRampMarkerDialogClass *ramp_marker_dialog)
 void
 ags_ramp_marker_dialog_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_ramp_marker_dialog_is_connected;  
   connectable->connect = ags_ramp_marker_dialog_connect;
   connectable->disconnect = ags_ramp_marker_dialog_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -150,7 +164,7 @@ ags_ramp_marker_dialog_init(AgsRampMarkerDialog *ramp_marker_dialog)
 			       TRUE);
   
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) ramp_marker_dialog),
 		 GTK_WIDGET(vbox));  
 
@@ -167,7 +181,7 @@ ags_ramp_marker_dialog_init(AgsRampMarkerDialog *ramp_marker_dialog)
   
   /* ramp x0 - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append(vbox,
 		 GTK_WIDGET(hbox));
 
@@ -189,7 +203,7 @@ ags_ramp_marker_dialog_init(AgsRampMarkerDialog *ramp_marker_dialog)
 
   /* ramp y0 - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append(vbox,
 		 GTK_WIDGET(hbox));
 
@@ -209,7 +223,7 @@ ags_ramp_marker_dialog_init(AgsRampMarkerDialog *ramp_marker_dialog)
   
   /* ramp x1 - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append(vbox,
 		 GTK_WIDGET(hbox));
 
@@ -231,7 +245,7 @@ ags_ramp_marker_dialog_init(AgsRampMarkerDialog *ramp_marker_dialog)
 
   /* ramp y1 - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append(vbox,
 		 GTK_WIDGET(hbox));
 
@@ -251,7 +265,7 @@ ags_ramp_marker_dialog_init(AgsRampMarkerDialog *ramp_marker_dialog)
 
   /* ramp step count - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append(vbox,
 		 GTK_WIDGET(hbox));
 
@@ -278,6 +292,31 @@ ags_ramp_marker_dialog_init(AgsRampMarkerDialog *ramp_marker_dialog)
 }
 
 void
+ags_ramp_marker_dialog_finalize(GObject *gobject)
+{
+  AgsRampMarkerDialog *ramp_marker_dialog;
+
+  ramp_marker_dialog = (AgsRampMarkerDialog *) gobject;
+  
+  G_OBJECT_CLASS(ags_ramp_marker_dialog_parent_class)->finalize(gobject);
+}
+
+gboolean
+ags_ramp_marker_dialog_is_connected(AgsConnectable *connectable)
+{
+  AgsRampMarkerDialog *ramp_marker_dialog;
+  
+  gboolean is_connected;
+  
+  ramp_marker_dialog = AGS_RAMP_MARKER_DIALOG(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (ramp_marker_dialog->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
+}
+
+void
 ags_ramp_marker_dialog_connect(AgsConnectable *connectable)
 {
   AgsWindow *window;
@@ -288,7 +327,7 @@ ags_ramp_marker_dialog_connect(AgsConnectable *connectable)
   
   ramp_marker_dialog = AGS_RAMP_MARKER_DIALOG(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (ramp_marker_dialog->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -323,7 +362,7 @@ ags_ramp_marker_dialog_disconnect(AgsConnectable *connectable)
 
   ramp_marker_dialog = AGS_RAMP_MARKER_DIALOG(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (ramp_marker_dialog->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -345,16 +384,6 @@ ags_ramp_marker_dialog_disconnect(AgsConnectable *connectable)
 		      G_CALLBACK(ags_ramp_marker_dialog_control_name_callback),
 		      ramp_marker_dialog,
 		      NULL);
-}
-
-void
-ags_ramp_marker_dialog_finalize(GObject *gobject)
-{
-  AgsRampMarkerDialog *ramp_marker_dialog;
-
-  ramp_marker_dialog = (AgsRampMarkerDialog *) gobject;
-  
-  G_OBJECT_CLASS(ags_ramp_marker_dialog_parent_class)->finalize(gobject);
 }
 
 void
@@ -716,6 +745,7 @@ ags_ramp_marker_dialog_reset(AgsApplicable *applicable)
 
 /**
  * ags_ramp_marker_dialog_new:
+ * @transient_for: the transient #AgsWindow
  *
  * Create a new instance of #AgsRampMarkerDialog.
  *
@@ -724,11 +754,12 @@ ags_ramp_marker_dialog_reset(AgsApplicable *applicable)
  * Since: 5.1.0
  */
 AgsRampMarkerDialog*
-ags_ramp_marker_dialog_new()
+ags_ramp_marker_dialog_new(GtkWindow *transient_for)
 {
   AgsRampMarkerDialog *ramp_marker_dialog;
 
   ramp_marker_dialog = (AgsRampMarkerDialog *) g_object_new(AGS_TYPE_RAMP_MARKER_DIALOG,
+							    "transient-for", transient_for,
 							    NULL);
 
   return(ramp_marker_dialog);

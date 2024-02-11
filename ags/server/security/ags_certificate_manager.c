@@ -27,7 +27,7 @@ void ags_certificate_manager_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_certificate_manager
- * @short_description: Singleton pattern to organize certificate
+ * @short_description: singleton pattern to organize certificate
  * @title: AgsCertificateManager
  * @section_id:
  * @include: ags/server/security/ags_certificate_manager.h

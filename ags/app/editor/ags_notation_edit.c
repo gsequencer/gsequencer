@@ -1452,8 +1452,8 @@ ags_notation_edit_drawing_area_button_release_select_note(GtkWidget *editor,
 
   /* select region */
   ags_composite_editor_select_region((AgsCompositeEditor *) editor,
-				     x0, y0,
-				     x1, y1);
+				     x0, (gdouble) y0,
+				     x1, (gdouble) y1);
 }
 
 gboolean

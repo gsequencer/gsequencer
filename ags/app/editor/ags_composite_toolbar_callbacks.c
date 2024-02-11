@@ -298,6 +298,8 @@ void
 ags_composite_toolbar_menu_tool_popup_automation_select_acceleration_callback(GAction *action, GVariant *parameter,
 									      AgsCompositeToolbar *composite_toolbar)
 {
+  ags_applicable_reset(AGS_APPLICABLE(composite_toolbar->automation_select_acceleration));
+  
   gtk_widget_show((GtkWidget *) composite_toolbar->automation_select_acceleration);
 }
 

@@ -27,7 +27,7 @@ void ags_password_store_manager_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_password_store_manager
- * @short_description: Singleton pattern to organize password stores
+ * @short_description: singleton pattern to organize password stores
  * @title: AgsPasswordStoreManager
  * @section_id:
  * @include: ags/server/security/ags_password_store_manager.h

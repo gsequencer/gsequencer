@@ -61,7 +61,7 @@ gchar* ags_priority_real_get_value(AgsPriority *priority, gchar *group, gchar *k
 
 /**
  * SECTION:ags_priority
- * @short_description: Priority Advanced Gtk+ Sequencer
+ * @short_description: priority settings of Advanced Gtk+ Sequencer
  * @title: AgsPriority
  * @section_id:
  * @include: ags/object/ags_priority.h

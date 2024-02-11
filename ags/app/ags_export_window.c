@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -132,18 +132,27 @@ ags_export_window_init(AgsExportWindow *export_window)
   GtkGrid *grid;
   GtkLabel *label;
 
-  AgsConfig *config;
-  
+  AgsConfig *config;  
+  AgsApplicationContext *application_context;
+
   gchar *str;
-  
+
   config = ags_config_get_instance();
+  
+  application_context = ags_application_context_get_instance();
 
   export_window->flags = 0;
   export_window->connectable_flags = 0;
+
+  ags_ui_provider_set_export_window(AGS_UI_PROVIDER(application_context),
+				    export_window);
   
   g_object_set(export_window,
 	       "title", i18n("Export to audio data"),
 	       NULL);
+
+  gtk_window_set_transient_for((GtkWindow *) export_window,
+			       ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
 
   gtk_window_set_hide_on_close((GtkWindow *) export_window,
 			       TRUE);

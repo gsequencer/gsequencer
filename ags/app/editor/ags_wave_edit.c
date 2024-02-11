@@ -25,6 +25,8 @@
 #include <ags/app/ags_composite_editor.h>
 #include <ags/app/ags_navigation.h>
 
+#include <ags/app/editor/ags_scrolled_wave_edit_box.h>
+#include <ags/app/editor/ags_wave_edit_box.h>
 #include <ags/app/editor/ags_wave_meta.h>
 
 #include <gdk/gdkkeysyms.h>
@@ -1157,6 +1159,8 @@ ags_wave_edit_drawing_area_button_release_select_buffer(GtkWidget *editor,
 
   GtkAllocation allocation;
 
+  GList *start_list, *list;
+  
   gdouble c_range;
   guint g_range;
   double zoom_factor, zoom;
@@ -1193,6 +1197,21 @@ ags_wave_edit_drawing_area_button_release_select_buffer(GtkWidget *editor,
   ags_composite_editor_select_region((AgsCompositeEditor *) editor,
 				     x0, y0,
 				     x1, y1);
+    
+  /* queue draw */
+  if(AGS_COMPOSITE_EDITOR(editor)->wave_edit != NULL &&
+     AGS_COMPOSITE_EDITOR(editor)->wave_edit->edit != NULL){
+    list =
+      start_list = ags_wave_edit_box_get_wave_edit(AGS_SCROLLED_WAVE_EDIT_BOX(AGS_COMPOSITE_EDITOR(editor)->wave_edit->edit)->wave_edit_box);
+
+    while(list != NULL){
+      gtk_widget_queue_draw(AGS_WAVE_EDIT(list->data)->drawing_area);
+
+      list = list->next;
+    }
+    
+    g_list_free(start_list);
+  }
 }
 
 gboolean

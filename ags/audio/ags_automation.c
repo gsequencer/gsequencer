@@ -2754,17 +2754,16 @@ ags_automation_find_region(AgsAutomation *automation,
   automation_mutex = AGS_AUTOMATION_GET_OBJ_MUTEX(automation);
 
   if(x0 > x1){
-    guint tmp;
-
-    tmp = x1;
-    x1 = x0;
-    x0 = x1;
-  }
-
-  if(y0 > y1){
+    guint tmp_x;
     gdouble tmp_y;
 
+    tmp_x = x0;
+
+    x0 = x1;
+    x1 = tmp_x;
+
     tmp_y = y0;
+
     y0 = y1;
     y1 = tmp_y;
   }
@@ -2802,7 +2801,8 @@ ags_automation_find_region(AgsAutomation *automation,
       break;
     }
 
-    if(current_y >= y0 && current_y < y1){
+    if((y0 < y1 && current_y >= y0 && current_y < y1) ||
+       (y0 >= y1 && current_y < y0 && current_y >= y1)){
       region = g_list_prepend(region,
 			      acceleration->data);
     }
@@ -3024,7 +3024,7 @@ ags_automation_add_region_to_selection(AgsAutomation *automation,
 
   /* get automation mutex */
   automation_mutex = AGS_AUTOMATION_GET_OBJ_MUTEX(automation);
-
+  
   /* find region */
   region = ags_automation_find_region(automation,
 				      x0, y0,
