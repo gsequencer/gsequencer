@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -117,6 +117,8 @@ void ags_dial_draw(AgsDial *dial,
 
 void ags_dial_adjustment_changed_callback(GtkAdjustment *adjustment,
 					  AgsDial *dial);
+void ags_dial_adjustment_value_changed_callback(GtkAdjustment *adjustment,
+						AgsDial *dial);
 
 /**
  * SECTION:ags_dial
@@ -527,6 +529,12 @@ ags_dial_set_property(GObject *gobject,
 			    G_CALLBACK(ags_dial_adjustment_changed_callback),
 			    dial,
 			    NULL);
+
+	g_object_disconnect(dial->adjustment,
+			    "any_signal::value-changed",
+			    G_CALLBACK(ags_dial_adjustment_changed_callback),
+			    dial,
+			    NULL);
 	
 	g_object_unref(G_OBJECT(dial->adjustment));
       }
@@ -536,6 +544,9 @@ ags_dial_set_property(GObject *gobject,
 
 	g_signal_connect(adjustment, "changed",
 			 G_CALLBACK(ags_dial_adjustment_changed_callback), dial);
+
+	g_signal_connect(adjustment, "value-changed",
+			 G_CALLBACK(ags_dial_adjustment_value_changed_callback), dial);
 
 	gtk_accessible_update_property(GTK_ACCESSIBLE(dial),
 				       GTK_ACCESSIBLE_PROPERTY_VALUE_MIN, gtk_adjustment_get_lower(adjustment),
@@ -911,7 +922,7 @@ ags_dial_gesture_click_released_callback(GtkGestureClick *event_controller,
       gtk_adjustment_set_value(adjustment,
 			       gtk_adjustment_get_value(adjustment) - gtk_adjustment_get_page_increment(adjustment));
 
-      ags_dial_value_changed(dial);
+      //      ags_dial_value_changed(dial);
       gtk_widget_queue_draw(dial);
     }
 
@@ -925,7 +936,7 @@ ags_dial_gesture_click_released_callback(GtkGestureClick *event_controller,
       gtk_adjustment_set_value(adjustment,
 			       gtk_adjustment_get_value(adjustment) + gtk_adjustment_get_page_increment(adjustment));
 
-      ags_dial_value_changed(dial);
+      //      ags_dial_value_changed(dial);
       gtk_widget_queue_draw(dial);
     }
 
@@ -1001,7 +1012,7 @@ ags_dial_key_released_callback(GtkEventControllerKey *event_controller,
 				 value + step);
       }
 
-      ags_dial_value_changed(dial);
+      //      ags_dial_value_changed(dial);
       
       gtk_widget_queue_draw((GtkWidget *) dial);
     }
@@ -1023,7 +1034,7 @@ ags_dial_key_released_callback(GtkEventControllerKey *event_controller,
 				 value - step);
       }
       
-      ags_dial_value_changed(dial);
+      //      ags_dial_value_changed(dial);
       
       gtk_widget_queue_draw((GtkWidget *) dial);
     }
@@ -1045,7 +1056,7 @@ ags_dial_key_released_callback(GtkEventControllerKey *event_controller,
 				 value + page);
       }
 
-      ags_dial_value_changed(dial);
+      //      ags_dial_value_changed(dial);
       
       gtk_widget_queue_draw((GtkWidget *) dial);
     }
@@ -1067,7 +1078,7 @@ ags_dial_key_released_callback(GtkEventControllerKey *event_controller,
 				 value - page);
       }
 
-      ags_dial_value_changed(dial);
+      //      ags_dial_value_changed(dial);
       
       gtk_widget_queue_draw((GtkWidget *) dial);
     }
@@ -1180,7 +1191,7 @@ ags_dial_motion_notify_do_dial(AgsDial *dial,
       gtk_adjustment_set_value(adjustment,
 			       gtk_adjustment_get_value(adjustment) - gtk_adjustment_get_step_increment(adjustment));
 
-      ags_dial_value_changed(dial);
+      //      ags_dial_value_changed(dial);
       gtk_widget_queue_draw(dial);
     }
   }else{
@@ -1188,7 +1199,7 @@ ags_dial_motion_notify_do_dial(AgsDial *dial,
       gtk_adjustment_set_value(adjustment,
 			       gtk_adjustment_get_value(adjustment) + gtk_adjustment_get_step_increment(adjustment));
 
-      ags_dial_value_changed(dial);
+      //      ags_dial_value_changed(dial);
       gtk_widget_queue_draw(dial);
     }
   }
@@ -1377,7 +1388,7 @@ ags_dial_motion_notify_do_seemless_dial(AgsDial *dial,
 
   gtk_adjustment_set_value(adjustment,
 			   translated_x);
-  ags_dial_value_changed(dial);
+  //  ags_dial_value_changed(dial);
   gtk_widget_queue_draw(dial);
 }
 
@@ -2261,7 +2272,12 @@ ags_dial_adjustment_changed_callback(GtkAdjustment *adjustment,
 				 GTK_ACCESSIBLE_PROPERTY_VALUE_MIN, gtk_adjustment_get_lower(adjustment),
 				 GTK_ACCESSIBLE_PROPERTY_VALUE_NOW, gtk_adjustment_get_value(adjustment),
 				 -1);
+}
 
+void
+ags_dial_adjustment_value_changed_callback(GtkAdjustment *adjustment,
+					   AgsDial *dial)
+{
   ags_dial_value_changed(dial);
 }
 

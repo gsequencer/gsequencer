@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -47,8 +47,7 @@ typedef struct _AgsPatternEnvelope AgsPatternEnvelope;
 typedef struct _AgsPatternEnvelopeClass AgsPatternEnvelopeClass;
 
 typedef enum{
-  AGS_PATTERN_ENVELOPE_CONNECTED      = 1,
-  AGS_PATTERN_ENVELOPE_NO_UPDATE      = 1 <<  1,
+  AGS_PATTERN_ENVELOPE_NO_UPDATE      = 1,
 }AgsPatternEnvelopeFlags;
 
 typedef enum{
@@ -69,6 +68,7 @@ struct _AgsPatternEnvelope
   GtkBox box;
 
   guint flags;
+  guint connectable_flags;
 
   gchar *version;
   gchar *build_id;
@@ -88,19 +88,19 @@ struct _AgsPatternEnvelope
   GtkSpinButton *x_start;
   GtkSpinButton *x_end;
   
-  GtkScale *attack_x;
-  GtkScale *attack_y;
+  AgsDial *attack_x;
+  AgsDial *attack_y;
   
-  GtkScale *decay_x;
-  GtkScale *decay_y;
+  AgsDial *decay_x;
+  AgsDial *decay_y;
 
-  GtkScale *sustain_x;
-  GtkScale *sustain_y;
+  AgsDial *sustain_x;
+  AgsDial *sustain_y;
 
-  GtkScale *release_x;
-  GtkScale *release_y;
+  AgsDial *release_x;
+  AgsDial *release_y;
 
-  GtkScale *ratio;
+  AgsDial *ratio;
 
   GtkDialog *rename;
   

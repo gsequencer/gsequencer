@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -105,7 +105,7 @@ ags_envelope_editor_preset_rename_response_callback(GtkWidget *widget, gint resp
 }
 
 void
-ags_envelope_editor_attack_x_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor)
+ags_envelope_editor_attack_x_callback(GtkWidget *dial, AgsEnvelopeEditor *envelope_editor)
 {
   AgsPreset *preset;
   
@@ -129,7 +129,7 @@ ags_envelope_editor_attack_x_callback(GtkWidget *range, AgsEnvelopeEditor *envel
   }
   
   /* get value and update preset */
-  attack_x = gtk_range_get_value((GtkRange *) range);
+  attack_x = ags_dial_get_value((AgsDial *) dial);
 
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);
@@ -160,7 +160,7 @@ ags_envelope_editor_attack_x_callback(GtkWidget *range, AgsEnvelopeEditor *envel
 }
 
 void
-ags_envelope_editor_attack_y_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor)
+ags_envelope_editor_attack_y_callback(GtkWidget *dial, AgsEnvelopeEditor *envelope_editor)
 {
   AgsPreset *preset;
   
@@ -184,7 +184,7 @@ ags_envelope_editor_attack_y_callback(GtkWidget *range, AgsEnvelopeEditor *envel
   }
   
   /* get value and update preset */
-  attack_y = gtk_range_get_value((GtkRange *) range);
+  attack_y = ags_dial_get_value((AgsDial *) dial);
 
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);
@@ -215,7 +215,7 @@ ags_envelope_editor_attack_y_callback(GtkWidget *range, AgsEnvelopeEditor *envel
 }
 
 void
-ags_envelope_editor_decay_x_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor)
+ags_envelope_editor_decay_x_callback(GtkWidget *dial, AgsEnvelopeEditor *envelope_editor)
 {
   AgsPreset *preset;
   
@@ -239,7 +239,7 @@ ags_envelope_editor_decay_x_callback(GtkWidget *range, AgsEnvelopeEditor *envelo
   }
   
   /* get value and update preset */
-  decay_x = gtk_range_get_value((GtkRange *) range);
+  decay_x = ags_dial_get_value((AgsDial *) dial);
 
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);
@@ -270,7 +270,7 @@ ags_envelope_editor_decay_x_callback(GtkWidget *range, AgsEnvelopeEditor *envelo
 }
 
 void
-ags_envelope_editor_decay_y_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor)
+ags_envelope_editor_decay_y_callback(GtkWidget *dial, AgsEnvelopeEditor *envelope_editor)
 {
   AgsPreset *preset;
   
@@ -294,7 +294,7 @@ ags_envelope_editor_decay_y_callback(GtkWidget *range, AgsEnvelopeEditor *envelo
   }
   
   /* get value and update preset */
-  decay_y = gtk_range_get_value((GtkRange *) range);
+  decay_y = ags_dial_get_value((AgsDial *) dial);
 
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);
@@ -325,7 +325,7 @@ ags_envelope_editor_decay_y_callback(GtkWidget *range, AgsEnvelopeEditor *envelo
 }
 
 void
-ags_envelope_editor_sustain_x_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor)
+ags_envelope_editor_sustain_x_callback(GtkWidget *dial, AgsEnvelopeEditor *envelope_editor)
 {
   AgsPreset *preset;
   
@@ -349,7 +349,7 @@ ags_envelope_editor_sustain_x_callback(GtkWidget *range, AgsEnvelopeEditor *enve
   }
   
   /* get value and update preset */
-  sustain_x = gtk_range_get_value((GtkRange *) range);
+  sustain_x = ags_dial_get_value((AgsDial *) dial);
 
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);
@@ -380,7 +380,7 @@ ags_envelope_editor_sustain_x_callback(GtkWidget *range, AgsEnvelopeEditor *enve
 }
 
 void
-ags_envelope_editor_sustain_y_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor)
+ags_envelope_editor_sustain_y_callback(GtkWidget *dial, AgsEnvelopeEditor *envelope_editor)
 {
   AgsPreset *preset;
   
@@ -404,7 +404,7 @@ ags_envelope_editor_sustain_y_callback(GtkWidget *range, AgsEnvelopeEditor *enve
   }
   
   /* get value and update preset */
-  sustain_y = gtk_range_get_value((GtkRange *) range);
+  sustain_y = ags_dial_get_value((AgsDial *) dial);
 
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);
@@ -435,7 +435,7 @@ ags_envelope_editor_sustain_y_callback(GtkWidget *range, AgsEnvelopeEditor *enve
 }
 
 void
-ags_envelope_editor_release_x_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor)
+ags_envelope_editor_release_x_callback(GtkWidget *dial, AgsEnvelopeEditor *envelope_editor)
 {
   AgsPreset *preset;
   
@@ -459,7 +459,7 @@ ags_envelope_editor_release_x_callback(GtkWidget *range, AgsEnvelopeEditor *enve
   }
   
   /* get value and update preset */
-  release_x = gtk_range_get_value((GtkRange *) range);
+  release_x = ags_dial_get_value((AgsDial *) dial);
 
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);
@@ -490,7 +490,7 @@ ags_envelope_editor_release_x_callback(GtkWidget *range, AgsEnvelopeEditor *enve
 }
 
 void
-ags_envelope_editor_release_y_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor)
+ags_envelope_editor_release_y_callback(GtkWidget *dial, AgsEnvelopeEditor *envelope_editor)
 {
   AgsPreset *preset;
   
@@ -514,7 +514,7 @@ ags_envelope_editor_release_y_callback(GtkWidget *range, AgsEnvelopeEditor *enve
   }
   
   /* get value and update preset */
-  release_y = gtk_range_get_value((GtkRange *) range);
+  release_y = ags_dial_get_value((AgsDial *) dial);
 
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);
@@ -545,7 +545,7 @@ ags_envelope_editor_release_y_callback(GtkWidget *range, AgsEnvelopeEditor *enve
 }
 
 void
-ags_envelope_editor_ratio_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor)
+ags_envelope_editor_ratio_callback(GtkWidget *dial, AgsEnvelopeEditor *envelope_editor)
 {
   AgsPreset *preset;
   
@@ -569,7 +569,7 @@ ags_envelope_editor_ratio_callback(GtkWidget *range, AgsEnvelopeEditor *envelope
   }
   
   /* get value and update preset */
-  ratio = gtk_range_get_value((GtkRange *) range);
+  ratio = ags_dial_get_value((AgsDial *) dial);
 
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);

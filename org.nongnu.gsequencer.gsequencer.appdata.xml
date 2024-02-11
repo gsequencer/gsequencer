@@ -15,6 +15,7 @@
   </content_rating>
   <name>GSequencer</name>
   <summary>Advanced Gtk+ Sequencer</summary>
+  <developer_name>Joël Krähemann</developer_name>
   <categories>
     <category>Audio</category>
     <category>Midi</category>

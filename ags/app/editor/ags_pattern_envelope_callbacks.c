@@ -321,7 +321,7 @@ ags_pattern_envelope_x_end_callback(GtkWidget *spin_button,
 }
 
 void
-ags_pattern_envelope_attack_x_callback(GtkWidget *range,
+ags_pattern_envelope_attack_x_callback(GtkWidget *dial,
 				       AgsPatternEnvelope *pattern_envelope)
 {
   AgsPreset *preset;
@@ -346,7 +346,7 @@ ags_pattern_envelope_attack_x_callback(GtkWidget *range,
   }
   
   /* get value and update preset */
-  attack_x = gtk_range_get_value(GTK_RANGE(range));
+  attack_x = ags_dial_get_value(AGS_DIAL(dial));
 
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);
@@ -377,7 +377,7 @@ ags_pattern_envelope_attack_x_callback(GtkWidget *range,
 }
 
 void
-ags_pattern_envelope_attack_y_callback(GtkWidget *range,
+ags_pattern_envelope_attack_y_callback(GtkWidget *dial,
 				       AgsPatternEnvelope *pattern_envelope)
 {
   AgsPreset *preset;
@@ -402,7 +402,7 @@ ags_pattern_envelope_attack_y_callback(GtkWidget *range,
   }
   
   /* get value and update preset */
-  attack_y = gtk_range_get_value((GtkRange *) range);
+  attack_y = ags_dial_get_value((AgsDial *) dial);
 
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);
@@ -433,7 +433,7 @@ ags_pattern_envelope_attack_y_callback(GtkWidget *range,
 }
 
 void
-ags_pattern_envelope_decay_x_callback(GtkWidget *range,
+ags_pattern_envelope_decay_x_callback(GtkWidget *dial,
 				      AgsPatternEnvelope *pattern_envelope)
 {
   AgsPreset *preset;
@@ -458,7 +458,7 @@ ags_pattern_envelope_decay_x_callback(GtkWidget *range,
   }
   
   /* get value and update preset */
-  decay_x = gtk_range_get_value((GtkRange *) range);
+  decay_x = ags_dial_get_value((AgsDial *) dial);
 
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);
@@ -489,7 +489,7 @@ ags_pattern_envelope_decay_x_callback(GtkWidget *range,
 }
 
 void
-ags_pattern_envelope_decay_y_callback(GtkWidget *range,
+ags_pattern_envelope_decay_y_callback(GtkWidget *dial,
 				      AgsPatternEnvelope *pattern_envelope)
 {
   AgsPreset *preset;
@@ -514,7 +514,7 @@ ags_pattern_envelope_decay_y_callback(GtkWidget *range,
   }
   
   /* get value and update preset */
-  decay_y = gtk_range_get_value((GtkRange *) range);
+  decay_y = ags_dial_get_value((AgsDial *) dial);
 
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);
@@ -545,7 +545,7 @@ ags_pattern_envelope_decay_y_callback(GtkWidget *range,
 }
 
 void
-ags_pattern_envelope_sustain_x_callback(GtkWidget *range,
+ags_pattern_envelope_sustain_x_callback(GtkWidget *dial,
 					AgsPatternEnvelope *pattern_envelope)
 {
   AgsPreset *preset;
@@ -570,7 +570,7 @@ ags_pattern_envelope_sustain_x_callback(GtkWidget *range,
   }
   
   /* get value and update preset */
-  sustain_x = gtk_range_get_value((GtkRange *) range);
+  sustain_x = ags_dial_get_value((AgsDial *) dial);
 
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);
@@ -601,7 +601,7 @@ ags_pattern_envelope_sustain_x_callback(GtkWidget *range,
 }
 
 void
-ags_pattern_envelope_sustain_y_callback(GtkWidget *range,
+ags_pattern_envelope_sustain_y_callback(GtkWidget *dial,
 					AgsPatternEnvelope *pattern_envelope)
 {
   AgsPreset *preset;
@@ -626,7 +626,7 @@ ags_pattern_envelope_sustain_y_callback(GtkWidget *range,
   }
   
   /* get value and update preset */
-  sustain_y = gtk_range_get_value((GtkRange *) range);
+  sustain_y = ags_dial_get_value((AgsDial *) dial);
 
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);
@@ -657,7 +657,7 @@ ags_pattern_envelope_sustain_y_callback(GtkWidget *range,
 }
 
 void
-ags_pattern_envelope_release_x_callback(GtkWidget *range,
+ags_pattern_envelope_release_x_callback(GtkWidget *dial,
 					AgsPatternEnvelope *pattern_envelope)
 {
   AgsPreset *preset;
@@ -682,7 +682,7 @@ ags_pattern_envelope_release_x_callback(GtkWidget *range,
   }
   
   /* get value and update preset */
-  release_x = gtk_range_get_value((GtkRange *) range);
+  release_x = ags_dial_get_value((AgsDial *) dial);
 
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);
@@ -713,7 +713,7 @@ ags_pattern_envelope_release_x_callback(GtkWidget *range,
 }
 
 void
-ags_pattern_envelope_release_y_callback(GtkWidget *range,
+ags_pattern_envelope_release_y_callback(GtkWidget *dial,
 					AgsPatternEnvelope *pattern_envelope)
 {
   AgsPreset *preset;
@@ -738,7 +738,7 @@ ags_pattern_envelope_release_y_callback(GtkWidget *range,
   }
   
   /* get value and update preset */
-  release_y = gtk_range_get_value((GtkRange *) range);
+  release_y = ags_dial_get_value((AgsDial *) dial);
 
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);
@@ -769,7 +769,7 @@ ags_pattern_envelope_release_y_callback(GtkWidget *range,
 }
 
 void
-ags_pattern_envelope_ratio_callback(GtkWidget *range,
+ags_pattern_envelope_ratio_callback(GtkWidget *dial,
 				    AgsPatternEnvelope *pattern_envelope)
 {
   AgsPreset *preset;
@@ -794,7 +794,7 @@ ags_pattern_envelope_ratio_callback(GtkWidget *range,
   }
   
   /* get value and update preset */
-  ratio = gtk_range_get_value((GtkRange *) range);
+  ratio = ags_dial_get_value((AgsDial *) dial);
 
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);
