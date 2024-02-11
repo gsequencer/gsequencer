@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -41,6 +41,7 @@ void ags_select_acceleration_dialog_applicable_interface_init(AgsApplicableInter
 void ags_select_acceleration_dialog_init(AgsSelectAccelerationDialog *select_acceleration_dialog);
 void ags_select_acceleration_dialog_finalize(GObject *gobject);
 
+gboolean ags_select_acceleration_dialog_is_connected(AgsConnectable *connectable);
 void ags_select_acceleration_dialog_connect(AgsConnectable *connectable);
 void ags_select_acceleration_dialog_disconnect(AgsConnectable *connectable);
 
@@ -126,10 +127,23 @@ ags_select_acceleration_dialog_class_init(AgsSelectAccelerationDialogClass *sele
 void
 ags_select_acceleration_dialog_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_select_acceleration_dialog_is_connected;  
   connectable->connect = ags_select_acceleration_dialog_connect;
   connectable->disconnect = ags_select_acceleration_dialog_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -155,9 +169,9 @@ ags_select_acceleration_dialog_init(AgsSelectAccelerationDialog *select_accelera
 
   gtk_window_set_hide_on_close((GtkWindow *) select_acceleration_dialog,
 			       TRUE);
-  
+    
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) select_acceleration_dialog),
 		 (GtkWidget *) vbox);  
 
@@ -176,7 +190,7 @@ ags_select_acceleration_dialog_init(AgsSelectAccelerationDialog *select_accelera
       
   /* select x0 - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append(vbox,
 		 GTK_WIDGET(hbox));
 
@@ -198,7 +212,7 @@ ags_select_acceleration_dialog_init(AgsSelectAccelerationDialog *select_accelera
   
   /* select x1 - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append(vbox,
 		 GTK_WIDGET(hbox));
 
@@ -227,6 +241,31 @@ ags_select_acceleration_dialog_init(AgsSelectAccelerationDialog *select_accelera
 }
 
 void
+ags_select_acceleration_dialog_finalize(GObject *gobject)
+{
+  AgsSelectAccelerationDialog *select_acceleration_dialog;
+
+  select_acceleration_dialog = (AgsSelectAccelerationDialog *) gobject;
+  
+  G_OBJECT_CLASS(ags_select_acceleration_dialog_parent_class)->finalize(gobject);
+}
+
+gboolean
+ags_select_acceleration_dialog_is_connected(AgsConnectable *connectable)
+{
+  AgsSelectAccelerationDialog *select_acceleration_dialog;
+  
+  gboolean is_connected;
+  
+  select_acceleration_dialog = AGS_SELECT_ACCELERATION_DIALOG(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (select_acceleration_dialog->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
+}
+
+void
 ags_select_acceleration_dialog_connect(AgsConnectable *connectable)
 {
   AgsWindow *window;
@@ -236,7 +275,7 @@ ags_select_acceleration_dialog_connect(AgsConnectable *connectable)
   
   select_acceleration_dialog = AGS_SELECT_ACCELERATION_DIALOG(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (select_acceleration_dialog->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -265,7 +304,7 @@ ags_select_acceleration_dialog_disconnect(AgsConnectable *connectable)
 
   select_acceleration_dialog = AGS_SELECT_ACCELERATION_DIALOG(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (select_acceleration_dialog->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -286,16 +325,6 @@ ags_select_acceleration_dialog_disconnect(AgsConnectable *connectable)
 		      G_CALLBACK(ags_select_acceleration_dialog_machine_changed_callback),
 		      select_acceleration_dialog,
 		      NULL);
-}
-
-void
-ags_select_acceleration_dialog_finalize(GObject *gobject)
-{
-  AgsSelectAccelerationDialog *select_acceleration_dialog;
-
-  select_acceleration_dialog = (AgsSelectAccelerationDialog *) gobject;
-  
-  G_OBJECT_CLASS(ags_select_acceleration_dialog_parent_class)->finalize(gobject);
 }
 
 void
@@ -330,14 +359,12 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
 
   gdouble gui_y;
   
-  gdouble c_y0, c_y1;
   gdouble val;
   gdouble upper, lower, range, step;
   gdouble c_upper, c_lower, c_range;
 
   int size;
-  guint x0, y0;
-  guint x1, y1;
+  guint x0, x1;
   guint i;
   gint line;
   
@@ -364,6 +391,8 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
   
   audio = machine->audio;
 
+  start_list_automation = NULL;
+  
   g_object_get(audio,
 	       "automation", &start_list_automation,
 	       NULL);
@@ -371,9 +400,9 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
   /* get some values */
   copy_selection = gtk_check_button_get_active(select_acceleration_dialog->copy_selection);
 
-  x0 = (AGS_SELECT_ACCELERATION_DEFAULT_WIDTH / 16) * gtk_spin_button_get_value_as_int(select_acceleration_dialog->select_x0);
+  x0 = AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH * gtk_spin_button_get_value_as_int(select_acceleration_dialog->select_x0);
 
-  x1 = (AGS_SELECT_ACCELERATION_DEFAULT_WIDTH / 16) * gtk_spin_button_get_value_as_int(select_acceleration_dialog->select_x1);
+  x1 = AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH * gtk_spin_button_get_value_as_int(select_acceleration_dialog->select_x1);
   
   /* select acceleration */
   clipboard = NULL;
@@ -420,6 +449,8 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
 	
       current_automation = list_automation->data;
 
+      timestamp = NULL;
+      
       g_object_get(current_automation,
 		   "timestamp", &timestamp,
 		   NULL);
@@ -473,39 +504,11 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
 	  
 	continue;
       }
-	
-      /* check steps */
-      g_object_get(current_automation,
-		   "steps", &gui_y,
-		   NULL);
-
-      val = c_lower + (gui_y * (c_range / gui_y));
-      c_y0 = val;
-
-      /* conversion */
-      if(conversion != NULL){
-	c_y0 = ags_conversion_convert(conversion,
-				      c_y0,
-				      TRUE);
-      }
-
-      /* check steps */
-      gui_y = 0;
-
-      val = c_lower + (gui_y * (c_range / gui_y));
-      c_y1 = val;
-
-      /* conversion */
-      if(conversion != NULL){
-	c_y1 = ags_conversion_convert(conversion,
-				      c_y1,
-				      TRUE);
-      }
-	    
+		    
       /* select */
       ags_automation_add_region_to_selection(current_automation,
-					     x0 * AGS_SELECT_ACCELERATION_DEFAULT_WIDTH, c_y0,
-					     x1 * AGS_SELECT_ACCELERATION_DEFAULT_WIDTH, c_y1,
+					     x0, lower,
+					     x1, upper,
 					     TRUE);
 
 
@@ -564,10 +567,17 @@ ags_select_acceleration_dialog_reset(AgsApplicable *applicable)
 
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
     
+  if(window == NULL ||
+     window->composite_editor == NULL){
+    return;
+  }
+
   composite_editor = window->composite_editor;
   
   machine = composite_editor->selected_machine;
   
+  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(select_acceleration_dialog->port))));
+
   if(machine == NULL ||
      composite_editor->automation_edit == NULL ||
      composite_editor->automation_edit->focused_edit == NULL){
@@ -643,12 +653,6 @@ ags_select_acceleration_dialog_reset(AgsApplicable *applicable)
       length++;
       i++;
     }
-
-    if(plugin_port != NULL){
-      g_object_unref(plugin_port);
-    }
-
-    g_free(specifier);
     
     /* iterate */
     port = port->next;
@@ -658,13 +662,18 @@ ags_select_acceleration_dialog_reset(AgsApplicable *applicable)
 		   g_object_unref);
     
   /* output */
+  start_channel = NULL;
+  
   g_object_get(audio,
 	       "output", &start_channel,
 	       NULL);
 
   channel = start_channel;
-  g_object_ref(channel);
 
+  if(channel != NULL){
+    g_object_ref(channel);
+  }
+  
   next_channel = NULL;
 
   while(channel != NULL){
@@ -716,12 +725,6 @@ ags_select_acceleration_dialog_reset(AgsApplicable *applicable)
 	length++;
 	i++;
       }
-
-      if(plugin_port != NULL){
-	g_object_unref(plugin_port);
-      }
-
-      g_free(specifier);
     
       /* iterate */
       port = port->next;
@@ -753,7 +756,10 @@ ags_select_acceleration_dialog_reset(AgsApplicable *applicable)
 	       NULL);
 
   channel = start_channel;
-  g_object_ref(channel);
+
+  if(channel != NULL){
+    g_object_ref(channel);
+  }
 
   next_channel = NULL;
 
@@ -806,12 +812,6 @@ ags_select_acceleration_dialog_reset(AgsApplicable *applicable)
 	length++;
 	i++;
       }
-
-      if(plugin_port != NULL){
-	g_object_unref(plugin_port);
-      }
-
-      g_free(specifier);
     
       /* iterate */
       port = port->next;
@@ -847,6 +847,7 @@ ags_select_acceleration_dialog_reset(AgsApplicable *applicable)
 
 /**
  * ags_select_acceleration_dialog_new:
+ * @transient_for: the transient #AgsWindow
  *
  * Create a new #AgsSelectAccelerationDialog.
  *
@@ -855,11 +856,12 @@ ags_select_acceleration_dialog_reset(AgsApplicable *applicable)
  * Since: 3.0.0
  */
 AgsSelectAccelerationDialog*
-ags_select_acceleration_dialog_new()
+ags_select_acceleration_dialog_new(GtkWindow *transient_for)
 {
   AgsSelectAccelerationDialog *select_acceleration_dialog;
 
   select_acceleration_dialog = (AgsSelectAccelerationDialog *) g_object_new(AGS_TYPE_SELECT_ACCELERATION_DIALOG,
+									    "transient-for", transient_for,
 									    NULL);
 
   return(select_acceleration_dialog);

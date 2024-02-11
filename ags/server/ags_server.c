@@ -78,7 +78,7 @@ void ags_server_xmlrpc_callback(SoupServer *soup_server,
 
 /**
  * SECTION:ags_server
- * @short_description: Remote control server
+ * @short_description: remote control server
  * @title: AgsServer
  * @section_id:
  * @include: ags/server/ags_server.h

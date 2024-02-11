@@ -47,7 +47,7 @@ guint ags_function_literal_solve_find_max_exponent(gchar *transformed_function);
 
 /**
  * SECTION:ags_function
- * @short_description: Function to translate values
+ * @short_description: function to translate values
  * @title: AgsFunction
  * @section_id:
  * @include: ags/lib/ags_function.h

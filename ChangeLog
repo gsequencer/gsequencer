@@ -1,3 +1,19 @@
+ags (6.5.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed notation, automation and wave edit selection
+	* improved AgsCropNoteDialog
+	* improved AgsMoveNoteDialog
+	* improved AgsSelectNoteDialog
+	* improved AgsPositionNotationCursorDialog
+	* improved AgsSelectAccelerationDialog
+	* improved AgsRampAccelerationDialog
+	* improved AgsPositionAutomationCursorDialog
+	* improved AgsSelectBufferDialog
+	* improved AgsPositionWaveCursorDialog
+	* improved AgsRampMarkerDialog
+	* minor improvements
+
 ags (6.4.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

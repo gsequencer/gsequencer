@@ -1309,7 +1309,7 @@ ags_sfz_synth_wah_wah_enabled_callback(GtkCheckButton *button, AgsSFZSynth *sfz_
 
   audio = AGS_MACHINE(sfz_synth)->audio;
 
-  wah_wah_enabled = gtk_check_button_get_active((GtkCheckButton *) button);
+  wah_wah_enabled = (gdouble) gtk_check_button_get_active((GtkCheckButton *) button);
 
   start_channel =
     channel = ags_audio_get_input(audio);

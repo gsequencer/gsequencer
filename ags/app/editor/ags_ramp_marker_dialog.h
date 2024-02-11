@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -69,7 +69,7 @@ struct _AgsRampMarkerDialogClass
 
 GType ags_ramp_marker_dialog_get_type(void);
 
-AgsRampMarkerDialog* ags_ramp_marker_dialog_new();
+AgsRampMarkerDialog* ags_ramp_marker_dialog_new(GtkWindow *transient_for);
 
 G_END_DECLS
 

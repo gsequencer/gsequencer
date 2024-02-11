@@ -27,7 +27,7 @@ void ags_timestamp_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_timestamp
- * @short_description: Timestamp unix and alike
+ * @short_description: timestamp unix and alike
  * @title: AgsTimestamp
  * @section_id:
  * @include: ags/thread/ags_timestamp.h

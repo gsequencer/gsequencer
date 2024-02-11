@@ -25,7 +25,7 @@ void ags_tactable_class_init(AgsTactableInterface *ginterface);
 
 /**
  * SECTION:ags_tactable
- * @short_description: Unique tempo set or attributes access
+ * @short_description: unique tempo set or attributes access
  * @title: AgsTactable
  * @section_id: AgsTactable
  * @include: ags/object/ags_tactable.h

@@ -48,6 +48,7 @@ ags_select_acceleration_dialog_response_callback(GtkWidget *dialog, gint respons
 	gtk_widget_hide((GtkWidget *) select_acceleration_dialog);
       }
     }
+    break;
   }
 }
 

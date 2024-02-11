@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,8 +21,9 @@
 #include <ags/app/editor/ags_composite_toolbar_callbacks.h>
 
 #include <ags/app/ags_ui_provider.h>
-#include <ags/app/ags_machine.h>
+#include <ags/app/ags_window.h>
 #include <ags/app/ags_composite_editor.h>
+#include <ags/app/ags_machine.h>
 
 #include <ags/app/editor/ags_move_note_dialog.h>
 #include <ags/app/editor/ags_crop_note_dialog.h>
@@ -152,9 +153,17 @@ ags_composite_toolbar_connectable_interface_init(AgsConnectableInterface *connec
 void
 ags_composite_toolbar_init(AgsCompositeToolbar *composite_toolbar)
 {
+  AgsWindow *window;
+  
   GSimpleActionGroup *action_group;
   GSimpleAction *action;
 
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  
   gtk_box_set_spacing((GtkBox *) composite_toolbar,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
   
@@ -408,24 +417,24 @@ ags_composite_toolbar_init(AgsCompositeToolbar *composite_toolbar)
 
   composite_toolbar->opacity = NULL;
 
-  composite_toolbar->notation_move_note = (GtkDialog *) ags_move_note_dialog_new();
-  composite_toolbar->notation_crop_note = (GtkDialog *) ags_crop_note_dialog_new();
-  composite_toolbar->notation_select_note = (GtkDialog *) ags_select_note_dialog_new();
-  composite_toolbar->notation_position_cursor = (GtkDialog *) ags_position_notation_cursor_dialog_new();
+  composite_toolbar->notation_move_note = (GtkDialog *) ags_move_note_dialog_new(window);
+  composite_toolbar->notation_crop_note = (GtkDialog *) ags_crop_note_dialog_new(window);
+  composite_toolbar->notation_select_note = (GtkDialog *) ags_select_note_dialog_new(window);
+  composite_toolbar->notation_position_cursor = (GtkDialog *) ags_position_notation_cursor_dialog_new(window);
 
-  composite_toolbar->sheet_position_cursor = (GtkDialog *) ags_position_sheet_cursor_dialog_new();
-  composite_toolbar->sheet_add_page = (GtkDialog *) ags_add_sheet_page_dialog_new();
-  composite_toolbar->sheet_remove_page = (GtkDialog *) ags_remove_sheet_page_dialog_new();
+  composite_toolbar->sheet_position_cursor = (GtkDialog *) ags_position_sheet_cursor_dialog_new(window);
+  composite_toolbar->sheet_add_page = (GtkDialog *) ags_add_sheet_page_dialog_new(window);
+  composite_toolbar->sheet_remove_page = (GtkDialog *) ags_remove_sheet_page_dialog_new(window);
 
-  composite_toolbar->automation_select_acceleration = (GtkDialog *) ags_select_acceleration_dialog_new();
-  composite_toolbar->automation_ramp_acceleration = (GtkDialog *) ags_ramp_acceleration_dialog_new();
-  composite_toolbar->automation_position_cursor = (GtkDialog *) ags_position_automation_cursor_dialog_new();
+  composite_toolbar->automation_select_acceleration = (GtkDialog *) ags_select_acceleration_dialog_new(window);
+  composite_toolbar->automation_ramp_acceleration = (GtkDialog *) ags_ramp_acceleration_dialog_new(window);
+  composite_toolbar->automation_position_cursor = (GtkDialog *) ags_position_automation_cursor_dialog_new(window);
 
-  composite_toolbar->wave_select_buffer = (GtkDialog *) ags_select_buffer_dialog_new();
-  composite_toolbar->wave_position_cursor = (GtkDialog *) ags_position_wave_cursor_dialog_new();
-  composite_toolbar->wave_time_stretch_buffer = (GtkDialog *) ags_time_stretch_buffer_dialog_new();
+  composite_toolbar->wave_select_buffer = (GtkDialog *) ags_select_buffer_dialog_new(window);
+  composite_toolbar->wave_position_cursor = (GtkDialog *) ags_position_wave_cursor_dialog_new(window);
+  composite_toolbar->wave_time_stretch_buffer = (GtkDialog *) ags_time_stretch_buffer_dialog_new(window);
 
-  composite_toolbar->program_ramp_marker = (GtkDialog *) ags_ramp_marker_dialog_new();
+  composite_toolbar->program_ramp_marker = (GtkDialog *) ags_ramp_marker_dialog_new(window);
 
   composite_toolbar->snap_to_zoom = NULL;
 }
@@ -562,7 +571,7 @@ ags_composite_toolbar_connect(AgsConnectable *connectable)
   
   composite_toolbar = AGS_COMPOSITE_TOOLBAR(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (composite_toolbar->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -595,7 +604,7 @@ ags_composite_toolbar_disconnect(AgsConnectable *connectable)
   
   composite_toolbar = AGS_COMPOSITE_TOOLBAR(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (composite_toolbar->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -2335,6 +2344,26 @@ ags_composite_toolbar_scope_create_and_connect(AgsCompositeToolbar *composite_to
   ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
 				     (GObject *) composite_toolbar->select);
 
+  /* reset dialogs */  
+  ags_applicable_reset(AGS_APPLICABLE(composite_toolbar->notation_move_note));
+  ags_applicable_reset(AGS_APPLICABLE(composite_toolbar->notation_crop_note));
+  ags_applicable_reset(AGS_APPLICABLE(composite_toolbar->notation_select_note));
+  ags_applicable_reset(AGS_APPLICABLE(composite_toolbar->notation_position_cursor));
+
+  ags_applicable_reset(AGS_APPLICABLE(composite_toolbar->sheet_position_cursor));
+  ags_applicable_reset(AGS_APPLICABLE(composite_toolbar->sheet_add_page));
+  ags_applicable_reset(AGS_APPLICABLE(composite_toolbar->sheet_remove_page));
+  
+  ags_applicable_reset(AGS_APPLICABLE(composite_toolbar->automation_select_acceleration));
+  ags_applicable_reset(AGS_APPLICABLE(composite_toolbar->automation_ramp_acceleration));
+  ags_applicable_reset(AGS_APPLICABLE(composite_toolbar->automation_position_cursor));
+
+  ags_applicable_reset(AGS_APPLICABLE(composite_toolbar->wave_select_buffer));
+  ags_applicable_reset(AGS_APPLICABLE(composite_toolbar->wave_position_cursor));
+  ags_applicable_reset(AGS_APPLICABLE(composite_toolbar->wave_time_stretch_buffer));
+
+  ags_applicable_reset(AGS_APPLICABLE(composite_toolbar->program_ramp_marker));
+  
   if(scope != NULL){
     if(!g_strcmp0(scope,
 		  AGS_COMPOSITE_TOOLBAR_SCOPE_NOTATION)){

@@ -2066,9 +2066,9 @@ ags_automation_edit_drawing_area_button_release_select_acceleration(GtkWidget *e
   hscrollbar_adjustment = gtk_scrollbar_get_adjustment(automation_edit->hscrollbar);
 
   g_range = gtk_adjustment_get_upper(vscrollbar_adjustment) + allocation.height;
-
+  
   /* region */
-  x0 = (guint) zoom_factor * automation_edit->selection_x0;
+  x0 = (guint) automation_edit->selection_x0;
 
   lower = automation_edit->lower;
   upper = automation_edit->upper;
@@ -2082,9 +2082,9 @@ ags_automation_edit_drawing_area_button_release_select_acceleration(GtkWidget *e
   }else{
     if((AGS_AUTOMATION_EDIT_INTEGER & (automation_edit->flags)) != 0 ||
        (AGS_AUTOMATION_EDIT_TOGGLED & (automation_edit->flags)) != 0){
-      y0 = round((((gdouble) (allocation.height - automation_edit->selection_y0) / g_range) * c_range) + lower);
+      y0 = round((((gdouble) (allocation.height - automation_edit->selection_y0) / (gdouble) g_range) * c_range) + lower);
     }else{
-      y0 = (((gdouble) (allocation.height - automation_edit->selection_y0) / g_range) * c_range) + lower;
+      y0 = ((((gdouble) allocation.height - (gdouble) automation_edit->selection_y0) / (gdouble) g_range) * c_range) + lower;
     }
   }
   
@@ -2099,9 +2099,9 @@ ags_automation_edit_drawing_area_button_release_select_acceleration(GtkWidget *e
   }else{
     if((AGS_AUTOMATION_EDIT_INTEGER & (automation_edit->flags)) != 0 ||
        (AGS_AUTOMATION_EDIT_TOGGLED & (automation_edit->flags)) != 0){
-      y1 = round(((((allocation.height - y) + gtk_adjustment_get_value(vscrollbar_adjustment) / g_range)) * c_range) + lower);
+      y1 = round((((((gdouble) allocation.height - y) / (gdouble) g_range)) * c_range) + lower);
     }else{
-      y1 = ((((allocation.height - y) + gtk_adjustment_get_value(vscrollbar_adjustment) / g_range)) * c_range) + lower;
+      y1 = (((((gdouble) allocation.height - y) / (gdouble) g_range)) * c_range) + lower;
     }
   }
     

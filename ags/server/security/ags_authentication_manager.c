@@ -27,7 +27,7 @@ void ags_authentication_manager_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_authentication_manager
- * @short_description: Singleton pattern to organize authentication
+ * @short_description: singleton pattern to organize authentication
  * @title: AgsAuthenticationManager
  * @section_id:
  * @include: ags/server/security/ags_authentication_manager.h

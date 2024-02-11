@@ -72,7 +72,7 @@ void* ags_thread_loop(void *ptr);
 
 /**
  * SECTION:ags_thread
- * @short_description: Thread class with base frequency
+ * @short_description: thread class with base frequency
  * @title: AgsThread
  * @section_id:
  * @include: ags/thread/ags_thread.h
@@ -101,6 +101,36 @@ void* ags_thread_loop(void *ptr);
  *
  * ags_thread_self() returns you your own #AgsThread you are running
  * in or %NULL if not applicable.
+ *
+ * To create a new thread, connect AgsThread::run() and attach it to
+ * main loop use the following example:
+ * 
+ * |[<!-- language="C" -->
+ * AgsThread *main_loop;
+ * AgsThread *thread;
+ * 
+ * AgsApplicationContext *application_context;
+ *
+ * gdouble frequency;
+ * 
+ * ags_thread_application_context_new();
+ *
+ * application_context = ags_application_context_get_instance();
+ * 
+ * main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+ *
+ * frequency = 0.004; // frequency equals to 0.004 causes AgsThread::run() to be emitted 250 times per second.
+ * 
+ * thread = ags_thread_new();
+ * ags_thread_set_frequency(thread,
+ *                          frequency);
+ * 
+ * g_signal_connect(thread, "run",
+ *                  G_CALLBACK(my_app_run_callback), my_data);
+ * 
+ * ags_thread_add_start_queue(main_loop,
+ *                            thread);
+ * ]|
  */
 
 enum{

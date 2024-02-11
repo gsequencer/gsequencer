@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -38,6 +38,7 @@ void ags_select_buffer_dialog_applicable_interface_init(AgsApplicableInterface *
 void ags_select_buffer_dialog_init(AgsSelectBufferDialog *select_buffer_dialog);
 void ags_select_buffer_dialog_finalize(GObject *gobject);
 
+gboolean ags_select_buffer_dialog_is_connected(AgsConnectable *connectable);
 void ags_select_buffer_dialog_connect(AgsConnectable *connectable);
 void ags_select_buffer_dialog_disconnect(AgsConnectable *connectable);
 
@@ -123,10 +124,23 @@ ags_select_buffer_dialog_class_init(AgsSelectBufferDialogClass *select_buffer_di
 void
 ags_select_buffer_dialog_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_select_buffer_dialog_is_connected;  
   connectable->connect = ags_select_buffer_dialog_connect;
   connectable->disconnect = ags_select_buffer_dialog_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -144,6 +158,10 @@ ags_select_buffer_dialog_init(AgsSelectBufferDialog *select_buffer_dialog)
   GtkBox *hbox;
   GtkLabel *label;
 
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+
   select_buffer_dialog->connectable_flags = 0;
 
   g_object_set(select_buffer_dialog,
@@ -154,7 +172,7 @@ ags_select_buffer_dialog_init(AgsSelectBufferDialog *select_buffer_dialog)
 			       TRUE);
   
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) select_buffer_dialog),
 		 (GtkWidget *) vbox);
 
@@ -167,7 +185,7 @@ ags_select_buffer_dialog_init(AgsSelectBufferDialog *select_buffer_dialog)
   
   /* select x0 - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append((GtkBox *) vbox,
 		 (GtkWidget *) hbox);
 
@@ -189,7 +207,7 @@ ags_select_buffer_dialog_init(AgsSelectBufferDialog *select_buffer_dialog)
   
   /* select x1 - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append(vbox,
 		 (GtkWidget *) hbox);
 
@@ -218,13 +236,38 @@ ags_select_buffer_dialog_init(AgsSelectBufferDialog *select_buffer_dialog)
 }
 
 void
+ags_select_buffer_dialog_finalize(GObject *gobject)
+{
+  AgsSelectBufferDialog *select_buffer_dialog;
+
+  select_buffer_dialog = (AgsSelectBufferDialog *) gobject;
+  
+  G_OBJECT_CLASS(ags_select_buffer_dialog_parent_class)->finalize(gobject);
+}
+
+gboolean
+ags_select_buffer_dialog_is_connected(AgsConnectable *connectable)
+{
+  AgsSelectBufferDialog *select_buffer_dialog;
+  
+  gboolean is_connected;
+  
+  select_buffer_dialog = AGS_SELECT_BUFFER_DIALOG(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (select_buffer_dialog->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
+}
+
+void
 ags_select_buffer_dialog_connect(AgsConnectable *connectable)
 {
   AgsSelectBufferDialog *select_buffer_dialog;
 
   select_buffer_dialog = AGS_SELECT_BUFFER_DIALOG(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (select_buffer_dialog->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -241,7 +284,7 @@ ags_select_buffer_dialog_disconnect(AgsConnectable *connectable)
 
   select_buffer_dialog = AGS_SELECT_BUFFER_DIALOG(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (select_buffer_dialog->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -252,16 +295,6 @@ ags_select_buffer_dialog_disconnect(AgsConnectable *connectable)
 		      G_CALLBACK(ags_select_buffer_dialog_response_callback),
 		      select_buffer_dialog,
 		      NULL);
-}
-
-void
-ags_select_buffer_dialog_finalize(GObject *gobject)
-{
-  AgsSelectBufferDialog *select_buffer_dialog;
-
-  select_buffer_dialog = (AgsSelectBufferDialog *) gobject;
-  
-  G_OBJECT_CLASS(ags_select_buffer_dialog_parent_class)->finalize(gobject);
 }
 
 void
@@ -411,6 +444,7 @@ ags_select_buffer_dialog_reset(AgsApplicable *applicable)
 
 /**
  * ags_select_buffer_dialog_new:
+ * @transient_for: the transient #AgsWindow
  *
  * Create a new #AgsSelectBufferDialog.
  *
@@ -419,11 +453,12 @@ ags_select_buffer_dialog_reset(AgsApplicable *applicable)
  * Since: 3.0.0
  */
 AgsSelectBufferDialog*
-ags_select_buffer_dialog_new()
+ags_select_buffer_dialog_new(GtkWindow *transient_for)
 {
   AgsSelectBufferDialog *select_buffer_dialog;
 
   select_buffer_dialog = (AgsSelectBufferDialog *) g_object_new(AGS_TYPE_SELECT_BUFFER_DIALOG,
+								"transient-for", transient_for,
 								NULL);
 
   return(select_buffer_dialog);
