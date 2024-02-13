@@ -53,9 +53,9 @@ struct _AgsFileUtil
   
   gchar *encoding;
 
-  GIConv *converter;
+  GIConv converter;
   
-  GIConv *reverse_converter;
+  GIConv reverse_converter;
 };
 
 GType ags_file_util_get_type(void);
