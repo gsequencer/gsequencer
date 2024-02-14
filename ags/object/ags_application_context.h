@@ -51,6 +51,7 @@ G_BEGIN_DECLS
 
 #define AGS_DEFAULT_DIRECTORY ".gsequencer"
 #define AGS_DEFAULT_CONFIG "ags.conf"
+#define AGS_DEFAULT_BUNDLE_ID "com.gsequencer.GSequencer"
 
 typedef struct _AgsApplicationContext AgsApplicationContext;
 typedef struct _AgsApplicationContextClass AgsApplicationContextClass;
