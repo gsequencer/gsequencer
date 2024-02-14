@@ -342,7 +342,7 @@ ags_regex_util_compile(AgsRegexUtil *regex_util,
 		      "regcomp unknown character class name");
 	}
 	break;
-#if !defined(__APPLE__) || !defined(__FreeBSD__) || !defined(__DragonFly__)
+#if !defined(__APPLE__) && !defined(__FreeBSD__) && !defined(__DragonFly__)
       case REG_EEND:
 	{
 	  g_set_error(error,
@@ -376,7 +376,7 @@ ags_regex_util_compile(AgsRegexUtil *regex_util,
 		      "regcomp invalid range operator");
 	}
 	break;
-#if !defined(__APPLE__) || !defined(__FreeBSD__) || !defined(__DragonFly__)
+#if !defined(__APPLE__) && !defined(__FreeBSD__) && !defined(__DragonFly__)
       case REG_ESIZE:
 	{
 	  g_set_error(error,
