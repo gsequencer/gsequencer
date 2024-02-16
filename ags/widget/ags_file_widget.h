@@ -1,0 +1,156 @@
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2024 Joël Krähemann
+ *
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#ifndef __AGS_FILE_WIDGET_H__
+#define __AGS_FILE_WIDGET_H__
+
+#include <glib.h>
+#include <glib-object.h>
+
+#include <gtk/gtk.h>
+
+G_BEGIN_DECLS
+
+#define AGS_TYPE_FILE_WIDGET                (ags_file_widget_get_type())
+#define AGS_FILE_WIDGET(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FILE_WIDGET, AgsFileWidget))
+#define AGS_FILE_WIDGET_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_FILE_WIDGET, AgsFileWidgetClass))
+#define AGS_IS_FILE_WIDGET(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_FILE_WIDGET))
+#define AGS_IS_FILE_WIDGET_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FILE_WIDGET))
+#define AGS_FILE_WIDGET_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_FILE_WIDGET, AgsFileWidgetClass))
+
+#define AGS_FILE_WIDGET_LOCATION_USER_HOME "user-home"
+#define AGS_FILE_WIDGET_LOCATION_USER_DESKTOP "user-desktop"
+#define AGS_FILE_WIDGET_LOCATION_FOLDER_PICTURES "folder-pictures"
+#define AGS_FILE_WIDGET_LOCATION_FOLDER_MUSIC "folder-music"
+#define AGS_FILE_WIDGET_LOCATION_FOLDER_DOWNLOAD "folder-download"
+#define AGS_FILE_WIDGET_LOCATION_FOLDER_DOCUMENTS "folder-documents"
+#define AGS_FILE_WIDGET_LOCATION_FOLDER "folder"
+
+typedef struct _AgsFileWidget AgsFileWidget;
+typedef struct _AgsFileWidgetClass AgsFileWidgetClass;
+
+typedef enum{
+  AGS_FILE_WIDGET_APP_SANDBOX            = 1,
+  AGS_FILE_WIDGET_WITH_MULTI_SELECTION   = 1 <<  1,
+  AGS_FILE_WIDGET_WITH_PREVIEW           = 1 <<  2,
+  AGS_FILE_WIDGET_HIDDEN_FILES_VISIBLE   = 1 <<  3,
+}AgsFileWidgetFlags;
+
+typedef enum{
+  AGS_FILE_WIDGET_OPEN,
+  AGS_FILE_WIDGET_SAVE_AS,
+}AgsFileWidgetFileAction;
+
+struct _AgsFileWidget
+{
+  GtkBox box;
+
+  guint flags;
+  guint file_action;
+
+  gchar *home_path;
+  gchar *sandbox_path;
+
+  gchar *default_path;
+
+  gchar *current_path;
+  
+  GtkBox *vbox;
+
+  GtkEntry *location_entry;
+
+  GtkDropDown *location_drop_down;
+  
+  GtkBox *left_vbox;
+  
+  GtkBox *location_box;
+  
+  GtkButton *recently_used;
+
+  GHashTable *location;
+  
+  GtkButton *start_here;
+  
+  GtkSeparator *location_separator;
+  
+  GHashTable *bookmark;
+  
+  GtkBox *center_vbox;
+
+  GtkNoSelection *filename_key_selection;
+  GtkListItemFactory *filename_factory[4];
+  
+  GtkSingleSelection *filename_single_selection;
+  GtkMultiSelection *filename_multi_selection;
+
+  GtkScrolledWindow *filename_scrolled_window;
+  
+  GtkColumnView *filename_view;
+
+  GtkBox *right_vbox;
+
+  GtkWidget *preview;
+};
+
+struct _AgsFileWidgetClass
+{
+  GtkBoxClass box;
+
+  void (*refresh)(AgsFileWidget *file_widget);
+
+  void (*create_dir)(AgsFileWidget *file_widget,
+		     gchar *dir_path);
+};
+
+GType ags_file_widget_get_type();
+
+gboolean ags_file_widget_test_flags(AgsFileWidget *file_widget,
+				    guint flags);
+void ags_file_widget_set_flags(AgsFileWidget *file_widget,
+			       guint flags);
+void ags_file_widget_unset_flags(AgsFileWidget *file_widget,
+				 guint flags);
+
+gboolean ags_file_widget_test_file_action(AgsFileWidget *file_widget,
+					  guint file_action);
+void ags_file_widget_set_file_action(AgsFileWidget *file_widget,
+				     guint file_action);
+
+void ags_file_widget_add_location(AgsFileWidget *file_widget,
+				  gchar *button_action,
+				  gchar *button_text);
+void ags_file_widget_remove_location(AgsFileWidget *file_widget,
+				     gchar *button_action);
+
+void ags_file_widget_add_bookmark(AgsFileWidget *file_widget,
+				  gchar *button_action,
+				  gchar *button_text);
+void ags_file_widget_remove_bookmark(AgsFileWidget *file_widget,
+				     gchar *button_action);
+
+void ags_file_widget_refresh(AgsFileWidget *file_widget);
+
+void ags_file_widget_create_dir(AgsFileWidget *file_widget,
+				gchar *dir_path);
+
+AgsFileWidget* ags_file_widget_new();
+
+G_END_DECLS
+
+#endif /*__AGS_FILE_WIDGET_H__*/
