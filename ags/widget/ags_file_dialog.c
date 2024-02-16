@@ -33,6 +33,7 @@ void ags_file_dialog_get_property(GObject *gobject,
 				  GValue *value,
 				  GParamSpec *param_spec);
 void ags_file_dialog_dispose(GObject *gobject);
+void ags_file_dialog_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_file_dialog
@@ -102,110 +103,17 @@ ags_file_dialog_class_init(AgsFileDialogClass *file_dialog)
 
 void
 ags_file_dialog_init(AgsFileDialog *file_dialog)
-{
-  GtkBox *hbox;
-  GtkLabel *label;
-  
-  GtkStringList *location_string_list;
-
-  const char* const* location_strv = {
-    "/",
-    NULL,
-  };
-
-  const char* const* filename_strv = {
-    ".",
-    "..",
-    NULL,
-  };
-  
+{  
   file_dialog->flags = 0;
-  file_dialog->file_action = AGS_FILE_DIALOG_OPEN;
-
-  file_dialog->home_path = NULL;
-  file_dialog->sandbox_path = NULL;
-  
-  file_dialog->default_path = NULL;
 
   file_dialog->vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 					     6);
+  gtk_window_set_child((GtkWindow *) file_dialog,
+		       (GtkWidget *) file_dialog->vbox);  
 
-  /* location */
-  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				6);
+  file_dialog->file_widget = ags_file_widget_new();  
   gtk_box_append(file_dialog->vbox,
-		 (GtkWidget *) hbox);
-
-  label = (GtkLabel *) gtk_label_new(i18n("location"));
-  gtk_box_append(hbox,
-		 (GtkWidget *) label);
-
-  file_dialog->location_entry = (GtkEntry *) gtk_entry_new();
-  gtk_box_append(hbox,
-		 (GtkWidget *) file_dialog->location_entry);
-
-
-  /* location - combo */
-  location_string_list = gtk_string_list_new(location_strv);
-  
-  file_dialog->location_drop_down = (GtkDropDown *) gtk_drop_down_new(G_LIST_MODEL(location_string_list),
-								      NULL);
-  gtk_box_append(hbox,
-		 (GtkWidget *) file_dialog->location_drop_down);
-
-  /* left */
-  file_dialog->left_vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-						  6);
-  gtk_box_append(file_dialog->vbox,
-		 (GtkWidget *) file_dialog->left_vbox);
-
-  file_dialog->recently_used = (GtkButton *) gtk_button_new_with_label(i18n("recently used"));
-  gtk_box_append(file_dialog->left_vbox,
-		 (GtkWidget *) file_dialog->recently_used);
-
-  file_dialog->location = g_hash_table_new_full(g_direct_hash,
-						g_string_equal,
-						g_free,
-						g_free);
-  
-  file_dialog->start_here = (GtkButton *) gtk_button_new_with_label(i18n("start here"));
-  gtk_box_append(file_dialog->left_vbox,
-		 (GtkWidget *) file_dialog->start_here);
-  
-  file_dialog->location_separator = (GtkButton *) gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
-  gtk_box_append(file_dialog->left_vbox,
-		 (GtkWidget *) file_dialog->location_separator);
-  
-  file_dialog->bookmark = g_hash_table_new_full(g_direct_hash,
-						g_string_equal,
-						g_free,
-						g_free);
-
-  /* center */
-  file_dialog->center_vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-						    6);
-  gtk_box_append(file_dialog->vbox,
-		 (GtkWidget *) file_dialog->center_vbox);
-
-  filename_list = g_string_list_new(filename_strv);
-
-  file_dialog->filename_single_selection = gtk_single_selection_new(G_LIST_MODEL(filename_list));
-  file_dialog->filename_multi_selection = gtk_single_selection_new(G_LIST_MODEL(filename_list));
-  
-  file_dialog->filename_view = (GtkListView *) gtk_list_view_new(GTK_SELECTION_MODEL(file_dialog->filename_single_selection),
-								 NULL);
-  gtk_box_append(file_dialog->center_vbox,
-		 (GtkWidget *) file_dialog->filename_view);
-
-  /* right */
-  file_dialog->right_vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-						   6);
-  gtk_widget_set_visible((GtkWidget *) file_dialog->right_vbox,
-			 FALSE);
-  gtk_box_append(file_dialog->vbox,
-		 (GtkWidget *) file_dialog->right_vbox);
-
-  file_dialog->preview = NULL;
+		 (GtkWidget *) file_dialog->file_widget);
   
   /* button */
   file_dialog->activate_button = (GtkButton *) gtk_button_new_with_label(i18n("open"));
@@ -215,9 +123,9 @@ ags_file_dialog_init(AgsFileDialog *file_dialog)
 
 void
 ags_file_dialog_set_property(GObject *gobject,
-			   guint prop_id,
-			   const GValue *value,
-			   GParamSpec *param_spec)
+			     guint prop_id,
+			     const GValue *value,
+			     GParamSpec *param_spec)
 {
   AgsFileDialog *file_dialog;
 
@@ -232,9 +140,9 @@ ags_file_dialog_set_property(GObject *gobject,
 
 void
 ags_file_dialog_get_property(GObject *gobject,
-			   guint prop_id,
-			   GValue *value,
-			   GParamSpec *param_spec)
+			     guint prop_id,
+			     GValue *value,
+			     GParamSpec *param_spec)
 {
   AgsFileDialog *file_dialog;
 
@@ -270,7 +178,7 @@ ags_file_dialog_finalize(GObject *gobject)
  *
  * Returns: the new #AgsFileDialog
  *
- * Since: 6.5.3
+ * Since: 6.6.0
  */
 AgsFileDialog*
 ags_file_dialog_new(GtkWidget *transient_for,
