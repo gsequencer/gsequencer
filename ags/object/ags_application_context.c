@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -72,7 +72,7 @@ void ags_application_context_real_quit(AgsApplicationContext *application_contex
 
 /**
  * SECTION:ags_application_context
- * @short_description: The application context
+ * @short_description: the application context
  * @title: AgsApplicationContext
  * @section_id:
  * @include: ags/object/ags_application_context.h
@@ -80,6 +80,30 @@ void ags_application_context_real_quit(AgsApplicationContext *application_contex
  * #AgsApplicationContext is a context provider is your and libraries entry
  * point to the application. You might subtype it to implement your own contices.
  * Thus you should consider to create a provider interface for reusability.
+ *
+ * Use this code to retrieve application context:
+ *
+ * |[<!-- language="C" -->
+ * AgsApplicationContext *application_context = ags_application_context_get_instance();
+ * ]|
+ *
+ * #AgsApplicationContext itself doesn't implement any provider interfaces,
+ * so you need to instantiate a specific application context first, before you
+ * get the singleton.
+ *
+ * For example with #AgsThreadApplicationContext implementing #AgsConcurrencyProvider:
+ * 
+ * |[<!-- language="C" -->
+ * AgsThread *main_loop;
+ * 
+ * AgsApplicationContext *application_context;
+ * 
+ * ags_thread_application_context_new();
+ *
+ * application_context = ags_application_context_get_instance();
+ * 
+ * main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+ * ]|
  */
 
 enum{

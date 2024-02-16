@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,6 +23,8 @@
 #undef AGS_W32API
 
 #undef AGS_OSXAPI
+
+#undef AGS_MACOS_SANDBOX
 
 #undef AGS_WITH_ALSA
 

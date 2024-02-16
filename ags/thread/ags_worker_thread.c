@@ -33,7 +33,7 @@ void* ags_woker_thread_do_poll_loop(void *ptr);
 
 /**
  * SECTION:ags_worker_thread
- * @short_description: Worker thread class discarding base frequency
+ * @short_description: worker thread class discarding base frequency
  * @title: AgsWorkerThread
  * @section_id:
  * @include: ags/thread/ags_worker_thread.h

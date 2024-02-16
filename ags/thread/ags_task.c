@@ -38,7 +38,7 @@ void ags_task_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_task
- * @short_description: Thread-safe task
+ * @short_description: thread-safe task
  * @title: AgsTask
  * @section_id: 
  * @include: ags/thread/ags_task.h

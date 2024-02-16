@@ -56,7 +56,7 @@ gboolean ags_task_launcher_source_func(AgsTaskLauncher *task_launcher);
 
 /**
  * SECTION:ags_task_launcher
- * @short_description: Task launcher thread-safe context within tree
+ * @short_description: task launcher thread-safe context within tree
  * @title: AgsTaskLauncher
  * @section_id:
  * @include: ags/thread/ags_task_launcher.h

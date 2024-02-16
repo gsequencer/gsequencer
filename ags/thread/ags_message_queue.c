@@ -42,7 +42,7 @@ void ags_message_queue_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_message_queue
- * @short_description: Message queue
+ * @short_description: message queue
  * @title: AgsMessageQueue
  * @section_id:
  * @include: ags/thread/ags_message_queue.h

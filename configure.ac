@@ -8,10 +8,10 @@
 # Process this file with autoconf to produce a configure script.
 
 LT_CURRENT=6
-LT_REVISION=4
-LT_AGE=4
+LT_REVISION=5
+LT_AGE=3
 
-m4_define([ags_version], [6.4.4])
+m4_define([ags_version], [6.5.3])
 
 AC_PREREQ([2.69])
 AC_INIT([gsequencer],m4_defn([ags_version]),[jkraehemann@gmail.com])
@@ -102,6 +102,11 @@ AC_ARG_ENABLE(osx-dmg-env, [AS_HELP_STRING([--enable-osx-dmg-env],
                                       [enable OS X DMG environment (default is no)])],
               [],
               [enable_osx_dmg_env=no])
+
+AC_ARG_ENABLE(macos-sandbox, [AS_HELP_STRING([--enable-macos-sandbox],
+                                      [enable macos sandbox environment (default is no)])],
+              [],
+              [enable_macos_sandbox=no])
 
 AC_ARG_ENABLE(uuid, [AS_HELP_STRING([--enable-uuid],
                                     [enable uuid (default is yes)])],
@@ -369,6 +374,12 @@ AS_IF([test "x$enable_osx_dmg_env" != xno],
       AC_MSG_NOTICE([OS X DMG environment enabled])],
       [AC_MSG_NOTICE([OS X DMG environment disabled])])
 AM_CONDITIONAL([WITH_OSX_DMG_ENV], [test "x$enable_osx_dmg_env" == xyes])
+
+AS_IF([test "x$enable_macos_sandbox" != xno],
+      [AC_DEFINE([AGS_MACOS_SANDBOX], [1], [macos sandbox environment enabled])
+      AC_MSG_NOTICE([macos sandbox environment enabled])],
+      [AC_MSG_NOTICE([macos sandbox environment disabled])])
+AM_CONDITIONAL([WITH_MACOS_SANDBOX], [test "x$enable_macos_sandbox" == xyes])
 
 AS_IF([test "x$enable_uuid" != xno],
       [PKG_CHECK_MODULES([UUID], [uuid >= 1.0.1])

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -66,7 +66,7 @@ struct _AgsSelectNoteDialogClass
 
 GType ags_select_note_dialog_get_type(void);
 
-AgsSelectNoteDialog* ags_select_note_dialog_new();
+AgsSelectNoteDialog* ags_select_note_dialog_new(GtkWindow *transient_for);
 
 G_END_DECLS
 

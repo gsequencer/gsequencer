@@ -99,7 +99,7 @@ struct _AgsRegexUtil
   gboolean is_unichar;
   gboolean is_unichar2;
 
-  GIConv *converter;
+  GIConv converter;
 
   regex_t regex;
   

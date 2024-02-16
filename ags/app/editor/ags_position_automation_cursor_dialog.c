@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,6 +36,7 @@ void ags_position_automation_cursor_dialog_applicable_interface_init(AgsApplicab
 void ags_position_automation_cursor_dialog_init(AgsPositionAutomationCursorDialog *position_automation_cursor_dialog);
 void ags_position_automation_cursor_dialog_finalize(GObject *gobject);
 
+gboolean ags_position_automation_cursor_dialog_is_connected(AgsConnectable *connectable);
 void ags_position_automation_cursor_dialog_connect(AgsConnectable *connectable);
 void ags_position_automation_cursor_dialog_disconnect(AgsConnectable *connectable);
 
@@ -121,10 +122,23 @@ ags_position_automation_cursor_dialog_class_init(AgsPositionAutomationCursorDial
 void
 ags_position_automation_cursor_dialog_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_position_automation_cursor_dialog_is_connected;  
   connectable->connect = ags_position_automation_cursor_dialog_connect;
   connectable->disconnect = ags_position_automation_cursor_dialog_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -142,6 +156,10 @@ ags_position_automation_cursor_dialog_init(AgsPositionAutomationCursorDialog *po
   GtkBox *hbox;
   GtkLabel *label;
 
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+
   position_automation_cursor_dialog->connectable_flags = 0;
 
   gtk_window_set_hide_on_close((GtkWindow *) position_automation_cursor_dialog,
@@ -152,7 +170,7 @@ ags_position_automation_cursor_dialog_init(AgsPositionAutomationCursorDialog *po
 	       NULL);
 
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) position_automation_cursor_dialog),
 		 GTK_WIDGET(vbox));  
 
@@ -165,7 +183,7 @@ ags_position_automation_cursor_dialog_init(AgsPositionAutomationCursorDialog *po
 
   /* position x - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append(vbox,
 		 (GtkWidget *) hbox);
 
@@ -192,13 +210,38 @@ ags_position_automation_cursor_dialog_init(AgsPositionAutomationCursorDialog *po
 }
 
 void
+ags_position_automation_cursor_dialog_finalize(GObject *gobject)
+{
+  AgsPositionAutomationCursorDialog *position_automation_cursor_dialog;
+
+  position_automation_cursor_dialog = (AgsPositionAutomationCursorDialog *) gobject;
+  
+  G_OBJECT_CLASS(ags_position_automation_cursor_dialog_parent_class)->finalize(gobject);
+}
+
+gboolean
+ags_position_automation_cursor_dialog_is_connected(AgsConnectable *connectable)
+{
+  AgsPositionAutomationCursorDialog *position_automation_cursor_dialog;
+  
+  gboolean is_connected;
+  
+  position_automation_cursor_dialog = AGS_POSITION_AUTOMATION_CURSOR_DIALOG(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (position_automation_cursor_dialog->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
+}
+
+void
 ags_position_automation_cursor_dialog_connect(AgsConnectable *connectable)
 {
   AgsPositionAutomationCursorDialog *position_automation_cursor_dialog;
 
   position_automation_cursor_dialog = AGS_POSITION_AUTOMATION_CURSOR_DIALOG(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (position_automation_cursor_dialog->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -215,7 +258,7 @@ ags_position_automation_cursor_dialog_disconnect(AgsConnectable *connectable)
 
   position_automation_cursor_dialog = AGS_POSITION_AUTOMATION_CURSOR_DIALOG(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (position_automation_cursor_dialog->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -226,16 +269,6 @@ ags_position_automation_cursor_dialog_disconnect(AgsConnectable *connectable)
 		      G_CALLBACK(ags_position_automation_cursor_dialog_response_callback),
 		      position_automation_cursor_dialog,
 		      NULL);
-}
-
-void
-ags_position_automation_cursor_dialog_finalize(GObject *gobject)
-{
-  AgsPositionAutomationCursorDialog *position_automation_cursor_dialog;
-
-  position_automation_cursor_dialog = (AgsPositionAutomationCursorDialog *) gobject;
-  
-  G_OBJECT_CLASS(ags_position_automation_cursor_dialog_parent_class)->finalize(gobject);
 }
 
 void
@@ -317,6 +350,7 @@ ags_position_automation_cursor_dialog_reset(AgsApplicable *applicable)
 
 /**
  * ags_position_automation_cursor_dialog_new:
+ * @transient_for: the transient #AgsWindow
  *
  * Create a new #AgsPositionAutomationCursorDialog.
  *
@@ -325,11 +359,12 @@ ags_position_automation_cursor_dialog_reset(AgsApplicable *applicable)
  * Since: 3.0.0
  */
 AgsPositionAutomationCursorDialog*
-ags_position_automation_cursor_dialog_new()
+ags_position_automation_cursor_dialog_new(GtkWindow *transient_for)
 {
   AgsPositionAutomationCursorDialog *position_automation_cursor_dialog;
 
   position_automation_cursor_dialog = (AgsPositionAutomationCursorDialog *) g_object_new(AGS_TYPE_POSITION_AUTOMATION_CURSOR_DIALOG,
+											 "transient-for", transient_for,
 											 NULL);
 
   return(position_automation_cursor_dialog);

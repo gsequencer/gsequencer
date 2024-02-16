@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,6 +32,7 @@ void ags_move_note_dialog_applicable_interface_init(AgsApplicableInterface *appl
 void ags_move_note_dialog_init(AgsMoveNoteDialog *move_note_dialog);
 void ags_move_note_dialog_finalize(GObject *gobject);
 
+gboolean ags_move_note_dialog_is_connected(AgsConnectable *connectable);
 void ags_move_note_dialog_connect(AgsConnectable *connectable);
 void ags_move_note_dialog_disconnect(AgsConnectable *connectable);
 
@@ -117,10 +118,23 @@ ags_move_note_dialog_class_init(AgsMoveNoteDialogClass *move_note_dialog)
 void
 ags_move_note_dialog_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_move_note_dialog_is_connected;  
   connectable->connect = ags_move_note_dialog_connect;
   connectable->disconnect = ags_move_note_dialog_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -138,6 +152,10 @@ ags_move_note_dialog_init(AgsMoveNoteDialog *move_note_dialog)
   GtkBox *hbox;
   GtkLabel *label;
 
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+
   move_note_dialog->connectable_flags = 0;
 
   g_object_set(move_note_dialog,
@@ -148,7 +166,7 @@ ags_move_note_dialog_init(AgsMoveNoteDialog *move_note_dialog)
 			       TRUE);
   
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) move_note_dialog),
 		 (GtkWidget *) vbox);  
 
@@ -166,7 +184,7 @@ ags_move_note_dialog_init(AgsMoveNoteDialog *move_note_dialog)
 
   /* move x - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append(vbox,
 		 GTK_WIDGET(hbox));
 
@@ -186,7 +204,7 @@ ags_move_note_dialog_init(AgsMoveNoteDialog *move_note_dialog)
 
   /* move y - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append(vbox,
 		 GTK_WIDGET(hbox));
 
@@ -213,13 +231,38 @@ ags_move_note_dialog_init(AgsMoveNoteDialog *move_note_dialog)
 }
 
 void
+ags_move_note_dialog_finalize(GObject *gobject)
+{
+  AgsMoveNoteDialog *move_note_dialog;
+
+  move_note_dialog = (AgsMoveNoteDialog *) gobject;
+  
+  G_OBJECT_CLASS(ags_move_note_dialog_parent_class)->finalize(gobject);
+}
+
+gboolean
+ags_move_note_dialog_is_connected(AgsConnectable *connectable)
+{
+  AgsMoveNoteDialog *move_note_dialog;
+  
+  gboolean is_connected;
+  
+  move_note_dialog = AGS_MOVE_NOTE_DIALOG(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (move_note_dialog->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
+}
+
+void
 ags_move_note_dialog_connect(AgsConnectable *connectable)
 {
   AgsMoveNoteDialog *move_note_dialog;
 
   move_note_dialog = AGS_MOVE_NOTE_DIALOG(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (move_note_dialog->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -242,7 +285,7 @@ ags_move_note_dialog_disconnect(AgsConnectable *connectable)
 
   move_note_dialog = AGS_MOVE_NOTE_DIALOG(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (move_note_dialog->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -265,16 +308,6 @@ ags_move_note_dialog_disconnect(AgsConnectable *connectable)
 		      G_CALLBACK(ags_move_note_dialog_absolute_callback),
 		      move_note_dialog,
 		      NULL);
-}
-
-void
-ags_move_note_dialog_finalize(GObject *gobject)
-{
-  AgsMoveNoteDialog *move_note_dialog;
-
-  move_note_dialog = (AgsMoveNoteDialog *) gobject;
-  
-  G_OBJECT_CLASS(ags_move_note_dialog_parent_class)->finalize(gobject);
 }
 
 void
@@ -444,6 +477,7 @@ ags_move_note_dialog_reset(AgsApplicable *applicable)
 
 /**
  * ags_move_note_dialog_new:
+ * @transient_for: the transient #AgsWindow
  *
  * Create a new #AgsMoveNoteDialog.
  *
@@ -452,11 +486,12 @@ ags_move_note_dialog_reset(AgsApplicable *applicable)
  * Since: 3.0.0
  */
 AgsMoveNoteDialog*
-ags_move_note_dialog_new()
+ags_move_note_dialog_new(GtkWindow *transient_for)
 {
   AgsMoveNoteDialog *move_note_dialog;
 
   move_note_dialog = (AgsMoveNoteDialog *) g_object_new(AGS_TYPE_MOVE_NOTE_DIALOG,
+							"transient-for", transient_for,
 							NULL);
 
   return(move_note_dialog);

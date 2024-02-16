@@ -21,6 +21,16 @@
 
 void ags_service_provider_class_init(AgsServiceProviderInterface *ginterface);
 
+/**
+ * SECTION:ags_service_provider
+ * @short_description: service provider interface
+ * @title: AgsServiceProvider
+ * @section_id: AgsServiceProvider
+ * @include: ags/server/ags_service_provider.h
+ *
+ * The #AgsServiceProvider gives you unique access to HTTP server instances.
+ */
+
 GType
 ags_service_provider_get_type()
 {

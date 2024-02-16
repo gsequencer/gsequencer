@@ -4732,8 +4732,8 @@ ags_composite_editor_delete_marker(AgsCompositeEditor *composite_editor,
  */
 void
 ags_composite_editor_select_region(AgsCompositeEditor *composite_editor,
-				   guint x0, guint y0, 
-				   guint x1, guint y1)
+				   guint x0, gdouble y0, 
+				   guint x1, gdouble y1)
 {
   AgsMachine *machine;
   
@@ -4782,8 +4782,8 @@ ags_composite_editor_select_region(AgsCompositeEditor *composite_editor,
 							 timestamp)) != NULL &&
 	    ags_timestamp_get_ags_offset(timestamp) < (guint64) (AGS_NOTATION_DEFAULT_OFFSET * floor((double) x1 / (double) AGS_NOTATION_DEFAULT_OFFSET)) + AGS_NOTATION_DEFAULT_OFFSET){
 	ags_notation_add_region_to_selection(notation->data,
-					     x0, y0,
-					     x1, y1,
+					     x0, (guint) y0,
+					     x1, (guint) y1,
 					     TRUE);
 	
 	/* iterate */
@@ -4813,25 +4813,9 @@ ags_composite_editor_select_region(AgsCompositeEditor *composite_editor,
 
     notebook = composite_editor->automation_edit->channel_selector;
 
-     /* swap values if needed */
-    if(x0 > x1){
-      guint tmp;
-
-      tmp = x0;
-      
-      x0 = x1;
-      x1 = tmp;
-    }
-
-    if(y0 > y1){
-      gdouble tmp;
-
-      tmp = y0;
-      
-      y0 = y1;
-      y1 = tmp;
-    }
-
+    /* swap values if needed */
+    //NOTE:JK: don't
+    
     /* check all active tabs */
     g_object_get(machine->audio,
 		 "automation", &start_automation,
@@ -4921,23 +4905,7 @@ ags_composite_editor_select_region(AgsCompositeEditor *composite_editor,
     bpm = gtk_spin_button_get_value(window->navigation->bpm);
 
     /* swap values if needed */
-    if(x0 > x1){
-      guint64 tmp;
-
-      tmp = x0;
-      
-      x0 = x1;
-      x1 = tmp;
-    }
-
-    if(y0 > y1){
-      gdouble tmp;
-
-      tmp = y0;
-      
-      y0 = y1;
-      y1 = tmp;
-    }
+    //NOTE:JK: don't
     
     /* zoom */
     zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) composite_editor->toolbar->zoom) - 2.0);

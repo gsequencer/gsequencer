@@ -1658,17 +1658,16 @@ ags_notation_find_region(AgsNotation *notation,
   notation_mutex = AGS_NOTATION_GET_OBJ_MUTEX(notation);
 
   if(x0 > x1){
-    guint tmp;
-
-    tmp = x1;
-    x1 = x0;
-    x0 = x1;
-  }
-
-  if(y0 > y1){
+    guint tmp_x;
     gdouble tmp_y;
 
+    tmp_x = x0;
+    
+    x0 = x1;
+    x1 = tmp_x;
+
     tmp_y = y0;
+
     y0 = y1;
     y1 = tmp_y;
   }
@@ -1706,7 +1705,8 @@ ags_notation_find_region(AgsNotation *notation,
       break;
     }
 
-    if(current_y >= y0 && current_y < y1){
+    if((y0 < y1 && current_y >= y0 && current_y < y1) ||
+       (y0 >= y1 && current_y < y0 && current_y >= y1)){
       region = g_list_prepend(region,
 			      note->data);
     }

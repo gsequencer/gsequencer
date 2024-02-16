@@ -23,7 +23,7 @@
 
 /**
  * SECTION:ags_complex
- * @short_description: Boxed type of complex
+ * @short_description: boxed type of complex
  * @title: AgsComplex
  * @section_id:
  * @include: ags/lib/ags_complex.h

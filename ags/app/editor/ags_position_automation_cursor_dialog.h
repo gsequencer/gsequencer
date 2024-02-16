@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -61,7 +61,7 @@ struct _AgsPositionAutomationCursorDialogClass
 
 GType ags_position_automation_cursor_dialog_get_type(void);
 
-AgsPositionAutomationCursorDialog* ags_position_automation_cursor_dialog_new();
+AgsPositionAutomationCursorDialog* ags_position_automation_cursor_dialog_new(GtkWindow *transient_for);
 
 G_END_DECLS
 

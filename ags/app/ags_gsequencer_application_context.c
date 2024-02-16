@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -2959,10 +2959,6 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
 				      NULL);
   window->no_config = no_config;
   
-  gsequencer_application_context->window = (GtkWidget *) window;
-
-  gsequencer_application_context->navigation = (GtkWidget *) window->navigation;
-
   gtk_window_set_default_size((GtkWindow *) window,
 			      AGS_WINDOW_DEFAULT_WIDTH, AGS_WINDOW_DEFAULT_HEIGHT);
   gtk_paned_set_position((GtkPaned *) window->paned, 300);
@@ -2973,8 +2969,6 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
   
   /* AgsExportWindow */
   export_window = ags_export_window_new((GtkWindow *) window);
-  ags_ui_provider_set_export_window(AGS_UI_PROVIDER(application_context),
-				    (GtkWidget *) export_window);
 
   export_soundcard = ags_export_soundcard_new();
   ags_export_window_add_export_soundcard(export_window,
@@ -2982,8 +2976,6 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
   
   /* AgsMetaDataWindow */
   widget = (GtkWidget *) ags_meta_data_window_new();
-  ags_ui_provider_set_meta_data_window(AGS_UI_PROVIDER(application_context),
-  				       widget);
 }
 
 void

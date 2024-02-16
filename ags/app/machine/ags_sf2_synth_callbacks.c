@@ -1365,7 +1365,7 @@ ags_sf2_synth_wah_wah_enabled_callback(GtkCheckButton *button, AgsSF2Synth *sf2_
 
   audio = AGS_MACHINE(sf2_synth)->audio;
 
-  wah_wah_enabled = gtk_check_button_get_active((GtkCheckButton *) button);
+  wah_wah_enabled = (gdouble) gtk_check_button_get_active((GtkCheckButton *) button);
 
   start_channel =
     channel = ags_audio_get_input(audio);

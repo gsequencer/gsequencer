@@ -18,9 +18,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 6.4.4\n"
+"Project-Id-Version: gsequencer 6.5.2\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-02-07 16:49+0100\n"
+"POT-Creation-Date: 2024-02-14 02:53+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -134,21 +134,21 @@ msgstr ""
 #: ags/app/export/ags_wave_export_dialog_callbacks.c:59
 #: ags/app/export/ags_midi_export_wizard.c:224
 #: ags/app/export/ags_wave_export_dialog.c:342 ags/app/ags_input_dialog.c:86
-#: ags/app/editor/ags_position_wave_cursor_dialog.c:189
-#: ags/app/editor/ags_position_notation_cursor_dialog.c:207
-#: ags/app/editor/ags_ramp_acceleration_dialog.c:269
+#: ags/app/editor/ags_position_wave_cursor_dialog.c:207
+#: ags/app/editor/ags_position_notation_cursor_dialog.c:225
+#: ags/app/editor/ags_ramp_acceleration_dialog.c:283
 #: ags/app/editor/ags_position_sheet_cursor_dialog.c:207
 #: ags/app/editor/ags_time_stretch_buffer_dialog.c:229
-#: ags/app/editor/ags_crop_note_dialog.c:213
+#: ags/app/editor/ags_crop_note_dialog.c:233
 #: ags/app/editor/ags_remove_sheet_page_dialog.c:153
 #: ags/app/editor/ags_machine_selection.c:158
-#: ags/app/editor/ags_position_automation_cursor_dialog.c:189
-#: ags/app/editor/ags_select_acceleration_dialog.c:224
-#: ags/app/editor/ags_select_buffer_dialog.c:215
+#: ags/app/editor/ags_position_automation_cursor_dialog.c:207
+#: ags/app/editor/ags_select_acceleration_dialog.c:238
+#: ags/app/editor/ags_select_buffer_dialog.c:233
 #: ags/app/editor/ags_envelope_dialog.c:227
 #: ags/app/editor/ags_add_sheet_page_dialog.c:208
-#: ags/app/editor/ags_move_note_dialog.c:210
-#: ags/app/editor/ags_select_note_dialog.c:252 ags/app/ags_midi_dialog.c:444
+#: ags/app/editor/ags_move_note_dialog.c:228
+#: ags/app/editor/ags_select_note_dialog.c:270 ags/app/ags_midi_dialog.c:444
 #: ags/app/machine/ags_audiorec_callbacks.c:143
 #: ags/app/machine/ags_sfz_synth_callbacks.c:55
 #: ags/app/machine/ags_ffplayer_callbacks.c:235
@@ -164,21 +164,21 @@ msgstr ""
 #: ags/app/export/ags_wave_export_dialog_callbacks.c:58
 #: ags/app/export/ags_midi_export_wizard.c:225
 #: ags/app/export/ags_wave_export_dialog.c:346 ags/app/ags_input_dialog.c:88
-#: ags/app/editor/ags_position_wave_cursor_dialog.c:190
-#: ags/app/editor/ags_position_notation_cursor_dialog.c:208
-#: ags/app/editor/ags_ramp_acceleration_dialog.c:270
+#: ags/app/editor/ags_position_wave_cursor_dialog.c:208
+#: ags/app/editor/ags_position_notation_cursor_dialog.c:226
+#: ags/app/editor/ags_ramp_acceleration_dialog.c:284
 #: ags/app/editor/ags_position_sheet_cursor_dialog.c:208
 #: ags/app/editor/ags_time_stretch_buffer_dialog.c:230
-#: ags/app/editor/ags_crop_note_dialog.c:214
+#: ags/app/editor/ags_crop_note_dialog.c:234
 #: ags/app/editor/ags_remove_sheet_page_dialog.c:154
 #: ags/app/editor/ags_machine_selection.c:159
-#: ags/app/editor/ags_position_automation_cursor_dialog.c:190
-#: ags/app/editor/ags_select_acceleration_dialog.c:225
-#: ags/app/editor/ags_select_buffer_dialog.c:216
+#: ags/app/editor/ags_position_automation_cursor_dialog.c:208
+#: ags/app/editor/ags_select_acceleration_dialog.c:239
+#: ags/app/editor/ags_select_buffer_dialog.c:234
 #: ags/app/editor/ags_envelope_dialog.c:231
 #: ags/app/editor/ags_add_sheet_page_dialog.c:209
-#: ags/app/editor/ags_move_note_dialog.c:211
-#: ags/app/editor/ags_select_note_dialog.c:253
+#: ags/app/editor/ags_move_note_dialog.c:229
+#: ags/app/editor/ags_select_note_dialog.c:271
 #: ags/app/ags_export_soundcard_callbacks.c:436 ags/app/ags_midi_dialog.c:449
 #: ags/app/machine/ags_audiorec_callbacks.c:144
 #: ags/app/machine/ags_sfz_synth_callbacks.c:56
@@ -227,21 +227,21 @@ msgstr ""
 msgid "bulk input"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application_context.c:3514
+#: ags/app/ags_gsequencer_application_context.c:3506
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application_context.c:3524
+#: ags/app/ags_gsequencer_application_context.c:3516
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application_context.c:3760
+#: ags/app/ags_gsequencer_application_context.c:3752
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application_context.c:3770
+#: ags/app/ags_gsequencer_application_context.c:3762
 msgid "unknown sequencer backend - NULL"
 msgstr ""
 
@@ -360,20 +360,20 @@ msgid "output format"
 msgstr ""
 
 #: ags/app/export/ags_wave_export_dialog.c:338
-#: ags/app/editor/ags_position_wave_cursor_dialog.c:188
-#: ags/app/editor/ags_position_notation_cursor_dialog.c:206
-#: ags/app/editor/ags_ramp_acceleration_dialog.c:268
+#: ags/app/editor/ags_position_wave_cursor_dialog.c:206
+#: ags/app/editor/ags_position_notation_cursor_dialog.c:224
+#: ags/app/editor/ags_ramp_acceleration_dialog.c:282
 #: ags/app/editor/ags_position_sheet_cursor_dialog.c:206
 #: ags/app/editor/ags_time_stretch_buffer_dialog.c:228
-#: ags/app/editor/ags_crop_note_dialog.c:212
+#: ags/app/editor/ags_crop_note_dialog.c:232
 #: ags/app/editor/ags_remove_sheet_page_dialog.c:152
-#: ags/app/editor/ags_position_automation_cursor_dialog.c:188
-#: ags/app/editor/ags_select_acceleration_dialog.c:223
-#: ags/app/editor/ags_select_buffer_dialog.c:214
+#: ags/app/editor/ags_position_automation_cursor_dialog.c:206
+#: ags/app/editor/ags_select_acceleration_dialog.c:237
+#: ags/app/editor/ags_select_buffer_dialog.c:232
 #: ags/app/editor/ags_envelope_dialog.c:223
 #: ags/app/editor/ags_add_sheet_page_dialog.c:207
-#: ags/app/editor/ags_move_note_dialog.c:209
-#: ags/app/editor/ags_select_note_dialog.c:251 ags/app/ags_midi_dialog.c:439
+#: ags/app/editor/ags_move_note_dialog.c:227
+#: ags/app/editor/ags_select_note_dialog.c:269 ags/app/ags_midi_dialog.c:439
 #: ags/app/ags_preferences.c:239
 msgid "_Apply"
 msgstr ""
@@ -499,62 +499,62 @@ msgstr ""
 msgid "Note:y"
 msgstr ""
 
-#: ags/app/editor/ags_position_wave_cursor_dialog.c:148
-#: ags/app/editor/ags_composite_toolbar.c:1865
+#: ags/app/editor/ags_position_wave_cursor_dialog.c:166
+#: ags/app/editor/ags_composite_toolbar.c:1874
 msgid "position wave cursor"
 msgstr ""
 
-#: ags/app/editor/ags_position_wave_cursor_dialog.c:160
-#: ags/app/editor/ags_position_notation_cursor_dialog.c:158
+#: ags/app/editor/ags_position_wave_cursor_dialog.c:178
+#: ags/app/editor/ags_position_notation_cursor_dialog.c:176
 #: ags/app/editor/ags_position_sheet_cursor_dialog.c:158
-#: ags/app/editor/ags_position_automation_cursor_dialog.c:160
+#: ags/app/editor/ags_position_automation_cursor_dialog.c:178
 msgid "set focus"
 msgstr ""
 
-#: ags/app/editor/ags_position_wave_cursor_dialog.c:173
-#: ags/app/editor/ags_position_notation_cursor_dialog.c:171
+#: ags/app/editor/ags_position_wave_cursor_dialog.c:191
+#: ags/app/editor/ags_position_notation_cursor_dialog.c:189
 #: ags/app/editor/ags_position_sheet_cursor_dialog.c:171
-#: ags/app/editor/ags_position_automation_cursor_dialog.c:173
+#: ags/app/editor/ags_position_automation_cursor_dialog.c:191
 msgid "position x"
 msgstr ""
 
-#: ags/app/editor/ags_position_notation_cursor_dialog.c:149
-#: ags/app/editor/ags_composite_toolbar.c:1774
+#: ags/app/editor/ags_position_notation_cursor_dialog.c:167
+#: ags/app/editor/ags_composite_toolbar.c:1783
 msgid "position notation cursor"
 msgstr ""
 
-#: ags/app/editor/ags_position_notation_cursor_dialog.c:191
+#: ags/app/editor/ags_position_notation_cursor_dialog.c:209
 #: ags/app/editor/ags_position_sheet_cursor_dialog.c:191
 msgid "position y"
 msgstr ""
 
-#: ags/app/editor/ags_ramp_acceleration_dialog.c:146
-#: ags/app/editor/ags_composite_toolbar.c:1831
+#: ags/app/editor/ags_ramp_acceleration_dialog.c:160
+#: ags/app/editor/ags_composite_toolbar.c:1840
 msgid "ramp accelerations"
 msgstr ""
 
-#: ags/app/editor/ags_ramp_acceleration_dialog.c:169
+#: ags/app/editor/ags_ramp_acceleration_dialog.c:183
 msgid "ramp x0"
 msgstr ""
 
-#: ags/app/editor/ags_ramp_acceleration_dialog.c:191
+#: ags/app/editor/ags_ramp_acceleration_dialog.c:205
 msgid "ramp y0"
 msgstr ""
 
-#: ags/app/editor/ags_ramp_acceleration_dialog.c:211
+#: ags/app/editor/ags_ramp_acceleration_dialog.c:225
 msgid "ramp x1"
 msgstr ""
 
-#: ags/app/editor/ags_ramp_acceleration_dialog.c:233
+#: ags/app/editor/ags_ramp_acceleration_dialog.c:247
 msgid "ramp y1"
 msgstr ""
 
-#: ags/app/editor/ags_ramp_acceleration_dialog.c:253
+#: ags/app/editor/ags_ramp_acceleration_dialog.c:267
 msgid "ramp step count"
 msgstr ""
 
 #: ags/app/editor/ags_position_sheet_cursor_dialog.c:146
-#: ags/app/editor/ags_composite_toolbar.c:1786
+#: ags/app/editor/ags_composite_toolbar.c:1795
 msgid "position sheet cursor"
 msgstr ""
 
@@ -564,7 +564,7 @@ msgid "preset name"
 msgstr ""
 
 #: ags/app/editor/ags_time_stretch_buffer_dialog.c:149
-#: ags/app/editor/ags_composite_toolbar.c:1876
+#: ags/app/editor/ags_composite_toolbar.c:1885
 msgid "time stretch buffers"
 msgstr ""
 
@@ -583,29 +583,29 @@ msgstr ""
 msgid "new BPM"
 msgstr ""
 
-#: ags/app/editor/ags_crop_note_dialog.c:142
-#: ags/app/editor/ags_composite_toolbar.c:1752
+#: ags/app/editor/ags_crop_note_dialog.c:162
+#: ags/app/editor/ags_composite_toolbar.c:1761
 msgid "crop notes"
 msgstr ""
 
-#: ags/app/editor/ags_crop_note_dialog.c:154
-#: ags/app/editor/ags_move_note_dialog.c:161
+#: ags/app/editor/ags_crop_note_dialog.c:174
+#: ags/app/editor/ags_move_note_dialog.c:179
 msgid "absolute"
 msgstr ""
 
-#: ags/app/editor/ags_crop_note_dialog.c:159
+#: ags/app/editor/ags_crop_note_dialog.c:179
 msgid "in-place"
 msgstr ""
 
-#: ags/app/editor/ags_crop_note_dialog.c:164
+#: ags/app/editor/ags_crop_note_dialog.c:184
 msgid "do resize"
 msgstr ""
 
-#: ags/app/editor/ags_crop_note_dialog.c:177
+#: ags/app/editor/ags_crop_note_dialog.c:197
 msgid "crop note"
 msgstr ""
 
-#: ags/app/editor/ags_crop_note_dialog.c:197
+#: ags/app/editor/ags_crop_note_dialog.c:217
 msgid "padding note"
 msgstr ""
 
@@ -613,170 +613,170 @@ msgstr ""
 msgid "remove sheet page"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:888
+#: ags/app/editor/ags_composite_toolbar.c:897
 msgid "Position"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:891
+#: ags/app/editor/ags_composite_toolbar.c:900
 msgid "position tool"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:907
+#: ags/app/editor/ags_composite_toolbar.c:916
 #: ags/app/ags_gsequencer_application.c:735
 msgid "Edit"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:910
+#: ags/app/editor/ags_composite_toolbar.c:919
 msgid "edit tool"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:926
+#: ags/app/editor/ags_composite_toolbar.c:935
 msgid "Clear"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:929
+#: ags/app/editor/ags_composite_toolbar.c:938
 msgid "clear tool"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:945
+#: ags/app/editor/ags_composite_toolbar.c:954
 msgid "Select"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:948
+#: ags/app/editor/ags_composite_toolbar.c:957
 msgid "selection tool"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1083
+#: ags/app/editor/ags_composite_toolbar.c:1092
 msgid "Invert"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1086
+#: ags/app/editor/ags_composite_toolbar.c:1095
 msgid "invert action"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1103
+#: ags/app/editor/ags_composite_toolbar.c:1112
 msgid "Copy"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1106
+#: ags/app/editor/ags_composite_toolbar.c:1115
 msgid "copy action"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1123
+#: ags/app/editor/ags_composite_toolbar.c:1132
 msgid "Cut"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1126
+#: ags/app/editor/ags_composite_toolbar.c:1135
 msgid "cut action"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1143
+#: ags/app/editor/ags_composite_toolbar.c:1152
 msgid "Paste"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1146
+#: ags/app/editor/ags_composite_toolbar.c:1155
 msgid "paste menu action"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1306
+#: ags/app/editor/ags_composite_toolbar.c:1315
 msgid "tool"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1308
+#: ags/app/editor/ags_composite_toolbar.c:1317
 msgid "tool dialog option"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1337
+#: ags/app/editor/ags_composite_toolbar.c:1346
 #: ags/app/ags_online_help_window.c:180
 msgid "zoom"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1365
+#: ags/app/editor/ags_composite_toolbar.c:1374
 msgid "opacity"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1396
+#: ags/app/editor/ags_composite_toolbar.c:1405
 msgid "Port"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1448
+#: ags/app/editor/ags_composite_toolbar.c:1457
 msgid "beats"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1494
+#: ags/app/editor/ags_composite_toolbar.c:1503
 msgid "beats type"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1531
+#: ags/app/editor/ags_composite_toolbar.c:1540
 msgid "snap to zoom"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1634
+#: ags/app/editor/ags_composite_toolbar.c:1643
 msgid "match audio channel"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1641
+#: ags/app/editor/ags_composite_toolbar.c:1650
 msgid "match line"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1648
+#: ags/app/editor/ags_composite_toolbar.c:1657
 msgid "no duplicates"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1654
+#: ags/app/editor/ags_composite_toolbar.c:1663
 msgid "paste"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1696
+#: ags/app/editor/ags_composite_toolbar.c:1705
 msgid "enable all audio channels"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1707
+#: ags/app/editor/ags_composite_toolbar.c:1716
 msgid "disable all audio channels"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1718
+#: ags/app/editor/ags_composite_toolbar.c:1727
 msgid "enable all lines"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1729
+#: ags/app/editor/ags_composite_toolbar.c:1738
 msgid "disable all lines"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1741
-#: ags/app/editor/ags_move_note_dialog.c:144
+#: ags/app/editor/ags_composite_toolbar.c:1750
+#: ags/app/editor/ags_move_note_dialog.c:162
 msgid "move notes"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1763
-#: ags/app/editor/ags_select_note_dialog.c:151
+#: ags/app/editor/ags_composite_toolbar.c:1772
+#: ags/app/editor/ags_select_note_dialog.c:169
 msgid "select notes"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1797
+#: ags/app/editor/ags_composite_toolbar.c:1806
 msgid "add page"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1808
+#: ags/app/editor/ags_composite_toolbar.c:1817
 msgid "remove page"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1820
-#: ags/app/editor/ags_select_acceleration_dialog.c:153
+#: ags/app/editor/ags_composite_toolbar.c:1829
+#: ags/app/editor/ags_select_acceleration_dialog.c:167
 msgid "select accelerations"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1842
-#: ags/app/editor/ags_position_automation_cursor_dialog.c:151
+#: ags/app/editor/ags_composite_toolbar.c:1851
+#: ags/app/editor/ags_position_automation_cursor_dialog.c:169
 msgid "position automation cursor"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1854
-#: ags/app/editor/ags_select_buffer_dialog.c:150
+#: ags/app/editor/ags_composite_toolbar.c:1863
+#: ags/app/editor/ags_select_buffer_dialog.c:168
 msgid "select buffers"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1890
+#: ags/app/editor/ags_composite_toolbar.c:1899
 msgid "ramp markers"
 msgstr ""
 
@@ -866,21 +866,21 @@ msgstr ""
 msgid "select machines"
 msgstr ""
 
-#: ags/app/editor/ags_select_acceleration_dialog.c:165
-#: ags/app/editor/ags_select_buffer_dialog.c:162
-#: ags/app/editor/ags_select_note_dialog.c:163
+#: ags/app/editor/ags_select_acceleration_dialog.c:179
+#: ags/app/editor/ags_select_buffer_dialog.c:180
+#: ags/app/editor/ags_select_note_dialog.c:181
 msgid "copy selection"
 msgstr ""
 
-#: ags/app/editor/ags_select_acceleration_dialog.c:184
-#: ags/app/editor/ags_select_buffer_dialog.c:175
-#: ags/app/editor/ags_select_note_dialog.c:176
+#: ags/app/editor/ags_select_acceleration_dialog.c:198
+#: ags/app/editor/ags_select_buffer_dialog.c:193
+#: ags/app/editor/ags_select_note_dialog.c:194
 msgid "select x0"
 msgstr ""
 
-#: ags/app/editor/ags_select_acceleration_dialog.c:206
-#: ags/app/editor/ags_select_buffer_dialog.c:197
-#: ags/app/editor/ags_select_note_dialog.c:216
+#: ags/app/editor/ags_select_acceleration_dialog.c:220
+#: ags/app/editor/ags_select_buffer_dialog.c:215
+#: ags/app/editor/ags_select_note_dialog.c:234
 msgid "select x1"
 msgstr ""
 
@@ -981,23 +981,23 @@ msgstr ""
 msgid "notation x1"
 msgstr ""
 
-#: ags/app/editor/ags_move_note_dialog.c:156
+#: ags/app/editor/ags_move_note_dialog.c:174
 msgid "relative"
 msgstr ""
 
-#: ags/app/editor/ags_move_note_dialog.c:174
+#: ags/app/editor/ags_move_note_dialog.c:192
 msgid "move x"
 msgstr ""
 
-#: ags/app/editor/ags_move_note_dialog.c:194
+#: ags/app/editor/ags_move_note_dialog.c:212
 msgid "move y"
 msgstr ""
 
-#: ags/app/editor/ags_select_note_dialog.c:196
+#: ags/app/editor/ags_select_note_dialog.c:214
 msgid "select y0"
 msgstr ""
 
-#: ags/app/editor/ags_select_note_dialog.c:236
+#: ags/app/editor/ags_select_note_dialog.c:254
 msgid "select y1"
 msgstr ""
 
@@ -1084,7 +1084,7 @@ msgstr ""
 msgid "auto-scroll"
 msgstr ""
 
-#: ags/app/ags_navigation.c:363 ags/app/ags_export_window.c:195
+#: ags/app/ags_navigation.c:363 ags/app/ags_export_window.c:204
 msgid "exclude sequencers"
 msgstr ""
 
@@ -1975,59 +1975,59 @@ msgstr ""
 msgid "Port control orientation"
 msgstr ""
 
-#: ags/app/ags_meta_data_window.c:75
+#: ags/app/ags_meta_data_window.c:82
 msgid "meta-data editor"
 msgstr ""
 
-#: ags/app/ags_meta_data_window.c:89
+#: ags/app/ags_meta_data_window.c:99
 msgid "author"
 msgstr ""
 
-#: ags/app/ags_meta_data_window.c:107
+#: ags/app/ags_meta_data_window.c:117
 msgid "title"
 msgstr ""
 
-#: ags/app/ags_meta_data_window.c:125
+#: ags/app/ags_meta_data_window.c:135
 msgid "album"
 msgstr ""
 
-#: ags/app/ags_meta_data_window.c:143
+#: ags/app/ags_meta_data_window.c:153
 msgid "release date"
 msgstr ""
 
-#: ags/app/ags_meta_data_window.c:161
+#: ags/app/ags_meta_data_window.c:171
 msgid "copyright"
 msgstr ""
 
-#: ags/app/ags_meta_data_window.c:179
+#: ags/app/ags_meta_data_window.c:189
 msgid "license"
 msgstr ""
 
-#: ags/app/ags_meta_data_window.c:197
+#: ags/app/ags_meta_data_window.c:207
 msgid "comment"
 msgstr ""
 
-#: ags/app/ags_export_window.c:145
+#: ags/app/ags_export_window.c:151
 msgid "Export to audio data"
 msgstr ""
 
-#: ags/app/ags_export_window.c:185
+#: ags/app/ags_export_window.c:194
 msgid "live export"
 msgstr ""
 
-#: ags/app/ags_export_window.c:222
+#: ags/app/ags_export_window.c:231
 msgid "mode"
 msgstr ""
 
-#: ags/app/ags_export_window.c:258
+#: ags/app/ags_export_window.c:267
 msgid "tact"
 msgstr ""
 
-#: ags/app/ags_export_window.c:289
+#: ags/app/ags_export_window.c:298
 msgid "time"
 msgstr ""
 
-#: ags/app/ags_export_window.c:372
+#: ags/app/ags_export_window.c:381
 msgid "export"
 msgstr ""
 

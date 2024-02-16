@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Daniel Maksymow, Joël Krähemann
+ * Copyright (C) 2005-2024 Daniel Maksymow, Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -71,11 +71,21 @@ ags_meta_data_window_init(AgsMetaDataWindow *meta_data_window)
   GtkScrolledWindow *scrolled_window;
   GtkLabel *label;
 
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+
+  ags_ui_provider_set_meta_data_window(AGS_UI_PROVIDER(application_context),
+  				       meta_data_window);
+
   g_object_set(meta_data_window,
 	       "title", i18n("meta-data editor"),
 	       "hide-on-close", TRUE,
 	       NULL);
 
+  gtk_window_set_transient_for((GtkWindow *) meta_data_window,
+			       ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
+  
   grid = (GtkGrid *) gtk_grid_new();
 
   gtk_grid_set_column_spacing(grid,

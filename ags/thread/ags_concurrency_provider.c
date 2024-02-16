@@ -25,7 +25,7 @@ void ags_concurrency_provider_class_init(AgsConcurrencyProviderInterface *ginter
 
 /**
  * SECTION:ags_concurrency_provider
- * @short_description: Concurrency provider interface
+ * @short_description: concurrency provider interface
  * @title: AgsConcurrencyProvider
  * @section_id: AgsConcurrencyProvider
  * @include: ags/thread/ags_concurrency_provider.h

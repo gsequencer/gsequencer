@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -62,7 +62,7 @@ gchar* ags_config_real_get_value(AgsConfig *config, gchar *group, gchar *key);
 
 /**
  * SECTION:ags_config
- * @short_description: Config Advanced Gtk+ Sequencer
+ * @short_description: config settings of Advanced Gtk+ Sequencer
  * @title: AgsConfig
  * @section_id:
  * @include: ags/object/ags_config.h
@@ -780,10 +780,17 @@ ags_config_save(AgsConfig *config)
   uid = getuid();
   pw = getpwuid(uid);
 
+#if !defined(AGS_MACOS_SANDBOX)
   path = g_strdup_printf("%s/%s",
 			 pw->pw_dir,
 			 AGS_DEFAULT_DIRECTORY);
-
+#else
+  path = g_strdup_printf("%s/Library/%s/%s",
+			 pw->pw_dir,
+			 AGS_DEFAULT_BUNDLE_ID,
+			 AGS_DEFAULT_DIRECTORY);
+#endif
+  
   filename = g_strdup_printf("%s/%s",
 			     path,
 			     AGS_DEFAULT_CONFIG);

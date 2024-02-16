@@ -28,7 +28,7 @@ void ags_turtle_manager_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_turtle_manager
- * @short_description: Singleton pattern to organize turtles
+ * @short_description: singleton pattern to organize turtles
  * @title: AgsTurtleManager
  * @section_id:
  * @include: ags/lib/ags_turtle_manager.h
