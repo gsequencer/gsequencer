@@ -1,6 +1,7 @@
-ags (6.5.3)
+ags (6.6.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: implemented AgsFileDialog
 	* TODO:JK: implemented --enable-macos-sandbox configure switch
 
 ags (6.5.2)

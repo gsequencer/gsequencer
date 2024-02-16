@@ -62,7 +62,7 @@ void ags_indicator_adjustment_changed_callback(GtkAdjustment *adjustment,
 
 /**
  * SECTION:ags_indicator
- * @short_description: A indicator widget
+ * @short_description: a indicator widget
  * @title: AgsIndicator
  * @section_id:
  * @include: ags/widget/ags_indicator.h
