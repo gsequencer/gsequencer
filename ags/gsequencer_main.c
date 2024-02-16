@@ -734,8 +734,12 @@ main(int argc, char **argv)
 //    ags_gsequencer_application_context_load_gui_scale(ags_application_context_get_instance());
   }
     
+#if !defined(AGS_MACOS_SANDBOX)
   application_id = "org.nongnu.gsequencer.gsequencer";
-
+#else
+  application_id = "com.gsequencer.GSequencer";
+#endif
+  
   if(non_unique){
     gsequencer_app = ags_gsequencer_application_new(application_id,
 						    (GApplicationFlags) (G_APPLICATION_HANDLES_OPEN |
