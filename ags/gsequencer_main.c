@@ -102,6 +102,10 @@ install_data()
   gchar *default_path;
   gchar *default_filename, *template_default_filename;
   gchar *default_dirs_mkdir_cmd;
+  gchar *local_share_dirs_mkdir_cmd;
+  gchar *local_state_dirs_mkdir_cmd;
+  gchar *config_dirs_mkdir_cmd;
+  gchar *cache_dirs_mkdir_cmd;
   gchar *default_file_cp_cmd;
   gchar *default_file_sed_cmd;
   gchar *free_sounds_cp_cmd;
@@ -135,9 +139,21 @@ install_data()
   default_dirs_mkdir_cmd = g_strdup_printf("mkdir -p %s/GSequencer/workspace/default",
 					   music_path);
 
+  local_state_dirs_mkdir_cmd = g_strdup_printf("mkdir -p %s/Library/%s/.local/state",
+					       pw->pw_dir, AGS_DEFAULT_BUNDLE_ID);
+
+  local_share_dirs_mkdir_cmd = g_strdup_printf("mkdir -p %s/Library/%s/.local/share",
+					       pw->pw_dir, AGS_DEFAULT_BUNDLE_ID);
+  
+  cache_dirs_mkdir_cmd = g_strdup_printf("mkdir -p %s/Library/%s/.cache",
+					 pw->pw_dir, AGS_DEFAULT_BUNDLE_ID);
+  
+  config_dirs_mkdir_cmd = g_strdup_printf("mkdir -p %s/Library/%s/.config",
+					  pw->pw_dir, AGS_DEFAULT_BUNDLE_ID);
+
   default_file_cp_cmd = g_strdup_printf("cp -v %s/Contents/Resources/gsequencer-default.xml.in %s/GSequencer/workspace/default/gsequencer-default.xml",
-					 app_dir,
-					 music_path);
+					app_dir,
+					music_path);
   
   default_file_sed_cmd = g_strdup_printf("sed -i '' 's,@MUSIC_DIR@,%s,g' %s/GSequencer/workspace/default/gsequencer-default.xml",
 					 music_path);
@@ -147,6 +163,34 @@ install_data()
 
   error = NULL;
   g_spawn_command_line_sync(default_dirs_mkdir_cmd,
+			    NULL,
+			    NULL,
+			    NULL,
+			    &error);
+
+  error = NULL;
+  g_spawn_command_line_sync(local_share_dirs_mkdir_cmd,
+			    NULL,
+			    NULL,
+			    NULL,
+			    &error);
+
+  error = NULL;
+  g_spawn_command_line_sync(local_state_dirs_mkdir_cmd,
+			    NULL,
+			    NULL,
+			    NULL,
+			    &error);
+
+  error = NULL;
+  g_spawn_command_line_sync(cache_dirs_mkdir_cmd,
+			    NULL,
+			    NULL,
+			    NULL,
+			    &error);
+
+  error = NULL;
+  g_spawn_command_line_sync(config_dirs_mkdir_cmd,
 			    NULL,
 			    NULL,
 			    NULL,
@@ -290,10 +334,31 @@ main(int argc, char **argv)
   putenv(g_strdup_printf("GIO_MODULE_DIR=%s/Contents/Resources/lib/gio/modules", app_dir));
 
   putenv(g_strdup_printf("GSETTINGS_SCHEMA_DIR=%s/Contents/Resources/share/glib-2.0/schemas", app_dir));  
+  
+#if !defined(AGS_MACOS_SANDBOX)
+  putenv(g_strdup_printf("XDG_RUNTIME_DIR=%s/Contents/Resources/var/run", app_dir));
 
-  putenv(g_strdup_printf("XDG_DATA_DIRS=%s/Contents/Resources/share", app_dir));
+  putenv(g_strdup_printf("XDG_CACHE_HOME=%s/Contents/Resources/var/cache", app_dir));
+
+  putenv(g_strdup_printf("XDG_DATA_HOME=%s/Contents/Resources/share", app_dir));
   putenv(g_strdup_printf("XDG_CONFIG_HOME=%s/Contents/Resources/etc", app_dir));
+  putenv(g_strdup_printf("XDG_STATE_HOME=%s/Contents/Resources/var", app_dir));
+  
+  putenv(g_strdup_printf("XDG_DATA_DIRS=%s/Contents/Resources/share", app_dir));
+  putenv(g_strdup_printf("XDG_CONFIG_DIRS=%s/Contents/Resources/etc", app_dir));
+#else
+  putenv(g_strdup_printf("XDG_RUNTIME_DIR=%s/Library/%s/var/run", pw->pw_dir, AGS_DEFAULT_BUNDLE_ID));
 
+  putenv(g_strdup_printf("XDG_CACHE_HOME=%s/Library/%s/.cache", pw->pw_dir, AGS_DEFAULT_BUNDLE_ID));
+
+  putenv(g_strdup_printf("XDG_DATA_HOME=%s/Library/%s/.local/share", pw->pw_dir, AGS_DEFAULT_BUNDLE_ID));
+  putenv(g_strdup_printf("XDG_CONFIG_HOME=%s/Library/%s/.config", pw->pw_dir, AGS_DEFAULT_BUNDLE_ID));
+  putenv(g_strdup_printf("XDG_STATE_HOME=%s/Library/%s/.local/state", pw->pw_dir, AGS_DEFAULT_BUNDLE_ID));
+  
+  putenv(g_strdup_printf("XDG_DATA_DIRS=%s/Contents/Resources/share", app_dir));
+  putenv(g_strdup_printf("XDG_CONFIG_DIRS=%s/Contents/Resources/etc", app_dir));
+#endif
+  
   putenv(g_strdup_printf("GDK_PIXBUF_MODULE_FILE=%s/Contents/Resources/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache", app_dir));
 
   putenv(g_strdup_printf("GTK_EXE_PREFIX=%s/Contents/Resources", app_dir));
@@ -636,10 +701,17 @@ main(int argc, char **argv)
 
   g_free(path);
 #else
+#if !defined(AGS_MACOS_SANDBOX)
   wdir = g_strdup_printf("%s/%s",
 			 pw->pw_dir,
 			 AGS_DEFAULT_DIRECTORY);
-    
+#else
+  wdir = g_strdup_printf("%s/Library/%s/%s",
+			 pw->pw_dir,
+			 AGS_DEFAULT_BUNDLE_ID,
+			 AGS_DEFAULT_DIRECTORY);
+#endif
+  
   config_filename = g_strdup_printf("%s/%s",
 				    wdir,
 				    AGS_DEFAULT_CONFIG);
@@ -662,8 +734,12 @@ main(int argc, char **argv)
 //    ags_gsequencer_application_context_load_gui_scale(ags_application_context_get_instance());
   }
     
+#if !defined(AGS_MACOS_SANDBOX)
   application_id = "org.nongnu.gsequencer.gsequencer";
-
+#else
+  application_id = "com.gsequencer.GSequencer";
+#endif
+  
   if(non_unique){
     gsequencer_app = ags_gsequencer_application_new(application_id,
 						    (GApplicationFlags) (G_APPLICATION_HANDLES_OPEN |

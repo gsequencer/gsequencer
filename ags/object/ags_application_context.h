@@ -52,6 +52,12 @@ G_BEGIN_DECLS
 #define AGS_DEFAULT_DIRECTORY ".gsequencer"
 #define AGS_DEFAULT_CONFIG "ags.conf"
 
+#if !defined(AGS_MACOS_SANDBOX)
+#define AGS_DEFAULT_BUNDLE_ID "org.nongnu.gsequencer.gsequencer"
+#else
+#define AGS_DEFAULT_BUNDLE_ID "com.gsequencer.GSequencer"
+#endif
+
 typedef struct _AgsApplicationContext AgsApplicationContext;
 typedef struct _AgsApplicationContextClass AgsApplicationContextClass;
 
