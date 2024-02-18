@@ -2479,6 +2479,7 @@ libags_gui_h_sources = \
 	ags/widget/ags_expander_set.h \
 	ags/widget/ags_file_dialog.h \
 	ags/widget/ags_file_widget.h \
+	ags/widget/ags_icon_link.h \
 	ags/widget/ags_indicator.h \
 	ags/widget/ags_led.h \
 	ags/widget/ags_led_array.h \
@@ -2506,6 +2507,7 @@ libags_gui_c_sources = \
 	ags/widget/ags_expander_set.c \
 	ags/widget/ags_file_dialog.c \
 	ags/widget/ags_file_widget.c \
+	ags/widget/ags_icon_link.c \
 	ags/widget/ags_indicator.c \
 	ags/widget/ags_led.c \
 	ags/widget/ags_led_array.c \

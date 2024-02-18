@@ -51,6 +51,24 @@ activate(GtkApplication *app,
   file_dialog = ags_file_dialog_new(window,
 				    "file dialog");
 
+  file_dialog->file_widget->default_bundle = g_strdup("com.gsequencer.GSequencer");
+  
+  ags_file_widget_add_location(file_dialog->file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_DESKTOP,
+			       NULL);
+
+  ags_file_widget_add_location(file_dialog->file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_DOCUMENTS,
+			       NULL);
+
+  ags_file_widget_add_location(file_dialog->file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_MUSIC,
+			       NULL);
+
+  ags_file_widget_add_location(file_dialog->file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_HOME,
+			       NULL);
+  
   file_dialog->file_widget->current_path = g_strdup(file_dialog->file_widget->home_path);
 
   ags_file_widget_refresh(file_dialog->file_widget);
