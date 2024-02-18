@@ -131,6 +131,7 @@ struct _AgsFileWidgetClass
 
 GType ags_file_widget_get_type();
 
+/* flags */
 gboolean ags_file_widget_test_flags(AgsFileWidget *file_widget,
 				    guint flags);
 void ags_file_widget_set_flags(AgsFileWidget *file_widget,
@@ -138,31 +139,33 @@ void ags_file_widget_set_flags(AgsFileWidget *file_widget,
 void ags_file_widget_unset_flags(AgsFileWidget *file_widget,
 				 guint flags);
 
+/* action */
 gboolean ags_file_widget_test_file_action(AgsFileWidget *file_widget,
 					  guint file_action);
 void ags_file_widget_set_file_action(AgsFileWidget *file_widget,
 				     guint file_action);
 
+/* location */
 void ags_file_widget_add_location(AgsFileWidget *file_widget,
 				  gchar *button_action,
 				  gchar *button_text);
 void ags_file_widget_remove_location(AgsFileWidget *file_widget,
 				     gchar *button_action);
 
-void ags_file_widget_location_callback(AgsIconLink *button,
-				       AgsFileWidget *file_widget);
-
+/* bookmarks */
 void ags_file_widget_add_bookmark(AgsFileWidget *file_widget,
 				  gchar *button_action,
 				  gchar *button_text);
 void ags_file_widget_remove_bookmark(AgsFileWidget *file_widget,
 				     gchar *button_action);
 
+/* events */
 void ags_file_widget_refresh(AgsFileWidget *file_widget);
 
 void ags_file_widget_create_dir(AgsFileWidget *file_widget,
 				gchar *dir_path);
 
+/* instantiate */
 AgsFileWidget* ags_file_widget_new();
 
 G_END_DECLS

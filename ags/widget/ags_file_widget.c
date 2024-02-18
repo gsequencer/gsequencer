@@ -48,6 +48,12 @@ void ags_file_widget_get_property(GObject *gobject,
 void ags_file_widget_dispose(GObject *gobject);
 void ags_file_widget_finalize(GObject *gobject);
 
+void ags_file_widget_location_drop_down_callback(GObject *location,
+						 GParamSpec *pspec,
+						 AgsFileWidget *file_widget);
+void ags_file_widget_location_callback(AgsIconLink *icon_link,
+				       AgsFileWidget *file_widget);
+
 /**
  * SECTION:ags_file_widget
  * @short_description: a file widget widget
@@ -364,6 +370,8 @@ ags_file_widget_init(AgsFileWidget *file_widget)
   file_widget->vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 					     6);
 
+  gtk_widget_set_valign(file_widget->vbox,
+			GTK_ALIGN_FILL);
   gtk_widget_set_halign(file_widget->vbox,
 			GTK_ALIGN_FILL);
 
@@ -390,8 +398,12 @@ ags_file_widget_init(AgsFileWidget *file_widget)
 
   file_widget->location_entry = (GtkEntry *) gtk_entry_new();
 
-  gtk_widget_set_size_request(file_widget->location_entry,
-			      600, -1);
+  gtk_widget_set_halign(file_widget->location_entry,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_hexpand(file_widget->location_entry,
+			 TRUE);  
+  
   gtk_entry_set_alignment(file_widget->location_entry,
 			  0.0);
   
@@ -406,9 +418,18 @@ ags_file_widget_init(AgsFileWidget *file_widget)
   gtk_box_append(file_widget->vbox,
 		 (GtkWidget *) file_widget->location_drop_down);
 
+  g_signal_connect_after(file_widget->location_drop_down, "notify::selected-item",
+			 G_CALLBACK(ags_file_widget_location_drop_down_callback), file_widget);
+
   /* left, center and right */
   action_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				       6);
+
+  gtk_widget_set_valign(action_hbox,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign(action_hbox,
+			GTK_ALIGN_FILL);
+
   gtk_box_append(file_widget->vbox,
 		 (GtkWidget *) action_hbox);
 
@@ -468,6 +489,12 @@ ags_file_widget_init(AgsFileWidget *file_widget)
   /* center */
   file_widget->center_vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 						    6);
+
+  gtk_widget_set_valign(file_widget->center_vbox,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign(file_widget->center_vbox,
+			GTK_ALIGN_FILL);
+
   gtk_box_append(action_hbox,
 		 (GtkWidget *) file_widget->center_vbox);
 
@@ -499,9 +526,17 @@ ags_file_widget_init(AgsFileWidget *file_widget)
   file_widget->filename_multi_selection = gtk_single_selection_new(G_LIST_MODEL(multi_filename_string_list));
 
   file_widget->filename_scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
-  gtk_widget_set_size_request(file_widget->filename_scrolled_window,
-			      800,
-			      600);
+
+  gtk_widget_set_valign(file_widget->filename_scrolled_window,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign(file_widget->filename_scrolled_window,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_vexpand(file_widget->filename_scrolled_window,
+			 TRUE);
+  gtk_widget_set_hexpand(file_widget->filename_scrolled_window,
+			 TRUE);
+  
   gtk_box_append(file_widget->center_vbox,
 		 (GtkWidget *) file_widget->filename_scrolled_window);
   
@@ -689,6 +724,34 @@ ags_file_widget_set_file_action(AgsFileWidget *file_widget,
 }
 
 void
+ags_file_widget_location_drop_down_callback(GObject *location,
+					    GParamSpec *pspec,
+					    AgsFileWidget *file_widget)
+{
+  GObject *item;
+  
+  gchar *current_path;
+  gchar *prev_current_path;
+
+  item = gtk_drop_down_get_selected_item(location);
+
+  current_path = gtk_string_object_get_string(item);
+
+  prev_current_path = file_widget->current_path;
+
+  if(current_path != NULL &&
+     (!g_strcmp0(current_path, prev_current_path)) == FALSE){
+    file_widget->current_path = current_path;
+
+    ags_file_widget_refresh(file_widget);
+  }else{
+    prev_current_path = NULL;
+  }
+
+  g_free(prev_current_path);
+}
+
+void
 ags_file_widget_location_callback(AgsIconLink *icon_link,
 				  AgsFileWidget *file_widget)
 {
@@ -733,7 +796,8 @@ ags_file_widget_location_callback(AgsIconLink *icon_link,
     current_path = g_strdup(file_widget->app_generic_path);
   }
 
-  if(current_path != NULL){
+  if(current_path != NULL &&
+     (!g_strcmp0(current_path, prev_current_path)) == FALSE){
     file_widget->current_path = current_path;
 
     ags_file_widget_refresh(file_widget);
@@ -1059,9 +1123,11 @@ ags_file_widget_refresh(AgsFileWidget *file_widget)
 	iter++;
       }
 
-      start_location = g_list_prepend(start_location,
-				      g_strdup(file_widget->current_path));
-
+      if((!strncmp(file_widget->current_path, "/", 2)) == FALSE){
+	start_location = g_list_prepend(start_location,
+					g_strdup(file_widget->current_path));
+      }
+      
       location = start_location;
 
       count = g_list_length(start_location);
