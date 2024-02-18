@@ -117,6 +117,8 @@ ags_file_dialog_init(AgsFileDialog *file_dialog)
   
   /* button */
   file_dialog->activate_button = (GtkButton *) gtk_button_new_with_label(i18n("open"));
+  gtk_widget_set_halign(file_dialog->activate_button,
+			GTK_ALIGN_END);
   gtk_box_append(file_dialog->vbox,
 		 (GtkWidget *) file_dialog->activate_button);
 }

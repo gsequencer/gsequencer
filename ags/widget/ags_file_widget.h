@@ -25,6 +25,8 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/widget/ags_icon_link.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_FILE_WIDGET                (ags_file_widget_get_type())
@@ -34,13 +36,17 @@ G_BEGIN_DECLS
 #define AGS_IS_FILE_WIDGET_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FILE_WIDGET))
 #define AGS_FILE_WIDGET_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_FILE_WIDGET, AgsFileWidgetClass))
 
-#define AGS_FILE_WIDGET_LOCATION_USER_HOME "user-home"
-#define AGS_FILE_WIDGET_LOCATION_USER_DESKTOP "user-desktop"
-#define AGS_FILE_WIDGET_LOCATION_FOLDER_PICTURES "folder-pictures"
-#define AGS_FILE_WIDGET_LOCATION_FOLDER_MUSIC "folder-music"
-#define AGS_FILE_WIDGET_LOCATION_FOLDER_DOWNLOAD "folder-download"
-#define AGS_FILE_WIDGET_LOCATION_FOLDER_DOCUMENTS "folder-documents"
-#define AGS_FILE_WIDGET_LOCATION_FOLDER "folder"
+#define AGS_FILE_WIDGET_LOCATION_OPEN_RECENT "document-open-recent"
+#define AGS_FILE_WIDGET_LOCATION_OPEN_START_HERE "open-start-here"
+#define AGS_FILE_WIDGET_LOCATION_OPEN_USER_HOME "open-user-home"
+#define AGS_FILE_WIDGET_LOCATION_OPEN_USER_DESKTOP "open-user-desktop"
+#define AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_PICTURES "open-folder-pictures"
+#define AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_MUSIC "open-folder-music"
+#define AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_VIDEOS "open-folder-videos"
+#define AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_DOWNLOADS "open-folder-downloads"
+#define AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_DOCUMENTS "open-folder-documents"
+#define AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_APP_HOME "open-app-home"
+#define AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_APP_GENERIC "open-app-generic"
 
 typedef struct _AgsFileWidget AgsFileWidget;
 typedef struct _AgsFileWidgetClass AgsFileWidgetClass;
@@ -64,9 +70,14 @@ struct _AgsFileWidget
   guint flags;
   guint file_action;
 
+  gchar *default_bundle;
+  
   gchar *home_path;
   gchar *sandbox_path;
 
+  gchar *app_home_path;
+  gchar *app_generic_path;
+  
   gchar *default_path;
 
   gchar *current_path;
@@ -80,17 +91,17 @@ struct _AgsFileWidget
   GtkBox *left_vbox;
   
   GtkBox *location_box;
-  
-  GtkButton *recently_used;
 
-  GHashTable *location;
+  GHashTable *location;  
   
-  GtkButton *start_here;
+  AgsIconLink *recently_used;
   
   GtkSeparator *location_separator;
   
   GHashTable *bookmark;
   
+  GtkBox *bookmark_box;
+
   GtkBox *center_vbox;
 
   GtkNoSelection *filename_key_selection;
@@ -137,6 +148,9 @@ void ags_file_widget_add_location(AgsFileWidget *file_widget,
 				  gchar *button_text);
 void ags_file_widget_remove_location(AgsFileWidget *file_widget,
 				     gchar *button_action);
+
+void ags_file_widget_location_callback(AgsIconLink *button,
+				       AgsFileWidget *file_widget);
 
 void ags_file_widget_add_bookmark(AgsFileWidget *file_widget,
 				  gchar *button_action,
