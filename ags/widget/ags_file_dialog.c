@@ -104,14 +104,39 @@ ags_file_dialog_class_init(AgsFileDialogClass *file_dialog)
 void
 ags_file_dialog_init(AgsFileDialog *file_dialog)
 {  
+  gtk_window_set_default_size(file_dialog,
+			      800, 600);
+
   file_dialog->flags = 0;
 
   file_dialog->vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 					     6);
+
+  gtk_widget_set_valign(file_dialog->vbox,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign(file_dialog->vbox,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_vexpand(file_dialog->vbox,
+			 TRUE);  
+  gtk_widget_set_hexpand(file_dialog->vbox,
+			 TRUE);  
+
   gtk_window_set_child((GtkWindow *) file_dialog,
 		       (GtkWidget *) file_dialog->vbox);  
 
   file_dialog->file_widget = ags_file_widget_new();  
+
+  gtk_widget_set_valign(file_dialog->file_widget,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign(file_dialog->file_widget,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_vexpand(file_dialog->file_widget,
+			 TRUE);  
+  gtk_widget_set_hexpand(file_dialog->file_widget,
+			 TRUE);  
+  
   gtk_box_append(file_dialog->vbox,
 		 (GtkWidget *) file_dialog->file_widget);
   

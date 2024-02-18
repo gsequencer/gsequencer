@@ -2,6 +2,7 @@ ags (6.6.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* TODO:JK: implemented AgsFileDialog and AgsFileWidget
+	* implemented AgsIconLink
 	* TODO:JK: implemented --enable-macos-sandbox configure switch
 
 ags (6.5.2)
