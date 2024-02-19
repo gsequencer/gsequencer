@@ -48,11 +48,31 @@ void ags_file_widget_get_property(GObject *gobject,
 void ags_file_widget_dispose(GObject *gobject);
 void ags_file_widget_finalize(GObject *gobject);
 
+void ags_file_widget_gesture_click_pressed_callback(GtkGestureClick *event_controller,
+						    gint n_press,
+						    gdouble x,
+						    gdouble y,
+						    AgsFileWidget *file_widget);
+void ags_file_widget_gesture_click_released_callback(GtkGestureClick *event_controller,
+						     gint n_press,
+						     gdouble x,
+						     gdouble y,
+						     AgsFileWidget *file_widget);
+
+void ags_file_widget_filename_activate_callback(GtkListView *list_view,
+						guint position,
+						AgsFileWidget *file_widget);
+
 void ags_file_widget_location_drop_down_callback(GObject *location,
 						 GParamSpec *pspec,
 						 AgsFileWidget *file_widget);
 void ags_file_widget_location_callback(AgsIconLink *icon_link,
 				       AgsFileWidget *file_widget);
+void ags_file_widget_bookmark_callback(AgsIconLink *icon_link,
+				       AgsFileWidget *file_widget);
+gboolean ags_file_widget_bookmark_find(gpointer key,
+				       gpointer value,
+				       AgsIconLink *icon_link);
 
 /**
  * SECTION:ags_file_widget
@@ -168,16 +188,18 @@ ags_file_widget_factory_setup(GtkListItemFactory *factory, GtkListItem *list_ite
 			      AgsFileWidget *file_widget)
 {
   GtkLabel *label;
-
+  
   label = (GtkLabel *) gtk_label_new("");
 
   gtk_label_set_xalign(label,
 		       0.0);
   gtk_widget_set_halign(label,
 			GTK_ALIGN_FILL);
-  
+
   gtk_list_item_set_child(list_item,
 			  (GtkWidget *) label);
+  gtk_list_item_set_activatable(list_item,
+				TRUE);
 }
 
 void
@@ -309,6 +331,8 @@ ags_file_widget_init(AgsFileWidget *file_widget)
   
   GtkColumnViewColumn *column;  
 
+  GtkEventController *event_controller;
+  
   GtkStringList *location_string_list;
   GtkStringList *filename_key_string_list;
   GtkStringList *single_filename_string_list;
@@ -551,6 +575,13 @@ ags_file_widget_init(AgsFileWidget *file_widget)
     gtk_column_view_append_column(GTK_COLUMN_VIEW(file_widget->filename_view),
 				  column);
   }
+
+  g_signal_connect_after(file_widget->filename_view, "activate",
+			 G_CALLBACK(ags_file_widget_filename_activate_callback), file_widget);
+
+  event_controller = gtk_gesture_click_new();
+  gtk_widget_add_controller((GtkWidget *) file_widget->filename_view,
+			    event_controller);
   
   /* right */
   file_widget->right_vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
@@ -609,6 +640,90 @@ ags_file_widget_finalize(GObject *gobject)
 {  
   /* call parent */
   G_OBJECT_CLASS(ags_file_widget_parent_class)->finalize(gobject);
+}
+
+void
+ags_file_widget_gesture_click_pressed_callback(GtkGestureClick *event_controller,
+					       gint n_press,
+					       gdouble x,
+					       gdouble y,
+					       AgsFileWidget *file_widget)
+{
+  //empty
+}
+
+void
+ags_file_widget_gesture_click_released_callback(GtkGestureClick *event_controller,
+						gint n_press,
+						gdouble x,
+						gdouble y,
+						AgsFileWidget *file_widget)
+{
+  if(gtk_gesture_single_get_button(event_controller) == GDK_BUTTON_PRIMARY &&
+     n_press >= 2){
+  }
+}
+
+void
+ags_file_widget_filename_activate_callback(GtkListView *list_view,
+					   guint position,
+					   AgsFileWidget *file_widget)
+{
+  GtkStringObject *string_object;
+
+  gchar *current_path, *filename;
+  gchar *prev_current_path;
+
+  string_object = gtk_single_selection_get_selected_item(file_widget->filename_single_selection);
+    
+  filename = gtk_string_object_get_string(string_object);
+
+  if(!strncmp(filename, ".", 2) == FALSE &&
+     !strncmp(filename, "..", 3) == FALSE){
+    current_path = g_strdup_printf("%s/%s",
+				   file_widget->current_path,
+				   filename);
+  }else{
+    current_path = g_strdup(filename);
+  }
+  
+  prev_current_path = file_widget->current_path;
+
+  if(!(g_file_test(current_path,
+		   G_FILE_TEST_IS_DIR) ||
+       g_file_test(current_path,
+		   G_FILE_TEST_IS_SYMLINK))){
+    current_path = NULL;
+  }
+  
+  if(current_path != NULL &&
+     (!g_strcmp0(current_path, prev_current_path)) == FALSE &&
+     (!strncmp(current_path, ".", 2)) == FALSE &&
+     ((!strncmp(current_path, "..", 3)) == FALSE ||
+      (!strncmp(current_path, "/", 2)) == FALSE)){
+    if(!strncmp(current_path, "..", 3)){
+      gchar *iter;
+	
+      if((iter = strrchr(prev_current_path, '/')) != NULL){
+	if(iter != prev_current_path){
+	  file_widget->current_path = g_strndup(prev_current_path,
+						iter - prev_current_path);
+	}else{
+	  file_widget->current_path = g_strdup("/");
+	}
+      }else{
+	prev_current_path = NULL;
+      }
+    }else{
+      file_widget->current_path = current_path;
+    }
+      
+    ags_file_widget_refresh(file_widget);
+  }else{
+    prev_current_path = NULL;
+  }
+
+  g_free(prev_current_path);
 }
 
 /**
@@ -966,17 +1081,132 @@ ags_file_widget_remove_location(AgsFileWidget *file_widget,
   }
 }
 
-void
-ags_file_widget_add_bookmark(AgsFileWidget *file_widget,
-			     gchar *button_action,
-			     gchar *button_text)
+gboolean
+ags_file_widget_bookmark_find(gpointer key,
+			      gpointer value,
+			      AgsIconLink *icon_link)
 {
+  if(value == icon_link){
+    return(TRUE);
+  }
+
+  return(FALSE);
 }
 
 void
-ags_file_widget_remove_bookmark(AgsFileWidget *file_widget,
-				gchar *button_action)
+ags_file_widget_bookmark_callback(AgsIconLink *icon_link,
+				  AgsFileWidget *file_widget)
 {
+  gchar *current_path;
+  gchar *prev_current_path;
+
+  current_path = g_hash_table_find(file_widget->bookmark,
+				   (GHRFunc) ags_file_widget_bookmark_find,
+				   icon_link);
+
+  prev_current_path = file_widget->current_path;
+
+  if(current_path != NULL &&
+     (!g_strcmp0(current_path, prev_current_path)) == FALSE){
+    file_widget->current_path = current_path;
+
+    ags_file_widget_refresh(file_widget);
+  }else{
+    prev_current_path = NULL;
+  }
+
+  g_free(prev_current_path);
+}
+
+/**
+ * ags_file_widget_add_bookmark:
+ * @file_widget: the #AgsFileWidget
+ * @bookmark_location: the bookmark location
+ *
+ * Add @bookmark_location to bookmark with @button_text.
+ * 
+ * Since: 6.6.0
+ */
+void
+ags_file_widget_add_bookmark(AgsFileWidget *file_widget,
+			     gchar *bookmark_location)
+{
+  if(!AGS_IS_FILE_WIDGET(file_widget) ||
+     bookmark_location == NULL){
+    return;
+  }
+
+  if(g_hash_table_lookup(file_widget->bookmark, bookmark_location) == NULL){
+    AgsIconLink *icon_link;
+
+    gchar *str;
+    gchar *iter;
+    
+    icon_link = NULL;
+    str = NULL;
+
+    iter = strrchr(bookmark_location, '/');
+
+    if(iter != NULL){
+      iter++;
+    }else{
+      iter = bookmark_location;
+    }
+    
+    str = g_strdup_printf("<span foreground=\"#0000ff\"><u>%s</u></span>",
+			  iter);
+      
+    icon_link = ags_icon_link_new("folder-bookmarks",
+				  bookmark_location,
+				  str);
+
+    g_free(str);
+        
+    gtk_box_append(file_widget->bookmark_box,
+		   (GtkWidget *) icon_link);
+    
+    g_hash_table_insert(file_widget->bookmark,
+			g_strdup(bookmark_location),
+			icon_link);
+    
+    g_signal_connect(icon_link, "clicked",
+		     G_CALLBACK(ags_file_widget_bookmark_callback), file_widget);
+  }
+}
+
+/**
+ * ags_file_widget_remove_bookmark:
+ * @file_widget: the #AgsFileWidget
+ * @bookmark_location: the bookmark location
+ *
+ * Remove @bookmark_location from bookmark with @button_text.
+ * 
+ * Since: 6.6.0
+ */
+void
+ags_file_widget_remove_bookmark(AgsFileWidget *file_widget,
+				gchar *bookmark_location)
+{
+  AgsIconLink *icon_link;
+
+  if(!AGS_IS_FILE_WIDGET(file_widget) ||
+     bookmark_location == NULL){
+    return;
+  }
+
+  if((icon_link = g_hash_table_lookup(file_widget->bookmark, bookmark_location)) != NULL){
+    gtk_box_remove(file_widget->bookmark_box,
+		   (GtkWidget *) icon_link);
+    
+    g_hash_table_remove(file_widget->location,
+			bookmark_location);
+    
+    g_object_disconnect(icon_link,
+			"any_signal::clicked",
+			G_CALLBACK(ags_file_widget_bookmark_callback),
+			file_widget,
+			NULL);
+  }
 }
 
 /**

@@ -33,16 +33,26 @@ void ags_icon_link_get_property(GObject *gobject,
 void ags_icon_link_dispose(GObject *gobject);
 void ags_icon_link_finalize(GObject *gobject);
 
-gboolean ags_icon_link_gesture_click_pressed_callback(GtkGestureClick *event_controller,
-						      gint n_press,
-						      gdouble x,
-						      gdouble y,
-						      AgsIconLink *icon_link);
-gboolean ags_icon_link_gesture_click_released_callback(GtkGestureClick *event_controller,
-						       gint n_press,
-						       gdouble x,
-						       gdouble y,
-						       AgsIconLink *icon_link);
+void ags_icon_link_snapshot(GtkWidget *widget,
+			    GtkSnapshot *snapshot);
+
+void ags_icon_link_gesture_click_pressed_callback(GtkGestureClick *event_controller,
+						  gint n_press,
+						  gdouble x,
+						  gdouble y,
+						  AgsIconLink *icon_link);
+void ags_icon_link_gesture_click_released_callback(GtkGestureClick *event_controller,
+						   gint n_press,
+						   gdouble x,
+						   gdouble y,
+						   AgsIconLink *icon_link);
+
+void ags_icon_link_enter_callback(GtkEventControllerMotion *event_controller,
+				  gdouble x,
+				  gdouble y,
+				  AgsIconLink *icon_link);
+void ags_icon_link_leave_callback(GtkEventControllerMotion *event_controller,
+				  AgsIconLink *icon_link);
 
 /**
  * SECTION:ags_icon_link
@@ -101,7 +111,8 @@ void
 ags_icon_link_class_init(AgsIconLinkClass *icon_link)
 {
   GObjectClass *gobject;
-
+  GtkWidgetClass *widget;
+  
   GParamSpec *param_spec;
 
   ags_icon_link_parent_class = g_type_class_peek_parent(icon_link);
@@ -131,7 +142,12 @@ ags_icon_link_class_init(AgsIconLinkClass *icon_link)
   g_object_class_install_property(gobject,
 				  PROP_ACTION,
 				  param_spec);
-  
+
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) icon_link;
+
+  widget->snapshot = ags_icon_link_snapshot;
+
   /* AgsIconLinkClass */  
   icon_link->clicked = NULL;
 
@@ -164,6 +180,8 @@ ags_icon_link_init(AgsIconLink *icon_link)
   gtk_orientable_set_orientation(GTK_ORIENTABLE(icon_link),
 				 GTK_ORIENTATION_VERTICAL);
 
+  icon_link->flags = 0;
+  
   icon_link->icon = gtk_image_new();
   gtk_image_set_icon_size(icon_link->icon,
 			  GTK_ICON_SIZE_LARGE);
@@ -176,6 +194,7 @@ ags_icon_link_init(AgsIconLink *icon_link)
   gtk_box_append(icon_link,
 		 icon_link->link);
 
+  /* events - gesture */
   event_controller = gtk_gesture_click_new();
   gtk_widget_add_controller((GtkWidget *) icon_link,
 			    event_controller);
@@ -185,6 +204,17 @@ ags_icon_link_init(AgsIconLink *icon_link)
 
   g_signal_connect(event_controller, "released",
 		   G_CALLBACK(ags_icon_link_gesture_click_released_callback), icon_link);
+
+  /* events - motion */
+  event_controller = gtk_event_controller_motion_new();
+  gtk_widget_add_controller((GtkWidget *) icon_link,
+			    event_controller);
+
+  g_signal_connect_after(event_controller, "enter",
+			 G_CALLBACK(ags_icon_link_enter_callback), icon_link);
+
+  g_signal_connect_after(event_controller, "leave",
+			 G_CALLBACK(ags_icon_link_leave_callback), icon_link);
 }
 
 void
@@ -199,20 +229,20 @@ ags_icon_link_set_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_ACTION:
-  {
-    gchar *action;
+    {
+      gchar *action;
 
-    action = g_value_get_string(value);
+      action = g_value_get_string(value);
 
-    if(action == icon_link->action){
-      return;
-    }
+      if(action == icon_link->action){
+	return;
+      }
 
-    g_free(icon_link->action);
+      g_free(icon_link->action);
       
-    icon_link->action = g_strdup(action);
-  }
-  break;
+      icon_link->action = g_strdup(action);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -231,10 +261,10 @@ ags_icon_link_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_ACTION:
-  {
-    g_value_set_string(value, icon_link->action);
-  }
-  break;
+    {
+      g_value_set_string(value, icon_link->action);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -253,6 +283,116 @@ ags_icon_link_finalize(GObject *gobject)
 {  
   /* call parent */
   G_OBJECT_CLASS(ags_icon_link_parent_class)->finalize(gobject);
+}
+
+void
+ags_icon_link_snapshot(GtkWidget *widget,
+		       GtkSnapshot *snapshot)
+{
+  GtkStyleContext *style_context;
+
+  cairo_t *cr;
+
+  graphene_rect_t rect;
+  
+  gint width, height;
+
+  /* call parent */
+  GTK_WIDGET_CLASS(ags_icon_link_parent_class)->snapshot(widget,
+							 snapshot);
+
+  if(ags_icon_link_test_flags(widget, AGS_ICON_LINK_HIGHLIGHT)){
+    style_context = gtk_widget_get_style_context((GtkWidget *) widget);  
+
+    width = gtk_widget_get_width(widget);
+    height = gtk_widget_get_height(widget);
+  
+    graphene_rect_init(&rect,
+		       0.0, 0.0,
+		       (float) width, (float) height);
+  
+    cr = gtk_snapshot_append_cairo(snapshot,
+				   &rect);
+  
+    /* highlight */
+    cairo_set_source_rgba(cr,
+			  1.0,
+			  1.0,
+			  1.0,
+			  0.333);
+    cairo_rectangle(cr,
+		    0.0, 0.0,
+		    (gdouble) width, (gdouble) height);
+    cairo_fill(cr);
+    
+    cairo_destroy(cr);
+  }
+}
+
+/**
+ * ags_icon_link_test_flags:
+ * @icon_link: the #AgsIconLink
+ * @flags: the flags
+ *
+ * Test @flags of @icon_link.
+ * 
+ * Returns: %TRUE if flags set, otherwise %FALSE
+ * 
+ * Since: 6.6.0
+ */
+gboolean
+ags_icon_link_test_flags(AgsIconLink *icon_link,
+			 guint flags)
+{
+  gboolean success;
+
+  if(!AGS_IS_ICON_LINK(icon_link)){
+    return(FALSE);
+  }
+  
+  success = ((flags & (icon_link->flags)) != 0) ? TRUE: FALSE;
+  
+  return(success);
+}
+
+/**
+ * ags_icon_link_set_flags:
+ * @icon_link: the #AgsIconLink
+ * @flags: the flags
+ *
+ * Set @flags of @icon_link.
+ * 
+ * Since: 6.6.0
+ */
+void
+ags_icon_link_set_flags(AgsIconLink *icon_link,
+			guint flags)
+{
+  if(!AGS_IS_ICON_LINK(icon_link)){
+    return;
+  }
+
+  icon_link->flags |= flags;
+}
+
+/**
+ * ags_icon_link_unset_flags:
+ * @icon_link: the #AgsIconLink
+ * @flags: the flags
+ *
+ * Set @flags of @icon_link.
+ * 
+ * Since: 6.6.0
+ */
+void
+ags_icon_link_unset_flags(AgsIconLink *icon_link,
+			  guint flags)
+{
+  if(!AGS_IS_ICON_LINK(icon_link)){
+    return;
+  }
+
+  icon_link->flags &= (~flags);
 }
 
 /**
@@ -414,17 +554,16 @@ ags_icon_link_clicked(AgsIconLink *icon_link)
   g_object_unref((GObject *) icon_link);
 }
 
-gboolean
+void
 ags_icon_link_gesture_click_pressed_callback(GtkGestureClick *event_controller,
 					     gint n_press,
 					     gdouble x,
 					     gdouble y,
 					     AgsIconLink *icon_link)
 {
-  return(FALSE);
 }
 
-gboolean
+void
 ags_icon_link_gesture_click_released_callback(GtkGestureClick *event_controller,
 					      gint n_press,
 					      gdouble x,
@@ -434,8 +573,28 @@ ags_icon_link_gesture_click_released_callback(GtkGestureClick *event_controller,
   gtk_widget_grab_focus((GtkWidget *) icon_link);
 
   ags_icon_link_clicked(icon_link);
-  
-  return(FALSE);
+}
+
+void
+ags_icon_link_enter_callback(GtkEventControllerMotion *event_controller,
+			     gdouble x,
+			     gdouble y,
+			     AgsIconLink *icon_link)
+{
+  ags_icon_link_set_flags(icon_link,
+			  AGS_ICON_LINK_HIGHLIGHT);
+
+  gtk_widget_queue_draw(icon_link);
+}
+
+void
+ags_icon_link_leave_callback(GtkEventControllerMotion *event_controller,
+			     AgsIconLink *icon_link)
+{
+  ags_icon_link_unset_flags(icon_link,
+			    AGS_ICON_LINK_HIGHLIGHT);
+
+  gtk_widget_queue_draw(icon_link);
 }
 
 /**
