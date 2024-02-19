@@ -42,10 +42,16 @@ G_BEGIN_DECLS
 typedef struct _AgsIconLink AgsIconLink;
 typedef struct _AgsIconLinkClass AgsIconLinkClass;
 
+typedef enum{
+  AGS_ICON_LINK_HIGHLIGHT            = 1,
+}AgsIconLinkFlags;
+
 struct _AgsIconLink
 {
   GtkBox box;
 
+  guint flags;
+  
   GtkImage *icon;
 
   GtkLabel *link;
@@ -61,6 +67,14 @@ struct _AgsIconLinkClass
 };
 
 GType ags_icon_link_get_type(void);
+
+/* flags */
+gboolean ags_icon_link_test_flags(AgsIconLink *icon_link,
+				  guint flags);
+void ags_icon_link_set_flags(AgsIconLink *icon_link,
+			     guint flags);
+void ags_icon_link_unset_flags(AgsIconLink *icon_link,
+			       guint flags);
 
 /* getter/setter */
 gchar* ags_icon_link_get_icon_name(AgsIconLink *icon_link);

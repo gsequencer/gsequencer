@@ -74,27 +74,27 @@ gboolean ags_dial_button_press_is_dial_event(AgsDial *dial,
 					     gint padding_left, gint padding_top,
 					     gint dial_left_position);
 
-gboolean ags_dial_gesture_click_pressed_callback(GtkGestureClick *event_controller,
-						 gint n_press,
-						 gdouble x,
-						 gdouble y,
-						 AgsDial *dial);
-gboolean ags_dial_gesture_click_released_callback(GtkGestureClick *event_controller,
-						  gint n_press,
-						  gdouble x,
-						  gdouble y,
-						  AgsDial *dial);
+void ags_dial_gesture_click_pressed_callback(GtkGestureClick *event_controller,
+					     gint n_press,
+					     gdouble x,
+					     gdouble y,
+					     AgsDial *dial);
+void ags_dial_gesture_click_released_callback(GtkGestureClick *event_controller,
+					      gint n_press,
+					      gdouble x,
+					      gdouble y,
+					      AgsDial *dial);
 
 gboolean ags_dial_key_pressed_callback(GtkEventControllerKey *event_controller,
 				       guint keyval,
 				       guint keycode,
 				       GdkModifierType state,
 				       AgsDial *dial);
-gboolean ags_dial_key_released_callback(GtkEventControllerKey *event_controller,
-					guint keyval,
-					guint keycode,
-					GdkModifierType state,
-					AgsDial *dial);
+void ags_dial_key_released_callback(GtkEventControllerKey *event_controller,
+				    guint keyval,
+				    guint keycode,
+				    GdkModifierType state,
+				    AgsDial *dial);
 gboolean ags_dial_modifiers_callback(GtkEventControllerKey *event_controller,
 				     GdkModifierType keyval,
 				     AgsDial *dial);
@@ -823,7 +823,7 @@ ags_dial_button_press_is_dial_event(AgsDial *dial,
   }
 }
 
-gboolean
+void
 ags_dial_gesture_click_pressed_callback(GtkGestureClick *event_controller,
 					gint n_press,
 					gdouble x,
@@ -898,11 +898,9 @@ ags_dial_gesture_click_pressed_callback(GtkGestureClick *event_controller,
       dial->flags |= AGS_DIAL_MOTION_CAPTURING;
     }
   }
-
-  return(FALSE);
 }
 
-gboolean
+void
 ags_dial_gesture_click_released_callback(GtkGestureClick *event_controller,
 					 gint n_press,
 					 gdouble x,
@@ -944,8 +942,6 @@ ags_dial_gesture_click_released_callback(GtkGestureClick *event_controller,
   }else if((AGS_DIAL_MOTION_CAPTURING & (dial->flags)) != 0){
     dial->flags &= (~AGS_DIAL_MOTION_CAPTURING);
   }
-
-  return(FALSE);
 }
 
 gboolean
@@ -973,7 +969,7 @@ ags_dial_key_pressed_callback(GtkEventControllerKey *event_controller,
   return(key_handled);
 }
 
-gboolean
+void
 ags_dial_key_released_callback(GtkEventControllerKey *event_controller,
 			       guint keyval,
 			       guint keycode,
@@ -1085,8 +1081,6 @@ ags_dial_key_released_callback(GtkEventControllerKey *event_controller,
     break;
     }
   }
-  
-  return(key_handled);
 }
 
 gboolean

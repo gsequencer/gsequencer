@@ -154,10 +154,9 @@ void ags_file_widget_remove_location(AgsFileWidget *file_widget,
 
 /* bookmarks */
 void ags_file_widget_add_bookmark(AgsFileWidget *file_widget,
-				  gchar *button_action,
-				  gchar *button_text);
+				  gchar *bookmark_location);
 void ags_file_widget_remove_bookmark(AgsFileWidget *file_widget,
-				     gchar *button_action);
+				     gchar *bookmark_location);
 
 /* events */
 void ags_file_widget_refresh(AgsFileWidget *file_widget);
