@@ -2485,6 +2485,7 @@ libags_gui_h_sources = \
 	ags/widget/ags_led_array.h \
 	ags/widget/ags_level.h \
 	ags/widget/ags_level_box.h \
+	ags/widget/ags_input_dialog.h \
 	ags/widget/ags_notebook.h \
 	ags/widget/ags_piano_keys.h \
 	ags/widget/ags_piano.h \
@@ -2513,6 +2514,7 @@ libags_gui_c_sources = \
 	ags/widget/ags_led_array.c \
 	ags/widget/ags_level.c \
 	ags/widget/ags_level_box.c \
+	ags/widget/ags_input_dialog.c \
 	ags/widget/ags_notebook.c \
 	ags/widget/ags_piano.c \
 	ags/widget/ags_scrolled_piano.c \
@@ -2582,7 +2584,6 @@ libgsequencer_h_sources = \
 	ags/app/ags_line_preset_editor_callbacks.h \
 	ags/app/ags_link_editor.h \
 	ags/app/ags_link_editor_callbacks.h \
-	ags/app/ags_input_dialog.h \
 	ags/app/ags_machine.h \
 	ags/app/ags_machine_counter.h \
 	ags/app/ags_machine_counter_manager.h \
@@ -2709,7 +2710,6 @@ libgsequencer_c_sources = \
 	ags/app/ags_line_preset_editor_callbacks.c \
 	ags/app/ags_link_editor.c \
 	ags/app/ags_link_editor_callbacks.c \
-	ags/app/ags_input_dialog.c \
 	ags/app/ags_machine.c \
 	ags/app/ags_machine_counter.c \
 	ags/app/ags_machine_counter_manager.c \

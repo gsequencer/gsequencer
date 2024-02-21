@@ -82,6 +82,8 @@ struct _AgsFileWidget
 
   gchar *current_path;
   
+  GSimpleActionGroup *action_group;
+
   GtkBox *vbox;
 
   GtkEntry *location_entry;
@@ -114,6 +116,9 @@ struct _AgsFileWidget
   
   GtkColumnView *filename_view;
 
+  GtkPopoverMenu *filename_popover;
+  GMenu *filename_popup;
+  
   GtkBox *right_vbox;
 
   GtkWidget *preview;

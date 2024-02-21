@@ -48,6 +48,13 @@ void ags_file_widget_get_property(GObject *gobject,
 void ags_file_widget_dispose(GObject *gobject);
 void ags_file_widget_finalize(GObject *gobject);
 
+void ags_file_widget_factory_setup(GtkListItemFactory *factory, GtkListItem *list_item,
+				   AgsFileWidget *file_widget);
+void ags_file_widget_primary_key_factory_bind(GtkListItemFactory *factory, GtkListItem *list_item,
+					      AgsFileWidget *file_widget);
+void ags_file_widget_value_factory_bind(GtkListItemFactory *factory, GtkListItem *list_item,
+					AgsFileWidget *file_widget);
+
 void ags_file_widget_gesture_click_pressed_callback(GtkGestureClick *event_controller,
 						    gint n_press,
 						    gdouble x,
@@ -73,6 +80,13 @@ void ags_file_widget_bookmark_callback(AgsIconLink *icon_link,
 gboolean ags_file_widget_bookmark_find(gpointer key,
 				       gpointer value,
 				       AgsIconLink *icon_link);
+
+void ags_file_widget_rename_callback(GAction *action, GVariant *parameter,
+				     AgsFileWidget *file_widget);
+void ags_file_widget_mkdir_callback(GAction *action, GVariant *parameter,
+				    AgsFileWidget *file_widget);
+void ags_file_widget_show_hidden_files_callback(GAction *action, GVariant *parameter,
+						AgsFileWidget *file_widget);
 
 /**
  * SECTION:ags_file_widget
@@ -184,145 +198,6 @@ ags_file_widget_class_init(AgsFileWidgetClass *file_widget)
 }
 
 void
-ags_file_widget_factory_setup(GtkListItemFactory *factory, GtkListItem *list_item,
-			      AgsFileWidget *file_widget)
-{
-  GtkLabel *label;
-  
-  label = (GtkLabel *) gtk_label_new("");
-
-  gtk_label_set_xalign(label,
-		       0.0);
-  gtk_widget_set_halign(label,
-			GTK_ALIGN_FILL);
-
-  gtk_list_item_set_child(list_item,
-			  (GtkWidget *) label);
-  gtk_list_item_set_activatable(list_item,
-				TRUE);
-}
-
-void
-ags_file_widget_primary_key_factory_bind(GtkListItemFactory *factory, GtkListItem *list_item,
-					 AgsFileWidget *file_widget)
-{
-  GtkLabel *label;
-
-  GtkStringObject *string_object;
-  
-  gchar *primary_key;
-  
-  label = (GtkLabel *) gtk_list_item_get_child(list_item);
-
-  string_object = GTK_STRING_OBJECT(gtk_list_item_get_item(list_item));
-  primary_key = gtk_string_object_get_string(string_object);
-
-  gtk_label_set_label(label,
-		      primary_key);
-}
-
-void
-ags_file_widget_value_factory_bind(GtkListItemFactory *factory, GtkListItem *list_item,
-				   AgsFileWidget *file_widget)
-{
-  GtkLabel *label;
-
-  GtkStringObject *string_object;
-
-  gchar *primary_key;
-  gchar *column_name, *value;
-  gchar *filename;
-
-  struct stat sb;
-  
-  int retval;
-  
-  label = gtk_list_item_get_child(list_item);
-
-  string_object = GTK_STRING_OBJECT(gtk_list_item_get_item(list_item));
-  primary_key = gtk_string_object_get_string(string_object);
-
-  column_name = NULL;
-  value = NULL;
-
-  if((!strncmp(primary_key, "..", 3) == FALSE) &&
-     (!strncmp(primary_key, ".", 2) == FALSE)){
-    filename = g_strdup_printf("%s/%s",
-			       file_widget->current_path,
-			       primary_key);
-  
-    retval = stat(filename,
-		  &sb);
-  
-    if(factory == file_widget->filename_factory[0]){
-      value = g_strdup_printf("%s",
-			      primary_key);
-    }else if(factory == file_widget->filename_factory[1]){
-      value = g_strdup_printf("%jd",
-			      sb.st_size);
-    }else if(factory == file_widget->filename_factory[2]){
-      gchar *file_type;
-      
-      switch (sb.st_mode & S_IFMT) {
-      case S_IFBLK:
-	{
-	  file_type = "block device";
-	}
-	break;
-      case S_IFCHR:
-	{
-	  file_type = "character device";
-	}
-	break;
-      case S_IFDIR:
-	{
-	  file_type = "directory";
-	}
-	break;
-      case S_IFIFO:
-	{
-	  file_type = "FIFO/pipe";
-	}
-	break;
-      case S_IFLNK:
-	{
-	  file_type = "symlink";
-	}
-	break;
-      case S_IFREG:
-	{
-	  file_type = "regular file";
-	}
-	break;
-      case S_IFSOCK:
-	{
-	  file_type = "socket";
-	}
-	break;
-      default:
-	{
-	  file_type = "unknown?";
-	}
-      }
-
-      value = g_strdup_printf("%s",
-			      file_type);
-    }else if(factory == file_widget->filename_factory[3]){
-      char outstr[200];
-
-      strftime(outstr, sizeof(outstr), "%a, %d %b %Y %T %z", localtime(&sb.st_mtime));
-      
-      value = g_strdup(outstr);
-    }
-  }else{
-    value = "";
-  }
-
-  gtk_label_set_label(label,
-		      value);
-}
-
-void
 ags_file_widget_init(AgsFileWidget *file_widget)
 {
   GtkBox *hbox;
@@ -337,6 +212,10 @@ ags_file_widget_init(AgsFileWidget *file_widget)
   GtkStringList *filename_key_string_list;
   GtkStringList *single_filename_string_list;
   GtkStringList *multi_filename_string_list;
+
+  GSimpleActionGroup *action_group;
+  GSimpleAction *action;
+  GMenuItem *menu_item;
 
   gchar *str;
   
@@ -563,7 +442,8 @@ ags_file_widget_init(AgsFileWidget *file_widget)
   
   gtk_box_append(file_widget->center_vbox,
 		 (GtkWidget *) file_widget->filename_scrolled_window);
-  
+
+  /* filename view */
   file_widget->filename_view = (GtkListView *) gtk_column_view_new(file_widget->filename_single_selection);
   gtk_scrolled_window_set_child(file_widget->filename_scrolled_window,
 				file_widget->filename_view);
@@ -580,9 +460,69 @@ ags_file_widget_init(AgsFileWidget *file_widget)
 			 G_CALLBACK(ags_file_widget_filename_activate_callback), file_widget);
 
   event_controller = gtk_gesture_click_new();
+  gtk_gesture_single_set_button(event_controller,
+				GDK_BUTTON_SECONDARY);
   gtk_widget_add_controller((GtkWidget *) file_widget->filename_view,
 			    event_controller);
+
+  g_signal_connect_after(event_controller, "pressed",
+			 G_CALLBACK(ags_file_widget_gesture_click_pressed_callback), file_widget);
+
+  g_signal_connect_after(event_controller, "released",
+			 G_CALLBACK(ags_file_widget_gesture_click_released_callback), file_widget);
+
+  /* filename popover */
+  file_widget->filename_popup = (GMenu *) g_menu_new();
+
+  menu_item = g_menu_item_new(i18n("rename file"),
+			      "file_widget.rename");
+  g_menu_append_item(file_widget->filename_popup,
+		     menu_item);
+
+  menu_item = g_menu_item_new(i18n("create directory"),
+			      "file_widget.mkdir");
+  g_menu_append_item(file_widget->filename_popup,
+		     menu_item);
+
+  menu_item = g_menu_item_new(i18n("show hidden files"),
+			      "file_widget.show_hidden_files");
+  g_menu_append_item(file_widget->filename_popup,
+		     menu_item);
+
+  file_widget->filename_popover = gtk_popover_menu_new_from_model(G_MENU_MODEL(file_widget->filename_popup));
+  gtk_widget_set_parent(file_widget->filename_popover,
+			file_widget->filename_view);
   
+  action_group =
+    file_widget->action_group = g_simple_action_group_new();
+  gtk_widget_insert_action_group((GtkWidget *) file_widget->filename_popover,
+				 "file_widget",
+				 G_ACTION_GROUP(action_group));
+
+  /* rename file */
+  action = g_simple_action_new("rename",
+			       NULL);
+  g_signal_connect(action, "activate",
+		   G_CALLBACK(ags_file_widget_rename_callback), file_widget);
+  g_action_map_add_action(G_ACTION_MAP(action_group),
+			  G_ACTION(action));
+
+  /* create directory */
+  action = g_simple_action_new("mkdir",
+			       NULL);
+  g_signal_connect(action, "activate",
+		   G_CALLBACK(ags_file_widget_mkdir_callback), file_widget);
+  g_action_map_add_action(G_ACTION_MAP(action_group),
+			  G_ACTION(action));
+
+  /* show hidden files */
+  action = g_simple_action_new("show_hidden_files",
+			       NULL);
+  g_signal_connect(action, "activate",
+		   G_CALLBACK(ags_file_widget_show_hidden_files_callback), file_widget);
+  g_action_map_add_action(G_ACTION_MAP(action_group),
+			  G_ACTION(action));
+
   /* right */
   file_widget->right_vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 						   6);
@@ -642,6 +582,146 @@ ags_file_widget_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_file_widget_parent_class)->finalize(gobject);
 }
 
+
+void
+ags_file_widget_factory_setup(GtkListItemFactory *factory, GtkListItem *list_item,
+			      AgsFileWidget *file_widget)
+{
+  GtkLabel *label;
+  
+  label = (GtkLabel *) gtk_label_new("");
+
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_widget_set_halign(label,
+			GTK_ALIGN_FILL);
+
+  gtk_list_item_set_child(list_item,
+			  (GtkWidget *) label);
+  gtk_list_item_set_activatable(list_item,
+				TRUE);
+}
+
+void
+ags_file_widget_primary_key_factory_bind(GtkListItemFactory *factory, GtkListItem *list_item,
+					 AgsFileWidget *file_widget)
+{
+  GtkLabel *label;
+
+  GtkStringObject *string_object;
+  
+  gchar *primary_key;
+  
+  label = (GtkLabel *) gtk_list_item_get_child(list_item);
+
+  string_object = GTK_STRING_OBJECT(gtk_list_item_get_item(list_item));
+  primary_key = gtk_string_object_get_string(string_object);
+
+  gtk_label_set_label(label,
+		      primary_key);
+}
+
+void
+ags_file_widget_value_factory_bind(GtkListItemFactory *factory, GtkListItem *list_item,
+				   AgsFileWidget *file_widget)
+{
+  GtkLabel *label;
+
+  GtkStringObject *string_object;
+
+  gchar *primary_key;
+  gchar *column_name, *value;
+  gchar *filename;
+
+  struct stat sb;
+  
+  int retval;
+  
+  label = gtk_list_item_get_child(list_item);
+
+  string_object = GTK_STRING_OBJECT(gtk_list_item_get_item(list_item));
+  primary_key = gtk_string_object_get_string(string_object);
+
+  column_name = NULL;
+  value = NULL;
+
+  if((!strncmp(primary_key, "..", 3) == FALSE) &&
+     (!strncmp(primary_key, ".", 2) == FALSE)){
+    filename = g_strdup_printf("%s/%s",
+			       file_widget->current_path,
+			       primary_key);
+  
+    retval = stat(filename,
+		  &sb);
+  
+    if(factory == file_widget->filename_factory[0]){
+      value = g_strdup_printf("%s",
+			      primary_key);
+    }else if(factory == file_widget->filename_factory[1]){
+      value = g_strdup_printf("%jd",
+			      sb.st_size);
+    }else if(factory == file_widget->filename_factory[2]){
+      gchar *file_type;
+      
+      switch (sb.st_mode & S_IFMT) {
+      case S_IFBLK:
+	{
+	  file_type = "block device";
+	}
+	break;
+      case S_IFCHR:
+	{
+	  file_type = "character device";
+	}
+	break;
+      case S_IFDIR:
+	{
+	  file_type = "directory";
+	}
+	break;
+      case S_IFIFO:
+	{
+	  file_type = "FIFO/pipe";
+	}
+	break;
+      case S_IFLNK:
+	{
+	  file_type = "symlink";
+	}
+	break;
+      case S_IFREG:
+	{
+	  file_type = "regular file";
+	}
+	break;
+      case S_IFSOCK:
+	{
+	  file_type = "socket";
+	}
+	break;
+      default:
+	{
+	  file_type = "unknown?";
+	}
+      }
+
+      value = g_strdup_printf("%s",
+			      file_type);
+    }else if(factory == file_widget->filename_factory[3]){
+      char outstr[200];
+
+      strftime(outstr, sizeof(outstr), "%a, %d %b %Y %T %z", localtime(&sb.st_mtime));
+      
+      value = g_strdup(outstr);
+    }
+  }else{
+    value = "";
+  }
+
+  gtk_label_set_label(label,
+		      value);
+}
+
 void
 ags_file_widget_gesture_click_pressed_callback(GtkGestureClick *event_controller,
 					       gint n_press,
@@ -659,8 +739,15 @@ ags_file_widget_gesture_click_released_callback(GtkGestureClick *event_controlle
 						gdouble y,
 						AgsFileWidget *file_widget)
 {
-  if(gtk_gesture_single_get_button(event_controller) == GDK_BUTTON_PRIMARY &&
-     n_press >= 2){
+  gint width, height;
+
+  width = gtk_widget_get_width(file_widget->filename_view);
+  height = gtk_widget_get_height(file_widget->filename_view);
+  
+  if(n_press >= 1){
+    gtk_popover_set_offset(file_widget->filename_popover,
+			   (gint) x - (width / 2), (gint) y - height);
+    gtk_popover_popup(file_widget->filename_popover);
   }
 }
 
@@ -1116,6 +1203,35 @@ ags_file_widget_bookmark_callback(AgsIconLink *icon_link,
   }
 
   g_free(prev_current_path);
+}
+
+void
+ags_file_widget_rename_callback(GAction *action, GVariant *parameter,
+				AgsFileWidget *file_widget)
+{
+}
+
+void
+ags_file_widget_mkdir_callback(GAction *action, GVariant *parameter,
+			       AgsFileWidget *file_widget)
+{
+}
+
+void
+ags_file_widget_show_hidden_files_callback(GAction *action, GVariant *parameter,
+					   AgsFileWidget *file_widget)
+{
+  if(!ags_file_widget_test_flags(file_widget, AGS_FILE_WIDGET_HIDDEN_FILES_VISIBLE)){
+    ags_file_widget_set_flags(file_widget,
+			      AGS_FILE_WIDGET_HIDDEN_FILES_VISIBLE);
+
+    ags_file_widget_refresh(file_widget);
+  }else{
+    ags_file_widget_unset_flags(file_widget,
+				AGS_FILE_WIDGET_HIDDEN_FILES_VISIBLE);
+
+    ags_file_widget_refresh(file_widget);
+  }
 }
 
 /**
