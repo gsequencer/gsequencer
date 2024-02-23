@@ -29,6 +29,16 @@
 
 #include <gmodule.h>
 
+#include <libxml/tree.h>
+#include <libxml/parser.h>
+#include <libxml/xpath.h>
+
+#include <libxml/xlink.h>
+#include <libxml/valid.h>
+#include <libxml/xmlIO.h>
+#include <libxml/xmlmemory.h>
+#include <libxml/xmlsave.h>
+
 #include <unistd.h>
 
 #include <sys/types.h>
@@ -89,9 +99,6 @@ void ags_file_widget_location_callback(AgsIconLink *icon_link,
 				       AgsFileWidget *file_widget);
 void ags_file_widget_bookmark_callback(AgsIconLink *icon_link,
 				       AgsFileWidget *file_widget);
-gboolean ags_file_widget_bookmark_find(gpointer key,
-				       gpointer value,
-				       AgsIconLink *icon_link);
 
 void ags_file_widget_rename_response_callback(AgsInputDialog *input_dialog,
 					      gint response,
@@ -106,6 +113,8 @@ void ags_file_widget_mkdir_callback(GAction *action, GVariant *parameter,
 				    AgsFileWidget *file_widget);
 void ags_file_widget_show_hidden_files_callback(GAction *action, GVariant *parameter,
 						AgsFileWidget *file_widget);
+void ags_file_widget_add_bookmark_callback(GAction *action, GVariant *parameter,
+					   AgsFileWidget *file_widget);
 
 /**
  * SECTION:ags_file_widget
@@ -469,6 +478,13 @@ ags_file_widget_init(AgsFileWidget *file_widget)
 		 (GtkWidget *) file_widget->location_separator);
 
   /* bookmark */
+  if(file_widget->home_path != NULL){
+    file_widget->bookmark_filename = g_strdup_printf("%s/.gsequencer/default-bookmarks.xml",
+						     file_widget->home_path);
+  }else{
+    file_widget->bookmark_filename = NULL;
+  }
+  
   file_widget->bookmark = g_hash_table_new_full(g_direct_hash,
 						g_string_equal,
 						g_free,
@@ -585,6 +601,14 @@ ags_file_widget_init(AgsFileWidget *file_widget)
   g_action_map_add_action(G_ACTION_MAP(action_group),
 			  G_ACTION(action));
 
+  /* add bookmark */
+  action = g_simple_action_new("add_bookmark",
+			       NULL);
+  g_signal_connect(action, "activate",
+		   G_CALLBACK(ags_file_widget_add_bookmark_callback), file_widget);
+  g_action_map_add_action(G_ACTION_MAP(action_group),
+			  G_ACTION(action));
+  
   /* right */
   file_widget->right_vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 						   6);
@@ -1016,7 +1040,7 @@ ags_file_widget_location_drop_down_callback(GObject *location,
 
   if(current_path != NULL &&
      (!g_strcmp0(current_path, prev_current_path)) == FALSE){
-    file_widget->current_path = current_path;
+    file_widget->current_path = g_strdup(current_path);
 
     ags_file_widget_refresh(file_widget);
   }else{
@@ -1081,6 +1105,30 @@ ags_file_widget_location_callback(AgsIconLink *icon_link,
   }
 
   g_free(prev_current_path);
+}
+
+/**
+ * ags_file_widget_get_location:
+ * @file_widget: the #AgsFileWidget
+ *
+ * Get location from @file_widget.
+ *
+ * Returns: (transfer container): the location #GHashTable
+ * 
+ * Since: 6.6.0
+ */
+GHashTable*
+ags_file_widget_get_location(AgsFileWidget *file_widget)
+{
+  GHashTable *location;
+  
+  g_return_val_if_fail(AGS_IS_FILE_WIDGET(file_widget), NULL);
+
+  location = file_widget->location;
+
+  g_hash_table_ref(location);
+
+  return(location);
 }
 
 /**
@@ -1241,18 +1289,6 @@ ags_file_widget_remove_location(AgsFileWidget *file_widget,
   }
 }
 
-gboolean
-ags_file_widget_bookmark_find(gpointer key,
-			      gpointer value,
-			      AgsIconLink *icon_link)
-{
-  if(value == icon_link){
-    return(TRUE);
-  }
-
-  return(FALSE);
-}
-
 void
 ags_file_widget_bookmark_callback(AgsIconLink *icon_link,
 				  AgsFileWidget *file_widget)
@@ -1260,15 +1296,13 @@ ags_file_widget_bookmark_callback(AgsIconLink *icon_link,
   gchar *current_path;
   gchar *prev_current_path;
 
-  current_path = g_hash_table_find(file_widget->bookmark,
-				   (GHRFunc) ags_file_widget_bookmark_find,
-				   icon_link);
+  current_path = ags_icon_link_get_action(icon_link);
 
   prev_current_path = file_widget->current_path;
 
   if(current_path != NULL &&
      (!g_strcmp0(current_path, prev_current_path)) == FALSE){
-    file_widget->current_path = current_path;
+    file_widget->current_path = g_strdup(current_path);
 
     ags_file_widget_refresh(file_widget);
   }else{
@@ -1276,6 +1310,7 @@ ags_file_widget_bookmark_callback(AgsIconLink *icon_link,
   }
 
   g_free(prev_current_path);
+  g_free(current_path);
 }
 
 void
@@ -1423,6 +1458,61 @@ ags_file_widget_show_hidden_files_callback(GAction *action, GVariant *parameter,
   }
 }
 
+void
+ags_file_widget_add_bookmark_callback(GAction *action, GVariant *parameter,
+				      AgsFileWidget *file_widget)
+{
+  GtkStringObject *string_object;
+
+  gchar *new_path;
+  gchar *bookmark_location;
+  gchar *new_str;
+  
+  string_object = gtk_single_selection_get_selected_item(file_widget->filename_single_selection);
+
+  bookmark_location = gtk_string_object_get_string(string_object);
+
+  if((!strncmp(bookmark_location, ".", 2)) == FALSE &&
+     (!strncmp(bookmark_location, "..", 3)) == FALSE){
+    new_path = g_strdup(file_widget->current_path);
+
+    new_str = g_strdup_printf("%s/%s",
+			      new_path,
+			      bookmark_location);
+    
+    ags_file_widget_add_bookmark(file_widget,
+				 new_str);
+  
+    g_free(new_path);
+  
+    g_free(new_str);
+  }
+}
+
+/**
+ * ags_file_widget_get_bookmark:
+ * @file_widget: the #AgsFileWidget
+ *
+ * Get bookmark from @file_widget.
+ *
+ * Returns: (transfer container): the bookmark #GHashTable
+ * 
+ * Since: 6.6.0
+ */
+GHashTable*
+ags_file_widget_get_bookmark(AgsFileWidget *file_widget)
+{
+  GHashTable *bookmark;
+  
+  g_return_val_if_fail(AGS_IS_FILE_WIDGET(file_widget), NULL);
+
+  bookmark = file_widget->bookmark;
+
+  g_hash_table_ref(bookmark);
+
+  return(bookmark);
+}
+
 /**
  * ags_file_widget_add_bookmark:
  * @file_widget: the #AgsFileWidget
@@ -1437,7 +1527,9 @@ ags_file_widget_add_bookmark(AgsFileWidget *file_widget,
 			     gchar *bookmark_location)
 {
   if(!AGS_IS_FILE_WIDGET(file_widget) ||
-     bookmark_location == NULL){
+     bookmark_location == NULL ||
+     !strncmp(bookmark_location, ".", 2) ||
+     !strncmp(bookmark_location, "..", 3)){
     return;
   }
 
@@ -1461,7 +1553,7 @@ ags_file_widget_add_bookmark(AgsFileWidget *file_widget,
     str = g_strdup_printf("<span foreground=\"#0000ff\"><u>%s</u></span>",
 			  iter);
       
-    icon_link = ags_icon_link_new("folder-bookmarks",
+    icon_link = ags_icon_link_new("user-bookmarks",
 				  bookmark_location,
 				  str);
 
@@ -1512,6 +1604,125 @@ ags_file_widget_remove_bookmark(AgsFileWidget *file_widget,
 			file_widget,
 			NULL);
   }
+}
+
+/**
+ * ags_file_widget_read_bookmark:
+ * @file_widget: the #AgsFileWidget
+ *
+ * Read bookmarks from bookmark-filename.
+ * 
+ * Since: 6.6.0
+ */
+void
+ags_file_widget_read_bookmark(AgsFileWidget *file_widget)
+{
+  xmlDoc *bookmark_doc;
+  xmlNode *root_node;
+  xmlNode *node;
+
+  g_return_if_fail(AGS_IS_FILE_WIDGET(file_widget));
+  g_return_if_fail(file_widget->bookmark_filename != NULL);
+
+  bookmark_doc = xmlReadFile(file_widget->bookmark_filename,
+			     NULL,
+			     0);
+
+  if(bookmark_doc == NULL){
+    return;
+  }
+
+  
+  root_node = xmlDocGetRootElement(bookmark_doc);
+
+  if(root_node != NULL &&
+     !xmlStrncmp("resources",
+		 root_node->name,
+		 10)){
+
+    node = root_node->children;
+    
+    while(node != NULL){
+      if(node->type == XML_ELEMENT_NODE){
+	if(!xmlStrncmp("resource",
+		       node->name,
+		       9)){
+	  xmlChar *filename;
+
+	  filename = xmlNodeGetContent(node);
+
+	  ags_file_widget_add_bookmark(file_widget,
+				       filename);
+
+	  xmlFree(filename);
+	}
+      }
+
+      node = node->next;
+    }
+  }
+}
+
+/**
+ * ags_file_widget_write_bookmark:
+ * @file_widget: the #AgsFileWidget
+ *
+ * Write bookmarks from bookmark-filename.
+ * 
+ * Since: 6.6.0
+ */
+void
+ags_file_widget_write_bookmark(AgsFileWidget *file_widget)
+{
+  GList *start_bookmark, *bookmark;
+  
+  FILE *out;
+
+  xmlDoc *bookmark_doc;
+  xmlNode *root_node;
+  xmlNode *node;
+  
+  xmlChar *buffer;
+
+  int size;
+
+  g_return_if_fail(AGS_IS_FILE_WIDGET(file_widget));
+  g_return_if_fail(file_widget->bookmark_filename != NULL);
+
+  bookmark =
+    start_bookmark = g_hash_table_get_keys(file_widget->bookmark);
+  
+  bookmark_doc = xmlNewDoc("1.0");
+
+  root_node = xmlNewNode(NULL,
+			 BAD_CAST "resources");
+
+  xmlDocSetRootElement(bookmark_doc,
+		       root_node);
+  
+  while(bookmark != NULL){
+    node = xmlNewNode(NULL,
+		      BAD_CAST "resource");
+
+    xmlNodeAddContent(node,
+		      (gchar *) bookmark->data);
+    
+    bookmark = bookmark->next;
+  }
+
+  g_list_free(start_bookmark);
+
+  out = NULL;
+  buffer = NULL;
+
+  out = fopen(file_widget->bookmark_filename, "w+");
+  size = 0;
+  
+  xmlDocDumpFormatMemoryEnc(bookmark_doc, &(buffer), &size, "UTF-8", TRUE);
+
+  fwrite(buffer, size, sizeof(xmlChar), out);
+  fflush(out);
+  fclose(out);
 }
 
 void

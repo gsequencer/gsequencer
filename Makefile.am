@@ -879,11 +879,11 @@ libags_audio_la_LDFLAGS += $(CORE_AUDIO_LIBS) $(WASAPI_LIBS) $(LIBASOUND2_LIBS) 
 
 # library libags-gui
 libags_gui_la_CPPFLAGS = -std=gnu99 $(CPPFLAGS) $(LIBAGS_GUI_CPPFLAGS)
-libags_gui_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(GOBJECT_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(W32API_CFLAGS)
+libags_gui_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(GOBJECT_CFLAGS) $(LIBXML2_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(W32API_CFLAGS)
 libags_gui_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(GOBJECT_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(W32API_CFLAGS)
 libags_gui_la_LDFLAGS = $(LDFLAGS) -version-info 6:0:0 $(PIC_FLAGS) -pthread
 libags_gui_la_LIBADD = -lm
-libags_gui_la_LDFLAGS += $(GOBJECT_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(W32API_LIBS)
+libags_gui_la_LDFLAGS += $(GOBJECT_LIBS) $(LIBXML2_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(W32API_LIBS)
 
 if WITH_W32API
 libags_gui_la_LDFLAGS += -Wl,--export-all-symbols,--out-implib=libags_gui.dll.a

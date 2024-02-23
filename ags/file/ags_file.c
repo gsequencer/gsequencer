@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-20204 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,9 +32,7 @@
 #include <ags/thread/ags_thread_pool.h>
 #include <ags/thread/ags_thread.h>
 
-#include <libxml/parser.h>
 #include <libxml/xlink.h>
-#include <libxml/xpath.h>
 #include <libxml/valid.h>
 #include <libxml/xmlIO.h>
 #include <libxml/xmlmemory.h>
