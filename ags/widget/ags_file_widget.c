@@ -214,6 +214,7 @@ ags_file_widget_class_init(AgsFileWidgetClass *file_widget)
   /**
    * AgsFileWidget::create-dir:
    * @file_widget: the #AgsFileWidget
+   * @dir_path: the directory path
    *
    * The ::create-dir signal notifies about creating directory.
    *
@@ -478,12 +479,18 @@ ags_file_widget_init(AgsFileWidget *file_widget)
 		 (GtkWidget *) file_widget->location_separator);
 
   /* bookmark */
+#if 0
+  //NOTE:JK: this is gsequencer specific
+  
   if(file_widget->home_path != NULL){
     file_widget->bookmark_filename = g_strdup_printf("%s/.gsequencer/default-bookmarks.xml",
 						     file_widget->home_path);
   }else{
     file_widget->bookmark_filename = NULL;
   }
+#else
+    file_widget->bookmark_filename = NULL;
+#endif
   
   file_widget->bookmark = g_hash_table_new_full(g_direct_hash,
 						g_string_equal,

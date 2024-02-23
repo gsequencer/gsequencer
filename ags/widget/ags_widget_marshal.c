@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -137,5 +137,42 @@ ags_widget_cclosure_marshal_VOID__OBJECT_INT (GClosure     *closure,
             g_marshal_value_peek_object (param_values + 1),
             g_marshal_value_peek_int (param_values + 2),
             data2);
+}
+
+/* OBJECT:VOID (ags/widget/ags_widget_marshallers.list:3) */
+void
+ags_widget_cclosure_marshal_OBJECT__VOID (GClosure     *closure,
+                                          GValue       *return_value,
+                                          guint         n_param_values,
+                                          const GValue *param_values,
+                                          gpointer      invocation_hint G_GNUC_UNUSED,
+                                          gpointer      marshal_data)
+{
+  typedef GObject* (*GMarshalFunc_OBJECT__VOID) (gpointer data1,
+                                                 gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
+  gpointer data1, data2;
+  GMarshalFunc_OBJECT__VOID callback;
+  GObject* v_return;
+
+  g_return_if_fail (return_value != NULL);
+  g_return_if_fail (n_param_values == 1);
+
+  if (G_CCLOSURE_SWAP_DATA (closure))
+    {
+      data1 = closure->data;
+      data2 = g_value_peek_pointer (param_values + 0);
+    }
+  else
+    {
+      data1 = g_value_peek_pointer (param_values + 0);
+      data2 = closure->data;
+    }
+  callback = (GMarshalFunc_OBJECT__VOID) (marshal_data ? marshal_data : cc->callback);
+
+  v_return = callback (data1,
+                       data2);
+
+  g_value_take_object (return_value, v_return);
 }
 

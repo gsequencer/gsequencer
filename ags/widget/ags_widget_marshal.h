@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -41,6 +41,15 @@ void ags_widget_cclosure_marshal_VOID__OBJECT_INT (GClosure     *closure,
                                                    const GValue *param_values,
                                                    gpointer      invocation_hint,
                                                    gpointer      marshal_data);
+
+/* OBJECT:VOID (ags/widget/ags_widget_marshallers.list:3) */
+extern
+void ags_widget_cclosure_marshal_OBJECT__VOID (GClosure     *closure,
+                                               GValue       *return_value,
+                                               guint         n_param_values,
+                                               const GValue *param_values,
+                                               gpointer      invocation_hint,
+                                               gpointer      marshal_data);
 
 
 G_END_DECLS

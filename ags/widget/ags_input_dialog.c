@@ -86,7 +86,8 @@ ags_input_dialog_class_init(AgsInputDialogClass *input_dialog)
   /* signals */
   /**
    * AgsInputDialog::response:
-   * @input_dialog: the #AgsInput_Dialog
+   * @input_dialog: the #AgsInputDialog
+   * @response: the response
    *
    * The ::response signal notifies adjustment value changed.
    *

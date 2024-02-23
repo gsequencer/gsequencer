@@ -46,7 +46,6 @@
 #include <ags/app/ags_connection_editor_line.h>
 #include <ags/app/ags_connection_editor.h>
 #include <ags/app/ags_line_member_editor_callbacks.h>
-#include <ags/app/ags_input_dialog.h>
 #include <ags/app/ags_preferences_callbacks.h>
 #include <ags/app/ags_effect_bulk_entry.h>
 #include <ags/app/ags_export_soundcard_callbacks.h>
