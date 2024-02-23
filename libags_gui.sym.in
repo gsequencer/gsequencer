@@ -237,6 +237,8 @@ ags_icon_link_get_action
 ags_icon_link_set_action
 ags_icon_link_get_link_text
 ags_icon_link_set_link_text
+ags_icon_link_delete_event
+ags_icon_link_copy_event
 ags_icon_link_clicked
 ags_icon_link_new
 ags_scrolled_scale_box_get_type

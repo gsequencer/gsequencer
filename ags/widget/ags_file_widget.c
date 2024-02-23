@@ -19,6 +19,14 @@
 
 #include "ags_file_widget.h"
 
+#include <ags/widget/ags_input_dialog.h>
+
+#include <glib.h>
+#include <glib/gstdio.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
 #include <gmodule.h>
 
 #include <unistd.h>
@@ -47,6 +55,10 @@ void ags_file_widget_get_property(GObject *gobject,
 				  GParamSpec *param_spec);
 void ags_file_widget_dispose(GObject *gobject);
 void ags_file_widget_finalize(GObject *gobject);
+
+void ags_file_widget_real_refresh(AgsFileWidget *file_widget);
+void ags_file_widget_real_create_dir(AgsFileWidget *file_widget,
+				     gchar *dir_path);
 
 void ags_file_widget_factory_setup(GtkListItemFactory *factory, GtkListItem *list_item,
 				   AgsFileWidget *file_widget);
@@ -80,6 +92,13 @@ void ags_file_widget_bookmark_callback(AgsIconLink *icon_link,
 gboolean ags_file_widget_bookmark_find(gpointer key,
 				       gpointer value,
 				       AgsIconLink *icon_link);
+
+void ags_file_widget_rename_response_callback(AgsInputDialog *input_dialog,
+					      gint response,
+					      AgsFileWidget *file_widget);
+void ags_file_widget_mkdir_response_callback(AgsInputDialog *input_dialog,
+					     gint response,
+					     AgsFileWidget *file_widget);
 
 void ags_file_widget_rename_callback(GAction *action, GVariant *parameter,
 				     AgsFileWidget *file_widget);
@@ -160,6 +179,11 @@ ags_file_widget_class_init(AgsFileWidgetClass *file_widget)
   gobject->dispose = ags_file_widget_dispose;
   gobject->finalize = ags_file_widget_finalize;
 
+  /* AgsFileWidget */
+  file_widget->refresh = ags_file_widget_real_refresh;
+
+  file_widget->create_dir = ags_file_widget_real_create_dir;
+  
   /* signals */
   /**
    * AgsFileWidget::refresh:
@@ -215,8 +239,9 @@ ags_file_widget_init(AgsFileWidget *file_widget)
 
   GSimpleActionGroup *action_group;
   GSimpleAction *action;
+  GMenu *bookmark_menu;
   GMenuItem *menu_item;
-
+  
   gchar *str;
   
 #if !defined(AGS_W32API)
@@ -312,6 +337,71 @@ ags_file_widget_init(AgsFileWidget *file_widget)
   
   gtk_box_append(hbox,
 		 (GtkWidget *) file_widget->location_entry);
+
+  /* action menu button */
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				6);
+
+  gtk_widget_set_halign(hbox,
+			GTK_ALIGN_FILL);
+  
+  gtk_widget_set_hexpand(hbox,
+			 TRUE);  
+
+  gtk_box_append(file_widget->vbox,
+		 (GtkWidget *) hbox);
+
+  file_widget->action_menu_button = (GtkMenuButton *) gtk_menu_button_new();
+  gtk_menu_button_set_icon_name(file_widget->action_menu_button,
+				"system-run");
+
+  gtk_widget_set_halign(file_widget->action_menu_button,
+			GTK_ALIGN_CENTER);
+
+  gtk_widget_set_hexpand(file_widget->action_menu_button,
+			 TRUE);  
+
+  gtk_box_append(hbox,
+		 (GtkWidget *) file_widget->action_menu_button);
+  
+  file_widget->action_popup = (GMenu *) g_menu_new();
+
+  menu_item = g_menu_item_new(i18n("rename file"),
+			      "file_widget.rename");
+  g_menu_append_item(file_widget->action_popup,
+		     menu_item);
+
+  menu_item = g_menu_item_new(i18n("create directory"),
+			      "file_widget.mkdir");
+  g_menu_append_item(file_widget->action_popup,
+		     menu_item);
+
+  menu_item = g_menu_item_new(i18n("show hidden files"),
+			      "file_widget.show_hidden_files");
+  g_menu_append_item(file_widget->action_popup,
+		     menu_item);
+
+  bookmark_menu = (GMenu *) g_menu_new();
+  
+  menu_item = g_menu_item_new_section(NULL,
+				      bookmark_menu);
+  g_menu_append_item(file_widget->action_popup,
+		     menu_item);
+
+  menu_item = g_menu_item_new(i18n("add bookmark"),
+			      "file_widget.add_bookmark");
+  g_menu_append_item(bookmark_menu,
+		     menu_item);
+  
+  file_widget->action_popover = gtk_popover_menu_new_from_model(G_MENU_MODEL(file_widget->action_popup));
+  gtk_menu_button_set_popover(file_widget->action_menu_button,
+			      file_widget->action_popover);
+  
+  action_group =
+    file_widget->action_group = g_simple_action_group_new();
+  gtk_widget_insert_action_group((GtkWidget *) file_widget->action_popover,
+				 "file_widget",
+				 G_ACTION_GROUP(action_group));
 
   /* location - combo */
   location_string_list = gtk_string_list_new(location_strv);
@@ -471,34 +561,6 @@ ags_file_widget_init(AgsFileWidget *file_widget)
   g_signal_connect_after(event_controller, "released",
 			 G_CALLBACK(ags_file_widget_gesture_click_released_callback), file_widget);
 
-  /* filename popover */
-  file_widget->filename_popup = (GMenu *) g_menu_new();
-
-  menu_item = g_menu_item_new(i18n("rename file"),
-			      "file_widget.rename");
-  g_menu_append_item(file_widget->filename_popup,
-		     menu_item);
-
-  menu_item = g_menu_item_new(i18n("create directory"),
-			      "file_widget.mkdir");
-  g_menu_append_item(file_widget->filename_popup,
-		     menu_item);
-
-  menu_item = g_menu_item_new(i18n("show hidden files"),
-			      "file_widget.show_hidden_files");
-  g_menu_append_item(file_widget->filename_popup,
-		     menu_item);
-
-  file_widget->filename_popover = gtk_popover_menu_new_from_model(G_MENU_MODEL(file_widget->filename_popup));
-  gtk_widget_set_parent(file_widget->filename_popover,
-			file_widget->filename_view);
-  
-  action_group =
-    file_widget->action_group = g_simple_action_group_new();
-  gtk_widget_insert_action_group((GtkWidget *) file_widget->filename_popover,
-				 "file_widget",
-				 G_ACTION_GROUP(action_group));
-
   /* rename file */
   action = g_simple_action_new("rename",
 			       NULL);
@@ -571,13 +633,33 @@ ags_file_widget_get_property(GObject *gobject,
 void
 ags_file_widget_dispose(GObject *gobject)
 {  
+  AgsFileWidget *file_widget;
+  
+  file_widget = AGS_FILE_WIDGET(gobject);
+
   /* call parent */
   G_OBJECT_CLASS(ags_file_widget_parent_class)->dispose(gobject);
 }
 
 void
 ags_file_widget_finalize(GObject *gobject)
-{  
+{
+  AgsFileWidget *file_widget;
+  
+  file_widget = AGS_FILE_WIDGET(gobject);
+
+  g_free(file_widget->default_bundle);
+
+  g_free(file_widget->home_path);
+  g_free(file_widget->sandbox_path);
+
+  g_free(file_widget->app_home_path);
+  g_free(file_widget->app_generic_path);
+
+  g_free(file_widget->default_path);
+  
+  g_free(file_widget->current_path);
+
   /* call parent */
   G_OBJECT_CLASS(ags_file_widget_parent_class)->finalize(gobject);
 }
@@ -739,16 +821,7 @@ ags_file_widget_gesture_click_released_callback(GtkGestureClick *event_controlle
 						gdouble y,
 						AgsFileWidget *file_widget)
 {
-  gint width, height;
-
-  width = gtk_widget_get_width(file_widget->filename_view);
-  height = gtk_widget_get_height(file_widget->filename_view);
-  
-  if(n_press >= 1){
-    gtk_popover_set_offset(file_widget->filename_popover,
-			   (gint) x - (width / 2), (gint) y - height);
-    gtk_popover_popup(file_widget->filename_popover);
-  }
+  //empty
 }
 
 void
@@ -1206,15 +1279,131 @@ ags_file_widget_bookmark_callback(AgsIconLink *icon_link,
 }
 
 void
+ags_file_widget_rename_response_callback(AgsInputDialog *input_dialog,
+					 gint response,
+					 AgsFileWidget *file_widget)
+{
+  if(response == GTK_RESPONSE_ACCEPT){
+    GtkStringObject *string_object;
+
+    gchar *selected_filename;
+    gchar *new_filename;
+    gchar *new_path;
+    gchar *new_str, *str;
+
+    string_object = gtk_single_selection_get_selected_item(file_widget->filename_single_selection);
+  
+    selected_filename = gtk_string_object_get_string(string_object);
+
+    new_filename = gtk_editable_get_text(GTK_EDITABLE(input_dialog->string_input));
+
+    new_path = g_strdup(file_widget->current_path);
+
+    str = g_strdup_printf("%s/%s",
+			  new_path,
+			  selected_filename);
+    
+    new_str = g_strdup_printf("%s/%s",
+			      new_path,
+			      new_filename);
+    
+    g_rename(str,
+	     new_str);
+
+    ags_file_widget_refresh(file_widget);
+
+    g_free(new_path);
+    
+    g_free(str);
+    g_free(new_str);
+  }
+
+  gtk_window_close(input_dialog);
+}
+
+void
+ags_file_widget_mkdir_response_callback(AgsInputDialog *input_dialog,
+					gint response,
+					AgsFileWidget *file_widget)
+{
+  if(response == GTK_RESPONSE_ACCEPT){
+    gchar *dir_path;
+    gchar *new_path;
+    gchar *new_str;
+
+    dir_path = gtk_editable_get_text(GTK_EDITABLE(input_dialog->string_input));
+    
+    new_path = g_strdup(file_widget->current_path);
+
+    new_str = g_strdup_printf("%s/%s",
+			      new_path,
+			      dir_path);
+
+    ags_file_widget_create_dir(file_widget,
+			       new_str);
+
+    ags_file_widget_refresh(file_widget);
+
+    g_free(new_path);
+    
+    g_free(new_str);
+  }
+
+  gtk_window_close(input_dialog);
+}
+
+void
 ags_file_widget_rename_callback(GAction *action, GVariant *parameter,
 				AgsFileWidget *file_widget)
 {
+  GtkWindow *transient_for;
+  AgsInputDialog *input_dialog;
+
+  transient_for = gtk_widget_get_ancestor(file_widget,
+					  GTK_TYPE_WINDOW);
+  
+  input_dialog = ags_input_dialog_new(i18n("rename file or directory"),
+				      transient_for);
+
+  ags_input_dialog_set_flags(input_dialog,
+			     AGS_INPUT_DIALOG_SHOW_STRING_INPUT);
+
+  ags_input_dialog_set_text(input_dialog,
+			    i18n("enter filename"));
+
+  g_signal_connect(input_dialog, "response",
+		   G_CALLBACK(ags_file_widget_rename_response_callback), file_widget);
+
+  gtk_window_set_modal(input_dialog,
+		       TRUE);
+  gtk_window_present(input_dialog);
 }
 
 void
 ags_file_widget_mkdir_callback(GAction *action, GVariant *parameter,
 			       AgsFileWidget *file_widget)
 {
+  GtkWindow *transient_for;
+  AgsInputDialog *input_dialog;
+
+  transient_for = gtk_widget_get_ancestor(file_widget,
+					  GTK_TYPE_WINDOW);
+  
+  input_dialog = ags_input_dialog_new(i18n("create directory"),
+				      transient_for);
+
+  ags_input_dialog_set_flags(input_dialog,
+			     AGS_INPUT_DIALOG_SHOW_STRING_INPUT);
+
+  ags_input_dialog_set_text(input_dialog,
+			    i18n("enter directory"));
+
+  g_signal_connect(input_dialog, "response",
+		   G_CALLBACK(ags_file_widget_mkdir_response_callback), file_widget);
+
+  gtk_window_set_modal(input_dialog,
+		       TRUE);
+  gtk_window_present(input_dialog);
 }
 
 void
@@ -1325,16 +1514,8 @@ ags_file_widget_remove_bookmark(AgsFileWidget *file_widget,
   }
 }
 
-/**
- * ags_file_widget_refresh:
- * @file_widget: the #AgsFileWidget
- *
- * Refresh @file_widget due to current path change.
- * 
- * Since: 6.6.0
- */
 void
-ags_file_widget_refresh(AgsFileWidget *file_widget)
+ags_file_widget_real_refresh(AgsFileWidget *file_widget)
 {
   GDir *current_dir;
   
@@ -1499,10 +1680,55 @@ ags_file_widget_refresh(AgsFileWidget *file_widget)
   }  
 }
 
+/**
+ * ags_file_widget_refresh:
+ * @file_widget: the #AgsFileWidget
+ *
+ * Refresh @file_widget due to current path change.
+ * 
+ * Since: 6.6.0
+ */
+void
+ags_file_widget_refresh(AgsFileWidget *file_widget)
+{
+  g_return_if_fail(AGS_IS_FILE_WIDGET(file_widget));
+  
+  g_object_ref((GObject *) file_widget);
+  g_signal_emit(G_OBJECT(file_widget),
+		file_widget_signals[REFRESH], 0);
+  g_object_unref((GObject *) file_widget);
+}
+
+void
+ags_file_widget_real_create_dir(AgsFileWidget *file_widget,
+				gchar *dir_path)
+{  
+  if(!g_mkdir_with_parents(dir_path,
+			   0755)){
+    //TODO:JK: implement me
+  }
+}
+
+/**
+ * ags_file_widget_create_dir:
+ * @file_widget: the #AgsFileWidget
+ * @dir_path: the directory path
+ *
+ * Create directory @dir_path.
+ * 
+ * Since: 6.6.0
+ */
 void
 ags_file_widget_create_dir(AgsFileWidget *file_widget,
 			   gchar *dir_path)
 {
+  g_return_if_fail(AGS_IS_FILE_WIDGET(file_widget));
+  
+  g_object_ref((GObject *) file_widget);
+  g_signal_emit(G_OBJECT(file_widget),
+		file_widget_signals[CREATE_DIR], 0,
+		dir_path);
+  g_object_unref((GObject *) file_widget);
 }
 
 /**

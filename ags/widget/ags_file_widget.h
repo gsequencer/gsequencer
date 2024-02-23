@@ -88,6 +88,10 @@ struct _AgsFileWidget
 
   GtkEntry *location_entry;
 
+  GtkMenuButton *action_menu_button;
+  GtkPopoverMenu *action_popover;
+  GMenu *action_popup;
+  
   GtkDropDown *location_drop_down;
   
   GtkBox *left_vbox;
@@ -116,9 +120,6 @@ struct _AgsFileWidget
   
   GtkColumnView *filename_view;
 
-  GtkPopoverMenu *filename_popover;
-  GMenu *filename_popup;
-  
   GtkBox *right_vbox;
 
   GtkWidget *preview;
