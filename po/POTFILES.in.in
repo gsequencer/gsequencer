@@ -1,5 +1,5 @@
 # GSequencer - Advanced GTK Sequencer 
-# Copyright (C) 2005-2022 Joël Krähemann
+# Copyright (C) 2005-2024 Joël Krähemann
 # 
 # This file is part of GSequencer.
 #
@@ -57,7 +57,6 @@ ags/app/export/ags_machine_mapper.c
 ags/app/ags_machine_editor_listing_callbacks.c
 ags/app/ags_window_callbacks.c
 ags/app/ags_link_editor.c
-ags/app/ags_input_dialog.c
 ags/app/ags_line_member.c
 ags/app/ags_effect_bulk_entry.c
 ags/app/ags_sequencer_editor.c

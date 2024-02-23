@@ -39,7 +39,6 @@ ags/app/export/ags_machine_mapper.c
 ags/app/ags_machine_editor_listing_callbacks.c
 ags/app/ags_window_callbacks.c
 ags/app/ags_link_editor.c
-ags/app/ags_input_dialog.c
 ags/app/ags_line_member.c
 ags/app/ags_effect_bulk_entry.c
 ags/app/ags_sequencer_editor.c
