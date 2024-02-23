@@ -363,12 +363,12 @@ INTROSPECTION_GIRS += AgsAudio-6.0.gir
 AgsGui-6.0.gir: libags_gui.la
 AgsGui_6_0_gir_INCLUDES = GObject-2.0 Gtk-4.0
 AgsGui_6_0_gir_C_INCLUDES = ags/libags-gui.h
-AgsGui_6_0_gir_CFLAGS = $(INCLUDES) $(GTK_CFLAGS)
+AgsGui_6_0_gir_CFLAGS = $(INCLUDES) $(GTK_CFLAGS) $(LIBXML2_CFLAGS)
 AgsGui_6_0_gir_LIBS = libags_gui.la
 AgsGui_6_0_gir_FILES = $(libags_gui_la_HEADERS_0) $(libags_gui_la_SOURCES)
 AgsGui_6_0_gir_NAMESPACE = AgsGui
 AgsGui_6_0_gir_VERSION = 6.0
-AgsGui_6_0_gir_SCANNERFLAGS = --add-include-path=$(top_srcdir) --add-include-path=$(top_builddir) -I$(top_srcdir) -I$(top_builddir) --warn-all --include=Gtk-4.0 --namespace=AgsGui --nsversion=6.0 --identifier-prefix=Ags --symbol-prefix=ags_ --output=$(top_builddir)/AgsGui-6.0.gir
+AgsGui_6_0_gir_SCANNERFLAGS = --add-include-path=$(top_srcdir) --add-include-path=$(top_builddir) -I$(top_srcdir) -I$(top_builddir) --warn-all --include=Gtk-4.0 --include=libxml2-2.0 --namespace=AgsGui --nsversion=6.0 --identifier-prefix=Ags --symbol-prefix=ags_ --output=$(top_builddir)/AgsGui-6.0.gir
 INTROSPECTION_GIRS += AgsGui-6.0.gir
 
 girdir = $(datadir)/gir-1.0

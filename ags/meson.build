@@ -877,6 +877,7 @@ libags_gui_sources = files(
 libags_gui_dependencies = [
   common_dependencies,
   dependency('gtk4'),
+  xml2_dependency,
 ]
 
 libags_gui = library('ags_gui',
@@ -2167,7 +2168,7 @@ if build_gir
     identifier_prefix: 'Ags',
     symbol_prefix: 'ags_',
     export_packages: 'AgsGui',
-    includes: [ 'Gtk-4.0', ],
+    includes: [ 'Gtk-4.0', 'libxml2-2.0', ],
     header: 'libags-gui.h',
     install: true,
     extra_args: gir_args,

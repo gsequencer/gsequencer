@@ -19,6 +19,8 @@
 
 #include "ags_icon_link.h"
 
+#include <ags/widget/ags_widget_marshal.h>
+
 #include <gmodule.h>
 
 #include <ags/i18n.h>
@@ -39,6 +41,8 @@ void ags_icon_link_finalize(GObject *gobject);
 
 void ags_icon_link_snapshot(GtkWidget *widget,
 			    GtkSnapshot *snapshot);
+
+AgsIconLink* ags_icon_link_real_copy_event(AgsIconLink *icon_link);
 
 void ags_icon_link_delete_callback(GAction *action, GVariant *parameter,
 				   AgsIconLink *icon_link);
@@ -171,7 +175,7 @@ ags_icon_link_class_init(AgsIconLinkClass *icon_link)
   /* AgsIconLinkClass */  
   icon_link->delete_event = NULL;
 
-  icon_link->copy_event = NULL;
+  icon_link->copy_event = ags_icon_link_real_copy_event;
 
   icon_link->clicked = NULL;
 
@@ -199,6 +203,8 @@ ags_icon_link_class_init(AgsIconLinkClass *icon_link)
    *
    * The ::copy-event signal notifies about widget copy_event.
    *
+   * Returns: (transfer none): the #AgsIconLink
+   * 
    * Since: 6.6.0
    */
   icon_link_signals[COPY_EVENT] =
@@ -207,8 +213,8 @@ ags_icon_link_class_init(AgsIconLinkClass *icon_link)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsIconLinkClass, copy_event),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__VOID,
-		 G_TYPE_NONE, 0);
+		 ags_widget_cclosure_marshal_OBJECT__VOID,
+		 AGS_TYPE_ICON_LINK, 0);
 
   /**
    * AgsIconLink::clicked:
@@ -669,6 +675,27 @@ ags_icon_link_delete_event(AgsIconLink *icon_link)
   g_signal_emit(G_OBJECT(icon_link),
 		icon_link_signals[DELETE_EVENT], 0);
   g_object_unref((GObject *) icon_link);
+}
+
+AgsIconLink*
+ags_icon_link_real_copy_event(AgsIconLink *icon_link)
+{
+  AgsIconLink *new_icon_link;
+
+  gchar *icon_name;
+  gchar *link_text;
+
+  icon_name = ags_icon_link_get_icon_name(icon_link);
+  link_text = ags_icon_link_get_link_text(icon_link);
+  
+  new_icon_link = ags_icon_link_new(icon_link->action,
+				    icon_name,
+				    link_text);
+
+  g_free(icon_name);
+  g_free(link_text);
+  
+  return(new_icon_link);
 }
 
 /**
