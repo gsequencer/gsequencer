@@ -173,6 +173,11 @@ void ags_file_widget_remove_bookmark(AgsFileWidget *file_widget,
 void ags_file_widget_read_bookmark(AgsFileWidget *file_widget);
 void ags_file_widget_write_bookmark(AgsFileWidget *file_widget);
 
+/* methods */
+gchar* ags_file_widget_get_filename(AgsFileWidget *file_widget);
+
+GSList* ags_file_widget_get_filenames(AgsFileWidget *file_widget);
+
 /* events */
 void ags_file_widget_refresh(AgsFileWidget *file_widget);
 
