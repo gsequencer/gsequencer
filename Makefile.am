@@ -879,11 +879,11 @@ libags_audio_la_LDFLAGS += $(CORE_AUDIO_LIBS) $(WASAPI_LIBS) $(LIBASOUND2_LIBS) 
 
 # library libags-gui
 libags_gui_la_CPPFLAGS = -std=gnu99 $(CPPFLAGS) $(LIBAGS_GUI_CPPFLAGS)
-libags_gui_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(GOBJECT_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(W32API_CFLAGS)
+libags_gui_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(GOBJECT_CFLAGS) $(LIBXML2_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(W32API_CFLAGS)
 libags_gui_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(GOBJECT_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(W32API_CFLAGS)
 libags_gui_la_LDFLAGS = $(LDFLAGS) -version-info 6:0:0 $(PIC_FLAGS) -pthread
 libags_gui_la_LIBADD = -lm
-libags_gui_la_LDFLAGS += $(GOBJECT_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(W32API_LIBS)
+libags_gui_la_LDFLAGS += $(GOBJECT_LIBS) $(LIBXML2_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(W32API_LIBS)
 
 if WITH_W32API
 libags_gui_la_LDFLAGS += -Wl,--export-all-symbols,--out-implib=libags_gui.dll.a
@@ -2485,6 +2485,7 @@ libags_gui_h_sources = \
 	ags/widget/ags_led_array.h \
 	ags/widget/ags_level.h \
 	ags/widget/ags_level_box.h \
+	ags/widget/ags_input_dialog.h \
 	ags/widget/ags_notebook.h \
 	ags/widget/ags_piano_keys.h \
 	ags/widget/ags_piano.h \
@@ -2513,6 +2514,7 @@ libags_gui_c_sources = \
 	ags/widget/ags_led_array.c \
 	ags/widget/ags_level.c \
 	ags/widget/ags_level_box.c \
+	ags/widget/ags_input_dialog.c \
 	ags/widget/ags_notebook.c \
 	ags/widget/ags_piano.c \
 	ags/widget/ags_scrolled_piano.c \
@@ -2582,7 +2584,6 @@ libgsequencer_h_sources = \
 	ags/app/ags_line_preset_editor_callbacks.h \
 	ags/app/ags_link_editor.h \
 	ags/app/ags_link_editor_callbacks.h \
-	ags/app/ags_input_dialog.h \
 	ags/app/ags_machine.h \
 	ags/app/ags_machine_counter.h \
 	ags/app/ags_machine_counter_manager.h \
@@ -2709,7 +2710,6 @@ libgsequencer_c_sources = \
 	ags/app/ags_line_preset_editor_callbacks.c \
 	ags/app/ags_link_editor.c \
 	ags/app/ags_link_editor_callbacks.c \
-	ags/app/ags_input_dialog.c \
 	ags/app/ags_machine.c \
 	ags/app/ags_machine_counter.c \
 	ags/app/ags_machine_counter_manager.c \

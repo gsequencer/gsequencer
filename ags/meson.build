@@ -861,6 +861,7 @@ libags_gui_sources = files(
   'widget/ags_led.c',
   'widget/ags_level_box.c',
   'widget/ags_level.c',
+  'widget/ags_input_dialog.c',
   'widget/ags_notebook.c',
   'widget/ags_piano.c',
   'widget/ags_ruler.c',
@@ -944,7 +945,6 @@ libgsequencer_sources = files(
   'app/ags_link_editor_callbacks.c',
   'app/ags_lv2_browser.c',
   'app/ags_lv2_browser_callbacks.c',
-  'app/ags_input_dialog.c',
   'app/ags_machine.c',
   'app/ags_machine_callbacks.c',
   'app/ags_machine_counter.c',
@@ -2062,6 +2062,7 @@ libags_gui_widget_headers = [
   'widget/ags_led.h',
   'widget/ags_scrolled_piano.h',
   'widget/ags_tempo.h',
+  'widget/ags_input_dialog.h',
   'widget/ags_notebook.h',
   'widget/ags_piano.h',
 ]

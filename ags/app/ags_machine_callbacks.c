@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,7 +25,6 @@
 #include <ags/app/ags_machine_editor.h>
 #include <ags/app/ags_connection_editor.h>
 #include <ags/app/ags_midi_dialog.h>
-#include <ags/app/ags_input_dialog.h>
 #include <ags/app/ags_machine_editor_dialog.h>
 #include <ags/app/ags_connection_editor_dialog.h>
 #include <ags/app/ags_composite_editor_callbacks.h>

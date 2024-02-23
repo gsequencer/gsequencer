@@ -19,6 +19,10 @@
 
 #include "ags_icon_link.h"
 
+#include <gmodule.h>
+
+#include <ags/i18n.h>
+
 void ags_icon_link_class_init(AgsIconLinkClass *icon_link);
 void ags_icon_link_orientable_interface_init(GtkOrientableIface *orientable);
 void ags_icon_link_init(AgsIconLink *icon_link);
@@ -36,6 +40,9 @@ void ags_icon_link_finalize(GObject *gobject);
 void ags_icon_link_snapshot(GtkWidget *widget,
 			    GtkSnapshot *snapshot);
 
+void ags_icon_link_delete_callback(GAction *action, GVariant *parameter,
+				   AgsIconLink *icon_link);
+
 void ags_icon_link_gesture_click_pressed_callback(GtkGestureClick *event_controller,
 						  gint n_press,
 						  gdouble x,
@@ -46,6 +53,17 @@ void ags_icon_link_gesture_click_released_callback(GtkGestureClick *event_contro
 						   gdouble x,
 						   gdouble y,
 						   AgsIconLink *icon_link);
+
+void ags_icon_link_gesture_secondary_pressed_callback(GtkGestureClick *event_controller,
+						      gint n_press,
+						      gdouble x,
+						      gdouble y,
+						      AgsIconLink *icon_link);
+void ags_icon_link_gesture_secondary_released_callback(GtkGestureClick *event_controller,
+						       gint n_press,
+						       gdouble x,
+						       gdouble y,
+						       AgsIconLink *icon_link);
 
 void ags_icon_link_enter_callback(GtkEventControllerMotion *event_controller,
 				  gdouble x,
@@ -65,6 +83,8 @@ void ags_icon_link_leave_callback(GtkEventControllerMotion *event_controller,
  */
 
 enum{
+  DELETE_EVENT,
+  COPY_EVENT,
   CLICKED,
   LAST_SIGNAL,
 };
@@ -149,7 +169,46 @@ ags_icon_link_class_init(AgsIconLinkClass *icon_link)
   widget->snapshot = ags_icon_link_snapshot;
 
   /* AgsIconLinkClass */  
+  icon_link->delete_event = NULL;
+
+  icon_link->copy_event = NULL;
+
   icon_link->clicked = NULL;
+
+  /* events */
+  /**
+   * AgsIconLink::delete-event:
+   * @icon_link: the #AgsIconLink
+   *
+   * The ::delete-event signal notifies about widget delete_event.
+   *
+   * Since: 6.6.0
+   */
+  icon_link_signals[DELETE_EVENT] =
+    g_signal_new("delete-event",
+		 G_TYPE_FROM_CLASS(icon_link),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsIconLinkClass, delete_event),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
+  /**
+   * AgsIconLink::copy-event:
+   * @icon_link: the #AgsIconLink
+   *
+   * The ::copy-event signal notifies about widget copy_event.
+   *
+   * Since: 6.6.0
+   */
+  icon_link_signals[COPY_EVENT] =
+    g_signal_new("copy-event",
+		 G_TYPE_FROM_CLASS(icon_link),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsIconLinkClass, copy_event),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
 
   /**
    * AgsIconLink::clicked:
@@ -174,6 +233,10 @@ ags_icon_link_init(AgsIconLink *icon_link)
 {
   GtkEventController *event_controller;
   
+  GSimpleActionGroup *context_group;
+  GSimpleAction *action;
+  GMenuItem *menu_item;
+
   gtk_widget_set_can_focus((GtkWidget *) icon_link,
 			   TRUE);
 
@@ -194,7 +257,33 @@ ags_icon_link_init(AgsIconLink *icon_link)
   gtk_box_append(icon_link,
 		 icon_link->link);
 
-  /* events - gesture */
+  /* context menu */
+  icon_link->context_popup = (GMenu *) g_menu_new();
+
+  menu_item = g_menu_item_new(i18n("delete"),
+			      "icon_link.delete");
+  g_menu_append_item(icon_link->context_popup,
+		     menu_item);
+
+  icon_link->context_popover = gtk_popover_menu_new_from_model(G_MENU_MODEL(icon_link->context_popup));
+  gtk_widget_set_parent(icon_link->context_popover,
+			icon_link->icon);
+  
+  context_group =
+    icon_link->context_group = g_simple_action_group_new();
+  gtk_widget_insert_action_group((GtkWidget *) icon_link->context_popover,
+				 "icon_link",
+				 G_ACTION_GROUP(context_group));
+
+  /* delete */
+  action = g_simple_action_new("delete",
+			       NULL);
+  g_signal_connect(action, "activate",
+		   G_CALLBACK(ags_icon_link_delete_callback), icon_link);
+  g_action_map_add_action(G_ACTION_MAP(context_group),
+			  G_ACTION(action));
+
+  /* events - gesture click */
   event_controller = gtk_gesture_click_new();
   gtk_widget_add_controller((GtkWidget *) icon_link,
 			    event_controller);
@@ -205,6 +294,21 @@ ags_icon_link_init(AgsIconLink *icon_link)
   g_signal_connect(event_controller, "released",
 		   G_CALLBACK(ags_icon_link_gesture_click_released_callback), icon_link);
 
+  /* events - gesture secondary */
+  event_controller = gtk_gesture_click_new();
+
+  gtk_gesture_single_set_button(event_controller,
+				GDK_BUTTON_SECONDARY);
+  
+  gtk_widget_add_controller((GtkWidget *) icon_link,
+			    event_controller);
+
+  g_signal_connect(event_controller, "pressed",
+		   G_CALLBACK(ags_icon_link_gesture_secondary_pressed_callback), icon_link);
+
+  g_signal_connect(event_controller, "released",
+		   G_CALLBACK(ags_icon_link_gesture_secondary_released_callback), icon_link);
+  
   /* events - motion */
   event_controller = gtk_event_controller_motion_new();
   gtk_widget_add_controller((GtkWidget *) icon_link,
@@ -274,6 +378,12 @@ ags_icon_link_get_property(GObject *gobject,
 void
 ags_icon_link_dispose(GObject *gobject)
 {  
+  AgsIconLink *icon_link;
+
+  icon_link = AGS_ICON_LINK(gobject);
+
+  gtk_widget_unparent(icon_link->context_popover);
+
   /* call parent */
   G_OBJECT_CLASS(ags_icon_link_parent_class)->dispose(gobject);
 }
@@ -327,6 +437,13 @@ ags_icon_link_snapshot(GtkWidget *widget,
     
     cairo_destroy(cr);
   }
+}
+
+void
+ags_icon_link_delete_callback(GAction *action, GVariant *parameter,
+			      AgsIconLink *icon_link)
+{
+  ags_icon_link_delete_event(icon_link);
 }
 
 /**
@@ -536,6 +653,51 @@ ags_icon_link_set_link_text(AgsIconLink *icon_link,
 }
 
 /**
+ * ags_icon_link_delete_event:
+ * @icon_link: the #AgsIconLink
+ * 
+ * Emits ::delete-event event.
+ * 
+ * Since: 6.6.0
+ */
+void
+ags_icon_link_delete_event(AgsIconLink *icon_link)
+{
+  g_return_if_fail(AGS_IS_ICON_LINK(icon_link));
+  
+  g_object_ref((GObject *) icon_link);
+  g_signal_emit(G_OBJECT(icon_link),
+		icon_link_signals[DELETE_EVENT], 0);
+  g_object_unref((GObject *) icon_link);
+}
+
+/**
+ * ags_icon_link_copy_event:
+ * @icon_link: the #AgsIconLink
+ * 
+ * Emits ::copy-event event.
+ * 
+ * Since: 6.6.0
+ */
+AgsIconLink*
+ags_icon_link_copy_event(AgsIconLink *icon_link)
+{
+  AgsIconLink *copy_link;
+  
+  g_return_val_if_fail(AGS_IS_ICON_LINK(icon_link), NULL);
+
+  copy_link = NULL;
+  
+  g_object_ref((GObject *) icon_link);
+  g_signal_emit(G_OBJECT(icon_link),
+		icon_link_signals[COPY_EVENT], 0,
+		&copy_link);
+  g_object_unref((GObject *) icon_link);
+
+  return(copy_link);
+}
+
+/**
  * ags_icon_link_clicked:
  * @icon_link: the #AgsIconLink
  * 
@@ -561,6 +723,7 @@ ags_icon_link_gesture_click_pressed_callback(GtkGestureClick *event_controller,
 					     gdouble y,
 					     AgsIconLink *icon_link)
 {
+  //empty
 }
 
 void
@@ -573,6 +736,28 @@ ags_icon_link_gesture_click_released_callback(GtkGestureClick *event_controller,
   gtk_widget_grab_focus((GtkWidget *) icon_link);
 
   ags_icon_link_clicked(icon_link);
+}
+
+void
+ags_icon_link_gesture_secondary_pressed_callback(GtkGestureClick *event_controller,
+						 gint n_press,
+						 gdouble x,
+						 gdouble y,
+						 AgsIconLink *icon_link)
+{
+  //empty
+}
+
+void
+ags_icon_link_gesture_secondary_released_callback(GtkGestureClick *event_controller,
+						  gint n_press,
+						  gdouble x,
+						  gdouble y,
+						  AgsIconLink *icon_link)
+{
+  if(ags_icon_link_test_flags(icon_link, AGS_ICON_LINK_SHOW_CONTEXT_MENU)){
+    gtk_popover_popup(icon_link->context_popover);
+  }
 }
 
 void

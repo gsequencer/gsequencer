@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,11 +25,6 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
-#include <ags/libags-gui.h>
-
 G_BEGIN_DECLS
 
 #define AGS_TYPE_INPUT_DIALOG                (ags_input_dialog_get_type())
@@ -49,23 +44,36 @@ typedef enum{
 
 struct _AgsInputDialog
 {
-  GtkDialog dialog;
+  GtkWindow window;
 
   guint flags;
 
+  GtkBox *vbox;
+  
+  GtkBox *input_box;
+  
+  GtkLabel *text;
+  
   GtkEntry *string_input;
 
   GtkLabel *spin_button_label;  
   GtkSpinButton *spin_button_input;
+
+  GtkButton *ok;
+  GtkButton *cancel;
 };
 
 struct _AgsInputDialogClass
 {
-  GtkDialogClass dialog;
+  GtkWindowClass window;
+
+  void (*response)(AgsInputDialog *input_dialog,
+		   gint response);
 };
 
 GType ags_input_dialog_get_type(void);
 
+/* flags */
 gboolean ags_input_dialog_test_flags(AgsInputDialog *input_dialog,
 				     guint flags);
 void ags_input_dialog_set_flags(AgsInputDialog *input_dialog,
@@ -73,6 +81,24 @@ void ags_input_dialog_set_flags(AgsInputDialog *input_dialog,
 void ags_input_dialog_unset_flags(AgsInputDialog *input_dialog,
 				  guint flags);
 
+/* text */
+void ags_input_dialog_set_text(AgsInputDialog *input_dialog,
+			       gchar *text);
+
+/* spin button */
+void ags_input_dialog_set_spin_button_label(AgsInputDialog *input_dialog,
+					    gchar *label);
+
+/* get input widgets */
+GtkEntry* ags_input_dialog_get_entry(AgsInputDialog *input_dialog);
+
+GtkSpinButton* ags_input_dialog_get_spin_button(AgsInputDialog *input_dialog);
+
+/* events */
+void ags_input_dialog_response(AgsInputDialog *input_dialog,
+			       gint response);
+
+/* instantiate */
 AgsInputDialog* ags_input_dialog_new(gchar *title,
 				     GtkWindow *transient_for);
 

@@ -32,6 +32,7 @@
 #include <ags/widget/ags_led_array.h>
 #include <ags/widget/ags_level.h>
 #include <ags/widget/ags_level_box.h>
+#include <ags/widget/ags_input_dialog.h>
 #include <ags/widget/ags_notebook.h>
 #include <ags/widget/ags_piano_keys.h>
 #include <ags/widget/ags_piano.h>

@@ -44,6 +44,7 @@ typedef struct _AgsIconLinkClass AgsIconLinkClass;
 
 typedef enum{
   AGS_ICON_LINK_HIGHLIGHT            = 1,
+  AGS_ICON_LINK_SHOW_CONTEXT_MENU    = 1 <<  1,
 }AgsIconLinkFlags;
 
 struct _AgsIconLink
@@ -55,13 +56,21 @@ struct _AgsIconLink
   GtkImage *icon;
 
   GtkLabel *link;
-
   gchar *action;
+
+  GSimpleActionGroup *context_group;
+
+  GtkPopoverMenu *context_popover;
+  GMenu *context_popup;
 };
 
 struct _AgsIconLinkClass
 {
   GtkBoxClass box;
+
+  void (*delete_event)(AgsIconLink *icon_link);
+
+  AgsIconLink* (*copy_event)(AgsIconLink *icon_link);
 
   void (*clicked)(AgsIconLink *icon_link);
 };
@@ -90,6 +99,10 @@ void ags_icon_link_set_link_text(AgsIconLink *icon_link,
 				 gchar *link_text);
 
 /* events */
+void ags_icon_link_delete_event(AgsIconLink *icon_link);
+
+AgsIconLink* ags_icon_link_copy_event(AgsIconLink *icon_link);
+
 void ags_icon_link_clicked(AgsIconLink *icon_link);
 
 /* instantiate */

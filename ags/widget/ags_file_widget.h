@@ -82,10 +82,16 @@ struct _AgsFileWidget
 
   gchar *current_path;
   
+  GSimpleActionGroup *action_group;
+
   GtkBox *vbox;
 
   GtkEntry *location_entry;
 
+  GtkMenuButton *action_menu_button;
+  GtkPopoverMenu *action_popover;
+  GMenu *action_popup;
+  
   GtkDropDown *location_drop_down;
   
   GtkBox *left_vbox;
@@ -97,6 +103,8 @@ struct _AgsFileWidget
   AgsIconLink *recently_used;
   
   GtkSeparator *location_separator;
+
+  gchar *bookmark_filename;
   
   GHashTable *bookmark;
   
@@ -146,6 +154,8 @@ void ags_file_widget_set_file_action(AgsFileWidget *file_widget,
 				     guint file_action);
 
 /* location */
+GHashTable* ags_file_widget_get_location(AgsFileWidget *file_widget);
+
 void ags_file_widget_add_location(AgsFileWidget *file_widget,
 				  gchar *button_action,
 				  gchar *button_text);
@@ -153,10 +163,15 @@ void ags_file_widget_remove_location(AgsFileWidget *file_widget,
 				     gchar *button_action);
 
 /* bookmarks */
+GHashTable* ags_file_widget_get_bookmark(AgsFileWidget *file_widget);
+
 void ags_file_widget_add_bookmark(AgsFileWidget *file_widget,
 				  gchar *bookmark_location);
 void ags_file_widget_remove_bookmark(AgsFileWidget *file_widget,
 				     gchar *bookmark_location);
+
+void ags_file_widget_read_bookmark(AgsFileWidget *file_widget);
+void ags_file_widget_write_bookmark(AgsFileWidget *file_widget);
 
 /* events */
 void ags_file_widget_refresh(AgsFileWidget *file_widget);
