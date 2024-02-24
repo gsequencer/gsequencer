@@ -1970,50 +1970,58 @@ ags_file_widget_get_filename(AgsFileWidget *file_widget)
   g_return_val_if_fail(AGS_IS_FILE_WIDGET(file_widget), NULL);
 
   filename = NULL;
-  
-  /* single selection */
-  if(!ags_file_widget_test_flags(file_widget, AGS_FILE_WIDGET_WITH_MULTI_SELECTION)){
-    GtkStringObject *string_object;
 
-    gchar *selected_filename;
+  if(ags_file_widget_test_file_action(file_widget, AGS_FILE_WIDGET_SAVE_AS)){
+    gchar *str;
 
-    string_object = gtk_single_selection_get_selected_item(file_widget->filename_single_selection);
-  
-    selected_filename = gtk_string_object_get_string(string_object);
-
-    filename = g_strdup_printf("%s/%s",
-			       file_widget->current_path,
-			       selected_filename);
-  }
-  
-  /* multi selection */
-  if(ags_file_widget_test_flags(file_widget, AGS_FILE_WIDGET_WITH_MULTI_SELECTION)){
-    GtkBitset *bitset;
-    GtkStringObject *string_object;
-
-    gchar *selected_filename;
-
-    guint64 length;
-
-    bitset = gtk_selection_model_get_selection(GTK_SELECTION_MODEL(file_widget->filename_multi_selection));
-
-    length = gtk_bitset_get_size(bitset);
-
-    if(length > 0){
-      guint position;
-
-      position = gtk_bitset_get_nth(bitset,
-				    0);
+    str = gtk_editable_get_text(GTK_EDITABLE(file_widget->location_entry));
     
-      string_object = g_list_model_get_item(gtk_multi_selection_get_model(file_widget->filename_multi_selection),
-					    position);
+    filename = g_strdup(str);
+  }else{
+    /* single selection */
+    if(!ags_file_widget_test_flags(file_widget, AGS_FILE_WIDGET_WITH_MULTI_SELECTION)){
+      GtkStringObject *string_object;
+
+      gchar *selected_filename;
+
+      string_object = gtk_single_selection_get_selected_item(file_widget->filename_single_selection);
   
       selected_filename = gtk_string_object_get_string(string_object);
 
       filename = g_strdup_printf("%s/%s",
 				 file_widget->current_path,
 				 selected_filename);
-    }  
+    }
+  
+    /* multi selection */
+    if(ags_file_widget_test_flags(file_widget, AGS_FILE_WIDGET_WITH_MULTI_SELECTION)){
+      GtkBitset *bitset;
+      GtkStringObject *string_object;
+
+      gchar *selected_filename;
+
+      guint64 length;
+
+      bitset = gtk_selection_model_get_selection(GTK_SELECTION_MODEL(file_widget->filename_multi_selection));
+
+      length = gtk_bitset_get_size(bitset);
+
+      if(length > 0){
+	guint position;
+
+	position = gtk_bitset_get_nth(bitset,
+				      0);
+    
+	string_object = g_list_model_get_item(gtk_multi_selection_get_model(file_widget->filename_multi_selection),
+					      position);
+  
+	selected_filename = gtk_string_object_get_string(string_object);
+
+	filename = g_strdup_printf("%s/%s",
+				   file_widget->current_path,
+				   selected_filename);
+      }  
+    }
   }
   
   return(filename);
@@ -2038,48 +2046,25 @@ ags_file_widget_get_filenames(AgsFileWidget *file_widget)
   
   start_filename = NULL;
 
-  /* single selection */
-  if(!ags_file_widget_test_flags(file_widget, AGS_FILE_WIDGET_WITH_MULTI_SELECTION)){
-    GtkStringObject *string_object;
-
-    gchar *selected_filename;
+  if(ags_file_widget_test_file_action(file_widget, AGS_FILE_WIDGET_SAVE_AS)){
     gchar *filename;
+    gchar *str;
 
-    string_object = gtk_single_selection_get_selected_item(file_widget->filename_single_selection);
-  
-    selected_filename = gtk_string_object_get_string(string_object);
-
-    filename = g_strdup_printf("%s/%s",
-			       file_widget->current_path,
-			       selected_filename);
+    str = gtk_editable_get_text(GTK_EDITABLE(file_widget->location_entry));
+    
+    filename = g_strdup(str);
 
     start_filename = g_slist_prepend(start_filename,
 				     filename);
-  }
+  }else{
+    /* single selection */
+    if(!ags_file_widget_test_flags(file_widget, AGS_FILE_WIDGET_WITH_MULTI_SELECTION)){
+      GtkStringObject *string_object;
 
-  /* multi selection */
-  if(ags_file_widget_test_flags(file_widget, AGS_FILE_WIDGET_WITH_MULTI_SELECTION)){
-    GtkBitset *bitset;
-    GtkStringObject *string_object;
+      gchar *selected_filename;
+      gchar *filename;
 
-    gchar *selected_filename;
-    gchar *filename;
-
-    guint64 length;
-    guint64 i;
-
-    bitset = gtk_selection_model_get_selection(GTK_SELECTION_MODEL(file_widget->filename_multi_selection));
-
-    length = gtk_bitset_get_size(bitset);
-
-    for(i = 0; i < length; i++){
-      guint position;
-
-      position = gtk_bitset_get_nth(bitset,
-				    i);
-    
-      string_object = g_list_model_get_item(gtk_multi_selection_get_model(file_widget->filename_multi_selection),
-					    position);
+      string_object = gtk_single_selection_get_selected_item(file_widget->filename_single_selection);
   
       selected_filename = gtk_string_object_get_string(string_object);
 
@@ -2091,7 +2076,42 @@ ags_file_widget_get_filenames(AgsFileWidget *file_widget)
 				       filename);
     }
 
-    start_filename = g_slist_reverse(start_filename);
+    /* multi selection */
+    if(ags_file_widget_test_flags(file_widget, AGS_FILE_WIDGET_WITH_MULTI_SELECTION)){
+      GtkBitset *bitset;
+      GtkStringObject *string_object;
+
+      gchar *selected_filename;
+      gchar *filename;
+
+      guint64 length;
+      guint64 i;
+
+      bitset = gtk_selection_model_get_selection(GTK_SELECTION_MODEL(file_widget->filename_multi_selection));
+
+      length = gtk_bitset_get_size(bitset);
+
+      for(i = 0; i < length; i++){
+	guint position;
+
+	position = gtk_bitset_get_nth(bitset,
+				      i);
+    
+	string_object = g_list_model_get_item(gtk_multi_selection_get_model(file_widget->filename_multi_selection),
+					      position);
+  
+	selected_filename = gtk_string_object_get_string(string_object);
+
+	filename = g_strdup_printf("%s/%s",
+				   file_widget->current_path,
+				   selected_filename);
+
+	start_filename = g_slist_prepend(start_filename,
+					 filename);
+      }
+
+      start_filename = g_slist_reverse(start_filename);
+    }
   }
   
   return(start_filename);
