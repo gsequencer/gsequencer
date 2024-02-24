@@ -77,6 +77,9 @@ void ags_file_widget_primary_key_factory_bind(GtkListItemFactory *factory, GtkLi
 void ags_file_widget_value_factory_bind(GtkListItemFactory *factory, GtkListItem *list_item,
 					AgsFileWidget *file_widget);
 
+void ags_file_widget_location_entry_callback(GtkEditable *entry,
+					     AgsFileWidget *file_widget);
+
 void ags_file_widget_gesture_click_pressed_callback(GtkGestureClick *event_controller,
 						    gint n_press,
 						    gdouble x,
@@ -347,6 +350,9 @@ ags_file_widget_init(AgsFileWidget *file_widget)
   
   gtk_box_append(hbox,
 		 (GtkWidget *) file_widget->location_entry);
+
+  g_signal_connect_after(file_widget->location_entry, "changed",
+			 G_CALLBACK(ags_file_widget_location_entry_callback), file_widget);
 
   /* action menu button */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
@@ -833,6 +839,29 @@ ags_file_widget_value_factory_bind(GtkListItemFactory *factory, GtkListItem *lis
 
   gtk_label_set_label(label,
 		      value);
+}
+
+void
+ags_file_widget_location_entry_callback(GtkEditable *entry,
+					AgsFileWidget *file_widget)
+{
+  gchar *filename;
+  gchar *prev_current_path;
+  
+  filename = gtk_editable_get_text(GTK_EDITABLE(entry));
+
+  prev_current_path = file_widget->current_path;
+
+  if(g_file_test(filename, G_FILE_TEST_EXISTS) &&
+     g_file_test(filename, G_FILE_TEST_IS_DIR)){
+    file_widget->current_path = g_strdup(filename);
+
+    ags_file_widget_refresh(file_widget);
+  }else{
+    prev_current_path = NULL;
+  }
+
+  g_free(prev_current_path);
 }
 
 void
