@@ -99,8 +99,11 @@ struct _AgsFileWidget
   GtkBox *location_box;
 
   GHashTable *location;  
+
+  gchar *recently_used_filename;
+  gchar **recently_used;
   
-  AgsIconLink *recently_used;
+  AgsIconLink *recently_used_link;
   
   GtkSeparator *location_separator;
 
@@ -124,6 +127,8 @@ struct _AgsFileWidget
 
   GtkBox *right_vbox;
 
+  gchar *file_executable;
+  
   GtkWidget *preview;
 };
 
@@ -153,6 +158,17 @@ gboolean ags_file_widget_test_file_action(AgsFileWidget *file_widget,
 void ags_file_widget_set_file_action(AgsFileWidget *file_widget,
 				     guint file_action);
 
+/* recently used */
+gchar** ags_file_widget_get_recently_used(AgsFileWidget *file_widget,
+					  guint *strv_length);
+
+gchar* ags_file_widget_get_recently_used_filename(AgsFileWidget *file_widget);
+void ags_file_widget_set_recently_used_filename(AgsFileWidget *file_widget,
+						gchar *recently_used_filename);
+
+void ags_file_widget_read_recently_used(AgsFileWidget *file_widget);
+void ags_file_widget_write_recently_used(AgsFileWidget *file_widget);
+
 /* location */
 GHashTable* ags_file_widget_get_location(AgsFileWidget *file_widget);
 
@@ -169,6 +185,10 @@ void ags_file_widget_add_bookmark(AgsFileWidget *file_widget,
 				  gchar *bookmark_location);
 void ags_file_widget_remove_bookmark(AgsFileWidget *file_widget,
 				     gchar *bookmark_location);
+
+gchar* ags_file_widget_get_bookmark_filename(AgsFileWidget *file_widget);
+void ags_file_widget_set_bookmark_filename(AgsFileWidget *file_widget,
+					   gchar *bookmark_filename);
 
 void ags_file_widget_read_bookmark(AgsFileWidget *file_widget);
 void ags_file_widget_write_bookmark(AgsFileWidget *file_widget);

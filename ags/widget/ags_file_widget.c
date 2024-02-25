@@ -460,23 +460,27 @@ ags_file_widget_init(AgsFileWidget *file_widget)
 						NULL);
 
   /* recently used */
+  file_widget->recently_used_filename = NULL;
+
+  file_widget->recently_used = NULL;
+  
   str = g_strdup_printf("<span foreground=\"#0000ff\"><u>%s</u></span>",
 			i18n("Recently-used"));
   
-  file_widget->recently_used = ags_icon_link_new("document-open-recent",
-						 AGS_FILE_WIDGET_LOCATION_OPEN_RECENT,
-						 str);
+  file_widget->recently_used_link = ags_icon_link_new("document-open-recent",
+						      AGS_FILE_WIDGET_LOCATION_OPEN_RECENT,
+						      str);
   
   g_free(str);
   
   g_hash_table_insert(file_widget->location,
 		      g_strdup(AGS_FILE_WIDGET_LOCATION_OPEN_RECENT),
-		      file_widget->recently_used);
-
+		      file_widget->recently_used_link);
+  
   gtk_box_append(file_widget->location_box,
-		 (GtkWidget *) file_widget->recently_used);
+		 (GtkWidget *) file_widget->recently_used_link);
 
-  g_signal_connect(file_widget->recently_used, "clicked",
+  g_signal_connect(file_widget->recently_used_link, "clicked",
 		   G_CALLBACK(ags_file_widget_location_callback), file_widget);
 
   /* separator */
@@ -630,6 +634,9 @@ ags_file_widget_init(AgsFileWidget *file_widget)
   gtk_box_append(action_hbox,
 		 (GtkWidget *) file_widget->right_vbox);
 
+  /* preview */
+  file_widget->file_executable = NULL;
+  
   file_widget->preview = NULL;
 }
 
@@ -1169,6 +1176,213 @@ ags_file_widget_location_callback(AgsIconLink *icon_link,
 }
 
 /**
+ * ags_file_widget_get_recently_used:
+ * @file_widget: the #AgsFileWidget
+ *
+ * Get recently used from @file_widget.
+ *
+ * Returns: (transfer full): the recently used string vector
+ * 
+ * Since: 6.6.0
+ */
+gchar**
+ags_file_widget_get_recently_used(AgsFileWidget *file_widget,
+				  guint *strv_length)
+{
+  g_return_val_if_fail(AGS_IS_FILE_WIDGET(file_widget), NULL);
+
+  if(strv_length != 0){
+    strv_length[0] = g_strv_length(file_widget->recently_used);
+  }
+  
+  return(g_strdupv(file_widget->recently_used));
+}
+
+/**
+ * ags_file_widget_get_recently_used_filename:
+ * @file_widget: the #AgsFileWidget
+ *
+ * Get recently used filename.
+ * 
+ * Returns: (transfer full): the recently used filename
+ * 
+ * Since: 6.6.0
+ */
+gchar*
+ags_file_widget_get_recently_used_filename(AgsFileWidget *file_widget)
+{
+  g_return_val_if_fail(AGS_IS_FILE_WIDGET(file_widget), NULL);
+
+  return(g_strdup(file_widget->recently_used_filename));
+}
+
+/**
+ * ags_file_widget_set_recently_used_filename:
+ * @file_widget: the #AgsFileWidget
+ * @recently_used_filename: the recently used file
+ *
+ * Set recently used filename.
+ * 
+ * Since: 6.6.0
+ */
+void
+ags_file_widget_set_recently_used_filename(AgsFileWidget *file_widget,
+					   gchar *recently_used_filename)
+{
+  g_return_if_fail(AGS_IS_FILE_WIDGET(file_widget));
+
+  g_free(file_widget->recently_used_filename);
+  
+  file_widget->recently_used_filename = g_strdup(recently_used_filename);
+}
+
+/**
+ * ags_file_widget_read_recently_used:
+ * @file_widget: the #AgsFileWidget
+ *
+ * Read recently-used from recently-used-filename.
+ * 
+ * Since: 6.6.0
+ */
+void
+ags_file_widget_read_recently_used(AgsFileWidget *file_widget)
+{
+  xmlDoc *recently_used_doc;
+  xmlNode *root_node;
+  xmlNode *node;
+
+  gchar **strv;
+  
+  guint strv_length;
+  gboolean is_end;
+  guint i, i_stop;
+  
+  g_return_if_fail(AGS_IS_FILE_WIDGET(file_widget));
+  g_return_if_fail(file_widget->recently_used_filename != NULL);
+
+  recently_used_doc = xmlReadFile(file_widget->recently_used_filename,
+				  NULL,
+				  0);
+
+  if(recently_used_doc == NULL){
+    return;
+  }
+  
+  root_node = xmlDocGetRootElement(recently_used_doc);
+
+  if(root_node != NULL &&
+     !xmlStrncmp("resources",
+		 root_node->name,
+		 10)){
+
+    node = root_node->children;
+
+    strv = file_widget->recently_used;
+
+    strv_length = g_strv_length(file_widget->recently_used);
+
+    i = 0;
+    i_stop = 10;
+
+    is_end = FALSE;
+    
+    while(node != NULL){
+      if(node->type == XML_ELEMENT_NODE){
+	if(!xmlStrncmp("resource",
+		       node->name,
+		       9)){
+	  xmlChar *filename;
+
+	  filename = xmlNodeGetContent(node);
+
+	  if(i < i_stop){
+	    if(strv[i] == NULL){
+	      is_end = TRUE;
+	    }
+	    
+	    if(!is_end){
+	      g_free(strv[i]);
+	    }
+	    
+	    strv[i] = g_strdup(filename);
+	  }
+	  
+	  xmlFree(filename);
+
+	  i++;
+	}
+      }
+
+      node = node->next;
+    }
+
+    strv[i] = NULL;
+  }
+}
+
+/**
+ * ags_file_widget_write_recently_used:
+ * @file_widget: the #AgsFileWidget
+ *
+ * Write recently_useds from recently_used-filename.
+ * 
+ * Since: 6.6.0
+ */
+void
+ags_file_widget_write_recently_used(AgsFileWidget *file_widget)
+{
+  FILE *out;
+
+  xmlDoc *recently_used_doc;
+  xmlNode *root_node;
+  xmlNode *node;
+
+  gchar **iter;
+  
+  xmlChar *buffer;
+
+  int size;
+
+  g_return_if_fail(AGS_IS_FILE_WIDGET(file_widget));
+  g_return_if_fail(file_widget->recently_used_filename != NULL);
+  
+  recently_used_doc = xmlNewDoc("1.0");
+
+  root_node = xmlNewNode(NULL,
+			 BAD_CAST "resources");
+
+  xmlDocSetRootElement(recently_used_doc,
+		       root_node);
+  
+  iter = file_widget->recently_used;
+
+  if(iter != NULL){
+    for(; iter[0] != NULL; iter++){
+      node = xmlNewNode(NULL,
+			BAD_CAST "resource");
+
+      xmlNodeAddContent(node,
+			(gchar *) iter[0]);
+      
+      xmlAddChild(root_node,
+		  node);
+    }
+  }
+
+  out = NULL;
+  buffer = NULL;
+
+  out = fopen(file_widget->recently_used_filename, "w+");
+  size = 0;
+  
+  xmlDocDumpFormatMemoryEnc(recently_used_doc, &(buffer), &size, "UTF-8", TRUE);
+
+  fwrite(buffer, size, sizeof(xmlChar), out);
+  fflush(out);
+  fclose(out);
+}
+
+/**
  * ags_file_widget_get_location:
  * @file_widget: the #AgsFileWidget
  *
@@ -1668,6 +1882,44 @@ ags_file_widget_remove_bookmark(AgsFileWidget *file_widget,
 }
 
 /**
+ * ags_file_widget_get_bookmark_filename:
+ * @file_widget: the #AgsFileWidget
+ *
+ * Get bookmark filename.
+ * 
+ * Returns: (transfer full): the recently used filename
+ * 
+ * Since: 6.6.0
+ */
+gchar*
+ags_file_widget_get_bookmark_filename(AgsFileWidget *file_widget)
+{
+  g_return_val_if_fail(AGS_IS_FILE_WIDGET(file_widget), NULL);
+
+  return(g_strdup(file_widget->bookmark_filename));
+}
+
+/**
+ * ags_file_widget_set_bookmark_filename:
+ * @file_widget: the #AgsFileWidget
+ * @bookmark_filename: the bookmark file
+ * 
+ * Set bookmark file.
+ * 
+ * Since: 6.6.0
+ */
+void
+ags_file_widget_set_bookmark_filename(AgsFileWidget *file_widget,
+				      gchar *bookmark_filename)
+{
+  g_return_if_fail(AGS_IS_FILE_WIDGET(file_widget));
+
+  g_free(file_widget->bookmark_filename);
+  
+  file_widget->bookmark_filename = g_strdup(bookmark_filename);
+}
+
+/**
  * ags_file_widget_read_bookmark:
  * @file_widget: the #AgsFileWidget
  *
@@ -1768,6 +2020,10 @@ ags_file_widget_write_bookmark(AgsFileWidget *file_widget)
     xmlNodeAddContent(node,
 		      (gchar *) bookmark->data);
     
+    xmlAddChild(root_node,
+		node);
+
+    /* iter */
     bookmark = bookmark->next;
   }
 
