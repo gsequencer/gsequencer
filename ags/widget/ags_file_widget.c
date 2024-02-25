@@ -139,7 +139,8 @@ enum{
   PROP_0,
   PROP_DEFAULT_BUNDLE,
   PROP_HOME_PATH,
-  PROP_GENERIC_PATH,
+  PROP_APP_HOME_PATH,
+  PROP_APP_GENERIC_PATH,
   PROP_DEFAULT_PATH,
   PROP_CURRENT_PATH,
   PROP_LOCATION,
@@ -234,21 +235,36 @@ ags_file_widget_class_init(AgsFileWidgetClass *file_widget)
 				  PROP_HOME_PATH,
 				  param_spec);
 
-
   /**
-   * AgsFileWidget:generic-path:
+   * AgsFileWidget:app-home-path:
    *
-   * The generic path.
+   * The app home path.
    * 
    * Since: 6.6.0
    */
-  param_spec = g_param_spec_string("generic-path",
-				   "generic path",
-				   "The generic path",
+  param_spec = g_param_spec_string("app-home-path",
+				   "app home path",
+				   "The app home path",
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_GENERIC_PATH,
+				  PROP_APP_HOME_PATH,
+				  param_spec);
+
+  /**
+   * AgsFileWidget:app-generic-path:
+   *
+   * The app generic path.
+   * 
+   * Since: 6.6.0
+   */
+  param_spec = g_param_spec_string("app-generic-path",
+				   "app generic path",
+				   "The app generic path",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_APP_GENERIC_PATH,
 				  param_spec);
 
   /**
@@ -797,6 +813,141 @@ ags_file_widget_set_property(GObject *gobject,
   file_widget = AGS_FILE_WIDGET(gobject);
 
   switch(prop_id){
+  case PROP_DEFAULT_BUNDLE:
+    {
+      gchar *default_bundle;
+
+      default_bundle = g_value_get_string(value);
+
+      if(file_widget->default_bundle == default_bundle){
+	return;
+      }
+
+      g_free(file_widget->default_bundle);
+
+      file_widget->default_bundle = g_strdup(default_bundle);
+    }
+    break;
+  case PROP_HOME_PATH:
+    {
+      gchar *home_path;
+
+      home_path = g_value_get_string(value);
+
+      if(file_widget->home_path == home_path){
+	return;
+      }
+
+      g_free(file_widget->home_path);
+
+      file_widget->home_path = g_strdup(home_path);
+    }
+    break;
+  case PROP_APP_HOME_PATH:
+    {
+      gchar *app_home_path;
+
+      app_home_path = g_value_get_string(value);
+
+      if(file_widget->app_home_path == app_home_path){
+	return;
+      }
+
+      g_free(file_widget->app_home_path);
+
+      file_widget->app_home_path = g_strdup(app_home_path);
+    }
+    break;
+  case PROP_APP_GENERIC_PATH:
+    {
+      gchar *app_generic_path;
+
+      app_generic_path = g_value_get_string(value);
+
+      if(file_widget->app_generic_path == app_generic_path){
+	return;
+      }
+
+      g_free(file_widget->app_generic_path);
+
+      file_widget->app_generic_path = g_strdup(app_generic_path);
+    }
+    break;
+  case PROP_DEFAULT_PATH:
+    {
+      gchar *default_path;
+
+      default_path = g_value_get_string(value);
+
+      if(file_widget->default_path == default_path){
+	return;
+      }
+
+      g_free(file_widget->default_path);
+
+      file_widget->default_path = g_strdup(default_path);
+    }
+    break;
+  case PROP_CURRENT_PATH:
+    {
+      gchar *current_path;
+
+      current_path = g_value_get_string(value);
+
+      if(file_widget->current_path == current_path){
+	return;
+      }
+
+      g_free(file_widget->current_path);
+
+      file_widget->current_path = g_strdup(current_path);
+    }
+    break;
+  case PROP_RECENTLY_USED_FILENAME:
+    {
+      gchar *recently_used_filename;
+
+      recently_used_filename = g_value_get_string(value);
+
+      if(file_widget->recently_used_filename == recently_used_filename){
+	return;
+      }
+
+      g_free(file_widget->recently_used_filename);
+
+      file_widget->recently_used_filename = g_strdup(recently_used_filename);
+    }
+    break;
+  case PROP_BOOKMARK_FILENAME:
+    {
+      gchar *bookmark_filename;
+
+      bookmark_filename = g_value_get_string(value);
+
+      if(file_widget->bookmark_filename == bookmark_filename){
+	return;
+      }
+
+      g_free(file_widget->bookmark_filename);
+
+      file_widget->bookmark_filename = g_strdup(bookmark_filename);
+    }
+    break;
+  case PROP_FILE_MAGIC_EXECUTABLE:
+    {
+      gchar *file_magic_executable;
+
+      file_magic_executable = g_value_get_string(value);
+
+      if(file_widget->file_magic_executable == file_magic_executable){
+	return;
+      }
+
+      g_free(file_widget->file_magic_executable);
+
+      file_widget->file_magic_executable = g_strdup(file_magic_executable);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -814,6 +965,51 @@ ags_file_widget_get_property(GObject *gobject,
   file_widget = AGS_FILE_WIDGET(gobject);
 
   switch(prop_id){
+  case PROP_DEFAULT_BUNDLE:
+  {
+    g_value_set_string(value, file_widget->default_bundle);
+  }
+  break;
+  case PROP_HOME_PATH:
+  {
+    g_value_set_string(value, file_widget->home_path);
+  }
+  break;
+  case PROP_APP_HOME_PATH:
+  {
+    g_value_set_string(value, file_widget->app_home_path);
+  }
+  break;
+  case PROP_APP_GENERIC_PATH:
+  {
+    g_value_set_string(value, file_widget->app_generic_path);
+  }
+  break;
+  case PROP_DEFAULT_PATH:
+  {
+    g_value_set_string(value, file_widget->default_path);
+  }
+  break;
+  case PROP_CURRENT_PATH:
+  {
+    g_value_set_string(value, file_widget->current_path);
+  }
+  break;
+  case PROP_RECENTLY_USED_FILENAME:
+  {
+    g_value_set_string(value, file_widget->recently_used_filename);
+  }
+  break;
+  case PROP_BOOKMARK_FILENAME:
+  {
+    g_value_set_string(value, file_widget->bookmark_filename);
+  }
+  break;
+  case PROP_FILE_MAGIC_EXECUTABLE:
+  {
+    g_value_set_string(value, file_widget->file_magic_executable);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -1258,6 +1454,16 @@ ags_file_widget_set_default_bundle(AgsFileWidget *file_widget,
 	       NULL);
 }
 
+/**
+ * ags_file_widget_get_default_bundle:
+ * @file_widget: the #AgsFileWidget
+ *
+ * Get default bundle of @file_widget.
+ * 
+ * Returns: (transfer full): the default bundle as string
+ * 
+ * Since: 6.6.0
+ */
 gchar*
 ags_file_widget_get_default_bundle(AgsFileWidget *file_widget)
 {
@@ -1298,6 +1504,16 @@ ags_file_widget_set_home_path(AgsFileWidget *file_widget,
 	       NULL);
 }
 
+/**
+ * ags_file_widget_get_home_path:
+ * @file_widget: the #AgsFileWidget
+ *
+ * Get home path of @file_widget.
+ * 
+ * Returns: (transfer full): the home path as string
+ * 
+ * Since: 6.6.0
+ */
 gchar*
 ags_file_widget_get_home_path(AgsFileWidget *file_widget)
 {
@@ -1317,43 +1533,103 @@ ags_file_widget_get_home_path(AgsFileWidget *file_widget)
 }
 
 /**
- * ags_file_widget_set_generic_path:
+ * ags_file_widget_set_app_home_path:
  * @file_widget: the #AgsFileWidget
- * @generic_path: the generic path
+ * @app_home_path: the app home path
  *
- * Set @generic_path of @file_widget.
+ * Set @app_home_path of @file_widget.
  * 
  * Since: 6.6.0
  */
 void
-ags_file_widget_set_generic_path(AgsFileWidget *file_widget,
-				 gchar *generic_path)
+ags_file_widget_set_app_home_path(AgsFileWidget *file_widget,
+				  gchar *app_home_path)
 {
   if(!AGS_IS_FILE_WIDGET(file_widget)){
     return;
   }
 
   g_object_set(file_widget,
-	       "generic-path", generic_path,
+	       "app-home-path", app_home_path,
 	       NULL);
 }
 
+/**
+ * ags_file_widget_get_app_home_path:
+ * @file_widget: the #AgsFileWidget
+ *
+ * Get app home path of @file_widget.
+ * 
+ * Returns: (transfer full): the app home path as string
+ * 
+ * Since: 6.6.0
+ */
 gchar*
-ags_file_widget_get_generic_path(AgsFileWidget *file_widget)
+ags_file_widget_get_app_home_path(AgsFileWidget *file_widget)
 {
-  gchar *generic_path;
+  gchar *app_home_path;
 
   if(!AGS_IS_FILE_WIDGET(file_widget)){
     return(NULL);
   }
 
-  generic_path = NULL;
+  app_home_path = NULL;
 
   g_object_get(file_widget,
-	       "generic-path", &generic_path,
+	       "app-home-path", &app_home_path,
 	       NULL);
 
-  return(generic_path);
+  return(app_home_path);
+}
+
+/**
+ * ags_file_widget_set_app_generic_path:
+ * @file_widget: the #AgsFileWidget
+ * @app_generic_path: the app generic path
+ *
+ * Set @app_generic_path of @file_widget.
+ * 
+ * Since: 6.6.0
+ */
+void
+ags_file_widget_set_app_generic_path(AgsFileWidget *file_widget,
+				     gchar *app_generic_path)
+{
+  if(!AGS_IS_FILE_WIDGET(file_widget)){
+    return;
+  }
+
+  g_object_set(file_widget,
+	       "app-generic-path", app_generic_path,
+	       NULL);
+}
+
+/**
+ * ags_file_widget_get_app_generic_path:
+ * @file_widget: the #AgsFileWidget
+ *
+ * Get app generic path of @file_widget.
+ * 
+ * Returns: (transfer full): the app generic path as string
+ * 
+ * Since: 6.6.0
+ */
+gchar*
+ags_file_widget_get_app_generic_path(AgsFileWidget *file_widget)
+{
+  gchar *app_generic_path;
+
+  if(!AGS_IS_FILE_WIDGET(file_widget)){
+    return(NULL);
+  }
+
+  app_generic_path = NULL;
+
+  g_object_get(file_widget,
+	       "app-generic-path", &app_generic_path,
+	       NULL);
+
+  return(app_generic_path);
 }
 
 /**
@@ -1378,6 +1654,16 @@ ags_file_widget_set_default_path(AgsFileWidget *file_widget,
 	       NULL);
 }
 
+/**
+ * ags_file_widget_get_default_path:
+ * @file_widget: the #AgsFileWidget
+ *
+ * Get default path of @file_widget.
+ * 
+ * Returns: (transfer full): the default path as string
+ * 
+ * Since: 6.6.0
+ */
 gchar*
 ags_file_widget_get_default_path(AgsFileWidget *file_widget)
 {
@@ -1418,6 +1704,16 @@ ags_file_widget_set_current_path(AgsFileWidget *file_widget,
 	       NULL);
 }
 
+/**
+ * ags_file_widget_get_current_path:
+ * @file_widget: the #AgsFileWidget
+ *
+ * Get current path of @file_widget.
+ * 
+ * Returns: (transfer full): the current path as string
+ * 
+ * Since: 6.6.0
+ */
 gchar*
 ags_file_widget_get_current_path(AgsFileWidget *file_widget)
 {
@@ -1458,6 +1754,16 @@ ags_file_widget_set_recently_used_filename(AgsFileWidget *file_widget,
 	       NULL);
 }
 
+/**
+ * ags_file_widget_get_recently_used_filename:
+ * @file_widget: the #AgsFileWidget
+ *
+ * Get recently used filename of @file_widget.
+ * 
+ * Returns: (transfer full): the home path as string
+ * 
+ * Since: 6.6.0
+ */
 gchar*
 ags_file_widget_get_recently_used_filename(AgsFileWidget *file_widget)
 {
@@ -1498,6 +1804,16 @@ ags_file_widget_set_bookmark_filename(AgsFileWidget *file_widget,
 	       NULL);
 }
 
+/**
+ * ags_file_widget_get_bookmark_filename:
+ * @file_widget: the #AgsFileWidget
+ *
+ * Get bookmark filename of @file_widget.
+ * 
+ * Returns: (transfer full): the bookmark filename as string
+ * 
+ * Since: 6.6.0
+ */
 gchar*
 ags_file_widget_get_bookmark_filename(AgsFileWidget *file_widget)
 {
@@ -1538,6 +1854,16 @@ ags_file_widget_set_file_magic_executable(AgsFileWidget *file_widget,
 	       NULL);
 }
 
+/**
+ * ags_file_widget_get_file_magic_executable:
+ * @file_widget: the #AgsFileWidget
+ *
+ * Get file magic executable of @file_widget.
+ * 
+ * Returns: (transfer full): the file magic executable as string
+ * 
+ * Since: 6.6.0
+ */
 gchar*
 ags_file_widget_get_file_magic_executable(AgsFileWidget *file_widget)
 {
@@ -1662,44 +1988,6 @@ ags_file_widget_get_recently_used(AgsFileWidget *file_widget,
   }
   
   return(g_strdupv(file_widget->recently_used));
-}
-
-/**
- * ags_file_widget_get_recently_used_filename:
- * @file_widget: the #AgsFileWidget
- *
- * Get recently used filename.
- * 
- * Returns: (transfer full): the recently used filename
- * 
- * Since: 6.6.0
- */
-gchar*
-ags_file_widget_get_recently_used_filename(AgsFileWidget *file_widget)
-{
-  g_return_val_if_fail(AGS_IS_FILE_WIDGET(file_widget), NULL);
-
-  return(g_strdup(file_widget->recently_used_filename));
-}
-
-/**
- * ags_file_widget_set_recently_used_filename:
- * @file_widget: the #AgsFileWidget
- * @recently_used_filename: the recently used file
- *
- * Set recently used filename.
- * 
- * Since: 6.6.0
- */
-void
-ags_file_widget_set_recently_used_filename(AgsFileWidget *file_widget,
-					   gchar *recently_used_filename)
-{
-  g_return_if_fail(AGS_IS_FILE_WIDGET(file_widget));
-
-  g_free(file_widget->recently_used_filename);
-  
-  file_widget->recently_used_filename = g_strdup(recently_used_filename);
 }
 
 /**
@@ -2345,44 +2633,6 @@ ags_file_widget_remove_bookmark(AgsFileWidget *file_widget,
 			file_widget,
 			NULL);
   }
-}
-
-/**
- * ags_file_widget_get_bookmark_filename:
- * @file_widget: the #AgsFileWidget
- *
- * Get bookmark filename.
- * 
- * Returns: (transfer full): the recently used filename
- * 
- * Since: 6.6.0
- */
-gchar*
-ags_file_widget_get_bookmark_filename(AgsFileWidget *file_widget)
-{
-  g_return_val_if_fail(AGS_IS_FILE_WIDGET(file_widget), NULL);
-
-  return(g_strdup(file_widget->bookmark_filename));
-}
-
-/**
- * ags_file_widget_set_bookmark_filename:
- * @file_widget: the #AgsFileWidget
- * @bookmark_filename: the bookmark file
- * 
- * Set bookmark file.
- * 
- * Since: 6.6.0
- */
-void
-ags_file_widget_set_bookmark_filename(AgsFileWidget *file_widget,
-				      gchar *bookmark_filename)
-{
-  g_return_if_fail(AGS_IS_FILE_WIDGET(file_widget));
-
-  g_free(file_widget->bookmark_filename);
-  
-  file_widget->bookmark_filename = g_strdup(bookmark_filename);
 }
 
 /**

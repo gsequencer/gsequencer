@@ -171,9 +171,13 @@ void ags_file_widget_set_home_path(AgsFileWidget *file_widget,
 				   gchar *home_path);
 gchar* ags_file_widget_get_home_path(AgsFileWidget *file_widget);
 
-void ags_file_widget_set_generic_path(AgsFileWidget *file_widget,
-				      gchar *generic_path);
-gchar* ags_file_widget_get_generic_path(AgsFileWidget *file_widget);
+void ags_file_widget_set_app_home_path(AgsFileWidget *file_widget,
+				       gchar *app_home_path);
+gchar* ags_file_widget_get_app_home_path(AgsFileWidget *file_widget);
+
+void ags_file_widget_set_app_generic_path(AgsFileWidget *file_widget,
+					  gchar *app_generic_path);
+gchar* ags_file_widget_get_app_generic_path(AgsFileWidget *file_widget);
 
 void ags_file_widget_set_default_path(AgsFileWidget *file_widget,
 				      gchar *default_path);
@@ -199,10 +203,6 @@ gchar* ags_file_widget_get_file_magic_executable(AgsFileWidget *file_widget);
 gchar** ags_file_widget_get_recently_used(AgsFileWidget *file_widget,
 					  guint *strv_length);
 
-gchar* ags_file_widget_get_recently_used_filename(AgsFileWidget *file_widget);
-void ags_file_widget_set_recently_used_filename(AgsFileWidget *file_widget,
-						gchar *recently_used_filename);
-
 void ags_file_widget_read_recently_used(AgsFileWidget *file_widget);
 void ags_file_widget_write_recently_used(AgsFileWidget *file_widget);
 
@@ -222,10 +222,6 @@ void ags_file_widget_add_bookmark(AgsFileWidget *file_widget,
 				  gchar *bookmark_location);
 void ags_file_widget_remove_bookmark(AgsFileWidget *file_widget,
 				     gchar *bookmark_location);
-
-gchar* ags_file_widget_get_bookmark_filename(AgsFileWidget *file_widget);
-void ags_file_widget_set_bookmark_filename(AgsFileWidget *file_widget,
-					   gchar *bookmark_filename);
 
 void ags_file_widget_read_bookmark(AgsFileWidget *file_widget);
 void ags_file_widget_write_bookmark(AgsFileWidget *file_widget);
