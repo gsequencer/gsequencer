@@ -137,6 +137,16 @@ enum{
 
 enum{
   PROP_0,
+  PROP_DEFAULT_BUNDLE,
+  PROP_HOME_PATH,
+  PROP_GENERIC_PATH,
+  PROP_DEFAULT_PATH,
+  PROP_CURRENT_PATH,
+  PROP_LOCATION,
+  PROP_RECENTLY_USED_FILENAME,
+  PROP_BOOKMARK,
+  PROP_BOOKMARK_FILENAME,
+  PROP_FILE_MAGIC_EXECUTABLE,
 };
 
 static gpointer ags_file_widget_parent_class = NULL;
@@ -190,6 +200,138 @@ ags_file_widget_class_init(AgsFileWidgetClass *file_widget)
 
   gobject->dispose = ags_file_widget_dispose;
   gobject->finalize = ags_file_widget_finalize;
+
+  /* properties */
+  /**
+   * AgsFileWidget:default-bundle:
+   *
+   * The default bundle.
+   * 
+   * Since: 6.6.0
+   */
+  param_spec = g_param_spec_string("default-bundle",
+				   "default bundle",
+				   "The default bundle",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DEFAULT_BUNDLE,
+				  param_spec);
+
+  /**
+   * AgsFileWidget:home-path:
+   *
+   * The home path.
+   * 
+   * Since: 6.6.0
+   */
+  param_spec = g_param_spec_string("home-path",
+				   "home path",
+				   "The home path",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_HOME_PATH,
+				  param_spec);
+
+
+  /**
+   * AgsFileWidget:generic-path:
+   *
+   * The generic path.
+   * 
+   * Since: 6.6.0
+   */
+  param_spec = g_param_spec_string("generic-path",
+				   "generic path",
+				   "The generic path",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_GENERIC_PATH,
+				  param_spec);
+
+  /**
+   * AgsFileWidget:default-path:
+   *
+   * The default path.
+   * 
+   * Since: 6.6.0
+   */
+  param_spec = g_param_spec_string("default-path",
+				   "default path",
+				   "The default path",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DEFAULT_PATH,
+				  param_spec);
+  
+  /**
+   * AgsFileWidget:current-path:
+   *
+   * The current path.
+   * 
+   * Since: 6.6.0
+   */
+  param_spec = g_param_spec_string("current-path",
+				   "current path",
+				   "The current path",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CURRENT_PATH,
+				  param_spec);
+
+  /**
+   * AgsFileWidget:recently-used-filename:
+   *
+   * The recently used filename.
+   * 
+   * Since: 6.6.0
+   */
+  param_spec = g_param_spec_string("recently-used-filename",
+				   "recently used filename",
+				   "The recently used filename",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECENTLY_USED_FILENAME,
+				  param_spec);
+  
+
+  /**
+   * AgsFileWidget:bookmark-filename:
+   *
+   * The recently used filename.
+   * 
+   * Since: 6.6.0
+   */
+  param_spec = g_param_spec_string("bookmark-filename",
+				   "bookmark filename",
+				   "The bookmark filename",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_BOOKMARK_FILENAME,
+				  param_spec);
+  
+
+  /**
+   * AgsFileWidget:file-magic-executable:
+   *
+   * The file magic executable.
+   * 
+   * Since: 6.6.0
+   */
+  param_spec = g_param_spec_string("file-magic-executable",
+				   "file magic executable",
+				   "The file magic executable",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FILE_MAGIC_EXECUTABLE,
+				  param_spec);
 
   /* AgsFileWidget */
   file_widget->refresh = ags_file_widget_real_refresh;
@@ -462,7 +604,11 @@ ags_file_widget_init(AgsFileWidget *file_widget)
   /* recently used */
   file_widget->recently_used_filename = NULL;
 
-  file_widget->recently_used = NULL;
+  file_widget->recently_used = (gchar **) g_malloc(AGS_FILE_WIDGET_MAX_RECENTLY_USED * sizeof(gchar *));
+
+  for(i = 0; i < AGS_FILE_WIDGET_MAX_RECENTLY_USED; i++){
+    file_widget->recently_used[i] = NULL;
+  }
   
   str = g_strdup_printf("<span foreground=\"#0000ff\"><u>%s</u></span>",
 			i18n("Recently-used"));
@@ -635,7 +781,7 @@ ags_file_widget_init(AgsFileWidget *file_widget)
 		 (GtkWidget *) file_widget->right_vbox);
 
   /* preview */
-  file_widget->file_executable = NULL;
+  file_widget->file_magic_executable = NULL;
   
   file_widget->preview = NULL;
 }
@@ -1295,7 +1441,7 @@ ags_file_widget_read_recently_used(AgsFileWidget *file_widget)
 
 	  filename = xmlNodeGetContent(node);
 
-	  if(i < i_stop){
+	  if(i < i_stop && i < AGS_FILE_WIDGET_MAX_RECENTLY_USED){
 	    if(strv[i] == NULL){
 	      is_end = TRUE;
 	    }
