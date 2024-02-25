@@ -36,6 +36,8 @@ G_BEGIN_DECLS
 #define AGS_IS_FILE_WIDGET_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FILE_WIDGET))
 #define AGS_FILE_WIDGET_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_FILE_WIDGET, AgsFileWidgetClass))
 
+#define AGS_FILE_WIDGET_MAX_RECENTLY_USED (24)
+
 #define AGS_FILE_WIDGET_LOCATION_OPEN_RECENT "document-open-recent"
 #define AGS_FILE_WIDGET_LOCATION_OPEN_START_HERE "open-start-here"
 #define AGS_FILE_WIDGET_LOCATION_OPEN_USER_HOME "open-user-home"
@@ -47,6 +49,8 @@ G_BEGIN_DECLS
 #define AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_DOCUMENTS "open-folder-documents"
 #define AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_APP_HOME "open-app-home"
 #define AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_APP_GENERIC "open-app-generic"
+
+#define AGS_FILE_WIDGET_DEFAULT_FILE_MAGIC_EXECUTABLE "/usr/bin/ags-file"
 
 typedef struct _AgsFileWidget AgsFileWidget;
 typedef struct _AgsFileWidgetClass AgsFileWidgetClass;
@@ -127,7 +131,7 @@ struct _AgsFileWidget
 
   GtkBox *right_vbox;
 
-  gchar *file_executable;
+  gchar *file_magic_executable;
   
   GtkWidget *preview;
 };
