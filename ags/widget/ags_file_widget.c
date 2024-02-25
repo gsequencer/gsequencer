@@ -1236,6 +1236,326 @@ ags_file_widget_set_file_action(AgsFileWidget *file_widget,
   file_widget->file_action = file_action;
 }
 
+/**
+ * ags_file_widget_set_default_bundle:
+ * @file_widget: the #AgsFileWidget
+ * @default_bundle: the default bundle
+ *
+ * Set @default_bundle of @file_widget.
+ * 
+ * Since: 6.6.0
+ */
+void
+ags_file_widget_set_default_bundle(AgsFileWidget *file_widget,
+				   gchar *default_bundle)
+{
+  if(!AGS_IS_FILE_WIDGET(file_widget)){
+    return;
+  }
+
+  g_object_set(file_widget,
+	       "default-bundle", default_bundle,
+	       NULL);
+}
+
+gchar*
+ags_file_widget_get_default_bundle(AgsFileWidget *file_widget)
+{
+  gchar *default_bundle;
+
+  if(!AGS_IS_FILE_WIDGET(file_widget)){
+    return(NULL);
+  }
+
+  default_bundle = NULL;
+
+  g_object_get(file_widget,
+	       "default-bundle", &default_bundle,
+	       NULL);
+
+  return(default_bundle);
+}
+
+/**
+ * ags_file_widget_set_home_path:
+ * @file_widget: the #AgsFileWidget
+ * @home_path: the home path
+ *
+ * Set @home_path of @file_widget.
+ * 
+ * Since: 6.6.0
+ */
+void
+ags_file_widget_set_home_path(AgsFileWidget *file_widget,
+			      gchar *home_path)
+{
+  if(!AGS_IS_FILE_WIDGET(file_widget)){
+    return;
+  }
+
+  g_object_set(file_widget,
+	       "home-path", home_path,
+	       NULL);
+}
+
+gchar*
+ags_file_widget_get_home_path(AgsFileWidget *file_widget)
+{
+  gchar *home_path;
+
+  if(!AGS_IS_FILE_WIDGET(file_widget)){
+    return(NULL);
+  }
+
+  home_path = NULL;
+
+  g_object_get(file_widget,
+	       "home-path", &home_path,
+	       NULL);
+
+  return(home_path);
+}
+
+/**
+ * ags_file_widget_set_generic_path:
+ * @file_widget: the #AgsFileWidget
+ * @generic_path: the generic path
+ *
+ * Set @generic_path of @file_widget.
+ * 
+ * Since: 6.6.0
+ */
+void
+ags_file_widget_set_generic_path(AgsFileWidget *file_widget,
+				 gchar *generic_path)
+{
+  if(!AGS_IS_FILE_WIDGET(file_widget)){
+    return;
+  }
+
+  g_object_set(file_widget,
+	       "generic-path", generic_path,
+	       NULL);
+}
+
+gchar*
+ags_file_widget_get_generic_path(AgsFileWidget *file_widget)
+{
+  gchar *generic_path;
+
+  if(!AGS_IS_FILE_WIDGET(file_widget)){
+    return(NULL);
+  }
+
+  generic_path = NULL;
+
+  g_object_get(file_widget,
+	       "generic-path", &generic_path,
+	       NULL);
+
+  return(generic_path);
+}
+
+/**
+ * ags_file_widget_set_default_path:
+ * @file_widget: the #AgsFileWidget
+ * @default_path: the default path
+ *
+ * Set @default_path of @file_widget.
+ * 
+ * Since: 6.6.0
+ */
+void
+ags_file_widget_set_default_path(AgsFileWidget *file_widget,
+				 gchar *default_path)
+{
+  if(!AGS_IS_FILE_WIDGET(file_widget)){
+    return;
+  }
+
+  g_object_set(file_widget,
+	       "default-path", default_path,
+	       NULL);
+}
+
+gchar*
+ags_file_widget_get_default_path(AgsFileWidget *file_widget)
+{
+  gchar *default_path;
+
+  if(!AGS_IS_FILE_WIDGET(file_widget)){
+    return(NULL);
+  }
+
+  default_path = NULL;
+
+  g_object_get(file_widget,
+	       "default-path", &default_path,
+	       NULL);
+
+  return(default_path);
+}
+
+/**
+ * ags_file_widget_set_current_path:
+ * @file_widget: the #AgsFileWidget
+ * @current_path: the current path
+ *
+ * Set @current_path of @file_widget.
+ * 
+ * Since: 6.6.0
+ */
+void
+ags_file_widget_set_current_path(AgsFileWidget *file_widget,
+				 gchar *current_path)
+{
+  if(!AGS_IS_FILE_WIDGET(file_widget)){
+    return;
+  }
+
+  g_object_set(file_widget,
+	       "current-path", current_path,
+	       NULL);
+}
+
+gchar*
+ags_file_widget_get_current_path(AgsFileWidget *file_widget)
+{
+  gchar *current_path;
+
+  if(!AGS_IS_FILE_WIDGET(file_widget)){
+    return(NULL);
+  }
+
+  current_path = NULL;
+
+  g_object_get(file_widget,
+	       "current-path", &current_path,
+	       NULL);
+
+  return(current_path);
+}
+
+/**
+ * ags_file_widget_set_recently_used_filename:
+ * @file_widget: the #AgsFileWidget
+ * @recently_used_filename: the recently used filename
+ *
+ * Set @recently_used_filename of @file_widget.
+ * 
+ * Since: 6.6.0
+ */
+void
+ags_file_widget_set_recently_used_filename(AgsFileWidget *file_widget,
+					   gchar *recently_used_filename)
+{
+  if(!AGS_IS_FILE_WIDGET(file_widget)){
+    return;
+  }
+
+  g_object_set(file_widget,
+	       "recently-used-filename", recently_used_filename,
+	       NULL);
+}
+
+gchar*
+ags_file_widget_get_recently_used_filename(AgsFileWidget *file_widget)
+{
+  gchar *recently_used_filename;
+
+  if(!AGS_IS_FILE_WIDGET(file_widget)){
+    return(NULL);
+  }
+
+  recently_used_filename = NULL;
+
+  g_object_get(file_widget,
+	       "recently-used-filename", &recently_used_filename,
+	       NULL);
+
+  return(recently_used_filename);
+}
+
+/**
+ * ags_file_widget_set_bookmark_filename:
+ * @file_widget: the #AgsFileWidget
+ * @bookmark_filename: the bookmark filename
+ *
+ * Set @bookmark_filename of @file_widget.
+ * 
+ * Since: 6.6.0
+ */
+void
+ags_file_widget_set_bookmark_filename(AgsFileWidget *file_widget,
+				      gchar *bookmark_filename)
+{
+  if(!AGS_IS_FILE_WIDGET(file_widget)){
+    return;
+  }
+
+  g_object_set(file_widget,
+	       "bookmark-filename", bookmark_filename,
+	       NULL);
+}
+
+gchar*
+ags_file_widget_get_bookmark_filename(AgsFileWidget *file_widget)
+{
+  gchar *bookmark_filename;
+
+  if(!AGS_IS_FILE_WIDGET(file_widget)){
+    return(NULL);
+  }
+
+  bookmark_filename = NULL;
+
+  g_object_get(file_widget,
+	       "bookmark-filename", &bookmark_filename,
+	       NULL);
+
+  return(bookmark_filename);
+}
+
+/**
+ * ags_file_widget_set_file_magic_executable:
+ * @file_widget: the #AgsFileWidget
+ * @file_magic_executable: the file magic executable
+ *
+ * Set @file_magic_executable of @file_widget.
+ * 
+ * Since: 6.6.0
+ */
+void
+ags_file_widget_set_file_magic_executable(AgsFileWidget *file_widget,
+					  gchar *file_magic_executable)
+{
+  if(!AGS_IS_FILE_WIDGET(file_widget)){
+    return;
+  }
+
+  g_object_set(file_widget,
+	       "file-magic-executable", file_magic_executable,
+	       NULL);
+}
+
+gchar*
+ags_file_widget_get_file_magic_executable(AgsFileWidget *file_widget)
+{
+  gchar *file_magic_executable;
+
+  if(!AGS_IS_FILE_WIDGET(file_widget)){
+    return(NULL);
+  }
+
+  file_magic_executable = NULL;
+
+  g_object_get(file_widget,
+	       "file-magic-executable", &file_magic_executable,
+	       NULL);
+
+  return(file_magic_executable);
+}
+
 void
 ags_file_widget_location_drop_down_callback(GObject *location,
 					    GParamSpec *pspec,
