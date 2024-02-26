@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -147,6 +147,8 @@ struct _AgsGSequencerApplicationContext
   GtkWidget *meta_data_window;
 
   gchar *paper_size;
+
+  GList *visible_window;
 };
 
 struct _AgsGSequencerApplicationContextClass

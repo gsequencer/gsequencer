@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,6 +18,8 @@
  */
 
 #include <ags/app/ags_gsequencer_application_callbacks.h>
+
+#include <ags/app/ags_ui_provider.h>
 
 #include <ags/app/ags_app_action_util.h>
 
@@ -96,6 +98,72 @@ ags_gsequencer_quit_callback(GAction *action, GVariant *parameter,
 			     AgsGSequencerApplication *gsequencer_app)
 {
   ags_app_action_util_quit();
+}
+
+void
+ags_gsequencer_present_app_window_callback(GAction *action, GVariant *parameter,
+					   AgsGSequencerApplication *gsequencer_app)
+{
+  AgsApplicationContext *application_context;
+  
+  application_context = ags_application_context_get_instance();
+    
+  gtk_window_present(ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
+}
+
+void
+ags_gsequencer_present_meta_data_window_callback(GAction *action, GVariant *parameter,
+						 AgsGSequencerApplication *gsequencer_app)
+{
+  AgsApplicationContext *application_context;
+  
+  application_context = ags_application_context_get_instance();
+    
+  gtk_window_present(ags_ui_provider_get_meta_data_window(AGS_UI_PROVIDER(application_context)));
+}
+
+void
+ags_gsequencer_present_export_window_callback(GAction *action, GVariant *parameter,
+					      AgsGSequencerApplication *gsequencer_app)
+{
+  AgsApplicationContext *application_context;
+  
+  application_context = ags_application_context_get_instance();
+    
+  gtk_window_present(ags_ui_provider_get_export_window(AGS_UI_PROVIDER(application_context)));
+}
+
+void
+ags_gsequencer_present_smf_import_window_callback(GAction *action, GVariant *parameter,
+						  AgsGSequencerApplication *gsequencer_app)
+{
+  AgsApplicationContext *application_context;
+  
+  application_context = ags_application_context_get_instance();
+    
+  gtk_window_present(ags_ui_provider_get_midi_import_wizard(AGS_UI_PROVIDER(application_context)));
+}
+
+void
+ags_gsequencer_present_smf_export_window_callback(GAction *action, GVariant *parameter,
+						  AgsGSequencerApplication *gsequencer_app)
+{
+  AgsApplicationContext *application_context;
+  
+  application_context = ags_application_context_get_instance();
+    
+  gtk_window_present(ags_ui_provider_get_midi_export_wizard(AGS_UI_PROVIDER(application_context)));
+}
+
+void
+ags_gsequencer_present_help_window_callback(GAction *action, GVariant *parameter,
+					    AgsGSequencerApplication *gsequencer_app)
+{
+  AgsApplicationContext *application_context;
+  
+  application_context = ags_application_context_get_instance();
+    
+  gtk_window_present(ags_ui_provider_get_online_help_window(AGS_UI_PROVIDER(application_context)));
 }
 
 void

@@ -239,6 +239,10 @@ GtkWidget* ags_gsequencer_application_context_get_meta_data_window(AgsUiProvider
 void ags_gsequencer_application_context_set_meta_data_window(AgsUiProvider *ui_provider,
 							     GtkWidget *widget);
 
+GList* ags_gsequencer_application_context_get_visible_window(AgsUiProvider *ui_provider);
+void ags_gsequencer_application_context_set_visible_window(AgsUiProvider *ui_provider,
+							   GList *visible_window);
+
 void ags_gsequencer_application_context_prepare(AgsApplicationContext *application_context);
 void ags_gsequencer_application_context_setup(AgsApplicationContext *application_context);
 
@@ -582,6 +586,9 @@ ags_gsequencer_application_context_ui_provider_interface_init(AgsUiProviderInter
 
   ui_provider->get_meta_data_window = ags_gsequencer_application_context_get_meta_data_window;
   ui_provider->set_meta_data_window = ags_gsequencer_application_context_set_meta_data_window;
+
+  ui_provider->get_visible_window = ags_gsequencer_application_context_get_visible_window;
+  ui_provider->set_visible_window = ags_gsequencer_application_context_set_visible_window;
 }
 
 void
@@ -693,6 +700,8 @@ ags_gsequencer_application_context_init(AgsGSequencerApplicationContext *gsequen
   gsequencer_application_context->meta_data_window = NULL;
 
   gsequencer_application_context->paper_size = g_strdup(AGS_GSEQUENCER_APPLICATION_CONTEXT_DEFAULT_PAPER_SIZE);
+
+  gsequencer_application_context->visible_window = NULL;
 
   g_timeout_add(AGS_GSEQUENCER_APPLICATION_CONTEXT_DEFAULT_LOADER_INTERVAL,
 		(GSourceFunc) ags_gsequencer_application_context_loader_timeout,
@@ -2742,6 +2751,35 @@ ags_gsequencer_application_context_set_meta_data_window(AgsUiProvider *ui_provid
 
   /* set meta_data window */
   gsequencer_application_context->meta_data_window = widget;
+}
+
+GList*
+ags_gsequencer_application_context_get_visible_window(AgsUiProvider *ui_provider)
+{
+  GList *visible_window;
+  
+  AgsGSequencerApplicationContext *gsequencer_application_context;
+
+  gsequencer_application_context = AGS_GSEQUENCER_APPLICATION_CONTEXT(ui_provider);
+
+  /* get visible_window */
+  visible_window = g_list_copy(gsequencer_application_context->visible_window);
+
+  return(visible_window);
+}
+
+void
+ags_gsequencer_application_context_set_visible_window(AgsUiProvider *ui_provider,
+						      GList *visible_window)
+{
+  AgsGSequencerApplicationContext *gsequencer_application_context;
+
+  gsequencer_application_context = AGS_GSEQUENCER_APPLICATION_CONTEXT(ui_provider);
+
+  /* set visible_window */
+  g_list_free(gsequencer_application_context->visible_window);
+  
+  gsequencer_application_context->visible_window = visible_window;
 }
 
 void

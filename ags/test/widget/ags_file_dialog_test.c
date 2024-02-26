@@ -24,6 +24,8 @@
 
 #include <ags/widget/ags_file_dialog.h>
 
+#define AGS_FILE_DIALOG_TEST_RECENTLY_USED_FILENAME SRCDIR "/ags/test/widget/ags_file_widget_recently_used.xml"
+
 gboolean timeout(AgsFileDialog *file_dialog);
 
 gboolean
@@ -68,6 +70,10 @@ activate(GtkApplication *app,
   ags_file_widget_add_location(file_dialog->file_widget,
 			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_HOME,
 			       NULL);
+
+  ags_file_widget_set_recently_used_filename(file_dialog->file_widget,
+					     AGS_FILE_DIALOG_TEST_RECENTLY_USED_FILENAME);
+  ags_file_widget_read_recently_used(file_dialog->file_widget);
   
   file_dialog->file_widget->current_path = g_strdup(file_dialog->file_widget->home_path);
 

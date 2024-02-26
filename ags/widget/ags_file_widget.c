@@ -512,6 +512,17 @@ ags_file_widget_init(AgsFileWidget *file_widget)
   g_signal_connect_after(file_widget->location_entry, "activate",
   			 G_CALLBACK(ags_file_widget_location_entry_callback), file_widget);
 
+  /* location - combo */
+  location_string_list = gtk_string_list_new(location_strv);
+  
+  file_widget->location_drop_down = (GtkDropDown *) gtk_drop_down_new(G_LIST_MODEL(location_string_list),
+								      NULL);
+  gtk_box_append(file_widget->vbox,
+		 (GtkWidget *) file_widget->location_drop_down);
+
+  g_signal_connect_after(file_widget->location_drop_down, "notify::selected-item",
+			 G_CALLBACK(ags_file_widget_location_drop_down_callback), file_widget);
+
   /* action menu button */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				6);
@@ -576,17 +587,6 @@ ags_file_widget_init(AgsFileWidget *file_widget)
   gtk_widget_insert_action_group((GtkWidget *) file_widget->action_popover,
 				 "file_widget",
 				 G_ACTION_GROUP(action_group));
-
-  /* location - combo */
-  location_string_list = gtk_string_list_new(location_strv);
-  
-  file_widget->location_drop_down = (GtkDropDown *) gtk_drop_down_new(G_LIST_MODEL(location_string_list),
-								      NULL);
-  gtk_box_append(file_widget->vbox,
-		 (GtkWidget *) file_widget->location_drop_down);
-
-  g_signal_connect_after(file_widget->location_drop_down, "notify::selected-item",
-			 G_CALLBACK(ags_file_widget_location_drop_down_callback), file_widget);
 
   /* left, center and right */
   action_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
@@ -1110,15 +1110,26 @@ ags_file_widget_value_factory_bind(GtkListItemFactory *factory, GtkListItem *lis
   string_object = GTK_STRING_OBJECT(gtk_list_item_get_item(list_item));
   primary_key = gtk_string_object_get_string(string_object);
 
+  filename = NULL;
+  
   column_name = NULL;
   value = NULL;
 
-  if((!strncmp(primary_key, "..", 3) == FALSE) &&
-     (!strncmp(primary_key, ".", 2) == FALSE)){
-    filename = g_strdup_printf("%s/%s",
-			       file_widget->current_path,
-			       primary_key);
-  
+  if(!g_strcmp0(file_widget->current_path,
+		"recently-used:")){
+    filename = g_strdup(primary_key);
+    
+  }else{
+    if((!strncmp(primary_key, "..", 3) == FALSE) &&
+       (!strncmp(primary_key, ".", 2) == FALSE)){
+      filename = g_strdup_printf("%s/%s",
+				 file_widget->current_path,
+				 primary_key);
+    }
+  }
+
+  if(filename != NULL &&
+     g_file_test(filename, G_FILE_TEST_EXISTS)){
     retval = stat(filename,
 		  &sb);
   
@@ -1185,7 +1196,7 @@ ags_file_widget_value_factory_bind(GtkListItemFactory *factory, GtkListItem *lis
   }else{
     value = "";
   }
-
+  
   gtk_label_set_label(label,
 		      value);
 }
@@ -1922,9 +1933,7 @@ ags_file_widget_location_callback(AgsIconLink *icon_link,
   prev_current_path = file_widget->current_path;
 
   if(g_hash_table_lookup(file_widget->location, AGS_FILE_WIDGET_LOCATION_OPEN_RECENT) == icon_link){
-    current_path = g_strdup_printf("%s/.var/app/%s/data/recently-used.xbel",
-				   file_widget->home_path,
-				   file_widget->default_bundle);
+    current_path = g_strdup("recently-used:");
   }else if(g_hash_table_lookup(file_widget->location, AGS_FILE_WIDGET_LOCATION_OPEN_START_HERE) == icon_link){
     current_path = g_strdup_printf("%s/Library/%s/workspace",
 				   file_widget->home_path,
@@ -2027,7 +2036,7 @@ ags_file_widget_read_recently_used(AgsFileWidget *file_widget)
   if(root_node != NULL &&
      !xmlStrncmp("resources",
 		 root_node->name,
-		 10)){
+		 9)){
 
     node = root_node->children;
 
@@ -2044,7 +2053,7 @@ ags_file_widget_read_recently_used(AgsFileWidget *file_widget)
       if(node->type == XML_ELEMENT_NODE){
 	if(!xmlStrncmp("resource",
 		       node->name,
-		       9)){
+		       8)){
 	  xmlChar *filename;
 
 	  filename = xmlNodeGetContent(node);
@@ -2758,172 +2767,6 @@ ags_file_widget_write_bookmark(AgsFileWidget *file_widget)
   fclose(out);
 }
 
-void
-ags_file_widget_real_refresh(AgsFileWidget *file_widget)
-{
-  GDir *current_dir;
-  
-  GtkStringList *single_filename_string_list;
-  GtkStringList *multi_filename_string_list;
-  GtkStringList *location_string_list;
-
-  GList *start_filename, *filename;
-  GList *start_location, *location;
-  
-  gchar **filename_strv;
-  gchar **location_strv;			  
-
-  gchar *current_filename;
-
-  guint count;
-  guint i, j;
-  
-  GError *error;
-
-  /* filename view */
-  filename_strv = NULL;
-
-  start_filename = NULL;
-
-  if(file_widget->current_path != NULL &&
-     g_file_test(file_widget->current_path,
-		 G_FILE_TEST_IS_DIR)){
-    error = NULL;
-    current_dir = g_dir_open(file_widget->current_path,
-			     0,
-			     &error);
-
-    if(error != NULL){
-      g_error_free(error);
-    
-      return;
-    }
-
-    do{
-      current_filename = g_dir_read_name(current_dir);
-
-      if(current_filename != NULL &&
-	 ((!strncmp(current_filename, ".", 2) == FALSE) &&
-	  (!strncmp(current_filename, "..", 3) == FALSE))){
-	start_filename = g_list_insert_sorted(start_filename,
-					      current_filename,
-					      g_strcmp0);
-      }
-    }while(current_filename != NULL);
-
-    filename = start_filename;
-
-    count = g_list_length(start_filename);
-  
-    filename_strv = (gchar **) g_malloc((count + 3) * sizeof(gchar *));
-
-    filename_strv[0] = g_strdup(".");
-    filename_strv[1] = g_strdup("..");
-
-    for(i = 0, j = 0; i < count; i++){
-      if(((gchar *) filename->data)[0] != '.' ||
-	 ags_file_widget_test_flags(file_widget, AGS_FILE_WIDGET_HIDDEN_FILES_VISIBLE)){
-	filename_strv[j + 2] = filename->data;
-	j++;
-      }
-    
-      filename = filename->next;
-    }
-  
-    filename_strv[j + 2] = NULL;
-  
-    single_filename_string_list = gtk_string_list_new(filename_strv);
-    gtk_single_selection_set_model(file_widget->filename_single_selection,
-				   G_LIST_MODEL(single_filename_string_list));
-
-    multi_filename_string_list = gtk_string_list_new(filename_strv);
-    gtk_multi_selection_set_model(file_widget->filename_multi_selection,
-				  G_LIST_MODEL(multi_filename_string_list));
-
-    g_list_free(start_filename);
-    //  g_strfreev(filename_strv);
-  }
-  
-  /* location entry */
-  if(file_widget->current_path != NULL){
-    if(g_file_test(file_widget->current_path,
-		   G_FILE_TEST_IS_REGULAR)){
-      gchar *recent_path;
-    
-      recent_path = g_strdup_printf("%s/.var/app/%s/data/recently-used.xbel",
-				    file_widget->home_path,
-				    file_widget->default_bundle);
-
-      gtk_editable_set_text(GTK_EDITABLE(file_widget->location_entry),
-			    i18n("Recently used:"));
-    
-      g_free(recent_path);
-    }else if(g_file_test(file_widget->current_path,
-			 G_FILE_TEST_IS_DIR)){
-      gtk_editable_set_text(GTK_EDITABLE(file_widget->location_entry),
-			    file_widget->current_path);
-			  
-    }
-  }
-  
-  /* location drop down */
-  location_strv = NULL;
-
-  start_location = NULL;
-  
-  if(file_widget->current_path != NULL){
-    if(g_file_test(file_widget->current_path,
-		   G_FILE_TEST_IS_DIR)){
-      gchar *iter, *prev_iter;
-
-      iter = file_widget->current_path;
-
-      prev_iter = NULL;
-      
-      while((iter = strstr(iter, "/")) != NULL){
-	if(prev_iter == NULL){
-	  start_location = g_list_prepend(start_location,
-					  g_strdup("/"));
-	}else{
-	  start_location = g_list_prepend(start_location,
-					  g_strndup(file_widget->current_path,
-						    iter - file_widget->current_path));
-	}
-
-	prev_iter = iter;
-	iter++;
-      }
-
-      if((!strncmp(file_widget->current_path, "/", 2)) == FALSE){
-	start_location = g_list_prepend(start_location,
-					g_strdup(file_widget->current_path));
-      }
-      
-      location = start_location;
-
-      count = g_list_length(start_location);
-  
-      location_strv = (gchar **) g_malloc((count + 1) * sizeof(gchar *));
-  
-      for(i = 0; location != NULL && i < count;){
-	location_strv[i] = location->data;
-    
-	location = location->next;
-	i++;
-      }
-      
-      location_strv[i] = NULL;
-
-      location_string_list = gtk_string_list_new(location_strv);
-
-      gtk_drop_down_set_model(file_widget->location_drop_down,
-			      G_LIST_MODEL(location_string_list));
-      
-      g_list_free(start_location);
-    }
-  }  
-}
-
 /**
  * ags_file_widget_get_filename:
  * @file_widget: the #AgsFileWidget
@@ -3087,6 +2930,188 @@ ags_file_widget_get_filenames(AgsFileWidget *file_widget)
   }
   
   return(start_filename);
+}
+
+void
+ags_file_widget_real_refresh(AgsFileWidget *file_widget)
+{
+  GDir *current_dir;
+  
+  GtkStringList *single_filename_string_list;
+  GtkStringList *multi_filename_string_list;
+  GtkStringList *location_string_list;
+
+  GList *start_filename, *filename;
+  GList *start_location, *location;
+  
+  gchar **filename_strv;
+  gchar **location_strv;			  
+
+  gchar *current_filename;
+
+  guint count;
+  guint i, j;
+  
+  GError *error;
+
+  /* filename view */
+  filename_strv = NULL;
+
+  start_filename = NULL;
+
+  if(file_widget->current_path != NULL &&
+     g_file_test(file_widget->current_path,
+		 G_FILE_TEST_IS_DIR)){
+    error = NULL;
+    current_dir = g_dir_open(file_widget->current_path,
+			     0,
+			     &error);
+
+    if(error != NULL){
+      g_error_free(error);
+    
+      return;
+    }
+
+    do{
+      current_filename = g_dir_read_name(current_dir);
+
+      if(current_filename != NULL &&
+	 ((!strncmp(current_filename, ".", 2) == FALSE) &&
+	  (!strncmp(current_filename, "..", 3) == FALSE))){
+	start_filename = g_list_insert_sorted(start_filename,
+					      current_filename,
+					      g_strcmp0);
+      }
+    }while(current_filename != NULL);
+
+    filename = start_filename;
+
+    count = g_list_length(start_filename);
+  
+    filename_strv = (gchar **) g_malloc((count + 3) * sizeof(gchar *));
+
+    filename_strv[0] = g_strdup(".");
+    filename_strv[1] = g_strdup("..");
+
+    for(i = 0, j = 0; i < count; i++){
+      if(((gchar *) filename->data)[0] != '.' ||
+	 ags_file_widget_test_flags(file_widget, AGS_FILE_WIDGET_HIDDEN_FILES_VISIBLE)){
+	filename_strv[j + 2] = filename->data;
+	j++;
+      }
+    
+      filename = filename->next;
+    }
+  
+    filename_strv[j + 2] = NULL;
+  
+    single_filename_string_list = gtk_string_list_new(filename_strv);
+    gtk_single_selection_set_model(file_widget->filename_single_selection,
+				   G_LIST_MODEL(single_filename_string_list));
+
+    multi_filename_string_list = gtk_string_list_new(filename_strv);
+    gtk_multi_selection_set_model(file_widget->filename_multi_selection,
+				  G_LIST_MODEL(multi_filename_string_list));
+
+    g_list_free(start_filename);
+    //  g_strfreev(filename_strv);
+  }
+
+  /* recently-used */
+  if(file_widget->current_path != NULL &&
+     !g_strcmp0(file_widget->current_path,
+		"recently-used:")){
+    count = 0;
+    
+    filename_strv = ags_file_widget_get_recently_used(file_widget,
+						      &count);
+
+    single_filename_string_list = gtk_string_list_new(filename_strv);
+    gtk_single_selection_set_model(file_widget->filename_single_selection,
+				   G_LIST_MODEL(single_filename_string_list));
+
+    multi_filename_string_list = gtk_string_list_new(filename_strv);
+    gtk_multi_selection_set_model(file_widget->filename_multi_selection,
+				  G_LIST_MODEL(multi_filename_string_list));
+  }
+  
+  /* location entry */
+  if(file_widget->current_path != NULL){
+    if(g_file_test(file_widget->current_path,
+		   G_FILE_TEST_IS_REGULAR)){
+      //TODO:JK: implement me
+    }else if(g_file_test(file_widget->current_path,
+			 G_FILE_TEST_IS_DIR)){
+      gtk_editable_set_text(GTK_EDITABLE(file_widget->location_entry),
+			    file_widget->current_path);			  
+    }else if(!g_strcmp0(file_widget->current_path,
+			"recently-used:")){    
+      gtk_editable_set_text(GTK_EDITABLE(file_widget->location_entry),
+			    i18n("Recently used:"));    
+    }
+  }
+  
+  /* location drop down */
+  location_strv = NULL;
+
+  start_location = NULL;
+  
+  if(file_widget->current_path != NULL){
+    if(g_file_test(file_widget->current_path,
+		   G_FILE_TEST_IS_DIR)){
+      gchar *iter, *prev_iter;
+
+      iter = file_widget->current_path;
+
+      prev_iter = NULL;
+      
+      while((iter = strstr(iter, "/")) != NULL){
+	if(prev_iter == NULL){
+	  start_location = g_list_prepend(start_location,
+					  g_strdup("/"));
+	}else{
+	  start_location = g_list_prepend(start_location,
+					  g_strndup(file_widget->current_path,
+						    iter - file_widget->current_path));
+	}
+
+	prev_iter = iter;
+	iter++;
+      }
+
+      if((!strncmp(file_widget->current_path, "/", 2)) == FALSE){
+	start_location = g_list_prepend(start_location,
+					g_strdup(file_widget->current_path));
+      }
+      
+      location = start_location;
+
+      count = g_list_length(start_location);
+  
+      location_strv = (gchar **) g_malloc((count + 1) * sizeof(gchar *));
+  
+      for(i = 0; location != NULL && i < count;){
+	location_strv[i] = location->data;
+    
+	location = location->next;
+	i++;
+      }
+      
+      location_strv[i] = NULL;
+
+      location_string_list = gtk_string_list_new(location_strv);
+
+      gtk_drop_down_set_model(file_widget->location_drop_down,
+			      G_LIST_MODEL(location_string_list));
+      
+      g_list_free(start_location);
+    }else if(!g_strcmp0(file_widget->current_path,
+			"recently-used:")){
+      gtk_drop_down_set_model(file_widget->location_drop_down,
+			      NULL);
+    }
+  }  
 }
 
 /**
