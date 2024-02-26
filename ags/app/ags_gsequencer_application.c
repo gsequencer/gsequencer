@@ -112,6 +112,13 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   GSimpleAction *help_action;
   GSimpleAction *quit_action;
 
+  GSimpleAction *present_app_window_action;
+  GSimpleAction *present_meta_data_window_action;
+  GSimpleAction *present_export_window_action;
+  GSimpleAction *present_smf_import_window_action;
+  GSimpleAction *present_smf_export_window_action;
+  GSimpleAction *present_help_window_action;
+  
   GSimpleAction *add_panel_action;
   GSimpleAction *add_spectrometer_action;
   GSimpleAction *add_equalizer_action;
@@ -354,6 +361,54 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
 					"app.quit",
 					quit_accel);
 
+  /* present app window */
+  present_app_window_action = g_simple_action_new("present_app_window",
+						  NULL);
+  g_signal_connect(present_app_window_action, "activate",
+		   G_CALLBACK(ags_gsequencer_present_app_window_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(present_app_window_action));
+
+  /* present meta-data window */
+  present_meta_data_window_action = g_simple_action_new("present_meta_data_window",
+							NULL);
+  g_signal_connect(present_meta_data_window_action, "activate",
+		   G_CALLBACK(ags_gsequencer_present_meta_data_window_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(present_meta_data_window_action));
+
+  /* present export window */
+  present_export_window_action = g_simple_action_new("present_export_window",
+						     NULL);
+  g_signal_connect(present_export_window_action, "activate",
+		   G_CALLBACK(ags_gsequencer_present_export_window_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(present_export_window_action));
+
+  /* present SMF import window */
+  present_smf_import_window_action = g_simple_action_new("present_smf_import_window",
+							 NULL);
+  g_signal_connect(present_smf_import_window_action, "activate",
+		   G_CALLBACK(ags_gsequencer_present_smf_import_window_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(present_smf_import_window_action));
+
+  /* present SMF export window */
+  present_smf_export_window_action = g_simple_action_new("present_smf_export_window",
+							 NULL);
+  g_signal_connect(present_smf_export_window_action, "activate",
+		   G_CALLBACK(ags_gsequencer_present_smf_export_window_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(present_smf_export_window_action));
+
+  /* present online help window */
+  present_help_window_action = g_simple_action_new("present_help_window",
+						   NULL);
+  g_signal_connect(present_help_window_action, "activate",
+		   G_CALLBACK(ags_gsequencer_present_help_window_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(present_help_window_action));
+  
   /* panel */
   add_panel_action = g_simple_action_new("add_panel",
 					 NULL);
@@ -753,6 +808,18 @@ ags_gsequencer_application_startup(GApplication *app)
 			i18n("MIDI"),
 			G_MENU_MODEL(gsequencer_app->midi_menu));
 
+  /* window menu */
+  gsequencer_app->window_menu = NULL;
+  
+#if defined(AGS_OSX_DMG_ENV)
+  gsequencer_app->window_menu = (GMenu *) g_menu_new();
+
+  g_menu_insert_submenu(gsequencer_app->menubar,
+			-1,
+			i18n("Window"),
+			G_MENU_MODEL(gsequencer_app->window_menu));
+#endif
+  
   /* Help menu */
   gsequencer_app->help_menu = (GMenu *) g_menu_new();
 
@@ -901,6 +968,77 @@ ags_gsequencer_application_open(GApplication *application,
       AGS_WINDOW(window)->filename = g_file_get_path(files[0]);
     }
   }
+}
+
+/**
+ * ags_gsequencer_application_refresh_window_menu:
+ * @app: the #AgsGSequencerApplication
+ *
+ * Refresh window menu.
+ *
+ * Since: 6.6.0
+ */
+void
+ags_gsequencer_application_refresh_window_menu(AgsGSequencerApplication *app)
+{
+  AgsApplicationContext *application_context;
+  
+  GMenuItem *item;
+
+  GtkWindow *window;
+
+#if defined(AGS_OSX_DMG_ENV)
+  /* application context */
+  application_context = ags_application_context_get_instance();
+  
+  g_menu_remove_all(app->window_menu);
+
+  item = g_menu_item_new(i18n("application window"),
+			 "app.present_app_window");
+  g_menu_insert_item(app->window_menu,
+		     -1,
+		     item);
+
+  if(gtk_widget_is_visible(ags_ui_provider_get_meta_data_window(AGS_UI_PROVIDER(application_context)))){
+    item = g_menu_item_new(i18n("meta-data"),
+			   "app.present_meta_data_window");
+    g_menu_insert_item(app->window_menu,
+		       -1,
+		       item);
+  }
+  
+  if(gtk_widget_is_visible(ags_ui_provider_get_export_window(AGS_UI_PROVIDER(application_context)))){
+    item = g_menu_item_new(i18n("audio export"),
+			   "app.present_export_window");
+    g_menu_insert_item(app->window_menu,
+		       -1,
+		       item);
+  }
+  
+  if(gtk_widget_is_visible(ags_ui_provider_get_midi_import_wizard(AGS_UI_PROVIDER(application_context)))){
+    item = g_menu_item_new(i18n("SMF import"),
+			   "app.present_smf_import_window");
+    g_menu_insert_item(app->window_menu,
+		       -1,
+		       item);
+  }
+  
+  if(gtk_widget_is_visible(ags_ui_provider_get_midi_export_wizard(AGS_UI_PROVIDER(application_context)))){
+    item = g_menu_item_new(i18n("SMF export"),
+			   "app.present_smf_export_window");
+    g_menu_insert_item(app->window_menu,
+		       -1,
+		       item);
+  }
+  
+  if(gtk_widget_is_visible(ags_ui_provider_get_online_help_window(AGS_UI_PROVIDER(application_context)))){
+    item = g_menu_item_new(i18n("help"),
+			   "app.present_help_window");
+    g_menu_insert_item(app->window_menu,
+		       -1,
+		       item);
+  }
+#endif
 }
 
 AgsGSequencerApplication*

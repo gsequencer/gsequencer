@@ -25,10 +25,6 @@
 #include <ags/app/ags_gsequencer_application_context.h>
 #include <ags/app/ags_app_action_util.h>
 
-#if defined(AGS_WITH_MAC_INTEGRATION)
-#include <gtkosxapplication.h>
-#endif
-
 #include <ags/i18n.h>
 
 void
@@ -37,10 +33,6 @@ ags_window_setup_completed_callback(AgsApplicationContext *application_context, 
   GtkBuilder *builder;
 
   AgsGSequencerApplication *gsequencer_app;
-
-#if defined(AGS_WITH_MAC_INTEGRATION)
-  GtkosxApplication *app;
-#endif
 
   GMenu *menu;
 
@@ -51,15 +43,6 @@ ags_window_setup_completed_callback(AgsApplicationContext *application_context, 
 
   menu = (GMenu *) gtk_builder_get_object(builder,
 					  "ags-add-menu");
-
-#if defined(AGS_WITH_MAC_INTEGRATION)
-  app = gtkosx_application_get();
-
-  gtk_widget_show((GtkWidget *) window->menu_bar);
-  gtkosx_application_sync_menubar(app);
-
-  gtk_widget_hide((GtkWidget *) window->menu_bar);
-#endif
 
   gtk_menu_button_set_menu_model(window->add_button,
 				 G_MENU_MODEL(menu));

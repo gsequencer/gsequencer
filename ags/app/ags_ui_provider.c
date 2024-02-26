@@ -894,7 +894,7 @@ ags_ui_provider_get_machine(AgsUiProvider *ui_provider)
 /**
  * ags_ui_provider_set_machine:
  * @ui_provider: the #AgsUiProvider
- * @machine: the #GList-struct containing #AgsMachine
+ * @machine: (transfer container): the #GList-struct containing #AgsMachine
  * 
  * Set machine.
  * 
@@ -1092,4 +1092,49 @@ ags_ui_provider_set_meta_data_window(AgsUiProvider *ui_provider,
 
   ui_provider_interface->set_meta_data_window(ui_provider,
 					      meta_data_window);
+}
+
+/**
+ * ags_ui_provider_get_visible_window:
+ * @ui_provider: the #AgsUiProvider
+ * 
+ * Get visible window.
+ * 
+ * Returns: the #GList-struct containing #GtkWindow
+ * 
+ * Since: 6.6.0
+ */
+GList*
+ags_ui_provider_get_visible_window(AgsUiProvider *ui_provider)
+{
+  AgsUiProviderInterface *ui_provider_interface;
+
+  g_return_val_if_fail(AGS_IS_UI_PROVIDER(ui_provider), NULL);
+  ui_provider_interface = AGS_UI_PROVIDER_GET_INTERFACE(ui_provider);
+  g_return_val_if_fail(ui_provider_interface->get_visible_window, NULL);
+
+  return(ui_provider_interface->get_visible_window(ui_provider));
+}
+
+/**
+ * ags_ui_provider_set_visible_window:
+ * @ui_provider: the #AgsUiProvider
+ * @visible_window: (transfer container): the #GList-struct containing #GtkWindow
+ * 
+ * Set visible window.
+ * 
+ * Since: 6.6.0
+ */
+void
+ags_ui_provider_set_visible_window(AgsUiProvider *ui_provider,
+				   GList *visible_window)
+{
+  AgsUiProviderInterface *ui_provider_interface;
+
+  g_return_if_fail(AGS_IS_UI_PROVIDER(ui_provider));
+  ui_provider_interface = AGS_UI_PROVIDER_GET_INTERFACE(ui_provider);
+  g_return_if_fail(ui_provider_interface->set_visible_window);
+
+  ui_provider_interface->set_visible_window(ui_provider,
+					    visible_window);
 }

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -65,6 +65,24 @@ void ags_gsequencer_help_callback(GAction *action, GVariant *parameter,
 
 void ags_gsequencer_quit_callback(GAction *action, GVariant *parameter,
 				  AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_present_app_window_callback(GAction *action, GVariant *parameter,
+						AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_present_meta_data_window_callback(GAction *action, GVariant *parameter,
+						      AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_present_export_window_callback(GAction *action, GVariant *parameter,
+						   AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_present_smf_import_window_callback(GAction *action, GVariant *parameter,
+						       AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_present_smf_export_window_callback(GAction *action, GVariant *parameter,
+						       AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_present_help_window_callback(GAction *action, GVariant *parameter,
+						 AgsGSequencerApplication *gsequencer_app);
 
 void ags_gsequencer_add_panel_callback(GAction *action, GVariant *parameter,
 				       AgsGSequencerApplication *gsequencer_app);
