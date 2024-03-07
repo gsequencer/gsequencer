@@ -55,9 +55,17 @@ struct _AgsFileDialog
 struct _AgsFileDialogClass
 {
   GtkWindowClass window;
+
+  void (*response)(AgsFileDialog *file_dialog,
+		   gint response_id);
 };
 
 GType ags_file_dialog_get_type();
+
+AgsFileWidget* ags_file_dialog_get_file_widget(AgsFileDialog *file_dialog);
+
+void ags_file_dialog_response(AgsFileDialog *file_dialog,
+			      gint response_id);
 
 AgsFileDialog* ags_file_dialog_new(GtkWidget *transient_for,
 				   gchar *title);

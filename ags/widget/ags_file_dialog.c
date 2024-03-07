@@ -35,6 +35,12 @@ void ags_file_dialog_get_property(GObject *gobject,
 void ags_file_dialog_dispose(GObject *gobject);
 void ags_file_dialog_finalize(GObject *gobject);
 
+void ags_file_dialog_activate_button_callback(GtkButton *activate_button,
+					      AgsFileDialog *file_dialog);
+
+void ags_file_dialog_real_response(AgsFileDialog *file_dialog,
+				   gint response);
+
 /**
  * SECTION:ags_file_dialog
  * @short_description: a file dialog widget
@@ -46,10 +52,17 @@ void ags_file_dialog_finalize(GObject *gobject);
  */
 
 enum{
+  RESPONSE,
+  LAST_SIGNAL,
+};
+
+enum{
   PROP_0,
+  PROP_FILE_WIDGET,
 };
 
 static gpointer ags_file_dialog_parent_class = NULL;
+static guint file_dialog_signals[LAST_SIGNAL];
 
 GType
 ags_file_dialog_get_type(void)
@@ -99,6 +112,44 @@ ags_file_dialog_class_init(AgsFileDialogClass *file_dialog)
 
   gobject->dispose = ags_file_dialog_dispose;
   gobject->finalize = ags_file_dialog_finalize;
+
+  /* properties */
+  /**
+   * AgsFileWidget:file-widget:
+   *
+   * The file widget.
+   * 
+   * Since: 6.6.0
+   */
+  param_spec = g_param_spec_pointer("file-widget",
+				    "file widget",
+				    "The file widget",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FILE_WIDGET,
+				  param_spec);
+
+  /* AgsFileDialog */
+  file_dialog->response = ags_file_dialog_real_response;
+  
+  /* signals */
+  /**
+   * AgsFileDialog::response:
+   * @file_dialog: the #AgsFileDialog
+   *
+   * The ::response signal notifies about filesystem change.
+   *
+   * Since: 6.6.0
+   */
+  file_dialog_signals[RESPONSE] =
+    g_signal_new("response",
+		 G_TYPE_FROM_CLASS(file_dialog),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsFileDialogClass, response),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__INT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_INT);
 }
 
 void
@@ -107,6 +158,9 @@ ags_file_dialog_init(AgsFileDialog *file_dialog)
   gtk_window_set_default_size(file_dialog,
 			      800, 600);
 
+  gtk_window_set_hide_on_close(file_dialog,
+			       TRUE);
+  
   file_dialog->flags = 0;
 
   file_dialog->vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
@@ -146,6 +200,9 @@ ags_file_dialog_init(AgsFileDialog *file_dialog)
 			GTK_ALIGN_END);
   gtk_box_append(file_dialog->vbox,
 		 (GtkWidget *) file_dialog->activate_button);
+
+  g_signal_connect(file_dialog->activate_button, "clicked",
+		   G_CALLBACK(ags_file_dialog_activate_button_callback), file_dialog);
 }
 
 void
@@ -159,6 +216,19 @@ ags_file_dialog_set_property(GObject *gobject,
   file_dialog = AGS_FILE_DIALOG(gobject);
 
   switch(prop_id){
+  case PROP_FILE_WIDGET:
+    {
+      AgsFileWidget *file_widget;
+
+      file_widget = g_value_get_pointer(value);
+
+      if(file_dialog->file_widget == file_widget){
+	return;
+      }
+
+      file_dialog->file_widget = file_widget;
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -176,6 +246,11 @@ ags_file_dialog_get_property(GObject *gobject,
   file_dialog = AGS_FILE_DIALOG(gobject);
 
   switch(prop_id){
+  case PROP_FILE_WIDGET:
+  {
+    g_value_set_pointer(value, file_dialog->file_widget);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -194,6 +269,61 @@ ags_file_dialog_finalize(GObject *gobject)
 {  
   /* call parent */
   G_OBJECT_CLASS(ags_file_dialog_parent_class)->finalize(gobject);
+}
+
+void
+ags_file_dialog_activate_button_callback(GtkButton *activate_button,
+					 AgsFileDialog *file_dialog)
+{
+  ags_file_dialog_response(file_dialog,
+			   GTK_RESPONSE_OK);
+}
+
+/**
+ * ags_file_dialog_get_widget:
+ * @file_dialog: the #AgsFileDialog
+ *
+ * Get widget of @file_dialog.
+ *
+ * Returns: (transfer none): the #AgsFileWidget
+ * 
+ * Since: 6.6.0
+ */
+AgsFileWidget*
+ags_file_dialog_get_file_widget(AgsFileDialog *file_dialog)
+{
+  g_return_val_if_fail(AGS_IS_FILE_DIALOG(file_dialog), NULL);
+
+  return(file_dialog->file_widget);
+}
+
+void
+ags_file_dialog_real_response(AgsFileDialog *file_dialog,
+			      gint response)
+{
+  gtk_window_close(file_dialog);
+}
+
+/**
+ * ags_file_dialog_response:
+ * @file_dialog: the #AgsFileDialog
+ * @response: the response
+ *
+ * Response @file_dialog due to user action.
+ * 
+ * Since: 6.6.0
+ */
+void
+ags_file_dialog_response(AgsFileDialog *file_dialog,
+			 gint response)
+{
+  g_return_if_fail(AGS_IS_FILE_DIALOG(file_dialog));
+  
+  g_object_ref((GObject *) file_dialog);
+  g_signal_emit(G_OBJECT(file_dialog),
+		file_dialog_signals[RESPONSE], 0,
+		response);
+  g_object_unref((GObject *) file_dialog);
 }
 
 /**
