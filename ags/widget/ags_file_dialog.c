@@ -19,6 +19,8 @@
 
 #include "ags_file_dialog.h"
 
+#include <gdk/gdkkeysyms.h>
+
 #include <ags/i18n.h>
 
 void ags_file_dialog_class_init(AgsFileDialogClass *file_dialog);
@@ -40,6 +42,20 @@ void ags_file_dialog_close_request_callback(GtkWindow *window,
 
 void ags_file_dialog_activate_button_callback(GtkButton *activate_button,
 					      AgsFileDialog *file_dialog);
+
+gboolean ags_file_dialog_key_pressed_callback(GtkEventControllerKey *event_controller,
+					      guint keyval,
+					      guint keycode,
+					      GdkModifierType state,
+					      AgsFileDialog *file_dialog);
+void ags_file_dialog_key_released_callback(GtkEventControllerKey *event_controller,
+					   guint keyval,
+					   guint keycode,
+					   GdkModifierType state,
+					   AgsFileDialog *file_dialog);
+gboolean ags_file_dialog_modifiers_callback(GtkEventControllerKey *event_controller,
+					    GdkModifierType keyval,
+					    AgsFileDialog *file_dialog);
 
 void ags_file_dialog_real_response(AgsFileDialog *file_dialog,
 				   gint response);
@@ -158,6 +174,10 @@ ags_file_dialog_class_init(AgsFileDialogClass *file_dialog)
 void
 ags_file_dialog_init(AgsFileDialog *file_dialog)
 {  
+  GtkEventController *event_controller;
+  
+  file_dialog->flags = 0;
+  
   gtk_window_set_default_size(file_dialog,
 			      800, 600);
 
@@ -166,8 +186,19 @@ ags_file_dialog_init(AgsFileDialog *file_dialog)
 
   g_signal_connect(file_dialog, "close-request",
 		   G_CALLBACK(ags_file_dialog_close_request_callback), file_dialog);
+
+  event_controller = gtk_event_controller_key_new();
+  gtk_widget_add_controller((GtkWidget *) file_dialog,
+			    event_controller);
+
+  g_signal_connect(event_controller, "key-pressed",
+		   G_CALLBACK(ags_file_dialog_key_pressed_callback), file_dialog);
   
-  file_dialog->flags = 0;
+  g_signal_connect(event_controller, "key-released",
+		   G_CALLBACK(ags_file_dialog_key_released_callback), file_dialog);
+
+  g_signal_connect(event_controller, "modifiers",
+		   G_CALLBACK(ags_file_dialog_modifiers_callback), file_dialog);
 
   file_dialog->vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 					     6);
@@ -291,6 +322,71 @@ ags_file_dialog_activate_button_callback(GtkButton *activate_button,
 {
   ags_file_dialog_response(file_dialog,
 			   GTK_RESPONSE_OK);
+}
+
+gboolean
+ags_file_dialog_key_pressed_callback(GtkEventControllerKey *event_controller,
+				     guint keyval,
+				     guint keycode,
+				     GdkModifierType state,
+				     AgsFileDialog *file_dialog)
+{
+  gboolean key_handled;
+
+  key_handled = TRUE;
+
+  if(keyval == GDK_KEY_Tab ||
+     keyval == GDK_KEY_ISO_Left_Tab ||
+     keyval == GDK_KEY_Shift_L ||
+     keyval == GDK_KEY_Shift_R ||
+     keyval == GDK_KEY_Alt_L ||
+     keyval == GDK_KEY_Alt_R ||
+     keyval == GDK_KEY_Control_L ||
+     keyval == GDK_KEY_Control_R){
+    key_handled = FALSE;
+  }
+  
+  return(key_handled);
+}
+
+void
+ags_file_dialog_key_released_callback(GtkEventControllerKey *event_controller,
+				      guint keyval,
+				      guint keycode,
+				      GdkModifierType state,
+				      AgsFileDialog *file_dialog)
+{
+  gboolean key_handled;
+
+  key_handled = TRUE;
+
+  if(keyval == GDK_KEY_Tab ||
+     keyval == GDK_KEY_ISO_Left_Tab ||
+     keyval == GDK_KEY_Shift_L ||
+     keyval == GDK_KEY_Shift_R ||
+     keyval == GDK_KEY_Alt_L ||
+     keyval == GDK_KEY_Alt_R ||
+     keyval == GDK_KEY_Control_L ||
+     keyval == GDK_KEY_Control_R){
+    key_handled = FALSE;
+  }else{
+    switch(keyval){
+    case GDK_KEY_Escape:
+      {
+	ags_file_dialog_response(file_dialog,
+				 GTK_RESPONSE_CANCEL);	
+      }
+      break;
+    }
+  }
+}
+
+gboolean
+ags_file_dialog_modifiers_callback(GtkEventControllerKey *event_controller,
+				   GdkModifierType keyval,
+				   AgsFileDialog *file_dialog)
+{
+  return(FALSE);
 }
 
 /**
