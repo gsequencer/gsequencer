@@ -35,6 +35,9 @@ void ags_file_dialog_get_property(GObject *gobject,
 void ags_file_dialog_dispose(GObject *gobject);
 void ags_file_dialog_finalize(GObject *gobject);
 
+void ags_file_dialog_close_request_callback(GtkWindow *window,
+					    AgsFileDialog *file_dialog);
+
 void ags_file_dialog_activate_button_callback(GtkButton *activate_button,
 					      AgsFileDialog *file_dialog);
 
@@ -160,6 +163,9 @@ ags_file_dialog_init(AgsFileDialog *file_dialog)
 
   gtk_window_set_hide_on_close(file_dialog,
 			       TRUE);
+
+  g_signal_connect(file_dialog, "close-request",
+		   G_CALLBACK(ags_file_dialog_close_request_callback), file_dialog);
   
   file_dialog->flags = 0;
 
@@ -272,6 +278,14 @@ ags_file_dialog_finalize(GObject *gobject)
 }
 
 void
+ags_file_dialog_close_request_callback(GtkWindow *window,
+				       AgsFileDialog *file_dialog)
+{
+  ags_file_dialog_response(file_dialog,
+			   GTK_RESPONSE_CANCEL);
+}
+
+void
 ags_file_dialog_activate_button_callback(GtkButton *activate_button,
 					 AgsFileDialog *file_dialog)
 {
@@ -300,8 +314,9 @@ ags_file_dialog_get_file_widget(AgsFileDialog *file_dialog)
 void
 ags_file_dialog_real_response(AgsFileDialog *file_dialog,
 			      gint response)
-{
-  gtk_window_close(file_dialog);
+{  
+  gtk_widget_set_visible(file_dialog,
+			 FALSE);
 }
 
 /**
