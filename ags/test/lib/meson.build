@@ -14,6 +14,7 @@ static_tests = [
   'ags_log_test',
   'ags_math_util_test',
   'ags_regex_util_test',
+  'ags_string_util_test',
   'ags_solver_matrix_test',
   'ags_solver_polynomial_test',
   'ags_solver_vector_test',
