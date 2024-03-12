@@ -1,4 +1,4 @@
-# Copyright (C) 2005-2023 Joel Kraehemann
+# Copyright (C) 2005-2024 Joel Kraehemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -25,6 +25,7 @@ check_PROGRAMS += \
 	ags_application_context_test \
 	ags_config_test \
 	ags_connectable_test \
+	ags_main_loop_test \
 	ags_soundcard_test \
 	ags_concurrency_provider_test \
 	ags_destroy_worker_test \
@@ -394,6 +395,12 @@ ags_connectable_test_SOURCES = ags/test/object/ags_connectable_test.c
 ags_connectable_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(JSON_GLIB_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
 ags_connectable_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_connectable_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(JSON_GLIB_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
+
+# main loop unit test
+ags_main_loop_test_SOURCES = ags/test/object/ags_main_loop_test.c
+ags_main_loop_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(JSON_GLIB_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
+ags_main_loop_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_main_loop_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(JSON_GLIB_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
 
 # soundcard unit test
 ags_soundcard_test_SOURCES = ags/test/object/ags_soundcard_test.c

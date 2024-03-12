@@ -8,6 +8,7 @@
 static_tests = [
   'ags_application_context_test',
   'ags_config_test',
+#  'ags_main_loop_test',
 #  'ags_connectable_test',
 #  'ags_soundcard_test',
 ]
