@@ -9,6 +9,7 @@ ags (6.6.0)
 	* added ags_endian_test.c
 	* added ags_regex_util_test.c
 	* added ags_string_util_test.c
+	* added ags_main_loop_test.c
 
 ags (6.5.2)
 
