@@ -1421,7 +1421,6 @@ ags_soundcard_test_get_loop_offset()
   CU_ASSERT(success);
 }
 
-
 int
 main(int argc, char **argv)
 {

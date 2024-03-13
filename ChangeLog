@@ -10,6 +10,10 @@ ags (6.6.0)
 	* added ags_regex_util_test.c
 	* added ags_string_util_test.c
 	* added ags_main_loop_test.c
+	* added ags_mutable_test.c
+	* added ags_seekable_test.c
+	* added ags_countable_test.c
+	* added ags_tactable_test.c
 
 ags (6.5.2)
 
