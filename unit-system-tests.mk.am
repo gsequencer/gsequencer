@@ -44,6 +44,7 @@ libags_installcheck_programs = \
 	ags_check_system_main_loop_test \
 	ags_check_system_mutable_test \
 	ags_check_system_soundcard_test \
+	ags_check_system_seekable_test \
 	ags_check_system_sequencer_test \
 	ags_check_system_concurrency_provider_test \
 	ags_check_system_destroy_worker_test \
@@ -468,6 +469,13 @@ ags_check_system_soundcard_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_
 ags_check_system_soundcard_test_CPPFLAGS = $(AGS_FEATURES)
 ags_check_system_soundcard_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_check_system_soundcard_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(JSON_GLIB_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
+
+# seekable unit test
+ags_check_system_seekable_test_SOURCES = ags/test/object/ags_seekable_test.c
+ags_check_system_seekable_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(JSON_GLIB_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
+ags_check_system_seekable_test_CPPFLAGS = $(AGS_FEATURES)
+ags_check_system_seekable_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_seekable_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(JSON_GLIB_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
 
 # sequencer unit test
 ags_check_system_sequencer_test_SOURCES = ags/test/object/ags_sequencer_test.c
