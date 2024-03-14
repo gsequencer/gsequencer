@@ -14,6 +14,7 @@ ags (6.6.0)
 	* added ags_seekable_test.c
 	* added ags_countable_test.c
 	* added ags_tactable_test.c
+	* added ags_sequencer_test.c
 
 ags (6.5.2)
 
