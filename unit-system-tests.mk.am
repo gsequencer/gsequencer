@@ -46,6 +46,7 @@ libags_installcheck_programs = \
 	ags_check_system_soundcard_test \
 	ags_check_system_seekable_test \
 	ags_check_system_sequencer_test \
+	ags_check_system_tactable_test \
 	ags_check_system_concurrency_provider_test \
 	ags_check_system_destroy_worker_test \
 	ags_check_system_generic_main_loop_test \
