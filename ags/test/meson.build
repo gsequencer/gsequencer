@@ -16,6 +16,7 @@ interactive_test_dependencies = [
   dependency('gtk4'),
   dependency('libxml-2.0'),
   dependency('libsoup-3.0'),
+  dependency('json-glib-1.0'),
   compiler.find_library('m', required: true),
 ]
 
@@ -47,6 +48,7 @@ srcdir_def = '-DAGS_SRC_DIR="@0@"'.format(meson.source_root())
 common_test_dependencies = [
   common_dependencies,
   cunit_dependency,
+  dependency('json-glib-1.0'),
 ]
 
 subdir('app')
