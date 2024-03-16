@@ -461,6 +461,8 @@ ags_app_action_util_save_as_response_callback(AgsFileDialog *file_dialog,
     file_widget = ags_file_dialog_get_file_widget(file_dialog);
 
     filename = ags_file_widget_get_current_path(file_widget);
+
+    g_message("response %s", filename);
     
     g_mutex_lock(&locale_mutex);
 
