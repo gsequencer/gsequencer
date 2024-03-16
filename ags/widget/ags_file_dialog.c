@@ -321,7 +321,7 @@ ags_file_dialog_activate_button_callback(GtkButton *activate_button,
 					 AgsFileDialog *file_dialog)
 {
   ags_file_dialog_response(file_dialog,
-			   GTK_RESPONSE_OK);
+			   GTK_RESPONSE_ACCEPT);
 }
 
 gboolean

@@ -1221,8 +1221,8 @@ ags_file_widget_location_entry_callback(GtkEntry *location_entry,
       
       if(length > 1 &&
 	 filename[length - 1] == '/'){
-	file_widget->current_path = g_strndup(filename,
-					      length - 1);
+	file_widget->current_path = g_strdup_printf("%s",
+						    filename);
       }else{
 	file_widget->current_path = g_strndup(filename,
 					      length);
@@ -1230,7 +1230,18 @@ ags_file_widget_location_entry_callback(GtkEntry *location_entry,
       
       ags_file_widget_refresh(file_widget);
     }else{
-      prev_current_path = NULL;
+      if(ags_file_widget_test_file_action(file_widget, AGS_FILE_WIDGET_SAVE_AS)){
+	guint length;
+
+	length = strlen(filename);
+      
+	file_widget->current_path = g_strdup_printf("%s",
+						    filename);
+      
+	ags_file_widget_refresh(file_widget);	
+      }else{
+	prev_current_path = NULL;
+      }
     }
 
     g_free(prev_current_path);
