@@ -147,6 +147,8 @@ ags_regex_util_alloc(gchar *app_encoding,
     ptr->converter = g_iconv_open(local_app_encoding,
 				  ptr->encoding);
   }
+
+  //  memset(&ptr->regex_str, 0, sizeof(regex_t));
   
   ptr->regex_str = NULL;
 
@@ -200,7 +202,7 @@ ags_regex_util_free(AgsRegexUtil *ptr)
     g_iconv_close(ptr->converter);
   }
   
-  regfree(&(ptr->regex));
+  //regfree(&(ptr->regex));
   
   g_free(ptr->regex_str);
 
