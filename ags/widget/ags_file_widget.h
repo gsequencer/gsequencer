@@ -67,13 +67,19 @@ typedef enum{
   AGS_FILE_WIDGET_SAVE_AS,
 }AgsFileWidgetFileAction;
 
+typedef enum{
+  AGS_FILE_WIDGET_FILTER_NONE,
+  AGS_FILE_WIDGET_FILTER_BY_SUFFIX,
+}AgsFileWidgetFileFilter;
+
 struct _AgsFileWidget
 {
   GtkBox box;
 
   guint flags;
   guint file_action;
-
+  guint file_filter;
+  
   gchar *default_bundle;
   
   gchar *home_path;
@@ -85,7 +91,7 @@ struct _AgsFileWidget
   gchar *default_path;
 
   gchar *current_path;
-  
+
   GSimpleActionGroup *action_group;
 
   GtkBox *vbox;
@@ -119,6 +125,10 @@ struct _AgsFileWidget
 
   GtkBox *center_vbox;
 
+  gchar **file_filter_suffix;
+
+  gchar *current_file_filter;
+    
   GtkNoSelection *filename_key_selection;
   GtkListItemFactory *filename_factory[4];
   
@@ -134,6 +144,8 @@ struct _AgsFileWidget
   gchar *file_magic_executable;
   
   GtkWidget *preview;
+
+  GtkDropDown *file_filter_drop_down;
 };
 
 struct _AgsFileWidgetClass
@@ -161,6 +173,12 @@ gboolean ags_file_widget_test_file_action(AgsFileWidget *file_widget,
 					  guint file_action);
 void ags_file_widget_set_file_action(AgsFileWidget *file_widget,
 				     guint file_action);
+
+/* filter */
+gboolean ags_file_widget_test_file_filter(AgsFileWidget *file_widget,
+					  guint file_filter);
+void ags_file_widget_set_file_filter(AgsFileWidget *file_widget,
+				     guint file_filter);
 
 /* getter/setter */
 void ags_file_widget_set_default_bundle(AgsFileWidget *file_widget,
@@ -225,6 +243,9 @@ void ags_file_widget_remove_bookmark(AgsFileWidget *file_widget,
 
 void ags_file_widget_read_bookmark(AgsFileWidget *file_widget);
 void ags_file_widget_write_bookmark(AgsFileWidget *file_widget);
+
+/* file filter */
+gchar** ags_file_widget_get_file_filter_suffix(AgsFileWidget *file_widget);
 
 /* methods */
 gchar* ags_file_widget_get_filename(AgsFileWidget *file_widget);
