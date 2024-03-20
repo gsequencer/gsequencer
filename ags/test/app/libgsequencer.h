@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -68,7 +68,7 @@
 #include <ags/app/ags_lv2_browser.h>
 #include <ags/app/ags_plugin_browser_callbacks.h>
 #include <ags/app/ags_ui_provider.h>
-#include <ags/app/ags_pcm_file_chooser_dialog.h>
+#include <ags/app/ags_pcm_file_dialog.h>
 #include <ags/app/osc/controller/ags_ui_osc_renew_controller.h>
 #include <ags/app/ags_machine_editor_collection_callbacks.h>
 #include <ags/app/ags_connection_editor_dialog.h>
