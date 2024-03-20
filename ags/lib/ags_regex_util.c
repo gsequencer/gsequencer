@@ -86,7 +86,9 @@ ags_regex_util_execute_flags_get_type()
     static const GFlagsValue values[] = {
       { AGS_REGEX_UTIL_NOT_BEGINNING_OF_LINE, "AGS_REGEX_UTIL_NOT_BEGINNING_OF_LINE", "regex-util-not-beginning-of-line" },
       { AGS_REGEX_UTIL_NOT_END_OF_LINE, "AGS_REGEX_UTIL_NOT_END_OF_LINE", "regex-util-end-of-line" },
+#if !defined(AGS_W32API)
       { AGS_REGEX_UTIL_START_END, "AGS_REGEX_UTIL_START_END", "regex-util-start-end" },
+#endif
       { 0, NULL, NULL }
     };
 

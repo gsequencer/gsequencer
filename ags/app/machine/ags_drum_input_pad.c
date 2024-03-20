@@ -168,7 +168,7 @@ ags_drum_input_pad_init(AgsDrumInputPad *drum_input_pad)
   drum_input_pad->pad_open_play_ref = 0;
   drum_input_pad->pad_open_recalls = NULL;
 
-  drum_input_pad->file_chooser = NULL;
+  drum_input_pad->open_dialog = NULL;
 
   drum_input_pad->pad_play_ref = 0;
 }
@@ -182,7 +182,7 @@ ags_drum_input_pad_finalize(GObject *gobject)
 
   //FIXME:JK: won't be called
   //NOTE:JK: work-around in ags_drum.c
-  if(drum_input_pad->file_chooser != NULL){
+  if(drum_input_pad->open_dialog != NULL){
     //    gtk_widget_destroy(drum_input_pad->file_chooser);
   }
   

@@ -156,11 +156,11 @@ ags_app_action_util_open()
 				 home_path,
 				 AGS_DEFAULT_BUNDLE_ID);
 
-  recently_used_filename = g_strdup_printf("%s/%s/ags_file_widget_recently_used.xml",
+  recently_used_filename = g_strdup_printf("%s/%s/gsequencer_app_recently_used.xml",
 					   sandbox_path,
 					   AGS_DEFAULT_DIRECTORY);
 #else
-  recently_used_filename = g_strdup_printf("%s/%s/ags_file_widget_recently_used.xml",
+  recently_used_filename = g_strdup_printf("%s/%s/gsequencer_app_recently_used.xml",
 					   home_path,
 					   AGS_DEFAULT_DIRECTORY);
 #endif
@@ -230,6 +230,8 @@ ags_app_action_util_open_response_callback(AgsFileDialog *file_dialog,
 #if defined(AGS_W32API) || defined(AGS_OSXAPI)
     gchar *app_dir;
 #endif
+
+    gint strv_length;
     
     GError *error;
 
@@ -238,6 +240,18 @@ ags_app_action_util_open_response_callback(AgsFileDialog *file_dialog,
     file_widget = ags_file_dialog_get_file_widget(file_dialog);
 
     filename = ags_file_widget_get_current_path(file_widget);
+
+    if(!g_strv_contains(file_widget->recently_used, filename)){
+      strv_length = g_strv_length(file_widget->recently_used);
+
+      file_widget->recently_used = g_realloc(file_widget->recently_used,
+					     (strv_length + 2) * sizeof(gchar *));
+
+      file_widget->recently_used[strv_length] = g_strdup(filename);
+      file_widget->recently_used[strv_length + 1] = NULL; 
+    
+      ags_file_widget_write_recently_used(file_widget);
+    }
     
     error = NULL;
 
@@ -451,6 +465,8 @@ ags_app_action_util_save_as_response_callback(AgsFileDialog *file_dialog,
     
     gchar *filename;
     gchar *window_title;
+
+    gint strv_length;
     
     GError *error;
         
@@ -462,7 +478,17 @@ ags_app_action_util_save_as_response_callback(AgsFileDialog *file_dialog,
 
     filename = ags_file_widget_get_current_path(file_widget);
 
-    g_message("response %s", filename);
+    if(!g_strv_contains(file_widget->recently_used, filename)){
+      strv_length = g_strv_length(file_widget->recently_used);
+
+      file_widget->recently_used = g_realloc(file_widget->recently_used,
+					     (strv_length + 2) * sizeof(gchar *));
+
+      file_widget->recently_used[strv_length] = g_strdup(filename);
+      file_widget->recently_used[strv_length + 1] = NULL; 
+    
+      ags_file_widget_write_recently_used(file_widget);
+    }
     
     g_mutex_lock(&locale_mutex);
 
@@ -564,11 +590,11 @@ ags_app_action_util_save_as()
 				 home_path,
 				 AGS_DEFAULT_BUNDLE_ID);
 
-  recently_used_filename = g_strdup_printf("%s/%s/ags_file_widget_recently_used.xml",
+  recently_used_filename = g_strdup_printf("%s/%s/gsequencer_app_recently_used.xml",
 					   sandbox_path,
 					   AGS_DEFAULT_DIRECTORY);
 #else
-  recently_used_filename = g_strdup_printf("%s/%s/ags_file_widget_recently_used.xml",
+  recently_used_filename = g_strdup_printf("%s/%s/gsequencer_app_recently_used.xml",
 					   home_path,
 					   AGS_DEFAULT_DIRECTORY);
 #endif

@@ -1221,12 +1221,9 @@ ags_machine_midi_import_callback(GAction *action, GVariant *parameter,
 }
 
 void
-ags_machine_open_response_callback(GtkDialog *dialog, gint response, AgsMachine *machine)
+ags_machine_open_response_callback(AgsPCMFileDialog *pcm_file_dialog, gint response,
+				   AgsMachine *machine)
 {
-  AgsPCMFileChooserDialog *pcm_file_chooser_dialog;
-
-  pcm_file_chooser_dialog = AGS_PCM_FILE_CHOOSER_DIALOG(dialog);
-
   if(response == GTK_RESPONSE_ACCEPT){
     GListModel *file;
     
@@ -1234,35 +1231,15 @@ ags_machine_open_response_callback(GtkDialog *dialog, gint response, AgsMachine 
 
     guint i, i_stop;
     
-    file = gtk_file_chooser_get_files(GTK_FILE_CHOOSER(pcm_file_chooser_dialog->file_chooser));
-
-    filename = NULL;
-    
-    i_stop = g_list_model_get_n_items(file);
-    
-    for(i = 0; i < i_stop; i++){
-      GFile *current_file;
-
-      gchar *path;
-      
-      current_file = g_list_model_get_item(file,
-					   i);
-
-      path = g_file_get_path(current_file);
-
-      g_message("%s", path);
-      
-      filename = g_slist_append(filename,
-				path);
-    }
+    filename = ags_file_widget_get_filenames(pcm_file_dialog->file_widget);
     
     ags_machine_open_files(machine,
 			   filename,
-			   gtk_check_button_get_active(pcm_file_chooser_dialog->existing_channel),
-			   gtk_check_button_get_active(pcm_file_chooser_dialog->new_channel));
+			   gtk_check_button_get_active(pcm_file_dialog->existing_channel),
+			   gtk_check_button_get_active(pcm_file_dialog->new_channel));
   }
 
-  gtk_window_destroy((GtkWindow *) pcm_file_chooser_dialog);
+  gtk_window_destroy((GtkWindow *) pcm_file_dialog);
 }
 
 void

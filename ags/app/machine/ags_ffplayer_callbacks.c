@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,7 +33,7 @@
 
 #include <ags/config.h>
 
-void ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,
+void ags_ffplayer_open_dialog_response_callback(AgsFileDialog *file_dialog, gint response,
 						AgsMachine *machine);
 
 void
@@ -223,40 +223,38 @@ void
 ags_ffplayer_open_clicked_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
 {
   AgsWindow *window;
-  GtkFileChooserDialog *file_chooser;
+  AgsFileDialog *file_dialog;
+  AgsFileWidget *file_widget;
 
-  GFile *file;
+  AgsApplicationContext *application_context;
 
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) ffplayer,
-						 AGS_TYPE_WINDOW);
-  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(i18n("Open Soundfont2 file"),
-								      (GtkWindow *) window,
-								      GTK_FILE_CHOOSER_ACTION_OPEN,
-								      i18n("_OK"), GTK_RESPONSE_ACCEPT,
-								      i18n("_Cancel"), GTK_RESPONSE_CANCEL,
-								      NULL);
-  gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser),
-				       FALSE);
+  /* get application context */  
+  application_context = ags_application_context_get_instance();
 
-  file = g_file_new_for_path("/usr/share/sounds/sf2");
-  gtk_file_chooser_add_shortcut_folder(GTK_FILE_CHOOSER(file_chooser),
-				       file,
-				       NULL);
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
   
-  ffplayer->open_dialog = (GtkWidget *) file_chooser;
+  file_dialog = (AgsFileDialog *) ags_file_dialog_new((GtkWindow *) window,
+						      i18n("open Soundfont2 file"));
 
-  gtk_widget_set_visible((GtkWidget *) file_chooser,
+  file_widget = ags_file_dialog_get_file_widget(file_dialog);
+
+  ags_file_widget_add_bookmark(file_widget,
+			       "/usr/share/sounds/sf2");
+  
+  ffplayer->open_dialog = (GtkWidget *) file_dialog;
+
+  gtk_widget_set_visible((GtkWidget *) file_dialog,
 			 TRUE);
 
-  gtk_widget_set_size_request(GTK_WIDGET(file_chooser),
-			      AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_WIDTH, AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_HEIGHT);
+  //  gtk_widget_set_size_request(GTK_WIDGET(file_dialog),
+  //			      AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_WIDTH, AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_HEIGHT);
 
-  g_signal_connect((GObject *) file_chooser, "response",
+  g_signal_connect((GObject *) file_dialog, "response",
 		   G_CALLBACK(ags_ffplayer_open_dialog_response_callback), AGS_MACHINE(ffplayer));
 }
 
 void
-ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,
+ags_ffplayer_open_dialog_response_callback(AgsFileDialog *file_dialog, gint response,
 					   AgsMachine *machine)
 {
   AgsFFPlayer *ffplayer;
@@ -264,19 +262,17 @@ ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,
   ffplayer = AGS_FFPLAYER(machine);
 
   if(response == GTK_RESPONSE_ACCEPT){
-    GFile *file;
-    
     gchar *filename;
 
-    file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(widget));
+    filename = ags_file_widget_get_filename(file_dialog->file_widget);
 
-    filename = g_file_get_path(file);
     ags_ffplayer_open_filename(ffplayer,
 			       filename);
   }
 
   ffplayer->open_dialog = NULL;
-  gtk_window_destroy((GtkWindow *) widget);
+
+  gtk_window_destroy((GtkWindow *) file_dialog);
 
   gtk_combo_box_set_active(GTK_COMBO_BOX(ffplayer->preset), 0);
 }
