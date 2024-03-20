@@ -67,7 +67,9 @@ typedef enum{
 typedef enum{
   AGS_REGEX_UTIL_NOT_BEGINNING_OF_LINE = REG_NOTBOL,
   AGS_REGEX_UTIL_NOT_END_OF_LINE       = REG_NOTEOL,
+#if !defined(AGS_W32API)
   AGS_REGEX_UTIL_START_END             = REG_STARTEND,
+#endif
 }AgsRegexUtilExecuteFlags;
 
 #define AGS_REGEX_UTIL_ERROR (ags_regex_util_error_quark())

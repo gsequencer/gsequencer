@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,6 +29,7 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <ags/app/ags_pcm_file_dialog.h>
 #include <ags/app/ags_pad.h>
 
 G_BEGIN_DECLS
@@ -63,7 +64,7 @@ struct _AgsDrumInputPad
   GList *pad_open_recalls;
   guint pad_open_play_ref;
 
-  GtkFileChooserDialog *file_chooser;
+  AgsPCMFileDialog *open_dialog;
 
   guint pad_play_ref;
 };

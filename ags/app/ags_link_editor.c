@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -162,7 +162,7 @@ ags_link_editor_init(AgsLinkEditor *link_editor)
 
   link_editor->audio_file = NULL;
 
-  link_editor->pcm_file_chooser_dialog = NULL;
+  link_editor->open_dialog = NULL;
 }
 
 void

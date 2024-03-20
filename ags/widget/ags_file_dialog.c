@@ -156,7 +156,7 @@ ags_file_dialog_class_init(AgsFileDialogClass *file_dialog)
    * AgsFileDialog::response:
    * @file_dialog: the #AgsFileDialog
    *
-   * The ::response signal notifies about filesystem change.
+   * The ::response signal notifies about window interaction.
    *
    * Since: 6.6.0
    */

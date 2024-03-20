@@ -977,7 +977,7 @@ libgsequencer_sources = files(
   'app/ags_osc_server_preferences_callbacks.c',
   'app/ags_pad.c',
   'app/ags_pad_callbacks.c',
-  'app/ags_pcm_file_chooser_dialog.c',
+  'app/ags_pcm_file_dialog.c',
   'app/ags_performance_preferences.c',
   'app/ags_performance_preferences_callbacks.c',
   'app/ags_port_editor.c',
