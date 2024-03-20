@@ -1,6 +1,6 @@
 #!/bin/sh
 # 
-# Copyright (C) 2005-2021 Joël Krähemann
+# Copyright (C) 2005-2024 Joël Krähemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -21,13 +21,13 @@
 srcdir="./"
 builddir="./"
 
-$( find ${builddir}/docs/reference/libags/libags-html -name "*.html" -type f -exec sed -i "s@../gobject@https://developer.gnome.org/gobject/stable@g" {} \; )
-$( find ${builddir}/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec sed -i "s@../gobject@https://developer.gnome.org/gobject/stable@g" {} \; )
+$( find ${builddir}/docs/reference/libags/libags-html -name "*.html" -type f -exec sed -i "s@../gobject@https://docs.gtk.org/gobject/@g" {} \; )
+$( find ${builddir}/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec sed -i "s@../gobject@https://docs.gtk.org/gobject/@g" {} \; )
 $( find ${builddir}/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec sed -i "s@../libags-html@../libags@g" {} \; )
-$( find ${builddir}/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec sed -i "s@../gobject@https://developer.gnome.org/gobject/stable@g" {} \; )
-$( find ${builddir}/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec sed -i "s@../gtk3@https://developer.gnome.org/gtk3/stable@g" {} \; )
-$( find ${builddir}/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i "s@../gobject@https://developer.gnome.org/gobject/stable@g" {} \; )
-$( find ${builddir}/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i "s@../gtk3@https://developer.gnome.org/gtk3/stable@g" {} \; )
+$( find ${builddir}/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec sed -i "s@../gobject@https://docs.gtk.org/gobject/@g" {} \; )
+$( find ${builddir}/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec sed -i "s@../gtk4@https://docs.gtk.org/gtk4/@g" {} \; )
+$( find ${builddir}/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i "s@../gobject@https://docs.gtk.org/gobject/@g" {} \; )
+$( find ${builddir}/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i "s@../gtk4@https://docs.gtk.org/gtk4/@g" {} \; )
 $( find ${builddir}/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i "s@../libags-html@../libags@g" {} \; )
 $( find ${builddir}/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i "s@../libags-audio-html@../libags-audio@g" {} \; )
 $( find ${builddir}/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i "s@../libags-gui-html@$../libags-gui@g" {} \; )
