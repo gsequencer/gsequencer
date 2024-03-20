@@ -5,11 +5,11 @@ ags (6.6.0)
 	* implemented AgsIconLink
 	* renamed ags/app/ags_pcm_file_chooser_dialog.[ch] to ags_pcm_file_dialog.[ch]
 	* moved ags/app/ags_input_dialog.[ch] to ags/widget/
-	* refactored AgsPCMFileDialog to use AgsFileWidget
 	* refactored ags_app_action_util.c to use AgsFileDialog
-	* refactored ags_drum.c to use AgsPCMFileDialog
-	* refactored ags_drum_input_pad.c to use AgsPCMFileDialog
-	* refactored ags_ffplayer.c to use AgsFileDialog
+	* refactored AgsPCMFileDialog to use AgsFileWidget
+	* refactored AgsDrum to use AgsPCMFileDialog
+	* refactored AgsDrumInputPad to use AgsPCMFileDialog
+	* refactored AgsFFPlayer to use AgsFileDialog
 	* added --enable-macos-sandbox configure switch
 	* added ags_endian_test.c
 	* added ags_regex_util_test.c
