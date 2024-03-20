@@ -444,6 +444,7 @@ ags_file_widget_init(AgsFileWidget *file_widget)
   
   file_widget->flags = 0;
   file_widget->file_action = AGS_FILE_WIDGET_OPEN;
+  file_widget->file_filter = AGS_FILE_WIDGET_FILTER_NONE;
 
   file_widget->default_bundle = NULL;
   
@@ -686,6 +687,10 @@ ags_file_widget_init(AgsFileWidget *file_widget)
   gtk_box_append(action_hbox,
 		 (GtkWidget *) file_widget->center_vbox);
 
+  file_widget->file_filter_suffix = NULL;
+
+  file_widget->current_file_filter = NULL;
+ 
   filename_key_string_list = gtk_string_list_new(filename_keys_strv);
   file_widget->filename_key_selection = gtk_single_selection_new(G_LIST_MODEL(filename_key_string_list));
 
@@ -800,6 +805,9 @@ ags_file_widget_init(AgsFileWidget *file_widget)
   file_widget->file_magic_executable = NULL;
   
   file_widget->preview = NULL;
+
+  /* file filter */
+  file_widget->file_filter_drop_down = NULL;
 }
 
 void
@@ -1452,6 +1460,52 @@ ags_file_widget_set_file_action(AgsFileWidget *file_widget,
   }
 
   file_widget->file_action = file_action;
+}
+
+/**
+ * ags_file_widget_test_file_filter:
+ * @file_widget: the #AgsFileWidget
+ * @file_filter: the file filter
+ *
+ * Test @file_filter of @file_widget.
+ * 
+ * Returns: %TRUE if file filter matches, otherwise %FALSE
+ * 
+ * Since: 6.6.0
+ */
+gboolean
+ags_file_widget_test_file_filter(AgsFileWidget *file_widget,
+				 guint file_filter)
+{
+  gboolean success;
+
+  if(!AGS_IS_FILE_WIDGET(file_widget)){
+    return(FALSE);
+  }
+  
+  success = (file_filter == file_widget->file_filter) ? TRUE: FALSE;
+  
+  return(success);
+}
+
+/**
+ * ags_file_widget_set_file_filter:
+ * @file_widget: the #AgsFileWidget
+ * @file_filter: the file filter
+ *
+ * Set @file_filter of @file_widget.
+ * 
+ * Since: 6.6.0
+ */
+void
+ags_file_widget_set_file_filter(AgsFileWidget *file_widget,
+				guint file_filter)
+{
+  if(!AGS_IS_FILE_WIDGET(file_widget)){
+    return;
+  }
+
+  file_widget->file_filter = file_filter;
 }
 
 /**
