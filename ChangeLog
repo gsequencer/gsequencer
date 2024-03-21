@@ -7,9 +7,13 @@ ags (6.6.0)
 	* moved ags/app/ags_input_dialog.[ch] to ags/widget/
 	* refactored ags_app_action_util.c to use AgsFileDialog
 	* refactored AgsPCMFileDialog to use AgsFileWidget
+	* refactored AgsLinkEditor to use AgsPCMFileDialog
 	* refactored AgsDrum to use AgsPCMFileDialog
 	* refactored AgsDrumInputPad to use AgsPCMFileDialog
 	* refactored AgsFFPlayer to use AgsFileDialog
+	* refactored AgsPitchSampler to use AgsFileDialog
+	* refactored AgsSF2Synth to use AgsFileDialog
+	* refactored AgsSFZSynth to use AgsFileDialog
 	* added --enable-macos-sandbox configure switch
 	* added ags_endian_test.c
 	* added ags_regex_util_test.c

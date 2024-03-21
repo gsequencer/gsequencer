@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,7 +27,7 @@
 #include <complex.h>
 #include <math.h>
 
-void ags_sfz_synth_open_dialog_response_callback(GtkWidget *widget, gint response,
+void ags_sfz_synth_open_dialog_response_callback(AgsFileDialog *file_dialog, gint response,
 						 AgsMachine *machine);
 
 void
@@ -42,54 +42,45 @@ void
 ags_sfz_synth_open_clicked_callback(GtkWidget *widget, AgsSFZSynth *sfz_synth)
 {
   AgsWindow *window;
-  GtkFileChooserDialog *file_chooser;
+  AgsFileDialog *file_dialog;
+  AgsFileWidget *file_widget;
 
-  GFile *file;
+  AgsApplicationContext *application_context;
 
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) sfz_synth,
-						 AGS_TYPE_WINDOW);
+  /* get application context */  
+  application_context = ags_application_context_get_instance();
+
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
   
-  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(i18n("Open SFZ file"),
-								      (GtkWindow *) window,
-								      GTK_FILE_CHOOSER_ACTION_OPEN,
-								      i18n("_OK"), GTK_RESPONSE_ACCEPT,
-								      i18n("_Cancel"), GTK_RESPONSE_CANCEL,
-								      NULL);
-  gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser),
-				       FALSE);
+  file_dialog = (AgsFileDialog *) ags_file_dialog_new((GtkWindow *) window,
+						      i18n("open Soundfont2 file"));
 
-  file = g_file_new_for_path("/usr/share/sounds/sfz");
-  gtk_file_chooser_add_shortcut_folder(GTK_FILE_CHOOSER(file_chooser),
-				       file,
-				       NULL);
+  file_widget = ags_file_dialog_get_file_widget(file_dialog);
+
+  ags_file_widget_add_bookmark(file_widget,
+			       "/usr/share/sounds/sfz");
   
-  sfz_synth->open_dialog = (GtkWidget *) file_chooser;
-  gtk_widget_set_visible((GtkWidget *) file_chooser,
+  sfz_synth->open_dialog = (GtkWidget *) file_dialog;
+
+  gtk_widget_set_visible((GtkWidget *) file_dialog,
 			 TRUE);
 
-  gtk_widget_set_size_request(GTK_WIDGET(file_chooser),
-			      AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_WIDTH, AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_HEIGHT);
-
-  g_signal_connect((GObject *) file_chooser, "response",
+  g_signal_connect((GObject *) file_dialog, "response",
 		   G_CALLBACK(ags_sfz_synth_open_dialog_response_callback), AGS_MACHINE(sfz_synth));
 }
 
 void
-ags_sfz_synth_open_dialog_response_callback(GtkWidget *widget, gint response,
-					   AgsMachine *machine)
+ags_sfz_synth_open_dialog_response_callback(AgsFileDialog *file_dialog, gint response,
+					    AgsMachine *machine)
 {
   AgsSFZSynth *sfz_synth;
 
   sfz_synth = AGS_SFZ_SYNTH(machine);
 
   if(response == GTK_RESPONSE_ACCEPT){
-    GFile *file;
-    
     gchar *filename;
 
-    file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(widget));
-
-    filename = g_file_get_path(file);
+    filename = ags_file_widget_get_filename(file_dialog->file_widget);
 
     gtk_editable_set_text(GTK_EDITABLE(sfz_synth->filename),
 			  filename);
@@ -99,7 +90,8 @@ ags_sfz_synth_open_dialog_response_callback(GtkWidget *widget, gint response,
   }
 
   sfz_synth->open_dialog = NULL;
-  gtk_window_destroy((GtkWindow *) widget);
+
+  gtk_window_destroy((GtkWindow *) file_dialog);
 }
 
 void
