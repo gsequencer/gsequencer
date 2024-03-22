@@ -516,7 +516,7 @@ ags_file_widget_init(AgsFileWidget *file_widget)
   /* location - combo */
   location_string_list = gtk_string_list_new(location_strv);
   
-  file_widget->location_drop_down = (GtkDropDown *) gtk_drop_down_new(G_LIST_MODEL(location_string_list),
+  file_widget->location_drop_down = (GtkDropDown *) gtk_drop_down_new(location_string_list,
 								      NULL);
   gtk_box_append(file_widget->vbox,
 		 (GtkWidget *) file_widget->location_drop_down);
@@ -692,7 +692,7 @@ ags_file_widget_init(AgsFileWidget *file_widget)
   file_widget->current_file_filter = NULL;
  
   filename_key_string_list = gtk_string_list_new(filename_keys_strv);
-  file_widget->filename_key_selection = gtk_single_selection_new(G_LIST_MODEL(filename_key_string_list));
+  file_widget->filename_key_selection = gtk_single_selection_new(filename_key_string_list);
 
   for(i = 0; i < 4; i++){
     file_widget->filename_factory[i] = gtk_signal_list_item_factory_new();
@@ -713,10 +713,10 @@ ags_file_widget_init(AgsFileWidget *file_widget)
   }
   
   single_filename_string_list = gtk_string_list_new(filename_strv);
-  file_widget->filename_single_selection = gtk_single_selection_new(G_LIST_MODEL(single_filename_string_list));
+  file_widget->filename_single_selection = gtk_single_selection_new(single_filename_string_list);
 
   multi_filename_string_list = gtk_string_list_new(filename_strv);
-  file_widget->filename_multi_selection = gtk_multi_selection_new(G_LIST_MODEL(multi_filename_string_list));
+  file_widget->filename_multi_selection = gtk_multi_selection_new(multi_filename_string_list);
 
   file_widget->filename_scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
 
@@ -1281,15 +1281,42 @@ ags_file_widget_filename_activate_callback(GtkListView *list_view,
 					   guint position,
 					   AgsFileWidget *file_widget)
 {
-  GtkStringObject *string_object;
-
   gchar *current_path, *filename;
   gchar *prev_current_path;
 
-  string_object = gtk_single_selection_get_selected_item(file_widget->filename_single_selection);
-    
-  filename = gtk_string_object_get_string(string_object);
+  filename = NULL;
+  
+  if(!ags_file_widget_test_flags(file_widget, AGS_FILE_WIDGET_WITH_MULTI_SELECTION)){
+    GtkStringObject *string_object;
 
+    string_object = gtk_single_selection_get_selected_item(file_widget->filename_single_selection);
+    
+    filename = gtk_string_object_get_string(string_object);
+  }
+
+  if(ags_file_widget_test_flags(file_widget, AGS_FILE_WIDGET_WITH_MULTI_SELECTION)){
+    GtkBitset *bitset;
+    GtkStringObject *string_object;
+
+    guint64 length;
+
+    bitset = gtk_selection_model_get_selection(GTK_SELECTION_MODEL(file_widget->filename_multi_selection));
+
+    length = gtk_bitset_get_size(bitset);
+
+    if(length > 0){
+      guint position;
+
+      position = gtk_bitset_get_nth(bitset,
+				    0);
+    
+      string_object = g_list_model_get_item(gtk_multi_selection_get_model(file_widget->filename_multi_selection),
+					    position);
+
+      filename = gtk_string_object_get_string(string_object);
+    }  
+  }
+  
   if(!strncmp(filename, ".", 2) == FALSE &&
      !strncmp(filename, "..", 3) == FALSE){
     current_path = g_strdup_printf("%s/%s",
@@ -3056,29 +3083,37 @@ ags_file_widget_real_refresh(AgsFileWidget *file_widget)
   
     filename_strv = (gchar **) g_malloc((count + 3) * sizeof(gchar *));
 
+    j = 0;
+    
     filename_strv[0] = g_strdup(".");
     filename_strv[1] = g_strdup("..");
 
-    for(i = 0, j = 0; i < count; i++){
+    j = 2;
+    
+    for(i = 0; i < count; i++){
       if(((gchar *) filename->data)[0] != '.' ||
 	 ags_file_widget_test_flags(file_widget, AGS_FILE_WIDGET_HIDDEN_FILES_VISIBLE)){
-	filename_strv[j + 2] = filename->data;
+	filename_strv[j] = g_strdup(filename->data);
 	j++;
       }
     
       filename = filename->next;
     }
   
-    filename_strv[j + 2] = NULL;
+    filename_strv[j] = NULL;
   
-    single_filename_string_list = gtk_string_list_new(filename_strv);
-    gtk_single_selection_set_model(file_widget->filename_single_selection,
-				   G_LIST_MODEL(single_filename_string_list));
-
-    multi_filename_string_list = gtk_string_list_new(filename_strv);
-    gtk_multi_selection_set_model(file_widget->filename_multi_selection,
-				  G_LIST_MODEL(multi_filename_string_list));
-
+    if(!ags_file_widget_test_flags(file_widget, AGS_FILE_WIDGET_WITH_MULTI_SELECTION)){
+      single_filename_string_list = gtk_string_list_new(filename_strv);
+      gtk_single_selection_set_model(file_widget->filename_single_selection,
+				     single_filename_string_list);
+    }
+    
+    if(ags_file_widget_test_flags(file_widget, AGS_FILE_WIDGET_WITH_MULTI_SELECTION)){
+      multi_filename_string_list = gtk_string_list_new(filename_strv);
+      gtk_multi_selection_set_model(file_widget->filename_multi_selection,
+				    multi_filename_string_list);
+    }
+    
     g_list_free(start_filename);
     //  g_strfreev(filename_strv);
   }
@@ -3092,13 +3127,17 @@ ags_file_widget_real_refresh(AgsFileWidget *file_widget)
     filename_strv = ags_file_widget_get_recently_used(file_widget,
 						      &count);
 
-    single_filename_string_list = gtk_string_list_new(filename_strv);
-    gtk_single_selection_set_model(file_widget->filename_single_selection,
-				   G_LIST_MODEL(single_filename_string_list));
-
-    multi_filename_string_list = gtk_string_list_new(filename_strv);
-    gtk_multi_selection_set_model(file_widget->filename_multi_selection,
-				  G_LIST_MODEL(multi_filename_string_list));
+    if(!ags_file_widget_test_flags(file_widget, AGS_FILE_WIDGET_WITH_MULTI_SELECTION)){
+      single_filename_string_list = gtk_string_list_new(filename_strv);
+      gtk_single_selection_set_model(file_widget->filename_single_selection,
+				     single_filename_string_list);
+    }
+    
+    if(ags_file_widget_test_flags(file_widget, AGS_FILE_WIDGET_WITH_MULTI_SELECTION)){
+      multi_filename_string_list = gtk_string_list_new(filename_strv);
+      gtk_multi_selection_set_model(file_widget->filename_multi_selection,
+				    multi_filename_string_list);
+    }
   }
   
   /* location entry */
@@ -3157,7 +3196,7 @@ ags_file_widget_real_refresh(AgsFileWidget *file_widget)
       location_strv = (gchar **) g_malloc((count + 1) * sizeof(gchar *));
   
       for(i = 0; location != NULL && i < count;){
-	location_strv[i] = location->data;
+	location_strv[i] = g_strdup(location->data);
     
 	location = location->next;
 	i++;
@@ -3168,9 +3207,10 @@ ags_file_widget_real_refresh(AgsFileWidget *file_widget)
       location_string_list = gtk_string_list_new(location_strv);
 
       gtk_drop_down_set_model(file_widget->location_drop_down,
-			      G_LIST_MODEL(location_string_list));
+			      location_string_list);
       
       g_list_free(start_location);
+      //  g_strfreev(location_strv);
     }else if(!g_strcmp0(file_widget->current_path,
 			"recently-used:")){
       gtk_drop_down_set_model(file_widget->location_drop_down,

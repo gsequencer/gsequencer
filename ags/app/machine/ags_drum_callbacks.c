@@ -46,6 +46,8 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
   AgsFileWidget *file_widget;
   
   AgsApplicationContext *application_context;
+
+  const gchar *drumkits_bookmark_filename = "/usr/share/hydrogen/data/drumkits";
     
   if(drum->open_dialog != NULL){
     return;
@@ -58,9 +60,28 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
 					    (GtkWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
 
   file_widget = ags_pcm_file_dialog_get_file_widget(pcm_file_dialog);
-  
-  ags_file_widget_add_bookmark(file_widget,
-			       "/usr/share/hydrogen/data/drumkits");
+
+  ags_file_widget_add_location(file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_DESKTOP,
+			       NULL);
+
+  ags_file_widget_add_location(file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_DOCUMENTS,
+			       NULL);  
+
+  ags_file_widget_add_location(file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_MUSIC,
+			       NULL);
+
+  ags_file_widget_add_location(file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_HOME,
+			       NULL);
+
+  if(g_file_test(drumkits_bookmark_filename,
+		 (G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR))){
+    ags_file_widget_add_bookmark(file_widget,
+				 drumkits_bookmark_filename);
+  }
   
   drum->open_dialog = (GtkWidget *) pcm_file_dialog;
 
@@ -75,9 +96,6 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
   
   gtk_widget_set_visible(GTK_WIDGET(pcm_file_dialog),
 			 TRUE);
-
-  //  gtk_widget_set_size_request(GTK_WIDGET(pcm_file_dialog),
-  //			      AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_WIDTH, AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_HEIGHT);
 
   g_signal_connect(G_OBJECT(pcm_file_dialog), "response",
 		   G_CALLBACK(ags_drum_open_response_callback), drum);

@@ -62,7 +62,7 @@ struct _AgsPCMFileDialog
   GtkCheckButton *new_channel;
   GtkCheckButton *existing_channel;
 
-  GtkButton *open;
+  GtkButton *activate_button;
 };
 
 struct _AgsPCMFileDialogClass

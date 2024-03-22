@@ -106,6 +106,22 @@ ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
       link_editor->open_dialog = ags_pcm_file_dialog_new(i18n("open audio file"),
 							 (GtkWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
 
+      ags_file_widget_add_location(link_editor->open_dialog->file_widget,
+				   AGS_FILE_WIDGET_LOCATION_OPEN_USER_DESKTOP,
+				   NULL);
+
+      ags_file_widget_add_location(link_editor->open_dialog->file_widget,
+				   AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_DOCUMENTS,
+				   NULL);  
+
+      ags_file_widget_add_location(link_editor->open_dialog->file_widget,
+				   AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_MUSIC,
+				   NULL);
+
+      ags_file_widget_add_location(link_editor->open_dialog->file_widget,
+				   AGS_FILE_WIDGET_LOCATION_OPEN_USER_HOME,
+				   NULL);
+
       /*  */
       str = NULL;
       

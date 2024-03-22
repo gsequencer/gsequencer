@@ -28,6 +28,26 @@ void ags_pcm_file_dialog_init(AgsPCMFileDialog *pcm_file_dialog);
 
 void ags_pcm_file_dialog_show(GtkWidget *widget);
 
+void ags_pcm_file_dialog_close_request_callback(GtkWindow *window,
+						AgsPCMFileDialog *pcm_file_dialog);
+
+void ags_pcm_file_dialog_activate_button_callback(GtkButton *activate_button,
+						  AgsPCMFileDialog *pcm_file_dialog);
+
+gboolean ags_pcm_file_dialog_key_pressed_callback(GtkEventControllerKey *event_controller,
+						  guint keyval,
+						  guint keycode,
+						  GdkModifierType state,
+						  AgsPCMFileDialog *pcm_file_dialog);
+void ags_pcm_file_dialog_key_released_callback(GtkEventControllerKey *event_controller,
+					       guint keyval,
+					       guint keycode,
+					       GdkModifierType state,
+					       AgsPCMFileDialog *pcm_file_dialog);
+gboolean ags_pcm_file_dialog_modifiers_callback(GtkEventControllerKey *event_controller,
+						GdkModifierType keyval,
+						AgsPCMFileDialog *pcm_file_dialog);
+
 void ags_pcm_file_dialog_real_response(AgsPCMFileDialog *pcm_file_dialog,
 				       gint response);
 
@@ -122,6 +142,8 @@ ags_pcm_file_dialog_init(AgsPCMFileDialog *pcm_file_dialog)
   GtkBox *vbox;
   GtkGrid *grid;
 
+  GtkEventController *event_controller;
+
   gchar *str;
 
   gtk_window_set_default_size(pcm_file_dialog,
@@ -129,6 +151,22 @@ ags_pcm_file_dialog_init(AgsPCMFileDialog *pcm_file_dialog)
 
   gtk_window_set_hide_on_close(pcm_file_dialog,
 			       TRUE);
+
+  g_signal_connect(pcm_file_dialog, "close-request",
+		   G_CALLBACK(ags_pcm_file_dialog_close_request_callback), pcm_file_dialog);
+
+  event_controller = gtk_event_controller_key_new();
+  gtk_widget_add_controller((GtkWidget *) pcm_file_dialog,
+			    event_controller);
+
+  g_signal_connect(event_controller, "key-pressed",
+		   G_CALLBACK(ags_pcm_file_dialog_key_pressed_callback), pcm_file_dialog);
+  
+  g_signal_connect(event_controller, "key-released",
+		   G_CALLBACK(ags_pcm_file_dialog_key_released_callback), pcm_file_dialog);
+
+  g_signal_connect(event_controller, "modifiers",
+		   G_CALLBACK(ags_pcm_file_dialog_modifiers_callback), pcm_file_dialog);
 
   /* file chooser */  
   pcm_file_dialog->flags = AGS_PCM_FILE_DIALOG_SHOW_AUDIO_CHANNEL;
@@ -235,6 +273,16 @@ ags_pcm_file_dialog_init(AgsPCMFileDialog *pcm_file_dialog)
 		  (GtkWidget *) pcm_file_dialog->existing_channel,
 		  0, 2,
 		  1, 1);
+
+  /* button */
+  pcm_file_dialog->activate_button = (GtkButton *) gtk_button_new_with_label(i18n("open"));
+  gtk_widget_set_halign(pcm_file_dialog->activate_button,
+			GTK_ALIGN_END);
+  gtk_box_append(content_area,
+		 (GtkWidget *) pcm_file_dialog->activate_button);
+
+  g_signal_connect(pcm_file_dialog->activate_button, "clicked",
+		   G_CALLBACK(ags_pcm_file_dialog_activate_button_callback), pcm_file_dialog);
 }
 
 void
@@ -402,6 +450,87 @@ ags_pcm_file_dialog_get_existing_channel(AgsPCMFileDialog *pcm_file_dialog)
   g_return_val_if_fail(AGS_IS_PCM_FILE_DIALOG(pcm_file_dialog), NULL);
 
   return(pcm_file_dialog->existing_channel);
+}
+
+void
+ags_pcm_file_dialog_close_request_callback(GtkWindow *window,
+					   AgsPCMFileDialog *pcm_file_dialog)
+{
+  ags_pcm_file_dialog_response(pcm_file_dialog,
+			       GTK_RESPONSE_CANCEL);
+}
+
+void
+ags_pcm_file_dialog_activate_button_callback(GtkButton *activate_button,
+					     AgsPCMFileDialog *pcm_file_dialog)
+{
+  ags_pcm_file_dialog_response(pcm_file_dialog,
+			       GTK_RESPONSE_ACCEPT);
+}
+
+gboolean
+ags_pcm_file_dialog_key_pressed_callback(GtkEventControllerKey *event_controller,
+					 guint keyval,
+					 guint keycode,
+					 GdkModifierType state,
+					 AgsPCMFileDialog *pcm_file_dialog)
+{
+  gboolean key_handled;
+
+  key_handled = TRUE;
+
+  if(keyval == GDK_KEY_Tab ||
+     keyval == GDK_KEY_ISO_Left_Tab ||
+     keyval == GDK_KEY_Shift_L ||
+     keyval == GDK_KEY_Shift_R ||
+     keyval == GDK_KEY_Alt_L ||
+     keyval == GDK_KEY_Alt_R ||
+     keyval == GDK_KEY_Control_L ||
+     keyval == GDK_KEY_Control_R){
+    key_handled = FALSE;
+  }
+  
+  return(key_handled);
+}
+
+void
+ags_pcm_file_dialog_key_released_callback(GtkEventControllerKey *event_controller,
+					  guint keyval,
+					  guint keycode,
+					  GdkModifierType state,
+					  AgsPCMFileDialog *pcm_file_dialog)
+{
+  gboolean key_handled;
+
+  key_handled = TRUE;
+
+  if(keyval == GDK_KEY_Tab ||
+     keyval == GDK_KEY_ISO_Left_Tab ||
+     keyval == GDK_KEY_Shift_L ||
+     keyval == GDK_KEY_Shift_R ||
+     keyval == GDK_KEY_Alt_L ||
+     keyval == GDK_KEY_Alt_R ||
+     keyval == GDK_KEY_Control_L ||
+     keyval == GDK_KEY_Control_R){
+    key_handled = FALSE;
+  }else{
+    switch(keyval){
+    case GDK_KEY_Escape:
+      {
+	ags_pcm_file_dialog_response(pcm_file_dialog,
+				     GTK_RESPONSE_CANCEL);	
+      }
+      break;
+    }
+  }
+}
+
+gboolean
+ags_pcm_file_dialog_modifiers_callback(GtkEventControllerKey *event_controller,
+				       GdkModifierType keyval,
+				       AgsPCMFileDialog *pcm_file_dialog)
+{
+  return(FALSE);
 }
 
 void
