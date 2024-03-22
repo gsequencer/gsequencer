@@ -565,8 +565,8 @@ ags_pcm_file_dialog_response(AgsPCMFileDialog *pcm_file_dialog,
 
 /**
  * ags_pcm_file_dialog_new:
- * @title: the title
  * @transient_for: the transient for window
+ * @title: the title
  * 
  * Create a new instance of #AgsPCMFileDialog
  * 
@@ -575,14 +575,14 @@ ags_pcm_file_dialog_response(AgsPCMFileDialog *pcm_file_dialog,
  * Since: 4.0.0
  */
 AgsPCMFileDialog*
-ags_pcm_file_dialog_new(gchar *title,
-			GtkWindow *transient_for)
+ags_pcm_file_dialog_new(GtkWindow *transient_for,
+			gchar *title)
 {
   AgsPCMFileDialog *pcm_file_dialog;
 
   pcm_file_dialog = (AgsPCMFileDialog *) g_object_new(AGS_TYPE_PCM_FILE_DIALOG,
-						      "title", title,
 						      "transient-for", transient_for,
+						      "title", title,
 						      NULL);
 
   return(pcm_file_dialog);
