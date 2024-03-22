@@ -47,6 +47,8 @@ ags_sf2_synth_open_clicked_callback(GtkWidget *widget, AgsSF2Synth *sf2_synth)
 
   AgsApplicationContext *application_context;
 
+  const gchar *sf2_bookmark_filename = "/usr/share/sounds/sf2";
+  
   /* get application context */  
   application_context = ags_application_context_get_instance();
 
@@ -73,9 +75,12 @@ ags_sf2_synth_open_clicked_callback(GtkWidget *widget, AgsSF2Synth *sf2_synth)
 			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_HOME,
 			       NULL);
 
-  ags_file_widget_add_bookmark(file_widget,
-			       "/usr/share/sounds/sf2");
-    
+  if(g_file_test(sf2_bookmark_filename,
+		 (G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR))){
+    ags_file_widget_add_bookmark(file_widget,
+				 sf2_bookmark_filename);
+  }
+  
   sf2_synth->open_dialog = (GtkWidget *) file_dialog;
 
   gtk_widget_set_visible((GtkWidget *) file_dialog,

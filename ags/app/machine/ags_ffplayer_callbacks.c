@@ -228,6 +228,8 @@ ags_ffplayer_open_clicked_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
 
   AgsApplicationContext *application_context;
 
+  const gchar *sf2_bookmark_filename = "/usr/share/sounds/sf2";
+
   /* get application context */  
   application_context = ags_application_context_get_instance();
 
@@ -254,8 +256,11 @@ ags_ffplayer_open_clicked_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
 			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_HOME,
 			       NULL);
 
-  ags_file_widget_add_bookmark(file_widget,
-			       "/usr/share/sounds/sf2");
+  if(g_file_test(sf2_bookmark_filename,
+		 (G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR))){
+    ags_file_widget_add_bookmark(file_widget,
+				 sf2_bookmark_filename);
+  }
   
   ffplayer->open_dialog = (GtkWidget *) file_dialog;
 

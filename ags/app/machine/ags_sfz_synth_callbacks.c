@@ -47,6 +47,8 @@ ags_sfz_synth_open_clicked_callback(GtkWidget *widget, AgsSFZSynth *sfz_synth)
 
   AgsApplicationContext *application_context;
 
+  const gchar *sfz_bookmark_filename = "/usr/share/sounds/sfz";
+
   /* get application context */  
   application_context = ags_application_context_get_instance();
 
@@ -73,8 +75,11 @@ ags_sfz_synth_open_clicked_callback(GtkWidget *widget, AgsSFZSynth *sfz_synth)
 			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_HOME,
 			       NULL);
 
-  ags_file_widget_add_bookmark(file_widget,
-			       "/usr/share/sounds/sfz");
+  if(g_file_test(sfz_bookmark_filename,
+		 (G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR))){
+    ags_file_widget_add_bookmark(file_widget,
+				 sfz_bookmark_filename);
+  }
   
   sfz_synth->open_dialog = (GtkWidget *) file_dialog;
 
