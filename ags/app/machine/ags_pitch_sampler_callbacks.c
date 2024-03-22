@@ -36,6 +36,8 @@ ags_pitch_sampler_open_callback(GtkButton *button, AgsPitchSampler *pitch_sample
 
   AgsApplicationContext *application_context;
 
+  const gchar *sfz_bookmark_filename = "/usr/share/sounds/sfz";
+
   /* get application context */  
   application_context = ags_application_context_get_instance();
 
@@ -62,8 +64,11 @@ ags_pitch_sampler_open_callback(GtkButton *button, AgsPitchSampler *pitch_sample
 			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_HOME,
 			       NULL);
 
-  ags_file_widget_add_bookmark(file_widget,
-			       "/usr/share/sounds/sfz");
+  if(g_file_test(sfz_bookmark_filename,
+		 (G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR))){
+    ags_file_widget_add_bookmark(file_widget,
+				 sfz_bookmark_filename);
+  }
   
   pitch_sampler->open_dialog = file_dialog;
   
