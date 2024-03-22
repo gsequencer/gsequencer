@@ -228,6 +228,10 @@ ags_ffplayer_open_clicked_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
 
   AgsApplicationContext *application_context;
 
+  gchar *recently_used_filename;
+  gchar *home_path;
+  gchar *sandbox_path;
+
   const gchar *sf2_bookmark_filename = "/usr/share/sounds/sf2";
 
   /* get application context */  
@@ -239,6 +243,42 @@ ags_ffplayer_open_clicked_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
 						      i18n("open Soundfont2 file"));
 
   file_widget = ags_file_dialog_get_file_widget(file_dialog);
+
+  home_path = ags_file_widget_get_home_path(file_widget);
+
+  sandbox_path = NULL;
+
+#if defined(AGS_MACOS_SANDBOX)
+  sandbox_path = g_strdup_printf("%s/Library/%s",
+				 home_path,
+				 AGS_DEFAULT_BUNDLE_ID);
+
+  recently_used_filename = g_strdup_printf("%s/%s/gsequencer_sf2_recently_used.xml",
+					   sandbox_path,
+					   AGS_DEFAULT_DIRECTORY);
+#else
+  recently_used_filename = g_strdup_printf("%s/%s/gsequencer_sf2_recently_used.xml",
+					   home_path,
+					   AGS_DEFAULT_DIRECTORY);
+#endif
+
+  ags_file_widget_set_recently_used_filename(file_widget,
+					     recently_used_filename);
+  
+  ags_file_widget_read_recently_used(file_widget);
+
+#if defined(AGS_MACOS_SANDBOX)
+  ags_file_widget_set_flags(file_widget,
+			    AGS_FILE_WIDGET_APP_SANDBOX);
+
+  ags_file_widget_set_current_path(file_widget,
+				   sandbox_path);
+#else
+  ags_file_widget_set_current_path(file_widget,
+				   home_path);
+#endif
+
+  ags_file_widget_refresh(file_widget);
 
   ags_file_widget_add_location(file_widget,
 			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_DESKTOP,
@@ -280,9 +320,27 @@ ags_ffplayer_open_dialog_response_callback(AgsFileDialog *file_dialog, gint resp
   ffplayer = AGS_FFPLAYER(machine);
 
   if(response == GTK_RESPONSE_ACCEPT){
+    AgsFileWidget *file_widget;
+    
     gchar *filename;
 
-    filename = ags_file_widget_get_filename(file_dialog->file_widget);
+    gint strv_length;
+
+    file_widget = ags_file_dialog_get_file_widget(file_dialog);
+
+    filename = ags_file_widget_get_filename(file_widget);
+
+    if(!g_strv_contains(file_widget->recently_used, filename)){
+      strv_length = g_strv_length(file_widget->recently_used);
+
+      file_widget->recently_used = g_realloc(file_widget->recently_used,
+					     (strv_length + 2) * sizeof(gchar *));
+
+      file_widget->recently_used[strv_length] = g_strdup(filename);
+      file_widget->recently_used[strv_length + 1] = NULL; 
+    
+      ags_file_widget_write_recently_used(file_widget);
+    }
 
     ags_ffplayer_open_filename(ffplayer,
 			       filename);

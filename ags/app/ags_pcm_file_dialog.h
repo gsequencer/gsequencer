@@ -92,8 +92,8 @@ GtkCheckButton* ags_pcm_file_dialog_get_existing_channel(AgsPCMFileDialog *pcm_f
 void ags_pcm_file_dialog_response(AgsPCMFileDialog *pcm_file_dialog,
 				  gint response_id);
 
-AgsPCMFileDialog* ags_pcm_file_dialog_new(gchar *title,
-					  GtkWindow *transient_for);
+AgsPCMFileDialog* ags_pcm_file_dialog_new(GtkWindow *transient_for,
+					  gchar *title);
 
 G_END_DECLS
 

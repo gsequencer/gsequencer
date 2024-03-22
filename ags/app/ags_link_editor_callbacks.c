@@ -41,6 +41,7 @@ ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
 				   &iter)){
     AgsMachine *machine, *link_machine;
     AgsMachineEditorLine *machine_editor_line;
+    AgsFileWidget *file_widget;
 
     AgsAudio *audio;
     AgsChannel *channel;
@@ -49,6 +50,10 @@ ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
   
     GtkTreeModel *model;
 
+    gchar *recently_used_filename;
+    gchar *home_path;
+    gchar *sandbox_path;
+    
     /* get application context */  
     application_context = ags_application_context_get_instance();
 
@@ -103,24 +108,68 @@ ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
       gtk_widget_set_sensitive((GtkWidget *) link_editor->spin_button,
 			       FALSE);
 
-      link_editor->open_dialog = ags_pcm_file_dialog_new(i18n("open audio file"),
-							 (GtkWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
+      link_editor->open_dialog = ags_pcm_file_dialog_new((GtkWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)),
+							 i18n("open audio file"));
 
-      ags_file_widget_add_location(link_editor->open_dialog->file_widget,
+      file_widget = ags_file_dialog_get_file_widget(link_editor->open_dialog);
+
+      home_path = ags_file_widget_get_home_path(file_widget);
+
+      sandbox_path = NULL;
+
+#if defined(AGS_MACOS_SANDBOX)
+      sandbox_path = g_strdup_printf("%s/Library/%s",
+				     home_path,
+				     AGS_DEFAULT_BUNDLE_ID);
+
+      recently_used_filename = g_strdup_printf("%s/%s/gsequencer_pcm_recently_used.xml",
+					       sandbox_path,
+					       AGS_DEFAULT_DIRECTORY);
+#else
+      recently_used_filename = g_strdup_printf("%s/%s/gsequencer_pcm_recently_used.xml",
+					       home_path,
+					       AGS_DEFAULT_DIRECTORY);
+#endif
+
+      ags_file_widget_set_recently_used_filename(file_widget,
+						 recently_used_filename);
+  
+      ags_file_widget_read_recently_used(file_widget);
+
+#if defined(AGS_MACOS_SANDBOX)
+      ags_file_widget_set_flags(file_widget,
+				AGS_FILE_WIDGET_APP_SANDBOX);
+
+      ags_file_widget_set_current_path(file_widget,
+				       sandbox_path);
+#else
+      ags_file_widget_set_current_path(file_widget,
+				       home_path);
+#endif
+
+      ags_file_widget_refresh(file_widget);
+      
+      ags_file_widget_add_location(file_widget,
 				   AGS_FILE_WIDGET_LOCATION_OPEN_USER_DESKTOP,
 				   NULL);
 
-      ags_file_widget_add_location(link_editor->open_dialog->file_widget,
+      ags_file_widget_add_location(file_widget,
 				   AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_DOCUMENTS,
 				   NULL);  
 
-      ags_file_widget_add_location(link_editor->open_dialog->file_widget,
+      ags_file_widget_add_location(file_widget,
 				   AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_MUSIC,
 				   NULL);
 
-      ags_file_widget_add_location(link_editor->open_dialog->file_widget,
+      ags_file_widget_add_location(file_widget,
 				   AGS_FILE_WIDGET_LOCATION_OPEN_USER_HOME,
 				   NULL);
+
+      ags_file_widget_set_file_action(file_widget,
+				      AGS_FILE_WIDGET_OPEN);
+
+      ags_file_widget_set_default_bundle(file_widget,
+					 AGS_DEFAULT_BUNDLE_ID);
 
       /*  */
       str = NULL;
@@ -134,10 +183,10 @@ ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
 	tmp = g_strdup(str + 7);
 
 	if((!g_strcmp0(tmp, "")) == FALSE){
-	  ags_file_widget_set_current_path(link_editor->open_dialog->file_widget,
+	  ags_file_widget_set_current_path(file_widget,
 					   tmp);
 
-	  ags_file_widget_refresh(link_editor->open_dialog->file_widget);
+	  ags_file_widget_refresh(file_widget);
 	}
       }
       
@@ -173,17 +222,35 @@ ags_link_editor_pcm_file_dialog_response_callback(AgsPCMFileDialog *open_dialog,
 						  AgsLinkEditor *link_editor)
 {
   if(response == GTK_RESPONSE_ACCEPT){
+    AgsFileWidget *file_widget;
+    
     GtkTreeModel *model;
     
     GtkTreeIter iter;
 
     char *filename;
 
+    gint strv_length;
+
     /* set filename in combo box */
     model = gtk_combo_box_get_model(link_editor->combo);
     
-    filename = ags_file_widget_get_filename(open_dialog->file_widget);
+    file_widget = ags_pcm_file_dialog_get_file_widget(open_dialog);
+
+    filename = ags_file_widget_get_filename(file_widget);
     
+    if(!g_strv_contains(file_widget->recently_used, filename)){
+      strv_length = g_strv_length(file_widget->recently_used);
+
+      file_widget->recently_used = g_realloc(file_widget->recently_used,
+					     (strv_length + 2) * sizeof(gchar *));
+
+      file_widget->recently_used[strv_length] = g_strdup(filename);
+      file_widget->recently_used[strv_length + 1] = NULL; 
+    
+      ags_file_widget_write_recently_used(file_widget);
+    }
+
     gtk_tree_model_iter_nth_child(model,
 				  &iter,
 				  NULL,
