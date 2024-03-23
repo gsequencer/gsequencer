@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -99,7 +99,7 @@ ags_midi_export_wizard_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_midi_export_wizard = g_type_register_static(GTK_TYPE_DIALOG,
+    ags_type_midi_export_wizard = g_type_register_static(GTK_TYPE_WINDOW,
 							 "AgsMidiExportWizard", &ags_midi_export_wizard_info,
 							 0);
 
@@ -158,20 +158,35 @@ ags_midi_export_wizard_applicable_interface_init(AgsApplicableInterface *applica
 void
 ags_midi_export_wizard_init(AgsMidiExportWizard *midi_export_wizard)
 {
-  AgsApplicationContext *application_context;
+  AgsFileWidget *file_widget;
+  GtkBox *vbox;
+  GtkBox *action_area;
+  GtkButton *button;
   
+  AgsApplicationContext *application_context;
+
+  gchar *recently_used_filename;
+  gchar *home_path;
+  gchar *sandbox_path;
+
+  application_context = ags_application_context_get_instance();
+  
+  midi_export_wizard->flags = AGS_MIDI_EXPORT_WIZARD_SHOW_MACHINE_COLLECTION;
+
   gtk_window_set_hide_on_close((GtkWindow *) midi_export_wizard,
 			       TRUE);
 
   gtk_widget_set_size_request(GTK_WIDGET(midi_export_wizard),
 			      AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_WIDTH, AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_HEIGHT);
 
-  application_context = ags_application_context_get_instance();
-
   gtk_window_set_transient_for((GtkWindow *) midi_export_wizard,
 			       (GtkWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
-  
-  midi_export_wizard->flags = AGS_MIDI_EXPORT_WIZARD_SHOW_MACHINE_COLLECTION;
+
+  /* vbox */
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				6);
+  gtk_window_set_child((GtkWindow *) midi_export_wizard,
+		       (GtkWidget *) vbox);
 
   /* midi builder */
   midi_export_wizard->midi_builder = ags_midi_builder_new();
@@ -197,33 +212,105 @@ ags_midi_export_wizard_init(AgsMidiExportWizard *midi_export_wizard)
 		 (GtkWidget*) midi_export_wizard->machine_collection);
   
   /* file chooser */  
-  midi_export_wizard->file_chooser = gtk_file_chooser_widget_new(GTK_FILE_CHOOSER_ACTION_SAVE);
+  file_widget = ags_file_widget_new();
 
-  gtk_widget_set_halign(midi_export_wizard->file_chooser,
+  midi_export_wizard->file_widget = file_widget;
+
+  home_path = ags_file_widget_get_home_path(file_widget);
+
+  sandbox_path = NULL;
+  
+#if defined(AGS_MACOS_SANDBOX)
+  sandbox_path = g_strdup_printf("%s/Library/%s",
+				 home_path,
+				 AGS_DEFAULT_BUNDLE_ID);
+
+  recently_used_filename = g_strdup_printf("%s/%s/gsequencer_app_recently_used.xml",
+					   sandbox_path,
+					   AGS_DEFAULT_DIRECTORY);
+#else
+  recently_used_filename = g_strdup_printf("%s/%s/gsequencer_app_recently_used.xml",
+					   home_path,
+					   AGS_DEFAULT_DIRECTORY);
+#endif
+
+  ags_file_widget_set_recently_used_filename(file_widget,
+					     recently_used_filename);
+  
+  ags_file_widget_read_recently_used(file_widget);
+
+#if defined(AGS_MACOS_SANDBOX)
+  ags_file_widget_set_flags(file_widget,
+			    AGS_FILE_WIDGET_APP_SANDBOX);
+
+  ags_file_widget_set_current_path(file_widget,
+				   sandbox_path);
+#else
+  ags_file_widget_set_current_path(file_widget,
+				   home_path);
+#endif
+
+  ags_file_widget_refresh(file_widget);
+
+  ags_file_widget_add_location(file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_DESKTOP,
+			       NULL);
+
+  ags_file_widget_add_location(file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_DOCUMENTS,
+			       NULL);  
+
+  ags_file_widget_add_location(file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_MUSIC,
+			       NULL);
+
+  ags_file_widget_add_location(file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_HOME,
+			       NULL);
+
+  ags_file_widget_set_file_action(file_widget,
+				  AGS_FILE_WIDGET_SAVE_AS);
+
+  ags_file_widget_set_default_bundle(file_widget,
+				     AGS_DEFAULT_BUNDLE_ID);
+
+  gtk_widget_set_halign(file_widget,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_valign(midi_export_wizard->file_chooser,
+  gtk_widget_set_valign(file_widget,
 			GTK_ALIGN_FILL);
 
-  gtk_widget_set_hexpand(midi_export_wizard->file_chooser,
+  gtk_widget_set_hexpand(file_widget,
 			 TRUE);
-  gtk_widget_set_vexpand(midi_export_wizard->file_chooser,
+  gtk_widget_set_vexpand(file_widget,
 			 TRUE);
 
-  gtk_widget_set_visible(midi_export_wizard->file_chooser,
+  gtk_widget_set_visible(file_widget,
 			 FALSE);
   
-  gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(midi_export_wizard->file_chooser),
-				    AGS_MIDI_EXPORT_WIZARD_DEFAULT_FILENAME);
+  gtk_box_append(vbox,
+		 (GtkWidget*) file_widget);
+
+  /*  */
+  action_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				       6);
+
+  gtk_widget_set_halign(action_area,
+			GTK_ALIGN_END);
+
+  gtk_box_append(vbox,
+		 (GtkWidget *) action_area);
+
+  midi_export_wizard->prev_button = (GtkButton *) gtk_button_new_with_label(i18n("previous"));
+  gtk_box_append(action_area,
+		 (GtkWidget *) midi_export_wizard->prev_button);
+
+  midi_export_wizard->next_button = (GtkButton *) gtk_button_new_with_label(i18n("next"));
+  gtk_box_append(action_area,
+		 (GtkWidget *) midi_export_wizard->next_button);
   
-  gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) midi_export_wizard),
-		 (GtkWidget*) midi_export_wizard->file_chooser);
-  
-  gtk_dialog_add_buttons((GtkDialog *) midi_export_wizard,
-			 i18n("_Back"), GTK_RESPONSE_CANCEL,
-			 i18n("_Forward"), GTK_RESPONSE_OK,
-			 i18n("_OK"), GTK_RESPONSE_ACCEPT,
-			 i18n("_Cancel"), GTK_RESPONSE_REJECT,
-			 NULL);
+  midi_export_wizard->activate_button = (GtkButton *) gtk_button_new_with_label(i18n("open"));
+  gtk_box_append(action_area,
+		 (GtkWidget *) midi_export_wizard->activate_button);
 }
 
 void
@@ -267,14 +354,11 @@ ags_midi_export_wizard_connect(AgsConnectable *connectable)
 
   midi_export_wizard = AGS_MIDI_EXPORT_WIZARD(connectable);
 
-  if((AGS_MIDI_EXPORT_WIZARD_CONNECTED & (midi_export_wizard->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (midi_export_wizard->connectable_flags)) != 0){
     return;
   }
 
-  midi_export_wizard->flags |= AGS_MIDI_EXPORT_WIZARD_CONNECTED;
-  
-  g_signal_connect(midi_export_wizard, "response",
-		   G_CALLBACK(ags_midi_export_wizard_response_callback), NULL);
+  midi_export_wizard->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
   ags_connectable_connect(AGS_CONNECTABLE(midi_export_wizard->machine_collection));
 }
@@ -286,11 +370,11 @@ ags_midi_export_wizard_disconnect(AgsConnectable *connectable)
 
   midi_export_wizard = AGS_MIDI_EXPORT_WIZARD(connectable);
 
-  if((AGS_MIDI_EXPORT_WIZARD_CONNECTED & (midi_export_wizard->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (midi_export_wizard->connectable_flags)) == 0){
     return;
   }
 
-  midi_export_wizard->flags &= (~AGS_MIDI_EXPORT_WIZARD_CONNECTED);
+  midi_export_wizard->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   ags_connectable_disconnect(AGS_CONNECTABLE(midi_export_wizard->machine_collection));
 }
@@ -312,8 +396,6 @@ ags_midi_export_wizard_apply(AgsApplicable *applicable)
   AgsMidiExportWizard *midi_export_wizard;
 
   AgsApplicationContext *application_context;
-
-  GFile *file;
 
   GList *list, *start_list;
   
@@ -364,9 +446,7 @@ ags_midi_export_wizard_apply(AgsApplicable *applicable)
   midi_export_wizard->pulse_unit = division / 16.0;
   
   /* open file */
-  file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(midi_export_wizard->file_chooser));
-
-  filename = g_file_get_path(file);
+  filename = ags_file_widget_get_filename(midi_export_wizard->file_widget);
 
   ags_midi_builder_open_filename(midi_export_wizard->midi_builder,
 				 filename);
@@ -387,8 +467,6 @@ ags_midi_export_wizard_apply(AgsApplicable *applicable)
   ags_midi_builder_write(midi_export_wizard->midi_builder);
 
   g_free(filename);
-
-  g_object_unref(file);
 }
 
 void
@@ -461,7 +539,7 @@ ags_midi_export_wizard_set_flags(AgsMidiExportWizard *midi_export_wizard,
   }
 
   if((AGS_MIDI_EXPORT_WIZARD_SHOW_FILE_CHOOSER & (flags)) != 0){
-    gtk_widget_show(midi_export_wizard->file_chooser);
+    gtk_widget_show(midi_export_wizard->file_widget);
   }
 
   midi_export_wizard->flags |= flags;
@@ -489,7 +567,7 @@ ags_midi_export_wizard_unset_flags(AgsMidiExportWizard *midi_export_wizard,
   }
 
   if((AGS_MIDI_EXPORT_WIZARD_SHOW_FILE_CHOOSER & (flags)) != 0){
-    gtk_widget_hide(midi_export_wizard->file_chooser);
+    gtk_widget_hide(midi_export_wizard->file_widget);
   }
 
   midi_export_wizard->flags &= (~flags);

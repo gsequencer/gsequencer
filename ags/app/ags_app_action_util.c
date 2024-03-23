@@ -615,7 +615,7 @@ ags_app_action_util_save_as()
 				   home_path);
 #endif
 
-  ags_file_widget_refresh(file_dialog->file_widget);
+  ags_file_widget_refresh(file_widget);
 
   ags_file_widget_add_location(file_widget,
 			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_DESKTOP,
