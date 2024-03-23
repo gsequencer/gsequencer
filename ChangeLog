@@ -7,6 +7,9 @@ ags (6.6.0)
 	* moved ags/app/ags_input_dialog.[ch] to ags/widget/
 	* refactored ags_app_action_util.c to use AgsFileDialog
 	* refactored AgsPCMFileDialog to use AgsFileWidget
+	* refactored AgsExportSoundcard to use AgsPCMFileDialog
+	* refactored AgsMidiExportWizard to use AgsFileWidget
+	* TODO:JK: refactored AgsMidiImportWizard to use AgsFileWidget
 	* refactored AgsLinkEditor to use AgsPCMFileDialog
 	* refactored AgsDrum to use AgsPCMFileDialog
 	* refactored AgsDrumInputPad to use AgsPCMFileDialog

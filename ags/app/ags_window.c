@@ -309,7 +309,7 @@ ags_window_init(AgsWindow *window)
   
   /* vbox */
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-				0);
+				6);
   gtk_window_set_child((GtkWindow *) window,
 		       (GtkWidget *) vbox);
   

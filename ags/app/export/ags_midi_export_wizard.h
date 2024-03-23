@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -53,27 +53,32 @@ typedef struct _AgsMidiExportWizard AgsMidiExportWizard;
 typedef struct _AgsMidiExportWizardClass AgsMidiExportWizardClass;
 
 typedef enum{
-  AGS_MIDI_EXPORT_WIZARD_CONNECTED                 = 1,
-  AGS_MIDI_EXPORT_WIZARD_SHOW_MACHINE_COLLECTION   = 1 << 1,
-  AGS_MIDI_EXPORT_WIZARD_SHOW_FILE_CHOOSER         = 1 << 2,
+  AGS_MIDI_EXPORT_WIZARD_SHOW_MACHINE_COLLECTION   = 1,
+  AGS_MIDI_EXPORT_WIZARD_SHOW_FILE_CHOOSER         = 1 << 1,
 }AgsMidiExportWizardFlags;
 
 struct _AgsMidiExportWizard
 {
-  GtkDialog dialog;
+  GtkWindow window;
 
   guint flags;
-
+  guint connectable_flags;
+  
   AgsMidiBuilder *midi_builder;
   guint pulse_unit;
   
   GtkWidget *machine_collection;
-  GtkWidget *file_chooser;
+  GtkWidget *file_widget;
+
+  GtkButton *prev_button;
+  GtkButton *next_button;
+
+  GtkButton *activate_button;
 };
 
 struct _AgsMidiExportWizardClass
 {
-  GtkDialogClass dialog;
+  GtkWindowClass window;
 };
 
 GType ags_midi_export_wizard_get_type(void);
