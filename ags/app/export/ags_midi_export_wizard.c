@@ -50,6 +50,33 @@ void ags_midi_export_wizard_reset(AgsApplicable *applicable);
 
 void ags_midi_export_wizard_show(GtkWidget *widget);
 
+void ags_midi_export_wizard_close_request_callback(GtkWindow *window,
+						   AgsMidiExportWizard *midi_export_wizard);
+
+void ags_midi_export_wizard_previous_button_callback(GtkButton *activate_button,
+						     AgsMidiExportWizard *midi_export_wizard);
+void ags_midi_export_wizard_next_button_callback(GtkButton *activate_button,
+						 AgsMidiExportWizard *midi_export_wizard);
+void ags_midi_export_wizard_activate_button_callback(GtkButton *activate_button,
+						     AgsMidiExportWizard *midi_export_wizard);
+
+gboolean ags_midi_export_wizard_key_pressed_callback(GtkEventControllerKey *event_controller,
+						     guint keyval,
+						     guint keycode,
+						     GdkModifierType state,
+						     AgsMidiExportWizard *midi_export_wizard);
+void ags_midi_export_wizard_key_released_callback(GtkEventControllerKey *event_controller,
+						  guint keyval,
+						  guint keycode,
+						  GdkModifierType state,
+						  AgsMidiExportWizard *midi_export_wizard);
+gboolean ags_midi_export_wizard_modifiers_callback(GtkEventControllerKey *event_controller,
+						   GdkModifierType keyval,
+						   AgsMidiExportWizard *midi_export_wizard);
+
+void ags_midi_export_wizard_real_response(AgsMidiExportWizard *midi_export_wizard,
+					  gint response_id);
+
 /**
  * SECTION:ags_midi_export_wizard
  * @short_description: Export to MIDI using wizard
@@ -61,7 +88,14 @@ void ags_midi_export_wizard_show(GtkWidget *widget);
  * to export to midi files.
  */
 
+enum{
+  RESPONSE,
+  LAST_SIGNAL,
+};
+
 static gpointer ags_midi_export_wizard_parent_class = NULL;
+
+static guint midi_export_wizard_signals[LAST_SIGNAL];
 
 enum{
   PROP_0,
@@ -136,6 +170,28 @@ ags_midi_export_wizard_class_init(AgsMidiExportWizardClass *midi_export_wizard)
 
   /* GtkWidget */
   widget->show = ags_midi_export_wizard_show;
+
+  /* AgsMidiExportWizard */
+  midi_export_wizard->response = ags_midi_export_wizard_real_response;
+  
+  /* signals */
+  /**
+   * AgsMidiExportWizard::response:
+   * @midi_export_wizard: the #AgsMidiExportWizard
+   *
+   * The ::response signal notifies about window interaction.
+   *
+   * Since: 6.6.0
+   */
+  midi_export_wizard_signals[RESPONSE] =
+    g_signal_new("response",
+		 G_TYPE_FROM_CLASS(midi_export_wizard),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsMidiExportWizardClass, response),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__INT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_INT);
 }
 
 void
@@ -163,6 +219,8 @@ ags_midi_export_wizard_init(AgsMidiExportWizard *midi_export_wizard)
   GtkBox *action_area;
   GtkButton *button;
   
+  GtkEventController *event_controller;
+
   AgsApplicationContext *application_context;
 
   gchar *recently_used_filename;
@@ -182,9 +240,25 @@ ags_midi_export_wizard_init(AgsMidiExportWizard *midi_export_wizard)
   gtk_window_set_transient_for((GtkWindow *) midi_export_wizard,
 			       (GtkWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
 
+  g_signal_connect(midi_export_wizard, "close-request",
+		   G_CALLBACK(ags_midi_export_wizard_close_request_callback), midi_export_wizard);
+
+  event_controller = gtk_event_controller_key_new();
+  gtk_widget_add_controller((GtkWidget *) midi_export_wizard,
+			    event_controller);
+
+  g_signal_connect(event_controller, "key-pressed",
+		   G_CALLBACK(ags_midi_export_wizard_key_pressed_callback), midi_export_wizard);
+  
+  g_signal_connect(event_controller, "key-released",
+		   G_CALLBACK(ags_midi_export_wizard_key_released_callback), midi_export_wizard);
+
+  g_signal_connect(event_controller, "modifiers",
+		   G_CALLBACK(ags_midi_export_wizard_modifiers_callback), midi_export_wizard);
+
   /* vbox */
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-				6);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_window_set_child((GtkWindow *) midi_export_wizard,
 		       (GtkWidget *) vbox);
 
@@ -208,7 +282,7 @@ ags_midi_export_wizard_init(AgsMidiExportWizard *midi_export_wizard)
   gtk_widget_set_vexpand(midi_export_wizard->machine_collection,
 			TRUE);
 
-  gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) midi_export_wizard),
+  gtk_box_append(vbox,
 		 (GtkWidget*) midi_export_wizard->machine_collection);
   
   /* file chooser */  
@@ -290,9 +364,9 @@ ags_midi_export_wizard_init(AgsMidiExportWizard *midi_export_wizard)
   gtk_box_append(vbox,
 		 (GtkWidget*) file_widget);
 
-  /*  */
+  /* buttons */
   action_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				       6);
+				       AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   gtk_widget_set_halign(action_area,
 			GTK_ALIGN_END);
@@ -304,13 +378,22 @@ ags_midi_export_wizard_init(AgsMidiExportWizard *midi_export_wizard)
   gtk_box_append(action_area,
 		 (GtkWidget *) midi_export_wizard->prev_button);
 
+  g_signal_connect(midi_export_wizard->prev_button, "clicked",
+		   G_CALLBACK(ags_midi_export_wizard_previous_button_callback), midi_export_wizard);
+
   midi_export_wizard->next_button = (GtkButton *) gtk_button_new_with_label(i18n("next"));
   gtk_box_append(action_area,
 		 (GtkWidget *) midi_export_wizard->next_button);
   
+  g_signal_connect(midi_export_wizard->next_button, "clicked",
+		   G_CALLBACK(ags_midi_export_wizard_next_button_callback), midi_export_wizard);
+
   midi_export_wizard->activate_button = (GtkButton *) gtk_button_new_with_label(i18n("open"));
   gtk_box_append(action_area,
 		 (GtkWidget *) midi_export_wizard->activate_button);
+
+  g_signal_connect(midi_export_wizard->activate_button, "clicked",
+		   G_CALLBACK(ags_midi_export_wizard_activate_button_callback), midi_export_wizard);
 }
 
 void
@@ -489,6 +572,177 @@ ags_midi_export_wizard_show(GtkWidget *widget)
   midi_export_wizard = AGS_MIDI_EXPORT_WIZARD(widget);
 
   GTK_WIDGET_CLASS(ags_midi_export_wizard_parent_class)->show(widget);
+}
+
+void
+ags_midi_export_wizard_close_request_callback(GtkWindow *window,
+					      AgsMidiExportWizard *midi_export_wizard)
+{
+  ags_midi_export_wizard_response(midi_export_wizard,
+				  GTK_RESPONSE_CLOSE);
+}
+
+void
+ags_midi_export_wizard_previous_button_callback(GtkButton *previous_button,
+						AgsMidiExportWizard *midi_export_wizard)
+{
+  ags_midi_export_wizard_response(midi_export_wizard,
+				  GTK_RESPONSE_CANCEL);
+}
+
+void
+ags_midi_export_wizard_next_button_callback(GtkButton *next_button,
+					    AgsMidiExportWizard *midi_export_wizard)
+{
+  ags_midi_export_wizard_response(midi_export_wizard,
+				  GTK_RESPONSE_OK);
+}
+
+void
+ags_midi_export_wizard_activate_button_callback(GtkButton *activate_button,
+						AgsMidiExportWizard *midi_export_wizard)
+{
+  ags_midi_export_wizard_response(midi_export_wizard,
+				  GTK_RESPONSE_ACCEPT);
+}
+
+gboolean
+ags_midi_export_wizard_key_pressed_callback(GtkEventControllerKey *event_controller,
+					    guint keyval,
+					    guint keycode,
+					    GdkModifierType state,
+					    AgsMidiExportWizard *midi_export_wizard)
+{
+  gboolean key_handled;
+
+  key_handled = TRUE;
+
+  if(keyval == GDK_KEY_Tab ||
+     keyval == GDK_KEY_ISO_Left_Tab ||
+     keyval == GDK_KEY_Shift_L ||
+     keyval == GDK_KEY_Shift_R ||
+     keyval == GDK_KEY_Alt_L ||
+     keyval == GDK_KEY_Alt_R ||
+     keyval == GDK_KEY_Control_L ||
+     keyval == GDK_KEY_Control_R){
+    key_handled = FALSE;
+  }
+  
+  return(key_handled);
+}
+
+void
+ags_midi_export_wizard_key_released_callback(GtkEventControllerKey *event_controller,
+					     guint keyval,
+					     guint keycode,
+					     GdkModifierType state,
+					     AgsMidiExportWizard *midi_export_wizard)
+{
+  gboolean key_handled;
+
+  key_handled = TRUE;
+
+  if(keyval == GDK_KEY_Tab ||
+     keyval == GDK_KEY_ISO_Left_Tab ||
+     keyval == GDK_KEY_Shift_L ||
+     keyval == GDK_KEY_Shift_R ||
+     keyval == GDK_KEY_Alt_L ||
+     keyval == GDK_KEY_Alt_R ||
+     keyval == GDK_KEY_Control_L ||
+     keyval == GDK_KEY_Control_R){
+    key_handled = FALSE;
+  }else{
+    switch(keyval){
+    case GDK_KEY_Escape:
+      {
+	ags_midi_export_wizard_response(midi_export_wizard,
+					GTK_RESPONSE_CLOSE);	
+      }
+      break;
+    }
+  }
+}
+
+gboolean
+ags_midi_export_wizard_modifiers_callback(GtkEventControllerKey *event_controller,
+					  GdkModifierType keyval,
+					  AgsMidiExportWizard *midi_export_wizard)
+{
+  return(FALSE);
+}
+
+void
+ags_midi_export_wizard_real_response(AgsMidiExportWizard *midi_export_wizard,
+				     gint response_id)
+{
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+  
+  switch(response_id){
+  case GTK_RESPONSE_CANCEL:
+    {
+      if(ags_midi_export_wizard_test_flags(midi_export_wizard, AGS_MIDI_EXPORT_WIZARD_SHOW_FILE_CHOOSER)){
+	/* show/hide */
+	ags_midi_export_wizard_unset_flags(midi_export_wizard,
+					   AGS_MIDI_EXPORT_WIZARD_SHOW_FILE_CHOOSER);
+	
+	ags_midi_export_wizard_set_flags(midi_export_wizard,
+					 AGS_MIDI_EXPORT_WIZARD_SHOW_MACHINE_COLLECTION);
+      }
+    }
+    break;
+  case GTK_RESPONSE_OK:
+    {
+      if(ags_midi_export_wizard_test_flags(midi_export_wizard, AGS_MIDI_EXPORT_WIZARD_SHOW_MACHINE_COLLECTION)){
+	/* show/hide */
+	ags_midi_export_wizard_unset_flags(midi_export_wizard,
+					   AGS_MIDI_EXPORT_WIZARD_SHOW_MACHINE_COLLECTION);
+	
+	ags_midi_export_wizard_set_flags(midi_export_wizard,
+					 AGS_MIDI_EXPORT_WIZARD_SHOW_FILE_CHOOSER);
+      }
+    }
+    break;
+  case GTK_RESPONSE_ACCEPT:
+    {
+      ags_applicable_apply(AGS_APPLICABLE(midi_export_wizard));
+    }
+  case GTK_RESPONSE_DELETE_EVENT:
+  case GTK_RESPONSE_CLOSE:
+  case GTK_RESPONSE_REJECT:
+    {
+      ags_ui_provider_set_midi_export_wizard(AGS_UI_PROVIDER(application_context),
+					     NULL);
+      
+      gtk_window_destroy((GtkWindow *) midi_export_wizard);
+    }
+    break;
+  default:
+    g_warning("unknown response");
+  }
+}
+
+/**
+ * ags_midi_export_wizard_response:
+ * @midi_export_wizard: the #AgsMidiExportWizard
+ * @response: the response
+ *
+ * Response @midi_export_wizard due to user action.
+ * 
+ * Since: 6.6.0
+ */
+void
+ags_midi_export_wizard_response(AgsMidiExportWizard *midi_export_wizard,
+				gint response)
+{
+  g_return_if_fail(AGS_IS_MIDI_EXPORT_WIZARD(midi_export_wizard));
+  
+  g_object_ref((GObject *) midi_export_wizard);
+  g_signal_emit(G_OBJECT(midi_export_wizard),
+		midi_export_wizard_signals[RESPONSE], 0,
+		response);
+  g_object_unref((GObject *) midi_export_wizard);
 }
 
 /**

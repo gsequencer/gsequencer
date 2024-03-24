@@ -128,7 +128,7 @@ ags_pcm_file_dialog_class_init(AgsPCMFileDialogClass *pcm_file_dialog)
     g_signal_new("response",
 		 G_TYPE_FROM_CLASS(pcm_file_dialog),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsFileDialogClass, response),
+		 G_STRUCT_OFFSET(AgsPCMFileDialogClass, response),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__INT,
 		 G_TYPE_NONE, 1,
@@ -168,7 +168,7 @@ ags_pcm_file_dialog_init(AgsPCMFileDialog *pcm_file_dialog)
   g_signal_connect(event_controller, "modifiers",
 		   G_CALLBACK(ags_pcm_file_dialog_modifiers_callback), pcm_file_dialog);
 
-  /* file chooser */  
+  /* file widget */  
   pcm_file_dialog->flags = AGS_PCM_FILE_DIALOG_SHOW_AUDIO_CHANNEL;
   
   content_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
