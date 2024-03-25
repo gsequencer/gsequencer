@@ -229,6 +229,7 @@ ags_ffplayer_open_clicked_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
   AgsApplicationContext *application_context;
 
   gchar *recently_used_filename;
+  gchar *bookmark_filename;
   gchar *home_path;
   gchar *sandbox_path;
 
@@ -256,16 +257,31 @@ ags_ffplayer_open_clicked_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
   recently_used_filename = g_strdup_printf("%s/%s/gsequencer_sf2_recently_used.xml",
 					   sandbox_path,
 					   AGS_DEFAULT_DIRECTORY);
+
+  bookmark_filename = g_strdup_printf("%s/%s/gsequencer_sf2_bookmark.xml",
+				      sandbox_path,
+				      AGS_DEFAULT_DIRECTORY);
 #else
   recently_used_filename = g_strdup_printf("%s/%s/gsequencer_sf2_recently_used.xml",
 					   home_path,
 					   AGS_DEFAULT_DIRECTORY);
+
+  bookmark_filename = g_strdup_printf("%s/%s/gsequencer_sf2_bookmark.xml",
+				      home_path,
+				      AGS_DEFAULT_DIRECTORY);
 #endif
 
+  /* recently-used */
   ags_file_widget_set_recently_used_filename(file_widget,
 					     recently_used_filename);
   
   ags_file_widget_read_recently_used(file_widget);
+
+  /* bookmark */
+  ags_file_widget_set_bookmark_filename(file_widget,
+					bookmark_filename);
+
+  ags_file_widget_read_bookmark(file_widget);
 
 #if defined(AGS_MACOS_SANDBOX)
   ags_file_widget_set_flags(file_widget,
