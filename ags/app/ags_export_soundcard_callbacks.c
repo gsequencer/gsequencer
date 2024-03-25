@@ -426,8 +426,6 @@ ags_export_soundcard_open_response_callback(AgsPCMFileDialog *pcm_file_dialog,
 
     ags_export_soundcard_set_filename(export_soundcard,
 				      filename);
-
-    g_free(filename);
   }
   
   gtk_window_destroy((GtkWindow *) pcm_file_dialog);
