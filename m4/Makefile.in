@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-#Copyright (C) 2005-2021 Joel Kraehemann
+#Copyright (C) 2005-2024 Joel Kraehemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -96,7 +96,8 @@ build_triplet = @build@
 host_triplet = @host@
 subdir = m4
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/ags-docs-api.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/ags-def.m4 \
+	$(top_srcdir)/m4/ags-docs-api.m4 \
 	$(top_srcdir)/m4/ags-docs-books.m4 \
 	$(top_srcdir)/m4/ags-listings.m4 \
 	$(top_srcdir)/m4/ags-marshallers.m4 \
@@ -400,6 +401,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 EXTRA_DIST = host-cpu-c-abi.m4 \
+        ags-def.m4 \
         ags-docs-api.m4 \
         ags-docs-books.m4 \
         ags-listings.m4 \
@@ -457,9 +459,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu m4/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign m4/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu m4/Makefile
+	  $(AUTOMAKE) --foreign m4/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \

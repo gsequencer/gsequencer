@@ -349,7 +349,7 @@ AS_IF([test "x$enable_w32api" != xno],
 #      W32API_LIBS="-L./lib -lgnu"
       AC_SUBST(W32API_CFLAGS)
       AC_SUBST(W32API_LIBS)
-      DLL_VERSION=`expr ${LT_CURRENT} - ${LT_AGE}`
+      DLL_VERSION="${LT_CURRENT}.0"
       AC_SUBST(DLL_VERSION)
       AC_MSG_NOTICE([w32api enabled])],
       [AC_MSG_NOTICE([w32api disabled])])
@@ -769,6 +769,14 @@ LIBAGS_AUDIO_SYMBOLS([])
 LIBAGS_VST_SYMBOLS([])
 LIBAGS_GUI_SYMBOLS([])
 
+AS_IF([test "x$enable_w32api" != xno],
+      [LIBAGS_DEF([])
+       LIBAGS_THREAD_DEF([])
+       LIBAGS_SERVER_DEF([])
+       LIBAGS_AUDIO_DEF([])
+       LIBAGS_VST_DEF([])
+       LIBAGS_GUI_DEF([])])
+     
 LIBAGS_MARSHALLERS([])
 LIBAGS_GUI_MARSHALLERS([])
 
