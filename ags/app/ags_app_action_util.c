@@ -133,6 +133,7 @@ ags_app_action_util_open()
   AgsFileWidget *file_widget;
 
   gchar *recently_used_filename;
+  gchar *bookmark_filename;
   gchar *home_path;
   gchar *sandbox_path;
 
@@ -159,16 +160,31 @@ ags_app_action_util_open()
   recently_used_filename = g_strdup_printf("%s/%s/gsequencer_app_recently_used.xml",
 					   sandbox_path,
 					   AGS_DEFAULT_DIRECTORY);
+
+  bookmark_filename = g_strdup_printf("%s/%s/gsequencer_app_bookmark.xml",
+				      sandbox_path,
+				      AGS_DEFAULT_DIRECTORY);
 #else
   recently_used_filename = g_strdup_printf("%s/%s/gsequencer_app_recently_used.xml",
 					   home_path,
 					   AGS_DEFAULT_DIRECTORY);
+
+  bookmark_filename = g_strdup_printf("%s/%s/gsequencer_app_bookmark.xml",
+				      home_path,
+				      AGS_DEFAULT_DIRECTORY);
 #endif
 
+  /* recently-used */
   ags_file_widget_set_recently_used_filename(file_widget,
 					     recently_used_filename);
   
   ags_file_widget_read_recently_used(file_widget);
+
+  /* bookmark */
+  ags_file_widget_set_bookmark_filename(file_widget,
+					bookmark_filename);
+
+  ags_file_widget_read_bookmark(file_widget);
 
 #if defined(AGS_MACOS_SANDBOX)
   ags_file_widget_set_flags(file_widget,
@@ -239,7 +255,7 @@ ags_app_action_util_open_response_callback(AgsFileDialog *file_dialog,
 
     file_widget = ags_file_dialog_get_file_widget(file_dialog);
 
-    filename = ags_file_widget_get_current_path(file_widget);
+    filename = ags_file_widget_get_filename(file_widget);
 
     if(!g_strv_contains(file_widget->recently_used, filename)){
       strv_length = g_strv_length(file_widget->recently_used);
