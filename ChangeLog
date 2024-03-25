@@ -7,6 +7,7 @@ ags (6.6.0)
 	* moved ags/app/ags_input_dialog.[ch] to ags/widget/
 	* refactored ags_app_action_util.c to use AgsFileDialog
 	* refactored AgsPCMFileDialog to use AgsFileWidget
+	* refactored AgsWaveExportDialog to use AgsFileDialog
 	* refactored AgsExportSoundcard to use AgsPCMFileDialog
 	* refactored AgsMidiExportWizard to use AgsFileWidget
 	* refactored AgsMidiImportWizard to use AgsFileWidget

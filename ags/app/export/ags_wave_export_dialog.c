@@ -50,6 +50,23 @@ void ags_wave_export_dialog_get_property(GObject *gobject,
 					 GParamSpec *param_spec);
 void ags_wave_export_dialog_finalize(GObject *gobject);
 
+void ags_wave_export_dialog_close_request_callback(GtkWindow *window,
+						   AgsWaveExportDialog *wave_export_dialog);
+
+gboolean ags_wave_export_dialog_key_pressed_callback(GtkEventControllerKey *event_controller,
+						     guint keyval,
+						     guint keycode,
+						     GdkModifierType state,
+						     AgsWaveExportDialog *wave_export_dialog);
+void ags_wave_export_dialog_key_released_callback(GtkEventControllerKey *event_controller,
+						  guint keyval,
+						  guint keycode,
+						  GdkModifierType state,
+						  AgsWaveExportDialog *wave_export_dialog);
+gboolean ags_wave_export_dialog_modifiers_callback(GtkEventControllerKey *event_controller,
+						   GdkModifierType keyval,
+						   AgsWaveExportDialog *wave_export_dialog);
+
 gboolean ags_wave_export_dialog_is_connected(AgsConnectable *connectable);
 void ags_wave_export_dialog_connect(AgsConnectable *connectable);
 void ags_wave_export_dialog_disconnect(AgsConnectable *connectable);
@@ -59,6 +76,9 @@ void ags_wave_export_dialog_apply(AgsApplicable *applicable);
 void ags_wave_export_dialog_reset(AgsApplicable *applicable);
 
 void ags_wave_export_dialog_show(GtkWidget *widget);
+
+void ags_wave_export_dialog_real_response(AgsWaveExportDialog *wave_export_dialog,
+					  gint response);
 
 /**
  * SECTION:ags_wave_export_dialog
@@ -174,6 +194,28 @@ ags_wave_export_dialog_class_init(AgsWaveExportDialogClass *wave_export_dialog)
   widget = (GtkWidgetClass *) wave_export_dialog;
 
   widget->show = ags_wave_export_dialog_show;
+
+  /* AgsWaveExportDialog */
+  wave_export_dialog->response = ags_wave_export_dialog_real_response;
+  
+  /* signals */
+  /**
+   * AgsWaveExportDialog::response:
+   * @wave_export_dialog: the #AgsWaveExportDialog
+   *
+   * The ::response signal notifies about window interaction.
+   *
+   * Since: 6.6.0
+   */
+  wave_export_dialog_signals[RESPONSE] =
+    g_signal_new("response",
+		 G_TYPE_FROM_CLASS(wave_export_dialog),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsWaveExportDialogClass, response),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__INT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_INT);
 }
 
 void
@@ -214,6 +256,8 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
   GtkBox *action_area;
   GtkLabel *label;
 
+  GtkEventController *event_controller;
+
   wave_export_dialog->flags = 0;
   wave_export_dialog->connectable_flags = 0;
   
@@ -223,6 +267,22 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
 
   gtk_widget_set_size_request(GTK_WIDGET(wave_export_dialog),
 			      AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_WIDTH, AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_HEIGHT);
+
+  g_signal_connect(wave_export_dialog, "close-request",
+		   G_CALLBACK(ags_wave_export_dialog_close_request_callback), wave_export_dialog);
+
+  event_controller = gtk_event_controller_key_new();
+  gtk_widget_add_controller((GtkWidget *) wave_export_dialog,
+			    event_controller);
+
+  g_signal_connect(event_controller, "key-pressed",
+		   G_CALLBACK(ags_wave_export_dialog_key_pressed_callback), wave_export_dialog);
+  
+  g_signal_connect(event_controller, "key-released",
+		   G_CALLBACK(ags_wave_export_dialog_key_released_callback), wave_export_dialog);
+
+  g_signal_connect(event_controller, "modifiers",
+		   G_CALLBACK(ags_wave_export_dialog_modifiers_callback), wave_export_dialog);
 
   /* vbox */
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
@@ -527,6 +587,87 @@ ags_wave_export_dialog_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_wave_export_dialog_close_request_callback(GtkWindow *window,
+					      AgsWaveExportDialog *wave_export_dialog)
+{
+  ags_wave_export_dialog_response(wave_export_dialog,
+				  GTK_RESPONSE_CANCEL);
+}
+
+void
+ags_wave_export_dialog_activate_button_callback(GtkButton *activate_button,
+						AgsWaveExportDialog *wave_export_dialog)
+{
+  ags_wave_export_dialog_response(wave_export_dialog,
+				  GTK_RESPONSE_ACCEPT);
+}
+
+gboolean
+ags_wave_export_dialog_key_pressed_callback(GtkEventControllerKey *event_controller,
+					    guint keyval,
+					    guint keycode,
+					    GdkModifierType state,
+					    AgsWaveExportDialog *wave_export_dialog)
+{
+  gboolean key_handled;
+
+  key_handled = TRUE;
+
+  if(keyval == GDK_KEY_Tab ||
+     keyval == GDK_KEY_ISO_Left_Tab ||
+     keyval == GDK_KEY_Shift_L ||
+     keyval == GDK_KEY_Shift_R ||
+     keyval == GDK_KEY_Alt_L ||
+     keyval == GDK_KEY_Alt_R ||
+     keyval == GDK_KEY_Control_L ||
+     keyval == GDK_KEY_Control_R){
+    key_handled = FALSE;
+  }
+  
+  return(key_handled);
+}
+
+void
+ags_wave_export_dialog_key_released_callback(GtkEventControllerKey *event_controller,
+					     guint keyval,
+					     guint keycode,
+					     GdkModifierType state,
+					     AgsWaveExportDialog *wave_export_dialog)
+{
+  gboolean key_handled;
+
+  key_handled = TRUE;
+
+  if(keyval == GDK_KEY_Tab ||
+     keyval == GDK_KEY_ISO_Left_Tab ||
+     keyval == GDK_KEY_Shift_L ||
+     keyval == GDK_KEY_Shift_R ||
+     keyval == GDK_KEY_Alt_L ||
+     keyval == GDK_KEY_Alt_R ||
+     keyval == GDK_KEY_Control_L ||
+     keyval == GDK_KEY_Control_R){
+    key_handled = FALSE;
+  }else{
+    switch(keyval){
+    case GDK_KEY_Escape:
+      {
+	ags_wave_export_dialog_response(wave_export_dialog,
+					GTK_RESPONSE_CANCEL);	
+      }
+      break;
+    }
+  }
+}
+
+gboolean
+ags_wave_export_dialog_modifiers_callback(GtkEventControllerKey *event_controller,
+					  GdkModifierType keyval,
+					  AgsWaveExportDialog *wave_export_dialog)
+{
+  return(FALSE);
+}
+
+void
 ags_wave_export_dialog_set_update(AgsApplicable *applicable, gboolean update)
 {
   /* empty */
@@ -655,6 +796,37 @@ ags_wave_export_dialog_update_duration(AgsWaveExportDialog *wave_export_dialog)
 		      str);
   
   g_free(str);
+}
+
+
+void
+ags_wave_export_dialog_real_response(AgsWaveExportDialog *wave_export_dialog,
+				     gint response)
+{  
+  gtk_widget_set_visible(wave_export_dialog,
+			 FALSE);
+}
+
+/**
+ * ags_wave_export_dialog_response:
+ * @wave_export_dialog: the #AgsWaveExportDialog
+ * @response: the response
+ *
+ * Response @wave_export_dialog due to user action.
+ * 
+ * Since: 6.6.0
+ */
+void
+ags_wave_export_dialog_response(AgsWaveExportDialog *wave_export_dialog,
+				gint response)
+{
+  g_return_if_fail(AGS_IS_WAVE_EXPORT_DIALOG(wave_export_dialog));
+  
+  g_object_ref((GObject *) wave_export_dialog);
+  g_signal_emit(G_OBJECT(wave_export_dialog),
+		wave_export_dialog_signals[RESPONSE], 0,
+		response);
+  g_object_unref((GObject *) wave_export_dialog);
 }
 
 /**
