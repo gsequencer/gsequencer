@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,15 +34,13 @@
 
 G_BEGIN_DECLS
 
-void ags_wave_export_dialog_file_chooser_button_callback(GtkWidget *file_chooser_button,
-							 AgsWaveExportDialog *wave_export_dialog);
+void ags_wave_export_dialog_file_open_button_callback(GtkWidget *file_open_button,
+						      AgsWaveExportDialog *wave_export_dialog);
 
 void ags_wave_export_dialog_start_tact_callback(GtkSpinButton *spin_button, AgsWaveExportDialog *wave_export_dialog);
 void ags_wave_export_dialog_end_tact_callback(GtkSpinButton *spin_button, AgsWaveExportDialog *wave_export_dialog);
 
-int ags_wave_export_dialog_apply_callback(GtkWidget *widget, AgsWaveExportDialog *wave_export_dialog);
-int ags_wave_export_dialog_ok_callback(GtkWidget *widget, AgsWaveExportDialog *wave_export_dialog);
-int ags_wave_export_dialog_cancel_callback(GtkWidget *widget, AgsWaveExportDialog *wave_export_dialog);
+void ags_wave_export_dialog_save_as_callback(GtkWidget *widget, AgsWaveExportDialog *wave_export_dialog);
 
 G_END_DECLS
 

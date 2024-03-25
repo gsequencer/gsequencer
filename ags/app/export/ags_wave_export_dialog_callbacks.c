@@ -21,14 +21,14 @@
 
 #include <ags/i18n.h>
 
-void ags_wave_export_dialog_file_chooser_response_callback(GtkDialog *file_chooser,
-							   gint response,
-							   AgsWaveExportDialog *wave_export_dialog);
+void ags_wave_export_dialog_file_open_response_callback(GtkDialog *file_chooser,
+							gint response,
+							AgsWaveExportDialog *wave_export_dialog);
 
 void
-ags_wave_export_dialog_file_chooser_response_callback(GtkDialog *file_chooser,
-						      gint response,
-						      AgsWaveExportDialog *wave_export_dialog)
+ags_wave_export_dialog_file_open_response_callback(GtkDialog *file_chooser,
+						   gint response,
+						   AgsWaveExportDialog *wave_export_dialog)
 {
   if(response == GTK_RESPONSE_ACCEPT){
     GFile *file;
@@ -47,19 +47,15 @@ ags_wave_export_dialog_file_chooser_response_callback(GtkDialog *file_chooser,
 }
 
 void
-ags_wave_export_dialog_file_chooser_button_callback(GtkWidget *file_chooser_button,
-						    AgsWaveExportDialog *wave_export_dialog)
+ags_wave_export_dialog_file_open_button_callback(GtkWidget *file_chooser_button,
+						 AgsWaveExportDialog *wave_export_dialog)
 {
-  GtkFileChooserDialog *file_chooser;
+  AgsFileDialog *file_dialog;
   
-  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(i18n("Export to file ..."),
-								      GTK_WINDOW(wave_export_dialog),
-								      GTK_FILE_CHOOSER_ACTION_SAVE,
-								      i18n("_Cancel"), GTK_RESPONSE_CANCEL,
-								      i18n("_OK"), GTK_RESPONSE_ACCEPT,
-								      NULL);
+  file_dialog = ags_file_dialog_new(wave_export_dialog,
+				    i18n("export to file"));
 
-  gtk_widget_show((GtkWidget *) file_chooser);
+  gtk_widget_show((GtkWidget *) file_dialog);
 }
 
 void
@@ -74,19 +70,8 @@ ags_wave_export_dialog_end_tact_callback(GtkSpinButton *spin_button, AgsWaveExpo
   ags_wave_export_dialog_update_duration(wave_export_dialog);
 }
 
-int
-ags_wave_export_dialog_apply_callback(GtkWidget *widget, AgsWaveExportDialog *wave_export_dialog)
-{
-  ags_applicable_apply(AGS_APPLICABLE(wave_export_dialog));
-
-  //TODO:JK: remove me
-  //  ags_applicable_reset(AGS_APPLICABLE(wave_export_dialog));
-
-  return(0);
-}
-
-int
-ags_wave_export_dialog_ok_callback(GtkWidget *widget, AgsWaveExportDialog *wave_export_dialog)
+void
+ags_wave_export_dialog_save_as_callback(GtkWidget *widget, AgsWaveExportDialog *wave_export_dialog)
 {
   //  ags_applicable_set_update(AGS_APPLICABLE(wave_export_dialog), FALSE);
   ags_connectable_disconnect(AGS_CONNECTABLE(wave_export_dialog));
@@ -94,15 +79,4 @@ ags_wave_export_dialog_ok_callback(GtkWidget *widget, AgsWaveExportDialog *wave_
  
   wave_export_dialog->machine->wave_export_dialog = NULL;
   gtk_window_destroy((GtkWindow *) wave_export_dialog);
-
-  return(0);
-}
-
-int
-ags_wave_export_dialog_cancel_callback(GtkWidget *widget, AgsWaveExportDialog *wave_export_dialog)
-{
-  wave_export_dialog->machine->wave_export_dialog = NULL;
-  gtk_window_destroy((GtkWindow *) wave_export_dialog);
-
-  return(0);
 }

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -50,6 +50,7 @@ void ags_wave_export_dialog_get_property(GObject *gobject,
 					 GParamSpec *param_spec);
 void ags_wave_export_dialog_finalize(GObject *gobject);
 
+gboolean ags_wave_export_dialog_is_connected(AgsConnectable *connectable);
 void ags_wave_export_dialog_connect(AgsConnectable *connectable);
 void ags_wave_export_dialog_disconnect(AgsConnectable *connectable);
 
@@ -71,11 +72,18 @@ void ags_wave_export_dialog_show(GtkWidget *widget);
  */
 
 enum{
+  RESPONSE,
+  LAST_SIGNAL,
+};
+
+enum{
   PROP_0,
   PROP_MACHINE,
 };
 
 static gpointer ags_wave_export_dialog_parent_class = NULL;
+
+static guint wave_export_dialog_signals[LAST_SIGNAL];
 
 GType
 ags_wave_export_dialog_get_type()
@@ -171,10 +179,23 @@ ags_wave_export_dialog_class_init(AgsWaveExportDialogClass *wave_export_dialog)
 void
 ags_wave_export_dialog_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_wave_export_dialog_is_connected;  
   connectable->connect = ags_wave_export_dialog_connect;
   connectable->disconnect = ags_wave_export_dialog_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -188,35 +209,42 @@ ags_wave_export_dialog_applicable_interface_init(AgsApplicableInterface *applica
 void
 ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
 {  
-  GtkBox *content_area;
+  GtkBox *vbox;
   GtkBox *hbox;
+  GtkBox *action_area;
   GtkLabel *label;
 
   wave_export_dialog->flags = 0;
-
+  wave_export_dialog->connectable_flags = 0;
+  
   g_object_set(wave_export_dialog,
-	       "title", i18n("Audio fast export"),
+	       "title", i18n("audio fast export"),
 	       NULL);
 
   gtk_widget_set_size_request(GTK_WIDGET(wave_export_dialog),
 			      AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_WIDTH, AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_HEIGHT);
 
-  content_area = (GtkBox *) gtk_dialog_get_content_area(GTK_DIALOG(wave_export_dialog));
+  /* vbox */
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
 
-  gtk_widget_set_valign((GtkWidget *) content_area,
+  gtk_widget_set_valign((GtkWidget *) vbox,
 			GTK_ALIGN_START);
-  gtk_widget_set_vexpand((GtkWidget *) content_area,
+  gtk_widget_set_vexpand((GtkWidget *) vbox,
 			 FALSE);
   
-  gtk_box_set_spacing((GtkBox *) content_area,
+  gtk_box_set_spacing((GtkBox *) vbox,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_window_set_child((GtkWindow *) wave_export_dialog,
+		       (GtkWidget *) vbox);
 
   wave_export_dialog->machine = NULL;
 
   /* filename */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				AGS_UI_PROVIDER_DEFAULT_SPACING);
-  gtk_box_append(content_area,
+  gtk_box_append(vbox,
 		 (GtkWidget *) hbox);
 
   label = (GtkLabel *) gtk_label_new(i18n("file"));
@@ -232,14 +260,14 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
   gtk_box_append(hbox,
 		 (GtkWidget *) wave_export_dialog->filename);
 
-  wave_export_dialog->file_chooser_button = (GtkButton *) gtk_button_new_with_label(i18n("open"));
+  wave_export_dialog->file_open_button = (GtkButton *) gtk_button_new_with_label(i18n("open file"));
   gtk_box_append(hbox,
-		 (GtkWidget *) wave_export_dialog->file_chooser_button);
+		 (GtkWidget *) wave_export_dialog->file_open_button);
 
   /* start tact */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				AGS_UI_PROVIDER_DEFAULT_SPACING);
-  gtk_box_append(content_area,
+  gtk_box_append(vbox,
 		 (GtkWidget *) hbox);
   
   label = (GtkLabel *) gtk_label_new(i18n("start tact"));
@@ -260,7 +288,7 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
   /* end tact */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				AGS_UI_PROVIDER_DEFAULT_SPACING);
-  gtk_box_append(content_area,
+  gtk_box_append(vbox,
 		 (GtkWidget *) hbox);
   
   label = (GtkLabel *) gtk_label_new(i18n("end tact"));
@@ -281,7 +309,7 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
   /* duration */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				AGS_UI_PROVIDER_DEFAULT_SPACING);
-  gtk_box_append(content_area,
+  gtk_box_append(vbox,
 		 (GtkWidget *) hbox);
 
   wave_export_dialog->duration = (GtkLabel *) gtk_label_new("0000:00.000");
@@ -294,7 +322,7 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
   /* output format */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				AGS_UI_PROVIDER_DEFAULT_SPACING);
-  gtk_box_append(content_area,
+  gtk_box_append(vbox,
 		 (GtkWidget *) hbox);
 
   label = (GtkLabel *) gtk_label_new(i18n("output format"));
@@ -333,18 +361,15 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
   gtk_box_append(hbox,
 		 (GtkWidget *) wave_export_dialog->output_format);
 
-  /* GtkButton's in GtkDialog->action_area  */
-  wave_export_dialog->apply = (GtkButton *) gtk_dialog_add_button((GtkDialog *) wave_export_dialog,
-								  i18n("_Apply"),
-								  GTK_RESPONSE_APPLY);
+  /* GtkButton action-area  */
+  action_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				       AGS_UI_PROVIDER_DEFAULT_SPACING);
+  gtk_box_append(vbox,
+		 (GtkWidget *) action_area);
 
-  wave_export_dialog->ok = (GtkButton *) gtk_dialog_add_button((GtkDialog *) wave_export_dialog,
-							       i18n("_OK"),
-							       GTK_RESPONSE_OK);
-
-  wave_export_dialog->cancel = (GtkButton *) gtk_dialog_add_button((GtkDialog *) wave_export_dialog,
-								   i18n("_Cancel"),
-								   GTK_RESPONSE_CANCEL);
+  wave_export_dialog->activate_button = (GtkButton *) gtk_button_new_with_label(i18n("open"));
+  gtk_box_append(action_area,
+		 (GtkWidget *) wave_export_dialog->activate_button);
 }
 
 void
@@ -422,6 +447,21 @@ ags_wave_export_dialog_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_wave_export_dialog_parent_class)->finalize(gobject);
 }
 
+gboolean
+ags_wave_export_dialog_is_connected(AgsConnectable *connectable)
+{
+  AgsWaveExportDialog *wave_export_dialog;
+  
+  gboolean is_connected;
+  
+  wave_export_dialog = AGS_WAVE_EXPORT_DIALOG(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (wave_export_dialog->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
+}
+
 void
 ags_wave_export_dialog_connect(AgsConnectable *connectable)
 {
@@ -429,14 +469,14 @@ ags_wave_export_dialog_connect(AgsConnectable *connectable)
 
   wave_export_dialog = AGS_WAVE_EXPORT_DIALOG(connectable);
 
-  if((AGS_WAVE_EXPORT_DIALOG_CONNECTED & (wave_export_dialog->flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
-  wave_export_dialog->flags |= AGS_WAVE_EXPORT_DIALOG_CONNECTED;
+  wave_export_dialog->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
   
-  g_signal_connect(G_OBJECT(wave_export_dialog->file_chooser_button), "clicked",
-		   G_CALLBACK(ags_wave_export_dialog_file_chooser_button_callback), wave_export_dialog);
+  g_signal_connect(G_OBJECT(wave_export_dialog->file_open_button), "clicked",
+		   G_CALLBACK(ags_wave_export_dialog_file_open_button_callback), wave_export_dialog);
   
   g_signal_connect_after(G_OBJECT(wave_export_dialog->start_tact), "value-changed",
 			 G_CALLBACK(ags_wave_export_dialog_start_tact_callback), wave_export_dialog);
@@ -444,14 +484,8 @@ ags_wave_export_dialog_connect(AgsConnectable *connectable)
   g_signal_connect_after(G_OBJECT(wave_export_dialog->end_tact), "value-changed",
 			 G_CALLBACK(ags_wave_export_dialog_end_tact_callback), wave_export_dialog);
 
-  g_signal_connect(G_OBJECT(wave_export_dialog->apply), "clicked",
-		   G_CALLBACK(ags_wave_export_dialog_apply_callback), wave_export_dialog);
-
-  g_signal_connect(G_OBJECT(wave_export_dialog->ok), "clicked",
-		   G_CALLBACK(ags_wave_export_dialog_ok_callback), wave_export_dialog);
-
-  g_signal_connect(G_OBJECT(wave_export_dialog->cancel), "clicked",
-		   G_CALLBACK(ags_wave_export_dialog_cancel_callback), wave_export_dialog);
+  g_signal_connect(G_OBJECT(wave_export_dialog->activate_button), "clicked",
+		   G_CALLBACK(ags_wave_export_dialog_save_as_callback), wave_export_dialog);
 }
 
 void
@@ -461,15 +495,15 @@ ags_wave_export_dialog_disconnect(AgsConnectable *connectable)
 
   wave_export_dialog = AGS_WAVE_EXPORT_DIALOG(connectable);
 
-  if((AGS_WAVE_EXPORT_DIALOG_CONNECTED & (wave_export_dialog->flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
-  wave_export_dialog->flags &= (~AGS_WAVE_EXPORT_DIALOG_CONNECTED);
+  wave_export_dialog->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
-  g_object_disconnect(G_OBJECT(wave_export_dialog->file_chooser_button),
+  g_object_disconnect(G_OBJECT(wave_export_dialog->file_open_button),
 		      "any_signal::clicked",
-		      G_CALLBACK(ags_wave_export_dialog_file_chooser_button_callback),
+		      G_CALLBACK(ags_wave_export_dialog_file_open_button_callback),
 		      wave_export_dialog,
 		      NULL);
   
@@ -485,21 +519,9 @@ ags_wave_export_dialog_disconnect(AgsConnectable *connectable)
 		      wave_export_dialog,
 		      NULL);
   
-  g_object_disconnect(G_OBJECT(wave_export_dialog->apply),
+  g_object_disconnect(G_OBJECT(wave_export_dialog->activate_button),
 		      "any_signal::clicked",
-		      G_CALLBACK(ags_wave_export_dialog_apply_callback),
-		      wave_export_dialog,
-		      NULL);
-
-  g_object_disconnect(G_OBJECT(wave_export_dialog->ok),
-		      "any_signal::clicked",
-		      G_CALLBACK(ags_wave_export_dialog_ok_callback),
-		      wave_export_dialog,
-		      NULL);
-
-  g_object_disconnect(G_OBJECT(wave_export_dialog->cancel),
-		      "any_signal::clicked",
-		      G_CALLBACK(ags_wave_export_dialog_cancel_callback),
+		      G_CALLBACK(ags_wave_export_dialog_save_as_callback),
 		      wave_export_dialog,
 		      NULL);
 }

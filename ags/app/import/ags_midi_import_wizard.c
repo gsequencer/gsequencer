@@ -43,6 +43,7 @@ void ags_midi_import_wizard_get_property(GObject *gobject,
 					 GValue *value,
 					 GParamSpec *param_spec);
 
+gboolean ags_midi_import_wizard_is_connected(AgsConnectable *connectable);
 void ags_midi_import_wizard_connect(AgsConnectable *connectable);
 void ags_midi_import_wizard_disconnect(AgsConnectable *connectable);
 
@@ -198,10 +199,23 @@ ags_midi_import_wizard_class_init(AgsMidiImportWizardClass *midi_import_wizard)
 void
 ags_midi_import_wizard_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_midi_import_wizard_is_connected;  
   connectable->connect = ags_midi_import_wizard_connect;
   connectable->disconnect = ags_midi_import_wizard_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -231,6 +245,7 @@ ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
   application_context = ags_application_context_get_instance();
   
   midi_import_wizard->flags = AGS_MIDI_IMPORT_WIZARD_SHOW_FILE_CHOOSER;
+  midi_import_wizard->connectable_flags = 0;
 
   gtk_window_set_hide_on_close((GtkWindow *) midi_import_wizard,
 			       TRUE);
@@ -419,6 +434,21 @@ ags_midi_import_wizard_get_property(GObject *gobject,
   }
 }
 
+gboolean
+ags_midi_import_wizard_is_connected(AgsConnectable *connectable)
+{
+  AgsMidiImportWizard *midi_import_wizard;
+  
+  gboolean is_connected;
+  
+  midi_import_wizard = AGS_MIDI_IMPORT_WIZARD(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (midi_import_wizard->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
+}
+
 void
 ags_midi_import_wizard_connect(AgsConnectable *connectable)
 {
@@ -426,7 +456,7 @@ ags_midi_import_wizard_connect(AgsConnectable *connectable)
 
   midi_import_wizard = AGS_MIDI_IMPORT_WIZARD(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (midi_import_wizard->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -442,7 +472,7 @@ ags_midi_import_wizard_disconnect(AgsConnectable *connectable)
 
   midi_import_wizard = AGS_MIDI_IMPORT_WIZARD(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (midi_import_wizard->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
