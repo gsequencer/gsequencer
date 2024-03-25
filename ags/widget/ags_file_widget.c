@@ -2761,7 +2761,6 @@ ags_file_widget_read_bookmark(AgsFileWidget *file_widget)
   if(bookmark_doc == NULL){
     return;
   }
-
   
   root_node = xmlDocGetRootElement(bookmark_doc);
 

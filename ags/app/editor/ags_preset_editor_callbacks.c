@@ -499,7 +499,7 @@ ags_preset_editor_save_response_callback(AgsFileDialog *file_dialog, gint respon
     }
   }
 
-  gtk_window_destroy((GtkWindow *) dialog);
+  gtk_window_destroy((GtkWindow *) file_dialog);
 }
 
 void
@@ -530,7 +530,7 @@ ags_preset_editor_open_response_callback(AgsFileDialog *file_dialog, gint respon
     }
   }
 
-  gtk_window_destroy(dialog);
+  gtk_window_destroy(file_dialog);
 }
 
 void
