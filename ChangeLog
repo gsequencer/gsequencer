@@ -18,6 +18,7 @@ ags (6.6.0)
 	* refactored AgsPitchSampler to use AgsFileDialog
 	* refactored AgsSF2Synth to use AgsFileDialog
 	* refactored AgsSFZSynth to use AgsFileDialog
+	* refactored AgsPresetEditor to use AgsFileDialog
 	* added --enable-macos-sandbox configure switch
 	* added ags_endian_test.c
 	* added ags_regex_util_test.c
