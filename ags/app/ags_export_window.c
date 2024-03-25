@@ -163,7 +163,7 @@ ags_export_window_init(AgsExportWindow *export_window)
   
   /* pack */
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   gtk_widget_set_valign((GtkWidget *) vbox,
 			GTK_ALIGN_FILL);
@@ -314,7 +314,7 @@ ags_export_window_init(AgsExportWindow *export_window)
 
   /* duration */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   gtk_box_set_spacing(hbox,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
@@ -343,7 +343,7 @@ ags_export_window_init(AgsExportWindow *export_window)
   export_window->export_soundcard = NULL;
   
   export_window->export_soundcard_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-							       0);
+							       AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   gtk_box_set_spacing(export_window->export_soundcard_box,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
@@ -371,7 +371,7 @@ ags_export_window_init(AgsExportWindow *export_window)
   
   /* export */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   gtk_box_set_spacing(vbox,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
