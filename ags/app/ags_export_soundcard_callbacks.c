@@ -410,7 +410,7 @@ ags_export_soundcard_open_response_callback(AgsPCMFileDialog *pcm_file_dialog,
 
     file_widget = ags_pcm_file_dialog_get_file_widget(pcm_file_dialog);
 
-    filename = ags_file_widget_get_filename(pcm_file_dialog->file_widget);
+    filename = ags_file_widget_get_filename(file_widget);
 
     if(!g_strv_contains(file_widget->recently_used, filename)){
       strv_length = g_strv_length(file_widget->recently_used);
@@ -524,6 +524,12 @@ ags_export_soundcard_file_chooser_button_callback(GtkWidget *file_chooser_button
 			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_HOME,
 			       NULL);
 
+  ags_file_widget_set_file_action(file_widget,
+				  AGS_FILE_WIDGET_SAVE_AS);
+
+  ags_file_widget_set_default_bundle(file_widget,
+				     AGS_DEFAULT_BUNDLE_ID);
+  
   gtk_widget_set_visible((GtkWidget *) pcm_file_dialog,
 			 TRUE);
 
