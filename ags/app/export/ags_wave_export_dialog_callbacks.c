@@ -128,7 +128,14 @@ ags_wave_export_dialog_file_open_button_callback(GtkWidget *file_open_button,
 			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_HOME,
 			       NULL);
 
-  gtk_widget_show((GtkWidget *) file_dialog);
+  ags_file_widget_set_file_action(file_widget,
+				  AGS_FILE_WIDGET_SAVE_AS);
+
+  ags_file_widget_set_default_bundle(file_widget,
+				     AGS_DEFAULT_BUNDLE_ID);
+
+  gtk_widget_set_visible((GtkWidget *) file_dialog,
+			 TRUE);
 
   g_signal_connect((GObject *) file_dialog, "response",
 		   G_CALLBACK(ags_wave_export_dialog_file_open_response_callback), wave_export_dialog);
