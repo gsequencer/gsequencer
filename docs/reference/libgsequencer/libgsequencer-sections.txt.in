@@ -1,5 +1,5 @@
 # GSequencer - Advanced GTK Sequencer 
-# Copyright (C) 2005-2023 Joël Krähemann
+# Copyright (C) 2005-2024 Joël Krähemann
 # 
 # This file is part of GSequencer.
 #
@@ -41,7 +41,7 @@ ags_add_sheet_page_dialog_response_callback
 <SECTION>
 <FILE>ags_animation_window</FILE>
 <TITLE>AgsAnimationWindow</TITLE>
-ags_animation_window_progress_timeout
+AgsAnimationWindowFlags
 ags_animation_window_new
 <SUBSECTION Standard>
 AGS_ANIMATION_WINDOW
@@ -144,7 +144,6 @@ ags_audiorec_remove_indicator
 ags_audiorec_open_filename
 ags_audiorec_fast_export
 ags_audiorec_wave_loader_completed_timeout
-ags_audiorec_indicator_queue_draw_timeout
 ags_audiorec_new
 <SUBSECTION Standard>
 AGS_AUDIOREC
@@ -160,6 +159,7 @@ ags_audiorec_get_type
 
 <SECTION>
 <FILE>ags_audiorec_callbacks</FILE>
+ags_audiorec_update_ui_callback
 ags_audiorec_open_callback
 ags_audiorec_keep_data_callback
 ags_audiorec_replace_data_callback
@@ -243,6 +243,7 @@ ags_automation_edit_box_get_type
 
 <SECTION>
 <FILE>ags_automation_edit_callbacks</FILE>
+ags_automation_edit_update_ui_callback
 ags_automation_edit_draw_callback
 ags_automation_edit_drawing_area_resize_callback
 ags_automation_edit_vscrollbar_value_changed
@@ -336,8 +337,6 @@ ags_cell_pattern_draw_cursor
 ags_cell_pattern_redraw_gutter_point
 ags_cell_pattern_highlight_gutter_point
 ags_cell_pattern_unpaint_gutter_point
-ags_cell_pattern_blink_worker
-ags_cell_pattern_led_queue_draw_timeout
 ags_cell_pattern_new
 <SUBSECTION Standard>
 AGS_CELL_PATTERN
@@ -353,6 +352,7 @@ ags_cell_pattern_get_type
 
 <SECTION>
 <FILE>ags_cell_pattern_callbacks</FILE>
+ags_cell_pattern_update_ui_callback
 ags_cell_pattern_gesture_click_pressed_callback
 ags_cell_pattern_gesture_click_released_callback
 ags_cell_pattern_key_pressed_callback
@@ -1004,7 +1004,6 @@ ags_effect_bulk_resize_pads
 ags_effect_bulk_map_recall
 ags_effect_bulk_find_port
 ags_effect_bulk_refresh_port
-ags_effect_bulk_indicator_refresh_timeout
 ags_effect_bulk_new
 <SUBSECTION Standard>
 AGS_EFFECT_BULK
@@ -1020,6 +1019,7 @@ ags_effect_bulk_get_type
 
 <SECTION>
 <FILE>ags_effect_bulk_callbacks</FILE>
+ags_effect_bulk_update_ui_callback
 ags_effect_bulk_add_callback
 ags_effect_bulk_remove_callback
 ags_effect_bulk_plugin_browser_response_callback
@@ -1077,7 +1077,6 @@ ags_effect_line_done
 ags_effect_line_refresh_port
 ags_effect_line_find_next_grouped
 ags_effect_line_check_message
-ags_effect_line_indicator_queue_draw_timeout
 ags_effect_line_new
 <SUBSECTION Standard>
 AGS_EFFECT_LINE
@@ -1093,6 +1092,7 @@ ags_effect_line_get_type
 
 <SECTION>
 <FILE>ags_effect_line_callbacks</FILE>
+ags_effect_line_update_ui_callback
 ags_effect_line_check_message_callback
 </SECTION>
 
@@ -1184,7 +1184,6 @@ ags_envelope_dialog_cancel_callback
 <TITLE>AgsEnvelopeEditor</TITLE>
 AGS_ENVELOPE_EDITOR_DEFAULT_VERSION
 AGS_ENVELOPE_EDITOR_DEFAULT_BUILD_ID
-AGS_ENVELOPE_EDITOR_SCALE_WIDTH
 AgsEnvelopeEditorFlags
 ags_envelope_editor_get_active_preset
 ags_envelope_editor_load_preset
@@ -1227,7 +1226,6 @@ ags_envelope_editor_ratio_callback
 <TITLE>AgsEnvelopeInfo</TITLE>
 AGS_ENVELOPE_INFO_DEFAULT_VERSION
 AGS_ENVELOPE_INFO_DEFAULT_BUILD_ID
-AgsEnvelopeInfoFlags
 AgsEnvelopeInfoColumn
 ags_envelope_info_plot
 ags_envelope_info_new
@@ -1435,7 +1433,6 @@ ags_ffplayer_bulk_input_resize_pads_callback
 ags_ffplayer_destroy_callback
 ags_ffplayer_draw_callback
 ags_ffplayer_open_clicked_callback
-ags_ffplayer_open_dialog_response_callback
 ags_ffplayer_preset_changed_callback
 ags_ffplayer_instrument_changed_callback
 ags_ffplayer_hscrollbar_value_changed
@@ -1667,6 +1664,7 @@ ags_generic_preferences_rt_safe_callback
 <SECTION>
 <FILE>ags_gsequencer_application</FILE>
 <TITLE>AgsGSequencerApplication</TITLE>
+ags_gsequencer_application_refresh_window_menu
 ags_gsequencer_application_new
 <SUBSECTION Standard>
 AGS_GSEQUENCER_APPLICATION
@@ -1693,6 +1691,12 @@ ags_gsequencer_preferences_callback
 ags_gsequencer_about_callback
 ags_gsequencer_help_callback
 ags_gsequencer_quit_callback
+ags_gsequencer_present_app_window_callback
+ags_gsequencer_present_meta_data_window_callback
+ags_gsequencer_present_export_window_callback
+ags_gsequencer_present_smf_import_window_callback
+ags_gsequencer_present_smf_export_window_callback
+ags_gsequencer_present_help_window_callback
 ags_gsequencer_add_panel_callback
 ags_gsequencer_add_spectrometer_callback
 ags_gsequencer_add_equalizer_callback
@@ -1891,26 +1895,6 @@ ags_hybrid_synth_volume_callback
 </SECTION>
 
 <SECTION>
-<FILE>ags_input_dialog</FILE>
-<TITLE>AgsInputDialog</TITLE>
-AgsInputDialogFlags
-ags_input_dialog_test_flags
-ags_input_dialog_set_flags
-ags_input_dialog_unset_flags
-ags_input_dialog_new
-<SUBSECTION Standard>
-AGS_INPUT_DIALOG
-AGS_INPUT_DIALOG_CLASS
-AGS_INPUT_DIALOG_GET_CLASS
-AGS_IS_INPUT_DIALOG
-AGS_IS_INPUT_DIALOG_CLASS
-AGS_TYPE_INPUT_DIALOG
-AgsInputDialog
-AgsInputDialogClass
-ags_input_dialog_get_type
-</SECTION>
-
-<SECTION>
 <FILE>ags_ladspa_bridge</FILE>
 <TITLE>AgsLadspaBridge</TITLE>
 AGS_LADSPA_BRIDGE_DEFAULT_VERSION
@@ -2020,6 +2004,7 @@ ags_line_get_type
 
 <SECTION>
 <FILE>ags_line_callbacks</FILE>
+ags_line_update_ui_callback
 ags_line_check_message_callback
 ags_line_group_toggled_callback
 ags_line_stop_callback
@@ -2934,6 +2919,7 @@ AgsMidiExportWizardFlags
 ags_midi_export_wizard_test_flags
 ags_midi_export_wizard_set_flags
 ags_midi_export_wizard_unset_flags
+ags_midi_export_wizard_response
 ags_midi_export_wizard_new
 <SUBSECTION Standard>
 AGS_IS_MIDI_EXPORT_WIZARD
@@ -2949,7 +2935,7 @@ ags_midi_export_wizard_get_type
 
 <SECTION>
 <FILE>ags_midi_export_wizard_callbacks</FILE>
-ags_midi_export_wizard_response_callback
+
 </SECTION>
 
 <SECTION>
@@ -2959,6 +2945,7 @@ AgsMidiImportWizardFlags
 ags_midi_import_wizard_test_flags
 ags_midi_import_wizard_set_flags
 ags_midi_import_wizard_unset_flags
+ags_midi_import_wizard_response
 ags_midi_import_wizard_new
 <SUBSECTION Standard>
 AGS_IS_MIDI_IMPORT_WIZARD
@@ -2974,7 +2961,7 @@ ags_midi_import_wizard_get_type
 
 <SECTION>
 <FILE>ags_midi_import_wizard_callbacks</FILE>
-ags_midi_import_wizard_response_callback
+
 </SECTION>
 
 <SECTION>
@@ -3099,7 +3086,6 @@ ags_navigation_absolute_tact_to_time_string
 ags_navigation_update_time_string
 ags_navigation_set_seeking_sensitive
 ags_navigation_change_position
-ags_navigation_duration_time_queue_draw_timeout
 ags_navigation_new
 <SUBSECTION Standard>
 AGS_IS_NAVIGATION
@@ -3115,6 +3101,7 @@ ags_navigation_get_type
 
 <SECTION>
 <FILE>ags_navigation_callbacks</FILE>
+ags_navigation_update_ui_callback
 ags_navigation_expander_callback
 ags_navigation_bpm_callback
 ags_navigation_rewind_callback
@@ -3125,6 +3112,7 @@ ags_navigation_next_callback
 ags_navigation_forward_callback
 ags_navigation_loop_callback
 ags_navigation_position_tact_callback
+ags_navigation_scroll_callback
 ags_navigation_duration_tact_callback
 ags_navigation_loop_left_tact_callback
 ags_navigation_loop_right_tact_callback
@@ -3175,6 +3163,7 @@ ags_notation_edit_get_type
 
 <SECTION>
 <FILE>ags_notation_edit_callbacks</FILE>
+ags_notation_edit_update_ui_callback
 ags_notation_edit_draw_callback
 ags_notation_edit_drawing_area_resize_callback
 ags_notation_edit_vscrollbar_value_changed
@@ -3411,7 +3400,6 @@ AgsPatternBoxAction
 ags_pattern_box_get_pad
 ags_pattern_box_add_pad
 ags_pattern_box_remove_pad
-ags_pattern_box_led_queue_draw_timeout
 ags_pattern_box_set_pattern
 ags_pattern_box_new
 <SUBSECTION Standard>
@@ -3428,6 +3416,7 @@ ags_pattern_box_get_type
 
 <SECTION>
 <FILE>ags_pattern_box_callbacks</FILE>
+ags_pattern_box_update_ui_callback
 ags_pattern_box_pad_callback
 ags_pattern_box_offset_callback
 </SECTION>
@@ -3488,20 +3477,28 @@ ags_pattern_envelope_preset_rename_response_callback
 </SECTION>
 
 <SECTION>
-<FILE>ags_pcm_file_chooser_dialog</FILE>
-<TITLE>AgsPCMFileChooserDialog</TITLE>
-AgsPCMFileChooserDialogFlags
-ags_pcm_file_chooser_dialog_new
+<FILE>ags_pcm_file_dialog</FILE>
+<TITLE>AgsPCMFileDialog</TITLE>
+AgsPCMFileDialogFlags
+ags_pcm_file_dialog_test_flags
+ags_pcm_file_dialog_set_flags
+ags_pcm_file_dialog_unset_flags
+ags_pcm_file_dialog_get_file_widget
+ags_pcm_file_dialog_get_audio_channel
+ags_pcm_file_dialog_get_new_channel
+ags_pcm_file_dialog_get_existing_channel
+ags_pcm_file_dialog_response
+ags_pcm_file_dialog_new
 <SUBSECTION Standard>
-AGS_IS_PCM_FILE_CHOOSER_DIALOG
-AGS_IS_PCM_FILE_CHOOSER_DIALOG_CLASS
-AGS_PCM_FILE_CHOOSER_DIALOG
-AGS_PCM_FILE_CHOOSER_DIALOG_CLASS
-AGS_PCM_FILE_CHOOSER_DIALOG_GET_CLASS
-AGS_TYPE_PCM_FILE_CHOOSER_DIALOG
-AgsPCMFileChooserDialog
-AgsPCMFileChooserDialogClass
-ags_pcm_file_chooser_dialog_get_type
+AGS_IS_PCM_FILE_DIALOG
+AGS_IS_PCM_FILE_DIALOG_CLASS
+AGS_PCM_FILE_DIALOG
+AGS_PCM_FILE_DIALOG_CLASS
+AGS_PCM_FILE_DIALOG_GET_CLASS
+AGS_TYPE_PCM_FILE_DIALOG
+AgsPCMFileDialog
+AgsPCMFileDialogClass
+ags_pcm_file_dialog_get_type
 </SECTION>
 
 <SECTION>
@@ -4442,7 +4439,6 @@ AGS_SPECTROMETER_PLOT_DEFAULT_POINT_COUNT
 AGS_SPECTROMETER_EXTRA_SCALE
 ags_spectrometer_find_specifier
 ags_spectrometer_fg_plot_alloc
-ags_spectrometer_cartesian_queue_draw_timeout
 ags_spectrometer_output_map_recall
 ags_spectrometer_input_map_recall
 ags_spectrometer_new
@@ -4460,7 +4456,7 @@ ags_spectrometer_get_type
 
 <SECTION>
 <FILE>ags_spectrometer_callbacks</FILE>
-
+ags_spectrometer_update_ui_callback
 </SECTION>
 
 <SECTION>
@@ -4622,6 +4618,7 @@ ags_tempo_edit_get_type
 
 <SECTION>
 <FILE>ags_tempo_edit_callbacks</FILE>
+ags_tempo_edit_update_ui_callback
 ags_tempo_edit_draw_callback
 ags_tempo_edit_drawing_area_resize_callback
 ags_tempo_edit_vscrollbar_value_changed
@@ -4785,6 +4782,8 @@ ags_ui_provider_get_app
 ags_ui_provider_set_app
 ags_ui_provider_get_meta_data_window
 ags_ui_provider_set_meta_data_window
+ags_ui_provider_get_visible_window
+ags_ui_provider_set_visible_window
 <SUBSECTION Standard>
 AGS_IS_UI_PROVIDER
 AGS_IS_UI_PROVIDER_INTERFACE
@@ -4941,6 +4940,7 @@ ags_wave_edit_box_get_type
 
 <SECTION>
 <FILE>ags_wave_edit_callbacks</FILE>
+ags_wave_edit_update_ui_callback
 ags_wave_edit_draw_callback
 ags_wave_edit_drawing_area_resize_callback
 ags_wave_edit_vscrollbar_value_changed
@@ -4960,7 +4960,7 @@ AGS_WAVE_EXPORT_DIALOG_FORMAT_MP4
 AGS_WAVE_EXPORT_DIALOG_FORMAT_MKV
 AGS_WAVE_EXPORT_DIALOG_FORMAT_WEBM
 AGS_WAVE_EXPORT_DIALOG_FORMAT_MPEG
-AgsWaveExportDialogFlags
+ags_wave_export_dialog_response
 ags_wave_export_dialog_update_duration
 ags_wave_export_dialog_new
 <SUBSECTION Standard>
@@ -4977,12 +4977,10 @@ ags_wave_export_dialog_get_type
 
 <SECTION>
 <FILE>ags_wave_export_dialog_callbacks</FILE>
-ags_wave_export_dialog_file_chooser_button_callback
+ags_wave_export_dialog_file_open_button_callback
 ags_wave_export_dialog_start_tact_callback
 ags_wave_export_dialog_end_tact_callback
-ags_wave_export_dialog_apply_callback
-ags_wave_export_dialog_ok_callback
-ags_wave_export_dialog_cancel_callback
+ags_wave_export_dialog_save_as_callback
 </SECTION>
 
 <SECTION>

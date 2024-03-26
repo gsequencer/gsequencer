@@ -1261,7 +1261,7 @@ ags_midi_util_delta_time_to_note_256th_offset(AgsMidiUtil *midi_util,
  * @division: division
  * @tempo: tempo
  * @bpm: bpm
- * @x: note offset
+ * @x_256th: note 256th offset
  *
  * Note 256th offset to delta time.
  *

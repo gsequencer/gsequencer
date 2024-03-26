@@ -46,6 +46,17 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="6.6.0" date="2024-03-26">
+      <description>
+	<p>
+	  Implemented file dialog and widget.
+	</p>
+	<p>
+	  Refactored file open and save as.
+	</p>
+      </description>
+    </release>
+
     <release version="6.5.0" date="2024-02-11">
       <description>
 	<p>

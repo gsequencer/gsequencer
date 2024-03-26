@@ -811,6 +811,9 @@ ags_icon_link_leave_callback(GtkEventControllerMotion *event_controller,
 
 /**
  * ags_icon_link_new:
+ * @icon_name: the icon name
+ * @action: the action
+ * @link_text: the link text
  *
  * Creates a new instance of #AgsIconLink.
  *
