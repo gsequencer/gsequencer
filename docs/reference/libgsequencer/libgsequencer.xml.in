@@ -7,7 +7,7 @@
   %gtkdocentities;
 ]>
 
-<!-- Copyright (C) 2005-2018 Jo\u00EBl Kr\u00E4hemann -->
+<!-- Copyright (C) 2005-2024 Jo\u00EBl Kr\u00E4hemann -->
 <!-- Permission is granted to copy, distribute and/or modify this document -->
 <!-- under the terms of the GNU Free Documentation License, Version 1.3 -->
 <!-- or any later version published by the Free Software Foundation; -->
@@ -55,14 +55,17 @@
       <xi:include href="xml/ags_export_soundcard_callbacks.xml"/>
 
       <xi:include href="xml/ags_midi_export_wizard.xml"/>
-      <xi:include href="xml/ags_midi_export_wizard_callbacks.xml"/>
+      <!--      <xi:include href="xml/ags_midi_export_wizard_callbacks.xml"/> -->
 
       <xi:include href="xml/ags_machine_collection.xml"/>
 
       <xi:include href="xml/ags_midi_import_wizard.xml"/>
-      <xi:include href="xml/ags_midi_import_wizard_callbacks.xml"/>
+      <!--      <xi:include href="xml/ags_midi_import_wizard_callbacks.xml"/> -->
 
       <xi:include href="xml/ags_track_collection.xml"/>
+
+      <xi:include href="xml/ags_pcm_file_dialog.xml"/>
+      <!--      <xi:include href="xml/ags_pcm_file_dialog_callbacks.xml"/> -->
     </chapter>
     
     <chapter id="ui-preferences">

@@ -58,7 +58,7 @@ gboolean ags_file_dialog_modifiers_callback(GtkEventControllerKey *event_control
 					    AgsFileDialog *file_dialog);
 
 void ags_file_dialog_real_response(AgsFileDialog *file_dialog,
-				   gint response);
+				   gint response_id);
 
 /**
  * SECTION:ags_file_dialog
@@ -409,7 +409,7 @@ ags_file_dialog_get_file_widget(AgsFileDialog *file_dialog)
 
 void
 ags_file_dialog_real_response(AgsFileDialog *file_dialog,
-			      gint response)
+			      gint response_id)
 {  
   gtk_widget_set_visible(file_dialog,
 			 FALSE);
@@ -418,7 +418,7 @@ ags_file_dialog_real_response(AgsFileDialog *file_dialog,
 /**
  * ags_file_dialog_response:
  * @file_dialog: the #AgsFileDialog
- * @response: the response
+ * @response_id: the response id
  *
  * Response @file_dialog due to user action.
  * 
@@ -426,14 +426,14 @@ ags_file_dialog_real_response(AgsFileDialog *file_dialog,
  */
 void
 ags_file_dialog_response(AgsFileDialog *file_dialog,
-			 gint response)
+			 gint response_id)
 {
   g_return_if_fail(AGS_IS_FILE_DIALOG(file_dialog));
   
   g_object_ref((GObject *) file_dialog);
   g_signal_emit(G_OBJECT(file_dialog),
 		file_dialog_signals[RESPONSE], 0,
-		response);
+		response_id);
   g_object_unref((GObject *) file_dialog);
 }
 

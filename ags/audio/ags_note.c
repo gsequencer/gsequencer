@@ -1780,7 +1780,7 @@ ags_note_get_x0_256th(AgsNote *note)
 }
 
 /**
- * ags_note_set_x0:
+ * ags_note_set_x0_256th:
  * @note: the #AgsNote
  * @x0_256th: the x0 as 256th
  *

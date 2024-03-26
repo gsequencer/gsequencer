@@ -110,6 +110,8 @@ ags_regex_util_error_quark()
  * ags_regex_util_alloc:
  * @app_encoding: the application encoding
  * @encoding: the input encoding
+ * @is_unichar: is gunichar
+ * @is_unichar2: is gunichar2
  *
  * Allocate #AgsRegexUtil-struct
  *
