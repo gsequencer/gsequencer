@@ -18,9 +18,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 6.5.3\n"
+"Project-Id-Version: gsequencer 6.6.0\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-03-20 03:28+0100\n"
+"POT-Creation-Date: 2024-03-26 11:13+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -126,14 +126,11 @@ msgstr ""
 msgid "connections"
 msgstr ""
 
-#: ags/app/ags_link_editor_callbacks.c:106
+#: ags/app/ags_link_editor_callbacks.c:113
 msgid "open audio file"
 msgstr ""
 
 #: ags/app/ags_machine_editor_dialog.c:102
-#: ags/app/export/ags_wave_export_dialog_callbacks.c:59
-#: ags/app/export/ags_midi_export_wizard.c:224
-#: ags/app/export/ags_wave_export_dialog.c:342
 #: ags/app/editor/ags_position_wave_cursor_dialog.c:207
 #: ags/app/editor/ags_position_notation_cursor_dialog.c:225
 #: ags/app/editor/ags_ramp_acceleration_dialog.c:283
@@ -149,19 +146,11 @@ msgstr ""
 #: ags/app/editor/ags_add_sheet_page_dialog.c:208
 #: ags/app/editor/ags_move_note_dialog.c:228
 #: ags/app/editor/ags_select_note_dialog.c:270 ags/app/ags_midi_dialog.c:444
-#: ags/app/machine/ags_audiorec_callbacks.c:143
-#: ags/app/machine/ags_sfz_synth_callbacks.c:55
-#: ags/app/machine/ags_sf2_synth_callbacks.c:55
-#: ags/app/machine/ags_pitch_sampler_callbacks.c:44
-#: ags/app/import/ags_midi_import_wizard.c:208 ags/app/ags_plugin_browser.c:271
-#: ags/app/ags_preferences.c:240
+#: ags/app/ags_plugin_browser.c:271 ags/app/ags_preferences.c:240
 msgid "_OK"
 msgstr ""
 
 #: ags/app/ags_machine_editor_dialog.c:104
-#: ags/app/export/ags_wave_export_dialog_callbacks.c:58
-#: ags/app/export/ags_midi_export_wizard.c:225
-#: ags/app/export/ags_wave_export_dialog.c:346
 #: ags/app/editor/ags_position_wave_cursor_dialog.c:208
 #: ags/app/editor/ags_position_notation_cursor_dialog.c:226
 #: ags/app/editor/ags_ramp_acceleration_dialog.c:284
@@ -176,14 +165,8 @@ msgstr ""
 #: ags/app/editor/ags_envelope_dialog.c:231
 #: ags/app/editor/ags_add_sheet_page_dialog.c:209
 #: ags/app/editor/ags_move_note_dialog.c:229
-#: ags/app/editor/ags_select_note_dialog.c:271
-#: ags/app/ags_export_soundcard_callbacks.c:436 ags/app/ags_midi_dialog.c:449
-#: ags/app/machine/ags_audiorec_callbacks.c:144
-#: ags/app/machine/ags_sfz_synth_callbacks.c:56
-#: ags/app/machine/ags_sf2_synth_callbacks.c:56
-#: ags/app/machine/ags_pitch_sampler_callbacks.c:45
-#: ags/app/import/ags_midi_import_wizard.c:209 ags/app/ags_plugin_browser.c:272
-#: ags/app/ags_preferences.c:241
+#: ags/app/editor/ags_select_note_dialog.c:271 ags/app/ags_midi_dialog.c:449
+#: ags/app/ags_plugin_browser.c:272 ags/app/ags_preferences.c:241
 msgid "_Cancel"
 msgstr ""
 
@@ -262,16 +245,24 @@ msgstr ""
 msgid "GUI scale factor"
 msgstr ""
 
-#: ags/app/ags_pcm_file_dialog.c:195 ags/app/editor/ags_envelope_info.c:250
+#: ags/app/ags_pcm_file_dialog.c:233 ags/app/editor/ags_envelope_info.c:250
 msgid "audio channel"
 msgstr ""
 
-#: ags/app/ags_pcm_file_dialog.c:218
+#: ags/app/ags_pcm_file_dialog.c:256
 msgid "open in new channel"
 msgstr ""
 
-#: ags/app/ags_pcm_file_dialog.c:229
+#: ags/app/ags_pcm_file_dialog.c:267
 msgid "override existing links"
+msgstr ""
+
+#: ags/app/ags_pcm_file_dialog.c:278
+#: ags/app/export/ags_midi_export_wizard.c:407
+#: ags/app/export/ags_wave_export_dialog.c:430
+#: ags/app/import/ags_midi_import_wizard.c:411
+#: ags/app/ags_export_soundcard.c:323
+msgid "open"
 msgstr ""
 
 #: ags/app/ags_performance_preferences.c:141
@@ -305,66 +296,46 @@ msgstr ""
 msgid "selector"
 msgstr ""
 
-#: ags/app/export/ags_wave_export_dialog_callbacks.c:55
-#: ags/app/ags_export_soundcard_callbacks.c:433
-msgid "Export to file ..."
+#: ags/app/export/ags_wave_export_dialog_callbacks.c:60
+msgid "export to file"
 msgstr ""
 
-#: ags/app/export/ags_midi_export_wizard.c:222
-#: ags/app/import/ags_midi_import_wizard.c:206
-msgid "_Back"
+#: ags/app/export/ags_midi_export_wizard.c:393
+#: ags/app/import/ags_midi_import_wizard.c:397
+msgid "previous"
 msgstr ""
 
-#: ags/app/export/ags_midi_export_wizard.c:223
-#: ags/app/import/ags_midi_import_wizard.c:207
-msgid "_Forward"
+#: ags/app/export/ags_midi_export_wizard.c:400
+#: ags/app/import/ags_midi_import_wizard.c:404
+msgid "next"
 msgstr ""
 
-#: ags/app/export/ags_wave_export_dialog.c:198
-msgid "Audio fast export"
+#: ags/app/export/ags_wave_export_dialog.c:265
+msgid "audio fast export"
 msgstr ""
 
-#: ags/app/export/ags_wave_export_dialog.c:222
+#: ags/app/export/ags_wave_export_dialog.c:310
 #: ags/app/machine/ags_pitch_sampler.c:311 ags/app/machine/ags_audiorec.c:272
 #: ags/app/ags_export_soundcard.c:276
 msgid "file"
 msgstr ""
 
-#: ags/app/export/ags_wave_export_dialog.c:235
-#: ags/app/ags_export_soundcard.c:323
-msgid "open"
+#: ags/app/export/ags_wave_export_dialog.c:323
+#: ags/app/ags_app_action_util.c:147
+msgid "open file"
 msgstr ""
 
-#: ags/app/export/ags_wave_export_dialog.c:245
+#: ags/app/export/ags_wave_export_dialog.c:333
 msgid "start tact"
 msgstr ""
 
-#: ags/app/export/ags_wave_export_dialog.c:266
+#: ags/app/export/ags_wave_export_dialog.c:354
 msgid "end tact"
 msgstr ""
 
-#: ags/app/export/ags_wave_export_dialog.c:300
+#: ags/app/export/ags_wave_export_dialog.c:388
 #: ags/app/ags_export_soundcard.c:328
 msgid "output format"
-msgstr ""
-
-#: ags/app/export/ags_wave_export_dialog.c:338
-#: ags/app/editor/ags_position_wave_cursor_dialog.c:206
-#: ags/app/editor/ags_position_notation_cursor_dialog.c:224
-#: ags/app/editor/ags_ramp_acceleration_dialog.c:282
-#: ags/app/editor/ags_position_sheet_cursor_dialog.c:206
-#: ags/app/editor/ags_time_stretch_buffer_dialog.c:228
-#: ags/app/editor/ags_crop_note_dialog.c:232
-#: ags/app/editor/ags_remove_sheet_page_dialog.c:152
-#: ags/app/editor/ags_position_automation_cursor_dialog.c:206
-#: ags/app/editor/ags_select_acceleration_dialog.c:237
-#: ags/app/editor/ags_select_buffer_dialog.c:232
-#: ags/app/editor/ags_envelope_dialog.c:223
-#: ags/app/editor/ags_add_sheet_page_dialog.c:207
-#: ags/app/editor/ags_move_note_dialog.c:227
-#: ags/app/editor/ags_select_note_dialog.c:269 ags/app/ags_midi_dialog.c:439
-#: ags/app/ags_preferences.c:239
-msgid "_Apply"
 msgstr ""
 
 #: ags/app/export/ags_machine_mapper.c:180
@@ -505,6 +476,24 @@ msgstr ""
 #: ags/app/editor/ags_position_sheet_cursor_dialog.c:171
 #: ags/app/editor/ags_position_automation_cursor_dialog.c:191
 msgid "position x"
+msgstr ""
+
+#: ags/app/editor/ags_position_wave_cursor_dialog.c:206
+#: ags/app/editor/ags_position_notation_cursor_dialog.c:224
+#: ags/app/editor/ags_ramp_acceleration_dialog.c:282
+#: ags/app/editor/ags_position_sheet_cursor_dialog.c:206
+#: ags/app/editor/ags_time_stretch_buffer_dialog.c:228
+#: ags/app/editor/ags_crop_note_dialog.c:232
+#: ags/app/editor/ags_remove_sheet_page_dialog.c:152
+#: ags/app/editor/ags_position_automation_cursor_dialog.c:206
+#: ags/app/editor/ags_select_acceleration_dialog.c:237
+#: ags/app/editor/ags_select_buffer_dialog.c:232
+#: ags/app/editor/ags_envelope_dialog.c:223
+#: ags/app/editor/ags_add_sheet_page_dialog.c:207
+#: ags/app/editor/ags_move_note_dialog.c:227
+#: ags/app/editor/ags_select_note_dialog.c:269 ags/app/ags_midi_dialog.c:439
+#: ags/app/ags_preferences.c:239
+msgid "_Apply"
 msgstr ""
 
 #: ags/app/editor/ags_position_notation_cursor_dialog.c:167
@@ -1025,10 +1014,11 @@ msgstr ""
 msgid "samplerate"
 msgstr ""
 
-#: ags/app/ags_export_soundcard_callbacks.c:437 ags/app/machine/ags_drum.c:363
-#: ags/app/machine/ags_sfz_synth.c:335 ags/app/machine/ags_audiorec.c:295
-#: ags/app/machine/ags_sf2_synth.c:345 ags/app/machine/ags_ffplayer.c:403
-msgid "_Open"
+#: ags/app/ags_export_soundcard_callbacks.c:452
+#: ags/app/machine/ags_audiorec_callbacks.c:152
+#: ags/app/machine/ags_drum_input_pad_callbacks.c:62
+#: ags/app/machine/ags_drum_callbacks.c:65
+msgid "open audio files"
 msgstr ""
 
 #: ags/app/ags_machine_editor_pad.c:182 ags/app/ags_connection_editor_pad.c:182
@@ -1079,7 +1069,7 @@ msgstr ""
 msgid "auto-scroll"
 msgstr ""
 
-#: ags/app/ags_navigation.c:363 ags/app/ags_export_window.c:204
+#: ags/app/ags_navigation.c:363 ags/app/ags_export_window.c:205
 msgid "exclude sequencers"
 msgstr ""
 
@@ -1207,11 +1197,7 @@ msgstr ""
 msgid "resize channels"
 msgstr ""
 
-#: ags/app/ags_app_action_util.c:146
-msgid "open file"
-msgstr ""
-
-#: ags/app/ags_app_action_util.c:580
+#: ags/app/ags_app_action_util.c:596
 msgid "save file as"
 msgstr ""
 
@@ -1413,13 +1399,14 @@ msgstr ""
 msgid "lower"
 msgstr ""
 
-#: ags/app/machine/ags_audiorec_callbacks.c:139
-#: ags/app/machine/ags_pitch_sampler_callbacks.c:40
-msgid "Open audio files"
-msgstr ""
-
 #: ags/app/machine/ags_drum.c:346
 msgid "kit"
+msgstr ""
+
+#: ags/app/machine/ags_drum.c:363 ags/app/machine/ags_sfz_synth.c:335
+#: ags/app/machine/ags_audiorec.c:295 ags/app/machine/ags_sf2_synth.c:345
+#: ags/app/machine/ags_ffplayer.c:403
+msgid "_Open"
 msgstr ""
 
 #: ags/app/machine/ags_drum.c:396
@@ -1456,11 +1443,6 @@ msgstr ""
 
 #: ags/app/machine/ags_oscillator.c:331 ags/app/machine/ags_fm_oscillator.c:322
 msgid "sync"
-msgstr ""
-
-#: ags/app/machine/ags_drum_input_pad_callbacks.c:54
-#: ags/app/machine/ags_drum_callbacks.c:57
-msgid "open audio files"
 msgstr ""
 
 #: ags/app/machine/ags_desk_pad.c:178
@@ -1636,17 +1618,16 @@ msgstr ""
 msgid "loop end"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth_callbacks.c:52
-msgid "Open SFZ file"
+#: ags/app/machine/ags_sfz_synth_callbacks.c:63
+#: ags/app/machine/ags_ffplayer_callbacks.c:244
+#: ags/app/machine/ags_sf2_synth_callbacks.c:63
+#: ags/app/machine/ags_pitch_sampler_callbacks.c:52
+msgid "open Soundfont2 file"
 msgstr ""
 
 #: ags/app/machine/ags_live_vst3_bridge.c:435
 #: ags/app/machine/ags_vst3_bridge.c:415
 msgid "show VST3 UI"
-msgstr ""
-
-#: ags/app/machine/ags_ffplayer_callbacks.c:237
-msgid "open Soundfont2 file"
 msgstr ""
 
 #: ags/app/machine/ags_hybrid_fm_synth.c:327
@@ -1922,10 +1903,6 @@ msgstr ""
 msgid "right"
 msgstr ""
 
-#: ags/app/machine/ags_sf2_synth_callbacks.c:52
-msgid "Open Soundfont2 file"
-msgstr ""
-
 #: ags/app/machine/ags_fm_oscillator.c:363
 msgid "LFO wave"
 msgstr ""
@@ -2027,27 +2004,27 @@ msgstr ""
 msgid "comment"
 msgstr ""
 
-#: ags/app/ags_export_window.c:151
-msgid "Export to audio data"
+#: ags/app/ags_export_window.c:152
+msgid "export to audio data"
 msgstr ""
 
-#: ags/app/ags_export_window.c:194
+#: ags/app/ags_export_window.c:195
 msgid "live export"
 msgstr ""
 
-#: ags/app/ags_export_window.c:231
+#: ags/app/ags_export_window.c:232
 msgid "mode"
 msgstr ""
 
-#: ags/app/ags_export_window.c:267
+#: ags/app/ags_export_window.c:268
 msgid "tact"
 msgstr ""
 
-#: ags/app/ags_export_window.c:298
+#: ags/app/ags_export_window.c:299
 msgid "time"
 msgstr ""
 
-#: ags/app/ags_export_window.c:381
+#: ags/app/ags_export_window.c:382
 msgid "export"
 msgstr ""
 
