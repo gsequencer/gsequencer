@@ -30,6 +30,7 @@
 
 #include <ags/libags-gui.h>
 
+#include <ags/app/ags_pcm_file_dialog.h>
 #include <ags/app/ags_machine.h>
 
 G_BEGIN_DECLS
@@ -87,7 +88,8 @@ void ags_machine_audio_import_callback(GAction *action, GVariant *parameter,
 void ags_machine_midi_import_callback(GAction *action, GVariant *parameter,
 				      AgsMachine *machine);
 
-void ags_machine_open_response_callback(GtkDialog *dialog, gint response, AgsMachine *machine);
+void ags_machine_open_response_callback(AgsPCMFileDialog *pcm_file_dialog, gint response,
+					AgsMachine *machine);
 
 void ags_machine_play_callback(GtkWidget *toggle_button, AgsMachine *machine);
 

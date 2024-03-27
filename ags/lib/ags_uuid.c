@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,7 +22,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <ags/ags_api_config.h>
+
+#if defined(AGS_WITH_W32API)
+#include <uuid.h>
+#else
 #include <uuid/uuid.h>
+#endif
 
 /**
  * SECTION:ags_uuid

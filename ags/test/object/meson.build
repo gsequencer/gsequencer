@@ -1,4 +1,4 @@
-# Copyright (C) 2020 Daniel Maksymow
+# Copyright (C) 2020-2024 Daniel Maksymow, Joël Krähemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -8,8 +8,13 @@
 static_tests = [
   'ags_application_context_test',
   'ags_config_test',
-#  'ags_connectable_test',
-#  'ags_soundcard_test',
+  'ags_countable_test',
+  'ags_main_loop_test',
+  'ags_mutable_test',
+  'ags_connectable_test',
+  'ags_seekable_test',
+  'ags_soundcard_test',
+  'ags_tactable_test',
 ]
 
 static_test_dependencies = [

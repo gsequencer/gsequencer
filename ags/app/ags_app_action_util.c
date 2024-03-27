@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -109,11 +109,11 @@ static locale_t c_utf8_locale;
 
 static gboolean locale_initialized = FALSE;
 
-void ags_app_action_util_open_response_callback(GtkFileChooserDialog *file_chooser,
+void ags_app_action_util_open_response_callback(AgsFileDialog *file_dialog,
 						gint response,
 						gpointer data);
 
-void ags_app_action_util_save_as_response_callback(GtkFileChooserDialog *file_chooser,
+void ags_app_action_util_save_as_response_callback(AgsFileDialog *file_dialog,
 						   gint response,
 						   gpointer data);
 
@@ -129,7 +129,13 @@ void
 ags_app_action_util_open()
 {
   AgsWindow *window;
-  GtkFileChooserDialog *file_chooser;
+  AgsFileDialog *file_dialog;
+  AgsFileWidget *file_widget;
+
+  gchar *recently_used_filename;
+  gchar *bookmark_filename;
+  gchar *home_path;
+  gchar *sandbox_path;
 
   AgsApplicationContext *application_context;
 
@@ -137,46 +143,131 @@ ags_app_action_util_open()
 
   window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(i18n("Open file"),
-								      (GtkWindow *) window,
-								      GTK_FILE_CHOOSER_ACTION_OPEN,
-								      "_Cancel", GTK_RESPONSE_CANCEL,
-								      "_OK", GTK_RESPONSE_ACCEPT,
-								      NULL);
-  gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser), FALSE);
-  gtk_widget_set_visible((GtkWidget *) file_chooser,
+  file_dialog = (AgsFileDialog *) ags_file_dialog_new((GtkWindow *) window,
+						      i18n("open file"));
+
+  file_widget = ags_file_dialog_get_file_widget(file_dialog);
+
+  home_path = ags_file_widget_get_home_path(file_widget);
+
+  sandbox_path = NULL;
+  
+#if defined(AGS_MACOS_SANDBOX)
+  sandbox_path = g_strdup_printf("%s/Library/%s",
+				 home_path,
+				 AGS_DEFAULT_BUNDLE_ID);
+
+  recently_used_filename = g_strdup_printf("%s/%s/gsequencer_app_recently_used.xml",
+					   sandbox_path,
+					   AGS_DEFAULT_DIRECTORY);
+
+  bookmark_filename = g_strdup_printf("%s/%s/gsequencer_app_bookmark.xml",
+				      sandbox_path,
+				      AGS_DEFAULT_DIRECTORY);
+#else
+  recently_used_filename = g_strdup_printf("%s/%s/gsequencer_app_recently_used.xml",
+					   home_path,
+					   AGS_DEFAULT_DIRECTORY);
+
+  bookmark_filename = g_strdup_printf("%s/%s/gsequencer_app_bookmark.xml",
+				      home_path,
+				      AGS_DEFAULT_DIRECTORY);
+#endif
+
+  /* recently-used */
+  ags_file_widget_set_recently_used_filename(file_widget,
+					     recently_used_filename);
+  
+  ags_file_widget_read_recently_used(file_widget);
+
+  /* bookmark */
+  ags_file_widget_set_bookmark_filename(file_widget,
+					bookmark_filename);
+
+  ags_file_widget_read_bookmark(file_widget);
+
+#if defined(AGS_MACOS_SANDBOX)
+  ags_file_widget_set_flags(file_widget,
+			    AGS_FILE_WIDGET_APP_SANDBOX);
+
+  ags_file_widget_set_current_path(file_widget,
+				   sandbox_path);
+#else
+  ags_file_widget_set_current_path(file_widget,
+				   home_path);
+#endif
+
+  ags_file_widget_refresh(file_widget);
+
+  ags_file_widget_add_location(file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_DESKTOP,
+			       NULL);
+
+  ags_file_widget_add_location(file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_DOCUMENTS,
+			       NULL);  
+
+  ags_file_widget_add_location(file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_MUSIC,
+			       NULL);
+
+  ags_file_widget_add_location(file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_HOME,
+			       NULL);
+
+  ags_file_widget_set_file_action(file_widget,
+				  AGS_FILE_WIDGET_OPEN);
+
+  ags_file_widget_set_default_bundle(file_widget,
+				     AGS_DEFAULT_BUNDLE_ID);
+  
+  gtk_widget_set_visible((GtkWidget *) file_dialog,
 			 TRUE);
 
-  gtk_widget_set_size_request(GTK_WIDGET(file_chooser),
-			      AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_WIDTH, AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_HEIGHT);
+  //  gtk_widget_set_size_request(GTK_WIDGET(file_dialog),
+  //			      AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_WIDTH, AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_HEIGHT);
 
-  g_signal_connect((GObject *) file_chooser, "response",
+  g_signal_connect((GObject *) file_dialog, "response",
 		   G_CALLBACK(ags_app_action_util_open_response_callback), NULL);
 }
 
 void
-ags_app_action_util_open_response_callback(GtkFileChooserDialog *file_chooser,
+ags_app_action_util_open_response_callback(AgsFileDialog *file_dialog,
 					   gint response,
 					   gpointer data)
 {
   if(response == GTK_RESPONSE_ACCEPT){
+    AgsFileWidget *file_widget;
+    
     AgsApplicationContext *application_context;
-
-    GFile *file;
     
     char *filename;
     gchar *str;
 #if defined(AGS_W32API) || defined(AGS_OSXAPI)
     gchar *app_dir;
 #endif
+
+    gint strv_length;
     
     GError *error;
 
     application_context = ags_application_context_get_instance();
 
-    file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(file_chooser));
+    file_widget = ags_file_dialog_get_file_widget(file_dialog);
 
-    filename = g_file_get_path(file);
+    filename = ags_file_widget_get_filename(file_widget);
+
+    if(!g_strv_contains(file_widget->recently_used, filename)){
+      strv_length = g_strv_length(file_widget->recently_used);
+
+      file_widget->recently_used = g_realloc(file_widget->recently_used,
+					     (strv_length + 2) * sizeof(gchar *));
+
+      file_widget->recently_used[strv_length] = g_strdup(filename);
+      file_widget->recently_used[strv_length + 1] = NULL; 
+    
+      ags_file_widget_write_recently_used(file_widget);
+    }
     
     error = NULL;
 
@@ -263,13 +354,11 @@ ags_app_action_util_open_response_callback(GtkFileChooserDialog *file_chooser,
 
     g_free(str);
 #endif    
-
-    g_object_unref(file);
     
     g_free(filename);
   }
 
-  gtk_window_destroy((GtkWindow *) file_chooser);
+  gtk_window_destroy((GtkWindow *) file_dialog);
 }
 
 void
@@ -372,19 +461,18 @@ ags_app_action_util_save()
 }
 
 void
-ags_app_action_util_save_as_response_callback(GtkFileChooserDialog *file_chooser,
+ags_app_action_util_save_as_response_callback(AgsFileDialog *file_dialog,
 					      gint response,
 					      gpointer data)
 {
   if(response == GTK_RESPONSE_ACCEPT){
     AgsWindow *window;
-    GtkLabel *label;
-    
+    GtkLabel *label;    
+    AgsFileWidget *file_widget;
+
     AgsSimpleFile *simple_file;
 
     AgsApplicationContext *application_context;
-
-    GFile *file;
     
 #if defined(AGS_OSXAPI) || defined(AGS_W32API)
 #else
@@ -393,6 +481,8 @@ ags_app_action_util_save_as_response_callback(GtkFileChooserDialog *file_chooser
     
     gchar *filename;
     gchar *window_title;
+
+    gint strv_length;
     
     GError *error;
         
@@ -400,9 +490,21 @@ ags_app_action_util_save_as_response_callback(GtkFileChooserDialog *file_chooser
 
     window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
     
-    file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(file_chooser));
+    file_widget = ags_file_dialog_get_file_widget(file_dialog);
 
-    filename = g_file_get_path(file);
+    filename = ags_file_widget_get_current_path(file_widget);
+
+    if(!g_strv_contains(file_widget->recently_used, filename)){
+      strv_length = g_strv_length(file_widget->recently_used);
+
+      file_widget->recently_used = g_realloc(file_widget->recently_used,
+					     (strv_length + 2) * sizeof(gchar *));
+
+      file_widget->recently_used[strv_length] = g_strdup(filename);
+      file_widget->recently_used[strv_length + 1] = NULL; 
+    
+      ags_file_widget_write_recently_used(file_widget);
+    }
     
     g_mutex_lock(&locale_mutex);
 
@@ -467,19 +569,22 @@ ags_app_action_util_save_as_response_callback(GtkFileChooserDialog *file_chooser
     
     g_free(window_title);
 
-    g_object_unref(file);
-
     g_free(filename);
   }
   
-  gtk_window_destroy((GtkWindow *) file_chooser);
+  gtk_window_destroy((GtkWindow *) file_dialog);
 }
 
 void
 ags_app_action_util_save_as()
 {
   AgsWindow *window;
-  GtkFileChooserDialog *file_chooser;
+  AgsFileDialog *file_dialog;
+  AgsFileWidget *file_widget;
+
+  gchar *recently_used_filename;
+  gchar *home_path;
+  gchar *sandbox_path;
   
   AgsApplicationContext *application_context;
         
@@ -487,22 +592,76 @@ ags_app_action_util_save_as()
   
   window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(i18n("save file as"),
-								      (GtkWindow *) window,
-								      GTK_FILE_CHOOSER_ACTION_SAVE,
-								      "_Cancel", GTK_RESPONSE_CANCEL,
-								      "_OK", GTK_RESPONSE_ACCEPT,
-								      NULL);  
-  gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser),
-				       FALSE);
+  file_dialog = (AgsFileDialog *) ags_file_dialog_new((GtkWindow *) window,
+						      i18n("save file as"));  
 
-  gtk_widget_set_visible((GtkWidget *) file_chooser,
+  file_widget = ags_file_dialog_get_file_widget(file_dialog);
+
+  home_path = ags_file_widget_get_home_path(file_widget);
+
+  sandbox_path = NULL;
+  
+#if defined(AGS_MACOS_SANDBOX)
+  sandbox_path = g_strdup_printf("%s/Library/%s",
+				 home_path,
+				 AGS_DEFAULT_BUNDLE_ID);
+
+  recently_used_filename = g_strdup_printf("%s/%s/gsequencer_app_recently_used.xml",
+					   sandbox_path,
+					   AGS_DEFAULT_DIRECTORY);
+#else
+  recently_used_filename = g_strdup_printf("%s/%s/gsequencer_app_recently_used.xml",
+					   home_path,
+					   AGS_DEFAULT_DIRECTORY);
+#endif
+
+  ags_file_widget_set_recently_used_filename(file_widget,
+					     recently_used_filename);
+  
+  ags_file_widget_read_recently_used(file_widget);
+
+#if defined(AGS_MACOS_SANDBOX)
+  ags_file_widget_set_flags(file_widget,
+			    AGS_FILE_WIDGET_APP_SANDBOX);
+
+  ags_file_widget_set_current_path(file_widget,
+				   sandbox_path);
+#else
+  ags_file_widget_set_current_path(file_widget,
+				   home_path);
+#endif
+
+  ags_file_widget_refresh(file_widget);
+
+  ags_file_widget_add_location(file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_DESKTOP,
+			       NULL);
+
+  ags_file_widget_add_location(file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_DOCUMENTS,
+			       NULL);  
+
+  ags_file_widget_add_location(file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_MUSIC,
+			       NULL);
+
+  ags_file_widget_add_location(file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_HOME,
+			       NULL);
+
+  ags_file_widget_set_file_action(file_widget,
+				  AGS_FILE_WIDGET_SAVE_AS);
+
+  ags_file_widget_set_default_bundle(file_widget,
+				     AGS_DEFAULT_BUNDLE_ID);
+  
+  gtk_widget_set_visible((GtkWidget *) file_dialog,
 			 TRUE);
+  
+  //  gtk_widget_set_size_request(GTK_WIDGET(file_dialog),
+  //			      AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_WIDTH, AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_HEIGHT);
 
-  gtk_widget_set_size_request(GTK_WIDGET(file_chooser),
-			      AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_WIDTH, AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_HEIGHT);
-
-  g_signal_connect(file_chooser, "response",
+  g_signal_connect(file_dialog, "response",
 		   G_CALLBACK(ags_app_action_util_save_as_response_callback), NULL);
 
 }

@@ -1,4 +1,4 @@
-# Copyright (C) 2005-2023 Joel Kraehemann
+# Copyright (C) 2005-2024 Joel Kraehemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -24,10 +24,13 @@ if WITH_SYSTEM_TESTS
 libags_installcheck_programs = \
 	ags_check_system_buffer_util_test \
 	ags_check_system_complex_test \
+	ags_check_system_endian_test \
 	ags_check_system_conversion_test \
 	ags_check_system_function_test \
 	ags_check_system_log_test \
 	ags_check_system_math_util_test \
+	ags_check_system_regex_util_test \
+	ags_check_system_string_util_test \
 	ags_check_system_solver_matrix_test \
 	ags_check_system_solver_vector_test \
 	ags_check_system_solver_polynomial_test \
@@ -37,7 +40,13 @@ libags_installcheck_programs = \
 	ags_check_system_application_context_test \
 	ags_check_system_config_test \
 	ags_check_system_connectable_test \
+	ags_check_system_countable_test \
+	ags_check_system_main_loop_test \
+	ags_check_system_mutable_test \
 	ags_check_system_soundcard_test \
+	ags_check_system_seekable_test \
+	ags_check_system_sequencer_test \
+	ags_check_system_tactable_test \
 	ags_check_system_concurrency_provider_test \
 	ags_check_system_destroy_worker_test \
 	ags_check_system_generic_main_loop_test \
@@ -322,6 +331,13 @@ ags_check_system_conversion_test_CPPFLAGS = $(AGS_FEATURES)
 ags_check_system_conversion_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_check_system_conversion_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
+# endian unit test
+ags_check_system_endian_test_SOURCES = ags/test/lib/ags_endian_test.c
+ags_check_system_endian_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_check_system_endian_test_CPPFLAGS = $(AGS_FEATURES)
+ags_check_system_endian_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_endian_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
 # function unit test
 ags_check_system_function_test_SOURCES = ags/test/lib/ags_function_test.c
 ags_check_system_function_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
@@ -342,6 +358,20 @@ ags_check_system_math_util_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_C
 ags_check_system_math_util_test_CPPFLAGS = $(AGS_FEATURES)
 ags_check_system_math_util_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_check_system_math_util_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# regex util unit test
+ags_check_system_regex_util_test_SOURCES = ags/test/lib/ags_regex_util_test.c
+ags_check_system_regex_util_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_check_system_regex_util_test_CPPFLAGS = $(AGS_FEATURES)
+ags_check_system_regex_util_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_regex_util_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# string util unit test
+ags_check_system_string_util_test_SOURCES = ags/test/lib/ags_string_util_test.c
+ags_check_system_string_util_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_check_system_string_util_test_CPPFLAGS = $(AGS_FEATURES)
+ags_check_system_string_util_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_string_util_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
 # solver matrix unit test
 ags_check_system_solver_matrix_test_SOURCES = ags/test/lib/ags_solver_matrix_test.c
@@ -406,12 +436,54 @@ ags_check_system_connectable_test_CPPFLAGS = $(AGS_FEATURES)
 ags_check_system_connectable_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_check_system_connectable_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lcunit -lags_audio -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(JSON_GLIB_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
 
+# countable unit test
+ags_check_system_countable_test_SOURCES = ags/test/object/ags_countable_test.c
+ags_check_system_countable_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(JSON_GLIB_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
+ags_check_system_countable_test_CPPFLAGS = $(AGS_FEATURES)
+ags_check_system_countable_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_countable_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(JSON_GLIB_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
+
+# main loop unit test
+ags_check_system_main_loop_test_SOURCES = ags/test/object/ags_main_loop_test.c
+ags_check_system_main_loop_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(JSON_GLIB_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
+ags_check_system_main_loop_test_CPPFLAGS = $(AGS_FEATURES)
+ags_check_system_main_loop_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_main_loop_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lcunit -lags_audio -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(JSON_GLIB_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
+
+# mutable unit test
+ags_check_system_mutable_test_SOURCES = ags/test/object/ags_mutable_test.c
+ags_check_system_mutable_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(JSON_GLIB_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
+ags_check_system_mutable_test_CPPFLAGS = $(AGS_FEATURES)
+ags_check_system_mutable_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_mutable_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(JSON_GLIB_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
+
 # soundcard unit test
 ags_check_system_soundcard_test_SOURCES = ags/test/object/ags_soundcard_test.c
 ags_check_system_soundcard_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(JSON_GLIB_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
 ags_check_system_soundcard_test_CPPFLAGS = $(AGS_FEATURES)
 ags_check_system_soundcard_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_check_system_soundcard_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(JSON_GLIB_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
+
+# seekable unit test
+ags_check_system_seekable_test_SOURCES = ags/test/object/ags_seekable_test.c
+ags_check_system_seekable_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(JSON_GLIB_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
+ags_check_system_seekable_test_CPPFLAGS = $(AGS_FEATURES)
+ags_check_system_seekable_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_seekable_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(JSON_GLIB_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
+
+# sequencer unit test
+ags_check_system_sequencer_test_SOURCES = ags/test/object/ags_sequencer_test.c
+ags_check_system_sequencer_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(JSON_GLIB_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
+ags_check_system_sequencer_test_CPPFLAGS = $(AGS_FEATURES)
+ags_check_system_sequencer_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_sequencer_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(JSON_GLIB_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
+
+# tactable unit test
+ags_check_system_tactable_test_SOURCES = ags/test/object/ags_tactable_test.c
+ags_check_system_tactable_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(JSON_GLIB_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
+ags_check_system_tactable_test_CPPFLAGS = $(AGS_FEATURES)
+ags_check_system_tactable_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_tactable_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(JSON_GLIB_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
 
 # concurrency provider unit test
 ags_check_system_concurrency_provider_test_SOURCES = ags/test/thread/ags_concurrency_provider_test.c
@@ -2035,9 +2107,12 @@ ags-check-system-unit-test: $(libags_installcheck_programs) $(libags_audio_insta
 	./ags_check_system_buffer_util_test
 	./ags_check_system_complex_test
 	./ags_check_system_conversion_test
+	./ags_check_system_endian_test
 	./ags_check_system_function_test
 	./ags_check_system_log_test
 	./ags_check_system_math_util_test
+	./ags_check_system_regex_util_test
+	./ags_check_system_string_util_test
 	./ags_check_system_solver_matrix_test
 	./ags_check_system_solver_vector_test
 	./ags_check_system_solver_polynomial_test
@@ -2047,7 +2122,13 @@ ags-check-system-unit-test: $(libags_installcheck_programs) $(libags_audio_insta
 	./ags_check_system_application_context_test
 	./ags_check_system_config_test
 	./ags_check_system_connectable_test
+	./ags_check_system_countable_test
+	./ags_check_system_main_loop_test
+	./ags_check_system_mutable_test
+	./ags_check_system_seekable_test
 	./ags_check_system_soundcard_test
+	./ags_check_system_sequencer_test
+	./ags_check_system_tactable_test
 	./ags_check_system_concurrency_provider_test
 	./ags_check_system_destroy_worker_test
 	./ags_check_system_generic_main_loop_test

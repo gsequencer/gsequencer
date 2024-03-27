@@ -59,6 +59,23 @@
     </itemizedlist>
 
     <sect2>
+      <title>Open file</title>
+      <mediaobject>
+	<imageobject>
+	  <imagedata width="100%" scalefit="1" fileref="../images/ags_file_open_dialog.png" />
+	</imageobject>
+	<caption>
+	  <para>
+	    The file open screenshot
+	  </para>
+	</caption>
+      </mediaobject>
+      <para>
+	Open files.
+      </para>
+    </sect2>
+
+    <sect2>
       <title>Export to PCM audio file</title>
       <mediaobject>
 	<imageobject>

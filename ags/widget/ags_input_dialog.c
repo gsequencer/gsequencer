@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -17,26 +17,33 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/app/ags_input_dialog.h>
-
-#include <ags/app/ags_ui_provider.h>
+#include <ags/widget/ags_input_dialog.h>
 
 #include <ags/i18n.h>
 
 void ags_input_dialog_class_init(AgsInputDialogClass *input_dialog);
 void ags_input_dialog_init(AgsInputDialog *input_dialog);
 
+void ags_input_dialog_clicked_callback(GtkButton *button,
+				       AgsInputDialog *input_dialog);
+
 /**
  * SECTION:ags_input_dialog
  * @short_description: edit input settings
  * @title: AgsInputDialog
  * @section_id:
- * @include: ags/app/ags_input_dialog.h
+ * @include: ags/widget/ags_input_dialog.h
  *
  * #AgsInputDialog is a dialog widget to edit input settings.
  */
 
+enum{
+  RESPONSE,
+  LAST_SIGNAL,
+};
+
 static gpointer ags_input_dialog_parent_class = NULL;
+static guint input_dialog_signals[LAST_SIGNAL];
 
 GType
 ags_input_dialog_get_type(void)
@@ -58,7 +65,7 @@ ags_input_dialog_get_type(void)
       (GInstanceInitFunc) ags_input_dialog_init,
     };
 
-    ags_type_input_dialog = g_type_register_static(GTK_TYPE_DIALOG,
+    ags_type_input_dialog = g_type_register_static(GTK_TYPE_WINDOW,
 						   "AgsInputDialog", &ags_input_dialog_info,
 						   0);
 
@@ -72,22 +79,109 @@ void
 ags_input_dialog_class_init(AgsInputDialogClass *input_dialog)
 {
   ags_input_dialog_parent_class = g_type_class_peek_parent(input_dialog);
+
+  /* AgsInputDialogClass */
+  input_dialog->response = NULL;
+
+  /* signals */
+  /**
+   * AgsInputDialog::response:
+   * @input_dialog: the #AgsInputDialog
+   * @response: the response
+   *
+   * The ::response signal notifies adjustment value changed.
+   *
+   * Since: 6.6.0
+   */
+  input_dialog_signals[RESPONSE] =
+    g_signal_new("response",
+		 G_TYPE_FROM_CLASS(input_dialog),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsInputDialogClass, response),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__INT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_INT);
 }
 
 void
 ags_input_dialog_init(AgsInputDialog *input_dialog)
 {
+  GtkBox *button_box;
+  
   input_dialog->flags = 0;
 
+  input_dialog->vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				   6);
+  gtk_window_set_child(input_dialog,
+		       input_dialog->vbox);
+
+  /* input */
+  input_dialog->input_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+					6);
+  gtk_box_append(input_dialog->vbox,
+		 input_dialog->input_box);
+
+  input_dialog->text = NULL;
+
   input_dialog->string_input = NULL;
+  
+  input_dialog->spin_button_label = NULL;
   input_dialog->spin_button_input = NULL;
 
-  gtk_dialog_add_buttons((GtkDialog *) input_dialog,
-			 i18n("_OK"),
-			 GTK_RESPONSE_ACCEPT,
-			 i18n("_Cancel"),
-			 GTK_RESPONSE_REJECT,
-			 NULL);
+  /* button */
+  button_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+			   6);
+
+  gtk_widget_set_halign(button_box,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_hexpand(button_box,
+			 TRUE);
+  
+  gtk_box_append(input_dialog->vbox,
+		 button_box);
+  
+  input_dialog->ok = gtk_button_new_with_mnemonic(i18n("_OK"));
+
+  gtk_widget_set_hexpand(input_dialog->ok,
+			 TRUE);
+
+  gtk_widget_set_halign(input_dialog->ok,
+			GTK_ALIGN_END);
+
+  gtk_box_append(button_box,
+		 input_dialog->ok);
+
+  g_signal_connect(input_dialog->ok, "clicked",
+		   G_CALLBACK(ags_input_dialog_clicked_callback), input_dialog);
+  
+  input_dialog->cancel = gtk_button_new_with_mnemonic(i18n("_Cancel"));
+
+  gtk_widget_set_hexpand(input_dialog->cancel,
+			 FALSE);
+
+  gtk_widget_set_halign(input_dialog->cancel,
+			GTK_ALIGN_END);
+
+  gtk_box_append(button_box,
+		 input_dialog->cancel);
+
+  g_signal_connect(input_dialog->cancel, "clicked",
+		   G_CALLBACK(ags_input_dialog_clicked_callback), input_dialog);
+}
+
+void
+ags_input_dialog_clicked_callback(GtkButton *button,
+				  AgsInputDialog *input_dialog)
+{
+  if(button == input_dialog->ok){
+    ags_input_dialog_response(input_dialog,
+			      GTK_RESPONSE_ACCEPT);
+  }else{
+    ags_input_dialog_response(input_dialog,
+			      GTK_RESPONSE_REJECT);
+  }
 }
 
 /**
@@ -133,7 +227,7 @@ ags_input_dialog_set_flags(AgsInputDialog *input_dialog,
   if((AGS_INPUT_DIALOG_SHOW_STRING_INPUT & (flags)) != 0 &&
      input_dialog->string_input == NULL){
     input_dialog->string_input = (GtkEntry *) gtk_entry_new();
-    gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) input_dialog),
+    gtk_box_append(input_dialog->input_box,
 		   (GtkWidget *) input_dialog->string_input);
 
     gtk_widget_show((GtkWidget *) input_dialog->string_input);
@@ -142,8 +236,8 @@ ags_input_dialog_set_flags(AgsInputDialog *input_dialog,
     GtkBox *hbox;
 
     hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				  AGS_UI_PROVIDER_DEFAULT_PADDING);
-    gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) input_dialog),
+				  6);
+    gtk_box_append(input_dialog->input_box,
 		   (GtkWidget *) hbox);
 
     input_dialog->spin_button_label = (GtkLabel *) gtk_label_new(NULL);
@@ -183,12 +277,115 @@ ags_input_dialog_unset_flags(AgsInputDialog *input_dialog,
 		   (GtkWidget *) input_dialog->string_input);
 
     g_object_run_dispose(G_OBJECT(input_dialog->string_input));
-    g_object_unref(G_OBJECT(input_dialog->string_input));
     
     input_dialog->string_input = NULL;
   }
   
   input_dialog->flags &= (~flags);
+}
+
+/**
+ * ags_input_dialog_set_text:
+ * @input_dialog: the #AgsInputDialog
+ * @text: the text
+ * 
+ * Set informal text.
+ * 
+ * Since: 6.6.0
+ */
+void
+ags_input_dialog_set_text(AgsInputDialog *input_dialog,
+			  gchar *text)
+{
+  g_return_if_fail(AGS_IS_INPUT_DIALOG(input_dialog));
+
+  if(input_dialog->text == NULL){
+    input_dialog->text = gtk_label_new(text);
+    gtk_box_prepend(input_dialog->input_box,
+		    input_dialog->text);
+  }else{
+    gtk_label_set_text(input_dialog->text,
+		       text);
+  }
+}
+
+/**
+ * ags_input_dialog_set_spin_button_label:
+ * @input_dialog: the #AgsInputDialog
+ * @label: the spin button label
+ * 
+ * Set label of spin button.
+ * 
+ * Since: 6.6.0
+ */
+void
+ags_input_dialog_set_spin_button_label(AgsInputDialog *input_dialog,
+				       gchar *label)
+{
+  g_return_if_fail(AGS_IS_INPUT_DIALOG(input_dialog));
+
+  if(input_dialog->spin_button_label != NULL){
+    gtk_label_set_text(input_dialog->spin_button_label,
+		       label);
+  }
+}
+
+/**
+ * ags_input_dialog_get_entry:
+ * @input_dialog: the #AgsInputDialog
+ * 
+ * The #GtkEntry to get input from.
+ *
+ * Returns: (transfer none): the entry widget
+ * 
+ * Since: 6.6.0
+ */
+GtkEntry*
+ags_input_dialog_get_entry(AgsInputDialog *input_dialog)
+{
+  g_return_val_if_fail(AGS_IS_INPUT_DIALOG(input_dialog), NULL);
+
+  return(input_dialog->string_input);
+}
+
+/**
+ * ags_input_dialog_get_spin_button:
+ * @input_dialog: the #AgsInputDialog
+ * 
+ * The #GtkSpinButton to get input from.
+ *
+ * Returns: (transfer none): the spin button widget
+ * 
+ * Since: 6.6.0
+ */
+GtkSpinButton*
+ags_input_dialog_get_spin_button(AgsInputDialog *input_dialog)
+{
+  g_return_val_if_fail(AGS_IS_INPUT_DIALOG(input_dialog), NULL);
+
+  return(input_dialog->spin_button_input);
+}
+
+/**
+ * ags_input_dialog_response:
+ * @input_dialog: the #AgsInputDialog
+ * @response: the response
+ * 
+ * Emit signal  AgsInputDialog::response().
+ * 
+ * Since: 6.6.0
+ */
+void
+ags_input_dialog_response(AgsInputDialog *input_dialog,
+			  gint response)
+{
+  g_return_if_fail(AGS_IS_INPUT_DIALOG(input_dialog));
+
+  g_object_ref((GObject *) input_dialog);
+  g_signal_emit(G_OBJECT(input_dialog),
+		input_dialog_signals[RESPONSE], 0,
+		response);
+  g_object_unref((GObject *) input_dialog);
 }
 
 /**

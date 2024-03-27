@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -510,8 +510,10 @@ ags_drum_dispose(GObject *gobject)
     start_list = ags_machine_get_input_pad(AGS_MACHINE(drum));
 
   while(list != NULL){
-    if(AGS_DRUM_INPUT_PAD(list->data)->file_chooser != NULL){
-      gtk_window_destroy(GTK_WINDOW(AGS_DRUM_INPUT_PAD(list->data)->file_chooser));
+    if(AGS_DRUM_INPUT_PAD(list->data)->open_dialog != NULL){
+      gtk_window_destroy(GTK_WINDOW(AGS_DRUM_INPUT_PAD(list->data)->open_dialog));
+
+      AGS_DRUM_INPUT_PAD(list->data)->open_dialog = NULL;
     }
 
     list = list->next;
@@ -537,7 +539,7 @@ ags_drum_connect(AgsConnectable *connectable)
 
   int i;
 
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -580,7 +582,7 @@ ags_drum_disconnect(AgsConnectable *connectable)
 
   int i;
 
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 

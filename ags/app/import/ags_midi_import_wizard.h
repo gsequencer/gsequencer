@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -49,18 +49,26 @@ typedef enum{
 
 struct _AgsMidiImportWizard
 {
-  GtkDialog dialog;
+  GtkWindow window;
 
   guint flags;
   guint connectable_flags;
   
-  GtkWidget *file_chooser;
+  GtkWidget *file_widget;
   GtkWidget *track_collection;
+
+  GtkButton *prev_button;
+  GtkButton *next_button;
+
+  GtkButton *activate_button;
 };
 
 struct _AgsMidiImportWizardClass
 {
-  GtkDialogClass dialog;
+  GtkWindowClass window;
+
+  void (*response)(AgsMidiImportWizard *midi_import,
+		   gint response_id);
 };
 
 GType ags_midi_import_wizard_get_type(void);
@@ -71,6 +79,9 @@ void ags_midi_import_wizard_set_flags(AgsMidiImportWizard *midi_import_wizard,
 				      guint flags);
 void ags_midi_import_wizard_unset_flags(AgsMidiImportWizard *midi_import_wizard,
 					guint flags);
+
+void ags_midi_import_wizard_response(AgsMidiImportWizard *midi_import_wizard,
+				     gint response_id);
 
 AgsMidiImportWizard* ags_midi_import_wizard_new();
 

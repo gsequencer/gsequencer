@@ -20,11 +20,12 @@
 #include <ags/app/machine/ags_audiorec_callbacks.h>
 
 #include <ags/app/ags_ui_provider.h>
+#include <ags/app/ags_pcm_file_dialog.h>
 #include <ags/app/ags_window.h>
 
 #include <ags/i18n.h>
 
-void ags_audiorec_open_response_callback(GtkWidget *widget, gint response,
+void ags_audiorec_open_response_callback(AgsPCMFileDialog *pcm_file_dialog, gint response,
 					 AgsAudiorec *audiorec);
 
 void
@@ -129,58 +130,148 @@ ags_audiorec_update_ui_callback(GObject *ui_provider,
 void
 ags_audiorec_open_callback(GtkWidget *button, AgsAudiorec *audiorec)
 {
-  GtkFileChooserDialog *dialog;
+  AgsPCMFileDialog *pcm_file_dialog;
 
   if(audiorec->open_dialog != NULL){
     return;
   }
   
-  audiorec->open_dialog = 
-    dialog = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(i18n("Open audio files"),
-								  (GtkWindow *) gtk_widget_get_ancestor((GtkWidget *) audiorec,
-													AGS_TYPE_WINDOW),
-								  GTK_FILE_CHOOSER_ACTION_OPEN,
-								  i18n("_OK"), GTK_RESPONSE_ACCEPT,
-								  i18n("_Cancel"), GTK_RESPONSE_CANCEL,
-								  NULL);
-  gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(dialog),
-				       FALSE);
-  gtk_widget_set_visible((GtkWidget *) dialog,
-			 TRUE);
+  AgsFileWidget *file_widget;
   
-  gtk_widget_set_size_request(GTK_WIDGET(dialog),
-			      AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_WIDTH, AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_HEIGHT);
+  AgsApplicationContext *application_context;
 
-  g_signal_connect((GObject *) dialog, "response",
+  gchar *recently_used_filename;
+  gchar *bookmark_filename;
+  gchar *home_path;
+  gchar *sandbox_path;
+  
+  /* get application context */  
+  application_context = ags_application_context_get_instance();
+  
+  pcm_file_dialog = ags_pcm_file_dialog_new((GtkWindow *) ags_ui_provider_get_export_window(AGS_UI_PROVIDER(application_context)),
+					    i18n("open audio files"));
+
+  audiorec->open_dialog = pcm_file_dialog;
+  
+  ags_pcm_file_dialog_unset_flags(pcm_file_dialog,
+				  (AGS_PCM_FILE_DIALOG_SHOW_AUDIO_CHANNEL));
+
+  file_widget = ags_pcm_file_dialog_get_file_widget(pcm_file_dialog);
+
+  home_path = ags_file_widget_get_home_path(file_widget);
+
+  sandbox_path = NULL;
+
+#if defined(AGS_MACOS_SANDBOX)
+  sandbox_path = g_strdup_printf("%s/Library/%s",
+				 home_path,
+				 AGS_DEFAULT_BUNDLE_ID);
+
+  recently_used_filename = g_strdup_printf("%s/%s/gsequencer_pcm_recently_used.xml",
+					   sandbox_path,
+					   AGS_DEFAULT_DIRECTORY);
+
+  bookmark_filename = g_strdup_printf("%s/%s/gsequencer_pcm_bookmark.xml",
+				      sandbox_path,
+				      AGS_DEFAULT_DIRECTORY);
+#else
+  recently_used_filename = g_strdup_printf("%s/%s/gsequencer_pcm_recently_used.xml",
+					   home_path,
+					   AGS_DEFAULT_DIRECTORY);
+
+  bookmark_filename = g_strdup_printf("%s/%s/gsequencer_pcm_bookmark.xml",
+				      home_path,
+				      AGS_DEFAULT_DIRECTORY);
+#endif
+
+  /* recently-used */
+  ags_file_widget_set_recently_used_filename(file_widget,
+					     recently_used_filename);
+  
+  ags_file_widget_read_recently_used(file_widget);
+
+  /* bookmark */
+  ags_file_widget_set_bookmark_filename(file_widget,
+					bookmark_filename);
+
+  ags_file_widget_read_bookmark(file_widget);
+
+#if defined(AGS_MACOS_SANDBOX)
+  ags_file_widget_set_flags(file_widget,
+			    AGS_FILE_WIDGET_APP_SANDBOX);
+
+  ags_file_widget_set_current_path(file_widget,
+				   sandbox_path);
+#else
+  ags_file_widget_set_current_path(file_widget,
+				   home_path);
+#endif
+
+  ags_file_widget_refresh(file_widget);
+
+  ags_file_widget_add_location(file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_DESKTOP,
+			       NULL);
+
+  ags_file_widget_add_location(file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_DOCUMENTS,
+			       NULL);  
+
+  ags_file_widget_add_location(file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_MUSIC,
+			       NULL);
+
+  ags_file_widget_add_location(file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_HOME,
+			       NULL);
+
+  ags_file_widget_set_default_bundle(file_widget,
+				     AGS_DEFAULT_BUNDLE_ID);
+  
+  gtk_widget_set_visible((GtkWidget *) pcm_file_dialog,
+			 TRUE);
+
+  g_signal_connect((GObject *) pcm_file_dialog, "response",
 		   G_CALLBACK(ags_audiorec_open_response_callback), audiorec);
 }
 
 void
-ags_audiorec_open_response_callback(GtkWidget *widget, gint response,
+ags_audiorec_open_response_callback(AgsPCMFileDialog *pcm_file_dialog, gint response,
 				    AgsAudiorec *audiorec)
 {
   if(response == GTK_RESPONSE_ACCEPT){
-    GFile *file;
-    
+    AgsFileWidget *file_widget;
+
     gchar *filename;
 
-    file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(widget));
+    gint strv_length;
+
+    file_widget = ags_pcm_file_dialog_get_file_widget(pcm_file_dialog);
+
+    filename = ags_file_widget_get_filename(file_widget);
+
+    if(!g_strv_contains(file_widget->recently_used, filename)){
+      strv_length = g_strv_length(file_widget->recently_used);
+
+      file_widget->recently_used = g_realloc(file_widget->recently_used,
+					     (strv_length + 2) * sizeof(gchar *));
+
+      file_widget->recently_used[strv_length] = g_strdup(filename);
+      file_widget->recently_used[strv_length + 1] = NULL; 
     
-    filename = g_file_get_path(file);
+      ags_file_widget_write_recently_used(file_widget);
+    }
 
     gtk_editable_set_text(GTK_EDITABLE(audiorec->filename),
 			  filename);
+
     ags_audiorec_open_filename(audiorec,
 			       filename);
-
-    g_object_unref(file);
-    
-    g_free(filename);
   }
 
   audiorec->open_dialog = NULL;
   
-  gtk_window_destroy((GtkWindow *) widget);
+  gtk_window_destroy((GtkWindow *) pcm_file_dialog);
 }
 
 void

@@ -20,7 +20,6 @@
 #include <ags/app/editor/ags_pattern_envelope_callbacks.h>
 
 #include <ags/app/ags_window.h>
-#include <ags/app/ags_input_dialog.h>
 #include <ags/app/ags_machine.h>
 
 #include <ags/app/editor/ags_envelope_dialog.h>

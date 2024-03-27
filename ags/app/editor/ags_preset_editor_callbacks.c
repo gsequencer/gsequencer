@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,14 +21,14 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
-#include <ags/app/ags_input_dialog.h>
 #include <ags/app/ags_machine.h>
 
 #include <ags/app/editor/ags_preset_dialog.h>
 
 #include <ags/i18n.h>
 
-void ags_preset_editor_open_response_callback(GtkDialog *dialog, gint response, AgsPresetEditor *preset_editor);
+void ags_preset_editor_open_response_callback(AgsFileDialog *file_dialog, gint response,
+					      AgsPresetEditor *preset_editor);
 
 void
 ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_editor)
@@ -480,31 +480,26 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
 }
 
 void
-ags_preset_editor_save_response_callback(GtkDialog *dialog, gint response, AgsPresetEditor *preset_editor)
+ags_preset_editor_save_response_callback(AgsFileDialog *file_dialog, gint response,
+					 AgsPresetEditor *preset_editor)
 {
   switch(response){
   case GTK_RESPONSE_ACCEPT:
     {
-      GFile *file;
+      AgsFileWidget *file_widget;
       
       gchar *filename;
 
-      file = gtk_file_chooser_get_file((GtkFileChooser *) dialog);
+      file_widget = ags_file_dialog_get_file_widget(file_dialog);
 
-      filename = g_file_get_path(file);
+      filename = ags_file_widget_get_filename(file_widget);
   
       gtk_editable_set_text(GTK_EDITABLE(preset_editor->filename),
 			    filename);
-
-      if(file != NULL){
-	g_object_unref(file);
-      }
-      
-      g_free(filename);
     }
   }
 
-  gtk_window_destroy((GtkWindow *) dialog);
+  gtk_window_destroy((GtkWindow *) file_dialog);
 }
 
 void
@@ -514,59 +509,134 @@ ags_preset_editor_save_preset_callback(GtkButton *button, AgsPresetEditor *prese
 }
 
 void
-ags_preset_editor_open_response_callback(GtkDialog *dialog, gint response, AgsPresetEditor *preset_editor)
+ags_preset_editor_open_response_callback(AgsFileDialog *file_dialog, gint response, AgsPresetEditor *preset_editor)
 {
   switch(response){
   case GTK_RESPONSE_ACCEPT:
     {
-      GFile *file;
+      AgsFileWidget *file_widget;
       
       gchar *filename;
 
-      file = gtk_file_chooser_get_file(dialog);
+      file_widget = ags_file_dialog_get_file_widget(file_dialog);
 
-      filename = g_file_get_path(file);
+      filename = ags_file_widget_get_filename(file_widget);
   
       gtk_editable_set_text(GTK_EDITABLE(preset_editor->filename),
 			    filename);
 
       ags_preset_editor_open_preset(preset_editor,
 				    filename);
-
-      if(file != NULL){
-	g_object_unref(file);
-      }
-      
-      g_free(filename);
     }
   }
 
-  gtk_window_destroy(dialog);
+  gtk_window_destroy(file_dialog);
 }
 
 void
 ags_preset_editor_open_preset_callback(GtkButton *button, AgsPresetEditor *preset_editor)
 {
   AgsWindow *window;
-  GtkFileChooserDialog *file_chooser;
+  AgsFileDialog *file_dialog;
+  AgsFileWidget *file_widget;
+
+  gchar *recently_used_filename;
+  gchar *bookmark_filename;
+  gchar *home_path;
+  gchar *sandbox_path;
 
   AgsApplicationContext *application_context;
 
   application_context = ags_application_context_get_instance();
 
   window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-  
-  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(i18n("open preset files"),
-								      window,
-								      GTK_FILE_CHOOSER_ACTION_OPEN,
-								      i18n("_Cancel"), GTK_RESPONSE_CANCEL,
-								      i18n("_Open"), GTK_RESPONSE_ACCEPT,
-								      NULL);
-  
-  g_signal_connect(file_chooser, "response",
-		   G_CALLBACK(ags_preset_editor_open_response_callback), preset_editor);
 
-  gtk_widget_show((GtkWidget *) file_chooser);
+  file_dialog = (AgsFileDialog *) ags_file_dialog_new((GtkWindow *) window,
+						      i18n("open preset file"));
+
+  file_widget = ags_file_dialog_get_file_widget(file_dialog);
+
+  home_path = ags_file_widget_get_home_path(file_widget);
+
+  sandbox_path = NULL;
+  
+#if defined(AGS_MACOS_SANDBOX)
+  sandbox_path = g_strdup_printf("%s/Library/%s",
+				 home_path,
+				 AGS_DEFAULT_BUNDLE_ID);
+
+  recently_used_filename = g_strdup_printf("%s/%s/gsequencer_preset_recently_used.xml",
+					   sandbox_path,
+					   AGS_DEFAULT_DIRECTORY);
+
+  bookmark_filename = g_strdup_printf("%s/%s/gsequencer_preset_bookmark.xml",
+				      sandbox_path,
+				      AGS_DEFAULT_DIRECTORY);
+#else
+  recently_used_filename = g_strdup_printf("%s/%s/gsequencer_preset_recently_used.xml",
+					   home_path,
+					   AGS_DEFAULT_DIRECTORY);
+
+  bookmark_filename = g_strdup_printf("%s/%s/gsequencer_preset_bookmark.xml",
+				      home_path,
+				      AGS_DEFAULT_DIRECTORY);
+#endif
+
+  /* recently-used */
+  ags_file_widget_set_recently_used_filename(file_widget,
+					     recently_used_filename);
+  
+  ags_file_widget_read_recently_used(file_widget);
+
+  /* bookmark */
+  ags_file_widget_set_bookmark_filename(file_widget,
+					bookmark_filename);
+
+  ags_file_widget_read_bookmark(file_widget);
+
+#if defined(AGS_MACOS_SANDBOX)
+  ags_file_widget_set_flags(file_widget,
+			    AGS_FILE_WIDGET_APP_SANDBOX);
+
+  ags_file_widget_set_current_path(file_widget,
+				   sandbox_path);
+#else
+  ags_file_widget_set_current_path(file_widget,
+				   home_path);
+#endif
+
+  ags_file_widget_refresh(file_widget);
+
+  ags_file_widget_add_location(file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_DESKTOP,
+			       NULL);
+
+  ags_file_widget_add_location(file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_DOCUMENTS,
+			       NULL);  
+
+  ags_file_widget_add_location(file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_MUSIC,
+			       NULL);
+
+  ags_file_widget_add_location(file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_HOME,
+			       NULL);
+
+  ags_file_widget_set_file_action(file_widget,
+				  AGS_FILE_WIDGET_OPEN);
+
+  ags_file_widget_set_default_bundle(file_widget,
+				     AGS_DEFAULT_BUNDLE_ID);
+  
+  gtk_widget_set_visible((GtkWidget *) file_dialog,
+			 TRUE);
+
+  //  gtk_widget_set_size_request(GTK_WIDGET(file_dialog),
+  //			      AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_WIDTH, AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_HEIGHT);
+
+  g_signal_connect((GObject *) file_dialog, "response",
+		   G_CALLBACK(ags_preset_editor_open_response_callback), preset_editor);
 }
 
 void

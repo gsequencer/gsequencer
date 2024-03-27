@@ -86,7 +86,9 @@ ags_regex_util_execute_flags_get_type()
     static const GFlagsValue values[] = {
       { AGS_REGEX_UTIL_NOT_BEGINNING_OF_LINE, "AGS_REGEX_UTIL_NOT_BEGINNING_OF_LINE", "regex-util-not-beginning-of-line" },
       { AGS_REGEX_UTIL_NOT_END_OF_LINE, "AGS_REGEX_UTIL_NOT_END_OF_LINE", "regex-util-end-of-line" },
+#if !defined(AGS_W32API)
       { AGS_REGEX_UTIL_START_END, "AGS_REGEX_UTIL_START_END", "regex-util-start-end" },
+#endif
       { 0, NULL, NULL }
     };
 
@@ -108,6 +110,8 @@ ags_regex_util_error_quark()
  * ags_regex_util_alloc:
  * @app_encoding: the application encoding
  * @encoding: the input encoding
+ * @is_unichar: is gunichar
+ * @is_unichar2: is gunichar2
  *
  * Allocate #AgsRegexUtil-struct
  *
@@ -147,6 +151,8 @@ ags_regex_util_alloc(gchar *app_encoding,
     ptr->converter = g_iconv_open(local_app_encoding,
 				  ptr->encoding);
   }
+
+  //  memset(&ptr->regex_str, 0, sizeof(regex_t));
   
   ptr->regex_str = NULL;
 
@@ -200,7 +206,7 @@ ags_regex_util_free(AgsRegexUtil *ptr)
     g_iconv_close(ptr->converter);
   }
   
-  regfree(&(ptr->regex));
+  //regfree(&(ptr->regex));
   
   g_free(ptr->regex_str);
 

@@ -142,7 +142,8 @@ build_triplet = @build@
 host_triplet = @host@
 subdir = docs/reference/libags-audio
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/ags-docs-api.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/ags-def.m4 \
+	$(top_srcdir)/m4/ags-docs-api.m4 \
 	$(top_srcdir)/m4/ags-docs-books.m4 \
 	$(top_srcdir)/m4/ags-listings.m4 \
 	$(top_srcdir)/m4/ags-marshallers.m4 \

@@ -363,12 +363,12 @@ INTROSPECTION_GIRS += AgsAudio-6.0.gir
 AgsGui-6.0.gir: libags_gui.la
 AgsGui_6_0_gir_INCLUDES = GObject-2.0 Gtk-4.0
 AgsGui_6_0_gir_C_INCLUDES = ags/libags-gui.h
-AgsGui_6_0_gir_CFLAGS = $(INCLUDES) $(GTK_CFLAGS)
+AgsGui_6_0_gir_CFLAGS = $(INCLUDES) $(GTK_CFLAGS) $(LIBXML2_CFLAGS)
 AgsGui_6_0_gir_LIBS = libags_gui.la
 AgsGui_6_0_gir_FILES = $(libags_gui_la_HEADERS_0) $(libags_gui_la_SOURCES)
 AgsGui_6_0_gir_NAMESPACE = AgsGui
 AgsGui_6_0_gir_VERSION = 6.0
-AgsGui_6_0_gir_SCANNERFLAGS = --add-include-path=$(top_srcdir) --add-include-path=$(top_builddir) -I$(top_srcdir) -I$(top_builddir) --warn-all --include=Gtk-4.0 --namespace=AgsGui --nsversion=6.0 --identifier-prefix=Ags --symbol-prefix=ags_ --output=$(top_builddir)/AgsGui-6.0.gir
+AgsGui_6_0_gir_SCANNERFLAGS = --add-include-path=$(top_srcdir) --add-include-path=$(top_builddir) -I$(top_srcdir) -I$(top_builddir) --warn-all --include=Gtk-4.0 --include=libxml2-2.0 --namespace=AgsGui --nsversion=6.0 --identifier-prefix=Ags --symbol-prefix=ags_ --output=$(top_builddir)/AgsGui-6.0.gir
 INTROSPECTION_GIRS += AgsGui-6.0.gir
 
 girdir = $(datadir)/gir-1.0
@@ -879,11 +879,11 @@ libags_audio_la_LDFLAGS += $(CORE_AUDIO_LIBS) $(WASAPI_LIBS) $(LIBASOUND2_LIBS) 
 
 # library libags-gui
 libags_gui_la_CPPFLAGS = -std=gnu99 $(CPPFLAGS) $(LIBAGS_GUI_CPPFLAGS)
-libags_gui_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(GOBJECT_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(W32API_CFLAGS)
+libags_gui_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(GOBJECT_CFLAGS) $(LIBXML2_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(W32API_CFLAGS)
 libags_gui_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(GOBJECT_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(W32API_CFLAGS)
 libags_gui_la_LDFLAGS = $(LDFLAGS) -version-info 6:0:0 $(PIC_FLAGS) -pthread
 libags_gui_la_LIBADD = -lm
-libags_gui_la_LDFLAGS += $(GOBJECT_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(W32API_LIBS)
+libags_gui_la_LDFLAGS += $(GOBJECT_LIBS) $(LIBXML2_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(W32API_LIBS)
 
 if WITH_W32API
 libags_gui_la_LDFLAGS += -Wl,--export-all-symbols,--out-implib=libags_gui.dll.a
@@ -2477,11 +2477,15 @@ libags_gui_h_sources = \
 	ags/widget/ags_dial.h \
 	ags/widget/ags_expander.h \
 	ags/widget/ags_expander_set.h \
+	ags/widget/ags_file_dialog.h \
+	ags/widget/ags_file_widget.h \
+	ags/widget/ags_icon_link.h \
 	ags/widget/ags_indicator.h \
 	ags/widget/ags_led.h \
 	ags/widget/ags_led_array.h \
 	ags/widget/ags_level.h \
 	ags/widget/ags_level_box.h \
+	ags/widget/ags_input_dialog.h \
 	ags/widget/ags_notebook.h \
 	ags/widget/ags_piano_keys.h \
 	ags/widget/ags_piano.h \
@@ -2502,11 +2506,15 @@ libags_gui_c_sources = \
 	ags/widget/ags_dial.c \
 	ags/widget/ags_expander.c \
 	ags/widget/ags_expander_set.c \
+	ags/widget/ags_file_dialog.c \
+	ags/widget/ags_file_widget.c \
+	ags/widget/ags_icon_link.c \
 	ags/widget/ags_indicator.c \
 	ags/widget/ags_led.c \
 	ags/widget/ags_led_array.c \
 	ags/widget/ags_level.c \
 	ags/widget/ags_level_box.c \
+	ags/widget/ags_input_dialog.c \
 	ags/widget/ags_notebook.c \
 	ags/widget/ags_piano.c \
 	ags/widget/ags_scrolled_piano.c \
@@ -2576,7 +2584,6 @@ libgsequencer_h_sources = \
 	ags/app/ags_line_preset_editor_callbacks.h \
 	ags/app/ags_link_editor.h \
 	ags/app/ags_link_editor_callbacks.h \
-	ags/app/ags_input_dialog.h \
 	ags/app/ags_machine.h \
 	ags/app/ags_machine_counter.h \
 	ags/app/ags_machine_counter_manager.h \
@@ -2608,7 +2615,7 @@ libgsequencer_h_sources = \
 	ags/app/ags_osc_server_preferences.h \
 	ags/app/ags_pad.h \
 	ags/app/ags_pad_callbacks.h \
-	ags/app/ags_pcm_file_chooser_dialog.h \
+	ags/app/ags_pcm_file_dialog.h \
 	ags/app/ags_performance_preferences_callbacks.h \
 	ags/app/ags_performance_preferences.h \
 	ags/app/ags_plugin_browser_callbacks.h \
@@ -2703,7 +2710,6 @@ libgsequencer_c_sources = \
 	ags/app/ags_line_preset_editor_callbacks.c \
 	ags/app/ags_link_editor.c \
 	ags/app/ags_link_editor_callbacks.c \
-	ags/app/ags_input_dialog.c \
 	ags/app/ags_machine.c \
 	ags/app/ags_machine_counter.c \
 	ags/app/ags_machine_counter_manager.c \
@@ -2735,7 +2741,7 @@ libgsequencer_c_sources = \
 	ags/app/ags_osc_server_preferences.c \
 	ags/app/ags_pad.c \
 	ags/app/ags_pad_callbacks.c \
-	ags/app/ags_pcm_file_chooser_dialog.c \
+	ags/app/ags_pcm_file_dialog.c \
 	ags/app/ags_performance_preferences.c \
 	ags/app/ags_performance_preferences_callbacks.c \
 	ags/app/ags_plugin_browser.c \
@@ -3572,9 +3578,9 @@ fix-local-html:
 	find $(top_builddir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../gobject@$(GOBJECT_API_DOC)@g' {} \;
 	find $(top_builddir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../libags-html@$(LIBAGS_API_DOC)@g' {} \;
 	find $(top_builddir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../gobject@$(GOBJECT_API_DOC)@g' {} \;
-	find $(top_builddir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../gtk3@$(GTK_API_DOC)@g' {} \;
+	find $(top_builddir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../gtk4@$(GTK_API_DOC)@g' {} \;
 	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../gobject@$(GOBJECT_API_DOC)@g' {} \;
-	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../gtk3@$(GTK_API_DOC)@g' {} \;
+	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../gtk4@$(GTK_API_DOC)@g' {} \;
 	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../libags-html@$(LIBAGS_API_DOC)@g' {} \;
 	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../libags-audio-html@$(LIBAGS_AUDIO_API_DOC)@g' {} \;
 	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../libags-gui-html@$(LIBAGS_GUI_API_DOC)@g' {} \;
@@ -3584,9 +3590,9 @@ fix-local-html-bsd:
 	find $(top_builddir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's@../gobject@$(GOBJECT_API_DOC)@g' {} \;
 	find $(top_builddir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's@../libags-html@$(LIBAGS_API_DOC)@g' {} \;
 	find $(top_builddir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's@../gobject@$(GOBJECT_API_DOC)@g' {} \;
-	find $(top_builddir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's@../gtk3@$(GTK_API_DOC)@g' {} \;
+	find $(top_builddir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's@../gtk4@$(GTK_API_DOC)@g' {} \;
 	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's@../gobject@$(GOBJECT_API_DOC)@g' {} \;
-	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's@../gtk3@$(GTK_API_DOC)@g' {} \;
+	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's@../gtk4@$(GTK_API_DOC)@g' {} \;
 	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's@../libags-html@$(LIBAGS_API_DOC)@g' {} \;
 	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's@../libags-audio-html@$(LIBAGS_AUDIO_API_DOC)@g' {} \;
 	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's@../libags-gui-html@$(LIBAGS_GUI_API_DOC)@g' {} \;
@@ -3596,13 +3602,13 @@ fix-online-books-html:
 	find $(top_builddir)/html/ -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\/usr\/share\/icons\/Adwaita\/32x32\/apps/..\/images/g' {} \;
 
 fix-online-html:
-	find $(top_builddir)/docs/reference/libags/libags-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../gobject@https://developer.gnome.org/gobject/stable@g' {} \;
-	find $(top_builddir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../gobject@https://developer.gnome.org/gobject/stable@g' {} \;
+	find $(top_builddir)/docs/reference/libags/libags-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../gobject@https://docs.gtk.org/gobject/@g' {} \;
+	find $(top_builddir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../gobject@https://docs.gtk.org/gobject/@g' {} \;
 	find $(top_builddir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../libags-html@../libags@g' {} \;
-	find $(top_builddir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../gobject@https://developer.gnome.org/gobject/stable@g' {} \;
-	find $(top_builddir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../gtk3@https://developer.gnome.org/gtk3/stable@g' {} \;
-	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../gobject@https://developer.gnome.org/gobject/stable@g' {} \;
-	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../gtk3@https://developer.gnome.org/gtk3/stable@g' {} \;
+	find $(top_builddir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../gobject@https://docs.gtk.org/gobject/@g' {} \;
+	find $(top_builddir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../gtk4@https://docs.gtk.org/gtk4/@g' {} \;
+	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../gobject@https://docs.gtk.org/gobject/@g' {} \;
+	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../gtk4@https://docs.gtk.org/gtk4/@g' {} \;
 	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../libags-html@../libags@g' {} \;
 	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../libags-audio-html@../libags-audio@g' {} \;
 	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../libags-gui-html@../libags-gui@g' {} \;

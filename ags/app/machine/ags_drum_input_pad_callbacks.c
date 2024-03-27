@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,14 +23,15 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
-#include <ags/app/ags_pcm_file_chooser_dialog.h>
+#include <ags/app/ags_pcm_file_dialog.h>
 #include <ags/app/ags_line_callbacks.h>
 
 #include <math.h>
 
 #include <ags/i18n.h>
 
-void ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsDrumInputPad *pad);
+void ags_drum_input_pad_open_response_callback(AgsPCMFileDialog *pcm_file_dialog, gint response,
+					       AgsDrumInputPad *pad);
 
 #define AGS_DRUM_INPUT_PAD_OPEN_AUDIO_FILE_NAME "AgsDrumInputPadOpenAudioFileName"
 #define AGS_DRUM_INPUT_PAD_OPEN_SPIN_BUTTON "AgsDrumInputPadOpenSpinButton"
@@ -38,76 +39,154 @@ void ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response,
 void
 ags_drum_input_pad_open_callback(GtkWidget *widget, AgsDrumInputPad *drum_input_pad)
 {
-  AgsPCMFileChooserDialog *pcm_file_chooser_dialog;
-
-  GFile *file;
+  AgsPCMFileDialog *pcm_file_dialog;
+  AgsFileWidget *file_widget;
   
-  GError *error;
+  AgsApplicationContext *application_context;
 
-  if(drum_input_pad->file_chooser != NULL){
+  gchar *recently_used_filename;
+  gchar *bookmark_filename;
+  gchar *home_path;
+  gchar *sandbox_path;
+
+  const gchar *drumkits_bookmark_filename = "/usr/share/hydrogen/data/drumkits";
+  
+  if(drum_input_pad->open_dialog != NULL){
     return;
   }
   
-  pcm_file_chooser_dialog = ags_pcm_file_chooser_dialog_new(i18n("open audio files"),
-							    (GtkWindow *) gtk_widget_get_ancestor((GtkWidget *) drum_input_pad,
-												  AGS_TYPE_WINDOW));
+  /* get application context */  
+  application_context = ags_application_context_get_instance();
+  
+  pcm_file_dialog = ags_pcm_file_dialog_new((GtkWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)),
+					    i18n("open audio files"));
 
-  file = g_file_new_for_path("/usr/share/hydrogen/data/drumkits");
+  drum_input_pad->open_dialog = (GtkWidget *) pcm_file_dialog;
 
-  error = NULL;
-  gtk_file_chooser_add_shortcut_folder(GTK_FILE_CHOOSER(pcm_file_chooser_dialog->file_chooser),
-				       file,
-				       &error);
+  file_widget = ags_pcm_file_dialog_get_file_widget(pcm_file_dialog);
 
-  if(error != NULL){
-    g_message("%s", error->message);
-    
-    g_error_free(error);
+  home_path = ags_file_widget_get_home_path(file_widget);
+
+  sandbox_path = NULL;
+
+#if defined(AGS_MACOS_SANDBOX)
+  sandbox_path = g_strdup_printf("%s/Library/%s",
+				 home_path,
+				 AGS_DEFAULT_BUNDLE_ID);
+
+  recently_used_filename = g_strdup_printf("%s/%s/gsequencer_pcm_recently_used.xml",
+					   sandbox_path,
+					   AGS_DEFAULT_DIRECTORY);
+
+  bookmark_filename = g_strdup_printf("%s/%s/gsequencer_pcm_bookmark.xml",
+				      sandbox_path,
+				      AGS_DEFAULT_DIRECTORY);
+#else
+  recently_used_filename = g_strdup_printf("%s/%s/gsequencer_pcm_recently_used.xml",
+					   home_path,
+					   AGS_DEFAULT_DIRECTORY);
+
+  bookmark_filename = g_strdup_printf("%s/%s/gsequencer_pcm_bookmark.xml",
+				      home_path,
+				      AGS_DEFAULT_DIRECTORY);
+#endif
+
+  /* recently-used */
+  ags_file_widget_set_recently_used_filename(file_widget,
+					     recently_used_filename);
+  
+  ags_file_widget_read_recently_used(file_widget);
+
+  /* bookmark */
+  ags_file_widget_set_bookmark_filename(file_widget,
+					bookmark_filename);
+
+  ags_file_widget_read_bookmark(file_widget);
+
+#if defined(AGS_MACOS_SANDBOX)
+  ags_file_widget_set_flags(file_widget,
+			    AGS_FILE_WIDGET_APP_SANDBOX);
+
+  ags_file_widget_set_current_path(file_widget,
+				   sandbox_path);
+#else
+  ags_file_widget_set_current_path(file_widget,
+				   home_path);
+#endif
+
+  ags_file_widget_refresh(file_widget);
+
+  ags_file_widget_add_location(file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_DESKTOP,
+			       NULL);
+
+  ags_file_widget_add_location(file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_DOCUMENTS,
+			       NULL);  
+
+  ags_file_widget_add_location(file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_MUSIC,
+			       NULL);
+
+  ags_file_widget_add_location(file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_HOME,
+			       NULL);
+
+  if(g_file_test(drumkits_bookmark_filename,
+		 (G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR))){
+    ags_file_widget_add_bookmark(file_widget,
+				 drumkits_bookmark_filename);
   }
-
-  drum_input_pad->file_chooser = (GtkFileChooserDialog *) pcm_file_chooser_dialog;
-  gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(pcm_file_chooser_dialog->file_chooser),
-				       FALSE);
-
+  
   if(gtk_toggle_button_get_active(AGS_PAD(drum_input_pad)->group)){
-    gtk_widget_set_sensitive((GtkWidget *) pcm_file_chooser_dialog->audio_channel,
+    gtk_widget_set_sensitive((GtkWidget *) pcm_file_dialog->audio_channel,
 			     FALSE);
   }
 
-  gtk_widget_set_visible((GtkWidget *) pcm_file_chooser_dialog,
+  gtk_widget_set_visible((GtkWidget *) pcm_file_dialog,
 			 TRUE);
-  
-  gtk_widget_set_size_request(GTK_WIDGET(pcm_file_chooser_dialog),
-			      AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_WIDTH, AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_HEIGHT);
 
-  g_signal_connect((GObject *) pcm_file_chooser_dialog, "response",
+  g_signal_connect((GObject *) pcm_file_dialog, "response",
 		   G_CALLBACK(ags_drum_input_pad_open_response_callback), (gpointer) drum_input_pad);
 }
 
 void
-ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsDrumInputPad *drum_input_pad)
+ags_drum_input_pad_open_response_callback(AgsPCMFileDialog *pcm_file_dialog, gint response,
+					  AgsDrumInputPad *drum_input_pad)
 {
-  AgsPCMFileChooserDialog *pcm_file_chooser_dialog;
-
-  AgsOpenSingleFile *open_single_file;
-
-  AgsApplicationContext *application_context;
-
-  GFile *file;  
-
-  GList *task;
-  
-  gchar *filename;
-
-  application_context = ags_application_context_get_instance();
-
-  pcm_file_chooser_dialog = (AgsPCMFileChooserDialog *) drum_input_pad->file_chooser;
-
   if(response == GTK_RESPONSE_ACCEPT){
-    file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(pcm_file_chooser_dialog->file_chooser));
+    AgsFileWidget *file_widget;
 
-    filename = g_file_get_path(file);
+    AgsOpenSingleFile *open_single_file;
+
+    AgsApplicationContext *application_context;
+
+    GList *task;
+      
+    gchar *filename;
+
+    gint strv_length;
+  
+    application_context = ags_application_context_get_instance();
+
+    task = NULL;
+  
+    file_widget = ags_pcm_file_dialog_get_file_widget(pcm_file_dialog);
+
+    filename = ags_file_widget_get_filename(pcm_file_dialog->file_widget);
     
+    if(!g_strv_contains(file_widget->recently_used, filename)){
+      strv_length = g_strv_length(file_widget->recently_used);
+
+      file_widget->recently_used = g_realloc(file_widget->recently_used,
+					     (strv_length + 2) * sizeof(gchar *));
+
+      file_widget->recently_used[strv_length] = g_strdup(filename);
+      file_widget->recently_used[strv_length + 1] = NULL; 
+    
+      ags_file_widget_write_recently_used(file_widget);
+    }
+
     /* task */
     task = NULL;
     
@@ -163,7 +242,7 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
 	
 	open_single_file = ags_open_single_file_new(line->channel,
 						    filename,
-						    (guint) gtk_spin_button_get_value(pcm_file_chooser_dialog->audio_channel));
+						    (guint) gtk_spin_button_get_value(pcm_file_dialog->audio_channel));
 	task = g_list_prepend(task,
 			      open_single_file);
       }
@@ -177,9 +256,9 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
 				      task);
   }
 
-  gtk_window_destroy((GtkWindow *) pcm_file_chooser_dialog);
+  gtk_window_destroy((GtkWindow *) pcm_file_dialog);
 
-  drum_input_pad->file_chooser = NULL;
+  drum_input_pad->open_dialog = NULL;
 }
 
 void

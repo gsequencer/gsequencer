@@ -32,6 +32,7 @@ void ags_export_window_connectable_interface_init(AgsConnectableInterface *conne
 void ags_export_window_init(AgsExportWindow *export_window);
 void ags_export_window_finalize(GObject *gobject);
 
+gboolean ags_export_window_is_connected(AgsConnectable *connectable);
 void ags_export_window_connect(AgsConnectable *connectable);
 void ags_export_window_disconnect(AgsConnectable *connectable);
 
@@ -116,7 +117,7 @@ ags_export_window_connectable_interface_init(AgsConnectableInterface *connectabl
   connectable->xml_compose = NULL;
   connectable->xml_parse = NULL;
 
-  connectable->is_connected = NULL;
+  connectable->is_connected = ags_export_window_is_connected;
   connectable->connect = ags_export_window_connect;
   connectable->disconnect = ags_export_window_disconnect;
 
@@ -148,7 +149,7 @@ ags_export_window_init(AgsExportWindow *export_window)
 				    export_window);
   
   g_object_set(export_window,
-	       "title", i18n("Export to audio data"),
+	       "title", i18n("export to audio data"),
 	       NULL);
 
   gtk_window_set_transient_for((GtkWindow *) export_window,
@@ -162,7 +163,7 @@ ags_export_window_init(AgsExportWindow *export_window)
   
   /* pack */
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   gtk_widget_set_valign((GtkWidget *) vbox,
 			GTK_ALIGN_FILL);
@@ -313,7 +314,7 @@ ags_export_window_init(AgsExportWindow *export_window)
 
   /* duration */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   gtk_box_set_spacing(hbox,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
@@ -342,7 +343,7 @@ ags_export_window_init(AgsExportWindow *export_window)
   export_window->export_soundcard = NULL;
   
   export_window->export_soundcard_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-							       0);
+							       AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   gtk_box_set_spacing(export_window->export_soundcard_box,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
@@ -370,7 +371,7 @@ ags_export_window_init(AgsExportWindow *export_window)
   
   /* export */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   gtk_box_set_spacing(vbox,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
@@ -386,6 +387,21 @@ ags_export_window_init(AgsExportWindow *export_window)
 			      800, 600);
 }
 
+gboolean
+ags_export_window_is_connected(AgsConnectable *connectable)
+{
+  AgsExportWindow *export_window;
+  
+  gboolean is_connected;
+  
+  export_window = AGS_EXPORT_WINDOW(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (export_window->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
+}
+
 void
 ags_export_window_connect(AgsConnectable *connectable)
 {
@@ -397,7 +413,7 @@ ags_export_window_connect(AgsConnectable *connectable)
 
   export_window = AGS_EXPORT_WINDOW(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (export_window->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -442,7 +458,7 @@ ags_export_window_disconnect(AgsConnectable *connectable)
 
   export_window = AGS_EXPORT_WINDOW(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (export_window->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 

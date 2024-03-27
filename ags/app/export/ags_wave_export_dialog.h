@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -56,20 +56,17 @@ G_BEGIN_DECLS
 typedef struct _AgsWaveExportDialog AgsWaveExportDialog;
 typedef struct _AgsWaveExportDialogClass AgsWaveExportDialogClass;
 
-typedef enum{
-  AGS_WAVE_EXPORT_DIALOG_CONNECTED     = 1,
-}AgsWaveExportDialogFlags;
-
 struct _AgsWaveExportDialog
 {
-  GtkDialog dialog;
+  GtkWindow window;
 
   guint flags;
-
+  guint connectable_flags;
+  
   AgsMachine *machine;
 
   GtkEntry *filename;
-  GtkButton *file_chooser_button;
+  GtkButton *file_open_button;
 
   GtkSpinButton *start_tact;
   GtkSpinButton *end_tact;
@@ -78,17 +75,21 @@ struct _AgsWaveExportDialog
 
   GtkComboBoxText *output_format;
 
-  GtkButton *apply;
-  GtkButton *ok;
-  GtkButton *cancel;
+  GtkButton *activate_button;
 };
 
 struct _AgsWaveExportDialogClass
 {
-  GtkDialogClass dialog;
+  GtkWindowClass window;
+
+  void (*response)(AgsWaveExportDialog *wave_export_dialog,
+		   gint response_id);
 };
 
 GType ags_wave_export_dialog_get_type(void);
+
+void ags_wave_export_dialog_response(AgsWaveExportDialog *wave_export_dialog,
+				     gint response_id);
 
 void ags_wave_export_dialog_update_duration(AgsWaveExportDialog *wave_export_dialog);
 

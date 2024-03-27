@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -144,6 +144,10 @@ struct _AgsUiProviderInterface
   GtkWidget* (*get_meta_data_window)(AgsUiProvider *ui_provider);
   void (*set_meta_data_window)(AgsUiProvider *ui_provider,
 			       GtkWidget *meta_data_window);
+
+  GList* (*get_visible_window)(AgsUiProvider *ui_provider);
+  void (*set_visible_window)(AgsUiProvider *ui_provider,
+			     GList *visible_window);
 };
 
 GType ags_ui_provider_get_type();
@@ -235,6 +239,10 @@ void ags_ui_provider_set_app(AgsUiProvider *ui_provider,
 GtkWidget* ags_ui_provider_get_meta_data_window(AgsUiProvider *ui_provider);
 void ags_ui_provider_set_meta_data_window(AgsUiProvider *ui_provider,
 					  GtkWidget *meta_data_window);
+
+GList* ags_ui_provider_get_visible_window(AgsUiProvider *ui_provider);
+void ags_ui_provider_set_visible_window(AgsUiProvider *ui_provider,
+					GList *visible_window);
 
 G_END_DECLS
 

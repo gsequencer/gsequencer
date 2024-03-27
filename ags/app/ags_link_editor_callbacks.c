@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,6 +19,7 @@
 
 #include <ags/app/ags_link_editor_callbacks.h>
 
+#include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_machine.h>
 #include <ags/app/ags_machine_editor.h>
@@ -26,7 +27,8 @@
 
 #include <ags/i18n.h>
 
-int ags_link_editor_file_chooser_response_callback(GtkWidget *widget, guint response, AgsLinkEditor *link_editor);
+void ags_link_editor_pcm_file_dialog_response_callback(AgsPCMFileDialog *pcm_file_dialog, guint response,
+						       AgsLinkEditor *link_editor);
 
 #define AGS_LINK_EDITOR_OPEN_SPIN_BUTTON "AgsLinkEditorOpenSpinButton"
 
@@ -39,11 +41,22 @@ ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
 				   &iter)){
     AgsMachine *machine, *link_machine;
     AgsMachineEditorLine *machine_editor_line;
+    AgsFileWidget *file_widget;
 
     AgsAudio *audio;
     AgsChannel *channel;
 
+    AgsApplicationContext *application_context;
+  
     GtkTreeModel *model;
+
+    gchar *recently_used_filename;
+    gchar *bookmark_filename;
+    gchar *home_path;
+    gchar *sandbox_path;
+    
+    /* get application context */  
+    application_context = ags_application_context_get_instance();
 
     machine_editor_line = AGS_MACHINE_EDITOR_LINE(gtk_widget_get_ancestor(GTK_WIDGET(link_editor),
 									  AGS_TYPE_MACHINE_EDITOR_LINE));
@@ -89,18 +102,90 @@ ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
       gchar *str, *tmp;
       
       /* set file link */
-      if(link_editor->pcm_file_chooser_dialog != NULL || (AGS_LINK_EDITOR_BLOCK_FILE_CHOOSER & (link_editor->flags)) != 0){
+      if(link_editor->open_dialog != NULL || (AGS_LINK_EDITOR_BLOCK_FILE_CHOOSER & (link_editor->flags)) != 0){
 	return;
       }
 
       gtk_widget_set_sensitive((GtkWidget *) link_editor->spin_button,
 			       FALSE);
 
-      link_editor->pcm_file_chooser_dialog = ags_pcm_file_chooser_dialog_new(i18n("Select audio file"),
-									     gtk_widget_get_ancestor((GtkWidget *) link_editor,
-												     GTK_TYPE_WINDOW));
-      gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(link_editor->pcm_file_chooser_dialog->file_chooser),
-					   FALSE);
+      link_editor->open_dialog = ags_pcm_file_dialog_new((GtkWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)),
+							 i18n("open audio file"));
+
+      file_widget = ags_file_dialog_get_file_widget(link_editor->open_dialog);
+
+      home_path = ags_file_widget_get_home_path(file_widget);
+
+      sandbox_path = NULL;
+
+#if defined(AGS_MACOS_SANDBOX)
+      sandbox_path = g_strdup_printf("%s/Library/%s",
+				     home_path,
+				     AGS_DEFAULT_BUNDLE_ID);
+
+      recently_used_filename = g_strdup_printf("%s/%s/gsequencer_pcm_recently_used.xml",
+					       sandbox_path,
+					       AGS_DEFAULT_DIRECTORY);
+
+      bookmark_filename = g_strdup_printf("%s/%s/gsequencer_pcm_bookmark.xml",
+					  sandbox_path,
+					  AGS_DEFAULT_DIRECTORY);
+#else
+      recently_used_filename = g_strdup_printf("%s/%s/gsequencer_pcm_recently_used.xml",
+					       home_path,
+					       AGS_DEFAULT_DIRECTORY);
+
+      bookmark_filename = g_strdup_printf("%s/%s/gsequencer_pcm_bookmark.xml",
+					  home_path,
+					  AGS_DEFAULT_DIRECTORY);
+#endif
+
+      /* recently-used */
+      ags_file_widget_set_recently_used_filename(file_widget,
+						 recently_used_filename);
+  
+      ags_file_widget_read_recently_used(file_widget);
+
+      /* bookmark */
+      ags_file_widget_set_bookmark_filename(file_widget,
+					    bookmark_filename);
+
+      ags_file_widget_read_bookmark(file_widget);
+
+#if defined(AGS_MACOS_SANDBOX)
+      ags_file_widget_set_flags(file_widget,
+				AGS_FILE_WIDGET_APP_SANDBOX);
+
+      ags_file_widget_set_current_path(file_widget,
+				       sandbox_path);
+#else
+      ags_file_widget_set_current_path(file_widget,
+				       home_path);
+#endif
+
+      ags_file_widget_refresh(file_widget);
+      
+      ags_file_widget_add_location(file_widget,
+				   AGS_FILE_WIDGET_LOCATION_OPEN_USER_DESKTOP,
+				   NULL);
+
+      ags_file_widget_add_location(file_widget,
+				   AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_DOCUMENTS,
+				   NULL);  
+
+      ags_file_widget_add_location(file_widget,
+				   AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_MUSIC,
+				   NULL);
+
+      ags_file_widget_add_location(file_widget,
+				   AGS_FILE_WIDGET_LOCATION_OPEN_USER_HOME,
+				   NULL);
+
+      ags_file_widget_set_file_action(file_widget,
+				      AGS_FILE_WIDGET_OPEN);
+
+      ags_file_widget_set_default_bundle(file_widget,
+					 AGS_DEFAULT_BUNDLE_ID);
 
       /*  */
       str = NULL;
@@ -114,29 +199,17 @@ ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
 	tmp = g_strdup(str + 7);
 
 	if((!g_strcmp0(tmp, "")) == FALSE){
-	  GFile *file;
+	  ags_file_widget_set_current_path(file_widget,
+					   tmp);
 
-	  GError *error;
-
-	  file = g_file_new_for_path(tmp);
-	
-	  error = NULL;
-	  gtk_file_chooser_set_file(GTK_FILE_CHOOSER(link_editor->pcm_file_chooser_dialog->file_chooser),
-				    file,
-				    &error);
-
-	  if(error != NULL){
-	    g_message("%s", error->message);
-	  
-	    g_error_free(error);
-	  }
+	  ags_file_widget_refresh(file_widget);
 	}
       }
       
-      g_signal_connect((GObject *) link_editor->pcm_file_chooser_dialog, "response",
-		       G_CALLBACK(ags_link_editor_file_chooser_response_callback), (gpointer) link_editor);
+      g_signal_connect((GObject *) link_editor->open_dialog, "response",
+		       G_CALLBACK(ags_link_editor_pcm_file_dialog_response_callback), (gpointer) link_editor);
 
-      gtk_widget_show((GtkWidget *) link_editor->pcm_file_chooser_dialog);
+      gtk_widget_show((GtkWidget *) link_editor->open_dialog);
     }
   }
 }
@@ -160,29 +233,40 @@ ags_link_editor_option_changed_callback(GtkWidget *widget, AgsLinkEditor *link_e
   return(0);
 }
 
-int
-ags_link_editor_file_chooser_response_callback(GtkWidget *widget, guint response, AgsLinkEditor *link_editor)
+void
+ags_link_editor_pcm_file_dialog_response_callback(AgsPCMFileDialog *open_dialog, guint response,
+						  AgsLinkEditor *link_editor)
 {
-  AgsPCMFileChooserDialog *pcm_file_chooser_dialog;
-
-  pcm_file_chooser_dialog = AGS_PCM_FILE_CHOOSER_DIALOG(widget);
-
   if(response == GTK_RESPONSE_ACCEPT){
+    AgsFileWidget *file_widget;
+    
     GtkTreeModel *model;
-
-    GFile *file;
     
     GtkTreeIter iter;
 
     char *filename;
 
+    gint strv_length;
+
     /* set filename in combo box */
     model = gtk_combo_box_get_model(link_editor->combo);
     
-    file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(pcm_file_chooser_dialog->file_chooser));
+    file_widget = ags_pcm_file_dialog_get_file_widget(open_dialog);
 
-    filename = g_file_get_path(file);
+    filename = ags_file_widget_get_filename(file_widget);
     
+    if(!g_strv_contains(file_widget->recently_used, filename)){
+      strv_length = g_strv_length(file_widget->recently_used);
+
+      file_widget->recently_used = g_realloc(file_widget->recently_used,
+					     (strv_length + 2) * sizeof(gchar *));
+
+      file_widget->recently_used[strv_length] = g_strdup(filename);
+      file_widget->recently_used[strv_length + 1] = NULL; 
+    
+      ags_file_widget_write_recently_used(file_widget);
+    }
+
     gtk_tree_model_iter_nth_child(model,
 				  &iter,
 				  NULL,
@@ -194,12 +278,10 @@ ags_link_editor_file_chooser_response_callback(GtkWidget *widget, guint response
 
     /* set audio channel */
     gtk_spin_button_set_value(link_editor->spin_button,
-			      gtk_spin_button_get_value(pcm_file_chooser_dialog->audio_channel));
+			      gtk_spin_button_get_value(open_dialog->audio_channel));
   }
 
-  link_editor->pcm_file_chooser_dialog = NULL;
+  link_editor->open_dialog = NULL;
   
-  gtk_window_destroy((GtkWindow *) pcm_file_chooser_dialog);
-
-  return(0);
+  gtk_window_destroy((GtkWindow *) open_dialog);
 }

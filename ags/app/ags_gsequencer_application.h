@@ -55,6 +55,8 @@ struct _AgsGSequencerApplication
 
   GMenu *midi_menu;
 
+  GMenu *window_menu;
+  
   GMenu *help_menu;
 };
 
@@ -64,6 +66,8 @@ struct _AgsGSequencerApplicationClass
 };
 
 GType ags_gsequencer_application_get_type();
+
+void ags_gsequencer_application_refresh_window_menu(AgsGSequencerApplication *app);
 
 AgsGSequencerApplication* ags_gsequencer_application_new(gchar *application_id,
 							 GApplicationFlags flags);

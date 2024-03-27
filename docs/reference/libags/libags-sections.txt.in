@@ -1,5 +1,5 @@
 # GSequencer - Advanced GTK Sequencer 
-# Copyright (C) 2005-2023 Joël Krähemann
+# Copyright (C) 2005-2024 Joël Krähemann
 # 
 # This file is part of GSequencer.
 #
@@ -42,6 +42,7 @@ AGS_VERSION
 AGS_BUILD_ID
 AGS_DEFAULT_DIRECTORY
 AGS_DEFAULT_CONFIG
+AGS_DEFAULT_BUNDLE_ID
 AgsApplicationContextFlags
 ags_application_context_test_flags
 ags_application_context_set_flags
@@ -669,6 +670,40 @@ ags_file_lookup_get_type
 </SECTION>
 
 <SECTION>
+<FILE>ags_file_util</FILE>
+AGS_FILE_UTIL_64BIT_MAX_STRING_LENGTH
+AGS_FILE_UTIL_DOUBLE_MAX_STRING_LENGTH
+ags_file_util_alloc
+ags_file_util_copy
+ags_file_util_free
+ags_file_util_get_file_version
+ags_file_util_set_file_version
+ags_file_util_get_app_encoding
+ags_file_util_get_encoding
+ags_file_util_get_int
+ags_file_util_put_int
+ags_file_util_get_uint
+ags_file_util_put_uint
+ags_file_util_get_int64
+ags_file_util_put_int64
+ags_file_util_get_uint64
+ags_file_util_put_uint64
+ags_file_util_get_float
+ags_file_util_put_float
+ags_file_util_get_double
+ags_file_util_put_double
+ags_file_util_get_complex
+ags_file_util_put_complex
+ags_file_util_get_string
+ags_file_util_put_string
+<SUBSECTION Standard>
+AGS_FILE_UTIL
+AGS_TYPE_FILE_UTIL
+AgsFileUtil
+ags_file_util_get_type
+</SECTION>
+
+<SECTION>
 <FILE>ags_front_controller</FILE>
 <TITLE>AgsFrontController</TITLE>
 ags_front_controller_do_request
@@ -1162,6 +1197,36 @@ ags_regexec
 </SECTION>
 
 <SECTION>
+<FILE>ags_regex_util</FILE>
+AgsRegexUtilCompileFlags
+AgsRegexUtilExecuteFlags
+AGS_REGEX_UTIL_ERROR
+AgsRegexUtilError
+AgsRegexMatch
+ags_regex_util_error_quark
+ags_regex_util_alloc
+ags_regex_util_copy
+ags_regex_util_free
+ags_regex_util_get_app_encoding
+ags_regex_util_get_encoding
+ags_regex_util_compile
+ags_regex_util_match_alloc
+ags_regex_util_match_copy
+ags_regex_util_match_free
+ags_regex_util_match_get_offset
+ags_regex_util_execute
+ags_regex_util_execute_unichar
+ags_regex_util_execute_unichar2
+<SUBSECTION Standard>
+AGS_REGEX_UTIL
+AGS_TYPE_REGEX_UTIL
+AgsRegexUtil
+ags_regex_util_compile_flags_get_type
+ags_regex_util_execute_flags_get_type
+ags_regex_util_get_type
+</SECTION>
+
+<SECTION>
 <FILE>ags_registry</FILE>
 <TITLE>AgsRegistry</TITLE>
 AGS_TYPE_REGISTRY_FLAGS
@@ -1583,6 +1648,12 @@ ags_soundcard_set_start_note_offset
 ags_soundcard_get_start_note_offset
 ags_soundcard_set_note_offset
 ags_soundcard_get_note_offset
+ags_soundcard_get_note_256th_offset
+ags_soundcard_get_note_256th_attack_of_16th_pulse
+ags_soundcard_get_note_256th_attack_of_16th_pulse_position
+ags_soundcard_get_note_256th_attack
+ags_soundcard_get_note_256th_attack_at_position
+ags_soundcard_get_note_256th_attack_position
 ags_soundcard_set_note_offset_absolute
 ags_soundcard_get_note_offset_absolute
 ags_soundcard_set_loop

@@ -1,4 +1,4 @@
-# Copyright (C) 2005-2023 Joel Kraehemann
+# Copyright (C) 2005-2024 Joel Kraehemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -10,9 +10,12 @@ check_PROGRAMS += \
 	ags_buffer_util_test \
 	ags_complex_test \
 	ags_conversion_test \
+	ags_endian_test \
 	ags_function_test \
 	ags_log_test \
 	ags_math_util_test \
+	ags_regex_util_test \
+	ags_string_util_test \
 	ags_solver_matrix_test \
 	ags_solver_vector_test \
 	ags_solver_polynomial_test \
@@ -22,7 +25,13 @@ check_PROGRAMS += \
 	ags_application_context_test \
 	ags_config_test \
 	ags_connectable_test \
+	ags_countable_test \
+	ags_main_loop_test \
+	ags_mutable_test \
+	ags_seekable_test \
 	ags_soundcard_test \
+	ags_sequencer_test \
+	ags_tactable_test \
 	ags_concurrency_provider_test \
 	ags_destroy_worker_test \
 	ags_generic_main_loop_test \
@@ -302,6 +311,12 @@ ags_conversion_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIB
 ags_conversion_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_conversion_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
+# endian unit test
+ags_endian_test_SOURCES = ags/test/lib/ags_endian_test.c
+ags_endian_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_endian_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_endian_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
 # function unit test
 ags_function_test_SOURCES = ags/test/lib/ags_function_test.c
 ags_function_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
@@ -319,6 +334,18 @@ ags_math_util_test_SOURCES = ags/test/lib/ags_math_util_test.c
 ags_math_util_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
 ags_math_util_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_math_util_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# regex util unit test
+ags_regex_util_test_SOURCES = ags/test/lib/ags_regex_util_test.c
+ags_regex_util_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_regex_util_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_regex_util_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# string util unit test
+ags_string_util_test_SOURCES = ags/test/lib/ags_string_util_test.c
+ags_string_util_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_string_util_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_string_util_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
 # solver matrix unit test
 ags_solver_matrix_test_SOURCES = ags/test/lib/ags_solver_matrix_test.c
@@ -374,11 +401,47 @@ ags_connectable_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(L
 ags_connectable_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_connectable_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(JSON_GLIB_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
 
+# countable unit test
+ags_countable_test_SOURCES = ags/test/object/ags_countable_test.c
+ags_countable_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(JSON_GLIB_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
+ags_countable_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_countable_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(JSON_GLIB_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
+
+# main loop unit test
+ags_main_loop_test_SOURCES = ags/test/object/ags_main_loop_test.c
+ags_main_loop_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(JSON_GLIB_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
+ags_main_loop_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_main_loop_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(JSON_GLIB_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
+
+# mutable unit test
+ags_mutable_test_SOURCES = ags/test/object/ags_mutable_test.c
+ags_mutable_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(JSON_GLIB_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
+ags_mutable_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_mutable_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(JSON_GLIB_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
+
+# seekable unit test
+ags_seekable_test_SOURCES = ags/test/object/ags_seekable_test.c
+ags_seekable_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(JSON_GLIB_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
+ags_seekable_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_seekable_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(JSON_GLIB_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
+
 # soundcard unit test
 ags_soundcard_test_SOURCES = ags/test/object/ags_soundcard_test.c
 ags_soundcard_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(JSON_GLIB_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
 ags_soundcard_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_soundcard_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(JSON_GLIB_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
+
+# sequencer unit test
+ags_sequencer_test_SOURCES = ags/test/object/ags_sequencer_test.c
+ags_sequencer_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(JSON_GLIB_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
+ags_sequencer_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_sequencer_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(JSON_GLIB_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
+
+# tactable unit test
+ags_tactable_test_SOURCES = ags/test/object/ags_tactable_test.c
+ags_tactable_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(JSON_GLIB_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
+ags_tactable_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_tactable_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(JSON_GLIB_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
 
 # concurrency provider unit test
 ags_concurrency_provider_test_SOURCES = ags/test/thread/ags_concurrency_provider_test.c

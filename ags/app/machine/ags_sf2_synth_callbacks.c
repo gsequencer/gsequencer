@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,7 +27,7 @@
 #include <complex.h>
 #include <math.h>
 
-void ags_sf2_synth_open_dialog_response_callback(GtkWidget *widget, gint response,
+void ags_sf2_synth_open_dialog_response_callback(AgsFileDialog *file_dialog, gint response,
 						 AgsMachine *machine);
 
 void
@@ -42,56 +42,141 @@ void
 ags_sf2_synth_open_clicked_callback(GtkWidget *widget, AgsSF2Synth *sf2_synth)
 {
   AgsWindow *window;
-  GtkFileChooserDialog *file_chooser;
+  AgsFileDialog *file_dialog;
+  AgsFileWidget *file_widget;
 
-  GFile *file;
+  AgsApplicationContext *application_context;
 
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) sf2_synth,
-						 AGS_TYPE_WINDOW);
+  gchar *recently_used_filename;
+  gchar *bookmark_filename;
+  gchar *home_path;
+  gchar *sandbox_path;
+
+  const gchar *sf2_bookmark_filename = "/usr/share/sounds/sf2";
   
-  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(i18n("Open Soundfont2 file"),
-								      (GtkWindow *) window,
-								      GTK_FILE_CHOOSER_ACTION_OPEN,
-								      i18n("_OK"), GTK_RESPONSE_ACCEPT,
-								      i18n("_Cancel"), GTK_RESPONSE_CANCEL,
-								      NULL);
-  gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser),
-				       FALSE);
+  /* get application context */  
+  application_context = ags_application_context_get_instance();
 
-  file = g_file_new_for_path("/usr/share/sounds/sf2");
-  gtk_file_chooser_add_shortcut_folder(GTK_FILE_CHOOSER(file_chooser),
-				       file,
-				       NULL);
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
   
-  sf2_synth->open_dialog = (GtkWidget *) file_chooser;
+  file_dialog = (AgsFileDialog *) ags_file_dialog_new((GtkWindow *) window,
+						      i18n("open Soundfont2 file"));
+  
+  sf2_synth->open_dialog = (GtkWidget *) file_dialog;
 
-  gtk_widget_set_visible((GtkWidget *) file_chooser,
+  file_widget = ags_file_dialog_get_file_widget(file_dialog);
+
+  home_path = ags_file_widget_get_home_path(file_widget);
+
+  sandbox_path = NULL;
+
+#if defined(AGS_MACOS_SANDBOX)
+  sandbox_path = g_strdup_printf("%s/Library/%s",
+				 home_path,
+				 AGS_DEFAULT_BUNDLE_ID);
+
+  recently_used_filename = g_strdup_printf("%s/%s/gsequencer_sf2_recently_used.xml",
+					   sandbox_path,
+					   AGS_DEFAULT_DIRECTORY);
+
+  bookmark_filename = g_strdup_printf("%s/%s/gsequencer_sf2_bookmark.xml",
+				      sandbox_path,
+				      AGS_DEFAULT_DIRECTORY);
+#else
+  recently_used_filename = g_strdup_printf("%s/%s/gsequencer_sf2_recently_used.xml",
+					   home_path,
+					   AGS_DEFAULT_DIRECTORY);
+
+  bookmark_filename = g_strdup_printf("%s/%s/gsequencer_sf2_bookmark.xml",
+				      home_path,
+				      AGS_DEFAULT_DIRECTORY);
+#endif
+
+  /* recently-used */
+  ags_file_widget_set_recently_used_filename(file_widget,
+					     recently_used_filename);
+  
+  ags_file_widget_read_recently_used(file_widget);
+
+  /* bookmark */
+  ags_file_widget_set_bookmark_filename(file_widget,
+					bookmark_filename);
+
+  ags_file_widget_read_bookmark(file_widget);
+
+#if defined(AGS_MACOS_SANDBOX)
+  ags_file_widget_set_flags(file_widget,
+			    AGS_FILE_WIDGET_APP_SANDBOX);
+
+  ags_file_widget_set_current_path(file_widget,
+				   sandbox_path);
+#else
+  ags_file_widget_set_current_path(file_widget,
+				   home_path);
+#endif
+
+  ags_file_widget_refresh(file_widget);
+
+  ags_file_widget_add_location(file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_DESKTOP,
+			       NULL);
+
+  ags_file_widget_add_location(file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_DOCUMENTS,
+			       NULL);  
+
+  ags_file_widget_add_location(file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_MUSIC,
+			       NULL);
+
+  ags_file_widget_add_location(file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_HOME,
+			       NULL);
+
+  if(g_file_test(sf2_bookmark_filename,
+		 (G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR))){
+    ags_file_widget_add_bookmark(file_widget,
+				 sf2_bookmark_filename);
+  }
+
+  gtk_widget_set_visible((GtkWidget *) file_dialog,
 			 TRUE);
 
-  gtk_widget_set_size_request(GTK_WIDGET(file_chooser),
-			      AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_WIDTH, AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_HEIGHT);
-
-  g_signal_connect((GObject *) file_chooser, "response",
+  g_signal_connect((GObject *) file_dialog, "response",
 		   G_CALLBACK(ags_sf2_synth_open_dialog_response_callback), AGS_MACHINE(sf2_synth));
 }
 
 void
-ags_sf2_synth_open_dialog_response_callback(GtkWidget *widget, gint response,
-					   AgsMachine *machine)
+ags_sf2_synth_open_dialog_response_callback(AgsFileDialog *file_dialog, gint response,
+					    AgsMachine *machine)
 {
   AgsSF2Synth *sf2_synth;
 
   sf2_synth = AGS_SF2_SYNTH(machine);
 
   if(response == GTK_RESPONSE_ACCEPT){
-    GFile *file;
+    AgsFileWidget *file_widget;
     
     gchar *filename;
 
-    file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(widget));
+    gint strv_length;
 
-    filename = g_file_get_path(file);
+    file_widget = ags_file_dialog_get_file_widget(file_dialog);
     
+    filename = ags_file_widget_get_filename(file_widget);
+    
+    if(!g_strv_contains(file_widget->recently_used, filename)){
+      strv_length = g_strv_length(file_widget->recently_used);
+
+      file_widget->recently_used = g_realloc(file_widget->recently_used,
+					     (strv_length + 2) * sizeof(gchar *));
+
+      file_widget->recently_used[strv_length] = g_strdup(filename);
+      file_widget->recently_used[strv_length + 1] = NULL; 
+    
+      ags_file_widget_write_recently_used(file_widget);
+    }
+
     gtk_editable_set_text(GTK_EDITABLE(sf2_synth->filename),
 			  filename);
 
@@ -100,7 +185,8 @@ ags_sf2_synth_open_dialog_response_callback(GtkWidget *widget, gint response,
   }
 
   sf2_synth->open_dialog = NULL;
-  gtk_window_destroy((GtkWindow *) widget);
+
+  gtk_window_destroy((GtkWindow *) file_dialog);
 }
 
 void
