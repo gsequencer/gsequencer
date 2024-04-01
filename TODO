@@ -7,6 +7,8 @@ with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
 A copy of the license is included in the section entitled "GNU
 Free Documentation License".
 
+* TODO:JK: rename AgsOpenSf2Sample to AgsOpenSF2Sample
+* TODO:JK: rename AgsOpenSf2Instrument to AgsOpenSF2Instrument
 * TODO:JK: refactor AgsSimpleFile
 * TODO:JK: refactor AgsRecallContainer
 * TODO:JK: improve ags_midi_smf_util.c return value
