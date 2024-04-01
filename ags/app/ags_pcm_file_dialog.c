@@ -49,7 +49,7 @@ gboolean ags_pcm_file_dialog_modifiers_callback(GtkEventControllerKey *event_con
 						AgsPCMFileDialog *pcm_file_dialog);
 
 void ags_pcm_file_dialog_real_response(AgsPCMFileDialog *pcm_file_dialog,
-				       gint response);
+				       gint response_id);
 
 /**
  * SECTION:ags_pcm_file_dialog
@@ -119,6 +119,7 @@ ags_pcm_file_dialog_class_init(AgsPCMFileDialogClass *pcm_file_dialog)
   /**
    * AgsPCMFileDialog::response:
    * @pcm_file_dialog: the #AgsPCMFileDialog
+   * @response_id: the response ID
    *
    * The ::response signal notifies about window interaction.
    *
