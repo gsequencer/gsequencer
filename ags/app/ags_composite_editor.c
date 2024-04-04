@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -886,14 +886,24 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
 {
   AgsWindow *window;
   AgsMachine *old_machine;
+  AgsCompositeToolbar *composite_toolbar;
   AgsMachineSelector *machine_selector;
   
+  GtkAdjustment *adjustment;
+
+  GtkAllocation allocation;
+
   AgsApplicationContext *application_context;
 
   GList *start_tab, *tab;
   GList *start_list, *list;
 
   gdouble gui_scale_factor;
+  double zoom_factor, zoom;
+  double zoom_correction;
+  guint map_width;
+  guint key_count;
+  double varea_height;
   gboolean piano_shown;
   gboolean level_shown;
   guint audio_channels;
@@ -1226,7 +1236,7 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
       
       ags_connectable_connect(AGS_CONNECTABLE(wave_edit));
       gtk_widget_show((GtkWidget *) wave_edit);
-
+      
       g_signal_connect(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar), "changed",
 		       G_CALLBACK(ags_composite_editor_wave_edit_hadjustment_changed_callback), (gpointer) composite_editor);
       
@@ -1235,6 +1245,47 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
       
       g_signal_connect(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar), "value-changed",
 		       G_CALLBACK(ags_composite_editor_wave_edit_hscrollbar_value_changed), (gpointer) composite_editor);
+
+      /* zoom */
+      composite_toolbar = composite_editor->toolbar;
+
+      zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) composite_toolbar->zoom));
+      zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) composite_toolbar->zoom) - 2.0);
+
+      zoom_correction = 1.0 / 16;
+
+      map_width = ((64.0) * (16.0 * 16.0 * 1200.0) * zoom * zoom_correction);
+
+      /* adjustment and allocation */
+      gtk_widget_get_allocation(wave_edit->drawing_area,
+				&allocation);
+
+      adjustment = gtk_scrollbar_get_adjustment(composite_editor->wave_edit->hscrollbar);
+      
+      gtk_adjustment_set_lower(adjustment,
+			       0.0);
+
+      gtk_adjustment_set_upper(adjustment,
+			       1.0);
+
+      gtk_adjustment_set_value(adjustment,
+			       0.0);
+
+      ags_wave_edit_reset_vscrollbar(wave_edit);
+      ags_wave_edit_reset_hscrollbar(wave_edit);
+
+      if(map_width - allocation.width > 0){
+	gtk_adjustment_set_upper(adjustment,
+				 (gdouble) (map_width - allocation.width));
+
+	if(gtk_adjustment_get_value(adjustment) + allocation.width > gtk_adjustment_get_upper(adjustment)){
+	  gtk_adjustment_set_value(adjustment,
+				   map_width - allocation.width);
+	}
+      }else{
+	gtk_adjustment_set_value(adjustment,
+				 0.0);
+      }
     }
     
     composite_editor->selected_edit = composite_editor->wave_edit;
@@ -1404,8 +1455,13 @@ ags_composite_editor_add_automation_port(AgsCompositeEditor *composite_editor,
 {
   AgsWindow *window;
   AgsMachine *machine;
+  AgsCompositeToolbar *composite_toolbar;
   AgsScale *scale;
   AgsAutomationEdit *automation_edit;
+
+  GtkAdjustment *adjustment;
+
+  GtkAllocation allocation;
 
   AgsChannel *start_channel, *channel;
   AgsPluginPort *plugin_port;
@@ -1416,6 +1472,11 @@ ags_composite_editor_add_automation_port(AgsCompositeEditor *composite_editor,
   GList *start_port;
 
   gdouble gui_scale_factor;
+  double zoom_factor, zoom;
+  double zoom_correction;
+  guint map_width;
+  guint key_count;
+  double varea_height;
 
   gdouble upper, lower;
   gdouble default_value;
@@ -1693,8 +1754,46 @@ ags_composite_editor_add_automation_port(AgsCompositeEditor *composite_editor,
     automation = automation->next;
   }
 
+  /* zoom */
+  composite_toolbar = composite_editor->toolbar;
+
+  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) composite_toolbar->zoom));
+  zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) composite_toolbar->zoom) - 2.0);
+
+  zoom_correction = 1.0 / 16;
+
+  map_width = ((64.0) * (16.0 * 16.0 * 1200.0) * zoom * zoom_correction);
+
+  /* adjustment and allocation */
+  gtk_widget_get_allocation(automation_edit->drawing_area,
+			    &allocation);
+
+  adjustment = gtk_scrollbar_get_adjustment(composite_editor->automation_edit->hscrollbar);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+
   ags_automation_edit_reset_vscrollbar(automation_edit);
   ags_automation_edit_reset_hscrollbar(automation_edit);
+
+  if(map_width - allocation.width > 0){
+    gtk_adjustment_set_upper(adjustment,
+			     (gdouble) (map_width - allocation.width));
+
+    if(gtk_adjustment_get_value(adjustment) + allocation.width > gtk_adjustment_get_upper(adjustment)){
+      gtk_adjustment_set_value(adjustment,
+			       map_width - allocation.width);
+    }
+  }else{
+    gtk_adjustment_set_value(adjustment,
+			     0.0);
+  }
   
   g_list_free_full(start_automation,
 		   g_object_unref);

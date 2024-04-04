@@ -406,10 +406,6 @@ ags_window_init(AgsWindow *window)
   gtk_box_append(vbox,
 		 (GtkWidget *) window->navigation);
 
-  /*  */  
-  gtk_window_set_default_size(window,
-			      AGS_UI_PROVIDER_DEFAULT_WINDOW_WIDTH, AGS_UI_PROVIDER_DEFAULT_WINDOW_HEIGHT);
-
   /* load file */
   if(ags_window_load_file == NULL){
     ags_window_load_file = g_hash_table_new_full(g_direct_hash, g_direct_equal,
@@ -489,11 +485,12 @@ ags_window_notify_default_width_callback(GObject *gobject,
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
-  /* adjustment and allocation */
+  /* adjustment */
+  adjustment = gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->hscrollbar);
+
+  /* allocation */
   gtk_widget_get_allocation(GTK_WIDGET(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->drawing_area),
 			    &allocation);
-
-  adjustment = gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->hscrollbar);
 
   /* zoom */
   composite_toolbar = composite_editor->toolbar;
@@ -523,11 +520,17 @@ ags_window_notify_default_width_callback(GObject *gobject,
   while(list != NULL){
     ags_automation_edit_reset_hscrollbar(list->data);
 
+    list = list->next;
+  }
+
+  list = start_list;
+  
+  if(list != NULL){
     /* adjustment and allocation */
     gtk_widget_get_allocation(GTK_WIDGET(AGS_AUTOMATION_EDIT(list->data)->drawing_area),
 			      &allocation);
 
-    adjustment = gtk_scrollbar_get_adjustment(AGS_AUTOMATION_EDIT(list->data)->hscrollbar);
+    adjustment = gtk_scrollbar_get_adjustment(composite_editor->automation_edit->hscrollbar);
 
     if(map_width - allocation.width > 0){
       if(gtk_adjustment_get_value(adjustment) + allocation.width > gtk_adjustment_get_upper(adjustment)){
@@ -538,10 +541,8 @@ ags_window_notify_default_width_callback(GObject *gobject,
       gtk_adjustment_set_value(adjustment,
 			       0.0);
     }
-    
-    list = list->next;
   }
-
+  
   g_list_free(start_list);
   
   wave_edit_box = ags_scrolled_wave_edit_box_get_wave_edit_box(composite_editor->wave_edit->edit);
@@ -552,11 +553,17 @@ ags_window_notify_default_width_callback(GObject *gobject,
   while(list != NULL){
     ags_wave_edit_reset_hscrollbar(list->data);
 
+    list = list->next;
+  }
+
+  list = start_list;
+
+  if(list != NULL){
     /* adjustment and allocation */
     gtk_widget_get_allocation(GTK_WIDGET(AGS_WAVE_EDIT(list->data)->drawing_area),
 			      &allocation);
 
-    adjustment = gtk_scrollbar_get_adjustment(AGS_WAVE_EDIT(list->data)->hscrollbar);
+    adjustment = gtk_scrollbar_get_adjustment(composite_editor->wave_edit->hscrollbar);
 
     if(map_width - allocation.width > 0){
       if(gtk_adjustment_get_value(adjustment) + allocation.width > gtk_adjustment_get_upper(adjustment)){
@@ -567,8 +574,6 @@ ags_window_notify_default_width_callback(GObject *gobject,
       gtk_adjustment_set_value(adjustment,
 			       0.0);
     }
-    
-    list = list->next;
   }
 
   g_list_free(start_list);
@@ -597,11 +602,12 @@ ags_window_notify_default_height_callback(GObject *gobject,
 
   ags_notation_edit_reset_vscrollbar(composite_editor->notation_edit->edit);
 
-  /* adjustment and allocation */
+  /* adjustment */
   adjustment = gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->vscrollbar);
 
   piano_adjustment = gtk_scrolled_window_get_vadjustment(AGS_SCROLLED_PIANO(composite_editor->notation_edit->edit_control)->scrolled_window);
 
+  /* allocation */
   gtk_widget_get_allocation(GTK_WIDGET(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->drawing_area),
 			    &allocation);  
 
@@ -663,6 +669,7 @@ ags_window_notify_maximized_callback(GObject *gobject,
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
+  /* allocation */
   gtk_widget_get_allocation(GTK_WIDGET(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->drawing_area),
 			    &allocation);
 
@@ -689,9 +696,9 @@ ags_window_notify_maximized_callback(GObject *gobject,
 			     0.0);
   }
 
+  /* adjustment */
   piano_adjustment = gtk_scrolled_window_get_vadjustment(AGS_SCROLLED_PIANO(composite_editor->notation_edit->edit_control)->scrolled_window);
   
-  /* adjustment */
   adjustment = gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->vscrollbar);
 
   /* get key count */
@@ -722,8 +729,29 @@ ags_window_notify_maximized_callback(GObject *gobject,
 
   while(list != NULL){
     ags_automation_edit_reset_vscrollbar(list->data);
+    ags_automation_edit_reset_hscrollbar(list->data);
 
     list = list->next;
+  }
+
+  list = start_list;
+  
+  if(list != NULL){
+    /* adjustment and allocation */
+    gtk_widget_get_allocation(GTK_WIDGET(AGS_AUTOMATION_EDIT(list->data)->drawing_area),
+			      &allocation);
+
+    adjustment = gtk_scrollbar_get_adjustment(composite_editor->automation_edit->hscrollbar);
+
+    if(map_width - allocation.width > 0){
+      if(gtk_adjustment_get_value(adjustment) + allocation.width > gtk_adjustment_get_upper(adjustment)){
+	gtk_adjustment_set_value(adjustment,
+				 map_width - allocation.width);
+      }
+    }else{
+      gtk_adjustment_set_value(adjustment,
+			       0.0);
+    }
   }
 
   g_list_free(start_list);
@@ -735,8 +763,29 @@ ags_window_notify_maximized_callback(GObject *gobject,
 
   while(list != NULL){
     ags_wave_edit_reset_vscrollbar(list->data);
+    ags_wave_edit_reset_hscrollbar(list->data);
 
     list = list->next;
+  }
+
+  list = start_list;
+
+  if(list != NULL){
+    /* adjustment and allocation */
+    gtk_widget_get_allocation(GTK_WIDGET(AGS_WAVE_EDIT(list->data)->drawing_area),
+			      &allocation);
+
+    adjustment = gtk_scrollbar_get_adjustment(composite_editor->wave_edit->hscrollbar);
+
+    if(map_width - allocation.width > 0){
+      if(gtk_adjustment_get_value(adjustment) + allocation.width > gtk_adjustment_get_upper(adjustment)){
+	gtk_adjustment_set_value(adjustment,
+				 map_width - allocation.width);
+      }
+    }else{
+      gtk_adjustment_set_value(adjustment,
+			       0.0);
+    }
   }
 
   g_list_free(start_list);
