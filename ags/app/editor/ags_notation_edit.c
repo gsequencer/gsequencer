@@ -1721,9 +1721,12 @@ ags_notation_edit_frame_clock_update_callback(GdkFrameClock *frame_clock,
 void
 ags_notation_edit_reset_vscrollbar(AgsNotationEdit *notation_edit)
 {
+  AgsCompositeEditor *composite_editor;
   AgsCompositeEdit *composite_edit;
   GtkAdjustment *adjustment;
   GtkAdjustment *piano_adjustment;
+
+  AgsApplicationContext *application_context;
 
   GtkAllocation allocation;
   
@@ -1738,8 +1741,11 @@ ags_notation_edit_reset_vscrollbar(AgsNotationEdit *notation_edit)
 
   notation_edit->flags |= AGS_NOTATION_EDIT_BLOCK_RESET_VSCROLLBAR;
 
-  composite_edit = (AgsCompositeEdit *) gtk_widget_get_ancestor((GtkWidget *) notation_edit,
-								AGS_TYPE_COMPOSITE_EDIT);
+  application_context = ags_application_context_get_instance();
+
+  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+
+  composite_edit = composite_editor->notation_edit;
 
   piano_adjustment = gtk_scrolled_window_get_vadjustment(AGS_SCROLLED_PIANO(composite_edit->edit_control)->scrolled_window);
 

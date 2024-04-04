@@ -1,3 +1,8 @@
+ags (6.7.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed editor missing scrollbar reset after window resize
+
 ags (6.6.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

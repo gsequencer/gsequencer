@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -52,6 +52,9 @@ gboolean ags_sheet_edit_auto_scroll_timeout(GtkWidget *widget);
  *
  * The #AgsSheetEdit lets you edit notes.
  */
+
+#define AGS_SHEET_EDIT_NOTE_HEAD "𝅗"
+#define AGS_SHEET_EDIT_NOTE_HEAD_BLACK "𝅘"
 
 enum{
   PROP_0,
@@ -1441,6 +1444,7 @@ ags_sheet_edit_draw_note(AgsSheetEdit *sheet_edit, cairo_t *cr,
     "𝅘𝅥",
     "𝅘𝅥𝅮",
     "𝅘𝅥𝅯",
+    "𝅘𝅥𝅰",
     NULL,
   };
 
@@ -1617,6 +1621,7 @@ ags_sheet_edit_draw_rest(AgsSheetEdit *sheet_edit, cairo_t *cr,
     "𝄽",
     "𝄾",
     "𝄿",
+    "𝅀",
     NULL,
   };
 

@@ -2392,10 +2392,10 @@ ags_automation_edit_reset_hscrollbar(AgsAutomationEdit *automation_edit)
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
+  /* adjustment and allocation */
   gtk_widget_get_allocation(GTK_WIDGET(automation_edit->drawing_area),
 			    &allocation);
   
-  /* adjustment and allocation */
   adjustment = gtk_scrollbar_get_adjustment(automation_edit->hscrollbar);
 
   /* zoom */
