@@ -4240,8 +4240,8 @@ ags_automation_edit_draw(AgsAutomationEdit *automation_edit, cairo_t *cr)
 
   application_context = ags_application_context_get_instance();
 
-  ags_automation_edit_reset_vscrollbar(automation_edit);
-  ags_automation_edit_reset_hscrollbar(automation_edit);
+  //  ags_automation_edit_reset_vscrollbar(automation_edit);
+  //  ags_automation_edit_reset_hscrollbar(automation_edit);
   
   /* segment */
   ags_automation_edit_draw_segment(automation_edit, cr);

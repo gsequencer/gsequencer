@@ -2528,8 +2528,8 @@ ags_wave_edit_draw(AgsWaveEdit *wave_edit, cairo_t *cr)
 
   application_context = ags_application_context_get_instance();
   
-  ags_wave_edit_reset_vscrollbar(wave_edit);
-  ags_wave_edit_reset_hscrollbar(wave_edit);
+  //  ags_wave_edit_reset_vscrollbar(wave_edit);
+  //  ags_wave_edit_reset_hscrollbar(wave_edit);
 
   /* segment */
   ags_wave_edit_draw_segment(wave_edit, cr);
