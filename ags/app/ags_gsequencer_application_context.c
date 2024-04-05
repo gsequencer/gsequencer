@@ -3033,15 +3033,35 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
 
   composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
+  /* adjustment */
+  adjustment = gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->vscrollbar);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+
+  adjustment = gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->hscrollbar);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+
   ags_notation_edit_reset_hscrollbar(composite_editor->notation_edit->edit);
   ags_notation_edit_reset_vscrollbar(composite_editor->notation_edit->edit);
 
   /* allocation */
   gtk_widget_get_allocation(GTK_WIDGET(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->drawing_area),
 			    &allocation);
-
-  /* adjustment */
-  adjustment = gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->hscrollbar);
 
   /* zoom */
   composite_toolbar = composite_editor->toolbar;
@@ -3053,7 +3073,39 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
 
   map_width = ((64.0) * (16.0 * 16.0 * 1200.0) * zoom * zoom_correction);
 
+  /* get key count */
+  key_count = AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->key_count;
+
+  varea_height = (key_count * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_height);
+
+  /*  */
+  adjustment = gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->vscrollbar);
+
+  if(varea_height - allocation.height > 0){
+    gtk_adjustment_set_upper(adjustment,
+			     (gdouble) (varea_height - allocation.height));
+
+    if(varea_height - allocation.height > 0){
+      gtk_adjustment_set_upper(adjustment,
+			       (gdouble) (varea_height - allocation.height));
+
+      if(gtk_adjustment_get_value(adjustment) + allocation.height > gtk_adjustment_get_upper(adjustment)){
+	gtk_adjustment_set_value(adjustment,
+				 varea_height - allocation.height);
+      }
+    }else{
+      gtk_adjustment_set_value(adjustment,
+			       0.0);
+    }
+  }
+  
+  /*  */
+  adjustment = gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->hscrollbar);
+
   if(map_width - allocation.width > 0){
+    gtk_adjustment_set_upper(adjustment,
+			     (gdouble) (map_width - allocation.width));
+
     if(gtk_adjustment_get_value(adjustment) + allocation.width > gtk_adjustment_get_upper(adjustment)){
       gtk_adjustment_set_value(adjustment,
 			       map_width - allocation.width);

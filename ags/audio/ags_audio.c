@@ -10984,15 +10984,15 @@ ags_audio_add_automation_port(AgsAudio *audio, gchar *control_name)
   }
 
   if(audio->automation_port == NULL){
-    audio->automation_port = (gchar **) malloc(2 * sizeof(gchar *));
+    audio->automation_port = (gchar **) g_malloc(2 * sizeof(gchar *));
 
     audio->automation_port[0] = g_strdup(control_name);
     audio->automation_port[1] = NULL;
   }else{
     length = g_strv_length(audio->automation_port);
 
-    audio->automation_port = (gchar **) realloc(audio->automation_port,
-						(length + 2) * sizeof(gchar *));
+    audio->automation_port = (gchar **) g_realloc(audio->automation_port,
+						  (length + 2) * sizeof(gchar *));
 
     audio->automation_port[length] = g_strdup(control_name);
     audio->automation_port[length + 1] = NULL;
@@ -11043,7 +11043,7 @@ ags_audio_remove_automation_port(AgsAudio *audio, gchar *control_name)
 
     audio->automation_port = NULL;
   }else{
-    automation_port = (gchar **) malloc((length) * sizeof(gchar *));
+    automation_port = (gchar **) g_malloc((length + 1) * sizeof(gchar *));
     
     for(i = 0, j = 0; i < length; i++){
       if(!g_strcmp0(audio->automation_port[i], control_name)){
@@ -11057,7 +11057,7 @@ ags_audio_remove_automation_port(AgsAudio *audio, gchar *control_name)
 
     automation_port[j] = NULL;
 
-    g_strfreev(audio->automation_port);
+    g_free(audio->automation_port);
 
     audio->automation_port = automation_port;
   }
