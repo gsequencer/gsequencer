@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-03-26 11:13+0100\n"
+"POT-Creation-Date: 2024-04-05 08:31+0200\n"
 "PO-Revision-Date: 2021-01-03 08:52+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: Deutsch <jkraehemann@gmail.com>\n"
@@ -214,21 +214,21 @@ msgstr "Eingang"
 msgid "bulk input"
 msgstr "Eingabe verknüpfen"
 
-#: ags/app/ags_gsequencer_application_context.c:3544
+#: ags/app/ags_gsequencer_application_context.c:3748
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr "unbekannte Soundkarten Schnittstelle - %s"
 
-#: ags/app/ags_gsequencer_application_context.c:3554
+#: ags/app/ags_gsequencer_application_context.c:3758
 msgid "unknown soundcard backend - NULL"
 msgstr "unbekannte Soundkarten Schnittstelle - NULL"
 
-#: ags/app/ags_gsequencer_application_context.c:3790
+#: ags/app/ags_gsequencer_application_context.c:3994
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr "unbekannte Sequenzer Schnittstelle - %s"
 
-#: ags/app/ags_gsequencer_application_context.c:3800
+#: ags/app/ags_gsequencer_application_context.c:4004
 msgid "unknown sequencer backend - NULL"
 msgstr "unbekannte Sequenzer Schnittstelle - NULL"
 
@@ -252,20 +252,20 @@ msgstr "RT-Sicher"
 msgid "GUI scale factor"
 msgstr "GUI Skalierungs faktor"
 
-#: ags/app/ags_pcm_file_dialog.c:233 ags/app/editor/ags_envelope_info.c:250
+#: ags/app/ags_pcm_file_dialog.c:234 ags/app/editor/ags_envelope_info.c:250
 msgid "audio channel"
 msgstr "Audio Kanal"
 
-#: ags/app/ags_pcm_file_dialog.c:256
+#: ags/app/ags_pcm_file_dialog.c:257
 msgid "open in new channel"
 msgstr "In einem neuen Kanal öffnen"
 
-#: ags/app/ags_pcm_file_dialog.c:267
+#: ags/app/ags_pcm_file_dialog.c:268
 #, fuzzy
 msgid "override existing links"
 msgstr "Überschreibe bestehende Verknüpfungen"
 
-#: ags/app/ags_pcm_file_dialog.c:278
+#: ags/app/ags_pcm_file_dialog.c:279
 #: ags/app/export/ags_midi_export_wizard.c:407
 #: ags/app/export/ags_wave_export_dialog.c:430
 #: ags/app/import/ags_midi_import_wizard.c:411

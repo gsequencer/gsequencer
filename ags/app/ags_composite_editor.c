@@ -1256,9 +1256,25 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
 
       map_width = ((64.0) * (16.0 * 16.0 * 1200.0) * zoom * zoom_correction);
 
+      /* get key count */
+      key_count = AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->key_count;
+
+      varea_height = (key_count * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_height);
+
       /* adjustment and allocation */
       gtk_widget_get_allocation(wave_edit->drawing_area,
 				&allocation);
+
+      adjustment = gtk_scrollbar_get_adjustment(composite_editor->wave_edit->vscrollbar);
+      
+      gtk_adjustment_set_lower(adjustment,
+			       0.0);
+
+      gtk_adjustment_set_upper(adjustment,
+			       1.0);
+
+      gtk_adjustment_set_value(adjustment,
+			       0.0);
 
       adjustment = gtk_scrollbar_get_adjustment(composite_editor->wave_edit->hscrollbar);
       
@@ -1273,6 +1289,30 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
 
       ags_wave_edit_reset_vscrollbar(wave_edit);
       ags_wave_edit_reset_hscrollbar(wave_edit);
+
+      /*  */
+      adjustment = gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->vscrollbar);
+
+      if(varea_height - allocation.height > 0){
+	gtk_adjustment_set_upper(adjustment,
+				 (gdouble) (varea_height - allocation.height));
+
+	if(varea_height - allocation.height > 0){
+	  gtk_adjustment_set_upper(adjustment,
+				   (gdouble) (varea_height - allocation.height));
+
+	  if(gtk_adjustment_get_value(adjustment) + allocation.height > gtk_adjustment_get_upper(adjustment)){
+	    gtk_adjustment_set_value(adjustment,
+				     varea_height - allocation.height);
+	  }
+	}else{
+	  gtk_adjustment_set_value(adjustment,
+				   0.0);
+	}
+      }
+  
+      /*  */
+      adjustment = gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->hscrollbar);
 
       if(map_width - allocation.width > 0){
 	gtk_adjustment_set_upper(adjustment,
@@ -1855,9 +1895,6 @@ ags_composite_editor_remove_automation_port(AgsCompositeEditor *composite_editor
 		  control_name)){
       ags_automation_edit_box_remove_automation_edit(AGS_AUTOMATION_EDIT_BOX(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_editor->automation_edit->edit)->automation_edit_box),
 						     list->data);
-      
-      g_object_run_dispose(list->data);
-      g_object_unref(list->data);
 
       success = TRUE;
 
@@ -1877,9 +1914,6 @@ ags_composite_editor_remove_automation_port(AgsCompositeEditor *composite_editor
 
     ags_scale_box_remove_scale(AGS_SCALE_BOX(AGS_SCROLLED_SCALE_BOX(composite_editor->automation_edit->edit_control)->scale_box),
 			       list->data);
-    
-    g_object_run_dispose(list->data);
-    g_object_unref(list->data);
       
     g_list_free(start_list);
   }
