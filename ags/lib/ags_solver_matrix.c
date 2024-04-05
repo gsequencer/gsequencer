@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -59,6 +59,7 @@ enum{
   PROP_SOURCE_FUNCTION,
   PROP_ROW_COUNT,
   PROP_COLUMN_COUNT,
+  PROP_SOLVER_PATH,
 };
 
 static gpointer ags_solver_matrix_parent_class = NULL;
@@ -163,6 +164,21 @@ ags_solver_matrix_class_init(AgsSolverMatrixClass *solver_matrix)
   g_object_class_install_property(gobject,
 				  PROP_COLUMN_COUNT,
 				  param_spec);
+
+  /**
+   * AgsSolverMatrix:solver-path:
+   *
+   * The assigned solver path.
+   * 
+   * Since: 6.7.1
+   */
+  param_spec = g_param_spec_pointer("solver-path",
+				    i18n_pspec("solver path"),
+				    i18n_pspec("The solver path"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SOLVER_PATH,
+				  param_spec);
 }
 
 void
@@ -180,6 +196,8 @@ ags_solver_matrix_init(AgsSolverMatrix *solver_matrix)
 
   solver_matrix->row_count = 0;
   solver_matrix->column_count = 0;
+
+  solver_matrix->solver_path = NULL;
 }
 
 void
@@ -217,6 +235,25 @@ ags_solver_matrix_set_property(GObject *gobject,
     }
 
     solver_matrix->source_function = g_strdup(source_function);
+
+    g_rec_mutex_unlock(solver_matrix_mutex);
+  }
+  break;
+  case PROP_SOLVER_PATH:
+  {
+    GList *solver_path;
+
+    solver_path = (GList *) g_value_get_pointer(value);
+
+    g_rec_mutex_lock(solver_matrix_mutex);
+
+    if(solver_matrix->solver_path == solver_path){
+      g_rec_mutex_unlock(solver_matrix_mutex);
+
+      return;
+    }
+    
+    solver_matrix->solver_path = solver_path;
 
     g_rec_mutex_unlock(solver_matrix_mutex);
   }
@@ -270,6 +307,18 @@ ags_solver_matrix_get_property(GObject *gobject,
     g_rec_mutex_unlock(solver_matrix_mutex);
   }
   break;
+  case PROP_SOLVER_PATH:
+  {
+    g_rec_mutex_lock(solver_matrix_mutex);
+
+    g_value_set_pointer(value,
+			g_list_copy_deep(solver_matrix->solver_path,
+					 (GCopyFunc) ags_solver_path_copy,
+					 NULL));
+
+    g_rec_mutex_unlock(solver_matrix_mutex);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -292,6 +341,9 @@ ags_solver_matrix_finalize(GObject *gobject)
   }
 
   g_free(solver_matrix->term_table);
+
+  g_list_free_full(solver_matrix->solver_path,
+		   (GDestroyNotify) ags_solver_path_free);
   
   /* call parent */
   G_OBJECT_CLASS(ags_solver_matrix_parent_class)->finalize(gobject);
@@ -401,6 +453,56 @@ ags_solver_matrix_get_column_count(AgsSolverMatrix *solver_matrix)
 	       NULL);
 
   return(column_count);
+}
+
+/**
+ * ags_solver_matrix_get_solver_path:
+ * @solver_matrix: the #AgsSolverMatrix
+ * 
+ * Get solver path of @solver_matrix.
+ * 
+ * Returns: (transfer full): the #GList-struct containing #AgsSolverPath
+ * 
+ * Since: 6.7.1
+ */
+GList*
+ags_solver_matrix_get_solver_path(AgsSolverMatrix *solver_matrix)
+{
+  GList *solver_path;
+  
+  if(!AGS_IS_SOLVER_MATRIX(solver_matrix)){
+    return(NULL);
+  }
+
+  solver_path = NULL;
+
+  g_object_get(solver_matrix,
+	       "solver-path", &solver_path,
+	       NULL);
+
+  return(solver_path);
+}
+
+/**
+ * ags_solver_matrix_set_solver_path:
+ * @solver_matrix: the #AgsSolverMatrix
+ * @solver_path: (transfer full): the solver path
+ * 
+ * Get column count of @solver_matrix.
+ * 
+ * Since: 6.7.1
+ */
+void
+ags_solver_matrix_set_solver_path(AgsSolverMatrix *solver_matrix,
+				  GList *solver_path)
+{
+  if(!AGS_IS_SOLVER_MATRIX(solver_matrix)){
+    return;
+  }
+
+  g_object_set(solver_matrix,
+	       "solver-path", &solver_path,
+	       NULL);
 }
 
 /**
