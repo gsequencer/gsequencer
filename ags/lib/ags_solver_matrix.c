@@ -20,6 +20,7 @@
 #include <ags/lib/ags_solver_matrix.h>
 
 #include <ags/lib/ags_string_util.h>
+#include <ags/lib/ags_solver_path.h>
 
 #include <stdlib.h>
 
