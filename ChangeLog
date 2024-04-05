@@ -1,3 +1,10 @@
+ags (6.7.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed editor missing scrollbar reset after window resize
+	* fixed potential SIGSEGV with automation editor
+	* fixed double free with ags_audio_remove_automation_port()
+
 ags (6.6.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

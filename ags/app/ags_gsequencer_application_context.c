@@ -36,6 +36,14 @@
 #include <ags/app/ags_bulk_member.h>
 #include <ags/app/ags_line_member.h>
 
+#include <ags/app/editor/ags_notation_edit.h>
+#include <ags/app/editor/ags_scrolled_automation_edit_box.h>
+#include <ags/app/editor/ags_automation_edit_box.h>
+#include <ags/app/editor/ags_automation_edit.h>
+#include <ags/app/editor/ags_scrolled_wave_edit_box.h>
+#include <ags/app/editor/ags_wave_edit_box.h>
+#include <ags/app/editor/ags_wave_edit.h>
+
 #include <ags/app/file/ags_simple_file.h>
 
 #include <ags/app/machine/ags_panel.h>
@@ -2788,9 +2796,18 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
   AgsGSequencerApplicationContext *gsequencer_application_context;
   GtkWidget *widget;
   AgsWindow *window;
+  AgsCompositeEditor *composite_editor;
+  AgsCompositeToolbar *composite_toolbar;
+  AgsAutomationEditBox *automation_edit_box;
+  AgsWaveEditBox *wave_edit_box;
   AgsExportWindow *export_window;
-  AgsExportSoundcard *export_soundcard;
+  AgsExportSoundcard *export_soundcard;  
   
+  GtkAdjustment *adjustment;
+  GtkAdjustment *piano_adjustment;
+
+  GtkAllocation allocation;
+
   AgsThread *audio_loop;
   AgsTaskLauncher *task_launcher;
   AgsMessageDelivery *message_delivery;
@@ -2804,11 +2821,18 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
   GMainContext *audio_main_context;
   GMainContext *osc_server_main_context;
   GMainLoop *main_loop;
-  
+
+  GList *start_list, *list;
+    
   gchar *filename;
   gchar *str;
   
   gdouble gui_scale_factor;
+  double zoom_factor, zoom;
+  double zoom_correction;
+  guint map_width;
+  guint key_count;
+  double varea_height;
   gboolean no_config;
   guint i;
 
@@ -2995,15 +3019,195 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
   /* AgsWindow */
   window = (AgsWindow *) g_object_new(AGS_TYPE_WINDOW,
 				      NULL);
-  window->no_config = no_config;
-  
-  gtk_window_set_default_size((GtkWindow *) window,
+  window->no_config = no_config;  
+
+  /*  */  
+  gtk_window_set_default_size(window,
 			      AGS_WINDOW_DEFAULT_WIDTH, AGS_WINDOW_DEFAULT_HEIGHT);
+  
   gtk_paned_set_position((GtkPaned *) window->paned, 300);
   
   if(filename != NULL){
     window->filename = filename;
   }  
+
+  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+
+  /* adjustment */
+  adjustment = gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->vscrollbar);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+
+  adjustment = gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->hscrollbar);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+
+  ags_notation_edit_reset_hscrollbar(composite_editor->notation_edit->edit);
+  ags_notation_edit_reset_vscrollbar(composite_editor->notation_edit->edit);
+
+  /* allocation */
+  gtk_widget_get_allocation(GTK_WIDGET(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->drawing_area),
+			    &allocation);
+
+  /* zoom */
+  composite_toolbar = composite_editor->toolbar;
+
+  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) composite_toolbar->zoom));
+  zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) composite_toolbar->zoom) - 2.0);
+
+  zoom_correction = 1.0 / 16;
+
+  map_width = ((64.0) * (16.0 * 16.0 * 1200.0) * zoom * zoom_correction);
+
+  /* get key count */
+  key_count = AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->key_count;
+
+  varea_height = (key_count * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_height);
+
+  /*  */
+  adjustment = gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->vscrollbar);
+
+  if(varea_height - allocation.height > 0){
+    gtk_adjustment_set_upper(adjustment,
+			     (gdouble) (varea_height - allocation.height));
+
+    if(varea_height - allocation.height > 0){
+      gtk_adjustment_set_upper(adjustment,
+			       (gdouble) (varea_height - allocation.height));
+
+      if(gtk_adjustment_get_value(adjustment) + allocation.height > gtk_adjustment_get_upper(adjustment)){
+	gtk_adjustment_set_value(adjustment,
+				 varea_height - allocation.height);
+      }
+    }else{
+      gtk_adjustment_set_value(adjustment,
+			       0.0);
+    }
+  }
+  
+  /*  */
+  adjustment = gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->hscrollbar);
+
+  if(map_width - allocation.width > 0){
+    gtk_adjustment_set_upper(adjustment,
+			     (gdouble) (map_width - allocation.width));
+
+    if(gtk_adjustment_get_value(adjustment) + allocation.width > gtk_adjustment_get_upper(adjustment)){
+      gtk_adjustment_set_value(adjustment,
+			       map_width - allocation.width);
+    }
+  }else{
+    gtk_adjustment_set_value(adjustment,
+			     0.0);
+  }
+
+  /* adjustment */
+  piano_adjustment = gtk_scrolled_window_get_vadjustment(AGS_SCROLLED_PIANO(composite_editor->notation_edit->edit_control)->scrolled_window);
+  
+  adjustment = gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->vscrollbar);
+
+  /* get key count */
+  key_count = AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->key_count;
+
+  varea_height = (key_count * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_height);
+
+  if(varea_height - allocation.height > 0){
+    if(gtk_adjustment_get_value(adjustment) + allocation.height > gtk_adjustment_get_upper(adjustment)){
+      gtk_adjustment_set_value(adjustment,
+			       varea_height - allocation.height);
+      
+      gtk_adjustment_set_value(piano_adjustment,
+			       gtk_adjustment_get_value(adjustment));
+    }
+  }else{
+    gtk_adjustment_set_value(adjustment,
+			     0.0);
+      
+    gtk_adjustment_set_value(piano_adjustment,
+			     0.0);
+  }
+  
+  automation_edit_box = ags_scrolled_automation_edit_box_get_automation_edit_box(composite_editor->automation_edit->edit);
+
+  list =
+    start_list = ags_automation_edit_box_get_automation_edit(automation_edit_box);
+
+  while(list != NULL){
+    ags_automation_edit_reset_vscrollbar(list->data);
+    ags_automation_edit_reset_hscrollbar(list->data);
+
+    list = list->next;
+  }
+
+  list = start_list;
+  
+  if(list != NULL){
+    /* adjustment and allocation */
+    gtk_widget_get_allocation(GTK_WIDGET(AGS_AUTOMATION_EDIT(list->data)->drawing_area),
+			      &allocation);
+
+    adjustment = gtk_scrollbar_get_adjustment(composite_editor->automation_edit->hscrollbar);
+
+    if(map_width - allocation.width > 0){
+      if(gtk_adjustment_get_value(adjustment) + allocation.width > gtk_adjustment_get_upper(adjustment)){
+	gtk_adjustment_set_value(adjustment,
+				 map_width - allocation.width);
+      }
+    }else{
+      gtk_adjustment_set_value(adjustment,
+			       0.0);
+    }
+  }
+
+  g_list_free(start_list);
+  
+  wave_edit_box = ags_scrolled_wave_edit_box_get_wave_edit_box(composite_editor->wave_edit->edit);
+
+  list =
+    start_list = ags_wave_edit_box_get_wave_edit(wave_edit_box);
+
+  while(list != NULL){
+    ags_wave_edit_reset_vscrollbar(list->data);
+    ags_wave_edit_reset_hscrollbar(list->data);
+
+    list = list->next;
+  }
+
+  list = start_list;
+
+  if(list != NULL){
+    /* adjustment and allocation */
+    gtk_widget_get_allocation(GTK_WIDGET(AGS_WAVE_EDIT(list->data)->drawing_area),
+			      &allocation);
+
+    adjustment = gtk_scrollbar_get_adjustment(composite_editor->wave_edit->hscrollbar);
+
+    if(map_width - allocation.width > 0){
+      if(gtk_adjustment_get_value(adjustment) + allocation.width > gtk_adjustment_get_upper(adjustment)){
+	gtk_adjustment_set_value(adjustment,
+				 map_width - allocation.width);
+      }
+    }else{
+      gtk_adjustment_set_value(adjustment,
+			       0.0);
+    }
+  }
+
+  g_list_free(start_list);
   
   /* AgsExportWindow */
   export_window = ags_export_window_new((GtkWindow *) window);

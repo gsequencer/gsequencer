@@ -107,8 +107,8 @@ ags_wave_edit_drawing_area_resize_callback(GtkWidget *drawing_area,
 					   gint width, gint height,
 					   AgsWaveEdit *wave_edit)
 {
-  ags_wave_edit_reset_vscrollbar(wave_edit);
-  ags_wave_edit_reset_hscrollbar(wave_edit);
+  //  ags_wave_edit_reset_vscrollbar(wave_edit);
+  //  ags_wave_edit_reset_hscrollbar(wave_edit);
   
   gtk_widget_queue_draw((GtkWidget *) wave_edit);
 }
