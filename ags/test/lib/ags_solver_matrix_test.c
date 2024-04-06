@@ -290,12 +290,95 @@ ags_solver_matrix_test_solve_default()
 {
   AgsSolverMatrix *solver_matrix;
 
+  GList *start_solver_path;
+  
   solver_matrix = ags_solver_matrix_new();
 
   ags_solver_matrix_parse(solver_matrix,
 			  AGS_SOLVER_MATRIX_TEST_SOLVE_DEFAULT_EQUATION_0);
 
+  g_message("%s",
+	    ags_solver_matrix_to_string(solver_matrix));
+
+  start_solver_path = NULL;
+  
+  start_solver_path = g_list_prepend(start_solver_path,
+				     ags_solver_path_alloc(0,
+							   0,
+							   1));  
+  start_solver_path = g_list_prepend(start_solver_path,
+				     ags_solver_path_alloc(0,
+							   0,
+							   2));
+  start_solver_path = g_list_prepend(start_solver_path,
+				     ags_solver_path_alloc(0,
+							   0,
+							   3));
+  
+  start_solver_path = g_list_prepend(start_solver_path,
+				     ags_solver_path_alloc(1,
+							   1,
+							   2));
+  start_solver_path = g_list_prepend(start_solver_path,
+				     ags_solver_path_alloc(1,
+							   1,
+							   3));
+  start_solver_path = g_list_prepend(start_solver_path,
+				     ags_solver_path_alloc(1,
+							   2,
+							   3));
+
+  start_solver_path = g_list_prepend(start_solver_path,
+				     ags_solver_path_alloc(2,
+							   0,
+							   1));
+  start_solver_path = g_list_prepend(start_solver_path,
+				     ags_solver_path_alloc(2,
+							   0,
+							   2));
+  start_solver_path = g_list_prepend(start_solver_path,
+				     ags_solver_path_alloc(2,
+							   1,
+							   2));
+  start_solver_path = g_list_prepend(start_solver_path,
+				     ags_solver_path_alloc(2,
+							   2,
+							   3));
+  
+  start_solver_path = g_list_prepend(start_solver_path,
+				     ags_solver_path_alloc(3,
+							   0,
+							   1));
+  start_solver_path = g_list_prepend(start_solver_path,
+				     ags_solver_path_alloc(3,
+							   0,
+							   2));
+  start_solver_path = g_list_prepend(start_solver_path,
+				     ags_solver_path_alloc(3,
+							   0,
+							   3));
+  start_solver_path = g_list_prepend(start_solver_path,
+				     ags_solver_path_alloc(3,
+							   1,
+							   2));
+  start_solver_path = g_list_prepend(start_solver_path,
+				     ags_solver_path_alloc(3,
+							   1,
+							   3));
+  start_solver_path = g_list_prepend(start_solver_path,
+				     ags_solver_path_alloc(3,
+							   2,
+							   3));
+  
+  start_solver_path = g_list_reverse(start_solver_path);
+  
+  ags_solver_matrix_set_solver_path(solver_matrix,
+				    start_solver_path);
+
   ags_solver_matrix_solve_default(solver_matrix);
+
+  g_message("%s",
+	    ags_solver_matrix_to_string(solver_matrix));
 }
 
 int
