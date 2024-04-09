@@ -41,10 +41,6 @@ void ags_solver_matrix_finalize(GObject *gobject);
 gchar** ags_solver_matrix_to_symbolic_string(AgsSolverMatrix *solver_matrix,
 					     guint *symbolic_strv_length);
 
-void ags_solver_matrix_solve_all_by_column(AgsSolverMatrix *solver_matrix,
-					   guint *nth_column, guint column_size);
-void ags_solver_matrix_solve_symbolic(AgsSolverMatrix *solver_matrix);
-
 /**
  * SECTION:ags_solver_matrix
  * @short_description: solver matrix
@@ -502,7 +498,7 @@ ags_solver_matrix_set_solver_path(AgsSolverMatrix *solver_matrix,
   }
 
   g_object_set(solver_matrix,
-	       "solver-path", &solver_path,
+	       "solver-path", solver_path,
 	       NULL);
 }
 
@@ -789,6 +785,8 @@ ags_solver_matrix_parse(AgsSolverMatrix *solver_matrix,
 
 	polynomial = g_strndup(prev,
 			       iter - prev);
+
+	//	g_message("poly - %s", polynomial);
 	
 	ags_solver_polynomial_parse(solver_polynomial,
 				    polynomial);
@@ -1035,6 +1033,8 @@ ags_solver_matrix_parse(AgsSolverMatrix *solver_matrix,
 
 	prev = iter;	
 	nth_row++;
+
+	continue;
       }
     }
       
@@ -1222,6 +1222,9 @@ ags_solver_matrix_eliminate(AgsSolverMatrix *solver_matrix,
 
   solver_matrix_mutex = AGS_SOLVER_MATRIX_GET_OBJ_MUTEX(solver_matrix);
 
+  row_count = 0;
+  column_count = 0;
+  
   g_object_get(solver_matrix,
 	       "row-count", &row_count,
 	       "column-count", &column_count,
@@ -1378,45 +1381,6 @@ ags_solver_matrix_eliminate(AgsSolverMatrix *solver_matrix,
 }
 
 /**
- * ags_solver_matrix_solve_all_by_column:
- * @solver_matrix: the #AgsSolverMatrix
- * @nth_column: the nth column vector
- * @column_size: the column size
- * 
- * Solve all by column of @solver_matrix.
- * 
- * Since: 5.3.4
- */
-void
-ags_solver_matrix_solve_all_by_column(AgsSolverMatrix *solver_matrix,
-				      guint *nth_column, guint column_size)
-{
-  guint column_count;
-  guint row_count;
-  guint i, i_stop;
-
-  g_return_if_fail(AGS_IS_SOLVER_MATRIX(solver_matrix));
-  g_return_if_fail(nth_column != NULL);
-  g_return_if_fail(column_size > 0);
-  
-  column_count = ags_solver_matrix_get_column_count(solver_matrix);
-  row_count = ags_solver_matrix_get_row_count(solver_matrix);
-
-  i_stop = column_size;
-  
-  for(i = 0; i < i_stop; i++){
-    guint current_column, current_row_a, current_row_b;
-
-    current_column = nth_column[i % column_size];
-    
-    current_row_a = (guint) floor(i / column_count);
-    current_row_b = (guint) floor(i / column_count) + (row_count - ((i + 1) % row_count));
-    
-    g_message("solve [%d] -> x,y [%d, %d %d]", i, current_column, current_row_a, current_row_b);
-  }
-}
-
-/**
  * ags_solver_matrix_solve_default:
  * @solver_matrix: the #AgsSolverMatrix
  *
@@ -1427,60 +1391,28 @@ ags_solver_matrix_solve_all_by_column(AgsSolverMatrix *solver_matrix,
 void
 ags_solver_matrix_solve_default(AgsSolverMatrix *solver_matrix)
 {
-  guint *nth_column;
-
+  GList *start_solver_path, *solver_path;
+  
   guint column_count;
-  guint column_size;
   guint i, i_stop;
   guint j;
 
   g_return_if_fail(AGS_IS_SOLVER_MATRIX(solver_matrix));
   
   column_count = ags_solver_matrix_get_column_count(solver_matrix);
+  
+  solver_path =
+    start_solver_path = ags_solver_matrix_get_solver_path(solver_matrix);
 
-  column_size = (column_count - 1) * (column_count - 2) / 2;
+  g_message("column_count = %d, solver_path[%d]", column_count, g_list_length(start_solver_path));
 
-  nth_column = g_malloc(column_size * sizeof(guint));
+  while(solver_path != NULL){
+    ags_solver_matrix_eliminate(solver_matrix,
+				ags_solver_path_get_nth_column(solver_path->data),
+				ags_solver_path_get_nth_row_a(solver_path->data), ags_solver_path_get_nth_row_b(solver_path->data));
 
-  g_message("column_count = %d, column_size = %d", column_count, column_size);
-
-  i_stop = column_size;
-
-  for(i = 0, j = 0; i < i_stop; i++, j++){
-    if(j == column_count - 2){
-      j = 0;
-    }
-
-    if(i % (column_count - 2)  == column_count - 2){
-      j++;
-    }
-
-    if(i == j){
-      j++;
-    }
-    
-    //    nth_column[i] = ((column_count - 1) * (guint) floor((double) i / (double) (column_count - 1)) - (i - ((column_count - 1) * (guint) floor((double) i / (double) (column_count - 1)))) + 1) % (column_count - 1);
-    nth_column[i] = j;
-
-    g_message("nth_column[i] = %d", nth_column[i]);
+    solver_path = solver_path->next;
   }
-
-  ags_solver_matrix_solve_all_by_column(solver_matrix,
-					nth_column, column_size);
-}
-
-/**
- * ags_solver_matrix_solve_symbolic:
- * @solver_matrix: the #AgsSolverMatrix
- *
- * Symbolic solve.
- * 
- * Since: 5.5.1 
- */
-void
-ags_solver_matrix_solve_symbolic(AgsSolverMatrix *solver_matrix)
-{
-  //TODO:JK: implement me
 }
 
 /**

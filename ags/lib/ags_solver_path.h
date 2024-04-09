@@ -39,7 +39,9 @@ struct _AgsSolverPath
 
 GType ags_solver_path_get_type(void);
 
-AgsSolverPath* ags_solver_path_alloc();
+AgsSolverPath* ags_solver_path_alloc(guint nth_column,
+				     guint nth_row_a,
+				     guint nth_row_b);
 
 gpointer ags_solver_path_copy(AgsSolverPath *ptr);
 void ags_solver_path_free(AgsSolverPath *ptr);

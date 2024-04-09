@@ -486,7 +486,7 @@ ags_window_notify_default_width_callback(GObject *gobject,
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   /* adjustment */
-  adjustment = gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->hscrollbar);
+  adjustment = gtk_scrollbar_get_adjustment(composite_editor->notation_edit->hscrollbar);
 
   /* allocation */
   gtk_widget_get_allocation(GTK_WIDGET(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->drawing_area),
@@ -603,7 +603,7 @@ ags_window_notify_default_height_callback(GObject *gobject,
   ags_notation_edit_reset_vscrollbar(composite_editor->notation_edit->edit);
 
   /* adjustment */
-  adjustment = gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->vscrollbar);
+  adjustment = gtk_scrollbar_get_adjustment(composite_editor->notation_edit->vscrollbar);
 
   piano_adjustment = gtk_scrolled_window_get_vadjustment(AGS_SCROLLED_PIANO(composite_editor->notation_edit->edit_control)->scrolled_window);
 
@@ -674,7 +674,7 @@ ags_window_notify_maximized_callback(GObject *gobject,
 			    &allocation);
 
   /* adjustment */
-  adjustment = gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->hscrollbar);
+  adjustment = gtk_scrollbar_get_adjustment(composite_editor->notation_edit->hscrollbar);
 
   /* zoom */
   composite_toolbar = composite_editor->toolbar;
@@ -699,7 +699,7 @@ ags_window_notify_maximized_callback(GObject *gobject,
   /* adjustment */
   piano_adjustment = gtk_scrolled_window_get_vadjustment(AGS_SCROLLED_PIANO(composite_editor->notation_edit->edit_control)->scrolled_window);
   
-  adjustment = gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->vscrollbar);
+  adjustment = gtk_scrollbar_get_adjustment(composite_editor->notation_edit->vscrollbar);
 
   /* get key count */
   key_count = AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->key_count;

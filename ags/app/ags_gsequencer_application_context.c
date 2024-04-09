@@ -3079,28 +3079,23 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
   varea_height = (key_count * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_height);
 
   /*  */
-  adjustment = gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->vscrollbar);
+  adjustment = gtk_scrollbar_get_adjustment(composite_editor->notation_edit->vscrollbar);
 
   if(varea_height - allocation.height > 0){
     gtk_adjustment_set_upper(adjustment,
 			     (gdouble) (varea_height - allocation.height));
 
-    if(varea_height - allocation.height > 0){
-      gtk_adjustment_set_upper(adjustment,
-			       (gdouble) (varea_height - allocation.height));
-
-      if(gtk_adjustment_get_value(adjustment) + allocation.height > gtk_adjustment_get_upper(adjustment)){
-	gtk_adjustment_set_value(adjustment,
-				 varea_height - allocation.height);
-      }
-    }else{
+    if(gtk_adjustment_get_value(adjustment) + allocation.height > gtk_adjustment_get_upper(adjustment)){
       gtk_adjustment_set_value(adjustment,
-			       0.0);
+			       varea_height - allocation.height);
     }
+  }else{
+    gtk_adjustment_set_value(adjustment,
+			     0.0);
   }
   
   /*  */
-  adjustment = gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->hscrollbar);
+  adjustment = gtk_scrollbar_get_adjustment(composite_editor->notation_edit->hscrollbar);
 
   if(map_width - allocation.width > 0){
     gtk_adjustment_set_upper(adjustment,
@@ -3119,11 +3114,6 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
   piano_adjustment = gtk_scrolled_window_get_vadjustment(AGS_SCROLLED_PIANO(composite_editor->notation_edit->edit_control)->scrolled_window);
   
   adjustment = gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->vscrollbar);
-
-  /* get key count */
-  key_count = AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->key_count;
-
-  varea_height = (key_count * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_height);
 
   if(varea_height - allocation.height > 0){
     if(gtk_adjustment_get_value(adjustment) + allocation.height > gtk_adjustment_get_upper(adjustment)){

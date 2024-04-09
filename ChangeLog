@@ -1,7 +1,13 @@
+ags (6.7.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed synchronize GtkScrolledWindow of scrolled wave and automation edit box
+
 ags (6.7.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented AgsSolverPath
+	* fixed notation edit scrollbars
 
 ags (6.7.0)
 

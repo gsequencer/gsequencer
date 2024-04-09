@@ -39,6 +39,7 @@
 #include <ags/lib/ags_function.h>
 #include <ags/lib/ags_solver_matrix.h>
 #include <ags/lib/ags_solver_vector.h>
+#include <ags/lib/ags_solver_path.h>
 #include <ags/lib/ags_solver_polynomial.h>
 #include <ags/lib/ags_log.h>
 #include <ags/lib/ags_regex.h>

@@ -52,6 +52,9 @@ ags_solver_path_get_type(void)
 
 /**
  * ags_solver_path_alloc:
+ * @nth_column: the nth-column
+ * @nth_row_a: nth-row a
+ * @nth_row_b: nth-row b
  *
  * Allocate #AgsSolverPath-struct
  *
@@ -60,15 +63,17 @@ ags_solver_path_get_type(void)
  * Since: 6.7.1
  */
 AgsSolverPath*
-ags_solver_path_alloc()
+ags_solver_path_alloc(guint nth_column,
+		      guint nth_row_a,
+		      guint nth_row_b)
 {
   AgsSolverPath *ptr;
 
   ptr = (AgsSolverPath *) g_malloc(sizeof(AgsSolverPath));
   
-  ptr[0].nth_column = 0;
-  ptr[0].nth_row_a = 0;
-  ptr[0].nth_row_b = 0;
+  ptr[0].nth_column = nth_column;
+  ptr[0].nth_row_a = nth_row_a;
+  ptr[0].nth_row_b = nth_row_b;
 
   return(ptr);
 }
@@ -87,6 +92,10 @@ gpointer
 ags_solver_path_copy(AgsSolverPath *ptr)
 {
   AgsSolverPath *new_ptr;
+
+  if(ptr == NULL){
+    return(NULL);
+  }
   
   new_ptr = (AgsSolverPath *) g_malloc(sizeof(AgsSolverPath));
   
@@ -122,7 +131,7 @@ ags_solver_path_free(AgsSolverPath *ptr)
  * Since: 6.7.1
  */
 guint
-ags_solver_path_get_nth_colum(AgsSolverPath *solver_path)
+ags_solver_path_get_nth_column(AgsSolverPath *solver_path)
 {
   g_return_val_if_fail(solver_path != NULL, 0);
 
