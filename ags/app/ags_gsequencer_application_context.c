@@ -2804,9 +2804,11 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
   AgsExportSoundcard *export_soundcard;  
   
   GtkAdjustment *adjustment;
-  GtkAdjustment *piano_adjustment;
+  GtkAdjustment *edit_adjustment;
+  GtkAdjustment *composite_adjustment;
 
   GtkAllocation allocation;
+  GtkAllocation scrolled_window_allocation;
 
   AgsThread *audio_loop;
   AgsTaskLauncher *task_launcher;
@@ -2833,6 +2835,7 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
   guint map_width;
   guint key_count;
   double varea_height;
+  guint list_length;
   gboolean no_config;
   guint i;
 
@@ -3079,10 +3082,15 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
   varea_height = (key_count * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_height);
 
   /*  */
+  edit_adjustment = gtk_scrolled_window_get_vadjustment(AGS_SCROLLED_PIANO(composite_editor->notation_edit->edit_control)->scrolled_window);
+  
   adjustment = gtk_scrollbar_get_adjustment(composite_editor->notation_edit->vscrollbar);
 
   if(varea_height - allocation.height > 0){
     gtk_adjustment_set_upper(adjustment,
+			     (gdouble) (varea_height - allocation.height));
+
+    gtk_adjustment_set_upper(edit_adjustment,
 			     (gdouble) (varea_height - allocation.height));
 
     if(gtk_adjustment_get_value(adjustment) + allocation.height > gtk_adjustment_get_upper(adjustment)){
@@ -3109,28 +3117,8 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
     gtk_adjustment_set_value(adjustment,
 			     0.0);
   }
-
-  /* adjustment */
-  piano_adjustment = gtk_scrolled_window_get_vadjustment(AGS_SCROLLED_PIANO(composite_editor->notation_edit->edit_control)->scrolled_window);
   
-  adjustment = gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->vscrollbar);
-
-  if(varea_height - allocation.height > 0){
-    if(gtk_adjustment_get_value(adjustment) + allocation.height > gtk_adjustment_get_upper(adjustment)){
-      gtk_adjustment_set_value(adjustment,
-			       varea_height - allocation.height);
-      
-      gtk_adjustment_set_value(piano_adjustment,
-			       gtk_adjustment_get_value(adjustment));
-    }
-  }else{
-    gtk_adjustment_set_value(adjustment,
-			     0.0);
-      
-    gtk_adjustment_set_value(piano_adjustment,
-			     0.0);
-  }
-  
+  /* automation */
   automation_edit_box = ags_scrolled_automation_edit_box_get_automation_edit_box(composite_editor->automation_edit->edit);
 
   list =
@@ -3163,8 +3151,28 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
     }
   }
 
-  g_list_free(start_list);
+  list = start_list;
+
+  list_length = g_list_length(start_list);
   
+  if(list != NULL){
+    /* adjustment and allocation */
+    gtk_widget_get_allocation(GTK_WIDGET(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_editor->automation_edit->edit)->scrolled_window),
+			      &scrolled_window_allocation);
+
+    composite_adjustment = gtk_scrollbar_get_adjustment(composite_editor->automation_edit->vscrollbar);
+
+    if(list_length > 0){
+      if(gtk_adjustment_get_value(adjustment) + scrolled_window_allocation.height < gtk_adjustment_get_upper(composite_adjustment)){
+	gtk_adjustment_set_value(composite_adjustment,
+				 gtk_adjustment_get_value(adjustment));
+      }
+    }
+  }
+
+  g_list_free(start_list);
+
+  /* wave */
   wave_edit_box = ags_scrolled_wave_edit_box_get_wave_edit_box(composite_editor->wave_edit->edit);
 
   list =
@@ -3197,6 +3205,25 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
     }
   }
 
+  list = start_list;
+
+  list_length = g_list_length(start_list);
+  
+  if(list != NULL){
+    /* adjustment and allocation */
+    gtk_widget_get_allocation(GTK_WIDGET(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->scrolled_window),
+			      &scrolled_window_allocation);
+
+    composite_adjustment = gtk_scrollbar_get_adjustment(composite_editor->automation_edit->vscrollbar);
+
+    if(list_length > 0){
+      if(gtk_adjustment_get_value(adjustment) + scrolled_window_allocation.height < gtk_adjustment_get_upper(composite_adjustment)){
+	gtk_adjustment_set_value(composite_adjustment,
+				 gtk_adjustment_get_value(adjustment));
+      }
+    }
+  }
+  
   g_list_free(start_list);
   
   /* AgsExportWindow */

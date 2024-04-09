@@ -466,6 +466,7 @@ ags_window_notify_default_width_callback(GObject *gobject,
   AgsApplicationContext *application_context;
 
   GtkAdjustment *adjustment;
+  GtkAdjustment *composite_adjustment;
 
   GtkAllocation allocation;
 
@@ -475,6 +476,7 @@ ags_window_notify_default_width_callback(GObject *gobject,
   double zoom_factor, zoom;
   double zoom_correction;
   guint map_width;
+  guint list_length;
   
   application_context = ags_application_context_get_instance();
 
@@ -531,6 +533,9 @@ ags_window_notify_default_width_callback(GObject *gobject,
 			      &allocation);
 
     adjustment = gtk_scrollbar_get_adjustment(composite_editor->automation_edit->hscrollbar);
+
+    gtk_adjustment_set_upper(adjustment,
+			     (gdouble) (map_width - allocation.width));
 
     if(map_width - allocation.width > 0){
       if(gtk_adjustment_get_value(adjustment) + allocation.width > gtk_adjustment_get_upper(adjustment)){
@@ -585,16 +590,23 @@ ags_window_notify_default_height_callback(GObject *gobject,
 					  gpointer user_data)
 {
   AgsCompositeEditor *composite_editor;
+  AgsAutomationEditBox *automation_edit_box;
+  AgsWaveEditBox *wave_edit_box;
   
   GtkAdjustment *adjustment;
-  GtkAdjustment *piano_adjustment;
+  GtkAdjustment *edit_adjustment;  
+  GtkAdjustment *composite_adjustment;
 
   GtkAllocation allocation;
+  GtkAllocation scrolled_window_allocation;
 
   AgsApplicationContext *application_context;
+
+  GList *start_list, *list;
   
   guint key_count;
   double varea_height;
+  guint list_length;
 
   application_context = ags_application_context_get_instance();
 
@@ -605,7 +617,7 @@ ags_window_notify_default_height_callback(GObject *gobject,
   /* adjustment */
   adjustment = gtk_scrollbar_get_adjustment(composite_editor->notation_edit->vscrollbar);
 
-  piano_adjustment = gtk_scrolled_window_get_vadjustment(AGS_SCROLLED_PIANO(composite_editor->notation_edit->edit_control)->scrolled_window);
+  edit_adjustment = gtk_scrolled_window_get_vadjustment(AGS_SCROLLED_PIANO(composite_editor->notation_edit->edit_control)->scrolled_window);
 
   /* allocation */
   gtk_widget_get_allocation(GTK_WIDGET(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->drawing_area),
@@ -617,20 +629,73 @@ ags_window_notify_default_height_callback(GObject *gobject,
   varea_height = (key_count * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_height);
 
   if(varea_height - allocation.height > 0){
+    gtk_adjustment_set_upper(adjustment,
+			     (gdouble) (varea_height - allocation.height));
+
     if(gtk_adjustment_get_value(adjustment) + allocation.height > gtk_adjustment_get_upper(adjustment)){
       gtk_adjustment_set_value(adjustment,
 			       varea_height - allocation.height);
       
-      gtk_adjustment_set_value(piano_adjustment,
+      gtk_adjustment_set_value(edit_adjustment,
 			       gtk_adjustment_get_value(adjustment));
     }
   }else{
     gtk_adjustment_set_value(adjustment,
 			     0.0);
       
-    gtk_adjustment_set_value(piano_adjustment,
+    gtk_adjustment_set_value(edit_adjustment,
 			     0.0);
   }
+
+  /* automation edit box */
+  automation_edit_box = ags_scrolled_automation_edit_box_get_automation_edit_box(composite_editor->automation_edit->edit);
+
+  list =
+    start_list = ags_automation_edit_box_get_automation_edit(automation_edit_box);
+
+  list_length = g_list_length(start_list);
+  
+  if(list != NULL){
+    /* adjustment and allocation */
+    gtk_widget_get_allocation(GTK_WIDGET(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_editor->automation_edit->edit)->scrolled_window),
+			      &scrolled_window_allocation);
+
+    composite_adjustment = gtk_scrollbar_get_adjustment(composite_editor->automation_edit->vscrollbar);
+
+    if(list_length > 0){
+      if(gtk_adjustment_get_value(adjustment) + scrolled_window_allocation.height < gtk_adjustment_get_upper(composite_adjustment)){
+	gtk_adjustment_set_value(composite_adjustment,
+				 gtk_adjustment_get_value(adjustment));
+      }
+    }
+  }
+
+  g_list_free(start_list);
+
+  /* wave edit box */
+  wave_edit_box = ags_scrolled_wave_edit_box_get_wave_edit_box(composite_editor->wave_edit->edit);
+
+  list =
+    start_list = ags_wave_edit_box_get_wave_edit(wave_edit_box);
+
+  list_length = g_list_length(start_list);
+  
+  if(list != NULL){
+    /* adjustment and allocation */
+    gtk_widget_get_allocation(GTK_WIDGET(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->scrolled_window),
+			      &scrolled_window_allocation);
+
+    composite_adjustment = gtk_scrollbar_get_adjustment(composite_editor->wave_edit->vscrollbar);
+
+    if(list_length > 0){
+      if(gtk_adjustment_get_value(adjustment) + scrolled_window_allocation.height < gtk_adjustment_get_upper(composite_adjustment)){
+	gtk_adjustment_set_value(composite_adjustment,
+				 gtk_adjustment_get_value(adjustment));
+      }
+    }
+  }
+
+  g_list_free(start_list);
 }
 
 void
@@ -644,9 +709,11 @@ ags_window_notify_maximized_callback(GObject *gobject,
   AgsWaveEditBox *wave_edit_box;
   
   GtkAdjustment *adjustment;
-  GtkAdjustment *piano_adjustment;
+  GtkAdjustment *edit_adjustment;
+  GtkAdjustment *composite_adjustment;
 
   GtkAllocation allocation;
+  GtkAllocation scrolled_window_allocation;
 
   AgsApplicationContext *application_context;
 
@@ -658,6 +725,7 @@ ags_window_notify_maximized_callback(GObject *gobject,
   guint map_width;
   guint key_count;
   double varea_height;
+  guint list_length;
 
   application_context = ags_application_context_get_instance();
 
@@ -697,7 +765,7 @@ ags_window_notify_maximized_callback(GObject *gobject,
   }
 
   /* adjustment */
-  piano_adjustment = gtk_scrolled_window_get_vadjustment(AGS_SCROLLED_PIANO(composite_editor->notation_edit->edit_control)->scrolled_window);
+  edit_adjustment = gtk_scrolled_window_get_vadjustment(AGS_SCROLLED_PIANO(composite_editor->notation_edit->edit_control)->scrolled_window);
   
   adjustment = gtk_scrollbar_get_adjustment(composite_editor->notation_edit->vscrollbar);
 
@@ -711,17 +779,18 @@ ags_window_notify_maximized_callback(GObject *gobject,
       gtk_adjustment_set_value(adjustment,
 			       varea_height - allocation.height);
       
-      gtk_adjustment_set_value(piano_adjustment,
+      gtk_adjustment_set_value(edit_adjustment,
 			       gtk_adjustment_get_value(adjustment));
     }
   }else{
     gtk_adjustment_set_value(adjustment,
 			     0.0);
       
-    gtk_adjustment_set_value(piano_adjustment,
+    gtk_adjustment_set_value(edit_adjustment,
 			     0.0);
   }
   
+  /* automation edit box */
   automation_edit_box = ags_scrolled_automation_edit_box_get_automation_edit_box(composite_editor->automation_edit->edit);
 
   list =
@@ -754,8 +823,28 @@ ags_window_notify_maximized_callback(GObject *gobject,
     }
   }
 
+  list = start_list;
+
+  list_length = g_list_length(start_list);
+  
+  if(list != NULL){
+    /* adjustment and allocation */
+    gtk_widget_get_allocation(GTK_WIDGET(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_editor->automation_edit->edit)->scrolled_window),
+			      &scrolled_window_allocation);
+
+    composite_adjustment = gtk_scrollbar_get_adjustment(composite_editor->automation_edit->vscrollbar);
+
+    if(list_length > 0){
+      if(gtk_adjustment_get_value(adjustment) + scrolled_window_allocation.height < gtk_adjustment_get_upper(composite_adjustment)){
+	gtk_adjustment_set_value(composite_adjustment,
+				 gtk_adjustment_get_value(adjustment));
+      }
+    }
+  }
+
   g_list_free(start_list);
   
+  /* wave edit box */
   wave_edit_box = ags_scrolled_wave_edit_box_get_wave_edit_box(composite_editor->wave_edit->edit);
 
   list =
@@ -785,6 +874,25 @@ ags_window_notify_maximized_callback(GObject *gobject,
     }else{
       gtk_adjustment_set_value(adjustment,
 			       0.0);
+    }
+  }
+
+  list = start_list;
+
+  list_length = g_list_length(start_list);
+  
+  if(list != NULL){
+    /* adjustment and allocation */
+    gtk_widget_get_allocation(GTK_WIDGET(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->scrolled_window),
+			      &scrolled_window_allocation);
+
+    composite_adjustment = gtk_scrollbar_get_adjustment(composite_editor->wave_edit->vscrollbar);
+
+    if(list_length > 0){
+      if(gtk_adjustment_get_value(adjustment) + scrolled_window_allocation.height < gtk_adjustment_get_upper(composite_adjustment)){
+	gtk_adjustment_set_value(composite_adjustment,
+				 gtk_adjustment_get_value(adjustment));
+      }
     }
   }
 
