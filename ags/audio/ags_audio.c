@@ -5949,6 +5949,8 @@ ags_audio_get_audio_channels(AgsAudio *audio)
     return(0);
   }
 
+  audio_channels = 0;
+  
   g_object_get(audio,
 	       "audio-channels", &audio_channels,
 	       NULL);
