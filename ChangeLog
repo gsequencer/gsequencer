@@ -2,6 +2,7 @@ ags (6.7.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed synchronize GtkScrolledWindow of scrolled wave and automation edit box
+	* fixed ags_fx_dssi_audio_load_port() infinite loop
 
 ags (6.7.1)
 

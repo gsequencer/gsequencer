@@ -1569,6 +1569,9 @@ ags_fx_dssi_audio_load_plugin(AgsFxDssiAudio *fx_dssi_audio)
   AgsDssiPlugin *dssi_plugin;
 
   gchar *filename, *effect;
+
+  guint i;
+  gboolean is_live_instrument;
   
   GRecMutex *recall_mutex;
 
@@ -1602,32 +1605,27 @@ ags_fx_dssi_audio_load_plugin(AgsFxDssiAudio *fx_dssi_audio)
     
     return;
   }
+  
+  is_live_instrument = ags_fx_dssi_audio_test_flags(fx_dssi_audio,
+						    AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT);
     
-  if(dssi_plugin != NULL){
-    guint i;
-    gboolean is_live_instrument;
+  /* set dssi plugin */    
+  g_rec_mutex_lock(recall_mutex);
 
-    is_live_instrument = ags_fx_dssi_audio_test_flags(fx_dssi_audio,
-						      AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT);
-    
-    /* set dssi plugin */    
-    g_rec_mutex_lock(recall_mutex);
+  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    AgsFxDssiAudioScopeData *scope_data;
 
-    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
-      AgsFxDssiAudioScopeData *scope_data;
-
-      scope_data = fx_dssi_audio->scope_data[i];
+    scope_data = fx_dssi_audio->scope_data[i];
       
-      if(i == AGS_SOUND_SCOPE_PLAYBACK ||
-	 i == AGS_SOUND_SCOPE_NOTATION ||
-	 i == AGS_SOUND_SCOPE_MIDI){
-	ags_fx_dssi_audio_scope_data_load_plugin(fx_dssi_audio,
-						 scope_data);
-      }
+    if(i == AGS_SOUND_SCOPE_PLAYBACK ||
+       i == AGS_SOUND_SCOPE_NOTATION ||
+       i == AGS_SOUND_SCOPE_MIDI){
+      ags_fx_dssi_audio_scope_data_load_plugin(fx_dssi_audio,
+					       scope_data);
     }
-    
-    g_rec_mutex_unlock(recall_mutex);
   }
+    
+  g_rec_mutex_unlock(recall_mutex);
 
   ags_recall_set_state_flags(AGS_RECALL(fx_dssi_audio),
 			     AGS_SOUND_STATE_PLUGIN_LOADED);
@@ -1931,6 +1929,8 @@ ags_fx_dssi_audio_load_port(AgsFxDssiAudio *fx_dssi_audio)
 	output_port_count++;
       }
     }  
+
+    plugin_port = plugin_port->next;      
   }
   
   g_rec_mutex_lock(recall_mutex);
