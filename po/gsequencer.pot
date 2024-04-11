@@ -18,9 +18,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 6.7.1\n"
+"Project-Id-Version: gsequencer 6.7.2\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-04-06 14:14+0200\n"
+"POT-Creation-Date: 2024-04-11 13:30+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -116,8 +116,8 @@ msgstr ""
 #: ags/app/ags_machine_callbacks.c:1040
 #: ags/app/editor/ags_pattern_envelope.c:276
 #: ags/app/editor/ags_envelope_editor.c:205
-#: ags/app/machine/ags_live_lv2_bridge.c:498
-#: ags/app/machine/ags_lv2_bridge.c:486 ags/app/machine/ags_sf2_synth.c:443
+#: ags/app/machine/ags_live_lv2_bridge.c:496
+#: ags/app/machine/ags_lv2_bridge.c:484 ags/app/machine/ags_sf2_synth.c:443
 #: ags/app/machine/ags_ffplayer.c:364
 msgid "preset"
 msgstr ""
@@ -207,21 +207,21 @@ msgstr ""
 msgid "bulk input"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application_context.c:3738
+#: ags/app/ags_gsequencer_application_context.c:3765
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application_context.c:3748
+#: ags/app/ags_gsequencer_application_context.c:3775
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application_context.c:3984
+#: ags/app/ags_gsequencer_application_context.c:4011
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application_context.c:3994
+#: ags/app/ags_gsequencer_application_context.c:4021
 msgid "unknown sequencer backend - NULL"
 msgstr ""
 
@@ -285,10 +285,10 @@ msgstr ""
 msgid "max precision of threads [Hz]"
 msgstr ""
 
-#: ags/app/ags_bulk_member.c:887 ags/app/machine/ags_dssi_bridge.c:421
-#: ags/app/machine/ags_live_dssi_bridge.c:424
-#: ags/app/machine/ags_live_vst3_bridge.c:481
-#: ags/app/machine/ags_vst3_bridge.c:461
+#: ags/app/ags_bulk_member.c:887 ags/app/machine/ags_dssi_bridge.c:419
+#: ags/app/machine/ags_live_dssi_bridge.c:422
+#: ags/app/machine/ags_live_vst3_bridge.c:479
+#: ags/app/machine/ags_vst3_bridge.c:459
 msgid "Plugin file not present"
 msgstr ""
 
@@ -1317,11 +1317,11 @@ msgstr ""
 msgid "mute"
 msgstr ""
 
-#: ags/app/machine/ags_live_lv2_bridge.c:472
-#: ags/app/machine/ags_dssi_bridge.c:351 ags/app/machine/ags_lv2_bridge.c:461
-#: ags/app/machine/ags_live_dssi_bridge.c:351
-#: ags/app/machine/ags_live_vst3_bridge.c:358
-#: ags/app/machine/ags_sf2_synth.c:436 ags/app/machine/ags_vst3_bridge.c:340
+#: ags/app/machine/ags_live_lv2_bridge.c:470
+#: ags/app/machine/ags_dssi_bridge.c:349 ags/app/machine/ags_lv2_bridge.c:459
+#: ags/app/machine/ags_live_dssi_bridge.c:349
+#: ags/app/machine/ags_live_vst3_bridge.c:356
+#: ags/app/machine/ags_sf2_synth.c:436 ags/app/machine/ags_vst3_bridge.c:338
 msgid "program"
 msgstr ""
 
@@ -1625,8 +1625,8 @@ msgstr ""
 msgid "open Soundfont2 file"
 msgstr ""
 
-#: ags/app/machine/ags_live_vst3_bridge.c:435
-#: ags/app/machine/ags_vst3_bridge.c:415
+#: ags/app/machine/ags_live_vst3_bridge.c:433
+#: ags/app/machine/ags_vst3_bridge.c:413
 msgid "show VST3 UI"
 msgstr ""
 

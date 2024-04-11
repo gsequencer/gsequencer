@@ -1929,6 +1929,8 @@ ags_fx_dssi_audio_load_port(AgsFxDssiAudio *fx_dssi_audio)
 	output_port_count++;
       }
     }  
+
+    plugin_port = plugin_port->next;      
   }
   
   g_rec_mutex_lock(recall_mutex);
