@@ -1195,9 +1195,16 @@ void
 ags_recall_container_remove(AgsRecallContainer *recall_container,
 			    AgsRecall *recall)
 {
+  GList *list_start, *list;
+
+  GRecMutex *recall_container_mutex;
+  
   if(!AGS_IS_RECALL_CONTAINER(recall_container)){
     return;
   }
+
+  /* get recall container mutex */
+  recall_container_mutex = AGS_RECALL_CONTAINER_GET_OBJ_MUTEX(recall_container);
   
   if(AGS_IS_RECALL_AUDIO(recall)){
     if(recall == recall_container->recall_audio){      
@@ -1212,24 +1219,131 @@ ags_recall_container_remove(AgsRecallContainer *recall_container,
   }else if(AGS_IS_RECALL_AUDIO_RUN(recall)){
     if(g_list_find(recall_container->recall_audio_run,
 		   recall) != NULL){
+      AgsRecallID *recall_id;
+
+      guint recall_flags;
+      
+      GRecMutex *recall_mutex;
+
       g_object_set(recall,
 		   "recall-container", NULL,
 		   NULL);
 
       recall_container->recall_audio_run = g_list_remove(recall_container->recall_audio_run,
 							 recall);
+
+      /* get recall mutex */
+      recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
+
+      /* set recall audio run - recall channel run */      
+      g_rec_mutex_lock(recall_mutex);
+
+      recall_flags = recall->flags;
+      
+      g_rec_mutex_unlock(recall_mutex);
+
+      recall_id = NULL;
+      
+      g_object_get(recall,
+		   "recall-id", &recall_id,
+		   NULL);
+      
+      g_rec_mutex_lock(recall_container_mutex);
+
+      list =
+	list_start = g_list_copy_deep(recall_container->recall_channel_run,
+				      (GCopyFunc) g_object_ref,
+				      NULL);
+
+      g_rec_mutex_unlock(recall_container_mutex);
+
+      if(recall_id != NULL){
+	AgsRecyclingContext *recycling_context;
+	
+	g_object_get(recall_id,
+		     "recycling-context", &recycling_context,
+		     NULL);
+
+	while((list = ags_recall_find_recycling_context(list,
+							(GObject *) recycling_context)) != NULL){
+	  g_object_set(list->data,
+		       "recall-audio-run", NULL,
+		       NULL);
+
+	  list = list->next;
+	}
+
+	g_object_unref(recycling_context);
+      }else if((AGS_RECALL_TEMPLATE & (recall_flags)) != 0){      
+	while((list = ags_recall_find_template(list)) != NULL){
+	  g_object_set(list->data,
+		       "recall-audio-run", NULL,
+		       NULL);
+
+	  list = list->next;
+	}
+      }
+      
+      g_object_set(recall,
+		   "recall-audio", NULL,
+		   NULL);
+
       g_object_unref(recall);
+
+      g_list_free_full(list_start,
+		       g_object_unref);
     }
   }else if(AGS_IS_RECALL_CHANNEL(recall)){
     if(g_list_find(recall_container->recall_channel,
 		   recall) != NULL){
+      AgsChannel *source;
+
+      GList *list_start, *list;
+
+      GRecMutex *recall_mutex;
+
       g_object_set(recall,
 		   "recall-container", NULL,
 		   NULL);
       
       recall_container->recall_channel = g_list_remove(recall_container->recall_channel,
 						       recall);
+
+      /* get recall mutex */
+      recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
+
+      /* set recall channel - recall channel run */
+      g_rec_mutex_lock(recall_mutex);
+
+      source = AGS_RECALL_CHANNEL(recall)->source;
+
+      g_rec_mutex_unlock(recall_mutex);
+      
+      g_rec_mutex_lock(recall_container_mutex);
+
+      list =
+	list_start = g_list_copy_deep(recall_container->recall_channel_run,
+				      (GCopyFunc) g_object_ref,
+				      NULL);
+
+      g_rec_mutex_unlock(recall_container_mutex);
+
+      while((list = ags_recall_find_provider(list, (GObject *) source)) != NULL){
+	g_object_set(G_OBJECT(list->data),
+		     "recall-channel", NULL,
+		     NULL);
+
+	list = list->next;
+      }
+
+      g_object_set(recall,
+		   "recall-audio", NULL,
+		   NULL);
+
       g_object_unref(recall);
+
+      g_list_free_full(list_start,
+		       g_object_unref);
     }
   }else if(AGS_IS_RECALL_CHANNEL_RUN(recall)){
     if(g_list_find(recall_container->recall_channel_run,
@@ -1240,6 +1354,12 @@ ags_recall_container_remove(AgsRecallContainer *recall_container,
       
       recall_container->recall_channel_run = g_list_remove(recall_container->recall_channel_run,
 							   recall);
+
+      g_object_set(recall,
+		   "recall-audio", NULL,
+		   "recall-channel", NULL,
+		   NULL);
+
       g_object_unref(recall);
     }
   }
