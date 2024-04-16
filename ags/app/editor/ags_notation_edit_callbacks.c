@@ -78,7 +78,7 @@ ags_notation_edit_update_ui_callback(GObject *ui_provider,
   width = (double) gtk_widget_get_width(notation_edit->drawing_area);
   
   if(x < gtk_adjustment_get_value(hscrollbar_adjustment) ||
-     x > gtk_adjustment_get_value(hscrollbar_adjustment) + (zoom_factor * width * (3.0 / 4.0))){
+     x > gtk_adjustment_get_value(hscrollbar_adjustment) + (width * (3.0 / 4.0))){
     gtk_adjustment_set_value(hscrollbar_adjustment,
 			     x);
   }else{

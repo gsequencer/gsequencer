@@ -1,3 +1,8 @@
+ags (6.7.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed auto-scroll with zoom
+
 ags (6.7.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
