@@ -1,3 +1,9 @@
+ags (6.8.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: added --enable-snap-sandbox configure switch
+	* TODO:JK: added --enable-flatpak-sandbox configure switch
+
 ags (6.7.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
