@@ -220,6 +220,9 @@ ags_dssi_plugin_class_init(AgsDssiPluginClass *dssi_plugin)
 void
 ags_dssi_plugin_init(AgsDssiPlugin *dssi_plugin)
 {
+  ags_base_plugin_set_flags(AGS_BASE_PLUGIN(dssi_plugin),
+  			    AGS_BASE_PLUGIN_IS_INSTRUMENT);
+  
   dssi_plugin->unique_id = 0;
   dssi_plugin->program = NULL;
 }
@@ -751,7 +754,8 @@ ags_dssi_plugin_real_change_program(AgsDssiPlugin *dssi_plugin,
   g_rec_mutex_unlock(base_plugin_mutex);
 
   /* change program */
-  if(select_program != NULL){
+  if(ladspa_handle != NULL &&
+     select_program != NULL){
     select_program((void *) ladspa_handle,
 		   (unsigned long) bank_index,
 		   (unsigned long) program_index);

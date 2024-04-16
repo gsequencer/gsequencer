@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1711,6 +1711,9 @@ ags_recall_dispose(GObject *gobject)
   recall = AGS_RECALL(gobject);
 
   ags_connectable_disconnect(AGS_CONNECTABLE(recall));
+
+  ags_reset_recall_staging_remove(ags_reset_recall_staging_get_instance(),
+				  recall);  
   
   /* recall container */
   if(recall->recall_container != NULL){
@@ -1785,18 +1788,18 @@ ags_recall_dispose(GObject *gobject)
   /* children */
   if(recall->children != NULL){
     list =
-      start_list = recall->children;
-
-    recall->children = NULL;
+      start_list = g_list_copy(recall->children);
 
     while(list != NULL){      
       g_object_run_dispose(G_OBJECT(list->data));
-
+      g_object_unref(G_OBJECT(list->data));
+      
       list = list->next;
     }
 
-    g_list_free_full(start_list,
-		     g_object_unref);
+    recall->children = NULL;
+
+    g_list_free(start_list);
   }
 
   /* call parent */
@@ -1814,7 +1817,7 @@ ags_recall_finalize(GObject *gobject)
   
   recall = AGS_RECALL(gobject);
 
-#ifdef AGS_DEBUG
+#if 0
   g_message("finalize %s", G_OBJECT_TYPE_NAME(gobject));
 #endif
 
@@ -1840,6 +1843,9 @@ ags_recall_finalize(GObject *gobject)
 
   g_free(ids);
 #endif
+  
+  ags_reset_recall_staging_remove(ags_reset_recall_staging_get_instance(),
+				  recall);
 
   g_free(recall->filename);
   g_free(recall->effect);
@@ -1937,18 +1943,18 @@ ags_recall_finalize(GObject *gobject)
 
   if(recall->children != NULL){
     list =
-      start_list = recall->children;
-
-    recall->children = NULL;
+      start_list = g_list_copy(recall->children);
 
     while(list != NULL){      
       g_object_run_dispose(G_OBJECT(list->data));
+      g_object_unref(G_OBJECT(list->data));
 
       list = list->next;
     }
 
-    g_list_free_full(start_list,
-		     g_object_unref);
+    recall->children = NULL;
+
+    g_list_free(start_list);
   }
   
   /* call parent */
@@ -6104,15 +6110,15 @@ ags_recall_real_duplicate(AgsRecall *recall,
   }
   
   if(n_params[0] == 0){
-    parameter_name = (gchar **) malloc(8 * sizeof(gchar *));
+    parameter_name = (gchar **) malloc(7 * sizeof(gchar *));
     value = g_new0(GValue,
-		   7);
+		   6);
   }else{
     parameter_name = (gchar **) realloc(parameter_name,
-					(n_params[0] + 8) * sizeof(gchar *));
+				 	(n_params[0] + 7) * sizeof(gchar *));
     value = g_renew(GValue,
 		    value,
-		    n_params[0] + 7);
+		    n_params[0] + 6);
   }
 
   /* set parameter name and value */
@@ -6146,21 +6152,15 @@ ags_recall_real_duplicate(AgsRecall *recall,
 	       G_TYPE_OBJECT);
   g_value_set_object(&(value[n_params[0] + 4]), recall_id);
     
-  parameter_name[n_params[0] + 5] = "recall-container";
+  parameter_name[n_params[0] + 5] = "child-type";
   memset(&(value[n_params[0] + 5]), 0, sizeof(GValue));
   g_value_init(&(value[n_params[0] + 5]),
-	       G_TYPE_OBJECT);
-  g_value_set_object(&(value[n_params[0] + 5]), recall_container);
-
-  parameter_name[n_params[0] + 6] = "child-type";
-  memset(&(value[n_params[0] + 6]), 0, sizeof(GValue));
-  g_value_init(&(value[n_params[0] + 6]),
 	       G_TYPE_GTYPE);
-  g_value_set_gtype(&(value[n_params[0] + 6]), child_type);
+  g_value_set_gtype(&(value[n_params[0] + 5]), child_type);
 
-  parameter_name[n_params[0] + 7] = NULL;
+  parameter_name[n_params[0] + 6] = NULL;
 
-  n_params[0] += 7;
+  n_params[0] += 6;
   
 #if HAVE_GLIB_2_54    
   copy_recall = g_object_new_with_properties(G_OBJECT_TYPE(recall),
@@ -6187,6 +6187,9 @@ ags_recall_real_duplicate(AgsRecall *recall,
   }
   
   g_free(value);
+
+  ags_recall_container_add(recall_container,
+			   copy_recall);
 
   /* apply flags */
   ags_recall_set_flags(copy_recall,

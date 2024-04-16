@@ -9828,6 +9828,20 @@ ags_channel_real_init_recall(AgsChannel *channel,
     list =
       list_start = g_list_reverse(list_start);
   }
+
+#if 0
+  g_message("channel[0x%x] recall length -> %d",
+	    channel,
+	    g_list_length(list_start));
+
+  g_message("channel[0x%x] recall ID length -> %d",
+	    channel,
+	    g_list_length(channel->recall_id));
+
+  g_message("channel[0x%x] recycling context length -> %d",
+	    channel,
+	    g_list_length(channel->recycling_context));
+#endif
   
   /* init  */
   staging_flags = staging_mask & staging_flags;
@@ -10530,6 +10544,8 @@ ags_channel_real_cleanup_recall(AgsChannel *channel,
   
   while(match != NULL){
     recall = AGS_RECALL(match->data);
+    
+    //    g_message("dispose %s", G_OBJECT_TYPE_NAME(recall));
     
     /* destroy */
     ags_connectable_disconnect(AGS_CONNECTABLE(recall));

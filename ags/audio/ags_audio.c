@@ -5949,6 +5949,8 @@ ags_audio_get_audio_channels(AgsAudio *audio)
     return(0);
   }
 
+  audio_channels = 0;
+  
   g_object_get(audio,
 	       "audio-channels", &audio_channels,
 	       NULL);
@@ -13324,6 +13326,20 @@ ags_audio_real_init_recall(AgsAudio *audio,
       list_start = g_list_reverse(list_start);
   }
   
+#if 0
+  g_message("audio[0x%x] recall length -> %d",
+	    audio,
+	    g_list_length(list_start));
+
+  g_message("audio[0x%x] recall ID length -> %d",
+	    audio,
+	    g_list_length(audio->recall_id));
+
+  g_message("audio[0x%x] recycling context length -> %d",
+	    audio,
+	    g_list_length(audio->recycling_context));
+#endif
+  
   /* init  */
   staging_flags = staging_mask & staging_flags;
   
@@ -14031,6 +14047,8 @@ ags_audio_real_cleanup_recall(AgsAudio *audio,
   while(match != NULL){
     recall = AGS_RECALL(match->data);
 
+    //    g_message("dispose %s", G_OBJECT_TYPE_NAME(recall));
+    
     /* destroy */
     ags_connectable_disconnect(AGS_CONNECTABLE(recall));
     g_object_run_dispose((GObject *) recall);
