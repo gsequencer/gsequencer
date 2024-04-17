@@ -24,7 +24,11 @@
 
 #undef AGS_OSXAPI
 
+#undef AGS_FLATPAK_SANDBOX
+
 #undef AGS_MACOS_SANDBOX
+
+#undef AGS_SNAP_SANDBOX
 
 #undef AGS_WITH_ALSA
 

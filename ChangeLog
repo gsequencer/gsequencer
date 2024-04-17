@@ -1,3 +1,30 @@
+ags (6.8.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_file_widget_real_refresh() test directory permissions
+	* fixed ags_file_widget_value_factory_bind() test file permissions
+	* fixed AgsFileWidget root directory bug
+
+ags (6.8.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_file_widget_refresh() default filename and location while failed permission of directory
+
+ags (6.8.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed compiler error with sandbox enabled
+
+ags (6.8.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented snap sandbox
+	* implemented flatpak sandbox
+	* improved AgsFileWidget make use of XDG_*_DIR environment variables
+	* improved ags_file_widget_refresh() while directory failed to open
+	* added --enable-snap-sandbox configure switch
+	* added --enable-flatpak-sandbox configure switch
+
 ags (6.7.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

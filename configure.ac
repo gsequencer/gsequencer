@@ -8,10 +8,10 @@
 # Process this file with autoconf to produce a configure script.
 
 LT_CURRENT=6
-LT_REVISION=7
-LT_AGE=4
+LT_REVISION=8
+LT_AGE=3
 
-m4_define([ags_version], [6.7.4])
+m4_define([ags_version], [6.8.3])
 
 AC_PREREQ([2.69])
 AC_INIT([gsequencer],m4_defn([ags_version]),[jkraehemann@gmail.com])
@@ -104,9 +104,19 @@ AC_ARG_ENABLE(osx-dmg-env, [AS_HELP_STRING([--enable-osx-dmg-env],
               [enable_osx_dmg_env=no])
 
 AC_ARG_ENABLE(macos-sandbox, [AS_HELP_STRING([--enable-macos-sandbox],
-                                      [enable macos sandbox environment (default is no)])],
+                                             [enable macos sandbox environment (default is no)])],
               [],
               [enable_macos_sandbox=no])
+
+AC_ARG_ENABLE(snap-sandbox, [AS_HELP_STRING([--enable-snap-sandbox],
+                                            [enable snap sandbox environment (default is no)])],
+              [],
+              [enable_snap_sandbox=no])
+
+AC_ARG_ENABLE(flatpak-sandbox, [AS_HELP_STRING([--enable-flatpak-sandbox],
+                                               [enable flatpak sandbox environment (default is no)])],
+              [],
+              [enable_flatpak_sandbox=no])
 
 AC_ARG_ENABLE(uuid, [AS_HELP_STRING([--enable-uuid],
                                     [enable uuid (default is yes)])],
@@ -380,6 +390,18 @@ AS_IF([test "x$enable_macos_sandbox" != xno],
       AC_MSG_NOTICE([macos sandbox environment enabled])],
       [AC_MSG_NOTICE([macos sandbox environment disabled])])
 AM_CONDITIONAL([WITH_MACOS_SANDBOX], [test "x$enable_macos_sandbox" == xyes])
+
+AS_IF([test "x$enable_snap_sandbox" != xno],
+      [AC_DEFINE([AGS_SNAP_SANDBOX], [1], [snap sandbox environment enabled])
+      AC_MSG_NOTICE([snap sandbox environment enabled])],
+      [AC_MSG_NOTICE([snap sandbox environment disabled])])
+AM_CONDITIONAL([WITH_SNAP_SANDBOX], [test "x$enable_snap_sandbox" == xyes])
+
+AS_IF([test "x$enable_flatpak_sandbox" != xno],
+      [AC_DEFINE([AGS_FLATPAK_SANDBOX], [1], [flatpak sandbox environment enabled])
+      AC_MSG_NOTICE([flatpak sandbox environment enabled])],
+      [AC_MSG_NOTICE([flatpak sandbox environment disabled])])
+AM_CONDITIONAL([WITH_FLATPAK_SANDBOX], [test "x$enable_flatpak_sandbox" == xyes])
 
 AS_IF([test "x$enable_uuid" != xno],
       [PKG_CHECK_MODULES([UUID], [uuid >= 1.0.1])

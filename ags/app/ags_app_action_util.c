@@ -131,13 +131,14 @@ ags_app_action_util_open()
   AgsWindow *window;
   AgsFileDialog *file_dialog;
   AgsFileWidget *file_widget;
+  
+  AgsApplicationContext *application_context;
 
   gchar *recently_used_filename;
   gchar *bookmark_filename;
   gchar *home_path;
   gchar *sandbox_path;
-
-  AgsApplicationContext *application_context;
+  gchar *str;
 
   application_context = ags_application_context_get_instance();
 
@@ -164,7 +165,39 @@ ags_app_action_util_open()
   bookmark_filename = g_strdup_printf("%s/%s/gsequencer_app_bookmark.xml",
 				      sandbox_path,
 				      AGS_DEFAULT_DIRECTORY);
-#else
+#endif
+
+#if defined(AGS_FLATPAK_SANDBOX)
+  if((str = getenv("HOME")) != NULL){
+    sandbox_path = g_strdup_printf("%s",
+				   str);
+  }
+
+  recently_used_filename = g_strdup_printf("%s/%s/gsequencer_app_recently_used.xml",
+					   sandbox_path,
+					   AGS_DEFAULT_DIRECTORY);
+
+  bookmark_filename = g_strdup_printf("%s/%s/gsequencer_app_bookmark.xml",
+				      sandbox_path,
+				      AGS_DEFAULT_DIRECTORY);
+#endif
+
+#if defined(AGS_SNAP_SANDBOX)
+  if((str = getenv("SNAP_USER_DATA")) != NULL){
+    sandbox_path = g_strdup_printf("%s",
+				   str);
+  }
+
+  recently_used_filename = g_strdup_printf("%s/%s/gsequencer_app_recently_used.xml",
+					   sandbox_path,
+					   AGS_DEFAULT_DIRECTORY);
+
+  bookmark_filename = g_strdup_printf("%s/%s/gsequencer_app_bookmark.xml",
+				      sandbox_path,
+				      AGS_DEFAULT_DIRECTORY);
+#endif
+  
+#if !defined(AGS_MACOS_SANDBOX) && !defined(AGS_FLATPAK_SANDBOX) && !defined(AGS_SNAP_SANDBOX)
   recently_used_filename = g_strdup_printf("%s/%s/gsequencer_app_recently_used.xml",
 					   home_path,
 					   AGS_DEFAULT_DIRECTORY);
@@ -192,7 +225,25 @@ ags_app_action_util_open()
 
   ags_file_widget_set_current_path(file_widget,
 				   sandbox_path);
-#else
+#endif
+
+#if defined(AGS_FLATPAK_SANDBOX)
+  ags_file_widget_set_flags(file_widget,
+			    AGS_FILE_WIDGET_APP_SANDBOX);
+
+  ags_file_widget_set_current_path(file_widget,
+				   sandbox_path);
+#endif
+
+#if defined(AGS_SNAP_SANDBOX)
+  ags_file_widget_set_flags(file_widget,
+			    AGS_FILE_WIDGET_APP_SANDBOX);
+
+  ags_file_widget_set_current_path(file_widget,
+				   sandbox_path);
+#endif
+  
+#if !defined(AGS_MACOS_SANDBOX) && !defined(AGS_FLATPAK_SANDBOX) && !defined(AGS_SNAP_SANDBOX)
   ags_file_widget_set_current_path(file_widget,
 				   home_path);
 #endif
@@ -585,6 +636,7 @@ ags_app_action_util_save_as()
   gchar *recently_used_filename;
   gchar *home_path;
   gchar *sandbox_path;
+  gchar *str;
   
   AgsApplicationContext *application_context;
         
@@ -609,12 +661,37 @@ ags_app_action_util_save_as()
   recently_used_filename = g_strdup_printf("%s/%s/gsequencer_app_recently_used.xml",
 					   sandbox_path,
 					   AGS_DEFAULT_DIRECTORY);
-#else
+#endif
+
+#if defined(AGS_FLATPAK_SANDBOX)
+  if((str = getenv("HOME")) != NULL){
+    sandbox_path = g_strdup_printf("%s",
+				   str);
+  }
+
+  recently_used_filename = g_strdup_printf("%s/%s/gsequencer_app_recently_used.xml",
+					   sandbox_path,
+					   AGS_DEFAULT_DIRECTORY);
+#endif
+
+#if defined(AGS_SNAP_SANDBOX)
+  if((str = getenv("SNAP_USER_DATA")) != NULL){
+    sandbox_path = g_strdup_printf("%s",
+				   str);
+  }
+
+  recently_used_filename = g_strdup_printf("%s/%s/gsequencer_app_recently_used.xml",
+					   sandbox_path,
+					   AGS_DEFAULT_DIRECTORY);
+#endif
+  
+#if !defined(AGS_MACOS_SANDBOX) && !defined(AGS_FLATPAK_SANDBOX) && !defined(AGS_SNAP_SANDBOX)
   recently_used_filename = g_strdup_printf("%s/%s/gsequencer_app_recently_used.xml",
 					   home_path,
 					   AGS_DEFAULT_DIRECTORY);
 #endif
 
+  /* recently-used */
   ags_file_widget_set_recently_used_filename(file_widget,
 					     recently_used_filename);
   
@@ -626,7 +703,25 @@ ags_app_action_util_save_as()
 
   ags_file_widget_set_current_path(file_widget,
 				   sandbox_path);
-#else
+#endif
+
+#if defined(AGS_FLATPAK_SANDBOX)
+  ags_file_widget_set_flags(file_widget,
+			    AGS_FILE_WIDGET_APP_SANDBOX);
+
+  ags_file_widget_set_current_path(file_widget,
+				   sandbox_path);
+#endif
+
+#if defined(AGS_SNAP_SANDBOX)
+  ags_file_widget_set_flags(file_widget,
+			    AGS_FILE_WIDGET_APP_SANDBOX);
+
+  ags_file_widget_set_current_path(file_widget,
+				   sandbox_path);
+#endif
+  
+#if !defined(AGS_MACOS_SANDBOX) && !defined(AGS_FLATPAK_SANDBOX) && !defined(AGS_SNAP_SANDBOX)
   ags_file_widget_set_current_path(file_widget,
 				   home_path);
 #endif
