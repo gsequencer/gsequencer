@@ -3129,10 +3129,11 @@ ags_file_widget_real_refresh(AgsFileWidget *file_widget)
       filename_strv[1] = g_strdup("..");
       filename_strv[2] = NULL;
 
-      location_strv = (gchar **) g_malloc(2 * sizeof(gchar *));
+      location_strv = (gchar **) g_malloc(3 * sizeof(gchar *));
 
-      location_strv[0] = g_strdup("/");
-      location_strv[1] = NULL;
+      location_strv[0] = g_strdup(file_widget->current_path);
+      location_strv[1] = g_strdup("/");
+      location_strv[2] = NULL;
       
       if(!ags_file_widget_test_flags(file_widget, AGS_FILE_WIDGET_WITH_MULTI_SELECTION)){
 	single_filename_string_list = gtk_string_list_new(filename_strv);

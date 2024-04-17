@@ -46,6 +46,15 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="6.8.2" date="2024-04-17">
+      <description>
+	<p>
+	  Fixed AgsFileWidget default filename and location while failed
+	  permission of directory.
+	</p>
+      </description>
+    </release>
+
     <release version="6.7.3" date="2024-04-15">
       <description>
 	<p>
@@ -53,7 +62,7 @@
 	</p>
       </description>
     </release>
-
+    
     <release version="6.6.0" date="2024-03-26">
       <description>
 	<p>
