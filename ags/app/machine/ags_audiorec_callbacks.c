@@ -144,6 +144,7 @@ ags_audiorec_open_callback(GtkWidget *button, AgsAudiorec *audiorec)
   gchar *bookmark_filename;
   gchar *home_path;
   gchar *sandbox_path;
+  gchar *str;
   
   /* get application context */  
   application_context = ags_application_context_get_instance();

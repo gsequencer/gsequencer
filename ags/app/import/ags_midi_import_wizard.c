@@ -242,6 +242,7 @@ ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
   gchar *bookmark_filename;
   gchar *home_path;
   gchar *sandbox_path;
+  gchar *str;
 
   application_context = ags_application_context_get_instance();
   

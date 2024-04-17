@@ -444,6 +444,7 @@ ags_export_soundcard_file_chooser_button_callback(GtkWidget *file_chooser_button
   gchar *bookmark_filename;
   gchar *home_path;
   gchar *sandbox_path;
+  gchar *str;
   
   /* get application context */  
   application_context = ags_application_context_get_instance();

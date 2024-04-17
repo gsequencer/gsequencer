@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-04-17 08:35+0200\n"
+"POT-Creation-Date: 2024-04-17 10:45+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -266,9 +266,9 @@ msgid "override existing links"
 msgstr "nadpisz istniejące połączenie"
 
 #: ags/app/ags_pcm_file_dialog.c:279
-#: ags/app/export/ags_midi_export_wizard.c:457
+#: ags/app/export/ags_midi_export_wizard.c:458
 #: ags/app/export/ags_wave_export_dialog.c:430
-#: ags/app/import/ags_midi_import_wizard.c:461
+#: ags/app/import/ags_midi_import_wizard.c:462
 #: ags/app/ags_export_soundcard.c:323
 msgid "open"
 msgstr "otwórz"
@@ -305,18 +305,18 @@ msgstr "Wtyczka niedostępna"
 msgid "selector"
 msgstr "zaznacz"
 
-#: ags/app/export/ags_wave_export_dialog_callbacks.c:60
+#: ags/app/export/ags_wave_export_dialog_callbacks.c:61
 #, fuzzy
 msgid "export to file"
 msgstr "eksportuj do audio"
 
-#: ags/app/export/ags_midi_export_wizard.c:443
-#: ags/app/import/ags_midi_import_wizard.c:447
+#: ags/app/export/ags_midi_export_wizard.c:444
+#: ags/app/import/ags_midi_import_wizard.c:448
 msgid "previous"
 msgstr ""
 
-#: ags/app/export/ags_midi_export_wizard.c:450
-#: ags/app/import/ags_midi_import_wizard.c:454
+#: ags/app/export/ags_midi_export_wizard.c:451
+#: ags/app/import/ags_midi_import_wizard.c:455
 msgid "next"
 msgstr ""
 
@@ -1049,10 +1049,10 @@ msgstr "format"
 msgid "samplerate"
 msgstr "częstotliwośc próbkowania"
 
-#: ags/app/ags_export_soundcard_callbacks.c:452
-#: ags/app/machine/ags_audiorec_callbacks.c:152
-#: ags/app/machine/ags_drum_input_pad_callbacks.c:79
-#: ags/app/machine/ags_drum_callbacks.c:82
+#: ags/app/ags_export_soundcard_callbacks.c:453
+#: ags/app/machine/ags_audiorec_callbacks.c:153
+#: ags/app/machine/ags_drum_input_pad_callbacks.c:80
+#: ags/app/machine/ags_drum_callbacks.c:83
 #, fuzzy
 msgid "open audio files"
 msgstr "Otwórz plik audio"
@@ -1244,7 +1244,7 @@ msgstr "połącz wejście"
 msgid "resize channels"
 msgstr "zmień rozmiar kanałów"
 
-#: ags/app/ags_app_action_util.c:647
+#: ags/app/ags_app_action_util.c:648
 #, fuzzy
 msgid "save file as"
 msgstr "Zapisz jako"
@@ -1673,10 +1673,10 @@ msgstr "start pętli"
 msgid "loop end"
 msgstr "koniec pętli"
 
-#: ags/app/machine/ags_sfz_synth_callbacks.c:82
-#: ags/app/machine/ags_ffplayer_callbacks.c:263
-#: ags/app/machine/ags_sf2_synth_callbacks.c:82
-#: ags/app/machine/ags_pitch_sampler_callbacks.c:71
+#: ags/app/machine/ags_sfz_synth_callbacks.c:83
+#: ags/app/machine/ags_ffplayer_callbacks.c:264
+#: ags/app/machine/ags_sf2_synth_callbacks.c:83
+#: ags/app/machine/ags_pitch_sampler_callbacks.c:72
 #, fuzzy
 msgid "open Soundfont2 file"
 msgstr "Otwórz plik audio"

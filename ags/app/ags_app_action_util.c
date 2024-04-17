@@ -636,6 +636,7 @@ ags_app_action_util_save_as()
   gchar *recently_used_filename;
   gchar *home_path;
   gchar *sandbox_path;
+  gchar *str;
   
   AgsApplicationContext *application_context;
         
