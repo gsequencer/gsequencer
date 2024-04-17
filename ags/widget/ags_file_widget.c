@@ -1137,7 +1137,8 @@ ags_file_widget_value_factory_bind(GtkListItemFactory *factory, GtkListItem *lis
   }
 
   if(filename != NULL &&
-     g_file_test(filename, G_FILE_TEST_EXISTS)){
+     g_file_test(filename, G_FILE_TEST_EXISTS) &&
+     g_access(filename, R_OK) == 0){
     retval = stat(filename,
 		  &sb);
   
@@ -1284,6 +1285,10 @@ ags_file_widget_filename_activate_callback(GtkListView *list_view,
   gchar *current_path, *filename;
   gchar *prev_current_path;
 
+  if(position == GTK_INVALID_LIST_POSITION){
+    return;
+  }
+  
   filename = NULL;
   
   if(!ags_file_widget_test_flags(file_widget, AGS_FILE_WIDGET_WITH_MULTI_SELECTION)){
@@ -3108,6 +3113,8 @@ ags_file_widget_real_refresh(AgsFileWidget *file_widget)
   GError *error;
 
   /* filename view */
+  current_dir = NULL;
+  
   filename_strv = NULL;
 
   start_filename = NULL;
@@ -3116,25 +3123,77 @@ ags_file_widget_real_refresh(AgsFileWidget *file_widget)
      g_file_test(file_widget->current_path,
 		 G_FILE_TEST_IS_DIR)){
     error = NULL;
-    current_dir = g_dir_open(file_widget->current_path,
-			     0,
-			     &error);
 
-    if(error != NULL){
-      g_error_free(error);
+    if(g_access(file_widget->current_path, (R_OK | X_OK)) == 0){    
+      current_dir = g_dir_open(file_widget->current_path,
+			       0,
+			       &error);
+    }
+    
+    if(current_dir == NULL ||
+       error != NULL){
+      gchar *iter, *prev_iter;
 
+      if(current_dir != NULL){
+	g_dir_close(current_dir);
+      }
+      
+      if(error != NULL){
+	g_error_free(error);
+      }
+      
       filename_strv = (gchar **) g_malloc(3 * sizeof(gchar *));
 
       filename_strv[0] = g_strdup(".");
       filename_strv[1] = g_strdup("..");
       filename_strv[2] = NULL;
 
-      location_strv = (gchar **) g_malloc(3 * sizeof(gchar *));
+      location_strv = NULL;
 
-      location_strv[0] = g_strdup(file_widget->current_path);
-      location_strv[1] = g_strdup("/");
-      location_strv[2] = NULL;
+      start_location = NULL;
+
+      iter = file_widget->current_path;
+
+      prev_iter = NULL;
       
+      while((iter = strstr(iter, "/")) != NULL){
+	if(prev_iter == NULL){
+	  start_location = g_list_prepend(start_location,
+					  g_strdup("/"));
+	}else{
+	  start_location = g_list_prepend(start_location,
+					  g_strndup(file_widget->current_path,
+						    iter - file_widget->current_path));
+	}
+
+	prev_iter = iter;
+	iter++;
+      }
+
+      if((!strncmp(file_widget->current_path, "/", 2)) == FALSE){
+	start_location = g_list_prepend(start_location,
+					g_strdup(file_widget->current_path));
+      }
+      
+      location = start_location;
+
+      count = g_list_length(start_location);
+  
+      location_strv = (gchar **) g_malloc((count + 1) * sizeof(gchar *));
+  
+      for(i = 0; location != NULL && i < count;){
+	location_strv[i] = g_strdup(location->data);
+    
+	location = location->next;
+	i++;
+      }
+      
+      location_strv[i] = NULL;
+    
+      g_list_free(start_location);
+      
+      //  g_strfreev(filename_strv);
+
       if(!ags_file_widget_test_flags(file_widget, AGS_FILE_WIDGET_WITH_MULTI_SELECTION)){
 	single_filename_string_list = gtk_string_list_new(filename_strv);
 	gtk_single_selection_set_model(file_widget->filename_single_selection,
@@ -3153,7 +3212,7 @@ ags_file_widget_real_refresh(AgsFileWidget *file_widget)
       location_string_list = gtk_string_list_new(location_strv);
       gtk_drop_down_set_model(file_widget->location_drop_down,
 			      location_string_list);
-    
+
       return;
     }
 
@@ -3207,9 +3266,14 @@ ags_file_widget_real_refresh(AgsFileWidget *file_widget)
     }
     
     g_list_free(start_filename);
+
     //  g_strfreev(filename_strv);
   }
 
+  if(current_dir != NULL){
+    g_dir_close(current_dir);
+  }
+  
   /* recently-used */
   if(file_widget->current_path != NULL &&
      !g_strcmp0(file_widget->current_path,
