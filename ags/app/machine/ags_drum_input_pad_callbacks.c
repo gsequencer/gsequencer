@@ -48,6 +48,7 @@ ags_drum_input_pad_open_callback(GtkWidget *widget, AgsDrumInputPad *drum_input_
   gchar *bookmark_filename;
   gchar *home_path;
   gchar *sandbox_path;
+  gchar *str;
 
   gchar *drumkits_bookmark_filename;
   

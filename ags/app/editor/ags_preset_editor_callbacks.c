@@ -544,6 +544,7 @@ ags_preset_editor_open_preset_callback(GtkButton *button, AgsPresetEditor *prese
   gchar *bookmark_filename;
   gchar *home_path;
   gchar *sandbox_path;
+  gchar *str;
 
   AgsApplicationContext *application_context;
 

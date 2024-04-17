@@ -232,6 +232,7 @@ ags_ffplayer_open_clicked_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
   gchar *bookmark_filename;
   gchar *home_path;
   gchar *sandbox_path;
+  gchar *str;
 
   gchar *sf2_bookmark_filename;
 

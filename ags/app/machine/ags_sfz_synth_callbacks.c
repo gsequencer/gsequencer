@@ -51,6 +51,7 @@ ags_sfz_synth_open_clicked_callback(GtkWidget *widget, AgsSFZSynth *sfz_synth)
   gchar *bookmark_filename;
   gchar *home_path;
   gchar *sandbox_path;
+  gchar *str;
 
   gchar *sfz_bookmark_filename;
 

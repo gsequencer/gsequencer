@@ -51,6 +51,7 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
   gchar *bookmark_filename;
   gchar *home_path;
   gchar *sandbox_path;
+  gchar *str;
 
   gchar *drumkits_bookmark_filename;
   
