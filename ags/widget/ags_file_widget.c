@@ -1136,74 +1136,97 @@ ags_file_widget_value_factory_bind(GtkListItemFactory *factory, GtkListItem *lis
     }
   }
 
+  value = NULL;
+
   if(filename != NULL &&
-     g_file_test(filename, G_FILE_TEST_EXISTS) &&
-     g_access(filename, R_OK) == 0){
-    retval = stat(filename,
-		  &sb);
-  
+     g_file_test(filename, G_FILE_TEST_EXISTS)){
+    retval = -1;
+    
     if(factory == file_widget->filename_factory[0]){
       value = g_strdup_printf("%s",
 			      primary_key);
     }else if(factory == file_widget->filename_factory[1]){
-      value = g_strdup_printf("%jd",
-			      sb.st_size);
-    }else if(factory == file_widget->filename_factory[2]){
-      gchar *file_type;
-      
-      switch (sb.st_mode & S_IFMT) {
-      case S_IFBLK:
-	{
-	  file_type = "block device";
-	}
-	break;
-      case S_IFCHR:
-	{
-	  file_type = "character device";
-	}
-	break;
-      case S_IFDIR:
-	{
-	  file_type = "directory";
-	}
-	break;
-      case S_IFIFO:
-	{
-	  file_type = "FIFO/pipe";
-	}
-	break;
-      case S_IFLNK:
-	{
-	  file_type = "symlink";
-	}
-	break;
-      case S_IFREG:
-	{
-	  file_type = "regular file";
-	}
-	break;
-      case S_IFSOCK:
-	{
-	  file_type = "socket";
-	}
-	break;
-      default:
-	{
-	  file_type = "unknown?";
-	}
+      if(g_access(filename, R_OK) == 0){
+	retval = stat(filename,
+		      &sb);
       }
 
-      value = g_strdup_printf("%s",
-			      file_type);
+      if(retval == 0){
+	value = g_strdup_printf("%jd",
+				sb.st_size);
+      }
+    }else if(factory == file_widget->filename_factory[2]){
+      gchar *file_type;
+
+      if(g_access(filename, R_OK) == 0){
+	retval = stat(filename,
+		      &sb);
+      }  
+      
+      if(retval == 0){
+	switch(sb.st_mode & S_IFMT){
+	case S_IFBLK:
+	  {
+	    file_type = "block device";
+	  }
+	  break;
+	case S_IFCHR:
+	  {
+	    file_type = "character device";
+	  }
+	  break;
+	case S_IFDIR:
+	  {
+	    file_type = "directory";
+	  }
+	  break;
+	case S_IFIFO:
+	  {
+	    file_type = "FIFO/pipe";
+	  }
+	  break;
+	case S_IFLNK:
+	  {
+	    file_type = "symlink";
+	  }
+	  break;
+	case S_IFREG:
+	  {
+	    file_type = "regular file";
+	  }
+	  break;
+	case S_IFSOCK:
+	  {
+	    file_type = "socket";
+	  }
+	  break;
+	default:
+	  {
+	    file_type = "unknown?";
+	  }
+	}
+
+	value = g_strdup_printf("%s",
+				file_type);
+      }      
     }else if(factory == file_widget->filename_factory[3]){
       char outstr[200];
 
-      strftime(outstr, sizeof(outstr), "%a, %d %b %Y %T %z", localtime(&sb.st_mtime));
+      if(g_access(filename, R_OK) == 0){
+	retval = stat(filename,
+		      &sb);
+      }
+  
+      if(retval == 0){
+	strftime(outstr, sizeof(outstr), "%a, %d %b %Y %T %z", localtime(&sb.st_mtime));
       
-      value = g_strdup(outstr);
+	value = g_strdup(outstr);
+      }
     }
-  }else{
-    value = "";
+  }
+
+  if(value == NULL){
+    value = g_strdup("");
   }
   
   gtk_label_set_label(label,
