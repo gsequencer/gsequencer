@@ -1317,7 +1317,8 @@ ags_file_widget_filename_activate_callback(GtkListView *list_view,
     }  
   }
   
-  if(!strncmp(filename, ".", 2) == FALSE &&
+  if(filename != NULL &&
+     !strncmp(filename, ".", 2) == FALSE &&
      !strncmp(filename, "..", 3) == FALSE){
     current_path = g_strdup_printf("%s/%s",
 				   file_widget->current_path,
@@ -3122,19 +3123,33 @@ ags_file_widget_real_refresh(AgsFileWidget *file_widget)
     if(error != NULL){
       g_error_free(error);
 
+      filename_strv = (gchar **) g_malloc(3 * sizeof(gchar *));
+
+      filename_strv[0] = g_strdup(".");
+      filename_strv[1] = g_strdup("..");
+      filename_strv[2] = NULL;
+
+      location_strv = (gchar **) g_malloc(2 * sizeof(gchar *));
+
+      location_strv[0] = g_strdup("/");
+      location_strv[1] = NULL;
+      
       if(!ags_file_widget_test_flags(file_widget, AGS_FILE_WIDGET_WITH_MULTI_SELECTION)){
-	single_filename_string_list = gtk_string_list_new(NULL);
+	single_filename_string_list = gtk_string_list_new(filename_strv);
 	gtk_single_selection_set_model(file_widget->filename_single_selection,
 				       single_filename_string_list);
       }
     
       if(ags_file_widget_test_flags(file_widget, AGS_FILE_WIDGET_WITH_MULTI_SELECTION)){
-	multi_filename_string_list = gtk_string_list_new(NULL);
+	multi_filename_string_list = gtk_string_list_new(filename_strv);
 	gtk_multi_selection_set_model(file_widget->filename_multi_selection,
 				      multi_filename_string_list);
       }
 
-      location_string_list = gtk_string_list_new(NULL);
+      gtk_editable_set_text(GTK_EDITABLE(file_widget->location_entry),
+			    file_widget->current_path);			  
+
+      location_string_list = gtk_string_list_new(location_strv);
       gtk_drop_down_set_model(file_widget->location_drop_down,
 			      location_string_list);
     
