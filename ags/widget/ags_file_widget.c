@@ -1348,9 +1348,14 @@ ags_file_widget_filename_activate_callback(GtkListView *list_view,
   if(filename != NULL &&
      !strncmp(filename, ".", 2) == FALSE &&
      !strncmp(filename, "..", 3) == FALSE){
-    current_path = g_strdup_printf("%s/%s",
-				   file_widget->current_path,
-				   filename);
+    if(strlen(file_widget->current_path) > 1){
+      current_path = g_strdup_printf("%s/%s",
+				     file_widget->current_path,
+				     filename);
+    }else{
+      current_path = g_strdup_printf("/%s",
+				     filename);
+    }
   }else{
     current_path = g_strdup(filename);
   }
@@ -3193,7 +3198,8 @@ ags_file_widget_real_refresh(AgsFileWidget *file_widget)
 	iter++;
       }
 
-      if((!strncmp(file_widget->current_path, "/", 2)) == FALSE){
+      if(strlen(file_widget->current_path) > 1 &&
+	 (!strncmp(file_widget->current_path, "/", 2)) == FALSE){
 	start_location = g_list_prepend(start_location,
 					g_strdup(file_widget->current_path));
       }
@@ -3363,7 +3369,8 @@ ags_file_widget_real_refresh(AgsFileWidget *file_widget)
 	iter++;
       }
 
-      if((!strncmp(file_widget->current_path, "/", 2)) == FALSE){
+      if(strlen(file_widget->current_path) > 1 &&
+	 (!strncmp(file_widget->current_path, "/", 2)) == FALSE){
 	start_location = g_list_prepend(start_location,
 					g_strdup(file_widget->current_path));
       }
