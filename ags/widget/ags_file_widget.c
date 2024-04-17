@@ -2020,6 +2020,7 @@ ags_file_widget_location_callback(AgsIconLink *icon_link,
   gchar *button_action;
   gchar *current_path;
   gchar *prev_current_path;
+  gchar *str;
 
   current_path = NULL;
   prev_current_path = file_widget->current_path;
@@ -2027,29 +2028,89 @@ ags_file_widget_location_callback(AgsIconLink *icon_link,
   if(g_hash_table_lookup(file_widget->location, AGS_FILE_WIDGET_LOCATION_OPEN_RECENT) == icon_link){
     current_path = g_strdup("recently-used:");
   }else if(g_hash_table_lookup(file_widget->location, AGS_FILE_WIDGET_LOCATION_OPEN_START_HERE) == icon_link){
+#if defined(AGS_MACOS_SANDBOX)
     current_path = g_strdup_printf("%s/Library/%s/workspace",
 				   file_widget->home_path,
 				   file_widget->default_bundle);
+#endif
+
+#if defined(AGS_FLATPAK_SANDBOX)
+    if((str = getenv("HOME")) != NULL){
+      current_path = g_strdup_printf("%s/workspace",
+				     str);
+    }else{
+      current_path = g_strdup_printf("%s/workspace",
+				     file_widget->home_path);
+    }
+#endif
+    
+#if defined(AGS_SNAP_SANDBOX)
+    if((str = getenv("SNAP_USER_DATA")) != NULL){
+      current_path = g_strdup_printf("%s/workspace",
+				     str);
+    }else{
+      current_path = g_strdup_printf("%s/workspace",
+				     file_widget->home_path);
+    }
+#endif
+  
+#if !defined(AGS_MACOS_SANDBOX) && !defined(AGS_FLATPAK_SANDBOX) && !defined(AGS_SNAP_SANDBOX)
+    if((str = getenv("HOME")) != NULL){
+      current_path = g_strdup_printf("%s/workspace",
+				     str);
+    }else{
+      current_path = g_strdup_printf("%s/workspace",
+				     file_widget->home_path);
+    }
+#endif    
   }else if(g_hash_table_lookup(file_widget->location, AGS_FILE_WIDGET_LOCATION_OPEN_USER_HOME) == icon_link){
-    current_path = g_strdup(file_widget->home_path);
+    if((str = getenv("HOME")) != NULL){
+      current_path = g_strdup(str);
+    }else{
+      current_path = g_strdup(file_widget->home_path);
+    }
   }else if(g_hash_table_lookup(file_widget->location, AGS_FILE_WIDGET_LOCATION_OPEN_USER_DESKTOP) == icon_link){
-    current_path = g_strdup_printf("%s/Desktop",
-				   file_widget->home_path);
+    if((str = getenv("XDG_DESKTOP_DIR")) != NULL){
+      current_path = g_strdup(str);
+    }else{
+      current_path = g_strdup_printf("%s/Desktop",
+				     file_widget->home_path);
+    }
   }else if(g_hash_table_lookup(file_widget->location, AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_PICTURES) == icon_link){
-    current_path = g_strdup_printf("%s/Pictures",
-				   file_widget->home_path);
+    if((str = getenv("XDG_PICTURES_DIR")) != NULL){
+      current_path = g_strdup(str);
+    }else{
+      current_path = g_strdup_printf("%s/Pictures",
+				     file_widget->home_path);
+    }
   }else if(g_hash_table_lookup(file_widget->location, AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_MUSIC) == icon_link){
-    current_path = g_strdup_printf("%s/Music",
-				   file_widget->home_path);
+    if((str = getenv("XDG_MUSIC_DIR")) != NULL){
+      current_path = g_strdup(str);
+    }else{
+      current_path = g_strdup_printf("%s/Music",
+				     file_widget->home_path);
+    }
   }else if(g_hash_table_lookup(file_widget->location, AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_VIDEOS) == icon_link){
-    current_path = g_strdup_printf("%s/Videos",
-				   file_widget->home_path);
+    if((str = getenv("XDG_VIDEOS_DIR")) != NULL){
+      current_path = g_strdup(str);
+    }else{
+      current_path = g_strdup_printf("%s/Videos",
+				     file_widget->home_path);
+    }
   }else if(g_hash_table_lookup(file_widget->location, AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_DOWNLOADS) == icon_link){
-    current_path = g_strdup_printf("%s/Downloads",
-				   file_widget->home_path);
+    if((str = getenv("XDG_DOWNLOAD_DIR")) != NULL){
+      current_path = g_strdup(str);
+    }else{
+      current_path = g_strdup_printf("%s/Downloads",
+				     file_widget->home_path);
+    }
   }else if(g_hash_table_lookup(file_widget->location, AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_DOCUMENTS) == icon_link){
-    current_path = g_strdup_printf("%s/Documents",
-				   file_widget->home_path);
+    if((str = getenv("XDG_DOCUMENTS_DIR")) != NULL){
+      current_path = g_strdup(str);
+    }else{
+      current_path = g_strdup_printf("%s/Documents",
+				     file_widget->home_path);
+    }
   }else if(g_hash_table_lookup(file_widget->location, AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_APP_HOME) == icon_link){
     current_path = g_strdup(file_widget->app_home_path);
   }else if(g_hash_table_lookup(file_widget->location, AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_APP_GENERIC) == icon_link){
