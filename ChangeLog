@@ -1,6 +1,10 @@
 ags (6.8.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented snap sandbox
+	* implemented flatpak sandbox
+	* improved AgsFileWidget make use of XDG_*_DIR environment variables
+	* improved ags_file_widget_refresh() while directory failed to open
 	* added --enable-snap-sandbox configure switch
 	* added --enable-flatpak-sandbox configure switch
 

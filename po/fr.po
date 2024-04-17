@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-04-16 06:40+0200\n"
+"POT-Creation-Date: 2024-04-17 08:35+0200\n"
 "PO-Revision-Date: 2021-01-11 21:07+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: français <jkraehemann@gmail.com>\n"
@@ -266,9 +266,9 @@ msgid "override existing links"
 msgstr "écraser exister liens"
 
 #: ags/app/ags_pcm_file_dialog.c:279
-#: ags/app/export/ags_midi_export_wizard.c:407
+#: ags/app/export/ags_midi_export_wizard.c:457
 #: ags/app/export/ags_wave_export_dialog.c:430
-#: ags/app/import/ags_midi_import_wizard.c:411
+#: ags/app/import/ags_midi_import_wizard.c:461
 #: ags/app/ags_export_soundcard.c:323
 msgid "open"
 msgstr "ouvrir"
@@ -310,13 +310,13 @@ msgstr "sélectionner"
 msgid "export to file"
 msgstr "exporter l'audio données"
 
-#: ags/app/export/ags_midi_export_wizard.c:393
-#: ags/app/import/ags_midi_import_wizard.c:397
+#: ags/app/export/ags_midi_export_wizard.c:443
+#: ags/app/import/ags_midi_import_wizard.c:447
 msgid "previous"
 msgstr ""
 
-#: ags/app/export/ags_midi_export_wizard.c:400
-#: ags/app/import/ags_midi_import_wizard.c:404
+#: ags/app/export/ags_midi_export_wizard.c:450
+#: ags/app/import/ags_midi_import_wizard.c:454
 msgid "next"
 msgstr ""
 
@@ -332,7 +332,7 @@ msgid "file"
 msgstr "fichier"
 
 #: ags/app/export/ags_wave_export_dialog.c:323
-#: ags/app/ags_app_action_util.c:147
+#: ags/app/ags_app_action_util.c:148
 #, fuzzy
 msgid "open file"
 msgstr "Ouvrir fichier"
@@ -1052,8 +1052,8 @@ msgstr "rate de répéter"
 
 #: ags/app/ags_export_soundcard_callbacks.c:452
 #: ags/app/machine/ags_audiorec_callbacks.c:152
-#: ags/app/machine/ags_drum_input_pad_callbacks.c:62
-#: ags/app/machine/ags_drum_callbacks.c:65
+#: ags/app/machine/ags_drum_input_pad_callbacks.c:79
+#: ags/app/machine/ags_drum_callbacks.c:82
 #, fuzzy
 msgid "open audio files"
 msgstr "Ouvrir d'audio fichier"
@@ -1245,7 +1245,7 @@ msgstr "lien intrant"
 msgid "resize channels"
 msgstr "réajuster canal"
 
-#: ags/app/ags_app_action_util.c:596
+#: ags/app/ags_app_action_util.c:647
 #, fuzzy
 msgid "save file as"
 msgstr "Mémoriser comme"
@@ -1674,10 +1674,10 @@ msgstr "premier boucle"
 msgid "loop end"
 msgstr "dernier boucle"
 
-#: ags/app/machine/ags_sfz_synth_callbacks.c:63
-#: ags/app/machine/ags_ffplayer_callbacks.c:244
-#: ags/app/machine/ags_sf2_synth_callbacks.c:63
-#: ags/app/machine/ags_pitch_sampler_callbacks.c:52
+#: ags/app/machine/ags_sfz_synth_callbacks.c:82
+#: ags/app/machine/ags_ffplayer_callbacks.c:263
+#: ags/app/machine/ags_sf2_synth_callbacks.c:82
+#: ags/app/machine/ags_pitch_sampler_callbacks.c:71
 #, fuzzy
 msgid "open Soundfont2 file"
 msgstr "Ouvrir d'audio fichier"
