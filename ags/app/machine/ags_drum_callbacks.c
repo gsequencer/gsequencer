@@ -52,12 +52,29 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
   gchar *home_path;
   gchar *sandbox_path;
 
-  const gchar *drumkits_bookmark_filename = "/usr/share/hydrogen/data/drumkits";
-    
+  gchar *drumkits_bookmark_filename;
+  
   if(drum->open_dialog != NULL){
     return;
   }
 
+#if defined(AGS_MACOS_SANDBOX)
+  drumkits_bookmark_filename = NULL;
+#endif
+  
+#if defined(AGS_FLATPAK_SANDBOX)
+  drumkits_bookmark_filename = g_strdup("/usr/share/hydrogen/data/drumkits");
+#endif
+
+#if defined(AGS_SNAP_SANDBOX)
+  drumkits_bookmark_filename = g_strdup_printf("%s/usr/share/hydrogen/data/drumkits",
+					       getenv("AGS_SNAP_PATH"));
+#endif
+  
+#if !defined(AGS_MACOS_SANDBOX) && !defined(AGS_FLATPAK_SANDBOX) && !defined(AGS_SNAP_SANDBOX)
+  drumkits_bookmark_filename = g_strdup("/usr/share/hydrogen/data/drumkits");
+#endif
+  
   /* get application context */  
   application_context = ags_application_context_get_instance();
   
@@ -84,7 +101,39 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
   bookmark_filename = g_strdup_printf("%s/%s/gsequencer_pcm_bookmark.xml",
 				      sandbox_path,
 				      AGS_DEFAULT_DIRECTORY);
-#else
+#endif
+
+#if defined(AGS_FLATPAK_SANDBOX)
+  if((str = getenv("HOME")) != NULL){
+    sandbox_path = g_strdup_printf("%s",
+				   str);
+  }
+
+  recently_used_filename = g_strdup_printf("%s/%s/gsequencer_pcm_recently_used.xml",
+					   sandbox_path,
+					   AGS_DEFAULT_DIRECTORY);
+
+  bookmark_filename = g_strdup_printf("%s/%s/gsequencer_pcm_bookmark.xml",
+				      sandbox_path,
+				      AGS_DEFAULT_DIRECTORY);
+#endif
+
+#if defined(AGS_SNAP_SANDBOX)
+  if((str = getenv("SNAP_USER_DATA")) != NULL){
+    sandbox_path = g_strdup_printf("%s",
+				   str);
+  }
+
+  recently_used_filename = g_strdup_printf("%s/%s/gsequencer_pcm_recently_used.xml",
+					   sandbox_path,
+					   AGS_DEFAULT_DIRECTORY);
+
+  bookmark_filename = g_strdup_printf("%s/%s/gsequencer_pcm_bookmark.xml",
+				      sandbox_path,
+				      AGS_DEFAULT_DIRECTORY);
+#endif
+  
+#if !defined(AGS_MACOS_SANDBOX) && !defined(AGS_FLATPAK_SANDBOX) && !defined(AGS_SNAP_SANDBOX)
   recently_used_filename = g_strdup_printf("%s/%s/gsequencer_pcm_recently_used.xml",
 					   home_path,
 					   AGS_DEFAULT_DIRECTORY);
@@ -112,7 +161,25 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
 
   ags_file_widget_set_current_path(file_widget,
 				   sandbox_path);
-#else
+#endif
+
+#if defined(AGS_FLATPAK_SANDBOX)
+  ags_file_widget_set_flags(file_widget,
+			    AGS_FILE_WIDGET_APP_SANDBOX);
+
+  ags_file_widget_set_current_path(file_widget,
+				   sandbox_path);
+#endif
+
+#if defined(AGS_SNAP_SANDBOX)
+  ags_file_widget_set_flags(file_widget,
+			    AGS_FILE_WIDGET_APP_SANDBOX);
+
+  ags_file_widget_set_current_path(file_widget,
+				   sandbox_path);
+#endif
+  
+#if !defined(AGS_MACOS_SANDBOX) && !defined(AGS_FLATPAK_SANDBOX) && !defined(AGS_SNAP_SANDBOX)
   ags_file_widget_set_current_path(file_widget,
 				   home_path);
 #endif
@@ -158,6 +225,8 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
 
   g_signal_connect(G_OBJECT(pcm_file_dialog), "response",
 		   G_CALLBACK(ags_machine_open_response_callback), drum);
+
+  g_free(drumkits_bookmark_filename);
 }
 
 void

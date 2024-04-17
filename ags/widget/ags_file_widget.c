@@ -3121,6 +3121,22 @@ ags_file_widget_real_refresh(AgsFileWidget *file_widget)
 
     if(error != NULL){
       g_error_free(error);
+
+      if(!ags_file_widget_test_flags(file_widget, AGS_FILE_WIDGET_WITH_MULTI_SELECTION)){
+	single_filename_string_list = gtk_string_list_new(NULL);
+	gtk_single_selection_set_model(file_widget->filename_single_selection,
+				       single_filename_string_list);
+      }
+    
+      if(ags_file_widget_test_flags(file_widget, AGS_FILE_WIDGET_WITH_MULTI_SELECTION)){
+	multi_filename_string_list = gtk_string_list_new(NULL);
+	gtk_multi_selection_set_model(file_widget->filename_multi_selection,
+				      multi_filename_string_list);
+      }
+
+      location_string_list = gtk_string_list_new(NULL);
+      gtk_drop_down_set_model(file_widget->location_drop_down,
+			      location_string_list);
     
       return;
     }
