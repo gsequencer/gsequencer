@@ -3161,7 +3161,7 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
 			      &scrolled_window_allocation);
 
     composite_adjustment = gtk_scrollbar_get_adjustment(composite_editor->automation_edit->vscrollbar);
-
+    
     if(list_length > 0){
       if(gtk_adjustment_get_value(adjustment) + scrolled_window_allocation.height < gtk_adjustment_get_upper(composite_adjustment)){
 	gtk_adjustment_set_value(composite_adjustment,

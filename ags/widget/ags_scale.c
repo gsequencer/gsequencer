@@ -205,7 +205,7 @@ ags_scale_class_init(AgsScaleClass *scale)
   param_spec = g_param_spec_double("lower",
 				   "lower",
 				   "The lower of scale",
-				   -G_MAXDOUBLE,
+				   -1.0 * G_MAXDOUBLE,
 				   G_MAXDOUBLE,
 				   AGS_SCALE_DEFAULT_LOWER,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -223,7 +223,7 @@ ags_scale_class_init(AgsScaleClass *scale)
   param_spec = g_param_spec_double("upper",
 				   "upper",
 				   "The upper of scale",
-				   -G_MAXDOUBLE,
+				   -1.0 * G_MAXDOUBLE,
 				   G_MAXDOUBLE,
 				   AGS_SCALE_DEFAULT_UPPER,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -241,7 +241,7 @@ ags_scale_class_init(AgsScaleClass *scale)
   param_spec = g_param_spec_double("default-value",
 				   "default value",
 				   "The default value of scale",
-				   -G_MAXDOUBLE,
+				   -1.0 * G_MAXDOUBLE,
 				   G_MAXDOUBLE,
 				   AGS_SCALE_DEFAULT_VALUE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);

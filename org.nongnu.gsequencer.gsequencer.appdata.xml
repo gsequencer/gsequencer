@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- Copyright 2005-2023 Joël Krähemann <jkraehemann@gmail.com> -->
+<!-- Copyright 2005-2024 Joël Krähemann <jkraehemann@gmail.com> -->
 <!-- Copying and distribution of this file, with or without modification, -->
 <!-- are permitted in any medium without royalty provided the copyright -->
 <!-- notice and this notice are preserved. This file is offered as-is, -->
@@ -17,9 +17,13 @@
   <summary>Advanced Gtk+ Sequencer</summary>
   <developer_name>Joël Krähemann</developer_name>
   <categories>
+    <category>AudioVideo</category>
     <category>Audio</category>
     <category>Midi</category>
     <category>Sequencer</category>
+    <category>AudioVideoEditing</category>
+    <category>Music</category>
+    <category>GTK</category>
   </categories>
   <description>
     <p>GSequencer provides you various tools to play, create, edit and mix your own music.
@@ -31,21 +35,32 @@
   <screenshots>
     <screenshot type="default">
       <caption>GSequencer's main window</caption>
-      <image>https://directory.fsf.org/w/images/2/26/Gsequencer-piano-roll-with-drum.png</image>
+      <image>https://nongnu.org/gsequencer/images/app-stream/gsequencer-piano-roll-with-drum.png</image>
     </screenshot>
     <screenshot>
       <caption>GSequencer's automation window</caption>
-      <image>https://directory.fsf.org/w/images/4/4f/Gsequencer-automation-mixer.png</image>
+      <image>https://nongnu.org/gsequencer/images/app-stream/gsequencer-automation-mixer.png</image>
     </screenshot>
     <screenshot>
       <caption>GSequencer's wave window</caption>
-      <image>https://directory.fsf.org/w/images/3/34/Gsequencer-wave-audiorec.png</image>
+      <image>https://nongnu.org/gsequencer/images/app-stream/gsequencer-wave-audiorec.png</image>
     </screenshot>
   </screenshots>
 
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="6.8.4" date="2024-04-18">
+      <description>
+	<p>
+	  Additional categories in AppStream XML.
+	</p>
+	<p>
+	  New screenshots in AppStream XML.
+	</p>
+      </description>
+    </release>
+
     <release version="6.8.2" date="2024-04-17">
       <description>
 	<p>
