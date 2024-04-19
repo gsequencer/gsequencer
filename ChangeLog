@@ -1,3 +1,8 @@
+ags (6.8.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsAutomationEdit render mode
+
 ags (6.8.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

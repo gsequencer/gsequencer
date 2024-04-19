@@ -1598,8 +1598,10 @@ ags_composite_editor_add_automation_port(AgsCompositeEditor *composite_editor,
 										    FALSE);
 
     if(start_port != NULL){
-      start_port = g_list_concat(start_port,
-				 current_start_port);
+      if(current_start_port != NULL){
+	start_port = g_list_concat(start_port,
+				   current_start_port);
+      }
     }else{
       start_port = current_start_port;
     }
@@ -1625,8 +1627,10 @@ ags_composite_editor_add_automation_port(AgsCompositeEditor *composite_editor,
 											  control_name,
 											  TRUE);
       if(start_port != NULL){
-	start_port = g_list_concat(start_port,
-				   current_start_port);
+	if(current_start_port != NULL){
+	  start_port = g_list_concat(start_port,
+				     current_start_port);
+	}
       }else{
 	start_port = current_start_port;
       }
@@ -1636,8 +1640,10 @@ ags_composite_editor_add_automation_port(AgsCompositeEditor *composite_editor,
 											  FALSE);
 
       if(start_port != NULL){
-	start_port = g_list_concat(start_port,
-				   current_start_port);
+	if(current_start_port != NULL){
+	  start_port = g_list_concat(start_port,
+				     current_start_port);
+	}
       }else{
 	start_port = current_start_port;
       }
@@ -1676,8 +1682,10 @@ ags_composite_editor_add_automation_port(AgsCompositeEditor *composite_editor,
 											  control_name,
 											  TRUE);
       if(start_port != NULL){
-	start_port = g_list_concat(start_port,
-				   current_start_port);
+	if(current_start_port != NULL){
+	  start_port = g_list_concat(start_port,
+				     current_start_port);
+	}
       }else{
 	start_port = current_start_port;
       }
@@ -1687,8 +1695,10 @@ ags_composite_editor_add_automation_port(AgsCompositeEditor *composite_editor,
 											  FALSE);
 
       if(start_port != NULL){
-	start_port = g_list_concat(start_port,
-				   current_start_port);
+	if(current_start_port != NULL){
+	  start_port = g_list_concat(start_port,
+				     current_start_port);
+	}
       }else{
 	start_port = current_start_port;
       }
