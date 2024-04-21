@@ -257,13 +257,13 @@ ags_fx_notation_audio_processor_init(AgsFxNotationAudioProcessor *fx_notation_au
   fx_notation_audio_processor->current_tic_counter = 0;
 
   /* 256th */
+  fx_notation_audio_processor->note_256th_delay = AGS_SOUNDCARD_DEFAULT_DELAY / 16.0;
+
   fx_notation_audio_processor->note_256th_offset_counter = 0;
-  fx_notation_audio_processor->note_256th_offset_counter_last = 1;
+  fx_notation_audio_processor->note_256th_offset_counter_last = (guint) floor(1.0 / fx_notation_audio_processor->note_256th_delay);
 
   fx_notation_audio_processor->note_256th_current_offset_counter = 0;
   fx_notation_audio_processor->note_256th_current_offset_counter_last = 1;
-
-  fx_notation_audio_processor->note_256th_delay = AGS_SOUNDCARD_DEFAULT_DELAY / 16.0;
 
   fx_notation_audio_processor->note_256th = NULL;
 }
@@ -895,28 +895,28 @@ ags_fx_notation_audio_processor_run_init_pre(AgsRecall *recall)
 	       "output-soundcard", &output_soundcard,
 	       NULL);
 
+  absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
+  
   /* counter */
   g_rec_mutex_lock(fx_notation_audio_processor_mutex);
     
-  fx_notation_audio_processor->delay_counter = 0;
+  fx_notation_audio_processor->delay_counter = 0.0;
   fx_notation_audio_processor->offset_counter = 0;
 
-  fx_notation_audio_processor->current_delay_counter = 0;
+  fx_notation_audio_processor->current_delay_counter = 0.0;
   fx_notation_audio_processor->current_offset_counter = 0;
 
-  fx_notation_audio_processor->tic_counter = 
-    fx_notation_audio_processor->current_tic_counter = 0;
-
-  fx_notation_audio_processor->note_256th_offset_counter = 
-    fx_notation_audio_processor->note_256th_current_offset_counter = 0;
-  
-  fx_notation_audio_processor->note_256th_offset_counter_last = 
-    fx_notation_audio_processor->note_256th_current_offset_counter_last = 0;
-
-  absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
+  fx_notation_audio_processor->tic_counter = 0;
+  fx_notation_audio_processor->current_tic_counter = 0;
 
   fx_notation_audio_processor->note_256th_delay = absolute_delay / 16.0;
-  
+
+  fx_notation_audio_processor->note_256th_offset_counter = 0;  
+  fx_notation_audio_processor->note_256th_offset_counter_last = 0;
+
+  fx_notation_audio_processor->note_256th_current_offset_counter = 0;
+  fx_notation_audio_processor->note_256th_current_offset_counter_last = (guint) floor(1.0 / fx_notation_audio_processor->note_256th_delay);
+
   g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
 
   if(output_soundcard != NULL){
@@ -1002,6 +1002,8 @@ ags_fx_notation_audio_processor_run_inter(AgsRecall *recall)
 
   g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
 
+  //  g_message("run-inter() %d %d", fx_notation_audio_processor->note_256th_offset_counter, fx_notation_audio_processor->note_256th_offset_counter_last);
+  
   /* run */
   if(ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_NOTATION)){
     if(parent_recycling_context == NULL){
@@ -2266,15 +2268,14 @@ ags_fx_notation_audio_processor_real_counter_change(AgsFxNotationAudioProcessor 
 
   guint buffer_size;
   gdouble delay;
-  guint delay_counter;
+  gdouble delay_counter;
+  gdouble absolute_delay;
+  gdouble note_256th_delay;
   guint offset_counter;
-  gboolean loop;
+  gboolean do_loop;
   guint64 loop_start, loop_end;
-
-  guint note_attack_256th_frame;
+  guint attack;
   guint note_256th_attack_lower, note_256th_attack_upper;
-  guint next_note_256th_attack_lower, next_note_256th_attack_upper;
-  guint note_256th_attack_of_16th_pulse;
   guint i, i_stop;
   
   GValue value = {0,};
@@ -2296,7 +2297,7 @@ ags_fx_notation_audio_processor_real_counter_change(AgsFxNotationAudioProcessor 
 
   delay = AGS_SOUNDCARD_DEFAULT_DELAY;
 
-  loop = FALSE;
+  do_loop = FALSE;
 
   loop_start = AGS_FX_NOTATION_AUDIO_DEFAULT_LOOP_START;
   loop_end = AGS_FX_NOTATION_AUDIO_DEFAULT_LOOP_END;
@@ -2338,7 +2339,7 @@ ags_fx_notation_audio_processor_real_counter_change(AgsFxNotationAudioProcessor 
       ags_port_safe_read(port,
 			 &value);
 
-      loop = g_value_get_boolean(&value);
+      do_loop = g_value_get_boolean(&value);
       g_value_unset(&value);
 
       g_object_unref(port);
@@ -2387,73 +2388,121 @@ ags_fx_notation_audio_processor_real_counter_change(AgsFxNotationAudioProcessor 
 
   g_rec_mutex_lock(fx_notation_audio_processor_mutex);
 
-  delay_counter = floor(fx_notation_audio_processor->delay_counter);
+  delay_counter = fx_notation_audio_processor->delay_counter;
 
   offset_counter = fx_notation_audio_processor->offset_counter;
   
   g_rec_mutex_unlock(fx_notation_audio_processor_mutex);  
+
+  absolute_delay = AGS_SOUNDCARD_DEFAULT_DELAY;
+
+  attack = 0;
   
   note_256th_attack_lower = 0;
   note_256th_attack_upper = 0;
 
-  note_256th_attack_of_16th_pulse = 0;
-  
   if(output_soundcard != NULL){
     delay = ags_soundcard_get_delay(AGS_SOUNDCARD(output_soundcard));
 
-    delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(output_soundcard));
+    absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
+    
+    //    delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(output_soundcard));
 
     ags_soundcard_get_presets(AGS_SOUNDCARD(output_soundcard),
 			      NULL,
 			      NULL,
 			      &buffer_size,
 			      NULL);
-  
+
+    //NOTE:JK: could be handled by ags-fx-notation
+    attack = ags_soundcard_get_attack(AGS_SOUNDCARD(output_soundcard));
+
     ags_soundcard_get_note_256th_attack(AGS_SOUNDCARD(output_soundcard),
 					&note_256th_attack_lower,
 					&note_256th_attack_upper);
-
-    note_256th_attack_of_16th_pulse = ags_soundcard_get_note_256th_attack_of_16th_pulse(AGS_SOUNDCARD(output_soundcard));
   }
 
+  note_256th_delay = absolute_delay / 16.0;
+
   if(delay_counter + 1.0 >= floor(delay)){
+    guint note_256th_offset_counter_tmp;
+    
     g_rec_mutex_lock(fx_notation_audio_processor_mutex);
     
-    fx_notation_audio_processor->current_delay_counter = 0.0;
-
-    if(loop &&
-       offset_counter + 1 >= loop_end){
+    if(do_loop &&
+       offset_counter + 1 == loop_end){
       fx_notation_audio_processor->current_offset_counter = loop_start;
+
+      note_256th_offset_counter_tmp = 
+	fx_notation_audio_processor->note_256th_current_offset_counter = 16 * loop_start;
+
+      if(note_256th_attack_lower < attack){
+	fx_notation_audio_processor->note_256th_current_offset_counter -= ((attack - note_256th_attack_lower) / (note_256th_delay * (double) buffer_size));
+      }
+      
+      if(fx_notation_audio_processor->note_256th_current_offset_counter == fx_notation_audio_processor->note_256th_offset_counter_last){
+	fx_notation_audio_processor->note_256th_current_offset_counter += 1; 
+      }
+      
+      fx_notation_audio_processor->note_256th_current_offset_counter_last = note_256th_offset_counter_tmp; // fx_notation_audio_processor->note_256th_current_offset_counter;
+
+      if(note_256th_delay < 1.0){
+	if(note_256th_attack_lower < note_256th_attack_upper){
+	  fx_notation_audio_processor->note_256th_current_offset_counter_last += (guint) floor((buffer_size - note_256th_attack_lower) / (note_256th_delay * (double) buffer_size));
+	}
+      }
     }else{
-      fx_notation_audio_processor->current_offset_counter += 1;
+      fx_notation_audio_processor->current_offset_counter = offset_counter + 1;
+
+      note_256th_offset_counter_tmp = 
+	fx_notation_audio_processor->note_256th_current_offset_counter = 16 * (offset_counter + 1);
+
+      if(note_256th_attack_lower < attack){
+	fx_notation_audio_processor->note_256th_current_offset_counter -= ((attack - note_256th_attack_lower) / (note_256th_delay * (double) buffer_size));
+      }
+      
+      if(fx_notation_audio_processor->note_256th_current_offset_counter == fx_notation_audio_processor->note_256th_offset_counter_last){
+	fx_notation_audio_processor->note_256th_current_offset_counter += 1; 
+      }
+
+      fx_notation_audio_processor->note_256th_current_offset_counter_last = note_256th_offset_counter_tmp; // fx_notation_audio_processor->note_256th_current_offset_counter;
+      
+      if(note_256th_delay < 1.0){
+	if(note_256th_attack_lower < note_256th_attack_upper){
+	  fx_notation_audio_processor->note_256th_current_offset_counter_last += (guint) floor((buffer_size - note_256th_attack_lower) / (note_256th_delay * (double) buffer_size));
+	}
+      }
     }
+
+    fx_notation_audio_processor->current_delay_counter = delay_counter + 1.0 - delay;
 
     g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
   }else{    
     g_rec_mutex_lock(fx_notation_audio_processor_mutex);
+
+    fx_notation_audio_processor->note_256th_current_offset_counter = (16 * offset_counter) + (guint) floor((delay_counter + 1.0) * (1.0 / note_256th_delay));
+
+#if 0
+    if(note_256th_attack_lower < attack){
+      fx_notation_audio_processor->note_256th_current_offset_counter -= ((attack - note_256th_attack_lower) / (note_256th_delay * (double) buffer_size));
+    }
+#endif
+      
+    if(fx_notation_audio_processor->note_256th_current_offset_counter == fx_notation_audio_processor->note_256th_offset_counter_last){
+      fx_notation_audio_processor->note_256th_current_offset_counter += 1; 
+    }
+
+    fx_notation_audio_processor->note_256th_current_offset_counter_last = fx_notation_audio_processor->note_256th_current_offset_counter;
     
+    if(note_256th_attack_lower < note_256th_attack_upper){
+      fx_notation_audio_processor->note_256th_current_offset_counter_last += (guint) floor((buffer_size - note_256th_attack_lower) / (note_256th_delay * (double) buffer_size));
+    }
+
     fx_notation_audio_processor->current_delay_counter += 1.0;
 
     g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
   }
-  
-  next_note_256th_attack_lower = note_256th_attack_of_16th_pulse;
-  next_note_256th_attack_upper = note_256th_attack_of_16th_pulse;
-
-  i_stop = 0;
-  
-  for(i = 1; note_256th_attack_lower + (guint) ((double) i * (fx_notation_audio_processor->note_256th_delay * (double) buffer_size)) < (guint) ((delay_counter + 1.0) * (double) buffer_size); i++){
-    next_note_256th_attack_lower = (next_note_256th_attack_lower + (guint) floor(fx_notation_audio_processor->note_256th_delay * (double) buffer_size)) % buffer_size;
-
-    i_stop = i;
-  }
-  
-  next_note_256th_attack_upper = next_note_256th_attack_lower;
-  
-  if(fx_notation_audio_processor->note_256th_delay < 1.0){
-    next_note_256th_attack_upper += (guint) floor((double) (buffer_size - next_note_256th_attack_lower) / (fx_notation_audio_processor->note_256th_delay * (double) buffer_size));
-  }
-  
+    
   g_rec_mutex_lock(fx_notation_audio_processor_mutex);
 
   fx_notation_audio_processor->current_tic_counter += 1;
@@ -2462,12 +2511,6 @@ ags_fx_notation_audio_processor_real_counter_change(AgsFxNotationAudioProcessor 
     /* reset - tic counter i.e. modified delay index within period */
     fx_notation_audio_processor->current_tic_counter = 0;
   }
-
-  fx_notation_audio_processor->note_256th_current_offset_counter = 16 * fx_notation_audio_processor->current_offset_counter;
-
-  fx_notation_audio_processor->note_256th_current_offset_counter = fx_notation_audio_processor->note_256th_current_offset_counter + (guint) floor((delay_counter * buffer_size) / (fx_notation_audio_processor->note_256th_delay * (double) buffer_size));
-
-  fx_notation_audio_processor->note_256th_current_offset_counter_last = fx_notation_audio_processor->note_256th_current_offset_counter + (guint) floor((next_note_256th_attack_upper - next_note_256th_attack_lower) / (fx_notation_audio_processor->note_256th_delay * (double) buffer_size));
   
   g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
   

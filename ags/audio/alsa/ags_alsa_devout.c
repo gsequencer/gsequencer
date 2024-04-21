@@ -3163,6 +3163,8 @@ ags_alsa_devout_tic(AgsSoundcard *soundcard)
 				      &note_256th_attack_upper);
 
   if(delay_counter + 1.0 >= floor(delay)){
+    guint note_256th_offset_tmp;
+
     if(do_loop &&
        note_offset + 1 == loop_right){
       ags_soundcard_set_note_offset(soundcard,
@@ -3170,13 +3172,22 @@ ags_alsa_devout_tic(AgsSoundcard *soundcard)
 
       g_rec_mutex_lock(alsa_devout_mutex);
       
-      alsa_devout->note_256th_offset = 16 * loop_left;
+      note_256th_offset_tmp = 
+	alsa_devout->note_256th_offset = 16 * loop_left;
 
-      alsa_devout->note_256th_offset_last = alsa_devout->note_256th_offset;
+      if(note_256th_attack_lower < attack){
+	alsa_devout->note_256th_offset -= ((attack - note_256th_attack_lower) / (note_256th_delay * (double) buffer_size));
+      }
+      
+      if(alsa_devout->note_256th_offset == alsa_devout->note_256th_offset_last){
+	alsa_devout->note_256th_offset += 1; 
+      }
+
+      alsa_devout->note_256th_offset_last = note_256th_offset_tmp; // alsa_devout->note_256th_offset;
 
       if(note_256th_delay < 1.0){
 	if(note_256th_attack_lower < note_256th_attack_upper){
-	  alsa_devout->note_256th_offset_last = alsa_devout->note_256th_offset + floor((note_256th_attack_upper - note_256th_attack_lower) / (alsa_devout->note_256th_delay * (double) buffer_size));
+	  alsa_devout->note_256th_offset_last = alsa_devout->note_256th_offset + floor((buffer_size - note_256th_attack_lower) / (alsa_devout->note_256th_delay * (double) buffer_size));
 	}
       }
 
@@ -3211,13 +3222,22 @@ ags_alsa_devout_tic(AgsSoundcard *soundcard)
 
       g_rec_mutex_lock(alsa_devout_mutex);
       
-      alsa_devout->note_256th_offset = 16 * (note_offset + 1);
+      note_256th_offset_tmp = 
+       alsa_devout->note_256th_offset = 16 * (note_offset + 1);
 
-      alsa_devout->note_256th_offset_last = alsa_devout->note_256th_offset;
+      if(note_256th_attack_lower < attack){
+	alsa_devout->note_256th_offset -= ((attack - note_256th_attack_lower) / (note_256th_delay * (double) buffer_size));
+      }
+      
+      if(alsa_devout->note_256th_offset == alsa_devout->note_256th_offset_last){
+	alsa_devout->note_256th_offset += 1; 
+      }
+
+      alsa_devout->note_256th_offset_last = note_256th_offset_tmp; // alsa_devout->note_256th_offset;
       
       if(note_256th_delay < 1.0){
 	if(note_256th_attack_lower < note_256th_attack_upper){
-	  alsa_devout->note_256th_offset_last = alsa_devout->note_256th_offset + floor((note_256th_attack_upper - note_256th_attack_lower) / (alsa_devout->note_256th_delay * (double) buffer_size));
+	  alsa_devout->note_256th_offset_last = alsa_devout->note_256th_offset + floor((buffer_size - note_256th_attack_lower) / (alsa_devout->note_256th_delay * (double) buffer_size));
 	}
       }
       
@@ -3267,10 +3287,20 @@ ags_alsa_devout_tic(AgsSoundcard *soundcard)
 
     alsa_devout->note_256th_offset = (16 * alsa_devout->note_offset) + (guint) floor((alsa_devout->delay_counter + 1.0) * (1.0 / note_256th_delay));
 
+#if 0
+    if(note_256th_attack_lower < attack){
+      alsa_devout->note_256th_offset -= ((attack - note_256th_attack_lower) / (note_256th_delay * (double) buffer_size));
+    }
+#endif
+    
+    if(alsa_devout->note_256th_offset == alsa_devout->note_256th_offset_last){
+      alsa_devout->note_256th_offset += 1; 
+    }
+    
     alsa_devout->note_256th_offset_last = alsa_devout->note_256th_offset;
 
     if(note_256th_attack_lower < note_256th_attack_upper){
-      alsa_devout->note_256th_offset_last = alsa_devout->note_256th_offset + floor((note_256th_attack_upper - note_256th_attack_lower) / (alsa_devout->note_256th_delay * (double) buffer_size));
+      alsa_devout->note_256th_offset_last = alsa_devout->note_256th_offset + floor((buffer_size - note_256th_attack_lower) / (alsa_devout->note_256th_delay * (double) buffer_size));
     }
     
     alsa_devout->delay_counter += 1.0;
