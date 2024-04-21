@@ -1257,6 +1257,7 @@ ags_pulse_port_cached_stream_request_callback(pa_stream *stream, size_t length, 
   guint frame_size;
   
   GRecMutex *pulse_port_mutex;
+  GRecMutex *device_mutex;
   GRecMutex *cache_mutex;
   
   if(pulse_port == NULL){
@@ -1312,6 +1313,17 @@ ags_pulse_port_cached_stream_request_callback(pa_stream *stream, size_t length, 
     soundcard = (GObject *) pulse_devin;
   }
 
+  /* get device mutex */
+  if(AGS_IS_PULSE_DEVOUT(soundcard)){
+    device_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(soundcard);
+  }else if(AGS_IS_PULSE_DEVIN(soundcard)){
+    device_mutex = AGS_PULSE_DEVIN_GET_OBJ_MUTEX(soundcard);
+  }else{
+    g_object_unref(audio_loop);
+    
+    return;
+  }
+  
   if(ags_soundcard_is_playing(AGS_SOUNDCARD(soundcard))){
     if(current_cache == 3){
       next_cache = 0;
@@ -1448,7 +1460,7 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
   }else{
     g_atomic_int_inc(&(pulse_port->queued));
   }
-
+  
   /*
    * process audio
    */
