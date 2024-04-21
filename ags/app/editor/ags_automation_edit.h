@@ -106,6 +106,11 @@ typedef enum{
   AGS_AUTOMATION_EDIT_KEY_R_META          = 1 <<  5,
 }AgsAutomationEditKeyMask;
 
+typedef enum{
+  AGS_AUTOMATION_EDIT_RENDER_VIEW,
+  AGS_AUTOMATION_EDIT_RENDER_EDITOR,
+}AgsAutomationEditRenderMode;
+
 struct _AgsAutomationEdit
 {
   GtkGrid grid;
@@ -114,6 +119,8 @@ struct _AgsAutomationEdit
   guint connectable_flags;
   guint mode;
 
+  guint render_mode;
+  
   guint button_mask;
   guint key_mask;
   

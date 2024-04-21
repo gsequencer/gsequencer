@@ -888,6 +888,8 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
   AgsMachine *old_machine;
   AgsCompositeToolbar *composite_toolbar;
   AgsMachineSelector *machine_selector;
+  AgsAutomationEditBox *automation_edit_box;
+  AgsWaveEditBox *wave_edit_box;
   
   GtkAdjustment *adjustment;
 
@@ -1287,9 +1289,6 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
       gtk_adjustment_set_value(adjustment,
 			       0.0);
 
-      ags_wave_edit_reset_vscrollbar(wave_edit);
-      ags_wave_edit_reset_hscrollbar(wave_edit);
-
       /*  */
       adjustment = gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->vscrollbar);
 
@@ -1429,9 +1428,25 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
   ags_notation_edit_reset_vscrollbar(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit));
   ags_notation_edit_reset_hscrollbar(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit));
 
+  automation_edit_box = ags_scrolled_automation_edit_box_get_automation_edit_box(composite_editor->automation_edit->edit);
+
+  list =
+    start_list = ags_automation_edit_box_get_automation_edit(automation_edit_box);
+
+  while(list != NULL){
+    ags_automation_edit_reset_vscrollbar((AgsAutomationEdit *) list->data);
+    ags_automation_edit_reset_hscrollbar((AgsAutomationEdit *) list->data);
+
+    list = list->next;
+  }
+
+  g_list_free(start_list);
+
   if(AGS_IS_AUDIOREC(machine)){
-    list = 
-      start_list = ags_wave_edit_box_get_wave_edit(AGS_WAVE_EDIT_BOX(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box));
+    wave_edit_box = ags_scrolled_wave_edit_box_get_wave_edit_box(composite_editor->wave_edit->edit);
+
+    list =
+      start_list = ags_wave_edit_box_get_wave_edit(wave_edit_box);
 
     while(list != NULL){
       ags_wave_edit_reset_vscrollbar((AgsWaveEdit *) list->data);
@@ -1446,6 +1461,32 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
   /* redraw */
   gtk_widget_queue_draw((GtkWidget *) composite_editor->notation_edit->edit);
 
+  automation_edit_box = ags_scrolled_automation_edit_box_get_automation_edit_box(composite_editor->automation_edit->edit);
+
+  list =
+    start_list = ags_automation_edit_box_get_automation_edit(automation_edit_box);
+
+  while(list != NULL){
+    gtk_widget_queue_draw(AGS_AUTOMATION_EDIT(list->data));
+
+    list = list->next;
+  }
+
+  g_list_free(start_list);
+
+  wave_edit_box = ags_scrolled_wave_edit_box_get_wave_edit_box(composite_editor->wave_edit->edit);
+
+  list =
+    start_list = ags_wave_edit_box_get_wave_edit(wave_edit_box);
+
+  while(list != NULL){
+    gtk_widget_queue_draw(AGS_WAVE_EDIT(list->data));
+
+    list = list->next;
+  }
+
+  g_list_free(start_list);
+  
   /* connect set-pads - new */
   if(machine != NULL){
     g_signal_connect_after(machine, "resize-audio-channels",
@@ -1557,8 +1598,10 @@ ags_composite_editor_add_automation_port(AgsCompositeEditor *composite_editor,
 										    FALSE);
 
     if(start_port != NULL){
-      start_port = g_list_concat(start_port,
-				 current_start_port);
+      if(current_start_port != NULL){
+	start_port = g_list_concat(start_port,
+				   current_start_port);
+      }
     }else{
       start_port = current_start_port;
     }
@@ -1584,8 +1627,10 @@ ags_composite_editor_add_automation_port(AgsCompositeEditor *composite_editor,
 											  control_name,
 											  TRUE);
       if(start_port != NULL){
-	start_port = g_list_concat(start_port,
-				   current_start_port);
+	if(current_start_port != NULL){
+	  start_port = g_list_concat(start_port,
+				     current_start_port);
+	}
       }else{
 	start_port = current_start_port;
       }
@@ -1595,8 +1640,10 @@ ags_composite_editor_add_automation_port(AgsCompositeEditor *composite_editor,
 											  FALSE);
 
       if(start_port != NULL){
-	start_port = g_list_concat(start_port,
-				   current_start_port);
+	if(current_start_port != NULL){
+	  start_port = g_list_concat(start_port,
+				     current_start_port);
+	}
       }else{
 	start_port = current_start_port;
       }
@@ -1635,8 +1682,10 @@ ags_composite_editor_add_automation_port(AgsCompositeEditor *composite_editor,
 											  control_name,
 											  TRUE);
       if(start_port != NULL){
-	start_port = g_list_concat(start_port,
-				   current_start_port);
+	if(current_start_port != NULL){
+	  start_port = g_list_concat(start_port,
+				     current_start_port);
+	}
       }else{
 	start_port = current_start_port;
       }
@@ -1646,8 +1695,10 @@ ags_composite_editor_add_automation_port(AgsCompositeEditor *composite_editor,
 											  FALSE);
 
       if(start_port != NULL){
-	start_port = g_list_concat(start_port,
-				   current_start_port);
+	if(current_start_port != NULL){
+	  start_port = g_list_concat(start_port,
+				     current_start_port);
+	}
       }else{
 	start_port = current_start_port;
       }
@@ -1818,9 +1869,6 @@ ags_composite_editor_add_automation_port(AgsCompositeEditor *composite_editor,
 
   gtk_adjustment_set_value(adjustment,
 			   0.0);
-
-  ags_automation_edit_reset_vscrollbar(automation_edit);
-  ags_automation_edit_reset_hscrollbar(automation_edit);
 
   if(map_width - allocation.width > 0){
     gtk_adjustment_set_upper(adjustment,
