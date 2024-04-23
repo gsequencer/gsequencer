@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -165,6 +165,7 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
   gboolean note_256th_mode;
   gdouble delay_counter;
   guint64 offset_counter;
+  guint64 note_256th_offset_counter;
   gdouble delay;
   guint length;
   guint frame_count;
@@ -217,6 +218,8 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
   delay_counter = 0.0;
   offset_counter = 0;
 
+  note_256th_offset_counter = 0;
+  
   if(fx_notation_audio_processor != NULL){
     fx_notation_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_notation_audio_processor);
 
@@ -226,6 +229,8 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
     delay_counter = fx_notation_audio_processor->delay_counter;
     offset_counter = fx_notation_audio_processor->offset_counter;
 
+    note_256th_offset_counter = fx_notation_audio_processor->note_256th_offset_counter;
+    
     g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
   }
 
@@ -278,16 +283,28 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
 
   for(i = 0; note != NULL; i++){
     guint x0, x1;
+    guint x0_256th;
+    guint x1_256th;
     guint y;
+
+    x0 = 0;
+    x1 = 1;
+
+    x0_256th = 0;
+    x0_256th = 15;
     
     g_object_get(note->data,
 		 "x0", &x0,
 		 "x1", &x1,
+		 "x0-256th", &x0_256th,
+		 "x1-256th", &x1_256th,
 		 "y", &y,
 		 NULL);
 
-    if(offset_counter >= x0){
-      if(offset_counter < x1 ||
+    if((!note_256th_mode && offset_counter >= x0) ||
+       (note_256th_mode && note_256th_offset_counter >= x0_256th)){
+      if((!note_256th_mode && offset_counter < x1) ||
+	 (note_256th_mode && note_256th_offset_counter < x1_256th) ||
 	 (pattern_mode &&
 	  frame_count < template_frame_count)){
 #ifdef AGS_DEBUG
@@ -426,7 +443,7 @@ ags_fx_notation_audio_signal_real_stream_feed(AgsFxNotationAudioSignal *fx_notat
 
   if(!note_256th_mode){
     if(x0 == offset_counter &&
-       delay_counter == 0.0){
+       (gint) floor(delay_counter) == 0){
       ags_audio_signal_open_feed(source,
 				 template,
 				 frame_count + buffer_size, frame_count);
@@ -445,9 +462,10 @@ ags_fx_notation_audio_signal_real_stream_feed(AgsFxNotationAudioSignal *fx_notat
   }else{
     gdouble note_256th_delay;
     guint x0_256th, x1_256th;
-    guint64 note_256th_offset_counter;
+    guint64 note_256th_offset_counter, note_256th_offset_counter_last;
 
     note_256th_offset_counter = 0;
+    note_256th_offset_counter_last = 15;
 
     note_256th_delay = delay / 16.0;
 
@@ -457,11 +475,15 @@ ags_fx_notation_audio_signal_real_stream_feed(AgsFxNotationAudioSignal *fx_notat
       g_rec_mutex_lock(fx_notation_audio_processor_mutex);
 
       note_256th_offset_counter = fx_notation_audio_processor->note_256th_offset_counter;
-
+      note_256th_offset_counter_last = fx_notation_audio_processor->note_256th_offset_counter_last;
+      
       note_256th_delay = fx_notation_audio_processor->note_256th_delay;
   
       g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
     }
+
+    x0_256th = 0;
+    x1_256th = 16;
     
     g_object_get(note,
 		 "x0-256th", &x0_256th,
@@ -485,7 +507,7 @@ ags_fx_notation_audio_signal_real_stream_feed(AgsFxNotationAudioSignal *fx_notat
 	}
       }
 
-      if(x0_256th + floor(1.0 / note_256th_delay) < note_256th_offset_counter){
+      if(x1_256th > note_256th_offset_counter_last){
 	ags_audio_signal_continue_feed(source,
 				       template,
 				       frame_count + buffer_size, frame_count);
@@ -503,7 +525,7 @@ ags_fx_notation_audio_signal_real_stream_feed(AgsFxNotationAudioSignal *fx_notat
 				    frame_count + buffer_size, frame_count);
 #endif
       }else{
-	if(x0_256th <= note_256th_offset_counter){
+	if(x1_256th > note_256th_offset_counter_last){
 	  ags_audio_signal_continue_feed(source,
 					 template,
 					 frame_count + buffer_size, frame_count);

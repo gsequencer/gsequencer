@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -85,6 +85,8 @@ struct _AgsFxNotationAudioProcessor
   guint64 note_256th_current_offset_counter_last;
 
   GList *note_256th;
+
+  gboolean has_16th_pulse;
 };
 
 struct _AgsFxNotationAudioProcessorClass

@@ -2989,9 +2989,16 @@ ags_file_widget_get_filename(AgsFileWidget *file_widget)
   
       selected_filename = gtk_string_object_get_string(string_object);
 
-      filename = g_strdup_printf("%s/%s",
-				 file_widget->current_path,
-				 selected_filename);
+      if(file_widget->current_path != NULL &&
+	 !g_strcmp0(file_widget->current_path,
+		    "recently-used:")){
+	filename = g_strdup_printf("%s",
+				   selected_filename);
+      }else{
+	filename = g_strdup_printf("%s/%s",
+				   file_widget->current_path,
+				   selected_filename);
+      }
     }
   
     /* multi selection */
@@ -3018,10 +3025,17 @@ ags_file_widget_get_filename(AgsFileWidget *file_widget)
   
 	selected_filename = gtk_string_object_get_string(string_object);
 
-	filename = g_strdup_printf("%s/%s",
-				   file_widget->current_path,
-				   selected_filename);
-      }  
+	if(file_widget->current_path != NULL &&
+	   !g_strcmp0(file_widget->current_path,
+		      "recently-used:")){
+	  filename = g_strdup_printf("%s",
+				     selected_filename);
+	}else{
+	  filename = g_strdup_printf("%s/%s",
+				     file_widget->current_path,
+				     selected_filename);
+	}
+      }
     }
   }
   
