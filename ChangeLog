@@ -1,7 +1,13 @@
 ags (6.9.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* refactored ags-fx-notation
+	* implemented ags_notation_find_note_256th_range()
+	* implemented ags_soundcard_util_calc_next_note_256th_offset()
+	* implemented ags_soundcard_util_calc_next_note_256th_attack()
+	* refactored ags-fx-notation counters
+	* TODO:JK: refactored all AgsSoundcard to use new note 256th offset and attack utility functions
+	* TODO:JK: refactored ags-fx-notation to use new note 256th offset and attack utility functions
+	* TODO:JK: improved all ags_soundcard_set_note_offset() to reset tic counter
 
 ags (6.8.6)
 
