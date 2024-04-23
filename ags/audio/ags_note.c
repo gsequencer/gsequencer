@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1108,20 +1108,32 @@ ags_note_sort_func(gconstpointer a,
 {
   guint a_x0, b_x0;
   guint a_y, b_y;
+
+  GRecMutex *mutex;
   
   if(a == NULL || b == NULL){
     return(0);
   }
 
-  g_object_get(a,
-	       "x0", &a_x0,
-	       "y", &a_y,
-	       NULL);
-    
-  g_object_get(b,
-	       "x0", &b_x0,
-	       "y", &b_y,
-	       NULL);
+  /* a */
+  mutex = AGS_NOTE_GET_OBJ_MUTEX(a);
+
+  g_rec_mutex_lock(mutex);
+
+  a_x0 = ((AgsNote *) a)->x_256th[0];
+  a_y = ((AgsNote *) a)->y;
+  
+  g_rec_mutex_unlock(mutex);
+
+  /* b */
+  mutex = AGS_NOTE_GET_OBJ_MUTEX(a);
+
+  g_rec_mutex_lock(mutex);
+
+  b_x0 = ((AgsNote *) b)->x_256th[0];
+  b_y = ((AgsNote *) b)->y;
+  
+  g_rec_mutex_unlock(mutex);
 
   if(a_x0 == b_x0){
     if(a_y == b_y){
