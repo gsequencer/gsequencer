@@ -851,7 +851,9 @@ ags_soundcard_util_calc_next_note_256th_offset(GObject *soundcard,
       }
     }
   }
-
+  
+  g_rec_mutex_unlock(obj_mutex);
+  
   if(note_256th_offset_lower != NULL){
     note_256th_offset_lower[0] = next_note_256th_offset_lower;
   }
@@ -1145,6 +1147,8 @@ ags_soundcard_util_calc_next_note_256th_attack(GObject *soundcard,
 										     note_256th_attack_position_upper + 1 + (next_note_256th_offset_upper - next_note_256th_offset_lower));
     }
   }
+  
+  g_rec_mutex_unlock(obj_mutex);
     
   if(note_256th_attack != NULL){
     note_256th_attack_lower[0] = next_note_256th_attack_lower;
