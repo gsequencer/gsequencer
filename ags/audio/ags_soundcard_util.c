@@ -176,6 +176,7 @@ ags_soundcard_util_adjust_delay_and_attack(GObject *soundcard)
   guint buffer_size;
   guint default_tact_frames;
   guint total_correct_frame_count;
+  gdouble correct_note_4th_frame_count;
   gdouble correct_frame_count;
   gdouble correct_note_256th_frame_count;
   guint frame_counter;
@@ -390,7 +391,9 @@ ags_soundcard_util_adjust_delay_and_attack(GObject *soundcard)
 
   total_correct_frame_count = buffer_size * ((guint) floor((gdouble) ((guint) AGS_SOUNDCARD_DEFAULT_PERIOD * default_tact_frames) / (gdouble) buffer_size));
 
-  correct_frame_count = (gdouble) total_correct_frame_count / AGS_SOUNDCARD_DEFAULT_PERIOD;
+  correct_note_4th_frame_count = floor((gdouble) total_correct_frame_count / (AGS_SOUNDCARD_DEFAULT_PERIOD / 4.0));
+  
+  correct_frame_count = (gdouble) correct_note_4th_frame_count / 4.0;
 
   correct_note_256th_frame_count = correct_frame_count / 16.0;
   
@@ -415,7 +418,7 @@ ags_soundcard_util_adjust_delay_and_attack(GObject *soundcard)
 
     for(j = 0; j < 16; j++){
       current_attack = attack[i];
-      current_note_256th_attack = (guint) (current_attack + (j * correct_note_256th_frame_count)) % buffer_size;
+      current_note_256th_attack = (guint) (current_attack + ((((16 * i) + j) % (64)) * correct_note_256th_frame_count)) % buffer_size;
 
       //      fprintf(stdout, " `-> nth list = %d, i = {#%d}\n", nth_list, ((16 * i) + j) % (guint) AGS_SOUNDCARD_DEFAULT_PERIOD);
 
@@ -425,11 +428,15 @@ ags_soundcard_util_adjust_delay_and_attack(GObject *soundcard)
     }
 
     if(i + 1 < AGS_SOUNDCARD_DEFAULT_PERIOD){
-      current_attack = (guint) ((i + 1) * correct_frame_count) % buffer_size;
+      current_attack = (guint) (((i + 1) % (4)) * correct_frame_count) % buffer_size;
     
       attack[i + 1] = current_attack;
 
-      frame_counter_delay_remainder += (buffer_size - ((guint) correct_frame_count % buffer_size));
+      if((i + 1) % (4) == 0){
+	frame_counter_delay_remainder = 0;
+      }
+      
+      frame_counter_delay_remainder += (correct_frame_count - ((guint) floor(corrected_delay) * buffer_size));
     
       increment_delay = FALSE;
 

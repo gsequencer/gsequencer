@@ -3201,8 +3201,9 @@ ags_alsa_devout_tic(AgsSoundcard *soundcard)
   //  g_message("tic -> next 256th [%d-%d]", next_note_256th_offset_lower, next_note_256th_offset_upper);
   
   if((16 * (note_offset + 1) >= next_note_256th_offset_lower &&
-      16 * (note_offset + 1) <= next_note_256th_offset_upper)){
-    //    g_message("16th pulse: %d", note_offset + 1);
+      16 * (note_offset + 1) <= next_note_256th_offset_upper) ||
+     (next_note_256th_offset_lower + 256 < note_256th_offset_lower)){
+    //    g_message("16th pulse: %d (delay = %f)", note_offset + 1, delay);
     
     if(do_loop &&
        note_offset + 1 == loop_right){
@@ -3303,7 +3304,7 @@ ags_alsa_devout_tic(AgsSoundcard *soundcard)
     
     g_rec_mutex_unlock(alsa_devout_mutex);
 
-    /* delay */
+    /* 16th pulse */
     ags_soundcard_offset_changed(soundcard,
 				 note_offset + 1);
   }else{
