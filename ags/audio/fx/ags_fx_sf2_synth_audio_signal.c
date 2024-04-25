@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -622,8 +622,8 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
     input_data = channel_data->input_data[midi_note];
 
     g_rec_mutex_unlock(fx_sf2_synth_audio_mutex);
-
-    if(delay_counter == 0.0 &&
+    
+    if((gint) floor(delay_counter) == 0 &&
        x0 == offset_counter){
       g_rec_mutex_lock(fx_sf2_synth_audio_mutex);
 

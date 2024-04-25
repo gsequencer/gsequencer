@@ -50,6 +50,17 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="6.9.0" date="2024-04-25">
+      <description>
+	<p>
+	  Fixed note 256th offset counter in ags-fx-notation.
+	</p>
+	<p>
+	  Fixed time correction to perform per quarter pulse.
+	</p>
+      </description>
+    </release>
+
     <release version="6.8.4" date="2024-04-18">
       <description>
 	<p>

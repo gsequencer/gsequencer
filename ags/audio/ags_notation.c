@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -639,6 +639,8 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
   gboolean use_ags_offset;
   gboolean success;
 
+  GRecMutex *mutex;
+  
   if(notation == NULL){
     return(NULL);
   }
@@ -673,9 +675,13 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
     current_x = 0;
     
     /* check current - start */
-    g_object_get(current_start->data,
-		 "audio-channel", &current_audio_channel,
-		 NULL);
+    mutex = AGS_NOTATION_GET_OBJ_MUTEX(current_start->data);
+
+    g_rec_mutex_lock(mutex);
+
+    current_audio_channel = ((AgsNotation *) current_start->data)->audio_channel;
+    
+    g_rec_mutex_unlock(mutex);
     
     if(current_audio_channel == audio_channel){
       if(timestamp == NULL){
@@ -684,24 +690,22 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
 	break;
       }
 
-      g_object_get(current_start->data,
-		   "timestamp", &current_timestamp,
-		   NULL);
+      g_rec_mutex_lock(mutex);
+
+      current_timestamp = ((AgsNotation *) current_start->data)->timestamp;
+    
+      g_rec_mutex_unlock(mutex);
       
       if(current_timestamp != NULL){
 	if(use_ags_offset){
 	  current_x = ags_timestamp_get_ags_offset(current_timestamp);
 
-	  g_object_unref(current_timestamp);
-	  
 	  if(current_x > x){
 	    break;
 	  }
 	}else{
 	  current_x = ags_timestamp_get_unix_time(current_timestamp);
 	  
-	  g_object_unref(current_timestamp);
-
 	  if(current_x > x){
 	    break;
 	  }
@@ -728,9 +732,13 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
     }
 
     /* check current - end */
-    g_object_get(current_end->data,
-		 "audio-channel", &current_audio_channel,
-		 NULL);
+    mutex = AGS_NOTATION_GET_OBJ_MUTEX(current_end->data);
+
+    g_rec_mutex_lock(mutex);
+
+    current_audio_channel = ((AgsNotation *) current_end->data)->audio_channel;
+    
+    g_rec_mutex_unlock(mutex);
     
     if(current_audio_channel == audio_channel){
       if(timestamp == NULL){
@@ -739,15 +747,15 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
 	break;
       }
 
-      g_object_get(current_end->data,
-		   "timestamp", &current_timestamp,
-		   NULL);
+      g_rec_mutex_lock(mutex);
+
+      current_timestamp = ((AgsNotation *) current_end->data)->timestamp;
+    
+      g_rec_mutex_unlock(mutex);
       
       if(current_timestamp != NULL){
 	if(use_ags_offset){
 	  current_x = ags_timestamp_get_ags_offset(current_timestamp);
-
-	  g_object_unref(current_timestamp);
 
 	  if(current_x < x){
 	    break;
@@ -755,8 +763,6 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
 	}else{
 	  current_x = ags_timestamp_get_unix_time(current_timestamp);
 	  
-	  g_object_unref(current_timestamp);
-
 	  if(current_x < x){
 	    break;
 	  }
@@ -783,9 +789,13 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
     }
 
     /* check current - center */
-    g_object_get(current->data,
-		 "audio-channel", &current_audio_channel,
-		 NULL);
+    mutex = AGS_NOTATION_GET_OBJ_MUTEX(current->data);
+
+    g_rec_mutex_lock(mutex);
+
+    current_audio_channel = ((AgsNotation *) current->data)->audio_channel;
+    
+    g_rec_mutex_unlock(mutex);
     
     if(current_audio_channel == audio_channel){
       if(timestamp == NULL){
@@ -794,16 +804,16 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
 	break;
       }
     }
+
+    g_rec_mutex_lock(mutex);
+
+    current_timestamp = ((AgsNotation *) current->data)->timestamp;
     
-    g_object_get(current->data,
-		 "timestamp", &current_timestamp,
-		 NULL);
+    g_rec_mutex_unlock(mutex);
 
     if(current_timestamp != NULL){
       if(use_ags_offset){
 	current_x = ags_timestamp_get_ags_offset(current_timestamp);
-
-	g_object_unref(current_timestamp);
 
 	if(current_x >= x &&
 	   current_x < x + AGS_NOTATION_DEFAULT_OFFSET &&
@@ -815,8 +825,6 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
       }else{
 	current_x = ags_timestamp_get_unix_time(current_timestamp);
 	  
-	g_object_unref(current_timestamp);
-
 	if(current_x >= x &&
 	   current_x < x + AGS_NOTATION_DEFAULT_DURATION &&
 	   current_audio_channel == audio_channel){
@@ -1901,6 +1909,232 @@ ags_notation_find_offset(AgsNotation *notation,
       current = current->prev;
     }
   }
+
+  g_rec_mutex_unlock(notation_mutex);
+  
+  return(retval);
+}
+
+/**
+ * ags_notation_find_note_256th_range:
+ * @notation: the #AgsNotation
+ * @x_256th_lower: offset lower
+ * @x_256th_upper: offset upper
+ * @use_selection_list: if %TRUE selection is searched
+ *
+ * Find all notes by range @x_256th_lower to @x_256th_upper.
+ *
+ * Returns: (element-type AgsAudio.Note) (transfer full): the #GList-struct containing matching #AgsNote
+ *
+ * Since: 6.9.0
+ */
+GList*
+ags_notation_find_note_256th_range(AgsNotation *notation,
+				   guint x_256th_lower, guint x_256th_upper,
+				   gboolean use_selection_list)
+{
+  GList *start_note, *note;
+  GList *first, *last, *center;
+  GList *first_match;
+  GList *retval;
+    
+  gint length;
+  gint remaining;
+  gint position;
+  gint nth;
+  guint x0_256th;
+  guint center_x0_256th;
+  gboolean success;
+  
+  GRecMutex *notation_mutex;
+  GRecMutex *note_mutex;
+
+  if(!AGS_IS_NOTATION(notation)){
+    return(NULL);
+  }
+
+  /* get notation mutex */
+  notation_mutex = AGS_NOTATION_GET_OBJ_MUTEX(notation);
+
+  retval = NULL;
+  
+  /* find note */
+  g_rec_mutex_lock(notation_mutex);
+
+  if(use_selection_list){
+    start_note = notation->selection;
+  }else{
+    start_note = notation->note;
+  }
+
+  first_match = NULL;
+
+  first = start_note;
+  last = g_list_last(start_note);
+  
+  length = g_list_length(start_note);
+  position = (length - 1) / 2;
+
+  center = g_list_nth(start_note,
+		      position);
+
+  success = FALSE;
+  
+  while(!success && center != NULL){
+    /* get note mutex */
+    note_mutex = AGS_NOTE_GET_OBJ_MUTEX(first->data);
+
+    /* x0_256th */
+    g_rec_mutex_lock(note_mutex);
+
+    x0_256th = ((AgsNote *) first->data)->x_256th[0];
+  
+    g_rec_mutex_unlock(note_mutex);
+
+    if(x0_256th > x_256th_upper){
+      break;
+    }
+    
+    if(x0_256th >= x_256th_lower &&
+       x0_256th <= x_256th_upper){
+      first_match = first;
+      
+      break;
+    }
+
+    /* get note mutex */
+    note_mutex = AGS_NOTE_GET_OBJ_MUTEX(last->data);
+    
+    /* x0_256th */
+    g_rec_mutex_lock(note_mutex);
+    
+    x0_256th = ((AgsNote *) last->data)->x_256th[0];
+    
+    g_rec_mutex_unlock(note_mutex);
+    
+    if(x0_256th >= x_256th_lower &&
+       x0_256th <= x_256th_upper){
+      first_match = last;
+
+      break;
+    }
+        
+    if(x0_256th < x_256th_lower){
+      break;
+    }
+
+    /* get note mutex */
+    note_mutex = AGS_NOTE_GET_OBJ_MUTEX(center->data);
+
+    /* x0_256th */
+    g_rec_mutex_lock(note_mutex);
+
+    x0_256th =
+      center_x0_256th = ((AgsNote *) center->data)->x_256th[0];
+  
+    g_rec_mutex_unlock(note_mutex);
+
+    if(x0_256th >= x_256th_lower &&
+       x0_256th <= x_256th_upper){
+      first_match = center;
+
+      break;
+    }
+
+    if(length <= 3){
+      break;
+    }
+
+    if(center_x0_256th < x_256th_lower){
+      first = center->next;
+      last = last->prev;
+    }else if(center_x0_256th > x_256th_upper){
+      first = first->next;
+      last = center->prev;
+    }else{
+      first = first->next;
+      //NOTE:JK: we want progression
+      //current_end = current_end->prev;
+    }
+
+    length = g_list_position(first,
+			     last) + 1;
+    position = (length - 1) / 2;
+
+    center = g_list_nth(first,
+			position);
+  }
+
+  /* inclusion */
+  if(first_match != NULL){
+    GList *list;
+
+    /* check leading */
+    list = first_match;
+    
+    while(list != NULL){
+      /* get note mutex */
+      note_mutex = AGS_NOTE_GET_OBJ_MUTEX(list->data);
+
+      /* x0_256th */
+      g_rec_mutex_lock(note_mutex);
+
+      x0_256th = ((AgsNote *) list->data)->x_256th[0];
+  
+      g_rec_mutex_unlock(note_mutex);
+
+      if(x0_256th >= x_256th_lower &&
+	 x0_256th <= x_256th_upper){
+#if 0
+	retval = g_list_insert_sorted(retval,
+				      list->data,
+				      (GCompareFunc) ags_note_sort_func);
+#else
+	retval = g_list_prepend(retval,
+				list->data);
+#endif
+	g_object_ref(list->data);
+      }else{
+	break;
+      }
+      
+      list = list->prev;
+    }
+
+    /* check trailing */
+    list = first_match->next;
+    
+    while(list != NULL){
+      /* get note mutex */
+      note_mutex = AGS_NOTE_GET_OBJ_MUTEX(list->data);
+
+      /* x0_256th */
+      g_rec_mutex_lock(note_mutex);
+
+      x0_256th = ((AgsNote *) list->data)->x_256th[0];
+  
+      g_rec_mutex_unlock(note_mutex);
+
+      if(x0_256th >= x_256th_lower &&
+	 x0_256th <= x_256th_upper){
+#if 0
+	retval = g_list_insert_sorted(retval,
+				      list->data,
+				      (GCompareFunc) ags_note_sort_func);
+#else
+	retval = g_list_prepend(retval,
+				list->data);
+#endif
+	g_object_ref(list->data);
+      }else{
+	break;
+      }
+      
+      list = list->next;
+    }
+  }
+
+ ags_notation_find_note_256th_range_END:
 
   g_rec_mutex_unlock(notation_mutex);
   
