@@ -966,6 +966,8 @@ libgsequencer_sources = files(
   'app/ags_machine_editor_pad_callbacks.c',
   'app/ags_machine_util.c',
   'app/ags_meta_data_window.c',
+  'app/ags_midi_cc_editor.c',
+  'app/ags_midi_cc_editor_callbacks.c',
   'app/ags_midi_dialog.c',
   'app/ags_midi_dialog_callbacks.c',
   'app/ags_midi_preferences.c',

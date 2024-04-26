@@ -9,6 +9,38 @@ ags (7.0.0)
 	* TODO:JK: implemented pitch selection of ags-sf2-synth
 	* TODO:JK: implemented pitch selection of ags-sfz-synth
 
+ags (6.9.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed some ref counters in ags-fx-notation
+
+ags (6.9.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_notation_find_note_256th_range()
+	* implemented ags_soundcard_util_calc_next_note_256th_offset()
+	* implemented ags_soundcard_util_calc_next_note_256th_attack()
+	* refactored ags-fx-notation counters
+	* refactored all AgsSoundcard to use new note 256th offset and attack utility functions
+	* refactored ags-fx-notation to use new note 256th offset and attack utility functions
+	* improved all ags_soundcard_set_note_offset() to reset tic counter
+
+ags (6.8.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed dead-lock in ags_pulse_devout_tic()
+
+ags (6.8.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsAutomationEdit render mode
+
+ags (6.8.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed automation cursor draw function
+	* updated AppStream XML
+
 ags (6.8.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

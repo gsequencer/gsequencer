@@ -387,7 +387,7 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
   wave_edit->stride = -1;
   
   /* vscrollbar */
-  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, wave_edit->control_height, 1.0);
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
   wave_edit->vscrollbar = (GtkScrollbar *) gtk_scrollbar_new(GTK_ORIENTATION_VERTICAL,
 							     adjustment);
   gtk_widget_set_visible((GtkWidget *) wave_edit->vscrollbar,

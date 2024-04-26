@@ -1165,7 +1165,7 @@ ags_fx_fm_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_a
 
     g_rec_mutex_unlock(fx_fm_synth_audio_mutex);
 
-    if(delay_counter == 0.0 &&
+    if((gint) floor(delay_counter) == 0 &&
        x0 == offset_counter){
       g_rec_mutex_lock(fx_fm_synth_audio_mutex);
 
