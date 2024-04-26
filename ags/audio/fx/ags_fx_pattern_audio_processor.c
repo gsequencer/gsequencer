@@ -607,6 +607,10 @@ ags_fx_pattern_audio_processor_change_bpm(AgsTactable *tactable, gdouble new_bpm
       g_object_unref(port);
     }
   }
+
+  if(output_soundcard != NULL){
+    g_object_unref(output_soundcard);
+  }
   
   if(fx_pattern_audio != NULL){
     g_object_unref(fx_pattern_audio);
@@ -674,6 +678,10 @@ ags_fx_pattern_audio_processor_change_tact(AgsTactable *tactable, gdouble new_ta
     }
   }
   
+  if(output_soundcard != NULL){
+    g_object_unref(output_soundcard);
+  }
+
   if(fx_pattern_audio != NULL){
     g_object_unref(fx_pattern_audio);
   }
@@ -1042,6 +1050,10 @@ ags_fx_pattern_audio_processor_real_key_on(AgsFxPatternAudioProcessor *fx_patter
 
   if(recall_id != NULL){
     g_object_unref(recall_id);
+  }
+
+  if(recycling_context != NULL){
+    g_object_unref(recycling_context);
   }
   
   if(fx_pattern_audio != NULL){

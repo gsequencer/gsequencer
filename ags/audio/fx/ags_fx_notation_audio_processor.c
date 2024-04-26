@@ -1582,8 +1582,8 @@ ags_fx_notation_audio_processor_real_play(AgsFxNotationAudioProcessor *fx_notati
     if(notation != NULL){
 #if 0
       start_note = ags_notation_find_note_256th_range(notation->data,
-						      16 * (guint) floor((double) note_256th_offset_lower / 16.0),
-						      16 * (guint) ceil((double) note_256th_offset_upper / 16.0),
+						      16 * (guint) floor((double) note_256th_offset_lower / 16.0) + ((floor((double) note_256th_offset_lower / 16.0) >= 1.0) ? -1.0: 0.0),
+						      16 * (guint) ceil((double) note_256th_offset_upper / 16.0) + 1.0,
 						      FALSE);
 #else
       start_note = ags_notation_find_note_256th_range(notation->data,
@@ -1650,6 +1650,10 @@ ags_fx_notation_audio_processor_real_play(AgsFxNotationAudioProcessor *fx_notati
     /* iterate */
     note = note_next;
   }    
+
+  if(output_soundcard != NULL){
+    g_object_unref(output_soundcard);
+  }
   
   if(audio != NULL){
     g_object_unref(audio);
@@ -2597,11 +2601,11 @@ ags_fx_notation_audio_processor_real_counter_change(AgsFxNotationAudioProcessor 
     g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
   }
   
+  /* unref */
   if(output_soundcard != NULL){
     g_object_unref(output_soundcard);
   }
 
-  /* unref */
   if(fx_notation_audio != NULL){
     g_object_unref(fx_notation_audio);
   }
