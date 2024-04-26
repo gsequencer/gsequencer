@@ -31,6 +31,7 @@ void ags_link_editor_connectable_interface_init(AgsConnectableInterface *connect
 void ags_link_editor_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_link_editor_init(AgsLinkEditor *link_editor);
 
+gboolean ags_link_editor_is_connected(AgsConnectable *connectable);
 void ags_link_editor_connect(AgsConnectable *connectable);
 void ags_link_editor_disconnect(AgsConnectable *connectable);
 
@@ -110,10 +111,23 @@ ags_link_editor_class_init(AgsLinkEditorClass *link_editor)
 void
 ags_link_editor_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_link_editor_is_connected;  
   connectable->connect = ags_link_editor_connect;
   connectable->disconnect = ags_link_editor_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -165,6 +179,20 @@ ags_link_editor_init(AgsLinkEditor *link_editor)
   link_editor->open_dialog = NULL;
 }
 
+gboolean
+ags_link_editor_is_connected(AgsConnectable *connectable)
+{
+  AgsLinkEditor *link_editor;
+
+  gboolean retval;
+
+  link_editor = AGS_LINK_EDITOR(connectable);
+
+  retval = ((AGS_CONNECTABLE_CONNECTED & (link_editor->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(retval);
+}
+
 void
 ags_link_editor_connect(AgsConnectable *connectable)
 {
@@ -172,7 +200,7 @@ ags_link_editor_connect(AgsConnectable *connectable)
 
   link_editor = AGS_LINK_EDITOR(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (link_editor->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -190,7 +218,7 @@ ags_link_editor_disconnect(AgsConnectable *connectable)
 
   link_editor = AGS_LINK_EDITOR(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (link_editor->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
