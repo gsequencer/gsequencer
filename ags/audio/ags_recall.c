@@ -100,6 +100,12 @@ void ags_recall_real_stop_persistent(AgsRecall *recall);
 void ags_recall_real_cancel(AgsRecall *recall);
 void ags_recall_real_done(AgsRecall *recall);
 
+void ags_recall_real_midi1_control_change(AgsRecall *recall);
+
+void ags_recall_real_midi2_control_change(AgsRecall *recall);
+
+void ags_recall_real_jack_metadata(AgsRecall *recall);
+
 AgsRecall* ags_recall_real_duplicate(AgsRecall *reall,
 				     AgsRecallID *recall_id,
 				     guint *n_params, gchar **parameter_name, GValue *value);
@@ -170,6 +176,9 @@ enum{
   PLAY_DUPLICATE,
   PLAY_NOTIFY_DEPENDENCY,
   CHILD_ADDED,
+  PLAY_MIDI1_CONTROL_CHANGE,
+  PLAY_MIDI2_CONTROL_CHANGE,
+  PLAY_JACK_METADATA,
   LAST_SIGNAL,
 };
 
@@ -1025,6 +1034,57 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 g_cclosure_marshal_VOID__OBJECT,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_OBJECT);
+
+  /**
+   * AgsRecall::midi1-control-change:
+   * @recall: the #AgsRecall
+   *
+   * The ::midi1-control change event notifies about parsing MIDI version 1.0 control change.
+   *
+   * Since: 7.0.0
+   */
+  recall_signals[PLAY_MIDI1_CONTROL_CHANGE] =
+    g_signal_new("midi1-control-change",
+		 G_TYPE_FROM_CLASS(recall),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsRecallClass, midi1_control_change),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
+  /**
+   * AgsRecall::midi2-control-change:
+   * @recall: the #AgsRecall
+   *
+   * The ::midi2-control change event notifies about parsing MIDI version 2.0 control change.
+   *
+   * Since: 7.0.0
+   */
+  recall_signals[PLAY_MIDI2_CONTROL_CHANGE] =
+    g_signal_new("midi2-control-change",
+		 G_TYPE_FROM_CLASS(recall),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsRecallClass, midi2_control_change),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+  
+  /**
+   * AgsRecall::jack-metadata:
+   * @recall: the #AgsRecall to finish playback
+   *
+   * The ::jack-metadata signal notifies about checking JACK metadata property change.
+   *
+   * Since: 3.0.0
+   */
+  recall_signals[PLAY_JACK_METADATA] =
+    g_signal_new("jack-metadata",
+		 G_TYPE_FROM_CLASS(recall),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsRecallClass, jack_metadata),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
 }
 
 void
@@ -1138,6 +1198,12 @@ ags_recall_init(AgsRecall *recall)
   recall->child_value = NULL;
 
   recall->children = NULL;
+
+  recall->midi1_control_change = NULL;
+  
+  recall->midi2_control_change = NULL;
+
+  recall->jack_metadata = NULL;
 }
 
 void
@@ -6051,6 +6117,78 @@ ags_recall_done(AgsRecall *recall)
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
 		recall_signals[PLAY_DONE], 0);
+  g_object_unref(G_OBJECT(recall));
+}
+
+void
+ags_recall_real_midi1_control_change(AgsRecall *recall)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_recall_midi1_control_change:
+ * @recall: the #AgsRecall
+ *
+ * The #AgsRecall checks MIDI version 1 control change from input sequencer.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_recall_midi1_control_change(AgsRecall *recall)
+{
+  g_return_if_fail(AGS_IS_RECALL(recall));
+  g_object_ref(G_OBJECT(recall));
+  g_signal_emit(G_OBJECT(recall),
+		recall_signals[PLAY_MIDI1_CONTROL_CHANGE], 0);
+  g_object_unref(G_OBJECT(recall));
+}
+
+void
+ags_recall_real_midi2_control_change(AgsRecall *recall)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_recall_midi2_control_change:
+ * @recall: the #AgsRecall
+ *
+ * The #AgsRecall checks MIDI version 2 control change from input sequencer.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_recall_midi2_control_change(AgsRecall *recall)
+{
+  g_return_if_fail(AGS_IS_RECALL(recall));
+  g_object_ref(G_OBJECT(recall));
+  g_signal_emit(G_OBJECT(recall),
+		recall_signals[PLAY_MIDI2_CONTROL_CHANGE], 0);
+  g_object_unref(G_OBJECT(recall));
+}
+
+void
+ags_recall_real_jack_metadata(AgsRecall *recall)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_recall_jack_metadata:
+ * @recall: the #AgsRecall
+ *
+ * The #AgsRecall checks JACK metadata property change from CV port.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_recall_jack_metadata(AgsRecall *recall)
+{
+  g_return_if_fail(AGS_IS_RECALL(recall));
+  g_object_ref(G_OBJECT(recall));
+  g_signal_emit(G_OBJECT(recall),
+		recall_signals[PLAY_JACK_METADATA], 0);
   g_object_unref(G_OBJECT(recall));
 }
 

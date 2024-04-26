@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -45,8 +45,8 @@ G_BEGIN_DECLS
 
 #define AGS_RECALL_GET_OBJ_MUTEX(obj) (&(((AgsRecall *) obj)->obj_mutex))
 
-#define AGS_RECALL_DEFAULT_VERSION "2.0.0"
-#define AGS_RECALL_DEFAULT_BUILD_ID "Tue Feb  6 14:27:35 UTC 2018"
+#define AGS_RECALL_DEFAULT_VERSION "7.0.0"
+#define AGS_RECALL_DEFAULT_BUILD_ID "Fri Apr 26 12:33:34 UTC 2024"
 
 typedef struct _AgsRecall AgsRecall;
 typedef struct _AgsRecallClass AgsRecallClass;
@@ -154,6 +154,12 @@ struct _AgsRecall
   GValue *child_value;
 
   GList *children;  
+
+  GHashTable *midi1_control_change;
+
+  GHashTable *midi2_control_change;
+
+  GHashTable *jack_metadata;
 };
 
 struct _AgsRecallClass
@@ -188,6 +194,12 @@ struct _AgsRecallClass
   void (*notify_dependency)(AgsRecall *recall, guint dependency, gboolean increase);
 
   void (*child_added)(AgsRecall *recall, AgsRecall *child);
+
+  void (*midi1_control_change)(AgsRecall *recall);
+
+  void (*midi2_control_change)(AgsRecall *recall);
+
+  void (*jack_metadata)(AgsRecall *recall);
 };
 
 /**
@@ -352,6 +364,12 @@ void ags_recall_feed_output_queue(AgsRecall *recall);
 void ags_recall_stop_persistent(AgsRecall *recall);
 void ags_recall_cancel(AgsRecall *recall);
 void ags_recall_done(AgsRecall *recall);
+
+void ags_recall_midi1_control_change(AgsRecall *recall);
+
+void ags_recall_midi2_control_change(AgsRecall *recall);
+
+void ags_recall_jack_metadata(AgsRecall *recall);
 
 AgsRecall* ags_recall_duplicate(AgsRecall *recall,
 				AgsRecallID *recall_id,

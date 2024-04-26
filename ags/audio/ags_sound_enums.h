@@ -128,27 +128,33 @@ typedef enum{
  * @AGS_SOUND_STAGING_REMOVE: remove
  * @AGS_SOUND_STAGING_RESET: reset
  * @AGS_SOUND_STAGING_FX: fx staging
+ * @AGS_SOUND_STAGING_MIDI1_CONTROL_CHANGE: parse MIDI version 1 control change
+ * @AGS_SOUND_STAGING_MIDI2_CONTROL_CHANGE: parse MIDI version 2 control change
+ * @AGS_SOUND_STAGING_JACK_METADATA: check JACK metadata property change
  * 
  * Enum values to stage the specified action.
  */
 typedef enum{
-  AGS_SOUND_STAGING_CHECK_RT_DATA       = 1,
-  AGS_SOUND_STAGING_RUN_INIT_PRE        = 1 <<  1,
-  AGS_SOUND_STAGING_RUN_INIT_INTER      = 1 <<  2,
-  AGS_SOUND_STAGING_RUN_INIT_POST       = 1 <<  3,
-  AGS_SOUND_STAGING_FEED_INPUT_QUEUE    = 1 <<  4,
-  AGS_SOUND_STAGING_AUTOMATE            = 1 <<  5,
-  AGS_SOUND_STAGING_RUN_PRE             = 1 <<  6,
-  AGS_SOUND_STAGING_RUN_INTER           = 1 <<  7,
-  AGS_SOUND_STAGING_RUN_POST            = 1 <<  8,
-  AGS_SOUND_STAGING_DO_FEEDBACK         = 1 <<  9,
-  AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE   = 1 << 10,
-  AGS_SOUND_STAGING_FINI                = 1 << 11,
-  AGS_SOUND_STAGING_CANCEL              = 1 << 12,
-  AGS_SOUND_STAGING_DONE                = 1 << 13,
-  AGS_SOUND_STAGING_REMOVE              = 1 << 14,
-  AGS_SOUND_STAGING_RESET               = 1 << 15,
-  AGS_SOUND_STAGING_FX                  = 1 << 16,
+  AGS_SOUND_STAGING_CHECK_RT_DATA         = 1,
+  AGS_SOUND_STAGING_RUN_INIT_PRE          = 1 <<  1,
+  AGS_SOUND_STAGING_RUN_INIT_INTER        = 1 <<  2,
+  AGS_SOUND_STAGING_RUN_INIT_POST         = 1 <<  3,
+  AGS_SOUND_STAGING_FEED_INPUT_QUEUE      = 1 <<  4,
+  AGS_SOUND_STAGING_AUTOMATE              = 1 <<  5,
+  AGS_SOUND_STAGING_RUN_PRE               = 1 <<  6,
+  AGS_SOUND_STAGING_RUN_INTER             = 1 <<  7,
+  AGS_SOUND_STAGING_RUN_POST              = 1 <<  8,
+  AGS_SOUND_STAGING_DO_FEEDBACK           = 1 <<  9,
+  AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE     = 1 << 10,
+  AGS_SOUND_STAGING_FINI                  = 1 << 11,
+  AGS_SOUND_STAGING_CANCEL                = 1 << 12,
+  AGS_SOUND_STAGING_DONE                  = 1 << 13,
+  AGS_SOUND_STAGING_REMOVE                = 1 << 14,
+  AGS_SOUND_STAGING_RESET                 = 1 << 15,
+  AGS_SOUND_STAGING_FX                    = 1 << 16,
+  AGS_SOUND_STAGING_MIDI1_CONTROL_CHANGE  = 1 << 17,
+  AGS_SOUND_STAGING_MIDI2_CONTROL_CHANGE  = 1 << 18,
+  AGS_SOUND_STAGING_JACK_METADATA         = 1 << 19,
 }AgsSoundStagingFlags;
 
 /**

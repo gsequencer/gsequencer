@@ -2000,6 +2000,9 @@ ags_recall_feed_output_queue
 ags_recall_stop_persistent
 ags_recall_cancel
 ags_recall_done
+ags_recall_midi1_control_change
+ags_recall_midi2_control_change
+ags_recall_jack_metadata
 ags_recall_duplicate
 ags_recall_notify_dependency
 ags_recall_child_added
