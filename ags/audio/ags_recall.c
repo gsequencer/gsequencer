@@ -22,6 +22,7 @@
 #include <ags/plugin/ags_ladspa_manager.h>
 #include <ags/plugin/ags_dssi_manager.h>
 #include <ags/plugin/ags_lv2_manager.h>
+#include <ags/plugin/ags_plugin_port.h>
 
 #include <ags/audio/ags_sound_enums.h>
 #include <ags/audio/ags_audio.h>
@@ -100,6 +101,12 @@ void ags_recall_real_stop_persistent(AgsRecall *recall);
 void ags_recall_real_cancel(AgsRecall *recall);
 void ags_recall_real_done(AgsRecall *recall);
 
+void ags_recall_real_midi1_control_change(AgsRecall *recall);
+
+void ags_recall_real_midi2_control_change(AgsRecall *recall);
+
+void ags_recall_real_jack_metadata(AgsRecall *recall);
+
 AgsRecall* ags_recall_real_duplicate(AgsRecall *reall,
 				     AgsRecallID *recall_id,
 				     guint *n_params, gchar **parameter_name, GValue *value);
@@ -170,6 +177,9 @@ enum{
   PLAY_DUPLICATE,
   PLAY_NOTIFY_DEPENDENCY,
   CHILD_ADDED,
+  PLAY_MIDI1_CONTROL_CHANGE,
+  PLAY_MIDI2_CONTROL_CHANGE,
+  PLAY_JACK_METADATA,
   LAST_SIGNAL,
 };
 
@@ -1025,6 +1035,57 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 g_cclosure_marshal_VOID__OBJECT,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_OBJECT);
+
+  /**
+   * AgsRecall::midi1-control-change:
+   * @recall: the #AgsRecall
+   *
+   * The ::midi1-control change event notifies about parsing MIDI version 1.0 control change.
+   *
+   * Since: 7.0.0
+   */
+  recall_signals[PLAY_MIDI1_CONTROL_CHANGE] =
+    g_signal_new("midi1-control-change",
+		 G_TYPE_FROM_CLASS(recall),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsRecallClass, midi1_control_change),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
+  /**
+   * AgsRecall::midi2-control-change:
+   * @recall: the #AgsRecall
+   *
+   * The ::midi2-control change event notifies about parsing MIDI version 2.0 control change.
+   *
+   * Since: 7.0.0
+   */
+  recall_signals[PLAY_MIDI2_CONTROL_CHANGE] =
+    g_signal_new("midi2-control-change",
+		 G_TYPE_FROM_CLASS(recall),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsRecallClass, midi2_control_change),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+  
+  /**
+   * AgsRecall::jack-metadata:
+   * @recall: the #AgsRecall to finish playback
+   *
+   * The ::jack-metadata signal notifies about checking JACK metadata property change.
+   *
+   * Since: 3.0.0
+   */
+  recall_signals[PLAY_JACK_METADATA] =
+    g_signal_new("jack-metadata",
+		 G_TYPE_FROM_CLASS(recall),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsRecallClass, jack_metadata),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
 }
 
 void
@@ -1138,6 +1199,16 @@ ags_recall_init(AgsRecall *recall)
   recall->child_value = NULL;
 
   recall->children = NULL;
+
+  recall->midi_util = ags_midi_util_alloc();
+
+  recall->midi_ump_util = ags_midi_ump_util_alloc();
+
+  recall->midi1_control_change = NULL;
+  
+  recall->midi2_control_change = NULL;
+
+  recall->jack_metadata = NULL;
 }
 
 void
@@ -6051,6 +6122,318 @@ ags_recall_done(AgsRecall *recall)
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
 		recall_signals[PLAY_DONE], 0);
+  g_object_unref(G_OBJECT(recall));
+}
+
+void
+ags_recall_real_midi1_control_change(AgsRecall *recall)
+{
+  AgsAudio *audio;
+
+  GObject *input_sequencer;
+
+  GHashTable *midi1_control_change;
+  
+  GList *start_port, *port;
+
+  guchar *midi_buffer;
+
+  gint midi_controller[31];
+		   
+  guint buffer_length;
+  
+  GRecMutex *recall_mutex;
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
+  
+  audio = NULL;
+
+  input_sequencer = NULL;
+
+  midi1_control_change = NULL;
+
+  start_port = NULL;
+  port = NULL;
+
+  midi_buffer = NULL;
+  
+  buffer_length = 0;
+  
+  if(AGS_IS_RECALL_AUDIO(recall)){
+    g_rec_mutex_lock(recall_mutex);
+
+    audio = AGS_RECALL_AUDIO(audio);
+    
+    g_rec_mutex_unlock(recall_mutex);    
+  }
+  
+  if(AGS_IS_RECALL_CHANNEL(recall)){
+    AgsChannel *channel;
+
+    g_rec_mutex_lock(recall_mutex);
+
+    channel = AGS_RECALL_CHANNEL(recall)->source;
+
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
+    
+    g_rec_mutex_unlock(recall_mutex);
+
+    if(channel != NULL){
+      audio = ags_channel_get_audio(channel);
+
+      g_object_unref(channel);
+    }    
+  }
+
+  input_sequencer = ags_audio_get_input_sequencer(audio);
+
+  memset(midi_controller, 0, 31 * sizeof(gint));
+  
+  if(input_sequencer != NULL &&
+     (AGS_IS_RECALL_AUDIO(recall) ||
+      AGS_IS_RECALL_CHANNEL(recall))){
+    g_rec_mutex_lock(recall_mutex);
+    
+    midi1_control_change = recall->midi1_control_change;
+    
+    g_rec_mutex_unlock(recall_mutex);
+    
+    if(midi1_control_change != NULL){
+      /* retrieve buffer */
+      midi_buffer = ags_sequencer_get_buffer(AGS_SEQUENCER(input_sequencer),
+					     &buffer_length);
+  
+      ags_sequencer_lock_buffer(AGS_SEQUENCER(input_sequencer),
+				midi_buffer);
+
+      if(midi_buffer != NULL){
+	guchar *midi_iter;
+      
+	/* parse bytes */
+	midi_iter = midi_buffer;
+    
+	while(midi_iter < midi_buffer + buffer_length){
+	  if(ags_midi_util_is_key_on(recall->midi_util, midi_iter)){
+	    /* key on */
+
+	    midi_iter += 3;
+	  }else if(ags_midi_util_is_key_off(recall->midi_util, midi_iter)){
+	    /* key off */
+	    
+	    midi_iter += 3;
+	  }else if(ags_midi_util_is_key_pressure(recall->midi_util,
+						 midi_iter)){
+	    midi_iter += 3;
+	  }else if(ags_midi_util_is_change_parameter(recall->midi_util,
+						     midi_iter)){
+	    gchar *port_specifier;
+
+	    gint channel;
+	    gint control;
+	    gint value;
+
+	    /* change parameter */
+	    ags_midi_util_get_change_parameter(recall->midi_util,
+					       midi_iter,
+					       &channel, &control, &value);
+
+	    if(control >= 0 && control <= 31){
+	      /* MSB */
+	      midi_controller[control] = (value << 7);
+	    }else{
+	      /* LSB */
+	      midi_controller[control] |= value;
+
+	      start_port = ags_recall_get_port(recall);
+	    
+	      g_rec_mutex_lock(recall_mutex);
+	    
+	      port_specifier = g_hash_table_lookup(midi1_control_change,
+						   GINT_TO_POINTER(control));
+
+	      g_rec_mutex_unlock(recall_mutex);
+
+	      if(port_specifier != NULL){
+		port = ags_port_find_specifier(start_port,
+					       port_specifier);
+
+		if(port != NULL){
+		  AgsPluginPort *plugin_port;
+
+		  GValue *upper;
+		  GValue *lower;	    
+		
+		  GValue port_value = G_VALUE_INIT;
+
+		  plugin_port = ags_port_get_plugin_port(port->data);
+		
+		  g_value_init(&port_value,
+			       G_TYPE_FLOAT);
+
+		  lower = ags_plugin_port_get_lower_value(plugin_port);
+		  upper = ags_plugin_port_get_upper_value(plugin_port);
+		
+		  g_value_set_float(&port_value,
+				    (gfloat) midi_controller[control] * ((g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(14.0) - 1.0)));
+		
+		  ags_port_safe_write(port->data,
+				      &port_value);
+
+		  if(plugin_port != NULL){
+		    g_object_unref(plugin_port);
+		  }
+		}
+	      }
+	    
+	      g_list_free_full(start_port,
+			       (GDestroyNotify) g_object_unref);
+	    }
+	    	    
+	    midi_iter += 3;
+	  }else if(ags_midi_util_is_pitch_bend(recall->midi_util,
+					       midi_iter)){
+	    /* change parameter */
+	    //TODO:JK: implement me	  
+	  
+	    midi_iter += 3;
+	  }else if(ags_midi_util_is_change_program(recall->midi_util,
+						   midi_iter)){
+	    /* change program */
+	    //TODO:JK: implement me	  
+	  
+	    midi_iter += 2;
+	  }else if(ags_midi_util_is_change_pressure(recall->midi_util,
+						    midi_iter)){
+	    /* change pressure */
+	    //TODO:JK: implement me	  
+	  
+	    midi_iter += 2;
+	  }else if(ags_midi_util_is_sysex(recall->midi_util,
+					  midi_iter)){
+	    guint n;
+	  
+	    /* sysex */
+	    n = 0;
+	  
+	    while(midi_iter[n] != 0xf7){
+	      n++;
+	    }
+
+	    //TODO:JK: implement me	  
+	  
+	    midi_iter += (n + 1);
+	  }else if(ags_midi_util_is_song_position(recall->midi_util,
+						  midi_iter)){
+	    /* song position */
+	    //TODO:JK: implement me	  
+	  
+	    midi_iter += 3;
+	  }else if(ags_midi_util_is_song_select(recall->midi_util,
+						midi_iter)){
+	    /* song select */
+	    //TODO:JK: implement me	  
+	  
+	    midi_iter += 2;
+	  }else if(ags_midi_util_is_tune_request(recall->midi_util,
+						 midi_iter)){
+	    /* tune request */
+	    //TODO:JK: implement me	  
+	  
+	    midi_iter += 1;
+	  }else if(ags_midi_util_is_meta_event(recall->midi_util,
+					       midi_iter)){
+	    /* meta event */
+	    //TODO:JK: implement me	  
+	  
+	    midi_iter += (3 + midi_iter[2]);
+	  }else{
+	    g_warning("ags_recall.c - unexpected byte %x", midi_iter[0]);
+	  
+	    midi_iter++;
+	  }
+	}
+      }
+  
+      ags_sequencer_unlock_buffer(AGS_SEQUENCER(input_sequencer),
+				  midi_buffer);
+    }
+  }
+
+  if(audio != NULL){
+    g_object_unref(audio);
+  }
+
+  if(input_sequencer != NULL){
+    g_object_unref(input_sequencer);
+  }  
+}
+
+/**
+ * ags_recall_midi1_control_change:
+ * @recall: the #AgsRecall
+ *
+ * The #AgsRecall checks MIDI version 1 control change from input sequencer.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_recall_midi1_control_change(AgsRecall *recall)
+{
+  g_return_if_fail(AGS_IS_RECALL(recall));
+  g_object_ref(G_OBJECT(recall));
+  g_signal_emit(G_OBJECT(recall),
+		recall_signals[PLAY_MIDI1_CONTROL_CHANGE], 0);
+  g_object_unref(G_OBJECT(recall));
+}
+
+void
+ags_recall_real_midi2_control_change(AgsRecall *recall)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_recall_midi2_control_change:
+ * @recall: the #AgsRecall
+ *
+ * The #AgsRecall checks MIDI version 2 control change from input sequencer.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_recall_midi2_control_change(AgsRecall *recall)
+{
+  g_return_if_fail(AGS_IS_RECALL(recall));
+  g_object_ref(G_OBJECT(recall));
+  g_signal_emit(G_OBJECT(recall),
+		recall_signals[PLAY_MIDI2_CONTROL_CHANGE], 0);
+  g_object_unref(G_OBJECT(recall));
+}
+
+void
+ags_recall_real_jack_metadata(AgsRecall *recall)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_recall_jack_metadata:
+ * @recall: the #AgsRecall
+ *
+ * The #AgsRecall checks JACK metadata property change from CV port.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_recall_jack_metadata(AgsRecall *recall)
+{
+  g_return_if_fail(AGS_IS_RECALL(recall));
+  g_object_ref(G_OBJECT(recall));
+  g_signal_emit(G_OBJECT(recall),
+		recall_signals[PLAY_JACK_METADATA], 0);
   g_object_unref(G_OBJECT(recall));
 }
 

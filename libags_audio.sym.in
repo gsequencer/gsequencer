@@ -1897,6 +1897,8 @@ ags_port_flags_get_type
 ags_port_test_flags
 ags_port_set_flags
 ags_port_unset_flags
+ags_port_get_plugin_port
+ags_port_set_plugin_port
 ags_port_safe_read
 ags_port_safe_read_raw
 ags_port_safe_write
@@ -2000,6 +2002,9 @@ ags_recall_feed_output_queue
 ags_recall_stop_persistent
 ags_recall_cancel
 ags_recall_done
+ags_recall_midi1_control_change
+ags_recall_midi2_control_change
+ags_recall_jack_metadata
 ags_recall_duplicate
 ags_recall_notify_dependency
 ags_recall_child_added

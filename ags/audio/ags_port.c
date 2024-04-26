@@ -1244,6 +1244,54 @@ ags_port_unset_flags(AgsPort *port, AgsPortFlags flags)
   g_rec_mutex_unlock(port_mutex);
 }
 
+/**
+ * ags_port_get_plugin_port:
+ * @port: the #AgsPort
+ *
+ * Get the plugin port of @port.
+ *
+ * Returns: (transfer full): the plugin port
+ * 
+ * Since: 7.0.0
+ */
+GObject*
+ags_port_get_plugin_port(AgsPort *port)
+{
+  GObject *plugin_port;
+  
+  if(!AGS_IS_PORT(port)){
+    return(NULL);
+  }
+
+  g_object_get(port,
+	       "plugin-port", &plugin_port,
+	       NULL);
+
+  return(plugin_port);
+}
+
+/**
+ * ags_port_set_plugin_port:
+ * @port: the #AgsPort
+ * @plugin_port: the #AgsPluginPort
+ *
+ * Set the plugin port of @port.
+ *
+ * Since: 7.0.0
+ */
+void
+ags_port_set_plugin_port(AgsPort *port,
+			 GObject *plugin_port)
+{
+  if(!AGS_IS_PORT(port)){
+    return;
+  }
+
+  g_object_set(port,
+	       "plugin-port", plugin_port,
+	       NULL);
+}
+
 void
 ags_port_real_safe_read(AgsPort *port, GValue *value)
 {
