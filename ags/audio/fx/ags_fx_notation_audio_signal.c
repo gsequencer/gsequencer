@@ -396,6 +396,10 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
     ags_recall_done(recall);
   }
   
+  if(output_soundcard != NULL){
+    g_object_unref(output_soundcard);
+  }
+  
   if(source != NULL){
     g_object_unref(source);
   }
@@ -612,8 +616,28 @@ ags_fx_notation_audio_signal_real_stream_feed(AgsFxNotationAudioSignal *fx_notat
 	       "frame-count", frame_count + buffer_size,
 	       NULL);
 
+  if(output_soundcard != NULL){
+    g_object_unref(output_soundcard);
+  }
+
   if(template != NULL){
     g_object_unref(template);
+  }
+
+  if(fx_notation_recycling != NULL){
+    g_object_unref(fx_notation_recycling);
+  }
+
+  if(fx_notation_audio != NULL){
+    g_object_unref(fx_notation_audio);
+  }
+
+  if(fx_notation_audio_processor != NULL){
+    g_object_unref(fx_notation_audio_processor);
+  }
+
+  if(fx_notation_recycling != NULL){
+    g_object_unref(fx_notation_channel_processor);
   }
 }
 
