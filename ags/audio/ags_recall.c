@@ -22,6 +22,7 @@
 #include <ags/plugin/ags_ladspa_manager.h>
 #include <ags/plugin/ags_dssi_manager.h>
 #include <ags/plugin/ags_lv2_manager.h>
+#include <ags/plugin/ags_plugin_port.h>
 
 #include <ags/audio/ags_sound_enums.h>
 #include <ags/audio/ags_audio.h>
@@ -1198,6 +1199,10 @@ ags_recall_init(AgsRecall *recall)
   recall->child_value = NULL;
 
   recall->children = NULL;
+
+  recall->midi_util = ags_midi_util_alloc();
+
+  recall->midi_ump_util = ags_midi_ump_util_alloc();
 
   recall->midi1_control_change = NULL;
   
@@ -6123,7 +6128,235 @@ ags_recall_done(AgsRecall *recall)
 void
 ags_recall_real_midi1_control_change(AgsRecall *recall)
 {
-  //TODO:JK: implement me
+  AgsAudio *audio;
+
+  GObject *input_sequencer;
+
+  GHashTable *midi1_control_change;
+  
+  GList *start_port, *port;
+
+  guchar *midi_buffer;
+
+  guint buffer_length;
+  
+  GRecMutex *recall_mutex;
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
+  
+  audio = NULL;
+
+  input_sequencer = NULL;
+
+  midi1_control_change = NULL;
+
+  start_port = NULL;
+  port = NULL;
+
+  midi_buffer = NULL;
+  
+  buffer_length = 0;
+  
+  if(AGS_IS_RECALL_AUDIO(recall)){
+    g_rec_mutex_lock(recall_mutex);
+
+    audio = AGS_RECALL_AUDIO(audio);
+    
+    g_rec_mutex_unlock(recall_mutex);    
+  }
+  
+  if(AGS_IS_RECALL_CHANNEL(recall)){
+    AgsChannel *channel;
+
+    g_rec_mutex_lock(recall_mutex);
+
+    channel = AGS_RECALL_CHANNEL(recall)->source;
+
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
+    
+    g_rec_mutex_unlock(recall_mutex);
+
+    if(channel != NULL){
+      audio = ags_channel_get_audio(channel);
+
+      g_object_unref(channel);
+    }    
+  }
+
+  input_sequencer = ags_audio_get_input_sequencer(audio);
+  
+  if(input_sequencer != NULL &&
+     (AGS_IS_RECALL_AUDIO(recall) ||
+      AGS_IS_RECALL_CHANNEL(recall))){
+    g_rec_mutex_lock(recall_mutex);
+    
+    midi1_control_change = recall->midi1_control_change;
+    
+    g_rec_mutex_unlock(recall_mutex);
+    
+    if(midi1_control_change != NULL){
+      /* retrieve buffer */
+      midi_buffer = ags_sequencer_get_buffer(AGS_SEQUENCER(input_sequencer),
+					     &buffer_length);
+  
+      ags_sequencer_lock_buffer(AGS_SEQUENCER(input_sequencer),
+				midi_buffer);
+
+      if(midi_buffer != NULL){
+	guchar *midi_iter;
+      
+	/* parse bytes */
+	midi_iter = midi_buffer;
+    
+	while(midi_iter < midi_buffer + buffer_length){
+	  if(ags_midi_util_is_key_on(recall->midi_util, midi_iter)){
+	    /* key on */
+
+	    midi_iter += 3;
+	  }else if(ags_midi_util_is_key_off(recall->midi_util, midi_iter)){
+	    /* key off */
+	    
+	    midi_iter += 3;
+	  }else if(ags_midi_util_is_key_pressure(recall->midi_util,
+						 midi_iter)){
+	    midi_iter += 3;
+	  }else if(ags_midi_util_is_change_parameter(recall->midi_util,
+						     midi_iter)){
+	    gchar *port_specifier;
+
+	    gint channel;
+	    gint control;
+	    gint value;
+
+	    /* change parameter */
+	    ags_midi_util_get_change_parameter(recall->midi_util,
+					       midi_iter,
+					       &channel, &control, &value);
+	    
+	    start_port = ags_recall_get_port(recall);
+	    
+	    g_rec_mutex_lock(recall_mutex);
+	    
+	    port_specifier = g_hash_table_lookup(midi1_control_change,
+						 GINT_TO_POINTER(control));
+
+	    g_rec_mutex_unlock(recall_mutex);
+
+	    if(port_specifier != NULL){
+	      port = ags_port_find_specifier(start_port,
+					     port_specifier);
+
+	      if(port != NULL){
+		AgsPluginPort *plugin_port;
+
+		GValue *upper;
+		GValue *lower;	    
+		
+		GValue port_value = G_VALUE_INIT;
+
+		plugin_port = ags_port_get_plugin_port(port->data);
+		
+		g_value_init(&port_value,
+			     G_TYPE_FLOAT);
+
+		lower = ags_plugin_port_get_lower_value(plugin_port);
+		upper = ags_plugin_port_get_upper_value(plugin_port);
+		
+		g_value_set_float(&port_value,
+				  value * ((g_value_get_float(upper) - g_value_get_float(lower)) / (127.0 * 127.0)));
+		
+		ags_port_safe_write(port->data,
+				    &port_value);
+
+		if(plugin_port != NULL){
+		  g_object_unref(plugin_port);
+		}
+	      }
+	    }
+	    
+	    g_list_free_full(start_port,
+			     (GDestroyNotify) g_object_unref);
+	    
+	    midi_iter += 3;
+	  }else if(ags_midi_util_is_pitch_bend(recall->midi_util,
+					       midi_iter)){
+	    /* change parameter */
+	    //TODO:JK: implement me	  
+	  
+	    midi_iter += 3;
+	  }else if(ags_midi_util_is_change_program(recall->midi_util,
+						   midi_iter)){
+	    /* change program */
+	    //TODO:JK: implement me	  
+	  
+	    midi_iter += 2;
+	  }else if(ags_midi_util_is_change_pressure(recall->midi_util,
+						    midi_iter)){
+	    /* change pressure */
+	    //TODO:JK: implement me	  
+	  
+	    midi_iter += 2;
+	  }else if(ags_midi_util_is_sysex(recall->midi_util,
+					  midi_iter)){
+	    guint n;
+	  
+	    /* sysex */
+	    n = 0;
+	  
+	    while(midi_iter[n] != 0xf7){
+	      n++;
+	    }
+
+	    //TODO:JK: implement me	  
+	  
+	    midi_iter += (n + 1);
+	  }else if(ags_midi_util_is_song_position(recall->midi_util,
+						  midi_iter)){
+	    /* song position */
+	    //TODO:JK: implement me	  
+	  
+	    midi_iter += 3;
+	  }else if(ags_midi_util_is_song_select(recall->midi_util,
+						midi_iter)){
+	    /* song select */
+	    //TODO:JK: implement me	  
+	  
+	    midi_iter += 2;
+	  }else if(ags_midi_util_is_tune_request(recall->midi_util,
+						 midi_iter)){
+	    /* tune request */
+	    //TODO:JK: implement me	  
+	  
+	    midi_iter += 1;
+	  }else if(ags_midi_util_is_meta_event(recall->midi_util,
+					       midi_iter)){
+	    /* meta event */
+	    //TODO:JK: implement me	  
+	  
+	    midi_iter += (3 + midi_iter[2]);
+	  }else{
+	    g_warning("ags_recall.c - unexpected byte %x", midi_iter[0]);
+	  
+	    midi_iter++;
+	  }
+	}
+      }
+  
+      ags_sequencer_unlock_buffer(AGS_SEQUENCER(input_sequencer),
+				  midi_buffer);
+    }
+  }
+
+  if(audio != NULL){
+    g_object_unref(audio);
+  }
+
+  if(input_sequencer != NULL){
+    g_object_unref(input_sequencer);
+  }  
 }
 
 /**
