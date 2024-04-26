@@ -1,6 +1,7 @@
 ags (7.0.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_recall_midi1_control_change()
 	* TODO:JK: implemented AgsMidiCCEditor
 	* TODO:JK: implemented pitch selection of ags-synth
 	* TODO:JK: implemented pitch selection of ags-fm-synth
