@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,8 +36,8 @@
 
 #include <ags/i18n.h>
 
-void ags_open_sf2_instrument_class_init(AgsOpenSf2InstrumentClass *open_sf2_instrument);
-void ags_open_sf2_instrument_init(AgsOpenSf2Instrument *open_sf2_instrument);
+void ags_open_sf2_instrument_class_init(AgsOpenSF2InstrumentClass *open_sf2_instrument);
+void ags_open_sf2_instrument_init(AgsOpenSF2Instrument *open_sf2_instrument);
 void ags_open_sf2_instrument_set_property(GObject *gobject,
 					  guint prop_id,
 					  const GValue *value,
@@ -54,11 +54,11 @@ void ags_open_sf2_instrument_launch(AgsTask *task);
 /**
  * SECTION:ags_open_sf2_instrument
  * @short_description: open Soundfont2 instrument
- * @title: AgsOpenSf2Instrument
+ * @title: AgsOpenSF2Instrument
  * @section_id:
  * @include: ags/audio/task/ags_open_sf2_instrument.h
  *
- * The #AgsOpenSf2Instrument task opens Soundfont2 instruments.
+ * The #AgsOpenSF2Instrument task opens Soundfont2 instruments.
  */
 
 static gpointer ags_open_sf2_instrument_parent_class = NULL;
@@ -82,19 +82,19 @@ ags_open_sf2_instrument_get_type()
     GType ags_type_open_sf2_instrument = 0;
 
     static const GTypeInfo ags_open_sf2_instrument_info = {
-      sizeof(AgsOpenSf2InstrumentClass),
+      sizeof(AgsOpenSF2InstrumentClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_open_sf2_instrument_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsOpenSf2Instrument),
+      sizeof(AgsOpenSF2Instrument),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_open_sf2_instrument_init,
     };
 
     ags_type_open_sf2_instrument = g_type_register_static(AGS_TYPE_TASK,
-							  "AgsOpenSf2Instrument",
+							  "AgsOpenSF2Instrument",
 							  &ags_open_sf2_instrument_info,
 							  0);
 
@@ -105,7 +105,7 @@ ags_open_sf2_instrument_get_type()
 }
 
 void
-ags_open_sf2_instrument_class_init(AgsOpenSf2InstrumentClass *open_sf2_instrument)
+ags_open_sf2_instrument_class_init(AgsOpenSF2InstrumentClass *open_sf2_instrument)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
@@ -125,7 +125,7 @@ ags_open_sf2_instrument_class_init(AgsOpenSf2InstrumentClass *open_sf2_instrumen
 
   /* properties */
   /**
-   * AgsOpenSf2Instrument:audio:
+   * AgsOpenSF2Instrument:audio:
    *
    * The assigned #AgsAudio
    * 
@@ -141,7 +141,7 @@ ags_open_sf2_instrument_class_init(AgsOpenSf2InstrumentClass *open_sf2_instrumen
 				  param_spec);
   
   /**
-   * AgsOpenSf2Instrument:ipatch:
+   * AgsOpenSF2Instrument:ipatch:
    *
    * The assigned #AgsIpatch
    * 
@@ -157,7 +157,7 @@ ags_open_sf2_instrument_class_init(AgsOpenSf2InstrumentClass *open_sf2_instrumen
 				  param_spec);
 
   /**
-   * AgsOpenSf2Instrument:filename:
+   * AgsOpenSF2Instrument:filename:
    *
    * The assigned filename.
    * 
@@ -173,7 +173,7 @@ ags_open_sf2_instrument_class_init(AgsOpenSf2InstrumentClass *open_sf2_instrumen
 				  param_spec);
 
   /**
-   * AgsOpenSf2Instrument:preset:
+   * AgsOpenSF2Instrument:preset:
    *
    * The assigned preset.
    * 
@@ -189,7 +189,7 @@ ags_open_sf2_instrument_class_init(AgsOpenSf2InstrumentClass *open_sf2_instrumen
 				  param_spec);
 
   /**
-   * AgsOpenSf2Instrument:instrument:
+   * AgsOpenSF2Instrument:instrument:
    *
    * The assigned instrument.
    * 
@@ -205,7 +205,7 @@ ags_open_sf2_instrument_class_init(AgsOpenSf2InstrumentClass *open_sf2_instrumen
 				  param_spec);
 
   /**
-   * AgsOpenSf2Instrument:start-pad:
+   * AgsOpenSF2Instrument:start-pad:
    *
    * The assigned start-pad.
    * 
@@ -229,7 +229,7 @@ ags_open_sf2_instrument_class_init(AgsOpenSf2InstrumentClass *open_sf2_instrumen
 }
 
 void
-ags_open_sf2_instrument_init(AgsOpenSf2Instrument *open_sf2_instrument)
+ags_open_sf2_instrument_init(AgsOpenSF2Instrument *open_sf2_instrument)
 {
   open_sf2_instrument->audio = NULL;
 
@@ -249,7 +249,7 @@ ags_open_sf2_instrument_set_property(GObject *gobject,
 				     const GValue *value,
 				     GParamSpec *param_spec)
 {
-  AgsOpenSf2Instrument *open_sf2_instrument;
+  AgsOpenSF2Instrument *open_sf2_instrument;
 
   open_sf2_instrument = AGS_OPEN_SF2_INSTRUMENT(gobject);
 
@@ -364,7 +364,7 @@ ags_open_sf2_instrument_get_property(GObject *gobject,
 				     GValue *value,
 				     GParamSpec *param_spec)
 {
-  AgsOpenSf2Instrument *open_sf2_instrument;
+  AgsOpenSF2Instrument *open_sf2_instrument;
 
   open_sf2_instrument = AGS_OPEN_SF2_INSTRUMENT(gobject);
 
@@ -408,7 +408,7 @@ ags_open_sf2_instrument_get_property(GObject *gobject,
 void
 ags_open_sf2_instrument_dispose(GObject *gobject)
 {
-  AgsOpenSf2Instrument *open_sf2_instrument;
+  AgsOpenSF2Instrument *open_sf2_instrument;
 
   open_sf2_instrument = AGS_OPEN_SF2_INSTRUMENT(gobject);
 
@@ -431,7 +431,7 @@ ags_open_sf2_instrument_dispose(GObject *gobject)
 void
 ags_open_sf2_instrument_finalize(GObject *gobject)
 {
-  AgsOpenSf2Instrument *open_sf2_instrument;
+  AgsOpenSF2Instrument *open_sf2_instrument;
 
   open_sf2_instrument = AGS_OPEN_SF2_INSTRUMENT(gobject);
 
@@ -460,7 +460,7 @@ ags_open_sf2_instrument_launch(AgsTask *task)
 
   AgsIpatch *ipatch;
   
-  AgsOpenSf2Instrument *open_sf2_instrument;
+  AgsOpenSF2Instrument *open_sf2_instrument;
 
   GObject *output_soundcard;
   
@@ -473,7 +473,7 @@ ags_open_sf2_instrument_launch(AgsTask *task)
 
   GError *error;
   
-  open_sf2_instrument = (AgsOpenSf2Instrument *) task;
+  open_sf2_instrument = (AgsOpenSF2Instrument *) task;
 
   g_return_if_fail(AGS_IS_AUDIO(open_sf2_instrument->audio));
   g_return_if_fail(AGS_IS_IPATCH(open_sf2_instrument->ipatch));
@@ -643,13 +643,13 @@ ags_open_sf2_instrument_launch(AgsTask *task)
  * @instrument: the instrument
  * @start_pad: the pad start
  *
- * Creates an #AgsOpenSf2Instrument.
+ * Creates an #AgsOpenSF2Instrument.
  *
- * Returns: an new #AgsOpenSf2Instrument.
+ * Returns: an new #AgsOpenSF2Instrument.
  *
  * Since: 3.0.0
  */
-AgsOpenSf2Instrument*
+AgsOpenSF2Instrument*
 ags_open_sf2_instrument_new(AgsAudio *audio,
 			    AgsIpatch *ipatch,
 			    gchar *filename,
@@ -657,9 +657,9 @@ ags_open_sf2_instrument_new(AgsAudio *audio,
 			    gchar *instrument,
 			    guint start_pad)
 {
-  AgsOpenSf2Instrument *open_sf2_instrument;
+  AgsOpenSF2Instrument *open_sf2_instrument;
 
-  open_sf2_instrument = (AgsOpenSf2Instrument *) g_object_new(AGS_TYPE_OPEN_SF2_INSTRUMENT,
+  open_sf2_instrument = (AgsOpenSF2Instrument *) g_object_new(AGS_TYPE_OPEN_SF2_INSTRUMENT,
 							      "audio", audio,
 							      "ipatch", ipatch,
 							      "filename", filename,

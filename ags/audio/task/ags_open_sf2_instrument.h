@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,16 +32,16 @@
 G_BEGIN_DECLS
 
 #define AGS_TYPE_OPEN_SF2_INSTRUMENT                (ags_open_sf2_instrument_get_type())
-#define AGS_OPEN_SF2_INSTRUMENT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OPEN_SF2_INSTRUMENT, AgsOpenSf2Instrument))
-#define AGS_OPEN_SF2_INSTRUMENT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_OPEN_SF2_INSTRUMENT, AgsOpenSf2InstrumentClass))
+#define AGS_OPEN_SF2_INSTRUMENT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OPEN_SF2_INSTRUMENT, AgsOpenSF2Instrument))
+#define AGS_OPEN_SF2_INSTRUMENT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_OPEN_SF2_INSTRUMENT, AgsOpenSF2InstrumentClass))
 #define AGS_IS_OPEN_SF2_INSTRUMENT(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_OPEN_SF2_INSTRUMENT))
 #define AGS_IS_OPEN_SF2_INSTRUMENT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_OPEN_SF2_INSTRUMENT))
-#define AGS_OPEN_SF2_INSTRUMENT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_OPEN_SF2_INSTRUMENT, AgsOpenSf2InstrumentClass))
+#define AGS_OPEN_SF2_INSTRUMENT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_OPEN_SF2_INSTRUMENT, AgsOpenSF2InstrumentClass))
 
-typedef struct _AgsOpenSf2Instrument AgsOpenSf2Instrument;
-typedef struct _AgsOpenSf2InstrumentClass AgsOpenSf2InstrumentClass;
+typedef struct _AgsOpenSF2Instrument AgsOpenSF2Instrument;
+typedef struct _AgsOpenSF2InstrumentClass AgsOpenSF2InstrumentClass;
 
-struct _AgsOpenSf2Instrument
+struct _AgsOpenSF2Instrument
 {
   AgsTask task;
 
@@ -57,14 +57,14 @@ struct _AgsOpenSf2Instrument
   guint start_pad;
 };
 
-struct _AgsOpenSf2InstrumentClass
+struct _AgsOpenSF2InstrumentClass
 {
   AgsTaskClass task;
 };
 
 GType ags_open_sf2_instrument_get_type();
 
-AgsOpenSf2Instrument* ags_open_sf2_instrument_new(AgsAudio *audio,
+AgsOpenSF2Instrument* ags_open_sf2_instrument_new(AgsAudio *audio,
 						  AgsIpatch *ipatch,
 						  gchar *filename,
 						  gchar *preset,

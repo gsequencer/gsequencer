@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,8 +34,8 @@
 
 #include <ags/i18n.h>
 
-void ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample);
-void ags_open_sf2_sample_init(AgsOpenSf2Sample *open_sf2_sample);
+void ags_open_sf2_sample_class_init(AgsOpenSF2SampleClass *open_sf2_sample);
+void ags_open_sf2_sample_init(AgsOpenSF2Sample *open_sf2_sample);
 void ags_open_sf2_sample_set_property(GObject *gobject,
 				      guint prop_id,
 				      const GValue *value,
@@ -52,11 +52,11 @@ void ags_open_sf2_sample_launch(AgsTask *task);
 /**
  * SECTION:ags_open_sf2_sample
  * @short_description: open Soundfont2 sample
- * @title: AgsOpenSf2Sample
+ * @title: AgsOpenSF2Sample
  * @section_id:
  * @include: ags/audio/task/ags_open_sf2_sample.h
  *
- * The #AgsOpenSf2Sample task opens Soundfont2 samples.
+ * The #AgsOpenSF2Sample task opens Soundfont2 samples.
  */
 
 static gpointer ags_open_sf2_sample_parent_class = NULL;
@@ -81,19 +81,19 @@ ags_open_sf2_sample_get_type()
     GType ags_type_open_sf2_sample = 0;
 
     static const GTypeInfo ags_open_sf2_sample_info = {
-      sizeof(AgsOpenSf2SampleClass),
+      sizeof(AgsOpenSF2SampleClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_open_sf2_sample_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsOpenSf2Sample),
+      sizeof(AgsOpenSF2Sample),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_open_sf2_sample_init,
     };
 
     ags_type_open_sf2_sample = g_type_register_static(AGS_TYPE_TASK,
-						"AgsOpenSf2Sample",
+						"AgsOpenSF2Sample",
 						&ags_open_sf2_sample_info,
 						0);
 
@@ -104,7 +104,7 @@ ags_open_sf2_sample_get_type()
 }
 
 void
-ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample)
+ags_open_sf2_sample_class_init(AgsOpenSF2SampleClass *open_sf2_sample)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
@@ -124,7 +124,7 @@ ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample)
 
   /* properties */
   /**
-   * AgsOpenSf2Sample:channel:
+   * AgsOpenSF2Sample:channel:
    *
    * The assigned #AgsChannel
    * 
@@ -140,7 +140,7 @@ ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample)
 				  param_spec);
   
   /**
-   * AgsOpenSf2Sample:ipatch-sample:
+   * AgsOpenSF2Sample:ipatch-sample:
    *
    * The assigned #AgsIpatchSample
    * 
@@ -156,7 +156,7 @@ ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample)
 				  param_spec);
 
   /**
-   * AgsOpenSf2Sample:filename:
+   * AgsOpenSF2Sample:filename:
    *
    * The assigned filename.
    * 
@@ -172,7 +172,7 @@ ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample)
 				  param_spec);
 
   /**
-   * AgsOpenSf2Sample:preset:
+   * AgsOpenSF2Sample:preset:
    *
    * The assigned preset.
    * 
@@ -188,7 +188,7 @@ ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample)
 				  param_spec);
 
   /**
-   * AgsOpenSf2Sample:instrument:
+   * AgsOpenSF2Sample:instrument:
    *
    * The assigned instrument.
    * 
@@ -204,7 +204,7 @@ ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample)
 				  param_spec);
 
   /**
-   * AgsOpenSf2Sample:sample:
+   * AgsOpenSF2Sample:sample:
    *
    * The assigned sample.
    * 
@@ -220,7 +220,7 @@ ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample)
 				  param_spec);
 
   /**
-   * AgsOpenSf2Sample:audio-channel:
+   * AgsOpenSF2Sample:audio-channel:
    *
    * The nth audio channel.
    * 
@@ -244,7 +244,7 @@ ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample)
 }
 
 void
-ags_open_sf2_sample_init(AgsOpenSf2Sample *open_sf2_sample)
+ags_open_sf2_sample_init(AgsOpenSF2Sample *open_sf2_sample)
 {
   open_sf2_sample->channel = NULL;
 
@@ -265,7 +265,7 @@ ags_open_sf2_sample_set_property(GObject *gobject,
 			       const GValue *value,
 			       GParamSpec *param_spec)
 {
-  AgsOpenSf2Sample *open_sf2_sample;
+  AgsOpenSF2Sample *open_sf2_sample;
 
   open_sf2_sample = AGS_OPEN_SF2_SAMPLE(gobject);
 
@@ -397,7 +397,7 @@ ags_open_sf2_sample_get_property(GObject *gobject,
 				 GValue *value,
 				 GParamSpec *param_spec)
 {
-  AgsOpenSf2Sample *open_sf2_sample;
+  AgsOpenSF2Sample *open_sf2_sample;
 
   open_sf2_sample = AGS_OPEN_SF2_SAMPLE(gobject);
 
@@ -446,7 +446,7 @@ ags_open_sf2_sample_get_property(GObject *gobject,
 void
 ags_open_sf2_sample_dispose(GObject *gobject)
 {
-  AgsOpenSf2Sample *open_sf2_sample;
+  AgsOpenSF2Sample *open_sf2_sample;
 
   open_sf2_sample = AGS_OPEN_SF2_SAMPLE(gobject);
 
@@ -469,7 +469,7 @@ ags_open_sf2_sample_dispose(GObject *gobject)
 void
 ags_open_sf2_sample_finalize(GObject *gobject)
 {
-  AgsOpenSf2Sample *open_sf2_sample;
+  AgsOpenSF2Sample *open_sf2_sample;
 
   open_sf2_sample = AGS_OPEN_SF2_SAMPLE(gobject);
 
@@ -497,7 +497,7 @@ ags_open_sf2_sample_launch(AgsTask *task)
   AgsChannel *link;
   AgsRecycling *first_recycling;
 
-  AgsOpenSf2Sample *open_sf2_sample;
+  AgsOpenSF2Sample *open_sf2_sample;
   
   AgsAudioContainer *audio_container;
   AgsIpatchSample *ipatch_sample;
@@ -624,13 +624,13 @@ ags_open_sf2_sample_launch(AgsTask *task)
  * @sample: the sample
  * @audio_channel: the audio channel
  *
- * Creates an #AgsOpenSf2Sample.
+ * Creates an #AgsOpenSF2Sample.
  *
- * Returns: an new #AgsOpenSf2Sample.
+ * Returns: an new #AgsOpenSF2Sample.
  *
  * Since: 3.0.0
  */
-AgsOpenSf2Sample*
+AgsOpenSF2Sample*
 ags_open_sf2_sample_new(AgsChannel *channel,
 			AgsIpatchSample *ipatch_sample,
 			gchar *filename,
@@ -639,9 +639,9 @@ ags_open_sf2_sample_new(AgsChannel *channel,
 			gchar *sample,
 			guint audio_channel)
 {
-  AgsOpenSf2Sample *open_sf2_sample;
+  AgsOpenSF2Sample *open_sf2_sample;
 
-  open_sf2_sample = (AgsOpenSf2Sample *) g_object_new(AGS_TYPE_OPEN_SF2_SAMPLE,
+  open_sf2_sample = (AgsOpenSF2Sample *) g_object_new(AGS_TYPE_OPEN_SF2_SAMPLE,
 						      "channel", channel,
 						      "ipatch-sample", ipatch_sample,
 						      "filename", filename,

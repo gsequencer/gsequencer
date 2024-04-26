@@ -30,6 +30,9 @@
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_dependency.h>
 
+#include <ags/audio/midi/ags_midi_util.h>
+#include <ags/audio/midi/ags_midi_ump_util.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_RECALL                (ags_recall_get_type())
@@ -154,6 +157,10 @@ struct _AgsRecall
   GValue *child_value;
 
   GList *children;  
+
+  AgsMidiUtil *midi_util;
+  
+  AgsMidiUmpUtil *midi_ump_util;
 
   GHashTable *midi1_control_change;
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -126,6 +126,10 @@ GType ags_port_flags_get_type();
 gboolean ags_port_test_flags(AgsPort *port, AgsPortFlags flags);
 void ags_port_set_flags(AgsPort *port, AgsPortFlags flags);
 void ags_port_unset_flags(AgsPort *port, AgsPortFlags flags);
+
+GObject* ags_port_get_plugin_port(AgsPort *port);
+void ags_port_set_plugin_port(AgsPort *port,
+			      GObject *plugin_port);
 
 void ags_port_safe_read(AgsPort *port, GValue *value);
 void ags_port_safe_read_raw(AgsPort *port, GValue *value);
