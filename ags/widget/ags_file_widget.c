@@ -613,8 +613,8 @@ ags_file_widget_init(AgsFileWidget *file_widget)
   gtk_box_append(file_widget->left_vbox,
 		 (GtkWidget *) file_widget->location_box);
 
-  file_widget->location = g_hash_table_new_full(g_str_hash,
-						g_str_equal,
+  file_widget->location = g_hash_table_new_full((GHashFunc) g_str_hash,
+						(GEqualFunc) g_str_equal,
 						g_free,
 						NULL);
 
@@ -665,8 +665,8 @@ ags_file_widget_init(AgsFileWidget *file_widget)
     file_widget->bookmark_filename = NULL;
 #endif
   
-  file_widget->bookmark = g_hash_table_new_full(g_direct_hash,
-						g_string_equal,
+    file_widget->bookmark = g_hash_table_new_full((GHashFunc) g_direct_hash,
+						(GEqualFunc) g_string_equal,
 						g_free,
 						g_free);
 
@@ -3267,7 +3267,7 @@ ags_file_widget_real_refresh(AgsFileWidget *file_widget)
 	  (!strncmp(current_filename, "..", 3) == FALSE))){
 	start_filename = g_list_insert_sorted(start_filename,
 					      current_filename,
-					      g_strcmp0);
+					      (GCompareFunc) g_strcmp0);
       }
     }while(current_filename != NULL);
 

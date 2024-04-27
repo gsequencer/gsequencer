@@ -1610,7 +1610,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 				 &output_buffer_size_bytes);
       
       AudioDeviceCreateIOProcID(core_audio_port->output_device,
-				ags_core_audio_port_hw_output_callback,
+				(OSStatus (*)(AudioObjectID inDevice, const AudioTimeStamp *inNow, const AudioBufferList *inInputData, const AudioTimeStamp *inInputTime, AudioBufferList *outOutputData, const AudioTimeStamp *inOutputTime, void *inClientData)) ags_core_audio_port_hw_output_callback,
 				core_audio_port,
 				&(core_audio_port->output_proc_id));
 
@@ -1740,7 +1740,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 				 &input_buffer_size_bytes);
       
       AudioDeviceCreateIOProcID(core_audio_port->input_device,
-				ags_core_audio_port_hw_input_callback,
+				(OSStatus (*)(AudioObjectID inDevice, const AudioTimeStamp *inNow, const AudioBufferList *inInputData, const AudioTimeStamp *inInputTime, AudioBufferList *outOutputData, const AudioTimeStamp *inOutputTime, void *inClientData)) ags_core_audio_port_hw_input_callback,
 				core_audio_port,
 				&(core_audio_port->input_proc_id));
 

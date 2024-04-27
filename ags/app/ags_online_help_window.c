@@ -407,7 +407,7 @@ ags_online_help_window_connect(AgsConnectable *connectable)
   
 #if defined(AGS_WITH_POPPLER)
   gtk_drawing_area_set_draw_func((GtkDrawingArea *) online_help_window->pdf_drawing_area,
-				 ags_online_help_window_pdf_drawing_area_draw_callback,
+				 (GtkDrawingAreaDrawFunc) ags_online_help_window_pdf_drawing_area_draw_callback,
 				 online_help_window,
 				 NULL);
 
