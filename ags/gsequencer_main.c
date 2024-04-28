@@ -109,6 +109,8 @@ install_data()
   gchar *default_file_cp_cmd;
   gchar *default_file_sed_cmd;
   gchar *free_sounds_cp_cmd;
+  gchar *ags_conf_dirs_mkdir_cmd;
+  gchar *ags_conf_cp_cmd;
   
   uid_t uid;
 
@@ -161,6 +163,12 @@ install_data()
 				       app_dir,
 				       music_path);
 
+  ags_conf_dirs_mkdir_cmd = g_strdup_printf("mkdir -p %s/Library/%s/Data/.gsequencer",
+					    pw->pw_dir, AGS_DEFAULT_BUNDLE_ID);
+  ags_conf_cp_cmd = g_strdup_printf("cp -v %s/Contents/Resources/ags.conf %s/Library/%s/Data/.gsequencer/",
+				    app_dir,
+				    pw->pw_dir,
+				    AGS_DEFAULT_BUNDLE_ID);
   error = NULL;
   g_spawn_command_line_sync(default_dirs_mkdir_cmd,
 			    NULL,
@@ -212,6 +220,20 @@ install_data()
   
   error = NULL;
   g_spawn_command_line_sync(free_sounds_cp_cmd,
+			    NULL,
+			    NULL,
+			    NULL,
+			    &error);
+  
+  error = NULL;
+  g_spawn_command_line_sync(ags_conf_dirs_mkdir_cmd,
+			    NULL,
+			    NULL,
+			    NULL,
+			    &error);
+  
+  error = NULL;
+  g_spawn_command_line_sync(ags_conf_cp_cmd,
 			    NULL,
 			    NULL,
 			    NULL,

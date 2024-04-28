@@ -2288,7 +2288,8 @@ ags_file_widget_write_recently_used(AgsFileWidget *file_widget)
   xmlNode *node;
 
   gchar **iter;
-  
+
+  gchar *default_path;
   xmlChar *buffer;
 
   int size;
@@ -2319,17 +2320,30 @@ ags_file_widget_write_recently_used(AgsFileWidget *file_widget)
     }
   }
 
+  default_path = NULL;
+  
+  if(strrchr(file_widget->recently_used_filename, '/') != NULL){
+    default_path = g_strndup(file_widget->recently_used_filename,
+			     strrchr(file_widget->recently_used_filename, '/') - file_widget->recently_used_filename);
+  }
+  
+  g_mkdir_with_parents(default_path,
+		       0755);
+
   out = NULL;
   buffer = NULL;
-
-  out = fopen(file_widget->recently_used_filename, "w+");
-  size = 0;
   
-  xmlDocDumpFormatMemoryEnc(recently_used_doc, &(buffer), &size, "UTF-8", TRUE);
+  if(g_file_test(default_path, G_FILE_TEST_EXISTS) &&
+     g_file_test(default_path, G_FILE_TEST_IS_DIR)){
+    out = fopen(file_widget->recently_used_filename, "w+");
+    size = 0;
+  
+    xmlDocDumpFormatMemoryEnc(recently_used_doc, &(buffer), &size, "UTF-8", TRUE);
 
-  fwrite(buffer, size, sizeof(xmlChar), out);
-  fflush(out);
-  fclose(out);
+    fwrite(buffer, size, sizeof(xmlChar), out);
+    fflush(out);
+    fclose(out);
+  }
 }
 
 /**
@@ -2905,7 +2919,8 @@ ags_file_widget_write_bookmark(AgsFileWidget *file_widget)
   xmlDoc *bookmark_doc;
   xmlNode *root_node;
   xmlNode *node;
-  
+
+  gchar *default_path;
   xmlChar *buffer;
 
   int size;
@@ -2940,17 +2955,30 @@ ags_file_widget_write_bookmark(AgsFileWidget *file_widget)
 
   g_list_free(start_bookmark);
 
+  default_path = NULL;
+  
+  if(strrchr(file_widget->recently_used_filename, '/') != NULL){
+    default_path = g_strndup(file_widget->recently_used_filename,
+			     strrchr(file_widget->recently_used_filename, '/') - file_widget->recently_used_filename);
+  }
+  
+  g_mkdir_with_parents(default_path,
+		       0755);
+  
   out = NULL;
   buffer = NULL;
 
-  out = fopen(file_widget->bookmark_filename, "w+");
-  size = 0;
+  if(g_file_test(default_path, G_FILE_TEST_EXISTS) &&
+     g_file_test(default_path, G_FILE_TEST_IS_DIR)){
+    out = fopen(file_widget->bookmark_filename, "w+");
+    size = 0;
   
-  xmlDocDumpFormatMemoryEnc(bookmark_doc, &(buffer), &size, "UTF-8", TRUE);
+    xmlDocDumpFormatMemoryEnc(bookmark_doc, &(buffer), &size, "UTF-8", TRUE);
 
-  fwrite(buffer, size, sizeof(xmlChar), out);
-  fflush(out);
-  fclose(out);
+    fwrite(buffer, size, sizeof(xmlChar), out);
+    fflush(out);
+    fclose(out);
+  }
 }
 
 /**
