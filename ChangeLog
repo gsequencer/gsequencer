@@ -1,3 +1,8 @@
+ags (6.9.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential SIGSEGV CoreAudio buffer size, check if config value matches device
+
 ags (6.9.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
