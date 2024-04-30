@@ -435,7 +435,12 @@ ags_config_real_load_defaults(AgsConfig *config)
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "buffer-size", "512");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "use-cache", "true");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "cache-buffer-size", "4096");
+
+#if defined(AGS_WITH_CORE_AUDIO)
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "format", "16");
+#else
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "format", "16");
+#endif
 #endif
   
   //ags_config_set_value(config, AGS_CONFIG_SEQUENCER_0, "backend", "jack");

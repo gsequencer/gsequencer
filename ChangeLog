@@ -1,15 +1,24 @@
-ags (7.0.0)
+ags (6.9.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* implemented ags_recall_midi1_control_change()
-	* TODO:JK: implemented AgsMidiCCEditor
-	* TODO:JK: implemented pitch selection of ags-synth
-	* TODO:JK: implemented pitch selection of ags-fm-synth
-	* TODO:JK: implemented pitch selection of ags-sf2-synth
-	* TODO:JK: implemented pitch selection of ags-sfz-synth
-	* TODO:JK: rename AgsOpenSf2Sample to AgsOpenSF2Sample
-	* TODO:JK: rename AgsOpenSf2Instrument to AgsOpenSF2Instrument
-	* TODO:JK: improve ags_midi_smf_util.c return value
+	* fixed check core-audio buffer size and channels against configured soundcard
+
+ags (6.9.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential SIGSEGV CoreAudio buffer size, check if config value matches device
+
+ags (6.9.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added default ags.conf of CoreAudio on macos
+	* fixed sandbox path on macos
+	* fixed potential SIGSEGV with AgsFileWidget
+
+ags (6.9.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed compiler errors on macos
 
 ags (6.9.1)
 
@@ -7170,7 +7179,7 @@ ags (0.4.2-68)
 	* added `midi2xml` the MIDI file to XML parser
 
 
-Copyright (C) 2005-2022 Joël Krähemann
+Copyright (C) 2005-2024 Joël Krähemann
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3
