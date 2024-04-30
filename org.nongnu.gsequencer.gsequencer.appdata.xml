@@ -64,6 +64,9 @@
 	<p>
 	  Refactored preferences, removed generic preferences and modern button layout.
 	</p>
+	<p>
+	  Refactored dialog windows.
+	</p>
       </description>
     </release>
 

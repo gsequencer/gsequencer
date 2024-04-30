@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -46,17 +46,29 @@ typedef struct _AgsMachineEditorDialogClass AgsMachineEditorDialogClass;
 
 struct _AgsMachineEditorDialog
 {
-  GtkDialog dialog;
+  GtkWindow window;
 
+  guint flags;
+  
   AgsMachineEditor *machine_editor;
+
+  GtkBox *action_area;
+
+  GtkButton *activate_button;
 };
 
 struct _AgsMachineEditorDialogClass
 {
-  GtkDialogClass dialog;
+  GtkWindowClass window;
+
+  void (*response)(AgsMachineEditorDialog *machine_editor_dialog,
+		   gint response_id);
 };
 
 GType ags_machine_editor_dialog_get_type(void);
+
+void ags_machine_editor_dialog_response(AgsMachineEditorDialog *machine_editor_dialog,
+					gint response_id);
 
 AgsMachineEditorDialog* ags_machine_editor_dialog_new(gchar *title,
 						      GtkWindow *transient_for);
