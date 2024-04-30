@@ -1,3 +1,9 @@
+ags (6.10.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* refactored AgsPreferences inherits GtkWindow, modern button layout and close by ESC key
+	* disabled generic preferences
+
 ags (6.9.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -167,6 +167,9 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
   gtk_box_append(hbox,
 		 (GtkWidget *) generic_preferences->segmentation);
 
+  gtk_widget_set_visible(hbox,
+			 FALSE);
+  
   /* engine mode */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				AGS_UI_PROVIDER_DEFAULT_SPACING);
@@ -188,8 +191,12 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
   gtk_box_append(hbox,
 		 (GtkWidget *) generic_preferences->engine_mode);
 
+  gtk_widget_set_visible(hbox,
+			 FALSE);
+
   /* rt-safe */
   generic_preferences->rt_safe = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("rt-safe"));
+
   gtk_box_append((GtkBox *) generic_preferences,
 		 (GtkWidget *) generic_preferences->rt_safe);
   
