@@ -742,18 +742,28 @@ void
 ags_machine_rename_callback(GAction *action, GVariant *parameter,
 			    AgsMachine *machine)
 {
-  GtkDialog *dialog;
+  AgsInputDialog *dialog;
 
   dialog = (GtkDialog *) ags_input_dialog_new(i18n("rename machine"),
 					      (GtkWindow *) gtk_widget_get_ancestor(GTK_WIDGET(machine),
 										    AGS_TYPE_WINDOW));
+  
   ags_input_dialog_set_flags((AgsInputDialog *) dialog,
 			     AGS_INPUT_DIALOG_SHOW_STRING_INPUT);
 
+  ags_input_dialog_set_message(dialog,
+			       i18n("The name of the machine is displayed on top of it or within editor."));
+
+  ags_input_dialog_set_text(dialog,
+			    i18n("machine's name"));
+  
   if(machine->machine_name != NULL){
     gtk_editable_set_text(GTK_EDITABLE(AGS_INPUT_DIALOG(dialog)->string_input),
 			  machine->machine_name);
   }
+
+  gtk_widget_set_visible(dialog->cancel,
+			 FALSE);
   
   gtk_widget_set_visible((GtkWidget *) dialog,
 			 TRUE);
@@ -786,15 +796,22 @@ void
 ags_machine_rename_audio_callback(GAction *action, GVariant *parameter,
 				  AgsMachine *machine)
 {
-  GtkDialog *dialog;
+  AgsInputDialog *dialog;
 
   gchar *str;
   
   dialog = (GtkDialog *) ags_input_dialog_new(i18n("rename audio"),
 					      (GtkWindow *) gtk_widget_get_ancestor(GTK_WIDGET(machine),
 										    AGS_TYPE_WINDOW));
+
   ags_input_dialog_set_flags((AgsInputDialog *) dialog,
 			     AGS_INPUT_DIALOG_SHOW_STRING_INPUT);
+
+  ags_input_dialog_set_message(dialog,
+			       i18n("The name of an audio object can be used to address it within a OSC message."));
+
+  ags_input_dialog_set_text(dialog,
+			    i18n("audio object's name"));
 
   str = ags_audio_get_audio_name(machine->audio);
 
@@ -804,6 +821,9 @@ ags_machine_rename_audio_callback(GAction *action, GVariant *parameter,
     
     g_free(str);
   }
+
+  gtk_widget_set_visible(dialog->cancel,
+			 FALSE);
   
   gtk_widget_set_visible((GtkWidget *) dialog,
 			 TRUE);
@@ -856,7 +876,7 @@ ags_machine_reposition_audio_callback(GAction *action, GVariant *parameter,
 				      AgsMachine *machine)
 {
   AgsWindow *window;
-  GtkDialog *dialog;
+  AgsInputDialog *dialog;
 
   AgsApplicationContext *application_context;
 
@@ -870,8 +890,15 @@ ags_machine_reposition_audio_callback(GAction *action, GVariant *parameter,
   
   dialog = (GtkDialog *) ags_input_dialog_new(i18n("reposition audio"),
 					      (GtkWindow *) window);
+
   ags_input_dialog_set_flags((AgsInputDialog *) dialog,
 			     AGS_INPUT_DIALOG_SHOW_SPIN_BUTTON_INPUT);
+
+  ags_input_dialog_set_message(dialog,
+			       i18n("The position of an audio object can be used to address it within a OSC message."));
+
+  ags_input_dialog_set_text(dialog,
+			    i18n("audio object's position"));
 
   gtk_label_set_text(AGS_INPUT_DIALOG(dialog)->spin_button_label,
 		     i18n("position"));
@@ -883,6 +910,9 @@ ags_machine_reposition_audio_callback(GAction *action, GVariant *parameter,
   gtk_spin_button_set_value(AGS_INPUT_DIALOG(dialog)->spin_button_input,
 			    (gdouble) g_list_index(start_list,
 						   machine->audio));
+
+  gtk_widget_set_visible(dialog->cancel,
+			 FALSE);
   
   gtk_widget_set_visible((GtkWidget *) dialog,
 			 TRUE);
