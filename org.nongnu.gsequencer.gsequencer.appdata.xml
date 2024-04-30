@@ -59,6 +59,9 @@
 	  Implemented gesture swipe in automation editor.
 	</p>
 	<p>
+	  Implemented gesture swipe in wave form editor.
+	</p>
+	<p>
 	  Refactored preferences, removed generic preferences and modern button layout.
 	</p>
       </description>
