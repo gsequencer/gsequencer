@@ -1,6 +1,9 @@
 ags (6.10.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented gesture swipe in notation editor
+	* implemented gesture swipe in automation editor
+	* TODO:JK: implemented gesture swipe in wave form editor
 	* refactored AgsPreferences inherits GtkWindow, modern button layout and close by ESC key
 	* disabled generic preferences
 

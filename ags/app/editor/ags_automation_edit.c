@@ -162,6 +162,11 @@ gboolean ags_automation_edit_motion_callback(GtkEventControllerMotion *event_con
 					     gdouble y,
 					     AgsAutomationEdit *automation_edit);
 
+void ags_automation_edit_gesture_swipe_callback(GtkGestureSwipe *event_controller,
+						gdouble x,
+						gdouble y,
+						AgsAutomationEdit *automation_edit);
+
 /**
  * SECTION:ags_automation_edit
  * @short_description: edit automations
@@ -458,6 +463,13 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
 
   g_signal_connect(event_controller, "motion",
 		   G_CALLBACK(ags_automation_edit_motion_callback), automation_edit);
+
+  event_controller = gtk_gesture_swipe_new();
+  gtk_widget_add_controller((GtkWidget *) automation_edit,
+			    event_controller);
+
+  g_signal_connect(event_controller, "swipe",
+		   G_CALLBACK(ags_automation_edit_gesture_swipe_callback), automation_edit);
 
   automation_edit->flags = 0;
   automation_edit->connectable_flags = 0;
@@ -1485,6 +1497,64 @@ ags_automation_edit_motion_callback(GtkEventControllerMotion *event_controller,
   }
 
   return(FALSE);
+}
+
+void
+ags_automation_edit_gesture_swipe_callback(GtkGestureSwipe *event_controller,
+					   gdouble x,
+					   gdouble y,
+					   AgsAutomationEdit *automation_edit)
+{
+  AgsCompositeToolbar *composite_toolbar;
+  AgsCompositeEditor *composite_editor;
+
+  GtkAdjustment *adjustment;
+  
+  AgsApplicationContext *application_context;
+  
+  double zoom_factor;
+
+  application_context = ags_application_context_get_instance();
+
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+
+  composite_toolbar = composite_editor->toolbar;
+
+  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) composite_toolbar->zoom));
+  
+  /* horizontal swipe */
+  if(x > 0.0){
+    adjustment = gtk_scrollbar_get_adjustment(composite_editor->automation_edit->hscrollbar);
+
+    if(gtk_adjustment_get_value(adjustment) + (zoom_factor * 4.0 * automation_edit->control_width) < gtk_adjustment_get_upper(adjustment)){
+      gtk_adjustment_set_value(adjustment,
+			       gtk_adjustment_get_value(adjustment) + (zoom_factor * 4.0 * automation_edit->control_width));
+    }
+  }else if(x < 0.0){
+    adjustment = gtk_scrollbar_get_adjustment(composite_editor->automation_edit->hscrollbar);
+
+    if(gtk_adjustment_get_value(adjustment) - (zoom_factor * 4.0 * automation_edit->control_width) > 0.0){
+      gtk_adjustment_set_value(adjustment,
+			       gtk_adjustment_get_value(adjustment) - (zoom_factor * 4.0 * automation_edit->control_width));
+    }
+  }
+
+  /* vertical swipe */
+  if(y > 0.0){
+    adjustment = gtk_scrollbar_get_adjustment(composite_editor->automation_edit->vscrollbar);
+
+    if(gtk_adjustment_get_value(adjustment) + (gdouble) automation_edit->control_height + AGS_UI_PROVIDER_DEFAULT_SPACING < gtk_adjustment_get_upper(adjustment)){
+      gtk_adjustment_set_value(adjustment,
+			       gtk_adjustment_get_value(adjustment) + (gdouble) automation_edit->control_height + AGS_UI_PROVIDER_DEFAULT_SPACING);
+    }
+  }else if(y < 0.0){
+    adjustment = gtk_scrollbar_get_adjustment(composite_editor->automation_edit->vscrollbar);
+
+    if(gtk_adjustment_get_value(adjustment) - (gdouble) automation_edit->control_height - AGS_UI_PROVIDER_DEFAULT_SPACING > 0.0){
+      gtk_adjustment_set_value(adjustment,
+			       gtk_adjustment_get_value(adjustment) - (gdouble) automation_edit->control_height - AGS_UI_PROVIDER_DEFAULT_SPACING);
+    }
+  }
 }
 
 void
