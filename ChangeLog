@@ -8,6 +8,7 @@ ags (6.10.0)
 	* refactored AgsMachineEditorDialog inherits GtkWindow, modern button layout and close by ESC key
 	* refactored AgsMetaDataWindow close by ESC key
 	* refactored AgsOnlineHelpWindow close by ESC key
+	* refactored AgsMidiDialog close by ESC key
 	* disabled generic preferences
 
 ags (6.9.5)

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -39,13 +39,35 @@ void ags_midi_dialog_get_property(GObject *gobject,
 				  GParamSpec *param_spec);
 void ags_midi_dialog_dispose(GObject *gobject);
 
+gboolean ags_midi_dialog_is_connected(AgsConnectable *connectable);
 void ags_midi_dialog_connect(AgsConnectable *connectable);
 void ags_midi_dialog_disconnect(AgsConnectable *connectable);
 
 void ags_midi_dialog_set_update(AgsApplicable *applicable, gboolean update);
 void ags_midi_dialog_apply(AgsApplicable *applicable);
 void ags_midi_dialog_reset(AgsApplicable *applicable);
+
 void ags_midi_dialog_show(GtkWidget *widget);
+
+void ags_midi_dialog_activate_button_callback(GtkButton *activate_button,
+					      AgsMidiDialog *midi_dialog);
+
+gboolean ags_midi_dialog_key_pressed_callback(GtkEventControllerKey *event_controller,
+					      guint keyval,
+					      guint keycode,
+					      GdkModifierType state,
+					      AgsMidiDialog *midi_dialog);
+void ags_midi_dialog_key_released_callback(GtkEventControllerKey *event_controller,
+					   guint keyval,
+					   guint keycode,
+					   GdkModifierType state,
+					   AgsMidiDialog *midi_dialog);
+gboolean ags_midi_dialog_modifiers_callback(GtkEventControllerKey *event_controller,
+					    GdkModifierType keyval,
+					    AgsMidiDialog *midi_dialog);
+
+void ags_midi_dialog_real_response(AgsMidiDialog *midi_dialog,
+				   gint response_id);
 
 /**
  * SECTION:ags_midi_dialog
@@ -58,11 +80,18 @@ void ags_midi_dialog_show(GtkWidget *widget);
  */
 
 enum{
+  RESPONSE,
+  LAST_SIGNAL,
+};
+
+enum{
   PROP_0,
   PROP_MACHINE,
 };
 
 static gpointer ags_midi_dialog_parent_class = NULL;
+
+static guint midi_dialog_signals[LAST_SIGNAL];
 
 GType
 ags_midi_dialog_get_type(void)
@@ -96,7 +125,7 @@ ags_midi_dialog_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_midi_dialog = g_type_register_static(GTK_TYPE_DIALOG,
+    ags_type_midi_dialog = g_type_register_static(GTK_TYPE_WINDOW,
 						  "AgsMidiDialog", &ags_midi_dialog_info,
 						  0);
 
@@ -152,15 +181,50 @@ ags_midi_dialog_class_init(AgsMidiDialogClass *midi_dialog)
   widget = (GtkWidgetClass *) midi_dialog;
 
   widget->show = ags_midi_dialog_show;
+
+  /* AgsMidiDialog */
+  midi_dialog->response = ags_midi_dialog_real_response;
+  
+  /* signals */
+  /**
+   * AgsMidiDialog::response:
+   * @midi_dialog: the #AgsMidiDialog
+   *
+   * The ::response signal notifies about window interaction.
+   *
+   * Since: 6.10.0
+   */
+  midi_dialog_signals[RESPONSE] =
+    g_signal_new("response",
+		 G_TYPE_FROM_CLASS(midi_dialog),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsMidiDialogClass, response),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__INT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_INT);
 }
 
 void
 ags_midi_dialog_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_midi_dialog_is_connected;  
   connectable->connect = ags_midi_dialog_connect;
   connectable->disconnect = ags_midi_dialog_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -174,14 +238,17 @@ ags_midi_dialog_applicable_interface_init(AgsApplicableInterface *applicable)
 void
 ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 {
-  GtkBox *content_area;
+  GtkBox *vbox;
   GtkLabel *label;
   GtkGrid *grid;
   GtkBox *hbox;
-  
-  gtk_window_set_title((GtkWindow *) midi_dialog,
-		       i18n("MIDI connection"));
 
+  GtkEventController *event_controller;
+
+  AgsApplicationContext *application_context;
+  
+  application_context = ags_application_context_get_instance();
+  
   midi_dialog->flags = 0;
   midi_dialog->connectable_flags = 0;
 
@@ -190,20 +257,44 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 
   midi_dialog->machine = NULL;
 
-  content_area = (GtkBox *) gtk_dialog_get_content_area(GTK_DIALOG(midi_dialog));
+  gtk_window_set_title((GtkWindow *) midi_dialog,
+		       i18n("MIDI connection"));
 
-  gtk_widget_set_valign(content_area,
-			GTK_ALIGN_START);
-  gtk_widget_set_vexpand(content_area,
-			 FALSE);
+  gtk_window_set_deletable(GTK_WINDOW(midi_dialog),
+			   TRUE);
+
+  gtk_window_set_transient_for((GtkWindow *) midi_dialog,
+			       (GtkWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
+
+  event_controller = gtk_event_controller_key_new();
+  gtk_widget_add_controller((GtkWidget *) midi_dialog,
+			    event_controller);
+
+  g_signal_connect(event_controller, "key-pressed",
+		   G_CALLBACK(ags_midi_dialog_key_pressed_callback), midi_dialog);
   
-  gtk_box_set_spacing(content_area,
-		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+  g_signal_connect(event_controller, "key-released",
+		   G_CALLBACK(ags_midi_dialog_key_released_callback), midi_dialog);
+
+  g_signal_connect(event_controller, "modifiers",
+		   G_CALLBACK(ags_midi_dialog_modifiers_callback), midi_dialog);
+
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_window_set_child((GtkWindow *) midi_dialog,
+		       (GtkWidget *) vbox);
+
+  gtk_widget_set_valign(vbox,
+			GTK_ALIGN_START);
+
+  gtk_widget_set_vexpand(vbox,
+			 FALSE);
   
   /* connection */
   midi_dialog->io_options = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 						   AGS_UI_PROVIDER_DEFAULT_SPACING);
-  gtk_box_append(content_area,
+  gtk_box_append(vbox,
 		 (GtkWidget *) midi_dialog->io_options);
 
   /* midi channel */
@@ -235,7 +326,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
   /* mapping */
   midi_dialog->mapping = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 						AGS_UI_PROVIDER_DEFAULT_SPACING);
-  gtk_box_append(content_area,
+  gtk_box_append(vbox,
 		 GTK_WIDGET(midi_dialog->mapping));
 
   grid = (GtkGrid *) gtk_grid_new();
@@ -393,7 +484,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
   /* device */
   midi_dialog->device = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 					       AGS_UI_PROVIDER_DEFAULT_SPACING);
-  gtk_box_append(content_area,
+  gtk_box_append(vbox,
 		 (GtkWidget *) midi_dialog->device);
 
   grid = (GtkGrid *) gtk_grid_new();
@@ -435,21 +526,23 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 		  1, 1,
 		  1, 1);
 
-  /* GtkButton's in GtkDialog->action_area  */
-  midi_dialog->apply = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Apply"));
-  gtk_dialog_add_action_widget((GtkDialog *) midi_dialog,
-			       (GtkWidget *) midi_dialog->apply,
-			       GTK_RESPONSE_NONE);
+  /* buttons */
+  midi_dialog->action_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+						    AGS_UI_PROVIDER_DEFAULT_SPACING);
   
-  midi_dialog->ok = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_OK"));
-  gtk_dialog_add_action_widget((GtkDialog *) midi_dialog,
-			       (GtkWidget *) midi_dialog->ok,
-			       GTK_RESPONSE_NONE);
-  
-  midi_dialog->cancel = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Cancel"));
-  gtk_dialog_add_action_widget((GtkDialog *) midi_dialog,
-			       (GtkWidget *) midi_dialog->cancel,
-			       GTK_RESPONSE_NONE);
+  gtk_widget_set_halign(midi_dialog->action_area,
+			GTK_ALIGN_END);
+
+  gtk_box_append(vbox,
+		 (GtkWidget *) midi_dialog->action_area);
+
+  midi_dialog->activate_button = (GtkButton *) gtk_button_new_with_label(i18n("ok"));
+
+  gtk_box_append(midi_dialog->action_area,
+		 (GtkWidget *) midi_dialog->activate_button);
+
+  g_signal_connect(midi_dialog->activate_button, "clicked",
+		   G_CALLBACK(ags_midi_dialog_activate_button_callback), midi_dialog);
 }
 
 void
@@ -530,6 +623,21 @@ ags_midi_dialog_dispose(GObject *gobject)
   G_OBJECT_CLASS(ags_midi_dialog_parent_class)->dispose(gobject);
 }
 
+gboolean
+ags_midi_dialog_is_connected(AgsConnectable *connectable)
+{
+  AgsMidiDialog *midi_dialog;
+  
+  gboolean is_connected;
+  
+  midi_dialog = AGS_MIDI_DIALOG(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (midi_dialog->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
+}
+
 void
 ags_midi_dialog_connect(AgsConnectable *connectable)
 {
@@ -537,21 +645,11 @@ ags_midi_dialog_connect(AgsConnectable *connectable)
 
   midi_dialog = AGS_MIDI_DIALOG(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (midi_dialog->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
   midi_dialog->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
-
-  /* applicable */
-  g_signal_connect((GObject *) midi_dialog->apply, "clicked",
-		   G_CALLBACK(ags_midi_dialog_apply_callback), (gpointer) midi_dialog);
-
-  g_signal_connect((GObject *) midi_dialog->ok, "clicked",
-		   G_CALLBACK(ags_midi_dialog_ok_callback), (gpointer) midi_dialog);
-
-  g_signal_connect((GObject *) midi_dialog->cancel, "clicked",
-		   G_CALLBACK(ags_midi_dialog_cancel_callback), (gpointer) midi_dialog);
 }
 
 void
@@ -561,30 +659,11 @@ ags_midi_dialog_disconnect(AgsConnectable *connectable)
 
   midi_dialog = AGS_MIDI_DIALOG(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (midi_dialog->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   midi_dialog->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
-
-  /* applicable */
-  g_object_disconnect((GObject *) midi_dialog->apply,
-		      "any_signal::clicked",
-		      G_CALLBACK(ags_midi_dialog_apply_callback),
-		      (gpointer) midi_dialog,
-		      NULL);
-
-  g_object_disconnect((GObject *) midi_dialog->ok,
-		      "any_signal::clicked",
-		      G_CALLBACK(ags_midi_dialog_ok_callback),
-		      (gpointer) midi_dialog,
-		      NULL);
-
-  g_object_disconnect((GObject *) midi_dialog->cancel,
-		      "any_signal::clicked",
-		      G_CALLBACK(ags_midi_dialog_cancel_callback),
-		      (gpointer) midi_dialog,
-		      NULL);
 }
 
 void
@@ -788,11 +867,109 @@ ags_midi_dialog_show(GtkWidget *widget)
     gtk_widget_show((GtkWidget *) midi_dialog->device);
   }
 
-  gtk_widget_show((GtkWidget *) midi_dialog->apply);
-  gtk_widget_show((GtkWidget *) midi_dialog->ok);
-  gtk_widget_show((GtkWidget *) midi_dialog->cancel);
-
   GTK_WIDGET_CLASS(ags_midi_dialog_parent_class)->show(widget);
+}
+
+void
+ags_midi_dialog_activate_button_callback(GtkButton *activate_button,
+					 AgsMidiDialog *midi_dialog)
+{
+  ags_midi_dialog_response(midi_dialog,
+			   GTK_RESPONSE_ACCEPT);
+}
+
+gboolean
+ags_midi_dialog_key_pressed_callback(GtkEventControllerKey *event_controller,
+				     guint keyval,
+				     guint keycode,
+				     GdkModifierType state,
+				     AgsMidiDialog *midi_dialog)
+{
+  gboolean key_handled;
+
+  key_handled = TRUE;
+
+  if(keyval == GDK_KEY_Tab ||
+     keyval == GDK_KEY_ISO_Left_Tab ||
+     keyval == GDK_KEY_Shift_L ||
+     keyval == GDK_KEY_Shift_R ||
+     keyval == GDK_KEY_Alt_L ||
+     keyval == GDK_KEY_Alt_R ||
+     keyval == GDK_KEY_Control_L ||
+     keyval == GDK_KEY_Control_R){
+    key_handled = FALSE;
+  }
+  
+  return(key_handled);
+}
+
+void
+ags_midi_dialog_key_released_callback(GtkEventControllerKey *event_controller,
+				      guint keyval,
+				      guint keycode,
+				      GdkModifierType state,
+				      AgsMidiDialog *midi_dialog)
+{
+  gboolean key_handled;
+
+  key_handled = TRUE;
+
+  if(keyval == GDK_KEY_Tab ||
+     keyval == GDK_KEY_ISO_Left_Tab ||
+     keyval == GDK_KEY_Shift_L ||
+     keyval == GDK_KEY_Shift_R ||
+     keyval == GDK_KEY_Alt_L ||
+     keyval == GDK_KEY_Alt_R ||
+     keyval == GDK_KEY_Control_L ||
+     keyval == GDK_KEY_Control_R){
+    key_handled = FALSE;
+  }else{
+    switch(keyval){
+    case GDK_KEY_Escape:
+      {
+	ags_midi_dialog_response(midi_dialog,
+				 GTK_RESPONSE_CLOSE);	
+      }
+      break;
+    }
+  }
+}
+
+gboolean
+ags_midi_dialog_modifiers_callback(GtkEventControllerKey *event_controller,
+				   GdkModifierType keyval,
+				   AgsMidiDialog *midi_dialog)
+{
+  return(FALSE);
+}
+
+void
+ags_midi_dialog_real_response(AgsMidiDialog *midi_dialog,
+			      gint response_id)
+{
+  gtk_window_destroy((GtkWindow *) midi_dialog);
+}
+
+/**
+ * ags_midi_dialog_response:
+ * @midi_dialog: the #AgsMidiDialog
+ * @response: the response
+ *
+ * Response @midi_dialog due to user action.
+ * 
+ * Since: 6.10.0
+ */
+void
+ags_midi_dialog_response(AgsMidiDialog *midi_dialog,
+			 gint response)
+{
+  g_return_if_fail(AGS_IS_MIDI_DIALOG(midi_dialog));
+  
+  g_object_ref((GObject *) midi_dialog);
+  g_signal_emit(G_OBJECT(midi_dialog),
+		midi_dialog_signals[RESPONSE], 0,
+		response);
+  g_object_unref((GObject *) midi_dialog);
 }
 
 /**
