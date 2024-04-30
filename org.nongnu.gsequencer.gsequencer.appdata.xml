@@ -65,7 +65,7 @@
 	  Refactored preferences, removed generic preferences and modern button layout.
 	</p>
 	<p>
-	  Refactored dialog windows.
+	  Refactored dialog windows to be closed by ESC key.
 	</p>
       </description>
     </release>
