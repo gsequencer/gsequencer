@@ -1233,16 +1233,19 @@ ags_notation_edit_gesture_swipe_callback(GtkGestureSwipe *event_controller,
   if(x > 0.0){
     adjustment = gtk_scrollbar_get_adjustment(notation_edit->hscrollbar);
 
-    if(gtk_adjustment_get_value(adjustment) + (zoom_factor * 4.0 * notation_edit->control_width) < gtk_adjustment_get_upper(adjustment)){
+    if(gtk_adjustment_get_value(adjustment) + (4.0 * notation_edit->control_width) < gtk_adjustment_get_upper(adjustment)){
       gtk_adjustment_set_value(adjustment,
-			       gtk_adjustment_get_value(adjustment) + (zoom_factor * 4.0 * notation_edit->control_width));
+			       gtk_adjustment_get_value(adjustment) + (4.0 * notation_edit->control_width));
     }
   }else if(x < 0.0){
     adjustment = gtk_scrollbar_get_adjustment(notation_edit->hscrollbar);
 
-    if(gtk_adjustment_get_value(adjustment) - (zoom_factor * 4.0 * notation_edit->control_width) > 0.0){
+    if(gtk_adjustment_get_value(adjustment) - (4.0 * notation_edit->control_width) > 0.0){
       gtk_adjustment_set_value(adjustment,
-			       gtk_adjustment_get_value(adjustment) - (zoom_factor * 4.0 * notation_edit->control_width));
+			       gtk_adjustment_get_value(adjustment) - (4.0 * notation_edit->control_width));
+    }else{
+      gtk_adjustment_set_value(adjustment,
+			       0.0);
     }
   }
 
@@ -1260,6 +1263,9 @@ ags_notation_edit_gesture_swipe_callback(GtkGestureSwipe *event_controller,
     if(gtk_adjustment_get_value(adjustment) - (gdouble) notation_edit->control_height > 0.0){
       gtk_adjustment_set_value(adjustment,
 			       gtk_adjustment_get_value(adjustment) - (gdouble) notation_edit->control_height);
+    }else{
+      gtk_adjustment_set_value(adjustment,
+			       0.0);
     }
   }
 }
