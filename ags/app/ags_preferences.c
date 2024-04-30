@@ -235,6 +235,9 @@ ags_preferences_init(AgsPreferences *preferences)
   gtk_window_set_transient_for((GtkWindow *) preferences,
 			       (GtkWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
 
+  gtk_window_set_default_size((GtkWindow *) preferences,
+			      800, 600);
+
   g_signal_connect(preferences, "close-request",
 		   G_CALLBACK(ags_preferences_close_request_callback), NULL);
 
@@ -253,9 +256,6 @@ ags_preferences_init(AgsPreferences *preferences)
   
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				AGS_UI_PROVIDER_DEFAULT_SPACING);
-
-  gtk_window_set_default_size((GtkWindow *) preferences,
-			      800, 600);
 
   gtk_window_set_child((GtkWindow *) preferences,
 		       (GtkWidget *) vbox);
