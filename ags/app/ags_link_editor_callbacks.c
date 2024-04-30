@@ -119,7 +119,7 @@ ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
       sandbox_path = NULL;
 
 #if defined(AGS_MACOS_SANDBOX)
-  sandbox_path = g_strdup_printf("%s/Library/%s",
+  sandbox_path = g_strdup_printf("%s/Library/%s/Data",
 				 home_path,
 				 AGS_DEFAULT_BUNDLE_ID);
 

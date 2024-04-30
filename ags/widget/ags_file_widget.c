@@ -613,8 +613,8 @@ ags_file_widget_init(AgsFileWidget *file_widget)
   gtk_box_append(file_widget->left_vbox,
 		 (GtkWidget *) file_widget->location_box);
 
-  file_widget->location = g_hash_table_new_full(g_str_hash,
-						g_str_equal,
+  file_widget->location = g_hash_table_new_full((GHashFunc) g_str_hash,
+						(GEqualFunc) g_str_equal,
 						g_free,
 						NULL);
 
@@ -665,8 +665,8 @@ ags_file_widget_init(AgsFileWidget *file_widget)
     file_widget->bookmark_filename = NULL;
 #endif
   
-  file_widget->bookmark = g_hash_table_new_full(g_direct_hash,
-						g_string_equal,
+    file_widget->bookmark = g_hash_table_new_full((GHashFunc) g_direct_hash,
+						(GEqualFunc) g_string_equal,
 						g_free,
 						g_free);
 
@@ -2288,7 +2288,8 @@ ags_file_widget_write_recently_used(AgsFileWidget *file_widget)
   xmlNode *node;
 
   gchar **iter;
-  
+
+  gchar *default_path;
   xmlChar *buffer;
 
   int size;
@@ -2319,17 +2320,30 @@ ags_file_widget_write_recently_used(AgsFileWidget *file_widget)
     }
   }
 
+  default_path = NULL;
+  
+  if(strrchr(file_widget->recently_used_filename, '/') != NULL){
+    default_path = g_strndup(file_widget->recently_used_filename,
+			     strrchr(file_widget->recently_used_filename, '/') - file_widget->recently_used_filename);
+  }
+  
+  g_mkdir_with_parents(default_path,
+		       0755);
+
   out = NULL;
   buffer = NULL;
-
-  out = fopen(file_widget->recently_used_filename, "w+");
-  size = 0;
   
-  xmlDocDumpFormatMemoryEnc(recently_used_doc, &(buffer), &size, "UTF-8", TRUE);
+  if(g_file_test(default_path, G_FILE_TEST_EXISTS) &&
+     g_file_test(default_path, G_FILE_TEST_IS_DIR)){
+    out = fopen(file_widget->recently_used_filename, "w+");
+    size = 0;
+  
+    xmlDocDumpFormatMemoryEnc(recently_used_doc, &(buffer), &size, "UTF-8", TRUE);
 
-  fwrite(buffer, size, sizeof(xmlChar), out);
-  fflush(out);
-  fclose(out);
+    fwrite(buffer, size, sizeof(xmlChar), out);
+    fflush(out);
+    fclose(out);
+  }
 }
 
 /**
@@ -2905,7 +2919,8 @@ ags_file_widget_write_bookmark(AgsFileWidget *file_widget)
   xmlDoc *bookmark_doc;
   xmlNode *root_node;
   xmlNode *node;
-  
+
+  gchar *default_path;
   xmlChar *buffer;
 
   int size;
@@ -2940,17 +2955,30 @@ ags_file_widget_write_bookmark(AgsFileWidget *file_widget)
 
   g_list_free(start_bookmark);
 
+  default_path = NULL;
+  
+  if(strrchr(file_widget->recently_used_filename, '/') != NULL){
+    default_path = g_strndup(file_widget->recently_used_filename,
+			     strrchr(file_widget->recently_used_filename, '/') - file_widget->recently_used_filename);
+  }
+  
+  g_mkdir_with_parents(default_path,
+		       0755);
+  
   out = NULL;
   buffer = NULL;
 
-  out = fopen(file_widget->bookmark_filename, "w+");
-  size = 0;
+  if(g_file_test(default_path, G_FILE_TEST_EXISTS) &&
+     g_file_test(default_path, G_FILE_TEST_IS_DIR)){
+    out = fopen(file_widget->bookmark_filename, "w+");
+    size = 0;
   
-  xmlDocDumpFormatMemoryEnc(bookmark_doc, &(buffer), &size, "UTF-8", TRUE);
+    xmlDocDumpFormatMemoryEnc(bookmark_doc, &(buffer), &size, "UTF-8", TRUE);
 
-  fwrite(buffer, size, sizeof(xmlChar), out);
-  fflush(out);
-  fclose(out);
+    fwrite(buffer, size, sizeof(xmlChar), out);
+    fflush(out);
+    fclose(out);
+  }
 }
 
 /**
@@ -3267,7 +3295,7 @@ ags_file_widget_real_refresh(AgsFileWidget *file_widget)
 	  (!strncmp(current_filename, "..", 3) == FALSE))){
 	start_filename = g_list_insert_sorted(start_filename,
 					      current_filename,
-					      g_strcmp0);
+					      (GCompareFunc) g_strcmp0);
       }
     }while(current_filename != NULL);
 

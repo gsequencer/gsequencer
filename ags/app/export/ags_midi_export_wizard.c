@@ -297,7 +297,7 @@ ags_midi_export_wizard_init(AgsMidiExportWizard *midi_export_wizard)
   sandbox_path = NULL;
   
 #if defined(AGS_MACOS_SANDBOX)
-  sandbox_path = g_strdup_printf("%s/Library/%s",
+  sandbox_path = g_strdup_printf("%s/Library/%s/Data",
 				 home_path,
 				 AGS_DEFAULT_BUNDLE_ID);
 

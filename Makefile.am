@@ -148,6 +148,7 @@ EXTRA_DIST = config.rpath \
 	conf/ags-oss.conf \
 	conf/ags-jack.conf \
 	conf/ags-pulse.conf \
+	conf/ags-core-audio.conf \
 	ags_authentication_test.xml \
 	ags_business_group_test.xml \
 	ags_certificate_test.xml \
