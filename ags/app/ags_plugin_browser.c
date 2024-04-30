@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -35,6 +35,7 @@ void ags_plugin_browser_init(AgsPluginBrowser *plugin_browser);
 void ags_plugin_browser_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_plugin_browser_applicable_interface_init(AgsApplicableInterface *applicable);
 
+gboolean ags_plugin_browser_is_connected(AgsConnectable *connectable);
 void ags_plugin_browser_connect(AgsConnectable *connectable);
 void ags_plugin_browser_disconnect(AgsConnectable *connectable);
 
@@ -42,9 +43,29 @@ void ags_plugin_browser_set_update(AgsApplicable *applicable, gboolean update);
 void ags_plugin_browser_apply(AgsApplicable *applicable);
 void ags_plugin_browser_reset(AgsApplicable *applicable);
 
+void ags_plugin_browser_activate_button_callback(GtkButton *activate_button,
+						 AgsPluginBrowser *plugin_browser);
+
+gboolean ags_plugin_browser_key_pressed_callback(GtkEventControllerKey *event_controller,
+						 guint keyval,
+						 guint keycode,
+						 GdkModifierType state,
+						 AgsPluginBrowser *plugin_browser);
+void ags_plugin_browser_key_released_callback(GtkEventControllerKey *event_controller,
+					      guint keyval,
+					      guint keycode,
+					      GdkModifierType state,
+					      AgsPluginBrowser *plugin_browser);
+gboolean ags_plugin_browser_modifiers_callback(GtkEventControllerKey *event_controller,
+					       GdkModifierType keyval,
+					       AgsPluginBrowser *plugin_browser);
+
+void ags_plugin_browser_real_response(AgsPluginBrowser *plugin_browser,
+				      gint response_id);
+
 /**
  * SECTION:ags_plugin_browser
- * @short_description: A composite to select plugin effect.
+ * @short_description: A composite to select plugin effect
  * @title: AgsPluginBrowser
  * @section_id:
  * @include: ags/app/ags_plugin_browser.h
@@ -53,7 +74,14 @@ void ags_plugin_browser_reset(AgsApplicable *applicable);
  * effect.
  */
 
+enum{
+  RESPONSE,
+  LAST_SIGNAL,
+};
+
 static gpointer ags_plugin_browser_parent_class = NULL;
+
+static guint plugin_browser_signals[LAST_SIGNAL];
 
 GType
 ags_plugin_browser_get_type(void)
@@ -87,7 +115,7 @@ ags_plugin_browser_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_plugin_browser = g_type_register_static(GTK_TYPE_DIALOG,
+    ags_type_plugin_browser = g_type_register_static(GTK_TYPE_WINDOW,
 						     "AgsPluginBrowser", &ags_plugin_browser_info,
 						     0);
 
@@ -109,15 +137,50 @@ void
 ags_plugin_browser_class_init(AgsPluginBrowserClass *plugin_browser)
 {
   ags_plugin_browser_parent_class = g_type_class_peek_parent(plugin_browser);
+
+  /* AgsPluginBrowser */
+  plugin_browser->response = ags_plugin_browser_real_response;
+  
+  /* signals */
+  /**
+   * AgsPluginBrowser::response:
+   * @plugin_browser: the #AgsPluginBrowser
+   *
+   * The ::response signal notifies about window interaction.
+   *
+   * Since: 6.10.0
+   */
+  plugin_browser_signals[RESPONSE] =
+    g_signal_new("response",
+		 G_TYPE_FROM_CLASS(plugin_browser),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsPluginBrowserClass, response),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__INT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_INT);
 }
 
 void
 ags_plugin_browser_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_plugin_browser_is_connected;  
   connectable->connect = ags_plugin_browser_connect;
   connectable->disconnect = ags_plugin_browser_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -132,9 +195,12 @@ void
 ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
 {
   GtkScrolledWindow *scrolled_window;
+  GtkBox *content_area;
   GtkBox *vbox;
   GtkBox *hbox;
   GtkLabel *label;
+
+  GtkEventController *event_controller;
 
   gchar *str;
   
@@ -144,10 +210,16 @@ ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
 			       TRUE);
   
   gtk_window_set_title((GtkWindow *) plugin_browser,
-		       i18n("Plugin browser"));
+		       i18n("plugin browser"));
 
   gtk_window_set_default_size((GtkWindow *) plugin_browser,
 			      1024, 800);
+
+  content_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+					AGS_UI_PROVIDER_DEFAULT_SPACING);
+  
+  gtk_window_set_child(plugin_browser,
+		       (GtkWidget *) content_area);
 
   /* scrolled window */
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
@@ -162,7 +234,7 @@ ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
   gtk_widget_set_valign((GtkWidget *) scrolled_window,
 			GTK_ALIGN_FILL);
 
-  gtk_box_append((GtkBox *) gtk_dialog_get_content_area(GTK_DIALOG(plugin_browser)),
+  gtk_box_append(content_area,
 		 (GtkWidget *) scrolled_window);
 
   /*  */
@@ -177,7 +249,7 @@ ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
 		 (GtkWidget *) hbox);
 
   str = g_strdup_printf("%s: ",
-			i18n("Plugin type"));
+			i18n("plugin type"));
   
   label = (GtkLabel *) gtk_label_new(str);
   gtk_box_append(hbox,
@@ -265,12 +337,52 @@ ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
 #else
   plugin_browser->vst3_browser = NULL;
 #endif
+
+  event_controller = gtk_event_controller_key_new();
+  gtk_widget_add_controller((GtkWidget *) plugin_browser,
+			    event_controller);
+
+  g_signal_connect(event_controller, "key-pressed",
+		   G_CALLBACK(ags_plugin_browser_key_pressed_callback), plugin_browser);
   
-  /* action area */
-  gtk_dialog_add_buttons((GtkDialog *) plugin_browser,
-			 i18n("_OK"), GTK_RESPONSE_ACCEPT,
-			 i18n("_Cancel"), GTK_RESPONSE_REJECT,
-			 NULL);
+  g_signal_connect(event_controller, "key-released",
+		   G_CALLBACK(ags_plugin_browser_key_released_callback), plugin_browser);
+
+  g_signal_connect(event_controller, "modifiers",
+		   G_CALLBACK(ags_plugin_browser_modifiers_callback), plugin_browser);
+
+  /* buttons */
+  plugin_browser->action_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+						       AGS_UI_PROVIDER_DEFAULT_SPACING);
+  
+  gtk_widget_set_halign(plugin_browser->action_area,
+			GTK_ALIGN_END);
+
+  gtk_box_append(content_area,
+		 (GtkWidget *) plugin_browser->action_area);
+
+  plugin_browser->activate_button = (GtkButton *) gtk_button_new_with_label(i18n("ok"));
+
+  gtk_box_append(plugin_browser->action_area,
+		 (GtkWidget *) plugin_browser->activate_button);
+
+  g_signal_connect(plugin_browser->activate_button, "clicked",
+		   G_CALLBACK(ags_plugin_browser_activate_button_callback), plugin_browser);
+}
+
+gboolean
+ags_plugin_browser_is_connected(AgsConnectable *connectable)
+{
+  AgsPluginBrowser *plugin_browser;
+  
+  gboolean is_connected;
+  
+  plugin_browser = AGS_PLUGIN_BROWSER(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (plugin_browser->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
 }
 
 void
@@ -280,7 +392,7 @@ ags_plugin_browser_connect(AgsConnectable *connectable)
 
   plugin_browser = AGS_PLUGIN_BROWSER(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (plugin_browser->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -296,10 +408,6 @@ ags_plugin_browser_connect(AgsConnectable *connectable)
 #if defined(AGS_WITH_VST3)
   ags_connectable_connect(AGS_CONNECTABLE(plugin_browser->vst3_browser));
 #endif
-  
-  /* AgsPluginBrowser response */
-  g_signal_connect((GObject *) plugin_browser, "response",
-		   G_CALLBACK(ags_plugin_browser_response_callback), NULL);
 }
 
 void
@@ -309,7 +417,7 @@ ags_plugin_browser_disconnect(AgsConnectable *connectable)
 
   plugin_browser = AGS_PLUGIN_BROWSER(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (plugin_browser->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -328,13 +436,6 @@ ags_plugin_browser_disconnect(AgsConnectable *connectable)
 #if defined(AGS_WITH_VST3)
   ags_connectable_disconnect(AGS_CONNECTABLE(plugin_browser->vst3_browser));
 #endif
-  
-  /* AgsPluginBrowser buttons */
-  g_object_disconnect((GObject *) plugin_browser,
-		      "any_signal::response",
-		      G_CALLBACK(ags_plugin_browser_response_callback),
-		      NULL,
-		      NULL);
 }
 
 void
@@ -353,6 +454,79 @@ void
 ags_plugin_browser_reset(AgsApplicable *applicable)
 {
   //TODO:JK: implement me
+}
+
+void
+ags_plugin_browser_activate_button_callback(GtkButton *activate_button,
+					    AgsPluginBrowser *plugin_browser)
+{
+  ags_plugin_browser_response(plugin_browser,
+			      GTK_RESPONSE_ACCEPT);
+}
+
+gboolean
+ags_plugin_browser_key_pressed_callback(GtkEventControllerKey *event_controller,
+					guint keyval,
+					guint keycode,
+					GdkModifierType state,
+					AgsPluginBrowser *plugin_browser)
+{
+  gboolean key_handled;
+
+  key_handled = TRUE;
+
+  if(keyval == GDK_KEY_Tab ||
+     keyval == GDK_KEY_ISO_Left_Tab ||
+     keyval == GDK_KEY_Shift_L ||
+     keyval == GDK_KEY_Shift_R ||
+     keyval == GDK_KEY_Alt_L ||
+     keyval == GDK_KEY_Alt_R ||
+     keyval == GDK_KEY_Control_L ||
+     keyval == GDK_KEY_Control_R){
+    key_handled = FALSE;
+  }
+  
+  return(key_handled);
+}
+
+void
+ags_plugin_browser_key_released_callback(GtkEventControllerKey *event_controller,
+					 guint keyval,
+					 guint keycode,
+					 GdkModifierType state,
+					 AgsPluginBrowser *plugin_browser)
+{
+  gboolean key_handled;
+
+  key_handled = TRUE;
+
+  if(keyval == GDK_KEY_Tab ||
+     keyval == GDK_KEY_ISO_Left_Tab ||
+     keyval == GDK_KEY_Shift_L ||
+     keyval == GDK_KEY_Shift_R ||
+     keyval == GDK_KEY_Alt_L ||
+     keyval == GDK_KEY_Alt_R ||
+     keyval == GDK_KEY_Control_L ||
+     keyval == GDK_KEY_Control_R){
+    key_handled = FALSE;
+  }else{
+    switch(keyval){
+    case GDK_KEY_Escape:
+      {
+	ags_plugin_browser_response(plugin_browser,
+				    GTK_RESPONSE_CLOSE);	
+      }
+      break;
+    }
+  }
+}
+
+gboolean
+ags_plugin_browser_modifiers_callback(GtkEventControllerKey *event_controller,
+				      GdkModifierType keyval,
+				      AgsPluginBrowser *plugin_browser)
+{
+  return(FALSE);
 }
 
 /**
@@ -405,6 +579,36 @@ ags_plugin_browser_get_plugin_effect(AgsPluginBrowser *plugin_browser)
   }else{
     return(NULL);
   }
+}
+
+void
+ags_plugin_browser_real_response(AgsPluginBrowser *plugin_browser,
+				 gint response_id)
+{
+  gtk_widget_set_visible(plugin_browser,
+			 FALSE);
+}
+
+/**
+ * ags_plugin_browser_response:
+ * @plugin_browser: the #AgsPluginBrowser
+ * @response: the response
+ *
+ * Response @plugin_browser due to user action.
+ * 
+ * Since: 6.10.0
+ */
+void
+ags_plugin_browser_response(AgsPluginBrowser *plugin_browser,
+			    gint response)
+{
+  g_return_if_fail(AGS_IS_PLUGIN_BROWSER(plugin_browser));
+  
+  g_object_ref((GObject *) plugin_browser);
+  g_signal_emit(G_OBJECT(plugin_browser),
+		plugin_browser_signals[RESPONSE], 0,
+		response);
+  g_object_unref((GObject *) plugin_browser);
 }
 
 /**

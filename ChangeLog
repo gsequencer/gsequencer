@@ -4,12 +4,14 @@ ags (6.10.0)
 	* implemented gesture swipe in notation editor
 	* implemented gesture swipe in automation editor
 	* implemented gesture swipe in wave form editor
+	* implemented message label of AgsInputDialog
 	* refactored AgsPreferences inherits GtkWindow, modern button layout and close by ESC key
 	* refactored AgsMachineEditorDialog inherits GtkWindow, modern button layout and close by ESC key
 	* refactored AgsMetaDataWindow close by ESC key
 	* refactored AgsOnlineHelpWindow close by ESC key
 	* refactored AgsMidiDialog close by ESC key
 	* refactored AgsExportWindow close by ESC key
+	* refactored AgsPluginBrowser inherits GtkWindow, modern button layout and close by ESC key
 	* refactored AgsInputDialog close by ESC key
 	* disabled generic preferences
 
