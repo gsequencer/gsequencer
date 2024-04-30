@@ -9,6 +9,8 @@ ags (6.10.0)
 	* refactored AgsMetaDataWindow close by ESC key
 	* refactored AgsOnlineHelpWindow close by ESC key
 	* refactored AgsMidiDialog close by ESC key
+	* refactored AgsExportWindow close by ESC key
+	* refactored AgsInputDialog close by ESC key
 	* disabled generic preferences
 
 ags (6.9.5)

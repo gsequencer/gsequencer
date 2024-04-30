@@ -27,6 +27,20 @@ void ags_input_dialog_init(AgsInputDialog *input_dialog);
 void ags_input_dialog_clicked_callback(GtkButton *button,
 				       AgsInputDialog *input_dialog);
 
+gboolean ags_input_dialog_key_pressed_callback(GtkEventControllerKey *event_controller,
+					       guint keyval,
+					       guint keycode,
+					       GdkModifierType state,
+					       AgsInputDialog *input_dialog);
+void ags_input_dialog_key_released_callback(GtkEventControllerKey *event_controller,
+					    guint keyval,
+					    guint keycode,
+					    GdkModifierType state,
+					    AgsInputDialog *input_dialog);
+gboolean ags_input_dialog_modifiers_callback(GtkEventControllerKey *event_controller,
+					     GdkModifierType keyval,
+					     AgsInputDialog *input_dialog);
+
 /**
  * SECTION:ags_input_dialog
  * @short_description: edit input settings
@@ -109,6 +123,8 @@ ags_input_dialog_init(AgsInputDialog *input_dialog)
 {
   GtkBox *button_box;
   
+  GtkEventController *event_controller;
+
   input_dialog->flags = 0;
 
   input_dialog->vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,
@@ -122,12 +138,28 @@ ags_input_dialog_init(AgsInputDialog *input_dialog)
   gtk_box_append(input_dialog->vbox,
 		 input_dialog->input_box);
 
+  input_dialog->message = NULL;
+  
   input_dialog->text = NULL;
 
   input_dialog->string_input = NULL;
   
   input_dialog->spin_button_label = NULL;
   input_dialog->spin_button_input = NULL;
+
+  event_controller = gtk_event_controller_key_new();
+
+  gtk_widget_add_controller((GtkWidget *) input_dialog,
+			    event_controller);
+
+  g_signal_connect(event_controller, "key-pressed",
+		   G_CALLBACK(ags_input_dialog_key_pressed_callback), input_dialog);
+  
+  g_signal_connect(event_controller, "key-released",
+		   G_CALLBACK(ags_input_dialog_key_released_callback), input_dialog);
+
+  g_signal_connect(event_controller, "modifiers",
+		   G_CALLBACK(ags_input_dialog_modifiers_callback), input_dialog);
 
   /* button */
   button_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
@@ -169,6 +201,71 @@ ags_input_dialog_init(AgsInputDialog *input_dialog)
 
   g_signal_connect(input_dialog->cancel, "clicked",
 		   G_CALLBACK(ags_input_dialog_clicked_callback), input_dialog);
+}
+
+gboolean
+ags_input_dialog_key_pressed_callback(GtkEventControllerKey *event_controller,
+				      guint keyval,
+				      guint keycode,
+				      GdkModifierType state,
+				      AgsInputDialog *input_dialog)
+{
+  gboolean key_handled;
+
+  key_handled = TRUE;
+
+  if(keyval == GDK_KEY_Tab ||
+     keyval == GDK_KEY_ISO_Left_Tab ||
+     keyval == GDK_KEY_Shift_L ||
+     keyval == GDK_KEY_Shift_R ||
+     keyval == GDK_KEY_Alt_L ||
+     keyval == GDK_KEY_Alt_R ||
+     keyval == GDK_KEY_Control_L ||
+     keyval == GDK_KEY_Control_R){
+    key_handled = FALSE;
+  }
+  
+  return(key_handled);
+}
+
+void
+ags_input_dialog_key_released_callback(GtkEventControllerKey *event_controller,
+				       guint keyval,
+				       guint keycode,
+				       GdkModifierType state,
+				       AgsInputDialog *input_dialog)
+{
+  gboolean key_handled;
+
+  key_handled = TRUE;
+
+  if(keyval == GDK_KEY_Tab ||
+     keyval == GDK_KEY_ISO_Left_Tab ||
+     keyval == GDK_KEY_Shift_L ||
+     keyval == GDK_KEY_Shift_R ||
+     keyval == GDK_KEY_Alt_L ||
+     keyval == GDK_KEY_Alt_R ||
+     keyval == GDK_KEY_Control_L ||
+     keyval == GDK_KEY_Control_R){
+    key_handled = FALSE;
+  }else{
+    switch(keyval){
+    case GDK_KEY_Escape:
+      {
+	ags_input_dialog_response(input_dialog,
+				  GTK_RESPONSE_CLOSE);	
+      }
+      break;
+    }
+  }
+}
+
+gboolean
+ags_input_dialog_modifiers_callback(GtkEventControllerKey *event_controller,
+				    GdkModifierType keyval,
+				    AgsInputDialog *input_dialog)
+{
+  return(FALSE);
 }
 
 void
@@ -227,6 +324,12 @@ ags_input_dialog_set_flags(AgsInputDialog *input_dialog,
   if((AGS_INPUT_DIALOG_SHOW_STRING_INPUT & (flags)) != 0 &&
      input_dialog->string_input == NULL){
     input_dialog->string_input = (GtkEntry *) gtk_entry_new();
+
+    gtk_widget_set_halign(input_dialog->string_input,
+			  GTK_ALIGN_FILL);
+    gtk_widget_set_hexpand(input_dialog->string_input,
+			   TRUE);
+    
     gtk_box_append(input_dialog->input_box,
 		   (GtkWidget *) input_dialog->string_input);
 
@@ -282,6 +385,38 @@ ags_input_dialog_unset_flags(AgsInputDialog *input_dialog,
   }
   
   input_dialog->flags &= (~flags);
+}
+
+/**
+ * ags_input_dialog_set_message:
+ * @input_dialog: the #AgsInputDialog
+ * @text: the message
+ * 
+ * Set informal message.
+ * 
+ * Since: 6.10.0
+ */
+void
+ags_input_dialog_set_message(AgsInputDialog *input_dialog,
+			     gchar *message)
+{
+  g_return_if_fail(AGS_IS_INPUT_DIALOG(input_dialog));
+
+  if(input_dialog->text == NULL){
+    input_dialog->message = gtk_label_new(message);
+
+    gtk_widget_set_hexpand(input_dialog->message,
+			   TRUE);
+    
+    gtk_widget_set_halign(input_dialog->message,
+			  GTK_ALIGN_START);
+    
+    gtk_box_prepend(input_dialog->vbox,
+		    input_dialog->message);
+  }else{
+    gtk_label_set_text(input_dialog->message,
+		       message);
+  }
 }
 
 /**
