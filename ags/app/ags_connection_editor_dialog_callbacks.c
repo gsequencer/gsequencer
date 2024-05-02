@@ -17,31 +17,12 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_LINE_MEMBER_EDITOR_CALLBACKS_H__
-#define __AGS_LINE_MEMBER_EDITOR_CALLBACKS_H__
+#include <ags/app/ags_connection_editor_dialog_callbacks.h>
 
-#include <glib.h>
-#include <glib-object.h>
+#include <ags/app/ags_ui_provider.h>
 
-#include <gtk/gtk.h>
-
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
-#include <ags/app/ags_line_member_editor.h>
-
-G_BEGIN_DECLS
-
-void ags_line_member_editor_add_callback(GtkWidget *button,
-					 AgsLineMemberEditor *line_member_editor);
-void ags_line_member_editor_remove_callback(GtkWidget *button,
-					    AgsLineMemberEditor *line_member_editor);
-
-void ags_line_member_editor_plugin_browser_response_callback(AgsPluginBrowser *dialog,
-							     gint response,
-							     AgsLineMemberEditor *line_member_editor);
-
-G_END_DECLS
-
-#endif /*__AGS_LINE_MEMBER_EDITOR_CALLBACKS_H__*/
+gboolean
+ags_connection_editor_dialog_close_request_callback(GtkWindow *window, gpointer user_data)
+{
+  return(FALSE);
+}

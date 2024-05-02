@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -91,7 +91,7 @@ ags_line_member_editor_plugin_browser_response_create_entry(AgsLineMemberEditor 
 }
 
 void
-ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
+ags_line_member_editor_plugin_browser_response_callback(AgsPluginBrowser *dialog,
 							gint response,
 							AgsLineMemberEditor *line_member_editor)
 {

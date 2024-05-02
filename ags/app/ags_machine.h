@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -48,8 +48,8 @@ G_BEGIN_DECLS
 
 #define AGS_MACHINE_AUTOMATION_PORT(ptr) ((AgsMachineAutomationPort *)(ptr))
 
-#define AGS_MACHINE_DEFAULT_VERSION "4.0.0"
-#define AGS_MACHINE_DEFAULT_BUILD_ID "Sat Feb 26 21:01:24 UTC 2022"
+#define AGS_MACHINE_DEFAULT_VERSION "6.10.0"
+#define AGS_MACHINE_DEFAULT_BUILD_ID "Thu May  2 16:12:23 UTC 2024"
 
 typedef struct _AgsMachine AgsMachine;
 typedef struct _AgsMachineInputLine AgsMachineInputLine;
@@ -188,19 +188,19 @@ struct _AgsMachine
   GList *editor_model;
   GList *dialog_model;
   
-  GtkDialog *machine_editor_dialog;
-  GtkDialog *rename;
-  GtkDialog *rename_audio;
-  GtkDialog *reposition_audio;
-  GtkDialog *connection_editor_dialog;
-  GtkDialog *midi_dialog;
-  GtkDialog *envelope_dialog;
-  GtkDialog *envelope_info;
-  GtkDialog *preset_dialog;
-  GtkDialog *midi_export_dialog;
-  GtkDialog *wave_export_dialog;
-  GtkDialog *midi_import_dialog;
-  GtkDialog *wave_import_dialog;
+  GtkWindow *machine_editor_dialog;
+  GtkWindow *rename;
+  GtkWindow *rename_audio;
+  GtkWindow *reposition_audio;
+  GtkWindow *connection_editor_dialog;
+  GtkWindow *midi_dialog;
+  GtkWindow *envelope_dialog;
+  GtkWindow *envelope_info;
+  GtkWindow *preset_dialog;
+  GtkWindow *midi_export_dialog;
+  GtkWindow *wave_export_dialog;
+  GtkWindow *midi_import_dialog;
+  GtkWindow *wave_import_dialog;
 };
 
 struct _AgsMachineInputLine
