@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -151,7 +151,7 @@ ags_functional_pitch_sampler_test_clean_suite()
 void
 ags_functional_pitch_sampler_test_resize_pads()
 {
-  GtkDialog *properties;
+  GtkWindow *properties;
 
   AgsGSequencerApplicationContext *gsequencer_application_context;
   
@@ -265,7 +265,7 @@ ags_functional_pitch_sampler_test_resize_pads()
   /* response ok */
   properties = AGS_MACHINE(pitch_sampler)->machine_editor_dialog;  
 
-  ags_functional_test_util_dialog_ok(properties);
+  ags_functional_test_util_dialog_ok(properties, AGS_MACHINE_EDITOR_DIALOG(properties)->activate_button);
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_PITCH_SAMPLER_TEST_DEFAULT_IDLE_TIME);
 
@@ -282,7 +282,7 @@ ags_functional_pitch_sampler_test_resize_pads()
 void
 ags_functional_pitch_sampler_test_resize_audio_channels()
 {
-  GtkDialog *properties;
+  GtkWindow *properties;
 
   AgsGSequencerApplicationContext *gsequencer_application_context;
   
@@ -387,7 +387,7 @@ ags_functional_pitch_sampler_test_resize_audio_channels()
   /* response ok */
   properties = AGS_MACHINE(pitch_sampler)->machine_editor_dialog;  
 
-  ags_functional_test_util_dialog_ok(properties);
+  ags_functional_test_util_dialog_ok(properties, AGS_MACHINE_EDITOR_DIALOG(properties)->activate_button);
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_PITCH_SAMPLER_TEST_DEFAULT_IDLE_TIME);
 

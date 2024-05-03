@@ -107,8 +107,6 @@ ags_ffplayer_input_pad_connectable_interface_init(AgsConnectableInterface *conne
 {
   ags_ffplayer_input_pad_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
-  connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
   connectable->connect = ags_ffplayer_input_pad_connect;
   connectable->disconnect = ags_ffplayer_input_pad_disconnect;
 }

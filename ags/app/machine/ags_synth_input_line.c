@@ -159,7 +159,7 @@ ags_synth_input_line_connect(AgsConnectable *connectable)
 
   synth_input_line = AGS_SYNTH_INPUT_LINE(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_LINE(synth_input_line)->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -178,7 +178,7 @@ ags_synth_input_line_disconnect(AgsConnectable *connectable)
 
   synth_input_line = AGS_SYNTH_INPUT_LINE(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_LINE(synth_input_line)->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
