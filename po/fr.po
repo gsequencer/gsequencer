@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-05-02 19:31+0200\n"
+"POT-Creation-Date: 2024-05-03 21:33+0200\n"
 "PO-Revision-Date: 2021-01-11 21:07+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: français <jkraehemann@gmail.com>\n"
@@ -598,9 +598,9 @@ msgid "time stretch buffers"
 msgstr "sélectionner zone tampon"
 
 #: ags/app/editor/ags_time_stretch_buffer_dialog.c:167
-#: ags/app/machine/ags_oscillator.c:291
-#: ags/app/machine/ags_pitch_sampler_file.c:178
-#: ags/app/machine/ags_fm_oscillator.c:285
+#: ags/app/machine/ags_oscillator.c:305
+#: ags/app/machine/ags_pitch_sampler_file.c:192
+#: ags/app/machine/ags_fm_oscillator.c:299
 msgid "frequency"
 msgstr "frequency"
 
@@ -960,7 +960,7 @@ msgstr "dernier x"
 
 #: ags/app/editor/ags_pattern_envelope.c:521
 #: ags/app/editor/ags_envelope_editor.c:344
-#: ags/app/machine/ags_oscillator.c:236 ags/app/machine/ags_fm_oscillator.c:237
+#: ags/app/machine/ags_oscillator.c:250 ags/app/machine/ags_fm_oscillator.c:251
 msgid "attack"
 msgstr "attaque"
 
@@ -1410,15 +1410,15 @@ msgid "program"
 msgstr "programme"
 
 #: ags/app/machine/ags_matrix.c:382 ags/app/machine/ags_drum.c:469
-#: ags/app/machine/ags_oscillator.c:254 ags/app/machine/ags_sfz_synth.c:1120
-#: ags/app/machine/ags_sf2_synth.c:1168 ags/app/machine/ags_fm_oscillator.c:253
+#: ags/app/machine/ags_oscillator.c:268 ags/app/machine/ags_sfz_synth.c:1120
+#: ags/app/machine/ags_sf2_synth.c:1168 ags/app/machine/ags_fm_oscillator.c:267
 msgid "length"
 msgstr "durée"
 
-#: ags/app/machine/ags_matrix.c:400 ags/app/machine/ags_oscillator.c:311
+#: ags/app/machine/ags_matrix.c:400 ags/app/machine/ags_oscillator.c:325
 #: ags/app/machine/ags_pitch_sampler.c:606
 #: ags/app/machine/ags_fm_syncsynth.c:443 ags/app/machine/ags_syncsynth.c:440
-#: ags/app/machine/ags_ffplayer.c:690 ags/app/machine/ags_fm_oscillator.c:303
+#: ags/app/machine/ags_ffplayer.c:690 ags/app/machine/ags_fm_oscillator.c:317
 msgid "volume"
 msgstr "volume"
 
@@ -1497,35 +1497,35 @@ msgstr "_Ouvrir"
 msgid "run"
 msgstr "aller"
 
-#: ags/app/machine/ags_oscillator.c:175 ags/app/machine/ags_fm_oscillator.c:176
+#: ags/app/machine/ags_oscillator.c:189 ags/app/machine/ags_fm_oscillator.c:190
 msgid "wave"
 msgstr "forme d'onde"
 
-#: ags/app/machine/ags_oscillator.c:214 ags/app/machine/ags_fm_oscillator.c:215
-#: ags/app/machine/ags_fm_oscillator.c:402
+#: ags/app/machine/ags_oscillator.c:228 ags/app/machine/ags_fm_oscillator.c:229
+#: ags/app/machine/ags_fm_oscillator.c:416
 msgid "sawtooth"
 msgstr "sawtooth"
 
-#: ags/app/machine/ags_oscillator.c:219 ags/app/machine/ags_fm_oscillator.c:220
-#: ags/app/machine/ags_fm_oscillator.c:407
+#: ags/app/machine/ags_oscillator.c:233 ags/app/machine/ags_fm_oscillator.c:234
+#: ags/app/machine/ags_fm_oscillator.c:421
 msgid "square"
 msgstr "square"
 
-#: ags/app/machine/ags_oscillator.c:224 ags/app/machine/ags_fm_oscillator.c:225
-#: ags/app/machine/ags_fm_oscillator.c:412
+#: ags/app/machine/ags_oscillator.c:238 ags/app/machine/ags_fm_oscillator.c:239
+#: ags/app/machine/ags_fm_oscillator.c:426
 msgid "triangle"
 msgstr "triangle"
 
-#: ags/app/machine/ags_oscillator.c:229 ags/app/machine/ags_fm_oscillator.c:230
-#: ags/app/machine/ags_fm_oscillator.c:417
+#: ags/app/machine/ags_oscillator.c:243 ags/app/machine/ags_fm_oscillator.c:244
+#: ags/app/machine/ags_fm_oscillator.c:431
 msgid "impulse"
 msgstr "impulse"
 
-#: ags/app/machine/ags_oscillator.c:273 ags/app/machine/ags_fm_oscillator.c:269
+#: ags/app/machine/ags_oscillator.c:287 ags/app/machine/ags_fm_oscillator.c:283
 msgid "phase"
 msgstr "phase"
 
-#: ags/app/machine/ags_oscillator.c:331 ags/app/machine/ags_fm_oscillator.c:322
+#: ags/app/machine/ags_oscillator.c:345 ags/app/machine/ags_fm_oscillator.c:336
 msgid "sync"
 msgstr "synchroniser"
 
@@ -1686,12 +1686,12 @@ msgid "LFO phase"
 msgstr "LFO phase"
 
 #: ags/app/machine/ags_pitch_sampler.c:731
-#: ags/app/machine/ags_fm_oscillator.c:442
+#: ags/app/machine/ags_fm_oscillator.c:456
 msgid "LFO depth"
 msgstr "LFO bas"
 
 #: ags/app/machine/ags_pitch_sampler.c:760
-#: ags/app/machine/ags_fm_oscillator.c:460
+#: ags/app/machine/ags_fm_oscillator.c:474
 msgid "LFO tuning"
 msgstr "LFO tuning"
 
@@ -1700,12 +1700,12 @@ msgid "filename: "
 msgstr "nom de fichier: "
 
 #: ags/app/machine/ags_fm_syncsynth.c:384 ags/app/machine/ags_syncsynth.c:381
-#: ags/app/machine/ags_pitch_sampler_file.c:236
+#: ags/app/machine/ags_pitch_sampler_file.c:250
 msgid "loop start"
 msgstr "premier boucle"
 
 #: ags/app/machine/ags_fm_syncsynth.c:414 ags/app/machine/ags_syncsynth.c:411
-#: ags/app/machine/ags_pitch_sampler_file.c:265
+#: ags/app/machine/ags_pitch_sampler_file.c:279
 msgid "loop end"
 msgstr "dernier boucle"
 
@@ -2001,7 +2001,7 @@ msgstr "LFO fréquence"
 msgid "chorus enabled"
 msgstr "activer"
 
-#: ags/app/machine/ags_pitch_sampler_file.c:207
+#: ags/app/machine/ags_pitch_sampler_file.c:221
 msgid "base key"
 msgstr "ton dominant"
 
@@ -2018,11 +2018,11 @@ msgstr "gauche"
 msgid "right"
 msgstr "droite"
 
-#: ags/app/machine/ags_fm_oscillator.c:363
+#: ags/app/machine/ags_fm_oscillator.c:377
 msgid "LFO wave"
 msgstr "LFO forme"
 
-#: ags/app/machine/ags_fm_oscillator.c:424
+#: ags/app/machine/ags_fm_oscillator.c:438
 msgid "LFO frequency"
 msgstr "LFO fréquence"
 
