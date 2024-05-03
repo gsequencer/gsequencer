@@ -1,3 +1,9 @@
+ags (6.10.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* disabled a unit-test in ags_solver_matrix_test.c
+	* minor improvements
+
 ags (6.10.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
