@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -170,7 +170,7 @@ ags_functional_audio_config_test_file_setup()
 
   ags_functional_test_util_sync();
   
-  ags_functional_test_util_dialog_ok(preferences);
+  ags_functional_test_util_dialog_ok(preferences, AGS_PREFERENCES(preferences)->activate_button);
   
   ags_functional_test_util_idle(AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_DEFAULT_IDLE_TIME);
 
@@ -193,7 +193,7 @@ ags_functional_audio_config_test_file_setup()
 
   ags_functional_test_util_sync();
   
-  ags_functional_test_util_dialog_ok(preferences);
+  ags_functional_test_util_dialog_ok(preferences, AGS_PREFERENCES(preferences)->activate_button);
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_DEFAULT_IDLE_TIME);
 
@@ -216,7 +216,7 @@ ags_functional_audio_config_test_file_setup()
 
   ags_functional_test_util_sync();
   
-  ags_functional_test_util_dialog_ok(preferences);
+  ags_functional_test_util_dialog_ok(preferences, AGS_PREFERENCES(preferences)->activate_button);
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_DEFAULT_IDLE_TIME);
 
@@ -239,7 +239,7 @@ ags_functional_audio_config_test_file_setup()
 
   ags_functional_test_util_sync();
   
-  ags_functional_test_util_dialog_ok(preferences);
+  ags_functional_test_util_dialog_ok(preferences, AGS_PREFERENCES(preferences)->activate_button);
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_DEFAULT_IDLE_TIME);
 

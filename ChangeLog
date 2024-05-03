@@ -1,3 +1,9 @@
+ags (6.10.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved AgsConnectable interface in libgsequencer
+	* fixed functional tests to work with modern button layout
+
 ags (6.10.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

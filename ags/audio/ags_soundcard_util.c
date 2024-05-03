@@ -174,7 +174,6 @@ ags_soundcard_util_adjust_delay_and_attack(GObject *soundcard)
   gdouble absolute_delay;
   gdouble corrected_delay;
   gdouble delay_overflow_counter;
-  gdouble delay_overflow_cumulated;
   guint buffer_size;
   guint default_tact_frames;
   guint total_correct_frame_count;
@@ -436,14 +435,10 @@ ags_soundcard_util_adjust_delay_and_attack(GObject *soundcard)
       }
       
       if(correct_note_256th_frame_count < buffer_size){
-	// current_note_256th_counter = floor((double) (((16 * (i + 1)) + j) * (double) (buffer_size / correct_note_256th_frame_count)));
-
 	current_note_256th_counter = (guint) floor((double) (frame_counter + buffer_size) / (double) correct_note_256th_frame_count);
 	
 	frame_counter += buffer_size;
       }else{
-	// current_note_256th_counter += (corrected_delay / 16.0 * buffer_size);
-	
 	current_note_256th_counter = (guint) floor((double) (frame_counter + (buffer_size * (floor((double) correct_note_256th_frame_count / (double) buffer_size) + 1.0))) / (double) correct_note_256th_frame_count);	
 
 	frame_counter += buffer_size * (floor((double) correct_note_256th_frame_count / (double) buffer_size) + 1.0);
