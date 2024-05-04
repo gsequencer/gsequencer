@@ -302,8 +302,14 @@ ags_pulse_port_init(AgsPulsePort *pulse_port)
   pulse_port->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
   pulse_port->format = ags_soundcard_helper_config_get_format(config);
 
+#if 0
   pulse_port->use_cache = TRUE;
   pulse_port->cache_buffer_size = AGS_PULSE_PORT_DEFAULT_CACHE_BUFFER_SIZE;
+#else
+  pulse_port->use_cache = ags_soundcard_helper_config_get_use_cache(config);
+
+  pulse_port->cache_buffer_size = ags_soundcard_helper_config_get_cache_buffer_size(config);
+#endif
 
   pulse_port->cache_mutex = (GRecMutex **) malloc(AGS_PULSE_PORT_DEFAULT_CACHE_COUNT * sizeof(GRecMutex *));
     

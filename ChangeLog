@@ -1,3 +1,10 @@
+ags (6.10.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_soundcard_helper_config_get_use_cache()
+	* implemented ags_soundcard_helper_config_get_cache_buffer_size()
+	* fixed use-cache and cache-buffer-size config value of pulse and CoreAudio
+
 ags (6.10.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
