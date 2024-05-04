@@ -29,8 +29,6 @@ ags_preferences_close_request_callback(GtkWindow *window, gpointer user_data)
 
   application_context = ags_application_context_get_instance();
   
-  ags_connectable_disconnect(AGS_CONNECTABLE(window));
-  
   ags_gsequencer_application_refresh_window_menu(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
 
   return(FALSE);

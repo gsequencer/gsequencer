@@ -693,6 +693,8 @@ ags_preferences_real_response(AgsPreferences *preferences,
   
       preferences->flags |= AGS_PREFERENCES_SHUTDOWN;
 
+      ags_connectable_disconnect(AGS_CONNECTABLE(preferences));
+
       ags_ui_provider_set_preferences(AGS_UI_PROVIDER(application_context),
 				      NULL);
       

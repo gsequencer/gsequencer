@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-05-03 21:33+0200\n"
+"POT-Creation-Date: 2024-05-04 07:02+0200\n"
 "PO-Revision-Date: 2021-01-11 21:07+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: français <jkraehemann@gmail.com>\n"
@@ -265,9 +265,9 @@ msgid "override existing links"
 msgstr "écraser exister liens"
 
 #: ags/app/ags_pcm_file_dialog.c:279
-#: ags/app/export/ags_midi_export_wizard.c:471
+#: ags/app/export/ags_midi_export_wizard.c:472
 #: ags/app/export/ags_wave_export_dialog.c:430
-#: ags/app/import/ags_midi_import_wizard.c:462
+#: ags/app/import/ags_midi_import_wizard.c:463
 #: ags/app/ags_export_soundcard.c:323
 msgid "open"
 msgstr "ouvrir"
@@ -309,13 +309,13 @@ msgstr "sélectionner"
 msgid "export to file"
 msgstr "exporter l'audio données"
 
-#: ags/app/export/ags_midi_export_wizard.c:457
-#: ags/app/import/ags_midi_import_wizard.c:448
+#: ags/app/export/ags_midi_export_wizard.c:458
+#: ags/app/import/ags_midi_import_wizard.c:449
 msgid "previous"
 msgstr ""
 
-#: ags/app/export/ags_midi_export_wizard.c:464
-#: ags/app/import/ags_midi_import_wizard.c:455
+#: ags/app/export/ags_midi_export_wizard.c:465
+#: ags/app/import/ags_midi_import_wizard.c:456
 msgid "next"
 msgstr ""
 
@@ -331,7 +331,7 @@ msgid "file"
 msgstr "fichier"
 
 #: ags/app/export/ags_wave_export_dialog.c:323
-#: ags/app/ags_app_action_util.c:148
+#: ags/app/ags_app_action_util.c:149
 #, fuzzy
 msgid "open file"
 msgstr "Ouvrir fichier"
@@ -727,7 +727,7 @@ msgid "tool dialog option"
 msgstr ""
 
 #: ags/app/editor/ags_composite_toolbar.c:1346
-#: ags/app/ags_online_help_window.c:208
+#: ags/app/ags_online_help_window.c:211
 msgid "zoom"
 msgstr ""
 
@@ -1280,7 +1280,7 @@ msgstr "lien intrant"
 msgid "resize channels"
 msgstr "réajuster canal"
 
-#: ags/app/ags_app_action_util.c:648
+#: ags/app/ags_app_action_util.c:649
 #, fuzzy
 msgid "save file as"
 msgstr "Mémoriser comme"
@@ -2069,11 +2069,11 @@ msgstr "Plugin browser"
 msgid "plugin type"
 msgstr "Plugin forme:"
 
-#: ags/app/ags_online_help_window_callbacks.c:73
+#: ags/app/ags_online_help_window_callbacks.c:86
 msgid "Print GSequencer user manual"
 msgstr ""
 
-#: ags/app/ags_online_help_window_callbacks.c:280
+#: ags/app/ags_online_help_window_callbacks.c:293
 msgid "Print manual ..."
 msgstr ""
 
@@ -2091,37 +2091,37 @@ msgstr "engluer éléments de contrôle"
 msgid "Port control orientation"
 msgstr ""
 
-#: ags/app/ags_meta_data_window.c:98
+#: ags/app/ags_meta_data_window.c:101
 msgid "meta-data editor"
 msgstr ""
 
-#: ags/app/ags_meta_data_window.c:128
+#: ags/app/ags_meta_data_window.c:134
 msgid "author"
 msgstr ""
 
-#: ags/app/ags_meta_data_window.c:146
+#: ags/app/ags_meta_data_window.c:152
 msgid "title"
 msgstr ""
 
-#: ags/app/ags_meta_data_window.c:164
+#: ags/app/ags_meta_data_window.c:170
 msgid "album"
 msgstr ""
 
-#: ags/app/ags_meta_data_window.c:182
+#: ags/app/ags_meta_data_window.c:188
 #, fuzzy
 msgid "release date"
 msgstr "lâcher"
 
-#: ags/app/ags_meta_data_window.c:200
+#: ags/app/ags_meta_data_window.c:206
 #, fuzzy
 msgid "copyright"
 msgstr "Copyright: "
 
-#: ags/app/ags_meta_data_window.c:218
+#: ags/app/ags_meta_data_window.c:224
 msgid "license"
 msgstr ""
 
-#: ags/app/ags_meta_data_window.c:236
+#: ags/app/ags_meta_data_window.c:242
 msgid "comment"
 msgstr ""
 
@@ -2146,7 +2146,7 @@ msgstr "tact"
 msgid "time"
 msgstr "temps"
 
-#: ags/app/ags_export_window.c:413
+#: ags/app/ags_export_window.c:416
 msgid "export"
 msgstr "exporter"
 
