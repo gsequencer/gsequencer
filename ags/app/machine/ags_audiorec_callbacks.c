@@ -164,7 +164,7 @@ ags_audiorec_open_callback(GtkWidget *button, AgsAudiorec *audiorec)
   sandbox_path = NULL;
 
 #if defined(AGS_MACOS_SANDBOX)
-  sandbox_path = g_strdup_printf("%s/Library/%s/Data",
+  sandbox_path = g_strdup_printf("%s/Library/Containers/%s/Data",
 				 home_path,
 				 AGS_DEFAULT_BUNDLE_ID);
 

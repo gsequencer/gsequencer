@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,12 +20,19 @@
 #include <ags/app/ags_preferences_callbacks.h>
 
 #include <ags/app/ags_ui_provider.h>
+#include <ags/app/ags_gsequencer_application.h>
 
 gboolean
 ags_preferences_close_request_callback(GtkWindow *window, gpointer user_data)
 {
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+  
   ags_connectable_disconnect(AGS_CONNECTABLE(window));
   
+  ags_gsequencer_application_refresh_window_menu(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
+
   return(FALSE);
 }
 

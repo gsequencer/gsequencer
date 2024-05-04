@@ -382,7 +382,10 @@ ags_export_window_init(AgsExportWindow *export_window)
   gtk_box_append(vbox,
 		 (GtkWidget *) export_window->add);
 
-  /*  */
+  /*  */  
+  g_signal_connect(export_window, "close-request",
+		   G_CALLBACK(ags_export_window_close_request_callback), NULL);
+
   event_controller = gtk_event_controller_key_new();
 
   gtk_widget_add_controller((GtkWidget *) export_window,

@@ -429,6 +429,12 @@ ags_config_real_load_defaults(AgsConfig *config)
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "format", "16");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "wasapi-buffer-size", "2048");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "wasapi-share-mode", "exclusive");
+#elif defined(AGS_WITH_CORE_AUDIO)
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "pcm-channels", "2");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "samplerate", "48000");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "buffer-size", "2048");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "use-cache", "true");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "cache-buffer-size", "8192");
 #else
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "pcm-channels", "2");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "samplerate", "48000");
@@ -790,7 +796,7 @@ ags_config_save(AgsConfig *config)
 			 pw->pw_dir,
 			 AGS_DEFAULT_DIRECTORY);
 #else
-  path = g_strdup_printf("%s/Library/%s/%s",
+  path = g_strdup_printf("%s/Library/Containers/%s/Data/%s",
 			 pw->pw_dir,
 			 AGS_DEFAULT_BUNDLE_ID,
 			 AGS_DEFAULT_DIRECTORY);

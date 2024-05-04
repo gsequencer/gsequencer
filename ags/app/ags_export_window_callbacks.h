@@ -33,6 +33,8 @@
 
 G_BEGIN_DECLS
 
+gboolean ags_export_window_close_request_callback(GtkWindow *window, gpointer user_data);
+
 void ags_export_window_add_export_soundcard_callback(GtkWidget *button,
 						     AgsExportWindow *export_window);
 void ags_export_window_remove_export_soundcard_callback(GtkWidget *button,
