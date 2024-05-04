@@ -22,6 +22,7 @@
 #include <ags/ags_api_config.h>
 
 #include <ags/app/ags_ui_provider.h>
+#include <ags/app/ags_gsequencer_application.h>
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_composite_editor.h>
 #include <ags/app/ags_export_window.h>
@@ -154,7 +155,7 @@ ags_app_action_util_open()
   sandbox_path = NULL;
   
 #if defined(AGS_MACOS_SANDBOX)
-  sandbox_path = g_strdup_printf("%s/Library/%s/Data",
+  sandbox_path = g_strdup_printf("%s/Library/Containers/%s/Data",
 				 home_path,
 				 AGS_DEFAULT_BUNDLE_ID);
 
@@ -654,7 +655,7 @@ ags_app_action_util_save_as()
   sandbox_path = NULL;
   
 #if defined(AGS_MACOS_SANDBOX)
-  sandbox_path = g_strdup_printf("%s/Library/%s/Data",
+  sandbox_path = g_strdup_printf("%s/Library/Containers/%s/Data",
 				 home_path,
 				 AGS_DEFAULT_BUNDLE_ID);
 
@@ -773,6 +774,8 @@ ags_app_action_util_meta_data()
   meta_data_window = (AgsMetaDataWindow *) ags_ui_provider_get_meta_data_window(AGS_UI_PROVIDER(application_context));
   gtk_widget_set_visible((GtkWidget *) meta_data_window,
 			 TRUE);
+
+  ags_gsequencer_application_refresh_window_menu(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
 }
 
 void
@@ -787,6 +790,8 @@ ags_app_action_util_export()
   export_window = (AgsExportWindow *) ags_ui_provider_get_export_window(AGS_UI_PROVIDER(application_context));
   gtk_widget_set_visible((GtkWidget *) export_window,
 			 TRUE);
+
+  ags_gsequencer_application_refresh_window_menu(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
 }
 
 void
@@ -813,6 +818,8 @@ ags_app_action_util_smf_import()
 
   gtk_widget_set_visible((GtkWidget *) midi_import_wizard,
 			 TRUE);
+
+  ags_gsequencer_application_refresh_window_menu(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
 }
 
 void
@@ -839,6 +846,8 @@ ags_app_action_util_smf_export()
 
   gtk_widget_set_visible((GtkWidget *) midi_export_wizard,
 			 TRUE);
+
+  ags_gsequencer_application_refresh_window_menu(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
 }
 
 void
@@ -866,6 +875,8 @@ ags_app_action_util_preferences()
 
   gtk_widget_set_visible((GtkWidget *) preferences,
 			 TRUE);
+
+  ags_gsequencer_application_refresh_window_menu(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
 }
 
 void
@@ -1039,6 +1050,8 @@ ags_app_action_util_help()
   
   gtk_widget_set_visible((GtkWidget *) online_help_window,
 			 TRUE);
+
+  ags_gsequencer_application_refresh_window_menu(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
 }
 
 void

@@ -20,6 +20,7 @@
 #include <ags/app/ags_meta_data_window.h>
 
 #include <ags/app/ags_ui_provider.h>
+#include <ags/app/ags_gsequencer_application.h>
 
 #include <ags/i18n.h>
 
@@ -39,6 +40,8 @@ void ags_meta_data_window_key_released_callback(GtkEventControllerKey *event_con
 gboolean ags_meta_data_window_modifiers_callback(GtkEventControllerKey *event_controller,
 						 GdkModifierType keyval,
 						 AgsMetaDataWindow *meta_data_window);
+
+gboolean ags_meta_data_window_close_request_callback(GtkWindow *window, gpointer user_data);
 
 static gpointer ags_meta_data_window_parent_class = NULL;
 
@@ -101,6 +104,9 @@ ags_meta_data_window_init(AgsMetaDataWindow *meta_data_window)
 
   gtk_window_set_transient_for((GtkWindow *) meta_data_window,
 			       ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
+
+  g_signal_connect(meta_data_window, "close-request",
+		   G_CALLBACK(ags_meta_data_window_close_request_callback), NULL);
 
   event_controller = gtk_event_controller_key_new();
   gtk_widget_add_controller((GtkWidget *) meta_data_window,
@@ -320,6 +326,18 @@ ags_meta_data_window_key_released_callback(GtkEventControllerKey *event_controll
       break;
     }
   }
+}
+
+gboolean
+ags_meta_data_window_close_request_callback(GtkWindow *window, gpointer user_data)
+{
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+  
+  ags_gsequencer_application_refresh_window_menu(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
+  
+  return(FALSE);
 }
 
 gboolean

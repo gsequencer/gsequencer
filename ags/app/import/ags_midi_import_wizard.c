@@ -21,6 +21,7 @@
 #include <ags/app/import/ags_midi_import_wizard_callbacks.h>
 
 #include <ags/app/ags_ui_provider.h>
+#include <ags/app/ags_gsequencer_application.h>
 #include <ags/app/ags_window.h>
 
 #include <ags/app/import/ags_track_collection.h>
@@ -290,7 +291,7 @@ ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
   sandbox_path = NULL;
   
 #if defined(AGS_MACOS_SANDBOX)
-  sandbox_path = g_strdup_printf("%s/Library/%s/Data",
+  sandbox_path = g_strdup_printf("%s/Library/Containers/%s/Data",
 				 home_path,
 				 AGS_DEFAULT_BUNDLE_ID);
 
@@ -600,8 +601,14 @@ void
 ags_midi_import_wizard_close_request_callback(GtkWindow *window,
 					      AgsMidiImportWizard *midi_import_wizard)
 {
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+  
   ags_midi_import_wizard_response(midi_import_wizard,
 				  GTK_RESPONSE_CLOSE);
+
+  ags_gsequencer_application_refresh_window_menu(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
 }
 
 void

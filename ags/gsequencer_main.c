@@ -141,16 +141,16 @@ install_data()
   default_dirs_mkdir_cmd = g_strdup_printf("mkdir -p %s/GSequencer/workspace/default",
 					   music_path);
 
-  local_state_dirs_mkdir_cmd = g_strdup_printf("mkdir -p %s/Library/%s/.local/state",
+  local_state_dirs_mkdir_cmd = g_strdup_printf("mkdir -p %s/Library/Containers/%s/Data/.local/state",
 					       pw->pw_dir, AGS_DEFAULT_BUNDLE_ID);
 
-  local_share_dirs_mkdir_cmd = g_strdup_printf("mkdir -p %s/Library/%s/.local/share",
+  local_share_dirs_mkdir_cmd = g_strdup_printf("mkdir -p %s/Library/Containers/%s/Data/.local/share",
 					       pw->pw_dir, AGS_DEFAULT_BUNDLE_ID);
   
-  cache_dirs_mkdir_cmd = g_strdup_printf("mkdir -p %s/Library/%s/.cache",
+  cache_dirs_mkdir_cmd = g_strdup_printf("mkdir -p %s/Library/Containers/%s/Data/.cache",
 					 pw->pw_dir, AGS_DEFAULT_BUNDLE_ID);
   
-  config_dirs_mkdir_cmd = g_strdup_printf("mkdir -p %s/Library/%s/.config",
+  config_dirs_mkdir_cmd = g_strdup_printf("mkdir -p %s/Library/Containers/%s/Data/.config",
 					  pw->pw_dir, AGS_DEFAULT_BUNDLE_ID);
 
   default_file_cp_cmd = g_strdup_printf("cp -v %s/Contents/Resources/gsequencer-default.xml.in %s/GSequencer/workspace/default/gsequencer-default.xml",
@@ -163,9 +163,9 @@ install_data()
 				       app_dir,
 				       music_path);
 
-  ags_conf_dirs_mkdir_cmd = g_strdup_printf("mkdir -p %s/Library/%s/Data/.gsequencer",
+  ags_conf_dirs_mkdir_cmd = g_strdup_printf("mkdir -p %s/Library/Containers/%s/Data/.gsequencer",
 					    pw->pw_dir, AGS_DEFAULT_BUNDLE_ID);
-  ags_conf_cp_cmd = g_strdup_printf("cp -v %s/Contents/Resources/ags.conf %s/Library/%s/Data/.gsequencer/",
+  ags_conf_cp_cmd = g_strdup_printf("cp -v %s/Contents/Resources/ags.conf %s/Library/Containers/%s/Data/.gsequencer/",
 				    app_dir,
 				    pw->pw_dir,
 				    AGS_DEFAULT_BUNDLE_ID);
@@ -369,13 +369,13 @@ main(int argc, char **argv)
   putenv(g_strdup_printf("XDG_DATA_DIRS=%s/Contents/Resources/share", app_dir));
   putenv(g_strdup_printf("XDG_CONFIG_DIRS=%s/Contents/Resources/etc", app_dir));
 #else
-  putenv(g_strdup_printf("XDG_RUNTIME_DIR=%s/Library/%s/var/run", pw->pw_dir, AGS_DEFAULT_BUNDLE_ID));
+  putenv(g_strdup_printf("XDG_RUNTIME_DIR=%s/Library/Containers/%s/Data/var/run", pw->pw_dir, AGS_DEFAULT_BUNDLE_ID));
 
-  putenv(g_strdup_printf("XDG_CACHE_HOME=%s/Library/%s/.cache", pw->pw_dir, AGS_DEFAULT_BUNDLE_ID));
+  putenv(g_strdup_printf("XDG_CACHE_HOME=%s/Library/Containers/%s/Data/.cache", pw->pw_dir, AGS_DEFAULT_BUNDLE_ID));
 
-  putenv(g_strdup_printf("XDG_DATA_HOME=%s/Library/%s/.local/share", pw->pw_dir, AGS_DEFAULT_BUNDLE_ID));
-  putenv(g_strdup_printf("XDG_CONFIG_HOME=%s/Library/%s/.config", pw->pw_dir, AGS_DEFAULT_BUNDLE_ID));
-  putenv(g_strdup_printf("XDG_STATE_HOME=%s/Library/%s/.local/state", pw->pw_dir, AGS_DEFAULT_BUNDLE_ID));
+  putenv(g_strdup_printf("XDG_DATA_HOME=%s/Library/Containers/%s/Data/.local/share", pw->pw_dir, AGS_DEFAULT_BUNDLE_ID));
+  putenv(g_strdup_printf("XDG_CONFIG_HOME=%s/Library/Containers/%s/Data/.config", pw->pw_dir, AGS_DEFAULT_BUNDLE_ID));
+  putenv(g_strdup_printf("XDG_STATE_HOME=%s/Library/Containers/%s/Data/.local/state", pw->pw_dir, AGS_DEFAULT_BUNDLE_ID));
   
   putenv(g_strdup_printf("XDG_DATA_DIRS=%s/Contents/Resources/share", app_dir));
   putenv(g_strdup_printf("XDG_CONFIG_DIRS=%s/Contents/Resources/etc", app_dir));
@@ -728,7 +728,7 @@ main(int argc, char **argv)
 			 pw->pw_dir,
 			 AGS_DEFAULT_DIRECTORY);
 #else
-  wdir = g_strdup_printf("%s/Library/%s/%s",
+  wdir = g_strdup_printf("%s/Library/Containers/%s/Data/%s",
 			 pw->pw_dir,
 			 AGS_DEFAULT_BUNDLE_ID,
 			 AGS_DEFAULT_DIRECTORY);

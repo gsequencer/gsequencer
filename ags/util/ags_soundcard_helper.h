@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,6 +33,9 @@ guint ags_soundcard_helper_config_get_pcm_channels(AgsConfig *config);
 gdouble ags_soundcard_helper_config_get_samplerate(AgsConfig *config);
 guint ags_soundcard_helper_config_get_buffer_size(AgsConfig *config);
 guint ags_soundcard_helper_config_get_format(AgsConfig *config);
+
+gboolean ags_soundcard_helper_config_get_use_cache(AgsConfig *config);
+guint ags_soundcard_helper_config_get_cache_buffer_size(AgsConfig *config);
 
 G_END_DECLS
 
