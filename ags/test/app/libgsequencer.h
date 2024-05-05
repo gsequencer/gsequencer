@@ -211,7 +211,6 @@
 #include <ags/app/editor/ags_select_acceleration_popover_callbacks.h>
 #include <ags/app/editor/ags_automation_edit_box.h>
 #include <ags/app/editor/ags_automation_edit.h>
-#include <ags/app/editor/ags_position_notation_cursor_popover_callbacks.h>
 #include <ags/app/editor/ags_position_sheet_cursor_dialog_callbacks.h>
 #include <ags/app/editor/ags_add_sheet_page_dialog_callbacks.h>
 #include <ags/app/editor/ags_composite_edit.h>
