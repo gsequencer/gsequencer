@@ -21,6 +21,7 @@
 
 #include <ags/lib/ags_log.h>
 
+#include <ags/object/ags_priority.h>
 #include <ags/object/ags_config.h>
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
