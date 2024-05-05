@@ -202,7 +202,6 @@
 #include <ags/app/editor/ags_machine_radio_button.h>
 #include <ags/app/editor/ags_machine_selector_callbacks.h>
 #include <ags/app/editor/ags_preset_editor.h>
-#include <ags/app/editor/ags_position_automation_cursor_popover_callbacks.h>
 #include <ags/app/editor/ags_position_sheet_cursor_dialog.h>
 #include <ags/app/editor/ags_notation_edit.h>
 #include <ags/app/editor/ags_notation_meta_callbacks.h>
@@ -212,7 +211,6 @@
 #include <ags/app/editor/ags_select_acceleration_popover_callbacks.h>
 #include <ags/app/editor/ags_automation_edit_box.h>
 #include <ags/app/editor/ags_automation_edit.h>
-#include <ags/app/editor/ags_position_notation_cursor_popover_callbacks.h>
 #include <ags/app/editor/ags_position_sheet_cursor_dialog_callbacks.h>
 #include <ags/app/editor/ags_add_sheet_page_dialog_callbacks.h>
 #include <ags/app/editor/ags_composite_edit.h>
@@ -221,7 +219,6 @@
 #include <ags/app/editor/ags_envelope_dialog_callbacks.h>
 #include <ags/app/editor/ags_ramp_marker_popover_callbacks.h>
 #include <ags/app/editor/ags_select_buffer_popover.h>
-#include <ags/app/editor/ags_position_wave_cursor_popover_callbacks.h>
 #include <ags/app/editor/ags_select_acceleration_popover.h>
 #include <ags/app/editor/ags_preset_dialog.h>
 #include <ags/app/editor/ags_select_note_popover_callbacks.h>
