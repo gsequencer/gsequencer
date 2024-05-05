@@ -430,6 +430,10 @@ ags_composite_toolbar_init(AgsCompositeToolbar *composite_toolbar)
   composite_toolbar->sheet_position_cursor = (GtkPopover *) ags_position_sheet_cursor_popover_new(window);
   composite_toolbar->sheet_add_page = (GtkPopover *) ags_add_sheet_page_popover_new(window);
   composite_toolbar->sheet_remove_page = (GtkPopover *) ags_remove_sheet_page_popover_new(window);
+#else
+  composite_toolbar->sheet_position_cursor = NULL;
+  composite_toolbar->sheet_add_page = NULL;
+  composite_toolbar->sheet_remove_page = NULL;
 #endif
   
   composite_toolbar->automation_select_acceleration = (GtkPopover *) ags_select_acceleration_popover_new(window);
@@ -588,9 +592,11 @@ ags_composite_toolbar_connect(AgsConnectable *connectable)
   ags_connectable_connect(AGS_CONNECTABLE(composite_toolbar->notation_select_note));
   ags_connectable_connect(AGS_CONNECTABLE(composite_toolbar->notation_position_cursor));
 
+#if 0
   ags_connectable_connect(AGS_CONNECTABLE(composite_toolbar->sheet_position_cursor));
   ags_connectable_connect(AGS_CONNECTABLE(composite_toolbar->sheet_add_page));
   ags_connectable_connect(AGS_CONNECTABLE(composite_toolbar->sheet_remove_page));
+#endif
   
   ags_connectable_connect(AGS_CONNECTABLE(composite_toolbar->automation_select_acceleration));
   ags_connectable_connect(AGS_CONNECTABLE(composite_toolbar->automation_ramp_acceleration));
@@ -621,9 +627,11 @@ ags_composite_toolbar_disconnect(AgsConnectable *connectable)
   ags_connectable_disconnect(AGS_CONNECTABLE(composite_toolbar->notation_select_note));
   ags_connectable_disconnect(AGS_CONNECTABLE(composite_toolbar->notation_position_cursor));
 
+#if 0
   ags_connectable_disconnect(AGS_CONNECTABLE(composite_toolbar->sheet_position_cursor));
   ags_connectable_disconnect(AGS_CONNECTABLE(composite_toolbar->sheet_add_page));
   ags_connectable_disconnect(AGS_CONNECTABLE(composite_toolbar->sheet_remove_page));
+#endif
   
   ags_connectable_disconnect(AGS_CONNECTABLE(composite_toolbar->automation_select_acceleration));
   ags_connectable_disconnect(AGS_CONNECTABLE(composite_toolbar->automation_ramp_acceleration));
@@ -2356,9 +2364,11 @@ ags_composite_toolbar_scope_create_and_connect(AgsCompositeToolbar *composite_to
   ags_applicable_reset(AGS_APPLICABLE(composite_toolbar->notation_select_note));
   ags_applicable_reset(AGS_APPLICABLE(composite_toolbar->notation_position_cursor));
 
+#if 0
   ags_applicable_reset(AGS_APPLICABLE(composite_toolbar->sheet_position_cursor));
   ags_applicable_reset(AGS_APPLICABLE(composite_toolbar->sheet_add_page));
   ags_applicable_reset(AGS_APPLICABLE(composite_toolbar->sheet_remove_page));
+#endif
   
   ags_applicable_reset(AGS_APPLICABLE(composite_toolbar->automation_select_acceleration));
   ags_applicable_reset(AGS_APPLICABLE(composite_toolbar->automation_ramp_acceleration));

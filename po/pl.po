@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-05-04 20:25+0200\n"
+"POT-Creation-Date: 2024-05-05 20:17+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -146,7 +146,7 @@ msgstr "ustawienia"
 msgid "envelope"
 msgstr "koperta"
 
-#: ags/app/ags_machine_callbacks.c:1070
+#: ags/app/ags_machine_callbacks.c:1071
 #: ags/app/editor/ags_pattern_envelope.c:276
 #: ags/app/editor/ags_envelope_editor.c:205
 #: ags/app/machine/ags_live_lv2_bridge.c:496
@@ -155,7 +155,7 @@ msgstr "koperta"
 msgid "preset"
 msgstr "ustawienia wstępne"
 
-#: ags/app/ags_machine_callbacks.c:1156
+#: ags/app/ags_machine_callbacks.c:1158
 msgid "connections"
 msgstr "powiązania"
 
@@ -169,7 +169,8 @@ msgstr "Otwórz plik audio"
 msgid "machine editor"
 msgstr "tym urządzenia: "
 
-#: ags/app/ags_machine_editor_dialog.c:192 ags/app/ags_midi_dialog.c:539
+#: ags/app/ags_machine_editor_dialog.c:192
+#: ags/app/editor/ags_envelope_dialog.c:339 ags/app/ags_midi_dialog.c:539
 #: ags/app/ags_plugin_browser.c:364 ags/app/ags_preferences.c:282
 msgid "ok"
 msgstr ""
@@ -472,169 +473,123 @@ msgstr "Nuta:x1"
 msgid "Note:y"
 msgstr "Nuta:y"
 
-#: ags/app/editor/ags_position_wave_cursor_dialog.c:166
-#: ags/app/editor/ags_composite_toolbar.c:1874
-msgid "position wave cursor"
-msgstr "pozycja kursora fali"
-
-#: ags/app/editor/ags_position_wave_cursor_dialog.c:178
-#: ags/app/editor/ags_position_notation_cursor_dialog.c:176
+#: ags/app/editor/ags_position_wave_cursor_popover.c:205
+#: ags/app/editor/ags_position_notation_cursor_popover.c:205
 #: ags/app/editor/ags_position_sheet_cursor_dialog.c:158
-#: ags/app/editor/ags_position_automation_cursor_dialog.c:178
+#: ags/app/editor/ags_position_automation_cursor_popover.c:205
 msgid "set focus"
 msgstr "ustaw fokus"
 
-#: ags/app/editor/ags_position_wave_cursor_dialog.c:191
-#: ags/app/editor/ags_position_notation_cursor_dialog.c:189
+#: ags/app/editor/ags_position_wave_cursor_popover.c:218
+#: ags/app/editor/ags_position_notation_cursor_popover.c:218
 #: ags/app/editor/ags_position_sheet_cursor_dialog.c:171
-#: ags/app/editor/ags_position_automation_cursor_dialog.c:191
+#: ags/app/editor/ags_position_automation_cursor_popover.c:218
 msgid "position x"
 msgstr "pozycja x"
 
-#: ags/app/editor/ags_position_wave_cursor_dialog.c:206
-#: ags/app/editor/ags_position_notation_cursor_dialog.c:224
-#: ags/app/editor/ags_ramp_acceleration_dialog.c:282
-#: ags/app/editor/ags_position_sheet_cursor_dialog.c:206
-#: ags/app/editor/ags_time_stretch_buffer_dialog.c:228
-#: ags/app/editor/ags_crop_note_dialog.c:232
-#: ags/app/editor/ags_remove_sheet_page_dialog.c:152
-#: ags/app/editor/ags_position_automation_cursor_dialog.c:206
-#: ags/app/editor/ags_select_acceleration_dialog.c:237
-#: ags/app/editor/ags_select_buffer_dialog.c:232
-#: ags/app/editor/ags_envelope_dialog.c:223
-#: ags/app/editor/ags_add_sheet_page_dialog.c:207
-#: ags/app/editor/ags_move_note_dialog.c:227
-#: ags/app/editor/ags_select_note_dialog.c:269
-msgid "_Apply"
+#: ags/app/editor/ags_position_wave_cursor_popover.c:241
+#: ags/app/editor/ags_position_notation_cursor_popover.c:261
+#: ags/app/editor/ags_ramp_acceleration_popover.c:324
+#: ags/app/editor/ags_time_stretch_buffer_popover.c:280
+#: ags/app/editor/ags_crop_note_popover.c:272
+#: ags/app/editor/ags_position_automation_cursor_popover.c:241
+#: ags/app/editor/ags_select_acceleration_popover.c:272
+#: ags/app/editor/ags_select_buffer_popover.c:265
+#: ags/app/editor/ags_move_note_popover.c:267
+#: ags/app/editor/ags_select_note_popover.c:302
+msgid "apply"
 msgstr ""
 
-#: ags/app/editor/ags_position_wave_cursor_dialog.c:207
-#: ags/app/editor/ags_position_notation_cursor_dialog.c:225
-#: ags/app/editor/ags_ramp_acceleration_dialog.c:283
-#: ags/app/editor/ags_position_sheet_cursor_dialog.c:207
-#: ags/app/editor/ags_time_stretch_buffer_dialog.c:229
-#: ags/app/editor/ags_crop_note_dialog.c:233
-#: ags/app/editor/ags_remove_sheet_page_dialog.c:153
-#: ags/app/editor/ags_machine_selection.c:158
-#: ags/app/editor/ags_position_automation_cursor_dialog.c:207
-#: ags/app/editor/ags_select_acceleration_dialog.c:238
-#: ags/app/editor/ags_select_buffer_dialog.c:233
-#: ags/app/editor/ags_envelope_dialog.c:227
-#: ags/app/editor/ags_add_sheet_page_dialog.c:208
-#: ags/app/editor/ags_move_note_dialog.c:228
-#: ags/app/editor/ags_select_note_dialog.c:270
-msgid "_OK"
-msgstr ""
-
-#: ags/app/editor/ags_position_wave_cursor_dialog.c:208
-#: ags/app/editor/ags_position_notation_cursor_dialog.c:226
-#: ags/app/editor/ags_ramp_acceleration_dialog.c:284
-#: ags/app/editor/ags_position_sheet_cursor_dialog.c:208
-#: ags/app/editor/ags_time_stretch_buffer_dialog.c:230
-#: ags/app/editor/ags_crop_note_dialog.c:234
-#: ags/app/editor/ags_remove_sheet_page_dialog.c:154
-#: ags/app/editor/ags_machine_selection.c:159
-#: ags/app/editor/ags_position_automation_cursor_dialog.c:208
-#: ags/app/editor/ags_select_acceleration_dialog.c:239
-#: ags/app/editor/ags_select_buffer_dialog.c:234
-#: ags/app/editor/ags_envelope_dialog.c:231
-#: ags/app/editor/ags_add_sheet_page_dialog.c:209
-#: ags/app/editor/ags_move_note_dialog.c:229
-#: ags/app/editor/ags_select_note_dialog.c:271
-#, fuzzy
-msgid "_Cancel"
-msgstr "Kasuj"
-
-#: ags/app/editor/ags_position_notation_cursor_dialog.c:167
-#: ags/app/editor/ags_composite_toolbar.c:1783
-msgid "position notation cursor"
-msgstr "pozycja notacji kursora"
-
-#: ags/app/editor/ags_position_notation_cursor_dialog.c:209
+#: ags/app/editor/ags_position_notation_cursor_popover.c:238
 #: ags/app/editor/ags_position_sheet_cursor_dialog.c:191
 msgid "position y"
 msgstr "pozycja y"
 
-#: ags/app/editor/ags_ramp_acceleration_dialog.c:160
-#: ags/app/editor/ags_composite_toolbar.c:1840
-msgid "ramp accelerations"
-msgstr "nachylenie akceleracji"
-
-#: ags/app/editor/ags_ramp_acceleration_dialog.c:183
+#: ags/app/editor/ags_ramp_acceleration_popover.c:217
 msgid "ramp x0"
 msgstr "nachylenie x0"
 
-#: ags/app/editor/ags_ramp_acceleration_dialog.c:205
+#: ags/app/editor/ags_ramp_acceleration_popover.c:239
 msgid "ramp y0"
 msgstr "nachylenie y0"
 
-#: ags/app/editor/ags_ramp_acceleration_dialog.c:225
+#: ags/app/editor/ags_ramp_acceleration_popover.c:259
 msgid "ramp x1"
 msgstr "nachylenie x1"
 
-#: ags/app/editor/ags_ramp_acceleration_dialog.c:247
+#: ags/app/editor/ags_ramp_acceleration_popover.c:281
 msgid "ramp y1"
 msgstr "nachylenie y1"
 
-#: ags/app/editor/ags_ramp_acceleration_dialog.c:267
+#: ags/app/editor/ags_ramp_acceleration_popover.c:301
 msgid "ramp step count"
 msgstr "liczba kroków nachylenia"
 
 #: ags/app/editor/ags_position_sheet_cursor_dialog.c:146
-#: ags/app/editor/ags_composite_toolbar.c:1795
+#: ags/app/editor/ags_composite_toolbar.c:1809
 #, fuzzy
 msgid "position sheet cursor"
 msgstr "pozycja kursowa"
+
+#: ags/app/editor/ags_position_sheet_cursor_dialog.c:206
+#: ags/app/editor/ags_remove_sheet_page_dialog.c:152
+#: ags/app/editor/ags_add_sheet_page_dialog.c:207
+msgid "_Apply"
+msgstr ""
+
+#: ags/app/editor/ags_position_sheet_cursor_dialog.c:207
+#: ags/app/editor/ags_remove_sheet_page_dialog.c:153
+#: ags/app/editor/ags_machine_selection.c:158
+#: ags/app/editor/ags_add_sheet_page_dialog.c:208
+msgid "_OK"
+msgstr ""
+
+#: ags/app/editor/ags_position_sheet_cursor_dialog.c:208
+#: ags/app/editor/ags_remove_sheet_page_dialog.c:154
+#: ags/app/editor/ags_machine_selection.c:159
+#: ags/app/editor/ags_add_sheet_page_dialog.c:209
+#, fuzzy
+msgid "_Cancel"
+msgstr "Kasuj"
 
 #: ags/app/editor/ags_envelope_editor_callbacks.c:47
 #: ags/app/editor/ags_pattern_envelope_callbacks.c:1049
 msgid "preset name"
 msgstr "nazwa wstępna"
 
-#: ags/app/editor/ags_time_stretch_buffer_dialog.c:149
-#: ags/app/editor/ags_composite_toolbar.c:1885
-#, fuzzy
-msgid "time stretch buffers"
-msgstr "zaznacz bufory"
-
-#: ags/app/editor/ags_time_stretch_buffer_dialog.c:167
+#: ags/app/editor/ags_time_stretch_buffer_popover.c:211
 #: ags/app/machine/ags_oscillator.c:305
 #: ags/app/machine/ags_pitch_sampler_file.c:192
 #: ags/app/machine/ags_fm_oscillator.c:299
 msgid "frequency"
 msgstr "częstotliwość"
 
-#: ags/app/editor/ags_time_stretch_buffer_dialog.c:189
+#: ags/app/editor/ags_time_stretch_buffer_popover.c:233
 msgid "orig BPM"
 msgstr ""
 
-#: ags/app/editor/ags_time_stretch_buffer_dialog.c:211
+#: ags/app/editor/ags_time_stretch_buffer_popover.c:255
 msgid "new BPM"
 msgstr ""
 
-#: ags/app/editor/ags_crop_note_dialog.c:162
-#: ags/app/editor/ags_composite_toolbar.c:1761
-msgid "crop notes"
-msgstr "wytnij nuty"
-
-#: ags/app/editor/ags_crop_note_dialog.c:174
-#: ags/app/editor/ags_move_note_dialog.c:179
+#: ags/app/editor/ags_crop_note_popover.c:206
+#: ags/app/editor/ags_move_note_popover.c:211
 msgid "absolute"
 msgstr "absolutna"
 
-#: ags/app/editor/ags_crop_note_dialog.c:179
+#: ags/app/editor/ags_crop_note_popover.c:211
 msgid "in-place"
 msgstr "w miejścu"
 
-#: ags/app/editor/ags_crop_note_dialog.c:184
+#: ags/app/editor/ags_crop_note_popover.c:216
 msgid "do resize"
 msgstr "zmień rozmiar"
 
-#: ags/app/editor/ags_crop_note_dialog.c:197
+#: ags/app/editor/ags_crop_note_popover.c:229
 msgid "crop note"
 msgstr "wytnij nute"
 
-#: ags/app/editor/ags_crop_note_dialog.c:217
+#: ags/app/editor/ags_crop_note_popover.c:249
 msgid "padding note"
 msgstr "padding nuty"
 
@@ -642,183 +597,199 @@ msgstr "padding nuty"
 msgid "remove sheet page"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:897
+#: ags/app/editor/ags_composite_toolbar.c:911
 msgid "Position"
 msgstr "Pozycja"
 
-#: ags/app/editor/ags_composite_toolbar.c:900
+#: ags/app/editor/ags_composite_toolbar.c:914
 #, fuzzy
 msgid "position tool"
 msgstr "pozycja x"
 
-#: ags/app/editor/ags_composite_toolbar.c:916
+#: ags/app/editor/ags_composite_toolbar.c:930
 #: ags/app/ags_gsequencer_application.c:790
 #, fuzzy
 msgid "Edit"
 msgstr "Edytuj"
 
-#: ags/app/editor/ags_composite_toolbar.c:919
+#: ags/app/editor/ags_composite_toolbar.c:933
 #, fuzzy
 msgid "edit tool"
 msgstr "narzędzia edytora: "
 
-#: ags/app/editor/ags_composite_toolbar.c:935
+#: ags/app/editor/ags_composite_toolbar.c:949
 #, fuzzy
 msgid "Clear"
 msgstr "wyczyść"
 
-#: ags/app/editor/ags_composite_toolbar.c:938
+#: ags/app/editor/ags_composite_toolbar.c:952
 #, fuzzy
 msgid "clear tool"
 msgstr "wyczyść"
 
-#: ags/app/editor/ags_composite_toolbar.c:954
+#: ags/app/editor/ags_composite_toolbar.c:968
 msgid "Select"
 msgstr "Zaznacz"
 
-#: ags/app/editor/ags_composite_toolbar.c:957
+#: ags/app/editor/ags_composite_toolbar.c:971
 #, fuzzy
 msgid "selection tool"
 msgstr "wybierz plik audio"
 
-#: ags/app/editor/ags_composite_toolbar.c:1092
+#: ags/app/editor/ags_composite_toolbar.c:1106
 msgid "Invert"
 msgstr "Odwróć"
 
-#: ags/app/editor/ags_composite_toolbar.c:1095
+#: ags/app/editor/ags_composite_toolbar.c:1109
 #, fuzzy
 msgid "invert action"
 msgstr "notacja"
 
-#: ags/app/editor/ags_composite_toolbar.c:1112
+#: ags/app/editor/ags_composite_toolbar.c:1126
 msgid "Copy"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1115
+#: ags/app/editor/ags_composite_toolbar.c:1129
 #, fuzzy
 msgid "copy action"
 msgstr "kopiuj zaznaczenie"
 
-#: ags/app/editor/ags_composite_toolbar.c:1132
+#: ags/app/editor/ags_composite_toolbar.c:1146
 msgid "Cut"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1135
+#: ags/app/editor/ags_composite_toolbar.c:1149
 #, fuzzy
 msgid "cut action"
 msgstr "automatyczny"
 
-#: ags/app/editor/ags_composite_toolbar.c:1152
+#: ags/app/editor/ags_composite_toolbar.c:1166
 msgid "Paste"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1155
+#: ags/app/editor/ags_composite_toolbar.c:1169
 #, fuzzy
 msgid "paste menu action"
 msgstr "segmentacja"
 
-#: ags/app/editor/ags_composite_toolbar.c:1315
+#: ags/app/editor/ags_composite_toolbar.c:1329
 msgid "tool"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1317
+#: ags/app/editor/ags_composite_toolbar.c:1331
 msgid "tool dialog option"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1346
+#: ags/app/editor/ags_composite_toolbar.c:1360
 #: ags/app/ags_online_help_window.c:211
 msgid "zoom"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1374
+#: ags/app/editor/ags_composite_toolbar.c:1388
 #, fuzzy
 msgid "opacity"
 msgstr "Przeźroczystość"
 
-#: ags/app/editor/ags_composite_toolbar.c:1405
+#: ags/app/editor/ags_composite_toolbar.c:1419
 msgid "Port"
 msgstr "Port"
 
-#: ags/app/editor/ags_composite_toolbar.c:1457
+#: ags/app/editor/ags_composite_toolbar.c:1471
 msgid "beats"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1503
+#: ags/app/editor/ags_composite_toolbar.c:1517
 msgid "beats type"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1540
+#: ags/app/editor/ags_composite_toolbar.c:1554
 msgid "snap to zoom"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1643
+#: ags/app/editor/ags_composite_toolbar.c:1657
 msgid "match audio channel"
 msgstr "dopasuj kanał audio"
 
-#: ags/app/editor/ags_composite_toolbar.c:1650
+#: ags/app/editor/ags_composite_toolbar.c:1664
 #, fuzzy
 msgid "match line"
 msgstr "dopasuj kanał audio"
 
-#: ags/app/editor/ags_composite_toolbar.c:1657
+#: ags/app/editor/ags_composite_toolbar.c:1671
 msgid "no duplicates"
 msgstr "brak duplikatów"
 
-#: ags/app/editor/ags_composite_toolbar.c:1663
+#: ags/app/editor/ags_composite_toolbar.c:1677
 msgid "paste"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1705
+#: ags/app/editor/ags_composite_toolbar.c:1719
 msgid "enable all audio channels"
 msgstr "aktywuj wszystkie kanały audio"
 
-#: ags/app/editor/ags_composite_toolbar.c:1716
+#: ags/app/editor/ags_composite_toolbar.c:1730
 msgid "disable all audio channels"
 msgstr "deaktywuj wszystkie kanały audio"
 
-#: ags/app/editor/ags_composite_toolbar.c:1727
+#: ags/app/editor/ags_composite_toolbar.c:1741
 msgid "enable all lines"
 msgstr "włącz wszystkie linie"
 
-#: ags/app/editor/ags_composite_toolbar.c:1738
+#: ags/app/editor/ags_composite_toolbar.c:1752
 msgid "disable all lines"
 msgstr "wyłącz wszystkie linie"
 
-#: ags/app/editor/ags_composite_toolbar.c:1750
-#: ags/app/editor/ags_move_note_dialog.c:162
+#: ags/app/editor/ags_composite_toolbar.c:1764
 msgid "move notes"
 msgstr "przenieś nuty"
 
-#: ags/app/editor/ags_composite_toolbar.c:1772
-#: ags/app/editor/ags_select_note_dialog.c:169
+#: ags/app/editor/ags_composite_toolbar.c:1775
+msgid "crop notes"
+msgstr "wytnij nuty"
+
+#: ags/app/editor/ags_composite_toolbar.c:1786
 msgid "select notes"
 msgstr "wybierz nuty"
 
-#: ags/app/editor/ags_composite_toolbar.c:1806
+#: ags/app/editor/ags_composite_toolbar.c:1797
+msgid "position notation cursor"
+msgstr "pozycja notacji kursora"
+
+#: ags/app/editor/ags_composite_toolbar.c:1820
 msgid "add page"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1817
+#: ags/app/editor/ags_composite_toolbar.c:1831
 #, fuzzy
 msgid "remove page"
 msgstr "usuń indeks"
 
-#: ags/app/editor/ags_composite_toolbar.c:1829
-#: ags/app/editor/ags_select_acceleration_dialog.c:167
+#: ags/app/editor/ags_composite_toolbar.c:1843
 msgid "select accelerations"
 msgstr "zaznacz akceleracje"
 
-#: ags/app/editor/ags_composite_toolbar.c:1851
-#: ags/app/editor/ags_position_automation_cursor_dialog.c:169
+#: ags/app/editor/ags_composite_toolbar.c:1854
+msgid "ramp accelerations"
+msgstr "nachylenie akceleracji"
+
+#: ags/app/editor/ags_composite_toolbar.c:1865
 msgid "position automation cursor"
 msgstr "automatyczna pozycja kursora"
 
-#: ags/app/editor/ags_composite_toolbar.c:1863
-#: ags/app/editor/ags_select_buffer_dialog.c:168
+#: ags/app/editor/ags_composite_toolbar.c:1877
 msgid "select buffers"
 msgstr "zaznacz bufory"
 
+#: ags/app/editor/ags_composite_toolbar.c:1888
+msgid "position wave cursor"
+msgstr "pozycja kursora fali"
+
 #: ags/app/editor/ags_composite_toolbar.c:1899
+#, fuzzy
+msgid "time stretch buffers"
+msgstr "zaznacz bufory"
+
+#: ags/app/editor/ags_composite_toolbar.c:1913
 #, fuzzy
 msgid "ramp markers"
 msgstr "nachylenie akceleracji"
@@ -909,21 +880,21 @@ msgstr "zaznacz"
 msgid "select machines"
 msgstr "wybierz urządzenia"
 
-#: ags/app/editor/ags_select_acceleration_dialog.c:179
-#: ags/app/editor/ags_select_buffer_dialog.c:180
-#: ags/app/editor/ags_select_note_dialog.c:181
+#: ags/app/editor/ags_select_acceleration_popover.c:206
+#: ags/app/editor/ags_select_buffer_popover.c:205
+#: ags/app/editor/ags_select_note_popover.c:206
 msgid "copy selection"
 msgstr "kopiuj zaznaczenie"
 
-#: ags/app/editor/ags_select_acceleration_dialog.c:198
-#: ags/app/editor/ags_select_buffer_dialog.c:193
-#: ags/app/editor/ags_select_note_dialog.c:194
+#: ags/app/editor/ags_select_acceleration_popover.c:225
+#: ags/app/editor/ags_select_buffer_popover.c:218
+#: ags/app/editor/ags_select_note_popover.c:219
 msgid "select x0"
 msgstr "wybierz x0"
 
-#: ags/app/editor/ags_select_acceleration_dialog.c:220
-#: ags/app/editor/ags_select_buffer_dialog.c:215
-#: ags/app/editor/ags_select_note_dialog.c:234
+#: ags/app/editor/ags_select_acceleration_popover.c:247
+#: ags/app/editor/ags_select_buffer_popover.c:240
+#: ags/app/editor/ags_select_note_popover.c:259
 msgid "select x1"
 msgstr "wybierz x1"
 
@@ -992,15 +963,20 @@ msgstr "do góry"
 msgid "move down"
 msgstr "na dół"
 
-#: ags/app/editor/ags_envelope_dialog.c:198
+#: ags/app/editor/ags_envelope_dialog.c:261
+#, fuzzy
+msgid "envelope info"
+msgstr "koperta"
+
+#: ags/app/editor/ags_envelope_dialog.c:309
 msgid "editor"
 msgstr "edytor"
 
-#: ags/app/editor/ags_envelope_dialog.c:209
+#: ags/app/editor/ags_envelope_dialog.c:320
 msgid "info"
 msgstr "info"
 
-#: ags/app/editor/ags_envelope_dialog.c:475 ags/app/machine/ags_drum.c:368
+#: ags/app/editor/ags_envelope_dialog.c:647 ags/app/machine/ags_drum.c:368
 msgid "pattern"
 msgstr "szablon"
 
@@ -1026,23 +1002,23 @@ msgstr "notacja"
 msgid "notation x1"
 msgstr "notacja"
 
-#: ags/app/editor/ags_move_note_dialog.c:174
+#: ags/app/editor/ags_move_note_popover.c:206
 msgid "relative"
 msgstr "relatywnie"
 
-#: ags/app/editor/ags_move_note_dialog.c:192
+#: ags/app/editor/ags_move_note_popover.c:224
 msgid "move x"
 msgstr "przemieść x"
 
-#: ags/app/editor/ags_move_note_dialog.c:212
+#: ags/app/editor/ags_move_note_popover.c:244
 msgid "move y"
 msgstr "przemieść y"
 
-#: ags/app/editor/ags_select_note_dialog.c:214
+#: ags/app/editor/ags_select_note_popover.c:239
 msgid "select y0"
 msgstr "wybierz y0"
 
-#: ags/app/editor/ags_select_note_dialog.c:254
+#: ags/app/editor/ags_select_note_popover.c:279
 msgid "select y1"
 msgstr "wybierz y1"
 

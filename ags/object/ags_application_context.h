@@ -29,6 +29,8 @@
 
 #include <ags/object/ags_config.h>
 
+#include <ags/ags_api_config.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_APPLICATION_CONTEXT                (ags_application_context_get_type())
