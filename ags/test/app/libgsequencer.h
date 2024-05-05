@@ -219,7 +219,6 @@
 #include <ags/app/editor/ags_envelope_dialog_callbacks.h>
 #include <ags/app/editor/ags_ramp_marker_popover_callbacks.h>
 #include <ags/app/editor/ags_select_buffer_popover.h>
-#include <ags/app/editor/ags_position_wave_cursor_popover_callbacks.h>
 #include <ags/app/editor/ags_select_acceleration_popover.h>
 #include <ags/app/editor/ags_preset_dialog.h>
 #include <ags/app/editor/ags_select_note_popover_callbacks.h>
