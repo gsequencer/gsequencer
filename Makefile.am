@@ -3174,6 +3174,7 @@ libgsequencer_editor_h_sources = \
 	ags/app/editor/ags_pattern_envelope_callbacks.h \
 	ags/app/editor/ags_pattern_envelope.h \
 	ags/app/editor/ags_position_automation_cursor_popover.h \
+	ags/app/editor/ags_position_notation_cursor_popover.h \
 	ags/app/editor/ags_position_sheet_cursor_dialog.h \
 	ags/app/editor/ags_position_sheet_cursor_dialog_callbacks.h \
 	ags/app/editor/ags_position_wave_cursor_popover.h \
