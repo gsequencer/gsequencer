@@ -33,10 +33,6 @@
 
 G_BEGIN_DECLS
 
-int ags_midi_dialog_apply_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog);
-int ags_midi_dialog_ok_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog);
-int ags_midi_dialog_cancel_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog);
-
 G_END_DECLS
 
 #endif /*__AGS_MIDI_DIALOG_CALLBACKS_H__*/

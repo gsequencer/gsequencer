@@ -1031,6 +1031,7 @@ ags_machine_envelope_callback(GAction *action, GVariant *parameter,
   envelope_dialog = ags_envelope_dialog_new(title,
 					    (GtkWindow *) window,
 					    machine);
+
   machine->envelope_dialog = (GtkWindow *) envelope_dialog;
   
   if(AGS_IS_DRUM(machine) ||
@@ -1050,7 +1051,7 @@ ags_machine_envelope_callback(GAction *action, GVariant *parameter,
 
 void
 ags_machine_preset_callback(GAction *action, GVariant *parameter,
-			      AgsMachine *machine)
+			    AgsMachine *machine)
 {
   AgsWindow *window;
   AgsPresetDialog *preset_dialog;
@@ -1072,6 +1073,7 @@ ags_machine_preset_callback(GAction *action, GVariant *parameter,
   preset_dialog = ags_preset_dialog_new(title,
 					(GtkWindow *) window,
 					machine);
+
   machine->preset_dialog = (GtkDialog *) preset_dialog;
 
   ags_connectable_connect(AGS_CONNECTABLE(machine->preset_dialog));
