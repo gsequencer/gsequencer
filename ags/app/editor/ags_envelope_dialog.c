@@ -24,7 +24,6 @@
 #include <ags/libags-audio.h>
 
 #include <ags/app/ags_ui_provider.h>
-#include <ags/app/ags_gsequencer_application.h>
 #include <ags/app/ags_window.h>
 
 #include <complex.h>
@@ -267,6 +266,9 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
   gtk_window_set_transient_for((GtkWindow *) envelope_dialog,
 			       (GtkWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
 
+  gtk_window_set_default_size((GtkWindow *) envelope_dialog,
+			      800, 600);
+
   event_controller = gtk_event_controller_key_new();
   gtk_widget_add_controller((GtkWidget *) envelope_dialog,
 			    event_controller);
@@ -296,7 +298,7 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
 
   envelope_dialog->notebook =
     notebook = (GtkNotebook *) gtk_notebook_new();
-  gtk_box_append((GtkBox *) vbox,
+  gtk_box_append(vbox,
 		 (GtkWidget *) notebook);
 
   /* envelope editor */
@@ -323,13 +325,10 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
 
   envelope_dialog->pattern_envelope_scrolled_window = NULL;
   envelope_dialog->pattern_envelope = NULL;
-
-  gtk_window_set_default_size((GtkWindow *) envelope_dialog,
-			      800, 600);
   
   /* buttons */
   envelope_dialog->action_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-						    AGS_UI_PROVIDER_DEFAULT_SPACING);
+							AGS_UI_PROVIDER_DEFAULT_SPACING);
   
   gtk_widget_set_halign(envelope_dialog->action_area,
 			GTK_ALIGN_END);
@@ -668,6 +667,10 @@ ags_envelope_dialog_real_response(AgsEnvelopeDialog *envelope_dialog,
   case GTK_RESPONSE_CLOSE:
   case GTK_RESPONSE_REJECT:
     {
+      if(envelope_dialog->machine != NULL){
+	envelope_dialog->machine->envelope_dialog = NULL;
+      }
+
       gtk_window_destroy((GtkWindow *) envelope_dialog);
     }
     break;

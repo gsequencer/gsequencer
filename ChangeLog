@@ -2,6 +2,7 @@ ags (6.11.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* refactored AgsEnvelopeDialog inherits GtkWindow, modern button layout and close by ESC key
+	* refactored AgsPresetDialog inherits GtkWindow, modern button layout and close by ESC key
 	* TODO:JK: refactored tool dialogs
 
 ags (6.10.4)
