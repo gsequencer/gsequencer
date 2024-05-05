@@ -182,12 +182,10 @@
 #include <ags/app/editor/ags_wave_meta_callbacks.h>
 #include <ags/app/editor/ags_composite_edit_callbacks.h>
 #include <ags/app/editor/ags_crop_note_popover.h>
-#include <ags/app/editor/ags_select_buffer_popover_callbacks.h>
 #include <ags/app/editor/ags_position_wave_cursor_popover.h>
 #include <ags/app/editor/ags_composite_toolbar_callbacks.h>
 #include <ags/app/editor/ags_move_note_popover_callbacks.h>
 #include <ags/app/editor/ags_preset_dialog_callbacks.h>
-#include <ags/app/editor/ags_time_stretch_buffer_popover_callbacks.h>
 #include <ags/app/editor/ags_automation_meta.h>
 #include <ags/app/editor/ags_preset_editor_callbacks.h>
 #include <ags/app/editor/ags_wave_meta.h>
