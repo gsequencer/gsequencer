@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -263,7 +263,12 @@ void
 ags_composite_toolbar_menu_tool_popup_notation_select_note_callback(GAction *action, GVariant *parameter,
 								    AgsCompositeToolbar *composite_toolbar)
 {
-  gtk_widget_show((GtkWidget *) composite_toolbar->notation_select_note);
+  if(gtk_widget_get_parent(composite_toolbar->notation_select_note) == NULL){
+    gtk_widget_set_parent(composite_toolbar->notation_select_note,
+			  composite_toolbar->menu_tool);
+  }
+  
+  gtk_popover_popup(composite_toolbar->notation_select_note);
 }
 
 void

@@ -3152,8 +3152,8 @@ libgsequencer_editor_h_sources = \
 	ags/app/editor/ags_composite_edit_callbacks.h \
 	ags/app/editor/ags_composite_toolbar.h \
 	ags/app/editor/ags_composite_toolbar_callbacks.h \
-	ags/app/editor/ags_crop_note_dialog_callbacks.h \
-	ags/app/editor/ags_crop_note_dialog.h \
+	ags/app/editor/ags_crop_note_popover_callbacks.h \
+	ags/app/editor/ags_crop_note_popover.h \
 	ags/app/editor/ags_envelope_dialog_callbacks.h \
 	ags/app/editor/ags_envelope_dialog.h \
 	ags/app/editor/ags_envelope_editor_callbacks.h \
@@ -3165,46 +3165,42 @@ libgsequencer_editor_h_sources = \
 	ags/app/editor/ags_machine_selection.h \
 	ags/app/editor/ags_machine_selector_callbacks.h \
 	ags/app/editor/ags_machine_selector.h \
-	ags/app/editor/ags_move_note_dialog_callbacks.h \
-	ags/app/editor/ags_move_note_dialog.h \
+	ags/app/editor/ags_move_note_popover_callbacks.h \
+	ags/app/editor/ags_move_note_popover.h \
 	ags/app/editor/ags_notation_edit_callbacks.h \
 	ags/app/editor/ags_notation_edit.h \
 	ags/app/editor/ags_notation_meta_callbacks.h \
 	ags/app/editor/ags_notation_meta.h \
 	ags/app/editor/ags_pattern_envelope_callbacks.h \
 	ags/app/editor/ags_pattern_envelope.h \
-	ags/app/editor/ags_position_automation_cursor_dialog.h \
-	ags/app/editor/ags_position_automation_cursor_dialog_callbacks.h \
+	ags/app/editor/ags_position_automation_cursor_popover.h \
 	ags/app/editor/ags_position_notation_cursor_dialog.h \
-	ags/app/editor/ags_position_notation_cursor_dialog_callbacks.h \
 	ags/app/editor/ags_position_sheet_cursor_dialog.h \
 	ags/app/editor/ags_position_sheet_cursor_dialog_callbacks.h \
-	ags/app/editor/ags_position_wave_cursor_dialog.h \
-	ags/app/editor/ags_position_wave_cursor_dialog_callbacks.h \
+	ags/app/editor/ags_position_wave_cursor_popover.h \
 	ags/app/editor/ags_preset_dialog_callbacks.h \
 	ags/app/editor/ags_preset_dialog.h \
 	ags/app/editor/ags_preset_editor_callbacks.h \
 	ags/app/editor/ags_preset_editor.h \
-	ags/app/editor/ags_ramp_acceleration_dialog.h \
-	ags/app/editor/ags_ramp_acceleration_dialog_callbacks.h \
-	ags/app/editor/ags_ramp_marker_dialog.h \
-	ags/app/editor/ags_ramp_marker_dialog_callbacks.h \
+	ags/app/editor/ags_ramp_acceleration_popover.h \
+	ags/app/editor/ags_ramp_acceleration_popover_callbacks.h \
+	ags/app/editor/ags_ramp_marker_popover.h \
+	ags/app/editor/ags_ramp_marker_popover_callbacks.h \
 	ags/app/editor/ags_remove_sheet_page_dialog_callbacks.h \
 	ags/app/editor/ags_remove_sheet_page_dialog.h \
 	ags/app/editor/ags_scrolled_automation_edit_box.h \
 	ags/app/editor/ags_scrolled_wave_edit_box.h \
-	ags/app/editor/ags_select_acceleration_dialog.h \
-	ags/app/editor/ags_select_acceleration_dialog_callbacks.h \
-	ags/app/editor/ags_select_buffer_dialog.h \
-	ags/app/editor/ags_select_buffer_dialog_callbacks.h \
-	ags/app/editor/ags_select_note_dialog.h \
-	ags/app/editor/ags_select_note_dialog_callbacks.h \
+	ags/app/editor/ags_select_acceleration_popover.h \
+	ags/app/editor/ags_select_acceleration_popover_callbacks.h \
+	ags/app/editor/ags_select_buffer_popover.h \
+	ags/app/editor/ags_select_note_popover.h \
+	ags/app/editor/ags_select_note_popover_callbacks.h \
 	ags/app/editor/ags_sheet_edit.h \
 	ags/app/editor/ags_sheet_edit_callbacks.h \
 	ags/app/editor/ags_tempo_edit.h \
 	ags/app/editor/ags_tempo_edit_callbacks.h \
-	ags/app/editor/ags_time_stretch_buffer_dialog.h \
-	ags/app/editor/ags_time_stretch_buffer_dialog_callbacks.h \
+	ags/app/editor/ags_time_stretch_buffer_popover.h \
+	ags/app/editor/ags_time_stretch_buffer_popover_callbacks.h \
 	ags/app/editor/ags_wave_edit_callbacks.h \
 	ags/app/editor/ags_wave_edit.h \
 	ags/app/editor/ags_wave_edit_box.h \
@@ -3226,8 +3222,8 @@ libgsequencer_editor_c_sources = \
 	ags/app/editor/ags_composite_edit_callbacks.c \
 	ags/app/editor/ags_composite_toolbar.c \
 	ags/app/editor/ags_composite_toolbar_callbacks.c \
-	ags/app/editor/ags_crop_note_dialog_callbacks.c \
-	ags/app/editor/ags_crop_note_dialog.c \
+	ags/app/editor/ags_crop_note_popover_callbacks.c \
+	ags/app/editor/ags_crop_note_popover.c \
 	ags/app/editor/ags_envelope_dialog_callbacks.c \
 	ags/app/editor/ags_envelope_dialog.c \
 	ags/app/editor/ags_envelope_editor_callbacks.c \
@@ -3239,46 +3235,41 @@ libgsequencer_editor_c_sources = \
 	ags/app/editor/ags_machine_selection.c \
 	ags/app/editor/ags_machine_selector.c \
 	ags/app/editor/ags_machine_selector_callbacks.c \
-	ags/app/editor/ags_move_note_dialog_callbacks.c \
-	ags/app/editor/ags_move_note_dialog.c \
+	ags/app/editor/ags_move_note_popover_callbacks.c \
+	ags/app/editor/ags_move_note_popover.c \
 	ags/app/editor/ags_notation_edit.c \
 	ags/app/editor/ags_notation_edit_callbacks.c \
 	ags/app/editor/ags_notation_meta.c \
 	ags/app/editor/ags_notation_meta_callbacks.c \
 	ags/app/editor/ags_pattern_envelope_callbacks.c \
 	ags/app/editor/ags_pattern_envelope.c \
-	ags/app/editor/ags_position_automation_cursor_dialog.c \
-	ags/app/editor/ags_position_automation_cursor_dialog_callbacks.c \
-	ags/app/editor/ags_position_notation_cursor_dialog.c \
-	ags/app/editor/ags_position_notation_cursor_dialog_callbacks.c \
+	ags/app/editor/ags_position_automation_cursor_popover.c \
+	ags/app/editor/ags_position_notation_cursor_popover.c \
 	ags/app/editor/ags_position_sheet_cursor_dialog.c \
 	ags/app/editor/ags_position_sheet_cursor_dialog_callbacks.c \
-	ags/app/editor/ags_position_wave_cursor_dialog.c \
-	ags/app/editor/ags_position_wave_cursor_dialog_callbacks.c \
+	ags/app/editor/ags_position_wave_cursor_popover.c \
 	ags/app/editor/ags_preset_dialog_callbacks.c \
 	ags/app/editor/ags_preset_dialog.c \
 	ags/app/editor/ags_preset_editor_callbacks.c \
 	ags/app/editor/ags_preset_editor.c \
-	ags/app/editor/ags_ramp_acceleration_dialog.c \
-	ags/app/editor/ags_ramp_acceleration_dialog_callbacks.c \
-	ags/app/editor/ags_ramp_marker_dialog.c \
-	ags/app/editor/ags_ramp_marker_dialog_callbacks.c \
+	ags/app/editor/ags_ramp_acceleration_popover.c \
+	ags/app/editor/ags_ramp_acceleration_popover_callbacks.c \
+	ags/app/editor/ags_ramp_marker_popover.c \
+	ags/app/editor/ags_ramp_marker_popover_callbacks.c \
 	ags/app/editor/ags_remove_sheet_page_dialog_callbacks.c \
 	ags/app/editor/ags_remove_sheet_page_dialog.c \
 	ags/app/editor/ags_scrolled_automation_edit_box.c \
 	ags/app/editor/ags_scrolled_wave_edit_box.c \
-	ags/app/editor/ags_select_acceleration_dialog.c \
-	ags/app/editor/ags_select_acceleration_dialog_callbacks.c \
-	ags/app/editor/ags_select_buffer_dialog.c \
-	ags/app/editor/ags_select_buffer_dialog_callbacks.c \
-	ags/app/editor/ags_select_note_dialog.c \
-	ags/app/editor/ags_select_note_dialog_callbacks.c \
+	ags/app/editor/ags_select_acceleration_popover.c \
+	ags/app/editor/ags_select_acceleration_popover_callbacks.c \
+	ags/app/editor/ags_select_buffer_popover.c \
+	ags/app/editor/ags_select_note_popover.c \
+	ags/app/editor/ags_select_note_popover_callbacks.c \
 	ags/app/editor/ags_sheet_edit.c \
 	ags/app/editor/ags_sheet_edit_callbacks.c \
 	ags/app/editor/ags_tempo_edit.c \
 	ags/app/editor/ags_tempo_edit_callbacks.c \
-	ags/app/editor/ags_time_stretch_buffer_dialog.c \
-	ags/app/editor/ags_time_stretch_buffer_dialog_callbacks.c \
+	ags/app/editor/ags_time_stretch_buffer_popover.c \
 	ags/app/editor/ags_wave_edit.c \
 	ags/app/editor/ags_wave_edit_box.c \
 	ags/app/editor/ags_wave_edit_callbacks.c \

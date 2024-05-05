@@ -1,8 +1,28 @@
 ags (6.11.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsMoveNotePopover
+	* implemented AgsCropNotePopover
+	* implemented AgsSelectNotePopover
+	* implemented AgsPositionNotationCursorPopover
+	* implemented AgsSelectAccelerationPopover
+	* implemented AgsRampAccelerationPopover
+	* implemented AgsPositionAutomationCursorPopover
+	* implemented AgsPositionWaveCursorPopover
+	* implemented AgsSelectBufferPopover
+	* implemented AgsRampMarkerPopover
 	* refactored AgsEnvelopeDialog inherits GtkWindow, modern button layout and close by ESC key
 	* refactored AgsPresetDialog inherits GtkWindow, modern button layout and close by ESC key
+	* TODO:JK: removed AgsMoveNoteDialog
+	* TODO:JK: removed AgsCropNoteDialog
+	* TODO:JK: removed AgsSelectNoteDialog
+	* TODO:JK: removed AgsPositionNotationCursorDialog
+	* TODO:JK: removed AgsSelectAccelerationDialog
+	* TODO:JK: removed AgsRampAccelerationDialog
+	* TODO:JK: removed AgsPositionAutomationCursorDialog
+	* TODO:JK: removed AgsSelectBufferDialog
+	* TODO:JK: removed AgsPositionWaveCursorDialog
+	* TODO:JK: removed AgsRampMarkerDialog
 	* TODO:JK: refactored tool dialogs
 
 ags (6.10.4)

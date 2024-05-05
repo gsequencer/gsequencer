@@ -25,24 +25,26 @@
 #include <ags/app/ags_composite_editor.h>
 #include <ags/app/ags_machine.h>
 
-#include <ags/app/editor/ags_move_note_dialog.h>
-#include <ags/app/editor/ags_crop_note_dialog.h>
-#include <ags/app/editor/ags_select_note_dialog.h>
-#include <ags/app/editor/ags_position_notation_cursor_dialog.h>
+#include <ags/app/editor/ags_move_note_popover.h>
+#include <ags/app/editor/ags_crop_note_popover.h>
+#include <ags/app/editor/ags_select_note_popover.h>
+#include <ags/app/editor/ags_position_notation_cursor_popover.h>
 
+#if 0
 #include <ags/app/editor/ags_position_sheet_cursor_dialog.h>
 #include <ags/app/editor/ags_add_sheet_page_dialog.h>
 #include <ags/app/editor/ags_remove_sheet_page_dialog.h>
+#endif
 
-#include <ags/app/editor/ags_select_acceleration_dialog.h>
-#include <ags/app/editor/ags_ramp_acceleration_dialog.h>
-#include <ags/app/editor/ags_position_automation_cursor_dialog.h>
+#include <ags/app/editor/ags_select_acceleration_popover.h>
+#include <ags/app/editor/ags_ramp_acceleration_popover.h>
+#include <ags/app/editor/ags_position_automation_cursor_popover.h>
 
-#include <ags/app/editor/ags_select_buffer_dialog.h>
-#include <ags/app/editor/ags_position_wave_cursor_dialog.h>
-#include <ags/app/editor/ags_time_stretch_buffer_dialog.h>
+#include <ags/app/editor/ags_select_buffer_popover.h>
+#include <ags/app/editor/ags_position_wave_cursor_popover.h>
+#include <ags/app/editor/ags_time_stretch_buffer_popover.h>
 
-#include <ags/app/editor/ags_ramp_marker_dialog.h>
+#include <ags/app/editor/ags_ramp_marker_popover.h>
 
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
@@ -417,24 +419,28 @@ ags_composite_toolbar_init(AgsCompositeToolbar *composite_toolbar)
 
   composite_toolbar->opacity = NULL;
 
-  composite_toolbar->notation_move_note = (GtkDialog *) ags_move_note_dialog_new(window);
-  composite_toolbar->notation_crop_note = (GtkDialog *) ags_crop_note_dialog_new(window);
-  composite_toolbar->notation_select_note = (GtkDialog *) ags_select_note_dialog_new(window);
-  composite_toolbar->notation_position_cursor = (GtkDialog *) ags_position_notation_cursor_dialog_new(window);
+  composite_toolbar->notation_move_note = (GtkPopover *) ags_move_note_popover_new(window);
+  composite_toolbar->notation_crop_note = (GtkPopover *) ags_crop_note_popover_new(window);
 
-  composite_toolbar->sheet_position_cursor = (GtkDialog *) ags_position_sheet_cursor_dialog_new(window);
-  composite_toolbar->sheet_add_page = (GtkDialog *) ags_add_sheet_page_dialog_new(window);
-  composite_toolbar->sheet_remove_page = (GtkDialog *) ags_remove_sheet_page_dialog_new(window);
+  composite_toolbar->notation_select_note = (GtkPopover *) ags_select_note_popover_new();
+  
+  composite_toolbar->notation_position_cursor = (GtkPopover *) ags_position_notation_cursor_popover_new(window);
 
-  composite_toolbar->automation_select_acceleration = (GtkDialog *) ags_select_acceleration_dialog_new(window);
-  composite_toolbar->automation_ramp_acceleration = (GtkDialog *) ags_ramp_acceleration_dialog_new(window);
-  composite_toolbar->automation_position_cursor = (GtkDialog *) ags_position_automation_cursor_dialog_new(window);
+#if 0
+  composite_toolbar->sheet_position_cursor = (GtkPopover *) ags_position_sheet_cursor_popover_new(window);
+  composite_toolbar->sheet_add_page = (GtkPopover *) ags_add_sheet_page_popover_new(window);
+  composite_toolbar->sheet_remove_page = (GtkPopover *) ags_remove_sheet_page_popover_new(window);
+#endif
+  
+  composite_toolbar->automation_select_acceleration = (GtkPopover *) ags_select_acceleration_popover_new(window);
+  composite_toolbar->automation_ramp_acceleration = (GtkPopover *) ags_ramp_acceleration_popover_new(window);
+  composite_toolbar->automation_position_cursor = (GtkPopover *) ags_position_automation_cursor_popover_new(window);
 
-  composite_toolbar->wave_select_buffer = (GtkDialog *) ags_select_buffer_dialog_new(window);
-  composite_toolbar->wave_position_cursor = (GtkDialog *) ags_position_wave_cursor_dialog_new(window);
-  composite_toolbar->wave_time_stretch_buffer = (GtkDialog *) ags_time_stretch_buffer_dialog_new(window);
+  composite_toolbar->wave_select_buffer = (GtkPopover *) ags_select_buffer_popover_new(window);
+  composite_toolbar->wave_position_cursor = (GtkPopover *) ags_position_wave_cursor_popover_new(window);
+  composite_toolbar->wave_time_stretch_buffer = (GtkPopover *) ags_time_stretch_buffer_popover_new(window);
 
-  composite_toolbar->program_ramp_marker = (GtkDialog *) ags_ramp_marker_dialog_new(window);
+  composite_toolbar->program_ramp_marker = (GtkPopover *) ags_ramp_marker_popover_new(window);
 
   composite_toolbar->snap_to_zoom = NULL;
 }
