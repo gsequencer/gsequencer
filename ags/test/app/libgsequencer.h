@@ -202,7 +202,6 @@
 #include <ags/app/editor/ags_machine_radio_button.h>
 #include <ags/app/editor/ags_machine_selector_callbacks.h>
 #include <ags/app/editor/ags_preset_editor.h>
-#include <ags/app/editor/ags_position_automation_cursor_popover_callbacks.h>
 #include <ags/app/editor/ags_position_sheet_cursor_dialog.h>
 #include <ags/app/editor/ags_notation_edit.h>
 #include <ags/app/editor/ags_notation_meta_callbacks.h>
