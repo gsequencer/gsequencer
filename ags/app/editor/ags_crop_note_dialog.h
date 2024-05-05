@@ -56,6 +56,10 @@ struct _AgsCropNoteDialog
 
   GtkSpinButton *crop_note;
   GtkSpinButton *padding_note;
+
+  GtkBox *action_area;
+
+  GtkButton *activate_button;  
 };
 
 struct _AgsCropNoteDialogClass

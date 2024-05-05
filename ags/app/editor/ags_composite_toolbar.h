@@ -39,8 +39,8 @@ G_BEGIN_DECLS
 #define AGS_IS_COMPOSITE_TOOLBAR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_COMPOSITE_TOOLBAR))
 #define AGS_COMPOSITE_TOOLBAR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_COMPOSITE_TOOLBAR, AgsCompositeToolbarClass))
 
-#define AGS_COMPOSITE_TOOLBAR_DEFAULT_VERSION "4.0.0"
-#define AGS_COMPOSITE_TOOLBAR_DEFAULT_BUILD_ID "Sat Feb 26 21:09:50 UTC 2022"
+#define AGS_COMPOSITE_TOOLBAR_DEFAULT_VERSION "6.11.0"
+#define AGS_COMPOSITE_TOOLBAR_DEFAULT_BUILD_ID "Sun May  5 10:39:01 UTC 2024"
 
 #define AGS_COMPOSITE_TOOLBAR_DIALOG_SCOPE_COUNT (5)
 
@@ -175,24 +175,24 @@ struct _AgsCompositeToolbar
 
   GtkSpinButton *opacity;
   
-  GtkDialog *notation_move_note;
-  GtkDialog *notation_crop_note;  
-  GtkDialog *notation_select_note;
-  GtkDialog *notation_position_cursor;
+  GtkPopover *notation_move_note;
+  GtkPopover *notation_crop_note;  
+  GtkPopover *notation_select_note;
+  GtkPopover *notation_position_cursor;
   
-  GtkDialog *sheet_position_cursor;
-  GtkDialog *sheet_add_page;
-  GtkDialog *sheet_remove_page;
+  GtkPopover *sheet_position_cursor;
+  GtkPopover *sheet_add_page;
+  GtkPopover *sheet_remove_page;
   
-  GtkDialog *automation_select_acceleration;
-  GtkDialog *automation_ramp_acceleration;
-  GtkDialog *automation_position_cursor;
+  GtkPopover *automation_select_acceleration;
+  GtkPopover *automation_ramp_acceleration;
+  GtkPopover *automation_position_cursor;
 
-  GtkDialog *wave_select_buffer;
-  GtkDialog *wave_position_cursor;
-  GtkDialog *wave_time_stretch_buffer;
+  GtkPopover *wave_select_buffer;
+  GtkPopover *wave_position_cursor;
+  GtkPopover *wave_time_stretch_buffer;
 
-  GtkDialog *program_ramp_marker;
+  GtkPopover *program_ramp_marker;
 
   GtkCheckButton *snap_to_zoom;
 };
