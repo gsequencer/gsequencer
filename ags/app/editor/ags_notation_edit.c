@@ -150,6 +150,11 @@ gboolean ags_notation_edit_motion_callback(GtkEventControllerMotion *event_contr
 					   gdouble y,
 					   AgsNotationEdit *notation_edit);
 
+void ags_notation_edit_gesture_swipe_callback(GtkGestureSwipe *event_controller,
+					      gdouble x,
+					      gdouble y,
+					      AgsNotationEdit *notation_edit);
+
 /**
  * SECTION:ags_notation_edit
  * @short_description: edit notes
@@ -348,12 +353,20 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
 		   G_CALLBACK(ags_notation_edit_gesture_click_released_callback), notation_edit);
 
   event_controller =
-    notation_edit->motion_controller = gtk_event_controller_motion_new();
+    notation_edit->swipe_controller = gtk_gesture_swipe_new();
   gtk_widget_add_controller((GtkWidget *) notation_edit->drawing_area,
 			    event_controller);
 
-  g_signal_connect(event_controller, "motion",
-		   G_CALLBACK(ags_notation_edit_motion_callback), notation_edit);
+  g_signal_connect(event_controller, "swipe",
+		   G_CALLBACK(ags_notation_edit_gesture_swipe_callback), notation_edit);
+
+  event_controller =
+    notation_edit->gesture_controller = (GtkEventController *) gtk_gesture_click_new();
+  gtk_widget_add_controller((GtkWidget *) notation_edit->drawing_area,
+			    event_controller);
+
+  g_signal_connect(event_controller, "pressed",
+		   G_CALLBACK(ags_notation_edit_gesture_click_pressed_callback), notation_edit);
   
   gtk_widget_set_halign((GtkWidget *) notation_edit->drawing_area,
 			GTK_ALIGN_FILL);
@@ -1191,6 +1204,70 @@ ags_notation_edit_motion_callback(GtkEventControllerMotion *event_controller,
   }
 
   return(FALSE);
+}
+
+void
+ags_notation_edit_gesture_swipe_callback(GtkGestureSwipe *event_controller,
+					 gdouble x,
+					 gdouble y,
+					 AgsNotationEdit *notation_edit)
+{
+  AgsCompositeToolbar *composite_toolbar;
+  AgsCompositeEditor *composite_editor;
+
+  GtkAdjustment *adjustment;
+  
+  AgsApplicationContext *application_context;
+  
+  double zoom_factor;
+
+  application_context = ags_application_context_get_instance();
+
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+
+  composite_toolbar = composite_editor->toolbar;
+
+  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) composite_toolbar->zoom));
+  
+  /* horizontal swipe */
+  if(x > 0.0){
+    adjustment = gtk_scrollbar_get_adjustment(notation_edit->hscrollbar);
+
+    if(gtk_adjustment_get_value(adjustment) + (4.0 * notation_edit->control_width) < gtk_adjustment_get_upper(adjustment)){
+      gtk_adjustment_set_value(adjustment,
+			       gtk_adjustment_get_value(adjustment) + (4.0 * notation_edit->control_width));
+    }
+  }else if(x < 0.0){
+    adjustment = gtk_scrollbar_get_adjustment(notation_edit->hscrollbar);
+
+    if(gtk_adjustment_get_value(adjustment) - (4.0 * notation_edit->control_width) > 0.0){
+      gtk_adjustment_set_value(adjustment,
+			       gtk_adjustment_get_value(adjustment) - (4.0 * notation_edit->control_width));
+    }else{
+      gtk_adjustment_set_value(adjustment,
+			       0.0);
+    }
+  }
+
+  /* vertical swipe */
+  if(y > 0.0){
+    adjustment = gtk_scrollbar_get_adjustment(notation_edit->vscrollbar);
+
+    if(gtk_adjustment_get_value(adjustment) + (gdouble) notation_edit->control_height < gtk_adjustment_get_upper(adjustment)){
+      gtk_adjustment_set_value(adjustment,
+			       gtk_adjustment_get_value(adjustment) + (gdouble) notation_edit->control_height);
+    }
+  }else if(y < 0.0){
+    adjustment = gtk_scrollbar_get_adjustment(notation_edit->vscrollbar);
+
+    if(gtk_adjustment_get_value(adjustment) - (gdouble) notation_edit->control_height > 0.0){
+      gtk_adjustment_set_value(adjustment,
+			       gtk_adjustment_get_value(adjustment) - (gdouble) notation_edit->control_height);
+    }else{
+      gtk_adjustment_set_value(adjustment,
+			       0.0);
+    }
+  }
 }
 
 void

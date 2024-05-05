@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,6 +19,7 @@
 
 #include <ags/app/ags_audio_preferences_callbacks.h>
 
+#include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_preferences.h>
 #include <ags/app/ags_soundcard_editor.h>
@@ -38,13 +39,15 @@ ags_audio_preferences_notify_parent_callback(GObject *gobject,
   if(audio_preferences->add == NULL) {
     AgsPreferences *preferences;
 
-    preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
-							     AGS_TYPE_PREFERENCES);
+    AgsApplicationContext *application_context;
+    
+    application_context = ags_application_context_get_instance();
+
+    preferences = (AgsPreferences *) ags_ui_provider_get_preferences(AGS_UI_PROVIDER(application_context));
     
     audio_preferences->add = (GtkButton *) gtk_button_new_from_icon_name("list-add");
-    gtk_dialog_add_action_widget((GtkDialog *) preferences,
-				 (GtkWidget *) audio_preferences->add,
-				 GTK_RESPONSE_NONE);
+    gtk_box_prepend(preferences->action_area,
+		    audio_preferences->add);
   }
 }
 

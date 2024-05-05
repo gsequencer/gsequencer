@@ -2545,6 +2545,7 @@ libgsequencer_h_sources = \
 	ags/app/ags_connection_editor.h \
 	ags/app/ags_connection_editor_callbacks.h \
 	ags/app/ags_connection_editor_dialog.h \
+	ags/app/ags_connection_editor_dialog_callbacks.h \
 	ags/app/ags_connection_editor_listing.h \
 	ags/app/ags_connection_editor_listing_callbacks.h \
 	ags/app/ags_connection_editor_pad.h \
@@ -2595,6 +2596,7 @@ libgsequencer_h_sources = \
 	ags/app/ags_machine_editor.h \
 	ags/app/ags_machine_editor_callbacks.h \
 	ags/app/ags_machine_editor_dialog.h \
+	ags/app/ags_machine_editor_dialog_callbacks.h \
 	ags/app/ags_machine_editor_listing.h \
 	ags/app/ags_machine_editor_listing_callbacks.h \
 	ags/app/ags_machine_editor_pad.h \
@@ -2673,6 +2675,7 @@ libgsequencer_c_sources = \
 	ags/app/ags_connection_editor.c \
 	ags/app/ags_connection_editor_callbacks.c \
 	ags/app/ags_connection_editor_dialog.c \
+	ags/app/ags_connection_editor_dialog_callbacks.c \
 	ags/app/ags_connection_editor_listing.c \
 	ags/app/ags_connection_editor_listing_callbacks.c \
 	ags/app/ags_connection_editor_pad.c \
@@ -2725,6 +2728,7 @@ libgsequencer_c_sources = \
 	ags/app/ags_machine_editor_bulk.c \
 	ags/app/ags_machine_editor_bulk_callbacks.c \
 	ags/app/ags_machine_editor_dialog.c \
+	ags/app/ags_machine_editor_dialog_callbacks.c \
 	ags/app/ags_machine_editor_collection.c \
 	ags/app/ags_machine_editor_collection_callbacks.c \
 	ags/app/ags_machine_editor_listing.c \

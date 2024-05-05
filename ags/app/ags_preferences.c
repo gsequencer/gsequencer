@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -39,6 +39,7 @@ void ags_preferences_init(AgsPreferences *preferences);
 void ags_preferences_dispose(GObject *gobject);
 void ags_preferences_finalize(GObject *gobject);
 
+gboolean ags_preferences_is_connected(AgsConnectable *connectable);
 void ags_preferences_connect(AgsConnectable *connectable);
 void ags_preferences_disconnect(AgsConnectable *connectable);
 
@@ -47,6 +48,26 @@ void ags_preferences_apply(AgsApplicable *applicable);
 void ags_preferences_reset(AgsApplicable *applicable);
 
 void ags_preferences_show(GtkWidget *widget);
+
+void ags_preferences_activate_button_callback(GtkButton *activate_button,
+					      AgsPreferences *preferences);
+
+gboolean ags_preferences_key_pressed_callback(GtkEventControllerKey *event_controller,
+					      guint keyval,
+					      guint keycode,
+					      GdkModifierType state,
+					      AgsPreferences *preferences);
+void ags_preferences_key_released_callback(GtkEventControllerKey *event_controller,
+					   guint keyval,
+					   guint keycode,
+					   GdkModifierType state,
+					   AgsPreferences *preferences);
+gboolean ags_preferences_modifiers_callback(GtkEventControllerKey *event_controller,
+					    GdkModifierType keyval,
+					    AgsPreferences *preferences);
+
+void ags_preferences_real_response(AgsPreferences *preferences,
+				   gint response_id);
 
 /**
  * SECTION:ags_preferences
@@ -58,7 +79,14 @@ void ags_preferences_show(GtkWidget *widget);
  * #AgsDialogPreferences enables you to make preferences.
  */
 
+enum{
+  RESPONSE,
+  LAST_SIGNAL,
+};
+
 static gpointer ags_preferences_parent_class = NULL;
+
+static guint preferences_signals[LAST_SIGNAL];
 
 GType
 ags_preferences_get_type(void)
@@ -92,7 +120,7 @@ ags_preferences_get_type(void)
       NULL, /* interface_data */
     };
     
-    ags_type_preferences = g_type_register_static(GTK_TYPE_DIALOG,
+    ags_type_preferences = g_type_register_static(GTK_TYPE_WINDOW,
 						  "AgsPreferences", &ags_preferences_info,
 						  0);
     
@@ -128,15 +156,50 @@ ags_preferences_class_init(AgsPreferencesClass *preferences)
   widget = (GtkWidgetClass *) preferences;
 
   widget->show = ags_preferences_show;
+
+  /* AgsPreferences */
+  preferences->response = ags_preferences_real_response;
+  
+  /* signals */
+  /**
+   * AgsPreferences::response:
+   * @preferences: the #AgsPreferences
+   *
+   * The ::response signal notifies about window interaction.
+   *
+   * Since: 6.10.0
+   */
+  preferences_signals[RESPONSE] =
+    g_signal_new("response",
+		 G_TYPE_FROM_CLASS(preferences),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsPreferencesClass, response),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__INT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_INT);
 }
 
 void
 ags_preferences_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_preferences_is_connected;  
   connectable->connect = ags_preferences_connect;
   connectable->disconnect = ags_preferences_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -150,36 +213,100 @@ ags_preferences_applicable_interface_init(AgsApplicableInterface *applicable)
 void
 ags_preferences_init(AgsPreferences *preferences)
 {
+  GtkBox *vbox;
+
+  GtkEventController *event_controller;
+
+  AgsApplicationContext *application_context;
+  
   gchar *str;
+
+  application_context = ags_application_context_get_instance();
 
   preferences->flags = 0;
   preferences->connectable_flags = 0;
 
   gtk_window_set_title(GTK_WINDOW(preferences),
-		       i18n("Preferences"));
+		       i18n("preferences"));
 
   gtk_window_set_deletable(GTK_WINDOW(preferences),
 			   TRUE);
 
+  gtk_window_set_transient_for((GtkWindow *) preferences,
+			       (GtkWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
+
+  gtk_window_set_default_size((GtkWindow *) preferences,
+			      800, 600);
+
   g_signal_connect(preferences, "close-request",
 		   G_CALLBACK(ags_preferences_close_request_callback), NULL);
+
+  event_controller = gtk_event_controller_key_new();
+  gtk_widget_add_controller((GtkWidget *) preferences,
+			    event_controller);
+
+  g_signal_connect(event_controller, "key-pressed",
+		   G_CALLBACK(ags_preferences_key_pressed_callback), preferences);
+  
+  g_signal_connect(event_controller, "key-released",
+		   G_CALLBACK(ags_preferences_key_released_callback), preferences);
+
+  g_signal_connect(event_controller, "modifiers",
+		   G_CALLBACK(ags_preferences_modifiers_callback), preferences);
+  
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_window_set_child((GtkWindow *) preferences,
+		       (GtkWidget *) vbox);
   
   preferences->notebook = (GtkNotebook *) gtk_notebook_new();
+
   g_object_set(G_OBJECT(preferences->notebook),
 	       "tab-pos", GTK_POS_LEFT,
 	       NULL);
-  gtk_box_append((GtkBox *) gtk_dialog_get_content_area(GTK_DIALOG(preferences)),
-		 (GtkWidget *) preferences->notebook);
 
+  gtk_box_append(vbox,
+		 (GtkWidget *) preferences->notebook);
+  
+  /* buttons */
+  preferences->action_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+						    AGS_UI_PROVIDER_DEFAULT_SPACING);
+  
+  gtk_widget_set_halign(preferences->action_area,
+			GTK_ALIGN_END);
+
+  gtk_box_append(vbox,
+		 (GtkWidget *) preferences->action_area);
+
+  preferences->activate_button = (GtkButton *) gtk_button_new_with_label(i18n("ok"));
+
+  gtk_box_append(preferences->action_area,
+		 (GtkWidget *) preferences->activate_button);
+
+  g_signal_connect(preferences->activate_button, "clicked",
+		   G_CALLBACK(ags_preferences_activate_button_callback), preferences);
+
+  /* set preferences in UI provider */
+  ags_ui_provider_set_preferences(AGS_UI_PROVIDER(application_context),
+				  preferences);
+
+  /* instantiate tabs */
+#if 0
   preferences->generic_preferences = ags_generic_preferences_new();
+
   gtk_widget_set_hexpand((GtkWidget *) preferences->generic_preferences,
 			 TRUE);
   gtk_widget_set_vexpand((GtkWidget *) preferences->generic_preferences,
 			 TRUE);
+
   gtk_notebook_append_page(preferences->notebook,
 			   GTK_WIDGET(preferences->generic_preferences),
 			   gtk_label_new(i18n("generic")));
-
+#else
+  preferences->generic_preferences = NULL;
+#endif
+  
   preferences->audio_preferences = ags_audio_preferences_new();
   gtk_widget_set_hexpand((GtkWidget *) preferences->audio_preferences,
 			 TRUE);
@@ -231,15 +358,6 @@ ags_preferences_init(AgsPreferences *preferences)
 			     GTK_WIDGET(preferences->server_preferences),
 			     gtk_label_new(i18n("server")));
   }
-
-  gtk_window_set_default_size((GtkWindow *) preferences,
-			      800, 600);
-  
-  gtk_dialog_add_buttons((GtkDialog *) preferences,
-			 i18n("_Apply"), GTK_RESPONSE_APPLY,
-			 i18n("_OK"), GTK_RESPONSE_ACCEPT,
-			 i18n("_Cancel"), GTK_RESPONSE_REJECT,
-			 NULL);
 }
 
 void
@@ -270,6 +388,21 @@ ags_preferences_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_preferences_parent_class)->finalize(gobject);
 }
 
+gboolean
+ags_preferences_is_connected(AgsConnectable *connectable)
+{
+  AgsPreferences *preferences;
+  
+  gboolean is_connected;
+  
+  preferences = AGS_PREFERENCES(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (preferences->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
+}
+
 void
 ags_preferences_connect(AgsConnectable *connectable)
 {
@@ -277,24 +410,27 @@ ags_preferences_connect(AgsConnectable *connectable)
 
   preferences = AGS_PREFERENCES(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (preferences->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
   preferences->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+
+  if(preferences->generic_preferences != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(preferences->generic_preferences));
+  }
   
-  ags_connectable_connect(AGS_CONNECTABLE(preferences->generic_preferences));
   ags_connectable_connect(AGS_CONNECTABLE(preferences->audio_preferences));
+
   ags_connectable_connect(AGS_CONNECTABLE(preferences->midi_preferences));
+
   ags_connectable_connect(AGS_CONNECTABLE(preferences->performance_preferences));
+
   ags_connectable_connect(AGS_CONNECTABLE(preferences->osc_server_preferences));
 
   if(preferences->server_preferences != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(preferences->server_preferences));
   }
-  
-  g_signal_connect_after(G_OBJECT(preferences), "response",
-			 G_CALLBACK(ags_preferences_response_callback), NULL);
 
   g_signal_connect_after(G_OBJECT(preferences->notebook), "switch-page",
 			 G_CALLBACK(ags_preferences_notebook_switch_page_callback), preferences);
@@ -307,27 +443,27 @@ ags_preferences_disconnect(AgsConnectable *connectable)
 
   preferences = AGS_PREFERENCES(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (preferences->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   preferences->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
-  ags_connectable_disconnect(AGS_CONNECTABLE(preferences->generic_preferences));
+  if(preferences->generic_preferences != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(preferences->generic_preferences));
+  }
+  
   ags_connectable_disconnect(AGS_CONNECTABLE(preferences->audio_preferences));
+
   ags_connectable_disconnect(AGS_CONNECTABLE(preferences->midi_preferences));
+
   ags_connectable_disconnect(AGS_CONNECTABLE(preferences->performance_preferences));
+
   ags_connectable_disconnect(AGS_CONNECTABLE(preferences->osc_server_preferences));
 
   if(preferences->server_preferences != NULL){
     ags_connectable_disconnect(AGS_CONNECTABLE(preferences->server_preferences));
   }
-
-  g_object_disconnect(G_OBJECT(preferences),
-		      "any_signal::response",
-		      G_CALLBACK(ags_preferences_response_callback),
-		      NULL,
-		      NULL);
 
   g_object_disconnect(G_OBJECT(preferences->notebook),
 		      "any_signal::switch-page",
@@ -343,10 +479,16 @@ ags_preferences_set_update(AgsApplicable *applicable, gboolean update)
 
   preferences = AGS_PREFERENCES(applicable);
 
-  ags_applicable_set_update(AGS_APPLICABLE(preferences->generic_preferences), update);
+  if(preferences->generic_preferences != NULL){
+    ags_applicable_set_update(AGS_APPLICABLE(preferences->generic_preferences), update);
+  }
+  
   ags_applicable_set_update(AGS_APPLICABLE(preferences->audio_preferences), update);
+
   ags_applicable_set_update(AGS_APPLICABLE(preferences->midi_preferences), update);
+
   ags_applicable_set_update(AGS_APPLICABLE(preferences->performance_preferences), update);
+
   ags_applicable_set_update(AGS_APPLICABLE(preferences->osc_server_preferences), update);
 
   if(preferences->server_preferences != NULL){
@@ -376,10 +518,16 @@ ags_preferences_apply(AgsApplicable *applicable)
 
   ags_config_clear(config);
 
-  ags_applicable_apply(AGS_APPLICABLE(preferences->generic_preferences));
+  if(preferences->generic_preferences != NULL){
+    ags_applicable_apply(AGS_APPLICABLE(preferences->generic_preferences));
+  }
+  
   ags_applicable_apply(AGS_APPLICABLE(preferences->audio_preferences));
+
   ags_applicable_apply(AGS_APPLICABLE(preferences->midi_preferences));
+
   ags_applicable_apply(AGS_APPLICABLE(preferences->performance_preferences));
+
   ags_applicable_apply(AGS_APPLICABLE(preferences->osc_server_preferences));
 
   if(preferences->server_preferences != NULL){
@@ -389,10 +537,12 @@ ags_preferences_apply(AgsApplicable *applicable)
   ags_config_save(config);
 
   apply_sound_config = ags_apply_sound_config_new(NULL);
+  
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) apply_sound_config);
 
   /* notify user about safe GSequencer */
+#if 0
   dialog = (GtkDialog *) gtk_message_dialog_new((GtkWindow *) window,
 						GTK_DIALOG_DESTROY_WITH_PARENT,
 						GTK_MESSAGE_INFO,
@@ -403,6 +553,7 @@ ags_preferences_apply(AgsApplicable *applicable)
 			   TRUE);
   
   gtk_widget_show((GtkWidget *) dialog);
+#endif  
 }
 
 void
@@ -412,10 +563,16 @@ ags_preferences_reset(AgsApplicable *applicable)
 
   preferences = AGS_PREFERENCES(applicable);
 
-  ags_applicable_reset(AGS_APPLICABLE(preferences->generic_preferences));
+  if(preferences->generic_preferences != NULL){
+    ags_applicable_reset(AGS_APPLICABLE(preferences->generic_preferences));
+  }
+  
   ags_applicable_reset(AGS_APPLICABLE(preferences->audio_preferences));
+
   ags_applicable_reset(AGS_APPLICABLE(preferences->midi_preferences));
+
   ags_applicable_reset(AGS_APPLICABLE(preferences->performance_preferences));
+
   ags_applicable_reset(AGS_APPLICABLE(preferences->osc_server_preferences));
 
   if(preferences->server_preferences != NULL){
@@ -432,9 +589,143 @@ ags_preferences_show(GtkWidget *widget)
   
   GTK_WIDGET_CLASS(ags_preferences_parent_class)->show(widget);
 
-  gtk_widget_hide((GtkWidget *) preferences->audio_preferences->add);
+  if(preferences->generic_preferences != NULL){
+    gtk_widget_hide((GtkWidget *) preferences->audio_preferences->add);
+  }
 
   gtk_widget_hide((GtkWidget *) preferences->midi_preferences->add);
+}
+
+void
+ags_preferences_activate_button_callback(GtkButton *activate_button,
+					 AgsPreferences *preferences)
+{
+  ags_preferences_response(preferences,
+			   GTK_RESPONSE_ACCEPT);
+}
+
+gboolean
+ags_preferences_key_pressed_callback(GtkEventControllerKey *event_controller,
+				     guint keyval,
+				     guint keycode,
+				     GdkModifierType state,
+				     AgsPreferences *preferences)
+{
+  gboolean key_handled;
+
+  key_handled = TRUE;
+
+  if(keyval == GDK_KEY_Tab ||
+     keyval == GDK_KEY_ISO_Left_Tab ||
+     keyval == GDK_KEY_Shift_L ||
+     keyval == GDK_KEY_Shift_R ||
+     keyval == GDK_KEY_Alt_L ||
+     keyval == GDK_KEY_Alt_R ||
+     keyval == GDK_KEY_Control_L ||
+     keyval == GDK_KEY_Control_R){
+    key_handled = FALSE;
+  }
+  
+  return(key_handled);
+}
+
+void
+ags_preferences_key_released_callback(GtkEventControllerKey *event_controller,
+				      guint keyval,
+				      guint keycode,
+				      GdkModifierType state,
+				      AgsPreferences *preferences)
+{
+  gboolean key_handled;
+
+  key_handled = TRUE;
+
+  if(keyval == GDK_KEY_Tab ||
+     keyval == GDK_KEY_ISO_Left_Tab ||
+     keyval == GDK_KEY_Shift_L ||
+     keyval == GDK_KEY_Shift_R ||
+     keyval == GDK_KEY_Alt_L ||
+     keyval == GDK_KEY_Alt_R ||
+     keyval == GDK_KEY_Control_L ||
+     keyval == GDK_KEY_Control_R){
+    key_handled = FALSE;
+  }else{
+    switch(keyval){
+    case GDK_KEY_Escape:
+      {
+	ags_preferences_response(preferences,
+				 GTK_RESPONSE_CLOSE);	
+      }
+      break;
+    }
+  }
+}
+
+gboolean
+ags_preferences_modifiers_callback(GtkEventControllerKey *event_controller,
+				   GdkModifierType keyval,
+				   AgsPreferences *preferences)
+{
+  return(FALSE);
+}
+
+void
+ags_preferences_real_response(AgsPreferences *preferences,
+			      gint response_id)
+{
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+  
+  switch(response_id){
+  case GTK_RESPONSE_OK:
+  case GTK_RESPONSE_ACCEPT:
+    {
+      ags_applicable_apply(AGS_APPLICABLE(preferences));
+    }
+  case GTK_RESPONSE_DELETE_EVENT:
+  case GTK_RESPONSE_CLOSE:
+  case GTK_RESPONSE_REJECT:
+    {
+      AgsApplicationContext *application_context;
+
+      application_context = ags_application_context_get_instance();  
+  
+      preferences->flags |= AGS_PREFERENCES_SHUTDOWN;
+
+      ags_connectable_disconnect(AGS_CONNECTABLE(preferences));
+
+      ags_ui_provider_set_preferences(AGS_UI_PROVIDER(application_context),
+				      NULL);
+      
+      gtk_window_destroy((GtkWindow *) preferences);
+    }
+    break;
+  default:
+    g_warning("unknown response");
+  }
+}
+
+/**
+ * ags_preferences_response:
+ * @preferences: the #AgsPreferences
+ * @response: the response
+ *
+ * Response @preferences due to user action.
+ * 
+ * Since: 6.10.0
+ */
+void
+ags_preferences_response(AgsPreferences *preferences,
+			 gint response)
+{
+  g_return_if_fail(AGS_IS_PREFERENCES(preferences));
+  
+  g_object_ref((GObject *) preferences);
+  g_signal_emit(G_OBJECT(preferences),
+		preferences_signals[RESPONSE], 0,
+		response);
+  g_object_unref((GObject *) preferences);
 }
 
 /**

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Daniel Maksymow, Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann, Daniel Maksymow
  *
  * This file is part of GSequencer.
  *
@@ -20,11 +20,28 @@
 #include <ags/app/ags_meta_data_window.h>
 
 #include <ags/app/ags_ui_provider.h>
+#include <ags/app/ags_gsequencer_application.h>
 
 #include <ags/i18n.h>
 
 void ags_meta_data_window_class_init(AgsMetaDataWindowClass *meta_data_window);
 void ags_meta_data_window_init(AgsMetaDataWindow *meta_data_window);
+
+gboolean ags_meta_data_window_key_pressed_callback(GtkEventControllerKey *event_controller,
+						   guint keyval,
+						   guint keycode,
+						   GdkModifierType state,
+						   AgsMetaDataWindow *meta_data_window);
+void ags_meta_data_window_key_released_callback(GtkEventControllerKey *event_controller,
+						guint keyval,
+						guint keycode,
+						GdkModifierType state,
+						AgsMetaDataWindow *meta_data_window);
+gboolean ags_meta_data_window_modifiers_callback(GtkEventControllerKey *event_controller,
+						 GdkModifierType keyval,
+						 AgsMetaDataWindow *meta_data_window);
+
+gboolean ags_meta_data_window_close_request_callback(GtkWindow *window, gpointer user_data);
 
 static gpointer ags_meta_data_window_parent_class = NULL;
 
@@ -71,6 +88,8 @@ ags_meta_data_window_init(AgsMetaDataWindow *meta_data_window)
   GtkScrolledWindow *scrolled_window;
   GtkLabel *label;
 
+  GtkEventController *event_controller;
+
   AgsApplicationContext *application_context;
 
   application_context = ags_application_context_get_instance();
@@ -85,6 +104,22 @@ ags_meta_data_window_init(AgsMetaDataWindow *meta_data_window)
 
   gtk_window_set_transient_for((GtkWindow *) meta_data_window,
 			       ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
+
+  g_signal_connect(meta_data_window, "close-request",
+		   G_CALLBACK(ags_meta_data_window_close_request_callback), NULL);
+
+  event_controller = gtk_event_controller_key_new();
+  gtk_widget_add_controller((GtkWidget *) meta_data_window,
+			    event_controller);
+
+  g_signal_connect(event_controller, "key-pressed",
+		   G_CALLBACK(ags_meta_data_window_key_pressed_callback), meta_data_window);
+  
+  g_signal_connect(event_controller, "key-released",
+		   G_CALLBACK(ags_meta_data_window_key_released_callback), meta_data_window);
+
+  g_signal_connect(event_controller, "modifiers",
+		   G_CALLBACK(ags_meta_data_window_modifiers_callback), meta_data_window);
   
   grid = (GtkGrid *) gtk_grid_new();
 
@@ -235,6 +270,82 @@ ags_meta_data_window_init(AgsMetaDataWindow *meta_data_window)
   
   gtk_scrolled_window_set_child(scrolled_window,
 				(GtkWidget *) meta_data_window->comment);
+}
+
+gboolean
+ags_meta_data_window_key_pressed_callback(GtkEventControllerKey *event_controller,
+					  guint keyval,
+					  guint keycode,
+					  GdkModifierType state,
+					  AgsMetaDataWindow *meta_data_window)
+{
+  gboolean key_handled;
+
+  key_handled = TRUE;
+
+  if(keyval == GDK_KEY_Tab ||
+     keyval == GDK_KEY_ISO_Left_Tab ||
+     keyval == GDK_KEY_Shift_L ||
+     keyval == GDK_KEY_Shift_R ||
+     keyval == GDK_KEY_Alt_L ||
+     keyval == GDK_KEY_Alt_R ||
+     keyval == GDK_KEY_Control_L ||
+     keyval == GDK_KEY_Control_R){
+    key_handled = FALSE;
+  }
+  
+  return(key_handled);
+}
+
+void
+ags_meta_data_window_key_released_callback(GtkEventControllerKey *event_controller,
+					   guint keyval,
+					   guint keycode,
+					   GdkModifierType state,
+					   AgsMetaDataWindow *meta_data_window)
+{
+  gboolean key_handled;
+
+  key_handled = TRUE;
+
+  if(keyval == GDK_KEY_Tab ||
+     keyval == GDK_KEY_ISO_Left_Tab ||
+     keyval == GDK_KEY_Shift_L ||
+     keyval == GDK_KEY_Shift_R ||
+     keyval == GDK_KEY_Alt_L ||
+     keyval == GDK_KEY_Alt_R ||
+     keyval == GDK_KEY_Control_L ||
+     keyval == GDK_KEY_Control_R){
+    key_handled = FALSE;
+  }else{
+    switch(keyval){
+    case GDK_KEY_Escape:
+      {
+	gtk_window_close(meta_data_window);	
+      }
+      break;
+    }
+  }
+}
+
+gboolean
+ags_meta_data_window_close_request_callback(GtkWindow *window, gpointer user_data)
+{
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+  
+  ags_gsequencer_application_refresh_window_menu(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
+  
+  return(FALSE);
+}
+
+gboolean
+ags_meta_data_window_modifiers_callback(GtkEventControllerKey *event_controller,
+					GdkModifierType keyval,
+					AgsMetaDataWindow *meta_data_window)
+{
+  return(FALSE);
 }
 
 /**

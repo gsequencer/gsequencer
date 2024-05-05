@@ -17,26 +17,12 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_SOUNDCARD_HELPER_H__
-#define __AGS_SOUNDCARD_HELPER_H__
+#include <ags/app/ags_machine_editor_dialog_callbacks.h>
 
-#include <glib.h>
-#include <glib-object.h>
+#include <ags/app/ags_ui_provider.h>
 
-#include <ags/object/ags_config.h>
-
-G_BEGIN_DECLS
-
-guint ags_soundcard_helper_config_get_dsp_channels(AgsConfig *config);
-guint ags_soundcard_helper_config_get_pcm_channels(AgsConfig *config);
-
-gdouble ags_soundcard_helper_config_get_samplerate(AgsConfig *config);
-guint ags_soundcard_helper_config_get_buffer_size(AgsConfig *config);
-guint ags_soundcard_helper_config_get_format(AgsConfig *config);
-
-gboolean ags_soundcard_helper_config_get_use_cache(AgsConfig *config);
-guint ags_soundcard_helper_config_get_cache_buffer_size(AgsConfig *config);
-
-G_END_DECLS
-
-#endif /*__AGS_SOUNDCARD_HELPER_H__*/
+gboolean
+ags_machine_editor_dialog_close_request_callback(GtkWindow *window, gpointer user_data)
+{
+  return(FALSE);
+}

@@ -36,6 +36,7 @@ void ags_effect_pad_get_property(GObject *gobject,
 				 GValue *value,
 				 GParamSpec *param_spec);
 
+gboolean ags_effect_pad_is_connected(AgsConnectable *connectable);
 void ags_effect_pad_connect(AgsConnectable *connectable);
 void ags_effect_pad_disconnect(AgsConnectable *connectable);
 
@@ -386,10 +387,23 @@ ags_effect_pad_class_init(AgsEffectPadClass *effect_pad)
 void
 ags_effect_pad_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_effect_pad_is_connected;  
   connectable->connect = ags_effect_pad_connect;
   connectable->disconnect = ags_effect_pad_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -596,6 +610,21 @@ ags_effect_pad_get_property(GObject *gobject,
   }
 }
 
+gboolean
+ags_effect_pad_is_connected(AgsConnectable *connectable)
+{
+  AgsEffectPad *effect_pad;
+  
+  gboolean is_connected;
+  
+  effect_pad = AGS_EFFECT_PAD(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (effect_pad->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
+}
+
 void
 ags_effect_pad_connect(AgsConnectable *connectable)
 {
@@ -606,7 +635,7 @@ ags_effect_pad_connect(AgsConnectable *connectable)
   /* AgsEffect_Pad */
   effect_pad = AGS_EFFECT_PAD(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (effect_pad->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
   
@@ -643,7 +672,7 @@ ags_effect_pad_disconnect(AgsConnectable *connectable)
   /* AgsEffect_Pad */
   effect_pad = AGS_EFFECT_PAD(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (effect_pad->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
   

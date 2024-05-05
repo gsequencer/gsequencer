@@ -39,8 +39,23 @@ void ags_online_help_window_class_init(AgsOnlineHelpWindowClass *online_help_win
 void ags_online_help_window_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window);
 
+gboolean ags_online_help_window_is_connected(AgsConnectable *connectable);
 void ags_online_help_window_connect(AgsConnectable *connectable);
 void ags_online_help_window_disconnect(AgsConnectable *connectable);
+
+gboolean ags_online_help_window_key_pressed_callback(GtkEventControllerKey *event_controller,
+						     guint keyval,
+						     guint keycode,
+						     GdkModifierType state,
+						     AgsOnlineHelpWindow *online_help_window);
+void ags_online_help_window_key_released_callback(GtkEventControllerKey *event_controller,
+						  guint keyval,
+						  guint keycode,
+						  GdkModifierType state,
+						  AgsOnlineHelpWindow *online_help_window);
+gboolean ags_online_help_window_modifiers_callback(GtkEventControllerKey *event_controller,
+						   GdkModifierType keyval,
+						   AgsOnlineHelpWindow *online_help_window);
 
 static gpointer ags_online_help_window_parent_class = NULL;
 
@@ -105,7 +120,7 @@ ags_online_help_window_connectable_interface_init(AgsConnectableInterface *conne
   connectable->xml_compose = NULL;
   connectable->xml_parse = NULL;
 
-  connectable->is_connected = NULL;
+  connectable->is_connected = ags_online_help_window_is_connected;  
   connectable->connect = ags_online_help_window_connect;
   connectable->disconnect = ags_online_help_window_disconnect;
 
@@ -122,6 +137,7 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
   GtkGrid *grid;
   GtkLabel *label;
   
+  GtkEventController *event_controller;
   GtkAdjustment *vadjustment, *hadjustment;
   GtkAllocation allocation;
 
@@ -139,15 +155,30 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
         
   application_context = ags_application_context_get_instance();
 
-  g_object_set(online_help_window,
-	       "title", i18n("Online help"),
-	       NULL);
+  online_help_window->flags = AGS_ONLINE_HELP_WINDOW_SHOW_PDF_CONTROLS;
+  online_help_window->connectable_flags = 0;
+
+  gtk_window_set_title(GTK_WINDOW(online_help_window),
+		       i18n("help - user manual"));
 
   gtk_window_set_hide_on_close((GtkWindow *) online_help_window,
 			       TRUE);
 
-  online_help_window->flags = AGS_ONLINE_HELP_WINDOW_SHOW_PDF_CONTROLS;
-  online_help_window->connectable_flags = 0;
+  g_signal_connect(online_help_window, "close-request",
+		   G_CALLBACK(ags_online_help_window_close_request_callback), NULL);
+
+  event_controller = gtk_event_controller_key_new();
+  gtk_widget_add_controller((GtkWidget *) online_help_window,
+			    event_controller);
+
+  g_signal_connect(event_controller, "key-pressed",
+		   G_CALLBACK(ags_online_help_window_key_pressed_callback), online_help_window);
+  
+  g_signal_connect(event_controller, "key-released",
+		   G_CALLBACK(ags_online_help_window_key_released_callback), online_help_window);
+
+  g_signal_connect(event_controller, "modifiers",
+		   G_CALLBACK(ags_online_help_window_modifiers_callback), online_help_window);
   
   width = 800.0;
   height = 600.0;
@@ -392,6 +423,21 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
   online_help_window->print_dialog = NULL;
 }
 
+gboolean
+ags_online_help_window_is_connected(AgsConnectable *connectable)
+{
+  AgsOnlineHelpWindow *online_help_window;
+  
+  gboolean is_connected;
+  
+  online_help_window = AGS_ONLINE_HELP_WINDOW(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (online_help_window->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
+}
+
 void
 ags_online_help_window_connect(AgsConnectable *connectable)
 {
@@ -399,7 +445,7 @@ ags_online_help_window_connect(AgsConnectable *connectable)
 
   online_help_window = AGS_ONLINE_HELP_WINDOW(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (online_help_window->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -437,7 +483,7 @@ ags_online_help_window_disconnect(AgsConnectable *connectable)
 
   online_help_window = AGS_ONLINE_HELP_WINDOW(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (online_help_window->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -481,6 +527,70 @@ ags_online_help_window_disconnect(AgsConnectable *connectable)
 		      online_help_window,
 		      NULL);
 #endif  
+}
+
+gboolean
+ags_online_help_window_key_pressed_callback(GtkEventControllerKey *event_controller,
+					    guint keyval,
+					    guint keycode,
+					    GdkModifierType state,
+					    AgsOnlineHelpWindow *online_help_window)
+{
+  gboolean key_handled;
+
+  key_handled = TRUE;
+
+  if(keyval == GDK_KEY_Tab ||
+     keyval == GDK_KEY_ISO_Left_Tab ||
+     keyval == GDK_KEY_Shift_L ||
+     keyval == GDK_KEY_Shift_R ||
+     keyval == GDK_KEY_Alt_L ||
+     keyval == GDK_KEY_Alt_R ||
+     keyval == GDK_KEY_Control_L ||
+     keyval == GDK_KEY_Control_R){
+    key_handled = FALSE;
+  }
+  
+  return(key_handled);
+}
+
+void
+ags_online_help_window_key_released_callback(GtkEventControllerKey *event_controller,
+					     guint keyval,
+					     guint keycode,
+					     GdkModifierType state,
+					     AgsOnlineHelpWindow *online_help_window)
+{
+  gboolean key_handled;
+
+  key_handled = TRUE;
+
+  if(keyval == GDK_KEY_Tab ||
+     keyval == GDK_KEY_ISO_Left_Tab ||
+     keyval == GDK_KEY_Shift_L ||
+     keyval == GDK_KEY_Shift_R ||
+     keyval == GDK_KEY_Alt_L ||
+     keyval == GDK_KEY_Alt_R ||
+     keyval == GDK_KEY_Control_L ||
+     keyval == GDK_KEY_Control_R){
+    key_handled = FALSE;
+  }else{
+    switch(keyval){
+    case GDK_KEY_Escape:
+      {
+	gtk_window_close((GtkWindow *) online_help_window);	
+      }
+      break;
+    }
+  }
+}
+
+gboolean
+ags_online_help_window_modifiers_callback(GtkEventControllerKey *event_controller,
+					  GdkModifierType keyval,
+					  AgsOnlineHelpWindow *online_help_window)
+{
+  return(FALSE);
 }
 
 /**

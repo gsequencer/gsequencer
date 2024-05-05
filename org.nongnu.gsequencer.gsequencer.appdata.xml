@@ -50,6 +50,26 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="6.10.0" date="2024-04-30">
+      <description>
+	<p>
+	  Implemented gesture swipe in notation editor.
+	</p>
+	<p>
+	  Implemented gesture swipe in automation editor.
+	</p>
+	<p>
+	  Implemented gesture swipe in wave form editor.
+	</p>
+	<p>
+	  Refactored preferences, removed generic preferences and modern button layout.
+	</p>
+	<p>
+	  Refactored dialog windows to be closed by ESC key.
+	</p>
+      </description>
+    </release>
+
     <release version="6.9.0" date="2024-04-25">
       <description>
 	<p>

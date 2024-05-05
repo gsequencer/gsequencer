@@ -43,8 +43,8 @@ G_BEGIN_DECLS
 
 #define AGS_EFFECT_BULK_PLUGIN(ptr) ((AgsEffectBulkPlugin *)(ptr))
 
-#define AGS_EFFECT_BULK_DEFAULT_VERSION "4.0.0"
-#define AGS_EFFECT_BULK_DEFAULT_BUILD_ID "Sun Feb 27 22:00:52 UTC 2022"
+#define AGS_EFFECT_BULK_DEFAULT_VERSION "6.10.0"
+#define AGS_EFFECT_BULK_DEFAULT_BUILD_ID "Thu May  2 16:12:23 UTC 2024"
 
 #define AGS_EFFECT_BULK_COLUMNS_COUNT (4)
 
@@ -91,7 +91,7 @@ struct _AgsEffectBulk
   GtkGrid *bulk_member_grid;
 
   GList *plugin;
-  GtkDialog *plugin_browser;
+  GtkWindow *plugin_browser;
 
   GList *queued_refresh;
 };

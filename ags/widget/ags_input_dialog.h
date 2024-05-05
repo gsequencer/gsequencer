@@ -49,7 +49,7 @@ struct _AgsInputDialog
   guint flags;
 
   GtkBox *vbox;
-  
+
   GtkBox *input_box;
   
   GtkLabel *text;
@@ -61,6 +61,8 @@ struct _AgsInputDialog
 
   GtkButton *ok;
   GtkButton *cancel;
+  
+  GtkLabel *message;  
 };
 
 struct _AgsInputDialogClass
@@ -80,6 +82,10 @@ void ags_input_dialog_set_flags(AgsInputDialog *input_dialog,
 				guint flags);
 void ags_input_dialog_unset_flags(AgsInputDialog *input_dialog,
 				  guint flags);
+
+/* message */
+void ags_input_dialog_set_message(AgsInputDialog *input_dialog,
+				  gchar *message);
 
 /* text */
 void ags_input_dialog_set_text(AgsInputDialog *input_dialog,

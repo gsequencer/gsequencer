@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -153,9 +153,9 @@ void ags_functional_test_util_check_button_click(GtkCheckButton *check_button);
 void ags_functional_test_util_menu_button_click(GtkMenuButton *button);
 
 /* generic dialog */
-void ags_functional_test_util_dialog_apply(GtkDialog *dialog);
-void ags_functional_test_util_dialog_ok(GtkDialog *dialog);
-void ags_functional_test_util_dialog_cancel(GtkDialog *dialog);
+void ags_functional_test_util_dialog_apply(GtkWindow *dialog, GtkButton *apply_button);
+void ags_functional_test_util_dialog_ok(GtkWindow *dialog, GtkButton *activate_button);
+void ags_functional_test_util_dialog_cancel(GtkWindow *dialog);
 
 #define ags_functional_test_util_dialog_close ags_functional_test_util_dialog_cancel
 

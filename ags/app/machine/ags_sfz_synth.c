@@ -1612,6 +1612,9 @@ ags_sfz_synth_connect(AgsConnectable *connectable)
   g_signal_connect_after(sfz_synth->tremolo_enabled, "toggled",
 			 G_CALLBACK(ags_sfz_synth_tremolo_enabled_callback), sfz_synth);
 
+  g_signal_connect_after(sfz_synth->tremolo_gain, "value-changed",
+			 G_CALLBACK(ags_sfz_synth_tremolo_gain_callback), sfz_synth);
+
   g_signal_connect_after(sfz_synth->tremolo_lfo_depth, "value-changed",
 			 G_CALLBACK(ags_sfz_synth_tremolo_lfo_depth_callback), sfz_synth);
 

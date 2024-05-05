@@ -128,7 +128,7 @@ ags_effect_bulk_add_callback(GtkWidget *button,
   window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
   
   if(effect_bulk->plugin_browser == NULL){
-    effect_bulk->plugin_browser = (GtkDialog *) ags_plugin_browser_new((GtkWidget *) window);
+    effect_bulk->plugin_browser = (GtkWindow *) ags_plugin_browser_new((GtkWidget *) window);
 
     ags_connectable_connect(AGS_CONNECTABLE(effect_bulk->plugin_browser));
 
@@ -201,7 +201,7 @@ ags_effect_bulk_plugin_browser_response_create_entry(AgsEffectBulk *effect_bulk,
 }
 
 void
-ags_effect_bulk_plugin_browser_response_callback(GtkDialog *dialog,
+ags_effect_bulk_plugin_browser_response_callback(AgsPluginBrowser *dialog,
 						 gint response,
 						 AgsEffectBulk *effect_bulk)
 {

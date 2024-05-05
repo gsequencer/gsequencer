@@ -17,26 +17,24 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_SOUNDCARD_HELPER_H__
-#define __AGS_SOUNDCARD_HELPER_H__
+#ifndef __AGS_CONNECTION_EDITOR_DIALOG_CALLBACKS_H__
+#define __AGS_CONNECTION_EDITOR_DIALOG_CALLBACKS_H__
 
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/object/ags_config.h>
+#include <gtk/gtk.h>
+
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
+#include <ags/app/ags_connection_editor_dialog.h>
 
 G_BEGIN_DECLS
 
-guint ags_soundcard_helper_config_get_dsp_channels(AgsConfig *config);
-guint ags_soundcard_helper_config_get_pcm_channels(AgsConfig *config);
-
-gdouble ags_soundcard_helper_config_get_samplerate(AgsConfig *config);
-guint ags_soundcard_helper_config_get_buffer_size(AgsConfig *config);
-guint ags_soundcard_helper_config_get_format(AgsConfig *config);
-
-gboolean ags_soundcard_helper_config_get_use_cache(AgsConfig *config);
-guint ags_soundcard_helper_config_get_cache_buffer_size(AgsConfig *config);
+gboolean ags_connection_editor_dialog_close_request_callback(GtkWindow *window, gpointer user_data);
 
 G_END_DECLS
 
-#endif /*__AGS_SOUNDCARD_HELPER_H__*/
+#endif /*__AGS_CONNECTION_EDITOR_DIALOG_CALLBACKS_H__*/

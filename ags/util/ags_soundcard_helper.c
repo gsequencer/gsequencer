@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -248,4 +248,95 @@ ags_soundcard_helper_config_get_format(AgsConfig *config)
   }
 
   return(format);
+}
+
+/**
+ * ags_soundcard_helper_config_get_use_cache:
+ * @config: the #AgsConfig
+ * 
+ * Get use cache.
+ * 
+ * Returns: if use cache %TRUE, otherwise %FALSE
+ * 
+ * Since: 6.10.4
+ */
+gboolean
+ags_soundcard_helper_config_get_use_cache(AgsConfig *config)
+{
+  gchar *str;
+
+  gboolean use_cache;
+
+  if(!AGS_IS_CONFIG(config)){
+    return(AGS_SOUNDCARD_DEFAULT_USE_CACHE);
+  }
+  
+  /* use cache */
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "use-cache");
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "use-cache");
+  }
+  
+  if(str != NULL){
+    if(!g_strncasecmp("false", str, 5) == FALSE){
+      use_cache = TRUE;
+    }else{
+      use_cache = FALSE;
+    }
+
+    g_free(str);
+  }else{
+    use_cache = AGS_SOUNDCARD_DEFAULT_USE_CACHE;
+  }
+
+  return(use_cache);
+}
+
+/**
+ * ags_soundcard_helper_config_get_cache_buffer_size:
+ * @config: the #AgsConfig
+ * 
+ * Get cache buffer size.
+ * 
+ * Returns: the cache buffer size
+ * 
+ * Since: 6.10.4
+ */
+guint
+ags_soundcard_helper_config_get_cache_buffer_size(AgsConfig *config)
+{
+  gchar *str;
+
+  guint cache_buffer_size;
+
+  if(!AGS_IS_CONFIG(config)){
+    return(AGS_SOUNDCARD_DEFAULT_CACHE_BUFFER_SIZE);
+  }
+  
+  /* cache buffer size */
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "cache-buffer-size");
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "cache-buffer-size");
+  }
+  
+  if(str != NULL){
+    cache_buffer_size = g_ascii_strtoull(str,
+				   NULL,
+				   10);
+    g_free(str);
+  }else{
+    cache_buffer_size = AGS_SOUNDCARD_DEFAULT_CACHE_BUFFER_SIZE;
+  }
+
+  return(cache_buffer_size);
 }

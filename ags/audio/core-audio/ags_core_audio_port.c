@@ -346,6 +346,7 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
   core_audio_port->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
   core_audio_port->format = ags_soundcard_helper_config_get_format(config);
 
+#if 0
 #if defined(AGS_CORE_AUDIO_PORT_USE_HW)
   core_audio_port->use_cache = FALSE;
 #else
@@ -353,6 +354,11 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
 #endif
 
   core_audio_port->cache_buffer_size = AGS_CORE_AUDIO_PORT_DEFAULT_CACHE_BUFFER_SIZE;
+#else
+  core_audio_port->use_cache = ags_soundcard_helper_config_get_use_cache(config);
+
+  core_audio_port->cache_buffer_size = ags_soundcard_helper_config_get_cache_buffer_size(config);
+#endif
   
   core_audio_port->current_cache = 0;
   core_audio_port->completed_cache = 0;

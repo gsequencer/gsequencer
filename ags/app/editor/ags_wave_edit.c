@@ -138,6 +138,11 @@ gboolean ags_wave_edit_motion_callback(GtkEventControllerMotion *event_controlle
 				       gdouble y,
 				       AgsWaveEdit *wave_edit);
 
+void ags_wave_edit_gesture_swipe_callback(GtkGestureSwipe *event_controller,
+					  gdouble x,
+					  gdouble y,
+					  AgsWaveEdit *wave_edit);
+
 /**
  * SECTION:ags_wave_edit
  * @short_description: edit audio data
@@ -280,6 +285,13 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
 
   application_context = ags_application_context_get_instance();
 
+  wave_edit->flags = 0;
+  wave_edit->connectable_flags = 0;
+  wave_edit->mode = AGS_WAVE_EDIT_NO_EDIT_MODE;
+
+  wave_edit->button_mask = 0;
+  wave_edit->key_mask = 0;
+
   event_controller = gtk_event_controller_key_new();
   gtk_widget_add_controller((GtkWidget *) wave_edit,
 			    event_controller);
@@ -310,12 +322,12 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
   g_signal_connect(event_controller, "motion",
 		   G_CALLBACK(ags_wave_edit_motion_callback), wave_edit);
 
-  wave_edit->flags = 0;
-  wave_edit->connectable_flags = 0;
-  wave_edit->mode = AGS_WAVE_EDIT_NO_EDIT_MODE;
+  event_controller = gtk_gesture_swipe_new();
+  gtk_widget_add_controller((GtkWidget *) wave_edit,
+			    event_controller);
 
-  wave_edit->button_mask = 0;
-  wave_edit->key_mask = 0;
+  g_signal_connect(event_controller, "swipe",
+		   G_CALLBACK(ags_wave_edit_gesture_swipe_callback), wave_edit);
 
   wave_edit->parent_composite_edit = NULL;
   
@@ -977,6 +989,70 @@ ags_wave_edit_motion_callback(GtkEventControllerMotion *event_controller,
   }
 
   return(FALSE);
+}
+
+void
+ags_wave_edit_gesture_swipe_callback(GtkGestureSwipe *event_controller,
+				     gdouble x,
+				     gdouble y,
+				     AgsWaveEdit *wave_edit)
+{
+  AgsCompositeToolbar *composite_toolbar;
+  AgsCompositeEditor *composite_editor;
+
+  GtkAdjustment *adjustment;
+  
+  AgsApplicationContext *application_context;
+  
+  double zoom_factor;
+
+  application_context = ags_application_context_get_instance();
+
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+
+  composite_toolbar = composite_editor->toolbar;
+
+  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) composite_toolbar->zoom));
+  
+  /* horizontal swipe */
+  if(x > 0.0){
+    adjustment = gtk_scrollbar_get_adjustment(composite_editor->wave_edit->hscrollbar);
+
+    if(gtk_adjustment_get_value(adjustment) + (zoom_factor * wave_edit->control_width) < gtk_adjustment_get_upper(adjustment)){
+      gtk_adjustment_set_value(adjustment,
+			       gtk_adjustment_get_value(adjustment) + (zoom_factor * wave_edit->control_width));
+    }
+  }else if(x < 0.0){
+    adjustment = gtk_scrollbar_get_adjustment(composite_editor->wave_edit->hscrollbar);
+
+    if(gtk_adjustment_get_value(adjustment) - (zoom_factor * wave_edit->control_width) > 0.0){
+      gtk_adjustment_set_value(adjustment,
+			       gtk_adjustment_get_value(adjustment) - (zoom_factor * wave_edit->control_width));
+    }else{
+      gtk_adjustment_set_value(adjustment,
+			       0.0);
+    }
+  }
+
+  /* vertical swipe */
+  if(y > 0.0){
+    adjustment = gtk_scrollbar_get_adjustment(composite_editor->wave_edit->vscrollbar);
+
+    if(gtk_adjustment_get_value(adjustment) + (gdouble) wave_edit->control_height + AGS_UI_PROVIDER_DEFAULT_SPACING < gtk_adjustment_get_upper(adjustment)){
+      gtk_adjustment_set_value(adjustment,
+			       gtk_adjustment_get_value(adjustment) + (gdouble) wave_edit->control_height + AGS_UI_PROVIDER_DEFAULT_SPACING);
+    }
+  }else if(y < 0.0){
+    adjustment = gtk_scrollbar_get_adjustment(composite_editor->wave_edit->vscrollbar);
+
+    if(gtk_adjustment_get_value(adjustment) - (gdouble) wave_edit->control_height - AGS_UI_PROVIDER_DEFAULT_SPACING > 0.0){
+      gtk_adjustment_set_value(adjustment,
+			       gtk_adjustment_get_value(adjustment) - (gdouble) wave_edit->control_height - AGS_UI_PROVIDER_DEFAULT_SPACING);
+    }else{
+      gtk_adjustment_set_value(adjustment,
+			       0.0);
+    }
+  }
 }
 
 void
