@@ -3174,7 +3174,6 @@ libgsequencer_editor_h_sources = \
 	ags/app/editor/ags_pattern_envelope_callbacks.h \
 	ags/app/editor/ags_pattern_envelope.h \
 	ags/app/editor/ags_position_automation_cursor_popover.h \
-	ags/app/editor/ags_position_notation_cursor_dialog.h \
 	ags/app/editor/ags_position_sheet_cursor_dialog.h \
 	ags/app/editor/ags_position_sheet_cursor_dialog_callbacks.h \
 	ags/app/editor/ags_position_wave_cursor_popover.h \
@@ -3200,7 +3199,6 @@ libgsequencer_editor_h_sources = \
 	ags/app/editor/ags_tempo_edit.h \
 	ags/app/editor/ags_tempo_edit_callbacks.h \
 	ags/app/editor/ags_time_stretch_buffer_popover.h \
-	ags/app/editor/ags_time_stretch_buffer_popover_callbacks.h \
 	ags/app/editor/ags_wave_edit_callbacks.h \
 	ags/app/editor/ags_wave_edit.h \
 	ags/app/editor/ags_wave_edit_box.h \
