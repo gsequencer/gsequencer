@@ -23,6 +23,8 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
+#include <ags/app/ags_ui_provider.h>
+#include <ags/app/ags_gsequencer_application.h>
 #include <ags/app/ags_window.h>
 
 #include <complex.h>
@@ -44,11 +46,33 @@ void ags_envelope_dialog_get_property(GObject *gobject,
 void ags_envelope_dialog_dispose(GObject *gobject);
 void ags_envelope_dialog_finalize(GObject *gobject);
 
+gboolean ags_envelope_dialog_is_connected(AgsConnectable *connectable);
 void ags_envelope_dialog_connect(AgsConnectable *connectable);
 void ags_envelope_dialog_disconnect(AgsConnectable *connectable);
+
 void ags_envelope_dialog_set_update(AgsApplicable *applicable, gboolean update);
 void ags_envelope_dialog_apply(AgsApplicable *applicable);
 void ags_envelope_dialog_reset(AgsApplicable *applicable);
+
+void ags_envelope_dialog_activate_button_callback(GtkButton *activate_button,
+						  AgsEnvelopeDialog *envelope_dialog);
+
+gboolean ags_envelope_dialog_key_pressed_callback(GtkEventControllerKey *event_controller,
+						  guint keyval,
+						  guint keycode,
+						  GdkModifierType state,
+						  AgsEnvelopeDialog *envelope_dialog);
+void ags_envelope_dialog_key_released_callback(GtkEventControllerKey *event_controller,
+					       guint keyval,
+					       guint keycode,
+					       GdkModifierType state,
+					       AgsEnvelopeDialog *envelope_dialog);
+gboolean ags_envelope_dialog_modifiers_callback(GtkEventControllerKey *event_controller,
+						GdkModifierType keyval,
+						AgsEnvelopeDialog *envelope_dialog);
+
+void ags_envelope_dialog_real_response(AgsEnvelopeDialog *envelope_dialog,
+				       gint response_id);
 
 /**
  * SECTION:ags_envelope_dialog
@@ -62,11 +86,18 @@ void ags_envelope_dialog_reset(AgsApplicable *applicable);
  */
 
 enum{
+  RESPONSE,
+  LAST_SIGNAL,
+};
+
+enum{
   PROP_0,
   PROP_MACHINE,
 };
 
 static gpointer ags_envelope_dialog_parent_class = NULL;
+
+static guint envelope_dialog_signals[LAST_SIGNAL];
 
 GType
 ags_envelope_dialog_get_type(void)
@@ -100,7 +131,7 @@ ags_envelope_dialog_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_envelope_dialog = g_type_register_static(GTK_TYPE_DIALOG,
+    ags_type_envelope_dialog = g_type_register_static(GTK_TYPE_WINDOW,
 						      "AgsEnvelopeDialog", &ags_envelope_dialog_info,
 						      0);
 
@@ -152,15 +183,50 @@ ags_envelope_dialog_class_init(AgsEnvelopeDialogClass *envelope_dialog)
   g_object_class_install_property(gobject,
 				  PROP_MACHINE,
 				  param_spec);
+
+  /* AgsEnvelopeDialog */
+  envelope_dialog->response = ags_envelope_dialog_real_response;
+  
+  /* signals */
+  /**
+   * AgsEnvelopeDialog::response:
+   * @envelope_dialog: the #AgsEnvelopeDialog
+   *
+   * The ::response signal notifies about window interaction.
+   *
+   * Since: 6.11.0
+   */
+  envelope_dialog_signals[RESPONSE] =
+    g_signal_new("response",
+		 G_TYPE_FROM_CLASS(envelope_dialog),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsEnvelopeDialogClass, response),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__INT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_INT);
 }
 
 void
 ags_envelope_dialog_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_envelope_dialog_is_connected;  
   connectable->connect = ags_envelope_dialog_connect;
   connectable->disconnect = ags_envelope_dialog_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -174,8 +240,15 @@ ags_envelope_dialog_applicable_interface_init(AgsApplicableInterface *applicable
 void
 ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
 {
+  GtkBox *vbox;
   GtkNotebook *notebook;
   GtkScrolledWindow *scrolled_window;
+
+  GtkEventController *event_controller;
+
+  AgsApplicationContext *application_context;
+  
+  application_context = ags_application_context_get_instance();
 
   envelope_dialog->flags = 0;
   envelope_dialog->connectable_flags = 0;
@@ -185,9 +258,45 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
 
   envelope_dialog->machine = NULL;
 
+  gtk_window_set_title((GtkWindow *) envelope_dialog,
+		       i18n("envelope info"));
+
+  gtk_window_set_deletable(GTK_WINDOW(envelope_dialog),
+			   TRUE);
+
+  gtk_window_set_transient_for((GtkWindow *) envelope_dialog,
+			       (GtkWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
+
+  event_controller = gtk_event_controller_key_new();
+  gtk_widget_add_controller((GtkWidget *) envelope_dialog,
+			    event_controller);
+
+  g_signal_connect(event_controller, "key-pressed",
+		   G_CALLBACK(ags_envelope_dialog_key_pressed_callback), envelope_dialog);
+  
+  g_signal_connect(event_controller, "key-released",
+		   G_CALLBACK(ags_envelope_dialog_key_released_callback), envelope_dialog);
+
+  g_signal_connect(event_controller, "modifiers",
+		   G_CALLBACK(ags_envelope_dialog_modifiers_callback), envelope_dialog);
+
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_window_set_child((GtkWindow *) envelope_dialog,
+		       (GtkWidget *) vbox);
+
+  gtk_widget_set_valign(vbox,
+			GTK_ALIGN_START);
+
+  gtk_widget_set_hexpand(vbox,
+			 TRUE);
+  gtk_widget_set_vexpand(vbox,
+			 TRUE);
+
   envelope_dialog->notebook =
     notebook = (GtkNotebook *) gtk_notebook_new();
-  gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) envelope_dialog),
+  gtk_box_append((GtkBox *) vbox,
 		 (GtkWidget *) notebook);
 
   /* envelope editor */
@@ -218,18 +327,23 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
   gtk_window_set_default_size((GtkWindow *) envelope_dialog,
 			      800, 600);
   
-  /* GtkButton's in GtkDialog->action_area  */
-  envelope_dialog->apply = (GtkButton *) gtk_dialog_add_button(GTK_DIALOG(envelope_dialog),
-							       i18n("_Apply"),
-							       GTK_RESPONSE_APPLY);
+  /* buttons */
+  envelope_dialog->action_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+						    AGS_UI_PROVIDER_DEFAULT_SPACING);
   
-  envelope_dialog->ok = (GtkButton *) gtk_dialog_add_button(GTK_DIALOG(envelope_dialog),
-							    i18n("_OK"),
-							    GTK_RESPONSE_OK);
-  
-  envelope_dialog->cancel = (GtkButton *) gtk_dialog_add_button(GTK_DIALOG(envelope_dialog),
-								i18n("_Cancel"),
-								GTK_RESPONSE_CANCEL);
+  gtk_widget_set_halign(envelope_dialog->action_area,
+			GTK_ALIGN_END);
+
+  gtk_box_append(vbox,
+		 (GtkWidget *) envelope_dialog->action_area);
+
+  envelope_dialog->activate_button = (GtkButton *) gtk_button_new_with_label(i18n("ok"));
+
+  gtk_box_append(envelope_dialog->action_area,
+		 (GtkWidget *) envelope_dialog->activate_button);
+
+  g_signal_connect(envelope_dialog->activate_button, "clicked",
+		   G_CALLBACK(ags_envelope_dialog_activate_button_callback), envelope_dialog);
 }
 
 void
@@ -322,6 +436,21 @@ ags_envelope_dialog_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_envelope_dialog_parent_class)->finalize(gobject);
 }
 
+gboolean
+ags_envelope_dialog_is_connected(AgsConnectable *connectable)
+{
+  AgsEnvelopeDialog *envelope_dialog;
+  
+  gboolean is_connected;
+  
+  envelope_dialog = AGS_ENVELOPE_DIALOG(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (envelope_dialog->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
+}
+
 void
 ags_envelope_dialog_connect(AgsConnectable *connectable)
 {
@@ -329,7 +458,7 @@ ags_envelope_dialog_connect(AgsConnectable *connectable)
 
   envelope_dialog = AGS_ENVELOPE_DIALOG(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (envelope_dialog->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -341,16 +470,6 @@ ags_envelope_dialog_connect(AgsConnectable *connectable)
   if(envelope_dialog->pattern_envelope != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(envelope_dialog->pattern_envelope));
   }
-  
-  /* applicable */
-  g_signal_connect((GObject *) envelope_dialog->apply, "clicked",
-		   G_CALLBACK(ags_envelope_dialog_apply_callback), (gpointer) envelope_dialog);
-
-  g_signal_connect((GObject *) envelope_dialog->ok, "clicked",
-		   G_CALLBACK(ags_envelope_dialog_ok_callback), (gpointer) envelope_dialog);
-
-  g_signal_connect((GObject *) envelope_dialog->cancel, "clicked",
-		   G_CALLBACK(ags_envelope_dialog_cancel_callback), (gpointer) envelope_dialog);
 }
 
 void
@@ -360,7 +479,7 @@ ags_envelope_dialog_disconnect(AgsConnectable *connectable)
 
   envelope_dialog = AGS_ENVELOPE_DIALOG(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (envelope_dialog->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -372,25 +491,6 @@ ags_envelope_dialog_disconnect(AgsConnectable *connectable)
   if(envelope_dialog->pattern_envelope != NULL){
     ags_connectable_disconnect(AGS_CONNECTABLE(envelope_dialog->pattern_envelope));
   }
-  
-  /* applicable */
-  g_object_disconnect((GObject *) envelope_dialog->apply,
-		      "any_signal::clicked",
-		      G_CALLBACK(ags_envelope_dialog_apply_callback),
-		      (gpointer) envelope_dialog,
-		      NULL);
-
-  g_object_disconnect((GObject *) envelope_dialog->ok,
-		      "any_signal::clicked",
-		      G_CALLBACK(ags_envelope_dialog_ok_callback),
-		      (gpointer) envelope_dialog,
-		      NULL);
-
-  g_object_disconnect((GObject *) envelope_dialog->cancel,
-		      "any_signal::clicked",
-		      G_CALLBACK(ags_envelope_dialog_cancel_callback),
-		      (gpointer) envelope_dialog,
-		      NULL);
 }
 
 void
@@ -427,6 +527,79 @@ ags_envelope_dialog_reset(AgsApplicable *applicable)
   if(envelope_dialog->pattern_envelope != NULL){
     ags_applicable_reset(AGS_APPLICABLE(envelope_dialog->pattern_envelope));
   }
+}
+
+void
+ags_envelope_dialog_activate_button_callback(GtkButton *activate_button,
+					     AgsEnvelopeDialog *envelope_dialog)
+{
+  ags_envelope_dialog_response(envelope_dialog,
+			       GTK_RESPONSE_ACCEPT);
+}
+
+gboolean
+ags_envelope_dialog_key_pressed_callback(GtkEventControllerKey *event_controller,
+					 guint keyval,
+					 guint keycode,
+					 GdkModifierType state,
+					 AgsEnvelopeDialog *envelope_dialog)
+{
+  gboolean key_handled;
+
+  key_handled = TRUE;
+
+  if(keyval == GDK_KEY_Tab ||
+     keyval == GDK_KEY_ISO_Left_Tab ||
+     keyval == GDK_KEY_Shift_L ||
+     keyval == GDK_KEY_Shift_R ||
+     keyval == GDK_KEY_Alt_L ||
+     keyval == GDK_KEY_Alt_R ||
+     keyval == GDK_KEY_Control_L ||
+     keyval == GDK_KEY_Control_R){
+    key_handled = FALSE;
+  }
+  
+  return(key_handled);
+}
+
+void
+ags_envelope_dialog_key_released_callback(GtkEventControllerKey *event_controller,
+					  guint keyval,
+					  guint keycode,
+					  GdkModifierType state,
+					  AgsEnvelopeDialog *envelope_dialog)
+{
+  gboolean key_handled;
+
+  key_handled = TRUE;
+
+  if(keyval == GDK_KEY_Tab ||
+     keyval == GDK_KEY_ISO_Left_Tab ||
+     keyval == GDK_KEY_Shift_L ||
+     keyval == GDK_KEY_Shift_R ||
+     keyval == GDK_KEY_Alt_L ||
+     keyval == GDK_KEY_Alt_R ||
+     keyval == GDK_KEY_Control_L ||
+     keyval == GDK_KEY_Control_R){
+    key_handled = FALSE;
+  }else{
+    switch(keyval){
+    case GDK_KEY_Escape:
+      {
+	ags_envelope_dialog_response(envelope_dialog,
+				     GTK_RESPONSE_CLOSE);	
+      }
+      break;
+    }
+  }
+}
+
+gboolean
+ags_envelope_dialog_modifiers_callback(GtkEventControllerKey *event_controller,
+				       GdkModifierType keyval,
+				       AgsEnvelopeDialog *envelope_dialog)
+{
+  return(FALSE);
 }
 
 /**
@@ -477,6 +650,50 @@ ags_envelope_dialog_add_pattern_tab(AgsEnvelopeDialog *envelope_dialog)
   envelope_dialog->pattern_envelope = ags_pattern_envelope_new();
   gtk_scrolled_window_set_child(envelope_dialog->pattern_envelope_scrolled_window,
 				(GtkWidget *) envelope_dialog->pattern_envelope);
+}
+
+void
+ags_envelope_dialog_real_response(AgsEnvelopeDialog *envelope_dialog,
+				  gint response_id)
+{
+  switch(response_id){
+  case GTK_RESPONSE_OK:
+  case GTK_RESPONSE_ACCEPT:
+    {
+      ags_connectable_disconnect(AGS_CONNECTABLE(envelope_dialog));
+      
+      ags_applicable_apply(AGS_APPLICABLE(envelope_dialog));
+    }
+  case GTK_RESPONSE_DELETE_EVENT:
+  case GTK_RESPONSE_CLOSE:
+  case GTK_RESPONSE_REJECT:
+    {
+      gtk_window_destroy((GtkWindow *) envelope_dialog);
+    }
+    break;
+  }
+}
+
+/**
+ * ags_envelope_dialog_response:
+ * @envelope_dialog: the #AgsEnvelopeDialog
+ * @response: the response
+ *
+ * Response @envelope_dialog due to user action.
+ * 
+ * Since: 6.11.0
+ */
+void
+ags_envelope_dialog_response(AgsEnvelopeDialog *envelope_dialog,
+			     gint response)
+{
+  g_return_if_fail(AGS_IS_ENVELOPE_DIALOG(envelope_dialog));
+  
+  g_object_ref((GObject *) envelope_dialog);
+  g_signal_emit(G_OBJECT(envelope_dialog),
+		envelope_dialog_signals[RESPONSE], 0,
+		response);
+  g_object_unref((GObject *) envelope_dialog);
 }
 
 /**
