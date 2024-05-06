@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -39,6 +39,7 @@ void ags_export_soundcard_get_property(GObject *gobject,
 				       GParamSpec *param_spec);
 void ags_export_soundcard_finalize(GObject *gobject);
 
+gboolean ags_export_soundcard_is_connected(AgsConnectable *connectable);
 void ags_export_soundcard_connect(AgsConnectable *connectable);
 void ags_export_soundcard_disconnect(AgsConnectable *connectable);
 
@@ -139,10 +140,24 @@ ags_export_soundcard_class_init(AgsExportSoundcardClass *export_soundcard)
 void
 ags_export_soundcard_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_export_soundcard_is_connected;  
   connectable->connect = ags_export_soundcard_connect;
   connectable->disconnect = ags_export_soundcard_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -157,6 +172,7 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
 				 GTK_ORIENTATION_VERTICAL);
 
   export_soundcard->flags = 0;
+  export_soundcard->connectable_flags = 0;
 
   /* grid */
   grid = (GtkGrid *) gtk_grid_new();
@@ -461,6 +477,21 @@ ags_export_soundcard_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_export_soundcard_parent_class)->finalize(gobject);
 }
 
+gboolean
+ags_export_soundcard_is_connected(AgsConnectable *connectable)
+{
+  AgsExportSoundcard *export_soundcard;
+  
+  gboolean is_connected;
+  
+  export_soundcard = AGS_EXPORT_SOUNDCARD(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (export_soundcard->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
+}
+
 void
 ags_export_soundcard_connect(AgsConnectable *connectable)
 {
@@ -468,11 +499,11 @@ ags_export_soundcard_connect(AgsConnectable *connectable)
 
   export_soundcard = AGS_EXPORT_SOUNDCARD(connectable);
 
-  if((AGS_EXPORT_SOUNDCARD_CONNECTED & (export_soundcard->flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
-  export_soundcard->flags |= AGS_EXPORT_SOUNDCARD_CONNECTED;
+  export_soundcard->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
   g_signal_connect_after(G_OBJECT(export_soundcard->backend), "changed",
 			 G_CALLBACK(ags_export_soundcard_backend_callback), export_soundcard);
@@ -491,11 +522,11 @@ ags_export_soundcard_disconnect(AgsConnectable *connectable)
 
   export_soundcard = AGS_EXPORT_SOUNDCARD(connectable);
 
-  if((AGS_EXPORT_SOUNDCARD_CONNECTED & (export_soundcard->flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
-  export_soundcard->flags &= (~AGS_EXPORT_SOUNDCARD_CONNECTED);
+  export_soundcard->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   g_object_disconnect(G_OBJECT(export_soundcard->backend),
 		      "any_signal::changed",

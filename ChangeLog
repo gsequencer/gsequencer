@@ -1,6 +1,12 @@
 ags (6.11.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved refactoring UI cosmetics
+	* fixed SF2 and SFZ synth wah-wah y range lower from 0.0 to -1.0
+
+ags (6.11.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented AgsMoveNotePopover
 	* implemented AgsCropNotePopover
 	* implemented AgsSelectNotePopover

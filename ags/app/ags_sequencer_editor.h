@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -42,15 +42,12 @@ G_BEGIN_DECLS
 typedef struct _AgsSequencerEditor AgsSequencerEditor;
 typedef struct _AgsSequencerEditorClass AgsSequencerEditorClass;
 
-typedef enum{
-  AGS_SEQUENCER_EDITOR_CONNECTED    = 1,
-}AgsSequencerEditorFlags;
-
 struct _AgsSequencerEditor
 {
   GtkBox box;
 
   guint flags;
+  guint connectable_flags;
   
   GObject *sequencer;
   GObject *sequencer_thread;

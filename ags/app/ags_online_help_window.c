@@ -164,8 +164,8 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
   gtk_window_set_hide_on_close((GtkWindow *) online_help_window,
 			       TRUE);
 
-  g_signal_connect(online_help_window, "close-request",
-		   G_CALLBACK(ags_online_help_window_close_request_callback), NULL);
+  g_signal_connect_after(online_help_window, "close-request",
+			 G_CALLBACK(ags_online_help_window_close_request_callback), NULL);
 
   event_controller = gtk_event_controller_key_new();
   gtk_widget_add_controller((GtkWidget *) online_help_window,

@@ -289,7 +289,7 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
 		       (GtkWidget *) vbox);
 
   gtk_widget_set_valign(vbox,
-			GTK_ALIGN_START);
+			GTK_ALIGN_FILL);
 
   gtk_widget_set_hexpand(vbox,
 			 TRUE);
@@ -298,12 +298,29 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
 
   envelope_dialog->notebook =
     notebook = (GtkNotebook *) gtk_notebook_new();
+
+  gtk_widget_set_halign(notebook,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign(notebook,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_hexpand(notebook,
+			 TRUE);
+  gtk_widget_set_vexpand(notebook,
+			 TRUE);
+
   gtk_box_append(vbox,
 		 (GtkWidget *) notebook);
 
   /* envelope editor */
   envelope_dialog->envelope_editor_scrolled_window =
     scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
+
+  gtk_widget_set_hexpand(scrolled_window,
+			 TRUE);
+  gtk_widget_set_vexpand(scrolled_window,
+			 TRUE);
+
   gtk_notebook_append_page(notebook,
 			   (GtkWidget *) scrolled_window,
 			   (GtkWidget *) gtk_label_new(i18n("editor")));
@@ -315,6 +332,12 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
   /* envelope info */
   envelope_dialog->envelope_info_scrolled_window =
     scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
+
+  gtk_widget_set_hexpand(scrolled_window,
+			 TRUE);
+  gtk_widget_set_vexpand(scrolled_window,
+			 TRUE);
+
   gtk_notebook_append_page(notebook,
 			   (GtkWidget *) scrolled_window,
 			   (GtkWidget *) gtk_label_new(i18n("info")));

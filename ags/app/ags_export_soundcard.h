@@ -53,15 +53,12 @@ G_BEGIN_DECLS
 typedef struct _AgsExportSoundcard AgsExportSoundcard;
 typedef struct _AgsExportSoundcardClass AgsExportSoundcardClass;
 
-typedef enum{
-  AGS_EXPORT_SOUNDCARD_CONNECTED     = 1,
-}AgsExportSoundcardFlags;
-
 struct _AgsExportSoundcard
 {
   GtkBox box;
 
   guint flags;
+  guint connectable_flags;
 
   GObject *soundcard;
 
