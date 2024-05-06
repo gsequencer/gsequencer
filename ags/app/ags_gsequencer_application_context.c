@@ -3973,8 +3973,43 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
     /* change sequencer */
     if(str != NULL){
       if(!g_ascii_strncasecmp(str,
-			      "jack",
+			      "alsa",
 			      5)){
+	sequencer = (GObject *) ags_alsa_midiin_new();
+      }else if(!g_ascii_strncasecmp(str,
+				    "oss",
+				    4)){
+	sequencer = (GObject *) ags_oss_midiin_new();
+      }else if(!g_ascii_strncasecmp(str,
+				    "core-midi",
+				    10)){
+	AgsCoreAudioClient *input_client;
+
+	g_object_get(core_audio_server,
+		     "input-core-audio-client", &input_client,
+		     NULL);
+
+	if(input_client == NULL){
+	  input_client = ags_core_audio_client_new((GObject *) core_audio_server);
+	  g_object_set(core_audio_server,
+		       "input-core-audio-client", input_client,
+		       NULL);
+	  ags_core_audio_server_add_client(core_audio_server,
+					   (GObject *) input_client);
+    
+	  ags_core_audio_client_open((AgsCoreAudioClient *) input_client,
+				     "ags-input-client");
+	}else{
+	  g_object_unref(input_client);
+	}
+
+	sequencer = ags_sound_server_register_sequencer(AGS_SOUND_SERVER(core_audio_server),
+							FALSE);
+
+	has_core_audio = TRUE;
+      }else if(!g_ascii_strncasecmp(str,
+				    "jack",
+				    5)){
 	AgsJackClient *input_client;
 
 	g_object_get(jack_server,
@@ -3999,14 +4034,6 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
 							FALSE);
 
 	has_jack = TRUE;
-      }else if(!g_ascii_strncasecmp(str,
-				    "alsa",
-				    5)){
-	sequencer = (GObject *) ags_alsa_midiin_new();
-      }else if(!g_ascii_strncasecmp(str,
-				    "oss",
-				    4)){
-	sequencer = (GObject *) ags_oss_midiin_new();
       }else{
 	g_warning(i18n("unknown sequencer backend - %s"), str);
 

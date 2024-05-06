@@ -38,10 +38,11 @@ void ags_sequencer_editor_backend_changed_callback(GtkComboBox *combo,
 
 void ags_sequencer_editor_card_changed_callback(GtkComboBox *combo,
 						AgsSequencerEditor *sequencer_editor);
-void ags_sequencer_editor_add_jack_callback(GtkWidget *button,
-					    AgsSequencerEditor *sequencer_editor);
-void ags_sequencer_editor_remove_jack_callback(GtkWidget *button,
-					       AgsSequencerEditor *sequencer_editor);
+
+void ags_sequencer_editor_add_source_callback(GtkWidget *button,
+					      AgsSequencerEditor *sequencer_editor);
+void ags_sequencer_editor_remove_source_callback(GtkWidget *button,
+						 AgsSequencerEditor *sequencer_editor);
 
 G_END_DECLS
 
