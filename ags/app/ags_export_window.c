@@ -383,8 +383,8 @@ ags_export_window_init(AgsExportWindow *export_window)
 		 (GtkWidget *) export_window->add);
 
   /*  */  
-  g_signal_connect(export_window, "close-request",
-		   G_CALLBACK(ags_export_window_close_request_callback), NULL);
+  g_signal_connect_after(export_window, "close-request",
+			 G_CALLBACK(ags_export_window_close_request_callback), NULL);
 
   event_controller = gtk_event_controller_key_new();
 

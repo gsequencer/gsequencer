@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,6 +33,7 @@ void ags_sequencer_editor_connectable_interface_init(AgsConnectableInterface *co
 void ags_sequencer_editor_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor);
 
+gboolean ags_sequencer_editor_is_connected(AgsConnectable *connectable);
 void ags_sequencer_editor_connect(AgsConnectable *connectable);
 void ags_sequencer_editor_disconnect(AgsConnectable *connectable);
 
@@ -111,10 +112,23 @@ ags_sequencer_editor_class_init(AgsSequencerEditorClass *sequencer_editor)
 void
 ags_sequencer_editor_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_sequencer_editor_is_connected;  
   connectable->connect = ags_sequencer_editor_connect;
   connectable->disconnect = ags_sequencer_editor_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -192,8 +206,10 @@ ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor)
 		  1, 0,
 		  1, 1);
 
+#ifdef AGS_WITH_CORE_AUDIO
   gtk_combo_box_text_append_text(sequencer_editor->backend,
-				 "jack");
+				 "core-audio");
+#endif
   
 #ifdef AGS_WITH_ALSA
   gtk_combo_box_text_append_text(sequencer_editor->backend,
@@ -203,6 +219,11 @@ ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor)
 #ifdef AGS_WITH_OSS
   gtk_combo_box_text_append_text(sequencer_editor->backend,
 				 "oss");
+#endif
+
+#ifdef AGS_WITH_JACK
+  gtk_combo_box_text_append_text(sequencer_editor->backend,
+				 "jack");
 #endif
 
   gtk_combo_box_set_active(GTK_COMBO_BOX(sequencer_editor->backend),
@@ -278,6 +299,20 @@ ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor)
 		  1, 1);
 }
 
+gboolean
+ags_sequencer_editor_is_connected(AgsConnectable *connectable)
+{
+  AgsSequencerEditor *sequencer_editor;
+
+  gboolean retval;
+
+  sequencer_editor = AGS_SEQUENCER_EDITOR(connectable);
+
+  retval = ((AGS_CONNECTABLE_CONNECTED & (sequencer_editor->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(retval);
+}
+
 void
 ags_sequencer_editor_connect(AgsConnectable *connectable)
 {
@@ -285,11 +320,11 @@ ags_sequencer_editor_connect(AgsConnectable *connectable)
 
   sequencer_editor = AGS_SEQUENCER_EDITOR(connectable);
 
-  if((AGS_SEQUENCER_EDITOR_CONNECTED & (sequencer_editor->flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
-  sequencer_editor->flags |= AGS_SEQUENCER_EDITOR_CONNECTED;
+  sequencer_editor->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
   
   /* backend and card */
   g_signal_connect(G_OBJECT(sequencer_editor->backend), "changed",
@@ -313,11 +348,11 @@ ags_sequencer_editor_disconnect(AgsConnectable *connectable)
 
   sequencer_editor = AGS_SEQUENCER_EDITOR(connectable);
 
-  if((AGS_SEQUENCER_EDITOR_CONNECTED & (sequencer_editor->flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
-  sequencer_editor->flags &= (~AGS_SEQUENCER_EDITOR_CONNECTED);
+  sequencer_editor->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   /* backend and card */
   g_object_disconnect(G_OBJECT(sequencer_editor->backend),

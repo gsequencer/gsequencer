@@ -259,8 +259,8 @@ ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
   gtk_window_set_transient_for((GtkWindow *) midi_import_wizard,
 			       (GtkWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
   
-  g_signal_connect(midi_import_wizard, "close-request",
-		   G_CALLBACK(ags_midi_import_wizard_close_request_callback), midi_import_wizard);
+  g_signal_connect_after(midi_import_wizard, "close-request",
+			 G_CALLBACK(ags_midi_import_wizard_close_request_callback), midi_import_wizard);
 
   event_controller = gtk_event_controller_key_new();
   gtk_widget_add_controller((GtkWidget *) midi_import_wizard,
@@ -402,9 +402,6 @@ ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
   ags_file_widget_add_location(file_widget,
 			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_HOME,
 			       NULL);
-
-  ags_file_widget_set_file_action(file_widget,
-				  AGS_FILE_WIDGET_SAVE_AS);
 
   ags_file_widget_set_default_bundle(file_widget,
 				     AGS_DEFAULT_BUNDLE_ID);

@@ -42,7 +42,6 @@ typedef struct _AgsSoundcardEditor AgsSoundcardEditor;
 typedef struct _AgsSoundcardEditorClass AgsSoundcardEditorClass;
 
 typedef enum{
-  AGS_SOUNDCARD_EDITOR_CONNECTED     = 1,
   AGS_SOUNDCARD_EDITOR_BLOCK_RESET   = 1 <<  1,
   AGS_SOUNDCARD_EDITOR_BLOCK_BACKEND = 1 <<  2,
   AGS_SOUNDCARD_EDITOR_BLOCK_CARD    = 1 <<  3,
@@ -55,6 +54,7 @@ struct _AgsSoundcardEditor
   GtkBox box;
 
   guint flags;
+  guint connectable_flags;
   
   GObject *soundcard;
   GObject *soundcard_thread;

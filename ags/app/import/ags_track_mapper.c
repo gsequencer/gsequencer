@@ -62,8 +62,10 @@ void ags_track_mapper_get_property(GObject *gobject,
 				   guint prop_id,
 				   GValue *value,
 				   GParamSpec *param_spec);
+
 void ags_track_mapper_connect(AgsConnectable *connectable);
 void ags_track_mapper_disconnect(AgsConnectable *connectable);
+
 void ags_track_mapper_set_update(AgsApplicable *applicable, gboolean update);
 void ags_track_mapper_apply(AgsApplicable *applicable);
 void ags_track_mapper_reset(AgsApplicable *applicable);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,15 +43,12 @@ G_BEGIN_DECLS
 typedef struct _AgsAudioPreferences AgsAudioPreferences;
 typedef struct _AgsAudioPreferencesClass AgsAudioPreferencesClass;
 
-typedef enum{
-  AGS_AUDIO_PREFERENCES_CONNECTED    = 1,
-}AgsAudioPreferencesFlags;
-
 struct _AgsAudioPreferences
 {
   GtkBox box;
 
   guint flags;
+  guint connectable_flags;
   
   GList *soundcard_editor;
   
