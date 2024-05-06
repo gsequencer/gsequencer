@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -464,6 +464,8 @@ ags_machine_mapper_apply(AgsApplicable *applicable)
 	continue;
       }
 
+      start_note = NULL;
+      
       g_object_get(notation->data,
 		   "note", &start_note,
 		   NULL);
@@ -483,9 +485,13 @@ ags_machine_mapper_apply(AgsApplicable *applicable)
 	active_note = start_active_note;
 	
 	while(active_note != NULL){
+	  GList *next_active_note;
+	  
 	  guint active_x1;
 	  guint active_y;
 
+	  next_active_note = active_note->next;
+	  
 	  g_object_get(active_note->data,
 		       "x1", &active_x1,
 		       "y", &active_y,
@@ -516,8 +522,9 @@ ags_machine_mapper_apply(AgsApplicable *applicable)
 						active_note->data);
 	    }
 	  }
-	  
-	  active_note = active_note->next;
+
+	  /* iterate */
+	  active_note = next_active_note;
 	}
 	
 	/* note-on */

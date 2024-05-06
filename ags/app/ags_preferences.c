@@ -238,8 +238,8 @@ ags_preferences_init(AgsPreferences *preferences)
   gtk_window_set_default_size((GtkWindow *) preferences,
 			      800, 600);
 
-  g_signal_connect(preferences, "close-request",
-		   G_CALLBACK(ags_preferences_close_request_callback), NULL);
+  g_signal_connect_after(preferences, "close-request",
+			 G_CALLBACK(ags_preferences_close_request_callback), NULL);
 
   event_controller = gtk_event_controller_key_new();
   gtk_widget_add_controller((GtkWidget *) preferences,

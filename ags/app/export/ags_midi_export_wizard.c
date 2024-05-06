@@ -256,8 +256,8 @@ ags_midi_export_wizard_init(AgsMidiExportWizard *midi_export_wizard)
   gtk_window_set_transient_for((GtkWindow *) midi_export_wizard,
 			       (GtkWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
 
-  g_signal_connect(midi_export_wizard, "close-request",
-		   G_CALLBACK(ags_midi_export_wizard_close_request_callback), midi_export_wizard);
+  g_signal_connect_after(midi_export_wizard, "close-request",
+			 G_CALLBACK(ags_midi_export_wizard_close_request_callback), midi_export_wizard);
 
   event_controller = gtk_event_controller_key_new();
   gtk_widget_add_controller((GtkWidget *) midi_export_wizard,

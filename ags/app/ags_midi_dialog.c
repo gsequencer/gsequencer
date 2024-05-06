@@ -488,6 +488,12 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 		 (GtkWidget *) midi_dialog->device);
 
   grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_box_append((GtkBox *) midi_dialog->device,
 		 (GtkWidget * ) grid);
   
