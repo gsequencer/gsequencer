@@ -1,4 +1,9 @@
-ags (6.11.0)
+ags (6.11.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed core midi backend name
+
+ags (6.11.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* improved window menu refresh
