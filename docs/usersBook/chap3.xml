@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE book [
+<!DOCTYPE chapter
+[
 <!ENTITY images "images">
 <!ENTITY indexMenuIcon "../&images;/adwaita/system-run.png">
 <!ENTITY cursorIcon "../&images;/adwaita/go-jump.png">
@@ -309,9 +310,9 @@
 
 	<table>
 	  <title>AGS crop note dialog controls.</title>
-	  <colspec colnum="1" colname="col1" colwidth="2*"/>
-	  <colspec colnum="2" colname="col2" colwidth="3*"/>
 	  <tgroup cols="2" align="left" colsep='1' rowsep='1'>
+	    <colspec colnum="1" colname="col1" colwidth="2*"/>
+	    <colspec colnum="2" colname="col2" colwidth="3*"/>
 	    <thead>
 	      <row>
 		<entry>control</entry>

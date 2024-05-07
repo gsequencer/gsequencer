@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE book [
+<!DOCTYPE chapter
+[
 <!ENTITY images "images">
 <!ENTITY backwardIcon "../&images;/adwaita/media-skip-backward.png">
 <!ENTITY previousIcon "../&images;/adwaita/media-seek-backward.png">

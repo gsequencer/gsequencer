@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE book [
+<!DOCTYPE chapter
+[
 <!ENTITY ags "Advanced Gtk+ Sequencer">
 <!ENTITY images "images">
 ]>
@@ -12,7 +13,7 @@
 <!-- A copy of the license is included in the section entitled "GNU -->
 <!-- Free Documentation License". -->
 
-<chapter xmlns="http://docbook.org/ns/docbook" version="5.0">
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0" xml:lang="en">
   <title>The menubar</title>
   <para>
     Within the menubar you may do basic tasks like open/close files. In this section we cover
