@@ -27,43 +27,53 @@
 
     <table border="1">
       <caption>Type tag description</caption>
-      <thead>
-	<tr>
-	  <td>index</td>
-	  <td>type indentifier</td>
-          <td>value</td>
-	</tr>
-      </thead>
-      <tbody>
-	<tr>
-	  <td>#0</td>
-	  <td>s</td>
-          <td>Path is any valid accessor for properties or port value.</td>
-	</tr>
-	<tr>
-	  <td>#1</td>
-	  <td>any valid value or array of values type</td>
-          <td>One or more values to apply</td>
-	</tr>
-      </tbody>
+      <tgroup cols="3" align="left" colsep="1" rowsep="1">
+	<colspec colnum="1" colname="col1" colwidth="1*"/>
+	<colspec colnum="2" colname="col2" colwidth="1*"/>
+	<colspec colnum="3" colname="col3" colwidth="3*"/>
+	<thead>
+	  <row>
+	    <entry>index</entry>
+	    <entry>type indentifier</entry>
+            <entry>value</entry>
+	  </row>
+	</thead>
+	<tbody>
+	  <row>
+	    <entry>#0</entry>
+	    <entry>s</entry>
+            <entry>Path is any valid accessor for properties or port value.</entry>
+	  </row>
+	  <row>
+	    <entry>#1</entry>
+	    <entry>any valid value or array of values type</entry>
+            <entry>One or more values to apply</entry>
+	  </row>
+	</tbody>
+      </tgroup>
     </table>
 
     <table border="1">
       <caption>Value specification</caption>
-      <thead>
-	<tr>
-	  <td>index</td>
-	  <td>type indentifier</td>
-          <td>value</td>
-	</tr>
-      </thead>
-      <tbody>
-	<tr>
-	  <td>#0 - #n</td>
-	  <td>binary data</td>
-          <td>The amount of data matches the type tag</td>
-	</tr>
-      </tbody>
+      <tgroup cols="3" align="left" colsep="1" rowsep="1">
+	<colspec colnum="1" colname="col1" colwidth="1*"/>
+	<colspec colnum="2" colname="col2" colwidth="1*"/>
+	<colspec colnum="3" colname="col3" colwidth="3*"/>
+	<thead>
+	  <row>
+	    <entry>index</entry>
+	    <entry>type indentifier</entry>
+            <entry>value</entry>
+	  </row>
+	</thead>
+	<tbody>
+	  <row>
+	    <entry>#0 - #n</entry>
+	    <entry>binary data</entry>
+            <entry>The amount of data matches the type tag</entry>
+	  </row>
+	</tbody>
+      </tgroup>
     </table>
 
     <para>
