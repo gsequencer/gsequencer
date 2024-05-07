@@ -7,6 +7,7 @@ ags (7.0.0)
 	* TODO:JK: implemented pitch selection of ags-fm-synth
 	* TODO:JK: implemented pitch selection of ags-sf2-synth
 	* TODO:JK: implemented pitch selection of ags-sfz-synth
+	* refactored CoreMIDI input
 	* refactored AgsOpenSf2Sample to AgsOpenSF2Sample
 	* refactored AgsOpenSf2Instrument to AgsOpenSF2Instrument
 	* TODO:JK: removed ags_regex.[ch]
