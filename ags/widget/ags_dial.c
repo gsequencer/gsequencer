@@ -532,7 +532,7 @@ ags_dial_set_property(GObject *gobject,
 
 	g_object_disconnect(dial->adjustment,
 			    "any_signal::value-changed",
-			    G_CALLBACK(ags_dial_adjustment_changed_callback),
+			    G_CALLBACK(ags_dial_adjustment_value_changed_callback),
 			    dial,
 			    NULL);
 	

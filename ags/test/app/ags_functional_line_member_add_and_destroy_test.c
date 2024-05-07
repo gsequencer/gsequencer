@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -317,7 +317,7 @@ ags_functional_line_member_add_and_destroy_test_panel()
 
   plugin_browser = machine_editor_line->line_member_editor->plugin_browser;
   
-  ags_functional_test_util_dialog_ok(plugin_browser);
+  ags_functional_test_util_dialog_ok(plugin_browser, plugin_browser->activate_button);
   
   ags_functional_test_util_idle(AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
@@ -367,14 +367,14 @@ ags_functional_line_member_add_and_destroy_test_panel()
 
   plugin_browser = machine_editor_line->line_member_editor->plugin_browser;
 
-  ags_functional_test_util_dialog_ok(plugin_browser);
+  ags_functional_test_util_dialog_ok(plugin_browser, plugin_browser->activate_button);
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
   ags_functional_test_util_sync();
 
   /* response OK */
-  ags_functional_test_util_dialog_ok(machine->machine_editor_dialog);
+  ags_functional_test_util_dialog_ok(machine->machine_editor_dialog, AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->activate_button);
   
   ags_functional_test_util_idle(AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
@@ -475,14 +475,14 @@ ags_functional_line_member_add_and_destroy_test_panel()
 
   plugin_browser = machine_editor_line->line_member_editor->plugin_browser;
 
-  ags_functional_test_util_dialog_ok(plugin_browser);
+  ags_functional_test_util_dialog_ok(plugin_browser, plugin_browser->activate_button);
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
   ags_functional_test_util_sync();
 
   /* response OK */
-  ags_functional_test_util_dialog_ok(machine->machine_editor_dialog);
+  ags_functional_test_util_dialog_ok(machine->machine_editor_dialog, AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->activate_button);
   
   ags_functional_test_util_idle(AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
@@ -535,7 +535,7 @@ ags_functional_line_member_add_and_destroy_test_panel()
   ags_functional_test_util_sync();
 
   /* response OK */
-  ags_functional_test_util_dialog_ok(machine->machine_editor_dialog);
+  ags_functional_test_util_dialog_ok(machine->machine_editor_dialog, AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->activate_button);
   
   ags_functional_test_util_idle(AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
@@ -661,7 +661,7 @@ ags_functional_line_member_add_and_destroy_test_mixer()
 
   plugin_browser = machine_editor_line->line_member_editor->plugin_browser;
 
-  ags_functional_test_util_dialog_ok(plugin_browser);
+  ags_functional_test_util_dialog_ok(plugin_browser, plugin_browser->activate_button);
   
   ags_functional_test_util_idle(AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
@@ -711,14 +711,14 @@ ags_functional_line_member_add_and_destroy_test_mixer()
 
   plugin_browser = machine_editor_line->line_member_editor->plugin_browser;
 
-  ags_functional_test_util_dialog_ok(plugin_browser);
+  ags_functional_test_util_dialog_ok(plugin_browser, plugin_browser->activate_button);
   
   ags_functional_test_util_idle(AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
   ags_functional_test_util_sync();
 
   /* response OK */
-  ags_functional_test_util_dialog_ok(machine->machine_editor_dialog);
+  ags_functional_test_util_dialog_ok(machine->machine_editor_dialog, AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->activate_button);
   
   ags_functional_test_util_idle(AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
@@ -782,14 +782,14 @@ ags_functional_line_member_add_and_destroy_test_mixer()
 
   plugin_browser = machine_editor_line->line_member_editor->plugin_browser;
   
-  ags_functional_test_util_dialog_ok(plugin_browser);
+  ags_functional_test_util_dialog_ok(plugin_browser, plugin_browser->activate_button);
   
   ags_functional_test_util_idle(AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
   ags_functional_test_util_sync();
 
   /* response OK */
-  ags_functional_test_util_dialog_ok(machine->machine_editor_dialog);
+  ags_functional_test_util_dialog_ok(machine->machine_editor_dialog, AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->activate_button);
   
   ags_functional_test_util_idle(AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
@@ -842,7 +842,7 @@ ags_functional_line_member_add_and_destroy_test_mixer()
   ags_functional_test_util_sync();
 
   /* response OK */
-  ags_functional_test_util_dialog_ok(machine->machine_editor_dialog);
+  ags_functional_test_util_dialog_ok(machine->machine_editor_dialog, AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->activate_button);
   
   ags_functional_test_util_idle(AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
@@ -968,7 +968,7 @@ ags_functional_line_member_add_and_destroy_test_drum()
 
   plugin_browser = machine_editor_line->line_member_editor->plugin_browser;  
 
-  ags_functional_test_util_dialog_ok(plugin_browser);
+  ags_functional_test_util_dialog_ok(plugin_browser, plugin_browser->activate_button);
   
   ags_functional_test_util_idle(AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
@@ -1018,14 +1018,14 @@ ags_functional_line_member_add_and_destroy_test_drum()
 
   plugin_browser = machine_editor_line->line_member_editor->plugin_browser;
   
-  ags_functional_test_util_dialog_ok(plugin_browser);
+  ags_functional_test_util_dialog_ok(plugin_browser, plugin_browser->activate_button);
   
   ags_functional_test_util_idle(AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
   ags_functional_test_util_sync();
 
   /* response OK */
-  ags_functional_test_util_dialog_ok(machine->machine_editor_dialog);
+  ags_functional_test_util_dialog_ok(machine->machine_editor_dialog, AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->activate_button);
   
   ags_functional_test_util_idle(AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
@@ -1089,14 +1089,14 @@ ags_functional_line_member_add_and_destroy_test_drum()
 
   plugin_browser = machine_editor_line->line_member_editor->plugin_browser;
   
-  ags_functional_test_util_dialog_ok(plugin_browser);
+  ags_functional_test_util_dialog_ok(plugin_browser, plugin_browser->activate_button);
   
   ags_functional_test_util_idle(AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
   ags_functional_test_util_sync();
 
   /* response OK */
-  ags_functional_test_util_dialog_ok(machine->machine_editor_dialog);
+  ags_functional_test_util_dialog_ok(machine->machine_editor_dialog, AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->activate_button);
   
   ags_functional_test_util_idle(AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
@@ -1149,7 +1149,7 @@ ags_functional_line_member_add_and_destroy_test_drum()
   ags_functional_test_util_sync();
 
   /* response OK */
-  ags_functional_test_util_dialog_ok(machine->machine_editor_dialog);
+  ags_functional_test_util_dialog_ok(machine->machine_editor_dialog, AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->activate_button);
   
   ags_functional_test_util_idle(AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
@@ -1397,7 +1397,7 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
   plugin_browser = machine_editor_line->line_member_editor->plugin_browser;
   
 
-  ags_functional_test_util_dialog_ok(plugin_browser);
+  ags_functional_test_util_dialog_ok(plugin_browser, plugin_browser->activate_button);
   
   ags_functional_test_util_idle(AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
@@ -1447,14 +1447,14 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
 
   plugin_browser = machine_editor_line->line_member_editor->plugin_browser;
   
-  ags_functional_test_util_dialog_ok(plugin_browser);
+  ags_functional_test_util_dialog_ok(plugin_browser, plugin_browser->activate_button);
   
   ags_functional_test_util_idle(AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
   ags_functional_test_util_sync();
 
   /* response OK */
-  ags_functional_test_util_dialog_ok(machine->machine_editor_dialog);
+  ags_functional_test_util_dialog_ok(machine->machine_editor_dialog, AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->activate_button);
   
   ags_functional_test_util_idle(AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
@@ -1518,14 +1518,14 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
 
   plugin_browser = machine_editor_line->line_member_editor->plugin_browser;
   
-  ags_functional_test_util_dialog_ok(plugin_browser);
+  ags_functional_test_util_dialog_ok(plugin_browser, plugin_browser->activate_button);
   
   ags_functional_test_util_idle(AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
   ags_functional_test_util_sync();
 
   /* response OK */
-  ags_functional_test_util_dialog_ok(machine->machine_editor_dialog);
+  ags_functional_test_util_dialog_ok(machine->machine_editor_dialog, AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->activate_button);
   
   ags_functional_test_util_idle(AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
@@ -1574,7 +1574,7 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
   ags_functional_test_util_sync();
 
   /* response OK */
-  ags_functional_test_util_dialog_ok(machine->machine_editor_dialog);
+  ags_functional_test_util_dialog_ok(machine->machine_editor_dialog, AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->activate_button);
   
   ags_functional_test_util_idle(AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 

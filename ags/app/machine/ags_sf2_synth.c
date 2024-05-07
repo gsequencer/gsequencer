@@ -1232,7 +1232,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   adjustment = ags_dial_get_adjustment(sf2_synth->wah_wah_attack_y);
 
   gtk_adjustment_set_lower(adjustment,
-			   0.0);
+			   -1.0);
   gtk_adjustment_set_upper(adjustment,
 			   1.0);
 
@@ -1290,7 +1290,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   adjustment = ags_dial_get_adjustment(sf2_synth->wah_wah_decay_y);
 
   gtk_adjustment_set_lower(adjustment,
-			   0.0);
+			   -1.0);
   gtk_adjustment_set_upper(adjustment,
 			   1.0);
 
@@ -1348,7 +1348,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   adjustment = ags_dial_get_adjustment(sf2_synth->wah_wah_sustain_y);
 
   gtk_adjustment_set_lower(adjustment,
-			   0.0);
+			   -1.0);
   gtk_adjustment_set_upper(adjustment,
 			   1.0);
 
@@ -1406,7 +1406,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   adjustment = ags_dial_get_adjustment(sf2_synth->wah_wah_release_y);
 
   gtk_adjustment_set_lower(adjustment,
-			   0.0);
+			   -1.0);
   gtk_adjustment_set_upper(adjustment,
 			   1.0);
 
@@ -1609,7 +1609,7 @@ ags_sf2_synth_connect(AgsConnectable *connectable)
 {
   AgsSF2Synth *sf2_synth;
   
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -1666,6 +1666,9 @@ ags_sf2_synth_connect(AgsConnectable *connectable)
   g_signal_connect_after(sf2_synth->tremolo_enabled, "toggled",
 			 G_CALLBACK(ags_sf2_synth_tremolo_enabled_callback), sf2_synth);
 
+  g_signal_connect_after(sf2_synth->tremolo_gain, "value-changed",
+			 G_CALLBACK(ags_sf2_synth_tremolo_gain_callback), sf2_synth);
+  
   g_signal_connect_after(sf2_synth->tremolo_lfo_depth, "value-changed",
 			 G_CALLBACK(ags_sf2_synth_tremolo_lfo_depth_callback), sf2_synth);
 
@@ -1738,7 +1741,7 @@ ags_sf2_synth_disconnect(AgsConnectable *connectable)
 {
   AgsSF2Synth *sf2_synth;
 
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 

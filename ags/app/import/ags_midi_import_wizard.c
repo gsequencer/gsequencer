@@ -21,6 +21,7 @@
 #include <ags/app/import/ags_midi_import_wizard_callbacks.h>
 
 #include <ags/app/ags_ui_provider.h>
+#include <ags/app/ags_gsequencer_application.h>
 #include <ags/app/ags_window.h>
 
 #include <ags/app/import/ags_track_collection.h>
@@ -258,8 +259,8 @@ ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
   gtk_window_set_transient_for((GtkWindow *) midi_import_wizard,
 			       (GtkWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
   
-  g_signal_connect(midi_import_wizard, "close-request",
-		   G_CALLBACK(ags_midi_import_wizard_close_request_callback), midi_import_wizard);
+  g_signal_connect_after(midi_import_wizard, "close-request",
+			 G_CALLBACK(ags_midi_import_wizard_close_request_callback), midi_import_wizard);
 
   event_controller = gtk_event_controller_key_new();
   gtk_widget_add_controller((GtkWidget *) midi_import_wizard,
@@ -290,7 +291,7 @@ ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
   sandbox_path = NULL;
   
 #if defined(AGS_MACOS_SANDBOX)
-  sandbox_path = g_strdup_printf("%s/Library/%s",
+  sandbox_path = g_strdup_printf("%s/Library/Containers/%s/Data",
 				 home_path,
 				 AGS_DEFAULT_BUNDLE_ID);
 
@@ -401,9 +402,6 @@ ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
   ags_file_widget_add_location(file_widget,
 			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_HOME,
 			       NULL);
-
-  ags_file_widget_set_file_action(file_widget,
-				  AGS_FILE_WIDGET_SAVE_AS);
 
   ags_file_widget_set_default_bundle(file_widget,
 				     AGS_DEFAULT_BUNDLE_ID);
@@ -600,8 +598,14 @@ void
 ags_midi_import_wizard_close_request_callback(GtkWindow *window,
 					      AgsMidiImportWizard *midi_import_wizard)
 {
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+  
   ags_midi_import_wizard_response(midi_import_wizard,
 				  GTK_RESPONSE_CLOSE);
+
+  ags_gsequencer_application_refresh_window_menu(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
 }
 
 void

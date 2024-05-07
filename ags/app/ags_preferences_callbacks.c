@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,53 +20,18 @@
 #include <ags/app/ags_preferences_callbacks.h>
 
 #include <ags/app/ags_ui_provider.h>
+#include <ags/app/ags_gsequencer_application.h>
 
 gboolean
 ags_preferences_close_request_callback(GtkWindow *window, gpointer user_data)
 {
-  ags_connectable_disconnect(AGS_CONNECTABLE(window));
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
   
+  ags_gsequencer_application_refresh_window_menu(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
+
   return(FALSE);
-}
-
-void
-ags_preferences_response_callback(GtkDialog *dialog, gint response_id, gpointer user_data)
-{
-  gboolean apply;
-
-  apply = FALSE;
-
-  switch(response_id){
-  case GTK_RESPONSE_APPLY:
-    {
-      apply = TRUE;
-    }
-  case GTK_RESPONSE_OK:
-  case GTK_RESPONSE_ACCEPT:
-    {
-      ags_applicable_apply(AGS_APPLICABLE(dialog));
-
-      if(apply){
-#if 0      
-	ags_applicable_reset(AGS_APPLICABLE(dialog));
-#endif
-	
-	break;
-      }
-    }
-  case GTK_RESPONSE_REJECT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = ags_application_context_get_instance();  
-  
-      AGS_PREFERENCES(dialog)->flags |= AGS_PREFERENCES_SHUTDOWN;
-      ags_ui_provider_set_preferences(AGS_UI_PROVIDER(application_context),
-				      NULL);
-      
-      gtk_window_destroy(GTK_WINDOW(dialog));
-    }
-  }
 }
 
 void
@@ -79,11 +44,11 @@ ags_preferences_notebook_switch_page_callback(GtkNotebook *notebook,
     return;
   }
   
-  if(page_n == 1){
+  if(page_n == 0){
     gtk_widget_hide((GtkWidget *) preferences->midi_preferences->add);
 
     gtk_widget_show((GtkWidget *) preferences->audio_preferences->add);
-  }else if(page_n == 2){
+  }else if(page_n == 1){
     gtk_widget_hide((GtkWidget *) preferences->audio_preferences->add);
 
     gtk_widget_show((GtkWidget *) preferences->midi_preferences->add);

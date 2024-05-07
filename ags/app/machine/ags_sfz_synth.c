@@ -1184,7 +1184,7 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   adjustment = ags_dial_get_adjustment(sfz_synth->wah_wah_attack_y);
 
   gtk_adjustment_set_lower(adjustment,
-			   0.0);
+			   -1.0);
   gtk_adjustment_set_upper(adjustment,
 			   1.0);
 
@@ -1242,7 +1242,7 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   adjustment = ags_dial_get_adjustment(sfz_synth->wah_wah_decay_y);
 
   gtk_adjustment_set_lower(adjustment,
-			   0.0);
+			   -1.0);
   gtk_adjustment_set_upper(adjustment,
 			   1.0);
 
@@ -1300,7 +1300,7 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   adjustment = ags_dial_get_adjustment(sfz_synth->wah_wah_sustain_y);
 
   gtk_adjustment_set_lower(adjustment,
-			   0.0);
+			   -1.0);
   gtk_adjustment_set_upper(adjustment,
 			   1.0);
 
@@ -1358,7 +1358,7 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   adjustment = ags_dial_get_adjustment(sfz_synth->wah_wah_release_y);
 
   gtk_adjustment_set_lower(adjustment,
-			   0.0);
+			   -1.0);
   gtk_adjustment_set_upper(adjustment,
 			   1.0);
 
@@ -1611,6 +1611,9 @@ ags_sfz_synth_connect(AgsConnectable *connectable)
 
   g_signal_connect_after(sfz_synth->tremolo_enabled, "toggled",
 			 G_CALLBACK(ags_sfz_synth_tremolo_enabled_callback), sfz_synth);
+
+  g_signal_connect_after(sfz_synth->tremolo_gain, "value-changed",
+			 G_CALLBACK(ags_sfz_synth_tremolo_gain_callback), sfz_synth);
 
   g_signal_connect_after(sfz_synth->tremolo_lfo_depth, "value-changed",
 			 G_CALLBACK(ags_sfz_synth_tremolo_lfo_depth_callback), sfz_synth);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -63,9 +63,9 @@ gboolean ags_audio_toolbox_rw_open(AgsSoundResource *sound_resource,
 				   gchar *filename,
 				   guint audio_channels, guint samplerate,
 				   gboolean create);
-gboolean ags_audio_toolbox_info(AgsSoundResource *sound_resource,
-				guint *frame_count,
-				guint *loop_start, guint *loop_end);
+void ags_audio_toolbox_info(AgsSoundResource *sound_resource,
+			    guint *frame_count,
+			    guint *loop_start, guint *loop_end);
 void ags_audio_toolbox_set_presets(AgsSoundResource *sound_resource,
 				   guint channels,
 				   guint samplerate,
@@ -1166,7 +1166,7 @@ ags_audio_toolbox_rw_open(AgsSoundResource *sound_resource,
   return(success);
 }
 
-gboolean
+void
 ags_audio_toolbox_info(AgsSoundResource *sound_resource,
 		       guint *frame_count,
 		       guint *loop_start, guint *loop_end)
@@ -1197,7 +1197,7 @@ ags_audio_toolbox_info(AgsSoundResource *sound_resource,
       frame_count[0] = 0;
     }
 
-    return(FALSE);
+    return;
   }
 
   if(frame_count != NULL){
@@ -1218,7 +1218,7 @@ ags_audio_toolbox_info(AgsSoundResource *sound_resource,
 
   g_rec_mutex_unlock(audio_toolbox_mutex);
 
-  return(TRUE);
+  return;
 }
 
 void

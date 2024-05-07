@@ -22,6 +22,7 @@
 #include <ags/ags_api_config.h>
 
 #include <ags/app/ags_ui_provider.h>
+#include <ags/app/ags_gsequencer_application.h>
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_composite_editor.h>
 #include <ags/app/ags_export_window.h>
@@ -154,7 +155,7 @@ ags_app_action_util_open()
   sandbox_path = NULL;
   
 #if defined(AGS_MACOS_SANDBOX)
-  sandbox_path = g_strdup_printf("%s/Library/%s",
+  sandbox_path = g_strdup_printf("%s/Library/Containers/%s/Data",
 				 home_path,
 				 AGS_DEFAULT_BUNDLE_ID);
 
@@ -654,7 +655,7 @@ ags_app_action_util_save_as()
   sandbox_path = NULL;
   
 #if defined(AGS_MACOS_SANDBOX)
-  sandbox_path = g_strdup_printf("%s/Library/%s",
+  sandbox_path = g_strdup_printf("%s/Library/Containers/%s/Data",
 				 home_path,
 				 AGS_DEFAULT_BUNDLE_ID);
 
@@ -773,6 +774,10 @@ ags_app_action_util_meta_data()
   meta_data_window = (AgsMetaDataWindow *) ags_ui_provider_get_meta_data_window(AGS_UI_PROVIDER(application_context));
   gtk_widget_set_visible((GtkWidget *) meta_data_window,
 			 TRUE);
+
+  gtk_window_present((GtkWindow *) meta_data_window);
+
+  ags_gsequencer_application_refresh_window_menu(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
 }
 
 void
@@ -787,6 +792,10 @@ ags_app_action_util_export()
   export_window = (AgsExportWindow *) ags_ui_provider_get_export_window(AGS_UI_PROVIDER(application_context));
   gtk_widget_set_visible((GtkWidget *) export_window,
 			 TRUE);
+
+  gtk_window_present((GtkWindow *) export_window);
+
+  ags_gsequencer_application_refresh_window_menu(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
 }
 
 void
@@ -801,6 +810,9 @@ ags_app_action_util_smf_import()
   midi_import_wizard = (AgsMidiImportWizard *) ags_ui_provider_get_midi_import_wizard(AGS_UI_PROVIDER(application_context));
 
   if(midi_import_wizard != NULL){
+    gtk_widget_set_visible((GtkWidget *) midi_import_wizard,
+			   TRUE);
+
     return;
   }
 
@@ -813,6 +825,10 @@ ags_app_action_util_smf_import()
 
   gtk_widget_set_visible((GtkWidget *) midi_import_wizard,
 			 TRUE);
+
+  gtk_window_present((GtkWindow *) midi_import_wizard);
+
+  ags_gsequencer_application_refresh_window_menu(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
 }
 
 void
@@ -826,19 +842,21 @@ ags_app_action_util_smf_export()
   
   midi_export_wizard = (AgsMidiExportWizard *) ags_ui_provider_get_midi_export_wizard(AGS_UI_PROVIDER(application_context));
 
-  if(midi_export_wizard != NULL){
-    return;
+  if(midi_export_wizard == NULL){
+    midi_export_wizard = ags_midi_export_wizard_new();
+    ags_ui_provider_set_midi_export_wizard(AGS_UI_PROVIDER(application_context),
+					   (GtkWidget *) midi_export_wizard);
+    
+    ags_connectable_connect(AGS_CONNECTABLE(midi_export_wizard));
+    ags_applicable_reset(AGS_APPLICABLE(midi_export_wizard));
   }
-
-  midi_export_wizard = ags_midi_export_wizard_new();
-  ags_ui_provider_set_midi_export_wizard(AGS_UI_PROVIDER(application_context),
-					 (GtkWidget *) midi_export_wizard);
-
-  ags_connectable_connect(AGS_CONNECTABLE(midi_export_wizard));
-  ags_applicable_reset(AGS_APPLICABLE(midi_export_wizard));
-
+  
   gtk_widget_set_visible((GtkWidget *) midi_export_wizard,
 			 TRUE);
+  
+  gtk_window_present((GtkWindow *) midi_export_wizard);
+
+  ags_gsequencer_application_refresh_window_menu(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
 }
 
 void
@@ -852,20 +870,22 @@ ags_app_action_util_preferences()
 
   preferences = (AgsPreferences *) ags_ui_provider_get_preferences(AGS_UI_PROVIDER(application_context));
 
-  if(preferences != NULL){
-    return;
-  }
+  if(preferences == NULL){
+    preferences = ags_preferences_new();
+    ags_ui_provider_set_preferences(AGS_UI_PROVIDER(application_context),
+				    (GtkWidget *) preferences);
 
-  preferences = ags_preferences_new();
-  ags_ui_provider_set_preferences(AGS_UI_PROVIDER(application_context),
-				  (GtkWidget *) preferences);
-
-  ags_connectable_connect(AGS_CONNECTABLE(preferences));
+    ags_connectable_connect(AGS_CONNECTABLE(preferences));
   
-  ags_applicable_reset(AGS_APPLICABLE(preferences));
-
+    ags_applicable_reset(AGS_APPLICABLE(preferences));
+  }
+  
   gtk_widget_set_visible((GtkWidget *) preferences,
 			 TRUE);
+
+  gtk_window_present((GtkWindow *) preferences);
+
+  ags_gsequencer_application_refresh_window_menu(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
 }
 
 void
@@ -1039,6 +1059,10 @@ ags_app_action_util_help()
   
   gtk_widget_set_visible((GtkWidget *) online_help_window,
 			 TRUE);
+  
+  gtk_window_present((GtkWindow *) online_help_window);
+
+  ags_gsequencer_application_refresh_window_menu(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
 }
 
 void

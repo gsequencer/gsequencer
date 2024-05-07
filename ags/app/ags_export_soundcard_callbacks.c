@@ -461,7 +461,7 @@ ags_export_soundcard_file_chooser_button_callback(GtkWidget *file_chooser_button
   sandbox_path = NULL;
 
 #if defined(AGS_MACOS_SANDBOX)
-  sandbox_path = g_strdup_printf("%s/Library/%s",
+  sandbox_path = g_strdup_printf("%s/Library/Containers/%s/Data",
 				 home_path,
 				 AGS_DEFAULT_BUNDLE_ID);
 

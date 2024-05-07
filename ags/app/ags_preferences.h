@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -57,7 +57,7 @@ typedef enum{
 
 struct _AgsPreferences
 {
-  GtkDialog dialog;
+  GtkWindow window;
 
   guint flags;
   guint connectable_flags;
@@ -70,14 +70,24 @@ struct _AgsPreferences
   AgsPerformancePreferences *performance_preferences;
   AgsOscServerPreferences *osc_server_preferences;
   AgsServerPreferences *server_preferences;
+
+  GtkBox *action_area;
+
+  GtkButton *activate_button;
 };
 
 struct _AgsPreferencesClass
 {
-  GtkDialogClass dialog;
+  GtkWindowClass window;
+
+  void (*response)(AgsPreferences *preferences,
+		   gint response_id);
 };
 
 GType ags_preferences_get_type(void);
+
+void ags_preferences_response(AgsPreferences *preferences,
+			      gint response_id);
 
 AgsPreferences* ags_preferences_new();
 

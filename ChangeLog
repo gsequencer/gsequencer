@@ -12,6 +12,124 @@ ags (7.0.0)
 	* TODO:JK: removed ags_regex.[ch]
 	* TODO:JK: improve ags_midi_smf_util.c return value
 
+ags (6.11.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* minor improvements
+
+ags (6.11.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed config values
+	* fixed present windows
+	* updated user manual for macOS
+
+ags (6.11.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed core midi backend name
+
+ags (6.11.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved window menu refresh
+	* improved refactoring UI cosmetics
+	* fixed SF2 and SFZ synth wah-wah y range lower from 0.0 to -1.0
+	* fixed SMF import/export
+
+ags (6.11.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsMoveNotePopover
+	* implemented AgsCropNotePopover
+	* implemented AgsSelectNotePopover
+	* implemented AgsPositionNotationCursorPopover
+	* implemented AgsSelectAccelerationPopover
+	* implemented AgsRampAccelerationPopover
+	* implemented AgsPositionAutomationCursorPopover
+	* implemented AgsPositionWaveCursorPopover
+	* implemented AgsSelectBufferPopover
+	* implemented AgsRampMarkerPopover
+	* refactored AgsEnvelopeDialog inherits GtkWindow, modern button layout and close by ESC key
+	* refactored AgsPresetDialog inherits GtkWindow, modern button layout and close by ESC key
+	* removed AgsMoveNoteDialog
+	* removed AgsCropNoteDialog
+	* removed AgsSelectNoteDialog
+	* removed AgsPositionNotationCursorDialog
+	* removed AgsSelectAccelerationDialog
+	* removed AgsRampAccelerationDialog
+	* removed AgsPositionAutomationCursorDialog
+	* removed AgsSelectBufferDialog
+	* removed AgsPositionWaveCursorDialog
+	* removed AgsRampMarkerDialog
+
+ags (6.10.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_soundcard_helper_config_get_use_cache()
+	* implemented ags_soundcard_helper_config_get_cache_buffer_size()
+	* fixed use-cache and cache-buffer-size config value of pulse and CoreAudio
+
+ags (6.10.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed macos sandbox paths
+	* improved macos window menu
+	* modified macos default config
+
+ags (6.10.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved AgsConnectable interface in libgsequencer
+	* fixed functional tests to work with modern button layout
+
+ags (6.10.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* disabled a unit-test in ags_solver_matrix_test.c
+	* minor improvements
+
+ags (6.10.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented gesture swipe in notation editor
+	* implemented gesture swipe in automation editor
+	* implemented gesture swipe in wave form editor
+	* implemented message label of AgsInputDialog
+	* refactored AgsPreferences inherits GtkWindow, modern button layout and close by ESC key
+	* refactored AgsMachineEditorDialog inherits GtkWindow, modern button layout and close by ESC key
+	* refactored AgsConnectionEditorDialog inherits GtkWindow, modern button layout and close by ESC key
+	* refactored AgsMetaDataWindow close by ESC key
+	* refactored AgsOnlineHelpWindow close by ESC key
+	* refactored AgsMidiDialog close by ESC key
+	* refactored AgsExportWindow close by ESC key
+	* refactored AgsPluginBrowser inherits GtkWindow, modern button layout and close by ESC key
+	* refactored AgsInputDialog close by ESC key
+	* disabled generic preferences
+	* TODO:JK: update user manual
+
+ags (6.9.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed check core-audio buffer size and channels against configured soundcard
+
+ags (6.9.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential SIGSEGV CoreAudio buffer size, check if config value matches device
+
+ags (6.9.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added default ags.conf of CoreAudio on macos
+	* fixed sandbox path on macos
+	* fixed potential SIGSEGV with AgsFileWidget
+
+ags (6.9.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed compiler errors on macos
+
 ags (6.9.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
@@ -5629,7 +5747,6 @@ ags (0.7.116)
 	* fixed possible NULL pointer access in ags_midiin_list_cards()
 	* fixed AgsMidiin to always set nth_buffer during record
 	* fixed in ags_midiin_set_device() to duplicate string and handle OSS4
->>>>>>> master
 
 ags (0.7.115)
 
@@ -7171,7 +7288,7 @@ ags (0.4.2-68)
 	* added `midi2xml` the MIDI file to XML parser
 
 
-Copyright (C) 2005-2022 Joël Krähemann
+Copyright (C) 2005-2024 Joël Krähemann
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3

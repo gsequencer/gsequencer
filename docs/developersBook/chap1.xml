@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE book
+<!DOCTYPE chapter
 [
   <!ENTITY libagsthreadso "libags_thread.so">
   <!ENTITY libagsaudioso "libags_audio.so">

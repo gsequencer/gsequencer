@@ -108,8 +108,6 @@ ags_ffplayer_bulk_input_connectable_interface_init(AgsConnectableInterface *conn
 {
   ags_ffplayer_bulk_input_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
-  connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
   connectable->connect = ags_ffplayer_bulk_input_connect;
   connectable->disconnect = ags_ffplayer_bulk_input_disconnect;
 }

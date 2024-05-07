@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -134,6 +134,7 @@ struct _AgsNotationEdit
   GtkEventController *key_controller;
   GtkEventController *gesture_controller;
   GtkEventController *motion_controller;
+  GtkEventController *swipe_controller;
 
   guint note_offset_256th;
   guint note_offset_256th_absolute;

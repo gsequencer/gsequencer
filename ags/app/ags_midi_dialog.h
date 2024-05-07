@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -41,8 +41,8 @@ G_BEGIN_DECLS
 #define AGS_IS_MIDI_DIALOG_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_MIDI_DIALOG))
 #define AGS_MIDI_DIALOG_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_MIDI_DIALOG, AgsMidiDialogClass))
 
-#define AGS_MIDI_DIALOG_DEFAULT_VERSION "4.0.0"
-#define AGS_MIDI_DIALOG_DEFAULT_BUILD_ID "Tue Mar 01 13:15:36 UTC 2022"
+#define AGS_MIDI_DIALOG_DEFAULT_VERSION "6.10.0"
+#define AGS_MIDI_DIALOG_DEFAULT_BUILD_ID "Tue Apr 30 13:11:09 UTC 2024"
 
 typedef struct _AgsMidiDialog AgsMidiDialog;
 typedef struct _AgsMidiDialogClass AgsMidiDialogClass;
@@ -55,7 +55,7 @@ typedef enum{
 
 struct _AgsMidiDialog
 {
-  GtkDialog dialog;
+  GtkWindow window;
 
   guint flags;
   guint connectable_flags;
@@ -83,20 +83,26 @@ struct _AgsMidiDialog
   GtkBox *device;
   
   GtkComboBox *midi_device;
-  
-  GtkButton *apply;
-  GtkButton *ok;
-  GtkButton *cancel;
+
+  GtkBox *action_area;
+
+  GtkButton *activate_button;
 };
 
 struct _AgsMidiDialogClass
 {
-  GtkDialogClass dialog;
+  GtkWindowClass window;
+
+  void (*response)(AgsMidiDialog *midi_dialog,
+		   gint response_id);
 };
 
 GType ags_midi_dialog_get_type(void);
 
 void ags_midi_dialog_load_sequencers(AgsMidiDialog *midi_dialog);
+
+void ags_midi_dialog_response(AgsMidiDialog *midi_dialog,
+			      gint response_id);
 
 AgsMidiDialog* ags_midi_dialog_new(AgsMachine *machine);
 

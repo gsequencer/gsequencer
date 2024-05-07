@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,6 +23,7 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
+#include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
 
 #include <complex.h>
@@ -44,11 +45,33 @@ void ags_preset_dialog_get_property(GObject *gobject,
 void ags_preset_dialog_dispose(GObject *gobject);
 void ags_preset_dialog_finalize(GObject *gobject);
 
+gboolean ags_preset_dialog_is_connected(AgsConnectable *connectable);
 void ags_preset_dialog_connect(AgsConnectable *connectable);
 void ags_preset_dialog_disconnect(AgsConnectable *connectable);
+
 void ags_preset_dialog_set_update(AgsApplicable *applicable, gboolean update);
 void ags_preset_dialog_apply(AgsApplicable *applicable);
 void ags_preset_dialog_reset(AgsApplicable *applicable);
+
+void ags_preset_dialog_activate_button_callback(GtkButton *activate_button,
+						AgsPresetDialog *preset_dialog);
+
+gboolean ags_preset_dialog_key_pressed_callback(GtkEventControllerKey *event_controller,
+						guint keyval,
+						guint keycode,
+						GdkModifierType state,
+						AgsPresetDialog *preset_dialog);
+void ags_preset_dialog_key_released_callback(GtkEventControllerKey *event_controller,
+					     guint keyval,
+					     guint keycode,
+					     GdkModifierType state,
+					     AgsPresetDialog *preset_dialog);
+gboolean ags_preset_dialog_modifiers_callback(GtkEventControllerKey *event_controller,
+					      GdkModifierType keyval,
+					      AgsPresetDialog *preset_dialog);
+
+void ags_preset_dialog_real_response(AgsPresetDialog *preset_dialog,
+				     gint response_id);
 
 /**
  * SECTION:ags_preset_dialog
@@ -62,11 +85,18 @@ void ags_preset_dialog_reset(AgsApplicable *applicable);
  */
 
 enum{
+  RESPONSE,
+  LAST_SIGNAL,
+};
+
+enum{
   PROP_0,
   PROP_MACHINE,
 };
 
 static gpointer ags_preset_dialog_parent_class = NULL;
+
+static guint preset_dialog_signals[LAST_SIGNAL];
 
 GType
 ags_preset_dialog_get_type(void)
@@ -152,15 +182,50 @@ ags_preset_dialog_class_init(AgsPresetDialogClass *preset_dialog)
   g_object_class_install_property(gobject,
 				  PROP_MACHINE,
 				  param_spec);
+
+  /* AgsPresetDialog */
+  preset_dialog->response = ags_preset_dialog_real_response;
+  
+  /* signals */
+  /**
+   * AgsPresetDialog::response:
+   * @preset_dialog: the #AgsPresetDialog
+   *
+   * The ::response signal notifies about window interaction.
+   *
+   * Since: 6.11.0
+   */
+  preset_dialog_signals[RESPONSE] =
+    g_signal_new("response",
+		 G_TYPE_FROM_CLASS(preset_dialog),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsPresetDialogClass, response),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__INT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_INT);
 }
 
 void
 ags_preset_dialog_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_preset_dialog_is_connected;  
   connectable->connect = ags_preset_dialog_connect;
   connectable->disconnect = ags_preset_dialog_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -174,7 +239,14 @@ ags_preset_dialog_applicable_interface_init(AgsApplicableInterface *applicable)
 void
 ags_preset_dialog_init(AgsPresetDialog *preset_dialog)
 {
+  GtkBox *vbox;
   GtkScrolledWindow *scrolled_window;
+
+  GtkEventController *event_controller;
+
+  AgsApplicationContext *application_context;
+  
+  application_context = ags_application_context_get_instance();
 
   preset_dialog->flags = 0;
   preset_dialog->connectable_flags = 0;
@@ -184,6 +256,45 @@ ags_preset_dialog_init(AgsPresetDialog *preset_dialog)
 
   preset_dialog->machine = NULL;
 
+  gtk_window_set_title((GtkWindow *) preset_dialog,
+		       i18n("preset editor"));
+
+  gtk_window_set_deletable(GTK_WINDOW(preset_dialog),
+			   TRUE);
+
+  gtk_window_set_transient_for((GtkWindow *) preset_dialog,
+			       (GtkWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
+
+  gtk_window_set_default_size((GtkWindow *) preset_dialog,
+			      1024, 800);
+
+  event_controller = gtk_event_controller_key_new();
+  gtk_widget_add_controller((GtkWidget *) preset_dialog,
+			    event_controller);
+
+  g_signal_connect(event_controller, "key-pressed",
+		   G_CALLBACK(ags_preset_dialog_key_pressed_callback), preset_dialog);
+  
+  g_signal_connect(event_controller, "key-released",
+		   G_CALLBACK(ags_preset_dialog_key_released_callback), preset_dialog);
+
+  g_signal_connect(event_controller, "modifiers",
+		   G_CALLBACK(ags_preset_dialog_modifiers_callback), preset_dialog);
+
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_window_set_child((GtkWindow *) preset_dialog,
+		       (GtkWidget *) vbox);
+
+  gtk_widget_set_valign(vbox,
+			GTK_ALIGN_START);
+
+  gtk_widget_set_hexpand(vbox,
+			 TRUE);
+  gtk_widget_set_vexpand(vbox,
+			 TRUE);
+  
   /* preset editor */
   scrolled_window = 
     preset_dialog->preset_editor_scrolled_window =(GtkScrolledWindow *) gtk_scrolled_window_new();
@@ -198,20 +309,30 @@ ags_preset_dialog_init(AgsPresetDialog *preset_dialog)
   gtk_widget_set_valign((GtkWidget *) scrolled_window,
 			GTK_ALIGN_FILL);
   
-  gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) preset_dialog),
+  gtk_box_append(vbox,
 		 (GtkWidget *) scrolled_window);
 
   preset_dialog->preset_editor = ags_preset_editor_new();
   gtk_scrolled_window_set_child(preset_dialog->preset_editor_scrolled_window,
 				(GtkWidget *) preset_dialog->preset_editor);
+  
+  /* buttons */
+  preset_dialog->action_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+						      AGS_UI_PROVIDER_DEFAULT_SPACING);
+  
+  gtk_widget_set_halign(preset_dialog->action_area,
+			GTK_ALIGN_END);
 
-  gtk_window_set_default_size((GtkWindow *) preset_dialog,
-			      1024, 800);
+  gtk_box_append(vbox,
+		 (GtkWidget *) preset_dialog->action_area);
 
-  /* GtkButton's in GtkDialog->action_area  */
-  preset_dialog->ok = (GtkButton *) gtk_dialog_add_button(GTK_DIALOG(preset_dialog),
-							  i18n("_OK"),
-							  GTK_RESPONSE_OK);
+  preset_dialog->activate_button = (GtkButton *) gtk_button_new_with_label(i18n("ok"));
+
+  gtk_box_append(preset_dialog->action_area,
+		 (GtkWidget *) preset_dialog->activate_button);
+
+  g_signal_connect(preset_dialog->activate_button, "clicked",
+		   G_CALLBACK(ags_preset_dialog_activate_button_callback), preset_dialog);
 }
 
 void
@@ -265,7 +386,8 @@ ags_preset_dialog_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_MACHINE:
     {
-      g_value_set_object(value, preset_dialog->machine);
+      g_value_set_object(value,
+			 preset_dialog->machine);
     }
     break;
   default:
@@ -304,6 +426,21 @@ ags_preset_dialog_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_preset_dialog_parent_class)->finalize(gobject);
 }
 
+gboolean
+ags_preset_dialog_is_connected(AgsConnectable *connectable)
+{
+  AgsPresetDialog *preset_dialog;
+  
+  gboolean is_connected;
+  
+  preset_dialog = AGS_PRESET_DIALOG(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (preset_dialog->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
+}
+
 void
 ags_preset_dialog_connect(AgsConnectable *connectable)
 {
@@ -311,17 +448,13 @@ ags_preset_dialog_connect(AgsConnectable *connectable)
 
   preset_dialog = AGS_PRESET_DIALOG(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (preset_dialog->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
   preset_dialog->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
   ags_connectable_connect(AGS_CONNECTABLE(preset_dialog->preset_editor));
-  
-  /* applicable */
-  g_signal_connect((GObject *) preset_dialog->ok, "clicked",
-		   G_CALLBACK(ags_preset_dialog_ok_callback), (gpointer) preset_dialog);
 }
 
 void
@@ -331,20 +464,13 @@ ags_preset_dialog_disconnect(AgsConnectable *connectable)
 
   preset_dialog = AGS_PRESET_DIALOG(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (preset_dialog->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   preset_dialog->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   ags_connectable_disconnect(AGS_CONNECTABLE(preset_dialog->preset_editor));
-  
-  /* applicable */
-  g_object_disconnect((GObject *) preset_dialog->ok,
-		      "any_signal::clicked",
-		      G_CALLBACK(ags_preset_dialog_ok_callback),
-		      (gpointer) preset_dialog,
-		      NULL);
 }
 
 void
@@ -371,6 +497,127 @@ ags_preset_dialog_reset(AgsApplicable *applicable)
   preset_dialog = AGS_PRESET_DIALOG(applicable);
 
   ags_applicable_reset(AGS_APPLICABLE(preset_dialog->preset_editor));
+}
+
+void
+ags_preset_dialog_activate_button_callback(GtkButton *activate_button,
+					   AgsPresetDialog *preset_dialog)
+{
+  ags_preset_dialog_response(preset_dialog,
+			     GTK_RESPONSE_ACCEPT);
+}
+
+gboolean
+ags_preset_dialog_key_pressed_callback(GtkEventControllerKey *event_controller,
+				       guint keyval,
+				       guint keycode,
+				       GdkModifierType state,
+				       AgsPresetDialog *preset_dialog)
+{
+  gboolean key_handled;
+
+  key_handled = TRUE;
+
+  if(keyval == GDK_KEY_Tab ||
+     keyval == GDK_KEY_ISO_Left_Tab ||
+     keyval == GDK_KEY_Shift_L ||
+     keyval == GDK_KEY_Shift_R ||
+     keyval == GDK_KEY_Alt_L ||
+     keyval == GDK_KEY_Alt_R ||
+     keyval == GDK_KEY_Control_L ||
+     keyval == GDK_KEY_Control_R){
+    key_handled = FALSE;
+  }
+  
+  return(key_handled);
+}
+
+void
+ags_preset_dialog_key_released_callback(GtkEventControllerKey *event_controller,
+					guint keyval,
+					guint keycode,
+					GdkModifierType state,
+					AgsPresetDialog *preset_dialog)
+{
+  gboolean key_handled;
+
+  key_handled = TRUE;
+
+  if(keyval == GDK_KEY_Tab ||
+     keyval == GDK_KEY_ISO_Left_Tab ||
+     keyval == GDK_KEY_Shift_L ||
+     keyval == GDK_KEY_Shift_R ||
+     keyval == GDK_KEY_Alt_L ||
+     keyval == GDK_KEY_Alt_R ||
+     keyval == GDK_KEY_Control_L ||
+     keyval == GDK_KEY_Control_R){
+    key_handled = FALSE;
+  }else{
+    switch(keyval){
+    case GDK_KEY_Escape:
+      {
+	ags_preset_dialog_response(preset_dialog,
+				   GTK_RESPONSE_CLOSE);	
+      }
+      break;
+    }
+  }
+}
+
+gboolean
+ags_preset_dialog_modifiers_callback(GtkEventControllerKey *event_controller,
+				     GdkModifierType keyval,
+				     AgsPresetDialog *preset_dialog)
+{
+  return(FALSE);
+}
+
+void
+ags_preset_dialog_real_response(AgsPresetDialog *preset_dialog,
+				gint response_id)
+{
+  switch(response_id){
+  case GTK_RESPONSE_OK:
+  case GTK_RESPONSE_ACCEPT:
+    {
+      ags_connectable_disconnect(AGS_CONNECTABLE(preset_dialog));
+      
+      ags_applicable_apply(AGS_APPLICABLE(preset_dialog));
+    }
+  case GTK_RESPONSE_DELETE_EVENT:
+  case GTK_RESPONSE_CLOSE:
+  case GTK_RESPONSE_REJECT:
+    {
+      if(preset_dialog->machine != NULL){
+	preset_dialog->machine->preset_dialog = NULL;
+      }
+	
+      gtk_window_destroy((GtkWindow *) preset_dialog);
+    }
+    break;
+  }
+}
+
+/**
+ * ags_preset_dialog_response:
+ * @preset_dialog: the #AgsPresetDialog
+ * @response: the response
+ *
+ * Response @preset_dialog due to user action.
+ * 
+ * Since: 6.11.0
+ */
+void
+ags_preset_dialog_response(AgsPresetDialog *preset_dialog,
+			   gint response)
+{
+  g_return_if_fail(AGS_IS_PRESET_DIALOG(preset_dialog));
+  
+  g_object_ref((GObject *) preset_dialog);
+  g_signal_emit(G_OBJECT(preset_dialog),
+		preset_dialog_signals[RESPONSE], 0,
+		response);
+  g_object_unref((GObject *) preset_dialog);
 }
 
 /**

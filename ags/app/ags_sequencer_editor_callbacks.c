@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,23 +34,29 @@ ags_sequencer_editor_backend_changed_callback(GtkComboBox *combo,
 
   if(str != NULL){
     if(!g_ascii_strncasecmp(str,
-			    "jack",
+			    "alsa",
 			    5)){
-      ags_sequencer_editor_load_jack_card(sequencer_editor);
-
-      gtk_widget_show((GtkWidget *) sequencer_editor->jack_hbox);
-    }else if(!g_ascii_strncasecmp(str,
-				  "alsa",
-				  5)){
       ags_sequencer_editor_load_alsa_card(sequencer_editor);
 
-      gtk_widget_hide((GtkWidget *) sequencer_editor->jack_hbox);
+      gtk_widget_hide((GtkWidget *) sequencer_editor->source_hbox);
     }else if(!g_ascii_strncasecmp(str,
 				  "oss",
 				  4)){
       ags_sequencer_editor_load_oss_card(sequencer_editor);
 
-      gtk_widget_hide((GtkWidget *) sequencer_editor->jack_hbox);
+      gtk_widget_hide((GtkWidget *) sequencer_editor->source_hbox);
+    }else if(!g_ascii_strncasecmp(str,
+				  "core-midi",
+				  10)){
+      ags_sequencer_editor_load_core_midi_card(sequencer_editor);
+
+      gtk_widget_show((GtkWidget *) sequencer_editor->source_hbox);
+    }else if(!g_ascii_strncasecmp(str,
+			    "jack",
+			    5)){
+      ags_sequencer_editor_load_jack_card(sequencer_editor);
+
+      gtk_widget_show((GtkWidget *) sequencer_editor->source_hbox);
     }
   }
 }
@@ -73,12 +79,14 @@ ags_sequencer_editor_card_changed_callback(GtkComboBox *combo,
 
   str = NULL;
   
-  if(AGS_IS_JACK_MIDIIN(sequencer)){
-    str = "jack";
-  }else if(AGS_IS_ALSA_MIDIIN(sequencer)){
+  if(AGS_IS_ALSA_MIDIIN(sequencer)){
     str = "alsa";
   }else if(AGS_IS_OSS_MIDIIN(sequencer)){
     str = "oss";
+  }else if(AGS_IS_CORE_AUDIO_MIDIIN(sequencer)){
+    str = "core-audio";
+  }else if(AGS_IS_JACK_MIDIIN(sequencer)){
+    str = "jack";
   }
 
   if(str != NULL &&
@@ -89,7 +97,9 @@ ags_sequencer_editor_card_changed_callback(GtkComboBox *combo,
   }
 
   card = gtk_combo_box_text_get_active_text(sequencer_editor->card);
-  
+
+  //NOTE:JK: looks not good
+#if 0
   if(card != NULL &&
      use_alsa){
     if(strchr(card,
@@ -102,6 +112,7 @@ ags_sequencer_editor_card_changed_callback(GtkComboBox *combo,
       card = str;
     }
   }
+#endif
   
   /* reset dialog */
   if(card != NULL){
@@ -111,16 +122,16 @@ ags_sequencer_editor_card_changed_callback(GtkComboBox *combo,
 }
 
 void
-ags_sequencer_editor_add_jack_callback(GtkWidget *button,
-				       AgsSequencerEditor *sequencer_editor)
+ags_sequencer_editor_add_source_callback(GtkWidget *button,
+					 AgsSequencerEditor *sequencer_editor)
 {
   ags_sequencer_editor_add_source(sequencer_editor,
 				  NULL);
 }
 
 void
-ags_sequencer_editor_remove_jack_callback(GtkWidget *button,
-					  AgsSequencerEditor *sequencer_editor)
+ags_sequencer_editor_remove_source_callback(GtkWidget *button,
+					    AgsSequencerEditor *sequencer_editor)
 {
   ags_sequencer_editor_remove_source(sequencer_editor,
 				     gtk_combo_box_text_get_active_text(sequencer_editor->card));

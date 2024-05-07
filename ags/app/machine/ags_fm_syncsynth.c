@@ -498,7 +498,7 @@ ags_fm_syncsynth_connect(AgsConnectable *connectable)
 
   GList *start_list, *list;
   
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -544,7 +544,7 @@ ags_fm_syncsynth_disconnect(AgsConnectable *connectable)
 
   GList *start_list, *list;
   
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 

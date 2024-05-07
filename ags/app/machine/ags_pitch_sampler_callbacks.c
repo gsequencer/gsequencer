@@ -78,7 +78,7 @@ ags_pitch_sampler_open_callback(GtkButton *button, AgsPitchSampler *pitch_sample
   sandbox_path = NULL;
 
 #if defined(AGS_MACOS_SANDBOX)
-  sandbox_path = g_strdup_printf("%s/Library/%s",
+  sandbox_path = g_strdup_printf("%s/Library/Containers/%s/Data",
 				 home_path,
 				 AGS_DEFAULT_BUNDLE_ID);
 

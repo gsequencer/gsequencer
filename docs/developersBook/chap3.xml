@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE book [
+<!DOCTYPE chapter
+[
 <!ENTITY libagsso "libags.so.3">
 <!ENTITY libagsthreadso "libags_thread.so.3">
 <!ENTITY libagsserverso "libags_server.so.3">

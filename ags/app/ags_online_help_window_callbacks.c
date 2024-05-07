@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,6 +21,7 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_gsequencer_application_context.h>
+#include <ags/app/ags_gsequencer_application.h>
 #include <ags/app/ags_window.h>
 
 #include <ags/config.h>
@@ -36,6 +37,18 @@ void ags_online_help_window_pdf_print_response_callback(GtkDialog *dialog,
 							gint response,
 							AgsOnlineHelpWindow *online_help_window);
 #endif
+
+gboolean
+ags_online_help_window_close_request_callback(GtkWindow *window, gpointer user_data)
+{
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+  
+  ags_gsequencer_application_refresh_window_menu(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
+  
+  return(FALSE);
+}
 
 #if defined(AGS_WITH_WEBKIT)
 void
