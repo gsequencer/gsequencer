@@ -75,32 +75,32 @@
 	</thead>
 	<tbody>
 	  <row>
-	    <entry><imagedata fileref="&backwardIcon;" /></entry>
+	    <entry><imagedata fileref="&backwardIcon;" width="1em" /></entry>
 	    <entry>backward</entry>
 	    <entry>Seeking back until it&apos;s pressed again.</entry>
 	  </row>
 	  <row>
-	    <entry><imagedata fileref="&previousIcon;" /></entry>
+	    <entry><imagedata fileref="&previousIcon;" width="1em" /></entry>
 	    <entry>previous</entry>
 	    <entry>Seeking back until it&apos;s not pressed anymore.</entry>
 	  </row>
 	  <row>
-	    <entry><imagedata fileref="&playIcon;" /></entry>
+	    <entry><imagedata fileref="&playIcon;" width="1em" /></entry>
 	    <entry>play</entry>
 	    <entry>Starts the engines and the piano roll.</entry>
 	  </row>
 	  <row>
-	    <entry><imagedata fileref="&stopIcon;" /></entry>
+	    <entry><imagedata fileref="&stopIcon;" width="1em" /></entry>
 	    <entry>stop</entry>
 	    <entry>Stops the engines and the piano roll.</entry>
 	  </row>
 	  <row>
-	    <entry><imagedata fileref="&nextIcon;" /></entry>
+	    <entry><imagedata fileref="&nextIcon;" width="1em" /></entry>
 	    <entry>next</entry>
 	    <entry>Seeking forward until it&apos;s not pressed anymore.</entry>
 	  </row>
 	  <row>
-	    <entry><imagedata fileref="&forwardIcon;" /></entry>
+	    <entry><imagedata fileref="&forwardIcon;" width="1em" /></entry>
 	    <entry>forward</entry>
 	    <entry>Seeking forward until it&apos;s pressed again.</entry>
 	  </row>
