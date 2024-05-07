@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -44,8 +44,8 @@ G_BEGIN_DECLS
 #define AGS_IS_ENVELOPE_DIALOG_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_ENVELOPE_DIALOG))
 #define AGS_ENVELOPE_DIALOG_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_ENVELOPE_DIALOG, AgsEnvelopeDialogClass))
 
-#define AGS_ENVELOPE_DIALOG_DEFAULT_VERSION "4.0.0"
-#define AGS_ENVELOPE_DIALOG_DEFAULT_BUILD_ID "Thu Apr  7 04:09:52 PM UTC 2022"
+#define AGS_ENVELOPE_DIALOG_DEFAULT_VERSION "6.11.0"
+#define AGS_ENVELOPE_DIALOG_DEFAULT_BUILD_ID "Sun May  5 10:39:01 UTC 2024"
 
 typedef struct _AgsEnvelopeDialog AgsEnvelopeDialog;
 typedef struct _AgsEnvelopeDialogClass AgsEnvelopeDialogClass;
@@ -56,7 +56,7 @@ typedef enum{
 
 struct _AgsEnvelopeDialog
 {
-  GtkDialog dialog;
+  GtkWindow window;
 
   guint flags;
   guint connectable_flags;
@@ -77,14 +77,17 @@ struct _AgsEnvelopeDialog
   GtkScrolledWindow *envelope_info_scrolled_window;
   AgsEnvelopeInfo *envelope_info;
   
-  GtkButton *apply;
-  GtkButton *ok;
-  GtkButton *cancel;
+  GtkBox *action_area;
+
+  GtkButton *activate_button;
 };
 
 struct _AgsEnvelopeDialogClass
 {
-  GtkDialogClass dialog;
+  GtkWindowClass window;
+
+  void (*response)(AgsEnvelopeDialog *envelope_dialog,
+		   gint response_id);
 };
 
 GType ags_envelope_dialog_get_type(void);
@@ -92,6 +95,9 @@ GType ags_envelope_dialog_get_type(void);
 void ags_envelope_dialog_load_preset(AgsEnvelopeDialog *envelope_dialog);
 
 void ags_envelope_dialog_add_pattern_tab(AgsEnvelopeDialog *envelope_dialog);
+
+void ags_envelope_dialog_response(AgsEnvelopeDialog *envelope_dialog,
+				  gint response_id);
 
 AgsEnvelopeDialog* ags_envelope_dialog_new(gchar *title,
 					   GtkWindow *transient_for,

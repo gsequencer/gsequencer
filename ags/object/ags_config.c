@@ -431,7 +431,7 @@ ags_config_real_load_defaults(AgsConfig *config)
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "wasapi-share-mode", "exclusive");
 #elif defined(AGS_WITH_CORE_AUDIO)
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "pcm-channels", "2");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "samplerate", "48000");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "samplerate", "44100");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "buffer-size", "2048");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "use-cache", "false");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "cache-buffer-size", "8192");

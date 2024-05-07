@@ -596,7 +596,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 		  1, 1);
 
   control = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				   0);
+				   AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_grid_attach(grid,
 		  GTK_WIDGET(control),
 		  1, 1,
@@ -650,7 +650,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 		  1, 1);
 
   control = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				   0);
+				   AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_grid_attach(grid,
 		  GTK_WIDGET(control),
 		  1, 2,
@@ -704,7 +704,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 		  1, 1);
 
   control = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				   0);
+				   AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_grid_attach(grid,
 		  GTK_WIDGET(control),
 		  1, 3,
@@ -801,7 +801,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   
   /* hbox - actions */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append((GtkBox *) pattern_envelope,
 		 GTK_WIDGET(hbox));
 

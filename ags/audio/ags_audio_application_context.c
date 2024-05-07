@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -2490,8 +2490,23 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
     /* change sequencer */
     if(str != NULL){
       if(!g_ascii_strncasecmp(str,
-			      "jack",
+			      "alsa",
 			      5)){
+	sequencer = (GObject *) ags_alsa_midiin_new();
+      }else if(!g_ascii_strncasecmp(str,
+				    "oss",
+				    4)){
+	sequencer = (GObject *) ags_oss_midiin_new();
+      }else if(!g_ascii_strncasecmp(str,
+				    "core-midi",
+				    10)){
+	sequencer = ags_sound_server_register_sequencer(AGS_SOUND_SERVER(core_audio_server),
+							FALSE);
+
+	has_core_audio = TRUE;
+      }else if(!g_ascii_strncasecmp(str,
+				    "jack",
+				    5)){
 	AgsJackClient *input_client;
 
 	g_object_get(jack_server,
@@ -2516,14 +2531,6 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
 							FALSE);
 
 	has_jack = TRUE;
-      }else if(!g_ascii_strncasecmp(str,
-				    "alsa",
-				    5)){
-	sequencer = (GObject *) ags_alsa_midiin_new();
-      }else if(!g_ascii_strncasecmp(str,
-				    "oss",
-				    4)){
-	sequencer = (GObject *) ags_oss_midiin_new();
       }else{
 	g_warning(i18n("unknown sequencer backend - %s"), str);
 

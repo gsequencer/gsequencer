@@ -105,8 +105,8 @@ ags_meta_data_window_init(AgsMetaDataWindow *meta_data_window)
   gtk_window_set_transient_for((GtkWindow *) meta_data_window,
 			       ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
 
-  g_signal_connect(meta_data_window, "close-request",
-		   G_CALLBACK(ags_meta_data_window_close_request_callback), NULL);
+  g_signal_connect_after(meta_data_window, "close-request",
+			 G_CALLBACK(ags_meta_data_window_close_request_callback), NULL);
 
   event_controller = gtk_event_controller_key_new();
   gtk_widget_add_controller((GtkWidget *) meta_data_window,

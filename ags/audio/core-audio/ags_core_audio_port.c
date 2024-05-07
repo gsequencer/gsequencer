@@ -1589,7 +1589,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 	       NULL);
   
   if(core_audio_client == NULL){
-    g_warning("ags_core_audio_port.c - no assigned AgsCore_AudioClient");
+    g_warning("ags_core_audio_port.c - no assigned AgsCoreAudioClient");
     
     return;
   }
@@ -1927,7 +1927,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 #ifdef AGS_WITH_CORE_AUDIO
       MIDIEndpointRef endpoint;
       
-      retval = MIDIClientCreate(CFSTR("Advanced Gtk+ Sequencer - Core MIDI to System Sounds Demo"),
+      retval = MIDIClientCreate(CFSTR("Advanced Gtk+ Sequencer - Core MIDI to System Sounds"),
 				NULL,
 				core_audio_port,
 				core_audio_port->midi_client);
@@ -2667,7 +2667,7 @@ ags_core_audio_port_handle_input_buffer(AgsCoreAudioPort *core_audio_port,
 }
   
 void
-ags_core_audio_port_midi_notify_callback(const MIDINotification  *message,
+ags_core_audio_port_midi_notify_callback(const MIDINotification *message,
 					 void *ref_con)
 {
   //NOTE:JK: unused
@@ -2800,7 +2800,7 @@ ags_core_audio_port_midi_read_callback(const MIDIPacketList *pkt_list,
 	core_audio_midiin->app_buffer[nth_buffer] = malloc(4096 * sizeof(char));
       }else{
 	core_audio_midiin->app_buffer[nth_buffer] = realloc(core_audio_midiin->app_buffer[nth_buffer],
-						  (ceil(core_audio_midiin->app_buffer_size[nth_buffer] / 4096.0) * 4096 + 4096) * sizeof(char));
+							    (ceil(core_audio_midiin->app_buffer_size[nth_buffer] / 4096.0) * 4096 + 4096) * sizeof(char));
       }
     }
 

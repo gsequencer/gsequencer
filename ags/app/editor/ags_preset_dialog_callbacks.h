@@ -33,8 +33,6 @@
 
 G_BEGIN_DECLS
 
-int ags_preset_dialog_ok_callback(GtkWidget *widget, AgsPresetDialog *preset_dialog);
-
 G_END_DECLS
 
 #endif /*__AGS_PRESET_DIALOG_CALLBACKS_H__*/

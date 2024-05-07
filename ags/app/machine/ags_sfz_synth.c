@@ -1184,7 +1184,7 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   adjustment = ags_dial_get_adjustment(sfz_synth->wah_wah_attack_y);
 
   gtk_adjustment_set_lower(adjustment,
-			   0.0);
+			   -1.0);
   gtk_adjustment_set_upper(adjustment,
 			   1.0);
 
@@ -1242,7 +1242,7 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   adjustment = ags_dial_get_adjustment(sfz_synth->wah_wah_decay_y);
 
   gtk_adjustment_set_lower(adjustment,
-			   0.0);
+			   -1.0);
   gtk_adjustment_set_upper(adjustment,
 			   1.0);
 
@@ -1300,7 +1300,7 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   adjustment = ags_dial_get_adjustment(sfz_synth->wah_wah_sustain_y);
 
   gtk_adjustment_set_lower(adjustment,
-			   0.0);
+			   -1.0);
   gtk_adjustment_set_upper(adjustment,
 			   1.0);
 
@@ -1358,7 +1358,7 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   adjustment = ags_dial_get_adjustment(sfz_synth->wah_wah_release_y);
 
   gtk_adjustment_set_lower(adjustment,
-			   0.0);
+			   -1.0);
   gtk_adjustment_set_upper(adjustment,
 			   1.0);
 
