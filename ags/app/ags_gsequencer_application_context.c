@@ -3636,7 +3636,7 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
     if(str != NULL){
       if(!g_ascii_strncasecmp(str,
 			      "core-audio",
-			      11)){
+			      10)){
 	soundcard = ags_sound_server_register_soundcard(AGS_SOUND_SERVER(core_audio_server),
 							is_output);
 
@@ -3983,26 +3983,6 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
       }else if(!g_ascii_strncasecmp(str,
 				    "core-midi",
 				    10)){
-	AgsCoreAudioClient *input_client;
-
-	g_object_get(core_audio_server,
-		     "input-core-audio-client", &input_client,
-		     NULL);
-
-	if(input_client == NULL){
-	  input_client = ags_core_audio_client_new((GObject *) core_audio_server);
-	  g_object_set(core_audio_server,
-		       "input-core-audio-client", input_client,
-		       NULL);
-	  ags_core_audio_server_add_client(core_audio_server,
-					   (GObject *) input_client);
-    
-	  ags_core_audio_client_open((AgsCoreAudioClient *) input_client,
-				     "ags-input-client");
-	}else{
-	  g_object_unref(input_client);
-	}
-
 	sequencer = ags_sound_server_register_sequencer(AGS_SOUND_SERVER(core_audio_server),
 							FALSE);
 

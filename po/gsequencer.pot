@@ -18,9 +18,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 6.11.2\n"
+"Project-Id-Version: gsequencer 6.11.3\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-05-06 09:37+0200\n"
+"POT-Creation-Date: 2024-05-07 08:36+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -213,12 +213,12 @@ msgstr ""
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application_context.c:4038
+#: ags/app/ags_gsequencer_application_context.c:4018
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application_context.c:4048
+#: ags/app/ags_gsequencer_application_context.c:4028
 msgid "unknown sequencer backend - NULL"
 msgstr ""
 

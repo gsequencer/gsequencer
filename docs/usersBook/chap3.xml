@@ -1,15 +1,16 @@
-<?xml version='1.0' encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE book [
-<!ENTITY indexMenuIcon "../images/adwaita/system-run.png">
-<!ENTITY cursorIcon "../images/adwaita/go-jump.png">
-<!ENTITY notesIcon "../images/adwaita/accessories-text-editor.png">
-<!ENTITY accelerationsIcon "../images/adwaita/accessories-text-editor.png">
-<!ENTITY deleteIcon "../images/adwaita/edit-clear-all.png">
-<!ENTITY selectIcon "../images/adwaita/edit-select-all.png">
-<!ENTITY copyIcon "../images/adwaita/edit-copy.png">
-<!ENTITY cutIcon "../images/adwaita/edit-cut.png">
-<!ENTITY pasteIcon "../images/adwaita/edit-paste.png">
-<!ENTITY invertIcon "../images/adwaita/object-flip-vertical.png">
+<!ENTITY images "images">
+<!ENTITY indexMenuIcon "../&images;/adwaita/system-run.png">
+<!ENTITY cursorIcon "../&images;/adwaita/go-jump.png">
+<!ENTITY notesIcon "../&images;/adwaita/accessories-text-editor.png">
+<!ENTITY accelerationsIcon "../&images;/adwaita/accessories-text-editor.png">
+<!ENTITY deleteIcon "../&images;/adwaita/edit-clear-all.png">
+<!ENTITY selectIcon "../&images;/adwaita/edit-select-all.png">
+<!ENTITY copyIcon "../&images;/adwaita/edit-copy.png">
+<!ENTITY cutIcon "../&images;/adwaita/edit-cut.png">
+<!ENTITY pasteIcon "../&images;/adwaita/edit-paste.png">
+<!ENTITY invertIcon "../&images;/adwaita/object-flip-vertical.png">
 ]>
 
 <!-- Copyright (C) 2005-2018 Jo\u00EBl Kr\u00E4hemann -->
@@ -55,7 +56,7 @@
     <title>Notation editor</title>
     <mediaobject>
       <imageobject>
-	<imagedata width="100%" scalefit="1" fileref="../images/ags_notation_edit.png" />
+	<imagedata width="100%" scalefit="1" fileref="../&images;/ags_notation_edit.png" />
       </imageobject>
       <caption>
 	<para>
@@ -77,7 +78,7 @@
       <para>
 	Before you might perform any task with the editor you have to link engines
 	by adding an index. Then you should link it with an engine. That can all be
-	done by using the menu button <imagedata fileref="&indexMenuIcon;" /> of the
+	done by using the menu button <imagedata fileref="&indexMenuIcon;" width="1em" /> of the
 	index list.
 	The corresponding editor appears as you click appropriate link.
       </para>
@@ -87,7 +88,7 @@
       <title>Toolbar</title>
       <mediaobject>
 	<imageobject>
-	  <imagedata width="100%" scalefit="1" fileref="../images/ags-toolbar.png" />
+	  <imagedata width="100%" scalefit="1" fileref="../&images;/ags-toolbar.png" />
 	</imageobject>
 	<caption>
 	  <para>
@@ -102,6 +103,9 @@
       <table>
 	<title>AGS editor toolbar controls table.</title>
 	<tgroup cols="3" align="left" colsep='1' rowsep='1'>
+	  <colspec colnum="1" colname="col1" colwidth="1*"/>
+	  <colspec colnum="2" colname="col2" colwidth="2*"/>
+	  <colspec colnum="3" colname="col3" colwidth="4.5*"/>
 	  <thead>
 	    <row>
 	      <entry>icon</entry>
@@ -111,7 +115,7 @@
 	  </thead>
 	  <tbody>
 	    <row>
-	      <entry><imagedata fileref="&cursorIcon;" /></entry>
+	      <entry><imagedata fileref="&cursorIcon;" width="1em" /></entry>
 	      <entry>cursor</entry>
 	      <entry>
 		You may want to set the cursor to paste notes at the position where it
@@ -119,7 +123,7 @@
 	      </entry>
 	    </row>
 	    <row>
-	      <entry><imagedata fileref="&notesIcon;" /></entry>
+	      <entry><imagedata fileref="&notesIcon;" width="1em" /></entry>
 	      <entry>notes</entry>
 	      <entry>
 		Add notes by clicking within the piano roll and move to till them having
@@ -127,35 +131,35 @@
 	      </entry>
 	    </row>
 	    <row>
-	      <entry><imagedata fileref="&deleteIcon;" /></entry>
+	      <entry><imagedata fileref="&deleteIcon;" width="1em" /></entry>
 	      <entry>delete</entry>
 	      <entry>
 		Delete notes by clicking on the note you don&apos;t want anymore.
 	      </entry>
 	    </row>
 	    <row>
-	      <entry><imagedata fileref="&selectIcon;" /></entry>
+	      <entry><imagedata fileref="&selectIcon;" width="1em" /></entry>
 	      <entry>select</entry>
 	      <entry>
 		Select notes to copy or cut them.
 	      </entry>
 	    </row>
 	    <row>
-	      <entry><imagedata fileref="&copyIcon;" /></entry>
+	      <entry><imagedata fileref="&copyIcon;" width="1em" /></entry>
 	      <entry>copy</entry>
 	      <entry>
 		Copy notes to the clipboard.
 	      </entry>
 	    </row>
 	    <row>
-	      <entry><imagedata fileref="&cutIcon;" /></entry>
+	      <entry><imagedata fileref="&cutIcon;" width="1em" /></entry>
 	      <entry>cut</entry>
 	      <entry>
 		Cut notes to the clipboard.
 	      </entry>
 	    </row>
 	    <row>
-	      <entry><imagedata fileref="&pasteIcon;" /></entry>
+	      <entry><imagedata fileref="&pasteIcon;" width="1em" /></entry>
 	      <entry>paste</entry>
 	      <entry>
 		Paste the previously copied or cutted notes at the cursor position or
@@ -163,7 +167,7 @@
 	      </entry>
 	    </row>
 	    <row>
-	      <entry><imagedata fileref="&invertIcon;" /></entry>
+	      <entry><imagedata fileref="&invertIcon;" width="1em" /></entry>
 	      <entry>invert</entry>
 	      <entry>
 		Invert entire notation in conjunction with reverse mapping or MIDI import.
@@ -185,7 +189,7 @@
 	<title>Position cursor</title>
 	<mediaobject>
 	  <imageobject>
-	    <imagedata width="100%" scalefit="1" fileref="../images/ags_position_notation_cursor_dialog.png" />
+	    <imagedata width="100%" scalefit="1" fileref="../&images;/ags_position_notation_cursor_dialog.png" />
 	  </imageobject>
 	  <caption>
 	    <para>
@@ -200,6 +204,8 @@
 	<table>
 	  <title>AGS position notation cursor dialog controls.</title>
 	  <tgroup cols="2" align="left" colsep='1' rowsep='1'>
+	    <colspec colnum="1" colname="col1" colwidth="2*"/>
+	    <colspec colnum="2" colname="col2" colwidth="3*"/>
 	    <thead>
 	      <row>
 		<entry>control</entry>
@@ -228,7 +234,7 @@
 	<title>Move notes</title>
 	<mediaobject>
 	  <imageobject>
-	    <imagedata width="100%" scalefit="1" fileref="../images/ags_move_notes_dialog.png" />
+	    <imagedata width="100%" scalefit="1" fileref="../&images;/ags_move_notes_dialog.png" />
 	  </imageobject>
 	  <caption>
 	    <para>
@@ -243,6 +249,8 @@
 	<table>
 	  <title>AGS move note dialog controls.</title>
 	  <tgroup cols="2" align="left" colsep='1' rowsep='1'>
+	    <colspec colnum="1" colname="col1" colwidth="2*"/>
+	    <colspec colnum="2" colname="col2" colwidth="3*"/>
 	    <thead>
 	      <row>
 		<entry>control</entry>
@@ -285,7 +293,7 @@
 	<title>Crop notes</title>
 	<mediaobject>
 	  <imageobject>
-	    <imagedata width="100%" scalefit="1" fileref="../images/ags_crop_notes_dialog.png" />
+	    <imagedata width="100%" scalefit="1" fileref="../&images;/ags_crop_notes_dialog.png" />
 	  </imageobject>
 	  <caption>
 	    <para>
@@ -301,6 +309,8 @@
 
 	<table>
 	  <title>AGS crop note dialog controls.</title>
+	  <colspec colnum="1" colname="col1" colwidth="2*"/>
+	  <colspec colnum="2" colname="col2" colwidth="3*"/>
 	  <tgroup cols="2" align="left" colsep='1' rowsep='1'>
 	    <thead>
 	      <row>
@@ -350,7 +360,7 @@
 	<title>Select notes</title>
 	<mediaobject>
 	  <imageobject>
-	    <imagedata width="100%" scalefit="1" fileref="../images/ags_select_notes_dialog.png" />
+	    <imagedata width="100%" scalefit="1" fileref="../&images;/ags_select_notes_dialog.png" />
 	  </imageobject>
 	  <caption>
 	    <para>
@@ -365,6 +375,8 @@
 	<table>
 	  <title>AGS select note dialog controls.</title>
 	  <tgroup cols="2" align="left" colsep='1' rowsep='1'>
+	    <colspec colnum="1" colname="col1" colwidth="2*"/>
+	    <colspec colnum="2" colname="col2" colwidth="3*"/>
 	    <thead>
 	      <row>
 		<entry>control</entry>
@@ -829,7 +841,7 @@
     <title>Automation editor</title>
     <mediaobject>
       <imageobject>
-	<imagedata width="100%" scalefit="1" fileref="../images/ags_automation_edit.png" />
+	<imagedata width="100%" scalefit="1" fileref="../&images;/ags_automation_edit.png" />
       </imageobject>
       <caption>
 	<para>
@@ -849,7 +861,7 @@
       <para>
 	Before you might perform any task with the editor you have to link engines
 	by adding an index. Then you should link it with an engine. That can all be
-	done by using the menu button <imagedata fileref="&indexMenuIcon;" /> of the
+	done by using the menu button <imagedata fileref="&indexMenuIcon;" width="1em" /> of the
 	index list.
 	The corresponding editor appears as you click appropriate link, if automation editor
 	is not the default view you have to change it by clicking Edit -> Automation from
@@ -861,7 +873,7 @@
       <title>Toolbar</title>
       <mediaobject>
 	<imageobject>
-	  <imagedata width="100%" scalefit="1" fileref="../images/ags-toolbar.png" />
+	  <imagedata width="100%" scalefit="1" fileref="../&images;/ags-toolbar.png" />
 	</imageobject>
 	<caption>
 	  <para>
@@ -876,6 +888,9 @@
       <table>
 	<title>AGS automation editor toolbar controls table.</title>
 	<tgroup cols="3" align="left" colsep='1' rowsep='1'>
+	  <colspec colnum="1" colname="col1" colwidth="1*"/>
+	  <colspec colnum="2" colname="col2" colwidth="2*"/>
+	  <colspec colnum="3" colname="col3" colwidth="4.5*"/>
 	  <thead>
 	    <row>
 	      <entry>icon</entry>
@@ -885,7 +900,7 @@
 	  </thead>
 	  <tbody>
 	    <row>
-	      <entry><imagedata fileref="&cursorIcon;" /></entry>
+	      <entry><imagedata fileref="&cursorIcon;" width="1em" /></entry>
 	      <entry>cursor</entry>
 	      <entry>
 		You may want to set the cursor to paste accelerations at the position where it
@@ -893,42 +908,42 @@
 	      </entry>
 	    </row>
 	    <row>
-	      <entry><imagedata fileref="&accelerationsIcon;" /></entry>
+	      <entry><imagedata fileref="&accelerationsIcon;" width="1em" /></entry>
 	      <entry>accelerations</entry>
 	      <entry>
 		Add accelerations by clicking within the automation area.
 	      </entry>
 	    </row>
 	    <row>
-	      <entry><imagedata fileref="&deleteIcon;" /></entry>
+	      <entry><imagedata fileref="&deleteIcon;" width="1em" /></entry>
 	      <entry>delete</entry>
 	      <entry>
 		Delete accelerations by clicking on the acceleration you don&apos;t want anymore.
 	      </entry>
 	    </row>
 	    <row>
-	      <entry><imagedata fileref="&selectIcon;" /></entry>
+	      <entry><imagedata fileref="&selectIcon;" width="1em" /></entry>
 	      <entry>select</entry>
 	      <entry>
 		Select accelerations to copy or cut them.
 	      </entry>
 	    </row>
 	    <row>
-	      <entry><imagedata fileref="&copyIcon;" /></entry>
+	      <entry><imagedata fileref="&copyIcon;" width="1em" /></entry>
 	      <entry>copy</entry>
 	      <entry>
 		Copy accelerations to the clipboard.
 	      </entry>
 	    </row>
 	    <row>
-	      <entry><imagedata fileref="&cutIcon;" /></entry>
+	      <entry><imagedata fileref="&cutIcon;" width="1em" /></entry>
 	      <entry>cut</entry>
 	      <entry>
 		Cut accelerations to the clipboard.
 	      </entry>
 	    </row>
 	    <row>
-	      <entry><imagedata fileref="&pasteIcon;" /></entry>
+	      <entry><imagedata fileref="&pasteIcon;" width="1em" /></entry>
 	      <entry>paste</entry>
 	      <entry>
 		Paste the previously copied or cutted accelerations at the cursor position or
@@ -951,7 +966,7 @@
 	<title>Position cursor</title>
 	<mediaobject>
 	  <imageobject>
-	    <imagedata width="100%" scalefit="1" fileref="../images/ags_position_automation_cursor_dialog.png" />
+	    <imagedata width="100%" scalefit="1" fileref="../&images;/ags_position_automation_cursor_dialog.png" />
 	  </imageobject>
 	  <caption>
 	    <para>
@@ -966,6 +981,8 @@
 	<table>
 	  <title>AGS position automation cursor dialog controls.</title>
 	  <tgroup cols="2" align="left" colsep='1' rowsep='1'>
+	    <colspec colnum="1" colname="col1" colwidth="2*"/>
+	    <colspec colnum="2" colname="col2" colwidth="3*"/>
 	    <thead>
 	      <row>
 		<entry>control</entry>
@@ -988,7 +1005,7 @@
 	<title>Select accelerations</title>
 	<mediaobject>
 	  <imageobject>
-	    <imagedata width="100%" scalefit="1" fileref="../images/ags_select_accelerations_dialog.png" />
+	    <imagedata width="100%" scalefit="1" fileref="../&images;/ags_select_accelerations_dialog.png" />
 	  </imageobject>
 	  <caption>
 	    <para>
@@ -1004,6 +1021,8 @@
 	<table>
 	  <title>AGS select acceleration dialog controls.</title>
 	  <tgroup cols="2" align="left" colsep='1' rowsep='1'>
+	    <colspec colnum="1" colname="col1" colwidth="2*"/>
+	    <colspec colnum="2" colname="col2" colwidth="3*"/>
 	    <thead>
 	      <row>
 		<entry>control</entry>
@@ -1044,7 +1063,7 @@
 	<title>Ramp accelerations</title>
 	<mediaobject>
 	  <imageobject>
-	    <imagedata width="100%" scalefit="1" fileref="../images/ags_ramp_accelerations_dialog.png" />
+	    <imagedata width="100%" scalefit="1" fileref="../&images;/ags_ramp_accelerations_dialog.png" />
 	  </imageobject>
 	  <caption>
 	    <para>
@@ -1060,6 +1079,8 @@
 	<table>
 	  <title>AGS ramp acceleration dialog controls.</title>
 	  <tgroup cols="2" align="left" colsep='1' rowsep='1'>
+	    <colspec colnum="1" colname="col1" colwidth="2*"/>
+	    <colspec colnum="2" colname="col2" colwidth="3*"/>
 	    <thead>
 	      <row>
 		<entry>control</entry>
@@ -1171,7 +1192,7 @@
     <title>Wave editor</title>
     <mediaobject>
       <imageobject>
-	<imagedata width="100%" scalefit="1" fileref="../images/ags_wave_edit.png" />
+	<imagedata width="100%" scalefit="1" fileref="../&images;/ags_wave_edit.png" />
       </imageobject>
       <caption>
 	<para>
@@ -1195,7 +1216,7 @@
       <para>
 	Before you might perform any task with the editor you have to link engines
 	by adding an index. Then you should link it with an engine. That can all be
-	done by using the menu button <imagedata fileref="&indexMenuIcon;" /> of the
+	done by using the menu button <imagedata fileref="&indexMenuIcon;" width="1em" /> of the
 	index list.
 	The corresponding editor appears as you click appropriate link, if wave editor
 	is not the default view you have to change it by clicking Edit -> Wave from
@@ -1207,7 +1228,7 @@
       <title>Wave toolbar</title>
       <mediaobject>
 	<imageobject>
-	  <imagedata width="100%" scalefit="1" fileref="../images/ags-wave-toolbar.png" />
+	  <imagedata width="100%" scalefit="1" fileref="../&images;/ags-wave-toolbar.png" />
 	</imageobject>
 	<caption>
 	  <para>
@@ -1222,6 +1243,9 @@
       <table>
 	<title>AGS wave editor toolbar controls table.</title>
 	<tgroup cols="3" align="left" colsep='1' rowsep='1'>
+	  <colspec colnum="1" colname="col1" colwidth="1*"/>
+	  <colspec colnum="2" colname="col2" colwidth="2*"/>
+	  <colspec colnum="3" colname="col3" colwidth="4.5*"/>
 	  <thead>
 	    <row>
 	      <entry>icon</entry>
@@ -1231,7 +1255,7 @@
 	  </thead>
 	  <tbody>
 	    <row>
-	      <entry><imagedata fileref="&cursorIcon;" /></entry>
+	      <entry><imagedata fileref="&cursorIcon;" width="1em" /></entry>
 	      <entry>cursor</entry>
 	      <entry>
 		You may want to set the cursor to paste buffers at the position where it
@@ -1239,28 +1263,28 @@
 	      </entry>
 	    </row>
 	    <row>
-	      <entry><imagedata fileref="&selectIcon;" /></entry>
+	      <entry><imagedata fileref="&selectIcon;" width="1em" /></entry>
 	      <entry>select</entry>
 	      <entry>
 		Select buffers to copy or cut them.
 	      </entry>
 	    </row>
 	    <row>
-	      <entry><imagedata fileref="&copyIcon;" /></entry>
+	      <entry><imagedata fileref="&copyIcon;" width="1em" /></entry>
 	      <entry>copy</entry>
 	      <entry>
 		Copy buffers to the clipboard.
 	      </entry>
 	    </row>
 	    <row>
-	      <entry><imagedata fileref="&cutIcon;" /></entry>
+	      <entry><imagedata fileref="&cutIcon;" width="1em" /></entry>
 	      <entry>cut</entry>
 	      <entry>
 		Cut buffers to the clipboard.
 	      </entry>
 	    </row>
 	    <row>
-	      <entry><imagedata fileref="&pasteIcon;" /></entry>
+	      <entry><imagedata fileref="&pasteIcon;" width="1em" /></entry>
 	      <entry>paste</entry>
 	      <entry>
 		Paste the previously copied or cutted buffers at the cursor position or
@@ -1283,7 +1307,7 @@
 	<title>Position cursor</title>
 	<mediaobject>
 	  <imageobject>
-	    <imagedata width="100%" scalefit="1" fileref="../images/ags_position_wave_cursor_dialog.png" />
+	    <imagedata width="100%" scalefit="1" fileref="../&images;/ags_position_wave_cursor_dialog.png" />
 	  </imageobject>
 	  <caption>
 	    <para>
@@ -1298,6 +1322,8 @@
 	<table>
 	  <title>AGS position wave cursor dialog controls.</title>
 	  <tgroup cols="2" align="left" colsep='1' rowsep='1'>
+	    <colspec colnum="1" colname="col1" colwidth="2*"/>
+	    <colspec colnum="2" colname="col2" colwidth="3*"/>
 	    <thead>
 	      <row>
 		<entry>control</entry>
@@ -1320,7 +1346,7 @@
 	<title>Select buffers</title>
 	<mediaobject>
 	  <imageobject>
-	    <imagedata width="100%" scalefit="1" fileref="../images/ags_select_buffers_dialog.png" />
+	    <imagedata width="100%" scalefit="1" fileref="../&images;/ags_select_buffers_dialog.png" />
 	  </imageobject>
 	  <caption>
 	    <para>
@@ -1335,6 +1361,8 @@
 	<table>
 	  <title>AGS select buffer dialog controls.</title>
 	  <tgroup cols="2" align="left" colsep='1' rowsep='1'>
+	    <colspec colnum="1" colname="col1" colwidth="2*"/>
+	    <colspec colnum="2" colname="col2" colwidth="3*"/>
 	    <thead>
 	      <row>
 		<entry>control</entry>
@@ -1369,7 +1397,7 @@
 	<title>Time-stretch buffers</title>
 	<mediaobject>
 	  <imageobject>
-	    <imagedata width="100%" scalefit="1" fileref="../images/ags_time_stretch_buffers_dialog.png" />
+	    <imagedata width="100%" scalefit="1" fileref="../&images;/ags_time_stretch_buffers_dialog.png" />
 	  </imageobject>
 	  <caption>
 	    <para>
@@ -1384,6 +1412,8 @@
 	<table>
 	  <title>AGS time-stretch buffer dialog controls.</title>
 	  <tgroup cols="2" align="left" colsep='1' rowsep='1'>
+	    <colspec colnum="1" colname="col1" colwidth="2*"/>
+	    <colspec colnum="2" colname="col2" colwidth="3*"/>
 	    <thead>
 	      <row>
 		<entry>control</entry>
