@@ -1,3 +1,15 @@
+ags (6.11.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* minor improvements
+
+ags (6.11.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed config values
+	* fixed present windows
+	* updated user manual for macOS
+
 ags (6.11.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

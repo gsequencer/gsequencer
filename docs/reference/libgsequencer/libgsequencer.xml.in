@@ -165,7 +165,6 @@
 @LIBGSEQUENCER_VST3_BROWSER_XINCLUDE@
 
       <xi:include href="xml/ags_midi_dialog.xml"/>
-      <xi:include href="xml/ags_midi_dialog_callbacks.xml"/>
 
       <xi:include href="xml/ags_envelope_dialog.xml"/>
       <xi:include href="xml/ags_envelope_dialog_callbacks.xml"/>
@@ -203,14 +202,10 @@
       <xi:include href="xml/ags_notation_edit.xml"/>
       <xi:include href="xml/ags_notation_edit_callbacks.xml"/>
 
-      <xi:include href="xml/ags_select_note_dialog.xml"/>
-      <xi:include href="xml/ags_select_note_dialog_callbacks.xml"/>
-      <xi:include href="xml/ags_move_note_dialog.xml"/>
-      <xi:include href="xml/ags_move_note_dialog_callbacks.xml"/>
-      <xi:include href="xml/ags_crop_note_dialog.xml"/>
-      <xi:include href="xml/ags_crop_note_dialog_callbacks.xml"/>    
-      <xi:include href="xml/ags_position_notation_cursor_dialog.xml"/>
-      <xi:include href="xml/ags_position_notation_cursor_dialog_callbacks.xml"/>
+      <xi:include href="xml/ags_select_note_popover.xml"/>
+      <xi:include href="xml/ags_move_note_popover.xml"/>
+      <xi:include href="xml/ags_crop_note_popover.xml"/>
+      <xi:include href="xml/ags_position_notation_cursor_popover.xml"/>
     </chapter>
     
     <chapter id="automation-editor">
@@ -224,12 +219,9 @@
       <xi:include href="xml/ags_automation_edit.xml"/>
       <xi:include href="xml/ags_automation_edit_callbacks.xml"/>
 
-      <xi:include href="xml/ags_ramp_acceleration_dialog.xml"/>
-      <xi:include href="xml/ags_ramp_acceleration_dialog_callbacks.xml"/>
-      <xi:include href="xml/ags_select_acceleration_dialog.xml"/>
-      <xi:include href="xml/ags_select_acceleration_dialog_callbacks.xml"/>
-      <xi:include href="xml/ags_position_automation_cursor_dialog.xml"/>
-      <xi:include href="xml/ags_position_automation_cursor_dialog_callbacks.xml"/>
+      <xi:include href="xml/ags_ramp_acceleration_popover.xml"/>
+      <xi:include href="xml/ags_select_acceleration_popover.xml"/>
+      <xi:include href="xml/ags_position_automation_cursor_popover.xml"/>
     </chapter>
 
     <chapter id="wave-editor">
@@ -244,10 +236,8 @@
       <xi:include href="xml/ags_wave_edit.xml"/>
       <xi:include href="xml/ags_wave_edit_callbacks.xml"/>
       
-      <xi:include href="xml/ags_select_buffer_dialog.xml"/>
-      <xi:include href="xml/ags_select_buffer_dialog_callbacks.xml"/>
-      <xi:include href="xml/ags_position_wave_cursor_dialog.xml"/>
-      <xi:include href="xml/ags_position_wave_cursor_dialog_callbacks.xml"/>
+      <xi:include href="xml/ags_select_buffer_popover.xml"/>
+      <xi:include href="xml/ags_position_wave_cursor_popover.xml"/>
     </chapter>
 
     <chapter id="tempo-editor">
@@ -258,8 +248,7 @@
       
       <xi:include href="xml/ags_tempo_edit.xml"/>
 
-      <xi:include href="xml/ags_ramp_marker_dialog.xml"/>
-      <xi:include href="xml/ags_ramp_marker_dialog_callbacks.xml"/>
+      <xi:include href="xml/ags_ramp_marker_popover.xml"/>
     </chapter>
 
     <chapter id="machine">

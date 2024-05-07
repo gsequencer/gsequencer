@@ -1,5 +1,6 @@
 <?xml version='1.0' encoding="utf-8"?>
-<!DOCTYPE book [
+<!DOCTYPE chapter
+[
 <!ENTITY oscversion "V2.1.0">
 <!ENTITY ags "Advanced Gtk+ Sequencer">
 <!ENTITY agsversion "2.1.0">
