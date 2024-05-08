@@ -367,14 +367,21 @@ ags_lv2_browser_plugin_uri_callback(GtkTreeView *tree_view,
 				      port_editor,
 				      0, y,
 				      1, 1);
-      
+
+      gtk_widget_set_visible((GtkWidget *) port_editor,
+			     TRUE);
+
       plugin_port = plugin_port->next;
       
       y++;      
     }
 
     g_list_free(start_plugin_port);
+
+    gtk_widget_queue_draw(lv2_browser);      
   }else{
     ags_lv2_browser_clear(lv2_browser);
+
+    gtk_widget_queue_draw(lv2_browser);
   }
 }

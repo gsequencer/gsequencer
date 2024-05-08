@@ -18,9 +18,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 6.11.4\n"
+"Project-Id-Version: gsequencer 6.11.5\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-05-07 10:27+0200\n"
+"POT-Creation-Date: 2024-05-08 10:58+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -88,59 +88,59 @@ msgstr ""
 msgid "Ports"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:747
+#: ags/app/ags_machine_callbacks.c:755
 msgid "rename machine"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:755
+#: ags/app/ags_machine_callbacks.c:763
 msgid "The name of the machine is displayed on top of it or within editor."
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:758
+#: ags/app/ags_machine_callbacks.c:766
 msgid "machine's name"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:805
+#: ags/app/ags_machine_callbacks.c:821
 msgid "rename audio"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:813
+#: ags/app/ags_machine_callbacks.c:829
 msgid ""
 "The name of an audio object can be used to address it within a OSC message."
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:816
+#: ags/app/ags_machine_callbacks.c:832
 msgid "audio object's name"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:895
+#: ags/app/ags_machine_callbacks.c:911
 msgid "reposition audio"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:902
+#: ags/app/ags_machine_callbacks.c:919
 msgid ""
 "The position of an audio object can be used to address it within a OSC "
 "message."
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:905
+#: ags/app/ags_machine_callbacks.c:924
 msgid "audio object's position"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:908 ags/app/editor/ags_automation_meta.c:593
+#: ags/app/ags_machine_callbacks.c:927 ags/app/editor/ags_automation_meta.c:593
 #: ags/app/editor/ags_wave_meta.c:426 ags/app/editor/ags_notation_meta.c:484
 msgid "position"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:956
+#: ags/app/ags_machine_callbacks.c:983
 msgid "properties"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:1037
+#: ags/app/ags_machine_callbacks.c:1063
 msgid "envelope"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:1081
+#: ags/app/ags_machine_callbacks.c:1106
 #: ags/app/editor/ags_pattern_envelope.c:276
 #: ags/app/editor/ags_envelope_editor.c:205
 #: ags/app/machine/ags_live_lv2_bridge.c:496
@@ -149,7 +149,7 @@ msgstr ""
 msgid "preset"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:1170
+#: ags/app/ags_machine_callbacks.c:1202
 msgid "connections"
 msgstr ""
 
@@ -162,7 +162,7 @@ msgid "machine editor"
 msgstr ""
 
 #: ags/app/ags_machine_editor_dialog.c:192
-#: ags/app/editor/ags_envelope_dialog.c:362 ags/app/ags_midi_dialog.c:545
+#: ags/app/editor/ags_envelope_dialog.c:362 ags/app/ags_midi_dialog.c:542
 #: ags/app/ags_plugin_browser.c:364 ags/app/ags_preferences.c:282
 msgid "ok"
 msgstr ""
@@ -256,7 +256,7 @@ msgstr ""
 
 #: ags/app/ags_pcm_file_dialog.c:279
 #: ags/app/export/ags_midi_export_wizard.c:472
-#: ags/app/export/ags_wave_export_dialog.c:430
+#: ags/app/export/ags_wave_export_dialog.c:417
 #: ags/app/import/ags_midi_import_wizard.c:460
 #: ags/app/ags_export_soundcard.c:339
 msgid "open"
@@ -311,28 +311,27 @@ msgstr ""
 msgid "audio fast export"
 msgstr ""
 
-#: ags/app/export/ags_wave_export_dialog.c:310
+#: ags/app/export/ags_wave_export_dialog.c:307
+msgid "start tact"
+msgstr ""
+
+#: ags/app/export/ags_wave_export_dialog.c:328
+msgid "end tact"
+msgstr ""
+
+#: ags/app/export/ags_wave_export_dialog.c:362
+#: ags/app/ags_export_soundcard.c:344
+msgid "output format"
+msgstr ""
+
+#: ags/app/export/ags_wave_export_dialog.c:404
 #: ags/app/machine/ags_pitch_sampler.c:311 ags/app/machine/ags_audiorec.c:272
 #: ags/app/ags_export_soundcard.c:292
 msgid "file"
 msgstr ""
 
-#: ags/app/export/ags_wave_export_dialog.c:323
-#: ags/app/ags_app_action_util.c:149
-msgid "open file"
-msgstr ""
-
-#: ags/app/export/ags_wave_export_dialog.c:333
-msgid "start tact"
-msgstr ""
-
-#: ags/app/export/ags_wave_export_dialog.c:354
-msgid "end tact"
-msgstr ""
-
-#: ags/app/export/ags_wave_export_dialog.c:388
-#: ags/app/ags_export_soundcard.c:344
-msgid "output format"
+#: ags/app/export/ags_wave_export_dialog.c:431 ags/app/ags_export_window.c:416
+msgid "export"
 msgstr ""
 
 #: ags/app/export/ags_machine_mapper.c:180
@@ -1203,6 +1202,10 @@ msgstr ""
 msgid "resize channels"
 msgstr ""
 
+#: ags/app/ags_app_action_util.c:149
+msgid "open file"
+msgstr ""
+
 #: ags/app/ags_app_action_util.c:649
 msgid "save file as"
 msgstr ""
@@ -1255,27 +1258,27 @@ msgstr ""
 msgid "MIDI connection"
 msgstr ""
 
-#: ags/app/ags_midi_dialog.c:306
+#: ags/app/ags_midi_dialog.c:303
 msgid "midi channel"
 msgstr ""
 
-#: ags/app/ags_midi_dialog.c:343
+#: ags/app/ags_midi_dialog.c:340
 msgid "audio start mapping"
 msgstr ""
 
-#: ags/app/ags_midi_dialog.c:380
+#: ags/app/ags_midi_dialog.c:377
 msgid "audio end mapping"
 msgstr ""
 
-#: ags/app/ags_midi_dialog.c:411
+#: ags/app/ags_midi_dialog.c:408
 msgid "midi start mapping"
 msgstr ""
 
-#: ags/app/ags_midi_dialog.c:448
+#: ags/app/ags_midi_dialog.c:445
 msgid "midi end mapping"
 msgstr ""
 
-#: ags/app/ags_midi_dialog.c:501
+#: ags/app/ags_midi_dialog.c:498
 msgid "midi device"
 msgstr ""
 
@@ -2028,10 +2031,6 @@ msgstr ""
 
 #: ags/app/ags_export_window.c:315
 msgid "time"
-msgstr ""
-
-#: ags/app/ags_export_window.c:416
-msgid "export"
 msgstr ""
 
 #: ags/app/ags_preferences.c:230

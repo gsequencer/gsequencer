@@ -263,9 +263,6 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
   gtk_window_set_deletable(GTK_WINDOW(midi_dialog),
 			   TRUE);
 
-  gtk_window_set_transient_for((GtkWindow *) midi_dialog,
-			       (GtkWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
-
   event_controller = gtk_event_controller_key_new();
   gtk_widget_add_controller((GtkWidget *) midi_dialog,
 			    event_controller);
@@ -980,6 +977,7 @@ ags_midi_dialog_response(AgsMidiDialog *midi_dialog,
 
 /**
  * ags_midi_dialog_new:
+ * @transient_for: the transient for window
  * @machine: the assigned machine.
  *
  * Creates an #AgsMidiDialog
@@ -989,11 +987,13 @@ ags_midi_dialog_response(AgsMidiDialog *midi_dialog,
  * Since: 3.0.0
  */
 AgsMidiDialog*
-ags_midi_dialog_new(AgsMachine *machine)
+ags_midi_dialog_new(GtkWindow *transient_for,
+		    AgsMachine *machine)
 {
   AgsMidiDialog *midi_dialog;
 
   midi_dialog = (AgsMidiDialog *) g_object_new(AGS_TYPE_MIDI_DIALOG,
+					       "transient-for", transient_for,
 					       "machine", machine,
 					       NULL);
 

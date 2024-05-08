@@ -103,7 +103,7 @@
       
       <table>
 	<title>AGS editor toolbar controls table.</title>
-	<tgroup cols="3" align="left" colsep='1' rowsep='1'>
+	<tgroup cols="3" align="left" colsep="1" rowsep="1">
 	  <colspec colnum="1" colname="col1" colwidth="1*"/>
 	  <colspec colnum="2" colname="col2" colwidth="2*"/>
 	  <colspec colnum="3" colname="col3" colwidth="4.5*"/>

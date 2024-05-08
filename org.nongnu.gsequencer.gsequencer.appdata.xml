@@ -50,6 +50,17 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="6.11.5" date="2024-05-08">
+      <description>
+	<p>
+	  Fixed bugs introduced during dialog refactoring.
+	</p>
+	<p>
+	  Improved presenting dialogs.
+	</p>
+      </description>
+    </release>
+
     <release version="6.11.0" date="2024-05-05">
       <description>
 	<p>

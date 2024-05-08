@@ -26,25 +26,30 @@
 
     <table border="1">
       <caption>Type tag description</caption>
-      <thead>
-	<tr>
-	  <td>index</td>
-	  <td>type indentifier</td>
-          <td>value</td>
-	</tr>
-      </thead>
-      <tbody>
-	<tr>
-	  <td>#0</td>
-	  <td>s</td>
-          <td>Path is either <literal>/AgsSoundProvider/AgsSoundcard</literal>, <literal>/AgsSoundProvider/AgsSequencer</literal> or <literal>/AgsSoundProvider/AgsAudio[[0-9]+|"[\w]+"]</literal></td>
-	</tr>
-	<tr>
-	  <td>#1</td>
-	  <td>s</td>
-          <td>Action is either <literal>start</literal> or <literal>stop</literal></td>
-	</tr>
-      </tbody>
+      <tgroup cols="3" align="left" colsep="1" rowsep="1">
+	<colspec colnum="1" colname="col1" colwidth="1*"/>
+	<colspec colnum="2" colname="col2" colwidth="1*"/>
+	<colspec colnum="3" colname="col3" colwidth="3*"/>
+	<thead>
+	  <row>
+	    <entry>index</entry>
+	    <entry>type indentifier</entry>
+            <entry>value</entry>
+	  </row>
+	</thead>
+	<tbody>
+	  <row>
+	    <entry>#0</entry>
+	    <entry>s</entry>
+            <entry>Path is either <literal>/AgsSoundProvider/AgsSoundcard</literal>, <literal>/AgsSoundProvider/AgsSequencer</literal> or <literal>/AgsSoundProvider/AgsAudio[[0-9]+|"[\w]+"]</literal></entry>
+	  </row>
+	  <row>
+	    <entry>#1</entry>
+	    <entry>s</entry>
+            <entry>Action is either <literal>start</literal> or <literal>stop</literal></entry>
+	  </row>
+	</tbody>
+      </tgroup>
     </table>
 
     <para>

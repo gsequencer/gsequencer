@@ -137,7 +137,7 @@ ags_wave_export_dialog_get_type()
       NULL, /* interface_data */
     };
 
-    ags_type_wave_export_dialog = g_type_register_static(GTK_TYPE_DIALOG,
+    ags_type_wave_export_dialog = g_type_register_static(GTK_TYPE_WINDOW,
 							 "AgsWaveExportDialog", &ags_wave_export_dialog_info,
 							 0);
     
@@ -265,9 +265,6 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
 	       "title", i18n("audio fast export"),
 	       NULL);
 
-  gtk_widget_set_size_request(GTK_WIDGET(wave_export_dialog),
-			      AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_WIDTH, AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_HEIGHT);
-
   g_signal_connect(wave_export_dialog, "close-request",
 		   G_CALLBACK(ags_wave_export_dialog_close_request_callback), wave_export_dialog);
 
@@ -300,29 +297,6 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
 		       (GtkWidget *) vbox);
 
   wave_export_dialog->machine = NULL;
-
-  /* filename */
-  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				AGS_UI_PROVIDER_DEFAULT_SPACING);
-  gtk_box_append(vbox,
-		 (GtkWidget *) hbox);
-
-  label = (GtkLabel *) gtk_label_new(i18n("file"));
-  g_object_set(G_OBJECT(label),
-	       "xalign", 0.0,
-	       NULL);
-  gtk_box_append(hbox,
-		 (GtkWidget *) label);
-
-  wave_export_dialog->filename = (GtkEntry *) gtk_entry_new();
-  gtk_editable_set_text(GTK_EDITABLE(wave_export_dialog->filename),
-			"out.wav");
-  gtk_box_append(hbox,
-		 (GtkWidget *) wave_export_dialog->filename);
-
-  wave_export_dialog->file_open_button = (GtkButton *) gtk_button_new_with_label(i18n("open file"));
-  gtk_box_append(hbox,
-		 (GtkWidget *) wave_export_dialog->file_open_button);
 
   /* start tact */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
@@ -421,13 +395,40 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
   gtk_box_append(hbox,
 		 (GtkWidget *) wave_export_dialog->output_format);
 
+  /* filename */
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
+  gtk_box_append(vbox,
+		 (GtkWidget *) hbox);
+
+  label = (GtkLabel *) gtk_label_new(i18n("file"));
+  g_object_set(G_OBJECT(label),
+	       "xalign", 0.0,
+	       NULL);
+  gtk_box_append(hbox,
+		 (GtkWidget *) label);
+
+  wave_export_dialog->filename = (GtkEntry *) gtk_entry_new();
+  gtk_editable_set_text(GTK_EDITABLE(wave_export_dialog->filename),
+			"out.wav");
+  gtk_box_append(hbox,
+		 (GtkWidget *) wave_export_dialog->filename);
+
+  wave_export_dialog->file_open_button = (GtkButton *) gtk_button_new_with_label(i18n("open"));
+  gtk_box_append(hbox,
+		 (GtkWidget *) wave_export_dialog->file_open_button);
+
   /* GtkButton action-area  */
   action_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				       AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_widget_set_halign((GtkWidget *) action_area,
+			GTK_ALIGN_END);
+
   gtk_box_append(vbox,
 		 (GtkWidget *) action_area);
 
-  wave_export_dialog->activate_button = (GtkButton *) gtk_button_new_with_label(i18n("open"));
+  wave_export_dialog->activate_button = (GtkButton *) gtk_button_new_with_label(i18n("export"));
   gtk_box_append(action_area,
 		 (GtkWidget *) wave_export_dialog->activate_button);
 }
@@ -840,11 +841,13 @@ ags_wave_export_dialog_response(AgsWaveExportDialog *wave_export_dialog,
  * Since: 3.0.0
  */
 AgsWaveExportDialog*
-ags_wave_export_dialog_new(AgsMachine *machine)
+ags_wave_export_dialog_new(GtkWindow *transient_for,
+			   AgsMachine *machine)
 {
   AgsWaveExportDialog *wave_export_dialog;
 
   wave_export_dialog = (AgsWaveExportDialog *) g_object_new(AGS_TYPE_WAVE_EXPORT_DIALOG,
+							    "transient-for", transient_for,
 							    "machine", machine,
 							    NULL);
 

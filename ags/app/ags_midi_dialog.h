@@ -104,7 +104,8 @@ void ags_midi_dialog_load_sequencers(AgsMidiDialog *midi_dialog);
 void ags_midi_dialog_response(AgsMidiDialog *midi_dialog,
 			      gint response_id);
 
-AgsMidiDialog* ags_midi_dialog_new(AgsMachine *machine);
+AgsMidiDialog* ags_midi_dialog_new(GtkWindow *transient_for,
+				   AgsMachine *machine);
 
 G_END_DECLS
 
