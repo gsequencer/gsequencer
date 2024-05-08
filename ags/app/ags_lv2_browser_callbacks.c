@@ -377,11 +377,7 @@ ags_lv2_browser_plugin_uri_callback(GtkTreeView *tree_view,
     }
 
     g_list_free(start_plugin_port);
-
-    gtk_widget_queue_draw(lv2_browser);      
   }else{
     ags_lv2_browser_clear(lv2_browser);
-
-    gtk_widget_queue_draw(lv2_browser);
   }
 }
