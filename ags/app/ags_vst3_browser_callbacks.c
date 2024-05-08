@@ -232,11 +232,7 @@ ags_vst3_browser_plugin_effect_callback(GtkTreeView *tree_view,
     }
 
     g_list_free(start_plugin_port);
-
-    gtk_widget_queue_draw(vst3_browser);
   }else{
     ags_vst3_browser_clear(vst3_browser);
-
-    gtk_widget_queue_draw(vst3_browser);
   }
 }
