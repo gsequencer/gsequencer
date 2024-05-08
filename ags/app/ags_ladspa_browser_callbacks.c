@@ -256,13 +256,18 @@ ags_ladspa_browser_plugin_effect_callback(GtkTreeView *tree_view,
 					 0, y,
 					 1, 1);
       
-      gtk_widget_show((GtkWidget *) port_editor);
+      gtk_widget_set_visible((GtkWidget *) port_editor,
+			     TRUE);
       
       y++;
     }
 
     g_rec_mutex_unlock(base_plugin_mutex);
+
+    gtk_widget_queue_draw(ladspa_browser);
   }else{
     ags_ladspa_browser_clear(ladspa_browser);
+
+    gtk_widget_queue_draw(ladspa_browser);
   }
 }

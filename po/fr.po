@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-05-07 10:27+0200\n"
+"POT-Creation-Date: 2024-05-08 10:58+0200\n"
 "PO-Revision-Date: 2021-01-11 21:07+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: français <jkraehemann@gmail.com>\n"
@@ -90,63 +90,63 @@ msgstr "effet: "
 msgid "Ports"
 msgstr "Porte"
 
-#: ags/app/ags_machine_callbacks.c:747
+#: ags/app/ags_machine_callbacks.c:755
 #, fuzzy
 msgid "rename machine"
 msgstr "renommer l'audio"
 
-#: ags/app/ags_machine_callbacks.c:755
+#: ags/app/ags_machine_callbacks.c:763
 msgid "The name of the machine is displayed on top of it or within editor."
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:758
+#: ags/app/ags_machine_callbacks.c:766
 #, fuzzy
 msgid "machine's name"
 msgstr "machine nom: "
 
-#: ags/app/ags_machine_callbacks.c:805
+#: ags/app/ags_machine_callbacks.c:821
 msgid "rename audio"
 msgstr "renommer l'audio"
 
-#: ags/app/ags_machine_callbacks.c:813
+#: ags/app/ags_machine_callbacks.c:829
 msgid ""
 "The name of an audio object can be used to address it within a OSC message."
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:816
+#: ags/app/ags_machine_callbacks.c:832
 #, fuzzy
 msgid "audio object's name"
 msgstr "connexion du audio"
 
-#: ags/app/ags_machine_callbacks.c:895
+#: ags/app/ags_machine_callbacks.c:911
 msgid "reposition audio"
 msgstr "repositionner l'audio"
 
-#: ags/app/ags_machine_callbacks.c:902
+#: ags/app/ags_machine_callbacks.c:919
 msgid ""
 "The position of an audio object can be used to address it within a OSC "
 "message."
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:905
+#: ags/app/ags_machine_callbacks.c:924
 #, fuzzy
 msgid "audio object's position"
 msgstr "connexion du audio"
 
-#: ags/app/ags_machine_callbacks.c:908 ags/app/editor/ags_automation_meta.c:593
+#: ags/app/ags_machine_callbacks.c:927 ags/app/editor/ags_automation_meta.c:593
 #: ags/app/editor/ags_wave_meta.c:426 ags/app/editor/ags_notation_meta.c:484
 msgid "position"
 msgstr "position"
 
-#: ags/app/ags_machine_callbacks.c:956
+#: ags/app/ags_machine_callbacks.c:983
 msgid "properties"
 msgstr "propriétés"
 
-#: ags/app/ags_machine_callbacks.c:1037
+#: ags/app/ags_machine_callbacks.c:1063
 msgid "envelope"
 msgstr "envelope"
 
-#: ags/app/ags_machine_callbacks.c:1081
+#: ags/app/ags_machine_callbacks.c:1106
 #: ags/app/editor/ags_pattern_envelope.c:276
 #: ags/app/editor/ags_envelope_editor.c:205
 #: ags/app/machine/ags_live_lv2_bridge.c:496
@@ -155,7 +155,7 @@ msgstr "envelope"
 msgid "preset"
 msgstr "préposition"
 
-#: ags/app/ags_machine_callbacks.c:1170
+#: ags/app/ags_machine_callbacks.c:1202
 msgid "connections"
 msgstr "connexion"
 
@@ -170,7 +170,7 @@ msgid "machine editor"
 msgstr "machine type: "
 
 #: ags/app/ags_machine_editor_dialog.c:192
-#: ags/app/editor/ags_envelope_dialog.c:362 ags/app/ags_midi_dialog.c:545
+#: ags/app/editor/ags_envelope_dialog.c:362 ags/app/ags_midi_dialog.c:542
 #: ags/app/ags_plugin_browser.c:364 ags/app/ags_preferences.c:282
 msgid "ok"
 msgstr ""
@@ -267,7 +267,7 @@ msgstr "écraser exister liens"
 
 #: ags/app/ags_pcm_file_dialog.c:279
 #: ags/app/export/ags_midi_export_wizard.c:472
-#: ags/app/export/ags_wave_export_dialog.c:430
+#: ags/app/export/ags_wave_export_dialog.c:417
 #: ags/app/import/ags_midi_import_wizard.c:460
 #: ags/app/ags_export_soundcard.c:339
 msgid "open"
@@ -325,30 +325,28 @@ msgstr ""
 msgid "audio fast export"
 msgstr "Audio vite exporter"
 
-#: ags/app/export/ags_wave_export_dialog.c:310
+#: ags/app/export/ags_wave_export_dialog.c:307
+msgid "start tact"
+msgstr "premier tact"
+
+#: ags/app/export/ags_wave_export_dialog.c:328
+msgid "end tact"
+msgstr "dernier tact"
+
+#: ags/app/export/ags_wave_export_dialog.c:362
+#: ags/app/ags_export_soundcard.c:344
+msgid "output format"
+msgstr "sortant format"
+
+#: ags/app/export/ags_wave_export_dialog.c:404
 #: ags/app/machine/ags_pitch_sampler.c:311 ags/app/machine/ags_audiorec.c:272
 #: ags/app/ags_export_soundcard.c:292
 msgid "file"
 msgstr "fichier"
 
-#: ags/app/export/ags_wave_export_dialog.c:323
-#: ags/app/ags_app_action_util.c:149
-#, fuzzy
-msgid "open file"
-msgstr "Ouvrir fichier"
-
-#: ags/app/export/ags_wave_export_dialog.c:333
-msgid "start tact"
-msgstr "premier tact"
-
-#: ags/app/export/ags_wave_export_dialog.c:354
-msgid "end tact"
-msgstr "dernier tact"
-
-#: ags/app/export/ags_wave_export_dialog.c:388
-#: ags/app/ags_export_soundcard.c:344
-msgid "output format"
-msgstr "sortant format"
+#: ags/app/export/ags_wave_export_dialog.c:431 ags/app/ags_export_window.c:416
+msgid "export"
+msgstr "exporter"
 
 #: ags/app/export/ags_machine_mapper.c:180
 #: ags/app/editor/ags_envelope_editor.c:197 ags/app/ags_resize_editor.c:135
@@ -1256,6 +1254,11 @@ msgstr "lien intrant"
 msgid "resize channels"
 msgstr "réajuster canal"
 
+#: ags/app/ags_app_action_util.c:149
+#, fuzzy
+msgid "open file"
+msgstr "Ouvrir fichier"
+
 #: ags/app/ags_app_action_util.c:649
 #, fuzzy
 msgid "save file as"
@@ -1309,27 +1312,27 @@ msgstr "délai d'inactivité"
 msgid "MIDI connection"
 msgstr "MIDI connexion"
 
-#: ags/app/ags_midi_dialog.c:306
+#: ags/app/ags_midi_dialog.c:303
 msgid "midi channel"
 msgstr "midi canal"
 
-#: ags/app/ags_midi_dialog.c:343
+#: ags/app/ags_midi_dialog.c:340
 msgid "audio start mapping"
 msgstr "audio premier assigner"
 
-#: ags/app/ags_midi_dialog.c:380
+#: ags/app/ags_midi_dialog.c:377
 msgid "audio end mapping"
 msgstr "audio dernier assigner"
 
-#: ags/app/ags_midi_dialog.c:411
+#: ags/app/ags_midi_dialog.c:408
 msgid "midi start mapping"
 msgstr "midi premier assigner"
 
-#: ags/app/ags_midi_dialog.c:448
+#: ags/app/ags_midi_dialog.c:445
 msgid "midi end mapping"
 msgstr "midi dernier assigner"
 
-#: ags/app/ags_midi_dialog.c:501
+#: ags/app/ags_midi_dialog.c:498
 msgid "midi device"
 msgstr "midi équipement"
 
@@ -2121,10 +2124,6 @@ msgstr "tact"
 #: ags/app/ags_export_window.c:315
 msgid "time"
 msgstr "temps"
-
-#: ags/app/ags_export_window.c:416
-msgid "export"
-msgstr "exporter"
 
 #: ags/app/ags_preferences.c:230
 msgid "preferences"
