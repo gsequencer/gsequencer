@@ -1,6 +1,7 @@
 ags (6.11.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented switching dark mode
 	* added initial missing app window in window menu
 	* added missing preferences in window menu
 
