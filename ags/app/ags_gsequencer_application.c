@@ -684,7 +684,7 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
 			  G_ACTION(edit_tempo_action));
 
   /* initial refresh window menu */
-  ags_gsequencer_application_refresh_window_menu(gsequencer_app)
+  ags_gsequencer_application_refresh_window_menu(gsequencer_app);
 }
 
 void
