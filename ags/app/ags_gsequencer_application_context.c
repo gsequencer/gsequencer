@@ -5743,7 +5743,7 @@ ags_gsequencer_application_context_update_ui_timeout(AgsGSequencerApplicationCon
     tic++;
 
     if(AGS_UI_PROVIDER_UPDATE_UI_TIMEOUT >= 1.0 ||
-	tic >= (gint)  (1.0 / AGS_UI_PROVIDER_UPDATE_UI_TIMEOUT)){
+       tic >= (gint)  (1.0 / AGS_UI_PROVIDER_UPDATE_UI_TIMEOUT)){
       tic = 0;
     }
 #endif
