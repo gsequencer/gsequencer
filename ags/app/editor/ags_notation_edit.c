@@ -361,12 +361,12 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
 		   G_CALLBACK(ags_notation_edit_gesture_swipe_callback), notation_edit);
 
   event_controller =
-    notation_edit->gesture_controller = (GtkEventController *) gtk_gesture_click_new();
+    notation_edit->motion_controller = (GtkEventController *) gtk_event_controller_motion_new();
   gtk_widget_add_controller((GtkWidget *) notation_edit->drawing_area,
 			    event_controller);
 
-  g_signal_connect(event_controller, "pressed",
-		   G_CALLBACK(ags_notation_edit_gesture_click_pressed_callback), notation_edit);
+  g_signal_connect(event_controller, "motion",
+		   G_CALLBACK(ags_notation_edit_motion_callback), notation_edit);
   
   gtk_widget_set_halign((GtkWidget *) notation_edit->drawing_area,
 			GTK_ALIGN_FILL);
@@ -1049,9 +1049,6 @@ ags_notation_edit_drawing_area_motion_notify_position_cursor(GtkWidget *editor,
 #ifdef AGS_DEBUG
   g_message("%lu %lu", notation_edit->cursor_position_x, notation_edit->cursor_position_y);
 #endif
-    
-  /* queue draw */
-  gtk_widget_queue_draw((GtkWidget *) notation_edit);
 }
 
 void
@@ -1118,9 +1115,6 @@ ags_notation_edit_drawing_area_motion_notify_add_note(GtkWidget *editor,
 #ifdef AGS_DEBUG
   g_message("%lu-%lu %lu", note->x[0], note->x[1], note->y);
 #endif
-    
-  /* queue draw */
-  gtk_widget_queue_draw((GtkWidget *) notation_edit);
 }
 
 void
@@ -1141,8 +1135,6 @@ ags_notation_edit_drawing_area_motion_notify_select_note(GtkWidget *editor,
   }else{
     notation_edit->selection_y1 = 0.0;
   }
-
-  gtk_widget_queue_draw((GtkWidget *) notation_edit);
 }
 
 gboolean
@@ -1288,9 +1280,6 @@ ags_notation_edit_drawing_area_button_press_position_cursor(GtkWidget *editor,
   notation_edit->cursor_position_x = zoom_factor * floor(notation_edit->cursor_position_x / zoom_factor);
     
   notation_edit->cursor_position_y = (guint) ((y + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->vscrollbar))) / notation_edit->control_height);
-
-  /* queue draw */
-  gtk_widget_queue_draw((GtkWidget *) notation_edit);
 }
 
 void
@@ -1364,9 +1353,6 @@ ags_notation_edit_drawing_area_button_press_add_note(GtkWidget *editor,
 
   notation_edit->current_note = note;
   g_object_ref(note);
-
-  /* queue draw */
-  gtk_widget_queue_draw((GtkWidget *) notation_edit);
 }
 
 void
@@ -1382,8 +1368,6 @@ ags_notation_edit_drawing_area_button_press_select_note(GtkWidget *editor,
     
   notation_edit->selection_y0 = (guint) y + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->vscrollbar));
   notation_edit->selection_y1 = notation_edit->selection_y0;
-
-  gtk_widget_queue_draw((GtkWidget *) notation_edit);
 }
 
 void
@@ -1404,9 +1388,6 @@ ags_notation_edit_drawing_area_button_release_position_cursor(GtkWidget *editor,
   notation_edit->cursor_position_x = zoom_factor * floor(notation_edit->cursor_position_x / zoom_factor);
 
   notation_edit->cursor_position_y = (guint) ((y + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->vscrollbar))) / notation_edit->control_height);
-    
-  /* queue draw */
-  gtk_widget_queue_draw((GtkWidget *) notation_edit);
 }
 
 void

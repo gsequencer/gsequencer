@@ -1,3 +1,9 @@
+ags (6.12.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed motion event controller of piano roll
+	* improved gtk_widget_queue_draw() calls in notation, automation and wave edit
+
 ags (6.11.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
