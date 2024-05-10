@@ -1336,9 +1336,6 @@ ags_automation_edit_drawing_area_motion_notify_position_cursor(GtkWidget *editor
 #ifdef AGS_DEBUG
   g_message("%lu %f", automation_edit->cursor_position_x, automation_edit->cursor_position_y);
 #endif
-    
-  /* queue draw */
-  gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
 }
 
 void
@@ -1416,9 +1413,6 @@ ags_automation_edit_drawing_area_motion_notify_add_acceleration(GtkWidget *edito
 #ifdef AGS_DEBUG
   g_message("motion add %lu %f", acceleration->x, acceleration->y);
 #endif
-    
-  /* queue draw */
-  gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
 }
 
 void
@@ -1444,8 +1438,6 @@ ags_automation_edit_drawing_area_motion_notify_select_acceleration(GtkWidget *ed
   }else{
     automation_edit->selection_y1 = 0.0;
   }
-    
-  gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
 }
 
 gboolean
@@ -1495,6 +1487,8 @@ ags_automation_edit_motion_callback(GtkEventControllerMotion *event_controller,
 									 x, y);
     }
   }
+    
+  gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
 
   return(FALSE);
 }
@@ -1621,9 +1615,6 @@ ags_automation_edit_drawing_area_button_press_position_cursor(GtkWidget *editor,
       automation_edit->cursor_position_y = (((allocation.height - y) / g_range) * c_range) + lower;
     }
   }
-
-  /* queue draw */
-  gtk_widget_queue_draw((GtkWidget *) automation_edit);
 }
   
 void
@@ -1708,9 +1699,6 @@ ags_automation_edit_drawing_area_button_press_add_acceleration(GtkWidget *editor
 
   automation_edit->current_acceleration = acceleration;
   g_object_ref(acceleration);
-
-  /* queue draw */
-  gtk_widget_queue_draw((GtkWidget *) automation_edit);
 }
 
 void
@@ -1735,8 +1723,6 @@ ags_automation_edit_drawing_area_button_press_select_acceleration(GtkWidget *edi
     
   automation_edit->selection_y0 = (guint) y + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->vscrollbar));
   automation_edit->selection_y1 = automation_edit->selection_y0;
-
-  gtk_widget_queue_draw((GtkWidget *) automation_edit);
 }
 
 gboolean
@@ -1879,6 +1865,8 @@ ags_automation_edit_gesture_click_pressed_callback(GtkGestureClick *event_contro
     }
   }
 
+  gtk_widget_queue_draw((GtkWidget *) automation_edit);
+
   return(FALSE);
 }
 
@@ -1945,9 +1933,6 @@ ags_automation_edit_drawing_area_button_release_position_cursor(GtkWidget *edito
       automation_edit->cursor_position_y = (((allocation.height - y) / g_range) * c_range) + lower;
     }
   }
-    
-  /* queue draw */
-  gtk_widget_queue_draw((GtkWidget *) automation_edit);
 }
 
 void
@@ -2034,8 +2019,6 @@ ags_automation_edit_drawing_area_button_release_add_acceleration(GtkWidget *edit
   
   automation_edit->current_acceleration = NULL;
   g_object_unref(acceleration);
-
-  gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
 }
   
 void
@@ -2105,8 +2088,6 @@ ags_automation_edit_drawing_area_button_release_delete_acceleration(GtkWidget *e
   /* delete acceleration */
   ags_composite_editor_delete_acceleration(editor,
 					   x, y);
-
-  gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
 }
   
 void
@@ -2197,8 +2178,6 @@ ags_automation_edit_drawing_area_button_release_select_acceleration(GtkWidget *e
   ags_composite_editor_select_region((AgsCompositeEditor *) editor,
 				     x0, y0,
 				     x1, y1);
-
-  gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
 }
 
 gboolean
@@ -2266,6 +2245,8 @@ ags_automation_edit_gesture_click_released_callback(GtkGestureClick *event_contr
       automation_edit->mode = AGS_AUTOMATION_EDIT_NO_EDIT_MODE;
     }
   }
+
+  gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
 
   return(FALSE);
 }

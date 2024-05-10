@@ -910,9 +910,6 @@ ags_wave_edit_drawing_area_motion_notify_position_cursor(GtkWidget *editor,
 #ifdef AGS_DEBUG
   g_message("%lu %f", wave_edit->cursor_position_x, wave_edit->cursor_position_y);
 #endif
-    
-  /* queue draw */
-  gtk_widget_queue_draw((GtkWidget *) wave_edit->drawing_area);
 }
 
 void
@@ -938,8 +935,6 @@ ags_wave_edit_drawing_area_motion_notify_select_buffer(GtkWidget *editor,
   }else{
     wave_edit->selection_y1 = 0.0;
   }
-    
-  gtk_widget_queue_draw((GtkWidget *) wave_edit->drawing_area);
 }
 
 gboolean
@@ -987,6 +982,8 @@ ags_wave_edit_motion_callback(GtkEventControllerMotion *event_controller,
 							     x, y);
     }
   }
+    
+  gtk_widget_queue_draw((GtkWidget *) wave_edit->drawing_area);
 
   return(FALSE);
 }
@@ -1091,9 +1088,6 @@ ags_wave_edit_drawing_area_button_press_position_cursor(GtkWidget *editor,
   wave_edit->cursor_position_x = (guint) ((zoom_factor * x + (gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar)) / zoom / zoom_correction)));
     
   wave_edit->cursor_position_y = (((allocation.height - y) / g_range) * c_range);
-
-  /* queue draw */
-  gtk_widget_queue_draw((GtkWidget *) wave_edit->drawing_area);
 }
   
 void
@@ -1118,8 +1112,6 @@ ags_wave_edit_drawing_area_button_press_select_buffer(GtkWidget *editor,
     
   wave_edit->selection_y0 = (guint) y + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(wave_edit->vscrollbar));
   wave_edit->selection_y1 = wave_edit->selection_y0;
-
-  gtk_widget_queue_draw((GtkWidget *) wave_edit->drawing_area);
 }  
 
 gboolean
@@ -1179,6 +1171,8 @@ ags_wave_edit_gesture_click_pressed_callback(GtkGestureClick *event_controller,
     }
   }
 
+  gtk_widget_queue_draw((GtkWidget *) wave_edit->drawing_area);
+
   return(FALSE);
 }
 
@@ -1218,9 +1212,6 @@ ags_wave_edit_drawing_area_button_release_position_cursor(GtkWidget *editor,
   wave_edit->cursor_position_x = (guint) ((zoom_factor * x + (gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar)) / zoom / zoom_correction)));
     
   wave_edit->cursor_position_y = (((allocation.height - y) / g_range) * c_range);
-    
-  /* queue draw */
-  gtk_widget_queue_draw((GtkWidget *) wave_edit->drawing_area);
 }
 
 void
@@ -1339,6 +1330,9 @@ ags_wave_edit_gesture_click_released_callback(GtkGestureClick *event_controller,
       wave_edit->mode = AGS_WAVE_EDIT_NO_EDIT_MODE;
     }
   }
+    
+  /* queue draw */
+  gtk_widget_queue_draw((GtkWidget *) wave_edit->drawing_area);
 
   return(FALSE);
 }
