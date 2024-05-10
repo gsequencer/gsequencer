@@ -112,6 +112,17 @@ ags_gsequencer_present_app_window_callback(GAction *action, GVariant *parameter,
 }
 
 void
+ags_gsequencer_present_preferences_window_callback(GAction *action, GVariant *parameter,
+						   AgsGSequencerApplication *gsequencer_app)
+{
+  AgsApplicationContext *application_context;
+  
+  application_context = ags_application_context_get_instance();
+    
+  gtk_window_present(ags_ui_provider_get_preferences(AGS_UI_PROVIDER(application_context)));
+}
+
+void
 ags_gsequencer_present_meta_data_window_callback(GAction *action, GVariant *parameter,
 						 AgsGSequencerApplication *gsequencer_app)
 {

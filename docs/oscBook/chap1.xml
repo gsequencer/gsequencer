@@ -35,42 +35,46 @@
 
     <table border="1">
       <caption>OSC server context paths</caption>
-      <thead>
-	<tr>
-	  <td>Context path</td>
-          <td>description</td>
-	</tr>
-      </thead>
-      <tbody>
-	<tr>
-	  <td><command>/info</command></td>
-          <td>Provides OSC server identifier</td>
-	</tr>
-	<tr>
-	  <td><command>/status</command></td>
-          <td>Retrieve OSC server status</td>
-	</tr>
-	<tr>
-	  <td><command>/config</command></td>
-          <td>Configure the GSequencer engine</td>
-	</tr>
-	<tr>
-	  <td><command>/action</command></td>
-          <td>Run tasks specified by action</td>
-	</tr>
-	<tr>
-	  <td><command>/node</command></td>
-          <td>Read values of nodes</td>
-	</tr>
-	<tr>
-	  <td><command>/renew</command></td>
-          <td>Modify values of nodes</td>
-	</tr>
-	<tr>
-	  <td><command>/meter</command></td>
-          <td>Continuing update meter values</td>
-	</tr>
-      </tbody>
+      <tgroup cols="2" align="left" colsep="1" rowsep="1">
+	<colspec colnum="1" colname="col1" colwidth="2*"/>
+	<colspec colnum="2" colname="col2" colwidth="3*"/>
+	<thead>
+	  <row>
+	    <entry>Context path</entry>
+            <entry>description</entry>
+	  </row>
+	</thead>
+	<tbody>
+	  <row>
+	    <entry><command>/info</command></entry>
+            <entry>Provides OSC server identifier</entry>
+	  </row>
+	  <row>
+	    <entry><command>/status</command></entry>
+            <entry>Rerowieve OSC server status</entry>
+	  </row>
+	  <row>
+	    <entry><command>/config</command></entry>
+            <entry>Configure the GSequencer engine</entry>
+	  </row>
+	  <row>
+	    <entry><command>/action</command></entry>
+            <entry>Run tasks specified by action</entry>
+	  </row>
+	  <row>
+	    <entry><command>/node</command></entry>
+            <entry>Read values of nodes</entry>
+	  </row>
+	  <row>
+	    <entry><command>/renew</command></entry>
+            <entry>Modify values of nodes</entry>
+	  </row>
+	  <row>
+	    <entry><command>/meter</command></entry>
+            <entry>Continuing update meter values</entry>
+	  </row>
+	</tbody>
+      </tgroup>
     </table>
   </sect1>
   

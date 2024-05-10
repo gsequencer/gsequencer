@@ -809,19 +809,14 @@ ags_app_action_util_smf_import()
   
   midi_import_wizard = (AgsMidiImportWizard *) ags_ui_provider_get_midi_import_wizard(AGS_UI_PROVIDER(application_context));
 
-  if(midi_import_wizard != NULL){
-    gtk_widget_set_visible((GtkWidget *) midi_import_wizard,
-			   TRUE);
+  if(midi_import_wizard == NULL){
+    midi_import_wizard = ags_midi_import_wizard_new();
+    ags_ui_provider_set_midi_import_wizard(AGS_UI_PROVIDER(application_context),
+					   (GtkWidget *) midi_import_wizard);
 
-    return;
+    ags_connectable_connect(AGS_CONNECTABLE(midi_import_wizard));
+    ags_applicable_reset(AGS_APPLICABLE(midi_import_wizard));
   }
-
-  midi_import_wizard = ags_midi_import_wizard_new();
-  ags_ui_provider_set_midi_import_wizard(AGS_UI_PROVIDER(application_context),
-					 (GtkWidget *) midi_import_wizard);
-
-  ags_connectable_connect(AGS_CONNECTABLE(midi_import_wizard));
-  ags_applicable_reset(AGS_APPLICABLE(midi_import_wizard));
 
   gtk_widget_set_visible((GtkWidget *) midi_import_wizard,
 			 TRUE);

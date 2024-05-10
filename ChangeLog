@@ -1,3 +1,15 @@
+ags (6.11.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented switching dark mode on macOS
+	* added initial missing app window in window menu
+	* added missing preferences in window menu
+
+ags (6.11.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved AgsMachine context dialogs
+
 ags (6.11.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

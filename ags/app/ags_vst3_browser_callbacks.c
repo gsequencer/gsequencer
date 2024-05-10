@@ -219,11 +219,12 @@ ags_vst3_browser_plugin_effect_callback(GtkTreeView *tree_view,
 				flags);
       
       ags_vst3_browser_add_port_editor(vst3_browser,
-					 port_editor,
-					 0, y,
-					 1, 1);
+				       port_editor,
+				       0, y,
+				       1, 1);
       
-      gtk_widget_show((GtkWidget *) port_editor);
+      gtk_widget_set_visible((GtkWidget *) port_editor,
+			     TRUE);
             
       y++;
       
