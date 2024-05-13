@@ -294,6 +294,7 @@ ags_app_action_util_open_response_callback(AgsFileDialog *file_dialog,
 					   gpointer data)
 {
   if(response == GTK_RESPONSE_ACCEPT){
+    AgsWindow *window;
     AgsFileWidget *file_widget;
     
     AgsApplicationContext *application_context;
@@ -312,6 +313,8 @@ ags_app_action_util_open_response_callback(AgsFileDialog *file_dialog,
     GError *error;
 
     application_context = ags_application_context_get_instance();
+
+    window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
     file_widget = ags_file_dialog_get_file_widget(file_dialog);
 
@@ -377,6 +380,20 @@ ags_app_action_util_open_response_callback(AgsFileDialog *file_dialog,
   application_id = "com.gsequencer.GSequencer";
 #endif
 
+    //FIXME:JK: macos open project files sandbox work-around
+#if 1
+    GFile* file[2];
+    
+    g_message("open %s", filename);
+
+    file[0] = g_file_new_for_path(filename);
+    file[1] = NULL;
+    
+    g_application_open(G_APPLICATION(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context))),
+		       file,
+		       1,
+		       "local command line");
+#else
 #if defined(AGS_OSX_DMG_ENV)
     app_dir = [[NSBundle mainBundle] bundlePath].UTF8String;
 
@@ -384,7 +401,6 @@ ags_app_action_util_open_response_callback(AgsFileDialog *file_dialog,
 			  app_dir,
 			  application_id,
 			  filename);
-
 #else
     str = g_strdup_printf("%s --filename '%s'",
 			  application_context->argv[0],
@@ -401,6 +417,7 @@ ags_app_action_util_open_response_callback(AgsFileDialog *file_dialog,
     }    
 
     g_free(str);
+#endif
 #else
     str = g_strdup_printf("%s --filename '%s'",
 			  application_context->argv[0],
