@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-05-13 08:39+0200\n"
+"POT-Creation-Date: 2024-05-13 10:40+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1210,7 +1210,7 @@ msgstr ""
 msgid "open file"
 msgstr ""
 
-#: ags/app/ags_app_action_util.c:667
+#: ags/app/ags_app_action_util.c:677
 msgid "save file as"
 msgstr ""
 

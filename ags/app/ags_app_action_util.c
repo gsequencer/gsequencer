@@ -374,16 +374,26 @@ ags_app_action_util_open_response_callback(AgsFileDialog *file_dialog,
 
     g_free(str);
 #elif defined(AGS_OSXAPI)
-    //FIXME:JK: macos open project files sandbox work-around
-#if 1
-    window->filename = g_strdup(filename);
-#else
 #if !defined(AGS_MACOS_SANDBOX)
   application_id = "org.nongnu.gsequencer.gsequencer";
 #else
   application_id = "com.gsequencer.GSequencer";
 #endif
 
+    //FIXME:JK: macos open project files sandbox work-around
+#if 1
+    GFile* file[2];
+    
+    g_message("open %s", filename);
+
+    file[0] = g_file_new_for_path(filename);
+    file[1] = NULL;
+    
+    g_application_open(G_APPLICATION(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context))),
+		       file,
+		       1,
+		       "local command line");
+#else
 #if defined(AGS_OSX_DMG_ENV)
     app_dir = [[NSBundle mainBundle] bundlePath].UTF8String;
 
