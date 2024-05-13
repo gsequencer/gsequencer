@@ -1,3 +1,9 @@
+ags (6.12.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved AgsFileWidget fixed memory leak and potential SIGSEGV while missing permissions
+	* work-around open project files on macOS
+
 ags (6.12.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

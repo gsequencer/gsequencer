@@ -584,7 +584,7 @@ main(int argc, char **argv)
 	     "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.");
       
       printf("Written by Joël Krähemann\n");
-
+      
       exit(0);
     }else if(!strncmp(argv[i], "--no-builtin-theme", 19)){
       builtin_theme_disabled = TRUE;
@@ -593,7 +593,16 @@ main(int argc, char **argv)
     }else if(!strncmp(argv[i], "--menu-bar", 11)){
       force_menu_bar = TRUE;
     }else if(!strncmp(argv[i], "--filename", 11)){
-      filename = argv[i + 1];
+      if(strlen(argv[i + 1]) > 2 && argv[i + 1][0] == '\''){
+	filename = g_strndup(argv[i + 1] + 1,
+			     strlen(argv[i + 1]) - 2);
+      }else if(strlen(argv[i + 1]) > 2 && argv[i + 1][0] == '"'){
+	filename = g_strndup(argv[i + 1] + 1,
+			     strlen(argv[i + 1]) - 2);
+       }else{
+	filename = g_strdup(argv[i + 1]);
+      }
+      
       i++;
 
       if(g_file_test(filename,
@@ -924,6 +933,9 @@ main(int argc, char **argv)
     
   g_application_run(G_APPLICATION(gsequencer_app),
 		    0, NULL);
+
+
+  g_free(filename);
   
   //  muntrace();
 
