@@ -2025,12 +2025,20 @@ ags_cartesian_draw(AgsCartesian *cartesian,
      !bg_success ||
      !shadow_success ||
      !highlight_success){
-    gdk_rgba_parse(&fg_color,
-		   "#101010");
+    if(!dark_theme){
+      gdk_rgba_parse(&fg_color,
+		     "#101010");
 
-    gdk_rgba_parse(&bg_color,
-		   "#cbd5d9");
+      gdk_rgba_parse(&bg_color,
+		     "#cbd5d9");
+    }else{
+      gdk_rgba_parse(&fg_color,
+		     "#cbd5d9");
 
+      gdk_rgba_parse(&bg_color,
+		     "#101010");
+    }
+    
     gdk_rgba_parse(&shadow_color,
 		   "#ffffff40");
 

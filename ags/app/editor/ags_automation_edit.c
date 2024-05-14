@@ -3011,21 +3011,33 @@ ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit, cairo_t *cr
 
   if(!fg_success ||
      !bg_success ||
-     !shadow_success ||
-     !text_success){
-    gdk_rgba_parse(&fg_color,
-		   "#101010");
+     !shadow_success){
+    if(!dark_theme){
+      gdk_rgba_parse(&fg_color,
+		     "#101010");
 
-    gdk_rgba_parse(&bg_color,
-		   "#cbd5d9");
+      gdk_rgba_parse(&bg_color,
+		     "#cbd5d9");
 
-    gdk_rgba_parse(&shadow_color,
-		   "#ffffff40");
+      gdk_rgba_parse(&shadow_color,
+		     "#ffffff40");
+    }else{
+      gdk_rgba_parse(&fg_color,
+		     "#eeeeec");
+      
+      gdk_rgba_parse(&bg_color,
+		     "#353535");
+      
+      gdk_rgba_parse(&shadow_color,
+		     "#202020");
+    }
+  }
 
+  if(!text_success){
     gdk_rgba_parse(&text_color,
 		   "#1a1a1a");
   }
-
+  
   /* push group */
   cairo_push_group(cr);
   
@@ -3165,6 +3177,8 @@ ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit, cairo_t *c
   AgsApplicationContext *application_context;
 
   GdkRGBA fg_color;
+  GdkRGBA bg_color;
+  GdkRGBA shadow_color;
 
   gdouble gui_scale_factor;
   gdouble tact;
@@ -3175,6 +3189,8 @@ ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit, cairo_t *c
   gboolean height_fits;
   gboolean dark_theme;
   gboolean fg_success;
+  gboolean bg_success;
+  gboolean shadow_success;
 
   GValue value = G_VALUE_INIT;
 
@@ -3211,9 +3227,24 @@ ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit, cairo_t *c
 					      "theme_fg_color",
 					      &fg_color);
 
-  if(!fg_success){
-    gdk_rgba_parse(&fg_color,
-		   "#101010");
+  bg_success = gtk_style_context_lookup_color(style_context,
+					      "theme_bg_color",
+					      &bg_color);
+    
+  shadow_success = gtk_style_context_lookup_color(style_context,
+						  "theme_shadow_color",
+						  &shadow_color);
+
+  if(!fg_success ||
+     !bg_success ||
+     !shadow_success){
+    if(!dark_theme){
+      gdk_rgba_parse(&fg_color,
+		     "#101010");
+    }else{
+      gdk_rgba_parse(&fg_color,
+		     "#eeeeec");
+    }
   }
   
   /* get offset and dimensions */
@@ -3261,6 +3292,8 @@ ags_automation_edit_draw_cursor(AgsAutomationEdit *automation_edit, cairo_t *cr)
   GtkAllocation allocation;
 
   GdkRGBA fg_color;
+  GdkRGBA bg_color;
+  GdkRGBA shadow_color;
 
   gdouble gui_scale_factor;
   double zoom, zoom_factor;
@@ -3272,6 +3305,8 @@ ags_automation_edit_draw_cursor(AgsAutomationEdit *automation_edit, cairo_t *cr)
   double width, height;
   gboolean dark_theme;
   gboolean fg_success;
+  gboolean bg_success;
+  gboolean shadow_success;
 
   GValue value = G_VALUE_INIT;
 
@@ -3300,9 +3335,24 @@ ags_automation_edit_draw_cursor(AgsAutomationEdit *automation_edit, cairo_t *cr)
 					      "theme_fg_color",
 					      &fg_color);
 
-  if(!fg_success){
-    gdk_rgba_parse(&fg_color,
-		   "#101010");
+  bg_success = gtk_style_context_lookup_color(style_context,
+					      "theme_bg_color",
+					      &bg_color);
+    
+  shadow_success = gtk_style_context_lookup_color(style_context,
+						  "theme_shadow_color",
+						  &shadow_color);
+
+  if(!fg_success ||
+     !bg_success ||
+     !shadow_success){
+    if(!dark_theme){
+      gdk_rgba_parse(&fg_color,
+		     "#101010");
+    }else{
+      gdk_rgba_parse(&fg_color,
+		     "#eeeeec");
+    }
   }
 
   gtk_widget_get_allocation(GTK_WIDGET(automation_edit->drawing_area),
@@ -3415,12 +3465,16 @@ ags_automation_edit_draw_selection(AgsAutomationEdit *automation_edit, cairo_t *
   GtkAllocation allocation;
 
   GdkRGBA fg_color;
+  GdkRGBA bg_color;
+  GdkRGBA shadow_color;
   
   double zoom, zoom_factor;
   double x, y;
   double width, height;
   gboolean dark_theme;
   gboolean fg_success;
+  gboolean bg_success;
+  gboolean shadow_success;
 
   GValue value = G_VALUE_INIT;
 
@@ -3446,9 +3500,24 @@ ags_automation_edit_draw_selection(AgsAutomationEdit *automation_edit, cairo_t *
 					      "theme_fg_color",
 					      &fg_color);
 
-  if(!fg_success){
-    gdk_rgba_parse(&fg_color,
-		   "#101010");
+  bg_success = gtk_style_context_lookup_color(style_context,
+					      "theme_bg_color",
+					      &bg_color);
+    
+  shadow_success = gtk_style_context_lookup_color(style_context,
+						  "theme_shadow_color",
+						  &shadow_color);
+  
+  if(!fg_success ||
+     !bg_success ||
+     !shadow_success){
+    if(!dark_theme){
+      gdk_rgba_parse(&fg_color,
+		     "#101010");
+    }else{
+      gdk_rgba_parse(&fg_color,
+		     "#eeeeec");
+    }
   }
   
   gtk_widget_get_allocation(GTK_WIDGET(automation_edit->drawing_area),
@@ -3543,6 +3612,7 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
   AgsApplicationContext *application_context;
 
   GdkRGBA fg_color;
+  GdkRGBA bg_color;
   GdkRGBA shadow_color;
 
   gdouble gui_scale_factor;
@@ -3559,6 +3629,7 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
   double width, height;
   gboolean dark_theme;
   gboolean fg_success;
+  gboolean bg_success;
   gboolean shadow_success;
 
   GValue value = {0};
@@ -3603,18 +3674,31 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
   fg_success = gtk_style_context_lookup_color(style_context,
 					      "theme_fg_color",
 					      &fg_color);
+
+  bg_success = gtk_style_context_lookup_color(style_context,
+					      "theme_bg_color",
+					      &bg_color);
     
   shadow_success = gtk_style_context_lookup_color(style_context,
 						  "theme_shadow_color",
 						  &shadow_color);
 
   if(!fg_success ||
+     !bg_success ||
      !shadow_success){
-    gdk_rgba_parse(&fg_color,
-		   "#101010");
+    if(!dark_theme){
+      gdk_rgba_parse(&fg_color,
+		     "#101010");
+      
+      gdk_rgba_parse(&shadow_color,
+		     "#ffffff40");
+    }else{
+      gdk_rgba_parse(&fg_color,
+		     "#eeeeec");
 
-    gdk_rgba_parse(&shadow_color,
-		   "#ffffff40");
+      gdk_rgba_parse(&shadow_color,
+		     "#202020");
+    }
   }
 
   allocation_width = gtk_widget_get_width(automation_edit->drawing_area);

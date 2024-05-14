@@ -50,6 +50,14 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="6.12.5" date="2024-05-14">
+      <description>
+	<p>
+	  Improved dark mode.
+	</p>
+      </description>
+    </release>
+
     <release version="6.11.5" date="2024-05-08">
       <description>
 	<p>
