@@ -10377,6 +10377,9 @@ ags_simple_file_read_composite_editor_launch(AgsFileLaunch *file_launch,
 
   if(start_list != NULL){
     gtk_check_button_set_active(start_list->data,
+				FALSE);
+    
+    gtk_check_button_set_active(start_list->data,
 				TRUE);
   }
   

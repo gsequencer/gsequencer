@@ -2002,14 +2002,25 @@ ags_notation_edit_draw_segment(AgsNotationEdit *notation_edit, cairo_t *cr)
   if(!fg_success ||
      !bg_success ||
      !shadow_success){
-    gdk_rgba_parse(&fg_color,
-		   "#101010");
-
-    gdk_rgba_parse(&bg_color,
-		   "#cbd5d9");
-
-    gdk_rgba_parse(&shadow_color,
-		   "#ffffff40");
+    if(!dark_theme){
+      gdk_rgba_parse(&fg_color,
+		     "#101010");
+      
+      gdk_rgba_parse(&bg_color,
+		     "#cbd5d9");
+      
+      gdk_rgba_parse(&shadow_color,
+		     "#ffffff40");
+    }else{
+      gdk_rgba_parse(&fg_color,
+		     "#eeeeec");
+      
+      gdk_rgba_parse(&bg_color,
+		     "#353535");
+      
+      gdk_rgba_parse(&shadow_color,
+		     "#202020");
+    }
   }
 
   /* adjustment */
@@ -2180,6 +2191,10 @@ ags_notation_edit_draw_position(AgsNotationEdit *notation_edit, cairo_t *cr)
   GtkAllocation allocation;
 
   GdkRGBA fg_color;
+  GdkRGBA bg_color;
+  GdkRGBA shadow_color;
+  gboolean bg_success;
+  gboolean shadow_success;
 
   guint channel_count;
   double zoom_factor;
@@ -2216,9 +2231,24 @@ ags_notation_edit_draw_position(AgsNotationEdit *notation_edit, cairo_t *cr)
 					      "theme_fg_color",
 					      &fg_color);
 
-  if(!fg_success){
-    gdk_rgba_parse(&fg_color,
-		   "#101010");
+  bg_success = gtk_style_context_lookup_color(style_context,
+					      "theme_bg_color",
+					      &bg_color);
+    
+  shadow_success = gtk_style_context_lookup_color(style_context,
+						  "theme_shadow_color",
+						  &shadow_color);
+
+  if(!fg_success ||
+     !bg_success ||
+     !shadow_success){
+    if(!dark_theme){
+      gdk_rgba_parse(&fg_color,
+		     "#101010");
+    }else{
+      gdk_rgba_parse(&fg_color,
+		     "#eeeeec");      
+    }
   }
   
   /* get channel count */
@@ -2283,12 +2313,16 @@ ags_notation_edit_draw_cursor(AgsNotationEdit *notation_edit, cairo_t *cr)
   GtkAllocation allocation;
   
   GdkRGBA fg_color;
+  GdkRGBA bg_color;
+  GdkRGBA shadow_color;
 
   double zoom_factor;
   double x, y;
   double width, height;
   gboolean dark_theme;
   gboolean fg_success;
+  gboolean bg_success;
+  gboolean shadow_success;
 
   GValue value = G_VALUE_INIT;
 
@@ -2315,9 +2349,24 @@ ags_notation_edit_draw_cursor(AgsNotationEdit *notation_edit, cairo_t *cr)
 					      "theme_fg_color",
 					      &fg_color);
 
-  if(!fg_success){
-    gdk_rgba_parse(&fg_color,
-		   "#101010");
+  bg_success = gtk_style_context_lookup_color(style_context,
+					      "theme_bg_color",
+					      &bg_color);
+    
+  shadow_success = gtk_style_context_lookup_color(style_context,
+						  "theme_shadow_color",
+						  &shadow_color);
+
+  if(!fg_success ||
+     !bg_success ||
+     !shadow_success){
+    if(!dark_theme){
+      gdk_rgba_parse(&fg_color,
+		     "#101010");
+    }else{
+      gdk_rgba_parse(&fg_color,
+		     "#eeeeec");
+    }
   }
   
   /* zoom */
@@ -2392,6 +2441,8 @@ ags_notation_edit_draw_selection(AgsNotationEdit *notation_edit, cairo_t *cr)
   GtkSettings *settings;
 
   GdkRGBA fg_color;
+  GdkRGBA bg_color;
+  GdkRGBA shadow_color;
 
   GtkAllocation allocation;
   
@@ -2399,6 +2450,8 @@ ags_notation_edit_draw_selection(AgsNotationEdit *notation_edit, cairo_t *cr)
   double width, height;
   gboolean dark_theme;
   gboolean fg_success;
+  gboolean bg_success;
+  gboolean shadow_success;
 
   GValue value = G_VALUE_INIT;
 
@@ -2424,9 +2477,24 @@ ags_notation_edit_draw_selection(AgsNotationEdit *notation_edit, cairo_t *cr)
 					      "theme_fg_color",
 					      &fg_color);
 
-  if(!fg_success){
-    gdk_rgba_parse(&fg_color,
-		   "#101010");
+  bg_success = gtk_style_context_lookup_color(style_context,
+					      "theme_bg_color",
+					      &bg_color);
+    
+  shadow_success = gtk_style_context_lookup_color(style_context,
+						  "theme_shadow_color",
+						  &shadow_color);
+
+  if(!fg_success ||
+     !bg_success ||
+     !shadow_success){
+    if(!dark_theme){
+      gdk_rgba_parse(&fg_color,
+		     "#101010");
+    }else{
+      gdk_rgba_parse(&fg_color,
+		     "#eeeeec");
+    }
   }
 
   gtk_widget_get_allocation(GTK_WIDGET(notation_edit->drawing_area),
@@ -2478,12 +2546,20 @@ ags_notation_edit_draw_selection(AgsNotationEdit *notation_edit, cairo_t *cr)
   cairo_push_group(cr);
 
   /* draw selection */
-  cairo_set_source_rgba(cr,
-			fg_color.red,
-			fg_color.blue,
-			fg_color.green,
-			1.0 / 3.0);
-
+  if(!dark_theme){
+    cairo_set_source_rgba(cr,
+			  fg_color.red,
+			  fg_color.blue,
+			  fg_color.green,
+			  1.0 / 3.0);
+  }else{
+    cairo_set_source_rgba(cr,
+			  fg_color.red,
+			  fg_color.blue,
+			  fg_color.green,
+			  1.0 / 3.0);
+  }
+  
   cairo_rectangle(cr,
 		  x, y,
 		  width, height);
@@ -2512,6 +2588,8 @@ ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
   GtkAllocation allocation;
 
   GdkRGBA fg_color;
+  GdkRGBA bg_color;
+  GdkRGBA shadow_color;
   GdkRGBA highlight_color;
   
   double zoom_factor;
@@ -2525,6 +2603,8 @@ ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
   gboolean dark_theme;
   gboolean fg_success;
   gboolean highlight_success;
+  gboolean bg_success;
+  gboolean shadow_success;
 
   GValue value = G_VALUE_INIT;
   
@@ -2551,18 +2631,39 @@ ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
   fg_success = gtk_style_context_lookup_color(style_context,
 					      "theme_fg_color",
 					      &fg_color);
+
+  bg_success = gtk_style_context_lookup_color(style_context,
+					      "theme_bg_color",
+					      &bg_color);
+    
+  shadow_success = gtk_style_context_lookup_color(style_context,
+						  "theme_shadow_color",
+						  &shadow_color);
     
   highlight_success = gtk_style_context_lookup_color(style_context,
 						     "theme_highlight_color",
 						     &highlight_color);
 
   if(!fg_success ||
-     !highlight_success){
-    gdk_rgba_parse(&fg_color,
-		   "#101010");
+     !bg_success ||
+     !shadow_success){
+    if(!dark_theme){
+      gdk_rgba_parse(&fg_color,
+		     "#101010");
+    }else{
+      gdk_rgba_parse(&fg_color,
+		     "#eeeeec");
+    }
+  }
 
-    gdk_rgba_parse(&highlight_color,
-		   "#00000040");
+  if(!highlight_success){
+    if(!dark_theme){
+      gdk_rgba_parse(&highlight_color,
+		     "#00000040");
+    }else{
+      gdk_rgba_parse(&highlight_color,
+		     "#00000040");
+    }
   }
 
   /* get channel count */
