@@ -3922,6 +3922,12 @@ gen-symbols-ags-gui:
 gen-symbols-all: gen-symbols-ags gen-symbols-ags-thread gen-symbols-ags-server gen-symbols-ags-audio gen-symbols-ags-vst gen-symbols-ags-gui
 	echo "Generated all symbols"
 
+fix-symbols-all: fix-symbols-ags-audio
+	echo "Fixed all symbols"
+
+fix-symbols-all-bsd: fix-symbols-ags-audio-bsd
+	echo "Fixed  all symbols"
+
 gen-marshallers:
 	cat ags_license_header > ags/object/ags_marshal.h
 	glib-genmarshal --prefix=ags_cclosure_marshal --header ags/object/ags_marshallers.list >> ags/object/ags_marshal.h
