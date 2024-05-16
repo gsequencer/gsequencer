@@ -9,9 +9,9 @@
 
 LT_CURRENT=6
 LT_REVISION=12
-LT_AGE=5
+LT_AGE=6
 
-m4_define([ags_version], [6.12.5])
+m4_define([ags_version], [6.12.6])
 
 AC_PREREQ([2.69])
 AC_INIT([gsequencer],m4_defn([ags_version]),[jkraehemann@gmail.com])
@@ -26,6 +26,8 @@ AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION([0.19.8])
 
 # options
+AC_ARG_VAR(PICFLAGS, PIC flags)
+
 AC_ARG_VAR(INTROSPECTION_SCANNER, introspection scanner)
 AC_ARG_VAR(INTROSPECTION_COMPILER, introspection compiler)
 
@@ -152,6 +154,11 @@ AC_ARG_ENABLE(core-audio, [AS_HELP_STRING([--enable-core-audio],
                                           [enable core audio (default is no)])],
               [],
               [enable_core_audio=no])
+
+AC_ARG_ENABLE(audio-toolbox, [AS_HELP_STRING([--enable-audio-toolbox],
+                                             [enable core audio (default is no)])],
+              [],
+              [enable_audio_toolbox=no])
 
 AC_ARG_ENABLE(audio-unit, [AS_HELP_STRING([--enable-audio-unit],
                                           [enable audio unit (default is no)])],
@@ -441,6 +448,8 @@ AS_IF([test "x$enable_core_audio" != xno],
 
       AC_MSG_NOTICE([core audio enabled])],
       [AC_MSG_NOTICE([core audio disabled])])
+
+AM_CONDITIONAL([WITH_AUDIO_TOOLBOX], [test "x$enable_audio_toolbox" == xyes])
 
 AS_IF([test "x$enable_audio_unit" != xno],
       [AC_DEFINE([AGS_WITH_AUDIO_UNIT], [1], [audio-unit enabled])
