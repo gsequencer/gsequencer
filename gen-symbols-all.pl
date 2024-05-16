@@ -28,6 +28,8 @@ print $fh "\n";
 
 close($license_fh);
 
+print $fh "ags_application_context\n";
+
 my @files = File::Find::Rule->name("*.h")->in("ags/util");
 
 foreach $f (@files){
@@ -211,7 +213,7 @@ sub test_func()
 {
     my ($current_filename, $fh) = @_;
 
-    print "test $current_filename\n";
+#    print "test $current_filename\n";
     
     open(my $current_fh, '<', $current_filename) or return;
 

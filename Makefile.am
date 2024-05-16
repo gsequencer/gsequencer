@@ -205,6 +205,7 @@ EXTRA_DIST += \
 	license-notice-permissive-xml.txt
 
 EXTRA_DIST += \
+	gen-symbols-all.pl \
 	libags.sym.in \
 	libags_thread.sym.in \
 	libags_server.sym.in \
@@ -3864,6 +3865,28 @@ gen-symbols-ags-audio:
 	find ags/plugin -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_audio.sym.in
 	find ags/audio -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_audio.sym.in
 
+gen-symbols-ags-vst:
+	rm -f libags_vst.sym.in
+	touch libags_vst.sym.in
+	cat license-notice-gnu-gpl-3-0+-sym.txt >> libags_vst.sym.in
+	echo -e -n "\n" >> libags_vst.sym.in
+	find ags/vst3-capi -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_vst.sym.in
+
+gen-symbols-ags-gui:
+	rm -f libags_gui.sym.in
+	touch libags_gui.sym.in
+	cat license-notice-gnu-gpl-3-0+-sym.txt >> libags_gui.sym.in
+	echo -e -n "\n" >> libags_gui.sym.in
+	find ags/widget -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_gui.sym.in
+	find ags/widget -name "ags_widget_marshal.h" | xargs grep --no-filename -o -P "(ags_widget_cclosure_marshal_[a-zA-Z0-9_]+)" >> libags_gui.sym.in
+
+gen-symbols-all: gen-symbols-ags gen-symbols-ags-thread gen-symbols-ags-server gen-symbols-ags-audio gen-symbols-ags-vst gen-symbols-ags-gui
+	echo "Generated all symbols"
+
+gen-symbols-all-bsd:
+	perl gen-symbols-all.pl
+	echo "Generated all symbols"
+
 fix-symbols-ags-audio:
 if !WITH_LIBINSTPATCH
 	${MAKE} rm-symbols-ags-audio-ipatch
@@ -3888,9 +3911,11 @@ endif
 
 rm-symbols-ags-audio-ipatch:
 	sed -i '/ipatch/d' libags_audio.sym.in
+	sed -i '/sf2/d' libags_audio.sym.in
 
-rm-symbols-ags-audio-vst3-bsd:
+rm-symbols-ags-audio-ipatch-bsd:
 	sed -i '' '/ipatch/d' libags_audio.sym.in
+	sed -i '' '/sf2/d' libags_audio.sym.in
 
 rm-symbols-ags-audio-vst3:
 	sed -i '/vst3/d' libags_audio.sym.in
@@ -3904,23 +3929,6 @@ rm-symbols-ags-audio-audio-toolbox:
 rm-symbols-ags-audio-audio-toolbox-bsd:
 	sed -i '' '/audio_toolbox/d' libags_audio.sym.in
 
-gen-symbols-ags-vst:
-	rm -f libags_vst.sym.in
-	touch libags_vst.sym.in
-	cat license-notice-gnu-gpl-3-0+-sym.txt >> libags_vst.sym.in
-	echo -e -n "\n" >> libags_vst.sym.in
-	find ags/vst3-capi -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_vst.sym.in
-
-gen-symbols-ags-gui:
-	rm -f libags_gui.sym.in
-	touch libags_gui.sym.in
-	cat license-notice-gnu-gpl-3-0+-sym.txt >> libags_gui.sym.in
-	echo -e -n "\n" >> libags_gui.sym.in
-	find ags/widget -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_gui.sym.in
-	find ags/widget -name "ags_widget_marshal.h" | xargs grep --no-filename -o -P "(ags_widget_cclosure_marshal_[a-zA-Z0-9_]+)" >> libags_gui.sym.in
-
-gen-symbols-all: gen-symbols-ags gen-symbols-ags-thread gen-symbols-ags-server gen-symbols-ags-audio gen-symbols-ags-vst gen-symbols-ags-gui
-	echo "Generated all symbols"
 
 fix-symbols-all: fix-symbols-ags-audio
 	echo "Fixed all symbols"
