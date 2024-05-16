@@ -2166,6 +2166,7 @@ ags_file_widget_location_callback(AgsIconLink *icon_link,
 /**
  * ags_file_widget_get_recently_used:
  * @file_widget: the #AgsFileWidget
+ * @strv_length: (out): the string vector length
  *
  * Get recently used from @file_widget.
  *

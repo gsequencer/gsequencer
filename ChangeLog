@@ -1,3 +1,8 @@
+ags (6.12.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved build generating symbols
+
 ags (6.12.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
