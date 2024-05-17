@@ -470,7 +470,7 @@ ags_composite_edit_connect(AgsConnectable *connectable)
   }
 
   composite_edit->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
-
+  
   if(AGS_IS_NOTATION_EDIT(composite_edit->edit)){
     ags_connectable_connect(AGS_CONNECTABLE(composite_edit->edit));
   }
