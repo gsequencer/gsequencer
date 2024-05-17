@@ -5713,9 +5713,17 @@ ags_gsequencer_application_context_update_ui_timeout(AgsGSequencerApplicationCon
 	theme = "Adwaita:dark";
 
 	dark_mode = TRUE;
+      }else if([interface_style isEqualToString:NSAppearanceNameVibrantDark]){
+	theme = "Adwaita:dark";
+
+	dark_mode = TRUE;
       }else if([interface_style isEqualToString:NSAppearanceNameAccessibilityHighContrastAqua]){
 	theme = "HighContrast";
       }else if([interface_style isEqualToString:NSAppearanceNameAccessibilityHighContrastDarkAqua]){
+	theme = "HighContrast:dark";
+
+	dark_mode = TRUE;
+      }else if([interface_style isEqualToString:NSAppearanceNameAccessibilityHighContrastVibrantDark]){
 	theme = "HighContrast:dark";
 
 	dark_mode = TRUE;
