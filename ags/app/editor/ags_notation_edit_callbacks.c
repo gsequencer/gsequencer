@@ -105,8 +105,103 @@ ags_notation_edit_drawing_area_resize_callback(GtkWidget *drawing_area,
 					       gint width, gint height,
 					       AgsNotationEdit *notation_edit)
 {
-  //  ags_notation_edit_reset_vscrollbar(notation_edit);
-  //  ags_notation_edit_reset_hscrollbar(notation_edit);
+  AgsCompositeEditor *composite_editor;
+  AgsCompositeToolbar *composite_toolbar;
+  AgsCompositeEdit *composite_edit;
+  
+  AgsApplicationContext *application_context;
+
+  GtkAdjustment *adjustment;
+  GtkAdjustment *edit_adjustment;
+  GtkAdjustment *composite_adjustment;
+
+  GtkAllocation allocation;
+  GtkAllocation scrolled_window_allocation;
+
+  GList *start_list, *list;
+
+  guint list_length;
+  
+  guint key_count;
+  double varea_height;
+
+  gdouble gui_scale_factor;
+  double zoom_factor, zoom;
+  double zoom_correction;
+  guint map_width;
+  
+  application_context = ags_application_context_get_instance();
+
+  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  composite_edit = composite_editor->notation_edit;
+  
+  /* scale factor */
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
+
+  /* zoom */
+  composite_toolbar = composite_editor->toolbar;
+
+  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) composite_toolbar->zoom));
+  zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) composite_toolbar->zoom) - 2.0);
+
+  zoom_correction = 1.0 / 16;
+
+  /* map width */
+  map_width = ((64.0) * (16.0 * 16.0 * 1200.0) * zoom * zoom_correction);
+
+  ags_notation_edit_reset_hscrollbar(notation_edit);
+
+  /* adjustment */
+  adjustment = gtk_scrollbar_get_adjustment(composite_editor->notation_edit->hscrollbar);
+
+  /* allocation */
+  gtk_widget_get_allocation(GTK_WIDGET(AGS_NOTATION_EDIT(notation_edit)->drawing_area),
+			    &allocation);
+
+  if(map_width - allocation.width > 0){
+    if(gtk_adjustment_get_value(adjustment) + allocation.width > gtk_adjustment_get_upper(adjustment)){
+      gtk_adjustment_set_value(adjustment,
+			       map_width - allocation.width);
+    }
+  }else{
+    gtk_adjustment_set_value(adjustment,
+			     0.0);
+  }
+
+  ags_notation_edit_reset_vscrollbar(notation_edit);
+
+  /* adjustment */
+  adjustment = gtk_scrollbar_get_adjustment(composite_edit->vscrollbar);
+
+  edit_adjustment = gtk_scrolled_window_get_vadjustment(AGS_SCROLLED_PIANO(composite_edit->edit_control)->scrolled_window);
+
+  /* allocation */
+  gtk_widget_get_allocation(GTK_WIDGET(notation_edit->drawing_area),
+			    &allocation);
+    
+  /* get key count */
+  key_count = notation_edit->key_count;
+
+  varea_height = (key_count * notation_edit->control_height);
+
+  if(varea_height - allocation.height > 0){
+    gtk_adjustment_set_upper(adjustment,
+			     (gdouble) (varea_height - allocation.height));
+
+    if(gtk_adjustment_get_value(adjustment) + allocation.height > gtk_adjustment_get_upper(adjustment)){
+      gtk_adjustment_set_value(adjustment,
+			       varea_height - allocation.height);
+      
+      gtk_adjustment_set_value(edit_adjustment,
+			       gtk_adjustment_get_value(adjustment));
+    }
+  }else{
+    gtk_adjustment_set_value(adjustment,
+			     0.0);
+      
+    gtk_adjustment_set_value(edit_adjustment,
+			     0.0);
+  }
   
   gtk_widget_queue_draw((GtkWidget *) notation_edit->drawing_area);
 }

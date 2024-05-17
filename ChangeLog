@@ -1,3 +1,9 @@
+ags (6.13.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed composite edit resize and scrolling areas of editors
+	* fixed ags-fx-lv2 load port
+
 ags (6.12.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
