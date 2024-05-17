@@ -910,9 +910,6 @@ ags_wave_edit_drawing_area_motion_notify_position_cursor(GtkWidget *editor,
 #ifdef AGS_DEBUG
   g_message("%lu %f", wave_edit->cursor_position_x, wave_edit->cursor_position_y);
 #endif
-    
-  /* queue draw */
-  gtk_widget_queue_draw((GtkWidget *) wave_edit->drawing_area);
 }
 
 void
@@ -938,8 +935,6 @@ ags_wave_edit_drawing_area_motion_notify_select_buffer(GtkWidget *editor,
   }else{
     wave_edit->selection_y1 = 0.0;
   }
-    
-  gtk_widget_queue_draw((GtkWidget *) wave_edit->drawing_area);
 }
 
 gboolean
@@ -987,6 +982,8 @@ ags_wave_edit_motion_callback(GtkEventControllerMotion *event_controller,
 							     x, y);
     }
   }
+    
+  gtk_widget_queue_draw((GtkWidget *) wave_edit->drawing_area);
 
   return(FALSE);
 }
@@ -1018,16 +1015,16 @@ ags_wave_edit_gesture_swipe_callback(GtkGestureSwipe *event_controller,
   if(x > 0.0){
     adjustment = gtk_scrollbar_get_adjustment(composite_editor->wave_edit->hscrollbar);
 
-    if(gtk_adjustment_get_value(adjustment) + (zoom_factor * wave_edit->control_width) < gtk_adjustment_get_upper(adjustment)){
+    if(gtk_adjustment_get_value(adjustment) + (4.0 * wave_edit->control_width) < gtk_adjustment_get_upper(adjustment)){
       gtk_adjustment_set_value(adjustment,
-			       gtk_adjustment_get_value(adjustment) + (zoom_factor * wave_edit->control_width));
+			       gtk_adjustment_get_value(adjustment) + (4.0 * wave_edit->control_width));
     }
   }else if(x < 0.0){
     adjustment = gtk_scrollbar_get_adjustment(composite_editor->wave_edit->hscrollbar);
 
-    if(gtk_adjustment_get_value(adjustment) - (zoom_factor * wave_edit->control_width) > 0.0){
+    if(gtk_adjustment_get_value(adjustment) - (4.0 * wave_edit->control_width) > 0.0){
       gtk_adjustment_set_value(adjustment,
-			       gtk_adjustment_get_value(adjustment) - (zoom_factor * wave_edit->control_width));
+			       gtk_adjustment_get_value(adjustment) - (4.0 * wave_edit->control_width));
     }else{
       gtk_adjustment_set_value(adjustment,
 			       0.0);
@@ -1091,9 +1088,6 @@ ags_wave_edit_drawing_area_button_press_position_cursor(GtkWidget *editor,
   wave_edit->cursor_position_x = (guint) ((zoom_factor * x + (gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar)) / zoom / zoom_correction)));
     
   wave_edit->cursor_position_y = (((allocation.height - y) / g_range) * c_range);
-
-  /* queue draw */
-  gtk_widget_queue_draw((GtkWidget *) wave_edit->drawing_area);
 }
   
 void
@@ -1118,8 +1112,6 @@ ags_wave_edit_drawing_area_button_press_select_buffer(GtkWidget *editor,
     
   wave_edit->selection_y0 = (guint) y + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(wave_edit->vscrollbar));
   wave_edit->selection_y1 = wave_edit->selection_y0;
-
-  gtk_widget_queue_draw((GtkWidget *) wave_edit->drawing_area);
 }  
 
 gboolean
@@ -1179,6 +1171,8 @@ ags_wave_edit_gesture_click_pressed_callback(GtkGestureClick *event_controller,
     }
   }
 
+  gtk_widget_queue_draw((GtkWidget *) wave_edit->drawing_area);
+
   return(FALSE);
 }
 
@@ -1218,9 +1212,6 @@ ags_wave_edit_drawing_area_button_release_position_cursor(GtkWidget *editor,
   wave_edit->cursor_position_x = (guint) ((zoom_factor * x + (gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar)) / zoom / zoom_correction)));
     
   wave_edit->cursor_position_y = (((allocation.height - y) / g_range) * c_range);
-    
-  /* queue draw */
-  gtk_widget_queue_draw((GtkWidget *) wave_edit->drawing_area);
 }
 
 void
@@ -1339,6 +1330,9 @@ ags_wave_edit_gesture_click_released_callback(GtkGestureClick *event_controller,
       wave_edit->mode = AGS_WAVE_EDIT_NO_EDIT_MODE;
     }
   }
+    
+  /* queue draw */
+  gtk_widget_queue_draw((GtkWidget *) wave_edit->drawing_area);
 
   return(FALSE);
 }
@@ -1706,14 +1700,25 @@ ags_wave_edit_draw_segment(AgsWaveEdit *wave_edit, cairo_t *cr)
   if(!fg_success ||
      !bg_success ||
      !shadow_success){
-    gdk_rgba_parse(&fg_color,
-		   "#101010");
+    if(!dark_theme){
+      gdk_rgba_parse(&fg_color,
+		     "#101010");
+      
+      gdk_rgba_parse(&bg_color,
+		     "#cbd5d9");
 
-    gdk_rgba_parse(&bg_color,
-		   "#cbd5d9");
-
-    gdk_rgba_parse(&shadow_color,
-		   "#ffffff40");
+      gdk_rgba_parse(&shadow_color,
+		     "#ffffff40");
+    }else{
+      gdk_rgba_parse(&fg_color,
+		     "#eeeeec");
+      
+      gdk_rgba_parse(&bg_color,
+		     "#353535");
+      
+      gdk_rgba_parse(&shadow_color,
+		     "#202020");
+    }
   }
 
   /* push group */
@@ -1851,6 +1856,8 @@ ags_wave_edit_draw_position(AgsWaveEdit *wave_edit, cairo_t *cr)
   AgsApplicationContext *application_context;
 
   GdkRGBA fg_color;
+  GdkRGBA bg_color;
+  GdkRGBA shadow_color;
 
   gdouble gui_scale_factor;
   gdouble tact;
@@ -1861,6 +1868,8 @@ ags_wave_edit_draw_position(AgsWaveEdit *wave_edit, cairo_t *cr)
   gboolean height_fits;
   gboolean dark_theme;
   gboolean fg_success;
+  gboolean bg_success;
+  gboolean shadow_success;
 
   GValue value = {0,};
 
@@ -1897,9 +1906,24 @@ ags_wave_edit_draw_position(AgsWaveEdit *wave_edit, cairo_t *cr)
 					      "theme_fg_color",
 					      &fg_color);
 
-  if(!fg_success){
-    gdk_rgba_parse(&fg_color,
-		   "#101010");
+  bg_success = gtk_style_context_lookup_color(style_context,
+					      "theme_bg_color",
+					      &bg_color);
+    
+  shadow_success = gtk_style_context_lookup_color(style_context,
+						  "theme_shadow_color",
+						  &shadow_color);
+
+  if(!fg_success ||
+     !bg_success ||
+     !shadow_success){
+    if(!dark_theme){
+      gdk_rgba_parse(&fg_color,
+		     "#101010");
+    }else{
+      gdk_rgba_parse(&fg_color,
+		     "#eeeeec");
+    }
   }
 
   /* get offset and dimensions */
@@ -1947,6 +1971,8 @@ ags_wave_edit_draw_cursor(AgsWaveEdit *wave_edit, cairo_t *cr)
   GtkAllocation allocation;
 
   GdkRGBA fg_color;
+  GdkRGBA bg_color;
+  GdkRGBA shadow_color;
 
   gdouble gui_scale_factor;
   double zoom, zoom_factor;
@@ -1956,6 +1982,8 @@ ags_wave_edit_draw_cursor(AgsWaveEdit *wave_edit, cairo_t *cr)
   gboolean height_fits;
   gboolean dark_theme;
   gboolean fg_success;
+  gboolean bg_success;
+  gboolean shadow_success;
 
   GValue value = {0,};
 
@@ -1984,9 +2012,24 @@ ags_wave_edit_draw_cursor(AgsWaveEdit *wave_edit, cairo_t *cr)
 					      "theme_fg_color",
 					      &fg_color);
 
-  if(!fg_success){
-    gdk_rgba_parse(&fg_color,
-		   "#101010");
+  bg_success = gtk_style_context_lookup_color(style_context,
+					      "theme_bg_color",
+					      &bg_color);
+    
+  shadow_success = gtk_style_context_lookup_color(style_context,
+						  "theme_shadow_color",
+						  &shadow_color);
+
+  if(!fg_success ||
+     !bg_success ||
+     !shadow_success){
+    if(!dark_theme){
+      gdk_rgba_parse(&fg_color,
+		     "#101010");
+    }else{
+      gdk_rgba_parse(&fg_color,
+		     "#eeeeec");
+    }
   }
 
   gtk_widget_get_allocation(GTK_WIDGET(wave_edit->drawing_area),
@@ -2044,6 +2087,8 @@ ags_wave_edit_draw_selection(AgsWaveEdit *wave_edit, cairo_t *cr)
   GtkAllocation allocation;
 
   GdkRGBA fg_color;
+  GdkRGBA bg_color;
+  GdkRGBA shadow_color;
   
   double zoom, zoom_factor;
   double zoom_correction;
@@ -2051,6 +2096,8 @@ ags_wave_edit_draw_selection(AgsWaveEdit *wave_edit, cairo_t *cr)
   double width, height;
   gboolean dark_theme;
   gboolean fg_success;
+  gboolean bg_success;
+  gboolean shadow_success;
 
   GValue value = {0,};
 
@@ -2076,9 +2123,25 @@ ags_wave_edit_draw_selection(AgsWaveEdit *wave_edit, cairo_t *cr)
 					      "theme_fg_color",
 					      &fg_color);
 
-  if(!fg_success){
-    gdk_rgba_parse(&fg_color,
-		   "#101010");
+  bg_success = gtk_style_context_lookup_color(style_context,
+					      "theme_bg_color",
+					      &bg_color);
+    
+  shadow_success = gtk_style_context_lookup_color(style_context,
+						  "theme_shadow_color",
+						  &shadow_color);
+  
+
+  if(!fg_success ||
+     !bg_success ||
+     !shadow_success){
+    if(!dark_theme){
+      gdk_rgba_parse(&fg_color,
+		     "#101010");
+    }else{
+      gdk_rgba_parse(&fg_color,
+		     "#eeeeec");
+    }
   }
 
   gtk_widget_get_allocation(GTK_WIDGET(wave_edit->drawing_area),
@@ -2177,6 +2240,8 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
   GtkAllocation allocation;
 
   GdkRGBA fg_color;
+  GdkRGBA bg_color;
+  GdkRGBA shadow_color;
 
   GObject *soundcard;
   
@@ -2200,6 +2265,8 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
   guint i;
   gboolean dark_theme;
   gboolean fg_success;
+  gboolean bg_success;
+  gboolean shadow_success;
 
   GValue value = {0};
 
@@ -2246,9 +2313,24 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
 					      "theme_fg_color",
 					      &fg_color);
 
-  if(!fg_success){
-    gdk_rgba_parse(&fg_color,
-		   "#101010");
+  bg_success = gtk_style_context_lookup_color(style_context,
+					      "theme_bg_color",
+					      &bg_color);
+    
+  shadow_success = gtk_style_context_lookup_color(style_context,
+						  "theme_shadow_color",
+						  &shadow_color);
+
+  if(!fg_success ||
+     !bg_success ||
+     !shadow_success){
+    if(!dark_theme){
+      gdk_rgba_parse(&fg_color,
+		     "#101010");
+    }else{
+      gdk_rgba_parse(&fg_color,
+		     "#eeeeec");
+    }
   }
   
   gtk_widget_get_allocation(GTK_WIDGET(wave_edit->drawing_area),

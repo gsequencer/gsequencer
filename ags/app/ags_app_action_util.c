@@ -90,6 +90,11 @@
 #include <tchar.h>
 #endif
 
+#if defined(AGS_OSX_DMG_ENV)
+#include <Cocoa/Cocoa.h>
+#include <Foundation/Foundation.h>
+#endif
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -289,14 +294,18 @@ ags_app_action_util_open_response_callback(AgsFileDialog *file_dialog,
 					   gpointer data)
 {
   if(response == GTK_RESPONSE_ACCEPT){
+    AgsWindow *window;
     AgsFileWidget *file_widget;
     
     AgsApplicationContext *application_context;
     
     char *filename;
     gchar *str;
-#if defined(AGS_W32API) || defined(AGS_OSXAPI)
+#if defined(AGS_W32API)
     gchar *app_dir;
+#elif defined(AGS_OSXAPI)
+    gchar *app_dir;
+    gchar *application_id;
 #endif
 
     gint strv_length;
@@ -304,6 +313,8 @@ ags_app_action_util_open_response_callback(AgsFileDialog *file_dialog,
     GError *error;
 
     application_context = ags_application_context_get_instance();
+
+    window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
     file_widget = ags_file_dialog_get_file_widget(file_dialog);
 
@@ -363,23 +374,39 @@ ags_app_action_util_open_response_callback(AgsFileDialog *file_dialog,
 
     g_free(str);
 #elif defined(AGS_OSXAPI)
-    app_dir = g_path_get_dirname(application_context->argv[0]);
-  
-    if(g_path_is_absolute(app_dir)){
-      str = g_strdup_printf("%s %s %s",
-			    application_context->argv[0],
-			    "--filename",
-			    filename);
-    }else{
-      str = g_strdup_printf("%s/%s %s %s",
-			    g_get_current_dir(),
-			    application_context->argv[0],
-			    "--filename",
-			    filename);
-    }
-    
-    g_free(app_dir);
+#if !defined(AGS_MACOS_SANDBOX)
+  application_id = "org.nongnu.gsequencer.gsequencer";
+#else
+  application_id = "com.gsequencer.GSequencer";
+#endif
 
+    //FIXME:JK: macos open project files sandbox work-around
+#if 1
+    GFile* file[2];
+    
+    g_message("open %s", filename);
+
+    file[0] = g_file_new_for_path(filename);
+    file[1] = NULL;
+    
+    g_application_open(G_APPLICATION(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context))),
+		       file,
+		       1,
+		       "local command line");
+#else
+#if defined(AGS_OSX_DMG_ENV)
+    app_dir = [[NSBundle mainBundle] bundlePath].UTF8String;
+
+    str = g_strdup_printf("%s/Contents/MacOS/%s --filename '%s'",
+			  app_dir,
+			  application_id,
+			  filename);
+#else
+    str = g_strdup_printf("%s --filename '%s'",
+			  application_context->argv[0],
+			  filename);
+#endif
+    
     g_spawn_command_line_async(str,
 			       &error);
 
@@ -390,8 +417,9 @@ ags_app_action_util_open_response_callback(AgsFileDialog *file_dialog,
     }    
 
     g_free(str);
+#endif
 #else
-    str = g_strdup_printf("%s --filename %s",
+    str = g_strdup_printf("%s --filename '%s'",
 			  application_context->argv[0],
 			  filename);
 

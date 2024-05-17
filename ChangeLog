@@ -1,3 +1,52 @@
+ags (6.12.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved build generating symbols with script gen-symbols-all.pl
+
+ags (6.12.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved build generating symbols
+
+ags (6.12.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential SIGSEGV while open files
+	* fixed memory-leak in ags_simple_file.c
+	* improved dark mode of AgsDial
+	* improved dark mode of AgsIndicator
+	* improved dark mode of AgsCartesian
+	* improved dark mode of AgsNotationEdit
+	* improved dark mode of AgsAutomationEdit
+	* improved dark mode of AgsWaveEdit
+
+ags (6.12.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* work-around improved open project files on macOS
+
+ags (6.12.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved AgsFileWidget fixed memory leak and potential SIGSEGV while missing permissions
+	* work-around open project files on macOS
+
+ags (6.12.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved file open
+
+ags (6.12.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* minor improvements
+
+ags (6.12.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed motion event controller of piano roll
+	* improved gtk_widget_queue_draw() calls in notation, automation and wave edit
+
 ags (6.11.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
