@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-05-18 05:31+0200\n"
+"POT-Creation-Date: 2024-05-18 07:05+0200\n"
 "PO-Revision-Date: 2021-01-03 08:52+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: Deutsch <jkraehemann@gmail.com>\n"
@@ -356,7 +356,7 @@ msgstr "exportieren"
 #: ags/app/machine/ags_sf2_synth.c:1008 ags/app/machine/ags_sf2_synth.c:1162
 #: ags/app/machine/ags_ffplayer.c:484 ags/app/machine/ags_ffplayer.c:612
 #: ags/app/ags_machine_editor_collection.c:175
-#: ags/app/import/ags_track_mapper.c:236
+#: ags/app/import/ags_track_mapper.c:237
 #: ags/app/ags_connection_editor_listing.c:177
 #: ags/app/ags_connection_editor_collection.c:175
 #: ags/app/ags_machine_editor_listing.c:177
@@ -1988,8 +1988,8 @@ msgstr "eingeschaltet"
 msgid "base key"
 msgstr "Grundton"
 
-#: ags/app/machine/ags_ffplayer.c:375 ags/app/import/ags_track_mapper.c:264
-#: ags/app/import/ags_track_mapper.c:398
+#: ags/app/machine/ags_ffplayer.c:375 ags/app/import/ags_track_mapper.c:265
+#: ags/app/import/ags_track_mapper.c:414
 msgid "instrument"
 msgstr "Instrument"
 
@@ -2038,7 +2038,7 @@ msgstr "Erste Verknüpfung mit Line"
 msgid "line"
 msgstr "Line"
 
-#: ags/app/import/ags_track_mapper.c:277 ags/app/import/ags_track_mapper.c:425
+#: ags/app/import/ags_track_mapper.c:278 ags/app/import/ags_track_mapper.c:441
 msgid "sequence"
 msgstr "Sequenz"
 
