@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -222,6 +222,7 @@ ags_track_mapper_init(AgsTrackMapper *track_mapper)
 
   gtk_grid_set_column_spacing((GtkGrid *) track_mapper,
 			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+
   gtk_grid_set_row_spacing((GtkGrid *) track_mapper,
 			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
   
@@ -319,8 +320,23 @@ ags_track_mapper_init(AgsTrackMapper *track_mapper)
 		  1, 2,
 		  1, 1);
 
+  /* midi channel */
+  //NOTE:JK: midi only knows 16 channels, -1 means ignore channel information
+  track_mapper->midi_channel = (GtkSpinButton *) gtk_spin_button_new_with_range(-1.0, 16.0, 1.0);
+  gtk_spin_button_set_value(track_mapper->midi_channel,
+			    -1.0);
+
+  gtk_widget_set_valign((GtkWidget *) track_mapper->midi_channel,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) track_mapper->midi_channel,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach((GtkGrid *) track_mapper,
+		  (GtkWidget *) track_mapper->midi_channel,
+		  2, 2,
+		  1, 1);
+
   /* audio channels */
-  //NOTE:JK: midi only knows 16 channels
   track_mapper->audio_channels = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 16.0, 1.0);
   gtk_spin_button_set_value(track_mapper->audio_channels,
 			    2.0);
@@ -332,7 +348,7 @@ ags_track_mapper_init(AgsTrackMapper *track_mapper)
 
   gtk_grid_attach((GtkGrid *) track_mapper,
 		  (GtkWidget *) track_mapper->audio_channels,
-		  2, 2,
+		  3, 2,
 		  1, 1);
 
   /* offset */
@@ -347,7 +363,7 @@ ags_track_mapper_init(AgsTrackMapper *track_mapper)
 
   gtk_grid_attach((GtkGrid *) track_mapper,
 		  (GtkWidget *) track_mapper->offset,
-		  3, 2,
+		  4, 2,
 		  1, 1);
 }
 
@@ -664,6 +680,7 @@ ags_track_mapper_map(AgsTrackMapper *track_mapper)
 
   gchar *segmentation;
 
+  gint midi_channel;
   gdouble delay_factor;
   guint audio_channels;
   guint n_key_on, n_key_off;
@@ -682,6 +699,8 @@ ags_track_mapper_map(AgsTrackMapper *track_mapper)
   midi_util.major = 1;
   midi_util.minor = 0;  
 
+  midi_channel = gtk_spin_button_get_value_as_int(track_mapper->midi_channel);
+  
   /* map notation */
   notation_start =
     notation = NULL;
@@ -741,16 +760,39 @@ ags_track_mapper_map(AgsTrackMapper *track_mapper)
 
     while(child != NULL){
       if(child->type == XML_ELEMENT_NODE){
+	xmlChar *event;
+	xmlChar *key;
 	xmlChar *str;
 
 	glong delta_time;
 
-	if(!xmlStrncmp(xmlGetProp(child,
-				  BAD_CAST "event"),
+	event = xmlGetProp(child,
+			   BAD_CAST "event");
+	
+	if(!xmlStrncmp(event,
 		       "note-on",
 		       8)){
+	  key = NULL;
+	  
+	  if(midi_channel >= 0){
+	    key = xmlGetProp(child,
+			     BAD_CAST "key");
+
+	    if(key != (gint) g_ascii_strtoll(key,
+					     NULL,
+					     10)){
+	      child = child->next;
+	      
+	      xmlFree(event);
+	      xmlFree(key);
+	      
+	      continue;
+	    }
+	  }
+	  
 	  str = xmlGetProp(child,
 			   BAD_CAST "delta-time");
+
 	  delta_time = g_ascii_strtod(str,
 				      NULL);
 
@@ -830,12 +872,30 @@ ags_track_mapper_map(AgsTrackMapper *track_mapper)
 
 	  //	  g_object_unref(note);
 	  n_key_on++;
-	}else if(!xmlStrncmp(xmlGetProp(child,
-					BAD_CAST "event"),
+	}else if(!xmlStrncmp(event,
 			     "note-off",
 			     9)){	  
+	  key = NULL;
+	  
+	  if(midi_channel >= 0){
+	    key = xmlGetProp(child,
+			     BAD_CAST "key");
+
+	    if(key != (gint) g_ascii_strtoll(key,
+					     NULL,
+					     10)){
+	      child = child->next;
+	      
+	      xmlFree(event);
+	      xmlFree(key);
+	      
+	      continue;
+	    }
+	  }
+
 	  str = xmlGetProp(child,
 			   BAD_CAST "delta-time");
+
 	  delta_time = g_ascii_strtod(str,
 				      NULL);
 
@@ -909,6 +969,8 @@ ags_track_mapper_map(AgsTrackMapper *track_mapper)
 	  
 	  n_key_off++;
 	}
+
+	xmlFree(event);
       }
 
       child = child->next;
