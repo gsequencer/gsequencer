@@ -1,3 +1,10 @@
+ags (6.13.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved missing vibrant dark mode
+	* fixed ags-fx-notation attack bug
+	* fixed AgsMidiParser use varlength in meta-events
+
 ags (6.13.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
