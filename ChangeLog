@@ -1,3 +1,9 @@
+ags (6.13.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed scrollbars upper range to be 0.0 if no scrolling
+	* improved disable swipe if not cursor tool
+
 ags (6.13.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
