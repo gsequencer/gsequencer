@@ -1,3 +1,8 @@
+ags (6.14.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed compiler errors with vst3 enabled
+
 ags (6.14.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
