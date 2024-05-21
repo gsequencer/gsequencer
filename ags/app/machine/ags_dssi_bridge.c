@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -502,15 +502,6 @@ ags_dssi_bridge_finalize(GObject *gobject)
   AgsDssiBridge *dssi_bridge;
 
   dssi_bridge = (AgsDssiBridge *) gobject;
-  
-  g_object_disconnect(G_OBJECT(dssi_bridge),
-		      "any_signal::resize-audio-channels",
-		      G_CALLBACK(ags_dssi_bridge_resize_audio_channels),
-		      NULL,
-		      "any_signal::resize-pads",
-		      G_CALLBACK(ags_dssi_bridge_resize_pads),
-		      NULL,
-		      NULL);
 
   g_free(dssi_bridge->filename);
   g_free(dssi_bridge->effect);
@@ -524,7 +515,7 @@ ags_dssi_bridge_connect(AgsConnectable *connectable)
 {
   AgsDssiBridge *dssi_bridge;
 
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -541,7 +532,7 @@ ags_dssi_bridge_disconnect(AgsConnectable *connectable)
 {
   AgsDssiBridge *dssi_bridge;
 
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 

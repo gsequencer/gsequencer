@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-05-18 07:05+0200\n"
+"POT-Creation-Date: 2024-05-19 16:33+0200\n"
 "PO-Revision-Date: 2021-01-11 21:07+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: français <jkraehemann@gmail.com>\n"
@@ -393,64 +393,64 @@ msgstr ""
 msgid "_Remove"
 msgstr "bouger x"
 
-#: ags/app/editor/ags_machine_selector.c:324
+#: ags/app/editor/ags_machine_selector.c:339
 #, fuzzy
 msgid "add machine"
 msgstr "ajouter un index"
 
-#: ags/app/editor/ags_machine_selector.c:430
+#: ags/app/editor/ags_machine_selector.c:460
 msgid "reverse mapping"
 msgstr "assigner revers"
 
-#: ags/app/editor/ags_machine_selector.c:441
+#: ags/app/editor/ags_machine_selector.c:471
 msgid "shift piano"
 msgstr "glisser piano"
 
-#: ags/app/editor/ags_machine_selector.c:451
+#: ags/app/editor/ags_machine_selector.c:481
 msgid "A"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:456
+#: ags/app/editor/ags_machine_selector.c:486
 msgid "A#"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:461
+#: ags/app/editor/ags_machine_selector.c:491
 msgid "H"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:466
+#: ags/app/editor/ags_machine_selector.c:496
 msgid "C"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:471
+#: ags/app/editor/ags_machine_selector.c:501
 msgid "C#"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:476
+#: ags/app/editor/ags_machine_selector.c:506
 msgid "D"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:481
+#: ags/app/editor/ags_machine_selector.c:511
 msgid "D#"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:486
+#: ags/app/editor/ags_machine_selector.c:516
 msgid "E"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:491
+#: ags/app/editor/ags_machine_selector.c:521
 msgid "F"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:496
+#: ags/app/editor/ags_machine_selector.c:526
 msgid "F#"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:501
+#: ags/app/editor/ags_machine_selector.c:531
 msgid "G"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:506
+#: ags/app/editor/ags_machine_selector.c:536
 msgid "G#"
 msgstr ""
 
@@ -605,7 +605,7 @@ msgid "position tool"
 msgstr "position x"
 
 #: ags/app/editor/ags_composite_toolbar.c:930
-#: ags/app/ags_gsequencer_application.c:802
+#: ags/app/ags_gsequencer_application.c:803
 #, fuzzy
 msgid "Edit"
 msgstr "_Édition"
@@ -1119,117 +1119,117 @@ msgstr ""
 msgid "exclude sequencers"
 msgstr "exclure séquencer"
 
-#: ags/app/ags_gsequencer_application.c:719
+#: ags/app/ags_gsequencer_application.c:720
 #, fuzzy
 msgid "Open"
 msgstr "_Ouvrir"
 
-#: ags/app/ags_gsequencer_application.c:724
+#: ags/app/ags_gsequencer_application.c:725
 #, fuzzy
 msgid "Save"
 msgstr "_Mémoriser"
 
-#: ags/app/ags_gsequencer_application.c:729
+#: ags/app/ags_gsequencer_application.c:730
 msgid "Save as"
 msgstr "Mémoriser comme"
 
-#: ags/app/ags_gsequencer_application.c:734
+#: ags/app/ags_gsequencer_application.c:735
 #, fuzzy
 msgid "Export"
 msgstr "exporter"
 
-#: ags/app/ags_gsequencer_application.c:739
+#: ags/app/ags_gsequencer_application.c:740
 #, fuzzy
 msgid "Quit"
 msgstr "_Quitter"
 
-#: ags/app/ags_gsequencer_application.c:746
+#: ags/app/ags_gsequencer_application.c:747
 #, fuzzy
 msgid "File"
 msgstr "_Fichier"
 
-#: ags/app/ags_gsequencer_application.c:759
+#: ags/app/ags_gsequencer_application.c:760
 msgid "Add"
 msgstr "Ajouter"
 
-#: ags/app/ags_gsequencer_application.c:762
+#: ags/app/ags_gsequencer_application.c:763
 #, fuzzy
 msgid "Notation"
 msgstr "notation"
 
-#: ags/app/ags_gsequencer_application.c:767
+#: ags/app/ags_gsequencer_application.c:768
 msgid "Automation"
 msgstr "Automation"
 
-#: ags/app/ags_gsequencer_application.c:772
+#: ags/app/ags_gsequencer_application.c:773
 msgid "Wave"
 msgstr "Forme d'onde"
 
-#: ags/app/ags_gsequencer_application.c:779
+#: ags/app/ags_gsequencer_application.c:780
 msgid "Sheet"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:785
+#: ags/app/ags_gsequencer_application.c:786
 msgid "Tempo"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:790
+#: ags/app/ags_gsequencer_application.c:791
 msgid "Meta-data"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:795
+#: ags/app/ags_gsequencer_application.c:796
 msgid "Preferences"
 msgstr "Préréglage"
 
-#: ags/app/ags_gsequencer_application.c:808
-#: ags/app/ags_gsequencer_application.c:1039
+#: ags/app/ags_gsequencer_application.c:809
+#: ags/app/ags_gsequencer_application.c:1052
 #, fuzzy
 msgid "SMF import"
 msgstr "MIDI importer"
 
-#: ags/app/ags_gsequencer_application.c:813
-#: ags/app/ags_gsequencer_application.c:1047
+#: ags/app/ags_gsequencer_application.c:814
+#: ags/app/ags_gsequencer_application.c:1060
 #, fuzzy
 msgid "SMF export"
 msgstr "MIDI exporter"
 
-#: ags/app/ags_gsequencer_application.c:820
+#: ags/app/ags_gsequencer_application.c:821
 #, fuzzy
 msgid "MIDI"
 msgstr "MIDI carte"
 
-#: ags/app/ags_gsequencer_application.c:831
+#: ags/app/ags_gsequencer_application.c:832
 msgid "Window"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:838
-#: ags/app/ags_gsequencer_application.c:850
+#: ags/app/ags_gsequencer_application.c:839
+#: ags/app/ags_gsequencer_application.c:851
 #, fuzzy
 msgid "Help"
 msgstr "_Aide"
 
-#: ags/app/ags_gsequencer_application.c:843
+#: ags/app/ags_gsequencer_application.c:844
 msgid "About"
 msgstr "Briefer"
 
-#: ags/app/ags_gsequencer_application.c:1008
+#: ags/app/ags_gsequencer_application.c:1021
 msgid "application window"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:1015 ags/app/ags_preferences.c:230
+#: ags/app/ags_gsequencer_application.c:1028 ags/app/ags_preferences.c:230
 msgid "preferences"
 msgstr "préréglage"
 
-#: ags/app/ags_gsequencer_application.c:1023
+#: ags/app/ags_gsequencer_application.c:1036
 msgid "meta-data"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:1031
+#: ags/app/ags_gsequencer_application.c:1044
 #, fuzzy
 msgid "audio export"
 msgstr "Audio exporter"
 
-#: ags/app/ags_gsequencer_application.c:1055
+#: ags/app/ags_gsequencer_application.c:1068
 msgid "help"
 msgstr ""
 

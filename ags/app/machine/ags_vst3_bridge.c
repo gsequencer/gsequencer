@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -542,15 +542,6 @@ ags_vst3_bridge_finalize(GObject *gobject)
   AgsVst3Bridge *vst3_bridge;
 
   vst3_bridge = (AgsVst3Bridge *) gobject;
-  
-  g_object_disconnect(G_OBJECT(vst3_bridge),
-		      "any_signal::resize-audio-channels",
-		      G_CALLBACK(ags_vst3_bridge_resize_audio_channels),
-		      NULL,
-		      "any_signal::resize-pads",
-		      G_CALLBACK(ags_vst3_bridge_resize_pads),
-		      NULL,
-		      NULL);
 
   g_free(vst3_bridge->filename);
   g_free(vst3_bridge->effect);
@@ -569,7 +560,7 @@ ags_vst3_bridge_connect(AgsConnectable *connectable)
 
   GList *start_list, *list;
 
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -622,7 +613,7 @@ ags_vst3_bridge_disconnect(AgsConnectable *connectable)
 {
   AgsVst3Bridge *vst3_bridge;
 
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -636,7 +627,59 @@ ags_vst3_bridge_disconnect(AgsConnectable *connectable)
 		      vst3_bridge,
 		      NULL);
 
-  //TODO:JK: implement me
+  /* bulk member */
+  effect_bridge = AGS_EFFECT_BRIDGE(AGS_MACHINE(vst3_bridge)->bridge);
+  
+  list =
+    start_list = ags_effect_bulk_get_bulk_member(AGS_EFFECT_BULK(effect_bridge->bulk_input));
+
+  while(list != NULL){
+    bulk_member = list->data;
+
+    control = ags_bulk_member_get_widget(bulk_member);
+
+    if(bulk_member->widget_type == AGS_TYPE_DIAL){
+      g_object_disconnect(GTK_WIDGET(control),
+			  "any_signal::value-changed",
+			  G_CALLBACK(ags_vst3_bridge_dial_changed_callback),
+			  vst3_bridge,
+			  NULL);
+    }else if(bulk_member->widget_type == GTK_TYPE_SCALE){
+      g_object_disconnect(GTK_WIDGET(control),
+			  "any_signal::value-changed",
+			  G_CALLBACK(ags_vst3_bridge_scale_changed_callback),
+			  vst3_bridge,
+			  NULL);
+    }else if(bulk_member->widget_type == GTK_TYPE_SPIN_BUTTON){
+      g_object_disconnect(GTK_WIDGET(control),
+			  "any_signal::value-changed",
+			  G_CALLBACK(ags_vst3_bridge_spin_button_changed_callback),
+			  vst3_bridge,
+			  NULL);
+    }else if(bulk_member->widget_type == GTK_TYPE_CHECK_BUTTON){
+      g_object_disconnect(GTK_WIDGET(control),
+			  "any_signal::toggled",
+			  G_CALLBACK(ags_vst3_bridge_check_button_toggled_callback),
+			  vst3_bridge,
+			  NULL);
+    }else if(bulk_member->widget_type == GTK_TYPE_TOGGLE_BUTTON){
+      g_object_disconnect(GTK_WIDGET(control),
+			  "any_signal::toggled",
+			  G_CALLBACK(ags_vst3_bridge_toggle_button_toggled_callback),
+			  vst3_bridge,
+			  NULL);
+    }else if(bulk_member->widget_type == GTK_TYPE_BUTTON){
+      g_object_disconnect(GTK_WIDGET(control),
+			  "any_signal::clicked",
+			  G_CALLBACK(ags_vst3_bridge_button_clicked_callback),
+			  vst3_bridge,
+			  NULL);
+    }
+
+    list = list->next;
+  }
+
+  g_list_free(start_list);
 }
 
 void

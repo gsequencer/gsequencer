@@ -117,7 +117,7 @@ struct _AgsMachine
   GtkGrid grid;
 
   guint flags;
-  guint connectable_flags;
+  AgsConnectableFlags connectable_flags;
   guint file_input_flags;
   guint mapping_flags;
   guint connection_flags;

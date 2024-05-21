@@ -27,6 +27,7 @@
 #include <ags/app/ags_gsequencer_application_context.h>
 #include <ags/app/ags_gsequencer_resource.h>
 #include <ags/app/ags_window.h>
+#include <ags/app/ags_composite_editor.h>
 
 #include <ags/i18n.h>
 
@@ -923,16 +924,21 @@ ags_gsequencer_application_open(GApplication *application,
   
   if(n_files > 0 && files != NULL && files[0] != NULL){
     GtkWidget *window;
-  
+    GtkWidget *composite_editor;
+    
     window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-    if(window != NULL){
+    composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+
+    if(composite_editor != NULL){
       GList *start_machine, *machine;
       GList *start_list, *list;
 
+      ags_connectable_disconnect(AGS_CONNECTABLE(composite_editor));
+      
       /* destroy editor */
       list =
-	start_list = ags_machine_selector_get_machine_radio_button(AGS_WINDOW(window)->composite_editor->machine_selector);
+	start_list = ags_machine_selector_get_machine_radio_button(AGS_COMPOSITE_EDITOR(composite_editor)->machine_selector);
 
       while(list != NULL){
 	ags_machine_selector_remove_machine_radio_button(AGS_WINDOW(window)->composite_editor->machine_selector,
@@ -976,8 +982,15 @@ ags_gsequencer_application_open(GApplication *application,
 
       ags_ui_provider_set_machine(AGS_UI_PROVIDER(application_context),
 				  NULL);
-      
-      AGS_WINDOW(window)->filename = g_file_get_path(files[0]);
+
+      AGS_COMPOSITE_EDITOR(composite_editor)->selected_machine = NULL;
+
+      /* connect and and open filename */
+      ags_connectable_connect(AGS_CONNECTABLE(composite_editor));
+
+      if(files != NULL){
+	AGS_WINDOW(window)->filename = g_file_get_path(files[0]);
+      }
     }
   }
 }

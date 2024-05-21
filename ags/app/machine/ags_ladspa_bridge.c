@@ -442,7 +442,7 @@ ags_ladspa_bridge_finalize(GObject *gobject)
 void
 ags_ladspa_bridge_connect(AgsConnectable *connectable)
 {
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -452,7 +452,7 @@ ags_ladspa_bridge_connect(AgsConnectable *connectable)
 void
 ags_ladspa_bridge_disconnect(AgsConnectable *connectable)
 {
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 

@@ -196,6 +196,9 @@ ags_notation_edit_drawing_area_resize_callback(GtkWidget *drawing_area,
 			       gtk_adjustment_get_value(adjustment));
     }
   }else{
+    gtk_adjustment_set_upper(adjustment,
+			     0.0);
+
     gtk_adjustment_set_value(adjustment,
 			     0.0);
       

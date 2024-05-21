@@ -811,6 +811,12 @@ ags_composite_editor_disconnect(AgsConnectable *connectable)
 
   ags_connectable_disconnect(AGS_CONNECTABLE(composite_editor->tempo_edit));
 
+  g_object_disconnect(composite_editor->machine_selector,
+		      "any_signal::changed",
+		      G_CALLBACK(ags_composite_editor_machine_selector_changed_callback),
+		      composite_editor,
+		      NULL);
+
   //TODO:JK: implement me
 }
 

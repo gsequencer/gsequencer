@@ -175,7 +175,7 @@ ags_wave_edit_drawing_area_resize_callback(GtkWidget *drawing_area,
       external_adjustment = gtk_scrollbar_get_adjustment(composite_edit->hscrollbar);
 
       gtk_adjustment_set_upper(external_adjustment,
-			       (map_width - allocation.width > 0.0) ? (gdouble) map_width - allocation.width: 1.0);
+			       (map_width - allocation.width > 0.0) ? (gdouble) map_width - allocation.width: 0.0);
 
       if(map_width - allocation.width > 0){
 	if(gtk_adjustment_get_value(external_adjustment) + allocation.width > gtk_adjustment_get_upper(external_adjustment)){
@@ -220,7 +220,7 @@ ags_wave_edit_drawing_area_resize_callback(GtkWidget *drawing_area,
       gtk_adjustment_configure(adjustment,
 			       gtk_adjustment_get_value(adjustment),
 			       0.0,
-			       (varea_height - scrolled_window_allocation.height > 0) ? (gdouble) varea_height - scrolled_window_allocation.height: 1.0,
+			       (varea_height - scrolled_window_allocation.height > 0) ? (gdouble) varea_height - scrolled_window_allocation.height: 0.0,
 			       1.0,
 			       (gdouble) wave_edit->control_height,
 			       0.0);
@@ -228,7 +228,7 @@ ags_wave_edit_drawing_area_resize_callback(GtkWidget *drawing_area,
       gtk_adjustment_configure(external_adjustment,
 			       gtk_adjustment_get_value(external_adjustment),
 			       0.0,
-			       (varea_height - scrolled_window_allocation.height > 0) ? (gdouble) varea_height - scrolled_window_allocation.height: 1.0,
+			       (varea_height - scrolled_window_allocation.height > 0) ? (gdouble) varea_height - scrolled_window_allocation.height: 0.0,
 			       1.0,
 			       (gdouble) wave_edit->control_height,
 			       0.0);
@@ -236,7 +236,7 @@ ags_wave_edit_drawing_area_resize_callback(GtkWidget *drawing_area,
       gtk_adjustment_configure(edit_control_adjustment,
 			       gtk_adjustment_get_value(adjustment),
 			       0.0,
-			       (varea_height - scrolled_window_allocation.height > 0) ? (gdouble) varea_height - scrolled_window_allocation.height: 1.0,
+			       (varea_height - scrolled_window_allocation.height > 0) ? (gdouble) varea_height - scrolled_window_allocation.height: 0.0,
 			       1.0,
 			       (gdouble) wave_edit->control_height,
 			       0.0);

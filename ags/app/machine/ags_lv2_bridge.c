@@ -742,15 +742,6 @@ ags_lv2_bridge_finalize(GObject *gobject)
 
   lv2_bridge = AGS_LV2_BRIDGE(gobject);
 
-  g_object_disconnect(G_OBJECT(lv2_bridge),
-		      "any_signal::resize-audio-channels",
-		      G_CALLBACK(ags_lv2_bridge_resize_audio_channels),
-		      NULL,
-		      "any_signal::resize-pads",
-		      G_CALLBACK(ags_lv2_bridge_resize_pads),
-		      NULL,
-		      NULL);
-
   /* lv2 plugin */
   if(lv2_bridge->lv2_plugin != NULL){
     g_object_unref(lv2_bridge->lv2_plugin);
@@ -790,7 +781,7 @@ ags_lv2_bridge_connect(AgsConnectable *connectable)
 
   GList *start_list, *list;
   
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -851,7 +842,7 @@ ags_lv2_bridge_disconnect(AgsConnectable *connectable)
 
   GList *start_list, *list;
 
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
