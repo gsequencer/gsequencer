@@ -1,6 +1,7 @@
 ags (6.14.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed notation clipboard wrong timestamp
 	* improved swipe
 
 ags (6.13.5)
