@@ -686,7 +686,6 @@ ags_track_mapper_map(AgsTrackMapper *track_mapper)
   guint n_key_on, n_key_off;
   guint x, y, velocity;
   guint x_256th;
-  guint prev_x;
   guint default_length;
   guint i;
   gboolean pattern;
@@ -732,8 +731,6 @@ ags_track_mapper_map(AgsTrackMapper *track_mapper)
 
   timestamp->timer.ags_offset.offset = 0;
   
-  prev_x = 0;
-
   delay_factor = AGS_SOUNDCARD_DEFAULT_DELAY_FACTOR;  
 
   /* segmentation */
@@ -748,7 +745,7 @@ ags_track_mapper_map(AgsTrackMapper *track_mapper)
 	   &denominator,
 	   &numerator);
     
-    delay_factor = 1.0 / numerator * (numerator / denominator);
+    delay_factor = 1.0 / (16.0 / denominator);
 
     g_free(segmentation);
   }
@@ -844,8 +841,14 @@ ags_track_mapper_map(AgsTrackMapper *track_mapper)
 #if 0	    
 	    note->attack.imag = (gdouble) velocity / 127.0;
 #endif
+
+	    ags_timestamp_set_ags_offset(timestamp,
+					 AGS_NOTATION_DEFAULT_OFFSET * floor(x / AGS_NOTATION_DEFAULT_OFFSET));
+
+	    notation = ags_notation_find_near_timestamp(notation_start, i,
+							timestamp);
 	    
-	    if(x >= prev_x + AGS_NOTATION_DEFAULT_OFFSET){
+	    if(notation == NULL){
 	      current_notation = ags_notation_new(NULL,
 						  i);
 	      ags_timestamp_set_ags_offset(current_notation->timestamp,
@@ -853,13 +856,7 @@ ags_track_mapper_map(AgsTrackMapper *track_mapper)
 	      
 	      notation_start = ags_notation_add(notation_start,
 						current_notation);
-
 	    }else{
-	      ags_timestamp_set_ags_offset(timestamp,
-					   AGS_NOTATION_DEFAULT_OFFSET * floor(x / AGS_NOTATION_DEFAULT_OFFSET));
-
-	      notation = ags_notation_find_near_timestamp(notation_start, i,
-							  timestamp);
 	      current_notation = notation->data;
 	    }
 	    

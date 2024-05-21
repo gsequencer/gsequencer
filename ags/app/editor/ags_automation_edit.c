@@ -1509,6 +1509,7 @@ ags_automation_edit_gesture_swipe_callback(GtkGestureSwipe *event_controller,
   double zoom_factor;
 
   gboolean selected_position_cursor;
+  gboolean swipe_horizontal, swipe_vertical;
 
   application_context = ags_application_context_get_instance();
 
@@ -1524,10 +1525,43 @@ ags_automation_edit_gesture_swipe_callback(GtkGestureSwipe *event_controller,
     return;
   }
 
-  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) composite_toolbar->zoom));
-  
+  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) composite_toolbar->zoom));  
+
+  swipe_horizontal = FALSE;
+  swipe_vertical = FALSE;
+
+  if(x < 0.0){
+    if(y < 0.0){
+      if(-1.0 * x > -1.0 * y){
+	swipe_horizontal = TRUE;
+      }else{
+	swipe_vertical = TRUE;
+      }
+    }else{
+      if(-1.0 * x > y){
+	swipe_horizontal = TRUE;
+      }else{
+	swipe_vertical = TRUE;
+      }
+    }
+  }else{
+    if(y < 0.0){
+      if(x > -1.0 * y){
+	swipe_horizontal = TRUE;
+      }else{
+	swipe_vertical = TRUE;
+      }
+    }else{
+      if(x > y){
+	swipe_horizontal = TRUE;
+      }else{
+	swipe_vertical = TRUE;
+      }
+    }
+  }
+
   /* horizontal swipe */
-  if(x > y){
+  if(swipe_horizontal){
     if(x > 0.0){
       adjustment = gtk_scrollbar_get_adjustment(composite_editor->automation_edit->hscrollbar);
 
@@ -1549,7 +1583,7 @@ ags_automation_edit_gesture_swipe_callback(GtkGestureSwipe *event_controller,
   }
   
   /* vertical swipe */
-  if(y > x){
+  if(swipe_vertical){
     if(y > 0.0){
       adjustment = gtk_scrollbar_get_adjustment(composite_editor->automation_edit->vscrollbar);
 

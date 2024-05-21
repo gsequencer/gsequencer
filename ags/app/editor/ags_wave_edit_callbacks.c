@@ -178,7 +178,7 @@ ags_wave_edit_drawing_area_resize_callback(GtkWidget *drawing_area,
 			       (map_width - allocation.width > 0.0) ? (gdouble) map_width - allocation.width: 0.0);
 
       if(map_width - allocation.width > 0){
-	if(gtk_adjustment_get_value(external_adjustment) + allocation.width > gtk_adjustment_get_upper(external_adjustment)){
+	if(gtk_adjustment_get_value(external_adjustment) > gtk_adjustment_get_upper(external_adjustment)){
 	  gtk_adjustment_set_value(external_adjustment,
 				   map_width - allocation.width);
 	}
@@ -242,9 +242,9 @@ ags_wave_edit_drawing_area_resize_callback(GtkWidget *drawing_area,
 			       0.0);
 
       if(list_length > 0){
-	if(gtk_adjustment_get_value(external_adjustment) + scrolled_window_allocation.height < gtk_adjustment_get_upper(external_adjustment)){
+	if(gtk_adjustment_get_value(external_adjustment) > gtk_adjustment_get_upper(external_adjustment)){
 	  gtk_adjustment_set_value(external_adjustment,
-				   gtk_adjustment_get_value(external_adjustment));
+				   gtk_adjustment_get_upper(external_adjustment));
 	}
       }
     }

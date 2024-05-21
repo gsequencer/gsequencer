@@ -159,7 +159,7 @@ ags_notation_edit_drawing_area_resize_callback(GtkWidget *drawing_area,
 			    &allocation);
 
   if(map_width - allocation.width > 0){
-    if(gtk_adjustment_get_value(adjustment) + allocation.width > gtk_adjustment_get_upper(adjustment)){
+    if(gtk_adjustment_get_value(adjustment) > gtk_adjustment_get_upper(adjustment)){
       gtk_adjustment_set_value(adjustment,
 			       map_width - allocation.width);
     }
@@ -188,7 +188,7 @@ ags_notation_edit_drawing_area_resize_callback(GtkWidget *drawing_area,
     gtk_adjustment_set_upper(adjustment,
 			     (gdouble) (varea_height - allocation.height));
 
-    if(gtk_adjustment_get_value(adjustment) + allocation.height > gtk_adjustment_get_upper(adjustment)){
+    if(gtk_adjustment_get_value(adjustment) > gtk_adjustment_get_upper(adjustment)){
       gtk_adjustment_set_value(adjustment,
 			       varea_height - allocation.height);
       

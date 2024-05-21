@@ -560,8 +560,8 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
       }
     }
   }
-  
-  track_collection->default_length = numerator * (numerator / denominator);
+
+  track_collection->default_length = 16 / denominator;
   
   /* collect */
   xpath_context = xmlXPathNewContext(track_collection->midi_doc);

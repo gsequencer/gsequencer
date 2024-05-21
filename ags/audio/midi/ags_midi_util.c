@@ -1245,10 +1245,10 @@ ags_midi_util_delta_time_to_note_256th_offset(AgsMidiUtil *midi_util,
 
   if(((1 << 15) & division) == 0){
     /* ticks per quarter note */
-    note_256th_offset = (16.0 * 16.0 * bpm / 60.0) * delta_time * (tempo / division / ((gdouble) AGS_USEC_PER_SEC)) * delay_factor;
+    note_256th_offset = ((bpm / 60.0) * delta_time * (tempo / division / ((gdouble) AGS_USEC_PER_SEC))) * (16.0 * 16.0 * delay_factor);
   }else{
     /* SMTPE */
-    note_256th_offset = (16.0 * 16.0 * bpm / 60.0) * delta_time / (((division * division) / 256.0) / ((gdouble) AGS_USEC_PER_SEC)) * delay_factor;
+    note_256th_offset = ((bpm / 60.0) * delta_time / (((division * division) / 256.0) / ((gdouble) AGS_USEC_PER_SEC))) * (16.0 * 16.0 * delay_factor);
   }
 
   return(note_256th_offset);
