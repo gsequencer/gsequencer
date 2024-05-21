@@ -384,7 +384,7 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
 		  1, 1);
 
   /* vscrollbar */
-  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, notation_edit->control_height, 1.0);
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, notation_edit->control_height, 0.0);
   notation_edit->vscrollbar = (GtkScrollbar *) gtk_scrollbar_new(GTK_ORIENTATION_VERTICAL,
 								 adjustment);
 
@@ -403,7 +403,7 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
 		  1, 1);
 
   /* hscrollbar */
-  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (gdouble) notation_edit->control_width, 1.0);
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (gdouble) notation_edit->control_width, 0.0);
   notation_edit->hscrollbar = (GtkScrollbar *) gtk_scrollbar_new(GTK_ORIENTATION_HORIZONTAL,
 								 adjustment);
 
@@ -1213,51 +1213,99 @@ ags_notation_edit_gesture_swipe_callback(GtkGestureSwipe *event_controller,
   
   double zoom_factor;
 
+  gboolean selected_position_cursor;
+  gboolean swipe_horizontal, swipe_vertical;
+  
   application_context = ags_application_context_get_instance();
+
+  selected_position_cursor = FALSE;
 
   composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   composite_toolbar = composite_editor->toolbar;
 
-  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) composite_toolbar->zoom));
+  selected_position_cursor = (composite_toolbar->selected_tool == (GtkButton *) composite_toolbar->position) ? TRUE: FALSE;
+
+  if(!selected_position_cursor){
+    return;
+  }
   
-  /* horizontal swipe */
-  if(x > 0.0){
-    adjustment = gtk_scrollbar_get_adjustment(notation_edit->hscrollbar);
+  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) composite_toolbar->zoom));
 
-    if(gtk_adjustment_get_value(adjustment) + (4.0 * notation_edit->control_width) < gtk_adjustment_get_upper(adjustment)){
-      gtk_adjustment_set_value(adjustment,
-			       gtk_adjustment_get_value(adjustment) + (4.0 * notation_edit->control_width));
-    }
-  }else if(x < 0.0){
-    adjustment = gtk_scrollbar_get_adjustment(notation_edit->hscrollbar);
+  swipe_horizontal = FALSE;
+  swipe_vertical = FALSE;
 
-    if(gtk_adjustment_get_value(adjustment) - (4.0 * notation_edit->control_width) > 0.0){
-      gtk_adjustment_set_value(adjustment,
-			       gtk_adjustment_get_value(adjustment) - (4.0 * notation_edit->control_width));
+  if(x < 0.0){
+    if(y < 0.0){
+      if(-1.0 * x > -1.0 * y){
+	swipe_horizontal = TRUE;
+      }else{
+	swipe_vertical = TRUE;
+      }
     }else{
-      gtk_adjustment_set_value(adjustment,
-			       0.0);
+      if(-1.0 * x > y){
+	swipe_horizontal = TRUE;
+      }else{
+	swipe_vertical = TRUE;
+      }
+    }
+  }else{
+    if(y < 0.0){
+      if(x > -1.0 * y){
+	swipe_horizontal = TRUE;
+      }else{
+	swipe_vertical = TRUE;
+      }
+    }else{
+      if(x > y){
+	swipe_horizontal = TRUE;
+      }else{
+	swipe_vertical = TRUE;
+      }
     }
   }
+  
+  /* horizontal swipe */
+  if(swipe_horizontal){
+    if(x > 0.0){
+      adjustment = gtk_scrollbar_get_adjustment(notation_edit->hscrollbar);
 
-  /* vertical swipe */
-  if(y > 0.0){
-    adjustment = gtk_scrollbar_get_adjustment(notation_edit->vscrollbar);
+      if(gtk_adjustment_get_value(adjustment) + (4.0 * notation_edit->control_width) < gtk_adjustment_get_upper(adjustment)){
+	gtk_adjustment_set_value(adjustment,
+				 gtk_adjustment_get_value(adjustment) + (4.0 * notation_edit->control_width));
+      }
+    }else if(x < 0.0){
+      adjustment = gtk_scrollbar_get_adjustment(notation_edit->hscrollbar);
 
-    if(gtk_adjustment_get_value(adjustment) + (gdouble) notation_edit->control_height < gtk_adjustment_get_upper(adjustment)){
-      gtk_adjustment_set_value(adjustment,
-			       gtk_adjustment_get_value(adjustment) + (gdouble) notation_edit->control_height);
+      if(gtk_adjustment_get_value(adjustment) - (4.0 * notation_edit->control_width) > 0.0){
+	gtk_adjustment_set_value(adjustment,
+				 gtk_adjustment_get_value(adjustment) - (4.0 * notation_edit->control_width));
+      }else{
+	gtk_adjustment_set_value(adjustment,
+				 0.0);
+      }
     }
-  }else if(y < 0.0){
-    adjustment = gtk_scrollbar_get_adjustment(notation_edit->vscrollbar);
+  }
+  
+  /* vertical swipe */
+  if(swipe_vertical){
+    if(y > 0.0){
+      adjustment = gtk_scrollbar_get_adjustment(notation_edit->vscrollbar);
 
-    if(gtk_adjustment_get_value(adjustment) - (gdouble) notation_edit->control_height > 0.0){
-      gtk_adjustment_set_value(adjustment,
-			       gtk_adjustment_get_value(adjustment) - (gdouble) notation_edit->control_height);
-    }else{
-      gtk_adjustment_set_value(adjustment,
-			       0.0);
+      if(gtk_adjustment_get_value(adjustment) + (gdouble) notation_edit->control_height < gtk_adjustment_get_upper(adjustment)){
+	gtk_adjustment_set_value(adjustment,
+				 gtk_adjustment_get_value(adjustment) + (gdouble) notation_edit->control_height);
+      }
+    }else if(y < 0.0){
+      adjustment = gtk_scrollbar_get_adjustment(notation_edit->vscrollbar);
+
+      if(gtk_adjustment_get_value(adjustment) - (gdouble) notation_edit->control_height > 0.0){
+	gtk_adjustment_set_value(adjustment,
+				 gtk_adjustment_get_value(adjustment) - (gdouble) notation_edit->control_height);
+      }else{
+	gtk_adjustment_set_value(adjustment,
+				 0.0);
+      }
     }
   }
 }
@@ -1781,7 +1829,7 @@ ags_notation_edit_reset_vscrollbar(AgsNotationEdit *notation_edit)
 {
   AgsCompositeEditor *composite_editor;
   AgsCompositeEdit *composite_edit;
-  GtkAdjustment *adjustment;
+  GtkAdjustment *adjustment, *external_adjustment;
   GtkAdjustment *piano_adjustment;
 
   AgsApplicationContext *application_context;
@@ -1790,6 +1838,7 @@ ags_notation_edit_reset_vscrollbar(AgsNotationEdit *notation_edit)
   
   guint key_count;
   double varea_height;
+  gdouble value;
   gdouble upper, old_upper;
   
   if(!AGS_IS_NOTATION_EDIT(notation_edit) ||
@@ -1805,14 +1854,15 @@ ags_notation_edit_reset_vscrollbar(AgsNotationEdit *notation_edit)
 
   composite_edit = composite_editor->notation_edit;
 
-  piano_adjustment = gtk_scrolled_window_get_vadjustment(AGS_SCROLLED_PIANO(composite_edit->edit_control)->scrolled_window);
-
   /* */
   gtk_widget_get_allocation(GTK_WIDGET(notation_edit->drawing_area),
 			    &allocation);
   
   /* adjustment */
   adjustment = gtk_scrollbar_get_adjustment(notation_edit->vscrollbar);
+  external_adjustment = gtk_scrollbar_get_adjustment(composite_edit->vscrollbar);
+
+  piano_adjustment = gtk_scrolled_window_get_vadjustment(AGS_SCROLLED_PIANO(composite_edit->edit_control)->scrolled_window);
 
   /* get key count */
   key_count = notation_edit->key_count;
@@ -1821,31 +1871,44 @@ ags_notation_edit_reset_vscrollbar(AgsNotationEdit *notation_edit)
   old_upper = gtk_adjustment_get_upper(adjustment); 
 
   varea_height = (key_count * notation_edit->control_height);
-  upper = varea_height - allocation.height;
+  upper = (gdouble) (varea_height - allocation.height);
 
   if(upper < 0.0){
     upper = 0.0;
   }
-	   
-  gtk_adjustment_set_upper(adjustment,
-			   upper);
+  
+  value = gtk_adjustment_get_value(adjustment);
+  
+  gtk_adjustment_configure(adjustment,
+			   value,
+			   0.0,
+			   upper,
+			   1.0,
+			   (gdouble) notation_edit->control_height,
+			   0.0);
 
-  /* piano - upper */
-  gtk_adjustment_set_lower(piano_adjustment,
-			   gtk_adjustment_get_lower(adjustment));
-  gtk_adjustment_set_step_increment(piano_adjustment,
-				    gtk_adjustment_get_step_increment(adjustment));
-  gtk_adjustment_set_page_increment(piano_adjustment,
-				    gtk_adjustment_get_page_increment(adjustment));
-  gtk_adjustment_set_page_size(piano_adjustment,
-			       gtk_adjustment_get_page_size(adjustment));
-  gtk_adjustment_set_upper(piano_adjustment,
-			   gtk_adjustment_get_upper(adjustment));
+  /* external */
+  gtk_adjustment_configure(external_adjustment,
+			   value,
+			   0.0,
+			   upper,
+			   1.0,
+			   (gdouble) notation_edit->control_height,
+			   0.0);
 
+  /* piano */
+  gtk_adjustment_configure(piano_adjustment,
+			   value,
+			   0.0,
+			   upper,
+			   1.0,
+			   (gdouble) notation_edit->control_height,
+			   0.0);
+  
   /* reset value */
   if(old_upper != 0.0){
     gtk_adjustment_set_value(adjustment,
-			     gtk_adjustment_get_value(adjustment) / old_upper * upper);
+			     value * (upper / old_upper));
 
     gtk_adjustment_set_value(piano_adjustment,
 			     gtk_adjustment_get_value(adjustment));

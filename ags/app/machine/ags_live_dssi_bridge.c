@@ -505,15 +505,6 @@ ags_live_dssi_bridge_finalize(GObject *gobject)
   AgsLiveDssiBridge *live_dssi_bridge;
 
   live_dssi_bridge = (AgsLiveDssiBridge *) gobject;
-  
-  g_object_disconnect(G_OBJECT(live_dssi_bridge),
-		      "any_signal::resize-audio-channels",
-		      G_CALLBACK(ags_live_dssi_bridge_resize_audio_channels),
-		      NULL,
-		      "any_signal::resize-pads",
-		      G_CALLBACK(ags_live_dssi_bridge_resize_pads),
-		      NULL,
-		      NULL);
 
   g_free(live_dssi_bridge->filename);
   g_free(live_dssi_bridge->effect);
@@ -527,7 +518,7 @@ ags_live_dssi_bridge_connect(AgsConnectable *connectable)
 {
   AgsLiveDssiBridge *live_dssi_bridge;
 
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -544,7 +535,7 @@ ags_live_dssi_bridge_disconnect(AgsConnectable *connectable)
 {
   AgsLiveDssiBridge *live_dssi_bridge;
 
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 

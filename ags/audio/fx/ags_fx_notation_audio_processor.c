@@ -1218,21 +1218,11 @@ ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_nota
 
       note_256th_attack = ags_soundcard_get_note_256th_attack_at_position(AGS_SOUNDCARD(output_soundcard),
 									  note_256th_attack_position_lower);
-      
-      for(i = 1; note_256th_attack + (i * note_256th_delay * buffer_size) < buffer_size; i++){
-	guint tmp_note_256th_attack;
 
-	if(offset_lower + i >= x0_256th){
-	  break;
-	}
-	
-	tmp_note_256th_attack = ags_soundcard_get_note_256th_attack_at_position(AGS_SOUNDCARD(output_soundcard),
-										note_256th_attack_position_lower + i);
-
-	if(note_256th_attack < tmp_note_256th_attack){
-	  note_256th_attack = tmp_note_256th_attack;
-	}
-      }
+      if(x0_256th > offset_lower){
+	note_256th_attack = ags_soundcard_get_note_256th_attack_at_position(AGS_SOUNDCARD(output_soundcard),
+									    (note_256th_attack_position_lower + (x0_256th - offset_lower)) % (16 * (guint) AGS_SOUNDCARD_DEFAULT_PERIOD));
+      }      
     }
     
     end_recycling = ags_recycling_next(last_recycling);

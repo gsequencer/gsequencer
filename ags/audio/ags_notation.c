@@ -1237,8 +1237,9 @@ ags_notation_add(GList *notation,
 					  timestamp);
   g_object_unref(timestamp);
   
-  if(list != NULL){
-    g_critical("timestamp already preset");
+  if(list != NULL &&
+     ags_timestamp_get_ags_offset(AGS_NOTATION(list->data)->timestamp) == ags_timestamp_get_ags_offset(timestamp)){
+    g_critical("timestamp already present");
 
     return(notation);
   }

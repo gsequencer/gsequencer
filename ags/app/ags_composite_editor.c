@@ -811,6 +811,12 @@ ags_composite_editor_disconnect(AgsConnectable *connectable)
 
   ags_connectable_disconnect(AGS_CONNECTABLE(composite_editor->tempo_edit));
 
+  g_object_disconnect(composite_editor->machine_selector,
+		      "any_signal::changed",
+		      G_CALLBACK(ags_composite_editor_machine_selector_changed_callback),
+		      composite_editor,
+		      NULL);
+
   //TODO:JK: implement me
 }
 
@@ -2403,7 +2409,7 @@ ags_composite_editor_paste_notation(AgsCompositeEditor *composite_editor,
 	      }     
 
 	      /* 1st attempt */
-	      timestamp->timer.ags_offset.offset = (guint64) AGS_AUTOMATION_DEFAULT_OFFSET * floor((double) position_x / (double) AGS_AUTOMATION_DEFAULT_OFFSET);
+	      timestamp->timer.ags_offset.offset = (guint64) AGS_NOTATION_DEFAULT_OFFSET * floor((double) position_x / (double) AGS_NOTATION_DEFAULT_OFFSET);
 		
 	      first_x = ags_composite_editor_paste_notation_all(composite_editor,
 								machine,
@@ -2415,7 +2421,7 @@ ags_composite_editor_paste_notation(AgsCompositeEditor *composite_editor,
 								last_x);
 
 	      /* 2nd attempt */
-	      timestamp->timer.ags_offset.offset += AGS_AUTOMATION_DEFAULT_OFFSET;
+	      timestamp->timer.ags_offset.offset += AGS_NOTATION_DEFAULT_OFFSET;
 
 	      ags_composite_editor_paste_notation_all(composite_editor,
 						      machine,

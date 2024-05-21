@@ -399,7 +399,7 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
   wave_edit->stride = -1;
   
   /* vscrollbar */
-  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 1.0, 0.0);
   wave_edit->vscrollbar = (GtkScrollbar *) gtk_scrollbar_new(GTK_ORIENTATION_VERTICAL,
 							     adjustment);
   gtk_widget_set_visible((GtkWidget *) wave_edit->vscrollbar,
@@ -412,7 +412,7 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
 		  1, 1);
 
   /* hscrollbar */
-  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (gdouble) wave_edit->control_width, 1.0);
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (gdouble) wave_edit->control_width, 0.0);
   wave_edit->hscrollbar = (GtkScrollbar *) gtk_scrollbar_new(GTK_ORIENTATION_HORIZONTAL,
 							     adjustment);
   gtk_widget_set_visible((GtkWidget *) wave_edit->hscrollbar,
@@ -1003,51 +1003,99 @@ ags_wave_edit_gesture_swipe_callback(GtkGestureSwipe *event_controller,
   
   double zoom_factor;
 
+  gboolean selected_position_cursor;
+  gboolean swipe_horizontal, swipe_vertical;
+
   application_context = ags_application_context_get_instance();
+
+  selected_position_cursor = FALSE;
 
   composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   composite_toolbar = composite_editor->toolbar;
 
-  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) composite_toolbar->zoom));
-  
-  /* horizontal swipe */
-  if(x > 0.0){
-    adjustment = gtk_scrollbar_get_adjustment(composite_editor->wave_edit->hscrollbar);
+  selected_position_cursor = (composite_toolbar->selected_tool == (GtkButton *) composite_toolbar->position) ? TRUE: FALSE;
 
-    if(gtk_adjustment_get_value(adjustment) + (4.0 * wave_edit->control_width) < gtk_adjustment_get_upper(adjustment)){
-      gtk_adjustment_set_value(adjustment,
-			       gtk_adjustment_get_value(adjustment) + (4.0 * wave_edit->control_width));
-    }
-  }else if(x < 0.0){
-    adjustment = gtk_scrollbar_get_adjustment(composite_editor->wave_edit->hscrollbar);
-
-    if(gtk_adjustment_get_value(adjustment) - (4.0 * wave_edit->control_width) > 0.0){
-      gtk_adjustment_set_value(adjustment,
-			       gtk_adjustment_get_value(adjustment) - (4.0 * wave_edit->control_width));
-    }else{
-      gtk_adjustment_set_value(adjustment,
-			       0.0);
-    }
+  if(!selected_position_cursor){
+    return;
   }
 
-  /* vertical swipe */
-  if(y > 0.0){
-    adjustment = gtk_scrollbar_get_adjustment(composite_editor->wave_edit->vscrollbar);
+  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) composite_toolbar->zoom));
 
-    if(gtk_adjustment_get_value(adjustment) + (gdouble) wave_edit->control_height + AGS_UI_PROVIDER_DEFAULT_SPACING < gtk_adjustment_get_upper(adjustment)){
-      gtk_adjustment_set_value(adjustment,
-			       gtk_adjustment_get_value(adjustment) + (gdouble) wave_edit->control_height + AGS_UI_PROVIDER_DEFAULT_SPACING);
-    }
-  }else if(y < 0.0){
-    adjustment = gtk_scrollbar_get_adjustment(composite_editor->wave_edit->vscrollbar);
+  swipe_horizontal = FALSE;
+  swipe_vertical = FALSE;
 
-    if(gtk_adjustment_get_value(adjustment) - (gdouble) wave_edit->control_height - AGS_UI_PROVIDER_DEFAULT_SPACING > 0.0){
-      gtk_adjustment_set_value(adjustment,
-			       gtk_adjustment_get_value(adjustment) - (gdouble) wave_edit->control_height - AGS_UI_PROVIDER_DEFAULT_SPACING);
+  if(x < 0.0){
+    if(y < 0.0){
+      if(-1.0 * x > -1.0 * y){
+	swipe_horizontal = TRUE;
+      }else{
+	swipe_vertical = TRUE;
+      }
     }else{
-      gtk_adjustment_set_value(adjustment,
-			       0.0);
+      if(-1.0 * x > y){
+	swipe_horizontal = TRUE;
+      }else{
+	swipe_vertical = TRUE;
+      }
+    }
+  }else{
+    if(y < 0.0){
+      if(x > -1.0 * y){
+	swipe_horizontal = TRUE;
+      }else{
+	swipe_vertical = TRUE;
+      }
+    }else{
+      if(x > y){
+	swipe_horizontal = TRUE;
+      }else{
+	swipe_vertical = TRUE;
+      }
+    }
+  }
+  
+  /* horizontal swipe */
+  if(swipe_horizontal){
+    if(x > 0.0){
+      adjustment = gtk_scrollbar_get_adjustment(composite_editor->wave_edit->hscrollbar);
+
+      if(gtk_adjustment_get_value(adjustment) + (4.0 * wave_edit->control_width) < gtk_adjustment_get_upper(adjustment)){
+	gtk_adjustment_set_value(adjustment,
+				 gtk_adjustment_get_value(adjustment) + (4.0 * wave_edit->control_width));
+      }
+    }else if(x < 0.0){
+      adjustment = gtk_scrollbar_get_adjustment(composite_editor->wave_edit->hscrollbar);
+
+      if(gtk_adjustment_get_value(adjustment) - (4.0 * wave_edit->control_width) > 0.0){
+	gtk_adjustment_set_value(adjustment,
+				 gtk_adjustment_get_value(adjustment) - (4.0 * wave_edit->control_width));
+      }else{
+	gtk_adjustment_set_value(adjustment,
+				 0.0);
+      }
+    }
+  }
+  
+  /* vertical swipe */
+  if(swipe_vertical){
+    if(y > 0.0){
+      adjustment = gtk_scrollbar_get_adjustment(composite_editor->wave_edit->vscrollbar);
+
+      if(gtk_adjustment_get_value(adjustment) + (gdouble) wave_edit->control_height + AGS_UI_PROVIDER_DEFAULT_SPACING < gtk_adjustment_get_upper(adjustment)){
+	gtk_adjustment_set_value(adjustment,
+				 gtk_adjustment_get_value(adjustment) + (gdouble) wave_edit->control_height + AGS_UI_PROVIDER_DEFAULT_SPACING);
+      }
+    }else if(y < 0.0){
+      adjustment = gtk_scrollbar_get_adjustment(composite_editor->wave_edit->vscrollbar);
+
+      if(gtk_adjustment_get_value(adjustment) - (gdouble) wave_edit->control_height - AGS_UI_PROVIDER_DEFAULT_SPACING > 0.0){
+	gtk_adjustment_set_value(adjustment,
+				 gtk_adjustment_get_value(adjustment) - (gdouble) wave_edit->control_height - AGS_UI_PROVIDER_DEFAULT_SPACING);
+      }else{
+	gtk_adjustment_set_value(adjustment,
+				 0.0);
+      }
     }
   }
 }

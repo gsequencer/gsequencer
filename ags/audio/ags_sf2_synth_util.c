@@ -1918,12 +1918,16 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 	
 	pzone = ipatch_iter_get(&pzone_iter);
 
-	note_range = ipatch_range_new(0, 127);
+	note_range = NULL;
 	
 	g_object_get(pzone,
 		     "note-range", &note_range,
 		     NULL);
 
+	if(note_range == NULL){
+	  note_range = ipatch_range_new(0, 127);
+	}
+	
 	//	g_message("note-range = %d %d", note_range->low, note_range->high);
 	
 	sf2_instrument = (IpatchItem *) ipatch_sf2_pzone_get_inst(pzone);
@@ -2323,6 +2327,8 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 	if(first != NULL){
 	  g_object_unref(first);
 	}
+
+	ipatch_range_free(note_range);
       }while(ipatch_iter_next(&pzone_iter) != NULL);
     }
   }
