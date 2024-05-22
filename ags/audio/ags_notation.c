@@ -1974,7 +1974,7 @@ ags_notation_find_note_256th_range(AgsNotation *notation,
   last = g_list_last(start_note);
   
   length = g_list_length(start_note);
-  position = (length - 1) / 2;
+  position = length / 2;
 
   center = g_list_nth(start_note,
 		      position);
@@ -2060,7 +2060,7 @@ ags_notation_find_note_256th_range(AgsNotation *notation,
 
     length = g_list_position(first,
 			     last) + 1;
-    position = (length - 1) / 2;
+    position = length / 2;
 
     center = g_list_nth(first,
 			position);
@@ -2086,7 +2086,7 @@ ags_notation_find_note_256th_range(AgsNotation *notation,
 
       if(x0_256th >= x_256th_lower &&
 	 x0_256th <= x_256th_upper){
-#if 0
+#if 1
 	retval = g_list_insert_sorted(retval,
 				      list->data,
 				      (GCompareFunc) ags_note_sort_func);
@@ -2118,7 +2118,7 @@ ags_notation_find_note_256th_range(AgsNotation *notation,
 
       if(x0_256th >= x_256th_lower &&
 	 x0_256th <= x_256th_upper){
-#if 0
+#if 1
 	retval = g_list_insert_sorted(retval,
 				      list->data,
 				      (GCompareFunc) ags_note_sort_func);

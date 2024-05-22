@@ -173,7 +173,7 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
   guint midi_start_mapping;
   gint midi_note;
   guint x0_256th, x1_256th;
-  guint64 note_256th_offset_counter;
+  guint64 note_256th_offset_lower;
   gdouble note_256th_delay;
   gdouble octave;
   gdouble key;
@@ -260,7 +260,7 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
 
   g_rec_mutex_lock(fx_sf2_synth_audio_processor_mutex);
 
-  note_256th_offset_counter = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_sf2_synth_audio_processor)->note_256th_offset_counter;
+  note_256th_offset_lower = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_sf2_synth_audio_processor)->note_256th_offset_lower;
 
   note_256th_delay = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_sf2_synth_audio_processor)->note_256th_delay;
   
@@ -661,20 +661,20 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
     }else{
       g_rec_mutex_lock(fx_sf2_synth_audio_processor_mutex);
 
-      note_256th_offset_counter = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_sf2_synth_audio_processor)->note_256th_offset_counter;
+      note_256th_offset_lower = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_sf2_synth_audio_processor)->note_256th_offset_lower;
 
       note_256th_delay = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_sf2_synth_audio_processor)->note_256th_delay;
 
       g_rec_mutex_unlock(fx_sf2_synth_audio_processor_mutex);
 
       ags_sf2_synth_util_set_frame_count(channel_data->synth,
-					 (guint) floor((double) (note_256th_offset_counter - x0_256th) * note_256th_delay * (double) buffer_size) + (guint) floor(delay * (double) buffer_size));
+					 (guint) floor((double) (note_256th_offset_lower - x0_256th) * note_256th_delay * (double) buffer_size) + (guint) floor(delay * (double) buffer_size));
 
       ags_sf2_synth_util_set_offset(channel_data->synth,
 				    (guint) floor(((double) (offset_counter - x0) * delay + delay_counter) * (double) buffer_size));
 
       ags_sf2_synth_util_set_offset_256th(channel_data->synth,
-					  (guint) floor((double) (note_256th_offset_counter - x0_256th) * note_256th_delay * (double) buffer_size));
+					  (guint) floor((double) (note_256th_offset_lower - x0_256th) * note_256th_delay * (double) buffer_size));
     }
 #endif
     

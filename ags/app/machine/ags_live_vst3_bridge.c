@@ -635,6 +635,11 @@ void
 ags_live_vst3_bridge_disconnect(AgsConnectable *connectable)
 {
   AgsLiveVst3Bridge *live_vst3_bridge;
+  AgsEffectBridge *effect_bridge;
+  AgsBulkMember *bulk_member;
+  GtkWidget *control;
+
+  GList *start_list, *list;
 
   if(!ags_connectable_is_connected(connectable)){
     return;
