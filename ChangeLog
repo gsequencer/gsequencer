@@ -1,3 +1,8 @@
+ags (6.14.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed concurrent counter bug
+
 ags (6.14.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

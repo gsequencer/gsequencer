@@ -3181,7 +3181,6 @@ ags_alsa_devout_tic(AgsSoundcard *soundcard)
 				      &note_256th_attack_lower,
 				      &note_256th_attack_upper);
 
-
   prev_note_256th_offset_last = alsa_devout->note_256th_offset_last;
 
   next_note_256th_offset_lower = 0;
