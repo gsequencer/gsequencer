@@ -18,9 +18,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 6.14.2\n"
+"Project-Id-Version: gsequencer 6.14.3\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-05-22 18:13+0200\n"
+"POT-Creation-Date: 2024-05-23 01:58+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1135,12 +1135,12 @@ msgid "Preferences"
 msgstr ""
 
 #: ags/app/ags_gsequencer_application.c:809
-#: ags/app/ags_gsequencer_application.c:1052
+#: ags/app/ags_gsequencer_application.c:1060
 msgid "SMF import"
 msgstr ""
 
 #: ags/app/ags_gsequencer_application.c:814
-#: ags/app/ags_gsequencer_application.c:1060
+#: ags/app/ags_gsequencer_application.c:1068
 msgid "SMF export"
 msgstr ""
 
@@ -1161,23 +1161,23 @@ msgstr ""
 msgid "About"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:1021
+#: ags/app/ags_gsequencer_application.c:1029
 msgid "application window"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:1028 ags/app/ags_preferences.c:230
+#: ags/app/ags_gsequencer_application.c:1036 ags/app/ags_preferences.c:230
 msgid "preferences"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:1036
+#: ags/app/ags_gsequencer_application.c:1044
 msgid "meta-data"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:1044
+#: ags/app/ags_gsequencer_application.c:1052
 msgid "audio export"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:1068
+#: ags/app/ags_gsequencer_application.c:1076
 msgid "help"
 msgstr ""
 
