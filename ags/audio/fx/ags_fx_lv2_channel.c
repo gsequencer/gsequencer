@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -180,7 +180,7 @@ ags_fx_lv2_channel_finalize(GObject *gobject)
   }
   
   if(fx_lv2_channel->lv2_plugin != NULL){
-    //    g_object_unref(fx_lv2_channel->lv2_plugin);
+    g_object_unref(fx_lv2_channel->lv2_plugin);
 
     fx_lv2_channel->lv2_plugin = NULL;
   }
@@ -233,7 +233,11 @@ ags_fx_lv2_channel_notify_filename_callback(GObject *gobject,
   if(filename != NULL &&
      effect != NULL){
     fx_lv2_channel->lv2_plugin = ags_lv2_manager_find_lv2_plugin(lv2_manager,
-							       filename, effect);
+								 filename, effect);
+
+    if(fx_lv2_channel->lv2_plugin != NULL){
+      g_object_ref(fx_lv2_channel->lv2_plugin);
+    }
   }
   
   g_rec_mutex_unlock(recall_mutex);
@@ -276,7 +280,11 @@ ags_fx_lv2_channel_notify_effect_callback(GObject *gobject,
   if(filename != NULL &&
      effect != NULL){
     fx_lv2_channel->lv2_plugin = ags_lv2_manager_find_lv2_plugin(lv2_manager,
-							       filename, effect);
+								 filename, effect);
+
+    if(fx_lv2_channel->lv2_plugin != NULL){
+      g_object_ref(fx_lv2_channel->lv2_plugin);
+    }
   }
   
   g_rec_mutex_unlock(recall_mutex);
