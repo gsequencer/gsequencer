@@ -1,3 +1,9 @@
+ags (6.14.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented large vector alternative of ags_audio_buffer_util.c
+	* implemented large vector alternative of ags_volume_util.c
+
 ags (6.14.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,6 +23,8 @@
 
 #if defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
 #include <Accelerate/Accelerate.h>
+
+#define LARGE_VECTOR 1
 #endif
 
 /**
@@ -482,6 +484,39 @@ ags_volume_util_compute_s8(AgsVolumeUtil *volume_util)
     i += 8;
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+#if defined(LARGE_VECTOR)
+  double ret_v_buffer[256];
+  double v_buffer[256];
+
+  gint j;
+
+  double v_volume[1] = { (double) volume_util->volume };
+
+  i_stop = volume_util->buffer_length - (volume_util->buffer_length % 256);
+  
+  while(i < i_stop){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_buffer, 1, v_volume, ret_v_buffer, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint8) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   i_stop = volume_util->buffer_length - (volume_util->buffer_length % 8);
   
   for(; i < i_stop;){
@@ -515,6 +550,7 @@ ags_volume_util_compute_s8(AgsVolumeUtil *volume_util)
     destination += destination_stride;
     i += 8;
   }
+#endif
 #else
   i_stop = volume_util->buffer_length - (volume_util->buffer_length % 8);
 
@@ -609,6 +645,39 @@ ags_volume_util_compute_s16(AgsVolumeUtil *volume_util)
     i += 8;
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+#if defined(LARGE_VECTOR)
+  double ret_v_buffer[256];
+  double v_buffer[256];
+
+  gint j;
+
+  double v_volume[1] = { (double) volume_util->volume };
+
+  i_stop = volume_util->buffer_length - (volume_util->buffer_length % 256);
+  
+  while(i < i_stop){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_buffer, 1, v_volume, ret_v_buffer, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint16) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   i_stop = volume_util->buffer_length - (volume_util->buffer_length % 8);
   
   for(; i < i_stop;){
@@ -642,6 +711,7 @@ ags_volume_util_compute_s16(AgsVolumeUtil *volume_util)
     destination += destination_stride;
     i += 8;
   }
+#endif
 #else
   i_stop = volume_util->buffer_length - (volume_util->buffer_length % 8);
 
@@ -736,6 +806,39 @@ ags_volume_util_compute_s24(AgsVolumeUtil *volume_util)
     i += 8;
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+#if defined(LARGE_VECTOR)
+  double ret_v_buffer[256];
+  double v_buffer[256];
+
+  gint j;
+
+  double v_volume[1] = { (double) volume_util->volume };
+
+  i_stop = volume_util->buffer_length - (volume_util->buffer_length % 256);
+  
+  while(i < i_stop){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_buffer, 1, v_volume, ret_v_buffer, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint32) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   i_stop = volume_util->buffer_length - (volume_util->buffer_length % 8);
   
   for(; i < i_stop;){
@@ -769,6 +872,7 @@ ags_volume_util_compute_s24(AgsVolumeUtil *volume_util)
     destination += destination_stride;
     i += 8;
   }
+#endif
 #else
   i_stop = volume_util->buffer_length - (volume_util->buffer_length % 8);
 
@@ -863,6 +967,39 @@ ags_volume_util_compute_s32(AgsVolumeUtil *volume_util)
     i += 8;
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+#if defined(LARGE_VECTOR)
+  double ret_v_buffer[256];
+  double v_buffer[256];
+
+  gint j;
+
+  double v_volume[1] = { (double) volume_util->volume };
+
+  i_stop = volume_util->buffer_length - (volume_util->buffer_length % 256);
+  
+  while(i < i_stop){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_buffer, 1, v_volume, ret_v_buffer, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint32) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   i_stop = volume_util->buffer_length - (volume_util->buffer_length % 8);
   
   for(; i < i_stop;){
@@ -896,6 +1033,7 @@ ags_volume_util_compute_s32(AgsVolumeUtil *volume_util)
     destination += destination_stride;
     i += 8;
   }
+#endif
 #else
   i_stop = volume_util->buffer_length - (volume_util->buffer_length % 8);
 
@@ -990,6 +1128,39 @@ ags_volume_util_compute_s64(AgsVolumeUtil *volume_util)
     i += 8;
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+#if defined(LARGE_VECTOR)
+  double ret_v_buffer[256];
+  double v_buffer[256];
+
+  gint j;
+
+  double v_volume[1] = { (double) volume_util->volume };
+
+  i_stop = volume_util->buffer_length - (volume_util->buffer_length % 256);
+  
+  while(i < i_stop){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_buffer, 1, v_volume, ret_v_buffer, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint64) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   i_stop = volume_util->buffer_length - (volume_util->buffer_length % 8);
   
   for(; i < i_stop;){
@@ -1023,6 +1194,7 @@ ags_volume_util_compute_s64(AgsVolumeUtil *volume_util)
     destination += destination_stride;
     i += 8;
   }
+#endif
 #else
   i_stop = volume_util->buffer_length - (volume_util->buffer_length % 8);
 
@@ -1117,6 +1289,39 @@ ags_volume_util_compute_float(AgsVolumeUtil *volume_util)
     i += 8;
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+#if defined(LARGE_VECTOR)
+  double ret_v_buffer[256];
+  double v_buffer[256];
+
+  gint j;
+
+  double v_volume[1] = { (double) volume_util->volume };
+
+  i_stop = volume_util->buffer_length - (volume_util->buffer_length % 256);
+  
+  while(i < i_stop){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_buffer, 1, v_volume, ret_v_buffer, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gfloat) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   i_stop = volume_util->buffer_length - (volume_util->buffer_length % 8);
   
   for(; i < i_stop;){
@@ -1150,6 +1355,7 @@ ags_volume_util_compute_float(AgsVolumeUtil *volume_util)
     destination += destination_stride;
     i += 8;
   }
+#endif
 #else
   i_stop = volume_util->buffer_length - (volume_util->buffer_length % 8);
 
@@ -1244,6 +1450,39 @@ ags_volume_util_compute_double(AgsVolumeUtil *volume_util)
     i += 8;
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+#if defined(LARGE_VECTOR)
+  double ret_v_buffer[256];
+  double v_buffer[256];
+
+  gint j;
+
+  double v_volume[1] = { (double) volume_util->volume };
+
+  i_stop = volume_util->buffer_length - (volume_util->buffer_length % 256);
+  
+  while(i < i_stop){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_buffer, 1, v_volume, ret_v_buffer, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gfloat) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   i_stop = volume_util->buffer_length - (volume_util->buffer_length % 8);
   
   for(; i < i_stop;){
@@ -1277,6 +1516,7 @@ ags_volume_util_compute_double(AgsVolumeUtil *volume_util)
     destination += destination_stride;
     i += 8;
   }
+#endif
 #else
   i_stop = volume_util->buffer_length - (volume_util->buffer_length % 8);
 

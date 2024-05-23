@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,8 @@
 
 #if defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
 #include <Accelerate/Accelerate.h>
+
+#define LARGE_VECTOR 1
 #endif
 
 gpointer ags_audio_buffer_util_copy(gpointer ptr);
@@ -2130,6 +2132,38 @@ ags_audio_buffer_util_copy_s8_to_s8(gint8 *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  int v_destination[256];
+  int v_source[256];
+  int v_result[256];
+
+  gint j;
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = destination[i + j];
+      v_source[j] = source[i + j];
+
+      j++;
+    }
+
+    vDSP_vaddi(v_destination, 1, v_source, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint8) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -2178,6 +2212,7 @@ ags_audio_buffer_util_copy_s8_to_s8(gint8 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -2297,6 +2332,42 @@ ags_audio_buffer_util_copy_s8_to_s16(gint16 *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_scaled[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_scale[1] = { (double) scale };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_source, 1, v_scale, v_scaled, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint16) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -2348,6 +2419,7 @@ ags_audio_buffer_util_copy_s8_to_s16(gint16 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -2467,6 +2539,42 @@ ags_audio_buffer_util_copy_s8_to_s24(gint32 *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_scaled[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_scale[1] = { (double) scale };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_source, 1, v_scale, v_scaled, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint32) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -2518,6 +2626,7 @@ ags_audio_buffer_util_copy_s8_to_s24(gint32 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -2637,6 +2746,42 @@ ags_audio_buffer_util_copy_s8_to_s32(gint32 *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_scaled[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_scale[1] = { (double) scale };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_source, 1, v_scale, v_scaled, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint32) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -2688,6 +2833,7 @@ ags_audio_buffer_util_copy_s8_to_s32(gint32 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -2807,6 +2953,42 @@ ags_audio_buffer_util_copy_s8_to_s64(gint64 *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_scaled[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_scale[1] = { (double) scale };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_source, 1, v_scale, v_scaled, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint64) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -2858,6 +3040,7 @@ ags_audio_buffer_util_copy_s8_to_s64(gint64 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -2978,6 +3161,42 @@ ags_audio_buffer_util_copy_s8_to_float(gfloat *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_normalized[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_normalize_divisor[1] = { (double) normalize_divisor };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsdivD(v_source, 1, v_normalize_divisor, v_normalized, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_normalized, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gfloat) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -3029,6 +3248,7 @@ ags_audio_buffer_util_copy_s8_to_float(gfloat *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -3149,6 +3369,42 @@ ags_audio_buffer_util_copy_s8_to_double(gdouble *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_normalized[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_normalize_divisor[1] = { (double) normalize_divisor };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsdivD(v_source, 1, v_normalize_divisor, v_normalized, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_normalized, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gdouble) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -3200,6 +3456,7 @@ ags_audio_buffer_util_copy_s8_to_double(gdouble *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -3319,6 +3576,42 @@ ags_audio_buffer_util_copy_s16_to_s8(gint8 *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_scaled[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_scale[1] = { (double) scale };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_source, 1, v_scale, v_scaled, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint8) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -3370,6 +3663,7 @@ ags_audio_buffer_util_copy_s16_to_s8(gint8 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -3485,6 +3779,38 @@ ags_audio_buffer_util_copy_s16_to_s16(gint16 *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  int v_destination[256];
+  int v_source[256];
+  int v_result[256];
+
+  gint j;
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = destination[i + j];
+      v_source[j] = source[i + j];
+
+      j++;
+    }
+
+    vDSP_vaddi(v_destination, 1, v_source, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint16) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -3533,6 +3859,7 @@ ags_audio_buffer_util_copy_s16_to_s16(gint16 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -3652,6 +3979,42 @@ ags_audio_buffer_util_copy_s16_to_s24(gint32 *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_scaled[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_scale[1] = { (double) scale };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_source, 1, v_scale, v_scaled, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint32) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -3703,6 +4066,7 @@ ags_audio_buffer_util_copy_s16_to_s24(gint32 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -3822,6 +4186,42 @@ ags_audio_buffer_util_copy_s16_to_s32(gint32 *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_scaled[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_scale[1] = { (double) scale };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_source, 1, v_scale, v_scaled, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint32) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -3873,6 +4273,7 @@ ags_audio_buffer_util_copy_s16_to_s32(gint32 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -3992,6 +4393,42 @@ ags_audio_buffer_util_copy_s16_to_s64(gint64 *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_scaled[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_scale[1] = { (double) scale };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_source, 1, v_scale, v_scaled, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint64) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -4043,6 +4480,7 @@ ags_audio_buffer_util_copy_s16_to_s64(gint64 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -4163,6 +4601,42 @@ ags_audio_buffer_util_copy_s16_to_float(gfloat *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_normalized[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_normalize_divisor[1] = { (double) normalize_divisor };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsdivD(v_source, 1, v_normalize_divisor, v_normalized, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_normalized, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gfloat) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -4214,6 +4688,7 @@ ags_audio_buffer_util_copy_s16_to_float(gfloat *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -4334,6 +4809,42 @@ ags_audio_buffer_util_copy_s16_to_double(gdouble *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_normalized[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_normalize_divisor[1] = { (double) normalize_divisor };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsdivD(v_source, 1, v_normalize_divisor, v_normalized, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_normalized, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gdouble) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -4385,6 +4896,7 @@ ags_audio_buffer_util_copy_s16_to_double(gdouble *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -4504,6 +5016,42 @@ ags_audio_buffer_util_copy_s24_to_s8(gint8 *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_scaled[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_scale[1] = { (double) scale };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_source, 1, v_scale, v_scaled, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint8) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -4555,6 +5103,7 @@ ags_audio_buffer_util_copy_s24_to_s8(gint8 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -4674,6 +5223,42 @@ ags_audio_buffer_util_copy_s24_to_s16(gint16 *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_scaled[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_scale[1] = { (double) scale };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_source, 1, v_scale, v_scaled, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint16) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -4725,6 +5310,7 @@ ags_audio_buffer_util_copy_s24_to_s16(gint16 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -4841,6 +5427,42 @@ ags_audio_buffer_util_copy_s24_to_s24(gint32 *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_scaled[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_scale[1] = { (double) scale };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_source, 1, v_scale, v_scaled, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint32) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -4889,6 +5511,7 @@ ags_audio_buffer_util_copy_s24_to_s24(gint32 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -5008,6 +5631,42 @@ ags_audio_buffer_util_copy_s24_to_s32(gint32 *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_scaled[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_scale[1] = { (double) scale };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_source, 1, v_scale, v_scaled, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint32) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -5059,6 +5718,7 @@ ags_audio_buffer_util_copy_s24_to_s32(gint32 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -5178,6 +5838,42 @@ ags_audio_buffer_util_copy_s24_to_s64(gint64 *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_scaled[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_scale[1] = { (double) scale };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_source, 1, v_scale, v_scaled, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint64) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -5229,6 +5925,7 @@ ags_audio_buffer_util_copy_s24_to_s64(gint64 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -5349,6 +6046,42 @@ ags_audio_buffer_util_copy_s24_to_float(gfloat *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_normalized[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_normalize_divisor[1] = { (double) normalize_divisor };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsdivD(v_source, 1, v_normalize_divisor, v_normalized, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_normalized, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gfloat) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -5400,6 +6133,7 @@ ags_audio_buffer_util_copy_s24_to_float(gfloat *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -5520,6 +6254,42 @@ ags_audio_buffer_util_copy_s24_to_double(gdouble *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_normalized[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_normalize_divisor[1] = { (double) normalize_divisor };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsdivD(v_source, 1, v_normalize_divisor, v_normalized, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_normalized, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gdouble) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -5571,6 +6341,7 @@ ags_audio_buffer_util_copy_s24_to_double(gdouble *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -5690,6 +6461,42 @@ ags_audio_buffer_util_copy_s32_to_s8(gint8 *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_scaled[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_scale[1] = { (double) scale };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_source, 1, v_scale, v_scaled, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint8) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -5741,6 +6548,7 @@ ags_audio_buffer_util_copy_s32_to_s8(gint8 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -5860,6 +6668,42 @@ ags_audio_buffer_util_copy_s32_to_s16(gint16 *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_scaled[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_scale[1] = { (double) scale };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_source, 1, v_scale, v_scaled, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint16) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -5911,6 +6755,7 @@ ags_audio_buffer_util_copy_s32_to_s16(gint16 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -6030,6 +6875,42 @@ ags_audio_buffer_util_copy_s32_to_s24(gint32 *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_scaled[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_scale[1] = { (double) scale };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_source, 1, v_scale, v_scaled, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint32) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -6081,6 +6962,7 @@ ags_audio_buffer_util_copy_s32_to_s24(gint32 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -6197,6 +7079,38 @@ ags_audio_buffer_util_copy_s32_to_s32(gint32 *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  int v_destination[256];
+  int v_source[256];
+  int v_result[256];
+
+  gint j;
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = destination[i + j];
+      v_source[j] = source[i + j];
+
+      j++;
+    }
+
+    vDSP_vaddi(v_destination, 1, v_source, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint32) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -6245,6 +7159,7 @@ ags_audio_buffer_util_copy_s32_to_s32(gint32 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -6361,6 +7276,42 @@ ags_audio_buffer_util_copy_s32_to_s64(gint64 *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_scaled[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_scale[1] = { (double) scale };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_source, 1, v_scale, v_scaled, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint64) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -6412,6 +7363,7 @@ ags_audio_buffer_util_copy_s32_to_s64(gint64 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -6532,6 +7484,42 @@ ags_audio_buffer_util_copy_s32_to_float(gfloat *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_normalized[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_normalize_divisor[1] = { (double) normalize_divisor };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsdivD(v_source, 1, v_normalize_divisor, v_normalized, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_normalized, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gfloat) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -6583,6 +7571,7 @@ ags_audio_buffer_util_copy_s32_to_float(gfloat *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -6703,6 +7692,42 @@ ags_audio_buffer_util_copy_s32_to_double(gdouble *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_normalized[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_normalize_divisor[1] = { (double) normalize_divisor };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsdivD(v_source, 1, v_normalize_divisor, v_normalized, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_normalized, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gdouble) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -6754,6 +7779,7 @@ ags_audio_buffer_util_copy_s32_to_double(gdouble *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -6873,6 +7899,42 @@ ags_audio_buffer_util_copy_s64_to_s8(gint8 *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_scaled[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_scale[1] = { (double) scale };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_source, 1, v_scale, v_scaled, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint8) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -6924,6 +7986,7 @@ ags_audio_buffer_util_copy_s64_to_s8(gint8 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -7043,6 +8106,42 @@ ags_audio_buffer_util_copy_s64_to_s16(gint16 *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_scaled[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_scale[1] = { (double) scale };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_source, 1, v_scale, v_scaled, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint16) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -7094,6 +8193,7 @@ ags_audio_buffer_util_copy_s64_to_s16(gint16 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -7213,6 +8313,42 @@ ags_audio_buffer_util_copy_s64_to_s24(gint32 *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_scaled[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_scale[1] = { (double) scale };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_source, 1, v_scale, v_scaled, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint32) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -7264,6 +8400,7 @@ ags_audio_buffer_util_copy_s64_to_s24(gint32 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -7383,6 +8520,42 @@ ags_audio_buffer_util_copy_s64_to_s32(gint32 *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_scaled[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_scale[1] = { (double) scale };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_source, 1, v_scale, v_scaled, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint32) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -7434,6 +8607,7 @@ ags_audio_buffer_util_copy_s64_to_s32(gint32 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -7499,6 +8673,38 @@ ags_audio_buffer_util_copy_s64_to_s64(gint64 *destination, guint dchannels,
 
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  int v_destination[256];
+  int v_source[256];
+  int v_result[256];
+
+  gint j;
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = destination[i + j];
+      v_source[j] = source[i + j];
+
+      j++;
+    }
+
+    vDSP_vaddi(v_destination, 1, v_source, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint64) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -7548,6 +8754,7 @@ ags_audio_buffer_util_copy_s64_to_s64(gint64 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
   if(count > 8){
@@ -7718,6 +8925,42 @@ ags_audio_buffer_util_copy_s64_to_float(gfloat *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_normalized[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_normalize_divisor[1] = { (double) normalize_divisor };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsdivD(v_source, 1, v_normalize_divisor, v_normalized, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_normalized, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gfloat) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -7769,6 +9012,7 @@ ags_audio_buffer_util_copy_s64_to_float(gfloat *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -7889,6 +9133,42 @@ ags_audio_buffer_util_copy_s64_to_double(gdouble *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_normalized[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_normalize_divisor[1] = { (double) normalize_divisor };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsdivD(v_source, 1, v_normalize_divisor, v_normalized, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_normalized, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gdouble) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -7935,11 +9215,12 @@ ags_audio_buffer_util_copy_s64_to_double(gdouble *destination, guint dchannels,
 
       /* iterate destination */
       destination += (current_dchannel + dchannels);
-
+      
       /* iterate source */
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -8059,6 +9340,42 @@ ags_audio_buffer_util_copy_float_to_s8(gint8 *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_scaled[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_scale[1] = { (double) scale };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_source, 1, v_scale, v_scaled, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint8) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -8110,6 +9427,7 @@ ags_audio_buffer_util_copy_float_to_s8(gint8 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -8229,6 +9547,42 @@ ags_audio_buffer_util_copy_float_to_s16(gint16 *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_scaled[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_scale[1] = { (double) scale };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_source, 1, v_scale, v_scaled, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint16) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -8280,6 +9634,7 @@ ags_audio_buffer_util_copy_float_to_s16(gint16 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -8399,6 +9754,42 @@ ags_audio_buffer_util_copy_float_to_s24(gint32 *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_scaled[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_scale[1] = { (double) scale };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_source, 1, v_scale, v_scaled, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint16) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -8450,6 +9841,7 @@ ags_audio_buffer_util_copy_float_to_s24(gint32 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -8569,6 +9961,42 @@ ags_audio_buffer_util_copy_float_to_s32(gint32 *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_scaled[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_scale[1] = { (double) scale };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_source, 1, v_scale, v_scaled, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint32) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -8620,6 +10048,7 @@ ags_audio_buffer_util_copy_float_to_s32(gint32 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -8739,6 +10168,42 @@ ags_audio_buffer_util_copy_float_to_s64(gint64 *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_scaled[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_scale[1] = { (double) scale };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_source, 1, v_scale, v_scaled, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint64) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -8790,6 +10255,7 @@ ags_audio_buffer_util_copy_float_to_s64(gint64 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -8906,6 +10372,38 @@ ags_audio_buffer_util_copy_float_to_float(gfloat *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_result[256];
+
+  gint j;
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = destination[i + j];
+      v_source[j] = source[i + j];
+
+      j++;
+    }
+
+    vDSP_vaddD(v_destination, 1, v_source, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gfloat) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -8954,6 +10452,7 @@ ags_audio_buffer_util_copy_float_to_float(gfloat *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -9067,6 +10566,38 @@ ags_audio_buffer_util_copy_float_to_double(gdouble *destination, guint dchannels
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_result[256];
+
+  gint j;
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = destination[i + j];
+      v_source[j] = source[i + j];
+
+      j++;
+    }
+
+    vDSP_vaddD(v_destination, 1, v_source, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gdouble) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -9115,6 +10646,7 @@ ags_audio_buffer_util_copy_float_to_double(gdouble *destination, guint dchannels
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -9231,6 +10763,42 @@ ags_audio_buffer_util_copy_double_to_s8(gint8 *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_scaled[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_scale[1] = { (double) scale };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_source, 1, v_scale, v_scaled, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint8) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -9282,6 +10850,7 @@ ags_audio_buffer_util_copy_double_to_s8(gint8 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -9401,6 +10970,42 @@ ags_audio_buffer_util_copy_double_to_s16(gint16 *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_scaled[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_scale[1] = { (double) scale };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_source, 1, v_scale, v_scaled, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint16) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -9452,6 +11057,7 @@ ags_audio_buffer_util_copy_double_to_s16(gint16 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -9571,6 +11177,42 @@ ags_audio_buffer_util_copy_double_to_s24(gint32 *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_scaled[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_scale[1] = { (double) scale };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_source, 1, v_scale, v_scaled, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint32) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -9622,6 +11264,7 @@ ags_audio_buffer_util_copy_double_to_s24(gint32 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -9741,6 +11384,42 @@ ags_audio_buffer_util_copy_double_to_s32(gint32 *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_scaled[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_scale[1] = { (double) scale };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_source, 1, v_scale, v_scaled, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint32) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -9792,6 +11471,7 @@ ags_audio_buffer_util_copy_double_to_s32(gint32 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -9911,6 +11591,42 @@ ags_audio_buffer_util_copy_double_to_s64(gint64 *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_scaled[256];
+  double v_result[256];
+
+  gint j;
+
+  static const double v_scale[1] = { (double) scale };
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = (double) destination[i + j];
+      v_source[j] = (double) source[i + j];
+
+      j++;
+    }
+
+    vDSP_vsmulD(v_source, 1, v_scale, v_scaled, 1, ((count < 256) ? count: 256));
+    vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gint64) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -9962,6 +11678,7 @@ ags_audio_buffer_util_copy_double_to_s64(gint64 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -10078,6 +11795,38 @@ ags_audio_buffer_util_copy_double_to_float(gfloat *destination, guint dchannels,
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_result[256];
+
+  gint j;
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = destination[i + j];
+      v_source[j] = source[i + j];
+
+      j++;
+    }
+
+    vDSP_vaddD(v_destination, 1, v_source, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gfloat) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -10126,6 +11875,7 @@ ags_audio_buffer_util_copy_double_to_float(gfloat *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
@@ -10242,6 +11992,38 @@ ags_audio_buffer_util_copy_double_to_double(gdouble *destination, guint dchannel
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
+#if defined(LARGE_VECTOR)
+  double v_destination[256];
+  double v_source[256];
+  double v_result[256];
+
+  gint j;
+
+  limit = count - (count % 256);
+  
+  while(i < limit){
+    j = 0;
+
+    while(j < count && j < 256){
+      v_destination[j] = destination[i + j];
+      v_source[j] = source[i + j];
+
+      j++;
+    }
+
+    vDSP_vaddD(v_destination, 1, v_source, 1, v_result, 1, ((count < 256) ? count: 256));
+
+    j = 0;
+
+    while(j < count && j < 256){
+      destination[i + j] = (gdouble) v_result[j];
+
+      j++;
+    }
+    
+    i += (count < 256) ? count: 256;
+  }
+#else
   if(count > 8){
     limit = count - (count % 8);
   
@@ -10290,6 +12072,7 @@ ags_audio_buffer_util_copy_double_to_double(gdouble *destination, guint dchannel
       source += (current_schannel + schannels);
     }
   }
+#endif
 #else  
   /* unrolled function */
   if(count > 8){
