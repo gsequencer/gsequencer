@@ -1,3 +1,8 @@
+ags (6.14.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* minor improvements to dlopen() call
+
 ags (6.14.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
