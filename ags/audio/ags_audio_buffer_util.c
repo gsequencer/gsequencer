@@ -2144,9 +2144,9 @@ ags_audio_buffer_util_copy_s8_to_s8(gint8 *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = destination[i + j];
-      v_source[j] = source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = destination[dchannels * (i + j)];
+      v_source[j] = source[schannels * (i + j)];
 
       j++;
     }
@@ -2155,13 +2155,13 @@ ags_audio_buffer_util_copy_s8_to_s8(gint8 *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gint8) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gint8) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -2347,9 +2347,9 @@ ags_audio_buffer_util_copy_s8_to_s16(gint16 *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -2359,13 +2359,13 @@ ags_audio_buffer_util_copy_s8_to_s16(gint16 *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gint16) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gint16) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -2554,9 +2554,9 @@ ags_audio_buffer_util_copy_s8_to_s24(gint32 *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -2566,13 +2566,13 @@ ags_audio_buffer_util_copy_s8_to_s24(gint32 *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gint32) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gint32) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -2761,9 +2761,9 @@ ags_audio_buffer_util_copy_s8_to_s32(gint32 *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -2773,13 +2773,13 @@ ags_audio_buffer_util_copy_s8_to_s32(gint32 *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gint32) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gint32) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -2968,9 +2968,9 @@ ags_audio_buffer_util_copy_s8_to_s64(gint64 *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -2980,13 +2980,13 @@ ags_audio_buffer_util_copy_s8_to_s64(gint64 *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gint64) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gint64) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -3176,9 +3176,9 @@ ags_audio_buffer_util_copy_s8_to_float(gfloat *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -3188,13 +3188,13 @@ ags_audio_buffer_util_copy_s8_to_float(gfloat *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gfloat) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gfloat) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -3384,9 +3384,9 @@ ags_audio_buffer_util_copy_s8_to_double(gdouble *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -3396,13 +3396,13 @@ ags_audio_buffer_util_copy_s8_to_double(gdouble *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gdouble) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gdouble) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -3591,9 +3591,9 @@ ags_audio_buffer_util_copy_s16_to_s8(gint8 *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -3603,13 +3603,13 @@ ags_audio_buffer_util_copy_s16_to_s8(gint8 *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gint8) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gint8) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -3791,9 +3791,9 @@ ags_audio_buffer_util_copy_s16_to_s16(gint16 *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = destination[i + j];
-      v_source[j] = source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = destination[dchannels * (i + j)];
+      v_source[j] = source[schannels * (i + j)];
 
       j++;
     }
@@ -3802,13 +3802,13 @@ ags_audio_buffer_util_copy_s16_to_s16(gint16 *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gint16) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gint16) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -3994,9 +3994,9 @@ ags_audio_buffer_util_copy_s16_to_s24(gint32 *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -4006,13 +4006,13 @@ ags_audio_buffer_util_copy_s16_to_s24(gint32 *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gint32) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gint32) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -4201,9 +4201,9 @@ ags_audio_buffer_util_copy_s16_to_s32(gint32 *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -4213,13 +4213,13 @@ ags_audio_buffer_util_copy_s16_to_s32(gint32 *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gint32) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gint32) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -4408,9 +4408,9 @@ ags_audio_buffer_util_copy_s16_to_s64(gint64 *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -4420,13 +4420,13 @@ ags_audio_buffer_util_copy_s16_to_s64(gint64 *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gint64) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gint64) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -4616,9 +4616,9 @@ ags_audio_buffer_util_copy_s16_to_float(gfloat *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -4628,13 +4628,13 @@ ags_audio_buffer_util_copy_s16_to_float(gfloat *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gfloat) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gfloat) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -4824,9 +4824,9 @@ ags_audio_buffer_util_copy_s16_to_double(gdouble *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -4836,13 +4836,13 @@ ags_audio_buffer_util_copy_s16_to_double(gdouble *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gdouble) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gdouble) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -5031,9 +5031,9 @@ ags_audio_buffer_util_copy_s24_to_s8(gint8 *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -5043,13 +5043,13 @@ ags_audio_buffer_util_copy_s24_to_s8(gint8 *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gint8) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gint8) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -5238,9 +5238,9 @@ ags_audio_buffer_util_copy_s24_to_s16(gint16 *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -5250,13 +5250,13 @@ ags_audio_buffer_util_copy_s24_to_s16(gint16 *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gint16) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gint16) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -5428,39 +5428,35 @@ ags_audio_buffer_util_copy_s24_to_s24(gint32 *destination, guint dchannels,
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   /* vectorized function */
 #if defined(LARGE_VECTOR)
-  double v_destination[256];
-  double v_source[256];
-  double v_scaled[256];
-  double v_result[256];
+  int v_destination[256];
+  int v_source[256];
+  int v_result[256];
 
   gint j;
-
-  static const double v_scale[1] = { (double) scale };
 
   limit = count - (count % 256);
   
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = destination[dchannels * (i + j)];
+      v_source[j] = source[schannels * (i + j)];
 
       j++;
     }
 
-    vDSP_vsmulD(v_source, 1, v_scale, v_scaled, 1, ((count < 256) ? count: 256));
-    vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, ((count < 256) ? count: 256));
+    vDSP_vaddi(v_destination, 1, v_source, 1, v_result, 1, ((count < 256) ? count: 256));
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gint32) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gint32) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -5646,9 +5642,9 @@ ags_audio_buffer_util_copy_s24_to_s32(gint32 *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -5658,13 +5654,13 @@ ags_audio_buffer_util_copy_s24_to_s32(gint32 *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gint32) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gint32) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -5853,9 +5849,9 @@ ags_audio_buffer_util_copy_s24_to_s64(gint64 *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -5865,13 +5861,13 @@ ags_audio_buffer_util_copy_s24_to_s64(gint64 *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gint64) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gint64) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -6061,9 +6057,9 @@ ags_audio_buffer_util_copy_s24_to_float(gfloat *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -6073,13 +6069,13 @@ ags_audio_buffer_util_copy_s24_to_float(gfloat *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gfloat) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gfloat) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -6269,9 +6265,9 @@ ags_audio_buffer_util_copy_s24_to_double(gdouble *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -6281,13 +6277,13 @@ ags_audio_buffer_util_copy_s24_to_double(gdouble *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gdouble) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gdouble) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -6476,9 +6472,9 @@ ags_audio_buffer_util_copy_s32_to_s8(gint8 *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -6488,13 +6484,13 @@ ags_audio_buffer_util_copy_s32_to_s8(gint8 *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gint8) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gint8) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -6683,9 +6679,9 @@ ags_audio_buffer_util_copy_s32_to_s16(gint16 *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -6695,13 +6691,13 @@ ags_audio_buffer_util_copy_s32_to_s16(gint16 *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gint16) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gint16) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -6890,9 +6886,9 @@ ags_audio_buffer_util_copy_s32_to_s24(gint32 *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -6902,13 +6898,13 @@ ags_audio_buffer_util_copy_s32_to_s24(gint32 *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gint32) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gint32) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -7091,9 +7087,9 @@ ags_audio_buffer_util_copy_s32_to_s32(gint32 *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = destination[i + j];
-      v_source[j] = source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = destination[dchannels * (i + j)];
+      v_source[j] = source[schannels * (i + j)];
 
       j++;
     }
@@ -7102,13 +7098,13 @@ ags_audio_buffer_util_copy_s32_to_s32(gint32 *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gint32) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gint32) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -7291,9 +7287,9 @@ ags_audio_buffer_util_copy_s32_to_s64(gint64 *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -7303,13 +7299,13 @@ ags_audio_buffer_util_copy_s32_to_s64(gint64 *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gint64) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gint64) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -7499,9 +7495,9 @@ ags_audio_buffer_util_copy_s32_to_float(gfloat *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -7511,13 +7507,13 @@ ags_audio_buffer_util_copy_s32_to_float(gfloat *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gfloat) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gfloat) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -7707,9 +7703,9 @@ ags_audio_buffer_util_copy_s32_to_double(gdouble *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -7719,13 +7715,13 @@ ags_audio_buffer_util_copy_s32_to_double(gdouble *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gdouble) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gdouble) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -7914,9 +7910,9 @@ ags_audio_buffer_util_copy_s64_to_s8(gint8 *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -7926,13 +7922,13 @@ ags_audio_buffer_util_copy_s64_to_s8(gint8 *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gint8) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gint8) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -8121,9 +8117,9 @@ ags_audio_buffer_util_copy_s64_to_s16(gint16 *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -8133,13 +8129,13 @@ ags_audio_buffer_util_copy_s64_to_s16(gint16 *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gint16) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gint16) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -8328,9 +8324,9 @@ ags_audio_buffer_util_copy_s64_to_s24(gint32 *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -8340,13 +8336,13 @@ ags_audio_buffer_util_copy_s64_to_s24(gint32 *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gint32) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gint32) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -8535,9 +8531,9 @@ ags_audio_buffer_util_copy_s64_to_s32(gint32 *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -8547,13 +8543,13 @@ ags_audio_buffer_util_copy_s64_to_s32(gint32 *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gint32) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gint32) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -8685,9 +8681,9 @@ ags_audio_buffer_util_copy_s64_to_s64(gint64 *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = destination[i + j];
-      v_source[j] = source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = destination[dchannels * (i + j)];
+      v_source[j] = source[schannels * (i + j)];
 
       j++;
     }
@@ -8696,13 +8692,13 @@ ags_audio_buffer_util_copy_s64_to_s64(gint64 *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gint64) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gint64) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -8940,9 +8936,9 @@ ags_audio_buffer_util_copy_s64_to_float(gfloat *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -8952,13 +8948,13 @@ ags_audio_buffer_util_copy_s64_to_float(gfloat *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gfloat) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gfloat) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -9148,9 +9144,9 @@ ags_audio_buffer_util_copy_s64_to_double(gdouble *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -9160,13 +9156,13 @@ ags_audio_buffer_util_copy_s64_to_double(gdouble *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gdouble) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gdouble) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -9355,9 +9351,9 @@ ags_audio_buffer_util_copy_float_to_s8(gint8 *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -9367,13 +9363,13 @@ ags_audio_buffer_util_copy_float_to_s8(gint8 *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gint8) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gint8) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -9562,9 +9558,9 @@ ags_audio_buffer_util_copy_float_to_s16(gint16 *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -9574,13 +9570,13 @@ ags_audio_buffer_util_copy_float_to_s16(gint16 *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gint16) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gint16) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -9769,9 +9765,9 @@ ags_audio_buffer_util_copy_float_to_s24(gint32 *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -9781,13 +9777,13 @@ ags_audio_buffer_util_copy_float_to_s24(gint32 *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gint16) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gint16) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -9976,9 +9972,9 @@ ags_audio_buffer_util_copy_float_to_s32(gint32 *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -9988,13 +9984,13 @@ ags_audio_buffer_util_copy_float_to_s32(gint32 *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gint32) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gint32) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -10183,9 +10179,9 @@ ags_audio_buffer_util_copy_float_to_s64(gint64 *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -10195,13 +10191,13 @@ ags_audio_buffer_util_copy_float_to_s64(gint64 *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gint64) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gint64) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -10384,9 +10380,9 @@ ags_audio_buffer_util_copy_float_to_float(gfloat *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = destination[i + j];
-      v_source[j] = source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = destination[dchannels * (i + j)];
+      v_source[j] = source[schannels * (i + j)];
 
       j++;
     }
@@ -10395,13 +10391,13 @@ ags_audio_buffer_util_copy_float_to_float(gfloat *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gfloat) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gfloat) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -10578,9 +10574,9 @@ ags_audio_buffer_util_copy_float_to_double(gdouble *destination, guint dchannels
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = destination[i + j];
-      v_source[j] = source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = destination[dchannels * (i + j)];
+      v_source[j] = source[schannels * (i + j)];
 
       j++;
     }
@@ -10589,13 +10585,13 @@ ags_audio_buffer_util_copy_float_to_double(gdouble *destination, guint dchannels
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gdouble) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gdouble) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -10778,9 +10774,9 @@ ags_audio_buffer_util_copy_double_to_s8(gint8 *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -10790,13 +10786,13 @@ ags_audio_buffer_util_copy_double_to_s8(gint8 *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gint8) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gint8) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -10985,9 +10981,9 @@ ags_audio_buffer_util_copy_double_to_s16(gint16 *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -10997,13 +10993,13 @@ ags_audio_buffer_util_copy_double_to_s16(gint16 *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gint16) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gint16) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -11192,9 +11188,9 @@ ags_audio_buffer_util_copy_double_to_s24(gint32 *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -11204,13 +11200,13 @@ ags_audio_buffer_util_copy_double_to_s24(gint32 *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gint32) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gint32) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -11399,9 +11395,9 @@ ags_audio_buffer_util_copy_double_to_s32(gint32 *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -11411,13 +11407,13 @@ ags_audio_buffer_util_copy_double_to_s32(gint32 *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gint32) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gint32) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -11606,9 +11602,9 @@ ags_audio_buffer_util_copy_double_to_s64(gint64 *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = (double) destination[i + j];
-      v_source[j] = (double) source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = (double) destination[dchannels * (i + j)];
+      v_source[j] = (double) source[schannels * (i + j)];
 
       j++;
     }
@@ -11618,13 +11614,13 @@ ags_audio_buffer_util_copy_double_to_s64(gint64 *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gint64) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gint64) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -11807,9 +11803,9 @@ ags_audio_buffer_util_copy_double_to_float(gfloat *destination, guint dchannels,
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = destination[i + j];
-      v_source[j] = source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = destination[dchannels * (i + j)];
+      v_source[j] = source[schannels * (i + j)];
 
       j++;
     }
@@ -11818,13 +11814,13 @@ ags_audio_buffer_util_copy_double_to_float(gfloat *destination, guint dchannels,
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gfloat) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gfloat) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){
@@ -12004,9 +12000,9 @@ ags_audio_buffer_util_copy_double_to_double(gdouble *destination, guint dchannel
   while(i < limit){
     j = 0;
 
-    while(j < count && j < 256){
-      v_destination[j] = destination[i + j];
-      v_source[j] = source[i + j];
+    while(i + j < count && j < 256){
+      v_destination[j] = destination[dchannels * (i + j)];
+      v_source[j] = source[schannels * (i + j)];
 
       j++;
     }
@@ -12015,13 +12011,13 @@ ags_audio_buffer_util_copy_double_to_double(gdouble *destination, guint dchannel
 
     j = 0;
 
-    while(j < count && j < 256){
-      destination[i + j] = (gdouble) v_result[j];
+    while(i + j < count && j < 256){
+      destination[dchannels * (i + j)] = (gdouble) v_result[j];
 
       j++;
     }
     
-    i += (count < 256) ? count: 256;
+    i += ((count < 256) ? count: 256);
   }
 #else
   if(count > 8){

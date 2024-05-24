@@ -9,9 +9,9 @@
 
 LT_CURRENT=6
 LT_REVISION=14
-LT_AGE=5
+LT_AGE=6
 
-m4_define([ags_version], [6.14.5])
+m4_define([ags_version], [6.14.6])
 
 AC_PREREQ([2.69])
 AC_INIT([gsequencer],m4_defn([ags_version]),[jkraehemann@gmail.com])
