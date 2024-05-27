@@ -1,3 +1,8 @@
+ags (6.15.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: implemented ags_pitch_16x_alias_util.c
+
 ags (6.14.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
