@@ -1003,6 +1003,7 @@ ags_audio_toolbox_rw_open(AgsSoundResource *sound_resource,
   
   AgsSoundcardFormat format;
   guint major_format;
+  UInt32 codec;
   OSStatus retval;
   gboolean success;
     
@@ -1114,7 +1115,7 @@ ags_audio_toolbox_rw_open(AgsSoundResource *sound_resource,
     audio_toolbox->stream->mChannelsPerFrame = audio_channels;
     
     retval = ExtAudioFileCreateWithURL((CFURLRef) audio_url,
-				       kAudioFileAIFFType,
+				       kAudioFileM4AType,
 				       audio_toolbox->stream,
 				       NULL,
 				       kAudioFileFlags_EraseFile,
@@ -1148,6 +1149,15 @@ ags_audio_toolbox_rw_open(AgsSoundResource *sound_resource,
   
   g_rec_mutex_lock(audio_toolbox_mutex);
 
+#if 0  
+  codec = kAppleHardwareAudioCodecManufacturer;
+  
+  ExtAudioFileSetProperty(audio_toolbox->audio_file, 
+			  kExtAudioFileProperty_CodecManufacturer, 
+			  sizeof(codec), 
+			  &codec);
+#endif
+  
   ExtAudioFileSetProperty(audio_toolbox->audio_file,
 			  kExtAudioFileProperty_ClientDataFormat,
 			  sizeof(AudioStreamBasicDescription),
@@ -1655,6 +1665,8 @@ ags_audio_toolbox_close(AgsSoundResource *sound_resource)
     return;
   }
 
+  AudioFileClose(audio_toolbox->audio_file);
+  
   ExtAudioFileDispose(audio_toolbox->audio_file);
 
   g_rec_mutex_lock(audio_toolbox_mutex);

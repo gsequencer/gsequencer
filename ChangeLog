@@ -1,3 +1,8 @@
+ags (6.14.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed audio type of AgsAudioToolbox
+
 ags (6.14.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
