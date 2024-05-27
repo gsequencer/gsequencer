@@ -612,6 +612,11 @@ void
 ags_vst3_bridge_disconnect(AgsConnectable *connectable)
 {
   AgsVst3Bridge *vst3_bridge;
+  AgsEffectBridge *effect_bridge;
+  AgsBulkMember *bulk_member;
+  GtkWidget *control;
+
+  GList *start_list, *list;
 
   if(!ags_connectable_is_connected(connectable)){
     return;
@@ -659,13 +664,13 @@ ags_vst3_bridge_disconnect(AgsConnectable *connectable)
     }else if(bulk_member->widget_type == GTK_TYPE_CHECK_BUTTON){
       g_object_disconnect(GTK_WIDGET(control),
 			  "any_signal::toggled",
-			  G_CALLBACK(ags_vst3_bridge_check_button_toggled_callback),
+			  G_CALLBACK(ags_vst3_bridge_check_button_clicked_callback),
 			  vst3_bridge,
 			  NULL);
     }else if(bulk_member->widget_type == GTK_TYPE_TOGGLE_BUTTON){
       g_object_disconnect(GTK_WIDGET(control),
 			  "any_signal::toggled",
-			  G_CALLBACK(ags_vst3_bridge_toggle_button_toggled_callback),
+			  G_CALLBACK(ags_vst3_bridge_toggle_button_clicked_callback),
 			  vst3_bridge,
 			  NULL);
     }else if(bulk_member->widget_type == GTK_TYPE_BUTTON){

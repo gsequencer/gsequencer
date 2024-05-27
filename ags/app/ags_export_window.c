@@ -963,16 +963,12 @@ ags_export_window_start_export(AgsExportWindow *export_window)
     task = NULL;
       
     while(export_soundcard != NULL){
-      GtkEntryBuffer *entry_buffer;
-      
       gchar *filename;
       
       current_export_thread = ags_export_thread_find_soundcard(export_thread,
 							       AGS_EXPORT_SOUNDCARD(export_soundcard->data)->soundcard);
 
-      entry_buffer = gtk_entry_get_buffer(AGS_EXPORT_SOUNDCARD(export_soundcard->data)->filename);
-      
-      filename = gtk_entry_buffer_get_text(entry_buffer);
+      filename = g_strdup(gtk_editable_get_text(GTK_EDITABLE(AGS_EXPORT_SOUNDCARD(export_soundcard->data)->filename)));
 
       export_output = ags_export_output_new(current_export_thread,
 					    AGS_EXPORT_SOUNDCARD(export_soundcard->data)->soundcard,

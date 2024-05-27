@@ -933,7 +933,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     plugin_so = LoadLibrary(base_plugin->filename);
 #else
     plugin_so = dlopen(base_plugin->filename,
-		       RTLD_NOW);
+		       RTLD_NOW|RTLD_GLOBAL);
 #endif
     
     g_object_set(lv2_plugin,

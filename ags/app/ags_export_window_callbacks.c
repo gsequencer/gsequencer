@@ -155,11 +155,8 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
     file_exists = FALSE;
 
     while(export_soundcard != NULL){
-      GtkEntryBuffer *entry_buffer;
+      filename = g_strdup(gtk_editable_get_text(GTK_EDITABLE(AGS_EXPORT_SOUNDCARD(export_soundcard->data)->filename)));
 
-      entry_buffer = gtk_entry_get_buffer(AGS_EXPORT_SOUNDCARD(export_soundcard->data)->filename);
-
-      filename = g_strdup(gtk_entry_buffer_get_text(entry_buffer));
       all_filename = g_list_prepend(all_filename,
 				    filename);
       

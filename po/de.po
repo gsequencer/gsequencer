@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-05-21 19:11+0200\n"
+"POT-Creation-Date: 2024-05-25 10:12+0200\n"
 "PO-Revision-Date: 2021-01-03 08:52+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: Deutsch <jkraehemann@gmail.com>\n"
@@ -1182,13 +1182,13 @@ msgid "Preferences"
 msgstr "Einstellungen"
 
 #: ags/app/ags_gsequencer_application.c:809
-#: ags/app/ags_gsequencer_application.c:1052
+#: ags/app/ags_gsequencer_application.c:1060
 #, fuzzy
 msgid "SMF import"
 msgstr "MIDI importieren"
 
 #: ags/app/ags_gsequencer_application.c:814
-#: ags/app/ags_gsequencer_application.c:1060
+#: ags/app/ags_gsequencer_application.c:1068
 #, fuzzy
 msgid "SMF export"
 msgstr "MIDI exportieren"
@@ -1212,24 +1212,24 @@ msgstr "_Hilfe"
 msgid "About"
 msgstr "Über"
 
-#: ags/app/ags_gsequencer_application.c:1021
+#: ags/app/ags_gsequencer_application.c:1029
 msgid "application window"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:1028 ags/app/ags_preferences.c:230
+#: ags/app/ags_gsequencer_application.c:1036 ags/app/ags_preferences.c:230
 msgid "preferences"
 msgstr "Einstellungen"
 
-#: ags/app/ags_gsequencer_application.c:1036
+#: ags/app/ags_gsequencer_application.c:1044
 msgid "meta-data"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:1044
+#: ags/app/ags_gsequencer_application.c:1052
 #, fuzzy
 msgid "audio export"
 msgstr "Audio exportieren"
 
-#: ags/app/ags_gsequencer_application.c:1068
+#: ags/app/ags_gsequencer_application.c:1076
 msgid "help"
 msgstr ""
 

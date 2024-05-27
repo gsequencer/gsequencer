@@ -937,6 +937,14 @@ ags_gsequencer_application_open(GApplication *application,
       ags_connectable_disconnect(AGS_CONNECTABLE(composite_editor));
       
       /* destroy editor */
+      g_menu_remove_all(AGS_COMPOSITE_EDITOR(composite_editor)->machine_selector->add_index_menu);
+
+      AGS_COMPOSITE_EDITOR(composite_editor)->machine_selector->add_index_item_count = 0;      
+
+      g_free(AGS_COMPOSITE_EDITOR(composite_editor)->machine_selector->add_index_item);
+      
+      AGS_COMPOSITE_EDITOR(composite_editor)->machine_selector->add_index_item = NULL;
+      
       list =
 	start_list = ags_machine_selector_get_machine_radio_button(AGS_COMPOSITE_EDITOR(composite_editor)->machine_selector);
 
