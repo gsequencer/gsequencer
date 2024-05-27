@@ -98,6 +98,7 @@
 #include <ags/audio/ags_pattern.h>
 #include <ags/audio/ags_peak_util.h>
 #include <ags/audio/ags_phase_shift_util.h>
+#include <ags/audio/ags_pitch_16x_alias_util.h>
 #include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_port.h>

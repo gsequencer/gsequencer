@@ -986,14 +986,26 @@ void
 ags_pitch_16x_alias_util_pitch_s8(AgsPitch16xAliasUtil *pitch_16x_alias_util)
 {
   gint8 *destination, *source;
-
+  gint8 *alias_source_buffer;
+  gint8 *alias_new_source_buffer;
+  
   guint destination_stride, source_stride;
   guint buffer_length;
   guint samplerate;
-  gdouble volume;
-  gdouble base_freq, new_freq;
+  gdouble base_key;
+  gdouble tuning;
+  gdouble root_pitch_hz;
+  gdouble new_pitch_hz;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  gdouble source_freq_period;
+  gdouble new_source_freq_period;
   gdouble t;
-  guint i, j;
+  gint reset_i;
+  guint i;
 
   if(pitch_16x_alias_util == NULL ||
      pitch_16x_alias_util->destination == NULL ||
@@ -1007,13 +1019,76 @@ ags_pitch_16x_alias_util_pitch_s8(AgsPitch16xAliasUtil *pitch_16x_alias_util)
   source = pitch_16x_alias_util->source;
   source_stride = pitch_16x_alias_util->source_stride;
 
+  alias_source_buffer = pitch_16x_alias_util->alias_source_buffer;
+  
+  alias_new_source_buffer = pitch_16x_alias_util->alias_new_source_buffer;
+
   buffer_length = pitch_16x_alias_util->buffer_length;
   samplerate = pitch_16x_alias_util->samplerate;
-  
-  /* frequency */
-  base_freq = exp2((pitch_16x_alias_util->base_key) / 12.0) * 440.0;
 
-  //TODO:JK: implement me
+  base_key = pitch_16x_alias_util->base_key;
+  tuning = pitch_16x_alias_util->tuning;
+
+  vibrato_gain = pitch_16x_alias_util->vibrato_gain;
+  vibrato_lfo_depth = pitch_16x_alias_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = pitch_16x_alias_util->vibrato_lfo_freq;
+  vibrato_tuning = pitch_16x_alias_util->vibrato_tuning;
+  offset = pitch_16x_alias_util->offset;
+
+  if(pitch_16x_alias_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
+  
+  root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
+  new_pitch_hz = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
+
+  for(i = 0; i < 16 * buffer_length; i++){
+    t = (double) (i % 16) / 16.0;
+
+    if((i / 16) + 1 < buffer_length){
+      alias_source_buffer[i] = ((1.0 - t) * (source[(i / 16) * source_stride] + (t * source[((i / 16) + 1) * source_stride])));
+    }
+  }
+
+  source_freq_period = (16 * samplerate) / root_pitch_hz;
+
+  new_source_freq_period = (16 * samplerate) / new_pitch_hz;
+
+  reset_i = -1;
+
+  for(i = 0; i < 16 * buffer_length; i++){
+    new_pitch_hz = exp2((base_key + (tuning / 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)))  / 12.0) * 440.0;
+      
+    new_source_freq_period = (16 * samplerate) / new_pitch_hz;
+    
+    if(source_freq_period < new_source_freq_period){
+      t = (i % (guint) source_freq_period) / new_source_freq_period;
+
+      if((guint) floor(i * (source_freq_period / new_source_freq_period)) < 16 * buffer_length){
+	alias_new_source_buffer[i] = ((1.0 - t) * alias_source_buffer[i]) + (t * alias_source_buffer[(guint) floor(i * (source_freq_period / new_source_freq_period))]);
+      }
+    }else{
+      t = 1.0 / source_freq_period * new_source_freq_period;
+
+      if(i * source_freq_period / new_source_freq_period < 16 * buffer_length){
+	alias_new_source_buffer[i] = alias_source_buffer[(guint) floor(i * source_freq_period / new_source_freq_period)];
+      }else{
+	if(reset_i == -1){
+	  reset_i = i;
+	}
+
+	if(reset_i != -1 && i - reset_i >= reset_i){
+	  reset_i = i;
+	}
+	
+	alias_new_source_buffer[i] = alias_source_buffer[(guint) floor((i - reset_i) * source_freq_period / new_source_freq_period)];
+      }
+    }
+  }
+
+  for(i = 0; i < buffer_length; i++){
+    destination[i * destination_stride] = alias_new_source_buffer[16 * i];
+  }
 }
 
 /**
@@ -1028,14 +1103,26 @@ void
 ags_pitch_16x_alias_util_pitch_s16(AgsPitch16xAliasUtil *pitch_16x_alias_util)
 {
   gint16 *destination, *source;
-
+  gint16 *alias_source_buffer;
+  gint16 *alias_new_source_buffer;
+  
   guint destination_stride, source_stride;
   guint buffer_length;
   guint samplerate;
-  gdouble volume;
-  gdouble base_freq, new_freq;
+  gdouble base_key;
+  gdouble tuning;
+  gdouble root_pitch_hz;
+  gdouble new_pitch_hz;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  gdouble source_freq_period;
+  gdouble new_source_freq_period;
   gdouble t;
-  guint i, j;
+  gint reset_i;
+  guint i;
 
   if(pitch_16x_alias_util == NULL ||
      pitch_16x_alias_util->destination == NULL ||
@@ -1049,13 +1136,76 @@ ags_pitch_16x_alias_util_pitch_s16(AgsPitch16xAliasUtil *pitch_16x_alias_util)
   source = pitch_16x_alias_util->source;
   source_stride = pitch_16x_alias_util->source_stride;
 
+  alias_source_buffer = pitch_16x_alias_util->alias_source_buffer;
+  
+  alias_new_source_buffer = pitch_16x_alias_util->alias_new_source_buffer;
+
   buffer_length = pitch_16x_alias_util->buffer_length;
   samplerate = pitch_16x_alias_util->samplerate;
-  
-  /* frequency */
-  base_freq = exp2((pitch_16x_alias_util->base_key) / 12.0) * 440.0;
 
-  //TODO:JK: implement me
+  base_key = pitch_16x_alias_util->base_key;
+  tuning = pitch_16x_alias_util->tuning;
+
+  vibrato_gain = pitch_16x_alias_util->vibrato_gain;
+  vibrato_lfo_depth = pitch_16x_alias_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = pitch_16x_alias_util->vibrato_lfo_freq;
+  vibrato_tuning = pitch_16x_alias_util->vibrato_tuning;
+  offset = pitch_16x_alias_util->offset;
+
+  if(pitch_16x_alias_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
+  
+  root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
+  new_pitch_hz = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
+
+  for(i = 0; i < 16 * buffer_length; i++){
+    t = (double) (i % 16) / 16.0;
+
+    if((i / 16) + 1 < buffer_length){
+      alias_source_buffer[i] = ((1.0 - t) * (source[(i / 16) * source_stride] + (t * source[((i / 16) + 1) * source_stride])));
+    }
+  }
+
+  source_freq_period = (16 * samplerate) / root_pitch_hz;
+
+  new_source_freq_period = (16 * samplerate) / new_pitch_hz;
+
+  reset_i = -1;
+
+  for(i = 0; i < 16 * buffer_length; i++){
+    new_pitch_hz = exp2((base_key + (tuning / 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)))  / 12.0) * 440.0;
+      
+    new_source_freq_period = (16 * samplerate) / new_pitch_hz;
+    
+    if(source_freq_period < new_source_freq_period){
+      t = (i % (guint) source_freq_period) / new_source_freq_period;
+
+      if((guint) floor(i * (source_freq_period / new_source_freq_period)) < 16 * buffer_length){
+	alias_new_source_buffer[i] = ((1.0 - t) * alias_source_buffer[i]) + (t * alias_source_buffer[(guint) floor(i * (source_freq_period / new_source_freq_period))]);
+      }
+    }else{
+      t = 1.0 / source_freq_period * new_source_freq_period;
+
+      if(i * source_freq_period / new_source_freq_period < 16 * buffer_length){
+	alias_new_source_buffer[i] = alias_source_buffer[(guint) floor(i * source_freq_period / new_source_freq_period)];
+      }else{
+	if(reset_i == -1){
+	  reset_i = i;
+	}
+
+	if(reset_i != -1 && i - reset_i >= reset_i){
+	  reset_i = i;
+	}
+	
+	alias_new_source_buffer[i] = alias_source_buffer[(guint) floor((i - reset_i) * source_freq_period / new_source_freq_period)];
+      }
+    }
+  }
+
+  for(i = 0; i < buffer_length; i++){
+    destination[i * destination_stride] = alias_new_source_buffer[16 * i];
+  }
 }
 
 /**
@@ -1070,14 +1220,26 @@ void
 ags_pitch_16x_alias_util_pitch_s24(AgsPitch16xAliasUtil *pitch_16x_alias_util)
 {
   gint32 *destination, *source;
-
+  gint32 *alias_source_buffer;
+  gint32 *alias_new_source_buffer;
+  
   guint destination_stride, source_stride;
   guint buffer_length;
   guint samplerate;
-  gdouble volume;
-  gdouble base_freq, new_freq;
+  gdouble base_key;
+  gdouble tuning;
+  gdouble root_pitch_hz;
+  gdouble new_pitch_hz;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  gdouble source_freq_period;
+  gdouble new_source_freq_period;
   gdouble t;
-  guint i, j;
+  gint reset_i;
+  guint i;
 
   if(pitch_16x_alias_util == NULL ||
      pitch_16x_alias_util->destination == NULL ||
@@ -1091,13 +1253,76 @@ ags_pitch_16x_alias_util_pitch_s24(AgsPitch16xAliasUtil *pitch_16x_alias_util)
   source = pitch_16x_alias_util->source;
   source_stride = pitch_16x_alias_util->source_stride;
 
+  alias_source_buffer = pitch_16x_alias_util->alias_source_buffer;
+  
+  alias_new_source_buffer = pitch_16x_alias_util->alias_new_source_buffer;
+
   buffer_length = pitch_16x_alias_util->buffer_length;
   samplerate = pitch_16x_alias_util->samplerate;
-  
-  /* frequency */
-  base_freq = exp2((pitch_16x_alias_util->base_key) / 12.0) * 440.0;
 
-  //TODO:JK: implement me
+  base_key = pitch_16x_alias_util->base_key;
+  tuning = pitch_16x_alias_util->tuning;
+
+  vibrato_gain = pitch_16x_alias_util->vibrato_gain;
+  vibrato_lfo_depth = pitch_16x_alias_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = pitch_16x_alias_util->vibrato_lfo_freq;
+  vibrato_tuning = pitch_16x_alias_util->vibrato_tuning;
+  offset = pitch_16x_alias_util->offset;
+
+  if(pitch_16x_alias_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
+  
+  root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
+  new_pitch_hz = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
+
+  for(i = 0; i < 16 * buffer_length; i++){
+    t = (double) (i % 16) / 16.0;
+
+    if((i / 16) + 1 < buffer_length){
+      alias_source_buffer[i] = ((1.0 - t) * (source[(i / 16) * source_stride] + (t * source[((i / 16) + 1) * source_stride])));
+    }
+  }
+
+  source_freq_period = (16 * samplerate) / root_pitch_hz;
+
+  new_source_freq_period = (16 * samplerate) / new_pitch_hz;
+
+  reset_i = -1;
+
+  for(i = 0; i < 16 * buffer_length; i++){
+    new_pitch_hz = exp2((base_key + (tuning / 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)))  / 12.0) * 440.0;
+      
+    new_source_freq_period = (16 * samplerate) / new_pitch_hz;
+    
+    if(source_freq_period < new_source_freq_period){
+      t = (i % (guint) source_freq_period) / new_source_freq_period;
+
+      if((guint) floor(i * (source_freq_period / new_source_freq_period)) < 16 * buffer_length){
+	alias_new_source_buffer[i] = ((1.0 - t) * alias_source_buffer[i]) + (t * alias_source_buffer[(guint) floor(i * (source_freq_period / new_source_freq_period))]);
+      }
+    }else{
+      t = 1.0 / source_freq_period * new_source_freq_period;
+
+      if(i * source_freq_period / new_source_freq_period < 16 * buffer_length){
+	alias_new_source_buffer[i] = alias_source_buffer[(guint) floor(i * source_freq_period / new_source_freq_period)];
+      }else{
+	if(reset_i == -1){
+	  reset_i = i;
+	}
+
+	if(reset_i != -1 && i - reset_i >= reset_i){
+	  reset_i = i;
+	}
+	
+	alias_new_source_buffer[i] = alias_source_buffer[(guint) floor((i - reset_i) * source_freq_period / new_source_freq_period)];
+      }
+    }
+  }
+
+  for(i = 0; i < buffer_length; i++){
+    destination[i * destination_stride] = alias_new_source_buffer[16 * i];
+  }
 }
 
 /**
@@ -1111,15 +1336,27 @@ ags_pitch_16x_alias_util_pitch_s24(AgsPitch16xAliasUtil *pitch_16x_alias_util)
 void
 ags_pitch_16x_alias_util_pitch_s32(AgsPitch16xAliasUtil *pitch_16x_alias_util)
 {
-  gint8 *destination, *source;
-
+  gint32 *destination, *source;
+  gint32 *alias_source_buffer;
+  gint32 *alias_new_source_buffer;
+  
   guint destination_stride, source_stride;
   guint buffer_length;
   guint samplerate;
-  gdouble volume;
-  gdouble base_freq, new_freq;
+  gdouble base_key;
+  gdouble tuning;
+  gdouble root_pitch_hz;
+  gdouble new_pitch_hz;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  gdouble source_freq_period;
+  gdouble new_source_freq_period;
   gdouble t;
-  guint i, j;
+  gint reset_i;
+  guint i;
 
   if(pitch_16x_alias_util == NULL ||
      pitch_16x_alias_util->destination == NULL ||
@@ -1133,13 +1370,76 @@ ags_pitch_16x_alias_util_pitch_s32(AgsPitch16xAliasUtil *pitch_16x_alias_util)
   source = pitch_16x_alias_util->source;
   source_stride = pitch_16x_alias_util->source_stride;
 
+  alias_source_buffer = pitch_16x_alias_util->alias_source_buffer;
+  
+  alias_new_source_buffer = pitch_16x_alias_util->alias_new_source_buffer;
+
   buffer_length = pitch_16x_alias_util->buffer_length;
   samplerate = pitch_16x_alias_util->samplerate;
-  
-  /* frequency */
-  base_freq = exp2((pitch_16x_alias_util->base_key) / 12.0) * 440.0;
 
-  //TODO:JK: implement me
+  base_key = pitch_16x_alias_util->base_key;
+  tuning = pitch_16x_alias_util->tuning;
+
+  vibrato_gain = pitch_16x_alias_util->vibrato_gain;
+  vibrato_lfo_depth = pitch_16x_alias_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = pitch_16x_alias_util->vibrato_lfo_freq;
+  vibrato_tuning = pitch_16x_alias_util->vibrato_tuning;
+  offset = pitch_16x_alias_util->offset;
+
+  if(pitch_16x_alias_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
+  
+  root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
+  new_pitch_hz = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
+
+  for(i = 0; i < 16 * buffer_length; i++){
+    t = (double) (i % 16) / 16.0;
+
+    if((i / 16) + 1 < buffer_length){
+      alias_source_buffer[i] = ((1.0 - t) * (source[(i / 16) * source_stride] + (t * source[((i / 16) + 1) * source_stride])));
+    }
+  }
+
+  source_freq_period = (16 * samplerate) / root_pitch_hz;
+
+  new_source_freq_period = (16 * samplerate) / new_pitch_hz;
+
+  reset_i = -1;
+
+  for(i = 0; i < 16 * buffer_length; i++){
+    new_pitch_hz = exp2((base_key + (tuning / 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)))  / 12.0) * 440.0;
+      
+    new_source_freq_period = (16 * samplerate) / new_pitch_hz;
+    
+    if(source_freq_period < new_source_freq_period){
+      t = (i % (guint) source_freq_period) / new_source_freq_period;
+
+      if((guint) floor(i * (source_freq_period / new_source_freq_period)) < 16 * buffer_length){
+	alias_new_source_buffer[i] = ((1.0 - t) * alias_source_buffer[i]) + (t * alias_source_buffer[(guint) floor(i * (source_freq_period / new_source_freq_period))]);
+      }
+    }else{
+      t = 1.0 / source_freq_period * new_source_freq_period;
+
+      if(i * source_freq_period / new_source_freq_period < 16 * buffer_length){
+	alias_new_source_buffer[i] = alias_source_buffer[(guint) floor(i * source_freq_period / new_source_freq_period)];
+      }else{
+	if(reset_i == -1){
+	  reset_i = i;
+	}
+
+	if(reset_i != -1 && i - reset_i >= reset_i){
+	  reset_i = i;
+	}
+	
+	alias_new_source_buffer[i] = alias_source_buffer[(guint) floor((i - reset_i) * source_freq_period / new_source_freq_period)];
+      }
+    }
+  }
+
+  for(i = 0; i < buffer_length; i++){
+    destination[i * destination_stride] = alias_new_source_buffer[16 * i];
+  }
 }
 
 /**
@@ -1154,14 +1454,26 @@ void
 ags_pitch_16x_alias_util_pitch_s64(AgsPitch16xAliasUtil *pitch_16x_alias_util)
 {
   gint64 *destination, *source;
-
+  gint64 *alias_source_buffer;
+  gint64 *alias_new_source_buffer;
+  
   guint destination_stride, source_stride;
   guint buffer_length;
   guint samplerate;
-  gdouble volume;
-  gdouble base_freq, new_freq;
+  gdouble base_key;
+  gdouble tuning;
+  gdouble root_pitch_hz;
+  gdouble new_pitch_hz;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  gdouble source_freq_period;
+  gdouble new_source_freq_period;
   gdouble t;
-  guint i, j;
+  gint reset_i;
+  guint i;
 
   if(pitch_16x_alias_util == NULL ||
      pitch_16x_alias_util->destination == NULL ||
@@ -1175,13 +1487,76 @@ ags_pitch_16x_alias_util_pitch_s64(AgsPitch16xAliasUtil *pitch_16x_alias_util)
   source = pitch_16x_alias_util->source;
   source_stride = pitch_16x_alias_util->source_stride;
 
+  alias_source_buffer = pitch_16x_alias_util->alias_source_buffer;
+  
+  alias_new_source_buffer = pitch_16x_alias_util->alias_new_source_buffer;
+
   buffer_length = pitch_16x_alias_util->buffer_length;
   samplerate = pitch_16x_alias_util->samplerate;
-  
-  /* frequency */
-  base_freq = exp2((pitch_16x_alias_util->base_key) / 12.0) * 440.0;
 
-  //TODO:JK: implement me
+  base_key = pitch_16x_alias_util->base_key;
+  tuning = pitch_16x_alias_util->tuning;
+
+  vibrato_gain = pitch_16x_alias_util->vibrato_gain;
+  vibrato_lfo_depth = pitch_16x_alias_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = pitch_16x_alias_util->vibrato_lfo_freq;
+  vibrato_tuning = pitch_16x_alias_util->vibrato_tuning;
+  offset = pitch_16x_alias_util->offset;
+
+  if(pitch_16x_alias_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
+  
+  root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
+  new_pitch_hz = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
+
+  for(i = 0; i < 16 * buffer_length; i++){
+    t = (double) (i % 16) / 16.0;
+
+    if((i / 16) + 1 < buffer_length){
+      alias_source_buffer[i] = ((1.0 - t) * (source[(i / 16) * source_stride] + (t * source[((i / 16) + 1) * source_stride])));
+    }
+  }
+
+  source_freq_period = (16 * samplerate) / root_pitch_hz;
+
+  new_source_freq_period = (16 * samplerate) / new_pitch_hz;
+
+  reset_i = -1;
+
+  for(i = 0; i < 16 * buffer_length; i++){
+    new_pitch_hz = exp2((base_key + (tuning / 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)))  / 12.0) * 440.0;
+      
+    new_source_freq_period = (16 * samplerate) / new_pitch_hz;
+    
+    if(source_freq_period < new_source_freq_period){
+      t = (i % (guint) source_freq_period) / new_source_freq_period;
+
+      if((guint) floor(i * (source_freq_period / new_source_freq_period)) < 16 * buffer_length){
+	alias_new_source_buffer[i] = ((1.0 - t) * alias_source_buffer[i]) + (t * alias_source_buffer[(guint) floor(i * (source_freq_period / new_source_freq_period))]);
+      }
+    }else{
+      t = 1.0 / source_freq_period * new_source_freq_period;
+
+      if(i * source_freq_period / new_source_freq_period < 16 * buffer_length){
+	alias_new_source_buffer[i] = alias_source_buffer[(guint) floor(i * source_freq_period / new_source_freq_period)];
+      }else{
+	if(reset_i == -1){
+	  reset_i = i;
+	}
+
+	if(reset_i != -1 && i - reset_i >= reset_i){
+	  reset_i = i;
+	}
+	
+	alias_new_source_buffer[i] = alias_source_buffer[(guint) floor((i - reset_i) * source_freq_period / new_source_freq_period)];
+      }
+    }
+  }
+
+  for(i = 0; i < buffer_length; i++){
+    destination[i * destination_stride] = alias_new_source_buffer[16 * i];
+  }
 }
 
 /**
@@ -1196,14 +1571,26 @@ void
 ags_pitch_16x_alias_util_pitch_float(AgsPitch16xAliasUtil *pitch_16x_alias_util)
 {
   gfloat *destination, *source;
-
+  gfloat *alias_source_buffer;
+  gfloat *alias_new_source_buffer;
+  
   guint destination_stride, source_stride;
   guint buffer_length;
   guint samplerate;
-  gdouble volume;
-  gdouble base_freq, new_freq;
+  gdouble base_key;
+  gdouble tuning;
+  gdouble root_pitch_hz;
+  gdouble new_pitch_hz;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  gdouble source_freq_period;
+  gdouble new_source_freq_period;
   gdouble t;
-  guint i, j;
+  gint reset_i;
+  guint i;
 
   if(pitch_16x_alias_util == NULL ||
      pitch_16x_alias_util->destination == NULL ||
@@ -1217,13 +1604,76 @@ ags_pitch_16x_alias_util_pitch_float(AgsPitch16xAliasUtil *pitch_16x_alias_util)
   source = pitch_16x_alias_util->source;
   source_stride = pitch_16x_alias_util->source_stride;
 
+  alias_source_buffer = pitch_16x_alias_util->alias_source_buffer;
+  
+  alias_new_source_buffer = pitch_16x_alias_util->alias_new_source_buffer;
+
   buffer_length = pitch_16x_alias_util->buffer_length;
   samplerate = pitch_16x_alias_util->samplerate;
-  
-  /* frequency */
-  base_freq = exp2((pitch_16x_alias_util->base_key) / 12.0) * 440.0;
 
-  //TODO:JK: implement me
+  base_key = pitch_16x_alias_util->base_key;
+  tuning = pitch_16x_alias_util->tuning;
+
+  vibrato_gain = pitch_16x_alias_util->vibrato_gain;
+  vibrato_lfo_depth = pitch_16x_alias_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = pitch_16x_alias_util->vibrato_lfo_freq;
+  vibrato_tuning = pitch_16x_alias_util->vibrato_tuning;
+  offset = pitch_16x_alias_util->offset;
+
+  if(pitch_16x_alias_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
+  
+  root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
+  new_pitch_hz = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
+
+  for(i = 0; i < 16 * buffer_length; i++){
+    t = (double) (i % 16) / 16.0;
+
+    if((i / 16) + 1 < buffer_length){
+      alias_source_buffer[i] = ((1.0 - t) * (source[(i / 16) * source_stride] + (t * source[((i / 16) + 1) * source_stride])));
+    }
+  }
+
+  source_freq_period = (16 * samplerate) / root_pitch_hz;
+
+  new_source_freq_period = (16 * samplerate) / new_pitch_hz;
+
+  reset_i = -1;
+
+  for(i = 0; i < 16 * buffer_length; i++){
+    new_pitch_hz = exp2((base_key + (tuning / 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)))  / 12.0) * 440.0;
+      
+    new_source_freq_period = (16 * samplerate) / new_pitch_hz;
+    
+    if(source_freq_period < new_source_freq_period){
+      t = (i % (guint) source_freq_period) / new_source_freq_period;
+
+      if((guint) floor(i * (source_freq_period / new_source_freq_period)) < 16 * buffer_length){
+	alias_new_source_buffer[i] = ((1.0 - t) * alias_source_buffer[i]) + (t * alias_source_buffer[(guint) floor(i * (source_freq_period / new_source_freq_period))]);
+      }
+    }else{
+      t = 1.0 / source_freq_period * new_source_freq_period;
+
+      if(i * source_freq_period / new_source_freq_period < 16 * buffer_length){
+	alias_new_source_buffer[i] = alias_source_buffer[(guint) floor(i * source_freq_period / new_source_freq_period)];
+      }else{
+	if(reset_i == -1){
+	  reset_i = i;
+	}
+
+	if(reset_i != -1 && i - reset_i >= reset_i){
+	  reset_i = i;
+	}
+	
+	alias_new_source_buffer[i] = alias_source_buffer[(guint) floor((i - reset_i) * source_freq_period / new_source_freq_period)];
+      }
+    }
+  }
+
+  for(i = 0; i < buffer_length; i++){
+    destination[i * destination_stride] = alias_new_source_buffer[16 * i];
+  }
 }
 
 /**
@@ -1238,14 +1688,26 @@ void
 ags_pitch_16x_alias_util_pitch_double(AgsPitch16xAliasUtil *pitch_16x_alias_util)
 {
   gdouble *destination, *source;
-
+  gdouble *alias_source_buffer;
+  gdouble *alias_new_source_buffer;
+  
   guint destination_stride, source_stride;
   guint buffer_length;
   guint samplerate;
-  gdouble volume;
-  gdouble base_freq, new_freq;
+  gdouble base_key;
+  gdouble tuning;
+  gdouble root_pitch_hz;
+  gdouble new_pitch_hz;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  gdouble source_freq_period;
+  gdouble new_source_freq_period;
   gdouble t;
-  guint i, j;
+  gint reset_i;
+  guint i;
 
   if(pitch_16x_alias_util == NULL ||
      pitch_16x_alias_util->destination == NULL ||
@@ -1259,13 +1721,76 @@ ags_pitch_16x_alias_util_pitch_double(AgsPitch16xAliasUtil *pitch_16x_alias_util
   source = pitch_16x_alias_util->source;
   source_stride = pitch_16x_alias_util->source_stride;
 
+  alias_source_buffer = pitch_16x_alias_util->alias_source_buffer;
+  
+  alias_new_source_buffer = pitch_16x_alias_util->alias_new_source_buffer;
+
   buffer_length = pitch_16x_alias_util->buffer_length;
   samplerate = pitch_16x_alias_util->samplerate;
-  
-  /* frequency */
-  base_freq = exp2((pitch_16x_alias_util->base_key) / 12.0) * 440.0;
 
-  //TODO:JK: implement me
+  base_key = pitch_16x_alias_util->base_key;
+  tuning = pitch_16x_alias_util->tuning;
+
+  vibrato_gain = pitch_16x_alias_util->vibrato_gain;
+  vibrato_lfo_depth = pitch_16x_alias_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = pitch_16x_alias_util->vibrato_lfo_freq;
+  vibrato_tuning = pitch_16x_alias_util->vibrato_tuning;
+  offset = pitch_16x_alias_util->offset;
+
+  if(pitch_16x_alias_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
+  
+  root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
+  new_pitch_hz = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
+
+  for(i = 0; i < 16 * buffer_length; i++){
+    t = (double) (i % 16) / 16.0;
+
+    if((i / 16) + 1 < buffer_length){
+      alias_source_buffer[i] = ((1.0 - t) * (source[(i / 16) * source_stride] + (t * source[((i / 16) + 1) * source_stride])));
+    }
+  }
+
+  source_freq_period = (16 * samplerate) / root_pitch_hz;
+
+  new_source_freq_period = (16 * samplerate) / new_pitch_hz;
+
+  reset_i = -1;
+
+  for(i = 0; i < 16 * buffer_length; i++){
+    new_pitch_hz = exp2((base_key + (tuning / 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)))  / 12.0) * 440.0;
+      
+    new_source_freq_period = (16 * samplerate) / new_pitch_hz;
+    
+    if(source_freq_period < new_source_freq_period){
+      t = (i % (guint) source_freq_period) / new_source_freq_period;
+
+      if((guint) floor(i * (source_freq_period / new_source_freq_period)) < 16 * buffer_length){
+	alias_new_source_buffer[i] = ((1.0 - t) * alias_source_buffer[i]) + (t * alias_source_buffer[(guint) floor(i * (source_freq_period / new_source_freq_period))]);
+      }
+    }else{
+      t = 1.0 / source_freq_period * new_source_freq_period;
+
+      if(i * source_freq_period / new_source_freq_period < 16 * buffer_length){
+	alias_new_source_buffer[i] = alias_source_buffer[(guint) floor(i * source_freq_period / new_source_freq_period)];
+      }else{
+	if(reset_i == -1){
+	  reset_i = i;
+	}
+
+	if(reset_i != -1 && i - reset_i >= reset_i){
+	  reset_i = i;
+	}
+	
+	alias_new_source_buffer[i] = alias_source_buffer[(guint) floor((i - reset_i) * source_freq_period / new_source_freq_period)];
+      }
+    }
+  }
+
+  for(i = 0; i < buffer_length; i++){
+    destination[i * destination_stride] = alias_new_source_buffer[16 * i];
+  }
 }
 
 /**
@@ -1280,14 +1805,26 @@ void
 ags_pitch_16x_alias_util_pitch_complex(AgsPitch16xAliasUtil *pitch_16x_alias_util)
 {
   AgsComplex *destination, *source;
-
+  AgsComplex *alias_source_buffer;
+  AgsComplex *alias_new_source_buffer;
+  
   guint destination_stride, source_stride;
   guint buffer_length;
   guint samplerate;
-  gdouble volume;
-  gdouble base_freq, new_freq;
+  gdouble base_key;
+  gdouble tuning;
+  gdouble root_pitch_hz;
+  gdouble new_pitch_hz;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  gdouble source_freq_period;
+  gdouble new_source_freq_period;
   gdouble t;
-  guint i, j;
+  gint reset_i;
+  guint i;
 
   if(pitch_16x_alias_util == NULL ||
      pitch_16x_alias_util->destination == NULL ||
@@ -1301,13 +1838,81 @@ ags_pitch_16x_alias_util_pitch_complex(AgsPitch16xAliasUtil *pitch_16x_alias_uti
   source = pitch_16x_alias_util->source;
   source_stride = pitch_16x_alias_util->source_stride;
 
+  alias_source_buffer = pitch_16x_alias_util->alias_source_buffer;
+  
+  alias_new_source_buffer = pitch_16x_alias_util->alias_new_source_buffer;
+
   buffer_length = pitch_16x_alias_util->buffer_length;
   samplerate = pitch_16x_alias_util->samplerate;
-  
-  /* frequency */
-  base_freq = exp2((pitch_16x_alias_util->base_key) / 12.0) * 440.0;
 
-  //TODO:JK: implement me
+  base_key = pitch_16x_alias_util->base_key;
+  tuning = pitch_16x_alias_util->tuning;
+
+  vibrato_gain = pitch_16x_alias_util->vibrato_gain;
+  vibrato_lfo_depth = pitch_16x_alias_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = pitch_16x_alias_util->vibrato_lfo_freq;
+  vibrato_tuning = pitch_16x_alias_util->vibrato_tuning;
+  offset = pitch_16x_alias_util->offset;
+
+  if(pitch_16x_alias_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
+  
+  root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
+  new_pitch_hz = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
+
+  for(i = 0; i < 16 * buffer_length; i++){
+    t = (double) (i % 16) / 16.0;
+
+    if((i / 16) + 1 < buffer_length){
+      ags_complex_set(alias_source_buffer + i,
+		      ((1.0 - t) * (ags_complex_get(source + ((i / 16) * source_stride)) + (t * ags_complex_get(source + (((i / 16) + 1) * source_stride))))));
+    }
+  }
+
+  source_freq_period = (16 * samplerate) / root_pitch_hz;
+
+  new_source_freq_period = (16 * samplerate) / new_pitch_hz;
+
+  reset_i = -1;
+
+  for(i = 0; i < 16 * buffer_length; i++){
+    new_pitch_hz = exp2((base_key + (tuning / 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)))  / 12.0) * 440.0;
+      
+    new_source_freq_period = (16 * samplerate) / new_pitch_hz;
+    
+    if(source_freq_period < new_source_freq_period){
+      t = (i % (guint) source_freq_period) / new_source_freq_period;
+
+      if((guint) floor(i * (source_freq_period / new_source_freq_period)) < 16 * buffer_length){
+	ags_complex_set(alias_new_source_buffer + i,
+			((1.0 - t) * ags_complex_get(alias_source_buffer + i)) + (t * ags_complex_get(alias_source_buffer + ((guint) floor(i * (source_freq_period / new_source_freq_period))))));
+      }
+    }else{
+      t = 1.0 / source_freq_period * new_source_freq_period;
+
+      if(i * source_freq_period / new_source_freq_period < 16 * buffer_length){
+	ags_complex_set(alias_new_source_buffer + i,
+			ags_complex_get(alias_source_buffer + ((guint) floor(i * source_freq_period / new_source_freq_period))));
+      }else{
+	if(reset_i == -1){
+	  reset_i = i;
+	}
+
+	if(reset_i != -1 && i - reset_i >= reset_i){
+	  reset_i = i;
+	}
+	
+	ags_complex_set(alias_new_source_buffer + i,
+			ags_complex_get(alias_source_buffer + ((guint) floor((i - reset_i) * source_freq_period / new_source_freq_period))));
+      }
+    }
+  }
+
+  for(i = 0; i < buffer_length; i++){
+    ags_complex_set(destination + (i * destination_stride),
+		    ags_complex_get(alias_new_source_buffer + (16 * i)));
+  }
 }
 
 /**
