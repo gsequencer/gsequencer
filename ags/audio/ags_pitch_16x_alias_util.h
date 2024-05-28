@@ -85,81 +85,81 @@ void ags_pitch_16x_alias_util_free(AgsPitch16xAliasUtil *ptr);
 
 gpointer ags_pitch_16x_alias_util_get_source(AgsPitch16xAliasUtil *pitch_16x_alias_util);
 void ags_pitch_16x_alias_util_set_source(AgsPitch16xAliasUtil *pitch_16x_alias_util,
-				    gpointer source);
+					 gpointer source);
 
 guint ags_pitch_16x_alias_util_get_source_stride(AgsPitch16xAliasUtil *pitch_16x_alias_util);
 void ags_pitch_16x_alias_util_set_source_stride(AgsPitch16xAliasUtil *pitch_16x_alias_util,
-					   guint source_stride);
+						guint source_stride);
 
 gpointer ags_pitch_16x_alias_util_get_destination(AgsPitch16xAliasUtil *pitch_16x_alias_util);
 void ags_pitch_16x_alias_util_set_destination(AgsPitch16xAliasUtil *pitch_16x_alias_util,
-					 gpointer destination);
+					      gpointer destination);
 
 guint ags_pitch_16x_alias_util_get_destination_stride(AgsPitch16xAliasUtil *pitch_16x_alias_util);
 void ags_pitch_16x_alias_util_set_destination_stride(AgsPitch16xAliasUtil *pitch_16x_alias_util,
-						guint destination_stride);
+						     guint destination_stride);
 
 guint ags_pitch_16x_alias_util_get_buffer_length(AgsPitch16xAliasUtil *pitch_16x_alias_util);
 void ags_pitch_16x_alias_util_set_buffer_length(AgsPitch16xAliasUtil *pitch_16x_alias_util,
-					   guint buffer_length);
+						guint buffer_length);
 
 guint ags_pitch_16x_alias_util_get_format(AgsPitch16xAliasUtil *pitch_16x_alias_util);
 void ags_pitch_16x_alias_util_set_format(AgsPitch16xAliasUtil *pitch_16x_alias_util,
-				    guint format);
+					 guint format);
 
 guint ags_pitch_16x_alias_util_get_samplerate(AgsPitch16xAliasUtil *pitch_16x_alias_util);
 void ags_pitch_16x_alias_util_set_samplerate(AgsPitch16xAliasUtil *pitch_16x_alias_util,
-					guint samplerate);
+					     guint samplerate);
 
 gdouble ags_pitch_16x_alias_util_get_base_key(AgsPitch16xAliasUtil *pitch_16x_alias_util);
 void ags_pitch_16x_alias_util_set_base_key(AgsPitch16xAliasUtil *pitch_16x_alias_util,
-				      gdouble base_key);
+					   gdouble base_key);
 
 gdouble ags_pitch_16x_alias_util_get_tuning(AgsPitch16xAliasUtil *pitch_16x_alias_util);
 void ags_pitch_16x_alias_util_set_tuning(AgsPitch16xAliasUtil *pitch_16x_alias_util,
-				    gdouble tuning);
+					 gdouble tuning);
 
 gboolean ags_pitch_16x_alias_util_get_vibrato_enabled(AgsPitch16xAliasUtil *pitch_16x_alias_util);
 void ags_pitch_16x_alias_util_set_vibrato_enabled(AgsPitch16xAliasUtil *pitch_16x_alias_util,
-					     gboolean vibrato_enabled);
+						  gboolean vibrato_enabled);
 
 gdouble ags_pitch_16x_alias_util_get_vibrato_gain(AgsPitch16xAliasUtil *pitch_16x_alias_util);
 void ags_pitch_16x_alias_util_set_vibrato_gain(AgsPitch16xAliasUtil *pitch_16x_alias_util,
-					  gdouble vibrato_gain);
+					       gdouble vibrato_gain);
 
 gdouble ags_pitch_16x_alias_util_get_vibrato_lfo_depth(AgsPitch16xAliasUtil *pitch_16x_alias_util);
 void ags_pitch_16x_alias_util_set_vibrato_lfo_depth(AgsPitch16xAliasUtil *pitch_16x_alias_util,
-					       gdouble vibrato_lfo_depth);
+						    gdouble vibrato_lfo_depth);
 
 gdouble ags_pitch_16x_alias_util_get_vibrato_lfo_freq(AgsPitch16xAliasUtil *pitch_16x_alias_util);
 void ags_pitch_16x_alias_util_set_vibrato_lfo_freq(AgsPitch16xAliasUtil *pitch_16x_alias_util,
-					      gdouble vibrato_lfo_freq);
+						   gdouble vibrato_lfo_freq);
 
 gdouble ags_pitch_16x_alias_util_get_vibrato_tuning(AgsPitch16xAliasUtil *pitch_16x_alias_util);
 void ags_pitch_16x_alias_util_set_vibrato_tuning(AgsPitch16xAliasUtil *pitch_16x_alias_util,
-					    gdouble vibrato_tuning);
+						 gdouble vibrato_tuning);
 
 G_DEPRECATED_FOR(ags_pitch_16x_alias_util_get_offset)
-guint ags_pitch_16x_alias_util_get_vibrato_lfo_offset(AgsPitch16xAliasUtil *pitch_16x_alias_util);
+  guint ags_pitch_16x_alias_util_get_vibrato_lfo_offset(AgsPitch16xAliasUtil *pitch_16x_alias_util);
 G_DEPRECATED_FOR(ags_pitch_16x_alias_util_set_offset)
-void ags_pitch_16x_alias_util_set_vibrato_lfo_offset(AgsPitch16xAliasUtil *pitch_16x_alias_util,
-						guint vibrato_lfo_offset);
+  void ags_pitch_16x_alias_util_set_vibrato_lfo_offset(AgsPitch16xAliasUtil *pitch_16x_alias_util,
+						       guint vibrato_lfo_offset);
 
 guint ags_pitch_16x_alias_util_get_frame_count(AgsPitch16xAliasUtil *pitch_16x_alias_util);
 void ags_pitch_16x_alias_util_set_frame_count(AgsPitch16xAliasUtil *pitch_16x_alias_util,
-					 guint frame_count);
+					      guint frame_count);
 
 guint ags_pitch_16x_alias_util_get_offset(AgsPitch16xAliasUtil *pitch_16x_alias_util);
 void ags_pitch_16x_alias_util_set_offset(AgsPitch16xAliasUtil *pitch_16x_alias_util,
-				    guint offset);
+					 guint offset);
 
 gboolean ags_pitch_16x_alias_util_get_note_256th_mode(AgsPitch16xAliasUtil *pitch_16x_alias_util);
 void ags_pitch_16x_alias_util_set_note_256th_mode(AgsPitch16xAliasUtil *pitch_16x_alias_util,
-					     gboolean note_256th_mode);
+						  gboolean note_256th_mode);
 
 guint ags_pitch_16x_alias_util_get_offset_256th(AgsPitch16xAliasUtil *pitch_16x_alias_util);
 void ags_pitch_16x_alias_util_set_offset_256th(AgsPitch16xAliasUtil *pitch_16x_alias_util,
-					  guint offset_256th);
+					       guint offset_256th);
 
 void ags_pitch_16x_alias_util_pitch_s8(AgsPitch16xAliasUtil *pitch_16x_alias_util);
 void ags_pitch_16x_alias_util_pitch_s16(AgsPitch16xAliasUtil *pitch_16x_alias_util);

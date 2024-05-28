@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -173,9 +173,14 @@ ags_sf2_synth_util_alloc()
 				   AGS_SOUNDCARD_DEFAULT_SAMPLERATE);  
 
   /* pitch util */
-  ptr->pitch_type = AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL;
+#if 0
+  ptr->pitch_type = AGS_TYPE_FLUID_INTERPOLATE_LINEAR_UTIL;
   ptr->pitch_util = ags_fluid_interpolate_4th_order_util_alloc();
-
+#else
+  ptr->pitch_type = AGS_TYPE_PITCH_2X_ALIAS_UTIL;
+  ptr->pitch_util = ags_pitch_2x_alias_util_alloc();
+#endif
+  
   ags_common_pitch_util_set_format(ptr->pitch_util,
 				   ptr->pitch_type,
 				   AGS_SOUNDCARD_DEFAULT_FORMAT);
@@ -269,6 +274,12 @@ ags_sf2_synth_util_boxed_copy(AgsSF2SynthUtil *ptr)
     new_ptr->pitch_util = ags_fluid_interpolate_4th_order_util_copy(ptr->pitch_util);
   }else if(new_ptr->pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     new_ptr->pitch_util = ags_fluid_interpolate_7th_order_util_copy(ptr->pitch_util);
+  }else if(new_ptr->pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    new_ptr->pitch_util = ags_pitch_2x_alias_util_copy(ptr->pitch_util);
+  }else if(new_ptr->pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    new_ptr->pitch_util = ags_pitch_4x_alias_util_copy(ptr->pitch_util);
+  }else if(new_ptr->pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    new_ptr->pitch_util = ags_pitch_16x_alias_util_copy(ptr->pitch_util);
   }
 
   new_ptr->volume_util = ags_hq_pitch_util_copy(ptr->volume_util);
@@ -314,6 +325,12 @@ ags_sf2_synth_util_free(AgsSF2SynthUtil *ptr)
     ags_fluid_interpolate_4th_order_util_free(ptr->pitch_util);
   }else if(ptr->pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     ags_fluid_interpolate_7th_order_util_free(ptr->pitch_util);
+  }else if(ptr->pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    ags_pitch_2x_alias_util_free(ptr->pitch_util);
+  }else if(ptr->pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    ags_pitch_4x_alias_util_free(ptr->pitch_util);
+  }else if(ptr->pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    ags_pitch_16x_alias_util_free(ptr->pitch_util);
   }
   
   g_free(ptr);

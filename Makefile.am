@@ -1363,6 +1363,8 @@ libags_audio_h_sources = \
 	ags/audio/ags_pattern.h \
 	ags/audio/ags_peak_util.h \
 	ags/audio/ags_phase_shift_util.h \
+	ags/audio/ags_pitch_2x_alias_util.h \
+	ags/audio/ags_pitch_4x_alias_util.h \
 	ags/audio/ags_pitch_16x_alias_util.h \
 	ags/audio/ags_playback.h \
 	ags/audio/ags_playback_domain.h \
@@ -1462,6 +1464,8 @@ libags_audio_c_sources = \
 	ags/audio/ags_pattern.c \
 	ags/audio/ags_peak_util.c \
 	ags/audio/ags_phase_shift_util.c \
+	ags/audio/ags_pitch_2x_alias_util.c \
+	ags/audio/ags_pitch_4x_alias_util.c \
 	ags/audio/ags_pitch_16x_alias_util.c \
 	ags/audio/ags_playback.c \
 	ags/audio/ags_playback_domain.c \
