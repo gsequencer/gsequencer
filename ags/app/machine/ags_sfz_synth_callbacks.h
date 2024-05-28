@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,6 +36,8 @@ G_BEGIN_DECLS
 void ags_sfz_synth_destroy_callback(GtkWidget *widget, AgsSFZSynth *sfz_synth);
 
 void ags_sfz_synth_open_clicked_callback(GtkWidget *widget, AgsSFZSynth *sfz_synth);
+
+void ags_sfz_synth_synth_pitch_type_callback(GtkDropDown *drop_down, AgsSFZSynth *sfz_synth);
 
 void ags_sfz_synth_synth_octave_callback(AgsDial *dial, AgsSFZSynth *sfz_synth);
 void ags_sfz_synth_synth_key_callback(AgsDial *dial, AgsSFZSynth *sfz_synth);
