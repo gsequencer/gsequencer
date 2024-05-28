@@ -7,6 +7,9 @@ ags (6.15.0)
 	* implemented ags_pitch_16x_alias_util.c
 	* implemented ags_pitch_4x_alias_util.c
 	* implemented ags_pitch_2x_alias_util.c
+	* implemented AgsPitchTypeMode enum
+	* implemented pitch type selection of ags-fx-sf2-synth
+	* implemented pitch type selection of ags-fx-sfz-synth
 
 ags (6.14.7)
 

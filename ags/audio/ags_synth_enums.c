@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -65,7 +65,7 @@ ags_synth_key_mode_get_type()
 
   if(g_once_init_enter (&g_enum_type_id__volatile)){
     static const GEnumValue values[] = {
-      { AGS_SYNTH_KEY_1_1, "AGS_SYNTH_KEY_1_+", "synth-key-1-1" },
+      { AGS_SYNTH_KEY_1_1, "AGS_SYNTH_KEY_1_1", "synth-key-1-1" },
       { AGS_SYNTH_KEY_2_2, "AGS_SYNTH_KEY_2_2", "synth-key-2-2" },
       { AGS_SYNTH_KEY_4_4, "AGS_SYNTH_KEY_4_4", "synth-key-4-4" },
       { AGS_SYNTH_KEY_8_8, "AGS_SYNTH_KEY_8_8", "synth-key-8-8" },
@@ -74,6 +74,31 @@ ags_synth_key_mode_get_type()
     };
 
     GType g_enum_type_id = g_enum_register_static(g_intern_static_string("AgsSynthKeyMode"), values);
+
+    g_once_init_leave (&g_enum_type_id__volatile, g_enum_type_id);
+  }
+  
+  return g_enum_type_id__volatile;
+}
+
+GType
+ags_pitch_type_mode_get_type()
+{
+  static volatile gsize g_enum_type_id__volatile;
+
+  if(g_once_init_enter (&g_enum_type_id__volatile)){
+    static const GEnumValue values[] = {
+      { AGS_PITCH_TYPE_FLUID_INTERPOLATE_NONE, "AGS_PITCH_TYPE_FLUID_INTERPOLATE_NONE", "pitch-type-fluid-interpolate-none" },
+      { AGS_PITCH_TYPE_FLUID_INTERPOLATE_LINEAR, "AGS_PITCH_TYPE_FLUID_INTERPOLATE_LINEAR", "pitch-type-fluid-interpolate-linear" },
+      { AGS_PITCH_TYPE_FLUID_INTERPOLATE_4TH_ORDER, "AGS_PITCH_TYPE_FLUID_INTERPOLATE_4TH_ORDER", "pitch-type-fluid-interpolate-4th-order" },
+      { AGS_PITCH_TYPE_FLUID_INTERPOLATE_7TH_ORDER, "AGS_PITCH_TYPE_FLUID_INTERPOLATE_7TH_ORDER", "pitch-type-fluid-interpolate-7th-order" },
+      { AGS_PITCH_TYPE_INTERPOLATE_2X_ALIAS, "AGS_PITCH_TYPE_INTERPOLATE_2X_ALIAS", "pitch-type-interpolate-2x-alias" },
+      { AGS_PITCH_TYPE_INTERPOLATE_4X_ALIAS, "AGS_PITCH_TYPE_INTERPOLATE_4X_ALIAS", "pitch-type-interpolate-4x-alias" },
+      { AGS_PITCH_TYPE_INTERPOLATE_16X_ALIAS, "AGS_PITCH_TYPE_INTERPOLATE_16X_ALIAS", "pitch-type-interpolate-16x-alias" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_enum_type_id = g_enum_register_static(g_intern_static_string("AgsPitchTypeMode"), values);
 
     g_once_init_leave (&g_enum_type_id__volatile, g_enum_type_id);
   }
