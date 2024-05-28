@@ -1057,7 +1057,7 @@ ags_pitch_4x_alias_util_pitch_s8(AgsPitch4xAliasUtil *pitch_4x_alias_util)
   reset_i = -1;
 
   for(i = 0; i < 4 * buffer_length; i++){
-    new_pitch_hz = exp2((base_key + ((tuning + (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0))  / 12.0) * 440.0;
+    new_pitch_hz = exp2((base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0))  / 12.0) * 440.0;
       
     new_source_freq_period = (4 * samplerate) / new_pitch_hz;
     
@@ -1174,7 +1174,7 @@ ags_pitch_4x_alias_util_pitch_s16(AgsPitch4xAliasUtil *pitch_4x_alias_util)
   reset_i = -1;
 
   for(i = 0; i < 4 * buffer_length; i++){
-    new_pitch_hz = exp2((base_key + ((tuning + (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0))  / 12.0) * 440.0;
+    new_pitch_hz = exp2((base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0))  / 12.0) * 440.0;
       
     new_source_freq_period = (4 * samplerate) / new_pitch_hz;
     
@@ -1291,7 +1291,7 @@ ags_pitch_4x_alias_util_pitch_s24(AgsPitch4xAliasUtil *pitch_4x_alias_util)
   reset_i = -1;
 
   for(i = 0; i < 4 * buffer_length; i++){
-    new_pitch_hz = exp2((base_key + ((tuning + (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0))  / 12.0) * 440.0;
+    new_pitch_hz = exp2((base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0))  / 12.0) * 440.0;
       
     new_source_freq_period = (4 * samplerate) / new_pitch_hz;
     
@@ -1408,7 +1408,7 @@ ags_pitch_4x_alias_util_pitch_s32(AgsPitch4xAliasUtil *pitch_4x_alias_util)
   reset_i = -1;
 
   for(i = 0; i < 4 * buffer_length; i++){
-    new_pitch_hz = exp2((base_key + ((tuning + (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0))  / 12.0) * 440.0;
+    new_pitch_hz = exp2((base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0))  / 12.0) * 440.0;
       
     new_source_freq_period = (4 * samplerate) / new_pitch_hz;
     
@@ -1525,7 +1525,7 @@ ags_pitch_4x_alias_util_pitch_s64(AgsPitch4xAliasUtil *pitch_4x_alias_util)
   reset_i = -1;
 
   for(i = 0; i < 4 * buffer_length; i++){
-    new_pitch_hz = exp2((base_key + ((tuning + (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0))  / 12.0) * 440.0;
+    new_pitch_hz = exp2((base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0))  / 12.0) * 440.0;
       
     new_source_freq_period = (4 * samplerate) / new_pitch_hz;
     
@@ -1642,7 +1642,7 @@ ags_pitch_4x_alias_util_pitch_float(AgsPitch4xAliasUtil *pitch_4x_alias_util)
   reset_i = -1;
 
   for(i = 0; i < 4 * buffer_length; i++){
-    new_pitch_hz = exp2((base_key + ((tuning + (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0))  / 12.0) * 440.0;
+    new_pitch_hz = exp2((base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0))  / 12.0) * 440.0;
       
     new_source_freq_period = (4 * samplerate) / new_pitch_hz;
     
@@ -1759,7 +1759,7 @@ ags_pitch_4x_alias_util_pitch_double(AgsPitch4xAliasUtil *pitch_4x_alias_util)
   reset_i = -1;
 
   for(i = 0; i < 4 * buffer_length; i++){
-    new_pitch_hz = exp2((base_key + ((tuning + (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0))  / 12.0) * 440.0;
+    new_pitch_hz = exp2((base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0))  / 12.0) * 440.0;
       
     new_source_freq_period = (4 * samplerate) / new_pitch_hz;
     
@@ -1877,7 +1877,7 @@ ags_pitch_4x_alias_util_pitch_complex(AgsPitch4xAliasUtil *pitch_4x_alias_util)
   reset_i = -1;
 
   for(i = 0; i < 4 * buffer_length; i++){
-    new_pitch_hz = exp2((base_key + ((tuning + (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0))  / 12.0) * 440.0;
+    new_pitch_hz = exp2((base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0))  / 12.0) * 440.0;
       
     new_source_freq_period = (4 * samplerate) / new_pitch_hz;
     
