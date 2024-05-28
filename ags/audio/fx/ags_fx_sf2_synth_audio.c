@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -52,6 +52,11 @@ void ags_fx_sf2_synth_audio_notify_samplerate_callback(GObject *gobject,
 void ags_fx_sf2_synth_audio_set_audio_channels_callback(AgsAudio *audio,
 							guint audio_channels, guint audio_channels_old,
 							AgsFxSF2SynthAudio *fx_sf2_synth_audio);
+
+void ags_fx_sf2_synth_audio_synth_pitch_type_callback(AgsPort *port, GValue *value,
+						      AgsFxSF2SynthAudio *fx_sf2_synth_audio);
+void ags_fx_sf2_synth_audio_chorus_pitch_type_callback(AgsPort *port, GValue *value,
+						       AgsFxSF2SynthAudio *fx_sf2_synth_audio);
 
 static AgsPluginPort* ags_fx_sf2_synth_audio_get_synth_octave_plugin_port();
 static AgsPluginPort* ags_fx_sf2_synth_audio_get_synth_key_plugin_port();
@@ -584,6 +589,9 @@ ags_fx_sf2_synth_audio_init(AgsFxSF2SynthAudio *fx_sf2_synth_audio)
 		      fx_sf2_synth_audio->synth_pitch_type);
 
   position++;
+
+  g_signal_connect_after(fx_sf2_synth_audio->synth_pitch_type, "safe-write",
+			 G_CALLBACK(ags_fx_sf2_synth_audio_synth_pitch_type_callback), fx_sf2_synth_audio);
   
   /* synth volume */
   fx_sf2_synth_audio->synth_volume = g_object_new(AGS_TYPE_PORT,
@@ -650,6 +658,9 @@ ags_fx_sf2_synth_audio_init(AgsFxSF2SynthAudio *fx_sf2_synth_audio)
 		      fx_sf2_synth_audio->chorus_pitch_type);
 
   position++;
+
+  g_signal_connect_after(fx_sf2_synth_audio->chorus_pitch_type, "safe-write",
+			 G_CALLBACK(ags_fx_sf2_synth_audio_synth_pitch_type_callback), fx_sf2_synth_audio);
   
   /* chorus input volume */
   fx_sf2_synth_audio->chorus_input_volume = g_object_new(AGS_TYPE_PORT,
@@ -2191,6 +2202,172 @@ ags_fx_sf2_synth_audio_set_audio_channels_callback(AgsAudio *audio,
   g_rec_mutex_unlock(recall_mutex);
 }
 
+void
+ags_fx_sf2_synth_audio_synth_pitch_type_callback(AgsPort *port, GValue *value,
+						 AgsFxSF2SynthAudio *fx_sf2_synth_audio)
+{
+  AgsPitchTypeMode pitch_type;
+
+  GType pitch_gtype;
+  
+  guint i, j;
+
+  GRecMutex *recall_mutex;
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_sf2_synth_audio);
+
+  /* reset pitch util */
+  g_rec_mutex_lock(recall_mutex);
+
+  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    AgsFxSF2SynthAudioScopeData *scope_data;
+
+    scope_data = fx_sf2_synth_audio->scope_data[i];
+    
+    if(i == AGS_SOUND_SCOPE_PLAYBACK ||
+       i == AGS_SOUND_SCOPE_NOTATION ||
+       i == AGS_SOUND_SCOPE_MIDI){
+      
+      for(j = 0; j < scope_data->audio_channels; j++){
+	AgsFxSF2SynthAudioChannelData *channel_data;
+	
+	channel_data = scope_data->channel_data[j];	
+
+	pitch_type = (AgsPitchTypeMode) g_value_get_float(value);
+  
+	pitch_gtype = G_TYPE_NONE;
+
+	switch(pitch_type){
+	case AGS_PITCH_TYPE_FLUID_INTERPOLATE_NONE:
+	  {
+	    pitch_gtype = AGS_TYPE_FLUID_INTERPOLATE_NONE_UTIL;
+	  }
+	  break;
+	case AGS_PITCH_TYPE_FLUID_INTERPOLATE_LINEAR:
+	  {
+	    pitch_gtype = AGS_TYPE_FLUID_INTERPOLATE_LINEAR_UTIL;
+	  }
+	  break;
+	case AGS_PITCH_TYPE_FLUID_INTERPOLATE_4TH_ORDER:
+	  {
+	    pitch_gtype = AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL;
+	  }
+	  break;
+	case AGS_PITCH_TYPE_FLUID_INTERPOLATE_7TH_ORDER:
+	  {
+	    pitch_gtype = AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL;
+	  }
+	  break;
+	case AGS_PITCH_TYPE_INTERPOLATE_2X_ALIAS:
+	  {
+	    pitch_gtype = AGS_TYPE_PITCH_2X_ALIAS_UTIL;
+	  }
+	  break;
+	case AGS_PITCH_TYPE_INTERPOLATE_4X_ALIAS:
+	  {
+	    pitch_gtype = AGS_TYPE_PITCH_4X_ALIAS_UTIL;
+	  }
+	  break;
+	case AGS_PITCH_TYPE_INTERPOLATE_16X_ALIAS:
+	  {
+	    pitch_gtype = AGS_TYPE_PITCH_16X_ALIAS_UTIL;
+	  }
+	  break;
+	}
+
+	ags_sf2_synth_util_set_pitch_type(channel_data->synth,
+					  pitch_gtype);
+      }
+    }
+  }  
+ 
+  g_rec_mutex_unlock(recall_mutex);
+}
+
+void
+ags_fx_sf2_synth_audio_chorus_pitch_type_callback(AgsPort *port, GValue *value,
+						  AgsFxSF2SynthAudio *fx_sf2_synth_audio)
+{
+  AgsPitchTypeMode pitch_type;
+
+  GType pitch_gtype;
+  
+  guint i, j;
+
+  GRecMutex *recall_mutex;
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_sf2_synth_audio);
+
+  /* reset pitch util */
+  g_rec_mutex_lock(recall_mutex);
+
+  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    AgsFxSF2SynthAudioScopeData *scope_data;
+
+    scope_data = fx_sf2_synth_audio->scope_data[i];
+    
+    if(i == AGS_SOUND_SCOPE_PLAYBACK ||
+       i == AGS_SOUND_SCOPE_NOTATION ||
+       i == AGS_SOUND_SCOPE_MIDI){
+      
+      for(j = 0; j < scope_data->audio_channels; j++){
+	AgsFxSF2SynthAudioChannelData *channel_data;
+	
+	channel_data = scope_data->channel_data[j];	
+
+	pitch_type = (AgsPitchTypeMode) g_value_get_float(value);
+
+	pitch_gtype = G_TYPE_NONE;
+  
+	switch(pitch_type){
+	case AGS_PITCH_TYPE_FLUID_INTERPOLATE_NONE:
+	  {
+	    pitch_gtype = AGS_TYPE_FLUID_INTERPOLATE_NONE_UTIL;
+	  }
+	  break;
+	case AGS_PITCH_TYPE_FLUID_INTERPOLATE_LINEAR:
+	  {
+	    pitch_gtype = AGS_TYPE_FLUID_INTERPOLATE_LINEAR_UTIL;
+	  }
+	  break;
+	case AGS_PITCH_TYPE_FLUID_INTERPOLATE_4TH_ORDER:
+	  {
+	    pitch_gtype = AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL;
+	  }
+	  break;
+	case AGS_PITCH_TYPE_FLUID_INTERPOLATE_7TH_ORDER:
+	  {
+	    pitch_gtype = AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL;
+	  }
+	  break;
+	case AGS_PITCH_TYPE_INTERPOLATE_2X_ALIAS:
+	  {
+	    pitch_gtype = AGS_TYPE_PITCH_2X_ALIAS_UTIL;
+	  }
+	  break;
+	case AGS_PITCH_TYPE_INTERPOLATE_4X_ALIAS:
+	  {
+	    pitch_gtype = AGS_TYPE_PITCH_4X_ALIAS_UTIL;
+	  }
+	  break;
+	case AGS_PITCH_TYPE_INTERPOLATE_16X_ALIAS:
+	  {
+	    pitch_gtype = AGS_TYPE_PITCH_16X_ALIAS_UTIL;
+	  }
+	  break;
+	}
+
+	ags_chorus_util_set_pitch_type(channel_data->synth,
+				       pitch_gtype);
+      }
+    }
+  }  
+ 
+  g_rec_mutex_unlock(recall_mutex);
+}
+
 /**
  * ags_fx_sf2_synth_audio_scope_data_alloc:
  * 
@@ -2500,11 +2677,11 @@ ags_fx_sf2_synth_audio_get_synth_pitch_type_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      0.0);
+		      (gfloat) AGS_PITCH_TYPE_FLUID_INTERPOLATE_4TH_ORDER);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
-		      4.0);
+		      6.0);
   }
 
   g_mutex_unlock(&mutex);
@@ -2579,11 +2756,11 @@ ags_fx_sf2_synth_audio_get_chorus_pitch_type_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      0.0);
+		      (gfloat) AGS_PITCH_TYPE_FLUID_INTERPOLATE_4TH_ORDER);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
-		      4.0);
+		      6.0);
   }
 
   g_mutex_unlock(&mutex);

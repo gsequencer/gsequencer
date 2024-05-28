@@ -46,7 +46,7 @@ void test_play_new_sine_buffer();
 #define TEST_COPY_MODE (AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S16)
 
 #define TEST_SINE_FREQ (440.0)
-#define TEST_NEW_SINE_FREQ (550.0)
+#define TEST_NEW_SINE_FREQ (220.0)
 
 #define TEST_DELAY (8 * G_USEC_PER_SEC)
 
