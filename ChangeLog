@@ -10,6 +10,8 @@ ags (6.15.0)
 	* implemented AgsPitchTypeMode enum
 	* implemented pitch type selection of ags-fx-sf2-synth
 	* implemented pitch type selection of ags-fx-sfz-synth
+	* improved ags_sf2_synth_util_set_pitch_type() to allow reset pitch util
+	* improved ags_sfz_synth_util_set_pitch_type() to allow reset pitch util
 
 ags (6.14.7)
 

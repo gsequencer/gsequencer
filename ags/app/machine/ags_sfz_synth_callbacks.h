@@ -37,7 +37,9 @@ void ags_sfz_synth_destroy_callback(GtkWidget *widget, AgsSFZSynth *sfz_synth);
 
 void ags_sfz_synth_open_clicked_callback(GtkWidget *widget, AgsSFZSynth *sfz_synth);
 
-void ags_sfz_synth_synth_pitch_type_callback(GtkDropDown *drop_down, AgsSFZSynth *sfz_synth);
+void ags_sfz_synth_synth_pitch_type_callback(GObject *gobject,
+					     GParamSpec *pspec,
+					     AgsSFZSynth *sfz_synth);
 
 void ags_sfz_synth_synth_octave_callback(AgsDial *dial, AgsSFZSynth *sfz_synth);
 void ags_sfz_synth_synth_key_callback(AgsDial *dial, AgsSFZSynth *sfz_synth);

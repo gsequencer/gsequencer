@@ -37,7 +37,9 @@ void ags_sf2_synth_destroy_callback(GtkWidget *widget, AgsSF2Synth *sf2_synth);
 
 void ags_sf2_synth_open_clicked_callback(GtkWidget *widget, AgsSF2Synth *sf2_synth);
 
-void ags_sf2_synth_synth_pitch_type_callback(GtkDropDown *drop_down, AgsSF2Synth *sf2_synth);
+void ags_sf2_synth_synth_pitch_type_callback(GObject *gobject,
+					     GParamSpec *pspec,
+					     AgsSF2Synth *sf2_synth);
 
 void ags_sf2_synth_bank_tree_view_callback(GtkTreeView *tree_view,
 					   GtkTreePath *path,

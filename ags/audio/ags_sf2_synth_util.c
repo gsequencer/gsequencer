@@ -1307,11 +1307,72 @@ void
 ags_sf2_synth_util_set_pitch_type(AgsSF2SynthUtil *sf2_synth_util,
 				  GType pitch_type)
 {
+  gpointer tmp_pitch_util;
+
+  GType tmp_pitch_type;
+  
+  gboolean success;
+  
   if(sf2_synth_util == NULL){
     return;
   }
 
-  sf2_synth_util->pitch_type = pitch_type;
+  tmp_pitch_type = sf2_synth_util->pitch_type;  
+  tmp_pitch_util = sf2_synth_util->pitch_util;
+
+  success = FALSE;
+
+  if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_NONE_UTIL){
+    success = TRUE;
+    
+    sf2_synth_util->pitch_util = ags_fluid_interpolate_none_util_alloc();
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_LINEAR_UTIL){
+    success = TRUE;
+    
+    sf2_synth_util->pitch_util = ags_fluid_interpolate_linear_util_alloc();
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL){
+    success = TRUE;
+    
+    sf2_synth_util->pitch_util = ags_fluid_interpolate_4th_order_util_alloc();
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
+    success = TRUE;
+    
+    sf2_synth_util->pitch_util = ags_fluid_interpolate_7th_order_util_alloc();
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    success = TRUE;
+    
+    sf2_synth_util->pitch_util = ags_pitch_2x_alias_util_alloc();
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    success = TRUE;
+    
+    sf2_synth_util->pitch_util = ags_pitch_4x_alias_util_alloc();
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    success = TRUE;
+    
+    sf2_synth_util->pitch_util = ags_pitch_16x_alias_util_alloc();
+  }
+  
+  if(success){
+    g_message("success");
+    
+    sf2_synth_util->pitch_type = pitch_type;
+
+    if(tmp_pitch_type == AGS_TYPE_FLUID_INTERPOLATE_NONE_UTIL){
+      ags_fluid_interpolate_none_util_free(tmp_pitch_util);
+    }else if(tmp_pitch_type == AGS_TYPE_FLUID_INTERPOLATE_LINEAR_UTIL){
+      ags_fluid_interpolate_linear_util_free(tmp_pitch_util);
+    }else if(tmp_pitch_type == AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL){
+      ags_fluid_interpolate_4th_order_util_free(tmp_pitch_util);
+    }else if(tmp_pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
+      ags_fluid_interpolate_7th_order_util_free(tmp_pitch_util);
+    }else if(tmp_pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+      ags_pitch_2x_alias_util_free(tmp_pitch_util);
+    }else if(tmp_pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+      ags_pitch_4x_alias_util_free(tmp_pitch_util);
+    }else if(tmp_pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+      ags_pitch_16x_alias_util_free(tmp_pitch_util);
+    }
+  }
 }
 
 /**

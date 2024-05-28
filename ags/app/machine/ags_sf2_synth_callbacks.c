@@ -262,7 +262,9 @@ ags_sf2_synth_open_dialog_response_callback(AgsFileDialog *file_dialog, gint res
 }
 
 void
-ags_sf2_synth_synth_pitch_type_callback(GtkDropDown *drop_down, AgsSF2Synth *sf2_synth)
+ags_sf2_synth_synth_pitch_type_callback(GObject *gobject,
+					GParamSpec *pspec,
+					AgsSF2Synth *sf2_synth)
 {
   AgsFxSF2SynthAudio *fx_sf2_synth_audio;
     
@@ -270,7 +272,7 @@ ags_sf2_synth_synth_pitch_type_callback(GtkDropDown *drop_down, AgsSF2Synth *sf2
 
   GValue value = G_VALUE_INIT;
   
-  selected = gtk_drop_down_get_selected(drop_down);
+  selected = gtk_drop_down_get_selected(gobject);
 
   g_value_init(&value,
 	       G_TYPE_FLOAT);
