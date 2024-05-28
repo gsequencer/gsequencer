@@ -98,6 +98,8 @@ struct _AgsSF2Synth
   AgsSF2Loader *sf2_loader;
   AgsSF2MidiLocaleLoader *sf2_midi_locale_loader;
 
+  GtkDropDown *synth_pitch_type;
+  
   gint load_bank;
   gint load_program;
 

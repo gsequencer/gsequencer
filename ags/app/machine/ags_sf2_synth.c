@@ -162,6 +162,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   GtkBox *vbox;
   GtkBox *sf2_hbox;
   GtkBox *sf2_file_hbox;
+  GtkBox *sf2_synth_pitch_type_hbox;
   GtkBox *sf2_preset_hbox;
   GtkBox *effect_vbox;
   GtkGrid *synth_grid;
@@ -201,6 +202,16 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   gint position;
 
+  const gchar* pitch_type_strv[] = {
+    "fluid-interpolate-none",
+    "fluid-interpolate-linear",
+    "fluid-interpolate-4th-order",
+    "fluid-interpolate-7th-order",
+    "ags-pitch-2x-alias",    
+    "ags-pitch-4x-alias",    
+    "ags-pitch-16x-alias",    
+  };
+  
   application_context = ags_application_context_get_instance();
   
   /* machine counter */
@@ -363,6 +374,36 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   gtk_widget_set_visible((GtkWidget *) sf2_synth->sf2_loader_spinner,
 			 FALSE);
 
+  /* pitch type */
+  sf2_synth_pitch_type_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				    AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_widget_set_valign((GtkWidget *) sf2_synth_pitch_type_hbox,
+			GTK_ALIGN_START);  
+  gtk_widget_set_halign((GtkWidget *) sf2_synth_pitch_type_hbox,
+			GTK_ALIGN_START);
+
+  gtk_widget_set_hexpand((GtkWidget *) sf2_synth_pitch_type_hbox,
+			 FALSE);
+
+  gtk_box_append(vbox,
+		 (GtkWidget *) sf2_synth_pitch_type_hbox);
+  
+  label = (GtkLabel *) gtk_label_new(i18n("pitch type"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+
+  gtk_box_append(sf2_synth_pitch_type_hbox,
+		 (GtkWidget *) label);
+
+  sf2_synth->synth_pitch_type = gtk_drop_down_new_from_strings(pitch_type_strv);
+
+  gtk_drop_down_set_selected(sf2_synth->synth_pitch_type,
+			     3);
+
+  gtk_box_append(sf2_synth_pitch_type_hbox,
+		 (GtkWidget *) sf2_synth->synth_pitch_type);
+  
   /* preset - bank and program */
   sf2_synth->bank = -1;
   sf2_synth->program = -1;
@@ -1624,6 +1665,9 @@ ags_sf2_synth_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) sf2_synth->open, "clicked",
 		   G_CALLBACK(ags_sf2_synth_open_clicked_callback), (gpointer) sf2_synth);
 
+  g_signal_connect((GObject *) sf2_synth->synth_pitch_type, "activate",
+		   G_CALLBACK(ags_sf2_synth_synth_pitch_type_callback), (gpointer) sf2_synth);
+
   g_signal_connect((GObject *) sf2_synth->bank_tree_view, "row-activated",
 		   G_CALLBACK(ags_sf2_synth_bank_tree_view_callback), (gpointer) sf2_synth);
 
@@ -1759,6 +1803,12 @@ ags_sf2_synth_disconnect(AgsConnectable *connectable)
   g_object_disconnect((GObject *) sf2_synth->open,
 		      "any_signal::clicked",
 		      G_CALLBACK(ags_sf2_synth_open_clicked_callback),
+		      (gpointer) sf2_synth,
+		      NULL);
+
+  g_object_disconnect((GObject *) sf2_synth->synth_pitch_type,
+		      "any_signal::activate",
+		      G_CALLBACK(ags_sf2_synth_synth_pitch_type_callback),
 		      (gpointer) sf2_synth,
 		      NULL);
 
