@@ -1,3 +1,9 @@
+ags (6.15.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing persistence of pitch type of AgsSF2Synth
+	* fixed missing persistence of pitch type of AgsSFZSynth
+
 ags (6.15.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
