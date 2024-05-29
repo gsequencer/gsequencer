@@ -446,10 +446,10 @@ ags_pitch_2x_alias_util_set_format(AgsPitch2xAliasUtil *pitch_2x_alias_util,
   ags_stream_free(pitch_2x_alias_util->alias_new_source_buffer);
 
   pitch_2x_alias_util->alias_source_buffer = ags_stream_alloc(AGS_PITCH_2X_ALIAS_UTIL_DEFAULT_MAX_BUFFER_SIZE,
-							       format);
-    
+							      format);
+  
   pitch_2x_alias_util->alias_new_source_buffer = ags_stream_alloc(AGS_PITCH_2X_ALIAS_UTIL_DEFAULT_MAX_BUFFER_SIZE,
-								   format);
+								  format);
 }
 
 /**

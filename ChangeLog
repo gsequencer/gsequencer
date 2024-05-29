@@ -1,3 +1,10 @@
+ags (6.15.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed memory corruption access after free with pitch selection
+	* fixed double free in ags_sf2_synth_util.c
+	* fixed double free in ags_sfz_synth_util.c
+
 ags (6.15.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
