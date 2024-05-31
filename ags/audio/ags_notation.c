@@ -2086,14 +2086,9 @@ ags_notation_find_note_256th_range(AgsNotation *notation,
 
       if(x0_256th >= x_256th_lower &&
 	 x0_256th <= x_256th_upper){
-#if 1
 	retval = g_list_insert_sorted(retval,
 				      list->data,
 				      (GCompareFunc) ags_note_sort_func);
-#else
-	retval = g_list_prepend(retval,
-				list->data);
-#endif
 	g_object_ref(list->data);
       }else{
 	break;
@@ -2118,14 +2113,9 @@ ags_notation_find_note_256th_range(AgsNotation *notation,
 
       if(x0_256th >= x_256th_lower &&
 	 x0_256th <= x_256th_upper){
-#if 1
 	retval = g_list_insert_sorted(retval,
 				      list->data,
 				      (GCompareFunc) ags_note_sort_func);
-#else
-	retval = g_list_prepend(retval,
-				list->data);
-#endif
 	g_object_ref(list->data);
       }else{
 	break;

@@ -1,3 +1,9 @@
+ags (6.15.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed note 256th counter loop and timing
+	* fixed potential SIGSEGV while filename not supplied
+
 ags (6.15.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

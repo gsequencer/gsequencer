@@ -50,6 +50,14 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="6.15.3" date="2024-05-31">
+      <description>
+	<p>
+	  Fixed note 256th counter.
+	</p>
+      </description>
+    </release>
+
     <release version="6.14.0" date="2024-05-21">
       <description>
 	<p>

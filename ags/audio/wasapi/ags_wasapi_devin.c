@@ -2604,11 +2604,11 @@ ags_wasapi_devin_tic(AgsSoundcard *soundcard)
   
   if((16 * (note_offset + 1) >= next_note_256th_offset_lower &&
       16 * (note_offset + 1) <= next_note_256th_offset_upper) ||
-     (next_note_256th_offset_lower + 256 < note_256th_offset_lower)){
+     (next_note_256th_offset_lower + 64 < note_256th_offset_lower)){
     //    g_message("16th pulse: %d (delay = %f)", note_offset + 1, delay);
     
     if(do_loop &&
-       note_offset + 1 == loop_right){
+       next_note_256th_offset_lower + 64 < note_256th_offset_lower){
       ags_soundcard_set_note_offset(soundcard,
 				    loop_left);
 
@@ -2617,29 +2617,8 @@ ags_wasapi_devin_tic(AgsSoundcard *soundcard)
       wasapi_devin->note_256th_offset = next_note_256th_offset_lower;
       wasapi_devin->note_256th_offset_last = next_note_256th_offset_upper;
       
-      note_256th_attack_of_16th_pulse = attack;
-
-      i = 1;
-      
-      if(note_256th_delay < 1.0){
-	for(; i < (guint) ceil(1.0 / note_256th_delay); i++){
-	  if(note_256th_attack_of_16th_pulse_position - i >= 0){
-	    current_note_256th_attack = ags_soundcard_get_note_256th_attack_at_position(soundcard,
-											note_256th_attack_of_16th_pulse_position - i);
-
-	    if(current_note_256th_attack < note_256th_attack_of_16th_pulse){
-	      note_256th_attack_of_16th_pulse = current_note_256th_attack;
-	    }else{
-	      break;
-	    }
-	  }else{
-	    break;
-	  }
-	}
-      }
-
-      wasapi_devin->note_256th_attack_of_16th_pulse = note_256th_attack_of_16th_pulse;      
-      wasapi_devin->note_256th_attack_of_16th_pulse_position += i;
+      wasapi_devin->note_256th_attack_of_16th_pulse = 0;
+      wasapi_devin->note_256th_attack_of_16th_pulse_position = 0;
 
       g_rec_mutex_unlock(wasapi_devin_mutex);
     }else{
@@ -2652,27 +2631,20 @@ ags_wasapi_devin_tic(AgsSoundcard *soundcard)
       wasapi_devin->note_256th_offset_last = next_note_256th_offset_upper;
 
       note_256th_attack_of_16th_pulse = attack;
+      
+      current_note_256th_attack = attack;
 
       i = 1;
-      
-      if(note_256th_delay < 1.0){
-	for(; i < (guint) ceil(1.0 / note_256th_delay); i++){
-	  if(note_256th_attack_of_16th_pulse_position - i >= 0){
-	    current_note_256th_attack = ags_soundcard_get_note_256th_attack_at_position(soundcard,
-											note_256th_attack_of_16th_pulse_position - i);
 
-	    if(current_note_256th_attack < note_256th_attack_of_16th_pulse){
-	      note_256th_attack_of_16th_pulse = current_note_256th_attack;
-	    }else{
-	      break;
-	    }
-	  }else{
-	    break;
-	  }
-	}
+      current_note_256th_attack = ags_soundcard_get_note_256th_attack_at_position(soundcard,
+										  note_256th_attack_of_16th_pulse_position + 1);
+      
+      for(; attack + (guint) floor((double) i * (note_256th_delay * (double) buffer_size)) < (guint) floor(absolute_delay * (double) buffer_size); i++){
+	current_note_256th_attack = ags_soundcard_get_note_256th_attack_at_position(soundcard,
+										    note_256th_attack_of_16th_pulse_position + i);
       }
 
-      wasapi_devin->note_256th_attack_of_16th_pulse = note_256th_attack_of_16th_pulse;
+      wasapi_devin->note_256th_attack_of_16th_pulse = current_note_256th_attack;
       wasapi_devin->note_256th_attack_of_16th_pulse_position += i;
 
       g_rec_mutex_unlock(wasapi_devin_mutex);
@@ -2685,7 +2657,7 @@ ags_wasapi_devin_tic(AgsSoundcard *soundcard)
     g_rec_mutex_lock(wasapi_devin_mutex);
 
     if(do_loop &&
-       note_offset + 1 == loop_right){
+       next_note_256th_offset_lower + 64 < note_256th_offset_lower){
       wasapi_devin->tic_counter = 0;
 
       wasapi_devin->delay_counter = 0.0;
@@ -2707,8 +2679,14 @@ ags_wasapi_devin_tic(AgsSoundcard *soundcard)
     g_rec_mutex_unlock(wasapi_devin_mutex);
 
     /* 16th pulse */
-    ags_soundcard_offset_changed(soundcard,
-				 note_offset + 1);
+    if(do_loop &&
+       next_note_256th_offset_lower + 64 < note_256th_offset_lower){
+      ags_soundcard_offset_changed(soundcard,
+				   loop_left);
+    }else{
+      ags_soundcard_offset_changed(soundcard,
+				   note_offset + 1);
+    }
   }else{
     g_rec_mutex_lock(wasapi_devin_mutex);
     
