@@ -418,6 +418,8 @@ ags_soundcard_util_adjust_delay_and_attack(GObject *soundcard)
 
   delay_overflow_counter = ((floor(corrected_delay) + 1.0) * (double) buffer_size) - (floor(corrected_delay) * (double) buffer_size);
   
+  decrement_delay = FALSE;
+  
   for(i = 0; i < AGS_SOUNDCARD_DEFAULT_PERIOD; i++){
     guint current_16th_attack;
     
@@ -444,21 +446,11 @@ ags_soundcard_util_adjust_delay_and_attack(GObject *soundcard)
 	frame_counter += buffer_size * (floor((double) correct_note_256th_frame_count / (double) buffer_size) + 1.0);
       }
 
-      current_note_256th_attack = frame_counter % (guint) correct_note_256th_frame_count;
+      current_note_256th_attack = (guint) fmod((double) frame_counter, correct_note_256th_frame_count);
       
       //      fprintf(stdout, " `-> note_256th_attack{#%d} = %d\n", ((16 * i) + j) % (guint) AGS_SOUNDCARD_DEFAULT_PERIOD, current_note_256th_attack);
     }
 
-    delay_overflow_counter += (((floor(corrected_delay) + 1.0) * (double) buffer_size) - (corrected_delay * (double) buffer_size));
-
-    decrement_delay = FALSE;
-
-    if((gint) floor(delay_overflow_counter) >= buffer_size){
-      decrement_delay = TRUE;
-
-      delay_overflow_counter -= (double) buffer_size;
-    }
-    
     if(!decrement_delay){
       delay[i] = floor(corrected_delay);
     }else{
@@ -466,6 +458,16 @@ ags_soundcard_util_adjust_delay_and_attack(GObject *soundcard)
     }
 
     attack[i] = (guint) current_16th_attack;
+
+    delay_overflow_counter += ((delay[i] * (double) buffer_size) - (corrected_delay * (double) buffer_size));
+
+    decrement_delay = FALSE;
+
+    if((gint) floor(delay_overflow_counter) >= buffer_size){
+      decrement_delay = TRUE;
+
+      //      delay_overflow_counter -= (double) buffer_size;
+    }    
   }
   
   for(; i < 2 * AGS_SOUNDCARD_DEFAULT_PERIOD; i++){
@@ -856,8 +858,12 @@ ags_soundcard_util_calc_next_note_256th_offset(GObject *soundcard,
 
   next_note_256th_attack = 0;
   
+  fraction_counter = (tic_counter * fraction) - floor(tic_counter * fraction) + fraction;
+  
   if(correct_note_256th_frame_count < buffer_size){
-    next_note_256th_attack = (note_256th_attack_last + (guint) floor(correct_note_256th_frame_count)) % buffer_size;
+    if((note_256th_attack_last + (guint) floor(correct_note_256th_frame_count + fraction_counter)) > buffer_size){
+      next_note_256th_attack = (note_256th_attack_last + (guint) floor(correct_note_256th_frame_count + fraction_counter)) % buffer_size;
+    }
   }
 
   /*  */
@@ -865,8 +871,6 @@ ags_soundcard_util_calc_next_note_256th_offset(GObject *soundcard,
   
   next_note_256th_offset_upper = next_note_256th_offset_lower;
 
-  fraction_counter = (tic_counter * fraction) - floor(tic_counter * fraction) + fraction;
-  
   if(correct_note_256th_frame_count < buffer_size){
     for(i = 1; next_note_256th_attack + (i * correct_note_256th_frame_count) + floor(fraction_counter) < buffer_size; i++){
       next_note_256th_offset_upper++;
@@ -1149,17 +1153,19 @@ ags_soundcard_util_calc_next_note_256th_attack(GObject *soundcard,
   corrected_delay = correct_frame_count / (gdouble) buffer_size;
 
   next_note_256th_attack = 0;
+
+  fraction_counter = (tic_counter * fraction) - floor(tic_counter * fraction) + fraction;
   
   if(correct_note_256th_frame_count < buffer_size){
-    next_note_256th_attack = (note_256th_attack_last + (guint) floor(correct_note_256th_frame_count)) % buffer_size;
+    if((note_256th_attack_last + (guint) floor(correct_note_256th_frame_count + fraction_counter)) > buffer_size){
+      next_note_256th_attack = (note_256th_attack_last + (guint) floor(correct_note_256th_frame_count + fraction_counter)) % buffer_size;
+    }
   }
 
   /*  */
   next_note_256th_offset_lower = note_256th_offset_last + 1;
   
   next_note_256th_offset_upper = next_note_256th_offset_lower;
-
-  fraction_counter = (tic_counter * fraction) - floor(tic_counter * fraction) + fraction;
   
   if(correct_note_256th_frame_count < buffer_size){
     for(i = 1; next_note_256th_attack + (i * correct_note_256th_frame_count) + floor(fraction_counter) < buffer_size; i++){

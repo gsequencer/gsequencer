@@ -1591,10 +1591,10 @@ ags_fx_notation_audio_processor_real_play(AgsFxNotationAudioProcessor *fx_notati
 
 	  note = note->next;
 	}	
-      }
 
-      g_list_free_full(start_note,
-		       g_object_unref);
+	g_list_free_full(start_note,
+			 g_object_unref);
+      }
     }
 
     g_list_free_full(start_notation,
