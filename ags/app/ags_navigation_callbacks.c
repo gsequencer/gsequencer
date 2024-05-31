@@ -94,7 +94,7 @@ ags_navigation_bpm_callback(GtkWidget *widget,
   if((AGS_NAVIGATION_BLOCK_BPM & (navigation->flags)) != 0){
     return;
   }
-  
+
   application_context = ags_application_context_get_instance();
 
   /* get task thread */
@@ -229,13 +229,13 @@ ags_navigation_stop_callback(GtkWidget *widget,
   GList *machines,*machines_start;
 
   gchar *timestr;
-
+  
   application_context = ags_application_context_get_instance();
 
   window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
-  
+
   machines =
     machines_start = ags_window_get_machine(window);
 
@@ -278,8 +278,8 @@ ags_navigation_stop_callback(GtkWidget *widget,
   navigation->start_tact = 0.0;
 
   timestr = ags_time_get_uptime_from_offset(0.0,
-					    gtk_spin_button_get_value(navigation->bpm),
-					    ags_soundcard_get_delay(AGS_SOUNDCARD(default_soundcard)),
+					    ags_soundcard_get_bpm(AGS_SOUNDCARD(default_soundcard)),
+					    ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(default_soundcard)),
 					    ags_soundcard_get_delay_factor(AGS_SOUNDCARD(default_soundcard)));
   gtk_label_set_text(navigation->duration_time, timestr);
   
