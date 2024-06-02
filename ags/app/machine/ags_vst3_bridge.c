@@ -1281,6 +1281,10 @@ ags_vst3_bridge_reload_port(AgsVst3Bridge *vst3_bridge)
 
   vst3_plugin = vst3_bridge->vst3_plugin;
 
+  if(vst3_plugin == NULL){
+    return;
+  }
+
   base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(vst3_plugin);
 
   effect_bridge = AGS_EFFECT_BRIDGE(AGS_MACHINE(vst3_bridge)->bridge);

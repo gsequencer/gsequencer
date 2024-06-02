@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -918,7 +918,11 @@ ags_live_dssi_bridge_load(AgsLiveDssiBridge *live_dssi_bridge)
   dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
 						  live_dssi_bridge->filename,
 						  live_dssi_bridge->effect);
-
+  
+  if(dssi_plugin == NULL){
+    return;
+  }
+  
   plugin_so = AGS_BASE_PLUGIN(dssi_plugin)->plugin_so;
 
   /*  */
