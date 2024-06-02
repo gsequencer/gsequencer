@@ -1,3 +1,13 @@
+ags (6.15.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved plugin load failure handling in AgsDssiBridge
+	* improved plugin load failure handling in AgsLv2Bridge
+	* improved plugin load failure handling in AgsVst3Bridge
+	* improved plugin load failure handling in AgsLiveDssiBridge
+	* improved plugin load failure handling in AgsLiveLv2Bridge
+	* improved plugin load failure handling in AgsLiveVst3Bridge
+
 ags (6.15.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

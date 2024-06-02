@@ -1283,9 +1283,12 @@ ags_live_lv2_bridge_load_program(AgsLiveLv2Bridge *live_lv2_bridge)
       live_lv2_bridge->lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
 								    live_lv2_bridge->filename,
 								    live_lv2_bridge->effect);
-    g_object_ref(lv2_plugin);
 
-    live_lv2_bridge->lv2_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor;
+    if(lv2_plugin != NULL){
+      g_object_ref(lv2_plugin);
+      
+      live_lv2_bridge->lv2_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor;
+    }
   }
   
   if(lv2_plugin == NULL){
@@ -1411,9 +1414,12 @@ ags_live_lv2_bridge_load_preset(AgsLiveLv2Bridge *live_lv2_bridge)
       live_lv2_bridge->lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
 								    live_lv2_bridge->filename,
 								    live_lv2_bridge->effect);
-    g_object_ref(lv2_plugin);
 
-    live_lv2_bridge->lv2_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor;
+    if(lv2_plugin != NULL){
+      g_object_ref(lv2_plugin);
+      
+      live_lv2_bridge->lv2_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor;
+    }
   }
   
   if(lv2_plugin == NULL){
@@ -1476,9 +1482,12 @@ ags_live_lv2_bridge_load_gui(AgsLiveLv2Bridge *live_lv2_bridge)
       live_lv2_bridge->lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
 								    live_lv2_bridge->filename,
 								    live_lv2_bridge->effect);
-    g_object_ref(lv2_plugin);
 
-    live_lv2_bridge->lv2_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor;
+    if(lv2_plugin != NULL){
+      g_object_ref(lv2_plugin);
+      
+      live_lv2_bridge->lv2_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor;
+    }
   }
   
   if(lv2_plugin == NULL ||
@@ -1534,9 +1543,12 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
       live_lv2_bridge->lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
 								    live_lv2_bridge->filename,
 								    live_lv2_bridge->effect);
-    g_object_ref(lv2_plugin);
 
-    live_lv2_bridge->lv2_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor;
+    if(lv2_plugin != NULL){
+      g_object_ref(lv2_plugin);
+
+      live_lv2_bridge->lv2_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor;
+    }
   }
   
   if(lv2_plugin == NULL){
