@@ -841,7 +841,8 @@ ags_notation_edit_key_released_callback(GtkEventControllerKey *event_controller,
 
 	      if(note != NULL &&
 		 note->x[1] - note->x[0] - zoom_factor >= zoom_factor){
-		note->x[1] -= zoom_factor;
+		ags_note_set_x1(note,
+				note->x[1] - zoom_factor);
 	      }
 	    }
 
@@ -913,7 +914,8 @@ ags_notation_edit_key_released_callback(GtkEventControllerKey *event_controller,
 					     FALSE);
 
 	      if(note != NULL){
-		note->x[1] += zoom_factor;
+		ags_note_set_x1(note,
+				note->x[1] + zoom_factor);
 	      }
 	    }
 
@@ -988,15 +990,19 @@ ags_notation_edit_key_released_callback(GtkEventControllerKey *event_controller,
 
 	note = ags_note_new();
 
-	note->x[0] = notation_edit->cursor_position_x;
+	ags_note_set_x0(note,
+			notation_edit->cursor_position_x);
 
 	if(!pattern_mode){
-	  note->x[1] = notation_edit->cursor_position_x + zoom_factor;
+	  ags_note_set_x1(note,
+			  notation_edit->cursor_position_x + zoom_factor);
 	}else{
-	  note->x[1] = note->x[0] + 1;
+	  ags_note_set_x1(note,
+			  notation_edit->cursor_position_x + 1);
 	}
 	
-	note->y = notation_edit->cursor_position_y;
+	ags_note_set_y(note,
+		       notation_edit->cursor_position_y);
 
 	/* add note */
 	ags_composite_editor_add_note(composite_editor,
