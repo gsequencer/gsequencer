@@ -7,6 +7,7 @@ ags (6.15.4)
 	* improved plugin load failure handling in AgsLiveDssiBridge
 	* improved plugin load failure handling in AgsLiveLv2Bridge
 	* improved plugin load failure handling in AgsLiveVst3Bridge
+	* fixed notation edit missing note 256th support
 
 ags (6.15.3)
 
