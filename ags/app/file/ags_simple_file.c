@@ -5277,6 +5277,45 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   }
 
   str = xmlGetProp(node,
+		   "pitch-type");
+
+  if(str != NULL){
+    gchar **iter;
+    
+    guint selected;
+    guint i;
+    
+    const gchar* pitch_type_strv[] = {
+      "fluid-interpolate-none",
+      "fluid-interpolate-linear",
+      "fluid-interpolate-4th-order",
+      "fluid-interpolate-7th-order",
+      "ags-pitch-2x-alias",    
+      "ags-pitch-4x-alias",    
+      "ags-pitch-16x-alias",
+      NULL,
+    };
+
+    iter = pitch_type_strv;
+    
+    selected = 2;
+
+    for(i = 0; iter[0] != NULL; i++, iter++){
+      if(!g_strcmp0(str,
+		    iter[0])){
+	selected = i;
+	
+	break;
+      }
+    }
+    
+    gtk_drop_down_set_selected(sfz_synth->synth_pitch_type,
+			       selected);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
 		   "synth-volume");
 
   if(str != NULL){
@@ -6059,6 +6098,45 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
 
     ags_dial_set_value(sf2_synth->synth_key,
 		       key);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "pitch-type");
+
+  if(str != NULL){
+    gchar **iter;
+    
+    guint selected;
+    guint i;
+    
+    const gchar* pitch_type_strv[] = {
+      "fluid-interpolate-none",
+      "fluid-interpolate-linear",
+      "fluid-interpolate-4th-order",
+      "fluid-interpolate-7th-order",
+      "ags-pitch-2x-alias",    
+      "ags-pitch-4x-alias",    
+      "ags-pitch-16x-alias",
+      NULL,
+    };
+
+    iter = pitch_type_strv;
+    
+    selected = 2;
+
+    for(i = 0; iter[0] != NULL; i++, iter++){
+      if(!g_strcmp0(str,
+		    iter[0])){
+	selected = i;
+	
+	break;
+      }
+    }
+    
+    gtk_drop_down_set_selected(sf2_synth->synth_pitch_type,
+			       selected);
       
     xmlFree(str);
   }
@@ -14147,6 +14225,17 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
   }else if(AGS_IS_SFZ_SYNTH(machine)){
     AgsSFZSynth *sfz_synth;
     
+    const gchar* pitch_type_strv[] = {
+      "fluid-interpolate-none",
+      "fluid-interpolate-linear",
+      "fluid-interpolate-4th-order",
+      "fluid-interpolate-7th-order",
+      "ags-pitch-2x-alias",    
+      "ags-pitch-4x-alias",    
+      "ags-pitch-16x-alias",
+      NULL,
+    };
+
     sfz_synth = (AgsSFZSynth *) machine;
 
     if(sfz_synth->audio_container != NULL){
@@ -14173,6 +14262,12 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 	       str);
 
     g_free(str);    
+
+    str = pitch_type_strv[gtk_drop_down_get_selected(sfz_synth->synth_pitch_type)];
+    
+    xmlNewProp(node,
+	       "pitch-type",
+	       str);
 
     str = g_strdup_printf("%lf",
 			  ags_dial_get_value(sfz_synth->synth_volume));
@@ -14578,6 +14673,17 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 
     gint bank, program;
     
+    const gchar* pitch_type_strv[] = {
+      "fluid-interpolate-none",
+      "fluid-interpolate-linear",
+      "fluid-interpolate-4th-order",
+      "fluid-interpolate-7th-order",
+      "ags-pitch-2x-alias",    
+      "ags-pitch-4x-alias",    
+      "ags-pitch-16x-alias",
+      NULL,
+    };
+
     sf2_synth = (AgsSF2Synth *) machine;
 
     if(sf2_synth->audio_container != NULL){
@@ -14622,6 +14728,12 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 	       str);
 
     g_free(str);    
+
+    str = pitch_type_strv[gtk_drop_down_get_selected(sf2_synth->synth_pitch_type)];
+    
+    xmlNewProp(node,
+	       "pitch-type",
+	       str);
 
     str = g_strdup_printf("%lf",
 			  ags_dial_get_value(sf2_synth->synth_volume));

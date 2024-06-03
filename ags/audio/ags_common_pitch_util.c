@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -85,6 +85,12 @@ ags_common_pitch_util_get_source(gpointer pitch_util,
     return(ags_fluid_interpolate_4th_order_util_get_source(pitch_util));
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     return(ags_fluid_interpolate_7th_order_util_get_source(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    return(ags_pitch_2x_alias_util_get_source(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    return(ags_pitch_4x_alias_util_get_source(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    return(ags_pitch_16x_alias_util_get_source(pitch_util));
   }
 
   return(NULL);
@@ -123,6 +129,15 @@ ags_common_pitch_util_set_source(gpointer pitch_util,
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     ags_fluid_interpolate_7th_order_util_set_source(pitch_util,
 						    source);
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    ags_pitch_2x_alias_util_set_source(pitch_util,
+				       source);
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    ags_pitch_4x_alias_util_set_source(pitch_util,
+				       source);
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    ags_pitch_16x_alias_util_set_source(pitch_util,
+					source);
   }
 }
 
@@ -153,6 +168,12 @@ ags_common_pitch_util_get_source_stride(gpointer pitch_util,
     return(ags_fluid_interpolate_4th_order_util_get_source_stride(pitch_util));
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     return(ags_fluid_interpolate_7th_order_util_get_source_stride(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    return(ags_pitch_2x_alias_util_get_source_stride(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    return(ags_pitch_4x_alias_util_get_source_stride(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    return(ags_pitch_16x_alias_util_get_source_stride(pitch_util));
   }
 
   return(0);
@@ -191,6 +212,15 @@ ags_common_pitch_util_set_source_stride(gpointer pitch_util,
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     ags_fluid_interpolate_7th_order_util_set_source_stride(pitch_util,
 							   source_stride);
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    ags_pitch_2x_alias_util_set_source_stride(pitch_util,
+					      source_stride);
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    ags_pitch_4x_alias_util_set_source_stride(pitch_util,
+					      source_stride);
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    ags_pitch_16x_alias_util_set_source_stride(pitch_util,
+					       source_stride);
   }
 }
 
@@ -221,6 +251,12 @@ ags_common_pitch_util_get_destination(gpointer pitch_util,
     return(ags_fluid_interpolate_4th_order_util_get_destination(pitch_util));
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     return(ags_fluid_interpolate_7th_order_util_get_destination(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    return(ags_pitch_2x_alias_util_get_destination(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    return(ags_pitch_4x_alias_util_get_destination(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    return(ags_pitch_16x_alias_util_get_destination(pitch_util));
   }else{
     g_warning("unknown pitch type");
   }
@@ -261,6 +297,15 @@ ags_common_pitch_util_set_destination(gpointer pitch_util,
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     ags_fluid_interpolate_7th_order_util_set_destination(pitch_util,
 							 destination);
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    ags_pitch_2x_alias_util_set_destination(pitch_util,
+					    destination);
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    ags_pitch_4x_alias_util_set_destination(pitch_util,
+					    destination);
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    ags_pitch_16x_alias_util_set_destination(pitch_util,
+					     destination);
   }
 }
 
@@ -291,6 +336,12 @@ ags_common_pitch_util_get_destination_stride(gpointer pitch_util,
     return(ags_fluid_interpolate_4th_order_util_get_destination_stride(pitch_util));
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     return(ags_fluid_interpolate_7th_order_util_get_destination_stride(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    return(ags_pitch_2x_alias_util_get_destination_stride(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    return(ags_pitch_4x_alias_util_get_destination_stride(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    return(ags_pitch_16x_alias_util_get_destination_stride(pitch_util));
   }
 
   return(0);
@@ -329,6 +380,15 @@ ags_common_pitch_util_set_destination_stride(gpointer pitch_util,
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     ags_fluid_interpolate_7th_order_util_set_destination_stride(pitch_util,
 								destination_stride);
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    ags_pitch_2x_alias_util_set_destination_stride(pitch_util,
+						   destination_stride);
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    ags_pitch_4x_alias_util_set_destination_stride(pitch_util,
+						   destination_stride);
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    ags_pitch_16x_alias_util_set_destination_stride(pitch_util,
+						    destination_stride);
   }
 }
 
@@ -359,6 +419,12 @@ ags_common_pitch_util_get_buffer_length(gpointer pitch_util,
     return(ags_fluid_interpolate_4th_order_util_get_buffer_length(pitch_util));
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     return(ags_fluid_interpolate_7th_order_util_get_buffer_length(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    return(ags_pitch_2x_alias_util_get_buffer_length(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    return(ags_pitch_4x_alias_util_get_buffer_length(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    return(ags_pitch_16x_alias_util_get_buffer_length(pitch_util));
   }
 
   return(0);
@@ -397,6 +463,15 @@ ags_common_pitch_util_set_buffer_length(gpointer pitch_util,
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     ags_fluid_interpolate_7th_order_util_set_buffer_length(pitch_util,
 							   buffer_length);
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    ags_pitch_2x_alias_util_set_buffer_length(pitch_util,
+					      buffer_length);
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    ags_pitch_4x_alias_util_set_buffer_length(pitch_util,
+					      buffer_length);
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    ags_pitch_16x_alias_util_set_buffer_length(pitch_util,
+					       buffer_length);
   }
 }
 
@@ -427,6 +502,12 @@ ags_common_pitch_util_get_format(gpointer pitch_util,
     return(ags_fluid_interpolate_4th_order_util_get_format(pitch_util));
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     return(ags_fluid_interpolate_7th_order_util_get_format(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    return(ags_pitch_2x_alias_util_get_format(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    return(ags_pitch_4x_alias_util_get_format(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    return(ags_pitch_16x_alias_util_get_format(pitch_util));
   }
 
   return(0);
@@ -465,6 +546,15 @@ ags_common_pitch_util_set_format(gpointer pitch_util,
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     ags_fluid_interpolate_7th_order_util_set_format(pitch_util,
 						    format);
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    ags_pitch_2x_alias_util_set_format(pitch_util,
+				       format);
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    ags_pitch_4x_alias_util_set_format(pitch_util,
+				       format);
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    ags_pitch_16x_alias_util_set_format(pitch_util,
+					format);
   }
 }
 
@@ -495,6 +585,12 @@ ags_common_pitch_util_get_samplerate(gpointer pitch_util,
     return(ags_fluid_interpolate_4th_order_util_get_samplerate(pitch_util));
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     return(ags_fluid_interpolate_7th_order_util_get_samplerate(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    return(ags_pitch_2x_alias_util_get_samplerate(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    return(ags_pitch_4x_alias_util_get_samplerate(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    return(ags_pitch_16x_alias_util_get_samplerate(pitch_util));
   }
 
   return(0);
@@ -533,6 +629,15 @@ ags_common_pitch_util_set_samplerate(gpointer pitch_util,
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     ags_fluid_interpolate_7th_order_util_set_samplerate(pitch_util,
 							samplerate);
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    ags_pitch_2x_alias_util_set_samplerate(pitch_util,
+					   samplerate);
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    ags_pitch_4x_alias_util_set_samplerate(pitch_util,
+					   samplerate);
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    ags_pitch_16x_alias_util_set_samplerate(pitch_util,
+					    samplerate);
   }
 }
 
@@ -563,6 +668,12 @@ ags_common_pitch_util_get_base_key(gpointer pitch_util,
     return(ags_fluid_interpolate_4th_order_util_get_base_key(pitch_util));
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     return(ags_fluid_interpolate_7th_order_util_get_base_key(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    return(ags_pitch_2x_alias_util_get_base_key(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    return(ags_pitch_4x_alias_util_get_base_key(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    return(ags_pitch_16x_alias_util_get_base_key(pitch_util));
   }
 
   return(0.0);
@@ -601,6 +712,15 @@ ags_common_pitch_util_set_base_key(gpointer pitch_util,
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     ags_fluid_interpolate_7th_order_util_set_base_key(pitch_util,
 						      base_key);
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    ags_pitch_2x_alias_util_set_base_key(pitch_util,
+					 base_key);
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    ags_pitch_4x_alias_util_set_base_key(pitch_util,
+					 base_key);
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    ags_pitch_16x_alias_util_set_base_key(pitch_util,
+					  base_key);
   }
 }
 
@@ -631,6 +751,12 @@ ags_common_pitch_util_get_tuning(gpointer pitch_util,
     return(ags_fluid_interpolate_4th_order_util_get_tuning(pitch_util));
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     return(ags_fluid_interpolate_7th_order_util_get_tuning(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    return(ags_pitch_2x_alias_util_get_tuning(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    return(ags_pitch_4x_alias_util_get_tuning(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    return(ags_pitch_16x_alias_util_get_tuning(pitch_util));
   }
 
   return(0.0);
@@ -669,6 +795,15 @@ ags_common_pitch_util_set_tuning(gpointer pitch_util,
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     ags_fluid_interpolate_7th_order_util_set_tuning(pitch_util,
 						    tuning);
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    ags_pitch_2x_alias_util_set_tuning(pitch_util,
+				       tuning);
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    ags_pitch_4x_alias_util_set_tuning(pitch_util,
+				       tuning);
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    ags_pitch_16x_alias_util_set_tuning(pitch_util,
+					tuning);
   }
 }
 
@@ -699,6 +834,12 @@ ags_common_pitch_util_get_vibrato_enabled(gpointer pitch_util,
     return(ags_fluid_interpolate_4th_order_util_get_vibrato_enabled(pitch_util));
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     return(ags_fluid_interpolate_7th_order_util_get_vibrato_enabled(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    return(ags_pitch_2x_alias_util_get_vibrato_enabled(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    return(ags_pitch_4x_alias_util_get_vibrato_enabled(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    return(ags_pitch_16x_alias_util_get_vibrato_enabled(pitch_util));
   }
 
   return(FALSE);
@@ -737,6 +878,15 @@ ags_common_pitch_util_set_vibrato_enabled(gpointer pitch_util,
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     ags_fluid_interpolate_7th_order_util_set_vibrato_enabled(pitch_util,
 							     vibrato_enabled);
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    ags_pitch_2x_alias_util_set_vibrato_enabled(pitch_util,
+						vibrato_enabled);
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    ags_pitch_4x_alias_util_set_vibrato_enabled(pitch_util,
+						vibrato_enabled);
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    ags_pitch_16x_alias_util_set_vibrato_enabled(pitch_util,
+						 vibrato_enabled);
   }
 }
 
@@ -767,6 +917,12 @@ ags_common_pitch_util_get_vibrato_gain(gpointer pitch_util,
     return(ags_fluid_interpolate_4th_order_util_get_vibrato_gain(pitch_util));
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     return(ags_fluid_interpolate_7th_order_util_get_vibrato_gain(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    return(ags_pitch_2x_alias_util_get_vibrato_gain(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    return(ags_pitch_4x_alias_util_get_vibrato_gain(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    return(ags_pitch_16x_alias_util_get_vibrato_gain(pitch_util));
   }
 
   return(0.0);
@@ -805,6 +961,15 @@ ags_common_pitch_util_set_vibrato_gain(gpointer pitch_util,
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     ags_fluid_interpolate_7th_order_util_set_vibrato_gain(pitch_util,
 							  vibrato_gain);
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    ags_pitch_2x_alias_util_set_vibrato_gain(pitch_util,
+					     vibrato_gain);
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    ags_pitch_4x_alias_util_set_vibrato_gain(pitch_util,
+					     vibrato_gain);
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    ags_pitch_16x_alias_util_set_vibrato_gain(pitch_util,
+					      vibrato_gain);
   }
 }
 
@@ -835,6 +1000,12 @@ ags_common_pitch_util_get_vibrato_lfo_depth(gpointer pitch_util,
     return(ags_fluid_interpolate_4th_order_util_get_vibrato_lfo_depth(pitch_util));
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     return(ags_fluid_interpolate_7th_order_util_get_vibrato_lfo_depth(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    return(ags_pitch_2x_alias_util_get_vibrato_lfo_depth(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    return(ags_pitch_4x_alias_util_get_vibrato_lfo_depth(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    return(ags_pitch_16x_alias_util_get_vibrato_lfo_depth(pitch_util));
   }
 
   return(0.0);
@@ -873,6 +1044,15 @@ ags_common_pitch_util_set_vibrato_lfo_depth(gpointer pitch_util,
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     ags_fluid_interpolate_7th_order_util_set_vibrato_lfo_depth(pitch_util,
 							       vibrato_lfo_depth);
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    ags_pitch_2x_alias_util_set_vibrato_lfo_depth(pitch_util,
+						  vibrato_lfo_depth);
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    ags_pitch_4x_alias_util_set_vibrato_lfo_depth(pitch_util,
+						  vibrato_lfo_depth);
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    ags_pitch_16x_alias_util_set_vibrato_lfo_depth(pitch_util,
+						   vibrato_lfo_depth);
   }
 }
 
@@ -903,6 +1083,12 @@ ags_common_pitch_util_get_vibrato_lfo_freq(gpointer pitch_util,
     return(ags_fluid_interpolate_4th_order_util_get_vibrato_lfo_freq(pitch_util));
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     return(ags_fluid_interpolate_7th_order_util_get_vibrato_lfo_freq(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    return(ags_pitch_2x_alias_util_get_vibrato_lfo_freq(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    return(ags_pitch_4x_alias_util_get_vibrato_lfo_freq(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    return(ags_pitch_16x_alias_util_get_vibrato_lfo_freq(pitch_util));
   }
 
   return(0.0);
@@ -941,6 +1127,15 @@ ags_common_pitch_util_set_vibrato_lfo_freq(gpointer pitch_util,
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     ags_fluid_interpolate_7th_order_util_set_vibrato_lfo_freq(pitch_util,
 							      vibrato_lfo_freq);
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    ags_pitch_2x_alias_util_set_vibrato_lfo_freq(pitch_util,
+						 vibrato_lfo_freq);
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    ags_pitch_4x_alias_util_set_vibrato_lfo_freq(pitch_util,
+						 vibrato_lfo_freq);
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    ags_pitch_16x_alias_util_set_vibrato_lfo_freq(pitch_util,
+						  vibrato_lfo_freq);
   }
 }
 
@@ -971,6 +1166,12 @@ ags_common_pitch_util_get_vibrato_tuning(gpointer pitch_util,
     return(ags_fluid_interpolate_4th_order_util_get_vibrato_tuning(pitch_util));
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     return(ags_fluid_interpolate_7th_order_util_get_vibrato_tuning(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    return(ags_pitch_2x_alias_util_get_vibrato_tuning(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    return(ags_pitch_4x_alias_util_get_vibrato_tuning(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    return(ags_pitch_16x_alias_util_get_vibrato_tuning(pitch_util));
   }
 
   return(0.0);
@@ -1009,6 +1210,15 @@ ags_common_pitch_util_set_vibrato_tuning(gpointer pitch_util,
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     ags_fluid_interpolate_7th_order_util_set_vibrato_tuning(pitch_util,
 							    vibrato_tuning);
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    ags_pitch_2x_alias_util_set_vibrato_tuning(pitch_util,
+					       vibrato_tuning);
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    ags_pitch_4x_alias_util_set_vibrato_tuning(pitch_util,
+					       vibrato_tuning);
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    ags_pitch_16x_alias_util_set_vibrato_tuning(pitch_util,
+						vibrato_tuning);
   }
 }
 
@@ -1039,6 +1249,12 @@ ags_common_pitch_util_get_vibrato_lfo_offset(gpointer pitch_util,
     return(ags_fluid_interpolate_4th_order_util_get_vibrato_lfo_offset(pitch_util));
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     return(ags_fluid_interpolate_7th_order_util_get_vibrato_lfo_offset(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    return(ags_pitch_2x_alias_util_get_vibrato_lfo_offset(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    return(ags_pitch_4x_alias_util_get_vibrato_lfo_offset(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    return(ags_pitch_16x_alias_util_get_vibrato_lfo_offset(pitch_util));
   }
 
   return(0);
@@ -1077,6 +1293,15 @@ ags_common_pitch_util_set_vibrato_lfo_offset(gpointer pitch_util,
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     ags_fluid_interpolate_7th_order_util_set_vibrato_lfo_offset(pitch_util,
 								vibrato_lfo_offset);
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    ags_pitch_2x_alias_util_set_vibrato_lfo_offset(pitch_util,
+						   vibrato_lfo_offset);
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    ags_pitch_4x_alias_util_set_vibrato_lfo_offset(pitch_util,
+						   vibrato_lfo_offset);
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    ags_pitch_16x_alias_util_set_vibrato_lfo_offset(pitch_util,
+						    vibrato_lfo_offset);
   }
 }
 
@@ -1107,6 +1332,12 @@ ags_common_pitch_util_get_frame_count(gpointer pitch_util,
     return(ags_fluid_interpolate_4th_order_util_get_frame_count(pitch_util));
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     return(ags_fluid_interpolate_7th_order_util_get_frame_count(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    return(ags_pitch_2x_alias_util_get_frame_count(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    return(ags_pitch_4x_alias_util_get_frame_count(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    return(ags_pitch_16x_alias_util_get_frame_count(pitch_util));
   }
 
   return(0);
@@ -1145,6 +1376,15 @@ ags_common_pitch_util_set_frame_count(gpointer pitch_util,
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     ags_fluid_interpolate_7th_order_util_set_frame_count(pitch_util,
 							 frame_count);
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    ags_pitch_2x_alias_util_set_frame_count(pitch_util,
+					    frame_count);
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    ags_pitch_4x_alias_util_set_frame_count(pitch_util,
+					    frame_count);
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    ags_pitch_16x_alias_util_set_frame_count(pitch_util,
+					     frame_count);
   }
 }
 
@@ -1175,6 +1415,12 @@ ags_common_pitch_util_get_offset(gpointer pitch_util,
     return(ags_fluid_interpolate_4th_order_util_get_offset(pitch_util));
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     return(ags_fluid_interpolate_7th_order_util_get_offset(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    return(ags_pitch_2x_alias_util_get_offset(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    return(ags_pitch_4x_alias_util_get_offset(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    return(ags_pitch_16x_alias_util_get_offset(pitch_util));
   }
 
   return(0);
@@ -1213,6 +1459,15 @@ ags_common_pitch_util_set_offset(gpointer pitch_util,
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     ags_fluid_interpolate_7th_order_util_set_offset(pitch_util,
 						    offset);
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    ags_pitch_2x_alias_util_set_offset(pitch_util,
+				       offset);
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    ags_pitch_4x_alias_util_set_offset(pitch_util,
+				       offset);
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    ags_pitch_16x_alias_util_set_offset(pitch_util,
+					offset);
   }
 }
 
@@ -1243,6 +1498,12 @@ ags_common_pitch_util_get_note_256th_mode(gpointer pitch_util,
     return(ags_fluid_interpolate_4th_order_util_get_note_256th_mode(pitch_util));
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     return(ags_fluid_interpolate_7th_order_util_get_note_256th_mode(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    return(ags_pitch_2x_alias_util_get_note_256th_mode(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    return(ags_pitch_4x_alias_util_get_note_256th_mode(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    return(ags_pitch_16x_alias_util_get_note_256th_mode(pitch_util));
   }
 
   return(FALSE);
@@ -1281,6 +1542,15 @@ ags_common_pitch_util_set_note_256th_mode(gpointer pitch_util,
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     ags_fluid_interpolate_7th_order_util_set_note_256th_mode(pitch_util,
 							     note_256th_mode);
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    ags_pitch_2x_alias_util_set_note_256th_mode(pitch_util,
+						note_256th_mode);
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    ags_pitch_4x_alias_util_set_note_256th_mode(pitch_util,
+						note_256th_mode);
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    ags_pitch_16x_alias_util_set_note_256th_mode(pitch_util,
+						 note_256th_mode);
   }
 }
 
@@ -1311,6 +1581,12 @@ ags_common_pitch_util_get_offset_256th(gpointer pitch_util,
     return(ags_fluid_interpolate_4th_order_util_get_offset_256th(pitch_util));
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     return(ags_fluid_interpolate_7th_order_util_get_offset_256th(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    return(ags_pitch_2x_alias_util_get_offset_256th(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    return(ags_pitch_4x_alias_util_get_offset_256th(pitch_util));
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    return(ags_pitch_16x_alias_util_get_offset_256th(pitch_util));
   }
 
   return(0);
@@ -1349,6 +1625,15 @@ ags_common_pitch_util_set_offset_256th(gpointer pitch_util,
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     ags_fluid_interpolate_7th_order_util_set_offset_256th(pitch_util,
 							  offset_256th);
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    ags_pitch_2x_alias_util_set_offset_256th(pitch_util,
+					     offset_256th);
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    ags_pitch_4x_alias_util_set_offset_256th(pitch_util,
+					     offset_256th);
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    ags_pitch_16x_alias_util_set_offset_256th(pitch_util,
+					      offset_256th);
   }
 }
 
@@ -1377,5 +1662,11 @@ ags_common_pitch_util_pitch(gpointer pitch_util,
     ags_fluid_interpolate_4th_order_util_pitch(pitch_util);
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     ags_fluid_interpolate_7th_order_util_pitch(pitch_util);
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    ags_pitch_2x_alias_util_pitch(pitch_util);
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    ags_pitch_4x_alias_util_pitch(pitch_util);
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    ags_pitch_16x_alias_util_pitch(pitch_util);
   }
 }

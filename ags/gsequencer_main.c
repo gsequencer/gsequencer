@@ -593,18 +593,20 @@ main(int argc, char **argv)
     }else if(!strncmp(argv[i], "--menu-bar", 11)){
       force_menu_bar = TRUE;
     }else if(!strncmp(argv[i], "--filename", 11)){
-      if(strlen(argv[i + 1]) > 2 && argv[i + 1][0] == '\''){
-	filename = g_strndup(argv[i + 1] + 1,
-			     strlen(argv[i + 1]) - 2);
-      }else if(strlen(argv[i + 1]) > 2 && argv[i + 1][0] == '"'){
-	filename = g_strndup(argv[i + 1] + 1,
-			     strlen(argv[i + 1]) - 2);
-       }else{
-	filename = g_strdup(argv[i + 1]);
+      if(i + 1 < argc){
+	if(strlen(argv[i + 1]) > 2 && argv[i + 1][0] == '\''){
+	  filename = g_strndup(argv[i + 1] + 1,
+			       strlen(argv[i + 1]) - 2);
+	}else if(strlen(argv[i + 1]) > 2 && argv[i + 1][0] == '"'){
+	  filename = g_strndup(argv[i + 1] + 1,
+			       strlen(argv[i + 1]) - 2);
+	}else{
+	  filename = g_strdup(argv[i + 1]);
+	}
+      
+	i++;
       }
       
-      i++;
-
       if(g_file_test(filename,
 		     G_FILE_TEST_EXISTS) &&
 	 g_file_test(filename,

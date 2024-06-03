@@ -447,6 +447,8 @@ ags_composite_toolbar_init(AgsCompositeToolbar *composite_toolbar)
   composite_toolbar->program_ramp_marker = (GtkPopover *) ags_ramp_marker_popover_new(window);
 
   composite_toolbar->snap_to_zoom = NULL;
+
+  composite_toolbar->trace_pointer = NULL;
 }
 
 AgsUUID*
@@ -1540,7 +1542,7 @@ ags_composite_toolbar_set_option(AgsCompositeToolbar *composite_toolbar, guint o
     sibling = gtk_widget_get_parent((GtkWidget *) composite_toolbar->beats_type);
   }
 
-  /* snap_to_zoom */
+  /* snap to zoom */
   if((AGS_COMPOSITE_TOOLBAR_HAS_SNAP_TO_ZOOM & option) != 0 &&
      composite_toolbar->snap_to_zoom == NULL){
     GtkBox *box;
@@ -1560,6 +1562,26 @@ ags_composite_toolbar_set_option(AgsCompositeToolbar *composite_toolbar, guint o
     sibling = gtk_widget_get_parent((GtkWidget *) composite_toolbar->snap_to_zoom);
   }
   
+  /* trace pointer */
+  if((AGS_COMPOSITE_TOOLBAR_HAS_TRACE_POINTER & option) != 0 &&
+     composite_toolbar->trace_pointer == NULL){
+    GtkBox *box;
+
+    box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				 0);
+    gtk_box_insert_child_after((GtkBox *) composite_toolbar,
+			       (GtkWidget *) box,
+			       sibling);
+
+    composite_toolbar->trace_pointer = (GtkSpinButton *) gtk_check_button_new_with_label(i18n("trace pointer"));
+    gtk_box_append(box,
+		   (GtkWidget *) composite_toolbar->trace_pointer);
+
+    sibling = (GtkWidget *) box;
+  }else if(composite_toolbar->trace_pointer != NULL){
+    sibling = gtk_widget_get_parent((GtkWidget *) composite_toolbar->trace_pointer);
+  }
+
   /* set option */
   composite_toolbar->option |= option;
 }
@@ -1627,6 +1649,14 @@ ags_composite_toolbar_unset_option(AgsCompositeToolbar *composite_toolbar, guint
 		   gtk_widget_get_parent((GtkWidget *) composite_toolbar->snap_to_zoom));
     
     composite_toolbar->snap_to_zoom = NULL;
+  }
+
+  if((AGS_COMPOSITE_TOOLBAR_HAS_TRACE_POINTER & option) != 0 &&
+     composite_toolbar->trace_pointer != NULL){
+    gtk_box_remove((GtkBox *) composite_toolbar,
+		   gtk_widget_get_parent((GtkWidget *) composite_toolbar->trace_pointer));
+    
+    composite_toolbar->trace_pointer = NULL;
   }
   
   /* unset option */
@@ -2338,7 +2368,8 @@ ags_composite_toolbar_scope_create_and_connect(AgsCompositeToolbar *composite_to
 				      AGS_COMPOSITE_TOOLBAR_HAS_BEATS |
 				      AGS_COMPOSITE_TOOLBAR_HAS_BEATS_TYPE |
 				      AGS_COMPOSITE_TOOLBAR_HAS_PORT |
-				      AGS_COMPOSITE_TOOLBAR_HAS_SNAP_TO_ZOOM));
+				      AGS_COMPOSITE_TOOLBAR_HAS_SNAP_TO_ZOOM |
+				      AGS_COMPOSITE_TOOLBAR_HAS_TRACE_POINTER));
 
   composite_toolbar->selected_tool = NULL;
   
@@ -2431,7 +2462,8 @@ ags_composite_toolbar_scope_create_and_connect(AgsCompositeToolbar *composite_to
 				       (AGS_COMPOSITE_TOOLBAR_HAS_MENU_TOOL |
 					AGS_COMPOSITE_TOOLBAR_HAS_ZOOM |
 					AGS_COMPOSITE_TOOLBAR_HAS_OPACITY |
-					AGS_COMPOSITE_TOOLBAR_HAS_SNAP_TO_ZOOM));
+					AGS_COMPOSITE_TOOLBAR_HAS_SNAP_TO_ZOOM |
+					AGS_COMPOSITE_TOOLBAR_HAS_TRACE_POINTER));
 
       /* connect */      
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
@@ -2454,11 +2486,17 @@ ags_composite_toolbar_scope_create_and_connect(AgsCompositeToolbar *composite_to
 
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
 					 (GObject *) composite_toolbar->snap_to_zoom);
+
+      ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
+					 (GObject *) composite_toolbar->trace_pointer);
       
       gtk_toggle_button_set_active(composite_toolbar->position,
 				   TRUE);
 
       gtk_check_button_set_active(composite_toolbar->snap_to_zoom,
+				  TRUE);
+
+      gtk_check_button_set_active(composite_toolbar->trace_pointer,
 				  TRUE);
       
       success = TRUE;

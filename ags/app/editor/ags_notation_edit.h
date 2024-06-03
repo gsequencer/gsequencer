@@ -138,6 +138,9 @@ struct _AgsNotationEdit
 
   guint note_offset_256th;
   guint note_offset_256th_absolute;
+
+  gdouble trace_position_x;
+  gdouble trace_position_y;
 };
 
 struct _AgsNotationEditClass
@@ -155,6 +158,7 @@ void ags_notation_edit_draw_position(AgsNotationEdit *notation_edit, cairo_t *cr
 
 void ags_notation_edit_draw_cursor(AgsNotationEdit *notation_edit, cairo_t *cr);
 void ags_notation_edit_draw_selection(AgsNotationEdit *notation_edit, cairo_t *cr);
+void ags_notation_edit_draw_trace(AgsNotationEdit *notation_edit, cairo_t *cr);
 
 void ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
 				 AgsNote *note,

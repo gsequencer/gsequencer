@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -153,6 +153,7 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   GtkBox *vbox;
   GtkBox *sfz_hbox;
   GtkBox *sfz_file_hbox;
+  GtkBox *sfz_synth_pitch_type_hbox;
   GtkBox *sfz_opcode_hbox;
   GtkBox *effect_vbox;
   GtkGrid *synth_grid;
@@ -187,6 +188,17 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   gchar *machine_name;
 
   gint position;
+
+  const gchar* pitch_type_strv[] = {
+    "fluid-interpolate-none",
+    "fluid-interpolate-linear",
+    "fluid-interpolate-4th-order",
+    "fluid-interpolate-7th-order",
+    "ags-pitch-2x-alias",    
+    "ags-pitch-4x-alias",    
+    "ags-pitch-16x-alias",
+    NULL,
+  };
 
   application_context = ags_application_context_get_instance();
   
@@ -538,6 +550,38 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
 		  (GtkWidget *) sfz_synth->synth_volume,
 		  3, 0,
 		  1, 1);
+
+  /* pitch type */
+  sfz_synth_pitch_type_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				    AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_widget_set_valign((GtkWidget *) sfz_synth_pitch_type_hbox,
+			GTK_ALIGN_START);  
+  gtk_widget_set_halign((GtkWidget *) sfz_synth_pitch_type_hbox,
+			GTK_ALIGN_START);
+
+  gtk_widget_set_hexpand((GtkWidget *) sfz_synth_pitch_type_hbox,
+			 FALSE);
+
+  gtk_grid_attach(synth_grid,
+		  (GtkWidget *) sfz_synth_pitch_type_hbox,
+		  0, 2,
+		  2, 1);
+  
+  label = (GtkLabel *) gtk_label_new(i18n("pitch type"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+
+  gtk_box_append(sfz_synth_pitch_type_hbox,
+		 (GtkWidget *) label);
+
+  sfz_synth->synth_pitch_type = (GtkDropDown *) gtk_drop_down_new_from_strings(pitch_type_strv);
+
+  gtk_drop_down_set_selected(sfz_synth->synth_pitch_type,
+			     2);
+
+  gtk_box_append(sfz_synth_pitch_type_hbox,
+		 (GtkWidget *) sfz_synth->synth_pitch_type);
 
   /* chorus grid */
   chorus_grid = (GtkGrid *) gtk_grid_new();
@@ -1561,7 +1605,7 @@ ags_sfz_synth_connect(AgsConnectable *connectable)
 {
   AgsSFZSynth *sfz_synth;
   
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -1575,6 +1619,9 @@ ags_sfz_synth_connect(AgsConnectable *connectable)
 
   g_signal_connect((GObject *) sfz_synth->open, "clicked",
 		   G_CALLBACK(ags_sfz_synth_open_clicked_callback), (gpointer) sfz_synth);
+
+  g_signal_connect((GObject *) sfz_synth->synth_pitch_type, "notify::activate",
+		   G_CALLBACK(ags_sfz_synth_synth_pitch_type_callback), (gpointer) sfz_synth);
 
   g_signal_connect_after(sfz_synth->synth_octave, "value-changed",
 			 G_CALLBACK(ags_sfz_synth_synth_octave_callback), sfz_synth);
@@ -1687,7 +1734,7 @@ ags_sfz_synth_disconnect(AgsConnectable *connectable)
 {
   AgsSFZSynth *sfz_synth;
 
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -1705,6 +1752,12 @@ ags_sfz_synth_disconnect(AgsConnectable *connectable)
   g_object_disconnect((GObject *) sfz_synth->open,
 		      "any_signal::clicked",
 		      G_CALLBACK(ags_sfz_synth_open_clicked_callback),
+		      (gpointer) sfz_synth,
+		      NULL);
+
+  g_object_disconnect((GObject *) sfz_synth->synth_pitch_type,
+		      "any_signal::notify::selected",
+		      G_CALLBACK(ags_sfz_synth_synth_pitch_type_callback),
 		      (gpointer) sfz_synth,
 		      NULL);
 

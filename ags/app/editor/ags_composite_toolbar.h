@@ -83,6 +83,7 @@ typedef enum{
   AGS_COMPOSITE_TOOLBAR_HAS_BEATS          = 1 <<  4,
   AGS_COMPOSITE_TOOLBAR_HAS_BEATS_TYPE     = 1 <<  5,
   AGS_COMPOSITE_TOOLBAR_HAS_SNAP_TO_ZOOM   = 1 <<  6,
+  AGS_COMPOSITE_TOOLBAR_HAS_TRACE_POINTER  = 1 <<  7,
 }AgsCompositeToolbarOption;
 
 typedef enum{
@@ -195,6 +196,7 @@ struct _AgsCompositeToolbar
   GtkPopover *program_ramp_marker;
 
   GtkCheckButton *snap_to_zoom;
+  GtkCheckButton *trace_pointer;
 };
 
 struct _AgsCompositeToolbarClass

@@ -909,8 +909,12 @@ ags_dssi_bridge_load(AgsDssiBridge *dssi_bridge)
 						  dssi_bridge->filename,
 						  dssi_bridge->effect);
 
+  if(dssi_plugin == NULL){
+    return;
+  }
+  
   plugin_so = AGS_BASE_PLUGIN(dssi_plugin)->plugin_so;
-
+  
   /*  */
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(dssi_bridge->program))));
   

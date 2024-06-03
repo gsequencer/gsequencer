@@ -262,6 +262,38 @@ ags_sf2_synth_open_dialog_response_callback(AgsFileDialog *file_dialog, gint res
 }
 
 void
+ags_sf2_synth_synth_pitch_type_callback(GObject *gobject,
+					GParamSpec *pspec,
+					AgsSF2Synth *sf2_synth)
+{
+  AgsFxSF2SynthAudio *fx_sf2_synth_audio;
+    
+  guint selected;
+
+  GValue value = G_VALUE_INIT;
+  
+  selected = gtk_drop_down_get_selected(gobject);
+
+  g_value_init(&value,
+	       G_TYPE_FLOAT);
+  
+  g_value_set_float(&value,
+		    (gfloat) selected);
+
+  /* play */
+  fx_sf2_synth_audio = ags_recall_container_get_recall_audio(sf2_synth->sf2_synth_play_container);
+
+  ags_port_safe_write(fx_sf2_synth_audio->synth_pitch_type,
+		      &value);
+
+  /* recall */
+  fx_sf2_synth_audio = ags_recall_container_get_recall_audio(sf2_synth->sf2_synth_recall_container);
+  
+  ags_port_safe_write(fx_sf2_synth_audio->synth_pitch_type,
+		      &value);
+}
+
+void
 ags_sf2_synth_bank_tree_view_callback(GtkTreeView *tree_view,
 				      GtkTreePath *path,
 				      GtkTreeViewColumn *column,
