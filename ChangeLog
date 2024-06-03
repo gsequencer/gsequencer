@@ -1,3 +1,10 @@
+ags (6.16.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_wave_copy_selection_as_base64()
+	* implemented ags_wave_cut_selection_as_base64()
+	* fixed composite toolbar menu tool popover parent widget to be a GtkBox
+
 ags (6.15.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
