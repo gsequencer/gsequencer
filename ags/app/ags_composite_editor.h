@@ -51,6 +51,8 @@ G_BEGIN_DECLS
 
 #define AGS_COMPOSITE_EDITOR_DEFAULT_PANED_POSITION (300)
 
+#define AGS_COMPOSITE_EDITOR_CLIPBOARD_VERSION "6.16.0"
+
 typedef struct _AgsCompositeEditor AgsCompositeEditor;
 typedef struct _AgsCompositeEditorClass AgsCompositeEditorClass;
 
