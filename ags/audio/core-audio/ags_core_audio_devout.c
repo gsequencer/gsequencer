@@ -2047,6 +2047,8 @@ ags_core_audio_devout_port_play(AgsSoundcard *soundcard,
   AgsApplicationContext *application_context;
 
   GList *task;
+
+  gboolean initial_run;
   guint word_size;
   gboolean use_cache;
   gboolean core_audio_client_activated;
@@ -2073,7 +2075,9 @@ ags_core_audio_devout_port_play(AgsSoundcard *soundcard,
   callback_mutex = &(core_audio_devout->callback_mutex);
   callback_finish_mutex = &(core_audio_devout->callback_finish_mutex);
 
-  /* do playback */  
+  /* do playback */    
+  initial_run = ((AGS_CORE_AUDIO_DEVOUT_START_PLAY & (core_audio_devout->flags)) != 0) ? TRUE: FALSE;
+
   core_audio_devout->flags &= (~AGS_CORE_AUDIO_DEVOUT_START_PLAY);
 
   if((AGS_CORE_AUDIO_DEVOUT_INITIALIZED & (core_audio_devout->flags)) == 0){
@@ -2306,10 +2310,12 @@ ags_core_audio_devout_port_play(AgsSoundcard *soundcard,
   task = NULL;      
   
   /* tic soundcard */
-  tic_device = ags_tic_device_new((GObject *) core_audio_devout);
-  task = g_list_append(task,
-		       tic_device);
-
+  if(!initial_run){
+    tic_device = ags_tic_device_new((GObject *) core_audio_devout);
+    task = g_list_append(task,
+			 tic_device);
+  }
+  
   /* reset - clear buffer */
   clear_buffer = ags_clear_buffer_new((GObject *) core_audio_devout);
   task = g_list_append(task,

@@ -615,16 +615,18 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 	g_rec_mutex_lock(source_stream_mutex);
 	g_rec_mutex_lock(destination_stream_mutex);
 
-	ags_audio_buffer_util_copy_buffer_to_buffer(stream_destination->data, 1, current_attack,
-						    buffer_source, 1, 0,
-						    destination_buffer_size - current_attack, copy_mode);
+	if(current_attack < destination_buffer_size){
+	  ags_audio_buffer_util_copy_buffer_to_buffer(stream_destination->data, 1, current_attack,
+						      buffer_source, 1, 0,
+						      destination_buffer_size - current_attack, copy_mode);
 
-	if(current_attack > 0){
-	  ags_audio_buffer_util_copy_buffer_to_buffer(stream_destination_next->data, 1, 0,
-						      buffer_source, 1, destination_buffer_size - current_attack,
-						      current_attack, copy_mode);
+	  if(current_attack > 0){
+	    ags_audio_buffer_util_copy_buffer_to_buffer(stream_destination_next->data, 1, 0,
+							buffer_source, 1, destination_buffer_size - current_attack,
+							current_attack, copy_mode);
+	  }
 	}
-
+	
 	g_rec_mutex_unlock(destination_stream_mutex);
 	g_rec_mutex_unlock(source_stream_mutex);
       }

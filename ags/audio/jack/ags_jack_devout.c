@@ -2022,6 +2022,7 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
 
   GList *task;
 
+  gboolean initial_run;
   guint word_size;
   gboolean jack_client_activated;
   
@@ -2050,6 +2051,8 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
   /* do playback */
   g_rec_mutex_lock(jack_devout_mutex);
   
+  initial_run = ((AGS_JACK_DEVOUT_START_PLAY & (jack_devout->flags)) != 0) ? TRUE: FALSE;
+
   jack_devout->app_buffer_mode = AGS_JACK_DEVOUT_APP_BUFFER_0;
   jack_devout->flags &= (~AGS_JACK_DEVOUT_START_PLAY);
   
@@ -2153,10 +2156,12 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
   task = NULL;
   
   /* tic soundcard */
-  tic_device = ags_tic_device_new((GObject *) jack_devout);
-  task = g_list_append(task,
-		       tic_device);
-
+  if(!initial_run){
+    tic_device = ags_tic_device_new((GObject *) jack_devout);
+    task = g_list_append(task,
+			 tic_device);
+  }
+  
   /* reset - clear buffer */
   clear_buffer = ags_clear_buffer_new((GObject *) jack_devout);
   task = g_list_append(task,

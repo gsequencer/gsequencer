@@ -2080,6 +2080,7 @@ ags_pulse_devout_port_play(AgsSoundcard *soundcard,
       
   GList *task;
 
+  gboolean initial_run;
   guint word_size;
   gboolean use_cache;
   gboolean pulse_client_activated;
@@ -2107,7 +2108,9 @@ ags_pulse_devout_port_play(AgsSoundcard *soundcard,
   callback_mutex = &(pulse_devout->callback_mutex);
   callback_finish_mutex = &(pulse_devout->callback_finish_mutex);
 
-  /* do playback */  
+  /* do playback */
+  initial_run = ((AGS_PULSE_DEVOUT_START_PLAY & (pulse_devout->flags)) != 0) ? TRUE: FALSE;
+  
   pulse_devout->flags &= (~AGS_PULSE_DEVOUT_START_PLAY);
   
   if((AGS_PULSE_DEVOUT_INITIALIZED & (pulse_devout->flags)) == 0){
@@ -2347,10 +2350,12 @@ ags_pulse_devout_port_play(AgsSoundcard *soundcard,
   task = NULL;
   
   /* tic soundcard */
-  tic_device = ags_tic_device_new((GObject *) pulse_devout);
-  task = g_list_append(task,
-		       tic_device);
-
+  if(!initial_run){
+    tic_device = ags_tic_device_new((GObject *) pulse_devout);
+    task = g_list_append(task,
+			 tic_device);
+  }
+  
   /* reset - clear buffer */
   clear_buffer = ags_clear_buffer_new((GObject *) pulse_devout);
   task = g_list_append(task,
