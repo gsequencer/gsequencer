@@ -1991,6 +1991,8 @@ ags_jack_devout_port_init(AgsSoundcard *soundcard,
   jack_devout->note_256th_attack_of_16th_pulse = 0;
   jack_devout->note_256th_attack_of_16th_pulse_position = 0;
 
+  jack_devout->note_256th_delay_counter = 0.0;
+
   jack_devout->flags |= (AGS_JACK_DEVOUT_INITIALIZED |
 			 AGS_JACK_DEVOUT_START_PLAY |
 			 AGS_JACK_DEVOUT_PLAY);
@@ -2401,10 +2403,14 @@ ags_jack_devout_tic(AgsSoundcard *soundcard)
 						 &next_note_256th_attack_upper);
 
   //  g_message("tic -> next 256th [%d-%d]", next_note_256th_offset_lower, next_note_256th_offset_upper);
+
+  jack_devout->note_256th_delay_counter += 1.0;    
   
-  if((16 * (note_offset + 1) >= next_note_256th_offset_lower &&
-      16 * (note_offset + 1) <= next_note_256th_offset_upper) ||
-     (next_note_256th_offset_lower + 64 < note_256th_offset_lower)){
+  if((note_256th_delay <= 1.0 ||
+      jack_devout->note_256th_delay_counter >= note_256th_delay) &&
+     ((16 * (note_offset + 1) >= next_note_256th_offset_lower &&
+       16 * (note_offset + 1) <= next_note_256th_offset_upper) ||
+      (next_note_256th_offset_lower + 64 < note_256th_offset_lower))){
     //    g_message("16th pulse: %d (delay = %f)", note_offset + 1, delay);
     
     if(do_loop &&
@@ -2463,6 +2469,8 @@ ags_jack_devout_tic(AgsSoundcard *soundcard)
       jack_devout->delay_counter = 0.0;
 
       jack_devout->tact_counter = 0.0;
+
+      jack_devout->note_256th_delay_counter = 0.0;
     }else{    
       jack_devout->tic_counter += 1;
 
@@ -2474,6 +2482,8 @@ ags_jack_devout_tic(AgsSoundcard *soundcard)
       jack_devout->delay_counter = 0.0;
 
       jack_devout->tact_counter += 1.0;
+
+      jack_devout->note_256th_delay_counter = 0.0;
     }
     
     g_rec_mutex_unlock(jack_devout_mutex);
@@ -2490,8 +2500,17 @@ ags_jack_devout_tic(AgsSoundcard *soundcard)
   }else{
     g_rec_mutex_lock(jack_devout_mutex);
     
-    jack_devout->note_256th_offset = next_note_256th_offset_lower;
-    jack_devout->note_256th_offset_last = next_note_256th_offset_upper;
+    if(note_256th_delay <= 1.0){
+      jack_devout->note_256th_offset = next_note_256th_offset_lower;
+      jack_devout->note_256th_offset_last = next_note_256th_offset_upper;
+    }else{
+      if(jack_devout->note_256th_delay_counter >= note_256th_delay){
+	jack_devout->note_256th_offset = next_note_256th_offset_lower;
+	jack_devout->note_256th_offset_last = next_note_256th_offset_upper;
+
+	jack_devout->note_256th_delay_counter -= note_256th_delay;
+      }
+    }
 
     jack_devout->delay_counter += 1.0;
 
