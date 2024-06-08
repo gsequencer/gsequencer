@@ -2175,6 +2175,8 @@ ags_oss_devin_device_record_init(AgsSoundcard *soundcard,
 
   oss_devin->note_256th_attack_of_16th_pulse = 0;
   oss_devin->note_256th_attack_of_16th_pulse_position = 0;
+
+  oss_devin->note_256th_delay_counter = 0.0;
   
   g_rec_mutex_unlock(oss_devin_mutex);
 }
@@ -2584,10 +2586,14 @@ ags_oss_devin_tic(AgsSoundcard *soundcard)
 						 &next_note_256th_attack_upper);
 
   //  g_message("tic -> next 256th [%d-%d]", next_note_256th_offset_lower, next_note_256th_offset_upper);
+
+  oss_devin->note_256th_delay_counter += 1.0;    
   
-  if((16 * (note_offset + 1) >= next_note_256th_offset_lower &&
-      16 * (note_offset + 1) <= next_note_256th_offset_upper) ||
-     (next_note_256th_offset_lower + 64 < note_256th_offset_lower)){
+  if((note_256th_delay <= 1.0 ||
+      oss_devin->note_256th_delay_counter >= note_256th_delay) &&
+     ((16 * (note_offset + 1) >= next_note_256th_offset_lower &&
+       16 * (note_offset + 1) <= next_note_256th_offset_upper) ||
+      (next_note_256th_offset_lower + 64 < note_256th_offset_lower))){
     //    g_message("16th pulse: %d (delay = %f)", note_offset + 1, delay);
     
     if(do_loop &&
@@ -2646,6 +2652,8 @@ ags_oss_devin_tic(AgsSoundcard *soundcard)
       oss_devin->delay_counter = 0.0;
 
       oss_devin->tact_counter = 0.0;
+
+      oss_devin->note_256th_delay_counter = 0.0;
     }else{    
       oss_devin->tic_counter += 1;
 
@@ -2657,6 +2665,8 @@ ags_oss_devin_tic(AgsSoundcard *soundcard)
       oss_devin->delay_counter = 0.0;
 
       oss_devin->tact_counter += 1.0;
+
+      oss_devin->note_256th_delay_counter = 0.0;
     }
     
     g_rec_mutex_unlock(oss_devin_mutex);
@@ -2673,8 +2683,17 @@ ags_oss_devin_tic(AgsSoundcard *soundcard)
   }else{
     g_rec_mutex_lock(oss_devin_mutex);
     
-    oss_devin->note_256th_offset = next_note_256th_offset_lower;
-    oss_devin->note_256th_offset_last = next_note_256th_offset_upper;
+    if(note_256th_delay <= 1.0){
+      oss_devin->note_256th_offset = next_note_256th_offset_lower;
+      oss_devin->note_256th_offset_last = next_note_256th_offset_upper;
+    }else{
+      if(oss_devin->note_256th_delay_counter >= note_256th_delay){
+	oss_devin->note_256th_offset = next_note_256th_offset_lower;
+	oss_devin->note_256th_offset_last = next_note_256th_offset_upper;
+
+	oss_devin->note_256th_delay_counter -= note_256th_delay;
+      }
+    }
 
     oss_devin->delay_counter += 1.0;
 
