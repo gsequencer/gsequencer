@@ -1553,6 +1553,12 @@ ags_fx_notation_audio_processor_real_play(AgsFxNotationAudioProcessor *fx_notati
 				      &note_256th_offset_lower,
 				      &note_256th_offset_upper);
 
+  //  g_message("%d - %d", note_256th_offset_lower, note_256th_offset_upper);
+  
+  if(note_256th_offset_lower == 0){
+    has_16th_pulse = TRUE;
+  }
+  
   if(has_16th_pulse &&
      note_offset % 4 == 0){
     g_rec_mutex_lock(audio_mutex);
@@ -1625,8 +1631,8 @@ ags_fx_notation_audio_processor_real_play(AgsFxNotationAudioProcessor *fx_notati
 
     if(x0_256th >= note_256th_offset_lower &&
        x0_256th <= note_256th_offset_upper){
-#if 0
       g_message("x0_256th %d_%d -> %d, [%d - %d]", x0_256th, x1_256th, note_offset, note_256th_offset_lower, note_256th_offset_upper);
+#if 0
 #endif
       
       ags_fx_notation_audio_processor_key_on(fx_notation_audio_processor,

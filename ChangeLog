@@ -2,6 +2,9 @@ ags (6.16.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed low-latency counter bug
+	* improved lost first note with pulseaudio, no tic during initial run
+	* improved lost first note with JACK, no tic during initial run
+	* improved lost first note with CoreAudio, no tic during initial run
 
 ags (6.16.0)
 
