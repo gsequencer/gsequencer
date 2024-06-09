@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-06-08 17:29+0200\n"
+"POT-Creation-Date: 2024-06-09 19:09+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -71,6 +71,14 @@ msgstr ""
 
 #: ags/app/ags_server_preferences.c:270
 msgid "password"
+msgstr ""
+
+#: ags/app/ags_export_window_callbacks.c:194
+msgid "Replace existing file(s)?"
+msgstr ""
+
+#: ags/app/ags_export_window_callbacks.c:197
+msgid "Following files exist, do you want to remove in order to export?"
 msgstr ""
 
 #: ags/app/ags_vst3_browser.c:194 ags/app/ags_lv2_browser.c:192
