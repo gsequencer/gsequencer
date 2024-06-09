@@ -33,7 +33,7 @@ G_BEGIN_DECLS
 #define AGS_TYPE_PITCH_2X_ALIAS_UTIL         (ags_pitch_2x_alias_util_get_type())
 #define AGS_PITCH_2X_ALIAS_UTIL(ptr) ((AgsPitch2xAliasUtil *)(ptr))
 
-#define AGS_PITCH_2X_ALIAS_UTIL_DEFAULT_MAX_BUFFER_SIZE (65536)
+#define AGS_PITCH_2X_ALIAS_UTIL_DEFAULT_MAX_BUFFER_SIZE (64 * 65536)
 
 typedef struct _AgsPitch2xAliasUtil AgsPitch2xAliasUtil;
 
