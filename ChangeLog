@@ -1,3 +1,8 @@
+ags (6.16.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential buffer overflow with ags_pitch_*_alias_* utility functions
+
 ags (6.16.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
