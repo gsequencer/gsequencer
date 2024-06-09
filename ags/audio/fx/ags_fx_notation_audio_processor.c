@@ -1631,8 +1631,8 @@ ags_fx_notation_audio_processor_real_play(AgsFxNotationAudioProcessor *fx_notati
 
     if(x0_256th >= note_256th_offset_lower &&
        x0_256th <= note_256th_offset_upper){
-      g_message("x0_256th %d_%d -> %d, [%d - %d]", x0_256th, x1_256th, note_offset, note_256th_offset_lower, note_256th_offset_upper);
 #if 0
+      g_message("x0_256th %d_%d -> %d, [%d - %d]", x0_256th, x1_256th, note_offset, note_256th_offset_lower, note_256th_offset_upper);
 #endif
       
       ags_fx_notation_audio_processor_key_on(fx_notation_audio_processor,
