@@ -5666,6 +5666,8 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 
   gint midi_controller[31];
 		   
+  gint pitch_bend[2];
+
   guint buffer_length;
   
   GRecMutex *recall_mutex;
@@ -5821,7 +5823,21 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 	    midi_iter += 3;
 	  }else if(ags_midi_util_is_pitch_bend(recall->midi_util,
 					       midi_iter)){
-	    /* change parameter */
+	    gint channel;
+	    gint pitch;
+	    gint transmitter;
+
+	    /* pitch bend */
+	    ags_midi_util_get_pitch_bend(recall->midi_util,
+					 midi_iter,      
+					 &channel, &pitch, &transmitter);
+	    
+	    /* MSB */
+	    pitch_bend[0] = 0x7f & pitch;
+
+	    /* LSB */
+	    pitch_bend[1] = 0x7f & transmitter;
+
 	    //TODO:JK: implement me	  
 	  
 	    midi_iter += 3;
