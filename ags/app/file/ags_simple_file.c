@@ -5277,6 +5277,45 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   }
 
   str = xmlGetProp(node,
+		   "pitch-type");
+
+  if(str != NULL){
+    gchar **iter;
+    
+    guint selected;
+    guint i;
+    
+    const gchar* pitch_type_strv[] = {
+      "fluid-interpolate-none",
+      "fluid-interpolate-linear",
+      "fluid-interpolate-4th-order",
+      "fluid-interpolate-7th-order",
+      "ags-pitch-2x-alias",    
+      "ags-pitch-4x-alias",    
+      "ags-pitch-16x-alias",
+      NULL,
+    };
+
+    iter = pitch_type_strv;
+    
+    selected = 2;
+
+    for(i = 0; iter[0] != NULL; i++, iter++){
+      if(!g_strcmp0(str,
+		    iter[0])){
+	selected = i;
+	
+	break;
+      }
+    }
+    
+    gtk_drop_down_set_selected(sfz_synth->synth_pitch_type,
+			       selected);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
 		   "synth-volume");
 
   if(str != NULL){
@@ -6059,6 +6098,45 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
 
     ags_dial_set_value(sf2_synth->synth_key,
 		       key);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "pitch-type");
+
+  if(str != NULL){
+    gchar **iter;
+    
+    guint selected;
+    guint i;
+    
+    const gchar* pitch_type_strv[] = {
+      "fluid-interpolate-none",
+      "fluid-interpolate-linear",
+      "fluid-interpolate-4th-order",
+      "fluid-interpolate-7th-order",
+      "ags-pitch-2x-alias",    
+      "ags-pitch-4x-alias",    
+      "ags-pitch-16x-alias",
+      NULL,
+    };
+
+    iter = pitch_type_strv;
+    
+    selected = 2;
+
+    for(i = 0; iter[0] != NULL; i++, iter++){
+      if(!g_strcmp0(str,
+		    iter[0])){
+	selected = i;
+	
+	break;
+      }
+    }
+    
+    gtk_drop_down_set_selected(sf2_synth->synth_pitch_type,
+			       selected);
       
     xmlFree(str);
   }
@@ -8807,7 +8885,7 @@ ags_simple_file_read_line_launch(AgsFileLaunch *file_launch,
   
   xmlNode *child;
 
-  GList *xpath_result;
+  GList *start_xpath_result, *xpath_result;
 
   xmlChar *str;
   
@@ -8924,11 +9002,14 @@ ags_simple_file_read_line_launch(AgsFileLaunch *file_launch,
     
     str = xmlGetProp(file_launch->node,
 		     "link");
-    xpath_result = NULL;
+
+    xpath_result =
+      start_xpath_result = NULL;
     
     if(str != NULL){
-      xpath_result = ags_simple_file_find_id_ref_by_xpath((AgsSimpleFile *) file_launch->file,
-							  str);
+      xpath_result =
+	start_xpath_result = ags_simple_file_find_id_ref_by_xpath((AgsSimpleFile *) file_launch->file,
+								  str);
       xmlFree(str);
     }
     
@@ -8975,6 +9056,8 @@ ags_simple_file_read_line_launch(AgsFileLaunch *file_launch,
       
       xpath_result = xpath_result->next;
     }
+
+    g_list_free(start_xpath_result);
   }
   
   /* is-grouped */
@@ -9039,7 +9122,7 @@ ags_simple_file_read_channel_line_launch(AgsFileLaunch *file_launch,
   
   xmlNode *child;
 
-  GList *xpath_result;
+  GList *start_xpath_result, *xpath_result;
 
   xmlChar *str;
 
@@ -9114,11 +9197,14 @@ ags_simple_file_read_channel_line_launch(AgsFileLaunch *file_launch,
     
     str = xmlGetProp(file_launch->node,
 		     "link");
-    xpath_result = NULL;
+
+    xpath_result =
+      start_xpath_result = NULL;
     
     if(str != NULL){
-      xpath_result = ags_simple_file_find_id_ref_by_xpath((AgsSimpleFile *) file_launch->file,
-							  str);
+      xpath_result =
+	start_xpath_result = ags_simple_file_find_id_ref_by_xpath((AgsSimpleFile *) file_launch->file,
+								  str);
       xmlFree(str);
     }
     
@@ -9165,6 +9251,8 @@ ags_simple_file_read_channel_line_launch(AgsFileLaunch *file_launch,
       
       xpath_result = xpath_result->next;
     }
+    
+    g_list_free(start_xpath_result);
   }
 }
 
@@ -10217,9 +10305,20 @@ void
 ags_simple_file_read_composite_editor_launch(AgsFileLaunch *file_launch,
 					     AgsCompositeEditor *composite_editor)
 {
+  AgsWindow *window;
+  
+  AgsApplicationContext *application_context;
+  
   xmlNode *child;
+
+  GList *start_machine, *machine;
+  GList *start_list, *list;
   
   xmlChar *str;
+
+  application_context = ags_application_context_get_instance();
+
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
   str = xmlGetProp(file_launch->node,
 		   "zoom");
@@ -10259,7 +10358,6 @@ ags_simple_file_read_composite_editor_launch(AgsFileLaunch *file_launch,
       if(!xmlStrncmp(child->name,
 		     (xmlChar *) "ags-sf-property-list",
 		     21)){
-	GList *start_list, *list;
 	GList *start_property, *property;
 
 	start_property = NULL;
@@ -10272,12 +10370,9 @@ ags_simple_file_read_composite_editor_launch(AgsFileLaunch *file_launch,
 	while(property != NULL){
   	  if(!g_strcmp0(((GParameter *) property->data)->name,
 			"machine")){
-	    AgsWindow *window;
 	    AgsMachine *current_machine;
 
-	    GList *file_id_ref;
-	    GList *start_machine, *machine;
-	    GList *start_list, *list;
+	    GList *start_file_id_ref, *file_id_ref;
 
 	    gint position;
 	    gboolean success;
@@ -10285,15 +10380,13 @@ ags_simple_file_read_composite_editor_launch(AgsFileLaunch *file_launch,
 	    str = g_value_get_string(&(((GParameter *) property->data)->value));
 
 	    if(str != NULL){
-	      file_id_ref = ags_simple_file_find_id_ref_by_xpath((AgsSimpleFile *) file_launch->file,
-								 str);
+	      file_id_ref =
+		start_file_id_ref = ags_simple_file_find_id_ref_by_xpath((AgsSimpleFile *) file_launch->file,
+									 str);
 
 	      if(file_id_ref != NULL &&
 		 file_id_ref->data != NULL &&
 		 AGS_FILE_ID_REF(file_id_ref->data)->ref != NULL){
-		window = gtk_widget_get_ancestor(composite_editor,
-						 AGS_TYPE_WINDOW);
-
 		current_machine = AGS_FILE_ID_REF(file_id_ref->data)->ref;
 
 		machine = 
@@ -10336,7 +10429,10 @@ ags_simple_file_read_composite_editor_launch(AgsFileLaunch *file_launch,
 						  current_machine);
 		
 		g_list_free(start_list);
+		g_list_free(start_machine);
 	      }
+
+	      g_list_free(start_file_id_ref);
 	    }
 	  }else{
 	    g_object_set_property((GObject *) composite_editor,
@@ -10354,6 +10450,18 @@ ags_simple_file_read_composite_editor_launch(AgsFileLaunch *file_launch,
 
     child = child->next;
   }
+
+  start_list = ags_machine_selector_get_machine_radio_button(window->composite_editor->machine_selector);
+
+  if(start_list != NULL){
+    gtk_check_button_set_active(start_list->data,
+				FALSE);
+    
+    gtk_check_button_set_active(start_list->data,
+				TRUE);
+  }
+  
+  g_list_free(start_list);
 }
 
 void
@@ -14117,6 +14225,17 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
   }else if(AGS_IS_SFZ_SYNTH(machine)){
     AgsSFZSynth *sfz_synth;
     
+    const gchar* pitch_type_strv[] = {
+      "fluid-interpolate-none",
+      "fluid-interpolate-linear",
+      "fluid-interpolate-4th-order",
+      "fluid-interpolate-7th-order",
+      "ags-pitch-2x-alias",    
+      "ags-pitch-4x-alias",    
+      "ags-pitch-16x-alias",
+      NULL,
+    };
+
     sfz_synth = (AgsSFZSynth *) machine;
 
     if(sfz_synth->audio_container != NULL){
@@ -14143,6 +14262,12 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 	       str);
 
     g_free(str);    
+
+    str = pitch_type_strv[gtk_drop_down_get_selected(sfz_synth->synth_pitch_type)];
+    
+    xmlNewProp(node,
+	       "pitch-type",
+	       str);
 
     str = g_strdup_printf("%lf",
 			  ags_dial_get_value(sfz_synth->synth_volume));
@@ -14548,6 +14673,17 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 
     gint bank, program;
     
+    const gchar* pitch_type_strv[] = {
+      "fluid-interpolate-none",
+      "fluid-interpolate-linear",
+      "fluid-interpolate-4th-order",
+      "fluid-interpolate-7th-order",
+      "ags-pitch-2x-alias",    
+      "ags-pitch-4x-alias",    
+      "ags-pitch-16x-alias",
+      NULL,
+    };
+
     sf2_synth = (AgsSF2Synth *) machine;
 
     if(sf2_synth->audio_container != NULL){
@@ -14592,6 +14728,12 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 	       str);
 
     g_free(str);    
+
+    str = pitch_type_strv[gtk_drop_down_get_selected(sf2_synth->synth_pitch_type)];
+    
+    xmlNewProp(node,
+	       "pitch-type",
+	       str);
 
     str = g_strdup_printf("%lf",
 			  ags_dial_get_value(sf2_synth->synth_volume));

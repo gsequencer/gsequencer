@@ -276,13 +276,9 @@ ags_quit_dialog_fast_export(AgsQuitDialog *quit_dialog,
   }
 
   if(AGS_IS_AUDIOREC(machine)){
-    GtkEntryBuffer *entry_buffer;
-    
     gchar *filename;
 
-    entry_buffer = gtk_entry_get_buffer(AGS_AUDIOREC(machine)->filename);
-
-    filename = gtk_entry_buffer_get_text(entry_buffer);
+    filename = g_strdup(gtk_editable_get_text(GTK_EDITABLE(AGS_AUDIOREC(machine)->filename)));
   
     ags_audiorec_fast_export((AgsAudiorec *) machine,
 			     filename,

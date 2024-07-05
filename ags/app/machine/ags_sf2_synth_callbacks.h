@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,6 +36,10 @@ G_BEGIN_DECLS
 void ags_sf2_synth_destroy_callback(GtkWidget *widget, AgsSF2Synth *sf2_synth);
 
 void ags_sf2_synth_open_clicked_callback(GtkWidget *widget, AgsSF2Synth *sf2_synth);
+
+void ags_sf2_synth_synth_pitch_type_callback(GObject *gobject,
+					     GParamSpec *pspec,
+					     AgsSF2Synth *sf2_synth);
 
 void ags_sf2_synth_bank_tree_view_callback(GtkTreeView *tree_view,
 					   GtkTreePath *path,

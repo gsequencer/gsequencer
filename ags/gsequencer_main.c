@@ -56,6 +56,7 @@
 #include <glib.h>
 
 #if defined(AGS_OSX_DMG_ENV)
+#include <Cocoa/Cocoa.h>
 #include <Foundation/Foundation.h>
 
 #include <uuid/uuid.h>
@@ -329,10 +330,6 @@ main(int argc, char **argv)
   putenv(g_strdup_printf("GTK_PATH=%s", app_dir));
   putenv(g_strdup_printf("GTK_IM_MODULE_FILE=%s\\lib\\gtk-3.0\\3.0.0\\immodules.cache", app_dir));
 
-  if(getenv("GTK_THEME") == NULL){
-    putenv(g_strdup("GTK_THEME=BlueMenta"));
-  }
-
   putenv(g_strdup_printf("GST_PLUGIN_SYSTEM_PATH=%s\\lib\\gstreamer-1.0", app_dir));
   putenv(g_strdup_printf("GST_PLUGIN_SCANNER=%s\\libexec\\gstreamer-1.0\\gst-plugin-scanner.exe", app_dir));
 
@@ -388,10 +385,6 @@ main(int argc, char **argv)
   putenv(g_strdup_printf("GTK_PATH=%s/Contents/Resources", app_dir));
   putenv(g_strdup_printf("GTK_IM_MODULE_FILE=%s/Contents/Resourcess/lib/gtk-3.0/3.0.0/immodules.cache", app_dir));
 
-  if(getenv("GTK_THEME") == NULL){
-    putenv(g_strdup("GTK_THEME=Blue-Submarine"));
-  }
-  
   putenv(g_strdup_printf("GST_PLUGIN_SYSTEM_PATH=%s/lib/gstreamer-1.0", app_dir));
   putenv(g_strdup_printf("GST_PLUGIN_SCANNER=%s/libexec/gstreamer-1.0/gst-plugin-scanner", app_dir));
 
@@ -475,6 +468,42 @@ main(int argc, char **argv)
 				  NULL,
 				  NULL,
 				  NULL);
+
+#if defined(AGS_OSX_DMG_ENV)
+  if(getenv("GTK_THEME") == NULL){
+    NSAppearance *appearance = NSApp.mainWindow.effectiveAppearance;
+    NSString *interface_style = appearance.name;
+    
+    gchar *theme;
+
+    gboolean dark_mode;
+
+    theme = "Adwaita";
+
+    dark_mode = FALSE;
+
+    g_object_get(settings,
+		 "gtk-application-prefer-dark-theme", &dark_mode,
+		 NULL);
+    
+    if([interface_style isEqualToString:NSAppearanceNameDarkAqua]){
+      theme = "Adwaita:dark";
+
+      dark_mode = TRUE;
+    }else if([interface_style isEqualToString:NSAppearanceNameAccessibilityHighContrastAqua]){
+      theme = "HighContrast";
+    }else if([interface_style isEqualToString:NSAppearanceNameAccessibilityHighContrastDarkAqua]){
+      theme = "HighContrast:dark";
+
+      dark_mode = TRUE;
+    }
+
+    g_object_set(settings,
+		 "gtk-theme-name", theme,
+		 "gtk-application-prefer-dark-theme", dark_mode,
+		 NULL);
+ }
+#endif
   
   config = NULL;
   
@@ -555,7 +584,7 @@ main(int argc, char **argv)
 	     "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.");
       
       printf("Written by Joël Krähemann\n");
-
+      
       exit(0);
     }else if(!strncmp(argv[i], "--no-builtin-theme", 19)){
       builtin_theme_disabled = TRUE;
@@ -564,9 +593,20 @@ main(int argc, char **argv)
     }else if(!strncmp(argv[i], "--menu-bar", 11)){
       force_menu_bar = TRUE;
     }else if(!strncmp(argv[i], "--filename", 11)){
-      filename = argv[i + 1];
-      i++;
-
+      if(i + 1 < argc){
+	if(strlen(argv[i + 1]) > 2 && argv[i + 1][0] == '\''){
+	  filename = g_strndup(argv[i + 1] + 1,
+			       strlen(argv[i + 1]) - 2);
+	}else if(strlen(argv[i + 1]) > 2 && argv[i + 1][0] == '"'){
+	  filename = g_strndup(argv[i + 1] + 1,
+			       strlen(argv[i + 1]) - 2);
+	}else{
+	  filename = g_strdup(argv[i + 1]);
+	}
+      
+	i++;
+      }
+      
       if(g_file_test(filename,
 		     G_FILE_TEST_EXISTS) &&
 	 g_file_test(filename,
@@ -895,6 +935,9 @@ main(int argc, char **argv)
     
   g_application_run(G_APPLICATION(gsequencer_app),
 		    0, NULL);
+
+
+  g_free(filename);
   
   //  muntrace();
 

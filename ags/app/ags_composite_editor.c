@@ -76,6 +76,8 @@
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
 
+#include <string.h>
+
 #include <ags/i18n.h>
 
 void ags_composite_editor_class_init(AgsCompositeEditorClass *composite_editor);
@@ -810,6 +812,12 @@ ags_composite_editor_disconnect(AgsConnectable *connectable)
   ags_connectable_disconnect(AGS_CONNECTABLE(composite_editor->wave_edit));
 
   ags_connectable_disconnect(AGS_CONNECTABLE(composite_editor->tempo_edit));
+
+  g_object_disconnect(composite_editor->machine_selector,
+		      "any_signal::changed",
+		      G_CALLBACK(ags_composite_editor_machine_selector_changed_callback),
+		      composite_editor,
+		      NULL);
 
   //TODO:JK: implement me
 }
@@ -2403,7 +2411,7 @@ ags_composite_editor_paste_notation(AgsCompositeEditor *composite_editor,
 	      }     
 
 	      /* 1st attempt */
-	      timestamp->timer.ags_offset.offset = (guint64) AGS_AUTOMATION_DEFAULT_OFFSET * floor((double) position_x / (double) AGS_AUTOMATION_DEFAULT_OFFSET);
+	      timestamp->timer.ags_offset.offset = (guint64) AGS_NOTATION_DEFAULT_OFFSET * floor((double) position_x / (double) AGS_NOTATION_DEFAULT_OFFSET);
 		
 	      first_x = ags_composite_editor_paste_notation_all(composite_editor,
 								machine,
@@ -2415,7 +2423,7 @@ ags_composite_editor_paste_notation(AgsCompositeEditor *composite_editor,
 								last_x);
 
 	      /* 2nd attempt */
-	      timestamp->timer.ags_offset.offset += AGS_AUTOMATION_DEFAULT_OFFSET;
+	      timestamp->timer.ags_offset.offset += AGS_NOTATION_DEFAULT_OFFSET;
 
 	      ags_composite_editor_paste_notation_all(composite_editor,
 						      machine,
@@ -3236,6 +3244,7 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
 				      GAsyncResult *res,
 				      AgsCompositeEditor *composite_editor)
 {
+#if 0
   AgsWindow *window;
   AgsMachine *machine;  
   AgsNotebook *notebook;
@@ -3396,6 +3405,348 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
   }
 
   g_free(buffer);
+#else
+  AgsWindow *window;
+  AgsMachine *machine;  
+  AgsNotebook *notebook;
+  
+  AgsWave *wave;
+
+  AgsTimestamp *timestamp;
+
+  AgsApplicationContext *application_context;
+
+  GObject *soundcard;
+
+  gchar *buffer;
+  char *program;
+  char *type;
+  char *version;
+  gchar *tmp_buffer;
+
+  gdouble bpm;
+  gdouble absolute_delay;
+  guint buffer_size;
+  double zoom, zoom_factor;
+  double zoom_correction;
+  guint64 map_width;
+  guint64 sample_width;
+  guint audio_lines;
+  guint samplerate;
+  gint offset;
+  gint current_offset;
+  guint64 relative_offset;
+  guint64 position_x;
+  guint64 timestamp_offset;
+  gint64 first_x, last_x;
+  gboolean match_line;
+  gboolean paste_from_position;
+
+  GError *error;
+
+  application_context = ags_application_context_get_instance();
+  
+  error = NULL;
+  buffer = gdk_clipboard_read_text_finish(gdk_display_get_clipboard(gdk_display_get_default()),
+					  res,
+					  &error);
+
+  if(buffer == NULL){
+    return;
+  }
+
+  window = AGS_WINDOW(ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
+
+  machine = composite_editor->selected_machine;
+
+  notebook = composite_editor->wave_edit->channel_selector;
+
+  offset = 0;
+  current_offset = 0;
+
+  first_x = -1;
+
+  bpm = gtk_spin_button_get_value(window->navigation->bpm);
+    
+  /* zoom */
+  zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) composite_editor->toolbar->zoom) - 2.0);
+  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) composite_editor->toolbar->zoom));
+
+  samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  
+  g_object_get(machine->audio,
+	       "output-soundcard", &soundcard,
+	       "samplerate", &samplerate,
+	       "buffer-size", &buffer_size,
+	       NULL);
+
+  absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(soundcard));
+
+  /* get position */
+  position_x = 0;
+    
+  if((GtkWidget *) composite_editor->toolbar->selected_tool == (GtkWidget *) composite_editor->toolbar->position){
+    AgsWaveEdit *wave_edit;
+
+    last_x = 0;
+    paste_from_position = TRUE;
+
+    zoom_correction = 1.0 / 16;
+
+    map_width = (64.0) * (16.0 * 16.0 * 1200.0);
+    sample_width = (absolute_delay * buffer_size) * (16.0 * 16.0 * 1200.0);
+
+    wave_edit = AGS_WAVE_EDIT(composite_editor->wave_edit->focused_edit);
+
+    position_x = (guint64) floorl((long double) wave_edit->cursor_position_x / (long double) map_width * (long double) sample_width);
+
+    position_x = (guint64) (floor(position_x / buffer_size) * buffer_size);
+      
+#ifdef AGS_DEBUG
+    printf("pasting at position: [%u]\n", position_x);
+#endif
+  }else{
+    paste_from_position = FALSE;
+  }
+
+  /* header */
+  tmp_buffer = g_malloc(AGS_WAVE_CLIPBOARD_MAX_SIZE * sizeof(gchar));
+
+  sscanf(buffer,
+	 "program=%ms type=%ms version=%ms audio-lines=%u\n",
+	 &program,
+	 &type,
+	 &version,
+	 &audio_lines);
+
+  offset = snprintf(tmp_buffer,
+		    AGS_WAVE_CLIPBOARD_MAX_SIZE,
+		    "program=%s type=%s version=%s audio-lines=%u\n",
+		    program,
+		    type,
+		    version,
+		    audio_lines);
+  
+  if(program == NULL ||
+     type == NULL ||
+     version == NULL ||
+     (!strncmp(program, "gsequencer", 10) == FALSE) ||
+     (!strncmp(version, "6.16.0", 7) == FALSE)){
+    if(program != NULL){
+      free(program);
+    }
+
+    if(type != NULL){
+      free(type);
+    }
+
+    if(version != NULL){
+      free(version);
+    }
+
+    g_free(tmp_buffer);  
+
+    return;
+  }
+
+  first_x = -1;
+  
+  match_line = ((AGS_COMPOSITE_EDIT_PASTE_MATCH_LINE & (composite_editor->wave_edit->paste_flags)) != 0) ? TRUE: FALSE;
+    
+  timestamp = ags_timestamp_new();
+
+  timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+  timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+    
+  timestamp->timer.ags_offset.offset = 0;
+
+  relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
+
+  do{
+    AgsWave *wave;
+		
+    GList *start_list_wave, *list_wave;
+
+    char *type, *version, *format;
+    char *buffer_format;
+    char *current_format;
+    char *current_data;
+    
+    guint current_line;
+    guint64 current_x_boundary;
+    guint64 current_timestamp;
+    guint current_samplerate;
+    guint current_buffer_size;
+    guint64 current_x;
+
+    gint n_items;
+    gint tmp_offset_a, tmp_offset_b;
+    gint i;
+    
+    tmp_offset_a = 0;
+      
+    n_items = sscanf(buffer + offset,
+		     "program=ags type=%ms version=%ms format=%ms line=%u buffer-format=%ms x-boundary=%lu timestamp=%lu\n",
+		     &type,
+		     &version,
+		     &format,
+		     &current_line,
+		     &buffer_format,
+		     &current_x_boundary,
+		     &timestamp_offset);
+
+    if(n_items != 7){
+      goto ags_composite_editor_PASTE_BASE64_DATA;
+    }
+    
+    tmp_offset_a = snprintf(tmp_buffer,
+			    AGS_WAVE_CLIPBOARD_MAX_SIZE,
+			    "program=ags type=%s version=%s format=%s line=%u buffer-format=%s x-boundary=%lu timestamp=%lu\n",
+			    type,
+			    version,
+			    format,
+			    current_line,
+			    buffer_format,
+			    current_x_boundary,
+			    timestamp_offset);
+    
+    if(tmp_offset_a <= 0){
+      break;
+    }
+
+    current_offset = offset;
+    
+  ags_composite_editor_PASTE_BASE64_DATA:
+
+    tmp_offset_b = 0;
+
+    do{
+      gint tmp;
+      
+      n_items = sscanf(buffer + offset + tmp_offset_a,
+		       "format=%ms samplerate=%u buffer-size=%u x=%lu data-base64=%ms\n",
+		       &current_format,
+		       &current_samplerate,
+		       &current_buffer_size,
+		       &current_x,
+		       &current_data);
+
+      if(n_items != 5){
+	break;
+      }
+    
+      tmp = snprintf(tmp_buffer,
+		     AGS_WAVE_CLIPBOARD_MAX_SIZE,
+		     "format=%s samplerate=%u buffer-size=%u x=%lu data-base64=%s\n",
+		     current_format,
+		     current_samplerate,
+		     current_buffer_size,
+		     current_x,
+		     current_data);
+
+      if(tmp <= 0){
+	break;
+      }
+
+      tmp_offset_b += tmp;
+    }while(offset + tmp_offset_a + tmp_offset_b < AGS_WAVE_CLIPBOARD_MAX_SIZE);
+    
+    /* 1st attempt */
+    timestamp->timer.ags_offset.offset = (guint64) (relative_offset * floor((double) position_x / (double) relative_offset));
+    
+    /*  */
+    i = 0;
+		
+    while((i = ags_notebook_next_active_tab(notebook,
+					    i)) != -1){
+      g_object_get(machine->audio,
+		   "wave", &start_list_wave,
+		   NULL);
+      
+      list_wave = ags_wave_find_near_timestamp(start_list_wave, i,
+					       timestamp);
+
+      if(list_wave == NULL){
+	wave = ags_wave_new((GObject *) machine->audio,
+			    i);
+	wave->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
+	
+	/* add to audio */
+	ags_audio_add_wave(machine->audio,
+			   (GObject *) wave);
+      }else{
+	wave = AGS_WAVE(list_wave->data);
+      }
+
+      if(paste_from_position){
+	ags_wave_insert_base64_from_clipboard_extended(wave,
+						       buffer + current_offset,
+						       TRUE, position_x,
+						       0.0, 0,
+						       match_line, FALSE);
+      }else{
+	ags_wave_insert_base64_from_clipboard_extended(wave,
+						       buffer + current_offset,
+						       FALSE, 0,
+						       0.0, 0,
+						       match_line, FALSE);
+      }
+
+      i++;
+    }
+    
+    /* 2nd attempt */
+    timestamp->timer.ags_offset.offset += relative_offset;
+    
+    /*  */
+    i = 0;
+		
+    while((i = ags_notebook_next_active_tab(notebook,
+					    i)) != -1){
+      g_object_get(machine->audio,
+		   "wave", &start_list_wave,
+		   NULL);
+      
+      list_wave = ags_wave_find_near_timestamp(start_list_wave, i,
+					       timestamp);
+
+      if(list_wave == NULL){
+	wave = ags_wave_new((GObject *) machine->audio,
+			    i);
+	wave->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
+	
+	/* add to audio */
+	ags_audio_add_wave(machine->audio,
+			   (GObject *) wave);
+      }else{
+	wave = AGS_WAVE(list_wave->data);
+      }
+
+      if(paste_from_position){
+	ags_wave_insert_base64_from_clipboard_extended(wave,
+						       buffer + current_offset,
+						       TRUE, position_x,
+						       0.0, 0,
+						       match_line, FALSE);
+      }else{
+	ags_wave_insert_base64_from_clipboard_extended(wave,
+						       buffer + current_offset,
+						       FALSE, 0,
+						       0.0, 0,
+						       match_line, FALSE);
+      }
+
+      i++;
+    }
+
+    offset += (tmp_offset_a + tmp_offset_b);
+  }while(offset < AGS_WAVE_CLIPBOARD_MAX_SIZE);
+
+  g_free(tmp_buffer);    
+  
+  gtk_widget_queue_draw(composite_editor->wave_edit->focused_edit);
+#endif
 }
 
 /**
@@ -3609,6 +3960,7 @@ ags_composite_editor_copy(AgsCompositeEditor *composite_editor)
 
     xmlFreeDoc(clipboard);
   }else if(composite_editor->selected_edit == composite_editor->wave_edit){
+#if 0
     AgsNotebook *notebook;
   
     xmlDoc *clipboard;
@@ -3681,6 +4033,94 @@ ags_composite_editor_copy(AgsCompositeEditor *composite_editor)
 			   buffer);
 
     xmlFreeDoc(clipboard);
+#else
+    AgsNotebook *notebook;
+
+    GList *start_wave, *wave;
+
+    gchar *wave_base64;
+
+    gint64 offset;
+    guint audio_lines;
+    gint i;
+    
+    notebook = composite_editor->wave_edit->channel_selector;
+
+    wave_base64 = g_malloc(AGS_WAVE_CLIPBOARD_MAX_SIZE * sizeof(gchar));
+
+    memset(wave_base64, 0, AGS_WAVE_CLIPBOARD_MAX_SIZE * sizeof(gchar));
+
+    offset = 0;
+
+    audio_lines = 0;
+
+    i = 0;
+
+    while((i = ags_notebook_next_active_tab(notebook,
+					    i)) != -1){
+      audio_lines++;
+      i++;
+    }
+    
+    /* header */
+    offset = sprintf(wave_base64,
+		     "program=gsequencer type=AgsWaveEditClipboard version=%s audio-lines=%u\n",
+		     AGS_COMPOSITE_EDITOR_CLIPBOARD_VERSION,
+		     audio_lines);
+
+    /* create wave nodes */
+    start_wave = NULL;
+    
+    g_object_get(machine->audio,
+		 "wave", &start_wave,
+		 NULL);
+    
+    i = 0;
+
+    while((i = ags_notebook_next_active_tab(notebook,
+					    i)) != -1){
+      wave = start_wave;
+
+      /* copy */
+      while(wave != NULL){
+	gchar *current_wave_base64;
+
+	guint64 current_offset;
+	guint line;
+	
+	g_object_get(wave->data,
+		     "line", &line,
+		     NULL);
+
+	if(i != line){	
+	  wave = wave->next;
+
+	  continue;
+	}
+
+	//	g_message("copy %d", i);
+	current_wave_base64 = ags_wave_copy_selection_as_base64(AGS_WAVE(wave->data));
+
+	current_offset = strlen(current_wave_base64);
+	
+	memcpy(wave_base64 + offset, current_wave_base64, current_offset * sizeof(gchar));
+
+	offset += current_offset;
+	
+	wave = wave->next;
+      }
+
+      i++;
+    }
+
+    g_list_free_full(start_wave,
+		     g_object_unref);
+    
+    gdk_clipboard_set_text(gdk_display_get_clipboard(gdk_display_get_default()),
+			   wave_base64);
+
+    g_free(wave_base64);
+#endif
   }
 }
 
@@ -3868,6 +4308,7 @@ ags_composite_editor_cut(AgsCompositeEditor *composite_editor)
     
     gtk_widget_queue_draw(AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->drawing_area);
   }else if(composite_editor->selected_edit == composite_editor->wave_edit){
+#if 0
     AgsNotebook *notebook;
   
     xmlDoc *clipboard;
@@ -3943,6 +4384,95 @@ ags_composite_editor_cut(AgsCompositeEditor *composite_editor)
     xmlFreeDoc(clipboard);
     
     gtk_widget_queue_draw(composite_editor->wave_edit->focused_edit);
+#else
+    AgsNotebook *notebook;
+
+    GList *start_wave, *wave;
+
+    gchar *wave_base64;
+
+    gint64 offset;
+    guint audio_lines;
+    gint i;
+    
+    notebook = composite_editor->wave_edit->channel_selector;
+
+    wave_base64 = g_malloc(AGS_WAVE_CLIPBOARD_MAX_SIZE * sizeof(gchar));
+
+    memset(wave_base64, 0, AGS_WAVE_CLIPBOARD_MAX_SIZE * sizeof(gchar));
+
+    offset = 0;
+
+    audio_lines = 0;
+
+    i = 0;
+
+    while((i = ags_notebook_next_active_tab(notebook,
+					    i)) != -1){
+      audio_lines++;
+    }
+    
+    /* header */
+    offset = sprintf(wave_base64,
+		     "program=gsequencer type=AgsWaveEditClipboard version=%s audio-lines=%u\n",
+		     AGS_COMPOSITE_EDITOR_CLIPBOARD_VERSION,
+		     audio_lines);
+
+    /* create wave nodes */
+    start_wave = NULL;
+    
+    g_object_get(machine->audio,
+		 "wave", &start_wave,
+		 NULL);
+    
+    i = 0;
+
+    while((i = ags_notebook_next_active_tab(notebook,
+					    i)) != -1){
+      wave = start_wave;
+
+      /* copy */
+      while(wave != NULL){
+	gchar *current_wave_base64;
+
+	guint64 current_offset;
+	guint line;
+	
+	g_object_get(wave->data,
+		     "line", &line,
+		     NULL);
+
+	if(i != line){	
+	  wave = wave->next;
+
+	  continue;
+	}
+
+	//	g_message("copy %d", i);
+	current_wave_base64 = ags_wave_cut_selection_as_base64(AGS_WAVE(wave->data));
+
+	current_offset = strlen(current_wave_base64);
+	
+	memcpy(wave_base64 + offset, current_wave_base64, current_offset * sizeof(gchar));
+
+	offset += current_offset;
+	
+	wave = wave->next;
+      }
+
+      i++;
+    }
+
+    g_list_free_full(start_wave,
+		     g_object_unref);
+    
+    gdk_clipboard_set_text(gdk_display_get_clipboard(gdk_display_get_default()),
+			   wave_base64);
+
+    g_free(wave_base64);
+    
+    gtk_widget_queue_draw(composite_editor->wave_edit->focused_edit);
+#endif
   }
 }
 

@@ -1463,17 +1463,29 @@ ags_dial_draw(AgsDial *dial,
 
   if(!fg_success ||
      !bg_success ||
-     !shadow_success ||
-     !text_success){
-    gdk_rgba_parse(&fg_color,
-		   "#101010");
+     !shadow_success){
+    if(!dark_theme){
+      gdk_rgba_parse(&fg_color,
+		     "#101010");
+      
+      gdk_rgba_parse(&bg_color,
+		     "#cbd5d9");
+    
+      gdk_rgba_parse(&shadow_color,
+		     "#ffffff40");
+    }else{
+      gdk_rgba_parse(&fg_color,
+		     "#cbd5d9");
+      
+      gdk_rgba_parse(&bg_color,
+		     "#101010");
+      
+      gdk_rgba_parse(&shadow_color,
+		     "#202020");
+    }
+  }
 
-    gdk_rgba_parse(&bg_color,
-		   "#cbd5d9");
-
-    gdk_rgba_parse(&shadow_color,
-		   "#ffffff40");
-
+  if(!text_success){
     gdk_rgba_parse(&text_color,
 		   "#1a1a1a");
   }
@@ -1522,7 +1534,12 @@ ags_dial_draw(AgsDial *dial,
 		    (gdouble) padding_left + 1.0, (gdouble) padding_top + (2.0 * radius) - button_height + outline_strength,
 		    (gdouble) button_width, (gdouble) button_height);
     cairo_set_line_join(cr, CAIRO_LINE_JOIN_MITER);
-    cairo_stroke(cr);
+
+    if(!dark_theme){
+      cairo_stroke(cr);
+    }else{
+      cairo_fill(cr);
+    }
 
     /* text */
 #if 0
@@ -1585,8 +1602,13 @@ ags_dial_draw(AgsDial *dial,
 		    padding_left + 1.0 + (2.0 * radius) + button_width + margin_left + margin_right, padding_top + (2.0 * radius) - button_height + outline_strength,
 		    button_width, button_height);
     cairo_set_line_join(cr, CAIRO_LINE_JOIN_MITER);
-    cairo_stroke(cr);
 
+    if(!dark_theme){
+      cairo_stroke(cr);
+    }else{
+      cairo_fill(cr);
+    }
+    
     /* text */
 #if 0
     cairo_set_source_rgba(cr,
@@ -1672,7 +1694,8 @@ ags_dial_draw(AgsDial *dial,
   cairo_stroke(cr);
   
   /* light effect */
-  if((AGS_DIAL_INVERSE_LIGHT & (dial->flags)) != 0){
+  if(!dark_theme &&
+     (AGS_DIAL_INVERSE_LIGHT & (dial->flags)) != 0){
     cairo_set_source_rgba(cr,
 			  0.0,
 			  0.0,
@@ -1725,12 +1748,20 @@ ags_dial_draw(AgsDial *dial,
   cairo_fill(cr);
 
   /* outline */
-  cairo_set_source_rgba(cr,
-			0.0,
-			0.0,
-			0.0,
-			1.0);
-
+  if(!dark_theme){
+    cairo_set_source_rgba(cr,
+			  0.0,
+			  0.0,
+			  0.0,
+			  1.0);
+  }else{
+    cairo_set_source_rgba(cr,
+			  1.0,
+			  1.0,
+			  1.0,
+			  1.0);
+  }
+  
   //  cairo_set_line_width(cr, 1.0 - (2.0 / M_PI));
   cairo_set_line_width(cr, 1.0);
   cairo_arc(cr,

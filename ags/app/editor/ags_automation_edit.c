@@ -563,7 +563,7 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
 		  1, 1);
 
   /* vscrollbar */
-  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, (gdouble) AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT, 1.0, 1.0, (gdouble) AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT);
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, (gdouble) AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT, 1.0, 1.0, 0.0);
   automation_edit->vscrollbar = (GtkScrollbar *) gtk_scrollbar_new(GTK_ORIENTATION_VERTICAL,
 								   adjustment);
   gtk_widget_set_visible((GtkWidget *) automation_edit->vscrollbar,
@@ -576,7 +576,7 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
 		  1, 1);
 
   /* hscrollbar */
-  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (gdouble) automation_edit->control_width, 1.0);
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (gdouble) automation_edit->control_width, 0.0);
   automation_edit->hscrollbar = (GtkScrollbar *) gtk_scrollbar_new(GTK_ORIENTATION_HORIZONTAL,
 								   adjustment);
   gtk_widget_set_visible((GtkWidget *) automation_edit->hscrollbar,
@@ -1336,9 +1336,6 @@ ags_automation_edit_drawing_area_motion_notify_position_cursor(GtkWidget *editor
 #ifdef AGS_DEBUG
   g_message("%lu %f", automation_edit->cursor_position_x, automation_edit->cursor_position_y);
 #endif
-    
-  /* queue draw */
-  gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
 }
 
 void
@@ -1416,9 +1413,6 @@ ags_automation_edit_drawing_area_motion_notify_add_acceleration(GtkWidget *edito
 #ifdef AGS_DEBUG
   g_message("motion add %lu %f", acceleration->x, acceleration->y);
 #endif
-    
-  /* queue draw */
-  gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
 }
 
 void
@@ -1444,8 +1438,6 @@ ags_automation_edit_drawing_area_motion_notify_select_acceleration(GtkWidget *ed
   }else{
     automation_edit->selection_y1 = 0.0;
   }
-    
-  gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
 }
 
 gboolean
@@ -1495,6 +1487,8 @@ ags_automation_edit_motion_callback(GtkEventControllerMotion *event_controller,
 									 x, y);
     }
   }
+    
+  gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
 
   return(FALSE);
 }
@@ -1514,51 +1508,99 @@ ags_automation_edit_gesture_swipe_callback(GtkGestureSwipe *event_controller,
   
   double zoom_factor;
 
+  gboolean selected_position_cursor;
+  gboolean swipe_horizontal, swipe_vertical;
+
   application_context = ags_application_context_get_instance();
+
+  selected_position_cursor = FALSE;
 
   composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   composite_toolbar = composite_editor->toolbar;
 
-  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) composite_toolbar->zoom));
-  
-  /* horizontal swipe */
-  if(x > 0.0){
-    adjustment = gtk_scrollbar_get_adjustment(composite_editor->automation_edit->hscrollbar);
+  selected_position_cursor = (composite_toolbar->selected_tool == (GtkButton *) composite_toolbar->position) ? TRUE: FALSE;
 
-    if(gtk_adjustment_get_value(adjustment) + (4.0 * automation_edit->control_width) < gtk_adjustment_get_upper(adjustment)){
-      gtk_adjustment_set_value(adjustment,
-			       gtk_adjustment_get_value(adjustment) + (zoom_factor * 4.0 * automation_edit->control_width));
-    }
-  }else if(x < 0.0){
-    adjustment = gtk_scrollbar_get_adjustment(composite_editor->automation_edit->hscrollbar);
+  if(!selected_position_cursor){
+    return;
+  }
 
-    if(gtk_adjustment_get_value(adjustment) - (4.0 * automation_edit->control_width) > 0.0){
-      gtk_adjustment_set_value(adjustment,
-			       gtk_adjustment_get_value(adjustment) - (zoom_factor * 4.0 * automation_edit->control_width));
+  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) composite_toolbar->zoom));  
+
+  swipe_horizontal = FALSE;
+  swipe_vertical = FALSE;
+
+  if(x < 0.0){
+    if(y < 0.0){
+      if(-1.0 * x > -1.0 * y){
+	swipe_horizontal = TRUE;
+      }else{
+	swipe_vertical = TRUE;
+      }
     }else{
-      gtk_adjustment_set_value(adjustment,
-			       0.0);
+      if(-1.0 * x > y){
+	swipe_horizontal = TRUE;
+      }else{
+	swipe_vertical = TRUE;
+      }
+    }
+  }else{
+    if(y < 0.0){
+      if(x > -1.0 * y){
+	swipe_horizontal = TRUE;
+      }else{
+	swipe_vertical = TRUE;
+      }
+    }else{
+      if(x > y){
+	swipe_horizontal = TRUE;
+      }else{
+	swipe_vertical = TRUE;
+      }
     }
   }
 
-  /* vertical swipe */
-  if(y > 0.0){
-    adjustment = gtk_scrollbar_get_adjustment(composite_editor->automation_edit->vscrollbar);
+  /* horizontal swipe */
+  if(swipe_horizontal){
+    if(x > 0.0){
+      adjustment = gtk_scrollbar_get_adjustment(composite_editor->automation_edit->hscrollbar);
 
-    if(gtk_adjustment_get_value(adjustment) + (gdouble) automation_edit->control_height + AGS_UI_PROVIDER_DEFAULT_SPACING < gtk_adjustment_get_upper(adjustment)){
-      gtk_adjustment_set_value(adjustment,
-			       gtk_adjustment_get_value(adjustment) + (gdouble) automation_edit->control_height + AGS_UI_PROVIDER_DEFAULT_SPACING);
+      if(gtk_adjustment_get_value(adjustment) + (4.0 * automation_edit->control_width) < gtk_adjustment_get_upper(adjustment)){
+	gtk_adjustment_set_value(adjustment,
+				 gtk_adjustment_get_value(adjustment) + (4.0 * automation_edit->control_width));
+      }
+    }else if(x < 0.0){
+      adjustment = gtk_scrollbar_get_adjustment(composite_editor->automation_edit->hscrollbar);
+
+      if(gtk_adjustment_get_value(adjustment) - (4.0 * automation_edit->control_width) > 0.0){
+	gtk_adjustment_set_value(adjustment,
+				 gtk_adjustment_get_value(adjustment) - (4.0 * automation_edit->control_width));
+      }else{
+	gtk_adjustment_set_value(adjustment,
+				 0.0);
+      }
     }
-  }else if(y < 0.0){
-    adjustment = gtk_scrollbar_get_adjustment(composite_editor->automation_edit->vscrollbar);
+  }
+  
+  /* vertical swipe */
+  if(swipe_vertical){
+    if(y > 0.0){
+      adjustment = gtk_scrollbar_get_adjustment(composite_editor->automation_edit->vscrollbar);
 
-    if(gtk_adjustment_get_value(adjustment) - (gdouble) automation_edit->control_height - AGS_UI_PROVIDER_DEFAULT_SPACING > 0.0){
-      gtk_adjustment_set_value(adjustment,
-			       gtk_adjustment_get_value(adjustment) - (gdouble) automation_edit->control_height - AGS_UI_PROVIDER_DEFAULT_SPACING);
-    }else{
-      gtk_adjustment_set_value(adjustment,
-			       0.0);
+      if(gtk_adjustment_get_value(adjustment) + (gdouble) automation_edit->control_height + AGS_UI_PROVIDER_DEFAULT_SPACING < gtk_adjustment_get_upper(adjustment)){
+	gtk_adjustment_set_value(adjustment,
+				 gtk_adjustment_get_value(adjustment) + (gdouble) automation_edit->control_height + AGS_UI_PROVIDER_DEFAULT_SPACING);
+      }
+    }else if(y < 0.0){
+      adjustment = gtk_scrollbar_get_adjustment(composite_editor->automation_edit->vscrollbar);
+
+      if(gtk_adjustment_get_value(adjustment) - (gdouble) automation_edit->control_height - AGS_UI_PROVIDER_DEFAULT_SPACING > 0.0){
+	gtk_adjustment_set_value(adjustment,
+				 gtk_adjustment_get_value(adjustment) - (gdouble) automation_edit->control_height - AGS_UI_PROVIDER_DEFAULT_SPACING);
+      }else{
+	gtk_adjustment_set_value(adjustment,
+				 0.0);
+      }
     }
   }
 }
@@ -1621,9 +1663,6 @@ ags_automation_edit_drawing_area_button_press_position_cursor(GtkWidget *editor,
       automation_edit->cursor_position_y = (((allocation.height - y) / g_range) * c_range) + lower;
     }
   }
-
-  /* queue draw */
-  gtk_widget_queue_draw((GtkWidget *) automation_edit);
 }
   
 void
@@ -1708,9 +1747,6 @@ ags_automation_edit_drawing_area_button_press_add_acceleration(GtkWidget *editor
 
   automation_edit->current_acceleration = acceleration;
   g_object_ref(acceleration);
-
-  /* queue draw */
-  gtk_widget_queue_draw((GtkWidget *) automation_edit);
 }
 
 void
@@ -1735,8 +1771,6 @@ ags_automation_edit_drawing_area_button_press_select_acceleration(GtkWidget *edi
     
   automation_edit->selection_y0 = (guint) y + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->vscrollbar));
   automation_edit->selection_y1 = automation_edit->selection_y0;
-
-  gtk_widget_queue_draw((GtkWidget *) automation_edit);
 }
 
 gboolean
@@ -1879,6 +1913,8 @@ ags_automation_edit_gesture_click_pressed_callback(GtkGestureClick *event_contro
     }
   }
 
+  gtk_widget_queue_draw((GtkWidget *) automation_edit);
+
   return(FALSE);
 }
 
@@ -1945,9 +1981,6 @@ ags_automation_edit_drawing_area_button_release_position_cursor(GtkWidget *edito
       automation_edit->cursor_position_y = (((allocation.height - y) / g_range) * c_range) + lower;
     }
   }
-    
-  /* queue draw */
-  gtk_widget_queue_draw((GtkWidget *) automation_edit);
 }
 
 void
@@ -2034,8 +2067,6 @@ ags_automation_edit_drawing_area_button_release_add_acceleration(GtkWidget *edit
   
   automation_edit->current_acceleration = NULL;
   g_object_unref(acceleration);
-
-  gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
 }
   
 void
@@ -2105,8 +2136,6 @@ ags_automation_edit_drawing_area_button_release_delete_acceleration(GtkWidget *e
   /* delete acceleration */
   ags_composite_editor_delete_acceleration(editor,
 					   x, y);
-
-  gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
 }
   
 void
@@ -2197,8 +2226,6 @@ ags_automation_edit_drawing_area_button_release_select_acceleration(GtkWidget *e
   ags_composite_editor_select_region((AgsCompositeEditor *) editor,
 				     x0, y0,
 				     x1, y1);
-
-  gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
 }
 
 gboolean
@@ -2266,6 +2293,8 @@ ags_automation_edit_gesture_click_released_callback(GtkGestureClick *event_contr
       automation_edit->mode = AGS_AUTOMATION_EDIT_NO_EDIT_MODE;
     }
   }
+
+  gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
 
   return(FALSE);
 }
@@ -3030,21 +3059,33 @@ ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit, cairo_t *cr
 
   if(!fg_success ||
      !bg_success ||
-     !shadow_success ||
-     !text_success){
-    gdk_rgba_parse(&fg_color,
-		   "#101010");
+     !shadow_success){
+    if(!dark_theme){
+      gdk_rgba_parse(&fg_color,
+		     "#101010");
 
-    gdk_rgba_parse(&bg_color,
-		   "#cbd5d9");
+      gdk_rgba_parse(&bg_color,
+		     "#cbd5d9");
 
-    gdk_rgba_parse(&shadow_color,
-		   "#ffffff40");
+      gdk_rgba_parse(&shadow_color,
+		     "#ffffff40");
+    }else{
+      gdk_rgba_parse(&fg_color,
+		     "#eeeeec");
+      
+      gdk_rgba_parse(&bg_color,
+		     "#353535");
+      
+      gdk_rgba_parse(&shadow_color,
+		     "#202020");
+    }
+  }
 
+  if(!text_success){
     gdk_rgba_parse(&text_color,
 		   "#1a1a1a");
   }
-
+  
   /* push group */
   cairo_push_group(cr);
   
@@ -3184,6 +3225,8 @@ ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit, cairo_t *c
   AgsApplicationContext *application_context;
 
   GdkRGBA fg_color;
+  GdkRGBA bg_color;
+  GdkRGBA shadow_color;
 
   gdouble gui_scale_factor;
   gdouble tact;
@@ -3194,6 +3237,8 @@ ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit, cairo_t *c
   gboolean height_fits;
   gboolean dark_theme;
   gboolean fg_success;
+  gboolean bg_success;
+  gboolean shadow_success;
 
   GValue value = G_VALUE_INIT;
 
@@ -3230,9 +3275,24 @@ ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit, cairo_t *c
 					      "theme_fg_color",
 					      &fg_color);
 
-  if(!fg_success){
-    gdk_rgba_parse(&fg_color,
-		   "#101010");
+  bg_success = gtk_style_context_lookup_color(style_context,
+					      "theme_bg_color",
+					      &bg_color);
+    
+  shadow_success = gtk_style_context_lookup_color(style_context,
+						  "theme_shadow_color",
+						  &shadow_color);
+
+  if(!fg_success ||
+     !bg_success ||
+     !shadow_success){
+    if(!dark_theme){
+      gdk_rgba_parse(&fg_color,
+		     "#101010");
+    }else{
+      gdk_rgba_parse(&fg_color,
+		     "#eeeeec");
+    }
   }
   
   /* get offset and dimensions */
@@ -3280,6 +3340,8 @@ ags_automation_edit_draw_cursor(AgsAutomationEdit *automation_edit, cairo_t *cr)
   GtkAllocation allocation;
 
   GdkRGBA fg_color;
+  GdkRGBA bg_color;
+  GdkRGBA shadow_color;
 
   gdouble gui_scale_factor;
   double zoom, zoom_factor;
@@ -3291,6 +3353,8 @@ ags_automation_edit_draw_cursor(AgsAutomationEdit *automation_edit, cairo_t *cr)
   double width, height;
   gboolean dark_theme;
   gboolean fg_success;
+  gboolean bg_success;
+  gboolean shadow_success;
 
   GValue value = G_VALUE_INIT;
 
@@ -3319,9 +3383,24 @@ ags_automation_edit_draw_cursor(AgsAutomationEdit *automation_edit, cairo_t *cr)
 					      "theme_fg_color",
 					      &fg_color);
 
-  if(!fg_success){
-    gdk_rgba_parse(&fg_color,
-		   "#101010");
+  bg_success = gtk_style_context_lookup_color(style_context,
+					      "theme_bg_color",
+					      &bg_color);
+    
+  shadow_success = gtk_style_context_lookup_color(style_context,
+						  "theme_shadow_color",
+						  &shadow_color);
+
+  if(!fg_success ||
+     !bg_success ||
+     !shadow_success){
+    if(!dark_theme){
+      gdk_rgba_parse(&fg_color,
+		     "#101010");
+    }else{
+      gdk_rgba_parse(&fg_color,
+		     "#eeeeec");
+    }
   }
 
   gtk_widget_get_allocation(GTK_WIDGET(automation_edit->drawing_area),
@@ -3434,12 +3513,16 @@ ags_automation_edit_draw_selection(AgsAutomationEdit *automation_edit, cairo_t *
   GtkAllocation allocation;
 
   GdkRGBA fg_color;
+  GdkRGBA bg_color;
+  GdkRGBA shadow_color;
   
   double zoom, zoom_factor;
   double x, y;
   double width, height;
   gboolean dark_theme;
   gboolean fg_success;
+  gboolean bg_success;
+  gboolean shadow_success;
 
   GValue value = G_VALUE_INIT;
 
@@ -3465,9 +3548,24 @@ ags_automation_edit_draw_selection(AgsAutomationEdit *automation_edit, cairo_t *
 					      "theme_fg_color",
 					      &fg_color);
 
-  if(!fg_success){
-    gdk_rgba_parse(&fg_color,
-		   "#101010");
+  bg_success = gtk_style_context_lookup_color(style_context,
+					      "theme_bg_color",
+					      &bg_color);
+    
+  shadow_success = gtk_style_context_lookup_color(style_context,
+						  "theme_shadow_color",
+						  &shadow_color);
+  
+  if(!fg_success ||
+     !bg_success ||
+     !shadow_success){
+    if(!dark_theme){
+      gdk_rgba_parse(&fg_color,
+		     "#101010");
+    }else{
+      gdk_rgba_parse(&fg_color,
+		     "#eeeeec");
+    }
   }
   
   gtk_widget_get_allocation(GTK_WIDGET(automation_edit->drawing_area),
@@ -3562,6 +3660,7 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
   AgsApplicationContext *application_context;
 
   GdkRGBA fg_color;
+  GdkRGBA bg_color;
   GdkRGBA shadow_color;
 
   gdouble gui_scale_factor;
@@ -3578,6 +3677,7 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
   double width, height;
   gboolean dark_theme;
   gboolean fg_success;
+  gboolean bg_success;
   gboolean shadow_success;
 
   GValue value = {0};
@@ -3622,18 +3722,31 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
   fg_success = gtk_style_context_lookup_color(style_context,
 					      "theme_fg_color",
 					      &fg_color);
+
+  bg_success = gtk_style_context_lookup_color(style_context,
+					      "theme_bg_color",
+					      &bg_color);
     
   shadow_success = gtk_style_context_lookup_color(style_context,
 						  "theme_shadow_color",
 						  &shadow_color);
 
   if(!fg_success ||
+     !bg_success ||
      !shadow_success){
-    gdk_rgba_parse(&fg_color,
-		   "#101010");
+    if(!dark_theme){
+      gdk_rgba_parse(&fg_color,
+		     "#101010");
+      
+      gdk_rgba_parse(&shadow_color,
+		     "#ffffff40");
+    }else{
+      gdk_rgba_parse(&fg_color,
+		     "#eeeeec");
 
-    gdk_rgba_parse(&shadow_color,
-		   "#ffffff40");
+      gdk_rgba_parse(&shadow_color,
+		     "#202020");
+    }
   }
 
   allocation_width = gtk_widget_get_width(automation_edit->drawing_area);

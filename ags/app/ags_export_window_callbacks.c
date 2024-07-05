@@ -26,7 +26,9 @@
 
 #include <glib/gstdio.h>
 
-void ags_export_window_replace_files_response_callback(GtkDialog *dialog,
+#include <ags/i18n.h>
+
+void ags_export_window_replace_files_response_callback(AgsInputDialog *input_dialog,
 						       gint response,
 						       AgsExportWindow *export_window);
 
@@ -104,7 +106,7 @@ ags_export_window_tact_callback(GtkWidget *spin_button,
 }
 
 void
-ags_export_window_replace_files_response_callback(GtkDialog *dialog,
+ags_export_window_replace_files_response_callback(AgsInputDialog *input_dialog,
 						  gint response,
 						  AgsExportWindow *export_window)
 {
@@ -130,7 +132,7 @@ ags_export_window_replace_files_response_callback(GtkDialog *dialog,
   g_list_free_full(start_remove_filename,
 		   (GDestroyNotify) g_free);
   
-  gtk_window_destroy((GtkWindow *) dialog);
+  gtk_window_destroy((GtkWindow *) input_dialog);
 }
 
 void
@@ -140,10 +142,11 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
   if(gtk_toggle_button_get_active((GtkToggleButton *) toggle_button)){
     GList *start_export_soundcard, *export_soundcard;
     GList *all_filename;
-    GList *start_remove_filename;
+    GList *start_remove_filename, *remove_filename;
     
     gchar *filename;
-
+    gchar *text;
+    
     gboolean file_exists;
 
     export_soundcard =
@@ -155,11 +158,8 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
     file_exists = FALSE;
 
     while(export_soundcard != NULL){
-      GtkEntryBuffer *entry_buffer;
+      filename = g_strdup(gtk_editable_get_text(GTK_EDITABLE(AGS_EXPORT_SOUNDCARD(export_soundcard->data)->filename)));
 
-      entry_buffer = gtk_entry_get_buffer(AGS_EXPORT_SOUNDCARD(export_soundcard->data)->filename);
-
-      filename = g_strdup(gtk_entry_buffer_get_text(entry_buffer));
       all_filename = g_list_prepend(all_filename,
 				    filename);
       
@@ -189,18 +189,43 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
     }
 
     if(file_exists){
-      GtkDialog *dialog;
+      AgsInputDialog *input_dialog;
 
-      dialog = (GtkDialog *) gtk_message_dialog_new((GtkWindow *) export_window,
-						    GTK_DIALOG_MODAL,
-						    GTK_MESSAGE_QUESTION,
-						    GTK_BUTTONS_OK_CANCEL,
-						    "Replace existing file(s)?");
+      input_dialog = ags_input_dialog_new(i18n("Replace existing file(s)?"),
+					  export_window);
+      ags_input_dialog_set_message(input_dialog,
+				   i18n("Following files exist, do you want to remove in order to export?"));
+
+      remove_filename = start_remove_filename;
+
+      text = NULL;
+
+      while(remove_filename != NULL){
+	if(text != NULL){
+	  gchar *tmp;
+
+	  tmp = text;
+	  
+	  text = g_strdup_printf("%s\n%s", text, remove_filename->data);
+
+	  g_free(tmp);
+	}else{
+	  text = g_strdup_printf("%s", remove_filename->data);
+	}
+
+	remove_filename = remove_filename->next;
+      }
+      
+      ags_input_dialog_set_text(input_dialog,
+				text);
 
       export_window->remove_filename = start_remove_filename;
       
-      g_signal_connect((GObject *) dialog, "response",
+      g_signal_connect((GObject *) input_dialog, "response",
 		       G_CALLBACK(ags_export_window_replace_files_response_callback), export_window);
+
+      gtk_widget_set_visible(input_dialog,
+			     TRUE);
     }else{
       ags_export_window_start_export(export_window);
     }

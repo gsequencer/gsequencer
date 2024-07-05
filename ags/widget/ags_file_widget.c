@@ -2166,6 +2166,7 @@ ags_file_widget_location_callback(AgsIconLink *icon_link,
 /**
  * ags_file_widget_get_recently_used:
  * @file_widget: the #AgsFileWidget
+ * @strv_length: (out): the string vector length
  *
  * Get recently used from @file_widget.
  *
@@ -2337,13 +2338,19 @@ ags_file_widget_write_recently_used(AgsFileWidget *file_widget)
      g_file_test(default_path, G_FILE_TEST_IS_DIR)){
     out = fopen(file_widget->recently_used_filename, "w+");
     size = 0;
-  
-    xmlDocDumpFormatMemoryEnc(recently_used_doc, &(buffer), &size, "UTF-8", TRUE);
 
-    fwrite(buffer, size, sizeof(xmlChar), out);
-    fflush(out);
-    fclose(out);
+    if(out != NULL){
+      xmlDocDumpFormatMemoryEnc(recently_used_doc, &(buffer), &size, "UTF-8", TRUE);
+      
+      fwrite(buffer, size, sizeof(xmlChar), out);
+      fflush(out);
+      fclose(out);
+
+      xmlFree(buffer);
+    }
   }
+
+  xmlFreeDoc(recently_used_doc);
 }
 
 /**
@@ -2973,12 +2980,18 @@ ags_file_widget_write_bookmark(AgsFileWidget *file_widget)
     out = fopen(file_widget->bookmark_filename, "w+");
     size = 0;
   
-    xmlDocDumpFormatMemoryEnc(bookmark_doc, &(buffer), &size, "UTF-8", TRUE);
+    if(out != NULL){
+      xmlDocDumpFormatMemoryEnc(bookmark_doc, &(buffer), &size, "UTF-8", TRUE);
 
-    fwrite(buffer, size, sizeof(xmlChar), out);
-    fflush(out);
-    fclose(out);
+      fwrite(buffer, size, sizeof(xmlChar), out);
+      fflush(out);
+      fclose(out);
+
+      xmlFree(buffer);
+    }
   }
+
+  xmlFreeDoc(bookmark_doc);
 }
 
 /**

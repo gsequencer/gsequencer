@@ -367,7 +367,10 @@ ags_lv2_browser_plugin_uri_callback(GtkTreeView *tree_view,
 				      port_editor,
 				      0, y,
 				      1, 1);
-      
+
+      gtk_widget_set_visible((GtkWidget *) port_editor,
+			     TRUE);
+
       plugin_port = plugin_port->next;
       
       y++;      

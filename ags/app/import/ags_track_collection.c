@@ -169,6 +169,7 @@ ags_track_collection_applicable_interface_init(AgsApplicableInterface *applicabl
 void
 ags_track_collection_init(AgsTrackCollection *track_collection)
 {
+  GtkLabel *label;
   GtkScrolledWindow *scrolled_window;
 
   gtk_orientable_set_orientation(GTK_ORIENTABLE(track_collection),
@@ -210,7 +211,8 @@ ags_track_collection_init(AgsTrackCollection *track_collection)
 		 (GtkWidget *) scrolled_window);
   
   track_collection->track_mapper_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-							      0);
+							      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_scrolled_window_set_child(scrolled_window,
 				(GtkWidget *) track_collection->track_mapper_box);
 
@@ -558,8 +560,8 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
       }
     }
   }
-  
-  track_collection->default_length = numerator * (numerator / denominator);
+
+  track_collection->default_length = 16 / denominator;
   
   /* collect */
   xpath_context = xmlXPathNewContext(track_collection->midi_doc);

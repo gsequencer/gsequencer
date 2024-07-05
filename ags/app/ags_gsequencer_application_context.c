@@ -81,6 +81,11 @@
 #include <pango/pangofc-fontmap.h>
 #endif
 
+#if defined(AGS_OSX_DMG_ENV)
+#include <Cocoa/Cocoa.h>
+#include <Foundation/Foundation.h>
+#endif
+
 #include <sys/types.h>
 
 #if !defined(AGS_W32API)
@@ -5672,8 +5677,84 @@ ags_gsequencer_application_context_loader_timeout(AgsGSequencerApplicationContex
 gboolean
 ags_gsequencer_application_context_update_ui_timeout(AgsGSequencerApplicationContext *gsequencer_application_context)
 {
+  static gint tic = 0;
+  
   if(ags_gsequencer_application_context_update_ui){
     ags_ui_provider_update_ui(AGS_UI_PROVIDER(gsequencer_application_context));
+
+#if defined(AGS_OSX_DMG_ENV)    
+    if(tic == 0 &&
+       getenv("GTK_THEME") == NULL){
+      GtkSettings *settings;
+      
+      NSAppearance *appearance = NSApp.mainWindow.effectiveAppearance;
+      NSString *interface_style = appearance.name;
+    
+      gchar *theme;
+      gchar *has_theme;
+      
+      gboolean dark_mode;
+      gboolean has_dark_mode;
+      
+      settings = gtk_settings_get_default();
+      
+      theme = "Adwaita";
+      has_theme = "Adwaita";
+      
+      dark_mode = FALSE;
+      has_dark_mode = FALSE;
+      
+      g_object_get(settings,
+		   "gtk-theme-name", &has_theme,
+		   "gtk-application-prefer-dark-theme", &has_dark_mode,
+		   NULL);
+    
+      if([interface_style isEqualToString:NSAppearanceNameDarkAqua]){
+	theme = "Adwaita:dark";
+
+	dark_mode = TRUE;
+      }else if([interface_style isEqualToString:NSAppearanceNameVibrantDark]){
+	theme = "Adwaita:dark";
+
+	dark_mode = TRUE;
+      }else if([interface_style isEqualToString:NSAppearanceNameAccessibilityHighContrastAqua]){
+	theme = "HighContrast";
+      }else if([interface_style isEqualToString:NSAppearanceNameAccessibilityHighContrastDarkAqua]){
+	theme = "HighContrast:dark";
+
+	dark_mode = TRUE;
+      }else if([interface_style isEqualToString:NSAppearanceNameAccessibilityHighContrastVibrantDark]){
+	theme = "HighContrast:dark";
+
+	dark_mode = TRUE;
+      }
+
+      if((dark_mode &&
+	  (!g_strcmp0(has_theme, "Adwaita:dark") == FALSE) &&
+	  (!g_strcmp0(has_theme, "HighContrast:dark") == FALSE)) ||
+	 (!dark_mode &&
+	  (!g_strcmp0(has_theme, "Adwaita:dark") ||
+	   !g_strcmp0(has_theme, "HighContrast:dark")))){
+	g_message("theme change %s -> theme", has_theme, theme);
+      
+	g_object_set(settings,
+		     "gtk-theme-name", theme,
+		     "gtk-application-prefer-dark-theme", dark_mode,
+		     NULL);
+
+	gtk_widget_queue_draw(ags_ui_provider_get_window(AGS_UI_PROVIDER(gsequencer_application_context)));
+      }
+      
+      g_free(has_theme);
+    }
+
+    tic++;
+
+    if(AGS_UI_PROVIDER_UPDATE_UI_TIMEOUT >= 1.0 ||
+       tic >= (gint)  (1.0 / AGS_UI_PROVIDER_UPDATE_UI_TIMEOUT)){
+      tic = 0;
+    }
+#endif
   }
   
   return(ags_gsequencer_application_context_update_ui);

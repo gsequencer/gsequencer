@@ -2197,10 +2197,10 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
 
   audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
 
+  allocated_frame_count = buffer_size;
+
   if(frame_count > buffer_size){
     allocated_frame_count = frame_count;
-  }else{
-    allocated_frame_count = buffer_size;
   }
 
   buffer = ags_stream_alloc(allocated_frame_count,

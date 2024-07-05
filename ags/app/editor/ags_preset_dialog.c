@@ -130,7 +130,7 @@ ags_preset_dialog_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_preset_dialog = g_type_register_static(GTK_TYPE_DIALOG,
+    ags_type_preset_dialog = g_type_register_static(GTK_TYPE_WINDOW,
 						    "AgsPresetDialog", &ags_preset_dialog_info,
 						    0);
 
@@ -288,7 +288,9 @@ ags_preset_dialog_init(AgsPresetDialog *preset_dialog)
 		       (GtkWidget *) vbox);
 
   gtk_widget_set_valign(vbox,
-			GTK_ALIGN_START);
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign(vbox,
+			GTK_ALIGN_FILL);
 
   gtk_widget_set_hexpand(vbox,
 			 TRUE);

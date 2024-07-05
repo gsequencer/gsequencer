@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -31,6 +31,9 @@
 #include <ags/audio/ags_fluid_interpolate_linear_util.h>
 #include <ags/audio/ags_fluid_interpolate_4th_order_util.h>
 #include <ags/audio/ags_fluid_interpolate_7th_order_util.h>
+#include <ags/audio/ags_pitch_2x_alias_util.h>
+#include <ags/audio/ags_pitch_4x_alias_util.h>
+#include <ags/audio/ags_pitch_16x_alias_util.h>
 
 G_BEGIN_DECLS
 

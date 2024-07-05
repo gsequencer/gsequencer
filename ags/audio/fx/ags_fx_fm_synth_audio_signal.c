@@ -171,7 +171,7 @@ ags_fx_fm_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_a
   guint midi_start_mapping;
   gint midi_note;
   guint x0_256th, x1_256th;
-  guint64 note_256th_offset_counter;
+  guint64 note_256th_offset_lower;
   gdouble note_256th_delay;
   guint format;
   guint samplerate;
@@ -266,7 +266,7 @@ ags_fx_fm_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_a
 
   g_rec_mutex_lock(fx_fm_synth_audio_processor_mutex);
 
-  note_256th_offset_counter = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_fm_synth_audio_processor)->note_256th_offset_counter;
+  note_256th_offset_lower = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_fm_synth_audio_processor)->note_256th_offset_lower;
 
   note_256th_delay = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_fm_synth_audio_processor)->note_256th_delay;
   
@@ -1196,20 +1196,20 @@ ags_fx_fm_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_a
     }else{
       g_rec_mutex_lock(fx_fm_synth_audio_processor_mutex);
 
-      note_256th_offset_counter = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_fm_synth_audio_processor)->note_256th_offset_counter;
+      note_256th_offset_lower = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_fm_synth_audio_processor)->note_256th_offset_lower;
 
       note_256th_delay = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_fm_synth_audio_processor)->note_256th_delay;
 
       g_rec_mutex_unlock(fx_fm_synth_audio_processor_mutex);
 
       ags_fm_synth_util_set_frame_count(channel_data->synth_0,
-				     (guint) floor((double) (note_256th_offset_counter - x0_256th) * note_256th_delay * (double) buffer_size) + (guint) floor(delay * (double) buffer_size));
+				     (guint) floor((double) (note_256th_offset_lower - x0_256th) * note_256th_delay * (double) buffer_size) + (guint) floor(delay * (double) buffer_size));
 
       ags_fm_synth_util_set_offset(channel_data->synth_0,
 				(guint) floor(((double) (offset_counter - x0) * delay + delay_counter) * (double) buffer_size));
 
       ags_fm_synth_util_set_offset_256th(channel_data->synth_0,
-				      (guint) floor((double) (note_256th_offset_counter - x0_256th) * note_256th_delay * (double) buffer_size));
+				      (guint) floor((double) (note_256th_offset_lower - x0_256th) * note_256th_delay * (double) buffer_size));
     }
     
     ags_fm_synth_util_set_frame_count(channel_data->synth_0,
@@ -1274,20 +1274,20 @@ ags_fx_fm_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_a
     }else{
       g_rec_mutex_lock(fx_fm_synth_audio_processor_mutex);
 
-      note_256th_offset_counter = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_fm_synth_audio_processor)->note_256th_offset_counter;
+      note_256th_offset_lower = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_fm_synth_audio_processor)->note_256th_offset_lower;
 
       note_256th_delay = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_fm_synth_audio_processor)->note_256th_delay;
 
       g_rec_mutex_unlock(fx_fm_synth_audio_processor_mutex);
 
       ags_fm_synth_util_set_frame_count(channel_data->synth_1,
-				     (guint) floor((double) (note_256th_offset_counter - x0_256th) * note_256th_delay * (double) buffer_size) + (guint) floor(delay * (double) buffer_size));
+				     (guint) floor((double) (note_256th_offset_lower - x0_256th) * note_256th_delay * (double) buffer_size) + (guint) floor(delay * (double) buffer_size));
 
       ags_fm_synth_util_set_offset(channel_data->synth_1,
 				(guint) floor(((double) (offset_counter - x0) * delay + delay_counter) * (double) buffer_size));
 
       ags_fm_synth_util_set_offset_256th(channel_data->synth_1,
-				      (guint) floor((double) (note_256th_offset_counter - x0_256th) * note_256th_delay * (double) buffer_size));
+				      (guint) floor((double) (note_256th_offset_lower - x0_256th) * note_256th_delay * (double) buffer_size));
     }
 
     g_rec_mutex_lock(source_stream_mutex);
@@ -1347,20 +1347,20 @@ ags_fx_fm_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_a
     }else{
       g_rec_mutex_lock(fx_fm_synth_audio_processor_mutex);
 
-      note_256th_offset_counter = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_fm_synth_audio_processor)->note_256th_offset_counter;
+      note_256th_offset_lower = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_fm_synth_audio_processor)->note_256th_offset_lower;
 
       note_256th_delay = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_fm_synth_audio_processor)->note_256th_delay;
 
       g_rec_mutex_unlock(fx_fm_synth_audio_processor_mutex);
 
       ags_fm_synth_util_set_frame_count(channel_data->synth_2,
-				     (guint) floor((double) (note_256th_offset_counter - x0_256th) * note_256th_delay * (double) buffer_size) + (guint) floor(delay * (double) buffer_size));
+				     (guint) floor((double) (note_256th_offset_lower - x0_256th) * note_256th_delay * (double) buffer_size) + (guint) floor(delay * (double) buffer_size));
 
       ags_fm_synth_util_set_offset(channel_data->synth_2,
 				(guint) floor(((double) (offset_counter - x0) * delay + delay_counter) * (double) buffer_size));
 
       ags_fm_synth_util_set_offset_256th(channel_data->synth_2,
-				      (guint) floor((double) (note_256th_offset_counter - x0_256th) * note_256th_delay * (double) buffer_size));
+				      (guint) floor((double) (note_256th_offset_lower - x0_256th) * note_256th_delay * (double) buffer_size));
     }
 
     g_rec_mutex_lock(source_stream_mutex);
@@ -1425,20 +1425,20 @@ ags_fx_fm_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_a
       }else{
 	g_rec_mutex_lock(fx_fm_synth_audio_processor_mutex);
 
-	note_256th_offset_counter = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_fm_synth_audio_processor)->note_256th_offset_counter;
+	note_256th_offset_lower = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_fm_synth_audio_processor)->note_256th_offset_lower;
 
 	note_256th_delay = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_fm_synth_audio_processor)->note_256th_delay;
 
 	g_rec_mutex_unlock(fx_fm_synth_audio_processor_mutex);
 
 	ags_noise_util_set_frame_count(channel_data->noise_util,
-				       (guint) floor((double) (note_256th_offset_counter - x0_256th) * note_256th_delay * (double) buffer_size) + (guint) floor(delay * (double) buffer_size));
+				       (guint) floor((double) (note_256th_offset_lower - x0_256th) * note_256th_delay * (double) buffer_size) + (guint) floor(delay * (double) buffer_size));
 
 	ags_noise_util_set_offset(channel_data->noise_util,
 				  (guint) floor(((double) (offset_counter - x0) * delay + delay_counter) * (double) buffer_size));
 
 	ags_noise_util_set_offset_256th(channel_data->noise_util,
-					(guint) floor((double) (note_256th_offset_counter - x0_256th) * note_256th_delay * (double) buffer_size));
+					(guint) floor((double) (note_256th_offset_lower - x0_256th) * note_256th_delay * (double) buffer_size));
       }
       
       ags_noise_util_compute(channel_data->noise_util);

@@ -262,6 +262,38 @@ ags_sfz_synth_open_dialog_response_callback(AgsFileDialog *file_dialog, gint res
 }
 
 void
+ags_sfz_synth_synth_pitch_type_callback(GObject *gobject,
+					GParamSpec *pspec,
+					AgsSFZSynth *sfz_synth)
+{
+  AgsFxSFZSynthAudio *fx_sfz_synth_audio;
+    
+  guint selected;
+
+  GValue value = G_VALUE_INIT;
+  
+  selected = gtk_drop_down_get_selected(gobject);
+
+  g_value_init(&value,
+	       G_TYPE_FLOAT);
+  
+  g_value_set_float(&value,
+		    (gfloat) selected);
+
+  /* play */
+  fx_sfz_synth_audio = ags_recall_container_get_recall_audio(sfz_synth->sfz_synth_play_container);
+
+  ags_port_safe_write(fx_sfz_synth_audio->synth_pitch_type,
+		      &value);
+
+  /* recall */
+  fx_sfz_synth_audio = ags_recall_container_get_recall_audio(sfz_synth->sfz_synth_recall_container);
+  
+  ags_port_safe_write(fx_sfz_synth_audio->synth_pitch_type,
+		      &value);
+}
+
+void
 ags_sfz_synth_synth_octave_callback(AgsDial *dial, AgsSFZSynth *sfz_synth)
 {
   AgsAudio *audio;

@@ -1237,8 +1237,9 @@ ags_notation_add(GList *notation,
 					  timestamp);
   g_object_unref(timestamp);
   
-  if(list != NULL){
-    g_critical("timestamp already preset");
+  if(list != NULL &&
+     ags_timestamp_get_ags_offset(AGS_NOTATION(list->data)->timestamp) == ags_timestamp_get_ags_offset(timestamp)){
+    g_critical("timestamp already present");
 
     return(notation);
   }
@@ -1973,7 +1974,7 @@ ags_notation_find_note_256th_range(AgsNotation *notation,
   last = g_list_last(start_note);
   
   length = g_list_length(start_note);
-  position = (length - 1) / 2;
+  position = length / 2;
 
   center = g_list_nth(start_note,
 		      position);
@@ -2059,7 +2060,7 @@ ags_notation_find_note_256th_range(AgsNotation *notation,
 
     length = g_list_position(first,
 			     last) + 1;
-    position = (length - 1) / 2;
+    position = length / 2;
 
     center = g_list_nth(first,
 			position);
@@ -2085,14 +2086,9 @@ ags_notation_find_note_256th_range(AgsNotation *notation,
 
       if(x0_256th >= x_256th_lower &&
 	 x0_256th <= x_256th_upper){
-#if 0
 	retval = g_list_insert_sorted(retval,
 				      list->data,
 				      (GCompareFunc) ags_note_sort_func);
-#else
-	retval = g_list_prepend(retval,
-				list->data);
-#endif
 	g_object_ref(list->data);
       }else{
 	break;
@@ -2117,14 +2113,9 @@ ags_notation_find_note_256th_range(AgsNotation *notation,
 
       if(x0_256th >= x_256th_lower &&
 	 x0_256th <= x_256th_upper){
-#if 0
 	retval = g_list_insert_sorted(retval,
 				      list->data,
 				      (GCompareFunc) ags_note_sort_func);
-#else
-	retval = g_list_prepend(retval,
-				list->data);
-#endif
 	g_object_ref(list->data);
       }else{
 	break;

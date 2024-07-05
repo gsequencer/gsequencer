@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -222,6 +222,7 @@ ags_track_mapper_init(AgsTrackMapper *track_mapper)
 
   gtk_grid_set_column_spacing((GtkGrid *) track_mapper,
 			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+
   gtk_grid_set_row_spacing((GtkGrid *) track_mapper,
 			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
   
@@ -319,8 +320,23 @@ ags_track_mapper_init(AgsTrackMapper *track_mapper)
 		  1, 2,
 		  1, 1);
 
+  /* midi channel */
+  //NOTE:JK: midi only knows 16 channels, -1 means ignore channel information
+  track_mapper->midi_channel = (GtkSpinButton *) gtk_spin_button_new_with_range(-1.0, 16.0, 1.0);
+  gtk_spin_button_set_value(track_mapper->midi_channel,
+			    -1.0);
+
+  gtk_widget_set_valign((GtkWidget *) track_mapper->midi_channel,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) track_mapper->midi_channel,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach((GtkGrid *) track_mapper,
+		  (GtkWidget *) track_mapper->midi_channel,
+		  2, 2,
+		  1, 1);
+
   /* audio channels */
-  //NOTE:JK: midi only knows 16 channels
   track_mapper->audio_channels = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 16.0, 1.0);
   gtk_spin_button_set_value(track_mapper->audio_channels,
 			    2.0);
@@ -332,7 +348,7 @@ ags_track_mapper_init(AgsTrackMapper *track_mapper)
 
   gtk_grid_attach((GtkGrid *) track_mapper,
 		  (GtkWidget *) track_mapper->audio_channels,
-		  2, 2,
+		  3, 2,
 		  1, 1);
 
   /* offset */
@@ -347,7 +363,7 @@ ags_track_mapper_init(AgsTrackMapper *track_mapper)
 
   gtk_grid_attach((GtkGrid *) track_mapper,
 		  (GtkWidget *) track_mapper->offset,
-		  3, 2,
+		  4, 2,
 		  1, 1);
 }
 
@@ -585,14 +601,19 @@ ags_track_mapper_apply(AgsApplicable *applicable)
   g_list_free_full(machine->audio->notation,
 		   g_object_unref);
   
-  machine->audio->notation = imported_notation;
+  machine->audio->notation = NULL;
   
   while(imported_notation != NULL){
-    g_object_ref(imported_notation->data);
+    ags_audio_add_notation(machine->audio,
+			   imported_notation->data);
     
     imported_notation = imported_notation->next;
   }
 
+  g_list_free(track_mapper->notation);
+
+  track_mapper->notation = NULL;
+  
   /* */
   gtk_widget_show(GTK_WIDGET(machine));
 }
@@ -664,12 +685,12 @@ ags_track_mapper_map(AgsTrackMapper *track_mapper)
 
   gchar *segmentation;
 
+  gint midi_channel;
   gdouble delay_factor;
   guint audio_channels;
   guint n_key_on, n_key_off;
   guint x, y, velocity;
   guint x_256th;
-  guint prev_x;
   guint default_length;
   guint i;
   gboolean pattern;
@@ -682,6 +703,8 @@ ags_track_mapper_map(AgsTrackMapper *track_mapper)
   midi_util.major = 1;
   midi_util.minor = 0;  
 
+  midi_channel = gtk_spin_button_get_value_as_int(track_mapper->midi_channel);
+  
   /* map notation */
   notation_start =
     notation = NULL;
@@ -713,8 +736,6 @@ ags_track_mapper_map(AgsTrackMapper *track_mapper)
 
   timestamp->timer.ags_offset.offset = 0;
   
-  prev_x = 0;
-
   delay_factor = AGS_SOUNDCARD_DEFAULT_DELAY_FACTOR;  
 
   /* segmentation */
@@ -729,7 +750,7 @@ ags_track_mapper_map(AgsTrackMapper *track_mapper)
 	   &denominator,
 	   &numerator);
     
-    delay_factor = 1.0 / numerator * (numerator / denominator);
+    delay_factor = 1.0 / (16.0 / denominator);
 
     g_free(segmentation);
   }
@@ -741,16 +762,39 @@ ags_track_mapper_map(AgsTrackMapper *track_mapper)
 
     while(child != NULL){
       if(child->type == XML_ELEMENT_NODE){
+	xmlChar *event;
+	xmlChar *key;
 	xmlChar *str;
 
 	glong delta_time;
 
-	if(!xmlStrncmp(xmlGetProp(child,
-				  BAD_CAST "event"),
+	event = xmlGetProp(child,
+			   BAD_CAST "event");
+	
+	if(!xmlStrncmp(event,
 		       "note-on",
 		       8)){
+	  key = NULL;
+	  
+	  if(midi_channel >= 0){
+	    key = xmlGetProp(child,
+			     BAD_CAST "key");
+
+	    if(key != (gint) g_ascii_strtoll(key,
+					     NULL,
+					     10)){
+	      child = child->next;
+	      
+	      xmlFree(event);
+	      xmlFree(key);
+	      
+	      continue;
+	    }
+	  }
+	  
 	  str = xmlGetProp(child,
 			   BAD_CAST "delta-time");
+
 	  delta_time = g_ascii_strtod(str,
 				      NULL);
 
@@ -786,8 +830,6 @@ ags_track_mapper_map(AgsTrackMapper *track_mapper)
 					      10);
 	  xmlFree(str);
 
-	  notation = notation_start;
-	  
 	  for(i = 0; i < audio_channels; i++){
 	    note = ags_note_new();
 	    note->x[0] = x;
@@ -802,8 +844,14 @@ ags_track_mapper_map(AgsTrackMapper *track_mapper)
 #if 0	    
 	    note->attack.imag = (gdouble) velocity / 127.0;
 #endif
+
+	    ags_timestamp_set_ags_offset(timestamp,
+					 AGS_NOTATION_DEFAULT_OFFSET * floor(x / AGS_NOTATION_DEFAULT_OFFSET));
+
+	    notation = ags_notation_find_near_timestamp(notation_start, i,
+							timestamp);
 	    
-	    if(x >= prev_x + AGS_NOTATION_DEFAULT_OFFSET){
+	    if(notation == NULL){
 	      current_notation = ags_notation_new(NULL,
 						  i);
 	      ags_timestamp_set_ags_offset(current_notation->timestamp,
@@ -811,31 +859,41 @@ ags_track_mapper_map(AgsTrackMapper *track_mapper)
 	      
 	      notation_start = ags_notation_add(notation_start,
 						current_notation);
-
 	    }else{
-	      ags_timestamp_set_ags_offset(timestamp,
-					   AGS_NOTATION_DEFAULT_OFFSET * floor(x / AGS_NOTATION_DEFAULT_OFFSET));
-
-	      notation = ags_notation_find_near_timestamp(notation_start, i,
-							  timestamp);
 	      current_notation = notation->data;
 	    }
 	    
 	    ags_notation_add_note(current_notation,
 				  note,
 				  FALSE);
-	    
-	    notation = notation->next;
 	  }
 
 	  //	  g_object_unref(note);
 	  n_key_on++;
-	}else if(!xmlStrncmp(xmlGetProp(child,
-					BAD_CAST "event"),
+	}else if(!xmlStrncmp(event,
 			     "note-off",
 			     9)){	  
+	  key = NULL;
+	  
+	  if(midi_channel >= 0){
+	    key = xmlGetProp(child,
+			     BAD_CAST "key");
+
+	    if(key != (gint) g_ascii_strtoll(key,
+					     NULL,
+					     10)){
+	      child = child->next;
+	      
+	      xmlFree(event);
+	      xmlFree(key);
+	      
+	      continue;
+	    }
+	  }
+
 	  str = xmlGetProp(child,
 			   BAD_CAST "delta-time");
+
 	  delta_time = g_ascii_strtod(str,
 				      NULL);
 
@@ -872,43 +930,74 @@ ags_track_mapper_map(AgsTrackMapper *track_mapper)
 	  xmlFree(str);
 	  
 	  for(i = 0; i < audio_channels; i++){
-	    notation = g_list_last(notation_start);
+	    list = NULL;
+	    
+	    ags_timestamp_set_ags_offset(timestamp,
+					 AGS_NOTATION_DEFAULT_OFFSET * floor(x / AGS_NOTATION_DEFAULT_OFFSET));
 
-	    while(notation != NULL){
+	    notation = ags_notation_find_near_timestamp(notation_start, i,
+							timestamp);
+
+	    if(notation == NULL){
+	      if(AGS_NOTATION_DEFAULT_OFFSET * floor(x / AGS_NOTATION_DEFAULT_OFFSET) - AGS_NOTATION_DEFAULT_OFFSET >= 0){
+		ags_timestamp_set_ags_offset(timestamp,
+					     AGS_NOTATION_DEFAULT_OFFSET * floor(x / AGS_NOTATION_DEFAULT_OFFSET) - AGS_NOTATION_DEFAULT_OFFSET);
+
+		notation = ags_notation_find_near_timestamp(notation_start, i,
+							    timestamp);
+	      }
+	    }
+	    
+	    if(notation != NULL){
 	      list = ags_note_find_prev(AGS_NOTATION(notation->data)->note,
 					x, y);
+	    }
+	    
+	    if(list == NULL){
+	      if(AGS_NOTATION_DEFAULT_OFFSET * floor(x / AGS_NOTATION_DEFAULT_OFFSET) - AGS_NOTATION_DEFAULT_OFFSET >= 0){
+		ags_timestamp_set_ags_offset(timestamp,
+					     AGS_NOTATION_DEFAULT_OFFSET * floor(x / AGS_NOTATION_DEFAULT_OFFSET) - AGS_NOTATION_DEFAULT_OFFSET);
 
-	      if(list != NULL){
-		note = list->data;
+		notation = ags_notation_find_near_timestamp(notation_start, i,
+							    timestamp);
 
-		if(note->x[0] == x){
-		  note->x[1] = x + 1;
-		}else{
-		  note->x[1] = x;
+		if(notation != NULL){
+		  list = ags_note_find_prev(AGS_NOTATION(notation->data)->note,
+					    x, y);
 		}
+	      }
+	    }
+	      
+	    if(list != NULL){
+	      note = list->data;
 
-		if(note->x_256th[0] == x_256th){
-		  note->x_256th[1] = x_256th + 1;
-		}else{
-		  note->x_256th[1] = x_256th;
-		}
+	      if(note->x[0] == x){
+		note->x[1] = x + 1;
+	      }else{
+		note->x[1] = x;
+	      }
+
+	      if(note->x_256th[0] == x_256th){
+		note->x_256th[1] = x_256th + 1;
+	      }else{
+		note->x_256th[1] = x_256th;
+	      }
 		
-		note->y = y;
+	      note->y = y;
 
-		/* velocity */
+	      /* velocity */
 #if 0	    
-		note->release.imag = (gdouble) velocity / 127.0;
+	      note->release.imag = (gdouble) velocity / 127.0;
 #endif
 		
-		break;
-	      }
-	    
-	      notation = notation->prev;
-	    }
+	      break;
+	    }	    
 	  }
 	  
 	  n_key_off++;
 	}
+
+	xmlFree(event);
       }
 
       child = child->next;

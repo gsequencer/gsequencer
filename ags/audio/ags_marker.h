@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -72,6 +72,8 @@ struct _AgsMarker
   gdouble y;
 
   gchar *marker_name;
+
+  gchar *marker_data;
 };
 
 struct _AgsMarkerClass
@@ -89,13 +91,16 @@ void ags_marker_set_flags(AgsMarker *marker, AgsMarkerFlags flags);
 void ags_marker_unset_flags(AgsMarker *marker, AgsMarkerFlags flags);
 
 gint ags_marker_sort_func(gconstpointer a,
-				gconstpointer b);
+			  gconstpointer b);
 
 guint ags_marker_get_x(AgsMarker *marker);
 void ags_marker_set_x(AgsMarker *marker, guint x);
 
 gdouble ags_marker_get_y(AgsMarker *marker);
 void ags_marker_set_y(AgsMarker *marker, gdouble y);
+
+gchar* ags_marker_get_data(AgsMarker *marker);
+void ags_marker_set_data(AgsMarker *marker, gchar *data);
 
 AgsMarker* ags_marker_duplicate(AgsMarker *marker);
 

@@ -27,6 +27,7 @@
 #include <ags/app/ags_gsequencer_application_context.h>
 #include <ags/app/ags_gsequencer_resource.h>
 #include <ags/app/ags_window.h>
+#include <ags/app/ags_composite_editor.h>
 
 #include <ags/i18n.h>
 
@@ -113,6 +114,7 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   GSimpleAction *quit_action;
 
   GSimpleAction *present_app_window_action;
+  GSimpleAction *present_preferences_window_action;
   GSimpleAction *present_meta_data_window_action;
   GSimpleAction *present_export_window_action;
   GSimpleAction *present_smf_import_window_action;
@@ -369,6 +371,14 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
 			  G_ACTION(present_app_window_action));
 
+  /* present preferences window */
+  present_preferences_window_action = g_simple_action_new("present_preferences_window",
+						  NULL);
+  g_signal_connect(present_preferences_window_action, "activate",
+		   G_CALLBACK(ags_gsequencer_present_preferences_window_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(present_preferences_window_action));
+  
   /* present meta-data window */
   present_meta_data_window_action = g_simple_action_new("present_meta_data_window",
 							NULL);
@@ -673,6 +683,9 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
 		   G_CALLBACK(ags_gsequencer_edit_tempo_callback), gsequencer_app);
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
 			  G_ACTION(edit_tempo_action));
+
+  /* initial refresh window menu */
+  ags_gsequencer_application_refresh_window_menu(gsequencer_app);
 }
 
 void
@@ -911,16 +924,29 @@ ags_gsequencer_application_open(GApplication *application,
   
   if(n_files > 0 && files != NULL && files[0] != NULL){
     GtkWidget *window;
-  
+    GtkWidget *composite_editor;
+    
     window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-    if(window != NULL){
+    composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+
+    if(composite_editor != NULL){
       GList *start_machine, *machine;
       GList *start_list, *list;
 
+      ags_connectable_disconnect(AGS_CONNECTABLE(composite_editor));
+      
       /* destroy editor */
+      g_menu_remove_all(AGS_COMPOSITE_EDITOR(composite_editor)->machine_selector->add_index_menu);
+
+      AGS_COMPOSITE_EDITOR(composite_editor)->machine_selector->add_index_item_count = 0;      
+
+      g_free(AGS_COMPOSITE_EDITOR(composite_editor)->machine_selector->add_index_item);
+      
+      AGS_COMPOSITE_EDITOR(composite_editor)->machine_selector->add_index_item = NULL;
+      
       list =
-	start_list = ags_machine_selector_get_machine_radio_button(AGS_WINDOW(window)->composite_editor->machine_selector);
+	start_list = ags_machine_selector_get_machine_radio_button(AGS_COMPOSITE_EDITOR(composite_editor)->machine_selector);
 
       while(list != NULL){
 	ags_machine_selector_remove_machine_radio_button(AGS_WINDOW(window)->composite_editor->machine_selector,
@@ -964,8 +990,15 @@ ags_gsequencer_application_open(GApplication *application,
 
       ags_ui_provider_set_machine(AGS_UI_PROVIDER(application_context),
 				  NULL);
-      
-      AGS_WINDOW(window)->filename = g_file_get_path(files[0]);
+
+      AGS_COMPOSITE_EDITOR(composite_editor)->selected_machine = NULL;
+
+      /* connect and and open filename */
+      ags_connectable_connect(AGS_CONNECTABLE(composite_editor));
+
+      if(files != NULL){
+	AGS_WINDOW(window)->filename = g_file_get_path(files[0]);
+      }
     }
   }
 }
@@ -998,6 +1031,14 @@ ags_gsequencer_application_refresh_window_menu(AgsGSequencerApplication *app)
   g_menu_insert_item(app->window_menu,
 		     -1,
 		     item);
+
+  if(gtk_widget_is_visible(ags_ui_provider_get_preferences(AGS_UI_PROVIDER(application_context)))){
+    item = g_menu_item_new(i18n("preferences"),
+			   "app.present_preferences_window");
+    g_menu_insert_item(app->window_menu,
+		       -1,
+		       item);
+  }
 
   if(gtk_widget_is_visible(ags_ui_provider_get_meta_data_window(AGS_UI_PROVIDER(application_context)))){
     item = g_menu_item_new(i18n("meta-data"),

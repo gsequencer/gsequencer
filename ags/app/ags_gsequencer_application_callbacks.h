@@ -69,6 +69,9 @@ void ags_gsequencer_quit_callback(GAction *action, GVariant *parameter,
 void ags_gsequencer_present_app_window_callback(GAction *action, GVariant *parameter,
 						AgsGSequencerApplication *gsequencer_app);
 
+void ags_gsequencer_present_preferences_window_callback(GAction *action, GVariant *parameter,
+							AgsGSequencerApplication *gsequencer_app);
+
 void ags_gsequencer_present_meta_data_window_callback(GAction *action, GVariant *parameter,
 						      AgsGSequencerApplication *gsequencer_app);
 

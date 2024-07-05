@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,8 @@
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 #include <ags/audio/ags_resample_util.h>
+
+#include <string.h>
 
 #include <ags/i18n.h>
 
@@ -336,6 +338,8 @@ ags_wave_init(AgsWave *wave)
 
   wave->buffer = NULL;
   wave->selection = NULL;
+
+  wave->clipboard_type = g_strdup(AGS_WAVE_CLIPBOARD_BASE64_TYPE);
 }
 
 void
@@ -3091,7 +3095,7 @@ ags_wave_copy_selection(AgsWave *wave)
 	     BAD_CAST (gstr));
 
   g_free(gstr);
-
+  
   return(wave_node);
 }
 
@@ -3143,6 +3147,338 @@ ags_wave_cut_selection(AgsWave *wave)
   ags_wave_free_selection(wave);
 
   return(wave_node);
+}
+
+/**
+ * ags_wave_copy_selection_as_base64:
+ * @wave: the #AgsWave
+ *
+ * Copy selection to clipboard.
+ *
+ * Returns: (transfer none): the selection as base64
+ *
+ * Since: 6.16.0
+ */
+gchar*
+ags_wave_copy_selection_as_base64(AgsWave *wave)
+{
+  AgsBuffer *buffer;
+
+  AgsTimestamp *timestamp;
+
+  GList *start_selection, *selection;
+
+  gchar *wave_base64;
+  gchar *format_str;
+
+  guint line;
+  guint64 x_boundary;
+  AgsSoundcardFormat format;
+  guint samplerate;
+  guint buffer_size;
+  guint64 x;
+  gint offset;
+  
+  GRecMutex *wave_mutex;
+
+  if(!AGS_IS_WAVE(wave)){
+    return(NULL);
+  }
+
+  /* get wave mutex */
+  wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
+
+  wave_base64 = g_malloc(AGS_WAVE_CLIPBOARD_MAX_SIZE * sizeof(gchar));
+
+  memset(wave_base64, 0, AGS_WAVE_CLIPBOARD_MAX_SIZE * sizeof(gchar));
+
+  offset = 0;
+
+  /* buffer format */
+  line = 0;
+  
+  format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  
+  g_object_get(wave,
+	       "line", &line,
+	       "format", &format,
+	       NULL);
+
+  format_str = NULL;
+  
+  switch(format){    
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+    {
+      format_str = "s8";
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      format_str = "s16";
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      format_str = "s24";
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      format_str = "s32";
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+    {
+      format_str = "s64";
+    }
+    break;
+  case AGS_SOUNDCARD_FLOAT:
+    {
+      format_str = "float";
+    }
+    break;
+  case AGS_SOUNDCARD_DOUBLE:
+    {
+      format_str = "double";
+    }
+    break;
+  case AGS_SOUNDCARD_COMPLEX:
+    {
+      format_str = "AgsComplex";
+    }
+    break;
+  }
+
+  /* selection */
+  x_boundary = 0;
+
+  g_rec_mutex_lock(wave_mutex);
+
+  selection =
+    start_selection = g_list_copy(wave->selection);
+
+  g_rec_mutex_unlock(wave_mutex);
+
+  if(selection != NULL){
+    g_object_get(selection->data,
+		 "selection-x0", &x_boundary,
+		 NULL);
+    x_boundary = AGS_BUFFER(selection->data)->selection_x0;
+  }else{
+    x_boundary = 0;
+  }
+  
+  /* timestamp */
+  g_object_get(wave,
+	       "timestamp", &timestamp,
+	       NULL);
+
+  /* header */
+  offset = sprintf(wave_base64,
+		   "program=ags type=%s version=%s format=%s line=%u buffer-format=%s x-boundary=%lu timestamp=%lu\n",
+		   AGS_WAVE_CLIPBOARD_BASE64_TYPE,
+		   AGS_WAVE_CLIPBOARD_VERSION,
+		   AGS_WAVE_CLIPBOARD_FORMAT,
+		   line,
+		   format_str,
+		   x_boundary,
+		   ags_timestamp_get_ags_offset(timestamp));
+  
+
+  /* body */
+  while(selection != NULL){
+    gchar *base64_str;
+    guchar *cbuffer;
+
+    gint cbuffer_size;
+    
+    GRecMutex *buffer_mutex;
+
+    buffer = AGS_BUFFER(selection->data);
+
+    buffer_mutex = AGS_BUFFER_GET_OBJ_MUTEX(buffer);
+
+    /* buffer format */
+    format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+    buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+
+    x = 0;
+    
+    g_object_get(buffer,
+		 "format", &format,
+		 "samplerate", &samplerate,
+		 "buffer-size", &buffer_size,
+		 "x", &x,
+		 NULL);
+
+    format_str = NULL;
+  
+    switch(format){    
+    case AGS_SOUNDCARD_SIGNED_8_BIT:
+      {
+	format_str = "s8";
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_16_BIT:
+      {
+	format_str = "s16";
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_24_BIT:
+      {
+	format_str = "s24";
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_32_BIT:
+      {
+	format_str = "s32";
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_64_BIT:
+      {
+	format_str = "s64";
+      }
+      break;
+    case AGS_SOUNDCARD_FLOAT:
+      {
+	format_str = "float";
+      }
+      break;
+    case AGS_SOUNDCARD_DOUBLE:
+      {
+	format_str = "double";
+      }
+      break;
+    case AGS_SOUNDCARD_COMPLEX:
+      {
+	format_str = "AgsComplex";
+      }
+      break;
+    }
+
+    cbuffer = NULL;
+    cbuffer_size = 0;
+
+    g_rec_mutex_lock(buffer_mutex);
+    
+    switch(buffer->format){
+    case AGS_SOUNDCARD_SIGNED_8_BIT:
+      {
+	cbuffer = ags_buffer_util_s8_to_char_buffer((gint8 *) buffer->data,
+						    buffer_size);
+	cbuffer_size = buffer_size * sizeof(guchar);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_16_BIT:
+      {
+	cbuffer = ags_buffer_util_s16_to_char_buffer((gint16 *) buffer->data,
+						     buffer_size);
+	cbuffer_size = 2 * buffer_size * sizeof(guchar);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_24_BIT:
+      {
+	cbuffer = ags_buffer_util_s24_to_char_buffer((gint32 *) buffer->data,
+						     buffer_size);
+	cbuffer_size = 4 * buffer_size * sizeof(guchar);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_32_BIT:
+      {
+	cbuffer = ags_buffer_util_s32_to_char_buffer((gint32 *) buffer->data,
+						     buffer_size);
+	cbuffer_size = 4 * buffer_size * sizeof(guchar);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_64_BIT:
+      {
+	cbuffer = ags_buffer_util_s64_to_char_buffer((gint64 *) buffer->data,
+						     buffer_size);
+	cbuffer_size = 8 * buffer_size * sizeof(guchar);
+      }
+      break;
+    }
+
+    g_rec_mutex_unlock(buffer_mutex);
+
+    base64_str = g_base64_encode(cbuffer,
+				 cbuffer_size);
+
+    g_free(cbuffer);
+
+    if(offset + 127 + strlen(base64_str) >= AGS_WAVE_CLIPBOARD_MAX_SIZE){
+      g_free(base64_str);
+      
+      break;
+    }
+    
+    offset += sprintf(wave_base64 + offset,
+		      "format=%u samplerate=%u buffer-size=%u x=%lu data-base64=%s\n",
+		      format,
+		      samplerate,
+		      buffer_size,
+		      x,
+		      base64_str);
+
+    g_free(base64_str);
+    
+    selection = selection->next;
+  }
+
+  g_list_free(start_selection);
+  
+  return(wave_base64);
+}
+
+/**
+ * ags_wave_cut_selection_as_base64:
+ * @wave: the #AgsWave
+ *
+ * Cut selection to clipboard.
+ *
+ * Returns: (transfer none): the selection as base64
+ *
+ * Since: 6.16.0
+ */
+gchar*
+ags_wave_cut_selection_as_base64(AgsWave *wave)
+{
+  gchar *wave_base64;
+  
+  GList *selection, *buffer;
+  
+  GRecMutex *wave_mutex;
+
+  if(!AGS_IS_WAVE(wave)){
+    return(NULL);
+  }
+
+  /* get wave mutex */
+  wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
+
+  /* copy selection */
+  wave_base64 = ags_wave_copy_selection_as_base64(wave);
+
+  /* cut */
+  g_rec_mutex_lock(wave_mutex);
+
+  selection = wave->selection;
+
+  while(selection != NULL){
+    wave->buffer = g_list_remove(wave->buffer,
+				 selection->data);
+    g_object_unref(selection->data);
+    
+    selection = selection->next;
+  }
+
+  g_rec_mutex_unlock(wave_mutex);
+
+  /* free selection */
+  ags_wave_free_selection(wave);
+
+  return(wave_base64);
 }
 
 guint64
@@ -4456,6 +4792,766 @@ ags_wave_insert_from_clipboard_extended(AgsWave *wave,
       }
     }
   }
+}
+
+/**
+ * ags_wave_insert_base64_from_clipboard:
+ * @wave: the #AgsWave
+ * @wave_base64: the clipboard base64 data
+ * @reset_x_offset: if %TRUE @x_offset used as cursor
+ * @x_offset: region start cursor offset
+ * @delay: the delay to be used
+ * @attack: the attack to be used
+ *
+ * Paste previously copied buffers. 
+ *
+ * Since: 6.16.0
+ */
+void
+ags_wave_insert_base64_from_clipboard(AgsWave *wave,
+				      gchar *wave_base64,
+				      gboolean reset_x_offset, guint64 x_offset,
+				      gdouble delay, guint attack)
+{
+  ags_wave_insert_base64_from_clipboard_extended(wave,
+						 wave_base64,
+						 reset_x_offset, x_offset,
+						 delay, attack,
+						 FALSE, FALSE);
+}
+
+/**
+ * ags_wave_insert_base64_from_clipboard_extended:
+ * @wave: the #AgsWave
+ * @wave_base64: the clipboard base64 data
+ * @reset_x_offset: if %TRUE @x_offset used as cursor
+ * @x_offset: region start cursor offset
+ * @delay: the delay to be used
+ * @attack: the attack to be used
+ * @match_line: only paste if channel matches
+ * @do_replace: if %TRUE current data is replaced, otherwise additive mixing is performed 
+ * 
+ * Paste previously copied buffers. 
+ * 
+ * Since: 6.16.0
+ */
+void
+ags_wave_insert_base64_from_clipboard_extended(AgsWave *wave,
+					       gchar *wave_base64,
+					       gboolean reset_x_offset, guint64 x_offset,
+					       gdouble delay, guint attack,
+					       gboolean match_line, gboolean do_replace)
+{
+  AgsBuffer *buffer;
+
+  AgsTimestamp *timestamp;
+
+  char *program, *version, *type, *format;
+  char *buffer_format;
+  guint64 x_boundary;
+
+  guint64 timestamp_offset;
+  guint line;
+  guint64 base64_timestamp_offset;
+  guint64 start_x_val;
+  guint64 current_position;
+  gint64 offset;
+  guint target_frame_count, frame_count;
+  gint n_items;
+  
+  gchar *tmp_buffer;
+  
+  timestamp = ags_wave_get_timestamp(wave);
+
+  if(!AGS_IS_TIMESTAMP(timestamp)){
+    return;
+  }
+
+  timestamp_offset = ags_timestamp_get_ags_offset(timestamp);
+
+  tmp_buffer = g_malloc(AGS_WAVE_CLIPBOARD_MAX_SIZE * sizeof(gchar));
+    
+  /* header */
+  program = NULL;
+  type = NULL;
+  version = NULL;
+  format = NULL;
+
+  line = 0;
+  
+  buffer_format = NULL;
+
+  x_boundary = 0;
+
+  base64_timestamp_offset = 0;
+  
+  if(wave_base64 != NULL){
+    program = NULL;
+    type = NULL;
+    version = NULL;
+    format = NULL;
+
+    buffer_format = NULL;
+
+    x_boundary = 0;
+    base64_timestamp_offset = 0;
+    
+    n_items = sscanf(wave_base64,
+		     "program=%ms type=%ms version=%ms format=%ms line=%u buffer-format=%ms x-boundary=%lu timestamp=%lu\n",
+		     &program,
+		     &type,
+		     &version,
+		     &format,
+		     &line,
+		     &buffer_format,
+		     &x_boundary,
+		     &base64_timestamp_offset);
+
+    if(n_items != 8){
+      if(program != NULL){
+	free(program);
+      }
+    
+      if(version != NULL){
+	free(version);
+      }
+
+      if(type != NULL){
+	free(type);
+      }
+      
+      if(format != NULL){
+	free(format);
+      }
+
+      if(buffer_format != NULL){
+	free(buffer_format);
+      }
+
+      g_free(tmp_buffer);
+      
+      return;
+    }
+    
+    offset = snprintf(tmp_buffer,
+		      AGS_WAVE_CLIPBOARD_MAX_SIZE,
+		      "program=%s type=%s version=%s format=%s line=%u buffer-format=%s x-boundary=%lu timestamp=%lu\n",
+		      program,
+		      type,
+		      version,
+		      format,
+		      line,
+		      buffer_format,
+		      x_boundary,
+		      base64_timestamp_offset);
+
+    if(program == NULL ||
+       type == NULL ||
+       version == NULL ||
+       format == NULL ||
+       buffer_format == NULL ||
+       offset <= 0){      
+      if(program != NULL){
+	free(program);
+      }
+    
+      if(version != NULL){
+	free(version);
+      }
+
+      if(type != NULL){
+	free(type);
+      }
+      
+      if(format != NULL){
+	free(format);
+      }
+
+      if(buffer_format != NULL){
+	free(buffer_format);
+      }
+
+      g_free(tmp_buffer);
+      
+      return;
+    }
+
+    start_x_val = ~0;
+    
+    if(!strncmp("ags", program, 4)){
+      if(!g_strcmp0(AGS_WAVE_CLIPBOARD_FORMAT,
+		    format)){
+	guint current_line;
+	guint64 relative_offset;
+	guint wave_samplerate;
+	guint wave_buffer_size;
+	guint wave_format;
+	guint wave_line;
+
+	gboolean match_timestamp;  
+
+	match_timestamp = TRUE;
+
+	if(!strncmp("6.16.0",
+		    version,
+		    7)){
+	  AgsBuffer *buffer;
+
+	  gpointer resampled_clipboard_data;
+	  gpointer data;
+
+	  char *current_format;
+
+	  char *base64_str;
+	  
+	  void *clipboard_data;
+	  guchar *clipboard_cdata;
+	  
+	  gint64 tmp_offset;
+	  guint current_samplerate;
+	  guint current_buffer_size;
+	  guint64 current_x;
+	  guint word_size;
+	  guint format_val;
+	  gsize clipboard_length;	  
+	  guint copy_mode;
+	  guint64 current_start_x_offset;
+	  guint current_attack;
+	  gboolean do_clear;
+	  
+	  wave_line = 0;
+
+	  wave_samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+	  wave_buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+	  wave_format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+	  
+	  g_object_get(wave,
+		       "line", &wave_line,
+		       "samplerate", &wave_samplerate,
+		       "buffer-size", &wave_buffer_size,
+		       "format", &wave_format,
+		       NULL);
+
+	  if(match_line &&
+	     wave_line != line){
+	    free(program);
+	    free(version);
+	    free(type);
+	    free(format);
+
+	    free(buffer_format);
+
+	    g_free(tmp_buffer);      
+	    
+	    return;
+	  }
+	  
+	  relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * wave_samplerate;
+
+	  do{
+	    current_line = 0;
+	    
+	    current_format = NULL;
+	    
+	    current_samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+	    current_buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+
+	    current_x = 0;
+	  
+	    base64_str = NULL;
+	  
+	    n_items = sscanf(wave_base64 + offset,
+			     "format=%ms samplerate=%u buffer-size=%u x=%lu data-base64=%ms\n",
+			     &current_format,
+			     &current_samplerate,
+			     &current_buffer_size,
+			     &current_x,
+			     &base64_str);
+
+	    if(n_items != 5){
+	      if(current_format != NULL){
+		free(current_format);
+	      }
+
+	      if(base64_str != NULL){
+		free(base64_str);
+	      }
+	      
+	      break;
+	    }
+	    
+	    tmp_offset = snprintf(tmp_buffer,
+				  AGS_WAVE_CLIPBOARD_MAX_SIZE,
+				  "format=%s samplerate=%u buffer-size=%u x=%lu data-base64=%s\n",				  
+				  current_format,
+				  current_samplerate,
+				  current_buffer_size,
+				  current_x,
+				  base64_str);
+	        
+	    if(tmp_offset <= 0 ||
+	       base64_str == NULL){
+	      if(current_format != NULL){
+		free(current_format);
+	      }
+
+	      if(base64_str != NULL){
+		free(base64_str);
+	      }
+	      
+	      break;
+	    }
+
+	    offset += tmp_offset;
+
+	    clipboard_length = 0;
+	    
+	    clipboard_cdata = g_base64_decode(base64_str,
+					      &clipboard_length);	  
+
+	    if(base64_str != NULL){
+	      free(base64_str);
+	    }
+
+	    word_size = 0;
+	    
+	    if(!g_ascii_strncasecmp("8",
+				    current_format,
+				    2)){
+	      format_val = AGS_SOUNDCARD_SIGNED_8_BIT;
+
+	      word_size = sizeof(gint8);
+
+	      clipboard_data = ags_buffer_util_char_buffer_to_s8(clipboard_cdata,
+								 clipboard_length);
+	    }else if(!g_ascii_strncasecmp("16",
+					  current_format,
+					  3)){
+	      format_val = AGS_SOUNDCARD_SIGNED_16_BIT;
+
+	      word_size = sizeof(gint16);
+
+	      clipboard_data = ags_buffer_util_char_buffer_to_s16(clipboard_cdata,
+								  clipboard_length);
+	    }else if(!g_ascii_strncasecmp("24",
+					  current_format,
+					  3)){
+	      format_val = AGS_SOUNDCARD_SIGNED_24_BIT;
+
+	      word_size = sizeof(gint32);
+
+	      clipboard_data = ags_buffer_util_char_buffer_to_s32(clipboard_cdata,
+								  clipboard_length);
+	    }else if(!g_ascii_strncasecmp("32",
+					  current_format,
+					  3)){
+	      format_val = AGS_SOUNDCARD_SIGNED_32_BIT;
+
+	      word_size = sizeof(gint32);
+
+	      clipboard_data = ags_buffer_util_char_buffer_to_s32(clipboard_cdata,
+								  clipboard_length);
+	    }else if(!g_ascii_strncasecmp("64",
+					  current_format,
+					  3)){
+	      format_val = AGS_SOUNDCARD_SIGNED_64_BIT;
+
+	      word_size = sizeof(gint64);
+
+	      clipboard_data = ags_buffer_util_char_buffer_to_s64(clipboard_cdata,
+								  clipboard_length);
+	    }else if(!g_ascii_strncasecmp("float",
+					  current_format,
+					  6)){
+	      format_val = AGS_SOUNDCARD_FLOAT;
+
+	      word_size = sizeof(gfloat);
+
+	      clipboard_data = ags_buffer_util_char_buffer_to_float(clipboard_cdata,
+								    clipboard_length);
+	    }else if(!g_ascii_strncasecmp("double",
+					  current_format,
+					  7)){
+	      format_val = AGS_SOUNDCARD_DOUBLE;
+
+	      word_size = sizeof(gdouble);
+
+	      clipboard_data = ags_buffer_util_char_buffer_to_double(clipboard_cdata,
+								     clipboard_length);
+	    }else if(!g_ascii_strncasecmp("AgsComplex",
+					  current_format,
+					  11)){
+	      format_val = AGS_SOUNDCARD_COMPLEX;
+
+	      word_size = sizeof(AgsComplex);
+
+	      clipboard_data = ags_buffer_util_char_buffer_to_complex(clipboard_cdata,
+								      clipboard_length);
+	    }else{
+	      if(current_format != NULL){
+		free(current_format);
+	      }
+	      
+	      g_free(clipboard_cdata);
+	  
+	      continue;
+	    }
+
+	    if(current_buffer_size * word_size != clipboard_length){
+	      g_free(clipboard_cdata);
+	      g_free(clipboard_data);
+	    
+	      if(current_format != NULL){
+		free(current_format);
+	      }
+	  
+	      continue;
+	    }
+
+	    current_start_x_offset = 0;
+	    
+	    current_attack = 0;
+
+	    current_position = 0;
+	    
+	    if(reset_x_offset){
+	      if(start_x_val == ~0){
+		start_x_val = current_x;
+	      }
+	  
+	      current_position = ags_wave_get_position_for_offset(wave_samplerate,
+								  wave_buffer_size,
+								  x_offset + (current_x - start_x_val),
+								  &current_start_x_offset,
+								  &current_attack);
+	    }else{
+	      current_position = ags_wave_get_position_for_offset(wave_samplerate,
+								  wave_buffer_size,
+								  current_x,
+								  &current_start_x_offset,
+								  &current_attack);
+	    }
+
+	    if(match_timestamp &&
+	       !(current_start_x_offset >= timestamp_offset &&
+		 current_start_x_offset < timestamp_offset + relative_offset)){
+	      g_free(clipboard_cdata);
+	      g_free(clipboard_data);
+	    
+	      if(current_format != NULL){
+		free(current_format);
+	      }
+	      
+	      continue;
+	    }
+
+	    /* find first */
+	    frame_count = current_buffer_size;
+
+	    buffer = ags_wave_find_point(wave,
+					 current_position,
+					 FALSE);
+
+	    if(buffer != NULL &&
+	       do_replace){
+	      void *data;
+
+	      //	      g_message("found %d", current_x);
+	      
+	      data = buffer->data;
+
+	      if(attack != 0){
+		switch(wave_format){
+		case AGS_SOUNDCARD_SIGNED_8_BIT:
+		  {
+		    data = ((gint8 *) data) + attack;
+		  }
+		  break;
+		case AGS_SOUNDCARD_SIGNED_16_BIT:
+		  {
+		    data = ((gint16 *) data) + attack;
+		  }
+		  break;
+		case AGS_SOUNDCARD_SIGNED_24_BIT:
+		  {
+		    data = ((gint32 *) data) + attack;
+		  }
+		  break;
+		case AGS_SOUNDCARD_SIGNED_32_BIT:
+		  {
+		    data = ((gint32 *) data) + attack;
+		  }
+		  break;
+		case AGS_SOUNDCARD_SIGNED_64_BIT:
+		  {
+		    data = ((gint64 *) data) + attack;
+		  }
+		  break;
+		case AGS_SOUNDCARD_FLOAT:
+		  {
+		    data = ((gfloat *) data) + attack;
+		  }
+		  break;
+		case AGS_SOUNDCARD_DOUBLE:
+		  {
+		    data = ((gdouble *) data) + attack;
+		  }
+		  break;
+		default:
+		  g_warning("unknown soundcard format");
+		  
+		  continue;
+		}
+	      }
+		
+	      if(attack + frame_count <= wave_buffer_size){
+		if(wave_format == AGS_SOUNDCARD_DOUBLE){
+		  ags_audio_buffer_util_clear_double(data, 1,
+						     frame_count);
+		}else if(wave_format == AGS_SOUNDCARD_FLOAT){
+		  ags_audio_buffer_util_clear_float(data, 1,
+						    frame_count);
+		}else{		
+		  ags_audio_buffer_util_clear_buffer(data, 1,
+						     frame_count, ags_audio_buffer_util_format_from_soundcard(wave_format));
+		}
+	      }else{
+		if(wave_format == AGS_SOUNDCARD_DOUBLE){
+		  ags_audio_buffer_util_clear_double(data, 1,
+						     wave_buffer_size);
+		}else if(wave_format == AGS_SOUNDCARD_FLOAT){
+		  ags_audio_buffer_util_clear_float(data, 1,
+						    wave_buffer_size);
+		}else{		
+		  ags_audio_buffer_util_clear_buffer(data, 1,
+						     wave_buffer_size - attack, ags_audio_buffer_util_format_from_soundcard(wave_format));
+		}
+	      }
+	    }
+	    
+	    if(buffer == NULL){
+	      buffer = ags_buffer_new();
+	      g_object_set(buffer,
+			   "samplerate", wave_samplerate,
+			   "buffer-size", wave_buffer_size,
+			   "format", wave_format,
+			   NULL);  
+	      
+	      buffer->x = current_position;
+	      
+	      //	      g_message("created %d", current_x);
+	      
+	      ags_wave_add_buffer(wave,
+				  buffer,
+				  FALSE);
+	    }
+
+	    //	    g_message("insert - buffer->x = %lu", buffer->x);
+	    //	    g_message("%d %d", wave_format, format_val);
+	    copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(wave_format),
+							    ags_audio_buffer_util_format_from_soundcard(format_val));
+
+	    if(current_samplerate != wave_samplerate){
+	      AgsResampleUtil resample_util;
+
+	      void *target_data;
+	      
+	      guint allocated_buffer_length;
+
+	      allocated_buffer_length = wave_buffer_size;
+
+	      if(allocated_buffer_length < current_buffer_size){
+		allocated_buffer_length = current_buffer_size;
+	      }
+	    
+	      target_frame_count = ceil((double) frame_count / (double) current_samplerate * (double) wave_samplerate);
+
+	      target_data = ags_stream_alloc(target_frame_count,
+					     format_val);
+
+	      ags_resample_util_init(&resample_util);
+
+	      resample_util.src_ratio = wave_samplerate / current_samplerate;
+
+	      resample_util.input_frames = current_buffer_size;
+	      resample_util.data_in = ags_stream_alloc(allocated_buffer_length,
+						       format_val);
+
+	      resample_util.output_frames = wave_buffer_size;
+	      resample_util.data_out = ags_stream_alloc(allocated_buffer_length,
+							format_val);
+  
+	      resample_util.destination = target_data;
+	      resample_util.destination_stride = 1;
+
+	      resample_util.source = clipboard_data;
+	      resample_util.source_stride = 1;
+
+	      resample_util.buffer_length = allocated_buffer_length;
+	      resample_util.format = format_val;
+	      resample_util.samplerate = current_samplerate;
+  
+	      resample_util.target_samplerate = wave_samplerate;
+
+	      resample_util.buffer = ags_stream_alloc(allocated_buffer_length,
+						      format_val);
+	    
+	      ags_resample_util_compute(&resample_util);  
+
+	      ags_stream_free(resample_util.data_out);
+	      ags_stream_free(resample_util.data_in);
+	      ags_stream_free(resample_util.buffer);
+	    
+	      if(attack + target_frame_count <= wave_buffer_size){
+		ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
+							    target_data, 1, 0,
+							    target_frame_count, copy_mode);
+	      }else{
+		ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
+							    target_data, 1, 0,
+							    wave_buffer_size - attack, copy_mode);
+	      }
+
+	      free(target_data);
+	    }else{
+	      if(attack + frame_count <= wave_buffer_size){
+		ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
+							    clipboard_data, 1, 0,
+							    frame_count, copy_mode);
+	      }else{
+		ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
+							    clipboard_data, 1, 0,
+							    wave_buffer_size - attack, copy_mode);
+	      }
+	    }
+
+	    /* find next */
+	    buffer = NULL;
+	    
+	    frame_count = current_buffer_size;
+	      
+	    current_position = current_position + current_attack + current_buffer_size;
+	    
+	    if(attack + frame_count > wave_buffer_size){
+	      buffer = ags_wave_find_point(wave,
+					   current_position,
+					   FALSE);
+
+	      if(buffer != NULL &&
+		 do_replace){
+		void *data;
+
+		data = buffer->data;
+		
+		if(wave_format == AGS_SOUNDCARD_DOUBLE){
+		  ags_audio_buffer_util_clear_double(data, 1,
+						     attack);
+		}else if(wave_format == AGS_SOUNDCARD_FLOAT){
+		  ags_audio_buffer_util_clear_float(data, 1,
+						    attack);
+		}else{		
+		  ags_audio_buffer_util_clear_buffer(data, 1,
+						     attack, ags_audio_buffer_util_format_from_soundcard(wave_format));
+		}
+	      }
+	    
+	      if(buffer == NULL){
+		buffer = ags_buffer_new();
+		g_object_set(buffer,
+			     "samplerate", wave_samplerate,
+			     "buffer-size", wave_buffer_size,
+			     "format", wave_format,
+			     NULL);  
+		buffer->x = current_position;
+	      
+		ags_wave_add_buffer(wave,
+				    buffer,
+				    FALSE);
+	      }
+	      
+	      copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(wave_format),
+							      ags_audio_buffer_util_format_from_soundcard(format_val));	
+
+	      resampled_clipboard_data = NULL;
+	    
+	      if(current_samplerate != wave_samplerate){
+		AgsResampleUtil resample_util;
+
+		void *target_data;
+		
+		guint allocated_buffer_length;
+
+		allocated_buffer_length = wave_buffer_size;
+
+		if(allocated_buffer_length < current_buffer_size){
+		  allocated_buffer_length = current_buffer_size;
+		}
+
+		target_data = ags_stream_alloc(wave_buffer_size,
+					       format_val);
+
+		ags_resample_util_init(&resample_util);
+	      
+		resample_util.src_ratio = wave_samplerate / current_samplerate;
+
+		resample_util.input_frames = current_buffer_size;
+		resample_util.data_in = ags_stream_alloc(allocated_buffer_length,
+							 format_val);
+
+		resample_util.output_frames = wave_buffer_size;
+		resample_util.data_out = ags_stream_alloc(allocated_buffer_length,
+							  format_val);
+  
+		resample_util.destination = target_data;
+		resample_util.destination_stride = 1;
+
+		resample_util.source = clipboard_data;
+		resample_util.source_stride = 1;
+
+		resample_util.buffer_length = allocated_buffer_length;
+		resample_util.format = format_val;
+		resample_util.samplerate = current_samplerate;
+  
+		resample_util.target_samplerate = wave_samplerate;
+
+		resample_util.buffer = ags_stream_alloc(allocated_buffer_length,
+							format_val);
+	      
+		ags_resample_util_compute(&resample_util);  
+
+		ags_stream_free(resample_util.data_out);
+		ags_stream_free(resample_util.data_in);
+		ags_stream_free(resample_util.buffer);
+	      
+		ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
+							    target_data, 1, wave_buffer_size - attack,
+							    attack, copy_mode);
+
+		free(target_data);
+	      }else{
+		ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
+							    clipboard_data, 1, wave_buffer_size - attack,
+							    attack, copy_mode);
+	      }
+	    }
+	    
+	    if(current_format != NULL){
+	      free(current_format);
+	    }
+	  }while(offset + 127 + strlen(base64_str) < AGS_WAVE_CLIPBOARD_MAX_SIZE);
+	  
+	  free(program);
+	  free(version);
+	  free(type);
+	  free(format);
+
+	  free(buffer_format);
+	}
+      }
+    }
+  }
+
+  g_free(tmp_buffer);    
 }
 
 /**
