@@ -162,14 +162,14 @@ ags_export_window_init(AgsExportWindow *export_window)
   export_window->connectable_flags = 0;
 
   ags_ui_provider_set_export_window(AGS_UI_PROVIDER(application_context),
-				    export_window);
+				    (GtkWidget *) export_window);
   
   g_object_set(export_window,
 	       "title", i18n("export to audio data"),
 	       NULL);
 
   gtk_window_set_transient_for((GtkWindow *) export_window,
-			       ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
+			       (GtkWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
 
   gtk_window_set_hide_on_close((GtkWindow *) export_window,
 			       TRUE);
