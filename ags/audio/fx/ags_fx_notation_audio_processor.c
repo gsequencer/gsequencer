@@ -1553,6 +1553,12 @@ ags_fx_notation_audio_processor_real_play(AgsFxNotationAudioProcessor *fx_notati
 				      &note_256th_offset_lower,
 				      &note_256th_offset_upper);
 
+  //  g_message("%d - %d", note_256th_offset_lower, note_256th_offset_upper);
+  
+  if(note_256th_offset_lower == 0){
+    has_16th_pulse = TRUE;
+  }
+  
   if(has_16th_pulse &&
      note_offset % 4 == 0){
     g_rec_mutex_lock(audio_mutex);

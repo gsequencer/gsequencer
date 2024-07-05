@@ -1995,6 +1995,8 @@ ags_gstreamer_devout_port_init(AgsSoundcard *soundcard,
 
   gstreamer_devout->note_256th_attack_of_16th_pulse = 0;
   gstreamer_devout->note_256th_attack_of_16th_pulse_position = 0;
+
+  gstreamer_devout->note_256th_delay_counter = 0.0;
   
   gstreamer_devout->flags |= (AGS_GSTREAMER_DEVOUT_INITIALIZED |
 			      AGS_GSTREAMER_DEVOUT_START_PLAY |
@@ -2409,10 +2411,14 @@ ags_gstreamer_devout_tic(AgsSoundcard *soundcard)
 						 &next_note_256th_attack_upper);
 
   //  g_message("tic -> next 256th [%d-%d]", next_note_256th_offset_lower, next_note_256th_offset_upper);
+
+  gstreamer_devout->note_256th_delay_counter += 1.0;    
   
-  if((16 * (note_offset + 1) >= next_note_256th_offset_lower &&
-      16 * (note_offset + 1) <= next_note_256th_offset_upper) ||
-     (next_note_256th_offset_lower + 64 < note_256th_offset_lower)){
+  if((note_256th_delay <= 1.0 ||
+      gstreamer_devout->note_256th_delay_counter >= note_256th_delay) &&
+     ((16 * (note_offset + 1) >= next_note_256th_offset_lower &&
+       16 * (note_offset + 1) <= next_note_256th_offset_upper) ||
+      (next_note_256th_offset_lower + 64 < note_256th_offset_lower))){
     //    g_message("16th pulse: %d (delay = %f)", note_offset + 1, delay);
     
     if(do_loop &&
@@ -2471,6 +2477,8 @@ ags_gstreamer_devout_tic(AgsSoundcard *soundcard)
       gstreamer_devout->delay_counter = 0.0;
 
       gstreamer_devout->tact_counter = 0.0;
+
+      gstreamer_devout->note_256th_delay_counter = 0.0;
     }else{    
       gstreamer_devout->tic_counter += 1;
 
@@ -2482,6 +2490,8 @@ ags_gstreamer_devout_tic(AgsSoundcard *soundcard)
       gstreamer_devout->delay_counter = 0.0;
 
       gstreamer_devout->tact_counter += 1.0;
+
+      gstreamer_devout->note_256th_delay_counter = 0.0;
     }
     
     g_rec_mutex_unlock(gstreamer_devout_mutex);
@@ -2498,8 +2508,17 @@ ags_gstreamer_devout_tic(AgsSoundcard *soundcard)
   }else{
     g_rec_mutex_lock(gstreamer_devout_mutex);
     
-    gstreamer_devout->note_256th_offset = next_note_256th_offset_lower;
-    gstreamer_devout->note_256th_offset_last = next_note_256th_offset_upper;
+    if(note_256th_delay <= 1.0){
+      gstreamer_devout->note_256th_offset = next_note_256th_offset_lower;
+      gstreamer_devout->note_256th_offset_last = next_note_256th_offset_upper;
+    }else{
+      if(gstreamer_devout->note_256th_delay_counter >= note_256th_delay){
+	gstreamer_devout->note_256th_offset = next_note_256th_offset_lower;
+	gstreamer_devout->note_256th_offset_last = next_note_256th_offset_upper;
+
+	gstreamer_devout->note_256th_delay_counter -= note_256th_delay;
+      }
+    }
 
     gstreamer_devout->delay_counter += 1.0;
 

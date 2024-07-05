@@ -1042,7 +1042,7 @@ ags_pitch_16x_alias_util_pitch_s8(AgsPitch16xAliasUtil *pitch_16x_alias_util)
   root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   new_pitch_hz = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
 
-  for(i = 0; i < 16 * buffer_length; i++){
+  for(i = 0; i < 16 * buffer_length && i < AGS_PITCH_16X_ALIAS_UTIL_DEFAULT_MAX_BUFFER_SIZE; i++){
     t = (double) (i % 16) / 16.0;
 
     if((i / 16) + 1 < buffer_length){
@@ -1056,7 +1056,7 @@ ags_pitch_16x_alias_util_pitch_s8(AgsPitch16xAliasUtil *pitch_16x_alias_util)
 
   reset_i = -1;
 
-  for(i = 0; i < 16 * buffer_length; i++){
+  for(i = 0; i < 16 * buffer_length && i < AGS_PITCH_16X_ALIAS_UTIL_DEFAULT_MAX_BUFFER_SIZE; i++){
     new_pitch_hz = exp2((base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0))  / 12.0) * 440.0;
       
     new_source_freq_period = (16 * samplerate) / new_pitch_hz;
@@ -1086,7 +1086,7 @@ ags_pitch_16x_alias_util_pitch_s8(AgsPitch16xAliasUtil *pitch_16x_alias_util)
     }
   }
 
-  for(i = 0; i < buffer_length; i++){
+  for(i = 0; i < buffer_length && i < AGS_PITCH_16X_ALIAS_UTIL_DEFAULT_MAX_BUFFER_SIZE; i++){
     destination[i * destination_stride] = alias_new_source_buffer[16 * i];
   }
 }
@@ -1159,7 +1159,7 @@ ags_pitch_16x_alias_util_pitch_s16(AgsPitch16xAliasUtil *pitch_16x_alias_util)
   root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   new_pitch_hz = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
 
-  for(i = 0; i < 16 * buffer_length; i++){
+  for(i = 0; i < 16 * buffer_length && i < AGS_PITCH_16X_ALIAS_UTIL_DEFAULT_MAX_BUFFER_SIZE; i++){
     t = (double) (i % 16) / 16.0;
 
     if((i / 16) + 1 < buffer_length){
@@ -1173,7 +1173,7 @@ ags_pitch_16x_alias_util_pitch_s16(AgsPitch16xAliasUtil *pitch_16x_alias_util)
 
   reset_i = -1;
 
-  for(i = 0; i < 16 * buffer_length; i++){
+  for(i = 0; i < 16 * buffer_length && i < AGS_PITCH_16X_ALIAS_UTIL_DEFAULT_MAX_BUFFER_SIZE; i++){
     new_pitch_hz = exp2((base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0))  / 12.0) * 440.0;
       
     new_source_freq_period = (16 * samplerate) / new_pitch_hz;
@@ -1203,7 +1203,7 @@ ags_pitch_16x_alias_util_pitch_s16(AgsPitch16xAliasUtil *pitch_16x_alias_util)
     }
   }
 
-  for(i = 0; i < buffer_length; i++){
+  for(i = 0; i < buffer_length && i < AGS_PITCH_16X_ALIAS_UTIL_DEFAULT_MAX_BUFFER_SIZE; i++){
     destination[i * destination_stride] = alias_new_source_buffer[16 * i];
   }
 }
@@ -1276,7 +1276,7 @@ ags_pitch_16x_alias_util_pitch_s24(AgsPitch16xAliasUtil *pitch_16x_alias_util)
   root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   new_pitch_hz = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
 
-  for(i = 0; i < 16 * buffer_length; i++){
+  for(i = 0; i < 16 * buffer_length && i < AGS_PITCH_16X_ALIAS_UTIL_DEFAULT_MAX_BUFFER_SIZE; i++){
     t = (double) (i % 16) / 16.0;
 
     if((i / 16) + 1 < buffer_length){
@@ -1290,7 +1290,7 @@ ags_pitch_16x_alias_util_pitch_s24(AgsPitch16xAliasUtil *pitch_16x_alias_util)
 
   reset_i = -1;
 
-  for(i = 0; i < 16 * buffer_length; i++){
+  for(i = 0; i < 16 * buffer_length && i < AGS_PITCH_16X_ALIAS_UTIL_DEFAULT_MAX_BUFFER_SIZE; i++){
     new_pitch_hz = exp2((base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0))  / 12.0) * 440.0;
       
     new_source_freq_period = (16 * samplerate) / new_pitch_hz;
@@ -1320,7 +1320,7 @@ ags_pitch_16x_alias_util_pitch_s24(AgsPitch16xAliasUtil *pitch_16x_alias_util)
     }
   }
 
-  for(i = 0; i < buffer_length; i++){
+  for(i = 0; i < buffer_length && i < AGS_PITCH_16X_ALIAS_UTIL_DEFAULT_MAX_BUFFER_SIZE; i++){
     destination[i * destination_stride] = alias_new_source_buffer[16 * i];
   }
 }
@@ -1393,7 +1393,7 @@ ags_pitch_16x_alias_util_pitch_s32(AgsPitch16xAliasUtil *pitch_16x_alias_util)
   root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   new_pitch_hz = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
 
-  for(i = 0; i < 16 * buffer_length; i++){
+  for(i = 0; i < 16 * buffer_length && i < AGS_PITCH_16X_ALIAS_UTIL_DEFAULT_MAX_BUFFER_SIZE; i++){
     t = (double) (i % 16) / 16.0;
 
     if((i / 16) + 1 < buffer_length){
@@ -1407,7 +1407,7 @@ ags_pitch_16x_alias_util_pitch_s32(AgsPitch16xAliasUtil *pitch_16x_alias_util)
 
   reset_i = -1;
 
-  for(i = 0; i < 16 * buffer_length; i++){
+  for(i = 0; i < 16 * buffer_length && i < AGS_PITCH_16X_ALIAS_UTIL_DEFAULT_MAX_BUFFER_SIZE; i++){
     new_pitch_hz = exp2((base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0))  / 12.0) * 440.0;
       
     new_source_freq_period = (16 * samplerate) / new_pitch_hz;
@@ -1437,7 +1437,7 @@ ags_pitch_16x_alias_util_pitch_s32(AgsPitch16xAliasUtil *pitch_16x_alias_util)
     }
   }
 
-  for(i = 0; i < buffer_length; i++){
+  for(i = 0; i < buffer_length && i < AGS_PITCH_16X_ALIAS_UTIL_DEFAULT_MAX_BUFFER_SIZE; i++){
     destination[i * destination_stride] = alias_new_source_buffer[16 * i];
   }
 }
@@ -1510,7 +1510,7 @@ ags_pitch_16x_alias_util_pitch_s64(AgsPitch16xAliasUtil *pitch_16x_alias_util)
   root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   new_pitch_hz = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
 
-  for(i = 0; i < 16 * buffer_length; i++){
+  for(i = 0; i < 16 * buffer_length && i < AGS_PITCH_16X_ALIAS_UTIL_DEFAULT_MAX_BUFFER_SIZE; i++){
     t = (double) (i % 16) / 16.0;
 
     if((i / 16) + 1 < buffer_length){
@@ -1524,7 +1524,7 @@ ags_pitch_16x_alias_util_pitch_s64(AgsPitch16xAliasUtil *pitch_16x_alias_util)
 
   reset_i = -1;
 
-  for(i = 0; i < 16 * buffer_length; i++){
+  for(i = 0; i < 16 * buffer_length && i < AGS_PITCH_16X_ALIAS_UTIL_DEFAULT_MAX_BUFFER_SIZE; i++){
     new_pitch_hz = exp2((base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0))  / 12.0) * 440.0;
       
     new_source_freq_period = (16 * samplerate) / new_pitch_hz;
@@ -1554,7 +1554,7 @@ ags_pitch_16x_alias_util_pitch_s64(AgsPitch16xAliasUtil *pitch_16x_alias_util)
     }
   }
 
-  for(i = 0; i < buffer_length; i++){
+  for(i = 0; i < buffer_length && i < AGS_PITCH_16X_ALIAS_UTIL_DEFAULT_MAX_BUFFER_SIZE; i++){
     destination[i * destination_stride] = alias_new_source_buffer[16 * i];
   }
 }
@@ -1627,7 +1627,7 @@ ags_pitch_16x_alias_util_pitch_float(AgsPitch16xAliasUtil *pitch_16x_alias_util)
   root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   new_pitch_hz = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
 
-  for(i = 0; i < 16 * buffer_length; i++){
+  for(i = 0; i < 16 * buffer_length && i < AGS_PITCH_16X_ALIAS_UTIL_DEFAULT_MAX_BUFFER_SIZE; i++){
     t = (double) (i % 16) / 16.0;
 
     if((i / 16) + 1 < buffer_length){
@@ -1641,7 +1641,7 @@ ags_pitch_16x_alias_util_pitch_float(AgsPitch16xAliasUtil *pitch_16x_alias_util)
 
   reset_i = -1;
 
-  for(i = 0; i < 16 * buffer_length; i++){
+  for(i = 0; i < 16 * buffer_length && i < AGS_PITCH_16X_ALIAS_UTIL_DEFAULT_MAX_BUFFER_SIZE; i++){
     new_pitch_hz = exp2((base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0))  / 12.0) * 440.0;
       
     new_source_freq_period = (16 * samplerate) / new_pitch_hz;
@@ -1671,7 +1671,7 @@ ags_pitch_16x_alias_util_pitch_float(AgsPitch16xAliasUtil *pitch_16x_alias_util)
     }
   }
 
-  for(i = 0; i < buffer_length; i++){
+  for(i = 0; i < buffer_length && i < AGS_PITCH_16X_ALIAS_UTIL_DEFAULT_MAX_BUFFER_SIZE; i++){
     destination[i * destination_stride] = alias_new_source_buffer[16 * i];
   }
 }
@@ -1744,7 +1744,7 @@ ags_pitch_16x_alias_util_pitch_double(AgsPitch16xAliasUtil *pitch_16x_alias_util
   root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   new_pitch_hz = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
 
-  for(i = 0; i < 16 * buffer_length; i++){
+  for(i = 0; i < 16 * buffer_length && i < AGS_PITCH_16X_ALIAS_UTIL_DEFAULT_MAX_BUFFER_SIZE; i++){
     t = (double) (i % 16) / 16.0;
 
     if((i / 16) + 1 < buffer_length){
@@ -1758,7 +1758,7 @@ ags_pitch_16x_alias_util_pitch_double(AgsPitch16xAliasUtil *pitch_16x_alias_util
 
   reset_i = -1;
 
-  for(i = 0; i < 16 * buffer_length; i++){
+  for(i = 0; i < 16 * buffer_length && i < AGS_PITCH_16X_ALIAS_UTIL_DEFAULT_MAX_BUFFER_SIZE; i++){
     new_pitch_hz = exp2((base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0))  / 12.0) * 440.0;
       
     new_source_freq_period = (16 * samplerate) / new_pitch_hz;
@@ -1788,7 +1788,7 @@ ags_pitch_16x_alias_util_pitch_double(AgsPitch16xAliasUtil *pitch_16x_alias_util
     }
   }
 
-  for(i = 0; i < buffer_length; i++){
+  for(i = 0; i < buffer_length && i < AGS_PITCH_16X_ALIAS_UTIL_DEFAULT_MAX_BUFFER_SIZE; i++){
     destination[i * destination_stride] = alias_new_source_buffer[16 * i];
   }
 }
@@ -1861,7 +1861,7 @@ ags_pitch_16x_alias_util_pitch_complex(AgsPitch16xAliasUtil *pitch_16x_alias_uti
   root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   new_pitch_hz = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
 
-  for(i = 0; i < 16 * buffer_length; i++){
+  for(i = 0; i < 16 * buffer_length && i < AGS_PITCH_16X_ALIAS_UTIL_DEFAULT_MAX_BUFFER_SIZE; i++){
     t = (double) (i % 16) / 16.0;
 
     if((i / 16) + 1 < buffer_length){
@@ -1876,7 +1876,7 @@ ags_pitch_16x_alias_util_pitch_complex(AgsPitch16xAliasUtil *pitch_16x_alias_uti
 
   reset_i = -1;
 
-  for(i = 0; i < 16 * buffer_length; i++){
+  for(i = 0; i < 16 * buffer_length && i < AGS_PITCH_16X_ALIAS_UTIL_DEFAULT_MAX_BUFFER_SIZE; i++){
     new_pitch_hz = exp2((base_key - 48.0 + ((tuning + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0))  / 12.0) * 440.0;
       
     new_source_freq_period = (16 * samplerate) / new_pitch_hz;
@@ -1909,7 +1909,7 @@ ags_pitch_16x_alias_util_pitch_complex(AgsPitch16xAliasUtil *pitch_16x_alias_uti
     }
   }
 
-  for(i = 0; i < buffer_length; i++){
+  for(i = 0; i < buffer_length && i < AGS_PITCH_16X_ALIAS_UTIL_DEFAULT_MAX_BUFFER_SIZE; i++){
     ags_complex_set(destination + (i * destination_stride),
 		    ags_complex_get(alias_new_source_buffer + (16 * i)));
   }

@@ -1,3 +1,30 @@
+ags (6.16.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential buffer overflow with ags_pitch_*_alias_* utility functions
+
+ags (6.16.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing confirm remove of existing files while export
+
+ags (6.16.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed low-latency counter bug
+	* improved lost first note with pulseaudio, no tic during initial run
+	* improved lost first note with JACK, no tic during initial run
+	* improved lost first note with CoreAudio, no tic during initial run
+
+ags (6.16.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_wave_copy_selection_as_base64()
+	* implemented ags_wave_cut_selection_as_base64()
+	* implemented ags_wave_insert_base64_from_clipboard()
+	* implemented ags_wave_insert_base64_from_clipboard_extended()
+	* fixed composite toolbar menu tool popover parent widget to be a GtkBox
+
 ags (6.15.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

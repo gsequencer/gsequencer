@@ -18,9 +18,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 6.15.4\n"
+"Project-Id-Version: gsequencer 6.16.3\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-06-02 15:08+0200\n"
+"POT-Creation-Date: 2024-06-09 21:10+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -71,6 +71,14 @@ msgstr ""
 
 #: ags/app/ags_server_preferences.c:270
 msgid "password"
+msgstr ""
+
+#: ags/app/ags_export_window_callbacks.c:194
+msgid "Replace existing file(s)?"
+msgstr ""
+
+#: ags/app/ags_export_window_callbacks.c:197
+msgid "Following files exist, do you want to remove in order to export?"
 msgstr ""
 
 #: ags/app/ags_vst3_browser.c:194 ags/app/ags_lv2_browser.c:192
@@ -289,7 +297,7 @@ msgstr ""
 msgid "Plugin file not present"
 msgstr ""
 
-#: ags/app/ags_composite_editor.c:370
+#: ags/app/ags_composite_editor.c:372
 msgid "selector"
 msgstr ""
 
@@ -508,7 +516,7 @@ msgid "ramp step count"
 msgstr ""
 
 #: ags/app/editor/ags_position_sheet_cursor_dialog.c:146
-#: ags/app/editor/ags_composite_toolbar.c:1839
+#: ags/app/editor/ags_composite_toolbar.c:1846
 msgid "position sheet cursor"
 msgstr ""
 
@@ -577,189 +585,189 @@ msgstr ""
 msgid "remove sheet page"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:913
+#: ags/app/editor/ags_composite_toolbar.c:914
 msgid "Position"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:916
+#: ags/app/editor/ags_composite_toolbar.c:917
 msgid "position tool"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:932
+#: ags/app/editor/ags_composite_toolbar.c:933
 #: ags/app/ags_gsequencer_application.c:803
 msgid "Edit"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:935
+#: ags/app/editor/ags_composite_toolbar.c:936
 msgid "edit tool"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:951
+#: ags/app/editor/ags_composite_toolbar.c:952
 msgid "Clear"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:954
+#: ags/app/editor/ags_composite_toolbar.c:955
 msgid "clear tool"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:970
+#: ags/app/editor/ags_composite_toolbar.c:971
 msgid "Select"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:973
+#: ags/app/editor/ags_composite_toolbar.c:974
 msgid "selection tool"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1108
+#: ags/app/editor/ags_composite_toolbar.c:1109
 msgid "Invert"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1111
+#: ags/app/editor/ags_composite_toolbar.c:1112
 msgid "invert action"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1128
+#: ags/app/editor/ags_composite_toolbar.c:1129
 msgid "Copy"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1131
+#: ags/app/editor/ags_composite_toolbar.c:1132
 msgid "copy action"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1148
+#: ags/app/editor/ags_composite_toolbar.c:1149
 msgid "Cut"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1151
+#: ags/app/editor/ags_composite_toolbar.c:1152
 msgid "cut action"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1168
+#: ags/app/editor/ags_composite_toolbar.c:1169
 msgid "Paste"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1171
+#: ags/app/editor/ags_composite_toolbar.c:1172
 msgid "paste menu action"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1331
+#: ags/app/editor/ags_composite_toolbar.c:1338
 msgid "tool"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1333
+#: ags/app/editor/ags_composite_toolbar.c:1340
 msgid "tool dialog option"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1362
+#: ags/app/editor/ags_composite_toolbar.c:1368
 #: ags/app/ags_online_help_window.c:211
 msgid "zoom"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1390
+#: ags/app/editor/ags_composite_toolbar.c:1396
 msgid "opacity"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1421
+#: ags/app/editor/ags_composite_toolbar.c:1427
 msgid "Port"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1473
+#: ags/app/editor/ags_composite_toolbar.c:1479
 msgid "beats"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1519
+#: ags/app/editor/ags_composite_toolbar.c:1525
 msgid "beats type"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1556
+#: ags/app/editor/ags_composite_toolbar.c:1562
 msgid "snap to zoom"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1576
+#: ags/app/editor/ags_composite_toolbar.c:1582
 msgid "trace pointer"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1687
+#: ags/app/editor/ags_composite_toolbar.c:1694
 msgid "match audio channel"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1694
+#: ags/app/editor/ags_composite_toolbar.c:1701
 msgid "match line"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1701
+#: ags/app/editor/ags_composite_toolbar.c:1708
 msgid "no duplicates"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1707
+#: ags/app/editor/ags_composite_toolbar.c:1714
 msgid "paste"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1749
+#: ags/app/editor/ags_composite_toolbar.c:1756
 msgid "enable all audio channels"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1760
+#: ags/app/editor/ags_composite_toolbar.c:1767
 msgid "disable all audio channels"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1771
+#: ags/app/editor/ags_composite_toolbar.c:1778
 msgid "enable all lines"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1782
+#: ags/app/editor/ags_composite_toolbar.c:1789
 msgid "disable all lines"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1794
+#: ags/app/editor/ags_composite_toolbar.c:1801
 msgid "move notes"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1805
+#: ags/app/editor/ags_composite_toolbar.c:1812
 msgid "crop notes"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1816
+#: ags/app/editor/ags_composite_toolbar.c:1823
 msgid "select notes"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1827
+#: ags/app/editor/ags_composite_toolbar.c:1834
 msgid "position notation cursor"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1850
+#: ags/app/editor/ags_composite_toolbar.c:1857
 msgid "add page"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1861
+#: ags/app/editor/ags_composite_toolbar.c:1868
 msgid "remove page"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1873
+#: ags/app/editor/ags_composite_toolbar.c:1880
 msgid "select accelerations"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1884
+#: ags/app/editor/ags_composite_toolbar.c:1891
 msgid "ramp accelerations"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1895
+#: ags/app/editor/ags_composite_toolbar.c:1902
 msgid "position automation cursor"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1907
+#: ags/app/editor/ags_composite_toolbar.c:1914
 msgid "select buffers"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1918
+#: ags/app/editor/ags_composite_toolbar.c:1925
 msgid "position wave cursor"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1929
+#: ags/app/editor/ags_composite_toolbar.c:1936
 msgid "time stretch buffers"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1943
+#: ags/app/editor/ags_composite_toolbar.c:1950
 msgid "ramp markers"
 msgstr ""
 

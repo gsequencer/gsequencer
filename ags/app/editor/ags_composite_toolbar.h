@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -160,6 +160,7 @@ struct _AgsCompositeToolbar
   GtkMenuButton *paste;
   GMenuModel *paste_popup;
 
+  GtkBox *menu_tool_box;
   gchar **menu_tool_dialog;
   GValue *menu_tool_value;
   GtkMenuButton *menu_tool;
