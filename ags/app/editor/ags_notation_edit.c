@@ -2357,6 +2357,8 @@ ags_notation_edit_draw_position(AgsNotationEdit *notation_edit, cairo_t *cr)
 
   selected_machine = composite_editor->selected_machine;
 
+  channel_count = 0;
+  
   g_object_get(selected_machine->audio,
 	       "input-pads", &channel_count,
 	       NULL);
