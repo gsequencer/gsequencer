@@ -256,21 +256,21 @@ ags_resize_editor_init(AgsResizeEditor *resize_editor)
 		  1, 1);
 
   resize_editor->format = (GtkComboBox *) gtk_combo_box_text_new();
-  gtk_combo_box_text_append_text(resize_editor->format,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) resize_editor->format,
 				 "8 bit");
-  gtk_combo_box_text_append_text(resize_editor->format,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) resize_editor->format,
 				 "16 bit");
-  gtk_combo_box_text_append_text(resize_editor->format,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) resize_editor->format,
 				 "24 bit");
-  gtk_combo_box_text_append_text(resize_editor->format,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) resize_editor->format,
 				 "32 bit");
-  gtk_combo_box_text_append_text(resize_editor->format,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) resize_editor->format,
 				 "64 bit");
-  gtk_combo_box_text_append_text(resize_editor->format,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) resize_editor->format,
 				 "floating point");
-  gtk_combo_box_text_append_text(resize_editor->format,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) resize_editor->format,
 				 "double precision floating point");
-  gtk_combo_box_text_append_text(resize_editor->format,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) resize_editor->format,
 				 "complex floating point");
   gtk_combo_box_set_active(resize_editor->format,
 			   1);
@@ -427,7 +427,7 @@ ags_resize_editor_apply(AgsApplicable *applicable)
   samplerate = gtk_spin_button_get_value_as_int(resize_editor->samplerate);
 
   /* append AgsSetPresets */
-  set_presets = ags_set_presets_new(audio,
+  set_presets = ags_set_presets_new((GObject *) audio,
 				    (guint) ceil((double) buffer_size / (double) orig_samplerate * (double) samplerate),
 				    format,
 				    samplerate);
