@@ -681,10 +681,10 @@ ags_sequencer_editor_add_source(AgsSequencerEditor *sequencer_editor,
 	return;
       }
 
-      input_sequencer = 
-	core_audio_midiin = (AgsCoreAudioMidiin *) ags_sound_server_register_sequencer(AGS_SOUND_SERVER(core_audio_server),
-										       FALSE);
-
+      core_audio_midiin = (AgsCoreAudioMidiin *) ags_sound_server_register_sequencer(AGS_SOUND_SERVER(core_audio_server),
+										     FALSE);
+      input_sequencer = (GObject *) core_audio_midiin;
+      
       if(core_audio_midiin == NULL){    
 	g_list_free_full(start_sound_server,
 			 g_object_unref);
@@ -708,10 +708,10 @@ ags_sequencer_editor_add_source(AgsSequencerEditor *sequencer_editor,
 	return;
       }
   
-      input_sequencer = 
-	jack_midiin = (AgsJackMidiin *) ags_sound_server_register_sequencer(AGS_SOUND_SERVER(jack_server),
-									    FALSE);
-
+      jack_midiin = (AgsJackMidiin *) ags_sound_server_register_sequencer(AGS_SOUND_SERVER(jack_server),
+									  FALSE);
+      input_sequencer = (GObject *) jack_midiin;
+      
       if(jack_midiin == NULL){    
 	g_list_free_full(start_sound_server,
 			 g_object_unref);
@@ -822,8 +822,8 @@ ags_sequencer_editor_remove_source(AgsSequencerEditor *sequencer_editor,
 	if(AGS_IS_CORE_AUDIO_MIDIIN(sequencer->data) &&
 	   !g_ascii_strcasecmp(ags_sequencer_get_device(AGS_SEQUENCER(sequencer->data)),
 			       device)){
-	  core_audio_midiin =
-	    input_sequencer = sequencer->data;
+	  input_sequencer = (GObject *) sequencer->data;
+	  core_audio_midiin = (AgsCoreAudioMidiin *) input_sequencer;
 
 	  break;
 	}
@@ -868,9 +868,9 @@ ags_sequencer_editor_remove_source(AgsSequencerEditor *sequencer_editor,
 	if(AGS_IS_JACK_MIDIIN(sequencer->data) &&
 	   !g_ascii_strcasecmp(ags_sequencer_get_device(AGS_SEQUENCER(sequencer->data)),
 			       device)){
-	  jack_midiin =
-	    input_sequencer = sequencer->data;
-
+	  input_sequencer = (GObject *) sequencer->data;
+	  jack_midiin = (AgsJackMidiin *) input_sequencer;
+	  
 	  break;
 	}
     

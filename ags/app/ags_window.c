@@ -199,9 +199,9 @@ ags_window_init(AgsWindow *window)
 		   G_CALLBACK(ags_window_setup_completed_callback), window);
 
   ags_ui_provider_set_window(AGS_UI_PROVIDER(application_context),
-			     window);
+			     (GtkWidget *) window);
 
-  gsequencer_app = ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context));
+  gsequencer_app = (GApplication *) ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context));
   gsequencer_app = G_APPLICATION(gsequencer_app);
 
   g_object_set(G_OBJECT(window),
@@ -282,7 +282,7 @@ ags_window_init(AgsWindow *window)
 
     if(menu != NULL){
       gtk_menu_button_set_menu_model(window->app_button,
-				     menu);
+				     G_MENU_MODEL(menu));
     }
     
     /* add menu button */
@@ -310,7 +310,7 @@ ags_window_init(AgsWindow *window)
 
     if(menu != NULL){
       gtk_menu_button_set_menu_model(window->edit_button,
-				     menu);
+				     G_MENU_MODEL(menu));
     }
   }
 #endif
@@ -327,7 +327,7 @@ ags_window_init(AgsWindow *window)
 
     gsequencer_app = (AgsGSequencerApplication *) AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->app;
     
-    window->menu_bar = gtk_popover_menu_bar_new_from_model(gsequencer_app->menubar);
+    window->menu_bar = (GtkPopoverMenuBar *) gtk_popover_menu_bar_new_from_model(G_MENU_MODEL(gsequencer_app->menubar));
     gtk_box_append(vbox,
 		   (GtkWidget *) window->menu_bar);
 
@@ -367,7 +367,7 @@ ags_window_init(AgsWindow *window)
 
   window->composite_editor = ags_composite_editor_new();
   ags_ui_provider_set_composite_editor(AGS_UI_PROVIDER(application_context),
-				       window->composite_editor);
+				       (GtkWidget *) window->composite_editor);
   g_object_set(window->composite_editor,
 	       "homogeneous", FALSE,
 	       "spacing", 0,
@@ -382,7 +382,7 @@ ags_window_init(AgsWindow *window)
 				    NULL);
 
   ags_ui_provider_set_navigation(AGS_UI_PROVIDER(application_context),
-				 window->navigation);
+				 (GtkWidget *) window->navigation);
   
   gtk_box_append(vbox,
 		 (GtkWidget *) window->navigation);

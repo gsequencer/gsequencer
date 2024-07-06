@@ -3030,7 +3030,7 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
   window->no_config = no_config;  
 
   /*  */  
-  gtk_window_set_default_size(window,
+  gtk_window_set_default_size((GtkWindow *) window,
 			      AGS_WINDOW_DEFAULT_WIDTH, AGS_WINDOW_DEFAULT_HEIGHT);
   
   gtk_paned_set_position((GtkPaned *) window->paned, 300);
@@ -3039,7 +3039,7 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
     window->filename = filename;
   }  
 
-  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   /* adjustment */
   adjustment = gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->vscrollbar);
@@ -3064,8 +3064,8 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
   gtk_adjustment_set_value(adjustment,
 			   0.0);
 
-  ags_notation_edit_reset_hscrollbar(composite_editor->notation_edit->edit);
-  ags_notation_edit_reset_vscrollbar(composite_editor->notation_edit->edit);
+  ags_notation_edit_reset_hscrollbar((AgsNotationEdit *) composite_editor->notation_edit->edit);
+  ags_notation_edit_reset_vscrollbar((AgsNotationEdit *) composite_editor->notation_edit->edit);
 
   /* allocation */
   gtk_widget_get_allocation(GTK_WIDGET(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->drawing_area),
@@ -3124,7 +3124,7 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
   }
   
   /* automation */
-  automation_edit_box = ags_scrolled_automation_edit_box_get_automation_edit_box(composite_editor->automation_edit->edit);
+  automation_edit_box = ags_scrolled_automation_edit_box_get_automation_edit_box((AgsScrolledAutomationEditBox *) composite_editor->automation_edit->edit);
 
   list =
     start_list = ags_automation_edit_box_get_automation_edit(automation_edit_box);
@@ -3178,7 +3178,7 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
   g_list_free(start_list);
 
   /* wave */
-  wave_edit_box = ags_scrolled_wave_edit_box_get_wave_edit_box(composite_editor->wave_edit->edit);
+  wave_edit_box = ags_scrolled_wave_edit_box_get_wave_edit_box((AgsScrolledWaveEditBox *) composite_editor->wave_edit->edit);
 
   list =
     start_list = ags_wave_edit_box_get_wave_edit(wave_edit_box);
@@ -4865,7 +4865,7 @@ ags_gsequencer_application_context_message_monitor_timeout(AgsGSequencerApplicat
 
   GList *start_message_envelope, *message_envelope;
 
-  navigation = ags_ui_provider_get_navigation(AGS_UI_PROVIDER(gsequencer_application_context));
+  navigation = (AgsNavigation *) ags_ui_provider_get_navigation(AGS_UI_PROVIDER(gsequencer_application_context));
   
   /* retrieve message */
   message_delivery = ags_message_delivery_get_instance();
