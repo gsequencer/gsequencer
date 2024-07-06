@@ -282,10 +282,10 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
   gtk_window_set_child((GtkWindow *) midi_dialog,
 		       (GtkWidget *) vbox);
 
-  gtk_widget_set_valign(vbox,
+  gtk_widget_set_valign((GtkWidget *) vbox,
 			GTK_ALIGN_START);
 
-  gtk_widget_set_vexpand(vbox,
+  gtk_widget_set_vexpand((GtkWidget *) vbox,
 			 FALSE);
   
   /* connection */
@@ -533,7 +533,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
   midi_dialog->action_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 						    AGS_UI_PROVIDER_DEFAULT_SPACING);
   
-  gtk_widget_set_halign(midi_dialog->action_area,
+  gtk_widget_set_halign((GtkWidget *) midi_dialog->action_area,
 			GTK_ALIGN_END);
 
   gtk_box_append(vbox,
