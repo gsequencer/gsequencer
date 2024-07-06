@@ -39,7 +39,7 @@ ags_export_window_close_request_callback(GtkWindow *window, gpointer user_data)
 
   application_context = ags_application_context_get_instance();
   
-  ags_gsequencer_application_refresh_window_menu(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
+  ags_gsequencer_application_refresh_window_menu((AgsGSequencerApplication *) ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
   
   return(FALSE);
 }
@@ -192,7 +192,7 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
       AgsInputDialog *input_dialog;
 
       input_dialog = ags_input_dialog_new(i18n("Replace existing file(s)?"),
-					  export_window);
+					  (GtkWindow *) export_window);
       ags_input_dialog_set_message(input_dialog,
 				   i18n("Following files exist, do you want to remove in order to export?"));
 
@@ -224,7 +224,7 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
       g_signal_connect((GObject *) input_dialog, "response",
 		       G_CALLBACK(ags_export_window_replace_files_response_callback), export_window);
 
-      gtk_widget_set_visible(input_dialog,
+      gtk_widget_set_visible((GtkWidget *) input_dialog,
 			     TRUE);
     }else{
       ags_export_window_start_export(export_window);

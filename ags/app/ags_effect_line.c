@@ -2017,10 +2017,10 @@ ags_effect_line_add_lv2_plugin(AgsEffectLine *effect_line,
   g_rec_mutex_lock(lv2_manager_mutex);
 	      
   is_lv2_plugin = ((lv2_manager->quick_scan_plugin_filename != NULL &&
-		    g_strv_contains(lv2_manager->quick_scan_plugin_filename,
+		    g_strv_contains((const gchar * const *) lv2_manager->quick_scan_plugin_filename,
 				    filename)) ||
 		   (lv2_manager->quick_scan_instrument_filename != NULL &&
-		    g_strv_contains(lv2_manager->quick_scan_instrument_filename,
+		    g_strv_contains((const gchar * const *) lv2_manager->quick_scan_instrument_filename,
 				    filename))) ? TRUE: FALSE;
 	      
   g_rec_mutex_unlock(lv2_manager_mutex);
@@ -2636,7 +2636,7 @@ ags_effect_line_add_lv2_plugin(AgsEffectLine *effect_line,
 			    GTK_ALIGN_FILL);
 
       ags_effect_line_add_line_member(effect_line,
-				      (GtkWidget *) line_member,
+				      line_member,
 				      (x % AGS_EFFECT_LINE_COLUMNS_COUNT), y,
 				      1, 1);
       

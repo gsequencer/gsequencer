@@ -48,7 +48,7 @@ ags_midi_preferences_notify_parent_callback(GObject *gobject,
     
     midi_preferences->add = (GtkButton *) gtk_button_new_from_icon_name("list-add");
     gtk_box_prepend(preferences->action_area,
-		    midi_preferences->add);
+		    (GtkWidget *) midi_preferences->add);
   }
 }
 

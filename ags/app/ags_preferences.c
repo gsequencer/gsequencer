@@ -273,7 +273,7 @@ ags_preferences_init(AgsPreferences *preferences)
   preferences->action_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 						    AGS_UI_PROVIDER_DEFAULT_SPACING);
   
-  gtk_widget_set_halign(preferences->action_area,
+  gtk_widget_set_halign((GtkWidget *) preferences->action_area,
 			GTK_ALIGN_END);
 
   gtk_box_append(vbox,
@@ -289,7 +289,7 @@ ags_preferences_init(AgsPreferences *preferences)
 
   /* set preferences in UI provider */
   ags_ui_provider_set_preferences(AGS_UI_PROVIDER(application_context),
-				  preferences);
+				  (GtkWidget *) preferences);
 
   /* instantiate tabs */
 #if 0

@@ -95,7 +95,7 @@ ags_meta_data_window_init(AgsMetaDataWindow *meta_data_window)
   application_context = ags_application_context_get_instance();
 
   ags_ui_provider_set_meta_data_window(AGS_UI_PROVIDER(application_context),
-  				       meta_data_window);
+  				       (GtkWidget *) meta_data_window);
 
   g_object_set(meta_data_window,
 	       "title", i18n("meta-data editor"),
@@ -103,7 +103,7 @@ ags_meta_data_window_init(AgsMetaDataWindow *meta_data_window)
 	       NULL);
 
   gtk_window_set_transient_for((GtkWindow *) meta_data_window,
-			       ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
+			       (GtkWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
 
   g_signal_connect_after(meta_data_window, "close-request",
 			 G_CALLBACK(ags_meta_data_window_close_request_callback), NULL);
@@ -321,7 +321,7 @@ ags_meta_data_window_key_released_callback(GtkEventControllerKey *event_controll
     switch(keyval){
     case GDK_KEY_Escape:
       {
-	gtk_window_close(meta_data_window);	
+	gtk_window_close((GtkWindow *) meta_data_window);	
       }
       break;
     }
@@ -335,7 +335,7 @@ ags_meta_data_window_close_request_callback(GtkWindow *window, gpointer user_dat
 
   application_context = ags_application_context_get_instance();
   
-  ags_gsequencer_application_refresh_window_menu(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
+  ags_gsequencer_application_refresh_window_menu((AgsGSequencerApplication *) ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
   
   return(FALSE);
 }

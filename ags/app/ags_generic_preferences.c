@@ -167,7 +167,7 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
   gtk_box_append(hbox,
 		 (GtkWidget *) generic_preferences->segmentation);
 
-  gtk_widget_set_visible(hbox,
+  gtk_widget_set_visible((GtkWidget *) hbox,
 			 FALSE);
   
   /* engine mode */
@@ -191,7 +191,7 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
   gtk_box_append(hbox,
 		 (GtkWidget *) generic_preferences->engine_mode);
 
-  gtk_widget_set_visible(hbox,
+  gtk_widget_set_visible((GtkWidget *) hbox,
 			 FALSE);
 
   /* rt-safe */
