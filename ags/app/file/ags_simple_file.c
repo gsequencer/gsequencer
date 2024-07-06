@@ -1278,7 +1278,7 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 	AgsWindow *orig_window, *window;
 
 	window =
-	  orig_window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+	  orig_window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 	ags_simple_file_read_window(simple_file,
 				    child,
 				    (AgsWindow **) &window);
@@ -1292,7 +1292,7 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 			   17)){
 	AgsMetaDataWindow *meta_data_window;
 
-	meta_data_window = ags_ui_provider_get_meta_data_window(AGS_UI_PROVIDER(application_context));
+	meta_data_window = (AgsMetaDataWindow *) ags_ui_provider_get_meta_data_window(AGS_UI_PROVIDER(application_context));
 
 	//FIXME:JK: not supported yet
 	ags_simple_file_read_meta_data_window(simple_file,
@@ -2047,7 +2047,7 @@ ags_simple_file_read_window_launch(AgsFileLaunch *file_launch,
   gdouble loop_start, loop_end;
   gboolean loop;
 
-  simple_file = file_launch->file;
+  simple_file = (AgsSimpleFile *) file_launch->file;
   
   /* bpm */
   str = xmlGetProp(file_launch->node,
@@ -2312,8 +2312,8 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
     }
     
     if(type_name != NULL){
-      gobject = ags_machine_util_new_by_type_name(type_name,
-						  filename, effect);
+      gobject = (AgsMachine *) ags_machine_util_new_by_type_name(type_name,
+								 filename, effect);
     }    
 
     *machine = gobject;
@@ -2340,16 +2340,16 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
     }else{
       GtkDialog *failed_dialog;
 
-      failed_dialog = gtk_message_dialog_new(ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)),
-					     GTK_DIALOG_DESTROY_WITH_PARENT,
-					     GTK_MESSAGE_ERROR,
-					     GTK_BUTTONS_OK,
-					     "failed to instantiate machine %s\nplugin - \nfilename: %s\neffect: %s\n",
-					     type_name,
-					     filename,
-					     effect);
+      failed_dialog = (GtkDialog *) gtk_message_dialog_new((GtkWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)),
+							   GTK_DIALOG_DESTROY_WITH_PARENT,
+							   GTK_MESSAGE_ERROR,
+							   GTK_BUTTONS_OK,
+							   "failed to instantiate machine %s\nplugin - \nfilename: %s\neffect: %s\n",
+							   type_name,
+							   filename,
+							   effect);
 
-      gtk_widget_show(failed_dialog);
+      gtk_widget_show((GtkWidget *) failed_dialog);
 
       g_signal_connect(failed_dialog, "response",
 		       G_CALLBACK(gtk_window_destroy), NULL);
@@ -2388,7 +2388,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 					  NULL));
   
   /* retrieve window */  
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
   
   config = ags_config_get_instance();
   
@@ -2584,7 +2584,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 		      wait_data,
 		      NULL);
 
-  ags_gsequencer_application_context_task_timeout(application_context);
+  ags_gsequencer_application_context_task_timeout((AgsGSequencerApplicationContext *) application_context);
 
   ags_ui_provider_check_message(AGS_UI_PROVIDER(application_context));
   ags_ui_provider_clean_message(AGS_UI_PROVIDER(application_context));
@@ -2705,7 +2705,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 #endif
 	
 	is_ladspa = (ags_ladspa_manager_find_ladspa_plugin(ladspa_manager, filename, effect) != NULL) ? TRUE: FALSE;
-	is_lv2 = (g_strv_contains(lv2_manager->quick_scan_plugin_filename, filename) && g_strv_contains(lv2_manager->quick_scan_plugin_effect, effect)) ? TRUE: FALSE;
+	is_lv2 = (g_strv_contains((const gchar * const *) lv2_manager->quick_scan_plugin_filename, filename) && g_strv_contains((const gchar * const *) lv2_manager->quick_scan_plugin_effect, effect)) ? TRUE: FALSE;
 
 #if defined(AGS_WITH_VST3)
 	is_vst3 = (ags_vst3_manager_find_vst3_plugin(vst3_manager, filename, effect) != NULL) ? TRUE: FALSE;
@@ -5296,7 +5296,7 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
       NULL,
     };
 
-    iter = pitch_type_strv;
+    iter = (gchar **) pitch_type_strv;
     
     selected = 2;
 
@@ -6122,7 +6122,7 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
       NULL,
     };
 
-    iter = pitch_type_strv;
+    iter = (gchar **) pitch_type_strv;
     
     selected = 2;
 
@@ -7187,8 +7187,8 @@ ags_simple_file_read_effect_bridge_launch(AgsSimpleFile *simple_file, xmlNode *n
     
   gboolean is_output;
 
-  machine = gtk_widget_get_ancestor(effect_bridge,
-				    AGS_TYPE_MACHINE);
+  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) effect_bridge,
+						   AGS_TYPE_MACHINE);
   
   is_output = TRUE;
   str = xmlGetProp(node,
@@ -7238,8 +7238,8 @@ ags_simple_file_read_effect_bulk_launch(AgsSimpleFile *simple_file, xmlNode *nod
   guint major, minor, micro;
   gboolean do_fixup_3_2_7;
   
-  machine = gtk_widget_get_ancestor(effect_bulk,
-				    AGS_TYPE_MACHINE);
+  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) effect_bulk,
+						   AGS_TYPE_MACHINE);
   
   filename = xmlGetProp(node,
 			"filename");
@@ -7485,7 +7485,7 @@ ags_simple_file_read_bulk_member_launch(AgsSimpleFile *simple_file, xmlNode *nod
 
       gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment,
 			       val);
-      gtk_widget_queue_draw((AgsDial *) child_widget);
+      gtk_widget_queue_draw((GtkWidget *) child_widget);
     }
   }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
     if(str != NULL){
@@ -7534,7 +7534,7 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
   application_context = ags_application_context_get_instance();
 
   /* start threads */
-  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+  audio_loop = (AgsAudioLoop *) ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
   /* get some fields */
   start_output = NULL;
@@ -7551,27 +7551,27 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
 
   /* add to start queue */
   if(ags_audio_test_ability_flags(machine->audio, AGS_SOUND_ABILITY_PLAYBACK)){
-    audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
-							AGS_SOUND_SCOPE_PLAYBACK);
+    audio_thread = (AgsAudioThread *) ags_playback_domain_get_audio_thread(playback_domain,
+									   AGS_SOUND_SCOPE_PLAYBACK);
 	
-    ags_thread_add_start_queue(audio_loop,
-			       audio_thread);
+    ags_thread_add_start_queue((AgsThread *) audio_loop,
+			       (AgsThread *) audio_thread);
   }
   
   if(ags_audio_test_ability_flags(machine->audio, AGS_SOUND_ABILITY_SEQUENCER)){
-    audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
-							AGS_SOUND_SCOPE_SEQUENCER);
+    audio_thread = (AgsAudioThread *) ags_playback_domain_get_audio_thread(playback_domain,
+									   AGS_SOUND_SCOPE_SEQUENCER);
 	
-    ags_thread_add_start_queue(audio_loop,
-			       audio_thread);
+    ags_thread_add_start_queue((AgsThread *) audio_loop,
+			       (AgsThread *) audio_thread);
   }
   
   if(ags_audio_test_ability_flags(machine->audio, AGS_SOUND_ABILITY_NOTATION)){
-    audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
-							AGS_SOUND_SCOPE_NOTATION);
+    audio_thread = (AgsAudioThread *) ags_playback_domain_get_audio_thread(playback_domain,
+									   AGS_SOUND_SCOPE_NOTATION);
 	
-    ags_thread_add_start_queue(audio_loop,
-			       audio_thread);
+    ags_thread_add_start_queue((AgsThread *) audio_loop,
+			       (AgsThread *) audio_thread);
   }
 
   for(i = 0; i < output_pads; i++){
@@ -7591,11 +7591,11 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
 
       /* add to start queue */
       if(ags_audio_test_ability_flags(machine->audio, AGS_SOUND_ABILITY_PLAYBACK)){
-	channel_thread = ags_playback_get_channel_thread(playback,
-							 AGS_SOUND_SCOPE_PLAYBACK);
+	channel_thread = (AgsChannelThread *) ags_playback_get_channel_thread(playback,
+									      AGS_SOUND_SCOPE_PLAYBACK);
 	
-	ags_thread_add_start_queue(audio_loop,
-				   channel_thread);
+	ags_thread_add_start_queue((AgsThread *) audio_loop,
+				   (AgsThread *) channel_thread);
 
 	if(channel_thread != NULL){
 	  g_object_unref(channel_thread);
@@ -7603,11 +7603,11 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
       }
 	
       if(ags_audio_test_ability_flags(machine->audio, AGS_SOUND_ABILITY_SEQUENCER)){
-	channel_thread = ags_playback_get_channel_thread(playback,
-							 AGS_SOUND_SCOPE_SEQUENCER);
+	channel_thread = (AgsChannelThread *) ags_playback_get_channel_thread(playback,
+									      AGS_SOUND_SCOPE_SEQUENCER);
 	
-	ags_thread_add_start_queue(audio_loop,
-				   channel_thread);
+	ags_thread_add_start_queue((AgsThread *) audio_loop,
+				   (AgsThread *) channel_thread);
 
 	if(channel_thread != NULL){
 	  g_object_unref(channel_thread);
@@ -7615,11 +7615,11 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
       }
       
       if(ags_audio_test_ability_flags(machine->audio, AGS_SOUND_ABILITY_NOTATION)){
-	channel_thread = ags_playback_get_channel_thread(playback,
-							 AGS_SOUND_SCOPE_NOTATION);
+	channel_thread = (AgsChannelThread *) ags_playback_get_channel_thread(playback,
+									      AGS_SOUND_SCOPE_NOTATION);
 	
-	ags_thread_add_start_queue(audio_loop,
-				   channel_thread);
+	ags_thread_add_start_queue((AgsThread *) audio_loop,
+				   (AgsThread *) channel_thread);
 
 	if(channel_thread != NULL){
 	  g_object_unref(channel_thread);
@@ -8474,10 +8474,10 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 	      g_rec_mutex_lock(lv2_manager_mutex);
 	      
 	      is_lv2_plugin = ((lv2_manager->quick_scan_plugin_filename != NULL &&
-				g_strv_contains(lv2_manager->quick_scan_plugin_filename,
+				g_strv_contains((const gchar * const *) lv2_manager->quick_scan_plugin_filename,
 						filename)) ||
 			       (lv2_manager->quick_scan_instrument_filename != NULL &&
-				g_strv_contains(lv2_manager->quick_scan_instrument_filename,
+				g_strv_contains((const gchar * const *) lv2_manager->quick_scan_instrument_filename,
 						filename))) ? TRUE: FALSE;
 	      
 	      g_rec_mutex_unlock(lv2_manager_mutex);
@@ -8547,8 +8547,8 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 						    G_DIR_SEPARATOR,
 						    "manifest.ttl");
 
-		manifest = ags_turtle_manager_find(turtle_manager,
-						   manifest_filename);
+		manifest = (AgsTurtle *) ags_turtle_manager_find(turtle_manager,
+								 manifest_filename);
 
 		if(manifest == NULL){
 		  AgsLv2TurtleParser *lv2_turtle_parser;
@@ -8669,7 +8669,7 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 						 g_strdup(effect));
 
 		  if(AGS_IS_LINE(gobject)){
-		    ags_line_add_plugin(gobject,
+		    ags_line_add_plugin((AgsLine *) gobject,
 					NULL,
 					ags_recall_container_new(), ags_recall_container_new(),
 					plugin_name,
@@ -8682,7 +8682,7 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 		  }else if(AGS_IS_CHANNEL(gobject)){
 		    GList *start_recall;
 
-		    start_recall = ags_fx_factory_create(AGS_CHANNEL(gobject)->audio,
+		    start_recall = ags_fx_factory_create((AgsAudio *) AGS_CHANNEL(gobject)->audio,
 							 ags_recall_container_new(), ags_recall_container_new(),
 							 plugin_name,
 							 filename,
@@ -8972,7 +8972,7 @@ ags_simple_file_read_line_launch(AgsFileLaunch *file_launch,
     ags_audio_file_open(audio_file);
     
     ags_audio_file_manager_add_audio_file(ags_audio_file_manager_get_instance(),
-					  audio_file);
+					  (GObject *) audio_file);
     
     ags_audio_file_read_audio_signal(audio_file);
 
@@ -9167,7 +9167,7 @@ ags_simple_file_read_channel_line_launch(AgsFileLaunch *file_launch,
     ags_audio_file_open(audio_file);
 
     ags_audio_file_manager_add_audio_file(ags_audio_file_manager_get_instance(),
-					  audio_file);
+					  (GObject *) audio_file);
 
     ags_audio_file_read_audio_signal(audio_file);
 
@@ -9510,10 +9510,10 @@ ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsE
 	      g_rec_mutex_lock(lv2_manager_mutex);
 	      
 	      is_lv2_plugin = ((lv2_manager->quick_scan_plugin_filename != NULL &&
-				g_strv_contains(lv2_manager->quick_scan_plugin_filename,
+				g_strv_contains((const gchar * const *) lv2_manager->quick_scan_plugin_filename,
 						filename)) ||
 			       (lv2_manager->quick_scan_instrument_filename != NULL &&
-				g_strv_contains(lv2_manager->quick_scan_instrument_filename,
+				g_strv_contains((const gchar * const *) lv2_manager->quick_scan_instrument_filename,
 						filename))) ? TRUE: FALSE;
 	      
 	      g_rec_mutex_unlock(lv2_manager_mutex);
@@ -9583,8 +9583,8 @@ ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsE
 						    G_DIR_SEPARATOR,
 						    "manifest.ttl");
 
-		manifest = ags_turtle_manager_find(turtle_manager,
-						   manifest_filename);
+		manifest = (AgsTurtle *) ags_turtle_manager_find(turtle_manager,
+								 manifest_filename);
 
 		if(manifest == NULL){
 		  AgsLv2TurtleParser *lv2_turtle_parser;
@@ -9718,7 +9718,7 @@ ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsE
 		  }else if(AGS_IS_CHANNEL(gobject)){
 		    GList *start_recall;
 
-		    start_recall = ags_fx_factory_create(AGS_CHANNEL(gobject)->audio,
+		    start_recall = ags_fx_factory_create((AgsAudio *) AGS_CHANNEL(gobject)->audio,
 							 ags_recall_container_new(), ags_recall_container_new(),
 							 plugin_name,
 							 filename,
@@ -10318,7 +10318,7 @@ ags_simple_file_read_composite_editor_launch(AgsFileLaunch *file_launch,
 
   application_context = ags_application_context_get_instance();
 
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
   str = xmlGetProp(file_launch->node,
 		   "zoom");
@@ -14104,7 +14104,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 		 "true");
     }
 
-    str = gtk_combo_box_text_get_active_text(pitch_sampler->pitch_function);
+    str = gtk_combo_box_text_get_active_text((GtkComboBoxText *) pitch_sampler->pitch_function);
       
     xmlNewProp(node,
 	       "pitch-type",
@@ -14569,7 +14569,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 		 "filename",
 		 ffplayer->audio_container->filename);
 
-      str = gtk_combo_box_text_get_active_text(ffplayer->preset);
+      str = gtk_combo_box_text_get_active_text((GtkComboBoxText *) ffplayer->preset);
       
       xmlNewProp(node,
 		 "preset",
@@ -14577,7 +14577,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 
       g_free(str);
 
-      str = gtk_combo_box_text_get_active_text(ffplayer->instrument);
+      str = gtk_combo_box_text_get_active_text((GtkComboBoxText *) ffplayer->instrument);
       
       xmlNewProp(node,
 		 "instrument",
@@ -14592,7 +14592,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 		 "true");
     }
 
-    str = gtk_combo_box_text_get_active_text(ffplayer->pitch_function);
+    str = gtk_combo_box_text_get_active_text((GtkComboBoxText *) ffplayer->pitch_function);
       
     xmlNewProp(node,
 	       "pitch-type",
@@ -15057,7 +15057,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 	       "effect",
 	       dssi_bridge->effect);
 
-    str = gtk_combo_box_text_get_active_text(dssi_bridge->program);
+    str = gtk_combo_box_text_get_active_text((GtkComboBoxText *) dssi_bridge->program);
     
     xmlNewProp(node,
 	       "program",
@@ -15077,7 +15077,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 	       "effect",
 	       live_dssi_bridge->effect);
 
-    str = gtk_combo_box_text_get_active_text(live_dssi_bridge->program);
+    str = gtk_combo_box_text_get_active_text((GtkComboBoxText *) live_dssi_bridge->program);
     
     xmlNewProp(node,
 	       "program",
@@ -15098,7 +15098,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 	       lv2_bridge->effect);
 
     if(lv2_bridge->preset != NULL){
-      str = gtk_combo_box_text_get_active_text(lv2_bridge->preset);
+      str = gtk_combo_box_text_get_active_text((GtkComboBoxText *) lv2_bridge->preset);
       
       xmlNewProp(node,
 		 "preset",
@@ -15120,7 +15120,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 	       live_lv2_bridge->effect);
 
     if(live_lv2_bridge->preset != NULL){
-      str = gtk_combo_box_text_get_active_text(live_lv2_bridge->preset);
+      str = gtk_combo_box_text_get_active_text((GtkComboBoxText *) live_lv2_bridge->preset);
       
       xmlNewProp(node,
 		 "preset",
