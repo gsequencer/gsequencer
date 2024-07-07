@@ -191,7 +191,7 @@ ags_wave_edit_box_notify_width_request_callback(GObject *gobject,
 	       NULL);
   
   ags_wave_edit_box_child_width_request(wave_edit_box,
-					AGS_WAVE_EDIT(gobject),
+					GTK_WIDGET(gobject),
 					width_request);
 }
 
@@ -209,7 +209,7 @@ ags_wave_edit_box_notify_height_request_callback(GObject *gobject,
 	       NULL);
   
   ags_wave_edit_box_child_height_request(wave_edit_box,
-					 AGS_WAVE_EDIT(gobject),
+					 GTK_WIDGET(gobject),
 					 height_request);
 }
 
@@ -257,7 +257,7 @@ ags_wave_edit_box_add_wave_edit(AgsWaveEditBox *wave_edit_box,
     g_signal_connect(wave_edit, "notify::height-request",
 		     G_CALLBACK(ags_wave_edit_box_notify_height_request_callback), wave_edit_box);
     
-    gtk_box_append(wave_edit_box,
+    gtk_box_append((GtkBox *) wave_edit_box,
 		   (GtkWidget *) wave_edit);
   }
 }
@@ -291,7 +291,7 @@ ags_wave_edit_box_remove_wave_edit(AgsWaveEditBox *wave_edit_box,
     wave_edit_box->wave_edit = g_list_remove(wave_edit_box->wave_edit,
 					     wave_edit);
 
-    gtk_box_remove(wave_edit_box,
+    gtk_box_remove((GtkBox *) wave_edit_box,
 		   (GtkWidget *) wave_edit);
   }
 }

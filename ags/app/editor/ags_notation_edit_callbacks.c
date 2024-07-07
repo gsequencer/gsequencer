@@ -75,14 +75,14 @@ ags_notation_edit_update_ui_callback(GObject *ui_provider,
   hscrollbar_adjustment = gtk_scrollbar_get_adjustment(notation_edit->hscrollbar);
   x = (double) notation_edit->note_offset * (double) notation_edit->control_width / zoom_factor;
 
-  width = (double) gtk_widget_get_width(notation_edit->drawing_area);
+  width = (double) gtk_widget_get_width((GtkWidget *) notation_edit->drawing_area);
   
   if(x < gtk_adjustment_get_value(hscrollbar_adjustment) ||
      x > gtk_adjustment_get_value(hscrollbar_adjustment) + (width * (3.0 / 4.0))){
     gtk_adjustment_set_value(hscrollbar_adjustment,
 			     x);
   }else{
-    gtk_widget_queue_draw(notation_edit->drawing_area);
+    gtk_widget_queue_draw((GtkWidget *) notation_edit->drawing_area);
   }
   
   if(output_soundcard != NULL){
@@ -132,7 +132,7 @@ ags_notation_edit_drawing_area_resize_callback(GtkWidget *drawing_area,
   
   application_context = ags_application_context_get_instance();
 
-  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
   composite_edit = composite_editor->notation_edit;
   
   /* scale factor */

@@ -353,7 +353,7 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
 		   G_CALLBACK(ags_notation_edit_gesture_click_released_callback), notation_edit);
 
   event_controller =
-    notation_edit->swipe_controller = gtk_gesture_swipe_new();
+    notation_edit->swipe_controller = (GtkEventController *) gtk_gesture_swipe_new();
   gtk_widget_add_controller((GtkWidget *) notation_edit->drawing_area,
 			    event_controller);
 
@@ -741,7 +741,7 @@ ags_notation_edit_key_released_callback(GtkEventControllerKey *event_controller,
   
   application_context = ags_application_context_get_instance();
   
-  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   channel_selector = composite_editor->notation_edit->channel_selector;
     
@@ -1176,7 +1176,7 @@ ags_notation_edit_motion_callback(GtkEventControllerMotion *event_controller,
 
   application_context = ags_application_context_get_instance();
   
-  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   machine = composite_editor->selected_machine;
 
@@ -1533,7 +1533,7 @@ ags_notation_edit_drawing_area_button_release_add_note(GtkWidget *editor,
 #endif
 
   /* add note */
-  ags_composite_editor_add_note(editor,
+  ags_composite_editor_add_note((AgsCompositeEditor *) editor,
 				note);
   
   notation_edit->current_note = NULL;
@@ -1561,7 +1561,7 @@ ags_notation_edit_drawing_area_button_release_delete_note(GtkWidget *editor,
   new_y = (guint) ((y + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->vscrollbar))) / notation_edit->control_height);
 
   /* delete note */
-  ags_composite_editor_delete_note(editor,
+  ags_composite_editor_delete_note((AgsCompositeEditor *) editor,
 				   new_x, new_y);
 }
 
@@ -1882,7 +1882,7 @@ ags_notation_edit_reset_vscrollbar(AgsNotationEdit *notation_edit)
 
   application_context = ags_application_context_get_instance();
 
-  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   composite_edit = composite_editor->notation_edit;
 
@@ -2693,7 +2693,7 @@ ags_notation_edit_draw_trace(AgsNotationEdit *notation_edit, cairo_t *cr)
 
   application_context = ags_application_context_get_instance();
   
-  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   toolbar = composite_editor->toolbar;
 
@@ -2904,7 +2904,7 @@ ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
   }
   
   /* get channel count */
-  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
     
   if(composite_editor->selected_machine == NULL){
     return;
