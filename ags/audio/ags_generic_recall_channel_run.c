@@ -295,9 +295,9 @@ ags_generic_recall_channel_run_duplicate(AgsRecall *recall,
   g_rec_mutex_unlock(recall_mutex);
 
   /* duplicate */
-  copy_generic_recall_channel_run = AGS_RECALL_CLASS(ags_generic_recall_channel_run_parent_class)->duplicate(recall,
-													     recall_id,
-													     n_params, parameter_name, value);
+  copy_generic_recall_channel_run = (AgsGenericRecallChannelRun *) AGS_RECALL_CLASS(ags_generic_recall_channel_run_parent_class)->duplicate(recall,
+																	    recall_id,
+																	    n_params, parameter_name, value);
   
   g_object_set(copy_generic_recall_channel_run,
 	       "generic-recall-recycling-child-type", generic_recall_recycling_child_type,
