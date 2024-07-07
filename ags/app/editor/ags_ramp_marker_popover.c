@@ -321,7 +321,7 @@ ags_ramp_marker_popover_init(AgsRampMarkerPopover *ramp_marker_popover)
   ramp_marker_popover->action_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 							    AGS_UI_PROVIDER_DEFAULT_SPACING);
   
-  gtk_widget_set_halign(ramp_marker_popover->action_area,
+  gtk_widget_set_halign((GtkWidget *) ramp_marker_popover->action_area,
 			GTK_ALIGN_END);
 
   gtk_box_append(vbox,
@@ -335,8 +335,8 @@ ags_ramp_marker_popover_init(AgsRampMarkerPopover *ramp_marker_popover)
   g_signal_connect(ramp_marker_popover->activate_button, "clicked",
 		   G_CALLBACK(ags_ramp_marker_popover_activate_button_callback), ramp_marker_popover);
 
-  gtk_popover_set_default_widget(ramp_marker_popover,
-				 ramp_marker_popover->activate_button);
+  gtk_popover_set_default_widget((GtkPopover *) ramp_marker_popover,
+				 (GtkWidget *) ramp_marker_popover->activate_button);
 }
 
 gboolean
@@ -774,7 +774,7 @@ ags_ramp_marker_popover_apply(AgsApplicable *applicable)
     timestamp->timer.ags_offset.offset += AGS_PROGRAM_DEFAULT_OFFSET;
   }
 
-  gtk_widget_queue_draw(composite_editor->tempo_edit->drawing_area);  
+  gtk_widget_queue_draw((GtkWidget *) composite_editor->tempo_edit->drawing_area);  
 }
 
 void
@@ -831,7 +831,7 @@ ags_ramp_marker_popover_key_released_callback(GtkEventControllerKey *event_contr
     switch(keyval){
     case GDK_KEY_Escape:
       {
-	gtk_popover_popdown(ramp_marker_popover);	
+	gtk_popover_popdown((GtkPopover *) ramp_marker_popover);	
       }
       break;
     }

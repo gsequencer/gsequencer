@@ -67,14 +67,14 @@ ags_tempo_edit_update_ui_callback(GObject *ui_provider,
   hscrollbar_adjustment = gtk_scrollbar_get_adjustment(tempo_edit->hscrollbar);
   x = (double) tempo_edit->note_offset * (double) tempo_edit->control_width / zoom_factor;
     
-  width = (double) gtk_widget_get_width(tempo_edit->drawing_area);
+  width = (double) gtk_widget_get_width((GtkWidget *) tempo_edit->drawing_area);
 
   if(x < gtk_adjustment_get_value(hscrollbar_adjustment) ||
      x > gtk_adjustment_get_value(hscrollbar_adjustment) + (zoom_factor * width * (3.0 / 4.0))){
     gtk_adjustment_set_value(hscrollbar_adjustment,
 			     x);
   }else{
-    gtk_widget_queue_draw(tempo_edit->drawing_area);
+    gtk_widget_queue_draw((GtkWidget *) tempo_edit->drawing_area);
   }
 
   if(output_soundcard != NULL){

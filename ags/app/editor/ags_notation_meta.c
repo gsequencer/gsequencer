@@ -109,7 +109,7 @@ ags_notation_meta_init(AgsNotationMeta *notation_meta)
   notation_meta->flags = 0;
   notation_meta->connectable_flags = 0;
 
-  grid = (GtkWidget *) gtk_grid_new();
+  grid = (GtkGrid *) gtk_grid_new();
   gtk_box_append((GtkBox *) notation_meta,
 		 (GtkWidget *) grid);
 
@@ -392,8 +392,8 @@ ags_notation_meta_refresh(AgsNotationMeta *notation_meta)
     return;
   }
   
-  composite_editor = (AgsNotationMeta *) gtk_widget_get_ancestor((GtkWidget *) notation_meta,
-								 AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) notation_meta,
+								    AGS_TYPE_COMPOSITE_EDITOR);
 
   if(composite_editor == NULL){
     return;

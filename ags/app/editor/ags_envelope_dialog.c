@@ -288,25 +288,25 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
   gtk_window_set_child((GtkWindow *) envelope_dialog,
 		       (GtkWidget *) vbox);
 
-  gtk_widget_set_valign(vbox,
+  gtk_widget_set_valign((GtkWidget *) vbox,
 			GTK_ALIGN_FILL);
 
-  gtk_widget_set_hexpand(vbox,
+  gtk_widget_set_hexpand((GtkWidget *) vbox,
 			 TRUE);
-  gtk_widget_set_vexpand(vbox,
+  gtk_widget_set_vexpand((GtkWidget *) vbox,
 			 TRUE);
 
   envelope_dialog->notebook =
     notebook = (GtkNotebook *) gtk_notebook_new();
 
-  gtk_widget_set_halign(notebook,
+  gtk_widget_set_halign((GtkWidget *) notebook,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_valign(notebook,
+  gtk_widget_set_valign((GtkWidget *) notebook,
 			GTK_ALIGN_FILL);
 
-  gtk_widget_set_hexpand(notebook,
+  gtk_widget_set_hexpand((GtkWidget *) notebook,
 			 TRUE);
-  gtk_widget_set_vexpand(notebook,
+  gtk_widget_set_vexpand((GtkWidget *) notebook,
 			 TRUE);
 
   gtk_box_append(vbox,
@@ -316,9 +316,9 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
   envelope_dialog->envelope_editor_scrolled_window =
     scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
 
-  gtk_widget_set_hexpand(scrolled_window,
+  gtk_widget_set_hexpand((GtkWidget *) scrolled_window,
 			 TRUE);
-  gtk_widget_set_vexpand(scrolled_window,
+  gtk_widget_set_vexpand((GtkWidget *) scrolled_window,
 			 TRUE);
 
   gtk_notebook_append_page(notebook,
@@ -333,9 +333,9 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
   envelope_dialog->envelope_info_scrolled_window =
     scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
 
-  gtk_widget_set_hexpand(scrolled_window,
+  gtk_widget_set_hexpand((GtkWidget *) scrolled_window,
 			 TRUE);
-  gtk_widget_set_vexpand(scrolled_window,
+  gtk_widget_set_vexpand((GtkWidget *) scrolled_window,
 			 TRUE);
 
   gtk_notebook_append_page(notebook,
@@ -353,7 +353,7 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
   envelope_dialog->action_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 							AGS_UI_PROVIDER_DEFAULT_SPACING);
   
-  gtk_widget_set_halign(envelope_dialog->action_area,
+  gtk_widget_set_halign((GtkWidget *) envelope_dialog->action_area,
 			GTK_ALIGN_END);
 
   gtk_box_append(vbox,

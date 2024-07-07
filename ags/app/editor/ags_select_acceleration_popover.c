@@ -263,7 +263,7 @@ ags_select_acceleration_popover_init(AgsSelectAccelerationPopover *select_accele
   select_acceleration_popover->action_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 								    AGS_UI_PROVIDER_DEFAULT_SPACING);
   
-  gtk_widget_set_halign(select_acceleration_popover->action_area,
+  gtk_widget_set_halign((GtkWidget *) select_acceleration_popover->action_area,
 			GTK_ALIGN_END);
 
   gtk_box_append(vbox,
@@ -277,8 +277,8 @@ ags_select_acceleration_popover_init(AgsSelectAccelerationPopover *select_accele
   g_signal_connect(select_acceleration_popover->activate_button, "clicked",
 		   G_CALLBACK(ags_select_acceleration_popover_activate_button_callback), select_acceleration_popover);
 
-  gtk_popover_set_default_widget(select_acceleration_popover,
-				 select_acceleration_popover->activate_button);
+  gtk_popover_set_default_widget((GtkPopover *) select_acceleration_popover,
+				 (GtkWidget *) select_acceleration_popover->activate_button);
 }
 
 gboolean
@@ -596,7 +596,7 @@ ags_select_acceleration_popover_reset(AgsApplicable *applicable)
   /* application context */
   application_context = ags_application_context_get_instance();
 
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
     
   if(window == NULL ||
      window->composite_editor == NULL){
@@ -658,7 +658,7 @@ ags_select_acceleration_popover_reset(AgsApplicable *applicable)
     }
     
 #ifdef HAVE_GLIB_2_44
-    contains_control_name = g_strv_contains(collected_specifier,
+    contains_control_name = g_strv_contains((const gchar * const *) collected_specifier,
 					    specifier);
 #else
     contains_control_name = ags_strv_contains(collected_specifier,
@@ -730,7 +730,7 @@ ags_select_acceleration_popover_reset(AgsApplicable *applicable)
 		   NULL);
 
 #ifdef HAVE_GLIB_2_44
-      contains_control_name = g_strv_contains(collected_specifier,
+      contains_control_name = g_strv_contains((const gchar * const *) collected_specifier,
 					      specifier);
 #else
       contains_control_name = ags_strv_contains(collected_specifier,
@@ -817,7 +817,7 @@ ags_select_acceleration_popover_reset(AgsApplicable *applicable)
 		   NULL);
 
 #ifdef HAVE_GLIB_2_44
-      contains_control_name = g_strv_contains(collected_specifier,
+      contains_control_name = g_strv_contains((const gchar * const *) collected_specifier,
 					      specifier);
 #else
       contains_control_name = ags_strv_contains(collected_specifier,
@@ -860,7 +860,7 @@ ags_select_acceleration_popover_reset(AgsApplicable *applicable)
   }
 
   if(position != -1){
-    gtk_combo_box_set_active(select_acceleration_popover->port,
+    gtk_combo_box_set_active((GtkComboBox *) select_acceleration_popover->port,
 			     position);
   }
   
@@ -925,7 +925,7 @@ ags_select_acceleration_popover_key_released_callback(GtkEventControllerKey *eve
     switch(keyval){
     case GDK_KEY_Escape:
       {
-	gtk_popover_popdown(select_acceleration_popover);	
+	gtk_popover_popdown((GtkPopover *) select_acceleration_popover);	
       }
       break;
     }
