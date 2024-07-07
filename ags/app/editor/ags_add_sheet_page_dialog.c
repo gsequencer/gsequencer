@@ -153,11 +153,11 @@ ags_add_sheet_page_dialog_init(AgsAddSheetPageDialog *add_sheet_page_dialog)
 	       "title", i18n("Add sheet page"),
 	       NULL);
 
-  gtk_window_set_hide_on_close(add_sheet_page_dialog,
+  gtk_window_set_hide_on_close((GtkWindow *) add_sheet_page_dialog,
 			       TRUE);
   
-  grid = gtk_grid_new();
-  gtk_box_append((GtkBox *) gtk_dialog_get_content_area(add_sheet_page_dialog),
+  grid = (GtkGrid *) gtk_grid_new();
+  gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) add_sheet_page_dialog),
 		 (GtkWidget *) grid);  
 
   label = (GtkLabel *) gtk_label_new(i18n("sheet title"));
@@ -178,9 +178,9 @@ ags_add_sheet_page_dialog_init(AgsAddSheetPageDialog *add_sheet_page_dialog)
 		  0, 1,
 		  1, 1);
   
-  add_sheet_page_dialog->notation_x0 = gtk_spin_button_new_with_range(0.0,
-								      (gdouble) AGS_ADD_SHEET_PAGE_DIALOG_MAX_NOTATION_X,
-								      1.0);
+  add_sheet_page_dialog->notation_x0 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+											(gdouble) AGS_ADD_SHEET_PAGE_DIALOG_MAX_NOTATION_X,
+											1.0);
   gtk_grid_attach(grid,
 		  (GtkWidget *) add_sheet_page_dialog->notation_x0,
 		  1, 1,
@@ -192,9 +192,9 @@ ags_add_sheet_page_dialog_init(AgsAddSheetPageDialog *add_sheet_page_dialog)
 		  0, 2,
 		  1, 1);
   
-  add_sheet_page_dialog->notation_x1 = gtk_spin_button_new_with_range(0.0,
-								      (gdouble) AGS_ADD_SHEET_PAGE_DIALOG_MAX_NOTATION_X,
-								      1.0);
+  add_sheet_page_dialog->notation_x1 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+											(gdouble) AGS_ADD_SHEET_PAGE_DIALOG_MAX_NOTATION_X,
+											1.0);
   gtk_spin_button_set_value(add_sheet_page_dialog->notation_x1,
 			    64.0);
   gtk_grid_attach(grid,
@@ -283,7 +283,7 @@ ags_add_sheet_page_dialog_apply(AgsApplicable *applicable)
   /* application context */
   application_context = ags_application_context_get_instance();
 
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
     
   composite_editor = window->composite_editor;
     

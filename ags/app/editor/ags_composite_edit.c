@@ -859,7 +859,7 @@ ags_composite_edit_set_channel_selector_mode(AgsCompositeEdit *composite_edit, g
 
 	toggle_button = (GtkToggleButton *) gtk_toggle_button_new_with_label(str);
 	ags_notebook_add_tab(composite_edit->channel_selector,
-			     (GtkWidget *) toggle_button);
+			     toggle_button);
 
 	g_free(str);
       }
