@@ -202,7 +202,7 @@ ags_recall_audio_run_set_property(GObject *gobject,
     {
       AgsAudio *audio;
 
-      audio = (AgsRecallAudio *) g_value_get_object(value);
+      audio = (AgsAudio *) g_value_get_object(value);
 
       g_rec_mutex_lock(recall_mutex);
 

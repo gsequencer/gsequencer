@@ -465,15 +465,15 @@ ags_playback_dispose(GObject *gobject)
 
   /* playback domain */
   if(playback->playback_domain != NULL){
-    ags_playback_domain_remove_playback(playback->playback_domain,
-					playback, ((AGS_IS_OUTPUT(playback->channel)) ? AGS_TYPE_OUTPUT: AGS_TYPE_INPUT));
+    ags_playback_domain_remove_playback((AgsPlaybackDomain *) playback->playback_domain,
+					(GObject *) playback, ((AGS_IS_OUTPUT(playback->channel)) ? AGS_TYPE_OUTPUT: AGS_TYPE_INPUT));
   }
 
   /* channel */
   if(playback->channel != NULL){
     AgsChannel *channel;
 
-    channel = playback->channel;
+    channel = (AgsChannel *) playback->channel;
     
     playback->channel = NULL;
     
@@ -519,8 +519,8 @@ ags_playback_finalize(GObject *gobject)
   /* playback domain */
   if(playback->playback_domain != NULL){
     if(playback->channel != NULL){
-      ags_playback_domain_remove_playback(playback->playback_domain,
-					  playback, ((AGS_IS_OUTPUT(playback->channel)) ? AGS_TYPE_OUTPUT: AGS_TYPE_INPUT));
+      ags_playback_domain_remove_playback((AgsPlaybackDomain *) playback->playback_domain,
+					  (GObject *) playback, ((AGS_IS_OUTPUT(playback->channel)) ? AGS_TYPE_OUTPUT: AGS_TYPE_INPUT));
     }else{
       gpointer tmp;
 
@@ -536,7 +536,7 @@ ags_playback_finalize(GObject *gobject)
   if(playback->channel != NULL){
     AgsChannel *channel;
 
-    channel = playback->channel;
+    channel = (AgsChannel *) playback->channel;
     
     playback->channel = NULL;
     
