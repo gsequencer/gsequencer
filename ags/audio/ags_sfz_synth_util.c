@@ -270,7 +270,7 @@ ags_sfz_synth_util_boxed_copy(AgsSFZSynthUtil *ptr)
     new_ptr->pitch_util = ags_pitch_16x_alias_util_copy(ptr->pitch_util);
  }
 
-  new_ptr->volume_util = ags_hq_pitch_util_copy(ptr->volume_util);
+  new_ptr->volume_util = ags_volume_util_copy(ptr->volume_util);
 
   new_ptr->note_256th_mode = ptr->note_256th_mode;
 

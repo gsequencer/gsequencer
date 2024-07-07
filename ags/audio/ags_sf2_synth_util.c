@@ -108,7 +108,7 @@ ags_sf2_synth_util_alloc()
   ptr->sf2_file = NULL;
 
   ptr->sf2_sample_count = 0;
-  ptr->sf2_sample_arr = (AgsIpatchSample **) g_malloc(128 * sizeof(AgsIpatchSample*));
+  ptr->sf2_sample_arr = (IpatchSample **) g_malloc(128 * sizeof(IpatchSample*));
   ptr->sf2_note_range = (gint **) g_malloc(128 * sizeof(gint*));
   
   ptr->sf2_orig_buffer = (gpointer *) g_malloc(128 * sizeof(gpointer));
@@ -282,7 +282,7 @@ ags_sf2_synth_util_boxed_copy(AgsSF2SynthUtil *ptr)
     new_ptr->pitch_util = ags_pitch_16x_alias_util_copy(ptr->pitch_util);
   }
 
-  new_ptr->volume_util = ags_hq_pitch_util_copy(ptr->volume_util);
+  new_ptr->volume_util = ags_volume_util_copy(ptr->volume_util);
 
   new_ptr->note_256th_mode = ptr->note_256th_mode;
 
@@ -1766,14 +1766,14 @@ ags_sf2_synth_util_load_instrument(AgsSF2SynthUtil *sf2_synth_util,
 		   NULL);
 
       if(midi_key == -1){
-	sf2_sample = AGS_IPATCH_SAMPLE(list->data)->sample;
+	sf2_sample = IPATCH_SAMPLE(AGS_IPATCH_SAMPLE(list->data)->sample);
 
 	matching_midi_key = current_midi_key;
       }else{
 	if(current_midi_key > midi_key &&
 	   (matching_midi_key == -1 ||
 	    current_midi_key < matching_midi_key)){
-	  sf2_sample = AGS_IPATCH_SAMPLE(list->data)->sample;
+	  sf2_sample = IPATCH_SAMPLE(AGS_IPATCH_SAMPLE(list->data)->sample);
 
 	  matching_midi_key = current_midi_key;
 	}
@@ -1805,7 +1805,7 @@ ags_sf2_synth_util_load_instrument(AgsSF2SynthUtil *sf2_synth_util,
       sf2_synth_util->sf2_note_range[i][0] = midi_key;
       sf2_synth_util->sf2_note_range[i][1] = midi_key;
       
-      sample_data = ipatch_sf2_sample_get_data(sf2_sample);
+      sample_data = ipatch_sf2_sample_get_data(IPATCH_SF2_SAMPLE(sf2_sample));
 
       sample_frame_count = 0;
       
@@ -2184,7 +2184,7 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 	
 	//	g_message("note-range = %d %d", note_range->low, note_range->high);
 	
-	sf2_instrument = (IpatchItem *) ipatch_sf2_pzone_get_inst(pzone);
+	sf2_instrument = (IpatchItem *) ipatch_sf2_pzone_get_inst(IPATCH_SF2_PZONE(pzone));
 
 	izone_list = ipatch_sf2_inst_get_zones(sf2_instrument);
 
@@ -2210,7 +2210,7 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 	      
 	      izone = ipatch_iter_get(&izone_iter);
 
-	      sf2_sample = ipatch_sf2_izone_get_sample(izone);
+	      sf2_sample = ipatch_sf2_izone_get_sample(IPATCH_SF2_IZONE(izone));
 
 	      if(sf2_sample != NULL){
 		g_object_ref(sf2_sample);
@@ -2309,7 +2309,7 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 	      int orig_sf2_sample_format, sf2_sample_format;
 	      guint copy_mode;
 	      
-	      sf2_synth_util->sf2_sample_arr[i] = sf2_sample;
+	      sf2_synth_util->sf2_sample_arr[i] = IPATCH_SAMPLE(sf2_sample);
 	      g_object_ref(sf2_sample);
 
 	      sf2_synth_util->sf2_note_range[i][0] = note_range->low;
@@ -2344,7 +2344,7 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 	      copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
 							      AGS_AUDIO_BUFFER_UTIL_S16);
 
-	      orig_sf2_sample_format = ipatch_sample_get_format(sf2_sample);
+	      orig_sf2_sample_format = ipatch_sample_get_format(IPATCH_SAMPLE(sf2_sample));
 	      
 	      if(ags_endian_host_is_be()){
 		sf2_sample_format = orig_sf2_sample_format;
@@ -5289,7 +5289,7 @@ ags_sf2_synth_util_midi_locale_find_sample_near_midi_key(AgsIpatch *ipatch,
 	
 	if(note_range->low <= midi_key &&
 	   note_range->high >= midi_key){
-	  sf2_instrument = (IpatchItem *) ipatch_sf2_pzone_get_inst(ipatch_iter_get(&pzone_iter));
+	  sf2_instrument = (IpatchSF2Inst *) ipatch_sf2_pzone_get_inst(ipatch_iter_get(&pzone_iter));
 
 	  if(instrument != NULL){
 	    matching_instrument = ipatch_sf2_inst_get_name(sf2_instrument);
@@ -5303,7 +5303,7 @@ ags_sf2_synth_util_midi_locale_find_sample_near_midi_key(AgsIpatch *ipatch,
 	    if(ipatch_iter_first(&izone_iter) != NULL){      
 	      izone = ipatch_iter_get(&izone_iter);
 
-	      first_sf2_sample = ipatch_sf2_izone_get_sample(izone);
+	      first_sf2_sample = ipatch_sf2_izone_get_sample(IPATCH_SF2_IZONE(izone));
 	      
 	      do{
 		gint root_note;
@@ -5375,5 +5375,5 @@ ags_sf2_synth_util_midi_locale_find_sample_near_midi_key(AgsIpatch *ipatch,
     sample[0] = matching_sample;
   }
   
-  return(matching_sf2_sample);
+  return(ipatch_sample);
 }

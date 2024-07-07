@@ -2027,8 +2027,8 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
   
   g_rec_mutex_lock(audio_container_manager_mutex);
   
-  audio_container = ags_audio_container_manager_find_audio_container(audio_container_manager,
-								     filename);
+  audio_container = (AgsAudioContainer *) ags_audio_container_manager_find_audio_container(audio_container_manager,
+											   filename);
 
   if(audio_container == NULL){    
     audio_container = ags_audio_container_new(filename,
@@ -2040,7 +2040,7 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
     ags_audio_container_open(audio_container);
 
     ags_audio_container_manager_add_audio_container(audio_container_manager,
-						    audio_container);
+						    (GObject *) audio_container);
   }
   
   g_rec_mutex_unlock(audio_container_manager_mutex);
@@ -2179,7 +2179,7 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
 				   ceil(requested_frame_count / buffer_size));
   }
 
-  ags_audio_signal_clear(audio_signal);
+  ags_audio_signal_clear((AgsAudioSignal *) audio_signal);
   
   /*  */
   g_rec_mutex_lock(stream_mutex);
@@ -2446,8 +2446,8 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
   
   g_rec_mutex_lock(audio_container_manager_mutex);
 
-  audio_container = ags_audio_container_manager_find_audio_container(audio_container_manager,
-								     filename);
+  audio_container = (AgsAudioContainer *) ags_audio_container_manager_find_audio_container(audio_container_manager,
+											   filename);
 
   if(audio_container == NULL){    
     audio_container = ags_audio_container_new(filename,
@@ -2461,7 +2461,7 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
     ags_audio_container_open(audio_container);
 
     ags_audio_container_manager_add_audio_container(audio_container_manager,
-						    audio_container);
+						    (GObject *) audio_container);
   }
   
   g_rec_mutex_unlock(audio_container_manager_mutex);
@@ -2504,7 +2504,7 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
   }
 
 #if defined(AGS_WITH_LIBINSTPATCH)
-  ipatch_sample = ags_sf2_synth_util_midi_locale_find_sample_near_midi_key(audio_container->sound_container,
+  ipatch_sample = ags_sf2_synth_util_midi_locale_find_sample_near_midi_key((AgsIpatch *) audio_container->sound_container,
 									   bank,
 									   program,
 									   midi_key,
@@ -2564,10 +2564,10 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
   ags_sf2_synth_util_set_source_stride(sf2_synth_generator->sf2_synth_util,
 				       1);
 
-  ags_sf2_synth_generator_set_bank(sf2_synth_generator->sf2_synth_util,
+  ags_sf2_synth_generator_set_bank(sf2_synth_generator,
 				   bank);
 
- ags_sf2_synth_generator_set_program(sf2_synth_generator->sf2_synth_util,
+ ags_sf2_synth_generator_set_program(sf2_synth_generator,
 				     program);
 
   ags_sf2_synth_util_set_buffer_length(sf2_synth_generator->sf2_synth_util,
