@@ -79,7 +79,7 @@ ags_drum_input_pad_open_callback(GtkWidget *widget, AgsDrumInputPad *drum_input_
   pcm_file_dialog = ags_pcm_file_dialog_new((GtkWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)),
 					    i18n("open audio files"));
 
-  drum_input_pad->open_dialog = (GtkWidget *) pcm_file_dialog;
+  drum_input_pad->open_dialog = pcm_file_dialog;
 
   file_widget = ags_pcm_file_dialog_get_file_widget(pcm_file_dialog);
 
@@ -245,7 +245,7 @@ ags_drum_input_pad_open_response_callback(AgsPCMFileDialog *pcm_file_dialog, gin
 
     filename = ags_file_widget_get_filename(pcm_file_dialog->file_widget);
     
-    if(!g_strv_contains(file_widget->recently_used, filename)){
+    if(!g_strv_contains((const gchar * const *) file_widget->recently_used, filename)){
       strv_length = g_strv_length(file_widget->recently_used);
 
       file_widget->recently_used = g_realloc(file_widget->recently_used,

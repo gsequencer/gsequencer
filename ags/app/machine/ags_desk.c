@@ -18,7 +18,6 @@
  */
 
 #include <ags/app/machine/ags_desk.h>
-#include <ags/app/machine/ags_desk_file_chooser.h>
 #include <ags/app/machine/ags_desk_callbacks.h>
 
 #include <ags/app/ags_ui_provider.h>
@@ -183,15 +182,15 @@ ags_desk_init(AgsDesk *desk)
 
 
   /* machine selector */
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   position = g_list_length(window->machine);
   
   ags_machine_selector_popup_insert_machine(composite_editor->machine_selector,
 					    position,
-					    desk);
+					    (AgsMachine *) desk);
 
   audio = AGS_MACHINE(desk)->audio;
 
@@ -398,7 +397,7 @@ ags_desk_map_recall(AgsMachine *machine)
 
   application_context = ags_application_context_get_instance();
 
-  navigation = ags_ui_provider_get_navigation(AGS_UI_PROVIDER(application_context));
+  navigation = (AgsNavigation *) ags_ui_provider_get_navigation(AGS_UI_PROVIDER(application_context));
 
   desk = AGS_DESK(machine);
   

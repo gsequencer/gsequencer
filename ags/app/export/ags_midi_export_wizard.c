@@ -304,7 +304,7 @@ ags_midi_export_wizard_init(AgsMidiExportWizard *midi_export_wizard)
   /* file chooser */  
   file_widget = ags_file_widget_new();
 
-  midi_export_wizard->file_widget = file_widget;
+  midi_export_wizard->file_widget = (GtkWidget *) file_widget;
 
   home_path = ags_file_widget_get_home_path(file_widget);
 
@@ -429,17 +429,17 @@ ags_midi_export_wizard_init(AgsMidiExportWizard *midi_export_wizard)
   ags_file_widget_set_default_bundle(file_widget,
 				     AGS_DEFAULT_BUNDLE_ID);
 
-  gtk_widget_set_halign(file_widget,
+  gtk_widget_set_halign((GtkWidget *) file_widget,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_valign(file_widget,
+  gtk_widget_set_valign((GtkWidget *) file_widget,
 			GTK_ALIGN_FILL);
 
-  gtk_widget_set_hexpand(file_widget,
+  gtk_widget_set_hexpand((GtkWidget *) file_widget,
 			 TRUE);
-  gtk_widget_set_vexpand(file_widget,
+  gtk_widget_set_vexpand((GtkWidget *) file_widget,
 			 TRUE);
 
-  gtk_widget_set_visible(file_widget,
+  gtk_widget_set_visible((GtkWidget *) file_widget,
 			 FALSE);
   
   gtk_box_append(vbox,
@@ -449,7 +449,7 @@ ags_midi_export_wizard_init(AgsMidiExportWizard *midi_export_wizard)
   action_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				       AGS_UI_PROVIDER_DEFAULT_SPACING);
 
-  gtk_widget_set_halign(action_area,
+  gtk_widget_set_halign((GtkWidget *) action_area,
 			GTK_ALIGN_END);
 
   gtk_box_append(vbox,
@@ -576,7 +576,7 @@ ags_midi_export_wizard_apply(AgsApplicable *applicable)
   application_context = ags_application_context_get_instance();
   
   /* retrieve BPM */
-  navigation = ags_ui_provider_get_navigation(AGS_UI_PROVIDER(application_context));
+  navigation = (AgsNavigation *) ags_ui_provider_get_navigation(AGS_UI_PROVIDER(application_context));
   
   bpm = gtk_spin_button_get_value_as_int(navigation->bpm);
   
@@ -610,7 +610,7 @@ ags_midi_export_wizard_apply(AgsApplicable *applicable)
   midi_export_wizard->pulse_unit = division / 16.0;
   
   /* open file */
-  filename = ags_file_widget_get_filename(midi_export_wizard->file_widget);
+  filename = ags_file_widget_get_filename((AgsFileWidget *) midi_export_wizard->file_widget);
 
   ags_midi_builder_open_filename(midi_export_wizard->midi_builder,
 				 filename);
@@ -666,7 +666,7 @@ ags_midi_export_wizard_close_request_callback(GtkWindow *window,
   ags_midi_export_wizard_response(midi_export_wizard,
 				  GTK_RESPONSE_CLOSE);
 
-  ags_gsequencer_application_refresh_window_menu(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
+  ags_gsequencer_application_refresh_window_menu((AgsGSequencerApplication *) ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
 }
 
 void

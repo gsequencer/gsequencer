@@ -57,7 +57,7 @@ ags_wave_export_dialog_file_open_button_callback(GtkWidget *file_open_button,
   gchar *sandbox_path;
   gchar *str;
 
-  file_dialog = ags_file_dialog_new((GtkWindow *) wave_export_dialog,
+  file_dialog = ags_file_dialog_new((GtkWidget *) wave_export_dialog,
 				    i18n("export to file"));
 
   file_widget = ags_file_dialog_get_file_widget(file_dialog);

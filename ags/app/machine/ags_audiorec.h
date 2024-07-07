@@ -31,6 +31,7 @@
 #include <ags/libags-gui.h>
 
 #include <ags/app/ags_machine.h>
+#include <ags/app/ags_pcm_file_dialog.h>
 
 G_BEGIN_DECLS
 
@@ -88,7 +89,7 @@ struct _AgsAudiorec
   
   GtkBox *indicator_vbox;
 
-  GtkFileChooserDialog *open_dialog;
+  AgsPCMFileDialog *open_dialog;
 };
 
 struct _AgsAudiorecClass
