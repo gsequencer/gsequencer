@@ -2184,7 +2184,7 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 	
 	//	g_message("note-range = %d %d", note_range->low, note_range->high);
 	
-	sf2_instrument = (IpatchItem *) ipatch_sf2_pzone_get_inst(IPATCH_SF2_PZONE(pzone));
+	sf2_instrument = (IpatchSF2Inst *) ipatch_sf2_pzone_get_inst(IPATCH_SF2_PZONE(pzone));
 
 	izone_list = ipatch_sf2_inst_get_zones(sf2_instrument);
 
@@ -5310,7 +5310,7 @@ ags_sf2_synth_util_midi_locale_find_sample_near_midi_key(AgsIpatch *ipatch,
 		
 		izone = ipatch_iter_get(&izone_iter);
 
-		sf2_sample = ipatch_sf2_izone_get_sample(izone);
+		sf2_sample = ipatch_sf2_izone_get_sample(IPATCH_SF2_IZONE(izone));
  
 		g_object_get(sf2_sample,
 			     "root-note", &root_note,

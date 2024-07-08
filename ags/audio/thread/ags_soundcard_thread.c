@@ -269,30 +269,30 @@ ags_soundcard_thread_set_property(GObject *gobject,
 
 	/* playback */
 	if(AGS_IS_ALSA_DEVOUT(soundcard)){
-	  ags_thread_set_flags(soundcard_thread, AGS_THREAD_INTERMEDIATE_POST_SYNC);
+	  ags_thread_set_flags((AgsThread *) soundcard_thread, AGS_THREAD_INTERMEDIATE_POST_SYNC);
 	}else if(AGS_IS_OSS_DEVOUT(soundcard)){
-	  ags_thread_set_flags(soundcard_thread, AGS_THREAD_INTERMEDIATE_POST_SYNC);
+	  ags_thread_set_flags((AgsThread *) soundcard_thread, AGS_THREAD_INTERMEDIATE_POST_SYNC);
 	}else if(AGS_IS_WASAPI_DEVOUT(soundcard)){
-	  ags_thread_set_flags(soundcard_thread, AGS_THREAD_INTERMEDIATE_POST_SYNC);
+	  ags_thread_set_flags((AgsThread *) soundcard_thread, AGS_THREAD_INTERMEDIATE_POST_SYNC);
 	}else if(AGS_IS_JACK_DEVOUT(soundcard) ||
 		 AGS_IS_PULSE_DEVOUT(soundcard)){
-	  ags_thread_set_flags(soundcard_thread, AGS_THREAD_INTERMEDIATE_POST_SYNC);
+	  ags_thread_set_flags((AgsThread *) soundcard_thread, AGS_THREAD_INTERMEDIATE_POST_SYNC);
 	}else if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard)){
-	  ags_thread_set_flags(soundcard_thread, AGS_THREAD_INTERMEDIATE_POST_SYNC);
+	  ags_thread_set_flags((AgsThread *) soundcard_thread, AGS_THREAD_INTERMEDIATE_POST_SYNC);
 	}
 
 	/* capture */
 	if(AGS_IS_ALSA_DEVIN(soundcard)){
-	  ags_thread_set_flags(soundcard_thread, AGS_THREAD_INTERMEDIATE_PRE_SYNC);
+	  ags_thread_set_flags((AgsThread *) soundcard_thread, AGS_THREAD_INTERMEDIATE_PRE_SYNC);
 	}else if(AGS_IS_OSS_DEVIN(soundcard)){
-	  ags_thread_set_flags(soundcard_thread, AGS_THREAD_INTERMEDIATE_PRE_SYNC);
+	  ags_thread_set_flags((AgsThread *) soundcard_thread, AGS_THREAD_INTERMEDIATE_PRE_SYNC);
 	}else if(AGS_IS_WASAPI_DEVIN(soundcard)){
-	  ags_thread_set_flags(soundcard_thread, AGS_THREAD_INTERMEDIATE_PRE_SYNC);
+	  ags_thread_set_flags((AgsThread *) soundcard_thread, AGS_THREAD_INTERMEDIATE_PRE_SYNC);
 	}else if(AGS_IS_JACK_DEVIN(soundcard) ||
 		 AGS_IS_PULSE_DEVIN(soundcard)){
-	  ags_thread_set_flags(soundcard_thread, AGS_THREAD_INTERMEDIATE_PRE_SYNC);
+	  ags_thread_set_flags((AgsThread *) soundcard_thread, AGS_THREAD_INTERMEDIATE_PRE_SYNC);
 	}else if(AGS_IS_CORE_AUDIO_DEVIN(soundcard)){
-	  ags_thread_set_flags(soundcard_thread, AGS_THREAD_INTERMEDIATE_PRE_SYNC);
+	  ags_thread_set_flags((AgsThread *) soundcard_thread, AGS_THREAD_INTERMEDIATE_PRE_SYNC);
 	}
 
 	/* duplex */
@@ -603,13 +603,13 @@ ags_soundcard_thread_find_soundcard(AgsSoundcardThread *soundcard_thread,
     return(NULL);
   }
 
-  thread = soundcard_thread;
+  thread = (AgsThread *) soundcard_thread;
   g_object_ref(thread);
   
   while(thread != NULL){
     if(AGS_IS_SOUNDCARD_THREAD(thread) &&
        AGS_SOUNDCARD_THREAD(thread)->soundcard == soundcard){
-      return(thread);
+      return((AgsSoundcardThread *) thread);
     }
 
     /* iterate */
