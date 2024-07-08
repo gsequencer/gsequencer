@@ -1094,7 +1094,7 @@ ags_pulse_client_open(AgsPulseClient *pulse_client,
 				  (pa_context_notify_cb_t) ags_pulse_client_state_callback,
 				  pulse_client);
 
-    log = (GObject *) ags_log_get_instance();
+    log = ags_log_get_instance();
 
     ags_log_add_message(log,
 			g_strdup("* start pulseaudio"));

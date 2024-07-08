@@ -2380,11 +2380,11 @@ ags_gstreamer_devin_tic(AgsSoundcard *soundcard)
   next_note_256th_attack_lower = 0;
   next_note_256th_attack_upper = 0;
   
-  ags_soundcard_util_calc_next_note_256th_offset(soundcard,
+  ags_soundcard_util_calc_next_note_256th_offset(G_OBJECT(soundcard),
 						 &next_note_256th_offset_lower,
 						 &next_note_256th_offset_upper);
 
-  ags_soundcard_util_calc_next_note_256th_attack(soundcard,
+  ags_soundcard_util_calc_next_note_256th_attack(G_OBJECT(soundcard),
 						 &next_note_256th_attack_lower,
 						 &next_note_256th_attack_upper);
 
@@ -3489,7 +3489,7 @@ ags_gstreamer_devin_adjust_delay_and_attack(AgsGstreamerDevin *gstreamer_devin)
     return;
   }
 
-  ags_soundcard_util_adjust_delay_and_attack(gstreamer_devin);
+  ags_soundcard_util_adjust_delay_and_attack((GObject *) gstreamer_devin);
 }
 
 /**
@@ -3522,7 +3522,7 @@ ags_gstreamer_devin_realloc_buffer(AgsGstreamerDevin *gstreamer_devin)
   /* get word size */  
   g_rec_mutex_lock(gstreamer_devin_mutex);
 
-  gstreamer_client = gstreamer_devin->gstreamer_client;
+  gstreamer_client = (AgsGstreamerClient *) gstreamer_devin->gstreamer_client;
   
   port_count = g_list_length(gstreamer_devin->gstreamer_port);
   
@@ -3591,7 +3591,7 @@ ags_gstreamer_devin_realloc_buffer(AgsGstreamerDevin *gstreamer_devin)
 			    nth_soundcard,
 			    i);
       
-      gstreamer_port = ags_gstreamer_port_new(gstreamer_client);
+      gstreamer_port = ags_gstreamer_port_new((GObject *) gstreamer_client);
       ags_gstreamer_client_add_port((AgsGstreamerClient *) gstreamer_client,
 				    (GObject *) gstreamer_port);
 

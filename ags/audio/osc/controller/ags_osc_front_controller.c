@@ -996,7 +996,7 @@ ags_osc_front_controller_read_message(AgsOscFrontController *osc_front_controlle
 	       NULL);    
 
   ags_osc_front_controller_add_message(osc_front_controller,
-				       osc_message);
+				       (GObject *) osc_message);
     
   return(read_count);
 }
