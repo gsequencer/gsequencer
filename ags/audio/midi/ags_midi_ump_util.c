@@ -4857,20 +4857,20 @@ ags_midi_ump_util_get_midi2_control_change(AgsMidiUmpUtil *midi_ump_util,
   nth++;
 
   /* data */
-  if((position = ags_strv_index(extension_name, "portamento")) >= 0){
+  if((position = ags_strv_index(extension_name[0], "portamento")) >= 0){
     gpointer source_note_number;
 
-    source_note_number = g_value_get_pointer(extension_value + position);
+    source_note_number = g_value_get_pointer(extension_value[0] + position);
 
     if(source_note_number != NULL){
       ((gint *) source_note_number)[0] = (0xfe & buffer[nth]) >> 1;
     }
   }
 
-  if((position = ags_strv_index(extension_name, "omni-off")) >= 0){
+  if((position = ags_strv_index(extension_name[0], "omni-off")) >= 0){
     gpointer channels_count;
 
-    channels_count = g_value_get_pointer(extension_value + position);
+    channels_count = g_value_get_pointer(extension_value[0] + position);
 
     if(channels_count != NULL){
       ((gint *) channels_count)[0] = (0xfe & buffer[nth]) >> 1;

@@ -2118,7 +2118,7 @@ ags_gstreamer_file_read(AgsSoundResource *sound_resource,
       g_rec_mutex_unlock(gstreamer_file_mutex);
     }else{
       /* attempt #0 */
-      sample = gst_app_sink_pull_sample(audio_sink);
+      sample = gst_app_sink_pull_sample((GstAppSink *) audio_sink);
 
       if(sample != NULL){
 	buffer = gst_sample_get_buffer(sample);
@@ -2730,14 +2730,14 @@ ags_gstreamer_file_create_wav_encoding_profile(AgsGstreamerFile *gstreamer_file)
   }
 
   caps = gst_caps_from_string("audio/x-rf64");
-  container_profile = gst_encoding_container_profile_new(NULL,
-							 NULL,
-							 caps,
-							 NULL);
+  container_profile = (GstEncodingProfile *) gst_encoding_container_profile_new(NULL,
+										NULL,
+										caps,
+										NULL);
   gst_caps_unref(caps);
   
   caps = gst_caps_from_string("audio/x-raw");
-  gst_encoding_container_profile_add_profile(container_profile,
+  gst_encoding_container_profile_add_profile((GstEncodingContainerProfile *) container_profile,
 					     (GstEncodingProfile*) gst_encoding_audio_profile_new(caps, NULL, NULL, 0));
   gst_caps_unref(caps);
 
@@ -2766,14 +2766,14 @@ ags_gstreamer_file_create_mp3_encoding_profile(AgsGstreamerFile *gstreamer_file)
   }
 
   caps = gst_caps_from_string("application/x-id3");
-  container_profile = gst_encoding_container_profile_new(NULL,
-							 NULL,
-							 caps,
-							 NULL);
+  container_profile = (GstEncodingProfile *) gst_encoding_container_profile_new(NULL,
+										NULL,
+										caps,
+										NULL);
   gst_caps_unref(caps);
   
   caps = gst_caps_from_string("audio/mpeg,mpegversion=1,layer=3");
-  gst_encoding_container_profile_add_profile(container_profile,
+  gst_encoding_container_profile_add_profile((GstEncodingContainerProfile *) container_profile,
 					     (GstEncodingProfile*) gst_encoding_audio_profile_new(caps, NULL, NULL, 0));
   gst_caps_unref(caps);
 
@@ -2802,14 +2802,14 @@ ags_gstreamer_file_create_aac_encoding_profile(AgsGstreamerFile *gstreamer_file)
   }  
 
   caps = gst_caps_from_string("audio/aac");
-  container_profile = gst_encoding_container_profile_new(NULL,
-							 NULL,
-							 caps,
-							 NULL);
+  container_profile = (GstEncodingProfile *) gst_encoding_container_profile_new(NULL,
+										NULL,
+										caps,
+										NULL);
   gst_caps_unref(caps);
   
   caps = gst_caps_from_string("audio/x-m4a");
-  gst_encoding_container_profile_add_profile(container_profile,
+  gst_encoding_container_profile_add_profile((GstEncodingContainerProfile *) container_profile,
 					     (GstEncodingProfile*) gst_encoding_audio_profile_new(caps, NULL, NULL, 0));
   gst_caps_unref(caps);
 
@@ -2838,21 +2838,21 @@ ags_gstreamer_file_create_mp4_encoding_profile(AgsGstreamerFile *gstreamer_file)
   }  
 
   caps = gst_caps_from_string("video/quicktime,variant=iso");
-  container_profile = gst_encoding_container_profile_new(NULL,
-							 NULL,
-							 caps,
-							 NULL);
+  container_profile = (GstEncodingProfile *) gst_encoding_container_profile_new(NULL,
+										NULL,
+										caps,
+										NULL);
   gst_caps_unref(caps);
 
 #if 0
   caps = gst_caps_from_string("video/x-h264");
-  gst_encoding_container_profile_add_profile(container_profile,
+  gst_encoding_container_profile_add_profile((GstEncodingContainerProfile *) container_profile,
 					     (GstEncodingProfile*) gst_encoding_video_profile_new(caps, NULL, NULL, 0));
   gst_caps_unref(caps);
 #endif
   
   caps = gst_caps_from_string("audio/mpeg,mpegversion=4");
-  gst_encoding_container_profile_add_profile(container_profile,
+  gst_encoding_container_profile_add_profile((GstEncodingContainerProfile *) container_profile,
 					     (GstEncodingProfile*) gst_encoding_audio_profile_new(caps, NULL, NULL, 0));
   gst_caps_unref(caps);
 
@@ -2881,21 +2881,21 @@ ags_gstreamer_file_create_mkv_encoding_profile(AgsGstreamerFile *gstreamer_file)
   }
   
   caps = gst_caps_from_string("video/x-matroska");
-  container_profile = gst_encoding_container_profile_new(NULL,
-							 NULL,
-							 caps,
-							 NULL);
+  container_profile = (GstEncodingProfile *) gst_encoding_container_profile_new(NULL,
+										NULL,
+										caps,
+										NULL);
   gst_caps_unref(caps);  
   
 #if 0
   caps = gst_caps_from_string("video/x-vp8");
-  gst_encoding_container_profile_add_profile(container_profile,
+  gst_encoding_container_profile_add_profile((GstEncodingContainerProfile *) container_profile,
 					     (GstEncodingProfile*) gst_encoding_video_profile_new(caps, NULL, NULL, 0));
   gst_caps_unref(caps);
 #endif
   
   caps = gst_caps_from_string("audio/x-flac");
-  gst_encoding_container_profile_add_profile(container_profile,
+  gst_encoding_container_profile_add_profile((GstEncodingContainerProfile *) container_profile,
 					     (GstEncodingProfile*) gst_encoding_audio_profile_new(caps, NULL, NULL, 0));
   gst_caps_unref(caps);
 
@@ -2924,14 +2924,14 @@ ags_gstreamer_file_create_webm_encoding_profile(AgsGstreamerFile *gstreamer_file
   }
   
   caps = gst_caps_from_string("video/x-matroska");
-  container_profile = gst_encoding_container_profile_new(NULL,
-							 NULL,
-							 caps,
-							 NULL);
+  container_profile = (GstEncodingProfile *) gst_encoding_container_profile_new(NULL,
+										NULL,
+										caps,
+										NULL);
   gst_caps_unref(caps);
   
   caps = gst_caps_from_string("audio/x-vorbis");
-  gst_encoding_container_profile_add_profile(container_profile,
+  gst_encoding_container_profile_add_profile((GstEncodingContainerProfile *) container_profile,
 					     (GstEncodingProfile*) gst_encoding_audio_profile_new(caps, NULL, NULL, 0));
   gst_caps_unref(caps);
 
@@ -2960,14 +2960,14 @@ ags_gstreamer_file_create_mpeg_encoding_profile(AgsGstreamerFile *gstreamer_file
   }
   
   caps = gst_caps_from_string("audio/mpegts");
-  container_profile = gst_encoding_container_profile_new(NULL,
-							 NULL,
-							 caps,
-							 NULL);
+  container_profile = (GstEncodingProfile *) gst_encoding_container_profile_new(NULL,
+										NULL,
+										caps,
+										NULL);
   gst_caps_unref(caps);
   
   caps = gst_caps_from_string("audio/x-ac3");
-  gst_encoding_container_profile_add_profile(container_profile,
+  gst_encoding_container_profile_add_profile((GstEncodingContainerProfile *) container_profile,
 					     (GstEncodingProfile*) gst_encoding_audio_profile_new(caps, NULL, NULL, 0));
   gst_caps_unref(caps);
 

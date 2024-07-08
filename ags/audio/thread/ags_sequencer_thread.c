@@ -239,7 +239,7 @@ ags_sequencer_thread_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(sequencer));
 
 	if(AGS_IS_JACK_MIDIIN(sequencer)){
-	  ags_thread_set_flags(sequencer_thread, AGS_THREAD_INTERMEDIATE_PRE_SYNC);
+	  ags_thread_set_flags((AgsThread *) sequencer_thread, AGS_THREAD_INTERMEDIATE_PRE_SYNC);
 
 	  //	  g_atomic_int_and(&(AGS_THREAD(sequencer_thread)->flags),
 	  //		   (~AGS_THREAD_INTERMEDIATE_PRE_SYNC));
@@ -495,13 +495,13 @@ ags_sequencer_thread_find_sequencer(AgsSequencerThread *sequencer_thread,
     return(NULL);
   }
 
-  thread = sequencer_thread;
+  thread = (AgsThread *) sequencer_thread;
   g_object_ref(thread);
   
   while(thread != NULL){
     if(AGS_IS_SEQUENCER_THREAD(thread) &&
        AGS_SEQUENCER_THREAD(thread)->sequencer == sequencer){
-      return(thread);
+      return((AgsSequencerThread *) thread);
     }
 
     /* iterate */
