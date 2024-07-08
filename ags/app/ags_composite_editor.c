@@ -2066,6 +2066,10 @@ ags_composite_editor_select_all(AgsCompositeEditor *composite_editor)
     GList *start_automation, *automation;
 
     gint i;
+
+    if(composite_editor->automation_edit->focused_edit == NULL){
+      return;
+    }
     
     notebook = composite_editor->automation_edit->channel_selector;
 
@@ -3780,6 +3784,10 @@ ags_composite_editor_paste(AgsCompositeEditor *composite_editor)
   }else if(composite_editor->selected_edit == composite_editor->sheet_edit){
     //TODO:JK: implement me
   }else if(composite_editor->selected_edit == composite_editor->automation_edit){
+    if(composite_editor->automation_edit->focused_edit == NULL){
+      return;
+    }
+    
     gdk_clipboard_read_text_async(gdk_display_get_clipboard(gdk_display_get_default()),
 				  NULL,
 				  (GAsyncReadyCallback) ags_composite_editor_paste_automation_async,
@@ -3899,6 +3907,10 @@ ags_composite_editor_copy(AgsCompositeEditor *composite_editor)
 
     int size;
     gint i;
+
+    if(composite_editor->automation_edit->focused_edit == NULL){
+      return;
+    }
     
     notebook = composite_editor->automation_edit->channel_selector;
 
@@ -4237,6 +4249,10 @@ ags_composite_editor_cut(AgsCompositeEditor *composite_editor)
     xmlChar *buffer;
     int size;
     gint i;
+
+    if(composite_editor->automation_edit->focused_edit == NULL){
+      return;
+    }
 
     notebook = composite_editor->automation_edit->channel_selector;
 
@@ -5001,6 +5017,10 @@ ags_composite_editor_add_acceleration(AgsCompositeEditor *composite_editor,
     return;
   }
 
+  if(composite_editor->automation_edit->focused_edit == NULL){
+    return;
+  }
+
   machine = composite_editor->selected_machine;
 
   if(machine == NULL){
@@ -5128,6 +5148,10 @@ ags_composite_editor_delete_acceleration(AgsCompositeEditor *composite_editor,
   gint i, j, j_step, j_stop;
   
   if(!AGS_IS_COMPOSITE_EDITOR(composite_editor)){
+    return;
+  }
+
+  if(composite_editor->automation_edit->focused_edit == NULL){
     return;
   }
 
@@ -5521,6 +5545,10 @@ ags_composite_editor_select_region(AgsCompositeEditor *composite_editor,
     GList *start_automation, *automation;
 
     gint i;
+
+    if(composite_editor->automation_edit->focused_edit == NULL){
+      return;
+    }
 
     notebook = composite_editor->automation_edit->channel_selector;
 
