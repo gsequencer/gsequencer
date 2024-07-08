@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-06-09 21:10+0200\n"
+"POT-Creation-Date: 2024-07-08 15:06+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1071,9 +1071,9 @@ msgid "samplerate"
 msgstr "częstotliwośc próbkowania"
 
 #: ags/app/ags_export_soundcard_callbacks.c:453
-#: ags/app/machine/ags_audiorec_callbacks.c:153
+#: ags/app/machine/ags_audiorec_callbacks.c:152
 #: ags/app/machine/ags_drum_input_pad_callbacks.c:80
-#: ags/app/machine/ags_drum_callbacks.c:83
+#: ags/app/machine/ags_drum_callbacks.c:82
 #, fuzzy
 msgid "open audio files"
 msgstr "Otwórz plik audio"
@@ -2009,11 +2009,11 @@ msgstr "klucz podstawowy"
 msgid "instrument"
 msgstr "instrument"
 
-#: ags/app/machine/ags_desk.c:247
+#: ags/app/machine/ags_desk.c:246
 msgid "left"
 msgstr "lewy"
 
-#: ags/app/machine/ags_desk.c:258
+#: ags/app/machine/ags_desk.c:257
 msgid "right"
 msgstr "prawy"
 
