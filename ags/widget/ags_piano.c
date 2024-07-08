@@ -392,7 +392,7 @@ ags_piano_init(AgsPiano *piano)
   g_signal_connect(event_controller, "modifiers",
 		   G_CALLBACK(ags_piano_modifiers_callback), piano);
 
-  event_controller = gtk_gesture_click_new();
+  event_controller = (GtkEventController *) gtk_gesture_click_new();
   gtk_widget_add_controller((GtkWidget *) piano,
 			    event_controller);
 
@@ -402,7 +402,7 @@ ags_piano_init(AgsPiano *piano)
   g_signal_connect(event_controller, "released",
 		   G_CALLBACK(ags_piano_gesture_click_released_callback), piano);
 
-  event_controller = gtk_event_controller_motion_new();
+  event_controller = (GtkEventController *) gtk_event_controller_motion_new();
   gtk_widget_add_controller((GtkWidget *) piano,
 			    event_controller);
 
@@ -705,8 +705,8 @@ ags_piano_gesture_click_pressed_callback(GtkGestureClick *event_controller,
   guint width, height;
   guint x_start, y_start;
 
-  width = gtk_widget_get_width((AgsPiano *) piano);
-  height = gtk_widget_get_height((AgsPiano *) piano);
+  width = gtk_widget_get_width((GtkWidget *) piano);
+  height = gtk_widget_get_height((GtkWidget *) piano);
 
   x_start = 0;
   y_start = 0;
@@ -888,8 +888,8 @@ ags_piano_motion_callback(GtkEventControllerMotion *event_controller,
 
   gint new_current_key;
 
-  width = gtk_widget_get_width((AgsPiano *) piano);
-  height = gtk_widget_get_height((AgsPiano *) piano);
+  width = gtk_widget_get_width((GtkWidget *) piano);
+  height = gtk_widget_get_height((GtkWidget *) piano);
 
   x_start = 0;
   y_start = 0;

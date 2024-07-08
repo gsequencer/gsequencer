@@ -571,7 +571,7 @@ ags_regex_util_execute(AgsRegexUtil *regex_util,
   }
   
   retval = regexec(&(regex_util->regex), local_str,
-		   (size_t) match_count, match,
+		   (size_t) match_count, (regmatch_t *) match,
 		   execute_flags);
 
   g_free(local_str);
@@ -649,11 +649,11 @@ ags_regex_util_execute_unichar(AgsRegexUtil *regex_util,
       g_error_free(local_error);
     }
   }else{
-    local_str = g_strdup(str);
+    local_str = g_strdup(utf8_str);
   }
   
   retval = regexec(&(regex_util->regex), local_str,
-		   match_count, match,
+		   match_count, (regmatch_t *) match,
 		   execute_flags);
 
   g_free(utf8_str);
@@ -732,11 +732,11 @@ ags_regex_util_execute_unichar2(AgsRegexUtil *regex_util,
       g_error_free(local_error);
     }
   }else{
-    local_str = g_strdup(str);
+    local_str = g_strdup(utf8_str);
   }
   
   retval = regexec(&(regex_util->regex), local_str,
-		   match_count, match,
+		   match_count, (regmatch_t *) match,
 		   execute_flags);
 
   g_free(utf8_str);

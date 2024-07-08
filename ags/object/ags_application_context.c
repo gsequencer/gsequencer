@@ -551,7 +551,7 @@ ags_application_context_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(file));
       }
       
-      application_context->file = (AgsFile *) file;
+      application_context->file = (GObject *) file;
   
       g_rec_mutex_unlock(application_context_mutex);
     }

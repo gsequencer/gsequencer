@@ -234,9 +234,9 @@ ags_server_application_context_init(AgsServerApplicationContext *server_applicat
   AGS_APPLICATION_CONTEXT(server_application_context)->config = config;
   g_object_ref(config);
 
-  log = (GObject *) ags_log_get_instance();
+  log = ags_log_get_instance();
 
-  AGS_APPLICATION_CONTEXT(server_application_context)->log = log;
+  AGS_APPLICATION_CONTEXT(server_application_context)->log = (GObject *) log;
   g_object_ref(log);
   
   /* server application context */  
@@ -469,7 +469,7 @@ ags_server_application_context_get_task_launcher(AgsConcurrencyProvider *concurr
   /* get main loop */
   g_rec_mutex_lock(application_context_mutex);
 
-  task_launcher = (AgsThread *) application_context->task_launcher;
+  task_launcher = (AgsTaskLauncher *) application_context->task_launcher;
 
   if(task_launcher != NULL){
     g_object_ref(task_launcher);
@@ -573,7 +573,7 @@ ags_server_application_context_set_thread_pool(AgsConcurrencyProvider *concurren
     g_object_ref(thread_pool);
   }
   
-  server_application_context->thread_pool = (GObject *) thread_pool;
+  server_application_context->thread_pool = thread_pool;
   
   g_rec_mutex_unlock(application_context_mutex);
 }
@@ -744,7 +744,7 @@ ags_server_application_context_set_registry(AgsServiceProvider *service_provider
     g_object_ref(registry);
   }
   
-  server_application_context->registry = (GObject *) registry;
+  server_application_context->registry = registry;
   
   g_rec_mutex_unlock(application_context_mutex);
 }

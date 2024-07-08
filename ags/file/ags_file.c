@@ -1334,7 +1334,7 @@ ags_file_xml_new_node(AgsFile *file,
   }
 
   error = NULL;
-  g_converter_convert(file->write_charset_converter,
+  g_converter_convert((GConverter *) file->write_charset_converter,
 		      node_name,
 		      strlen(node_name),
 		      localized_node_name,
@@ -1463,7 +1463,7 @@ ags_file_xml_get_node_name(AgsFile *file,
   }
 
   error = NULL;
-  g_converter_convert(file->read_charset_converter,
+  g_converter_convert((GConverter *) file->read_charset_converter,
 		      node->name,
 		      strlen(node->name),
 		      localized_node_name,
@@ -1586,7 +1586,7 @@ ags_file_xml_get_prop(AgsFile *file,
 		   BAD_CAST prop_name);
 
   error = NULL;
-  g_converter_convert(file->read_charset_converter,
+  g_converter_convert((GConverter *) file->read_charset_converter,
 		      str,
 		      strlen(str),
 		      localized_prop_value,
@@ -1638,7 +1638,7 @@ ags_file_xml_set_prop(AgsFile *file,
   }
 
   error = NULL;
-  g_converter_convert(file->write_charset_converter,
+  g_converter_convert((GConverter *) file->write_charset_converter,
 		      prop_name,
 		      strlen(prop_name),
 		      localized_prop_name,
@@ -1655,7 +1655,7 @@ ags_file_xml_set_prop(AgsFile *file,
   }
 
   error = NULL;
-  g_converter_convert(file->write_charset_converter,
+  g_converter_convert((GConverter *) file->write_charset_converter,
 		      prop_value,
 		      strlen(prop_value),
 		      localized_prop_value,
@@ -1705,7 +1705,7 @@ ags_file_xml_get_content(AgsFile *file,
   str = xmlNodeGetContent(node);
 
   error = NULL;
-  g_converter_convert(file->read_charset_converter,
+  g_converter_convert((GConverter *) file->read_charset_converter,
 		      str,
 		      strlen(str),
 		      localized_content,
@@ -1756,7 +1756,7 @@ ags_file_xml_set_content(AgsFile *file,
   }
 
   error = NULL;
-  g_converter_convert(file->write_charset_converter,
+  g_converter_convert((GConverter *) file->write_charset_converter,
 		      content,
 		      strlen(content),
 		      localized_content,
@@ -2100,7 +2100,7 @@ ags_file_real_write(AgsFile *file)
   /* write application context */
   ags_file_write_application_context(file,
 				     file->root_node,
-				     ags_application_context_get_instance());
+				     (GObject *) ags_application_context_get_instance());
 
   /* write embedded audio */
   //TODO:JK: implement me
@@ -2549,7 +2549,7 @@ ags_file_read_application_context(AgsFile *file, xmlNode *node, GObject **applic
 		       "context");
 
   AGS_APPLICATION_CONTEXT_GET_CLASS(current_application_context)->register_types(AGS_APPLICATION_CONTEXT(current_application_context));
-  AGS_APPLICATION_CONTEXT_GET_CLASS(current_application_context)->read(file,
+  AGS_APPLICATION_CONTEXT_GET_CLASS(current_application_context)->read((GObject *) file,
 								       node,
 								       application_context);
 }
@@ -2558,7 +2558,7 @@ void
 ags_file_write_application_context(AgsFile *file, xmlNode *parent, GObject *application_context)
 {
   AGS_APPLICATION_CONTEXT_GET_CLASS(application_context)->register_types(AGS_APPLICATION_CONTEXT(application_context));
-  AGS_APPLICATION_CONTEXT_GET_CLASS(application_context)->write(file,
+  AGS_APPLICATION_CONTEXT_GET_CLASS(application_context)->write((GObject *) file,
 								parent,
 								application_context);
 }

@@ -1521,13 +1521,13 @@ ags_server_xmlrpc_callback(SoupServer *soup_server,
     g_rec_mutex_unlock(authentication_manager_mutex);
 
     if(ags_authentication_manager_is_session_active(authentication_manager,
-						    security_context,
+						    (GObject *) security_context,
 						    user_uuid,
 						    security_token)){
       ags_front_controller_do_request(front_controller,
 				      server_msg,
 				      query,
-				      security_context,
+				      (GObject *) security_context,
 				      path,
 				      login,
 				      security_token);
