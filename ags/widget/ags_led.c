@@ -174,10 +174,10 @@ ags_led_class_init(AgsLedClass *led)
 void
 ags_led_init(AgsLed *led)
 {
-  gtk_widget_set_hexpand(led,
+  gtk_widget_set_hexpand((GtkWidget *) led,
 			 TRUE);
   
-  gtk_widget_set_vexpand(led,
+  gtk_widget_set_vexpand((GtkWidget *) led,
 			 TRUE);
 
   led->active = FALSE;
