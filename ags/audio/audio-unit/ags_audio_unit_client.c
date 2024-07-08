@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -979,7 +979,7 @@ ags_audio_unit_client_open(AgsAudioUnitClient *audio_unit_client,
     return;
   } 
 
-  audio_unit_server = audio_unit_client->audio_unit_server;
+  audio_unit_server = (AgsAudioUnitServer *) audio_unit_client->audio_unit_server;
   
   g_rec_mutex_unlock(audio_unit_client_mutex);
   
