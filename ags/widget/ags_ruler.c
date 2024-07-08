@@ -299,7 +299,7 @@ ags_ruler_init(AgsRuler *ruler)
 {  
   ruler->orientation = GTK_ORIENTATION_HORIZONTAL;
 
-  gtk_widget_set_hexpand(ruler,
+  gtk_widget_set_hexpand((GtkWidget *) ruler,
 			 TRUE);
 
   g_object_set(ruler,
@@ -341,16 +341,16 @@ ags_ruler_set_property(GObject *gobject,
       ruler->orientation = orientation;
 
       if(orientation == GTK_ORIENTATION_VERTICAL){
-	gtk_widget_set_hexpand(ruler,
+	gtk_widget_set_hexpand((GtkWidget *) ruler,
 			       FALSE);
   
-	gtk_widget_set_vexpand(ruler,
+	gtk_widget_set_vexpand((GtkWidget *) ruler,
 			       TRUE);
       }else{
-	gtk_widget_set_hexpand(ruler,
+	gtk_widget_set_hexpand((GtkWidget *) ruler,
 			       TRUE);
   
-	gtk_widget_set_vexpand(ruler,
+	gtk_widget_set_vexpand((GtkWidget *) ruler,
 			       FALSE);
       }
       
