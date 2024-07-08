@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -999,7 +999,7 @@ ags_midi_util_to_smf(AgsMidiUtil *midi_util,
       smf_buffer = ags_midi_util_to_smf_realloc(midi_util,
 						smf_buffer,
 						ret_smf_buffer_length);
-      ags_midi_smf_util_put_change_parameter(midi_util,
+      ags_midi_smf_util_put_change_parameter(NULL,
 					     smf_buffer,
 					     delta_time,
 					     0xf & midi_iter[0],
