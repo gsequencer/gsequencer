@@ -1921,7 +1921,7 @@ ags_lv2_turtle_scanner_load_read_object_list(AgsLv2TurtleScanner *lv2_turtle_sca
 				      &(buffer[buffer_length]));
 
       if(cache_turtle->see_also == NULL ||
-	 !g_strv_contains(cache_turtle->see_also, iriref)){
+	 !g_strv_contains((const gchar * const *) cache_turtle->see_also, iriref)){
 	guint length;
 	gboolean is_available;
 
@@ -1932,7 +1932,7 @@ ags_lv2_turtle_scanner_load_read_object_list(AgsLv2TurtleScanner *lv2_turtle_sca
 	  
 	  cache_turtle->see_also = (gchar **) g_malloc(2 * sizeof(gchar *));
 	}else{
-	  if(!g_strv_contains(cache_turtle->see_also,
+	  if(!g_strv_contains((const gchar * const *) cache_turtle->see_also,
 			      iriref)){
 	    length = g_strv_length(cache_turtle->see_also);
 	    

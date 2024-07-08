@@ -265,7 +265,7 @@ ags_lv2_uri_map_manager_load_default(AgsLv2UriMapManager *lv2_uri_map_manager)
     NULL,
   };
 
-  str = default_uri;
+  str = (gchar **) default_uri;
 
   while(str[0] != NULL){
     value = g_new0(GValue,

@@ -312,31 +312,31 @@ ags_add_audio_launch(AgsTask *task)
 	       NULL);
 
   /* start threads */
-  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+  audio_loop = (AgsAudioLoop *) ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
   /* add to start queue */
   if(ags_audio_test_ability_flags(add_audio->audio, AGS_SOUND_ABILITY_PLAYBACK)){
-    audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
-							AGS_SOUND_SCOPE_PLAYBACK);
+    audio_thread = (AgsAudioThread *) ags_playback_domain_get_audio_thread(playback_domain,
+									   AGS_SOUND_SCOPE_PLAYBACK);
 	
-    ags_thread_add_start_queue(audio_loop,
-			       audio_thread);
+    ags_thread_add_start_queue((AgsThread *) audio_loop,
+			       (AgsThread *) audio_thread);
   }
   
   if(ags_audio_test_ability_flags(add_audio->audio, AGS_SOUND_ABILITY_SEQUENCER)){
-    audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
-							AGS_SOUND_SCOPE_SEQUENCER);
+    audio_thread = (AgsAudioThread *) ags_playback_domain_get_audio_thread(playback_domain,
+									   AGS_SOUND_SCOPE_SEQUENCER);
 	
-    ags_thread_add_start_queue(audio_loop,
-			       audio_thread);
+    ags_thread_add_start_queue((AgsThread *) audio_loop,
+			       (AgsThread *) audio_thread);
   }
   
   if(ags_audio_test_ability_flags(add_audio->audio, AGS_SOUND_ABILITY_NOTATION)){
-    audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
-							AGS_SOUND_SCOPE_NOTATION);
+    audio_thread = (AgsAudioThread *) ags_playback_domain_get_audio_thread(playback_domain,
+									   AGS_SOUND_SCOPE_NOTATION);
 	
-    ags_thread_add_start_queue(audio_loop,
-			       audio_thread);
+    ags_thread_add_start_queue((AgsThread *) audio_loop,
+			       (AgsThread *) audio_thread);
   }
   
   for(i = 0; i < output_pads; i++){
@@ -356,11 +356,11 @@ ags_add_audio_launch(AgsTask *task)
 
       /* add to start queue */
       if(ags_audio_test_ability_flags(add_audio->audio, AGS_SOUND_ABILITY_PLAYBACK)){
-	channel_thread = ags_playback_get_channel_thread(playback,
-							 AGS_SOUND_SCOPE_PLAYBACK);
+	channel_thread = (AgsChannelThread *) ags_playback_get_channel_thread(playback,
+									      AGS_SOUND_SCOPE_PLAYBACK);
 	
-	ags_thread_add_start_queue(audio_loop,
-				   channel_thread);
+	ags_thread_add_start_queue((AgsThread *) audio_loop,
+				   (AgsThread *) channel_thread);
 
 	if(channel_thread != NULL){
 	  g_object_unref(channel_thread);
@@ -368,11 +368,11 @@ ags_add_audio_launch(AgsTask *task)
       }
 	
       if(ags_audio_test_ability_flags(add_audio->audio, AGS_SOUND_ABILITY_SEQUENCER)){
-	channel_thread = ags_playback_get_channel_thread(playback,
-							 AGS_SOUND_SCOPE_SEQUENCER);
+	channel_thread = (AgsChannelThread *) ags_playback_get_channel_thread(playback,
+									      AGS_SOUND_SCOPE_SEQUENCER);
 	
-	ags_thread_add_start_queue(audio_loop,
-				   channel_thread);
+	ags_thread_add_start_queue((AgsThread *) audio_loop,
+				   (AgsThread *) channel_thread);
 
 	if(channel_thread != NULL){
 	  g_object_unref(channel_thread);
@@ -380,11 +380,11 @@ ags_add_audio_launch(AgsTask *task)
       }
       
       if(ags_audio_test_ability_flags(add_audio->audio, AGS_SOUND_ABILITY_NOTATION)){
-	channel_thread = ags_playback_get_channel_thread(playback,
-							 AGS_SOUND_SCOPE_NOTATION);
+	channel_thread = (AgsChannelThread *) ags_playback_get_channel_thread(playback,
+									      AGS_SOUND_SCOPE_NOTATION);
 	
-	ags_thread_add_start_queue(audio_loop,
-				   channel_thread);
+	ags_thread_add_start_queue((AgsThread *) audio_loop,
+				   (AgsThread *) channel_thread);
 
 	if(channel_thread != NULL){
 	  g_object_unref(channel_thread);

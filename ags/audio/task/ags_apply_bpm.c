@@ -311,7 +311,7 @@ ags_apply_bpm_launch(AgsTask *task)
 
       /* add message */
       message = ags_message_envelope_new((GObject *) apply_bpm,
-					 application_context,
+					 (GObject *) application_context,
 					 doc);
 
       /* set parameter */
@@ -343,7 +343,7 @@ ags_apply_bpm_launch(AgsTask *task)
       /* add message */
       ags_message_delivery_add_message_envelope(message_delivery,
 						"libags-audio",
-						message);
+						(GObject *) message);
 
       g_list_free_full(start_message_queue,
 		       (GDestroyNotify) g_object_unref);
