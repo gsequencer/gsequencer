@@ -341,6 +341,10 @@ ags_position_automation_cursor_popover_apply(AgsApplicable *applicable)
 
   focused_automation_edit = (AgsAutomationEdit *) composite_editor->automation_edit->focused_edit;
 
+  if(focused_automation_edit == NULL){
+    return;
+  }
+  
   machine = composite_editor->selected_machine;
 
   history = gtk_combo_box_get_active(GTK_COMBO_BOX(composite_toolbar->zoom));

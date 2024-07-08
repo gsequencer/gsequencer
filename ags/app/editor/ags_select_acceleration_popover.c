@@ -413,6 +413,10 @@ ags_select_acceleration_popover_apply(AgsApplicable *applicable)
   machine = composite_editor->selected_machine;
 
   focused_automation_edit = (AgsAutomationEdit *) composite_editor->automation_edit->focused_edit;
+
+  if(focused_automation_edit == NULL){
+    return;
+  }
     
   notebook = composite_editor->automation_edit->channel_selector;
   
