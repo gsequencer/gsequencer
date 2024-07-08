@@ -134,7 +134,7 @@ ags_lv2_worker_manager_pull_worker(AgsLv2WorkerManager *worker_manager)
     return(NULL);
   }
   
-  thread = ags_worker_thread_new();
+  thread = (AgsThread *) ags_worker_thread_new();
   
   lv2_worker = g_object_new(AGS_TYPE_LV2_WORKER,
 			    "worker-thread", thread,
@@ -145,7 +145,7 @@ ags_lv2_worker_manager_pull_worker(AgsLv2WorkerManager *worker_manager)
 
   ags_thread_start(thread);
   
-  return(lv2_worker);
+  return((GObject *) lv2_worker);
 }
 
 /**

@@ -369,7 +369,7 @@ ags_ladspa_manager_get_filenames(AgsLadspaManager *ladspa_manager)
       i++;
     }else{
 #ifdef HAVE_GLIB_2_44
-      contains_filename = g_strv_contains(filenames,
+      contains_filename = g_strv_contains((const gchar * const *) filenames,
 					  AGS_BASE_PLUGIN(ladspa_plugin->data)->filename);
 #else
       contains_filename = ags_strv_contains(filenames,

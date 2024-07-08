@@ -276,7 +276,7 @@ ags_fx_playback_audio_signal_run_inter(AgsRecall *recall)
 	  
 	  sub_block = output_soundcard_channel + (i * pcm_channels);
 	  
-	  success = ags_soundcard_trylock_sub_block(output_soundcard,
+	  success = ags_soundcard_trylock_sub_block(AGS_SOUNDCARD(output_soundcard),
 						    buffer, sub_block);
 
 	  if(success){
@@ -292,7 +292,7 @@ ags_fx_playback_audio_signal_run_inter(AgsRecall *recall)
 
 	    g_rec_mutex_unlock(recall_mutex);
 
-	    ags_soundcard_unlock_sub_block(output_soundcard,
+	    ags_soundcard_unlock_sub_block(AGS_SOUNDCARD(output_soundcard),
 					   buffer, sub_block);
 	  }
 	}
@@ -375,7 +375,7 @@ ags_fx_playback_audio_signal_run_inter(AgsRecall *recall)
 	  
 	  sub_block = output_soundcard_channel + (i * pcm_channels);
 	  
-	  success = ags_soundcard_trylock_sub_block(output_soundcard,
+	  success = ags_soundcard_trylock_sub_block(AGS_SOUNDCARD(output_soundcard),
 						    buffer, sub_block);
 
 	  if(success){
@@ -391,7 +391,7 @@ ags_fx_playback_audio_signal_run_inter(AgsRecall *recall)
 
 	    g_rec_mutex_unlock(recall_mutex);
 
-	    ags_soundcard_unlock_sub_block(output_soundcard,
+	    ags_soundcard_unlock_sub_block(AGS_SOUNDCARD(output_soundcard),
 					   buffer, sub_block);
 	  }
 	}

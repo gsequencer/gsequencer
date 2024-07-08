@@ -149,7 +149,7 @@ void
 ags_lv2_manager_init(AgsLv2Manager *lv2_manager)
 {  
   /* lv2 manager mutex */
-  g_mutex_init(&(lv2_manager->obj_mutex));
+  g_rec_mutex_init(&(lv2_manager->obj_mutex));
 
   /* initialize lv2 plugin blacklist */
   lv2_manager->lv2_plugin_blacklist = NULL;
@@ -530,7 +530,7 @@ ags_lv2_manager_get_filenames(AgsLv2Manager *lv2_manager)
       i++;
     }else{
 #ifdef HAVE_GLIB_2_44
-      contains_filename = g_strv_contains(filenames,
+      contains_filename = g_strv_contains((const gchar * const *) filenames,
 					  filename);
 #else
       contains_filename = ags_strv_contains(filenames,
