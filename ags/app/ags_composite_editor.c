@@ -4114,10 +4114,16 @@ ags_composite_editor_copy(AgsCompositeEditor *composite_editor)
 	current_wave_base64 = ags_wave_copy_selection_as_base64(AGS_WAVE(wave->data));
 
 	current_offset = strlen(current_wave_base64);
-	
-	memcpy(wave_base64 + offset, current_wave_base64, current_offset * sizeof(gchar));
 
-	offset += current_offset;
+	if(offset + current_offset >= AGS_WAVE_CLIPBOARD_MAX_SIZE){
+	  break;
+	}
+
+	if(current_wave_base64 != NULL && current_offset > 0){
+	  memcpy(wave_base64 + offset, current_wave_base64, current_offset * sizeof(gchar));
+
+	  offset += current_offset;
+	}
 	
 	wave = wave->next;
       }
@@ -4426,6 +4432,7 @@ ags_composite_editor_cut(AgsCompositeEditor *composite_editor)
     while((i = ags_notebook_next_active_tab(notebook,
 					    i)) != -1){
       audio_lines++;
+      i++;
     }
     
     /* header */
@@ -4468,10 +4475,16 @@ ags_composite_editor_cut(AgsCompositeEditor *composite_editor)
 	current_wave_base64 = ags_wave_cut_selection_as_base64(AGS_WAVE(wave->data));
 
 	current_offset = strlen(current_wave_base64);
-	
-	memcpy(wave_base64 + offset, current_wave_base64, current_offset * sizeof(gchar));
 
-	offset += current_offset;
+	if(offset + current_offset >= AGS_WAVE_CLIPBOARD_MAX_SIZE){
+	  break;
+	}
+	
+	if(current_wave_base64 != NULL && current_offset > 0){
+	  memcpy(wave_base64 + offset, current_wave_base64, current_offset * sizeof(gchar));
+
+	  offset += current_offset;
+	}
 	
 	wave = wave->next;
       }

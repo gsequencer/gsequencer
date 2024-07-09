@@ -3188,6 +3188,16 @@ ags_wave_copy_selection_as_base64(AgsWave *wave)
   /* get wave mutex */
   wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
 
+  g_rec_mutex_lock(wave_mutex);
+
+  if(wave->selection == NULL){
+    g_rec_mutex_unlock(wave_mutex);
+
+    return(NULL);    
+  }
+
+  g_rec_mutex_unlock(wave_mutex);
+  
   wave_base64 = g_malloc(AGS_WAVE_CLIPBOARD_MAX_SIZE * sizeof(gchar));
 
   memset(wave_base64, 0, AGS_WAVE_CLIPBOARD_MAX_SIZE * sizeof(gchar));
