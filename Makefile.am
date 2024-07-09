@@ -582,6 +582,7 @@ userdocimages = \
 	docs/images/ags_midi_import_wizard_no2.png \
 	docs/images/ags_midi_preferences.png \
 	docs/images/ags_ffplayer.png \
+	docs/images/ags_file_open_dialog.png \
 	docs/images/ags_fm_synth.png \
 	docs/images/ags_fm_syncsynth.png \
 	docs/images/ags_ladspa_browser.png \
