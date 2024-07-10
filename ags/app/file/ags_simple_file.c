@@ -1327,10 +1327,12 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
   /* connect */  
   ags_connectable_connect(AGS_CONNECTABLE(application_context));
 
-  gtk_widget_show(ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
-
   g_message("XML simple file connected");
 
+  g_usleep(4 * G_USEC_PER_SEC);
+
+  gtk_widget_show(ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
+  
   /* start */
   ags_simple_file_read_start(simple_file);
 
@@ -5061,6 +5063,12 @@ ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *n
   ags_pitch_sampler_open_filename(pitch_sampler,
 				  filename);
 
+  g_usleep(G_USEC_PER_SEC);
+
+  while(!ags_sfz_loader_test_flags(pitch_sampler->sfz_loader, AGS_SFZ_LOADER_HAS_COMPLETED)){
+    g_usleep(G_USEC_PER_SEC);
+  }  
+
   /* aliase */
   str = xmlGetProp(node,
 		   "enable-aliase");
@@ -5244,6 +5252,12 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   
   ags_sfz_synth_open_filename(sfz_synth,
 			      filename);
+
+  g_usleep(G_USEC_PER_SEC);
+
+  while(!ags_sfz_loader_test_flags(sfz_synth->sfz_loader, AGS_SFZ_LOADER_HAS_COMPLETED)){
+    g_usleep(G_USEC_PER_SEC);
+  }
   
   /* synth */
   str = xmlGetProp(node,
@@ -5913,6 +5927,12 @@ ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simple_file, xmlNode *node, 
 
   ags_ffplayer_open_filename(ffplayer,
 			     filename);
+
+  g_usleep(G_USEC_PER_SEC);
+
+  while(!ags_sf2_loader_test_flags(ffplayer->sf2_loader, AGS_SF2_LOADER_HAS_COMPLETED)){
+    g_usleep(G_USEC_PER_SEC);
+  }
   
   /* aliase */
   str = xmlGetProp(node,
@@ -6070,6 +6090,12 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   
   ags_sf2_synth_open_filename(sf2_synth,
 			      filename);
+
+  g_usleep(G_USEC_PER_SEC);
+
+  while(!ags_sf2_loader_test_flags(sf2_synth->sf2_loader, AGS_SF2_LOADER_HAS_COMPLETED)){
+    g_usleep(G_USEC_PER_SEC);
+  }
   
   /* synth */
   str = xmlGetProp(node,
@@ -6647,6 +6673,12 @@ ags_simple_file_read_audiorec_launch(AgsSimpleFile *simple_file, xmlNode *node, 
     
   ags_audiorec_open_filename(audiorec,
 			     str);
+
+  g_usleep(G_USEC_PER_SEC);
+
+  while(!ags_wave_loader_test_flags(audiorec->wave_loader, AGS_WAVE_LOADER_HAS_COMPLETED)){
+    g_usleep(G_USEC_PER_SEC);
+  }
 
   if(str != NULL){
     gtk_editable_set_text(GTK_EDITABLE(audiorec->filename),
