@@ -166,7 +166,7 @@ void
 ags_fx_playback_recycling_connect(AgsConnectable *connectable)
 {
   AgsChannel *source;
-  AgsFxPlaybackChannelProcessor *fx_playback_recycling;
+  AgsFxPlaybackRecycling *fx_playback_recycling;
   
   if(ags_connectable_is_connected(connectable)){
     return;
@@ -201,7 +201,7 @@ void
 ags_fx_playback_recycling_disconnect(AgsConnectable *connectable)
 {
   AgsChannel *source;
-  AgsFxPlaybackChannelProcessor *fx_playback_recycling;
+  AgsFxPlaybackRecycling *fx_playback_recycling;
   
   if(!ags_connectable_is_connected(connectable)){
     return;

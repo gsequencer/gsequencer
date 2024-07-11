@@ -1260,7 +1260,7 @@ ags_pulse_port_cached_stream_request_callback(pa_stream *stream, size_t length, 
   guint next_cache, completed_cache;
   guint played_cache;
   guint word_size;
-  guint frame_size;
+  size_t frame_size;
   
   GRecMutex *pulse_port_mutex;
   GRecMutex *device_mutex;
@@ -1272,9 +1272,9 @@ ags_pulse_port_cached_stream_request_callback(pa_stream *stream, size_t length, 
 
   application_context = ags_application_context_get_instance();
 
-  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+  audio_loop = (AgsAudioLoop *) ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
-  ags_thread_unset_flags(audio_loop, AGS_THREAD_TIME_ACCOUNTING);
+  ags_thread_unset_flags((AgsThread *) audio_loop, AGS_THREAD_TIME_ACCOUNTING);
 
   /* get pulse port mutex */
   pulse_port_mutex = AGS_PULSE_PORT_GET_OBJ_MUTEX(pulse_port);
@@ -1407,7 +1407,7 @@ ags_pulse_port_cached_stream_request_callback(pa_stream *stream, size_t length, 
     g_rec_mutex_lock(cache_mutex);
 
     pa_stream_peek(stream,
-		   &(pulse_port->cache[played_cache]),
+		   (const void **) &(pulse_port->cache[played_cache]),
 		   &frame_size);
 
     g_rec_mutex_unlock(cache_mutex);
@@ -1473,9 +1473,9 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
   /*  */  
   application_context = ags_application_context_get_instance();
 
-  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+  audio_loop = (AgsAudioLoop *) ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
-  ags_thread_unset_flags(audio_loop, AGS_THREAD_TIME_ACCOUNTING);
+  ags_thread_unset_flags((AgsThread *) audio_loop, AGS_THREAD_TIME_ACCOUNTING);
 
   /*  */
   g_rec_mutex_lock(pulse_port_mutex);
@@ -1623,11 +1623,11 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
 	g_atomic_int_or(&(pulse_devout->sync_flags),
 			AGS_PULSE_DEVOUT_CALLBACK_WAIT);
 
-	g_mutex_lock(pulse_port_mutex);
+	g_rec_mutex_lock(pulse_port_mutex);
       
 	latency = ags_pulse_port_get_latency(pulse_port);
 
-	g_mutex_unlock(pulse_port_mutex);
+	g_rec_mutex_unlock(pulse_port_mutex);
       
 	latency /= 8;
       
@@ -1889,7 +1889,7 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
   }else if(pulse_devin != NULL){
     if(!empty_run){
       pa_stream_peek(stream,
-		     &(pulse_devin->app_buffer[nth_buffer]),
+		     (const void **) &(pulse_devin->app_buffer[nth_buffer]),
 		     &count);
       
       g_atomic_int_set(&(pulse_port->is_empty),
@@ -1938,7 +1938,7 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
 	pulse_port->nth_empty_buffer = nth_empty_buffer;
 
 	pa_stream_peek(stream,
-		       &empty_buffer,
+		       (const void **) &empty_buffer,
 		       &count);
 	
 	g_rec_mutex_unlock(pulse_port_mutex);
@@ -1969,7 +1969,7 @@ ags_pulse_port_stream_underflow_callback(pa_stream *stream, AgsPulsePort *pulse_
       
   application_context = ags_application_context_get_instance();
 
-  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+  audio_loop = (AgsAudioLoop *) ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
   
   /* get audio loop mutex */
   audio_loop_mutex = AGS_THREAD_GET_OBJ_MUTEX(audio_loop);

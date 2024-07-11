@@ -225,7 +225,7 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
 
   fx_synth_recycling = NULL;
 
-  sound_scope = ags_recall_get_sound_scope(fx_notation_audio_signal);
+  sound_scope = ags_recall_get_sound_scope((AgsRecall *) fx_notation_audio_signal);
 
   audio_channel = 0;
   
@@ -2060,7 +2060,7 @@ ags_fx_synth_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notation_au
 
   fx_synth_recycling = NULL;
 
-  sound_scope = ags_recall_get_sound_scope(fx_notation_audio_signal);
+  sound_scope = ags_recall_get_sound_scope((AgsRecall *) fx_notation_audio_signal);
 
   audio_channel = 0;
 

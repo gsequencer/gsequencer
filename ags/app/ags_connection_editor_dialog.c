@@ -180,7 +180,7 @@ ags_connection_editor_dialog_init(AgsConnectionEditorDialog *connection_editor_d
   connection_editor_dialog->action_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 								 AGS_UI_PROVIDER_DEFAULT_SPACING);
   
-  gtk_widget_set_halign(connection_editor_dialog->action_area,
+  gtk_widget_set_halign((GtkWidget *) connection_editor_dialog->action_area,
 			GTK_ALIGN_END);
 
   gtk_box_append(vbox,

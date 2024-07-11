@@ -232,7 +232,7 @@ ags_position_automation_cursor_popover_init(AgsPositionAutomationCursorPopover *
   position_automation_cursor_popover->action_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 									   AGS_UI_PROVIDER_DEFAULT_SPACING);
   
-  gtk_widget_set_halign(position_automation_cursor_popover->action_area,
+  gtk_widget_set_halign((GtkWidget *) position_automation_cursor_popover->action_area,
 			GTK_ALIGN_END);
 
   gtk_box_append(vbox,
@@ -246,8 +246,8 @@ ags_position_automation_cursor_popover_init(AgsPositionAutomationCursorPopover *
   g_signal_connect(position_automation_cursor_popover->activate_button, "clicked",
 		   G_CALLBACK(ags_position_automation_cursor_popover_activate_button_callback), position_automation_cursor_popover);
 
-  gtk_popover_set_default_widget(position_automation_cursor_popover,
-				 position_automation_cursor_popover->activate_button);
+  gtk_popover_set_default_widget((GtkPopover *) position_automation_cursor_popover,
+				 (GtkWidget *) position_automation_cursor_popover->activate_button);
 }
 
 gboolean
@@ -341,6 +341,10 @@ ags_position_automation_cursor_popover_apply(AgsApplicable *applicable)
 
   focused_automation_edit = (AgsAutomationEdit *) composite_editor->automation_edit->focused_edit;
 
+  if(focused_automation_edit == NULL){
+    return;
+  }
+  
   machine = composite_editor->selected_machine;
 
   history = gtk_combo_box_get_active(GTK_COMBO_BOX(composite_toolbar->zoom));
@@ -429,7 +433,7 @@ ags_position_automation_cursor_popover_key_released_callback(GtkEventControllerK
     switch(keyval){
     case GDK_KEY_Escape:
       {
-	gtk_popover_popdown(position_automation_cursor_popover);	
+	gtk_popover_popdown((GtkPopover *) position_automation_cursor_popover);	
       }
       break;
     }

@@ -1869,7 +1869,7 @@ ags_fluid_interpolate_linear_util_pitch_double(AgsFluidInterpolateLinearUtil *fl
 void
 ags_fluid_interpolate_linear_util_pitch_complex(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util)
 {
-  gint8 *destination, *source;
+  AgsComplex *destination, *source;
   
   guint samplerate;
   guint destination_stride, source_stride;

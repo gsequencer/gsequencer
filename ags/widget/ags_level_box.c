@@ -195,7 +195,7 @@ ags_level_box_notify_width_request_callback(GObject *gobject,
 	       NULL);
   
   ags_level_box_child_width_request(level_box,
-				    AGS_LEVEL(gobject),
+				    GTK_WIDGET(gobject),
 				    width_request);
 }
 
@@ -213,7 +213,7 @@ ags_level_box_notify_height_request_callback(GObject *gobject,
 	       NULL);
   
   ags_level_box_child_height_request(level_box,
-				     AGS_LEVEL(gobject),
+				     GTK_WIDGET(gobject),
 				     height_request);
 }
 
@@ -261,8 +261,8 @@ ags_level_box_add_level(AgsLevelBox *level_box,
     g_signal_connect(level, "notify::height-request",
 		     G_CALLBACK(ags_level_box_notify_height_request_callback), level_box);
     
-    gtk_box_append(level_box,
-		   level);
+    gtk_box_append((GtkBox *) level_box,
+		   (GtkWidget *) level);
   }else{
     g_warning("level already added to level box");
   }
@@ -297,8 +297,8 @@ ags_level_box_remove_level(AgsLevelBox *level_box,
     level_box->level = g_list_remove(level_box->level,
 				     level);
 
-    gtk_box_remove(level_box,
-		   level);
+    gtk_box_remove((GtkBox *) level_box,
+		   (GtkWidget *) level);
   }else{
     g_warning("level not packed by level box");
   }

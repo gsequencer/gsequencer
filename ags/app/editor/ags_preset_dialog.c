@@ -287,14 +287,14 @@ ags_preset_dialog_init(AgsPresetDialog *preset_dialog)
   gtk_window_set_child((GtkWindow *) preset_dialog,
 		       (GtkWidget *) vbox);
 
-  gtk_widget_set_valign(vbox,
+  gtk_widget_set_valign((GtkWidget *) vbox,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_halign(vbox,
+  gtk_widget_set_halign((GtkWidget *) vbox,
 			GTK_ALIGN_FILL);
 
-  gtk_widget_set_hexpand(vbox,
+  gtk_widget_set_hexpand((GtkWidget *) vbox,
 			 TRUE);
-  gtk_widget_set_vexpand(vbox,
+  gtk_widget_set_vexpand((GtkWidget *) vbox,
 			 TRUE);
   
   /* preset editor */
@@ -322,7 +322,7 @@ ags_preset_dialog_init(AgsPresetDialog *preset_dialog)
   preset_dialog->action_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 						      AGS_UI_PROVIDER_DEFAULT_SPACING);
   
-  gtk_widget_set_halign(preset_dialog->action_area,
+  gtk_widget_set_halign((GtkWidget *) preset_dialog->action_area,
 			GTK_ALIGN_END);
 
   gtk_box_append(vbox,

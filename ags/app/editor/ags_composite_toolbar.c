@@ -164,7 +164,7 @@ ags_composite_toolbar_init(AgsCompositeToolbar *composite_toolbar)
 
   application_context = ags_application_context_get_instance();
 
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
   
   gtk_box_set_spacing((GtkBox *) composite_toolbar,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
@@ -1559,7 +1559,7 @@ ags_composite_toolbar_set_option(AgsCompositeToolbar *composite_toolbar, guint o
 			       (GtkWidget *) box,
 			       sibling);
 
-    composite_toolbar->snap_to_zoom = (GtkSpinButton *) gtk_check_button_new_with_label(i18n("snap to zoom"));
+    composite_toolbar->snap_to_zoom = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("snap to zoom"));
     gtk_box_append(box,
 		   (GtkWidget *) composite_toolbar->snap_to_zoom);
 
@@ -1579,7 +1579,7 @@ ags_composite_toolbar_set_option(AgsCompositeToolbar *composite_toolbar, guint o
 			       (GtkWidget *) box,
 			       sibling);
 
-    composite_toolbar->trace_pointer = (GtkSpinButton *) gtk_check_button_new_with_label(i18n("trace pointer"));
+    composite_toolbar->trace_pointer = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("trace pointer"));
     gtk_box_append(box,
 		   (GtkWidget *) composite_toolbar->trace_pointer);
 
@@ -2041,7 +2041,7 @@ ags_composite_toolbar_load_port(AgsCompositeToolbar *composite_toolbar)
     }
     
 #ifdef HAVE_GLIB_2_44
-    contains_control_name = g_strv_contains(collected_specifier,
+    contains_control_name = g_strv_contains((const gchar * const *) collected_specifier,
 					    specifier);
 #else
     contains_control_name = ags_strv_contains(collected_specifier,
@@ -2138,7 +2138,7 @@ ags_composite_toolbar_load_port(AgsCompositeToolbar *composite_toolbar)
 	continue;
       }
       
-      contains_control_name = g_strv_contains(collected_specifier,
+      contains_control_name = g_strv_contains((const gchar * const *) collected_specifier,
 					      specifier);
 
       if(plugin_port != NULL &&
@@ -2237,7 +2237,7 @@ ags_composite_toolbar_load_port(AgsCompositeToolbar *composite_toolbar)
 	continue;
       }
       
-      contains_control_name = g_strv_contains(collected_specifier,
+      contains_control_name = g_strv_contains((const gchar * const *) collected_specifier,
 					      specifier);
 
       if(plugin_port != NULL &&

@@ -490,7 +490,7 @@ ags_online_help_window_disconnect(AgsConnectable *connectable)
   online_help_window->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
 #if defined(AGS_WITH_POPPLER)
-  gtk_drawing_area_set_draw_func(online_help_window->pdf_drawing_area,
+  gtk_drawing_area_set_draw_func((GtkDrawingArea *) online_help_window->pdf_drawing_area,
 				 NULL,
 				 online_help_window,
 				 NULL);

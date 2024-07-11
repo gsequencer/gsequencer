@@ -994,7 +994,7 @@ ags_lv2_turtle_parser_parse_names_predicate_object_list(AgsLv2TurtleParser *lv2_
   }
 
   if(is_instrument){
-    ags_base_plugin_set_flags(lv2_plugin,
+    ags_base_plugin_set_flags((AgsBasePlugin *) lv2_plugin,
 			      AGS_BASE_PLUGIN_IS_INSTRUMENT);
     
     ags_lv2_plugin_set_flags(lv2_plugin,
@@ -1211,8 +1211,8 @@ ags_lv2_turtle_parser_parse_names_predicate_object_list_see_also(AgsLv2TurtlePar
 				     ttl_length, &(str[1]));
 
 	  skip = TRUE;
-	  next = ags_turtle_manager_find(ags_turtle_manager_get_instance(),
-					 filename);
+	  next = (AgsTurtle *) ags_turtle_manager_find(ags_turtle_manager_get_instance(),
+						       filename);
 	    
 	  if(next == NULL){
 	    g_message("new turtle - %s", filename);
@@ -2024,7 +2024,7 @@ ags_lv2_turtle_parser_parse_predicate_object_list(AgsLv2TurtleParser *lv2_turtle
   }
 
   if(is_instrument){
-    ags_base_plugin_set_flags(lv2_plugin,
+    ags_base_plugin_set_flags((AgsBasePlugin *) lv2_plugin,
 			      AGS_BASE_PLUGIN_IS_INSTRUMENT);
 
     ags_lv2_plugin_set_flags(lv2_plugin,
@@ -4595,8 +4595,8 @@ ags_lv2_turtle_parser_parse_predicate_object_list_see_also(AgsLv2TurtleParser *l
 	  skip = TRUE;
 	}
 	  
-	next = ags_turtle_manager_find(ags_turtle_manager_get_instance(),
-				       filename);
+	next = (AgsTurtle *) ags_turtle_manager_find(ags_turtle_manager_get_instance(),
+						     filename);
 	    
 	if(next == NULL){
 	  g_message("new turtle - %s", filename);

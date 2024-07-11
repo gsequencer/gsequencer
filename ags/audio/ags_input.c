@@ -660,7 +660,7 @@ ags_input_next_active(AgsInput *input,
 	  g_list_free_full(start_list,
 			   g_object_unref);
 
-	  retval = channel;
+	  retval = (AgsInput *) channel;
 
 	  goto ags_input_next_active_END;
 	}

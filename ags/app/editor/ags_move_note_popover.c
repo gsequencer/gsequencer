@@ -258,7 +258,7 @@ ags_move_note_popover_init(AgsMoveNotePopover *move_note_popover)
   move_note_popover->action_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 							  AGS_UI_PROVIDER_DEFAULT_SPACING);
   
-  gtk_widget_set_halign(move_note_popover->action_area,
+  gtk_widget_set_halign((GtkWidget *) move_note_popover->action_area,
 			GTK_ALIGN_END);
 
   gtk_box_append(vbox,
@@ -272,8 +272,8 @@ ags_move_note_popover_init(AgsMoveNotePopover *move_note_popover)
   g_signal_connect(move_note_popover->activate_button, "clicked",
 		   G_CALLBACK(ags_move_note_popover_activate_button_callback), move_note_popover);
 
-  gtk_popover_set_default_widget(move_note_popover,
-				 move_note_popover->activate_button);
+  gtk_popover_set_default_widget((GtkPopover *) move_note_popover,
+				 (GtkWidget *) move_note_popover->activate_button);
 }
 
 gboolean
@@ -561,7 +561,7 @@ ags_move_note_popover_key_released_callback(GtkEventControllerKey *event_control
     switch(keyval){
     case GDK_KEY_Escape:
       {
-	gtk_popover_popdown(move_note_popover);	
+	gtk_popover_popdown((GtkPopover *) move_note_popover);	
       }
       break;
     }

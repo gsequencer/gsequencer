@@ -149,7 +149,7 @@ ags_scrolled_automation_edit_box_hadjustment_callback(GtkAdjustment *adjustment,
 
   application_context = ags_application_context_get_instance();
 
-  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
@@ -165,7 +165,7 @@ ags_scrolled_automation_edit_box_hadjustment_callback(GtkAdjustment *adjustment,
   map_width = ((64.0) * (16.0 * 16.0 * 1200.0) * zoom * zoom_correction);
 
   /* automation edit box */
-  automation_edit_box = ags_scrolled_automation_edit_box_get_automation_edit_box(composite_editor->automation_edit->edit);
+  automation_edit_box = ags_scrolled_automation_edit_box_get_automation_edit_box((AgsScrolledAutomationEditBox *) composite_editor->automation_edit->edit);
 
   list =
     start_list = ags_automation_edit_box_get_automation_edit(automation_edit_box);
@@ -209,10 +209,10 @@ ags_scrolled_automation_edit_box_vadjustment_callback(GtkAdjustment *adjustment,
 
   application_context = ags_application_context_get_instance();
 
-  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   /* automation edit box */
-  automation_edit_box = ags_scrolled_automation_edit_box_get_automation_edit_box(composite_editor->automation_edit->edit);
+  automation_edit_box = ags_scrolled_automation_edit_box_get_automation_edit_box((AgsScrolledAutomationEditBox *) composite_editor->automation_edit->edit);
 
   list =
     start_list = ags_automation_edit_box_get_automation_edit(automation_edit_box);

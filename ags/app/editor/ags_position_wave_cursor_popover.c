@@ -232,7 +232,7 @@ ags_position_wave_cursor_popover_init(AgsPositionWaveCursorPopover *position_wav
   position_wave_cursor_popover->action_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 								     AGS_UI_PROVIDER_DEFAULT_SPACING);
   
-  gtk_widget_set_halign(position_wave_cursor_popover->action_area,
+  gtk_widget_set_halign((GtkWidget *) position_wave_cursor_popover->action_area,
 			GTK_ALIGN_END);
 
   gtk_box_append(vbox,
@@ -246,8 +246,8 @@ ags_position_wave_cursor_popover_init(AgsPositionWaveCursorPopover *position_wav
   g_signal_connect(position_wave_cursor_popover->activate_button, "clicked",
 		   G_CALLBACK(ags_position_wave_cursor_popover_activate_button_callback), position_wave_cursor_popover);
 
-  gtk_popover_set_default_widget(position_wave_cursor_popover,
-				 position_wave_cursor_popover->activate_button);
+  gtk_popover_set_default_widget((GtkPopover *) position_wave_cursor_popover,
+				 (GtkWidget *) position_wave_cursor_popover->activate_button);
 }
 
 gboolean
@@ -429,7 +429,7 @@ ags_position_wave_cursor_popover_key_released_callback(GtkEventControllerKey *ev
     switch(keyval){
     case GDK_KEY_Escape:
       {
-	gtk_popover_popdown(position_wave_cursor_popover);	
+	gtk_popover_popdown((GtkPopover *) position_wave_cursor_popover);	
       }
       break;
     }

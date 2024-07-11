@@ -79,7 +79,7 @@ ags_sf2_synth_open_clicked_callback(GtkWidget *widget, AgsSF2Synth *sf2_synth)
 
   window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
   
-  file_dialog = (AgsFileDialog *) ags_file_dialog_new((GtkWindow *) window,
+  file_dialog = (AgsFileDialog *) ags_file_dialog_new((GtkWidget *) window,
 						      i18n("open Soundfont2 file"));
   
   sf2_synth->open_dialog = (GtkWidget *) file_dialog;
@@ -237,7 +237,7 @@ ags_sf2_synth_open_dialog_response_callback(AgsFileDialog *file_dialog, gint res
     
     filename = ags_file_widget_get_filename(file_widget);
     
-    if(!g_strv_contains(file_widget->recently_used, filename)){
+    if(!g_strv_contains((const gchar * const *) file_widget->recently_used, filename)){
       strv_length = g_strv_length(file_widget->recently_used);
 
       file_widget->recently_used = g_realloc(file_widget->recently_used,
@@ -272,7 +272,7 @@ ags_sf2_synth_synth_pitch_type_callback(GObject *gobject,
 
   GValue value = G_VALUE_INIT;
   
-  selected = gtk_drop_down_get_selected(gobject);
+  selected = gtk_drop_down_get_selected((GtkDropDown *) gobject);
 
   g_value_init(&value,
 	       G_TYPE_FLOAT);
@@ -281,13 +281,13 @@ ags_sf2_synth_synth_pitch_type_callback(GObject *gobject,
 		    (gfloat) selected);
 
   /* play */
-  fx_sf2_synth_audio = ags_recall_container_get_recall_audio(sf2_synth->sf2_synth_play_container);
+  fx_sf2_synth_audio = (AgsFxSF2SynthAudio *) ags_recall_container_get_recall_audio(sf2_synth->sf2_synth_play_container);
 
   ags_port_safe_write(fx_sf2_synth_audio->synth_pitch_type,
 		      &value);
 
   /* recall */
-  fx_sf2_synth_audio = ags_recall_container_get_recall_audio(sf2_synth->sf2_synth_recall_container);
+  fx_sf2_synth_audio = (AgsFxSF2SynthAudio *) ags_recall_container_get_recall_audio(sf2_synth->sf2_synth_recall_container);
   
   ags_port_safe_write(fx_sf2_synth_audio->synth_pitch_type,
 		      &value);
@@ -1772,7 +1772,7 @@ ags_sf2_synth_wah_wah_attack_callback(AgsDial *dial, AgsSF2Synth *sf2_synth)
     g_object_unref(start_channel);
   }
   
-  gtk_widget_queue_draw(sf2_synth->wah_wah_drawing_area);
+  gtk_widget_queue_draw((GtkWidget *) sf2_synth->wah_wah_drawing_area);
 }
 
 void
@@ -1852,7 +1852,7 @@ ags_sf2_synth_wah_wah_decay_callback(AgsDial *dial, AgsSF2Synth *sf2_synth)
     g_object_unref(start_channel);
   }
   
-  gtk_widget_queue_draw(sf2_synth->wah_wah_drawing_area);
+  gtk_widget_queue_draw((GtkWidget *) sf2_synth->wah_wah_drawing_area);
 }
 
 void
@@ -1932,7 +1932,7 @@ ags_sf2_synth_wah_wah_sustain_callback(AgsDial *dial, AgsSF2Synth *sf2_synth)
     g_object_unref(start_channel);
   }
   
-  gtk_widget_queue_draw(sf2_synth->wah_wah_drawing_area);
+  gtk_widget_queue_draw((GtkWidget *) sf2_synth->wah_wah_drawing_area);
 }
 
 void
@@ -2012,7 +2012,7 @@ ags_sf2_synth_wah_wah_release_callback(AgsDial *dial, AgsSF2Synth *sf2_synth)
     g_object_unref(start_channel);
   }
   
-  gtk_widget_queue_draw(sf2_synth->wah_wah_drawing_area);
+  gtk_widget_queue_draw((GtkWidget *) sf2_synth->wah_wah_drawing_area);
 }
 
 void
@@ -2092,7 +2092,7 @@ ags_sf2_synth_wah_wah_ratio_callback(AgsDial *dial, AgsSF2Synth *sf2_synth)
     g_object_unref(start_channel);
   }
 
-  gtk_widget_queue_draw(sf2_synth->wah_wah_drawing_area);
+  gtk_widget_queue_draw((GtkWidget *) sf2_synth->wah_wah_drawing_area);
 }
 
 void

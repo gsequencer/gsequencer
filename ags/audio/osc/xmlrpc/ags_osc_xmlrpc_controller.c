@@ -304,7 +304,7 @@ ags_osc_xmlrpc_controller_set_property(GObject *gobject,
   {
     AgsOscXmlrpcServer *osc_xmlrpc_server;
 
-    osc_xmlrpc_server = (AgsOscServer *) g_value_get_object(value);
+    osc_xmlrpc_server = (AgsOscXmlrpcServer *) g_value_get_object(value);
 
     g_rec_mutex_lock(controller_mutex);
 
@@ -1054,7 +1054,7 @@ ags_osc_xmlrpc_controller_read_bundle(AgsOscXmlrpcController *osc_xmlrpc_control
     }else if(packet[offset + read_count] == '/'){
       ags_osc_xmlrpc_controller_read_message(osc_xmlrpc_controller,
 					     osc_websocket_connection,
-					     msg,
+					     (SoupServerMessage *) msg,
 					     query,
 					     packet, packet_size,
 					     offset + read_count,
@@ -1182,7 +1182,7 @@ ags_osc_xmlrpc_controller_read_message(AgsOscXmlrpcController *osc_xmlrpc_contro
 
   read_count += (4 * (gsize) ceil((double) data_length / 4.0));
 
-  osc_message = ags_osc_xmlrpc_message_new();
+  osc_message = (AgsOscMessage *) ags_osc_xmlrpc_message_new();
 
   message = (guchar *) malloc(read_count * sizeof(guchar));
   memcpy(message,
@@ -1201,7 +1201,7 @@ ags_osc_xmlrpc_controller_read_message(AgsOscXmlrpcController *osc_xmlrpc_contro
 	       NULL);    
 
   ags_osc_xmlrpc_controller_add_message(osc_xmlrpc_controller,
-					osc_message);
+					(GObject *) osc_message);
     
   return(read_count);
 }
@@ -1300,7 +1300,7 @@ ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
   ags_uuid_free(resource_uuid);
 #endif
 
-  osc_websocket_connection = ags_osc_websocket_connection_new(osc_xmlrpc_server);
+  osc_websocket_connection = ags_osc_websocket_connection_new((GObject *) osc_xmlrpc_server);
   g_object_set(osc_websocket_connection,
 	       "security-context", security_context,
 	       "login", login,
@@ -1308,8 +1308,8 @@ ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
 	       "resource-id", response_resource_id,
 	       NULL);
 
-  ags_osc_server_add_connection(osc_xmlrpc_server,
-				osc_websocket_connection);
+  ags_osc_server_add_connection((AgsOscServer *) osc_xmlrpc_server,
+				(GObject *) osc_websocket_connection);
   
   osc_packet_node_list = root_node->children;
 
@@ -1347,7 +1347,7 @@ ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
 		if(!g_strcmp0(packet + offset, "#bundle")){      
 		  read_count = ags_osc_xmlrpc_controller_read_bundle(osc_xmlrpc_controller,
 								     osc_websocket_connection,
-								     server_msg,
+								     (SoupMessage *) server_msg,
 								     query,
 								     packet, packet_size,
 								     offset);

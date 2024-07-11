@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -678,8 +678,8 @@ ags_sf2_midi_locale_loader_run(void *ptr)
   
   g_rec_mutex_lock(audio_container_manager_mutex);
 
-  sf2_midi_locale_loader->audio_container = ags_audio_container_manager_find_audio_container(audio_container_manager,
-											     sf2_midi_locale_loader->filename);  
+  sf2_midi_locale_loader->audio_container = (AgsAudioContainer *) ags_audio_container_manager_find_audio_container(audio_container_manager,
+														   sf2_midi_locale_loader->filename);  
   g_object_ref(sf2_midi_locale_loader->audio_container);
 
   if(sf2_midi_locale_loader->audio_container == NULL){
@@ -694,7 +694,7 @@ ags_sf2_midi_locale_loader_run(void *ptr)
     ags_audio_container_open(sf2_midi_locale_loader->audio_container);
   
     ags_audio_container_manager_add_audio_container(audio_container_manager,
-						    sf2_midi_locale_loader->audio_container);
+						    (GObject *) sf2_midi_locale_loader->audio_container);
   }
   
   g_rec_mutex_unlock(audio_container_manager_mutex);
@@ -765,7 +765,7 @@ ags_sf2_midi_locale_loader_run(void *ptr)
 							  sf2_midi_locale_loader->synth);
     
     ags_task_launcher_add_task(task_launcher,
-			       apply_sf2_midi_locale);
+			       (AgsTask *) apply_sf2_midi_locale);
   }
   
   ags_sf2_midi_locale_loader_set_flags(sf2_midi_locale_loader,

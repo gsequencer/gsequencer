@@ -350,7 +350,7 @@ ags_audio_file_manager_find_audio_file(AgsAudioFileManager *audio_file_manager,
   g_list_free_full(start_list,
 		   (GDestroyNotify) g_object_unref);
   
-  return(audio_file);
+  return((GObject *) audio_file);
 }
 
 /**

@@ -386,7 +386,7 @@ ags_lv2ui_manager_get_filenames(AgsLv2uiManager *lv2ui_manager)
       i++;
     }else{
 #ifdef HAVE_GLIB_2_44
-      contains_filename = g_strv_contains(filenames,
+      contains_filename = g_strv_contains((const gchar * const *) filenames,
 					  ui_filename);
 #else
       contains_filename = ags_strv_contains(filenames,

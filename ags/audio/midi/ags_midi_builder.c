@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1057,7 +1057,7 @@ ags_midi_builder_track_insert_midi_message(AgsMidiBuilderTrack *midi_builder_tra
   
   gint prefix_length, suffix_length;
   guint64 absolute_time;
-  glong delta_time;
+  gint delta_time;
   
   if(midi_builder_track == NULL ||
      buffer == NULL ||
@@ -1124,7 +1124,7 @@ ags_midi_builder_track_get_delta_time_offset(AgsMidiBuilderTrack *midi_builder_t
   guchar *prev, *current;
 
   guint64 time_counter;
-  glong current_delta_time;
+  gint current_delta_time;
   
   if(midi_builder_track == NULL ||
      midi_builder_track->data == NULL){

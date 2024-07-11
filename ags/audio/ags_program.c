@@ -2804,7 +2804,7 @@ ags_program_get_control_name_unique(GList *program)
     g_rec_mutex_unlock(program_mutex);
     
 #ifdef HAVE_GLIB_2_44
-    contains_control_name = g_strv_contains(control_name,
+    contains_control_name = g_strv_contains((const gchar * const *) control_name,
 					    current_control_name);
 #else
     contains_control_name = ags_strv_contains(control_name,

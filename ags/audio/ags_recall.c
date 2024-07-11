@@ -1788,7 +1788,7 @@ ags_recall_dispose(GObject *gobject)
   
   /* recall container */
   if(recall->recall_container != NULL){
-    ags_recall_container_remove(recall->recall_container,
+    ags_recall_container_remove((AgsRecallContainer *) recall->recall_container,
 				recall);
   }
 
@@ -1923,7 +1923,7 @@ ags_recall_finalize(GObject *gobject)
   
   /* recall container */
   if(recall->recall_container != NULL){
-    ags_recall_container_remove(recall->recall_container,
+    ags_recall_container_remove((AgsRecallContainer *) recall->recall_container,
 				recall);
   }
 
@@ -5689,7 +5689,11 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
   if(AGS_IS_RECALL_AUDIO(recall)){
     g_rec_mutex_lock(recall_mutex);
 
-    audio = AGS_RECALL_AUDIO(audio);
+    audio = AGS_RECALL_AUDIO(recall)->audio;
+
+    if(audio != NULL){
+      g_object_ref(audio);
+    }
     
     g_rec_mutex_unlock(recall_mutex);    
   }
@@ -5708,7 +5712,7 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
     g_rec_mutex_unlock(recall_mutex);
 
     if(channel != NULL){
-      audio = ags_channel_get_audio(channel);
+      audio = (AgsAudio *) ags_channel_get_audio(channel);
 
       g_object_unref(channel);
     }    
@@ -5794,7 +5798,7 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 		
 		  GValue port_value = G_VALUE_INIT;
 
-		  plugin_port = ags_port_get_plugin_port(port->data);
+		  plugin_port = (AgsPluginPort *) ags_port_get_plugin_port(port->data);
 		
 		  g_value_init(&port_value,
 			       G_TYPE_FLOAT);
@@ -6072,11 +6076,11 @@ ags_recall_real_duplicate(AgsRecall *recall,
   n_params[0] += 6;
   
 #if HAVE_GLIB_2_54    
-  copy_recall = g_object_new_with_properties(G_OBJECT_TYPE(recall),
-					     n_params[0], parameter_name, value);
+  copy_recall = (AgsRecall *) g_object_new_with_properties(G_OBJECT_TYPE(recall),
+							   n_params[0], (const gchar **) parameter_name, value);
 #else
-  copy_recall = g_object_new(G_OBJECT_TYPE(recall),
-			     NULL);
+  copy_recall = (AgsRecall *) g_object_new(G_OBJECT_TYPE(recall),
+					   NULL);
 
   {
     guint i;

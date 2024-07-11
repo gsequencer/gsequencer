@@ -752,8 +752,8 @@ ags_gsequencer_application_startup(GApplication *app)
 
   builder = gtk_builder_new_from_resource("/org/nongnu/gsequencer/ags/app/ui/ags_add_menu.ui");
 
-  gsequencer_app->add_menu = gtk_builder_get_object(builder,
-						    "ags-add-menu");
+  gsequencer_app->add_menu = (GMenu *) gtk_builder_get_object(builder,
+							      "ags-add-menu");
 
   g_menu_insert_submenu(gsequencer_app->edit_menu,
 			0,

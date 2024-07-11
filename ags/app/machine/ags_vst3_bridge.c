@@ -391,7 +391,7 @@ ags_vst3_bridge_init(AgsVst3Bridge *vst3_bridge)
   gtk_widget_set_halign(AGS_EFFECT_BRIDGE(AGS_MACHINE(vst3_bridge)->bridge)->bulk_input,
 			GTK_ALIGN_START);
   
-  AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(vst3_bridge)->bridge)->bulk_input)->parent_bridge = AGS_MACHINE(vst3_bridge)->bridge;
+  AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(vst3_bridge)->bridge)->bulk_input)->parent_bridge = (GtkWidget *) AGS_MACHINE(vst3_bridge)->bridge;
   gtk_grid_attach(AGS_MACHINE(vst3_bridge)->bridge,
 		  AGS_EFFECT_BRIDGE(AGS_MACHINE(vst3_bridge)->bridge)->bulk_input,
 		  0, 0,

@@ -396,7 +396,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 		 (GtkWidget *) scrolled_window);
   
   sf2_bank_tree_view =
-    sf2_synth->bank_tree_view = gtk_tree_view_new();
+    sf2_synth->bank_tree_view = (GtkTreeView *) gtk_tree_view_new();
   gtk_tree_view_set_activate_on_single_click(sf2_bank_tree_view,
 					     TRUE);
   gtk_scrolled_window_set_child(scrolled_window,
@@ -432,7 +432,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 		 (GtkWidget *) scrolled_window);
 
   sf2_synth->program_tree_view = 
-    sf2_program_tree_view = gtk_tree_view_new();
+    sf2_program_tree_view = (GtkTreeView *) gtk_tree_view_new();
   gtk_tree_view_set_activate_on_single_click(sf2_program_tree_view,
 					     TRUE);
   gtk_scrolled_window_set_child(scrolled_window,
@@ -622,7 +622,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   gtk_box_append(sf2_synth_pitch_type_hbox,
 		 (GtkWidget *) label);
 
-  sf2_synth->synth_pitch_type = gtk_drop_down_new_from_strings(pitch_type_strv);
+  sf2_synth->synth_pitch_type = (GtkDropDown *) gtk_drop_down_new_from_strings(pitch_type_strv);
 
   gtk_drop_down_set_selected(sf2_synth->synth_pitch_type,
 			     2);
@@ -880,7 +880,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 		 (GtkWidget *) ext_hbox);
 
   /* tremolo */
-  tremolo_frame = gtk_frame_new(i18n("tremolo"));
+  tremolo_frame = (GtkFrame *) gtk_frame_new(i18n("tremolo"));
 
   gtk_box_append(ext_hbox,
 		 (GtkWidget *) tremolo_frame);
@@ -1034,7 +1034,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 		  1, 1);
   
   /* vibrato */
-  vibrato_frame = gtk_frame_new(i18n("vibrato"));
+  vibrato_frame = (GtkFrame *) gtk_frame_new(i18n("vibrato"));
 
   gtk_box_append(ext_hbox,
 		 (GtkWidget *) vibrato_frame);
@@ -1188,7 +1188,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 		  1, 1);
   
   /* wah-wah */
-  wah_wah_frame = gtk_frame_new(i18n("wah-wah"));
+  wah_wah_frame = (GtkFrame *) gtk_frame_new(i18n("wah-wah"));
 
   gtk_box_append(ext_hbox,
 		 (GtkWidget *) wah_wah_frame);
@@ -3123,7 +3123,7 @@ ags_sf2_synth_load_bank(AgsSF2Synth *sf2_synth,
 
   g_rec_mutex_lock(audio_container_mutex);
   
-  ipatch = sf2_synth->audio_container->sound_container;
+  ipatch = (AgsIpatch *) sf2_synth->audio_container->sound_container;
 
   error = NULL;
   sf2 = (IpatchSF2 *) ipatch_convert_object_to_type((GObject *) ipatch->handle->file,

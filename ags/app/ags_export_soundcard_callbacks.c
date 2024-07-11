@@ -412,7 +412,7 @@ ags_export_soundcard_open_response_callback(AgsPCMFileDialog *pcm_file_dialog,
 
     filename = ags_file_widget_get_filename(file_widget);
 
-    if(!g_strv_contains(file_widget->recently_used, filename)){
+    if(!g_strv_contains((const char * const*) file_widget->recently_used, filename)){
       strv_length = g_strv_length(file_widget->recently_used);
 
       file_widget->recently_used = g_realloc(file_widget->recently_used,

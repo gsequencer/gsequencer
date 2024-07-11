@@ -298,7 +298,7 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
   input_data = ags_fx_buffer_channel_get_input_data(fx_buffer_channel,
 						    sound_scope);
 
-  if(ags_recall_test_state_flags(fx_buffer_channel_processor,
+  if(ags_recall_test_state_flags((AgsRecall *) fx_buffer_channel_processor,
 				 AGS_SOUND_STATE_RUN_COMPLETED)){
     goto fx_buffer_audio_signal_run_inter_END;
 

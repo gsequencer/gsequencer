@@ -47,7 +47,7 @@ ags_audio_preferences_notify_parent_callback(GObject *gobject,
     
     audio_preferences->add = (GtkButton *) gtk_button_new_from_icon_name("list-add");
     gtk_box_prepend(preferences->action_area,
-		    audio_preferences->add);
+		    (GtkWidget *) audio_preferences->add);
   }
 }
 
