@@ -147,10 +147,10 @@ ags_pcm_file_dialog_init(AgsPCMFileDialog *pcm_file_dialog)
 
   gchar *str;
 
-  gtk_window_set_default_size(pcm_file_dialog,
+  gtk_window_set_default_size((GtkWindow *) pcm_file_dialog,
 			      800, 600);
 
-  gtk_window_set_hide_on_close(pcm_file_dialog,
+  gtk_window_set_hide_on_close((GtkWindow *)pcm_file_dialog,
 			       TRUE);
 
   g_signal_connect(pcm_file_dialog, "close-request",
@@ -183,8 +183,8 @@ ags_pcm_file_dialog_init(AgsPCMFileDialog *pcm_file_dialog)
   gtk_window_set_child((GtkWindow *) pcm_file_dialog,
 		       (GtkWidget *) content_area);  
 
-  vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				AGS_UI_PROVIDER_DEFAULT_PADDING);
   
   gtk_widget_set_vexpand((GtkWidget *) vbox,
 			 TRUE);
@@ -277,7 +277,7 @@ ags_pcm_file_dialog_init(AgsPCMFileDialog *pcm_file_dialog)
 
   /* button */
   pcm_file_dialog->activate_button = (GtkButton *) gtk_button_new_with_label(i18n("open"));
-  gtk_widget_set_halign(pcm_file_dialog->activate_button,
+  gtk_widget_set_halign((GtkWidget *) pcm_file_dialog->activate_button,
 			GTK_ALIGN_END);
   gtk_box_append(content_area,
 		 (GtkWidget *) pcm_file_dialog->activate_button);
@@ -538,7 +538,7 @@ void
 ags_pcm_file_dialog_real_response(AgsPCMFileDialog *pcm_file_dialog,
 				  gint response)
 {  
-  gtk_widget_set_visible(pcm_file_dialog,
+  gtk_widget_set_visible((GtkWidget *) pcm_file_dialog,
 			 FALSE);
 }
 

@@ -127,16 +127,16 @@ ags_input_dialog_init(AgsInputDialog *input_dialog)
 
   input_dialog->flags = 0;
 
-  input_dialog->vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,
-				   6);
-  gtk_window_set_child(input_dialog,
-		       input_dialog->vbox);
+  input_dialog->vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+					      6);
+  gtk_window_set_child((GtkWindow *) input_dialog,
+		       (GtkWidget *) input_dialog->vbox);
 
   /* input */
-  input_dialog->input_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-					6);
-  gtk_box_append(input_dialog->vbox,
-		 input_dialog->input_box);
+  input_dialog->input_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+						   6);
+  gtk_box_append((GtkBox *) input_dialog->vbox,
+		 (GtkWidget *) input_dialog->input_box);
 
   input_dialog->message = NULL;
   
@@ -162,42 +162,42 @@ ags_input_dialog_init(AgsInputDialog *input_dialog)
 		   G_CALLBACK(ags_input_dialog_modifiers_callback), input_dialog);
 
   /* button */
-  button_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-			   6);
+  button_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				      6);
 
-  gtk_widget_set_halign(button_box,
+  gtk_widget_set_halign((GtkWidget *) button_box,
 			GTK_ALIGN_FILL);
 
-  gtk_widget_set_hexpand(button_box,
+  gtk_widget_set_hexpand((GtkWidget *) button_box,
 			 TRUE);
   
   gtk_box_append(input_dialog->vbox,
-		 button_box);
+		 (GtkWidget *) button_box);
   
-  input_dialog->ok = gtk_button_new_with_mnemonic(i18n("_OK"));
+  input_dialog->ok = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_OK"));
 
-  gtk_widget_set_hexpand(input_dialog->ok,
+  gtk_widget_set_hexpand((GtkWidget *) input_dialog->ok,
 			 TRUE);
 
-  gtk_widget_set_halign(input_dialog->ok,
+  gtk_widget_set_halign((GtkWidget *) input_dialog->ok,
 			GTK_ALIGN_END);
 
   gtk_box_append(button_box,
-		 input_dialog->ok);
+		 (GtkWidget *) input_dialog->ok);
 
   g_signal_connect(input_dialog->ok, "clicked",
 		   G_CALLBACK(ags_input_dialog_clicked_callback), input_dialog);
   
-  input_dialog->cancel = gtk_button_new_with_mnemonic(i18n("_Cancel"));
+  input_dialog->cancel = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Cancel"));
 
-  gtk_widget_set_hexpand(input_dialog->cancel,
+  gtk_widget_set_hexpand((GtkWidget *) input_dialog->cancel,
 			 FALSE);
 
-  gtk_widget_set_halign(input_dialog->cancel,
+  gtk_widget_set_halign((GtkWidget *) input_dialog->cancel,
 			GTK_ALIGN_END);
 
   gtk_box_append(button_box,
-		 input_dialog->cancel);
+		 (GtkWidget *) input_dialog->cancel);
 
   g_signal_connect(input_dialog->cancel, "clicked",
 		   G_CALLBACK(ags_input_dialog_clicked_callback), input_dialog);
@@ -325,9 +325,9 @@ ags_input_dialog_set_flags(AgsInputDialog *input_dialog,
      input_dialog->string_input == NULL){
     input_dialog->string_input = (GtkEntry *) gtk_entry_new();
 
-    gtk_widget_set_halign(input_dialog->string_input,
+    gtk_widget_set_halign((GtkWidget *) input_dialog->string_input,
 			  GTK_ALIGN_FILL);
-    gtk_widget_set_hexpand(input_dialog->string_input,
+    gtk_widget_set_hexpand((GtkWidget *) input_dialog->string_input,
 			   TRUE);
     
     gtk_box_append(input_dialog->input_box,
@@ -403,16 +403,16 @@ ags_input_dialog_set_message(AgsInputDialog *input_dialog,
   g_return_if_fail(AGS_IS_INPUT_DIALOG(input_dialog));
 
   if(input_dialog->text == NULL){
-    input_dialog->message = gtk_label_new(message);
+    input_dialog->message = (GtkLabel *) gtk_label_new(message);
 
-    gtk_widget_set_hexpand(input_dialog->message,
+    gtk_widget_set_hexpand((GtkWidget *) input_dialog->message,
 			   TRUE);
     
-    gtk_widget_set_halign(input_dialog->message,
+    gtk_widget_set_halign((GtkWidget *) input_dialog->message,
 			  GTK_ALIGN_START);
     
     gtk_box_prepend(input_dialog->vbox,
-		    input_dialog->message);
+		    (GtkWidget *) input_dialog->message);
   }else{
     gtk_label_set_text(input_dialog->message,
 		       message);
@@ -435,9 +435,9 @@ ags_input_dialog_set_text(AgsInputDialog *input_dialog,
   g_return_if_fail(AGS_IS_INPUT_DIALOG(input_dialog));
 
   if(input_dialog->text == NULL){
-    input_dialog->text = gtk_label_new(text);
+    input_dialog->text = (GtkLabel *) gtk_label_new(text);
     gtk_box_prepend(input_dialog->input_box,
-		    input_dialog->text);
+		    (GtkWidget *) input_dialog->text);
   }else{
     gtk_label_set_text(input_dialog->text,
 		       text);

@@ -248,7 +248,7 @@ ags_indicator_class_init(AgsIndicatorClass *indicator)
   
   widget->snapshot = ags_indicator_snapshot;
 
-  gtk_widget_class_set_accessible_role(indicator,
+  gtk_widget_class_set_accessible_role(widget,
 				       GTK_ACCESSIBLE_ROLE_METER);
 }
 
@@ -257,10 +257,10 @@ ags_indicator_init(AgsIndicator *indicator)
 {
   indicator->orientation = GTK_ORIENTATION_VERTICAL;
 
-  gtk_widget_set_hexpand(indicator,
+  gtk_widget_set_hexpand((GtkWidget *) indicator,
 			 TRUE);
   
-  gtk_widget_set_vexpand(indicator,
+  gtk_widget_set_vexpand((GtkWidget *) indicator,
 			 TRUE);
   
   /* segment alignment */

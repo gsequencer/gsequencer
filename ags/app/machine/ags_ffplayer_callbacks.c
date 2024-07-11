@@ -260,7 +260,7 @@ ags_ffplayer_open_clicked_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
 
   window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
   
-  file_dialog = (AgsFileDialog *) ags_file_dialog_new((GtkWindow *) window,
+  file_dialog = (AgsFileDialog *) ags_file_dialog_new((GtkWidget *) window,
 						      i18n("open Soundfont2 file"));
 
   file_widget = ags_file_dialog_get_file_widget(file_dialog);
@@ -418,7 +418,7 @@ ags_ffplayer_open_dialog_response_callback(AgsFileDialog *file_dialog, gint resp
 
     filename = ags_file_widget_get_filename(file_widget);
 
-    if(!g_strv_contains(file_widget->recently_used, filename)){
+    if(!g_strv_contains((const gchar * const *) file_widget->recently_used, filename)){
       strv_length = g_strv_length(file_widget->recently_used);
 
       file_widget->recently_used = g_realloc(file_widget->recently_used,

@@ -85,7 +85,7 @@ ags_desk_file_chooser_class_init(AgsDeskFileChooserClass *desk_file_chooser)
 void
 ags_desk_file_chooser_init(AgsDeskFileChooser *desk_file_chooser)
 {
-  desk_file_chooser->file_chooser = gtk_file_chooser_widget_new(GTK_FILE_CHOOSER_ACTION_OPEN);
+  desk_file_chooser->file_chooser = (GtkFileChooserWidget *) gtk_file_chooser_widget_new(GTK_FILE_CHOOSER_ACTION_OPEN);
 
   gtk_widget_set_hexpand((GtkWidget *) desk_file_chooser,
 			 TRUE);

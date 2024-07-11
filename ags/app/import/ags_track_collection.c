@@ -683,7 +683,7 @@ ags_track_collection_add_mapper(AgsTrackCollection *track_collection,
 
   track_mapper = (AgsTrackMapper *) g_object_new_with_properties(track_collection->track_mapper_type,
 								 track_collection->track_mapper_n_properties,
-								 track_collection->track_mapper_strv,
+								 (const gchar **) track_collection->track_mapper_strv,
 								 track_collection->track_mapper_value);
   g_object_set(track_mapper,
 	       "track", track,

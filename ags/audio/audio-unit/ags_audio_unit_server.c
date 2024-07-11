@@ -1666,7 +1666,7 @@ ags_audio_unit_server_find_port(AgsAudioUnitServer *audio_unit_server,
 	g_list_free(client_start);
 	g_list_free(port_start);
 	
-	return(retval);
+	return((GObject *) retval);
       }
 
       /* iterate */

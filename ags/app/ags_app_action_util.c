@@ -150,7 +150,7 @@ ags_app_action_util_open()
 
   window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  file_dialog = (AgsFileDialog *) ags_file_dialog_new((GtkWindow *) window,
+  file_dialog = (AgsFileDialog *) ags_file_dialog_new((GtkWidget *) window,
 						      i18n("open file"));
 
   file_widget = ags_file_dialog_get_file_widget(file_dialog);
@@ -320,7 +320,7 @@ ags_app_action_util_open_response_callback(AgsFileDialog *file_dialog,
 
     filename = ags_file_widget_get_filename(file_widget);
 
-    if(!g_strv_contains(file_widget->recently_used, filename)){
+    if(!g_strv_contains((const gchar * const *) file_widget->recently_used, filename)){
       strv_length = g_strv_length(file_widget->recently_used);
 
       file_widget->recently_used = g_realloc(file_widget->recently_used,
@@ -574,7 +574,7 @@ ags_app_action_util_save_as_response_callback(AgsFileDialog *file_dialog,
 
     filename = ags_file_widget_get_current_path(file_widget);
 
-    if(!g_strv_contains(file_widget->recently_used, filename)){
+    if(!g_strv_contains((const gchar * const *) file_widget->recently_used, filename)){
       strv_length = g_strv_length(file_widget->recently_used);
 
       file_widget->recently_used = g_realloc(file_widget->recently_used,
@@ -673,7 +673,7 @@ ags_app_action_util_save_as()
   
   window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  file_dialog = (AgsFileDialog *) ags_file_dialog_new((GtkWindow *) window,
+  file_dialog = (AgsFileDialog *) ags_file_dialog_new((GtkWidget *) window,
 						      i18n("save file as"));  
 
   file_widget = ags_file_dialog_get_file_widget(file_dialog);
@@ -805,7 +805,7 @@ ags_app_action_util_meta_data()
 
   gtk_window_present((GtkWindow *) meta_data_window);
 
-  ags_gsequencer_application_refresh_window_menu(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
+  ags_gsequencer_application_refresh_window_menu((AgsGSequencerApplication *) ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
 }
 
 void
@@ -823,7 +823,7 @@ ags_app_action_util_export()
 
   gtk_window_present((GtkWindow *) export_window);
 
-  ags_gsequencer_application_refresh_window_menu(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
+  ags_gsequencer_application_refresh_window_menu((AgsGSequencerApplication *) ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
 }
 
 void
@@ -851,7 +851,7 @@ ags_app_action_util_smf_import()
 
   gtk_window_present((GtkWindow *) midi_import_wizard);
 
-  ags_gsequencer_application_refresh_window_menu(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
+  ags_gsequencer_application_refresh_window_menu((AgsGSequencerApplication *) ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
 }
 
 void
@@ -879,7 +879,7 @@ ags_app_action_util_smf_export()
   
   gtk_window_present((GtkWindow *) midi_export_wizard);
 
-  ags_gsequencer_application_refresh_window_menu(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
+  ags_gsequencer_application_refresh_window_menu((AgsGSequencerApplication *) ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
 }
 
 void
@@ -908,7 +908,7 @@ ags_app_action_util_preferences()
 
   gtk_window_present((GtkWindow *) preferences);
 
-  ags_gsequencer_application_refresh_window_menu(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
+  ags_gsequencer_application_refresh_window_menu((AgsGSequencerApplication *) ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
 }
 
 void
@@ -1085,7 +1085,7 @@ ags_app_action_util_help()
   
   gtk_window_present((GtkWindow *) online_help_window);
 
-  ags_gsequencer_application_refresh_window_menu(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
+  ags_gsequencer_application_refresh_window_menu((AgsGSequencerApplication *) ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
 }
 
 void
@@ -2185,13 +2185,13 @@ ags_app_action_util_edit_meta()
   scrolled_edit_meta = NULL;
   
   if(AGS_IS_NOTATION_EDIT(composite_editor->selected_edit)){
-    scrolled_edit_meta = composite_editor->notation_edit->scrolled_edit_meta;
+    scrolled_edit_meta = (GtkWidget *) composite_editor->notation_edit->scrolled_edit_meta;
   }else if(AGS_IS_AUTOMATION_EDIT(composite_editor->selected_edit)){
-    scrolled_edit_meta = composite_editor->automation_edit->scrolled_edit_meta;
+    scrolled_edit_meta = (GtkWidget *) composite_editor->automation_edit->scrolled_edit_meta;
   }else if(AGS_IS_WAVE_EDIT(composite_editor->selected_edit)){
-    scrolled_edit_meta = composite_editor->wave_edit->scrolled_edit_meta;
+    scrolled_edit_meta = (GtkWidget *) composite_editor->wave_edit->scrolled_edit_meta;
   }else if(AGS_IS_SHEET_EDIT(composite_editor->selected_edit)){
-    scrolled_edit_meta = composite_editor->sheet_edit->scrolled_edit_meta;
+    scrolled_edit_meta = (GtkWidget *) composite_editor->sheet_edit->scrolled_edit_meta;
   }
 
   if(scrolled_edit_meta != NULL){

@@ -75,7 +75,7 @@ ags_automation_edit_update_ui_callback(GObject *ui_provider,
   hscrollbar_adjustment = gtk_scrollbar_get_adjustment(automation_edit->hscrollbar);
   x = (double) automation_edit->note_offset * (double) automation_edit->control_width / zoom_factor;
     
-  width = (double) gtk_widget_get_width(automation_edit->drawing_area);
+  width = (double) gtk_widget_get_width((GtkWidget *) automation_edit->drawing_area);
   
   if(x < gtk_adjustment_get_value(hscrollbar_adjustment) ||
      x > gtk_adjustment_get_value(hscrollbar_adjustment) + (width * (3.0 / 4.0))){
@@ -85,7 +85,7 @@ ags_automation_edit_update_ui_callback(GObject *ui_provider,
     gtk_adjustment_set_value(gtk_scrollbar_get_adjustment(composite_editor->automation_edit->hscrollbar),
 			     x);
   }else{
-    gtk_widget_queue_draw(automation_edit->drawing_area);
+    gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
   }
 
   if(output_soundcard != NULL){
@@ -135,7 +135,7 @@ ags_automation_edit_drawing_area_resize_callback(GtkWidget *drawing_area,
   
   application_context = ags_application_context_get_instance();
 
-  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
   composite_edit = composite_editor->automation_edit;
 
   /* scale factor */
@@ -153,7 +153,7 @@ ags_automation_edit_drawing_area_resize_callback(GtkWidget *drawing_area,
   map_width = ((64.0) * (16.0 * 16.0 * 1200.0) * zoom * zoom_correction);
 
   if(AGS_IS_SCROLLED_AUTOMATION_EDIT_BOX(composite_edit->edit)){
-    automation_edit_box = ags_scrolled_automation_edit_box_get_automation_edit_box(composite_edit->edit);
+    automation_edit_box = ags_scrolled_automation_edit_box_get_automation_edit_box((AgsScrolledAutomationEditBox *) composite_edit->edit);
 
     list =
       start_list = ags_automation_edit_box_get_automation_edit(automation_edit_box);
@@ -192,7 +192,7 @@ ags_automation_edit_drawing_area_resize_callback(GtkWidget *drawing_area,
 
   if(AGS_IS_SCROLLED_AUTOMATION_EDIT_BOX(composite_edit->edit)){
     /* automation edit box */
-    automation_edit_box = ags_scrolled_automation_edit_box_get_automation_edit_box(composite_edit->edit);
+    automation_edit_box = ags_scrolled_automation_edit_box_get_automation_edit_box((AgsScrolledAutomationEditBox *) composite_edit->edit);
 
     list =
       start_list = ags_automation_edit_box_get_automation_edit(automation_edit_box);
@@ -274,7 +274,7 @@ ags_automation_edit_hscrollbar_value_changed(GtkAdjustment *adjustment, AgsAutom
 
   application_context = ags_application_context_get_instance();
 
-  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
   
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));

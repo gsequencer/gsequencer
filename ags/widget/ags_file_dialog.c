@@ -178,10 +178,10 @@ ags_file_dialog_init(AgsFileDialog *file_dialog)
   
   file_dialog->flags = 0;
   
-  gtk_window_set_default_size(file_dialog,
+  gtk_window_set_default_size((GtkWindow *) file_dialog,
 			      800, 600);
 
-  gtk_window_set_hide_on_close(file_dialog,
+  gtk_window_set_hide_on_close((GtkWindow *) file_dialog,
 			       TRUE);
 
   g_signal_connect(file_dialog, "close-request",
@@ -203,14 +203,14 @@ ags_file_dialog_init(AgsFileDialog *file_dialog)
   file_dialog->vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 					     6);
 
-  gtk_widget_set_valign(file_dialog->vbox,
+  gtk_widget_set_valign((GtkWidget *) file_dialog->vbox,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_halign(file_dialog->vbox,
+  gtk_widget_set_halign((GtkWidget *) file_dialog->vbox,
 			GTK_ALIGN_FILL);
 
-  gtk_widget_set_vexpand(file_dialog->vbox,
+  gtk_widget_set_vexpand((GtkWidget *) file_dialog->vbox,
 			 TRUE);  
-  gtk_widget_set_hexpand(file_dialog->vbox,
+  gtk_widget_set_hexpand((GtkWidget *) file_dialog->vbox,
 			 TRUE);  
 
   gtk_window_set_child((GtkWindow *) file_dialog,
@@ -218,14 +218,14 @@ ags_file_dialog_init(AgsFileDialog *file_dialog)
 
   file_dialog->file_widget = ags_file_widget_new();  
 
-  gtk_widget_set_valign(file_dialog->file_widget,
+  gtk_widget_set_valign((GtkWidget *) file_dialog->file_widget,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_halign(file_dialog->file_widget,
+  gtk_widget_set_halign((GtkWidget *) file_dialog->file_widget,
 			GTK_ALIGN_FILL);
 
-  gtk_widget_set_vexpand(file_dialog->file_widget,
+  gtk_widget_set_vexpand((GtkWidget *) file_dialog->file_widget,
 			 TRUE);  
-  gtk_widget_set_hexpand(file_dialog->file_widget,
+  gtk_widget_set_hexpand((GtkWidget *) file_dialog->file_widget,
 			 TRUE);  
   
   gtk_box_append(file_dialog->vbox,
@@ -233,7 +233,7 @@ ags_file_dialog_init(AgsFileDialog *file_dialog)
   
   /* button */
   file_dialog->activate_button = (GtkButton *) gtk_button_new_with_label(i18n("open"));
-  gtk_widget_set_halign(file_dialog->activate_button,
+  gtk_widget_set_halign((GtkWidget *) file_dialog->activate_button,
 			GTK_ALIGN_END);
   gtk_box_append(file_dialog->vbox,
 		 (GtkWidget *) file_dialog->activate_button);
@@ -411,7 +411,7 @@ void
 ags_file_dialog_real_response(AgsFileDialog *file_dialog,
 			      gint response_id)
 {  
-  gtk_widget_set_visible(file_dialog,
+  gtk_widget_set_visible((GtkWidget *) file_dialog,
 			 FALSE);
 }
 

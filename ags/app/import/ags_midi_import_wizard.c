@@ -284,7 +284,7 @@ ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
   /* file chooser */  
   file_widget = ags_file_widget_new();
 
-  midi_import_wizard->file_widget = file_widget;
+  midi_import_wizard->file_widget = (GtkWidget *) file_widget;
 
   home_path = ags_file_widget_get_home_path(file_widget);
 
@@ -406,15 +406,15 @@ ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
   ags_file_widget_set_default_bundle(file_widget,
 				     AGS_DEFAULT_BUNDLE_ID);
 
-  gtk_widget_set_halign(file_widget,
+  gtk_widget_set_halign((GtkWidget *) file_widget,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_valign(file_widget,
+  gtk_widget_set_valign((GtkWidget *) file_widget,
 			GTK_ALIGN_FILL);
 
-  gtk_widget_set_hexpand(file_widget,
+  gtk_widget_set_hexpand((GtkWidget *) file_widget,
 			 TRUE);
-  gtk_widget_set_vexpand(file_widget,
-			TRUE);
+  gtk_widget_set_vexpand((GtkWidget *) file_widget,
+			 TRUE);
   
   gtk_box_append(vbox,
 		 (GtkWidget *) file_widget);
@@ -437,7 +437,7 @@ ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
   action_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				       AGS_UI_PROVIDER_DEFAULT_SPACING);
 
-  gtk_widget_set_halign(action_area,
+  gtk_widget_set_halign((GtkWidget *) action_area,
 			GTK_ALIGN_END);
 
   gtk_box_append(vbox,
@@ -605,7 +605,7 @@ ags_midi_import_wizard_close_request_callback(GtkWindow *window,
   ags_midi_import_wizard_response(midi_import_wizard,
 				  GTK_RESPONSE_CLOSE);
 
-  ags_gsequencer_application_refresh_window_menu(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
+  ags_gsequencer_application_refresh_window_menu((AgsGSequencerApplication *) ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
 }
 
 void
@@ -735,7 +735,7 @@ ags_midi_import_wizard_real_response(AgsMidiImportWizard *midi_import_wizard,
 					 AGS_MIDI_IMPORT_WIZARD_SHOW_TRACK_COLLECTION);
 
 	/* parse */
-	filename = ags_file_widget_get_filename(midi_import_wizard->file_widget);
+	filename = ags_file_widget_get_filename((AgsFileWidget *) midi_import_wizard->file_widget);
 
 	midi_parser = ags_midi_parser_new_from_filename(filename);
 	midi_doc = ags_midi_parser_parse_full(midi_parser);

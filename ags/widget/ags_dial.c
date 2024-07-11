@@ -405,10 +405,10 @@ ags_dial_init(AgsDial *dial)
   gtk_widget_set_can_focus((GtkWidget *) dial,
 			   TRUE);
 
-  gtk_widget_set_hexpand(dial,
+  gtk_widget_set_hexpand((GtkWidget *) dial,
 			 TRUE);
   
-  gtk_widget_set_vexpand(dial,
+  gtk_widget_set_vexpand((GtkWidget *) dial,
 			 TRUE);  
 
   event_controller = gtk_event_controller_key_new();
@@ -424,7 +424,7 @@ ags_dial_init(AgsDial *dial)
   g_signal_connect(event_controller, "modifiers",
 		   G_CALLBACK(ags_dial_modifiers_callback), dial);
 
-  event_controller = gtk_gesture_click_new();
+  event_controller = (GtkEventController *) gtk_gesture_click_new();
   gtk_widget_add_controller((GtkWidget *) dial,
 			    event_controller);
 
@@ -728,7 +728,7 @@ void
 ags_dial_frame_clock_update_callback(GdkFrameClock *frame_clock,
 				     AgsDial *dial)
 {
-  gtk_widget_queue_draw(AGS_DIAL(dial));
+  gtk_widget_queue_draw((GtkWidget *) dial);
 }
 
 void
@@ -921,7 +921,7 @@ ags_dial_gesture_click_released_callback(GtkGestureClick *event_controller,
 			       gtk_adjustment_get_value(adjustment) - gtk_adjustment_get_page_increment(adjustment));
 
       //      ags_dial_value_changed(dial);
-      gtk_widget_queue_draw(dial);
+      gtk_widget_queue_draw((GtkWidget *) dial);
     }
 
     dial->flags &= (~AGS_DIAL_BUTTON_DOWN_PRESSED);
@@ -935,7 +935,7 @@ ags_dial_gesture_click_released_callback(GtkGestureClick *event_controller,
 			       gtk_adjustment_get_value(adjustment) + gtk_adjustment_get_page_increment(adjustment));
 
       //      ags_dial_value_changed(dial);
-      gtk_widget_queue_draw(dial);
+      gtk_widget_queue_draw((GtkWidget *) dial);
     }
 
     dial->flags &= (~AGS_DIAL_BUTTON_UP_PRESSED);
@@ -1186,7 +1186,7 @@ ags_dial_motion_notify_do_dial(AgsDial *dial,
 			       gtk_adjustment_get_value(adjustment) - gtk_adjustment_get_step_increment(adjustment));
 
       //      ags_dial_value_changed(dial);
-      gtk_widget_queue_draw(dial);
+      gtk_widget_queue_draw((GtkWidget *) dial);
     }
   }else{
     if(gtk_adjustment_get_value(adjustment) < gtk_adjustment_get_lower(adjustment)){
@@ -1194,7 +1194,7 @@ ags_dial_motion_notify_do_dial(AgsDial *dial,
 			       gtk_adjustment_get_value(adjustment) + gtk_adjustment_get_step_increment(adjustment));
 
       //      ags_dial_value_changed(dial);
-      gtk_widget_queue_draw(dial);
+      gtk_widget_queue_draw((GtkWidget *) dial);
     }
   }
 }
@@ -1383,7 +1383,7 @@ ags_dial_motion_notify_do_seemless_dial(AgsDial *dial,
   gtk_adjustment_set_value(adjustment,
 			   translated_x);
   //  ags_dial_value_changed(dial);
-  gtk_widget_queue_draw(dial);
+  gtk_widget_queue_draw((GtkWidget *) dial);
 }
 
 /**

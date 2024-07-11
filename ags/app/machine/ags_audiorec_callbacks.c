@@ -20,7 +20,6 @@
 #include <ags/app/machine/ags_audiorec_callbacks.h>
 
 #include <ags/app/ags_ui_provider.h>
-#include <ags/app/ags_pcm_file_dialog.h>
 #include <ags/app/ags_window.h>
 
 #include <ags/i18n.h>
@@ -301,7 +300,7 @@ ags_audiorec_open_response_callback(AgsPCMFileDialog *pcm_file_dialog, gint resp
 
     filename = ags_file_widget_get_filename(file_widget);
 
-    if(!g_strv_contains(file_widget->recently_used, filename)){
+    if(!g_strv_contains((const gchar * const *) file_widget->recently_used, filename)){
       strv_length = g_strv_length(file_widget->recently_used);
 
       file_widget->recently_used = g_realloc(file_widget->recently_used,

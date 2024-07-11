@@ -2448,7 +2448,7 @@ ags_core_audio_devout_port_free(AgsSoundcard *soundcard)
 		   (~AGS_CORE_AUDIO_DEVOUT_INITIAL_CALLBACK));
 
   /* signal callback */
-  g_rec_mutex_lock(callback_mutex);
+  g_mutex_lock(callback_mutex);
 
   g_atomic_int_or(&(core_audio_devout->sync_flags),
 		  AGS_CORE_AUDIO_DEVOUT_CALLBACK_DONE);
@@ -2457,10 +2457,10 @@ ags_core_audio_devout_port_free(AgsSoundcard *soundcard)
     g_cond_signal(&(core_audio_devout->callback_cond));
   }
 
-  g_rec_mutex_unlock(callback_mutex);
+  g_mutex_unlock(callback_mutex);
 
   /* signal thread */
-  g_rec_mutex_lock(callback_finish_mutex);
+  g_mutex_lock(callback_finish_mutex);
 
   g_atomic_int_or(&(core_audio_devout->sync_flags),
 		  AGS_CORE_AUDIO_DEVOUT_CALLBACK_FINISH_DONE);
@@ -2469,7 +2469,7 @@ ags_core_audio_devout_port_free(AgsSoundcard *soundcard)
     g_cond_signal(&(core_audio_devout->callback_finish_cond));
   }
 
-  g_rec_mutex_unlock(callback_finish_mutex);
+  g_mutex_unlock(callback_finish_mutex);
   
   /*  */
   core_audio_devout->note_offset = core_audio_devout->start_note_offset;
@@ -2637,11 +2637,11 @@ ags_core_audio_devout_tic(AgsSoundcard *soundcard)
   next_note_256th_attack_lower = 0;
   next_note_256th_attack_upper = 0;
   
-  ags_soundcard_util_calc_next_note_256th_offset(soundcard,
+  ags_soundcard_util_calc_next_note_256th_offset(G_OBJECT(soundcard),
 						 &next_note_256th_offset_lower,
 						 &next_note_256th_offset_upper);
 
-  ags_soundcard_util_calc_next_note_256th_attack(soundcard,
+  ags_soundcard_util_calc_next_note_256th_attack(G_OBJECT(soundcard),
 						 &next_note_256th_attack_lower,
 						 &next_note_256th_attack_upper);
 
@@ -3882,7 +3882,7 @@ ags_core_audio_devout_adjust_delay_and_attack(AgsCoreAudioDevout *core_audio_dev
     return;
   }
 
-  ags_soundcard_util_adjust_delay_and_attack(core_audio_devout);
+  ags_soundcard_util_adjust_delay_and_attack((GObject *) core_audio_devout);
 }
 
 /**

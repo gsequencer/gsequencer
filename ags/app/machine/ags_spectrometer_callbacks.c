@@ -183,5 +183,5 @@ ags_spectrometer_update_ui_callback(GObject *ui_provider,
   }
         
   /* queue draw */
-  gtk_widget_queue_draw(spectrometer->cartesian);
+  gtk_widget_queue_draw((GtkWidget *) spectrometer->cartesian);
 }

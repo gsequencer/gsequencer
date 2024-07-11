@@ -726,7 +726,7 @@ ags_machine_init(AgsMachine *machine)
 			 TRUE);
 
   gtk_grid_attach((GtkGrid *) machine,
-		  machine->frame,
+		  (GtkWidget *) machine->frame,
 		  0, 0,
 		  1, 1);
 
@@ -2538,12 +2538,12 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
 
 	  if(machine->input_pad_orientation == GTK_ORIENTATION_HORIZONTAL){
 	    ags_machine_add_input_pad(machine,
-				      (GtkWidget *) pad,
+				      pad,
 				      i, 0,
 				      1, 1);
 	  }else{
 	    ags_machine_add_input_pad(machine,
-				      (GtkWidget *) pad,
+				      pad,
 				      0, i,
 				      1, 1);
 	  }
@@ -3725,8 +3725,8 @@ ags_machine_get_possible_links(AgsMachine *machine)
   GList *start_list, *list;
   GtkTreeIter iter;
   
-  window = gtk_widget_get_ancestor((GtkWidget *) machine,
-				   AGS_TYPE_WINDOW);
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
+						 AGS_TYPE_WINDOW);
 
   model = gtk_list_store_new(2,
 			     G_TYPE_STRING,

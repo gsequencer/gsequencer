@@ -225,7 +225,7 @@ ags_business_group_manager_remove_business_group(AgsBusinessGroupManager *busine
 AgsBusinessGroupManager*
 ags_business_group_manager_get_instance()
 {
-  static GRecMutex mutex;
+  static GMutex mutex;
 
   g_mutex_lock(&mutex);
 

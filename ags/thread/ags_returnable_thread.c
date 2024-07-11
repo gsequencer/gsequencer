@@ -347,7 +347,7 @@ ags_returnable_thread_run(AgsThread *thread)
 
       g_rec_mutex_lock(thread_mutex);
 
-      thread_pool = returnable_thread->thread_pool;
+      thread_pool = (AgsThreadPool *) returnable_thread->thread_pool;
       
       g_rec_mutex_unlock(thread_mutex);
 

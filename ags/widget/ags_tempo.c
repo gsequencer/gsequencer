@@ -292,13 +292,13 @@ ags_tempo_init(AgsTempo *tempo)
 	       "height-request", AGS_TEMPO_DEFAULT_HEIGHT_REQUEST,
 	       NULL);
 
-  gtk_widget_set_hexpand(tempo,
+  gtk_widget_set_hexpand((GtkWidget *) tempo,
 			 FALSE);
   
-  gtk_widget_set_vexpand(tempo,
+  gtk_widget_set_vexpand((GtkWidget *) tempo,
 			 FALSE);
 
-  event_controller = gtk_event_controller_key_new();
+  event_controller = (GtkEventController *) gtk_event_controller_key_new();
   gtk_widget_add_controller((GtkWidget *) tempo,
 			    event_controller);
 
@@ -311,7 +311,7 @@ ags_tempo_init(AgsTempo *tempo)
   g_signal_connect(event_controller, "modifiers",
 		   G_CALLBACK(ags_tempo_modifiers_callback), tempo);
 
-  event_controller = gtk_gesture_click_new();
+  event_controller = (GtkEventController *) gtk_gesture_click_new();
   gtk_widget_add_controller((GtkWidget *) tempo,
 			    event_controller);
 
@@ -321,7 +321,7 @@ ags_tempo_init(AgsTempo *tempo)
   g_signal_connect(event_controller, "released",
 		   G_CALLBACK(ags_tempo_gesture_click_released_callback), tempo);
 
-  event_controller = gtk_event_controller_motion_new();
+  event_controller = (GtkEventController *) gtk_event_controller_motion_new();
   gtk_widget_add_controller((GtkWidget *) tempo,
 			    event_controller);
 

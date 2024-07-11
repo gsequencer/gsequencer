@@ -1272,7 +1272,7 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
       varea_height = (key_count * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_height);
 
       /* adjustment and allocation */
-      gtk_widget_get_allocation(wave_edit->drawing_area,
+      gtk_widget_get_allocation((GtkWidget *) wave_edit->drawing_area,
 				&allocation);
 
       adjustment = gtk_scrollbar_get_adjustment(composite_editor->wave_edit->vscrollbar);
@@ -1436,7 +1436,7 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
   ags_notation_edit_reset_vscrollbar(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit));
   ags_notation_edit_reset_hscrollbar(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit));
 
-  automation_edit_box = ags_scrolled_automation_edit_box_get_automation_edit_box(composite_editor->automation_edit->edit);
+  automation_edit_box = ags_scrolled_automation_edit_box_get_automation_edit_box(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_editor->automation_edit->edit));
 
   list =
     start_list = ags_automation_edit_box_get_automation_edit(automation_edit_box);
@@ -1451,7 +1451,7 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
   g_list_free(start_list);
 
   if(AGS_IS_AUDIOREC(machine)){
-    wave_edit_box = ags_scrolled_wave_edit_box_get_wave_edit_box(composite_editor->wave_edit->edit);
+    wave_edit_box = ags_scrolled_wave_edit_box_get_wave_edit_box(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit));
 
     list =
       start_list = ags_wave_edit_box_get_wave_edit(wave_edit_box);
@@ -1469,26 +1469,26 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
   /* redraw */
   gtk_widget_queue_draw((GtkWidget *) composite_editor->notation_edit->edit);
 
-  automation_edit_box = ags_scrolled_automation_edit_box_get_automation_edit_box(composite_editor->automation_edit->edit);
+  automation_edit_box = ags_scrolled_automation_edit_box_get_automation_edit_box(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_editor->automation_edit->edit));
 
   list =
     start_list = ags_automation_edit_box_get_automation_edit(automation_edit_box);
 
   while(list != NULL){
-    gtk_widget_queue_draw(AGS_AUTOMATION_EDIT(list->data));
+    gtk_widget_queue_draw(GTK_WIDGET(list->data));
 
     list = list->next;
   }
 
   g_list_free(start_list);
 
-  wave_edit_box = ags_scrolled_wave_edit_box_get_wave_edit_box(composite_editor->wave_edit->edit);
+  wave_edit_box = ags_scrolled_wave_edit_box_get_wave_edit_box(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit));
 
   list =
     start_list = ags_wave_edit_box_get_wave_edit(wave_edit_box);
 
   while(list != NULL){
-    gtk_widget_queue_draw(AGS_WAVE_EDIT(list->data));
+    gtk_widget_queue_draw(GTK_WIDGET(list->data));
 
     list = list->next;
   }
@@ -1864,7 +1864,7 @@ ags_composite_editor_add_automation_port(AgsCompositeEditor *composite_editor,
   map_width = ((64.0) * (16.0 * 16.0 * 1200.0) * zoom * zoom_correction);
 
   /* adjustment and allocation */
-  gtk_widget_get_allocation(automation_edit->drawing_area,
+  gtk_widget_get_allocation((GtkWidget *) automation_edit->drawing_area,
 			    &allocation);
 
   adjustment = gtk_scrollbar_get_adjustment(composite_editor->automation_edit->hscrollbar);
@@ -2054,7 +2054,7 @@ ags_composite_editor_select_all(AgsCompositeEditor *composite_editor)
       i++;
     }
 
-    gtk_widget_queue_draw(composite_editor->notation_edit->edit);
+    gtk_widget_queue_draw((GtkWidget *) composite_editor->notation_edit->edit);
     
     g_list_free_full(start_notation,
 		     (GDestroyNotify) g_object_unref);
@@ -2066,6 +2066,10 @@ ags_composite_editor_select_all(AgsCompositeEditor *composite_editor)
     GList *start_automation, *automation;
 
     gint i;
+
+    if(composite_editor->automation_edit->focused_edit == NULL){
+      return;
+    }
     
     notebook = composite_editor->automation_edit->channel_selector;
 
@@ -2131,7 +2135,7 @@ ags_composite_editor_select_all(AgsCompositeEditor *composite_editor)
       i++;
     }
 
-    gtk_widget_queue_draw(AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->drawing_area);
+    gtk_widget_queue_draw((GtkWidget *) AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->drawing_area);
     
     g_list_free_full(start_automation,
 		     g_object_unref);
@@ -2190,7 +2194,7 @@ ags_composite_editor_select_all(AgsCompositeEditor *composite_editor)
       i++;
     }
 
-    gtk_widget_queue_draw(composite_editor->wave_edit->focused_edit);
+    gtk_widget_queue_draw((GtkWidget *) composite_editor->wave_edit->focused_edit);
     
     g_list_free_full(start_wave,
 		     g_object_unref);
@@ -3218,7 +3222,7 @@ ags_composite_editor_paste_automation_async(GObject *source_object,
     first_x = 0;
   }
     
-  gtk_widget_queue_draw(AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->drawing_area);
+  gtk_widget_queue_draw((GtkWidget *) AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->drawing_area);
     
   xmlFreeDoc(clipboard); 
 
@@ -3780,6 +3784,10 @@ ags_composite_editor_paste(AgsCompositeEditor *composite_editor)
   }else if(composite_editor->selected_edit == composite_editor->sheet_edit){
     //TODO:JK: implement me
   }else if(composite_editor->selected_edit == composite_editor->automation_edit){
+    if(composite_editor->automation_edit->focused_edit == NULL){
+      return;
+    }
+    
     gdk_clipboard_read_text_async(gdk_display_get_clipboard(gdk_display_get_default()),
 				  NULL,
 				  (GAsyncReadyCallback) ags_composite_editor_paste_automation_async,
@@ -3899,6 +3907,10 @@ ags_composite_editor_copy(AgsCompositeEditor *composite_editor)
 
     int size;
     gint i;
+
+    if(composite_editor->automation_edit->focused_edit == NULL){
+      return;
+    }
     
     notebook = composite_editor->automation_edit->channel_selector;
 
@@ -4102,10 +4114,16 @@ ags_composite_editor_copy(AgsCompositeEditor *composite_editor)
 	current_wave_base64 = ags_wave_copy_selection_as_base64(AGS_WAVE(wave->data));
 
 	current_offset = strlen(current_wave_base64);
-	
-	memcpy(wave_base64 + offset, current_wave_base64, current_offset * sizeof(gchar));
 
-	offset += current_offset;
+	if(offset + current_offset >= AGS_WAVE_CLIPBOARD_MAX_SIZE){
+	  break;
+	}
+
+	if(current_wave_base64 != NULL && current_offset > 0){
+	  memcpy(wave_base64 + offset, current_wave_base64, current_offset * sizeof(gchar));
+
+	  offset += current_offset;
+	}
 	
 	wave = wave->next;
       }
@@ -4238,6 +4256,10 @@ ags_composite_editor_cut(AgsCompositeEditor *composite_editor)
     int size;
     gint i;
 
+    if(composite_editor->automation_edit->focused_edit == NULL){
+      return;
+    }
+
     notebook = composite_editor->automation_edit->channel_selector;
 
     /* create document */
@@ -4306,7 +4328,7 @@ ags_composite_editor_cut(AgsCompositeEditor *composite_editor)
 
     xmlFreeDoc(clipboard);
     
-    gtk_widget_queue_draw(AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->drawing_area);
+    gtk_widget_queue_draw((GtkWidget *) AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->drawing_area);
   }else if(composite_editor->selected_edit == composite_editor->wave_edit){
 #if 0
     AgsNotebook *notebook;
@@ -4410,6 +4432,7 @@ ags_composite_editor_cut(AgsCompositeEditor *composite_editor)
     while((i = ags_notebook_next_active_tab(notebook,
 					    i)) != -1){
       audio_lines++;
+      i++;
     }
     
     /* header */
@@ -4452,10 +4475,16 @@ ags_composite_editor_cut(AgsCompositeEditor *composite_editor)
 	current_wave_base64 = ags_wave_cut_selection_as_base64(AGS_WAVE(wave->data));
 
 	current_offset = strlen(current_wave_base64);
-	
-	memcpy(wave_base64 + offset, current_wave_base64, current_offset * sizeof(gchar));
 
-	offset += current_offset;
+	if(offset + current_offset >= AGS_WAVE_CLIPBOARD_MAX_SIZE){
+	  break;
+	}
+	
+	if(current_wave_base64 != NULL && current_offset > 0){
+	  memcpy(wave_base64 + offset, current_wave_base64, current_offset * sizeof(gchar));
+
+	  offset += current_offset;
+	}
 	
 	wave = wave->next;
       }
@@ -5001,6 +5030,10 @@ ags_composite_editor_add_acceleration(AgsCompositeEditor *composite_editor,
     return;
   }
 
+  if(composite_editor->automation_edit->focused_edit == NULL){
+    return;
+  }
+
   machine = composite_editor->selected_machine;
 
   if(machine == NULL){
@@ -5128,6 +5161,10 @@ ags_composite_editor_delete_acceleration(AgsCompositeEditor *composite_editor,
   gint i, j, j_step, j_stop;
   
   if(!AGS_IS_COMPOSITE_EDITOR(composite_editor)){
+    return;
+  }
+
+  if(composite_editor->automation_edit->focused_edit == NULL){
     return;
   }
 
@@ -5313,7 +5350,7 @@ ags_composite_editor_add_marker(AgsCompositeEditor *composite_editor,
 			 new_marker,
 			 FALSE);
   
-  gtk_widget_queue_draw(composite_editor->tempo_edit->drawing_area);
+  gtk_widget_queue_draw((GtkWidget *) composite_editor->tempo_edit->drawing_area);
   
   /* unref */
   g_object_unref(timestamp);
@@ -5426,7 +5463,7 @@ ags_composite_editor_delete_marker(AgsCompositeEditor *composite_editor,
   ags_sound_provider_set_tempo(AGS_SOUND_PROVIDER(application_context),
 			       start_list);
 
-  gtk_widget_queue_draw(composite_editor->tempo_edit->drawing_area);
+  gtk_widget_queue_draw((GtkWidget *) composite_editor->tempo_edit->drawing_area);
 }
 
 /**
@@ -5521,6 +5558,10 @@ ags_composite_editor_select_region(AgsCompositeEditor *composite_editor,
     GList *start_automation, *automation;
 
     gint i;
+
+    if(composite_editor->automation_edit->focused_edit == NULL){
+      return;
+    }
 
     notebook = composite_editor->automation_edit->channel_selector;
 

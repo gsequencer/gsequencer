@@ -378,7 +378,7 @@ ags_resize_audio_launch(AgsTask *task)
   }
 
   /* start threads */  
-  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+  audio_loop = (AgsAudioLoop *) ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
   if(audio_channels_old < resize_audio->audio_channels){
     for(i = 0; i < output_pads_old; i++){
@@ -398,60 +398,60 @@ ags_resize_audio_launch(AgsTask *task)
 
 	/* add to start queue */
 	if(ags_audio_test_ability_flags(resize_audio->audio, AGS_SOUND_ABILITY_PLAYBACK)){
-	  channel_thread = ags_playback_get_channel_thread(playback,
-							   AGS_SOUND_SCOPE_PLAYBACK);
+	  channel_thread = (AgsChannelThread *) ags_playback_get_channel_thread(playback,
+										AGS_SOUND_SCOPE_PLAYBACK);
 	
 	  if(channel_thread != NULL){
-	    ags_thread_add_start_queue(audio_loop,
-				       channel_thread);
+	    ags_thread_add_start_queue((AgsThread *) audio_loop,
+				       (AgsThread *) channel_thread);
 
 	    g_object_unref(channel_thread);
 	  }
 	}
 	
 	if(ags_audio_test_ability_flags(resize_audio->audio, AGS_SOUND_ABILITY_SEQUENCER)){
-	  channel_thread = ags_playback_get_channel_thread(playback,
-							   AGS_SOUND_SCOPE_SEQUENCER);
+	  channel_thread = (AgsChannelThread *) ags_playback_get_channel_thread(playback,
+										AGS_SOUND_SCOPE_SEQUENCER);
 	
 	  if(channel_thread != NULL){
-	    ags_thread_add_start_queue(audio_loop,
-				       channel_thread);
+	    ags_thread_add_start_queue((AgsThread *) audio_loop,
+				       (AgsThread *) channel_thread);
 
 	    g_object_unref(channel_thread);
 	  }
 	}
 	
 	if(ags_audio_test_ability_flags(resize_audio->audio, AGS_SOUND_ABILITY_NOTATION)){
-	  channel_thread = ags_playback_get_channel_thread(playback,
-							   AGS_SOUND_SCOPE_NOTATION);
+	  channel_thread = (AgsChannelThread *) ags_playback_get_channel_thread(playback,
+										AGS_SOUND_SCOPE_NOTATION);
 	
 	  if(channel_thread != NULL){
-	    ags_thread_add_start_queue(audio_loop,
-				       channel_thread);
+	    ags_thread_add_start_queue((AgsThread *) audio_loop,
+				       (AgsThread *) channel_thread);
 
 	    g_object_unref(channel_thread);
 	  }
 	}
 	
 	if(ags_audio_test_ability_flags(resize_audio->audio, AGS_SOUND_ABILITY_WAVE)){
-	  channel_thread = ags_playback_get_channel_thread(playback,
-							   AGS_SOUND_SCOPE_WAVE);
+	  channel_thread = (AgsChannelThread *) ags_playback_get_channel_thread(playback,
+										AGS_SOUND_SCOPE_WAVE);
 	
 	  if(channel_thread != NULL){
-	    ags_thread_add_start_queue(audio_loop,
-				       channel_thread);
+	    ags_thread_add_start_queue((AgsThread *) audio_loop,
+				       (AgsThread *) channel_thread);
 
 	    g_object_unref(channel_thread);
 	  }
 	}	
 	
 	if(ags_audio_test_ability_flags(resize_audio->audio, AGS_SOUND_ABILITY_MIDI)){
-	  channel_thread = ags_playback_get_channel_thread(playback,
-							   AGS_SOUND_SCOPE_MIDI);
+	  channel_thread = (AgsChannelThread *) ags_playback_get_channel_thread(playback,
+										AGS_SOUND_SCOPE_MIDI);
 	
 	  if(channel_thread != NULL){
-	    ags_thread_add_start_queue(audio_loop,
-				       channel_thread);
+	    ags_thread_add_start_queue((AgsThread *) audio_loop,
+				       (AgsThread *) channel_thread);
 
 	    g_object_unref(channel_thread);
 	  }
@@ -482,60 +482,60 @@ ags_resize_audio_launch(AgsTask *task)
 
 	/* add to start queue */
 	if(ags_audio_test_ability_flags(resize_audio->audio, AGS_SOUND_ABILITY_PLAYBACK)){
-	  channel_thread = ags_playback_get_channel_thread(playback,
-							   AGS_SOUND_SCOPE_PLAYBACK);
+	  channel_thread = (AgsChannelThread *) ags_playback_get_channel_thread(playback,
+										AGS_SOUND_SCOPE_PLAYBACK);
 
 	  if(channel_thread != NULL){
-	    ags_thread_add_start_queue(audio_loop,
-				       channel_thread);
+	    ags_thread_add_start_queue((AgsThread *) audio_loop,
+				       (AgsThread *) channel_thread);
 
 	    g_object_unref(channel_thread);
 	  }
 	}
 	
 	if(ags_audio_test_ability_flags(resize_audio->audio, AGS_SOUND_ABILITY_SEQUENCER)){
-	  channel_thread = ags_playback_get_channel_thread(playback,
-							   AGS_SOUND_SCOPE_SEQUENCER);
+	  channel_thread = (AgsChannelThread *) ags_playback_get_channel_thread(playback,
+										AGS_SOUND_SCOPE_SEQUENCER);
 	
 	  if(channel_thread != NULL){
-	    ags_thread_add_start_queue(audio_loop,
-				       channel_thread);
+	    ags_thread_add_start_queue((AgsThread *) audio_loop,
+				       (AgsThread *) channel_thread);
 
 	    g_object_unref(channel_thread);
 	  }
 	}
 	
 	if(ags_audio_test_ability_flags(resize_audio->audio, AGS_SOUND_ABILITY_NOTATION)){
-	  channel_thread = ags_playback_get_channel_thread(playback,
-							   AGS_SOUND_SCOPE_NOTATION);
+	  channel_thread = (AgsChannelThread *) ags_playback_get_channel_thread(playback,
+										AGS_SOUND_SCOPE_NOTATION);
 	
 	  if(channel_thread != NULL){
-	    ags_thread_add_start_queue(audio_loop,
-				       channel_thread);
+	    ags_thread_add_start_queue((AgsThread *) audio_loop,
+				       (AgsThread *) channel_thread);
 
 	    g_object_unref(channel_thread);
 	  }
 	}
 	
 	if(ags_audio_test_ability_flags(resize_audio->audio, AGS_SOUND_ABILITY_WAVE)){
-	  channel_thread = ags_playback_get_channel_thread(playback,
-							   AGS_SOUND_SCOPE_WAVE);
+	  channel_thread = (AgsChannelThread *) ags_playback_get_channel_thread(playback,
+										AGS_SOUND_SCOPE_WAVE);
 	
 	  if(channel_thread != NULL){
-	    ags_thread_add_start_queue(audio_loop,
-				       channel_thread);
+	    ags_thread_add_start_queue((AgsThread *) audio_loop,
+				       (AgsThread *) channel_thread);
 
 	    g_object_unref(channel_thread);
 	  }
 	}
 	
 	if(ags_audio_test_ability_flags(resize_audio->audio, AGS_SOUND_ABILITY_MIDI)){
-	  channel_thread = ags_playback_get_channel_thread(playback,
-							   AGS_SOUND_SCOPE_MIDI);
+	  channel_thread = (AgsChannelThread *) ags_playback_get_channel_thread(playback,
+										AGS_SOUND_SCOPE_MIDI);
 	
 	  if(channel_thread != NULL){
-	    ags_thread_add_start_queue(audio_loop,
-				       channel_thread);
+	    ags_thread_add_start_queue((AgsThread *) audio_loop,
+				       (AgsThread *) channel_thread);
 
 	    g_object_unref(channel_thread);
 	  }

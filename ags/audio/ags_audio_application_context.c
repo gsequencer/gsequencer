@@ -415,9 +415,9 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   AGS_APPLICATION_CONTEXT(audio_application_context)->config = config;
   g_object_ref(config);
 
-  log = (GObject *) ags_log_get_instance();
+  log = ags_log_get_instance();
 
-  AGS_APPLICATION_CONTEXT(audio_application_context)->log = log;
+  AGS_APPLICATION_CONTEXT(audio_application_context)->log = (GObject *) log;
   g_object_ref(log);
   
   /* Audio application context */  
@@ -886,7 +886,7 @@ ags_audio_application_context_get_task_launcher(AgsConcurrencyProvider *concurre
   /* get main loop */
   g_rec_mutex_lock(application_context_mutex);
 
-  task_launcher = (AgsThread *) application_context->task_launcher;
+  task_launcher = (AgsTaskLauncher *) application_context->task_launcher;
 
   if(task_launcher != NULL){
     g_object_ref(task_launcher);
@@ -990,7 +990,7 @@ ags_audio_application_context_set_thread_pool(AgsConcurrencyProvider *concurrenc
     g_object_ref(thread_pool);
   }
   
-  audio_application_context->thread_pool = (GObject *) thread_pool;
+  audio_application_context->thread_pool = thread_pool;
   
   g_rec_mutex_unlock(application_context_mutex);
 }
@@ -1161,7 +1161,7 @@ ags_audio_application_context_set_registry(AgsServiceProvider *service_provider,
     g_object_ref(registry);
   }
   
-  audio_application_context->registry = (GObject *) registry;
+  audio_application_context->registry = registry;
   
   g_rec_mutex_unlock(application_context_mutex);
 }
@@ -1337,7 +1337,7 @@ ags_audio_application_context_set_default_soundcard(AgsSoundProvider *sound_prov
     /* add message */
     ags_message_delivery_add_message_envelope(message_delivery,
 					      "libags-audio",
-					      message);
+					      (GObject *) message);
 
     g_list_free_full(start_message_queue,
 		     (GDestroyNotify) g_object_unref);
@@ -3363,7 +3363,7 @@ ags_audio_application_context_audio_main_loop_thread(GMainLoop *main_loop)
 #endif
   
   list = 
-    start_list = ags_sound_provider_get_osc_server(AGS_SERVICE_PROVIDER(application_context));
+    start_list = ags_sound_provider_get_osc_server(AGS_SOUND_PROVIDER(application_context));
 
   while(list != NULL){
     if(ags_osc_server_test_flags(list->data, AGS_OSC_SERVER_AUTO_START)){

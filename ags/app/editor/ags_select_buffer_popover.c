@@ -256,7 +256,7 @@ ags_select_buffer_popover_init(AgsSelectBufferPopover *select_buffer_popover)
   select_buffer_popover->action_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 							      AGS_UI_PROVIDER_DEFAULT_SPACING);
   
-  gtk_widget_set_halign(select_buffer_popover->action_area,
+  gtk_widget_set_halign((GtkWidget *) select_buffer_popover->action_area,
 			GTK_ALIGN_END);
 
   gtk_box_append(vbox,
@@ -270,8 +270,8 @@ ags_select_buffer_popover_init(AgsSelectBufferPopover *select_buffer_popover)
   g_signal_connect(select_buffer_popover->activate_button, "clicked",
 		   G_CALLBACK(ags_select_buffer_popover_activate_button_callback), select_buffer_popover);
 
-  gtk_popover_set_default_widget(select_buffer_popover,
-				 select_buffer_popover->activate_button);
+  gtk_popover_set_default_widget((GtkPopover *) select_buffer_popover,
+				 (GtkWidget *) select_buffer_popover->activate_button);
 }
 
 gboolean
@@ -521,7 +521,7 @@ ags_select_buffer_popover_key_released_callback(GtkEventControllerKey *event_con
     switch(keyval){
     case GDK_KEY_Escape:
       {
-	gtk_popover_popdown(select_buffer_popover);	
+	gtk_popover_popdown((GtkPopover *) select_buffer_popover);	
       }
       break;
     }

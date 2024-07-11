@@ -183,7 +183,7 @@ ags_machine_editor_dialog_init(AgsMachineEditorDialog *machine_editor_dialog)
   machine_editor_dialog->action_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 							      AGS_UI_PROVIDER_DEFAULT_SPACING);
   
-  gtk_widget_set_halign(machine_editor_dialog->action_area,
+  gtk_widget_set_halign((GtkWidget *) machine_editor_dialog->action_area,
 			GTK_ALIGN_END);
 
   gtk_box_append(vbox,

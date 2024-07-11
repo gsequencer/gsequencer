@@ -109,7 +109,7 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
     }
 
 #ifdef HAVE_GLIB_2_44
-    contains_control_name = g_strv_contains(collected_specifier,
+    contains_control_name = g_strv_contains((const gchar * const *) collected_specifier,
 					    specifier);
 #else
     contains_control_name = ags_strv_contains(collected_specifier,
@@ -247,7 +247,7 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
 	goto OUTPUT_ITERATE;
       }
       
-      contains_control_name = g_strv_contains(collected_specifier,
+      contains_control_name = g_strv_contains((const gchar * const *) collected_specifier,
 					      specifier);
 
       if(plugin_port != NULL &&
@@ -389,7 +389,7 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
 	continue;
       }
       
-      contains_control_name = g_strv_contains(collected_specifier,
+      contains_control_name = g_strv_contains((const gchar * const *) collected_specifier,
 					      specifier);
 
       if(plugin_port != NULL &&
@@ -530,7 +530,7 @@ ags_preset_editor_open_response_callback(AgsFileDialog *file_dialog, gint respon
     }
   }
 
-  gtk_window_destroy(file_dialog);
+  gtk_window_destroy((GtkWindow *) file_dialog);
 }
 
 void
@@ -552,7 +552,7 @@ ags_preset_editor_open_preset_callback(GtkButton *button, AgsPresetEditor *prese
 
   window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  file_dialog = (AgsFileDialog *) ags_file_dialog_new((GtkWindow *) window,
+  file_dialog = (AgsFileDialog *) ags_file_dialog_new((GtkWidget *) window,
 						      i18n("open preset file"));
 
   file_widget = ags_file_dialog_get_file_widget(file_dialog);

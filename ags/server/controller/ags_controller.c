@@ -191,7 +191,7 @@ ags_controller_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(server));
       }
       
-      controller->server = server;
+      controller->server = (GObject *) server;
 
       g_rec_mutex_unlock(controller_mutex);
     }

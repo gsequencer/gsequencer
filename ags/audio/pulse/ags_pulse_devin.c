@@ -2344,11 +2344,11 @@ ags_pulse_devin_tic(AgsSoundcard *soundcard)
   next_note_256th_attack_lower = 0;
   next_note_256th_attack_upper = 0;
   
-  ags_soundcard_util_calc_next_note_256th_offset(soundcard,
+  ags_soundcard_util_calc_next_note_256th_offset(G_OBJECT(soundcard),
 						 &next_note_256th_offset_lower,
 						 &next_note_256th_offset_upper);
 
-  ags_soundcard_util_calc_next_note_256th_attack(soundcard,
+  ags_soundcard_util_calc_next_note_256th_attack(G_OBJECT(soundcard),
 						 &next_note_256th_attack_lower,
 						 &next_note_256th_attack_upper);
 
@@ -3386,7 +3386,7 @@ ags_pulse_devin_adjust_delay_and_attack(AgsPulseDevin *pulse_devin)
     return;
   }
 
-  ags_soundcard_util_adjust_delay_and_attack(pulse_devin);
+  ags_soundcard_util_adjust_delay_and_attack((GObject *) pulse_devin);
 }
 
 /**

@@ -2437,8 +2437,8 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
     soundcard_thread = ags_thread_find_type(audio_loop,
 					    AGS_TYPE_SOUNDCARD_THREAD);
 
-    soundcard_thread = ags_soundcard_thread_find_soundcard(soundcard_thread,
-							   AGS_WASAPI_DEVOUT(soundcard));
+    soundcard_thread = (AgsThread *) ags_soundcard_thread_find_soundcard((AgsSoundcardThread *) soundcard_thread,
+									 G_OBJECT(soundcard));
 
     ags_thread_stop(soundcard_thread);
     
@@ -2622,11 +2622,11 @@ ags_wasapi_devout_tic(AgsSoundcard *soundcard)
   next_note_256th_attack_lower = 0;
   next_note_256th_attack_upper = 0;
   
-  ags_soundcard_util_calc_next_note_256th_offset(soundcard,
+  ags_soundcard_util_calc_next_note_256th_offset(G_OBJECT(soundcard),
 						 &next_note_256th_offset_lower,
 						 &next_note_256th_offset_upper);
 
-  ags_soundcard_util_calc_next_note_256th_attack(soundcard,
+  ags_soundcard_util_calc_next_note_256th_attack(G_OBJECT(soundcard),
 						 &next_note_256th_attack_lower,
 						 &next_note_256th_attack_upper);
 
@@ -3867,7 +3867,7 @@ ags_wasapi_devout_adjust_delay_and_attack(AgsWasapiDevout *wasapi_devout)
     return;
   }
 
-  ags_soundcard_util_adjust_delay_and_attack(wasapi_devout);
+  ags_soundcard_util_adjust_delay_and_attack((GObject *) wasapi_devout);
 }
 
 /**

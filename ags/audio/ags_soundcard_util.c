@@ -670,12 +670,12 @@ ags_soundcard_util_calc_next_note_256th_offset(GObject *soundcard,
 			    &buffer_size,
 			    NULL);
   
-  note_offset = ags_soundcard_get_note_offset(soundcard);
+  note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(soundcard));
 
   note_256th_offset = 0;
   note_256th_offset_last = 0;
   
-  ags_soundcard_get_note_256th_offset(soundcard,
+  ags_soundcard_get_note_256th_offset(AGS_SOUNDCARD(soundcard),
 				      &note_256th_offset,
 				      &note_256th_offset_last);
 
@@ -684,14 +684,14 @@ ags_soundcard_util_calc_next_note_256th_offset(GObject *soundcard,
   
   do_loop = FALSE;
   
-  ags_soundcard_get_loop(soundcard,
+  ags_soundcard_get_loop(AGS_SOUNDCARD(soundcard),
 			 &loop_left, &loop_right,
 			 &do_loop);
 
   note_256th_attack = 0;
   note_256th_attack_last = 0;
 
-  ags_soundcard_get_note_256th_attack(soundcard,
+  ags_soundcard_get_note_256th_attack(AGS_SOUNDCARD(soundcard),
 				      &note_256th_attack,
 				      &note_256th_attack_last);
   
@@ -962,12 +962,12 @@ ags_soundcard_util_calc_next_note_256th_attack(GObject *soundcard,
 			    &buffer_size,
 			    NULL);
   
-  note_offset = ags_soundcard_get_note_offset(soundcard);
+  note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(soundcard));
 
   note_256th_offset = 0;
   note_256th_offset_last = 0;
   
-  ags_soundcard_get_note_256th_offset(soundcard,
+  ags_soundcard_get_note_256th_offset(AGS_SOUNDCARD(soundcard),
 				      &note_256th_offset,
 				      &note_256th_offset_last);
 
@@ -976,18 +976,18 @@ ags_soundcard_util_calc_next_note_256th_attack(GObject *soundcard,
   
   do_loop = FALSE;
   
-  ags_soundcard_get_loop(soundcard,
+  ags_soundcard_get_loop(AGS_SOUNDCARD(soundcard),
 			 &loop_left, &loop_right,
 			 &do_loop);
 
   note_256th_attack = 0;
   note_256th_attack_last = 0;
 
-  ags_soundcard_get_note_256th_attack(soundcard,
+  ags_soundcard_get_note_256th_attack(AGS_SOUNDCARD(soundcard),
 				      &note_256th_attack,
 				      &note_256th_attack_last);
   
-  ags_soundcard_get_note_256th_attack_position(soundcard,
+  ags_soundcard_get_note_256th_attack_position(AGS_SOUNDCARD(soundcard),
 					       &note_256th_attack_position_lower,
 					       &note_256th_attack_position_upper);
   
@@ -1188,22 +1188,22 @@ ags_soundcard_util_calc_next_note_256th_attack(GObject *soundcard,
     }
   }
   
-  next_note_256th_attack_lower = ags_soundcard_get_note_256th_attack_at_position(soundcard,
+  next_note_256th_attack_lower = ags_soundcard_get_note_256th_attack_at_position(AGS_SOUNDCARD(soundcard),
 										 note_256th_attack_position_lower);
-  next_note_256th_attack_upper = ags_soundcard_get_note_256th_attack_at_position(soundcard,
+  next_note_256th_attack_upper = ags_soundcard_get_note_256th_attack_at_position(AGS_SOUNDCARD(soundcard),
 										 note_256th_attack_position_upper);
 
   if(next_note_256th_offset_lower != note_256th_offset){
     if(do_loop &&
        next_note_256th_offset_upper >= 16 * loop_right){
-      next_note_256th_attack_lower = ags_soundcard_get_note_256th_attack_at_position(soundcard,
+      next_note_256th_attack_lower = ags_soundcard_get_note_256th_attack_at_position(AGS_SOUNDCARD(soundcard),
 										     0);
-      next_note_256th_attack_upper = ags_soundcard_get_note_256th_attack_at_position(soundcard,
+      next_note_256th_attack_upper = ags_soundcard_get_note_256th_attack_at_position(AGS_SOUNDCARD(soundcard),
 										     (next_note_256th_offset_upper - next_note_256th_offset_lower));
     }else{
-      next_note_256th_attack_lower = ags_soundcard_get_note_256th_attack_at_position(soundcard,
+      next_note_256th_attack_lower = ags_soundcard_get_note_256th_attack_at_position(AGS_SOUNDCARD(soundcard),
 										     note_256th_attack_position_upper + 1);
-      next_note_256th_attack_upper = ags_soundcard_get_note_256th_attack_at_position(soundcard,
+      next_note_256th_attack_upper = ags_soundcard_get_note_256th_attack_at_position(AGS_SOUNDCARD(soundcard),
 										     note_256th_attack_position_upper + 1 + (next_note_256th_offset_upper - next_note_256th_offset_lower));
     }
   }

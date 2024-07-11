@@ -148,7 +148,7 @@ ags_line_preset_editor_init(AgsLinePresetEditor *line_preset_editor)
   gtk_grid_set_row_spacing(grid,
 			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
 
-  gtk_box_append((GtkGrid *) line_preset_editor,
+  gtk_box_append((GtkBox *) line_preset_editor,
 		 (GtkWidget *) grid);
 
   /* format */
@@ -168,21 +168,21 @@ ags_line_preset_editor_init(AgsLinePresetEditor *line_preset_editor)
 		  1, 1);
 
   line_preset_editor->format = (GtkComboBox *) gtk_combo_box_text_new();
-  gtk_combo_box_text_append_text(line_preset_editor->format,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) line_preset_editor->format,
 				 "8 bit");
-  gtk_combo_box_text_append_text(line_preset_editor->format,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) line_preset_editor->format,
 				 "16 bit");
-  gtk_combo_box_text_append_text(line_preset_editor->format,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) line_preset_editor->format,
 				 "24 bit");
-  gtk_combo_box_text_append_text(line_preset_editor->format,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) line_preset_editor->format,
 				 "32 bit");
-  gtk_combo_box_text_append_text(line_preset_editor->format,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) line_preset_editor->format,
 				 "64 bit");
-  gtk_combo_box_text_append_text(line_preset_editor->format,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) line_preset_editor->format,
 				 "floating point");
-  gtk_combo_box_text_append_text(line_preset_editor->format,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) line_preset_editor->format,
 				 "double precision floating point");
-  gtk_combo_box_text_append_text(line_preset_editor->format,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) line_preset_editor->format,
 				 "complex floating point");
   gtk_combo_box_set_active(line_preset_editor->format,
 			   1);
@@ -285,11 +285,11 @@ ags_line_preset_editor_reset(AgsApplicable *applicable)
     
     gchar *filename;
 
-    filename = ags_file_link_get_filename(AGS_INPUT(machine_editor_line->channel)->file_link);
+    filename = ags_file_link_get_filename((AgsFileLink *) AGS_INPUT(machine_editor_line->channel)->file_link);
 
-    audio_file = ags_audio_file_manager_find_audio_file(ags_audio_file_manager_get_instance(),
-							filename);
-
+    audio_file = (AgsAudioFile *) ags_audio_file_manager_find_audio_file(ags_audio_file_manager_get_instance(),
+									 filename);
+    
     g_free(filename);
 
     if(audio_file != NULL){

@@ -884,7 +884,7 @@ ags_automation_meta_refresh(AgsAutomationMeta *automation_meta)
       }
 
 #ifdef HAVE_GLIB_2_44
-      contains_control_name = g_strv_contains(collected_specifier,
+      contains_control_name = g_strv_contains((const gchar * const *) collected_specifier,
 					      specifier);
 #else
       contains_control_name = ags_strv_contains(collected_specifier,

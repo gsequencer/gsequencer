@@ -832,7 +832,7 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
 		 (GtkWidget *) ext_hbox);
 
   /* tremolo */
-  tremolo_frame = gtk_frame_new(i18n("tremolo"));
+  tremolo_frame = (GtkFrame *) gtk_frame_new(i18n("tremolo"));
 
   gtk_box_append(ext_hbox,
 		 (GtkWidget *) tremolo_frame);
@@ -986,7 +986,7 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
 		  1, 1);
   
   /* vibrato */
-  vibrato_frame = gtk_frame_new(i18n("vibrato"));
+  vibrato_frame = (GtkFrame *) gtk_frame_new(i18n("vibrato"));
 
   gtk_box_append(ext_hbox,
 		 (GtkWidget *) vibrato_frame);
@@ -1140,7 +1140,7 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
 		  1, 1);
   
   /* wah-wah */
-  wah_wah_frame = gtk_frame_new(i18n("wah-wah"));
+  wah_wah_frame = (GtkFrame *) gtk_frame_new(i18n("wah-wah"));
 
   gtk_box_append(ext_hbox,
 		 (GtkWidget *) wah_wah_frame);

@@ -112,7 +112,7 @@ ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
       link_editor->open_dialog = ags_pcm_file_dialog_new((GtkWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)),
 							 i18n("open audio file"));
 
-      file_widget = ags_file_dialog_get_file_widget(link_editor->open_dialog);
+      file_widget = ags_pcm_file_dialog_get_file_widget(link_editor->open_dialog);
 
       home_path = ags_file_widget_get_home_path(file_widget);
 
@@ -305,7 +305,7 @@ ags_link_editor_pcm_file_dialog_response_callback(AgsPCMFileDialog *open_dialog,
 
     filename = ags_file_widget_get_filename(file_widget);
     
-    if(!g_strv_contains(file_widget->recently_used, filename)){
+    if(!g_strv_contains((const gchar * const *) file_widget->recently_used, filename)){
       strv_length = g_strv_length(file_widget->recently_used);
 
       file_widget->recently_used = g_realloc(file_widget->recently_used,
