@@ -1696,7 +1696,7 @@ ags_alsa_devout_list_cards_NO_DEFAULT_0:
             
     error = snd_device_name_hint(card_num,
 				 iface,
-				 &hints);
+				 (void ***) &hints);
 
     if(hints != NULL){
       for(iter = hints; iter[0] != NULL; iter++){
@@ -1723,7 +1723,7 @@ ags_alsa_devout_list_cards_NO_DEFAULT_0:
 	}
       }
 
-      snd_device_name_free_hint(hints);
+      snd_device_name_free_hint((void **) hints);
     }
       
     snd_ctl_close(card_handle);
@@ -3191,11 +3191,11 @@ ags_alsa_devout_tic(AgsSoundcard *soundcard)
   next_note_256th_attack_lower = 0;
   next_note_256th_attack_upper = 0;
   
-  ags_soundcard_util_calc_next_note_256th_offset(soundcard,
+  ags_soundcard_util_calc_next_note_256th_offset(G_OBJECT(soundcard),
 						 &next_note_256th_offset_lower,
 						 &next_note_256th_offset_upper);
 
-  ags_soundcard_util_calc_next_note_256th_attack(soundcard,
+  ags_soundcard_util_calc_next_note_256th_attack(G_OBJECT(soundcard),
 						 &next_note_256th_attack_lower,
 						 &next_note_256th_attack_upper);
 
@@ -4326,7 +4326,7 @@ ags_alsa_devout_adjust_delay_and_attack(AgsAlsaDevout *alsa_devout)
     return;
   }
 
-  ags_soundcard_util_adjust_delay_and_attack(alsa_devout);
+  ags_soundcard_util_adjust_delay_and_attack((GObject *) alsa_devout);
 }
 
 /**

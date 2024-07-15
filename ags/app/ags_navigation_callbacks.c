@@ -533,7 +533,7 @@ ags_navigation_scroll_callback(GtkWidget *widget,
     AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->flags |= AGS_NOTATION_EDIT_AUTO_SCROLL;
 
     list = 
-      start_list = ags_automation_edit_box_get_automation_edit(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_editor->automation_edit->edit)->automation_edit_box);
+      start_list = ags_automation_edit_box_get_automation_edit(AGS_AUTOMATION_EDIT_BOX(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_editor->automation_edit->edit)->automation_edit_box));
 
     while(list != NULL){
       AGS_AUTOMATION_EDIT(list->data)->flags |= AGS_AUTOMATION_EDIT_AUTO_SCROLL;
@@ -544,7 +544,7 @@ ags_navigation_scroll_callback(GtkWidget *widget,
     g_list_free(start_list);
     
     list = 
-      start_list = ags_wave_edit_box_get_wave_edit(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box);
+      start_list = ags_wave_edit_box_get_wave_edit(AGS_WAVE_EDIT_BOX(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box));
 
     while(list != NULL){
       AGS_WAVE_EDIT(list->data)->flags |= AGS_WAVE_EDIT_AUTO_SCROLL;
@@ -559,7 +559,7 @@ ags_navigation_scroll_callback(GtkWidget *widget,
     AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->flags &= (~AGS_NOTATION_EDIT_AUTO_SCROLL);
 
     list = 
-      start_list = ags_automation_edit_box_get_automation_edit(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_editor->automation_edit->edit)->automation_edit_box);
+      start_list = ags_automation_edit_box_get_automation_edit(AGS_AUTOMATION_EDIT_BOX(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_editor->automation_edit->edit)->automation_edit_box));
 
     while(list != NULL){
       AGS_AUTOMATION_EDIT(list->data)->flags &= (~AGS_AUTOMATION_EDIT_AUTO_SCROLL);
@@ -570,7 +570,7 @@ ags_navigation_scroll_callback(GtkWidget *widget,
     g_list_free(start_list);    
 
     list = 
-      start_list = ags_wave_edit_box_get_wave_edit(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box);
+      start_list = ags_wave_edit_box_get_wave_edit(AGS_WAVE_EDIT_BOX(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box));
 
     while(list != NULL){
       AGS_WAVE_EDIT(list->data)->flags &= (~AGS_WAVE_EDIT_AUTO_SCROLL);

@@ -31,6 +31,7 @@
 
 #include <ags/app/ags_machine.h>
 
+#include <ags/app/machine/ags_desk_file_chooser.h>
 #include <ags/app/machine/ags_desk_pad.h>
 
 G_BEGIN_DECLS
@@ -73,7 +74,7 @@ struct _AgsDesk
   
   AgsDeskPad *right_pad;
   
-  GtkFileChooserWidget *file_chooser;
+  AgsDeskFileChooser *file_chooser;
 };
 
 struct _AgsDeskClass

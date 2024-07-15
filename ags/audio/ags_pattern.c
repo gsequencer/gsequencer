@@ -369,7 +369,7 @@ ags_pattern_set_property(GObject *gobject,
       g_object_ref(G_OBJECT(channel));
     }
 
-    pattern->channel = channel;
+    pattern->channel = (GObject *) channel;
 
     g_rec_mutex_unlock(pattern_mutex);
   }

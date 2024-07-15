@@ -702,7 +702,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   volume_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				       0);
 
-  gtk_widget_set_hexpand(volume_hbox,
+  gtk_widget_set_hexpand((GtkWidget *) volume_hbox,
 			 FALSE);
 
   gtk_box_set_spacing(volume_hbox,

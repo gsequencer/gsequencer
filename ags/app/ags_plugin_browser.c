@@ -218,7 +218,7 @@ ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
   content_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 					AGS_UI_PROVIDER_DEFAULT_SPACING);
   
-  gtk_window_set_child(plugin_browser,
+  gtk_window_set_child((GtkWindow *) plugin_browser,
 		       (GtkWidget *) content_area);
 
   /* scrolled window */
@@ -279,12 +279,12 @@ ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
 
   gtk_widget_set_valign(plugin_browser->lv2_browser,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_halign(plugin_browser->lv2_browser,
+  gtk_widget_set_halign((GtkWidget *) plugin_browser->lv2_browser,
 			GTK_ALIGN_FILL);
 
-  gtk_widget_set_vexpand(plugin_browser->lv2_browser,
+  gtk_widget_set_vexpand((GtkWidget *) plugin_browser->lv2_browser,
 			 TRUE);
-  gtk_widget_set_hexpand(plugin_browser->lv2_browser,
+  gtk_widget_set_hexpand((GtkWidget *) plugin_browser->lv2_browser,
 			 TRUE);
 
   gtk_widget_set_visible((GtkWidget *) plugin_browser->lv2_browser,
@@ -355,7 +355,7 @@ ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
   plugin_browser->action_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 						       AGS_UI_PROVIDER_DEFAULT_SPACING);
   
-  gtk_widget_set_halign(plugin_browser->action_area,
+  gtk_widget_set_halign((GtkWidget *) plugin_browser->action_area,
 			GTK_ALIGN_END);
 
   gtk_box_append(content_area,
@@ -585,7 +585,7 @@ void
 ags_plugin_browser_real_response(AgsPluginBrowser *plugin_browser,
 				 gint response_id)
 {
-  gtk_widget_set_visible(plugin_browser,
+  gtk_widget_set_visible((GtkWidget *) plugin_browser,
 			 FALSE);
 }
 

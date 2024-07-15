@@ -592,7 +592,7 @@ ags_machine_editor_bulk_to_xml_node(AgsMachineEditorBulk *machine_editor_bulk)
   
   g_return_val_if_fail(AGS_IS_MACHINE_EDITOR_BULK(machine_editor_bulk), NULL);
 
-  machine_editor_collection = (AgsMachineEditorCollection *) gtk_widget_get_ancestor(machine_editor_bulk,
+  machine_editor_collection = (AgsMachineEditorCollection *) gtk_widget_get_ancestor((GtkWidget *) machine_editor_bulk,
 										     AGS_TYPE_MACHINE_EDITOR_COLLECTION);
 
   node = NULL;

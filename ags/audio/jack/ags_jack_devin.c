@@ -2349,11 +2349,11 @@ ags_jack_devin_tic(AgsSoundcard *soundcard)
   next_note_256th_attack_lower = 0;
   next_note_256th_attack_upper = 0;
   
-  ags_soundcard_util_calc_next_note_256th_offset(soundcard,
+  ags_soundcard_util_calc_next_note_256th_offset(G_OBJECT(soundcard),
 						 &next_note_256th_offset_lower,
 						 &next_note_256th_offset_upper);
 
-  ags_soundcard_util_calc_next_note_256th_attack(soundcard,
+  ags_soundcard_util_calc_next_note_256th_attack(G_OBJECT(soundcard),
 						 &next_note_256th_attack_lower,
 						 &next_note_256th_attack_upper);
 
@@ -3412,7 +3412,7 @@ ags_jack_devin_adjust_delay_and_attack(AgsJackDevin *jack_devin)
     return;
   }
 
-  ags_soundcard_util_adjust_delay_and_attack(jack_devin);
+  ags_soundcard_util_adjust_delay_and_attack((GObject *) jack_devin);
 }
 
 /**
@@ -3445,7 +3445,7 @@ ags_jack_devin_realloc_buffer(AgsJackDevin *jack_devin)
   /* get word size */  
   g_rec_mutex_lock(jack_devin_mutex);
 
-  jack_client = jack_devin->jack_client;
+  jack_client = (AgsJackClient *) jack_devin->jack_client;
   
   port_count = g_list_length(jack_devin->jack_port);
   
@@ -3514,7 +3514,7 @@ ags_jack_devin_realloc_buffer(AgsJackDevin *jack_devin)
 			    nth_soundcard,
 			    i);
       
-      jack_port = ags_jack_port_new(jack_client);
+      jack_port = ags_jack_port_new((GObject *) jack_client);
       ags_jack_client_add_port((AgsJackClient *) jack_client,
 			       (GObject *) jack_port);
 

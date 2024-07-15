@@ -1428,9 +1428,9 @@ ags_fx_pattern_audio_processor_real_counter_change(AgsFxPatternAudioProcessor *f
     }else{
       fx_pattern_audio_processor->current_offset_counter = offset_counter + 1;
 
-      if(!ags_recall_test_staging_flags(fx_pattern_audio_processor, AGS_SOUND_STAGING_DONE)){	
+      if(!ags_recall_test_staging_flags((AgsRecall *) fx_pattern_audio_processor, AGS_SOUND_STAGING_DONE)){	
 	if(fx_pattern_audio_processor->current_offset_counter >= loop_end){
-	  ags_recall_done(fx_pattern_audio_processor);
+	  ags_recall_done((AgsRecall *) fx_pattern_audio_processor);
 	}
       }else{
 	fx_pattern_audio_processor->current_offset_counter = 0;

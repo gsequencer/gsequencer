@@ -322,7 +322,7 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
   g_signal_connect(event_controller, "motion",
 		   G_CALLBACK(ags_wave_edit_motion_callback), wave_edit);
 
-  event_controller = gtk_gesture_swipe_new();
+  event_controller = (GtkEventController *) gtk_gesture_swipe_new();
   gtk_widget_add_controller((GtkWidget *) wave_edit,
 			    event_controller);
 
@@ -1317,10 +1317,10 @@ ags_wave_edit_drawing_area_button_release_select_buffer(GtkWidget *editor,
   if(AGS_COMPOSITE_EDITOR(editor)->wave_edit != NULL &&
      AGS_COMPOSITE_EDITOR(editor)->wave_edit->edit != NULL){
     list =
-      start_list = ags_wave_edit_box_get_wave_edit(AGS_SCROLLED_WAVE_EDIT_BOX(AGS_COMPOSITE_EDITOR(editor)->wave_edit->edit)->wave_edit_box);
+      start_list = ags_wave_edit_box_get_wave_edit((AgsWaveEditBox *) AGS_SCROLLED_WAVE_EDIT_BOX(AGS_COMPOSITE_EDITOR(editor)->wave_edit->edit)->wave_edit_box);
 
     while(list != NULL){
-      gtk_widget_queue_draw(AGS_WAVE_EDIT(list->data)->drawing_area);
+      gtk_widget_queue_draw((GtkWidget *) AGS_WAVE_EDIT(list->data)->drawing_area);
 
       list = list->next;
     }

@@ -3700,7 +3700,7 @@ ags_automation_get_specifier_unique(GList *automation)
     g_rec_mutex_unlock(automation_mutex);
     
 #ifdef HAVE_GLIB_2_44
-    contains_control_name = g_strv_contains(specifier,
+    contains_control_name = g_strv_contains((const gchar * const *) specifier,
 					    current_control_name);
 #else
     contains_control_name = ags_strv_contains(specifier,
@@ -3787,7 +3787,7 @@ ags_automation_get_specifier_unique_with_channel_type(GList *automation,
     g_rec_mutex_unlock(automation_mutex);
     
 #ifdef HAVE_GLIB_2_44
-    contains_control_name = g_strv_contains(specifier,
+    contains_control_name = g_strv_contains((const gchar * const *) specifier,
 					    current_control_name);
 #else
     contains_control_name = ags_strv_contains(specifier,

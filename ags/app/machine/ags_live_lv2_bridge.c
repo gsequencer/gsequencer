@@ -504,7 +504,7 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
   /* effect bridge */  
   AGS_MACHINE(live_lv2_bridge)->bridge = (GtkGrid *) ags_effect_bridge_new(audio);
 
-  AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->parent_machine = (AgsMachine *) live_lv2_bridge;
+  AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->parent_machine = (GtkWidget *) live_lv2_bridge;
 
   gtk_widget_set_hexpand((GtkWidget *) AGS_MACHINE(live_lv2_bridge)->bridge,
 			 FALSE);
@@ -524,7 +524,7 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
   gtk_widget_set_halign((GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->bulk_input,
 			GTK_ALIGN_START);
   
-  AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->bulk_input)->parent_bridge = AGS_MACHINE(live_lv2_bridge)->bridge;
+  AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->bulk_input)->parent_bridge = (GtkWidget *) AGS_MACHINE(live_lv2_bridge)->bridge;
   gtk_grid_attach(AGS_MACHINE(live_lv2_bridge)->bridge,
 		  (GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->bulk_input,
 		  0, 2,

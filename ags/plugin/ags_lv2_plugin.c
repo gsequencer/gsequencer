@@ -1271,7 +1271,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     lv2_handle[0] = instantiate(plugin_descriptor,
 				rate,
 				path,
-				feature);
+				(const LV2_Feature * const *) feature);
     
     /* set options */
     if(lv2_handle[0] != NULL &&

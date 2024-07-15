@@ -3649,7 +3649,7 @@ ags_notation_to_raw_midi(AgsNotation *notation,
   g_list_free_full(start_note,
 		   (GDestroyNotify) g_object_unref);
 
-  g_object_run_dispose(midi_builder);
+  g_object_run_dispose((GObject *) midi_builder);
   g_object_unref(midi_builder);
   
   return(buffer);

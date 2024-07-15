@@ -82,13 +82,13 @@ void
 ags_effect_bulk_entry_init(AgsEffectBulkEntry *effect_bulk_entry)
 {
   effect_bulk_entry->check_button = (GtkCheckButton *) gtk_check_button_new();
-  gtk_grid_attach(effect_bulk_entry,
+  gtk_grid_attach((GtkGrid *) effect_bulk_entry,
 		  (GtkWidget *) effect_bulk_entry->check_button,
 		  0, 0,
 		  1, 1);
 
   effect_bulk_entry->label = (GtkLabel *) gtk_label_new(NULL);
-  gtk_grid_attach(effect_bulk_entry,
+  gtk_grid_attach((GtkGrid *) effect_bulk_entry,
 		  (GtkWidget *) effect_bulk_entry->label,
 		  1, 0,
 		  1, 1);

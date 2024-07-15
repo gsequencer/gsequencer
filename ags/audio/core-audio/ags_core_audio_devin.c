@@ -2355,11 +2355,11 @@ ags_core_audio_devin_tic(AgsSoundcard *soundcard)
   next_note_256th_attack_lower = 0;
   next_note_256th_attack_upper = 0;
   
-  ags_soundcard_util_calc_next_note_256th_offset(soundcard,
+  ags_soundcard_util_calc_next_note_256th_offset(G_OBJECT(soundcard),
 						 &next_note_256th_offset_lower,
 						 &next_note_256th_offset_upper);
 
-  ags_soundcard_util_calc_next_note_256th_attack(soundcard,
+  ags_soundcard_util_calc_next_note_256th_attack(G_OBJECT(soundcard),
 						 &next_note_256th_attack_lower,
 						 &next_note_256th_attack_upper);
 
@@ -3466,7 +3466,7 @@ ags_core_audio_devin_adjust_delay_and_attack(AgsCoreAudioDevin *core_audio_devin
     return;
   }
 
-  ags_soundcard_util_adjust_delay_and_attack(core_audio_devin);
+  ags_soundcard_util_adjust_delay_and_attack((GObject *) core_audio_devin);
 }
 
 /**

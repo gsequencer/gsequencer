@@ -899,7 +899,7 @@ ags_audio_loop_run(AgsThread *thread)
 		 "frequency", &frequency,
 		 NULL);
 
-    if(!ags_thread_test_flags(audio_loop, AGS_THREAD_TIME_ACCOUNTING)){
+    if(!ags_thread_test_flags((AgsThread *) audio_loop, AGS_THREAD_TIME_ACCOUNTING)){
       g_usleep((guint) (G_USEC_PER_SEC / frequency) - 4);
     }
   }
@@ -1064,7 +1064,7 @@ ags_audio_loop_play_channel_super_threaded(AgsAudioLoop *audio_loop,
 	g_mutex_lock(&(channel_thread->wakeup_mutex));
 
 	ags_channel_thread_unset_nested_sync_flags(channel_thread,
-					      AGS_CHANNEL_THREAD_STATUS_WAIT);
+						   AGS_CHANNEL_THREAD_STATUS_WAIT);
 	    
 	if(!ags_channel_thread_test_nested_sync_flags(channel_thread, AGS_CHANNEL_THREAD_STATUS_DONE)){
 	  g_cond_signal(&(channel_thread->wakeup_cond));
@@ -1116,8 +1116,8 @@ ags_audio_loop_sync_channel_super_threaded(AgsAudioLoop *audio_loop,
       g_mutex_lock(&(channel_thread->done_mutex));
   
       if(g_list_find(audio_loop->sync_thread, channel_thread) != NULL &&
-	 ags_thread_test_status_flags(channel_thread, AGS_THREAD_STATUS_RUNNING) &&
-	 ags_thread_test_status_flags(channel_thread, AGS_THREAD_STATUS_SYNCED)){
+	 ags_thread_test_status_flags((AgsThread *) channel_thread, AGS_THREAD_STATUS_RUNNING) &&
+	 ags_thread_test_status_flags((AgsThread *) channel_thread, AGS_THREAD_STATUS_SYNCED)){
 	if(ags_channel_thread_test_nested_sync_flags(channel_thread, AGS_CHANNEL_THREAD_STATUS_WAIT_SYNC)){
 	  ags_channel_thread_unset_nested_sync_flags(channel_thread, AGS_CHANNEL_THREAD_STATUS_DONE_SYNC);
 	
@@ -1332,8 +1332,8 @@ ags_audio_loop_play_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDo
       if(thread != NULL){
 	audio_thread = (AgsAudioThread *) thread;
 	
-	if(ags_thread_test_status_flags(audio_thread, AGS_THREAD_STATUS_RUNNING) &&
-	   ags_thread_test_status_flags(audio_thread, AGS_THREAD_STATUS_SYNCED)){
+	if(ags_thread_test_status_flags((AgsThread *) audio_thread, AGS_THREAD_STATUS_RUNNING) &&
+	   ags_thread_test_status_flags((AgsThread *) audio_thread, AGS_THREAD_STATUS_SYNCED)){
 	  /* wakeup wait */
 	  g_mutex_lock(&(audio_thread->wakeup_mutex));
 
@@ -1399,8 +1399,8 @@ ags_audio_loop_sync_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDo
 	audio_thread = (AgsAudioThread *) thread;
 
 	if(g_list_find(audio_loop->sync_thread, audio_thread) != NULL &&
-	   ags_thread_test_status_flags(audio_thread, AGS_THREAD_STATUS_RUNNING) &&
-	   ags_thread_test_status_flags(audio_thread, AGS_THREAD_STATUS_SYNCED)){
+	   ags_thread_test_status_flags((AgsThread *) audio_thread, AGS_THREAD_STATUS_RUNNING) &&
+	   ags_thread_test_status_flags((AgsThread *) audio_thread, AGS_THREAD_STATUS_SYNCED)){
 	  g_mutex_lock(&(audio_thread->done_mutex));
 	  
 	  if(ags_audio_thread_test_nested_sync_flags(audio_thread, AGS_AUDIO_THREAD_STATUS_WAIT_SYNC)){

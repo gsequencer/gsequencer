@@ -45,7 +45,7 @@ ags_online_help_window_close_request_callback(GtkWindow *window, gpointer user_d
 
   application_context = ags_application_context_get_instance();
   
-  ags_gsequencer_application_refresh_window_menu(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
+  ags_gsequencer_application_refresh_window_menu((AgsGSequencerApplication *) ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
   
   return(FALSE);
 }
@@ -267,7 +267,7 @@ ags_online_help_window_pdf_print_response_callback(GtkDialog *dialog,
     }
   }
   
-  gtk_window_close(dialog);
+  gtk_window_close((GtkWindow *) dialog);
 
   online_help_window->print_dialog = NULL;
 }
@@ -286,15 +286,15 @@ ags_online_help_window_pdf_print_callback(GtkButton *button,
     
     application_context = ags_application_context_get_instance();
     
-    window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+    window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
     paper_size = AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->paper_size;
     
-    online_help_window->print_dialog = gtk_print_unix_dialog_new(i18n("Print manual ..."),
-								 window);
+    online_help_window->print_dialog = (GtkDialog *) gtk_print_unix_dialog_new(i18n("Print manual ..."),
+									       (GtkWindow *) window);
 
     page_setup = gtk_page_setup_new();
-    gtk_print_unix_dialog_set_page_setup(online_help_window->print_dialog,
+    gtk_print_unix_dialog_set_page_setup((GtkPrintUnixDialog *) online_help_window->print_dialog,
 					 page_setup);
     
     if(!g_strcmp0(paper_size, "a4")){
@@ -309,10 +309,10 @@ ags_online_help_window_pdf_print_callback(GtkButton *button,
       g_warning("unknown paper size");
     }
     
-    gtk_print_unix_dialog_set_manual_capabilities(online_help_window->print_dialog,
+    gtk_print_unix_dialog_set_manual_capabilities((GtkPrintUnixDialog *) online_help_window->print_dialog,
 						  GTK_PRINT_CAPABILITY_GENERATE_PDF);
     
-    gtk_widget_show(online_help_window->print_dialog);
+    gtk_widget_show((GtkWidget *) online_help_window->print_dialog);
 
     g_signal_connect(online_help_window->print_dialog, "response",
 		     G_CALLBACK(ags_online_help_window_pdf_print_response_callback), online_help_window);

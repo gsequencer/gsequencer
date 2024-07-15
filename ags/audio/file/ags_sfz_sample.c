@@ -1976,7 +1976,7 @@ ags_sfz_sample_get_key(AgsSFZSample *sfz_sample)
 
   midi_key = -1;
 
-  group_key = ags_sfz_group_lookup_control(sfz_sample->group,
+  group_key = ags_sfz_group_lookup_control((AgsSFZGroup *) sfz_sample->group,
 					   "key");
 
   if(group_key != NULL){
@@ -1999,7 +1999,7 @@ ags_sfz_sample_get_key(AgsSFZSample *sfz_sample)
     g_free(group_key);
   }
   
-  region_key = ags_sfz_region_lookup_control(sfz_sample->region,
+  region_key = ags_sfz_region_lookup_control((AgsSFZRegion *) sfz_sample->region,
 					     "key");
   
   if(region_key != NULL){
@@ -2046,7 +2046,7 @@ ags_sfz_sample_get_hikey(AgsSFZSample *sfz_sample)
 
   hikey = -1;
   
-  group_key = ags_sfz_group_lookup_control(sfz_sample->group,
+  group_key = ags_sfz_group_lookup_control((AgsSFZGroup *) sfz_sample->group,
 					   "hikey");
     
   if(group_key != NULL){
@@ -2069,7 +2069,7 @@ ags_sfz_sample_get_hikey(AgsSFZSample *sfz_sample)
     g_free(group_key);
   }
 
-  region_key = ags_sfz_region_lookup_control(sfz_sample->region,
+  region_key = ags_sfz_region_lookup_control((AgsSFZRegion *) sfz_sample->region,
 					     "hikey");
   
   if(region_key != NULL){
@@ -2118,7 +2118,7 @@ ags_sfz_sample_get_lokey(AgsSFZSample *sfz_sample)
 
   lokey = -1;
   
-  group_key = ags_sfz_group_lookup_control(sfz_sample->group,
+  group_key = ags_sfz_group_lookup_control((AgsSFZGroup *) sfz_sample->group,
 					   "lokey");
     
   if(group_key != NULL){
@@ -2141,7 +2141,7 @@ ags_sfz_sample_get_lokey(AgsSFZSample *sfz_sample)
     g_free(group_key);
   }
 
-  region_key = ags_sfz_region_lookup_control(sfz_sample->region,
+  region_key = ags_sfz_region_lookup_control((AgsSFZRegion *) sfz_sample->region,
 					     "lokey");
   
   if(region_key != NULL){
@@ -2190,7 +2190,7 @@ ags_sfz_sample_get_pitch_keycenter(AgsSFZSample *sfz_sample)
 
   pitch_keycenter = -1;
   
-  group_key = ags_sfz_group_lookup_control(sfz_sample->group,
+  group_key = ags_sfz_group_lookup_control((AgsSFZGroup *) sfz_sample->group,
 					   "pitch_keycenter");
     
   if(group_key != NULL){
@@ -2213,7 +2213,7 @@ ags_sfz_sample_get_pitch_keycenter(AgsSFZSample *sfz_sample)
     g_free(group_key);
   }
 
-  region_key = ags_sfz_region_lookup_control(sfz_sample->region,
+  region_key = ags_sfz_region_lookup_control((AgsSFZRegion *) sfz_sample->region,
 					     "pitch_keycenter");
   
   if(region_key != NULL){
@@ -2262,11 +2262,11 @@ ags_sfz_sample_get_loop_mode(AgsSFZSample *sfz_sample)
 
   loop_mode = AGS_SFZ_SAMPLE_LOOP_ONE_SHOT;
   
-  group_key = ags_sfz_group_lookup_control(sfz_sample->group,
+  group_key = ags_sfz_group_lookup_control((AgsSFZGroup *) sfz_sample->group,
 					   "loop_mode");
     
   if(group_key != NULL){
-    guint current_loop_mode;
+    glong current_loop_mode;
     int retval;
     
     retval = sscanf(group_key, "%ul", &current_loop_mode);
@@ -2285,11 +2285,11 @@ ags_sfz_sample_get_loop_mode(AgsSFZSample *sfz_sample)
     g_free(group_key);
   }
 
-  region_key = ags_sfz_region_lookup_control(sfz_sample->region,
+  region_key = ags_sfz_region_lookup_control((AgsSFZRegion *) sfz_sample->region,
 					     "loop_mode");
   
   if(region_key != NULL){
-    guint current_loop_mode;
+    glong current_loop_mode;
     int retval;
     
     retval = sscanf(region_key, "%ul", &current_loop_mode);
@@ -2334,11 +2334,11 @@ ags_sfz_sample_get_loop_start(AgsSFZSample *sfz_sample)
 
   loop_start = 0;
   
-  group_key = ags_sfz_group_lookup_control(sfz_sample->group,
+  group_key = ags_sfz_group_lookup_control((AgsSFZGroup *) sfz_sample->group,
 					   "loop_start");
     
   if(group_key != NULL){
-    guint current_loop_start;
+    glong current_loop_start;
     int retval;
     
     retval = sscanf(group_key, "%ul", &current_loop_start);
@@ -2357,11 +2357,11 @@ ags_sfz_sample_get_loop_start(AgsSFZSample *sfz_sample)
     g_free(group_key);
   }
 
-  region_key = ags_sfz_region_lookup_control(sfz_sample->region,
+  region_key = ags_sfz_region_lookup_control((AgsSFZRegion *) sfz_sample->region,
 					     "loop_start");
   
   if(region_key != NULL){
-    guint current_loop_start;
+    glong current_loop_start;
     int retval;
     
     retval = sscanf(region_key, "%ul", &current_loop_start);
@@ -2406,11 +2406,11 @@ ags_sfz_sample_get_loop_end(AgsSFZSample *sfz_sample)
 
   loop_end = 0;
   
-  group_key = ags_sfz_group_lookup_control(sfz_sample->group,
+  group_key = ags_sfz_group_lookup_control((AgsSFZGroup *) sfz_sample->group,
 					   "loop_end");
     
   if(group_key != NULL){
-    guint current_loop_end;
+    glong current_loop_end;
     int retval;
     
     retval = sscanf(group_key, "%ul", &current_loop_end);
@@ -2429,11 +2429,11 @@ ags_sfz_sample_get_loop_end(AgsSFZSample *sfz_sample)
     g_free(group_key);
   }
 
-  region_key = ags_sfz_region_lookup_control(sfz_sample->region,
+  region_key = ags_sfz_region_lookup_control((AgsSFZRegion *) sfz_sample->region,
 					     "loop_end");
   
   if(region_key != NULL){
-    guint current_loop_end;
+    glong current_loop_end;
     int retval;
     
     retval = sscanf(region_key, "%ul", &current_loop_end);

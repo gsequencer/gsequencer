@@ -809,7 +809,7 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
 			       write_function,
 			       controller,
 			       &widget,
-			       feature);
+			       (const LV2_Feature * const *) feature);
   }
   
   g_message("LV2UI handle = %p", ui_handle[0]);

@@ -156,7 +156,7 @@ ags_fx_lv2_audio_processor_key_on(AgsFxNotationAudioProcessor *fx_notation_audio
 
   y = 0;
 
-  sound_scope = ags_recall_get_sound_scope(fx_notation_audio_processor);
+  sound_scope = ags_recall_get_sound_scope((AgsRecall *) fx_notation_audio_processor);
 
   audio_channel = 0;
   

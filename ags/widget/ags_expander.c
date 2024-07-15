@@ -132,13 +132,13 @@ ags_expander_init(AgsExpander *expander)
 {
   expander->flags = 0;
 
-  expander->expander = gtk_expander_new("pad");
-  gtk_box_append(expander,
-		 expander->expander);
+  expander->expander = (GtkExpander *) gtk_expander_new("pad");
+  gtk_box_append((GtkBox *) expander,
+		 (GtkWidget *) expander->expander);
   
   expander->grid = (GtkGrid *) gtk_grid_new();
   gtk_expander_set_child(expander->expander,
-			 expander->grid);  
+			 (GtkWidget *) expander->grid);  
 
   expander->children = NULL;
 
@@ -415,7 +415,7 @@ ags_expander_add(AgsExpander *expander,
   ags_expander_insert_child(expander,
 			    child);
 
-  if(gtk_widget_is_visible(expander)){
+  if(gtk_widget_is_visible((GtkWidget *) expander)){
     gtk_widget_show(child->child);
   }
 }

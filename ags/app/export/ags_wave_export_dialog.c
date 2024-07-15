@@ -804,7 +804,7 @@ void
 ags_wave_export_dialog_real_response(AgsWaveExportDialog *wave_export_dialog,
 				     gint response)
 {  
-  gtk_widget_set_visible(wave_export_dialog,
+  gtk_widget_set_visible((GtkWidget *) wave_export_dialog,
 			 FALSE);
 }
 

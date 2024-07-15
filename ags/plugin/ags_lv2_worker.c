@@ -328,7 +328,7 @@ ags_lv2_worker_set_property(GObject *gobject,
 	g_object_ref(worker_thread);
       }
 
-      lv2_worker->worker_thread = worker_thread;
+      lv2_worker->worker_thread = (AgsThread *) worker_thread;
       
       g_rec_mutex_unlock(lv2_worker_mutex);
     }

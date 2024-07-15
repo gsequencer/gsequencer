@@ -2351,7 +2351,7 @@ ags_fx_sfz_synth_audio_chorus_pitch_type_callback(AgsPort *port, GValue *value,
 	  break;
 	}
 
-	ags_chorus_util_set_pitch_type(channel_data->synth,
+	ags_chorus_util_set_pitch_type(channel_data->chorus_util,
 				       pitch_gtype);
       }
     }
