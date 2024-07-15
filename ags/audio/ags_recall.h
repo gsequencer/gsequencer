@@ -188,6 +188,7 @@ struct _AgsRecall
   
   AgsMidiUmpUtil *midi_ump_util;
 
+  GHashTable *midi1_controller;
   GHashTable *midi1_control_change;
 
   GHashTable *midi2_control_change;

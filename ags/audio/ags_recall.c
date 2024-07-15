@@ -1203,8 +1203,15 @@ ags_recall_init(AgsRecall *recall)
   recall->midi_util = ags_midi_util_alloc();
 
   recall->midi_ump_util = ags_midi_ump_util_alloc();
-
-  recall->midi1_control_change = NULL;
+  
+  recall->midi1_controller = g_hash_table_new_full(g_direct_hash,
+						   g_direct_equal,
+						   NULL,
+						   NULL);
+  recall->midi1_control_change = g_hash_table_new_full(g_direct_hash,
+						       g_direct_equal,
+						       NULL,
+						       g_free);
   
   recall->midi2_control_change = NULL;
 
@@ -5659,14 +5666,11 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
   GObject *input_sequencer;
 
   GHashTable *midi1_control_change;
-  
+  GHashTable *midi1_controller;
+    
   GList *start_port, *port;
 
   guchar *midi_buffer;
-
-  gint midi_controller[31];
-		   
-  gint pitch_bend[2];
 
   guint buffer_length;
   
@@ -5722,7 +5726,7 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 
   input_sequencer = ags_audio_get_input_sequencer(audio);
 
-  memset(midi_controller, 0, 31 * sizeof(gint));
+  midi1_controller = recall->midi1_controller;
   
   if(input_sequencer != NULL &&
      (AGS_IS_RECALL_AUDIO(recall) ||
@@ -5774,17 +5778,24 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 
 	    if(control >= 0 && control <= 31){
 	      /* MSB */
-	      midi_controller[control] = (value << 7);
+	      g_hash_table_insert(midi1_controller,
+				  GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, control)), GUINT_TO_POINTER(value << 7));
 	    }else{
+	      gpointer ptr;
+	    
+	      ptr = g_hash_table_lookup(midi1_controller,
+					GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, control)));
+	      
 	      /* LSB */
-	      midi_controller[control] |= value;
+	      g_hash_table_insert(midi1_controller,
+				  GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, control)), GUINT_TO_POINTER(((guint) ptr) | value));
 
 	      start_port = ags_recall_get_port(recall);
 	    
 	      g_rec_mutex_lock(recall_mutex);
 	    
 	      port_specifier = g_hash_table_lookup(midi1_control_change,
-						   GINT_TO_POINTER(control));
+						   GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, control)));
 
 	      g_rec_mutex_unlock(recall_mutex);
 
@@ -5807,9 +5818,12 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 
 		  lower = ags_plugin_port_get_lower_value(plugin_port);
 		  upper = ags_plugin_port_get_upper_value(plugin_port);
+
+		  ptr = g_hash_table_lookup(midi1_controller,
+					    GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, control)));
 		
 		  g_value_set_float(&port_value,
-				    (gfloat) midi_controller[control] * ((g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(14.0) - 1.0)));
+				    ((gfloat) ((guint) ptr)) * ((g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(14.0) - 1.0)));
 		
 		  ags_port_safe_write(port->data,
 				      &port_value);
@@ -5836,11 +5850,9 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 					 midi_iter,      
 					 &channel, &pitch, &transmitter);
 	    
-	    /* MSB */
-	    pitch_bend[0] = 0x7f & pitch;
-
-	    /* LSB */
-	    pitch_bend[1] = 0x7f & transmitter;
+	    /* MSB and LSB */
+	    g_hash_table_insert(midi1_controller,
+				GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xe0, 0x0)), GUINT_TO_POINTER(((0x7f & pitch) << 8) | (0x7f & transmitter)));
 
 	    //TODO:JK: implement me	  
 	  
@@ -5907,7 +5919,7 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 				  midi_buffer);
     }
   }
-
+  
   if(audio != NULL){
     g_object_unref(audio);
   }
