@@ -188,8 +188,8 @@ struct _AgsRecall
   
   AgsMidiUmpUtil *midi_ump_util;
 
-  GHashTable *midi1_controller;
-  GHashTable *midi1_control_change;
+  GHashTable *midi1_cc_to_value;
+  GHashTable *midi1_cc_to_port_specifier;
 
   GHashTable *midi2_control_change;
 
@@ -376,6 +376,10 @@ void ags_recall_set_buffer_size(AgsRecall *recall, guint buffer_size);
 
 AgsSoundcardFormat ags_recall_get_format(AgsRecall *recall);
 void ags_recall_set_format(AgsRecall *recall, AgsSoundcardFormat format);
+
+/* MIDI version 1.0 control change */
+GHashTable* ags_recall_get_midi1_cc_to_value(AgsRecall *recall);
+GHashTable* ags_recall_get_midi1_cc_to_port_specifier(AgsRecall *recall);
 
 /* events */
 void ags_recall_resolve_dependency(AgsRecall *recall);
