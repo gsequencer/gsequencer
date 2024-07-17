@@ -867,11 +867,25 @@ main(int argc, char **argv)
       gchar *default_path;
       gchar *default_filename;
 
-      gchar *music_path = NULL;
+      gchar *home_env;
+      gchar *music_path;
 
       GError *error;
-      
-      music_path = [[NSSearchPathForDirectoriesInDomains(NSMusicDirectory, NSUserDomainMask, YES) objectAtIndex:0] UTF8String];
+
+      uid = getuid();
+      pw = getpwuid(uid);
+
+      music_path = NULL;
+
+      //      music_path = [[NSSearchPathForDirectoriesInDomains(NSMusicDirectory, NSUserDomainMask, YES) objectAtIndex:0] UTF8String];
+
+      if((home_env = getenv("HOME")) != NULL){
+	music_path = g_strdup_printf("%s/Music",
+				     home_env);
+      }else{
+	music_path = g_strdup_printf("%s/Music",
+				     pw->pw_dir);
+      }
       
       default_path = g_strdup_printf("%s%s",
 				     music_path,
