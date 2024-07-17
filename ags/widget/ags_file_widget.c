@@ -2063,9 +2063,13 @@ ags_file_widget_location_callback(AgsIconLink *icon_link,
     current_path = g_strdup("recently-used:");
   }else if(g_hash_table_lookup(file_widget->location, AGS_FILE_WIDGET_LOCATION_OPEN_START_HERE) == icon_link){
 #if defined(AGS_MACOS_SANDBOX)
-    current_path = g_strdup_printf("%s/Library/Containers/%s/Data/workspace",
-				   file_widget->home_path,
-				   file_widget->default_bundle);
+    if((str = getenv("HOME")) != NULL){
+      current_path = g_strdup_printf("%s/Music/GSequencer/workspace",
+				     str);
+    }else{
+      current_path = g_strdup_printf("%s/Music/GSequencer/workspace",
+				     file_widget->home_path);
+    }
 #endif
 
 #if defined(AGS_FLATPAK_SANDBOX)
