@@ -1,3 +1,9 @@
+ags (6.16.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved XML project file restore, update synth engine
+	* improved XML project file restore emit clicked event for GtkToggleButton
+
 ags (6.16.9)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
