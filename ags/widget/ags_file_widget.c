@@ -2063,13 +2063,8 @@ ags_file_widget_location_callback(AgsIconLink *icon_link,
     current_path = g_strdup("recently-used:");
   }else if(g_hash_table_lookup(file_widget->location, AGS_FILE_WIDGET_LOCATION_OPEN_START_HERE) == icon_link){
 #if defined(AGS_MACOS_SANDBOX)
-    if((str = getenv("HOME")) != NULL){
-      current_path = g_strdup_printf("%s/Music/GSequencer/workspace",
-				     str);
-    }else{
-      current_path = g_strdup_printf("%s/Music/GSequencer/workspace",
-				     file_widget->home_path);
-    }
+    current_path = g_strdup_printf("%s/Music/GSequencer/workspace",
+				   file_widget->home_path);
 #endif
 
 #if defined(AGS_FLATPAK_SANDBOX)
@@ -2093,13 +2088,8 @@ ags_file_widget_location_callback(AgsIconLink *icon_link,
 #endif
   
 #if !defined(AGS_MACOS_SANDBOX) && !defined(AGS_FLATPAK_SANDBOX) && !defined(AGS_SNAP_SANDBOX)
-    if((str = getenv("HOME")) != NULL){
-      current_path = g_strdup_printf("%s/workspace",
-				     str);
-    }else{
-      current_path = g_strdup_printf("%s/workspace",
-				     file_widget->home_path);
-    }
+    current_path = g_strdup_printf("%s/workspace",
+				   file_widget->home_path);
 #endif    
   }else if(g_hash_table_lookup(file_widget->location, AGS_FILE_WIDGET_LOCATION_OPEN_USER_HOME) == icon_link){
     if((str = getenv("HOME")) != NULL){
