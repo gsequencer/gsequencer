@@ -118,21 +118,13 @@ install_data()
 
   GError *error;
   
-  music_path = NULL;
-  app_dir = NULL;
-
   uid = getuid();
   pw = getpwuid(uid);
 
   app_dir = [[NSBundle mainBundle] bundlePath].UTF8String;
   
-  if((str = getenv("HOME")) != NULL){
-    music_path = g_strdup_printf("%s/Music",
-				 str);
-  }else{
-    music_path = g_strdup_printf("%s/Music",
-				 pw->pw_dir);
-  }
+  music_path = g_strdup_printf("%s/Music",
+			       pw->pw_dir);
 
   //TODO:JK: remove
   //  music_path = [[NSSearchPathForDirectoriesInDomains(NSMusicDirectory, NSUserDomainMask, YES) objectAtIndex:0] UTF8String];
@@ -885,18 +877,12 @@ main(int argc, char **argv)
       uid = getuid();
       pw = getpwuid(uid);
 
-      music_path = NULL;
+      music_path = g_strdup_printf("%s/Music",
+				   pw->pw_dir);
 
+      //TODO:JK: remove
       //      music_path = [[NSSearchPathForDirectoriesInDomains(NSMusicDirectory, NSUserDomainMask, YES) objectAtIndex:0] UTF8String];
 
-      if((home_env = getenv("HOME")) != NULL){
-	music_path = g_strdup_printf("%s/Music",
-				     home_env);
-      }else{
-	music_path = g_strdup_printf("%s/Music",
-				     pw->pw_dir);
-      }
-      
       default_path = g_strdup_printf("%s%s",
 				     music_path,
 				     "/GSequencer/workspace/default");
