@@ -112,6 +112,7 @@ install_data()
   gchar *free_sounds_cp_cmd;
   gchar *ags_conf_dirs_mkdir_cmd;
   gchar *ags_conf_cp_cmd;
+  gchar *str;
   
   uid_t uid;
 
@@ -124,8 +125,17 @@ install_data()
   pw = getpwuid(uid);
 
   app_dir = [[NSBundle mainBundle] bundlePath].UTF8String;
+  
+  if((str = getenv("HOME")) != NULL){
+    music_path = g_strdup_printf("%s/Music",
+				 str);
+  }else{
+    music_path = g_strdup_printf("%s/Music",
+				 pw->pw_dir);
+  }
 
-  music_path = [[NSSearchPathForDirectoriesInDomains(NSMusicDirectory, NSUserDomainMask, YES) objectAtIndex:0] UTF8String];
+  //TODO:JK: remove
+  //  music_path = [[NSSearchPathForDirectoriesInDomains(NSMusicDirectory, NSUserDomainMask, YES) objectAtIndex:0] UTF8String];
 
   default_path = g_strdup_printf("%s%s",
 				 music_path,
