@@ -4986,7 +4986,8 @@ ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *n
   gchar *value;
       
   guint major, minor, micro;
-      
+  gint i, i_stop;
+  
   /* fixup 3.7.3 */
   version = xmlGetProp(simple_file->root_node,
 		       "version");
@@ -5078,14 +5079,31 @@ ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *n
   ags_pitch_sampler_open_filename(pitch_sampler,
 				  filename);
 
+  ags_pitch_sampler_sfz_loader_completed_timeout(pitch_sampler);
+
   g_usleep(G_USEC_PER_SEC);
 
-  if(pitch_sampler->sfz_loader != NULL){
-    while(!ags_sfz_loader_test_flags(pitch_sampler->sfz_loader, AGS_SFZ_LOADER_HAS_COMPLETED)){
-      g_usleep(G_USEC_PER_SEC);
+  i = 0;
+  i_stop = 16;
+  
+  if(pitch_sampler->sfz_loader != NULL ||
+     pitch_sampler->audio_container == NULL ||
+     pitch_sampler->audio_container->sound_container == NULL){
+    while(!ags_sfz_loader_test_flags(pitch_sampler->sfz_loader, AGS_SFZ_LOADER_HAS_COMPLETED) ||
+	  pitch_sampler->audio_container == NULL ||
+	  pitch_sampler->audio_container->sound_container == NULL){
+      ags_pitch_sampler_sfz_loader_completed_timeout(pitch_sampler);
+
+      g_usleep(G_USEC_PER_SEC / 2);
+
+      i++;
+      
+      if(i >= i_stop){
+	break;
+      }
     }
   }
-
+  
   ags_pitch_sampler_update(pitch_sampler);
 
   /* aliase */
@@ -5261,6 +5279,8 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   xmlChar *filename;
   xmlChar *str;
 
+  gint i, i_stop;
+
   filename = xmlGetProp(node,
 			"filename");
 
@@ -5272,14 +5292,33 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   ags_sfz_synth_open_filename(sfz_synth,
 			      filename);
 
+  ags_sfz_synth_sfz_loader_completed_timeout(sfz_synth);
+
   g_usleep(G_USEC_PER_SEC);
 
-  if(sfz_synth->sfz_loader != NULL){
-    while(!ags_sfz_loader_test_flags(sfz_synth->sfz_loader, AGS_SFZ_LOADER_HAS_COMPLETED)){
-      g_usleep(G_USEC_PER_SEC);
+  i = 0;
+  i_stop = 16;
+
+  if(sfz_synth->sfz_loader != NULL ||
+     sfz_synth->audio_container == NULL ||
+     sfz_synth->audio_container->sound_container == NULL){
+    while(!ags_sfz_loader_test_flags(sfz_synth->sfz_loader, AGS_SFZ_LOADER_HAS_COMPLETED) ||
+	  sfz_synth->audio_container == NULL ||
+	  sfz_synth->audio_container->sound_container == NULL){
+      ags_sfz_synth_sfz_loader_completed_timeout(sfz_synth);
+
+      g_usleep(G_USEC_PER_SEC / 2);
+
+      i++;
+      
+      if(i >= i_stop){
+	break;
+      }
     }
   }
   
+  ags_sfz_synth_sfz_loader_completed_timeout(sfz_synth);
+
   ags_sfz_synth_load_opcode(sfz_synth);
   
   /* synth */
@@ -5855,6 +5894,7 @@ ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simple_file, xmlNode *node, 
   xmlChar *str;
   
   guint major, minor, micro;
+  gint i, i_stop;
       
   /* fixup 3.7.3 */
   version = xmlGetProp(simple_file->root_node,
@@ -5901,8 +5941,6 @@ ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simple_file, xmlNode *node, 
     gtk_check_button_set_active((GtkCheckButton *) ffplayer->enable_synth_generator,
 				TRUE);
   }
-
-  ags_ffplayer_update(ffplayer);
 
   model = gtk_combo_box_get_model(ffplayer->pitch_function);
 
@@ -5953,13 +5991,32 @@ ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simple_file, xmlNode *node, 
   ags_ffplayer_open_filename(ffplayer,
 			     filename);
 
+  ags_ffplayer_sf2_loader_completed_timeout(ffplayer);
+  
   g_usleep(G_USEC_PER_SEC);
 
-  if(ffplayer->sf2_loader != NULL){
-    while(!ags_sf2_loader_test_flags(ffplayer->sf2_loader, AGS_SF2_LOADER_HAS_COMPLETED)){
-      g_usleep(G_USEC_PER_SEC);
+  i = 0;
+  i_stop = 16;
+
+  if(ffplayer->sf2_loader != NULL ||
+     ffplayer->audio_container == NULL ||
+     ffplayer->audio_container->sound_container == NULL){
+    while(!ags_sf2_loader_test_flags(ffplayer->sf2_loader, AGS_SF2_LOADER_HAS_COMPLETED) ||
+	  ffplayer->audio_container == NULL ||
+	  ffplayer->audio_container->sound_container == NULL){
+      ags_ffplayer_sf2_loader_completed_timeout(ffplayer);
+  
+      g_usleep(G_USEC_PER_SEC / 2);
+
+      i++;
+      
+      if(i >= i_stop){
+	break;
+      }
     }
   }
+
+  ags_ffplayer_update(ffplayer);
   
   /* aliase */
   str = xmlGetProp(node,
@@ -6089,6 +6146,7 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   xmlChar *str;
 
   gint load_bank, load_program;
+  gint i, i_stop;
   
   filename = xmlGetProp(node,
 			"filename");
@@ -6125,11 +6183,28 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   ags_sf2_synth_open_filename(sf2_synth,
 			      filename);
 
+  ags_sf2_synth_sf2_loader_completed_timeout(sf2_synth);
+
   g_usleep(G_USEC_PER_SEC);
 
-  if(sf2_synth->sf2_loader != NULL){
-    while(!ags_sf2_loader_test_flags(sf2_synth->sf2_loader, AGS_SF2_LOADER_HAS_COMPLETED)){
+  i = 0;
+  i_stop = 16;
+  
+  if(sf2_synth->sf2_loader != NULL ||
+     sf2_synth->audio_container == NULL ||
+     sf2_synth->audio_container->sound_container == NULL){
+    while(!ags_sf2_loader_test_flags(sf2_synth->sf2_loader, AGS_SF2_LOADER_HAS_COMPLETED) ||
+	  sf2_synth->audio_container == NULL ||
+	  sf2_synth->audio_container->sound_container == NULL){
+      ags_sf2_synth_sf2_loader_completed_timeout(sf2_synth);
+      
       g_usleep(G_USEC_PER_SEC);
+
+      i++;
+      
+      if(i >= i_stop){
+	break;
+      }
     }
   }
 
