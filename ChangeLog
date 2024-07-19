@@ -1,3 +1,11 @@
+ags (6.16.15)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsFFPlayer potential SIGSEGV
+	* fixed AgsPitchSampler potential SIGSEGV
+	* fixed AgsSF2Synth potential SIGSEGV
+	* fixed AgsSFZSynth potential SIGSEGV
+
 ags (6.16.14)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
