@@ -251,10 +251,10 @@ ags_app_action_util_open()
   current_path = g_strdup(home_path);
 #endif
 
-  if(window->filename != NULL){
+  if(window->name != NULL){
     g_free(current_path);
 
-    current_path = g_path_get_dirname(window->filename);
+    current_path = g_path_get_dirname(window->name);
   }
   
   ags_file_widget_set_current_path(file_widget,
@@ -760,10 +760,10 @@ ags_app_action_util_save_as()
   current_path = g_strdup(home_path);
 #endif
 
-  if(window->filename != NULL){
+  if(window->name != NULL){
     g_free(current_path);
 
-    current_path = g_path_get_dirname(window->filename);
+    current_path = g_path_get_dirname(window->name);
   }
 
   ags_file_widget_set_current_path(file_widget,

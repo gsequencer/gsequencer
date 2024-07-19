@@ -1,3 +1,9 @@
+ags (6.16.14)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed home path
+	* fixed initial directory of XML project file open and save as
+
 ags (6.16.13)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
