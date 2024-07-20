@@ -1313,11 +1313,9 @@ ags_ffplayer_load_preset(AgsFFPlayer *ffplayer)
   
   gchar **preset;
 
-  if(!AGS_IS_FFPLAYER(ffplayer) ||
-     ffplayer->audio_container == NULL ||
-     ffplayer->audio_container->sound_container == NULL){
-    return;
-  }
+  g_return_if_fail(AGS_IS_FFPLAYER(ffplayer));
+  g_return_if_fail(ffplayer->audio_container != NULL);
+  g_return_if_fail(ffplayer->audio_container->sound_container != NULL);
 
   audio_container = ffplayer->audio_container;
 
@@ -1343,12 +1341,10 @@ ags_ffplayer_load_instrument(AgsFFPlayer *ffplayer)
   gchar **instrument;
 
   gint position;
-  
-  if(!AGS_IS_FFPLAYER(ffplayer) ||
-     ffplayer->audio_container == NULL ||
-     ffplayer->audio_container->sound_container == NULL){
-    return;
-  }
+
+  g_return_if_fail(AGS_IS_FFPLAYER(ffplayer));
+  g_return_if_fail(ffplayer->audio_container != NULL);
+  g_return_if_fail(ffplayer->audio_container->sound_container != NULL);
 
   audio_container = ffplayer->audio_container;
   
@@ -1404,17 +1400,13 @@ ags_ffplayer_update(AgsFFPlayer *ffplayer)
   guint audio_channels;
   guint output_pads;
 
-  if(!AGS_IS_FFPLAYER(ffplayer)){
-    return;
-  }
+  g_return_if_fail(AGS_IS_FFPLAYER(ffplayer));
+  g_return_if_fail(ffplayer->audio_container != NULL);
+  g_return_if_fail(ffplayer->audio_container->sound_container != NULL);
 
   application_context = ags_application_context_get_instance();
 
   audio_container = ffplayer->audio_container;
-
-  if(audio_container == NULL){
-    return;
-  }
 
   audio = AGS_MACHINE(ffplayer)->audio;
 

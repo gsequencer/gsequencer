@@ -2092,11 +2092,17 @@ ags_file_widget_location_callback(AgsIconLink *icon_link,
 				   file_widget->home_path);
 #endif    
   }else if(g_hash_table_lookup(file_widget->location, AGS_FILE_WIDGET_LOCATION_OPEN_USER_HOME) == icon_link){
+#if defined(AGS_MACOS_SANDBOX)
+    current_path = g_strdup(file_widget->home_path);
+#endif
+
+#if !defined(AGS_MACOS_SANDBOX)
     if((str = getenv("HOME")) != NULL){
       current_path = g_strdup(str);
     }else{
       current_path = g_strdup(file_widget->home_path);
     }
+#endif
   }else if(g_hash_table_lookup(file_widget->location, AGS_FILE_WIDGET_LOCATION_OPEN_USER_DESKTOP) == icon_link){
     if((str = getenv("XDG_DESKTOP_DIR")) != NULL){
       current_path = g_strdup(str);

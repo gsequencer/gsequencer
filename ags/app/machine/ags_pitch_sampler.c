@@ -1495,17 +1495,13 @@ ags_pitch_sampler_update(AgsPitchSampler *pitch_sampler)
   guint output_pads;
   gchar *pitch_type;
 
-  if(!AGS_IS_PITCH_SAMPLER(pitch_sampler)){
-    return;
-  }
+  g_return_if_fail(AGS_IS_PITCH_SAMPLER(pitch_sampler));
+  g_return_if_fail(pitch_sampler->audio_container != NULL);
+  g_return_if_fail(pitch_sampler->audio_container->sound_container != NULL);
 
   application_context = ags_application_context_get_instance();
 
   audio_container = pitch_sampler->audio_container;
-
-  if(audio_container == NULL){
-    return;
-  }
 
   audio = AGS_MACHINE(pitch_sampler)->audio;
 

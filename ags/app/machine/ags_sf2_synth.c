@@ -3283,6 +3283,7 @@ ags_sf2_synth_load_midi_locale(AgsSF2Synth *sf2_synth,
 
   g_return_if_fail(AGS_IS_SF2_SYNTH(sf2_synth));
   g_return_if_fail(sf2_synth->audio_container != NULL);
+  g_return_if_fail(sf2_synth->audio_container->sound_container != NULL);
   
   audio_container_mutex = AGS_AUDIO_CONTAINER_GET_OBJ_MUTEX(sf2_synth->audio_container);
   
