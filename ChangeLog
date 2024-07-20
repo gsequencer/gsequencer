@@ -1,3 +1,8 @@
+ags (6.16.16)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed SF2 MIDI locale loader worker thread thread safety
+
 ags (6.16.15)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -639,9 +639,16 @@ ags_sf2_midi_locale_loader_unset_flags(AgsSF2MidiLocaleLoader *sf2_midi_locale_l
 void*
 ags_sf2_midi_locale_loader_run(void *ptr)
 {
+  AgsSF2SynthUtil *synth_template;    
   AgsAudioContainerManager *audio_container_manager;
 
   AgsSF2MidiLocaleLoader *sf2_midi_locale_loader;
+
+  AgsApplySF2MidiLocale *apply_sf2_midi_locale;
+
+  AgsTaskLauncher *task_launcher;
+    
+  AgsApplicationContext *application_context;
 
   GObject *output_soundcard;
 
@@ -650,8 +657,13 @@ ags_sf2_midi_locale_loader_run(void *ptr)
   AgsSoundcardFormat format;
   
   GRecMutex *audio_container_manager_mutex;
+  GRecMutex *audio_container_mutex;
 
   sf2_midi_locale_loader = AGS_SF2_MIDI_LOCALE_LOADER(ptr);
+
+  application_context = ags_application_context_get_instance();
+
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
 
   output_soundcard = NULL;
   
@@ -699,74 +711,76 @@ ags_sf2_midi_locale_loader_run(void *ptr)
   
   g_rec_mutex_unlock(audio_container_manager_mutex);
 
-  if(sf2_midi_locale_loader->audio_container->sound_container != NULL){
-    ags_sound_container_level_up(AGS_SOUND_CONTAINER(sf2_midi_locale_loader->audio_container->sound_container),
-				 5);
-    
-    ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(sf2_midi_locale_loader->audio_container->sound_container),
-					      0);
+  if(sf2_midi_locale_loader->audio_container != NULL){
+    audio_container_mutex = AGS_AUDIO_CONTAINER_GET_OBJ_MUTEX(sf2_midi_locale_loader->audio_container);
 
-    AGS_IPATCH(sf2_midi_locale_loader->audio_container->sound_container)->nesting_level += 1;
-  }
+    synth_template = NULL;
 
-  if(output_soundcard != NULL){
-    g_object_unref(output_soundcard);
-  }
-  
-  if(ags_sf2_midi_locale_loader_test_flags(sf2_midi_locale_loader, AGS_SF2_MIDI_LOCALE_LOADER_RUN_APPLY_MIDI_LOCALE)){
-    AgsApplySF2MidiLocale *apply_sf2_midi_locale;
-
-    AgsTaskLauncher *task_launcher;
-    
-    AgsApplicationContext *application_context;
-
-    AgsSF2SynthUtil *synth_template;
-    
-    application_context = ags_application_context_get_instance();
-
-    task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
-
+    if(ags_sf2_midi_locale_loader_test_flags(sf2_midi_locale_loader, AGS_SF2_MIDI_LOCALE_LOADER_RUN_APPLY_MIDI_LOCALE)){
 #if defined(AGS_WITH_LIBINSTPATCH)
-    synth_template =
-      sf2_midi_locale_loader->synth_template = ags_sf2_synth_util_alloc();
+      synth_template =
+	sf2_midi_locale_loader->synth_template = ags_sf2_synth_util_alloc();
 #else
-    synth_template =
-      sf2_midi_locale_loader->synth_template = NULL;
+      synth_template =
+	sf2_midi_locale_loader->synth_template = NULL;
 #endif
-    
-    synth_template->flags |= AGS_SF2_SYNTH_UTIL_COMPUTE_MIDI_LOCALE;
-    
-    synth_template->sf2_file = sf2_midi_locale_loader->audio_container;
-
-    if(synth_template->sf2_file != NULL){
-      g_object_ref(synth_template->sf2_file);
     }
     
-    synth_template->source = ags_stream_alloc(buffer_length,
-					      format);
+    g_rec_mutex_lock(audio_container_mutex);
 
-#if defined(AGS_WITH_LIBINSTPATCH)
-    ags_sf2_synth_util_set_buffer_length(synth_template,
-					 buffer_length);
-    ags_sf2_synth_util_set_samplerate(synth_template,
-				      samplerate);
-    ags_sf2_synth_util_set_format(synth_template,
-				  format);
-#endif
+    if(sf2_midi_locale_loader->audio_container->sound_container != NULL){
+      ags_sound_container_level_up(AGS_SOUND_CONTAINER(sf2_midi_locale_loader->audio_container->sound_container),
+				   5);
+    
+      ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(sf2_midi_locale_loader->audio_container->sound_container),
+						0);
 
-    /*  */
+      AGS_IPATCH(sf2_midi_locale_loader->audio_container->sound_container)->nesting_level += 1;
+    }
+
+    if(output_soundcard != NULL){
+      g_object_unref(output_soundcard);
+    }
+  
+    if(ags_sf2_midi_locale_loader_test_flags(sf2_midi_locale_loader, AGS_SF2_MIDI_LOCALE_LOADER_RUN_APPLY_MIDI_LOCALE)){
 #if defined(AGS_WITH_LIBINSTPATCH)
-    ags_sf2_synth_util_load_midi_locale(synth_template,
-					sf2_midi_locale_loader->bank,
-					sf2_midi_locale_loader->program);
-#endif
+      synth_template->flags |= AGS_SF2_SYNTH_UTIL_COMPUTE_MIDI_LOCALE;
     
-    apply_sf2_midi_locale = ags_apply_sf2_midi_locale_new(synth_template,
-							  sf2_midi_locale_loader->synth);
+      synth_template->sf2_file = sf2_midi_locale_loader->audio_container;
+
+      if(synth_template->sf2_file != NULL){
+	g_object_ref(synth_template->sf2_file);
+      }
     
-    ags_task_launcher_add_task(task_launcher,
-			       (AgsTask *) apply_sf2_midi_locale);
+      synth_template->source = ags_stream_alloc(buffer_length,
+						format);
+
+      ags_sf2_synth_util_set_buffer_length(synth_template,
+					   buffer_length);
+      ags_sf2_synth_util_set_samplerate(synth_template,
+					samplerate);
+      ags_sf2_synth_util_set_format(synth_template,
+				    format);
+
+      /* load MIDI locale */
+      ags_sf2_synth_util_load_midi_locale(synth_template,
+					  sf2_midi_locale_loader->bank,
+					  sf2_midi_locale_loader->program);
+
+      g_rec_mutex_unlock(audio_container_mutex);
+
+      /* apply SF2 MIDI locale task */
+      apply_sf2_midi_locale = ags_apply_sf2_midi_locale_new(synth_template,
+							    sf2_midi_locale_loader->synth);
+    
+      ags_task_launcher_add_task(task_launcher,
+				 (AgsTask *) apply_sf2_midi_locale);
+#endif    
+    }else{
+      g_rec_mutex_unlock(audio_container_mutex);
+    }
   }
+
   
   ags_sf2_midi_locale_loader_set_flags(sf2_midi_locale_loader,
 				       AGS_SF2_MIDI_LOCALE_LOADER_HAS_COMPLETED);
