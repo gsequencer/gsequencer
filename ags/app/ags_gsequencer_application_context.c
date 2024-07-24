@@ -3036,7 +3036,7 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
   gtk_paned_set_position((GtkPaned *) window->paned, 300);
   
   if(filename != NULL){
-    window->filename = filename;
+    window->queued_filename = filename;
   }  
 
   composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));

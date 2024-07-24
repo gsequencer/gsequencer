@@ -104,7 +104,7 @@ ags_quit_dialog_response_callback(GtkDialog *dialog,
 #endif
 
       simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
-						   "filename", window->name,
+						   "filename", window->loaded_filename,
 						   NULL);
       
       error = NULL;
