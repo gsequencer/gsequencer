@@ -3033,21 +3033,14 @@ ags_sfz_synth_load_opcode(AgsSFZSynth *sfz_synth)
   GtkTreeIter tree_iter;
   
   GRecMutex *audio_container_mutex;
-  
-  if(!AGS_IS_SFZ_SYNTH(sfz_synth)){
-    return;
-  }
+
+  g_return_if_fail(AGS_IS_SFZ_SYNTH(sfz_synth));
+  g_return_if_fail(sfz_synth->audio_container != NULL);
+  g_return_if_fail(sfz_synth->audio_container->sound_container != NULL);
 
   audio_container_mutex = AGS_AUDIO_CONTAINER_GET_OBJ_MUTEX(sfz_synth->audio_container);
 
   g_rec_mutex_lock(audio_container_mutex);
-
-  if(sfz_synth->audio_container == NULL ||
-     sfz_synth->audio_container->sound_container == NULL){
-    g_rec_mutex_unlock(audio_container_mutex);
-    
-    return;
-  }
 
   sound_container = sfz_synth->audio_container->sound_container;
   

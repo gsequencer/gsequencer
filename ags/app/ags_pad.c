@@ -681,7 +681,7 @@ ags_pad_connect(AgsConnectable *connectable)
     ags_pad_find_port(pad);
   }
 
-  /* GtkButton */
+  /* GtkToggleButton */
   g_signal_connect_after((GObject *) pad->group, "clicked",
 			 G_CALLBACK(ags_pad_group_clicked_callback), (gpointer) pad);
 
