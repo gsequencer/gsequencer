@@ -40,6 +40,7 @@ ags_pitch_sampler_open_callback(GtkButton *button, AgsPitchSampler *pitch_sample
   gchar *bookmark_filename;
   gchar *home_path;
   gchar *sandbox_path;
+  gchar *current_path;
   gchar *str;
 
   gchar *sfz_bookmark_filename;
@@ -143,34 +144,36 @@ ags_pitch_sampler_open_callback(GtkButton *button, AgsPitchSampler *pitch_sample
 
   ags_file_widget_read_bookmark(file_widget);
 
-#if defined(AGS_MACOS_SANDBOX)
-  ags_file_widget_set_flags(file_widget,
-			    AGS_FILE_WIDGET_APP_SANDBOX);
 
-  ags_file_widget_set_current_path(file_widget,
-				   sandbox_path);
+  /* current path */
+  current_path = NULL;
+    
+#if defined(AGS_MACOS_SANDBOX)
+  current_path = g_strdup(home_path);
 #endif
 
 #if defined(AGS_FLATPAK_SANDBOX)
   ags_file_widget_set_flags(file_widget,
 			    AGS_FILE_WIDGET_APP_SANDBOX);
 
-  ags_file_widget_set_current_path(file_widget,
-				   sandbox_path);
+  current_path = g_strdup(sandbox_path);
 #endif
 
 #if defined(AGS_SNAP_SANDBOX)
   ags_file_widget_set_flags(file_widget,
 			    AGS_FILE_WIDGET_APP_SANDBOX);
 
-  ags_file_widget_set_current_path(file_widget,
-				   sandbox_path);
+  current_path = g_strdup(sandbox_path);
 #endif
   
 #if !defined(AGS_MACOS_SANDBOX) && !defined(AGS_FLATPAK_SANDBOX) && !defined(AGS_SNAP_SANDBOX)
-  ags_file_widget_set_current_path(file_widget,
-				   home_path);
+  current_path = g_strdup(home_path);
 #endif
+
+  ags_file_widget_set_current_path(file_widget,
+				   current_path);
+
+  g_free(current_path);
 
   ags_file_widget_refresh(file_widget);
 

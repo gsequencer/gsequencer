@@ -3,6 +3,51 @@ ags (7.0.0)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented ags_recall_midi1_control_change()
 
+ags (6.16.16)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed SF2 MIDI locale loader worker thread thread safety
+
+ags (6.16.15)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsFFPlayer potential SIGSEGV
+	* fixed AgsPitchSampler potential SIGSEGV
+	* fixed AgsSF2Synth potential SIGSEGV
+	* fixed AgsSFZSynth potential SIGSEGV
+
+ags (6.16.14)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed home path
+	* fixed initial directory of XML project file open and save as
+
+ags (6.16.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed music path for macOS
+
+ags (6.16.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed music path in gsequencer_main.c's install_data() function for macOS
+
+ags (6.16.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed SIGSEGV while update synth engine during XML file restore
+
+gs (6.16.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved XML project file restore, update synth engine
+	* improved XML project file restore emit clicked event for GtkToggleButton
+
+ags (6.16.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsFileWidget macOS sandbox path
+
 ags (6.16.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
