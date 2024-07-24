@@ -920,7 +920,7 @@ main(int argc, char **argv)
 #endif
       }
       
-      AGS_WINDOW(window)->filename = default_filename;
+      AGS_WINDOW(window)->queued_filename = default_filename;
 
       g_free(default_path);
     }

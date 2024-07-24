@@ -997,7 +997,7 @@ ags_gsequencer_application_open(GApplication *application,
       ags_connectable_connect(AGS_CONNECTABLE(composite_editor));
 
       if(files != NULL){
-	AGS_WINDOW(window)->filename = g_file_get_path(files[0]);
+	AGS_WINDOW(window)->queued_filename = g_file_get_path(files[0]);
       }
     }
   }

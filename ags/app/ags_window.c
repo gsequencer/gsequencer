@@ -221,11 +221,11 @@ ags_window_init(AgsWindow *window)
 	       NULL);
 #endif
   
-  window->filename = NULL;
+  window->queued_filename = NULL;
 
-  window->name = g_strdup("unnamed");
+  window->loaded_filename = g_strdup("unnamed");
 
-  window_title = g_strdup_printf("GSequencer - %s", window->name);
+  window_title = g_strdup_printf("GSequencer - %s", window->loaded_filename);
   
   gtk_window_set_title((GtkWindow *) window,
 		       window_title);
@@ -257,7 +257,7 @@ ags_window_init(AgsWindow *window)
 					 "menu:minimize,maximize,close");
 
     window_title = g_strdup_printf("GSequencer\n<small>%s</small>",
-				   window->name);
+				   window->loaded_filename);
 
     label = (GtkLabel *) gtk_label_new(window_title);
     gtk_label_set_use_markup(label,
@@ -531,8 +531,8 @@ ags_window_finalize(GObject *gobject)
   g_hash_table_remove(ags_window_load_file,
 		      window);
 
-  if(window->name != NULL){
-    g_free(window->name);
+  if(window->loaded_filename != NULL){
+    g_free(window->loaded_filename);
   }
   
   /* call parent */
@@ -1272,7 +1272,7 @@ ags_window_load_file_timeout(AgsWindow *window)
 
   if(g_hash_table_lookup(ags_window_load_file,
 			 window) != NULL){
-    if(window->filename != NULL){
+    if(window->queued_filename != NULL){
       GtkLabel *label;
       
       AgsSimpleFile *simple_file;
@@ -1311,7 +1311,7 @@ ags_window_load_file_timeout(AgsWindow *window)
 #endif
       
       simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
-						   "filename", window->filename,
+						   "filename", window->queued_filename,
 						   "no-config", window->no_config,
 						   NULL);
       
@@ -1327,9 +1327,9 @@ ags_window_load_file_timeout(AgsWindow *window)
       ags_simple_file_close(simple_file);
       
       /* set name */
-      window->name = g_strdup(window->filename);
+      window->loaded_filename = g_strdup(window->queued_filename);
 
-      window_title = g_strdup_printf("GSequencer - %s", window->name);
+      window_title = g_strdup_printf("GSequencer - %s", window->loaded_filename);
       
       gtk_window_set_title((GtkWindow *) window,
 			   window_title);
@@ -1340,7 +1340,7 @@ ags_window_load_file_timeout(AgsWindow *window)
 
       if(label != NULL){
 	window_title = g_strdup_printf("GSequencer\n<small>%s</small>",
-				       window->name);
+				       window->loaded_filename);
 
 	gtk_label_set_label(label,
 			    window_title);
@@ -1348,7 +1348,7 @@ ags_window_load_file_timeout(AgsWindow *window)
 	g_free(window_title);
       }
       
-      window->filename = NULL;
+      window->queued_filename = NULL;
 
 #if defined(AGS_OSXAPI) || defined(AGS_W32API)
       setlocale(LC_ALL, locale_env);

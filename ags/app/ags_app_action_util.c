@@ -251,10 +251,10 @@ ags_app_action_util_open()
   current_path = g_strdup(home_path);
 #endif
 
-  if(window->name != NULL){
+  if(window->loaded_filename != NULL){
     g_free(current_path);
 
-    current_path = g_path_get_dirname(window->name);
+    current_path = g_path_get_dirname(window->loaded_filename);
   }
   
   ags_file_widget_set_current_path(file_widget,
@@ -497,7 +497,7 @@ ags_app_action_util_save()
 #endif
 
     simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
-						 "filename", window->name,
+						 "filename", window->loaded_filename,
 						 NULL);
       
     error = NULL;
@@ -525,7 +525,7 @@ ags_app_action_util_save()
     AgsFile *file;
 
     file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				    "filename", window->name,
+				    "filename", window->loaded_filename,
 				    NULL);
       
     error = NULL;
@@ -640,9 +640,9 @@ ags_app_action_util_save_as_response_callback(AgsFileDialog *file_dialog,
     uselocale(current);
 #endif
 
-    window->name = g_strdup(filename);
+    window->loaded_filename = g_strdup(filename);
 
-    window_title = g_strdup_printf("GSequencer - %s", window->name);
+    window_title = g_strdup_printf("GSequencer - %s", window->loaded_filename);
     gtk_window_set_title((GtkWindow *) window,
 			 window_title);
     
@@ -650,7 +650,7 @@ ags_app_action_util_save_as_response_callback(AgsFileDialog *file_dialog,
 
     label = GTK_LABEL(gtk_header_bar_get_title_widget(window->header_bar));
 
-    window_title = g_strdup_printf("GSequencer\n<small>%s</small>", window->name);
+    window_title = g_strdup_printf("GSequencer\n<small>%s</small>", window->loaded_filename);
 
     gtk_label_set_label(label,
 			window_title);
@@ -760,10 +760,10 @@ ags_app_action_util_save_as()
   current_path = g_strdup(home_path);
 #endif
 
-  if(window->name != NULL){
+  if(window->loaded_filename != NULL){
     g_free(current_path);
 
-    current_path = g_path_get_dirname(window->name);
+    current_path = g_path_get_dirname(window->loaded_filename);
   }
 
   ags_file_widget_set_current_path(file_widget,

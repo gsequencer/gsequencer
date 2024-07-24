@@ -64,9 +64,8 @@ struct _AgsWindow
   gboolean no_config;
   gboolean shows_menu_bar;
   
-  gchar *filename;
-  
-  char *name;
+  gchar *queued_filename;
+  gchar *loaded_filename;
 
   GtkPopoverMenuBar *menu_bar;
   

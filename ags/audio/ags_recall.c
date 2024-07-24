@@ -1236,14 +1236,14 @@ ags_recall_init(AgsRecall *recall)
 
   recall->midi_ump_util = ags_midi_ump_util_alloc();
   
-  recall->midi1_controller = g_hash_table_new_full(g_direct_hash,
-						   g_direct_equal,
-						   NULL,
-						   NULL);
-  recall->midi1_control_change = g_hash_table_new_full(g_direct_hash,
-						       g_direct_equal,
-						       NULL,
-						       g_free);
+  recall->midi1_cc_to_value = g_hash_table_new_full(g_direct_hash,
+						    g_direct_equal,
+						    NULL,
+						    NULL);
+  recall->midi1_cc_to_port_specifier = g_hash_table_new_full(g_direct_hash,
+							     g_direct_equal,
+							     NULL,
+							     g_free);
   
   recall->midi2_control_change = NULL;
 

@@ -1938,9 +1938,9 @@ ags_simple_file_read_window(AgsSimpleFile *simple_file, xmlNode *node, AgsWindow
 		   BAD_CAST "filename");
 
   if(str != NULL){
-    gobject->name = (gchar *) str;
+    gobject->loaded_filename = (gchar *) str;
 
-    gtk_window_set_title((GtkWindow *) gobject, g_strconcat("GSequencer - ", gobject->name, NULL));
+    gtk_window_set_title((GtkWindow *) gobject, g_strconcat("GSequencer - ", gobject->loaded_filename, NULL));
   }
   
   /* children */  
