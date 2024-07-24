@@ -642,7 +642,8 @@ ags_machine_destroy_callback(GAction *action, GVariant *parameter,
 void
 ags_machine_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine)
 {
-  if(response == GTK_RESPONSE_ACCEPT){
+  if(response == GTK_RESPONSE_ACCEPT ||
+     response == GTK_RESPONSE_OK){
     AgsWindow *window;
 
     AgsApplicationContext *application_context;
@@ -742,24 +743,44 @@ void
 ags_machine_rename_callback(GAction *action, GVariant *parameter,
 			    AgsMachine *machine)
 {
-  GtkDialog *dialog;
+  AgsInputDialog *dialog;
 
-  dialog = (GtkDialog *) ags_input_dialog_new(i18n("rename machine"),
-					      (GtkWindow *) gtk_widget_get_ancestor(GTK_WIDGET(machine),
-										    AGS_TYPE_WINDOW));
-  ags_input_dialog_set_flags((AgsInputDialog *) dialog,
-			     AGS_INPUT_DIALOG_SHOW_STRING_INPUT);
+  AgsApplicationContext *application_context;
 
-  if(machine->machine_name != NULL){
-    gtk_editable_set_text(GTK_EDITABLE(AGS_INPUT_DIALOG(dialog)->string_input),
-			  machine->machine_name);
+  application_context = ags_application_context_get_instance();
+
+  dialog = (AgsInputDialog *) machine->rename;
+  
+  if(dialog == NULL){
+    dialog = ags_input_dialog_new(i18n("rename machine"),
+				  (GtkWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
+    machine->rename = (GtkWindow *) dialog;
+
+    ags_input_dialog_set_flags((AgsInputDialog *) dialog,
+			       AGS_INPUT_DIALOG_SHOW_STRING_INPUT);
+
+    ags_input_dialog_set_message(dialog,
+				 i18n("The name of the machine is displayed on top of it or within editor."));
+
+    ags_input_dialog_set_text(dialog,
+			      i18n("machine's name"));
+  
+    if(machine->machine_name != NULL){
+      gtk_editable_set_text(GTK_EDITABLE(AGS_INPUT_DIALOG(dialog)->string_input),
+			    machine->machine_name);
+    }
+
+    gtk_widget_set_visible((GtkWidget *) dialog->cancel,
+			   FALSE);
+
+    g_signal_connect((GObject *) dialog, "response",
+		     G_CALLBACK(ags_machine_rename_response_callback), (gpointer) machine);
   }
   
   gtk_widget_set_visible((GtkWidget *) dialog,
 			 TRUE);
 
-  g_signal_connect((GObject *) dialog, "response",
-		   G_CALLBACK(ags_machine_rename_response_callback), (gpointer) machine);
+  gtk_window_present((GtkWindow *) dialog);
 }
 
 void
@@ -786,36 +807,57 @@ void
 ags_machine_rename_audio_callback(GAction *action, GVariant *parameter,
 				  AgsMachine *machine)
 {
-  GtkDialog *dialog;
+  AgsInputDialog *dialog;
+
+  AgsApplicationContext *application_context;
 
   gchar *str;
+
+  application_context = ags_application_context_get_instance();
+
+  dialog = (AgsInputDialog *) machine->rename_audio;
   
-  dialog = (GtkDialog *) ags_input_dialog_new(i18n("rename audio"),
-					      (GtkWindow *) gtk_widget_get_ancestor(GTK_WIDGET(machine),
-										    AGS_TYPE_WINDOW));
-  ags_input_dialog_set_flags((AgsInputDialog *) dialog,
-			     AGS_INPUT_DIALOG_SHOW_STRING_INPUT);
+  if(dialog == NULL){  
+    dialog = ags_input_dialog_new(i18n("rename audio"),
+				  (GtkWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
+    machine->rename_audio = (GtkWindow *) dialog;
 
-  str = ags_audio_get_audio_name(machine->audio);
+    ags_input_dialog_set_flags((AgsInputDialog *) dialog,
+			       AGS_INPUT_DIALOG_SHOW_STRING_INPUT);
 
-  if(str != NULL){
-    gtk_editable_set_text(GTK_EDITABLE(AGS_INPUT_DIALOG(dialog)->string_input),
-			  str);
+    ags_input_dialog_set_message(dialog,
+				 i18n("The name of an audio object can be used to address it within a OSC message."));
+
+    ags_input_dialog_set_text(dialog,
+			      i18n("audio object's name"));
+
+    str = ags_audio_get_audio_name(machine->audio);
+
+    if(str != NULL){
+      gtk_editable_set_text(GTK_EDITABLE(AGS_INPUT_DIALOG(dialog)->string_input),
+			    str);
     
-    g_free(str);
+      g_free(str);
+    }
+
+    gtk_widget_set_visible((GtkWidget *) dialog->cancel,
+			   FALSE);
+
+    g_signal_connect((GObject *) dialog, "response",
+		     G_CALLBACK(ags_machine_rename_audio_response_callback), (gpointer) machine);
   }
   
   gtk_widget_set_visible((GtkWidget *) dialog,
 			 TRUE);
 
-  g_signal_connect((GObject *) dialog, "response",
-		   G_CALLBACK(ags_machine_rename_audio_response_callback), (gpointer) machine);
+  gtk_window_present((GtkWindow *) dialog);
 }
 
 void
 ags_machine_reposition_audio_response_callback(GtkWidget *widget, gint response, AgsMachine *machine)
 {
-  if(response == GTK_RESPONSE_ACCEPT){
+  if(response == GTK_RESPONSE_ACCEPT ||
+     response == GTK_RESPONSE_OK){
     AgsAudio *audio;
 
     AgsApplicationContext *application_context;
@@ -847,7 +889,7 @@ ags_machine_reposition_audio_response_callback(GtkWidget *widget, gint response,
   }
 
   machine->reposition_audio = NULL;
-  
+
   gtk_window_destroy(GTK_WINDOW(widget));
 }
 
@@ -855,42 +897,56 @@ void
 ags_machine_reposition_audio_callback(GAction *action, GVariant *parameter,
 				      AgsMachine *machine)
 {
-  AgsWindow *window;
-  GtkDialog *dialog;
+  AgsInputDialog *dialog;
 
   AgsApplicationContext *application_context;
 
   GList *start_list;
-  
+
   application_context = ags_application_context_get_instance();
 
-  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  dialog = (AgsInputDialog *) machine->reposition_audio;
 
-  start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
+  if(dialog == NULL){
+    dialog = ags_input_dialog_new(i18n("reposition audio"),
+				  (GtkWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
+    machine->reposition_audio = (GtkWindow *) dialog;
+
+    ags_input_dialog_set_flags((AgsInputDialog *) dialog,
+			       AGS_INPUT_DIALOG_SHOW_SPIN_BUTTON_INPUT);
+
+    ags_input_dialog_set_message(dialog,
+				 i18n("The position of an audio object can be used to address it within a OSC message."));
+
+    start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
+      
+    ags_input_dialog_set_text(dialog,
+			      i18n("audio object's position"));
+
+    gtk_label_set_text(AGS_INPUT_DIALOG(dialog)->spin_button_label,
+		       i18n("position"));
+
+    gtk_spin_button_set_range(AGS_INPUT_DIALOG(dialog)->spin_button_input,
+			      0.0,
+			      (gdouble) g_list_length(start_list));
   
-  dialog = (GtkDialog *) ags_input_dialog_new(i18n("reposition audio"),
-					      (GtkWindow *) window);
-  ags_input_dialog_set_flags((AgsInputDialog *) dialog,
-			     AGS_INPUT_DIALOG_SHOW_SPIN_BUTTON_INPUT);
+    gtk_spin_button_set_value(AGS_INPUT_DIALOG(dialog)->spin_button_input,
+			      (gdouble) g_list_index(start_list,
+						     machine->audio));
 
-  gtk_label_set_text(AGS_INPUT_DIALOG(dialog)->spin_button_label,
-		     i18n("position"));
+    gtk_widget_set_visible((GtkWidget *) dialog->cancel,
+			   FALSE);
 
-  gtk_spin_button_set_range(AGS_INPUT_DIALOG(dialog)->spin_button_input,
-			    0.0,
-			    (gdouble) g_list_length(start_list));
-  
-  gtk_spin_button_set_value(AGS_INPUT_DIALOG(dialog)->spin_button_input,
-			    (gdouble) g_list_index(start_list,
-						   machine->audio));
+    g_signal_connect((GObject *) dialog, "response",
+		     G_CALLBACK(ags_machine_reposition_audio_response_callback), (gpointer) machine);
+
+    g_list_free(start_list);
+  }
   
   gtk_widget_set_visible((GtkWidget *) dialog,
 			 TRUE);
 
-  g_signal_connect((GObject *) dialog, "response",
-		   G_CALLBACK(ags_machine_reposition_audio_response_callback), (gpointer) machine);
-
-  g_list_free(start_list);
+  gtk_window_present((GtkWindow *) dialog);  
 }
 
 void
@@ -912,32 +968,41 @@ ags_machine_properties_callback(GAction *action, GVariant *parameter,
 {
   AgsMachineEditorDialog *machine_editor_dialog;
 
+  AgsApplicationContext *application_context;
+
   gchar *str;
 
-  str = g_strdup_printf("%s:%s - %s",
-			G_OBJECT_TYPE_NAME(machine),
-			machine->machine_name,
-			i18n("properties"));
-  
-  machine_editor_dialog = ags_machine_editor_dialog_new(str,
-							(GtkWindow *) gtk_widget_get_ancestor(GTK_WIDGET(machine),
-											      AGS_TYPE_WINDOW));
-  machine->machine_editor_dialog = (GtkDialog *) machine_editor_dialog;
+  application_context = ags_application_context_get_instance();
 
-  ags_machine_editor_set_machine(machine_editor_dialog->machine_editor,
-				 machine);
-  
-  ags_applicable_reset(AGS_APPLICABLE(machine_editor_dialog->machine_editor));
+  machine_editor_dialog = (AgsMachineEditorDialog *) machine->machine_editor_dialog;
 
-  ags_connectable_connect(AGS_CONNECTABLE(machine_editor_dialog->machine_editor));
+  if(machine_editor_dialog == NULL){
+    str = g_strdup_printf("%s:%s - %s",
+			  G_OBJECT_TYPE_NAME(machine),
+			  machine->machine_name,
+			  i18n("properties"));
+  
+    machine_editor_dialog = ags_machine_editor_dialog_new(str,
+							  (GtkWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
+    machine->machine_editor_dialog = (GtkWindow *) machine_editor_dialog;
+
+    ags_machine_editor_set_machine(machine_editor_dialog->machine_editor,
+				   machine);
+  
+    ags_applicable_reset(AGS_APPLICABLE(machine_editor_dialog->machine_editor));
+
+    ags_connectable_connect(AGS_CONNECTABLE(machine_editor_dialog->machine_editor));
+
+    g_signal_connect(machine_editor_dialog, "response",
+		     G_CALLBACK(ags_machine_editor_dialog_response_callback), machine);
+  
+    g_free(str);
+  }
     
   gtk_widget_set_visible((GtkWidget *) machine_editor_dialog,
 			 TRUE);
 
-  g_signal_connect(machine_editor_dialog, "response",
-		   G_CALLBACK(ags_machine_editor_dialog_response_callback), machine);
-  
-  g_free(str);
+  gtk_window_present((GtkWindow *) machine_editor_dialog);  
 }
 
 void
@@ -981,75 +1046,79 @@ void
 ags_machine_envelope_callback(GAction *action, GVariant *parameter,
 			      AgsMachine *machine)
 {
-  AgsWindow *window;
   AgsEnvelopeDialog *envelope_dialog;
+
+  AgsApplicationContext *application_context;
 
   gchar *title;
 
-  if(machine->envelope_dialog != NULL){
-    return;
-  }
-  
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
-						 AGS_TYPE_WINDOW);
+  application_context = ags_application_context_get_instance();
 
-  title = g_strdup_printf("%s:%s %s",
-			  G_OBJECT_TYPE_NAME(machine),
-			  machine->machine_name,
-			  i18n("envelope"));
-  
-  envelope_dialog = ags_envelope_dialog_new(title,
-					    (GtkWindow *) window,
-					    machine);
-  machine->envelope_dialog = (GtkWindow *) envelope_dialog;
-  
-  if(AGS_IS_DRUM(machine) ||
-     AGS_IS_MATRIX(machine)){
-    ags_envelope_dialog_add_pattern_tab(envelope_dialog);
-  }
+  envelope_dialog = (AgsEnvelopeDialog *) machine->envelope_dialog;
 
-  ags_connectable_connect(AGS_CONNECTABLE(machine->envelope_dialog));
+  if(envelope_dialog == NULL){
+    title = g_strdup_printf("%s:%s %s",
+			    G_OBJECT_TYPE_NAME(machine),
+			    machine->machine_name,
+			    i18n("envelope"));
+  
+    envelope_dialog = ags_envelope_dialog_new(title,
+					      (GtkWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)),
+					      machine);
+    machine->envelope_dialog = (GtkWindow *) envelope_dialog;
+  
+    if(AGS_IS_DRUM(machine) ||
+       AGS_IS_MATRIX(machine)){
+      ags_envelope_dialog_add_pattern_tab(envelope_dialog);
+    }
+
+    ags_connectable_connect(AGS_CONNECTABLE(machine->envelope_dialog));
+
+    ags_applicable_reset(AGS_APPLICABLE(machine->envelope_dialog));
+  
+    g_free(title);
+  }
   
   gtk_widget_set_visible((GtkWidget *) envelope_dialog,
 			 TRUE);
 
-  ags_applicable_reset(AGS_APPLICABLE(machine->envelope_dialog));
-  
-  g_free(title);
+  gtk_window_present((GtkWindow *) envelope_dialog);
 }
 
 void
 ags_machine_preset_callback(GAction *action, GVariant *parameter,
-			      AgsMachine *machine)
+			    AgsMachine *machine)
 {
-  AgsWindow *window;
   AgsPresetDialog *preset_dialog;
+
+  AgsApplicationContext *application_context;
 
   gchar *title;
 
-  if(machine->preset_dialog != NULL){
-    return;
+  application_context = ags_application_context_get_instance();
+
+  preset_dialog = (AgsPresetDialog *) machine->preset_dialog;
+  
+  if(preset_dialog == NULL){
+    title = g_strdup_printf("%s:%s %s",
+			    G_OBJECT_TYPE_NAME(machine),
+			    machine->machine_name,
+			    i18n("preset"));
+  
+    preset_dialog = ags_preset_dialog_new(title,
+					  (GtkWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)),
+					  machine);
+    machine->preset_dialog = (GtkWindow *) preset_dialog;
+
+    ags_connectable_connect(AGS_CONNECTABLE(machine->preset_dialog));
+  
+    g_free(title);
   }
-  
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
-						 AGS_TYPE_WINDOW);
-
-  title = g_strdup_printf("%s:%s %s",
-			  G_OBJECT_TYPE_NAME(machine),
-			  machine->machine_name,
-			  i18n("preset"));
-  
-  preset_dialog = ags_preset_dialog_new(title,
-					(GtkWindow *) window,
-					machine);
-  machine->preset_dialog = (GtkDialog *) preset_dialog;
-
-  ags_connectable_connect(AGS_CONNECTABLE(machine->preset_dialog));
   
   gtk_widget_set_visible((GtkWidget *) preset_dialog,
 			 TRUE);
-  
-  g_free(title);
+
+  gtk_window_present((GtkWindow *) preset_dialog);
 }
 
 void
@@ -1113,47 +1182,56 @@ ags_machine_audio_connection_callback(GAction *action, GVariant *parameter,
 {
   AgsConnectionEditorDialog *connection_editor_dialog;
 
+  AgsApplicationContext *application_context;
+
   gchar *str;
 
   if(!AGS_IS_PANEL(machine) &&
      !AGS_IS_AUDIOREC(machine)){
     return;
   }
-  
-  str = g_strdup_printf("%s:%s - %s",
-			G_OBJECT_TYPE_NAME(machine),
-			machine->machine_name,
-			i18n("connections"));
-  
-  connection_editor_dialog = ags_connection_editor_dialog_new(str,
-							      (GtkWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
-												    AGS_TYPE_WINDOW));
-  machine->connection_editor_dialog = (GtkDialog *) connection_editor_dialog;
-  
-  if(AGS_IS_PANEL(machine)){
-    connection_editor_dialog->connection_editor->flags |= (AGS_CONNECTION_EDITOR_SHOW_OUTPUT |
-							   AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_OUTPUT);
-  }
 
-  if(AGS_IS_AUDIOREC(machine)){
-    connection_editor_dialog->connection_editor->flags |= (AGS_CONNECTION_EDITOR_SHOW_INPUT |
-							   AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_INPUT);
-  }
-  
-  ags_connection_editor_set_machine(connection_editor_dialog->connection_editor,
-				    machine);
-  
-  ags_applicable_reset(AGS_APPLICABLE(connection_editor_dialog->connection_editor));
+  application_context = ags_application_context_get_instance();
 
-  ags_connectable_connect(AGS_CONNECTABLE(connection_editor_dialog->connection_editor));
+  connection_editor_dialog = (AgsConnectionEditorDialog *) machine->connection_editor_dialog;
+
+  if(connection_editor_dialog == NULL){
+    str = g_strdup_printf("%s:%s - %s",
+			  G_OBJECT_TYPE_NAME(machine),
+			  machine->machine_name,
+			  i18n("connections"));
+  
+    connection_editor_dialog = ags_connection_editor_dialog_new(str,
+								(GtkWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
+    machine->connection_editor_dialog = (GtkWindow *) connection_editor_dialog;
+  
+    if(AGS_IS_PANEL(machine)){
+      connection_editor_dialog->connection_editor->flags |= (AGS_CONNECTION_EDITOR_SHOW_OUTPUT |
+							     AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_OUTPUT);
+    }
+
+    if(AGS_IS_AUDIOREC(machine)){
+      connection_editor_dialog->connection_editor->flags |= (AGS_CONNECTION_EDITOR_SHOW_INPUT |
+							     AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_INPUT);
+    }
+  
+    ags_connection_editor_set_machine(connection_editor_dialog->connection_editor,
+				      machine);
+  
+    ags_applicable_reset(AGS_APPLICABLE(connection_editor_dialog->connection_editor));
+
+    ags_connectable_connect(AGS_CONNECTABLE(connection_editor_dialog->connection_editor));
+
+    g_signal_connect(connection_editor_dialog, "response",
+		     G_CALLBACK(ags_connection_editor_dialog_response_callback), machine);
+  
+    g_free(str);
+  }
   
   gtk_widget_set_visible((GtkWidget *) connection_editor_dialog,
 			 TRUE);
 
-  g_signal_connect(connection_editor_dialog, "response",
-		   G_CALLBACK(ags_connection_editor_dialog_response_callback), machine);
-  
-  g_free(str);
+  gtk_window_present((GtkWindow *) connection_editor_dialog);
 }
 
 void
@@ -1161,22 +1239,30 @@ ags_machine_midi_connection_callback(GAction *action, GVariant *parameter,
 				     AgsMachine *machine)
 {
   AgsMidiDialog *midi_dialog;
+
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+
+  midi_dialog = (AgsMidiDialog *) machine->midi_dialog;
   
   if(machine->midi_dialog == NULL){
-    midi_dialog = ags_midi_dialog_new(machine);
-    machine->midi_dialog = (GtkDialog *) midi_dialog;
+    midi_dialog = ags_midi_dialog_new((GtkWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)),
+				      machine);
+    machine->midi_dialog = (GtkWindow *) midi_dialog;
+    
     midi_dialog->flags |= (AGS_MIDI_DIALOG_IO_OPTIONS |
 			   AGS_MIDI_DIALOG_MAPPING |
 			   AGS_MIDI_DIALOG_DEVICE);
 
     ags_connectable_connect(AGS_CONNECTABLE(midi_dialog));
     ags_applicable_reset(AGS_APPLICABLE(midi_dialog));
-  }else{
-    midi_dialog = (AgsMidiDialog *) machine->midi_dialog;
   }
 
   gtk_widget_set_visible((GtkWidget *) midi_dialog,
 			 TRUE);
+
+  gtk_window_present((GtkWindow *) midi_dialog);
 }
 
 void
@@ -1185,18 +1271,25 @@ ags_machine_audio_export_callback(GAction *action, GVariant *parameter,
 {
   AgsWaveExportDialog *wave_export_dialog;
   
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+
+  wave_export_dialog = (AgsWaveExportDialog *) machine->wave_export_dialog;
+  
   if(machine->wave_export_dialog == NULL){
-    wave_export_dialog = ags_wave_export_dialog_new(machine);
-    machine->wave_export_dialog = (GtkDialog *) wave_export_dialog;
+    wave_export_dialog = ags_wave_export_dialog_new((GtkWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)),
+						    machine);
+    machine->wave_export_dialog = (GtkWindow *) wave_export_dialog;
 
     ags_connectable_connect(AGS_CONNECTABLE(wave_export_dialog));
     ags_applicable_reset(AGS_APPLICABLE(wave_export_dialog));
-  }else{
-    wave_export_dialog = (AgsWaveExportDialog *) machine->wave_export_dialog;
   }
 
   gtk_widget_set_visible((GtkWidget *) wave_export_dialog,
 			 TRUE);
+
+  gtk_window_present((GtkWindow *) wave_export_dialog);
 }
 
 void

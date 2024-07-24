@@ -162,6 +162,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   GtkBox *vbox;
   GtkBox *sf2_hbox;
   GtkBox *sf2_file_hbox;
+  GtkBox *sf2_synth_pitch_type_hbox;
   GtkBox *sf2_preset_hbox;
   GtkBox *effect_vbox;
   GtkGrid *synth_grid;
@@ -201,6 +202,17 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   gint position;
 
+  const gchar* pitch_type_strv[] = {
+    "fluid-interpolate-none",
+    "fluid-interpolate-linear",
+    "fluid-interpolate-4th-order",
+    "fluid-interpolate-7th-order",
+    "ags-pitch-2x-alias",    
+    "ags-pitch-4x-alias",    
+    "ags-pitch-16x-alias",
+    NULL,
+  };
+  
   application_context = ags_application_context_get_instance();
   
   /* machine counter */
@@ -362,7 +374,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 		     (GtkWidget *) sf2_synth->sf2_loader_spinner);
   gtk_widget_set_visible((GtkWidget *) sf2_synth->sf2_loader_spinner,
 			 FALSE);
-
+  
   /* preset - bank and program */
   sf2_synth->bank = -1;
   sf2_synth->program = -1;
@@ -384,7 +396,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 		 (GtkWidget *) scrolled_window);
   
   sf2_bank_tree_view =
-    sf2_synth->bank_tree_view = gtk_tree_view_new();
+    sf2_synth->bank_tree_view = (GtkTreeView *) gtk_tree_view_new();
   gtk_tree_view_set_activate_on_single_click(sf2_bank_tree_view,
 					     TRUE);
   gtk_scrolled_window_set_child(scrolled_window,
@@ -420,7 +432,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 		 (GtkWidget *) scrolled_window);
 
   sf2_synth->program_tree_view = 
-    sf2_program_tree_view = gtk_tree_view_new();
+    sf2_program_tree_view = (GtkTreeView *) gtk_tree_view_new();
   gtk_tree_view_set_activate_on_single_click(sf2_program_tree_view,
 					     TRUE);
   gtk_scrolled_window_set_child(scrolled_window,
@@ -585,6 +597,38 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 		  (GtkWidget *) sf2_synth->synth_volume,
 		  3, 0,
 		  1, 1);
+
+  /* pitch type */
+  sf2_synth_pitch_type_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				    AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_widget_set_valign((GtkWidget *) sf2_synth_pitch_type_hbox,
+			GTK_ALIGN_START);  
+  gtk_widget_set_halign((GtkWidget *) sf2_synth_pitch_type_hbox,
+			GTK_ALIGN_START);
+
+  gtk_widget_set_hexpand((GtkWidget *) sf2_synth_pitch_type_hbox,
+			 FALSE);
+
+  gtk_grid_attach(synth_grid,
+		  (GtkWidget *) sf2_synth_pitch_type_hbox,
+		  0, 2,
+		  2, 1);
+  
+  label = (GtkLabel *) gtk_label_new(i18n("pitch type"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+
+  gtk_box_append(sf2_synth_pitch_type_hbox,
+		 (GtkWidget *) label);
+
+  sf2_synth->synth_pitch_type = (GtkDropDown *) gtk_drop_down_new_from_strings(pitch_type_strv);
+
+  gtk_drop_down_set_selected(sf2_synth->synth_pitch_type,
+			     2);
+
+  gtk_box_append(sf2_synth_pitch_type_hbox,
+		 (GtkWidget *) sf2_synth->synth_pitch_type);
 
   /* chorus grid */
   chorus_grid = (GtkGrid *) gtk_grid_new();
@@ -836,7 +880,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 		 (GtkWidget *) ext_hbox);
 
   /* tremolo */
-  tremolo_frame = gtk_frame_new(i18n("tremolo"));
+  tremolo_frame = (GtkFrame *) gtk_frame_new(i18n("tremolo"));
 
   gtk_box_append(ext_hbox,
 		 (GtkWidget *) tremolo_frame);
@@ -990,7 +1034,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 		  1, 1);
   
   /* vibrato */
-  vibrato_frame = gtk_frame_new(i18n("vibrato"));
+  vibrato_frame = (GtkFrame *) gtk_frame_new(i18n("vibrato"));
 
   gtk_box_append(ext_hbox,
 		 (GtkWidget *) vibrato_frame);
@@ -1144,7 +1188,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 		  1, 1);
   
   /* wah-wah */
-  wah_wah_frame = gtk_frame_new(i18n("wah-wah"));
+  wah_wah_frame = (GtkFrame *) gtk_frame_new(i18n("wah-wah"));
 
   gtk_box_append(ext_hbox,
 		 (GtkWidget *) wah_wah_frame);
@@ -1232,7 +1276,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   adjustment = ags_dial_get_adjustment(sf2_synth->wah_wah_attack_y);
 
   gtk_adjustment_set_lower(adjustment,
-			   0.0);
+			   -1.0);
   gtk_adjustment_set_upper(adjustment,
 			   1.0);
 
@@ -1290,7 +1334,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   adjustment = ags_dial_get_adjustment(sf2_synth->wah_wah_decay_y);
 
   gtk_adjustment_set_lower(adjustment,
-			   0.0);
+			   -1.0);
   gtk_adjustment_set_upper(adjustment,
 			   1.0);
 
@@ -1348,7 +1392,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   adjustment = ags_dial_get_adjustment(sf2_synth->wah_wah_sustain_y);
 
   gtk_adjustment_set_lower(adjustment,
-			   0.0);
+			   -1.0);
   gtk_adjustment_set_upper(adjustment,
 			   1.0);
 
@@ -1406,7 +1450,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   adjustment = ags_dial_get_adjustment(sf2_synth->wah_wah_release_y);
 
   gtk_adjustment_set_lower(adjustment,
-			   0.0);
+			   -1.0);
   gtk_adjustment_set_upper(adjustment,
 			   1.0);
 
@@ -1609,7 +1653,7 @@ ags_sf2_synth_connect(AgsConnectable *connectable)
 {
   AgsSF2Synth *sf2_synth;
   
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -1623,6 +1667,9 @@ ags_sf2_synth_connect(AgsConnectable *connectable)
 
   g_signal_connect((GObject *) sf2_synth->open, "clicked",
 		   G_CALLBACK(ags_sf2_synth_open_clicked_callback), (gpointer) sf2_synth);
+
+  g_signal_connect((GObject *) sf2_synth->synth_pitch_type, "notify::selected",
+		   G_CALLBACK(ags_sf2_synth_synth_pitch_type_callback), (gpointer) sf2_synth);
 
   g_signal_connect((GObject *) sf2_synth->bank_tree_view, "row-activated",
 		   G_CALLBACK(ags_sf2_synth_bank_tree_view_callback), (gpointer) sf2_synth);
@@ -1666,6 +1713,9 @@ ags_sf2_synth_connect(AgsConnectable *connectable)
   g_signal_connect_after(sf2_synth->tremolo_enabled, "toggled",
 			 G_CALLBACK(ags_sf2_synth_tremolo_enabled_callback), sf2_synth);
 
+  g_signal_connect_after(sf2_synth->tremolo_gain, "value-changed",
+			 G_CALLBACK(ags_sf2_synth_tremolo_gain_callback), sf2_synth);
+  
   g_signal_connect_after(sf2_synth->tremolo_lfo_depth, "value-changed",
 			 G_CALLBACK(ags_sf2_synth_tremolo_lfo_depth_callback), sf2_synth);
 
@@ -1738,7 +1788,7 @@ ags_sf2_synth_disconnect(AgsConnectable *connectable)
 {
   AgsSF2Synth *sf2_synth;
 
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -1756,6 +1806,12 @@ ags_sf2_synth_disconnect(AgsConnectable *connectable)
   g_object_disconnect((GObject *) sf2_synth->open,
 		      "any_signal::clicked",
 		      G_CALLBACK(ags_sf2_synth_open_clicked_callback),
+		      (gpointer) sf2_synth,
+		      NULL);
+
+  g_object_disconnect((GObject *) sf2_synth->synth_pitch_type,
+		      "any_signal::notify::selected",
+		      G_CALLBACK(ags_sf2_synth_synth_pitch_type_callback),
 		      (gpointer) sf2_synth,
 		      NULL);
 
@@ -3067,7 +3123,7 @@ ags_sf2_synth_load_bank(AgsSF2Synth *sf2_synth,
 
   g_rec_mutex_lock(audio_container_mutex);
   
-  ipatch = sf2_synth->audio_container->sound_container;
+  ipatch = (AgsIpatch *) sf2_synth->audio_container->sound_container;
 
   error = NULL;
   sf2 = (IpatchSF2 *) ipatch_convert_object_to_type((GObject *) ipatch->handle->file,
@@ -3225,6 +3281,10 @@ ags_sf2_synth_load_midi_locale(AgsSF2Synth *sf2_synth,
   
   GRecMutex *audio_container_mutex;
 
+  g_return_if_fail(AGS_IS_SF2_SYNTH(sf2_synth));
+  g_return_if_fail(sf2_synth->audio_container != NULL);
+  g_return_if_fail(sf2_synth->audio_container->sound_container != NULL);
+  
   audio_container_mutex = AGS_AUDIO_CONTAINER_GET_OBJ_MUTEX(sf2_synth->audio_container);
   
   g_rec_mutex_lock(audio_container_mutex);

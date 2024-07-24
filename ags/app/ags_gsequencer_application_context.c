@@ -81,6 +81,11 @@
 #include <pango/pangofc-fontmap.h>
 #endif
 
+#if defined(AGS_OSX_DMG_ENV)
+#include <Cocoa/Cocoa.h>
+#include <Foundation/Foundation.h>
+#endif
+
 #include <sys/types.h>
 
 #if !defined(AGS_W32API)
@@ -3025,7 +3030,7 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
   window->no_config = no_config;  
 
   /*  */  
-  gtk_window_set_default_size(window,
+  gtk_window_set_default_size((GtkWindow *) window,
 			      AGS_WINDOW_DEFAULT_WIDTH, AGS_WINDOW_DEFAULT_HEIGHT);
   
   gtk_paned_set_position((GtkPaned *) window->paned, 300);
@@ -3034,7 +3039,7 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
     window->filename = filename;
   }  
 
-  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   /* adjustment */
   adjustment = gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->vscrollbar);
@@ -3059,8 +3064,8 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
   gtk_adjustment_set_value(adjustment,
 			   0.0);
 
-  ags_notation_edit_reset_hscrollbar(composite_editor->notation_edit->edit);
-  ags_notation_edit_reset_vscrollbar(composite_editor->notation_edit->edit);
+  ags_notation_edit_reset_hscrollbar((AgsNotationEdit *) composite_editor->notation_edit->edit);
+  ags_notation_edit_reset_vscrollbar((AgsNotationEdit *) composite_editor->notation_edit->edit);
 
   /* allocation */
   gtk_widget_get_allocation(GTK_WIDGET(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->drawing_area),
@@ -3119,7 +3124,7 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
   }
   
   /* automation */
-  automation_edit_box = ags_scrolled_automation_edit_box_get_automation_edit_box(composite_editor->automation_edit->edit);
+  automation_edit_box = ags_scrolled_automation_edit_box_get_automation_edit_box((AgsScrolledAutomationEditBox *) composite_editor->automation_edit->edit);
 
   list =
     start_list = ags_automation_edit_box_get_automation_edit(automation_edit_box);
@@ -3173,7 +3178,7 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
   g_list_free(start_list);
 
   /* wave */
-  wave_edit_box = ags_scrolled_wave_edit_box_get_wave_edit_box(composite_editor->wave_edit->edit);
+  wave_edit_box = ags_scrolled_wave_edit_box_get_wave_edit_box((AgsScrolledWaveEditBox *) composite_editor->wave_edit->edit);
 
   list =
     start_list = ags_wave_edit_box_get_wave_edit(wave_edit_box);
@@ -3636,7 +3641,7 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
     if(str != NULL){
       if(!g_ascii_strncasecmp(str,
 			      "core-audio",
-			      11)){
+			      10)){
 	soundcard = ags_sound_server_register_soundcard(AGS_SOUND_SERVER(core_audio_server),
 							is_output);
 
@@ -3973,8 +3978,23 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
     /* change sequencer */
     if(str != NULL){
       if(!g_ascii_strncasecmp(str,
-			      "jack",
+			      "alsa",
 			      5)){
+	sequencer = (GObject *) ags_alsa_midiin_new();
+      }else if(!g_ascii_strncasecmp(str,
+				    "oss",
+				    4)){
+	sequencer = (GObject *) ags_oss_midiin_new();
+      }else if(!g_ascii_strncasecmp(str,
+				    "core-midi",
+				    10)){
+	sequencer = ags_sound_server_register_sequencer(AGS_SOUND_SERVER(core_audio_server),
+							FALSE);
+
+	has_core_audio = TRUE;
+      }else if(!g_ascii_strncasecmp(str,
+				    "jack",
+				    5)){
 	AgsJackClient *input_client;
 
 	g_object_get(jack_server,
@@ -3999,14 +4019,6 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
 							FALSE);
 
 	has_jack = TRUE;
-      }else if(!g_ascii_strncasecmp(str,
-				    "alsa",
-				    5)){
-	sequencer = (GObject *) ags_alsa_midiin_new();
-      }else if(!g_ascii_strncasecmp(str,
-				    "oss",
-				    4)){
-	sequencer = (GObject *) ags_oss_midiin_new();
       }else{
 	g_warning(i18n("unknown sequencer backend - %s"), str);
 
@@ -4853,7 +4865,7 @@ ags_gsequencer_application_context_message_monitor_timeout(AgsGSequencerApplicat
 
   GList *start_message_envelope, *message_envelope;
 
-  navigation = ags_ui_provider_get_navigation(AGS_UI_PROVIDER(gsequencer_application_context));
+  navigation = (AgsNavigation *) ags_ui_provider_get_navigation(AGS_UI_PROVIDER(gsequencer_application_context));
   
   /* retrieve message */
   message_delivery = ags_message_delivery_get_instance();
@@ -5665,8 +5677,84 @@ ags_gsequencer_application_context_loader_timeout(AgsGSequencerApplicationContex
 gboolean
 ags_gsequencer_application_context_update_ui_timeout(AgsGSequencerApplicationContext *gsequencer_application_context)
 {
+  static gint tic = 0;
+  
   if(ags_gsequencer_application_context_update_ui){
     ags_ui_provider_update_ui(AGS_UI_PROVIDER(gsequencer_application_context));
+
+#if defined(AGS_OSX_DMG_ENV)    
+    if(tic == 0 &&
+       getenv("GTK_THEME") == NULL){
+      GtkSettings *settings;
+      
+      NSAppearance *appearance = NSApp.mainWindow.effectiveAppearance;
+      NSString *interface_style = appearance.name;
+    
+      gchar *theme;
+      gchar *has_theme;
+      
+      gboolean dark_mode;
+      gboolean has_dark_mode;
+      
+      settings = gtk_settings_get_default();
+      
+      theme = "Adwaita";
+      has_theme = "Adwaita";
+      
+      dark_mode = FALSE;
+      has_dark_mode = FALSE;
+      
+      g_object_get(settings,
+		   "gtk-theme-name", &has_theme,
+		   "gtk-application-prefer-dark-theme", &has_dark_mode,
+		   NULL);
+    
+      if([interface_style isEqualToString:NSAppearanceNameDarkAqua]){
+	theme = "Adwaita:dark";
+
+	dark_mode = TRUE;
+      }else if([interface_style isEqualToString:NSAppearanceNameVibrantDark]){
+	theme = "Adwaita:dark";
+
+	dark_mode = TRUE;
+      }else if([interface_style isEqualToString:NSAppearanceNameAccessibilityHighContrastAqua]){
+	theme = "HighContrast";
+      }else if([interface_style isEqualToString:NSAppearanceNameAccessibilityHighContrastDarkAqua]){
+	theme = "HighContrast:dark";
+
+	dark_mode = TRUE;
+      }else if([interface_style isEqualToString:NSAppearanceNameAccessibilityHighContrastVibrantDark]){
+	theme = "HighContrast:dark";
+
+	dark_mode = TRUE;
+      }
+
+      if((dark_mode &&
+	  (!g_strcmp0(has_theme, "Adwaita:dark") == FALSE) &&
+	  (!g_strcmp0(has_theme, "HighContrast:dark") == FALSE)) ||
+	 (!dark_mode &&
+	  (!g_strcmp0(has_theme, "Adwaita:dark") ||
+	   !g_strcmp0(has_theme, "HighContrast:dark")))){
+	g_message("theme change %s -> theme", has_theme, theme);
+      
+	g_object_set(settings,
+		     "gtk-theme-name", theme,
+		     "gtk-application-prefer-dark-theme", dark_mode,
+		     NULL);
+
+	gtk_widget_queue_draw(ags_ui_provider_get_window(AGS_UI_PROVIDER(gsequencer_application_context)));
+      }
+      
+      g_free(has_theme);
+    }
+
+    tic++;
+
+    if(AGS_UI_PROVIDER_UPDATE_UI_TIMEOUT >= 1.0 ||
+       tic >= (gint)  (1.0 / AGS_UI_PROVIDER_UPDATE_UI_TIMEOUT)){
+      tic = 0;
+    }
+#endif
   }
   
   return(ags_gsequencer_application_context_update_ui);

@@ -264,7 +264,7 @@ ags_osc_message_set_property(GObject *gobject,
 	g_object_ref(osc_connection);
       }
       
-      osc_message->osc_connection = osc_connection;
+      osc_message->osc_connection = (AgsOscConnection *) osc_connection;
 
       g_rec_mutex_unlock(osc_message_mutex);
     }

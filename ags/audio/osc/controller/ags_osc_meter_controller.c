@@ -464,7 +464,7 @@ ags_osc_meter_controller_monitor_timeout(AgsOscMeterController *osc_meter_contro
 	ags_osc_connection_write_response(osc_connection,
 					  (GObject *) osc_response);
 	    
-	g_object_run_dispose(osc_response);
+	g_object_run_dispose((GObject *) osc_response);
 	g_object_unref(osc_response);
 	  
 	/* iterate */
@@ -501,7 +501,7 @@ ags_osc_meter_controller_monitor_timeout(AgsOscMeterController *osc_meter_contro
 	  ags_osc_connection_write_response(osc_connection,
 					    (GObject *) osc_response);
 	    
-	  g_object_run_dispose(osc_response);
+	  g_object_run_dispose((GObject *) osc_response);
 	  g_object_unref(osc_response);
 
 	  /* iterate */
@@ -532,7 +532,7 @@ ags_osc_meter_controller_monitor_timeout(AgsOscMeterController *osc_meter_contro
 	  ags_osc_connection_write_response(osc_connection,
 					    (GObject *) osc_response);
 	    
-	  g_object_run_dispose(osc_response);
+	  g_object_run_dispose((GObject *) osc_response);
 	  g_object_unref(osc_response);
 	    
 	  /* iterate */
@@ -596,7 +596,7 @@ ags_osc_meter_controller_monitor_timeout(AgsOscMeterController *osc_meter_contro
 	  ags_osc_connection_write_response(osc_connection,
 					    (GObject *) osc_response);
 	    
-	  g_object_run_dispose(osc_response);
+	  g_object_run_dispose((GObject *) osc_response);
 	  g_object_unref(osc_response);
 	    
 	  /* iterate */
@@ -638,7 +638,7 @@ ags_osc_meter_controller_monitor_timeout(AgsOscMeterController *osc_meter_contro
     /* write response */
     ags_osc_connection_write_response(osc_connection,
 				      (GObject *) osc_response);
-    g_object_run_dispose(osc_response);
+    g_object_run_dispose((GObject *) osc_response);
     g_object_unref(osc_response);
       
     /* iterate */

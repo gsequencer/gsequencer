@@ -346,7 +346,7 @@ ags_audio_container_manager_find_audio_container(AgsAudioContainerManager *audio
   g_list_free_full(start_list,
 		   (GDestroyNotify) g_object_unref);
   
-  return(audio_container);
+  return((GObject *) audio_container);
 }
 
 /**

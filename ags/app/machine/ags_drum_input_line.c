@@ -153,11 +153,11 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
   
   widget = ags_line_member_get_widget(line_member);
 
-  ags_indicator_set_segment_width(widget,
+  ags_indicator_set_segment_width((AgsIndicator *) widget,
 				  (gint) (gui_scale_factor * 20.0));
-  ags_indicator_set_segment_height(widget,
+  ags_indicator_set_segment_height((AgsIndicator *) widget,
 				   (gint) (gui_scale_factor * ((gdouble) AGS_DRUM_INPUT_LINE_SCALE_HEIGHT - 28.0) / 10.0));
-  ags_indicator_set_segment_padding(widget,
+  ags_indicator_set_segment_padding((AgsIndicator *) widget,
 				    (gint) (gui_scale_factor * 2));
 
   gtk_widget_set_margin_top(widget,

@@ -56,6 +56,7 @@
 #include <glib.h>
 
 #if defined(AGS_OSX_DMG_ENV)
+#include <Cocoa/Cocoa.h>
 #include <Foundation/Foundation.h>
 
 #include <uuid/uuid.h>
@@ -109,20 +110,24 @@ install_data()
   gchar *default_file_cp_cmd;
   gchar *default_file_sed_cmd;
   gchar *free_sounds_cp_cmd;
+  gchar *ags_conf_dirs_mkdir_cmd;
+  gchar *ags_conf_cp_cmd;
+  gchar *str;
   
   uid_t uid;
 
   GError *error;
   
-  music_path = NULL;
-  app_dir = NULL;
-
   uid = getuid();
   pw = getpwuid(uid);
 
   app_dir = [[NSBundle mainBundle] bundlePath].UTF8String;
+  
+  music_path = g_strdup_printf("%s/Music",
+			       pw->pw_dir);
 
-  music_path = [[NSSearchPathForDirectoriesInDomains(NSMusicDirectory, NSUserDomainMask, YES) objectAtIndex:0] UTF8String];
+  //TODO:JK: remove
+  //  music_path = [[NSSearchPathForDirectoriesInDomains(NSMusicDirectory, NSUserDomainMask, YES) objectAtIndex:0] UTF8String];
 
   default_path = g_strdup_printf("%s%s",
 				 music_path,
@@ -139,16 +144,16 @@ install_data()
   default_dirs_mkdir_cmd = g_strdup_printf("mkdir -p %s/GSequencer/workspace/default",
 					   music_path);
 
-  local_state_dirs_mkdir_cmd = g_strdup_printf("mkdir -p %s/Library/%s/.local/state",
+  local_state_dirs_mkdir_cmd = g_strdup_printf("mkdir -p %s/Library/Containers/%s/Data/.local/state",
 					       pw->pw_dir, AGS_DEFAULT_BUNDLE_ID);
 
-  local_share_dirs_mkdir_cmd = g_strdup_printf("mkdir -p %s/Library/%s/.local/share",
+  local_share_dirs_mkdir_cmd = g_strdup_printf("mkdir -p %s/Library/Containers/%s/Data/.local/share",
 					       pw->pw_dir, AGS_DEFAULT_BUNDLE_ID);
   
-  cache_dirs_mkdir_cmd = g_strdup_printf("mkdir -p %s/Library/%s/.cache",
+  cache_dirs_mkdir_cmd = g_strdup_printf("mkdir -p %s/Library/Containers/%s/Data/.cache",
 					 pw->pw_dir, AGS_DEFAULT_BUNDLE_ID);
   
-  config_dirs_mkdir_cmd = g_strdup_printf("mkdir -p %s/Library/%s/.config",
+  config_dirs_mkdir_cmd = g_strdup_printf("mkdir -p %s/Library/Containers/%s/Data/.config",
 					  pw->pw_dir, AGS_DEFAULT_BUNDLE_ID);
 
   default_file_cp_cmd = g_strdup_printf("cp -v %s/Contents/Resources/gsequencer-default.xml.in %s/GSequencer/workspace/default/gsequencer-default.xml",
@@ -161,6 +166,12 @@ install_data()
 				       app_dir,
 				       music_path);
 
+  ags_conf_dirs_mkdir_cmd = g_strdup_printf("mkdir -p %s/Library/Containers/%s/Data/.gsequencer",
+					    pw->pw_dir, AGS_DEFAULT_BUNDLE_ID);
+  ags_conf_cp_cmd = g_strdup_printf("cp -v %s/Contents/Resources/ags.conf %s/Library/Containers/%s/Data/.gsequencer/",
+				    app_dir,
+				    pw->pw_dir,
+				    AGS_DEFAULT_BUNDLE_ID);
   error = NULL;
   g_spawn_command_line_sync(default_dirs_mkdir_cmd,
 			    NULL,
@@ -212,6 +223,20 @@ install_data()
   
   error = NULL;
   g_spawn_command_line_sync(free_sounds_cp_cmd,
+			    NULL,
+			    NULL,
+			    NULL,
+			    &error);
+  
+  error = NULL;
+  g_spawn_command_line_sync(ags_conf_dirs_mkdir_cmd,
+			    NULL,
+			    NULL,
+			    NULL,
+			    &error);
+  
+  error = NULL;
+  g_spawn_command_line_sync(ags_conf_cp_cmd,
 			    NULL,
 			    NULL,
 			    NULL,
@@ -307,10 +332,6 @@ main(int argc, char **argv)
   putenv(g_strdup_printf("GTK_PATH=%s", app_dir));
   putenv(g_strdup_printf("GTK_IM_MODULE_FILE=%s\\lib\\gtk-3.0\\3.0.0\\immodules.cache", app_dir));
 
-  if(getenv("GTK_THEME") == NULL){
-    putenv(g_strdup("GTK_THEME=BlueMenta"));
-  }
-
   putenv(g_strdup_printf("GST_PLUGIN_SYSTEM_PATH=%s\\lib\\gstreamer-1.0", app_dir));
   putenv(g_strdup_printf("GST_PLUGIN_SCANNER=%s\\libexec\\gstreamer-1.0\\gst-plugin-scanner.exe", app_dir));
 
@@ -347,13 +368,13 @@ main(int argc, char **argv)
   putenv(g_strdup_printf("XDG_DATA_DIRS=%s/Contents/Resources/share", app_dir));
   putenv(g_strdup_printf("XDG_CONFIG_DIRS=%s/Contents/Resources/etc", app_dir));
 #else
-  putenv(g_strdup_printf("XDG_RUNTIME_DIR=%s/Library/%s/var/run", pw->pw_dir, AGS_DEFAULT_BUNDLE_ID));
+  putenv(g_strdup_printf("XDG_RUNTIME_DIR=%s/Library/Containers/%s/Data/var/run", pw->pw_dir, AGS_DEFAULT_BUNDLE_ID));
 
-  putenv(g_strdup_printf("XDG_CACHE_HOME=%s/Library/%s/.cache", pw->pw_dir, AGS_DEFAULT_BUNDLE_ID));
+  putenv(g_strdup_printf("XDG_CACHE_HOME=%s/Library/Containers/%s/Data/.cache", pw->pw_dir, AGS_DEFAULT_BUNDLE_ID));
 
-  putenv(g_strdup_printf("XDG_DATA_HOME=%s/Library/%s/.local/share", pw->pw_dir, AGS_DEFAULT_BUNDLE_ID));
-  putenv(g_strdup_printf("XDG_CONFIG_HOME=%s/Library/%s/.config", pw->pw_dir, AGS_DEFAULT_BUNDLE_ID));
-  putenv(g_strdup_printf("XDG_STATE_HOME=%s/Library/%s/.local/state", pw->pw_dir, AGS_DEFAULT_BUNDLE_ID));
+  putenv(g_strdup_printf("XDG_DATA_HOME=%s/Library/Containers/%s/Data/.local/share", pw->pw_dir, AGS_DEFAULT_BUNDLE_ID));
+  putenv(g_strdup_printf("XDG_CONFIG_HOME=%s/Library/Containers/%s/Data/.config", pw->pw_dir, AGS_DEFAULT_BUNDLE_ID));
+  putenv(g_strdup_printf("XDG_STATE_HOME=%s/Library/Containers/%s/Data/.local/state", pw->pw_dir, AGS_DEFAULT_BUNDLE_ID));
   
   putenv(g_strdup_printf("XDG_DATA_DIRS=%s/Contents/Resources/share", app_dir));
   putenv(g_strdup_printf("XDG_CONFIG_DIRS=%s/Contents/Resources/etc", app_dir));
@@ -366,10 +387,6 @@ main(int argc, char **argv)
   putenv(g_strdup_printf("GTK_PATH=%s/Contents/Resources", app_dir));
   putenv(g_strdup_printf("GTK_IM_MODULE_FILE=%s/Contents/Resourcess/lib/gtk-3.0/3.0.0/immodules.cache", app_dir));
 
-  if(getenv("GTK_THEME") == NULL){
-    putenv(g_strdup("GTK_THEME=Blue-Submarine"));
-  }
-  
   putenv(g_strdup_printf("GST_PLUGIN_SYSTEM_PATH=%s/lib/gstreamer-1.0", app_dir));
   putenv(g_strdup_printf("GST_PLUGIN_SCANNER=%s/libexec/gstreamer-1.0/gst-plugin-scanner", app_dir));
 
@@ -453,6 +470,42 @@ main(int argc, char **argv)
 				  NULL,
 				  NULL,
 				  NULL);
+
+#if defined(AGS_OSX_DMG_ENV)
+  if(getenv("GTK_THEME") == NULL){
+    NSAppearance *appearance = NSApp.mainWindow.effectiveAppearance;
+    NSString *interface_style = appearance.name;
+    
+    gchar *theme;
+
+    gboolean dark_mode;
+
+    theme = "Adwaita";
+
+    dark_mode = FALSE;
+
+    g_object_get(settings,
+		 "gtk-application-prefer-dark-theme", &dark_mode,
+		 NULL);
+    
+    if([interface_style isEqualToString:NSAppearanceNameDarkAqua]){
+      theme = "Adwaita:dark";
+
+      dark_mode = TRUE;
+    }else if([interface_style isEqualToString:NSAppearanceNameAccessibilityHighContrastAqua]){
+      theme = "HighContrast";
+    }else if([interface_style isEqualToString:NSAppearanceNameAccessibilityHighContrastDarkAqua]){
+      theme = "HighContrast:dark";
+
+      dark_mode = TRUE;
+    }
+
+    g_object_set(settings,
+		 "gtk-theme-name", theme,
+		 "gtk-application-prefer-dark-theme", dark_mode,
+		 NULL);
+ }
+#endif
   
   config = NULL;
   
@@ -533,7 +586,7 @@ main(int argc, char **argv)
 	     "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.");
       
       printf("Written by Joël Krähemann\n");
-
+      
       exit(0);
     }else if(!strncmp(argv[i], "--no-builtin-theme", 19)){
       builtin_theme_disabled = TRUE;
@@ -542,9 +595,20 @@ main(int argc, char **argv)
     }else if(!strncmp(argv[i], "--menu-bar", 11)){
       force_menu_bar = TRUE;
     }else if(!strncmp(argv[i], "--filename", 11)){
-      filename = argv[i + 1];
-      i++;
-
+      if(i + 1 < argc){
+	if(strlen(argv[i + 1]) > 2 && argv[i + 1][0] == '\''){
+	  filename = g_strndup(argv[i + 1] + 1,
+			       strlen(argv[i + 1]) - 2);
+	}else if(strlen(argv[i + 1]) > 2 && argv[i + 1][0] == '"'){
+	  filename = g_strndup(argv[i + 1] + 1,
+			       strlen(argv[i + 1]) - 2);
+	}else{
+	  filename = g_strdup(argv[i + 1]);
+	}
+      
+	i++;
+      }
+      
       if(g_file_test(filename,
 		     G_FILE_TEST_EXISTS) &&
 	 g_file_test(filename,
@@ -706,7 +770,7 @@ main(int argc, char **argv)
 			 pw->pw_dir,
 			 AGS_DEFAULT_DIRECTORY);
 #else
-  wdir = g_strdup_printf("%s/Library/%s/%s",
+  wdir = g_strdup_printf("%s/Library/Containers/%s/Data/%s",
 			 pw->pw_dir,
 			 AGS_DEFAULT_BUNDLE_ID,
 			 AGS_DEFAULT_DIRECTORY);
@@ -805,12 +869,20 @@ main(int argc, char **argv)
       gchar *default_path;
       gchar *default_filename;
 
-      gchar *music_path = NULL;
+      gchar *home_env;
+      gchar *music_path;
 
       GError *error;
-      
-      music_path = [[NSSearchPathForDirectoriesInDomains(NSMusicDirectory, NSUserDomainMask, YES) objectAtIndex:0] UTF8String];
-      
+
+      uid = getuid();
+      pw = getpwuid(uid);
+
+      music_path = g_strdup_printf("%s/Music",
+				   pw->pw_dir);
+
+      //TODO:JK: remove
+      //      music_path = [[NSSearchPathForDirectoriesInDomains(NSMusicDirectory, NSUserDomainMask, YES) objectAtIndex:0] UTF8String];
+
       default_path = g_strdup_printf("%s%s",
 				     music_path,
 				     "/GSequencer/workspace/default");
@@ -873,6 +945,9 @@ main(int argc, char **argv)
     
   g_application_run(G_APPLICATION(gsequencer_app),
 		    0, NULL);
+
+
+  g_free(filename);
   
   //  muntrace();
 

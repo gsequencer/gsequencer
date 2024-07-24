@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -702,7 +702,7 @@ ags_recall_channel_run_notify_recall_container_callback(GObject *gobject,
       }
 
       g_object_unref(recycling_context);
-    }else if(ags_recall_test_flags(recall_channel_run, AGS_RECALL_TEMPLATE)){
+    }else if(ags_recall_test_flags((AgsRecall *) recall_channel_run, AGS_RECALL_TEMPLATE)){
       if((list = ags_recall_find_template(list_start)) != NULL){	
 	g_object_set(recall_channel_run,
 		     "recall-audio-run", list->data,
@@ -980,7 +980,7 @@ ags_recall_channel_run_map_recall_recycling(AgsRecallChannelRun *recall_channel_
   /* check instantiable child */
   if(source == NULL ||
      child_type == G_TYPE_NONE ||
-     ags_recall_test_flags(recall_channel_run, AGS_RECALL_TEMPLATE)){
+     ags_recall_test_flags((AgsRecall *) recall_channel_run, AGS_RECALL_TEMPLATE)){
     if(destination != NULL){
       g_object_unref(destination);
     }
@@ -1194,7 +1194,7 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
   /* check instantiable child */
   if(source == NULL ||
      child_type == G_TYPE_NONE ||
-     ags_recall_test_flags(recall_channel_run, AGS_RECALL_TEMPLATE)){
+     ags_recall_test_flags((AgsRecall *) recall_channel_run, AGS_RECALL_TEMPLATE)){
     if(destination != NULL){
       g_object_unref(destination);
     }
@@ -1408,7 +1408,7 @@ ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_chann
   /* check instantiable child */
   if(source == NULL ||
      child_type == G_TYPE_NONE ||
-     ags_recall_test_flags(recall_channel_run, AGS_RECALL_TEMPLATE)){
+     ags_recall_test_flags((AgsRecall *) recall_channel_run, AGS_RECALL_TEMPLATE)){
     if(source != NULL){
       g_object_unref(source);
     }

@@ -128,7 +128,7 @@ ags_composite_edit_hscrollbar_callback(GtkAdjustment *adjustment,
 
   application_context = ags_application_context_get_instance();
 
-  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
   
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));

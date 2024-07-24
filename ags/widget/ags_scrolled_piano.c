@@ -92,10 +92,10 @@ ags_scrolled_piano_init(AgsScrolledPiano *scrolled_piano)
   				 GTK_POLICY_EXTERNAL,
   				 GTK_POLICY_EXTERNAL);
 
-  gtk_widget_set_vexpand(scrolled_piano->scrolled_window,
+  gtk_widget_set_vexpand((GtkWidget *) scrolled_piano->scrolled_window,
 			 TRUE);
 
-  gtk_widget_set_hexpand(scrolled_piano->scrolled_window,
+  gtk_widget_set_hexpand((GtkWidget *) scrolled_piano->scrolled_window,
 			 TRUE);
 
   /* piano */
@@ -103,7 +103,7 @@ ags_scrolled_piano_init(AgsScrolledPiano *scrolled_piano)
 					AGS_PIANO_DEFAULT_KEY_WIDTH,
 					AGS_PIANO_DEFAULT_KEY_HEIGHT);
   gtk_scrolled_window_set_child(scrolled_piano->scrolled_window,
-				scrolled_piano->piano);
+				(GtkWidget *) scrolled_piano->piano);
 }
 
 void

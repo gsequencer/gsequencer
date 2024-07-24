@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,7 +43,7 @@ void ags_marker_finalize(GObject *gobject);
  * @include: ags/audio/ags_marker.h
  *
  * #AgsMarker represents an automated value of a port. You specify y the value written to a port
- * by offset x.
+ * by offset x. It can be used to store time based events, too.
  */
 
 enum{
@@ -51,6 +51,7 @@ enum{
   PROP_X,
   PROP_Y,
   PROP_MARKER_NAME,
+  PROP_MARKER_DATA,
 };
 
 static gpointer ags_marker_parent_class = NULL;
@@ -179,6 +180,23 @@ ags_marker_class_init(AgsMarkerClass *marker)
   g_object_class_install_property(gobject,
 				  PROP_MARKER_NAME,
 				  param_spec);
+
+
+  /**
+   * AgsMarker:marker-data:
+   *
+   * The marker's data.
+   * 
+   * Since: 6.14.0
+   */
+  param_spec = g_param_spec_string("marker-data",
+				   i18n_pspec("marker data"),
+				   i18n_pspec("The marker's data"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MARKER_DATA,
+				  param_spec);
 }
 
 void
@@ -194,6 +212,8 @@ ags_marker_init(AgsMarker *marker)
   marker->y = 120.0;
 
   marker->marker_name = NULL;
+
+  marker->marker_data = NULL;
 }
 
 
@@ -254,6 +274,29 @@ ags_marker_set_property(GObject *gobject,
       g_rec_mutex_unlock(marker_mutex);
     }
     break;
+  case PROP_MARKER_DATA:
+    {
+      gchar *marker_data;
+      
+      marker_data = g_value_get_string(value);
+      
+      g_rec_mutex_lock(marker_mutex);
+
+      if(marker_data == marker->marker_data){
+	g_rec_mutex_unlock(marker_mutex);
+
+	return;
+      }
+
+      if(marker->marker_data != NULL){
+	g_free(marker->marker_data);
+      }
+
+      marker->marker_data = g_strdup(marker_data);
+
+      g_rec_mutex_unlock(marker_mutex);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -303,6 +346,15 @@ ags_marker_get_property(GObject *gobject,
       g_rec_mutex_unlock(marker_mutex);
     }
     break;
+  case PROP_MARKER_DATA:
+    {
+      g_rec_mutex_lock(marker_mutex);
+
+      g_value_set_string(value, marker->marker_data);
+
+      g_rec_mutex_unlock(marker_mutex);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -317,7 +369,11 @@ ags_marker_finalize(GObject *gobject)
   marker = AGS_MARKER(gobject);
   
   if(marker->marker_name != NULL){
-    free(marker->marker_name);
+    g_free(marker->marker_name);
+  }
+
+  if(marker->marker_data != NULL){
+    g_free(marker->marker_data);
   }
   
   /* call parent */
@@ -571,6 +627,53 @@ ags_marker_set_y(AgsMarker *marker, gdouble y)
 }
 
 /**
+ * ags_marker_get_data:
+ * @marker: the #AgsMarker
+ *
+ * Gets data.
+ * 
+ * Returns: the data
+ * 
+ * Since: 6.14.0
+ */
+gchar*
+ags_marker_get_data(AgsMarker *marker)
+{
+  gchar *data;
+  
+  if(!AGS_IS_MARKER(marker)){
+    return(NULL);
+  }
+
+  g_object_get(marker,
+	       "marker-data", &data,
+	       NULL);
+
+  return(data);
+}
+
+/**
+ * ags_marker_set_data:
+ * @marker: the #AgsMarker
+ * @data: the data
+ *
+ * Sets data.
+ * 
+ * Since: 6.14.0
+ */
+void
+ags_marker_set_data(AgsMarker *marker, gchar *data)
+{
+  if(!AGS_IS_MARKER(marker)){
+    return;
+  }
+
+  g_object_set(marker,
+	       "marker-data", data,
+	       NULL);
+}
+
+/**
  * ags_marker_duplicate:
  * @marker: an #AgsMarker
  * 
@@ -605,6 +708,8 @@ ags_marker_duplicate(AgsMarker *marker)
   marker_copy->y = marker->y;
 
   marker_copy->marker_name = g_strdup(marker->marker_name);
+
+  marker_copy->marker_data = g_strdup(marker->marker_data);
 
   g_rec_mutex_unlock(marker_mutex);
   

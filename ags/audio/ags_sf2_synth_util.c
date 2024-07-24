@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -108,7 +108,7 @@ ags_sf2_synth_util_alloc()
   ptr->sf2_file = NULL;
 
   ptr->sf2_sample_count = 0;
-  ptr->sf2_sample_arr = (AgsIpatchSample **) g_malloc(128 * sizeof(AgsIpatchSample*));
+  ptr->sf2_sample_arr = (IpatchSample **) g_malloc(128 * sizeof(IpatchSample*));
   ptr->sf2_note_range = (gint **) g_malloc(128 * sizeof(gint*));
   
   ptr->sf2_orig_buffer = (gpointer *) g_malloc(128 * sizeof(gpointer));
@@ -173,9 +173,14 @@ ags_sf2_synth_util_alloc()
 				   AGS_SOUNDCARD_DEFAULT_SAMPLERATE);  
 
   /* pitch util */
-  ptr->pitch_type = AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL;
+#if 0
+  ptr->pitch_type = AGS_TYPE_FLUID_INTERPOLATE_LINEAR_UTIL;
   ptr->pitch_util = ags_fluid_interpolate_4th_order_util_alloc();
-
+#else
+  ptr->pitch_type = AGS_TYPE_PITCH_2X_ALIAS_UTIL;
+  ptr->pitch_util = ags_pitch_2x_alias_util_alloc();
+#endif
+  
   ags_common_pitch_util_set_format(ptr->pitch_util,
 				   ptr->pitch_type,
 				   AGS_SOUNDCARD_DEFAULT_FORMAT);
@@ -269,9 +274,15 @@ ags_sf2_synth_util_boxed_copy(AgsSF2SynthUtil *ptr)
     new_ptr->pitch_util = ags_fluid_interpolate_4th_order_util_copy(ptr->pitch_util);
   }else if(new_ptr->pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     new_ptr->pitch_util = ags_fluid_interpolate_7th_order_util_copy(ptr->pitch_util);
+  }else if(new_ptr->pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    new_ptr->pitch_util = ags_pitch_2x_alias_util_copy(ptr->pitch_util);
+  }else if(new_ptr->pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    new_ptr->pitch_util = ags_pitch_4x_alias_util_copy(ptr->pitch_util);
+  }else if(new_ptr->pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    new_ptr->pitch_util = ags_pitch_16x_alias_util_copy(ptr->pitch_util);
   }
 
-  new_ptr->volume_util = ags_hq_pitch_util_copy(ptr->volume_util);
+  new_ptr->volume_util = ags_volume_util_copy(ptr->volume_util);
 
   new_ptr->note_256th_mode = ptr->note_256th_mode;
 
@@ -303,17 +314,77 @@ ags_sf2_synth_util_free(AgsSF2SynthUtil *ptr)
   ags_resample_util_free(ptr->resample_util);
 
   if(ptr->pitch_type == AGS_TYPE_FAST_PITCH_UTIL){
+    ags_fast_pitch_util_set_source(ptr->pitch_util,
+				   NULL);
+      
+    ags_fast_pitch_util_set_destination(ptr->pitch_util,
+					NULL);
+
     ags_fast_pitch_util_free(ptr->pitch_util);
   }else if(ptr->pitch_type == AGS_TYPE_HQ_PITCH_UTIL){
+    ags_hq_pitch_util_set_source(ptr->pitch_util,
+				 NULL);
+      
+    ags_hq_pitch_util_set_destination(ptr->pitch_util,
+				      NULL);
+
     ags_hq_pitch_util_free(ptr->pitch_util);
   }else if(ptr->pitch_type == AGS_TYPE_FLUID_INTERPOLATE_NONE_UTIL){
+    ags_fluid_interpolate_none_util_set_source(ptr->pitch_util,
+					       NULL);
+      
+    ags_fluid_interpolate_none_util_set_destination(ptr->pitch_util,
+						    NULL);
+
     ags_fluid_interpolate_none_util_free(ptr->pitch_util);
   }else if(ptr->pitch_type == AGS_TYPE_FLUID_INTERPOLATE_LINEAR_UTIL){
+    ags_fluid_interpolate_linear_util_set_source(ptr->pitch_util,
+						 NULL);
+
+    ags_fluid_interpolate_linear_util_set_destination(ptr->pitch_util,
+						      NULL);
+
     ags_fluid_interpolate_linear_util_free(ptr->pitch_util);
   }else if(ptr->pitch_type == AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL){
+    ags_fluid_interpolate_4th_order_util_set_source(ptr->pitch_util,
+						    NULL);
+
+    ags_fluid_interpolate_4th_order_util_set_destination(ptr->pitch_util,
+							 NULL);
+
     ags_fluid_interpolate_4th_order_util_free(ptr->pitch_util);
   }else if(ptr->pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
+    ags_fluid_interpolate_7th_order_util_set_source(ptr->pitch_util,
+						    NULL);
+
+    ags_fluid_interpolate_7th_order_util_set_destination(ptr->pitch_util,
+							 NULL);
+
     ags_fluid_interpolate_7th_order_util_free(ptr->pitch_util);
+  }else if(ptr->pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    ags_pitch_2x_alias_util_set_source(ptr->pitch_util,
+				       NULL);
+
+    ags_pitch_2x_alias_util_set_destination(ptr->pitch_util,
+					    NULL);
+
+    ags_pitch_2x_alias_util_free(ptr->pitch_util);
+  }else if(ptr->pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    ags_pitch_4x_alias_util_set_source(ptr->pitch_util,
+				       NULL);
+
+    ags_pitch_4x_alias_util_set_destination(ptr->pitch_util,
+					    NULL);
+
+    ags_pitch_4x_alias_util_free(ptr->pitch_util);
+  }else if(ptr->pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    ags_pitch_16x_alias_util_set_source(ptr->pitch_util,
+					NULL);
+
+    ags_pitch_16x_alias_util_set_destination(ptr->pitch_util,
+					     NULL);
+
+    ags_pitch_16x_alias_util_free(ptr->pitch_util);
   }
   
   g_free(ptr);
@@ -511,15 +582,15 @@ ags_sf2_synth_util_set_buffer_length(AgsSF2SynthUtil *sf2_synth_util,
 
   ags_stream_free(sf2_synth_util->sample_buffer);
   ags_stream_free(sf2_synth_util->im_buffer);
+
+  sf2_synth_util->sample_buffer = NULL;
+  sf2_synth_util->im_buffer = NULL;
   
-  if(sf2_synth_util->buffer_length > 0){
-    sf2_synth_util->sample_buffer = ags_stream_alloc(sf2_synth_util->buffer_length,
+  if(buffer_length > 0){
+    sf2_synth_util->sample_buffer = ags_stream_alloc(buffer_length,
 						     sf2_synth_util->format);
-    sf2_synth_util->im_buffer = ags_stream_alloc(sf2_synth_util->buffer_length,
+    sf2_synth_util->im_buffer = ags_stream_alloc(buffer_length,
 						 sf2_synth_util->format);
-  }else{
-    sf2_synth_util->sample_buffer = NULL;
-    sf2_synth_util->im_buffer = NULL;
   }
 
   ags_common_pitch_util_set_buffer_length(sf2_synth_util->pitch_util,
@@ -543,8 +614,8 @@ ags_sf2_synth_util_set_buffer_length(AgsSF2SynthUtil *sf2_synth_util,
   ags_volume_util_set_source(sf2_synth_util->pitch_util,
 			     sf2_synth_util->im_buffer);
   ags_volume_util_set_destination(sf2_synth_util->pitch_util,
-				  sf2_synth_util->im_buffer);
-}
+				  sf2_synth_util->im_buffer);}
+
 
 /**
  * ags_sf2_synth_util_get_format:
@@ -589,11 +660,14 @@ ags_sf2_synth_util_set_format(AgsSF2SynthUtil *sf2_synth_util,
   ags_stream_free(sf2_synth_util->sample_buffer);
   ags_stream_free(sf2_synth_util->im_buffer);
 
+  sf2_synth_util->sample_buffer = NULL;
+  sf2_synth_util->im_buffer = NULL;
+
   if(sf2_synth_util->buffer_length > 0){
     sf2_synth_util->sample_buffer = ags_stream_alloc(sf2_synth_util->buffer_length,
-						     sf2_synth_util->format);
+						     format);
     sf2_synth_util->im_buffer = ags_stream_alloc(sf2_synth_util->buffer_length,
-						 sf2_synth_util->format);
+						 format);
   }
   
   ags_common_pitch_util_set_format(sf2_synth_util->pitch_util,
@@ -1290,11 +1364,191 @@ void
 ags_sf2_synth_util_set_pitch_type(AgsSF2SynthUtil *sf2_synth_util,
 				  GType pitch_type)
 {
+  gpointer pitch_util;
+  gpointer tmp_pitch_util;
+  gpointer source;
+  gpointer destination;    
+
+  GType tmp_pitch_type;
+  
+  gboolean success;
+  
   if(sf2_synth_util == NULL){
     return;
   }
 
-  sf2_synth_util->pitch_type = pitch_type;
+  tmp_pitch_type = sf2_synth_util->pitch_type;  
+  tmp_pitch_util = sf2_synth_util->pitch_util;
+
+  source = NULL;
+  destination = NULL;
+  
+  success = FALSE;
+
+  if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_NONE_UTIL){
+    success = TRUE;
+
+    pitch_util = 
+      sf2_synth_util->pitch_util = ags_fluid_interpolate_none_util_alloc();
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_LINEAR_UTIL){
+    success = TRUE;
+    
+    pitch_util = 
+      sf2_synth_util->pitch_util = ags_fluid_interpolate_linear_util_alloc();
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL){
+    success = TRUE;
+    
+    pitch_util = 
+      sf2_synth_util->pitch_util = ags_fluid_interpolate_4th_order_util_alloc();
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
+    success = TRUE;
+    
+    pitch_util = 
+      sf2_synth_util->pitch_util = ags_fluid_interpolate_7th_order_util_alloc();
+  }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+    success = TRUE;
+    
+    pitch_util = 
+      sf2_synth_util->pitch_util = ags_pitch_2x_alias_util_alloc();
+  }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+    success = TRUE;
+    
+    pitch_util = 
+      sf2_synth_util->pitch_util = ags_pitch_4x_alias_util_alloc();
+  }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+    success = TRUE;
+    
+    pitch_util = 
+      sf2_synth_util->pitch_util = ags_pitch_16x_alias_util_alloc();
+  }
+  
+  if(success){
+    sf2_synth_util->pitch_type = pitch_type;
+
+    if(tmp_pitch_type == AGS_TYPE_FLUID_INTERPOLATE_NONE_UTIL){
+      source = ags_fluid_interpolate_none_util_get_source(tmp_pitch_util);
+      destination = ags_fluid_interpolate_none_util_get_destination(tmp_pitch_util);
+      
+      ags_fluid_interpolate_none_util_set_source(tmp_pitch_util,
+						 NULL);
+      
+      ags_fluid_interpolate_none_util_set_destination(tmp_pitch_util,
+						      NULL);
+
+      ags_fluid_interpolate_none_util_free(tmp_pitch_util);
+    }else if(tmp_pitch_type == AGS_TYPE_FLUID_INTERPOLATE_LINEAR_UTIL){
+      source = ags_fluid_interpolate_linear_util_get_source(tmp_pitch_util);
+      destination = ags_fluid_interpolate_linear_util_get_destination(tmp_pitch_util);
+
+      ags_fluid_interpolate_linear_util_set_source(tmp_pitch_util,
+						   NULL);
+
+      ags_fluid_interpolate_linear_util_set_destination(tmp_pitch_util,
+							NULL);
+
+      ags_fluid_interpolate_linear_util_free(tmp_pitch_util);
+    }else if(tmp_pitch_type == AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL){
+      source = ags_fluid_interpolate_4th_order_util_get_source(tmp_pitch_util);
+      destination = ags_fluid_interpolate_4th_order_util_get_destination(tmp_pitch_util);
+
+      ags_fluid_interpolate_4th_order_util_set_source(tmp_pitch_util,
+						      NULL);
+
+      ags_fluid_interpolate_4th_order_util_set_destination(tmp_pitch_util,
+							   NULL);
+
+      ags_fluid_interpolate_4th_order_util_free(tmp_pitch_util);
+    }else if(tmp_pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
+      source = ags_fluid_interpolate_7th_order_util_get_source(tmp_pitch_util);
+      destination = ags_fluid_interpolate_7th_order_util_get_destination(tmp_pitch_util);
+
+      ags_fluid_interpolate_7th_order_util_set_source(tmp_pitch_util,
+						      NULL);
+
+      ags_fluid_interpolate_7th_order_util_set_destination(tmp_pitch_util,
+							   NULL);
+
+      ags_fluid_interpolate_7th_order_util_free(tmp_pitch_util);
+    }else if(tmp_pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+      source = ags_pitch_2x_alias_util_get_source(tmp_pitch_util);
+      destination = ags_pitch_2x_alias_util_get_destination(tmp_pitch_util);
+
+      ags_pitch_2x_alias_util_set_source(tmp_pitch_util,
+					 NULL);
+
+      ags_pitch_2x_alias_util_set_destination(tmp_pitch_util,
+					      NULL);
+
+      ags_pitch_2x_alias_util_free(tmp_pitch_util);
+    }else if(tmp_pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+      source = ags_pitch_4x_alias_util_get_source(tmp_pitch_util);
+      destination = ags_pitch_4x_alias_util_get_destination(tmp_pitch_util);
+
+      ags_pitch_4x_alias_util_set_source(tmp_pitch_util,
+					 NULL);
+
+      ags_pitch_4x_alias_util_set_destination(tmp_pitch_util,
+					      NULL);
+
+      ags_pitch_4x_alias_util_free(tmp_pitch_util);
+    }else if(tmp_pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+      source = ags_pitch_16x_alias_util_get_source(tmp_pitch_util);
+      destination = ags_pitch_16x_alias_util_get_destination(tmp_pitch_util);
+
+      ags_pitch_16x_alias_util_set_source(tmp_pitch_util,
+					 NULL);
+
+      ags_pitch_16x_alias_util_set_destination(tmp_pitch_util,
+					      NULL);
+
+      ags_pitch_16x_alias_util_free(tmp_pitch_util);
+    }
+
+    /* set source and destination */
+    if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_NONE_UTIL){
+      ags_fluid_interpolate_none_util_set_source(pitch_util,
+						 source);
+      
+      ags_fluid_interpolate_none_util_set_destination(pitch_util,
+						      destination);
+    }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_LINEAR_UTIL){
+      ags_fluid_interpolate_linear_util_set_source(pitch_util,
+						   source);
+
+      ags_fluid_interpolate_linear_util_set_destination(pitch_util,
+							destination);
+    }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL){
+      ags_fluid_interpolate_4th_order_util_set_source(pitch_util,
+						      source);
+
+      ags_fluid_interpolate_4th_order_util_set_destination(pitch_util,
+							   destination);
+    }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
+      ags_fluid_interpolate_7th_order_util_set_source(pitch_util,
+						      source);
+
+      ags_fluid_interpolate_7th_order_util_set_destination(pitch_util,
+							   destination);
+    }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
+      ags_pitch_2x_alias_util_set_source(pitch_util,
+					 source);
+
+      ags_pitch_2x_alias_util_set_destination(pitch_util,
+					      destination);
+    }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
+      ags_pitch_4x_alias_util_set_source(pitch_util,
+					 source);
+
+      ags_pitch_4x_alias_util_set_destination(pitch_util,
+					      destination);
+    }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
+      ags_pitch_16x_alias_util_set_source(pitch_util,
+					  source);
+
+      ags_pitch_16x_alias_util_set_destination(pitch_util,
+					       destination);
+    }
+  }
 }
 
 /**
@@ -1512,14 +1766,14 @@ ags_sf2_synth_util_load_instrument(AgsSF2SynthUtil *sf2_synth_util,
 		   NULL);
 
       if(midi_key == -1){
-	sf2_sample = AGS_IPATCH_SAMPLE(list->data)->sample;
+	sf2_sample = IPATCH_SAMPLE(AGS_IPATCH_SAMPLE(list->data)->sample);
 
 	matching_midi_key = current_midi_key;
       }else{
 	if(current_midi_key > midi_key &&
 	   (matching_midi_key == -1 ||
 	    current_midi_key < matching_midi_key)){
-	  sf2_sample = AGS_IPATCH_SAMPLE(list->data)->sample;
+	  sf2_sample = IPATCH_SAMPLE(AGS_IPATCH_SAMPLE(list->data)->sample);
 
 	  matching_midi_key = current_midi_key;
 	}
@@ -1551,7 +1805,7 @@ ags_sf2_synth_util_load_instrument(AgsSF2SynthUtil *sf2_synth_util,
       sf2_synth_util->sf2_note_range[i][0] = midi_key;
       sf2_synth_util->sf2_note_range[i][1] = midi_key;
       
-      sample_data = ipatch_sf2_sample_get_data(sf2_sample);
+      sample_data = ipatch_sf2_sample_get_data(IPATCH_SF2_SAMPLE(sf2_sample));
 
       sample_frame_count = 0;
       
@@ -1918,15 +2172,19 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 	
 	pzone = ipatch_iter_get(&pzone_iter);
 
-	note_range = ipatch_range_new(0, 127);
+	note_range = NULL;
 	
 	g_object_get(pzone,
 		     "note-range", &note_range,
 		     NULL);
 
+	if(note_range == NULL){
+	  note_range = ipatch_range_new(0, 127);
+	}
+	
 	//	g_message("note-range = %d %d", note_range->low, note_range->high);
 	
-	sf2_instrument = (IpatchItem *) ipatch_sf2_pzone_get_inst(pzone);
+	sf2_instrument = (IpatchSF2Inst *) ipatch_sf2_pzone_get_inst(IPATCH_SF2_PZONE(pzone));
 
 	izone_list = ipatch_sf2_inst_get_zones(sf2_instrument);
 
@@ -1952,7 +2210,7 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 	      
 	      izone = ipatch_iter_get(&izone_iter);
 
-	      sf2_sample = ipatch_sf2_izone_get_sample(izone);
+	      sf2_sample = ipatch_sf2_izone_get_sample(IPATCH_SF2_IZONE(izone));
 
 	      if(sf2_sample != NULL){
 		g_object_ref(sf2_sample);
@@ -2051,7 +2309,7 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 	      int orig_sf2_sample_format, sf2_sample_format;
 	      guint copy_mode;
 	      
-	      sf2_synth_util->sf2_sample_arr[i] = sf2_sample;
+	      sf2_synth_util->sf2_sample_arr[i] = IPATCH_SAMPLE(sf2_sample);
 	      g_object_ref(sf2_sample);
 
 	      sf2_synth_util->sf2_note_range[i][0] = note_range->low;
@@ -2086,7 +2344,7 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 	      copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
 							      AGS_AUDIO_BUFFER_UTIL_S16);
 
-	      orig_sf2_sample_format = ipatch_sample_get_format(sf2_sample);
+	      orig_sf2_sample_format = ipatch_sample_get_format(IPATCH_SAMPLE(sf2_sample));
 	      
 	      if(ags_endian_host_is_be()){
 		sf2_sample_format = orig_sf2_sample_format;
@@ -2323,6 +2581,8 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 	if(first != NULL){
 	  g_object_unref(first);
 	}
+
+	ipatch_range_free(note_range);
       }while(ipatch_iter_next(&pzone_iter) != NULL);
     }
   }
@@ -5029,7 +5289,7 @@ ags_sf2_synth_util_midi_locale_find_sample_near_midi_key(AgsIpatch *ipatch,
 	
 	if(note_range->low <= midi_key &&
 	   note_range->high >= midi_key){
-	  sf2_instrument = (IpatchItem *) ipatch_sf2_pzone_get_inst(ipatch_iter_get(&pzone_iter));
+	  sf2_instrument = (IpatchSF2Inst *) ipatch_sf2_pzone_get_inst(ipatch_iter_get(&pzone_iter));
 
 	  if(instrument != NULL){
 	    matching_instrument = ipatch_sf2_inst_get_name(sf2_instrument);
@@ -5043,14 +5303,14 @@ ags_sf2_synth_util_midi_locale_find_sample_near_midi_key(AgsIpatch *ipatch,
 	    if(ipatch_iter_first(&izone_iter) != NULL){      
 	      izone = ipatch_iter_get(&izone_iter);
 
-	      first_sf2_sample = ipatch_sf2_izone_get_sample(izone);
+	      first_sf2_sample = ipatch_sf2_izone_get_sample(IPATCH_SF2_IZONE(izone));
 	      
 	      do{
 		gint root_note;
 		
 		izone = ipatch_iter_get(&izone_iter);
 
-		sf2_sample = ipatch_sf2_izone_get_sample(izone);
+		sf2_sample = ipatch_sf2_izone_get_sample(IPATCH_SF2_IZONE(izone));
  
 		g_object_get(sf2_sample,
 			     "root-note", &root_note,
@@ -5115,5 +5375,5 @@ ags_sf2_synth_util_midi_locale_find_sample_near_midi_key(AgsIpatch *ipatch,
     sample[0] = matching_sample;
   }
   
-  return(matching_sf2_sample);
+  return(ipatch_sample);
 }

@@ -470,9 +470,9 @@ ags_file_widget_init(AgsFileWidget *file_widget)
   file_widget->vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 					     6);
 
-  gtk_widget_set_valign(file_widget->vbox,
+  gtk_widget_set_valign((GtkWidget *) file_widget->vbox,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_halign(file_widget->vbox,
+  gtk_widget_set_halign((GtkWidget *) file_widget->vbox,
 			GTK_ALIGN_FILL);
 
   gtk_box_append((GtkBox *) file_widget,
@@ -482,7 +482,7 @@ ags_file_widget_init(AgsFileWidget *file_widget)
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				6);
 
-  gtk_widget_set_halign(hbox,
+  gtk_widget_set_halign((GtkWidget *) hbox,
 			GTK_ALIGN_FILL);
 
   gtk_box_append(file_widget->vbox,
@@ -490,7 +490,7 @@ ags_file_widget_init(AgsFileWidget *file_widget)
 
   label = (GtkLabel *) gtk_label_new(i18n("location"));
 
-  gtk_widget_set_halign(label,
+  gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
 
   gtk_box_append(hbox,
@@ -498,10 +498,10 @@ ags_file_widget_init(AgsFileWidget *file_widget)
 
   file_widget->location_entry = (GtkEntry *) gtk_entry_new();
 
-  gtk_widget_set_halign(file_widget->location_entry,
+  gtk_widget_set_halign((GtkWidget *) file_widget->location_entry,
 			GTK_ALIGN_FILL);
 
-  gtk_widget_set_hexpand(file_widget->location_entry,
+  gtk_widget_set_hexpand((GtkWidget *) file_widget->location_entry,
 			 TRUE);  
   
   gtk_entry_set_alignment(file_widget->location_entry,
@@ -514,9 +514,9 @@ ags_file_widget_init(AgsFileWidget *file_widget)
   			 G_CALLBACK(ags_file_widget_location_entry_callback), file_widget);
 
   /* location - combo */
-  location_string_list = gtk_string_list_new(location_strv);
+  location_string_list = gtk_string_list_new((const gchar * const *) location_strv);
   
-  file_widget->location_drop_down = (GtkDropDown *) gtk_drop_down_new(location_string_list,
+  file_widget->location_drop_down = (GtkDropDown *) gtk_drop_down_new(G_LIST_MODEL(location_string_list),
 								      NULL);
   gtk_box_append(file_widget->vbox,
 		 (GtkWidget *) file_widget->location_drop_down);
@@ -528,10 +528,10 @@ ags_file_widget_init(AgsFileWidget *file_widget)
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				6);
 
-  gtk_widget_set_halign(hbox,
+  gtk_widget_set_halign((GtkWidget *) hbox,
 			GTK_ALIGN_FILL);
   
-  gtk_widget_set_hexpand(hbox,
+  gtk_widget_set_hexpand((GtkWidget *) hbox,
 			 TRUE);  
 
   gtk_box_append(file_widget->vbox,
@@ -541,10 +541,10 @@ ags_file_widget_init(AgsFileWidget *file_widget)
   gtk_menu_button_set_icon_name(file_widget->action_menu_button,
 				"system-run");
 
-  gtk_widget_set_halign(file_widget->action_menu_button,
+  gtk_widget_set_halign((GtkWidget *) file_widget->action_menu_button,
 			GTK_ALIGN_CENTER);
 
-  gtk_widget_set_hexpand(file_widget->action_menu_button,
+  gtk_widget_set_hexpand((GtkWidget *) file_widget->action_menu_button,
 			 TRUE);  
 
   gtk_box_append(hbox,
@@ -570,7 +570,7 @@ ags_file_widget_init(AgsFileWidget *file_widget)
   bookmark_menu = (GMenu *) g_menu_new();
   
   menu_item = g_menu_item_new_section(NULL,
-				      bookmark_menu);
+				      G_MENU_MODEL(bookmark_menu));
   g_menu_append_item(file_widget->action_popup,
 		     menu_item);
 
@@ -579,9 +579,9 @@ ags_file_widget_init(AgsFileWidget *file_widget)
   g_menu_append_item(bookmark_menu,
 		     menu_item);
   
-  file_widget->action_popover = gtk_popover_menu_new_from_model(G_MENU_MODEL(file_widget->action_popup));
+  file_widget->action_popover = (GtkPopoverMenu *) gtk_popover_menu_new_from_model(G_MENU_MODEL(file_widget->action_popup));
   gtk_menu_button_set_popover(file_widget->action_menu_button,
-			      file_widget->action_popover);
+			      (GtkWidget *) file_widget->action_popover);
   
   action_group =
     file_widget->action_group = g_simple_action_group_new();
@@ -593,9 +593,9 @@ ags_file_widget_init(AgsFileWidget *file_widget)
   action_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				       6);
 
-  gtk_widget_set_valign(action_hbox,
+  gtk_widget_set_valign((GtkWidget *) action_hbox,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_halign(action_hbox,
+  gtk_widget_set_halign((GtkWidget *) action_hbox,
 			GTK_ALIGN_FILL);
 
   gtk_box_append(file_widget->vbox,
@@ -613,8 +613,8 @@ ags_file_widget_init(AgsFileWidget *file_widget)
   gtk_box_append(file_widget->left_vbox,
 		 (GtkWidget *) file_widget->location_box);
 
-  file_widget->location = g_hash_table_new_full(g_str_hash,
-						g_str_equal,
+  file_widget->location = g_hash_table_new_full((GHashFunc) g_str_hash,
+						(GEqualFunc) g_str_equal,
 						g_free,
 						NULL);
 
@@ -665,8 +665,8 @@ ags_file_widget_init(AgsFileWidget *file_widget)
     file_widget->bookmark_filename = NULL;
 #endif
   
-  file_widget->bookmark = g_hash_table_new_full(g_direct_hash,
-						g_string_equal,
+    file_widget->bookmark = g_hash_table_new_full((GHashFunc) g_direct_hash,
+						(GEqualFunc) g_string_equal,
 						g_free,
 						g_free);
 
@@ -679,9 +679,9 @@ ags_file_widget_init(AgsFileWidget *file_widget)
   file_widget->center_vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 						    6);
 
-  gtk_widget_set_valign(file_widget->center_vbox,
+  gtk_widget_set_valign((GtkWidget *) file_widget->center_vbox,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_halign(file_widget->center_vbox,
+  gtk_widget_set_halign((GtkWidget *) file_widget->center_vbox,
 			GTK_ALIGN_FILL);
 
   gtk_box_append(action_hbox,
@@ -691,8 +691,8 @@ ags_file_widget_init(AgsFileWidget *file_widget)
 
   file_widget->current_file_filter = NULL;
  
-  filename_key_string_list = gtk_string_list_new(filename_keys_strv);
-  file_widget->filename_key_selection = gtk_single_selection_new(filename_key_string_list);
+  filename_key_string_list = gtk_string_list_new((const gchar * const *) filename_keys_strv);
+  file_widget->filename_key_selection = (GtkNoSelection *) gtk_single_selection_new(G_LIST_MODEL(filename_key_string_list));
 
   for(i = 0; i < 4; i++){
     file_widget->filename_factory[i] = gtk_signal_list_item_factory_new();
@@ -712,31 +712,31 @@ ags_file_widget_init(AgsFileWidget *file_widget)
 		     G_CALLBACK(ags_file_widget_value_factory_bind), file_widget);
   }
   
-  single_filename_string_list = gtk_string_list_new(filename_strv);
-  file_widget->filename_single_selection = gtk_single_selection_new(single_filename_string_list);
+  single_filename_string_list = gtk_string_list_new((const gchar * const *) filename_strv);
+  file_widget->filename_single_selection = gtk_single_selection_new(G_LIST_MODEL(single_filename_string_list));
 
-  multi_filename_string_list = gtk_string_list_new(filename_strv);
-  file_widget->filename_multi_selection = gtk_multi_selection_new(multi_filename_string_list);
+  multi_filename_string_list = gtk_string_list_new((const gchar * const *) filename_strv);
+  file_widget->filename_multi_selection = gtk_multi_selection_new(G_LIST_MODEL(multi_filename_string_list));
 
   file_widget->filename_scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
 
-  gtk_widget_set_valign(file_widget->filename_scrolled_window,
+  gtk_widget_set_valign((GtkWidget *) file_widget->filename_scrolled_window,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_halign(file_widget->filename_scrolled_window,
+  gtk_widget_set_halign((GtkWidget *) file_widget->filename_scrolled_window,
 			GTK_ALIGN_FILL);
 
-  gtk_widget_set_vexpand(file_widget->filename_scrolled_window,
+  gtk_widget_set_vexpand((GtkWidget *) file_widget->filename_scrolled_window,
 			 TRUE);
-  gtk_widget_set_hexpand(file_widget->filename_scrolled_window,
+  gtk_widget_set_hexpand((GtkWidget *) file_widget->filename_scrolled_window,
 			 TRUE);
   
   gtk_box_append(file_widget->center_vbox,
 		 (GtkWidget *) file_widget->filename_scrolled_window);
 
   /* filename view */
-  file_widget->filename_view = (GtkListView *) gtk_column_view_new(file_widget->filename_single_selection);
+  file_widget->filename_view = (GtkColumnView *) gtk_column_view_new(GTK_SELECTION_MODEL(file_widget->filename_single_selection));
   gtk_scrolled_window_set_child(file_widget->filename_scrolled_window,
-				file_widget->filename_view);
+				(GtkWidget *) file_widget->filename_view);
   
   for(i = 0; i < 4; i++){
     column = gtk_column_view_column_new(filename_keys_strv[i],
@@ -749,8 +749,8 @@ ags_file_widget_init(AgsFileWidget *file_widget)
   g_signal_connect_after(file_widget->filename_view, "activate",
 			 G_CALLBACK(ags_file_widget_filename_activate_callback), file_widget);
 
-  event_controller = gtk_gesture_click_new();
-  gtk_gesture_single_set_button(event_controller,
+  event_controller = (GtkEventController *) gtk_gesture_click_new();
+  gtk_gesture_single_set_button((GtkGestureSingle *) event_controller,
 				GDK_BUTTON_SECONDARY);
   gtk_widget_add_controller((GtkWidget *) file_widget->filename_view,
 			    event_controller);
@@ -1069,7 +1069,7 @@ ags_file_widget_factory_setup(GtkListItemFactory *factory, GtkListItem *list_ite
 
   gtk_label_set_xalign(label,
 		       0.0);
-  gtk_widget_set_halign(label,
+  gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
 
   gtk_list_item_set_child(list_item,
@@ -1113,7 +1113,7 @@ ags_file_widget_value_factory_bind(GtkListItemFactory *factory, GtkListItem *lis
   
   int retval;
   
-  label = gtk_list_item_get_child(list_item);
+  label = (GtkLabel *) gtk_list_item_get_child(list_item);
 
   string_object = GTK_STRING_OBJECT(gtk_list_item_get_item(list_item));
   primary_key = gtk_string_object_get_string(string_object);
@@ -1445,7 +1445,7 @@ ags_file_widget_set_flags(AgsFileWidget *file_widget,
   if((AGS_FILE_WIDGET_WITH_MULTI_SELECTION & (file_widget->flags)) == 0 &&
      (AGS_FILE_WIDGET_WITH_MULTI_SELECTION & (flags)) != 0){
     gtk_column_view_set_model(file_widget->filename_view,
-			      file_widget->filename_multi_selection);
+			      GTK_SELECTION_MODEL(file_widget->filename_multi_selection));
   }
   
   file_widget->flags |= flags;
@@ -1471,7 +1471,7 @@ ags_file_widget_unset_flags(AgsFileWidget *file_widget,
   if((AGS_FILE_WIDGET_WITH_MULTI_SELECTION & (file_widget->flags)) != 0 &&
      (AGS_FILE_WIDGET_WITH_MULTI_SELECTION & (flags)) != 0){
     gtk_column_view_set_model(file_widget->filename_view,
-			      file_widget->filename_single_selection);
+			      GTK_SELECTION_MODEL(file_widget->filename_single_selection));
   }
 
   file_widget->flags &= (~flags);
@@ -2029,9 +2029,9 @@ ags_file_widget_location_drop_down_callback(GObject *location,
   gchar *current_path;
   gchar *prev_current_path;
 
-  item = gtk_drop_down_get_selected_item(location);
+  item = gtk_drop_down_get_selected_item((GtkDropDown *) location);
 
-  current_path = gtk_string_object_get_string(item);
+  current_path = gtk_string_object_get_string((GtkStringObject *) item);
 
   prev_current_path = file_widget->current_path;
 
@@ -2063,9 +2063,8 @@ ags_file_widget_location_callback(AgsIconLink *icon_link,
     current_path = g_strdup("recently-used:");
   }else if(g_hash_table_lookup(file_widget->location, AGS_FILE_WIDGET_LOCATION_OPEN_START_HERE) == icon_link){
 #if defined(AGS_MACOS_SANDBOX)
-    current_path = g_strdup_printf("%s/Library/%s/workspace",
-				   file_widget->home_path,
-				   file_widget->default_bundle);
+    current_path = g_strdup_printf("%s/Music/GSequencer/workspace",
+				   file_widget->home_path);
 #endif
 
 #if defined(AGS_FLATPAK_SANDBOX)
@@ -2089,20 +2088,21 @@ ags_file_widget_location_callback(AgsIconLink *icon_link,
 #endif
   
 #if !defined(AGS_MACOS_SANDBOX) && !defined(AGS_FLATPAK_SANDBOX) && !defined(AGS_SNAP_SANDBOX)
-    if((str = getenv("HOME")) != NULL){
-      current_path = g_strdup_printf("%s/workspace",
-				     str);
-    }else{
-      current_path = g_strdup_printf("%s/workspace",
-				     file_widget->home_path);
-    }
+    current_path = g_strdup_printf("%s/workspace",
+				   file_widget->home_path);
 #endif    
   }else if(g_hash_table_lookup(file_widget->location, AGS_FILE_WIDGET_LOCATION_OPEN_USER_HOME) == icon_link){
+#if defined(AGS_MACOS_SANDBOX)
+    current_path = g_strdup(file_widget->home_path);
+#endif
+
+#if !defined(AGS_MACOS_SANDBOX)
     if((str = getenv("HOME")) != NULL){
       current_path = g_strdup(str);
     }else{
       current_path = g_strdup(file_widget->home_path);
     }
+#endif
   }else if(g_hash_table_lookup(file_widget->location, AGS_FILE_WIDGET_LOCATION_OPEN_USER_DESKTOP) == icon_link){
     if((str = getenv("XDG_DESKTOP_DIR")) != NULL){
       current_path = g_strdup(str);
@@ -2166,6 +2166,7 @@ ags_file_widget_location_callback(AgsIconLink *icon_link,
 /**
  * ags_file_widget_get_recently_used:
  * @file_widget: the #AgsFileWidget
+ * @strv_length: (out): the string vector length
  *
  * Get recently used from @file_widget.
  *
@@ -2288,7 +2289,8 @@ ags_file_widget_write_recently_used(AgsFileWidget *file_widget)
   xmlNode *node;
 
   gchar **iter;
-  
+
+  gchar *default_path;
   xmlChar *buffer;
 
   int size;
@@ -2319,17 +2321,36 @@ ags_file_widget_write_recently_used(AgsFileWidget *file_widget)
     }
   }
 
+  default_path = NULL;
+  
+  if(strrchr(file_widget->recently_used_filename, '/') != NULL){
+    default_path = g_strndup(file_widget->recently_used_filename,
+			     strrchr(file_widget->recently_used_filename, '/') - file_widget->recently_used_filename);
+  }
+  
+  g_mkdir_with_parents(default_path,
+		       0755);
+
   out = NULL;
   buffer = NULL;
-
-  out = fopen(file_widget->recently_used_filename, "w+");
-  size = 0;
   
-  xmlDocDumpFormatMemoryEnc(recently_used_doc, &(buffer), &size, "UTF-8", TRUE);
+  if(g_file_test(default_path, G_FILE_TEST_EXISTS) &&
+     g_file_test(default_path, G_FILE_TEST_IS_DIR)){
+    out = fopen(file_widget->recently_used_filename, "w+");
+    size = 0;
 
-  fwrite(buffer, size, sizeof(xmlChar), out);
-  fflush(out);
-  fclose(out);
+    if(out != NULL){
+      xmlDocDumpFormatMemoryEnc(recently_used_doc, &(buffer), &size, "UTF-8", TRUE);
+      
+      fwrite(buffer, size, sizeof(xmlChar), out);
+      fflush(out);
+      fclose(out);
+
+      xmlFree(buffer);
+    }
+  }
+
+  xmlFreeDoc(recently_used_doc);
 }
 
 /**
@@ -2578,7 +2599,7 @@ ags_file_widget_rename_response_callback(AgsInputDialog *input_dialog,
     g_free(new_str);
   }
 
-  gtk_window_close(input_dialog);
+  gtk_window_close((GtkWindow *) input_dialog);
 }
 
 void
@@ -2609,7 +2630,7 @@ ags_file_widget_mkdir_response_callback(AgsInputDialog *input_dialog,
     g_free(new_str);
   }
 
-  gtk_window_close(input_dialog);
+  gtk_window_close((GtkWindow *) input_dialog);
 }
 
 void
@@ -2619,8 +2640,8 @@ ags_file_widget_rename_callback(GAction *action, GVariant *parameter,
   GtkWindow *transient_for;
   AgsInputDialog *input_dialog;
 
-  transient_for = gtk_widget_get_ancestor(file_widget,
-					  GTK_TYPE_WINDOW);
+  transient_for = (GtkWindow *) gtk_widget_get_ancestor((GtkWidget *) file_widget,
+							GTK_TYPE_WINDOW);
   
   input_dialog = ags_input_dialog_new(i18n("rename file or directory"),
 				      transient_for);
@@ -2634,9 +2655,9 @@ ags_file_widget_rename_callback(GAction *action, GVariant *parameter,
   g_signal_connect(input_dialog, "response",
 		   G_CALLBACK(ags_file_widget_rename_response_callback), file_widget);
 
-  gtk_window_set_modal(input_dialog,
+  gtk_window_set_modal((GtkWindow *) input_dialog,
 		       TRUE);
-  gtk_window_present(input_dialog);
+  gtk_window_present((GtkWindow *) input_dialog);
 }
 
 void
@@ -2646,8 +2667,8 @@ ags_file_widget_mkdir_callback(GAction *action, GVariant *parameter,
   GtkWindow *transient_for;
   AgsInputDialog *input_dialog;
 
-  transient_for = gtk_widget_get_ancestor(file_widget,
-					  GTK_TYPE_WINDOW);
+  transient_for = (GtkWindow *) gtk_widget_get_ancestor((GtkWidget *) file_widget,
+							GTK_TYPE_WINDOW);
   
   input_dialog = ags_input_dialog_new(i18n("create directory"),
 				      transient_for);
@@ -2661,9 +2682,9 @@ ags_file_widget_mkdir_callback(GAction *action, GVariant *parameter,
   g_signal_connect(input_dialog, "response",
 		   G_CALLBACK(ags_file_widget_mkdir_response_callback), file_widget);
 
-  gtk_window_set_modal(input_dialog,
+  gtk_window_set_modal((GtkWindow *) input_dialog,
 		       TRUE);
-  gtk_window_present(input_dialog);
+  gtk_window_present((GtkWindow *) input_dialog);
 }
 
 void
@@ -2905,7 +2926,8 @@ ags_file_widget_write_bookmark(AgsFileWidget *file_widget)
   xmlDoc *bookmark_doc;
   xmlNode *root_node;
   xmlNode *node;
-  
+
+  gchar *default_path;
   xmlChar *buffer;
 
   int size;
@@ -2940,17 +2962,36 @@ ags_file_widget_write_bookmark(AgsFileWidget *file_widget)
 
   g_list_free(start_bookmark);
 
+  default_path = NULL;
+  
+  if(strrchr(file_widget->recently_used_filename, '/') != NULL){
+    default_path = g_strndup(file_widget->recently_used_filename,
+			     strrchr(file_widget->recently_used_filename, '/') - file_widget->recently_used_filename);
+  }
+  
+  g_mkdir_with_parents(default_path,
+		       0755);
+  
   out = NULL;
   buffer = NULL;
 
-  out = fopen(file_widget->bookmark_filename, "w+");
-  size = 0;
+  if(g_file_test(default_path, G_FILE_TEST_EXISTS) &&
+     g_file_test(default_path, G_FILE_TEST_IS_DIR)){
+    out = fopen(file_widget->bookmark_filename, "w+");
+    size = 0;
   
-  xmlDocDumpFormatMemoryEnc(bookmark_doc, &(buffer), &size, "UTF-8", TRUE);
+    if(out != NULL){
+      xmlDocDumpFormatMemoryEnc(bookmark_doc, &(buffer), &size, "UTF-8", TRUE);
 
-  fwrite(buffer, size, sizeof(xmlChar), out);
-  fflush(out);
-  fclose(out);
+      fwrite(buffer, size, sizeof(xmlChar), out);
+      fflush(out);
+      fclose(out);
+
+      xmlFree(buffer);
+    }
+  }
+
+  xmlFreeDoc(bookmark_doc);
 }
 
 /**
@@ -3238,23 +3279,23 @@ ags_file_widget_real_refresh(AgsFileWidget *file_widget)
       //  g_strfreev(filename_strv);
 
       if(!ags_file_widget_test_flags(file_widget, AGS_FILE_WIDGET_WITH_MULTI_SELECTION)){
-	single_filename_string_list = gtk_string_list_new(filename_strv);
+	single_filename_string_list = gtk_string_list_new((const gchar * const *) filename_strv);
 	gtk_single_selection_set_model(file_widget->filename_single_selection,
-				       single_filename_string_list);
+				       G_LIST_MODEL(single_filename_string_list));
       }
     
       if(ags_file_widget_test_flags(file_widget, AGS_FILE_WIDGET_WITH_MULTI_SELECTION)){
-	multi_filename_string_list = gtk_string_list_new(filename_strv);
+	multi_filename_string_list = gtk_string_list_new((const gchar * const *) filename_strv);
 	gtk_multi_selection_set_model(file_widget->filename_multi_selection,
-				      multi_filename_string_list);
+				      G_LIST_MODEL(multi_filename_string_list));
       }
 
       gtk_editable_set_text(GTK_EDITABLE(file_widget->location_entry),
 			    file_widget->current_path);			  
 
-      location_string_list = gtk_string_list_new(location_strv);
+      location_string_list = gtk_string_list_new((const gchar * const *) location_strv);
       gtk_drop_down_set_model(file_widget->location_drop_down,
-			      location_string_list);
+			      G_LIST_MODEL(location_string_list));
 
       return;
     }
@@ -3267,7 +3308,7 @@ ags_file_widget_real_refresh(AgsFileWidget *file_widget)
 	  (!strncmp(current_filename, "..", 3) == FALSE))){
 	start_filename = g_list_insert_sorted(start_filename,
 					      current_filename,
-					      g_strcmp0);
+					      (GCompareFunc) g_strcmp0);
       }
     }while(current_filename != NULL);
 
@@ -3297,15 +3338,15 @@ ags_file_widget_real_refresh(AgsFileWidget *file_widget)
     filename_strv[j] = NULL;
   
     if(!ags_file_widget_test_flags(file_widget, AGS_FILE_WIDGET_WITH_MULTI_SELECTION)){
-      single_filename_string_list = gtk_string_list_new(filename_strv);
+      single_filename_string_list = gtk_string_list_new((const gchar * const *) filename_strv);
       gtk_single_selection_set_model(file_widget->filename_single_selection,
-				     single_filename_string_list);
+				     G_LIST_MODEL(single_filename_string_list));
     }
     
     if(ags_file_widget_test_flags(file_widget, AGS_FILE_WIDGET_WITH_MULTI_SELECTION)){
-      multi_filename_string_list = gtk_string_list_new(filename_strv);
+      multi_filename_string_list = gtk_string_list_new((const gchar * const *) filename_strv);
       gtk_multi_selection_set_model(file_widget->filename_multi_selection,
-				    multi_filename_string_list);
+				    G_LIST_MODEL(multi_filename_string_list));
     }
     
     g_list_free(start_filename);
@@ -3327,15 +3368,15 @@ ags_file_widget_real_refresh(AgsFileWidget *file_widget)
 						      &count);
 
     if(!ags_file_widget_test_flags(file_widget, AGS_FILE_WIDGET_WITH_MULTI_SELECTION)){
-      single_filename_string_list = gtk_string_list_new(filename_strv);
+      single_filename_string_list = gtk_string_list_new((const gchar * const *) filename_strv);
       gtk_single_selection_set_model(file_widget->filename_single_selection,
-				     single_filename_string_list);
+				     G_LIST_MODEL(single_filename_string_list));
     }
     
     if(ags_file_widget_test_flags(file_widget, AGS_FILE_WIDGET_WITH_MULTI_SELECTION)){
-      multi_filename_string_list = gtk_string_list_new(filename_strv);
+      multi_filename_string_list = gtk_string_list_new((const gchar * const *) filename_strv);
       gtk_multi_selection_set_model(file_widget->filename_multi_selection,
-				    multi_filename_string_list);
+				    G_LIST_MODEL(multi_filename_string_list));
     }
   }
   
@@ -3404,10 +3445,10 @@ ags_file_widget_real_refresh(AgsFileWidget *file_widget)
       
       location_strv[i] = NULL;
 
-      location_string_list = gtk_string_list_new(location_strv);
+      location_string_list = gtk_string_list_new((const gchar * const *) location_strv);
 
       gtk_drop_down_set_model(file_widget->location_drop_down,
-			      location_string_list);
+			      G_LIST_MODEL(location_string_list));
       
       g_list_free(start_location);
       //  g_strfreev(location_strv);

@@ -353,7 +353,7 @@ ags_open_single_file_launch(AgsTask *task)
   //  ags_audio_file_close(audio_file);
 
   ags_audio_file_manager_add_audio_file(ags_audio_file_manager_get_instance(),
-					audio_file);
+					(GObject *) audio_file);
 
   /* iterate channels */
   audio_signal = audio_file->audio_signal;

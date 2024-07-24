@@ -1642,7 +1642,7 @@ ags_pulse_server_find_port(AgsPulseServer *pulse_server,
 	g_list_free_full(port_start,
 			 g_object_unref);
 	
-	return(retval);
+	return((GObject *) retval);
       }
 
       /* iterate */

@@ -417,7 +417,7 @@ ags_led_array_set_led_count(AgsLedArray *led_array,
   if(led_count < led_array->led_count){
     /* shrink */
     for(i = led_count; i < led_array->led_count; i++){
-      gtk_box_remove(led_array,
+      gtk_box_remove((GtkBox *) led_array,
 		     (GtkWidget *) led_array->led[i]);      
       g_object_unref(led_array->led[i]);
     }
@@ -440,7 +440,7 @@ ags_led_array_set_led_count(AgsLedArray *led_array,
     for(i = led_array->led_count; i < led_count; i++){
       led_array->led[i] = ags_led_new(led_array->segment_width,
 				      led_array->segment_height);
-      gtk_box_append(led_array,
+      gtk_box_append((GtkBox *) led_array,
 		     (GtkWidget *) led_array->led[i]);
       gtk_widget_show((GtkWidget *) led_array->led[i]);
     }

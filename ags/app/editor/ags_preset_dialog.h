@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -42,15 +42,15 @@ G_BEGIN_DECLS
 #define AGS_IS_PRESET_DIALOG_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_PRESET_DIALOG))
 #define AGS_PRESET_DIALOG_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_PRESET_DIALOG, AgsPresetDialogClass))
 
-#define AGS_PRESET_DIALOG_DEFAULT_VERSION "4.1.0"
-#define AGS_PRESET_DIALOG_DEFAULT_BUILD_ID "Tue May 31 07:48:20 AM UTC 2022"
+#define AGS_PRESET_DIALOG_DEFAULT_VERSION "6.11.0"
+#define AGS_PRESET_DIALOG_DEFAULT_BUILD_ID "Sun May  5 10:39:01 UTC 2024"
 
 typedef struct _AgsPresetDialog AgsPresetDialog;
 typedef struct _AgsPresetDialogClass AgsPresetDialogClass;
 
 struct _AgsPresetDialog
 {
-  GtkDialog dialog;
+  GtkWindow window;
 
   guint flags;
   guint connectable_flags;
@@ -62,16 +62,24 @@ struct _AgsPresetDialog
 
   GtkScrolledWindow *preset_editor_scrolled_window;
   AgsPresetEditor *preset_editor;
+  
+  GtkBox *action_area;
 
-  GtkButton *ok;
+  GtkButton *activate_button;
 };
 
 struct _AgsPresetDialogClass
 {
-  GtkDialogClass dialog;
+  GtkWindowClass window;
+
+  void (*response)(AgsPresetDialog *preset_dialog,
+		   gint response_id);
 };
 
 GType ags_preset_dialog_get_type(void);
+
+void ags_preset_dialog_response(AgsPresetDialog *preset_dialog,
+				gint response_id);
 
 AgsPresetDialog* ags_preset_dialog_new(gchar *title,
 				       GtkWindow *transient_for,

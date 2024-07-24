@@ -1021,7 +1021,7 @@ ags_alsa_midiin_list_cards(AgsSequencer *sequencer,
             
     error = snd_device_name_hint(card_num,
 				 iface,
-				 &hints);
+				 (void ***) &hints);
 
     if(hints != NULL){
       for(iter = hints; iter[0] != NULL; iter++){
@@ -1044,7 +1044,7 @@ ags_alsa_midiin_list_cards(AgsSequencer *sequencer,
 	}
       }
 
-      snd_device_name_free_hint(hints);
+      snd_device_name_free_hint((void **) hints);
     }
       
     snd_ctl_close(card_handle);

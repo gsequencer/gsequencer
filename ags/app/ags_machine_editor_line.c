@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -191,7 +191,7 @@ ags_machine_editor_line_init(AgsMachineEditorLine *machine_editor_line)
 
   machine_editor_line->line_preset_editor = ags_line_preset_editor_new();
 
-  gtk_widget_set_visible(machine_editor_line->line_preset_editor,
+  gtk_widget_set_visible((GtkWidget *) machine_editor_line->line_preset_editor,
 			 FALSE);
   
   gtk_box_append((GtkBox *) machine_editor_line,
@@ -320,7 +320,7 @@ ags_machine_editor_line_notify_channel_callback(GObject *gobject,
 
   if(AGS_IS_INPUT(channel) &&
      ags_audio_test_flags(audio, AGS_AUDIO_OUTPUT_HAS_RECYCLING)){
-    gtk_widget_set_visible(machine_editor_line->line_preset_editor,
+    gtk_widget_set_visible((GtkWidget *) machine_editor_line->line_preset_editor,
 			   TRUE);
   }
 }

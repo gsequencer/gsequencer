@@ -251,17 +251,17 @@ ags_icon_link_init(AgsIconLink *icon_link)
 
   icon_link->flags = 0;
   
-  icon_link->icon = gtk_image_new();
+  icon_link->icon = (GtkImage *) gtk_image_new();
   gtk_image_set_icon_size(icon_link->icon,
 			  GTK_ICON_SIZE_LARGE);
-  gtk_box_append(icon_link,
-		 icon_link->icon);
+  gtk_box_append((GtkBox *) icon_link,
+		 (GtkWidget *) icon_link->icon);
 
-  icon_link->link = gtk_label_new(NULL);
+  icon_link->link = (GtkLabel *) gtk_label_new(NULL);
   gtk_label_set_use_markup(icon_link->link,
 			   TRUE);
-  gtk_box_append(icon_link,
-		 icon_link->link);
+  gtk_box_append((GtkBox *) icon_link,
+		 (GtkWidget *) icon_link->link);
 
   /* context menu */
   icon_link->context_popup = (GMenu *) g_menu_new();
@@ -271,9 +271,9 @@ ags_icon_link_init(AgsIconLink *icon_link)
   g_menu_append_item(icon_link->context_popup,
 		     menu_item);
 
-  icon_link->context_popover = gtk_popover_menu_new_from_model(G_MENU_MODEL(icon_link->context_popup));
-  gtk_widget_set_parent(icon_link->context_popover,
-			icon_link->icon);
+  icon_link->context_popover = (GtkPopoverMenu *) gtk_popover_menu_new_from_model(G_MENU_MODEL(icon_link->context_popup));
+  gtk_widget_set_parent((GtkWidget *) icon_link->context_popover,
+			(GtkWidget *) icon_link->icon);
   
   context_group =
     icon_link->context_group = g_simple_action_group_new();
@@ -290,7 +290,7 @@ ags_icon_link_init(AgsIconLink *icon_link)
 			  G_ACTION(action));
 
   /* events - gesture click */
-  event_controller = gtk_gesture_click_new();
+  event_controller = (GtkEventController *) gtk_gesture_click_new();
   gtk_widget_add_controller((GtkWidget *) icon_link,
 			    event_controller);
 
@@ -301,9 +301,9 @@ ags_icon_link_init(AgsIconLink *icon_link)
 		   G_CALLBACK(ags_icon_link_gesture_click_released_callback), icon_link);
 
   /* events - gesture secondary */
-  event_controller = gtk_gesture_click_new();
+  event_controller = (GtkEventController *) gtk_gesture_click_new();
 
-  gtk_gesture_single_set_button(event_controller,
+  gtk_gesture_single_set_button((GtkGestureSingle *) event_controller,
 				GDK_BUTTON_SECONDARY);
   
   gtk_widget_add_controller((GtkWidget *) icon_link,
@@ -388,7 +388,7 @@ ags_icon_link_dispose(GObject *gobject)
 
   icon_link = AGS_ICON_LINK(gobject);
 
-  gtk_widget_unparent(icon_link->context_popover);
+  gtk_widget_unparent((GtkWidget *) icon_link->context_popover);
 
   /* call parent */
   G_OBJECT_CLASS(ags_icon_link_parent_class)->dispose(gobject);
@@ -417,7 +417,7 @@ ags_icon_link_snapshot(GtkWidget *widget,
   GTK_WIDGET_CLASS(ags_icon_link_parent_class)->snapshot(widget,
 							 snapshot);
 
-  if(ags_icon_link_test_flags(widget, AGS_ICON_LINK_HIGHLIGHT)){
+  if(ags_icon_link_test_flags((AgsIconLink *) widget, AGS_ICON_LINK_HIGHLIGHT)){
     style_context = gtk_widget_get_style_context((GtkWidget *) widget);  
 
     width = gtk_widget_get_width(widget);
@@ -783,7 +783,7 @@ ags_icon_link_gesture_secondary_released_callback(GtkGestureClick *event_control
 						  AgsIconLink *icon_link)
 {
   if(ags_icon_link_test_flags(icon_link, AGS_ICON_LINK_SHOW_CONTEXT_MENU)){
-    gtk_popover_popup(icon_link->context_popover);
+    gtk_popover_popup((GtkPopover *) icon_link->context_popover);
   }
 }
 
@@ -796,7 +796,7 @@ ags_icon_link_enter_callback(GtkEventControllerMotion *event_controller,
   ags_icon_link_set_flags(icon_link,
 			  AGS_ICON_LINK_HIGHLIGHT);
 
-  gtk_widget_queue_draw(icon_link);
+  gtk_widget_queue_draw((GtkWidget *) icon_link);
 }
 
 void
@@ -806,7 +806,7 @@ ags_icon_link_leave_callback(GtkEventControllerMotion *event_controller,
   ags_icon_link_unset_flags(icon_link,
 			    AGS_ICON_LINK_HIGHLIGHT);
 
-  gtk_widget_queue_draw(icon_link);
+  gtk_widget_queue_draw((GtkWidget *) icon_link);
 }
 
 /**

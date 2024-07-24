@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1822,7 +1822,7 @@ ags_core_audio_server_find_port(AgsCoreAudioServer *core_audio_server,
 	g_list_free_full(port_start,
 			 g_object_unref);
 	
-	return(retval);
+	return((GObject *) retval);
       }
 
       /* iterate */

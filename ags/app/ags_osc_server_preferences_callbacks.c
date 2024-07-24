@@ -150,8 +150,6 @@ ags_osc_server_preferences_enable_ip4_callback(GtkButton *button, AgsOscServerPr
 void
 ags_osc_server_preferences_ip4_address_callback(GtkEditable *editable, AgsOscServerPreferences *osc_server_preferences)
 {
-  GtkEntryBuffer *entry_buffer;
-  
   AgsApplicationContext *application_context;
   
   GList *start_list, *list;
@@ -168,9 +166,7 @@ ags_osc_server_preferences_ip4_address_callback(GtkEditable *editable, AgsOscSer
     start_list = ags_sound_provider_get_osc_server(AGS_SOUND_PROVIDER(application_context));
 
   if(list != NULL){
-    entry_buffer = gtk_entry_get_buffer(GTK_ENTRY(editable));
-
-    ip4 = gtk_entry_buffer_get_text(entry_buffer);
+    ip4 = g_strdup(gtk_editable_get_text(editable));
     
     g_object_set(list->data,
 		 "ip4", ip4,
@@ -214,8 +210,6 @@ ags_osc_server_preferences_enable_ip6_callback(GtkButton *button, AgsOscServerPr
 void
 ags_osc_server_preferences_ip6_address_callback(GtkEditable *editable, AgsOscServerPreferences *osc_server_preferences)
 {
-  GtkEntryBuffer *entry_buffer;
-
   AgsApplicationContext *application_context;
   
   GList *start_list, *list;
@@ -232,9 +226,7 @@ ags_osc_server_preferences_ip6_address_callback(GtkEditable *editable, AgsOscSer
     start_list = ags_sound_provider_get_osc_server(AGS_SOUND_PROVIDER(application_context));
 
   if(list != NULL){
-    entry_buffer = gtk_entry_get_buffer(GTK_ENTRY(editable));
-
-    ip6 = gtk_entry_buffer_get_text(entry_buffer);
+    ip6 = g_strdup(gtk_editable_get_text(editable));
 
     g_object_set(list->data,
 		 "ip6", ip6,
@@ -248,8 +240,6 @@ ags_osc_server_preferences_ip6_address_callback(GtkEditable *editable, AgsOscSer
 void
 ags_osc_server_preferences_port_callback(GtkEditable *editable, AgsOscServerPreferences *osc_server_preferences)
 {
-  GtkEntryBuffer *entry_buffer;
-
   AgsApplicationContext *application_context;
   
   GList *start_list, *list;
@@ -267,11 +257,9 @@ ags_osc_server_preferences_port_callback(GtkEditable *editable, AgsOscServerPref
     start_list = ags_sound_provider_get_osc_server(AGS_SOUND_PROVIDER(application_context));
 
   if(list != NULL){
-    entry_buffer = gtk_entry_get_buffer(GTK_ENTRY(editable));
-
     server_port = AGS_OSC_SERVER_DEFAULT_SERVER_PORT;
 
-    str = gtk_entry_buffer_get_text(entry_buffer);
+    str = gtk_editable_get_text(editable);
 
     if(str != NULL){
       server_port = (guint) g_ascii_strtoull(str,

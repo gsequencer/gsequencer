@@ -80,7 +80,7 @@ struct _AgsMidiExportWizardClass
 {
   GtkWindowClass window;
 
-  void (*response)(AgsMidiExportWizard *midi_export,
+  void (*response)(AgsMidiExportWizard *midi_export_wizard,
 		   gint response_id);
 };
 

@@ -518,8 +518,8 @@ ags_xml_authentication_login(AgsAuthentication *authentication,
 	xmlAddChild(session_list_node,
 		    session_node);
 
-	current_security_token = ags_xml_authentication_generate_token(xml_authentication,
-								       NULL);
+	current_security_token = ags_authentication_generate_token(AGS_AUTHENTICATION(xml_authentication),
+								   NULL);
 
 	xmlNodeSetContent(session_node,
 			  current_security_token);

@@ -1616,7 +1616,7 @@ ags_gstreamer_server_find_port(AgsGstreamerServer *gstreamer_server,
 	g_list_free_full(port_start,
 			 g_object_unref);
 	
-	return(retval);
+	return((GObject *) retval);
       }
 
       /* iterate */

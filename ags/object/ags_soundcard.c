@@ -1084,7 +1084,7 @@ ags_soundcard_get_note_256th_attack(AgsSoundcard *soundcard,
  * @soundcard: the #AgsSoundcard
  * @note_256th_attack_position: the note 256th attack position
  *
- * Get current playback note 256th attack position within AGS_SOUNDCARD_DEFAULT_PERIOD.
+ * Get current playback note 256th attack position within 16 times %AGS_SOUNDCARD_DEFAULT_PERIOD.
  *
  * Since: 6.2.2
  */
@@ -1108,7 +1108,7 @@ ags_soundcard_get_note_256th_attack_at_position(AgsSoundcard *soundcard,
  * @note_256th_attack_position_lower: the return location of attack position lower range
  * @note_256th_attack_position_upper: the return location of attack position upper range
  *
- * Get current playback note 256th attack position within AGS_SOUNDCARD_DEFAULT_PERIOD.
+ * Get current playback note 256th attack position within 16 times %AGS_SOUNDCARD_DEFAULT_PERIOD.
  *
  * Since: 6.2.2
  */

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -645,13 +645,13 @@ ags_export_thread_find_soundcard(AgsExportThread *export_thread,
     return(NULL);
   }
 
-  thread = export_thread;
+  thread = (AgsThread *) export_thread;
   g_object_ref(thread);
   
   while(thread != NULL){
     if(AGS_IS_EXPORT_THREAD(thread) &&
        AGS_EXPORT_THREAD(thread)->soundcard == soundcard){
-      return(thread);
+      return((AgsExportThread *) thread);
     }
 
     /* iterate */

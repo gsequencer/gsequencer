@@ -21,6 +21,7 @@
 #include <ags/app/export/ags_midi_export_wizard_callbacks.h>
 
 #include <ags/app/ags_ui_provider.h>
+#include <ags/app/ags_gsequencer_application.h>
 #include <ags/app/ags_window.h>
 
 #include <ags/app/export/ags_machine_collection.h>
@@ -197,10 +198,23 @@ ags_midi_export_wizard_class_init(AgsMidiExportWizardClass *midi_export_wizard)
 void
 ags_midi_export_wizard_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
   connectable->is_connected = NULL;
   connectable->connect = ags_midi_export_wizard_connect;
   connectable->disconnect = ags_midi_export_wizard_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -227,6 +241,7 @@ ags_midi_export_wizard_init(AgsMidiExportWizard *midi_export_wizard)
   gchar *bookmark_filename;
   gchar *home_path;
   gchar *sandbox_path;
+  gchar *current_path;
   gchar *str;
 
   application_context = ags_application_context_get_instance();
@@ -242,8 +257,8 @@ ags_midi_export_wizard_init(AgsMidiExportWizard *midi_export_wizard)
   gtk_window_set_transient_for((GtkWindow *) midi_export_wizard,
 			       (GtkWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
 
-  g_signal_connect(midi_export_wizard, "close-request",
-		   G_CALLBACK(ags_midi_export_wizard_close_request_callback), midi_export_wizard);
+  g_signal_connect_after(midi_export_wizard, "close-request",
+			 G_CALLBACK(ags_midi_export_wizard_close_request_callback), midi_export_wizard);
 
   event_controller = gtk_event_controller_key_new();
   gtk_widget_add_controller((GtkWidget *) midi_export_wizard,
@@ -290,14 +305,14 @@ ags_midi_export_wizard_init(AgsMidiExportWizard *midi_export_wizard)
   /* file chooser */  
   file_widget = ags_file_widget_new();
 
-  midi_export_wizard->file_widget = file_widget;
+  midi_export_wizard->file_widget = (GtkWidget *) file_widget;
 
   home_path = ags_file_widget_get_home_path(file_widget);
 
   sandbox_path = NULL;
   
 #if defined(AGS_MACOS_SANDBOX)
-  sandbox_path = g_strdup_printf("%s/Library/%s",
+  sandbox_path = g_strdup_printf("%s/Library/Containers/%s/Data",
 				 home_path,
 				 AGS_DEFAULT_BUNDLE_ID);
 
@@ -362,34 +377,35 @@ ags_midi_export_wizard_init(AgsMidiExportWizard *midi_export_wizard)
 
   ags_file_widget_read_bookmark(file_widget);
 
+  /* current path */
+  current_path = NULL;
+    
 #if defined(AGS_MACOS_SANDBOX)
-  ags_file_widget_set_flags(file_widget,
-			    AGS_FILE_WIDGET_APP_SANDBOX);
-
-  ags_file_widget_set_current_path(file_widget,
-				   sandbox_path);
+  current_path = g_strdup(home_path);
 #endif
 
 #if defined(AGS_FLATPAK_SANDBOX)
   ags_file_widget_set_flags(file_widget,
 			    AGS_FILE_WIDGET_APP_SANDBOX);
 
-  ags_file_widget_set_current_path(file_widget,
-				   sandbox_path);
+  current_path = g_strdup(sandbox_path);
 #endif
 
 #if defined(AGS_SNAP_SANDBOX)
   ags_file_widget_set_flags(file_widget,
 			    AGS_FILE_WIDGET_APP_SANDBOX);
 
-  ags_file_widget_set_current_path(file_widget,
-				   sandbox_path);
+  current_path = g_strdup(sandbox_path);
 #endif
   
 #if !defined(AGS_MACOS_SANDBOX) && !defined(AGS_FLATPAK_SANDBOX) && !defined(AGS_SNAP_SANDBOX)
-  ags_file_widget_set_current_path(file_widget,
-				   home_path);
+  current_path = g_strdup(home_path);
 #endif
+
+  ags_file_widget_set_current_path(file_widget,
+				   current_path);
+
+  g_free(current_path);
 
   ags_file_widget_refresh(file_widget);
 
@@ -415,17 +431,17 @@ ags_midi_export_wizard_init(AgsMidiExportWizard *midi_export_wizard)
   ags_file_widget_set_default_bundle(file_widget,
 				     AGS_DEFAULT_BUNDLE_ID);
 
-  gtk_widget_set_halign(file_widget,
+  gtk_widget_set_halign((GtkWidget *) file_widget,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_valign(file_widget,
+  gtk_widget_set_valign((GtkWidget *) file_widget,
 			GTK_ALIGN_FILL);
 
-  gtk_widget_set_hexpand(file_widget,
+  gtk_widget_set_hexpand((GtkWidget *) file_widget,
 			 TRUE);
-  gtk_widget_set_vexpand(file_widget,
+  gtk_widget_set_vexpand((GtkWidget *) file_widget,
 			 TRUE);
 
-  gtk_widget_set_visible(file_widget,
+  gtk_widget_set_visible((GtkWidget *) file_widget,
 			 FALSE);
   
   gtk_box_append(vbox,
@@ -435,7 +451,7 @@ ags_midi_export_wizard_init(AgsMidiExportWizard *midi_export_wizard)
   action_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				       AGS_UI_PROVIDER_DEFAULT_SPACING);
 
-  gtk_widget_set_halign(action_area,
+  gtk_widget_set_halign((GtkWidget *) action_area,
 			GTK_ALIGN_END);
 
   gtk_box_append(vbox,
@@ -562,7 +578,7 @@ ags_midi_export_wizard_apply(AgsApplicable *applicable)
   application_context = ags_application_context_get_instance();
   
   /* retrieve BPM */
-  navigation = ags_ui_provider_get_navigation(AGS_UI_PROVIDER(application_context));
+  navigation = (AgsNavigation *) ags_ui_provider_get_navigation(AGS_UI_PROVIDER(application_context));
   
   bpm = gtk_spin_button_get_value_as_int(navigation->bpm);
   
@@ -596,7 +612,7 @@ ags_midi_export_wizard_apply(AgsApplicable *applicable)
   midi_export_wizard->pulse_unit = division / 16.0;
   
   /* open file */
-  filename = ags_file_widget_get_filename(midi_export_wizard->file_widget);
+  filename = ags_file_widget_get_filename((AgsFileWidget *) midi_export_wizard->file_widget);
 
   ags_midi_builder_open_filename(midi_export_wizard->midi_builder,
 				 filename);
@@ -645,8 +661,14 @@ void
 ags_midi_export_wizard_close_request_callback(GtkWindow *window,
 					      AgsMidiExportWizard *midi_export_wizard)
 {
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+  
   ags_midi_export_wizard_response(midi_export_wizard,
 				  GTK_RESPONSE_CLOSE);
+
+  ags_gsequencer_application_refresh_window_menu((AgsGSequencerApplication *) ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
 }
 
 void

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -377,7 +377,7 @@ ags_sound_provider_get_osc_server(AgsSoundProvider *sound_provider)
 /**
  * ags_sound_provider_set_program:
  * @sound_provider: the #AgsSoundProvider
- * @program: (element-type AgsProgram.Program) (transfer full): a #GList-struct containing #AgsProgram
+ * @program: (element-type AgsAudio.Program) (transfer full): a #GList-struct containing #AgsProgram
  * 
  * Set program objects.
  *
@@ -403,7 +403,7 @@ ags_sound_provider_set_program(AgsSoundProvider *sound_provider,
  * 
  * Get program objects.
  *
- * Returns: (element-type AgsProgram.Program) (transfer full): a #GList-struct containing #AgsProgram
+ * Returns: (element-type AgsAudio.Program) (transfer full): a #GList-struct containing #AgsProgram
  * 
  * Since: 5.1.0
  */
@@ -422,7 +422,7 @@ ags_sound_provider_get_program(AgsSoundProvider *sound_provider)
 /**
  * ags_sound_provider_set_tempo:
  * @sound_provider: the #AgsSoundProvider
- * @tempo: (element-type AgsTempo.Tempo) (transfer full): a #GList-struct containing #AgsTempo
+ * @tempo: (element-type AgsAudio.Program) (transfer full): a #GList-struct containing #AgsTempo
  * 
  * Set tempo objects.
  *
@@ -448,7 +448,7 @@ ags_sound_provider_set_tempo(AgsSoundProvider *sound_provider,
  * 
  * Get tempo objects.
  *
- * Returns: (element-type AgsTempo.Tempo) (transfer full): a #GList-struct containing #AgsTempo
+ * Returns: (element-type AgsAudio.Program) (transfer full): a #GList-struct containing #AgsTempo
  * 
  * Since: 5.4.1
  */
@@ -462,4 +462,49 @@ ags_sound_provider_get_tempo(AgsSoundProvider *sound_provider)
   g_return_val_if_fail(sound_provider_interface->get_tempo, NULL);
 
   return(sound_provider_interface->get_tempo(sound_provider));
+}
+
+/**
+ * ags_sound_provider_set_time_signature:
+ * @sound_provider: the #AgsSoundProvider
+ * @time_signature: (element-type AgsAudio.Program) (transfer full): a #GList-struct containing #AgsProgram
+ * 
+ * Set time signature objects.
+ *
+ * Since: 6.14.0
+ */
+void
+ags_sound_provider_set_time_signature(AgsSoundProvider *sound_provider,
+				      GList *time_signature)
+{
+  AgsSoundProviderInterface *sound_provider_interface;
+
+  g_return_if_fail(AGS_IS_SOUND_PROVIDER(sound_provider));
+  sound_provider_interface = AGS_SOUND_PROVIDER_GET_INTERFACE(sound_provider);
+  g_return_if_fail(sound_provider_interface->set_time_signature);
+
+  sound_provider_interface->set_time_signature(sound_provider,
+					       time_signature);
+}
+
+/**
+ * ags_sound_provider_get_time_signature:
+ * @sound_provider: the #AgsSoundProvider
+ * 
+ * Get time signature objects.
+ *
+ * Returns: (element-type AgsAudio.Program) (transfer full): a #GList-struct containing #AgsProgram
+ * 
+ * Since: 6.14.0
+ */
+GList*
+ags_sound_provider_get_time_signature(AgsSoundProvider *sound_provider)
+{
+  AgsSoundProviderInterface *sound_provider_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUND_PROVIDER(sound_provider), NULL);
+  sound_provider_interface = AGS_SOUND_PROVIDER_GET_INTERFACE(sound_provider);
+  g_return_val_if_fail(sound_provider_interface->get_time_signature, NULL);
+
+  return(sound_provider_interface->get_time_signature(sound_provider));
 }

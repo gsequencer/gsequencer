@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,6 +28,7 @@ void ags_fm_oscillator_class_init(AgsFMOscillatorClass *fm_oscillator);
 void ags_fm_oscillator_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator);
 
+gboolean ags_fm_oscillator_is_connected(AgsConnectable *connectable);
 void ags_fm_oscillator_connect(AgsConnectable *connectable);
 void ags_fm_oscillator_disconnect(AgsConnectable *connectable);
 
@@ -121,12 +122,25 @@ ags_fm_oscillator_class_init(AgsFMOscillatorClass *fm_oscillator)
 void
 ags_fm_oscillator_connectable_interface_init(AgsConnectableInterface *connectable)
 {
-  ags_fm_oscillator_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+  //  ags_fm_oscillator_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
 
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_fm_oscillator_is_connected;  
   connectable->connect = ags_fm_oscillator_connect;
   connectable->disconnect = ags_fm_oscillator_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -476,6 +490,21 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
 		  1, 1);
 }
 
+gboolean
+ags_fm_oscillator_is_connected(AgsConnectable *connectable)
+{
+  AgsFMOscillator *fm_oscillator;
+  
+  gboolean is_connected;
+  
+  fm_oscillator = AGS_FM_OSCILLATOR(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (fm_oscillator->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
+}
+
 void
 ags_fm_oscillator_connect(AgsConnectable *connectable)
 {
@@ -485,7 +514,7 @@ ags_fm_oscillator_connect(AgsConnectable *connectable)
   
   fm_oscillator = AGS_FM_OSCILLATOR(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (fm_oscillator->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -539,7 +568,7 @@ ags_fm_oscillator_disconnect(AgsConnectable *connectable)
   
   fm_oscillator = AGS_FM_OSCILLATOR(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (fm_oscillator->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 

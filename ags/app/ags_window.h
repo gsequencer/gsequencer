@@ -59,7 +59,7 @@ struct _AgsWindow
   GtkApplicationWindow application_window;
 
   guint flags;
-  guint connectable_flags;
+  AgsConnectableFlags connectable_flags;
   
   gboolean no_config;
   gboolean shows_menu_bar;

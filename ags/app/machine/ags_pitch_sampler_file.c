@@ -31,6 +31,7 @@ void ags_pitch_sampler_file_class_init(AgsPitchSamplerFileClass *pitch_sampler_f
 void ags_pitch_sampler_file_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_pitch_sampler_file_init(AgsPitchSamplerFile *pitch_sampler_file);
 
+gboolean ags_pitch_sampler_file_is_connected(AgsConnectable *connectable);
 void ags_pitch_sampler_file_connect(AgsConnectable *connectable);
 void ags_pitch_sampler_file_disconnect(AgsConnectable *connectable);
 
@@ -122,12 +123,25 @@ ags_pitch_sampler_file_class_init(AgsPitchSamplerFileClass *pitch_sampler_file)
 void
 ags_pitch_sampler_file_connectable_interface_init(AgsConnectableInterface *connectable)
 {
-  ags_pitch_sampler_file_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+  //  ags_pitch_sampler_file_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
 
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_pitch_sampler_file_is_connected;  
   connectable->connect = ags_pitch_sampler_file_connect;
   connectable->disconnect = ags_pitch_sampler_file_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -290,6 +304,21 @@ ags_pitch_sampler_file_init(AgsPitchSamplerFile *pitch_sampler_file)
 		  1, 1);
 }
 
+gboolean
+ags_pitch_sampler_file_is_connected(AgsConnectable *connectable)
+{
+  AgsPitchSamplerFile *pitch_sampler_file;
+  
+  gboolean is_connected;
+  
+  pitch_sampler_file = AGS_PITCH_SAMPLER_FILE(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (pitch_sampler_file->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
+}
+
 void
 ags_pitch_sampler_file_connect(AgsConnectable *connectable)
 {
@@ -297,7 +326,7 @@ ags_pitch_sampler_file_connect(AgsConnectable *connectable)
   
   pitch_sampler_file = AGS_PITCH_SAMPLER_FILE(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (pitch_sampler_file->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -311,7 +340,7 @@ ags_pitch_sampler_file_disconnect(AgsConnectable *connectable)
   
   pitch_sampler_file = AGS_PITCH_SAMPLER_FILE(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (pitch_sampler_file->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 

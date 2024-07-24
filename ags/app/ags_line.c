@@ -2073,10 +2073,10 @@ ags_line_add_lv2_plugin(AgsLine *line,
   g_rec_mutex_lock(lv2_manager_mutex);
 	      
   is_lv2_plugin = ((lv2_manager->quick_scan_plugin_filename != NULL &&
-		    g_strv_contains(lv2_manager->quick_scan_plugin_filename,
+		    g_strv_contains((const gchar * const *) lv2_manager->quick_scan_plugin_filename,
 				    filename)) ||
 		   (lv2_manager->quick_scan_instrument_filename != NULL &&
-		    g_strv_contains(lv2_manager->quick_scan_instrument_filename,
+		    g_strv_contains((const gchar * const *) lv2_manager->quick_scan_instrument_filename,
 				    filename))) ? TRUE: FALSE;
 	      
   g_rec_mutex_unlock(lv2_manager_mutex);

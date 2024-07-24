@@ -202,7 +202,7 @@ ags_osc_websocket_connection_class_init(AgsOscWebsocketConnectionClass *osc_webs
 				  param_spec);
 
   /* AgsOscConnectionClass */
-  osc_connection = (AgsOscConnection *) osc_websocket_connection;
+  osc_connection = (AgsOscConnectionClass *) osc_websocket_connection;
   
   osc_connection->read_bytes = NULL;
   osc_connection->write_response = ags_osc_websocket_connection_write_response;
@@ -263,7 +263,7 @@ ags_osc_websocket_connection_set_property(GObject *gobject,
       g_object_ref(websocket_connection);
     }
       
-    osc_websocket_connection->websocket_connection = websocket_connection;
+    osc_websocket_connection->websocket_connection = (SoupWebsocketConnection *) websocket_connection;
 
     g_rec_mutex_unlock(osc_connection_mutex);
   }

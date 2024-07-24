@@ -145,12 +145,12 @@ ags_desk_pad_init(AgsDeskPad *desk_pad)
 
   /* position */
   desk_pad->position_time = (GtkLabel *) gtk_label_new("00:00.000");
-  gtk_box_append(desk_pad,
+  gtk_box_append((GtkBox *) desk_pad,
 		 (GtkWidget *) desk_pad->position_time);
   
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
-  gtk_box_append(desk_pad,
+  gtk_box_append((GtkBox *) desk_pad,
 		 (GtkWidget *) hbox);
   
   desk_pad->position = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,
@@ -161,7 +161,7 @@ ags_desk_pad_init(AgsDeskPad *desk_pad)
   /* filename */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
-  gtk_box_append(desk_pad,
+  gtk_box_append((GtkBox *) desk_pad,
 		 (GtkWidget *) hbox);
 
   /* play */
@@ -182,7 +182,7 @@ ags_desk_pad_init(AgsDeskPad *desk_pad)
   /* controls/playlist */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
-  gtk_box_append(desk_pad,
+  gtk_box_append((GtkBox *) desk_pad,
 		 (GtkWidget *) hbox);
   
   /* controls */

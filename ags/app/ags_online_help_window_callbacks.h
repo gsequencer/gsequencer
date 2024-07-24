@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,6 +32,8 @@
 #include <ags/app/ags_online_help_window.h>
 
 G_BEGIN_DECLS
+
+gboolean ags_online_help_window_close_request_callback(GtkWindow *window, gpointer user_data);
 
 #if defined(AGS_WITH_WEBKIT)
 void ags_online_help_window_load_changed(WebKitWebView *web_view,

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -249,28 +249,48 @@ void
 ags_composite_toolbar_menu_tool_popup_notation_move_note_callback(GAction *action, GVariant *parameter,
 								  AgsCompositeToolbar *composite_toolbar)
 {
-  gtk_widget_show((GtkWidget *) composite_toolbar->notation_move_note);
+  if(gtk_widget_get_parent((GtkWidget *) composite_toolbar->notation_move_note) == NULL){
+    gtk_box_append(composite_toolbar->menu_tool_box,
+		   (GtkWidget *) composite_toolbar->notation_move_note);
+  }
+  
+  gtk_popover_popup(composite_toolbar->notation_move_note);
 }
 
 void
 ags_composite_toolbar_menu_tool_popup_notation_crop_note_callback(GAction *action, GVariant *parameter,
 								  AgsCompositeToolbar *composite_toolbar)
 {
-  gtk_widget_show((GtkWidget *) composite_toolbar->notation_crop_note);
+  if(gtk_widget_get_parent((GtkWidget *) composite_toolbar->notation_crop_note) == NULL){
+    gtk_box_append(composite_toolbar->menu_tool_box,
+		   (GtkWidget *) composite_toolbar->notation_crop_note);
+  }
+  
+  gtk_popover_popup(composite_toolbar->notation_crop_note);
 }
 
 void
 ags_composite_toolbar_menu_tool_popup_notation_select_note_callback(GAction *action, GVariant *parameter,
 								    AgsCompositeToolbar *composite_toolbar)
 {
-  gtk_widget_show((GtkWidget *) composite_toolbar->notation_select_note);
+  if(gtk_widget_get_parent((GtkWidget *) composite_toolbar->notation_select_note) == NULL){
+    gtk_box_append(composite_toolbar->menu_tool_box,
+		   (GtkWidget *) composite_toolbar->notation_select_note);
+  }
+  
+  gtk_popover_popup(composite_toolbar->notation_select_note);
 }
 
 void
 ags_composite_toolbar_menu_tool_popup_notation_position_cursor_callback(GAction *action, GVariant *parameter,
 									AgsCompositeToolbar *composite_toolbar)
 {
-  gtk_widget_show((GtkWidget *) composite_toolbar->notation_position_cursor);
+  if(gtk_widget_get_parent((GtkWidget *) composite_toolbar->notation_position_cursor) == NULL){
+    gtk_box_append(composite_toolbar->menu_tool_box,
+		   (GtkWidget *) composite_toolbar->notation_position_cursor);
+  }
+
+  gtk_popover_popup(composite_toolbar->notation_position_cursor);
 }
 
 void
@@ -298,52 +318,87 @@ void
 ags_composite_toolbar_menu_tool_popup_automation_select_acceleration_callback(GAction *action, GVariant *parameter,
 									      AgsCompositeToolbar *composite_toolbar)
 {
+  if(gtk_widget_get_parent((GtkWidget *) composite_toolbar->automation_select_acceleration) == NULL){
+    gtk_box_append(composite_toolbar->menu_tool_box,
+		   (GtkWidget *) composite_toolbar->automation_select_acceleration);
+  }
+
   ags_applicable_reset(AGS_APPLICABLE(composite_toolbar->automation_select_acceleration));
   
-  gtk_widget_show((GtkWidget *) composite_toolbar->automation_select_acceleration);
+  gtk_popover_popup(composite_toolbar->automation_select_acceleration);
 }
 
 void
 ags_composite_toolbar_menu_tool_popup_automation_ramp_acceleration_callback(GAction *action, GVariant *parameter,
 									    AgsCompositeToolbar *composite_toolbar)
 {
+  if(gtk_widget_get_parent((GtkWidget *) composite_toolbar->automation_ramp_acceleration) == NULL){
+    gtk_box_append(composite_toolbar->menu_tool_box,
+		   (GtkWidget *) composite_toolbar->automation_ramp_acceleration);
+  }
+
   ags_applicable_reset(AGS_APPLICABLE(composite_toolbar->automation_ramp_acceleration));
   
-  gtk_widget_show((GtkWidget *) composite_toolbar->automation_ramp_acceleration);
+  gtk_popover_popup(composite_toolbar->automation_ramp_acceleration);
 }
 
 void
 ags_composite_toolbar_menu_tool_popup_automation_position_cursor_callback(GAction *action, GVariant *parameter,
 									  AgsCompositeToolbar *composite_toolbar)
 {  
-  gtk_widget_show((GtkWidget *) composite_toolbar->automation_position_cursor);
+  if(gtk_widget_get_parent((GtkWidget *) composite_toolbar->automation_position_cursor) == NULL){
+    gtk_box_append(composite_toolbar->menu_tool_box,
+		   (GtkWidget *) composite_toolbar->automation_position_cursor);
+  }
+
+  gtk_popover_popup(composite_toolbar->automation_position_cursor);
 }
 
 void
 ags_composite_toolbar_menu_tool_popup_wave_select_buffer_callback(GAction *action, GVariant *parameter,
 								  AgsCompositeToolbar *composite_toolbar)
 {
-  gtk_widget_show((GtkWidget *) composite_toolbar->wave_select_buffer);
+  if(gtk_widget_get_parent((GtkWidget *) composite_toolbar->wave_select_buffer) == NULL){
+    gtk_box_append(composite_toolbar->menu_tool_box,
+		   (GtkWidget *) composite_toolbar->wave_select_buffer);
+  }
+
+  gtk_popover_popup(composite_toolbar->wave_select_buffer);
 }
 
 void
 ags_composite_toolbar_menu_tool_popup_wave_position_cursor_callback(GAction *action, GVariant *parameter,
 								    AgsCompositeToolbar *composite_toolbar)
 {
-  gtk_widget_show((GtkWidget *) composite_toolbar->wave_position_cursor);
+  if(gtk_widget_get_parent((GtkWidget *) composite_toolbar->wave_position_cursor) == NULL){
+    gtk_box_append(composite_toolbar->menu_tool_box,
+		   (GtkWidget *) composite_toolbar->wave_position_cursor);
+  }
+
+  gtk_popover_popup(composite_toolbar->wave_position_cursor);
 }
 
 void
 ags_composite_toolbar_menu_tool_popup_wave_time_stretch_buffer_callback(GAction *action, GVariant *parameter,
 									AgsCompositeToolbar *composite_toolbar)
 {
-  gtk_widget_show((GtkWidget *) composite_toolbar->wave_time_stretch_buffer);
+  if(gtk_widget_get_parent((GtkWidget *) composite_toolbar->wave_time_stretch_buffer) == NULL){
+    gtk_box_append(composite_toolbar->menu_tool_box,
+		   (GtkWidget *) composite_toolbar->wave_time_stretch_buffer);
+  }
+
+  gtk_popover_popup(composite_toolbar->wave_time_stretch_buffer);
 }
 
 void
 ags_composite_toolbar_menu_tool_popup_program_ramp_marker_callback(GAction *action, GVariant *parameter,
 								   AgsCompositeToolbar *composite_toolbar)
 {
+  if(gtk_widget_get_parent((GtkWidget *) composite_toolbar->program_ramp_marker) == NULL){
+    gtk_box_append(composite_toolbar->menu_tool_box,
+		   (GtkWidget *) composite_toolbar->program_ramp_marker);
+  }
+
   ags_applicable_reset(AGS_APPLICABLE(composite_toolbar->program_ramp_marker));
   
   gtk_widget_show((GtkWidget *) composite_toolbar->program_ramp_marker);

@@ -205,6 +205,8 @@ struct _AgsAlsaDevin
 
   guint note_256th_attack_of_16th_pulse;
   guint note_256th_attack_of_16th_pulse_position;
+
+  gdouble note_256th_delay_counter;
 };
 
 struct _AgsAlsaDevinClass

@@ -424,7 +424,7 @@ ags_machine_collection_add_entry(AgsMachineCollection *machine_collection,
 
   machine_mapper = (AgsMachineMapper *) g_object_new_with_properties(machine_collection->machine_mapper_type,
 								     machine_collection->machine_mapper_n_properties,
-								     machine_collection->machine_mapper_strv,
+								     (const gchar **) machine_collection->machine_mapper_strv,
 								     machine_collection->machine_mapper_value);
   g_object_set(machine_mapper,
 	       "machine", machine,

@@ -24,7 +24,6 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
-#include <ags/app/ags_pcm_file_dialog.h>
 #include <ags/app/ags_pad.h>
 #include <ags/app/ags_navigation.h>
 
@@ -51,6 +50,7 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
   gchar *bookmark_filename;
   gchar *home_path;
   gchar *sandbox_path;
+  gchar *current_path;
   gchar *str;
 
   gchar *drumkits_bookmark_filename;
@@ -82,7 +82,7 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
   pcm_file_dialog = ags_pcm_file_dialog_new((GtkWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)),
 					    i18n("open audio files"));
 
-  drum->open_dialog = (GtkWidget *) pcm_file_dialog;
+  drum->open_dialog = pcm_file_dialog;
 
   file_widget = ags_pcm_file_dialog_get_file_widget(pcm_file_dialog);
 
@@ -91,7 +91,7 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
   sandbox_path = NULL;
 
 #if defined(AGS_MACOS_SANDBOX)
-  sandbox_path = g_strdup_printf("%s/Library/%s",
+  sandbox_path = g_strdup_printf("%s/Library/Containers/%s/Data",
 				 home_path,
 				 AGS_DEFAULT_BUNDLE_ID);
 
@@ -156,34 +156,35 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
 
   ags_file_widget_read_bookmark(file_widget);
 
+  /* current path */
+  current_path = NULL;
+    
 #if defined(AGS_MACOS_SANDBOX)
-  ags_file_widget_set_flags(file_widget,
-			    AGS_FILE_WIDGET_APP_SANDBOX);
-
-  ags_file_widget_set_current_path(file_widget,
-				   sandbox_path);
+  current_path = g_strdup(home_path);
 #endif
 
 #if defined(AGS_FLATPAK_SANDBOX)
   ags_file_widget_set_flags(file_widget,
 			    AGS_FILE_WIDGET_APP_SANDBOX);
 
-  ags_file_widget_set_current_path(file_widget,
-				   sandbox_path);
+  current_path = g_strdup(sandbox_path);
 #endif
 
 #if defined(AGS_SNAP_SANDBOX)
   ags_file_widget_set_flags(file_widget,
 			    AGS_FILE_WIDGET_APP_SANDBOX);
 
-  ags_file_widget_set_current_path(file_widget,
-				   sandbox_path);
+  current_path = g_strdup(sandbox_path);
 #endif
   
 #if !defined(AGS_MACOS_SANDBOX) && !defined(AGS_FLATPAK_SANDBOX) && !defined(AGS_SNAP_SANDBOX)
-  ags_file_widget_set_current_path(file_widget,
-				   home_path);
+  current_path = g_strdup(home_path);
 #endif
+
+  ags_file_widget_set_current_path(file_widget,
+				   current_path);
+
+  g_free(current_path);
 
   ags_file_widget_refresh(file_widget);
 
@@ -247,7 +248,7 @@ ags_drum_open_response_callback(AgsPCMFileDialog *pcm_file_dialog, gint response
       start_filename = ags_file_widget_get_filenames(file_widget);
 
     while(filename != NULL){
-      if(!g_strv_contains(file_widget->recently_used, filename->data)){
+      if(!g_strv_contains((const gchar * const *) file_widget->recently_used, filename->data)){
 	strv_length = g_strv_length(file_widget->recently_used);
 
 	file_widget->recently_used = g_realloc(file_widget->recently_used,

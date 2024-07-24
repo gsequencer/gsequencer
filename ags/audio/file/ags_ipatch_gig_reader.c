@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -858,7 +858,7 @@ ags_ipatch_gig_reader_get_sample_all(AgsIpatchGigReader *ipatch_gig_reader)
 
   gig = ipatch_gig_reader->gig;
   
-  ipatch_list = ipatch_container_get_children(gig, IPATCH_TYPE_DLS2_SAMPLE);
+  ipatch_list = ipatch_container_get_children((IpatchContainer *) gig, IPATCH_TYPE_DLS2_SAMPLE);
   
   if(ipatch_list != NULL){
     ipatch_list_init_iter(ipatch_list, &sample_iter);

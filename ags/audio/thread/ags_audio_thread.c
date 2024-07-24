@@ -515,10 +515,10 @@ ags_audio_thread_start(AgsThread *thread)
 #endif
   
   /* reset status */
-  ags_audio_thread_set_nested_sync_flags(thread, (AGS_AUDIO_THREAD_STATUS_WAIT |
-						  AGS_AUDIO_THREAD_STATUS_DONE |
-						  AGS_AUDIO_THREAD_STATUS_WAIT_SYNC |
-						  AGS_AUDIO_THREAD_STATUS_DONE_SYNC));
+  ags_audio_thread_set_nested_sync_flags((AgsAudioThread *) thread, (AGS_AUDIO_THREAD_STATUS_WAIT |
+								     AGS_AUDIO_THREAD_STATUS_DONE |
+								     AGS_AUDIO_THREAD_STATUS_WAIT_SYNC |
+								     AGS_AUDIO_THREAD_STATUS_DONE_SYNC));
   
   AGS_THREAD_CLASS(ags_audio_thread_parent_class)->start(thread);
 }
@@ -584,7 +584,7 @@ ags_audio_thread_run(AgsThread *thread)
   }
 #endif
 
-  audio_loop = thread->parent;
+  audio_loop = (AgsAudioLoop *) thread->parent;
 
   if(!ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_SYNCED)){
     return;

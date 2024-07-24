@@ -312,7 +312,7 @@ ags_solver_polynomial_set_property(GObject *gobject,
     g_rec_mutex_lock(solver_polynomial_mutex);
 
     if(solver_polynomial->symbol != NULL &&
-       g_strv_contains(solver_polynomial->symbol, symbol)){
+       g_strv_contains((const gchar * const *) solver_polynomial->symbol, symbol)){
       g_rec_mutex_unlock(solver_polynomial_mutex);
 
       return;

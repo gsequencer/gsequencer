@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1320,12 +1320,16 @@ ags_functional_test_util_fake_mouse_button_click(gpointer display, guint button)
 void
 ags_functional_test_util_fake_button_click(GtkButton *button)
 {
+  gtk_widget_grab_focus(button);
+  
   g_signal_emit_by_name(button, "clicked");
 }
 
 void
 ags_functional_test_util_fake_toggle_button_click(GtkToggleButton *toggle_button)
 {
+  gtk_widget_grab_focus(toggle_button);
+  
   gtk_toggle_button_set_active(toggle_button,
 			       !gtk_toggle_button_get_active(toggle_button));
 }
@@ -1333,6 +1337,8 @@ ags_functional_test_util_fake_toggle_button_click(GtkToggleButton *toggle_button
 void
 ags_functional_test_util_fake_check_button_click(GtkCheckButton *check_button)
 {
+  gtk_widget_grab_focus(check_button);
+  
   gtk_check_button_set_active(check_button,
 			      !gtk_check_button_get_active(check_button));
 }
@@ -1741,48 +1747,61 @@ ags_functional_test_util_dialog_apply_driver_program(guint n_params,
 						     gchar **param_strv,
 						     GValue *param)
 {
-  GtkDialog *dialog;
+  GtkWindow *dialog;
+  GtkButton *button;
   
   dialog = g_value_get_object(param);
-
-  gtk_dialog_response(dialog,
-		      GTK_RESPONSE_APPLY);
+  button = g_value_get_object(param + 1);
+  
+  g_signal_emit_by_name(dialog,
+			"response",
+			GTK_RESPONSE_APPLY);
 
   ags_functional_test_util_reaction_time_long();
 }
 
 void
-ags_functional_test_util_dialog_apply(GtkDialog *dialog)
+ags_functional_test_util_dialog_apply(GtkWindow *dialog, GtkButton *apply_button)
 {
   AgsFunctionalTestUtilDriverProgram *driver_program;
 
-  if(!GTK_IS_DIALOG(dialog)){
+  if(!GTK_IS_WINDOW(dialog)){
     return;
   }
 
+#if 0
   driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
 			  1);
 
   driver_program->driver_program_func = ags_functional_test_util_dialog_apply_driver_program;
   
-  driver_program->n_params = 1;
+  driver_program->n_params = 2;
 
   /* param string vector */
-  driver_program->param_strv = g_malloc(2 * sizeof(gchar *));
+  driver_program->param_strv = g_malloc(3 * sizeof(gchar *));
 
   driver_program->param_strv[0] = g_strdup("dialog");
-  driver_program->param_strv[1] = NULL;
+  driver_program->param_strv[1] = g_strdup("apply-button");
+  driver_program->param_strv[2] = NULL;
   
   /* param value array */
   driver_program->param = g_new0(GValue,
-				 1);
+				 2);
 
   g_value_init(driver_program->param,
 	       G_TYPE_OBJECT);
   g_value_set_object(driver_program->param,
 		     dialog);
+
+  g_value_init(driver_program->param + 1,
+	       G_TYPE_OBJECT);
+  g_value_set_object(driver_program->param + 1,
+		     apply_button);
   
   ags_functional_test_util_add_driver_program(driver_program);  
+#else
+  ags_functional_test_util_button_click(GTK_BUTTON(apply_button));
+#endif  
 }
 
 void
@@ -1790,48 +1809,62 @@ ags_functional_test_util_dialog_ok_driver_program(guint n_params,
 						  gchar **param_strv,
 						  GValue *param)
 {
-  GtkDialog *dialog;
+  GtkWindow *dialog;
+  GtkButton *button;
   
   dialog = g_value_get_object(param);
-
-  gtk_dialog_response(dialog,
-		      GTK_RESPONSE_OK);
+  button = g_value_get_object(param + 1);
+  
+  g_signal_emit_by_name(dialog,
+			"response",
+			GTK_RESPONSE_ACCEPT);
 
   ags_functional_test_util_reaction_time_long();
 }
 
 void
-ags_functional_test_util_dialog_ok(GtkDialog *dialog)
+ags_functional_test_util_dialog_ok(GtkWindow *dialog, GtkButton *activate_button)
 {
   AgsFunctionalTestUtilDriverProgram *driver_program;
   
-  if(!GTK_IS_DIALOG(dialog)){
+  if(!GTK_IS_WINDOW(dialog) ||
+     !GTK_IS_BUTTON(activate_button)){
     return;
   }
 
+#if 0
   driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
 			  1);
 
   driver_program->driver_program_func = ags_functional_test_util_dialog_ok_driver_program;
   
-  driver_program->n_params = 1;
+  driver_program->n_params = 2;
 
   /* param string vector */
-  driver_program->param_strv = g_malloc(2 * sizeof(gchar *));
+  driver_program->param_strv = g_malloc(3 * sizeof(gchar *));
 
   driver_program->param_strv[0] = g_strdup("dialog");
-  driver_program->param_strv[1] = NULL;
+  driver_program->param_strv[1] = g_strdup("activate-button");
+  driver_program->param_strv[2] = NULL;
   
   /* param value array */
   driver_program->param = g_new0(GValue,
-				 1);
+				 2);
 
   g_value_init(driver_program->param,
 	       G_TYPE_OBJECT);
   g_value_set_object(driver_program->param,
 		     dialog);
+
+  g_value_init(driver_program->param + 1,
+	       G_TYPE_OBJECT);
+  g_value_set_object(driver_program->param + 1,
+		     activate_button);
   
   ags_functional_test_util_add_driver_program(driver_program);  
+#else
+  ags_functional_test_util_button_click(GTK_BUTTON(activate_button));
+#endif  
 }
 
 void
@@ -1839,22 +1872,21 @@ ags_functional_test_util_dialog_cancel_driver_program(guint n_params,
 						      gchar **param_strv,
 						      GValue *param)
 {
-  GtkDialog *dialog;
+  GtkWindow *dialog;
   
   dialog = g_value_get_object(param);
 
-  gtk_dialog_response(dialog,
-		      GTK_RESPONSE_CANCEL);
+  gtk_window_close(dialog);
 
   ags_functional_test_util_reaction_time_long();
 }
 
 void
-ags_functional_test_util_dialog_cancel(GtkDialog *dialog)
+ags_functional_test_util_dialog_cancel(GtkWindow *dialog)
 {
   AgsFunctionalTestUtilDriverProgram *driver_program;
   
-  if(!GTK_IS_DIALOG(dialog)){
+  if(!GTK_IS_WINDOW(dialog)){
     return;
   }
 
@@ -5565,7 +5597,7 @@ ags_functional_test_util_machine_editor_dialog_effect_remove_driver_program(guin
   AgsMachineEditorLine *machine_editor_line;
   AgsLineMemberEditor *member_editor;
   AgsLineMemberEditorEntry *member_editor_entry;
-  GtkDialog **effect_dialog;
+  GtkWindow **effect_dialog;
   GtkButton *check_button;
   GtkButton *remove_button;
   

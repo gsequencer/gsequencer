@@ -287,7 +287,7 @@ ags_animation_window_snapshot(GtkWidget *widget,
 				 &rect);
   
   /* clear bg */
-  ags_animation_window_draw((AgsAnimationWindow *) widget,
+  ags_animation_window_draw(widget,
 			    cr,
 			    TRUE);
   

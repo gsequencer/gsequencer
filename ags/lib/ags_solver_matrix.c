@@ -1404,7 +1404,7 @@ ags_solver_matrix_solve_default(AgsSolverMatrix *solver_matrix)
   solver_path =
     start_solver_path = ags_solver_matrix_get_solver_path(solver_matrix);
 
-  g_message("column_count = %d, solver_path[%d]", column_count, g_list_length(start_solver_path));
+  //  g_message("column_count = %d, solver_path[%d]", column_count, g_list_length(start_solver_path));
 
   while(solver_path != NULL){
     ags_solver_matrix_eliminate(solver_matrix,

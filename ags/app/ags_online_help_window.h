@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,10 +26,6 @@
 #include <gtk/gtk.h>
 
 #include <ags/ags_api_config.h>
-
-#if defined(AGS_WITH_WEBKIT)
-#include <webkit2/webkit2.h>
-#endif
 
 #if defined(AGS_WITH_POPPLER)
 #include <poppler.h>
@@ -71,12 +67,8 @@ struct _AgsOnlineHelpWindow
   GtkEntry *location;
 
   gchar *start_filename;  
-  
-#if defined(AGS_WITH_WEBKIT)
-  WebKitWebView *web_view;
-#else
+
   gpointer web_view;
-#endif
 
   GtkBox *pdf_controls;
 

@@ -231,7 +231,7 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
     if(filename != NULL &&
        effect != NULL &&
        (filename_strv == NULL ||
-	!g_strv_contains(filename_strv,
+	!g_strv_contains((const gchar * const *) filename_strv,
 			 filename))){
       GtkTreeIter tree_iter;
 
@@ -603,7 +603,7 @@ ags_lv2_browser_remove_port_editor(AgsLv2Browser *lv2_browser,
 					     port_editor);
     
     gtk_grid_remove(lv2_browser->port_editor_grid,
-		    port_editor);
+		    (GtkWidget *) port_editor);
   }
 }
 

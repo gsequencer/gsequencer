@@ -248,7 +248,7 @@ ags_indicator_class_init(AgsIndicatorClass *indicator)
   
   widget->snapshot = ags_indicator_snapshot;
 
-  gtk_widget_class_set_accessible_role(indicator,
+  gtk_widget_class_set_accessible_role(widget,
 				       GTK_ACCESSIBLE_ROLE_METER);
 }
 
@@ -257,10 +257,10 @@ ags_indicator_init(AgsIndicator *indicator)
 {
   indicator->orientation = GTK_ORIENTATION_VERTICAL;
 
-  gtk_widget_set_hexpand(indicator,
+  gtk_widget_set_hexpand((GtkWidget *) indicator,
 			 TRUE);
   
-  gtk_widget_set_vexpand(indicator,
+  gtk_widget_set_vexpand((GtkWidget *) indicator,
 			 TRUE);
   
   /* segment alignment */
@@ -647,12 +647,20 @@ ags_indicator_draw(AgsIndicator *indicator,
   if(!fg_success ||
      !bg_success ||
      !shadow_success){
-    gdk_rgba_parse(&fg_color,
-		   "#101010");
+    if(!dark_theme){
+      gdk_rgba_parse(&fg_color,
+		     "#101010");
 
-    gdk_rgba_parse(&bg_color,
-		   "#cbd5d9");
+      gdk_rgba_parse(&bg_color,
+		     "#cbd5d9");
+    }else{
+      gdk_rgba_parse(&fg_color,
+		     "#cbd5d9");
 
+      gdk_rgba_parse(&bg_color,
+		     "#101010");
+    }
+    
     gdk_rgba_parse(&shadow_color,
 		   "#ffffff40");
   }
@@ -664,7 +672,7 @@ ags_indicator_draw(AgsIndicator *indicator,
 			bg_color.green,
 			bg_color.blue,
 			bg_color.alpha);
-    
+  
   if(orientation == GTK_ORIENTATION_VERTICAL){
     for(i = 0; i < segment_count; i++){
       cairo_rectangle(cr,

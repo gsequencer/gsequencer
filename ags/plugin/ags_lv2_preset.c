@@ -299,7 +299,7 @@ ags_lv2_preset_set_property(GObject *gobject,
 	g_object_ref(lv2_plugin);
       }
       
-      lv2_preset->lv2_plugin = lv2_plugin;
+      lv2_preset->lv2_plugin = (GObject *) lv2_plugin;
 
       g_rec_mutex_unlock(lv2_preset_mutex);
     }

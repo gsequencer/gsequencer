@@ -183,7 +183,7 @@ ags_functional_server_test_authenticate()
   //  buffer = g_bytes_get_data(response_body,
   //			    &buffer_size);
   
-  g_message("%s", buffer);
+  //  g_message("%s", buffer);
 
   CU_ASSERT(status == 302);
 

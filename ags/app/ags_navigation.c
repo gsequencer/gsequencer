@@ -642,7 +642,8 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   GList *start_list, *list;
   
   gchar *timestr;
-  gdouble delay;
+  gdouble bpm;
+  gdouble absolute_delay;
   gdouble delay_factor;
   gint64 new_offset;
 
@@ -651,7 +652,9 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
 
   /* seek soundcard */
-  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(default_soundcard));
+  bpm = ags_soundcard_get_bpm(AGS_SOUNDCARD(default_soundcard));
+
+  absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(default_soundcard));
   delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(default_soundcard));
   
   new_offset = (16 * tact_counter);
@@ -695,8 +698,8 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   
   /* update */
   timestr = ags_time_get_uptime_from_offset(16.0 * tact_counter,
-					    gtk_spin_button_get_value(navigation->bpm),
-					    delay,
+					    bpm,
+					    absolute_delay,
 					    delay_factor);
   gtk_label_set_text(navigation->position_time, timestr);
   

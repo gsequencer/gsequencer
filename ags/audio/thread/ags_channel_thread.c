@@ -491,10 +491,10 @@ ags_channel_thread_start(AgsThread *thread)
 #endif
   
   /* reset status */
-  ags_channel_thread_set_nested_sync_flags(thread, (AGS_CHANNEL_THREAD_STATUS_WAIT |
-						    AGS_CHANNEL_THREAD_STATUS_DONE |
-						    AGS_CHANNEL_THREAD_STATUS_WAIT_SYNC |
-						    AGS_CHANNEL_THREAD_STATUS_DONE_SYNC));
+  ags_channel_thread_set_nested_sync_flags((AgsChannelThread *) thread, (AGS_CHANNEL_THREAD_STATUS_WAIT |
+									 AGS_CHANNEL_THREAD_STATUS_DONE |
+									 AGS_CHANNEL_THREAD_STATUS_WAIT_SYNC |
+									 AGS_CHANNEL_THREAD_STATUS_DONE_SYNC));
 
   AGS_THREAD_CLASS(ags_channel_thread_parent_class)->start(thread);
 }
@@ -556,7 +556,7 @@ ags_channel_thread_run(AgsThread *thread)
   }
 #endif
 
-  audio_loop = thread->parent;
+  audio_loop = (AgsAudioLoop *) thread->parent;
 
   if(!ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_SYNCED)){
     return;

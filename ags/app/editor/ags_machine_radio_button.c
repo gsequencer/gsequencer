@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -37,9 +37,11 @@ void ags_machine_radio_button_get_property(GObject *gobject,
 					   guint prop_id,
 					   GValue *value,
 					   GParamSpec *param_spec);
+void ags_machine_radio_button_finalize(GObject *gobject);
+
+gboolean ags_machine_radio_button_is_connected(AgsConnectable *connectable);
 void ags_machine_radio_button_connect(AgsConnectable *connectable);
 void ags_machine_radio_button_disconnect(AgsConnectable *connectable);
-void ags_machine_radio_button_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_machine_radio_button
@@ -101,10 +103,23 @@ ags_machine_radio_button_get_type(void)
 void
 ags_machine_radio_button_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+  
+  connectable->is_connected = ags_machine_radio_button_is_connected;
   connectable->connect = ags_machine_radio_button_connect;
   connectable->disconnect = ags_machine_radio_button_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -144,6 +159,8 @@ ags_machine_radio_button_class_init(AgsMachineRadioButtonClass *machine_radio_bu
 void
 ags_machine_radio_button_init(AgsMachineRadioButton *machine_radio_button)
 {
+  machine_radio_button->connectable_flags = 0;
+  
   machine_radio_button->machine = NULL;
 }
 
@@ -222,6 +239,21 @@ ags_machine_radio_button_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
+}
+
+gboolean
+ags_machine_radio_button_is_connected(AgsConnectable *connectable)
+{
+  AgsMachineRadioButton *machine_radio_button;
+  
+  gboolean is_connected;
+
+  machine_radio_button = AGS_MACHINE_RADIO_BUTTON(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (machine_radio_button->connectable_flags)) != 0) ? TRUE: FALSE;
+  
+  return(is_connected);
 }
 
 void

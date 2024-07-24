@@ -201,7 +201,7 @@ ags_connection_editor_bulk_init(AgsConnectionEditorBulk *connection_editor_bulk)
   gtk_combo_box_set_model(connection_editor_bulk->output_soundcard,
 			  GTK_TREE_MODEL(model));
   
-  label = gtk_label_new(i18n("first line"));
+  label = (GtkLabel *) gtk_label_new(i18n("first line"));
 
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
@@ -237,7 +237,7 @@ ags_connection_editor_bulk_init(AgsConnectionEditorBulk *connection_editor_bulk)
 		  1, 2,
 		  1, 1);
 
-  label = gtk_label_new(i18n("count"));
+  label = (GtkLabel *) gtk_label_new(i18n("count"));
 
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);

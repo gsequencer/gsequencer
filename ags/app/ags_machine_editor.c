@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -37,6 +37,7 @@ void ags_machine_editor_get_property(GObject *gobject,
 				     GValue *value,
 				     GParamSpec *param_spec);
 
+gboolean ags_machine_editor_is_connected(AgsConnectable *connectable);
 void ags_machine_editor_connect(AgsConnectable *connectable);
 void ags_machine_editor_disconnect(AgsConnectable *connectable);
 
@@ -181,10 +182,23 @@ ags_machine_editor_class_init(AgsMachineEditorClass *machine_editor)
 void
 ags_machine_editor_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_machine_editor_is_connected;  
   connectable->connect = ags_machine_editor_connect;
   connectable->disconnect = ags_machine_editor_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -416,6 +430,21 @@ ags_machine_editor_get_property(GObject *gobject,
   }
 }
 
+gboolean
+ags_machine_editor_is_connected(AgsConnectable *connectable)
+{
+  AgsMachineEditor *machine_editor;
+  
+  gboolean is_connected;
+  
+  machine_editor = AGS_MACHINE_EDITOR(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (machine_editor->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
+}
+
 void
 ags_machine_editor_connect(AgsConnectable *connectable)
 {
@@ -423,7 +452,7 @@ ags_machine_editor_connect(AgsConnectable *connectable)
 
   machine_editor = AGS_MACHINE_EDITOR(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (machine_editor->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -446,7 +475,7 @@ ags_machine_editor_disconnect(AgsConnectable *connectable)
 
   machine_editor = AGS_MACHINE_EDITOR(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (machine_editor->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
   

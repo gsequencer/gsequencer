@@ -2245,6 +2245,8 @@ ags_stream_alloc(guint buffer_size,
 		 AgsSoundcardFormat format)
 {
   void *buffer;
+
+  buffer = NULL;
   
   switch(format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:

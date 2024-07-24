@@ -268,7 +268,7 @@ ags_lv2_urid_manager_load_default(AgsLv2UridManager *lv2_urid_manager)
     NULL,
   };
 
-  str = default_uri;
+  str = (gchar **) default_uri;
 
   while(str[0] != NULL){
     value = g_new0(GValue,

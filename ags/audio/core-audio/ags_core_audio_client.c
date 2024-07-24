@@ -996,7 +996,7 @@ ags_core_audio_client_open(AgsCoreAudioClient *core_audio_client,
   } 
 #endif
   
-  core_audio_server = core_audio_client->core_audio_server;
+  core_audio_server = (AgsCoreAudioServer *) core_audio_client->core_audio_server;
   
   g_rec_mutex_unlock(core_audio_client_mutex);
   

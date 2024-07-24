@@ -308,7 +308,7 @@ ags_ladspa_bridge_init(AgsLadspaBridge *ladspa_bridge)
   gtk_widget_set_hexpand((GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input,
 			 FALSE);
   
-  AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input)->parent_bridge = AGS_MACHINE(ladspa_bridge)->bridge;
+  AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input)->parent_bridge = (GtkWidget *) AGS_MACHINE(ladspa_bridge)->bridge;
   gtk_grid_attach((GtkGrid *) AGS_MACHINE(ladspa_bridge)->bridge,
 		  (GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input,
 		  0, 0,
@@ -442,7 +442,7 @@ ags_ladspa_bridge_finalize(GObject *gobject)
 void
 ags_ladspa_bridge_connect(AgsConnectable *connectable)
 {
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -452,7 +452,7 @@ ags_ladspa_bridge_connect(AgsConnectable *connectable)
 void
 ags_ladspa_bridge_disconnect(AgsConnectable *connectable)
 {
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 

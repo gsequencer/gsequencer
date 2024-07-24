@@ -127,7 +127,7 @@ struct _AgsPitchSampler
 
   GtkScale *volume;
 
-  GtkFileChooserDialog *open_dialog;
+  AgsFileDialog *open_dialog;
 };
 
 struct _AgsPitchSamplerClass

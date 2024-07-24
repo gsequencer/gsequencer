@@ -92,16 +92,16 @@ ags_scrolled_scale_box_init(AgsScrolledScaleBox *scrolled_scale_box)
   				 GTK_POLICY_EXTERNAL,
   				 GTK_POLICY_EXTERNAL);
 
-  gtk_widget_set_vexpand(scrolled_scale_box->scrolled_window,
+  gtk_widget_set_vexpand((GtkWidget *) scrolled_scale_box->scrolled_window,
 			 TRUE);
 
-  gtk_widget_set_size_request(scrolled_scale_box->scrolled_window,
+  gtk_widget_set_size_request((GtkWidget *) scrolled_scale_box->scrolled_window,
 			      AGS_SCALE_DEFAULT_WIDTH_REQUEST, -1);
 
   /* scale box */
-  scrolled_scale_box->scale_box = ags_scale_box_new(GTK_ORIENTATION_VERTICAL);
+  scrolled_scale_box->scale_box = (GtkBox *) ags_scale_box_new(GTK_ORIENTATION_VERTICAL);
   gtk_scrolled_window_set_child(scrolled_scale_box->scrolled_window,
-				scrolled_scale_box->scale_box);
+				(GtkWidget *) scrolled_scale_box->scale_box);
 }
 
 void
@@ -152,7 +152,7 @@ ags_scrolled_scale_box_get_scale_box(AgsScrolledScaleBox *scrolled_scale_box)
     return(NULL);
   }
   
-  return(scrolled_scale_box->scale_box);
+  return((AgsScaleBox *) scrolled_scale_box->scale_box);
 }
 
 /**

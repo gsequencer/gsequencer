@@ -167,7 +167,7 @@ ags_registry_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(server));
       }
       
-      registry->server = server;
+      registry->server = (GObject *) server;
     }
     break;
   default:
@@ -277,7 +277,7 @@ ags_registry_entry_free(AgsRegistryEntry *registry_entry)
 {
   GObject *gobject;
 
-  gobject = g_value_get_object(&(registry_entry->entry));
+  gobject = g_value_get_object(registry_entry->entry);
 
   if(gobject != NULL){
     g_object_unref(gobject);

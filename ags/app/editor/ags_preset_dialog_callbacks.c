@@ -19,18 +19,3 @@
 
 #include <ags/app/editor/ags_preset_dialog_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
-
-int
-ags_preset_dialog_ok_callback(GtkWidget *widget, AgsPresetDialog *preset_dialog)
-{
-  //  ags_applicable_set_update(AGS_APPLICABLE(preset_dialog), FALSE);
-  ags_connectable_disconnect(AGS_CONNECTABLE(preset_dialog));
-  ags_applicable_apply(AGS_APPLICABLE(preset_dialog));
- 
-  preset_dialog->machine->preset_dialog = NULL;
-  gtk_window_destroy(preset_dialog);
-
-  return(0);
-}

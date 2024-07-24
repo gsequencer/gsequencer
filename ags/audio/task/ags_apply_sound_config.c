@@ -445,7 +445,7 @@ ags_apply_sound_config_launch(AgsTask *task)
 	ags_audio_recursive_run_stage(audio->data,
 				      sound_scope, staging_flags);
       
-	ags_audio_thread_set_processing(audio_thread,
+	ags_audio_thread_set_processing((AgsAudioThread *) audio_thread,
 					FALSE);
       }
 
@@ -467,7 +467,7 @@ ags_apply_sound_config_launch(AgsTask *task)
 				   sound_scope);
 
 	if(channel_thread != NULL){
-	  ags_channel_thread_set_processing(channel_thread,
+	  ags_channel_thread_set_processing((AgsChannelThread *) channel_thread,
 					    FALSE);
 	}
 
@@ -495,7 +495,7 @@ ags_apply_sound_config_launch(AgsTask *task)
 				   sound_scope);
 
 	if(channel_thread != NULL){
-	  ags_channel_thread_set_processing(channel_thread,
+	  ags_channel_thread_set_processing((AgsChannelThread *) channel_thread,
 					    FALSE);
 	}
 

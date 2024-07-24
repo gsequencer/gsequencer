@@ -2063,7 +2063,7 @@ ags_channel_dispose(GObject *gobject)
     channel->playback = NULL;
 
     //TODO:JK: stop threads
-    g_object_run_dispose(playback);
+    g_object_run_dispose((GObject *) playback);
   }
 
   /* recall id */
@@ -2222,7 +2222,7 @@ ags_channel_finalize(GObject *gobject)
   if(channel->audio != NULL){
     AgsAudio *audio;
 
-    audio = channel->audio;
+    audio = (AgsAudio *) channel->audio;
     
     channel->audio = NULL;
 
@@ -2301,7 +2301,7 @@ ags_channel_finalize(GObject *gobject)
     channel->playback = NULL;
 
     //TODO:JK: stop threads
-    g_object_run_dispose(playback);
+    g_object_run_dispose((GObject *) playback);
   }
 
   /* recall id */
@@ -5459,7 +5459,7 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
     /* recursive set property */
     ags_channel_recursive_set_property(current_link,
 				       n_params,
-				       parameter_name, value);
+				       (gchar **) parameter_name, value);
 
     if(output_soundcard != NULL){
       g_object_unref(output_soundcard);
@@ -7829,7 +7829,7 @@ ags_channel_real_set_samplerate(AgsChannel *channel, guint samplerate)
     /* add message */
     ags_message_delivery_add_message_envelope(message_delivery,
 					      "libags-audio",
-					      message);
+					      (GObject *) message);
 
     g_list_free_full(start_message_queue,
 		     (GDestroyNotify) g_object_unref);
@@ -8010,7 +8010,7 @@ ags_channel_real_set_buffer_size(AgsChannel *channel, guint buffer_size)
     /* add message */
     ags_message_delivery_add_message_envelope(message_delivery,
 					      "libags-audio",
-					      message);
+					      (GObject *) message);
 
     g_list_free_full(start_message_queue,
 		     (GDestroyNotify) g_object_unref);
@@ -8161,7 +8161,7 @@ ags_channel_real_set_format(AgsChannel *channel, AgsSoundcardFormat format)
     /* add message */
     ags_message_delivery_add_message_envelope(message_delivery,
 					      "libags-audio",
-					      message);
+					      (GObject *) message);
 
     g_list_free_full(start_message_queue,
 		     (GDestroyNotify) g_object_unref);
@@ -10613,7 +10613,7 @@ ags_channel_recall_done_callback(AgsRecall *recall,
 					      sound_scope);
 
       ags_task_launcher_add_task(task_launcher,
-				 cancel_channel);
+				 (AgsTask *) cancel_channel);
 
       g_object_unref(cancel_channel);
     }
@@ -10680,7 +10680,7 @@ ags_channel_real_start(AgsChannel *channel,
   ags_audio_loop_add_channel(AGS_AUDIO_LOOP(audio_loop),
 			     (GObject *) channel);
   
-  ags_audio_loop_set_flags(audio_loop, AGS_AUDIO_LOOP_PLAY_CHANNEL);
+  ags_audio_loop_set_flags((AgsAudioLoop *) audio_loop, AGS_AUDIO_LOOP_PLAY_CHANNEL);
 
   /* get playback domain */
   g_object_get(audio,
@@ -10735,7 +10735,7 @@ ags_channel_real_start(AgsChannel *channel,
 				       NULL);
       ags_recall_id_set_sound_scope(channel_recall_id, sound_scope);
       ags_channel_add_recall_id(channel,
-				(GObject *) channel_recall_id);
+				channel_recall_id);
 
       /* prepend recall id */
       start_recall_id = g_list_prepend(start_recall_id,
@@ -10769,7 +10769,7 @@ ags_channel_real_start(AgsChannel *channel,
 							      sound_scope);
 
 	  if(audio_thread != NULL){
-	    ags_audio_thread_set_processing(audio_thread,
+	    ags_audio_thread_set_processing((AgsAudioThread *) audio_thread,
 					    TRUE);
 	  }
 	}
@@ -10779,7 +10779,7 @@ ags_channel_real_start(AgsChannel *channel,
 							   sound_scope);
 
 	  if(channel_thread != NULL){
-	    ags_channel_thread_set_processing(channel_thread,
+	    ags_channel_thread_set_processing((AgsChannelThread *) channel_thread,
 					      TRUE);
 	  }
 	}
@@ -10825,7 +10825,7 @@ ags_channel_real_start(AgsChannel *channel,
 					 NULL);
 	ags_recall_id_set_sound_scope(channel_recall_id, i);
 	ags_channel_add_recall_id(channel,
-				  (GObject *) channel_recall_id);
+				  channel_recall_id);
       
 	/* prepend recall id */
 	start_recall_id = g_list_prepend(start_recall_id,
@@ -10859,7 +10859,7 @@ ags_channel_real_start(AgsChannel *channel,
 								i);
 
 	    if(audio_thread != NULL){
-	      ags_audio_thread_set_processing(audio_thread,
+	      ags_audio_thread_set_processing((AgsAudioThread *) audio_thread,
 					      TRUE);
 	    }
 	  }
@@ -10869,7 +10869,7 @@ ags_channel_real_start(AgsChannel *channel,
 							     i);
 
 	    if(channel_thread != NULL){
-	      ags_channel_thread_set_processing(channel_thread,
+	      ags_channel_thread_set_processing((AgsChannelThread *) channel_thread,
 						TRUE);
 	    }
 	  }
@@ -10953,7 +10953,7 @@ ags_channel_real_start(AgsChannel *channel,
       /* add message */
       ags_message_delivery_add_message_envelope(message_delivery,
 						"libags-audio",
-						message);
+						(GObject *) message);
 
       g_list_free_full(start_message_queue,
 		       (GDestroyNotify) g_object_unref);
@@ -11051,14 +11051,14 @@ ags_channel_real_stop(AgsChannel *channel,
 						     sound_scope);
 
     if(audio_thread != NULL){
-      ags_audio_thread_set_processing(audio_thread,
+      ags_audio_thread_set_processing((AgsAudioThread *) audio_thread,
 				      FALSE);
 
       g_object_unref(audio_thread);
     }
 
     if(channel_thread != NULL){
-      ags_channel_thread_set_processing(channel_thread,
+      ags_channel_thread_set_processing((AgsChannelThread *) channel_thread,
 					FALSE);
 
       g_object_unref(channel_thread);
@@ -11085,14 +11085,14 @@ ags_channel_real_stop(AgsChannel *channel,
 						       i);
 
       if(audio_thread != NULL){
-	ags_audio_thread_set_processing(audio_thread,
+	ags_audio_thread_set_processing((AgsAudioThread *) audio_thread,
 					FALSE);
 
 	g_object_unref(audio_thread);
       }
 
       if(channel_thread != NULL){
-	ags_channel_thread_set_processing(channel_thread,
+	ags_channel_thread_set_processing((AgsChannelThread *) channel_thread,
 					  FALSE);
 
 	g_object_unref(channel_thread);
@@ -11115,7 +11115,7 @@ ags_channel_real_stop(AgsChannel *channel,
   }
     
   /* remove channel from AgsAudioLoop */
-  ags_audio_loop_remove_channel(audio_loop,
+  ags_audio_loop_remove_channel((AgsAudioLoop *) audio_loop,
 				(GObject *) channel);
 
   if(audio_loop != NULL){
@@ -11185,7 +11185,7 @@ ags_channel_real_stop(AgsChannel *channel,
     /* add message */
     ags_message_delivery_add_message_envelope(message_delivery,
 					      "libags-audio",
-					      message);
+					      (GObject *) message);
 
     g_list_free_full(start_message_queue,
 		     (GDestroyNotify) g_object_unref);
@@ -11643,7 +11643,7 @@ ags_channel_recursive_set_property_setv(AgsChannel *channel,
 #if HAVE_GLIB_2_54    
   g_object_setv((GObject *) channel,
 		n_params,
-		parameter_name, value);
+		(const gchar **) parameter_name, value);
 #else
   guint i;
   

@@ -173,6 +173,7 @@ ags_soundcard_util_adjust_delay_and_attack(GObject *soundcard)
   gdouble bpm;
   gdouble absolute_delay;
   gdouble corrected_delay;
+  gdouble delay_overflow_counter;
   guint buffer_size;
   guint default_tact_frames;
   guint total_correct_frame_count;
@@ -184,7 +185,8 @@ ags_soundcard_util_adjust_delay_and_attack(GObject *soundcard)
   guint nth_list;
   guint current_attack;
   guint current_note_256th_attack;
-  gboolean increment_delay;
+  guint current_note_256th_counter;
+  gboolean decrement_delay;
   guint i, j;
   
   GList *start_note_256th_attack;
@@ -410,50 +412,62 @@ ags_soundcard_util_adjust_delay_and_attack(GObject *soundcard)
   nth_list = 0;
   note_256th_attack = g_list_nth_data(start_note_256th_attack,
 				      nth_list);
+
+  current_note_256th_attack = 0;
+  current_note_256th_counter = 0;
+
+  delay_overflow_counter = ((floor(corrected_delay) + 1.0) * (double) buffer_size) - (floor(corrected_delay) * (double) buffer_size);
+  
+  decrement_delay = FALSE;
   
   for(i = 0; i < AGS_SOUNDCARD_DEFAULT_PERIOD; i++){
+    guint current_16th_attack;
+    
     nth_list = floor(16.0 * (double) i / AGS_SOUNDCARD_DEFAULT_PERIOD);
     note_256th_attack = g_list_nth_data(start_note_256th_attack,
 					nth_list);
 
     for(j = 0; j < 16; j++){
-      current_attack = attack[i];
-      current_note_256th_attack = (guint) (current_attack + ((((16 * i) + j) % (64)) * correct_note_256th_frame_count)) % buffer_size;
-
       //      fprintf(stdout, " `-> nth list = %d, i = {#%d}\n", nth_list, ((16 * i) + j) % (guint) AGS_SOUNDCARD_DEFAULT_PERIOD);
 
-      note_256th_attack[((16 * i) + j) % (guint) AGS_SOUNDCARD_DEFAULT_PERIOD] = (guint) current_note_256th_attack;
+      note_256th_attack[((16 * i) + j) % (guint) AGS_SOUNDCARD_DEFAULT_PERIOD] = current_note_256th_attack;
 
+      if(j == 0){
+	current_16th_attack = current_note_256th_attack;
+      }
+      
+      if(correct_note_256th_frame_count < buffer_size){
+	current_note_256th_counter = (guint) floor((double) (frame_counter + buffer_size) / (double) correct_note_256th_frame_count);
+	
+	frame_counter += buffer_size;
+      }else{
+	current_note_256th_counter = (guint) floor((double) (frame_counter + (buffer_size * (floor((double) correct_note_256th_frame_count / (double) buffer_size) + 1.0))) / (double) correct_note_256th_frame_count);	
+
+	frame_counter += buffer_size * (floor((double) correct_note_256th_frame_count / (double) buffer_size) + 1.0);
+      }
+
+      current_note_256th_attack = (guint) fmod((double) frame_counter, correct_note_256th_frame_count);
+      
       //      fprintf(stdout, " `-> note_256th_attack{#%d} = %d\n", ((16 * i) + j) % (guint) AGS_SOUNDCARD_DEFAULT_PERIOD, current_note_256th_attack);
     }
 
-    if(i + 1 < AGS_SOUNDCARD_DEFAULT_PERIOD){
-      current_attack = (guint) (((i + 1) % (4)) * correct_frame_count) % buffer_size;
-    
-      attack[i + 1] = current_attack;
-
-      if((i + 1) % (4) == 0){
-	frame_counter_delay_remainder = 0;
-      }
-      
-      frame_counter_delay_remainder += (correct_frame_count - ((guint) floor(corrected_delay) * buffer_size));
-    
-      increment_delay = FALSE;
-
-      if(frame_counter_delay_remainder >= buffer_size){
-	frame_counter_delay_remainder -= buffer_size;
-      
-	increment_delay = TRUE;
-      }
-
-      if(!increment_delay){
-	delay[i + 1] = floor(corrected_delay);
-      }else{
-	delay[i + 1] = floor(corrected_delay) + 1.0;
-      }
-
-      //      fprintf(stdout, "-> delay{#%d} = %f, attack{#%d} = %d\n", i, delay[i], i, attack[i]);
+    if(!decrement_delay){
+      delay[i] = floor(corrected_delay);
+    }else{
+      delay[i] = floor(corrected_delay) - 1.0;
     }
+
+    attack[i] = (guint) current_16th_attack;
+
+    delay_overflow_counter += ((delay[i] * (double) buffer_size) - (corrected_delay * (double) buffer_size));
+
+    decrement_delay = FALSE;
+
+    if((gint) floor(delay_overflow_counter) >= buffer_size){
+      decrement_delay = TRUE;
+
+      //      delay_overflow_counter -= (double) buffer_size;
+    }    
   }
   
   for(; i < 2 * AGS_SOUNDCARD_DEFAULT_PERIOD; i++){
@@ -620,11 +634,21 @@ ags_soundcard_util_calc_next_note_256th_offset(GObject *soundcard,
   guint note_256th_attack_last;
   guint next_note_256th_offset_lower;
   guint next_note_256th_offset_upper;
+  guint next_note_256th_attack;
   
   gdouble absolute_delay;
+  gdouble corrected_delay;
+  guint default_tact_frames;
+  guint total_correct_frame_count;
+  gdouble correct_note_4th_frame_count;
+  gdouble correct_frame_count;
+  gdouble correct_note_256th_frame_count;
+  gdouble fraction;
+  gdouble fraction_counter;
   guint buffer_size;
   guint loop_left, loop_right;
   gboolean do_loop;
+  guint i;
 
   GRecMutex *obj_mutex;
 
@@ -646,12 +670,12 @@ ags_soundcard_util_calc_next_note_256th_offset(GObject *soundcard,
 			    &buffer_size,
 			    NULL);
   
-  note_offset = ags_soundcard_get_note_offset(soundcard);
+  note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(soundcard));
 
   note_256th_offset = 0;
   note_256th_offset_last = 0;
   
-  ags_soundcard_get_note_256th_offset(soundcard,
+  ags_soundcard_get_note_256th_offset(AGS_SOUNDCARD(soundcard),
 				      &note_256th_offset,
 				      &note_256th_offset_last);
 
@@ -660,14 +684,14 @@ ags_soundcard_util_calc_next_note_256th_offset(GObject *soundcard,
   
   do_loop = FALSE;
   
-  ags_soundcard_get_loop(soundcard,
+  ags_soundcard_get_loop(AGS_SOUNDCARD(soundcard),
 			 &loop_left, &loop_right,
 			 &do_loop);
 
   note_256th_attack = 0;
   note_256th_attack_last = 0;
 
-  ags_soundcard_get_note_256th_attack(soundcard,
+  ags_soundcard_get_note_256th_attack(AGS_SOUNDCARD(soundcard),
 				      &note_256th_attack,
 				      &note_256th_attack_last);
   
@@ -818,44 +842,53 @@ ags_soundcard_util_calc_next_note_256th_offset(GObject *soundcard,
   
   //  fprintf(stdout, "-> delay{#0} = %f, attack{#0} = %d\n", delay[0], attack[0]);
 
-  if(delay_counter + 1.0 >= floor(delay[tic_counter])){
-    if(do_loop &&
-       note_offset + 1 == loop_right){      
-      next_note_256th_offset_lower = 16 * loop_left;
+  default_tact_frames = (guint) floor(absolute_delay * (gdouble) buffer_size);
 
-      if(note_256th_attack < attack[tic_counter]){
-	if(next_note_256th_offset_lower - (guint) floor((double) (attack[tic_counter] - note_256th_attack) / (note_256th_delay * (double) buffer_size)) > note_256th_offset_last){
-	  next_note_256th_offset_lower -= (guint) floor((double) (attack[tic_counter] - note_256th_attack) / (note_256th_delay * (double) buffer_size));
-	}
-      }
-      
-      next_note_256th_offset_upper = next_note_256th_offset_lower;
-      
-      if(note_256th_delay < 1.0){
-	if(note_256th_attack < note_256th_attack_last){
-	  next_note_256th_offset_upper += (guint) floor((double) (buffer_size - note_256th_attack) / (note_256th_delay * (double) buffer_size));
-	}
-      }
-    }else{
-      next_note_256th_offset_lower = 16 * (note_offset + 1);
-      
-      next_note_256th_offset_upper = next_note_256th_offset_lower;
-      
-      if(note_256th_delay < 1.0){
-	if(note_256th_attack < note_256th_attack_last){
-	  next_note_256th_offset_upper += (guint) floor((double) (buffer_size - note_256th_attack) / (note_256th_delay * (double) buffer_size));
-	}
-      }
+  total_correct_frame_count = buffer_size * ((guint) floor((gdouble) ((guint) AGS_SOUNDCARD_DEFAULT_PERIOD * default_tact_frames) / (gdouble) buffer_size));
+
+  correct_note_4th_frame_count = floor((gdouble) total_correct_frame_count / (AGS_SOUNDCARD_DEFAULT_PERIOD / 4.0));
+  
+  correct_frame_count = (gdouble) correct_note_4th_frame_count / 4.0;
+
+  correct_note_256th_frame_count = correct_frame_count / 16.0;
+
+  fraction = correct_note_256th_frame_count - floor(correct_note_256th_frame_count);
+  
+  corrected_delay = correct_frame_count / (gdouble) buffer_size;
+
+  next_note_256th_attack = 0;
+  
+  fraction_counter = (tic_counter * fraction) - floor(tic_counter * fraction) + fraction;
+  
+  if(correct_note_256th_frame_count < buffer_size){
+    if((note_256th_attack_last + (guint) floor(correct_note_256th_frame_count + fraction_counter)) > buffer_size){
+      next_note_256th_attack = (note_256th_attack_last + (guint) floor(correct_note_256th_frame_count + fraction_counter)) % buffer_size;
     }
-  }else{
-    next_note_256th_offset_lower = note_256th_offset_last + 1;
-    
+  }
+
+  /*  */
+  next_note_256th_offset_lower = note_256th_offset_last + 1;
+  
+  next_note_256th_offset_upper = next_note_256th_offset_lower;
+
+  if(correct_note_256th_frame_count < buffer_size){
+    for(i = 1; next_note_256th_attack + (i * correct_note_256th_frame_count) + floor(fraction_counter) < buffer_size; i++){
+      next_note_256th_offset_upper++;
+
+      fraction_counter += fraction;
+    }
+  }
+  
+  if(do_loop &&
+     next_note_256th_offset_upper >= 16 * loop_right){
+    next_note_256th_offset_lower = 16 * loop_left;
+      
     next_note_256th_offset_upper = next_note_256th_offset_lower;
-    
-    if(note_256th_delay < 1.0){
-      if(note_256th_attack < note_256th_attack_last){
-	next_note_256th_offset_upper += (guint) floor((double) (buffer_size - note_256th_attack) / (note_256th_delay * (double) buffer_size));
-      }
+      
+    for(i = 1; next_note_256th_attack + (i * correct_note_256th_frame_count) + floor(fraction_counter) < buffer_size; i++){
+      next_note_256th_offset_upper++;
+
+      fraction_counter += fraction;
     }
   }
   
@@ -887,15 +920,25 @@ ags_soundcard_util_calc_next_note_256th_attack(GObject *soundcard,
   guint note_256th_offset_last;
   guint note_256th_attack;
   guint note_256th_attack_last;
+  guint next_note_256th_attack;
   guint next_note_256th_offset_lower;
   guint next_note_256th_offset_upper;
   guint next_note_256th_attack_lower;
   guint next_note_256th_attack_upper;
   
   gdouble absolute_delay;
+  gdouble corrected_delay;
+  guint default_tact_frames;
+  guint total_correct_frame_count;
+  gdouble correct_note_4th_frame_count;
+  gdouble correct_frame_count;
+  gdouble correct_note_256th_frame_count;
+  gdouble fraction;
+  gdouble fraction_counter;
   guint buffer_size;
   guint loop_left, loop_right;
   gboolean do_loop;
+  guint i;
   guint note_256th_attack_position_lower;
   guint note_256th_attack_position_upper;
   
@@ -919,12 +962,12 @@ ags_soundcard_util_calc_next_note_256th_attack(GObject *soundcard,
 			    &buffer_size,
 			    NULL);
   
-  note_offset = ags_soundcard_get_note_offset(soundcard);
+  note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(soundcard));
 
   note_256th_offset = 0;
   note_256th_offset_last = 0;
   
-  ags_soundcard_get_note_256th_offset(soundcard,
+  ags_soundcard_get_note_256th_offset(AGS_SOUNDCARD(soundcard),
 				      &note_256th_offset,
 				      &note_256th_offset_last);
 
@@ -933,18 +976,18 @@ ags_soundcard_util_calc_next_note_256th_attack(GObject *soundcard,
   
   do_loop = FALSE;
   
-  ags_soundcard_get_loop(soundcard,
+  ags_soundcard_get_loop(AGS_SOUNDCARD(soundcard),
 			 &loop_left, &loop_right,
 			 &do_loop);
 
   note_256th_attack = 0;
   note_256th_attack_last = 0;
 
-  ags_soundcard_get_note_256th_attack(soundcard,
+  ags_soundcard_get_note_256th_attack(AGS_SOUNDCARD(soundcard),
 				      &note_256th_attack,
 				      &note_256th_attack_last);
   
-  ags_soundcard_get_note_256th_attack_position(soundcard,
+  ags_soundcard_get_note_256th_attack_position(AGS_SOUNDCARD(soundcard),
 					       &note_256th_attack_position_lower,
 					       &note_256th_attack_position_upper);
   
@@ -1095,62 +1138,72 @@ ags_soundcard_util_calc_next_note_256th_attack(GObject *soundcard,
   
   //  fprintf(stdout, "-> delay{#0} = %f, attack{#0} = %d\n", delay[0], attack[0]);
 
-  if(delay_counter + 1.0 >= floor(delay[tic_counter])){
-    if(do_loop &&
-       note_offset + 1 == loop_right){      
-      next_note_256th_offset_lower = 16 * loop_left;
+  default_tact_frames = (guint) floor(absolute_delay * (gdouble) buffer_size);
 
-      if(note_256th_attack < attack[tic_counter]){
-	if(next_note_256th_offset_lower - (guint) floor((double) (attack[tic_counter] - note_256th_attack) / (note_256th_delay * (double) buffer_size)) > note_256th_offset_last){
-	  next_note_256th_offset_lower -= (guint) floor((double) (attack[tic_counter] - note_256th_attack) / (note_256th_delay * (double) buffer_size));
-	}
-      }
-      
-      next_note_256th_offset_upper = next_note_256th_offset_lower;
-      
-      if(note_256th_delay < 1.0){
-	if(note_256th_attack < note_256th_attack_last){
-	  next_note_256th_offset_upper += (guint) floor((double) (buffer_size - note_256th_attack) / (note_256th_delay * (double) buffer_size));
-	}
-      }
-    }else{
-      next_note_256th_offset_lower = 16 * (note_offset + 1);
-      
-      next_note_256th_offset_upper = next_note_256th_offset_lower;
-      
-      if(note_256th_delay < 1.0){
-	if(note_256th_attack < note_256th_attack_last){
-	  next_note_256th_offset_upper += (guint) floor((double) (buffer_size - note_256th_attack) / (note_256th_delay * (double) buffer_size));
-	}
-      }
-    }
-  }else{
-    next_note_256th_offset_lower = note_256th_offset_last + 1;
-    
-    next_note_256th_offset_upper = next_note_256th_offset_lower;
-    
-    if(note_256th_delay < 1.0){
-      if(note_256th_attack < note_256th_attack_last){
-	next_note_256th_offset_upper += (guint) floor((double) (buffer_size - note_256th_attack) / (note_256th_delay * (double) buffer_size));
-      }
+  total_correct_frame_count = buffer_size * ((guint) floor((gdouble) ((guint) AGS_SOUNDCARD_DEFAULT_PERIOD * default_tact_frames) / (gdouble) buffer_size));
+
+  correct_note_4th_frame_count = floor((gdouble) total_correct_frame_count / (AGS_SOUNDCARD_DEFAULT_PERIOD / 4.0));
+  
+  correct_frame_count = (gdouble) correct_note_4th_frame_count / 4.0;
+
+  correct_note_256th_frame_count = correct_frame_count / 16.0;
+
+  fraction = correct_note_256th_frame_count - floor(correct_note_256th_frame_count);
+  
+  corrected_delay = correct_frame_count / (gdouble) buffer_size;
+
+  next_note_256th_attack = 0;
+
+  fraction_counter = (tic_counter * fraction) - floor(tic_counter * fraction) + fraction;
+  
+  if(correct_note_256th_frame_count < buffer_size){
+    if((note_256th_attack_last + (guint) floor(correct_note_256th_frame_count + fraction_counter)) > buffer_size){
+      next_note_256th_attack = (note_256th_attack_last + (guint) floor(correct_note_256th_frame_count + fraction_counter)) % buffer_size;
     }
   }
 
-  next_note_256th_attack_lower = ags_soundcard_get_note_256th_attack_at_position(soundcard,
+  /*  */
+  next_note_256th_offset_lower = note_256th_offset_last + 1;
+  
+  next_note_256th_offset_upper = next_note_256th_offset_lower;
+  
+  if(correct_note_256th_frame_count < buffer_size){
+    for(i = 1; next_note_256th_attack + (i * correct_note_256th_frame_count) + floor(fraction_counter) < buffer_size; i++){
+      next_note_256th_offset_upper++;
+
+      fraction_counter += fraction;
+    }
+  }
+  
+  if(do_loop &&
+     next_note_256th_offset_upper >= 16 * loop_right){
+    next_note_256th_offset_lower = 16 * loop_left;
+      
+    next_note_256th_offset_upper = next_note_256th_offset_lower;
+      
+    for(i = 1; next_note_256th_attack + (i * correct_note_256th_frame_count) + floor(fraction_counter) < buffer_size; i++){
+      next_note_256th_offset_upper++;
+
+      fraction_counter += fraction;
+    }
+  }
+  
+  next_note_256th_attack_lower = ags_soundcard_get_note_256th_attack_at_position(AGS_SOUNDCARD(soundcard),
 										 note_256th_attack_position_lower);
-  next_note_256th_attack_upper = ags_soundcard_get_note_256th_attack_at_position(soundcard,
+  next_note_256th_attack_upper = ags_soundcard_get_note_256th_attack_at_position(AGS_SOUNDCARD(soundcard),
 										 note_256th_attack_position_upper);
 
   if(next_note_256th_offset_lower != note_256th_offset){
-    if(do_loop){
-      next_note_256th_attack_lower = ags_soundcard_get_note_256th_attack_at_position(soundcard,
+    if(do_loop &&
+       next_note_256th_offset_upper >= 16 * loop_right){
+      next_note_256th_attack_lower = ags_soundcard_get_note_256th_attack_at_position(AGS_SOUNDCARD(soundcard),
 										     0);
-      next_note_256th_attack_upper = ags_soundcard_get_note_256th_attack_at_position(soundcard,
+      next_note_256th_attack_upper = ags_soundcard_get_note_256th_attack_at_position(AGS_SOUNDCARD(soundcard),
 										     (next_note_256th_offset_upper - next_note_256th_offset_lower));
     }else{
-      next_note_256th_attack_lower = ags_soundcard_get_note_256th_attack_at_position(soundcard,
+      next_note_256th_attack_lower = ags_soundcard_get_note_256th_attack_at_position(AGS_SOUNDCARD(soundcard),
 										     note_256th_attack_position_upper + 1);
-      next_note_256th_attack_upper = ags_soundcard_get_note_256th_attack_at_position(soundcard,
+      next_note_256th_attack_upper = ags_soundcard_get_note_256th_attack_at_position(AGS_SOUNDCARD(soundcard),
 										     note_256th_attack_position_upper + 1 + (next_note_256th_offset_upper - next_note_256th_offset_lower));
     }
   }

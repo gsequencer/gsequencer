@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,6 +32,7 @@ void ags_soundcard_editor_applicable_interface_init(AgsApplicableInterface *appl
 void ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor);
 static void ags_soundcard_editor_finalize(GObject *gobject);
 
+gboolean ags_soundcard_editor_is_connected(AgsConnectable *connectable);
 void ags_soundcard_editor_connect(AgsConnectable *connectable);
 void ags_soundcard_editor_disconnect(AgsConnectable *connectable);
 
@@ -118,10 +119,23 @@ ags_soundcard_editor_class_init(AgsSoundcardEditorClass *soundcard_editor)
 void
 ags_soundcard_editor_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_soundcard_editor_is_connected;  
   connectable->connect = ags_soundcard_editor_connect;
   connectable->disconnect = ags_soundcard_editor_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -668,6 +682,20 @@ ags_soundcard_editor_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_soundcard_editor_parent_class)->finalize(gobject);
 }
 
+gboolean
+ags_soundcard_editor_is_connected(AgsConnectable *connectable)
+{
+  AgsSoundcardEditor *soundcard_editor;
+
+  gboolean retval;
+
+  soundcard_editor = AGS_SOUNDCARD_EDITOR(connectable);
+
+  retval = ((AGS_CONNECTABLE_CONNECTED & (soundcard_editor->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(retval);
+}
+
 void
 ags_soundcard_editor_connect(AgsConnectable *connectable)
 {
@@ -675,11 +703,11 @@ ags_soundcard_editor_connect(AgsConnectable *connectable)
 
   soundcard_editor = AGS_SOUNDCARD_EDITOR(connectable);
 
-  if((AGS_SOUNDCARD_EDITOR_CONNECTED & (soundcard_editor->flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
-  soundcard_editor->flags |= AGS_SOUNDCARD_EDITOR_CONNECTED;
+  soundcard_editor->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
   
   /* backend and card */
   g_signal_connect_after(G_OBJECT(soundcard_editor->backend), "changed",
@@ -716,11 +744,11 @@ ags_soundcard_editor_disconnect(AgsConnectable *connectable)
 
   soundcard_editor = AGS_SOUNDCARD_EDITOR(connectable);
 
-  if((AGS_SOUNDCARD_EDITOR_CONNECTED & (soundcard_editor->flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
-  soundcard_editor->flags &= (~AGS_SOUNDCARD_EDITOR_CONNECTED);
+  soundcard_editor->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   /* backend and card */
   g_object_disconnect(G_OBJECT(soundcard_editor->backend),

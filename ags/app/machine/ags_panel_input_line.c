@@ -171,7 +171,7 @@ ags_panel_input_line_connect(AgsConnectable *connectable)
 
   panel_input_line = AGS_PANEL_INPUT_LINE(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_LINE(panel_input_line)->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
   
@@ -187,7 +187,7 @@ ags_panel_input_line_disconnect(AgsConnectable *connectable)
 
   panel_input_line = AGS_PANEL_INPUT_LINE(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_LINE(panel_input_line)->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 

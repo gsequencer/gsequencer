@@ -18,39 +18,3 @@
  */
 
 #include <ags/app/ags_midi_dialog_callbacks.h>
-
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
-#include <ags/app/ags_window.h>
-
-int
-ags_midi_dialog_apply_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog)
-{
-  ags_applicable_apply(AGS_APPLICABLE(midi_dialog));
-
-  //TODO:JK: remove me
-  //  ags_applicable_reset(AGS_APPLICABLE(midi_dialog));
-
-  return(0);
-}
-
-int
-ags_midi_dialog_ok_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog)
-{
-  //  ags_applicable_set_update(AGS_APPLICABLE(midi_dialog), FALSE);
-  ags_connectable_disconnect(AGS_CONNECTABLE(midi_dialog));
-  ags_applicable_apply(AGS_APPLICABLE(midi_dialog));
- 
-  gtk_window_destroy((GtkWindow *) midi_dialog);
-
-  return(0);
-}
-
-int
-ags_midi_dialog_cancel_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog)
-{
-  gtk_window_destroy((GtkWindow *) midi_dialog);
-
-  return(0);
-}

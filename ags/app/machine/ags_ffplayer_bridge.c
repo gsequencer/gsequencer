@@ -98,8 +98,6 @@ ags_ffplayer_bridge_connectable_interface_init(AgsConnectableInterface *connecta
 {
   ags_ffplayer_bridge_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
-  connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
   connectable->connect = ags_ffplayer_bridge_connect;
   connectable->disconnect = ags_ffplayer_bridge_disconnect;
 }
@@ -138,7 +136,6 @@ ags_ffplayer_bridge_init(AgsFFPlayerBridge *ffplayer_bridge)
   gtk_widget_set_halign((GtkWidget *) AGS_EFFECT_BRIDGE(ffplayer_bridge)->bulk_input,
 			GTK_ALIGN_FILL);
   
-  AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(ffplayer_bridge)->bulk_input)->parent_bridge = ffplayer_bridge;
   gtk_grid_attach(grid,
 		  (GtkWidget *) AGS_EFFECT_BRIDGE(ffplayer_bridge)->bulk_input,
 		  0, 0,

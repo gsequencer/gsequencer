@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -64,9 +64,11 @@
 void ags_machine_selector_class_init(AgsMachineSelectorClass *machine_selector);
 void ags_machine_selector_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_machine_selector_init(AgsMachineSelector *machine_selector);
+void ags_machine_selector_show(GtkWidget *widget);
+
+gboolean ags_machine_selector_is_connected(AgsConnectable *connectable);
 void ags_machine_selector_connect(AgsConnectable *connectable);
 void ags_machine_selector_disconnect(AgsConnectable *connectable);
-void ags_machine_selector_show(GtkWidget *widget);
 
 void ags_machine_selector_real_changed(AgsMachineSelector *machine_selector, AgsMachine *machine);
 
@@ -131,10 +133,23 @@ ags_machine_selector_get_type(void)
 void
 ags_machine_selector_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+  
+  connectable->is_connected = ags_machine_selector_is_connected;
   connectable->connect = ags_machine_selector_connect;
   connectable->disconnect = ags_machine_selector_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -339,6 +354,21 @@ ags_machine_selector_init(AgsMachineSelector *machine_selector)
   machine_selector->machine_selection = NULL;
 }
 
+gboolean
+ags_machine_selector_is_connected(AgsConnectable *connectable)
+{
+  AgsMachineSelector *machine_selector;
+  
+  gboolean is_connected;
+
+  machine_selector = AGS_MACHINE_SELECTOR(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (machine_selector->connectable_flags)) != 0) ? TRUE: FALSE;
+  
+  return(is_connected);
+}
+
 void
 ags_machine_selector_connect(AgsConnectable *connectable)
 {
@@ -348,7 +378,7 @@ ags_machine_selector_connect(AgsConnectable *connectable)
   
   machine_selector = AGS_MACHINE_SELECTOR(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (machine_selector->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -379,7 +409,7 @@ ags_machine_selector_disconnect(AgsConnectable *connectable)
   
   machine_selector = AGS_MACHINE_SELECTOR(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (machine_selector->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 

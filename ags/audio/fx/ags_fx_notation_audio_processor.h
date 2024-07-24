@@ -78,11 +78,11 @@ struct _AgsFxNotationAudioProcessor
 
   gdouble note_256th_delay;
 
-  guint64 note_256th_offset_counter;
-  guint64 note_256th_offset_counter_last;
+  guint64 note_256th_offset_lower;
+  guint64 note_256th_offset_upper;
 
-  guint64 note_256th_current_offset_counter;
-  guint64 note_256th_current_offset_counter_last;
+  guint64 note_256th_current_offset_lower;
+  guint64 note_256th_current_offset_upper;
 
   GList *note_256th;
 

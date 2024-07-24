@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -42,15 +42,12 @@ G_BEGIN_DECLS
 typedef struct _AgsSequencerEditor AgsSequencerEditor;
 typedef struct _AgsSequencerEditorClass AgsSequencerEditorClass;
 
-typedef enum{
-  AGS_SEQUENCER_EDITOR_CONNECTED    = 1,
-}AgsSequencerEditorFlags;
-
 struct _AgsSequencerEditor
 {
   GtkBox box;
 
   guint flags;
+  guint connectable_flags;
   
   GObject *sequencer;
   GObject *sequencer_thread;
@@ -59,9 +56,10 @@ struct _AgsSequencerEditor
   
   GtkComboBoxText *card;
   
-  GtkBox *jack_hbox;
-  GtkButton *add_jack;
-  GtkButton *remove_jack;
+  GtkBox *source_hbox;
+  
+  GtkButton *add_source;
+  GtkButton *remove_source;
 
   GtkButton *remove;
 };
@@ -83,9 +81,10 @@ void ags_sequencer_editor_add_sequencer(AgsSequencerEditor *sequencer_editor,
 void ags_sequencer_editor_remove_sequencer(AgsSequencerEditor *sequencer_editor,
 					   GObject *sequencer);
 
-void ags_sequencer_editor_load_jack_card(AgsSequencerEditor *sequencer_editor);
 void ags_sequencer_editor_load_alsa_card(AgsSequencerEditor *sequencer_editor);
 void ags_sequencer_editor_load_oss_card(AgsSequencerEditor *sequencer_editor);
+void ags_sequencer_editor_load_core_midi_card(AgsSequencerEditor *sequencer_editor);
+void ags_sequencer_editor_load_jack_card(AgsSequencerEditor *sequencer_editor);
 
 AgsSequencerEditor* ags_sequencer_editor_new();
 

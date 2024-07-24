@@ -679,8 +679,8 @@ ags_tempo_edit_key_released_callback(GtkEventControllerKey *event_controller,
     key_handled = TRUE;
   }
   
-  composite_editor = gtk_widget_get_ancestor((GtkWidget *) tempo_edit,
-					     AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) tempo_edit,
+								    AGS_TYPE_COMPOSITE_EDITOR);
 
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) AGS_COMPOSITE_TOOLBAR(composite_editor->toolbar)->zoom));
 
@@ -1099,7 +1099,7 @@ ags_tempo_edit_drawing_area_button_release_add_marker(GtkWidget *editor,
 #endif
 
   /* add marker */
-  ags_composite_editor_add_marker(editor,
+  ags_composite_editor_add_marker((AgsCompositeEditor *) editor,
 				  marker);
   
   tempo_edit->current_marker = NULL;
@@ -1156,7 +1156,7 @@ ags_tempo_edit_drawing_area_button_release_delete_marker(GtkWidget *editor,
   y = (((allocation.height - y) / g_range) * c_range) + lower;
     
   /* delete marker */
-  ags_composite_editor_delete_marker(editor,
+  ags_composite_editor_delete_marker((AgsCompositeEditor *) editor,
 				     x, y);
 
   gtk_widget_queue_draw((GtkWidget *) tempo_edit->drawing_area);
@@ -1630,7 +1630,7 @@ ags_tempo_edit_find_first_drawn_func(AgsTempoEdit *tempo_edit,
   
   application_context = ags_application_context_get_instance();
 
-  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   composite_toolbar = composite_editor->toolbar;
 
@@ -1763,7 +1763,7 @@ ags_tempo_edit_find_last_drawn_func(AgsTempoEdit *tempo_edit,
   
   application_context = ags_application_context_get_instance();
 
-  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   composite_toolbar = composite_editor->toolbar;
 
@@ -1773,7 +1773,7 @@ ags_tempo_edit_find_last_drawn_func(AgsTempoEdit *tempo_edit,
 
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) composite_toolbar->zoom));
   
-  width = gtk_widget_get_width(tempo_edit->drawing_area);
+  width = gtk_widget_get_width((GtkWidget *) tempo_edit->drawing_area);
 
   x_offset = (guint64) (AGS_PROGRAM_DEFAULT_OFFSET * floor((zoom_factor * (gtk_adjustment_get_value(adjustment) + (double) width)) / (double) AGS_PROGRAM_DEFAULT_OFFSET));
 

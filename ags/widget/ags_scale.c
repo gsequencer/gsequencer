@@ -292,13 +292,13 @@ ags_scale_init(AgsScale *scale)
 	       "height-request", AGS_SCALE_DEFAULT_HEIGHT_REQUEST,
 	       NULL);
 
-  gtk_widget_set_hexpand(scale,
+  gtk_widget_set_hexpand((GtkWidget *) scale,
 			 FALSE);
   
-  gtk_widget_set_vexpand(scale,
+  gtk_widget_set_vexpand((GtkWidget *) scale,
 			 FALSE);
 
-  event_controller = gtk_event_controller_key_new();
+  event_controller = (GtkEventController *) gtk_event_controller_key_new();
   gtk_widget_add_controller((GtkWidget *) scale,
 			    event_controller);
 
@@ -311,7 +311,7 @@ ags_scale_init(AgsScale *scale)
   g_signal_connect(event_controller, "modifiers",
 		   G_CALLBACK(ags_scale_modifiers_callback), scale);
 
-  event_controller = gtk_gesture_click_new();
+  event_controller = (GtkEventController *) gtk_gesture_click_new();
   gtk_widget_add_controller((GtkWidget *) scale,
 			    event_controller);
 
@@ -321,7 +321,7 @@ ags_scale_init(AgsScale *scale)
   g_signal_connect(event_controller, "released",
 		   G_CALLBACK(ags_scale_gesture_click_released_callback), scale);
 
-  event_controller = gtk_event_controller_motion_new();
+  event_controller = (GtkEventController *) gtk_event_controller_motion_new();
   gtk_widget_add_controller((GtkWidget *) scale,
 			    event_controller);
 

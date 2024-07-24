@@ -22,6 +22,7 @@
 #include <ags/ags_api_config.h>
 
 #include <ags/app/ags_ui_provider.h>
+#include <ags/app/ags_gsequencer_application.h>
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_composite_editor.h>
 #include <ags/app/ags_export_window.h>
@@ -89,6 +90,11 @@
 #include <tchar.h>
 #endif
 
+#if defined(AGS_OSX_DMG_ENV)
+#include <Cocoa/Cocoa.h>
+#include <Foundation/Foundation.h>
+#endif
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -138,13 +144,14 @@ ags_app_action_util_open()
   gchar *bookmark_filename;
   gchar *home_path;
   gchar *sandbox_path;
+  gchar *current_path;
   gchar *str;
 
   application_context = ags_application_context_get_instance();
 
   window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  file_dialog = (AgsFileDialog *) ags_file_dialog_new((GtkWindow *) window,
+  file_dialog = (AgsFileDialog *) ags_file_dialog_new((GtkWidget *) window,
 						      i18n("open file"));
 
   file_widget = ags_file_dialog_get_file_widget(file_dialog);
@@ -154,8 +161,8 @@ ags_app_action_util_open()
   sandbox_path = NULL;
   
 #if defined(AGS_MACOS_SANDBOX)
-  sandbox_path = g_strdup_printf("%s/Library/%s",
-				 home_path,
+  sandbox_path = g_strdup_printf("%s/Library/Containers/%s/Data",
+  				 home_path,
 				 AGS_DEFAULT_BUNDLE_ID);
 
   recently_used_filename = g_strdup_printf("%s/%s/gsequencer_app_recently_used.xml",
@@ -219,37 +226,44 @@ ags_app_action_util_open()
 
   ags_file_widget_read_bookmark(file_widget);
 
+  /* current path */
+  current_path = NULL;
+  
 #if defined(AGS_MACOS_SANDBOX)
-  ags_file_widget_set_flags(file_widget,
-			    AGS_FILE_WIDGET_APP_SANDBOX);
-
-  ags_file_widget_set_current_path(file_widget,
-				   sandbox_path);
+  current_path = g_strdup(home_path);
 #endif
 
 #if defined(AGS_FLATPAK_SANDBOX)
   ags_file_widget_set_flags(file_widget,
 			    AGS_FILE_WIDGET_APP_SANDBOX);
 
-  ags_file_widget_set_current_path(file_widget,
-				   sandbox_path);
+  current_path = g_strdup(sandbox_path);
 #endif
 
 #if defined(AGS_SNAP_SANDBOX)
   ags_file_widget_set_flags(file_widget,
 			    AGS_FILE_WIDGET_APP_SANDBOX);
 
-  ags_file_widget_set_current_path(file_widget,
-				   sandbox_path);
+  current_path = g_strdup(sandbox_path);
 #endif
   
 #if !defined(AGS_MACOS_SANDBOX) && !defined(AGS_FLATPAK_SANDBOX) && !defined(AGS_SNAP_SANDBOX)
-  ags_file_widget_set_current_path(file_widget,
-				   home_path);
+  current_path = g_strdup(home_path);
 #endif
 
-  ags_file_widget_refresh(file_widget);
+  if(window->name != NULL){
+    g_free(current_path);
 
+    current_path = g_path_get_dirname(window->name);
+  }
+  
+  ags_file_widget_set_current_path(file_widget,
+				   current_path);
+
+  g_free(current_path);
+
+  ags_file_widget_refresh(file_widget);
+  
   ags_file_widget_add_location(file_widget,
 			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_DESKTOP,
 			       NULL);
@@ -288,14 +302,18 @@ ags_app_action_util_open_response_callback(AgsFileDialog *file_dialog,
 					   gpointer data)
 {
   if(response == GTK_RESPONSE_ACCEPT){
+    AgsWindow *window;
     AgsFileWidget *file_widget;
     
     AgsApplicationContext *application_context;
     
     char *filename;
     gchar *str;
-#if defined(AGS_W32API) || defined(AGS_OSXAPI)
+#if defined(AGS_W32API)
     gchar *app_dir;
+#elif defined(AGS_OSXAPI)
+    gchar *app_dir;
+    gchar *application_id;
 #endif
 
     gint strv_length;
@@ -304,11 +322,13 @@ ags_app_action_util_open_response_callback(AgsFileDialog *file_dialog,
 
     application_context = ags_application_context_get_instance();
 
+    window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
     file_widget = ags_file_dialog_get_file_widget(file_dialog);
 
     filename = ags_file_widget_get_filename(file_widget);
 
-    if(!g_strv_contains(file_widget->recently_used, filename)){
+    if(!g_strv_contains((const gchar * const *) file_widget->recently_used, filename)){
       strv_length = g_strv_length(file_widget->recently_used);
 
       file_widget->recently_used = g_realloc(file_widget->recently_used,
@@ -362,23 +382,39 @@ ags_app_action_util_open_response_callback(AgsFileDialog *file_dialog,
 
     g_free(str);
 #elif defined(AGS_OSXAPI)
-    app_dir = g_path_get_dirname(application_context->argv[0]);
-  
-    if(g_path_is_absolute(app_dir)){
-      str = g_strdup_printf("%s %s %s",
-			    application_context->argv[0],
-			    "--filename",
-			    filename);
-    }else{
-      str = g_strdup_printf("%s/%s %s %s",
-			    g_get_current_dir(),
-			    application_context->argv[0],
-			    "--filename",
-			    filename);
-    }
-    
-    g_free(app_dir);
+#if !defined(AGS_MACOS_SANDBOX)
+  application_id = "org.nongnu.gsequencer.gsequencer";
+#else
+  application_id = "com.gsequencer.GSequencer";
+#endif
 
+    //FIXME:JK: macos open project files sandbox work-around
+#if 1
+    GFile* file[2];
+    
+    g_message("open %s", filename);
+
+    file[0] = g_file_new_for_path(filename);
+    file[1] = NULL;
+    
+    g_application_open(G_APPLICATION(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context))),
+		       file,
+		       1,
+		       "local command line");
+#else
+#if defined(AGS_OSX_DMG_ENV)
+    app_dir = [[NSBundle mainBundle] bundlePath].UTF8String;
+
+    str = g_strdup_printf("%s/Contents/MacOS/%s --filename '%s'",
+			  app_dir,
+			  application_id,
+			  filename);
+#else
+    str = g_strdup_printf("%s --filename '%s'",
+			  application_context->argv[0],
+			  filename);
+#endif
+    
     g_spawn_command_line_async(str,
 			       &error);
 
@@ -389,8 +425,9 @@ ags_app_action_util_open_response_callback(AgsFileDialog *file_dialog,
     }    
 
     g_free(str);
+#endif
 #else
-    str = g_strdup_printf("%s --filename %s",
+    str = g_strdup_printf("%s --filename '%s'",
 			  application_context->argv[0],
 			  filename);
 
@@ -545,7 +582,7 @@ ags_app_action_util_save_as_response_callback(AgsFileDialog *file_dialog,
 
     filename = ags_file_widget_get_current_path(file_widget);
 
-    if(!g_strv_contains(file_widget->recently_used, filename)){
+    if(!g_strv_contains((const gchar * const *) file_widget->recently_used, filename)){
       strv_length = g_strv_length(file_widget->recently_used);
 
       file_widget->recently_used = g_realloc(file_widget->recently_used,
@@ -636,6 +673,7 @@ ags_app_action_util_save_as()
   gchar *recently_used_filename;
   gchar *home_path;
   gchar *sandbox_path;
+  gchar *current_path;
   gchar *str;
   
   AgsApplicationContext *application_context;
@@ -644,7 +682,7 @@ ags_app_action_util_save_as()
   
   window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  file_dialog = (AgsFileDialog *) ags_file_dialog_new((GtkWindow *) window,
+  file_dialog = (AgsFileDialog *) ags_file_dialog_new((GtkWidget *) window,
 						      i18n("save file as"));  
 
   file_widget = ags_file_dialog_get_file_widget(file_dialog);
@@ -654,7 +692,7 @@ ags_app_action_util_save_as()
   sandbox_path = NULL;
   
 #if defined(AGS_MACOS_SANDBOX)
-  sandbox_path = g_strdup_printf("%s/Library/%s",
+  sandbox_path = g_strdup_printf("%s/Library/Containers/%s/Data",
 				 home_path,
 				 AGS_DEFAULT_BUNDLE_ID);
 
@@ -697,34 +735,41 @@ ags_app_action_util_save_as()
   
   ags_file_widget_read_recently_used(file_widget);
 
+  /* current path */
+  current_path = NULL;
+  
 #if defined(AGS_MACOS_SANDBOX)
-  ags_file_widget_set_flags(file_widget,
-			    AGS_FILE_WIDGET_APP_SANDBOX);
-
-  ags_file_widget_set_current_path(file_widget,
-				   sandbox_path);
+  current_path = g_strdup(home_path);
 #endif
 
 #if defined(AGS_FLATPAK_SANDBOX)
   ags_file_widget_set_flags(file_widget,
 			    AGS_FILE_WIDGET_APP_SANDBOX);
 
-  ags_file_widget_set_current_path(file_widget,
-				   sandbox_path);
+  current_path = g_strdup(sandbox_path);
 #endif
 
 #if defined(AGS_SNAP_SANDBOX)
   ags_file_widget_set_flags(file_widget,
 			    AGS_FILE_WIDGET_APP_SANDBOX);
 
-  ags_file_widget_set_current_path(file_widget,
-				   sandbox_path);
+  current_path = g_strdup(sandbox_path);
 #endif
   
 #if !defined(AGS_MACOS_SANDBOX) && !defined(AGS_FLATPAK_SANDBOX) && !defined(AGS_SNAP_SANDBOX)
-  ags_file_widget_set_current_path(file_widget,
-				   home_path);
+  current_path = g_strdup(home_path);
 #endif
+
+  if(window->name != NULL){
+    g_free(current_path);
+
+    current_path = g_path_get_dirname(window->name);
+  }
+
+  ags_file_widget_set_current_path(file_widget,
+				   current_path);
+
+  g_free(current_path);
 
   ags_file_widget_refresh(file_widget);
 
@@ -773,6 +818,10 @@ ags_app_action_util_meta_data()
   meta_data_window = (AgsMetaDataWindow *) ags_ui_provider_get_meta_data_window(AGS_UI_PROVIDER(application_context));
   gtk_widget_set_visible((GtkWidget *) meta_data_window,
 			 TRUE);
+
+  gtk_window_present((GtkWindow *) meta_data_window);
+
+  ags_gsequencer_application_refresh_window_menu((AgsGSequencerApplication *) ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
 }
 
 void
@@ -787,6 +836,10 @@ ags_app_action_util_export()
   export_window = (AgsExportWindow *) ags_ui_provider_get_export_window(AGS_UI_PROVIDER(application_context));
   gtk_widget_set_visible((GtkWidget *) export_window,
 			 TRUE);
+
+  gtk_window_present((GtkWindow *) export_window);
+
+  ags_gsequencer_application_refresh_window_menu((AgsGSequencerApplication *) ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
 }
 
 void
@@ -800,19 +853,21 @@ ags_app_action_util_smf_import()
   
   midi_import_wizard = (AgsMidiImportWizard *) ags_ui_provider_get_midi_import_wizard(AGS_UI_PROVIDER(application_context));
 
-  if(midi_import_wizard != NULL){
-    return;
+  if(midi_import_wizard == NULL){
+    midi_import_wizard = ags_midi_import_wizard_new();
+    ags_ui_provider_set_midi_import_wizard(AGS_UI_PROVIDER(application_context),
+					   (GtkWidget *) midi_import_wizard);
+
+    ags_connectable_connect(AGS_CONNECTABLE(midi_import_wizard));
+    ags_applicable_reset(AGS_APPLICABLE(midi_import_wizard));
   }
-
-  midi_import_wizard = ags_midi_import_wizard_new();
-  ags_ui_provider_set_midi_import_wizard(AGS_UI_PROVIDER(application_context),
-					 (GtkWidget *) midi_import_wizard);
-
-  ags_connectable_connect(AGS_CONNECTABLE(midi_import_wizard));
-  ags_applicable_reset(AGS_APPLICABLE(midi_import_wizard));
 
   gtk_widget_set_visible((GtkWidget *) midi_import_wizard,
 			 TRUE);
+
+  gtk_window_present((GtkWindow *) midi_import_wizard);
+
+  ags_gsequencer_application_refresh_window_menu((AgsGSequencerApplication *) ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
 }
 
 void
@@ -826,19 +881,21 @@ ags_app_action_util_smf_export()
   
   midi_export_wizard = (AgsMidiExportWizard *) ags_ui_provider_get_midi_export_wizard(AGS_UI_PROVIDER(application_context));
 
-  if(midi_export_wizard != NULL){
-    return;
+  if(midi_export_wizard == NULL){
+    midi_export_wizard = ags_midi_export_wizard_new();
+    ags_ui_provider_set_midi_export_wizard(AGS_UI_PROVIDER(application_context),
+					   (GtkWidget *) midi_export_wizard);
+    
+    ags_connectable_connect(AGS_CONNECTABLE(midi_export_wizard));
+    ags_applicable_reset(AGS_APPLICABLE(midi_export_wizard));
   }
-
-  midi_export_wizard = ags_midi_export_wizard_new();
-  ags_ui_provider_set_midi_export_wizard(AGS_UI_PROVIDER(application_context),
-					 (GtkWidget *) midi_export_wizard);
-
-  ags_connectable_connect(AGS_CONNECTABLE(midi_export_wizard));
-  ags_applicable_reset(AGS_APPLICABLE(midi_export_wizard));
-
+  
   gtk_widget_set_visible((GtkWidget *) midi_export_wizard,
 			 TRUE);
+  
+  gtk_window_present((GtkWindow *) midi_export_wizard);
+
+  ags_gsequencer_application_refresh_window_menu((AgsGSequencerApplication *) ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
 }
 
 void
@@ -852,20 +909,22 @@ ags_app_action_util_preferences()
 
   preferences = (AgsPreferences *) ags_ui_provider_get_preferences(AGS_UI_PROVIDER(application_context));
 
-  if(preferences != NULL){
-    return;
-  }
+  if(preferences == NULL){
+    preferences = ags_preferences_new();
+    ags_ui_provider_set_preferences(AGS_UI_PROVIDER(application_context),
+				    (GtkWidget *) preferences);
 
-  preferences = ags_preferences_new();
-  ags_ui_provider_set_preferences(AGS_UI_PROVIDER(application_context),
-				  (GtkWidget *) preferences);
-
-  ags_connectable_connect(AGS_CONNECTABLE(preferences));
+    ags_connectable_connect(AGS_CONNECTABLE(preferences));
   
-  ags_applicable_reset(AGS_APPLICABLE(preferences));
-
+    ags_applicable_reset(AGS_APPLICABLE(preferences));
+  }
+  
   gtk_widget_set_visible((GtkWidget *) preferences,
 			 TRUE);
+
+  gtk_window_present((GtkWindow *) preferences);
+
+  ags_gsequencer_application_refresh_window_menu((AgsGSequencerApplication *) ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
 }
 
 void
@@ -1039,6 +1098,10 @@ ags_app_action_util_help()
   
   gtk_widget_set_visible((GtkWidget *) online_help_window,
 			 TRUE);
+  
+  gtk_window_present((GtkWindow *) online_help_window);
+
+  ags_gsequencer_application_refresh_window_menu((AgsGSequencerApplication *) ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
 }
 
 void
@@ -2138,13 +2201,13 @@ ags_app_action_util_edit_meta()
   scrolled_edit_meta = NULL;
   
   if(AGS_IS_NOTATION_EDIT(composite_editor->selected_edit)){
-    scrolled_edit_meta = composite_editor->notation_edit->scrolled_edit_meta;
+    scrolled_edit_meta = (GtkWidget *) composite_editor->notation_edit->scrolled_edit_meta;
   }else if(AGS_IS_AUTOMATION_EDIT(composite_editor->selected_edit)){
-    scrolled_edit_meta = composite_editor->automation_edit->scrolled_edit_meta;
+    scrolled_edit_meta = (GtkWidget *) composite_editor->automation_edit->scrolled_edit_meta;
   }else if(AGS_IS_WAVE_EDIT(composite_editor->selected_edit)){
-    scrolled_edit_meta = composite_editor->wave_edit->scrolled_edit_meta;
+    scrolled_edit_meta = (GtkWidget *) composite_editor->wave_edit->scrolled_edit_meta;
   }else if(AGS_IS_SHEET_EDIT(composite_editor->selected_edit)){
-    scrolled_edit_meta = composite_editor->sheet_edit->scrolled_edit_meta;
+    scrolled_edit_meta = (GtkWidget *) composite_editor->sheet_edit->scrolled_edit_meta;
   }
 
   if(scrolled_edit_meta != NULL){

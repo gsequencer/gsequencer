@@ -1,11 +1,13 @@
-<?xml version='1.0' encoding="utf-8"?>
-<!DOCTYPE book [
-<!ENTITY backwardIcon "../images/adwaita/media-skip-backward.png">
-<!ENTITY previousIcon "../images/adwaita/media-seek-backward.png">
-<!ENTITY playIcon "../images/adwaita/media-playback-start.png">
-<!ENTITY stopIcon "../images/adwaita/media-playback-stop.png">
-<!ENTITY nextIcon "../images/adwaita/media-seek-forward.png">
-<!ENTITY forwardIcon "../images/adwaita/media-skip-forward.png">
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE chapter
+[
+<!ENTITY images "images">
+<!ENTITY backwardIcon "../&images;/adwaita/media-skip-backward.png">
+<!ENTITY previousIcon "../&images;/adwaita/media-seek-backward.png">
+<!ENTITY playIcon "../&images;/adwaita/media-playback-start.png">
+<!ENTITY stopIcon "../&images;/adwaita/media-playback-stop.png">
+<!ENTITY nextIcon "../&images;/adwaita/media-seek-forward.png">
+<!ENTITY forwardIcon "../&images;/adwaita/media-skip-forward.png">
 ]>
 
 <!-- Copyright (C) 2005-2018 Jo\u00EBl Kr\u00E4hemann -->
@@ -20,7 +22,7 @@
   <title>The navigation</title>
   <mediaobject>
     <imageobject>
-      <imagedata width="100%" scalefit="1" fileref="../images/ags_navigation.png" />
+      <imagedata width="100%" scalefit="1" fileref="../&images;/ags_navigation.png" />
     </imageobject>
     <caption>
       <para>
@@ -62,6 +64,9 @@
     <table>
       <title>AGS playback controls table</title>
       <tgroup cols="3" align="left" colsep='1' rowsep='1'>
+	<colspec colnum="1" colname="col1" colwidth="1*"/>
+	<colspec colnum="2" colname="col2" colwidth="2*"/>
+	<colspec colnum="3" colname="col3" colwidth="4.5*"/>
 	<thead>
 	  <row>
 	    <entry>icon</entry>
@@ -71,32 +76,32 @@
 	</thead>
 	<tbody>
 	  <row>
-	    <entry><imagedata fileref="&backwardIcon;" /></entry>
+	    <entry><imagedata fileref="&backwardIcon;" width="1em" /></entry>
 	    <entry>backward</entry>
 	    <entry>Seeking back until it&apos;s pressed again.</entry>
 	  </row>
 	  <row>
-	    <entry><imagedata fileref="&previousIcon;" /></entry>
+	    <entry><imagedata fileref="&previousIcon;" width="1em" /></entry>
 	    <entry>previous</entry>
 	    <entry>Seeking back until it&apos;s not pressed anymore.</entry>
 	  </row>
 	  <row>
-	    <entry><imagedata fileref="&playIcon;" /></entry>
+	    <entry><imagedata fileref="&playIcon;" width="1em" /></entry>
 	    <entry>play</entry>
 	    <entry>Starts the engines and the piano roll.</entry>
 	  </row>
 	  <row>
-	    <entry><imagedata fileref="&stopIcon;" /></entry>
+	    <entry><imagedata fileref="&stopIcon;" width="1em" /></entry>
 	    <entry>stop</entry>
 	    <entry>Stops the engines and the piano roll.</entry>
 	  </row>
 	  <row>
-	    <entry><imagedata fileref="&nextIcon;" /></entry>
+	    <entry><imagedata fileref="&nextIcon;" width="1em" /></entry>
 	    <entry>next</entry>
 	    <entry>Seeking forward until it&apos;s not pressed anymore.</entry>
 	  </row>
 	  <row>
-	    <entry><imagedata fileref="&forwardIcon;" /></entry>
+	    <entry><imagedata fileref="&forwardIcon;" width="1em" /></entry>
 	    <entry>forward</entry>
 	    <entry>Seeking forward until it&apos;s pressed again.</entry>
 	  </row>

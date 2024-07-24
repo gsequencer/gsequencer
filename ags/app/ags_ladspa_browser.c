@@ -590,7 +590,7 @@ ags_ladspa_browser_remove_port_editor(AgsLadspaBrowser *ladspa_browser,
 						port_editor);
     
     gtk_grid_remove(ladspa_browser->port_editor_grid,
-		    port_editor);
+		    (GtkWidget *) port_editor);
   }
 }
 

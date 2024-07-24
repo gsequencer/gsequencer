@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,8 +34,10 @@ void ags_audio_preferences_applicable_interface_init(AgsApplicableInterface *app
 void ags_audio_preferences_init(AgsAudioPreferences *audio_preferences);
 static void ags_audio_preferences_finalize(GObject *gobject);
 
+gboolean ags_audio_preferences_is_connected(AgsConnectable *connectable);
 void ags_audio_preferences_connect(AgsConnectable *connectable);
 void ags_audio_preferences_disconnect(AgsConnectable *connectable);
+
 void ags_audio_preferences_set_update(AgsApplicable *applicable, gboolean update);
 void ags_audio_preferences_apply(AgsApplicable *applicable);
 void ags_audio_preferences_reset(AgsApplicable *applicable);
@@ -119,10 +121,24 @@ ags_audio_preferences_class_init(AgsAudioPreferencesClass *audio_preferences)
 void
 ags_audio_preferences_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_audio_preferences_is_connected;  
   connectable->connect = ags_audio_preferences_connect;
   connectable->disconnect = ags_audio_preferences_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -157,6 +173,7 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
 		   G_CALLBACK(ags_audio_preferences_notify_parent_callback), NULL);
 
   audio_preferences->flags = 0;
+  audio_preferences->connectable_flags = 0;
 
   /* scrolled window */
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
@@ -306,6 +323,21 @@ ags_audio_preferences_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_audio_preferences_parent_class)->finalize(gobject);
 }
 
+gboolean
+ags_audio_preferences_is_connected(AgsConnectable *connectable)
+{
+  AgsAudioPreferences *audio_preferences;
+  
+  gboolean is_connected;
+  
+  audio_preferences = AGS_AUDIO_PREFERENCES(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (audio_preferences->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
+}
+
 void
 ags_audio_preferences_connect(AgsConnectable *connectable)
 {
@@ -313,11 +345,11 @@ ags_audio_preferences_connect(AgsConnectable *connectable)
 
   audio_preferences = AGS_AUDIO_PREFERENCES(connectable);
 
-  if((AGS_AUDIO_PREFERENCES_CONNECTED & (audio_preferences->flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
-  audio_preferences->flags |= AGS_AUDIO_PREFERENCES_CONNECTED;
+  audio_preferences->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
   
   if(audio_preferences->add != NULL){
     g_signal_connect(G_OBJECT(audio_preferences->add), "clicked",
@@ -343,11 +375,11 @@ ags_audio_preferences_disconnect(AgsConnectable *connectable)
   
   audio_preferences = AGS_AUDIO_PREFERENCES(connectable);
 
-  if((AGS_AUDIO_PREFERENCES_CONNECTED & (audio_preferences->flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
-  audio_preferences->flags &= (~AGS_AUDIO_PREFERENCES_CONNECTED);
+  audio_preferences->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   if(audio_preferences->add != NULL){
     g_object_disconnect(G_OBJECT(audio_preferences->add),

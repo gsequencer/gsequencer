@@ -181,7 +181,7 @@ ags_osc_xmlrpc_message_set_property(GObject *gobject,
       g_object_ref(server_msg);
     }
       
-    osc_xmlrpc_message->server_msg = server_msg;
+    osc_xmlrpc_message->server_msg = (SoupServerMessage *) server_msg;
 
     g_rec_mutex_unlock(osc_message_mutex);
   }

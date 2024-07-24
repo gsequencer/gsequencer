@@ -206,6 +206,8 @@ enum{
   PROP_PARENT,
   PROP_CHILD_TYPE,
   PROP_CHILD,
+  PROP_MIDI1_CC_TO_VALUE,
+  PROP_MIDI1_CC_TO_PORT_SPECIFIER,
 };
 
 static gpointer ags_recall_parent_class = NULL;
@@ -671,6 +673,36 @@ ags_recall_class_init(AgsRecallClass *recall)
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_CHILD,
+				  param_spec);
+
+  /**
+   * AgsRecall:midi1-cc-to-value: (type GHashTable(gpointer)) (transfer container)
+   *
+   * The MIDI version 1 control change to value.
+   * 
+   * Since: 7.0.0
+   */
+  param_spec = g_param_spec_pointer("midi1-cc-to-value",
+				    i18n_pspec("MIDI version 1 control change to value"),
+				    i18n_pspec("The MIDI version 1 control change to value"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MIDI1_CC_TO_VALUE,
+				  param_spec);
+
+  /**
+   * AgsRecall:midi1-cc-to-port-specifier: (type GHashTable(utf8)) (transfer container)
+   *
+   * The MIDI version 1 control change to port specifier.
+   * 
+   * Since: 7.0.0
+   */
+  param_spec = g_param_spec_pointer("midi1-cc-to-port-specifier",
+				    i18n_pspec("MIDI version 1 control change to port specifier"),
+				    i18n_pspec("The MIDI version 1 control change to port specifier"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MIDI1_CC_TO_PORT_SPECIFIER,
 				  param_spec);
   
   /* AgsRecallClass */
@@ -1203,8 +1235,15 @@ ags_recall_init(AgsRecall *recall)
   recall->midi_util = ags_midi_util_alloc();
 
   recall->midi_ump_util = ags_midi_ump_util_alloc();
-
-  recall->midi1_control_change = NULL;
+  
+  recall->midi1_controller = g_hash_table_new_full(g_direct_hash,
+						   g_direct_equal,
+						   NULL,
+						   NULL);
+  recall->midi1_control_change = g_hash_table_new_full(g_direct_hash,
+						       g_direct_equal,
+						       NULL,
+						       g_free);
   
   recall->midi2_control_change = NULL;
 
@@ -1545,6 +1584,52 @@ ags_recall_set_property(GObject *gobject,
       ags_recall_add_child(recall, child);
     }
     break;
+  case PROP_MIDI1_CC_TO_VALUE:
+    {
+      GHashTable *midi1_cc_to_value;
+      
+      midi1_cc_to_value = (GHashTable *) g_value_get_pointer(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(recall->midi1_cc_to_value == midi1_cc_to_value){
+	g_rec_mutex_unlock(recall_mutex);
+	
+	return;
+      }
+
+      if(midi1_cc_to_value != NULL){
+	g_hash_table_ref(midi1_cc_to_value);
+      }
+      
+      recall->midi1_cc_to_value = midi1_cc_to_value;
+      
+      g_rec_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_MIDI1_CC_TO_PORT_SPECIFIER:
+    {
+      GHashTable *midi1_cc_to_port_specifier;
+      
+      midi1_cc_to_port_specifier = (GHashTable *) g_value_get_pointer(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(recall->midi1_cc_to_port_specifier == midi1_cc_to_port_specifier){
+	g_rec_mutex_unlock(recall_mutex);
+	
+	return;
+      }
+
+      if(midi1_cc_to_port_specifier != NULL){
+	g_hash_table_ref(midi1_cc_to_port_specifier);
+      }
+      
+      recall->midi1_cc_to_port_specifier = midi1_cc_to_port_specifier;
+      
+      g_rec_mutex_unlock(recall_mutex);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -1766,6 +1851,36 @@ ags_recall_get_property(GObject *gobject,
       g_rec_mutex_unlock(recall_mutex);
     }
     break;
+  case PROP_MIDI1_CC_TO_VALUE:
+    {
+      GHashTable *midi1_cc_to_value;
+
+      g_rec_mutex_lock(recall_mutex);
+      
+      midi1_cc_to_value = recall->midi1_cc_to_value;
+
+      g_hash_table_ref(midi1_cc_to_value);
+      
+      g_value_set_pointer(value, midi1_cc_to_value);      
+      
+      g_rec_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_MIDI1_CC_TO_PORT_SPECIFIER:
+    {
+      GHashTable *midi1_cc_to_port_specifier;
+
+      g_rec_mutex_lock(recall_mutex);
+      
+      midi1_cc_to_port_specifier = recall->midi1_cc_to_port_specifier;
+
+      g_hash_table_ref(midi1_cc_to_port_specifier);
+      
+      g_value_set_pointer(value, midi1_cc_to_port_specifier);      
+      
+      g_rec_mutex_unlock(recall_mutex);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -1788,7 +1903,7 @@ ags_recall_dispose(GObject *gobject)
   
   /* recall container */
   if(recall->recall_container != NULL){
-    ags_recall_container_remove(recall->recall_container,
+    ags_recall_container_remove((AgsRecallContainer *) recall->recall_container,
 				recall);
   }
 
@@ -1923,7 +2038,7 @@ ags_recall_finalize(GObject *gobject)
   
   /* recall container */
   if(recall->recall_container != NULL){
-    ags_recall_container_remove(recall->recall_container,
+    ags_recall_container_remove((AgsRecallContainer *) recall->recall_container,
 				recall);
   }
 
@@ -3234,8 +3349,11 @@ ags_recall_set_staging_flags(AgsRecall *recall, AgsSoundStagingFlags staging_fla
 {
   AgsSoundStagingFlags recall_staging_flags;
   AgsSoundStateFlags recall_state_flags;
+
+  GList *list_start, *list, *next;
   
   gboolean omit_event;
+  gboolean children_lock_free;  
 
   GRecMutex *recall_mutex;
 
@@ -3246,6 +3364,8 @@ ags_recall_set_staging_flags(AgsRecall *recall, AgsSoundStagingFlags staging_fla
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
+  children_lock_free = ags_recall_global_get_children_lock_free();
+
   omit_event = ags_recall_global_get_omit_event();
 
   /* get staging flags */
@@ -3254,6 +3374,16 @@ ags_recall_set_staging_flags(AgsRecall *recall, AgsSoundStagingFlags staging_fla
   recall_staging_flags = recall->staging_flags;
   recall_state_flags = recall->state_flags;
   
+  if(!children_lock_free){
+    list =
+      list_start = g_list_copy_deep(recall->children,
+				    (GCopyFunc) g_object_ref,
+				    NULL);
+  }else{
+    list = 
+      list_start = recall->children;
+  }
+
   g_rec_mutex_unlock(recall_mutex);
   
   /* invoke appropriate staging */
@@ -3396,6 +3526,19 @@ ags_recall_set_staging_flags(AgsRecall *recall, AgsSoundStagingFlags staging_fla
   recall->staging_flags |= staging_flags;
 
   g_rec_mutex_unlock(recall_mutex);
+
+  while(list != NULL){
+    next = list->next;
+    
+    ags_recall_set_staging_flags(AGS_RECALL(list->data), staging_flags);
+
+    list = next;
+  }
+
+  if(!children_lock_free){
+    g_list_free_full(list_start,
+		     g_object_unref);
+  }
 }
 
 /**
@@ -4406,6 +4549,8 @@ ags_recall_add_child(AgsRecall *recall, AgsRecall *child)
   
   g_rec_mutex_unlock(recall_mutex);
 
+  recall_id = NULL;
+  
   g_object_get(recall,
 	       "recall-id", &recall_id,
 	       NULL);
@@ -4977,19 +5122,69 @@ ags_recall_set_format(AgsRecall *recall, AgsSoundcardFormat format)
   g_rec_mutex_unlock(recall_mutex);
 }
 
+/**
+ * ags_recall_get_midi1_cc_to_value:
+ * @recall: the #AgsRecall
+ *
+ * Gets MIDI version 1 control change to value mapped hash table.
+ * 
+ * Returns: (transfer container): the MIDI version 1 control change to value hash table
+ * 
+ * Since: 7.0.0
+ */
+GHashTable*
+ags_recall_get_midi1_cc_to_value(AgsRecall *recall)
+{
+  GHashTable *midi1_cc_to_value;
+  
+  if(!AGS_IS_RECALL(recall)){
+    return(0);
+  }
+
+  midi1_cc_to_value = NULL;
+
+  g_object_get(recall,
+	       "midi1-cc-to-value", &midi1_cc_to_value,
+	       NULL);
+
+  return(midi1_cc_to_value);
+}
+
+/**
+ * ags_recall_get_midi1_cc_to_port_specifier:
+ * @recall: the #AgsRecall
+ *
+ * Gets MIDI version 1 control change to port specifier mapped hash table.
+ * 
+ * Returns: (transfer container): the MIDI version 1 control change to port specifier hash table
+ * 
+ * Since: 7.0.0
+ */
+GHashTable*
+ags_recall_get_midi1_cc_to_port_specifier(AgsRecall *recall)
+{
+  GHashTable *midi1_cc_to_port_specifier;
+  
+  if(!AGS_IS_RECALL(recall)){
+    return(0);
+  }
+
+  midi1_cc_to_port_specifier = NULL;
+
+  g_object_get(recall,
+	       "midi1-cc-to-port-specifier", &midi1_cc_to_port_specifier,
+	       NULL);
+
+  return(midi1_cc_to_port_specifier);
+}
+
 void
 ags_recall_real_resolve_dependency(AgsRecall *recall)
 {
-  GList *list_start, *list, *next;
-
-  gboolean children_lock_free;
-  
   GRecMutex *recall_mutex;
 
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
-
-  children_lock_free = ags_recall_global_get_children_lock_free();
 
   /* resolve dependency */
   g_rec_mutex_lock(recall_mutex);
@@ -4997,28 +5192,8 @@ ags_recall_real_resolve_dependency(AgsRecall *recall)
   if((AGS_RECALL_TEMPLATE & (AGS_RECALL(recall)->flags)) != 0){
     g_warning("running on template");
   }
-
-  if(!children_lock_free){
-    list =
-      list_start = g_list_copy(recall->children);
-  }else{
-    list =
-      list_start = recall->children;
-  }
   
   g_rec_mutex_unlock(recall_mutex);
-
-  while(list != NULL){
-    next = list->next;
-    
-    ags_recall_resolve_dependency(AGS_RECALL(list->data));
-
-    list = next;
-  }
-
-  if(!children_lock_free){
-    g_list_free(list_start);
-  }
 }
 
 /**
@@ -5048,47 +5223,19 @@ ags_recall_resolve_dependency(AgsRecall *recall)
 void
 ags_recall_real_check_rt_data(AgsRecall *recall)
 {
-  GList *list_start, *list, *next;
-
-  gboolean children_lock_free;
-  
   GRecMutex *recall_mutex;
 
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
-  children_lock_free = ags_recall_global_get_children_lock_free();
-
   /* check rt data */
   g_rec_mutex_lock(recall_mutex);
   
-  recall->staging_flags |= AGS_SOUND_STAGING_CHECK_RT_DATA;
-
   if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
     g_warning("running on template");
   }
-
-  if(!children_lock_free){
-    list =
-      list_start = g_list_copy(recall->children);
-  }else{
-    list = 
-      list_start = recall->children;
-  }
   
   g_rec_mutex_unlock(recall_mutex);
-
-  while(list != NULL){
-    next = list->next;
-    
-    ags_recall_check_rt_data(AGS_RECALL(list->data));
-
-    list = next;
-  }
-
-  if(!children_lock_free){
-    g_list_free(list_start);  
-  }
   
   /* set is waiting */
   g_rec_mutex_lock(recall_mutex);
@@ -5123,68 +5270,25 @@ ags_recall_real_run_init_pre(AgsRecall *recall)
 {
   AgsResetRecallStaging *reset_recall_staging;
   
-  GList *list_start, *list, *next;
-
-  gboolean children_lock_free;
-  gboolean omit_event;
-  
   GRecMutex *recall_mutex;
 
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
-  children_lock_free = ags_recall_global_get_children_lock_free();
-  omit_event = ags_recall_global_get_omit_event();
-
   /* run init pre */
   g_rec_mutex_lock(recall_mutex);
 
-  if((AGS_SOUND_STAGING_RUN_INIT_PRE & (recall->staging_flags)) != 0){
-    g_rec_mutex_unlock(recall_mutex);
-
-    return;
-  }
-
   reset_recall_staging = ags_reset_recall_staging_get_instance();
   ags_reset_recall_staging_add(reset_recall_staging,
-			       recall);
-    
+			       recall);    
 
   recall->flags |= AGS_RECALL_INITIAL_RUN;
-  recall->staging_flags |= AGS_SOUND_STAGING_RUN_INIT_PRE;
 
   if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
     g_warning("running on template");
   }
   
-  if(!children_lock_free){
-    list =
-      list_start = g_list_copy_deep(recall->children,
-				    (GCopyFunc) g_object_ref,
-				    NULL);
-  }else{
-    list = 
-      list_start = recall->children;
-  }
-  
   g_rec_mutex_unlock(recall_mutex);
-
-  while(list != NULL){
-    next = list->next;
-    
-    if(omit_event){
-      AGS_RECALL_GET_CLASS(AGS_RECALL(list->data))->run_init_pre(AGS_RECALL(list->data));
-    }else{
-      ags_recall_run_init_pre(AGS_RECALL(list->data));
-    }
-    
-    list = next;
-  }
-
-  if(!children_lock_free){
-    g_list_free_full(list_start,
-		     g_object_unref);
-  }
 }
 
 /**
@@ -5210,62 +5314,19 @@ ags_recall_run_init_pre(AgsRecall *recall)
 void
 ags_recall_real_run_init_inter(AgsRecall *recall)
 {
-  GList *list_start, *list, *next;
-
-  gboolean children_lock_free;
-  gboolean omit_event;
-  
   GRecMutex *recall_mutex;
 
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
-  children_lock_free = ags_recall_global_get_children_lock_free();
-  omit_event = ags_recall_global_get_omit_event();
-
   /* run init inter */
   g_rec_mutex_lock(recall_mutex);
-
-  if((AGS_SOUND_STAGING_RUN_INIT_INTER & (recall->staging_flags)) != 0){
-    g_rec_mutex_unlock(recall_mutex);
-
-    return;
-  }
-
-  recall->staging_flags |= AGS_SOUND_STAGING_RUN_INIT_INTER;
 
   if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
     g_warning("running on template");
   }
-
-  if(!children_lock_free){
-    list =
-      list_start = g_list_copy_deep(recall->children,
-				    (GCopyFunc) g_object_ref,
-				    NULL);
-  }else{
-    list = 
-      list_start = recall->children;
-  }
   
   g_rec_mutex_unlock(recall_mutex);
-
-  while(list != NULL){
-    next = list->next;
-    
-    if(omit_event){
-      AGS_RECALL_GET_CLASS(AGS_RECALL(list->data))->run_init_inter(AGS_RECALL(list->data));
-    }else{
-      ags_recall_run_init_inter(AGS_RECALL(list->data));
-    }
-    
-    list = next;
-  }
-
-  if(!children_lock_free){
-    g_list_free_full(list_start,
-		     g_object_unref);
-  }
 }
 
 /**
@@ -5290,28 +5351,14 @@ ags_recall_run_init_inter(AgsRecall *recall)
 
 void
 ags_recall_real_run_init_post(AgsRecall *recall)
-{
-  GList *list_start, *list, *next;
-
-  gboolean children_lock_free;
-  gboolean omit_event;
-  
+{  
   GRecMutex *recall_mutex;
 
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
-  children_lock_free = ags_recall_global_get_children_lock_free();
-  omit_event = ags_recall_global_get_omit_event();
-
   /* run init post */
   g_rec_mutex_lock(recall_mutex);
-
-  if((AGS_SOUND_STAGING_RUN_INIT_POST & (recall->staging_flags)) != 0){
-    g_rec_mutex_unlock(recall_mutex);
-
-    return;
-  }
 
   recall->staging_flags |= AGS_SOUND_STAGING_RUN_INIT_POST;
 
@@ -5319,34 +5366,7 @@ ags_recall_real_run_init_post(AgsRecall *recall)
     g_warning("running on template");
   }
 
-  if(!children_lock_free){
-    list =
-      list_start = g_list_copy_deep(recall->children,
-				    (GCopyFunc) g_object_ref,
-				    NULL);
-  }else{
-    list = 
-      list_start = recall->children;
-  }
-  
   g_rec_mutex_unlock(recall_mutex);
-
-  while(list != NULL){
-    next = list->next;
-    
-    if(omit_event){
-      AGS_RECALL_GET_CLASS(AGS_RECALL(list->data))->run_init_post(AGS_RECALL(list->data));
-    }else{
-      ags_recall_run_init_post(AGS_RECALL(list->data));
-    }
-    
-    list = next;
-  }
-
-  if(!children_lock_free){
-    g_list_free_full(list_start,
-		     g_object_unref);
-  }
   
   /* set active */
   g_rec_mutex_lock(recall_mutex);
@@ -5380,62 +5400,19 @@ ags_recall_run_init_post(AgsRecall *recall)
 void
 ags_recall_real_feed_input_queue(AgsRecall *recall)
 {
-  GList *list_start, *list, *next;
-
   GRecMutex *recall_mutex;
-
-  gboolean children_lock_free;  
-  gboolean omit_event;
   
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
-  children_lock_free = ags_recall_global_get_children_lock_free();
-  omit_event = ags_recall_global_get_omit_event();
-
   /* feed input queue */
   g_rec_mutex_lock(recall_mutex);
-
-  if((AGS_SOUND_STAGING_FEED_INPUT_QUEUE & (recall->staging_flags)) != 0){
-    g_rec_mutex_unlock(recall_mutex);
-
-    return;
-  }
-
-  recall->staging_flags |= AGS_SOUND_STAGING_FEED_INPUT_QUEUE;
 
   if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
     g_warning("running on template");
   }
 
-  if(!children_lock_free){
-    list =
-      list_start = g_list_copy_deep(recall->children,
-				    (GCopyFunc) g_object_ref,
-				    NULL);
-  }else{
-    list = 
-      list_start = recall->children;
-  }
-  
   g_rec_mutex_unlock(recall_mutex);
-
-  while(list != NULL){
-    next = list->next;
-    
-    if(omit_event){
-      AGS_RECALL_GET_CLASS(AGS_RECALL(list->data))->feed_input_queue(AGS_RECALL(list->data));
-    }else{
-      ags_recall_feed_input_queue(AGS_RECALL(list->data));
-    }    
-
-    list = next;
-  }
-
-  if(!children_lock_free){
-    g_list_free_full(list_start,
-		     g_object_unref);
-  }
 }
 
 /**
@@ -5461,55 +5438,19 @@ ags_recall_feed_input_queue(AgsRecall *recall)
 void
 ags_recall_real_automate(AgsRecall *recall)
 {
-  GList *list_start, *list, *next;
-
   GRecMutex *recall_mutex;
-
-  gboolean children_lock_free;  
-  gboolean omit_event;
   
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
-  children_lock_free = ags_recall_global_get_children_lock_free();
-  omit_event = ags_recall_global_get_omit_event();
-
   /* automate */
   g_rec_mutex_lock(recall_mutex);
-
-  if((AGS_SOUND_STAGING_AUTOMATE & (recall->staging_flags)) != 0){
-    g_rec_mutex_unlock(recall_mutex);
-
-    return;
-  }
-
-  recall->staging_flags |= AGS_SOUND_STAGING_AUTOMATE;
 
   if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
     g_warning("running on template");
   }
-
-  list =
-    list_start = g_list_copy_deep(recall->children,
-				  (GCopyFunc) g_object_ref,
-				  NULL);
   
   g_rec_mutex_unlock(recall_mutex);
-
-  while(list != NULL){
-    next = list->next;
-    
-    if(omit_event){
-      AGS_RECALL_GET_CLASS(AGS_RECALL(list->data))->automate(AGS_RECALL(list->data));
-    }else{
-      ags_recall_automate(AGS_RECALL(list->data));
-    }    
-
-    list = next;
-  }
-
-  g_list_free_full(list_start,
-		   g_object_unref);
 }
 
 /**
@@ -5534,12 +5475,7 @@ ags_recall_automate(AgsRecall *recall)
 void
 ags_recall_real_run_pre(AgsRecall *recall)
 {
-  GList *list_start, *list, *next;
-
   GRecMutex *recall_mutex;
-
-  gboolean children_lock_free;  
-  gboolean omit_event;
 
 #if 0
   if(AGS_IS_RECALL_AUDIO_SIGNAL(recall)){
@@ -5550,52 +5486,14 @@ ags_recall_real_run_pre(AgsRecall *recall)
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
-  children_lock_free = ags_recall_global_get_children_lock_free();
-  omit_event = ags_recall_global_get_omit_event();
-
   /* run pre */
   g_rec_mutex_lock(recall_mutex);
-
-  if((AGS_SOUND_STAGING_RUN_PRE & (recall->staging_flags)) != 0){
-    g_rec_mutex_unlock(recall_mutex);
-
-    return;
-  }
-
-  recall->staging_flags |= AGS_SOUND_STAGING_RUN_PRE;
 
   if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
     g_warning("running on template");
   }
-
-  if(!children_lock_free){
-    list =
-      list_start = g_list_copy_deep(recall->children,
-				    (GCopyFunc) g_object_ref,
-				    NULL);
-  }else{
-    list = 
-      list_start = recall->children;
-  }
   
   g_rec_mutex_unlock(recall_mutex);
-
-  while(list != NULL){
-    next = list->next;
-    
-    if(omit_event){
-      AGS_RECALL_GET_CLASS(AGS_RECALL(list->data))->run_pre(AGS_RECALL(list->data));
-    }else{
-      ags_recall_run_pre(AGS_RECALL(list->data));
-    }    
-
-    list = next;
-  }
-
-  if(!children_lock_free){
-    g_list_free_full(list_start,
-		     g_object_unref);
-  }
 }
 
 /**
@@ -5621,12 +5519,7 @@ ags_recall_run_pre(AgsRecall *recall)
 void
 ags_recall_real_run_inter(AgsRecall *recall)
 {
-  GList *list_start, *list, *next;
-
   GRecMutex *recall_mutex;
-
-  gboolean children_lock_free;  
-  gboolean omit_event;
 
 #if 0
   if(AGS_IS_RECALL_AUDIO_SIGNAL(recall)){
@@ -5637,52 +5530,14 @@ ags_recall_real_run_inter(AgsRecall *recall)
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
-  children_lock_free = ags_recall_global_get_children_lock_free();
-  omit_event = ags_recall_global_get_omit_event();
-
   /* run inter */
   g_rec_mutex_lock(recall_mutex);
-
-  if((AGS_SOUND_STAGING_RUN_INTER & (recall->staging_flags)) != 0){
-    g_rec_mutex_unlock(recall_mutex);
-
-    return;
-  }
-
-  recall->staging_flags |= AGS_SOUND_STAGING_RUN_INTER;
 
   if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
     g_warning("running on template");
   }
 
-  if(!children_lock_free){
-    list =
-      list_start = g_list_copy_deep(recall->children,
-				    (GCopyFunc) g_object_ref,
-				    NULL);
-  }else{
-    list = 
-      list_start = recall->children;
-  }
-  
   g_rec_mutex_unlock(recall_mutex);
-
-  while(list != NULL){
-    next = list->next;
-    
-    if(omit_event){
-      AGS_RECALL_GET_CLASS(AGS_RECALL(list->data))->run_inter(AGS_RECALL(list->data));
-    }else{
-      ags_recall_run_inter(AGS_RECALL(list->data));
-    }    
-
-    list = next;
-  }
-
-  if(!children_lock_free){
-    g_list_free_full(list_start,
-		     g_object_unref);
-  }
 }
 
 /**
@@ -5708,12 +5563,7 @@ ags_recall_run_inter(AgsRecall *recall)
 void
 ags_recall_real_run_post(AgsRecall *recall)
 {
-  GList *list_start, *list, *next;
-
   GRecMutex *recall_mutex;
-
-  gboolean children_lock_free;  
-  gboolean omit_event;
 
 #if 0
   if(AGS_IS_RECALL_AUDIO_SIGNAL(recall)){
@@ -5724,53 +5574,16 @@ ags_recall_real_run_post(AgsRecall *recall)
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
-  children_lock_free = ags_recall_global_get_children_lock_free();
-  omit_event = ags_recall_global_get_omit_event();
-
   /* run post */
   g_rec_mutex_lock(recall_mutex);
 
-  if((AGS_SOUND_STAGING_RUN_POST & (recall->staging_flags)) != 0){
-    g_rec_mutex_unlock(recall_mutex);
-
-    return;
-  }
-
-  recall->staging_flags |= AGS_SOUND_STAGING_RUN_POST;
   recall->flags &= (~AGS_RECALL_INITIAL_RUN);
 
   if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
     g_warning("running on template");
   }
 
-  if(!children_lock_free){
-    list =
-      list_start = g_list_copy_deep(recall->children,
-				    (GCopyFunc) g_object_ref,
-				    NULL);
-  }else{
-    list = 
-      list_start = recall->children;
-  }
-  
   g_rec_mutex_unlock(recall_mutex);
-
-  while(list != NULL){
-    next = list->next;
-    
-    if(omit_event){
-      AGS_RECALL_GET_CLASS(AGS_RECALL(list->data))->run_post(AGS_RECALL(list->data));
-    }else{
-      ags_recall_run_post(AGS_RECALL(list->data));
-    }    
-
-    list = next;
-  }
-
-  if(!children_lock_free){
-    g_list_free_full(list_start,
-		     g_object_unref);
-  }
 }
 
 /**
@@ -5796,62 +5609,19 @@ ags_recall_run_post(AgsRecall *recall)
 void
 ags_recall_real_do_feedback(AgsRecall *recall)
 {
-  GList *list_start, *list, *next;
-
   GRecMutex *recall_mutex;
-
-  gboolean children_lock_free;  
-  gboolean omit_event;
   
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
-  children_lock_free = ags_recall_global_get_children_lock_free();
-  omit_event = ags_recall_global_get_omit_event();
-
   /* do feedback */
   g_rec_mutex_lock(recall_mutex);
-
-  if((AGS_SOUND_STAGING_DO_FEEDBACK & (recall->staging_flags)) != 0){
-    g_rec_mutex_unlock(recall_mutex);
-
-    return;
-  }
-
-  recall->staging_flags |= AGS_SOUND_STAGING_DO_FEEDBACK;
 
   if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
     g_warning("running on template");
   }
 
-  if(!children_lock_free){
-    list =
-      list_start = g_list_copy_deep(recall->children,
-				    (GCopyFunc) g_object_ref,
-				    NULL);
-  }else{
-    list = 
-      list_start = recall->children;
-  }
-  
   g_rec_mutex_unlock(recall_mutex);
-
-  while(list != NULL){
-    next = list->next;
-    
-    if(omit_event){
-      AGS_RECALL_GET_CLASS(AGS_RECALL(list->data))->do_feedback(AGS_RECALL(list->data));
-    }else{
-      ags_recall_do_feedback(AGS_RECALL(list->data));
-    }    
-
-    list = next;
-  }
-
-  if(!children_lock_free){
-    g_list_free_full(list_start,
-		     g_object_unref);
-  }
 }
 
 /**
@@ -5877,62 +5647,19 @@ ags_recall_do_feedback(AgsRecall *recall)
 void
 ags_recall_real_feed_output_queue(AgsRecall *recall)
 {
-  GList *list_start, *list, *next;
-
   GRecMutex *recall_mutex;
-
-  gboolean children_lock_free;  
-  gboolean omit_event;
   
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
-  children_lock_free = ags_recall_global_get_children_lock_free();
-  omit_event = ags_recall_global_get_omit_event();
-
   /* feed output queue */
   g_rec_mutex_lock(recall_mutex);
-
-  if((AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE & (recall->staging_flags)) != 0){
-    g_rec_mutex_unlock(recall_mutex);
-
-    return;
-  }
-
-  recall->staging_flags |= AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE;
 
   if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
     g_warning("running on template");
   }
-
-  if(!children_lock_free){
-    list =
-      list_start = g_list_copy_deep(recall->children,
-				    (GCopyFunc) g_object_ref,
-				    NULL);
-  }else{
-    list = 
-      list_start = recall->children;
-  }
   
   g_rec_mutex_unlock(recall_mutex);
-
-  while(list != NULL){
-    next = list->next;
-    
-    if(omit_event){
-      AGS_RECALL_GET_CLASS(AGS_RECALL(list->data))->feed_output_queue(AGS_RECALL(list->data));
-    }else{
-      ags_recall_feed_output_queue(AGS_RECALL(list->data));
-    }    
-
-    list = next;
-  }
-
-  if(!children_lock_free){
-    g_list_free_full(list_start,
-		     g_object_unref);
-  }
 }
 
 /**
@@ -6009,8 +5736,6 @@ ags_recall_stop_persistent(AgsRecall *recall)
 void
 ags_recall_real_cancel(AgsRecall *recall)
 {
-  GList *list_start, *list;
-
   GRecMutex *recall_mutex;
 
   /* get recall mutex */
@@ -6019,24 +5744,11 @@ ags_recall_real_cancel(AgsRecall *recall)
   /* cancel */
   g_rec_mutex_lock(recall_mutex);
 
-  recall->staging_flags |= AGS_SOUND_STAGING_CANCEL;
-
   if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
     g_warning("running on template");
   }
 
-  list =
-    list_start = g_list_copy(recall->children);
-
   g_rec_mutex_unlock(recall_mutex);
-
-  while(list != NULL){
-    ags_recall_cancel(AGS_RECALL(list->data));
-    
-    list = list->next;
-  }
-  
-  g_list_free(list_start);  
 
   /* stop any recall */
   ags_recall_stop_persistent(recall);
@@ -6065,8 +5777,6 @@ void
 ags_recall_real_done(AgsRecall *recall)
 {
   AgsResetRecallStaging *reset_recall_staging;
-  
-  GList *list_start, *list;
 
   GRecMutex *recall_mutex;
 
@@ -6086,24 +5796,11 @@ ags_recall_real_done(AgsRecall *recall)
   /* do feedback */
   g_rec_mutex_lock(recall_mutex);
 
-  recall->staging_flags |= AGS_SOUND_STAGING_DONE;
-
   if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
     g_warning("running on template");
   }
-  
-  list =
-    list_start = g_list_copy(recall->children);
 
   g_rec_mutex_unlock(recall_mutex);
-  
-  while(list != NULL){
-    ags_recall_done(AGS_RECALL(list->data));
-
-    list = list->next;
-  }
-
-  g_list_free(list_start);  
 }
 
 /**
@@ -6132,14 +5829,13 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 
   GObject *input_sequencer;
 
-  GHashTable *midi1_control_change;
-  
+  GHashTable *midi1_cc_to_value;
+  GHashTable *midi1_cc_to_port_specifier;
+    
   GList *start_port, *port;
 
   guchar *midi_buffer;
 
-  gint midi_controller[31];
-		   
   guint buffer_length;
   
   GRecMutex *recall_mutex;
@@ -6151,7 +5847,7 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 
   input_sequencer = NULL;
 
-  midi1_control_change = NULL;
+  midi1_cc_to_value = NULL;
 
   start_port = NULL;
   port = NULL;
@@ -6163,7 +5859,11 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
   if(AGS_IS_RECALL_AUDIO(recall)){
     g_rec_mutex_lock(recall_mutex);
 
-    audio = AGS_RECALL_AUDIO(audio);
+    audio = AGS_RECALL_AUDIO(recall)->audio;
+
+    if(audio != NULL){
+      g_object_ref(audio);
+    }
     
     g_rec_mutex_unlock(recall_mutex);    
   }
@@ -6182,7 +5882,7 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
     g_rec_mutex_unlock(recall_mutex);
 
     if(channel != NULL){
-      audio = ags_channel_get_audio(channel);
+      audio = (AgsAudio *) ags_channel_get_audio(channel);
 
       g_object_unref(channel);
     }    
@@ -6190,18 +5890,18 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 
   input_sequencer = ags_audio_get_input_sequencer(audio);
 
-  memset(midi_controller, 0, 31 * sizeof(gint));
+  midi1_cc_to_port_specifier = recall->midi1_cc_to_port_specifier;
   
   if(input_sequencer != NULL &&
      (AGS_IS_RECALL_AUDIO(recall) ||
       AGS_IS_RECALL_CHANNEL(recall))){
     g_rec_mutex_lock(recall_mutex);
     
-    midi1_control_change = recall->midi1_control_change;
+    midi1_cc_to_value = recall->midi1_cc_to_value;
     
     g_rec_mutex_unlock(recall_mutex);
     
-    if(midi1_control_change != NULL){
+    if(midi1_cc_to_value != NULL){
       /* retrieve buffer */
       midi_buffer = ags_sequencer_get_buffer(AGS_SEQUENCER(input_sequencer),
 					     &buffer_length);
@@ -6229,6 +5929,8 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 	    midi_iter += 3;
 	  }else if(ags_midi_util_is_change_parameter(recall->midi_util,
 						     midi_iter)){
+	    gpointer ptr;
+	    
 	    gchar *port_specifier;
 
 	    gint channel;
@@ -6242,17 +5944,22 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 
 	    if(control >= 0 && control <= 31){
 	      /* MSB */
-	      midi_controller[control] = (value << 7);
+	      g_hash_table_insert(midi1_cc_to_port_specifier,
+				  GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, control)), GUINT_TO_POINTER(value << 7));
 	    }else{
+	      ptr = g_hash_table_lookup(midi1_cc_to_port_specifier,
+					GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, control)));
+	      
 	      /* LSB */
-	      midi_controller[control] |= value;
+	      g_hash_table_insert(midi1_cc_to_port_specifier,
+				  GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, control)), GUINT_TO_POINTER(((guint) ptr) | value));
 
 	      start_port = ags_recall_get_port(recall);
 	    
 	      g_rec_mutex_lock(recall_mutex);
 	    
-	      port_specifier = g_hash_table_lookup(midi1_control_change,
-						   GINT_TO_POINTER(control));
+	      port_specifier = g_hash_table_lookup(midi1_cc_to_value,
+						   GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, control)));
 
 	      g_rec_mutex_unlock(recall_mutex);
 
@@ -6268,16 +5975,19 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 		
 		  GValue port_value = G_VALUE_INIT;
 
-		  plugin_port = ags_port_get_plugin_port(port->data);
+		  plugin_port = (AgsPluginPort *) ags_port_get_plugin_port(port->data);
 		
 		  g_value_init(&port_value,
 			       G_TYPE_FLOAT);
 
 		  lower = ags_plugin_port_get_lower_value(plugin_port);
 		  upper = ags_plugin_port_get_upper_value(plugin_port);
+
+		  ptr = g_hash_table_lookup(midi1_cc_to_port_specifier,
+					    GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, control)));
 		
 		  g_value_set_float(&port_value,
-				    (gfloat) midi_controller[control] * ((g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(14.0) - 1.0)));
+				    ((gfloat) ((guint) ptr)) * ((g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(14.0) - 1.0)));
 		
 		  ags_port_safe_write(port->data,
 				      &port_value);
@@ -6295,8 +6005,69 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 	    midi_iter += 3;
 	  }else if(ags_midi_util_is_pitch_bend(recall->midi_util,
 					       midi_iter)){
-	    /* change parameter */
-	    //TODO:JK: implement me	  
+	    gpointer ptr;
+	    
+	    gchar *port_specifier;
+
+	    gint channel;
+	    gint pitch;
+	    gint transmitter;
+
+	    /* pitch bend */
+	    ags_midi_util_get_pitch_bend(recall->midi_util,
+					 midi_iter,      
+					 &channel, &pitch, &transmitter);
+	    
+	    /* MSB and LSB */
+	    g_hash_table_insert(midi1_cc_to_port_specifier,
+				GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xe0, 0x0)), GUINT_TO_POINTER(((0x7f & pitch) << 8) | (0x7f & transmitter)));
+
+	    start_port = ags_recall_get_port(recall);
+	    
+	    g_rec_mutex_lock(recall_mutex);
+	    
+	    port_specifier = g_hash_table_lookup(midi1_cc_to_value,
+						 GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xe0, 0x0)));
+
+	    g_rec_mutex_unlock(recall_mutex);
+
+	    if(port_specifier != NULL){
+	      port = ags_port_find_specifier(start_port,
+					     port_specifier);
+
+	      if(port != NULL){
+		AgsPluginPort *plugin_port;
+
+		GValue *upper;
+		GValue *lower;	    
+		
+		GValue port_value = G_VALUE_INIT;
+
+		plugin_port = (AgsPluginPort *) ags_port_get_plugin_port(port->data);
+		
+		g_value_init(&port_value,
+			     G_TYPE_FLOAT);
+
+		lower = ags_plugin_port_get_lower_value(plugin_port);
+		upper = ags_plugin_port_get_upper_value(plugin_port);
+
+		ptr = g_hash_table_lookup(midi1_cc_to_port_specifier,
+					  GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xe0, 0x0)));
+		
+		g_value_set_float(&port_value,
+				  ((gfloat) ((guint) ptr)) * ((g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(14.0) - 1.0)));
+		
+		ags_port_safe_write(port->data,
+				    &port_value);
+
+		if(plugin_port != NULL){
+		  g_object_unref(plugin_port);
+		}
+	      }
+	    }
+	    
+	    g_list_free_full(start_port,
+			     (GDestroyNotify) g_object_unref);
 	  
 	    midi_iter += 3;
 	  }else if(ags_midi_util_is_change_program(recall->midi_util,
@@ -6361,7 +6132,7 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 				  midi_buffer);
     }
   }
-
+  
   if(audio != NULL){
     g_object_unref(audio);
   }
@@ -6546,11 +6317,11 @@ ags_recall_real_duplicate(AgsRecall *recall,
   n_params[0] += 6;
   
 #if HAVE_GLIB_2_54    
-  copy_recall = g_object_new_with_properties(G_OBJECT_TYPE(recall),
-					     n_params[0], parameter_name, value);
+  copy_recall = (AgsRecall *) g_object_new_with_properties(G_OBJECT_TYPE(recall),
+							   n_params[0], (const gchar **) parameter_name, value);
 #else
-  copy_recall = g_object_new(G_OBJECT_TYPE(recall),
-			     NULL);
+  copy_recall = (AgsRecall *) g_object_new(G_OBJECT_TYPE(recall),
+					   NULL);
 
   {
     guint i;

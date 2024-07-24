@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -52,9 +52,14 @@ G_BEGIN_DECLS
 #define AGS_WAVE_DEFAULT_DURATION (AGS_WAVE_DEFAULT_LENGTH * AGS_WAVE_DEFAULT_JIFFIE * AGS_USEC_PER_SEC)
 #define AGS_WAVE_DEFAULT_OFFSET (AGS_WAVE_DEFAULT_BUFFER_LENGTH * AGS_SOUNDCARD_DEFAULT_SAMPLERATE)
 
-#define AGS_WAVE_CLIPBOARD_VERSION "1.4.0"
+#define AGS_WAVE_CLIPBOARD_VERSION "6.16.0"
 #define AGS_WAVE_CLIPBOARD_TYPE "AgsWaveClipboardXml"
 #define AGS_WAVE_CLIPBOARD_FORMAT "AgsWaveNativeLevel"
+
+#define AGS_WAVE_CLIPBOARD_XML_TYPE "AgsWaveClipboardXml"
+#define AGS_WAVE_CLIPBOARD_BASE64_TYPE "AgsWaveClipboardBase64"
+
+#define AGS_WAVE_CLIPBOARD_MAX_SIZE (64 * 1024 * 1024)
 
 typedef struct _AgsWave AgsWave;
 typedef struct _AgsWaveClass AgsWaveClass;
@@ -91,6 +96,8 @@ struct _AgsWave
   
   GList *buffer;
   GList *selection;
+
+  gchar *clipboard_type;
 };
 
 struct _AgsWaveClass
@@ -180,6 +187,9 @@ void ags_wave_add_all_to_selection(AgsWave *wave);
 xmlNode* ags_wave_copy_selection(AgsWave *wave);
 xmlNode* ags_wave_cut_selection(AgsWave *wave);
 
+gchar* ags_wave_copy_selection_as_base64(AgsWave *wave);
+gchar* ags_wave_cut_selection_as_base64(AgsWave *wave);
+
 void ags_wave_insert_from_clipboard(AgsWave *wave,
 				    xmlNode *wave_node,
 				    gboolean reset_x_offset, guint64 x_offset,
@@ -190,6 +200,17 @@ void ags_wave_insert_from_clipboard_extended(AgsWave *wave,
 					     gboolean reset_x_offset, guint64 x_offset,
 					     gdouble delay, guint attack,
 					     gboolean match_line, gboolean do_replace);
+
+void ags_wave_insert_base64_from_clipboard(AgsWave *wave,
+					   gchar *wave_base64,
+					   gboolean reset_x_offset, guint64 x_offset,
+					   gdouble delay, guint attack);
+
+void ags_wave_insert_base64_from_clipboard_extended(AgsWave *wave,
+						    gchar *wave_base64,
+						    gboolean reset_x_offset, guint64 x_offset,
+						    gdouble delay, guint attack,
+						    gboolean match_line, gboolean do_replace);
 
 AgsWave* ags_wave_new(GObject *audio,
 		      guint line);

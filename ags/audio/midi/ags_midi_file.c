@@ -132,7 +132,7 @@ ags_midi_file_init(AgsMidiFile *midi_file)
   midi_file->flags = 0;
 
   /* midi file mutex */
-  g_mutex_init(&(midi_file->obj_mutex));
+  g_rec_mutex_init(&(midi_file->obj_mutex));
 
   midi_file->file = NULL;
   midi_file->filename = NULL;

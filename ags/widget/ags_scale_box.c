@@ -195,7 +195,7 @@ ags_scale_box_notify_width_request_callback(GObject *gobject,
 	       NULL);
   
   ags_scale_box_child_width_request(scale_box,
-				    AGS_SCALE(gobject),
+				    GTK_WIDGET(gobject),
 				    width_request);
 }
 
@@ -213,7 +213,7 @@ ags_scale_box_notify_height_request_callback(GObject *gobject,
 	       NULL);
   
   ags_scale_box_child_height_request(scale_box,
-				     AGS_SCALE(gobject),
+				     GTK_WIDGET(gobject),
 				     height_request);
 }
 
@@ -261,8 +261,8 @@ ags_scale_box_add_scale(AgsScaleBox *scale_box,
     g_signal_connect(scale, "notify::height-request",
 		     G_CALLBACK(ags_scale_box_notify_height_request_callback), scale_box);
     
-    gtk_box_append(scale_box,
-		   scale);
+    gtk_box_append((GtkBox *) scale_box,
+		   (GtkWidget *) scale);
   }else{
     g_warning("scale already added to scale box");
   }
@@ -297,8 +297,8 @@ ags_scale_box_remove_scale(AgsScaleBox *scale_box,
     scale_box->scale = g_list_remove(scale_box->scale,
 				     scale);
 
-    gtk_box_remove(scale_box,
-		   scale);
+    gtk_box_remove((GtkBox *) scale_box,
+		   (GtkWidget *) scale);
   }else{
     g_warning("scale not packed by scale box");
   }

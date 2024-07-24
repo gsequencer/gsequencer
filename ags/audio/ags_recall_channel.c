@@ -307,7 +307,7 @@ ags_recall_channel_set_property(GObject *gobject,
 	line = ags_channel_get_line(source);
 
 	port =
-	  start_port = ags_recall_get_port(recall_channel);
+	  start_port = ags_recall_get_port((AgsRecall *) recall_channel);
 
 	while(port != NULL){
 	  g_object_set(port->data,
@@ -592,7 +592,7 @@ ags_recall_channel_automate(AgsRecall *recall)
     
     g_rec_mutex_lock(audio_mutex);
 
-    success = (specifier != NULL && g_strv_contains(audio->automation_port, specifier)) ? TRUE: FALSE;
+    success = (specifier != NULL && g_strv_contains((const gchar * const *) audio->automation_port, specifier)) ? TRUE: FALSE;
     
     g_rec_mutex_unlock(audio_mutex);
       

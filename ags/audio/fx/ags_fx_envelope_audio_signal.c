@@ -313,7 +313,7 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
     GRecMutex *mutex;
 
     list = ags_recall_find_type_with_recycling_context(start_list,
-						       AGS_TYPE_FX_NOTATION_AUDIO_PROCESSOR, recycling_context);
+						       AGS_TYPE_FX_NOTATION_AUDIO_PROCESSOR, (GObject *) recycling_context);
 
     if(list != NULL){
       fx_notation_audio_processor = list->data;
@@ -333,7 +333,7 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
     GRecMutex *mutex;
     
     list = ags_recall_find_type_with_recycling_context(start_list,
-						       AGS_TYPE_FX_PATTERN_AUDIO_PROCESSOR, recycling_context);
+						       AGS_TYPE_FX_PATTERN_AUDIO_PROCESSOR, (GObject *) recycling_context);
 
     if(list != NULL){
       fx_pattern_audio_processor = list->data;

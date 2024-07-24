@@ -593,10 +593,17 @@ ags_fx_lv2_audio_notify_samplerate_callback(GObject *gobject,
 	channel_data = scope_data->channel_data[j];
 
 	if(is_live_instrument){
-	  ags_fx_lv2_audio_channel_data_load_plugin(fx_lv2_audio,
+	  if(ags_recall_test_state_flags(AGS_RECALL(fx_lv2_audio),
+					 AGS_SOUND_STATE_PLUGIN_LOADED)){
+	    ags_fx_lv2_audio_channel_data_load_plugin(fx_lv2_audio,
+						      channel_data);
+	  }
+	  
+	  if(ags_recall_test_state_flags(AGS_RECALL(fx_lv2_audio),
+					 AGS_SOUND_STATE_PORT_LOADED)){
+	    ags_fx_lv2_audio_channel_data_load_port(fx_lv2_audio,
 						    channel_data);
-	  ags_fx_lv2_audio_channel_data_load_port(fx_lv2_audio,
-						  channel_data);
+	  }
 	}
 	
 	if(!is_live_instrument){
@@ -605,8 +612,11 @@ ags_fx_lv2_audio_notify_samplerate_callback(GObject *gobject,
 
 	    input_data = channel_data->input_data[k];
 
-	    ags_fx_lv2_audio_input_data_load_plugin(fx_lv2_audio,
-						    input_data);
+	    if(ags_recall_test_state_flags(AGS_RECALL(fx_lv2_audio),
+					   AGS_SOUND_STATE_PLUGIN_LOADED)){
+	      ags_fx_lv2_audio_input_data_load_plugin(fx_lv2_audio,
+						      input_data);
+	    }
 	  }
 	}
       }
@@ -614,21 +624,24 @@ ags_fx_lv2_audio_notify_samplerate_callback(GObject *gobject,
   }
 
   if(!is_live_instrument){
-    for(j = 0; j < audio_channels; j++){
-      for(k = 0; k < input_pads; k++){
-	AgsChannel *input;
+    if(ags_recall_test_state_flags(AGS_RECALL(fx_lv2_audio),
+				   AGS_SOUND_STATE_PORT_LOADED)){
+      for(j = 0; j < audio_channels; j++){
+	for(k = 0; k < input_pads; k++){
+	  AgsChannel *input;
 
-	input = ags_channel_nth(start_input,
-				k * audio_channels + j);
+	  input = ags_channel_nth(start_input,
+				  k * audio_channels + j);
 
-	recall_channel = ags_recall_template_find_provider(start_recall_channel, (GObject *) input);
+	  recall_channel = ags_recall_template_find_provider(start_recall_channel, (GObject *) input);
 
-	if(recall_channel != NULL){
-	  ags_fx_lv2_channel_load_port(recall_channel->data);
-	}
+	  if(recall_channel != NULL){	  
+	    ags_fx_lv2_channel_load_port(recall_channel->data);
+	  }
 
-	if(input != NULL){
-	  g_object_unref(input);
+	  if(input != NULL){
+	    g_object_unref(input);
+	  }
 	}
       }
     }
@@ -1728,36 +1741,45 @@ ags_fx_lv2_audio_channel_data_load_port(AgsFxLv2Audio *fx_lv2_audio,
       channel_data->input = (float *) g_malloc(input_port_count * buffer_size * sizeof(float));
     }
 
-    for(nth = 0; nth < output_port_count; nth++){
-      ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
-				   channel_data->lv2_handle[0],
-				   output_port[nth],
-				   &(channel_data->output[nth]));
-    }
+    if(lv2_plugin != NULL &&
+       channel_data->lv2_handle != NULL){
+      for(nth = 0; nth < output_port_count; nth++){
+	ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
+				     channel_data->lv2_handle[0],
+				     output_port[nth],
+				     &(channel_data->output[nth]));
+      }
 
-    for(nth = 0; nth < input_port_count; nth++){
-      ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
-				   channel_data->lv2_handle[0],
-				   input_port[nth],
-				   &(channel_data->input[nth]));
+      for(nth = 0; nth < input_port_count; nth++){
+	ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
+				     channel_data->lv2_handle[0],
+				     input_port[nth],
+				     &(channel_data->input[nth]));
+      }
     }
-
+    
     if(has_midiin_event_port){
       channel_data->midiin_event_port = ags_lv2_plugin_event_buffer_alloc(AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT);
 	    
-      ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
-				   channel_data->lv2_handle[0],
-				   midiin_event_port,
-				   channel_data->midiin_event_port);
+      if(lv2_plugin != NULL &&
+	 channel_data->lv2_handle != NULL){
+	ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
+				     channel_data->lv2_handle[0],
+				     midiin_event_port,
+				     channel_data->midiin_event_port);
+      }
     }
 
     if(has_midiin_atom_port){
       channel_data->midiin_atom_port = ags_lv2_plugin_alloc_atom_sequence(AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT);
 	    
-      ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
-				   channel_data->lv2_handle[0],
-				   midiin_atom_port,
-				   channel_data->midiin_atom_port);
+      if(lv2_plugin != NULL &&
+	 channel_data->lv2_handle != NULL){
+	ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
+				     channel_data->lv2_handle[0],
+				     midiin_atom_port,
+				     channel_data->midiin_atom_port);
+      }
     }
 
     start_plugin_port = NULL;
@@ -1776,34 +1798,37 @@ ags_fx_lv2_audio_channel_data_load_port(AgsFxLv2Audio *fx_lv2_audio,
   
     g_rec_mutex_unlock(recall_mutex);
     
-    for(nth = 0; plugin_port != NULL;){
-      if(ags_plugin_port_test_flags(plugin_port->data,
-				    AGS_PLUGIN_PORT_CONTROL)){
-	AgsPluginPort *current_plugin_port;
+    if(lv2_plugin != NULL &&
+       channel_data->lv2_handle != NULL){
+      for(nth = 0; plugin_port != NULL;){
+	if(ags_plugin_port_test_flags(plugin_port->data,
+				      AGS_PLUGIN_PORT_CONTROL)){
+	  AgsPluginPort *current_plugin_port;
 
-	guint port_index;
+	  guint port_index;
       
-	current_plugin_port = AGS_PLUGIN_PORT(plugin_port->data);
+	  current_plugin_port = AGS_PLUGIN_PORT(plugin_port->data);
 
-	port_index = 0;
+	  port_index = 0;
 
-	g_object_get(current_plugin_port,
-		     "port-index", &port_index,
-		     NULL);
+	  g_object_get(current_plugin_port,
+		       "port-index", &port_index,
+		       NULL);
 	
-	ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
-				     channel_data->lv2_handle[0],
-				     port_index,
-				     &(lv2_port[nth]->port_value.ags_port_float));
+	  ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
+				       channel_data->lv2_handle[0],
+				       port_index,
+				       &(lv2_port[nth]->port_value.ags_port_float));
 	
-	nth++;
+	  nth++;
+	}
+
+	plugin_port = plugin_port->next;
       }
-
-      plugin_port = plugin_port->next;
-    }
     
-    ags_base_plugin_activate((AgsBasePlugin *) lv2_plugin,
-			     channel_data->lv2_handle[0]);
+      ags_base_plugin_activate((AgsBasePlugin *) lv2_plugin,
+			       channel_data->lv2_handle[0]);
+    }
   }
 }
 

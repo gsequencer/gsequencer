@@ -3370,11 +3370,11 @@ ags_audio_dispose(GObject *gobject)
   if(audio->playback_domain != NULL){
     AgsPlaybackDomain *playback_domain;
 
-    playback_domain = audio->playback_domain;
+    playback_domain = (AgsPlaybackDomain *) audio->playback_domain;
 
     audio->playback_domain = NULL;
     
-    g_object_run_dispose(playback_domain);
+    g_object_run_dispose((GObject *) playback_domain);
   }
   
   /* notation */
@@ -3760,11 +3760,11 @@ ags_audio_finalize(GObject *gobject)
   if(audio->playback_domain != NULL){
     AgsPlaybackDomain *playback_domain;
 
-    playback_domain = audio->playback_domain;
+    playback_domain = (AgsPlaybackDomain *) audio->playback_domain;
 
     audio->playback_domain = NULL;
     
-    g_object_run_dispose(playback_domain);
+    g_object_run_dispose((GObject *) playback_domain);
   }
   
   /* notation */
@@ -4176,10 +4176,222 @@ ags_audio_list_resource(AgsConnectable *connectable)
 xmlNode*
 ags_audio_xml_compose(AgsConnectable *connectable)
 {
-  xmlNode *node;
-  
-  node = NULL;
+  AgsAudio *audio;
 
+  GObject *output_soundcard, *input_soundcard;
+  GObject *output_sequencer, *input_sequencer;
+  
+  xmlNode *node;
+
+  gchar *uuid_str;
+  gchar *audio_name;
+  gchar *str;
+  gchar *tmp;
+  
+  AgsAudioFlags flags;
+  AgsConnectableFlags connectable_flags;
+  AgsSoundAbilityFlags ability_flags;
+  AgsSoundBehaviourFlags behaviour_flags;
+  AgsSoundStagingFlags staging_flags[AGS_SOUND_SCOPE_LAST];
+  gboolean staging_completed[AGS_SOUND_SCOPE_LAST];
+  guint i;
+  
+  GRecMutex *audio_mutex;
+
+  audio = AGS_AUDIO(connectable);
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+
+  g_rec_mutex_lock(audio_mutex);
+
+  flags = audio->flags;
+  connectable_flags = audio->connectable_flags;
+  ability_flags = audio->ability_flags;
+  behaviour_flags = audio->behaviour_flags;
+
+  memcpy(staging_flags, audio->staging_flags, AGS_SOUND_SCOPE_LAST * sizeof(AgsSoundStagingFlags));
+  
+  memcpy(staging_completed, audio->staging_completed, AGS_SOUND_SCOPE_LAST * sizeof(gboolean));
+
+  uuid_str = ags_uuid_to_string(audio->uuid);
+
+  g_rec_mutex_unlock(audio_mutex);
+
+  output_soundcard = NULL;
+  input_soundcard = NULL;
+
+  output_sequencer = NULL;
+  input_sequencer = NULL;
+  
+  g_object_get(audio,
+	       "output-soundcard", &output_soundcard,
+	       "input-soundcard", &input_soundcard,
+	       "output-sequencer", &output_sequencer,
+	       "input-sequencer", &input_sequencer,
+	       NULL);
+  
+  /* compose */
+  node = xmlNewNode(NULL,
+		    BAD_CAST "ags-audio");
+
+  str = g_strdup_printf("0x%x",
+			flags);
+  
+  xmlNewProp(node,
+	     BAD_CAST "flags",
+	     BAD_CAST str);
+
+  g_free(str);
+  
+  str = g_strdup_printf("0x%x",
+			connectable_flags);
+  
+  xmlNewProp(node,
+	     BAD_CAST "connectable-flags",
+	     BAD_CAST str);
+
+  g_free(str);
+
+  str = g_strdup_printf("0x%x",
+			behaviour_flags);
+  
+  xmlNewProp(node,
+	     BAD_CAST "behaviour-flags",
+	     BAD_CAST str);
+
+  g_free(str);
+
+  str = g_malloc((AGS_SOUND_SCOPE_LAST * 19) * sizeof(gchar));
+  memset(str, 0, (AGS_SOUND_SCOPE_LAST * 19) * sizeof(gchar));
+
+  for(tmp = str, i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    gint count;
+    
+    count = sprintf(tmp,
+		    "0x%x",
+		    staging_flags[i]);
+
+    if(count <= 0){
+      break;
+    }
+    
+    if(i + 1 < AGS_SOUND_SCOPE_LAST){
+      tmp[count] = ' ';
+
+      tmp += count;
+    }else{
+      tmp[count] = '\0';      
+    }
+  }
+  
+  xmlNewProp(node,
+	     BAD_CAST "staging-flags",
+	     BAD_CAST str);
+
+  g_free(str);
+
+  str = g_malloc((AGS_SOUND_SCOPE_LAST * 6) * sizeof(gboolean));
+  memset(str, 0, (AGS_SOUND_SCOPE_LAST * 6) * sizeof(gboolean));
+
+  for(tmp = str, i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    gint count;
+
+    count = sprintf(tmp,
+		    "%s",
+		    ((staging_completed[i]) ? "true": "false"));
+    
+    if(count <= 0){
+      break;
+    }
+    
+    if(i + 1 < AGS_SOUND_SCOPE_LAST){
+      tmp[count] = ' ';
+
+      tmp += count;
+    }else{
+      tmp[count] = '\0';      
+    }
+  }
+  
+  xmlNewProp(node,
+	     BAD_CAST "staging-completed",
+	     BAD_CAST str);
+
+  g_free(str);
+
+  /* fields */
+  xmlNewProp(node,
+	     BAD_CAST "uuid",
+	     BAD_CAST uuid_str);
+
+  g_free(uuid_str);
+
+  audio_name = ags_audio_get_audio_name(audio);
+
+  xmlNewProp(node,
+	     BAD_CAST "audio-name",
+	     BAD_CAST audio_name);
+
+  g_free(audio_name);
+
+  if(output_soundcard != NULL){
+    str = ags_uuid_to_string(ags_connectable_get_uuid(AGS_CONNECTABLE(output_soundcard)));
+    
+    xmlNewProp(node,
+	       BAD_CAST "output-soundcard",
+	       BAD_CAST str);
+
+    g_free(str);
+  }else{
+    xmlNewProp(node,
+	       BAD_CAST "output-soundcard",
+	       BAD_CAST "(null)");
+  }
+
+  if(input_soundcard != NULL){
+    str = ags_uuid_to_string(ags_connectable_get_uuid(AGS_CONNECTABLE(input_soundcard)));
+    
+    xmlNewProp(node,
+	       BAD_CAST "input-soundcard",
+	       BAD_CAST str);
+
+    g_free(str);
+  }else{
+    xmlNewProp(node,
+	       BAD_CAST "input-soundcard",
+	       BAD_CAST "(null)");
+  }
+
+  if(output_sequencer != NULL){
+    str = ags_uuid_to_string(ags_connectable_get_uuid(AGS_CONNECTABLE(output_sequencer)));
+    
+    xmlNewProp(node,
+	       BAD_CAST "output-sequencer",
+	       BAD_CAST str);
+
+    g_free(str);
+  }else{
+    xmlNewProp(node,
+	       BAD_CAST "output-sequencer",
+	       BAD_CAST "(null)");
+  }
+
+  if(input_sequencer != NULL){
+    str = ags_uuid_to_string(ags_connectable_get_uuid(AGS_CONNECTABLE(input_sequencer)));
+    
+    xmlNewProp(node,
+	       BAD_CAST "input-sequencer",
+	       BAD_CAST str);
+
+    g_free(str);
+  }else{
+    xmlNewProp(node,
+	       BAD_CAST "input-sequencer",
+	       BAD_CAST "(null)");
+  }
+  
+  
   //TODO:JK: implement me
   
   return(node);
@@ -6911,7 +7123,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     /* add message */
     ags_message_delivery_add_message_envelope(message_delivery,
 					      "libags-audio",
-					      message);
+					      (GObject *) message);
 
     g_list_free_full(start_message_queue,
 		     (GDestroyNotify) g_object_unref);
@@ -7982,7 +8194,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
     /* set parameter */
     message->n_params = 3;
 
-    message->parameter_name = (gchar *) malloc(4 * sizeof(gchar *));
+    message->parameter_name = (gchar **) malloc(4 * sizeof(gchar *));
     message->value = g_new0(GValue,
 			    3);
 
@@ -8016,7 +8228,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
     /* add message */
     ags_message_delivery_add_message_envelope(message_delivery,
 					      "libags-audio",
-					      message);
+					      (GObject *) message);
 
     g_list_free_full(start_message_queue,
 		     (GDestroyNotify) g_object_unref);
@@ -8955,7 +9167,7 @@ ags_audio_real_set_samplerate(AgsAudio *audio, guint samplerate)
     /* add message */
     ags_message_delivery_add_message_envelope(message_delivery,
 					      "libags-audio",
-					      message);
+					      (GObject *) message);
 
     g_list_free_full(start_message_queue,
 		     (GDestroyNotify) g_object_unref);
@@ -9180,7 +9392,7 @@ ags_audio_real_set_buffer_size(AgsAudio *audio, guint buffer_size)
     /* add message */
     ags_message_delivery_add_message_envelope(message_delivery,
 					      "libags-audio",
-					      message);
+					      (GObject *) message);
 
     g_list_free_full(start_message_queue,
 		     (GDestroyNotify) g_object_unref);
@@ -9381,7 +9593,7 @@ ags_audio_real_set_format(AgsAudio *audio, AgsSoundcardFormat format)
     /* add message */
     ags_message_delivery_add_message_envelope(message_delivery,
 					      "libags-audio",
-					      message);
+					      (GObject *) message);
 
     g_list_free_full(start_message_queue,
 		     (GDestroyNotify) g_object_unref);
@@ -10979,7 +11191,7 @@ ags_audio_add_automation_port(AgsAudio *audio, gchar *control_name)
   g_rec_mutex_lock(audio_mutex);
 
   if(audio->automation_port != NULL &&
-     g_strv_contains(audio->automation_port, control_name)){
+     g_strv_contains((const gchar * const *) audio->automation_port, control_name)){
     g_rec_mutex_unlock(audio_mutex);
 
     return;
@@ -11032,7 +11244,7 @@ ags_audio_remove_automation_port(AgsAudio *audio, gchar *control_name)
 
   g_rec_mutex_lock(audio_mutex);
 
-  if(!g_strv_contains(audio->automation_port, control_name)){
+  if(!g_strv_contains((const gchar * const *) audio->automation_port, control_name)){
     g_rec_mutex_unlock(audio_mutex);
 
     return;
@@ -11280,13 +11492,13 @@ ags_audio_add_automation(AgsAudio *audio, GObject *automation)
   /* get audio mutex */
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
-  timestamp = ags_automation_get_timestamp(automation);
+  timestamp = ags_automation_get_timestamp((AgsAutomation *) automation);
 
-  control_name = ags_automation_get_control_name(automation);
+  control_name = ags_automation_get_control_name((AgsAutomation *) automation);
 
-  channel_type = ags_automation_get_channel_type(automation);
+  channel_type = ags_automation_get_channel_type((AgsAutomation *) automation);
 
-  line = ags_automation_get_line(automation);
+  line = ags_automation_get_line((AgsAutomation *) automation);
 
   /* add automation */
   success = FALSE;
@@ -11304,11 +11516,11 @@ ags_audio_add_automation(AgsAudio *audio, GObject *automation)
   cmp_control_name = NULL;
   
   if(list != NULL){
-    cmp_timestamp = ags_automation_get_timestamp(list->data);
+    cmp_timestamp = ags_automation_get_timestamp((AgsAutomation *) list->data);
     
-    cmp_line = ags_automation_get_line(list->data);
-    cmp_channel_type = ags_automation_get_channel_type(list->data);
-    cmp_control_name = ags_automation_get_control_name(list->data);
+    cmp_line = ags_automation_get_line((AgsAutomation *) list->data);
+    cmp_channel_type = ags_automation_get_channel_type((AgsAutomation *) list->data);
+    cmp_control_name = ags_automation_get_control_name((AgsAutomation *) list->data);
   }
   
   if(list == NULL ||
@@ -14108,7 +14320,7 @@ ags_audio_recall_done_callback(AgsRecall *recall,
 					sound_scope);
 
     ags_task_launcher_add_task(task_launcher,
-			       cancel_audio);
+			       (AgsTask *) cancel_audio);
 
     g_object_unref(cancel_audio);
   }
@@ -14157,10 +14369,10 @@ ags_audio_real_start(AgsAudio *audio,
   audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
   /* add audio to AgsAudioLoop */
-  ags_audio_loop_add_audio(audio_loop,
+  ags_audio_loop_add_audio((AgsAudioLoop *) audio_loop,
 			   (GObject *) audio);
 
-  ags_audio_loop_set_flags(audio_loop, AGS_AUDIO_LOOP_PLAY_AUDIO);
+  ags_audio_loop_set_flags((AgsAudioLoop *) audio_loop, AGS_AUDIO_LOOP_PLAY_AUDIO);
 
   /* get some fields */
   playback_domain = NULL;
@@ -14230,7 +14442,7 @@ ags_audio_real_start(AgsAudio *audio,
 					 NULL);
 	ags_recall_id_set_sound_scope(channel_recall_id, sound_scope);
 	ags_channel_add_recall_id(channel,
-				  (GObject *) channel_recall_id);
+				  channel_recall_id);
 
 	/* prepend recall id */
 	start_recall_id = g_list_prepend(start_recall_id,
@@ -14268,7 +14480,7 @@ ags_audio_real_start(AgsAudio *audio,
 							    sound_scope);
 
 	if(audio_thread != NULL){
-	  ags_audio_thread_set_processing(audio_thread,
+	  ags_audio_thread_set_processing((AgsAudioThread *) audio_thread,
 					  TRUE);
 
 	  g_object_unref(audio_thread);
@@ -14284,7 +14496,7 @@ ags_audio_real_start(AgsAudio *audio,
       
 	  /* add to start queue */
 	  if(channel_thread != NULL){
-	    ags_channel_thread_set_processing(channel_thread,
+	    ags_channel_thread_set_processing((AgsChannelThread *) channel_thread,
 					      TRUE);
 
 	    g_object_unref(channel_thread);
@@ -14351,7 +14563,7 @@ ags_audio_real_start(AgsAudio *audio,
 					   NULL);
 	  ags_recall_id_set_sound_scope(channel_recall_id, i);
 	  ags_channel_add_recall_id(channel,
-				    (GObject *) channel_recall_id);
+				    channel_recall_id);
 
 	  /* prepend recall id */
 	  start_recall_id = g_list_prepend(start_recall_id,
@@ -14389,7 +14601,7 @@ ags_audio_real_start(AgsAudio *audio,
 							      i);
 
 	  if(audio_thread != NULL){
-	    ags_audio_thread_set_processing(audio_thread,
+	    ags_audio_thread_set_processing((AgsAudioThread *) audio_thread,
 					    TRUE);
 
 	    g_object_unref(audio_thread);
@@ -14404,7 +14616,7 @@ ags_audio_real_start(AgsAudio *audio,
 							     i);
 
 	    if(channel_thread != NULL){
-	      ags_channel_thread_set_processing(channel_thread,
+	      ags_channel_thread_set_processing((AgsChannelThread *) channel_thread,
 						TRUE);
 
 	      g_object_unref(channel_thread);
@@ -14489,7 +14701,7 @@ ags_audio_real_start(AgsAudio *audio,
       /* add message */
       ags_message_delivery_add_message_envelope(message_delivery,
 						"libags-audio",
-						message);
+						(GObject *) message);
 
       g_list_free_full(start_message_queue,
 		       (GDestroyNotify) g_object_unref);
@@ -14589,7 +14801,7 @@ ags_audio_real_stop(AgsAudio *audio,
 							sound_scope);
 
     if(audio_thread != NULL){
-      ags_audio_thread_set_processing(audio_thread,
+      ags_audio_thread_set_processing((AgsAudioThread *) audio_thread,
 				      FALSE);
 
       g_object_unref(audio_thread);
@@ -14610,7 +14822,7 @@ ags_audio_real_stop(AgsAudio *audio,
 						       sound_scope);
 
       if(channel_thread != NULL){
-	ags_channel_thread_set_processing(channel_thread,
+	ags_channel_thread_set_processing((AgsChannelThread *) channel_thread,
 					  FALSE);
 
 	g_object_unref(channel_thread);
@@ -14651,7 +14863,7 @@ ags_audio_real_stop(AgsAudio *audio,
 							  i);
 
       if(audio_thread != NULL){
-	ags_audio_thread_set_processing(audio_thread,
+	ags_audio_thread_set_processing((AgsAudioThread *) audio_thread,
 					FALSE);
 
 	g_object_unref(audio_thread);
@@ -14672,7 +14884,7 @@ ags_audio_real_stop(AgsAudio *audio,
 							 i);
 
 	if(channel_thread != NULL){
-	  ags_channel_thread_set_processing(channel_thread,
+	  ags_channel_thread_set_processing((AgsChannelThread *) channel_thread,
 					    FALSE);
 
 	  g_object_unref(channel_thread);
@@ -14745,7 +14957,7 @@ ags_audio_real_stop(AgsAudio *audio,
      notation_recall_id == NULL &&
      wave_recall_id == NULL &&
      midi_recall_id == NULL){
-    ags_audio_loop_remove_audio(audio_loop,
+    ags_audio_loop_remove_audio((AgsAudioLoop *) audio_loop,
 				(GObject *) audio);
   }
 
@@ -14820,7 +15032,7 @@ ags_audio_real_stop(AgsAudio *audio,
     /* add message */
     ags_message_delivery_add_message_envelope(message_delivery,
 					      "libags-audio",
-					      message);
+					      (GObject *) message);
 
     g_list_free_full(start_message_queue,
 		     (GDestroyNotify) g_object_unref);
@@ -15258,7 +15470,7 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
 	//	ags_audio_file_close(audio_file);
 	
 	ags_audio_file_manager_add_audio_file(ags_audio_file_manager_get_instance(),
-					      audio_file);
+					      (GObject *) audio_file);
 
 	audio_signal = audio_file->audio_signal;
 	
@@ -15345,7 +15557,7 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
 	  channel = nth_channel;
 	}
 
-	g_object_run_dispose(audio_file);
+	g_object_run_dispose((GObject *) audio_file);
 	g_object_unref(audio_file);
 	
 	filename = filename->next;
@@ -15392,7 +15604,7 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
       //      ags_audio_file_close(audio_file);
 	
       ags_audio_file_manager_add_audio_file(ags_audio_file_manager_get_instance(),
-					    audio_file);
+					    (GObject *) audio_file);
 
       audio_signal = audio_file->audio_signal;
       
@@ -15468,7 +15680,7 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
 	channel = nth_channel;
       }
 
-      g_object_run_dispose(audio_file);
+      g_object_run_dispose((GObject *) audio_file);
       g_object_unref(audio_file);
       
       filename = filename->next;
@@ -15534,7 +15746,7 @@ ags_audio_open_audio_file_as_wave(AgsAudio *audio,
   //  ags_audio_file_close(audio_file);
 
   ags_audio_file_manager_add_audio_file(ags_audio_file_manager_get_instance(),
-					audio_file);
+					(GObject *) audio_file);
 
   //TODO:JK: implement me
 }

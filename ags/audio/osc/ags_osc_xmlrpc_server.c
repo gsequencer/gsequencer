@@ -222,7 +222,7 @@ ags_osc_xmlrpc_server_set_property(GObject *gobject,
       g_object_ref(xmlrpc_server);
     }
       
-    osc_xmlrpc_server->xmlrpc_server = xmlrpc_server;
+    osc_xmlrpc_server->xmlrpc_server = (AgsServer *) xmlrpc_server;
 
     g_rec_mutex_unlock(osc_server_mutex);
   }
@@ -249,7 +249,7 @@ ags_osc_xmlrpc_server_set_property(GObject *gobject,
       g_object_ref(osc_xmlrpc_controller);
     }
       
-    osc_xmlrpc_server->osc_xmlrpc_controller = osc_xmlrpc_controller;
+    osc_xmlrpc_server->osc_xmlrpc_controller = (AgsController *) osc_xmlrpc_controller;
 
     g_rec_mutex_unlock(osc_server_mutex);
   }
@@ -532,7 +532,7 @@ ags_osc_xmlrpc_server_add_default_controller(AgsOscXmlrpcServer *osc_xmlrpc_serv
 	       "osc-server", osc_xmlrpc_server,
 	       NULL);
 
-  ags_osc_server_add_controller(osc_xmlrpc_server,
+  ags_osc_server_add_controller((AgsOscServer *) osc_xmlrpc_server,
 				(GObject *) action_controller);
 
   /* config controller */
@@ -541,7 +541,7 @@ ags_osc_xmlrpc_server_add_default_controller(AgsOscXmlrpcServer *osc_xmlrpc_serv
 	       "osc-server", osc_xmlrpc_server,
 	       NULL);
 
-  ags_osc_server_add_controller(osc_xmlrpc_server,
+  ags_osc_server_add_controller((AgsOscServer *) osc_xmlrpc_server,
 				(GObject *) config_controller);
 
   /* info controller */
@@ -550,7 +550,7 @@ ags_osc_xmlrpc_server_add_default_controller(AgsOscXmlrpcServer *osc_xmlrpc_serv
 	       "osc-server", osc_xmlrpc_server,
 	       NULL);
 
-  ags_osc_server_add_controller(osc_xmlrpc_server,
+  ags_osc_server_add_controller((AgsOscServer *) osc_xmlrpc_server,
 				(GObject *) info_controller);
 
   /* meter controller */
@@ -559,7 +559,7 @@ ags_osc_xmlrpc_server_add_default_controller(AgsOscXmlrpcServer *osc_xmlrpc_serv
 	       "osc-server", osc_xmlrpc_server,
 	       NULL);
 
-  ags_osc_server_add_controller(osc_xmlrpc_server,
+  ags_osc_server_add_controller((AgsOscServer *) osc_xmlrpc_server,
 				(GObject *) meter_controller);
 
   /* node controller */
@@ -568,7 +568,7 @@ ags_osc_xmlrpc_server_add_default_controller(AgsOscXmlrpcServer *osc_xmlrpc_serv
 	       "osc-server", osc_xmlrpc_server,
 	       NULL);
 
-  ags_osc_server_add_controller(osc_xmlrpc_server,
+  ags_osc_server_add_controller((AgsOscServer *) osc_xmlrpc_server,
 				(GObject *) node_controller);
 
   /* renew controller */
@@ -577,7 +577,7 @@ ags_osc_xmlrpc_server_add_default_controller(AgsOscXmlrpcServer *osc_xmlrpc_serv
 	       "osc-server", osc_xmlrpc_server,
 	       NULL);
 
-  ags_osc_server_add_controller(osc_xmlrpc_server,
+  ags_osc_server_add_controller((AgsOscServer *) osc_xmlrpc_server,
 				(GObject *) renew_controller);
 
   /* status controller */
@@ -586,7 +586,7 @@ ags_osc_xmlrpc_server_add_default_controller(AgsOscXmlrpcServer *osc_xmlrpc_serv
 	       "osc-server", osc_xmlrpc_server,
 	       NULL);
 
-  ags_osc_server_add_controller(osc_xmlrpc_server,
+  ags_osc_server_add_controller((AgsOscServer *) osc_xmlrpc_server,
 				(GObject *) status_controller);
 
   /* OSC response websocket handler */
@@ -777,7 +777,7 @@ ags_osc_xmlrpc_server_websocket_message_callback(SoupWebsocketConnection *websoc
     g_rec_mutex_unlock(authentication_manager_mutex);
    
     if(ags_authentication_manager_is_session_active(authentication_manager,
-						    security_context,
+						    (GObject *) security_context,
 						    user_uuid,
 						    security_token)){
       GList *start_connection, *connection;

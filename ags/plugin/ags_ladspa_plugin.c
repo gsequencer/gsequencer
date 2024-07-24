@@ -418,7 +418,7 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
   base_plugin->plugin_so = LoadLibrary(base_plugin->filename);
 #else
   base_plugin->plugin_so = dlopen(base_plugin->filename,
-				  RTLD_NOW);
+				  RTLD_NOW|RTLD_GLOBAL);
 #endif
   
   if(base_plugin->plugin_so == NULL){

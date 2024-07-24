@@ -889,7 +889,7 @@ ags_recycling_dispose(GObject *gobject)
   if(recycling->channel != NULL){
     AgsChannel *channel;
 
-    channel = recycling->channel;
+    channel = (AgsChannel *) recycling->channel;
     
     recycling->channel = NULL;
     

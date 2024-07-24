@@ -978,32 +978,28 @@ gchar*
 ags_midi_parser_read_text(AgsMidiParser *midi_parser,
 			  gint length)
 {
-  gchar text[AGS_MIDI_PARSER_MAX_TEXT_LENGTH + 1];
+  gchar text[AGS_MIDI_PARSER_MAX_TEXT_LENGTH];
 
   gchar c;
   guint i;
   
   memset(text, 0, AGS_MIDI_PARSER_MAX_TEXT_LENGTH * sizeof(char));
-  i = 0;
   
-  while((length <= 0 ||
-	 i < length) &&
-	(AGS_MIDI_PARSER_EOF & (midi_parser->flags)) == 0 &&
-	i < AGS_MIDI_PARSER_MAX_TEXT_LENGTH){
-    (c = (char) 0xff & (ags_midi_parser_midi_getc(midi_parser)));
-    
-    if(c == '\0' || !(g_ascii_isalnum(c) ||
-		      g_ascii_ispunct(c) ||
-		      c == ' ')){
-      break;
+  i = 0;
+
+  if(length > 0){
+    while((i < length) &&
+	  (AGS_MIDI_PARSER_EOF & (midi_parser->flags)) == 0 &&
+	  i < AGS_MIDI_PARSER_MAX_TEXT_LENGTH - 1){
+      c = (gchar) (0xff & (ags_midi_parser_midi_getc(midi_parser)));
+      
+      text[i] = c;
+      i++;
     }
-
-    text[i] = c;
-    i++;
   }
-
+  
   text[i] = '\0';
-    
+  
   return(g_strdup(text));
 }
 
@@ -2833,8 +2829,12 @@ ags_midi_parser_real_text_event(AgsMidiParser *midi_parser, guint meta_type)
   node = xmlNewNode(NULL,
 		    "midi-message");
 
-  //TODO:JK: verify me
-  text_length = 0x7f & ags_midi_parser_midi_getc(midi_parser);
+  text_length = ags_midi_parser_read_varlength(midi_parser);
+
+  if(text_length > AGS_MIDI_PARSER_MAX_TEXT_LENGTH){
+    g_warning("SMF text length exceeds maximum text length [%d]", AGS_MIDI_PARSER_MAX_TEXT_LENGTH);
+  }
+  
   text = ags_midi_parser_read_text(midi_parser,
 				   text_length);
   

@@ -275,7 +275,7 @@ ags_task_completion_set_property(GObject *gobject,
 	g_object_ref(task);
       }
 
-      task_completion->task = task;
+      task_completion->task = (GObject *) task;
       
       g_rec_mutex_unlock(task_completion_mutex);
     }

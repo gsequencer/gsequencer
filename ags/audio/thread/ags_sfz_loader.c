@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -495,8 +495,8 @@ ags_sfz_loader_run(void *ptr)
   
   g_rec_mutex_lock(audio_container_manager_mutex);
 
-  sfz_loader->audio_container = ags_audio_container_manager_find_audio_container(audio_container_manager,
-										 sfz_loader->filename);
+  sfz_loader->audio_container = (AgsAudioContainer *) ags_audio_container_manager_find_audio_container(audio_container_manager,
+												       sfz_loader->filename);
   
   if(sfz_loader->audio_container == NULL){
     sfz_loader->audio_container = ags_audio_container_new(sfz_loader->filename,
@@ -510,7 +510,7 @@ ags_sfz_loader_run(void *ptr)
     ags_audio_container_open(sfz_loader->audio_container);
 
     ags_audio_container_manager_add_audio_container(audio_container_manager,
-						    sfz_loader->audio_container);
+						    (GObject *) sfz_loader->audio_container);
   }
   
   g_rec_mutex_unlock(audio_container_manager_mutex);
@@ -564,7 +564,7 @@ ags_sfz_loader_run(void *ptr)
 					      sfz_loader->count);
 
     ags_task_launcher_add_task(task_launcher,
-			       apply_sfz_synth);
+			       (AgsTask *) apply_sfz_synth);
     
     g_list_free_full(start_sfz_synth_generator,
 		     (GDestroyNotify) g_object_unref);

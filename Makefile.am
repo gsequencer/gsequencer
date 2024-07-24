@@ -50,10 +50,12 @@ endif
 LDFLAGS = @LDFLAGS@ $(LTLIBINTL)
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
 
+PICFLAGS = @PICFLAGS@
+
 if WITH_W32API
-PIC_FLAGS = -shared -DDLL_EXPORT -DPIC
+PICFLAGS += -shared -DDLL_EXPORT -DPIC
 else
-PIC_FLAGS = -shared -fPIC
+PICFLAGS += -shared -fPIC
 endif
 
 gsequencer_CFLAGS = @GSEQUENCER_CFLAGS@
@@ -148,6 +150,7 @@ EXTRA_DIST = config.rpath \
 	conf/ags-oss.conf \
 	conf/ags-jack.conf \
 	conf/ags-pulse.conf \
+	conf/ags-core-audio.conf \
 	ags_authentication_test.xml \
 	ags_business_group_test.xml \
 	ags_certificate_test.xml \
@@ -202,6 +205,7 @@ EXTRA_DIST += \
 	license-notice-permissive-xml.txt
 
 EXTRA_DIST += \
+	gen-symbols-all.pl \
 	libags.sym.in \
 	libags_thread.sym.in \
 	libags_server.sym.in \
@@ -578,6 +582,7 @@ userdocimages = \
 	docs/images/ags_midi_import_wizard_no2.png \
 	docs/images/ags_midi_preferences.png \
 	docs/images/ags_ffplayer.png \
+	docs/images/ags_file_open_dialog.png \
 	docs/images/ags_fm_synth.png \
 	docs/images/ags_fm_syncsynth.png \
 	docs/images/ags_ladspa_browser.png \
@@ -765,9 +770,9 @@ defexec_DATA =
 
 # library libags
 libags_la_CPPFLAGS = -std=gnu99 $(CPPFLAGS) $(LIBAGS_CPPFLAGS)
-libags_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS) $(W32API_CFLAGS)
+libags_la_CFLAGS =  $(PICFLAGS) $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS) $(W32API_CFLAGS)
 libags_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS) $(W32API_CFLAGS)
-libags_la_LDFLAGS = $(LDFLAGS) -version-info 6:0:0 $(PIC_FLAGS) -pthread
+libags_la_LDFLAGS = $(LDFLAGS) -version-info 6:0:0 -pthread
 libags_la_LIBADD = -lm
 libags_la_LDFLAGS += $(UUID_LIBS) $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(GIO_LIBS) $(W32API_LIBS) 
 
@@ -789,9 +794,9 @@ endif
 
 # library libags-thread
 libags_thread_la_CPPFLAGS = -std=gnu99 $(CPPFLAGS) $(LIBAGS_THREAD_CPPFLAGS)
-libags_thread_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(W32API_CFLAGS)
+libags_thread_la_CFLAGS = $(PICFLAGS) $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(W32API_CFLAGS)
 libags_thread_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(W32API_CFLAGS)
-libags_thread_la_LDFLAGS = $(LDFLAGS) -version-info 6:0:0 $(PIC_FLAGS) -pthread
+libags_thread_la_LDFLAGS = $(LDFLAGS) -version-info 6:0:0 -pthread
 libags_thread_la_LIBADD = libags.la -lm
 libags_thread_la_LDFLAGS += $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(W32API_LIBS)
 
@@ -813,9 +818,9 @@ endif
 
 # library libags-server
 libags_server_la_CPPFLAGS = -std=gnu99 $(CPPFLAGS) $(LIBAGS_SERVER_CPPFLAGS)
-libags_server_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(W32API_CFLAGS)
+libags_server_la_CFLAGS = $(PICFLAGS) $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(W32API_CFLAGS)
 libags_server_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(W32API_CFLAGS)
-libags_server_la_LDFLAGS = $(LDFLAGS) -version-info 6:0:0 $(PIC_FLAGS) -pthread
+libags_server_la_LDFLAGS = $(LDFLAGS) -version-info 6:0:0 -pthread
 libags_server_la_LIBADD = -lm libags_thread.la libags.la
 libags_server_la_LDFLAGS += $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(W32API_LIBS)
 
@@ -844,9 +849,9 @@ endif
 
 libags_audio_la_CPPFLAGS += $(CPPFLAGS) $(LIBAGS_AUDIO_CPPFLAGS)
 
-libags_audio_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SAMPLERATE_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JSON_GLIB_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(W32API_CFLAGS)
+libags_audio_la_CFLAGS = $(PICFLAGS) $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SAMPLERATE_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JSON_GLIB_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(W32API_CFLAGS)
 libags_audio_la_CXXFLAGS = $(CXXFLAGS) $(libags_vst3_CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SAMPLERATE_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(JSON_GLIB_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(W32API_CFLAGS)
-libags_audio_la_LDFLAGS = $(LDFLAGS) -version-info 6:0:0 $(PIC_FLAGS) -pthread 
+libags_audio_la_LDFLAGS = $(LDFLAGS) -version-info 6:0:0 -pthread 
 libags_audio_la_LIBADD = -lm 
 
 if WITH_VST3
@@ -879,9 +884,9 @@ libags_audio_la_LDFLAGS += $(CORE_AUDIO_LIBS) $(WASAPI_LIBS) $(LIBASOUND2_LIBS) 
 
 # library libags-gui
 libags_gui_la_CPPFLAGS = -std=gnu99 $(CPPFLAGS) $(LIBAGS_GUI_CPPFLAGS)
-libags_gui_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(GOBJECT_CFLAGS) $(LIBXML2_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(W32API_CFLAGS)
+libags_gui_la_CFLAGS = $(PICFLAGS) $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(GOBJECT_CFLAGS) $(LIBXML2_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(W32API_CFLAGS)
 libags_gui_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(GOBJECT_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(W32API_CFLAGS)
-libags_gui_la_LDFLAGS = $(LDFLAGS) -version-info 6:0:0 $(PIC_FLAGS) -pthread
+libags_gui_la_LDFLAGS = $(LDFLAGS) -version-info 6:0:0 -pthread
 libags_gui_la_LIBADD = -lm
 libags_gui_la_LDFLAGS += $(GOBJECT_LIBS) $(LIBXML2_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(W32API_LIBS)
 
@@ -909,9 +914,9 @@ libgsequencer_la_CPPFLAGS = -std=gnu99
 endif
 
 libgsequencer_la_CPPFLAGS += $(CPPFLAGS) $(LIBGSEQUENCER_CPPFLAGS)
-libgsequencer_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JSON_GLIB_CFLAGS) $(LIBSOUP_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(GTK_UNIX_PRINT_CFLAGS) $(POPPLER_CFLAGS) $(W32API_CFLAGS)
+libgsequencer_la_CFLAGS = $(PICFLAGS) $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JSON_GLIB_CFLAGS) $(LIBSOUP_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(GTK_UNIX_PRINT_CFLAGS) $(POPPLER_CFLAGS) $(W32API_CFLAGS)
 libgsequencer_la_CXXFLAGS = $(CXXFLAGS) $(libags_vst3_CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JSON_GLIB_CFLAGS) $(LIBSOUP_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(GTK_UNIX_PRINT_CFLAGS) $(POPPLER_CFLAGS) $(W32API_CFLAGS)
-libgsequencer_la_LDFLAGS = $(LDFLAGS) -version-info 0:1:0 $(PIC_FLAGS) -pthread
+libgsequencer_la_LDFLAGS = $(LDFLAGS) -version-info 0:1:0 -pthread
 libgsequencer_la_LIBADD = -lm
 
 if WITH_VST3
@@ -942,8 +947,8 @@ libgsequencer_la_LDFLAGS += $(CORE_AUDIO_LIBS) $(WASAPI_LIBS) $(LIBASOUND2_LIBS)
 # library libags-vst
 if WITH_VST3
 libags_vst_la_CPPFLAGS = -std=c++2a $(libags_vst3_RELEASE_TYPE) $(libags_vst3_CPPFLAGS) -Wall -Wformat -Werror=format-security -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized
-libags_vst_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(GLIB_CFLAGS) $(libags_vst3_CXXFLAGS) $(W32API_CFLAGS)
-libags_vst_la_LDFLAGS = $(LDFLAGS) $(libags_vst3_LDFLAGS) -version-info 6:0:0 $(PIC_FLAGS) -pthread 
+libags_vst_la_CXXFLAGS = $(PICFLAGS) $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(GLIB_CFLAGS) $(libags_vst3_CXXFLAGS) $(W32API_CFLAGS)
+libags_vst_la_LDFLAGS = $(LDFLAGS) $(libags_vst3_LDFLAGS) -version-info 6:0:0 -pthread 
 libags_vst_la_LIBADD = -lm
 
 if WITH_W32API
@@ -1359,6 +1364,9 @@ libags_audio_h_sources = \
 	ags/audio/ags_pattern.h \
 	ags/audio/ags_peak_util.h \
 	ags/audio/ags_phase_shift_util.h \
+	ags/audio/ags_pitch_2x_alias_util.h \
+	ags/audio/ags_pitch_4x_alias_util.h \
+	ags/audio/ags_pitch_16x_alias_util.h \
 	ags/audio/ags_playback.h \
 	ags/audio/ags_playback_domain.h \
 	ags/audio/ags_port.h \
@@ -1457,6 +1465,9 @@ libags_audio_c_sources = \
 	ags/audio/ags_pattern.c \
 	ags/audio/ags_peak_util.c \
 	ags/audio/ags_phase_shift_util.c \
+	ags/audio/ags_pitch_2x_alias_util.c \
+	ags/audio/ags_pitch_4x_alias_util.c \
+	ags/audio/ags_pitch_16x_alias_util.c \
 	ags/audio/ags_playback.c \
 	ags/audio/ags_playback_domain.c \
 	ags/audio/ags_port.c \
@@ -2544,6 +2555,7 @@ libgsequencer_h_sources = \
 	ags/app/ags_connection_editor.h \
 	ags/app/ags_connection_editor_callbacks.h \
 	ags/app/ags_connection_editor_dialog.h \
+	ags/app/ags_connection_editor_dialog_callbacks.h \
 	ags/app/ags_connection_editor_listing.h \
 	ags/app/ags_connection_editor_listing_callbacks.h \
 	ags/app/ags_connection_editor_pad.h \
@@ -2594,6 +2606,7 @@ libgsequencer_h_sources = \
 	ags/app/ags_machine_editor.h \
 	ags/app/ags_machine_editor_callbacks.h \
 	ags/app/ags_machine_editor_dialog.h \
+	ags/app/ags_machine_editor_dialog_callbacks.h \
 	ags/app/ags_machine_editor_listing.h \
 	ags/app/ags_machine_editor_listing_callbacks.h \
 	ags/app/ags_machine_editor_pad.h \
@@ -2672,6 +2685,7 @@ libgsequencer_c_sources = \
 	ags/app/ags_connection_editor.c \
 	ags/app/ags_connection_editor_callbacks.c \
 	ags/app/ags_connection_editor_dialog.c \
+	ags/app/ags_connection_editor_dialog_callbacks.c \
 	ags/app/ags_connection_editor_listing.c \
 	ags/app/ags_connection_editor_listing_callbacks.c \
 	ags/app/ags_connection_editor_pad.c \
@@ -2724,6 +2738,7 @@ libgsequencer_c_sources = \
 	ags/app/ags_machine_editor_bulk.c \
 	ags/app/ags_machine_editor_bulk_callbacks.c \
 	ags/app/ags_machine_editor_dialog.c \
+	ags/app/ags_machine_editor_dialog_callbacks.c \
 	ags/app/ags_machine_editor_collection.c \
 	ags/app/ags_machine_editor_collection_callbacks.c \
 	ags/app/ags_machine_editor_listing.c \
@@ -3147,8 +3162,8 @@ libgsequencer_editor_h_sources = \
 	ags/app/editor/ags_composite_edit_callbacks.h \
 	ags/app/editor/ags_composite_toolbar.h \
 	ags/app/editor/ags_composite_toolbar_callbacks.h \
-	ags/app/editor/ags_crop_note_dialog_callbacks.h \
-	ags/app/editor/ags_crop_note_dialog.h \
+	ags/app/editor/ags_crop_note_popover_callbacks.h \
+	ags/app/editor/ags_crop_note_popover.h \
 	ags/app/editor/ags_envelope_dialog_callbacks.h \
 	ags/app/editor/ags_envelope_dialog.h \
 	ags/app/editor/ags_envelope_editor_callbacks.h \
@@ -3160,46 +3175,41 @@ libgsequencer_editor_h_sources = \
 	ags/app/editor/ags_machine_selection.h \
 	ags/app/editor/ags_machine_selector_callbacks.h \
 	ags/app/editor/ags_machine_selector.h \
-	ags/app/editor/ags_move_note_dialog_callbacks.h \
-	ags/app/editor/ags_move_note_dialog.h \
+	ags/app/editor/ags_move_note_popover_callbacks.h \
+	ags/app/editor/ags_move_note_popover.h \
 	ags/app/editor/ags_notation_edit_callbacks.h \
 	ags/app/editor/ags_notation_edit.h \
 	ags/app/editor/ags_notation_meta_callbacks.h \
 	ags/app/editor/ags_notation_meta.h \
 	ags/app/editor/ags_pattern_envelope_callbacks.h \
 	ags/app/editor/ags_pattern_envelope.h \
-	ags/app/editor/ags_position_automation_cursor_dialog.h \
-	ags/app/editor/ags_position_automation_cursor_dialog_callbacks.h \
-	ags/app/editor/ags_position_notation_cursor_dialog.h \
-	ags/app/editor/ags_position_notation_cursor_dialog_callbacks.h \
+	ags/app/editor/ags_position_automation_cursor_popover.h \
+	ags/app/editor/ags_position_notation_cursor_popover.h \
 	ags/app/editor/ags_position_sheet_cursor_dialog.h \
 	ags/app/editor/ags_position_sheet_cursor_dialog_callbacks.h \
-	ags/app/editor/ags_position_wave_cursor_dialog.h \
-	ags/app/editor/ags_position_wave_cursor_dialog_callbacks.h \
+	ags/app/editor/ags_position_wave_cursor_popover.h \
 	ags/app/editor/ags_preset_dialog_callbacks.h \
 	ags/app/editor/ags_preset_dialog.h \
 	ags/app/editor/ags_preset_editor_callbacks.h \
 	ags/app/editor/ags_preset_editor.h \
-	ags/app/editor/ags_ramp_acceleration_dialog.h \
-	ags/app/editor/ags_ramp_acceleration_dialog_callbacks.h \
-	ags/app/editor/ags_ramp_marker_dialog.h \
-	ags/app/editor/ags_ramp_marker_dialog_callbacks.h \
+	ags/app/editor/ags_ramp_acceleration_popover.h \
+	ags/app/editor/ags_ramp_acceleration_popover_callbacks.h \
+	ags/app/editor/ags_ramp_marker_popover.h \
+	ags/app/editor/ags_ramp_marker_popover_callbacks.h \
 	ags/app/editor/ags_remove_sheet_page_dialog_callbacks.h \
 	ags/app/editor/ags_remove_sheet_page_dialog.h \
 	ags/app/editor/ags_scrolled_automation_edit_box.h \
 	ags/app/editor/ags_scrolled_wave_edit_box.h \
-	ags/app/editor/ags_select_acceleration_dialog.h \
-	ags/app/editor/ags_select_acceleration_dialog_callbacks.h \
-	ags/app/editor/ags_select_buffer_dialog.h \
-	ags/app/editor/ags_select_buffer_dialog_callbacks.h \
-	ags/app/editor/ags_select_note_dialog.h \
-	ags/app/editor/ags_select_note_dialog_callbacks.h \
+	ags/app/editor/ags_select_acceleration_popover.h \
+	ags/app/editor/ags_select_acceleration_popover_callbacks.h \
+	ags/app/editor/ags_select_buffer_popover.h \
+	ags/app/editor/ags_select_note_popover.h \
+	ags/app/editor/ags_select_note_popover_callbacks.h \
 	ags/app/editor/ags_sheet_edit.h \
 	ags/app/editor/ags_sheet_edit_callbacks.h \
 	ags/app/editor/ags_tempo_edit.h \
 	ags/app/editor/ags_tempo_edit_callbacks.h \
-	ags/app/editor/ags_time_stretch_buffer_dialog.h \
-	ags/app/editor/ags_time_stretch_buffer_dialog_callbacks.h \
+	ags/app/editor/ags_time_stretch_buffer_popover.h \
 	ags/app/editor/ags_wave_edit_callbacks.h \
 	ags/app/editor/ags_wave_edit.h \
 	ags/app/editor/ags_wave_edit_box.h \
@@ -3221,8 +3231,8 @@ libgsequencer_editor_c_sources = \
 	ags/app/editor/ags_composite_edit_callbacks.c \
 	ags/app/editor/ags_composite_toolbar.c \
 	ags/app/editor/ags_composite_toolbar_callbacks.c \
-	ags/app/editor/ags_crop_note_dialog_callbacks.c \
-	ags/app/editor/ags_crop_note_dialog.c \
+	ags/app/editor/ags_crop_note_popover_callbacks.c \
+	ags/app/editor/ags_crop_note_popover.c \
 	ags/app/editor/ags_envelope_dialog_callbacks.c \
 	ags/app/editor/ags_envelope_dialog.c \
 	ags/app/editor/ags_envelope_editor_callbacks.c \
@@ -3234,46 +3244,41 @@ libgsequencer_editor_c_sources = \
 	ags/app/editor/ags_machine_selection.c \
 	ags/app/editor/ags_machine_selector.c \
 	ags/app/editor/ags_machine_selector_callbacks.c \
-	ags/app/editor/ags_move_note_dialog_callbacks.c \
-	ags/app/editor/ags_move_note_dialog.c \
+	ags/app/editor/ags_move_note_popover_callbacks.c \
+	ags/app/editor/ags_move_note_popover.c \
 	ags/app/editor/ags_notation_edit.c \
 	ags/app/editor/ags_notation_edit_callbacks.c \
 	ags/app/editor/ags_notation_meta.c \
 	ags/app/editor/ags_notation_meta_callbacks.c \
 	ags/app/editor/ags_pattern_envelope_callbacks.c \
 	ags/app/editor/ags_pattern_envelope.c \
-	ags/app/editor/ags_position_automation_cursor_dialog.c \
-	ags/app/editor/ags_position_automation_cursor_dialog_callbacks.c \
-	ags/app/editor/ags_position_notation_cursor_dialog.c \
-	ags/app/editor/ags_position_notation_cursor_dialog_callbacks.c \
+	ags/app/editor/ags_position_automation_cursor_popover.c \
+	ags/app/editor/ags_position_notation_cursor_popover.c \
 	ags/app/editor/ags_position_sheet_cursor_dialog.c \
 	ags/app/editor/ags_position_sheet_cursor_dialog_callbacks.c \
-	ags/app/editor/ags_position_wave_cursor_dialog.c \
-	ags/app/editor/ags_position_wave_cursor_dialog_callbacks.c \
+	ags/app/editor/ags_position_wave_cursor_popover.c \
 	ags/app/editor/ags_preset_dialog_callbacks.c \
 	ags/app/editor/ags_preset_dialog.c \
 	ags/app/editor/ags_preset_editor_callbacks.c \
 	ags/app/editor/ags_preset_editor.c \
-	ags/app/editor/ags_ramp_acceleration_dialog.c \
-	ags/app/editor/ags_ramp_acceleration_dialog_callbacks.c \
-	ags/app/editor/ags_ramp_marker_dialog.c \
-	ags/app/editor/ags_ramp_marker_dialog_callbacks.c \
+	ags/app/editor/ags_ramp_acceleration_popover.c \
+	ags/app/editor/ags_ramp_acceleration_popover_callbacks.c \
+	ags/app/editor/ags_ramp_marker_popover.c \
+	ags/app/editor/ags_ramp_marker_popover_callbacks.c \
 	ags/app/editor/ags_remove_sheet_page_dialog_callbacks.c \
 	ags/app/editor/ags_remove_sheet_page_dialog.c \
 	ags/app/editor/ags_scrolled_automation_edit_box.c \
 	ags/app/editor/ags_scrolled_wave_edit_box.c \
-	ags/app/editor/ags_select_acceleration_dialog.c \
-	ags/app/editor/ags_select_acceleration_dialog_callbacks.c \
-	ags/app/editor/ags_select_buffer_dialog.c \
-	ags/app/editor/ags_select_buffer_dialog_callbacks.c \
-	ags/app/editor/ags_select_note_dialog.c \
-	ags/app/editor/ags_select_note_dialog_callbacks.c \
+	ags/app/editor/ags_select_acceleration_popover.c \
+	ags/app/editor/ags_select_acceleration_popover_callbacks.c \
+	ags/app/editor/ags_select_buffer_popover.c \
+	ags/app/editor/ags_select_note_popover.c \
+	ags/app/editor/ags_select_note_popover_callbacks.c \
 	ags/app/editor/ags_sheet_edit.c \
 	ags/app/editor/ags_sheet_edit_callbacks.c \
 	ags/app/editor/ags_tempo_edit.c \
 	ags/app/editor/ags_tempo_edit_callbacks.c \
-	ags/app/editor/ags_time_stretch_buffer_dialog.c \
-	ags/app/editor/ags_time_stretch_buffer_dialog_callbacks.c \
+	ags/app/editor/ags_time_stretch_buffer_popover.c \
 	ags/app/editor/ags_wave_edit.c \
 	ags/app/editor/ags_wave_edit_box.c \
 	ags/app/editor/ags_wave_edit_callbacks.c \
@@ -3884,6 +3889,59 @@ gen-symbols-ags-gui:
 
 gen-symbols-all: gen-symbols-ags gen-symbols-ags-thread gen-symbols-ags-server gen-symbols-ags-audio gen-symbols-ags-vst gen-symbols-ags-gui
 	echo "Generated all symbols"
+
+gen-symbols-all-bsd:
+	perl gen-symbols-all.pl
+	echo "Generated all symbols"
+
+fix-symbols-ags-audio:
+if !WITH_LIBINSTPATCH
+	${MAKE} rm-symbols-ags-audio-ipatch
+endif
+if !WITH_VST3
+	${MAKE} rm-symbols-ags-audio-vst3
+endif
+if !WITH_AUDIO_TOOLBOX
+	${MAKE} rm-symbols-ags-audio-audio-toolbox
+endif
+
+fix-symbols-ags-audio-bsd:
+if !WITH_LIBINSTPATCH
+	${MAKE} rm-symbols-ags-audio-ipatch-bsd
+endif
+if !WITH_VST3
+	${MAKE} rm-symbols-ags-audio-vst3-bsd
+endif
+if !WITH_AUDIO_TOOLBOX
+	${MAKE} rm-symbols-ags-audio-audio-toolbox-bsd
+endif
+
+rm-symbols-ags-audio-ipatch:
+	sed -i '/ipatch/d' libags_audio.sym.in
+	sed -i '/sf2/d' libags_audio.sym.in
+
+rm-symbols-ags-audio-ipatch-bsd:
+	sed -i '' '/ipatch/d' libags_audio.sym.in
+	sed -i '' '/sf2/d' libags_audio.sym.in
+
+rm-symbols-ags-audio-vst3:
+	sed -i '/vst3/d' libags_audio.sym.in
+
+rm-symbols-ags-audio-vst3-bsd:
+	sed -i '' '/vst3/d' libags_audio.sym.in
+
+rm-symbols-ags-audio-audio-toolbox:
+	sed -i '/audio_toolbox/d' libags_audio.sym.in
+
+rm-symbols-ags-audio-audio-toolbox-bsd:
+	sed -i '' '/audio_toolbox/d' libags_audio.sym.in
+
+
+fix-symbols-all: fix-symbols-ags-audio
+	echo "Fixed all symbols"
+
+fix-symbols-all-bsd: fix-symbols-ags-audio-bsd
+	echo "Fixed  all symbols"
 
 gen-marshallers:
 	cat ags_license_header > ags/object/ags_marshal.h

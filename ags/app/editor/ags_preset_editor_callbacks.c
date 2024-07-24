@@ -109,7 +109,7 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
     }
 
 #ifdef HAVE_GLIB_2_44
-    contains_control_name = g_strv_contains(collected_specifier,
+    contains_control_name = g_strv_contains((const gchar * const *) collected_specifier,
 					    specifier);
 #else
     contains_control_name = ags_strv_contains(collected_specifier,
@@ -247,7 +247,7 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
 	goto OUTPUT_ITERATE;
       }
       
-      contains_control_name = g_strv_contains(collected_specifier,
+      contains_control_name = g_strv_contains((const gchar * const *) collected_specifier,
 					      specifier);
 
       if(plugin_port != NULL &&
@@ -389,7 +389,7 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
 	continue;
       }
       
-      contains_control_name = g_strv_contains(collected_specifier,
+      contains_control_name = g_strv_contains((const gchar * const *) collected_specifier,
 					      specifier);
 
       if(plugin_port != NULL &&
@@ -530,7 +530,7 @@ ags_preset_editor_open_response_callback(AgsFileDialog *file_dialog, gint respon
     }
   }
 
-  gtk_window_destroy(file_dialog);
+  gtk_window_destroy((GtkWindow *) file_dialog);
 }
 
 void
@@ -544,6 +544,7 @@ ags_preset_editor_open_preset_callback(GtkButton *button, AgsPresetEditor *prese
   gchar *bookmark_filename;
   gchar *home_path;
   gchar *sandbox_path;
+  gchar *current_path;
   gchar *str;
 
   AgsApplicationContext *application_context;
@@ -552,7 +553,7 @@ ags_preset_editor_open_preset_callback(GtkButton *button, AgsPresetEditor *prese
 
   window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  file_dialog = (AgsFileDialog *) ags_file_dialog_new((GtkWindow *) window,
+  file_dialog = (AgsFileDialog *) ags_file_dialog_new((GtkWidget *) window,
 						      i18n("open preset file"));
 
   file_widget = ags_file_dialog_get_file_widget(file_dialog);
@@ -562,7 +563,7 @@ ags_preset_editor_open_preset_callback(GtkButton *button, AgsPresetEditor *prese
   sandbox_path = NULL;
   
 #if defined(AGS_MACOS_SANDBOX)
-  sandbox_path = g_strdup_printf("%s/Library/%s",
+  sandbox_path = g_strdup_printf("%s/Library/Containers/%s/Data",
 				 home_path,
 				 AGS_DEFAULT_BUNDLE_ID);
 
@@ -627,34 +628,35 @@ ags_preset_editor_open_preset_callback(GtkButton *button, AgsPresetEditor *prese
 
   ags_file_widget_read_bookmark(file_widget);
 
+  /* current path */
+  current_path = NULL;
+    
 #if defined(AGS_MACOS_SANDBOX)
-  ags_file_widget_set_flags(file_widget,
-			    AGS_FILE_WIDGET_APP_SANDBOX);
-
-  ags_file_widget_set_current_path(file_widget,
-				   sandbox_path);
+  current_path = g_strdup(home_path);
 #endif
 
 #if defined(AGS_FLATPAK_SANDBOX)
   ags_file_widget_set_flags(file_widget,
 			    AGS_FILE_WIDGET_APP_SANDBOX);
 
-  ags_file_widget_set_current_path(file_widget,
-				   sandbox_path);
+  current_path = g_strdup(sandbox_path);
 #endif
 
 #if defined(AGS_SNAP_SANDBOX)
   ags_file_widget_set_flags(file_widget,
 			    AGS_FILE_WIDGET_APP_SANDBOX);
 
-  ags_file_widget_set_current_path(file_widget,
-				   sandbox_path);
+  current_path = g_strdup(sandbox_path);
 #endif
   
 #if !defined(AGS_MACOS_SANDBOX) && !defined(AGS_FLATPAK_SANDBOX) && !defined(AGS_SNAP_SANDBOX)
-  ags_file_widget_set_current_path(file_widget,
-				   home_path);
+  current_path = g_strdup(home_path);
 #endif
+
+  ags_file_widget_set_current_path(file_widget,
+				   current_path);
+
+  g_free(current_path);
 
   ags_file_widget_refresh(file_widget);
 

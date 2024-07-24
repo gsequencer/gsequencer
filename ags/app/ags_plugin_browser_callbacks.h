@@ -36,10 +36,6 @@ G_BEGIN_DECLS
 void ags_plugin_browser_plugin_type_changed_callback(GtkWidget *combo_box,
 						     AgsPluginBrowser *plugin_browser);
 
-void ags_plugin_browser_response_callback(GtkDialog *plugin_browser,
-					  gint response,
-					  gpointer user_data);
-
 G_END_DECLS
 
 #endif /*__AGS_PLUGIN_BROWSER_CALLBACKS_H__*/

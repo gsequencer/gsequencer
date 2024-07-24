@@ -270,7 +270,7 @@ ags_password_store_manager_check_password(AgsPasswordStoreManager *password_stor
 
     error = NULL;
     current_password = ags_password_store_get_password(AGS_PASSWORD_STORE(password_store->data),
-						       ags_auth_security_context_get_instance(),
+						       (GObject *) ags_auth_security_context_get_instance(),
 						       user_uuid,
 						       NULL,
 						       &error);
@@ -328,7 +328,7 @@ ags_password_store_manager_check_password(AgsPasswordStoreManager *password_stor
 AgsPasswordStoreManager*
 ags_password_store_manager_get_instance()
 {
-  static GRecMutex mutex;
+  static GMutex mutex;
 
   g_mutex_lock(&mutex);
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -999,7 +999,7 @@ ags_midi_util_to_smf(AgsMidiUtil *midi_util,
       smf_buffer = ags_midi_util_to_smf_realloc(midi_util,
 						smf_buffer,
 						ret_smf_buffer_length);
-      ags_midi_smf_util_put_change_parameter(midi_util,
+      ags_midi_smf_util_put_change_parameter(NULL,
 					     smf_buffer,
 					     delta_time,
 					     0xf & midi_iter[0],
@@ -1245,10 +1245,10 @@ ags_midi_util_delta_time_to_note_256th_offset(AgsMidiUtil *midi_util,
 
   if(((1 << 15) & division) == 0){
     /* ticks per quarter note */
-    note_256th_offset = (16.0 * 16.0 * bpm / 60.0) * delta_time * (tempo / division / ((gdouble) AGS_USEC_PER_SEC)) * delay_factor;
+    note_256th_offset = ((bpm / 60.0) * delta_time * (tempo / division / ((gdouble) AGS_USEC_PER_SEC))) * (16.0 * 16.0 * delay_factor);
   }else{
     /* SMTPE */
-    note_256th_offset = (16.0 * 16.0 * bpm / 60.0) * delta_time / (((division * division) / 256.0) / ((gdouble) AGS_USEC_PER_SEC)) * delay_factor;
+    note_256th_offset = ((bpm / 60.0) * delta_time / (((division * division) / 256.0) / ((gdouble) AGS_USEC_PER_SEC))) * (16.0 * 16.0 * delay_factor);
   }
 
   return(note_256th_offset);

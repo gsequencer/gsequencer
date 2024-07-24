@@ -1507,7 +1507,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
    * process audio
    */
   /*  */
-  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+  audio_loop = (AgsAudioLoop *) ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
   task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
 
   device = device_start;
@@ -1521,7 +1521,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
     return(0);
   }
 
-  ags_thread_set_flags(audio_loop, AGS_THREAD_TIME_ACCOUNTING);
+  ags_thread_set_flags((AgsThread *) audio_loop, AGS_THREAD_TIME_ACCOUNTING);
 
   /*
    * process MIDI and audio input

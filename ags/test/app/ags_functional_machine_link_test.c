@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -185,7 +185,7 @@ void
 ags_functional_machine_link_test_master_mixer()
 {
   AgsMachine *machine;
-  GtkDialog *properties;
+  GtkWindow *properties;
   GtkWidget **widget;
   
   AgsFunctionalTestUtilListLengthCondition condition;
@@ -334,7 +334,7 @@ ags_functional_machine_link_test_master_mixer()
   /* response ok */
   properties = AGS_MACHINE(master_mixer)->machine_editor_dialog;  
 
-  ags_functional_test_util_dialog_ok(properties);
+  ags_functional_test_util_dialog_ok(properties, AGS_MACHINE_EDITOR_DIALOG(properties)->activate_button);
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
 
@@ -392,7 +392,7 @@ ags_functional_machine_link_test_master_mixer()
   /* response ok */
   properties = AGS_MACHINE(master_mixer)->machine_editor_dialog;
   
-  ags_functional_test_util_dialog_ok(properties);
+  ags_functional_test_util_dialog_ok(properties, AGS_MACHINE_EDITOR_DIALOG(properties)->activate_button);
   
   ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
 
@@ -410,7 +410,7 @@ void
 ags_functional_machine_link_test_slave_mixer()
 {
   AgsMachine *machine;
-  GtkDialog *properties;
+  GtkWindow *properties;
   
   AgsFunctionalTestUtilListLengthCondition condition;
   
@@ -508,7 +508,7 @@ ags_functional_machine_link_test_slave_mixer()
   /* response ok */
   properties = AGS_MACHINE(slave_mixer)->machine_editor_dialog;  
 
-  ags_functional_test_util_dialog_ok(properties);
+  ags_functional_test_util_dialog_ok(properties, AGS_MACHINE_EDITOR_DIALOG(properties)->activate_button);
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
 
@@ -525,7 +525,7 @@ ags_functional_machine_link_test_slave_mixer()
 void
 ags_functional_machine_link_test_drum()
 {
-  GtkDialog *properties;
+  GtkWindow *properties;
   
   AgsFunctionalTestUtilListLengthCondition condition;
   
@@ -624,7 +624,7 @@ ags_functional_machine_link_test_drum()
   /* response ok */
   properties = AGS_MACHINE(slave_mixer)->machine_editor_dialog;  
 
-  ags_functional_test_util_dialog_ok(properties);
+  ags_functional_test_util_dialog_ok(properties, AGS_MACHINE_EDITOR_DIALOG(properties)->activate_button);
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
 
@@ -641,7 +641,7 @@ ags_functional_machine_link_test_drum()
 void
 ags_functional_machine_link_test_matrix()
 {
-  GtkDialog *properties;
+  GtkWindow *properties;
   
   AgsFunctionalTestUtilListLengthCondition condition;
   
@@ -727,7 +727,7 @@ ags_functional_machine_link_test_matrix()
   /* response ok */
   properties = AGS_MACHINE(matrix)->machine_editor_dialog;  
 
-  ags_functional_test_util_dialog_ok(properties);
+  ags_functional_test_util_dialog_ok(properties, AGS_MACHINE_EDITOR_DIALOG(properties)->activate_button);
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
 
@@ -785,7 +785,7 @@ ags_functional_machine_link_test_matrix()
   /* response ok */
   properties = AGS_MACHINE(slave_mixer)->machine_editor_dialog;  
 
-  ags_functional_test_util_dialog_ok(properties);
+  ags_functional_test_util_dialog_ok(properties, AGS_MACHINE_EDITOR_DIALOG(properties)->activate_button);
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
 
@@ -802,7 +802,7 @@ ags_functional_machine_link_test_matrix()
 void
 ags_functional_machine_link_test_synth()
 {
-  GtkDialog *properties;
+  GtkWindow *properties;
   
   AgsFunctionalTestUtilListLengthCondition condition;
   
@@ -909,7 +909,7 @@ ags_functional_machine_link_test_synth()
   /* response ok */
   properties = AGS_MACHINE(matrix)->machine_editor_dialog;  
 
-  ags_functional_test_util_dialog_ok(properties);
+  ags_functional_test_util_dialog_ok(properties, AGS_MACHINE_EDITOR_DIALOG(properties)->activate_button);
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
 
@@ -927,7 +927,7 @@ ags_functional_machine_link_test_synth()
 void
 ags_functional_machine_link_test_ffplayer_0()
 {
-  GtkDialog *properties;
+  GtkWindow *properties;
   
   AgsFunctionalTestUtilListLengthCondition condition;
   
@@ -1027,7 +1027,7 @@ ags_functional_machine_link_test_ffplayer_0()
   /* response ok */
   properties = AGS_MACHINE(slave_mixer)->machine_editor_dialog;  
 
-  ags_functional_test_util_dialog_ok(properties);
+  ags_functional_test_util_dialog_ok(properties, AGS_MACHINE_EDITOR_DIALOG(properties)->activate_button);
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
 
@@ -1044,7 +1044,7 @@ ags_functional_machine_link_test_ffplayer_0()
 void
 ags_functional_machine_link_test_ffplayer_1()
 {
-  GtkDialog *properties;
+  GtkWindow *properties;
   
   AgsFunctionalTestUtilListLengthCondition condition;
   
@@ -1143,7 +1143,7 @@ ags_functional_machine_link_test_ffplayer_1()
   /* response ok */
   properties = AGS_MACHINE(slave_mixer)->machine_editor_dialog;  
 
-  ags_functional_test_util_dialog_ok(properties);
+  ags_functional_test_util_dialog_ok(properties, AGS_MACHINE_EDITOR_DIALOG(properties)->activate_button);
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
@@ -1161,7 +1161,7 @@ ags_functional_machine_link_test_ffplayer_1()
 void
 ags_functional_machine_link_test_relink_all()
 {
-  GtkDialog *properties;
+  GtkWindow *properties;
   
   GList *start_list, *list;
   
@@ -1230,7 +1230,7 @@ ags_functional_machine_link_test_relink_all()
   /* response ok */
   properties = AGS_MACHINE(slave_mixer)->machine_editor_dialog;  
 
-  ags_functional_test_util_dialog_ok(properties);
+  ags_functional_test_util_dialog_ok(properties, AGS_MACHINE_EDITOR_DIALOG(properties)->activate_button);
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
@@ -1294,7 +1294,7 @@ ags_functional_machine_link_test_relink_all()
   /* response ok */
   properties = AGS_MACHINE(slave_mixer)->machine_editor_dialog;
   
-  ags_functional_test_util_dialog_ok(properties);
+  ags_functional_test_util_dialog_ok(properties, AGS_MACHINE_EDITOR_DIALOG(properties)->activate_button);
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
@@ -1357,7 +1357,7 @@ ags_functional_machine_link_test_relink_all()
   /* response ok */
   properties = AGS_MACHINE(slave_mixer)->machine_editor_dialog;  
 
-  ags_functional_test_util_dialog_ok(properties);
+  ags_functional_test_util_dialog_ok(properties, AGS_MACHINE_EDITOR_DIALOG(properties)->activate_button);
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
@@ -1367,7 +1367,7 @@ ags_functional_machine_link_test_relink_all()
 void
 ags_functional_machine_link_test_reset_link_all()
 {
-  GtkDialog *properties;
+  GtkWindow *properties;
   
   GList *start_list, *list;
   
@@ -1436,7 +1436,7 @@ ags_functional_machine_link_test_reset_link_all()
   /* response ok */
   properties = AGS_MACHINE(slave_mixer)->machine_editor_dialog;  
 
-  ags_functional_test_util_dialog_ok(properties);
+  ags_functional_test_util_dialog_ok(properties, AGS_MACHINE_EDITOR_DIALOG(properties)->activate_button);
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
@@ -1499,7 +1499,7 @@ ags_functional_machine_link_test_reset_link_all()
   /* response ok */
   properties = AGS_MACHINE(slave_mixer)->machine_editor_dialog;  
 
-  ags_functional_test_util_dialog_ok(properties);
+  ags_functional_test_util_dialog_ok(properties, AGS_MACHINE_EDITOR_DIALOG(properties)->activate_button);
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
@@ -1561,7 +1561,7 @@ ags_functional_machine_link_test_reset_link_all()
   /* response ok */
   properties = AGS_MACHINE(slave_mixer)->machine_editor_dialog;
   
-  ags_functional_test_util_dialog_ok(properties);
+  ags_functional_test_util_dialog_ok(properties, AGS_MACHINE_EDITOR_DIALOG(properties)->activate_button);
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
@@ -1623,7 +1623,7 @@ ags_functional_machine_link_test_reset_link_all()
   /* response ok */
   properties = AGS_MACHINE(slave_mixer)->machine_editor_dialog;  
 
-  ags_functional_test_util_dialog_ok(properties);
+  ags_functional_test_util_dialog_ok(properties, AGS_MACHINE_EDITOR_DIALOG(properties)->activate_button);
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   

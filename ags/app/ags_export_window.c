@@ -36,6 +36,20 @@ gboolean ags_export_window_is_connected(AgsConnectable *connectable);
 void ags_export_window_connect(AgsConnectable *connectable);
 void ags_export_window_disconnect(AgsConnectable *connectable);
 
+gboolean ags_export_window_key_pressed_callback(GtkEventControllerKey *event_controller,
+						guint keyval,
+						guint keycode,
+						GdkModifierType state,
+						AgsExportWindow *export_window);
+void ags_export_window_key_released_callback(GtkEventControllerKey *event_controller,
+					     guint keyval,
+					     guint keycode,
+					     GdkModifierType state,
+					     AgsExportWindow *export_window);
+gboolean ags_export_window_modifiers_callback(GtkEventControllerKey *event_controller,
+					      GdkModifierType keyval,
+					      AgsExportWindow *export_window);
+
 /**
  * SECTION:ags_export_window
  * @short_description: The export dialog
@@ -133,6 +147,8 @@ ags_export_window_init(AgsExportWindow *export_window)
   GtkGrid *grid;
   GtkLabel *label;
 
+  GtkEventController *event_controller;
+
   AgsConfig *config;  
   AgsApplicationContext *application_context;
 
@@ -146,14 +162,14 @@ ags_export_window_init(AgsExportWindow *export_window)
   export_window->connectable_flags = 0;
 
   ags_ui_provider_set_export_window(AGS_UI_PROVIDER(application_context),
-				    export_window);
+				    (GtkWidget *) export_window);
   
   g_object_set(export_window,
 	       "title", i18n("export to audio data"),
 	       NULL);
 
   gtk_window_set_transient_for((GtkWindow *) export_window,
-			       ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
+			       (GtkWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
 
   gtk_window_set_hide_on_close((GtkWindow *) export_window,
 			       TRUE);
@@ -366,6 +382,24 @@ ags_export_window_init(AgsExportWindow *export_window)
   gtk_box_append(vbox,
 		 (GtkWidget *) export_window->add);
 
+  /*  */  
+  g_signal_connect_after(export_window, "close-request",
+			 G_CALLBACK(ags_export_window_close_request_callback), NULL);
+
+  event_controller = gtk_event_controller_key_new();
+
+  gtk_widget_add_controller((GtkWidget *) export_window,
+			    event_controller);
+
+  g_signal_connect(event_controller, "key-pressed",
+		   G_CALLBACK(ags_export_window_key_pressed_callback), export_window);
+  
+  g_signal_connect(event_controller, "key-released",
+		   G_CALLBACK(ags_export_window_key_released_callback), export_window);
+
+  g_signal_connect(event_controller, "modifiers",
+		   G_CALLBACK(ags_export_window_modifiers_callback), export_window);
+
   /* remove files */
   export_window->remove_filename = NULL;
   
@@ -511,6 +545,70 @@ ags_export_window_finalize(GObject *gobject)
   export_window = (AgsExportWindow *) gobject;
   
   G_OBJECT_CLASS(ags_export_window_parent_class)->finalize(gobject);
+}
+
+gboolean
+ags_export_window_key_pressed_callback(GtkEventControllerKey *event_controller,
+				       guint keyval,
+				       guint keycode,
+				       GdkModifierType state,
+				       AgsExportWindow *export_window)
+{
+  gboolean key_handled;
+
+  key_handled = TRUE;
+
+  if(keyval == GDK_KEY_Tab ||
+     keyval == GDK_KEY_ISO_Left_Tab ||
+     keyval == GDK_KEY_Shift_L ||
+     keyval == GDK_KEY_Shift_R ||
+     keyval == GDK_KEY_Alt_L ||
+     keyval == GDK_KEY_Alt_R ||
+     keyval == GDK_KEY_Control_L ||
+     keyval == GDK_KEY_Control_R){
+    key_handled = FALSE;
+  }
+  
+  return(key_handled);
+}
+
+void
+ags_export_window_key_released_callback(GtkEventControllerKey *event_controller,
+					guint keyval,
+					guint keycode,
+					GdkModifierType state,
+					AgsExportWindow *export_window)
+{
+  gboolean key_handled;
+
+  key_handled = TRUE;
+
+  if(keyval == GDK_KEY_Tab ||
+     keyval == GDK_KEY_ISO_Left_Tab ||
+     keyval == GDK_KEY_Shift_L ||
+     keyval == GDK_KEY_Shift_R ||
+     keyval == GDK_KEY_Alt_L ||
+     keyval == GDK_KEY_Alt_R ||
+     keyval == GDK_KEY_Control_L ||
+     keyval == GDK_KEY_Control_R){
+    key_handled = FALSE;
+  }else{
+    switch(keyval){
+    case GDK_KEY_Escape:
+      {
+	gtk_window_close((GtkWindow *) export_window);	
+      }
+      break;
+    }
+  }
+}
+
+gboolean
+ags_export_window_modifiers_callback(GtkEventControllerKey *event_controller,
+				     GdkModifierType keyval,
+				     AgsExportWindow *export_window)
+{
+  return(FALSE);
 }
 
 /**
@@ -865,16 +963,12 @@ ags_export_window_start_export(AgsExportWindow *export_window)
     task = NULL;
       
     while(export_soundcard != NULL){
-      GtkEntryBuffer *entry_buffer;
-      
       gchar *filename;
       
       current_export_thread = ags_export_thread_find_soundcard(export_thread,
 							       AGS_EXPORT_SOUNDCARD(export_soundcard->data)->soundcard);
 
-      entry_buffer = gtk_entry_get_buffer(AGS_EXPORT_SOUNDCARD(export_soundcard->data)->filename);
-      
-      filename = gtk_entry_buffer_get_text(entry_buffer);
+      filename = g_strdup(gtk_editable_get_text(GTK_EDITABLE(AGS_EXPORT_SOUNDCARD(export_soundcard->data)->filename)));
 
       export_output = ags_export_output_new(current_export_thread,
 					    AGS_EXPORT_SOUNDCARD(export_soundcard->data)->soundcard,

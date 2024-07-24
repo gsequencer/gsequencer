@@ -13,9 +13,11 @@ backend=pulse
 capability=playback
 buffer-size=2048
 pcm-channels=2
-format=32
-samplerate=192000
-device=hw:CARD=MGXU,DEV=0
+format=16
+samplerate=44100
+device=ags-pulse-devout-0
+use-cache=true
+cache-buffer-size=8192
 
 [recall]
 auto-sense=true

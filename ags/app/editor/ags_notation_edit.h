@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -134,9 +134,13 @@ struct _AgsNotationEdit
   GtkEventController *key_controller;
   GtkEventController *gesture_controller;
   GtkEventController *motion_controller;
+  GtkEventController *swipe_controller;
 
   guint note_offset_256th;
   guint note_offset_256th_absolute;
+
+  gdouble trace_position_x;
+  gdouble trace_position_y;
 };
 
 struct _AgsNotationEditClass
@@ -154,6 +158,7 @@ void ags_notation_edit_draw_position(AgsNotationEdit *notation_edit, cairo_t *cr
 
 void ags_notation_edit_draw_cursor(AgsNotationEdit *notation_edit, cairo_t *cr);
 void ags_notation_edit_draw_selection(AgsNotationEdit *notation_edit, cairo_t *cr);
+void ags_notation_edit_draw_trace(AgsNotationEdit *notation_edit, cairo_t *cr);
 
 void ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
 				 AgsNote *note,

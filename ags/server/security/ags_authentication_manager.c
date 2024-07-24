@@ -519,7 +519,7 @@ ags_authentication_manager_login(AgsAuthenticationManager *authentication_manage
     
     strv = ags_authentication_get_authentication_module(AGS_AUTHENTICATION(authentication->data));
     
-    if(g_strv_contains(strv,
+    if(g_strv_contains((const gchar * const *) strv,
 		       authentication_module)){
       error = NULL;
       success = ags_authentication_login(AGS_AUTHENTICATION(authentication->data),
@@ -698,7 +698,7 @@ ags_authentication_manager_get_digest(AgsAuthenticationManager *authentication_m
     start_authentication = ags_authentication_manager_get_authentication(authentication_manager);
 
   while(authentication != NULL){
-    if(g_strv_contains(ags_authentication_get_authentication_module(AGS_AUTHENTICATION(authentication->data)),
+    if(g_strv_contains((const gchar * const *) ags_authentication_get_authentication_module(AGS_AUTHENTICATION(authentication->data)),
 		       authentication_module)){
       GError *error;
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -377,7 +377,7 @@ ags_live_dssi_bridge_init(AgsLiveDssiBridge *live_dssi_bridge)
   gtk_widget_set_halign((GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge)->bulk_input,
 			GTK_ALIGN_START);
 
-  AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge)->bulk_input)->parent_bridge = AGS_MACHINE(live_dssi_bridge)->bridge;
+  AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge)->bulk_input)->parent_bridge = (GtkWidget *) AGS_MACHINE(live_dssi_bridge)->bridge;
   gtk_grid_attach(AGS_MACHINE(live_dssi_bridge)->bridge,
 		  (GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge)->bulk_input,
 		  0, 0,
@@ -505,15 +505,6 @@ ags_live_dssi_bridge_finalize(GObject *gobject)
   AgsLiveDssiBridge *live_dssi_bridge;
 
   live_dssi_bridge = (AgsLiveDssiBridge *) gobject;
-  
-  g_object_disconnect(G_OBJECT(live_dssi_bridge),
-		      "any_signal::resize-audio-channels",
-		      G_CALLBACK(ags_live_dssi_bridge_resize_audio_channels),
-		      NULL,
-		      "any_signal::resize-pads",
-		      G_CALLBACK(ags_live_dssi_bridge_resize_pads),
-		      NULL,
-		      NULL);
 
   g_free(live_dssi_bridge->filename);
   g_free(live_dssi_bridge->effect);
@@ -527,7 +518,7 @@ ags_live_dssi_bridge_connect(AgsConnectable *connectable)
 {
   AgsLiveDssiBridge *live_dssi_bridge;
 
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -544,7 +535,7 @@ ags_live_dssi_bridge_disconnect(AgsConnectable *connectable)
 {
   AgsLiveDssiBridge *live_dssi_bridge;
 
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -927,7 +918,11 @@ ags_live_dssi_bridge_load(AgsLiveDssiBridge *live_dssi_bridge)
   dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
 						  live_dssi_bridge->filename,
 						  live_dssi_bridge->effect);
-
+  
+  if(dssi_plugin == NULL){
+    return;
+  }
+  
   plugin_so = AGS_BASE_PLUGIN(dssi_plugin)->plugin_so;
 
   /*  */

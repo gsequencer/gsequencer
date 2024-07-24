@@ -1080,10 +1080,10 @@ ags_cartesian_init(AgsCartesian *cartesian)
 {
   guint i, i_stop;
 
-  gtk_widget_set_hexpand(cartesian,
+  gtk_widget_set_hexpand((GtkWidget *) cartesian,
 			 TRUE);
   
-  gtk_widget_set_vexpand(cartesian,
+  gtk_widget_set_vexpand((GtkWidget *) cartesian,
 			 TRUE);
   
   /* flags */
@@ -2025,12 +2025,20 @@ ags_cartesian_draw(AgsCartesian *cartesian,
      !bg_success ||
      !shadow_success ||
      !highlight_success){
-    gdk_rgba_parse(&fg_color,
-		   "#101010");
+    if(!dark_theme){
+      gdk_rgba_parse(&fg_color,
+		     "#101010");
 
-    gdk_rgba_parse(&bg_color,
-		   "#cbd5d9");
+      gdk_rgba_parse(&bg_color,
+		     "#cbd5d9");
+    }else{
+      gdk_rgba_parse(&fg_color,
+		     "#cbd5d9");
 
+      gdk_rgba_parse(&bg_color,
+		     "#101010");
+    }
+    
     gdk_rgba_parse(&shadow_color,
 		   "#ffffff40");
 
@@ -2059,7 +2067,7 @@ ags_cartesian_draw(AgsCartesian *cartesian,
     data = cairo_image_surface_get_data(cartesian->surface);
     stride = cairo_image_surface_get_stride(cartesian->surface);
 
-    data_ptr = data;
+    data_ptr = (guint32 *) data;
   
     clear_color = (((guint) (255.0 * bg_color.red) << 16) |
 		   ((guint) (255.0 * bg_color.green) << 8) |
@@ -3217,7 +3225,7 @@ ags_plot_get_pixmap(AgsPlot *plot)
     return(NULL);
   }
 
-  return(plot->pixmap);
+  return((guchar **) plot->pixmap);
 }
 
 /**
@@ -3237,7 +3245,7 @@ ags_plot_set_pixmap(AgsPlot *plot,
     return;
   }
 
-  plot->pixmap = pixmap;
+  plot->pixmap = (gdouble ***) &pixmap;
 }
 
 /**

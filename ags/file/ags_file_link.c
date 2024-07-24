@@ -376,7 +376,7 @@ ags_file_link_read(GObject *file, xmlNode *node, AgsPlugin *plugin)
 
   file_link = AGS_FILE_LINK(plugin);
 
-  ags_file_add_id_ref(file,
+  ags_file_add_id_ref((AgsFile *) file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "node", node,
 				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, "id")),
@@ -401,7 +401,7 @@ ags_file_link_write(GObject *file, xmlNode *parent, AgsPlugin *plugin)
 	     "id",
 	     id);
 
-  ags_file_add_id_ref(file,
+  ags_file_add_id_ref((AgsFile *) file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "node", node,
 				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),

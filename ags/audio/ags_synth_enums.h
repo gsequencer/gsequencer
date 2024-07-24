@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -67,8 +67,31 @@ typedef enum{
   AGS_SYNTH_KEY_16_16,
 }AgsSynthKeyMode;
 
+/**
+ * AgsPitchTypeMode:
+ * @AGS_PITCH_TYPE_FLUID_INTERPOLATE_NONE: fluidsynth's interpolate none
+ * @AGS_PITCH_TYPE_FLUID_INTERPOLATE_LINEAR: fluidsynth's interpolate none
+ * @AGS_PITCH_TYPE_FLUID_INTERPOLATE_4TH_ORDER: fluidsynth's interpolate none
+ * @AGS_PITCH_TYPE_FLUID_INTERPOLATE_7TH_ORDER: fluidsynth's interpolate none
+ * @AGS_PITCH_TYPE_INTERPOLATE_2X_ALIAS: interpolate 2 times alias
+ * @AGS_PITCH_TYPE_INTERPOLATE_2X_ALIAS: interpolate 4 times alias
+ * @AGS_PITCH_TYPE_INTERPOLATE_2X_ALIAS: interpolate 16 times alias
+ * 
+ * Enum values to specify pitch type.
+ */
+typedef enum{
+  AGS_PITCH_TYPE_FLUID_INTERPOLATE_NONE,
+  AGS_PITCH_TYPE_FLUID_INTERPOLATE_LINEAR,
+  AGS_PITCH_TYPE_FLUID_INTERPOLATE_4TH_ORDER,
+  AGS_PITCH_TYPE_FLUID_INTERPOLATE_7TH_ORDER,
+  AGS_PITCH_TYPE_INTERPOLATE_2X_ALIAS,
+  AGS_PITCH_TYPE_INTERPOLATE_4X_ALIAS,
+  AGS_PITCH_TYPE_INTERPOLATE_16X_ALIAS,
+}AgsPitchTypeMode;
+
 GType ags_synth_oscillator_mode_get_type();
 GType ags_synth_key_mode_get_type();
+GType ags_pitch_type_mode_get_type();
 
 G_END_DECLS
 

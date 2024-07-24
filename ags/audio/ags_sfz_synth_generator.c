@@ -1453,8 +1453,8 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
   
   g_rec_mutex_lock(audio_container_manager_mutex);
   
-  audio_container = ags_audio_container_manager_find_audio_container(audio_container_manager,
-								     filename);
+  audio_container = (AgsAudioContainer *) ags_audio_container_manager_find_audio_container(audio_container_manager,
+											   filename);
 
   if(audio_container == NULL){    
     audio_container = ags_audio_container_new(filename,
@@ -1466,7 +1466,7 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
     ags_audio_container_open(audio_container);
 
     ags_audio_container_manager_add_audio_container(audio_container_manager,
-						    audio_container);
+						    (GObject *) audio_container);
   }
 
   g_rec_mutex_unlock(audio_container_manager_mutex);
@@ -1603,7 +1603,7 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
 				   ceil(requested_frame_count / buffer_size));
   }
 
-  ags_audio_signal_clear(audio_signal);
+  ags_audio_signal_clear((AgsAudioSignal *) audio_signal);
   
   /*  */
   g_rec_mutex_lock(stream_mutex);

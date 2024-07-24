@@ -49,11 +49,3 @@ ags_plugin_browser_plugin_type_changed_callback(GtkWidget *combo_box,
 #endif
   }
 }
-
-void
-ags_plugin_browser_response_callback(GtkDialog *plugin_browser,
-				     gint response,
-				     gpointer user_data)
-{  
-  gtk_widget_hide((GtkWidget *) plugin_browser);
-}

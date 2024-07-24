@@ -1107,7 +1107,7 @@ ags_core_audio_midiin_set_device(AgsSequencer *sequencer,
 
   if(!g_str_has_prefix(device,
 		       "ags-core-audio-midiin-")){
-    g_warning("invalid CORE_AUDIO device prefix");
+    g_warning("invalid CoreAudio device prefix");
 
     g_rec_mutex_unlock(core_audio_midiin_mutex);
 
@@ -1119,7 +1119,7 @@ ags_core_audio_midiin_set_device(AgsSequencer *sequencer,
 	       &nth_card);
 
   if(ret != 1){
-    g_warning("invalid CORE_AUDIO device specifier");
+    g_warning("invalid CoreAudio device specifier");
 
     g_rec_mutex_unlock(core_audio_midiin_mutex);
 

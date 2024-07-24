@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -64,7 +64,11 @@ struct _AgsTrackMapper
   GtkLabel *info_sequence;
   
   GtkComboBoxText *machine_type;
+
+  GtkSpinButton *midi_channel;
+  
   GtkSpinButton *audio_channels;
+
   GtkSpinButton *offset;
 };
 

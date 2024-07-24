@@ -31,6 +31,7 @@
 #include <ags/libags-gui.h>
 
 #include <ags/app/ags_machine.h>
+#include <ags/app/ags_pcm_file_dialog.h>
 
 #include <ags/app/machine/ags_drum_input_pad.h>
 #include <ags/app/machine/ags_pattern_box.h>
@@ -78,7 +79,7 @@ struct _AgsDrum
   AgsRecallContainer *buffer_recall_container;
   
   GtkButton *open;
-  AgsFileDialog *open_dialog;
+  AgsPCMFileDialog *open_dialog;
   
   GtkCheckButton *loop_button;
   GtkSpinButton *length_spin;

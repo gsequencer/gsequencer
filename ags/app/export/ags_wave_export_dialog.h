@@ -93,7 +93,8 @@ void ags_wave_export_dialog_response(AgsWaveExportDialog *wave_export_dialog,
 
 void ags_wave_export_dialog_update_duration(AgsWaveExportDialog *wave_export_dialog);
 
-AgsWaveExportDialog* ags_wave_export_dialog_new(AgsMachine *machine);
+AgsWaveExportDialog* ags_wave_export_dialog_new(GtkWindow *transient_for,
+						AgsMachine *machine);
 
 G_END_DECLS
 

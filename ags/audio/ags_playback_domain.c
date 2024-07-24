@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -385,7 +385,7 @@ ags_playback_domain_dispose(GObject *gobject)
   if(playback_domain->audio != NULL){
     AgsAudio *audio;
 
-    audio = playback_domain->audio;
+    audio = (AgsAudio *) playback_domain->audio;
 
     playback_domain->audio = NULL;
     

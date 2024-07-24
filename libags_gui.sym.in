@@ -185,6 +185,7 @@ ags_input_dialog_get_type
 ags_input_dialog_test_flags
 ags_input_dialog_set_flags
 ags_input_dialog_unset_flags
+ags_input_dialog_set_message
 ags_input_dialog_set_text
 ags_input_dialog_set_spin_button_label
 ags_input_dialog_get_entry

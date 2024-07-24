@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,6 +32,7 @@ void ags_midi_preferences_connectable_interface_init(AgsConnectableInterface *co
 void ags_midi_preferences_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_midi_preferences_init(AgsMidiPreferences *midi_preferences);
 
+gboolean ags_midi_preferences_is_connected(AgsConnectable *connectable);
 void ags_midi_preferences_connect(AgsConnectable *connectable);
 void ags_midi_preferences_disconnect(AgsConnectable *connectable);
 
@@ -119,10 +120,24 @@ ags_midi_preferences_class_init(AgsMidiPreferencesClass *midi_preferences)
 void
 ags_midi_preferences_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_midi_preferences_is_connected;  
   connectable->connect = ags_midi_preferences_connect;
   connectable->disconnect = ags_midi_preferences_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -182,6 +197,21 @@ ags_midi_preferences_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_midi_preferences_parent_class)->finalize(gobject);
 }
 
+gboolean
+ags_midi_preferences_is_connected(AgsConnectable *connectable)
+{
+  AgsMidiPreferences *midi_preferences;
+  
+  gboolean is_connected;
+  
+  midi_preferences = AGS_MIDI_PREFERENCES(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (midi_preferences->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
+}
+
 void
 ags_midi_preferences_connect(AgsConnectable *connectable)
 {
@@ -189,7 +219,7 @@ ags_midi_preferences_connect(AgsConnectable *connectable)
 
   midi_preferences = AGS_MIDI_PREFERENCES(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (midi_preferences->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -208,7 +238,7 @@ ags_midi_preferences_disconnect(AgsConnectable *connectable)
 
   midi_preferences = AGS_MIDI_PREFERENCES(connectable);
 
-  if((AGS_CONNECTABLE_CONNECTED & (midi_preferences->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 

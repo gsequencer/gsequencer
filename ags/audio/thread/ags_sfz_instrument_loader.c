@@ -591,8 +591,8 @@ ags_sfz_instrument_loader_run(void *ptr)
   
   g_rec_mutex_lock(audio_container_manager_mutex);
 
-  sfz_instrument_loader->audio_container = ags_audio_container_manager_find_audio_container(audio_container_manager,
-											    sfz_instrument_loader->filename);  
+  sfz_instrument_loader->audio_container = (AgsAudioContainer *) ags_audio_container_manager_find_audio_container(audio_container_manager,
+														  sfz_instrument_loader->filename);  
   g_object_ref(sfz_instrument_loader->audio_container);
 
   if(sfz_instrument_loader->audio_container == NULL){
@@ -607,7 +607,7 @@ ags_sfz_instrument_loader_run(void *ptr)
     ags_audio_container_open(sfz_instrument_loader->audio_container);
   
     ags_audio_container_manager_add_audio_container(audio_container_manager,
-						    sfz_instrument_loader->audio_container);
+						    (GObject *) sfz_instrument_loader->audio_container);
   }
   
   g_rec_mutex_unlock(audio_container_manager_mutex);
@@ -664,7 +664,7 @@ ags_sfz_instrument_loader_run(void *ptr)
 							sfz_instrument_loader->synth);
     
     ags_task_launcher_add_task(task_launcher,
-			       apply_sfz_instrument);
+			       (AgsTask *) apply_sfz_instrument);
   }
   
   ags_sfz_instrument_loader_set_flags(sfz_instrument_loader,

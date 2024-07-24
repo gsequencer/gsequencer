@@ -2379,7 +2379,7 @@ ags_math_util_find_symbol_all(gchar *str)
 	  
 	  n_literals++;
 	}else{
-	  if(!g_strv_contains(symbol_arr,
+	  if(!g_strv_contains((const gchar * const *) symbol_arr,
 			      tmp_literal)){
 	    symbol_arr = (gchar **) g_realloc(symbol_arr,
 					      (n_literals + 2) * sizeof(gchar *));
@@ -2450,7 +2450,7 @@ ags_math_util_find_symbol_all(gchar *str)
 	  
 	n_literals++;
       }else{
-	if(!g_strv_contains(symbol_arr,
+	if(!g_strv_contains((const gchar * const *) symbol_arr,
 			    tmp_literal)){
 	  symbol_arr = (gchar **) g_realloc(symbol_arr,
 					    (n_literals + 2) * sizeof(gchar *));

@@ -517,7 +517,7 @@ ags_notebook_remove_tab(AgsNotebook *notebook,
 				  tab);
     
     gtk_box_remove(notebook->tab_box,
-		   tab);
+		   (GtkWidget *) tab);
   }
 }
 

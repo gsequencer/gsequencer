@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -52,7 +52,7 @@ ags_line_member_editor_add_callback(GtkWidget *button,
 				    AgsLineMemberEditor *line_member_editor)
 {
   if(line_member_editor->plugin_browser == NULL){
-    line_member_editor->plugin_browser = ags_plugin_browser_new((GtkWidget *) gtk_widget_get_ancestor(line_member_editor,
+    line_member_editor->plugin_browser = ags_plugin_browser_new((GtkWidget *) gtk_widget_get_ancestor((GtkWidget *) line_member_editor,
 												      GTK_TYPE_WINDOW));
 
     ags_connectable_connect(AGS_CONNECTABLE(line_member_editor->plugin_browser));
@@ -91,7 +91,7 @@ ags_line_member_editor_plugin_browser_response_create_entry(AgsLineMemberEditor 
 }
 
 void
-ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
+ags_line_member_editor_plugin_browser_response_callback(AgsPluginBrowser *dialog,
 							gint response,
 							AgsLineMemberEditor *line_member_editor)
 {

@@ -225,7 +225,7 @@ ags_certificate_manager_remove_certificate(AgsCertificateManager *certificate_ma
 AgsCertificateManager*
 ags_certificate_manager_get_instance()
 {
-  static GRecMutex mutex;
+  static GMutex mutex;
 
   g_mutex_lock(&mutex);
 

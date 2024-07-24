@@ -63,7 +63,7 @@ struct _AgsMachineSelector
   GtkBox box;
 
   guint flags;
-  guint connectable_flags;
+  AgsConnectableFlags connectable_flags;
   guint edit;
   
   GtkLabel *label;
