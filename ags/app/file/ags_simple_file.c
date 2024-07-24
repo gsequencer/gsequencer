@@ -2338,7 +2338,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 				   start_list);
 
       /* AgsMachine */
-      ags_connectable_connect(AGS_CONNECTABLE(gobject));
+      ags_connectable_connect(AGS_CONNECTABLE(gobject->audio));
     }else{
       GtkDialog *failed_dialog;
 
@@ -2398,6 +2398,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   start_list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
 
   soundcard = NULL;
+
   if(!(simple_file->no_config)){
     device = xmlGetProp(node,
 			"soundcard-device");
@@ -3263,6 +3264,7 @@ ags_simple_file_read_drum_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsD
     if(bank_0 < 4){
       gtk_toggle_button_set_active(drum->index0[bank_0],
 				   TRUE);
+      g_signal_emit_by_name(drum->index0[bank_0], "clicked");
     }
 
     xmlFree(str);
@@ -3280,6 +3282,7 @@ ags_simple_file_read_drum_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsD
     if(bank_1 < 12){
       gtk_toggle_button_set_active(drum->index1[bank_1],
 				   TRUE);
+      g_signal_emit_by_name(drum->index1[bank_1], "clicked");
     }
 
     xmlFree(str);
@@ -3334,8 +3337,14 @@ ags_simple_file_read_drum_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsD
     if(start_pattern != NULL){
       for(i = 0; i < 16; i++){
 	if(ags_pattern_get_bit(start_pattern->data, bank_0, bank_1, i)){
-	  gtk_toggle_button_set_active(g_list_nth_data(start_list, i),
+	  GtkToggleButton *toggle;
+
+	  toggle = g_list_nth_data(start_list, i);
+	  
+	  gtk_toggle_button_set_active(toggle,
 				       TRUE);
+
+	  g_signal_emit_by_name(toggle, "clicked");
 	}
       }
     }
@@ -3372,6 +3381,8 @@ ags_simple_file_read_matrix_launch(AgsSimpleFile *simple_file, xmlNode *node, Ag
     if(bank_1 < 9){
       gtk_toggle_button_set_active(matrix->index[bank_1],
 				   TRUE);
+
+      g_signal_emit_by_name(matrix->index[bank_1], "clicked");
     }
       
     xmlFree(str);
@@ -3448,6 +3459,8 @@ ags_simple_file_read_synth_launch(AgsSimpleFile *simple_file, xmlNode *node, Ags
       
     xmlFree(str);
   }
+
+  ags_synth_update(synth);
 }
   
 void
@@ -3537,7 +3550,7 @@ void
 ags_simple_file_read_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsFMSynth *fm_synth)
 {
   xmlChar *str;
-    
+
   /* base note */
   str = xmlGetProp(node,
 		   "base-note");
@@ -3556,6 +3569,8 @@ ags_simple_file_read_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode *node, 
       
     xmlFree(str);
   }
+
+  ags_fm_synth_update(fm_synth);    
 }
 
 void
@@ -4971,7 +4986,8 @@ ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *n
   gchar *value;
       
   guint major, minor, micro;
-      
+  gint i, i_stop;
+  
   /* fixup 3.7.3 */
   version = xmlGetProp(simple_file->root_node,
 		       "version");
@@ -5063,13 +5079,32 @@ ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *n
   ags_pitch_sampler_open_filename(pitch_sampler,
 				  filename);
 
+  ags_pitch_sampler_sfz_loader_completed_timeout(pitch_sampler);
+
   g_usleep(G_USEC_PER_SEC);
 
-  if(pitch_sampler->sfz_loader != NULL){
-    while(!ags_sfz_loader_test_flags(pitch_sampler->sfz_loader, AGS_SFZ_LOADER_HAS_COMPLETED)){
-      g_usleep(G_USEC_PER_SEC);
+  i = 0;
+  i_stop = 16;
+  
+  if(pitch_sampler->sfz_loader != NULL ||
+     pitch_sampler->audio_container == NULL ||
+     pitch_sampler->audio_container->sound_container == NULL){
+    while(!ags_sfz_loader_test_flags(pitch_sampler->sfz_loader, AGS_SFZ_LOADER_HAS_COMPLETED) ||
+	  pitch_sampler->audio_container == NULL ||
+	  pitch_sampler->audio_container->sound_container == NULL){
+      ags_pitch_sampler_sfz_loader_completed_timeout(pitch_sampler);
+
+      g_usleep(G_USEC_PER_SEC / 2);
+
+      i++;
+      
+      if(i >= i_stop){
+	break;
+      }
     }
   }
+  
+  ags_pitch_sampler_update(pitch_sampler);
 
   /* aliase */
   str = xmlGetProp(node,
@@ -5244,6 +5279,8 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   xmlChar *filename;
   xmlChar *str;
 
+  gint i, i_stop;
+
   filename = xmlGetProp(node,
 			"filename");
 
@@ -5255,13 +5292,34 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   ags_sfz_synth_open_filename(sfz_synth,
 			      filename);
 
+  ags_sfz_synth_sfz_loader_completed_timeout(sfz_synth);
+
   g_usleep(G_USEC_PER_SEC);
 
-  if(sfz_synth->sfz_loader != NULL){
-    while(!ags_sfz_loader_test_flags(sfz_synth->sfz_loader, AGS_SFZ_LOADER_HAS_COMPLETED)){
-      g_usleep(G_USEC_PER_SEC);
+  i = 0;
+  i_stop = 16;
+
+  if(sfz_synth->sfz_loader != NULL ||
+     sfz_synth->audio_container == NULL ||
+     sfz_synth->audio_container->sound_container == NULL){
+    while(!ags_sfz_loader_test_flags(sfz_synth->sfz_loader, AGS_SFZ_LOADER_HAS_COMPLETED) ||
+	  sfz_synth->audio_container == NULL ||
+	  sfz_synth->audio_container->sound_container == NULL){
+      ags_sfz_synth_sfz_loader_completed_timeout(sfz_synth);
+
+      g_usleep(G_USEC_PER_SEC / 2);
+
+      i++;
+      
+      if(i >= i_stop){
+	break;
+      }
     }
   }
+  
+  ags_sfz_synth_sfz_loader_completed_timeout(sfz_synth);
+
+  ags_sfz_synth_load_opcode(sfz_synth);
   
   /* synth */
   str = xmlGetProp(node,
@@ -5836,6 +5894,7 @@ ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simple_file, xmlNode *node, 
   xmlChar *str;
   
   guint major, minor, micro;
+  gint i, i_stop;
       
   /* fixup 3.7.3 */
   version = xmlGetProp(simple_file->root_node,
@@ -5932,13 +5991,32 @@ ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simple_file, xmlNode *node, 
   ags_ffplayer_open_filename(ffplayer,
 			     filename);
 
+  ags_ffplayer_sf2_loader_completed_timeout(ffplayer);
+  
   g_usleep(G_USEC_PER_SEC);
 
-  if(ffplayer->sf2_loader != NULL){
-    while(!ags_sf2_loader_test_flags(ffplayer->sf2_loader, AGS_SF2_LOADER_HAS_COMPLETED)){
-      g_usleep(G_USEC_PER_SEC);
+  i = 0;
+  i_stop = 16;
+
+  if(ffplayer->sf2_loader != NULL ||
+     ffplayer->audio_container == NULL ||
+     ffplayer->audio_container->sound_container == NULL){
+    while(!ags_sf2_loader_test_flags(ffplayer->sf2_loader, AGS_SF2_LOADER_HAS_COMPLETED) ||
+	  ffplayer->audio_container == NULL ||
+	  ffplayer->audio_container->sound_container == NULL){
+      ags_ffplayer_sf2_loader_completed_timeout(ffplayer);
+  
+      g_usleep(G_USEC_PER_SEC / 2);
+
+      i++;
+      
+      if(i >= i_stop){
+	break;
+      }
     }
   }
+
+  ags_ffplayer_update(ffplayer);
   
   /* aliase */
   str = xmlGetProp(node,
@@ -6067,6 +6145,9 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   xmlChar *bank, *program;
   xmlChar *str;
 
+  gint load_bank, load_program;
+  gint i, i_stop;
+  
   filename = xmlGetProp(node,
 			"filename");
 
@@ -6076,17 +6157,22 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   program = xmlGetProp(node,
 		       "program");
 
+  load_bank = 0;
+  load_program = 0;
+  
   if(bank != NULL){
-    sf2_synth->load_bank = (gint) g_ascii_strtoll(bank,
-						  NULL,
-						  10);
+    load_bank = 
+      sf2_synth->load_bank = (gint) g_ascii_strtoll(bank,
+						    NULL,
+						    10);
   }
 
   if(bank != NULL &&
      program != NULL){
-    sf2_synth->load_program = (gint) g_ascii_strtoll(program,
-						     NULL,
-						     10);
+    load_program = 
+      sf2_synth->load_program = (gint) g_ascii_strtoll(program,
+						       NULL,
+						       10);
   }
 
   if(filename != NULL){
@@ -6097,14 +6183,35 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
   ags_sf2_synth_open_filename(sf2_synth,
 			      filename);
 
+  ags_sf2_synth_sf2_loader_completed_timeout(sf2_synth);
+
   g_usleep(G_USEC_PER_SEC);
 
-  if(sf2_synth->sf2_loader != NULL){
-    while(!ags_sf2_loader_test_flags(sf2_synth->sf2_loader, AGS_SF2_LOADER_HAS_COMPLETED)){
+  i = 0;
+  i_stop = 16;
+  
+  if(sf2_synth->sf2_loader != NULL ||
+     sf2_synth->audio_container == NULL ||
+     sf2_synth->audio_container->sound_container == NULL){
+    while(!ags_sf2_loader_test_flags(sf2_synth->sf2_loader, AGS_SF2_LOADER_HAS_COMPLETED) ||
+	  sf2_synth->audio_container == NULL ||
+	  sf2_synth->audio_container->sound_container == NULL){
+      ags_sf2_synth_sf2_loader_completed_timeout(sf2_synth);
+      
       g_usleep(G_USEC_PER_SEC);
+
+      i++;
+      
+      if(i >= i_stop){
+	break;
+      }
     }
   }
-  
+
+  ags_sf2_synth_load_midi_locale(sf2_synth,
+				 load_bank,
+				 load_program);
+
   /* synth */
   str = xmlGetProp(node,
 		   "synth-octave");
@@ -7533,6 +7640,7 @@ ags_simple_file_read_bulk_member_launch(AgsSimpleFile *simple_file, xmlNode *nod
     if(str != NULL){
       gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
 				   ((!g_ascii_strncasecmp(str, "true", 5)) ? TRUE: FALSE));
+      g_signal_emit_by_name(child_widget, "clicked");
     }
   }else if(GTK_IS_CHECK_BUTTON(child_widget)){
     if(str != NULL){
@@ -7975,6 +8083,10 @@ ags_simple_file_read_pad_launch(AgsFileLaunch *file_launch,
   xmlChar *str;
     
   if(AGS_IS_PAD(pad)){
+    if(!ags_connectable_is_connected(AGS_CONNECTABLE(pad))){
+      ags_connectable_connect(AGS_CONNECTABLE(pad));
+    }
+    
     str = xmlGetProp(file_launch->node,
 		     "group");
 
@@ -7983,6 +8095,7 @@ ags_simple_file_read_pad_launch(AgsFileLaunch *file_launch,
 			     "false")){
 	gtk_toggle_button_set_active(pad->group,
 				     FALSE);
+	g_signal_emit_by_name(pad->group, "clicked");
       }
       
       xmlFree(str);
@@ -7996,6 +8109,7 @@ ags_simple_file_read_pad_launch(AgsFileLaunch *file_launch,
 			     "true")){
 	gtk_toggle_button_set_active(pad->mute,
 				     TRUE);
+	g_signal_emit_by_name(pad->mute, "clicked");
       }
       
       xmlFree(str);
@@ -8009,6 +8123,7 @@ ags_simple_file_read_pad_launch(AgsFileLaunch *file_launch,
 			     "true")){
 	gtk_toggle_button_set_active(pad->solo,
 				     TRUE);
+	g_signal_emit_by_name(pad->solo, "clicked");
       }
       
       xmlFree(str);
@@ -8215,6 +8330,7 @@ ags_simple_file_read_line_member(AgsSimpleFile *simple_file, xmlNode *node, AgsL
     }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
       gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
 				   ((!g_ascii_strncasecmp(str, "true", 5)) ? TRUE: FALSE));
+      g_signal_emit_by_name(child_widget, "clicked");
     }else if(GTK_IS_CHECK_BUTTON(child_widget)){
       gtk_check_button_set_active((GtkCheckButton *) child_widget,
 				  ((!g_ascii_strncasecmp(str, "true", 5)) ? TRUE: FALSE));
@@ -8936,6 +9052,12 @@ ags_simple_file_read_line_launch(AgsFileLaunch *file_launch,
 
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) line,
 						   AGS_TYPE_MACHINE);
+
+  if(AGS_IS_LINE(line)){
+    if(!ags_connectable_is_connected(AGS_CONNECTABLE(line))){
+      ags_connectable_connect(AGS_CONNECTABLE(line));
+    }
+  }
   
   /* link or file */
   is_output = TRUE;
@@ -9112,6 +9234,7 @@ ags_simple_file_read_line_launch(AgsFileLaunch *file_launch,
 			     "false")){
 	gtk_toggle_button_set_active(line->group,
 				     FALSE);
+	g_signal_emit_by_name(line->group, "clicked");
       }
       
       xmlFree(str);
@@ -9376,6 +9499,10 @@ void
 ags_simple_file_read_effect_pad_launch(AgsFileLaunch *file_launch,
 				       AgsEffectPad *effect_pad)
 {
+  if(!ags_connectable_is_connected(AGS_CONNECTABLE(effect_pad))){
+    ags_connectable_connect(AGS_CONNECTABLE(effect_pad));
+  }
+  
   /* empty */
 }
 
@@ -9904,6 +10031,10 @@ void
 ags_simple_file_read_effect_line_launch(AgsFileLaunch *file_launch,
 					AgsEffectLine *effect_line)
 {
+  if(!ags_connectable_is_connected(AGS_CONNECTABLE(effect_line))){
+    ags_connectable_connect(AGS_CONNECTABLE(effect_line));
+  }
+  
   /* empty */
 }
 

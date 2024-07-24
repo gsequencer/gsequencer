@@ -112,20 +112,22 @@ install_data()
   gchar *free_sounds_cp_cmd;
   gchar *ags_conf_dirs_mkdir_cmd;
   gchar *ags_conf_cp_cmd;
+  gchar *str;
   
   uid_t uid;
 
   GError *error;
   
-  music_path = NULL;
-  app_dir = NULL;
-
   uid = getuid();
   pw = getpwuid(uid);
 
   app_dir = [[NSBundle mainBundle] bundlePath].UTF8String;
+  
+  music_path = g_strdup_printf("%s/Music",
+			       pw->pw_dir);
 
-  music_path = [[NSSearchPathForDirectoriesInDomains(NSMusicDirectory, NSUserDomainMask, YES) objectAtIndex:0] UTF8String];
+  //TODO:JK: remove
+  //  music_path = [[NSSearchPathForDirectoriesInDomains(NSMusicDirectory, NSUserDomainMask, YES) objectAtIndex:0] UTF8String];
 
   default_path = g_strdup_printf("%s%s",
 				 music_path,
@@ -867,12 +869,20 @@ main(int argc, char **argv)
       gchar *default_path;
       gchar *default_filename;
 
-      gchar *music_path = NULL;
+      gchar *home_env;
+      gchar *music_path;
 
       GError *error;
-      
-      music_path = [[NSSearchPathForDirectoriesInDomains(NSMusicDirectory, NSUserDomainMask, YES) objectAtIndex:0] UTF8String];
-      
+
+      uid = getuid();
+      pw = getpwuid(uid);
+
+      music_path = g_strdup_printf("%s/Music",
+				   pw->pw_dir);
+
+      //TODO:JK: remove
+      //      music_path = [[NSSearchPathForDirectoriesInDomains(NSMusicDirectory, NSUserDomainMask, YES) objectAtIndex:0] UTF8String];
+
       default_path = g_strdup_printf("%s%s",
 				     music_path,
 				     "/GSequencer/workspace/default");
