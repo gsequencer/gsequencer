@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-07-20 07:10+0200\n"
+"POT-Creation-Date: 2024-07-27 13:26+0200\n"
 "PO-Revision-Date: 2021-01-11 21:07+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: français <jkraehemann@gmail.com>\n"
@@ -276,7 +276,7 @@ msgstr "écraser exister liens"
 #: ags/app/ags_pcm_file_dialog.c:279
 #: ags/app/export/ags_midi_export_wizard.c:474
 #: ags/app/export/ags_wave_export_dialog.c:417
-#: ags/app/import/ags_midi_import_wizard.c:463
+#: ags/app/import/ags_midi_import_wizard.c:465
 #: ags/app/ags_export_soundcard.c:339
 msgid "open"
 msgstr "ouvrir"
@@ -319,12 +319,12 @@ msgid "export to file"
 msgstr "exporter l'audio données"
 
 #: ags/app/export/ags_midi_export_wizard.c:460
-#: ags/app/import/ags_midi_import_wizard.c:449
+#: ags/app/import/ags_midi_import_wizard.c:451
 msgid "previous"
 msgstr ""
 
 #: ags/app/export/ags_midi_export_wizard.c:467
-#: ags/app/import/ags_midi_import_wizard.c:456
+#: ags/app/import/ags_midi_import_wizard.c:458
 msgid "next"
 msgstr ""
 
@@ -364,7 +364,7 @@ msgstr "exporter"
 #: ags/app/machine/ags_sf2_synth.c:1052 ags/app/machine/ags_sf2_synth.c:1206
 #: ags/app/machine/ags_ffplayer.c:484 ags/app/machine/ags_ffplayer.c:612
 #: ags/app/ags_machine_editor_collection.c:175
-#: ags/app/import/ags_track_mapper.c:237
+#: ags/app/import/ags_track_mapper.c:239
 #: ags/app/ags_connection_editor_listing.c:177
 #: ags/app/ags_connection_editor_collection.c:175
 #: ags/app/ags_machine_editor_listing.c:177
@@ -1368,7 +1368,7 @@ msgstr "lancer"
 msgid "capability"
 msgstr "aptitude"
 
-#: ags/app/ags_soundcard_editor.c:363
+#: ags/app/ags_soundcard_editor.c:363 ags/app/import/ags_track_mapper.c:361
 msgid "audio channels"
 msgstr "audio canals"
 
@@ -2005,8 +2005,8 @@ msgstr "activer"
 msgid "base key"
 msgstr "ton dominant"
 
-#: ags/app/machine/ags_ffplayer.c:375 ags/app/import/ags_track_mapper.c:265
-#: ags/app/import/ags_track_mapper.c:414
+#: ags/app/machine/ags_ffplayer.c:375 ags/app/import/ags_track_mapper.c:267
+#: ags/app/import/ags_track_mapper.c:451
 msgid "instrument"
 msgstr "l'instrument: "
 
@@ -2055,9 +2055,22 @@ msgstr "premier lien ligne"
 msgid "line"
 msgstr "ligne"
 
-#: ags/app/import/ags_track_mapper.c:278 ags/app/import/ags_track_mapper.c:441
+#: ags/app/import/ags_track_mapper.c:280 ags/app/import/ags_track_mapper.c:478
 msgid "sequence"
 msgstr "séquence"
+
+#: ags/app/import/ags_track_mapper.c:292
+msgid "soft synth"
+msgstr ""
+
+#: ags/app/import/ags_track_mapper.c:337
+#, fuzzy
+msgid "MIDI channel"
+msgstr "canal"
+
+#: ags/app/import/ags_track_mapper.c:384
+msgid "offset"
+msgstr ""
 
 #: ags/app/ags_plugin_browser.c:213
 #, fuzzy

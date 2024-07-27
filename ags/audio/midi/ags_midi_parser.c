@@ -946,7 +946,7 @@ ags_midi_parser_read_varlength(AgsMidiParser *midi_parser)
   guint i;
   guchar c;
 
-  c = ags_midi_parser_midi_getc(midi_parser);
+  c = (guchar) ags_midi_parser_midi_getc(midi_parser);
   value = c;
   i = 1;
   
@@ -978,15 +978,18 @@ gchar*
 ags_midi_parser_read_text(AgsMidiParser *midi_parser,
 			  gint length)
 {
-  gchar text[AGS_MIDI_PARSER_MAX_TEXT_LENGTH];
+  gchar *text;
 
   gchar c;
   guint i;
-  
+
+  text = (gchar *) g_malloc(AGS_MIDI_PARSER_MAX_TEXT_LENGTH * sizeof(gchar));
+
   memset(text, 0, AGS_MIDI_PARSER_MAX_TEXT_LENGTH * sizeof(char));
   
   i = 0;
-
+  c = '\0';
+  
   if(length > 0){
     while((i < length) &&
 	  (AGS_MIDI_PARSER_EOF & (midi_parser->flags)) == 0 &&
@@ -995,12 +998,33 @@ ags_midi_parser_read_text(AgsMidiParser *midi_parser,
       
       text[i] = c;
       i++;
+
+      if(c == '\0'){
+	break;
+      }
     }
   }
+
+  //  c = (gchar) (0xff & (ags_midi_parser_midi_getc(midi_parser)));
+
+  if(c != '\0'){
+    g_critical("expected nul byte");
+  }
+
+  if(i != length){
+    g_critical("text length mismatch");
+  }
+
+  //NOTE:JK: skip additional nul bytes
+  while(((0xff & (midi_parser->buffer[midi_parser->offset]))) == '\0'){
+    midi_parser->offset += 1;
+  }
   
-  text[i] = '\0';
+  //  if(i > 0){
+    //    midi_parser->offset -= 1;
+  //  }
   
-  return(g_strdup(text));
+  return(text);
 }
 
 /**
@@ -1054,7 +1078,7 @@ ags_midi_parser_real_midi_getc(AgsMidiParser *midi_parser)
     return(0);
   }
 
-  c = (int) midi_parser->buffer[midi_parser->offset];
+  c = (int) (0xff & (midi_parser->buffer[midi_parser->offset]));
   midi_parser->offset += 1;
 
   return(c);
@@ -1329,7 +1353,8 @@ ags_midi_parser_real_parse_track(AgsMidiParser *midi_parser)
   guint status;
   guint n;
   guchar c;
-
+  guint i;
+  
   n = 0;
   
   while(n < 4 &&
@@ -1361,9 +1386,14 @@ ags_midi_parser_real_parse_track(AgsMidiParser *midi_parser)
 
   midi_parser->current_time = 0;
   
-  for(; midi_parser->offset < midi_parser->file_length; ){
+  for(i = 0; midi_parser->offset < midi_parser->file_length && i < offset; ){
+    gint delta_time_length;
+    
     delta_time = ags_midi_parser_read_varlength(midi_parser);
     midi_parser->current_time += (guint) delta_time;
+
+    //    delta_time_length = ags_midi_smf_util_get_varlength_size(NULL,
+    //							     delta_time);
     
     status = ags_midi_parser_midi_getc(midi_parser);
     
