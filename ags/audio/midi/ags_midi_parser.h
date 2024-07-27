@@ -38,7 +38,7 @@ G_BEGIN_DECLS
 
 #define AGS_MIDI_PARSER_GET_OBJ_MUTEX(obj) (&(((AgsMidiParser *) obj)->obj_mutex))
 
-#define AGS_MIDI_PARSER_MAX_TEXT_LENGTH (4096)
+#define AGS_MIDI_PARSER_MAX_TEXT_LENGTH (65535)
 
 #define AGS_MIDI_PARSER_MTHD "MThd"
 #define AGS_MIDI_PARSER_MTCK "MTrk"
