@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,6 +18,7 @@
  */
 
 #include <ags/audio/midi/ags_midi_parser.h>
+#include <ags/audio/midi/ags_midi_smf_util.h>
 
 #include <ags/libags.h>
 
@@ -740,11 +741,14 @@ ags_midi_parser_init(AgsMidiParser *midi_parser)
   midi_parser->file = NULL;
   midi_parser->nth_chunk = 0;
 
-  midi_parser->file_length = 0;
+  midi_parser->file_length = 0;  
   midi_parser->offset = 0;
 
-  midi_parser->current_time = 0;
-  midi_parser->current_status = 0x0;
+  midi_parser->current_smf_offset = 0;
+  midi_parser->current_smf_length = 0;
+  
+  midi_parser->current_smf_time = 0;
+  midi_parser->current_smf_status = 0x0;
 
   midi_parser->doc = NULL;
 }
@@ -1348,7 +1352,7 @@ ags_midi_parser_real_parse_track(AgsMidiParser *midi_parser)
 
   static guchar track[] = "MTrk";
 
-  gint offset;
+  guint delta_time_length;
   long delta_time;
   guint status;
   guint n;
@@ -1374,28 +1378,30 @@ ags_midi_parser_real_parse_track(AgsMidiParser *midi_parser)
 
   node = xmlNewNode(NULL, "midi-track");
 
-  offset = ags_midi_parser_read_gint32(midi_parser);
+  midi_parser->current_smf_length = ags_midi_parser_read_gint32(midi_parser);
 
 #ifdef AGS_DEBUG
-  g_message("n = %d\noffset = %d", n, offset);
+  g_message("n = %d\midi_parser->current_smf_length = %d", n, midi_parser->current_smf_length);
 #endif
   
-  if(offset < 0){
+  if(midi_parser->current_smf_length < 0){
     return(NULL);
   }
 
-  midi_parser->current_time = 0;
+  midi_parser->current_smf_time = 0;
   
-  for(i = 0; midi_parser->offset < midi_parser->file_length && i < offset; ){
-    gint delta_time_length;
-    
+  for(; midi_parser->offset < midi_parser->file_length && midi_parser->current_smf_offset < midi_parser->current_smf_length; ){
     delta_time = ags_midi_parser_read_varlength(midi_parser);
-    midi_parser->current_time += (guint) delta_time;
+    midi_parser->current_smf_time += (guint) delta_time;
 
-    //    delta_time_length = ags_midi_smf_util_get_varlength_size(NULL,
-    //							     delta_time);
+    delta_time_length = ags_midi_smf_util_get_varlength_size(NULL,
+							     (gint) delta_time);
+
+    midi_parser->current_smf_offset += delta_time_length;
     
     status = ags_midi_parser_midi_getc(midi_parser);
+
+    midi_parser->current_smf_offset += 1;
     
     if((0xf0 & status) == 0xf0){
 #ifdef AGS_DEBUG
@@ -1441,7 +1447,7 @@ ags_midi_parser_real_parse_track(AgsMidiParser *midi_parser)
 	    
 	    xmlNewProp(current,
 		       "delta-time",
-		       g_strdup_printf("%d", midi_parser->current_time));
+		       g_strdup_printf("%d", midi_parser->current_smf_time));
 	    
 	    xmlAddChild(node,
 			current);
@@ -1467,7 +1473,7 @@ ags_midi_parser_real_parse_track(AgsMidiParser *midi_parser)
       if(current != NULL){
 	xmlNewProp(current,
 		   "delta-time",
-		   g_strdup_printf("%u", midi_parser->current_time));
+		   g_strdup_printf("%u", midi_parser->current_smf_time));
 	
 	xmlAddChild(node,
 		    current);
@@ -1539,61 +1545,61 @@ ags_midi_parser_channel_message(AgsMidiParser *midi_parser, guint status)
     {
       node = ags_midi_parser_key_off(midi_parser, status);
 
-      midi_parser->current_status = status;
+      midi_parser->current_smf_status = status;
     }
     break;
   case 0x90:
     {
       node = ags_midi_parser_key_on(midi_parser, status);
 
-      midi_parser->current_status = status;
+      midi_parser->current_smf_status = status;
     }
     break;
   case 0xa0:
     {
       node = ags_midi_parser_key_pressure(midi_parser, status);
 
-      midi_parser->current_status = status;
+      midi_parser->current_smf_status = status;
     }
     break;
   case 0xb0:
     {
       node = ags_midi_parser_change_parameter(midi_parser, status);
 
-      midi_parser->current_status = status;
+      midi_parser->current_smf_status = status;
     }
     break;
   case 0xc0:
     {
       node = ags_midi_parser_change_program(midi_parser, status);
 
-      midi_parser->current_status = status;
+      midi_parser->current_smf_status = status;
     }
     break;
   case 0xd0:
     {
       node = ags_midi_parser_change_channel_pressure(midi_parser, status);
 
-      midi_parser->current_status = status;
+      midi_parser->current_smf_status = status;
     }
     break;
   case 0xe0:
     {
       node = ags_midi_parser_change_pitch_bend(midi_parser, status);
 
-      midi_parser->current_status = status;
+      midi_parser->current_smf_status = status;
     }
     break;
   default:
     {
-      if(midi_parser->current_status >= 0x80 &&
-	 midi_parser->current_status <= 0xef){
+      if(midi_parser->current_smf_status >= 0x80 &&
+	 midi_parser->current_smf_status <= 0xef){
 #ifdef AGS_DEBUG
-	g_message("repeat status=0x%x", midi_parser->current_status);
+	g_message("repeat status=0x%x", midi_parser->current_smf_status);
 #endif
 
 	midi_parser->offset -= 1;
-	status = midi_parser->current_status;
+	status = midi_parser->current_smf_status;
 	
 	goto ags_midi_parser_channel_message_CHECK;
       }
@@ -2169,10 +2175,17 @@ ags_midi_parser_real_sysex(AgsMidiParser *midi_parser, guint status)
 {
   xmlNode *node;
   gchar c;
+  guint i;
+
+  i = 0;
   
   while((c = ags_midi_parser_midi_getc(midi_parser)) != 0xf7 &&
-	(AGS_MIDI_PARSER_EOF & (midi_parser->flags)) == 0);
+	(AGS_MIDI_PARSER_EOF & (midi_parser->flags)) == 0){
+    i++;
+  }
 
+  midi_parser->current_smf_offset += i;
+  
 #ifdef AGS_DEBUG
   g_message("discarded sysex");
 #endif
@@ -2227,6 +2240,8 @@ ags_midi_parser_real_system_common(AgsMidiParser *midi_parser, guint status)
       
       quarter_frame = 0xff & (ags_midi_parser_midi_getc(midi_parser));
 
+      midi_parser->current_smf_offset += 1;
+
       node = xmlNewNode(NULL,
 			"midi-system-common");
       xmlNewProp(node,
@@ -2241,6 +2256,8 @@ ags_midi_parser_real_system_common(AgsMidiParser *midi_parser, guint status)
       song_position = 0x7f & (ags_midi_parser_midi_getc(midi_parser)) << 7;
       song_position |= 0x7f & (ags_midi_parser_midi_getc(midi_parser));
 
+      midi_parser->current_smf_offset += 2;
+
       node = xmlNewNode(NULL,
 			"midi-system-common");
       xmlNewProp(node,
@@ -2253,6 +2270,8 @@ ags_midi_parser_real_system_common(AgsMidiParser *midi_parser, guint status)
       guint song_select;
       
       song_select = 0x7f & (ags_midi_parser_midi_getc(midi_parser));
+
+      midi_parser->current_smf_offset += 1;
 
       node = xmlNewNode(NULL,
 			"midi-system-common");
@@ -2328,6 +2347,8 @@ ags_midi_parser_real_meta_event(AgsMidiParser *midi_parser, guint status)
 
   meta_type = 0xff & (ags_midi_parser_midi_getc(midi_parser));
 
+  midi_parser->current_smf_offset += 1;
+  
   node = NULL;
   
   switch(meta_type){
@@ -2336,6 +2357,8 @@ ags_midi_parser_real_meta_event(AgsMidiParser *midi_parser, guint status)
       int c;
 
       c = ags_midi_parser_midi_getc(midi_parser);
+
+      midi_parser->current_smf_offset += 1;
 
       if(c == 0x02){
 	node = ags_midi_parser_sequence_number(midi_parser, meta_type);
@@ -2454,6 +2477,8 @@ ags_midi_parser_real_sequence_number(AgsMidiParser *midi_parser, guint meta_type
 
   sequence = (guint) ags_midi_parser_read_gint16(midi_parser);
   
+  midi_parser->current_smf_offset += 2;
+  
   xmlNewProp(node,
 	     AGS_MIDI_EVENT,
 	     "sequence-number");
@@ -2509,6 +2534,8 @@ ags_midi_parser_real_end_of_track(AgsMidiParser *midi_parser, guint meta_type)
 
   length = ags_midi_parser_midi_getc(midi_parser);
 
+  midi_parser->current_smf_offset += 1;
+
   xmlNewProp(node,
 	     AGS_MIDI_EVENT,
 	     "end-of-track");
@@ -2560,8 +2587,12 @@ ags_midi_parser_real_smtpe(AgsMidiParser *midi_parser, guint meta_type)
 
   length = ags_midi_parser_midi_getc(midi_parser);
 
+  midi_parser->current_smf_offset += 1;
+
   rr = 
     hr = ags_midi_parser_midi_getc(midi_parser);
+
+  midi_parser->current_smf_offset += 1;
 
   rr = (0x60 & rr) >> 5;
   hr = (0x1f & hr);
@@ -2570,6 +2601,8 @@ ags_midi_parser_real_smtpe(AgsMidiParser *midi_parser, guint meta_type)
   se = 0xff & ags_midi_parser_midi_getc(midi_parser);
   fr = 0xff & ags_midi_parser_midi_getc(midi_parser);
   ff = 0xff & ags_midi_parser_midi_getc(midi_parser);
+  
+  midi_parser->current_smf_offset += 4;
   
   xmlNewProp(node,
 	     AGS_MIDI_EVENT,
@@ -2631,7 +2664,11 @@ ags_midi_parser_real_tempo(AgsMidiParser *midi_parser, guint meta_type)
 
   length = 0xff & ags_midi_parser_midi_getc(midi_parser);
 
+  midi_parser->current_smf_offset += 1;
+  
   tempo = ags_midi_parser_read_gint24(midi_parser);
+
+  midi_parser->current_smf_offset += 3;
   
   xmlNewProp(node,
 	     AGS_MIDI_EVENT,
@@ -2689,11 +2726,15 @@ ags_midi_parser_real_time_signature(AgsMidiParser *midi_parser, guint meta_type)
 
   length = 0xff & ags_midi_parser_midi_getc(midi_parser);
 
+  midi_parser->current_smf_offset += 1;
+
   nn = 0xff & ags_midi_parser_midi_getc(midi_parser);
   dd = 0xff & ags_midi_parser_midi_getc(midi_parser);
   cc = 0xff & ags_midi_parser_midi_getc(midi_parser);
   bb = 0xff & ags_midi_parser_midi_getc(midi_parser);
 
+  midi_parser->current_smf_offset += 4;
+  
   while(dd > 0){
     denom *= 2;
     dd--;
@@ -2758,8 +2799,12 @@ ags_midi_parser_real_key_signature(AgsMidiParser *midi_parser, guint meta_type)
 
   length = ags_midi_parser_midi_getc(midi_parser);
 
+  midi_parser->current_smf_offset += 1;
+
   sf = ags_midi_parser_midi_getc(midi_parser);
   mi = ags_midi_parser_midi_getc(midi_parser);
+
+  midi_parser->current_smf_offset += 2;
 
   xmlNewProp(node,
 	     "keysig",
@@ -2813,6 +2858,8 @@ ags_midi_parser_real_sequencer_meta_event(AgsMidiParser *midi_parser, guint meta
   id = ags_midi_parser_midi_getc(midi_parser);
   data = ags_midi_parser_midi_getc(midi_parser);
 
+  midi_parser->current_smf_offset += 3;
+
   xmlNewProp(node,
 	     "length",
 	     g_strdup_printf("%d", len));
@@ -2850,7 +2897,10 @@ ags_midi_parser_real_text_event(AgsMidiParser *midi_parser, guint meta_type)
 {
   xmlNode *node;
   gchar *text;
+  
+  size_t tmp_offset;
   guint text_length;
+  guint varlength_length;
 
 #ifdef AGS_DEBUG
   g_message("text event");
@@ -2861,12 +2911,21 @@ ags_midi_parser_real_text_event(AgsMidiParser *midi_parser, guint meta_type)
 
   text_length = ags_midi_parser_read_varlength(midi_parser);
 
+  varlength_length = ags_midi_smf_util_get_varlength_size(NULL,
+							  (gint) text_length);
+  midi_parser->current_smf_offset += varlength_length;
+
   if(text_length > AGS_MIDI_PARSER_MAX_TEXT_LENGTH){
     g_warning("SMF text length exceeds maximum text length [%d]", AGS_MIDI_PARSER_MAX_TEXT_LENGTH);
   }
-  
+
+  tmp_offset = midi_parser->offset;
   text = ags_midi_parser_read_text(midi_parser,
 				   text_length);
+
+  if(midi_parser->offset > tmp_offset){
+    midi_parser->current_smf_offset += (midi_parser->offset - tmp_offset);
+  }
   
   switch(0x0f & meta_type){
   case 0x01:

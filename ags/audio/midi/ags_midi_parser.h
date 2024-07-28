@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -75,8 +75,11 @@ struct _AgsMidiParser
   size_t file_length;
   size_t offset;
 
-  guint current_time;
-  guchar current_status;
+  guint current_smf_length;
+  guint current_smf_offset;
+
+  guint current_smf_time;  
+  guchar current_smf_status;
   
   xmlDoc *doc;
 };
