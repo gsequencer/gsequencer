@@ -27,6 +27,9 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/midi/ags_midi_util.h>
+#include <ags/audio/midi/ags_midi_smf_util.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_MIDI_PARSER                (ags_midi_parser_get_type ())
@@ -82,6 +85,11 @@ struct _AgsMidiParser
   guchar current_smf_status;
   
   xmlDoc *doc;
+
+  xmlNode *current_node;
+  
+  AgsMidiUtil *midi_util;
+  AgsMidiSmfUtil *midi_smf_util;
 };
 
 struct _AgsMidiParserClass
@@ -122,6 +130,15 @@ struct _AgsMidiParserClass
   xmlNode* (*key_signature)(AgsMidiParser *midi_parser, guint meta_type);
   xmlNode* (*sequencer_meta_event)(AgsMidiParser *midi_parser, guint meta_type);
   xmlNode* (*text_event)(AgsMidiParser *midi_parser, guint meta_type);
+
+  xmlNode* (*meta_misc)(AgsMidiParser *midi_parser, guint meta_type);
+
+  xmlNode* (*midi_channel_prefix)(AgsMidiParser *midi_parser, guint meta_type);
+  
+  xmlNode* (*quarter_frame)(AgsMidiParser *midi_parser, guint status);
+  xmlNode* (*song_position)(AgsMidiParser *midi_parser, guint status);
+  xmlNode* (*song_select)(AgsMidiParser *midi_parser, guint status);
+  xmlNode* (*tune_request)(AgsMidiParser *midi_parser, guint status);
 };
 
 GType ags_midi_parser_get_type(void);
@@ -129,7 +146,7 @@ GType ags_midi_parser_get_type(void);
 gint16 ags_midi_parser_read_gint16(AgsMidiParser *midi_parser);
 gint32 ags_midi_parser_read_gint24(AgsMidiParser *midi_parser);
 gint32 ags_midi_parser_read_gint32(AgsMidiParser *midi_parser);
-long ags_midi_parser_read_varlength(AgsMidiParser *midi_parser);
+glong ags_midi_parser_read_varlength(AgsMidiParser *midi_parser);
 
 gchar* ags_midi_parser_read_text(AgsMidiParser *midi_parser,
 				 gint length);
@@ -170,8 +187,16 @@ xmlNode* ags_midi_parser_tempo(AgsMidiParser *midi_parser, guint meta_type);
 xmlNode* ags_midi_parser_time_signature(AgsMidiParser *midi_parser, guint meta_type);
 xmlNode* ags_midi_parser_key_signature(AgsMidiParser *midi_parser, guint meta_type);
 xmlNode* ags_midi_parser_sequencer_meta_event(AgsMidiParser *midi_parser, guint meta_type);
-xmlNode* ags_midi_parser_meta_misc(AgsMidiParser *midi_parser, guint meta_type);
 xmlNode* ags_midi_parser_text_event(AgsMidiParser *midi_parser, guint meta_type);
+
+xmlNode* ags_midi_parser_meta_misc(AgsMidiParser *midi_parser, guint meta_type);
+
+xmlNode* ags_midi_parser_midi_channel_prefix(AgsMidiParser *midi_parser, guint meta_type);
+
+xmlNode* ags_midi_parser_quarter_frame(AgsMidiParser *midi_parser, guint status);
+xmlNode* ags_midi_parser_song_position(AgsMidiParser *midi_parser, guint status);
+xmlNode* ags_midi_parser_song_select(AgsMidiParser *midi_parser, guint status);
+xmlNode* ags_midi_parser_tune_request(AgsMidiParser *midi_parser, guint status);
 
 /*  */
 void ags_midi_parser_open_filename(AgsMidiParser *midi_parser,

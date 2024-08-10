@@ -1,6 +1,33 @@
 ags (6.16.18)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented dedicated events of system common messages of AgsMidiParser
+	* implemented ags_midi_parser_quarter_frame()
+	* implemented ags_midi_parser_song_position()
+	* implemented ags_midi_parser_song_select()
+	* implemented ags_midi_parser_tune_request()
+	* implemented ags_midi_util_is_undefined()
+	* implemented ags_midi_smf_util_get_undefined()
+	* implemented ags_midi_util_is_text_event()
+	* implemented ags_midi_util_is_copyright_notice()
+	* implemented ags_midi_util_is_sequence_name()
+	* implemented ags_midi_util_is_instrument_name()
+	* implemented ags_midi_util_is_lyric()
+	* implemented ags_midi_util_is_marker()
+	* implemented ags_midi_util_is_cue_point()
+	* implemented ags_midi_util_is_unknown_text_event()
+	* implemented ags_midi_util_is_midi_channel_prefix()
+	* implemented ags_midi_smf_util_put_midi_channel_prefix()
+	* implemented ags_midi_smf_util_get_midi_channel_prefix()
+	* implemented ags_midi_util_is_end_of_track()
+	* implemented ags_midi_util_is_smtpe()
+	* implemented ags_midi_util_is_time_signature()
+	* implemented ags_midi_util_is_key_signature()
+	* implemented ags_midi_util_is_sequencer_meta_event()
+	* implemented ags_midi_util_is_sequencer_meta_event()
+	* implemented ags_midi_util_is_tempo()
+	* implemented ags_midi_util_is_misc_event()
+	* TODO:JK: implemented AgsPersistenceManager
 	* fixed AgsMidiParser
 
 ags (6.16.17)
