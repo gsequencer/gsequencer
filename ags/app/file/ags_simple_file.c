@@ -6198,7 +6198,7 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
 	  sf2_synth->audio_container->sound_container == NULL){
       ags_sf2_synth_sf2_loader_completed_timeout(sf2_synth);
       
-      g_usleep(G_USEC_PER_SEC);
+      g_usleep(G_USEC_PER_SEC / 2);
 
       i++;
       
@@ -6783,6 +6783,8 @@ ags_simple_file_read_audiorec_launch(AgsSimpleFile *simple_file, xmlNode *node, 
   xmlChar *str;
   gchar *value;
 
+  gint i, i_stop;
+
   str = xmlGetProp(node,
 		   "filename");
     
@@ -6791,9 +6793,18 @@ ags_simple_file_read_audiorec_launch(AgsSimpleFile *simple_file, xmlNode *node, 
 
   g_usleep(G_USEC_PER_SEC);
 
+  i = 0;
+  i_stop = 16;
+
   if(audiorec->wave_loader != NULL){
     while(!ags_wave_loader_test_flags(audiorec->wave_loader, AGS_WAVE_LOADER_HAS_COMPLETED)){
-      g_usleep(G_USEC_PER_SEC);
+      g_usleep(G_USEC_PER_SEC / 2);
+
+      i++;
+      
+      if(i >= i_stop){
+	break;
+      }
     }
   }
   

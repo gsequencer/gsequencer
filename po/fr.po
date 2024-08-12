@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-07-27 13:26+0200\n"
+"POT-Creation-Date: 2024-08-12 12:12+0200\n"
 "PO-Revision-Date: 2021-01-11 21:07+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: français <jkraehemann@gmail.com>\n"
@@ -183,24 +183,40 @@ msgstr "machine type: "
 msgid "ok"
 msgstr ""
 
-#: ags/app/ags_quit_dialog.c:142
-msgid "accept all"
-msgstr "accepter tous"
+#: ags/app/ags_quit_dialog.c:197
+#, fuzzy
+msgid "Exit GSequencer"
+msgstr "séquence"
 
-#: ags/app/ags_quit_dialog.c:148
+#: ags/app/ags_quit_dialog.c:233
 msgid "Do you want to save before quit?"
 msgstr "Est-ce que vous voulez mémoriser avant quitter?"
 
-#: ags/app/ags_quit_dialog.c:157
-msgid "Yes"
+#: ags/app/ags_quit_dialog.c:239
+msgid "Do you want to fast export before quit?"
+msgstr "Est-ce que vous voulez faire du vite exporter avant quitter?"
+
+#: ags/app/ags_quit_dialog.c:263
+msgid "Current filename of export wave:"
+msgstr ""
+
+#: ags/app/ags_quit_dialog.c:277
+msgid "accept all"
+msgstr "accepter tous"
+
+#: ags/app/ags_quit_dialog.c:300
+#, fuzzy
+msgid "yes"
 msgstr "Oui"
 
-#: ags/app/ags_quit_dialog.c:161
-msgid "No"
-msgstr "Non"
+#: ags/app/ags_quit_dialog.c:304
+#, fuzzy
+msgid "no"
+msgstr "information"
 
-#: ags/app/ags_quit_dialog.c:165
-msgid "Cancel"
+#: ags/app/ags_quit_dialog.c:308
+#, fuzzy
+msgid "cancel"
 msgstr "Abandonner"
 
 #: ags/app/ags_connection_editor.c:552 ags/app/ags_machine_editor.c:264
@@ -1280,10 +1296,6 @@ msgstr "Ouvrir fichier"
 msgid "save file as"
 msgstr "Mémoriser comme"
 
-#: ags/app/ags_quit_dialog_callbacks.c:51
-msgid "Do you want to fast export before quit?"
-msgstr "Est-ce que vous voulez faire du vite exporter avant quitter?"
-
 #: ags/app/ags_osc_server_preferences.c:149
 msgid "Note: the fields below are applied immediately"
 msgstr "Notice: le cadre en bas sont appliquer direct"
@@ -2182,6 +2194,9 @@ msgstr "OSC serveur"
 #: ags/app/ags_preferences.c:359
 msgid "server"
 msgstr "serveur"
+
+#~ msgid "No"
+#~ msgstr "Non"
 
 #~ msgid "Online help"
 #~ msgstr "on-line aide"

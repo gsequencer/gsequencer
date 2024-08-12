@@ -29,6 +29,7 @@ ags (6.16.18)
 	* implemented ags_midi_util_is_misc_event()
 	* refactored AgsQuitDialog
 	* fixed AgsMidiParser
+	* fixed infinite loop in ags_simple_file_read_audiorec_launch()
 
 ags (6.16.17)
 
