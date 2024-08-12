@@ -21,6 +21,9 @@
 #include <ags/app/ags_quit_dialog_callbacks.h>
 
 #include <ags/app/ags_ui_provider.h>
+#include <ags/app/ags_window.h>
+
+#include <ags/app/file/ags_simple_file.h>
 
 #include <ags/app/machine/ags_audiorec.h>
 
@@ -39,8 +42,29 @@ void ags_quit_dialog_connectable_interface_init(AgsConnectableInterface *connect
 void ags_quit_dialog_init(AgsQuitDialog *quit_dialog);
 void ags_quit_dialog_finalize(GObject *gobject);
 
+gboolean ags_quit_dialog_is_connected(AgsConnectable *connectable);
 void ags_quit_dialog_connect(AgsConnectable *connectable);
 void ags_quit_dialog_disconnect(AgsConnectable *connectable);
+
+void ags_quit_dialog_close_request_callback(GtkWindow *window,
+					    AgsQuitDialog *quit_dialog);
+
+gboolean ags_quit_dialog_key_pressed_callback(GtkEventControllerKey *event_controller,
+					      guint keyval,
+					      guint keycode,
+					      GdkModifierType state,
+					      AgsQuitDialog *quit_dialog);
+void ags_quit_dialog_key_released_callback(GtkEventControllerKey *event_controller,
+					   guint keyval,
+					   guint keycode,
+					   GdkModifierType state,
+					   AgsQuitDialog *quit_dialog);
+gboolean ags_quit_dialog_modifiers_callback(GtkEventControllerKey *event_controller,
+					    GdkModifierType keyval,
+					    AgsQuitDialog *quit_dialog);
+
+void ags_quit_dialog_real_response(AgsQuitDialog *quit_dialog,
+				   gint response);
 
 /**
  * SECTION:ags_quit_dialog
@@ -53,6 +77,13 @@ void ags_quit_dialog_disconnect(AgsConnectable *connectable);
  */
 
 static gpointer ags_quit_dialog_parent_class = NULL;
+
+enum{
+  RESPONSE,
+  LAST_SIGNAL,
+};
+
+static guint quit_dialog_signals[LAST_SIGNAL];
 
 GType
 ags_quit_dialog_get_type()
@@ -80,7 +111,7 @@ ags_quit_dialog_get_type()
       NULL, /* interface_data */
     };
 
-    ags_type_quit_dialog = g_type_register_static(GTK_TYPE_DIALOG,
+    ags_type_quit_dialog = g_type_register_static(GTK_TYPE_WINDOW,
 						  "AgsQuitDialog", &ags_quit_dialog_info,
 						  0);
     
@@ -105,6 +136,28 @@ ags_quit_dialog_class_init(AgsQuitDialogClass *quit_dialog)
   gobject = (GObjectClass *) quit_dialog;
 
   gobject->finalize = ags_quit_dialog_finalize;
+
+  /* AgsQuitDialog */
+  quit_dialog->response = ags_quit_dialog_real_response;
+  
+  /* signals */
+  /**
+   * AgsQuitDialog::response:
+   * @quit_dialog: the #AgsQuitDialog
+   *
+   * The ::response signal notifies about window interaction.
+   *
+   * Since: 6.16.18
+   */
+  quit_dialog_signals[RESPONSE] =
+    g_signal_new("response",
+		 G_TYPE_FROM_CLASS(quit_dialog),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsQuitDialogClass, response),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__INT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_INT);
 }
 
 void
@@ -122,7 +175,7 @@ ags_quit_dialog_connectable_interface_init(AgsConnectableInterface *connectable)
   connectable->xml_compose = NULL;
   connectable->xml_parse = NULL;
 
-  connectable->is_connected = NULL;
+  connectable->is_connected = ags_quit_dialog_is_connected;  
   connectable->connect = ags_quit_dialog_connect;
   connectable->disconnect = ags_quit_dialog_disconnect;
 
@@ -133,76 +186,101 @@ ags_quit_dialog_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_quit_dialog_init(AgsQuitDialog *quit_dialog)
 {
-  GtkBox *vbox;
+  GtkBox *vbox;  
+  GtkBox *hbox;
   
-  quit_dialog->connectable_flags = 0;
+  GtkEventController *event_controller;
 
-  vbox = (GtkBox *) gtk_dialog_get_content_area((GtkDialog *) quit_dialog);
+  quit_dialog->connectable_flags = 0;
   
+  g_object_set(quit_dialog,
+	       "title", i18n("Exit GSequencer"),
+	       NULL);
+
+  g_signal_connect(quit_dialog, "close-request",
+		   G_CALLBACK(ags_quit_dialog_close_request_callback), quit_dialog);
+
+  event_controller = gtk_event_controller_key_new();
+  gtk_widget_add_controller((GtkWidget *) quit_dialog,
+			    event_controller);
+
+  g_signal_connect(event_controller, "key-pressed",
+		   G_CALLBACK(ags_quit_dialog_key_pressed_callback), quit_dialog);
+  
+  g_signal_connect(event_controller, "key-released",
+		   G_CALLBACK(ags_quit_dialog_key_released_callback), quit_dialog);
+
+  g_signal_connect(event_controller, "modifiers",
+		   G_CALLBACK(ags_quit_dialog_modifiers_callback), quit_dialog);
+
+  /* vbox */
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_widget_set_valign((GtkWidget *) vbox,
+			GTK_ALIGN_START);
+  gtk_widget_set_vexpand((GtkWidget *) vbox,
+			 FALSE);
+  
+  gtk_box_set_spacing((GtkBox *) vbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_window_set_child((GtkWindow *) quit_dialog,
+		       (GtkWidget *) vbox);
+  
+  quit_dialog->current_question = AGS_QUIT_DIALOG_QUESTION_SAVE_FILE;
+  
+  quit_dialog->save_file_question = (GtkLabel *) gtk_label_new(i18n("Do you want to save before quit?"));
+  gtk_box_append(vbox,
+		 (GtkWidget *) quit_dialog->save_file_question);
+
+  quit_dialog->export_wave_question = (GtkLabel *) gtk_label_new(i18n("Do you want to fast export before quit?"));
+  gtk_box_append(vbox,
+		 (GtkWidget *) quit_dialog->export_wave_question);
+
+  gtk_widget_set_visible((GtkWidget *) quit_dialog->export_wave_question,
+			 FALSE);
+
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_widget_set_valign((GtkWidget *) hbox,
+			GTK_ALIGN_START);
+  gtk_widget_set_vexpand((GtkWidget *) hbox,
+			 FALSE);
+  
+  gtk_box_set_spacing((GtkBox *) hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_box_append(vbox,
+		 (GtkWidget *) hbox);
+  
+  quit_dialog->export_wave = (GtkLabel *) gtk_label_new(i18n("Current filename of export wave:"));
+  gtk_box_append(hbox,
+		 (GtkWidget *) quit_dialog->export_wave);
+
+  gtk_widget_set_visible((GtkWidget *) quit_dialog->export_wave,
+			 FALSE);
+
+  quit_dialog->export_wave_filename = (GtkLabel *) gtk_label_new("(null)");
+  gtk_box_append(hbox,
+		 (GtkWidget *) quit_dialog->export_wave_filename);
+
+  gtk_widget_set_visible((GtkWidget *) quit_dialog->export_wave_filename,
+			 FALSE);
+
   quit_dialog->accept_all = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("accept all"));
   gtk_box_append(vbox,
 		 (GtkWidget *) quit_dialog->accept_all);
-
-  quit_dialog->current_question = AGS_QUIT_DIALOG_QUESTION_SAVE_FILE;
-  
-  quit_dialog->question = (GtkLabel *) gtk_label_new(i18n("Do you want to save before quit?"));
-  gtk_box_append(vbox,
-		 (GtkWidget *) quit_dialog->question);
 
   quit_dialog->nth_wave_export_machine = 0;
 
   quit_dialog->wave_export_machine = NULL;
   
-  quit_dialog->yes = (GtkButton *) gtk_dialog_add_button((GtkDialog *) quit_dialog,
-							 i18n("Yes"),
-							 GTK_RESPONSE_YES);
+  quit_dialog->accept = (GtkButton *) gtk_button_new_with_label(i18n("yes"));
+  quit_dialog->reject = (GtkButton *) gtk_button_new_with_label(i18n("no"));
 
-  quit_dialog->no = (GtkButton *) gtk_dialog_add_button((GtkDialog *) quit_dialog,
-							i18n("No"),
-							GTK_RESPONSE_NO);
-
-  quit_dialog->cancel = (GtkButton *) gtk_dialog_add_button((GtkDialog *) quit_dialog,
-							    i18n("Cancel"),
-							    GTK_RESPONSE_CANCEL);
-  
-  quit_dialog->confirm = NULL;
-}
-
-void
-ags_quit_dialog_connect(AgsConnectable *connectable)
-{
-  AgsQuitDialog *quit_dialog;
-
-  quit_dialog = AGS_QUIT_DIALOG(connectable);
-
-  if((AGS_CONNECTABLE_CONNECTED & (quit_dialog->connectable_flags)) != 0){
-    return;
-  }
-
-  quit_dialog->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
-
-  g_signal_connect(G_OBJECT(quit_dialog), "response",
-		   G_CALLBACK(ags_quit_dialog_response_callback), NULL);
-}
-
-void
-ags_quit_dialog_disconnect(AgsConnectable *connectable)
-{
-  AgsQuitDialog *quit_dialog;
-
-  quit_dialog = AGS_QUIT_DIALOG(connectable);
-
-  if((AGS_CONNECTABLE_CONNECTED & (quit_dialog->connectable_flags)) == 0){
-    return;
-  }
-
-  quit_dialog->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
-
-  g_object_disconnect(G_OBJECT(quit_dialog),
-		      "any_signal::response",
-		      G_CALLBACK(ags_quit_dialog_response_callback),
-		      NULL,
-		      NULL);
+  quit_dialog->cancel = (GtkButton *) gtk_button_new_with_label(i18n("cancel"));
 }
 
 void
@@ -213,6 +291,168 @@ ags_quit_dialog_finalize(GObject *gobject)
   quit_dialog = (AgsQuitDialog *) gobject;
   
   G_OBJECT_CLASS(ags_quit_dialog_parent_class)->finalize(gobject);
+}
+
+gboolean
+ags_quit_dialog_is_connected(AgsConnectable *connectable)
+{
+  AgsQuitDialog *quit_dialog;
+  
+  gboolean is_connected;
+  
+  quit_dialog = AGS_QUIT_DIALOG(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (quit_dialog->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
+}
+
+void
+ags_quit_dialog_connect(AgsConnectable *connectable)
+{
+  AgsQuitDialog *quit_dialog;
+
+  quit_dialog = AGS_QUIT_DIALOG(connectable);
+
+  if(ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  quit_dialog->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+}
+
+void
+ags_quit_dialog_disconnect(AgsConnectable *connectable)
+{
+  AgsQuitDialog *quit_dialog;
+
+  quit_dialog = AGS_QUIT_DIALOG(connectable);
+
+  if(!ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  quit_dialog->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+}
+
+void
+ags_quit_dialog_close_request_callback(GtkWindow *window,
+				       AgsQuitDialog *quit_dialog)
+{
+  ags_quit_dialog_response(quit_dialog,
+			   GTK_RESPONSE_CANCEL);
+}
+
+gboolean
+ags_quit_dialog_key_pressed_callback(GtkEventControllerKey *event_controller,
+				     guint keyval,
+				     guint keycode,
+				     GdkModifierType state,
+				     AgsQuitDialog *quit_dialog)
+{
+  gboolean key_handled;
+
+  key_handled = TRUE;
+
+  if(keyval == GDK_KEY_Tab ||
+     keyval == GDK_KEY_ISO_Left_Tab ||
+     keyval == GDK_KEY_Shift_L ||
+     keyval == GDK_KEY_Shift_R ||
+     keyval == GDK_KEY_Alt_L ||
+     keyval == GDK_KEY_Alt_R ||
+     keyval == GDK_KEY_Control_L ||
+     keyval == GDK_KEY_Control_R){
+    key_handled = FALSE;
+  }
+  
+  return(key_handled);
+}
+
+void
+ags_quit_dialog_key_released_callback(GtkEventControllerKey *event_controller,
+				      guint keyval,
+				      guint keycode,
+				      GdkModifierType state,
+				      AgsQuitDialog *quit_dialog)
+{
+  gboolean key_handled;
+
+  key_handled = TRUE;
+
+  if(keyval == GDK_KEY_Tab ||
+     keyval == GDK_KEY_ISO_Left_Tab ||
+     keyval == GDK_KEY_Shift_L ||
+     keyval == GDK_KEY_Shift_R ||
+     keyval == GDK_KEY_Alt_L ||
+     keyval == GDK_KEY_Alt_R ||
+     keyval == GDK_KEY_Control_L ||
+     keyval == GDK_KEY_Control_R){
+    key_handled = FALSE;
+  }else{
+    switch(keyval){
+    case GDK_KEY_Escape:
+      {
+	ags_quit_dialog_response(quit_dialog,
+				 GTK_RESPONSE_CANCEL);	
+      }
+      break;
+    }
+  }
+}
+
+gboolean
+ags_quit_dialog_modifiers_callback(GtkEventControllerKey *event_controller,
+				   GdkModifierType keyval,
+				   AgsQuitDialog *quit_dialog)
+{
+  return(FALSE);
+}
+
+/**
+ * ags_quit_dialog_save_file:
+ * @quit_dialog: the #AgsQuitDialog
+ * 
+ * Save file @quit_dialog.
+ * 
+ * Since: 3.16.18
+ */
+void
+ags_quit_dialog_save_file(AgsQuitDialog *quit_dialog)
+{
+  AgsWindow *window;
+    
+  AgsApplicationContext *application_context;
+
+  AgsSimpleFile *simple_file;
+  
+  GList *start_list, *list;
+    
+  GError *error;
+
+  application_context = ags_application_context_get_instance();
+  
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  
+  simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
+					       "filename", window->name,
+					       NULL);
+      
+  error = NULL;
+  ags_simple_file_rw_open(simple_file,
+			  TRUE,
+			  &error);
+  
+  if(error != NULL){
+    g_message("%s", error->message);
+
+    g_error_free(error);
+  }
+    
+  ags_simple_file_write(simple_file);
+  ags_simple_file_close(simple_file);
+  
+  g_object_unref(G_OBJECT(simple_file));
 }
 
 /**
@@ -284,6 +524,36 @@ ags_quit_dialog_fast_export(AgsQuitDialog *quit_dialog,
 			     filename,
 			     start_frame, end_frame);
   }
+}
+
+void
+ags_quit_dialog_real_response(AgsQuitDialog *quit_dialog,
+			      gint response)
+{  
+  gtk_widget_set_visible((GtkWidget *) quit_dialog,
+			 FALSE);
+}
+
+/**
+ * ags_quit_dialog_response:
+ * @quit_dialog: the #AgsQuitDialog
+ * @response: the response
+ *
+ * Response @quit_dialog due to user action.
+ * 
+ * Since: 6.16.18
+ */
+void
+ags_quit_dialog_response(AgsQuitDialog *quit_dialog,
+			 gint response)
+{
+  g_return_if_fail(AGS_IS_QUIT_DIALOG(quit_dialog));
+  
+  g_object_ref((GObject *) quit_dialog);
+  g_signal_emit(G_OBJECT(quit_dialog),
+		quit_dialog_signals[RESPONSE], 0,
+		response);
+  g_object_unref((GObject *) quit_dialog);
 }
 
 /**

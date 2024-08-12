@@ -27,7 +27,7 @@ ags (6.16.18)
 	* implemented ags_midi_util_is_sequencer_meta_event()
 	* implemented ags_midi_util_is_tempo()
 	* implemented ags_midi_util_is_misc_event()
-	* TODO:JK: implemented AgsPersistenceManager
+	* refactored AgsQuitDialog
 	* fixed AgsMidiParser
 
 ags (6.16.17)
