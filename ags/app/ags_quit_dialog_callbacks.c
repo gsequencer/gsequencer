@@ -136,6 +136,27 @@ ags_quit_dialog_accept_callback(GtkButton *button, AgsQuitDialog *quit_dialog)
       }
     }
   }
+
+  if(quit_dialog->current_question == AGS_QUIT_DIALOG_QUESTION_SAVE_FILE){
+    quit_dialog->current_question = AGS_QUIT_DIALOG_QUESTION_EXPORT_WAVE;
+
+    gtk_widget_set_visible((GtkWidget *) quit_dialog->save_file_question,
+			   FALSE);
+
+    gtk_widget_set_visible((GtkWidget *) quit_dialog->export_wave_question,
+			   TRUE);
+
+    gtk_widget_set_visible((GtkWidget *) quit_dialog->export_wave,
+			   TRUE);
+
+    gtk_widget_set_visible((GtkWidget *) quit_dialog->export_wave_filename,
+			   TRUE);
+  }
+  
+  if(accept_all ||
+     quit_dialog->nth_wave_export_machine >= g_list_length(quit_dialog->wave_export_machine)){
+    ags_application_context_quit(AGS_APPLICATION_CONTEXT(application_context));
+  }
 }
 
 void
@@ -207,6 +228,27 @@ ags_quit_dialog_reject_callback(GtkButton *button, AgsQuitDialog *quit_dialog)
     }else{      
       quit_dialog->nth_wave_export_machine += 1;
     }
+  }
+
+  if(quit_dialog->current_question == AGS_QUIT_DIALOG_QUESTION_SAVE_FILE){
+    quit_dialog->current_question = AGS_QUIT_DIALOG_QUESTION_EXPORT_WAVE;
+
+    gtk_widget_set_visible((GtkWidget *) quit_dialog->save_file_question,
+			   FALSE);
+
+    gtk_widget_set_visible((GtkWidget *) quit_dialog->export_wave_question,
+			   TRUE);
+
+    gtk_widget_set_visible((GtkWidget *) quit_dialog->export_wave,
+			   TRUE);
+
+    gtk_widget_set_visible((GtkWidget *) quit_dialog->export_wave_filename,
+			   TRUE);
+  }
+
+  if(accept_all ||
+     quit_dialog->nth_wave_export_machine >= g_list_length(quit_dialog->wave_export_machine)){
+    ags_application_context_quit(AGS_APPLICATION_CONTEXT(application_context));
   }
 }
 

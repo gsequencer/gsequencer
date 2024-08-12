@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -110,9 +110,6 @@ gboolean ags_midi_util_is_time_signature(AgsMidiUtil *midi_util,
 
 gboolean ags_midi_util_is_key_signature(AgsMidiUtil *midi_util,
 					guchar *buffer);
-
-gboolean ags_midi_util_is_sequencer_meta_event(AgsMidiUtil *midi_util,
-					       guchar *buffer);
 
 gboolean ags_midi_util_is_sequencer_meta_event(AgsMidiUtil *midi_util,
 					       guchar *buffer);

@@ -231,16 +231,21 @@ ags_quit_dialog_init(AgsQuitDialog *quit_dialog)
   quit_dialog->current_question = AGS_QUIT_DIALOG_QUESTION_SAVE_FILE;
   
   quit_dialog->save_file_question = (GtkLabel *) gtk_label_new(i18n("Do you want to save before quit?"));
+  gtk_label_set_xalign(quit_dialog->save_file_question,
+		       0.0);
   gtk_box_append(vbox,
 		 (GtkWidget *) quit_dialog->save_file_question);
 
   quit_dialog->export_wave_question = (GtkLabel *) gtk_label_new(i18n("Do you want to fast export before quit?"));
+  gtk_label_set_xalign(quit_dialog->export_wave_question,
+		       0.0);
   gtk_box_append(vbox,
 		 (GtkWidget *) quit_dialog->export_wave_question);
 
   gtk_widget_set_visible((GtkWidget *) quit_dialog->export_wave_question,
 			 FALSE);
 
+  /* filename hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				AGS_UI_PROVIDER_DEFAULT_SPACING);
 
@@ -276,11 +281,33 @@ ags_quit_dialog_init(AgsQuitDialog *quit_dialog)
   quit_dialog->nth_wave_export_machine = 0;
 
   quit_dialog->wave_export_machine = NULL;
+
+  /* button hbox */
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_widget_set_valign((GtkWidget *) hbox,
+			GTK_ALIGN_START);
+  gtk_widget_set_vexpand((GtkWidget *) hbox,
+			 FALSE);
+  
+  gtk_box_set_spacing((GtkBox *) hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_box_append(vbox,
+		 (GtkWidget *) hbox);
   
   quit_dialog->accept = (GtkButton *) gtk_button_new_with_label(i18n("yes"));
+  gtk_box_append(hbox,
+		 (GtkWidget *) quit_dialog->accept);
+
   quit_dialog->reject = (GtkButton *) gtk_button_new_with_label(i18n("no"));
+  gtk_box_append(hbox,
+		 (GtkWidget *) quit_dialog->reject);
 
   quit_dialog->cancel = (GtkButton *) gtk_button_new_with_label(i18n("cancel"));
+  gtk_box_append(hbox,
+		 (GtkWidget *) quit_dialog->cancel);
 }
 
 void
@@ -320,6 +347,15 @@ ags_quit_dialog_connect(AgsConnectable *connectable)
   }
 
   quit_dialog->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+
+  g_signal_connect(quit_dialog->accept, "clicked",
+		   G_CALLBACK(ags_quit_dialog_accept_callback), quit_dialog);
+
+  g_signal_connect(quit_dialog->reject, "clicked",
+		   G_CALLBACK(ags_quit_dialog_reject_callback), quit_dialog);
+
+  g_signal_connect(quit_dialog->cancel, "clicked",
+		   G_CALLBACK(ags_quit_dialog_cancel_callback), quit_dialog);
 }
 
 void
@@ -334,6 +370,24 @@ ags_quit_dialog_disconnect(AgsConnectable *connectable)
   }
 
   quit_dialog->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+
+  g_object_disconnect(quit_dialog->accept,
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_quit_dialog_accept_callback),
+		      quit_dialog,
+		      NULL);
+
+  g_object_disconnect(quit_dialog->reject,
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_quit_dialog_reject_callback),
+		      quit_dialog,
+		      NULL);
+
+  g_object_disconnect(quit_dialog->cancel,
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_quit_dialog_cancel_callback),
+		      quit_dialog,
+		      NULL);
 }
 
 void
@@ -529,9 +583,15 @@ ags_quit_dialog_fast_export(AgsQuitDialog *quit_dialog,
 void
 ags_quit_dialog_real_response(AgsQuitDialog *quit_dialog,
 			      gint response)
-{  
-  gtk_widget_set_visible((GtkWidget *) quit_dialog,
-			 FALSE);
+{
+  switch(response){
+  case GTK_RESPONSE_OK:
+  case GTK_RESPONSE_CANCEL:
+    {
+      gtk_widget_set_visible((GtkWidget *) quit_dialog,
+			     FALSE);
+    }
+  }
 }
 
 /**
