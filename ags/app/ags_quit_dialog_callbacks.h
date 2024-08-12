@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,10 +34,9 @@
 
 G_BEGIN_DECLS
 
-void ags_quit_dialog_response_callback(GtkDialog *dialog,
-				       gint response_id,
-				       gpointer user_data);
-
+void ags_quit_dialog_accept_callback(GtkButton *button, AgsQuitDialog *quit_dialog);
+void ags_quit_dialog_reject_callback(GtkButton *button, AgsQuitDialog *quit_dialog);
+void ags_quit_dialog_cancel_callback(GtkButton *button, AgsQuitDialog *quit_dialog);
 
 G_END_DECLS
 

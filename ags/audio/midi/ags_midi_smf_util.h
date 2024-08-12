@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -102,21 +102,21 @@ void ags_midi_smf_util_get_int32(AgsMidiSmfUtil *midi_smf_util,
 /* midi header */
 void ags_midi_smf_util_put_header(AgsMidiSmfUtil *midi_smf_util,
 				  guchar *buffer,
-				  gint offset, gint format,
+				  gint chunk_length, gint format,
 				  gint track_count, gint division);
 
 guint ags_midi_smf_util_get_header(AgsMidiSmfUtil *midi_smf_util,
 				   guchar *buffer,
-				   gint *offset, gint *format,
+				   gint *chunk_length, gint *format,
 				   gint *track_count, gint *division);
 
 /* midi track */
 void ags_midi_smf_util_put_track(AgsMidiSmfUtil *midi_smf_util,
 				 guchar *buffer,
-				 gint offset);
+				 gint chunk_length);
 guint ags_midi_smf_util_get_track(AgsMidiSmfUtil *midi_smf_util,
 				  guchar *buffer,
-				  gint *offset);
+				  gint *chunk_length);
 
 /* key on */
 void ags_midi_smf_util_put_key_on(AgsMidiSmfUtil *midi_smf_util,
@@ -336,6 +336,20 @@ guint ags_midi_smf_util_get_text_event(AgsMidiSmfUtil *midi_smf_util,
 				       gint *delta_time,
 				       gchar **text, gint *length);
 
+/* undefined */
+guint ags_midi_smf_util_get_undefined(AgsMidiSmfUtil *midi_smf_util,
+				      guchar *buffer,
+				      gint *delta_time);
+
+/* MIDI channel prefix */
+void ags_midi_smf_util_put_midi_channel_prefix(AgsMidiSmfUtil *midi_smf_util,
+					       guchar *buffer,
+					       gint delta_time,
+					       gint midi_channel);
+guint ags_midi_smf_util_get_midi_channel_prefix(AgsMidiSmfUtil *midi_smf_util,
+						guchar *buffer,
+						gint *delta_time,
+						gint *midi_channel);
 
 /* end of track */
 void ags_midi_smf_util_put_end_of_track(AgsMidiSmfUtil *midi_smf_util,
