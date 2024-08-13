@@ -1,3 +1,9 @@
+ags (6.16.19)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved build proper use of WITH_AUDIO_TOOLBOX
+	* improved API config header define AGS_WITH_AUDIO_TOOLBOX from configure.ac
+
 ags (6.16.18)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

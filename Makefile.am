@@ -1665,7 +1665,7 @@ libags_audio_file_h_sources = \
 	ags/audio/file/ags_sfz_region.h \
 	ags/audio/file/ags_sfz_sample.h	
 
-if WITH_OSXAPI
+if WITH_AUDIO_TOOLBOX
 libags_audio_file_h_sources += \
 	ags/audio/file/ags_audio_toolbox.h
 else
@@ -1705,7 +1705,7 @@ libags_audio_file_c_sources = \
 	ags/audio/file/ags_sfz_region.c \
 	ags/audio/file/ags_sfz_sample.c	
 
-if WITH_OSXAPI
+if WITH_AUDIO_TOOLBOX
 libags_audio_file_c_sources += \
 	ags/audio/file/ags_audio_toolbox.c
 else
