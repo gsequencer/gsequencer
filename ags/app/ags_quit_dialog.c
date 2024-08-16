@@ -287,9 +287,14 @@ ags_quit_dialog_init(AgsQuitDialog *quit_dialog)
 				AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   gtk_widget_set_valign((GtkWidget *) hbox,
-			GTK_ALIGN_START);
+			GTK_ALIGN_END);
+  gtk_widget_set_halign((GtkWidget *) hbox,
+			GTK_ALIGN_END);
+
   gtk_widget_set_vexpand((GtkWidget *) hbox,
-			 FALSE);
+			 TRUE);
+  gtk_widget_set_hexpand((GtkWidget *) hbox,
+			 TRUE);
   
   gtk_box_set_spacing((GtkBox *) hbox,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
