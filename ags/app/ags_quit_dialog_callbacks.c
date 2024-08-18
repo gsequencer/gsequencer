@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,335 +22,239 @@
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
 
-#include <ags/app/file/ags_simple_file.h>
-
 #include <ags/app/machine/ags_audiorec.h>
-
-#define _GNU_SOURCE
-#include <locale.h>
 
 #include <ags/i18n.h>
 
-static GMutex locale_mutex;
+void
+ags_quit_dialog_accept_callback(GtkButton *button, AgsQuitDialog *quit_dialog)
+{
+  AgsWindow *window;
+  AgsMachine *machine;
+  
+  AgsApplicationContext *application_context;
 
-#if defined(AGS_OSXAPI) || defined(AGS_W32API)
-static char *locale_env;
-#else
-static locale_t c_locale;
-#endif
+  GList *start_list, *list;
 
-static gboolean locale_initialized = FALSE;
+  gchar *filename;
+  
+  gboolean accept_all;    
+
+  application_context = ags_application_context_get_instance();
+  
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  filename = NULL;
+  
+  accept_all = gtk_check_button_get_active(quit_dialog->accept_all);
+
+  ags_quit_dialog_response(quit_dialog,
+			   GTK_RESPONSE_ACCEPT);
+
+  if(quit_dialog->current_question == AGS_QUIT_DIALOG_QUESTION_SAVE_FILE){
+    /* save file */
+    ags_quit_dialog_save_file(quit_dialog);
+
+    /* prepare export */
+    list = 
+      start_list = ags_window_get_machine(window);
+    
+    while(list != NULL){
+      if(AGS_IS_AUDIOREC(list->data)){
+	quit_dialog->wave_export_machine = g_list_prepend(quit_dialog->wave_export_machine,
+							  list->data);
+      }
+      
+      list = list->next;
+    }
+
+    quit_dialog->nth_wave_export_machine = 0;
+    
+    quit_dialog->wave_export_machine = g_list_reverse(quit_dialog->wave_export_machine);
+
+    machine = g_list_nth_data(quit_dialog->wave_export_machine,
+			      0);
+
+    if(machine != NULL){
+      filename = NULL;
+      
+      if(AGS_IS_AUDIOREC(machine)){
+	filename = gtk_editable_get_text(GTK_EDITABLE(AGS_AUDIOREC(machine)->filename));
+      }
+
+      gtk_label_set_text(quit_dialog->export_wave_filename,
+			 filename);
+    }else{
+      ags_quit_dialog_response(quit_dialog,
+			       GTK_RESPONSE_OK);
+    }
+    
+    g_list_free(start_list);
+  }
+
+  if(accept_all ||
+     quit_dialog->current_question == AGS_QUIT_DIALOG_QUESTION_EXPORT_WAVE){
+    if(accept_all){
+      list = quit_dialog->wave_export_machine;
+      
+      while(list != NULL){
+	machine = list->data;
+
+	if(AGS_IS_AUDIOREC(machine)){
+	  ags_quit_dialog_fast_export(quit_dialog,
+				      machine);
+	}
+  
+	list = list->next;
+      }
+    }else{
+      machine = g_list_nth_data(quit_dialog->wave_export_machine,
+				quit_dialog->nth_wave_export_machine);
+
+      if(AGS_IS_AUDIOREC(machine)){
+	ags_quit_dialog_fast_export(quit_dialog,
+				    machine);
+      }
+      
+      quit_dialog->nth_wave_export_machine += 1;
+
+      machine = g_list_nth_data(quit_dialog->wave_export_machine,
+				quit_dialog->nth_wave_export_machine);
+
+      if(machine != NULL){
+	filename = NULL;
+      
+	if(AGS_IS_AUDIOREC(machine)){
+	  filename = gtk_editable_get_text(GTK_EDITABLE(AGS_AUDIOREC(machine)->filename));
+	}
+
+	gtk_label_set_text(quit_dialog->export_wave_filename,
+			   filename);
+      }else{
+	ags_quit_dialog_response(quit_dialog,
+				 GTK_RESPONSE_OK);
+      }
+    }
+  }
+
+  if(quit_dialog->current_question == AGS_QUIT_DIALOG_QUESTION_SAVE_FILE){
+    quit_dialog->current_question = AGS_QUIT_DIALOG_QUESTION_EXPORT_WAVE;
+
+    gtk_widget_set_visible((GtkWidget *) quit_dialog->save_file_question,
+			   FALSE);
+
+    gtk_widget_set_visible((GtkWidget *) quit_dialog->export_wave_question,
+			   TRUE);
+
+    gtk_widget_set_visible((GtkWidget *) quit_dialog->export_wave,
+			   TRUE);
+
+    gtk_widget_set_visible((GtkWidget *) quit_dialog->export_wave_filename,
+			   TRUE);
+  }
+  
+  if(accept_all ||
+     quit_dialog->nth_wave_export_machine >= g_list_length(quit_dialog->wave_export_machine)){
+    ags_application_context_quit(AGS_APPLICATION_CONTEXT(application_context));
+  }
+}
 
 void
-ags_quit_dialog_response_callback(GtkDialog *dialog,
-				  gint response_id,
-				  gpointer user_data)
+ags_quit_dialog_reject_callback(GtkButton *button, AgsQuitDialog *quit_dialog)
 {
-  AgsQuitDialog *quit_dialog;
-
-  gchar *fast_export_question = i18n("Do you want to fast export before quit?");
-
-  quit_dialog = AGS_QUIT_DIALOG(dialog);
-
-#if AGS_DEBUG
-  g_message("question %d; nth_machine %d", quit_dialog->current_question,  quit_dialog->nth_wave_export_machine);
-#endif
+  AgsWindow *window;
+  AgsMachine *machine;
   
-  switch(response_id){
-  case GTK_RESPONSE_YES:
-  {
-    AgsWindow *window;
-    
-    AgsApplicationContext *application_context;
+  AgsApplicationContext *application_context;
 
-    gboolean accept_all;
-
-    application_context = ags_application_context_get_instance();
-
-    window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-    accept_all = gtk_toggle_button_get_active((GtkToggleButton *) quit_dialog->accept_all);
-
-    if(quit_dialog->current_question == AGS_QUIT_DIALOG_QUESTION_SAVE_FILE){      
-      AgsSimpleFile *simple_file;
-
-      GList *start_list, *list;
-
-#if defined(AGS_OSXAPI) || defined(AGS_W32API)
-#else
-      locale_t current;
-#endif
-
-      GError *error;
-
-      g_mutex_lock(&locale_mutex);
-
-      if(!locale_initialized){
-#if defined(AGS_OSXAPI) || defined(AGS_W32API)
-	locale_env = getenv("LC_ALL");
-#else
-	c_locale = newlocale(LC_ALL_MASK, "C", (locale_t) 0);
-#endif
-    
-	locale_initialized = TRUE;
-      }
-
-      g_mutex_unlock(&locale_mutex);
-
-#if defined(AGS_OSXAPI) || defined(AGS_W32API)
-      setlocale(LC_ALL, "C");
-#else
-      current = uselocale(c_locale);
-#endif
-
-      simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
-						   "filename", window->loaded_filename,
-						   NULL);
-      
-      error = NULL;
-      ags_simple_file_rw_open(simple_file,
-			      TRUE,
-			      &error);
-
-      if(error != NULL){
-	g_message("%s", error->message);
-
-	g_error_free(error);
-      }
-    
-      ags_simple_file_write(simple_file);
-      ags_simple_file_close(simple_file);
-
-      g_object_unref(G_OBJECT(simple_file));
-
-#if defined(AGS_OSXAPI) || defined(AGS_W32API)
-      setlocale(LC_ALL, locale_env);
-#else
-      uselocale(current);
-#endif
-
-      list = 
-	start_list = ags_window_get_machine(window);
-      
-      while(list != NULL){
-	if(AGS_IS_AUDIOREC(list->data)){
-	  quit_dialog->wave_export_machine = g_list_prepend(quit_dialog->wave_export_machine,
-							    list->data);
-	}
-
-	list = list->next;
-      }
-
-      quit_dialog->wave_export_machine = g_list_reverse(quit_dialog->wave_export_machine);
-
-      g_list_free(start_list);
-    }
-
-    if(accept_all ||
-       quit_dialog->current_question == AGS_QUIT_DIALOG_QUESTION_EXPORT_WAVE){
-      AgsMachine *machine;
-
-      GList *wave_export_machine;
-	
-      wave_export_machine = g_list_nth(quit_dialog->wave_export_machine,
-				       quit_dialog->nth_wave_export_machine);
-
-
-      if(accept_all){
-	while(wave_export_machine != NULL){
-	  machine = wave_export_machine->data;
-
-	  if(AGS_IS_AUDIOREC(machine)){
-	    ags_quit_dialog_fast_export(quit_dialog,
-					machine);
-	  }
+  GList *start_list, *list;
   
-	  wave_export_machine = wave_export_machine->next;
-	}
-      }else{
-	if(wave_export_machine != NULL){
-	  machine = wave_export_machine->data;
+  gchar *filename;
+  
+  gboolean accept_all;    
 
-	  if(AGS_IS_AUDIOREC(machine)){
-	    ags_quit_dialog_fast_export(quit_dialog,
-					machine);
-	  }
-	}
+  application_context = ags_application_context_get_instance();
+  
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  filename = NULL;
+  
+  accept_all = gtk_check_button_get_active(quit_dialog->accept_all);
+
+  ags_quit_dialog_response(quit_dialog,
+			   GTK_RESPONSE_REJECT);
+
+  if(quit_dialog->current_question == AGS_QUIT_DIALOG_QUESTION_SAVE_FILE){
+    /* prepare export */
+    list = 
+      start_list = ags_window_get_machine(window);
+    
+    while(list != NULL){
+      if(AGS_IS_AUDIOREC(list->data)){
+	quit_dialog->wave_export_machine = g_list_prepend(quit_dialog->wave_export_machine,
+							  list->data);
       }
       
+      list = list->next;
+    }
+
+    quit_dialog->nth_wave_export_machine = 0;
+    
+    machine = g_list_nth_data(quit_dialog->wave_export_machine,
+			      0);
+
+    if(machine != NULL){
+      filename = NULL;
+      
+      if(AGS_IS_AUDIOREC(machine)){
+	filename = gtk_editable_get_text(GTK_EDITABLE(AGS_AUDIOREC(machine)->filename));
+      }
+
+      gtk_label_set_text(quit_dialog->export_wave_filename,
+			 filename);
+    }else{
+      ags_quit_dialog_response(quit_dialog,
+			       GTK_RESPONSE_CANCEL);
+    }
+    
+    g_list_free(start_list);
+  }
+
+  if(accept_all ||
+     quit_dialog->current_question == AGS_QUIT_DIALOG_QUESTION_EXPORT_WAVE){
+    if(accept_all){
+      ags_quit_dialog_response(quit_dialog,
+			       GTK_RESPONSE_CANCEL);
+    }else{      
       quit_dialog->nth_wave_export_machine += 1;
-
-      if(quit_dialog->nth_wave_export_machine < g_list_length(quit_dialog->wave_export_machine)){
-	gchar *str;
-	gchar *filename;
-	gchar *machine_name;
-
-	machine = g_list_nth_data(quit_dialog->wave_export_machine,
-				  quit_dialog->nth_wave_export_machine);
-      
-	filename = NULL;
-
-	if(AGS_IS_AUDIOREC(machine)){
-	  filename = g_strdup(gtk_editable_get_text(GTK_EDITABLE(AGS_AUDIOREC(machine)->filename)));
-	}
-
-	machine_name = NULL;
-
-	if(machine != NULL){
-	  machine_name = machine->machine_name;
-	}
-	
-	str = g_strdup_printf("%s\n\n%s:%s\nfilename: %s",
-			      fast_export_question,
-			      G_OBJECT_TYPE_NAME(machine),
-			      machine_name,
-			      filename);
-
-	gtk_label_set_text(quit_dialog->question,
-			   str);
-
-	g_free(str);
-      }
-    }
-
-    if(quit_dialog->current_question == AGS_QUIT_DIALOG_QUESTION_SAVE_FILE){
-      if(quit_dialog->wave_export_machine != NULL){
-	gchar *str;
-	gchar *filename;
-	
-	quit_dialog->nth_wave_export_machine = 0;
-
-	quit_dialog->current_question = AGS_QUIT_DIALOG_QUESTION_EXPORT_WAVE;
-
-	filename = NULL;
-
-	if(AGS_IS_AUDIOREC(quit_dialog->wave_export_machine->data)){
-	  filename = g_strdup(gtk_editable_get_text(GTK_EDITABLE(AGS_AUDIOREC(quit_dialog->wave_export_machine->data)->filename)));
-	}
-
-	str = g_strdup_printf("%s\n\nmachine: %s:%s\nfilename: %s",
-			      fast_export_question,
-			      G_OBJECT_TYPE_NAME(quit_dialog->wave_export_machine->data),
-			      AGS_MACHINE(quit_dialog->wave_export_machine->data)->machine_name,
-			      filename);
-	
-	gtk_label_set_text(quit_dialog->question,
-			   str);
-	
-	g_free(str);
-      }
-    }
-    
-    if(accept_all ||
-       quit_dialog->nth_wave_export_machine >= g_list_length(quit_dialog->wave_export_machine)){
-      ags_application_context_quit(AGS_APPLICATION_CONTEXT(application_context));
     }
   }
-  break;
-  case GTK_RESPONSE_NO:
-  { 
-    AgsWindow *window;
-    
-    AgsApplicationContext *application_context;
 
-    application_context = ags_application_context_get_instance();
+  if(quit_dialog->current_question == AGS_QUIT_DIALOG_QUESTION_SAVE_FILE){
+    quit_dialog->current_question = AGS_QUIT_DIALOG_QUESTION_EXPORT_WAVE;
 
-    window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+    gtk_widget_set_visible((GtkWidget *) quit_dialog->save_file_question,
+			   FALSE);
 
-    if(quit_dialog->current_question == AGS_QUIT_DIALOG_QUESTION_SAVE_FILE){
-      GList *start_list, *list;
+    gtk_widget_set_visible((GtkWidget *) quit_dialog->export_wave_question,
+			   TRUE);
 
-      list = 
-	start_list = ags_window_get_machine(window);
+    gtk_widget_set_visible((GtkWidget *) quit_dialog->export_wave,
+			   TRUE);
 
-      while(list != NULL){
-	if(AGS_IS_AUDIOREC(list->data)){
-	  quit_dialog->wave_export_machine = g_list_prepend(quit_dialog->wave_export_machine,
-							    list->data);
-	}
-
-	list = list->next;
-      }
-
-      quit_dialog->wave_export_machine = g_list_reverse(quit_dialog->wave_export_machine);
-
-      g_list_free(start_list);
-    }
-    
-    if(quit_dialog->current_question == AGS_QUIT_DIALOG_QUESTION_EXPORT_WAVE){
-      quit_dialog->nth_wave_export_machine += 1;
-
-      if(quit_dialog->nth_wave_export_machine < g_list_length(quit_dialog->wave_export_machine)){
-	AgsMachine *machine;
-      
-	gchar *str;
-	gchar *filename;
-	gchar *machine_name;
-      
-	machine = g_list_nth_data(quit_dialog->wave_export_machine,
-				  quit_dialog->nth_wave_export_machine);
-      
-	filename = NULL;
-
-	if(AGS_IS_AUDIOREC(machine)){
-	  filename = g_strdup(gtk_editable_get_text(GTK_EDITABLE(AGS_AUDIOREC(machine)->filename)));
-	}
-
-	machine_name = NULL;
-
-	if(machine != NULL){
-	  machine_name = machine->machine_name;
-	}
-      
-	str = g_strdup_printf("%s\n\n%s:%s\nfilename: %s",
-			      fast_export_question,
-			      G_OBJECT_TYPE_NAME(machine),
-			      machine_name,
-			      filename);
-
-	gtk_label_set_text(quit_dialog->question,
-			   str);
-
-	g_free(str);
-      }
-    }
-
-    if(quit_dialog->current_question == AGS_QUIT_DIALOG_QUESTION_SAVE_FILE){
-      if(quit_dialog->wave_export_machine != NULL){
-	gchar *str;
-	gchar *filename;
-
-	quit_dialog->nth_wave_export_machine = 0;
-
-	quit_dialog->current_question = AGS_QUIT_DIALOG_QUESTION_EXPORT_WAVE;
-
-	filename = NULL;
-
-	if(AGS_IS_AUDIOREC(quit_dialog->wave_export_machine->data)){
-	  filename = g_strdup(gtk_editable_get_text(GTK_EDITABLE(AGS_AUDIOREC(quit_dialog->wave_export_machine->data)->filename)));
-	}
-	
-	str = g_strdup_printf("%s\n\n%s:%s\nfilename: %s",
-			      fast_export_question,
-			      G_OBJECT_TYPE_NAME(quit_dialog->wave_export_machine->data),
-			      AGS_MACHINE(quit_dialog->wave_export_machine->data)->machine_name,
-			      filename);
-
-	gtk_label_set_text(quit_dialog->question,
-			   str);
-
-	g_free(str);
-      }
-    }
-
-    if(quit_dialog->nth_wave_export_machine >= g_list_length(quit_dialog->wave_export_machine)){
-      ags_application_context_quit(AGS_APPLICATION_CONTEXT(application_context));
-    }    
+    gtk_widget_set_visible((GtkWidget *) quit_dialog->export_wave_filename,
+			   TRUE);
   }
-  break;
-  case GTK_RESPONSE_CANCEL:
-  {
-    gtk_window_destroy((GtkWindow *) dialog);
+
+  if(accept_all ||
+     quit_dialog->nth_wave_export_machine >= g_list_length(quit_dialog->wave_export_machine)){
+    ags_application_context_quit(AGS_APPLICATION_CONTEXT(application_context));
   }
-  }
+}
+
+void
+ags_quit_dialog_cancel_callback(GtkButton *button, AgsQuitDialog *quit_dialog)
+{
+  ags_quit_dialog_response(quit_dialog,
+			   GTK_RESPONSE_CANCEL);
 }

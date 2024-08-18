@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -51,35 +51,45 @@ typedef enum{
 
 struct _AgsQuitDialog
 {
-  GtkDialog dialog;
+  GtkWindow window;
 
   guint connectable_flags;
 
-  GtkCheckButton *accept_all;
-
   guint current_question;
-  GtkLabel *question;
+  
+  GtkLabel *save_file_question;
+  GtkLabel *export_wave_question;
+
+  GtkLabel *export_wave;
+  GtkLabel *export_wave_filename;
+
+  GtkCheckButton *accept_all;
 
   guint nth_wave_export_machine;
   GList *wave_export_machine;
   
-  GtkButton *yes;
-  GtkButton *no;
+  GtkButton *accept;
+  GtkButton *reject;
 
   GtkButton *cancel;
-
-  GtkDialog *confirm;
 };
 
 struct _AgsQuitDialogClass
 {
-  GtkDialogClass dialog;
+  GtkWindowClass window;
+
+  void (*response)(AgsQuitDialog *quit_dialog,
+		   gint response_id);
 };
 
 GType ags_quit_dialog_get_type(void);
 
+void ags_quit_dialog_save_file(AgsQuitDialog *quit_dialog);
 void ags_quit_dialog_fast_export(AgsQuitDialog *quit_dialog,
 				 AgsMachine *machine);
+
+void ags_quit_dialog_response(AgsQuitDialog *quit_dialog,
+			      gint response_id);
 
 AgsQuitDialog* ags_quit_dialog_new(GtkWindow *transient_for);
 

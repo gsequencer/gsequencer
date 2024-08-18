@@ -434,7 +434,9 @@ ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
 			GTK_ALIGN_FILL);
   
   gtk_box_append(vbox,
-		 (GtkWidget*) midi_import_wizard->track_collection);
+		 midi_import_wizard->track_collection);
+
+  ags_track_collection_add_all_track_mapper((AgsTrackCollection *) midi_import_wizard->track_collection);
   
   /* buttons */
   action_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,

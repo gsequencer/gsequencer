@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -77,6 +77,52 @@ gboolean ags_midi_util_is_tune_request(AgsMidiUtil *midi_util,
 /* real-time meta event utility */
 gboolean ags_midi_util_is_meta_event(AgsMidiUtil *midi_util,
 				     guchar *buffer);
+
+gboolean ags_midi_util_is_text_event(AgsMidiUtil *midi_util,
+				     guchar *buffer);
+gboolean ags_midi_util_is_copyright_notice(AgsMidiUtil *midi_util,
+					   guchar *buffer);
+gboolean ags_midi_util_is_sequence_name(AgsMidiUtil *midi_util,
+					guchar *buffer);
+gboolean ags_midi_util_is_instrument_name(AgsMidiUtil *midi_util,
+					  guchar *buffer);
+gboolean ags_midi_util_is_lyric(AgsMidiUtil *midi_util,
+				guchar *buffer);
+gboolean ags_midi_util_is_marker(AgsMidiUtil *midi_util,
+				 guchar *buffer);
+gboolean ags_midi_util_is_cue_point(AgsMidiUtil *midi_util,
+				    guchar *buffer);
+gboolean ags_midi_util_is_unknown_text_event(AgsMidiUtil *midi_util,
+					     guchar *buffer);
+
+gboolean ags_midi_util_is_midi_channel_prefix(AgsMidiUtil *midi_util,
+					      guchar *buffer);
+
+gboolean ags_midi_util_is_end_of_track(AgsMidiUtil *midi_util,
+				       guchar *buffer);
+
+/*  */
+gboolean ags_midi_util_is_smtpe(AgsMidiUtil *midi_util,
+				guchar *buffer);
+
+gboolean ags_midi_util_is_time_signature(AgsMidiUtil *midi_util,
+					 guchar *buffer);
+
+gboolean ags_midi_util_is_key_signature(AgsMidiUtil *midi_util,
+					guchar *buffer);
+
+gboolean ags_midi_util_is_sequencer_meta_event(AgsMidiUtil *midi_util,
+					       guchar *buffer);
+
+gboolean ags_midi_util_is_tempo(AgsMidiUtil *midi_util,
+				guchar *buffer);
+
+gboolean ags_midi_util_is_misc_event(AgsMidiUtil *midi_util,
+				     guchar *buffer);
+
+/* undefined */
+gboolean ags_midi_util_is_undefined(AgsMidiUtil *midi_util,
+				    guchar *buffer);
 
 /* real-time channel message getter */
 gboolean ags_midi_util_get_key_on(AgsMidiUtil *midi_util,

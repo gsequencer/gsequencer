@@ -87,10 +87,9 @@ void ags_track_collection_add_track_mapper(AgsTrackCollection *track_collection,
 void ags_track_collection_remove_track_mapper(AgsTrackCollection *track_collection,
 					      AgsTrackMapper *track_mapper);
 
+void ags_track_collection_add_all_track_mapper(AgsTrackCollection *track_collection);
+
 void ags_track_collection_parse(AgsTrackCollection *track_collection);
-void ags_track_collection_add_mapper(AgsTrackCollection *track_collection,
-				     xmlNode *track,
-				     gchar *instrument, gchar *sequence);
 
 AgsTrackCollection* ags_track_collection_new(GType track_mapper_type,
 					     guint track_mapper_n_properties,
