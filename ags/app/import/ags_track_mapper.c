@@ -217,7 +217,9 @@ ags_track_mapper_applicable_interface_init(AgsApplicableInterface *applicable)
 
 void
 ags_track_mapper_init(AgsTrackMapper *track_mapper)
-{
+{  
+  GtkLabel *label;
+
   gchar *str;
 
   gtk_grid_set_column_spacing((GtkGrid *) track_mapper,
@@ -287,6 +289,14 @@ ags_track_mapper_init(AgsTrackMapper *track_mapper)
   g_free(str);
 
   /* machine type */
+  label = (GtkLabel *) gtk_label_new(i18n("soft synth"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach((GtkGrid *) track_mapper,
+		  (GtkWidget *) label,
+		  0, 2,
+		  1, 1);
+
   track_mapper->machine_type = (GtkComboBoxText *) gtk_combo_box_text_new();
 
   gtk_combo_box_text_append_text(track_mapper->machine_type,
@@ -320,7 +330,18 @@ ags_track_mapper_init(AgsTrackMapper *track_mapper)
 		  1, 2,
 		  1, 1);
 
+  gtk_combo_box_set_active((GtkComboBox *) track_mapper->machine_type,
+			   7);
+
   /* midi channel */
+  label = (GtkLabel *) gtk_label_new(i18n("MIDI channel"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach((GtkGrid *) track_mapper,
+		  (GtkWidget *) label,
+		  0, 3,
+		  1, 1);
+
   //NOTE:JK: midi only knows 16 channels, -1 means ignore channel information
   track_mapper->midi_channel = (GtkSpinButton *) gtk_spin_button_new_with_range(-1.0, 16.0, 1.0);
   gtk_spin_button_set_value(track_mapper->midi_channel,
@@ -333,10 +354,18 @@ ags_track_mapper_init(AgsTrackMapper *track_mapper)
 
   gtk_grid_attach((GtkGrid *) track_mapper,
 		  (GtkWidget *) track_mapper->midi_channel,
-		  2, 2,
+		  1, 3,
 		  1, 1);
 
   /* audio channels */
+  label = (GtkLabel *) gtk_label_new(i18n("audio channels"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach((GtkGrid *) track_mapper,
+		  (GtkWidget *) label,
+		  0, 4,
+		  1, 1);
+
   track_mapper->audio_channels = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 16.0, 1.0);
   gtk_spin_button_set_value(track_mapper->audio_channels,
 			    2.0);
@@ -348,10 +377,18 @@ ags_track_mapper_init(AgsTrackMapper *track_mapper)
 
   gtk_grid_attach((GtkGrid *) track_mapper,
 		  (GtkWidget *) track_mapper->audio_channels,
-		  3, 2,
+		  1, 4,
 		  1, 1);
 
   /* offset */
+  label = (GtkLabel *) gtk_label_new(i18n("offset"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach((GtkGrid *) track_mapper,
+		  (GtkWidget *) label,
+		  0, 5,
+		  1, 1);
+
   track_mapper->offset = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 									  (gdouble) AGS_NAVIGATION_MAX_POSITION_TACT,
 									  1.0);
@@ -363,7 +400,7 @@ ags_track_mapper_init(AgsTrackMapper *track_mapper)
 
   gtk_grid_attach((GtkGrid *) track_mapper,
 		  (GtkWidget *) track_mapper->offset,
-		  4, 2,
+		  1, 5,
 		  1, 1);
 }
 
@@ -646,10 +683,38 @@ ags_track_mapper_find_instrument_with_sequence(GList *track_mapper,
   }
   
   while(track_mapper != NULL){
-    if((!g_ascii_strcasecmp(AGS_TRACK_MAPPER(track_mapper->data)->instrument,
+    if((AGS_TRACK_MAPPER(track_mapper->data)->instrument != NULL &&
+	!g_ascii_strcasecmp(AGS_TRACK_MAPPER(track_mapper->data)->instrument,
 			    instrument) &&
+	AGS_TRACK_MAPPER(track_mapper->data)->sequence != NULL &&
 	!g_ascii_strcasecmp(AGS_TRACK_MAPPER(track_mapper->data)->sequence,
 			    sequence))){
+      return(track_mapper);
+    }
+
+    track_mapper = track_mapper->next;
+  }
+  
+  return(NULL);
+}
+
+/**
+ * ags_track_mapper_find_midi_channel:
+ * @track_mapper: a #GList-struct containing #AgsTrackMapper
+ * @midi_channel: the MIDI channel valid 0 through 15
+ *
+ * Finds next matching track in a #GList-struct.
+ *
+ * Returns: the next matching #GList-struct
+ *
+ * Since: 6.16.17
+ */
+GList*
+ags_track_mapper_find_midi_channel(GList *track_mapper,
+				   gint midi_channel)
+{
+  while(track_mapper != NULL){
+    if((gint) gtk_spin_button_get_value(AGS_TRACK_MAPPER(track_mapper->data)->midi_channel) == midi_channel){
       return(track_mapper);
     }
 
@@ -780,9 +845,9 @@ ags_track_mapper_map(AgsTrackMapper *track_mapper)
 	    key = xmlGetProp(child,
 			     BAD_CAST "key");
 
-	    if(key != (gint) g_ascii_strtoll(key,
-					     NULL,
-					     10)){
+	    if(midi_channel != (gint) g_ascii_strtoll(key,
+						      NULL,
+						      10)){
 	      child = child->next;
 	      
 	      xmlFree(event);
@@ -879,9 +944,9 @@ ags_track_mapper_map(AgsTrackMapper *track_mapper)
 	    key = xmlGetProp(child,
 			     BAD_CAST "key");
 
-	    if(key != (gint) g_ascii_strtoll(key,
-					     NULL,
-					     10)){
+	    if(midi_channel != (gint) g_ascii_strtoll(key,
+						      NULL,
+						      10)){
 	      child = child->next;
 	      
 	      xmlFree(event);

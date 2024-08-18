@@ -9,9 +9,9 @@
 
 LT_CURRENT=6
 LT_REVISION=16
-LT_AGE=16
+LT_AGE=20
 
-m4_define([ags_version], [6.16.16])
+m4_define([ags_version], [6.16.20])
 
 AC_PREREQ([2.69])
 AC_INIT([gsequencer],m4_defn([ags_version]),[jkraehemann@gmail.com])
@@ -448,6 +448,11 @@ AS_IF([test "x$enable_core_audio" != xno],
 
       AC_MSG_NOTICE([core audio enabled])],
       [AC_MSG_NOTICE([core audio disabled])])
+
+AS_IF([test "x$enable_audio_toolbox" != xno],
+      [AC_DEFINE([AGS_WITH_AUDIO_TOOLBOX], [1], [AUDIO_TOOLBOX enabled])
+       AC_MSG_NOTICE([AUDIO_TOOLBOX enabled])],
+      [AC_MSG_NOTICE([AUDIO_TOOLBOX disabled])])
 
 AM_CONDITIONAL([WITH_AUDIO_TOOLBOX], [test "x$enable_audio_toolbox" == xyes])
 

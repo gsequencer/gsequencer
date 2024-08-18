@@ -247,7 +247,7 @@ ags_midi_util_is_change_program(AgsMidiUtil *midi_util,
 
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  retval = ((0xf0 & buffer[0]) == 0xc0) ? TRUE: FALSE;
+  retval = ((0xf0 & (buffer[0])) == 0xc0) ? TRUE: FALSE;
 
   return(retval);
 }
@@ -402,6 +402,431 @@ ags_midi_util_is_meta_event(AgsMidiUtil *midi_util,
   g_return_val_if_fail(buffer != NULL, FALSE);
 
   retval = ((0xff & buffer[0]) == 0xff) ? TRUE: FALSE;
+  
+  return(retval);
+}
+
+/**
+ * ags_midi_util_is_text_event:
+ * @midi_util: the #AgsMidiUtil-struct
+ * @buffer: the MIDI buffer
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 6.16.18
+ */
+gboolean
+ags_midi_util_is_text_event(AgsMidiUtil *midi_util,
+			    guchar *buffer)
+{
+  gboolean retval;
+
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
+  retval = (((0xff & buffer[0]) == 0xff) && ((0xff & buffer[1]) == 0x1)) ? TRUE: FALSE;
+  
+  return(retval);
+}
+
+/**
+ * ags_midi_util_is_copyright_notice:
+ * @midi_util: the #AgsMidiUtil-struct
+ * @buffer: the MIDI buffer
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 6.16.18
+ */
+gboolean
+ags_midi_util_is_copyright_notice(AgsMidiUtil *midi_util,
+				  guchar *buffer)
+{
+  gboolean retval;
+
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
+  retval = (((0xff & buffer[0]) == 0xff) && ((0xff & buffer[1]) == 0x2)) ? TRUE: FALSE;
+  
+  return(retval);
+}
+
+/**
+ * ags_midi_util_is_sequence_name:
+ * @midi_util: the #AgsMidiUtil-struct
+ * @buffer: the MIDI buffer
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 6.16.18
+ */
+gboolean
+ags_midi_util_is_sequence_name(AgsMidiUtil *midi_util,
+			       guchar *buffer)
+{
+  gboolean retval;
+
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
+  retval = (((0xff & buffer[0]) == 0xff) && ((0xff & buffer[1]) == 0x3)) ? TRUE: FALSE;
+  
+  return(retval);
+}
+
+/**
+ * ags_midi_util_is_instrument_name:
+ * @midi_util: the #AgsMidiUtil-struct
+ * @buffer: the MIDI buffer
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 6.16.18
+ */
+gboolean
+ags_midi_util_is_instrument_name(AgsMidiUtil *midi_util,
+				 guchar *buffer)
+{
+  gboolean retval;
+
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
+  retval = (((0xff & buffer[0]) == 0xff) && ((0xff & buffer[1]) == 0x4)) ? TRUE: FALSE;
+  
+  return(retval);
+}
+
+/**
+ * ags_midi_util_is_lyric:
+ * @midi_util: the #AgsMidiUtil-struct
+ * @buffer: the MIDI buffer
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 6.16.18
+ */
+gboolean
+ags_midi_util_is_lyric(AgsMidiUtil *midi_util,
+		       guchar *buffer)  
+{
+  gboolean retval;
+
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
+  retval = (((0xff & buffer[0]) == 0xff) && ((0xff & buffer[1]) == 0x5)) ? TRUE: FALSE;
+  
+  return(retval);
+}
+
+/**
+ * ags_midi_util_is_marker:
+ * @midi_util: the #AgsMidiUtil-struct
+ * @buffer: the MIDI buffer
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 6.16.18
+ */
+gboolean
+ags_midi_util_is_marker(AgsMidiUtil *midi_util,
+			guchar *buffer)
+{
+  gboolean retval;
+
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
+  retval = (((0xff & buffer[0]) == 0xff) && ((0xff & buffer[1]) == 0x6)) ? TRUE: FALSE;
+  
+  return(retval);
+}
+
+/**
+ * ags_midi_util_is_cue_point:
+ * @midi_util: the #AgsMidiUtil-struct
+ * @buffer: the MIDI buffer
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 6.16.18
+ */
+gboolean
+ags_midi_util_is_cue_point(AgsMidiUtil *midi_util,
+			   guchar *buffer)
+{
+  gboolean retval;
+
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
+  retval = (((0xff & buffer[0]) == 0xff) && ((0xff & buffer[1]) == 0x7)) ? TRUE: FALSE;
+  
+  return(retval);
+}
+
+/**
+ * ags_midi_util_is_unknow_text_event:
+ * @midi_util: the #AgsMidiUtil-struct
+ * @buffer: the MIDI buffer
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 6.16.18
+ */
+gboolean
+ags_midi_util_is_unknown_text_event(AgsMidiUtil *midi_util,
+				    guchar *buffer)
+{
+  gboolean retval;
+
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
+  retval = (((0xff & buffer[0]) == 0xff) && ((0xff & buffer[1]) >= 0x08) && ((0xff & buffer[1]) <= 0x0f)) ? TRUE: FALSE;
+  
+  return(retval);
+}
+
+/**
+ * ags_midi_util_is_midi_channel_prefix:
+ * @midi_util: the #AgsMidiUtil-struct
+ * @buffer: the MIDI buffer
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 6.16.18
+ */
+gboolean
+ags_midi_util_is_midi_channel_prefix(AgsMidiUtil *midi_util,
+				     guchar *buffer)
+{
+  gboolean retval;
+
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
+  retval = (((0xff & buffer[0]) == 0xff) && ((0xff & buffer[1]) == 0x20) && ((0xff & buffer[2]) == 0x01)) ? TRUE: FALSE;
+  
+  return(retval);
+}
+
+/**
+ * ags_midi_util_is_end_of_track:
+ * @midi_util: the #AgsMidiUtil-struct
+ * @buffer: the MIDI buffer
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 6.16.18
+ */
+gboolean
+ags_midi_util_is_end_of_track(AgsMidiUtil *midi_util,
+			      guchar *buffer)
+{
+  gboolean retval;
+
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
+  retval = (((0xff & buffer[0]) == 0xff) && ((0xff & buffer[1]) == 0x2f) && ((0xff & buffer[2]) == 0x00)) ? TRUE: FALSE;
+  
+  return(retval);
+}
+
+/**
+ * ags_midi_util_is_smtpe:
+ * @midi_util: the #AgsMidiUtil-struct
+ * @buffer: the MIDI buffer
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 6.16.18
+ */
+gboolean
+ags_midi_util_is_smtpe(AgsMidiUtil *midi_util,
+		       guchar *buffer)
+{
+  gboolean retval;
+
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
+  retval = (((0xff & buffer[0]) == 0xff) && ((0xff & buffer[1]) == 0x54) && ((0xff & buffer[2]) == 0x05)) ? TRUE: FALSE;
+  
+  return(retval);
+}
+
+/**
+ * ags_midi_util_is_time_signature:
+ * @midi_util: the #AgsMidiUtil-struct
+ * @buffer: the MIDI buffer
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 6.16.18
+ */
+gboolean
+ags_midi_util_is_time_signature(AgsMidiUtil *midi_util,
+				guchar *buffer)
+{
+  gboolean retval;
+
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
+  retval = (((0xff & buffer[0]) == 0xff) && ((0xff & buffer[1]) == 0x58) && ((0xff & buffer[2]) == 0x04)) ? TRUE: FALSE;
+  
+  return(retval);
+}
+
+/**
+ * ags_midi_util_is_key_signature:
+ * @midi_util: the #AgsMidiUtil-struct
+ * @buffer: the MIDI buffer
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 6.16.18
+ */
+gboolean
+ags_midi_util_is_key_signature(AgsMidiUtil *midi_util,
+			       guchar *buffer)
+{
+  gboolean retval;
+
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
+  retval = (((0xff & buffer[0]) == 0xff) && ((0xff & buffer[1]) == 0x59) && ((0xff & buffer[2]) == 0x02)) ? TRUE: FALSE;
+  
+  return(retval);
+}
+
+/**
+ * ags_midi_util_is_sequencer_meta_event:
+ * @midi_util: the #AgsMidiUtil-struct
+ * @buffer: the MIDI buffer
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 6.16.18
+ */
+gboolean
+ags_midi_util_is_sequencer_meta_event(AgsMidiUtil *midi_util,
+				      guchar *buffer)
+{
+  gboolean retval;
+
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
+  retval = (((0xff & buffer[0]) == 0xff) && ((0xff & buffer[1]) == 0x7f)) ? TRUE: FALSE;
+  
+  return(retval);
+}
+
+/**
+ * ags_midi_util_is_tempo:
+ * @midi_util: the #AgsMidiUtil-struct
+ * @buffer: the MIDI buffer
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 6.16.18
+ */
+gboolean
+ags_midi_util_is_tempo(AgsMidiUtil *midi_util,
+		       guchar *buffer)
+{
+  gboolean retval;
+
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
+  retval = (((0xff & buffer[0]) == 0xff) && ((0xff & buffer[1]) == 0x51) && ((0xff & buffer[2]) == 0x3)) ? TRUE: FALSE;
+  
+  return(retval);
+}
+
+/**
+ * ags_midi_util_is_misc_event:
+ * @midi_util: the #AgsMidiUtil-struct
+ * @buffer: the MIDI buffer
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 6.16.18
+ */
+gboolean
+ags_midi_util_is_misc_event(AgsMidiUtil *midi_util,
+			    guchar *buffer)
+{
+  gint meta_type;
+  
+  gboolean retval;
+
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
+  if((0xff & buffer[0]) != 0xff){
+    return(FALSE);
+  }
+  
+  meta_type = buffer[1];
+  
+  retval = FALSE;
+
+  switch(meta_type){
+  case 0x00:
+    break;
+  case 0x01:      /* Text event */
+  case 0x02:      /* Copyright notice */
+  case 0x03:      /* Sequence/Track name */
+  case 0x04:      /* Instrument name */
+  case 0x05:      /* Lyric */
+  case 0x06:      /* Marker */
+  case 0x07:      /* Cue point */
+  case 0x08:
+  case 0x09:
+  case 0x0a:
+  case 0x0b:
+  case 0x0c:
+  case 0x0d:
+  case 0x0e:
+  case 0x0f:
+    break;
+  case 0x2f:
+    break;
+  case 0x51:
+    break;
+  case 0x54:
+    break;
+  case 0x58:
+    break;
+  case 0x59:
+    break;
+  case 0x7f:
+    break;
+  default:
+    retval = TRUE;
+  }
+
+  return(retval);
+}
+
+/**
+ * ags_midi_util_is_undefined:
+ * @midi_util: the #AgsMidiUtil-struct
+ * @buffer: the MIDI buffer
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 6.16.18
+ */
+gboolean
+ags_midi_util_is_undefined(AgsMidiUtil *midi_util,
+			   guchar *buffer)
+{
+  gboolean retval;
+
+  g_return_val_if_fail(buffer != NULL, FALSE);
+
+  retval = FALSE;
+  
+  if((0xff & buffer[0]) == 0xf4){
+    retval = TRUE;
+  }
+     
+  if((0xff & buffer[0]) == 0xf5){
+    retval = TRUE;
+  }
   
   return(retval);
 }

@@ -81,6 +81,8 @@ GType ags_track_mapper_get_type(void);
 
 GList* ags_track_mapper_find_instrument_with_sequence(GList *track_mapper,
 						      gchar *instrument, gchar *sequence);
+GList* ags_track_mapper_find_midi_channel(GList *track_mapper,
+					  gint midi_channel);
 
 void ags_track_mapper_map(AgsTrackMapper *track_mapper);
 
