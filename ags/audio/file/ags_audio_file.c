@@ -32,7 +32,7 @@
 #include <ags/audio/file/ags_gstreamer_file.h>
 #endif
 
-#ifdef AGS_WITH_CORE_AUDIO
+#ifdef AGS_WITH_AUDIO_TOOLBOX
 #include <ags/audio/file/ags_audio_toolbox.h>
 #endif
 
@@ -1120,7 +1120,7 @@ gboolean
 ags_audio_file_check_suffix(gchar *filename)
 {
   if(
-#if defined(AGS_WITH_CORE_AUDIO)
+#if defined(AGS_WITH_AUDIO_TOOLBOX)
      ags_audio_toolbox_check_suffix(filename) ||
 #endif
      ags_sndfile_check_suffix(filename)
@@ -1817,7 +1817,7 @@ ags_audio_file_open(AgsAudioFile *audio_file)
   retval = FALSE;
   
   if(g_file_test(filename, G_FILE_TEST_EXISTS)){
-#if defined(AGS_WITH_CORE_AUDIO)
+#if defined(AGS_WITH_AUDIO_TOOLBOX)
     if(ags_audio_toolbox_check_suffix(filename)){
       g_rec_mutex_lock(audio_file_mutex);
 
@@ -1980,7 +1980,7 @@ ags_audio_file_rw_open(AgsAudioFile *audio_file,
 
   retval = FALSE;
 
-#if defined(AGS_WITH_CORE_AUDIO)
+#if defined(AGS_WITH_AUDIO_TOOLBOX)
   if(ags_audio_toolbox_check_suffix(audio_file->filename)){
     GError *error;
     guint loop_start, loop_end;

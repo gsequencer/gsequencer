@@ -30,6 +30,8 @@
 
 #undef AGS_SNAP_SANDBOX
 
+#undef AGS_WITH_AUDIO_TOOLBOX
+
 #undef AGS_WITH_ALSA
 
 #undef AGS_WITH_OSS

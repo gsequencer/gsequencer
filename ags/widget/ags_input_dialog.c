@@ -165,9 +165,13 @@ ags_input_dialog_init(AgsInputDialog *input_dialog)
   button_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				      6);
 
+  gtk_widget_set_valign((GtkWidget *) button_box,
+			GTK_ALIGN_END);
   gtk_widget_set_halign((GtkWidget *) button_box,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_END);
 
+  gtk_widget_set_vexpand((GtkWidget *) button_box,
+			 TRUE);
   gtk_widget_set_hexpand((GtkWidget *) button_box,
 			 TRUE);
   
@@ -175,13 +179,6 @@ ags_input_dialog_init(AgsInputDialog *input_dialog)
 		 (GtkWidget *) button_box);
   
   input_dialog->ok = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_OK"));
-
-  gtk_widget_set_hexpand((GtkWidget *) input_dialog->ok,
-			 TRUE);
-
-  gtk_widget_set_halign((GtkWidget *) input_dialog->ok,
-			GTK_ALIGN_END);
-
   gtk_box_append(button_box,
 		 (GtkWidget *) input_dialog->ok);
 
@@ -189,13 +186,6 @@ ags_input_dialog_init(AgsInputDialog *input_dialog)
 		   G_CALLBACK(ags_input_dialog_clicked_callback), input_dialog);
   
   input_dialog->cancel = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Cancel"));
-
-  gtk_widget_set_hexpand((GtkWidget *) input_dialog->cancel,
-			 FALSE);
-
-  gtk_widget_set_halign((GtkWidget *) input_dialog->cancel,
-			GTK_ALIGN_END);
-
   gtk_box_append(button_box,
 		 (GtkWidget *) input_dialog->cancel);
 
