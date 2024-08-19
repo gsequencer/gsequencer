@@ -2,6 +2,7 @@ ags (7.0.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented ags_recall_midi1_control_change()
+	* TODO:JK: refactored AgsAudioBufferUtil
 
 ags (6.16.20)
 

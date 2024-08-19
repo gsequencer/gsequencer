@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,22 +25,16 @@
 
 #include <ags/libags.h>
 
-#ifdef __APPLE__
+#if defined(__APPLE__)
 #include <AudioToolbox/AudioToolbox.h>
 #endif
 
 G_BEGIN_DECLS
 
 #define AGS_TYPE_AUDIO_BUFFER_UTIL         (ags_audio_buffer_util_get_type())
+#define AGS_AUDIO_BUFFER_UTIL(ptr) ((AgsAudioBufferUtil *)(ptr))
 
 typedef struct _AgsAudioBufferUtil AgsAudioBufferUtil;
-
-struct _AgsAudioBufferUtil
-{
-  //empty
-};
-
-GType ags_audio_buffer_util_get_type(void);
 
 #define AGS_AUDIO_BUFFER_S8(ptr) ((gint8 *)(ptr))
 #define AGS_AUDIO_BUFFER_S16(ptr) ((gint16 *)(ptr))
@@ -341,6 +335,25 @@ typedef gint32 ags_v8s32 __attribute__ ((vector_size(8 * sizeof(gint32))));
 typedef gint64 ags_v8s64 __attribute__ ((vector_size(8 * sizeof(gint64))));
 typedef gfloat ags_v8float __attribute__ ((vector_size(8 * sizeof(gfloat))));
 typedef gdouble ags_v8double __attribute__ ((vector_size(8 * sizeof(gdouble))));
+
+struct _AgsAudioBufferUtil
+{
+  gpointer destination;
+  AgsSoundcardFormat destination_format;
+  guint destination_stride;
+
+  gpointer source;
+  AgsSoundcardFormat source_format;
+  guint source_stride;
+
+  AgsAudioBufferUtilCopyMode copy_mode;
+  
+  gpointer converted_source;
+  
+  guint buffer_length;
+};
+
+GType ags_audio_buffer_util_get_type(void);
 
 AgsAudioBufferUtilFormat ags_audio_buffer_util_format_from_soundcard(AgsSoundcardFormat soundcard_format);
 AgsAudioBufferUtilCopyMode ags_audio_buffer_util_get_copy_mode(AgsAudioBufferUtilFormat destination_format,

@@ -96,6 +96,32 @@ typedef enum{
   AGS_RECALL_NOTIFY_RECALL,
 }AgsRecallNotifyDependencyMode;
 
+/**
+ * AgsRecallMidi1ControlChange:
+ * @AGS_RECALL_MIDI1_BANK_SELECT: MIDI version 1 bank select
+ * @AGS_RECALL_MIDI1_MODULATION_WHEEL: MIDI version 1 modulation wheel
+ * @AGS_RECALL_MIDI1_BREATH_CONTROLLER: MIDI version 1 breath controller
+ * @AGS_RECALL_MIDI1_FOOT_CONTROLLER: MIDI version 1 foot controller
+ * @AGS_RECALL_MIDI1_PORTAMENTO_TIME: MIDI version 1 portamento time
+ * @AGS_RECALL_MIDI1_CHANNEL_VOLUME: MIDI version 1 channel volume
+ * @AGS_RECALL_MIDI1_BALANCE: MIDI version 1 balance
+ * @AGS_RECALL_MIDI1_PAN: MIDI version 1 PAN
+ * @AGS_RECALL_MIDI1_EXPRESSION_CONTROLLER: MIDI version 1 expression controller
+ * @AGS_RECALL_MIDI1_EFFECT_CONTROL_1: MIDI version 1 effect control 1
+ * @AGS_RECALL_MIDI1_EFFECT_CONTROL_2: MIDI version 1 effect control 2
+ * @AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_1: MIDI version 1 general purpose controller 1
+ * @AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_2: MIDI version 1 general purpose controller 2
+ * @AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_3: MIDI version 1 general purpose controller 3
+ * @AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_4: MIDI version 1 general purpose controller 4
+ * @AGS_RECALL_MIDI1_CHANGE_PROGRAM: MIDI version 1 change program
+ * @AGS_RECALL_MIDI1_CHANGE_PRESSURE: MIDI version 1 change pressure
+ * @AGS_RECALL_MIDI1_PITCH_BEND: MIDI version 1 pitch bend
+ * @AGS_RECALL_MIDI1_SONG_POSITION: MIDI version 1 song position
+ * @AGS_RECALL_MIDI1_SONG_SELECT: MIDI version 1 song select
+ * @AGS_RECALL_MIDI1_TUNE_REQUEST: MIDI version 1 tune request
+ * 
+ * Modes to handle MIDI version 1 control change and others.
+ */
 typedef enum{
   AGS_RECALL_MIDI1_BANK_SELECT = AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, 0x0),
   AGS_RECALL_MIDI1_MODULATION_WHEEL = AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, 0x1),
@@ -191,7 +217,8 @@ struct _AgsRecall
   GHashTable *midi1_cc_to_value;
   GHashTable *midi1_cc_to_port_specifier;
 
-  GHashTable *midi2_control_change;
+  GHashTable *midi2_cc_to_value;
+  GHashTable *midi2_cc_to_port_specifier;
 
   GHashTable *jack_metadata;
 };
@@ -380,6 +407,10 @@ void ags_recall_set_format(AgsRecall *recall, AgsSoundcardFormat format);
 /* MIDI version 1.0 control change */
 GHashTable* ags_recall_get_midi1_cc_to_value(AgsRecall *recall);
 GHashTable* ags_recall_get_midi1_cc_to_port_specifier(AgsRecall *recall);
+
+/* MIDI version 2.0 control change */
+GHashTable* ags_recall_get_midi2_cc_to_value(AgsRecall *recall);
+GHashTable* ags_recall_get_midi2_cc_to_port_specifier(AgsRecall *recall);
 
 /* events */
 void ags_recall_resolve_dependency(AgsRecall *recall);

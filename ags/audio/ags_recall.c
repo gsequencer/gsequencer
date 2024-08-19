@@ -208,6 +208,8 @@ enum{
   PROP_CHILD,
   PROP_MIDI1_CC_TO_VALUE,
   PROP_MIDI1_CC_TO_PORT_SPECIFIER,
+  PROP_MIDI2_CC_TO_VALUE,
+  PROP_MIDI2_CC_TO_PORT_SPECIFIER,
 };
 
 static gpointer ags_recall_parent_class = NULL;
@@ -705,6 +707,36 @@ ags_recall_class_init(AgsRecallClass *recall)
 				  PROP_MIDI1_CC_TO_PORT_SPECIFIER,
 				  param_spec);
   
+  /**
+   * AgsRecall:midi2-cc-to-value: (type GHashTable(gpointer)) (transfer container)
+   *
+   * The MIDI version 1 control change to value.
+   * 
+   * Since: 7.0.0
+   */
+  param_spec = g_param_spec_pointer("midi2-cc-to-value",
+				    i18n_pspec("MIDI version 1 control change to value"),
+				    i18n_pspec("The MIDI version 1 control change to value"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MIDI2_CC_TO_VALUE,
+				  param_spec);
+
+  /**
+   * AgsRecall:midi2-cc-to-port-specifier: (type GHashTable(utf8)) (transfer container)
+   *
+   * The MIDI version 1 control change to port specifier.
+   * 
+   * Since: 7.0.0
+   */
+  param_spec = g_param_spec_pointer("midi2-cc-to-port-specifier",
+				    i18n_pspec("MIDI version 1 control change to port specifier"),
+				    i18n_pspec("The MIDI version 1 control change to port specifier"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MIDI2_CC_TO_PORT_SPECIFIER,
+				  param_spec);
+
   /* AgsRecallClass */
   recall->resolve_dependency = ags_recall_real_resolve_dependency;
   recall->check_rt_data = ags_recall_real_check_rt_data;
@@ -1245,7 +1277,14 @@ ags_recall_init(AgsRecall *recall)
 							     NULL,
 							     g_free);
   
-  recall->midi2_control_change = NULL;
+  recall->midi2_cc_to_value = g_hash_table_new_full(g_direct_hash,
+						    g_direct_equal,
+						    NULL,
+						    NULL);
+  recall->midi2_cc_to_port_specifier = g_hash_table_new_full(g_direct_hash,
+							     g_direct_equal,
+							     NULL,
+							     g_free);
 
   recall->jack_metadata = NULL;
 }
@@ -1630,6 +1669,52 @@ ags_recall_set_property(GObject *gobject,
       g_rec_mutex_unlock(recall_mutex);
     }
     break;
+  case PROP_MIDI2_CC_TO_VALUE:
+    {
+      GHashTable *midi2_cc_to_value;
+      
+      midi2_cc_to_value = (GHashTable *) g_value_get_pointer(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(recall->midi2_cc_to_value == midi2_cc_to_value){
+	g_rec_mutex_unlock(recall_mutex);
+	
+	return;
+      }
+
+      if(midi2_cc_to_value != NULL){
+	g_hash_table_ref(midi2_cc_to_value);
+      }
+      
+      recall->midi2_cc_to_value = midi2_cc_to_value;
+      
+      g_rec_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_MIDI2_CC_TO_PORT_SPECIFIER:
+    {
+      GHashTable *midi2_cc_to_port_specifier;
+      
+      midi2_cc_to_port_specifier = (GHashTable *) g_value_get_pointer(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(recall->midi2_cc_to_port_specifier == midi2_cc_to_port_specifier){
+	g_rec_mutex_unlock(recall_mutex);
+	
+	return;
+      }
+
+      if(midi2_cc_to_port_specifier != NULL){
+	g_hash_table_ref(midi2_cc_to_port_specifier);
+      }
+      
+      recall->midi2_cc_to_port_specifier = midi2_cc_to_port_specifier;
+      
+      g_rec_mutex_unlock(recall_mutex);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -1877,6 +1962,36 @@ ags_recall_get_property(GObject *gobject,
       g_hash_table_ref(midi1_cc_to_port_specifier);
       
       g_value_set_pointer(value, midi1_cc_to_port_specifier);      
+      
+      g_rec_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_MIDI2_CC_TO_VALUE:
+    {
+      GHashTable *midi2_cc_to_value;
+
+      g_rec_mutex_lock(recall_mutex);
+      
+      midi2_cc_to_value = recall->midi2_cc_to_value;
+
+      g_hash_table_ref(midi2_cc_to_value);
+      
+      g_value_set_pointer(value, midi2_cc_to_value);      
+      
+      g_rec_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_MIDI2_CC_TO_PORT_SPECIFIER:
+    {
+      GHashTable *midi2_cc_to_port_specifier;
+
+      g_rec_mutex_lock(recall_mutex);
+      
+      midi2_cc_to_port_specifier = recall->midi2_cc_to_port_specifier;
+
+      g_hash_table_ref(midi2_cc_to_port_specifier);
+      
+      g_value_set_pointer(value, midi2_cc_to_port_specifier);      
       
       g_rec_mutex_unlock(recall_mutex);
     }
@@ -5176,6 +5291,62 @@ ags_recall_get_midi1_cc_to_port_specifier(AgsRecall *recall)
 	       NULL);
 
   return(midi1_cc_to_port_specifier);
+}
+
+/**
+ * ags_recall_get_midi2_cc_to_value:
+ * @recall: the #AgsRecall
+ *
+ * Gets MIDI version 1 control change to value mapped hash table.
+ * 
+ * Returns: (transfer container): the MIDI version 1 control change to value hash table
+ * 
+ * Since: 7.0.0
+ */
+GHashTable*
+ags_recall_get_midi2_cc_to_value(AgsRecall *recall)
+{
+  GHashTable *midi2_cc_to_value;
+  
+  if(!AGS_IS_RECALL(recall)){
+    return(0);
+  }
+
+  midi2_cc_to_value = NULL;
+
+  g_object_get(recall,
+	       "midi2-cc-to-value", &midi2_cc_to_value,
+	       NULL);
+
+  return(midi2_cc_to_value);
+}
+
+/**
+ * ags_recall_get_midi2_cc_to_port_specifier:
+ * @recall: the #AgsRecall
+ *
+ * Gets MIDI version 1 control change to port specifier mapped hash table.
+ * 
+ * Returns: (transfer container): the MIDI version 1 control change to port specifier hash table
+ * 
+ * Since: 7.0.0
+ */
+GHashTable*
+ags_recall_get_midi2_cc_to_port_specifier(AgsRecall *recall)
+{
+  GHashTable *midi2_cc_to_port_specifier;
+  
+  if(!AGS_IS_RECALL(recall)){
+    return(0);
+  }
+
+  midi2_cc_to_port_specifier = NULL;
+
+  g_object_get(recall,
+	       "midi2-cc-to-port-specifier", &midi2_cc_to_port_specifier,
+	       NULL);
+
+  return(midi2_cc_to_port_specifier);
 }
 
 void
