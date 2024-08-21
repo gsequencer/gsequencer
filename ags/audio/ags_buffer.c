@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,7 +20,6 @@
 #include <ags/audio/ags_buffer.h>
 
 #include <ags/audio/ags_audio_signal.h>
-#include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/i18n.h>
 
@@ -952,10 +951,16 @@ ags_buffer_set_format(AgsBuffer *buffer,
   data = ags_stream_alloc(buffer->buffer_size,
 			  format);
 
-  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
-						  ags_audio_buffer_util_format_from_soundcard(buffer->format));
+  buffer->audio_buffer_util = ags_audio_buffer_util_alloc();
   
-  ags_audio_buffer_util_copy_buffer_to_buffer(data, 1, 0,
+  copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(buffer->audio_buffer_util,
+							      ags_audio_buffer_util_format_from_soundcard(buffer->audio_buffer_util,
+													  format),
+							      ags_audio_buffer_util_format_from_soundcard(buffer->audio_buffer_util,
+													  buffer->format));
+  
+  ags_audio_buffer_util_copy_buffer_to_buffer(buffer->audio_buffer_util,
+					      data, 1, 0,
 					      buffer->data, 1, 0,
 					      buffer->buffer_size, copy_mode);
 
@@ -1043,10 +1048,14 @@ ags_buffer_duplicate(AgsBuffer *buffer)
 	       "format", buffer->format,
 	       NULL);
 
-  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(buffer_copy->format),
-						  ags_audio_buffer_util_format_from_soundcard(buffer->format));
+  copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(buffer->audio_buffer_util,
+							      ags_audio_buffer_util_format_from_soundcard(buffer->audio_buffer_util,
+													  buffer_copy->format),
+							      ags_audio_buffer_util_format_from_soundcard(buffer->audio_buffer_util,
+													  buffer->format));
   
-  ags_audio_buffer_util_copy_buffer_to_buffer(buffer_copy->data, 1, 0,
+  ags_audio_buffer_util_copy_buffer_to_buffer(buffer->audio_buffer_util,
+					      buffer_copy->data, 1, 0,
 					      buffer->data, 1, 0,
 					      buffer_copy->buffer_size, copy_mode);
 

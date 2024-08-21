@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/audio/fx/ags_fx_analyse_audio_signal.h>
-
-#include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/fx/ags_fx_analyse_channel.h>
 #include <ags/audio/fx/ags_fx_analyse_channel_processor.h>
@@ -136,6 +134,7 @@ ags_fx_analyse_audio_signal_real_run_inter(AgsRecall *recall)
   AgsFxAnalyseChannel *fx_analyse_channel;
   AgsFxAnalyseChannelProcessor *fx_analyse_channel_processor;
   AgsFxAnalyseRecycling *fx_analyse_recycling;
+  AgsFxAnalyseAudioSignal *fx_analyse_audio_signal;
   AgsAudioSignal *source;
 
   gint sound_scope;
@@ -146,6 +145,8 @@ ags_fx_analyse_audio_signal_real_run_inter(AgsRecall *recall)
   GRecMutex *fx_analyse_channel_mutex;
   GRecMutex *stream_mutex;
 
+  fx_analyse_audio_signal = (AgsFxAnalyseAudioSignal *) recall;
+  
   sound_scope = ags_recall_get_sound_scope(recall);
   
   fx_analyse_channel = NULL;
@@ -178,8 +179,10 @@ ags_fx_analyse_audio_signal_real_run_inter(AgsRecall *recall)
 	       "format", &format,
 	       NULL);
   
-  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
-						  ags_audio_buffer_util_format_from_soundcard(format));
+  copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(&(fx_analyse_audio_signal->audio_buffer_util),
+							      AGS_AUDIO_BUFFER_UTIL_DOUBLE,
+							      ags_audio_buffer_util_format_from_soundcard(&(fx_analyse_audio_signal->audio_buffer_util),
+													  format));
 
   if(fx_analyse_channel != NULL &&
      source != NULL &&
@@ -192,7 +195,8 @@ ags_fx_analyse_audio_signal_real_run_inter(AgsRecall *recall)
     g_rec_mutex_lock(fx_analyse_channel_mutex);
     g_rec_mutex_lock(stream_mutex);
 
-    ags_audio_buffer_util_copy_buffer_to_buffer(fx_analyse_channel->input_data[sound_scope]->in, 1, 0,
+    ags_audio_buffer_util_copy_buffer_to_buffer(&(fx_analyse_audio_signal->audio_buffer_util),
+						fx_analyse_channel->input_data[sound_scope]->in, 1, 0,
 						source->stream_current->data, 1, 0,
 						buffer_size, copy_mode);    
     

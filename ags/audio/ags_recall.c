@@ -1286,7 +1286,8 @@ ags_recall_init(AgsRecall *recall)
 							     NULL,
 							     g_free);
 
-  recall->jack_metadata = NULL;
+  recall->jack_metadata_to_value = NULL;
+  recall->jack_metadata_to_port_specifier = NULL;
 }
 
 void
@@ -2257,7 +2258,21 @@ ags_recall_finalize(GObject *gobject)
 
     g_list_free(start_list);
   }
+
+  /*  */
+  ags_midi_util_free(recall->midi_util);
+
+  ags_midi_ump_util_free(recall->midi_ump_util);
+
+  g_hash_table_unref(recall->midi1_cc_to_value);
+  g_hash_table_unref(recall->midi1_cc_to_port_specifier);
+
+  g_hash_table_unref(recall->midi2_cc_to_value);
+  g_hash_table_unref(recall->midi2_cc_to_port_specifier);
   
+  g_hash_table_unref(recall->jack_metadata_to_value);
+  g_hash_table_unref(recall->jack_metadata_to_port_specifier);
+
   /* call parent */
   G_OBJECT_CLASS(ags_recall_parent_class)->finalize(gobject);
 }
@@ -6334,7 +6349,203 @@ ags_recall_midi1_control_change(AgsRecall *recall)
 void
 ags_recall_real_midi2_control_change(AgsRecall *recall)
 {
-  //TODO:JK: implement me
+  AgsAudio *audio;
+
+  GObject *input_sequencer;
+
+  GHashTable *midi2_cc_to_value;
+  GHashTable *midi2_cc_to_port_specifier;
+    
+  GList *start_port, *port;
+
+  guchar *midi_buffer;
+
+  guint buffer_length;
+  
+  GRecMutex *recall_mutex;
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
+  
+  audio = NULL;
+
+  input_sequencer = NULL;
+
+  midi2_cc_to_value = NULL;
+
+  start_port = NULL;
+  port = NULL;
+
+  midi_buffer = NULL;
+  
+  buffer_length = 0;
+  
+  if(AGS_IS_RECALL_AUDIO(recall)){
+    g_rec_mutex_lock(recall_mutex);
+
+    audio = AGS_RECALL_AUDIO(recall)->audio;
+
+    if(audio != NULL){
+      g_object_ref(audio);
+    }
+    
+    g_rec_mutex_unlock(recall_mutex);    
+  }
+  
+  if(AGS_IS_RECALL_CHANNEL(recall)){
+    AgsChannel *channel;
+
+    g_rec_mutex_lock(recall_mutex);
+
+    channel = AGS_RECALL_CHANNEL(recall)->source;
+
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
+    
+    g_rec_mutex_unlock(recall_mutex);
+
+    if(channel != NULL){
+      audio = (AgsAudio *) ags_channel_get_audio(channel);
+
+      g_object_unref(channel);
+    }    
+  }
+
+  input_sequencer = ags_audio_get_input_sequencer(audio);
+
+  midi2_cc_to_port_specifier = recall->midi2_cc_to_port_specifier;
+  
+  if(input_sequencer != NULL &&
+     (AGS_IS_RECALL_AUDIO(recall) ||
+      AGS_IS_RECALL_CHANNEL(recall))){
+    g_rec_mutex_lock(recall_mutex);
+    
+    midi2_cc_to_value = recall->midi2_cc_to_value;
+    
+    g_rec_mutex_unlock(recall_mutex);
+
+    if(midi2_cc_to_value != NULL){
+      /* retrieve buffer */
+      midi_buffer = ags_sequencer_get_buffer(AGS_SEQUENCER(input_sequencer),
+					     &buffer_length);
+  
+      ags_sequencer_lock_buffer(AGS_SEQUENCER(input_sequencer),
+				midi_buffer);
+
+      if(midi_buffer != NULL){
+	guchar *midi_iter;
+      
+	/* parse bytes */
+	midi_iter = midi_buffer;
+    
+	while(midi_iter < midi_buffer + buffer_length){
+	  if(ags_midi_ump_util_is_midi1_note_on(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_midi1_note_off(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_midi1_polyphonic_aftertouch(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_midi1_control_change(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_midi1_pitch_bend(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_midi1_program_change(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_midi1_channel_pressure(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_midi2_note_on(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_midi2_note_off(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_midi2_polyphonic_aftertouch(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_midi2_registered_per_note_controller(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_midi2_assignable_per_note_controller(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_midi2_control_change(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_midi2_rpn_pitch_bend_range(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_midi2_rpn_coarse_tuning(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_midi2_rpn_tuning_program_change(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_midi2_rpn_tuning_bank_select(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_midi2_rpn_mpe_mcm(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_midi2_program_change(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_midi2_channel_pressure(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_midi2_pitch_bend(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_midi2_per_note_pitch_bend(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_flex_set_tempo(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_flex_set_time_signature(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_flex_set_metronome(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_flex_set_key_signature(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_flex_set_chord_name(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_endpoint_discovery(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_endpoint_info_notification(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_device_identity_notification(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_endpoint_name_notification(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_product_instance_id_notification(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_stream_configuration_request(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_function_block_discovery(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_function_block_info_notification(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_function_block_name_notification(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_start_of_clip(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_end_of_clip(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_noop(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_jr_clock(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_jr_timestamp(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_delta_clock_ticks_per_quarter_note(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_delta_clock_ticks_since_last_event(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else{
+	    g_warning("ags_recall.c - unexpected byte %x", midi_iter[0]);
+	    
+	    midi_iter++;
+	  }
+	}
+      }
+      
+      ags_sequencer_unlock_buffer(AGS_SEQUENCER(input_sequencer),
+				  midi_buffer);
+    }
+  }
+  
+  if(audio != NULL){
+    g_object_unref(audio);
+  }
+
+  if(input_sequencer != NULL){
+    g_object_unref(input_sequencer);
+  }  
 }
 
 /**

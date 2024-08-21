@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,8 +20,6 @@
 #include <ags/audio/fx/ags_fx_playback_audio_processor.h>
 
 #include <ags/audio/ags_wave.h>
-#include <ags/audio/ags_audio_buffer_util.h>
-#include <ags/audio/ags_resample_util.h>
 
 #include <ags/audio/fx/ags_fx_playback_audio.h>
 
@@ -852,8 +850,10 @@ ags_fx_playback_audio_processor_run_inter(AgsRecall *recall)
     if(audio_signal->recall_id == recall_id){
       g_rec_mutex_lock(stream_mutex);
     
-      ags_audio_buffer_util_clear_buffer(audio_signal->stream_current->data, 1,
-					 buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
+      ags_audio_buffer_util_clear_buffer(&(fx_playback_audio_processor->audio_buffer_util),
+					 audio_signal->stream_current->data, 1,
+					 buffer_size, ags_audio_buffer_util_format_from_soundcard(&(fx_playback_audio_processor->audio_buffer_util),
+												  format));
 
     
       g_rec_mutex_unlock(stream_mutex);
@@ -885,8 +885,10 @@ ags_fx_playback_audio_processor_run_inter(AgsRecall *recall)
     if(audio_signal->recall_id == recall_id){
       g_rec_mutex_lock(stream_mutex);
     
-      ags_audio_buffer_util_clear_buffer(audio_signal->stream_current->data, 1,
-					 buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
+      ags_audio_buffer_util_clear_buffer(&(fx_playback_audio_processor->audio_buffer_util),
+					 audio_signal->stream_current->data, 1,
+					 buffer_size, ags_audio_buffer_util_format_from_soundcard(&(fx_playback_audio_processor->audio_buffer_util),
+												  format));
 
     
       g_rec_mutex_unlock(stream_mutex);
@@ -1152,14 +1154,15 @@ ags_fx_playback_audio_processor_real_data_put(AgsFxPlaybackAudioProcessor *fx_pl
   buffer_mutex = AGS_BUFFER_GET_OBJ_MUTEX(buffer);
   stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(current_audio_signal);
   
-  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
-						  ags_audio_buffer_util_format_from_soundcard(buffer_format));
+  copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(&(fx_playback_audio_processor->audio_buffer_util),
+							      ags_audio_buffer_util_format_from_soundcard(&(fx_playback_audio_processor->audio_buffer_util),
+													  format),
+							      ags_audio_buffer_util_format_from_soundcard(&(fx_playback_audio_processor->audio_buffer_util),
+													  buffer_format));
 
   do_resample = FALSE;
   
   if(samplerate != buffer_samplerate){
-    AgsResampleUtil resample_util;
-
     guint allocated_buffer_length;
 
     allocated_buffer_length = buffer_size;
@@ -1175,40 +1178,40 @@ ags_fx_playback_audio_processor_real_data_put(AgsFxPlaybackAudioProcessor *fx_pl
 
     g_rec_mutex_lock(buffer_mutex);
 
-    ags_resample_util_init(&resample_util);
+    ags_resample_util_init(&(fx_playback_audio_processor->resample_util));
 
-    resample_util.src_ratio = buffer_samplerate / samplerate;
+    fx_playback_audio_processor->resample_util.src_ratio = buffer_samplerate / samplerate;
 
-    resample_util.input_frames = buffer_buffer_size;
-    resample_util.data_in = ags_stream_alloc(allocated_buffer_length,
-					     buffer_format);
+    fx_playback_audio_processor->resample_util.input_frames = buffer_buffer_size;
+    fx_playback_audio_processor->resample_util.data_in = ags_stream_alloc(allocated_buffer_length,
+									  buffer_format);
 
-    resample_util.output_frames = buffer_size;
-    resample_util.data_out = ags_stream_alloc(allocated_buffer_length,
-					      buffer_format);
+    fx_playback_audio_processor->resample_util.output_frames = buffer_size;
+    fx_playback_audio_processor->resample_util.data_out = ags_stream_alloc(allocated_buffer_length,
+									   buffer_format);
 
-    resample_util.buffer = ags_stream_alloc(allocated_buffer_length,
-					    buffer_format);
+    fx_playback_audio_processor->resample_util.buffer = ags_stream_alloc(allocated_buffer_length,
+									 buffer_format);
   
-    resample_util.destination = buffer_data;
-    resample_util.destination_stride = 1;
+    fx_playback_audio_processor->resample_util.destination = buffer_data;
+    fx_playback_audio_processor->resample_util.destination_stride = 1;
 
-    resample_util.source = buffer->data;
-    resample_util.source_stride = 1;
+    fx_playback_audio_processor->resample_util.source = buffer->data;
+    fx_playback_audio_processor->resample_util.source_stride = 1;
 
-    resample_util.buffer_length = allocated_buffer_length;
-    resample_util.format = buffer_format;
-    resample_util.samplerate = buffer_samplerate;
+    fx_playback_audio_processor->resample_util.buffer_length = allocated_buffer_length;
+    fx_playback_audio_processor->resample_util.format = buffer_format;
+    fx_playback_audio_processor->resample_util.samplerate = buffer_samplerate;
   
-    resample_util.target_samplerate = samplerate;
+    fx_playback_audio_processor->resample_util.target_samplerate = samplerate;
 
-    resample_util.bypass_cache = TRUE;
+    fx_playback_audio_processor->resample_util.bypass_cache = TRUE;
     
-    ags_resample_util_compute(&resample_util);  
+    ags_resample_util_compute(&(fx_playback_audio_processor->resample_util));  
 
-    ags_stream_free(resample_util.data_out);
-    ags_stream_free(resample_util.data_in);
-    ags_stream_free(resample_util.buffer);
+    ags_stream_free(fx_playback_audio_processor->resample_util.data_out);
+    ags_stream_free(fx_playback_audio_processor->resample_util.data_in);
+    ags_stream_free(fx_playback_audio_processor->resample_util.buffer);
     
     g_rec_mutex_unlock(buffer_mutex);
     
@@ -1217,13 +1220,15 @@ ags_fx_playback_audio_processor_real_data_put(AgsFxPlaybackAudioProcessor *fx_pl
     if(x_offset < buffer_x_offset){
       attack = (samplerate / buffer_samplerate) * (buffer_x_offset - x_offset);
       
-      ags_audio_buffer_util_copy_buffer_to_buffer(current_audio_signal->stream_current->data, 1, attack,
+      ags_audio_buffer_util_copy_buffer_to_buffer(&(fx_playback_audio_processor->audio_buffer_util),
+						  current_audio_signal->stream_current->data, 1, attack,
 						  buffer_data, 1, 0,
 						  buffer_size - attack, copy_mode);
     }else{
       attack = (samplerate / buffer_samplerate) * (x_offset - buffer_x_offset);
       
-      ags_audio_buffer_util_copy_buffer_to_buffer(current_audio_signal->stream_current->data, 1, 0,
+      ags_audio_buffer_util_copy_buffer_to_buffer(&(fx_playback_audio_processor->audio_buffer_util),
+						  current_audio_signal->stream_current->data, 1, 0,
 						  buffer_data, 1, attack,
 						  buffer_size - attack, copy_mode);
     }
@@ -1238,13 +1243,15 @@ ags_fx_playback_audio_processor_real_data_put(AgsFxPlaybackAudioProcessor *fx_pl
     if(x_offset < buffer_x_offset){
       attack = buffer_x_offset - x_offset;
       
-      ags_audio_buffer_util_copy_buffer_to_buffer(current_audio_signal->stream_current->data, 1, attack,
+      ags_audio_buffer_util_copy_buffer_to_buffer(&(fx_playback_audio_processor->audio_buffer_util),
+						  current_audio_signal->stream_current->data, 1, attack,
 						  buffer->data, 1, 0,
 						  buffer_size - attack, copy_mode);
     }else{
       attack = x_offset - buffer_x_offset;
       
-      ags_audio_buffer_util_copy_buffer_to_buffer(current_audio_signal->stream_current->data, 1, 0,
+      ags_audio_buffer_util_copy_buffer_to_buffer(&(fx_playback_audio_processor->audio_buffer_util),
+						  current_audio_signal->stream_current->data, 1, 0,
 						  buffer->data, 1, attack,
 						  buffer_size - attack, copy_mode);      
     }
@@ -1690,8 +1697,11 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
       }
     }
 
-    target_copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(target_format),
-							   ags_audio_buffer_util_format_from_soundcard(format));
+    target_copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(&(fx_playback_audio_processor->audio_buffer_util),
+								       ags_audio_buffer_util_format_from_soundcard(&(fx_playback_audio_processor->audio_buffer_util),
+														   target_format),
+								       ags_audio_buffer_util_format_from_soundcard(&(fx_playback_audio_processor->audio_buffer_util),
+														   format));
 
     if(input_soundcard != NULL){
       stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(current_audio_signal);
@@ -1701,10 +1711,13 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
       g_rec_mutex_lock(stream_mutex);
       ags_soundcard_lock_buffer(AGS_SOUNDCARD(input_soundcard), data);
 
-      ags_audio_buffer_util_clear_buffer(current_audio_signal->stream_current->data, 1,
-					 target_buffer_size, ags_audio_buffer_util_format_from_soundcard(target_format));
+      ags_audio_buffer_util_clear_buffer(&(fx_playback_audio_processor->audio_buffer_util),
+					 current_audio_signal->stream_current->data, 1,
+					 target_buffer_size, ags_audio_buffer_util_format_from_soundcard(&(fx_playback_audio_processor->audio_buffer_util),
+													 target_format));
     
-      ags_audio_buffer_util_copy_buffer_to_buffer(current_audio_signal->stream_current->data, 1, 0,
+      ags_audio_buffer_util_copy_buffer_to_buffer(&(fx_playback_audio_processor->audio_buffer_util),
+						  current_audio_signal->stream_current->data, 1, 0,
 						  data, audio_channels, input_soundcard_channel,
 						  target_buffer_size, target_copy_mode);
 
@@ -1769,8 +1782,11 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
     /* record */
     data = NULL;
 
-    target_copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(target_format),
-							   ags_audio_buffer_util_format_from_soundcard(format));
+    target_copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(&(fx_playback_audio_processor->audio_buffer_util),
+								       ags_audio_buffer_util_format_from_soundcard(&(fx_playback_audio_processor->audio_buffer_util),
+														   target_format),
+								       ags_audio_buffer_util_format_from_soundcard(&(fx_playback_audio_processor->audio_buffer_util),
+														   format));
     
     if(input_soundcard != NULL){
       buffer_mutex = AGS_BUFFER_GET_OBJ_MUTEX(buffer);
@@ -1813,11 +1829,14 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
 	  break;
 	}
 	
-	ags_audio_buffer_util_clear_buffer(data, 1,
-					   frame_count, ags_audio_buffer_util_format_from_soundcard(target_format));
+	ags_audio_buffer_util_clear_buffer(&(fx_playback_audio_processor->audio_buffer_util),
+					   data, 1,
+					   frame_count, ags_audio_buffer_util_format_from_soundcard(&(fx_playback_audio_processor->audio_buffer_util),
+												    target_format));
       }
     
-      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
+      ags_audio_buffer_util_copy_buffer_to_buffer(&(fx_playback_audio_processor->audio_buffer_util),
+						  buffer->data, 1, attack,
 						  data, audio_channels, input_soundcard_channel,
 						  frame_count, target_copy_mode);
 
@@ -1891,11 +1910,14 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
 
 	if(found_buffer &&
 	   capture_mode == AGS_FX_PLAYBACK_AUDIO_CAPTURE_MODE_REPLACE){
-	  ags_audio_buffer_util_clear_buffer(buffer->data, 1,
-					     attack, ags_audio_buffer_util_format_from_soundcard(target_format));
+	  ags_audio_buffer_util_clear_buffer(&(fx_playback_audio_processor->audio_buffer_util),
+					     buffer->data, 1,
+					     attack, ags_audio_buffer_util_format_from_soundcard(&(fx_playback_audio_processor->audio_buffer_util),
+												 target_format));
 	}
     
-	ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
+	ags_audio_buffer_util_copy_buffer_to_buffer(&(fx_playback_audio_processor->audio_buffer_util),
+						    buffer->data, 1, 0,
 						    data, audio_channels, (frame_count * audio_channels) + input_soundcard_channel,
 						    attack, target_copy_mode);
 

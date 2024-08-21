@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,7 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/fx/ags_fx_notation_audio_signal.h>
 
@@ -44,6 +45,8 @@ typedef struct _AgsFxLv2AudioSignalClass AgsFxLv2AudioSignalClass;
 struct _AgsFxLv2AudioSignal
 {
   AgsFxNotationAudioSignal fx_notation_audio_signal;
+
+  AgsAudioBufferUtil audio_buffer_util;
 };
 
 struct _AgsFxLv2AudioSignalClass

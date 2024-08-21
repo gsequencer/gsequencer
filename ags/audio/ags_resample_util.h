@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -96,6 +96,8 @@ struct _AgsResampleUtil
   gdouble last_position;
 
   gpointer buffer;  
+
+  AgsAudioBufferUtil *audio_buffer_util;
 };
 
 GType ags_resample_util_get_type(void);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,6 +27,7 @@
 
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_channel_run.h>
+#include <ags/audio/ags_audio_buffer_util.h>
 
 G_BEGIN_DECLS
 
@@ -43,6 +44,8 @@ typedef struct _AgsFxAnalyseChannelProcessorClass AgsFxAnalyseChannelProcessorCl
 struct _AgsFxAnalyseChannelProcessor
 {
   AgsRecallChannelRun recall_channel_run;
+
+  AgsAudioBufferUtil audio_buffer_util;
 };
 
 struct _AgsFxAnalyseChannelProcessorClass

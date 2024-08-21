@@ -1327,7 +1327,8 @@ ags_wave_set_samplerate(AgsWave *wave,
     /*  */
     g_rec_mutex_lock(buffer_mutex);
     
-    ags_audio_buffer_util_copy_buffer_to_buffer(data, 1, offset,
+    ags_audio_buffer_util_copy_buffer_to_buffer(AGS_BUFFER(list->data)->audio_buffer_util,
+						data, 1, offset,
 						AGS_BUFFER(list->data)->data, 1, 0,
 						buffer_size, copy_mode);
 
@@ -1430,21 +1431,27 @@ ags_wave_set_samplerate(AgsWave *wave,
 
     g_rec_mutex_lock(buffer_mutex);
     
-    ags_audio_buffer_util_clear_buffer(AGS_BUFFER(list->data)->data, 1,
-				       buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
+    ags_audio_buffer_util_clear_buffer(AGS_BUFFER(list->data)->audio_buffer_util,
+				       AGS_BUFFER(list->data)->data, 1,
+				       buffer_size, ags_audio_buffer_util_format_from_soundcard(AGS_BUFFER(list->data)->audio_buffer_util,
+												format));
 
     if(offset + buffer_size < buffer_length * buffer_size){
-      ags_audio_buffer_util_copy_buffer_to_buffer(AGS_BUFFER(list->data)->data, 1, 0,
+      ags_audio_buffer_util_copy_buffer_to_buffer(AGS_BUFFER(list->data)->audio_buffer_util,
+						  AGS_BUFFER(list->data)->data, 1, 0,
 						  resampled_data, 1, offset,
 						  buffer_size, copy_mode);
     }else{
       if(end_offset > offset){
-	ags_audio_buffer_util_copy_buffer_to_buffer(AGS_BUFFER(list->data)->data, 1, 0,
+	ags_audio_buffer_util_copy_buffer_to_buffer(AGS_BUFFER(list->data)->audio_buffer_util,
+						    AGS_BUFFER(list->data)->data, 1, 0,
 						    resampled_data, 1, offset,
 						    end_offset - offset, copy_mode);
 
-	ags_audio_buffer_util_clear_buffer(AGS_BUFFER(list->data)->data + (end_offset - offset), 1,
-					   buffer_size - (end_offset - offset), ags_audio_buffer_util_format_from_soundcard(format));
+	ags_audio_buffer_util_clear_buffer(AGS_BUFFER(list->data)->audio_buffer_util,
+					   AGS_BUFFER(list->data)->data + (end_offset - offset), 1,
+					   buffer_size - (end_offset - offset), ags_audio_buffer_util_format_from_soundcard(AGS_BUFFER(list->data)->audio_buffer_util,
+															    format));
       }
     }
     
@@ -1632,7 +1639,8 @@ ags_wave_set_buffer_size(AgsWave *wave,
     /*  */
     g_rec_mutex_lock(buffer_mutex);
     
-    ags_audio_buffer_util_copy_buffer_to_buffer(data, 1, offset,
+    ags_audio_buffer_util_copy_buffer_to_buffer(AGS_BUFFER(list->data)->audio_buffer_util,
+						data, 1, offset,
 						AGS_BUFFER(list->data)->data, 1, 0,
 						old_buffer_size, copy_mode);
 
@@ -1700,16 +1708,20 @@ ags_wave_set_buffer_size(AgsWave *wave,
 
     g_rec_mutex_lock(buffer_mutex);
 
-    ags_audio_buffer_util_clear_buffer(AGS_BUFFER(list->data)->data, 1,
-				       buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
+    ags_audio_buffer_util_clear_buffer(AGS_BUFFER(list->data)->audio_buffer_util,
+				       AGS_BUFFER(list->data)->data, 1,
+				       buffer_size, ags_audio_buffer_util_format_from_soundcard(AGS_BUFFER(list->data)->audio_buffer_util,
+												format));
     
     if(offset + buffer_size < buffer_length * buffer_size){
-      ags_audio_buffer_util_copy_buffer_to_buffer(AGS_BUFFER(list->data)->data, 1, 0,
+      ags_audio_buffer_util_copy_buffer_to_buffer(AGS_BUFFER(list->data)->audio_buffer_util,
+						  AGS_BUFFER(list->data)->data, 1, 0,
 						  data, 1, offset,
 						  buffer_size, copy_mode);
     }else{
       if(end_offset > offset){
-	ags_audio_buffer_util_copy_buffer_to_buffer(AGS_BUFFER(list->data)->data, 1, 0,
+	ags_audio_buffer_util_copy_buffer_to_buffer(AGS_BUFFER(list->data)->audio_buffer_util,
+						    AGS_BUFFER(list->data)->data, 1, 0,
 						    data, 1, offset,
 						    end_offset - offset, copy_mode);
       }
@@ -3780,10 +3792,7 @@ ags_wave_insert_native_level_from_clipboard_version_3_14_6(AgsWave *wave,
 
 	  continue;
 	}
-		
-	copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(wave_format),
-							ags_audio_buffer_util_format_from_soundcard(format_val));	
-
+	
 	resampled_clipboard_data = NULL;
 
 	if(samplerate_val != wave_samplerate){
@@ -3866,6 +3875,12 @@ ags_wave_insert_native_level_from_clipboard_version_3_14_6(AgsWave *wave,
 	  do_clear = TRUE;
 	}
 
+	copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(buffer->audio_buffer_util,
+								    ags_audio_buffer_util_format_from_soundcard(buffer->audio_buffer_util,
+														wave_format),
+								    ags_audio_buffer_util_format_from_soundcard(buffer->audio_buffer_util,
+														format_val));	
+
 	switch(wave_format){
 	case AGS_SOUNDCARD_SIGNED_8_BIT:
 	  {
@@ -3917,11 +3932,14 @@ ags_wave_insert_native_level_from_clipboard_version_3_14_6(AgsWave *wave,
 	
 	if(do_replace &&
 	   do_clear){
-	  ags_audio_buffer_util_clear_buffer(data, 1,
-					     current_buffer_length, ags_audio_buffer_util_format_from_soundcard(wave_format));
+	  ags_audio_buffer_util_clear_buffer(buffer->audio_buffer_util,
+					     data, 1,
+					     current_buffer_length, ags_audio_buffer_util_format_from_soundcard(buffer->audio_buffer_util,
+														wave_format));
 	}
 
-	ags_audio_buffer_util_copy_buffer_to_buffer(data, 1, 0,
+	ags_audio_buffer_util_copy_buffer_to_buffer(buffer->audio_buffer_util,
+						    data, 1, 0,
 						    resampled_clipboard_data, 1, 0,
 						    current_buffer_length, copy_mode);
 
@@ -3971,17 +3989,26 @@ ags_wave_insert_native_level_from_clipboard_version_3_14_6(AgsWave *wave,
 
 	  do_clear = TRUE;
 	}
+
+	copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(buffer->audio_buffer_util,
+								    ags_audio_buffer_util_format_from_soundcard(buffer->audio_buffer_util,
+														wave_format),
+								    ags_audio_buffer_util_format_from_soundcard(buffer->audio_buffer_util,
+														format_val));	
 	
 	current_buffer_length = wave_buffer_size - current_buffer_length;
 
 	if(current_buffer_length > 0){
 	  if(do_replace &&
 	     do_clear){
-	    ags_audio_buffer_util_clear_buffer(data, 1,
-					       current_buffer_length, ags_audio_buffer_util_format_from_soundcard(wave_format));
+	    ags_audio_buffer_util_clear_buffer(buffer->audio_buffer_util,
+					       data, 1,
+					       current_buffer_length, ags_audio_buffer_util_format_from_soundcard(buffer->audio_buffer_util,
+														  wave_format));
 	  }
 
-	  ags_audio_buffer_util_copy_buffer_to_buffer(data, 1, 0,
+	  ags_audio_buffer_util_copy_buffer_to_buffer(buffer->audio_buffer_util,
+						      data, 1, 0,
 						      resampled_clipboard_data, 1, 0,
 						      current_buffer_length, copy_mode);
 	}
@@ -4407,25 +4434,33 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 		
 	    if(attack + frame_count <= wave_buffer_size){
 	      if(wave_format == AGS_SOUNDCARD_DOUBLE){
-		ags_audio_buffer_util_clear_double(data, 1,
+		ags_audio_buffer_util_clear_double(buffer->audio_buffer_util,
+						   data, 1,
 						   frame_count);
 	      }else if(wave_format == AGS_SOUNDCARD_FLOAT){
-		ags_audio_buffer_util_clear_float(data, 1,
+		ags_audio_buffer_util_clear_float(buffer->audio_buffer_util,
+						  data, 1,
 						  frame_count);
 	      }else{		
-		ags_audio_buffer_util_clear_buffer(data, 1,
-						   frame_count, ags_audio_buffer_util_format_from_soundcard(wave_format));
+		ags_audio_buffer_util_clear_buffer(buffer->audio_buffer_util,
+						   data, 1,
+						   frame_count, ags_audio_buffer_util_format_from_soundcard(buffer->audio_buffer_util,
+													    wave_format));
 	      }
 	    }else{
 	      if(wave_format == AGS_SOUNDCARD_DOUBLE){
-		ags_audio_buffer_util_clear_double(data, 1,
+		ags_audio_buffer_util_clear_double(buffer->audio_buffer_util,
+						   data, 1,
 						   wave_buffer_size);
 	      }else if(wave_format == AGS_SOUNDCARD_FLOAT){
-		ags_audio_buffer_util_clear_float(data, 1,
+		ags_audio_buffer_util_clear_float(buffer->audio_buffer_util,
+						  data, 1,
 						  wave_buffer_size);
 	      }else{		
-		ags_audio_buffer_util_clear_buffer(data, 1,
-						   wave_buffer_size - attack, ags_audio_buffer_util_format_from_soundcard(wave_format));
+		ags_audio_buffer_util_clear_buffer(buffer->audio_buffer_util,
+						   data, 1,
+						   wave_buffer_size - attack, ags_audio_buffer_util_format_from_soundcard(buffer->audio_buffer_util,
+															  wave_format));
 	      }
 	    }
 	  }
@@ -4449,8 +4484,11 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 
 	  //	    g_message("insert - buffer->x = %lu", buffer->x);
 	  //	    g_message("%d %d", wave_format, format_val);
-	  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(wave_format),
-							  ags_audio_buffer_util_format_from_soundcard(format_val));
+	  copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(buffer->audio_buffer_util,
+								      ags_audio_buffer_util_format_from_soundcard(buffer->audio_buffer_util,
+														  wave_format),
+								      ags_audio_buffer_util_format_from_soundcard(buffer->audio_buffer_util,
+														  format_val));
 
 	  if(samplerate_val != wave_samplerate){
 	    AgsResampleUtil resample_util;
@@ -4502,11 +4540,13 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 	    ags_stream_free(resample_util.buffer);
 	    
 	    if(attack + target_frame_count <= wave_buffer_size){
-	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
+	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->audio_buffer_util,
+							  buffer->data, 1, attack,
 							  target_data, 1, 0,
 							  target_frame_count, copy_mode);
 	    }else{
-	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
+	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->audio_buffer_util,
+							  buffer->data, 1, attack,
 							  target_data, 1, 0,
 							  wave_buffer_size - attack, copy_mode);
 	    }
@@ -4514,11 +4554,13 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 	    free(target_data);
 	  }else{
 	    if(attack + frame_count <= wave_buffer_size){
-	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
+	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->audio_buffer_util,
+							  buffer->data, 1, attack,
 							  clipboard_data, 1, 0,
 							  frame_count, copy_mode);
 	    }else{
-	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
+	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->audio_buffer_util,
+							  buffer->data, 1, attack,
 							  clipboard_data, 1, 0,
 							  wave_buffer_size - attack, copy_mode);
 	    }
@@ -4537,14 +4579,18 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 	      data = buffer->data;
 		
 	      if(wave_format == AGS_SOUNDCARD_DOUBLE){
-		ags_audio_buffer_util_clear_double(data, 1,
+		ags_audio_buffer_util_clear_double(buffer->audio_buffer_util,
+						   data, 1,
 						   attack);
 	      }else if(wave_format == AGS_SOUNDCARD_FLOAT){
-		ags_audio_buffer_util_clear_float(data, 1,
+		ags_audio_buffer_util_clear_float(buffer->audio_buffer_util,
+						   data, 1,
 						  attack);
 	      }else{		
-		ags_audio_buffer_util_clear_buffer(data, 1,
-						   attack, ags_audio_buffer_util_format_from_soundcard(wave_format));
+		ags_audio_buffer_util_clear_buffer(buffer->audio_buffer_util,
+						   data, 1,
+						   attack, ags_audio_buffer_util_format_from_soundcard(buffer->audio_buffer_util,
+												       wave_format));
 	      }
 	    }
 	    
@@ -4564,8 +4610,11 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 
 	    //	      g_message("insert - buffer->x = %lu", buffer->x);
 
-	    copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(wave_format),
-							    ags_audio_buffer_util_format_from_soundcard(format_val));
+	    copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(buffer->audio_buffer_util,
+									ags_audio_buffer_util_format_from_soundcard(buffer->audio_buffer_util,
+														    wave_format),
+									ags_audio_buffer_util_format_from_soundcard(buffer->audio_buffer_util,
+														    format_val));
 	      
 	    if(samplerate_val != wave_samplerate){
 	      AgsResampleUtil resample_util;
@@ -4614,13 +4663,15 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 	      ags_stream_free(resample_util.data_in);
 	      ags_stream_free(resample_util.buffer);
 	      
-	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
+	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->audio_buffer_util,
+							  buffer->data, 1, 0,
 							  target_data, 1, wave_buffer_size - attack,
 							  attack, copy_mode);
 
 	      free(target_data);
 	    }else{
-	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
+	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->audio_buffer_util,
+							  buffer->data, 1, 0,
 							  clipboard_data, 1, wave_buffer_size - attack,
 							  attack, copy_mode);
 	    }
@@ -5316,25 +5367,33 @@ ags_wave_insert_base64_from_clipboard_extended(AgsWave *wave,
 		
 	      if(attack + frame_count <= wave_buffer_size){
 		if(wave_format == AGS_SOUNDCARD_DOUBLE){
-		  ags_audio_buffer_util_clear_double(data, 1,
+		  ags_audio_buffer_util_clear_double(buffer->audio_buffer_util,
+						     data, 1,
 						     frame_count);
 		}else if(wave_format == AGS_SOUNDCARD_FLOAT){
-		  ags_audio_buffer_util_clear_float(data, 1,
+		  ags_audio_buffer_util_clear_float(buffer->audio_buffer_util,
+						    data, 1,
 						    frame_count);
 		}else{		
-		  ags_audio_buffer_util_clear_buffer(data, 1,
-						     frame_count, ags_audio_buffer_util_format_from_soundcard(wave_format));
+		  ags_audio_buffer_util_clear_buffer(buffer->audio_buffer_util,
+						     data, 1,
+						     frame_count, ags_audio_buffer_util_format_from_soundcard(buffer->audio_buffer_util,
+													      wave_format));
 		}
 	      }else{
 		if(wave_format == AGS_SOUNDCARD_DOUBLE){
-		  ags_audio_buffer_util_clear_double(data, 1,
+		  ags_audio_buffer_util_clear_double(buffer->audio_buffer_util,
+						     data, 1,
 						     wave_buffer_size);
 		}else if(wave_format == AGS_SOUNDCARD_FLOAT){
-		  ags_audio_buffer_util_clear_float(data, 1,
+		  ags_audio_buffer_util_clear_float(buffer->audio_buffer_util,
+						    data, 1,
 						    wave_buffer_size);
 		}else{		
-		  ags_audio_buffer_util_clear_buffer(data, 1,
-						     wave_buffer_size - attack, ags_audio_buffer_util_format_from_soundcard(wave_format));
+		  ags_audio_buffer_util_clear_buffer(buffer->audio_buffer_util,
+						     data, 1,
+						     wave_buffer_size - attack, ags_audio_buffer_util_format_from_soundcard(buffer->audio_buffer_util,
+															    wave_format));
 		}
 	      }
 	    }
@@ -5358,8 +5417,11 @@ ags_wave_insert_base64_from_clipboard_extended(AgsWave *wave,
 
 	    //	    g_message("insert - buffer->x = %lu", buffer->x);
 	    //	    g_message("%d %d", wave_format, format_val);
-	    copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(wave_format),
-							    ags_audio_buffer_util_format_from_soundcard(format_val));
+	    copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(buffer->audio_buffer_util,
+									ags_audio_buffer_util_format_from_soundcard(buffer->audio_buffer_util,
+														    wave_format),
+									ags_audio_buffer_util_format_from_soundcard(buffer->audio_buffer_util,
+														    format_val));
 
 	    if(current_samplerate != wave_samplerate){
 	      AgsResampleUtil resample_util;
@@ -5413,11 +5475,13 @@ ags_wave_insert_base64_from_clipboard_extended(AgsWave *wave,
 	      ags_stream_free(resample_util.buffer);
 	    
 	      if(attack + target_frame_count <= wave_buffer_size){
-		ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
+		ags_audio_buffer_util_copy_buffer_to_buffer(buffer->audio_buffer_util,
+							    buffer->data, 1, attack,
 							    target_data, 1, 0,
 							    target_frame_count, copy_mode);
 	      }else{
-		ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
+		ags_audio_buffer_util_copy_buffer_to_buffer(buffer->audio_buffer_util,
+							    buffer->data, 1, attack,
 							    target_data, 1, 0,
 							    wave_buffer_size - attack, copy_mode);
 	      }
@@ -5425,11 +5489,13 @@ ags_wave_insert_base64_from_clipboard_extended(AgsWave *wave,
 	      free(target_data);
 	    }else{
 	      if(attack + frame_count <= wave_buffer_size){
-		ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
+		ags_audio_buffer_util_copy_buffer_to_buffer(buffer->audio_buffer_util,
+							    buffer->data, 1, attack,
 							    clipboard_data, 1, 0,
 							    frame_count, copy_mode);
 	      }else{
-		ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
+		ags_audio_buffer_util_copy_buffer_to_buffer(buffer->audio_buffer_util,
+							    buffer->data, 1, attack,
 							    clipboard_data, 1, 0,
 							    wave_buffer_size - attack, copy_mode);
 	      }
@@ -5454,14 +5520,18 @@ ags_wave_insert_base64_from_clipboard_extended(AgsWave *wave,
 		data = buffer->data;
 		
 		if(wave_format == AGS_SOUNDCARD_DOUBLE){
-		  ags_audio_buffer_util_clear_double(data, 1,
+		  ags_audio_buffer_util_clear_double(buffer->audio_buffer_util,
+						     data, 1,
 						     attack);
 		}else if(wave_format == AGS_SOUNDCARD_FLOAT){
-		  ags_audio_buffer_util_clear_float(data, 1,
+		  ags_audio_buffer_util_clear_float(buffer->audio_buffer_util,
+						    data, 1,
 						    attack);
 		}else{		
-		  ags_audio_buffer_util_clear_buffer(data, 1,
-						     attack, ags_audio_buffer_util_format_from_soundcard(wave_format));
+		  ags_audio_buffer_util_clear_buffer(buffer->audio_buffer_util,
+						     data, 1,
+						     attack, ags_audio_buffer_util_format_from_soundcard(buffer->audio_buffer_util,
+													 wave_format));
 		}
 	      }
 	    
@@ -5479,8 +5549,11 @@ ags_wave_insert_base64_from_clipboard_extended(AgsWave *wave,
 				    FALSE);
 	      }
 	      
-	      copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(wave_format),
-							      ags_audio_buffer_util_format_from_soundcard(format_val));	
+	      copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(buffer->audio_buffer_util,
+									  ags_audio_buffer_util_format_from_soundcard(buffer->audio_buffer_util,
+														      wave_format),
+									  ags_audio_buffer_util_format_from_soundcard(buffer->audio_buffer_util,
+														      format_val));	
 
 	      resampled_clipboard_data = NULL;
 	    
@@ -5533,13 +5606,15 @@ ags_wave_insert_base64_from_clipboard_extended(AgsWave *wave,
 		ags_stream_free(resample_util.data_in);
 		ags_stream_free(resample_util.buffer);
 	      
-		ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
+		ags_audio_buffer_util_copy_buffer_to_buffer(buffer->audio_buffer_util,
+							    buffer->data, 1, 0,
 							    target_data, 1, wave_buffer_size - attack,
 							    attack, copy_mode);
 
 		free(target_data);
 	      }else{
-		ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
+		ags_audio_buffer_util_copy_buffer_to_buffer(buffer->audio_buffer_util,
+							    buffer->data, 1, 0,
 							    clipboard_data, 1, wave_buffer_size - attack,
 							    attack, copy_mode);
 	      }

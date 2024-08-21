@@ -68,6 +68,8 @@ struct _AgsSpectrometer
   AgsCartesian *cartesian;
   GList *fg_plot;
 
+  AgsAudioBufferUtil *audio_buffer_util;
+  
   double *frequency;
 
   double *magnitude_cache;

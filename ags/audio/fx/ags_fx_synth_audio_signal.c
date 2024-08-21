@@ -216,6 +216,8 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
   GRecMutex *fx_synth_audio_mutex;
   GRecMutex *fx_synth_audio_processor_mutex;
 
+  fx_synth_audio_signal = (AgsFxSynthAudioSignal *) fx_notation_audio_signal;
+  
   audio = NULL;
   
   fx_synth_audio = NULL;
@@ -309,10 +311,12 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
 	       "x1-256th", &x1_256th,
 	       NULL);
 
-  audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
+  audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(&(fx_synth_audio_signal->audio_buffer_util),
+									 format);
 
-  copy_mode = ags_audio_buffer_util_get_copy_mode(audio_buffer_util_format,
-						  audio_buffer_util_format);
+  copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(&(fx_synth_audio_signal->audio_buffer_util),
+							      audio_buffer_util_format,
+							      audio_buffer_util_format);
   
   /* get synth mutex */
   fx_synth_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_synth_audio);
@@ -1232,9 +1236,11 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
     }
   }
 
-  copy_mode_out = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
-						      AGS_AUDIO_BUFFER_UTIL_FLOAT);
-
+  copy_mode_out = ags_audio_buffer_util_get_copy_mode_from_format(&(fx_synth_audio_signal->audio_buffer_util),
+								  ags_audio_buffer_util_format_from_soundcard(&(fx_synth_audio_signal->audio_buffer_util),
+													      format),
+								  AGS_AUDIO_BUFFER_UTIL_FLOAT);
+  
   if(midi_note >= 0 &&
      midi_note < 128){
     AgsFxSynthAudioScopeData *scope_data;
@@ -1912,10 +1918,12 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
 
       g_rec_mutex_unlock(source_stream_mutex);
 
-      ags_audio_buffer_util_clear_buffer(source->stream_current->data, 1,
+      ags_audio_buffer_util_clear_buffer(&(fx_synth_audio_signal->audio_buffer_util),
+					 source->stream_current->data, 1,
 					 buffer_size, audio_buffer_util_format);
 
-      ags_audio_buffer_util_copy_buffer_to_buffer(source->stream_current->data, 1, 0,
+      ags_audio_buffer_util_copy_buffer_to_buffer(&(fx_synth_audio_signal->audio_buffer_util),
+						  source->stream_current->data, 1, 0,
 						  ags_common_pitch_util_get_destination(channel_data->pitch_util,
 											channel_data->pitch_type), 1, 0,
 						  buffer_size, copy_mode);
@@ -1995,10 +2003,12 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
 
       g_rec_mutex_unlock(source_stream_mutex);
 
-      ags_audio_buffer_util_clear_buffer(source->stream_current->data, 1,
+      ags_audio_buffer_util_clear_buffer(&(fx_synth_audio_signal->audio_buffer_util),
+					 source->stream_current->data, 1,
 					 buffer_size, audio_buffer_util_format);
 
-      ags_audio_buffer_util_copy_buffer_to_buffer(source->stream_current->data, 1, 0,
+      ags_audio_buffer_util_copy_buffer_to_buffer(&(fx_synth_audio_signal->audio_buffer_util),
+						  source->stream_current->data, 1, 0,
 						  ags_chorus_util_get_destination(channel_data->chorus_util), 1, 0,
 						  buffer_size, copy_mode);
 

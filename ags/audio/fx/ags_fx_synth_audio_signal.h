@@ -26,6 +26,7 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/fx/ags_fx_notation_audio_signal.h>
 
@@ -44,6 +45,8 @@ typedef struct _AgsFxSynthAudioSignalClass AgsFxSynthAudioSignalClass;
 struct _AgsFxSynthAudioSignal
 {
   AgsFxNotationAudioSignal fx_notation_audio_signal;
+
+  AgsAudioBufferUtil audio_buffer_util;
 };
 
 struct _AgsFxSynthAudioSignalClass

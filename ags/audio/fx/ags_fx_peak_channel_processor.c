@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,9 +18,6 @@
  */
 
 #include <ags/audio/fx/ags_fx_peak_channel_processor.h>
-
-#include <ags/audio/ags_audio_buffer_util.h>
-#include <ags/audio/ags_peak_util.h>
 
 #include <ags/audio/fx/ags_fx_peak_channel.h>
 #include <ags/audio/fx/ags_fx_peak_recycling.h>
@@ -136,6 +133,7 @@ void
 ags_fx_peak_channel_processor_real_run_inter(AgsRecall *recall)
 {
   AgsFxPeakChannel *fx_peak_channel;
+  AgsFxPeakChannelProcessor *fx_peak_channel_processor;
   
   gdouble peak;
   guint buffer_size;
@@ -144,6 +142,8 @@ ags_fx_peak_channel_processor_real_run_inter(AgsRecall *recall)
 
   GRecMutex *fx_peak_channel_mutex;
 
+  fx_peak_channel_processor = (AgsFxPeakChannelProcessor *) recall;
+  
   sound_scope = ags_recall_get_sound_scope(recall);
   
   fx_peak_channel = NULL;
@@ -164,8 +164,6 @@ ags_fx_peak_channel_processor_real_run_inter(AgsRecall *recall)
   if(fx_peak_channel != NULL){
     AgsPort *port;
 
-    AgsPeakUtil peak_util;
-    
     gboolean peak_reseted;
     
     GValue value = {0,};
@@ -195,24 +193,25 @@ ags_fx_peak_channel_processor_real_run_inter(AgsRecall *recall)
       g_value_unset(&value);
     }
 
-    peak_util.source = fx_peak_channel->input_data[sound_scope]->buffer;
-    peak_util.source_stride = 1;
+    fx_peak_channel_processor->peak_util.source = fx_peak_channel->input_data[sound_scope]->buffer;
+    fx_peak_channel_processor->peak_util.source_stride = 1;
 
-    peak_util.buffer_length = buffer_size;
-    peak_util.format = AGS_SOUNDCARD_DOUBLE;
-    peak_util.samplerate = samplerate;
+    fx_peak_channel_processor->peak_util.buffer_length = buffer_size;
+    fx_peak_channel_processor->peak_util.format = AGS_SOUNDCARD_DOUBLE;
+    fx_peak_channel_processor->peak_util.samplerate = samplerate;
 
-    peak_util.harmonic_rate = 440.0;
-    peak_util.pressure_factor = 1.0;
+    fx_peak_channel_processor->peak_util.harmonic_rate = 440.0;
+    fx_peak_channel_processor->peak_util.pressure_factor = 1.0;
 
-    peak_util.peak = 0.0;
+    fx_peak_channel_processor->peak_util.peak = 0.0;
 
-    ags_peak_util_compute_double(&peak_util);
+    ags_peak_util_compute_double(&(fx_peak_channel_processor->peak_util));
 
-    peak = peak_util.peak;
+    peak = fx_peak_channel_processor->peak_util.peak;
 
     if(!peak_reseted){
-      ags_audio_buffer_util_clear_buffer(fx_peak_channel->input_data[sound_scope]->buffer, 1,
+      ags_audio_buffer_util_clear_buffer(&(fx_peak_channel_processor->audio_buffer_util),
+					 fx_peak_channel->input_data[sound_scope]->buffer, 1,
 					 buffer_size, AGS_AUDIO_BUFFER_UTIL_DOUBLE);
     }
     

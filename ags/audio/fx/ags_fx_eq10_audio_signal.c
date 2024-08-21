@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,8 +20,6 @@
 #include <ags/audio/fx/ags_fx_eq10_audio_signal.h>
 
 #include <ags/audio/ags_port.h>
-#include <ags/audio/ags_audio_buffer_util.h>
-#include <ags/audio/ags_volume_util.h>
 
 #include <ags/audio/fx/ags_fx_eq10_audio.h>
 #include <ags/audio/fx/ags_fx_eq10_channel.h>
@@ -141,9 +139,8 @@ ags_fx_eq10_audio_signal_real_run_inter(AgsRecall *recall)
   AgsFxEq10Channel *fx_eq10_channel;
   AgsFxEq10ChannelProcessor *fx_eq10_channel_processor;
   AgsFxEq10Recycling *fx_eq10_recycling;
+  AgsFxEq10AudioSignal *fx_eq10_audio_signal;
 
-  AgsVolumeUtil volume_util;
-  
   gdouble *output_buffer;
   gdouble *input_buffer;
   gdouble *cache_28hz;
@@ -180,6 +177,8 @@ ags_fx_eq10_audio_signal_real_run_inter(AgsRecall *recall)
   GRecMutex *fx_eq10_channel_mutex;
   GRecMutex *stream_mutex;
 
+  fx_eq10_audio_signal = (AgsFxEq10AudioSignal *) recall;
+  
   stream_mutex = NULL;
   
   sound_scope = ags_recall_get_sound_scope(recall);
@@ -215,11 +214,15 @@ ags_fx_eq10_audio_signal_real_run_inter(AgsRecall *recall)
 	       NULL);
 
   /* copy mode */
-  output_copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
-							 AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+  output_copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(&(fx_eq10_audio_signal->audio_buffer_util),
+								     ags_audio_buffer_util_format_from_soundcard(&(fx_eq10_audio_signal->audio_buffer_util),
+														 format),
+								     AGS_AUDIO_BUFFER_UTIL_DOUBLE);
 
-  input_copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
-							ags_audio_buffer_util_format_from_soundcard(format));
+  input_copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(&(fx_eq10_audio_signal->audio_buffer_util),
+								    AGS_AUDIO_BUFFER_UTIL_DOUBLE,
+								    ags_audio_buffer_util_format_from_soundcard(&(fx_eq10_audio_signal->audio_buffer_util),
+														format));
 
   output_buffer = NULL;
   input_buffer = NULL;
@@ -484,13 +487,15 @@ ags_fx_eq10_audio_signal_real_run_inter(AgsRecall *recall)
     /* clear/copy - preserve trailing */
     if(buffer_size > 8){
       /* clear buffer */
-      ags_audio_buffer_util_clear_double(input_buffer, 1,
+      ags_audio_buffer_util_clear_double(&(fx_eq10_audio_signal->audio_buffer_util),
+					 input_buffer, 1,
 					 buffer_size - 2);
     
       /* copy input */
       g_rec_mutex_lock(stream_mutex);
       
-      ags_audio_buffer_util_copy_buffer_to_buffer(input_buffer, 1, 0,
+      ags_audio_buffer_util_copy_buffer_to_buffer(&(fx_eq10_audio_signal->audio_buffer_util),
+						  input_buffer, 1, 0,
 						  source->stream_current->data, 1, 0,
 						  buffer_size - 2, input_copy_mode);
       
@@ -745,13 +750,15 @@ ags_fx_eq10_audio_signal_real_run_inter(AgsRecall *recall)
       /* clear/copy - handle trailing */
       if(i == 0){
 	/* clear buffer */
-	ags_audio_buffer_util_clear_double(input_buffer + (buffer_size - 3), 1,
+	ags_audio_buffer_util_clear_double(&(fx_eq10_audio_signal->audio_buffer_util),
+					   input_buffer + (buffer_size - 3), 1,
 					   2);
     
 	/* copy input */
 	g_rec_mutex_lock(stream_mutex);
 	
-	ags_audio_buffer_util_copy_buffer_to_buffer(input_buffer, 1, buffer_size - 3,
+	ags_audio_buffer_util_copy_buffer_to_buffer(&(fx_eq10_audio_signal->audio_buffer_util),
+						    input_buffer, 1, buffer_size - 3,
 						    source->stream_current->data, 1, buffer_size - 3,
 						    2, input_copy_mode);
 
@@ -759,43 +766,53 @@ ags_fx_eq10_audio_signal_real_run_inter(AgsRecall *recall)
       }
 
       /* fill output */
-      ags_audio_buffer_util_copy_double_to_double(output_buffer + i, 1,
+      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
+						  output_buffer + i, 1,
 						  cache_28hz, 1,
 						  AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE);
 
-      ags_audio_buffer_util_copy_double_to_double(output_buffer + i, 1,
+      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
+						  output_buffer + i, 1,
 						  cache_56hz, 1,
 						  AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE);
 
-      ags_audio_buffer_util_copy_double_to_double(output_buffer + i, 1,
+      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
+						  output_buffer + i, 1,
 						  cache_112hz, 1,
 						  AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE);
 
-      ags_audio_buffer_util_copy_double_to_double(output_buffer + i, 1,
+      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
+						  output_buffer + i, 1,
 						  cache_224hz, 1,
 						  AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE);
 
-      ags_audio_buffer_util_copy_double_to_double(output_buffer + i, 1,
+      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
+						  output_buffer + i, 1,
 						  cache_448hz, 1,
 						  AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE);
 
-      ags_audio_buffer_util_copy_double_to_double(output_buffer + i, 1,
+      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
+						  output_buffer + i, 1,
 						  cache_896hz, 1,
 						  AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE);
 
-      ags_audio_buffer_util_copy_double_to_double(output_buffer + i, 1,
+      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
+						  output_buffer + i, 1,
 						  cache_1792hz, 1,
 						  AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE);
 
-      ags_audio_buffer_util_copy_double_to_double(output_buffer + i, 1,
+      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
+						  output_buffer + i, 1,
 						  cache_3584hz, 1,
 						  AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE);
 
-      ags_audio_buffer_util_copy_double_to_double(output_buffer + i, 1,
+      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
+						  output_buffer + i, 1,
 						  cache_7168hz, 1,
 						  AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE);
 
-      ags_audio_buffer_util_copy_double_to_double(output_buffer + i, 1,
+      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
+						  output_buffer + i, 1,
 						  cache_14336hz, 1,
 						  AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE);
     }
@@ -806,13 +823,15 @@ ags_fx_eq10_audio_signal_real_run_inter(AgsRecall *recall)
 	gdouble frequency;
       
 	/* clear buffer */
-	ags_audio_buffer_util_clear_double(input_buffer + i, 1,
+	ags_audio_buffer_util_clear_double(&(fx_eq10_audio_signal->audio_buffer_util),
+					   input_buffer + i, 1,
 					   1);
       
 	/* copy input */
 	g_rec_mutex_lock(stream_mutex);
 	
-	ags_audio_buffer_util_copy_buffer_to_buffer(input_buffer, 1, i,
+	ags_audio_buffer_util_copy_buffer_to_buffer(&(fx_eq10_audio_signal->audio_buffer_util),
+						    input_buffer, 1, i,
 						    source->stream_current->data, 1, i,
 						    1, input_copy_mode);
 
@@ -942,68 +961,81 @@ ags_fx_eq10_audio_signal_real_run_inter(AgsRecall *recall)
       }
 
       /* fill output */
-      ags_audio_buffer_util_copy_double_to_double(output_buffer + i, 1,
+      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
+						  output_buffer + i, 1,
 						  cache_28hz + (i % 8), 1,
 						  1);
 
-      ags_audio_buffer_util_copy_double_to_double(output_buffer + i, 1,
+      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
+						  output_buffer + i, 1,
 						  cache_56hz + (i % 8), 1,
 						  1);
 
-      ags_audio_buffer_util_copy_double_to_double(output_buffer + i, 1,
+      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
+						  output_buffer + i, 1,
 						  cache_112hz + (i % 8), 1,
 						  1);
 
-      ags_audio_buffer_util_copy_double_to_double(output_buffer + i, 1,
+      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
+						  output_buffer + i, 1,
 						  cache_224hz + (i % 8), 1,
 						  1);
 
-      ags_audio_buffer_util_copy_double_to_double(output_buffer + i, 1,
+      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
+						  output_buffer + i, 1,
 						  cache_448hz + (i % 8), 1,
 						  1);
 
-      ags_audio_buffer_util_copy_double_to_double(output_buffer + i, 1,
+      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
+						  output_buffer + i, 1,
 						  cache_896hz + (i % 8), 1,
 						  1);
 
-      ags_audio_buffer_util_copy_double_to_double(output_buffer + i, 1,
+      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
+						  output_buffer + i, 1,
 						  cache_1792hz + (i % 8), 1,
 						  1);
 
-      ags_audio_buffer_util_copy_double_to_double(output_buffer + i, 1,
+      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
+						  output_buffer + i, 1,
 						  cache_3584hz + (i % 8), 1,
 						  1);
 
-      ags_audio_buffer_util_copy_double_to_double(output_buffer + i, 1,
+      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
+						  output_buffer + i, 1,
 						  cache_7168hz + (i % 8), 1,
 						  1);
 
-      ags_audio_buffer_util_copy_double_to_double(output_buffer + i, 1,
+      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
+						  output_buffer + i, 1,
 						  cache_14336hz + (i % 8), 1,
 						  1);
     }
 
     /* apply boost */
-    volume_util.destination = output_buffer;
-    volume_util.destination_stride = 1;
+    fx_eq10_audio_signal->volume_util.destination = output_buffer;
+    fx_eq10_audio_signal->volume_util.destination_stride = 1;
     
-    volume_util.source = output_buffer;
-    volume_util.source_stride = 1;
+    fx_eq10_audio_signal->volume_util.source = output_buffer;
+    fx_eq10_audio_signal->volume_util.source_stride = 1;
 
-    volume_util.buffer_length = buffer_size;
-    volume_util.format = AGS_SOUNDCARD_DOUBLE;
+    fx_eq10_audio_signal->volume_util.buffer_length = buffer_size;
+    fx_eq10_audio_signal->volume_util.format = AGS_SOUNDCARD_DOUBLE;
 
-    volume_util.volume = pressure;
+    fx_eq10_audio_signal->volume_util.volume = pressure;
 
-    ags_volume_util_compute_double(&volume_util);
+    ags_volume_util_compute_double(&(fx_eq10_audio_signal->volume_util));
   
     /* clear buffer and copy output  */
     g_rec_mutex_lock(stream_mutex);
 
-    ags_audio_buffer_util_clear_buffer(source->stream_current->data, 1,
-				       buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
+    ags_audio_buffer_util_clear_buffer(&(fx_eq10_audio_signal->audio_buffer_util),
+				       source->stream_current->data, 1,
+				       buffer_size, ags_audio_buffer_util_format_from_soundcard(&(fx_eq10_audio_signal->audio_buffer_util),
+												format));
     
-    ags_audio_buffer_util_copy_buffer_to_buffer(source->stream_current->data, 1, 0,
+    ags_audio_buffer_util_copy_buffer_to_buffer(&(fx_eq10_audio_signal->audio_buffer_util),
+						source->stream_current->data, 1, 0,
 						output_buffer, 1, 0,
 						buffer_size, output_copy_mode);
 

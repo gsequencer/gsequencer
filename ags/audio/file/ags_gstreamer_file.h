@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,6 +28,8 @@
 #include <gst/pbutils/pbutils.h>
 
 #include <ags/libags.h>
+
+#include <ags/audio/ags_audio_buffer_util.h>
 
 G_BEGIN_DECLS
 
@@ -122,6 +124,8 @@ struct _AgsGstreamerFile
   GList *rw_info;
   GList *rw_current_buffer;
   GList *rw_current_info;
+
+  AgsAudioBufferUtil *audio_buffer_util;
 };
 
 struct _AgsGstreamerFileClass

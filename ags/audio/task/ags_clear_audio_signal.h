@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,7 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_audio_buffer_util.h>
 #include <ags/audio/ags_audio_signal.h>
 
 G_BEGIN_DECLS
@@ -44,6 +45,8 @@ struct _AgsClearAudioSignal
   AgsTask task;
 
   AgsAudioSignal *audio_signal;
+
+  AgsAudioBufferUtil *audio_buffer_util;
 };
 
 struct _AgsClearAudioSignalClass

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,8 +21,6 @@
 
 #include <ags/plugin/ags_base_plugin.h>
 #include <ags/plugin/ags_lv2_plugin.h>
-
-#include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/fx/ags_fx_lv2_audio.h>
 #include <ags/audio/fx/ags_fx_lv2_audio_processor.h>
@@ -167,6 +165,7 @@ ags_fx_lv2_audio_signal_real_run_inter(AgsRecall *recall)
   AgsFxLv2Channel *fx_lv2_channel;
   AgsFxLv2ChannelProcessor *fx_lv2_channel_processor;
   AgsFxLv2Recycling *fx_lv2_recycling;
+  AgsFxLv2AudioSignal *fx_lv2_audio_signal;
   AgsLv2Plugin *lv2_plugin;
 
   guint sound_scope;
@@ -182,6 +181,8 @@ ags_fx_lv2_audio_signal_real_run_inter(AgsRecall *recall)
   GRecMutex *fx_lv2_channel_mutex;
   GRecMutex *base_plugin_mutex;
 
+  fx_lv2_audio_signal = (AgsFxLv2AudioSignal *) recall;
+  
   fx_lv2_channel = NULL;
   fx_lv2_channel_processor = NULL;
 
@@ -271,11 +272,15 @@ ags_fx_lv2_audio_signal_real_run_inter(AgsRecall *recall)
   
   g_rec_mutex_unlock(base_plugin_mutex);
 
-  copy_mode_out = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
-						      AGS_AUDIO_BUFFER_UTIL_FLOAT);
+  copy_mode_out = ags_audio_buffer_util_get_copy_mode_from_format(&(fx_lv2_audio_signal->audio_buffer_util),
+								  ags_audio_buffer_util_format_from_soundcard(&(fx_lv2_audio_signal->audio_buffer_util),
+													      format),
+								  AGS_AUDIO_BUFFER_UTIL_FLOAT);
   
-  copy_mode_in = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_FLOAT,
-						     ags_audio_buffer_util_format_from_soundcard(format));
+  copy_mode_in = ags_audio_buffer_util_get_copy_mode_from_format(&(fx_lv2_audio_signal->audio_buffer_util),
+								 AGS_AUDIO_BUFFER_UTIL_FLOAT,
+								 ags_audio_buffer_util_format_from_soundcard(&(fx_lv2_audio_signal->audio_buffer_util),
+													     format));
 
   if(run != NULL){
     AgsFxLv2ChannelInputData *input_data;
@@ -285,12 +290,14 @@ ags_fx_lv2_audio_signal_real_run_inter(AgsRecall *recall)
     input_data = fx_lv2_channel->input_data[sound_scope];
 
     if(input_data->output != NULL){
-      ags_audio_buffer_util_clear_float(input_data->output, 1,
+      ags_audio_buffer_util_clear_float(&(fx_lv2_audio_signal->audio_buffer_util),
+					input_data->output, 1,
 					fx_lv2_channel->output_port_count * buffer_size);
     }
 
     if(input_data->input != NULL){
-      ags_audio_buffer_util_clear_float(input_data->input, 1,
+      ags_audio_buffer_util_clear_float(&(fx_lv2_audio_signal->audio_buffer_util),
+					input_data->input, 1,
 					fx_lv2_channel->input_port_count * buffer_size);
     }
 
@@ -299,7 +306,8 @@ ags_fx_lv2_audio_signal_real_run_inter(AgsRecall *recall)
     if(input_data->input != NULL &&
        fx_lv2_channel->input_port_count >= 1 &&
        source->stream_current != NULL){
-      ags_audio_buffer_util_copy_buffer_to_buffer(input_data->input, fx_lv2_channel->input_port_count, 0,
+      ags_audio_buffer_util_copy_buffer_to_buffer(&(fx_lv2_audio_signal->audio_buffer_util),
+						  input_data->input, fx_lv2_channel->input_port_count, 0,
 						  source->stream_current->data, 1, 0,
 						  buffer_size, copy_mode_in);
     }
@@ -314,7 +322,8 @@ ags_fx_lv2_audio_signal_real_run_inter(AgsRecall *recall)
        fx_lv2_channel->output_port_count >= 1 &&
        source->stream_current != NULL){
       //NOTE:JK: only mono input, additional channels discarded
-      ags_audio_buffer_util_copy_buffer_to_buffer(source->stream_current->data, 1, 0,
+      ags_audio_buffer_util_copy_buffer_to_buffer(&(fx_lv2_audio_signal->audio_buffer_util),
+						  source->stream_current->data, 1, 0,
 						  input_data->output, fx_lv2_channel->output_port_count, 0,
 						  buffer_size, copy_mode_out);
     }
@@ -390,6 +399,8 @@ ags_fx_lv2_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_
   GRecMutex *fx_lv2_audio_mutex;
   GRecMutex *base_plugin_mutex;
 
+  fx_lv2_audio_signal = (AgsFxLv2AudioSignal *) fx_notation_audio_signal;
+
   audio = NULL;
   
   fx_lv2_audio = NULL;
@@ -463,8 +474,10 @@ ags_fx_lv2_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_
     midi_note = (y - audio_start_mapping + midi_start_mapping);
   }
   
-  copy_mode_out = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
-						      AGS_AUDIO_BUFFER_UTIL_FLOAT);
+  copy_mode_out = ags_audio_buffer_util_get_copy_mode_from_format(&(fx_lv2_audio_signal->audio_buffer_util),
+								  ags_audio_buffer_util_format_from_soundcard(&(fx_lv2_audio_signal->audio_buffer_util),
+													      format),
+								  AGS_AUDIO_BUFFER_UTIL_FLOAT);
 
   if(midi_note >= 0 &&
      midi_note < 128){
@@ -535,7 +548,8 @@ ags_fx_lv2_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_
       g_rec_mutex_lock(fx_lv2_audio_mutex);
       
       if(channel_data->output != NULL){
-	ags_audio_buffer_util_clear_float(channel_data->output, fx_lv2_audio->output_port_count,
+	ags_audio_buffer_util_clear_float(&(fx_lv2_audio_signal->audio_buffer_util),
+					  channel_data->output, fx_lv2_audio->output_port_count,
 					  buffer_size);
       }
 
@@ -550,7 +564,8 @@ ags_fx_lv2_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_
 	 fx_lv2_audio->output_port_count >= 1 &&
 	 source->stream_current != NULL){
 	//NOTE:JK: only mono input, additional channels discarded
-	ags_audio_buffer_util_copy_buffer_to_buffer(source->stream_current->data, 1, 0,
+	ags_audio_buffer_util_copy_buffer_to_buffer(&(fx_lv2_audio_signal->audio_buffer_util),
+						    source->stream_current->data, 1, 0,
 						    channel_data->output, fx_lv2_audio->output_port_count, 0,
 						    buffer_size, copy_mode_out);
       }
@@ -562,7 +577,8 @@ ags_fx_lv2_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_
       g_rec_mutex_lock(fx_lv2_audio_mutex);
       
       if(input_data->output != NULL){
-	ags_audio_buffer_util_clear_float(input_data->output, fx_lv2_audio->output_port_count,
+	ags_audio_buffer_util_clear_float(&(fx_lv2_audio_signal->audio_buffer_util),
+					  input_data->output, fx_lv2_audio->output_port_count,
 					  buffer_size);
       }
 
@@ -577,7 +593,8 @@ ags_fx_lv2_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_
 	 fx_lv2_audio->output_port_count >= 1 &&
 	 source->stream_current != NULL){
 	//NOTE:JK: only mono input, additional channels discarded
-	ags_audio_buffer_util_copy_buffer_to_buffer(source->stream_current->data, 1, 0,
+	ags_audio_buffer_util_copy_buffer_to_buffer(&(fx_lv2_audio_signal->audio_buffer_util),
+						    source->stream_current->data, 1, 0,
 						    input_data->output, fx_lv2_audio->output_port_count, 0,
 						    buffer_size, copy_mode_out);
       }

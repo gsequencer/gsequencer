@@ -220,7 +220,8 @@ struct _AgsRecall
   GHashTable *midi2_cc_to_value;
   GHashTable *midi2_cc_to_port_specifier;
 
-  GHashTable *jack_metadata;
+  GHashTable *jack_metadata_to_value;
+  GHashTable *jack_metadata_to_port_specifier;
 };
 
 struct _AgsRecallClass

@@ -24,6 +24,7 @@
 #include <glib-object.h>
 
 #include <ags/libags.h>
+
 #include <ags/ags_api_config.h>
 
 #ifdef AGS_WITH_LIBINSTPATCH

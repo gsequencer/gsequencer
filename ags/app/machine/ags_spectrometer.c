@@ -290,14 +290,18 @@ ags_spectrometer_init(AgsSpectrometer *spectrometer)
   gtk_widget_queue_draw((GtkWidget *) cartesian);
 
   /* buffer */
+  spectrometer->audio_buffer_util = ags_audio_buffer_util_alloc();
+  
   buffer_size = AGS_MACHINE(spectrometer)->buffer_size;
   
   spectrometer->magnitude_cache = (double *) g_malloc(buffer_size * sizeof(double));
-  ags_audio_buffer_util_clear_double(spectrometer->magnitude_cache, 1,
+  ags_audio_buffer_util_clear_double(spectrometer->audio_buffer_util,
+				     spectrometer->magnitude_cache, 1,
 				     buffer_size);
 
   spectrometer->magnitude = (double *) g_malloc(buffer_size * sizeof(double));
-  ags_audio_buffer_util_clear_double(spectrometer->magnitude, 1,
+  ags_audio_buffer_util_clear_double(spectrometer->audio_buffer_util,
+				     spectrometer->magnitude, 1,
 				     buffer_size);
   
   /* update-ui */
@@ -450,21 +454,25 @@ ags_spectrometer_buffer_size_changed_callback(AgsMachine *machine,
   if(buffer_size > 0){
     if(spectrometer->magnitude_cache == NULL){
       spectrometer->magnitude_cache = (double *) g_malloc(buffer_size * sizeof(double));
-      ags_audio_buffer_util_clear_double(spectrometer->magnitude_cache, 1,
+      ags_audio_buffer_util_clear_double(spectrometer->audio_buffer_util,
+					 spectrometer->magnitude_cache, 1,
 					 buffer_size);
 
       spectrometer->magnitude = (double *) g_malloc(buffer_size * sizeof(double));
-      ags_audio_buffer_util_clear_double(spectrometer->magnitude, 1,
+      ags_audio_buffer_util_clear_double(spectrometer->audio_buffer_util,
+					 spectrometer->magnitude, 1,
 					 buffer_size);
     }else{
       spectrometer->magnitude_cache = (double *) g_realloc(spectrometer->magnitude_cache,
 							   buffer_size * sizeof(double));
-      ags_audio_buffer_util_clear_double(spectrometer->magnitude_cache, 1,
+      ags_audio_buffer_util_clear_double(spectrometer->audio_buffer_util,
+					 spectrometer->magnitude_cache, 1,
 					 buffer_size);
 
       spectrometer->magnitude = (double *) g_realloc(spectrometer->magnitude,
 						     buffer_size * sizeof(double));
-      ags_audio_buffer_util_clear_double(spectrometer->magnitude, 1,
+      ags_audio_buffer_util_clear_double(spectrometer->audio_buffer_util,
+					 spectrometer->magnitude, 1,
 					 buffer_size);
     }
   }else{

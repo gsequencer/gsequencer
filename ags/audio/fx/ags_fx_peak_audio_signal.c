@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/audio/fx/ags_fx_peak_audio_signal.h>
-
-#include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/fx/ags_fx_peak_channel.h>
 #include <ags/audio/fx/ags_fx_peak_channel_processor.h>
@@ -136,6 +134,7 @@ ags_fx_peak_audio_signal_run_inter(AgsRecall *recall)
   AgsFxPeakChannel *fx_peak_channel;
   AgsFxPeakChannelProcessor *fx_peak_channel_processor;
   AgsFxPeakRecycling *fx_peak_recycling;
+  AgsFxPeakAudioSignal *fx_peak_audio_signal;
   AgsAudioSignal *source;
 
   gint sound_scope;
@@ -146,6 +145,8 @@ ags_fx_peak_audio_signal_run_inter(AgsRecall *recall)
   GRecMutex *fx_peak_channel_mutex;
   GRecMutex *stream_mutex;
 
+  fx_peak_audio_signal = (AgsFxPeakAudioSignal *) recall;
+  
   sound_scope = ags_recall_get_sound_scope(recall);
   
   fx_peak_channel = NULL;
@@ -178,8 +179,10 @@ ags_fx_peak_audio_signal_run_inter(AgsRecall *recall)
 	       "format", &format,
 	       NULL);
   
-  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
-						  ags_audio_buffer_util_format_from_soundcard(format));
+  copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(&(fx_peak_audio_signal->audio_buffer_util),
+							      AGS_AUDIO_BUFFER_UTIL_DOUBLE,
+							      ags_audio_buffer_util_format_from_soundcard(&(fx_peak_audio_signal->audio_buffer_util),
+													  format));
 
   if(fx_peak_channel != NULL){
     gboolean peak_reseted;
@@ -217,7 +220,8 @@ ags_fx_peak_audio_signal_run_inter(AgsRecall *recall)
 
       g_rec_mutex_lock(fx_peak_channel_mutex);
       
-      ags_audio_buffer_util_clear_buffer(fx_peak_channel->input_data[sound_scope]->buffer, 1,
+      ags_audio_buffer_util_clear_buffer(&(fx_peak_audio_signal->audio_buffer_util),
+					 fx_peak_channel->input_data[sound_scope]->buffer, 1,
 					 buffer_size, AGS_AUDIO_BUFFER_UTIL_DOUBLE);
 
       fx_peak_channel->peak_reseted = TRUE;
@@ -239,7 +243,8 @@ ags_fx_peak_audio_signal_run_inter(AgsRecall *recall)
     g_rec_mutex_lock(fx_peak_channel_mutex);
     g_rec_mutex_lock(stream_mutex);
 
-    ags_audio_buffer_util_copy_buffer_to_buffer(fx_peak_channel->input_data[sound_scope]->buffer, 1, 0,
+    ags_audio_buffer_util_copy_buffer_to_buffer(&(fx_peak_audio_signal->audio_buffer_util),
+						fx_peak_channel->input_data[sound_scope]->buffer, 1, 0,
 						source->stream_current->data, 1, 0,
 						buffer_size, copy_mode);    
     

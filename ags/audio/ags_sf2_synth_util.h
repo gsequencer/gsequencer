@@ -31,6 +31,7 @@
 #include <libinstpatch/libinstpatch.h>
 #endif
 
+#include <ags/audio/ags_audio_buffer_util.h>
 #include <ags/audio/ags_resample_util.h>
 #include <ags/audio/ags_common_pitch_util.h>
 #include <ags/audio/ags_volume_util.h>
@@ -121,6 +122,8 @@ struct _AgsSF2SynthUtil
 
   gint loop_start;
   gint loop_end;
+  
+  AgsAudioBufferUtil *audio_buffer_util;
 
   AgsResampleUtil *resample_util;
 

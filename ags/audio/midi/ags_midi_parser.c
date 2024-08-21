@@ -1095,10 +1095,10 @@ ags_midi_parser_read_gint32(AgsMidiParser *midi_parser)
  * 
  * Since: 3.0.0
  */
-glong
+gint
 ags_midi_parser_read_varlength(AgsMidiParser *midi_parser)
 {
-  glong value;
+  gint value;
   guint i;
   guchar c;
 

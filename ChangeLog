@@ -1,8 +1,11 @@
 ags (7.0.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* NOTE:JK: incompatible ags_audio_buffer_util_get_copy_mode() due to refactoring
+	* NOTE:JK: incompatible ags_midi_parser_read_varlength() due to refactoring
 	* implemented ags_recall_midi1_control_change()
-	* TODO:JK: refactored AgsAudioBufferUtil
+	* refactored AgsAudioBufferUtil breaking ABI
+	* TODO:JK: refactored ags_audio_buffer_util_get_copy_mode_from_format()
 
 ags (6.16.20)
 

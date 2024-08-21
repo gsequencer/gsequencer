@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,8 @@
 #include <glib-object.h>
 
 #include <ags/libags.h>
+
+#include <ags/audio/ags_audio_buffer_util.h>
 
 #include <sndfile.h>
 
@@ -83,6 +85,8 @@ struct _AgsSndfile
 
   SF_INFO *info;
   SNDFILE *file;
+
+  AgsAudioBufferUtil *audio_buffer_util;
 };
 
 struct _AgsSndfileClass

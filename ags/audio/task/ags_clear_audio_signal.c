@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,7 +22,6 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_recycling.h>
-#include <ags/audio/ags_audio_buffer_util.h>
 
 #include <math.h>
 
@@ -135,6 +134,8 @@ void
 ags_clear_audio_signal_init(AgsClearAudioSignal *clear_audio_signal)
 {
   clear_audio_signal->audio_signal = NULL;
+
+  clear_audio_signal->audio_buffer_util = ags_audio_buffer_util_alloc();
 }
 
 void
@@ -225,6 +226,14 @@ ags_clear_audio_signal_finalize(GObject *gobject)
     g_object_unref(clear_audio_signal->audio_signal);
   }
 
+  ags_audio_buffer_util_set_source(clear_audio_signal->audio_buffer_util,
+				   NULL);
+      
+  ags_audio_buffer_util_set_destination(clear_audio_signal->audio_buffer_util,
+					NULL);
+
+  ags_audio_buffer_util_free(clear_audio_signal->audio_buffer_util);
+
   /* call parent */
   G_OBJECT_CLASS(ags_clear_audio_signal_parent_class)->finalize(gobject);
 }
@@ -256,8 +265,10 @@ ags_clear_audio_signal_launch(AgsTask *task)
 	       NULL);
   
   while(stream != NULL){
-    ags_audio_buffer_util_clear_buffer(stream->data, 1,
-				       audio_signal->buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
+    ags_audio_buffer_util_clear_buffer(clear_audio_signal->audio_buffer_util,
+				       stream->data, 1,
+				       audio_signal->buffer_size, ags_audio_buffer_util_format_from_soundcard(clear_audio_signal->audio_buffer_util,
+													      format));
     
     stream = stream->next;
   }
@@ -286,8 +297,10 @@ ags_clear_audio_signal_launch(AgsTask *task)
 		   NULL);
       
       while(stream != NULL){
-	ags_audio_buffer_util_clear_buffer(stream->data, 1,
-					   audio_signal->buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
+	ags_audio_buffer_util_clear_buffer(clear_audio_signal->audio_buffer_util,
+					   stream->data, 1,
+					   audio_signal->buffer_size, ags_audio_buffer_util_format_from_soundcard(clear_audio_signal->audio_buffer_util,
+														  format));
 	
 	stream = stream->next;
       }

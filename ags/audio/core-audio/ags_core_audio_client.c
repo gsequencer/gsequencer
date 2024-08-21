@@ -21,7 +21,6 @@
 
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/core-audio/ags_core_audio_server.h>
 #include <ags/audio/core-audio/ags_core_audio_port.h>
