@@ -6622,7 +6622,72 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 	    
 	    midi_iter += 4;
 	  }else if(ags_midi_ump_util_is_midi1_pitch_bend(recall->midi_ump_util, midi_iter)){
-	    //TODO:JK: implement me
+	    gpointer ptr;
+	    
+	    gchar *port_specifier;
+
+	    gint group;
+	    gint channel;
+	    gint data;
+
+	    ags_midi_ump_util_get_midi1_pitch_bend(recall->midi_ump_util,
+						   midi_iter,
+						   &group,
+						   &channel,
+						   &data,
+						   NULL,
+						   NULL,
+						   NULL);
+
+	    g_hash_table_insert(midi2_cc_to_port_specifier,
+				GUINT_TO_POINTER(AGS_RECALL_MIDI2_MIDI1_PITCH_BEND), GUINT_TO_POINTER(data));
+
+	    start_port = ags_recall_get_port(recall);
+	    
+	    g_rec_mutex_lock(recall_mutex);
+	    
+	    port_specifier = g_hash_table_lookup(midi2_cc_to_value,
+						 GUINT_TO_POINTER(AGS_RECALL_MIDI2_MIDI1_PITCH_BEND));
+	    
+	    g_rec_mutex_unlock(recall_mutex);
+
+	    if(port_specifier != NULL){
+	      port = ags_port_find_specifier(start_port,
+					     port_specifier);
+
+	      if(port != NULL){
+		AgsPluginPort *plugin_port;
+
+		GValue *upper;
+		GValue *lower;	    
+		
+		GValue port_value = G_VALUE_INIT;
+
+		plugin_port = (AgsPluginPort *) ags_port_get_plugin_port(port->data);
+		
+		g_value_init(&port_value,
+			     G_TYPE_FLOAT);
+
+		lower = ags_plugin_port_get_lower_value(plugin_port);
+		upper = ags_plugin_port_get_upper_value(plugin_port);
+
+		ptr = g_hash_table_lookup(midi2_cc_to_port_specifier,
+					  GUINT_TO_POINTER(AGS_RECALL_MIDI2_MIDI1_PITCH_BEND));
+		
+		g_value_set_float(&port_value,
+				  ((gfloat) ((guint) ptr)) * ((g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(14.0) - 1.0)));
+		
+		ags_port_safe_write(port->data,
+				    &port_value);
+
+		if(plugin_port != NULL){
+		  g_object_unref(plugin_port);
+		}
+	      }
+	    }
+	    
+	    g_list_free_full(start_port,
+			     (GDestroyNotify) g_object_unref);
 	    
 	    midi_iter += 4;
 	  }else if(ags_midi_ump_util_is_midi1_program_change(recall->midi_ump_util, midi_iter)){
@@ -6647,68 +6712,150 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 	    midi_iter += 8;
 	  }else if(ags_midi_ump_util_is_midi2_registered_per_note_controller(recall->midi_ump_util, midi_iter)){
 	    //TODO:JK: implement me
+	    	    
+	    midi_iter += 8;
 	  }else if(ags_midi_ump_util_is_midi2_assignable_per_note_controller(recall->midi_ump_util, midi_iter)){
 	    //TODO:JK: implement me
+	    	    
+	    midi_iter += 8;
 	  }else if(ags_midi_ump_util_is_midi2_control_change(recall->midi_ump_util, midi_iter)){
 	    //TODO:JK: implement me
 	    	    
 	    midi_iter += 8;
 	  }else if(ags_midi_ump_util_is_midi2_rpn_pitch_bend_range(recall->midi_ump_util, midi_iter)){
 	    //TODO:JK: implement me
+	    	    
+	    midi_iter += 8;
 	  }else if(ags_midi_ump_util_is_midi2_rpn_coarse_tuning(recall->midi_ump_util, midi_iter)){
 	    //TODO:JK: implement me
+	    	    
+	    midi_iter += 8;
 	  }else if(ags_midi_ump_util_is_midi2_rpn_tuning_program_change(recall->midi_ump_util, midi_iter)){
 	    //TODO:JK: implement me
+	    	    
+	    midi_iter += 8;
 	  }else if(ags_midi_ump_util_is_midi2_rpn_tuning_bank_select(recall->midi_ump_util, midi_iter)){
 	    //TODO:JK: implement me
+	    	    
+	    midi_iter += 8;
 	  }else if(ags_midi_ump_util_is_midi2_rpn_mpe_mcm(recall->midi_ump_util, midi_iter)){
 	    //TODO:JK: implement me
+	    	    
+	    midi_iter += 8;
 	  }else if(ags_midi_ump_util_is_midi2_program_change(recall->midi_ump_util, midi_iter)){
 	    //TODO:JK: implement me
+	    	    
+	    midi_iter += 8;
 	  }else if(ags_midi_ump_util_is_midi2_channel_pressure(recall->midi_ump_util, midi_iter)){
 	    //TODO:JK: implement me
+	    	    
+	    midi_iter += 8;
 	  }else if(ags_midi_ump_util_is_midi2_pitch_bend(recall->midi_ump_util, midi_iter)){
 	    //TODO:JK: implement me
+	    	    
+	    midi_iter += 8;
 	  }else if(ags_midi_ump_util_is_midi2_per_note_pitch_bend(recall->midi_ump_util, midi_iter)){
 	    //TODO:JK: implement me
+	    	    
+	    midi_iter += 8;
 	  }else if(ags_midi_ump_util_is_flex_set_tempo(recall->midi_ump_util, midi_iter)){
 	    //TODO:JK: implement me
+
+	    midi_iter += 16;
 	  }else if(ags_midi_ump_util_is_flex_set_time_signature(recall->midi_ump_util, midi_iter)){
 	    //TODO:JK: implement me
+
+	    midi_iter += 16;
 	  }else if(ags_midi_ump_util_is_flex_set_metronome(recall->midi_ump_util, midi_iter)){
 	    //TODO:JK: implement me
+
+	    midi_iter += 16;
 	  }else if(ags_midi_ump_util_is_flex_set_key_signature(recall->midi_ump_util, midi_iter)){
 	    //TODO:JK: implement me
+
+	    midi_iter += 16;
 	  }else if(ags_midi_ump_util_is_flex_set_chord_name(recall->midi_ump_util, midi_iter)){
 	    //TODO:JK: implement me
+
+	    midi_iter += 16;
 	  }else if(ags_midi_ump_util_is_endpoint_discovery(recall->midi_ump_util, midi_iter)){
 	    //TODO:JK: implement me
+
+	    midi_iter += 16;
 	  }else if(ags_midi_ump_util_is_endpoint_info_notification(recall->midi_ump_util, midi_iter)){
 	    //TODO:JK: implement me
+
+	    midi_iter += 16;
 	  }else if(ags_midi_ump_util_is_device_identity_notification(recall->midi_ump_util, midi_iter)){
 	    //TODO:JK: implement me
+
+	    midi_iter += 16;
 	  }else if(ags_midi_ump_util_is_endpoint_name_notification(recall->midi_ump_util, midi_iter)){
-	    //TODO:JK: implement me
+	    guint msg_length;
+	    
+	    msg_length = ags_midi_ump_util_get_endpoint_name_notification(recall->midi_ump_util,
+									  midi_iter,
+									  NULL,
+									  NULL,
+									  NULL,
+									  NULL);
+
+	    midi_iter += msg_length;
 	  }else if(ags_midi_ump_util_is_product_instance_id_notification(recall->midi_ump_util, midi_iter)){
-	    //TODO:JK: implement me
+	    guint msg_length;
+	    
+	    msg_length = ags_midi_ump_util_get_product_instance_id_notification(recall->midi_ump_util,
+										midi_iter,
+										NULL,
+										NULL,
+										NULL,
+										NULL);
+
+	    midi_iter += msg_length;
 	  }else if(ags_midi_ump_util_is_stream_configuration_request(recall->midi_ump_util, midi_iter)){
 	    //TODO:JK: implement me
+
+	    midi_iter += 16;
 	  }else if(ags_midi_ump_util_is_function_block_discovery(recall->midi_ump_util, midi_iter)){
 	    //TODO:JK: implement me
+
+	    midi_iter += 16;
 	  }else if(ags_midi_ump_util_is_function_block_info_notification(recall->midi_ump_util, midi_iter)){
 	    //TODO:JK: implement me
+
+	    midi_iter += 20;
 	  }else if(ags_midi_ump_util_is_function_block_name_notification(recall->midi_ump_util, midi_iter)){
-	    //TODO:JK: implement me
+	    guint msg_length;
+	    
+	    msg_length = ags_midi_ump_util_get_function_block_name_notification(recall->midi_ump_util,
+										midi_iter,
+										NULL,
+										NULL,
+										NULL,
+										NULL,
+										NULL);
+
+	    midi_iter += msg_length;
 	  }else if(ags_midi_ump_util_is_start_of_clip(recall->midi_ump_util, midi_iter)){
 	    //TODO:JK: implement me
+
+	    midi_iter += 16;
 	  }else if(ags_midi_ump_util_is_end_of_clip(recall->midi_ump_util, midi_iter)){
 	    //TODO:JK: implement me
+
+	    midi_iter += 16;
 	  }else if(ags_midi_ump_util_is_noop(recall->midi_ump_util, midi_iter)){
 	    //TODO:JK: implement me
+	    	    
+	    midi_iter += 4;
 	  }else if(ags_midi_ump_util_is_jr_clock(recall->midi_ump_util, midi_iter)){
 	    //TODO:JK: implement me
+	    	    
+	    midi_iter += 4;
 	  }else if(ags_midi_ump_util_is_jr_timestamp(recall->midi_ump_util, midi_iter)){
 	    //TODO:JK: implement me
+	    	    
+	    midi_iter += 4;
 	  }else if(ags_midi_ump_util_is_delta_clock_ticks_per_quarter_note(recall->midi_ump_util, midi_iter)){
 	    //TODO:JK: implement me
 	  }else if(ags_midi_ump_util_is_delta_clock_ticks_since_last_event(recall->midi_ump_util, midi_iter)){
