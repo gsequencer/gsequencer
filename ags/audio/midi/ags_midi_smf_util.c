@@ -1063,7 +1063,6 @@ ags_midi_smf_util_get_change_parameter(AgsMidiSmfUtil *midi_smf_util,
  * @buffer: the MIDI buffer
  * @delta_time: timing information
  * @channel: channel
- * @pitch: the pitch
  * @transmitter: the transmitter
  * 
  * Put pitch bend.
@@ -1075,7 +1074,6 @@ ags_midi_smf_util_put_pitch_bend(AgsMidiSmfUtil *midi_smf_util,
 				 guchar *buffer,
 				 gint delta_time,
 				 gint channel,
-				 gint pitch,
 				 gint transmitter)
 {
   guint delta_time_size;
@@ -1094,10 +1092,10 @@ ags_midi_smf_util_put_pitch_bend(AgsMidiSmfUtil *midi_smf_util,
   buffer[delta_time_size] |= (channel & 0xf);
 
   /* pitch */
-  buffer[delta_time_size + 1] = 0x7f & pitch;
+  buffer[delta_time_size + 1] = (0x7f & (transmitter >> 7));
   
   /* transmitter */
-  buffer[delta_time_size + 2] = 0x7f & transmitter;
+  buffer[delta_time_size + 2] = (0x7f & transmitter);
 }
 
 /**
@@ -1106,7 +1104,6 @@ ags_midi_smf_util_put_pitch_bend(AgsMidiSmfUtil *midi_smf_util,
  * @buffer: the MIDI buffer
  * @delta_time: (out): the return location of timing information
  * @channel: (out): the return location of channel
- * @pitch: (out): the return location of the pitch
  * @transmitter: (out): the return location the transmitter
  * 
  * Get pitch bend.
@@ -1120,7 +1117,6 @@ ags_midi_smf_util_get_pitch_bend(AgsMidiSmfUtil *midi_smf_util,
 				 guchar *buffer,
 				 gint *delta_time,
 				 gint *channel,
-				 gint *pitch,
 				 gint *transmitter)
 {
   gint local_delta_time;
@@ -1133,10 +1129,6 @@ ags_midi_smf_util_get_pitch_bend(AgsMidiSmfUtil *midi_smf_util,
 
     if(channel != NULL){
       *channel = 0;
-    }
-
-    if(pitch != NULL){
-      *pitch = 0;
     }
 
     if(transmitter != NULL){
@@ -1158,15 +1150,10 @@ ags_midi_smf_util_get_pitch_bend(AgsMidiSmfUtil *midi_smf_util,
   if(channel != NULL){
     *channel = (0xf & buffer[delta_time_size]);
   }
-
-  /* pitch */
-  if(pitch != NULL){
-    *pitch = 0x7f & buffer[delta_time_size + 1];
-  }
   
   /* transmitter */
   if(transmitter != NULL){
-    *transmitter = 0x7f & buffer[delta_time_size + 2];
+    *transmitter =  ((0x7f & buffer[delta_time_size + 1]) << 7) | (0x7f & buffer[delta_time_size + 2]);
   }
   
   return(delta_time_size + 3);

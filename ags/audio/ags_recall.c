@@ -6285,17 +6285,16 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 	    gchar *port_specifier;
 
 	    gint channel;
-	    gint pitch;
 	    gint transmitter;
 
 	    /* pitch bend */
 	    ags_midi_util_get_pitch_bend(recall->midi_util,
 					 midi_iter,      
-					 &channel, &pitch, &transmitter);
+					 &channel, &transmitter);
 	    
 	    /* MSB and LSB */
 	    g_hash_table_insert(midi1_cc_to_port_specifier,
-				GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xe0, 0x0)), GUINT_TO_POINTER(((0x7f & pitch) << 8) | (0x7f & transmitter)));
+				GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xe0, 0x0)), GUINT_TO_POINTER(transmitter));
 
 	    start_port = ags_recall_get_port(recall);
 	    

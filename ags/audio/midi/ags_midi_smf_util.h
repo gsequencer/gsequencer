@@ -182,13 +182,11 @@ void ags_midi_smf_util_put_pitch_bend(AgsMidiSmfUtil *midi_smf_util,
 				      guchar *buffer,
 				      gint delta_time,
 				      gint channel,
-				      gint pitch,
 				      gint transmitter);
 guint ags_midi_smf_util_get_pitch_bend(AgsMidiSmfUtil *midi_smf_util,
 				       guchar *buffer,
 				       gint *delta_time,
 				       gint *channel,
-				       gint *pitch,
 				       gint *transmitter);
 
 /* change program */

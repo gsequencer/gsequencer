@@ -1734,18 +1734,15 @@ ags_midi_parser_real_parse_full(AgsMidiParser *midi_parser)
 	  }else if(ags_midi_util_is_pitch_bend(midi_util,
 					       buffer + offset + delta_time_varlength_size)){
 	    gint channel;
-	    gint pitch;
 	    gint transmitter;
 	    
 	    channel = 0;
-	    pitch = 0;
 	    transmitter = 0;
 	    
 	    retval = ags_midi_smf_util_get_pitch_bend(midi_smf_util,
 						      buffer + offset,
 						      NULL,
 						      &channel,
-						      &pitch,
 						      &transmitter);
 	    
 	    status = midi_parser->buffer[offset + delta_time_varlength_size];
@@ -2729,7 +2726,7 @@ ags_midi_parser_real_change_pitch_bend(AgsMidiParser *midi_parser, guint status)
 
   gchar *str;
   
-  int channel, pitch, transmitter;
+  int channel, transmitter;
 
 #ifdef AGS_DEBUG
   g_message("change pitch bend");
@@ -2740,8 +2737,7 @@ ags_midi_parser_real_change_pitch_bend(AgsMidiParser *midi_parser, guint status)
   ags_midi_parser_midi_getc(midi_parser); // status
 
   channel = 0xf & status;
-  pitch = 0x7f & ags_midi_parser_midi_getc(midi_parser);
-  transmitter = 0x7f & ags_midi_parser_midi_getc(midi_parser);
+  transmitter = ((0x7f & ags_midi_parser_midi_getc(midi_parser)) << 7) | (0x7f & ags_midi_parser_midi_getc(midi_parser));
   
   node = xmlNewNode(NULL,
 		    "midi-message");
@@ -2758,15 +2754,6 @@ ags_midi_parser_real_change_pitch_bend(AgsMidiParser *midi_parser, guint status)
   xmlNewProp(node,
 	     AGS_MIDI_EVENT,
 	     "pitch-bend");
-
-  str = g_strdup_printf("%d",
-			pitch);
-  
-  xmlNewProp(node,
-	     "pitch",
-	     str);	  
-  
-  g_free(str);
 
   str = g_strdup_printf("%d",
 			transmitter);

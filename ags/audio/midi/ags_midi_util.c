@@ -1040,7 +1040,6 @@ ags_midi_util_get_change_parameter(AgsMidiUtil *midi_util,
  * @midi_util: the #AgsMidiUtil-struct
  * @buffer: the MIDI buffer
  * @channel: (out): the return location of channel
- * @pitch: (out): the return location of pitch
  * @transmitter: (out): the return location of transmitter
  * 
  * Get pitch bend fields of @buffer.
@@ -1052,16 +1051,12 @@ ags_midi_util_get_change_parameter(AgsMidiUtil *midi_util,
 gboolean
 ags_midi_util_get_pitch_bend(AgsMidiUtil *midi_util,
 			     guchar *buffer,
-			     gint *channel, gint *pitch, gint *transmitter)
+			     gint *channel, gint *transmitter)
 {
   if(buffer != NULL ||
      (0xf0 & (buffer[0])) != 0xe0){
     if(channel != NULL){
       channel[0] = 0;
-    }
-
-    if(pitch != NULL){
-      pitch[0] = 0;
     }
 
     if(transmitter != NULL){
@@ -1075,12 +1070,8 @@ ags_midi_util_get_pitch_bend(AgsMidiUtil *midi_util,
     channel[0] = 0xf & (buffer[0]);
   }
 
-  if(pitch != NULL){
-    pitch[0] = 0x7f & (buffer[1]);
-  }
-
   if(transmitter != NULL){
-    transmitter[0] = 0x7f & (buffer[2]);
+    transmitter[0] = ((0x7f & (buffer[1])) << 7) | (0x7f & (buffer[2]));
   }
   
   return(TRUE);
@@ -1441,9 +1432,8 @@ ags_midi_util_to_smf(AgsMidiUtil *midi_util,
       ags_midi_smf_util_put_pitch_bend(NULL,
 				       smf_buffer,
 				       delta_time,
-				       0xf & midi_iter[0],
-				       0x7f & midi_iter[1],
-				       0x7f & midi_iter[2]);
+				       (0xf & midi_iter[0]),
+				       ((0x7f & midi_iter[1]) << 7) | (0x7f & midi_iter[2]));
       
       midi_iter += 3;
     }else if(ags_midi_util_is_change_program(midi_util, midi_iter)){
