@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2018 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -152,6 +152,8 @@ void ags_audio_buffer_util_test_copy_buffer_to_buffer();
 #define AGS_AUDIO_BUFFER_UTIL_TEST_COPY_DOUBLE_TO_FLOAT_BUFFER_SIZE (8192)
 #define AGS_AUDIO_BUFFER_UTIL_TEST_COPY_DOUBLE_TO_DOUBLE_BUFFER_SIZE (8192)
 
+AgsAudioBufferUtil audio_buffer_util;
+
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
  * Returns zero on success, non-zero otherwise.
@@ -175,73 +177,80 @@ ags_audio_buffer_util_test_clean_suite()
 void
 ags_audio_buffer_util_test_format_from_soundcard()
 {
-  CU_ASSERT(ags_audio_buffer_util_format_from_soundcard(AGS_SOUNDCARD_SIGNED_8_BIT) == AGS_AUDIO_BUFFER_UTIL_S8);
+  CU_ASSERT(ags_audio_buffer_util_format_from_soundcard(&audio_buffer_util,
+							AGS_SOUNDCARD_SIGNED_8_BIT) == AGS_AUDIO_BUFFER_UTIL_S8);
 
-  CU_ASSERT(ags_audio_buffer_util_format_from_soundcard(AGS_SOUNDCARD_SIGNED_16_BIT) == AGS_AUDIO_BUFFER_UTIL_S16);
+  CU_ASSERT(ags_audio_buffer_util_format_from_soundcard(&audio_buffer_util,
+							AGS_SOUNDCARD_SIGNED_16_BIT) == AGS_AUDIO_BUFFER_UTIL_S16);
 
-  CU_ASSERT(ags_audio_buffer_util_format_from_soundcard(AGS_SOUNDCARD_SIGNED_24_BIT) == AGS_AUDIO_BUFFER_UTIL_S24);
+  CU_ASSERT(ags_audio_buffer_util_format_from_soundcard(&audio_buffer_util,
+							AGS_SOUNDCARD_SIGNED_24_BIT) == AGS_AUDIO_BUFFER_UTIL_S24);
 
-  CU_ASSERT(ags_audio_buffer_util_format_from_soundcard(AGS_SOUNDCARD_SIGNED_32_BIT) == AGS_AUDIO_BUFFER_UTIL_S32);
+  CU_ASSERT(ags_audio_buffer_util_format_from_soundcard(&audio_buffer_util,
+							AGS_SOUNDCARD_SIGNED_32_BIT) == AGS_AUDIO_BUFFER_UTIL_S32);
 
-  CU_ASSERT(ags_audio_buffer_util_format_from_soundcard(AGS_SOUNDCARD_SIGNED_64_BIT) == AGS_AUDIO_BUFFER_UTIL_S64);
+  CU_ASSERT(ags_audio_buffer_util_format_from_soundcard(&audio_buffer_util,
+							AGS_SOUNDCARD_SIGNED_64_BIT) == AGS_AUDIO_BUFFER_UTIL_S64);
 
-  CU_ASSERT(ags_audio_buffer_util_format_from_soundcard(AGS_SOUNDCARD_FLOAT) == AGS_AUDIO_BUFFER_UTIL_FLOAT);
+  CU_ASSERT(ags_audio_buffer_util_format_from_soundcard(&audio_buffer_util,
+							AGS_SOUNDCARD_FLOAT) == AGS_AUDIO_BUFFER_UTIL_FLOAT);
 
-  CU_ASSERT(ags_audio_buffer_util_format_from_soundcard(AGS_SOUNDCARD_DOUBLE) == AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+  CU_ASSERT(ags_audio_buffer_util_format_from_soundcard(&audio_buffer_util,
+							AGS_SOUNDCARD_DOUBLE) == AGS_AUDIO_BUFFER_UTIL_DOUBLE);
 }
 
 void
 ags_audio_buffer_util_test_get_copy_mode()
 {
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S8, AGS_AUDIO_BUFFER_UTIL_S8) == AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S8);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S16, AGS_AUDIO_BUFFER_UTIL_S8) == AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S16);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S24, AGS_AUDIO_BUFFER_UTIL_S8) == AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S24);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S32, AGS_AUDIO_BUFFER_UTIL_S8) == AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S32);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S64, AGS_AUDIO_BUFFER_UTIL_S8) == AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S64);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_FLOAT, AGS_AUDIO_BUFFER_UTIL_S8) == AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_FLOAT);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE, AGS_AUDIO_BUFFER_UTIL_S8) == AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_DOUBLE);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S8, AGS_AUDIO_BUFFER_UTIL_S16) == AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S8);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S16, AGS_AUDIO_BUFFER_UTIL_S16) == AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S16);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S24, AGS_AUDIO_BUFFER_UTIL_S16) == AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S24);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S32, AGS_AUDIO_BUFFER_UTIL_S16) == AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S32);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S64, AGS_AUDIO_BUFFER_UTIL_S16) == AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S64);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_FLOAT, AGS_AUDIO_BUFFER_UTIL_S16) == AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_FLOAT);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE, AGS_AUDIO_BUFFER_UTIL_S16) == AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_DOUBLE);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S8, AGS_AUDIO_BUFFER_UTIL_S24) == AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S8);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S16, AGS_AUDIO_BUFFER_UTIL_S24) == AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S16);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S24, AGS_AUDIO_BUFFER_UTIL_S24) == AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S24);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S32, AGS_AUDIO_BUFFER_UTIL_S24) == AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S32);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S64, AGS_AUDIO_BUFFER_UTIL_S24) == AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S64);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_FLOAT, AGS_AUDIO_BUFFER_UTIL_S24) == AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_FLOAT);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE, AGS_AUDIO_BUFFER_UTIL_S24) == AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_DOUBLE);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S8, AGS_AUDIO_BUFFER_UTIL_S32) == AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S8);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S16, AGS_AUDIO_BUFFER_UTIL_S32) == AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S16);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S24, AGS_AUDIO_BUFFER_UTIL_S32) == AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S24);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S32, AGS_AUDIO_BUFFER_UTIL_S32) == AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S32);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S64, AGS_AUDIO_BUFFER_UTIL_S32) == AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S64);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_FLOAT, AGS_AUDIO_BUFFER_UTIL_S32) == AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_FLOAT);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE, AGS_AUDIO_BUFFER_UTIL_S32) == AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_DOUBLE);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S8, AGS_AUDIO_BUFFER_UTIL_S64) == AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S8);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S16, AGS_AUDIO_BUFFER_UTIL_S64) == AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S16);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S24, AGS_AUDIO_BUFFER_UTIL_S64) == AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S24);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S32, AGS_AUDIO_BUFFER_UTIL_S64) == AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S32);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S64, AGS_AUDIO_BUFFER_UTIL_S64) == AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S64);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_FLOAT, AGS_AUDIO_BUFFER_UTIL_S64) == AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_FLOAT);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE, AGS_AUDIO_BUFFER_UTIL_S64) == AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_DOUBLE);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S8, AGS_AUDIO_BUFFER_UTIL_FLOAT) == AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S8);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S16, AGS_AUDIO_BUFFER_UTIL_FLOAT) == AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S16);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S24, AGS_AUDIO_BUFFER_UTIL_FLOAT) == AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S24);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S32, AGS_AUDIO_BUFFER_UTIL_FLOAT) == AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S32);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S64, AGS_AUDIO_BUFFER_UTIL_FLOAT) == AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S64);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_FLOAT, AGS_AUDIO_BUFFER_UTIL_FLOAT) == AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE, AGS_AUDIO_BUFFER_UTIL_FLOAT) == AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_DOUBLE);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S8, AGS_AUDIO_BUFFER_UTIL_DOUBLE) == AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S8);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S16, AGS_AUDIO_BUFFER_UTIL_DOUBLE) == AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S16);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S24, AGS_AUDIO_BUFFER_UTIL_DOUBLE) == AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S24);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S32, AGS_AUDIO_BUFFER_UTIL_DOUBLE) == AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S32);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S64, AGS_AUDIO_BUFFER_UTIL_DOUBLE) == AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S64);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_FLOAT, AGS_AUDIO_BUFFER_UTIL_DOUBLE) == AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_FLOAT);
-  CU_ASSERT(ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE, AGS_AUDIO_BUFFER_UTIL_DOUBLE) == AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_DOUBLE);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_S8, AGS_AUDIO_BUFFER_UTIL_S8) == AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S8);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_S16, AGS_AUDIO_BUFFER_UTIL_S8) == AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S16);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_S24, AGS_AUDIO_BUFFER_UTIL_S8) == AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S24);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_S32, AGS_AUDIO_BUFFER_UTIL_S8) == AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S32);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_S64, AGS_AUDIO_BUFFER_UTIL_S8) == AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S64);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_FLOAT, AGS_AUDIO_BUFFER_UTIL_S8) == AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_FLOAT);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_DOUBLE, AGS_AUDIO_BUFFER_UTIL_S8) == AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_DOUBLE);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_S8, AGS_AUDIO_BUFFER_UTIL_S16) == AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S8);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_S16, AGS_AUDIO_BUFFER_UTIL_S16) == AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S16);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_S24, AGS_AUDIO_BUFFER_UTIL_S16) == AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S24);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_S32, AGS_AUDIO_BUFFER_UTIL_S16) == AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S32);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_S64, AGS_AUDIO_BUFFER_UTIL_S16) == AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S64);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_FLOAT, AGS_AUDIO_BUFFER_UTIL_S16) == AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_FLOAT);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_DOUBLE, AGS_AUDIO_BUFFER_UTIL_S16) == AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_DOUBLE);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_S8, AGS_AUDIO_BUFFER_UTIL_S24) == AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S8);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_S16, AGS_AUDIO_BUFFER_UTIL_S24) == AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S16);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_S24, AGS_AUDIO_BUFFER_UTIL_S24) == AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S24);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_S32, AGS_AUDIO_BUFFER_UTIL_S24) == AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S32);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_S64, AGS_AUDIO_BUFFER_UTIL_S24) == AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S64);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_FLOAT, AGS_AUDIO_BUFFER_UTIL_S24) == AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_FLOAT);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_DOUBLE, AGS_AUDIO_BUFFER_UTIL_S24) == AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_DOUBLE);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_S8, AGS_AUDIO_BUFFER_UTIL_S32) == AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S8);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_S16, AGS_AUDIO_BUFFER_UTIL_S32) == AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S16);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_S24, AGS_AUDIO_BUFFER_UTIL_S32) == AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S24);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_S32, AGS_AUDIO_BUFFER_UTIL_S32) == AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S32);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_S64, AGS_AUDIO_BUFFER_UTIL_S32) == AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S64);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_FLOAT, AGS_AUDIO_BUFFER_UTIL_S32) == AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_FLOAT);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_DOUBLE, AGS_AUDIO_BUFFER_UTIL_S32) == AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_DOUBLE);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_S8, AGS_AUDIO_BUFFER_UTIL_S64) == AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S8);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_S16, AGS_AUDIO_BUFFER_UTIL_S64) == AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S16);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_S24, AGS_AUDIO_BUFFER_UTIL_S64) == AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S24);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_S32, AGS_AUDIO_BUFFER_UTIL_S64) == AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S32);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_S64, AGS_AUDIO_BUFFER_UTIL_S64) == AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S64);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_FLOAT, AGS_AUDIO_BUFFER_UTIL_S64) == AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_FLOAT);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_DOUBLE, AGS_AUDIO_BUFFER_UTIL_S64) == AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_DOUBLE);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_S8, AGS_AUDIO_BUFFER_UTIL_FLOAT) == AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S8);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_S16, AGS_AUDIO_BUFFER_UTIL_FLOAT) == AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S16);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_S24, AGS_AUDIO_BUFFER_UTIL_FLOAT) == AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S24);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_S32, AGS_AUDIO_BUFFER_UTIL_FLOAT) == AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S32);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_S64, AGS_AUDIO_BUFFER_UTIL_FLOAT) == AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S64);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_FLOAT, AGS_AUDIO_BUFFER_UTIL_FLOAT) == AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_DOUBLE, AGS_AUDIO_BUFFER_UTIL_FLOAT) == AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_DOUBLE);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_S8, AGS_AUDIO_BUFFER_UTIL_DOUBLE) == AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S8);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_S16, AGS_AUDIO_BUFFER_UTIL_DOUBLE) == AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S16);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_S24, AGS_AUDIO_BUFFER_UTIL_DOUBLE) == AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S24);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_S32, AGS_AUDIO_BUFFER_UTIL_DOUBLE) == AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S32);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_S64, AGS_AUDIO_BUFFER_UTIL_DOUBLE) == AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S64);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_FLOAT, AGS_AUDIO_BUFFER_UTIL_DOUBLE) == AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_FLOAT);
+  CU_ASSERT(ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util, AGS_AUDIO_BUFFER_UTIL_DOUBLE, AGS_AUDIO_BUFFER_UTIL_DOUBLE) == AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_DOUBLE);
 }
 
 void
@@ -260,7 +269,8 @@ ags_audio_buffer_util_test_clear_float()
   }
 
   /* clear and assert */
-  ags_audio_buffer_util_clear_float(buffer, 1,
+  ags_audio_buffer_util_clear_float(&audio_buffer_util,
+				    buffer, 1,
 				    AGS_AUDIO_BUFFER_UTIL_TEST_CLEAR_FLOAT_BUFFER_SIZE);
 
   success = TRUE;
@@ -292,7 +302,8 @@ ags_audio_buffer_util_test_clear_double()
   }
 
   /* clear and assert */
-  ags_audio_buffer_util_clear_double(buffer, 1,
+  ags_audio_buffer_util_clear_double(&audio_buffer_util,
+				     buffer, 1,
 				     AGS_AUDIO_BUFFER_UTIL_TEST_CLEAR_DOUBLE_BUFFER_SIZE);
 
   success = TRUE;
@@ -329,7 +340,8 @@ ags_audio_buffer_util_test_clear_buffer()
   }
 
   /* clear and assert */
-  ags_audio_buffer_util_clear_buffer(s8_buffer, 1,
+  ags_audio_buffer_util_clear_buffer(&audio_buffer_util,
+				     s8_buffer, 1,
 				     AGS_AUDIO_BUFFER_UTIL_TEST_CLEAR_BUFFER_BUFFER_SIZE, AGS_AUDIO_BUFFER_UTIL_S8);
 
   success = TRUE;
@@ -353,7 +365,8 @@ ags_audio_buffer_util_test_clear_buffer()
   }
 
   /* clear and assert */
-  ags_audio_buffer_util_clear_buffer(s16_buffer, 1,
+  ags_audio_buffer_util_clear_buffer(&audio_buffer_util,
+				     s16_buffer, 1,
 				     AGS_AUDIO_BUFFER_UTIL_TEST_CLEAR_BUFFER_BUFFER_SIZE, AGS_AUDIO_BUFFER_UTIL_S16);
 
   success = TRUE;
@@ -377,7 +390,8 @@ ags_audio_buffer_util_test_clear_buffer()
   }
 
   /* clear and assert */
-  ags_audio_buffer_util_clear_buffer(s24_buffer, 1,
+  ags_audio_buffer_util_clear_buffer(&audio_buffer_util,
+				     s24_buffer, 1,
 				     AGS_AUDIO_BUFFER_UTIL_TEST_CLEAR_BUFFER_BUFFER_SIZE, AGS_AUDIO_BUFFER_UTIL_S24);
 
   success = TRUE;
@@ -401,7 +415,8 @@ ags_audio_buffer_util_test_clear_buffer()
   }
 
   /* clear and assert */
-  ags_audio_buffer_util_clear_buffer(s32_buffer, 1,
+  ags_audio_buffer_util_clear_buffer(&audio_buffer_util,
+				     s32_buffer, 1,
 				     AGS_AUDIO_BUFFER_UTIL_TEST_CLEAR_BUFFER_BUFFER_SIZE, AGS_AUDIO_BUFFER_UTIL_S32);
 
   success = TRUE;
@@ -425,7 +440,8 @@ ags_audio_buffer_util_test_clear_buffer()
   }
 
   /* clear and assert */
-  ags_audio_buffer_util_clear_buffer(s64_buffer, 1,
+  ags_audio_buffer_util_clear_buffer(&audio_buffer_util,
+				     s64_buffer, 1,
 				     AGS_AUDIO_BUFFER_UTIL_TEST_CLEAR_BUFFER_BUFFER_SIZE, AGS_AUDIO_BUFFER_UTIL_S64);
 
   success = TRUE;
@@ -462,7 +478,8 @@ ags_audio_buffer_util_test_copy_s8_to_s8()
 							 AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S8_TO_S8_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_s8_to_s8(s8_destination, 1,
+  ags_audio_buffer_util_copy_s8_to_s8(&audio_buffer_util,
+				      s8_destination, 1,
 				      s8_buffer, 1,
 				      AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S8_TO_S8_BUFFER_SIZE);
 
@@ -494,7 +511,8 @@ ags_audio_buffer_util_test_copy_s8_to_s16()
 							 AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S8_TO_S16_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_s8_to_s16(s16_destination, 1,
+  ags_audio_buffer_util_copy_s8_to_s16(&audio_buffer_util,
+				       s16_destination, 1,
 				       s8_buffer, 1,
 				       AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S8_TO_S16_BUFFER_SIZE);
 
@@ -526,7 +544,8 @@ ags_audio_buffer_util_test_copy_s8_to_s24()
 							 AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S8_TO_S24_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_s8_to_s24(s24_destination, 1,
+  ags_audio_buffer_util_copy_s8_to_s24(&audio_buffer_util,
+				       s24_destination, 1,
 				       s8_buffer, 1,
 				       AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S8_TO_S24_BUFFER_SIZE);
 
@@ -558,7 +577,8 @@ ags_audio_buffer_util_test_copy_s8_to_s32()
 							 AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S8_TO_S32_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_s8_to_s32(s32_destination, 1,
+  ags_audio_buffer_util_copy_s8_to_s32(&audio_buffer_util,
+				       s32_destination, 1,
 				       s8_buffer, 1,
 				       AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S8_TO_S32_BUFFER_SIZE);
 
@@ -590,7 +610,8 @@ ags_audio_buffer_util_test_copy_s8_to_s64()
 							 AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S8_TO_S64_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_s8_to_s64(s64_destination, 1,
+  ags_audio_buffer_util_copy_s8_to_s64(&audio_buffer_util,
+				       s64_destination, 1,
 				       s8_buffer, 1,
 				       AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S8_TO_S64_BUFFER_SIZE);
 
@@ -622,7 +643,8 @@ ags_audio_buffer_util_test_copy_s8_to_float()
 							 AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S8_TO_FLOAT_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_s8_to_float(float_destination, 1,
+  ags_audio_buffer_util_copy_s8_to_float(&audio_buffer_util,
+					 float_destination, 1,
 					 s8_buffer, 1,
 					 AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S8_TO_FLOAT_BUFFER_SIZE);
 
@@ -654,7 +676,8 @@ ags_audio_buffer_util_test_copy_s8_to_double()
 							 AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S8_TO_DOUBLE_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_s8_to_double(double_destination, 1,
+  ags_audio_buffer_util_copy_s8_to_double(&audio_buffer_util,
+					  double_destination, 1,
 					  s8_buffer, 1,
 					  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S8_TO_DOUBLE_BUFFER_SIZE);
 
@@ -686,7 +709,8 @@ ags_audio_buffer_util_test_copy_s16_to_s8()
 							  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S16_TO_S8_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_s16_to_s8(s8_destination, 1,
+  ags_audio_buffer_util_copy_s16_to_s8(&audio_buffer_util,
+				       s8_destination, 1,
 				       s16_buffer, 1,
 				       AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S16_TO_S8_BUFFER_SIZE);
 
@@ -717,7 +741,8 @@ ags_audio_buffer_util_test_copy_s16_to_s16()
 							  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S16_TO_S16_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_s16_to_s16(s16_destination, 1,
+  ags_audio_buffer_util_copy_s16_to_s16(&audio_buffer_util,
+					s16_destination, 1,
 					s16_buffer, 1,
 					AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S16_TO_S16_BUFFER_SIZE);
 
@@ -749,7 +774,8 @@ ags_audio_buffer_util_test_copy_s16_to_s24()
 							  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S16_TO_S24_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_s16_to_s24(s24_destination, 1,
+  ags_audio_buffer_util_copy_s16_to_s24(&audio_buffer_util,
+					s24_destination, 1,
 					s16_buffer, 1,
 					AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S16_TO_S24_BUFFER_SIZE);
 
@@ -781,7 +807,8 @@ ags_audio_buffer_util_test_copy_s16_to_s32()
 							  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S16_TO_S32_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_s16_to_s32(s32_destination, 1,
+  ags_audio_buffer_util_copy_s16_to_s32(&audio_buffer_util,
+					s32_destination, 1,
 					s16_buffer, 1,
 					AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S16_TO_S32_BUFFER_SIZE);
 
@@ -813,7 +840,8 @@ ags_audio_buffer_util_test_copy_s16_to_s64()
 							  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S16_TO_S64_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_s16_to_s64(s64_destination, 1,
+  ags_audio_buffer_util_copy_s16_to_s64(&audio_buffer_util,
+					s64_destination, 1,
 					s16_buffer, 1,
 					AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S16_TO_S64_BUFFER_SIZE);
 
@@ -845,7 +873,8 @@ ags_audio_buffer_util_test_copy_s16_to_float()
 							  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S16_TO_FLOAT_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_s16_to_float(float_destination, 1,
+  ags_audio_buffer_util_copy_s16_to_float(&audio_buffer_util,
+					  float_destination, 1,
 					  s16_buffer, 1,
 					  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S16_TO_FLOAT_BUFFER_SIZE);
 
@@ -877,7 +906,8 @@ ags_audio_buffer_util_test_copy_s16_to_double()
 							  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S16_TO_DOUBLE_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_s16_to_double(double_destination, 1,
+  ags_audio_buffer_util_copy_s16_to_double(&audio_buffer_util,
+					   double_destination, 1,
 					   s16_buffer, 1,
 					   AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S16_TO_DOUBLE_BUFFER_SIZE);
 
@@ -909,7 +939,8 @@ ags_audio_buffer_util_test_copy_s24_to_s8()
 							  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S24_TO_S8_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_s24_to_s8(s8_destination, 1,
+  ags_audio_buffer_util_copy_s24_to_s8(&audio_buffer_util,
+				       s8_destination, 1,
 				       s24_buffer, 1,
 				       AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S24_TO_S8_BUFFER_SIZE);
 
@@ -941,7 +972,8 @@ ags_audio_buffer_util_test_copy_s24_to_s16()
 							  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S24_TO_S16_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_s24_to_s16(s16_destination, 1,
+  ags_audio_buffer_util_copy_s24_to_s16(&audio_buffer_util,
+					s16_destination, 1,
 					s24_buffer, 1,
 					AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S24_TO_S16_BUFFER_SIZE);
 
@@ -972,7 +1004,8 @@ ags_audio_buffer_util_test_copy_s24_to_s24()
 							  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S24_TO_S24_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_s24_to_s24(s24_destination, 1,
+  ags_audio_buffer_util_copy_s24_to_s24(&audio_buffer_util,
+					s24_destination, 1,
 					s24_buffer, 1,
 					AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S24_TO_S24_BUFFER_SIZE);
 
@@ -1004,7 +1037,8 @@ ags_audio_buffer_util_test_copy_s24_to_s32()
 							  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S24_TO_S32_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_s24_to_s32(s32_destination, 1,
+  ags_audio_buffer_util_copy_s24_to_s32(&audio_buffer_util,
+					s32_destination, 1,
 					s24_buffer, 1,
 					AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S24_TO_S32_BUFFER_SIZE);
 
@@ -1036,7 +1070,8 @@ ags_audio_buffer_util_test_copy_s24_to_s64()
 							  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S24_TO_S64_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_s24_to_s64(s64_destination, 1,
+  ags_audio_buffer_util_copy_s24_to_s64(&audio_buffer_util,
+					s64_destination, 1,
 					s24_buffer, 1,
 					AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S24_TO_S64_BUFFER_SIZE);
 
@@ -1068,7 +1103,8 @@ ags_audio_buffer_util_test_copy_s24_to_float()
 							  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S24_TO_FLOAT_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_s24_to_float(float_destination, 1,
+  ags_audio_buffer_util_copy_s24_to_float(&audio_buffer_util,
+					  float_destination, 1,
 					  s24_buffer, 1,
 					  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S24_TO_FLOAT_BUFFER_SIZE);
 
@@ -1100,7 +1136,8 @@ ags_audio_buffer_util_test_copy_s24_to_double()
 							  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S24_TO_DOUBLE_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_s24_to_double(double_destination, 1,
+  ags_audio_buffer_util_copy_s24_to_double(&audio_buffer_util,
+					   double_destination, 1,
 					   s24_buffer, 1,
 					   AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S24_TO_DOUBLE_BUFFER_SIZE);
 
@@ -1134,7 +1171,8 @@ ags_audio_buffer_util_test_copy_s32_to_s8()
 							  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S32_TO_S8_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_s32_to_s8(s8_destination, 1,
+  ags_audio_buffer_util_copy_s32_to_s8(&audio_buffer_util,
+				       s8_destination, 1,
 				       s32_buffer, 1,
 				       AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S32_TO_S8_BUFFER_SIZE);
 
@@ -1168,7 +1206,8 @@ ags_audio_buffer_util_test_copy_s32_to_s16()
 							  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S32_TO_S16_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_s32_to_s16(s16_destination, 1,
+  ags_audio_buffer_util_copy_s32_to_s16(&audio_buffer_util,
+					s16_destination, 1,
 					s32_buffer, 1,
 					AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S32_TO_S16_BUFFER_SIZE);
 
@@ -1202,7 +1241,8 @@ ags_audio_buffer_util_test_copy_s32_to_s24()
 							  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S32_TO_S24_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_s32_to_s24(s24_destination, 1,
+  ags_audio_buffer_util_copy_s32_to_s24(&audio_buffer_util,
+					s24_destination, 1,
 					s32_buffer, 1,
 					AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S32_TO_S24_BUFFER_SIZE);
 
@@ -1235,7 +1275,8 @@ ags_audio_buffer_util_test_copy_s32_to_s32()
 							  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S32_TO_S32_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_s32_to_s32(s32_destination, 1,
+  ags_audio_buffer_util_copy_s32_to_s32(&audio_buffer_util,
+					s32_destination, 1,
 					s32_buffer, 1,
 					AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S32_TO_S32_BUFFER_SIZE);
 
@@ -1269,7 +1310,8 @@ ags_audio_buffer_util_test_copy_s32_to_s64()
 							  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S32_TO_S64_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_s32_to_s64(s64_destination, 1,
+  ags_audio_buffer_util_copy_s32_to_s64(&audio_buffer_util,
+					s64_destination, 1,
 					s32_buffer, 1,
 					AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S32_TO_S64_BUFFER_SIZE);
 
@@ -1303,7 +1345,8 @@ ags_audio_buffer_util_test_copy_s32_to_float()
 							  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S32_TO_FLOAT_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_s32_to_float(float_destination, 1,
+  ags_audio_buffer_util_copy_s32_to_float(&audio_buffer_util,
+					  float_destination, 1,
 					  s32_buffer, 1,
 					  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S32_TO_FLOAT_BUFFER_SIZE);
 
@@ -1337,7 +1380,8 @@ ags_audio_buffer_util_test_copy_s32_to_double()
 							  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S32_TO_DOUBLE_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_s32_to_double(double_destination, 1,
+  ags_audio_buffer_util_copy_s32_to_double(&audio_buffer_util,
+					   double_destination, 1,
 					   s32_buffer, 1,
 					   AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S32_TO_DOUBLE_BUFFER_SIZE);
 
@@ -1369,7 +1413,8 @@ ags_audio_buffer_util_test_copy_s64_to_s8()
 							  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S64_TO_S8_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_s64_to_s8(s8_destination, 1,
+  ags_audio_buffer_util_copy_s64_to_s8(&audio_buffer_util,
+				       s8_destination, 1,
 				       s64_buffer, 1,
 				       AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S64_TO_S8_BUFFER_SIZE);
 
@@ -1401,7 +1446,8 @@ ags_audio_buffer_util_test_copy_s64_to_s16()
 							  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S64_TO_S16_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_s64_to_s16(s16_destination, 1,
+  ags_audio_buffer_util_copy_s64_to_s16(&audio_buffer_util,
+					s16_destination, 1,
 					s64_buffer, 1,
 					AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S64_TO_S16_BUFFER_SIZE);
 
@@ -1433,7 +1479,8 @@ ags_audio_buffer_util_test_copy_s64_to_s24()
 							  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S64_TO_S24_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_s64_to_s24(s24_destination, 1,
+  ags_audio_buffer_util_copy_s64_to_s24(&audio_buffer_util,
+					s24_destination, 1,
 					s64_buffer, 1,
 					AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S64_TO_S24_BUFFER_SIZE);
 
@@ -1465,7 +1512,8 @@ ags_audio_buffer_util_test_copy_s64_to_s32()
 							  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S64_TO_S32_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_s64_to_s32(s32_destination, 1,
+  ags_audio_buffer_util_copy_s64_to_s32(&audio_buffer_util,
+					s32_destination, 1,
 					s64_buffer, 1,
 					AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S64_TO_S32_BUFFER_SIZE);
 
@@ -1496,7 +1544,8 @@ ags_audio_buffer_util_test_copy_s64_to_s64()
 							  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S64_TO_S64_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_s64_to_s64(s64_destination, 1,
+  ags_audio_buffer_util_copy_s64_to_s64(&audio_buffer_util,
+					s64_destination, 1,
 					s64_buffer, 1,
 					AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S64_TO_S64_BUFFER_SIZE);
 
@@ -1528,7 +1577,8 @@ ags_audio_buffer_util_test_copy_s64_to_float()
 							  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S64_TO_FLOAT_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_s64_to_float(float_destination, 1,
+  ags_audio_buffer_util_copy_s64_to_float(&audio_buffer_util,
+					  float_destination, 1,
 					  s64_buffer, 1,
 					  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S64_TO_FLOAT_BUFFER_SIZE);
 
@@ -1560,7 +1610,8 @@ ags_audio_buffer_util_test_copy_s64_to_double()
 							  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S64_TO_DOUBLE_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_s64_to_double(double_destination, 1,
+  ags_audio_buffer_util_copy_s64_to_double(&audio_buffer_util,
+					   double_destination, 1,
 					   s64_buffer, 1,
 					   AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S64_TO_DOUBLE_BUFFER_SIZE);
 
@@ -1592,7 +1643,8 @@ ags_audio_buffer_util_test_copy_float_to_s8()
 							    AGS_AUDIO_BUFFER_UTIL_TEST_COPY_FLOAT_TO_S8_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_float_to_s8(s8_destination, 1,
+  ags_audio_buffer_util_copy_float_to_s8(&audio_buffer_util,
+					 s8_destination, 1,
 					 float_buffer, 1,
 					 AGS_AUDIO_BUFFER_UTIL_TEST_COPY_FLOAT_TO_S8_BUFFER_SIZE);
 
@@ -1624,7 +1676,8 @@ ags_audio_buffer_util_test_copy_float_to_s16()
 							    AGS_AUDIO_BUFFER_UTIL_TEST_COPY_FLOAT_TO_S16_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_float_to_s16(s16_destination, 1,
+  ags_audio_buffer_util_copy_float_to_s16(&audio_buffer_util,
+					  s16_destination, 1,
 					  float_buffer, 1,
 					  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_FLOAT_TO_S16_BUFFER_SIZE);
 
@@ -1656,7 +1709,8 @@ ags_audio_buffer_util_test_copy_float_to_s24()
 							    AGS_AUDIO_BUFFER_UTIL_TEST_COPY_FLOAT_TO_S24_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_float_to_s24(s24_destination, 1,
+  ags_audio_buffer_util_copy_float_to_s24(&audio_buffer_util,
+					  s24_destination, 1,
 					  float_buffer, 1,
 					  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_FLOAT_TO_S24_BUFFER_SIZE);
 
@@ -1688,7 +1742,8 @@ ags_audio_buffer_util_test_copy_float_to_s32()
 							    AGS_AUDIO_BUFFER_UTIL_TEST_COPY_FLOAT_TO_S32_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_float_to_s32(s32_destination, 1,
+  ags_audio_buffer_util_copy_float_to_s32(&audio_buffer_util,
+					  s32_destination, 1,
 					  float_buffer, 1,
 					  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_FLOAT_TO_S32_BUFFER_SIZE);
 
@@ -1720,7 +1775,8 @@ ags_audio_buffer_util_test_copy_float_to_s64()
 							    AGS_AUDIO_BUFFER_UTIL_TEST_COPY_FLOAT_TO_S64_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_float_to_s64(s64_destination, 1,
+  ags_audio_buffer_util_copy_float_to_s64(&audio_buffer_util,
+					  s64_destination, 1,
 					  float_buffer, 1,
 					  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_FLOAT_TO_S64_BUFFER_SIZE);
 
@@ -1751,7 +1807,8 @@ ags_audio_buffer_util_test_copy_float_to_float()
 							    AGS_AUDIO_BUFFER_UTIL_TEST_COPY_FLOAT_TO_FLOAT_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_float_to_float(float_destination, 1,
+  ags_audio_buffer_util_copy_float_to_float(&audio_buffer_util,
+					    float_destination, 1,
 					    float_buffer, 1,
 					    AGS_AUDIO_BUFFER_UTIL_TEST_COPY_FLOAT_TO_FLOAT_BUFFER_SIZE);
 
@@ -1783,7 +1840,8 @@ ags_audio_buffer_util_test_copy_float_to_double()
 							    AGS_AUDIO_BUFFER_UTIL_TEST_COPY_FLOAT_TO_DOUBLE_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_float_to_double(double_destination, 1,
+  ags_audio_buffer_util_copy_float_to_double(&audio_buffer_util,
+					     double_destination, 1,
 					     float_buffer, 1,
 					     AGS_AUDIO_BUFFER_UTIL_TEST_COPY_FLOAT_TO_DOUBLE_BUFFER_SIZE);
 
@@ -1815,7 +1873,8 @@ ags_audio_buffer_util_test_copy_double_to_s8()
 							     AGS_AUDIO_BUFFER_UTIL_TEST_COPY_DOUBLE_TO_S8_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_double_to_s8(s8_destination, 1,
+  ags_audio_buffer_util_copy_double_to_s8(&audio_buffer_util,
+					  s8_destination, 1,
 					  double_buffer, 1,
 					  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_DOUBLE_TO_S8_BUFFER_SIZE);
 
@@ -1847,7 +1906,8 @@ ags_audio_buffer_util_test_copy_double_to_s16()
 							     AGS_AUDIO_BUFFER_UTIL_TEST_COPY_DOUBLE_TO_S16_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_double_to_s16(s16_destination, 1,
+  ags_audio_buffer_util_copy_double_to_s16(&audio_buffer_util,
+					   s16_destination, 1,
 					   double_buffer, 1,
 					   AGS_AUDIO_BUFFER_UTIL_TEST_COPY_DOUBLE_TO_S16_BUFFER_SIZE);
 
@@ -1879,7 +1939,8 @@ ags_audio_buffer_util_test_copy_double_to_s24()
 							     AGS_AUDIO_BUFFER_UTIL_TEST_COPY_DOUBLE_TO_S24_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_double_to_s24(s24_destination, 1,
+  ags_audio_buffer_util_copy_double_to_s24(&audio_buffer_util,
+					   s24_destination, 1,
 					   double_buffer, 1,
 					   AGS_AUDIO_BUFFER_UTIL_TEST_COPY_DOUBLE_TO_S24_BUFFER_SIZE);
 
@@ -1911,7 +1972,8 @@ ags_audio_buffer_util_test_copy_double_to_s32()
 							     AGS_AUDIO_BUFFER_UTIL_TEST_COPY_DOUBLE_TO_S32_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_double_to_s32(s32_destination, 1,
+  ags_audio_buffer_util_copy_double_to_s32(&audio_buffer_util,
+					   s32_destination, 1,
 					   double_buffer, 1,
 					   AGS_AUDIO_BUFFER_UTIL_TEST_COPY_DOUBLE_TO_S32_BUFFER_SIZE);
 
@@ -1943,7 +2005,8 @@ ags_audio_buffer_util_test_copy_double_to_s64()
 							     AGS_AUDIO_BUFFER_UTIL_TEST_COPY_DOUBLE_TO_S64_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_double_to_s64(s64_destination, 1,
+  ags_audio_buffer_util_copy_double_to_s64(&audio_buffer_util,
+					   s64_destination, 1,
 					   double_buffer, 1,
 					   AGS_AUDIO_BUFFER_UTIL_TEST_COPY_DOUBLE_TO_S64_BUFFER_SIZE);
 
@@ -1975,7 +2038,8 @@ ags_audio_buffer_util_test_copy_double_to_float()
 							     AGS_AUDIO_BUFFER_UTIL_TEST_COPY_DOUBLE_TO_FLOAT_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_double_to_float(float_destination, 1,
+  ags_audio_buffer_util_copy_double_to_float(&audio_buffer_util,
+					     float_destination, 1,
 					     double_buffer, 1,
 					     AGS_AUDIO_BUFFER_UTIL_TEST_COPY_DOUBLE_TO_FLOAT_BUFFER_SIZE);
 
@@ -2006,7 +2070,8 @@ ags_audio_buffer_util_test_copy_double_to_double()
 							     AGS_AUDIO_BUFFER_UTIL_TEST_COPY_DOUBLE_TO_DOUBLE_BUFFER_SIZE);
   
   /* test */
-  ags_audio_buffer_util_copy_double_to_double(double_destination, 1,
+  ags_audio_buffer_util_copy_double_to_double(&audio_buffer_util,
+					      double_destination, 1,
 					      double_buffer, 1,
 					      AGS_AUDIO_BUFFER_UTIL_TEST_COPY_DOUBLE_TO_DOUBLE_BUFFER_SIZE);
 

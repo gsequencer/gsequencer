@@ -172,6 +172,10 @@ gpointer
 ags_fluid_interpolate_4th_order_util_copy(AgsFluidInterpolate4thOrderUtil *ptr)
 {
   AgsFluidInterpolate4thOrderUtil *new_ptr;
+
+  if(ptr == NULL){
+    return(NULL);
+  }
   
   new_ptr = (AgsFluidInterpolate4thOrderUtil *) g_new(AgsFluidInterpolate4thOrderUtil,
 						      1);

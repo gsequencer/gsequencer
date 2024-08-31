@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2020 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -76,17 +76,23 @@ ags_sfz_synth_util_test_stub_read(AgsSoundResource *sound_resource,
 {
   AgsSFZSample *sfz_sample;
 
+  AgsAudioBufferUtil audio_buffer_util;
+  
   guint copy_mode;
   guint read_count;
   
   sfz_sample = AGS_SFZ_SAMPLE(sound_resource);
 
-  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
-						  ags_audio_buffer_util_format_from_soundcard(sfz_sample->format));
+  copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util,
+							      ags_audio_buffer_util_format_from_soundcard(&audio_buffer_util,
+													  format),
+							      ags_audio_buffer_util_format_from_soundcard(&audio_buffer_util,
+													  sfz_sample->format));
 
   read_count = sfz_sample->buffer_size;
 
-  ags_audio_buffer_util_copy_buffer_to_buffer(dbuffer, daudio_channels, 0,
+  ags_audio_buffer_util_copy_buffer_to_buffer(&audio_buffer_util,
+					      dbuffer, daudio_channels, 0,
 					      sfz_sample->full_buffer, sfz_sample->info->channels, audio_channel,
 					      read_count, copy_mode);
   

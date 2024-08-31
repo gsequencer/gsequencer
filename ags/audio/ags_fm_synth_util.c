@@ -117,6 +117,10 @@ gpointer
 ags_fm_synth_util_copy(AgsFMSynthUtil *ptr)
 {
   AgsFMSynthUtil *new_ptr;
+
+  if(ptr == NULL){
+    return(NULL);
+  }
   
   new_ptr = (AgsFMSynthUtil *) g_new(AgsFMSynthUtil,
 				     1);

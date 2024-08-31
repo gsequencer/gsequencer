@@ -110,6 +110,10 @@ gpointer
 ags_lfo_synth_util_copy(AgsLFOSynthUtil *ptr)
 {
   AgsLFOSynthUtil *new_ptr;
+
+  if(ptr == NULL){
+    return(NULL);
+  }
   
   new_ptr = (AgsLFOSynthUtil *) g_new(AgsLFOSynthUtil,
 				     1);

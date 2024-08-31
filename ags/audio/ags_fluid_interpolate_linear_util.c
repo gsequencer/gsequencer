@@ -170,6 +170,10 @@ gpointer
 ags_fluid_interpolate_linear_util_copy(AgsFluidInterpolateLinearUtil *ptr)
 {
   AgsFluidInterpolateLinearUtil *new_ptr;
+
+  if(ptr == NULL){
+    return(NULL);
+  }
   
   new_ptr = (AgsFluidInterpolateLinearUtil *) g_new(AgsFluidInterpolateLinearUtil,
 						    1);

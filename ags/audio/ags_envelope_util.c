@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -111,6 +111,10 @@ gpointer
 ags_envelope_util_copy(AgsEnvelopeUtil *ptr)
 {
   AgsEnvelopeUtil *new_ptr;
+
+  if(ptr == NULL){
+    return(NULL);
+  }
   
   new_ptr = (AgsEnvelopeUtil *) g_new(AgsEnvelopeUtil,
 				      1);

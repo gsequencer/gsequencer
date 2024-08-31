@@ -216,6 +216,10 @@ gpointer
 ags_sf2_synth_util_boxed_copy(AgsSF2SynthUtil *ptr)
 {
   AgsSF2SynthUtil *new_ptr;
+
+  if(ptr == NULL){
+    return(NULL);
+  }
   
   new_ptr = (AgsSF2SynthUtil *) g_new(AgsSF2SynthUtil,
 				      1);

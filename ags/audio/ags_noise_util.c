@@ -163,6 +163,10 @@ gpointer
 ags_noise_util_copy(AgsNoiseUtil *ptr)
 {
   AgsNoiseUtil *new_ptr;
+
+  if(ptr == NULL){
+    return(NULL);
+  }
   
   new_ptr = (AgsNoiseUtil *) g_new(AgsNoiseUtil,
 				   1);

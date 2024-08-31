@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2017,2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -662,12 +662,9 @@ ags_midi_builder_test_append_change_pitch_bend()
 
   unsigned char *offset;
 
-  guint pitchs[AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PITCH_BEND_TRACK_COUNT][AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PITCH_BEND_PITCH_COUNT];
-
   guint ret_size;
   gint delta_time;
   gint channel;
-  gint pitch;
   gint transmitter;
   guint i, j;
   gboolean success;
@@ -680,12 +677,9 @@ ags_midi_builder_test_append_change_pitch_bend()
     midi_builder->current_midi_track = current_midi_track->data;
     
     for(j = 0; j < AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PITCH_BEND_PITCH_COUNT; j++){
-      pitchs[i][j] = rand() % 128;
-      
       ags_midi_builder_append_change_pitch_bend(midi_builder,
 						AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PITCH_BEND_PULSE_UNIT,
 						AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PITCH_BEND_CHANNEL,
-						pitchs[i][j],
 						AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PITCH_BEND_TRANSMITTER);
     }
 
@@ -720,14 +714,7 @@ ags_midi_builder_test_append_change_pitch_bend()
       ret_size = ags_midi_smf_util_get_pitch_bend(&midi_smf_util, offset,
 						  &delta_time,
 						  &channel,
-						  &pitch,
 						  &transmitter);
-
-      if(pitch != pitchs[i][j]){
-	success = FALSE;
-
-	break;
-      }
 
       offset += ret_size;
     }

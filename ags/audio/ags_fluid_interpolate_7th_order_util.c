@@ -187,6 +187,10 @@ gpointer
 ags_fluid_interpolate_7th_order_util_copy(AgsFluidInterpolate7thOrderUtil *ptr)
 {
   AgsFluidInterpolate7thOrderUtil *new_ptr;
+
+  if(ptr == NULL){
+    return(NULL);
+  }
   
   new_ptr = (AgsFluidInterpolate7thOrderUtil *) g_new(AgsFluidInterpolate7thOrderUtil,
 						      1);

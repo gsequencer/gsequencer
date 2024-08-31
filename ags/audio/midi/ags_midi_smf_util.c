@@ -1104,7 +1104,7 @@ ags_midi_smf_util_put_pitch_bend(AgsMidiSmfUtil *midi_smf_util,
  * @buffer: the MIDI buffer
  * @delta_time: (out): the return location of timing information
  * @channel: (out): the return location of channel
- * @transmitter: (out): the return location the transmitter
+ * @transmitter: (out): the return location the transmitter signed 14 bit integer
  * 
  * Get pitch bend.
  * 
@@ -1121,6 +1121,7 @@ ags_midi_smf_util_get_pitch_bend(AgsMidiSmfUtil *midi_smf_util,
 {
   gint local_delta_time;
   guint delta_time_size;
+  gint local_transmitter;
   
   if(buffer == NULL){
     if(delta_time != NULL){
@@ -1153,7 +1154,13 @@ ags_midi_smf_util_get_pitch_bend(AgsMidiSmfUtil *midi_smf_util,
   
   /* transmitter */
   if(transmitter != NULL){
-    *transmitter =  ((0x7f & buffer[delta_time_size + 1]) << 7) | (0x7f & buffer[delta_time_size + 2]);
+    local_transmitter = ((0x7f & buffer[delta_time_size + 1]) << 7) | (0x7f & buffer[delta_time_size + 2]);
+
+    if((local_transmitter & (1 << 13)) != 0){
+      local_transmitter = (~(0x3fff)) | local_transmitter;
+    }
+    
+    *transmitter = local_transmitter;
   }
   
   return(delta_time_size + 3);

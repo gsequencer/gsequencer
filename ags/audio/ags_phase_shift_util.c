@@ -94,6 +94,10 @@ gpointer
 ags_phase_shift_util_copy(AgsPhaseShiftUtil *ptr)
 {
   AgsPhaseShiftUtil *new_ptr;
+
+  if(ptr == NULL){
+    return(NULL);
+  }
   
   new_ptr = (AgsPhaseShiftUtil *) g_new(AgsPhaseShiftUtil,
 					 1);

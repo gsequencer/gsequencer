@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -282,6 +282,8 @@ ags_recycling_test_create_audio_signal_with_frame_count()
   AgsRecycling *recycling;
   AgsAudioSignal *template, *audio_signal;
 
+  AgsAudioBufferUtil audio_buffer_util;
+  
   GList *stream, *template_stream;
 
   signed short *entire_buffer;
@@ -375,8 +377,10 @@ ags_recycling_test_create_audio_signal_with_frame_count()
   entire_buffer = (signed short *) malloc(AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_FRAMES * sizeof(signed short));
   memset(entire_buffer, 0, AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_FRAMES * sizeof(signed short));
   
-  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S16,
-						  ags_audio_buffer_util_format_from_soundcard(template->format));
+  copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(&audio_buffer_util,
+							      AGS_AUDIO_BUFFER_UTIL_S16,
+							      ags_audio_buffer_util_format_from_soundcard(&audio_buffer_util,
+													  template->format));
 
   for(i = 0, j = 0; i < AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_FRAMES;){
     copy_n_frames = template->buffer_size;
@@ -399,7 +403,8 @@ ags_recycling_test_create_audio_signal_with_frame_count()
     }
 
     /* copy */    
-    ags_audio_buffer_util_copy_buffer_to_buffer(entire_buffer, 1, i,
+    ags_audio_buffer_util_copy_buffer_to_buffer(&audio_buffer_util,
+						entire_buffer, 1, i,
 						template_stream->data, 1, j,
 						copy_n_frames, copy_mode);
 

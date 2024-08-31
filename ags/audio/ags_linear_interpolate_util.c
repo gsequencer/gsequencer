@@ -97,6 +97,10 @@ gpointer
 ags_linear_interpolate_util_copy(AgsLinearInterpolateUtil *ptr)
 {
   AgsLinearInterpolateUtil *new_ptr;
+
+  if(ptr == NULL){
+    return(NULL);
+  }
   
   new_ptr = (AgsLinearInterpolateUtil *) g_new(AgsLinearInterpolateUtil,
 					       1);

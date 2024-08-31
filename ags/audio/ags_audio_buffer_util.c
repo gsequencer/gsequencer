@@ -113,6 +113,10 @@ gpointer
 ags_audio_buffer_util_copy(AgsAudioBufferUtil *ptr)
 {
   AgsAudioBufferUtil *new_ptr;
+
+  if(ptr == NULL){
+    return(NULL);
+  }
   
   new_ptr = (AgsAudioBufferUtil *) g_new(AgsAudioBufferUtil,
 					 1);

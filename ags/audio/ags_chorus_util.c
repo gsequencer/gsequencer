@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -125,6 +125,10 @@ gpointer
 ags_chorus_util_copy(AgsChorusUtil *ptr)
 {
   AgsChorusUtil *new_ptr;
+
+  if(ptr == NULL){
+    return(NULL);
+  }
   
   new_ptr = (AgsChorusUtil *) g_new(AgsChorusUtil,
 				    1);

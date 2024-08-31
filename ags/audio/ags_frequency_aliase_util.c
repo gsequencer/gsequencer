@@ -96,6 +96,10 @@ gpointer
 ags_frequency_aliase_util_copy(AgsFrequencyAliaseUtil *ptr)
 {
   AgsFrequencyAliaseUtil *new_ptr;
+
+  if(ptr == NULL){
+    return(NULL);
+  }
   
   new_ptr = (AgsFrequencyAliaseUtil *) g_new(AgsFrequencyAliaseUtil,
 					     1);

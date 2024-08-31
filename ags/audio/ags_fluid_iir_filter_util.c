@@ -165,6 +165,10 @@ gpointer
 ags_fluid_iir_filter_util_copy(AgsFluidIIRFilterUtil *ptr)
 {
   AgsFluidIIRFilterUtil *new_ptr;
+
+  if(ptr == NULL){
+    return(NULL);
+  }
   
   new_ptr = (AgsFluidIIRFilterUtil *) g_new(AgsFluidIIRFilterUtil,
 					    1);

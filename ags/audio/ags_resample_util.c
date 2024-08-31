@@ -204,6 +204,10 @@ gpointer
 ags_resample_util_copy(AgsResampleUtil *ptr)
 {
   AgsResampleUtil *new_ptr;
+
+  if(ptr == NULL){
+    return(NULL);
+  }
   
   new_ptr = (AgsResampleUtil *) g_new(AgsResampleUtil,
 				      1);

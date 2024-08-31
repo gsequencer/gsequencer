@@ -213,6 +213,10 @@ ags_sfz_synth_util_boxed_copy(AgsSFZSynthUtil *ptr)
   AgsSFZSynthUtil *new_ptr;
 
   guint i;
+
+  if(ptr == NULL){
+    return(NULL);
+  }
   
   new_ptr = (AgsSFZSynthUtil *) g_new(AgsSFZSynthUtil,
 				      1);

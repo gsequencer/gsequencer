@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2018 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -62,6 +62,8 @@ ags_synth_generator_test_compute()
   AgsAudioSignal *audio_signal;
   AgsSynthGenerator *synth_generator;
 
+  AgsAudioBufferUtil audio_buffer_util;
+  
   GList *list;
   
   guint xcross_count;
@@ -91,7 +93,8 @@ ags_synth_generator_test_compute()
   
   while(list != NULL){
     xcross_count += ags_synth_util_get_xcross_count(list->data,
-						    ags_audio_buffer_util_format_from_soundcard(audio_signal->format),
+						    ags_audio_buffer_util_format_from_soundcard(&audio_buffer_util,
+												audio_signal->format),
 						    audio_signal->buffer_size);
 
     list = list->next;
@@ -116,7 +119,8 @@ ags_synth_generator_test_compute()
   
   while(list != NULL){
     xcross_count += ags_synth_util_get_xcross_count(list->data,
-						    ags_audio_buffer_util_format_from_soundcard(audio_signal->format),
+						    ags_audio_buffer_util_format_from_soundcard(&audio_buffer_util,
+												audio_signal->format),
 						    audio_signal->buffer_size);
 
     list = list->next;

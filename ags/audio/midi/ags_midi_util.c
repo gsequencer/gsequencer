@@ -1040,7 +1040,7 @@ ags_midi_util_get_change_parameter(AgsMidiUtil *midi_util,
  * @midi_util: the #AgsMidiUtil-struct
  * @buffer: the MIDI buffer
  * @channel: (out): the return location of channel
- * @transmitter: (out): the return location of transmitter
+ * @transmitter: (out): the return location of transmitter signed 14 bit integer
  * 
  * Get pitch bend fields of @buffer.
  * 
@@ -1053,6 +1053,8 @@ ags_midi_util_get_pitch_bend(AgsMidiUtil *midi_util,
 			     guchar *buffer,
 			     gint *channel, gint *transmitter)
 {
+  gint local_transmitter;
+
   if(buffer != NULL ||
      (0xf0 & (buffer[0])) != 0xe0){
     if(channel != NULL){
@@ -1071,7 +1073,13 @@ ags_midi_util_get_pitch_bend(AgsMidiUtil *midi_util,
   }
 
   if(transmitter != NULL){
-    transmitter[0] = ((0x7f & (buffer[1])) << 7) | (0x7f & (buffer[2]));
+    local_transmitter = ((0x7f & (buffer[1])) << 7) | (0x7f & (buffer[2]));
+    
+    if((local_transmitter & (1 << 13)) != 0){
+      local_transmitter = (~(0x3fff)) | local_transmitter;
+    }
+    
+    transmitter[0] = local_transmitter;
   }
   
   return(TRUE);

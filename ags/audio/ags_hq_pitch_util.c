@@ -127,6 +127,10 @@ gpointer
 ags_hq_pitch_util_copy(AgsHQPitchUtil *ptr)
 {
   AgsHQPitchUtil *new_ptr;
+
+  if(ptr == NULL){
+    return(NULL);
+  }
   
   new_ptr = (AgsHQPitchUtil *) g_new(AgsHQPitchUtil,
 				     1);

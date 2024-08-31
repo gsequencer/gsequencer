@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2016,2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -988,7 +988,6 @@ ags_midi_smf_util_test_put_pitch_bend()
 				     buffer,
 				     varlength[i][1],
 				     0,
-				     0,
 				     127);
 
     if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
@@ -1009,7 +1008,7 @@ ags_midi_smf_util_test_get_pitch_bend()
   unsigned char *pitch_bend = "\xe0\x00\x7f";
 
   guint i;
-  gint delta_time, channel, pitch, transmitter;
+  gint delta_time, channel, transmitter;
   gboolean success;
 
   buffer = (unsigned char *) malloc(7 * sizeof(unsigned char));
@@ -1020,7 +1019,6 @@ ags_midi_smf_util_test_get_pitch_bend()
   
   ags_midi_smf_util_get_pitch_bend(&midi_smf_util,
 				   buffer,
-				   NULL,
 				   NULL,
 				   NULL,
 				   NULL);
@@ -1036,12 +1034,10 @@ ags_midi_smf_util_test_get_pitch_bend()
 				     buffer,
 				     &delta_time,
 				     &channel,
-				     &pitch,
 				     &transmitter);
 
     if(delta_time != varlength[i][1] ||
        channel != 0 ||
-       pitch != 0 ||
        transmitter != 127){
       success = FALSE;
 

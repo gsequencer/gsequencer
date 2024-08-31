@@ -118,6 +118,10 @@ gpointer
 ags_wah_wah_util_copy(AgsWahWahUtil *ptr)
 {
   AgsWahWahUtil *new_ptr;
+
+  if(ptr == NULL){
+    return(NULL);
+  }
   
   new_ptr = (AgsWahWahUtil *) g_new(AgsWahWahUtil,
 				    1);

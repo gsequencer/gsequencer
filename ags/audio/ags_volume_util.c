@@ -101,6 +101,10 @@ gpointer
 ags_volume_util_copy(AgsVolumeUtil *ptr)
 {
   AgsVolumeUtil *new_ptr;
+
+  if(ptr == NULL){
+    return(NULL);
+  }
   
   new_ptr = (AgsVolumeUtil *) g_new(AgsVolumeUtil,
 				    1);

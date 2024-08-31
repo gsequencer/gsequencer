@@ -136,6 +136,10 @@ gpointer
 ags_fluid_interpolate_none_util_copy(AgsFluidInterpolateNoneUtil *ptr)
 {
   AgsFluidInterpolateNoneUtil *new_ptr;
+
+  if(ptr == NULL){
+    return(NULL);
+  }
   
   new_ptr = (AgsFluidInterpolateNoneUtil *) g_new(AgsFluidInterpolateNoneUtil,
 						  1);

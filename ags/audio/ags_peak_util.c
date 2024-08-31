@@ -100,6 +100,10 @@ gpointer
 ags_peak_util_copy(AgsPeakUtil *ptr)
 {
   AgsPeakUtil *new_ptr;
+
+  if(ptr == NULL){
+    return(NULL);
+  }
   
   new_ptr = (AgsPeakUtil *) g_new(AgsPeakUtil,
 				  1);

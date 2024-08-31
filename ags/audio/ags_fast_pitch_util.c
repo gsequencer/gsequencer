@@ -138,6 +138,10 @@ gpointer
 ags_fast_pitch_util_copy(AgsFastPitchUtil *ptr)
 {
   AgsFastPitchUtil *new_ptr;
+
+  if(ptr == NULL){
+    return(NULL);
+  }
   
   new_ptr = (AgsFastPitchUtil *) g_new(AgsFastPitchUtil,
 				       1);

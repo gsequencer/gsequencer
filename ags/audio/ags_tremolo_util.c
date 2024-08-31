@@ -113,6 +113,10 @@ gpointer
 ags_tremolo_util_copy(AgsTremoloUtil *ptr)
 {
   AgsTremoloUtil *new_ptr;
+
+  if(ptr == NULL){
+    return(NULL);
+  }
   
   new_ptr = (AgsTremoloUtil *) g_new(AgsTremoloUtil,
 				     1);
