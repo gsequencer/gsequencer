@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -677,6 +677,7 @@ ags_synth_util_set_offset_256th(AgsSynthUtil *synth_util,
 
 /**
  * ags_synth_util_get_xcross_count_s8:
+ * @synth_util: the #AgsSynthUtil-struct
  * @buffer: the buffer containing audio data
  * @buffer_size: the buffer size
  * 
@@ -687,7 +688,8 @@ ags_synth_util_set_offset_256th(AgsSynthUtil *synth_util,
  * Since: 3.0.0
  */
 guint
-ags_synth_util_get_xcross_count_s8(gint8 *buffer,
+ags_synth_util_get_xcross_count_s8(AgsSynthUtil *synth_util,
+				   gint8 *buffer,
 				   guint buffer_size)
 {
   guint count;
@@ -725,6 +727,7 @@ ags_synth_util_get_xcross_count_s8(gint8 *buffer,
 
 /**
  * ags_synth_util_get_xcross_count_s16:
+ * @synth_util: the #AgsSynthUtil-struct
  * @buffer: the buffer containing audio data
  * @buffer_size: the buffer size
  * 
@@ -735,7 +738,8 @@ ags_synth_util_get_xcross_count_s8(gint8 *buffer,
  * Since: 3.0.0
  */
 guint
-ags_synth_util_get_xcross_count_s16(gint16 *buffer,
+ags_synth_util_get_xcross_count_s16(AgsSynthUtil *synth_util,
+				    gint16 *buffer,
 				    guint buffer_size)
 {
   guint count;
@@ -773,6 +777,7 @@ ags_synth_util_get_xcross_count_s16(gint16 *buffer,
 
 /**
  * ags_synth_util_get_xcross_count_s24:
+ * @synth_util: the #AgsSynthUtil-struct
  * @buffer: the buffer containing audio data
  * @buffer_size: the buffer size
  * 
@@ -783,7 +788,8 @@ ags_synth_util_get_xcross_count_s16(gint16 *buffer,
  * Since: 3.0.0
  */
 guint
-ags_synth_util_get_xcross_count_s24(gint32 *buffer,
+ags_synth_util_get_xcross_count_s24(AgsSynthUtil *synth_util,
+				    gint32 *buffer,
 				    guint buffer_size)
 {
   guint count;
@@ -821,6 +827,7 @@ ags_synth_util_get_xcross_count_s24(gint32 *buffer,
 
 /**
  * ags_synth_util_get_xcross_count_s32:
+ * @synth_util: the #AgsSynthUtil-struct
  * @buffer: the buffer containing audio data
  * @buffer_size: the buffer size
  * 
@@ -831,7 +838,8 @@ ags_synth_util_get_xcross_count_s24(gint32 *buffer,
  * Since: 3.0.0
  */
 guint
-ags_synth_util_get_xcross_count_s32(gint32 *buffer,
+ags_synth_util_get_xcross_count_s32(AgsSynthUtil *synth_util,
+				    gint32 *buffer,
 				    guint buffer_size)
 {
   guint count;
@@ -869,6 +877,7 @@ ags_synth_util_get_xcross_count_s32(gint32 *buffer,
 
 /**
  * ags_synth_util_get_xcross_count_s64:
+ * @synth_util: the #AgsSynthUtil-struct
  * @buffer: the buffer containing audio data
  * @buffer_size: the buffer size
  * 
@@ -879,7 +888,8 @@ ags_synth_util_get_xcross_count_s32(gint32 *buffer,
  * Since: 3.0.0
  */
 guint
-ags_synth_util_get_xcross_count_s64(gint64 *buffer,
+ags_synth_util_get_xcross_count_s64(AgsSynthUtil *synth_util,
+				    gint64 *buffer,
 				    guint buffer_size)
 {
   guint count;
@@ -917,6 +927,7 @@ ags_synth_util_get_xcross_count_s64(gint64 *buffer,
 
 /**
  * ags_synth_util_get_xcross_count_float:
+ * @synth_util: the #AgsSynthUtil-struct
  * @buffer: the buffer containing audio data
  * @buffer_size: the buffer size
  * 
@@ -927,7 +938,8 @@ ags_synth_util_get_xcross_count_s64(gint64 *buffer,
  * Since: 3.0.0
  */
 guint
-ags_synth_util_get_xcross_count_float(gfloat *buffer,
+ags_synth_util_get_xcross_count_float(AgsSynthUtil *synth_util,
+				      gfloat *buffer,
 				      guint buffer_size)
 {
   guint count;
@@ -965,6 +977,7 @@ ags_synth_util_get_xcross_count_float(gfloat *buffer,
 
 /**
  * ags_synth_util_get_xcross_count_double:
+ * @synth_util: the #AgsSynthUtil-struct
  * @buffer: the buffer containing audio data
  * @buffer_size: the buffer size
  * 
@@ -975,7 +988,8 @@ ags_synth_util_get_xcross_count_float(gfloat *buffer,
  * Since: 3.0.0
  */
 guint
-ags_synth_util_get_xcross_count_double(gdouble *buffer,
+ags_synth_util_get_xcross_count_double(AgsSynthUtil *synth_util,
+				       gdouble *buffer,
 				       guint buffer_size)
 {
   guint count;
@@ -1014,6 +1028,7 @@ ags_synth_util_get_xcross_count_double(gdouble *buffer,
 
 /**
  * ags_synth_util_get_xcross_count_complex:
+ * @synth_util: the #AgsSynthUtil-struct
  * @buffer: the buffer containing audio data
  * @buffer_size: the buffer size
  * 
@@ -1024,7 +1039,8 @@ ags_synth_util_get_xcross_count_double(gdouble *buffer,
  * Since: 3.0.0
  */
 guint
-ags_synth_util_get_xcross_count_complex(AgsComplex *buffer,
+ags_synth_util_get_xcross_count_complex(AgsSynthUtil *synth_util,
+					AgsComplex *buffer,
 					guint buffer_size)
 {
   gfloat **ptr_ptr;
@@ -1079,6 +1095,7 @@ ags_synth_util_get_xcross_count_complex(AgsComplex *buffer,
 
 /**
  * ags_synth_util_get_xcross_count:
+ * @synth_util: the #AgsSynthUtil-struct
  * @buffer: the buffer containing audio data
  * @format: the format
  * @buffer_size: the buffer size
@@ -1090,7 +1107,8 @@ ags_synth_util_get_xcross_count_complex(AgsComplex *buffer,
  * Since: 3.0.0
  */
 guint
-ags_synth_util_get_xcross_count(void *buffer,
+ags_synth_util_get_xcross_count(AgsSynthUtil *synth_util,
+				void *buffer,
 				guint format,
 				guint buffer_size)
 {
@@ -1105,49 +1123,57 @@ ags_synth_util_get_xcross_count(void *buffer,
   switch(format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
   {
-    count = ags_synth_util_get_xcross_count_s8((gint8 *) buffer,
+    count = ags_synth_util_get_xcross_count_s8(synth_util,
+					       (gint8 *) buffer,
 					       buffer_size);
   }
   break;
   case AGS_SOUNDCARD_SIGNED_16_BIT:
   {
-    count = ags_synth_util_get_xcross_count_s16((gint16 *) buffer,
+    count = ags_synth_util_get_xcross_count_s16(synth_util,
+						(gint16 *) buffer,
 						buffer_size);
   }
   break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
   {
-    count = ags_synth_util_get_xcross_count_s24((gint32 *) buffer,
+    count = ags_synth_util_get_xcross_count_s24(synth_util,
+						(gint32 *) buffer,
 						buffer_size);
   }
   break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
   {
-    count = ags_synth_util_get_xcross_count_s32((gint32 *) buffer,
+    count = ags_synth_util_get_xcross_count_s32(synth_util,
+						(gint32 *) buffer,
 						buffer_size);
   }
   break;
   case AGS_SOUNDCARD_SIGNED_64_BIT:
   {
-    count = ags_synth_util_get_xcross_count_s64((gint64 *) buffer,
+    count = ags_synth_util_get_xcross_count_s64(synth_util,
+						(gint64 *) buffer,
 						buffer_size);
   }
   break;
   case AGS_SOUNDCARD_FLOAT:
   {
-    count = ags_synth_util_get_xcross_count_float((gfloat *) buffer,
+    count = ags_synth_util_get_xcross_count_float(synth_util,
+						  (gfloat *) buffer,
 						  buffer_size);
   }
   break;
   case AGS_SOUNDCARD_DOUBLE:
   {
-    count = ags_synth_util_get_xcross_count_double((gdouble *) buffer,
+    count = ags_synth_util_get_xcross_count_double(synth_util,
+						   (gdouble *) buffer,
 						   buffer_size);
   }
   break;
   case AGS_SOUNDCARD_COMPLEX:
   {
-    count = ags_synth_util_get_xcross_count_complex((AgsComplex *) buffer,
+    count = ags_synth_util_get_xcross_count_complex(synth_util,
+						    (AgsComplex *) buffer,
 						    buffer_size);
   }
   break;

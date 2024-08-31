@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -118,24 +118,33 @@ void ags_synth_util_set_offset_256th(AgsSynthUtil *synth_util,
 				     guint offset_256th);
 
 /* zero-crossing */
-guint ags_synth_util_get_xcross_count_s8(gint8 *buffer,
+guint ags_synth_util_get_xcross_count_s8(AgsSynthUtil *synth_util,
+					 gint8 *buffer,
 					 guint buffer_size);
-guint ags_synth_util_get_xcross_count_s16(gint16 *buffer,
+guint ags_synth_util_get_xcross_count_s16(AgsSynthUtil *synth_util,
+					  gint16 *buffer,
 					  guint buffer_size);
-guint ags_synth_util_get_xcross_count_s24(gint32 *buffer,
+guint ags_synth_util_get_xcross_count_s24(AgsSynthUtil *synth_util,
+					  gint32 *buffer,
 					  guint buffer_size);
-guint ags_synth_util_get_xcross_count_s32(gint32 *buffer,
+guint ags_synth_util_get_xcross_count_s32(AgsSynthUtil *synth_util,
+					  gint32 *buffer,
 					  guint buffer_size);
-guint ags_synth_util_get_xcross_count_s64(gint64 *buffer,
+guint ags_synth_util_get_xcross_count_s64(AgsSynthUtil *synth_util,
+					  gint64 *buffer,
 					  guint buffer_size);
-guint ags_synth_util_get_xcross_count_float(gfloat *buffer,
+guint ags_synth_util_get_xcross_count_float(AgsSynthUtil *synth_util,
+					    gfloat *buffer,
 					    guint buffer_size);
-guint ags_synth_util_get_xcross_count_double(gdouble *buffer,
+guint ags_synth_util_get_xcross_count_double(AgsSynthUtil *synth_util,
+					     gdouble *buffer,
 					     guint buffer_size);
-guint ags_synth_util_get_xcross_count_complex(AgsComplex *buffer,
+guint ags_synth_util_get_xcross_count_complex(AgsSynthUtil *synth_util,
+					      AgsComplex *buffer,
 					      guint buffer_size);
 
-guint ags_synth_util_get_xcross_count(void *buffer,
+guint ags_synth_util_get_xcross_count(AgsSynthUtil *synth_util,
+				      void *buffer,
 				      guint format,
 				      guint buffer_size);
 

@@ -13,7 +13,8 @@ ags (7.0.0)
 	* implemented ags_recall_midi1_control_change()
 	* implemented ags_recall_midi2_control_change()
 	* refactored AgsAudioBufferUtil breaking ABI
-	* refactored ags_audio_buffer_util_get_copy_mode_from_format()
+	* refactored AgsSynthUtil breaking ABI
+	* refactored ags_audio_buffer_util_get_copy_mode_from_format() breaking ABI due to renaming and conflict
 	* fixed ags_midi_ump_util_put_midi1_pitch_bend() prototype declaration
 	* fixed ags_midi_ump_util_get_midi1_pitch_bend() prototype declaration
 	* fixed ags_midi_util_put_pitch_bend() prototype declaration
