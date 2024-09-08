@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -39,6 +39,15 @@
 #include <ags/audio/ags_fluid_interpolate_4th_order_util.h>
 
 #include <ags/audio/ags_fluid_util.h>
+
+void ags_fluid_interpolate_4th_order_util_pitch_s8(AgsFluidInterpolate4thOrderUtil *fluid_interpolate_4th_order_util);
+void ags_fluid_interpolate_4th_order_util_pitch_s16(AgsFluidInterpolate4thOrderUtil *fluid_interpolate_4th_order_util);
+void ags_fluid_interpolate_4th_order_util_pitch_s24(AgsFluidInterpolate4thOrderUtil *fluid_interpolate_4th_order_util);
+void ags_fluid_interpolate_4th_order_util_pitch_s32(AgsFluidInterpolate4thOrderUtil *fluid_interpolate_4th_order_util);
+void ags_fluid_interpolate_4th_order_util_pitch_s64(AgsFluidInterpolate4thOrderUtil *fluid_interpolate_4th_order_util);
+void ags_fluid_interpolate_4th_order_util_pitch_float(AgsFluidInterpolate4thOrderUtil *fluid_interpolate_4th_order_util);
+void ags_fluid_interpolate_4th_order_util_pitch_double(AgsFluidInterpolate4thOrderUtil *fluid_interpolate_4th_order_util);
+void ags_fluid_interpolate_4th_order_util_pitch_complex(AgsFluidInterpolate4thOrderUtil *fluid_interpolate_4th_order_util);
 
 /* 4th Order interpolation table (2 coefficients centered on 1st) */
 gboolean interp_coeff_4th_order_initialized = FALSE;
@@ -123,37 +132,7 @@ ags_fluid_interpolate_4th_order_util_alloc()
   ptr = (AgsFluidInterpolate4thOrderUtil *) g_new(AgsFluidInterpolate4thOrderUtil,
 						  1);
 
-  ptr->source = NULL;
-  ptr->source_stride = 1;
-
-  ptr->destination = NULL;
-  ptr->destination_stride = 1;
-
-  ptr->buffer_length = 0;
-  ptr->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
-  ptr->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-
-  ptr->base_key = 0.0;
-  ptr->tuning = 0.0;
-
-  ptr->phase_increment = 0.0;
-
-  ptr->vibrato_enabled = TRUE;
-
-  ptr->vibrato_gain = 1.0;
-  ptr->vibrato_lfo_depth = 1.0;
-  ptr->vibrato_lfo_freq = 8.172;
-  ptr->vibrato_tuning = 0.0;
-
-  ptr->vibrato_lfo_frame_count = ptr->samplerate / ptr->vibrato_lfo_freq;
-  ptr->vibrato_lfo_offset = 0;
-
-  ptr->frame_count = 0;
-  ptr->offset = 0;
-
-  ptr->note_256th_mode = TRUE;
-
-  ptr->offset_256th = 0;
+  ptr[0] = AGS_FLUID_INTERPOLATE_4TH_ORDER_UTIL_INITIALIZER;
 
   return(ptr);
 }
@@ -173,9 +152,7 @@ ags_fluid_interpolate_4th_order_util_copy(AgsFluidInterpolate4thOrderUtil *ptr)
 {
   AgsFluidInterpolate4thOrderUtil *new_ptr;
 
-  if(ptr == NULL){
-    return(NULL);
-  }
+  g_return_val_if_fail(ptr != NULL, NULL);
   
   new_ptr = (AgsFluidInterpolate4thOrderUtil *) g_new(AgsFluidInterpolate4thOrderUtil,
 						      1);
@@ -202,9 +179,6 @@ ags_fluid_interpolate_4th_order_util_copy(AgsFluidInterpolate4thOrderUtil *ptr)
   new_ptr->vibrato_lfo_freq = ptr->vibrato_lfo_freq;
   new_ptr->vibrato_tuning = ptr->vibrato_tuning;
 
-  new_ptr->vibrato_lfo_frame_count = ptr->vibrato_lfo_frame_count;
-  new_ptr->vibrato_lfo_offset = ptr->vibrato_lfo_offset;
-
   new_ptr->frame_count = ptr->frame_count;
   new_ptr->offset = ptr->offset;
 
@@ -226,6 +200,8 @@ ags_fluid_interpolate_4th_order_util_copy(AgsFluidInterpolate4thOrderUtil *ptr)
 void
 ags_fluid_interpolate_4th_order_util_free(AgsFluidInterpolate4thOrderUtil *ptr)
 {
+  g_return_if_fail(ptr != NULL);
+
   g_free(ptr->destination);
 
   if(ptr->destination != ptr->source){
@@ -514,7 +490,7 @@ ags_fluid_interpolate_4th_order_util_set_samplerate(AgsFluidInterpolate4thOrderU
 
   fluid_interpolate_4th_order_util->samplerate = samplerate;
 
-  fluid_interpolate_4th_order_util->vibrato_lfo_frame_count = fluid_interpolate_4th_order_util->samplerate / fluid_interpolate_4th_order_util->vibrato_lfo_freq;
+  fluid_interpolate_4th_order_util->frame_count = fluid_interpolate_4th_order_util->samplerate / fluid_interpolate_4th_order_util->vibrato_lfo_freq;
 }
 
 /**
@@ -861,46 +837,6 @@ ags_fluid_interpolate_4th_order_util_set_vibrato_tuning(AgsFluidInterpolate4thOr
   }
 
   fluid_interpolate_4th_order_util->vibrato_tuning = vibrato_tuning;
-}
-
-/**
- * ags_fluid_interpolate_4th_order_util_get_vibrato_lfo_offset:
- * @fluid_interpolate_4th_order_util: the #AgsFluidInterpolate4thOrderUtil-struct
- * 
- * Get vibrato lfo_offset of @fluid_interpolate_4th_order_util.
- * 
- * Returns: the vibrato lfo_offset
- * 
- * Since: 5.2.4
- */
-guint
-ags_fluid_interpolate_4th_order_util_get_vibrato_lfo_offset(AgsFluidInterpolate4thOrderUtil *fluid_interpolate_4th_order_util)
-{
-  if(fluid_interpolate_4th_order_util == NULL){
-    return(0);
-  }
-
-  return(fluid_interpolate_4th_order_util->vibrato_lfo_offset);
-}
-
-/**
- * ags_fluid_interpolate_4th_order_util_set_vibrato_lfo_offset:
- * @fluid_interpolate_4th_order_util: the #AgsFluidInterpolate4thOrderUtil-struct
- * @vibrato_lfo_offset: the vibrato lfo_offset
- *
- * Set @vibrato_lfo_offset of @fluid_interpolate_4th_order_util.
- *
- * Since: 5.2.4
- */
-void
-ags_fluid_interpolate_4th_order_util_set_vibrato_lfo_offset(AgsFluidInterpolate4thOrderUtil *fluid_interpolate_4th_order_util,
-							    guint vibrato_lfo_offset)
-{
-  if(fluid_interpolate_4th_order_util == NULL){
-    return;
-  }
-
-  fluid_interpolate_4th_order_util->vibrato_lfo_offset = vibrato_lfo_offset;
 }
 
 /**

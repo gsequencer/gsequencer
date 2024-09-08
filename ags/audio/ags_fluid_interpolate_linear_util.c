@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -39,6 +39,15 @@
 #include <ags/audio/ags_fluid_interpolate_linear_util.h>
 
 #include <ags/audio/ags_fluid_util.h>
+
+void ags_fluid_interpolate_linear_util_pitch_s8(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+void ags_fluid_interpolate_linear_util_pitch_s16(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+void ags_fluid_interpolate_linear_util_pitch_s24(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+void ags_fluid_interpolate_linear_util_pitch_s32(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+void ags_fluid_interpolate_linear_util_pitch_s64(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+void ags_fluid_interpolate_linear_util_pitch_float(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+void ags_fluid_interpolate_linear_util_pitch_double(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+void ags_fluid_interpolate_linear_util_pitch_complex(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
 
 /* Linear interpolation table (2 coefficients centered on 1st) */
 gboolean interp_coeff_linear_initialized = FALSE;
@@ -121,37 +130,7 @@ ags_fluid_interpolate_linear_util_alloc()
   ptr = (AgsFluidInterpolateLinearUtil *) g_new(AgsFluidInterpolateLinearUtil,
 						1);
 
-  ptr->source = NULL;
-  ptr->source_stride = 1;
-
-  ptr->destination = NULL;
-  ptr->destination_stride = 1;
-
-  ptr->buffer_length = 0;
-  ptr->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
-  ptr->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-
-  ptr->base_key = 0.0;
-  ptr->tuning = 0.0;
-
-  ptr->phase_increment = 0.0;
-
-  ptr->vibrato_enabled = TRUE;
-  
-  ptr->vibrato_gain = 1.0;
-  ptr->vibrato_lfo_depth = 0.0;
-  ptr->vibrato_lfo_freq = 8.172;
-  ptr->vibrato_tuning = 0.0;
-
-  ptr->vibrato_lfo_frame_count = ptr->samplerate / ptr->vibrato_lfo_freq;
-  ptr->vibrato_lfo_offset = 0;
-
-  ptr->frame_count = 0;
-  ptr->offset = 0;
-
-  ptr->note_256th_mode = TRUE;
-
-  ptr->offset_256th = 0;
+  ptr[0] = AGS_FLUID_INTERPOLATE_LINEAR_UTIL_INITIALIZER;
 
   return(ptr);
 }
@@ -171,9 +150,7 @@ ags_fluid_interpolate_linear_util_copy(AgsFluidInterpolateLinearUtil *ptr)
 {
   AgsFluidInterpolateLinearUtil *new_ptr;
 
-  if(ptr == NULL){
-    return(NULL);
-  }
+  g_return_val_if_fail(ptr != NULL, NULL);
   
   new_ptr = (AgsFluidInterpolateLinearUtil *) g_new(AgsFluidInterpolateLinearUtil,
 						    1);
@@ -200,9 +177,6 @@ ags_fluid_interpolate_linear_util_copy(AgsFluidInterpolateLinearUtil *ptr)
   new_ptr->vibrato_lfo_freq = ptr->vibrato_lfo_freq;
   new_ptr->vibrato_tuning = ptr->vibrato_tuning;
 
-  new_ptr->vibrato_lfo_frame_count = ptr->vibrato_lfo_frame_count;
-  new_ptr->vibrato_lfo_offset = ptr->vibrato_lfo_offset;
-
   new_ptr->frame_count = ptr->frame_count;
   new_ptr->offset = ptr->offset;
 
@@ -224,6 +198,8 @@ ags_fluid_interpolate_linear_util_copy(AgsFluidInterpolateLinearUtil *ptr)
 void
 ags_fluid_interpolate_linear_util_free(AgsFluidInterpolateLinearUtil *ptr)
 {
+  g_return_if_fail(ptr != NULL);
+
   g_free(ptr->destination);
 
   if(ptr->destination != ptr->source){
@@ -817,46 +793,6 @@ ags_fluid_interpolate_linear_util_set_vibrato_tuning(AgsFluidInterpolateLinearUt
   }
 
   fluid_interpolate_linear_util->vibrato_tuning = vibrato_tuning;
-}
-
-/**
- * ags_fluid_interpolate_linear_util_get_vibrato_lfo_offset:
- * @fluid_interpolate_linear_util: the #AgsFluidInterpolateLinearUtil-struct
- * 
- * Get vibrato LFO offset of @fluid_interpolate_linear_util.
- * 
- * Returns: the vibrato LFO offset
- * 
- * Since: 5.2.4
- */
-guint
-ags_fluid_interpolate_linear_util_get_vibrato_lfo_offset(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util)
-{
-  if(fluid_interpolate_linear_util == NULL){
-    return(0);
-  }
-
-  return(fluid_interpolate_linear_util->vibrato_lfo_offset);
-}
-
-/**
- * ags_fluid_interpolate_linear_util_set_vibrato_lfo_offset:
- * @fluid_interpolate_linear_util: the #AgsFluidInterpolateLinearUtil-struct
- * @vibrato_lfo_offset: the vibrato LFO offset
- *
- * Set @vibrato_lfo_offset of @fluid_interpolate_linear_util.
- *
- * Since: 5.2.4
- */
-void
-ags_fluid_interpolate_linear_util_set_vibrato_lfo_offset(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
-							 guint vibrato_lfo_offset)
-{
-  if(fluid_interpolate_linear_util == NULL){
-    return;
-  }
-
-  fluid_interpolate_linear_util->vibrato_lfo_offset = vibrato_lfo_offset;
 }
 
 /**

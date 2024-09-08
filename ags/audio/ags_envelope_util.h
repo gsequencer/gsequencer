@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,15 +25,25 @@
 
 #include <ags/libags.h>
 
-#include <ags/audio/ags_audio_buffer_util.h>
-
 G_BEGIN_DECLS
 
 #define AGS_TYPE_ENVELOPE_UTIL         (ags_envelope_util_get_type())
 #define AGS_ENVELOPE_UTIL(ptr) ((AgsEnvelopeUtil *)(ptr))
 
-#define AGS_ENVELOPE_UTIL_DEFAULT_FORMAT (AGS_SOUNDCARD_SIGNED_16_BIT)
-#define AGS_ENVELOPE_UTIL_DEFAULT_AUDIO_BUFFER_UTIL_FORMAT (AGS_AUDIO_BUFFER_UTIL_S16)
+#define AGS_ENVELOPE_UTIL_INITIALIZER ((AgsEnvelopeUtil) {	\
+      .source = NULL,						\
+      .source_stride = 1,					\
+      .destination = NULL,					\
+      .destination_stride = 1,					\
+      .buffer_length = 0,					\
+      .format = AGS_SOUNDCARD_DEFAULT_FORMAT,			\
+      .samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE,		\
+      .volume = 1.0,						\
+      .amount = 0.0,						\
+      .lfo_enabled = FALSE,					\
+      .lfo_freq = 6.0,						\
+      .frame_count = (AGS_SOUNDCARD_DEFAULT_SAMPLERATE / 6.0),	\
+      .offset = 0 })
 
 typedef struct _AgsEnvelopeUtil AgsEnvelopeUtil;
 
@@ -46,22 +56,17 @@ struct _AgsEnvelopeUtil
   guint source_stride;
   
   guint buffer_length;
-  guint format;
+  AgsSoundcardFormat format;
   guint samplerate;
   
   gdouble volume;
   gdouble amount;
 
-  gboolean wah_wah_enabled;
+  gboolean lfo_enabled;
+  gdouble lfo_freq;
 
-  gdouble wah_wah_delay;
-  
-  gdouble wah_wah_lfo_depth;
-  gdouble wah_wah_lfo_freq;
-  gdouble wah_wah_tuning;
-
-  guint wah_wah_lfo_frame_count;
-  guint wah_wah_lfo_offset;
+  guint frame_count;
+  guint offset;
 };
 
 GType ags_envelope_util_get_type(void);
@@ -103,30 +108,21 @@ gdouble ags_envelope_util_get_amount(AgsEnvelopeUtil *envelope_util);
 void ags_envelope_util_set_amount(AgsEnvelopeUtil *envelope_util,
 				  gdouble amount);
 
-gdouble ags_envelope_util_get_wah_wah_lfo_depth(AgsEnvelopeUtil *envelope_util);
-void ags_envelope_util_set_wah_wah_lfo_depth(AgsEnvelopeUtil *envelope_util,
-					    gdouble wah_wah_lfo_depth);
+gboolean ags_envelope_util_get_lfo_enabled(AgsEnvelopeUtil *envelope_util);
+void ags_envelope_util_set_lfo_enabled(AgsEnvelopeUtil *envelope_util,
+				       gboolean lfo_enabled);
 
-gdouble ags_envelope_util_get_wah_wah_lfo_freq(AgsEnvelopeUtil *envelope_util);
-void ags_envelope_util_set_wah_wah_lfo_freq(AgsEnvelopeUtil *envelope_util,
-					   gdouble wah_wah_lfo_freq);
+gdouble ags_envelope_util_get_lfo_freq(AgsEnvelopeUtil *envelope_util);
+void ags_envelope_util_set_lfo_freq(AgsEnvelopeUtil *envelope_util,
+				    gdouble lfo_freq);
 
-gdouble ags_envelope_util_get_wah_wah_tuning(AgsEnvelopeUtil *envelope_util);
-void ags_envelope_util_set_wah_wah_tuning(AgsEnvelopeUtil *envelope_util,
-					 gdouble wah_wah_tuning);
+guint ags_envelope_util_get_frame_count(AgsEnvelopeUtil *envelope_util);
+void ags_envelope_util_set_frame_count(AgsEnvelopeUtil *envelope_util,
+				       guint frame_count);
 
-guint ags_envelope_util_get_wah_wah_lfo_offset(AgsEnvelopeUtil *envelope_util);
-void ags_envelope_util_set_wah_wah_lfo_offset(AgsEnvelopeUtil *envelope_util,
-					      guint wah_wah_lfo_offset);
-
-void ags_envelope_util_compute_s8(AgsEnvelopeUtil *envelope_util);
-void ags_envelope_util_compute_s16(AgsEnvelopeUtil *envelope_util);
-void ags_envelope_util_compute_s24(AgsEnvelopeUtil *envelope_util);
-void ags_envelope_util_compute_s32(AgsEnvelopeUtil *envelope_util);
-void ags_envelope_util_compute_s64(AgsEnvelopeUtil *envelope_util);
-void ags_envelope_util_compute_float(AgsEnvelopeUtil *envelope_util);
-void ags_envelope_util_compute_double(AgsEnvelopeUtil *envelope_util);
-void ags_envelope_util_compute_complex(AgsEnvelopeUtil *envelope_util);
+guint ags_envelope_util_get_offset(AgsEnvelopeUtil *envelope_util);
+void ags_envelope_util_set_offset(AgsEnvelopeUtil *envelope_util,
+				  guint offset);
 
 void ags_envelope_util_compute(AgsEnvelopeUtil *envelope_util);
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,15 @@
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 #include <ags/audio/ags_fourier_transform_util.h>
+
+void ags_fast_pitch_util_pitch_s8(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_pitch_s16(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_pitch_s24(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_pitch_s32(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_pitch_s64(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_pitch_float(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_pitch_double(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_pitch_complex(AgsFastPitchUtil *fast_pitch_util);
 
 /**
  * SECTION:ags_fast_pitch_util
@@ -139,9 +148,7 @@ ags_fast_pitch_util_copy(AgsFastPitchUtil *ptr)
 {
   AgsFastPitchUtil *new_ptr;
 
-  if(ptr == NULL){
-    return(NULL);
-  }
+  g_return_val_if_fail(ptr != NULL, NULL);
   
   new_ptr = (AgsFastPitchUtil *) g_new(AgsFastPitchUtil,
 				       1);
@@ -210,9 +217,7 @@ ags_fast_pitch_util_copy(AgsFastPitchUtil *ptr)
 void
 ags_fast_pitch_util_free(AgsFastPitchUtil *ptr)
 {
-  if(ptr == NULL){
-    return;
-  }
+  g_return_if_fail(ptr != NULL);
   
   g_free(ptr->destination);
 

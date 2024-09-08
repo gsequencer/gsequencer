@@ -23,6 +23,15 @@
 
 #include <string.h>
 
+void ags_chorus_util_compute_s8(AgsChorusUtil *chorus_util);
+void ags_chorus_util_compute_s16(AgsChorusUtil *chorus_util);
+void ags_chorus_util_compute_s24(AgsChorusUtil *chorus_util);
+void ags_chorus_util_compute_s32(AgsChorusUtil *chorus_util);
+void ags_chorus_util_compute_s64(AgsChorusUtil *chorus_util);
+void ags_chorus_util_compute_float(AgsChorusUtil *chorus_util);
+void ags_chorus_util_compute_double(AgsChorusUtil *chorus_util);
+void ags_chorus_util_compute_complex(AgsChorusUtil *chorus_util);
+
 /**
  * SECTION:ags_chorus_util
  * @short_description: chorus util
@@ -126,9 +135,7 @@ ags_chorus_util_copy(AgsChorusUtil *ptr)
 {
   AgsChorusUtil *new_ptr;
 
-  if(ptr == NULL){
-    return(NULL);
-  }
+  g_return_val_if_fail(ptr != NULL, NULL);
   
   new_ptr = (AgsChorusUtil *) g_new(AgsChorusUtil,
 				    1);
@@ -197,6 +204,8 @@ ags_chorus_util_copy(AgsChorusUtil *ptr)
 void
 ags_chorus_util_free(AgsChorusUtil *ptr)
 {
+  g_return_if_fail(ptr != NULL);
+
   ags_stream_free(ptr->destination);
 
   if(ptr->destination != ptr->source){
@@ -328,6 +337,10 @@ ags_chorus_util_set_source(AgsChorusUtil *chorus_util,
   }
 
   chorus_util->source = source;
+
+  ags_common_pitch_util_set_source(chorus_util->pitch_util,
+				   chorus_util->pitch_type,
+				   source);
 }
 
 /**
@@ -368,6 +381,10 @@ ags_chorus_util_set_source_stride(AgsChorusUtil *chorus_util,
   }
 
   chorus_util->source_stride = source_stride;
+
+  ags_common_pitch_util_set_source_stride(chorus_util->pitch_util,
+					  chorus_util->pitch_type,
+					  source_stride);
 }
 
 /**
@@ -1077,12 +1094,6 @@ ags_chorus_util_compute_s8(AgsChorusUtil *chorus_util)
   guint word_size;    
   guint i;
   
-  if(chorus_util == NULL ||
-     chorus_util->destination == NULL ||
-     chorus_util->source == NULL){
-    return;
-  }
-
   pitch_util = chorus_util->pitch_util;
   pitch_type = chorus_util->pitch_type;
 
@@ -1142,26 +1153,6 @@ ags_chorus_util_compute_s8(AgsChorusUtil *chorus_util)
   ags_common_pitch_util_set_destination(pitch_util,
 					pitch_type,
 					pitch_mix_buffer);
-  
-  ags_common_pitch_util_set_source(pitch_util,
-				   pitch_type,
-				   source);
-
-  ags_common_pitch_util_set_buffer_length(pitch_util,
-					  pitch_type,
-					  buffer_length);
-
-  ags_common_pitch_util_set_format(pitch_util,
-				   pitch_type,
-				   AGS_SOUNDCARD_SIGNED_8_BIT);
-
-  ags_common_pitch_util_set_samplerate(pitch_util,
-				       pitch_type,
-				       samplerate);
-
-  ags_common_pitch_util_set_base_key(pitch_util,
-				     pitch_type,
-				     chorus_util->base_key);
 
   ags_common_pitch_util_set_tuning(pitch_util,
 				   pitch_type,
@@ -1274,12 +1265,6 @@ ags_chorus_util_compute_s16(AgsChorusUtil *chorus_util)
   guint word_size;    
   guint i;
   
-  if(chorus_util == NULL ||
-     chorus_util->destination == NULL ||
-     chorus_util->source == NULL){
-    return;
-  }
-
   pitch_util = chorus_util->pitch_util;
   pitch_type = chorus_util->pitch_type;
 
@@ -1340,26 +1325,6 @@ ags_chorus_util_compute_s16(AgsChorusUtil *chorus_util)
 					pitch_type,
 					pitch_mix_buffer);
   
-  ags_common_pitch_util_set_source(pitch_util,
-				   pitch_type,
-				   source);
-
-  ags_common_pitch_util_set_buffer_length(pitch_util,
-					  pitch_type,
-					  buffer_length);
-
-  ags_common_pitch_util_set_format(pitch_util,
-				   pitch_type,
-				   AGS_SOUNDCARD_SIGNED_16_BIT);
-
-  ags_common_pitch_util_set_samplerate(pitch_util,
-				       pitch_type,
-				       samplerate);
-
-  ags_common_pitch_util_set_base_key(pitch_util,
-				     pitch_type,
-				     chorus_util->base_key);
-
   ags_common_pitch_util_set_tuning(pitch_util,
 				   pitch_type,
 				   tuning);
@@ -1471,12 +1436,6 @@ ags_chorus_util_compute_s24(AgsChorusUtil *chorus_util)
   guint word_size;    
   guint i;
   
-  if(chorus_util == NULL ||
-     chorus_util->destination == NULL ||
-     chorus_util->source == NULL){
-    return;
-  }
-
   pitch_util = chorus_util->pitch_util;
   pitch_type = chorus_util->pitch_type;
 
@@ -1536,26 +1495,6 @@ ags_chorus_util_compute_s24(AgsChorusUtil *chorus_util)
   ags_common_pitch_util_set_destination(pitch_util,
 					pitch_type,
 					pitch_mix_buffer);
-  
-  ags_common_pitch_util_set_source(pitch_util,
-				   pitch_type,
-				   source);
-
-  ags_common_pitch_util_set_buffer_length(pitch_util,
-					  pitch_type,
-					  buffer_length);
-
-  ags_common_pitch_util_set_format(pitch_util,
-				   pitch_type,
-				   AGS_SOUNDCARD_SIGNED_24_BIT);
-
-  ags_common_pitch_util_set_samplerate(pitch_util,
-				       pitch_type,
-				       samplerate);
-
-  ags_common_pitch_util_set_base_key(pitch_util,
-				     pitch_type,
-				     chorus_util->base_key);
 
   ags_common_pitch_util_set_tuning(pitch_util,
 				   pitch_type,
@@ -1668,12 +1607,6 @@ ags_chorus_util_compute_s32(AgsChorusUtil *chorus_util)
   guint word_size;    
   guint i;
   
-  if(chorus_util == NULL ||
-     chorus_util->destination == NULL ||
-     chorus_util->source == NULL){
-    return;
-  }
-
   pitch_util = chorus_util->pitch_util;
   pitch_type = chorus_util->pitch_type;
 
@@ -1733,26 +1666,6 @@ ags_chorus_util_compute_s32(AgsChorusUtil *chorus_util)
   ags_common_pitch_util_set_destination(pitch_util,
 					pitch_type,
 					pitch_mix_buffer);
-  
-  ags_common_pitch_util_set_source(pitch_util,
-				   pitch_type,
-				   source);
-
-  ags_common_pitch_util_set_buffer_length(pitch_util,
-					  pitch_type,
-					  buffer_length);
-
-  ags_common_pitch_util_set_format(pitch_util,
-				   pitch_type,
-				   AGS_SOUNDCARD_SIGNED_32_BIT);
-
-  ags_common_pitch_util_set_samplerate(pitch_util,
-				       pitch_type,
-				       samplerate);
-
-  ags_common_pitch_util_set_base_key(pitch_util,
-				     pitch_type,
-				     chorus_util->base_key);
 
   ags_common_pitch_util_set_tuning(pitch_util,
 				   pitch_type,
@@ -1865,12 +1778,6 @@ ags_chorus_util_compute_s64(AgsChorusUtil *chorus_util)
   guint word_size;    
   guint i;
   
-  if(chorus_util == NULL ||
-     chorus_util->destination == NULL ||
-     chorus_util->source == NULL){
-    return;
-  }
-
   pitch_util = chorus_util->pitch_util;
   pitch_type = chorus_util->pitch_type;
 
@@ -1930,26 +1837,6 @@ ags_chorus_util_compute_s64(AgsChorusUtil *chorus_util)
   ags_common_pitch_util_set_destination(pitch_util,
 					pitch_type,
 					pitch_mix_buffer);
-  
-  ags_common_pitch_util_set_source(pitch_util,
-				   pitch_type,
-				   source);
-
-  ags_common_pitch_util_set_buffer_length(pitch_util,
-					  pitch_type,
-					  buffer_length);
-
-  ags_common_pitch_util_set_format(pitch_util,
-				   pitch_type,
-				   AGS_SOUNDCARD_SIGNED_64_BIT);
-
-  ags_common_pitch_util_set_samplerate(pitch_util,
-				       pitch_type,
-				       samplerate);
-
-  ags_common_pitch_util_set_base_key(pitch_util,
-				     pitch_type,
-				     chorus_util->base_key);
 
   ags_common_pitch_util_set_tuning(pitch_util,
 				   pitch_type,
@@ -2062,12 +1949,6 @@ ags_chorus_util_compute_float(AgsChorusUtil *chorus_util)
   guint word_size;    
   guint i;
   
-  if(chorus_util == NULL ||
-     chorus_util->destination == NULL ||
-     chorus_util->source == NULL){
-    return;
-  }
-
   pitch_util = chorus_util->pitch_util;
   pitch_type = chorus_util->pitch_type;
 
@@ -2127,26 +2008,6 @@ ags_chorus_util_compute_float(AgsChorusUtil *chorus_util)
   ags_common_pitch_util_set_destination(pitch_util,
 					pitch_type,
 					pitch_mix_buffer);
-  
-  ags_common_pitch_util_set_source(pitch_util,
-				   pitch_type,
-				   source);
-
-  ags_common_pitch_util_set_buffer_length(pitch_util,
-					  pitch_type,
-					  buffer_length);
-
-  ags_common_pitch_util_set_format(pitch_util,
-				   pitch_type,
-				   AGS_SOUNDCARD_FLOAT);
-
-  ags_common_pitch_util_set_samplerate(pitch_util,
-				       pitch_type,
-				       samplerate);
-
-  ags_common_pitch_util_set_base_key(pitch_util,
-				     pitch_type,
-				     chorus_util->base_key);
 
   ags_common_pitch_util_set_tuning(pitch_util,
 				   pitch_type,
@@ -2259,12 +2120,6 @@ ags_chorus_util_compute_double(AgsChorusUtil *chorus_util)
   guint word_size;    
   guint i;
   
-  if(chorus_util == NULL ||
-     chorus_util->destination == NULL ||
-     chorus_util->source == NULL){
-    return;
-  }
-
   pitch_util = chorus_util->pitch_util;
   pitch_type = chorus_util->pitch_type;
 
@@ -2324,26 +2179,6 @@ ags_chorus_util_compute_double(AgsChorusUtil *chorus_util)
   ags_common_pitch_util_set_destination(pitch_util,
 					pitch_type,
 					pitch_mix_buffer);
-  
-  ags_common_pitch_util_set_source(pitch_util,
-				   pitch_type,
-				   source);
-
-  ags_common_pitch_util_set_buffer_length(pitch_util,
-					  pitch_type,
-					  buffer_length);
-
-  ags_common_pitch_util_set_format(pitch_util,
-				   pitch_type,
-				   AGS_SOUNDCARD_DOUBLE);
-
-  ags_common_pitch_util_set_samplerate(pitch_util,
-				       pitch_type,
-				       samplerate);
-
-  ags_common_pitch_util_set_base_key(pitch_util,
-				     pitch_type,
-				     chorus_util->base_key);
 
   ags_common_pitch_util_set_tuning(pitch_util,
 				   pitch_type,
@@ -2455,12 +2290,6 @@ ags_chorus_util_compute_complex(AgsChorusUtil *chorus_util)
   guint64 offset;
   guint word_size;    
   guint i;
-  
-  if(chorus_util == NULL ||
-     chorus_util->destination == NULL ||
-     chorus_util->source == NULL){
-    return;
-  }
 
   pitch_util = chorus_util->pitch_util;
   pitch_type = chorus_util->pitch_type;
@@ -2521,26 +2350,6 @@ ags_chorus_util_compute_complex(AgsChorusUtil *chorus_util)
   ags_common_pitch_util_set_destination(pitch_util,
 					pitch_type,
 					pitch_mix_buffer);
-  
-  ags_common_pitch_util_set_source(pitch_util,
-				   pitch_type,
-				   source);
-
-  ags_common_pitch_util_set_buffer_length(pitch_util,
-					  pitch_type,
-					  buffer_length);
-
-  ags_common_pitch_util_set_format(pitch_util,
-				   pitch_type,
-				   AGS_SOUNDCARD_DOUBLE);
-
-  ags_common_pitch_util_set_samplerate(pitch_util,
-				       pitch_type,
-				       samplerate);
-
-  ags_common_pitch_util_set_base_key(pitch_util,
-				     pitch_type,
-				     chorus_util->base_key);
 
   ags_common_pitch_util_set_tuning(pitch_util,
 				   pitch_type,
@@ -2676,5 +2485,9 @@ ags_chorus_util_compute(AgsChorusUtil *chorus_util)
     ags_chorus_util_compute_complex(chorus_util);
   }
   break;
+  default:
+    {
+      g_warning("chorus util - unsupported soundcard format");
+    }
   }
 }

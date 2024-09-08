@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -167,14 +167,6 @@ guint ags_fast_pitch_util_get_offset_256th(AgsFastPitchUtil *fast_pitch_util);
 void ags_fast_pitch_util_set_offset_256th(AgsFastPitchUtil *fast_pitch_util,
 					  guint offset_256th);
 
-void ags_fast_pitch_util_pitch_s8(AgsFastPitchUtil *fast_pitch_util);
-void ags_fast_pitch_util_pitch_s16(AgsFastPitchUtil *fast_pitch_util);
-void ags_fast_pitch_util_pitch_s24(AgsFastPitchUtil *fast_pitch_util);
-void ags_fast_pitch_util_pitch_s32(AgsFastPitchUtil *fast_pitch_util);
-void ags_fast_pitch_util_pitch_s64(AgsFastPitchUtil *fast_pitch_util);
-void ags_fast_pitch_util_pitch_float(AgsFastPitchUtil *fast_pitch_util);
-void ags_fast_pitch_util_pitch_double(AgsFastPitchUtil *fast_pitch_util);
-void ags_fast_pitch_util_pitch_complex(AgsFastPitchUtil *fast_pitch_util);
 void ags_fast_pitch_util_pitch(AgsFastPitchUtil *fast_pitch_util);
 
 G_END_DECLS

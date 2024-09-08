@@ -25,6 +25,15 @@
 #include <Accelerate/Accelerate.h>
 #endif
 
+void ags_envelope_util_compute_s8(AgsEnvelopeUtil *envelope_util);
+void ags_envelope_util_compute_s16(AgsEnvelopeUtil *envelope_util);
+void ags_envelope_util_compute_s24(AgsEnvelopeUtil *envelope_util);
+void ags_envelope_util_compute_s32(AgsEnvelopeUtil *envelope_util);
+void ags_envelope_util_compute_s64(AgsEnvelopeUtil *envelope_util);
+void ags_envelope_util_compute_float(AgsEnvelopeUtil *envelope_util);
+void ags_envelope_util_compute_double(AgsEnvelopeUtil *envelope_util);
+void ags_envelope_util_compute_complex(AgsEnvelopeUtil *envelope_util);
+
 /**
  * SECTION:ags_envelope_util
  * @short_description: Boxed type of envelope util
@@ -71,28 +80,7 @@ ags_envelope_util_alloc()
   ptr = (AgsEnvelopeUtil *) g_new(AgsEnvelopeUtil,
 				  1);
 
-  ptr->destination = NULL;
-  ptr->destination_stride = 1;
-
-  ptr->source = NULL;
-  ptr->source_stride = 1;
-
-  ptr->buffer_length = 0;
-  ptr->format = AGS_ENVELOPE_UTIL_DEFAULT_FORMAT;
-  
-  ptr->volume = 1.0;
-  ptr->amount = 0.0;
-
-  ptr->wah_wah_enabled = FALSE;
-
-  ptr->wah_wah_delay = 0.0;
-
-  ptr->wah_wah_lfo_depth = 1.0;
-  ptr->wah_wah_lfo_freq = 6.0;
-  ptr->wah_wah_tuning = 0.0;
-
-  ptr->wah_wah_lfo_frame_count = (guint) (ptr->samplerate / ptr->wah_wah_lfo_freq);
-  ptr->wah_wah_lfo_offset = 0;
+  ptr[0] = AGS_ENVELOPE_UTIL_INITIALIZER;
 
   return(ptr);
 }
@@ -112,9 +100,7 @@ ags_envelope_util_copy(AgsEnvelopeUtil *ptr)
 {
   AgsEnvelopeUtil *new_ptr;
 
-  if(ptr == NULL){
-    return(NULL);
-  }
+  g_return_val_if_fail(ptr != NULL, NULL);
   
   new_ptr = (AgsEnvelopeUtil *) g_new(AgsEnvelopeUtil,
 				      1);
@@ -127,18 +113,16 @@ ags_envelope_util_copy(AgsEnvelopeUtil *ptr)
 
   new_ptr->buffer_length = ptr->buffer_length;
   new_ptr->format = ptr->format;
+  new_ptr->samplerate = ptr->samplerate;
 
   new_ptr->volume = ptr->volume;
   new_ptr->amount = ptr->amount;
 
-  new_ptr->wah_wah_enabled = ptr->wah_wah_enabled;
-  
-  new_ptr->wah_wah_lfo_depth = ptr->wah_wah_lfo_depth;
-  new_ptr->wah_wah_lfo_freq = ptr->wah_wah_lfo_freq;
-  new_ptr->wah_wah_tuning = ptr->wah_wah_tuning;
+  new_ptr->lfo_enabled = ptr->lfo_enabled;
+  new_ptr->lfo_freq = ptr->lfo_freq;
 
-  new_ptr->wah_wah_lfo_frame_count = ptr->wah_wah_lfo_frame_count;
-  new_ptr->wah_wah_lfo_offset = ptr->wah_wah_lfo_offset;
+  new_ptr->frame_count = ptr->frame_count;
+  new_ptr->offset = ptr->offset;
 
   return(new_ptr);
 }
@@ -154,6 +138,8 @@ ags_envelope_util_copy(AgsEnvelopeUtil *ptr)
 void
 ags_envelope_util_free(AgsEnvelopeUtil *ptr)
 {
+  g_return_if_fail(ptr != NULL);
+
   g_free(ptr->destination);
 
   if(ptr->destination != ptr->source){
@@ -434,7 +420,7 @@ ags_envelope_util_get_samplerate(AgsEnvelopeUtil *envelope_util)
  */
 void
 ags_envelope_util_set_samplerate(AgsEnvelopeUtil *envelope_util,
-			     guint samplerate)
+				 guint samplerate)
 {
   if(envelope_util == NULL){
     return;
@@ -524,203 +510,163 @@ ags_envelope_util_set_amount(AgsEnvelopeUtil *envelope_util,
 }
 
 /**
- * ags_envelope_util_get_wah_wah_enabled:
+ * ags_envelope_util_get_lfo_enabled:
  * @envelope_util: the #AgsEnvelopeUtil-struct
  * 
- * Get wah-wah enabled of @envelope_util.
+ * Get LFO enabled of @envelope_util.
  * 
- * Returns: the wah-wah enabled
+ * Returns: the LFO enabled
  * 
- * Since: 5.2.0
+ * Since: 7.0.0
  */
 gboolean 
-ags_envelope_util_get_wah_wah_enabled(AgsEnvelopeUtil *envelope_util)
+ags_envelope_util_get_lfo_enabled(AgsEnvelopeUtil *envelope_util)
 {
   if(envelope_util == NULL){
     return(FALSE);
   }
 
-  return(envelope_util->wah_wah_enabled);
+  return(envelope_util->lfo_enabled);
 }
 
 /**
- * ags_envelope_util_set_wah_wah_enabled:
+ * ags_envelope_util_set_lfo_enabled:
  * @envelope_util: the #AgsEnvelopeUtil-struct
- * @wah_wah_enabled: the wah-wah enabled
+ * @lfo_enabled: the LFO enabled
  *
- * Set @wah_wah_enabled of @envelope_util.
+ * Set @lfo_enabled of @envelope_util.
  *
- * Since: 5.2.0
+ * Since: 7.0.0
  */
 void
-ags_envelope_util_set_wah_wah_enabled(AgsEnvelopeUtil *envelope_util,
-				      gboolean wah_wah_enabled)
+ags_envelope_util_set_lfo_enabled(AgsEnvelopeUtil *envelope_util,
+				  gboolean lfo_enabled)
 {
   if(envelope_util == NULL){
     return;
   }
 
-  envelope_util->wah_wah_enabled = wah_wah_enabled;
+  envelope_util->lfo_enabled = lfo_enabled;
 }
 
 /**
- * ags_envelope_util_get_wah_wah_lfo_depth:
+ * ags_envelope_util_get_lfo_freq:
  * @envelope_util: the #AgsEnvelopeUtil-struct
  * 
- * Get wah-wah LFO depth of @envelope_util.
+ * Get LFO frequency of @envelope_util.
  * 
- * Returns: the wah-wah LFO depth
+ * Returns: the LFO frequency
  * 
- * Since: 5.2.0
+ * Since: 7.0.0
  */
 gdouble
-ags_envelope_util_get_wah_wah_lfo_depth(AgsEnvelopeUtil *envelope_util)
+ags_envelope_util_get_lfo_freq(AgsEnvelopeUtil *envelope_util)
 {
   if(envelope_util == NULL){
-    return(1.0);
+    return(0.0);
   }
 
-  return(envelope_util->wah_wah_lfo_depth);
+  return(envelope_util->lfo_freq);
 }
 
 /**
- * ags_envelope_util_set_wah_wah_lfo_depth:
+ * ags_envelope_util_set_lfo_freq:
  * @envelope_util: the #AgsEnvelopeUtil-struct
- * @wah_wah_lfo_depth: the wah-wah LFO depth
+ * @lfo_freq: the LFO frequency
  *
- * Set @wah_wah_lfo_depth of @envelope_util.
+ * Set @lfo_freq of @envelope_util.
  *
- * Since: 5.2.0
+ * Since: 7.0.0
  */
 void
-ags_envelope_util_set_wah_wah_lfo_depth(AgsEnvelopeUtil *envelope_util,
-					gdouble wah_wah_lfo_depth)
+ags_envelope_util_set_lfo_freq(AgsEnvelopeUtil *envelope_util,
+			       gdouble lfo_freq)
 {
   if(envelope_util == NULL){
     return;
   }
 
-  envelope_util->wah_wah_lfo_depth = wah_wah_lfo_depth;
+  envelope_util->lfo_freq = lfo_freq;
 }
 
 /**
- * ags_envelope_util_get_wah_wah_lfo_freq:
+ * ags_envelope_util_get_frame_count:
  * @envelope_util: the #AgsEnvelopeUtil-struct
  * 
- * Get wah-wah LFO freq of @envelope_util.
+ * Get frame count of @envelope_util.
  * 
- * Returns: the wah-wah LFO freq
+ * Returns: the frame count
  * 
- * Since: 5.2.0
- */
-gdouble
-ags_envelope_util_get_wah_wah_lfo_freq(AgsEnvelopeUtil *envelope_util)
-{
-  if(envelope_util == NULL){
-    return(1.0);
-  }
-
-  return(envelope_util->wah_wah_lfo_freq);
-}
-
-/**
- * ags_envelope_util_set_wah_wah_lfo_freq:
- * @envelope_util: the #AgsEnvelopeUtil-struct
- * @wah_wah_lfo_freq: the wah-wah LFO freq
- *
- * Set @wah_wah_lfo_freq of @envelope_util.
- *
- * Since: 5.2.0
- */
-void
-ags_envelope_util_set_wah_wah_lfo_freq(AgsEnvelopeUtil *envelope_util,
-				       gdouble wah_wah_lfo_freq)
-{
-  if(envelope_util == NULL){
-    return;
-  }
-
-  envelope_util->wah_wah_lfo_freq = wah_wah_lfo_freq;
-}
-
-/**
- * ags_envelope_util_get_wah_wah_tuning:
- * @envelope_util: the #AgsEnvelopeUtil-struct
- * 
- * Get wah-wah tuning of @envelope_util.
- * 
- * Returns: the wah-wah tuning
- * 
- * Since: 5.2.0
- */
-gdouble
-ags_envelope_util_get_wah_wah_tuning(AgsEnvelopeUtil *envelope_util)
-{
-  if(envelope_util == NULL){
-    return(1.0);
-  }
-
-  return(envelope_util->wah_wah_tuning);
-}
-
-/**
- * ags_envelope_util_set_wah_wah_tuning:
- * @envelope_util: the #AgsEnvelopeUtil-struct
- * @wah_wah_tuning: the wah-wah tuning
- *
- * Set @wah_wah_tuning of @envelope_util.
- *
- * Since: 5.2.0
- */
-void
-ags_envelope_util_set_wah_wah_tuning(AgsEnvelopeUtil *envelope_util,
-				     gdouble wah_wah_tuning)
-{
-  if(envelope_util == NULL){
-    return;
-  }
-
-  envelope_util->wah_wah_tuning = wah_wah_tuning;
-}
-
-/**
- * ags_envelope_util_get_wah_wah_lfo_offset:
- * @envelope_util: the #AgsEnvelopeUtil-struct
- * 
- * Get wah-wah LFO offset of @envelope_util.
- * 
- * Returns: the wah-wah LFO offset
- * 
- * Since: 5.2.4
+ * Since: 7.0.0
  */
 guint
-ags_envelope_util_get_wah_wah_lfo_offset(AgsEnvelopeUtil *envelope_util)
+ags_envelope_util_get_frame_count(AgsEnvelopeUtil *envelope_util)
 {
   if(envelope_util == NULL){
     return(0);
   }
 
-  return(envelope_util->wah_wah_lfo_offset);
+  return(envelope_util->frame_count);
 }
 
 /**
- * ags_envelope_util_set_wah_wah_lfo_offset:
+ * ags_envelope_util_set_frame_count:
  * @envelope_util: the #AgsEnvelopeUtil-struct
- * @wah_wah_lfo_offset: the wah-wah LFO offset
+ * @frame_count: the frame count
  *
- * Set @wah_wah_lfo_offset of @envelope_util.
+ * Set @frame_count of @envelope_util.
  *
- * Since: 5.2.4
+ * Since: 7.0.0
  */
 void
-ags_envelope_util_set_wah_wah_lfo_offset(AgsEnvelopeUtil *envelope_util,
-					 guint wah_wah_lfo_offset)
+ags_envelope_util_set_frame_count(AgsEnvelopeUtil *envelope_util,
+				  guint frame_count)
 {
   if(envelope_util == NULL){
     return;
   }
 
-  envelope_util->wah_wah_lfo_offset = wah_wah_lfo_offset;
+  envelope_util->frame_count = frame_count;
+}
+
+/**
+ * ags_envelope_util_get_offset:
+ * @envelope_util: the #AgsEnvelopeUtil-struct
+ * 
+ * Get offset of @envelope_util.
+ * 
+ * Returns: the offset
+ * 
+ * Since: 7.0.0
+ */
+guint
+ags_envelope_util_get_offset(AgsEnvelopeUtil *envelope_util)
+{
+  if(envelope_util == NULL){
+    return(0);
+  }
+
+  return(envelope_util->offset);
+}
+
+/**
+ * ags_envelope_util_set_offset:
+ * @envelope_util: the #AgsEnvelopeUtil-struct
+ * @offset: the offset
+ *
+ * Set @offset of @envelope_util.
+ *
+ * Since: 7.0.0
+ */
+void
+ags_envelope_util_set_offset(AgsEnvelopeUtil *envelope_util,
+			     guint offset)
+{
+  if(envelope_util == NULL){
+    return;
+  }
+
+  envelope_util->offset = offset;
 }
 
 /**
@@ -741,18 +687,7 @@ ags_envelope_util_compute_s8(AgsEnvelopeUtil *envelope_util)
   guint samplerate;
   gdouble start_volume;
   gdouble amount;
-  gdouble wah_wah_delay;
-  gdouble wah_wah_lfo_freq;
-  gdouble wah_wah_lfo_depth;
-  gdouble wah_wah_tuning;
-  gint64 wah_wah_lfo_offset;
   guint i, i_stop;
-
-  if(envelope_util == NULL ||
-     envelope_util->destination == NULL ||
-     envelope_util->source == NULL){
-    return;
-  }
 
   destination = (gint8 *) envelope_util->destination;
   source = (gint8 *) envelope_util->source;
@@ -764,13 +699,6 @@ ags_envelope_util_compute_s8(AgsEnvelopeUtil *envelope_util)
 
   start_volume = envelope_util->volume;
   amount = envelope_util->amount;
-
-  wah_wah_delay = envelope_util->wah_wah_delay;
-
-  wah_wah_lfo_freq = envelope_util->wah_wah_lfo_freq;
-  wah_wah_lfo_depth = envelope_util->wah_wah_lfo_depth;
-  wah_wah_tuning = envelope_util->wah_wah_tuning;
-  wah_wah_lfo_offset = envelope_util->wah_wah_lfo_offset;
 
   i = 0;
   
@@ -912,18 +840,7 @@ ags_envelope_util_compute_s16(AgsEnvelopeUtil *envelope_util)
   guint samplerate;
   gdouble start_volume;
   gdouble amount;
-  gdouble wah_wah_delay;
-  gdouble wah_wah_lfo_freq;
-  gdouble wah_wah_lfo_depth;
-  gdouble wah_wah_tuning;
-  gint64 wah_wah_lfo_offset;
   guint i, i_stop;
-
-  if(envelope_util == NULL ||
-     envelope_util->destination == NULL ||
-     envelope_util->source == NULL){
-    return;
-  }
 
   destination = (gint16 *) envelope_util->destination;
   source = (gint16 *) envelope_util->source;
@@ -935,13 +852,6 @@ ags_envelope_util_compute_s16(AgsEnvelopeUtil *envelope_util)
 
   start_volume = envelope_util->volume;
   amount = envelope_util->amount;
-
-  wah_wah_delay = envelope_util->wah_wah_delay;
-
-  wah_wah_lfo_freq = envelope_util->wah_wah_lfo_freq;
-  wah_wah_lfo_depth = envelope_util->wah_wah_lfo_depth;
-  wah_wah_tuning = envelope_util->wah_wah_tuning;
-  wah_wah_lfo_offset = envelope_util->wah_wah_lfo_offset;
 
   i = 0;
   
@@ -1083,18 +993,7 @@ ags_envelope_util_compute_s24(AgsEnvelopeUtil *envelope_util)
   guint samplerate;
   gdouble start_volume;
   gdouble amount;
-  gdouble wah_wah_delay;
-  gdouble wah_wah_lfo_freq;
-  gdouble wah_wah_lfo_depth;
-  gdouble wah_wah_tuning;
-  gint64 wah_wah_lfo_offset;
   guint i, i_stop;
-
-  if(envelope_util == NULL ||
-     envelope_util->destination == NULL ||
-     envelope_util->source == NULL){
-    return;
-  }
 
   destination = (gint32 *) envelope_util->destination;
   source = (gint32 *) envelope_util->source;
@@ -1106,13 +1005,6 @@ ags_envelope_util_compute_s24(AgsEnvelopeUtil *envelope_util)
 
   start_volume = envelope_util->volume;
   amount = envelope_util->amount;
-
-  wah_wah_delay = envelope_util->wah_wah_delay;
-
-  wah_wah_lfo_freq = envelope_util->wah_wah_lfo_freq;
-  wah_wah_lfo_depth = envelope_util->wah_wah_lfo_depth;
-  wah_wah_tuning = envelope_util->wah_wah_tuning;
-  wah_wah_lfo_offset = envelope_util->wah_wah_lfo_offset;
 
   i = 0;
   
@@ -1254,18 +1146,7 @@ ags_envelope_util_compute_s32(AgsEnvelopeUtil *envelope_util)
   guint samplerate;
   gdouble start_volume;
   gdouble amount;
-  gdouble wah_wah_delay;
-  gdouble wah_wah_lfo_freq;
-  gdouble wah_wah_lfo_depth;
-  gdouble wah_wah_tuning;
-  gint64 wah_wah_lfo_offset;
   guint i, i_stop;
-
-  if(envelope_util == NULL ||
-     envelope_util->destination == NULL ||
-     envelope_util->source == NULL){
-    return;
-  }
 
   destination = (gint32 *) envelope_util->destination;
   source = (gint32 *) envelope_util->source;
@@ -1277,13 +1158,6 @@ ags_envelope_util_compute_s32(AgsEnvelopeUtil *envelope_util)
 
   start_volume = envelope_util->volume;
   amount = envelope_util->amount;
-
-  wah_wah_delay = envelope_util->wah_wah_delay;
-
-  wah_wah_lfo_freq = envelope_util->wah_wah_lfo_freq;
-  wah_wah_lfo_depth = envelope_util->wah_wah_lfo_depth;
-  wah_wah_tuning = envelope_util->wah_wah_tuning;
-  wah_wah_lfo_offset = envelope_util->wah_wah_lfo_offset;
 
   i = 0;
   
@@ -1425,18 +1299,7 @@ ags_envelope_util_compute_s64(AgsEnvelopeUtil *envelope_util)
   guint samplerate;
   gdouble start_volume;
   gdouble amount;
-  gdouble wah_wah_delay;
-  gdouble wah_wah_lfo_freq;
-  gdouble wah_wah_lfo_depth;
-  gdouble wah_wah_tuning;
-  gint64 wah_wah_lfo_offset;
   guint i, i_stop;
-
-  if(envelope_util == NULL ||
-     envelope_util->destination == NULL ||
-     envelope_util->source == NULL){
-    return;
-  }
 
   destination = (gint64 *) envelope_util->destination;
   source = (gint64 *) envelope_util->source;
@@ -1448,13 +1311,6 @@ ags_envelope_util_compute_s64(AgsEnvelopeUtil *envelope_util)
 
   start_volume = envelope_util->volume;
   amount = envelope_util->amount;
-
-  wah_wah_delay = envelope_util->wah_wah_delay;
-
-  wah_wah_lfo_freq = envelope_util->wah_wah_lfo_freq;
-  wah_wah_lfo_depth = envelope_util->wah_wah_lfo_depth;
-  wah_wah_tuning = envelope_util->wah_wah_tuning;
-  wah_wah_lfo_offset = envelope_util->wah_wah_lfo_offset;
 
   i = 0;
   
@@ -1596,18 +1452,7 @@ ags_envelope_util_compute_float(AgsEnvelopeUtil *envelope_util)
   guint samplerate;
   gdouble start_volume;
   gdouble amount;
-  gdouble wah_wah_delay;
-  gdouble wah_wah_lfo_freq;
-  gdouble wah_wah_lfo_depth;
-  gdouble wah_wah_tuning;
-  gint64 wah_wah_lfo_offset;
   guint i, i_stop;
-
-  if(envelope_util == NULL ||
-     envelope_util->destination == NULL ||
-     envelope_util->source == NULL){
-    return;
-  }
 
   destination = (gfloat *) envelope_util->destination;
   source = (gfloat *) envelope_util->source;
@@ -1619,13 +1464,6 @@ ags_envelope_util_compute_float(AgsEnvelopeUtil *envelope_util)
 
   start_volume = envelope_util->volume;
   amount = envelope_util->amount;
-
-  wah_wah_delay = envelope_util->wah_wah_delay;
-
-  wah_wah_lfo_freq = envelope_util->wah_wah_lfo_freq;
-  wah_wah_lfo_depth = envelope_util->wah_wah_lfo_depth;
-  wah_wah_tuning = envelope_util->wah_wah_tuning;
-  wah_wah_lfo_offset = envelope_util->wah_wah_lfo_offset;
 
   i = 0;
   
@@ -1767,18 +1605,7 @@ ags_envelope_util_compute_double(AgsEnvelopeUtil *envelope_util)
   guint samplerate;
   gdouble start_volume;
   gdouble amount;
-  gdouble wah_wah_delay;
-  gdouble wah_wah_lfo_freq;
-  gdouble wah_wah_lfo_depth;
-  gdouble wah_wah_tuning;
-  gint64 wah_wah_lfo_offset;
   guint i, i_stop;
-
-  if(envelope_util == NULL ||
-     envelope_util->destination == NULL ||
-     envelope_util->source == NULL){
-    return;
-  }
 
   destination = (gdouble *) envelope_util->destination;
   source = (gdouble *) envelope_util->source;
@@ -1790,13 +1617,6 @@ ags_envelope_util_compute_double(AgsEnvelopeUtil *envelope_util)
 
   start_volume = envelope_util->volume;
   amount = envelope_util->amount;
-
-  wah_wah_delay = envelope_util->wah_wah_delay;
-
-  wah_wah_lfo_freq = envelope_util->wah_wah_lfo_freq;
-  wah_wah_lfo_depth = envelope_util->wah_wah_lfo_depth;
-  wah_wah_tuning = envelope_util->wah_wah_tuning;
-  wah_wah_lfo_offset = envelope_util->wah_wah_lfo_offset;
 
   i = 0;
   
@@ -1938,19 +1758,8 @@ ags_envelope_util_compute_complex(AgsEnvelopeUtil *envelope_util)
   guint samplerate;
   gdouble start_volume;
   gdouble amount;
-  gdouble wah_wah_delay;
-  gdouble wah_wah_lfo_freq;
-  gdouble wah_wah_lfo_depth;
-  gdouble wah_wah_tuning;
-  gint64 wah_wah_lfo_offset;
   guint i;
 
-  if(envelope_util == NULL ||
-     envelope_util->destination == NULL ||
-     envelope_util->source == NULL){
-    return;
-  }
-  
   destination = (AgsComplex *) envelope_util->destination;
   source = (AgsComplex *) envelope_util->source;
   
@@ -1961,13 +1770,6 @@ ags_envelope_util_compute_complex(AgsEnvelopeUtil *envelope_util)
 
   start_volume = envelope_util->volume;
   amount = envelope_util->amount;
-
-  wah_wah_delay = envelope_util->wah_wah_delay;
-
-  wah_wah_lfo_freq = envelope_util->wah_wah_lfo_freq;
-  wah_wah_lfo_depth = envelope_util->wah_wah_lfo_depth;
-  wah_wah_tuning = envelope_util->wah_wah_tuning;
-  wah_wah_lfo_offset = envelope_util->wah_wah_lfo_offset;
 
   i = 0;
   
@@ -2045,5 +1847,9 @@ ags_envelope_util_compute(AgsEnvelopeUtil *envelope_util)
     ags_envelope_util_compute_complex(envelope_util);
   }
   break;
+  default:
+    {
+      g_warning("envelope util - unsupported soundcard format");
+    }
   }
 }
