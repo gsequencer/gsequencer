@@ -393,6 +393,8 @@ ags_fx_two_pass_aliase_audio_signal_real_run_inter(AgsRecall *recall)
     ags_phase_shift_util_process_double(&(fx_two_pass_aliase_audio_signal->phase_shift_util));
 
     /* frequency aliase - a mix */
+    fx_two_pass_aliase_audio_signal->frequency_aliase_util = AGS_FREQUENCY_ALIASE_UTIL_INITIALIZER;
+    
     fx_two_pass_aliase_audio_signal->frequency_aliase_util.buffer_length = buffer_size;
     fx_two_pass_aliase_audio_signal->frequency_aliase_util.format = AGS_SOUNDCARD_DOUBLE;
     fx_two_pass_aliase_audio_signal->frequency_aliase_util.samplerate = samplerate;
@@ -406,9 +408,11 @@ ags_fx_two_pass_aliase_audio_signal_real_run_inter(AgsRecall *recall)
     fx_two_pass_aliase_audio_signal->frequency_aliase_util.phase_shifted_source = fx_two_pass_aliase_channel->input_data[sound_scope]->a_buffer;
     fx_two_pass_aliase_audio_signal->frequency_aliase_util.phase_shifted_source_stride = 1;
 
-    ags_frequency_aliase_util_process_double(&(fx_two_pass_aliase_audio_signal->frequency_aliase_util));
+    ags_frequency_aliase_util_process(&(fx_two_pass_aliase_audio_signal->frequency_aliase_util));
 
     /* frequency aliase - b mix */
+    fx_two_pass_aliase_audio_signal->frequency_aliase_util = AGS_FREQUENCY_ALIASE_UTIL_INITIALIZER;
+
     fx_two_pass_aliase_audio_signal->frequency_aliase_util.buffer_length = buffer_size;
     fx_two_pass_aliase_audio_signal->frequency_aliase_util.format = AGS_SOUNDCARD_DOUBLE;
     fx_two_pass_aliase_audio_signal->frequency_aliase_util.samplerate = samplerate;
@@ -422,9 +426,11 @@ ags_fx_two_pass_aliase_audio_signal_real_run_inter(AgsRecall *recall)
     fx_two_pass_aliase_audio_signal->frequency_aliase_util.phase_shifted_source = fx_two_pass_aliase_channel->input_data[sound_scope]->b_buffer;
     fx_two_pass_aliase_audio_signal->frequency_aliase_util.phase_shifted_source_stride = 1;
 
-    ags_frequency_aliase_util_process_double(&(fx_two_pass_aliase_audio_signal->frequency_aliase_util));
+    ags_frequency_aliase_util_process(&(fx_two_pass_aliase_audio_signal->frequency_aliase_util));
     
     /* frequency aliase - final mix */
+    fx_two_pass_aliase_audio_signal->frequency_aliase_util = AGS_FREQUENCY_ALIASE_UTIL_INITIALIZER;
+
     fx_two_pass_aliase_audio_signal->frequency_aliase_util.buffer_length = buffer_size;
     fx_two_pass_aliase_audio_signal->frequency_aliase_util.format = AGS_SOUNDCARD_DOUBLE;
     fx_two_pass_aliase_audio_signal->frequency_aliase_util.samplerate = samplerate;
@@ -438,7 +444,7 @@ ags_fx_two_pass_aliase_audio_signal_real_run_inter(AgsRecall *recall)
     fx_two_pass_aliase_audio_signal->frequency_aliase_util.phase_shifted_source = fx_two_pass_aliase_channel->input_data[sound_scope]->b_mix;
     fx_two_pass_aliase_audio_signal->frequency_aliase_util.phase_shifted_source_stride = 1;
 
-    ags_frequency_aliase_util_process_double(&(fx_two_pass_aliase_audio_signal->frequency_aliase_util));
+    ags_frequency_aliase_util_process(&(fx_two_pass_aliase_audio_signal->frequency_aliase_util));
     
     g_rec_mutex_lock(stream_mutex);
 

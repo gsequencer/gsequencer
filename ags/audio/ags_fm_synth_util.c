@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,6 +27,51 @@
 
 #include <math.h>
 #include <complex.h>
+
+void ags_fm_synth_util_compute_sin_s8(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_sin_s16(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_sin_s24(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_sin_s32(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_sin_s64(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_sin_float(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_sin_double(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_sin_complex(AgsFMSynthUtil *fm_synth_util);
+
+void ags_fm_synth_util_compute_sawtooth_s8(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_sawtooth_s16(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_sawtooth_s24(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_sawtooth_s32(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_sawtooth_s64(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_sawtooth_float(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_sawtooth_double(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_sawtooth_complex(AgsFMSynthUtil *fm_synth_util);
+
+void ags_fm_synth_util_compute_triangle_s8(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_triangle_s16(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_triangle_s24(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_triangle_s32(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_triangle_s64(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_triangle_float(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_triangle_double(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_triangle_complex(AgsFMSynthUtil *fm_synth_util);
+
+void ags_fm_synth_util_compute_square_s8(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_square_s16(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_square_s24(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_square_s32(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_square_s64(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_square_float(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_square_double(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_square_complex(AgsFMSynthUtil *fm_synth_util);
+
+void ags_fm_synth_util_compute_impulse_s8(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_impulse_s16(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_impulse_s24(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_impulse_s32(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_impulse_s64(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_impulse_float(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_impulse_double(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_impulse_complex(AgsFMSynthUtil *fm_synth_util);
 
 /**
  * SECTION:ags_fm_synth_util
@@ -74,31 +119,7 @@ ags_fm_synth_util_alloc()
   ptr = (AgsFMSynthUtil *) g_new(AgsFMSynthUtil,
 				 1);
 
-  ptr->source = NULL;
-  ptr->source_stride = 1;
-
-  ptr->buffer_length = 0;
-  ptr->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
-  ptr->samplerate = 0;
-  
-  ptr->synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_SIN;
-
-  ptr->frequency = AGS_FM_SYNTH_UTIL_DEFAULT_FREQUENCY;
-  ptr->phase = 0.0;
-  ptr->volume = 1.0;
-  
-  ptr->lfo_oscillator_mode = AGS_SYNTH_OSCILLATOR_SIN;
-
-  ptr->lfo_frequency = AGS_FM_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY;
-  ptr->lfo_depth = AGS_FM_SYNTH_UTIL_DEFAULT_LFO_DEPTH;
-  ptr->tuning = AGS_FM_SYNTH_UTIL_DEFAULT_TUNING;
-
-  ptr->frame_count = 0;
-  ptr->offset = 0;
-
-  ptr->note_256th_mode = TRUE;
-
-  ptr->offset_256th = 0;
+  ptr[0] = AGS_FM_SYNTH_UTIL_INITIALIZER;
 
   return(ptr);
 }
@@ -118,10 +139,8 @@ ags_fm_synth_util_copy(AgsFMSynthUtil *ptr)
 {
   AgsFMSynthUtil *new_ptr;
 
-  if(ptr == NULL){
-    return(NULL);
-  }
-  
+  g_return_val_if_fail(ptr != NULL, NULL);
+
   new_ptr = (AgsFMSynthUtil *) g_new(AgsFMSynthUtil,
 				     1);
   
@@ -165,6 +184,8 @@ ags_fm_synth_util_copy(AgsFMSynthUtil *ptr)
 void
 ags_fm_synth_util_free(AgsFMSynthUtil *ptr)
 {
+  g_return_if_fail(ptr != NULL);
+
   g_free(ptr->source);
   
   g_free(ptr);

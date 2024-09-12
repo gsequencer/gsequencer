@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,6 +20,15 @@
 #include <ags/audio/ags_frequency_aliase_util.h>
 
 #include <math.h>
+
+void ags_frequency_aliase_util_process_s8(AgsFrequencyAliaseUtil *frequency_aliase_util);
+void ags_frequency_aliase_util_process_s16(AgsFrequencyAliaseUtil *frequency_aliase_util);
+void ags_frequency_aliase_util_process_s24(AgsFrequencyAliaseUtil *frequency_aliase_util);
+void ags_frequency_aliase_util_process_s32(AgsFrequencyAliaseUtil *frequency_aliase_util);
+void ags_frequency_aliase_util_process_s64(AgsFrequencyAliaseUtil *frequency_aliase_util);
+void ags_frequency_aliase_util_process_float(AgsFrequencyAliaseUtil *frequency_aliase_util);
+void ags_frequency_aliase_util_process_double(AgsFrequencyAliaseUtil *frequency_aliase_util);
+void ags_frequency_aliase_util_process_complex(AgsFrequencyAliaseUtil *frequency_aliase_util);
 
 /**
  * SECTION:ags_frequency_aliase_util
@@ -67,17 +76,7 @@ ags_frequency_aliase_util_alloc()
   ptr = (AgsFrequencyAliaseUtil *) g_new(AgsFrequencyAliaseUtil,
 					 1);
 
-  ptr->destination = NULL;
-  ptr->destination_stride = 1;
-
-  ptr->source = NULL;
-  ptr->source_stride = 1;
-
-  ptr->phase_shifted_source = NULL;
-  ptr->phase_shifted_source_stride = 1;
-
-  ptr->buffer_length = 0;
-  ptr->format = AGS_FREQUENCY_ALIASE_UTIL_DEFAULT_FORMAT;
+  ptr[0] = AGS_FREQUENCY_ALIASE_UTIL_INITIALIZER;
 
   return(ptr);
 }
@@ -97,9 +96,7 @@ ags_frequency_aliase_util_copy(AgsFrequencyAliaseUtil *ptr)
 {
   AgsFrequencyAliaseUtil *new_ptr;
 
-  if(ptr == NULL){
-    return(NULL);
-  }
+  g_return_val_if_fail(ptr != NULL, NULL);
   
   new_ptr = (AgsFrequencyAliaseUtil *) g_new(AgsFrequencyAliaseUtil,
 					     1);
@@ -115,6 +112,7 @@ ags_frequency_aliase_util_copy(AgsFrequencyAliaseUtil *ptr)
 
   new_ptr->buffer_length = ptr->buffer_length;
   new_ptr->format = ptr->format;
+  new_ptr->samplerate = ptr->samplerate;
 
   return(new_ptr);
 }
@@ -130,6 +128,8 @@ ags_frequency_aliase_util_copy(AgsFrequencyAliaseUtil *ptr)
 void
 ags_frequency_aliase_util_free(AgsFrequencyAliaseUtil *ptr)
 {
+  g_return_if_fail(ptr != NULL);
+
   g_free(ptr->destination);
 
   if(ptr->destination != ptr->source){
