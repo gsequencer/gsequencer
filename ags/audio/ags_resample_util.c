@@ -25,6 +25,15 @@
 
 #include <complex.h>
 
+void ags_resample_util_compute_s8(AgsResampleUtil *resample_util);
+void ags_resample_util_compute_s16(AgsResampleUtil *resample_util);
+void ags_resample_util_compute_s24(AgsResampleUtil *resample_util);
+void ags_resample_util_compute_s32(AgsResampleUtil *resample_util);
+void ags_resample_util_compute_s64(AgsResampleUtil *resample_util);
+void ags_resample_util_compute_float(AgsResampleUtil *resample_util);
+void ags_resample_util_compute_double(AgsResampleUtil *resample_util);
+void ags_resample_util_compute_complex(AgsResampleUtil *resample_util);
+
 /**
  * SECTION:ags_resample_util
  * @short_description: Boxed type of resample util
@@ -71,39 +80,7 @@ ags_resample_util_alloc()
   ptr = (AgsResampleUtil *) g_new(AgsResampleUtil,
 				  1);
 
-  ptr->destination = NULL;
-  ptr->destination_stride = 1;
-
-  ptr->source = NULL;
-  ptr->source_stride = 1;
-
-  ptr->buffer_length = 0;
-  ptr->format = AGS_RESAMPLE_UTIL_DEFAULT_FORMAT;
-  ptr->samplerate = AGS_RESAMPLE_UTIL_DEFAULT_SAMPLERATE;
-
-  ptr->target_samplerate = AGS_RESAMPLE_UTIL_DEFAULT_TARGET_SAMPLERATE;
-
-  ptr->src_ratio = 1.0;
-
-  ptr->input_frames = 0;
-  ptr->data_in = NULL;
-
-  ptr->output_frames = 0;
-  ptr->data_out = NULL;
-  
-  ptr->increment = 2381;
-
-  ptr->bypass_cache = FALSE;
-  
-  ptr->in_count = 0;
-  ptr->in_used = 0;
-  ptr->out_count = 0;
-  ptr->out_gen = 0;
-  
-  ptr->coeff_half_len = ARRAY_LEN (ags_samplerate_coeffs) - 2;
-  ptr->index_inc = 2381;
-  
-  ptr->input_index = 0;
+  ptr[0] = AGS_RESAMPLE_UTIL_INITIALIZER;
   
   ptr->b_current = 0;
   ptr->b_end = 0;
@@ -111,18 +88,6 @@ ags_resample_util_alloc()
   ptr->b_len = 3 * (int) psf_lrint ((ptr->coeff_half_len + 2.0) / ptr->index_inc * SRC_MAX_RATIO + 1);
   ptr->b_len = MAX (ptr->b_len, 4096);
   ptr->b_len += 1;
-  
-  ptr->coeffs = ags_samplerate_coeffs;
-  
-  ptr->left_calc = 0.0;
-  ptr->right_calc = 0.0;
-
-  ptr->last_ratio = -1.0;
-  ptr->last_position = 0.0;
-  
-  ptr->buffer = NULL;
-
-  ptr->audio_buffer_util = ags_audio_buffer_util_alloc();
 
   return(ptr);
 }
@@ -138,39 +103,9 @@ ags_resample_util_alloc()
 void
 ags_resample_util_init(AgsResampleUtil *resample_util)
 {
-  resample_util->destination = NULL;
-  resample_util->destination_stride = 1;
+  g_return_if_fail(resample_util != NULL);
 
-  resample_util->source = NULL;
-  resample_util->source_stride = 1;
-
-  resample_util->buffer_length = 0;
-  resample_util->format = AGS_RESAMPLE_UTIL_DEFAULT_FORMAT;
-  resample_util->samplerate = AGS_RESAMPLE_UTIL_DEFAULT_SAMPLERATE;
-
-  resample_util->target_samplerate = AGS_RESAMPLE_UTIL_DEFAULT_TARGET_SAMPLERATE;
-
-  resample_util->src_ratio = 1.0;
-
-  resample_util->input_frames = 0;
-  resample_util->data_in = NULL;
-
-  resample_util->output_frames = 0;
-  resample_util->data_out = NULL;
-  
-  resample_util->increment = 2381;
-
-  resample_util->bypass_cache = FALSE;
-  
-  resample_util->in_count = 0;
-  resample_util->in_used = 0;
-  resample_util->out_count = 0;
-  resample_util->out_gen = 0;
-
-  resample_util->coeff_half_len = ARRAY_LEN (ags_samplerate_coeffs) - 2;
-  resample_util->index_inc = 2381;
-  
-  resample_util->input_index = 0;
+  resample_util[0] = AGS_RESAMPLE_UTIL_INITIALIZER;
   
   resample_util->b_current = 0;
   resample_util->b_end = 0;
@@ -178,14 +113,6 @@ ags_resample_util_init(AgsResampleUtil *resample_util)
   resample_util->b_len = 3 * (int) psf_lrint ((resample_util->coeff_half_len + 2.0) / resample_util->index_inc * SRC_MAX_RATIO + 1);
   resample_util->b_len = MAX (resample_util->b_len, 4096);
   resample_util->b_len += 1;
-  
-  resample_util->coeffs = ags_samplerate_coeffs;
-  
-  resample_util->left_calc = 0.0;
-  resample_util->right_calc = 0.0;
-
-  resample_util->last_ratio = -1.0;
-  resample_util->last_position = 0.0;
   
   resample_util->buffer = NULL;
 }
@@ -204,10 +131,8 @@ gpointer
 ags_resample_util_copy(AgsResampleUtil *ptr)
 {
   AgsResampleUtil *new_ptr;
-
-  if(ptr == NULL){
-    return(NULL);
-  }
+  
+  g_return_val_if_fail(ptr != NULL, NULL);
   
   new_ptr = (AgsResampleUtil *) g_new(AgsResampleUtil,
 				      1);
@@ -295,6 +220,8 @@ ags_resample_util_copy(AgsResampleUtil *ptr)
 void
 ags_resample_util_free(AgsResampleUtil *ptr)
 {
+  g_return_if_fail(ptr != NULL);
+
   ags_stream_free(ptr->data_in);
   ags_stream_free(ptr->data_out);
   
@@ -621,7 +548,7 @@ guint
 ags_resample_util_get_samplerate(AgsResampleUtil *resample_util)
 {
   if(resample_util == NULL){
-    return(AGS_RESAMPLE_UTIL_DEFAULT_SAMPLERATE);
+    return(0);
   }
   
   return(resample_util->samplerate);
@@ -683,7 +610,7 @@ guint
 ags_resample_util_get_target_samplerate(AgsResampleUtil *resample_util)
 {
   if(resample_util == NULL){
-    return(AGS_RESAMPLE_UTIL_DEFAULT_TARGET_SAMPLERATE);
+    return(0);
   }
 
   return(resample_util->target_samplerate);

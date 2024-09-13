@@ -32,7 +32,17 @@ G_BEGIN_DECLS
 
 #define AGS_TYPE_PHASE_SHIFT_UTIL         (ags_phase_shift_util_get_type())
 
-#define AGS_PHASE_SHIFT_UTIL_DEFAULT_FORMAT (AGS_SOUNDCARD_SIGNED_16_BIT)
+#define AGS_PHASE_SHIFT_UTIL_INITIALIZER ((AgsPhaseShiftUtil) {	\
+      .source = NULL,					\
+      .source_stride = 1,				\
+      .destination = NULL,				\
+      .destination_stride = 1,				\
+      .buffer_length = 0,				\
+      .format = AGS_SOUNDCARD_DEFAULT_FORMAT,		\
+      .samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE,	\
+      .frequency = 0.0,	\
+      .amount = 1.0,					\
+      .phase = 0.0 })
 
 typedef struct _AgsPhaseShiftUtil AgsPhaseShiftUtil;
 
@@ -97,14 +107,6 @@ gdouble ags_phase_shift_util_get_phase(AgsPhaseShiftUtil *phase_shift_util);
 void ags_phase_shift_util_set_phase(AgsPhaseShiftUtil *phase_shift_util,
 				    gdouble phase);
 
-void ags_phase_shift_util_process_s8(AgsPhaseShiftUtil *phase_shift_util);
-void ags_phase_shift_util_process_s16(AgsPhaseShiftUtil *phase_shift_util);
-void ags_phase_shift_util_process_s24(AgsPhaseShiftUtil *phase_shift_util);
-void ags_phase_shift_util_process_s32(AgsPhaseShiftUtil *phase_shift_util);
-void ags_phase_shift_util_process_s64(AgsPhaseShiftUtil *phase_shift_util);
-void ags_phase_shift_util_process_float(AgsPhaseShiftUtil *phase_shift_util);
-void ags_phase_shift_util_process_double(AgsPhaseShiftUtil *phase_shift_util);
-void ags_phase_shift_util_process_complex(AgsPhaseShiftUtil *phase_shift_util);
 void ags_phase_shift_util_process(AgsPhaseShiftUtil *phase_shift_util);
 
 G_END_DECLS

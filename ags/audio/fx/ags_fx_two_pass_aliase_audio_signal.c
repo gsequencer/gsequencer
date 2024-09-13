@@ -373,7 +373,7 @@ ags_fx_two_pass_aliase_audio_signal_real_run_inter(AgsRecall *recall)
     fx_two_pass_aliase_audio_signal->phase_shift_util.amount = a_amount;
     fx_two_pass_aliase_audio_signal->phase_shift_util.phase = a_phase;
     
-    ags_phase_shift_util_process_double(&(fx_two_pass_aliase_audio_signal->phase_shift_util));
+    ags_phase_shift_util_process(&(fx_two_pass_aliase_audio_signal->phase_shift_util));
 
     /* phase shift - b buffer */
     fx_two_pass_aliase_audio_signal->phase_shift_util.buffer_length = buffer_size;
@@ -390,7 +390,7 @@ ags_fx_two_pass_aliase_audio_signal_real_run_inter(AgsRecall *recall)
     fx_two_pass_aliase_audio_signal->phase_shift_util.amount = b_amount;
     fx_two_pass_aliase_audio_signal->phase_shift_util.phase = b_phase;
     
-    ags_phase_shift_util_process_double(&(fx_two_pass_aliase_audio_signal->phase_shift_util));
+    ags_phase_shift_util_process(&(fx_two_pass_aliase_audio_signal->phase_shift_util));
 
     /* frequency aliase - a mix */
     fx_two_pass_aliase_audio_signal->frequency_aliase_util = AGS_FREQUENCY_ALIASE_UTIL_INITIALIZER;

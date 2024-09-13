@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,6 +21,15 @@
 
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
+
+void ags_phase_shift_util_process_s8(AgsPhaseShiftUtil *phase_shift_util);
+void ags_phase_shift_util_process_s16(AgsPhaseShiftUtil *phase_shift_util);
+void ags_phase_shift_util_process_s24(AgsPhaseShiftUtil *phase_shift_util);
+void ags_phase_shift_util_process_s32(AgsPhaseShiftUtil *phase_shift_util);
+void ags_phase_shift_util_process_s64(AgsPhaseShiftUtil *phase_shift_util);
+void ags_phase_shift_util_process_float(AgsPhaseShiftUtil *phase_shift_util);
+void ags_phase_shift_util_process_double(AgsPhaseShiftUtil *phase_shift_util);
+void ags_phase_shift_util_process_complex(AgsPhaseShiftUtil *phase_shift_util);
 
 /**
  * SECTION:ags_phase_shift_util
@@ -68,14 +77,7 @@ ags_phase_shift_util_alloc()
   ptr = (AgsPhaseShiftUtil *) g_new(AgsPhaseShiftUtil,
 				     1);
 
-  ptr->destination = NULL;
-  ptr->destination_stride = 1;
-
-  ptr->source = NULL;
-  ptr->source_stride = 1;
-
-  ptr->buffer_length = 0;
-  ptr->format = AGS_PHASE_SHIFT_UTIL_DEFAULT_FORMAT;
+  ptr[0] = AGS_PHASE_SHIFT_UTIL_INITIALIZER;
 
   return(ptr);
 }
@@ -95,22 +97,25 @@ ags_phase_shift_util_copy(AgsPhaseShiftUtil *ptr)
 {
   AgsPhaseShiftUtil *new_ptr;
 
-  if(ptr == NULL){
-    return(NULL);
-  }
+  g_return_val_if_fail(ptr != NULL, NULL);
   
   new_ptr = (AgsPhaseShiftUtil *) g_new(AgsPhaseShiftUtil,
 					 1);
   
-  new_ptr->destination = ptr->destination;
-  new_ptr->destination_stride = ptr->destination_stride;
-
   new_ptr->source = ptr->source;
   new_ptr->source_stride = ptr->source_stride;
 
+  new_ptr->destination = ptr->destination;
+  new_ptr->destination_stride = ptr->destination_stride;
+
   new_ptr->buffer_length = ptr->buffer_length;
   new_ptr->format = ptr->format;
+  new_ptr->samplerate = ptr->samplerate;
 
+  new_ptr->frequency = ptr->frequency;
+  new_ptr->amount = ptr->amount;
+  new_ptr->phase = ptr->phase;
+  
   return(new_ptr);
 }
 
@@ -125,6 +130,8 @@ ags_phase_shift_util_copy(AgsPhaseShiftUtil *ptr)
 void
 ags_phase_shift_util_free(AgsPhaseShiftUtil *ptr)
 {
+  g_return_if_fail(ptr != NULL);
+
   g_free(ptr->destination);
 
   if(ptr->destination != ptr->source){

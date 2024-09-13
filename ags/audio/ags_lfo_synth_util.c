@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,6 +28,51 @@
 
 #include <math.h>
 #include <complex.h>
+
+void ags_lfo_synth_util_compute_sin_s8(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_compute_sin_s16(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_compute_sin_s24(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_compute_sin_s32(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_compute_sin_s64(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_compute_sin_float(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_compute_sin_double(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_compute_sin_complex(AgsLFOSynthUtil *lfo_synth_util);
+
+void ags_lfo_synth_util_compute_sawtooth_s8(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_compute_sawtooth_s16(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_compute_sawtooth_s24(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_compute_sawtooth_s32(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_compute_sawtooth_s64(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_compute_sawtooth_float(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_compute_sawtooth_double(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_compute_sawtooth_complex(AgsLFOSynthUtil *lfo_synth_util);
+
+void ags_lfo_synth_util_compute_triangle_s8(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_compute_triangle_s16(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_compute_triangle_s24(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_compute_triangle_s32(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_compute_triangle_s64(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_compute_triangle_float(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_compute_triangle_double(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_compute_triangle_complex(AgsLFOSynthUtil *lfo_synth_util);
+
+void ags_lfo_synth_util_compute_square_s8(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_compute_square_s16(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_compute_square_s24(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_compute_square_s32(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_compute_square_s64(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_compute_square_float(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_compute_square_double(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_compute_square_complex(AgsLFOSynthUtil *lfo_synth_util);
+
+void ags_lfo_synth_util_compute_impulse_s8(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_compute_impulse_s16(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_compute_impulse_s24(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_compute_impulse_s32(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_compute_impulse_s64(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_compute_impulse_float(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_compute_impulse_double(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_compute_impulse_complex(AgsLFOSynthUtil *lfo_synth_util);
 
 /**
  * SECTION:ags_lfo_synth_util
@@ -75,23 +120,7 @@ ags_lfo_synth_util_alloc()
   ptr = (AgsLFOSynthUtil *) g_new(AgsLFOSynthUtil,
 				 1);
 
-  ptr->source = NULL;
-  ptr->source_stride = 1;
-
-  ptr->buffer_length = 0;
-  ptr->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
-  ptr->samplerate = 0;
-  
-  ptr->frequency = AGS_LFO_SYNTH_UTIL_DEFAULT_FREQUENCY;
-  ptr->phase = 0.0;
-  
-  ptr->lfo_synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_SIN;
-
-  ptr->lfo_depth = AGS_LFO_SYNTH_UTIL_DEFAULT_LFO_DEPTH;
-  ptr->tuning = AGS_LFO_SYNTH_UTIL_DEFAULT_TUNING;
-
-  ptr->frame_count = 0;
-  ptr->offset = 0;
+  ptr[0] = AGS_LFO_SYNTH_UTIL_INITIALIZER;
 
   return(ptr);
 }
@@ -111,9 +140,7 @@ ags_lfo_synth_util_copy(AgsLFOSynthUtil *ptr)
 {
   AgsLFOSynthUtil *new_ptr;
 
-  if(ptr == NULL){
-    return(NULL);
-  }
+  g_return_val_if_fail(ptr != NULL, NULL);
   
   new_ptr = (AgsLFOSynthUtil *) g_new(AgsLFOSynthUtil,
 				     1);
@@ -150,6 +177,8 @@ ags_lfo_synth_util_copy(AgsLFOSynthUtil *ptr)
 void
 ags_lfo_synth_util_free(AgsLFOSynthUtil *ptr)
 {
+  g_return_if_fail(ptr != NULL);
+
   g_free(ptr->source);
   
   g_free(ptr);
@@ -634,6 +663,86 @@ ags_lfo_synth_util_set_frame_count(AgsLFOSynthUtil *lfo_synth_util,
   }
 
   lfo_synth_util->frame_count = frame_count;
+}
+
+/**
+ * ags_lfo_synth_util_get_note_256th_mode:
+ * @lfo_synth_util: the #AgsLFOSynthUtil-struct
+ * 
+ * Get note 256th mode of @lfo_synth_util.
+ * 
+ * Returns: %TRUE if note 256th mode, otherwise %FALSE
+ * 
+ * Since: 7.0.0
+ */
+gboolean
+ags_lfo_synth_util_get_note_256th_mode(AgsLFOSynthUtil *lfo_synth_util)
+{
+  if(lfo_synth_util == NULL){
+    return(0);
+  }
+
+  return(lfo_synth_util->note_256th_mode);
+}
+
+/**
+ * ags_lfo_synth_util_set_note_256th_mode:
+ * @lfo_synth_util: the #AgsLFOSynthUtil-struct
+ * @note_256th_mode: the note 256th mode
+ *
+ * Set @note_256th_mode of @lfo_synth_util.
+ *
+ * Since: 7.0.0
+ */
+void
+ags_lfo_synth_util_set_note_256th_mode(AgsLFOSynthUtil *lfo_synth_util,
+				       gboolean note_256th_mode)
+{
+  if(lfo_synth_util == NULL){
+    return;
+  }
+
+  lfo_synth_util->note_256th_mode = note_256th_mode;
+}
+
+/**
+ * ags_lfo_synth_util_get_offset_256th:
+ * @lfo_synth_util: the #AgsLFOSynthUtil-struct
+ * 
+ * Get offset as note 256th of @lfo_synth_util.
+ * 
+ * Returns: the offset as note 256th
+ * 
+ * Since: 7.0.0
+ */
+guint
+ags_lfo_synth_util_get_offset_256th(AgsLFOSynthUtil *lfo_synth_util)
+{
+  if(lfo_synth_util == NULL){
+    return(0);
+  }
+
+  return(lfo_synth_util->offset_256th);
+}
+
+/**
+ * ags_lfo_synth_util_set_offset_256th:
+ * @lfo_synth_util: the #AgsLFOSynthUtil-struct
+ * @offset_256th: the offset as note 256th
+ *
+ * Set @offset_256th of @lfo_synth_util.
+ *
+ * Since: 7.0.0
+ */
+void
+ags_lfo_synth_util_set_offset_256th(AgsLFOSynthUtil *lfo_synth_util,
+				    guint offset_256th)
+{
+  if(lfo_synth_util == NULL){
+    return;
+  }
+  
+  lfo_synth_util->offset_256th = offset_256th;
 }
 
 /**

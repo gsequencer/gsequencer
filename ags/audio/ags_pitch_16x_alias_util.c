@@ -22,6 +22,15 @@
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
+void ags_pitch_16x_alias_util_pitch_s8(AgsPitch16xAliasUtil *pitch_16x_alias_util);
+void ags_pitch_16x_alias_util_pitch_s16(AgsPitch16xAliasUtil *pitch_16x_alias_util);
+void ags_pitch_16x_alias_util_pitch_s24(AgsPitch16xAliasUtil *pitch_16x_alias_util);
+void ags_pitch_16x_alias_util_pitch_s32(AgsPitch16xAliasUtil *pitch_16x_alias_util);
+void ags_pitch_16x_alias_util_pitch_s64(AgsPitch16xAliasUtil *pitch_16x_alias_util);
+void ags_pitch_16x_alias_util_pitch_float(AgsPitch16xAliasUtil *pitch_16x_alias_util);
+void ags_pitch_16x_alias_util_pitch_double(AgsPitch16xAliasUtil *pitch_16x_alias_util);
+void ags_pitch_16x_alias_util_pitch_complex(AgsPitch16xAliasUtil *pitch_16x_alias_util);
+
 /**
  * SECTION:ags_pitch_16x_alias_util
  * @short_description: 16 times aliased pitch util
@@ -51,7 +60,6 @@ ags_pitch_16x_alias_util_get_type(void)
   return g_define_type_id__volatile;
 }
 
-
 /**
  * ags_pitch_16x_alias_util_alloc:
  * 
@@ -69,45 +77,7 @@ ags_pitch_16x_alias_util_alloc()
   ptr = (AgsPitch16xAliasUtil *) g_new(AgsPitch16xAliasUtil,
 				       1);
 
-  ptr->source = NULL;
-  ptr->source_stride = 1;
-
-  ptr->destination = NULL;
-  ptr->destination_stride = 1;
-
-  ptr->alias_source_buffer = ags_stream_alloc(AGS_PITCH_16X_ALIAS_UTIL_DEFAULT_MAX_BUFFER_SIZE,
-					      AGS_SOUNDCARD_DEFAULT_FORMAT);
-
-  ptr->alias_source_max_buffer_length = AGS_PITCH_16X_ALIAS_UTIL_DEFAULT_MAX_BUFFER_SIZE;
-
-  ptr->alias_new_source_buffer = ags_stream_alloc(AGS_PITCH_16X_ALIAS_UTIL_DEFAULT_MAX_BUFFER_SIZE,
-						  AGS_SOUNDCARD_DEFAULT_FORMAT);
-
-  ptr->alias_new_source_max_buffer_length = AGS_PITCH_16X_ALIAS_UTIL_DEFAULT_MAX_BUFFER_SIZE;
-  
-  ptr->buffer_length = 0;
-  ptr->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
-  ptr->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-
-  ptr->base_key = 0.0;
-  ptr->tuning = 0.0;
-
-  ptr->vibrato_enabled = TRUE;
-
-  ptr->vibrato_gain = 1.0;
-  ptr->vibrato_lfo_depth = 0.0;
-  ptr->vibrato_lfo_freq = 8.172;
-  ptr->vibrato_tuning = 0.0;
-
-  ptr->vibrato_lfo_frame_count = ptr->samplerate / ptr->vibrato_lfo_freq;
-  ptr->vibrato_lfo_offset = 0;
-
-  ptr->frame_count = 0;
-  ptr->offset = 0;
-
-  ptr->note_256th_mode = TRUE;
-
-  ptr->offset_256th = 0;
+  ptr[0] = AGS_PITCH_16X_ALIAS_UTIL_INITIALIZER;
   
   return(ptr);
 }
@@ -126,6 +96,8 @@ gpointer
 ags_pitch_16x_alias_util_copy(AgsPitch16xAliasUtil *ptr)
 {
   AgsPitch16xAliasUtil *new_ptr;
+  
+  g_return_val_if_fail(ptr != NULL, NULL);
   
   new_ptr = (AgsPitch16xAliasUtil *) g_new(AgsPitch16xAliasUtil,
 					   1);
@@ -161,9 +133,6 @@ ags_pitch_16x_alias_util_copy(AgsPitch16xAliasUtil *ptr)
   new_ptr->vibrato_lfo_freq = ptr->vibrato_lfo_freq;
   new_ptr->vibrato_tuning = ptr->vibrato_tuning;
 
-  new_ptr->vibrato_lfo_frame_count = ptr->vibrato_lfo_frame_count;
-  new_ptr->vibrato_lfo_offset = ptr->vibrato_lfo_offset;
-
   new_ptr->frame_count = ptr->frame_count;
   new_ptr->offset = ptr->offset;
 
@@ -185,9 +154,7 @@ ags_pitch_16x_alias_util_copy(AgsPitch16xAliasUtil *ptr)
 void
 ags_pitch_16x_alias_util_free(AgsPitch16xAliasUtil *ptr)
 {
-  if(ptr == NULL){
-    return;
-  }
+  g_return_if_fail(ptr != NULL);
   
   g_free(ptr->destination);
 
@@ -772,46 +739,6 @@ ags_pitch_16x_alias_util_set_vibrato_tuning(AgsPitch16xAliasUtil *pitch_16x_alia
   }
 
   pitch_16x_alias_util->vibrato_tuning = vibrato_tuning;
-}
-
-/**
- * ags_pitch_16x_alias_util_get_vibrato_lfo_offset:
- * @pitch_16x_alias_util: the #AgsPitch16xAliasUtil-struct
- * 
- * Get vibrato lfo_offset of @pitch_16x_alias_util.
- * 
- * Returns: the vibrato lfo_offset
- * 
- * Since: 6.15.0
- */
-guint
-ags_pitch_16x_alias_util_get_vibrato_lfo_offset(AgsPitch16xAliasUtil *pitch_16x_alias_util)
-{
-  if(pitch_16x_alias_util == NULL){
-    return(0);
-  }
-
-  return(pitch_16x_alias_util->vibrato_lfo_offset);
-}
-
-/**
- * ags_pitch_16x_alias_util_set_vibrato_lfo_offset:
- * @pitch_16x_alias_util: the #AgsPitch16xAliasUtil-struct
- * @vibrato_lfo_offset: the vibrato lfo_offset
- *
- * Set @vibrato_lfo_offset of @pitch_16x_alias_util.
- *
- * Since: 6.15.0
- */
-void
-ags_pitch_16x_alias_util_set_vibrato_lfo_offset(AgsPitch16xAliasUtil *pitch_16x_alias_util,
-						guint vibrato_lfo_offset)
-{
-  if(pitch_16x_alias_util == NULL){
-    return;
-  }
-
-  pitch_16x_alias_util->vibrato_lfo_offset = vibrato_lfo_offset;
 }
 
 /**

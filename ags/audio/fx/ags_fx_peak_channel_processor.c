@@ -205,7 +205,7 @@ ags_fx_peak_channel_processor_real_run_inter(AgsRecall *recall)
 
     fx_peak_channel_processor->peak_util.peak = 0.0;
 
-    ags_peak_util_compute_double(&(fx_peak_channel_processor->peak_util));
+    ags_peak_util_compute(&(fx_peak_channel_processor->peak_util));
 
     peak = fx_peak_channel_processor->peak_util.peak;
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,15 @@
 #if defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
 #include <Accelerate/Accelerate.h>
 #endif
+
+void ags_peak_util_compute_s8(AgsPeakUtil *peak_util);
+void ags_peak_util_compute_s16(AgsPeakUtil *peak_util);
+void ags_peak_util_compute_s24(AgsPeakUtil *peak_util);
+void ags_peak_util_compute_s32(AgsPeakUtil *peak_util);
+void ags_peak_util_compute_s64(AgsPeakUtil *peak_util);
+void ags_peak_util_compute_float(AgsPeakUtil *peak_util);
+void ags_peak_util_compute_double(AgsPeakUtil *peak_util);
+void ags_peak_util_compute_complex(AgsPeakUtil *peak_util);
 
 /**
  * SECTION:ags_peak_util
@@ -71,17 +80,7 @@ ags_peak_util_alloc()
   ptr = (AgsPeakUtil *) g_new(AgsPeakUtil,
 				1);
 
-  ptr->source = NULL;
-  ptr->source_stride = 1;
-
-  ptr->buffer_length = 0;
-  ptr->format = AGS_PEAK_UTIL_DEFAULT_FORMAT;
-  ptr->samplerate = AGS_PEAK_UTIL_DEFAULT_SAMPLERATE;
-
-  ptr->harmonic_rate = AGS_PEAK_UTIL_DEFAULT_HARMONIC_RATE;
-  ptr->pressure_factor = AGS_PEAK_UTIL_DEFAULT_PRESSURE_FACTOR;
-
-  ptr->peak = 0.0;
+  ptr[0] = AGS_PEAK_UTIL_INITIALIZER;
 
   return(ptr);
 }
@@ -101,9 +100,7 @@ ags_peak_util_copy(AgsPeakUtil *ptr)
 {
   AgsPeakUtil *new_ptr;
 
-  if(ptr == NULL){
-    return(NULL);
-  }
+  g_return_val_if_fail(ptr != NULL, NULL);
   
   new_ptr = (AgsPeakUtil *) g_new(AgsPeakUtil,
 				  1);
@@ -134,6 +131,8 @@ ags_peak_util_copy(AgsPeakUtil *ptr)
 void
 ags_peak_util_free(AgsPeakUtil *ptr)
 {
+  g_return_if_fail(ptr != NULL);
+
   g_free(ptr->source);
 
   g_free(ptr);
@@ -313,7 +312,7 @@ guint
 ags_peak_util_get_samplerate(AgsPeakUtil *peak_util)
 {
   if(peak_util == NULL){
-    return(AGS_PEAK_UTIL_DEFAULT_SAMPLERATE);
+    return(0);
   }
 
   return(peak_util->samplerate);

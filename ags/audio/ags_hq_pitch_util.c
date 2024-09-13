@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,6 +21,15 @@
 
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
+
+void ags_hq_pitch_util_pitch_s8(AgsHQPitchUtil *hq_pitch_util);
+void ags_hq_pitch_util_pitch_s16(AgsHQPitchUtil *hq_pitch_util);
+void ags_hq_pitch_util_pitch_s24(AgsHQPitchUtil *hq_pitch_util);
+void ags_hq_pitch_util_pitch_s32(AgsHQPitchUtil *hq_pitch_util);
+void ags_hq_pitch_util_pitch_s64(AgsHQPitchUtil *hq_pitch_util);
+void ags_hq_pitch_util_pitch_float(AgsHQPitchUtil *hq_pitch_util);
+void ags_hq_pitch_util_pitch_double(AgsHQPitchUtil *hq_pitch_util);
+void ags_hq_pitch_util_pitch_complex(AgsHQPitchUtil *hq_pitch_util);
 
 /**
  * SECTION:ags_hq_pitch_util
@@ -68,47 +77,7 @@ ags_hq_pitch_util_alloc()
   ptr = (AgsHQPitchUtil *) g_new(AgsHQPitchUtil,
 				 1);
 
-  ptr->source = NULL;
-  ptr->source_stride = 1;
-
-  ptr->destination = NULL;
-  ptr->destination_stride = 1;
-
-  ptr->low_mix_buffer = ags_stream_alloc(AGS_HQ_PITCH_UTIL_DEFAULT_MAX_BUFFER_SIZE,
-					 AGS_SOUNDCARD_DEFAULT_FORMAT);
-
-  ptr->low_mix_buffer_max_buffer_length = AGS_HQ_PITCH_UTIL_DEFAULT_MAX_BUFFER_SIZE;
-  
-  ptr->new_mix_buffer = ags_stream_alloc(AGS_HQ_PITCH_UTIL_DEFAULT_MAX_BUFFER_SIZE,
-					 AGS_SOUNDCARD_DEFAULT_FORMAT);
-
-  ptr->new_mix_buffer_max_buffer_length = AGS_HQ_PITCH_UTIL_DEFAULT_MAX_BUFFER_SIZE;
-  
-  ptr->buffer_length = 0;
-  ptr->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
-  ptr->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-
-  ptr->base_key = 0.0;
-  ptr->tuning = 0.0;
-
-  ptr->linear_interpolate_util = ags_linear_interpolate_util_alloc();
-
-  ptr->vibrato_enabled = TRUE;
-
-  ptr->vibrato_gain = 1.0;
-  ptr->vibrato_lfo_depth = 0.0;
-  ptr->vibrato_lfo_freq = 8.172;
-  ptr->vibrato_tuning = 0.0;
-
-  ptr->vibrato_lfo_frame_count = ptr->samplerate / ptr->vibrato_lfo_freq;
-  ptr->vibrato_lfo_offset = 0;
-
-  ptr->frame_count = 0;
-  ptr->offset = 0;
-
-  ptr->note_256th_mode = TRUE;
-
-  ptr->offset_256th = 0;
+  ptr[0] = AGS_HQ_PITCH_UTIL_INITIALIZER;
   
   return(ptr);
 }
@@ -128,9 +97,7 @@ ags_hq_pitch_util_copy(AgsHQPitchUtil *ptr)
 {
   AgsHQPitchUtil *new_ptr;
 
-  if(ptr == NULL){
-    return(NULL);
-  }
+  g_return_val_if_fail(ptr != NULL, NULL);
   
   new_ptr = (AgsHQPitchUtil *) g_new(AgsHQPitchUtil,
 				     1);
@@ -165,9 +132,6 @@ ags_hq_pitch_util_copy(AgsHQPitchUtil *ptr)
   new_ptr->vibrato_lfo_freq = ptr->vibrato_lfo_freq;
   new_ptr->vibrato_tuning = ptr->vibrato_tuning;
 
-  new_ptr->vibrato_lfo_frame_count = ptr->vibrato_lfo_frame_count;
-  new_ptr->vibrato_lfo_offset = ptr->vibrato_lfo_offset;
-
   new_ptr->frame_count = ptr->frame_count;
   new_ptr->offset = ptr->offset;
 
@@ -189,9 +153,7 @@ ags_hq_pitch_util_copy(AgsHQPitchUtil *ptr)
 void
 ags_hq_pitch_util_free(AgsHQPitchUtil *ptr)
 {
-  if(ptr == NULL){
-    return;
-  }
+  g_return_if_fail(ptr != NULL);
   
   g_free(ptr->destination);
 
@@ -787,46 +749,6 @@ ags_hq_pitch_util_set_vibrato_tuning(AgsHQPitchUtil *hq_pitch_util,
   }
 
   hq_pitch_util->vibrato_tuning = vibrato_tuning;
-}
-
-/**
- * ags_hq_pitch_util_get_vibrato_lfo_offset:
- * @hq_pitch_util: the #AgsHQPitchUtil-struct
- * 
- * Get vibrato lfo_offset of @hq_pitch_util.
- * 
- * Returns: the vibrato lfo_offset
- * 
- * Since: 5.2.4
- */
-guint
-ags_hq_pitch_util_get_vibrato_lfo_offset(AgsHQPitchUtil *hq_pitch_util)
-{
-  if(hq_pitch_util == NULL){
-    return(0);
-  }
-
-  return(hq_pitch_util->vibrato_lfo_offset);
-}
-
-/**
- * ags_hq_pitch_util_set_vibrato_lfo_offset:
- * @hq_pitch_util: the #AgsHQPitchUtil-struct
- * @vibrato_lfo_offset: the vibrato lfo_offset
- *
- * Set @vibrato_lfo_offset of @hq_pitch_util.
- *
- * Since: 5.2.4
- */
-void
-ags_hq_pitch_util_set_vibrato_lfo_offset(AgsHQPitchUtil *hq_pitch_util,
-					 guint vibrato_lfo_offset)
-{
-  if(hq_pitch_util == NULL){
-    return;
-  }
-
-  hq_pitch_util->vibrato_lfo_offset = vibrato_lfo_offset;
 }
 
 /**

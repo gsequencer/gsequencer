@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,6 +36,31 @@ G_BEGIN_DECLS
 #define AGS_HQ_PITCH_UTIL(ptr) ((AgsHQPitchUtil *)(ptr))
 
 #define AGS_HQ_PITCH_UTIL_DEFAULT_MAX_BUFFER_SIZE (65536)
+
+#define AGS_HQ_PITCH_UTIL_INITIALIZER ((AgsHQPitchUtil) {		\
+      .source = NULL,							\
+	.source_stride = 1,						\
+	.destination = NULL,						\
+	.destination_stride = 1,					\
+	.low_mix_buffer = ags_stream_alloc(AGS_HQ_PITCH_UTIL_DEFAULT_MAX_BUFFER_SIZE, AGS_SOUNDCARD_DEFAULT_FORMAT), \
+	.low_mix_buffer_max_buffer_length = AGS_HQ_PITCH_UTIL_DEFAULT_MAX_BUFFER_SIZE, \
+	.new_mix_buffer = ags_stream_alloc(AGS_HQ_PITCH_UTIL_DEFAULT_MAX_BUFFER_SIZE, AGS_SOUNDCARD_DEFAULT_FORMAT), \
+	.new_mix_buffer_max_buffer_length = AGS_HQ_PITCH_UTIL_DEFAULT_MAX_BUFFER_SIZE, \
+	.buffer_length = 0,						\
+	.format = AGS_SOUNDCARD_DEFAULT_FORMAT,				\
+	.samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE,			\
+	.base_key = 0.0,						\
+	.tuning = 0.0,							\
+	.linear_interpolate_util = ags_linear_interpolate_util_alloc(),	\
+	.vibrato_enabled = FALSE,					\
+	.vibrato_gain = 1.0,						\
+	.vibrato_lfo_depth = 1.0,					\
+	.vibrato_lfo_freq = 6.0,					\
+	.vibrato_tuning = 0.0,						\
+	.frame_count = (AGS_SOUNDCARD_DEFAULT_SAMPLERATE / 6.0),	\
+	.offset = 0,							\
+	.note_256th_mode = FALSE,					\
+	.offset_256th = 0 })
 
 typedef struct _AgsHQPitchUtil AgsHQPitchUtil;
 
@@ -143,12 +168,6 @@ gdouble ags_hq_pitch_util_get_vibrato_tuning(AgsHQPitchUtil *hq_pitch_util);
 void ags_hq_pitch_util_set_vibrato_tuning(AgsHQPitchUtil *hq_pitch_util,
 					  gdouble vibrato_tuning);
 
-G_DEPRECATED_FOR(ags_hq_pitch_util_get_offset)
-guint ags_hq_pitch_util_get_vibrato_lfo_offset(AgsHQPitchUtil *hq_pitch_util);
-G_DEPRECATED_FOR(ags_hq_pitch_util_set_offset)
-void ags_hq_pitch_util_set_vibrato_lfo_offset(AgsHQPitchUtil *hq_pitch_util,
-					      guint vibrato_lfo_offset);
-
 guint ags_hq_pitch_util_get_frame_count(AgsHQPitchUtil *hq_pitch_util);
 void ags_hq_pitch_util_set_frame_count(AgsHQPitchUtil *hq_pitch_util,
 				       guint frame_count);
@@ -165,14 +184,6 @@ guint ags_hq_pitch_util_get_offset_256th(AgsHQPitchUtil *hq_pitch_util);
 void ags_hq_pitch_util_set_offset_256th(AgsHQPitchUtil *hq_pitch_util,
 					guint offset_256th);
 
-void ags_hq_pitch_util_pitch_s8(AgsHQPitchUtil *hq_pitch_util);
-void ags_hq_pitch_util_pitch_s16(AgsHQPitchUtil *hq_pitch_util);
-void ags_hq_pitch_util_pitch_s24(AgsHQPitchUtil *hq_pitch_util);
-void ags_hq_pitch_util_pitch_s32(AgsHQPitchUtil *hq_pitch_util);
-void ags_hq_pitch_util_pitch_s64(AgsHQPitchUtil *hq_pitch_util);
-void ags_hq_pitch_util_pitch_float(AgsHQPitchUtil *hq_pitch_util);
-void ags_hq_pitch_util_pitch_double(AgsHQPitchUtil *hq_pitch_util);
-void ags_hq_pitch_util_pitch_complex(AgsHQPitchUtil *hq_pitch_util);
 void ags_hq_pitch_util_pitch(AgsHQPitchUtil *hq_pitch_util);
 
 G_END_DECLS

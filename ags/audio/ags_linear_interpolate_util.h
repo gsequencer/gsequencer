@@ -33,6 +33,16 @@ G_BEGIN_DECLS
 #define AGS_TYPE_LINEAR_INTERPOLATE_UTIL         (ags_linear_interpolate_util_get_type())
 #define AGS_LINEAR_INTERPOLATE_UTIL(ptr) ((AgsLinearInterpolateUtil *)(ptr))
 
+#define AGS_LINEAR_UTIL_INITIALIZER ((AgsLinearInterpolateUtil) {	\
+      .source = NULL,							\
+      .source_stride = 1,						\
+      .destination = NULL,						\
+      .destination_stride = 1,						\
+      .buffer_length = 0,						\
+      .format = AGS_SOUNDCARD_DEFAULT_FORMAT,				\
+      .samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE,			\
+      .factor = 0.0 })
+
 typedef struct _AgsLinearInterpolateUtil AgsLinearInterpolateUtil;
 
 struct _AgsLinearInterpolateUtil
@@ -89,14 +99,6 @@ gdouble ags_linear_interpolate_util_get_factor(AgsLinearInterpolateUtil *linear_
 void ags_linear_interpolate_util_set_factor(AgsLinearInterpolateUtil *linear_interpolate_util,
 					    gdouble factor);
 
-void ags_linear_interpolate_util_pitch_s8(AgsLinearInterpolateUtil *linear_interpolate_util);
-void ags_linear_interpolate_util_pitch_s16(AgsLinearInterpolateUtil *linear_interpolate_util);
-void ags_linear_interpolate_util_pitch_s24(AgsLinearInterpolateUtil *linear_interpolate_util);
-void ags_linear_interpolate_util_pitch_s32(AgsLinearInterpolateUtil *linear_interpolate_util);
-void ags_linear_interpolate_util_pitch_s64(AgsLinearInterpolateUtil *linear_interpolate_util);
-void ags_linear_interpolate_util_pitch_float(AgsLinearInterpolateUtil *linear_interpolate_util);
-void ags_linear_interpolate_util_pitch_double(AgsLinearInterpolateUtil *linear_interpolate_util);
-void ags_linear_interpolate_util_pitch_complex(AgsLinearInterpolateUtil *linear_interpolate_util);
 void ags_linear_interpolate_util_pitch(AgsLinearInterpolateUtil *linear_interpolate_util);
 
 G_END_DECLS
