@@ -27,6 +27,15 @@
 #define LARGE_VECTOR 1
 #endif
 
+void ags_volume_util_compute_s8(AgsVolumeUtil *volume_util);
+void ags_volume_util_compute_s16(AgsVolumeUtil *volume_util);
+void ags_volume_util_compute_s24(AgsVolumeUtil *volume_util);
+void ags_volume_util_compute_s32(AgsVolumeUtil *volume_util);
+void ags_volume_util_compute_s64(AgsVolumeUtil *volume_util);
+void ags_volume_util_compute_float(AgsVolumeUtil *volume_util);
+void ags_volume_util_compute_double(AgsVolumeUtil *volume_util);
+void ags_volume_util_compute_complex(AgsVolumeUtil *volume_util);
+
 /**
  * SECTION:ags_volume_util
  * @short_description: Boxed type of volume util
@@ -73,16 +82,7 @@ ags_volume_util_alloc()
   ptr = (AgsVolumeUtil *) g_new(AgsVolumeUtil,
 				1);
 
-  ptr->destination = NULL;
-  ptr->destination_stride = 1;
-
-  ptr->source = NULL;
-  ptr->source_stride = 1;
-
-  ptr->buffer_length = 0;
-  ptr->format = AGS_VOLUME_UTIL_DEFAULT_FORMAT;
-
-  ptr->volume = 1.0;
+  ptr[0] = AGS_VOLUME_UTIL_INITIALIZER;
 
   return(ptr);
 }
@@ -102,9 +102,7 @@ ags_volume_util_copy(AgsVolumeUtil *ptr)
 {
   AgsVolumeUtil *new_ptr;
 
-  if(ptr == NULL){
-    return(NULL);
-  }
+  g_return_val_if_fail(ptr != NULL, NULL);
   
   new_ptr = (AgsVolumeUtil *) g_new(AgsVolumeUtil,
 				    1);
@@ -134,6 +132,8 @@ ags_volume_util_copy(AgsVolumeUtil *ptr)
 void
 ags_volume_util_free(AgsVolumeUtil *ptr)
 {
+  g_return_if_fail(ptr != NULL);
+
   g_free(ptr->destination);
 
   if(ptr->destination != ptr->source){

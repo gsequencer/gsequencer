@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,7 +32,15 @@ G_BEGIN_DECLS
 #define AGS_TYPE_VOLUME_UTIL         (ags_volume_util_get_type())
 #define AGS_VOLUME_UTIL(ptr) ((AgsVolumeUtil *)(ptr))
 
-#define AGS_VOLUME_UTIL_DEFAULT_FORMAT (AGS_SOUNDCARD_SIGNED_16_BIT)
+#define AGS_VOLUME_UTIL_INITIALIZER ((AgsVolumeUtil) {			\
+      .source = NULL,							\
+      .source_stride = 1,						\
+      .destination = NULL,						\
+      .destination_stride = 1,						\
+      .buffer_length = 0,						\
+      .format = AGS_SOUNDCARD_DEFAULT_FORMAT,				\
+      .samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE,			\
+      .volume = 1.0 })
 
 typedef struct _AgsVolumeUtil AgsVolumeUtil;
 
@@ -46,6 +54,7 @@ struct _AgsVolumeUtil
   
   guint buffer_length;
   AgsSoundcardFormat format;
+  guint samplerate;
   
   gdouble volume;
 };
@@ -87,15 +96,6 @@ void ags_volume_util_set_volume(AgsVolumeUtil *volume_util,
 				gdouble volume);
 
 /* compute */
-void ags_volume_util_compute_s8(AgsVolumeUtil *volume_util);
-void ags_volume_util_compute_s16(AgsVolumeUtil *volume_util);
-void ags_volume_util_compute_s24(AgsVolumeUtil *volume_util);
-void ags_volume_util_compute_s32(AgsVolumeUtil *volume_util);
-void ags_volume_util_compute_s64(AgsVolumeUtil *volume_util);
-void ags_volume_util_compute_float(AgsVolumeUtil *volume_util);
-void ags_volume_util_compute_double(AgsVolumeUtil *volume_util);
-void ags_volume_util_compute_complex(AgsVolumeUtil *volume_util);
-
 void ags_volume_util_compute(AgsVolumeUtil *volume_util);
 
 G_END_DECLS

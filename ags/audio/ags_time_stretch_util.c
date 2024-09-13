@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,6 +18,15 @@
  */
 
 #include <ags/audio/ags_time_stretch_util.h>
+
+void ags_time_stretch_util_stretch_s8(AgsTimeStretchUtil *time_stretch_util);
+void ags_time_stretch_util_stretch_s16(AgsTimeStretchUtil *time_stretch_util);
+void ags_time_stretch_util_stretch_s24(AgsTimeStretchUtil *time_stretch_util);
+void ags_time_stretch_util_stretch_s32(AgsTimeStretchUtil *time_stretch_util);
+void ags_time_stretch_util_stretch_s64(AgsTimeStretchUtil *time_stretch_util);
+void ags_time_stretch_util_stretch_float(AgsTimeStretchUtil *time_stretch_util);
+void ags_time_stretch_util_stretch_double(AgsTimeStretchUtil *time_stretch_util);
+void ags_time_stretch_util_stretch_complex(AgsTimeStretchUtil *time_stretch_util);
 
 /**
  * SECTION:ags_time_stretch_util
@@ -65,22 +74,7 @@ ags_time_stretch_util_alloc()
   ptr = (AgsTimeStretchUtil *) g_new(AgsTimeStretchUtil,
 				     1);
 
-  ptr->source = NULL;
-  ptr->source_stride = 1;
-  ptr->source_buffer_length = 0;
-
-  ptr->destination = NULL;
-  ptr->destination_stride = 1;
-  ptr->destination_buffer_length = 0;
-  
-  ptr->buffer_size = 0;
-  ptr->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
-  ptr->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-
-  ptr->frequency = AGS_TIME_STRETCH_UTIL_DEFAULT_FREQUENCY;
-  
-  ptr->orig_bpm = 120.0;
-  ptr->new_bpm = 120.0;
+  ptr[0] = AGS_TIME_STRETCH_UTIL_INITIALIZER;
 
   return(ptr);
 }
@@ -99,6 +93,8 @@ gpointer
 ags_time_stretch_util_copy(AgsTimeStretchUtil *ptr)
 {
   AgsTimeStretchUtil *new_ptr;
+
+  g_return_val_if_fail(ptr != NULL, NULL);
   
   new_ptr = (AgsTimeStretchUtil *) g_new(AgsTimeStretchUtil,
 					 1);
@@ -111,7 +107,7 @@ ags_time_stretch_util_copy(AgsTimeStretchUtil *ptr)
   new_ptr->source_stride = ptr->source_stride;
   new_ptr->source_buffer_length = ptr->source_buffer_length;
   
-  new_ptr->buffer_size = ptr->buffer_size;
+  new_ptr->buffer_length = ptr->buffer_length;
   new_ptr->format = ptr->format;
   new_ptr->samplerate = ptr->samplerate;
 
@@ -134,6 +130,8 @@ ags_time_stretch_util_copy(AgsTimeStretchUtil *ptr)
 void
 ags_time_stretch_util_free(AgsTimeStretchUtil *ptr)
 {
+  g_return_if_fail(ptr != NULL);
+
   g_free(ptr->destination);
 
   if(ptr->destination != ptr->source){
@@ -384,7 +382,7 @@ ags_time_stretch_util_set_destination_buffer_length(AgsTimeStretchUtil *time_str
 }
 
 /**
- * ags_time_stretch_util_get_buffer_size:
+ * ags_time_stretch_util_get_buffer_length:
  * @time_stretch_util: the #AgsTimeStretchUtil-struct
  * 
  * Get buffer size of @time_stretch_util.
@@ -394,33 +392,33 @@ ags_time_stretch_util_set_destination_buffer_length(AgsTimeStretchUtil *time_str
  * Since: 3.13.0
  */
 guint
-ags_time_stretch_util_get_buffer_size(AgsTimeStretchUtil *time_stretch_util)
+ags_time_stretch_util_get_buffer_length(AgsTimeStretchUtil *time_stretch_util)
 {
   if(time_stretch_util == NULL){
     return(0);
   }
 
-  return(time_stretch_util->buffer_size);
+  return(time_stretch_util->buffer_length);
 }
 
 /**
- * ags_time_stretch_util_set_buffer_size:
+ * ags_time_stretch_util_set_buffer_length:
  * @time_stretch_util: the #AgsTimeStretchUtil-struct
- * @buffer_size: the buffer size
+ * @buffer_length: the buffer size
  *
- * Set @buffer_size of @time_stretch_util.
+ * Set @buffer_length of @time_stretch_util.
  *
  * Since: 3.13.0
  */
 void
-ags_time_stretch_util_set_buffer_size(AgsTimeStretchUtil *time_stretch_util,
-				      guint buffer_size)
+ags_time_stretch_util_set_buffer_length(AgsTimeStretchUtil *time_stretch_util,
+				      guint buffer_length)
 {
   if(time_stretch_util == NULL){
     return;
   }
 
-  time_stretch_util->buffer_size = buffer_size;
+  time_stretch_util->buffer_length = buffer_length;
 }
 
 /**
@@ -638,7 +636,7 @@ ags_time_stretch_util_stretch_s8(AgsTimeStretchUtil *time_stretch_util)
 
   guint destination_stride, source_stride;
   guint destination_buffer_length, source_buffer_length;
-  guint buffer_size;
+  guint buffer_length;
   guint samplerate;
   gdouble frequency;
   gdouble frequency_period;
@@ -661,14 +659,14 @@ ags_time_stretch_util_stretch_s8(AgsTimeStretchUtil *time_stretch_util)
   source_stride = time_stretch_util->source_stride;
   source_buffer_length = time_stretch_util->source_buffer_length;
 
-  buffer_size = time_stretch_util->buffer_size;
+  buffer_length = time_stretch_util->buffer_length;
   samplerate = time_stretch_util->samplerate;
 
   frequency = time_stretch_util->frequency;
 
   frequency_period = 2.0 * M_PI * samplerate / frequency;
 
-  orig_delay = samplerate / buffer_size / time_stretch_util->orig_bpm * ((1.0 / 16.0) * (1.0 / (1.0 / 4.0)));
+  orig_delay = samplerate / buffer_length / time_stretch_util->orig_bpm * ((1.0 / 16.0) * (1.0 / (1.0 / 4.0)));
   
   factor = time_stretch_util->new_bpm / time_stretch_util->orig_bpm;
 
@@ -680,15 +678,15 @@ ags_time_stretch_util_stretch_s8(AgsTimeStretchUtil *time_stretch_util)
     guint start_x;
     guint j;
 
-    beat_offset = (guint) floor((factor * i) / (orig_delay * buffer_size));
+    beat_offset = (guint) floor((factor * i) / (orig_delay * buffer_length));
 
-    if(floor(orig_delay * buffer_size) != 0.0){
-      start_x = (orig_delay * buffer_size) * floor((double) (factor * i) / (orig_delay * buffer_size));
+    if(floor(orig_delay * buffer_length) != 0.0){
+      start_x = (orig_delay * buffer_length) * floor((double) (factor * i) / (orig_delay * buffer_length));
     }else{
       start_x = 0;
     }
     
-    phase = fmod((factor * i) - (beat_offset * orig_delay * buffer_size), frequency_period);
+    phase = fmod((factor * i) - (beat_offset * orig_delay * buffer_length), frequency_period);
     
     j = start_x + phase;
 
@@ -728,7 +726,7 @@ ags_time_stretch_util_stretch_s16(AgsTimeStretchUtil *time_stretch_util)
 
   guint destination_stride, source_stride;
   guint destination_buffer_length, source_buffer_length;
-  guint buffer_size;
+  guint buffer_length;
   guint samplerate;
   gdouble frequency;
   gdouble frequency_period;
@@ -751,14 +749,14 @@ ags_time_stretch_util_stretch_s16(AgsTimeStretchUtil *time_stretch_util)
   source_stride = time_stretch_util->source_stride;
   source_buffer_length = time_stretch_util->source_buffer_length;
 
-  buffer_size = time_stretch_util->buffer_size;
+  buffer_length = time_stretch_util->buffer_length;
   samplerate = time_stretch_util->samplerate;
 
   frequency = time_stretch_util->frequency;
 
   frequency_period = 2.0 * M_PI * samplerate / frequency;
 
-  orig_delay = samplerate / buffer_size / time_stretch_util->orig_bpm * ((1.0 / 16.0) * (1.0 / (1.0 / 4.0)));
+  orig_delay = samplerate / buffer_length / time_stretch_util->orig_bpm * ((1.0 / 16.0) * (1.0 / (1.0 / 4.0)));
   
   factor = time_stretch_util->new_bpm / time_stretch_util->orig_bpm;
 
@@ -770,15 +768,15 @@ ags_time_stretch_util_stretch_s16(AgsTimeStretchUtil *time_stretch_util)
     guint start_x;
     guint j;
 
-    beat_offset = (guint) floor((factor * i) / (orig_delay * buffer_size));
+    beat_offset = (guint) floor((factor * i) / (orig_delay * buffer_length));
 
-    if(floor(orig_delay * buffer_size) != 0.0){
-      start_x = (orig_delay * buffer_size) * floor((double) (factor * i) / (orig_delay * buffer_size));
+    if(floor(orig_delay * buffer_length) != 0.0){
+      start_x = (orig_delay * buffer_length) * floor((double) (factor * i) / (orig_delay * buffer_length));
     }else{
       start_x = 0;
     }
     
-    phase = fmod((factor * i) - (beat_offset * orig_delay * buffer_size), frequency_period);
+    phase = fmod((factor * i) - (beat_offset * orig_delay * buffer_length), frequency_period);
     
     j = start_x + phase;
 
@@ -818,7 +816,7 @@ ags_time_stretch_util_stretch_s24(AgsTimeStretchUtil *time_stretch_util)
 
   guint destination_stride, source_stride;
   guint destination_buffer_length, source_buffer_length;
-  guint buffer_size;
+  guint buffer_length;
   guint samplerate;
   gdouble frequency;
   gdouble frequency_period;
@@ -841,14 +839,14 @@ ags_time_stretch_util_stretch_s24(AgsTimeStretchUtil *time_stretch_util)
   source_stride = time_stretch_util->source_stride;
   source_buffer_length = time_stretch_util->source_buffer_length;
 
-  buffer_size = time_stretch_util->buffer_size;
+  buffer_length = time_stretch_util->buffer_length;
   samplerate = time_stretch_util->samplerate;
 
   frequency = time_stretch_util->frequency;
 
   frequency_period = 2.0 * M_PI * samplerate / frequency;
 
-  orig_delay = samplerate / buffer_size / time_stretch_util->orig_bpm * ((1.0 / 16.0) * (1.0 / (1.0 / 4.0)));
+  orig_delay = samplerate / buffer_length / time_stretch_util->orig_bpm * ((1.0 / 16.0) * (1.0 / (1.0 / 4.0)));
   
   factor = time_stretch_util->new_bpm / time_stretch_util->orig_bpm;
 
@@ -860,15 +858,15 @@ ags_time_stretch_util_stretch_s24(AgsTimeStretchUtil *time_stretch_util)
     guint start_x;
     guint j;
 
-    beat_offset = (guint) floor((factor * i) / (orig_delay * buffer_size));
+    beat_offset = (guint) floor((factor * i) / (orig_delay * buffer_length));
 
-    if(floor(orig_delay * buffer_size) != 0.0){
-      start_x = (orig_delay * buffer_size) * floor((double) (factor * i) / (orig_delay * buffer_size));
+    if(floor(orig_delay * buffer_length) != 0.0){
+      start_x = (orig_delay * buffer_length) * floor((double) (factor * i) / (orig_delay * buffer_length));
     }else{
       start_x = 0;
     }
     
-    phase = fmod((factor * i) - (beat_offset * orig_delay * buffer_size), frequency_period);
+    phase = fmod((factor * i) - (beat_offset * orig_delay * buffer_length), frequency_period);
     
     j = start_x + phase;
 
@@ -908,7 +906,7 @@ ags_time_stretch_util_stretch_s32(AgsTimeStretchUtil *time_stretch_util)
 
   guint destination_stride, source_stride;
   guint destination_buffer_length, source_buffer_length;
-  guint buffer_size;
+  guint buffer_length;
   guint samplerate;
   gdouble frequency;
   gdouble frequency_period;
@@ -931,14 +929,14 @@ ags_time_stretch_util_stretch_s32(AgsTimeStretchUtil *time_stretch_util)
   source_stride = time_stretch_util->source_stride;
   source_buffer_length = time_stretch_util->source_buffer_length;
 
-  buffer_size = time_stretch_util->buffer_size;
+  buffer_length = time_stretch_util->buffer_length;
   samplerate = time_stretch_util->samplerate;
 
   frequency = time_stretch_util->frequency;
 
   frequency_period = 2.0 * M_PI * samplerate / frequency;
 
-  orig_delay = samplerate / buffer_size / time_stretch_util->orig_bpm * ((1.0 / 16.0) * (1.0 / (1.0 / 4.0)));
+  orig_delay = samplerate / buffer_length / time_stretch_util->orig_bpm * ((1.0 / 16.0) * (1.0 / (1.0 / 4.0)));
   
   factor = time_stretch_util->new_bpm / time_stretch_util->orig_bpm;
 
@@ -950,15 +948,15 @@ ags_time_stretch_util_stretch_s32(AgsTimeStretchUtil *time_stretch_util)
     guint start_x;
     guint j;
 
-    beat_offset = (guint) floor((factor * i) / (orig_delay * buffer_size));
+    beat_offset = (guint) floor((factor * i) / (orig_delay * buffer_length));
 
-    if(floor(orig_delay * buffer_size) != 0.0){
-      start_x = (orig_delay * buffer_size) * floor((double) (factor * i) / (orig_delay * buffer_size));
+    if(floor(orig_delay * buffer_length) != 0.0){
+      start_x = (orig_delay * buffer_length) * floor((double) (factor * i) / (orig_delay * buffer_length));
     }else{
       start_x = 0;
     }
     
-    phase = fmod((factor * i) - (beat_offset * orig_delay * buffer_size), frequency_period);
+    phase = fmod((factor * i) - (beat_offset * orig_delay * buffer_length), frequency_period);
     
     j = start_x + phase;
 
@@ -998,7 +996,7 @@ ags_time_stretch_util_stretch_s64(AgsTimeStretchUtil *time_stretch_util)
 
   guint destination_stride, source_stride;
   guint destination_buffer_length, source_buffer_length;
-  guint buffer_size;
+  guint buffer_length;
   guint samplerate;
   gdouble frequency;
   gdouble frequency_period;
@@ -1021,14 +1019,14 @@ ags_time_stretch_util_stretch_s64(AgsTimeStretchUtil *time_stretch_util)
   source_stride = time_stretch_util->source_stride;
   source_buffer_length = time_stretch_util->source_buffer_length;
 
-  buffer_size = time_stretch_util->buffer_size;
+  buffer_length = time_stretch_util->buffer_length;
   samplerate = time_stretch_util->samplerate;
 
   frequency = time_stretch_util->frequency;
 
   frequency_period = 2.0 * M_PI * samplerate / frequency;
 
-  orig_delay = samplerate / buffer_size / time_stretch_util->orig_bpm * ((1.0 / 16.0) * (1.0 / (1.0 / 4.0)));
+  orig_delay = samplerate / buffer_length / time_stretch_util->orig_bpm * ((1.0 / 16.0) * (1.0 / (1.0 / 4.0)));
   
   factor = time_stretch_util->new_bpm / time_stretch_util->orig_bpm;
 
@@ -1040,15 +1038,15 @@ ags_time_stretch_util_stretch_s64(AgsTimeStretchUtil *time_stretch_util)
     guint start_x;
     guint j;
 
-    beat_offset = (guint) floor((factor * i) / (orig_delay * buffer_size));
+    beat_offset = (guint) floor((factor * i) / (orig_delay * buffer_length));
 
-    if(floor(orig_delay * buffer_size) != 0.0){
-      start_x = (orig_delay * buffer_size) * floor((double) (factor * i) / (orig_delay * buffer_size));
+    if(floor(orig_delay * buffer_length) != 0.0){
+      start_x = (orig_delay * buffer_length) * floor((double) (factor * i) / (orig_delay * buffer_length));
     }else{
       start_x = 0;
     }
     
-    phase = fmod((factor * i) - (beat_offset * orig_delay * buffer_size), frequency_period);
+    phase = fmod((factor * i) - (beat_offset * orig_delay * buffer_length), frequency_period);
     
     j = start_x + phase;
 
@@ -1088,7 +1086,7 @@ ags_time_stretch_util_stretch_float(AgsTimeStretchUtil *time_stretch_util)
 
   guint destination_stride, source_stride;
   guint destination_buffer_length, source_buffer_length;
-  guint buffer_size;
+  guint buffer_length;
   guint samplerate;
   gdouble frequency;
   gdouble frequency_period;
@@ -1111,14 +1109,14 @@ ags_time_stretch_util_stretch_float(AgsTimeStretchUtil *time_stretch_util)
   source_stride = time_stretch_util->source_stride;
   source_buffer_length = time_stretch_util->source_buffer_length;
 
-  buffer_size = time_stretch_util->buffer_size;
+  buffer_length = time_stretch_util->buffer_length;
   samplerate = time_stretch_util->samplerate;
 
   frequency = time_stretch_util->frequency;
 
   frequency_period = 2.0 * M_PI * samplerate / frequency;
 
-  orig_delay = samplerate / buffer_size / time_stretch_util->orig_bpm * ((1.0 / 16.0) * (1.0 / (1.0 / 4.0)));
+  orig_delay = samplerate / buffer_length / time_stretch_util->orig_bpm * ((1.0 / 16.0) * (1.0 / (1.0 / 4.0)));
   
   factor = time_stretch_util->new_bpm / time_stretch_util->orig_bpm;
 
@@ -1130,15 +1128,15 @@ ags_time_stretch_util_stretch_float(AgsTimeStretchUtil *time_stretch_util)
     guint start_x;
     guint j;
 
-    beat_offset = (guint) floor((factor * i) / (orig_delay * buffer_size));
+    beat_offset = (guint) floor((factor * i) / (orig_delay * buffer_length));
 
-    if(floor(orig_delay * buffer_size) != 0.0){
-      start_x = (orig_delay * buffer_size) * floor((double) (factor * i) / (orig_delay * buffer_size));
+    if(floor(orig_delay * buffer_length) != 0.0){
+      start_x = (orig_delay * buffer_length) * floor((double) (factor * i) / (orig_delay * buffer_length));
     }else{
       start_x = 0;
     }
     
-    phase = fmod((factor * i) - (beat_offset * orig_delay * buffer_size), frequency_period);
+    phase = fmod((factor * i) - (beat_offset * orig_delay * buffer_length), frequency_period);
     
     j = start_x + phase;
 
@@ -1178,7 +1176,7 @@ ags_time_stretch_util_stretch_double(AgsTimeStretchUtil *time_stretch_util)
 
   guint destination_stride, source_stride;
   guint destination_buffer_length, source_buffer_length;
-  guint buffer_size;
+  guint buffer_length;
   guint samplerate;
   gdouble frequency;
   gdouble frequency_period;
@@ -1201,14 +1199,14 @@ ags_time_stretch_util_stretch_double(AgsTimeStretchUtil *time_stretch_util)
   source_stride = time_stretch_util->source_stride;
   source_buffer_length = time_stretch_util->source_buffer_length;
 
-  buffer_size = time_stretch_util->buffer_size;
+  buffer_length = time_stretch_util->buffer_length;
   samplerate = time_stretch_util->samplerate;
 
   frequency = time_stretch_util->frequency;
 
   frequency_period = 2.0 * M_PI * samplerate / frequency;
 
-  orig_delay = samplerate / buffer_size / time_stretch_util->orig_bpm * ((1.0 / 16.0) * (1.0 / (1.0 / 4.0)));
+  orig_delay = samplerate / buffer_length / time_stretch_util->orig_bpm * ((1.0 / 16.0) * (1.0 / (1.0 / 4.0)));
   
   factor = time_stretch_util->new_bpm / time_stretch_util->orig_bpm;
 
@@ -1220,15 +1218,15 @@ ags_time_stretch_util_stretch_double(AgsTimeStretchUtil *time_stretch_util)
     guint start_x;
     guint j;
 
-    beat_offset = (guint) floor((factor * i) / (orig_delay * buffer_size));
+    beat_offset = (guint) floor((factor * i) / (orig_delay * buffer_length));
 
-    if(floor(orig_delay * buffer_size) != 0.0){
-      start_x = (orig_delay * buffer_size) * floor((double) (factor * i) / (orig_delay * buffer_size));
+    if(floor(orig_delay * buffer_length) != 0.0){
+      start_x = (orig_delay * buffer_length) * floor((double) (factor * i) / (orig_delay * buffer_length));
     }else{
       start_x = 0;
     }
     
-    phase = fmod((factor * i) - (beat_offset * orig_delay * buffer_size), frequency_period);
+    phase = fmod((factor * i) - (beat_offset * orig_delay * buffer_length), frequency_period);
     
     j = start_x + phase;
 
@@ -1268,7 +1266,7 @@ ags_time_stretch_util_stretch_complex(AgsTimeStretchUtil *time_stretch_util)
 
   guint destination_stride, source_stride;
   guint destination_buffer_length, source_buffer_length;
-  guint buffer_size;
+  guint buffer_length;
   guint samplerate;
   gdouble frequency;
   gdouble frequency_period;
@@ -1291,14 +1289,14 @@ ags_time_stretch_util_stretch_complex(AgsTimeStretchUtil *time_stretch_util)
   source_stride = time_stretch_util->source_stride;
   source_buffer_length = time_stretch_util->source_buffer_length;
 
-  buffer_size = time_stretch_util->buffer_size;
+  buffer_length = time_stretch_util->buffer_length;
   samplerate = time_stretch_util->samplerate;
 
   frequency = time_stretch_util->frequency;
 
   frequency_period = 2.0 * M_PI * samplerate / frequency;
 
-  orig_delay = samplerate / buffer_size / time_stretch_util->orig_bpm * ((1.0 / 16.0) * (1.0 / (1.0 / 4.0)));
+  orig_delay = samplerate / buffer_length / time_stretch_util->orig_bpm * ((1.0 / 16.0) * (1.0 / (1.0 / 4.0)));
   
   factor = time_stretch_util->new_bpm / time_stretch_util->orig_bpm;
 
@@ -1310,15 +1308,15 @@ ags_time_stretch_util_stretch_complex(AgsTimeStretchUtil *time_stretch_util)
     guint start_x;
     guint j;
 
-    beat_offset = (guint) floor((factor * i) / (orig_delay * buffer_size));
+    beat_offset = (guint) floor((factor * i) / (orig_delay * buffer_length));
 
-    if(floor(orig_delay * buffer_size) != 0.0){
-      start_x = (orig_delay * buffer_size) * floor((double) (factor * i) / (orig_delay * buffer_size));
+    if(floor(orig_delay * buffer_length) != 0.0){
+      start_x = (orig_delay * buffer_length) * floor((double) (factor * i) / (orig_delay * buffer_length));
     }else{
       start_x = 0;
     }
     
-    phase = fmod((factor * i) - (beat_offset * orig_delay * buffer_size), frequency_period);
+    phase = fmod((factor * i) - (beat_offset * orig_delay * buffer_length), frequency_period);
     
     j = start_x + phase;
 

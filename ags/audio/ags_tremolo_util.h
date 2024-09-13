@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,7 +32,22 @@ G_BEGIN_DECLS
 #define AGS_TYPE_TREMOLO_UTIL         (ags_tremolo_util_get_type())
 #define AGS_TREMOLO_UTIL(ptr) ((AgsTremoloUtil *)(ptr))
 
-#define AGS_TREMOLO_UTIL_DEFAULT_FORMAT (AGS_SOUNDCARD_SIGNED_16_BIT)
+#define AGS_TREMOLO_UTIL_INITIALIZER ((AgsTremoloUtil) {	\
+      .source = NULL,						\
+      .source_stride = 1,					\
+      .destination = NULL,					\
+      .destination_stride = 1,					\
+      .buffer_length = 0,					\
+      .format = AGS_SOUNDCARD_DEFAULT_FORMAT,			\
+      .samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE,		\
+      .tremolo_gain = 1.0,					\
+      .tremolo_lfo_depth = 0.0,					\
+      .tremolo_lfo_freq = 6.0,					\
+      .tremolo_tuning = 0.0,					\
+      .frame_count = (AGS_SOUNDCARD_DEFAULT_SAMPLERATE / 6.0),	\
+      .offset = 0,						\
+      .note_256th_mode = TRUE,					\
+      .offset_256th = 0 })
 
 typedef struct _AgsTremoloUtil AgsTremoloUtil;
 
@@ -52,9 +67,6 @@ struct _AgsTremoloUtil
   gdouble tremolo_lfo_depth;
   gdouble tremolo_lfo_freq;
   gdouble tremolo_tuning;
-
-  guint tremolo_lfo_frame_count;
-  guint tremolo_lfo_offset;
 
   guint frame_count;
   guint offset;
@@ -116,12 +128,6 @@ gdouble ags_tremolo_util_get_tremolo_tuning(AgsTremoloUtil *tremolo_util);
 void ags_tremolo_util_set_tremolo_tuning(AgsTremoloUtil *tremolo_util,
 					 gdouble tremolo_tuning);
 
-G_DEPRECATED_FOR(ags_tremolo_util_get_offset)
-guint ags_tremolo_util_get_tremolo_lfo_offset(AgsTremoloUtil *tremolo_util);
-G_DEPRECATED_FOR(ags_tremolo_util_set_offset)
-void ags_tremolo_util_set_tremolo_lfo_offset(AgsTremoloUtil *tremolo_util,
-					     guint tremolo_lfo_offset);
-
 guint ags_tremolo_util_get_frame_count(AgsTremoloUtil *tremolo_util);
 void ags_tremolo_util_set_frame_count(AgsTremoloUtil *tremolo_util,
 				      guint frame_count);
@@ -139,15 +145,6 @@ void ags_tremolo_util_set_offset_256th(AgsTremoloUtil *tremolo_util,
 				       guint offset_256th);
 
 /* compute */
-void ags_tremolo_util_compute_s8(AgsTremoloUtil *tremolo_util);
-void ags_tremolo_util_compute_s16(AgsTremoloUtil *tremolo_util);
-void ags_tremolo_util_compute_s24(AgsTremoloUtil *tremolo_util);
-void ags_tremolo_util_compute_s32(AgsTremoloUtil *tremolo_util);
-void ags_tremolo_util_compute_s64(AgsTremoloUtil *tremolo_util);
-void ags_tremolo_util_compute_float(AgsTremoloUtil *tremolo_util);
-void ags_tremolo_util_compute_double(AgsTremoloUtil *tremolo_util);
-void ags_tremolo_util_compute_complex(AgsTremoloUtil *tremolo_util);
-
 void ags_tremolo_util_compute(AgsTremoloUtil *tremolo_util);
 
 G_END_DECLS

@@ -47,6 +47,10 @@ ags (7.0.0)
 	* refactored AgsAudioBufferUtil breaking ABI
 	* refactored AgsSynthUtil breaking ABI
 	* refactored ags_audio_buffer_util_get_copy_mode_from_format() breaking ABI due to renaming and conflict
+	* refactored ags_sf2_synth_util_copy() renamed
+	* refactored ags_sfz_synth_util_copy() renamed
+	* refactored ags_time_stretch_util_get_buffer_length() renamed
+	* refactored ags_time_stretch_util_set_buffer_length() renamed
 	* removed deprecated functions
 	* fixed ags_midi_ump_util_put_midi1_pitch_bend() prototype declaration
 	* fixed ags_midi_ump_util_get_midi1_pitch_bend() prototype declaration

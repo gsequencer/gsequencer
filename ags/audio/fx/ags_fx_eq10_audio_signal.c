@@ -1024,7 +1024,7 @@ ags_fx_eq10_audio_signal_real_run_inter(AgsRecall *recall)
 
     fx_eq10_audio_signal->volume_util.volume = pressure;
 
-    ags_volume_util_compute_double(&(fx_eq10_audio_signal->volume_util));
+    ags_volume_util_compute(&(fx_eq10_audio_signal->volume_util));
   
     /* clear buffer and copy output  */
     g_rec_mutex_lock(stream_mutex);

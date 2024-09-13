@@ -25,6 +25,15 @@
 #include <Accelerate/Accelerate.h>
 #endif
 
+void ags_wah_wah_util_compute_s8(AgsWahWahUtil *wah_wah_util);
+void ags_wah_wah_util_compute_s16(AgsWahWahUtil *wah_wah_util);
+void ags_wah_wah_util_compute_s24(AgsWahWahUtil *wah_wah_util);
+void ags_wah_wah_util_compute_s32(AgsWahWahUtil *wah_wah_util);
+void ags_wah_wah_util_compute_s64(AgsWahWahUtil *wah_wah_util);
+void ags_wah_wah_util_compute_float(AgsWahWahUtil *wah_wah_util);
+void ags_wah_wah_util_compute_double(AgsWahWahUtil *wah_wah_util);
+void ags_wah_wah_util_compute_complex(AgsWahWahUtil *wah_wah_util);
+
 /**
  * SECTION:ags_wah_wah_util
  * @short_description: Boxed type of wah_wah util
@@ -71,35 +80,7 @@ ags_wah_wah_util_alloc()
   ptr = (AgsWahWahUtil *) g_new(AgsWahWahUtil,
 				1);
 
-  ptr->destination = NULL;
-  ptr->destination_stride = 1;
-
-  ptr->source = NULL;
-  ptr->source_stride = 1;
-
-  ptr->buffer_length = 0;
-  ptr->format = AGS_WAH_WAH_UTIL_DEFAULT_FORMAT;
-  
-  ptr->volume = 1.0;
-  ptr->amount = 0.0;
-
-  ptr->wah_wah_enabled = FALSE;
-
-  ptr->wah_wah_delay = 0.0;
-
-  ptr->wah_wah_lfo_depth = 1.0;
-  ptr->wah_wah_lfo_freq = 6.0;
-  ptr->wah_wah_tuning = 0.0;
-
-  ptr->wah_wah_lfo_frame_count = (guint) (ptr->samplerate / ptr->wah_wah_lfo_freq);
-  ptr->wah_wah_lfo_offset = 0;
-
-  ptr->frame_count = 0;
-  ptr->offset = 0;
-
-  ptr->note_256th_mode = TRUE;
-
-  ptr->offset_256th = 0;
+  ptr[0] = AGS_WAH_WAH_UTIL_INITIALIZER;
 
   return(ptr);
 }
@@ -119,9 +100,7 @@ ags_wah_wah_util_copy(AgsWahWahUtil *ptr)
 {
   AgsWahWahUtil *new_ptr;
 
-  if(ptr == NULL){
-    return(NULL);
-  }
+  g_return_val_if_fail(ptr != NULL, NULL);
   
   new_ptr = (AgsWahWahUtil *) g_new(AgsWahWahUtil,
 				    1);
@@ -144,9 +123,6 @@ ags_wah_wah_util_copy(AgsWahWahUtil *ptr)
   new_ptr->wah_wah_lfo_freq = ptr->wah_wah_lfo_freq;
   new_ptr->wah_wah_tuning = ptr->wah_wah_tuning;
 
-  new_ptr->wah_wah_lfo_frame_count = ptr->wah_wah_lfo_frame_count;
-  new_ptr->wah_wah_lfo_offset = ptr->wah_wah_lfo_offset;
-
   new_ptr->frame_count = ptr->frame_count;
   new_ptr->offset = ptr->offset;
 
@@ -168,6 +144,8 @@ ags_wah_wah_util_copy(AgsWahWahUtil *ptr)
 void
 ags_wah_wah_util_free(AgsWahWahUtil *ptr)
 {
+  g_return_if_fail(ptr != NULL);
+
   g_free(ptr->destination);
 
   if(ptr->destination != ptr->source){
@@ -695,46 +673,6 @@ ags_wah_wah_util_set_wah_wah_tuning(AgsWahWahUtil *wah_wah_util,
   }
 
   wah_wah_util->wah_wah_tuning = wah_wah_tuning;
-}
-
-/**
- * ags_wah_wah_util_get_wah_wah_lfo_offset:
- * @wah_wah_util: the #AgsWahWahUtil-struct
- * 
- * Get wah-wah LFO offset of @wah_wah_util.
- * 
- * Returns: the wah-wah LFO offset
- * 
- * Since: 5.2.4
- */
-guint
-ags_wah_wah_util_get_wah_wah_lfo_offset(AgsWahWahUtil *wah_wah_util)
-{
-  if(wah_wah_util == NULL){
-    return(0);
-  }
-
-  return(wah_wah_util->wah_wah_lfo_offset);
-}
-
-/**
- * ags_wah_wah_util_set_wah_wah_lfo_offset:
- * @wah_wah_util: the #AgsWahWahUtil-struct
- * @wah_wah_lfo_offset: the wah-wah LFO offset
- *
- * Set @wah_wah_lfo_offset of @wah_wah_util.
- *
- * Since: 5.2.4
- */
-void
-ags_wah_wah_util_set_wah_wah_lfo_offset(AgsWahWahUtil *wah_wah_util,
-					guint wah_wah_lfo_offset)
-{
-  if(wah_wah_util == NULL){
-    return;
-  }
-
-  wah_wah_util->wah_wah_lfo_offset = wah_wah_lfo_offset;
 }
 
 /**

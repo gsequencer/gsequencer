@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,15 @@
 #if defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
 #include <Accelerate/Accelerate.h>
 #endif
+
+void ags_tremolo_util_compute_s8(AgsTremoloUtil *tremolo_util);
+void ags_tremolo_util_compute_s16(AgsTremoloUtil *tremolo_util);
+void ags_tremolo_util_compute_s24(AgsTremoloUtil *tremolo_util);
+void ags_tremolo_util_compute_s32(AgsTremoloUtil *tremolo_util);
+void ags_tremolo_util_compute_s64(AgsTremoloUtil *tremolo_util);
+void ags_tremolo_util_compute_float(AgsTremoloUtil *tremolo_util);
+void ags_tremolo_util_compute_double(AgsTremoloUtil *tremolo_util);
+void ags_tremolo_util_compute_complex(AgsTremoloUtil *tremolo_util);
 
 /**
  * SECTION:ags_tremolo_util
@@ -71,30 +80,7 @@ ags_tremolo_util_alloc()
   ptr = (AgsTremoloUtil *) g_new(AgsTremoloUtil,
 				 1);
 
-  ptr->destination = NULL;
-  ptr->destination_stride = 1;
-
-  ptr->source = NULL;
-  ptr->source_stride = 1;
-
-  ptr->buffer_length = 0;
-  ptr->format = AGS_TREMOLO_UTIL_DEFAULT_FORMAT;
-  ptr->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-
-  ptr->tremolo_gain = 1.0;
-  ptr->tremolo_lfo_depth = 0.0;
-  ptr->tremolo_lfo_freq = 6.0;
-  ptr->tremolo_tuning = 0.0;
-
-  ptr->tremolo_lfo_frame_count = (guint) (ptr->samplerate / ptr->tremolo_lfo_freq);
-  ptr->tremolo_lfo_offset = 0;
-
-  ptr->frame_count = 0;
-  ptr->offset = 0;
-
-  ptr->note_256th_mode = TRUE;
-
-  ptr->offset_256th = 0;
+  ptr[0] = AGS_TREMOLO_UTIL_INITIALIZER;
 
   return(ptr);
 }
@@ -114,10 +100,8 @@ ags_tremolo_util_copy(AgsTremoloUtil *ptr)
 {
   AgsTremoloUtil *new_ptr;
 
-  if(ptr == NULL){
-    return(NULL);
-  }
-  
+  g_return_val_if_fail(ptr != NULL, NULL);
+    
   new_ptr = (AgsTremoloUtil *) g_new(AgsTremoloUtil,
 				     1);
   
@@ -136,9 +120,6 @@ ags_tremolo_util_copy(AgsTremoloUtil *ptr)
   new_ptr->tremolo_lfo_freq = ptr->tremolo_lfo_freq;
   new_ptr->tremolo_tuning = ptr->tremolo_tuning;
 
-  new_ptr->tremolo_lfo_frame_count = ptr->tremolo_lfo_frame_count;
-  new_ptr->tremolo_lfo_offset = ptr->tremolo_lfo_offset;
-
   new_ptr->frame_count = ptr->frame_count;
   new_ptr->offset = ptr->offset;
 
@@ -147,166 +128,6 @@ ags_tremolo_util_copy(AgsTremoloUtil *ptr)
   new_ptr->offset_256th = ptr->offset_256th;
 
   return(new_ptr);
-}
-
-/**
- * ags_tremolo_util_get_frame_count:
- * @tremolo_util: the #AgsTremoloUtil-struct
- * 
- * Get frame count of @tremolo_util.
- * 
- * Returns: the frame count
- * 
- * Since: 6.1.0
- */
-guint
-ags_tremolo_util_get_frame_count(AgsTremoloUtil *tremolo_util)
-{
-  if(tremolo_util == NULL){
-    return(0);
-  }
-
-  return(tremolo_util->frame_count);
-}
-
-/**
- * ags_tremolo_util_set_frame_count:
- * @tremolo_util: the #AgsTremoloUtil-struct
- * @frame_count: the frame count
- *
- * Set @frame_count of @tremolo_util.
- *
- * Since: 6.1.0
- */
-void
-ags_tremolo_util_set_frame_count(AgsTremoloUtil *tremolo_util,
-				 guint frame_count)
-{
-  if(tremolo_util == NULL){
-    return;
-  }
-
-  tremolo_util->frame_count = frame_count;
-}
-
-/**
- * ags_tremolo_util_get_offset:
- * @tremolo_util: the #AgsTremoloUtil-struct
- * 
- * Get offset of @tremolo_util.
- * 
- * Returns: the offset
- * 
- * Since: 6.1.0
- */
-guint
-ags_tremolo_util_get_offset(AgsTremoloUtil *tremolo_util)
-{
-  if(tremolo_util == NULL){
-    return(0);
-  }
-
-  return(tremolo_util->offset);
-}
-
-/**
- * ags_tremolo_util_set_offset:
- * @tremolo_util: the #AgsTremoloUtil-struct
- * @offset: the offset
- *
- * Set @offset of @tremolo_util.
- *
- * Since: 6.1.0
- */
-void
-ags_tremolo_util_set_offset(AgsTremoloUtil *tremolo_util,
-			    guint offset)
-{
-  if(tremolo_util == NULL){
-    return;
-  }
-
-  tremolo_util->offset = offset;
-}
-
-/**
- * ags_tremolo_util_get_note_256th_mode:
- * @tremolo_util: the #AgsTremoloUtil-struct
- * 
- * Get note 256th mode of @tremolo_util.
- * 
- * Returns: %TRUE if note 256th mode, otherwise %FALSE
- * 
- * Since: 6.1.0
- */
-gboolean
-ags_tremolo_util_get_note_256th_mode(AgsTremoloUtil *tremolo_util)
-{
-  if(tremolo_util == NULL){
-    return(0);
-  }
-
-  return(tremolo_util->note_256th_mode);
-}
-
-/**
- * ags_tremolo_util_set_note_256th_mode:
- * @tremolo_util: the #AgsTremoloUtil-struct
- * @note_256th_mode: the note 256th mode
- *
- * Set @note_256th_mode of @tremolo_util.
- *
- * Since: 6.1.0
- */
-void
-ags_tremolo_util_set_note_256th_mode(AgsTremoloUtil *tremolo_util,
-				     gboolean note_256th_mode)
-{
-  if(tremolo_util == NULL){
-    return;
-  }
-
-  tremolo_util->note_256th_mode = note_256th_mode;
-}
-
-/**
- * ags_tremolo_util_get_offset_256th:
- * @tremolo_util: the #AgsTremoloUtil-struct
- * 
- * Get offset as note 256th of @tremolo_util.
- * 
- * Returns: the offset as note 256th
- * 
- * Since: 6.1.0
- */
-guint
-ags_tremolo_util_get_offset_256th(AgsTremoloUtil *tremolo_util)
-{
-  if(tremolo_util == NULL){
-    return(0);
-  }
-
-  return(tremolo_util->offset_256th);
-}
-
-/**
- * ags_tremolo_util_set_offset_256th:
- * @tremolo_util: the #AgsTremoloUtil-struct
- * @offset_256th: the offset as note 256th
- *
- * Set @offset_256th of @tremolo_util.
- *
- * Since: 6.1.0
- */
-void
-ags_tremolo_util_set_offset_256th(AgsTremoloUtil *tremolo_util,
-				  guint offset_256th)
-{
-  if(tremolo_util == NULL){
-    return;
-  }
-  
-  tremolo_util->offset_256th = offset_256th;
 }
 
 /**
@@ -320,6 +141,8 @@ ags_tremolo_util_set_offset_256th(AgsTremoloUtil *tremolo_util,
 void
 ags_tremolo_util_free(AgsTremoloUtil *ptr)
 {
+  g_return_if_fail(ptr != NULL);
+
   g_free(ptr->destination);
 
   if(ptr->destination != ptr->source){
@@ -769,44 +592,165 @@ ags_tremolo_util_set_tremolo_tuning(AgsTremoloUtil *tremolo_util,
   tremolo_util->tremolo_tuning = tremolo_tuning;
 }
 
+
 /**
- * ags_tremolo_util_get_tremolo_lfo_offset:
+ * ags_tremolo_util_get_frame_count:
  * @tremolo_util: the #AgsTremoloUtil-struct
  * 
- * Get tremolo LFO offset of @tremolo_util.
+ * Get frame count of @tremolo_util.
  * 
- * Returns: the tremolo LFO offset
+ * Returns: the frame count
  * 
- * Since: 5.2.0
+ * Since: 6.1.0
  */
 guint
-ags_tremolo_util_get_tremolo_lfo_offset(AgsTremoloUtil *tremolo_util)
+ags_tremolo_util_get_frame_count(AgsTremoloUtil *tremolo_util)
 {
   if(tremolo_util == NULL){
     return(0);
   }
 
-  return(tremolo_util->tremolo_lfo_offset);
+  return(tremolo_util->frame_count);
 }
 
 /**
- * ags_tremolo_util_set_tremolo_lfo_offset:
+ * ags_tremolo_util_set_frame_count:
  * @tremolo_util: the #AgsTremoloUtil-struct
- * @tremolo_lfo_offset: the tremolo LFO offset
+ * @frame_count: the frame count
  *
- * Set @tremolo_lfo_offset of @tremolo_util.
+ * Set @frame_count of @tremolo_util.
  *
- * Since: 5.2.0
+ * Since: 6.1.0
  */
 void
-ags_tremolo_util_set_tremolo_lfo_offset(AgsTremoloUtil *tremolo_util,
-					guint tremolo_lfo_offset)
+ags_tremolo_util_set_frame_count(AgsTremoloUtil *tremolo_util,
+				 guint frame_count)
 {
   if(tremolo_util == NULL){
     return;
   }
 
-  tremolo_util->tremolo_lfo_offset = tremolo_lfo_offset;
+  tremolo_util->frame_count = frame_count;
+}
+
+/**
+ * ags_tremolo_util_get_offset:
+ * @tremolo_util: the #AgsTremoloUtil-struct
+ * 
+ * Get offset of @tremolo_util.
+ * 
+ * Returns: the offset
+ * 
+ * Since: 6.1.0
+ */
+guint
+ags_tremolo_util_get_offset(AgsTremoloUtil *tremolo_util)
+{
+  if(tremolo_util == NULL){
+    return(0);
+  }
+
+  return(tremolo_util->offset);
+}
+
+/**
+ * ags_tremolo_util_set_offset:
+ * @tremolo_util: the #AgsTremoloUtil-struct
+ * @offset: the offset
+ *
+ * Set @offset of @tremolo_util.
+ *
+ * Since: 6.1.0
+ */
+void
+ags_tremolo_util_set_offset(AgsTremoloUtil *tremolo_util,
+			    guint offset)
+{
+  if(tremolo_util == NULL){
+    return;
+  }
+
+  tremolo_util->offset = offset;
+}
+
+/**
+ * ags_tremolo_util_get_note_256th_mode:
+ * @tremolo_util: the #AgsTremoloUtil-struct
+ * 
+ * Get note 256th mode of @tremolo_util.
+ * 
+ * Returns: %TRUE if note 256th mode, otherwise %FALSE
+ * 
+ * Since: 6.1.0
+ */
+gboolean
+ags_tremolo_util_get_note_256th_mode(AgsTremoloUtil *tremolo_util)
+{
+  if(tremolo_util == NULL){
+    return(0);
+  }
+
+  return(tremolo_util->note_256th_mode);
+}
+
+/**
+ * ags_tremolo_util_set_note_256th_mode:
+ * @tremolo_util: the #AgsTremoloUtil-struct
+ * @note_256th_mode: the note 256th mode
+ *
+ * Set @note_256th_mode of @tremolo_util.
+ *
+ * Since: 6.1.0
+ */
+void
+ags_tremolo_util_set_note_256th_mode(AgsTremoloUtil *tremolo_util,
+				     gboolean note_256th_mode)
+{
+  if(tremolo_util == NULL){
+    return;
+  }
+
+  tremolo_util->note_256th_mode = note_256th_mode;
+}
+
+/**
+ * ags_tremolo_util_get_offset_256th:
+ * @tremolo_util: the #AgsTremoloUtil-struct
+ * 
+ * Get offset as note 256th of @tremolo_util.
+ * 
+ * Returns: the offset as note 256th
+ * 
+ * Since: 6.1.0
+ */
+guint
+ags_tremolo_util_get_offset_256th(AgsTremoloUtil *tremolo_util)
+{
+  if(tremolo_util == NULL){
+    return(0);
+  }
+
+  return(tremolo_util->offset_256th);
+}
+
+/**
+ * ags_tremolo_util_set_offset_256th:
+ * @tremolo_util: the #AgsTremoloUtil-struct
+ * @offset_256th: the offset as note 256th
+ *
+ * Set @offset_256th of @tremolo_util.
+ *
+ * Since: 6.1.0
+ */
+void
+ags_tremolo_util_set_offset_256th(AgsTremoloUtil *tremolo_util,
+				  guint offset_256th)
+{
+  if(tremolo_util == NULL){
+    return;
+  }
+  
+  tremolo_util->offset_256th = offset_256th;
 }
 
 /**
@@ -887,7 +831,7 @@ ags_tremolo_util_compute_s8(AgsTremoloUtil *tremolo_util)
     		 
     source += source_stride;
 
-    if(tremolo_util->offset > tremolo_util->tremolo_lfo_frame_count){
+    if(tremolo_util->offset > tremolo_util->frame_count){
       tremolo_util->offset = 0;
     }
     
@@ -934,7 +878,7 @@ ags_tremolo_util_compute_s8(AgsTremoloUtil *tremolo_util)
 
     source += source_stride;
 
-    if(tremolo_util->offset > tremolo_util->tremolo_lfo_frame_count){
+    if(tremolo_util->offset > tremolo_util->frame_count){
       tremolo_util->offset = 0;
     }
 
@@ -1105,7 +1049,7 @@ ags_tremolo_util_compute_s16(AgsTremoloUtil *tremolo_util)
 
     source += source_stride;
 
-    if(tremolo_util->offset > tremolo_util->tremolo_lfo_frame_count){
+    if(tremolo_util->offset > tremolo_util->frame_count){
       tremolo_util->offset = 0;
     }
 
@@ -1128,7 +1072,7 @@ ags_tremolo_util_compute_s16(AgsTremoloUtil *tremolo_util)
   i_stop = tremolo_util->buffer_length - (tremolo_util->buffer_length % 8);
 
   for(; i < i_stop;){
-    if(tremolo_util->offset > tremolo_util->tremolo_lfo_frame_count){
+    if(tremolo_util->offset > tremolo_util->frame_count){
       tremolo_util->offset = 0;
     }
 
@@ -1280,7 +1224,7 @@ ags_tremolo_util_compute_s24(AgsTremoloUtil *tremolo_util)
 
     source += source_stride;
 
-    if(tremolo_util->offset > tremolo_util->tremolo_lfo_frame_count){
+    if(tremolo_util->offset > tremolo_util->frame_count){
       tremolo_util->offset = 0;
     }
 

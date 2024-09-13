@@ -59,7 +59,7 @@ ags_sfz_synth_util_get_type(void)
 
     ags_type_sfz_synth_util =
       g_boxed_type_register_static("AgsSFZSynthUtil",
-				   (GBoxedCopyFunc) ags_sfz_synth_util_boxed_copy,
+				   (GBoxedCopyFunc) ags_sfz_synth_util_copy,
 				   (GBoxedFreeFunc) ags_sfz_synth_util_free);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_sfz_synth_util);
@@ -109,17 +109,9 @@ ags_sfz_synth_util_alloc()
   ptr = (AgsSFZSynthUtil *) g_new(AgsSFZSynthUtil,
 				  1);
 
+  ptr[0] = AGS_SFZ_SYNTH_UTIL_INITIALIZER;
+
   ptr->flags = 0;
-
-  ptr->sfz_file = NULL;
-
-  ptr->sfz_sample_count = 0;
-  ptr->sfz_sample_arr = (AgsSFZSample **) g_malloc(128 * sizeof(AgsSFZSample*));
-  ptr->sfz_note_range = (gint **) g_malloc(128 * sizeof(gint*));
-  
-  ptr->sfz_orig_buffer = (gpointer *) g_malloc(128 * sizeof(gpointer));
-
-  ptr->sfz_resampled_buffer = (gpointer *) g_malloc(128 * sizeof(gpointer));
 
   for(i = 0; i < 128; i++){
     ptr->sfz_sample_arr[i] = NULL;
@@ -140,65 +132,11 @@ ags_sfz_synth_util_alloc()
     ptr->sfz_loop_end[i] = 0;
   }
 
-  ptr->source = NULL;
-  ptr->source_stride = 1;
-
-  ptr->sample_buffer = NULL;
-  ptr->im_buffer = NULL;
-
-  ptr->buffer_length = 0;
-  ptr->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
-  ptr->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-
-  ptr->midi_key = -1;
-  
-  ptr->note = 0.0;
-  ptr->volume = 1.0;
-
-  ptr->frame_count = 0;
-  ptr->offset = 0;
-
-  ptr->loop_mode = AGS_SFZ_SYNTH_UTIL_LOOP_NONE;
-
-  ptr->loop_start = 0;
-  ptr->loop_end = 0;
-
-  ptr->audio_buffer_util = ags_audio_buffer_util_alloc();
-
-  /* resample util */
-  ptr->resample_util = ags_resample_util_alloc();
-
-  ags_resample_util_set_format(ptr->resample_util,
-			       AGS_SOUNDCARD_DEFAULT_FORMAT);  
-  ags_resample_util_set_samplerate(ptr->resample_util,
-				   AGS_SOUNDCARD_DEFAULT_SAMPLERATE);  
-
-  /* pitch util */
-  ptr->pitch_type = AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL;
-  ptr->pitch_util = ags_fluid_interpolate_4th_order_util_alloc();
-
-  ags_common_pitch_util_set_format(ptr->pitch_util,
-				   ptr->pitch_type,
-				   AGS_SOUNDCARD_DEFAULT_FORMAT);
-  ags_common_pitch_util_set_samplerate(ptr->pitch_util,
-				       ptr->pitch_type,
-				       AGS_SOUNDCARD_DEFAULT_SAMPLERATE);
-
-  /* volume util */
-  ptr->volume_util = ags_volume_util_alloc();
-
-  ags_volume_util_set_format(ptr->volume_util,
-			     AGS_SOUNDCARD_DEFAULT_FORMAT);
-
-  ptr->note_256th_mode = TRUE;
-
-  ptr->offset_256th = 0;
-
   return(ptr);
 }
 
 /**
- * ags_sfz_synth_util_boxed_copy:
+ * ags_sfz_synth_util_copy:
  * @ptr: the #AgsSFZSynthUtil-struct
  * 
  * Copy #AgsSFZSynthUtil-struct.
@@ -208,15 +146,13 @@ ags_sfz_synth_util_alloc()
  * Since: 3.9.6
  */
 gpointer
-ags_sfz_synth_util_boxed_copy(AgsSFZSynthUtil *ptr)
+ags_sfz_synth_util_copy(AgsSFZSynthUtil *ptr)
 {
   AgsSFZSynthUtil *new_ptr;
 
   guint i;
 
-  if(ptr == NULL){
-    return(NULL);
-  }
+  g_return_val_if_fail(ptr != NULL, NULL);
   
   new_ptr = (AgsSFZSynthUtil *) g_new(AgsSFZSynthUtil,
 				      1);
@@ -297,6 +233,8 @@ ags_sfz_synth_util_boxed_copy(AgsSFZSynthUtil *ptr)
 void
 ags_sfz_synth_util_free(AgsSFZSynthUtil *ptr)
 {
+  g_return_if_fail(ptr != NULL);
+
   g_free(ptr->source);
 
   ags_audio_buffer_util_set_source(ptr->audio_buffer_util,

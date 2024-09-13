@@ -32,6 +32,15 @@
 #include <math.h>
 #include <complex.h>
 
+void ags_sf2_synth_util_compute_s8(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_compute_s16(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_compute_s24(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_compute_s32(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_compute_s64(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_compute_float(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_compute_double(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_compute_complex(AgsSF2SynthUtil *sf2_synth_util);
+
 /**
  * SECTION:ags_sf2_synth_util
  * @short_description: SF2 synth util
@@ -52,7 +61,7 @@ ags_sf2_synth_util_get_type(void)
 
     ags_type_sf2_synth_util =
       g_boxed_type_register_static("AgsSF2SynthUtil",
-				   (GBoxedCopyFunc) ags_sf2_synth_util_boxed_copy,
+				   (GBoxedCopyFunc) ags_sf2_synth_util_copy,
 				   (GBoxedFreeFunc) ags_sf2_synth_util_free);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_sf2_synth_util);
@@ -102,18 +111,8 @@ ags_sf2_synth_util_alloc()
   ptr = (AgsSF2SynthUtil *) g_new(AgsSF2SynthUtil,
 				  1);
 
-  ptr->flags = 0;
-
-  ptr->sf2_file = NULL;
-
-  ptr->sf2_sample_count = 0;
-  ptr->sf2_sample_arr = (IpatchSample **) g_malloc(128 * sizeof(IpatchSample*));
-  ptr->sf2_note_range = (gint **) g_malloc(128 * sizeof(gint*));
+  ptr[0] = AGS_SF2_SYNTH_UTIL_INITIALIZER;
   
-  ptr->sf2_orig_buffer = (gpointer *) g_malloc(128 * sizeof(gpointer));
-
-  ptr->sf2_resampled_buffer = (gpointer *) g_malloc(128 * sizeof(gpointer));
-
   for(i = 0; i < 128; i++){
     ptr->sf2_sample_arr[i] = NULL;
 
@@ -133,77 +132,11 @@ ags_sf2_synth_util_alloc()
     ptr->sf2_loop_end[i] = 0;
   }
 
-  ptr->source = NULL;
-  ptr->source_stride = 1;
-
-  ptr->sample_buffer = NULL;
-  ptr->im_buffer = NULL;
-
-  ptr->buffer_length = 0;
-  ptr->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
-  ptr->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-
-  ptr->preset = NULL;
-  ptr->instrument = NULL;
-  ptr->sample = NULL;
-
-  ptr->bank = -1;
-  ptr->program = -1;
-
-  ptr->midi_key = -1;
-  
-  ptr->note = 0.0;
-  ptr->volume = 1.0;
-
-  ptr->frame_count = 0;
-  ptr->offset = 0;
-
-  ptr->loop_mode = AGS_SF2_SYNTH_UTIL_LOOP_NONE;
-
-  ptr->loop_start = 0;
-  ptr->loop_end = 0;
-
-  ptr->audio_buffer_util = ags_audio_buffer_util_alloc();
-
-  /* resample util */
-  ptr->resample_util = ags_resample_util_alloc();
-
-  ags_resample_util_set_format(ptr->resample_util,
-			       AGS_SOUNDCARD_DEFAULT_FORMAT);  
-  ags_resample_util_set_samplerate(ptr->resample_util,
-				   AGS_SOUNDCARD_DEFAULT_SAMPLERATE);  
-
-  /* pitch util */
-#if 0
-  ptr->pitch_type = AGS_TYPE_FLUID_INTERPOLATE_LINEAR_UTIL;
-  ptr->pitch_util = ags_fluid_interpolate_4th_order_util_alloc();
-#else
-  ptr->pitch_type = AGS_TYPE_PITCH_2X_ALIAS_UTIL;
-  ptr->pitch_util = ags_pitch_2x_alias_util_alloc();
-#endif
-  
-  ags_common_pitch_util_set_format(ptr->pitch_util,
-				   ptr->pitch_type,
-				   AGS_SOUNDCARD_DEFAULT_FORMAT);
-  ags_common_pitch_util_set_samplerate(ptr->pitch_util,
-				       ptr->pitch_type,
-				       AGS_SOUNDCARD_DEFAULT_SAMPLERATE);
-  
-  /* volume util */
-  ptr->volume_util = ags_volume_util_alloc();
-
-  ags_volume_util_set_format(ptr->volume_util,
-			     AGS_SOUNDCARD_DEFAULT_FORMAT);
-
-  ptr->note_256th_mode = TRUE;
-
-  ptr->offset_256th = 0;
-
   return(ptr);
 }
 
 /**
- * ags_sf2_synth_util_boxed_copy:
+ * ags_sf2_synth_util_copy:
  * @ptr: the #AgsSF2SynthUtil-struct
  * 
  * Copy #AgsSF2SynthUtil-struct.
@@ -213,13 +146,11 @@ ags_sf2_synth_util_alloc()
  * Since: 3.9.6
  */
 gpointer
-ags_sf2_synth_util_boxed_copy(AgsSF2SynthUtil *ptr)
+ags_sf2_synth_util_copy(AgsSF2SynthUtil *ptr)
 {
   AgsSF2SynthUtil *new_ptr;
 
-  if(ptr == NULL){
-    return(NULL);
-  }
+  g_return_val_if_fail(ptr != NULL, NULL);
   
   new_ptr = (AgsSF2SynthUtil *) g_new(AgsSF2SynthUtil,
 				      1);
@@ -309,6 +240,8 @@ ags_sf2_synth_util_boxed_copy(AgsSF2SynthUtil *ptr)
 void
 ags_sf2_synth_util_free(AgsSF2SynthUtil *ptr)
 {
+  g_return_if_fail(ptr != NULL);
+
   ags_stream_free(ptr->source);
 
   ags_stream_free(ptr->sample_buffer);

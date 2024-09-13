@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -35,6 +35,20 @@ G_BEGIN_DECLS
 
 #define AGS_TIME_STRETCH_UTIL_DEFAULT_FREQUENCY (440.0)
 
+#define AGS_TIME_STRETCH_UTIL_INITIALIZER ((AgsTimeStretchUtil) {	\
+      .source = NULL,							\
+      .source_stride = 1,						\
+      .source_buffer_length = 0,					\
+      .destination = NULL,						\
+      .destination_stride = 1,						\
+      .destination_buffer_length = 0,					\
+      .buffer_length = 0,						\
+      .format = AGS_SOUNDCARD_DEFAULT_FORMAT,				\
+      .samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE,			\
+      .frequency = AGS_TIME_STRETCH_UTIL_DEFAULT_FREQUENCY,		\
+      .orig_bpm = 120.0,						\
+      .new_bpm = 120.0 })
+
 typedef struct _AgsTimeStretchUtil AgsTimeStretchUtil;
 
 struct _AgsTimeStretchUtil
@@ -47,7 +61,7 @@ struct _AgsTimeStretchUtil
   guint destination_stride;
   guint destination_buffer_length;
   
-  guint buffer_size;
+  guint buffer_length;
   AgsSoundcardFormat format;
   guint samplerate;
 
@@ -88,9 +102,9 @@ guint ags_time_stretch_util_get_destination_buffer_length(AgsTimeStretchUtil *ti
 void ags_time_stretch_util_set_destination_buffer_length(AgsTimeStretchUtil *time_stretch_util,
 							 guint destination_buffer_length);
 
-guint ags_time_stretch_util_get_buffer_size(AgsTimeStretchUtil *time_stretch_util);
-void ags_time_stretch_util_set_buffer_size(AgsTimeStretchUtil *time_stretch_util,
-					   guint buffer_size);
+guint ags_time_stretch_util_get_buffer_length(AgsTimeStretchUtil *time_stretch_util);
+void ags_time_stretch_util_set_buffer_length(AgsTimeStretchUtil *time_stretch_util,
+					     guint buffer_length);
 
 AgsSoundcardFormat ags_time_stretch_util_get_format(AgsTimeStretchUtil *time_stretch_util);
 void ags_time_stretch_util_set_format(AgsTimeStretchUtil *time_stretch_util,
@@ -112,14 +126,6 @@ gdouble ags_time_stretch_util_get_new_bpm(AgsTimeStretchUtil *time_stretch_util)
 void ags_time_stretch_util_set_new_bpm(AgsTimeStretchUtil *time_stretch_util,
 				       gdouble new_bpm);
 
-void ags_time_stretch_util_stretch_s8(AgsTimeStretchUtil *time_stretch_util);
-void ags_time_stretch_util_stretch_s16(AgsTimeStretchUtil *time_stretch_util);
-void ags_time_stretch_util_stretch_s24(AgsTimeStretchUtil *time_stretch_util);
-void ags_time_stretch_util_stretch_s32(AgsTimeStretchUtil *time_stretch_util);
-void ags_time_stretch_util_stretch_s64(AgsTimeStretchUtil *time_stretch_util);
-void ags_time_stretch_util_stretch_float(AgsTimeStretchUtil *time_stretch_util);
-void ags_time_stretch_util_stretch_double(AgsTimeStretchUtil *time_stretch_util);
-void ags_time_stretch_util_stretch_complex(AgsTimeStretchUtil *time_stretch_util);
 void ags_time_stretch_util_stretch(AgsTimeStretchUtil *time_stretch_util);
 
 G_END_DECLS

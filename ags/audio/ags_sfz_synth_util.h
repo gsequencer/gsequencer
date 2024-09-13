@@ -39,6 +39,37 @@ G_BEGIN_DECLS
 #define AGS_TYPE_SFZ_SYNTH_UTIL         (ags_sfz_synth_util_get_type())
 #define AGS_SFZ_SYNTH_UTIL(ptr) ((AgsSFZSynthUtil *)(ptr))
 
+#define AGS_SFZ_SYNTH_UTIL_INITIALIZER ((AgsSFZSynthUtil) {		\
+      .flags = 0,							\
+	.sfz_file = NULL,						\
+	.sfz_sample_count = 0,						\
+	.sfz_sample_arr = (AgsSFZSample **) g_malloc(128 * sizeof(AgsSFZSample*)), \
+	.sfz_note_range = (gint **) g_malloc(128 * sizeof(gint*)),	\
+	.sfz_orig_buffer = (gpointer *) g_malloc(128 * sizeof(gpointer)), \
+	.sfz_resampled_buffer = (gpointer *) g_malloc(128 * sizeof(gpointer)), \
+	.source = NULL,							\
+	.source_stride = 1,						\
+	.sample_buffer = NULL,						\
+	.im_buffer = NULL,						\
+	.buffer_length = 0,						\
+	.format = AGS_SOUNDCARD_DEFAULT_FORMAT,				\
+	.samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE,			\
+	.midi_key = -1,							\
+	.note = 0.0,							\
+	.volume = 1.0,							\
+	.frame_count = 0,						\
+	.offset = 0,							\
+	.loop_mode = AGS_SFZ_SYNTH_UTIL_LOOP_NONE,			\
+	.loop_start = 0,						\
+	.loop_end = 0,							\
+	.audio_buffer_util = ags_audio_buffer_util_alloc(),		\
+	.resample_util = ags_resample_util_alloc(),			\
+	.pitch_type = AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL,	\
+	.pitch_util = ags_fluid_interpolate_4th_order_util_alloc(),	\
+	.volume_util = ags_volume_util_alloc(),				\
+	.note_256th_mode = FALSE,					\
+	.offset_256th = 0 })
+
 /**
  * AgsSFZSynthUtilLoopMode:
  * @AGS_SFZ_SYNTH_UTIL_LOOP_NONE: loop none
@@ -121,7 +152,7 @@ GType ags_sfz_synth_util_loop_mode_get_type();
 
 AgsSFZSynthUtil* ags_sfz_synth_util_alloc();
 
-gpointer ags_sfz_synth_util_boxed_copy(AgsSFZSynthUtil *ptr);
+gpointer ags_sfz_synth_util_copy(AgsSFZSynthUtil *ptr);
 void ags_sfz_synth_util_free(AgsSFZSynthUtil *ptr);
 
 AgsAudioContainer* ags_sfz_synth_util_get_sfz_file(AgsSFZSynthUtil *sfz_synth_util);

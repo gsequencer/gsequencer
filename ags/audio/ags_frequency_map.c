@@ -813,27 +813,27 @@ ags_frequency_map_real_process(AgsFrequencyMap *frequency_map)
   switch(frequency_map->oscillator_mode){
   case AGS_SYNTH_OSCILLATOR_SIN:
   {
-    ags_synth_util_compute_sin_complex(&synth_util);
+    ags_synth_util_compute_sin(&synth_util);
   }
   break;
   case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
   {
-    ags_synth_util_compute_sawtooth_complex(&synth_util);
+    ags_synth_util_compute_sawtooth(&synth_util);
   }
   break;
   case AGS_SYNTH_OSCILLATOR_TRIANGLE:
   {
-    ags_synth_util_compute_triangle_complex(&synth_util);
+    ags_synth_util_compute_triangle(&synth_util);
   }
   break;
   case AGS_SYNTH_OSCILLATOR_SQUARE:
   {
-    ags_synth_util_compute_square_complex(&synth_util);
+    ags_synth_util_compute_square(&synth_util);
   }
   break;
   case AGS_SYNTH_OSCILLATOR_IMPULSE:
   {
-    ags_synth_util_compute_impulse_complex(&synth_util);
+    ags_synth_util_compute_impulse(&synth_util);
   }
   break;
   }
