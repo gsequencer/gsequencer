@@ -1,3 +1,9 @@
+ags (6.16.21)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential SIGSEGV in ags_audio.c not respecting cache of AgsAudioFileManager
+	* fixed wrong initial value of chorus LFO frequency of ags-fx-synth, ags-fx-fm-synth, ags-fx-sf2-synth and ags-fx-sfz-synth
+
 ags (6.16.20)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
