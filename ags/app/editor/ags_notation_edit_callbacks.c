@@ -245,6 +245,8 @@ ags_notation_edit_hscrollbar_value_changed(GtkAdjustment *adjustment, AgsNotatio
 
   application_context = ags_application_context_get_instance();
 
+  editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
@@ -253,9 +255,6 @@ ags_notation_edit_hscrollbar_value_changed(GtkAdjustment *adjustment, AgsNotatio
   gtk_adjustment_set_value(notation_edit->ruler->adjustment,
 			   gui_scale_factor * value);
   gtk_widget_queue_draw((GtkWidget *) notation_edit->ruler);
-
-  editor = gtk_widget_get_ancestor(GTK_WIDGET(notation_edit),
-				   AGS_TYPE_COMPOSITE_EDITOR);
     
   gtk_adjustment_set_value(AGS_COMPOSITE_EDITOR(editor)->notation_edit->ruler->adjustment,
 			   gui_scale_factor * value);

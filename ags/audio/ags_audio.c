@@ -4176,10 +4176,222 @@ ags_audio_list_resource(AgsConnectable *connectable)
 xmlNode*
 ags_audio_xml_compose(AgsConnectable *connectable)
 {
-  xmlNode *node;
-  
-  node = NULL;
+  AgsAudio *audio;
 
+  GObject *output_soundcard, *input_soundcard;
+  GObject *output_sequencer, *input_sequencer;
+  
+  xmlNode *node;
+
+  gchar *uuid_str;
+  gchar *audio_name;
+  gchar *str;
+  gchar *tmp;
+  
+  AgsAudioFlags flags;
+  AgsConnectableFlags connectable_flags;
+  AgsSoundAbilityFlags ability_flags;
+  AgsSoundBehaviourFlags behaviour_flags;
+  AgsSoundStagingFlags staging_flags[AGS_SOUND_SCOPE_LAST];
+  gboolean staging_completed[AGS_SOUND_SCOPE_LAST];
+  guint i;
+  
+  GRecMutex *audio_mutex;
+
+  audio = AGS_AUDIO(connectable);
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+
+  g_rec_mutex_lock(audio_mutex);
+
+  flags = audio->flags;
+  connectable_flags = audio->connectable_flags;
+  ability_flags = audio->ability_flags;
+  behaviour_flags = audio->behaviour_flags;
+
+  memcpy(staging_flags, audio->staging_flags, AGS_SOUND_SCOPE_LAST * sizeof(AgsSoundStagingFlags));
+  
+  memcpy(staging_completed, audio->staging_completed, AGS_SOUND_SCOPE_LAST * sizeof(gboolean));
+
+  uuid_str = ags_uuid_to_string(audio->uuid);
+
+  g_rec_mutex_unlock(audio_mutex);
+
+  output_soundcard = NULL;
+  input_soundcard = NULL;
+
+  output_sequencer = NULL;
+  input_sequencer = NULL;
+  
+  g_object_get(audio,
+	       "output-soundcard", &output_soundcard,
+	       "input-soundcard", &input_soundcard,
+	       "output-sequencer", &output_sequencer,
+	       "input-sequencer", &input_sequencer,
+	       NULL);
+  
+  /* compose */
+  node = xmlNewNode(NULL,
+		    BAD_CAST "ags-audio");
+
+  str = g_strdup_printf("0x%x",
+			flags);
+  
+  xmlNewProp(node,
+	     BAD_CAST "flags",
+	     BAD_CAST str);
+
+  g_free(str);
+  
+  str = g_strdup_printf("0x%x",
+			connectable_flags);
+  
+  xmlNewProp(node,
+	     BAD_CAST "connectable-flags",
+	     BAD_CAST str);
+
+  g_free(str);
+
+  str = g_strdup_printf("0x%x",
+			behaviour_flags);
+  
+  xmlNewProp(node,
+	     BAD_CAST "behaviour-flags",
+	     BAD_CAST str);
+
+  g_free(str);
+
+  str = g_malloc((AGS_SOUND_SCOPE_LAST * 19) * sizeof(gchar));
+  memset(str, 0, (AGS_SOUND_SCOPE_LAST * 19) * sizeof(gchar));
+
+  for(tmp = str, i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    gint count;
+    
+    count = sprintf(tmp,
+		    "0x%x",
+		    staging_flags[i]);
+
+    if(count <= 0){
+      break;
+    }
+    
+    if(i + 1 < AGS_SOUND_SCOPE_LAST){
+      tmp[count] = ' ';
+
+      tmp += count;
+    }else{
+      tmp[count] = '\0';      
+    }
+  }
+  
+  xmlNewProp(node,
+	     BAD_CAST "staging-flags",
+	     BAD_CAST str);
+
+  g_free(str);
+
+  str = g_malloc((AGS_SOUND_SCOPE_LAST * 6) * sizeof(gboolean));
+  memset(str, 0, (AGS_SOUND_SCOPE_LAST * 6) * sizeof(gboolean));
+
+  for(tmp = str, i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    gint count;
+
+    count = sprintf(tmp,
+		    "%s",
+		    ((staging_completed[i]) ? "true": "false"));
+    
+    if(count <= 0){
+      break;
+    }
+    
+    if(i + 1 < AGS_SOUND_SCOPE_LAST){
+      tmp[count] = ' ';
+
+      tmp += count;
+    }else{
+      tmp[count] = '\0';      
+    }
+  }
+  
+  xmlNewProp(node,
+	     BAD_CAST "staging-completed",
+	     BAD_CAST str);
+
+  g_free(str);
+
+  /* fields */
+  xmlNewProp(node,
+	     BAD_CAST "uuid",
+	     BAD_CAST uuid_str);
+
+  g_free(uuid_str);
+
+  audio_name = ags_audio_get_audio_name(audio);
+
+  xmlNewProp(node,
+	     BAD_CAST "audio-name",
+	     BAD_CAST audio_name);
+
+  g_free(audio_name);
+
+  if(output_soundcard != NULL){
+    str = ags_uuid_to_string(ags_connectable_get_uuid(AGS_CONNECTABLE(output_soundcard)));
+    
+    xmlNewProp(node,
+	       BAD_CAST "output-soundcard",
+	       BAD_CAST str);
+
+    g_free(str);
+  }else{
+    xmlNewProp(node,
+	       BAD_CAST "output-soundcard",
+	       BAD_CAST "(null)");
+  }
+
+  if(input_soundcard != NULL){
+    str = ags_uuid_to_string(ags_connectable_get_uuid(AGS_CONNECTABLE(input_soundcard)));
+    
+    xmlNewProp(node,
+	       BAD_CAST "input-soundcard",
+	       BAD_CAST str);
+
+    g_free(str);
+  }else{
+    xmlNewProp(node,
+	       BAD_CAST "input-soundcard",
+	       BAD_CAST "(null)");
+  }
+
+  if(output_sequencer != NULL){
+    str = ags_uuid_to_string(ags_connectable_get_uuid(AGS_CONNECTABLE(output_sequencer)));
+    
+    xmlNewProp(node,
+	       BAD_CAST "output-sequencer",
+	       BAD_CAST str);
+
+    g_free(str);
+  }else{
+    xmlNewProp(node,
+	       BAD_CAST "output-sequencer",
+	       BAD_CAST "(null)");
+  }
+
+  if(input_sequencer != NULL){
+    str = ags_uuid_to_string(ags_connectable_get_uuid(AGS_CONNECTABLE(input_sequencer)));
+    
+    xmlNewProp(node,
+	       BAD_CAST "input-sequencer",
+	       BAD_CAST str);
+
+    g_free(str);
+  }else{
+    xmlNewProp(node,
+	       BAD_CAST "input-sequencer",
+	       BAD_CAST "(null)");
+  }
+  
+  
   //TODO:JK: implement me
   
   return(node);
