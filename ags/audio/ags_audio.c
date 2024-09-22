@@ -6650,7 +6650,6 @@ ags_audio_set_audio_channels_shrink_notation(AgsAudio *audio,
 				list->data);
 
       g_object_run_dispose((GObject *) list->data);
-      g_object_unref((GObject *) list->data);
     }
       
     list = list->next;
@@ -6687,7 +6686,6 @@ ags_audio_set_audio_channels_shrink_automation(AgsAudio *audio,
 				  list->data);
 
       g_object_run_dispose((GObject *) list->data);
-      g_object_unref((GObject *) list->data);
     }
       
     list = list->next;
@@ -6728,7 +6726,6 @@ ags_audio_set_audio_channels_shrink_wave(AgsAudio *audio,
 			    list->data);
 
       g_object_run_dispose((GObject *) list->data);
-      g_object_unref((GObject *) list->data);
     }
       
     list = list->next;
@@ -6765,7 +6762,6 @@ ags_audio_set_audio_channels_shrink_midi(AgsAudio *audio,
 			    list->data);
 
       g_object_run_dispose((GObject *) list->data);
-      g_object_unref((GObject *) list->data);
     }
       
     list = list->next;
@@ -7723,7 +7719,6 @@ ags_audio_set_pads_shrink_automation(AgsAudio *audio,
 				  list->data);
 	
       g_object_run_dispose((GObject *) list->data);
-      g_object_unref((GObject *) list->data);
     }
       
     list = list->next;
@@ -7760,7 +7755,6 @@ ags_audio_set_pads_shrink_wave(AgsAudio *audio,
 			  list->data);
       
     g_object_run_dispose((GObject *) list->data);
-    g_object_unref((GObject *) list->data);
       
     list = list->next;
   }
@@ -7799,7 +7793,6 @@ ags_audio_set_pads_shrink_midi(AgsAudio *audio,
 			  list->data);
 
     g_object_run_dispose((GObject *) list->data);
-    g_object_unref((GObject *) list->data);
       
     list = list->next;
   }
@@ -15557,8 +15550,8 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
 	  channel = nth_channel;
 	}
 
-	g_object_run_dispose((GObject *) audio_file);
-	g_object_unref(audio_file);
+	//FIXME:JK: to remove
+	//	g_object_unref((GObject *) audio_file);
 	
 	filename = filename->next;
       }
@@ -15680,8 +15673,8 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
 	channel = nth_channel;
       }
 
-      g_object_run_dispose((GObject *) audio_file);
-      g_object_unref(audio_file);
+      //FIXME:JK: to remove
+      // g_object_unref((GObject *) audio_file);
       
       filename = filename->next;
     }
