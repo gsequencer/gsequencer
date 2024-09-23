@@ -6648,8 +6648,6 @@ ags_audio_set_audio_channels_shrink_notation(AgsAudio *audio,
     if(AGS_NOTATION(list->data)->audio_channel >= audio_channels){
       ags_audio_remove_notation(audio,
 				list->data);
-
-      g_object_run_dispose((GObject *) list->data);
     }
       
     list = list->next;
@@ -6684,8 +6682,6 @@ ags_audio_set_audio_channels_shrink_automation(AgsAudio *audio,
     if(AGS_AUTOMATION(list->data)->line % audio_channels_old >= audio_channels){
       ags_audio_remove_automation(audio,
 				  list->data);
-
-      g_object_run_dispose((GObject *) list->data);
     }
       
     list = list->next;
@@ -6724,8 +6720,6 @@ ags_audio_set_audio_channels_shrink_wave(AgsAudio *audio,
     if(AGS_WAVE(list->data)->line % audio_channels_old >= audio_channels){
       ags_audio_remove_wave(audio,
 			    list->data);
-
-      g_object_run_dispose((GObject *) list->data);
     }
       
     list = list->next;
@@ -6760,8 +6754,6 @@ ags_audio_set_audio_channels_shrink_midi(AgsAudio *audio,
     if(AGS_MIDI(list->data)->audio_channel >= audio_channels){
       ags_audio_remove_midi(audio,
 			    list->data);
-
-      g_object_run_dispose((GObject *) list->data);
     }
       
     list = list->next;
