@@ -61,6 +61,17 @@ ags (7.0.0)
 	* fixed ags_midi_builder_append_change_pitch_bend() prototype declaration
 	* fixed ags_midi_parser_change_pitch_bend() parse transmitter attribute as 14 bit value
 
+ags (6.16.22)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential SIGSEGV in ags_audio.c involving g_object_run_dispose()
+
+ags (6.16.21)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential SIGSEGV in ags_audio.c not respecting cache of AgsAudioFileManager
+	* fixed wrong initial value of chorus LFO frequency of ags-fx-synth, ags-fx-fm-synth, ags-fx-sf2-synth and ags-fx-sfz-synth
+
 ags (6.16.20)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

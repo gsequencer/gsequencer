@@ -50,6 +50,22 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="6.16.22" date="2024-09-23">
+      <description>
+	<p>
+	  Fixed potential SIGSEGV while shrinking audio channels.
+	</p>
+      </description>
+    </release>
+
+    <release version="6.16.21" date="2024-09-22">
+      <description>
+	<p>
+	  Fixed potential SIGSEGV while shrinking audio channels.
+	</p>
+      </description>
+    </release>
+
     <release version="6.16.10" date="2024-07-17">
       <description>
 	<p>
@@ -57,7 +73,7 @@
 	</p>
       </description>
     </release>
-
+    
     <release version="6.16.4" date="2024-07-08">
       <description>
 	<p>
