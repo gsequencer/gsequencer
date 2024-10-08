@@ -25,15 +25,6 @@
 #include <Accelerate/Accelerate.h>
 #endif
 
-void ags_envelope_util_compute_s8(AgsEnvelopeUtil *envelope_util);
-void ags_envelope_util_compute_s16(AgsEnvelopeUtil *envelope_util);
-void ags_envelope_util_compute_s24(AgsEnvelopeUtil *envelope_util);
-void ags_envelope_util_compute_s32(AgsEnvelopeUtil *envelope_util);
-void ags_envelope_util_compute_s64(AgsEnvelopeUtil *envelope_util);
-void ags_envelope_util_compute_float(AgsEnvelopeUtil *envelope_util);
-void ags_envelope_util_compute_double(AgsEnvelopeUtil *envelope_util);
-void ags_envelope_util_compute_complex(AgsEnvelopeUtil *envelope_util);
-
 /**
  * SECTION:ags_envelope_util
  * @short_description: Boxed type of envelope util

@@ -29,51 +29,6 @@
 #include <math.h>
 #include <complex.h>
 
-void ags_synth_util_compute_sin_s8(AgsSynthUtil *synth_util);
-void ags_synth_util_compute_sin_s16(AgsSynthUtil *synth_util);
-void ags_synth_util_compute_sin_s24(AgsSynthUtil *synth_util);
-void ags_synth_util_compute_sin_s32(AgsSynthUtil *synth_util);
-void ags_synth_util_compute_sin_s64(AgsSynthUtil *synth_util);
-void ags_synth_util_compute_sin_float(AgsSynthUtil *synth_util);
-void ags_synth_util_compute_sin_double(AgsSynthUtil *synth_util);
-void ags_synth_util_compute_sin_complex(AgsSynthUtil *synth_util);
-
-void ags_synth_util_compute_sawtooth_s8(AgsSynthUtil *synth_util);
-void ags_synth_util_compute_sawtooth_s16(AgsSynthUtil *synth_util);
-void ags_synth_util_compute_sawtooth_s24(AgsSynthUtil *synth_util);
-void ags_synth_util_compute_sawtooth_s32(AgsSynthUtil *synth_util);
-void ags_synth_util_compute_sawtooth_s64(AgsSynthUtil *synth_util);
-void ags_synth_util_compute_sawtooth_float(AgsSynthUtil *synth_util);
-void ags_synth_util_compute_sawtooth_double(AgsSynthUtil *synth_util);
-void ags_synth_util_compute_sawtooth_complex(AgsSynthUtil *synth_util);
-
-void ags_synth_util_compute_triangle_s8(AgsSynthUtil *synth_util);
-void ags_synth_util_compute_triangle_s16(AgsSynthUtil *synth_util);
-void ags_synth_util_compute_triangle_s24(AgsSynthUtil *synth_util);
-void ags_synth_util_compute_triangle_s32(AgsSynthUtil *synth_util);
-void ags_synth_util_compute_triangle_s64(AgsSynthUtil *synth_util);
-void ags_synth_util_compute_triangle_float(AgsSynthUtil *synth_util);
-void ags_synth_util_compute_triangle_double(AgsSynthUtil *synth_util);
-void ags_synth_util_compute_triangle_complex(AgsSynthUtil *synth_util);
-
-void ags_synth_util_compute_square_s8(AgsSynthUtil *synth_util);
-void ags_synth_util_compute_square_s16(AgsSynthUtil *synth_util);
-void ags_synth_util_compute_square_s24(AgsSynthUtil *synth_util);
-void ags_synth_util_compute_square_s32(AgsSynthUtil *synth_util);
-void ags_synth_util_compute_square_s64(AgsSynthUtil *synth_util);
-void ags_synth_util_compute_square_float(AgsSynthUtil *synth_util);
-void ags_synth_util_compute_square_double(AgsSynthUtil *synth_util);
-void ags_synth_util_compute_square_complex(AgsSynthUtil *synth_util);
-
-void ags_synth_util_compute_impulse_s8(AgsSynthUtil *synth_util);
-void ags_synth_util_compute_impulse_s16(AgsSynthUtil *synth_util);
-void ags_synth_util_compute_impulse_s24(AgsSynthUtil *synth_util);
-void ags_synth_util_compute_impulse_s32(AgsSynthUtil *synth_util);
-void ags_synth_util_compute_impulse_s64(AgsSynthUtil *synth_util);
-void ags_synth_util_compute_impulse_float(AgsSynthUtil *synth_util);
-void ags_synth_util_compute_impulse_double(AgsSynthUtil *synth_util);
-void ags_synth_util_compute_impulse_complex(AgsSynthUtil *synth_util);
-
 /**
  * SECTION:ags_synth_util
  * @short_description: synth util

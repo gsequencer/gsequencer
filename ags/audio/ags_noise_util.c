@@ -75,15 +75,6 @@
 #include <stdlib.h>
 #include <math.h>
 
-void ags_noise_util_compute_s8(AgsNoiseUtil *noise_util);
-void ags_noise_util_compute_s16(AgsNoiseUtil *noise_util);
-void ags_noise_util_compute_s24(AgsNoiseUtil *noise_util);
-void ags_noise_util_compute_s32(AgsNoiseUtil *noise_util);
-void ags_noise_util_compute_s64(AgsNoiseUtil *noise_util);
-void ags_noise_util_compute_float(AgsNoiseUtil *noise_util);
-void ags_noise_util_compute_double(AgsNoiseUtil *noise_util);
-void ags_noise_util_compute_complex(AgsNoiseUtil *noise_util);
-
 /**
  * SECTION:ags_noise_util
  * @short_description: noise util

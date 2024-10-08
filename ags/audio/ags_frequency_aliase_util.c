@@ -21,15 +21,6 @@
 
 #include <math.h>
 
-void ags_frequency_aliase_util_process_s8(AgsFrequencyAliaseUtil *frequency_aliase_util);
-void ags_frequency_aliase_util_process_s16(AgsFrequencyAliaseUtil *frequency_aliase_util);
-void ags_frequency_aliase_util_process_s24(AgsFrequencyAliaseUtil *frequency_aliase_util);
-void ags_frequency_aliase_util_process_s32(AgsFrequencyAliaseUtil *frequency_aliase_util);
-void ags_frequency_aliase_util_process_s64(AgsFrequencyAliaseUtil *frequency_aliase_util);
-void ags_frequency_aliase_util_process_float(AgsFrequencyAliaseUtil *frequency_aliase_util);
-void ags_frequency_aliase_util_process_double(AgsFrequencyAliaseUtil *frequency_aliase_util);
-void ags_frequency_aliase_util_process_complex(AgsFrequencyAliaseUtil *frequency_aliase_util);
-
 /**
  * SECTION:ags_frequency_aliase_util
  * @short_description: frequency aliase util

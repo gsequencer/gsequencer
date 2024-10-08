@@ -109,7 +109,7 @@ ags_volume_util_test_alloc()
   CU_ASSERT(volume_util->source_stride == 1);
   
   CU_ASSERT(volume_util->buffer_length == 0);
-  CU_ASSERT(volume_util->format == AGS_VOLUME_UTIL_DEFAULT_FORMAT);
+  CU_ASSERT(volume_util->format == AGS_SOUNDCARD_DEFAULT_FORMAT);
 
   CU_ASSERT(volume_util->volume == 1.0);
 }

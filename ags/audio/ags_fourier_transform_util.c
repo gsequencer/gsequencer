@@ -33,24 +33,6 @@
 
 #include <stdlib.h>
 
-void ags_fourier_transform_util_compute_stft_s8(AgsFourierTransformUtil *fourier_transform_util);
-void ags_fourier_transform_util_compute_stft_s16(AgsFourierTransformUtil *fourier_transform_util);
-void ags_fourier_transform_util_compute_stft_s24(AgsFourierTransformUtil *fourier_transform_util);
-void ags_fourier_transform_util_compute_stft_s32(AgsFourierTransformUtil *fourier_transform_util);
-void ags_fourier_transform_util_compute_stft_s64(AgsFourierTransformUtil *fourier_transform_util);
-void ags_fourier_transform_util_compute_stft_float(AgsFourierTransformUtil *fourier_transform_util);
-void ags_fourier_transform_util_compute_stft_double(AgsFourierTransformUtil *fourier_transform_util);
-void ags_fourier_transform_util_compute_stft_complex(AgsFourierTransformUtil *fourier_transform_util);
-
-void ags_fourier_transform_util_inverse_stft_s8(AgsFourierTransformUtil *fourier_transform_util);
-void ags_fourier_transform_util_inverse_stft_s16(AgsFourierTransformUtil *fourier_transform_util);
-void ags_fourier_transform_util_inverse_stft_s24(AgsFourierTransformUtil *fourier_transform_util);
-void ags_fourier_transform_util_inverse_stft_s32(AgsFourierTransformUtil *fourier_transform_util);
-void ags_fourier_transform_util_inverse_stft_s64(AgsFourierTransformUtil *fourier_transform_util);
-void ags_fourier_transform_util_inverse_stft_float(AgsFourierTransformUtil *fourier_transform_util);
-void ags_fourier_transform_util_inverse_stft_double(AgsFourierTransformUtil *fourier_transform_util);
-void ags_fourier_transform_util_inverse_stft_complex(AgsFourierTransformUtil *fourier_transform_util);
-
 /**
  * SECTION:ags_fourier_transform_util
  * @short_description: fourier transform util

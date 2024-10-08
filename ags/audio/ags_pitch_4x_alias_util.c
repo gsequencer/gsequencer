@@ -22,15 +22,6 @@
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
-void ags_pitch_4x_alias_util_pitch_s8(AgsPitch4xAliasUtil *pitch_4x_alias_util);
-void ags_pitch_4x_alias_util_pitch_s16(AgsPitch4xAliasUtil *pitch_4x_alias_util);
-void ags_pitch_4x_alias_util_pitch_s24(AgsPitch4xAliasUtil *pitch_4x_alias_util);
-void ags_pitch_4x_alias_util_pitch_s32(AgsPitch4xAliasUtil *pitch_4x_alias_util);
-void ags_pitch_4x_alias_util_pitch_s64(AgsPitch4xAliasUtil *pitch_4x_alias_util);
-void ags_pitch_4x_alias_util_pitch_float(AgsPitch4xAliasUtil *pitch_4x_alias_util);
-void ags_pitch_4x_alias_util_pitch_double(AgsPitch4xAliasUtil *pitch_4x_alias_util);
-void ags_pitch_4x_alias_util_pitch_complex(AgsPitch4xAliasUtil *pitch_4x_alias_util);
-
 /**
  * SECTION:ags_pitch_4x_alias_util
  * @short_description: 4 times aliased pitch util

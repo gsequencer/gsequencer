@@ -202,6 +202,15 @@ guint ags_chorus_util_get_offset_256th(AgsChorusUtil *chorus_util);
 void ags_chorus_util_set_offset_256th(AgsChorusUtil *chorus_util,
 				      guint offset_256th);
 
+void ags_chorus_util_compute_s8(AgsChorusUtil *chorus_util);
+void ags_chorus_util_compute_s16(AgsChorusUtil *chorus_util);
+void ags_chorus_util_compute_s24(AgsChorusUtil *chorus_util);
+void ags_chorus_util_compute_s32(AgsChorusUtil *chorus_util);
+void ags_chorus_util_compute_s64(AgsChorusUtil *chorus_util);
+void ags_chorus_util_compute_float(AgsChorusUtil *chorus_util);
+void ags_chorus_util_compute_double(AgsChorusUtil *chorus_util);
+void ags_chorus_util_compute_complex(AgsChorusUtil *chorus_util);
+
 void ags_chorus_util_compute(AgsChorusUtil *chorus_util);
 
 G_END_DECLS

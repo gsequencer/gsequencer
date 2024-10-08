@@ -27,15 +27,6 @@
 #define LARGE_VECTOR 1
 #endif
 
-void ags_volume_util_compute_s8(AgsVolumeUtil *volume_util);
-void ags_volume_util_compute_s16(AgsVolumeUtil *volume_util);
-void ags_volume_util_compute_s24(AgsVolumeUtil *volume_util);
-void ags_volume_util_compute_s32(AgsVolumeUtil *volume_util);
-void ags_volume_util_compute_s64(AgsVolumeUtil *volume_util);
-void ags_volume_util_compute_float(AgsVolumeUtil *volume_util);
-void ags_volume_util_compute_double(AgsVolumeUtil *volume_util);
-void ags_volume_util_compute_complex(AgsVolumeUtil *volume_util);
-
 /**
  * SECTION:ags_volume_util
  * @short_description: Boxed type of volume util

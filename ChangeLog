@@ -39,7 +39,7 @@ ags (7.0.0)
 	* NOTE:JK: removed ags_envelope_util_set_wah_wah_lfo_offset()
 	* implemented ags_recall_midi1_control_change()
 	* implemented ags_recall_midi2_control_change()
-	* TODO:JK: implemented utility functions initializers
+	* implemented utility functions initializers
 	* TODO:JK: refactored envelope to support LFO
 	* TODO:JK: refactored ags/audio/ags_fourier_transform_util.h
 	* TODO:JK: refactored ags/audio/ags_audio_buffer_util.h

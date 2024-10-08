@@ -101,6 +101,15 @@ AgsSoundcardFormat ags_frequency_aliase_util_get_format(AgsFrequencyAliaseUtil *
 void ags_frequency_aliase_util_set_format(AgsFrequencyAliaseUtil *frequency_aliase_util,
 					  AgsSoundcardFormat format);
 
+void ags_frequency_aliase_util_process_s8(AgsFrequencyAliaseUtil *frequency_aliase_util);
+void ags_frequency_aliase_util_process_s16(AgsFrequencyAliaseUtil *frequency_aliase_util);
+void ags_frequency_aliase_util_process_s24(AgsFrequencyAliaseUtil *frequency_aliase_util);
+void ags_frequency_aliase_util_process_s32(AgsFrequencyAliaseUtil *frequency_aliase_util);
+void ags_frequency_aliase_util_process_s64(AgsFrequencyAliaseUtil *frequency_aliase_util);
+void ags_frequency_aliase_util_process_float(AgsFrequencyAliaseUtil *frequency_aliase_util);
+void ags_frequency_aliase_util_process_double(AgsFrequencyAliaseUtil *frequency_aliase_util);
+void ags_frequency_aliase_util_process_complex(AgsFrequencyAliaseUtil *frequency_aliase_util);
+
 void ags_frequency_aliase_util_process(AgsFrequencyAliaseUtil *frequency_aliase_util);
 
 G_END_DECLS

@@ -52,9 +52,9 @@ G_BEGIN_DECLS
       .vibrato_enabled = FALSE,						\
       .vibrato_gain = 1.0,						\
       .vibrato_lfo_depth = 1.0,						\
-      .vibrato_lfo_freq = 6.0,						\
+      .vibrato_lfo_freq = 8.172,					\
       .vibrato_tuning = 0.0,						\
-      .frame_count = (AGS_SOUNDCARD_DEFAULT_SAMPLERATE / 6.0),		\
+      .frame_count = (AGS_SOUNDCARD_DEFAULT_SAMPLERATE / 8.172),	\
       .offset = 0,							\
       .note_256th_mode = FALSE,						\
       .offset_256th = 0 })
@@ -178,6 +178,15 @@ void ags_pitch_2x_alias_util_set_note_256th_mode(AgsPitch2xAliasUtil *pitch_2x_a
 guint ags_pitch_2x_alias_util_get_offset_256th(AgsPitch2xAliasUtil *pitch_2x_alias_util);
 void ags_pitch_2x_alias_util_set_offset_256th(AgsPitch2xAliasUtil *pitch_2x_alias_util,
 					      guint offset_256th);
+
+void ags_pitch_2x_alias_util_pitch_s8(AgsPitch2xAliasUtil *pitch_2x_alias_util);
+void ags_pitch_2x_alias_util_pitch_s16(AgsPitch2xAliasUtil *pitch_2x_alias_util);
+void ags_pitch_2x_alias_util_pitch_s24(AgsPitch2xAliasUtil *pitch_2x_alias_util);
+void ags_pitch_2x_alias_util_pitch_s32(AgsPitch2xAliasUtil *pitch_2x_alias_util);
+void ags_pitch_2x_alias_util_pitch_s64(AgsPitch2xAliasUtil *pitch_2x_alias_util);
+void ags_pitch_2x_alias_util_pitch_float(AgsPitch2xAliasUtil *pitch_2x_alias_util);
+void ags_pitch_2x_alias_util_pitch_double(AgsPitch2xAliasUtil *pitch_2x_alias_util);
+void ags_pitch_2x_alias_util_pitch_complex(AgsPitch2xAliasUtil *pitch_2x_alias_util);
 
 void ags_pitch_2x_alias_util_pitch(AgsPitch2xAliasUtil *pitch_2x_alias_util);
 

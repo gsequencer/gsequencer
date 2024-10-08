@@ -29,51 +29,6 @@
 #include <math.h>
 #include <complex.h>
 
-void ags_lfo_synth_util_compute_sin_s8(AgsLFOSynthUtil *lfo_synth_util);
-void ags_lfo_synth_util_compute_sin_s16(AgsLFOSynthUtil *lfo_synth_util);
-void ags_lfo_synth_util_compute_sin_s24(AgsLFOSynthUtil *lfo_synth_util);
-void ags_lfo_synth_util_compute_sin_s32(AgsLFOSynthUtil *lfo_synth_util);
-void ags_lfo_synth_util_compute_sin_s64(AgsLFOSynthUtil *lfo_synth_util);
-void ags_lfo_synth_util_compute_sin_float(AgsLFOSynthUtil *lfo_synth_util);
-void ags_lfo_synth_util_compute_sin_double(AgsLFOSynthUtil *lfo_synth_util);
-void ags_lfo_synth_util_compute_sin_complex(AgsLFOSynthUtil *lfo_synth_util);
-
-void ags_lfo_synth_util_compute_sawtooth_s8(AgsLFOSynthUtil *lfo_synth_util);
-void ags_lfo_synth_util_compute_sawtooth_s16(AgsLFOSynthUtil *lfo_synth_util);
-void ags_lfo_synth_util_compute_sawtooth_s24(AgsLFOSynthUtil *lfo_synth_util);
-void ags_lfo_synth_util_compute_sawtooth_s32(AgsLFOSynthUtil *lfo_synth_util);
-void ags_lfo_synth_util_compute_sawtooth_s64(AgsLFOSynthUtil *lfo_synth_util);
-void ags_lfo_synth_util_compute_sawtooth_float(AgsLFOSynthUtil *lfo_synth_util);
-void ags_lfo_synth_util_compute_sawtooth_double(AgsLFOSynthUtil *lfo_synth_util);
-void ags_lfo_synth_util_compute_sawtooth_complex(AgsLFOSynthUtil *lfo_synth_util);
-
-void ags_lfo_synth_util_compute_triangle_s8(AgsLFOSynthUtil *lfo_synth_util);
-void ags_lfo_synth_util_compute_triangle_s16(AgsLFOSynthUtil *lfo_synth_util);
-void ags_lfo_synth_util_compute_triangle_s24(AgsLFOSynthUtil *lfo_synth_util);
-void ags_lfo_synth_util_compute_triangle_s32(AgsLFOSynthUtil *lfo_synth_util);
-void ags_lfo_synth_util_compute_triangle_s64(AgsLFOSynthUtil *lfo_synth_util);
-void ags_lfo_synth_util_compute_triangle_float(AgsLFOSynthUtil *lfo_synth_util);
-void ags_lfo_synth_util_compute_triangle_double(AgsLFOSynthUtil *lfo_synth_util);
-void ags_lfo_synth_util_compute_triangle_complex(AgsLFOSynthUtil *lfo_synth_util);
-
-void ags_lfo_synth_util_compute_square_s8(AgsLFOSynthUtil *lfo_synth_util);
-void ags_lfo_synth_util_compute_square_s16(AgsLFOSynthUtil *lfo_synth_util);
-void ags_lfo_synth_util_compute_square_s24(AgsLFOSynthUtil *lfo_synth_util);
-void ags_lfo_synth_util_compute_square_s32(AgsLFOSynthUtil *lfo_synth_util);
-void ags_lfo_synth_util_compute_square_s64(AgsLFOSynthUtil *lfo_synth_util);
-void ags_lfo_synth_util_compute_square_float(AgsLFOSynthUtil *lfo_synth_util);
-void ags_lfo_synth_util_compute_square_double(AgsLFOSynthUtil *lfo_synth_util);
-void ags_lfo_synth_util_compute_square_complex(AgsLFOSynthUtil *lfo_synth_util);
-
-void ags_lfo_synth_util_compute_impulse_s8(AgsLFOSynthUtil *lfo_synth_util);
-void ags_lfo_synth_util_compute_impulse_s16(AgsLFOSynthUtil *lfo_synth_util);
-void ags_lfo_synth_util_compute_impulse_s24(AgsLFOSynthUtil *lfo_synth_util);
-void ags_lfo_synth_util_compute_impulse_s32(AgsLFOSynthUtil *lfo_synth_util);
-void ags_lfo_synth_util_compute_impulse_s64(AgsLFOSynthUtil *lfo_synth_util);
-void ags_lfo_synth_util_compute_impulse_float(AgsLFOSynthUtil *lfo_synth_util);
-void ags_lfo_synth_util_compute_impulse_double(AgsLFOSynthUtil *lfo_synth_util);
-void ags_lfo_synth_util_compute_impulse_complex(AgsLFOSynthUtil *lfo_synth_util);
-
 /**
  * SECTION:ags_lfo_synth_util
  * @short_description: low frequency oscillator synth util
