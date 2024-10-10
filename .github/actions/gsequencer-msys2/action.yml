@@ -1,0 +1,19 @@
+name: "GSequencer MSys2 build"
+
+description: "build GSequencer on Microsoft Windows using MSys2"
+
+inputs:
+  version:  # id of input
+    description: 'The GSequencer version'
+    required: true
+
+  gh_token:  # id of input
+    description: 'The Github token'
+    required: true
+
+runs:
+  using: "docker"
+  image: "Dockerfile"
+  args:
+    - GSEQUENCER_VERSION=${{ inputs.version }}
+    - GH_TOKEN=${{ inputs.gh_token }}

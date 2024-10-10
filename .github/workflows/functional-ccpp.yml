@@ -1,0 +1,31 @@
+name: functional C/C++ CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-22.04
+    timeout-minutes: 300
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set and install dependencies
+      run: |
+        sudo DEBIAN_FRONTEND=noninteractive apt-get remove libunwind-14-dev
+        sudo DEBIAN_FRONTEND=noninteractive apt-get update
+        sudo DEBIAN_FRONTEND=noninteractive apt-get install -f make gcc gettext autoconf automake autopoint autotools-dev parallel pkg-config gobject-introspection libgirepository1.0-dev gstreamer1.0-plugins-base gstreamer1.0-plugins-good libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libgtk-4-dev libinstpatch-dev libsndfile-dev libsamplerate-dev libsoup-3.0-dev libxml2-dev ladspa-sdk dssi-dev lv2-dev fftw3-dev libasound2-dev libjack-jackd2-dev libpulse-dev libpoppler-glib-dev uuid-dev xvfb libcunit1-dev gtk-doc-tools pulseaudio cmt swh-lv2 invada-studio-plugins-lv2 calf-plugins fluid-soundfont-gm hydrogen-drumkits libxtst-dev
+    - name: autoreconf
+      run: autoreconf -fi
+    - name: configure
+      run: ./configure --prefix=/usr --enable-run-system-tests --enable-run-functional-tests
+    - name: update-po
+      run: make update-po
+    - name: make
+      run: make
+    - name: make install
+      run: sudo make install
+    - name: make ags-integration-unit-test
+      run: xvfb-run --server-args="-screen 0 1920x1080x24" -a make ags-integration-unit-test
+    - name: make ags-integration-functional-test
+      run: xvfb-run --server-args="-screen 0 1920x1080x24" -a make ags-integration-functional-test

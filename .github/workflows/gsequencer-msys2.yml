@@ -1,0 +1,34 @@
+name: GSequencer MSys2
+
+on:
+  push:
+    # Publish `3.x.x` tags as releases.
+    tags:
+      - 3.*
+
+env:
+  IMAGE_NAME: gsequencer-msys2
+  
+jobs:
+  push:
+    runs-on: windows-latest
+    permissions:
+      packages: read
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: build gsequencer.exe
+        run: |
+          set CR_TOKEN "${{ secrets.GITHUB_TOKEN }}"
+          set GSEQUENCER_VERSION "${{ github.ref }}"
+          set GHCR_USERNAME "joelkraehemann"
+          set GHCR_PROJECT "gsequencer"
+          set GHCR_IMAGE "msys2:latest"
+          set GHCR_CONTAINER "ags-ms-build-container"
+          echo $CR_TOKEN | docker login ghcr.io -u $GHCR_USERNAME --password-stdin
+          docker pull ghcr.io/$GHCR_PROJECT/$GHCR_IMAGE
+          docker container create $GHCR_IMAGE --name $GHCR_CONTAINER
+          docker container start $GHCR_CONTAINER
+          docker exec $GHCR_CONTAINER git clone https://github.com/gsequencer/gsequencer.git
+          docker exec $GHCR_CONTAINER git clone git://git.sv.gnu.org/gnulib.git
