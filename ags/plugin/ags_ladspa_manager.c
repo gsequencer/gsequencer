@@ -54,6 +54,7 @@ void ags_ladspa_manager_finalize(GObject *gobject);
  *
  * The #AgsLadspaManager loads/unloads LADSPA plugins.
  */
+
 enum{
   ADD,
   CREATE,

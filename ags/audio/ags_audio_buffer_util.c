@@ -16236,7 +16236,7 @@ ags_audio_buffer_util_fill_v8double(AgsAudioBufferUtil *audio_buffer_util,
 }
 
 /**
- * ags_audio_buffer_util_add_fetch_v8s8:
+ * ags_audio_buffer_util_fetch_v8s8:
  * @audio_buffer_util: the #AgsAudioBufferUtil-struct
  * @destination: destination buffer
  * @destination_stride: destination buffer's count of channels
@@ -16244,192 +16244,192 @@ ags_audio_buffer_util_fill_v8double(AgsAudioBufferUtil *audio_buffer_util,
  * @source_stride: source vector's count of channels
  * @count: number of frames to copy
  *
- * Fetch and add signed 8 bit data from vector.
+ * Fetch signed 8 bit data from vector.
  * 
  * Since: 7.0.0
  */
 void
-ags_audio_buffer_util_add_fetch_v8s8(AgsAudioBufferUtil *audio_buffer_util,
-				     gint8 *destination, guint destination_stride,
-				     volatile ags_v8s8 *source, guint source_stride,
+ags_audio_buffer_util_fetch_v8s8(AgsAudioBufferUtil *audio_buffer_util,
+				 gint8 *destination, guint destination_stride,
+				 volatile ags_v8s8 *source, guint source_stride,
+				 guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = source[i * source_stride][0];
+    destination[(i + 1) * destination_stride] = source[i * source_stride][1];
+    destination[(i + 2) * destination_stride] = source[i * source_stride][2];
+    destination[(i + 3) * destination_stride] = source[i * source_stride][3];
+    destination[(i + 4) * destination_stride] = source[i * source_stride][4];
+    destination[(i + 5) * destination_stride] = source[i * source_stride][5];
+    destination[(i + 6) * destination_stride] = source[i * source_stride][6];
+    destination[(i + 7) * destination_stride] = source[i * source_stride][7];
+  }
+}
+
+/**
+ * ags_audio_buffer_util_fetch_v8s8:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination buffer
+ * @destination_stride: destination buffer's count of channels
+ * @source: source vector
+ * @source_stride: source vector's count of channels
+ * @count: number of frames to copy
+ *
+ * Fetch signed 16 bit data from vector.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fetch_v8s16(AgsAudioBufferUtil *audio_buffer_util,
+				  gint16 *destination, guint destination_stride,
+				  volatile ags_v8s16 *source, guint source_stride,
+				  guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = source[i * source_stride][0];
+    destination[(i + 1) * destination_stride] = source[i * source_stride][1];
+    destination[(i + 2) * destination_stride] = source[i * source_stride][2];
+    destination[(i + 3) * destination_stride] = source[i * source_stride][3];
+    destination[(i + 4) * destination_stride] = source[i * source_stride][4];
+    destination[(i + 5) * destination_stride] = source[i * source_stride][5];
+    destination[(i + 6) * destination_stride] = source[i * source_stride][6];
+    destination[(i + 7) * destination_stride] = source[i * source_stride][7];
+  }
+}
+
+/**
+ * ags_audio_buffer_util_fetch_v8s8:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination buffer
+ * @destination_stride: destination buffer's count of channels
+ * @source: source vector
+ * @source_stride: source vector's count of channels
+ * @count: number of frames to copy
+ *
+ * Fetch signed 32 bit data from vector.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fetch_v8s32(AgsAudioBufferUtil *audio_buffer_util,
+				  gint32 *destination, guint destination_stride,
+				  volatile ags_v8s32 *source, guint source_stride,
+				  guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = source[i * source_stride][0];
+    destination[(i + 1) * destination_stride] = source[i * source_stride][1];
+    destination[(i + 2) * destination_stride] = source[i * source_stride][2];
+    destination[(i + 3) * destination_stride] = source[i * source_stride][3];
+    destination[(i + 4) * destination_stride] = source[i * source_stride][4];
+    destination[(i + 5) * destination_stride] = source[i * source_stride][5];
+    destination[(i + 6) * destination_stride] = source[i * source_stride][6];
+    destination[(i + 7) * destination_stride] = source[i * source_stride][7];
+  }
+}
+
+/**
+ * ags_audio_buffer_util_fetch_v8s8:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination buffer
+ * @destination_stride: destination buffer's count of channels
+ * @source: source vector
+ * @source_stride: source vector's count of channels
+ * @count: number of frames to copy
+ *
+ * Fetch signed 64 bit data from vector.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fetch_v8s64(AgsAudioBufferUtil *audio_buffer_util,
+				  gint64 *destination, guint destination_stride,
+				  volatile ags_v8s64 *source, guint source_stride,
+				  guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = source[i * source_stride][0];
+    destination[(i + 1) * destination_stride] = source[i * source_stride][1];
+    destination[(i + 2) * destination_stride] = source[i * source_stride][2];
+    destination[(i + 3) * destination_stride] = source[i * source_stride][3];
+    destination[(i + 4) * destination_stride] = source[i * source_stride][4];
+    destination[(i + 5) * destination_stride] = source[i * source_stride][5];
+    destination[(i + 6) * destination_stride] = source[i * source_stride][6];
+    destination[(i + 7) * destination_stride] = source[i * source_stride][7];
+  }
+}
+
+/**
+ * ags_audio_buffer_util_fetch_v8s8:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination buffer
+ * @destination_stride: destination buffer's count of channels
+ * @source: source vector
+ * @source_stride: source vector's count of channels
+ * @count: number of frames to copy
+ *
+ * Fetch single precision floating point data from vector.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fetch_v8float(AgsAudioBufferUtil *audio_buffer_util,
+				    gfloat *destination, guint destination_stride,
+				    volatile ags_v8float *source, guint source_stride,
+				    guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = source[i * source_stride][0];
+    destination[(i + 1) * destination_stride] = source[i * source_stride][1];
+    destination[(i + 2) * destination_stride] = source[i * source_stride][2];
+    destination[(i + 3) * destination_stride] = source[i * source_stride][3];
+    destination[(i + 4) * destination_stride] = source[i * source_stride][4];
+    destination[(i + 5) * destination_stride] = source[i * source_stride][5];
+    destination[(i + 6) * destination_stride] = source[i * source_stride][6];
+    destination[(i + 7) * destination_stride] = source[i * source_stride][7];
+  }
+}
+
+/**
+ * ags_audio_buffer_util_fetch_v8double:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination buffer
+ * @destination_stride: destination buffer's count of channels
+ * @source: source vector
+ * @source_stride: source vector's count of channels
+ * @count: number of frames to copy
+ *
+ * Fetch double precision floating point data from vector.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fetch_v8double(AgsAudioBufferUtil *audio_buffer_util,
+				     gdouble *destination, guint destination_stride,
+				     volatile ags_v8double *source, guint source_stride,
 				     guint count)
 {
   guint i;
 
   for(i = 0; i < count / 8; i++){
-    destination[i * source_stride] += source[i * source_stride][0];
-    destination[(i + 1) * destination_stride] += source[i * source_stride][1];
-    destination[(i + 2) * destination_stride] += source[i * source_stride][2];
-    destination[(i + 3) * destination_stride] += source[i * source_stride][3];
-    destination[(i + 4) * destination_stride] += source[i * source_stride][4];
-    destination[(i + 5) * destination_stride] += source[i * source_stride][5];
-    destination[(i + 6) * destination_stride] += source[i * source_stride][6];
-    destination[(i + 7) * destination_stride] += source[i * source_stride][7];
-  }
-}
-
-/**
- * ags_audio_buffer_util_add_fetch_v8s8:
- * @audio_buffer_util: the #AgsAudioBufferUtil-struct
- * @destination: destination buffer
- * @destination_stride: destination buffer's count of channels
- * @source: source vector
- * @source_stride: source vector's count of channels
- * @count: number of frames to copy
- *
- * Fetch and add signed 16 bit data from vector.
- * 
- * Since: 7.0.0
- */
-void
-ags_audio_buffer_util_add_fetch_v8s16(AgsAudioBufferUtil *audio_buffer_util,
-				      gint16 *destination, guint destination_stride,
-				      volatile ags_v8s16 *source, guint source_stride,
-				      guint count)
-{
-  guint i;
-
-  for(i = 0; i < count / 8; i++){
-    destination[i * source_stride] += source[i * source_stride][0];
-    destination[(i + 1) * destination_stride] += source[i * source_stride][1];
-    destination[(i + 2) * destination_stride] += source[i * source_stride][2];
-    destination[(i + 3) * destination_stride] += source[i * source_stride][3];
-    destination[(i + 4) * destination_stride] += source[i * source_stride][4];
-    destination[(i + 5) * destination_stride] += source[i * source_stride][5];
-    destination[(i + 6) * destination_stride] += source[i * source_stride][6];
-    destination[(i + 7) * destination_stride] += source[i * source_stride][7];
-  }
-}
-
-/**
- * ags_audio_buffer_util_add_fetch_v8s8:
- * @audio_buffer_util: the #AgsAudioBufferUtil-struct
- * @destination: destination buffer
- * @destination_stride: destination buffer's count of channels
- * @source: source vector
- * @source_stride: source vector's count of channels
- * @count: number of frames to copy
- *
- * Fetch and add signed 32 bit data from vector.
- * 
- * Since: 7.0.0
- */
-void
-ags_audio_buffer_util_add_fetch_v8s32(AgsAudioBufferUtil *audio_buffer_util,
-				      gint32 *destination, guint destination_stride,
-				      volatile ags_v8s32 *source, guint source_stride,
-				      guint count)
-{
-  guint i;
-
-  for(i = 0; i < count / 8; i++){
-    destination[i * source_stride] += source[i * source_stride][0];
-    destination[(i + 1) * destination_stride] += source[i * source_stride][1];
-    destination[(i + 2) * destination_stride] += source[i * source_stride][2];
-    destination[(i + 3) * destination_stride] += source[i * source_stride][3];
-    destination[(i + 4) * destination_stride] += source[i * source_stride][4];
-    destination[(i + 5) * destination_stride] += source[i * source_stride][5];
-    destination[(i + 6) * destination_stride] += source[i * source_stride][6];
-    destination[(i + 7) * destination_stride] += source[i * source_stride][7];
-  }
-}
-
-/**
- * ags_audio_buffer_util_add_fetch_v8s8:
- * @audio_buffer_util: the #AgsAudioBufferUtil-struct
- * @destination: destination buffer
- * @destination_stride: destination buffer's count of channels
- * @source: source vector
- * @source_stride: source vector's count of channels
- * @count: number of frames to copy
- *
- * Fetch and add signed 64 bit data from vector.
- * 
- * Since: 7.0.0
- */
-void
-ags_audio_buffer_util_add_fetch_v8s64(AgsAudioBufferUtil *audio_buffer_util,
-				      gint64 *destination, guint destination_stride,
-				      volatile ags_v8s64 *source, guint source_stride,
-				      guint count)
-{
-  guint i;
-
-  for(i = 0; i < count / 8; i++){
-    destination[i * source_stride] += source[i * source_stride][0];
-    destination[(i + 1) * destination_stride] += source[i * source_stride][1];
-    destination[(i + 2) * destination_stride] += source[i * source_stride][2];
-    destination[(i + 3) * destination_stride] += source[i * source_stride][3];
-    destination[(i + 4) * destination_stride] += source[i * source_stride][4];
-    destination[(i + 5) * destination_stride] += source[i * source_stride][5];
-    destination[(i + 6) * destination_stride] += source[i * source_stride][6];
-    destination[(i + 7) * destination_stride] += source[i * source_stride][7];
-  }
-}
-
-/**
- * ags_audio_buffer_util_add_fetch_v8s8:
- * @audio_buffer_util: the #AgsAudioBufferUtil-struct
- * @destination: destination buffer
- * @destination_stride: destination buffer's count of channels
- * @source: source vector
- * @source_stride: source vector's count of channels
- * @count: number of frames to copy
- *
- * Fetch and add single precision floating point data from vector.
- * 
- * Since: 7.0.0
- */
-void
-ags_audio_buffer_util_add_fetch_v8float(AgsAudioBufferUtil *audio_buffer_util,
-					gfloat *destination, guint destination_stride,
-					volatile ags_v8float *source, guint source_stride,
-					guint count)
-{
-  guint i;
-
-  for(i = 0; i < count / 8; i++){
-    destination[i * source_stride] += source[i * source_stride][0];
-    destination[(i + 1) * destination_stride] += source[i * source_stride][1];
-    destination[(i + 2) * destination_stride] += source[i * source_stride][2];
-    destination[(i + 3) * destination_stride] += source[i * source_stride][3];
-    destination[(i + 4) * destination_stride] += source[i * source_stride][4];
-    destination[(i + 5) * destination_stride] += source[i * source_stride][5];
-    destination[(i + 6) * destination_stride] += source[i * source_stride][6];
-    destination[(i + 7) * destination_stride] += source[i * source_stride][7];
-  }
-}
-
-/**
- * ags_audio_buffer_util_add_fetch_v8double:
- * @audio_buffer_util: the #AgsAudioBufferUtil-struct
- * @destination: destination buffer
- * @destination_stride: destination buffer's count of channels
- * @source: source vector
- * @source_stride: source vector's count of channels
- * @count: number of frames to copy
- *
- * Fetch and add double precision floating point data from vector.
- * 
- * Since: 7.0.0
- */
-void
-ags_audio_buffer_util_add_fetch_v8double(AgsAudioBufferUtil *audio_buffer_util,
-					 gdouble *destination, guint destination_stride,
-					 volatile ags_v8double *source, guint source_stride,
-					 guint count)
-{
-  guint i;
-
-  for(i = 0; i < count / 8; i++){
-    destination[i * source_stride] += source[i * source_stride][0];
-    destination[(i + 1) * destination_stride] += source[i * source_stride][1];
-    destination[(i + 2) * destination_stride] += source[i * source_stride][2];
-    destination[(i + 3) * destination_stride] += source[i * source_stride][3];
-    destination[(i + 4) * destination_stride] += source[i * source_stride][4];
-    destination[(i + 5) * destination_stride] += source[i * source_stride][5];
-    destination[(i + 6) * destination_stride] += source[i * source_stride][6];
-    destination[(i + 7) * destination_stride] += source[i * source_stride][7];
+    destination[i * destination_stride] = source[i * source_stride][0];
+    destination[(i + 1) * destination_stride] = source[i * source_stride][1];
+    destination[(i + 2) * destination_stride] = source[i * source_stride][2];
+    destination[(i + 3) * destination_stride] = source[i * source_stride][3];
+    destination[(i + 4) * destination_stride] = source[i * source_stride][4];
+    destination[(i + 5) * destination_stride] = source[i * source_stride][5];
+    destination[(i + 6) * destination_stride] = source[i * source_stride][6];
+    destination[(i + 7) * destination_stride] = source[i * source_stride][7];
   }
 }
 

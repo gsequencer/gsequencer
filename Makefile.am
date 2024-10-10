@@ -1319,6 +1319,7 @@ deprecated_libags_audio_h_sources =
 
 libags_audio_h_sources = \
 	$(deprecated_libags_audio_h_sources) \
+	ags/audio/ags_sound_types.h \
 	ags/audio/ags_sound_enums.h \
 	ags/audio/ags_synth_enums.h \
 	ags/audio/ags_acceleration.h \
@@ -1397,6 +1398,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_time_stretch_util.h \
 	ags/audio/ags_track.h \
 	ags/audio/ags_tremolo_util.h \
+	ags/audio/ags_vector_256_manager.h \
 	ags/audio/ags_volume_util.h \
 	ags/audio/ags_wah_wah_util.h \
 	ags/audio/ags_wave.h
@@ -1499,6 +1501,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_time_stretch_util.c \
 	ags/audio/ags_track.c \
 	ags/audio/ags_tremolo_util.c \
+	ags/audio/ags_vector_256_manager.c \
 	ags/audio/ags_volume_util.c \
 	ags/audio/ags_wah_wah_util.c \
 	ags/audio/ags_wave.c
