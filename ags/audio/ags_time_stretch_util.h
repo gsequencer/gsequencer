@@ -126,6 +126,15 @@ gdouble ags_time_stretch_util_get_new_bpm(AgsTimeStretchUtil *time_stretch_util)
 void ags_time_stretch_util_set_new_bpm(AgsTimeStretchUtil *time_stretch_util,
 				       gdouble new_bpm);
 
+void ags_time_stretch_util_stretch_s8(AgsTimeStretchUtil *time_stretch_util);
+void ags_time_stretch_util_stretch_s16(AgsTimeStretchUtil *time_stretch_util);
+void ags_time_stretch_util_stretch_s24(AgsTimeStretchUtil *time_stretch_util);
+void ags_time_stretch_util_stretch_s32(AgsTimeStretchUtil *time_stretch_util);
+void ags_time_stretch_util_stretch_s64(AgsTimeStretchUtil *time_stretch_util);
+void ags_time_stretch_util_stretch_float(AgsTimeStretchUtil *time_stretch_util);
+void ags_time_stretch_util_stretch_double(AgsTimeStretchUtil *time_stretch_util);
+void ags_time_stretch_util_stretch_complex(AgsTimeStretchUtil *time_stretch_util);
+
 void ags_time_stretch_util_stretch(AgsTimeStretchUtil *time_stretch_util);
 
 G_END_DECLS

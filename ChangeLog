@@ -39,11 +39,11 @@ ags (7.0.0)
 	* NOTE:JK: removed ags_envelope_util_set_wah_wah_lfo_offset()
 	* implemented ags_recall_midi1_control_change()
 	* implemented ags_recall_midi2_control_change()
-	* TODO:JK: implemented utility functions initializers
+	* implemented utility functions initializers
+	* optimized ags/audio/ags_audio_buffer_util.c
 	* TODO:JK: refactored envelope to support LFO
-	* TODO:JK: refactored ags/audio/ags_fourier_transform_util.h
-	* TODO:JK: refactored ags/audio/ags_audio_buffer_util.h
-	* TODO:JK: temporary private utility functions
+	* refactored ags/audio/ags_fourier_transform_util.h
+	* refactored ags/audio/ags_audio_buffer_util.h
 	* refactored AgsAudioBufferUtil breaking ABI
 	* refactored AgsSynthUtil breaking ABI
 	* refactored ags_audio_buffer_util_get_copy_mode_from_format() breaking ABI due to renaming and conflict
@@ -60,6 +60,17 @@ ags (7.0.0)
 	* fixed ags_midi_smf_util_get_pitch_bend() prototype declaration
 	* fixed ags_midi_builder_append_change_pitch_bend() prototype declaration
 	* fixed ags_midi_parser_change_pitch_bend() parse transmitter attribute as 14 bit value
+
+ags (6.16.22)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential SIGSEGV in ags_audio.c involving g_object_run_dispose()
+
+ags (6.16.21)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential SIGSEGV in ags_audio.c not respecting cache of AgsAudioFileManager
+	* fixed wrong initial value of chorus LFO frequency of ags-fx-synth, ags-fx-fm-synth, ags-fx-sf2-synth and ags-fx-sfz-synth
 
 ags (6.16.20)
 

@@ -145,6 +145,15 @@ void ags_tremolo_util_set_offset_256th(AgsTremoloUtil *tremolo_util,
 				       guint offset_256th);
 
 /* compute */
+void ags_tremolo_util_compute_s8(AgsTremoloUtil *tremolo_util);
+void ags_tremolo_util_compute_s16(AgsTremoloUtil *tremolo_util);
+void ags_tremolo_util_compute_s24(AgsTremoloUtil *tremolo_util);
+void ags_tremolo_util_compute_s32(AgsTremoloUtil *tremolo_util);
+void ags_tremolo_util_compute_s64(AgsTremoloUtil *tremolo_util);
+void ags_tremolo_util_compute_float(AgsTremoloUtil *tremolo_util);
+void ags_tremolo_util_compute_double(AgsTremoloUtil *tremolo_util);
+void ags_tremolo_util_compute_complex(AgsTremoloUtil *tremolo_util);
+
 void ags_tremolo_util_compute(AgsTremoloUtil *tremolo_util);
 
 G_END_DECLS

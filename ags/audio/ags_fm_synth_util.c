@@ -28,51 +28,6 @@
 #include <math.h>
 #include <complex.h>
 
-void ags_fm_synth_util_compute_sin_s8(AgsFMSynthUtil *fm_synth_util);
-void ags_fm_synth_util_compute_sin_s16(AgsFMSynthUtil *fm_synth_util);
-void ags_fm_synth_util_compute_sin_s24(AgsFMSynthUtil *fm_synth_util);
-void ags_fm_synth_util_compute_sin_s32(AgsFMSynthUtil *fm_synth_util);
-void ags_fm_synth_util_compute_sin_s64(AgsFMSynthUtil *fm_synth_util);
-void ags_fm_synth_util_compute_sin_float(AgsFMSynthUtil *fm_synth_util);
-void ags_fm_synth_util_compute_sin_double(AgsFMSynthUtil *fm_synth_util);
-void ags_fm_synth_util_compute_sin_complex(AgsFMSynthUtil *fm_synth_util);
-
-void ags_fm_synth_util_compute_sawtooth_s8(AgsFMSynthUtil *fm_synth_util);
-void ags_fm_synth_util_compute_sawtooth_s16(AgsFMSynthUtil *fm_synth_util);
-void ags_fm_synth_util_compute_sawtooth_s24(AgsFMSynthUtil *fm_synth_util);
-void ags_fm_synth_util_compute_sawtooth_s32(AgsFMSynthUtil *fm_synth_util);
-void ags_fm_synth_util_compute_sawtooth_s64(AgsFMSynthUtil *fm_synth_util);
-void ags_fm_synth_util_compute_sawtooth_float(AgsFMSynthUtil *fm_synth_util);
-void ags_fm_synth_util_compute_sawtooth_double(AgsFMSynthUtil *fm_synth_util);
-void ags_fm_synth_util_compute_sawtooth_complex(AgsFMSynthUtil *fm_synth_util);
-
-void ags_fm_synth_util_compute_triangle_s8(AgsFMSynthUtil *fm_synth_util);
-void ags_fm_synth_util_compute_triangle_s16(AgsFMSynthUtil *fm_synth_util);
-void ags_fm_synth_util_compute_triangle_s24(AgsFMSynthUtil *fm_synth_util);
-void ags_fm_synth_util_compute_triangle_s32(AgsFMSynthUtil *fm_synth_util);
-void ags_fm_synth_util_compute_triangle_s64(AgsFMSynthUtil *fm_synth_util);
-void ags_fm_synth_util_compute_triangle_float(AgsFMSynthUtil *fm_synth_util);
-void ags_fm_synth_util_compute_triangle_double(AgsFMSynthUtil *fm_synth_util);
-void ags_fm_synth_util_compute_triangle_complex(AgsFMSynthUtil *fm_synth_util);
-
-void ags_fm_synth_util_compute_square_s8(AgsFMSynthUtil *fm_synth_util);
-void ags_fm_synth_util_compute_square_s16(AgsFMSynthUtil *fm_synth_util);
-void ags_fm_synth_util_compute_square_s24(AgsFMSynthUtil *fm_synth_util);
-void ags_fm_synth_util_compute_square_s32(AgsFMSynthUtil *fm_synth_util);
-void ags_fm_synth_util_compute_square_s64(AgsFMSynthUtil *fm_synth_util);
-void ags_fm_synth_util_compute_square_float(AgsFMSynthUtil *fm_synth_util);
-void ags_fm_synth_util_compute_square_double(AgsFMSynthUtil *fm_synth_util);
-void ags_fm_synth_util_compute_square_complex(AgsFMSynthUtil *fm_synth_util);
-
-void ags_fm_synth_util_compute_impulse_s8(AgsFMSynthUtil *fm_synth_util);
-void ags_fm_synth_util_compute_impulse_s16(AgsFMSynthUtil *fm_synth_util);
-void ags_fm_synth_util_compute_impulse_s24(AgsFMSynthUtil *fm_synth_util);
-void ags_fm_synth_util_compute_impulse_s32(AgsFMSynthUtil *fm_synth_util);
-void ags_fm_synth_util_compute_impulse_s64(AgsFMSynthUtil *fm_synth_util);
-void ags_fm_synth_util_compute_impulse_float(AgsFMSynthUtil *fm_synth_util);
-void ags_fm_synth_util_compute_impulse_double(AgsFMSynthUtil *fm_synth_util);
-void ags_fm_synth_util_compute_impulse_complex(AgsFMSynthUtil *fm_synth_util);
-
 /**
  * SECTION:ags_fm_synth_util
  * @short_description: frequency modulation synth util

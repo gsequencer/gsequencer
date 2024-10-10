@@ -152,6 +152,15 @@ guint ags_wah_wah_util_get_offset_256th(AgsWahWahUtil *wah_wah_util);
 void ags_wah_wah_util_set_offset_256th(AgsWahWahUtil *wah_wah_util,
 				       guint offset_256th);
 
+void ags_wah_wah_util_compute_s8(AgsWahWahUtil *wah_wah_util);
+void ags_wah_wah_util_compute_s16(AgsWahWahUtil *wah_wah_util);
+void ags_wah_wah_util_compute_s24(AgsWahWahUtil *wah_wah_util);
+void ags_wah_wah_util_compute_s32(AgsWahWahUtil *wah_wah_util);
+void ags_wah_wah_util_compute_s64(AgsWahWahUtil *wah_wah_util);
+void ags_wah_wah_util_compute_float(AgsWahWahUtil *wah_wah_util);
+void ags_wah_wah_util_compute_double(AgsWahWahUtil *wah_wah_util);
+void ags_wah_wah_util_compute_complex(AgsWahWahUtil *wah_wah_util);
+
 void ags_wah_wah_util_compute(AgsWahWahUtil *wah_wah_util);
 
 G_END_DECLS

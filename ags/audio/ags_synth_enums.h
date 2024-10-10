@@ -74,8 +74,8 @@ typedef enum{
  * @AGS_PITCH_TYPE_FLUID_INTERPOLATE_4TH_ORDER: fluidsynth's interpolate none
  * @AGS_PITCH_TYPE_FLUID_INTERPOLATE_7TH_ORDER: fluidsynth's interpolate none
  * @AGS_PITCH_TYPE_INTERPOLATE_2X_ALIAS: interpolate 2 times alias
- * @AGS_PITCH_TYPE_INTERPOLATE_2X_ALIAS: interpolate 4 times alias
- * @AGS_PITCH_TYPE_INTERPOLATE_2X_ALIAS: interpolate 16 times alias
+ * @AGS_PITCH_TYPE_INTERPOLATE_4X_ALIAS: interpolate 4 times alias
+ * @AGS_PITCH_TYPE_INTERPOLATE_16X_ALIAS: interpolate 16 times alias
  * 
  * Enum values to specify pitch type.
  */

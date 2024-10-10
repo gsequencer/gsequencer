@@ -22,6 +22,7 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_vector_256_manager.h>
 
 #include <samplerate.h>
 
@@ -2540,6 +2541,50 @@ ags_audio_buffer_util_copy_s8_to_s8(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_SIGNED_8_BIT, AGS_VECTOR_256_SIGNED_8_BIT,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8s8(NULL,
+				       source_arr->vector.vec_s8->mem_s8, 1,
+				       source, source_stride,
+				       32);
+
+      ags_audio_buffer_util_fill_v8s8(NULL,
+				       destination_arr->vector.vec_s8->mem_s8, 1,
+				       destination, destination_stride,
+				       32);
+
+      for(j = 0; j < 32; j++){
+	destination_arr->vector.vec_s8->mem_s8[j] += source_arr->vector.vec_s8->mem_s8[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8s8(NULL,
+					destination, destination_stride,
+					destination_arr->vector.vec_s8->mem_s8, 1,
+					32);
+
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8s8 v_destination;
       ags_v8s8 v_source;
@@ -2741,6 +2786,52 @@ ags_audio_buffer_util_copy_s8_to_s16(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_DOUBLE, AGS_VECTOR_256_DOUBLE,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8double_from_s8(NULL,
+						  source_arr->vector.vec_double->mem_double, 1,
+						  source, source_stride,
+						  32);
+
+      ags_audio_buffer_util_fill_v8double_from_s16(NULL,
+						   destination_arr->vector.vec_double->mem_double, 1,
+						   destination, destination_stride,
+						   32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_double->mem_double[j] *= scale;
+	
+	destination_arr->vector.vec_double->mem_double[j] += source_arr->vector.vec_double->mem_double[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8double_as_s16(NULL,
+						  destination, destination_stride,
+						  destination_arr->vector.vec_double->mem_double, 1,
+						  32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8double v_destination;
       ags_v8double v_source;
@@ -2950,6 +3041,52 @@ ags_audio_buffer_util_copy_s8_to_s24(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_DOUBLE, AGS_VECTOR_256_DOUBLE,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8double_from_s8(NULL,
+						  source_arr->vector.vec_double->mem_double, 1,
+						  source, source_stride,
+						  32);
+
+      ags_audio_buffer_util_fill_v8double_from_s32(NULL,
+						   destination_arr->vector.vec_double->mem_double, 1,
+						   destination, destination_stride,
+						   32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_double->mem_double[j] *= scale;
+	
+	destination_arr->vector.vec_double->mem_double[j] += source_arr->vector.vec_double->mem_double[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8double_as_s32(NULL,
+						  destination, destination_stride,
+						  destination_arr->vector.vec_double->mem_double, 1,
+						  32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8double v_destination;
       ags_v8double v_source;
@@ -3159,6 +3296,52 @@ ags_audio_buffer_util_copy_s8_to_s32(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_DOUBLE, AGS_VECTOR_256_DOUBLE,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8double_from_s8(NULL,
+						  source_arr->vector.vec_double->mem_double, 1,
+						  source, source_stride,
+						  32);
+
+      ags_audio_buffer_util_fill_v8double_from_s32(NULL,
+						   destination_arr->vector.vec_double->mem_double, 1,
+						   destination, destination_stride,
+						   32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_double->mem_double[j] *= scale;
+	
+	destination_arr->vector.vec_double->mem_double[j] += source_arr->vector.vec_double->mem_double[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8double_as_s32(NULL,
+						  destination, destination_stride,
+						  destination_arr->vector.vec_double->mem_double, 1,
+						  32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8double v_destination;
       ags_v8double v_source;
@@ -3368,6 +3551,52 @@ ags_audio_buffer_util_copy_s8_to_s64(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_DOUBLE, AGS_VECTOR_256_DOUBLE,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8double_from_s8(NULL,
+						  source_arr->vector.vec_double->mem_double, 1,
+						  source, source_stride,
+						  32);
+
+      ags_audio_buffer_util_fill_v8double_from_s64(NULL,
+						   destination_arr->vector.vec_double->mem_double, 1,
+						   destination, destination_stride,
+						   32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_double->mem_double[j] *= scale;
+	
+	destination_arr->vector.vec_double->mem_double[j] += source_arr->vector.vec_double->mem_double[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8double_as_s64(NULL,
+						  destination, destination_stride,
+						  destination_arr->vector.vec_double->mem_double, 1,
+						  32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8double v_destination;
       ags_v8double v_source;
@@ -3578,6 +3807,52 @@ ags_audio_buffer_util_copy_s8_to_float(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_FLOAT, AGS_VECTOR_256_FLOAT,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8float_from_s8(NULL,
+						 source_arr->vector.vec_float->mem_float, 1,
+						 source, source_stride,
+						 32);
+
+      ags_audio_buffer_util_fill_v8float(NULL,
+					 destination_arr->vector.vec_float->mem_float, 1,
+					 destination, destination_stride,
+					 32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_float->mem_float[j] /= (gfloat) normalize_divisor;
+	
+	destination_arr->vector.vec_float->mem_float[j] += source_arr->vector.vec_float->mem_float[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8float(NULL,
+					  destination, destination_stride,
+					  destination_arr->vector.vec_float->mem_float, 1,
+					  32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8float v_destination;
       ags_v8float v_source;
@@ -3788,6 +4063,52 @@ ags_audio_buffer_util_copy_s8_to_double(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_DOUBLE, AGS_VECTOR_256_DOUBLE,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8double_from_s8(NULL,
+						  source_arr->vector.vec_double->mem_double, 1,
+						  source, source_stride,
+						  32);
+
+      ags_audio_buffer_util_fill_v8double(NULL,
+					 destination_arr->vector.vec_double->mem_double, 1,
+					 destination, destination_stride,
+					 32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_double->mem_double[j] /= normalize_divisor;
+	
+	destination_arr->vector.vec_double->mem_double[j] += source_arr->vector.vec_double->mem_double[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8double(NULL,
+					  destination, destination_stride,
+					  destination_arr->vector.vec_double->mem_double, 1,
+					  32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8double v_destination;
       ags_v8double v_source;
@@ -3997,6 +4318,52 @@ ags_audio_buffer_util_copy_s16_to_s8(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_DOUBLE, AGS_VECTOR_256_DOUBLE,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8double_from_s16(NULL,
+						   source_arr->vector.vec_double->mem_double, 1,
+						   source, source_stride,
+						   32);
+
+      ags_audio_buffer_util_fill_v8double_from_s8(NULL,
+						   destination_arr->vector.vec_double->mem_double, 1,
+						   destination, destination_stride,
+						   32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_double->mem_double[j] *= scale;
+	
+	destination_arr->vector.vec_double->mem_double[j] += source_arr->vector.vec_double->mem_double[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8double_as_s8(NULL,
+						 destination, destination_stride,
+						 destination_arr->vector.vec_double->mem_double, 1,
+						 32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8double v_destination;
       ags_v8double v_source;
@@ -4169,6 +4536,8 @@ ags_audio_buffer_util_copy_s16_to_s8(AgsAudioBufferUtil *audio_buffer_util,
   }
 }
 
+// #undef AGS_VECTOR_256_FUNCTIONS
+
 /**
  * ags_audio_buffer_util_copy_s16_to_s16:
  * @audio_buffer_util: the #AgsAudioBufferUtil-struct
@@ -4203,6 +4572,50 @@ ags_audio_buffer_util_copy_s16_to_s16(AgsAudioBufferUtil *audio_buffer_util,
   /* vectorized function */
   if(count > 8){
     limit = count - (count % 8);
+  
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_SIGNED_16_BIT, AGS_VECTOR_256_SIGNED_16_BIT,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8s16(NULL,
+				       source_arr->vector.vec_s16->mem_s16, 1,
+				       source, source_stride,
+				       32);
+
+      ags_audio_buffer_util_fill_v8s16(NULL,
+				       destination_arr->vector.vec_s16->mem_s16, 1,
+				       destination, destination_stride,
+				       32);
+
+      for(j = 0; j < 32; j++){
+	destination_arr->vector.vec_s16->mem_s16[j] += source_arr->vector.vec_s16->mem_s16[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8s16(NULL,
+					destination, destination_stride,
+					destination_arr->vector.vec_s16->mem_s16, 1,
+					32);
+
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
   
     for(; i < limit; i += 8){
       ags_v8s16 v_destination;
@@ -4404,6 +4817,52 @@ ags_audio_buffer_util_copy_s16_to_s24(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_DOUBLE, AGS_VECTOR_256_DOUBLE,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8double_from_s16(NULL,
+						   source_arr->vector.vec_double->mem_double, 1,
+						   source, source_stride,
+						   32);
+
+      ags_audio_buffer_util_fill_v8double_from_s32(NULL,
+						   destination_arr->vector.vec_double->mem_double, 1,
+						   destination, destination_stride,
+						   32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_double->mem_double[j] *= scale;
+	
+	destination_arr->vector.vec_double->mem_double[j] += source_arr->vector.vec_double->mem_double[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8double_as_s32(NULL,
+						  destination, destination_stride,
+						  destination_arr->vector.vec_double->mem_double, 1,
+						  32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8double v_destination;
       ags_v8double v_source;
@@ -4613,6 +5072,52 @@ ags_audio_buffer_util_copy_s16_to_s32(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_DOUBLE, AGS_VECTOR_256_DOUBLE,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8double_from_s16(NULL,
+						   source_arr->vector.vec_double->mem_double, 1,
+						   source, source_stride,
+						   32);
+
+      ags_audio_buffer_util_fill_v8double_from_s32(NULL,
+						   destination_arr->vector.vec_double->mem_double, 1,
+						   destination, destination_stride,
+						   32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_double->mem_double[j] *= scale;
+	
+	destination_arr->vector.vec_double->mem_double[j] += source_arr->vector.vec_double->mem_double[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8double_as_s32(NULL,
+						  destination, destination_stride,
+						  destination_arr->vector.vec_double->mem_double, 1,
+						  32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8double v_destination;
       ags_v8double v_source;
@@ -4822,6 +5327,52 @@ ags_audio_buffer_util_copy_s16_to_s64(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_DOUBLE, AGS_VECTOR_256_DOUBLE,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8double_from_s16(NULL,
+						   source_arr->vector.vec_double->mem_double, 1,
+						   source, source_stride,
+						   32);
+
+      ags_audio_buffer_util_fill_v8double_from_s64(NULL,
+						   destination_arr->vector.vec_double->mem_double, 1,
+						   destination, destination_stride,
+						   32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_double->mem_double[j] *= scale;
+	
+	destination_arr->vector.vec_double->mem_double[j] += source_arr->vector.vec_double->mem_double[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8double_as_s64(NULL,
+						  destination, destination_stride,
+						  destination_arr->vector.vec_double->mem_double, 1,
+						  32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8double v_destination;
       ags_v8double v_source;
@@ -5032,6 +5583,52 @@ ags_audio_buffer_util_copy_s16_to_float(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_FLOAT, AGS_VECTOR_256_FLOAT,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8float_from_s16(NULL,
+						  source_arr->vector.vec_float->mem_float, 1,
+						  source, source_stride,
+						  32);
+
+      ags_audio_buffer_util_fill_v8float(NULL,
+					 destination_arr->vector.vec_float->mem_float, 1,
+					 destination, destination_stride,
+					 32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_float->mem_float[j] /= (gfloat) normalize_divisor;
+	
+	destination_arr->vector.vec_float->mem_float[j] += source_arr->vector.vec_float->mem_float[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8float(NULL,
+					  destination, destination_stride,
+					  destination_arr->vector.vec_float->mem_float, 1,
+					  32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8float v_destination;
       ags_v8float v_source;
@@ -5242,6 +5839,52 @@ ags_audio_buffer_util_copy_s16_to_double(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_DOUBLE, AGS_VECTOR_256_DOUBLE,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8double_from_s16(NULL,
+						   source_arr->vector.vec_double->mem_double, 1,
+						   source, source_stride,
+						   32);
+
+      ags_audio_buffer_util_fill_v8double(NULL,
+					 destination_arr->vector.vec_double->mem_double, 1,
+					 destination, destination_stride,
+					 32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_double->mem_double[j] /= normalize_divisor;
+	
+	destination_arr->vector.vec_double->mem_double[j] += source_arr->vector.vec_double->mem_double[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8double(NULL,
+					  destination, destination_stride,
+					  destination_arr->vector.vec_double->mem_double, 1,
+					  32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8double v_destination;
       ags_v8double v_source;
@@ -5451,6 +6094,52 @@ ags_audio_buffer_util_copy_s24_to_s8(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_DOUBLE, AGS_VECTOR_256_DOUBLE,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8double_from_s32(NULL,
+						   source_arr->vector.vec_double->mem_double, 1,
+						   source, source_stride,
+						   32);
+
+      ags_audio_buffer_util_fill_v8double_from_s8(NULL,
+						  destination_arr->vector.vec_double->mem_double, 1,
+						  destination, destination_stride,
+						  32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_double->mem_double[j] *= scale;
+	
+	destination_arr->vector.vec_double->mem_double[j] += source_arr->vector.vec_double->mem_double[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8double_as_s8(NULL,
+						 destination, destination_stride,
+						 destination_arr->vector.vec_double->mem_double, 1,
+						 32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8double v_destination;
       ags_v8double v_source;
@@ -5660,6 +6349,52 @@ ags_audio_buffer_util_copy_s24_to_s16(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_DOUBLE, AGS_VECTOR_256_DOUBLE,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8double_from_s32(NULL,
+						   source_arr->vector.vec_double->mem_double, 1,
+						   source, source_stride,
+						   32);
+
+      ags_audio_buffer_util_fill_v8double_from_s16(NULL,
+						   destination_arr->vector.vec_double->mem_double, 1,
+						   destination, destination_stride,
+						   32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_double->mem_double[j] *= scale;
+	
+	destination_arr->vector.vec_double->mem_double[j] += source_arr->vector.vec_double->mem_double[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8double_as_s16(NULL,
+						  destination, destination_stride,
+						  destination_arr->vector.vec_double->mem_double, 1,
+						  32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8double v_destination;
       ags_v8double v_source;
@@ -5867,6 +6602,50 @@ ags_audio_buffer_util_copy_s24_to_s24(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_SIGNED_32_BIT, AGS_VECTOR_256_SIGNED_32_BIT,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8s32(NULL,
+				       source_arr->vector.vec_s32->mem_s32, 1,
+				       source, source_stride,
+				       32);
+
+      ags_audio_buffer_util_fill_v8s32(NULL,
+				       destination_arr->vector.vec_s32->mem_s32, 1,
+				       destination, destination_stride,
+				       32);
+
+      for(j = 0; j < 32; j++){
+	destination_arr->vector.vec_s32->mem_s32[j] += source_arr->vector.vec_s32->mem_s32[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8s32(NULL,
+					destination, destination_stride,
+					destination_arr->vector.vec_s32->mem_s32, 1,
+					32);
+
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8s32 v_destination;
       ags_v8s32 v_source;
@@ -6068,6 +6847,52 @@ ags_audio_buffer_util_copy_s24_to_s32(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_DOUBLE, AGS_VECTOR_256_DOUBLE,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8double_from_s32(NULL,
+						   source_arr->vector.vec_double->mem_double, 1,
+						   source, source_stride,
+						   32);
+
+      ags_audio_buffer_util_fill_v8double_from_s32(NULL,
+						   destination_arr->vector.vec_double->mem_double, 1,
+						   destination, destination_stride,
+						   32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_double->mem_double[j] *= scale;
+	
+	destination_arr->vector.vec_double->mem_double[j] += source_arr->vector.vec_double->mem_double[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8double_as_s32(NULL,
+						  destination, destination_stride,
+						  destination_arr->vector.vec_double->mem_double, 1,
+						  32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8double v_destination;
       ags_v8double v_source;
@@ -6277,6 +7102,52 @@ ags_audio_buffer_util_copy_s24_to_s64(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_DOUBLE, AGS_VECTOR_256_DOUBLE,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8double_from_s32(NULL,
+						   source_arr->vector.vec_double->mem_double, 1,
+						   source, source_stride,
+						   32);
+
+      ags_audio_buffer_util_fill_v8double_from_s64(NULL,
+						   destination_arr->vector.vec_double->mem_double, 1,
+						   destination, destination_stride,
+						   32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_double->mem_double[j] *= scale;
+	
+	destination_arr->vector.vec_double->mem_double[j] += source_arr->vector.vec_double->mem_double[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8double_as_s64(NULL,
+						  destination, destination_stride,
+						  destination_arr->vector.vec_double->mem_double, 1,
+						  32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8double v_destination;
       ags_v8double v_source;
@@ -6487,6 +7358,52 @@ ags_audio_buffer_util_copy_s24_to_float(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_FLOAT, AGS_VECTOR_256_FLOAT,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8float_from_s32(NULL,
+						  source_arr->vector.vec_float->mem_float, 1,
+						  source, source_stride,
+						  32);
+
+      ags_audio_buffer_util_fill_v8float(NULL,
+					 destination_arr->vector.vec_float->mem_float, 1,
+					 destination, destination_stride,
+					 32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_float->mem_float[j] /= (gfloat) normalize_divisor;
+	
+	destination_arr->vector.vec_float->mem_float[j] += source_arr->vector.vec_float->mem_float[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8float(NULL,
+					  destination, destination_stride,
+					  destination_arr->vector.vec_float->mem_float, 1,
+					  32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8float v_destination;
       ags_v8float v_source;
@@ -6697,6 +7614,52 @@ ags_audio_buffer_util_copy_s24_to_double(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_DOUBLE, AGS_VECTOR_256_DOUBLE,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8double_from_s32(NULL,
+						   source_arr->vector.vec_double->mem_double, 1,
+						   source, source_stride,
+						   32);
+
+      ags_audio_buffer_util_fill_v8double(NULL,
+					 destination_arr->vector.vec_double->mem_double, 1,
+					 destination, destination_stride,
+					 32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_double->mem_double[j] /= normalize_divisor;
+	
+	destination_arr->vector.vec_double->mem_double[j] += source_arr->vector.vec_double->mem_double[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8double(NULL,
+					  destination, destination_stride,
+					  destination_arr->vector.vec_double->mem_double, 1,
+					  32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8double v_destination;
       ags_v8double v_source;
@@ -6906,6 +7869,52 @@ ags_audio_buffer_util_copy_s32_to_s8(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_DOUBLE, AGS_VECTOR_256_DOUBLE,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8double_from_s32(NULL,
+						   source_arr->vector.vec_double->mem_double, 1,
+						   source, source_stride,
+						   32);
+
+      ags_audio_buffer_util_fill_v8double_from_s8(NULL,
+						  destination_arr->vector.vec_double->mem_double, 1,
+						  destination, destination_stride,
+						  32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_double->mem_double[j] *= scale;
+	
+	destination_arr->vector.vec_double->mem_double[j] += source_arr->vector.vec_double->mem_double[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8double_as_s8(NULL,
+						 destination, destination_stride,
+						 destination_arr->vector.vec_double->mem_double, 1,
+						 32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8double v_destination;
       ags_v8double v_source;
@@ -7115,6 +8124,52 @@ ags_audio_buffer_util_copy_s32_to_s16(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_DOUBLE, AGS_VECTOR_256_DOUBLE,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8double_from_s32(NULL,
+						   source_arr->vector.vec_double->mem_double, 1,
+						   source, source_stride,
+						   32);
+
+      ags_audio_buffer_util_fill_v8double_from_s16(NULL,
+						   destination_arr->vector.vec_double->mem_double, 1,
+						   destination, destination_stride,
+						   32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_double->mem_double[j] *= scale;
+	
+	destination_arr->vector.vec_double->mem_double[j] += source_arr->vector.vec_double->mem_double[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8double_as_s16(NULL,
+						  destination, destination_stride,
+						  destination_arr->vector.vec_double->mem_double, 1,
+						  32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8double v_destination;
       ags_v8double v_source;
@@ -7324,6 +8379,52 @@ ags_audio_buffer_util_copy_s32_to_s24(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_DOUBLE, AGS_VECTOR_256_DOUBLE,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8double_from_s32(NULL,
+						   source_arr->vector.vec_double->mem_double, 1,
+						   source, source_stride,
+						   32);
+
+      ags_audio_buffer_util_fill_v8double_from_s32(NULL,
+						   destination_arr->vector.vec_double->mem_double, 1,
+						   destination, destination_stride,
+						   32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_double->mem_double[j] *= scale;
+	
+	destination_arr->vector.vec_double->mem_double[j] += source_arr->vector.vec_double->mem_double[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8double_as_s32(NULL,
+						  destination, destination_stride,
+						  destination_arr->vector.vec_double->mem_double, 1,
+						  32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8double v_destination;
       ags_v8double v_source;
@@ -7531,6 +8632,50 @@ ags_audio_buffer_util_copy_s32_to_s32(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_SIGNED_32_BIT, AGS_VECTOR_256_SIGNED_32_BIT,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8s32(NULL,
+				       source_arr->vector.vec_s32->mem_s32, 1,
+				       source, source_stride,
+				       32);
+
+      ags_audio_buffer_util_fill_v8s32(NULL,
+				       destination_arr->vector.vec_s32->mem_s32, 1,
+				       destination, destination_stride,
+				       32);
+
+      for(j = 0; j < 32; j++){
+	destination_arr->vector.vec_s32->mem_s32[j] += source_arr->vector.vec_s32->mem_s32[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8s32(NULL,
+					destination, destination_stride,
+					destination_arr->vector.vec_s32->mem_s32, 1,
+					32);
+
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8s32 v_destination;
       ags_v8s32 v_source;
@@ -7729,6 +8874,52 @@ ags_audio_buffer_util_copy_s32_to_s64(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_DOUBLE, AGS_VECTOR_256_DOUBLE,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8double_from_s32(NULL,
+						   source_arr->vector.vec_double->mem_double, 1,
+						   source, source_stride,
+						   32);
+
+      ags_audio_buffer_util_fill_v8double_from_s64(NULL,
+						   destination_arr->vector.vec_double->mem_double, 1,
+						   destination, destination_stride,
+						   32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_double->mem_double[j] *= scale;
+	
+	destination_arr->vector.vec_double->mem_double[j] += source_arr->vector.vec_double->mem_double[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8double_as_s64(NULL,
+						  destination, destination_stride,
+						  destination_arr->vector.vec_double->mem_double, 1,
+						  32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8double v_destination;
       ags_v8double v_source;
@@ -7939,6 +9130,52 @@ ags_audio_buffer_util_copy_s32_to_float(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_FLOAT, AGS_VECTOR_256_FLOAT,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8float_from_s32(NULL,
+						  source_arr->vector.vec_float->mem_float, 1,
+						  source, source_stride,
+						  32);
+
+      ags_audio_buffer_util_fill_v8float(NULL,
+					 destination_arr->vector.vec_float->mem_float, 1,
+					 destination, destination_stride,
+					 32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_float->mem_float[j] /= (gfloat) normalize_divisor;
+	
+	destination_arr->vector.vec_float->mem_float[j] += source_arr->vector.vec_float->mem_float[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8float(NULL,
+					  destination, destination_stride,
+					  destination_arr->vector.vec_float->mem_float, 1,
+					  32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8float v_destination;
       ags_v8float v_source;
@@ -8149,6 +9386,52 @@ ags_audio_buffer_util_copy_s32_to_double(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_DOUBLE, AGS_VECTOR_256_DOUBLE,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8double_from_s32(NULL,
+						   source_arr->vector.vec_double->mem_double, 1,
+						   source, source_stride,
+						   32);
+
+      ags_audio_buffer_util_fill_v8double(NULL,
+					 destination_arr->vector.vec_double->mem_double, 1,
+					 destination, destination_stride,
+					 32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_double->mem_double[j] /= normalize_divisor;
+	
+	destination_arr->vector.vec_double->mem_double[j] += source_arr->vector.vec_double->mem_double[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8double(NULL,
+					  destination, destination_stride,
+					  destination_arr->vector.vec_double->mem_double, 1,
+					  32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8double v_destination;
       ags_v8double v_source;
@@ -8358,6 +9641,52 @@ ags_audio_buffer_util_copy_s64_to_s8(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_DOUBLE, AGS_VECTOR_256_DOUBLE,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8double_from_s64(NULL,
+						   source_arr->vector.vec_double->mem_double, 1,
+						   source, source_stride,
+						   32);
+
+      ags_audio_buffer_util_fill_v8double_from_s8(NULL,
+						  destination_arr->vector.vec_double->mem_double, 1,
+						  destination, destination_stride,
+						  32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_double->mem_double[j] *= scale;
+	
+	destination_arr->vector.vec_double->mem_double[j] += source_arr->vector.vec_double->mem_double[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8double_as_s8(NULL,
+						 destination, destination_stride,
+						 destination_arr->vector.vec_double->mem_double, 1,
+						 32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8double v_destination;
       ags_v8double v_source;
@@ -8567,6 +9896,52 @@ ags_audio_buffer_util_copy_s64_to_s16(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_DOUBLE, AGS_VECTOR_256_DOUBLE,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8double_from_s64(NULL,
+						   source_arr->vector.vec_double->mem_double, 1,
+						   source, source_stride,
+						   32);
+
+      ags_audio_buffer_util_fill_v8double_from_s16(NULL,
+						   destination_arr->vector.vec_double->mem_double, 1,
+						   destination, destination_stride,
+						   32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_double->mem_double[j] *= scale;
+	
+	destination_arr->vector.vec_double->mem_double[j] += source_arr->vector.vec_double->mem_double[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8double_as_s16(NULL,
+						  destination, destination_stride,
+						  destination_arr->vector.vec_double->mem_double, 1,
+						  32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8double v_destination;
       ags_v8double v_source;
@@ -8776,6 +10151,52 @@ ags_audio_buffer_util_copy_s64_to_s24(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_DOUBLE, AGS_VECTOR_256_DOUBLE,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8double_from_s64(NULL,
+						   source_arr->vector.vec_double->mem_double, 1,
+						   source, source_stride,
+						   32);
+
+      ags_audio_buffer_util_fill_v8double_from_s32(NULL,
+						   destination_arr->vector.vec_double->mem_double, 1,
+						   destination, destination_stride,
+						   32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_double->mem_double[j] *= scale;
+	
+	destination_arr->vector.vec_double->mem_double[j] += source_arr->vector.vec_double->mem_double[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8double_as_s32(NULL,
+						  destination, destination_stride,
+						  destination_arr->vector.vec_double->mem_double, 1,
+						  32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8double v_destination;
       ags_v8double v_source;
@@ -8985,6 +10406,52 @@ ags_audio_buffer_util_copy_s64_to_s32(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_DOUBLE, AGS_VECTOR_256_DOUBLE,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8double_from_s64(NULL,
+						   source_arr->vector.vec_double->mem_double, 1,
+						   source, source_stride,
+						   32);
+
+      ags_audio_buffer_util_fill_v8double_from_s32(NULL,
+						   destination_arr->vector.vec_double->mem_double, 1,
+						   destination, destination_stride,
+						   32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_double->mem_double[j] *= scale;
+	
+	destination_arr->vector.vec_double->mem_double[j] += source_arr->vector.vec_double->mem_double[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8double_as_s32(NULL,
+						  destination, destination_stride,
+						  destination_arr->vector.vec_double->mem_double, 1,
+						  32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8double v_destination;
       ags_v8double v_source;
@@ -9224,6 +10691,50 @@ ags_audio_buffer_util_copy_s64_to_s64(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_SIGNED_64_BIT, AGS_VECTOR_256_SIGNED_64_BIT,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8s64(NULL,
+				       source_arr->vector.vec_s64->mem_s64, 1,
+				       source, source_stride,
+				       32);
+
+      ags_audio_buffer_util_fill_v8s64(NULL,
+				       destination_arr->vector.vec_s64->mem_s64, 1,
+				       destination, destination_stride,
+				       32);
+
+      for(j = 0; j < 32; j++){
+	destination_arr->vector.vec_s64->mem_s64[j] += source_arr->vector.vec_s64->mem_s64[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8s64(NULL,
+					destination, destination_stride,
+					destination_arr->vector.vec_s64->mem_s64, 1,
+					32);
+
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8s64 v_destination;
       ags_v8s64 v_source;
@@ -9394,6 +10905,52 @@ ags_audio_buffer_util_copy_s64_to_float(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_FLOAT, AGS_VECTOR_256_FLOAT,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8float_from_s64(NULL,
+						  source_arr->vector.vec_float->mem_float, 1,
+						  source, source_stride,
+						  32);
+
+      ags_audio_buffer_util_fill_v8float(NULL,
+					 destination_arr->vector.vec_float->mem_float, 1,
+					 destination, destination_stride,
+					 32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_float->mem_float[j] /= (gfloat) normalize_divisor;
+	
+	destination_arr->vector.vec_float->mem_float[j] += source_arr->vector.vec_float->mem_float[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8float(NULL,
+					  destination, destination_stride,
+					  destination_arr->vector.vec_float->mem_float, 1,
+					  32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8float v_destination;
       ags_v8float v_source;
@@ -9604,6 +11161,52 @@ ags_audio_buffer_util_copy_s64_to_double(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_DOUBLE, AGS_VECTOR_256_DOUBLE,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8double_from_s64(NULL,
+						   source_arr->vector.vec_double->mem_double, 1,
+						   source, source_stride,
+						   32);
+
+      ags_audio_buffer_util_fill_v8double(NULL,
+					 destination_arr->vector.vec_double->mem_double, 1,
+					 destination, destination_stride,
+					 32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_double->mem_double[j] /= normalize_divisor;
+	
+	destination_arr->vector.vec_double->mem_double[j] += source_arr->vector.vec_double->mem_double[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8double(NULL,
+					  destination, destination_stride,
+					  destination_arr->vector.vec_double->mem_double, 1,
+					  32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8double v_destination;
       ags_v8double v_source;
@@ -9813,6 +11416,52 @@ ags_audio_buffer_util_copy_float_to_s8(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_FLOAT, AGS_VECTOR_256_FLOAT,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8float(NULL,
+					 source_arr->vector.vec_float->mem_float, 1,
+					 source, source_stride,
+					 32);
+
+      ags_audio_buffer_util_fill_v8float_from_s8(NULL,
+						 destination_arr->vector.vec_float->mem_float, 1,
+						 destination, destination_stride,
+						 32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_float->mem_float[j] *= (gfloat) scale;
+	
+	destination_arr->vector.vec_float->mem_float[j] += source_arr->vector.vec_float->mem_float[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8float_as_s8(NULL,
+						destination, destination_stride,
+						destination_arr->vector.vec_float->mem_float, 1,
+						32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8float v_destination;
       ags_v8float v_source;
@@ -10022,6 +11671,52 @@ ags_audio_buffer_util_copy_float_to_s16(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_FLOAT, AGS_VECTOR_256_FLOAT,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8float(NULL,
+					 source_arr->vector.vec_float->mem_float, 1,
+					 source, source_stride,
+					 32);
+
+      ags_audio_buffer_util_fill_v8float_from_s16(NULL,
+						  destination_arr->vector.vec_float->mem_float, 1,
+						  destination, destination_stride,
+						  32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_float->mem_float[j] *= (gfloat) scale;
+	
+	destination_arr->vector.vec_float->mem_float[j] += source_arr->vector.vec_float->mem_float[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8float_as_s16(NULL,
+						 destination, destination_stride,
+						 destination_arr->vector.vec_float->mem_float, 1,
+						 32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8float v_destination;
       ags_v8float v_source;
@@ -10231,6 +11926,52 @@ ags_audio_buffer_util_copy_float_to_s24(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_FLOAT, AGS_VECTOR_256_FLOAT,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8float(NULL,
+					 source_arr->vector.vec_float->mem_float, 1,
+					 source, source_stride,
+					 32);
+
+      ags_audio_buffer_util_fill_v8float_from_s32(NULL,
+						  destination_arr->vector.vec_float->mem_float, 1,
+						  destination, destination_stride,
+						  32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_float->mem_float[j] *= (gfloat) scale;
+	
+	destination_arr->vector.vec_float->mem_float[j] += source_arr->vector.vec_float->mem_float[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8float_as_s32(NULL,
+						 destination, destination_stride,
+						 destination_arr->vector.vec_float->mem_float, 1,
+						 32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8float v_destination;
       ags_v8float v_source;
@@ -10440,6 +12181,52 @@ ags_audio_buffer_util_copy_float_to_s32(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_FLOAT, AGS_VECTOR_256_FLOAT,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8float(NULL,
+					 source_arr->vector.vec_float->mem_float, 1,
+					 source, source_stride,
+					 32);
+
+      ags_audio_buffer_util_fill_v8float_from_s32(NULL,
+						  destination_arr->vector.vec_float->mem_float, 1,
+						  destination, destination_stride,
+						  32);
+      
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_float->mem_float[j] *= (gfloat) scale;
+	
+	destination_arr->vector.vec_float->mem_float[j] += source_arr->vector.vec_float->mem_float[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8float_as_s32(NULL,
+						 destination, destination_stride,
+						 destination_arr->vector.vec_float->mem_float, 1,
+						 32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8float v_destination;
       ags_v8float v_source;
@@ -10649,6 +12436,52 @@ ags_audio_buffer_util_copy_float_to_s64(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_FLOAT, AGS_VECTOR_256_FLOAT,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8float(NULL,
+					 source_arr->vector.vec_float->mem_float, 1,
+					 source, source_stride,
+					 32);
+
+      ags_audio_buffer_util_fill_v8float_from_s64(NULL,
+						  destination_arr->vector.vec_float->mem_float, 1,
+						  destination, destination_stride,
+						  32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_float->mem_float[j] *= (gfloat) scale;
+	
+	destination_arr->vector.vec_float->mem_float[j] += source_arr->vector.vec_float->mem_float[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8float_as_s64(NULL,
+						 destination, destination_stride,
+						 destination_arr->vector.vec_float->mem_float, 1,
+						 32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8float v_destination;
       ags_v8float v_source;
@@ -10856,6 +12689,50 @@ ags_audio_buffer_util_copy_float_to_float(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_FLOAT, AGS_VECTOR_256_FLOAT,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8float(NULL,
+					 source_arr->vector.vec_float->mem_float, 1,
+					 source, source_stride,
+					 32);
+
+      ags_audio_buffer_util_fill_v8float(NULL,
+					 destination_arr->vector.vec_float->mem_float, 1,
+					 destination, destination_stride,
+					 32);
+
+      for(j = 0; j < 32; j++){
+	destination_arr->vector.vec_float->mem_float[j] += source_arr->vector.vec_float->mem_float[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8float(NULL,
+					  destination, destination_stride,
+					  destination_arr->vector.vec_float->mem_float, 1,
+					  32);
+
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8float v_destination;
       ags_v8float v_source;
@@ -11052,6 +12929,50 @@ ags_audio_buffer_util_copy_float_to_double(AgsAudioBufferUtil *audio_buffer_util
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_DOUBLE, AGS_VECTOR_256_DOUBLE,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8double_from_float(NULL,
+						     source_arr->vector.vec_double->mem_double, 1,
+						     source, source_stride,
+						     32);
+
+      ags_audio_buffer_util_fill_v8double(NULL,
+					  destination_arr->vector.vec_double->mem_double, 1,
+					  destination, destination_stride,
+					  32);
+
+      for(j = 0; j < 32; j++){
+	destination_arr->vector.vec_double->mem_double[j] += source_arr->vector.vec_double->mem_double[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8double(NULL,
+					   destination, destination_stride,
+					   destination_arr->vector.vec_double->mem_double, 1,
+					   32);
+
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8double v_destination;
       ags_v8double v_source;
@@ -11250,6 +13171,52 @@ ags_audio_buffer_util_copy_double_to_s8(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_DOUBLE, AGS_VECTOR_256_DOUBLE,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8double(NULL,
+					  source_arr->vector.vec_double->mem_double, 1,
+					  source, source_stride,
+					  32);
+
+      ags_audio_buffer_util_fill_v8double_from_s8(NULL,
+						  destination_arr->vector.vec_double->mem_double, 1,
+						  destination, destination_stride,
+						  32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_double->mem_double[j] *= scale;
+	
+	destination_arr->vector.vec_double->mem_double[j] += source_arr->vector.vec_double->mem_double[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8double_as_s8(NULL,
+						 destination, destination_stride,
+						 destination_arr->vector.vec_double->mem_double, 1,
+						 32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8double v_destination;
       ags_v8double v_source;
@@ -11459,6 +13426,52 @@ ags_audio_buffer_util_copy_double_to_s16(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_DOUBLE, AGS_VECTOR_256_DOUBLE,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8double(NULL,
+					 source_arr->vector.vec_double->mem_double, 1,
+					 source, source_stride,
+					 32);
+
+      ags_audio_buffer_util_fill_v8double_from_s16(NULL,
+						  destination_arr->vector.vec_double->mem_double, 1,
+						  destination, destination_stride,
+						  32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_double->mem_double[j] *= scale;
+	
+	destination_arr->vector.vec_double->mem_double[j] += source_arr->vector.vec_double->mem_double[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8double_as_s16(NULL,
+						 destination, destination_stride,
+						 destination_arr->vector.vec_double->mem_double, 1,
+						 32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8double v_destination;
       ags_v8double v_source;
@@ -11668,6 +13681,52 @@ ags_audio_buffer_util_copy_double_to_s24(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_DOUBLE, AGS_VECTOR_256_DOUBLE,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8double(NULL,
+					  source_arr->vector.vec_double->mem_double, 1,
+					  source, source_stride,
+					  32);
+
+      ags_audio_buffer_util_fill_v8double_from_s32(NULL,
+						   destination_arr->vector.vec_double->mem_double, 1,
+						   destination, destination_stride,
+						   32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_double->mem_double[j] *= scale;
+	
+	destination_arr->vector.vec_double->mem_double[j] += source_arr->vector.vec_double->mem_double[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8double_as_s32(NULL,
+						  destination, destination_stride,
+						  destination_arr->vector.vec_double->mem_double, 1,
+						  32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8double v_destination;
       ags_v8double v_source;
@@ -11877,6 +13936,52 @@ ags_audio_buffer_util_copy_double_to_s32(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_DOUBLE, AGS_VECTOR_256_DOUBLE,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8double(NULL,
+					  source_arr->vector.vec_double->mem_double, 1,
+					  source, source_stride,
+					  32);
+
+      ags_audio_buffer_util_fill_v8double_from_s32(NULL,
+						   destination_arr->vector.vec_double->mem_double, 1,
+						   destination, destination_stride,
+						   32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_double->mem_double[j] *= scale;
+	
+	destination_arr->vector.vec_double->mem_double[j] += source_arr->vector.vec_double->mem_double[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8double_as_s32(NULL,
+						  destination, destination_stride,
+						  destination_arr->vector.vec_double->mem_double, 1,
+						  32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8double v_destination;
       ags_v8double v_source;
@@ -12086,6 +14191,52 @@ ags_audio_buffer_util_copy_double_to_s64(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_DOUBLE, AGS_VECTOR_256_DOUBLE,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8double(NULL,
+					  source_arr->vector.vec_double->mem_double, 1,
+					  source, source_stride,
+					  32);
+
+      ags_audio_buffer_util_fill_v8double_from_s64(NULL,
+						   destination_arr->vector.vec_double->mem_double, 1,
+						   destination, destination_stride,
+						   32);
+
+      for(j = 0; j < 32; j++){
+	source_arr->vector.vec_double->mem_double[j] *= scale;
+	
+	destination_arr->vector.vec_double->mem_double[j] += source_arr->vector.vec_double->mem_double[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8double_as_s64(NULL,
+						  destination, destination_stride,
+						  destination_arr->vector.vec_double->mem_double, 1,
+						  32);
+      
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8double v_destination;
       ags_v8double v_source;
@@ -12293,6 +14444,50 @@ ags_audio_buffer_util_copy_double_to_float(AgsAudioBufferUtil *audio_buffer_util
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_FLOAT, AGS_VECTOR_256_FLOAT,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8float_from_double(NULL,
+						     source_arr->vector.vec_float->mem_float, 1,
+						     source, source_stride,
+						     32);
+
+      ags_audio_buffer_util_fill_v8float(NULL,
+					 destination_arr->vector.vec_float->mem_float, 1,
+					 destination, destination_stride,
+					 32);
+
+      for(j = 0; j < 32; j++){
+	destination_arr->vector.vec_float->mem_float[j] += source_arr->vector.vec_float->mem_float[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8float(NULL,
+					  destination, destination_stride,
+					  destination_arr->vector.vec_float->mem_float, 1,
+					  32);
+
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8float v_destination;
       ags_v8float v_source;
@@ -12492,6 +14687,50 @@ ags_audio_buffer_util_copy_double_to_double(AgsAudioBufferUtil *audio_buffer_uti
   if(count > 8){
     limit = count - (count % 8);
   
+#if defined(AGS_VECTOR_256_FUNCTIONS)
+    AgsVector256Manager *vector_256_manager = ags_vector_256_manager_get_instance();
+  
+    while(i + 256 <= limit){
+      AgsVectorArr *source_arr, *destination_arr;
+
+      guint j;
+    
+      while(!ags_vector_256_manager_try_acquire_dual(vector_256_manager,
+						     AGS_VECTOR_256_DOUBLE, AGS_VECTOR_256_DOUBLE,
+						     &source_arr, &destination_arr)){
+	g_thread_yield();
+      }
+
+      ags_audio_buffer_util_fill_v8double(NULL,
+					  source_arr->vector.vec_double->mem_double, 1,
+					  source, source_stride,
+					  32);
+
+      ags_audio_buffer_util_fill_v8double(NULL,
+					  destination_arr->vector.vec_double->mem_double, 1,
+					  destination, destination_stride,
+					  32);
+
+      for(j = 0; j < 32; j++){
+	destination_arr->vector.vec_double->mem_double[j] += source_arr->vector.vec_double->mem_double[j];
+      }
+    
+      ags_audio_buffer_util_fetch_v8double(NULL,
+					   destination, destination_stride,
+					   destination_arr->vector.vec_double->mem_double, 1,
+					   32);
+
+      ags_vector_256_manager_release(vector_256_manager,
+				     source_arr);
+      ags_vector_256_manager_release(vector_256_manager,
+				     destination_arr);
+
+      destination += (256 * destination_stride);
+      source += (256 * source_stride);
+      i += 256;
+    }
+#endif
+
     for(; i < limit; i += 8){
       ags_v8double v_destination;
       ags_v8double v_source;
@@ -16036,6 +18275,1062 @@ ags_audio_buffer_util_copy_complex_to_float32(AgsAudioBufferUtil *audio_buffer_u
   }
 }
 #endif
+
+/**
+ * ags_audio_buffer_util_fill_v8s8:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination vector
+ * @destination_stride: destination vector's count of channels
+ * @source: source buffer
+ * @source_stride: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Fill vector with signed 8 bit data.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fill_v8s8(AgsAudioBufferUtil *audio_buffer_util,
+				ags_v8s8 *destination, guint destination_stride,
+				gint8 *source, guint source_stride,
+				guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = (ags_v8s8) {source[i * source_stride],
+						      source[(i + 1) * source_stride],
+						      source[(i + 2) * source_stride],
+						      source[(i + 3) * source_stride],
+						      source[(i + 4) * source_stride],
+						      source[(i + 5) * source_stride],
+						      source[(i + 6) * source_stride],
+						      source[(i + 7) * source_stride]};
+  }
+}
+
+/**
+ * ags_audio_buffer_util_fill_v8s16:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination vector
+ * @destination_stride: destination vector's count of channels
+ * @source: source buffer
+ * @source_stride: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Fill vector with signed 16 bit data.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fill_v8s16(AgsAudioBufferUtil *audio_buffer_util,
+				 ags_v8s16 *destination, guint destination_stride,
+				 gint16 *source, guint source_stride,
+				 guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = (ags_v8s16) {source[i * source_stride],
+						       source[(i + 1) * source_stride],
+						       source[(i + 2) * source_stride],
+						       source[(i + 3) * source_stride],
+						       source[(i + 4) * source_stride],
+						       source[(i + 5) * source_stride],
+						       source[(i + 6) * source_stride],
+						       source[(i + 7) * source_stride]};
+  }
+}
+
+/**
+ * ags_audio_buffer_util_fill_v8s32:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination vector
+ * @destination_stride: destination vector's count of channels
+ * @source: source buffer
+ * @source_stride: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Fill vector with signed 32 bit data.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fill_v8s32(AgsAudioBufferUtil *audio_buffer_util,
+				 ags_v8s32 *destination, guint destination_stride,
+				 gint32 *source, guint source_stride,
+				 guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = (ags_v8s32) {source[i * source_stride],
+						       source[(i + 1) * source_stride],
+						       source[(i + 2) * source_stride],
+						       source[(i + 3) * source_stride],
+						       source[(i + 4) * source_stride],
+						       source[(i + 5) * source_stride],
+						       source[(i + 6) * source_stride],
+						       source[(i + 7) * source_stride]};
+  }
+}
+
+/**
+ * ags_audio_buffer_util_fill_v8s64:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination vector
+ * @destination_stride: destination vector's count of channels
+ * @source: source buffer
+ * @source_stride: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Fill vector with signed 64 bit data.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fill_v8s64(AgsAudioBufferUtil *audio_buffer_util,
+				 ags_v8s64 *destination, guint destination_stride,
+				 gint64 *source, guint source_stride,
+				 guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = (ags_v8s64) {source[i * source_stride],
+						       source[(i + 1) * source_stride],
+						       source[(i + 2) * source_stride],
+						       source[(i + 3) * source_stride],
+						       source[(i + 4) * source_stride],
+						       source[(i + 5) * source_stride],
+						       source[(i + 6) * source_stride],
+						       source[(i + 7) * source_stride]};
+  }
+}
+
+/**
+ * ags_audio_buffer_util_fill_v8float:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination vector
+ * @destination_stride: destination vector's count of channels
+ * @source: source buffer
+ * @source_stride: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Fill vector with single precision floating point data.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fill_v8float(AgsAudioBufferUtil *audio_buffer_util,
+				   ags_v8float *destination, guint destination_stride,
+				   gfloat *source, guint source_stride,
+				   guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = (ags_v8float) {source[i * source_stride],
+							 source[(i + 1) * source_stride],
+							 source[(i + 2) * source_stride],
+							 source[(i + 3) * source_stride],
+							 source[(i + 4) * source_stride],
+							 source[(i + 5) * source_stride],
+							 source[(i + 6) * source_stride],
+							 source[(i + 7) * source_stride]};
+  }
+}
+
+/**
+ * ags_audio_buffer_util_fill_v8double:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination vector
+ * @destination_stride: destination vector's count of channels
+ * @source: source buffer
+ * @source_stride: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Fill vector with double precision floating point data.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fill_v8double(AgsAudioBufferUtil *audio_buffer_util,
+				    ags_v8double *destination, guint destination_stride,
+				    gdouble *source, guint source_stride,
+				    guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = (ags_v8double) {source[i * source_stride],
+							  source[(i + 1) * source_stride],
+							  source[(i + 2) * source_stride],
+							  source[(i + 3) * source_stride],
+							  source[(i + 4) * source_stride],
+							  source[(i + 5) * source_stride],
+							  source[(i + 6) * source_stride],
+							  source[(i + 7) * source_stride]};
+  }
+}
+
+/**
+ * ags_audio_buffer_util_fetch_v8s8:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination buffer
+ * @destination_stride: destination buffer's count of channels
+ * @source: source vector
+ * @source_stride: source vector's count of channels
+ * @count: number of frames to copy
+ *
+ * Fetch signed 8 bit data from vector.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fetch_v8s8(AgsAudioBufferUtil *audio_buffer_util,
+				 gint8 *destination, guint destination_stride,
+				 ags_v8s8 *source, guint source_stride,
+				 guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = source[i * source_stride][0];
+    destination[(i + 1) * destination_stride] = source[i * source_stride][1];
+    destination[(i + 2) * destination_stride] = source[i * source_stride][2];
+    destination[(i + 3) * destination_stride] = source[i * source_stride][3];
+    destination[(i + 4) * destination_stride] = source[i * source_stride][4];
+    destination[(i + 5) * destination_stride] = source[i * source_stride][5];
+    destination[(i + 6) * destination_stride] = source[i * source_stride][6];
+    destination[(i + 7) * destination_stride] = source[i * source_stride][7];
+  }
+}
+
+/**
+ * ags_audio_buffer_util_fetch_v8s8:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination buffer
+ * @destination_stride: destination buffer's count of channels
+ * @source: source vector
+ * @source_stride: source vector's count of channels
+ * @count: number of frames to copy
+ *
+ * Fetch signed 16 bit data from vector.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fetch_v8s16(AgsAudioBufferUtil *audio_buffer_util,
+				  gint16 *destination, guint destination_stride,
+				  ags_v8s16 *source, guint source_stride,
+				  guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = source[i * source_stride][0];
+    destination[(i + 1) * destination_stride] = source[i * source_stride][1];
+    destination[(i + 2) * destination_stride] = source[i * source_stride][2];
+    destination[(i + 3) * destination_stride] = source[i * source_stride][3];
+    destination[(i + 4) * destination_stride] = source[i * source_stride][4];
+    destination[(i + 5) * destination_stride] = source[i * source_stride][5];
+    destination[(i + 6) * destination_stride] = source[i * source_stride][6];
+    destination[(i + 7) * destination_stride] = source[i * source_stride][7];
+  }
+}
+
+/**
+ * ags_audio_buffer_util_fetch_v8s8:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination buffer
+ * @destination_stride: destination buffer's count of channels
+ * @source: source vector
+ * @source_stride: source vector's count of channels
+ * @count: number of frames to copy
+ *
+ * Fetch signed 32 bit data from vector.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fetch_v8s32(AgsAudioBufferUtil *audio_buffer_util,
+				  gint32 *destination, guint destination_stride,
+				  ags_v8s32 *source, guint source_stride,
+				  guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = source[i * source_stride][0];
+    destination[(i + 1) * destination_stride] = source[i * source_stride][1];
+    destination[(i + 2) * destination_stride] = source[i * source_stride][2];
+    destination[(i + 3) * destination_stride] = source[i * source_stride][3];
+    destination[(i + 4) * destination_stride] = source[i * source_stride][4];
+    destination[(i + 5) * destination_stride] = source[i * source_stride][5];
+    destination[(i + 6) * destination_stride] = source[i * source_stride][6];
+    destination[(i + 7) * destination_stride] = source[i * source_stride][7];
+  }
+}
+
+/**
+ * ags_audio_buffer_util_fetch_v8s8:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination buffer
+ * @destination_stride: destination buffer's count of channels
+ * @source: source vector
+ * @source_stride: source vector's count of channels
+ * @count: number of frames to copy
+ *
+ * Fetch signed 64 bit data from vector.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fetch_v8s64(AgsAudioBufferUtil *audio_buffer_util,
+				  gint64 *destination, guint destination_stride,
+				  ags_v8s64 *source, guint source_stride,
+				  guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = source[i * source_stride][0];
+    destination[(i + 1) * destination_stride] = source[i * source_stride][1];
+    destination[(i + 2) * destination_stride] = source[i * source_stride][2];
+    destination[(i + 3) * destination_stride] = source[i * source_stride][3];
+    destination[(i + 4) * destination_stride] = source[i * source_stride][4];
+    destination[(i + 5) * destination_stride] = source[i * source_stride][5];
+    destination[(i + 6) * destination_stride] = source[i * source_stride][6];
+    destination[(i + 7) * destination_stride] = source[i * source_stride][7];
+  }
+}
+
+/**
+ * ags_audio_buffer_util_fetch_v8s8:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination buffer
+ * @destination_stride: destination buffer's count of channels
+ * @source: source vector
+ * @source_stride: source vector's count of channels
+ * @count: number of frames to copy
+ *
+ * Fetch single precision floating point data from vector.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fetch_v8float(AgsAudioBufferUtil *audio_buffer_util,
+				    gfloat *destination, guint destination_stride,
+				    ags_v8float *source, guint source_stride,
+				    guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = source[i * source_stride][0];
+    destination[(i + 1) * destination_stride] = source[i * source_stride][1];
+    destination[(i + 2) * destination_stride] = source[i * source_stride][2];
+    destination[(i + 3) * destination_stride] = source[i * source_stride][3];
+    destination[(i + 4) * destination_stride] = source[i * source_stride][4];
+    destination[(i + 5) * destination_stride] = source[i * source_stride][5];
+    destination[(i + 6) * destination_stride] = source[i * source_stride][6];
+    destination[(i + 7) * destination_stride] = source[i * source_stride][7];
+  }
+}
+
+/**
+ * ags_audio_buffer_util_fetch_v8double:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination buffer
+ * @destination_stride: destination buffer's count of channels
+ * @source: source vector
+ * @source_stride: source vector's count of channels
+ * @count: number of frames to copy
+ *
+ * Fetch double precision floating point data from vector.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fetch_v8double(AgsAudioBufferUtil *audio_buffer_util,
+				     gdouble *destination, guint destination_stride,
+				     ags_v8double *source, guint source_stride,
+				     guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = source[i * source_stride][0];
+    destination[(i + 1) * destination_stride] = source[i * source_stride][1];
+    destination[(i + 2) * destination_stride] = source[i * source_stride][2];
+    destination[(i + 3) * destination_stride] = source[i * source_stride][3];
+    destination[(i + 4) * destination_stride] = source[i * source_stride][4];
+    destination[(i + 5) * destination_stride] = source[i * source_stride][5];
+    destination[(i + 6) * destination_stride] = source[i * source_stride][6];
+    destination[(i + 7) * destination_stride] = source[i * source_stride][7];
+  }
+}
+
+/**
+ * ags_audio_buffer_util_fill_v8float_from_s8:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination vector
+ * @destination_stride: destination vector's count of channels
+ * @source: source buffer
+ * @source_stride: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Fill vector with float precision floating point data from signed 8 bit.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fill_v8float_from_s8(AgsAudioBufferUtil *audio_buffer_util,
+					   ags_v8float *destination, guint destination_stride,
+					   gint8 *source, guint source_stride,
+					   guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = (ags_v8float) {source[i * source_stride],
+							 source[(i + 1) * source_stride],
+							 source[(i + 2) * source_stride],
+							 source[(i + 3) * source_stride],
+							 source[(i + 4) * source_stride],
+							 source[(i + 5) * source_stride],
+							 source[(i + 6) * source_stride],
+							 source[(i + 7) * source_stride]};
+  }
+}
+
+/**
+ * ags_audio_buffer_util_fill_v8float_from_s16:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination vector
+ * @destination_stride: destination vector's count of channels
+ * @source: source buffer
+ * @source_stride: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Fill vector with float precision floating point data from signed 16 bit.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fill_v8float_from_s16(AgsAudioBufferUtil *audio_buffer_util,
+					    ags_v8float *destination, guint destination_stride,
+					    gint16 *source, guint source_stride,
+					    guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = (ags_v8float) {source[i * source_stride],
+							 source[(i + 1) * source_stride],
+							 source[(i + 2) * source_stride],
+							 source[(i + 3) * source_stride],
+							 source[(i + 4) * source_stride],
+							 source[(i + 5) * source_stride],
+							 source[(i + 6) * source_stride],
+							 source[(i + 7) * source_stride]};
+  }
+}
+
+/**
+ * ags_audio_buffer_util_fill_v8float_from_s32:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination vector
+ * @destination_stride: destination vector's count of channels
+ * @source: source buffer
+ * @source_stride: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Fill vector with float precision floating point data from signed 32 bit.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fill_v8float_from_s32(AgsAudioBufferUtil *audio_buffer_util,
+					    ags_v8float *destination, guint destination_stride,
+					    gint32 *source, guint source_stride,
+					    guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = (ags_v8float) {source[i * source_stride],
+							 source[(i + 1) * source_stride],
+							 source[(i + 2) * source_stride],
+							 source[(i + 3) * source_stride],
+							 source[(i + 4) * source_stride],
+							 source[(i + 5) * source_stride],
+							 source[(i + 6) * source_stride],
+							 source[(i + 7) * source_stride]};
+  }
+}
+
+/**
+ * ags_audio_buffer_util_fill_v8float_from_s64:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination vector
+ * @destination_stride: destination vector's count of channels
+ * @source: source buffer
+ * @source_stride: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Fill vector with float precision floating point data from signed 64 bit.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fill_v8float_from_s64(AgsAudioBufferUtil *audio_buffer_util,
+					    ags_v8float *destination, guint destination_stride,
+					    gint64 *source, guint source_stride,
+					    guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = (ags_v8float) {source[i * source_stride],
+							 source[(i + 1) * source_stride],
+							 source[(i + 2) * source_stride],
+							 source[(i + 3) * source_stride],
+							 source[(i + 4) * source_stride],
+							 source[(i + 5) * source_stride],
+							 source[(i + 6) * source_stride],
+							 source[(i + 7) * source_stride]};
+  }
+}
+
+/**
+ * ags_audio_buffer_util_fill_v8float_from_double:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination vector
+ * @destination_stride: destination vector's count of channels
+ * @source: source buffer
+ * @source_stride: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Fill vector with float precision floating point data from float.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fill_v8float_from_double(AgsAudioBufferUtil *audio_buffer_util,
+					       ags_v8float *destination, guint destination_stride,
+					       gdouble *source, guint source_stride,
+					       guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = (ags_v8float) {source[i * source_stride],
+							 source[(i + 1) * source_stride],
+							 source[(i + 2) * source_stride],
+							 source[(i + 3) * source_stride],
+							 source[(i + 4) * source_stride],
+							 source[(i + 5) * source_stride],
+							 source[(i + 6) * source_stride],
+							 source[(i + 7) * source_stride]};
+  }
+}
+
+/**
+ * ags_audio_buffer_util_fetch_v8float_as_s8:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination buffer
+ * @destination_stride: destination buffer's count of channels
+ * @source: source vector
+ * @source_stride: source vector's count of channels
+ * @count: number of frames to copy
+ *
+ * Fetch signed 8 bit data from float vector.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fetch_v8float_as_s8(AgsAudioBufferUtil *audio_buffer_util,
+					  gint8 *destination, guint destination_stride,
+					  ags_v8float *source, guint source_stride,
+					  guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = (gint8) source[i * source_stride][0];
+    destination[(i + 1) * destination_stride] = (gint8) source[i * source_stride][1];
+    destination[(i + 2) * destination_stride] = (gint8) source[i * source_stride][2];
+    destination[(i + 3) * destination_stride] = (gint8) source[i * source_stride][3];
+    destination[(i + 4) * destination_stride] = (gint8) source[i * source_stride][4];
+    destination[(i + 5) * destination_stride] = (gint8) source[i * source_stride][5];
+    destination[(i + 6) * destination_stride] = (gint8) source[i * source_stride][6];
+    destination[(i + 7) * destination_stride] = (gint8) source[i * source_stride][7];
+  }
+}
+
+/**
+ * ags_audio_buffer_util_fetch_v8float_as_s16:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination buffer
+ * @destination_stride: destination buffer's count of channels
+ * @source: source vector
+ * @source_stride: source vector's count of channels
+ * @count: number of frames to copy
+ *
+ * Fetch signed 16 bit data from float vector.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fetch_v8float_as_s16(AgsAudioBufferUtil *audio_buffer_util,
+					   gint16 *destination, guint destination_stride,
+					   ags_v8float *source, guint source_stride,
+					   guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = (gint16) source[i * source_stride][0];
+    destination[(i + 1) * destination_stride] = (gint16) source[i * source_stride][1];
+    destination[(i + 2) * destination_stride] = (gint16) source[i * source_stride][2];
+    destination[(i + 3) * destination_stride] = (gint16) source[i * source_stride][3];
+    destination[(i + 4) * destination_stride] = (gint16) source[i * source_stride][4];
+    destination[(i + 5) * destination_stride] = (gint16) source[i * source_stride][5];
+    destination[(i + 6) * destination_stride] = (gint16) source[i * source_stride][6];
+    destination[(i + 7) * destination_stride] = (gint16) source[i * source_stride][7];
+  }
+}
+
+/**
+ * ags_audio_buffer_util_fetch_v8float_as_s32:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination buffer
+ * @destination_stride: destination buffer's count of channels
+ * @source: source vector
+ * @source_stride: source vector's count of channels
+ * @count: number of frames to copy
+ *
+ * Fetch signed 32 bit data from float vector.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fetch_v8float_as_s32(AgsAudioBufferUtil *audio_buffer_util,
+					   gint32 *destination, guint destination_stride,
+					   ags_v8float *source, guint source_stride,
+					   guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = (gint32) source[i * source_stride][0];
+    destination[(i + 1) * destination_stride] = (gint32) source[i * source_stride][1];
+    destination[(i + 2) * destination_stride] = (gint32) source[i * source_stride][2];
+    destination[(i + 3) * destination_stride] = (gint32) source[i * source_stride][3];
+    destination[(i + 4) * destination_stride] = (gint32) source[i * source_stride][4];
+    destination[(i + 5) * destination_stride] = (gint32) source[i * source_stride][5];
+    destination[(i + 6) * destination_stride] = (gint32) source[i * source_stride][6];
+    destination[(i + 7) * destination_stride] = (gint32) source[i * source_stride][7];
+  }
+}
+
+/**
+ * ags_audio_buffer_util_fetch_v8float_as_s64:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination buffer
+ * @destination_stride: destination buffer's count of channels
+ * @source: source vector
+ * @source_stride: source vector's count of channels
+ * @count: number of frames to copy
+ *
+ * Fetch signed 64 bit data from float vector.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fetch_v8float_as_s64(AgsAudioBufferUtil *audio_buffer_util,
+					   gint64 *destination, guint destination_stride,
+					   ags_v8float *source, guint source_stride,
+					   guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = (gint64) source[i * source_stride][0];
+    destination[(i + 1) * destination_stride] = (gint64) source[i * source_stride][1];
+    destination[(i + 2) * destination_stride] = (gint64) source[i * source_stride][2];
+    destination[(i + 3) * destination_stride] = (gint64) source[i * source_stride][3];
+    destination[(i + 4) * destination_stride] = (gint64) source[i * source_stride][4];
+    destination[(i + 5) * destination_stride] = (gint64) source[i * source_stride][5];
+    destination[(i + 6) * destination_stride] = (gint64) source[i * source_stride][6];
+    destination[(i + 7) * destination_stride] = (gint64) source[i * source_stride][7];
+  }
+}
+
+/**
+ * ags_audio_buffer_util_fetch_v8float_as_double:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination buffer
+ * @destination_stride: destination buffer's count of channels
+ * @source: source vector
+ * @source_stride: source vector's count of channels
+ * @count: number of frames to copy
+ *
+ * Fetch signed 16 bit data from float vector.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fetch_v8float_as_float(AgsAudioBufferUtil *audio_buffer_util,
+					     gdouble *destination, guint destination_stride,
+					     ags_v8float *source, guint source_stride,
+					     guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = (gfloat) source[i * source_stride][0];
+    destination[(i + 1) * destination_stride] = (gfloat) source[i * source_stride][1];
+    destination[(i + 2) * destination_stride] = (gfloat) source[i * source_stride][2];
+    destination[(i + 3) * destination_stride] = (gfloat) source[i * source_stride][3];
+    destination[(i + 4) * destination_stride] = (gfloat) source[i * source_stride][4];
+    destination[(i + 5) * destination_stride] = (gfloat) source[i * source_stride][5];
+    destination[(i + 6) * destination_stride] = (gfloat) source[i * source_stride][6];
+    destination[(i + 7) * destination_stride] = (gfloat) source[i * source_stride][7];
+  }
+}
+
+/**
+ * ags_audio_buffer_util_fill_v8double_from_s8:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination vector
+ * @destination_stride: destination vector's count of channels
+ * @source: source buffer
+ * @source_stride: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Fill vector with double precision floating point data from signed 8 bit.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fill_v8double_from_s8(AgsAudioBufferUtil *audio_buffer_util,
+					    ags_v8double *destination, guint destination_stride,
+					    gint8 *source, guint source_stride,
+					    guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = (ags_v8double) {source[i * source_stride],
+							  source[(i + 1) * source_stride],
+							  source[(i + 2) * source_stride],
+							  source[(i + 3) * source_stride],
+							  source[(i + 4) * source_stride],
+							  source[(i + 5) * source_stride],
+							  source[(i + 6) * source_stride],
+							  source[(i + 7) * source_stride]};
+  }
+}
+
+/**
+ * ags_audio_buffer_util_fill_v8double_from_s16:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination vector
+ * @destination_stride: destination vector's count of channels
+ * @source: source buffer
+ * @source_stride: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Fill vector with double precision floating point data from signed 16 bit.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fill_v8double_from_s16(AgsAudioBufferUtil *audio_buffer_util,
+					     ags_v8double *destination, guint destination_stride,
+					     gint16 *source, guint source_stride,
+					     guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = (ags_v8double) {source[i * source_stride],
+							  source[(i + 1) * source_stride],
+							  source[(i + 2) * source_stride],
+							  source[(i + 3) * source_stride],
+							  source[(i + 4) * source_stride],
+							  source[(i + 5) * source_stride],
+							  source[(i + 6) * source_stride],
+							  source[(i + 7) * source_stride]};
+  }
+}
+
+/**
+ * ags_audio_buffer_util_fill_v8double_from_s32:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination vector
+ * @destination_stride: destination vector's count of channels
+ * @source: source buffer
+ * @source_stride: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Fill vector with double precision floating point data from signed 32 bit.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fill_v8double_from_s32(AgsAudioBufferUtil *audio_buffer_util,
+					     ags_v8double *destination, guint destination_stride,
+					     gint32 *source, guint source_stride,
+					     guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = (ags_v8double) {source[i * source_stride],
+							  source[(i + 1) * source_stride],
+							  source[(i + 2) * source_stride],
+							  source[(i + 3) * source_stride],
+							  source[(i + 4) * source_stride],
+							  source[(i + 5) * source_stride],
+							  source[(i + 6) * source_stride],
+							  source[(i + 7) * source_stride]};
+  }
+}
+
+/**
+ * ags_audio_buffer_util_fill_v8double_from_s64:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination vector
+ * @destination_stride: destination vector's count of channels
+ * @source: source buffer
+ * @source_stride: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Fill vector with double precision floating point data from signed 64 bit.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fill_v8double_from_s64(AgsAudioBufferUtil *audio_buffer_util,
+					     ags_v8double *destination, guint destination_stride,
+					     gint64 *source, guint source_stride,
+					     guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = (ags_v8double) {source[i * source_stride],
+							  source[(i + 1) * source_stride],
+							  source[(i + 2) * source_stride],
+							  source[(i + 3) * source_stride],
+							  source[(i + 4) * source_stride],
+							  source[(i + 5) * source_stride],
+							  source[(i + 6) * source_stride],
+							  source[(i + 7) * source_stride]};
+  }
+}
+
+/**
+ * ags_audio_buffer_util_fill_v8double_from_float:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination vector
+ * @destination_stride: destination vector's count of channels
+ * @source: source buffer
+ * @source_stride: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Fill vector with double precision floating point data from float.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fill_v8double_from_float(AgsAudioBufferUtil *audio_buffer_util,
+					       ags_v8double *destination, guint destination_stride,
+					       gfloat *source, guint source_stride,
+					       guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = (ags_v8double) {source[i * source_stride],
+							  source[(i + 1) * source_stride],
+							  source[(i + 2) * source_stride],
+							  source[(i + 3) * source_stride],
+							  source[(i + 4) * source_stride],
+							  source[(i + 5) * source_stride],
+							  source[(i + 6) * source_stride],
+							  source[(i + 7) * source_stride]};
+  }
+}
+
+/**
+ * ags_audio_buffer_util_fetch_v8double_as_s8:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination buffer
+ * @destination_stride: destination buffer's count of channels
+ * @source: source vector
+ * @source_stride: source vector's count of channels
+ * @count: number of frames to copy
+ *
+ * Fetch signed 8 bit data from double vector.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fetch_v8double_as_s8(AgsAudioBufferUtil *audio_buffer_util,
+					   gint8 *destination, guint destination_stride,
+					   ags_v8double *source, guint source_stride,
+					   guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = (gint8) source[i * source_stride][0];
+    destination[(i + 1) * destination_stride] = (gint8) source[i * source_stride][1];
+    destination[(i + 2) * destination_stride] = (gint8) source[i * source_stride][2];
+    destination[(i + 3) * destination_stride] = (gint8) source[i * source_stride][3];
+    destination[(i + 4) * destination_stride] = (gint8) source[i * source_stride][4];
+    destination[(i + 5) * destination_stride] = (gint8) source[i * source_stride][5];
+    destination[(i + 6) * destination_stride] = (gint8) source[i * source_stride][6];
+    destination[(i + 7) * destination_stride] = (gint8) source[i * source_stride][7];
+  }
+}
+
+/**
+ * ags_audio_buffer_util_fetch_v8double_as_s16:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination buffer
+ * @destination_stride: destination buffer's count of channels
+ * @source: source vector
+ * @source_stride: source vector's count of channels
+ * @count: number of frames to copy
+ *
+ * Fetch signed 16 bit data from double vector.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fetch_v8double_as_s16(AgsAudioBufferUtil *audio_buffer_util,
+					    gint16 *destination, guint destination_stride,
+					    ags_v8double *source, guint source_stride,
+					    guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = (gint16) source[i * source_stride][0];
+    destination[(i + 1) * destination_stride] = (gint16) source[i * source_stride][1];
+    destination[(i + 2) * destination_stride] = (gint16) source[i * source_stride][2];
+    destination[(i + 3) * destination_stride] = (gint16) source[i * source_stride][3];
+    destination[(i + 4) * destination_stride] = (gint16) source[i * source_stride][4];
+    destination[(i + 5) * destination_stride] = (gint16) source[i * source_stride][5];
+    destination[(i + 6) * destination_stride] = (gint16) source[i * source_stride][6];
+    destination[(i + 7) * destination_stride] = (gint16) source[i * source_stride][7];
+  }
+}
+
+/**
+ * ags_audio_buffer_util_fetch_v8double_as_s32:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination buffer
+ * @destination_stride: destination buffer's count of channels
+ * @source: source vector
+ * @source_stride: source vector's count of channels
+ * @count: number of frames to copy
+ *
+ * Fetch signed 32 bit data from double vector.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fetch_v8double_as_s32(AgsAudioBufferUtil *audio_buffer_util,
+					    gint32 *destination, guint destination_stride,
+					    ags_v8double *source, guint source_stride,
+					    guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = (gint32) source[i * source_stride][0];
+    destination[(i + 1) * destination_stride] = (gint32) source[i * source_stride][1];
+    destination[(i + 2) * destination_stride] = (gint32) source[i * source_stride][2];
+    destination[(i + 3) * destination_stride] = (gint32) source[i * source_stride][3];
+    destination[(i + 4) * destination_stride] = (gint32) source[i * source_stride][4];
+    destination[(i + 5) * destination_stride] = (gint32) source[i * source_stride][5];
+    destination[(i + 6) * destination_stride] = (gint32) source[i * source_stride][6];
+    destination[(i + 7) * destination_stride] = (gint32) source[i * source_stride][7];
+  }
+}
+
+/**
+ * ags_audio_buffer_util_fetch_v8double_as_s64:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination buffer
+ * @destination_stride: destination buffer's count of channels
+ * @source: source vector
+ * @source_stride: source vector's count of channels
+ * @count: number of frames to copy
+ *
+ * Fetch signed 64 bit data from double vector.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fetch_v8double_as_s64(AgsAudioBufferUtil *audio_buffer_util,
+					    gint64 *destination, guint destination_stride,
+					    ags_v8double *source, guint source_stride,
+					    guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = (gint64) source[i * source_stride][0];
+    destination[(i + 1) * destination_stride] = (gint64) source[i * source_stride][1];
+    destination[(i + 2) * destination_stride] = (gint64) source[i * source_stride][2];
+    destination[(i + 3) * destination_stride] = (gint64) source[i * source_stride][3];
+    destination[(i + 4) * destination_stride] = (gint64) source[i * source_stride][4];
+    destination[(i + 5) * destination_stride] = (gint64) source[i * source_stride][5];
+    destination[(i + 6) * destination_stride] = (gint64) source[i * source_stride][6];
+    destination[(i + 7) * destination_stride] = (gint64) source[i * source_stride][7];
+  }
+}
+
+/**
+ * ags_audio_buffer_util_fetch_v8double_as_float:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination buffer
+ * @destination_stride: destination buffer's count of channels
+ * @source: source vector
+ * @source_stride: source vector's count of channels
+ * @count: number of frames to copy
+ *
+ * Fetch signed 16 bit data from double vector.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fetch_v8double_as_float(AgsAudioBufferUtil *audio_buffer_util,
+					      gfloat *destination, guint destination_stride,
+					      ags_v8double *source, guint source_stride,
+					      guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = (gfloat) source[i * source_stride][0];
+    destination[(i + 1) * destination_stride] = (gfloat) source[i * source_stride][1];
+    destination[(i + 2) * destination_stride] = (gfloat) source[i * source_stride][2];
+    destination[(i + 3) * destination_stride] = (gfloat) source[i * source_stride][3];
+    destination[(i + 4) * destination_stride] = (gfloat) source[i * source_stride][4];
+    destination[(i + 5) * destination_stride] = (gfloat) source[i * source_stride][5];
+    destination[(i + 6) * destination_stride] = (gfloat) source[i * source_stride][6];
+    destination[(i + 7) * destination_stride] = (gfloat) source[i * source_stride][7];
+  }
+}
 
 /**
  * ags_audio_buffer_util_copy_buffer_to_buffer:

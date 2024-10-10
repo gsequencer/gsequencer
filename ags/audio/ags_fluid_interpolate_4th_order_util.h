@@ -47,9 +47,9 @@ G_BEGIN_DECLS
       .vibrato_enabled = FALSE,						\
       .vibrato_gain = 1.0,						\
       .vibrato_lfo_depth = 1.0,						\
-      .vibrato_lfo_freq = 6.0,						\
+      .vibrato_lfo_freq = 8.172,					\
       .vibrato_tuning = 0.0,						\
-      .frame_count = (AGS_SOUNDCARD_DEFAULT_SAMPLERATE / 6.0),		\
+      .frame_count = (AGS_SOUNDCARD_DEFAULT_SAMPLERATE / 8.172),	\
       .offset = 0,							\
       .note_256th_mode = FALSE,						\
       .offset_256th = 0 })
@@ -170,6 +170,15 @@ void ags_fluid_interpolate_4th_order_util_set_note_256th_mode(AgsFluidInterpolat
 guint ags_fluid_interpolate_4th_order_util_get_offset_256th(AgsFluidInterpolate4thOrderUtil *fluid_interpolate_4th_order_util);
 void ags_fluid_interpolate_4th_order_util_set_offset_256th(AgsFluidInterpolate4thOrderUtil *fluid_interpolate_4th_order_util,
 							   guint offset_256th);
+
+void ags_fluid_interpolate_4th_order_util_pitch_s8(AgsFluidInterpolate4thOrderUtil *fluid_interpolate_4th_order_util);
+void ags_fluid_interpolate_4th_order_util_pitch_s16(AgsFluidInterpolate4thOrderUtil *fluid_interpolate_4th_order_util);
+void ags_fluid_interpolate_4th_order_util_pitch_s24(AgsFluidInterpolate4thOrderUtil *fluid_interpolate_4th_order_util);
+void ags_fluid_interpolate_4th_order_util_pitch_s32(AgsFluidInterpolate4thOrderUtil *fluid_interpolate_4th_order_util);
+void ags_fluid_interpolate_4th_order_util_pitch_s64(AgsFluidInterpolate4thOrderUtil *fluid_interpolate_4th_order_util);
+void ags_fluid_interpolate_4th_order_util_pitch_float(AgsFluidInterpolate4thOrderUtil *fluid_interpolate_4th_order_util);
+void ags_fluid_interpolate_4th_order_util_pitch_double(AgsFluidInterpolate4thOrderUtil *fluid_interpolate_4th_order_util);
+void ags_fluid_interpolate_4th_order_util_pitch_complex(AgsFluidInterpolate4thOrderUtil *fluid_interpolate_4th_order_util);
 
 void ags_fluid_interpolate_4th_order_util_pitch(AgsFluidInterpolate4thOrderUtil *fluid_interpolate_4th_order_util);
 

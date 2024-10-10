@@ -47,38 +47,38 @@ G_BEGIN_DECLS
 
 #define AGS_SF2_SYNTH_UTIL_INITIALIZER ((AgsSF2SynthUtil) {		\
       .flags = 0,							\
-	.sf2_file = NULL,						\
-	.sf2_sample_count = 0,						\
-	.sf2_sample_arr = (IpatchSample **) g_malloc(128 * sizeof(IpatchSample*)), \
-	.sf2_note_range = (gint **) g_malloc(128 * sizeof(gint*)),	\
-	.sf2_orig_buffer = (gpointer *) g_malloc(128 * sizeof(gpointer)), \
-	.sf2_resampled_buffer = (gpointer *) g_malloc(128 * sizeof(gpointer)), \
-	.source = NULL,							\
-	.source_stride = 1,						\
-	.sample_buffer = NULL,						\
-	.im_buffer = NULL,						\
-	.buffer_length = 0,						\
-	.format = AGS_SOUNDCARD_DEFAULT_FORMAT,				\
-	.samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE,			\
-	.preset = NULL,							\
-	.instrument = NULL,						\
-	.bank = -1,							\
-	.program = -1,							\
-	.midi_key = -1,							\
-	.note = 0.0,							\
-	.volume = 1.0,							\
-	.frame_count = 0,						\
-	.offset = 0,							\
-	.loop_mode = AGS_SF2_SYNTH_UTIL_LOOP_NONE,			\
-	.loop_start = 0,						\
-	.loop_end = 0,							\
-	.audio_buffer_util = ags_audio_buffer_util_alloc(),		\
-	.resample_util = ags_resample_util_alloc(),			\
-	.pitch_type = AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL,	\
-	.pitch_util = ags_fluid_interpolate_4th_order_util_alloc(),	\
-	.volume_util = ags_volume_util_alloc(),				\
-	.note_256th_mode = FALSE,					\
-	.offset_256th = 0 })
+      .sf2_file = NULL,							\
+      .sf2_sample_count = 0,						\
+      .sf2_sample_arr = (IpatchSample **) g_malloc(128 * sizeof(IpatchSample*)), \
+      .sf2_note_range = (gint **) g_malloc(128 * sizeof(gint*)),	\
+      .sf2_orig_buffer = (gpointer *) g_malloc(128 * sizeof(gpointer)), \
+      .sf2_resampled_buffer = (gpointer *) g_malloc(128 * sizeof(gpointer)), \
+      .source = NULL,							\
+      .source_stride = 1,						\
+      .sample_buffer = NULL,						\
+      .im_buffer = NULL,						\
+      .buffer_length = 0,						\
+      .format = AGS_SOUNDCARD_DEFAULT_FORMAT,				\
+      .samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE,			\
+      .preset = NULL,							\
+      .instrument = NULL,						\
+      .bank = -1,							\
+      .program = -1,							\
+      .midi_key = -1,							\
+      .note = 0.0,							\
+      .volume = 1.0,							\
+      .frame_count = 0,							\
+      .offset = 0,							\
+      .loop_mode = AGS_SF2_SYNTH_UTIL_LOOP_NONE,			\
+      .loop_start = 0,							\
+      .loop_end = 0,							\
+      .audio_buffer_util = ags_audio_buffer_util_alloc(),		\
+      .resample_util = ags_resample_util_alloc(),			\
+      .pitch_type = AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL,		\
+      .pitch_util = ags_fluid_interpolate_4th_order_util_alloc(),	\
+      .volume_util = ags_volume_util_alloc(),				\
+      .note_256th_mode = FALSE,						\
+      .offset_256th = 0 })
 
 typedef enum{
   AGS_SF2_SYNTH_UTIL_COMPUTE_INSTRUMENT    = 1,
@@ -283,6 +283,15 @@ void ags_sf2_synth_util_load_instrument(AgsSF2SynthUtil *sf2_synth_util,
 void ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 					 gint bank,
 					 gint program);
+
+void ags_sf2_synth_util_compute_s8(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_compute_s16(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_compute_s24(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_compute_s32(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_compute_s64(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_compute_float(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_compute_double(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_compute_complex(AgsSF2SynthUtil *sf2_synth_util);
 
 void ags_sf2_synth_util_compute(AgsSF2SynthUtil *sf2_synth_util);
 

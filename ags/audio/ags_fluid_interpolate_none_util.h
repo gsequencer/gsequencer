@@ -47,9 +47,9 @@ G_BEGIN_DECLS
       .vibrato_enabled = FALSE,						\
       .vibrato_gain = 1.0,						\
       .vibrato_lfo_depth = 1.0,						\
-      .vibrato_lfo_freq = 6.0,						\
+      .vibrato_lfo_freq = 8.172,					\
       .vibrato_tuning = 0.0,						\
-      .frame_count = (AGS_SOUNDCARD_DEFAULT_SAMPLERATE / 6.0),		\
+      .frame_count = (AGS_SOUNDCARD_DEFAULT_SAMPLERATE / 8.172),	\
       .offset = 0,							\
       .note_256th_mode = FALSE,						\
       .offset_256th = 0 })
@@ -170,6 +170,15 @@ void ags_fluid_interpolate_none_util_set_note_256th_mode(AgsFluidInterpolateNone
 guint ags_fluid_interpolate_none_util_get_offset_256th(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
 void ags_fluid_interpolate_none_util_set_offset_256th(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util,
 						      guint offset_256th);
+
+void ags_fluid_interpolate_none_util_pitch_s8(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
+void ags_fluid_interpolate_none_util_pitch_s16(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
+void ags_fluid_interpolate_none_util_pitch_s24(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
+void ags_fluid_interpolate_none_util_pitch_s32(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
+void ags_fluid_interpolate_none_util_pitch_s64(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
+void ags_fluid_interpolate_none_util_pitch_float(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
+void ags_fluid_interpolate_none_util_pitch_double(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
+void ags_fluid_interpolate_none_util_pitch_complex(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
 
 void ags_fluid_interpolate_none_util_pitch(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
 

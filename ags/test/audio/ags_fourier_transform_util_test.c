@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -101,6 +101,8 @@ ags_fourier_transform_util_test_clean_suite()
 void
 ags_fourier_transform_util_test_compute_stft_s8()
 {
+  AgsFourierTransformUtil fourier_transform_util = AGS_FOURIER_TRANSFORM_UTIL_INITIALIZER;
+  
   AgsComplex *retval;
   gint8 *s8_buffer;
 
@@ -108,21 +110,25 @@ ags_fourier_transform_util_test_compute_stft_s8()
   gboolean success;
 
   static const double _Complex z_zero = 0.0 + I * 0.0;
+
+  fourier_transform_util.buffer_length = AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S8_BUFFER_SIZE;
+  fourier_transform_util.format = AGS_SOUNDCARD_SIGNED_8_BIT;
+  fourier_transform_util.samplerate = AGS_FOURIER_TRANSFORM_UTIL_TEST_SAMPLERATE;
   
-  s8_buffer = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S8_BUFFER_SIZE,
-			       AGS_SOUNDCARD_SIGNED_8_BIT);
+  s8_buffer =
+    fourier_transform_util.source = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S8_BUFFER_SIZE,
+						     AGS_SOUNDCARD_SIGNED_8_BIT);
 
   for(i = 0; i < AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S8_BUFFER_SIZE; i++){
     s8_buffer[i] = G_MAXINT8 * sin(i * 2.0 * M_PI * AGS_FOURIER_TRANSFORM_UTIL_TEST_FREQUENCY / AGS_FOURIER_TRANSFORM_UTIL_TEST_SAMPLERATE);
   }
 
   /* test */
-  retval = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S8_BUFFER_SIZE,
-			    AGS_SOUNDCARD_COMPLEX);
+  retval =
+    fourier_transform_util.frequency_domain = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S8_BUFFER_SIZE,
+							       AGS_SOUNDCARD_COMPLEX);
 
-  ags_fourier_transform_util_compute_stft_s8(s8_buffer, 1,
-					     AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S8_BUFFER_SIZE,
-					     &retval);
+  ags_fourier_transform_util_compute_stft_s8(&fourier_transform_util);
 
   success = TRUE;
 
@@ -141,6 +147,8 @@ ags_fourier_transform_util_test_compute_stft_s8()
 void
 ags_fourier_transform_util_test_compute_stft_s16()
 {
+  AgsFourierTransformUtil fourier_transform_util = AGS_FOURIER_TRANSFORM_UTIL_INITIALIZER;
+  
   AgsComplex *retval;
   gint16 *s16_buffer;
 
@@ -149,20 +157,24 @@ ags_fourier_transform_util_test_compute_stft_s16()
   
   static const double _Complex z_zero = 0.0 + I * 0.0;
 
-  s16_buffer = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S16_BUFFER_SIZE,
-				AGS_SOUNDCARD_SIGNED_16_BIT);
+  fourier_transform_util.buffer_length = AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S16_BUFFER_SIZE;
+  fourier_transform_util.format = AGS_SOUNDCARD_SIGNED_16_BIT;
+  fourier_transform_util.samplerate = AGS_FOURIER_TRANSFORM_UTIL_TEST_SAMPLERATE;
+
+  s16_buffer =
+    fourier_transform_util.source = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S16_BUFFER_SIZE,
+						     AGS_SOUNDCARD_SIGNED_16_BIT);
 
   for(i = 0; i < AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S16_BUFFER_SIZE; i++){
     s16_buffer[i] = G_MAXINT16 * sin(i * 2.0 * M_PI * AGS_FOURIER_TRANSFORM_UTIL_TEST_FREQUENCY / AGS_FOURIER_TRANSFORM_UTIL_TEST_SAMPLERATE);
   }
 
   /* test */
-  retval = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S16_BUFFER_SIZE,
-			    AGS_SOUNDCARD_COMPLEX);
+  retval =
+    fourier_transform_util.frequency_domain = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S16_BUFFER_SIZE,
+							       AGS_SOUNDCARD_COMPLEX);
 
-  ags_fourier_transform_util_compute_stft_s16(s16_buffer, 1,
-					      AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S16_BUFFER_SIZE,
-					      &retval);
+  ags_fourier_transform_util_compute_stft_s16(&fourier_transform_util);
 
   success = TRUE;
 
@@ -181,6 +193,8 @@ ags_fourier_transform_util_test_compute_stft_s16()
 void
 ags_fourier_transform_util_test_compute_stft_s24()
 {
+  AgsFourierTransformUtil fourier_transform_util = AGS_FOURIER_TRANSFORM_UTIL_INITIALIZER;
+  
   AgsComplex *retval;
   gint32 *s24_buffer;
 
@@ -189,20 +203,24 @@ ags_fourier_transform_util_test_compute_stft_s24()
   
   static const double _Complex z_zero = 0.0 + I * 0.0;
 
-  s24_buffer = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S24_BUFFER_SIZE,
-				AGS_SOUNDCARD_SIGNED_24_BIT);
+  fourier_transform_util.buffer_length = AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S24_BUFFER_SIZE;
+  fourier_transform_util.format = AGS_SOUNDCARD_SIGNED_24_BIT;
+  fourier_transform_util.samplerate = AGS_FOURIER_TRANSFORM_UTIL_TEST_SAMPLERATE;
+
+  s24_buffer =
+    fourier_transform_util.source = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S24_BUFFER_SIZE,
+						     AGS_SOUNDCARD_SIGNED_24_BIT);
 
   for(i = 0; i < AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S24_BUFFER_SIZE; i++){
     s24_buffer[i] = AGS_FOURIER_TRANSFORM_UTIL_TEST_MAX_S24 * sin(i * 2.0 * M_PI * AGS_FOURIER_TRANSFORM_UTIL_TEST_FREQUENCY / AGS_FOURIER_TRANSFORM_UTIL_TEST_SAMPLERATE);
   }
 
   /* test */
-  retval = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S24_BUFFER_SIZE,
-			    AGS_SOUNDCARD_COMPLEX);
+  retval =
+    fourier_transform_util.frequency_domain = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S24_BUFFER_SIZE,
+							       AGS_SOUNDCARD_COMPLEX);
 
-  ags_fourier_transform_util_compute_stft_s24(s24_buffer, 1,
-					      AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S24_BUFFER_SIZE,
-					      &retval);
+  ags_fourier_transform_util_compute_stft_s24(&fourier_transform_util);
 
   success = TRUE;
 
@@ -221,6 +239,8 @@ ags_fourier_transform_util_test_compute_stft_s24()
 void
 ags_fourier_transform_util_test_compute_stft_s32()
 {
+  AgsFourierTransformUtil fourier_transform_util = AGS_FOURIER_TRANSFORM_UTIL_INITIALIZER;
+  
   AgsComplex *retval;
   gint32 *s32_buffer;
 
@@ -229,20 +249,24 @@ ags_fourier_transform_util_test_compute_stft_s32()
   
   static const double _Complex z_zero = 0.0 + I * 0.0;
 
-  s32_buffer = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S32_BUFFER_SIZE,
-				AGS_SOUNDCARD_SIGNED_32_BIT);
+  fourier_transform_util.buffer_length = AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S32_BUFFER_SIZE;
+  fourier_transform_util.format = AGS_SOUNDCARD_SIGNED_32_BIT;
+  fourier_transform_util.samplerate = AGS_FOURIER_TRANSFORM_UTIL_TEST_SAMPLERATE;
+
+  s32_buffer =
+    fourier_transform_util.source = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S32_BUFFER_SIZE,
+						     AGS_SOUNDCARD_SIGNED_32_BIT);
 
   for(i = 0; i < AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S32_BUFFER_SIZE; i++){
     s32_buffer[i] = G_MAXINT32 * sin(i * 2.0 * M_PI * AGS_FOURIER_TRANSFORM_UTIL_TEST_FREQUENCY / AGS_FOURIER_TRANSFORM_UTIL_TEST_SAMPLERATE);
   }
 
   /* test */
-  retval = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S32_BUFFER_SIZE,
-			    AGS_SOUNDCARD_COMPLEX);
+  retval =
+    fourier_transform_util.frequency_domain = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S32_BUFFER_SIZE,
+							       AGS_SOUNDCARD_COMPLEX);
 
-  ags_fourier_transform_util_compute_stft_s32(s32_buffer, 1,
-					      AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S32_BUFFER_SIZE,
-					      &retval);
+  ags_fourier_transform_util_compute_stft_s32(&fourier_transform_util);
 
   success = TRUE;
 
@@ -261,6 +285,8 @@ ags_fourier_transform_util_test_compute_stft_s32()
 void
 ags_fourier_transform_util_test_compute_stft_s64()
 {
+  AgsFourierTransformUtil fourier_transform_util = AGS_FOURIER_TRANSFORM_UTIL_INITIALIZER;
+  
   AgsComplex *retval;
   gint64 *s64_buffer;
 
@@ -269,20 +295,24 @@ ags_fourier_transform_util_test_compute_stft_s64()
   
   static const double _Complex z_zero = 0.0 + I * 0.0;
 
-  s64_buffer = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S64_BUFFER_SIZE,
-				AGS_SOUNDCARD_SIGNED_64_BIT);
+  fourier_transform_util.buffer_length = AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S64_BUFFER_SIZE;
+  fourier_transform_util.format = AGS_SOUNDCARD_SIGNED_64_BIT;
+  fourier_transform_util.samplerate = AGS_FOURIER_TRANSFORM_UTIL_TEST_SAMPLERATE;
+
+  s64_buffer =
+    fourier_transform_util.source = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S64_BUFFER_SIZE,
+						     AGS_SOUNDCARD_SIGNED_64_BIT);
 
   for(i = 0; i < AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S64_BUFFER_SIZE; i++){
     s64_buffer[i] = G_MAXINT64 * sin(i * 2.0 * M_PI * AGS_FOURIER_TRANSFORM_UTIL_TEST_FREQUENCY / AGS_FOURIER_TRANSFORM_UTIL_TEST_SAMPLERATE);
   }
 
   /* test */
-  retval = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S64_BUFFER_SIZE,
-			    AGS_SOUNDCARD_COMPLEX);
+  retval =
+    fourier_transform_util.frequency_domain = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S64_BUFFER_SIZE,
+							       AGS_SOUNDCARD_COMPLEX);
 
-  ags_fourier_transform_util_compute_stft_s64(s64_buffer, 1,
-					      AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S64_BUFFER_SIZE,
-					      &retval);
+  ags_fourier_transform_util_compute_stft_s64(&fourier_transform_util);
 
   success = TRUE;
 
@@ -301,6 +331,8 @@ ags_fourier_transform_util_test_compute_stft_s64()
 void
 ags_fourier_transform_util_test_compute_stft_float()
 {
+  AgsFourierTransformUtil fourier_transform_util = AGS_FOURIER_TRANSFORM_UTIL_INITIALIZER;
+  
   AgsComplex *retval;
   gfloat *float_buffer;
 
@@ -309,20 +341,24 @@ ags_fourier_transform_util_test_compute_stft_float()
   
   static const double _Complex z_zero = 0.0 + I * 0.0;
 
-  float_buffer = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_FLOAT_BUFFER_SIZE,
-				  AGS_SOUNDCARD_FLOAT);
+  fourier_transform_util.buffer_length = AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_FLOAT_BUFFER_SIZE;
+  fourier_transform_util.format = AGS_SOUNDCARD_FLOAT;
+  fourier_transform_util.samplerate = AGS_FOURIER_TRANSFORM_UTIL_TEST_SAMPLERATE;
+
+  float_buffer =
+    fourier_transform_util.source = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_FLOAT_BUFFER_SIZE,
+						     AGS_SOUNDCARD_FLOAT);
 
   for(i = 0; i < AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_FLOAT_BUFFER_SIZE; i++){
     float_buffer[i] = sin(i * 2.0 * M_PI * AGS_FOURIER_TRANSFORM_UTIL_TEST_FREQUENCY / AGS_FOURIER_TRANSFORM_UTIL_TEST_SAMPLERATE);
   }
 
   /* test */
-  retval = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_FLOAT_BUFFER_SIZE,
-			    AGS_SOUNDCARD_COMPLEX);
+  retval =
+    fourier_transform_util.frequency_domain = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_FLOAT_BUFFER_SIZE,
+							       AGS_SOUNDCARD_COMPLEX);
 
-  ags_fourier_transform_util_compute_stft_float(float_buffer, 1,
-						AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_FLOAT_BUFFER_SIZE,
-						&retval);
+  ags_fourier_transform_util_compute_stft_float(&fourier_transform_util);
 
   success = TRUE;
 
@@ -341,6 +377,8 @@ ags_fourier_transform_util_test_compute_stft_float()
 void
 ags_fourier_transform_util_test_compute_stft_double()
 {
+  AgsFourierTransformUtil fourier_transform_util = AGS_FOURIER_TRANSFORM_UTIL_INITIALIZER;
+  
   AgsComplex *retval;
   gdouble *double_buffer;
 
@@ -349,20 +387,24 @@ ags_fourier_transform_util_test_compute_stft_double()
   
   static const double _Complex z_zero = 0.0 + I * 0.0;
 
-  double_buffer = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_DOUBLE_BUFFER_SIZE,
-				   AGS_SOUNDCARD_DOUBLE);
+  fourier_transform_util.buffer_length = AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_DOUBLE_BUFFER_SIZE;
+  fourier_transform_util.format = AGS_SOUNDCARD_DOUBLE;
+  fourier_transform_util.samplerate = AGS_FOURIER_TRANSFORM_UTIL_TEST_SAMPLERATE;
+
+  double_buffer =
+    fourier_transform_util.source = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_DOUBLE_BUFFER_SIZE,
+						     AGS_SOUNDCARD_DOUBLE);
 
   for(i = 0; i < AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_DOUBLE_BUFFER_SIZE; i++){
     double_buffer[i] = sin(i * 2.0 * M_PI * AGS_FOURIER_TRANSFORM_UTIL_TEST_FREQUENCY / AGS_FOURIER_TRANSFORM_UTIL_TEST_SAMPLERATE);
   }
 
   /* test */
-  retval = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_DOUBLE_BUFFER_SIZE,
-			    AGS_SOUNDCARD_COMPLEX);
+  retval =
+    fourier_transform_util.frequency_domain = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_DOUBLE_BUFFER_SIZE,
+							       AGS_SOUNDCARD_COMPLEX);
 
-  ags_fourier_transform_util_compute_stft_double(double_buffer, 1,
-						 AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_DOUBLE_BUFFER_SIZE,
-						 &retval);
+  ags_fourier_transform_util_compute_stft_double(&fourier_transform_util);
 
   success = TRUE;
 
@@ -381,6 +423,8 @@ ags_fourier_transform_util_test_compute_stft_double()
 void
 ags_fourier_transform_util_test_inverse_stft_s8()
 {
+  AgsFourierTransformUtil fourier_transform_util = AGS_FOURIER_TRANSFORM_UTIL_INITIALIZER;
+  
   AgsComplex *buffer;
   gint8 *retval;
 
@@ -388,9 +432,14 @@ ags_fourier_transform_util_test_inverse_stft_s8()
   gboolean success;
 
   static const double _Complex z_zero = 0.0 + I * 0.0;
+
+  fourier_transform_util.buffer_length = AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S8_BUFFER_SIZE;
+  fourier_transform_util.format = AGS_SOUNDCARD_SIGNED_8_BIT;
+  fourier_transform_util.samplerate = AGS_FOURIER_TRANSFORM_UTIL_TEST_SAMPLERATE;
   
-  buffer = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_S8_BUFFER_SIZE,
-			    AGS_SOUNDCARD_COMPLEX);
+  buffer =
+    fourier_transform_util.source = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_S8_BUFFER_SIZE,
+						     AGS_SOUNDCARD_COMPLEX);
 
   for(i = 0; i < AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_S8_BUFFER_SIZE; i++){
     complex z;
@@ -409,12 +458,11 @@ ags_fourier_transform_util_test_inverse_stft_s8()
   }
 
   /* test */
-  retval = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_S8_BUFFER_SIZE,
-			    AGS_SOUNDCARD_SIGNED_8_BIT);
+  retval =
+    fourier_transform_util.frequency_domain = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_S8_BUFFER_SIZE,
+							       AGS_SOUNDCARD_SIGNED_8_BIT);
 
-  ags_fourier_transform_util_inverse_stft_s8(buffer, 1,
-					     AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_S8_BUFFER_SIZE,
-					     &retval);
+  ags_fourier_transform_util_inverse_stft_s8(&fourier_transform_util);
 
   success = TRUE;
 
@@ -433,6 +481,8 @@ ags_fourier_transform_util_test_inverse_stft_s8()
 void
 ags_fourier_transform_util_test_inverse_stft_s16()
 {
+  AgsFourierTransformUtil fourier_transform_util = AGS_FOURIER_TRANSFORM_UTIL_INITIALIZER;
+  
   AgsComplex *buffer;
   gint16 *retval;
 
@@ -440,9 +490,14 @@ ags_fourier_transform_util_test_inverse_stft_s16()
   gboolean success;
 
   static const double _Complex z_zero = 0.0 + I * 0.0;
+
+  fourier_transform_util.buffer_length = AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S16_BUFFER_SIZE;
+  fourier_transform_util.format = AGS_SOUNDCARD_SIGNED_16_BIT;
+  fourier_transform_util.samplerate = AGS_FOURIER_TRANSFORM_UTIL_TEST_SAMPLERATE;
   
-  buffer = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_S16_BUFFER_SIZE,
-			    AGS_SOUNDCARD_COMPLEX);
+  buffer =
+    fourier_transform_util.source = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_S16_BUFFER_SIZE,
+						     AGS_SOUNDCARD_COMPLEX);
 
   for(i = 0; i < AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_S16_BUFFER_SIZE; i++){
     complex z;
@@ -461,12 +516,11 @@ ags_fourier_transform_util_test_inverse_stft_s16()
   }
 
   /* test */
-  retval = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_S16_BUFFER_SIZE,
-			    AGS_SOUNDCARD_SIGNED_16_BIT);
+  retval =
+    fourier_transform_util.frequency_domain = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_S16_BUFFER_SIZE,
+							       AGS_SOUNDCARD_SIGNED_16_BIT);
 
-  ags_fourier_transform_util_inverse_stft_s16(buffer, 1,
-					      AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_S16_BUFFER_SIZE,
-					      &retval);
+  ags_fourier_transform_util_inverse_stft_s16(&fourier_transform_util);
 
   success = TRUE;
 
@@ -485,6 +539,8 @@ ags_fourier_transform_util_test_inverse_stft_s16()
 void
 ags_fourier_transform_util_test_inverse_stft_s24()
 {
+  AgsFourierTransformUtil fourier_transform_util = AGS_FOURIER_TRANSFORM_UTIL_INITIALIZER;
+  
   AgsComplex *buffer;
   gint32 *retval;
 
@@ -492,9 +548,14 @@ ags_fourier_transform_util_test_inverse_stft_s24()
   gboolean success;
 
   static const double _Complex z_zero = 0.0 + I * 0.0;
+
+  fourier_transform_util.buffer_length = AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S24_BUFFER_SIZE;
+  fourier_transform_util.format = AGS_SOUNDCARD_SIGNED_24_BIT;
+  fourier_transform_util.samplerate = AGS_FOURIER_TRANSFORM_UTIL_TEST_SAMPLERATE;
   
-  buffer = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_S24_BUFFER_SIZE,
-			    AGS_SOUNDCARD_COMPLEX);
+  buffer =
+    fourier_transform_util.source = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_S24_BUFFER_SIZE,
+						     AGS_SOUNDCARD_COMPLEX);
 
   for(i = 0; i < AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_S24_BUFFER_SIZE; i++){
     complex z;
@@ -513,12 +574,11 @@ ags_fourier_transform_util_test_inverse_stft_s24()
   }
 
   /* test */
-  retval = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_S24_BUFFER_SIZE,
-			    AGS_SOUNDCARD_SIGNED_24_BIT);
+  retval =
+    fourier_transform_util.frequency_domain = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_S24_BUFFER_SIZE,
+							       AGS_SOUNDCARD_SIGNED_24_BIT);
 
-  ags_fourier_transform_util_inverse_stft_s24(buffer, 1,
-					      AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_S24_BUFFER_SIZE,
-					      &retval);
+  ags_fourier_transform_util_inverse_stft_s24(&fourier_transform_util);
 
   success = TRUE;
 
@@ -537,6 +597,8 @@ ags_fourier_transform_util_test_inverse_stft_s24()
 void
 ags_fourier_transform_util_test_inverse_stft_s32()
 {
+  AgsFourierTransformUtil fourier_transform_util = AGS_FOURIER_TRANSFORM_UTIL_INITIALIZER;
+  
   AgsComplex *buffer;
   gint32 *retval;
 
@@ -544,9 +606,14 @@ ags_fourier_transform_util_test_inverse_stft_s32()
   gboolean success;
 
   static const double _Complex z_zero = 0.0 + I * 0.0;
+
+  fourier_transform_util.buffer_length = AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S32_BUFFER_SIZE;
+  fourier_transform_util.format = AGS_SOUNDCARD_SIGNED_32_BIT;
+  fourier_transform_util.samplerate = AGS_FOURIER_TRANSFORM_UTIL_TEST_SAMPLERATE;
   
-  buffer = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_S32_BUFFER_SIZE,
-			    AGS_SOUNDCARD_COMPLEX);
+  buffer =
+    fourier_transform_util.source = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_S32_BUFFER_SIZE,
+						     AGS_SOUNDCARD_COMPLEX);
 
   for(i = 0; i < AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_S32_BUFFER_SIZE; i++){
     complex z;
@@ -565,12 +632,11 @@ ags_fourier_transform_util_test_inverse_stft_s32()
   }
 
   /* test */
-  retval = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_S32_BUFFER_SIZE,
-			    AGS_SOUNDCARD_SIGNED_32_BIT);
+  retval =
+    fourier_transform_util.frequency_domain = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_S32_BUFFER_SIZE,
+							       AGS_SOUNDCARD_SIGNED_32_BIT);
 
-  ags_fourier_transform_util_inverse_stft_s32(buffer, 1,
-					      AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_S32_BUFFER_SIZE,
-					      &retval);
+  ags_fourier_transform_util_inverse_stft_s32(&fourier_transform_util);
 
   success = TRUE;
 
@@ -589,6 +655,8 @@ ags_fourier_transform_util_test_inverse_stft_s32()
 void
 ags_fourier_transform_util_test_inverse_stft_s64()
 {
+  AgsFourierTransformUtil fourier_transform_util = AGS_FOURIER_TRANSFORM_UTIL_INITIALIZER;
+  
   AgsComplex *buffer;
   gint64 *retval;
 
@@ -596,9 +664,14 @@ ags_fourier_transform_util_test_inverse_stft_s64()
   gboolean success;
 
   static const double _Complex z_zero = 0.0 + I * 0.0;
+
+  fourier_transform_util.buffer_length = AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S64_BUFFER_SIZE;
+  fourier_transform_util.format = AGS_SOUNDCARD_SIGNED_64_BIT;
+  fourier_transform_util.samplerate = AGS_FOURIER_TRANSFORM_UTIL_TEST_SAMPLERATE;
   
-  buffer = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_S64_BUFFER_SIZE,
-			    AGS_SOUNDCARD_COMPLEX);
+  buffer =
+    fourier_transform_util.source = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_S64_BUFFER_SIZE,
+						     AGS_SOUNDCARD_COMPLEX);
 
   for(i = 0; i < AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_S64_BUFFER_SIZE; i++){
     complex z;
@@ -617,12 +690,11 @@ ags_fourier_transform_util_test_inverse_stft_s64()
   }
 
   /* test */
-  retval = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_S64_BUFFER_SIZE,
-			    AGS_SOUNDCARD_SIGNED_64_BIT);
+  retval =
+    fourier_transform_util.frequency_domain = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_S64_BUFFER_SIZE,
+							       AGS_SOUNDCARD_SIGNED_64_BIT);
 
-  ags_fourier_transform_util_inverse_stft_s64(buffer, 1,
-					      AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_S64_BUFFER_SIZE,
-					      &retval);
+  ags_fourier_transform_util_inverse_stft_s64(&fourier_transform_util);
 
   success = TRUE;
 
@@ -641,6 +713,8 @@ ags_fourier_transform_util_test_inverse_stft_s64()
 void
 ags_fourier_transform_util_test_inverse_stft_float()
 {
+  AgsFourierTransformUtil fourier_transform_util = AGS_FOURIER_TRANSFORM_UTIL_INITIALIZER;
+  
   AgsComplex *buffer;
   gfloat *retval;
 
@@ -648,9 +722,14 @@ ags_fourier_transform_util_test_inverse_stft_float()
   gboolean success;
 
   static const double _Complex z_zero = 0.0 + I * 0.0;
+
+  fourier_transform_util.buffer_length = AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_FLOAT_BUFFER_SIZE;
+  fourier_transform_util.format = AGS_SOUNDCARD_FLOAT;
+  fourier_transform_util.samplerate = AGS_FOURIER_TRANSFORM_UTIL_TEST_SAMPLERATE;
   
-  buffer = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_FLOAT_BUFFER_SIZE,
-			    AGS_SOUNDCARD_COMPLEX);
+  buffer =
+    fourier_transform_util.source = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_FLOAT_BUFFER_SIZE,
+						     AGS_SOUNDCARD_COMPLEX);
 
   for(i = 0; i < AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_FLOAT_BUFFER_SIZE; i++){
     complex z;
@@ -669,12 +748,11 @@ ags_fourier_transform_util_test_inverse_stft_float()
   }
 
   /* test */
-  retval = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_FLOAT_BUFFER_SIZE,
-			    AGS_SOUNDCARD_FLOAT);
+  retval =
+    fourier_transform_util.frequency_domain = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_FLOAT_BUFFER_SIZE,
+							       AGS_SOUNDCARD_FLOAT);
 
-  ags_fourier_transform_util_inverse_stft_float(buffer, 1,
-						AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_FLOAT_BUFFER_SIZE,
-						&retval);
+  ags_fourier_transform_util_inverse_stft_float(&fourier_transform_util);
 
   success = TRUE;
 
@@ -693,6 +771,8 @@ ags_fourier_transform_util_test_inverse_stft_float()
 void
 ags_fourier_transform_util_test_inverse_stft_double()
 {
+  AgsFourierTransformUtil fourier_transform_util = AGS_FOURIER_TRANSFORM_UTIL_INITIALIZER;
+  
   AgsComplex *buffer;
   gdouble *retval;
 
@@ -700,9 +780,14 @@ ags_fourier_transform_util_test_inverse_stft_double()
   gboolean success;
 
   static const double _Complex z_zero = 0.0 + I * 0.0;
+
+  fourier_transform_util.buffer_length = AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_DOUBLE_BUFFER_SIZE;
+  fourier_transform_util.format = AGS_SOUNDCARD_DOUBLE;
+  fourier_transform_util.samplerate = AGS_FOURIER_TRANSFORM_UTIL_TEST_SAMPLERATE;
   
-  buffer = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_DOUBLE_BUFFER_SIZE,
-			    AGS_SOUNDCARD_COMPLEX);
+  buffer =
+    fourier_transform_util.source = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_DOUBLE_BUFFER_SIZE,
+						     AGS_SOUNDCARD_COMPLEX);
 
   for(i = 0; i < AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_DOUBLE_BUFFER_SIZE; i++){
     complex z;
@@ -721,12 +806,11 @@ ags_fourier_transform_util_test_inverse_stft_double()
   }
 
   /* test */
-  retval = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_DOUBLE_BUFFER_SIZE,
-			    AGS_SOUNDCARD_DOUBLE);
+  retval =
+    fourier_transform_util.frequency_domain = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_DOUBLE_BUFFER_SIZE,
+							       AGS_SOUNDCARD_DOUBLE);
 
-  ags_fourier_transform_util_inverse_stft_double(buffer, 1,
-						 AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_DOUBLE_BUFFER_SIZE,
-						 &retval);
+  ags_fourier_transform_util_inverse_stft_double(&fourier_transform_util);
 
   success = TRUE;
 

@@ -648,3 +648,25 @@ ags_sequencer_set_note_offset(AgsSequencer *sequencer,
   sequencer_interface->set_note_offset(sequencer,
 				       note_offset);
 }
+
+/**
+ * ags_sequencer_get_midi_version:
+ * @sequencer: the #AgsSequencer
+ *
+ * Get MIDI version. 
+ *
+ * Returns: the MIDI version
+ *
+ * Since: 7.0.0
+ */
+AgsSequencerMidiVersion
+ags_sequencer_get_midi_version(AgsSequencer *sequencer)
+{
+  AgsSequencerInterface *sequencer_interface;
+
+  g_return_val_if_fail(AGS_IS_SEQUENCER(sequencer), 0);
+  sequencer_interface = AGS_SEQUENCER_GET_INTERFACE(sequencer);
+  g_return_val_if_fail(sequencer_interface->get_midi_version, 0);
+
+  return(sequencer_interface->get_midi_version(sequencer));
+}

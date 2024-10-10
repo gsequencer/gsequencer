@@ -25,15 +25,6 @@
 
 #include <complex.h>
 
-void ags_resample_util_compute_s8(AgsResampleUtil *resample_util);
-void ags_resample_util_compute_s16(AgsResampleUtil *resample_util);
-void ags_resample_util_compute_s24(AgsResampleUtil *resample_util);
-void ags_resample_util_compute_s32(AgsResampleUtil *resample_util);
-void ags_resample_util_compute_s64(AgsResampleUtil *resample_util);
-void ags_resample_util_compute_float(AgsResampleUtil *resample_util);
-void ags_resample_util_compute_double(AgsResampleUtil *resample_util);
-void ags_resample_util_compute_complex(AgsResampleUtil *resample_util);
-
 /**
  * SECTION:ags_resample_util
  * @short_description: Boxed type of resample util

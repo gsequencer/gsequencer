@@ -101,6 +101,15 @@ gdouble ags_peak_util_get_peak(AgsPeakUtil *peak_util);
 void ags_peak_util_set_peak(AgsPeakUtil *peak_util,
 			    gdouble peak);
 
+void ags_peak_util_compute_s8(AgsPeakUtil *peak_util);
+void ags_peak_util_compute_s16(AgsPeakUtil *peak_util);
+void ags_peak_util_compute_s24(AgsPeakUtil *peak_util);
+void ags_peak_util_compute_s32(AgsPeakUtil *peak_util);
+void ags_peak_util_compute_s64(AgsPeakUtil *peak_util);
+void ags_peak_util_compute_float(AgsPeakUtil *peak_util);
+void ags_peak_util_compute_double(AgsPeakUtil *peak_util);
+void ags_peak_util_compute_complex(AgsPeakUtil *peak_util);
+
 void ags_peak_util_compute(AgsPeakUtil *peak_util);
 
 G_END_DECLS

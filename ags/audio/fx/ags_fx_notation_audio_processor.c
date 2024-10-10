@@ -72,7 +72,8 @@ void ags_fx_notation_audio_processor_real_key_pressure(AgsFxNotationAudioProcess
 						       guint key_mode);
 
 void ags_fx_notation_audio_processor_real_play(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
-void ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
+void ags_fx_notation_audio_processor_real_midi1_record(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
+void ags_fx_notation_audio_processor_real_midi2_record(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
 void ags_fx_notation_audio_processor_real_feed(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
 
 void ags_fx_notation_audio_processor_real_counter_change(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
@@ -176,7 +177,8 @@ ags_fx_notation_audio_processor_class_init(AgsFxNotationAudioProcessorClass *fx_
   fx_notation_audio_processor->key_pressure = ags_fx_notation_audio_processor_real_key_pressure;
 
   fx_notation_audio_processor->play = ags_fx_notation_audio_processor_real_play;
-  fx_notation_audio_processor->record = ags_fx_notation_audio_processor_real_record;
+  fx_notation_audio_processor->midi1_record = ags_fx_notation_audio_processor_real_midi1_record;
+  fx_notation_audio_processor->midi2_record = ags_fx_notation_audio_processor_real_midi2_record;
   fx_notation_audio_processor->feed = ags_fx_notation_audio_processor_real_feed;
 
   fx_notation_audio_processor->counter_change = ags_fx_notation_audio_processor_real_counter_change;
@@ -225,8 +227,12 @@ ags_fx_notation_audio_processor_init(AgsFxNotationAudioProcessor *fx_notation_au
   AGS_RECALL(fx_notation_audio_processor)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(fx_notation_audio_processor)->xml_type = "ags-fx-notation-audio-processor";
 
-  fx_notation_audio_processor->midi_util = ags_midi_util_alloc();
-
+  ags_recall_set_flags((AgsRecall *) fx_notation_audio_processor,
+		       AGS_RECALL_MIDI1_CONTROL_CHANGE);
+  
+  ags_recall_set_flags((AgsRecall *) fx_notation_audio_processor,
+		       AGS_RECALL_MIDI2_CONTROL_CHANGE);
+  
   /* counter */
   fx_notation_audio_processor->delay_completion = 0.0;
 
@@ -288,8 +294,6 @@ ags_fx_notation_audio_processor_finalize(GObject *gobject)
   AgsFxNotationAudioProcessor *fx_notation_audio_processor;
   
   fx_notation_audio_processor = AGS_FX_NOTATION_AUDIO_PROCESSOR(gobject);  
-
-  ags_midi_util_free(fx_notation_audio_processor->midi_util);
   
   /* timestamp */
   if(fx_notation_audio_processor->timestamp != NULL){
@@ -1020,7 +1024,8 @@ ags_fx_notation_audio_processor_run_inter(AgsRecall *recall)
 
   if(ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_NOTATION)){
     if(parent_recycling_context == NULL){
-      ags_fx_notation_audio_processor_record(fx_notation_audio_processor);
+      ags_fx_notation_audio_processor_midi1_record(fx_notation_audio_processor);
+      ags_fx_notation_audio_processor_midi2_record(fx_notation_audio_processor);
     }
   }
   
@@ -1321,7 +1326,8 @@ ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_nota
       g_message(" `- added x0_256th %d [%d]", x0_256th, note_256th_attack);
 #endif
       
-      if(key_mode == AGS_FX_NOTATION_AUDIO_PROCESSOR_KEY_MODE_RECORD){
+      if(key_mode == AGS_FX_NOTATION_AUDIO_PROCESSOR_KEY_MODE_MIDI1_RECORD ||
+	 key_mode == AGS_FX_NOTATION_AUDIO_PROCESSOR_KEY_MODE_MIDI2_RECORD){
 #if 0
 	g_object_ref(audio_signal);
 
@@ -1675,9 +1681,10 @@ ags_fx_notation_audio_processor_play(AgsFxNotationAudioProcessor *fx_notation_au
 }
 
 void
-ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_notation_audio_processor)
+ags_fx_notation_audio_processor_real_midi1_record(AgsFxNotationAudioProcessor *fx_notation_audio_processor)
 {
   AgsAudio *audio;
+  AgsRecall *recall;
   AgsPort *port;
   AgsNotation *current_notation;
   AgsFxNotationAudio *fx_notation_audio;
@@ -1712,6 +1719,8 @@ ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_nota
   fx_notation_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_notation_audio_processor);
 
   audio = NULL;
+
+  recall = (AgsRecall *) fx_notation_audio_processor;
 
   fx_notation_audio = NULL;
 
@@ -1753,7 +1762,8 @@ ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_nota
 	       "midi-channel", &midi_channel,
 	       NULL);
 
-  if(input_sequencer == NULL){
+  if(input_sequencer == NULL ||
+     ags_sequencer_get_midi_version(AGS_SEQUENCER(input_sequencer)) != AGS_SEQUENCER_MIDI1){
     if(audio != NULL){
       g_object_unref(audio);
     }
@@ -1844,7 +1854,7 @@ ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_nota
     midi_iter = midi_buffer;
     
     while(midi_iter < midi_buffer + buffer_length){
-      if(ags_midi_util_is_key_on(fx_notation_audio_processor->midi_util, midi_iter)){
+      if(ags_midi_util_is_key_on(recall->midi_util, midi_iter)){
 	/* check midi channel */
 	if(midi_channel == (0x0f & midi_iter[0])){
 	  AgsNote *current_note;
@@ -1958,7 +1968,7 @@ ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_nota
 	}
 
 	midi_iter += 3;
-      }else if(ags_midi_util_is_key_off(fx_notation_audio_processor->midi_util, midi_iter)){
+      }else if(ags_midi_util_is_key_off(recall->midi_util, midi_iter)){
 	/* check midi channel */
 	if(midi_channel == (0x0f & midi_iter[0])){
 	  AgsNote *current_note;
@@ -2025,34 +2035,34 @@ ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_nota
 	}
 
 	midi_iter += 3;
-      }else if(ags_midi_util_is_key_pressure(fx_notation_audio_processor->midi_util,
+      }else if(ags_midi_util_is_key_pressure(recall->midi_util,
 					     midi_iter)){
 	midi_iter += 3;
-      }else if(ags_midi_util_is_change_parameter(fx_notation_audio_processor->midi_util,
+      }else if(ags_midi_util_is_change_parameter(recall->midi_util,
 						 midi_iter)){
 	/* change parameter */
 	//TODO:JK: implement me	  
 	  
 	midi_iter += 3;
-      }else if(ags_midi_util_is_pitch_bend(fx_notation_audio_processor->midi_util,
+      }else if(ags_midi_util_is_pitch_bend(recall->midi_util,
 					   midi_iter)){
 	/* change parameter */
 	//TODO:JK: implement me	  
 	  
 	midi_iter += 3;
-      }else if(ags_midi_util_is_change_program(fx_notation_audio_processor->midi_util,
+      }else if(ags_midi_util_is_change_program(recall->midi_util,
 					       midi_iter)){
 	/* change program */
 	//TODO:JK: implement me	  
 	  
 	midi_iter += 2;
-      }else if(ags_midi_util_is_change_pressure(fx_notation_audio_processor->midi_util,
+      }else if(ags_midi_util_is_change_pressure(recall->midi_util,
 						midi_iter)){
 	/* change pressure */
 	//TODO:JK: implement me	  
 	  
 	midi_iter += 2;
-      }else if(ags_midi_util_is_sysex(fx_notation_audio_processor->midi_util,
+      }else if(ags_midi_util_is_sysex(recall->midi_util,
 				      midi_iter)){
 	guint n;
 	  
@@ -2066,25 +2076,25 @@ ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_nota
 	//TODO:JK: implement me	  
 	  
 	midi_iter += (n + 1);
-      }else if(ags_midi_util_is_song_position(fx_notation_audio_processor->midi_util,
+      }else if(ags_midi_util_is_song_position(recall->midi_util,
 					      midi_iter)){
 	/* song position */
 	//TODO:JK: implement me	  
 	  
 	midi_iter += 3;
-      }else if(ags_midi_util_is_song_select(fx_notation_audio_processor->midi_util,
+      }else if(ags_midi_util_is_song_select(recall->midi_util,
 					    midi_iter)){
 	/* song select */
 	//TODO:JK: implement me	  
 	  
 	midi_iter += 2;
-      }else if(ags_midi_util_is_tune_request(fx_notation_audio_processor->midi_util,
+      }else if(ags_midi_util_is_tune_request(recall->midi_util,
 					     midi_iter)){
 	/* tune request */
 	//TODO:JK: implement me	  
 	  
 	midi_iter += 1;
-      }else if(ags_midi_util_is_meta_event(fx_notation_audio_processor->midi_util,
+      }else if(ags_midi_util_is_meta_event(recall->midi_util,
 					   midi_iter)){
 	/* meta event */
 	//TODO:JK: implement me	  
@@ -2108,7 +2118,7 @@ ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_nota
     ags_fx_notation_audio_processor_key_on(fx_notation_audio_processor,
 					   note->data,
 					   AGS_FX_NOTATION_AUDIO_PROCESSOR_DEFAULT_KEY_ON_VELOCITY,
-					   AGS_FX_NOTATION_AUDIO_PROCESSOR_KEY_MODE_RECORD);
+					   AGS_FX_NOTATION_AUDIO_PROCESSOR_KEY_MODE_MIDI1_RECORD);
     
     note = note->next;
   }
@@ -2167,14 +2177,684 @@ ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_nota
 }
 
 void
-ags_fx_notation_audio_processor_record(AgsFxNotationAudioProcessor *fx_notation_audio_processor)
+ags_fx_notation_audio_processor_midi1_record(AgsFxNotationAudioProcessor *fx_notation_audio_processor)
 {
   g_return_if_fail(AGS_IS_FX_NOTATION_AUDIO_PROCESSOR(fx_notation_audio_processor));
 
   g_object_ref(fx_notation_audio_processor);
   
-  if(AGS_FX_NOTATION_AUDIO_PROCESSOR_GET_CLASS(fx_notation_audio_processor)->record != NULL){
-    AGS_FX_NOTATION_AUDIO_PROCESSOR_GET_CLASS(fx_notation_audio_processor)->record(fx_notation_audio_processor);
+  if(AGS_FX_NOTATION_AUDIO_PROCESSOR_GET_CLASS(fx_notation_audio_processor)->midi1_record != NULL){
+    AGS_FX_NOTATION_AUDIO_PROCESSOR_GET_CLASS(fx_notation_audio_processor)->midi1_record(fx_notation_audio_processor);
+  }
+  
+  g_object_unref(fx_notation_audio_processor);
+}
+
+void
+ags_fx_notation_audio_processor_real_midi2_record(AgsFxNotationAudioProcessor *fx_notation_audio_processor)
+{
+  AgsAudio *audio;
+  AgsRecall *recall;
+  AgsPort *port;
+  AgsNotation *current_notation;
+  AgsFxNotationAudio *fx_notation_audio;
+  
+  AgsTimestamp *timestamp;
+
+  GObject *output_soundcard;
+  GObject *input_sequencer;
+
+  GList *start_notation, *notation;
+  GList *start_note, *note;
+  GList *start_recording_note, *recording_note;	
+
+  guchar *midi_buffer;
+
+  guint input_pads;
+  guint audio_start_mapping;
+  guint midi_start_mapping, midi_end_mapping;
+  guint midi_group;
+  guint midi_channel;
+  gdouble delay;
+  guint64 offset_counter;
+  guint offset_upper, offset_lower;
+  guint audio_channel;
+  guint buffer_length;
+  gboolean reverse_mapping;
+  gboolean pattern_mode;
+
+  GValue value = {0,};
+  
+  GRecMutex *fx_notation_audio_processor_mutex;
+
+  fx_notation_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_notation_audio_processor);
+
+  audio = NULL;
+
+  recall = (AgsRecall *) fx_notation_audio_processor;
+
+  fx_notation_audio = NULL;
+
+  audio_channel = 0;
+  
+  g_object_get(fx_notation_audio_processor,
+	       "audio", &audio,
+	       "recall-audio", &fx_notation_audio,
+	       "audio-channel", &audio_channel,
+	       NULL);
+
+  if(audio == NULL){
+    if(fx_notation_audio != NULL){
+      g_object_unref(fx_notation_audio);
+    }
+
+    return;
+  }
+  
+  output_soundcard = NULL;
+  input_sequencer = NULL;
+
+  input_pads = 0;
+
+  audio_start_mapping = 0;
+  
+  midi_start_mapping = 0;
+  midi_end_mapping = 0;
+
+  midi_group = 0;
+  midi_channel = 0;
+  
+  g_object_get(audio,
+	       "output-soundcard", &output_soundcard,
+	       "input-sequencer", &input_sequencer,
+	       "input-pads", &input_pads,
+	       "audio-start-mapping", &audio_start_mapping,
+	       "midi-start-mapping", &midi_start_mapping,
+	       "midi-end-mapping", &midi_end_mapping,
+	       "midi-group", &midi_group,
+	       "midi-channel", &midi_channel,
+	       NULL);
+
+  if(input_sequencer == NULL ||
+     ags_sequencer_get_midi_version(AGS_SEQUENCER(input_sequencer)) != AGS_SEQUENCER_MIDI2){
+    if(audio != NULL){
+      g_object_unref(audio);
+    }
+    
+    if(fx_notation_audio != NULL){
+      g_object_unref(fx_notation_audio);
+    }
+    
+    return;
+  }
+
+  current_notation = NULL;
+  
+  start_notation = NULL;
+  start_note = NULL;
+
+  g_object_get(audio,
+	       "notation", &start_notation,
+	       NULL);
+
+  /* get delay */
+  delay = AGS_SOUNDCARD_DEFAULT_DELAY;
+
+  if(fx_notation_audio != NULL){        
+    g_object_get(fx_notation_audio,
+		 "delay", &port,
+		 NULL);
+
+    if(port != NULL){
+      g_value_init(&value,
+		   G_TYPE_DOUBLE);
+    
+      ags_port_safe_read(port,
+			 &value);
+
+      delay = g_value_get_double(&value);
+      g_value_unset(&value);
+
+      g_object_unref(port);
+    }
+  }
+
+  /* timestamp and offset counter */
+  g_rec_mutex_lock(fx_notation_audio_processor_mutex);
+    
+  timestamp = fx_notation_audio_processor->timestamp;
+  
+  offset_counter = fx_notation_audio_processor->offset_counter;
+
+  g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
+
+  ags_timestamp_set_ags_offset(timestamp,
+			       AGS_NOTATION_DEFAULT_OFFSET * floor(offset_counter / AGS_NOTATION_DEFAULT_OFFSET));
+
+  offset_lower = 0;
+  offset_upper = 1;
+  
+  ags_soundcard_get_note_256th_offset(AGS_SOUNDCARD(output_soundcard),
+				      &offset_lower,
+				      &offset_upper);
+
+  /* test flags */
+  reverse_mapping = ags_audio_test_behaviour_flags(audio,
+						   AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING);
+  
+  pattern_mode = ags_audio_test_behaviour_flags(audio,
+						AGS_SOUND_BEHAVIOUR_PATTERN_MODE);
+  
+  /* find near timestamp */
+  notation = ags_notation_find_near_timestamp(start_notation, audio_channel,
+					      timestamp);
+
+  if(notation != NULL){
+    current_notation = notation->data;
+  }
+ 
+  /* retrieve buffer */
+  midi_buffer = ags_sequencer_get_buffer(AGS_SEQUENCER(input_sequencer),
+					 &buffer_length);
+  
+  ags_sequencer_lock_buffer(AGS_SEQUENCER(input_sequencer),
+			    midi_buffer);
+
+  if(midi_buffer != NULL){
+    guchar *midi_iter;
+    
+    /* parse bytes */
+    midi_iter = midi_buffer;
+    
+    while(midi_iter < midi_buffer + buffer_length){
+      if(ags_midi_ump_util_is_midi1_note_on(recall->midi_ump_util, midi_iter)){
+	gint group;
+	gint channel;
+	gint key;
+	gint velocity;
+	
+	/* key on */
+	group = 0;
+	channel = 0;
+	key = 0;
+	velocity = 0;
+	
+	ags_midi_ump_util_get_midi1_note_on(recall->midi_ump_util,
+					    midi_iter,
+					    &group,
+					    &channel,
+					    &key,
+					    &velocity,
+					    NULL, NULL,
+					    NULL);
+
+	if(midi_group == group &&
+	   midi_channel == channel){
+	  AgsNote *current_note;
+
+	  gint y;
+
+	  current_note = NULL;
+	  y = -1;
+	
+	  /* check mapping */
+	  if(key >= midi_start_mapping &&
+	     key <= midi_end_mapping){
+	    /* check channel */
+	    if(!reverse_mapping){
+	      y = audio_start_mapping + (key - midi_start_mapping);
+	    }else{
+	      y = input_pads - (audio_start_mapping + (key - midi_start_mapping)) - 1;
+	    }
+	  }
+
+	  if(y >= 0 &&
+	     y < input_pads){
+	    g_rec_mutex_lock(fx_notation_audio_processor_mutex);
+
+	    start_recording_note = g_list_copy_deep(fx_notation_audio_processor->recording_note,
+						    (GCopyFunc) g_object_ref,
+						    NULL);
+	  
+	    g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
+
+	    recording_note = start_recording_note;
+
+	    while(recording_note != NULL){
+	      guint current_y;
+
+	      current_y = 0;
+	      
+	      g_object_get(recording_note->data,
+			   "y", &current_y,
+			   NULL);
+	    
+	      if(current_y == y){
+		current_note = recording_note->data;
+	      
+		break;
+	      }
+	    
+	      /* iterate */
+	      recording_note = recording_note->next;
+	    }
+	  
+	    if(current_note == NULL){
+	      current_note = ags_note_new();
+	    
+	      current_note->x[0] = offset_counter;
+	      current_note->x[1] = offset_counter + 1;
+
+	      current_note->x_256th[0] = offset_lower;
+	      current_note->x_256th[1] = offset_upper;
+
+	      if(offset_lower == offset_upper){
+		current_note->x_256th[1] = offset_lower + 1;
+	      }
+	      
+	      current_note->y = y;
+		
+	      if(!pattern_mode){
+		fx_notation_audio_processor->recording_note = g_list_prepend(fx_notation_audio_processor->recording_note,
+									     current_note);
+		g_object_ref(current_note);
+
+		ags_note_set_flags(current_note,
+				   AGS_NOTE_FEED);
+	      }
+
+	      g_object_ref(current_note);
+	      start_note = g_list_prepend(start_note,
+					  current_note);
+	    
+	      /* check notation */
+	      if(current_notation == NULL){
+		current_notation = ags_notation_new((GObject *) audio,
+						    audio_channel);
+
+		ags_timestamp_set_ags_offset(current_notation->timestamp,
+					     ags_timestamp_get_ags_offset(timestamp));
+
+		ags_audio_add_notation(audio,
+				       (GObject *) current_notation);
+	      }
+
+	      /* add note */
+	      ags_notation_add_note(current_notation,
+				    current_note,
+				    FALSE);
+	    }else{
+	      if(velocity == 0){
+		/* note-off */
+		ags_note_unset_flags(current_note,
+				     AGS_NOTE_FEED);
+
+		fx_notation_audio_processor->recording_note = g_list_remove(fx_notation_audio_processor->recording_note,
+									    current_note);
+		g_object_unref(current_note);
+	      }
+	    }
+
+	    g_list_free_full(start_recording_note,
+			     (GDestroyNotify) g_object_unref);
+	  }
+	}
+	
+	midi_iter += 4;
+      }else if(ags_midi_ump_util_is_midi1_note_off(recall->midi_ump_util, midi_iter)){
+	gint group;
+	gint channel;
+	gint key;
+	gint velocity;
+	
+	/* key off */
+	group = 0;
+	channel = 0;
+	key = 0;
+	velocity = 0;
+	
+	ags_midi_ump_util_get_midi1_note_off(recall->midi_ump_util,
+					     midi_iter,
+					     &group,
+					     &channel,
+					     &key,
+					     &velocity,
+					     NULL, NULL,
+					     NULL);
+
+	if(midi_group == group &&
+	   midi_channel == channel){
+	  AgsNote *current_note;
+
+	  gint y;
+
+	  current_note = NULL;
+	  y = -1;
+	
+	  /* check mapping */
+	  if(key >= midi_start_mapping &&
+	     key <= midi_end_mapping){
+	    /* check channel */
+	    if(!reverse_mapping){
+	      y = audio_start_mapping + (key - midi_start_mapping);
+	    }else{
+	      y = input_pads - (audio_start_mapping + (key - midi_start_mapping)) - 1;
+	    }
+	  }
+
+	  if(y >= 0 &&
+	     y < input_pads){
+	    g_rec_mutex_lock(fx_notation_audio_processor_mutex);
+
+	    start_recording_note = g_list_copy_deep(fx_notation_audio_processor->recording_note,
+						    (GCopyFunc) g_object_ref,
+						    NULL);
+	  
+	    g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
+
+	    recording_note = start_recording_note;
+
+	    while(recording_note != NULL){
+	      guint current_y;
+
+	      current_y = 0;
+	      
+	      g_object_get(recording_note->data,
+			   "y", &current_y,
+			   NULL);
+	    
+	      if(current_y == y){
+		current_note = recording_note->data;
+	      
+		break;
+	      }
+	    
+	      /* iterate */
+	      recording_note = recording_note->next;
+	    }
+	  
+	    if(current_note != NULL){
+	      ags_note_unset_flags(current_note,
+				   AGS_NOTE_FEED);
+	      
+	      fx_notation_audio_processor->recording_note = g_list_remove(fx_notation_audio_processor->recording_note,
+									  current_note);
+	      g_object_unref(current_note);
+	    }
+
+	    g_list_free_full(start_recording_note,
+			     (GDestroyNotify) g_object_unref);
+	  }
+	}
+	
+	midi_iter += 4;
+      }else if(ags_midi_ump_util_is_midi1_polyphonic_aftertouch(recall->midi_ump_util, midi_iter)){
+	/* key pressure */
+	    
+	midi_iter += 4;
+      }else if(ags_midi_ump_util_is_midi1_control_change(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+	    	    
+	midi_iter += 4;
+      }else if(ags_midi_ump_util_is_midi1_pitch_bend(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+	    	    
+	midi_iter += 4;
+      }else if(ags_midi_ump_util_is_midi1_program_change(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+	    
+	midi_iter += 4;
+      }else if(ags_midi_ump_util_is_midi1_channel_pressure(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+	    
+	midi_iter += 4;
+      }else if(ags_midi_ump_util_is_midi2_note_on(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+	    	    
+	midi_iter += 8;
+      }else if(ags_midi_ump_util_is_midi2_note_off(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+	    	    
+	midi_iter += 8;
+      }else if(ags_midi_ump_util_is_midi2_polyphonic_aftertouch(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+	    	    
+	midi_iter += 8;
+      }else if(ags_midi_ump_util_is_midi2_registered_per_note_controller(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+	    	    
+	midi_iter += 8;
+      }else if(ags_midi_ump_util_is_midi2_assignable_per_note_controller(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+	    	    
+	midi_iter += 8;
+      }else if(ags_midi_ump_util_is_midi2_control_change(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+	    	    
+	midi_iter += 8;
+      }else if(ags_midi_ump_util_is_midi2_rpn_pitch_bend_range(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+	    	    
+	midi_iter += 8;
+      }else if(ags_midi_ump_util_is_midi2_rpn_coarse_tuning(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+	    	    
+	midi_iter += 8;
+      }else if(ags_midi_ump_util_is_midi2_rpn_tuning_program_change(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+	    	    
+	midi_iter += 8;
+      }else if(ags_midi_ump_util_is_midi2_rpn_tuning_bank_select(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+	    	    
+	midi_iter += 8;
+      }else if(ags_midi_ump_util_is_midi2_rpn_mpe_mcm(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+	    	    
+	midi_iter += 8;
+      }else if(ags_midi_ump_util_is_midi2_program_change(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+	    	    
+	midi_iter += 8;
+      }else if(ags_midi_ump_util_is_midi2_channel_pressure(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+	    	    
+	midi_iter += 8;
+      }else if(ags_midi_ump_util_is_midi2_pitch_bend(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+	    	    
+	midi_iter += 8;
+      }else if(ags_midi_ump_util_is_midi2_per_note_pitch_bend(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+	    	    
+	midi_iter += 8;
+      }else if(ags_midi_ump_util_is_flex_set_tempo(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+
+	midi_iter += 16;
+      }else if(ags_midi_ump_util_is_flex_set_time_signature(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+
+	midi_iter += 16;
+      }else if(ags_midi_ump_util_is_flex_set_metronome(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+
+	midi_iter += 16;
+      }else if(ags_midi_ump_util_is_flex_set_key_signature(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+
+	midi_iter += 16;
+      }else if(ags_midi_ump_util_is_flex_set_chord_name(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+
+	midi_iter += 16;
+      }else if(ags_midi_ump_util_is_endpoint_discovery(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+
+	midi_iter += 16;
+      }else if(ags_midi_ump_util_is_endpoint_info_notification(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+
+	midi_iter += 16;
+      }else if(ags_midi_ump_util_is_device_identity_notification(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+
+	midi_iter += 16;
+      }else if(ags_midi_ump_util_is_endpoint_name_notification(recall->midi_ump_util, midi_iter)){
+	guint msg_length;
+	    
+	msg_length = ags_midi_ump_util_get_endpoint_name_notification(recall->midi_ump_util,
+								      midi_iter,
+								      NULL,
+								      NULL,
+								      NULL,
+								      NULL);
+
+	midi_iter += msg_length;
+      }else if(ags_midi_ump_util_is_product_instance_id_notification(recall->midi_ump_util, midi_iter)){
+	guint msg_length;
+	    
+	msg_length = ags_midi_ump_util_get_product_instance_id_notification(recall->midi_ump_util,
+									    midi_iter,
+									    NULL,
+									    NULL,
+									    NULL,
+									    NULL);
+
+	midi_iter += msg_length;
+      }else if(ags_midi_ump_util_is_stream_configuration_request(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+
+	midi_iter += 16;
+      }else if(ags_midi_ump_util_is_function_block_discovery(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+
+	midi_iter += 16;
+      }else if(ags_midi_ump_util_is_function_block_info_notification(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+
+	midi_iter += 20;
+      }else if(ags_midi_ump_util_is_function_block_name_notification(recall->midi_ump_util, midi_iter)){
+	guint msg_length;
+	    
+	msg_length = ags_midi_ump_util_get_function_block_name_notification(recall->midi_ump_util,
+									    midi_iter,
+									    NULL,
+									    NULL,
+									    NULL,
+									    NULL,
+									    NULL);
+
+	midi_iter += msg_length;
+      }else if(ags_midi_ump_util_is_start_of_clip(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+
+	midi_iter += 16;
+      }else if(ags_midi_ump_util_is_end_of_clip(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+
+	midi_iter += 16;
+      }else if(ags_midi_ump_util_is_noop(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+	    	    
+	midi_iter += 4;
+      }else if(ags_midi_ump_util_is_jr_clock(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+	    	    
+	midi_iter += 4;
+      }else if(ags_midi_ump_util_is_jr_timestamp(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+	    	    
+	midi_iter += 4;
+      }else if(ags_midi_ump_util_is_delta_clock_ticks_per_quarter_note(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+      }else if(ags_midi_ump_util_is_delta_clock_ticks_since_last_event(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+      }else{
+	g_warning("ags_fx_notation_audio_processor.c - unexpected byte %x", midi_iter[0]);
+	    
+	midi_iter++;
+      }
+    }
+  }
+  
+  ags_sequencer_unlock_buffer(AGS_SEQUENCER(input_sequencer),
+			      midi_buffer);
+
+  /* key on */
+  note = start_note;
+
+  while(note != NULL){
+    ags_fx_notation_audio_processor_key_on(fx_notation_audio_processor,
+					   note->data,
+					   AGS_FX_NOTATION_AUDIO_PROCESSOR_DEFAULT_KEY_ON_VELOCITY,
+					   AGS_FX_NOTATION_AUDIO_PROCESSOR_KEY_MODE_MIDI2_RECORD);
+    
+    note = note->next;
+  }
+
+  /* update */
+  g_rec_mutex_lock(fx_notation_audio_processor_mutex);
+
+  start_recording_note = g_list_copy_deep(fx_notation_audio_processor->recording_note,
+					  (GCopyFunc) g_object_ref,
+					  NULL);
+	  
+  g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
+  
+  recording_note = start_recording_note;
+
+  while(recording_note != NULL){
+    guint current_x1;
+
+    current_x1 = 0;
+    
+    g_object_get(recording_note->data,
+		 "x1", &current_x1,
+		 NULL);
+    
+    if(current_x1 <= offset_counter + 1){
+      g_object_set(recording_note->data,
+		   "x1", current_x1 + 1,
+		   NULL);
+    }
+	    
+    /* iterate */
+    recording_note = recording_note->next;
+  }
+  
+  /* unref */
+  g_list_free_full(start_recording_note,
+		   (GDestroyNotify) g_object_unref);
+
+  if(audio != NULL){
+    g_object_unref(audio);  
+  }
+  
+  if(fx_notation_audio != NULL){
+    g_object_unref(fx_notation_audio);
+  }
+
+  if(input_sequencer != NULL){
+    g_object_unref(input_sequencer);
+  }
+  
+  g_list_free_full(start_notation,
+		   (GDestroyNotify) g_object_unref);
+
+  g_list_free_full(start_note,
+		   (GDestroyNotify) g_object_unref);
+}
+
+void
+ags_fx_notation_audio_processor_midi2_record(AgsFxNotationAudioProcessor *fx_notation_audio_processor)
+{
+  g_return_if_fail(AGS_IS_FX_NOTATION_AUDIO_PROCESSOR(fx_notation_audio_processor));
+
+  g_object_ref(fx_notation_audio_processor);
+  
+  if(AGS_FX_NOTATION_AUDIO_PROCESSOR_GET_CLASS(fx_notation_audio_processor)->midi2_record != NULL){
+    AGS_FX_NOTATION_AUDIO_PROCESSOR_GET_CLASS(fx_notation_audio_processor)->midi2_record(fx_notation_audio_processor);
   }
   
   g_object_unref(fx_notation_audio_processor);

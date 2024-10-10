@@ -19,15 +19,6 @@
 
 #include <ags/audio/ags_time_stretch_util.h>
 
-void ags_time_stretch_util_stretch_s8(AgsTimeStretchUtil *time_stretch_util);
-void ags_time_stretch_util_stretch_s16(AgsTimeStretchUtil *time_stretch_util);
-void ags_time_stretch_util_stretch_s24(AgsTimeStretchUtil *time_stretch_util);
-void ags_time_stretch_util_stretch_s32(AgsTimeStretchUtil *time_stretch_util);
-void ags_time_stretch_util_stretch_s64(AgsTimeStretchUtil *time_stretch_util);
-void ags_time_stretch_util_stretch_float(AgsTimeStretchUtil *time_stretch_util);
-void ags_time_stretch_util_stretch_double(AgsTimeStretchUtil *time_stretch_util);
-void ags_time_stretch_util_stretch_complex(AgsTimeStretchUtil *time_stretch_util);
-
 /**
  * SECTION:ags_time_stretch_util
  * @short_description: time stretch util

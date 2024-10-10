@@ -22,15 +22,6 @@
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
-void ags_phase_shift_util_process_s8(AgsPhaseShiftUtil *phase_shift_util);
-void ags_phase_shift_util_process_s16(AgsPhaseShiftUtil *phase_shift_util);
-void ags_phase_shift_util_process_s24(AgsPhaseShiftUtil *phase_shift_util);
-void ags_phase_shift_util_process_s32(AgsPhaseShiftUtil *phase_shift_util);
-void ags_phase_shift_util_process_s64(AgsPhaseShiftUtil *phase_shift_util);
-void ags_phase_shift_util_process_float(AgsPhaseShiftUtil *phase_shift_util);
-void ags_phase_shift_util_process_double(AgsPhaseShiftUtil *phase_shift_util);
-void ags_phase_shift_util_process_complex(AgsPhaseShiftUtil *phase_shift_util);
-
 /**
  * SECTION:ags_phase_shift_util
  * @short_description: phase shift util

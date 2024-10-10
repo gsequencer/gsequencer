@@ -25,15 +25,6 @@
 #include <Accelerate/Accelerate.h>
 #endif
 
-void ags_tremolo_util_compute_s8(AgsTremoloUtil *tremolo_util);
-void ags_tremolo_util_compute_s16(AgsTremoloUtil *tremolo_util);
-void ags_tremolo_util_compute_s24(AgsTremoloUtil *tremolo_util);
-void ags_tremolo_util_compute_s32(AgsTremoloUtil *tremolo_util);
-void ags_tremolo_util_compute_s64(AgsTremoloUtil *tremolo_util);
-void ags_tremolo_util_compute_float(AgsTremoloUtil *tremolo_util);
-void ags_tremolo_util_compute_double(AgsTremoloUtil *tremolo_util);
-void ags_tremolo_util_compute_complex(AgsTremoloUtil *tremolo_util);
-
 /**
  * SECTION:ags_tremolo_util
  * @short_description: Boxed type of tremolo util

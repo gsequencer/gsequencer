@@ -164,18 +164,63 @@ guint ags_synth_util_get_xcross_count(AgsSynthUtil *synth_util,
 				      guint buffer_size);
 
 /* sin oscillator */
+void ags_synth_util_compute_sin_s8(AgsSynthUtil *synth_util);
+void ags_synth_util_compute_sin_s16(AgsSynthUtil *synth_util);
+void ags_synth_util_compute_sin_s24(AgsSynthUtil *synth_util);
+void ags_synth_util_compute_sin_s32(AgsSynthUtil *synth_util);
+void ags_synth_util_compute_sin_s64(AgsSynthUtil *synth_util);
+void ags_synth_util_compute_sin_float(AgsSynthUtil *synth_util);
+void ags_synth_util_compute_sin_double(AgsSynthUtil *synth_util);
+void ags_synth_util_compute_sin_complex(AgsSynthUtil *synth_util);
+
 void ags_synth_util_compute_sin(AgsSynthUtil *synth_util);
 
 /* sawtooth oscillator */
+void ags_synth_util_compute_sawtooth_s8(AgsSynthUtil *synth_util);
+void ags_synth_util_compute_sawtooth_s16(AgsSynthUtil *synth_util);
+void ags_synth_util_compute_sawtooth_s24(AgsSynthUtil *synth_util);
+void ags_synth_util_compute_sawtooth_s32(AgsSynthUtil *synth_util);
+void ags_synth_util_compute_sawtooth_s64(AgsSynthUtil *synth_util);
+void ags_synth_util_compute_sawtooth_float(AgsSynthUtil *synth_util);
+void ags_synth_util_compute_sawtooth_double(AgsSynthUtil *synth_util);
+void ags_synth_util_compute_sawtooth_complex(AgsSynthUtil *synth_util);
+
 void ags_synth_util_compute_sawtooth(AgsSynthUtil *synth_util);
 
 /* triangle oscillator */
+void ags_synth_util_compute_triangle_s8(AgsSynthUtil *synth_util);
+void ags_synth_util_compute_triangle_s16(AgsSynthUtil *synth_util);
+void ags_synth_util_compute_triangle_s24(AgsSynthUtil *synth_util);
+void ags_synth_util_compute_triangle_s32(AgsSynthUtil *synth_util);
+void ags_synth_util_compute_triangle_s64(AgsSynthUtil *synth_util);
+void ags_synth_util_compute_triangle_float(AgsSynthUtil *synth_util);
+void ags_synth_util_compute_triangle_double(AgsSynthUtil *synth_util);
+void ags_synth_util_compute_triangle_complex(AgsSynthUtil *synth_util);
+
 void ags_synth_util_compute_triangle(AgsSynthUtil *synth_util);
 
 /* square oscillator */
+void ags_synth_util_compute_square_s8(AgsSynthUtil *synth_util);
+void ags_synth_util_compute_square_s16(AgsSynthUtil *synth_util);
+void ags_synth_util_compute_square_s24(AgsSynthUtil *synth_util);
+void ags_synth_util_compute_square_s32(AgsSynthUtil *synth_util);
+void ags_synth_util_compute_square_s64(AgsSynthUtil *synth_util);
+void ags_synth_util_compute_square_float(AgsSynthUtil *synth_util);
+void ags_synth_util_compute_square_double(AgsSynthUtil *synth_util);
+void ags_synth_util_compute_square_complex(AgsSynthUtil *synth_util);
+
 void ags_synth_util_compute_square(AgsSynthUtil *synth_util);
 
 /* impulse oscillator */
+void ags_synth_util_compute_impulse_s8(AgsSynthUtil *synth_util);
+void ags_synth_util_compute_impulse_s16(AgsSynthUtil *synth_util);
+void ags_synth_util_compute_impulse_s24(AgsSynthUtil *synth_util);
+void ags_synth_util_compute_impulse_s32(AgsSynthUtil *synth_util);
+void ags_synth_util_compute_impulse_s64(AgsSynthUtil *synth_util);
+void ags_synth_util_compute_impulse_float(AgsSynthUtil *synth_util);
+void ags_synth_util_compute_impulse_double(AgsSynthUtil *synth_util);
+void ags_synth_util_compute_impulse_complex(AgsSynthUtil *synth_util);
+
 void ags_synth_util_compute_impulse(AgsSynthUtil *synth_util);
 
 G_END_DECLS

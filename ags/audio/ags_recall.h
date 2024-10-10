@@ -288,8 +288,7 @@ struct _AgsRecall
 
   GList *children;  
 
-  AgsMidiUtil *midi_util;
-  
+  AgsMidiUtil *midi_util;  
   AgsMidiUmpUtil *midi_ump_util;
 
   GHashTable *midi1_cc_to_value;

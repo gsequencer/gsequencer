@@ -739,7 +739,7 @@ ags_fx_sf2_synth_audio_init(AgsFxSF2SynthAudio *fx_sf2_synth_audio)
 							 "port-value-length", 1,
 							 NULL);
   
-  fx_sf2_synth_audio->chorus_lfo_frequency->port_value.ags_port_float = (gfloat) 10.0;
+  fx_sf2_synth_audio->chorus_lfo_frequency->port_value.ags_port_float = (gfloat) 0.01;
 
   g_object_set(fx_sf2_synth_audio->chorus_lfo_frequency,
 	       "plugin-port", ags_fx_sf2_synth_audio_get_chorus_lfo_frequency_plugin_port(),

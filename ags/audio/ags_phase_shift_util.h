@@ -107,6 +107,15 @@ gdouble ags_phase_shift_util_get_phase(AgsPhaseShiftUtil *phase_shift_util);
 void ags_phase_shift_util_set_phase(AgsPhaseShiftUtil *phase_shift_util,
 				    gdouble phase);
 
+void ags_phase_shift_util_process_s8(AgsPhaseShiftUtil *phase_shift_util);
+void ags_phase_shift_util_process_s16(AgsPhaseShiftUtil *phase_shift_util);
+void ags_phase_shift_util_process_s24(AgsPhaseShiftUtil *phase_shift_util);
+void ags_phase_shift_util_process_s32(AgsPhaseShiftUtil *phase_shift_util);
+void ags_phase_shift_util_process_s64(AgsPhaseShiftUtil *phase_shift_util);
+void ags_phase_shift_util_process_float(AgsPhaseShiftUtil *phase_shift_util);
+void ags_phase_shift_util_process_double(AgsPhaseShiftUtil *phase_shift_util);
+void ags_phase_shift_util_process_complex(AgsPhaseShiftUtil *phase_shift_util);
+
 void ags_phase_shift_util_process(AgsPhaseShiftUtil *phase_shift_util);
 
 G_END_DECLS

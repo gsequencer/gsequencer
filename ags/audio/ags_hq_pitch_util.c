@@ -22,15 +22,6 @@
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
-void ags_hq_pitch_util_pitch_s8(AgsHQPitchUtil *hq_pitch_util);
-void ags_hq_pitch_util_pitch_s16(AgsHQPitchUtil *hq_pitch_util);
-void ags_hq_pitch_util_pitch_s24(AgsHQPitchUtil *hq_pitch_util);
-void ags_hq_pitch_util_pitch_s32(AgsHQPitchUtil *hq_pitch_util);
-void ags_hq_pitch_util_pitch_s64(AgsHQPitchUtil *hq_pitch_util);
-void ags_hq_pitch_util_pitch_float(AgsHQPitchUtil *hq_pitch_util);
-void ags_hq_pitch_util_pitch_double(AgsHQPitchUtil *hq_pitch_util);
-void ags_hq_pitch_util_pitch_complex(AgsHQPitchUtil *hq_pitch_util);
-
 /**
  * SECTION:ags_hq_pitch_util
  * @short_description: hq pitch util

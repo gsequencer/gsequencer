@@ -21,15 +21,6 @@
 
 #include <math.h>
 
-void ags_linear_interpolate_util_pitch_s8(AgsLinearInterpolateUtil *linear_interpolate_util);
-void ags_linear_interpolate_util_pitch_s16(AgsLinearInterpolateUtil *linear_interpolate_util);
-void ags_linear_interpolate_util_pitch_s24(AgsLinearInterpolateUtil *linear_interpolate_util);
-void ags_linear_interpolate_util_pitch_s32(AgsLinearInterpolateUtil *linear_interpolate_util);
-void ags_linear_interpolate_util_pitch_s64(AgsLinearInterpolateUtil *linear_interpolate_util);
-void ags_linear_interpolate_util_pitch_float(AgsLinearInterpolateUtil *linear_interpolate_util);
-void ags_linear_interpolate_util_pitch_double(AgsLinearInterpolateUtil *linear_interpolate_util);
-void ags_linear_interpolate_util_pitch_complex(AgsLinearInterpolateUtil *linear_interpolate_util);
-
 /**
  * SECTION:ags_linear_interpolate_util
  * @short_description: util functions to linear interpolate

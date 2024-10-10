@@ -350,6 +350,7 @@ ags_sequencer_set_start_note_offset
 ags_sequencer_get_start_note_offset
 ags_sequencer_set_note_offset
 ags_sequencer_get_note_offset
+ags_sequencer_get_midi_version
 ags_main_loop_get_type
 ags_main_loop_get_tree_lock
 ags_main_loop_set_syncing

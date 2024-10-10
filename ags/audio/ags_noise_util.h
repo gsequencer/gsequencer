@@ -209,6 +209,15 @@ guint ags_noise_util_get_offset_256th(AgsNoiseUtil *noise_util);
 void ags_noise_util_set_offset_256th(AgsNoiseUtil *noise_util,
 				     guint offset_256th);
 
+void ags_noise_util_compute_s8(AgsNoiseUtil *noise_util);
+void ags_noise_util_compute_s16(AgsNoiseUtil *noise_util);
+void ags_noise_util_compute_s24(AgsNoiseUtil *noise_util);
+void ags_noise_util_compute_s32(AgsNoiseUtil *noise_util);
+void ags_noise_util_compute_s64(AgsNoiseUtil *noise_util);
+void ags_noise_util_compute_float(AgsNoiseUtil *noise_util);
+void ags_noise_util_compute_double(AgsNoiseUtil *noise_util);
+void ags_noise_util_compute_complex(AgsNoiseUtil *noise_util);
+
 void ags_noise_util_compute(AgsNoiseUtil *noise_util);
 
 G_END_DECLS

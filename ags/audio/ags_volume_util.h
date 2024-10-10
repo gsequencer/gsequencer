@@ -96,6 +96,15 @@ void ags_volume_util_set_volume(AgsVolumeUtil *volume_util,
 				gdouble volume);
 
 /* compute */
+void ags_volume_util_compute_s8(AgsVolumeUtil *volume_util);
+void ags_volume_util_compute_s16(AgsVolumeUtil *volume_util);
+void ags_volume_util_compute_s24(AgsVolumeUtil *volume_util);
+void ags_volume_util_compute_s32(AgsVolumeUtil *volume_util);
+void ags_volume_util_compute_s64(AgsVolumeUtil *volume_util);
+void ags_volume_util_compute_float(AgsVolumeUtil *volume_util);
+void ags_volume_util_compute_double(AgsVolumeUtil *volume_util);
+void ags_volume_util_compute_complex(AgsVolumeUtil *volume_util);
+
 void ags_volume_util_compute(AgsVolumeUtil *volume_util);
 
 G_END_DECLS
