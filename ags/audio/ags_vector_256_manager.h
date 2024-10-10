@@ -139,6 +139,10 @@ void ags_vector_256_manager_reserve_all(AgsVector256Manager *vector_256_manager)
 
 AgsVectorArr* ags_vector_256_manager_try_acquire(AgsVector256Manager *vector_256_manager,
 						 AgsVector256Types vector_type);
+gboolean ags_vector_256_manager_try_acquire_dual(AgsVector256Manager *vector_256_manager,
+						 AgsVector256Types vector_type_a, AgsVector256Types vector_type_b,
+						 AgsVectorArr **vector_arr_a, AgsVectorArr **vector_arr_b);
+
 void ags_vector_256_manager_release(AgsVector256Manager *vector_256_manager,
 				    AgsVectorArr *vector_arr);
 

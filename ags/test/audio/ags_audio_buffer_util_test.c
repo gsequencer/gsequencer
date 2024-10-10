@@ -85,6 +85,7 @@ void ags_audio_buffer_util_test_copy_double_to_s64();
 void ags_audio_buffer_util_test_copy_double_to_float();
 void ags_audio_buffer_util_test_copy_double_to_double();
 void ags_audio_buffer_util_test_copy_buffer_to_buffer();
+void ags_audio_buffer_util_test_perf_copy_s16_to_s16();
 
 #define AGS_AUDIO_BUFFER_UTIL_TEST_MAX_S24 (0x7fffff)
 #define AGS_AUDIO_BUFFER_UTIL_TEST_FREQUENCY (440.0)
@@ -162,6 +163,8 @@ AgsSynthUtil synth_util;
 int
 ags_audio_buffer_util_test_init_suite()
 { 
+  ags_vector_256_manager_reserve_all(ags_vector_256_manager_get_instance());
+
   return(0);
 }
 
@@ -2186,6 +2189,57 @@ ags_audio_buffer_util_test_copy_buffer_to_buffer()
   //TODO:JK: implement me
 }
 
+void
+ags_audio_buffer_util_test_perf_copy_s16_to_s16()
+{
+  struct timespec start_time, end_time;
+  struct timespec diff_time;
+
+  gint16 *s16_buffer, *s16_destination;
+
+  gboolean overflow;
+  guint i;
+  
+  s16_buffer = ags_stream_alloc(AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S16_TO_S16_BUFFER_SIZE,
+				AGS_SOUNDCARD_SIGNED_16_BIT);
+  s16_destination = ags_stream_alloc(AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S16_TO_S16_BUFFER_SIZE,
+				     AGS_SOUNDCARD_SIGNED_16_BIT);
+  
+  for(i = 0; i < AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S16_TO_S16_BUFFER_SIZE; i++){
+    s16_buffer[i] = G_MAXINT16 * sin(i * 2.0 * M_PI * AGS_AUDIO_BUFFER_UTIL_TEST_FREQUENCY / AGS_AUDIO_BUFFER_UTIL_TEST_SAMPLERATE);
+  }
+  
+  /* test */
+  clock_gettime(CLOCK_MONOTONIC, &start_time);
+  
+  for(i = 0; i < 1024 * 1024; i++){
+    ags_audio_buffer_util_copy_s16_to_s16(&audio_buffer_util,
+					  s16_destination, 1,
+					  s16_buffer, 1,
+					  AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S16_TO_S16_BUFFER_SIZE);
+  }
+
+  clock_gettime(CLOCK_MONOTONIC, &end_time);
+
+  overflow = FALSE;
+  
+  if(end_time.tv_nsec > start_time.tv_nsec){
+    diff_time.tv_nsec = end_time.tv_nsec - start_time.tv_nsec;
+  }else{
+    overflow = TRUE;
+  
+    diff_time.tv_nsec = (AGS_NSEC_PER_SEC - start_time.tv_nsec) + end_time.tv_nsec;
+  }
+
+  diff_time.tv_sec = end_time.tv_sec - start_time.tv_sec;
+
+  if(overflow){
+    diff_time.tv_sec -= 1;
+  }
+
+  g_message("time computed: %10jd.%03ld", diff_time.tv_sec, diff_time.tv_nsec / 1000000);
+}
+
 int
 main(int argc, char **argv)
 {
@@ -2260,7 +2314,8 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of ags_audio_buffer_util.c copy double to s64", ags_audio_buffer_util_test_copy_double_to_s64) == NULL) ||
      (CU_add_test(pSuite, "test of ags_audio_buffer_util.c copy double to float", ags_audio_buffer_util_test_copy_double_to_float) == NULL) ||
      (CU_add_test(pSuite, "test of ags_audio_buffer_util.c copy double to double", ags_audio_buffer_util_test_copy_double_to_double) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_audio_buffer_util.c copy buffer to buffer", ags_audio_buffer_util_test_copy_buffer_to_buffer) == NULL)){
+     (CU_add_test(pSuite, "test of ags_audio_buffer_util.c copy buffer to buffer", ags_audio_buffer_util_test_copy_buffer_to_buffer) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_audio_buffer_util.c perf copy s16 to s16", ags_audio_buffer_util_test_perf_copy_s16_to_s16) == NULL)){
     CU_cleanup_registry();
       
     return CU_get_error();

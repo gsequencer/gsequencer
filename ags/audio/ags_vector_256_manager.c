@@ -434,6 +434,164 @@ ags_vector_256_manager_try_acquire(AgsVector256Manager *vector_256_manager,
   return(vector_arr);
 }
 
+gboolean
+ags_vector_256_manager_try_acquire_dual(AgsVector256Manager *vector_256_manager,
+					AgsVector256Types vector_type_a, AgsVector256Types vector_type_b,
+					AgsVectorArr **vector_arr_a, AgsVectorArr **vector_arr_b)
+{
+  AgsVectorArr *arr_a, *arr_b;
+
+  guint i;
+  gboolean success;
+  
+  GRecMutex *mutex;
+
+  g_return_val_if_fail(vector_256_manager != NULL, FALSE);
+  g_return_val_if_fail(vector_arr_a != NULL, FALSE);
+  g_return_val_if_fail(vector_arr_b != NULL, FALSE);
+
+  mutex = AGS_VECTOR_256_MANAGER_GET_OBJ_MUTEX(vector_256_manager);
+  
+  success = FALSE;
+  
+  g_rec_mutex_lock(mutex);
+
+  for(i = 0; i < 2; i++){
+    AgsVectorArr *vector_arr;
+    
+    GList *vector;
+
+    AgsVector256Types vector_type;
+
+    if(i == 0){
+      vector_type = vector_type_a;
+    }else{
+      vector_type = vector_type_b;
+    }
+    
+    vector_arr = NULL;
+  
+    switch(vector_type){
+    case AGS_VECTOR_256_SIGNED_8_BIT:
+      {
+	vector = vector_256_manager->v8s8_arr;
+      
+	while(vector != NULL){
+	  if(g_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
+	    vector_arr = (AgsVectorArr *) vector->data;
+	  
+	    break;
+	  }
+	
+	  vector = vector->next;
+	}
+      }
+      break;
+    case AGS_VECTOR_256_SIGNED_16_BIT:
+      {
+	vector = vector_256_manager->v8s16_arr;
+      
+	while(vector != NULL){
+	  if(g_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
+	    vector_arr = (AgsVectorArr *) vector->data;
+	  
+	    break;
+	  }
+	
+	  vector = vector->next;
+	}
+      }
+      break;
+    case AGS_VECTOR_256_SIGNED_32_BIT:
+      {
+	vector = vector_256_manager->v8s32_arr;
+      
+	while(vector != NULL){
+	  if(g_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
+	    vector_arr = (AgsVectorArr *) vector->data;
+	  
+	    break;
+	  }
+	
+	  vector = vector->next;
+	}
+      }
+      break;
+    case AGS_VECTOR_256_SIGNED_64_BIT:
+      {
+	vector = vector_256_manager->v8s64_arr;
+      
+	while(vector != NULL){
+	  if(g_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
+	    vector_arr = (AgsVectorArr *) vector->data;
+	  
+	    break;
+	  }
+	
+	  vector = vector->next;
+	}
+      }
+      break;
+    case AGS_VECTOR_256_FLOAT:
+      {
+	vector = vector_256_manager->v8float_arr;
+      
+	while(vector != NULL){
+	  if(g_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
+	    vector_arr = (AgsVectorArr *) vector->data;
+	  
+	    break;
+	  }
+	
+	  vector = vector->next;
+	}
+      }
+      break;
+    case AGS_VECTOR_256_DOUBLE:
+      {
+	vector = vector_256_manager->v8double_arr;
+      
+	while(vector != NULL){
+	  if(g_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
+	    vector_arr = (AgsVectorArr *) vector->data;
+	  
+	    break;
+	  }
+	
+	  vector = vector->next;
+	}
+      }
+      break;
+    };
+
+    if(i == 0){
+      arr_a = vector_arr;
+    }else{
+      arr_b = vector_arr;
+    }
+  }
+  
+  if(arr_a != NULL &&
+     arr_b != NULL){
+    success = TRUE;
+  }
+  
+  if(success){
+    vector_arr_a[0] = arr_a;
+    vector_arr_b[0] = arr_b;
+    
+    g_atomic_int_set(&(arr_a->locked),
+		     TRUE);
+
+    g_atomic_int_set(&(arr_b->locked),
+		     TRUE);
+  }
+
+  g_rec_mutex_unlock(mutex);
+  
+  return(success);
+}
+
 /**
  * ags_vector_256_manager_release:
  * @vector_256_manager: the #AgsVector256Manager
