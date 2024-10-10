@@ -1801,7 +1801,7 @@ ags_program_find_point(AgsProgram *program,
 }
 
 /**
- * ags_program_find_point:
+ * ags_program_find_exact_point:
  * @program: the #AgsProgram
  * @x: offset
  * @use_selection_list: if %TRUE selection is searched

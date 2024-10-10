@@ -2272,7 +2272,7 @@ ags_wave_find_point(AgsWave *wave,
 }
 
 /**
- * ags_wave_find_point:
+ * ags_wave_find_exact_point:
  * @wave: the #AgsWave
  * @x: offset
  * @use_selection_list: if %TRUE selection is searched

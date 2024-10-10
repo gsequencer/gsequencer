@@ -35,7 +35,7 @@ foreach static_test : static_tests
   static_test_bin = executable(
     static_test,
     source,
-    c_args: [compiler_flags],
+    c_args: [compiler_test_flags],
     include_directories: [includes],
     dependencies: [static_test_dependencies],
     link_with: [

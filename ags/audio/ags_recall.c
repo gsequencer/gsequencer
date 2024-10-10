@@ -2774,15 +2774,13 @@ ags_recall_set_flags(AgsRecall *recall, AgsRecallFlags flags)
   /* set flags */
   g_rec_mutex_lock(recall_mutex);
 
-  if((AGS_RECALL_MIDI1_CONTROL_CHANGE & flags) != 0){
+  if((AGS_RECALL_MIDI1 & flags) != 0){
     if(recall->midi_util != NULL){
       recall->midi_util = ags_midi_util_alloc();
     }
+  }
 
-    if(recall->midi_ump_util != NULL){
-      recall->midi_ump_util = ags_midi_ump_util_alloc();
-    }
-        
+  if((AGS_RECALL_MIDI1_CONTROL_CHANGE & flags) != 0){
     if(recall->midi1_cc_to_value == NULL){
       recall->midi1_cc_to_value = g_hash_table_new_full(g_direct_hash,
 							g_direct_equal,
@@ -2796,6 +2794,12 @@ ags_recall_set_flags(AgsRecall *recall, AgsRecallFlags flags)
 								 NULL,
 								 g_free);
     }
+  }
+
+  if((AGS_RECALL_MIDI2 & flags) != 0){
+    if(recall->midi_ump_util != NULL){
+      recall->midi_ump_util = ags_midi_ump_util_alloc();
+    }        
   }
 
   if((AGS_RECALL_MIDI2_CONTROL_CHANGE & flags) != 0){
@@ -2843,19 +2847,15 @@ ags_recall_unset_flags(AgsRecall *recall, AgsRecallFlags flags)
   /* unset flags */
   g_rec_mutex_lock(recall_mutex);
 
-  if((AGS_RECALL_MIDI1_CONTROL_CHANGE & flags) != 0){
+  if((AGS_RECALL_MIDI1 & flags) != 0){
     if(recall->midi_util != NULL){
       ags_midi_util_free(recall->midi_util);
 
       recall->midi_util = NULL;
     }
-
-    if(recall->midi_ump_util != NULL){
-      ags_midi_ump_util_free(recall->midi_ump_util);
-
-      recall->midi_ump_util = NULL;
-    }
-
+  }
+  
+  if((AGS_RECALL_MIDI1_CONTROL_CHANGE & flags) != 0){
     if(recall->midi1_cc_to_value != NULL){
       g_hash_table_unref(recall->midi1_cc_to_value);
 
@@ -2869,6 +2869,14 @@ ags_recall_unset_flags(AgsRecall *recall, AgsRecallFlags flags)
     }
   }
 
+  if((AGS_RECALL_MIDI2 & flags) != 0){
+    if(recall->midi_ump_util != NULL){
+      ags_midi_ump_util_free(recall->midi_ump_util);
+
+      recall->midi_ump_util = NULL;
+    }
+  }
+  
   if((AGS_RECALL_MIDI2_CONTROL_CHANGE & flags) != 0){
     if(recall->midi2_cc_to_value != NULL){
       g_hash_table_unref(recall->midi2_cc_to_value);

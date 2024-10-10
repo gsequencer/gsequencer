@@ -18508,7 +18508,7 @@ ags_audio_buffer_util_fetch_v8s8(AgsAudioBufferUtil *audio_buffer_util,
 }
 
 /**
- * ags_audio_buffer_util_fetch_v8s8:
+ * ags_audio_buffer_util_fetch_v8s16:
  * @audio_buffer_util: the #AgsAudioBufferUtil-struct
  * @destination: destination buffer
  * @destination_stride: destination buffer's count of channels
@@ -18541,7 +18541,7 @@ ags_audio_buffer_util_fetch_v8s16(AgsAudioBufferUtil *audio_buffer_util,
 }
 
 /**
- * ags_audio_buffer_util_fetch_v8s8:
+ * ags_audio_buffer_util_fetch_v8s32:
  * @audio_buffer_util: the #AgsAudioBufferUtil-struct
  * @destination: destination buffer
  * @destination_stride: destination buffer's count of channels
@@ -18574,7 +18574,7 @@ ags_audio_buffer_util_fetch_v8s32(AgsAudioBufferUtil *audio_buffer_util,
 }
 
 /**
- * ags_audio_buffer_util_fetch_v8s8:
+ * ags_audio_buffer_util_fetch_v8s64:
  * @audio_buffer_util: the #AgsAudioBufferUtil-struct
  * @destination: destination buffer
  * @destination_stride: destination buffer's count of channels
@@ -18607,7 +18607,7 @@ ags_audio_buffer_util_fetch_v8s64(AgsAudioBufferUtil *audio_buffer_util,
 }
 
 /**
- * ags_audio_buffer_util_fetch_v8s8:
+ * ags_audio_buffer_util_fetch_v8float:
  * @audio_buffer_util: the #AgsAudioBufferUtil-struct
  * @destination: destination buffer
  * @destination_stride: destination buffer's count of channels
