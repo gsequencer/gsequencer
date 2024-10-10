@@ -134,6 +134,7 @@
 #include <ags/audio/ags_sfz_synth_util.h>
 #include <ags/audio/ags_track.h>
 #include <ags/audio/ags_tremolo_util.h>
+#include <ags/audio/ags_vector_256_manager.h>
 #include <ags/audio/ags_volume_util.h>
 #include <ags/audio/ags_wah_wah_util.h>
 #include <ags/audio/ags_wave.h>

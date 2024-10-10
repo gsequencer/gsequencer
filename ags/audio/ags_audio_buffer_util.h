@@ -824,54 +824,64 @@ void ags_audio_buffer_util_copy_complex_to_float32(AgsAudioBufferUtil *audio_buf
 
 /* vectors */
 void ags_audio_buffer_util_fill_v8s8(AgsAudioBufferUtil *audio_buffer_util,
-				     volatile ags_v8s8 *destination, guint destination_stride,
+				     ags_v8s8 *destination, guint destination_stride,
 				     gint8 *source, guint source_stride,
 				     guint count);
 void ags_audio_buffer_util_fill_v8s16(AgsAudioBufferUtil *audio_buffer_util,
-				      volatile ags_v8s16 *destination, guint destination_stride,
+				      ags_v8s16 *destination, guint destination_stride,
 				      gint16 *source, guint source_stride,
 				      guint count);
 void ags_audio_buffer_util_fill_v8s32(AgsAudioBufferUtil *audio_buffer_util,
-				      volatile ags_v8s32 *destination, guint destination_stride,
+				      ags_v8s32 *destination, guint destination_stride,
 				      gint32 *source, guint source_stride,
 				      guint count);
 void ags_audio_buffer_util_fill_v8s64(AgsAudioBufferUtil *audio_buffer_util,
-				      volatile ags_v8s64 *destination, guint destination_stride,
+				      ags_v8s64 *destination, guint destination_stride,
 				      gint64 *source, guint source_stride,
 				      guint count);
 void ags_audio_buffer_util_fill_v8float(AgsAudioBufferUtil *audio_buffer_util,
-					volatile ags_v8float *destination, guint destination_stride,
+					ags_v8float *destination, guint destination_stride,
 					gfloat *source, guint source_stride,
 					guint count);
 void ags_audio_buffer_util_fill_v8double(AgsAudioBufferUtil *audio_buffer_util,
-					 volatile ags_v8double *destination, guint destination_stride,
+					 ags_v8double *destination, guint destination_stride,
 					 gdouble *source, guint source_stride,
 					 guint count);
 
 void ags_audio_buffer_util_fetch_v8s8(AgsAudioBufferUtil *audio_buffer_util,
 				      gint8 *destination, guint destination_stride,
-				      volatile ags_v8s8 *source, guint source_stride,
+				      ags_v8s8 *source, guint source_stride,
 				      guint count);
 void ags_audio_buffer_util_fetch_v8s16(AgsAudioBufferUtil *audio_buffer_util,
 				       gint16 *destination, guint destination_stride,
-				       volatile ags_v8s16 *source, guint source_stride,
+				       ags_v8s16 *source, guint source_stride,
 				       guint count);
 void ags_audio_buffer_util_fetch_v8s32(AgsAudioBufferUtil *audio_buffer_util,
 				       gint32 *destination, guint destination_stride,
-				       volatile ags_v8s32 *source, guint source_stride,
+				       ags_v8s32 *source, guint source_stride,
 				       guint count);
 void ags_audio_buffer_util_fetch_v8s64(AgsAudioBufferUtil *audio_buffer_util,
 				       gint64 *destination, guint destination_stride,
-				       volatile ags_v8s64 *source, guint source_stride,
+				       ags_v8s64 *source, guint source_stride,
 				       guint count);
 void ags_audio_buffer_util_fetch_v8float(AgsAudioBufferUtil *audio_buffer_util,
 					 gfloat *destination, guint destination_stride,
-					 volatile ags_v8float *source, guint source_stride,
+					 ags_v8float *source, guint source_stride,
 					 guint count);
 void ags_audio_buffer_util_fetch_v8double(AgsAudioBufferUtil *audio_buffer_util,
 					  gdouble *destination, guint destination_stride,
-					  volatile ags_v8double *source, guint source_stride,
+					  ags_v8double *source, guint source_stride,
 					  guint count);
+
+/* double vectors */
+void ags_audio_buffer_util_fill_v8double_from_s16(AgsAudioBufferUtil *audio_buffer_util,
+						  ags_v8double *destination, guint destination_stride,
+						  gint16 *source, guint source_stride,
+						  guint count);
+void ags_audio_buffer_util_fetch_v8double_as_s16(AgsAudioBufferUtil *audio_buffer_util,
+						 gint16 *destination, guint destination_stride,
+						 ags_v8double *source, guint source_stride,
+						 guint count);
 
 /* copy */
 void ags_audio_buffer_util_copy_buffer_to_buffer(AgsAudioBufferUtil *audio_buffer_util,

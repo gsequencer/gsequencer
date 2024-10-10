@@ -56,6 +56,7 @@ void ags_volume_util_test_compute_float();
 void ags_volume_util_test_compute_double();
 void ags_volume_util_test_compute_complex();
 void ags_volume_util_test_compute();
+void ags_volume_util_test_perf_compute_s16();
 
 #define AGS_VOLUME_UTIL_TEST_COPY_BUFFER_SIZE (1024)
 #define AGS_VOLUME_UTIL_TEST_COPY_FORMAT (AGS_SOUNDCARD_SIGNED_16_BIT)
@@ -80,6 +81,8 @@ void ags_volume_util_test_compute();
 int
 ags_volume_util_test_init_suite()
 { 
+  ags_vector_256_manager_reserve_all(ags_vector_256_manager_get_instance());
+
   return(0);
 }
 
@@ -339,7 +342,7 @@ ags_volume_util_test_set_format()
   ags_volume_util_set_format(&volume_util,
 			     AGS_SOUNDCARD_FLOAT);
   
-  CU_ASSERT(volume_util.format == AGS_AUDIO_BUFFER_UTIL_FLOAT);
+  CU_ASSERT(volume_util.format == AGS_SOUNDCARD_FLOAT);
 }
 
 void
@@ -575,6 +578,59 @@ ags_volume_util_test_compute()
   ags_volume_util_compute(&volume_util);
 }
 
+void
+ags_volume_util_test_perf_compute_s16()
+{
+  AgsVolumeUtil volume_util;
+
+  struct timespec start_time, end_time;
+  struct timespec diff_time;
+  
+  gpointer source;
+
+  gboolean overflow;
+  guint i;
+  
+  source = ags_stream_alloc(1024,
+			    AGS_SOUNDCARD_SIGNED_16_BIT);
+
+  volume_util = (AgsVolumeUtil) {
+    .destination = source,
+    .destination_stride = 1,
+    .source = source,
+    .source_stride = 1,
+    .buffer_length = 1024,
+    .format = AGS_SOUNDCARD_SIGNED_16_BIT,
+    .volume = 0.5
+  };
+
+  clock_gettime(CLOCK_MONOTONIC, &start_time);
+  
+  for(i = 0; i < 1024 * 1024; i++){
+    ags_volume_util_compute_s16(&volume_util);
+  }
+
+  clock_gettime(CLOCK_MONOTONIC, &end_time);
+
+  overflow = FALSE;
+  
+  if(end_time.tv_nsec > start_time.tv_nsec){
+    diff_time.tv_nsec = end_time.tv_nsec - start_time.tv_nsec;
+  }else{
+    overflow = TRUE;
+  
+    diff_time.tv_nsec = (AGS_NSEC_PER_SEC - start_time.tv_nsec) + end_time.tv_nsec;
+  }
+
+  diff_time.tv_sec = end_time.tv_sec - start_time.tv_sec;
+
+  if(overflow){
+    diff_time.tv_sec -= 1;
+  }
+
+  g_message("time computed: %10jd.%03ld", diff_time.tv_sec, diff_time.tv_nsec / 1000000);
+}
+
 int
 main(int argc, char **argv)
 {
@@ -620,7 +676,8 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of AgsVolumeUtil compute float", ags_volume_util_test_compute_float) == NULL) ||
      (CU_add_test(pSuite, "test of AgsVolumeUtil compute double", ags_volume_util_test_compute_double) == NULL) ||
      (CU_add_test(pSuite, "test of AgsVolumeUtil compute complex", ags_volume_util_test_compute_complex) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsVolumeUtil compute", ags_volume_util_test_compute) == NULL)){
+     (CU_add_test(pSuite, "test of AgsVolumeUtil compute", ags_volume_util_test_compute) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsVolumeUtil perf compute s16", ags_volume_util_test_perf_compute_s16) == NULL)){
     CU_cleanup_registry();
       
     return CU_get_error();

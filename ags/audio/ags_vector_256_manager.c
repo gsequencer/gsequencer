@@ -309,7 +309,7 @@ ags_vector_256_manager_reserve_all(AgsVector256Manager *vector_256_manager)
  *
  * Try acquire vector of @vector_type and lock it.
  *
- * Returns: (transfer none): the vector array
+ * Returns: (transfer none): the vector array or %NULL if none is available yet
  * 
  * Since: 7.0.0
  */
@@ -331,7 +331,7 @@ ags_vector_256_manager_try_acquire(AgsVector256Manager *vector_256_manager,
 
   g_rec_mutex_lock(mutex);
   
-  switch(vector_arr->vector_type){
+  switch(vector_type){
   case AGS_VECTOR_256_SIGNED_8_BIT:
     {
       vector = vector_256_manager->v8s8_arr;

@@ -102,32 +102,32 @@ struct _AgsVectorArr
 
 struct _AgsVectorMemS8
 {
-  volatile ags_v8s8 mem_s8[256];
+  ags_v8s8 mem_s8[32];
 };
 
 struct _AgsVectorMemS16
 {
-  volatile ags_v8s16 mem_s16[256];
+  ags_v8s16 mem_s16[32];
 };
 
 struct _AgsVectorMemS32
 {
-  volatile ags_v8s32 mem_s32[256];
+  ags_v8s32 mem_s32[32];
 };
 
 struct _AgsVectorMemS64
 {
-  volatile ags_v8s64 mem_s64[256];
+  ags_v8s64 mem_s64[32];
 };
 
 struct _AgsVectorMemFloat
 {
-  volatile ags_v8float mem_float[256];
+  ags_v8float mem_float[32];
 };
 
 struct _AgsVectorMemDouble
 {
-  volatile ags_v8double mem_double[256];
+  ags_v8double mem_double[32];
 };
 
 GType ags_vector_256_manager_get_type(void);
