@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -38,7 +38,8 @@ void ags_fx_notation_audio_processor_test_key_on();
 void ags_fx_notation_audio_processor_test_key_off();
 void ags_fx_notation_audio_processor_test_key_pressure();
 void ags_fx_notation_audio_processor_test_play();
-void ags_fx_notation_audio_processor_test_record();
+void ags_fx_notation_audio_processor_test_midi1_record();
+void ags_fx_notation_audio_processor_test_midi2_record();
 void ags_fx_notation_audio_processor_test_feed();
 void ags_fx_notation_audio_processor_test_counter_change();
 
@@ -796,7 +797,7 @@ ags_fx_notation_audio_processor_test_play()
 }
 
 void
-ags_fx_notation_audio_processor_test_record()
+ags_fx_notation_audio_processor_test_midi1_record()
 {
   AgsAlsaDevout *devout;
   AgsAudio *audio;
@@ -911,7 +912,126 @@ ags_fx_notation_audio_processor_test_record()
   CU_ASSERT(fx_notation_audio_processor != NULL);
 
   /* attempt #0 */
-  ags_fx_notation_audio_processor_record(fx_notation_audio_processor);
+  ags_fx_notation_audio_processor_midi1_record(fx_notation_audio_processor);
+}
+
+void
+ags_fx_notation_audio_processor_test_midi2_record()
+{
+  AgsAlsaDevout *devout;
+  AgsAudio *audio;
+  AgsChannel *input;
+  AgsNote *note;
+  AgsRecallID *parent_recall_id;
+  AgsRecallID *recall_id;
+  AgsRecyclingContext *parent_recycling_context;
+  AgsRecyclingContext *recycling_context;
+  AgsRecallContainer *recall_container;
+  AgsFxNotationAudio *fx_notation_audio;
+  AgsFxNotationAudioProcessor *fx_notation_audio_processor;
+
+  guint i;
+  
+  devout = audio_application_context->default_soundcard;
+
+  parent_recall_id = ags_recall_id_new();
+  recall_id = ags_recall_id_new();
+
+  recycling_context = ags_recycling_context_new(8);
+  g_object_set(recall_id,
+	       "recycling-context", recycling_context,
+	       NULL);
+
+  parent_recycling_context = ags_recycling_context_new(1);
+  g_object_set(parent_recall_id,
+	       "recycling-context", parent_recycling_context,
+	       NULL);
+  g_object_set(recycling_context,
+	       "parent", parent_recycling_context,
+	       NULL);
+  
+  /* audio */
+  audio = g_object_new(AGS_TYPE_AUDIO,
+		       "output-soundcard", devout,
+		       NULL);
+  ags_audio_set_flags(audio, AGS_AUDIO_OUTPUT_HAS_RECYCLING);
+  ags_audio_set_flags(audio, AGS_AUDIO_INPUT_HAS_RECYCLING);
+
+  ags_audio_set_ability_flags(audio, AGS_SOUND_ABILITY_SEQUENCER);
+
+  audio->bank_dim[0] = 1;
+  audio->bank_dim[1] = 1;
+
+  audio->bank_dim[2] = 64;
+  
+  ags_audio_add_recycling_context(audio,
+				  parent_recycling_context);
+  
+  ags_audio_set_audio_channels(audio,
+			       1, 0);
+  
+  ags_audio_set_pads(audio,
+		     AGS_TYPE_OUTPUT,
+		     1, 0);
+  ags_audio_set_pads(audio,
+		     AGS_TYPE_INPUT,
+		     8, 0);
+
+  ags_recycling_context_replace(parent_recycling_context,
+				audio->output->first_recycling,
+				0);
+
+  input = audio->input;
+  
+  for(i = 0; i < 8 && input != NULL; i++){
+    g_object_set(input,
+		 "recycling-context", recycling_context,
+		 NULL);
+    
+    ags_channel_add_recall_id(input,
+			      recall_id);
+    ags_recycling_context_replace(recycling_context,
+				  input->first_recycling,
+				  i);
+
+    input = input->next;
+  }
+  
+  recall_container = ags_recall_container_new();
+  ags_audio_add_recall_container(audio,
+				 recall_container);
+
+  fx_notation_audio = ags_fx_notation_audio_new(audio);
+  
+  ags_recall_set_sound_scope(fx_notation_audio, AGS_SOUND_SCOPE_PLAYBACK);
+  ags_recall_container_add(recall_container,
+			   fx_notation_audio);
+
+  g_object_set(fx_notation_audio,
+	       "recall-id", recall_id,
+	       NULL);
+  
+  CU_ASSERT(fx_notation_audio != NULL);
+
+  /* audio processor */  
+  fx_notation_audio_processor = ags_fx_notation_audio_processor_new(audio);
+  ags_recall_set_sound_scope(fx_notation_audio_processor, AGS_SOUND_SCOPE_PLAYBACK);
+
+  g_object_set(fx_notation_audio_processor,
+	       "recall-audio", fx_notation_audio,
+	       NULL);
+  
+  ags_recall_container_add(recall_container,
+			   fx_notation_audio_processor);
+
+  g_object_set(fx_notation_audio_processor,
+	       "recall-id", recall_id,
+	       NULL);
+  
+  CU_ASSERT(fx_notation_audio_processor != NULL);
+
+  /* attempt #0 */
+  ags_fx_notation_audio_processor_midi2_record(fx_notation_audio_processor);
 }
 
 void
@@ -1181,7 +1301,8 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of AgsFxNotationAudioProcessor key off", ags_fx_notation_audio_processor_test_key_off) == NULL) ||
      (CU_add_test(pSuite, "test of AgsFxNotationAudioProcessor key pressure", ags_fx_notation_audio_processor_test_key_pressure) == NULL) ||
      (CU_add_test(pSuite, "test of AgsFxNotationAudioProcessor play", ags_fx_notation_audio_processor_test_play) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsFxNotationAudioProcessor record", ags_fx_notation_audio_processor_test_record) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFxNotationAudioProcessor MIDI version 1 record", ags_fx_notation_audio_processor_test_midi1_record) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFxNotationAudioProcessor MIDI version 2 record", ags_fx_notation_audio_processor_test_midi2_record) == NULL) ||
      (CU_add_test(pSuite, "test of AgsFxNotationAudioProcessor feed", ags_fx_notation_audio_processor_test_feed) == NULL) ||
      (CU_add_test(pSuite, "test of AgsFxNotationAudioProcessor counter change", ags_fx_notation_audio_processor_test_counter_change) == NULL)){
     CU_cleanup_registry();
