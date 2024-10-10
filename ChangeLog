@@ -40,7 +40,9 @@ ags (7.0.0)
 	* implemented ags_recall_midi1_control_change()
 	* implemented ags_recall_midi2_control_change()
 	* implemented utility functions initializers
+	* implemented ags-fx-notation MIDI version 2 support
 	* optimized ags/audio/ags_audio_buffer_util.c
+	* optimized ags/audio/ags_volume_util.c
 	* TODO:JK: refactored envelope to support LFO
 	* refactored ags/audio/ags_fourier_transform_util.h
 	* refactored ags/audio/ags_audio_buffer_util.h
