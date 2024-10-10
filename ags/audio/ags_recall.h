@@ -185,7 +185,7 @@ typedef enum{
  * @AGS_RECALL_MIDI2_MIDI1_BALANCE: MIDI version 2 balance
  * @AGS_RECALL_MIDI2_MIDI1_PAN: MIDI version 2 PAN
  * @AGS_RECALL_MIDI2_MIDI1_EXPRESSION_CONTROLLER: MIDI version 2 expression controller
- * @AGS_RECALL_MIDI2_MIDI1_EFFECT_CONTROL_2: MIDI version 2 effect control 2
+ * @AGS_RECALL_MIDI2_MIDI1_EFFECT_CONTROL_1: MIDI version 2 effect control 1
  * @AGS_RECALL_MIDI2_MIDI1_EFFECT_CONTROL_2: MIDI version 2 effect control 2
  * @AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_1: MIDI version 2 general purpose controller 1
  * @AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_2: MIDI version 2 general purpose controller 2
