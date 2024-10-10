@@ -228,10 +228,10 @@ ags_fx_notation_audio_processor_init(AgsFxNotationAudioProcessor *fx_notation_au
   AGS_RECALL(fx_notation_audio_processor)->xml_type = "ags-fx-notation-audio-processor";
 
   ags_recall_set_flags((AgsRecall *) fx_notation_audio_processor,
-		       AGS_RECALL_MIDI1_CONTROL_CHANGE);
+		       AGS_RECALL_MIDI1);
   
   ags_recall_set_flags((AgsRecall *) fx_notation_audio_processor,
-		       AGS_RECALL_MIDI2_CONTROL_CHANGE);
+		       AGS_RECALL_MIDI2);
   
   /* counter */
   fx_notation_audio_processor->delay_completion = 0.0;

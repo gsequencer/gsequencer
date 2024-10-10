@@ -88,7 +88,9 @@ typedef struct _AgsRecallHandler AgsRecallHandler;
  * @AGS_RECALL_HAS_OUTPUT_PORT: has output port
  * @AGS_RECALL_BYPASS: don't apply effect processing
  * @AGS_RECALL_INITIAL_RUN: initial run, first attack to audio data
+ * @AGS_RECALL_MIDI1: enable MIDI version 1
  * @AGS_RECALL_MIDI1_CONTROL_CHANGE: enable MIDI version 1 control change
+ * @AGS_RECALL_MIDI2: enable MIDI version 2
  * @AGS_RECALL_MIDI2_CONTROL_CHANGE: enable MIDI version 2 control change
  * 
  * Enum values to control the behavior or indicate internal state of #AgsRecall by
@@ -100,8 +102,10 @@ typedef enum{
   AGS_RECALL_HAS_OUTPUT_PORT       = 1 <<  2,
   AGS_RECALL_BYPASS                = 1 <<  3,
   AGS_RECALL_INITIAL_RUN           = 1 <<  4,
-  AGS_RECALL_MIDI1_CONTROL_CHANGE  = 1 <<  5,
-  AGS_RECALL_MIDI2_CONTROL_CHANGE  = 1 <<  6,
+  AGS_RECALL_MIDI1                 = 1 <<  5,
+  AGS_RECALL_MIDI1_CONTROL_CHANGE  = 1 <<  6,
+  AGS_RECALL_MIDI2                 = 1 <<  7,
+  AGS_RECALL_MIDI2_CONTROL_CHANGE  = 1 <<  8,
 }AgsRecallFlags;
 
 /**
