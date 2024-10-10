@@ -40,10 +40,10 @@ ags (7.0.0)
 	* implemented ags_recall_midi1_control_change()
 	* implemented ags_recall_midi2_control_change()
 	* implemented utility functions initializers
+	* optimized ags/audio/ags_audio_buffer_util.c
 	* TODO:JK: refactored envelope to support LFO
-	* TODO:JK: refactored ags/audio/ags_fourier_transform_util.h
-	* TODO:JK: refactored ags/audio/ags_audio_buffer_util.h
-	* TODO:JK: temporary private utility functions
+	* refactored ags/audio/ags_fourier_transform_util.h
+	* refactored ags/audio/ags_audio_buffer_util.h
 	* refactored AgsAudioBufferUtil breaking ABI
 	* refactored AgsSynthUtil breaking ABI
 	* refactored ags_audio_buffer_util_get_copy_mode_from_format() breaking ABI due to renaming and conflict
