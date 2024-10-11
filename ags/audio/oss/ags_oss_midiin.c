@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -130,6 +130,8 @@ guint ags_oss_midiin_get_start_note_offset(AgsSequencer *sequencer);
 void ags_oss_midiin_set_note_offset(AgsSequencer *sequencer,
 				    guint note_offset);
 guint ags_oss_midiin_get_note_offset(AgsSequencer *sequencer);
+
+AgsSequencerMidiVersion ags_oss_midiin_get_midi_version(AgsSequencer *sequencer);  
 
 enum{
   PROP_0,
@@ -388,6 +390,8 @@ ags_oss_midiin_sequencer_interface_init(AgsSequencerInterface *sequencer)
 
   sequencer->set_note_offset = ags_oss_midiin_set_note_offset;
   sequencer->get_note_offset = ags_oss_midiin_get_note_offset;
+
+  sequencer->get_midi_version = ags_oss_midiin_get_midi_version;
 }
 
 void
@@ -483,6 +487,8 @@ ags_oss_midiin_init(AgsOssMidiin *oss_midiin)
   oss_midiin->tact_counter = 0.0;
   oss_midiin->delay_counter = 0;
   oss_midiin->tic_counter = 0;
+
+  oss_midiin->midi_version = AGS_SEQUENCER_MIDI1;
 }
 
 void
@@ -1825,6 +1831,30 @@ ags_oss_midiin_get_note_offset(AgsSequencer *sequencer)
   g_rec_mutex_unlock(oss_midiin_mutex);
 
   return(note_offset);
+}
+
+AgsSequencerMidiVersion
+ags_oss_midiin_get_midi_version(AgsSequencer *sequencer)
+{
+  AgsOssMidiin *oss_midiin;
+
+  AgsSequencerMidiVersion midi_version;
+  
+  GRecMutex *oss_midiin_mutex;  
+
+  oss_midiin = AGS_OSS_MIDIIN(sequencer);
+
+  /* get oss_midiin mutex */
+  oss_midiin_mutex = AGS_OSS_MIDIIN_GET_OBJ_MUTEX(oss_midiin);
+
+  /* set note offset */
+  g_rec_mutex_lock(oss_midiin_mutex);
+
+  midi_version = oss_midiin->midi_version;
+
+  g_rec_mutex_unlock(oss_midiin_mutex);
+
+  return(midi_version);
 }
 
 /**
