@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -109,6 +109,8 @@ guint ags_core_audio_midiin_get_start_note_offset(AgsSequencer *sequencer);
 void ags_core_audio_midiin_set_note_offset(AgsSequencer *sequencer,
 					   guint note_offset);
 guint ags_core_audio_midiin_get_note_offset(AgsSequencer *sequencer);
+
+AgsSequencerMidiVersion ags_core_audio_midiin_get_midi_version(AgsSequencer *sequencer);  
 
 /**
  * SECTION:ags_core_audio_midiin
@@ -413,6 +415,8 @@ ags_core_audio_midiin_sequencer_interface_init(AgsSequencerInterface *sequencer)
 
   sequencer->set_note_offset = ags_core_audio_midiin_set_note_offset;
   sequencer->get_note_offset = ags_core_audio_midiin_get_note_offset;
+
+  sequencer->get_midi_version = ags_core_audio_midiin_get_midi_version;
 }
 
 void
@@ -510,6 +514,8 @@ ags_core_audio_midiin_init(AgsCoreAudioMidiin *core_audio_midiin)
   g_mutex_init(&(core_audio_midiin->callback_finish_mutex));
 
   g_cond_init(&(core_audio_midiin->callback_finish_cond));
+
+  core_audio_midiin->midi_version = AGS_SEQUENCER_MIDI2;
 }
 
 void
@@ -1996,6 +2002,30 @@ ags_core_audio_midiin_get_note_offset(AgsSequencer *sequencer)
   g_rec_mutex_unlock(core_audio_midiin_mutex);
 
   return(note_offset);
+}
+
+AgsSequencerMidiVersion
+ags_core_audio_midiin_get_midi_version(AgsSequencer *sequencer)
+{
+  AgsCoreAudioMidiin *core_audio_midiin;
+
+  AgsSequencerMidiVersion midi_version;
+  
+  GRecMutex *core_audio_midiin_mutex;  
+
+  core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
+
+  /* get core_audio_midiin mutex */
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
+
+  /* set note offset */
+  g_rec_mutex_lock(core_audio_midiin_mutex);
+
+  midi_version = core_audio_midiin->midi_version;
+
+  g_rec_mutex_unlock(core_audio_midiin_mutex);
+
+  return(midi_version);
 }
 
 /**

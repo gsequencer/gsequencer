@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -109,6 +109,8 @@ guint ags_jack_midiin_get_start_note_offset(AgsSequencer *sequencer);
 void ags_jack_midiin_set_note_offset(AgsSequencer *sequencer,
 				     guint note_offset);
 guint ags_jack_midiin_get_note_offset(AgsSequencer *sequencer);
+
+AgsSequencerMidiVersion ags_jack_midiin_get_midi_version(AgsSequencer *sequencer);  
 
 /**
  * SECTION:ags_jack_midiin
@@ -413,6 +415,8 @@ ags_jack_midiin_sequencer_interface_init(AgsSequencerInterface *sequencer)
 
   sequencer->set_note_offset = ags_jack_midiin_set_note_offset;
   sequencer->get_note_offset = ags_jack_midiin_get_note_offset;
+
+  sequencer->get_midi_version = ags_jack_midiin_get_midi_version;
 }
 
 void
@@ -510,6 +514,8 @@ ags_jack_midiin_init(AgsJackMidiin *jack_midiin)
   g_mutex_init(&(jack_midiin->callback_finish_mutex));
 
   g_cond_init(&(jack_midiin->callback_finish_cond));
+
+  jack_midiin->midi_version = AGS_SEQUENCER_MIDI1;
 }
 
 void
@@ -1982,6 +1988,30 @@ ags_jack_midiin_get_note_offset(AgsSequencer *sequencer)
   g_rec_mutex_unlock(jack_midiin_mutex);
 
   return(note_offset);
+}
+
+AgsSequencerMidiVersion
+ags_jack_midiin_get_midi_version(AgsSequencer *sequencer)
+{
+  AgsJackMidiin *jack_midiin;
+
+  AgsSequencerMidiVersion midi_version;
+  
+  GRecMutex *jack_midiin_mutex;  
+
+  jack_midiin = AGS_JACK_MIDIIN(sequencer);
+
+  /* get jack_midiin mutex */
+  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
+
+  /* set note offset */
+  g_rec_mutex_lock(jack_midiin_mutex);
+
+  midi_version = jack_midiin->midi_version;
+
+  g_rec_mutex_unlock(jack_midiin_mutex);
+
+  return(midi_version);
 }
 
 /**

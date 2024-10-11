@@ -40,7 +40,7 @@ G_BEGIN_DECLS
 
 #define AGS_VECTOR_256_MANAGER_GET_OBJ_MUTEX(obj) (&(((AgsVector256Manager *) obj)->obj_mutex))
 
-#define AGS_VECTOR_256_MANAGER_DEFAULT_VECTOR_COUNT (32)
+#define AGS_VECTOR_256_MANAGER_DEFAULT_VECTOR_COUNT (96)
 
 typedef struct _AgsVector256Manager AgsVector256Manager;
 typedef struct _AgsVector256ManagerClass AgsVector256ManagerClass;

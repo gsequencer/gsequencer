@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,12 +19,24 @@
 
 #include <ags/audio/fx/ags_fx_envelope_audio.h>
 
+#include <ags/plugin/ags_plugin_port.h>
+
 #include <ags/i18n.h>
 
 void ags_fx_envelope_audio_class_init(AgsFxEnvelopeAudioClass *fx_envelope_audio);
 void ags_fx_envelope_audio_init(AgsFxEnvelopeAudio *fx_envelope_audio);
+void ags_fx_envelope_audio_set_property(GObject *gobject,
+					guint prop_id,
+					const GValue *value,
+					GParamSpec *param_spec);
+void ags_fx_envelope_audio_get_property(GObject *gobject,
+					guint prop_id,
+					GValue *value,
+					GParamSpec *param_spec);
 void ags_fx_envelope_audio_dispose(GObject *gobject);
 void ags_fx_envelope_audio_finalize(GObject *gobject);
+
+static AgsPluginPort* ags_fx_envelope_audio_get_lfo_enabled_plugin_port();
 
 /**
  * SECTION:ags_fx_envelope_audio
@@ -41,15 +53,18 @@ static gpointer ags_fx_envelope_audio_parent_class = NULL;
 const gchar *ags_fx_envelope_audio_plugin_name = "ags-fx-envelope";
 
 const gchar* ags_fx_envelope_audio_specifier[] = {
+  "./lfo-enabled[0]",
   NULL,
 };
 
 const gchar* ags_fx_envelope_audio_control_port[] = {
+  "1/1",
   NULL,
 };
 
 enum{
   PROP_0,
+  PROP_LFO_ENABLED,
 };
 
 GType
@@ -95,10 +110,28 @@ ags_fx_envelope_audio_class_init(AgsFxEnvelopeAudioClass *fx_envelope_audio)
   /* GObjectClass */
   gobject = (GObjectClass *) fx_envelope_audio;
 
+  gobject->set_property = ags_fx_envelope_audio_set_property;
+  gobject->get_property = ags_fx_envelope_audio_get_property;
+
   gobject->dispose = ags_fx_envelope_audio_dispose;
   gobject->finalize = ags_fx_envelope_audio_finalize;
 
   /* properties */
+  /**
+   * AgsFxEnvelopeAudio:lfo-enabled:
+   *
+   * The LFO enabled port.
+   * 
+   * Since: 3.3.0
+   */
+  param_spec = g_param_spec_object("lfo-enabled",
+				   i18n_pspec("LFO enabled of recall"),
+				   i18n_pspec("The recall's LFO enabled"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LFO_ENABLED,
+				  param_spec);
 }
 
 void
@@ -108,6 +141,106 @@ ags_fx_envelope_audio_init(AgsFxEnvelopeAudio *fx_envelope_audio)
   AGS_RECALL(fx_envelope_audio)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(fx_envelope_audio)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(fx_envelope_audio)->xml_type = "ags-fx-envelope-audio";
+
+  /* LFO enabled */
+  fx_envelope_audio->lfo_enabled = g_object_new(AGS_TYPE_PORT,
+						"plugin-name", ags_fx_envelope_audio_plugin_name,
+						"specifier", ags_fx_envelope_audio_specifier[0],
+						"control-port", ags_fx_envelope_audio_control_port[0],
+						"port-value-is-pointer", FALSE,
+						"port-value-type", G_TYPE_FLOAT,
+						"port-value-size", sizeof(gfloat),
+						"port-value-length", 1,
+						NULL);
+  
+  fx_envelope_audio->lfo_enabled->port_value.ags_port_float = (gfloat) FALSE;
+
+  g_object_set(fx_envelope_audio->lfo_enabled,
+	       "plugin-port", ags_fx_envelope_audio_get_lfo_enabled_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_envelope_audio,
+		      fx_envelope_audio->lfo_enabled);
+}
+
+void
+ags_fx_envelope_audio_set_property(GObject *gobject,
+				   guint prop_id,
+				   const GValue *value,
+				   GParamSpec *param_spec)
+{
+  AgsFxEnvelopeAudio *fx_envelope_audio;
+
+  GRecMutex *recall_mutex;
+
+  fx_envelope_audio = AGS_FX_ENVELOPE_AUDIO(gobject);
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_envelope_audio);
+
+  switch(prop_id){
+  case PROP_LFO_ENABLED:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_envelope_audio->lfo_enabled){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_envelope_audio->lfo_enabled != NULL){
+	g_object_unref(G_OBJECT(fx_envelope_audio->lfo_enabled));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_envelope_audio->lfo_enabled = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }  
+}
+
+void
+ags_fx_envelope_audio_get_property(GObject *gobject,
+				   guint prop_id,
+				   GValue *value,
+				   GParamSpec *param_spec)
+{
+  AgsFxEnvelopeAudio *fx_envelope_audio;
+
+  GRecMutex *recall_mutex;
+
+  fx_envelope_audio = AGS_FX_ENVELOPE_AUDIO(gobject);
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_envelope_audio);
+
+  switch(prop_id){
+  case PROP_LFO_ENABLED:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_envelope_audio->lfo_enabled);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -116,6 +249,13 @@ ags_fx_envelope_audio_dispose(GObject *gobject)
   AgsFxEnvelopeAudio *fx_envelope_audio;
   
   fx_envelope_audio = AGS_FX_ENVELOPE_AUDIO(gobject);
+
+  /* lfo_enabled */
+  if(fx_envelope_audio->lfo_enabled != NULL){
+    g_object_unref(G_OBJECT(fx_envelope_audio->lfo_enabled));
+
+    fx_envelope_audio->lfo_enabled = NULL;
+  }
 
   /* call parent */
   G_OBJECT_CLASS(ags_fx_envelope_audio_parent_class)->dispose(gobject);
@@ -128,8 +268,53 @@ ags_fx_envelope_audio_finalize(GObject *gobject)
   
   fx_envelope_audio = AGS_FX_ENVELOPE_AUDIO(gobject);
 
+  /* lfo_enabled */
+  if(fx_envelope_audio->lfo_enabled != NULL){
+    g_object_unref(G_OBJECT(fx_envelope_audio->lfo_enabled));
+  }
+
   /* call parent */
   G_OBJECT_CLASS(ags_fx_envelope_audio_parent_class)->finalize(gobject);
+}
+
+static AgsPluginPort*
+ags_fx_envelope_audio_get_lfo_enabled_plugin_port()
+{
+  static AgsPluginPort *plugin_port = NULL;
+
+  static GMutex mutex;
+
+  g_mutex_lock(&mutex);
+  
+  if(plugin_port == NULL){
+    plugin_port = ags_plugin_port_new();
+    g_object_ref(plugin_port);
+    
+    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_CONTROL |
+			   AGS_PLUGIN_PORT_TOGGLED);
+
+    plugin_port->port_index = 0;
+
+    /* range */
+    g_value_init(plugin_port->default_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->lower_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->upper_value,
+		 G_TYPE_FLOAT);
+
+    g_value_set_float(plugin_port->default_value,
+		      0.0);
+    g_value_set_float(plugin_port->lower_value,
+		      0.0);
+    g_value_set_float(plugin_port->upper_value,
+		      1.0);
+  }
+
+  g_mutex_unlock(&mutex);
+    
+  return(plugin_port);
 }
 
 /**

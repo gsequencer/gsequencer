@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -50,7 +50,7 @@
  * @short_description: Input from sequencer
  * @title: AgsAlsaMidiin
  * @section_id:
- * @include: ags/audio/ags_alsa_midiin.h
+ * @include: ags/audio/alsa/ags_alsa_midiin.h
  *
  * #AgsAlsaMidiin represents a sequencer and supports midi input.
  */
@@ -128,6 +128,8 @@ guint ags_alsa_midiin_get_start_note_offset(AgsSequencer *sequencer);
 void ags_alsa_midiin_set_note_offset(AgsSequencer *sequencer,
 				     guint note_offset);
 guint ags_alsa_midiin_get_note_offset(AgsSequencer *sequencer);
+
+AgsSequencerMidiVersion ags_alsa_midiin_get_midi_version(AgsSequencer *sequencer);  
 
 enum{
   PROP_0,
@@ -362,6 +364,8 @@ ags_alsa_midiin_sequencer_interface_init(AgsSequencerInterface *sequencer)
 
   sequencer->set_note_offset = ags_alsa_midiin_set_note_offset;
   sequencer->get_note_offset = ags_alsa_midiin_get_note_offset;
+
+  sequencer->get_midi_version = ags_alsa_midiin_get_midi_version;
 }
 
 void
@@ -456,6 +460,8 @@ ags_alsa_midiin_init(AgsAlsaMidiin *alsa_midiin)
   alsa_midiin->tact_counter = 0.0;
   alsa_midiin->delay_counter = 0;
   alsa_midiin->tic_counter = 0;
+
+  alsa_midiin->midi_version = AGS_SEQUENCER_MIDI1;
 }
 
 void
@@ -1767,6 +1773,30 @@ ags_alsa_midiin_get_note_offset(AgsSequencer *sequencer)
   g_rec_mutex_unlock(alsa_midiin_mutex);
 
   return(note_offset);
+}
+
+AgsSequencerMidiVersion
+ags_alsa_midiin_get_midi_version(AgsSequencer *sequencer)
+{
+  AgsAlsaMidiin *alsa_midiin;
+
+  AgsSequencerMidiVersion midi_version;
+  
+  GRecMutex *alsa_midiin_mutex;  
+
+  alsa_midiin = AGS_ALSA_MIDIIN(sequencer);
+
+  /* get alsa_midiin mutex */
+  alsa_midiin_mutex = AGS_ALSA_MIDIIN_GET_OBJ_MUTEX(alsa_midiin);
+
+  /* set note offset */
+  g_rec_mutex_lock(alsa_midiin_mutex);
+
+  midi_version = alsa_midiin->midi_version;
+
+  g_rec_mutex_unlock(alsa_midiin_mutex);
+
+  return(midi_version);
 }
 
 /**
