@@ -163,8 +163,6 @@ AgsSynthUtil synth_util;
 int
 ags_audio_buffer_util_test_init_suite()
 { 
-  ags_vector_256_manager_reserve_all(ags_vector_256_manager_get_instance());
-
   return(0);
 }
 

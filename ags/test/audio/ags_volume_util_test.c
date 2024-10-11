@@ -81,8 +81,6 @@ void ags_volume_util_test_perf_compute_s16();
 int
 ags_volume_util_test_init_suite()
 { 
-  ags_vector_256_manager_reserve_all(ags_vector_256_manager_get_instance());
-
   return(0);
 }
 

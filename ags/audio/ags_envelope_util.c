@@ -678,6 +678,9 @@ ags_envelope_util_compute_s8(AgsEnvelopeUtil *envelope_util)
   guint samplerate;
   gdouble start_volume;
   gdouble amount;
+  guint offset;
+  gdouble lfo_freq;
+  gboolean lfo_enabled;
   guint i, i_stop;
 
   destination = (gint8 *) envelope_util->destination;
@@ -691,6 +694,11 @@ ags_envelope_util_compute_s8(AgsEnvelopeUtil *envelope_util)
   start_volume = envelope_util->volume;
   amount = envelope_util->amount;
 
+  lfo_enabled = envelope_util->lfo_enabled;
+  lfo_freq = envelope_util->lfo_freq;
+
+  offset = envelope_util->offset;
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -699,6 +707,7 @@ ags_envelope_util_compute_s8(AgsEnvelopeUtil *envelope_util)
   for(; i < i_stop;){
     ags_v8double v_buffer;
     ags_v8double v_volume;
+    ags_v8double v_sine;
 
     v_buffer = (ags_v8double) {
       (gdouble) *(source),
@@ -724,6 +733,21 @@ ags_envelope_util_compute_s8(AgsEnvelopeUtil *envelope_util)
       (gdouble) (start_volume + (i + 7) * amount),
     };
 
+    if(lfo_enabled){
+      v_sine = (ags_v8double) {
+	sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 1) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 2) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 3) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 4) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 5) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 6) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 7) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),	
+      };
+    
+      v_buffer *= v_sine;
+    }
+    
     v_buffer *= v_volume;
 
     *(destination) = (gint8) v_buffer[0];
@@ -763,11 +787,28 @@ ags_envelope_util_compute_s8(AgsEnvelopeUtil *envelope_util)
       (double) (start_volume + (i + 5) * amount),
       (double) (start_volume + (i + 6) * amount),
       (double) (start_volume + (i + 7) * amount)};
-
+    
     source += source_stride;
 
-    vDSP_vmulD(v_buffer, 1, v_volume, 1, ret_v_buffer, 1, 8);
+    if(lfo_enabled){
+      double ret_sine_buffer[8];
+      
+      double v_sine[] = {sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 1) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 2) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 3) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 4) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 5) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 6) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 7) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate)};
+    
+      vDSP_vmulD(v_buffer, 1, v_sine, 1, ret_sine_buffer, 1, 8);
 
+      vDSP_vmulD(ret_sine_buffer, 1, v_volume, 1, ret_v_buffer, 1, 8);
+    }else{
+      vDSP_vmulD(v_buffer, 1, v_volume, 1, ret_v_buffer, 1, 8);
+    }
+    
     *(destination) = (gint8) ret_v_buffer[0];
     *(destination += destination_stride) = (gint8) ret_v_buffer[1];
     *(destination += destination_stride) = (gint8) ret_v_buffer[2];
@@ -785,15 +826,26 @@ ags_envelope_util_compute_s8(AgsEnvelopeUtil *envelope_util)
   i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
 
   for(; i < i_stop;){
-    *(destination) = (gint8) ((gint16) ((source)[0] * (double) (start_volume + (i) * amount)));
-    *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * (double) (start_volume + (i + 1) * amount)));
-    *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * (double) (start_volume + (i + 2) * amount)));
-    *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * (double) (start_volume + (i + 3) * amount)));
-    *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * (double) (start_volume + (i + 4) * amount)));
-    *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * (double) (start_volume + (i + 5) * amount)));
-    *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * (double) (start_volume + (i + 6) * amount)));
-    *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * (double) (start_volume + (i + 7) * amount)));
-
+    if(lfo_enabled){
+      *(destination) = (gint8) ((gint16) ((source)[0] * sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i) * amount)));
+      *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * sin((gdouble) (offset + i + 1) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 1) * amount)));
+      *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * sin((gdouble) (offset + i + 2) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 2) * amount)));
+      *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * sin((gdouble) (offset + i + 3) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 3) * amount)));
+      *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * sin((gdouble) (offset + i + 4) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 4) * amount)));
+      *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * sin((gdouble) (offset + i + 5) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 5) * amount)));
+      *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * sin((gdouble) (offset + i + 6) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 6) * amount)));
+      *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * sin((gdouble) (offset + i + 7) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 7) * amount)));
+    }else{
+      *(destination) = (gint8) ((gint16) ((source)[0] * (double) (start_volume + (i) * amount)));
+      *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * (double) (start_volume + (i + 1) * amount)));
+      *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * (double) (start_volume + (i + 2) * amount)));
+      *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * (double) (start_volume + (i + 3) * amount)));
+      *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * (double) (start_volume + (i + 4) * amount)));
+      *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * (double) (start_volume + (i + 5) * amount)));
+      *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * (double) (start_volume + (i + 6) * amount)));
+      *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * (double) (start_volume + (i + 7) * amount)));
+    }
+    
     destination += destination_stride;
     source += source_stride;
 
@@ -803,8 +855,12 @@ ags_envelope_util_compute_s8(AgsEnvelopeUtil *envelope_util)
 
   /* loop tail */
   for(; i < envelope_util->buffer_length;){
-    *(destination) = (gint8) ((gint16) ((source)[0] * (double) (start_volume + (i) * amount)));
-
+    if(lfo_enabled){
+      *(destination) = (gint8) ((gint16) ((source)[0] * sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i) * amount)));
+    }else{
+      *(destination) = (gint8) ((gint16) ((source)[0] * (double) (start_volume + (i) * amount)));
+    }
+    
     destination += destination_stride;
     source += source_stride;
     i++;
@@ -831,6 +887,9 @@ ags_envelope_util_compute_s16(AgsEnvelopeUtil *envelope_util)
   guint samplerate;
   gdouble start_volume;
   gdouble amount;
+  guint offset;
+  gdouble lfo_freq;
+  gboolean lfo_enabled;
   guint i, i_stop;
 
   destination = (gint16 *) envelope_util->destination;
@@ -844,6 +903,11 @@ ags_envelope_util_compute_s16(AgsEnvelopeUtil *envelope_util)
   start_volume = envelope_util->volume;
   amount = envelope_util->amount;
 
+  lfo_enabled = envelope_util->lfo_enabled;
+  lfo_freq = envelope_util->lfo_freq;
+
+  offset = envelope_util->offset;
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -852,6 +916,7 @@ ags_envelope_util_compute_s16(AgsEnvelopeUtil *envelope_util)
   for(; i < i_stop;){
     ags_v8double v_buffer;
     ags_v8double v_volume;
+    ags_v8double v_sine;
 
     v_buffer = (ags_v8double) {
       (gdouble) *(source),
@@ -876,6 +941,21 @@ ags_envelope_util_compute_s16(AgsEnvelopeUtil *envelope_util)
       (gdouble) (start_volume + (i + 6) * amount),
       (gdouble) (start_volume + (i + 7) * amount)
     };
+
+    if(lfo_enabled){
+      v_sine = (ags_v8double) {
+	sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 1) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 2) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 3) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 4) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 5) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 6) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 7) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),	
+      };
+    
+      v_buffer *= v_sine;
+    }
 
     v_buffer *= v_volume;
 
@@ -919,7 +999,24 @@ ags_envelope_util_compute_s16(AgsEnvelopeUtil *envelope_util)
 
     source += source_stride;
 
-    vDSP_vmulD(v_buffer, 1, v_volume, 1, ret_v_buffer, 1, 8);
+    if(lfo_enabled){
+      double ret_sine_buffer[8];
+      
+      double v_sine[] = {sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 1) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 2) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 3) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 4) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 5) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 6) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 7) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate)};
+    
+      vDSP_vmulD(v_buffer, 1, v_sine, 1, ret_sine_buffer, 1, 8);
+
+      vDSP_vmulD(ret_sine_buffer, 1, v_volume, 1, ret_v_buffer, 1, 8);
+    }else{
+      vDSP_vmulD(v_buffer, 1, v_volume, 1, ret_v_buffer, 1, 8);
+    }
 
     *(destination) = (gint16) ret_v_buffer[0];
     *(destination += destination_stride) = (gint16) ret_v_buffer[1];
@@ -938,14 +1035,25 @@ ags_envelope_util_compute_s16(AgsEnvelopeUtil *envelope_util)
   i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
 
   for(; i < i_stop;){
-    *(destination) = (gint16) ((gint32) ((source)[0] * (double) (start_volume + (i) * amount)));
-    *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 1) * amount)));
-    *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 2) * amount)));
-    *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 3) * amount)));
-    *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 4) * amount)));
-    *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 5) * amount)));
-    *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 6) * amount)));
-    *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 7) * amount)));
+    if(lfo_enabled){
+      *(destination) = (gint16) ((gint32) ((source)[0] * sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i) * amount)));
+      *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * sin((gdouble) (offset + i + 1) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 1) * amount)));
+      *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * sin((gdouble) (offset + i + 2) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 2) * amount)));
+      *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * sin((gdouble) (offset + i + 3) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 3) * amount)));
+      *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * sin((gdouble) (offset + i + 4) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 4) * amount)));
+      *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * sin((gdouble) (offset + i + 5) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 5) * amount)));
+      *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * sin((gdouble) (offset + i + 6) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 6) * amount)));
+      *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * sin((gdouble) (offset + i + 7) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 7) * amount)));
+    }else{
+      *(destination) = (gint16) ((gint32) ((source)[0] * (double) (start_volume + (i) * amount)));
+      *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 1) * amount)));
+      *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 2) * amount)));
+      *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 3) * amount)));
+      *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 4) * amount)));
+      *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 5) * amount)));
+      *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 6) * amount)));
+      *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 7) * amount)));
+    }
 
     destination += destination_stride;
     source += source_stride;
@@ -956,8 +1064,12 @@ ags_envelope_util_compute_s16(AgsEnvelopeUtil *envelope_util)
 
   /* loop tail */
   for(; i < envelope_util->buffer_length;){
-    *(destination) = (gint16) ((gint32) ((source)[0] * (double) (start_volume + (i) * amount)));
-
+    if(lfo_enabled){
+      *(destination) = (gint16) ((gint32) ((source)[0] * sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i) * amount)));
+    }else{
+      *(destination) = (gint16) ((gint32) ((source)[0] * (double) (start_volume + (i) * amount)));
+    }
+    
     destination += destination_stride;
     source += source_stride;
     i++;
@@ -984,6 +1096,9 @@ ags_envelope_util_compute_s24(AgsEnvelopeUtil *envelope_util)
   guint samplerate;
   gdouble start_volume;
   gdouble amount;
+  guint offset;
+  gdouble lfo_freq;
+  gboolean lfo_enabled;
   guint i, i_stop;
 
   destination = (gint32 *) envelope_util->destination;
@@ -997,6 +1112,11 @@ ags_envelope_util_compute_s24(AgsEnvelopeUtil *envelope_util)
   start_volume = envelope_util->volume;
   amount = envelope_util->amount;
 
+  lfo_enabled = envelope_util->lfo_enabled;
+  lfo_freq = envelope_util->lfo_freq;
+
+  offset = envelope_util->offset;
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -1005,6 +1125,7 @@ ags_envelope_util_compute_s24(AgsEnvelopeUtil *envelope_util)
   for(; i < i_stop;){
     ags_v8double v_buffer;
     ags_v8double v_volume;
+    ags_v8double v_sine;
 
     v_buffer = (ags_v8double) {
       (gdouble) *(source),
@@ -1029,6 +1150,21 @@ ags_envelope_util_compute_s24(AgsEnvelopeUtil *envelope_util)
       (gdouble) (start_volume + (i + 6) * amount),
       (gdouble) (start_volume + (i + 7) * amount)
     };
+
+    if(lfo_enabled){
+      v_sine = (ags_v8double) {
+	sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 1) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 2) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 3) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 4) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 5) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 6) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 7) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),	
+      };
+    
+      v_buffer *= v_sine;
+    }
 
     v_buffer *= v_volume;
 
@@ -1072,7 +1208,24 @@ ags_envelope_util_compute_s24(AgsEnvelopeUtil *envelope_util)
 
     source += source_stride;
 
-    vDSP_vmulD(v_buffer, 1, v_volume, 1, ret_v_buffer, 1, 8);
+    if(lfo_enabled){
+      double ret_sine_buffer[8];
+      
+      double v_sine[] = {sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 1) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 2) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 3) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 4) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 5) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 6) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 7) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate)};
+    
+      vDSP_vmulD(v_buffer, 1, v_sine, 1, ret_sine_buffer, 1, 8);
+
+      vDSP_vmulD(ret_sine_buffer, 1, v_volume, 1, ret_v_buffer, 1, 8);
+    }else{
+      vDSP_vmulD(v_buffer, 1, v_volume, 1, ret_v_buffer, 1, 8);
+    }
 
     *(destination) = (gint32) ret_v_buffer[0];
     *(destination += destination_stride) = (gint32) ret_v_buffer[1];
@@ -1091,14 +1244,25 @@ ags_envelope_util_compute_s24(AgsEnvelopeUtil *envelope_util)
   i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
 
   for(; i < i_stop;){
-    *(destination) = (gint32) ((gint32) ((source)[0] * (double) (start_volume + (i) * amount)));
-    *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 1) * amount)));
-    *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 2) * amount)));
-    *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 3) * amount)));
-    *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 4) * amount)));
-    *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 5) * amount)));
-    *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 6) * amount)));
-    *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 7) * amount)));
+    if(lfo_enabled){
+      *(destination) = (gint32) ((gint32) ((source)[0] * sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i) * amount)));
+      *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * sin((gdouble) (offset + i + 1) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 1) * amount)));
+      *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * sin((gdouble) (offset + i + 2) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 2) * amount)));
+      *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * sin((gdouble) (offset + i + 3) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 3) * amount)));
+      *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * sin((gdouble) (offset + i + 4) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 4) * amount)));
+      *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * sin((gdouble) (offset + i + 5) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 5) * amount)));
+      *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * sin((gdouble) (offset + i + 6) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 6) * amount)));
+      *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * sin((gdouble) (offset + i + 7) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 7) * amount)));
+    }else{
+      *(destination) = (gint32) ((gint32) ((source)[0] * (double) (start_volume + (i) * amount)));
+      *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 1) * amount)));
+      *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 2) * amount)));
+      *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 3) * amount)));
+      *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 4) * amount)));
+      *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 5) * amount)));
+      *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 6) * amount)));
+      *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * (double) (start_volume + (i + 7) * amount)));
+    }
 
     destination += destination_stride;
     source += source_stride;
@@ -1109,8 +1273,12 @@ ags_envelope_util_compute_s24(AgsEnvelopeUtil *envelope_util)
 
   /* loop tail */
   for(; i < envelope_util->buffer_length;){
-    destination[0] = (gint32) ((gint32) (source[0] * (start_volume + i * amount)));
-
+    if(lfo_enabled){
+      destination[0] = (gint32) ((gint32) (source[0] * sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (start_volume + i * amount)));
+    }else{
+      destination[0] = (gint32) ((gint32) (source[0] * (start_volume + i * amount)));
+    }
+    
     destination += destination_stride;
     source += source_stride;
     i++;
@@ -1137,6 +1305,9 @@ ags_envelope_util_compute_s32(AgsEnvelopeUtil *envelope_util)
   guint samplerate;
   gdouble start_volume;
   gdouble amount;
+  guint offset;
+  gdouble lfo_freq;
+  gboolean lfo_enabled;
   guint i, i_stop;
 
   destination = (gint32 *) envelope_util->destination;
@@ -1150,6 +1321,11 @@ ags_envelope_util_compute_s32(AgsEnvelopeUtil *envelope_util)
   start_volume = envelope_util->volume;
   amount = envelope_util->amount;
 
+  lfo_enabled = envelope_util->lfo_enabled;
+  lfo_freq = envelope_util->lfo_freq;
+
+  offset = envelope_util->offset;
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -1158,6 +1334,7 @@ ags_envelope_util_compute_s32(AgsEnvelopeUtil *envelope_util)
   for(; i < i_stop;){
     ags_v8double v_buffer;
     ags_v8double v_volume;
+    ags_v8double v_sine;
 
     v_buffer = (ags_v8double) {
       (gdouble) *(source),
@@ -1182,6 +1359,21 @@ ags_envelope_util_compute_s32(AgsEnvelopeUtil *envelope_util)
       (gdouble) (start_volume + (i + 6) * amount),
       (gdouble) (start_volume + (i + 7) * amount)
     };
+
+    if(lfo_enabled){
+      v_sine = (ags_v8double) {
+	sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 1) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 2) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 3) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 4) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 5) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 6) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 7) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),	
+      };
+    
+      v_buffer *= v_sine;
+    }
 
     v_buffer *= v_volume;
 
@@ -1225,7 +1417,24 @@ ags_envelope_util_compute_s32(AgsEnvelopeUtil *envelope_util)
 
     source += source_stride;
 
-    vDSP_vmulD(v_buffer, 1, v_volume, 1, ret_v_buffer, 1, 8);
+    if(lfo_enabled){
+      double ret_sine_buffer[8];
+      
+      double v_sine[] = {sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 1) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 2) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 3) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 4) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 5) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 6) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 7) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate)};
+    
+      vDSP_vmulD(v_buffer, 1, v_sine, 1, ret_sine_buffer, 1, 8);
+
+      vDSP_vmulD(ret_sine_buffer, 1, v_volume, 1, ret_v_buffer, 1, 8);
+    }else{
+      vDSP_vmulD(v_buffer, 1, v_volume, 1, ret_v_buffer, 1, 8);
+    }
 
     *(destination) = (gint32) ret_v_buffer[0];
     *(destination += destination_stride) = (gint32) ret_v_buffer[1];
@@ -1244,15 +1453,26 @@ ags_envelope_util_compute_s32(AgsEnvelopeUtil *envelope_util)
   i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
 
   for(; i < i_stop;){
-    *(destination) = (gint32) ((gint64) ((source)[0] * (double) (start_volume + (i) * amount)));
-    *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 1) * amount)));
-    *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 2) * amount)));
-    *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 3) * amount)));
-    *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 4) * amount)));
-    *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 5) * amount)));
-    *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 6) * amount)));
-    *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 7) * amount)));
-
+    if(lfo_enabled){
+      *(destination) = (gint32) ((gint64) ((source)[0] * sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i) * amount)));
+      *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * sin((gdouble) (offset + i + 1) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 1) * amount)));
+      *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * sin((gdouble) (offset + i + 2) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 2) * amount)));
+      *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * sin((gdouble) (offset + i + 3) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 3) * amount)));
+      *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * sin((gdouble) (offset + i + 4) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 4) * amount)));
+      *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * sin((gdouble) (offset + i + 5) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 5) * amount)));
+      *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * sin((gdouble) (offset + i + 6) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 6) * amount)));
+      *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * sin((gdouble) (offset + i + 7) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 7) * amount)));
+    }else{
+      *(destination) = (gint32) ((gint64) ((source)[0] * (double) (start_volume + (i) * amount)));
+      *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 1) * amount)));
+      *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 2) * amount)));
+      *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 3) * amount)));
+      *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 4) * amount)));
+      *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 5) * amount)));
+      *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 6) * amount)));
+      *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 7) * amount)));
+    }
+    
     destination += destination_stride;
     source += source_stride;
 
@@ -1262,8 +1482,12 @@ ags_envelope_util_compute_s32(AgsEnvelopeUtil *envelope_util)
 
   /* loop tail */
   for(; i < envelope_util->buffer_length;){
-    *(destination) = (gint32) ((gint64) ((source)[0] * (double) (start_volume + (i) * amount)));
-
+    if(lfo_enabled){
+      *(destination) = (gint32) ((gint64) ((source)[0] * sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i) * amount)));
+    }else{
+      *(destination) = (gint32) ((gint64) ((source)[0] * (double) (start_volume + (i) * amount)));
+    }
+    
     destination += destination_stride;
     source += source_stride;
     i++;
@@ -1290,6 +1514,9 @@ ags_envelope_util_compute_s64(AgsEnvelopeUtil *envelope_util)
   guint samplerate;
   gdouble start_volume;
   gdouble amount;
+  guint offset;
+  gdouble lfo_freq;
+  gboolean lfo_enabled;
   guint i, i_stop;
 
   destination = (gint64 *) envelope_util->destination;
@@ -1303,6 +1530,11 @@ ags_envelope_util_compute_s64(AgsEnvelopeUtil *envelope_util)
   start_volume = envelope_util->volume;
   amount = envelope_util->amount;
 
+  lfo_enabled = envelope_util->lfo_enabled;
+  lfo_freq = envelope_util->lfo_freq;
+
+  offset = envelope_util->offset;
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -1311,6 +1543,7 @@ ags_envelope_util_compute_s64(AgsEnvelopeUtil *envelope_util)
   for(; i < i_stop;){
     ags_v8double v_buffer;
     ags_v8double v_volume;
+    ags_v8double v_sine;
 
     v_buffer = (ags_v8double) {
       (gdouble) *(source),
@@ -1335,6 +1568,21 @@ ags_envelope_util_compute_s64(AgsEnvelopeUtil *envelope_util)
       (gdouble) (start_volume + (i + 6) * amount),
       (gdouble) (start_volume + (i + 7) * amount)
     };
+
+    if(lfo_enabled){
+      v_sine = (ags_v8double) {
+	sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 1) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 2) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 3) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 4) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 5) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 6) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 7) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),	
+      };
+    
+      v_buffer *= v_sine;
+    }
 
     v_buffer *= v_volume;
 
@@ -1378,7 +1626,24 @@ ags_envelope_util_compute_s64(AgsEnvelopeUtil *envelope_util)
 
     source += source_stride;
 
-    vDSP_vmulD(v_buffer, 1, v_volume, 1, ret_v_buffer, 1, 8);
+    if(lfo_enabled){
+      double ret_sine_buffer[8];
+      
+      double v_sine[] = {sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 1) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 2) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 3) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 4) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 5) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 6) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 7) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate)};
+    
+      vDSP_vmulD(v_buffer, 1, v_sine, 1, ret_sine_buffer, 1, 8);
+
+      vDSP_vmulD(ret_sine_buffer, 1, v_volume, 1, ret_v_buffer, 1, 8);
+    }else{
+      vDSP_vmulD(v_buffer, 1, v_volume, 1, ret_v_buffer, 1, 8);
+    }
 
     *(destination) = (gint64) ret_v_buffer[0];
     *(destination += destination_stride) = (gint64) ret_v_buffer[1];
@@ -1397,15 +1662,26 @@ ags_envelope_util_compute_s64(AgsEnvelopeUtil *envelope_util)
   i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
 
   for(; i < i_stop;){
-    *(destination) = (gint64) ((gint64) ((source)[0] * (double) (start_volume + (i) * amount)));
-    *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 1) * amount)));
-    *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 2) * amount)));
-    *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 3) * amount)));
-    *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 4) * amount)));
-    *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 5) * amount)));
-    *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 6) * amount)));
-    *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 7) * amount)));
-
+    if(lfo_enabled){
+      *(destination) = (gint64) ((gint64) ((source)[0] * sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i) * amount)));
+      *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * sin((gdouble) (offset + i + 1) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 1) * amount)));
+      *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * sin((gdouble) (offset + i + 2) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 2) * amount)));
+      *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * sin((gdouble) (offset + i + 3) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 3) * amount)));
+      *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * sin((gdouble) (offset + i + 4) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 4) * amount)));
+      *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * sin((gdouble) (offset + i + 5) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 5) * amount)));
+      *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * sin((gdouble) (offset + i + 6) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 6) * amount)));
+      *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * sin((gdouble) (offset + i + 7) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 7) * amount)));
+    }else{
+      *(destination) = (gint64) ((gint64) ((source)[0] * (double) (start_volume + (i) * amount)));
+      *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 1) * amount)));
+      *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 2) * amount)));
+      *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 3) * amount)));
+      *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 4) * amount)));
+      *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 5) * amount)));
+      *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 6) * amount)));
+      *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * (double) (start_volume + (i + 7) * amount)));
+    }
+    
     destination += destination_stride;
     source += source_stride;
 
@@ -1415,7 +1691,11 @@ ags_envelope_util_compute_s64(AgsEnvelopeUtil *envelope_util)
 
   /* loop tail */
   for(; i < envelope_util->buffer_length;){
-    *(destination) = (gint64) ((gint64) ((source)[0] * (double) (start_volume + (i) * amount)));
+    if(lfo_enabled){
+      *(destination) = (gint64) ((gint64) ((source)[0] * sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i) * amount)));
+    }else{
+      *(destination) = (gint64) ((gint64) ((source)[0] * (double) (start_volume + (i) * amount)));
+    }
 
     destination += destination_stride;
     source += source_stride;
@@ -1443,6 +1723,9 @@ ags_envelope_util_compute_float(AgsEnvelopeUtil *envelope_util)
   guint samplerate;
   gdouble start_volume;
   gdouble amount;
+  guint offset;
+  gdouble lfo_freq;
+  gboolean lfo_enabled;
   guint i, i_stop;
 
   destination = (gfloat *) envelope_util->destination;
@@ -1456,6 +1739,11 @@ ags_envelope_util_compute_float(AgsEnvelopeUtil *envelope_util)
   start_volume = envelope_util->volume;
   amount = envelope_util->amount;
 
+  lfo_enabled = envelope_util->lfo_enabled;
+  lfo_freq = envelope_util->lfo_freq;
+
+  offset = envelope_util->offset;
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -1464,6 +1752,7 @@ ags_envelope_util_compute_float(AgsEnvelopeUtil *envelope_util)
   for(; i < i_stop;){
     ags_v8double v_buffer;
     ags_v8double v_volume;
+    ags_v8double v_sine;
 
     v_buffer = (ags_v8double) {
       (gdouble) *(source),
@@ -1488,6 +1777,21 @@ ags_envelope_util_compute_float(AgsEnvelopeUtil *envelope_util)
       (gdouble) (start_volume + (i + 6) * amount),
       (gdouble) (start_volume + (i + 7) * amount)
     };
+
+    if(lfo_enabled){
+      v_sine = (ags_v8double) {
+	sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 1) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 2) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 3) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 4) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 5) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 6) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 7) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),	
+      };
+    
+      v_buffer *= v_sine;
+    }
 
     v_buffer *= v_volume;
 
@@ -1531,7 +1835,24 @@ ags_envelope_util_compute_float(AgsEnvelopeUtil *envelope_util)
 
     source += source_stride;
 
-    vDSP_vmulD(v_buffer, 1, v_volume, 1, ret_v_buffer, 1, 8);
+    if(lfo_enabled){
+      double ret_sine_buffer[8];
+      
+      double v_sine[] = {sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 1) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 2) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 3) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 4) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 5) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 6) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 7) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate)};
+    
+      vDSP_vmulD(v_buffer, 1, v_sine, 1, ret_sine_buffer, 1, 8);
+
+      vDSP_vmulD(ret_sine_buffer, 1, v_volume, 1, ret_v_buffer, 1, 8);
+    }else{
+      vDSP_vmulD(v_buffer, 1, v_volume, 1, ret_v_buffer, 1, 8);
+    }
 
     *(destination) = (gfloat) ret_v_buffer[0];
     *(destination += destination_stride) = (gfloat) ret_v_buffer[1];
@@ -1550,15 +1871,26 @@ ags_envelope_util_compute_float(AgsEnvelopeUtil *envelope_util)
   i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
 
   for(; i < i_stop;){
-    *(destination) = (gfloat) ((source)[0] * (double) (start_volume + (i) * amount));
-    *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * (double) (start_volume + (i + 1) * amount));
-    *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * (double) (start_volume + (i + 2) * amount));
-    *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * (double) (start_volume + (i + 3) * amount));
-    *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * (double) (start_volume + (i + 4) * amount));
-    *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * (double) (start_volume + (i + 5) * amount));
-    *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * (double) (start_volume + (i + 6) * amount));
-    *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * (double) (start_volume + (i + 7) * amount));
-
+    if(lfo_enabled){
+      *(destination) = (gfloat) ((source)[0] * sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i) * amount));
+      *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 1) * amount));
+      *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 2) * amount));
+      *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 3) * amount));
+      *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 4) * amount));
+      *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 5) * amount));
+      *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 6) * amount));
+      *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 7) * amount));
+    }else{
+      *(destination) = (gfloat) ((source)[0] * (double) (start_volume + (i) * amount));
+      *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * (double) (start_volume + (i + 1) * amount));
+      *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * (double) (start_volume + (i + 2) * amount));
+      *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * (double) (start_volume + (i + 3) * amount));
+      *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * (double) (start_volume + (i + 4) * amount));
+      *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * (double) (start_volume + (i + 5) * amount));
+      *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * (double) (start_volume + (i + 6) * amount));
+      *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * (double) (start_volume + (i + 7) * amount));
+    }
+    
     destination += destination_stride;
     source += source_stride;
 
@@ -1568,7 +1900,11 @@ ags_envelope_util_compute_float(AgsEnvelopeUtil *envelope_util)
 
   /* loop tail */
   for(; i < envelope_util->buffer_length;){
-    *(destination) = (gfloat) ((source)[0] * (double) (start_volume + (i) * amount));
+    if(lfo_enabled){
+      *(destination) = (gfloat) ((source)[0] * sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i) * amount));
+    }else{
+      *(destination) = (gfloat) ((source)[0] * (double) (start_volume + (i) * amount));
+    }
 
     destination += destination_stride;
     source += source_stride;
@@ -1596,6 +1932,9 @@ ags_envelope_util_compute_double(AgsEnvelopeUtil *envelope_util)
   guint samplerate;
   gdouble start_volume;
   gdouble amount;
+  guint offset;
+  gdouble lfo_freq;
+  gboolean lfo_enabled;
   guint i, i_stop;
 
   destination = (gdouble *) envelope_util->destination;
@@ -1609,6 +1948,11 @@ ags_envelope_util_compute_double(AgsEnvelopeUtil *envelope_util)
   start_volume = envelope_util->volume;
   amount = envelope_util->amount;
 
+  lfo_enabled = envelope_util->lfo_enabled;
+  lfo_freq = envelope_util->lfo_freq;
+
+  offset = envelope_util->offset;
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -1617,6 +1961,7 @@ ags_envelope_util_compute_double(AgsEnvelopeUtil *envelope_util)
   for(; i < i_stop;){
     ags_v8double v_buffer;
     ags_v8double v_volume;
+    ags_v8double v_sine;
 
     v_buffer = (ags_v8double) {
       (gdouble) *(source),
@@ -1641,6 +1986,21 @@ ags_envelope_util_compute_double(AgsEnvelopeUtil *envelope_util)
       (gdouble) (start_volume + (i + 6) * amount),
       (gdouble) (start_volume + (i + 7) * amount)
     };
+
+    if(lfo_enabled){
+      v_sine = (ags_v8double) {
+	sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 1) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 2) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 3) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 4) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 5) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 6) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 7) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),	
+      };
+    
+      v_buffer *= v_sine;
+    }
 
     v_buffer *= v_volume;
 
@@ -1684,7 +2044,24 @@ ags_envelope_util_compute_double(AgsEnvelopeUtil *envelope_util)
 
     source += source_stride;
 
-    vDSP_vmulD(v_buffer, 1, v_volume, 1, ret_v_buffer, 1, 8);
+    if(lfo_enabled){
+      double ret_sine_buffer[8];
+      
+      double v_sine[] = {sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 1) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 2) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 3) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 4) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 5) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 6) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+	sin((gdouble) (offset + i + 7) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate)};
+    
+      vDSP_vmulD(v_buffer, 1, v_sine, 1, ret_sine_buffer, 1, 8);
+
+      vDSP_vmulD(ret_sine_buffer, 1, v_volume, 1, ret_v_buffer, 1, 8);
+    }else{
+      vDSP_vmulD(v_buffer, 1, v_volume, 1, ret_v_buffer, 1, 8);
+    }
 
     *(destination) = (gdouble) ret_v_buffer[0];
     *(destination += destination_stride) = (gdouble) ret_v_buffer[1];
@@ -1703,15 +2080,26 @@ ags_envelope_util_compute_double(AgsEnvelopeUtil *envelope_util)
   i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
 
   for(; i < i_stop;){
-    *(destination) = (gdouble) ((source)[0] * (double) (start_volume + (i) * amount));
-    *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * (double) (start_volume + (i + 1) * amount));
-    *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * (double) (start_volume + (i + 2) * amount));
-    *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * (double) (start_volume + (i + 3) * amount));
-    *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * (double) (start_volume + (i + 4) * amount));
-    *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * (double) (start_volume + (i + 5) * amount));
-    *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * (double) (start_volume + (i + 6) * amount));
-    *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * (double) (start_volume + (i + 7) * amount));
-
+    if(lfo_enabled){
+      *(destination) = (gdouble) ((source)[0] * sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i) * amount));
+      *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * sin((gdouble) (offset + i + 1) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 1) * amount));
+      *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * sin((gdouble) (offset + i + 2) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 2) * amount));
+      *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * sin((gdouble) (offset + i + 3) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 3) * amount));
+      *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * sin((gdouble) (offset + i + 4) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 4) * amount));
+      *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * sin((gdouble) (offset + i + 5) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 5) * amount));
+      *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * sin((gdouble) (offset + i + 6) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 6) * amount));
+      *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * sin((gdouble) (offset + i + 7) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i + 7) * amount));
+    }else{
+      *(destination) = (gdouble) ((source)[0] * (double) (start_volume + (i) * amount));
+      *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * (double) (start_volume + (i + 1) * amount));
+      *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * (double) (start_volume + (i + 2) * amount));
+      *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * (double) (start_volume + (i + 3) * amount));
+      *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * (double) (start_volume + (i + 4) * amount));
+      *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * (double) (start_volume + (i + 5) * amount));
+      *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * (double) (start_volume + (i + 6) * amount));
+      *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * (double) (start_volume + (i + 7) * amount));
+    }
+    
     destination += destination_stride;
     source += source_stride;
 
@@ -1721,8 +2109,12 @@ ags_envelope_util_compute_double(AgsEnvelopeUtil *envelope_util)
 
   /* loop tail */
   for(; i < envelope_util->buffer_length;){
-    *(destination) = (gdouble) ((source)[0] * (double) (start_volume + (i) * amount));
-
+    if(lfo_enabled){
+      *(destination) = (gdouble) ((source)[0] * sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i) * amount));
+    }else{
+      *(destination) = (gdouble) ((source)[0] * (double) (start_volume + (i) * amount));
+    }
+    
     destination += destination_stride;
     source += source_stride;
     i++;
@@ -1749,6 +2141,9 @@ ags_envelope_util_compute_complex(AgsEnvelopeUtil *envelope_util)
   guint samplerate;
   gdouble start_volume;
   gdouble amount;
+  guint offset;
+  gdouble lfo_freq;
+  gboolean lfo_enabled;
   guint i;
 
   destination = (AgsComplex *) envelope_util->destination;
@@ -1762,6 +2157,11 @@ ags_envelope_util_compute_complex(AgsEnvelopeUtil *envelope_util)
   start_volume = envelope_util->volume;
   amount = envelope_util->amount;
 
+  lfo_enabled = envelope_util->lfo_enabled;
+  lfo_freq = envelope_util->lfo_freq;
+
+  offset = envelope_util->offset;
+
   i = 0;
   
   for(; i < envelope_util->buffer_length;){
@@ -1769,9 +2169,14 @@ ags_envelope_util_compute_complex(AgsEnvelopeUtil *envelope_util)
 
     z = ags_complex_get(source);
 
-    ags_complex_set(destination,
-		    z * (double) (start_volume + (i) * amount));
-
+    if(lfo_enabled){
+      ags_complex_set(destination,
+		      z * sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) * (double) (start_volume + (i) * amount));
+    }else{
+      ags_complex_set(destination,
+		      z * (double) (start_volume + (i) * amount));
+    }
+    
     destination += destination_stride;
     source += source_stride;
     i++;

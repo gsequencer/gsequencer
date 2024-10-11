@@ -629,6 +629,8 @@ ags_vector_256_manager_get_instance()
 
   if(ags_vector_256_manager == NULL){
     ags_vector_256_manager = ags_vector_256_manager_new();
+
+    ags_vector_256_manager_reserve_all(ags_vector_256_manager);
   }
 
   g_mutex_unlock(&mutex);
