@@ -45,10 +45,12 @@ typedef struct _AgsVDSP256ManagerClass AgsVDSP256ManagerClass;
 
 typedef struct _AgsVDSPArr AgsVDSPArr;
 
+typedef struct _AgsVDSPMemInt AgsVDSPMemInt;
 typedef struct _AgsVDSPMemFloat AgsVDSPMemFloat;
 typedef struct _AgsVDSPMemDouble AgsVDSPMemDouble;
 
 typedef enum{
+  AGS_VDSP_256_INT,
   AGS_VDSP_256_FLOAT,
   AGS_VDSP_256_DOUBLE,
 }AgsVDSP256Types;
@@ -61,6 +63,7 @@ struct _AgsVDSP256Manager
 
   guint vdsp_count;
   
+  GList *int_arr;
   GList *float_arr;
   GList *double_arr;
 };
@@ -77,9 +80,15 @@ struct _AgsVDSPArr
   volatile gboolean locked;
   
   union{
+    AgsVDSPMemInt *vec_int;
     AgsVDSPMemFloat *vec_float;
     AgsVDSPMemDouble *vec_double;
   }vdsp;
+};
+
+struct _AgsVDSPMemInt
+{
+  int mem_int[256];
 };
 
 struct _AgsVDSPMemFloat
@@ -104,6 +113,12 @@ AgsVDSPArr* ags_vdsp_256_manager_try_acquire(AgsVDSP256Manager *vdsp_256_manager
 gboolean ags_vdsp_256_manager_try_acquire_dual(AgsVDSP256Manager *vdsp_256_manager,
 					       AgsVDSP256Types vdsp_type_a, AgsVDSP256Types vdsp_type_b,
 					       AgsVDSPArr **vdsp_arr_a, AgsVDSPArr **vdsp_arr_b);
+gboolean ags_vdsp_256_manager_try_acquire_triple(AgsVDSP256Manager *vdsp_256_manager,
+						 AgsVDSP256Types vdsp_type_a, AgsVDSP256Types vdsp_type_b, AgsVDSP256Types vdsp_type_c,
+						 AgsVDSPArr **vdsp_arr_a, AgsVDSPArr **vdsp_arr_b, AgsVDSPArr **vdsp_arr_c);
+gboolean ags_vdsp_256_manager_try_acquire_quad(AgsVDSP256Manager *vdsp_256_manager,
+					       AgsVDSP256Types vdsp_type_a, AgsVDSP256Types vdsp_type_b, AgsVDSP256Types vdsp_type_c, AgsVDSP256Types vdsp_type_d,
+					       AgsVDSPArr **vdsp_arr_a, AgsVDSPArr **vdsp_arr_b, AgsVDSPArr **vdsp_arr_c, AgsVDSPArr **vdsp_arr_d);
 
 void ags_vdsp_256_manager_release(AgsVDSP256Manager *vdsp_256_manager,
 				  AgsVDSPArr *vdsp_arr);

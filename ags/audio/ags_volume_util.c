@@ -545,6 +545,38 @@ ags_volume_util_compute_s8(AgsVolumeUtil *volume_util)
     
     i += ((volume_util->buffer_length < 256) ? volume_util->buffer_length: 256);
   }
+#elif defined(AGS_VDSP_256_FUNCTIONS)
+  AgsVDSP256Manager *vdsp_256_manager = ags_vdsp_256_manager_get_instance();
+  
+  while(i + 256 <= i_stop){
+    AgsVdspArr *vdsp_arr;
+
+    guint j;
+    
+    while((vdsp_arr = ags_vdsp_256_manager_try_acquire(vdsp_256_manager, AGS_VDSP_256_DOUBLE)) == NULL){
+      g_thread_yield();
+    }
+
+    ags_audio_buffer_util_put_double_from_s8(NULL,
+					     vdsp_arr->vdsp.vec_double->mem_double, 1,
+					     source, source_stride,
+					     256);
+
+    for(j = 0; j < 32; j++){
+      vdsp_arr->vdsp.vec_double->mem_double[j] *= volume_util->volume;
+    }
+    
+    ags_audio_buffer_util_get_double_as_s8(NULL,
+					    source, source_stride,
+					    vdsp_arr->vdsp.vec_double->mem_double, 1,
+					    256);
+    
+    ags_vdsp_256_manager_release(vdsp_256_manager,
+				 vdsp_arr);
+
+    source += (256 * source_stride);
+    i += 256;
+  }
 #else
   i_stop = volume_util->buffer_length - (volume_util->buffer_length % 8);
   
@@ -740,7 +772,7 @@ ags_volume_util_compute_s16(AgsVolumeUtil *volume_util)
     i += ((volume_util->buffer_length < 256) ? volume_util->buffer_length: 256);
   }
 #elif defined(AGS_VDSP_256_FUNCTIONS)
-  AgsVdsp256Manager *vdsp_256_manager = ags_vdsp_256_manager_get_instance();
+  AgsVDSP256Manager *vdsp_256_manager = ags_vdsp_256_manager_get_instance();
   
   while(i + 256 <= i_stop){
     AgsVdspArr *vdsp_arr;
@@ -766,7 +798,7 @@ ags_volume_util_compute_s16(AgsVolumeUtil *volume_util)
 					    256);
     
     ags_vdsp_256_manager_release(vdsp_256_manager,
-				   vdsp_arr);
+				 vdsp_arr);
 
     source += (256 * source_stride);
     i += 256;
@@ -965,6 +997,38 @@ ags_volume_util_compute_s24(AgsVolumeUtil *volume_util)
     
     i += ((volume_util->buffer_length < 256) ? volume_util->buffer_length: 256);
   }
+#elif defined(AGS_VDSP_256_FUNCTIONS)
+  AgsVDSP256Manager *vdsp_256_manager = ags_vdsp_256_manager_get_instance();
+  
+  while(i + 256 <= i_stop){
+    AgsVdspArr *vdsp_arr;
+
+    guint j;
+    
+    while((vdsp_arr = ags_vdsp_256_manager_try_acquire(vdsp_256_manager, AGS_VDSP_256_DOUBLE)) == NULL){
+      g_thread_yield();
+    }
+
+    ags_audio_buffer_util_put_double_from_s32(NULL,
+					      vdsp_arr->vdsp.vec_double->mem_double, 1,
+					      source, source_stride,
+					      256);
+
+    for(j = 0; j < 32; j++){
+      vdsp_arr->vdsp.vec_double->mem_double[j] *= volume_util->volume;
+    }
+    
+    ags_audio_buffer_util_get_double_as_s32(NULL,
+					    source, source_stride,
+					    vdsp_arr->vdsp.vec_double->mem_double, 1,
+					    256);
+    
+    ags_vdsp_256_manager_release(vdsp_256_manager,
+				   vdsp_arr);
+
+    source += (256 * source_stride);
+    i += 256;
+  }
 #else
   i_stop = volume_util->buffer_length - (volume_util->buffer_length % 8);
   
@@ -1158,6 +1222,38 @@ ags_volume_util_compute_s32(AgsVolumeUtil *volume_util)
     }
     
     i += ((volume_util->buffer_length < 256) ? volume_util->buffer_length: 256);
+  }
+#elif defined(AGS_VDSP_256_FUNCTIONS)
+  AgsVDSP256Manager *vdsp_256_manager = ags_vdsp_256_manager_get_instance();
+  
+  while(i + 256 <= i_stop){
+    AgsVdspArr *vdsp_arr;
+
+    guint j;
+    
+    while((vdsp_arr = ags_vdsp_256_manager_try_acquire(vdsp_256_manager, AGS_VDSP_256_DOUBLE)) == NULL){
+      g_thread_yield();
+    }
+
+    ags_audio_buffer_util_put_double_from_s32(NULL,
+					      vdsp_arr->vdsp.vec_double->mem_double, 1,
+					      source, source_stride,
+					      256);
+
+    for(j = 0; j < 32; j++){
+      vdsp_arr->vdsp.vec_double->mem_double[j] *= volume_util->volume;
+    }
+    
+    ags_audio_buffer_util_get_double_as_s32(NULL,
+					    source, source_stride,
+					    vdsp_arr->vdsp.vec_double->mem_double, 1,
+					    256);
+    
+    ags_vdsp_256_manager_release(vdsp_256_manager,
+				 vdsp_arr);
+
+    source += (256 * source_stride);
+    i += 256;
   }
 #else
   i_stop = volume_util->buffer_length - (volume_util->buffer_length % 8);
@@ -1353,6 +1449,38 @@ ags_volume_util_compute_s64(AgsVolumeUtil *volume_util)
     
     i += ((volume_util->buffer_length < 256) ? volume_util->buffer_length: 256);
   }
+#elif defined(AGS_VDSP_256_FUNCTIONS)
+  AgsVDSP256Manager *vdsp_256_manager = ags_vdsp_256_manager_get_instance();
+  
+  while(i + 256 <= i_stop){
+    AgsVdspArr *vdsp_arr;
+
+    guint j;
+    
+    while((vdsp_arr = ags_vdsp_256_manager_try_acquire(vdsp_256_manager, AGS_VDSP_256_DOUBLE)) == NULL){
+      g_thread_yield();
+    }
+
+    ags_audio_buffer_util_put_double_from_s64(NULL,
+					      vdsp_arr->vdsp.vec_double->mem_double, 1,
+					      source, source_stride,
+					      256);
+
+    for(j = 0; j < 32; j++){
+      vdsp_arr->vdsp.vec_double->mem_double[j] *= volume_util->volume;
+    }
+    
+    ags_audio_buffer_util_get_double_as_s64(NULL,
+					    source, source_stride,
+					    vdsp_arr->vdsp.vec_double->mem_double, 1,
+					    256);
+    
+    ags_vdsp_256_manager_release(vdsp_256_manager,
+				 vdsp_arr);
+
+    source += (256 * source_stride);
+    i += 256;
+  }
 #else
   i_stop = volume_util->buffer_length - (volume_util->buffer_length % 8);
   
@@ -1547,6 +1675,38 @@ ags_volume_util_compute_float(AgsVolumeUtil *volume_util)
     
     i += ((volume_util->buffer_length < 256) ? volume_util->buffer_length: 256);
   }
+#elif defined(AGS_VDSP_256_FUNCTIONS)
+  AgsVDSP256Manager *vdsp_256_manager = ags_vdsp_256_manager_get_instance();
+  
+  while(i + 256 <= i_stop){
+    AgsVdspArr *vdsp_arr;
+
+    guint j;
+    
+    while((vdsp_arr = ags_vdsp_256_manager_try_acquire(vdsp_256_manager, AGS_VDSP_256_DOUBLE)) == NULL){
+      g_thread_yield();
+    }
+
+    ags_audio_buffer_util_put_double_from_float(NULL,
+						vdsp_arr->vdsp.vec_double->mem_double, 1,
+						source, source_stride,
+						256);
+
+    for(j = 0; j < 32; j++){
+      vdsp_arr->vdsp.vec_double->mem_double[j] *= volume_util->volume;
+    }
+    
+    ags_audio_buffer_util_get_double_as_float(NULL,
+					      source, source_stride,
+					      vdsp_arr->vdsp.vec_double->mem_double, 1,
+					      256);
+    
+    ags_vdsp_256_manager_release(vdsp_256_manager,
+				   vdsp_arr);
+
+    source += (256 * source_stride);
+    i += 256;
+  }
 #else
   i_stop = volume_util->buffer_length - (volume_util->buffer_length % 8);
   
@@ -1740,6 +1900,38 @@ ags_volume_util_compute_double(AgsVolumeUtil *volume_util)
     }
     
     i += ((volume_util->buffer_length < 256) ? volume_util->buffer_length: 256);
+  }
+#elif defined(AGS_VDSP_256_FUNCTIONS)
+  AgsVDSP256Manager *vdsp_256_manager = ags_vdsp_256_manager_get_instance();
+  
+  while(i + 256 <= i_stop){
+    AgsVdspArr *vdsp_arr;
+
+    guint j;
+    
+    while((vdsp_arr = ags_vdsp_256_manager_try_acquire(vdsp_256_manager, AGS_VDSP_256_DOUBLE)) == NULL){
+      g_thread_yield();
+    }
+
+    ags_audio_buffer_util_put_double(NULL,
+				     vdsp_arr->vdsp.vec_double->mem_double, 1,
+				     source, source_stride,
+				     256);
+    
+    for(j = 0; j < 32; j++){
+      vdsp_arr->vdsp.vec_double->mem_double[j] *= volume_util->volume;
+    }
+    
+    ags_audio_buffer_util_get_double(NULL,
+				     source, source_stride,
+				     vdsp_arr->vdsp.vec_double->mem_double, 1,
+				     256);
+    
+    ags_vdsp_256_manager_release(vdsp_256_manager,
+				 vdsp_arr);
+
+    source += (256 * source_stride);
+    i += 256;
   }
 #else
   i_stop = volume_util->buffer_length - (volume_util->buffer_length % 8);

@@ -823,6 +823,10 @@ void ags_audio_buffer_util_copy_complex_to_float32(AgsAudioBufferUtil *audio_buf
 #endif
 
 /* vDSP */
+void ags_audio_buffer_util_put_int(AgsAudioBufferUtil *audio_buffer_util,
+				   gint *destination, guint destination_stride,
+				   gint *source, guint source_stride,
+				   guint count);
 void ags_audio_buffer_util_put_float(AgsAudioBufferUtil *audio_buffer_util,
 				     gfloat *destination, guint destination_stride,
 				     gfloat *source, guint source_stride,
@@ -831,6 +835,56 @@ void ags_audio_buffer_util_put_double(AgsAudioBufferUtil *audio_buffer_util,
 				      gdouble *destination, guint destination_stride,
 				      gdouble *source, guint source_stride,
 				      guint count);
+
+void ags_audio_buffer_util_put_int_from_s8(AgsAudioBufferUtil *audio_buffer_util,
+					   gint *destination, guint destination_stride,
+					   gint8 *source, guint source_stride,
+					   guint count);
+void ags_audio_buffer_util_put_int_from_s16(AgsAudioBufferUtil *audio_buffer_util,
+					    gint *destination, guint destination_stride,
+					    gint16 *source, guint source_stride,
+					    guint count);
+void ags_audio_buffer_util_put_int_from_s32(AgsAudioBufferUtil *audio_buffer_util,
+					    gint *destination, guint destination_stride,
+					    gint32 *source, guint source_stride,
+					    guint count);
+void ags_audio_buffer_util_put_int_from_s64(AgsAudioBufferUtil *audio_buffer_util,
+					    gint *destination, guint destination_stride,
+					    gint64 *source, guint source_stride,
+					    guint count);
+void ags_audio_buffer_util_put_int_from_float(AgsAudioBufferUtil *audio_buffer_util,
+					      gint *destination, guint destination_stride,
+					      gfloat *source, guint source_stride,
+					      guint count);
+void ags_audio_buffer_util_put_int_from_double(AgsAudioBufferUtil *audio_buffer_util,
+					       gint *destination, guint destination_stride,
+					       gdouble *source, guint source_stride,
+					       guint count);
+
+void ags_audio_buffer_util_get_int_as_s8(AgsAudioBufferUtil *audio_buffer_util,
+					 gint8 *destination, guint destination_stride,
+					 gint *source, guint source_stride,
+					 guint count);
+void ags_audio_buffer_util_get_int_as_s16(AgsAudioBufferUtil *audio_buffer_util,
+					  gint16 *destination, guint destination_stride,
+					  gint *source, guint source_stride,
+					  guint count);
+void ags_audio_buffer_util_get_int_as_s32(AgsAudioBufferUtil *audio_buffer_util,
+					  gint32 *destination, guint destination_stride,
+					  gint *source, guint source_stride,
+					  guint count);
+void ags_audio_buffer_util_get_int_as_s64(AgsAudioBufferUtil *audio_buffer_util,
+					  gint64 *destination, guint destination_stride,
+					  gint *source, guint source_stride,
+					  guint count);
+void ags_audio_buffer_util_get_int_as_float(AgsAudioBufferUtil *audio_buffer_util,
+					    gfloat *destination, guint destination_stride,
+					    gint *source, guint source_stride,
+					    guint count);
+void ags_audio_buffer_util_get_int_as_double(AgsAudioBufferUtil *audio_buffer_util,
+					     gdouble *destination, guint destination_stride,
+					     gint *source, guint source_stride,
+					     guint count);
 
 void ags_audio_buffer_util_put_float_from_s8(AgsAudioBufferUtil *audio_buffer_util,
 					     gfloat *destination, guint destination_stride,
