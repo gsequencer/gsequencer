@@ -26,12 +26,12 @@ void ags_vector_256_manager_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_vector_256_manager
- * @short_description: Singleton pattern to organize volatile memory
+ * @short_description: Singleton pattern to organize prefaulted vector memory
  * @title: AgsVector256Manager
  * @section_id:
  * @include: ags/plugin/ags_vector_256_manager.h
  *
- * The #AgsVector256Manager contains volatile memory for vector types.
+ * The #AgsVector256Manager contains prefaulted memory for vector types.
  */
 
 static gpointer ags_vector_256_manager_parent_class = NULL;
@@ -434,6 +434,20 @@ ags_vector_256_manager_try_acquire(AgsVector256Manager *vector_256_manager,
   return(vector_arr);
 }
 
+/**
+ * ags_vector_256_manager_try_acquire_dual:
+ * @vector_256_manager: the #AgsVector256Manager
+ * @vector_type_a: the first vector type
+ * @vector_type_b: the second vector type
+ * @vector_arr_a: (transfer none) (out): the vector array or %NULL if none is available yet
+ * @vector_arr_b: (transfer none) (out): the vector array or %NULL if none is available yet
+ *
+ * Try acquire 2 vectors of vector type and lock it.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 7.0.0
+ */
 gboolean
 ags_vector_256_manager_try_acquire_dual(AgsVector256Manager *vector_256_manager,
 					AgsVector256Types vector_type_a, AgsVector256Types vector_type_b,
@@ -595,6 +609,22 @@ ags_vector_256_manager_try_acquire_dual(AgsVector256Manager *vector_256_manager,
   return(success);
 }
 
+/**
+ * ags_vector_256_manager_try_acquire_dual:
+ * @vector_256_manager: the #AgsVector256Manager
+ * @vector_type_a: the first vector type
+ * @vector_type_b: the second vector type
+ * @vector_type_c: the third vector type
+ * @vector_arr_a: (transfer none) (out): the vector array or %NULL if none is available yet
+ * @vector_arr_b: (transfer none) (out): the vector array or %NULL if none is available yet
+ * @vector_arr_c: (transfer none) (out): the vector array or %NULL if none is available yet
+ *
+ * Try acquire 3 vectors of vector type and lock it.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 7.0.0
+ */
 gboolean
 ags_vector_256_manager_try_acquire_triple(AgsVector256Manager *vector_256_manager,
 					  AgsVector256Types vector_type_a, AgsVector256Types vector_type_b, AgsVector256Types vector_type_c,
