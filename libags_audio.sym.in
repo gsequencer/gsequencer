@@ -807,6 +807,7 @@ ags_sf2_synth_util_get_type
 ags_sf2_synth_util_loop_mode_get_type
 ags_sf2_synth_util_alloc
 ags_sf2_synth_util_boxed_copy
+ags_sf2_synth_util_copy
 ags_sf2_synth_util_free
 ags_sf2_synth_util_get_sf2_file
 ags_sf2_synth_util_set_sf2_file
@@ -2994,7 +2995,6 @@ ags_midi_util_is_smtpe
 ags_midi_util_is_time_signature
 ags_midi_util_is_key_signature
 ags_midi_util_is_sequencer_meta_event
-ags_midi_util_is_sequencer_meta_event
 ags_midi_util_is_tempo
 ags_midi_util_is_misc_event
 ags_midi_util_is_undefined
@@ -3390,6 +3390,7 @@ ags_sfz_synth_util_get_type
 ags_sfz_synth_util_loop_mode_get_type
 ags_sfz_synth_util_alloc
 ags_sfz_synth_util_boxed_copy
+ags_sfz_synth_util_copy
 ags_sfz_synth_util_free
 ags_sfz_synth_util_get_sfz_file
 ags_sfz_synth_util_set_sfz_file
