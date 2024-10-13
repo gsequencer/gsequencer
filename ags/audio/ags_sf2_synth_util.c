@@ -53,7 +53,7 @@ ags_sf2_synth_util_get_type(void)
 
     ags_type_sf2_synth_util =
       g_boxed_type_register_static("AgsSF2SynthUtil",
-				   (GBoxedCopyFunc) ags_sf2_synth_util_boxed_copy,
+				   (GBoxedCopyFunc) ags_sf2_synth_util_copy,
 				   (GBoxedFreeFunc) ags_sf2_synth_util_free);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_sf2_synth_util);
@@ -213,6 +213,26 @@ ags_sf2_synth_util_alloc()
  */
 gpointer
 ags_sf2_synth_util_boxed_copy(AgsSF2SynthUtil *ptr)
+{
+  AgsSF2SynthUtil *new_ptr;
+  
+  new_ptr = ags_sf2_synth_util_copy(ptr);
+
+  return(new_ptr);
+}
+
+/**
+ * ags_sf2_synth_util_copy:
+ * @ptr: the #AgsSF2SynthUtil-struct
+ * 
+ * Copy #AgsSF2SynthUtil-struct.
+ * 
+ * Returns: the newly allocated #AgsSF2SynthUtil-struct
+ * 
+ * Since: 6.16.23
+ */
+gpointer
+ags_sf2_synth_util_copy(AgsSF2SynthUtil *ptr)
 {
   AgsSF2SynthUtil *new_ptr;
   

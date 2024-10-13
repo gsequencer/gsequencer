@@ -1,3 +1,14 @@
+ags (6.16.23)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* deprecated ags_fx_notation_audio_processor_record() because of MIDI version 2 transition
+	* deprecated ags_audio_buffer_util_get_copy_mode() because of future naming conflict with getter of struct field
+	* deprecated ags_envelope_*_wah_wah_*() because not used
+	* deprecated ags_sf2_synth_util_boxed_copy() for uniform naming schema
+	* deprecated ags_sfz_synth_util_boxed_copy() for uniform naming schema
+	* deprecated ags_time_stretch_util_get_buffer_size() for uniform naming schema
+	* deprecated ags_time_stretch_util_set_buffer_size() for uniform naming schema
+
 ags (6.16.22)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

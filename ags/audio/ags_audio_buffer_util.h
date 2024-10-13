@@ -343,6 +343,8 @@ typedef gfloat ags_v8float __attribute__ ((vector_size(8 * sizeof(gfloat))));
 typedef gdouble ags_v8double __attribute__ ((vector_size(8 * sizeof(gdouble))));
 
 AgsAudioBufferUtilFormat ags_audio_buffer_util_format_from_soundcard(AgsSoundcardFormat soundcard_format);
+
+G_DEPRECATED
 AgsAudioBufferUtilCopyMode ags_audio_buffer_util_get_copy_mode(AgsAudioBufferUtilFormat destination_format,
 							       AgsAudioBufferUtilFormat source_format);
 

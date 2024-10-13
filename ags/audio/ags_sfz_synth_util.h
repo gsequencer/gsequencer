@@ -118,7 +118,9 @@ GType ags_sfz_synth_util_loop_mode_get_type();
 
 AgsSFZSynthUtil* ags_sfz_synth_util_alloc();
 
+G_DEPRECATED_FOR(ags_sfz_synth_util_copy)
 gpointer ags_sfz_synth_util_boxed_copy(AgsSFZSynthUtil *ptr);
+gpointer ags_sfz_synth_util_copy(AgsSFZSynthUtil *ptr);
 void ags_sfz_synth_util_free(AgsSFZSynthUtil *ptr);
 
 AgsAudioContainer* ags_sfz_synth_util_get_sfz_file(AgsSFZSynthUtil *sfz_synth_util);
