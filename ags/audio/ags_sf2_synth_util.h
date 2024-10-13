@@ -140,7 +140,10 @@ GType ags_sf2_synth_util_loop_mode_get_type();
 
 AgsSF2SynthUtil* ags_sf2_synth_util_alloc();
 
+G_DEPRECATED_FOR(ags_sf2_synth_util_copy)
 gpointer ags_sf2_synth_util_boxed_copy(AgsSF2SynthUtil *ptr);
+
+gpointer ags_sf2_synth_util_copy(AgsSF2SynthUtil *ptr);
 void ags_sf2_synth_util_free(AgsSF2SynthUtil *ptr);
 
 AgsAudioContainer* ags_sf2_synth_util_get_sf2_file(AgsSF2SynthUtil *sf2_synth_util);

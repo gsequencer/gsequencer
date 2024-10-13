@@ -88,7 +88,9 @@ guint ags_time_stretch_util_get_destination_buffer_length(AgsTimeStretchUtil *ti
 void ags_time_stretch_util_set_destination_buffer_length(AgsTimeStretchUtil *time_stretch_util,
 							 guint destination_buffer_length);
 
+G_DEPRECATED
 guint ags_time_stretch_util_get_buffer_size(AgsTimeStretchUtil *time_stretch_util);
+G_DEPRECATED
 void ags_time_stretch_util_set_buffer_size(AgsTimeStretchUtil *time_stretch_util,
 					   guint buffer_size);
 
