@@ -1261,10 +1261,10 @@ ags_core_audio_port_hw_output_callback(AudioObjectID device,
 			      &buffer_size,
 			      &format);
   
-    copy_mode = ags_audio_buffer_util_get_copy_mode(core_audio_port->audio_buffer_util,
-						    AGS_AUDIO_BUFFER_UTIL_FLOAT,
-						    ags_audio_buffer_util_format_from_soundcard(core_audio_port->audio_buffer_util,
-												format));
+    copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(core_audio_port->audio_buffer_util,
+								AGS_AUDIO_BUFFER_UTIL_FLOAT,
+								ags_audio_buffer_util_format_from_soundcard(core_audio_port->audio_buffer_util,
+													    format));
   
     buffer = ags_soundcard_get_buffer(AGS_SOUNDCARD(soundcard));
 

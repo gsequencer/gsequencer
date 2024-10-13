@@ -29,7 +29,11 @@
 #if defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
 #include <Accelerate/Accelerate.h>
 
-#define LARGE_VECTOR 1
+#define AGS_VECTORIZED_BUILTIN_FUNCTIONS 1
+#define AGS_VECTOR_256_FUNCTIONS
+
+// #define LARGE_VECTOR 1
+// #define AGS_VDSP_256_FUNCTIONS
 #endif
 
 #include <stdlib.h>
