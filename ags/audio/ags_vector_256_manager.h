@@ -142,6 +142,9 @@ AgsVectorArr* ags_vector_256_manager_try_acquire(AgsVector256Manager *vector_256
 gboolean ags_vector_256_manager_try_acquire_dual(AgsVector256Manager *vector_256_manager,
 						 AgsVector256Types vector_type_a, AgsVector256Types vector_type_b,
 						 AgsVectorArr **vector_arr_a, AgsVectorArr **vector_arr_b);
+gboolean ags_vector_256_manager_try_acquire_triple(AgsVector256Manager *vector_256_manager,
+						   AgsVector256Types vector_type_a, AgsVector256Types vector_type_b, AgsVector256Types vector_type_c,
+						   AgsVectorArr **vector_arr_a, AgsVectorArr **vector_arr_b, AgsVectorArr **vector_arr_c);
 
 void ags_vector_256_manager_release(AgsVector256Manager *vector_256_manager,
 				    AgsVectorArr *vector_arr);

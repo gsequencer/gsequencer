@@ -48,7 +48,7 @@ ags (7.0.0)
 	* implemented ags_sequencer_get_midi_version()
 	* optimized ags/audio/ags_audio_buffer_util.c
 	* optimized ags/audio/ags_volume_util.c
-	* TODO:JK: optimized ags/audio/ags_envelope_util.c
+	* optimized ags/audio/ags_envelope_util.c
 	* refactored envelope to support LFO
 	* refactored ags/audio/ags_fourier_transform_util.h
 	* refactored ags/audio/ags_audio_buffer_util.h

@@ -127,6 +127,8 @@ struct _AgsSequencerInterface
   guint (*get_note_offset)(AgsSequencer *sequencer);
 
   AgsSequencerMidiVersion (*get_midi_version)(AgsSequencer *sequencer);  
+  void (*set_midi_version)(AgsSequencer *sequencer,
+			   AgsSequencerMidiVersion midi_version);  
 };
 
 GType ags_sequencer_get_type();

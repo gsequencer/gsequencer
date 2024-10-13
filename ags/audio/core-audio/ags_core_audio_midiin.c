@@ -417,6 +417,7 @@ ags_core_audio_midiin_sequencer_interface_init(AgsSequencerInterface *sequencer)
   sequencer->get_note_offset = ags_core_audio_midiin_get_note_offset;
 
   sequencer->get_midi_version = ags_core_audio_midiin_get_midi_version;
+  sequencer->set_midi_version = NULL;
 }
 
 void
