@@ -2078,7 +2078,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 						     continue;
 						   }
 
-						   if(ceil((core_audio_midiin->app_buffer_size[nth_buffer] + (4 * length)) / 4096.0) > ceil(core_audio_midiin->app_buffer_size[nth_buffer] / 4096.0)){
+						   if(ceil((core_audio_midiin->app_buffer_size[nth_buffer] + (4 * length)) / 4096.0) > core_audio_midiin->allocated_app_buffer_size[nth_buffer]){
 						     if(core_audio_midiin->app_buffer[nth_buffer] == NULL){
 						       core_audio_midiin->app_buffer[nth_buffer] = malloc(4096 * sizeof(char));
 
