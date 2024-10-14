@@ -461,6 +461,11 @@ ags_core_audio_midiin_init(AgsCoreAudioMidiin *core_audio_midiin)
   core_audio_midiin->app_buffer[2] = NULL;
   core_audio_midiin->app_buffer[3] = NULL;
 
+  core_audio_midiin->allocated_app_buffer_size[0] = 0;
+  core_audio_midiin->allocated_app_buffer_size[1] = 0;
+  core_audio_midiin->allocated_app_buffer_size[2] = 0;
+  core_audio_midiin->allocated_app_buffer_size[3] = 0;
+
   core_audio_midiin->app_buffer_size[0] = 0;
   core_audio_midiin->app_buffer_size[1] = 0;
   core_audio_midiin->app_buffer_size[2] = 0;
@@ -1557,21 +1562,33 @@ ags_core_audio_midiin_port_free(AgsSequencer *sequencer)
 
   if(core_audio_midiin->app_buffer[1] != NULL){
     g_free(core_audio_midiin->app_buffer[1]);
+
+    core_audio_midiin->app_buffer[1] = NULL;
+    
     core_audio_midiin->app_buffer_size[1] = 0;
   }
 
   if(core_audio_midiin->app_buffer[2] != NULL){
     g_free(core_audio_midiin->app_buffer[2]);
+
+    core_audio_midiin->app_buffer[2] = NULL;
+    
     core_audio_midiin->app_buffer_size[2] = 0;
   }
 
   if(core_audio_midiin->app_buffer[3] != NULL){
     g_free(core_audio_midiin->app_buffer[3]);
+
+    core_audio_midiin->app_buffer[3] = NULL;
+    
     core_audio_midiin->app_buffer_size[3] = 0;
   }
 
   if(core_audio_midiin->app_buffer[0] != NULL){
     g_free(core_audio_midiin->app_buffer[0]);
+
+    core_audio_midiin->app_buffer[0] = NULL;
+    
     core_audio_midiin->app_buffer_size[0] = 0;
   }
 

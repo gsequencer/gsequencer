@@ -443,6 +443,7 @@ ags_oss_midiin_init(AgsOssMidiin *oss_midiin)
   for(i = 0; i < AGS_OSS_MIDIIN_DEFAULT_APP_BUFFER_SIZE; i++){
     oss_midiin->app_buffer[i] = NULL;
 
+    oss_midiin->allocated_app_buffer_size[i] = 0;
     oss_midiin->app_buffer_size[i] = 0;
   }
   
@@ -453,6 +454,7 @@ ags_oss_midiin_init(AgsOssMidiin *oss_midiin)
   for(i = 0; i < AGS_OSS_MIDIIN_DEFAULT_BACKEND_BUFFER_SIZE; i++){
     oss_midiin->backend_buffer[i] = NULL;
 
+    oss_midiin->allocated_backend_buffer_size[i] = 0;
     oss_midiin->backend_buffer_size[i] = 0;
   }
 
@@ -1345,9 +1347,13 @@ ags_oss_midiin_device_record(AgsSequencer *sequencer,
 	 ceil((backend_buffer_size + num_read) / AGS_OSS_MIDIIN_DEFAULT_BUFFER_SIZE) > ceil(backend_buffer_size / AGS_OSS_MIDIIN_DEFAULT_BUFFER_SIZE)){
 	if(backend_buffer[backend_buffer_mode] == NULL){
 	  backend_buffer[backend_buffer_mode] = (char *) g_malloc(AGS_OSS_MIDIIN_DEFAULT_BUFFER_SIZE * sizeof(char));
+
+	  oss_midiin->allocated_backend_buffer_size[backend_buffer_mode] = AGS_OSS_MIDIIN_DEFAULT_BUFFER_SIZE;
 	}else{
 	  backend_buffer[backend_buffer_mode] = (char *) g_realloc(backend_buffer[backend_buffer_mode],
 								   (AGS_OSS_MIDIIN_DEFAULT_BUFFER_SIZE * ceil(backend_buffer_size / AGS_OSS_MIDIIN_DEFAULT_BUFFER_SIZE) + AGS_OSS_MIDIIN_DEFAULT_BUFFER_SIZE) * sizeof(char));
+
+	  oss_midiin->allocated_backend_buffer_size[backend_buffer_mode] = (AGS_OSS_MIDIIN_DEFAULT_BUFFER_SIZE * ceil(backend_buffer_size / AGS_OSS_MIDIIN_DEFAULT_BUFFER_SIZE) + AGS_OSS_MIDIIN_DEFAULT_BUFFER_SIZE);
 	}
       }
 
@@ -1376,6 +1382,8 @@ ags_oss_midiin_device_record(AgsSequencer *sequencer,
   /* fill buffer */
   if(backend_buffer_size > 0){
     oss_midiin->app_buffer[app_buffer_mode] = (char *) g_malloc(backend_buffer_size * sizeof(char));
+
+    oss_midiin->allocated_app_buffer_size[app_buffer_mode] = backend_buffer_size;
 	
     memcpy(oss_midiin->app_buffer[app_buffer_mode], backend_buffer[backend_buffer_mode], backend_buffer_size * sizeof(char));
   }

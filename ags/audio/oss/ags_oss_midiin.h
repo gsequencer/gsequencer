@@ -158,11 +158,13 @@ struct _AgsOssMidiin
   GRecMutex **app_buffer_mutex;
 
   char **app_buffer;
+  guint allocated_app_buffer_size[AGS_OSS_MIDIIN_DEFAULT_APP_BUFFER_SIZE];
   guint app_buffer_size[AGS_OSS_MIDIIN_DEFAULT_APP_BUFFER_SIZE];
 
   AgsOssMidiinBackendBufferMode backend_buffer_mode;
   
   char **backend_buffer;
+  guint allocated_backend_buffer_size[AGS_OSS_MIDIIN_DEFAULT_BACKEND_BUFFER_SIZE];
   guint backend_buffer_size[AGS_OSS_MIDIIN_DEFAULT_BACKEND_BUFFER_SIZE];
 
   double bpm; // beats per minute

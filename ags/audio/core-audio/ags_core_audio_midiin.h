@@ -127,6 +127,7 @@ struct _AgsCoreAudioMidiin
 
   GRecMutex **app_buffer_mutex;
   char **app_buffer;
+  guint allocated_app_buffer_size[4];
   guint app_buffer_size[4];
 
   double bpm; // beats per minute

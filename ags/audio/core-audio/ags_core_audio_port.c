@@ -2078,12 +2078,16 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 						     continue;
 						   }
 
-						   if(ceil((core_audio_midiin->app_buffer_size[nth_buffer] + length) / 4096.0) > ceil(core_audio_midiin->app_buffer_size[nth_buffer] / 4096.0)){
+						   if(ceil((core_audio_midiin->app_buffer_size[nth_buffer] + (4 * length)) / 4096.0) > ceil(core_audio_midiin->app_buffer_size[nth_buffer] / 4096.0)){
 						     if(core_audio_midiin->app_buffer[nth_buffer] == NULL){
 						       core_audio_midiin->app_buffer[nth_buffer] = malloc(4096 * sizeof(char));
+
+						       core_audio_midiin->allocated_app_buffer_size[nth_buffer] = 4096;
 						     }else{
 						       core_audio_midiin->app_buffer[nth_buffer] = realloc(core_audio_midiin->app_buffer[nth_buffer],
 													   (ceil(core_audio_midiin->app_buffer_size[nth_buffer] / 4096.0) * 4096 + 4096) * sizeof(char));
+
+						       core_audio_midiin->allocated_app_buffer_size[nth_buffer] = (ceil(core_audio_midiin->app_buffer_size[nth_buffer] / 4096.0) * 4096 + 4096);
 						     }
 						   }
 

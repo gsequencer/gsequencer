@@ -461,6 +461,11 @@ ags_jack_midiin_init(AgsJackMidiin *jack_midiin)
   jack_midiin->app_buffer[2] = NULL;
   jack_midiin->app_buffer[3] = NULL;
 
+  jack_midiin->allocated_app_buffer_size[0] = 0;
+  jack_midiin->allocated_app_buffer_size[1] = 0;
+  jack_midiin->allocated_app_buffer_size[2] = 0;
+  jack_midiin->allocated_app_buffer_size[3] = 0;
+
   jack_midiin->app_buffer_size[0] = 0;
   jack_midiin->app_buffer_size[1] = 0;
   jack_midiin->app_buffer_size[2] = 0;
@@ -1542,21 +1547,37 @@ ags_jack_midiin_port_free(AgsSequencer *sequencer)
 
   if(jack_midiin->app_buffer[1] != NULL){
     g_free(jack_midiin->app_buffer[1]);
+
+    jack_midiin->app_buffer[1] = NULL;
+    
+    jack_midiin->allocated_app_buffer_size[1] = 0;
     jack_midiin->app_buffer_size[1] = 0;
   }
 
   if(jack_midiin->app_buffer[2] != NULL){
     g_free(jack_midiin->app_buffer[2]);
+
+    jack_midiin->app_buffer[2] = NULL;
+
+    jack_midiin->allocated_app_buffer_size[2] = 0;
     jack_midiin->app_buffer_size[2] = 0;
   }
 
   if(jack_midiin->app_buffer[3] != NULL){
     g_free(jack_midiin->app_buffer[3]);
+
+    jack_midiin->app_buffer[3] = NULL;
+
+    jack_midiin->allocated_app_buffer_size[3] = 0;
     jack_midiin->app_buffer_size[3] = 0;
   }
 
   if(jack_midiin->app_buffer[0] != NULL){
     g_free(jack_midiin->app_buffer[0]);
+
+    jack_midiin->app_buffer[0] = NULL;
+
+    jack_midiin->allocated_app_buffer_size[0] = 0;
     jack_midiin->app_buffer_size[0] = 0;
   }
 
