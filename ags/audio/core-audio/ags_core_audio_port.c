@@ -2093,7 +2093,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 
 						   memcpy(&(core_audio_midiin->app_buffer[nth_buffer][core_audio_midiin->app_buffer_size[nth_buffer]]),
 							  event_packet->words,
-							  length);
+							  4 * length);
 						   core_audio_midiin->app_buffer_size[nth_buffer] += (4 * length);
 
 						   event_packet = MIDIEventPacketNext(event_packet);
