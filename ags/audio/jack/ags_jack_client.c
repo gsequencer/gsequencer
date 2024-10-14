@@ -1617,7 +1617,8 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 		  nth_buffer = 0;
 		}
 
-		if(ceil((jack_midiin->app_buffer_size[nth_buffer] + in_event.size) / 4096.0) > ceil(jack_midiin->app_buffer_size[nth_buffer] / 4096.0)){
+		if(jack_midiin->app_buffer[nth_buffer] == NULL ||
+		   ceil((jack_midiin->app_buffer_size[nth_buffer] + in_event.size) / 4096.0) > ceil(jack_midiin->app_buffer_size[nth_buffer] / 4096.0)){
 		  if(jack_midiin->app_buffer[nth_buffer] == NULL){
 		    jack_midiin->app_buffer[nth_buffer] = g_malloc(4096 * sizeof(char));
 

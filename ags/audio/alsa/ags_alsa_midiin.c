@@ -1282,7 +1282,8 @@ ags_alsa_midiin_device_record(AgsSequencer *sequencer,
     }
 
     if(status >= 0){
-      if(backend_buffer_size % AGS_ALSA_MIDIIN_DEFAULT_BUFFER_SIZE == 0){
+      if(backend_buffer[backend_buffer_mode] == NULL ||
+	 backend_buffer_size % AGS_ALSA_MIDIIN_DEFAULT_BUFFER_SIZE == 0){
 	if(backend_buffer[backend_buffer_mode] == NULL){
 	  backend_buffer[backend_buffer_mode] = (char *) g_malloc(AGS_ALSA_MIDIIN_DEFAULT_BUFFER_SIZE * sizeof(char));
 
