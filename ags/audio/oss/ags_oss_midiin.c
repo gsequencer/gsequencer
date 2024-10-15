@@ -1465,18 +1465,10 @@ ags_oss_midiin_device_free(AgsSequencer *sequencer)
   oss_midiin->backend_buffer_mode = AGS_OSS_MIDIIN_BACKEND_BUFFER_0;
 
   for(i = 0; i < AGS_OSS_MIDIIN_DEFAULT_APP_BUFFER_SIZE; i++){
-    g_free(oss_midiin->app_buffer[i]);
-
-    oss_midiin->app_buffer[i] = NULL;
-    
     oss_midiin->app_buffer_size[i] = 0;
   }
 
   for(i = 0; i < AGS_OSS_MIDIIN_DEFAULT_BACKEND_BUFFER_SIZE; i++){
-    g_free(oss_midiin->backend_buffer[i]);
-
-    oss_midiin->backend_buffer[i] = NULL;
-
     oss_midiin->backend_buffer_size[i] = 0;
   }
 

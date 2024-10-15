@@ -1616,27 +1616,25 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 		}else if(jack_midiin->app_buffer_mode == AGS_JACK_MIDIIN_APP_BUFFER_3){
 		  nth_buffer = 0;
 		}
-
-		if(jack_midiin->app_buffer[nth_buffer] == NULL ||
-		   ceil((jack_midiin->app_buffer_size[nth_buffer] + in_event.size) / 4096.0) > ceil(jack_midiin->app_buffer_size[nth_buffer] / 4096.0)){
+		
+		if(jack_midiin->app_buffer_size[nth_buffer] + in_event.size >= jack_midiin->allocated_app_buffer_size[nth_buffer]){
 		  if(jack_midiin->app_buffer[nth_buffer] == NULL){
-		    jack_midiin->app_buffer[nth_buffer] = g_malloc(4096 * sizeof(char));
-
-		    jack_midiin->allocated_app_buffer_size[nth_buffer] = 4096;
+		    jack_midiin->app_buffer[nth_buffer] = (char *) g_malloc(AGS_JACK_MIDIIN_DEFAULT_BUFFER_SIZE * sizeof(char));
 		  }else{
-		    jack_midiin->app_buffer[nth_buffer] = g_realloc(jack_midiin->app_buffer[nth_buffer],
-								    (ceil(jack_midiin->app_buffer_size[nth_buffer] / 4096.0) * 4096 + 4096) * sizeof(char));
-
-		    jack_midiin->allocated_app_buffer_size[nth_buffer] = ceil(jack_midiin->app_buffer_size[nth_buffer] / 4096.0) * 4096 + 4096;
+		    jack_midiin->app_buffer[nth_buffer] = (char *) g_realloc(jack_midiin->app_buffer[nth_buffer],
+									     (jack_midiin->allocated_app_buffer_size[nth_buffer] + AGS_JACK_MIDIIN_DEFAULT_BUFFER_SIZE) * sizeof(char));
 		  }
+		  
+		  memset(jack_midiin->app_buffer[nth_buffer] + jack_midiin->allocated_app_buffer_size[nth_buffer], 0, AGS_JACK_MIDIIN_DEFAULT_BUFFER_SIZE * sizeof(char));
+
+		  jack_midiin->allocated_app_buffer_size[nth_buffer] = 
+		    jack_midiin->allocated_app_buffer_size[nth_buffer] = jack_midiin->allocated_app_buffer_size[nth_buffer] + AGS_JACK_MIDIIN_DEFAULT_BUFFER_SIZE;
 		}
 
-		memcpy(&(jack_midiin->app_buffer[nth_buffer][jack_midiin->app_buffer_size[nth_buffer]]),
-		       in_event.buffer,
-		       in_event.size);
-		jack_midiin->app_buffer_size[nth_buffer] += in_event.size;
+		memcpy(jack_midiin->app_buffer[nth_buffer] + jack_midiin->app_buffer_size[nth_buffer], in_event.buffer, in_event.size);
+		
+		jack_midiin->app_buffer_size[nth_buffer] = jack_midiin->app_buffer_size[nth_buffer] + in_event.size;
 	      }
-
 	    }	  
 
 	    jack_midi_clear_buffer(port_buf);

@@ -446,30 +446,22 @@ ags_jack_midiin_init(AgsJackMidiin *jack_midiin)
   jack_midiin->app_buffer_mode = AGS_JACK_MIDIIN_APP_BUFFER_0;
   
   /* buffer */
-  jack_midiin->app_buffer_mutex = (GRecMutex **) g_malloc(4 * sizeof(GRecMutex *));
+  jack_midiin->app_buffer_mutex = (GRecMutex **) g_malloc(AGS_JACK_MIDIIN_DEFAULT_APP_BUFFER_SIZE * sizeof(GRecMutex *));
 
-  for(i = 0; i < 4; i++){
+  for(i = 0; i < AGS_JACK_MIDIIN_DEFAULT_APP_BUFFER_SIZE; i++){
     jack_midiin->app_buffer_mutex[i] = (GRecMutex *) g_malloc(sizeof(GRecMutex));
 
     g_rec_mutex_init(jack_midiin->app_buffer_mutex[i]);
   }
 
-  jack_midiin->app_buffer = (char **) g_malloc(4 * sizeof(char *));
+  jack_midiin->app_buffer = (char **) g_malloc(AGS_JACK_MIDIIN_DEFAULT_APP_BUFFER_SIZE * sizeof(char *));
 
-  jack_midiin->app_buffer[0] = NULL;
-  jack_midiin->app_buffer[1] = NULL;
-  jack_midiin->app_buffer[2] = NULL;
-  jack_midiin->app_buffer[3] = NULL;
+  for(i = 0; i < AGS_JACK_MIDIIN_DEFAULT_APP_BUFFER_SIZE; i++){
+    jack_midiin->app_buffer[i] = NULL;
 
-  jack_midiin->allocated_app_buffer_size[0] = 0;
-  jack_midiin->allocated_app_buffer_size[1] = 0;
-  jack_midiin->allocated_app_buffer_size[2] = 0;
-  jack_midiin->allocated_app_buffer_size[3] = 0;
-
-  jack_midiin->app_buffer_size[0] = 0;
-  jack_midiin->app_buffer_size[1] = 0;
-  jack_midiin->app_buffer_size[2] = 0;
-  jack_midiin->app_buffer_size[3] = 0;
+    jack_midiin->allocated_app_buffer_size[i] = 0;
+    jack_midiin->app_buffer_size[i] = 0;
+  }
 
   /* bpm */
   jack_midiin->bpm = AGS_SEQUENCER_DEFAULT_BPM;
@@ -2063,41 +2055,21 @@ ags_jack_midiin_switch_buffer_flag(AgsJackMidiin *jack_midiin)
     jack_midiin->app_buffer_mode = AGS_JACK_MIDIIN_APP_BUFFER_1;
 
     /* clear buffer */
-    if(jack_midiin->app_buffer[3] != NULL){
-      g_free(jack_midiin->app_buffer[3]);
-    }
-
-    jack_midiin->app_buffer[3] = NULL;
     jack_midiin->app_buffer_size[3] = 0;
   }else if(jack_midiin->app_buffer_mode == AGS_JACK_MIDIIN_APP_BUFFER_1){
     jack_midiin->app_buffer_mode = AGS_JACK_MIDIIN_APP_BUFFER_2;
 
     /* clear buffer */
-    if(jack_midiin->app_buffer[0] != NULL){
-      g_free(jack_midiin->app_buffer[0]);
-    }
-
-    jack_midiin->app_buffer[0] = NULL;
     jack_midiin->app_buffer_size[0] = 0;
   }else if(jack_midiin->app_buffer_mode == AGS_JACK_MIDIIN_APP_BUFFER_2){
     jack_midiin->app_buffer_mode = AGS_JACK_MIDIIN_APP_BUFFER_3;
 
     /* clear buffer */
-    if(jack_midiin->app_buffer[1] != NULL){
-      g_free(jack_midiin->app_buffer[1]);
-    }
-
-    jack_midiin->app_buffer[1] = NULL;
     jack_midiin->app_buffer_size[1] = 0;
   }else if(jack_midiin->app_buffer_mode == AGS_JACK_MIDIIN_APP_BUFFER_3){
     jack_midiin->app_buffer_mode = AGS_JACK_MIDIIN_APP_BUFFER_0;
 
     /* clear buffer */
-    if(jack_midiin->app_buffer[2] != NULL){
-      g_free(jack_midiin->app_buffer[2]);
-    }
-
-    jack_midiin->app_buffer[2] = NULL;
     jack_midiin->app_buffer_size[2] = 0;
   }
 

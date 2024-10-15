@@ -1409,18 +1409,10 @@ ags_alsa_midiin_device_free(AgsSequencer *sequencer)
   alsa_midiin->backend_buffer_mode = AGS_ALSA_MIDIIN_BACKEND_BUFFER_0;
 
   for(i = 0; i < AGS_ALSA_MIDIIN_DEFAULT_APP_BUFFER_SIZE; i++){
-    g_free(alsa_midiin->app_buffer[i]);
-
-    alsa_midiin->app_buffer[i] = NULL;
-    
     alsa_midiin->app_buffer_size[i] = 0;
   }
 
   for(i = 0; i < AGS_ALSA_MIDIIN_DEFAULT_BACKEND_BUFFER_SIZE; i++){
-    g_free(alsa_midiin->backend_buffer[i]);
-
-    alsa_midiin->backend_buffer[i] = NULL;
-
     alsa_midiin->backend_buffer_size[i] = 0;
   }
 
