@@ -652,7 +652,7 @@ ags_vector_256_manager_try_acquire_triple(AgsVector256Manager *vector_256_manage
   
   g_rec_mutex_lock(mutex);
 
-  for(i = 0; i < 2; i++){
+  for(i = 0; i < 3; i++){
     AgsVectorArr *vector_arr;
     
     GList *vector;
