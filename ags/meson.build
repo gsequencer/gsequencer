@@ -228,7 +228,7 @@ libags = library('ags',
   c_args: compiler_flags,
   include_directories: [includes],
   dependencies: libags_dependencies,
-  version: '6.0.0',
+  version: '7.0.0',
   install: true,
 )
 
@@ -262,7 +262,7 @@ libags_thread = library('ags_thread',
   link_with: [
     libags,
   ],
-  version: '6.0.0',
+  version: '7.0.0',
   install: true,
 )
 
@@ -306,7 +306,7 @@ libags_server = library('libags_server',
     libags,
     libags_thread,
   ],
-  version: '6.0.0',
+  version: '7.0.0',
   install: true,
 )
 
@@ -767,7 +767,7 @@ libags_audio = library('ags_audio',
     libags_thread,
     libags_server,
   ],
-  version: '6.0.0',
+  version: '7.0.0',
   install: true,
 )
 
@@ -847,7 +847,7 @@ if get_option('vst3')
     cpp_args: cxx_compiler_flags,
     dependencies: libags_vst_dependencies,
     include_directories: [includes],
-    version: '6.0.0',
+    version: '7.0.0',
     install: true,
   )
 
@@ -890,7 +890,7 @@ libags_gui = library('ags_gui',
   c_args: compiler_flags,
   include_directories: [includes],
   dependencies: libags_gui_dependencies,
-  version: '6.0.0',
+  version: '7.0.0',
   install: true,
 )
 

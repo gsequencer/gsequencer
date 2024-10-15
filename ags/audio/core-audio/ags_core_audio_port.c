@@ -1261,10 +1261,10 @@ ags_core_audio_port_hw_output_callback(AudioObjectID device,
 			      &buffer_size,
 			      &format);
   
-    copy_mode = ags_audio_buffer_util_get_copy_mode(core_audio_port->audio_buffer_util,
-						    AGS_AUDIO_BUFFER_UTIL_FLOAT,
-						    ags_audio_buffer_util_format_from_soundcard(core_audio_port->audio_buffer_util,
-												format));
+    copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(core_audio_port->audio_buffer_util,
+								AGS_AUDIO_BUFFER_UTIL_FLOAT,
+								ags_audio_buffer_util_format_from_soundcard(core_audio_port->audio_buffer_util,
+													    format));
   
     buffer = ags_soundcard_get_buffer(AGS_SOUNDCARD(soundcard));
 
@@ -2054,6 +2054,8 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 						 }
 
 						 /* get buffer */  
+						 nth_buffer = 0;
+						 
 						 if((AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_0 & (core_audio_midiin->flags)) != 0){
 						   nth_buffer = 1;
 						 }else if((AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_1 & (core_audio_midiin->flags)) != 0){
@@ -2078,19 +2080,23 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 						     continue;
 						   }
 
-						   if(ceil((core_audio_midiin->app_buffer_size[nth_buffer] + length) / 4096.0) > ceil(core_audio_midiin->app_buffer_size[nth_buffer] / 4096.0)){
+						   if(core_audio_midiin->app_buffer_size[nth_buffer] + (4 * length) >= core_audio_midiin->allocated_app_buffer_size[nth_buffer]){
 						     if(core_audio_midiin->app_buffer[nth_buffer] == NULL){
-						       core_audio_midiin->app_buffer[nth_buffer] = malloc(4096 * sizeof(char));
+						       core_audio_midiin->app_buffer[nth_buffer] = (char *) g_malloc(AGS_CORE_AUDIO_MIDIIN_DEFAULT_BUFFER_SIZE * sizeof(char));
 						     }else{
-						       core_audio_midiin->app_buffer[nth_buffer] = realloc(core_audio_midiin->app_buffer[nth_buffer],
-													   (ceil(core_audio_midiin->app_buffer_size[nth_buffer] / 4096.0) * 4096 + 4096) * sizeof(char));
+						       core_audio_midiin->app_buffer[nth_buffer] = (char *) g_realloc(core_audio_midiin->app_buffer[nth_buffer],
+														      (core_audio_midiin->allocated_app_buffer_size[nth_buffer] + AGS_CORE_AUDIO_MIDIIN_DEFAULT_BUFFER_SIZE) * sizeof(char));
 						     }
+		  
+						     memset(core_audio_midiin->app_buffer[nth_buffer] + core_audio_midiin->allocated_app_buffer_size[nth_buffer], 0, AGS_CORE_AUDIO_MIDIIN_DEFAULT_BUFFER_SIZE * sizeof(char));
+
+						     core_audio_midiin->allocated_app_buffer_size[nth_buffer] = 
+						       core_audio_midiin->allocated_app_buffer_size[nth_buffer] = core_audio_midiin->allocated_app_buffer_size[nth_buffer] + AGS_CORE_AUDIO_MIDIIN_DEFAULT_BUFFER_SIZE;
 						   }
 
-						   memcpy(&(core_audio_midiin->app_buffer[nth_buffer][core_audio_midiin->app_buffer_size[nth_buffer]]),
-							  event_packet->words,
-							  length);
-						   core_audio_midiin->app_buffer_size[nth_buffer] += length;
+						   memcpy(core_audio_midiin->app_buffer[nth_buffer] + core_audio_midiin->app_buffer_size[nth_buffer], event_packet->words, (4 * length));
+		
+						   core_audio_midiin->app_buffer_size[nth_buffer] = core_audio_midiin->app_buffer_size[nth_buffer] + (4 * length);
 
 						   event_packet = MIDIEventPacketNext(event_packet);
 						 }

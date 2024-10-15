@@ -48,7 +48,7 @@ ags (7.0.0)
 	* implemented ags_sequencer_get_midi_version()
 	* optimized ags/audio/ags_audio_buffer_util.c
 	* optimized ags/audio/ags_volume_util.c
-	* TODO:JK: optimized ags/audio/ags_envelope_util.c
+	* optimized ags/audio/ags_envelope_util.c
 	* refactored envelope to support LFO
 	* refactored ags/audio/ags_fourier_transform_util.h
 	* refactored ags/audio/ags_audio_buffer_util.h
@@ -68,6 +68,17 @@ ags (7.0.0)
 	* fixed ags_midi_smf_util_get_pitch_bend() prototype declaration
 	* fixed ags_midi_builder_append_change_pitch_bend() prototype declaration
 	* fixed ags_midi_parser_change_pitch_bend() parse transmitter attribute as 14 bit value
+
+ags (6.16.23)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* deprecated ags_fx_notation_audio_processor_record() because of MIDI version 2 transition
+	* deprecated ags_audio_buffer_util_get_copy_mode() because of future naming conflict with getter of struct field
+	* deprecated ags_envelope_*_wah_wah_*() because not used
+	* deprecated ags_sf2_synth_util_boxed_copy() for uniform naming schema
+	* deprecated ags_sfz_synth_util_boxed_copy() for uniform naming schema
+	* deprecated ags_time_stretch_util_get_buffer_size() for uniform naming schema
+	* deprecated ags_time_stretch_util_set_buffer_size() for uniform naming schema
 
 ags (6.16.22)
 

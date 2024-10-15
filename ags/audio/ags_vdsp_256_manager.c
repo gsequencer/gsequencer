@@ -91,6 +91,7 @@ ags_vdsp_256_manager_init(AgsVDSP256Manager *vdsp_256_manager)
 
   vdsp_256_manager->vdsp_count = AGS_VDSP_256_MANAGER_DEFAULT_VDSP_COUNT;
 
+  vdsp_256_manager->int_arr = NULL;
   vdsp_256_manager->float_arr = NULL;
   vdsp_256_manager->double_arr = NULL;
 }
@@ -140,6 +141,11 @@ ags_vdsp_arr_alloc(AgsVDSP256Types vdsp_type)
 		   FALSE);
 
   switch(vdsp_type){
+  case AGS_VDSP_256_INT:
+    {
+      vdsp_arr->vdsp.vec_int = (AgsVDSPMemInt *) malloc(sizeof(AgsVDSPMemInt));
+    }
+    break;
   case AGS_VDSP_256_FLOAT:
     {
       vdsp_arr->vdsp.vec_float = (AgsVDSPMemFloat *) malloc(sizeof(AgsVDSPMemFloat));
@@ -173,6 +179,11 @@ ags_vdsp_arr_free(AgsVDSPArr *vdsp_arr)
   g_return_if_fail(vdsp_arr);
   
   switch(vdsp_arr->vdsp_type){
+  case AGS_VDSP_256_INT:
+    {
+      free(vdsp_arr->vdsp.vec_int);
+    }
+    break;
   case AGS_VDSP_256_FLOAT:
     {
       free(vdsp_arr->vdsp.vec_float);
@@ -202,6 +213,15 @@ ags_vdsp_256_manager_reserve_all(AgsVDSP256Manager *vdsp_256_manager)
   guint i;
 
   g_return_if_fail(vdsp_256_manager != NULL);
+  
+  for(i = 0; i < vdsp_256_manager->vdsp_count; i++){
+    AgsVDSPArr *vdsp_arr;
+
+    vdsp_arr = ags_vdsp_arr_alloc(AGS_VDSP_256_INT);
+
+    vdsp_256_manager->int_arr = g_list_prepend(vdsp_256_manager->int_arr,
+					       vdsp_arr);
+  }
   
   for(i = 0; i < vdsp_256_manager->vdsp_count; i++){
     AgsVDSPArr *vdsp_arr;
@@ -252,6 +272,21 @@ ags_vdsp_256_manager_try_acquire(AgsVDSP256Manager *vdsp_256_manager,
   g_rec_mutex_lock(mutex);
   
   switch(vdsp_type){
+  case AGS_VDSP_256_INT:
+    {
+      vdsp = vdsp_256_manager->int_arr;
+      
+      while(vdsp != NULL){
+	if(g_atomic_int_get(&(AGS_VDSP_ARR(vdsp->data)->locked)) == FALSE){
+	  vdsp_arr = (AgsVDSPArr *) vdsp->data;
+	  
+	  break;
+	}
+	
+	vdsp = vdsp->next;
+      }
+    }
+    break;
   case AGS_VDSP_256_FLOAT:
     {
       vdsp = vdsp_256_manager->float_arr;
@@ -312,6 +347,9 @@ ags_vdsp_256_manager_try_acquire_dual(AgsVDSP256Manager *vdsp_256_manager,
 
   mutex = AGS_VDSP_256_MANAGER_GET_OBJ_MUTEX(vdsp_256_manager);
   
+  arr_a = NULL;
+  arr_b = NULL;
+
   success = FALSE;
   
   g_rec_mutex_lock(mutex);
@@ -332,6 +370,21 @@ ags_vdsp_256_manager_try_acquire_dual(AgsVDSP256Manager *vdsp_256_manager,
     vdsp_arr = NULL;
   
     switch(vdsp_type){
+    case AGS_VDSP_256_INT:
+      {
+	vdsp = vdsp_256_manager->int_arr;
+      
+	while(vdsp != NULL){
+	  if(g_atomic_int_get(&(AGS_VDSP_ARR(vdsp->data)->locked)) == FALSE){
+	    vdsp_arr = (AgsVDSPArr *) vdsp->data;
+	  
+	    break;
+	  }
+	
+	  vdsp = vdsp->next;
+	}
+      }
+      break;
     case AGS_VDSP_256_FLOAT:
       {
 	vdsp = vdsp_256_manager->float_arr;
@@ -384,6 +437,271 @@ ags_vdsp_256_manager_try_acquire_dual(AgsVDSP256Manager *vdsp_256_manager,
 		     TRUE);
 
     g_atomic_int_set(&(arr_b->locked),
+		     TRUE);
+  }
+
+  g_rec_mutex_unlock(mutex);
+  
+  return(success);
+}
+
+gboolean
+ags_vdsp_256_manager_try_acquire_triple(AgsVDSP256Manager *vdsp_256_manager,
+					AgsVDSP256Types vdsp_type_a, AgsVDSP256Types vdsp_type_b, AgsVDSP256Types vdsp_type_c,
+					AgsVDSPArr **vdsp_arr_a, AgsVDSPArr **vdsp_arr_b, AgsVDSPArr **vdsp_arr_c)
+{
+  AgsVDSPArr *arr_a, *arr_b, *arr_c;
+
+  guint i;
+  gboolean success;
+  
+  GRecMutex *mutex;
+
+  g_return_val_if_fail(vdsp_256_manager != NULL, FALSE);
+  g_return_val_if_fail(vdsp_arr_a != NULL, FALSE);
+  g_return_val_if_fail(vdsp_arr_b != NULL, FALSE);
+  g_return_val_if_fail(vdsp_arr_c != NULL, FALSE);
+
+  mutex = AGS_VDSP_256_MANAGER_GET_OBJ_MUTEX(vdsp_256_manager);
+  
+  success = FALSE;
+
+  arr_a = NULL;
+  arr_b = NULL;
+  arr_c = NULL;
+  
+  g_rec_mutex_lock(mutex);
+
+  for(i = 0; i < 3; i++){
+    AgsVDSPArr *vdsp_arr;
+    
+    GList *vdsp;
+
+    AgsVDSP256Types vdsp_type;
+
+    if(i == 0){
+      vdsp_type = vdsp_type_a;
+    }else if(i == 1){
+      vdsp_type = vdsp_type_b;
+    }else{
+      vdsp_type = vdsp_type_c;
+    }
+    
+    vdsp_arr = NULL;
+  
+    switch(vdsp_type){
+    case AGS_VDSP_256_INT:
+      {
+	vdsp = vdsp_256_manager->int_arr;
+      
+	while(vdsp != NULL){
+	  if(g_atomic_int_get(&(AGS_VDSP_ARR(vdsp->data)->locked)) == FALSE){
+	    vdsp_arr = (AgsVDSPArr *) vdsp->data;
+	  
+	    break;
+	  }
+	
+	  vdsp = vdsp->next;
+	}
+      }
+      break;
+    case AGS_VDSP_256_FLOAT:
+      {
+	vdsp = vdsp_256_manager->float_arr;
+      
+	while(vdsp != NULL){
+	  if(g_atomic_int_get(&(AGS_VDSP_ARR(vdsp->data)->locked)) == FALSE){
+	    vdsp_arr = (AgsVDSPArr *) vdsp->data;
+	  
+	    break;
+	  }
+	
+	  vdsp = vdsp->next;
+	}
+      }
+      break;
+    case AGS_VDSP_256_DOUBLE:
+      {
+	vdsp = vdsp_256_manager->double_arr;
+      
+	while(vdsp != NULL){
+	  if(g_atomic_int_get(&(AGS_VDSP_ARR(vdsp->data)->locked)) == FALSE){
+	    vdsp_arr = (AgsVDSPArr *) vdsp->data;
+	  
+	    break;
+	  }
+	
+	  vdsp = vdsp->next;
+	}
+      }
+      break;
+    };
+
+    if(i == 0){
+      arr_a = vdsp_arr;
+    }else if(i == 1){
+      arr_b = vdsp_arr;
+    }else{
+      arr_c = vdsp_arr;
+    }
+  }
+  
+  if(arr_a != NULL &&
+     arr_b != NULL &&
+     arr_c != NULL){
+    success = TRUE;
+  }
+  
+  if(success){
+    vdsp_arr_a[0] = arr_a;
+    vdsp_arr_b[0] = arr_b;
+    vdsp_arr_c[0] = arr_c;
+    
+    g_atomic_int_set(&(arr_a->locked),
+		     TRUE);
+
+    g_atomic_int_set(&(arr_b->locked),
+		     TRUE);
+
+    g_atomic_int_set(&(arr_c->locked),
+		     TRUE);
+  }
+
+  g_rec_mutex_unlock(mutex);
+  
+  return(success);
+}
+
+gboolean
+ags_vdsp_256_manager_try_acquire_quad(AgsVDSP256Manager *vdsp_256_manager,
+				      AgsVDSP256Types vdsp_type_a, AgsVDSP256Types vdsp_type_b, AgsVDSP256Types vdsp_type_c, AgsVDSP256Types vdsp_type_d,
+				      AgsVDSPArr **vdsp_arr_a, AgsVDSPArr **vdsp_arr_b, AgsVDSPArr **vdsp_arr_c, AgsVDSPArr **vdsp_arr_d)
+{
+  AgsVDSPArr *arr_a, *arr_b, *arr_c, *arr_d;
+
+  guint i;
+  gboolean success;
+  
+  GRecMutex *mutex;
+
+  g_return_val_if_fail(vdsp_256_manager != NULL, FALSE);
+  g_return_val_if_fail(vdsp_arr_a != NULL, FALSE);
+  g_return_val_if_fail(vdsp_arr_b != NULL, FALSE);
+  g_return_val_if_fail(vdsp_arr_c != NULL, FALSE);
+  g_return_val_if_fail(vdsp_arr_d != NULL, FALSE);
+
+  mutex = AGS_VDSP_256_MANAGER_GET_OBJ_MUTEX(vdsp_256_manager);
+  
+  success = FALSE;
+
+  arr_a = NULL;
+  arr_b = NULL;
+  arr_c = NULL;
+  arr_d = NULL;
+  
+  g_rec_mutex_lock(mutex);
+
+  for(i = 0; i < 3; i++){
+    AgsVDSPArr *vdsp_arr;
+    
+    GList *vdsp;
+
+    AgsVDSP256Types vdsp_type;
+
+    if(i == 0){
+      vdsp_type = vdsp_type_a;
+    }else if(i == 1){
+      vdsp_type = vdsp_type_b;
+    }else if(i == 2){
+      vdsp_type = vdsp_type_c;
+    }else{
+      vdsp_type = vdsp_type_d;
+    }
+    
+    vdsp_arr = NULL;
+  
+    switch(vdsp_type){
+    case AGS_VDSP_256_INT:
+      {
+	vdsp = vdsp_256_manager->int_arr;
+      
+	while(vdsp != NULL){
+	  if(g_atomic_int_get(&(AGS_VDSP_ARR(vdsp->data)->locked)) == FALSE){
+	    vdsp_arr = (AgsVDSPArr *) vdsp->data;
+	  
+	    break;
+	  }
+	
+	  vdsp = vdsp->next;
+	}
+      }
+      break;
+    case AGS_VDSP_256_FLOAT:
+      {
+	vdsp = vdsp_256_manager->float_arr;
+      
+	while(vdsp != NULL){
+	  if(g_atomic_int_get(&(AGS_VDSP_ARR(vdsp->data)->locked)) == FALSE){
+	    vdsp_arr = (AgsVDSPArr *) vdsp->data;
+	  
+	    break;
+	  }
+	
+	  vdsp = vdsp->next;
+	}
+      }
+      break;
+    case AGS_VDSP_256_DOUBLE:
+      {
+	vdsp = vdsp_256_manager->double_arr;
+      
+	while(vdsp != NULL){
+	  if(g_atomic_int_get(&(AGS_VDSP_ARR(vdsp->data)->locked)) == FALSE){
+	    vdsp_arr = (AgsVDSPArr *) vdsp->data;
+	  
+	    break;
+	  }
+	
+	  vdsp = vdsp->next;
+	}
+      }
+      break;
+    };
+
+    if(i == 0){
+      arr_a = vdsp_arr;
+    }else if(i == 1){
+      arr_b = vdsp_arr;
+    }else if(i == 2){
+      arr_c = vdsp_arr;
+    }else{
+      arr_d = vdsp_arr;
+    }
+  }
+  
+  if(arr_a != NULL &&
+     arr_b != NULL &&
+     arr_c != NULL &&
+     arr_d != NULL){
+    success = TRUE;
+  }
+  
+  if(success){
+    vdsp_arr_a[0] = arr_a;
+    vdsp_arr_b[0] = arr_b;
+    vdsp_arr_c[0] = arr_c;
+    vdsp_arr_d[0] = arr_d;
+    
+    g_atomic_int_set(&(arr_a->locked),
+		     TRUE);
+
+    g_atomic_int_set(&(arr_b->locked),
+		     TRUE);
+
+    g_atomic_int_set(&(arr_c->locked),
+		     TRUE);
+
+    g_atomic_int_set(&(arr_d->locked),
 		     TRUE);
   }
 

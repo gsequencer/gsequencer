@@ -36,6 +36,8 @@ G_BEGIN_DECLS
 
 #define AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(obj) (&(((AgsCoreAudioMidiin *) obj)->obj_mutex))
 
+#define AGS_CORE_AUDIO_MIDIIN_DEFAULT_APP_BUFFER_SIZE (4)
+
 #define AGS_CORE_AUDIO_MIDIIN_DEFAULT_BUFFER_SIZE (256)
 
 typedef struct _AgsCoreAudioMidiin AgsCoreAudioMidiin;
@@ -126,8 +128,10 @@ struct _AgsCoreAudioMidiin
   AgsCoreAudioMidiinAppBufferMode app_buffer_mode;
 
   GRecMutex **app_buffer_mutex;
+
   char **app_buffer;
-  guint app_buffer_size[4];
+  guint allocated_app_buffer_size[AGS_CORE_AUDIO_MIDIIN_DEFAULT_APP_BUFFER_SIZE];
+  guint app_buffer_size[AGS_CORE_AUDIO_MIDIIN_DEFAULT_APP_BUFFER_SIZE];
 
   double bpm; // beats per minute
 

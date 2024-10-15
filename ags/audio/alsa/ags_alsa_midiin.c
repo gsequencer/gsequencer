@@ -366,6 +366,7 @@ ags_alsa_midiin_sequencer_interface_init(AgsSequencerInterface *sequencer)
   sequencer->get_note_offset = ags_alsa_midiin_get_note_offset;
 
   sequencer->get_midi_version = ags_alsa_midiin_get_midi_version;
+  sequencer->set_midi_version = NULL;
 }
 
 void
@@ -415,6 +416,7 @@ ags_alsa_midiin_init(AgsAlsaMidiin *alsa_midiin)
   for(i = 0; i < AGS_ALSA_MIDIIN_DEFAULT_APP_BUFFER_SIZE; i++){
     alsa_midiin->app_buffer[i] = NULL;
 
+    alsa_midiin->allocated_app_buffer_size[i] = 0;
     alsa_midiin->app_buffer_size[i] = 0;
   }
   
@@ -425,6 +427,7 @@ ags_alsa_midiin_init(AgsAlsaMidiin *alsa_midiin)
   for(i = 0; i < AGS_ALSA_MIDIIN_DEFAULT_BACKEND_BUFFER_SIZE; i++){
     alsa_midiin->backend_buffer[i] = NULL;
 
+    alsa_midiin->allocated_backend_buffer_size[i] = 0;
     alsa_midiin->backend_buffer_size[i] = 0;
   }
 
@@ -1211,11 +1214,15 @@ ags_alsa_midiin_device_record(AgsSequencer *sequencer,
 #endif
 
   char **backend_buffer;
+  char **app_buffer;
   
   gboolean no_event;
-  AgsAlsaMidiinAppBufferMode app_buffer_mode;
   AgsAlsaMidiinBackendBufferMode backend_buffer_mode;
+  AgsAlsaMidiinAppBufferMode app_buffer_mode;
+  guint allocated_backend_buffer_size;
   guint backend_buffer_size;
+  guint allocated_app_buffer_size;
+  guint app_buffer_size;
   int status;
   unsigned char c;
   
@@ -1241,27 +1248,31 @@ ags_alsa_midiin_device_record(AgsSequencer *sequencer,
 
   device_handle = alsa_midiin->handle;      
 
-  if(alsa_midiin->app_buffer_mode + 1 > AGS_ALSA_MIDIIN_APP_BUFFER_3){
-    app_buffer_mode = AGS_ALSA_MIDIIN_APP_BUFFER_0;
-  }else{
-    app_buffer_mode = alsa_midiin->app_buffer_mode + 1;
-  }
-
   if(alsa_midiin->backend_buffer_mode + 1 > AGS_ALSA_MIDIIN_BACKEND_BUFFER_7){
     backend_buffer_mode = AGS_ALSA_MIDIIN_BACKEND_BUFFER_0;
   }else{
     backend_buffer_mode = alsa_midiin->backend_buffer_mode + 1;
   }
-  
-  if(alsa_midiin->backend_buffer[backend_buffer_mode] != NULL){
-    g_free(alsa_midiin->backend_buffer[backend_buffer_mode]);
+
+  if(alsa_midiin->app_buffer_mode + 1 > AGS_ALSA_MIDIIN_APP_BUFFER_3){
+    app_buffer_mode = AGS_ALSA_MIDIIN_APP_BUFFER_0;
+  }else{
+    app_buffer_mode = alsa_midiin->app_buffer_mode + 1;
+  }
+        
+  backend_buffer = alsa_midiin->backend_buffer;
+
+  allocated_backend_buffer_size = alsa_midiin->allocated_backend_buffer_size[backend_buffer_mode];
+  backend_buffer_size = 0;
+
+  if(allocated_backend_buffer_size > 0){
+    memset(backend_buffer[backend_buffer_mode], 0, allocated_backend_buffer_size * sizeof(char));
   }
   
-  alsa_midiin->backend_buffer[backend_buffer_mode] = NULL;
-  alsa_midiin->backend_buffer_size[backend_buffer_mode] = 0;
-      
-  backend_buffer = alsa_midiin->backend_buffer;
-  backend_buffer_size = alsa_midiin->backend_buffer_size[backend_buffer_mode];
+  app_buffer = alsa_midiin->app_buffer;
+
+  allocated_app_buffer_size = alsa_midiin->allocated_app_buffer_size[app_buffer_mode];
+  app_buffer_size = 0;
 
   g_rec_mutex_unlock(alsa_midiin_mutex);
 
@@ -1279,45 +1290,55 @@ ags_alsa_midiin_device_record(AgsSequencer *sequencer,
     }
 
     if(status >= 0){
-      if(backend_buffer_size % AGS_ALSA_MIDIIN_DEFAULT_BUFFER_SIZE == 0){
+      if(backend_buffer_size + 1 >= allocated_backend_buffer_size){
 	if(backend_buffer[backend_buffer_mode] == NULL){
 	  backend_buffer[backend_buffer_mode] = (char *) g_malloc(AGS_ALSA_MIDIIN_DEFAULT_BUFFER_SIZE * sizeof(char));
 	}else{
 	  backend_buffer[backend_buffer_mode] = (char *) g_realloc(backend_buffer[backend_buffer_mode],
-								   (backend_buffer_size + AGS_ALSA_MIDIIN_DEFAULT_BUFFER_SIZE) * sizeof(char));
+								   (allocated_backend_buffer_size + AGS_ALSA_MIDIIN_DEFAULT_BUFFER_SIZE) * sizeof(char));
 	}
+
+	memset(backend_buffer[backend_buffer_mode] + allocated_backend_buffer_size, 0, AGS_ALSA_MIDIIN_DEFAULT_BUFFER_SIZE * sizeof(char));
+
+	allocated_backend_buffer_size = 
+	  alsa_midiin->allocated_backend_buffer_size[backend_buffer_mode] = allocated_backend_buffer_size + AGS_ALSA_MIDIIN_DEFAULT_BUFFER_SIZE;
       }
 
       backend_buffer[backend_buffer_mode][backend_buffer_size] = (unsigned char) c;
-      backend_buffer_size += 1;
+
+      backend_buffer_size = 
+	alsa_midiin->backend_buffer_size[backend_buffer_mode] = backend_buffer_size + 1;
     }
 #endif
   }
 
-  /* switch buffer */
+  /* fill buffer */
   g_rec_mutex_lock(alsa_midiin_mutex);
 
-  /* update byte array and buffer size */
-  if(alsa_midiin->app_buffer[app_buffer_mode] != NULL){
-    g_free(alsa_midiin->app_buffer[app_buffer_mode]);
+  if(allocated_backend_buffer_size > allocated_app_buffer_size){
+    allocated_app_buffer_size = allocated_backend_buffer_size;
+    
+    if(app_buffer[app_buffer_mode] == NULL){
+      app_buffer[app_buffer_mode] = (char *) g_malloc(allocated_app_buffer_size * sizeof(char));
+    }else{
+      app_buffer[app_buffer_mode] = (char *) g_realloc(app_buffer[app_buffer_mode],
+						       allocated_app_buffer_size * sizeof(char));
+    }
+
+    alsa_midiin->allocated_app_buffer_size[app_buffer_mode] = allocated_app_buffer_size;	
   }
 
-  alsa_midiin->app_buffer[app_buffer_mode] = NULL;
-      
-  alsa_midiin->backend_buffer_size[backend_buffer_mode] = backend_buffer_size;
-
-  alsa_midiin->app_buffer_size[app_buffer_mode] = backend_buffer_size;
-
-  /* fill buffer */
   if(backend_buffer_size > 0){
-    alsa_midiin->app_buffer[app_buffer_mode] = (char *) g_malloc(backend_buffer_size * sizeof(char));
-	
-    memcpy(alsa_midiin->app_buffer[app_buffer_mode], backend_buffer[backend_buffer_mode], backend_buffer_size * sizeof(char));
+    app_buffer_size = 
+      alsa_midiin->app_buffer_size[app_buffer_mode] = backend_buffer_size;
+  
+    memset(app_buffer[app_buffer_mode], 0, allocated_app_buffer_size * sizeof(char));
+    memcpy(alsa_midiin->app_buffer[app_buffer_mode], backend_buffer[backend_buffer_mode], app_buffer_size * sizeof(char));
   }
-      
+  
   g_rec_mutex_unlock(alsa_midiin_mutex);
 
-  /*  */
+  /* switch buffer */
   g_rec_mutex_lock(alsa_midiin_mutex);
 
   ags_alsa_midiin_switch_buffer_flag(alsa_midiin);
@@ -1388,18 +1409,10 @@ ags_alsa_midiin_device_free(AgsSequencer *sequencer)
   alsa_midiin->backend_buffer_mode = AGS_ALSA_MIDIIN_BACKEND_BUFFER_0;
 
   for(i = 0; i < AGS_ALSA_MIDIIN_DEFAULT_APP_BUFFER_SIZE; i++){
-    g_free(alsa_midiin->app_buffer[i]);
-
-    alsa_midiin->app_buffer[i] = NULL;
-    
     alsa_midiin->app_buffer_size[i] = 0;
   }
 
   for(i = 0; i < AGS_ALSA_MIDIIN_DEFAULT_BACKEND_BUFFER_SIZE; i++){
-    g_free(alsa_midiin->backend_buffer[i]);
-
-    alsa_midiin->backend_buffer[i] = NULL;
-
     alsa_midiin->backend_buffer_size[i] = 0;
   }
 
