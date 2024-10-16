@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -95,6 +95,10 @@ void ags_apply_sound_config_finalize(GObject *gobject);
 
 void ags_apply_sound_config_change_max_precision(AgsThread *thread,
 						 gdouble max_precision);
+void ags_apply_sound_config_soundcard_presets(AgsTask *task,
+					      GType soundcard_type, guint soundcard_count);
+void ags_apply_sound_config_sequencer_presets(AgsTask *task,
+					      GType sequencer_type, guint sequencer_count);
 void ags_apply_sound_config_launch(AgsTask *task);
 
 /**
@@ -290,6 +294,772 @@ ags_apply_sound_config_change_max_precision(AgsThread *thread,
 }
 
 void
+ags_apply_sound_config_soundcard_presets(AgsTask *task,
+					 GType soundcard_type, guint soundcard_count)
+{
+  AgsJackServer *jack_server;
+  AgsPulseServer *pulse_server;
+  AgsCoreAudioServer *core_audio_server;
+
+  AgsThread *audio_loop;
+  AgsThread *soundcard_thread;
+  AgsThread *export_thread;
+
+  AgsApplicationContext *application_context;
+  AgsConfig *config;
+
+  GObject *io_soundcard;
+  
+  GList *start_sound_server, *sound_server;
+  GList *start_soundcard, *soundcard;
+
+  gchar *soundcard_group;
+  gchar *backend;
+  gchar *capability;
+  gchar *str;
+
+  guint available_soundcard_count;
+  guint pcm_channels, buffer_size, samplerate, format;
+  guint cache_buffer_size;
+  guint nth_card;
+  guint i, i_stop;
+  guint j;
+  gboolean do_grow;
+  gboolean is_output;
+  gboolean use_cache;
+
+  application_context = ags_application_context_get_instance();
+
+  config = ags_config_get_instance();
+
+  start_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+
+  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+
+  jack_server = NULL;
+  pulse_server = NULL;
+  core_audio_server = NULL;
+  
+  sound_server = 
+    start_sound_server = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
+
+  while(sound_server != NULL){
+    if(AGS_IS_JACK_SERVER(sound_server->data)){
+      jack_server = sound_server->data;
+    }else if(AGS_IS_PULSE_SERVER(sound_server->data)){
+      pulse_server = sound_server->data;
+    }else if(AGS_IS_CORE_AUDIO_SERVER(sound_server->data)){
+      core_audio_server = sound_server->data;
+    }
+    
+    sound_server = sound_server->next;
+  }
+
+  backend = NULL;
+
+  if(soundcard_type == AGS_TYPE_ALSA_DEVOUT ||
+     soundcard_type == AGS_TYPE_ALSA_DEVIN){
+    backend = "alsa";
+  }else if(soundcard_type == AGS_TYPE_OSS_DEVOUT ||
+	   soundcard_type == AGS_TYPE_OSS_DEVIN){
+    backend = "oss";
+  }else if(soundcard_type == AGS_TYPE_PULSE_DEVOUT ||
+	   soundcard_type == AGS_TYPE_PULSE_DEVIN){
+    backend = "pulse";
+  }else if(soundcard_type == AGS_TYPE_JACK_DEVOUT ||
+	   soundcard_type == AGS_TYPE_JACK_DEVIN){
+    backend = "jack";
+  }else if(soundcard_type == AGS_TYPE_CORE_AUDIO_DEVOUT ||
+	   soundcard_type == AGS_TYPE_CORE_AUDIO_DEVIN){
+    backend = "core-audio";
+  }else if(soundcard_type == AGS_TYPE_WASAPI_DEVOUT ||
+	   soundcard_type == AGS_TYPE_WASAPI_DEVIN){
+    backend = "wasapi";
+  }
+  
+  if(backend == NULL){
+    g_warning("apply config - unknown soundcard backend");
+    
+    return;
+  }
+  
+  /* backend - device output */
+  soundcard = start_soundcard;
+
+  available_soundcard_count = 0;
+  
+  while(soundcard != NULL){
+    if(soundcard_type == AGS_TYPE_ALSA_DEVOUT && AGS_IS_ALSA_DEVOUT(soundcard->data)){
+      available_soundcard_count++;
+    }else if(soundcard_type == AGS_TYPE_ALSA_DEVIN && AGS_IS_ALSA_DEVIN(soundcard->data)){
+      available_soundcard_count++;
+    }else if(soundcard_type == AGS_TYPE_OSS_DEVOUT && AGS_IS_OSS_DEVOUT(soundcard->data)){
+      available_soundcard_count++;
+    }else if(soundcard_type == AGS_TYPE_OSS_DEVIN && AGS_IS_OSS_DEVIN(soundcard->data)){
+      available_soundcard_count++;
+    }else if(soundcard_type == AGS_TYPE_PULSE_DEVOUT && AGS_IS_PULSE_DEVOUT(soundcard->data)){
+      available_soundcard_count++;
+    }else if(soundcard_type == AGS_TYPE_PULSE_DEVIN && AGS_IS_PULSE_DEVIN(soundcard->data)){
+      available_soundcard_count++;
+    }else if(soundcard_type == AGS_TYPE_JACK_DEVOUT && AGS_IS_JACK_DEVOUT(soundcard->data)){
+      available_soundcard_count++;
+    }else if(soundcard_type == AGS_TYPE_JACK_DEVIN && AGS_IS_JACK_DEVIN(soundcard->data)){
+      available_soundcard_count++;
+    }else if(soundcard_type == AGS_TYPE_CORE_AUDIO_DEVOUT && AGS_IS_CORE_AUDIO_DEVOUT(soundcard->data)){
+      available_soundcard_count++;
+    }else if(soundcard_type == AGS_TYPE_CORE_AUDIO_DEVIN && AGS_IS_CORE_AUDIO_DEVIN(soundcard->data)){
+      available_soundcard_count++;
+    }else if(soundcard_type == AGS_TYPE_WASAPI_DEVOUT && AGS_IS_WASAPI_DEVOUT(soundcard->data)){
+      available_soundcard_count++;
+    }else if(soundcard_type == AGS_TYPE_WASAPI_DEVIN && AGS_IS_WASAPI_DEVIN(soundcard->data)){
+      available_soundcard_count++;
+    }
+
+    soundcard = soundcard->next;
+  }
+
+  /* grow/shrink */
+  nth_card = 0;
+	
+  if(soundcard_count > available_soundcard_count ||
+     soundcard_count < available_soundcard_count){
+    soundcard_group = g_strdup("soundcard");
+
+    do_grow = TRUE;
+
+    if(soundcard_count > available_soundcard_count){
+      do_grow = FALSE;
+    }
+    
+    for(i = 0; i < soundcard_count && i < 256;){
+      io_soundcard = NULL;
+
+      if(!g_key_file_has_group(config->key_file,
+			       soundcard_group)){
+	g_free(soundcard_group);    
+
+	soundcard_group = g_strdup_printf("%s-%d",
+					  AGS_CONFIG_SOUNDCARD,
+					  i);
+    	
+	continue;
+      }
+
+      str = ags_config_get_value(config,
+				 soundcard_group,
+				 "backend");
+
+      capability = ags_config_get_value(config,
+					soundcard_group,
+					"capability");
+
+      is_output = TRUE;
+
+      if(capability != NULL &&
+	 !g_ascii_strncasecmp(capability,
+			      "capture",
+			      8)){
+	is_output = FALSE;
+
+	g_free(capability);
+      }
+      
+      if((!g_ascii_strncasecmp(str, backend, strlen(backend) + 1)) == FALSE ||
+	 !is_output){
+	g_free(str);
+	
+	/* iter */
+	i++;
+	
+	continue;
+      }
+
+      g_free(str);
+      
+      /* add/remove or get soundcard */
+      if(i >= available_soundcard_count){
+	if(soundcard_type == AGS_TYPE_ALSA_DEVOUT){
+	  io_soundcard = (GObject *) ags_alsa_devout_new();
+	}else if(soundcard_type == AGS_TYPE_ALSA_DEVIN){
+	  io_soundcard = (GObject *) ags_alsa_devin_new();
+	}else if(soundcard_type == AGS_TYPE_OSS_DEVOUT){
+	  io_soundcard = (GObject *) ags_oss_devout_new();
+	}else if(soundcard_type == AGS_TYPE_OSS_DEVIN){
+	  io_soundcard = (GObject *) ags_oss_devin_new();
+	}else if(soundcard_type == AGS_TYPE_PULSE_DEVOUT){
+	  io_soundcard = ags_sound_server_register_soundcard(AGS_SOUND_SERVER(pulse_server),
+							     TRUE);
+	}else if(soundcard_type == AGS_TYPE_PULSE_DEVIN){
+	  io_soundcard = ags_sound_server_register_soundcard(AGS_SOUND_SERVER(pulse_server),
+							     FALSE);
+	}else if(soundcard_type == AGS_TYPE_JACK_DEVOUT){
+	  io_soundcard = ags_sound_server_register_soundcard(AGS_SOUND_SERVER(jack_server),
+							     TRUE);
+	}else if(soundcard_type == AGS_TYPE_JACK_DEVIN){
+	  io_soundcard = ags_sound_server_register_soundcard(AGS_SOUND_SERVER(jack_server),
+							     FALSE);
+	}else if(soundcard_type == AGS_TYPE_CORE_AUDIO_DEVOUT){
+	  io_soundcard = ags_sound_server_register_soundcard(AGS_SOUND_SERVER(core_audio_server),
+							     TRUE);
+	}else if(soundcard_type == AGS_TYPE_CORE_AUDIO_DEVIN){
+	  io_soundcard = ags_sound_server_register_soundcard(AGS_SOUND_SERVER(core_audio_server),
+							     FALSE);
+	}else if(soundcard_type == AGS_TYPE_WASAPI_DEVOUT){
+	  io_soundcard = (GObject *) ags_wasapi_devout_new();
+
+	  str = ags_config_get_value(config,
+				     soundcard_group,
+				     "wasapi-share-mode");
+
+	  if(str != NULL &&
+	     !g_ascii_strncasecmp(str,
+				  "exclusive",
+				  10)){
+	    ags_wasapi_devout_set_flags(AGS_WASAPI_DEVOUT(io_soundcard),
+					AGS_WASAPI_DEVOUT_SHARE_MODE_EXCLUSIVE);
+	  }else{
+	    ags_wasapi_devout_unset_flags(AGS_WASAPI_DEVOUT(io_soundcard),
+					  AGS_WASAPI_DEVOUT_SHARE_MODE_EXCLUSIVE);
+	  }
+	  
+	  str = ags_config_get_value(config,
+				     soundcard_group,
+				     "wasapi-buffer-size");
+
+	  if(str != NULL){
+	    AGS_WASAPI_DEVOUT(soundcard)->wasapi_buffer_size = g_ascii_strtoull(str,
+										NULL,
+										10);
+	    
+	    g_free(str);
+	  }
+	}else if(soundcard_type == AGS_TYPE_WASAPI_DEVIN){
+	  io_soundcard = (GObject *) ags_wasapi_devin_new();
+
+	  str = ags_config_get_value(config,
+				     soundcard_group,
+				     "wasapi-share-mode");
+
+	  if(str != NULL &&
+	     !g_ascii_strncasecmp(str,
+				  "exclusive",
+				  10)){
+	    ags_wasapi_devout_set_flags(AGS_WASAPI_DEVOUT(io_soundcard),
+					AGS_WASAPI_DEVOUT_SHARE_MODE_EXCLUSIVE);
+	  }else{
+	    ags_wasapi_devout_unset_flags(AGS_WASAPI_DEVOUT(io_soundcard),
+					  AGS_WASAPI_DEVOUT_SHARE_MODE_EXCLUSIVE);
+	  }
+
+	  str = ags_config_get_value(config,
+				     soundcard_group,
+				     "wasapi-buffer-size");
+
+	  if(str != NULL){
+	    AGS_WASAPI_DEVIN(soundcard)->wasapi_buffer_size = g_ascii_strtoull(str,
+									       NULL,
+									       10);
+	    
+	    g_free(str);
+	  }
+	}
+
+	if(io_soundcard != NULL){
+	  guint soundcard_capability;
+
+	  g_object_ref(io_soundcard);
+
+	  start_soundcard = g_list_append(start_soundcard,
+					  io_soundcard);
+
+	  soundcard_capability = ags_soundcard_get_capability(AGS_SOUNDCARD(io_soundcard));
+    
+	  soundcard_thread = (AgsThread *) ags_soundcard_thread_new(io_soundcard,
+								    soundcard_capability);
+	  ags_thread_add_child_extended(AGS_THREAD(audio_loop),
+					(AgsThread *) soundcard_thread,
+					TRUE, TRUE);
+
+	  if(is_output){
+	    export_thread = (AgsThread *) ags_export_thread_new(io_soundcard,
+								NULL);
+	    ags_thread_add_child_extended(AGS_THREAD(audio_loop),
+					  (AgsThread *) export_thread,
+					  TRUE, TRUE);
+	  }
+	}
+      }else{
+	soundcard = start_soundcard;
+
+	for(j = 0; soundcard != NULL;){
+	  if(((soundcard_type == AGS_TYPE_ALSA_DEVOUT && AGS_IS_ALSA_DEVOUT(soundcard->data)) ||
+	      (soundcard_type == AGS_TYPE_ALSA_DEVIN && AGS_IS_ALSA_DEVIN(soundcard->data)) ||
+	      (soundcard_type == AGS_TYPE_OSS_DEVOUT && AGS_IS_OSS_DEVOUT(soundcard->data)) ||
+	      (soundcard_type == AGS_TYPE_OSS_DEVIN && AGS_IS_OSS_DEVIN(soundcard->data)) ||
+	      (soundcard_type == AGS_TYPE_PULSE_DEVOUT && AGS_IS_PULSE_DEVOUT(soundcard->data)) ||
+	      (soundcard_type == AGS_TYPE_PULSE_DEVIN && AGS_IS_PULSE_DEVIN(soundcard->data)) ||
+	      (soundcard_type == AGS_TYPE_JACK_DEVOUT && AGS_IS_JACK_DEVOUT(soundcard->data)) ||
+	      (soundcard_type == AGS_TYPE_JACK_DEVIN && AGS_IS_JACK_DEVIN(soundcard->data)) ||
+	      (soundcard_type == AGS_TYPE_CORE_AUDIO_DEVOUT && AGS_IS_CORE_AUDIO_DEVOUT(soundcard->data)) ||
+	      (soundcard_type == AGS_TYPE_CORE_AUDIO_DEVIN && AGS_IS_CORE_AUDIO_DEVIN(soundcard->data)) ||
+	      (soundcard_type == AGS_TYPE_WASAPI_DEVOUT && AGS_IS_WASAPI_DEVOUT(soundcard->data)) ||
+	      (soundcard_type == AGS_TYPE_WASAPI_DEVIN && AGS_IS_WASAPI_DEVIN(soundcard->data))) &&
+	     ((do_grow && j == nth_card) ||
+	      (!do_grow && j == soundcard_count))){
+	    io_soundcard = soundcard->data;
+	    nth_card++;
+
+	    break;
+	  }
+
+	  /* iter soundcard */
+	  if((soundcard_type == AGS_TYPE_ALSA_DEVOUT && AGS_IS_ALSA_DEVOUT(soundcard->data)) ||
+	      (soundcard_type == AGS_TYPE_ALSA_DEVIN && AGS_IS_ALSA_DEVIN(soundcard->data)) ||
+	      (soundcard_type == AGS_TYPE_OSS_DEVOUT && AGS_IS_OSS_DEVOUT(soundcard->data)) ||
+	      (soundcard_type == AGS_TYPE_OSS_DEVIN && AGS_IS_OSS_DEVIN(soundcard->data)) ||
+	      (soundcard_type == AGS_TYPE_PULSE_DEVOUT && AGS_IS_PULSE_DEVOUT(soundcard->data)) ||
+	      (soundcard_type == AGS_TYPE_PULSE_DEVIN && AGS_IS_PULSE_DEVIN(soundcard->data)) ||
+	      (soundcard_type == AGS_TYPE_JACK_DEVOUT && AGS_IS_JACK_DEVOUT(soundcard->data)) ||
+	      (soundcard_type == AGS_TYPE_JACK_DEVIN && AGS_IS_JACK_DEVIN(soundcard->data)) ||
+	      (soundcard_type == AGS_TYPE_CORE_AUDIO_DEVOUT && AGS_IS_CORE_AUDIO_DEVOUT(soundcard->data)) ||
+	      (soundcard_type == AGS_TYPE_CORE_AUDIO_DEVIN && AGS_IS_CORE_AUDIO_DEVIN(soundcard->data)) ||
+	      (soundcard_type == AGS_TYPE_WASAPI_DEVOUT && AGS_IS_WASAPI_DEVOUT(soundcard->data)) ||
+	      (soundcard_type == AGS_TYPE_WASAPI_DEVIN && AGS_IS_WASAPI_DEVIN(soundcard->data))){
+	    j++;
+	    nth_card++;
+	  }
+
+	  soundcard = soundcard->next;
+	}
+
+	if(io_soundcard != NULL){
+	  start_soundcard = g_list_remove(start_soundcard,
+					  io_soundcard);
+
+	  /* soundcard thread */
+	  soundcard_thread = ags_thread_find_type(audio_loop,
+						  AGS_TYPE_SOUNDCARD_THREAD);
+
+	  while(soundcard_thread != NULL){
+	    AgsThread *next;
+    
+	    next = g_atomic_pointer_get(&(soundcard_thread->next));
+    
+	    if(AGS_IS_SOUNDCARD_THREAD(soundcard_thread) &&
+	       AGS_SOUNDCARD_THREAD(soundcard_thread)->soundcard == io_soundcard){
+	      ags_thread_remove_child(audio_loop,
+				      soundcard_thread);
+
+	      g_object_run_dispose((GObject *) soundcard_thread);
+	      g_object_unref((GObject *) soundcard_thread);
+
+	      break;
+	    }
+
+	    soundcard_thread = next;
+	  }
+
+	  /* export thread */
+	  export_thread = ags_thread_find_type(audio_loop,
+					       AGS_TYPE_EXPORT_THREAD);
+
+	  while(export_thread != NULL){
+	    if(AGS_IS_EXPORT_THREAD(export_thread) &&
+	       AGS_EXPORT_THREAD(export_thread)->soundcard == io_soundcard){
+	      ags_thread_remove_child(audio_loop,
+				      export_thread);
+
+	      g_object_run_dispose((GObject *) export_thread);
+	      g_object_unref((GObject *) export_thread);
+
+	      break;
+	    }
+    
+	    export_thread = g_atomic_pointer_get(&(export_thread->next));
+	  }
+
+
+	  if(AGS_IS_JACK_DEVOUT(io_soundcard) || AGS_IS_JACK_DEVIN(io_soundcard)){
+	    ags_sound_server_unregister_soundcard(AGS_SOUND_SERVER(jack_server),
+						  io_soundcard);
+	  }else if(AGS_IS_PULSE_DEVOUT(io_soundcard)){
+	    ags_sound_server_unregister_soundcard(AGS_SOUND_SERVER(pulse_server),
+						  io_soundcard);
+	  }else if(AGS_IS_CORE_AUDIO_DEVOUT(io_soundcard) || AGS_IS_CORE_AUDIO_DEVIN(io_soundcard)){
+	    ags_sound_server_unregister_soundcard(AGS_SOUND_SERVER(core_audio_server),
+						  io_soundcard);
+	  }
+	  
+	}
+      }
+
+      /* device */
+      str = ags_config_get_value(config,
+				 soundcard_group,
+				 "device");
+      
+      if(str != NULL){
+	ags_soundcard_set_device(AGS_SOUNDCARD(soundcard),
+				 str);
+	g_free(str);
+      }
+	
+      /* presets */
+      pcm_channels = AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS;
+      buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+      samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+      format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+      str = ags_config_get_value(config,
+				 soundcard_group,
+				 "pcm-channels");
+
+      if(str != NULL){
+	pcm_channels = g_ascii_strtoull(str,
+					NULL,
+					10);
+	g_free(str);
+      }
+
+      str = ags_config_get_value(config,
+				 soundcard_group,
+				 "buffer-size");
+
+      if(str != NULL){
+	buffer_size = g_ascii_strtoull(str,
+				       NULL,
+				       10);
+	g_free(str);
+      }
+
+      str = ags_config_get_value(config,
+				 soundcard_group,
+				 "samplerate");
+
+      if(str != NULL){
+	samplerate = g_ascii_strtoull(str,
+				      NULL,
+				      10);
+	g_free(str);
+      }
+
+      str = ags_config_get_value(config,
+				 soundcard_group,
+				 "format");
+
+      if(str != NULL){
+	format = g_ascii_strtoull(str,
+				  NULL,
+				  10);
+	g_free(str);
+      }
+
+      ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),
+				pcm_channels,
+				samplerate,
+				buffer_size,
+				format);
+
+      use_cache = TRUE;
+      str = ags_config_get_value(config,
+				 soundcard_group,
+				 "use-cache");
+
+      if(str != NULL &&
+	 !g_strncasecmp(str,
+			"false",
+			5)){
+	use_cache = FALSE;
+
+	g_free(str);
+      }
+
+      cache_buffer_size = 4096;
+      str = ags_config_get_value(config,
+				 soundcard_group,
+				 "cache-buffer-size");
+
+      if(str != NULL){
+	cache_buffer_size = g_ascii_strtoull(str,
+					     NULL,
+					     10);
+
+	g_free(str);
+      }
+
+      if(soundcard_type == AGS_TYPE_PULSE_DEVOUT ||
+	 soundcard_type == AGS_TYPE_PULSE_DEVIN ||
+	 soundcard_type == AGS_TYPE_CORE_AUDIO_DEVOUT ||
+	 soundcard_type == AGS_TYPE_CORE_AUDIO_DEVIN ||
+	 soundcard_type == AGS_TYPE_WASAPI_DEVOUT ||
+	 soundcard_type == AGS_TYPE_WASAPI_DEVIN){
+	g_object_set(io_soundcard,
+		     "use-cache", use_cache,
+		     "cache-buffer-size", cache_buffer_size,
+		     NULL);
+      }
+      
+      /* iter */
+      i++;
+    }
+  }
+}
+
+void
+ags_apply_sound_config_sequencer_presets(AgsTask *task,
+					 GType sequencer_type, guint sequencer_count)
+{
+  AgsJackServer *jack_server;
+  AgsCoreAudioServer *core_audio_server;
+
+  AgsThread *audio_loop;
+  AgsThread *sequencer_thread;
+
+  AgsApplicationContext *application_context;
+  AgsConfig *config;
+
+  GObject *io_sequencer;
+  
+  GList *start_sound_server, *sound_server;
+  GList *start_sequencer, *sequencer;
+
+  gchar *soundcard_group;
+  gchar *sequencer_group;
+  gchar *backend;
+  gchar *capability;
+  gchar *str;
+
+  guint available_sequencer_count;
+  guint pcm_channels, buffer_size, samplerate, format;
+  guint cache_buffer_size;
+  guint nth_card;
+  guint i, i_stop;
+  guint j;
+  gboolean do_grow;
+  gboolean is_output;
+  gboolean use_cache;
+
+  application_context = ags_application_context_get_instance();
+
+  config = ags_config_get_instance();
+
+  start_sequencer = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
+
+  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+
+  jack_server = NULL;
+  core_audio_server = NULL;
+  
+  sound_server = 
+    start_sound_server = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
+
+  while(sound_server != NULL){
+    if(AGS_IS_JACK_SERVER(sound_server->data)){
+      jack_server = sound_server->data;
+    }else if(AGS_IS_CORE_AUDIO_SERVER(sound_server->data)){
+      core_audio_server = sound_server->data;
+    }
+    
+    sound_server = sound_server->next;
+  }
+
+  backend = NULL;
+
+  if(sequencer_type == AGS_TYPE_ALSA_MIDIIN){
+    backend = "alsa";
+  }else if(sequencer_type == AGS_TYPE_OSS_MIDIIN){
+    backend = "oss";
+  }else if(sequencer_type == AGS_TYPE_JACK_MIDIIN){
+    backend = "jack";
+  }else if(sequencer_type == AGS_TYPE_CORE_AUDIO_MIDIIN){
+    backend = "core-audio";
+  }
+  
+  if(backend == NULL){
+    g_warning("apply config - unknown sequencer backend");
+    
+    return;
+  }
+  
+  /* backend - device output */
+  sequencer = start_sequencer;
+
+  available_sequencer_count = 0;
+  
+  while(sequencer != NULL){
+    if(sequencer_type == AGS_TYPE_ALSA_MIDIIN && AGS_IS_ALSA_MIDIIN(sequencer->data)){
+      available_sequencer_count++;
+    }else if(sequencer_type == AGS_TYPE_OSS_MIDIIN && AGS_IS_OSS_MIDIIN(sequencer->data)){
+      available_sequencer_count++;
+    }else if(sequencer_type == AGS_TYPE_JACK_MIDIIN && AGS_IS_JACK_MIDIIN(sequencer->data)){
+      available_sequencer_count++;
+    }else if(sequencer_type == AGS_TYPE_CORE_AUDIO_MIDIIN && AGS_IS_CORE_AUDIO_MIDIIN(sequencer->data)){
+      available_sequencer_count++;
+    }
+
+    sequencer = sequencer->next;
+  }
+
+  /* grow/shrink */
+  nth_card = 0;
+	
+  if(sequencer_count > available_sequencer_count ||
+     sequencer_count < available_sequencer_count){
+    sequencer_group = g_strdup("sequencer");
+
+    do_grow = TRUE;
+
+    if(sequencer_count > available_sequencer_count){
+      do_grow = FALSE;
+    }
+    
+    for(i = 0; i < sequencer_count && i < 256;){
+      io_sequencer = NULL;
+
+      if(!g_key_file_has_group(config->key_file,
+			       sequencer_group)){
+	g_free(sequencer_group);    
+
+	sequencer_group = g_strdup_printf("%s-%d",
+					  AGS_CONFIG_SEQUENCER,
+					  i);
+    	
+	continue;
+      }
+
+      str = ags_config_get_value(config,
+				 sequencer_group,
+				 "backend");
+
+      capability = ags_config_get_value(config,
+					sequencer_group,
+					"capability");
+
+      is_output = TRUE;
+
+      if(capability != NULL &&
+	 !g_ascii_strncasecmp(capability,
+			      "capture",
+			      8)){
+	is_output = FALSE;
+
+	g_free(capability);
+      }
+      
+      if((!g_ascii_strncasecmp(str, backend, strlen(backend) + 1)) == FALSE ||
+	 !is_output){
+	g_free(str);
+	
+	/* iter */
+	i++;
+	
+	continue;
+      }
+
+      g_free(str);
+      
+      /* add/remove or get sequencer */
+      if(i >= available_sequencer_count){
+	if(sequencer_type == AGS_TYPE_ALSA_MIDIIN){
+	  io_sequencer = (GObject *) ags_alsa_midiin_new();
+	}else if(sequencer_type == AGS_TYPE_OSS_MIDIIN){
+	  io_sequencer = (GObject *) ags_oss_midiin_new();
+	}else if(sequencer_type == AGS_TYPE_JACK_MIDIIN){
+	  io_sequencer = ags_sound_server_register_sequencer(AGS_SOUND_SERVER(jack_server),
+							     FALSE);
+	}else if(sequencer_type == AGS_TYPE_CORE_AUDIO_MIDIIN){
+	  io_sequencer = ags_sound_server_register_sequencer(AGS_SOUND_SERVER(core_audio_server),
+							     FALSE);
+	}
+
+	if(io_sequencer != NULL){
+	  g_object_ref(io_sequencer);
+
+	  start_sequencer = g_list_append(start_sequencer,
+					  io_sequencer);
+	}
+      }else{
+	sequencer = start_sequencer;
+
+	for(j = 0; sequencer != NULL;){
+	  if(((sequencer_type == AGS_TYPE_ALSA_MIDIIN && AGS_IS_ALSA_MIDIIN(sequencer->data)) ||
+	      (sequencer_type == AGS_TYPE_OSS_MIDIIN && AGS_IS_OSS_MIDIIN(sequencer->data)) ||
+	      (sequencer_type == AGS_TYPE_JACK_MIDIIN && AGS_IS_JACK_MIDIIN(sequencer->data)) ||
+	      (sequencer_type == AGS_TYPE_CORE_AUDIO_MIDIIN && AGS_IS_CORE_AUDIO_MIDIIN(sequencer->data))) &&
+	     ((do_grow && j == nth_card) ||
+	      (!do_grow && j == sequencer_count))){
+	    io_sequencer = sequencer->data;
+	    nth_card++;
+
+	    break;
+	  }
+
+	  /* iter sequencer */
+	  if((sequencer_type == AGS_TYPE_ALSA_MIDIIN && AGS_IS_ALSA_MIDIIN(sequencer->data)) ||
+	     (sequencer_type == AGS_TYPE_OSS_MIDIIN && AGS_IS_OSS_MIDIIN(sequencer->data)) ||
+	     (sequencer_type == AGS_TYPE_JACK_MIDIIN && AGS_IS_JACK_MIDIIN(sequencer->data)) ||
+	     (sequencer_type == AGS_TYPE_CORE_AUDIO_MIDIIN && AGS_IS_CORE_AUDIO_MIDIIN(sequencer->data))){
+	    j++;
+	    nth_card++;
+	  }
+
+	  sequencer = sequencer->next;
+	}
+
+	if(io_sequencer != NULL){
+	  start_sequencer = g_list_remove(start_sequencer,
+					  io_sequencer);
+
+	  /* sequencer thread */
+	  sequencer_thread = ags_thread_find_type(audio_loop,
+						  AGS_TYPE_SEQUENCER_THREAD);
+
+	  while(sequencer_thread != NULL){
+	    AgsThread *next;
+    
+	    next = g_atomic_pointer_get(&(sequencer_thread->next));
+    
+	    if(AGS_IS_SEQUENCER_THREAD(sequencer_thread) &&
+	       AGS_SEQUENCER_THREAD(sequencer_thread)->sequencer == io_sequencer){
+	      ags_thread_remove_child(audio_loop,
+				      sequencer_thread);
+
+	      g_object_run_dispose((GObject *) sequencer_thread);
+	      g_object_unref((GObject *) sequencer_thread);
+
+	      break;
+	    }
+
+	    sequencer_thread = next;
+	  }
+
+	  if(AGS_IS_JACK_MIDIIN(io_sequencer)){
+	    ags_sound_server_unregister_sequencer(AGS_SOUND_SERVER(jack_server),
+						  io_sequencer);
+	  }else if(AGS_IS_CORE_AUDIO_MIDIIN(io_sequencer)){
+	    ags_sound_server_unregister_sequencer(AGS_SOUND_SERVER(core_audio_server),
+						  io_sequencer);
+	  }	  
+	}
+      }
+
+      /* device */
+      str = ags_config_get_value(config,
+				 sequencer_group,
+				 "device");
+      
+      if(str != NULL){
+	ags_sequencer_set_device(AGS_SEQUENCER(sequencer),
+				 str);
+	g_free(str);
+      }
+      
+      /* iter */
+      i++;
+    }
+  }
+}
+
+void
 ags_apply_sound_config_launch(AgsTask *task)
 {
   AgsApplySoundConfig *apply_sound_config;
@@ -311,30 +1081,49 @@ ags_apply_sound_config_launch(AgsTask *task)
   AgsApplicationContext *application_context;
   AgsConfig *config;
 
-  GObject *soundcard;
-  GObject *sequencer;
-
+  GObject *default_soundcard;
+  
   GList *start_lv2_plugin, *lv2_plugin;
   GList *start_sound_server, *sound_server;
-  GList *start_orig_soundcard, *orig_soundcard;
-  GList *start_orig_sequencer, *orig_sequencer;
+  GList *start_soundcard, *soundcard;
+  GList *start_sequencer, *sequencer;
   GList *start_audio, *audio;
   GList *start_list, *list;
 
   gchar *soundcard_group;
   gchar *sequencer_group;
-  gchar *capability;
   gchar *str;
-
+  gchar *capability;
+  
   gdouble frequency;
   guint samplerate;
   guint buffer_size;
+
+  guint alsa_devout_count;
+  guint alsa_devin_count;
+  guint alsa_midiin_count;
+  guint oss_devout_count;
+  guint oss_devin_count;
+  guint oss_midiin_count;
+  guint pulse_devout_count;
+  guint pulse_devin_count;
+  guint available_pulse_devout_count;
+  guint jack_devout_count;
+  guint jack_devin_count;
+  guint jack_midiin_count;
+  guint core_audio_devout_count;
+  guint core_audio_devin_count;
+  guint core_audio_midiin_count;
+  guint wasapi_devout_count;
+  guint wasapi_devin_count;
+  guint wasapi_midiin_count;
+
   guint i;
   gboolean has_core_audio;
   gboolean has_pulse;
   gboolean has_jack;
-  gboolean is_output;
-  
+  gboolean is_output;  
+
   static const guint staging_flags = (AGS_SOUND_STAGING_CANCEL |
 				      AGS_SOUND_STAGING_REMOVE);
 
@@ -342,14 +1131,14 @@ ags_apply_sound_config_launch(AgsTask *task)
 
   application_context = ags_application_context_get_instance();
 
+  config = ags_config_get_instance();
+
   audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
   task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
   
-  start_orig_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
-  start_orig_sequencer = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
-  
-  config = ags_config_get_instance();
+  start_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+  start_sequencer = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));  
 
   if(apply_sound_config->config_data != NULL){
     ags_config_clear(config);
@@ -408,7 +1197,8 @@ ags_apply_sound_config_launch(AgsTask *task)
 					  AGS_TYPE_SEQUENCER_THREAD);
 
   while(sequencer_thread != NULL){
-    if(AGS_IS_SEQUENCER_THREAD(sequencer_thread)){
+    if(!AGS_IS_CORE_AUDIO_MIDIIN(AGS_SEQUENCER_THREAD(sequencer_thread)->sequencer) &&
+       AGS_IS_SEQUENCER_THREAD(sequencer_thread)){
       ags_thread_stop(sequencer_thread);
     }
     
@@ -518,222 +1308,30 @@ ags_apply_sound_config_launch(AgsTask *task)
 
     audio = audio->next;
   }
-  
-  /* stop sound server */
-  if(jack_server != NULL){
-#ifdef AGS_WITH_JACK      
-    AgsJackClient *default_client;
-    AgsJackClient *input_client;
 
-    g_object_get(jack_server,
-		 "default-jack-client", &default_client,
-		 "input-jack-client", &input_client,
-		 NULL);
+  alsa_devout_count = 0;
+  alsa_devin_count = 0;
     
-    ags_jack_server_disconnect_client(jack_server);
-
-    ags_jack_server_remove_client(jack_server,
-				  (GObject *) default_client);
-    ags_jack_server_remove_client(jack_server,
-				  (GObject *) input_client);
-
-    if(default_client != NULL){
-      g_object_unref(default_client);
-    }
+  oss_devout_count = 0;
+  oss_devin_count = 0;
     
-    if(input_client != NULL){
-      g_object_unref(input_client);
-    }
-#endif
-  }
-
-  if(pulse_server != NULL){
-#ifdef AGS_WITH_PULSE
-    AgsPulseClient *pulse_client;
-
-    g_object_get(pulse_server,
-		 "default-pulse-client", &pulse_client,
-		 NULL);
-
-    if(pulse_server->main_loop != NULL){
-      pa_mainloop_quit(pulse_server->main_loop,
-		       0);
-    }
+  jack_devout_count = 0;
+  jack_devin_count = 0;
     
-    ags_pulse_server_disconnect_client(pulse_server);
-
-    ags_pulse_server_remove_client(pulse_server,
-				   (GObject *) pulse_client);
+  pulse_devout_count = 0;
+  pulse_devin_count = 0;
     
-    pulse_server->main_loop = NULL;
-    pulse_server->main_loop_api = NULL;
-    
-    if(pulse_client != NULL){
-      g_object_unref(pulse_client);
-    }
-#endif
-  }
-  
-  if(core_audio_server != NULL){
-    list = core_audio_server->client;
+  core_audio_devout_count = 0;
+  core_audio_devin_count = 0;
 
-    while(list != NULL){
-      ags_core_audio_client_deactivate(list->data);
-
-      list = list->next;
-    }
-  }
-  
-  /* remove all soundcard, export and sequencer threads */
-  soundcard_thread = ags_thread_find_type(audio_loop,
-					  AGS_TYPE_SOUNDCARD_THREAD);
-
-  while(soundcard_thread != NULL){
-    AgsThread *next;
-    
-    next = g_atomic_pointer_get(&(soundcard_thread->next));
-    
-    if(AGS_IS_SOUNDCARD_THREAD(soundcard_thread)){
-      ags_thread_remove_child(audio_loop,
-			      soundcard_thread);
-
-      g_object_run_dispose((GObject *) soundcard_thread);
-      g_object_unref((GObject *) soundcard_thread);
-
-      if((AgsThread *) ags_sound_provider_get_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context)) == soundcard_thread){
-	ags_sound_provider_set_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context),
-							NULL);
-      }
-    }
-
-    soundcard_thread = next;
-  }
-  
-  export_thread = ags_thread_find_type(audio_loop,
-				       AGS_TYPE_EXPORT_THREAD);
-    
-  while(export_thread != NULL){
-    AgsThread *next;
-    
-    next = g_atomic_pointer_get(&(export_thread->next));
-    
-    if(AGS_IS_EXPORT_THREAD(export_thread)){
-      ags_thread_remove_child(audio_loop,
-			      export_thread);
-      
-      g_object_run_dispose((GObject *) export_thread);
-      g_object_unref((GObject *) export_thread);
-    }
-
-    export_thread = next;
-  }
-
-  sequencer_thread = ags_thread_find_type(audio_loop,
-					  AGS_TYPE_SEQUENCER_THREAD);
-
-  while(sequencer_thread != NULL){
-    AgsThread *next;
-
-    next = g_atomic_pointer_get(&(sequencer_thread->next));    
-    
-    if(AGS_IS_SEQUENCER_THREAD(sequencer_thread)){
-      ags_thread_remove_child(audio_loop,
-			      sequencer_thread);
-      
-      g_object_run_dispose((GObject *) sequencer_thread);
-      g_object_unref((GObject *) sequencer_thread);
-    }
-
-    sequencer_thread = next;
-  }
-  
-  /* unregister soundcard and sequencer */
-  orig_soundcard = start_orig_soundcard;
-  
-  while(orig_soundcard){
-    if(AGS_IS_JACK_DEVOUT(orig_soundcard->data) || AGS_IS_JACK_DEVIN(orig_soundcard->data)){
-      ags_sound_server_unregister_soundcard(AGS_SOUND_SERVER(jack_server),
-					    orig_soundcard->data);
-    }else if(AGS_IS_PULSE_DEVOUT(orig_soundcard->data)){
-      ags_sound_server_unregister_soundcard(AGS_SOUND_SERVER(pulse_server),
-					    orig_soundcard->data);
-    }else if(AGS_IS_CORE_AUDIO_DEVOUT(orig_soundcard->data) || AGS_IS_CORE_AUDIO_DEVIN(orig_soundcard->data)){
-      ags_sound_server_unregister_soundcard(AGS_SOUND_SERVER(core_audio_server),
-					    orig_soundcard->data);
-    }
-
-    orig_soundcard = orig_soundcard->next;
-  }
-
-  orig_sequencer = start_orig_sequencer;
-  
-  while(orig_sequencer){
-    if(AGS_IS_JACK_MIDIIN(orig_sequencer->data)){
-      ags_sound_server_unregister_sequencer(AGS_SOUND_SERVER(jack_server),
-					    orig_sequencer->data);
-    }else if(AGS_IS_CORE_AUDIO_MIDIIN(orig_sequencer->data)){
-      ags_sound_server_unregister_sequencer(AGS_SOUND_SERVER(core_audio_server),
-					    orig_sequencer->data);
-    }
-    
-    orig_sequencer = orig_sequencer->next;
-  }
-
-  ags_sound_provider_set_default_soundcard(AGS_SOUND_PROVIDER(application_context),
-					   NULL);
-
-  ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
-				   NULL);
-  ags_sound_provider_set_sequencer(AGS_SOUND_PROVIDER(application_context),
-				   NULL);
-
-  if(jack_server != NULL){
-#ifdef AGS_WITH_JACK      
-    g_object_set(jack_server,
-		 "default-jack-client", NULL,
-		 NULL);
-
-    jack_server->n_soundcards = 0;
-    jack_server->n_sequencers = 0;
-#endif
-  }
-
-  if(pulse_server != NULL){
-#ifdef AGS_WITH_PULSE
-    g_object_set(pulse_server,
-		 "default-pulse-client", NULL,
-		 NULL);
-
-    pulse_server->n_soundcards = 0;
-    pulse_server->n_sequencers = 0;
-#endif
-  }
-  
-  /* read config */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_THREAD,
-			     "max-precision");
-  
-  if(str != NULL){
-    gdouble max_precision;
-    
-    /* change max precision */
-    max_precision = g_ascii_strtod(str,
-				   NULL);
-    
-    ags_apply_sound_config_change_max_precision(audio_loop,
-						max_precision);  
-  }
+  wasapi_devout_count = 0;
+  wasapi_devin_count = 0;
 
   soundcard = NULL;
 
   soundcard_group = g_strdup("soundcard");
 
   for(i = 0; ; i++){
-    guint pcm_channels, buffer_size, samplerate, format;
-    guint cache_buffer_size;
-    gboolean use_cache;
-
     if(!g_key_file_has_group(config->key_file,
 			     soundcard_group)){
       if(i == 0){
@@ -765,326 +1363,76 @@ ags_apply_sound_config_launch(AgsTask *task)
       is_output = FALSE;
     }
     
-    /* change soundcard */
+    /* check soundcard */    
     if(str != NULL){
       if(!g_ascii_strncasecmp(str,
 			      "core-audio",
 			      11)){
-	soundcard = ags_sound_server_register_soundcard(AGS_SOUND_SERVER(core_audio_server),
-							is_output);
-
-	has_core_audio = TRUE;
+	if(is_output){
+	  core_audio_devout_count++;
+	}else{
+	  core_audio_devin_count++;
+	}
       }else if(!g_ascii_strncasecmp(str,
 				    "pulse",
 				    6)){
-	soundcard = ags_sound_server_register_soundcard(AGS_SOUND_SERVER(pulse_server),
-							is_output);
-
-	has_pulse = TRUE;
+	if(is_output){
+	  pulse_devout_count++;
+	}
       }else if(!g_ascii_strncasecmp(str,
 				    "jack",
 				    5)){
-	if(!is_output){
-	  AgsJackClient *input_client;
-
-	  g_object_get(jack_server,
-		       "input-jack-client", &input_client,
-		       NULL);
-
-	  if(input_client == NULL){
-	    input_client = ags_jack_client_new((GObject *) jack_server);
-	    g_object_set(jack_server,
-			 "input-jack-client", input_client,
-			 NULL);
-	    ags_jack_server_add_client(jack_server,
-				       (GObject *) input_client);
-    
-	    ags_jack_client_open((AgsJackClient *) input_client,
-				 "ags-input-client");	    
-
-	    g_object_unref(input_client);
-	  }
+	if(is_output){
+	  jack_devout_count++;
+	}else{
+	  jack_devin_count++;
 	}
-
-	soundcard = ags_sound_server_register_soundcard(AGS_SOUND_SERVER(jack_server),
-							is_output);
-
-	has_jack = TRUE;
       }else if(!g_ascii_strncasecmp(str,
 				    "wasapi",
 				    7)){
 	if(is_output){
-	  soundcard = (GObject *) ags_wasapi_devout_new();
-
-	  str = ags_config_get_value(config,
-				     soundcard_group,
-				     "wasapi-share-mode");
-
-	  if(str != NULL &&
-	     !g_ascii_strncasecmp(str,
-				  "exclusive",
-				  10)){
-	    ags_wasapi_devout_set_flags(AGS_WASAPI_DEVOUT(soundcard),
-					AGS_WASAPI_DEVOUT_SHARE_MODE_EXCLUSIVE);
-	  }else{
-	    ags_wasapi_devout_unset_flags(AGS_WASAPI_DEVOUT(soundcard),
-					  AGS_WASAPI_DEVOUT_SHARE_MODE_EXCLUSIVE);
-	  }
-
-	  g_free(str);
-	  
-	  str = ags_config_get_value(config,
-				     soundcard_group,
-				     "wasapi-buffer-size");
-
-	  if(str != NULL){
-	    AGS_WASAPI_DEVOUT(soundcard)->wasapi_buffer_size = g_ascii_strtoull(str,
-										NULL,
-										10);
-	    
-	    g_free(str);
-	  }
+	  wasapi_devout_count++;
 	}else{
-	  soundcard = (GObject *) ags_wasapi_devin_new();
-
-	  str = ags_config_get_value(config,
-				     soundcard_group,
-				     "wasapi-share-mode");
-
-	  if(str != NULL &&
-	     !g_ascii_strncasecmp(str,
-				  "exclusive",
-				  10)){
-	    ags_wasapi_devin_set_flags(AGS_WASAPI_DEVIN(soundcard),
-				       AGS_WASAPI_DEVIN_SHARE_MODE_EXCLUSIVE);
-	  }else{
-	    ags_wasapi_devin_unset_flags(AGS_WASAPI_DEVIN(soundcard),
-					 AGS_WASAPI_DEVIN_SHARE_MODE_EXCLUSIVE);
-	  }
-
-	  g_free(str);
-	  
-	  str = ags_config_get_value(config,
-				     soundcard_group,
-				     "wasapi-buffer-size");
-
-	  if(str != NULL){
-	    AGS_WASAPI_DEVIN(soundcard)->wasapi_buffer_size = g_ascii_strtoull(str,
-									       NULL,
-									       10);
-	    
-	    g_free(str);
-	  }
+	  wasapi_devin_count++;
 	}
       }else if(!g_ascii_strncasecmp(str,
 				    "alsa",
 				    5)){
-	gchar *str;
-	
 	if(is_output){
-	  soundcard = (GObject *) ags_alsa_devout_new();
+	  alsa_devout_count++;
 	}else{
-	  soundcard = (GObject *) ags_alsa_devin_new();
+	  alsa_devin_count++;
 	}
       }else if(!g_ascii_strncasecmp(str,
 				    "oss",
 				    4)){
 	if(is_output){
-	  soundcard = (GObject *) ags_oss_devout_new();
+	  oss_devout_count++;
 	}else{
-	  soundcard = (GObject *) ags_oss_devin_new();
+	  oss_devin_count++;
 	}
-      }else{
-	g_warning(i18n("unknown soundcard backend - %s"), str);
-
-	g_free(soundcard_group);    
-	soundcard_group = g_strdup_printf("%s-%d",
-					  AGS_CONFIG_SOUNDCARD,
-					  i);
-    
-	continue;
       }
-    }else{
-      g_warning(i18n("unknown soundcard backend - NULL"));
-
-      g_free(soundcard_group);    
-      soundcard_group = g_strdup_printf("%s-%d",
-					AGS_CONFIG_SOUNDCARD,
-					i);
-          
-      continue;
     }
 
-    if(ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context)) == NULL){
-      ags_sound_provider_set_default_soundcard(AGS_SOUND_PROVIDER(application_context),
-					       soundcard);
-    }
-    
-    ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
-				     g_list_append(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)),
-						   soundcard));
-    g_object_ref(soundcard);
-
-    /* device */
-    str = ags_config_get_value(config,
-			       soundcard_group,
-			       "device");
-
-    if(str != NULL){
-      ags_soundcard_set_device(AGS_SOUNDCARD(soundcard),
-			       str);
-      g_free(str);
-    }
-    
-    /* presets */
-    pcm_channels = AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS;
-    buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
-    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-    format = AGS_SOUNDCARD_DEFAULT_FORMAT;
-
-    str = ags_config_get_value(config,
-			       soundcard_group,
-			       "pcm-channels");
-
-    if(str != NULL){
-      pcm_channels = g_ascii_strtoull(str,
-				      NULL,
-				      10);
-      g_free(str);
-    }
-
-    str = ags_config_get_value(config,
-			       soundcard_group,
-			       "buffer-size");
-
-    if(str != NULL){
-      buffer_size = g_ascii_strtoull(str,
-				     NULL,
-				     10);
-      g_free(str);
-    }
-
-    str = ags_config_get_value(config,
-			       soundcard_group,
-			       "samplerate");
-
-    if(str != NULL){
-      samplerate = g_ascii_strtoull(str,
-				    NULL,
-				    10);
-      g_free(str);
-    }
-
-    str = ags_config_get_value(config,
-			       soundcard_group,
-			       "format");
-
-    if(str != NULL){
-      format = g_ascii_strtoull(str,
-				NULL,
-				10);
-      g_free(str);
-    }
-
-    ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),
-			      pcm_channels,
-			      samplerate,
-			      buffer_size,
-			      format);
-
-    use_cache = TRUE;
-    str = ags_config_get_value(config,
-			       soundcard_group,
-			       "use-cache");
-
-    if(str != NULL &&
-       !g_strncasecmp(str,
-		      "false",
-		      5)){
-      use_cache = FALSE;
-    }
-
-    cache_buffer_size = 4096;
-    str = ags_config_get_value(config,
-			       soundcard_group,
-			       "cache-buffer-size");
-
-    if(str != NULL){
-      cache_buffer_size = g_ascii_strtoull(str,
-					   NULL,
-					   10);
-    }
-
-    if(AGS_IS_PULSE_DEVOUT(soundcard)){
-      GList *start_port, *port;
-
-      g_object_get(soundcard,
-		   "pulse-port", &start_port,
-		   NULL);
-
-      port = start_port;
-
-      while(port != NULL){
-	ags_pulse_port_set_samplerate(port->data,
-				      samplerate);
-	ags_pulse_port_set_pcm_channels(port->data,
-					pcm_channels);
-	ags_pulse_port_set_buffer_size(port->data,
-				       buffer_size);
-	ags_pulse_port_set_format(port->data,
-				  format);
-	ags_pulse_port_set_cache_buffer_size(port->data,
-					     buffer_size * ceil(cache_buffer_size / buffer_size));
-	
-	port = port->next;
-      }
-
-      g_list_free_full(start_port,
-		       g_object_unref);
-    }else if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard)){
-      GList *start_port, *port;
-
-      g_object_get(soundcard,
-		   "core-audio-port", &start_port,
-		   NULL);
-
-      port = start_port;
-      
-      while(port != NULL){
-	ags_core_audio_port_set_samplerate(port->data,
-					   samplerate);
-	ags_core_audio_port_set_pcm_channels(port->data,
-					     pcm_channels);
-	ags_core_audio_port_set_buffer_size(port->data,
-					    buffer_size);
-	ags_core_audio_port_set_format(port->data,
-				       format);
-	ags_core_audio_port_set_cache_buffer_size(port->data,
-						  buffer_size * ceil(cache_buffer_size / buffer_size));
-	
-	port = port->next;
-      }
-    
-      g_list_free_full(start_port,
-		       g_object_unref);
-    }
-  
     g_free(soundcard_group);    
     soundcard_group = g_strdup_printf("%s-%d",
 				      AGS_CONFIG_SOUNDCARD,
 				      i);
   }
 
-  g_free(soundcard_group);
+  g_free(soundcard_group);    
 
-  /* AgsSequencer */
-  sequencer = NULL;
+  alsa_midiin_count = 0;
+    
+  oss_midiin_count = 0;
+    
+  jack_midiin_count = 0;
+  
+  core_audio_midiin_count = 0;
 
   sequencer_group = g_strdup("sequencer");
   
   for(i = 0; ; i++){
-    guint pcm_channels, buffer_size, samplerate, format;
-
     if(!g_key_file_has_group(config->key_file,
 			     sequencer_group)){
       if(i == 0){
@@ -1102,79 +1450,34 @@ ags_apply_sound_config_launch(AgsTask *task)
     str = ags_config_get_value(config,
 			       sequencer_group,
 			       "backend");
-    
-    /* change sequencer */
+
+    /* check sequencer */
     if(str != NULL){
       if(!g_ascii_strncasecmp(str,
-			      "jack",
-			      5)){
-	AgsJackClient *input_client;
-
-	g_object_get(jack_server,
-		     "input-jack-client", &input_client,
-		     NULL);
-
-	if(input_client == NULL){
-	  input_client = ags_jack_client_new((GObject *) jack_server);
-	  g_object_set(jack_server,
-		       "input-jack-client", input_client,
-		       NULL);
-	  ags_jack_server_add_client(jack_server,
-				     (GObject *) input_client);
-    
-	  ags_jack_client_open((AgsJackClient *) input_client,
-			       "ags-input-client");
-
-	  g_object_unref(input_client);
-	}
-
-	sequencer = ags_sound_server_register_sequencer(AGS_SOUND_SERVER(jack_server),
-							FALSE);
-
-	has_jack = TRUE;
+			      "core-audio",
+			      11)){
+	core_audio_midiin_count++;
+      }else if(!g_ascii_strncasecmp(str,
+				    "pulse",
+				    6)){
+	alsa_midiin_count++;
+      }else if(!g_ascii_strncasecmp(str,
+				    "jack",
+				    5)){
+	jack_midiin_count++;
+      }else if(!g_ascii_strncasecmp(str,
+				    "wasapi",
+				    7)){
+	wasapi_midiin_count++;
       }else if(!g_ascii_strncasecmp(str,
 				    "alsa",
 				    5)){
-	sequencer = (GObject *) ags_alsa_midiin_new();
+	alsa_midiin_count++;
       }else if(!g_ascii_strncasecmp(str,
 				    "oss",
 				    4)){
-	sequencer = (GObject *) ags_oss_midiin_new();
-      }else{
-	g_warning(i18n("unknown sequencer backend - %s"), str);
-
-	g_free(sequencer_group);    
-	sequencer_group = g_strdup_printf("%s-%d",
-					  AGS_CONFIG_SEQUENCER,
-					  i);
-    
-	continue;
+	oss_midiin_count++;
       }
-    }else{
-      g_warning(i18n("unknown sequencer backend - NULL"));
-
-      g_free(sequencer_group);    
-      sequencer_group = g_strdup_printf("%s-%d",
-					AGS_CONFIG_SEQUENCER,
-					i);
-          
-      continue;
-    }
-    
-    ags_sound_provider_set_sequencer(AGS_SOUND_PROVIDER(application_context),
-				     g_list_append(ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context)),
-						   sequencer));
-    g_object_ref(sequencer);
-
-    /* device */
-    str = ags_config_get_value(config,
-			       sequencer_group,
-			       "device");
-    
-    if(str != NULL){
-      ags_sequencer_set_device(AGS_SEQUENCER(sequencer),
-			       str);
-      g_free(str);
     }
 
     g_free(sequencer_group);    
@@ -1183,65 +1486,196 @@ ags_apply_sound_config_launch(AgsTask *task)
 				      i);
   }
 
-  g_free(sequencer_group);
+  g_free(sequencer_group);    
 
-  /* create threads */
-  list = 
-    start_list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+  /* ALSA - device output/input */  
+  ags_apply_sound_config_soundcard_presets(task,
+					   AGS_TYPE_ALSA_DEVOUT, alsa_devout_count);
 
-  while(list != NULL){
-    guint soundcard_capability;
+  ags_apply_sound_config_soundcard_presets(task,
+					   AGS_TYPE_ALSA_DEVIN, alsa_devin_count);
 
-    soundcard_capability = ags_soundcard_get_capability(AGS_SOUNDCARD(list->data));
+  ags_apply_sound_config_sequencer_presets(task,
+					   AGS_TYPE_ALSA_MIDIIN, alsa_midiin_count);
+  
+  /* OSSv4 - device output/input */  
+  ags_apply_sound_config_soundcard_presets(task,
+					   AGS_TYPE_OSS_DEVOUT, oss_devout_count);
+
+  ags_apply_sound_config_soundcard_presets(task,
+					   AGS_TYPE_OSS_DEVIN, oss_devin_count);
+
+  ags_apply_sound_config_sequencer_presets(task,
+					   AGS_TYPE_OSS_MIDIIN, oss_midiin_count);
+  
+  /* Pulseaudio - device output/input */  
+  ags_apply_sound_config_soundcard_presets(task,
+					   AGS_TYPE_PULSE_DEVOUT, pulse_devout_count);
+
+  ags_apply_sound_config_soundcard_presets(task,
+					   AGS_TYPE_PULSE_DEVIN, pulse_devin_count);
+  
+  /* JACK - device output/input */  
+  ags_apply_sound_config_soundcard_presets(task,
+					   AGS_TYPE_JACK_DEVOUT, jack_devout_count);
+
+  ags_apply_sound_config_soundcard_presets(task,
+					   AGS_TYPE_JACK_DEVIN, jack_devin_count);
+  
+  ags_apply_sound_config_sequencer_presets(task,
+					   AGS_TYPE_JACK_MIDIIN, jack_midiin_count);
+  
+  /* CoreAudio - device output/input */  
+  ags_apply_sound_config_soundcard_presets(task,
+					   AGS_TYPE_CORE_AUDIO_DEVOUT, core_audio_devout_count);
+
+  ags_apply_sound_config_soundcard_presets(task,
+					   AGS_TYPE_CORE_AUDIO_DEVIN, core_audio_devin_count);
+  
+  ags_apply_sound_config_sequencer_presets(task,
+					   AGS_TYPE_CORE_AUDIO_MIDIIN, core_audio_midiin_count);
+  
+  /* WASAPI - device output/input */  
+  ags_apply_sound_config_soundcard_presets(task,
+					   AGS_TYPE_WASAPI_DEVOUT, wasapi_devout_count);
+
+  ags_apply_sound_config_soundcard_presets(task,
+					   AGS_TYPE_WASAPI_DEVIN, wasapi_devin_count);
+  
+  ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
+				   start_soundcard);
+
+  /* default soundcard and soundcard thread */
+  if(start_soundcard != NULL){
+    ags_sound_provider_set_default_soundcard(AGS_SOUND_PROVIDER(application_context),
+					     start_soundcard->data);
+
+    soundcard_thread = ags_thread_find_type(audio_loop,
+					    AGS_TYPE_SOUNDCARD_THREAD);
+
+    while(soundcard_thread != NULL){
+      AgsThread *next;
     
-    soundcard_thread = (AgsThread *) ags_soundcard_thread_new(list->data,
-							      soundcard_capability);
-    ags_thread_add_child_extended(AGS_THREAD(audio_loop),
-				  (AgsThread *) soundcard_thread,
-				  TRUE, TRUE);
-
-    /* export thread */
-    export_thread = NULL;
+      next = g_atomic_pointer_get(&(soundcard_thread->next));
     
-    /* export thread */
-    if(AGS_IS_ALSA_DEVOUT(list->data) ||
-       AGS_IS_OSS_DEVOUT(list->data) ||
-       AGS_IS_WASAPI_DEVOUT(list->data) ||
-       AGS_IS_JACK_DEVOUT(list->data) ||
-       AGS_IS_PULSE_DEVOUT(list->data) ||
-       AGS_IS_CORE_AUDIO_DEVOUT(list->data)){
-      export_thread = (AgsThread *) ags_export_thread_new(list->data,
-							  NULL);
-      ags_thread_add_child_extended(AGS_THREAD(audio_loop),
-				    (AgsThread *) export_thread,
-				    TRUE, TRUE);
-    }    
+      if(AGS_IS_SOUNDCARD_THREAD(soundcard_thread) &&
+	 AGS_SOUNDCARD_THREAD(soundcard_thread)->soundcard == start_soundcard->data){
+	ags_sound_provider_set_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context),
+							(GObject *) soundcard_thread);
 
-    /* default soundcard thread */
-    if(ags_sound_provider_get_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context)) == NULL){
-      ags_sound_provider_set_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context),
-						      (GObject *) soundcard_thread);
+	break;
+      }
+
+      soundcard_thread = next;
     }
+  }else{
+    ags_sound_provider_set_default_soundcard(AGS_SOUND_PROVIDER(application_context),
+					     NULL);
 
-    list = list->next;
+    ags_sound_provider_set_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context),
+						    NULL);
   }
   
-  list = 
-    start_list = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
-      
-  while(list != NULL){
-    sequencer_thread = (AgsThread *) ags_sequencer_thread_new(list->data);
-    ags_thread_add_child_extended(AGS_THREAD(audio_loop),
-				  (AgsThread *) sequencer_thread,
-				  TRUE, TRUE);
+  /* stop sound server */
+  if(jack_server != NULL &&
+     jack_devout_count == 0 &&
+     jack_devin_count == 0 &&
+     jack_midiin_count == 0){
+#ifdef AGS_WITH_JACK      
+    AgsJackClient *default_client;
+    AgsJackClient *input_client;
 
-    list = list->next;
+    g_object_get(jack_server,
+		 "default-jack-client", &default_client,
+		 "input-jack-client", &input_client,
+		 NULL);
+    
+    ags_jack_server_disconnect_client(jack_server);
+
+    ags_jack_server_remove_client(jack_server,
+				  (GObject *) default_client);
+    ags_jack_server_remove_client(jack_server,
+				  (GObject *) input_client);
+
+    if(default_client != NULL){
+      g_object_unref(default_client);
+    }
+    
+    if(input_client != NULL){
+      g_object_unref(input_client);
+    }
+
+    jack_server->n_soundcards = 0;
+    jack_server->n_sequencers = 0;
+#endif
+  }
+
+  if(pulse_server != NULL &&
+     pulse_devout_count == 0){
+#ifdef AGS_WITH_PULSE
+    AgsPulseClient *pulse_client;
+
+    g_object_get(pulse_server,
+		 "default-pulse-client", &pulse_client,
+		 NULL);
+
+    if(pulse_server->main_loop != NULL){
+      pa_mainloop_quit(pulse_server->main_loop,
+		       0);
+    }
+    
+    ags_pulse_server_disconnect_client(pulse_server);
+
+    ags_pulse_server_remove_client(pulse_server,
+				   (GObject *) pulse_client);
+    
+    pulse_server->main_loop = NULL;
+    pulse_server->main_loop_api = NULL;
+    
+    if(pulse_client != NULL){
+      g_object_unref(pulse_client);
+    }
+
+    pulse_server->n_soundcards = 0;
+    pulse_server->n_sequencers = 0;
+#endif
+  }
+  
+  if(core_audio_server != NULL &&
+     core_audio_devout_count == 0 &&
+     core_audio_devin_count == 0 &&
+     core_audio_midiin_count == 0){
+    list = core_audio_server->client;
+
+    while(list != NULL){
+      ags_core_audio_client_deactivate(list->data);
+
+      list = list->next;
+    }
+  }
+
+  //---------------------------------------------------------  
+
+  /* read config */
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_THREAD,
+			     "max-precision");
+  
+  if(str != NULL){
+    gdouble max_precision;
+    
+    /* change max precision */
+    max_precision = g_ascii_strtod(str,
+				   NULL);
+    
+    ags_apply_sound_config_change_max_precision(audio_loop,
+						max_precision);  
   }
 
   /* change frequency */
-  soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
   
-  ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+  ags_soundcard_get_presets(AGS_SOUNDCARD(default_soundcard),
 			    NULL,
 			    &samplerate,
 			    &buffer_size,
@@ -1323,13 +1757,14 @@ ags_apply_sound_config_launch(AgsTask *task)
 
   while(audio != NULL){
     g_object_set(audio->data,
-		 "output-soundcard", soundcard,
+		 "output-soundcard", start_soundcard->data,
 		 NULL);
 
     audio = audio->next;
   }
 
   /* launch */
+#if 0
   if(has_core_audio){
     ags_core_audio_client_open((AgsCoreAudioClient *) core_audio_server->default_client,
 			       "ags-default-client");
@@ -1346,35 +1781,11 @@ ags_apply_sound_config_launch(AgsTask *task)
   if(has_jack){    
     ags_jack_server_connect_client(jack_server);
   }
-
+#endif
+  
   g_list_free_full(start_sound_server,
 		   g_object_unref);
   g_list_free_full(start_audio,
-		   g_object_unref);
-
-  /* run dispose */
-  orig_soundcard = start_orig_soundcard;
-  
-  while(orig_soundcard != NULL){    
-    g_object_run_dispose((GObject *) orig_soundcard->data);
-    g_object_unref((GObject *) orig_soundcard->data);
-    
-    orig_soundcard = orig_soundcard->next;
-  }
-
-  g_list_free_full(start_orig_soundcard,
-		   g_object_unref);
-
-  orig_sequencer = start_orig_sequencer;
-  
-  while(orig_sequencer != NULL){
-    g_object_run_dispose((GObject *) orig_sequencer->data);
-    g_object_unref((GObject *) orig_sequencer->data);
-    
-    orig_sequencer = orig_sequencer->next;
-  }
-
-  g_list_free_full(start_orig_sequencer,
 		   g_object_unref);
 
   g_object_unref(audio_loop);

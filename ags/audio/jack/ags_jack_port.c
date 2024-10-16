@@ -297,7 +297,7 @@ ags_jack_port_set_property(GObject *gobject,
 	g_free(jack_port->port_name);
       }
 
-      jack_port->port_name = port_name;
+      jack_port->port_name = g_strdup(port_name);
 
 #ifdef AGS_WITH_JACK
       if(jack_port->port != NULL){
@@ -729,6 +729,8 @@ ags_jack_port_find(GList *jack_port,
 			   port_name)){
       return(jack_port);
     }
+
+    jack_port = jack_port->next;
   }
 #endif
 
