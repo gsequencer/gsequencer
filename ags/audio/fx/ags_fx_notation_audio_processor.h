@@ -129,6 +129,8 @@ void ags_fx_notation_audio_processor_key_pressure(AgsFxNotationAudioProcessor *f
 						  guint key_mode);
 
 void ags_fx_notation_audio_processor_play(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
+
+G_DEPRECATED
 void ags_fx_notation_audio_processor_record(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
 void ags_fx_notation_audio_processor_feed(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
 

@@ -103,19 +103,27 @@ gdouble ags_envelope_util_get_amount(AgsEnvelopeUtil *envelope_util);
 void ags_envelope_util_set_amount(AgsEnvelopeUtil *envelope_util,
 				  gdouble amount);
 
+G_DEPRECATED
 gdouble ags_envelope_util_get_wah_wah_lfo_depth(AgsEnvelopeUtil *envelope_util);
+G_DEPRECATED
 void ags_envelope_util_set_wah_wah_lfo_depth(AgsEnvelopeUtil *envelope_util,
 					    gdouble wah_wah_lfo_depth);
 
+G_DEPRECATED
 gdouble ags_envelope_util_get_wah_wah_lfo_freq(AgsEnvelopeUtil *envelope_util);
+G_DEPRECATED
 void ags_envelope_util_set_wah_wah_lfo_freq(AgsEnvelopeUtil *envelope_util,
 					   gdouble wah_wah_lfo_freq);
 
+G_DEPRECATED
 gdouble ags_envelope_util_get_wah_wah_tuning(AgsEnvelopeUtil *envelope_util);
+G_DEPRECATED
 void ags_envelope_util_set_wah_wah_tuning(AgsEnvelopeUtil *envelope_util,
 					 gdouble wah_wah_tuning);
 
+G_DEPRECATED
 guint ags_envelope_util_get_wah_wah_lfo_offset(AgsEnvelopeUtil *envelope_util);
+G_DEPRECATED
 void ags_envelope_util_set_wah_wah_lfo_offset(AgsEnvelopeUtil *envelope_util,
 					      guint wah_wah_lfo_offset);
 
