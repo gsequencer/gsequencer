@@ -459,7 +459,7 @@ ags_osc_server_preferences_disconnect(AgsConnectable *connectable)
   /* IPv4 */
   g_object_disconnect(G_OBJECT(osc_server_preferences->enable_ip4),
 		      "any_signal::toggled",
-		      G_CALLBACK(ags_osc_server_preferences_enable_ip6_callback),
+		      G_CALLBACK(ags_osc_server_preferences_enable_ip4_callback),
 		      osc_server_preferences,
 		      NULL);
 
