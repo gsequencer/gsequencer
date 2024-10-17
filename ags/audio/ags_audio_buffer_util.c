@@ -41,6 +41,9 @@
 #include <math.h>
 #include <complex.h>
 
+//FIXME:JK: disabled because of silent output
+#undef AGS_VECTOR_256_FUNCTIONS
+
 /**
  * SECTION:ags_audio_buffer_util
  * @short_description: audio buffer util
@@ -2562,12 +2565,12 @@ ags_audio_buffer_util_copy_s8_to_s8(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8s8(NULL,
 				       source_arr->vector.vec_s8->mem_s8, 1,
 				       source, source_stride,
-				       32);
+				       256);
 
       ags_audio_buffer_util_fill_v8s8(NULL,
 				       destination_arr->vector.vec_s8->mem_s8, 1,
 				       destination, destination_stride,
-				       32);
+				       256);
 
       for(j = 0; j < 32; j++){
 	destination_arr->vector.vec_s8->mem_s8[j] += source_arr->vector.vec_s8->mem_s8[j];
@@ -2576,7 +2579,7 @@ ags_audio_buffer_util_copy_s8_to_s8(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8s8(NULL,
 					destination, destination_stride,
 					destination_arr->vector.vec_s8->mem_s8, 1,
-					32);
+					256);
 
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -2849,12 +2852,12 @@ ags_audio_buffer_util_copy_s8_to_s16(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8double_from_s8(NULL,
 						  source_arr->vector.vec_double->mem_double, 1,
 						  source, source_stride,
-						  32);
+						  256);
 
       ags_audio_buffer_util_fill_v8double_from_s16(NULL,
 						   destination_arr->vector.vec_double->mem_double, 1,
 						   destination, destination_stride,
-						   32);
+						   256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_double->mem_double[j] *= scale;
@@ -2865,7 +2868,7 @@ ags_audio_buffer_util_copy_s8_to_s16(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8double_as_s16(NULL,
 						  destination, destination_stride,
 						  destination_arr->vector.vec_double->mem_double, 1,
-						  32);
+						  256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -3149,12 +3152,12 @@ ags_audio_buffer_util_copy_s8_to_s24(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8double_from_s8(NULL,
 						  source_arr->vector.vec_double->mem_double, 1,
 						  source, source_stride,
-						  32);
+						  256);
 
       ags_audio_buffer_util_fill_v8double_from_s32(NULL,
 						   destination_arr->vector.vec_double->mem_double, 1,
 						   destination, destination_stride,
-						   32);
+						   256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_double->mem_double[j] *= scale;
@@ -3165,7 +3168,7 @@ ags_audio_buffer_util_copy_s8_to_s24(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8double_as_s32(NULL,
 						  destination, destination_stride,
 						  destination_arr->vector.vec_double->mem_double, 1,
-						  32);
+						  256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -3449,12 +3452,12 @@ ags_audio_buffer_util_copy_s8_to_s32(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8double_from_s8(NULL,
 						  source_arr->vector.vec_double->mem_double, 1,
 						  source, source_stride,
-						  32);
+						  256);
 
       ags_audio_buffer_util_fill_v8double_from_s32(NULL,
 						   destination_arr->vector.vec_double->mem_double, 1,
 						   destination, destination_stride,
-						   32);
+						   256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_double->mem_double[j] *= scale;
@@ -3465,7 +3468,7 @@ ags_audio_buffer_util_copy_s8_to_s32(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8double_as_s32(NULL,
 						  destination, destination_stride,
 						  destination_arr->vector.vec_double->mem_double, 1,
-						  32);
+						  256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -3749,12 +3752,12 @@ ags_audio_buffer_util_copy_s8_to_s64(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8double_from_s8(NULL,
 						  source_arr->vector.vec_double->mem_double, 1,
 						  source, source_stride,
-						  32);
+						  256);
 
       ags_audio_buffer_util_fill_v8double_from_s64(NULL,
 						   destination_arr->vector.vec_double->mem_double, 1,
 						   destination, destination_stride,
-						   32);
+						   256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_double->mem_double[j] *= scale;
@@ -3765,7 +3768,7 @@ ags_audio_buffer_util_copy_s8_to_s64(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8double_as_s64(NULL,
 						  destination, destination_stride,
 						  destination_arr->vector.vec_double->mem_double, 1,
-						  32);
+						  256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -4050,12 +4053,12 @@ ags_audio_buffer_util_copy_s8_to_float(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8float_from_s8(NULL,
 						 source_arr->vector.vec_float->mem_float, 1,
 						 source, source_stride,
-						 32);
+						 256);
 
       ags_audio_buffer_util_fill_v8float(NULL,
 					 destination_arr->vector.vec_float->mem_float, 1,
 					 destination, destination_stride,
-					 32);
+					 256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_float->mem_float[j] /= (gfloat) normalize_divisor;
@@ -4066,7 +4069,7 @@ ags_audio_buffer_util_copy_s8_to_float(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8float(NULL,
 					  destination, destination_stride,
 					  destination_arr->vector.vec_float->mem_float, 1,
-					  32);
+					  256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -4349,12 +4352,12 @@ ags_audio_buffer_util_copy_s8_to_double(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8double_from_s8(NULL,
 						  source_arr->vector.vec_double->mem_double, 1,
 						  source, source_stride,
-						  32);
+						  256);
 
       ags_audio_buffer_util_fill_v8double(NULL,
 					 destination_arr->vector.vec_double->mem_double, 1,
 					 destination, destination_stride,
-					 32);
+					 256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_double->mem_double[j] /= normalize_divisor;
@@ -4365,7 +4368,7 @@ ags_audio_buffer_util_copy_s8_to_double(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8double(NULL,
 					  destination, destination_stride,
 					  destination_arr->vector.vec_double->mem_double, 1,
-					  32);
+					  256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -4647,12 +4650,12 @@ ags_audio_buffer_util_copy_s16_to_s8(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8double_from_s16(NULL,
 						   source_arr->vector.vec_double->mem_double, 1,
 						   source, source_stride,
-						   32);
+						   256);
 
       ags_audio_buffer_util_fill_v8double_from_s8(NULL,
 						   destination_arr->vector.vec_double->mem_double, 1,
 						   destination, destination_stride,
-						   32);
+						   256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_double->mem_double[j] *= scale;
@@ -4663,7 +4666,7 @@ ags_audio_buffer_util_copy_s16_to_s8(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8double_as_s8(NULL,
 						 destination, destination_stride,
 						 destination_arr->vector.vec_double->mem_double, 1,
-						 32);
+						 256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -4893,8 +4896,6 @@ ags_audio_buffer_util_copy_s16_to_s8(AgsAudioBufferUtil *audio_buffer_util,
   }
 }
 
-// #undef AGS_VECTOR_256_FUNCTIONS
-
 /**
  * ags_audio_buffer_util_copy_s16_to_s16:
  * @audio_buffer_util: the #AgsAudioBufferUtil-struct
@@ -4947,21 +4948,21 @@ ags_audio_buffer_util_copy_s16_to_s16(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8s16(NULL,
 				       source_arr->vector.vec_s16->mem_s16, 1,
 				       source, source_stride,
-				       32);
+				       256);
 
       ags_audio_buffer_util_fill_v8s16(NULL,
 				       destination_arr->vector.vec_s16->mem_s16, 1,
 				       destination, destination_stride,
-				       32);
+				       256);
 
       for(j = 0; j < 32; j++){
-	destination_arr->vector.vec_s16->mem_s16[j] += source_arr->vector.vec_s16->mem_s16[j];
+	destination_arr->vector.vec_s16->mem_s16[j] = (ags_v8s16) destination_arr->vector.vec_s16->mem_s16[j] + (ags_v8s16) source_arr->vector.vec_s16->mem_s16[j];
       }
     
       ags_audio_buffer_util_fetch_v8s16(NULL,
 					destination, destination_stride,
 					destination_arr->vector.vec_s16->mem_s16, 1,
-					32);
+					256);
 
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -5233,12 +5234,12 @@ ags_audio_buffer_util_copy_s16_to_s24(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8double_from_s16(NULL,
 						   source_arr->vector.vec_double->mem_double, 1,
 						   source, source_stride,
-						   32);
+						   256);
 
       ags_audio_buffer_util_fill_v8double_from_s32(NULL,
 						   destination_arr->vector.vec_double->mem_double, 1,
 						   destination, destination_stride,
-						   32);
+						   256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_double->mem_double[j] *= scale;
@@ -5249,7 +5250,7 @@ ags_audio_buffer_util_copy_s16_to_s24(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8double_as_s32(NULL,
 						  destination, destination_stride,
 						  destination_arr->vector.vec_double->mem_double, 1,
-						  32);
+						  256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -5488,12 +5489,12 @@ ags_audio_buffer_util_copy_s16_to_s32(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8double_from_s16(NULL,
 						   source_arr->vector.vec_double->mem_double, 1,
 						   source, source_stride,
-						   32);
+						   256);
 
       ags_audio_buffer_util_fill_v8double_from_s32(NULL,
 						   destination_arr->vector.vec_double->mem_double, 1,
 						   destination, destination_stride,
-						   32);
+						   256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_double->mem_double[j] *= scale;
@@ -5504,7 +5505,7 @@ ags_audio_buffer_util_copy_s16_to_s32(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8double_as_s32(NULL,
 						  destination, destination_stride,
 						  destination_arr->vector.vec_double->mem_double, 1,
-						  32);
+						  256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -5743,12 +5744,12 @@ ags_audio_buffer_util_copy_s16_to_s64(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8double_from_s16(NULL,
 						   source_arr->vector.vec_double->mem_double, 1,
 						   source, source_stride,
-						   32);
+						   256);
 
       ags_audio_buffer_util_fill_v8double_from_s64(NULL,
 						   destination_arr->vector.vec_double->mem_double, 1,
 						   destination, destination_stride,
-						   32);
+						   256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_double->mem_double[j] *= scale;
@@ -5759,7 +5760,7 @@ ags_audio_buffer_util_copy_s16_to_s64(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8double_as_s64(NULL,
 						  destination, destination_stride,
 						  destination_arr->vector.vec_double->mem_double, 1,
-						  32);
+						  256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -5999,23 +6000,23 @@ ags_audio_buffer_util_copy_s16_to_float(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8float_from_s16(NULL,
 						  source_arr->vector.vec_float->mem_float, 1,
 						  source, source_stride,
-						  32);
+						  256);
 
       ags_audio_buffer_util_fill_v8float(NULL,
 					 destination_arr->vector.vec_float->mem_float, 1,
 					 destination, destination_stride,
-					 32);
+					 256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_float->mem_float[j] /= (gfloat) normalize_divisor;
 	
-	destination_arr->vector.vec_float->mem_float[j] += source_arr->vector.vec_float->mem_float[j];
+	destination_arr->vector.vec_float->mem_float[j] = (ags_v8float) destination_arr->vector.vec_float->mem_float[j] + (ags_v8float) source_arr->vector.vec_float->mem_float[j];
       }
     
       ags_audio_buffer_util_fetch_v8float(NULL,
 					  destination, destination_stride,
 					  destination_arr->vector.vec_float->mem_float, 1,
-					  32);
+					  256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -6255,12 +6256,12 @@ ags_audio_buffer_util_copy_s16_to_double(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8double_from_s16(NULL,
 						   source_arr->vector.vec_double->mem_double, 1,
 						   source, source_stride,
-						   32);
+						   256);
 
       ags_audio_buffer_util_fill_v8double(NULL,
 					 destination_arr->vector.vec_double->mem_double, 1,
 					 destination, destination_stride,
-					 32);
+					 256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_double->mem_double[j] /= normalize_divisor;
@@ -6271,7 +6272,7 @@ ags_audio_buffer_util_copy_s16_to_double(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8double(NULL,
 					  destination, destination_stride,
 					  destination_arr->vector.vec_double->mem_double, 1,
-					  32);
+					  256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -6510,12 +6511,12 @@ ags_audio_buffer_util_copy_s24_to_s8(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8double_from_s32(NULL,
 						   source_arr->vector.vec_double->mem_double, 1,
 						   source, source_stride,
-						   32);
+						   256);
 
       ags_audio_buffer_util_fill_v8double_from_s8(NULL,
 						  destination_arr->vector.vec_double->mem_double, 1,
 						  destination, destination_stride,
-						  32);
+						  256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_double->mem_double[j] *= scale;
@@ -6526,7 +6527,7 @@ ags_audio_buffer_util_copy_s24_to_s8(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8double_as_s8(NULL,
 						 destination, destination_stride,
 						 destination_arr->vector.vec_double->mem_double, 1,
-						 32);
+						 256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -6765,12 +6766,12 @@ ags_audio_buffer_util_copy_s24_to_s16(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8double_from_s32(NULL,
 						   source_arr->vector.vec_double->mem_double, 1,
 						   source, source_stride,
-						   32);
+						   256);
 
       ags_audio_buffer_util_fill_v8double_from_s16(NULL,
 						   destination_arr->vector.vec_double->mem_double, 1,
 						   destination, destination_stride,
-						   32);
+						   256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_double->mem_double[j] *= scale;
@@ -6781,7 +6782,7 @@ ags_audio_buffer_util_copy_s24_to_s16(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8double_as_s16(NULL,
 						  destination, destination_stride,
 						  destination_arr->vector.vec_double->mem_double, 1,
-						  32);
+						  256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -7018,12 +7019,12 @@ ags_audio_buffer_util_copy_s24_to_s24(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8s32(NULL,
 				       source_arr->vector.vec_s32->mem_s32, 1,
 				       source, source_stride,
-				       32);
+				       256);
 
       ags_audio_buffer_util_fill_v8s32(NULL,
 				       destination_arr->vector.vec_s32->mem_s32, 1,
 				       destination, destination_stride,
-				       32);
+				       256);
 
       for(j = 0; j < 32; j++){
 	destination_arr->vector.vec_s32->mem_s32[j] += source_arr->vector.vec_s32->mem_s32[j];
@@ -7032,7 +7033,7 @@ ags_audio_buffer_util_copy_s24_to_s24(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8s32(NULL,
 					destination, destination_stride,
 					destination_arr->vector.vec_s32->mem_s32, 1,
-					32);
+					256);
 
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -7263,12 +7264,12 @@ ags_audio_buffer_util_copy_s24_to_s32(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8double_from_s32(NULL,
 						   source_arr->vector.vec_double->mem_double, 1,
 						   source, source_stride,
-						   32);
+						   256);
 
       ags_audio_buffer_util_fill_v8double_from_s32(NULL,
 						   destination_arr->vector.vec_double->mem_double, 1,
 						   destination, destination_stride,
-						   32);
+						   256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_double->mem_double[j] *= scale;
@@ -7279,7 +7280,7 @@ ags_audio_buffer_util_copy_s24_to_s32(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8double_as_s32(NULL,
 						  destination, destination_stride,
 						  destination_arr->vector.vec_double->mem_double, 1,
-						  32);
+						  256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -7518,12 +7519,12 @@ ags_audio_buffer_util_copy_s24_to_s64(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8double_from_s32(NULL,
 						   source_arr->vector.vec_double->mem_double, 1,
 						   source, source_stride,
-						   32);
+						   256);
 
       ags_audio_buffer_util_fill_v8double_from_s64(NULL,
 						   destination_arr->vector.vec_double->mem_double, 1,
 						   destination, destination_stride,
-						   32);
+						   256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_double->mem_double[j] *= scale;
@@ -7534,7 +7535,7 @@ ags_audio_buffer_util_copy_s24_to_s64(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8double_as_s64(NULL,
 						  destination, destination_stride,
 						  destination_arr->vector.vec_double->mem_double, 1,
-						  32);
+						  256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -7774,12 +7775,12 @@ ags_audio_buffer_util_copy_s24_to_float(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8float_from_s32(NULL,
 						  source_arr->vector.vec_float->mem_float, 1,
 						  source, source_stride,
-						  32);
+						  256);
 
       ags_audio_buffer_util_fill_v8float(NULL,
 					 destination_arr->vector.vec_float->mem_float, 1,
 					 destination, destination_stride,
-					 32);
+					 256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_float->mem_float[j] /= (gfloat) normalize_divisor;
@@ -7790,7 +7791,7 @@ ags_audio_buffer_util_copy_s24_to_float(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8float(NULL,
 					  destination, destination_stride,
 					  destination_arr->vector.vec_float->mem_float, 1,
-					  32);
+					  256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -8030,12 +8031,12 @@ ags_audio_buffer_util_copy_s24_to_double(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8double_from_s32(NULL,
 						   source_arr->vector.vec_double->mem_double, 1,
 						   source, source_stride,
-						   32);
+						   256);
 
       ags_audio_buffer_util_fill_v8double(NULL,
 					 destination_arr->vector.vec_double->mem_double, 1,
 					 destination, destination_stride,
-					 32);
+					 256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_double->mem_double[j] /= normalize_divisor;
@@ -8046,7 +8047,7 @@ ags_audio_buffer_util_copy_s24_to_double(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8double(NULL,
 					  destination, destination_stride,
 					  destination_arr->vector.vec_double->mem_double, 1,
-					  32);
+					  256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -8285,12 +8286,12 @@ ags_audio_buffer_util_copy_s32_to_s8(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8double_from_s32(NULL,
 						   source_arr->vector.vec_double->mem_double, 1,
 						   source, source_stride,
-						   32);
+						   256);
 
       ags_audio_buffer_util_fill_v8double_from_s8(NULL,
 						  destination_arr->vector.vec_double->mem_double, 1,
 						  destination, destination_stride,
-						  32);
+						  256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_double->mem_double[j] *= scale;
@@ -8301,7 +8302,7 @@ ags_audio_buffer_util_copy_s32_to_s8(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8double_as_s8(NULL,
 						 destination, destination_stride,
 						 destination_arr->vector.vec_double->mem_double, 1,
-						 32);
+						 256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -8540,12 +8541,12 @@ ags_audio_buffer_util_copy_s32_to_s16(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8double_from_s32(NULL,
 						   source_arr->vector.vec_double->mem_double, 1,
 						   source, source_stride,
-						   32);
+						   256);
 
       ags_audio_buffer_util_fill_v8double_from_s16(NULL,
 						   destination_arr->vector.vec_double->mem_double, 1,
 						   destination, destination_stride,
-						   32);
+						   256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_double->mem_double[j] *= scale;
@@ -8556,7 +8557,7 @@ ags_audio_buffer_util_copy_s32_to_s16(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8double_as_s16(NULL,
 						  destination, destination_stride,
 						  destination_arr->vector.vec_double->mem_double, 1,
-						  32);
+						  256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -8795,12 +8796,12 @@ ags_audio_buffer_util_copy_s32_to_s24(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8double_from_s32(NULL,
 						   source_arr->vector.vec_double->mem_double, 1,
 						   source, source_stride,
-						   32);
+						   256);
 
       ags_audio_buffer_util_fill_v8double_from_s32(NULL,
 						   destination_arr->vector.vec_double->mem_double, 1,
 						   destination, destination_stride,
-						   32);
+						   256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_double->mem_double[j] *= scale;
@@ -8811,7 +8812,7 @@ ags_audio_buffer_util_copy_s32_to_s24(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8double_as_s32(NULL,
 						  destination, destination_stride,
 						  destination_arr->vector.vec_double->mem_double, 1,
-						  32);
+						  256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -9048,12 +9049,12 @@ ags_audio_buffer_util_copy_s32_to_s32(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8s32(NULL,
 				       source_arr->vector.vec_s32->mem_s32, 1,
 				       source, source_stride,
-				       32);
+				       256);
 
       ags_audio_buffer_util_fill_v8s32(NULL,
 				       destination_arr->vector.vec_s32->mem_s32, 1,
 				       destination, destination_stride,
-				       32);
+				       256);
 
       for(j = 0; j < 32; j++){
 	destination_arr->vector.vec_s32->mem_s32[j] += source_arr->vector.vec_s32->mem_s32[j];
@@ -9062,7 +9063,7 @@ ags_audio_buffer_util_copy_s32_to_s32(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8s32(NULL,
 					destination, destination_stride,
 					destination_arr->vector.vec_s32->mem_s32, 1,
-					32);
+					256);
 
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -9290,12 +9291,12 @@ ags_audio_buffer_util_copy_s32_to_s64(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8double_from_s32(NULL,
 						   source_arr->vector.vec_double->mem_double, 1,
 						   source, source_stride,
-						   32);
+						   256);
 
       ags_audio_buffer_util_fill_v8double_from_s64(NULL,
 						   destination_arr->vector.vec_double->mem_double, 1,
 						   destination, destination_stride,
-						   32);
+						   256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_double->mem_double[j] *= scale;
@@ -9306,7 +9307,7 @@ ags_audio_buffer_util_copy_s32_to_s64(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8double_as_s64(NULL,
 						  destination, destination_stride,
 						  destination_arr->vector.vec_double->mem_double, 1,
-						  32);
+						  256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -9546,12 +9547,12 @@ ags_audio_buffer_util_copy_s32_to_float(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8float_from_s32(NULL,
 						  source_arr->vector.vec_float->mem_float, 1,
 						  source, source_stride,
-						  32);
+						  256);
 
       ags_audio_buffer_util_fill_v8float(NULL,
 					 destination_arr->vector.vec_float->mem_float, 1,
 					 destination, destination_stride,
-					 32);
+					 256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_float->mem_float[j] /= (gfloat) normalize_divisor;
@@ -9562,7 +9563,7 @@ ags_audio_buffer_util_copy_s32_to_float(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8float(NULL,
 					  destination, destination_stride,
 					  destination_arr->vector.vec_float->mem_float, 1,
-					  32);
+					  256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -9802,12 +9803,12 @@ ags_audio_buffer_util_copy_s32_to_double(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8double_from_s32(NULL,
 						   source_arr->vector.vec_double->mem_double, 1,
 						   source, source_stride,
-						   32);
+						   256);
 
       ags_audio_buffer_util_fill_v8double(NULL,
 					 destination_arr->vector.vec_double->mem_double, 1,
 					 destination, destination_stride,
-					 32);
+					 256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_double->mem_double[j] /= normalize_divisor;
@@ -9818,7 +9819,7 @@ ags_audio_buffer_util_copy_s32_to_double(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8double(NULL,
 					  destination, destination_stride,
 					  destination_arr->vector.vec_double->mem_double, 1,
-					  32);
+					  256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -10057,12 +10058,12 @@ ags_audio_buffer_util_copy_s64_to_s8(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8double_from_s64(NULL,
 						   source_arr->vector.vec_double->mem_double, 1,
 						   source, source_stride,
-						   32);
+						   256);
 
       ags_audio_buffer_util_fill_v8double_from_s8(NULL,
 						  destination_arr->vector.vec_double->mem_double, 1,
 						  destination, destination_stride,
-						  32);
+						  256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_double->mem_double[j] *= scale;
@@ -10073,7 +10074,7 @@ ags_audio_buffer_util_copy_s64_to_s8(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8double_as_s8(NULL,
 						 destination, destination_stride,
 						 destination_arr->vector.vec_double->mem_double, 1,
-						 32);
+						 256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -10312,12 +10313,12 @@ ags_audio_buffer_util_copy_s64_to_s16(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8double_from_s64(NULL,
 						   source_arr->vector.vec_double->mem_double, 1,
 						   source, source_stride,
-						   32);
+						   256);
 
       ags_audio_buffer_util_fill_v8double_from_s16(NULL,
 						   destination_arr->vector.vec_double->mem_double, 1,
 						   destination, destination_stride,
-						   32);
+						   256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_double->mem_double[j] *= scale;
@@ -10328,7 +10329,7 @@ ags_audio_buffer_util_copy_s64_to_s16(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8double_as_s16(NULL,
 						  destination, destination_stride,
 						  destination_arr->vector.vec_double->mem_double, 1,
-						  32);
+						  256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -10567,12 +10568,12 @@ ags_audio_buffer_util_copy_s64_to_s24(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8double_from_s64(NULL,
 						   source_arr->vector.vec_double->mem_double, 1,
 						   source, source_stride,
-						   32);
+						   256);
 
       ags_audio_buffer_util_fill_v8double_from_s32(NULL,
 						   destination_arr->vector.vec_double->mem_double, 1,
 						   destination, destination_stride,
-						   32);
+						   256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_double->mem_double[j] *= scale;
@@ -10583,7 +10584,7 @@ ags_audio_buffer_util_copy_s64_to_s24(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8double_as_s32(NULL,
 						  destination, destination_stride,
 						  destination_arr->vector.vec_double->mem_double, 1,
-						  32);
+						  256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -10822,12 +10823,12 @@ ags_audio_buffer_util_copy_s64_to_s32(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8double_from_s64(NULL,
 						   source_arr->vector.vec_double->mem_double, 1,
 						   source, source_stride,
-						   32);
+						   256);
 
       ags_audio_buffer_util_fill_v8double_from_s32(NULL,
 						   destination_arr->vector.vec_double->mem_double, 1,
 						   destination, destination_stride,
-						   32);
+						   256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_double->mem_double[j] *= scale;
@@ -10838,7 +10839,7 @@ ags_audio_buffer_util_copy_s64_to_s32(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8double_as_s32(NULL,
 						  destination, destination_stride,
 						  destination_arr->vector.vec_double->mem_double, 1,
-						  32);
+						  256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -11107,12 +11108,12 @@ ags_audio_buffer_util_copy_s64_to_s64(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8s64(NULL,
 				       source_arr->vector.vec_s64->mem_s64, 1,
 				       source, source_stride,
-				       32);
+				       256);
 
       ags_audio_buffer_util_fill_v8s64(NULL,
 				       destination_arr->vector.vec_s64->mem_s64, 1,
 				       destination, destination_stride,
-				       32);
+				       256);
 
       for(j = 0; j < 32; j++){
 	destination_arr->vector.vec_s64->mem_s64[j] += source_arr->vector.vec_s64->mem_s64[j];
@@ -11121,7 +11122,7 @@ ags_audio_buffer_util_copy_s64_to_s64(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8s64(NULL,
 					destination, destination_stride,
 					destination_arr->vector.vec_s64->mem_s64, 1,
-					32);
+					256);
 
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -11321,12 +11322,12 @@ ags_audio_buffer_util_copy_s64_to_float(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8float_from_s64(NULL,
 						  source_arr->vector.vec_float->mem_float, 1,
 						  source, source_stride,
-						  32);
+						  256);
 
       ags_audio_buffer_util_fill_v8float(NULL,
 					 destination_arr->vector.vec_float->mem_float, 1,
 					 destination, destination_stride,
-					 32);
+					 256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_float->mem_float[j] /= (gfloat) normalize_divisor;
@@ -11337,7 +11338,7 @@ ags_audio_buffer_util_copy_s64_to_float(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8float(NULL,
 					  destination, destination_stride,
 					  destination_arr->vector.vec_float->mem_float, 1,
-					  32);
+					  256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -11577,12 +11578,12 @@ ags_audio_buffer_util_copy_s64_to_double(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8double_from_s64(NULL,
 						   source_arr->vector.vec_double->mem_double, 1,
 						   source, source_stride,
-						   32);
+						   256);
 
       ags_audio_buffer_util_fill_v8double(NULL,
 					 destination_arr->vector.vec_double->mem_double, 1,
 					 destination, destination_stride,
-					 32);
+					 256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_double->mem_double[j] /= normalize_divisor;
@@ -11593,7 +11594,7 @@ ags_audio_buffer_util_copy_s64_to_double(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8double(NULL,
 					  destination, destination_stride,
 					  destination_arr->vector.vec_double->mem_double, 1,
-					  32);
+					  256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -11832,12 +11833,12 @@ ags_audio_buffer_util_copy_float_to_s8(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8float(NULL,
 					 source_arr->vector.vec_float->mem_float, 1,
 					 source, source_stride,
-					 32);
+					 256);
 
       ags_audio_buffer_util_fill_v8float_from_s8(NULL,
 						 destination_arr->vector.vec_float->mem_float, 1,
 						 destination, destination_stride,
-						 32);
+						 256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_float->mem_float[j] *= (gfloat) scale;
@@ -11848,7 +11849,7 @@ ags_audio_buffer_util_copy_float_to_s8(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8float_as_s8(NULL,
 						destination, destination_stride,
 						destination_arr->vector.vec_float->mem_float, 1,
-						32);
+						256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -12087,23 +12088,23 @@ ags_audio_buffer_util_copy_float_to_s16(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8float(NULL,
 					 source_arr->vector.vec_float->mem_float, 1,
 					 source, source_stride,
-					 32);
+					 256);
 
       ags_audio_buffer_util_fill_v8float_from_s16(NULL,
 						  destination_arr->vector.vec_float->mem_float, 1,
 						  destination, destination_stride,
-						  32);
+						  256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_float->mem_float[j] *= (gfloat) scale;
 	
-	destination_arr->vector.vec_float->mem_float[j] += source_arr->vector.vec_float->mem_float[j];
+	destination_arr->vector.vec_float->mem_float[j] = (ags_v8float) destination_arr->vector.vec_float->mem_float[j] + (ags_v8float) source_arr->vector.vec_float->mem_float[j];
       }
     
       ags_audio_buffer_util_fetch_v8float_as_s16(NULL,
 						 destination, destination_stride,
 						 destination_arr->vector.vec_float->mem_float, 1,
-						 32);
+						 256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -12342,12 +12343,12 @@ ags_audio_buffer_util_copy_float_to_s24(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8float(NULL,
 					 source_arr->vector.vec_float->mem_float, 1,
 					 source, source_stride,
-					 32);
+					 256);
 
       ags_audio_buffer_util_fill_v8float_from_s32(NULL,
 						  destination_arr->vector.vec_float->mem_float, 1,
 						  destination, destination_stride,
-						  32);
+						  256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_float->mem_float[j] *= (gfloat) scale;
@@ -12358,7 +12359,7 @@ ags_audio_buffer_util_copy_float_to_s24(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8float_as_s32(NULL,
 						 destination, destination_stride,
 						 destination_arr->vector.vec_float->mem_float, 1,
-						 32);
+						 256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -12597,12 +12598,12 @@ ags_audio_buffer_util_copy_float_to_s32(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8float(NULL,
 					 source_arr->vector.vec_float->mem_float, 1,
 					 source, source_stride,
-					 32);
+					 256);
 
       ags_audio_buffer_util_fill_v8float_from_s32(NULL,
 						  destination_arr->vector.vec_float->mem_float, 1,
 						  destination, destination_stride,
-						  32);
+						  256);
       
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_float->mem_float[j] *= (gfloat) scale;
@@ -12613,7 +12614,7 @@ ags_audio_buffer_util_copy_float_to_s32(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8float_as_s32(NULL,
 						 destination, destination_stride,
 						 destination_arr->vector.vec_float->mem_float, 1,
-						 32);
+						 256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -12852,12 +12853,12 @@ ags_audio_buffer_util_copy_float_to_s64(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8float(NULL,
 					 source_arr->vector.vec_float->mem_float, 1,
 					 source, source_stride,
-					 32);
+					 256);
 
       ags_audio_buffer_util_fill_v8float_from_s64(NULL,
 						  destination_arr->vector.vec_float->mem_float, 1,
 						  destination, destination_stride,
-						  32);
+						  256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_float->mem_float[j] *= (gfloat) scale;
@@ -12868,7 +12869,7 @@ ags_audio_buffer_util_copy_float_to_s64(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8float_as_s64(NULL,
 						 destination, destination_stride,
 						 destination_arr->vector.vec_float->mem_float, 1,
-						 32);
+						 256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -13105,12 +13106,12 @@ ags_audio_buffer_util_copy_float_to_float(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8float(NULL,
 					 source_arr->vector.vec_float->mem_float, 1,
 					 source, source_stride,
-					 32);
+					 256);
 
       ags_audio_buffer_util_fill_v8float(NULL,
 					 destination_arr->vector.vec_float->mem_float, 1,
 					 destination, destination_stride,
-					 32);
+					 256);
 
       for(j = 0; j < 32; j++){
 	destination_arr->vector.vec_float->mem_float[j] += source_arr->vector.vec_float->mem_float[j];
@@ -13119,7 +13120,7 @@ ags_audio_buffer_util_copy_float_to_float(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8float(NULL,
 					  destination, destination_stride,
 					  destination_arr->vector.vec_float->mem_float, 1,
-					  32);
+					  256);
 
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -13345,12 +13346,12 @@ ags_audio_buffer_util_copy_float_to_double(AgsAudioBufferUtil *audio_buffer_util
       ags_audio_buffer_util_fill_v8double_from_float(NULL,
 						     source_arr->vector.vec_double->mem_double, 1,
 						     source, source_stride,
-						     32);
+						     256);
 
       ags_audio_buffer_util_fill_v8double(NULL,
 					  destination_arr->vector.vec_double->mem_double, 1,
 					  destination, destination_stride,
-					  32);
+					  256);
 
       for(j = 0; j < 32; j++){
 	destination_arr->vector.vec_double->mem_double[j] += source_arr->vector.vec_double->mem_double[j];
@@ -13359,7 +13360,7 @@ ags_audio_buffer_util_copy_float_to_double(AgsAudioBufferUtil *audio_buffer_util
       ags_audio_buffer_util_fetch_v8double(NULL,
 					   destination, destination_stride,
 					   destination_arr->vector.vec_double->mem_double, 1,
-					   32);
+					   256);
 
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -13587,12 +13588,12 @@ ags_audio_buffer_util_copy_double_to_s8(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8double(NULL,
 					  source_arr->vector.vec_double->mem_double, 1,
 					  source, source_stride,
-					  32);
+					  256);
 
       ags_audio_buffer_util_fill_v8double_from_s8(NULL,
 						  destination_arr->vector.vec_double->mem_double, 1,
 						  destination, destination_stride,
-						  32);
+						  256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_double->mem_double[j] *= scale;
@@ -13603,7 +13604,7 @@ ags_audio_buffer_util_copy_double_to_s8(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8double_as_s8(NULL,
 						 destination, destination_stride,
 						 destination_arr->vector.vec_double->mem_double, 1,
-						 32);
+						 256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -13842,12 +13843,12 @@ ags_audio_buffer_util_copy_double_to_s16(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8double(NULL,
 					 source_arr->vector.vec_double->mem_double, 1,
 					 source, source_stride,
-					 32);
+					 256);
 
       ags_audio_buffer_util_fill_v8double_from_s16(NULL,
 						  destination_arr->vector.vec_double->mem_double, 1,
 						  destination, destination_stride,
-						  32);
+						  256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_double->mem_double[j] *= scale;
@@ -13858,7 +13859,7 @@ ags_audio_buffer_util_copy_double_to_s16(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8double_as_s16(NULL,
 						 destination, destination_stride,
 						 destination_arr->vector.vec_double->mem_double, 1,
-						 32);
+						 256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -14097,12 +14098,12 @@ ags_audio_buffer_util_copy_double_to_s24(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8double(NULL,
 					  source_arr->vector.vec_double->mem_double, 1,
 					  source, source_stride,
-					  32);
+					  256);
 
       ags_audio_buffer_util_fill_v8double_from_s32(NULL,
 						   destination_arr->vector.vec_double->mem_double, 1,
 						   destination, destination_stride,
-						   32);
+						   256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_double->mem_double[j] *= scale;
@@ -14113,7 +14114,7 @@ ags_audio_buffer_util_copy_double_to_s24(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8double_as_s32(NULL,
 						  destination, destination_stride,
 						  destination_arr->vector.vec_double->mem_double, 1,
-						  32);
+						  256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -14352,12 +14353,12 @@ ags_audio_buffer_util_copy_double_to_s32(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8double(NULL,
 					  source_arr->vector.vec_double->mem_double, 1,
 					  source, source_stride,
-					  32);
+					  256);
 
       ags_audio_buffer_util_fill_v8double_from_s32(NULL,
 						   destination_arr->vector.vec_double->mem_double, 1,
 						   destination, destination_stride,
-						   32);
+						   256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_double->mem_double[j] *= scale;
@@ -14368,7 +14369,7 @@ ags_audio_buffer_util_copy_double_to_s32(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8double_as_s32(NULL,
 						  destination, destination_stride,
 						  destination_arr->vector.vec_double->mem_double, 1,
-						  32);
+						  256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -14607,12 +14608,12 @@ ags_audio_buffer_util_copy_double_to_s64(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fill_v8double(NULL,
 					  source_arr->vector.vec_double->mem_double, 1,
 					  source, source_stride,
-					  32);
+					  256);
 
       ags_audio_buffer_util_fill_v8double_from_s64(NULL,
 						   destination_arr->vector.vec_double->mem_double, 1,
 						   destination, destination_stride,
-						   32);
+						   256);
 
       for(j = 0; j < 32; j++){
 	source_arr->vector.vec_double->mem_double[j] *= scale;
@@ -14623,7 +14624,7 @@ ags_audio_buffer_util_copy_double_to_s64(AgsAudioBufferUtil *audio_buffer_util,
       ags_audio_buffer_util_fetch_v8double_as_s64(NULL,
 						  destination, destination_stride,
 						  destination_arr->vector.vec_double->mem_double, 1,
-						  32);
+						  256);
       
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -14860,12 +14861,12 @@ ags_audio_buffer_util_copy_double_to_float(AgsAudioBufferUtil *audio_buffer_util
       ags_audio_buffer_util_fill_v8float_from_double(NULL,
 						     source_arr->vector.vec_float->mem_float, 1,
 						     source, source_stride,
-						     32);
+						     256);
 
       ags_audio_buffer_util_fill_v8float(NULL,
 					 destination_arr->vector.vec_float->mem_float, 1,
 					 destination, destination_stride,
-					 32);
+					 256);
 
       for(j = 0; j < 32; j++){
 	destination_arr->vector.vec_float->mem_float[j] += source_arr->vector.vec_float->mem_float[j];
@@ -14874,7 +14875,7 @@ ags_audio_buffer_util_copy_double_to_float(AgsAudioBufferUtil *audio_buffer_util
       ags_audio_buffer_util_fetch_v8float(NULL,
 					  destination, destination_stride,
 					  destination_arr->vector.vec_float->mem_float, 1,
-					  32);
+					  256);
 
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -15103,12 +15104,12 @@ ags_audio_buffer_util_copy_double_to_double(AgsAudioBufferUtil *audio_buffer_uti
       ags_audio_buffer_util_fill_v8double(NULL,
 					  source_arr->vector.vec_double->mem_double, 1,
 					  source, source_stride,
-					  32);
+					  256);
 
       ags_audio_buffer_util_fill_v8double(NULL,
 					  destination_arr->vector.vec_double->mem_double, 1,
 					  destination, destination_stride,
-					  32);
+					  256);
 
       for(j = 0; j < 32; j++){
 	destination_arr->vector.vec_double->mem_double[j] += source_arr->vector.vec_double->mem_double[j];
@@ -15117,7 +15118,7 @@ ags_audio_buffer_util_copy_double_to_double(AgsAudioBufferUtil *audio_buffer_uti
       ags_audio_buffer_util_fetch_v8double(NULL,
 					   destination, destination_stride,
 					   destination_arr->vector.vec_double->mem_double, 1,
-					   32);
+					   256);
 
       ags_vector_256_manager_release(vector_256_manager,
 				     source_arr);
@@ -19610,14 +19611,14 @@ ags_audio_buffer_util_fill_v8s8(AgsAudioBufferUtil *audio_buffer_util,
   guint i;
 
   for(i = 0; i < count / 8; i++){
-    destination[i * destination_stride] = (ags_v8s8) {source[i * source_stride],
-						      source[(i + 1) * source_stride],
-						      source[(i + 2) * source_stride],
-						      source[(i + 3) * source_stride],
-						      source[(i + 4) * source_stride],
-						      source[(i + 5) * source_stride],
-						      source[(i + 6) * source_stride],
-						      source[(i + 7) * source_stride]};
+    destination[i * destination_stride] = (ags_v8s8) {source[i * 8 * source_stride],
+						      source[(i * 8 + 1) * source_stride],
+						      source[(i * 8 + 2) * source_stride],
+						      source[(i * 8 + 3) * source_stride],
+						      source[(i * 8 + 4) * source_stride],
+						      source[(i * 8 + 5) * source_stride],
+						      source[(i * 8 + 6) * source_stride],
+						      source[(i * 8 + 7) * source_stride]};
   }
 }
 
@@ -19643,14 +19644,14 @@ ags_audio_buffer_util_fill_v8s16(AgsAudioBufferUtil *audio_buffer_util,
   guint i;
 
   for(i = 0; i < count / 8; i++){
-    destination[i * destination_stride] = (ags_v8s16) {source[i * source_stride],
-						       source[(i + 1) * source_stride],
-						       source[(i + 2) * source_stride],
-						       source[(i + 3) * source_stride],
-						       source[(i + 4) * source_stride],
-						       source[(i + 5) * source_stride],
-						       source[(i + 6) * source_stride],
-						       source[(i + 7) * source_stride]};
+    destination[i * destination_stride] = (ags_v8s16) {source[i * 8 * source_stride],
+						       source[(i * 8 + 1) * source_stride],
+						       source[(i * 8 + 2) * source_stride],
+						       source[(i * 8 + 3) * source_stride],
+						       source[(i * 8 + 4) * source_stride],
+						       source[(i * 8 + 5) * source_stride],
+						       source[(i * 8 + 6) * source_stride],
+						       source[(i * 8 + 7) * source_stride]};
   }
 }
 
@@ -19676,14 +19677,14 @@ ags_audio_buffer_util_fill_v8s32(AgsAudioBufferUtil *audio_buffer_util,
   guint i;
 
   for(i = 0; i < count / 8; i++){
-    destination[i * destination_stride] = (ags_v8s32) {source[i * source_stride],
-						       source[(i + 1) * source_stride],
-						       source[(i + 2) * source_stride],
-						       source[(i + 3) * source_stride],
-						       source[(i + 4) * source_stride],
-						       source[(i + 5) * source_stride],
-						       source[(i + 6) * source_stride],
-						       source[(i + 7) * source_stride]};
+    destination[i * destination_stride] = (ags_v8s32) {source[i * 8 * source_stride],
+						       source[(i * 8 + 1) * source_stride],
+						       source[(i * 8 + 2) * source_stride],
+						       source[(i * 8 + 3) * source_stride],
+						       source[(i * 8 + 4) * source_stride],
+						       source[(i * 8 + 5) * source_stride],
+						       source[(i * 8 + 6) * source_stride],
+						       source[(i * 8 + 7) * source_stride]};
   }
 }
 
@@ -19709,14 +19710,14 @@ ags_audio_buffer_util_fill_v8s64(AgsAudioBufferUtil *audio_buffer_util,
   guint i;
 
   for(i = 0; i < count / 8; i++){
-    destination[i * destination_stride] = (ags_v8s64) {source[i * source_stride],
-						       source[(i + 1) * source_stride],
-						       source[(i + 2) * source_stride],
-						       source[(i + 3) * source_stride],
-						       source[(i + 4) * source_stride],
-						       source[(i + 5) * source_stride],
-						       source[(i + 6) * source_stride],
-						       source[(i + 7) * source_stride]};
+    destination[i * destination_stride] = (ags_v8s64) {source[i * 8 * source_stride],
+						       source[(i * 8 + 1) * source_stride],
+						       source[(i * 8 + 2) * source_stride],
+						       source[(i * 8 + 3) * source_stride],
+						       source[(i * 8 + 4) * source_stride],
+						       source[(i * 8 + 5) * source_stride],
+						       source[(i * 8 + 6) * source_stride],
+						       source[(i * 8 + 7) * source_stride]};
   }
 }
 
@@ -19742,14 +19743,14 @@ ags_audio_buffer_util_fill_v8float(AgsAudioBufferUtil *audio_buffer_util,
   guint i;
 
   for(i = 0; i < count / 8; i++){
-    destination[i * destination_stride] = (ags_v8float) {source[i * source_stride],
-							 source[(i + 1) * source_stride],
-							 source[(i + 2) * source_stride],
-							 source[(i + 3) * source_stride],
-							 source[(i + 4) * source_stride],
-							 source[(i + 5) * source_stride],
-							 source[(i + 6) * source_stride],
-							 source[(i + 7) * source_stride]};
+    destination[i * destination_stride] = (ags_v8float) {source[i * 8 * source_stride],
+							 source[(i * 8 + 1) * source_stride],
+							 source[(i * 8 + 2) * source_stride],
+							 source[(i * 8 + 3) * source_stride],
+							 source[(i * 8 + 4) * source_stride],
+							 source[(i * 8 + 5) * source_stride],
+							 source[(i * 8 + 6) * source_stride],
+							 source[(i * 8 + 7) * source_stride]};
   }
 }
 
@@ -19775,14 +19776,14 @@ ags_audio_buffer_util_fill_v8double(AgsAudioBufferUtil *audio_buffer_util,
   guint i;
 
   for(i = 0; i < count / 8; i++){
-    destination[i * destination_stride] = (ags_v8double) {source[i * source_stride],
-							  source[(i + 1) * source_stride],
-							  source[(i + 2) * source_stride],
-							  source[(i + 3) * source_stride],
-							  source[(i + 4) * source_stride],
-							  source[(i + 5) * source_stride],
-							  source[(i + 6) * source_stride],
-							  source[(i + 7) * source_stride]};
+    destination[i * destination_stride] = (ags_v8double) {source[i * 8 * source_stride],
+							  source[(i * 8 + 1) * source_stride],
+							  source[(i * 8 + 2) * source_stride],
+							  source[(i * 8 + 3) * source_stride],
+							  source[(i * 8 + 4) * source_stride],
+							  source[(i * 8 + 5) * source_stride],
+							  source[(i * 8 + 6) * source_stride],
+							  source[(i * 8 + 7) * source_stride]};
   }
 }
 
@@ -19808,14 +19809,14 @@ ags_audio_buffer_util_fetch_v8s8(AgsAudioBufferUtil *audio_buffer_util,
   guint i;
 
   for(i = 0; i < count / 8; i++){
-    destination[i * destination_stride] = source[i * source_stride][0];
-    destination[(i + 1) * destination_stride] = source[i * source_stride][1];
-    destination[(i + 2) * destination_stride] = source[i * source_stride][2];
-    destination[(i + 3) * destination_stride] = source[i * source_stride][3];
-    destination[(i + 4) * destination_stride] = source[i * source_stride][4];
-    destination[(i + 5) * destination_stride] = source[i * source_stride][5];
-    destination[(i + 6) * destination_stride] = source[i * source_stride][6];
-    destination[(i + 7) * destination_stride] = source[i * source_stride][7];
+    destination[i * 8 * destination_stride] = source[i * source_stride][0];
+    destination[(i * 8 + 1) * destination_stride] = source[i * source_stride][1];
+    destination[(i * 8 + 2) * destination_stride] = source[i * source_stride][2];
+    destination[(i * 8 + 3) * destination_stride] = source[i * source_stride][3];
+    destination[(i * 8 + 4) * destination_stride] = source[i * source_stride][4];
+    destination[(i * 8 + 5) * destination_stride] = source[i * source_stride][5];
+    destination[(i * 8 + 6) * destination_stride] = source[i * source_stride][6];
+    destination[(i * 8 + 7) * destination_stride] = source[i * source_stride][7];
   }
 }
 
@@ -19841,14 +19842,14 @@ ags_audio_buffer_util_fetch_v8s16(AgsAudioBufferUtil *audio_buffer_util,
   guint i;
 
   for(i = 0; i < count / 8; i++){
-    destination[i * destination_stride] = source[i * source_stride][0];
-    destination[(i + 1) * destination_stride] = source[i * source_stride][1];
-    destination[(i + 2) * destination_stride] = source[i * source_stride][2];
-    destination[(i + 3) * destination_stride] = source[i * source_stride][3];
-    destination[(i + 4) * destination_stride] = source[i * source_stride][4];
-    destination[(i + 5) * destination_stride] = source[i * source_stride][5];
-    destination[(i + 6) * destination_stride] = source[i * source_stride][6];
-    destination[(i + 7) * destination_stride] = source[i * source_stride][7];
+    destination[i * 8 * destination_stride] = source[i * source_stride][0];
+    destination[(i * 8 + 1) * destination_stride] = source[i * source_stride][1];
+    destination[(i * 8 + 2) * destination_stride] = source[i * source_stride][2];
+    destination[(i * 8 + 3) * destination_stride] = source[i * source_stride][3];
+    destination[(i * 8 + 4) * destination_stride] = source[i * source_stride][4];
+    destination[(i * 8 + 5) * destination_stride] = source[i * source_stride][5];
+    destination[(i * 8 + 6) * destination_stride] = source[i * source_stride][6];
+    destination[(i * 8 + 7) * destination_stride] = source[i * source_stride][7];
   }
 }
 
@@ -19874,14 +19875,14 @@ ags_audio_buffer_util_fetch_v8s32(AgsAudioBufferUtil *audio_buffer_util,
   guint i;
 
   for(i = 0; i < count / 8; i++){
-    destination[i * destination_stride] = source[i * source_stride][0];
-    destination[(i + 1) * destination_stride] = source[i * source_stride][1];
-    destination[(i + 2) * destination_stride] = source[i * source_stride][2];
-    destination[(i + 3) * destination_stride] = source[i * source_stride][3];
-    destination[(i + 4) * destination_stride] = source[i * source_stride][4];
-    destination[(i + 5) * destination_stride] = source[i * source_stride][5];
-    destination[(i + 6) * destination_stride] = source[i * source_stride][6];
-    destination[(i + 7) * destination_stride] = source[i * source_stride][7];
+    destination[i * 8 * destination_stride] = source[i * source_stride][0];
+    destination[(i * 8 + 1) * destination_stride] = source[i * source_stride][1];
+    destination[(i * 8 + 2) * destination_stride] = source[i * source_stride][2];
+    destination[(i * 8 + 3) * destination_stride] = source[i * source_stride][3];
+    destination[(i * 8 + 4) * destination_stride] = source[i * source_stride][4];
+    destination[(i * 8 + 5) * destination_stride] = source[i * source_stride][5];
+    destination[(i * 8 + 6) * destination_stride] = source[i * source_stride][6];
+    destination[(i * 8 + 7) * destination_stride] = source[i * source_stride][7];
   }
 }
 
@@ -19907,14 +19908,14 @@ ags_audio_buffer_util_fetch_v8s64(AgsAudioBufferUtil *audio_buffer_util,
   guint i;
 
   for(i = 0; i < count / 8; i++){
-    destination[i * destination_stride] = source[i * source_stride][0];
-    destination[(i + 1) * destination_stride] = source[i * source_stride][1];
-    destination[(i + 2) * destination_stride] = source[i * source_stride][2];
-    destination[(i + 3) * destination_stride] = source[i * source_stride][3];
-    destination[(i + 4) * destination_stride] = source[i * source_stride][4];
-    destination[(i + 5) * destination_stride] = source[i * source_stride][5];
-    destination[(i + 6) * destination_stride] = source[i * source_stride][6];
-    destination[(i + 7) * destination_stride] = source[i * source_stride][7];
+    destination[i * 8 * destination_stride] = source[i * source_stride][0];
+    destination[(i * 8 + 1) * destination_stride] = source[i * source_stride][1];
+    destination[(i * 8 + 2) * destination_stride] = source[i * source_stride][2];
+    destination[(i * 8 + 3) * destination_stride] = source[i * source_stride][3];
+    destination[(i * 8 + 4) * destination_stride] = source[i * source_stride][4];
+    destination[(i * 8 + 5) * destination_stride] = source[i * source_stride][5];
+    destination[(i * 8 + 6) * destination_stride] = source[i * source_stride][6];
+    destination[(i * 8 + 7) * destination_stride] = source[i * source_stride][7];
   }
 }
 
@@ -19940,14 +19941,14 @@ ags_audio_buffer_util_fetch_v8float(AgsAudioBufferUtil *audio_buffer_util,
   guint i;
 
   for(i = 0; i < count / 8; i++){
-    destination[i * destination_stride] = source[i * source_stride][0];
-    destination[(i + 1) * destination_stride] = source[i * source_stride][1];
-    destination[(i + 2) * destination_stride] = source[i * source_stride][2];
-    destination[(i + 3) * destination_stride] = source[i * source_stride][3];
-    destination[(i + 4) * destination_stride] = source[i * source_stride][4];
-    destination[(i + 5) * destination_stride] = source[i * source_stride][5];
-    destination[(i + 6) * destination_stride] = source[i * source_stride][6];
-    destination[(i + 7) * destination_stride] = source[i * source_stride][7];
+    destination[i * 8 * destination_stride] = source[i * source_stride][0];
+    destination[(i * 8 + 1) * destination_stride] = source[i * source_stride][1];
+    destination[(i * 8 + 2) * destination_stride] = source[i * source_stride][2];
+    destination[(i * 8 + 3) * destination_stride] = source[i * source_stride][3];
+    destination[(i * 8 + 4) * destination_stride] = source[i * source_stride][4];
+    destination[(i * 8 + 5) * destination_stride] = source[i * source_stride][5];
+    destination[(i * 8 + 6) * destination_stride] = source[i * source_stride][6];
+    destination[(i * 8 + 7) * destination_stride] = source[i * source_stride][7];
   }
 }
 
@@ -19973,14 +19974,14 @@ ags_audio_buffer_util_fetch_v8double(AgsAudioBufferUtil *audio_buffer_util,
   guint i;
 
   for(i = 0; i < count / 8; i++){
-    destination[i * destination_stride] = source[i * source_stride][0];
-    destination[(i + 1) * destination_stride] = source[i * source_stride][1];
-    destination[(i + 2) * destination_stride] = source[i * source_stride][2];
-    destination[(i + 3) * destination_stride] = source[i * source_stride][3];
-    destination[(i + 4) * destination_stride] = source[i * source_stride][4];
-    destination[(i + 5) * destination_stride] = source[i * source_stride][5];
-    destination[(i + 6) * destination_stride] = source[i * source_stride][6];
-    destination[(i + 7) * destination_stride] = source[i * source_stride][7];
+    destination[i * 8 * destination_stride] = source[i * source_stride][0];
+    destination[(i * 8 + 1) * destination_stride] = source[i * source_stride][1];
+    destination[(i * 8 + 2) * destination_stride] = source[i * source_stride][2];
+    destination[(i * 8 + 3) * destination_stride] = source[i * source_stride][3];
+    destination[(i * 8 + 4) * destination_stride] = source[i * source_stride][4];
+    destination[(i * 8 + 5) * destination_stride] = source[i * source_stride][5];
+    destination[(i * 8 + 6) * destination_stride] = source[i * source_stride][6];
+    destination[(i * 8 + 7) * destination_stride] = source[i * source_stride][7];
   }
 }
 
@@ -20006,14 +20007,14 @@ ags_audio_buffer_util_fill_v8float_from_s8(AgsAudioBufferUtil *audio_buffer_util
   guint i;
 
   for(i = 0; i < count / 8; i++){
-    destination[i * destination_stride] = (ags_v8float) {source[i * source_stride],
-							 source[(i + 1) * source_stride],
-							 source[(i + 2) * source_stride],
-							 source[(i + 3) * source_stride],
-							 source[(i + 4) * source_stride],
-							 source[(i + 5) * source_stride],
-							 source[(i + 6) * source_stride],
-							 source[(i + 7) * source_stride]};
+    destination[i * destination_stride] = (ags_v8float) {source[i * 8 * source_stride],
+							 source[(i * 8 + 1) * source_stride],
+							 source[(i * 8 + 2) * source_stride],
+							 source[(i * 8 + 3) * source_stride],
+							 source[(i * 8 + 4) * source_stride],
+							 source[(i * 8 + 5) * source_stride],
+							 source[(i * 8 + 6) * source_stride],
+							 source[(i * 8 + 7) * source_stride]};
   }
 }
 
@@ -20039,14 +20040,14 @@ ags_audio_buffer_util_fill_v8float_from_s16(AgsAudioBufferUtil *audio_buffer_uti
   guint i;
 
   for(i = 0; i < count / 8; i++){
-    destination[i * destination_stride] = (ags_v8float) {source[i * source_stride],
-							 source[(i + 1) * source_stride],
-							 source[(i + 2) * source_stride],
-							 source[(i + 3) * source_stride],
-							 source[(i + 4) * source_stride],
-							 source[(i + 5) * source_stride],
-							 source[(i + 6) * source_stride],
-							 source[(i + 7) * source_stride]};
+    destination[i * destination_stride] = (ags_v8float) {source[i * 8 * source_stride],
+							 source[(i * 8 + 1) * source_stride],
+							 source[(i * 8 + 2) * source_stride],
+							 source[(i * 8 + 3) * source_stride],
+							 source[(i * 8 + 4) * source_stride],
+							 source[(i * 8 + 5) * source_stride],
+							 source[(i * 8 + 6) * source_stride],
+							 source[(i * 8 + 7) * source_stride]};
   }
 }
 
@@ -20072,14 +20073,14 @@ ags_audio_buffer_util_fill_v8float_from_s32(AgsAudioBufferUtil *audio_buffer_uti
   guint i;
 
   for(i = 0; i < count / 8; i++){
-    destination[i * destination_stride] = (ags_v8float) {source[i * source_stride],
-							 source[(i + 1) * source_stride],
-							 source[(i + 2) * source_stride],
-							 source[(i + 3) * source_stride],
-							 source[(i + 4) * source_stride],
-							 source[(i + 5) * source_stride],
-							 source[(i + 6) * source_stride],
-							 source[(i + 7) * source_stride]};
+    destination[i * destination_stride] = (ags_v8float) {source[i * 8 * source_stride],
+							 source[(i * 8 + 1) * source_stride],
+							 source[(i * 8 + 2) * source_stride],
+							 source[(i * 8 + 3) * source_stride],
+							 source[(i * 8 + 4) * source_stride],
+							 source[(i * 8 + 5) * source_stride],
+							 source[(i * 8 + 6) * source_stride],
+							 source[(i * 8 + 7) * source_stride]};
   }
 }
 
@@ -20105,14 +20106,14 @@ ags_audio_buffer_util_fill_v8float_from_s64(AgsAudioBufferUtil *audio_buffer_uti
   guint i;
 
   for(i = 0; i < count / 8; i++){
-    destination[i * destination_stride] = (ags_v8float) {source[i * source_stride],
-							 source[(i + 1) * source_stride],
-							 source[(i + 2) * source_stride],
-							 source[(i + 3) * source_stride],
-							 source[(i + 4) * source_stride],
-							 source[(i + 5) * source_stride],
-							 source[(i + 6) * source_stride],
-							 source[(i + 7) * source_stride]};
+    destination[i * destination_stride] = (ags_v8float) {source[i * 8 * source_stride],
+							 source[(i * 8 + 1) * source_stride],
+							 source[(i * 8 + 2) * source_stride],
+							 source[(i * 8 + 3) * source_stride],
+							 source[(i * 8 + 4) * source_stride],
+							 source[(i * 8 + 5) * source_stride],
+							 source[(i * 8 + 6) * source_stride],
+							 source[(i * 8 + 7) * source_stride]};
   }
 }
 
@@ -20138,14 +20139,14 @@ ags_audio_buffer_util_fill_v8float_from_double(AgsAudioBufferUtil *audio_buffer_
   guint i;
 
   for(i = 0; i < count / 8; i++){
-    destination[i * destination_stride] = (ags_v8float) {source[i * source_stride],
-							 source[(i + 1) * source_stride],
-							 source[(i + 2) * source_stride],
-							 source[(i + 3) * source_stride],
-							 source[(i + 4) * source_stride],
-							 source[(i + 5) * source_stride],
-							 source[(i + 6) * source_stride],
-							 source[(i + 7) * source_stride]};
+    destination[i * destination_stride] = (ags_v8float) {source[i * 8 * source_stride],
+							 source[(i * 8 + 1) * source_stride],
+							 source[(i * 8 + 2) * source_stride],
+							 source[(i * 8 + 3) * source_stride],
+							 source[(i * 8 + 4) * source_stride],
+							 source[(i * 8 + 5) * source_stride],
+							 source[(i * 8 + 6) * source_stride],
+							 source[(i * 8 + 7) * source_stride]};
   }
 }
 
@@ -20171,14 +20172,14 @@ ags_audio_buffer_util_fetch_v8float_as_s8(AgsAudioBufferUtil *audio_buffer_util,
   guint i;
 
   for(i = 0; i < count / 8; i++){
-    destination[i * destination_stride] = (gint8) source[i * source_stride][0];
-    destination[(i + 1) * destination_stride] = (gint8) source[i * source_stride][1];
-    destination[(i + 2) * destination_stride] = (gint8) source[i * source_stride][2];
-    destination[(i + 3) * destination_stride] = (gint8) source[i * source_stride][3];
-    destination[(i + 4) * destination_stride] = (gint8) source[i * source_stride][4];
-    destination[(i + 5) * destination_stride] = (gint8) source[i * source_stride][5];
-    destination[(i + 6) * destination_stride] = (gint8) source[i * source_stride][6];
-    destination[(i + 7) * destination_stride] = (gint8) source[i * source_stride][7];
+    destination[i * 8 * destination_stride] = (gint8) source[i * source_stride][0];
+    destination[(i * 8 + 1) * destination_stride] = (gint8) source[i * source_stride][1];
+    destination[(i * 8 + 2) * destination_stride] = (gint8) source[i * source_stride][2];
+    destination[(i * 8 + 3) * destination_stride] = (gint8) source[i * source_stride][3];
+    destination[(i * 8 + 4) * destination_stride] = (gint8) source[i * source_stride][4];
+    destination[(i * 8 + 5) * destination_stride] = (gint8) source[i * source_stride][5];
+    destination[(i * 8 + 6) * destination_stride] = (gint8) source[i * source_stride][6];
+    destination[(i * 8 + 7) * destination_stride] = (gint8) source[i * source_stride][7];
   }
 }
 
@@ -20204,14 +20205,14 @@ ags_audio_buffer_util_fetch_v8float_as_s16(AgsAudioBufferUtil *audio_buffer_util
   guint i;
 
   for(i = 0; i < count / 8; i++){
-    destination[i * destination_stride] = (gint16) source[i * source_stride][0];
-    destination[(i + 1) * destination_stride] = (gint16) source[i * source_stride][1];
-    destination[(i + 2) * destination_stride] = (gint16) source[i * source_stride][2];
-    destination[(i + 3) * destination_stride] = (gint16) source[i * source_stride][3];
-    destination[(i + 4) * destination_stride] = (gint16) source[i * source_stride][4];
-    destination[(i + 5) * destination_stride] = (gint16) source[i * source_stride][5];
-    destination[(i + 6) * destination_stride] = (gint16) source[i * source_stride][6];
-    destination[(i + 7) * destination_stride] = (gint16) source[i * source_stride][7];
+    destination[i * 8 * destination_stride] = (gint16) source[i * source_stride][0];
+    destination[(i * 8 + 1) * destination_stride] = (gint16) source[i * source_stride][1];
+    destination[(i * 8 + 2) * destination_stride] = (gint16) source[i * source_stride][2];
+    destination[(i * 8 + 3) * destination_stride] = (gint16) source[i * source_stride][3];
+    destination[(i * 8 + 4) * destination_stride] = (gint16) source[i * source_stride][4];
+    destination[(i * 8 + 5) * destination_stride] = (gint16) source[i * source_stride][5];
+    destination[(i * 8 + 6) * destination_stride] = (gint16) source[i * source_stride][6];
+    destination[(i * 8 + 7) * destination_stride] = (gint16) source[i * source_stride][7];
   }
 }
 
@@ -20237,14 +20238,14 @@ ags_audio_buffer_util_fetch_v8float_as_s32(AgsAudioBufferUtil *audio_buffer_util
   guint i;
 
   for(i = 0; i < count / 8; i++){
-    destination[i * destination_stride] = (gint32) source[i * source_stride][0];
-    destination[(i + 1) * destination_stride] = (gint32) source[i * source_stride][1];
-    destination[(i + 2) * destination_stride] = (gint32) source[i * source_stride][2];
-    destination[(i + 3) * destination_stride] = (gint32) source[i * source_stride][3];
-    destination[(i + 4) * destination_stride] = (gint32) source[i * source_stride][4];
-    destination[(i + 5) * destination_stride] = (gint32) source[i * source_stride][5];
-    destination[(i + 6) * destination_stride] = (gint32) source[i * source_stride][6];
-    destination[(i + 7) * destination_stride] = (gint32) source[i * source_stride][7];
+    destination[i * 8 * destination_stride] = (gint32) source[i * source_stride][0];
+    destination[(i * 8 + 1) * destination_stride] = (gint32) source[i * source_stride][1];
+    destination[(i * 8 + 2) * destination_stride] = (gint32) source[i * source_stride][2];
+    destination[(i * 8 + 3) * destination_stride] = (gint32) source[i * source_stride][3];
+    destination[(i * 8 + 4) * destination_stride] = (gint32) source[i * source_stride][4];
+    destination[(i * 8 + 5) * destination_stride] = (gint32) source[i * source_stride][5];
+    destination[(i * 8 + 6) * destination_stride] = (gint32) source[i * source_stride][6];
+    destination[(i * 8 + 7) * destination_stride] = (gint32) source[i * source_stride][7];
   }
 }
 
@@ -20270,14 +20271,14 @@ ags_audio_buffer_util_fetch_v8float_as_s64(AgsAudioBufferUtil *audio_buffer_util
   guint i;
 
   for(i = 0; i < count / 8; i++){
-    destination[i * destination_stride] = (gint64) source[i * source_stride][0];
-    destination[(i + 1) * destination_stride] = (gint64) source[i * source_stride][1];
-    destination[(i + 2) * destination_stride] = (gint64) source[i * source_stride][2];
-    destination[(i + 3) * destination_stride] = (gint64) source[i * source_stride][3];
-    destination[(i + 4) * destination_stride] = (gint64) source[i * source_stride][4];
-    destination[(i + 5) * destination_stride] = (gint64) source[i * source_stride][5];
-    destination[(i + 6) * destination_stride] = (gint64) source[i * source_stride][6];
-    destination[(i + 7) * destination_stride] = (gint64) source[i * source_stride][7];
+    destination[i * 8 * destination_stride] = (gint64) source[i * source_stride][0];
+    destination[(i * 8 + 1) * destination_stride] = (gint64) source[i * source_stride][1];
+    destination[(i * 8 + 2) * destination_stride] = (gint64) source[i * source_stride][2];
+    destination[(i * 8 + 3) * destination_stride] = (gint64) source[i * source_stride][3];
+    destination[(i * 8 + 4) * destination_stride] = (gint64) source[i * source_stride][4];
+    destination[(i * 8 + 5) * destination_stride] = (gint64) source[i * source_stride][5];
+    destination[(i * 8 + 6) * destination_stride] = (gint64) source[i * source_stride][6];
+    destination[(i * 8 + 7) * destination_stride] = (gint64) source[i * source_stride][7];
   }
 }
 
@@ -20303,14 +20304,14 @@ ags_audio_buffer_util_fetch_v8float_as_float(AgsAudioBufferUtil *audio_buffer_ut
   guint i;
 
   for(i = 0; i < count / 8; i++){
-    destination[i * destination_stride] = (gfloat) source[i * source_stride][0];
-    destination[(i + 1) * destination_stride] = (gfloat) source[i * source_stride][1];
-    destination[(i + 2) * destination_stride] = (gfloat) source[i * source_stride][2];
-    destination[(i + 3) * destination_stride] = (gfloat) source[i * source_stride][3];
-    destination[(i + 4) * destination_stride] = (gfloat) source[i * source_stride][4];
-    destination[(i + 5) * destination_stride] = (gfloat) source[i * source_stride][5];
-    destination[(i + 6) * destination_stride] = (gfloat) source[i * source_stride][6];
-    destination[(i + 7) * destination_stride] = (gfloat) source[i * source_stride][7];
+    destination[i * 8 * destination_stride] = (gfloat) source[i * source_stride][0];
+    destination[(i * 8 + 1) * destination_stride] = (gfloat) source[i * source_stride][1];
+    destination[(i * 8 + 2) * destination_stride] = (gfloat) source[i * source_stride][2];
+    destination[(i * 8 + 3) * destination_stride] = (gfloat) source[i * source_stride][3];
+    destination[(i * 8 + 4) * destination_stride] = (gfloat) source[i * source_stride][4];
+    destination[(i * 8 + 5) * destination_stride] = (gfloat) source[i * source_stride][5];
+    destination[(i * 8 + 6) * destination_stride] = (gfloat) source[i * source_stride][6];
+    destination[(i * 8 + 7) * destination_stride] = (gfloat) source[i * source_stride][7];
   }
 }
 
@@ -20336,14 +20337,14 @@ ags_audio_buffer_util_fill_v8double_from_s8(AgsAudioBufferUtil *audio_buffer_uti
   guint i;
 
   for(i = 0; i < count / 8; i++){
-    destination[i * destination_stride] = (ags_v8double) {source[i * source_stride],
-							  source[(i + 1) * source_stride],
-							  source[(i + 2) * source_stride],
-							  source[(i + 3) * source_stride],
-							  source[(i + 4) * source_stride],
-							  source[(i + 5) * source_stride],
-							  source[(i + 6) * source_stride],
-							  source[(i + 7) * source_stride]};
+    destination[i * destination_stride] = (ags_v8double) {source[i * 8 * source_stride],
+							  source[(i * 8 + 1) * source_stride],
+							  source[(i * 8 + 2) * source_stride],
+							  source[(i * 8 + 3) * source_stride],
+							  source[(i * 8 + 4) * source_stride],
+							  source[(i * 8 + 5) * source_stride],
+							  source[(i * 8 + 6) * source_stride],
+							  source[(i * 8 + 7) * source_stride]};
   }
 }
 
@@ -20369,14 +20370,14 @@ ags_audio_buffer_util_fill_v8double_from_s16(AgsAudioBufferUtil *audio_buffer_ut
   guint i;
 
   for(i = 0; i < count / 8; i++){
-    destination[i * destination_stride] = (ags_v8double) {source[i * source_stride],
-							  source[(i + 1) * source_stride],
-							  source[(i + 2) * source_stride],
-							  source[(i + 3) * source_stride],
-							  source[(i + 4) * source_stride],
-							  source[(i + 5) * source_stride],
-							  source[(i + 6) * source_stride],
-							  source[(i + 7) * source_stride]};
+    destination[i * destination_stride] = (ags_v8double) {source[i * 8 * source_stride],
+							  source[(i * 8 + 1) * source_stride],
+							  source[(i * 8 + 2) * source_stride],
+							  source[(i * 8 + 3) * source_stride],
+							  source[(i * 8 + 4) * source_stride],
+							  source[(i * 8 + 5) * source_stride],
+							  source[(i * 8 + 6) * source_stride],
+							  source[(i * 8 + 7) * source_stride]};
   }
 }
 
@@ -20402,14 +20403,14 @@ ags_audio_buffer_util_fill_v8double_from_s32(AgsAudioBufferUtil *audio_buffer_ut
   guint i;
 
   for(i = 0; i < count / 8; i++){
-    destination[i * destination_stride] = (ags_v8double) {source[i * source_stride],
-							  source[(i + 1) * source_stride],
-							  source[(i + 2) * source_stride],
-							  source[(i + 3) * source_stride],
-							  source[(i + 4) * source_stride],
-							  source[(i + 5) * source_stride],
-							  source[(i + 6) * source_stride],
-							  source[(i + 7) * source_stride]};
+    destination[i * destination_stride] = (ags_v8double) {source[i * 8 * source_stride],
+							  source[(i * 8 + 1) * source_stride],
+							  source[(i * 8 + 2) * source_stride],
+							  source[(i * 8 + 3) * source_stride],
+							  source[(i * 8 + 4) * source_stride],
+							  source[(i * 8 + 5) * source_stride],
+							  source[(i * 8 + 6) * source_stride],
+							  source[(i * 8 + 7) * source_stride]};
   }
 }
 
@@ -20435,14 +20436,14 @@ ags_audio_buffer_util_fill_v8double_from_s64(AgsAudioBufferUtil *audio_buffer_ut
   guint i;
 
   for(i = 0; i < count / 8; i++){
-    destination[i * destination_stride] = (ags_v8double) {source[i * source_stride],
-							  source[(i + 1) * source_stride],
-							  source[(i + 2) * source_stride],
-							  source[(i + 3) * source_stride],
-							  source[(i + 4) * source_stride],
-							  source[(i + 5) * source_stride],
-							  source[(i + 6) * source_stride],
-							  source[(i + 7) * source_stride]};
+    destination[i * destination_stride] = (ags_v8double) {source[i * 8 * source_stride],
+							  source[(i * 8 + 1) * source_stride],
+							  source[(i * 8 + 2) * source_stride],
+							  source[(i * 8 + 3) * source_stride],
+							  source[(i * 8 + 4) * source_stride],
+							  source[(i * 8 + 5) * source_stride],
+							  source[(i * 8 + 6) * source_stride],
+							  source[(i * 8 + 7) * source_stride]};
   }
 }
 
@@ -20468,14 +20469,14 @@ ags_audio_buffer_util_fill_v8double_from_float(AgsAudioBufferUtil *audio_buffer_
   guint i;
 
   for(i = 0; i < count / 8; i++){
-    destination[i * destination_stride] = (ags_v8double) {source[i * source_stride],
-							  source[(i + 1) * source_stride],
-							  source[(i + 2) * source_stride],
-							  source[(i + 3) * source_stride],
-							  source[(i + 4) * source_stride],
-							  source[(i + 5) * source_stride],
-							  source[(i + 6) * source_stride],
-							  source[(i + 7) * source_stride]};
+    destination[i * destination_stride] = (ags_v8double) {source[i * 8 * source_stride],
+							  source[(i * 8 + 1) * source_stride],
+							  source[(i * 8 + 2) * source_stride],
+							  source[(i * 8 + 3) * source_stride],
+							  source[(i * 8 + 4) * source_stride],
+							  source[(i * 8 + 5) * source_stride],
+							  source[(i * 8 + 6) * source_stride],
+							  source[(i * 8 + 7) * source_stride]};
   }
 }
 
@@ -20501,14 +20502,14 @@ ags_audio_buffer_util_fetch_v8double_as_s8(AgsAudioBufferUtil *audio_buffer_util
   guint i;
 
   for(i = 0; i < count / 8; i++){
-    destination[i * destination_stride] = (gint8) source[i * source_stride][0];
-    destination[(i + 1) * destination_stride] = (gint8) source[i * source_stride][1];
-    destination[(i + 2) * destination_stride] = (gint8) source[i * source_stride][2];
-    destination[(i + 3) * destination_stride] = (gint8) source[i * source_stride][3];
-    destination[(i + 4) * destination_stride] = (gint8) source[i * source_stride][4];
-    destination[(i + 5) * destination_stride] = (gint8) source[i * source_stride][5];
-    destination[(i + 6) * destination_stride] = (gint8) source[i * source_stride][6];
-    destination[(i + 7) * destination_stride] = (gint8) source[i * source_stride][7];
+    destination[i * 8 * destination_stride] = (gint8) source[i * source_stride][0];
+    destination[(i * 8 + 1) * destination_stride] = (gint8) source[i * source_stride][1];
+    destination[(i * 8 + 2) * destination_stride] = (gint8) source[i * source_stride][2];
+    destination[(i * 8 + 3) * destination_stride] = (gint8) source[i * source_stride][3];
+    destination[(i * 8 + 4) * destination_stride] = (gint8) source[i * source_stride][4];
+    destination[(i * 8 + 5) * destination_stride] = (gint8) source[i * source_stride][5];
+    destination[(i * 8 + 6) * destination_stride] = (gint8) source[i * source_stride][6];
+    destination[(i * 8 + 7) * destination_stride] = (gint8) source[i * source_stride][7];
   }
 }
 
@@ -20534,14 +20535,14 @@ ags_audio_buffer_util_fetch_v8double_as_s16(AgsAudioBufferUtil *audio_buffer_uti
   guint i;
 
   for(i = 0; i < count / 8; i++){
-    destination[i * destination_stride] = (gint16) source[i * source_stride][0];
-    destination[(i + 1) * destination_stride] = (gint16) source[i * source_stride][1];
-    destination[(i + 2) * destination_stride] = (gint16) source[i * source_stride][2];
-    destination[(i + 3) * destination_stride] = (gint16) source[i * source_stride][3];
-    destination[(i + 4) * destination_stride] = (gint16) source[i * source_stride][4];
-    destination[(i + 5) * destination_stride] = (gint16) source[i * source_stride][5];
-    destination[(i + 6) * destination_stride] = (gint16) source[i * source_stride][6];
-    destination[(i + 7) * destination_stride] = (gint16) source[i * source_stride][7];
+    destination[i * 8 * destination_stride] = (gint16) source[i * source_stride][0];
+    destination[(i * 8 + 1) * destination_stride] = (gint16) source[i * source_stride][1];
+    destination[(i * 8 + 2) * destination_stride] = (gint16) source[i * source_stride][2];
+    destination[(i * 8 + 3) * destination_stride] = (gint16) source[i * source_stride][3];
+    destination[(i * 8 + 4) * destination_stride] = (gint16) source[i * source_stride][4];
+    destination[(i * 8 + 5) * destination_stride] = (gint16) source[i * source_stride][5];
+    destination[(i * 8 + 6) * destination_stride] = (gint16) source[i * source_stride][6];
+    destination[(i * 8 + 7) * destination_stride] = (gint16) source[i * source_stride][7];
   }
 }
 
@@ -20567,14 +20568,14 @@ ags_audio_buffer_util_fetch_v8double_as_s32(AgsAudioBufferUtil *audio_buffer_uti
   guint i;
 
   for(i = 0; i < count / 8; i++){
-    destination[i * destination_stride] = (gint32) source[i * source_stride][0];
-    destination[(i + 1) * destination_stride] = (gint32) source[i * source_stride][1];
-    destination[(i + 2) * destination_stride] = (gint32) source[i * source_stride][2];
-    destination[(i + 3) * destination_stride] = (gint32) source[i * source_stride][3];
-    destination[(i + 4) * destination_stride] = (gint32) source[i * source_stride][4];
-    destination[(i + 5) * destination_stride] = (gint32) source[i * source_stride][5];
-    destination[(i + 6) * destination_stride] = (gint32) source[i * source_stride][6];
-    destination[(i + 7) * destination_stride] = (gint32) source[i * source_stride][7];
+    destination[i * 8 * destination_stride] = (gint32) source[i * source_stride][0];
+    destination[(i * 8 + 1) * destination_stride] = (gint32) source[i * source_stride][1];
+    destination[(i * 8 + 2) * destination_stride] = (gint32) source[i * source_stride][2];
+    destination[(i * 8 + 3) * destination_stride] = (gint32) source[i * source_stride][3];
+    destination[(i * 8 + 4) * destination_stride] = (gint32) source[i * source_stride][4];
+    destination[(i * 8 + 5) * destination_stride] = (gint32) source[i * source_stride][5];
+    destination[(i * 8 + 6) * destination_stride] = (gint32) source[i * source_stride][6];
+    destination[(i * 8 + 7) * destination_stride] = (gint32) source[i * source_stride][7];
   }
 }
 
@@ -20600,14 +20601,14 @@ ags_audio_buffer_util_fetch_v8double_as_s64(AgsAudioBufferUtil *audio_buffer_uti
   guint i;
 
   for(i = 0; i < count / 8; i++){
-    destination[i * destination_stride] = (gint64) source[i * source_stride][0];
-    destination[(i + 1) * destination_stride] = (gint64) source[i * source_stride][1];
-    destination[(i + 2) * destination_stride] = (gint64) source[i * source_stride][2];
-    destination[(i + 3) * destination_stride] = (gint64) source[i * source_stride][3];
-    destination[(i + 4) * destination_stride] = (gint64) source[i * source_stride][4];
-    destination[(i + 5) * destination_stride] = (gint64) source[i * source_stride][5];
-    destination[(i + 6) * destination_stride] = (gint64) source[i * source_stride][6];
-    destination[(i + 7) * destination_stride] = (gint64) source[i * source_stride][7];
+    destination[i * 8 * destination_stride] = (gint64) source[i * source_stride][0];
+    destination[(i * 8 + 1) * destination_stride] = (gint64) source[i * source_stride][1];
+    destination[(i * 8 + 2) * destination_stride] = (gint64) source[i * source_stride][2];
+    destination[(i * 8 + 3) * destination_stride] = (gint64) source[i * source_stride][3];
+    destination[(i * 8 + 4) * destination_stride] = (gint64) source[i * source_stride][4];
+    destination[(i * 8 + 5) * destination_stride] = (gint64) source[i * source_stride][5];
+    destination[(i * 8 + 6) * destination_stride] = (gint64) source[i * source_stride][6];
+    destination[(i * 8 + 7) * destination_stride] = (gint64) source[i * source_stride][7];
   }
 }
 
@@ -20633,14 +20634,14 @@ ags_audio_buffer_util_fetch_v8double_as_float(AgsAudioBufferUtil *audio_buffer_u
   guint i;
 
   for(i = 0; i < count / 8; i++){
-    destination[i * destination_stride] = (gfloat) source[i * source_stride][0];
-    destination[(i + 1) * destination_stride] = (gfloat) source[i * source_stride][1];
-    destination[(i + 2) * destination_stride] = (gfloat) source[i * source_stride][2];
-    destination[(i + 3) * destination_stride] = (gfloat) source[i * source_stride][3];
-    destination[(i + 4) * destination_stride] = (gfloat) source[i * source_stride][4];
-    destination[(i + 5) * destination_stride] = (gfloat) source[i * source_stride][5];
-    destination[(i + 6) * destination_stride] = (gfloat) source[i * source_stride][6];
-    destination[(i + 7) * destination_stride] = (gfloat) source[i * source_stride][7];
+    destination[i * 8 * destination_stride] = (gfloat) source[i * source_stride][0];
+    destination[(i * 8 + 1) * destination_stride] = (gfloat) source[i * source_stride][1];
+    destination[(i * 8 + 2) * destination_stride] = (gfloat) source[i * source_stride][2];
+    destination[(i * 8 + 3) * destination_stride] = (gfloat) source[i * source_stride][3];
+    destination[(i * 8 + 4) * destination_stride] = (gfloat) source[i * source_stride][4];
+    destination[(i * 8 + 5) * destination_stride] = (gfloat) source[i * source_stride][5];
+    destination[(i * 8 + 6) * destination_stride] = (gfloat) source[i * source_stride][6];
+    destination[(i * 8 + 7) * destination_stride] = (gfloat) source[i * source_stride][7];
   }
 }
 
