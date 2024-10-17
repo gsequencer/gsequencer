@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -2619,8 +2619,11 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
   template_stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(template);
 
   /* loop related copying */
-  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
- 						  ags_audio_buffer_util_format_from_soundcard(format));
+  copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(audio_signal->audio_buffer_util,
+							      ags_audio_buffer_util_format_from_soundcard(audio_signal->audio_buffer_util,
+													  format),
+							      ags_audio_buffer_util_format_from_soundcard(audio_signal->audio_buffer_util,
+													  format));
 
   /* generic copying */
   stream = g_list_nth(audio_signal->stream,
@@ -2654,7 +2657,8 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
     }
     
     /* copy */
-    ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, i % buffer_size,
+    ags_audio_buffer_util_copy_buffer_to_buffer(audio_signal->audio_buffer_util,
+						stream->data, 1, i % buffer_size,
 						template_stream->data, 1, j % buffer_size,
 						copy_n_frames, copy_mode);
     

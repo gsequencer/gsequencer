@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -2195,7 +2195,8 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
   loop_start = 0;
   loop_end = 0;
 
-  audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
+  audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(AGS_AUDIO_SIGNAL(audio_signal)->audio_buffer_util,
+									 format);
 
   allocated_frame_count = buffer_size;
 
@@ -2324,8 +2325,9 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
 
   g_rec_mutex_unlock(sf2_synth_generator_mutex);    
   
-  copy_mode = ags_audio_buffer_util_get_copy_mode(audio_buffer_util_format,
-						  audio_buffer_util_format);
+  copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(AGS_AUDIO_SIGNAL(audio_signal)->audio_buffer_util,
+							      audio_buffer_util_format,
+							      audio_buffer_util_format);
   
   g_rec_mutex_lock(stream_mutex);
 
@@ -2338,7 +2340,8 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
       copy_count = frame_count - i;
     }
 
-    ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, 0,
+    ags_audio_buffer_util_copy_buffer_to_buffer(AGS_AUDIO_SIGNAL(audio_signal)->audio_buffer_util,
+						stream->data, 1, 0,
 						buffer, 1, i,
 						copy_count, copy_mode);
     i += copy_count;
@@ -2546,7 +2549,8 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
 			(guint) floor((double) attack / (double) buffer_size));
   }
 
-  audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
+  audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(AGS_AUDIO_SIGNAL(audio_signal)->audio_buffer_util,
+									 format);
 
   buffer = ags_stream_alloc(frame_count,
 			    format);
@@ -2602,8 +2606,9 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
   
   g_rec_mutex_unlock(sf2_synth_generator_mutex);    
 
-  copy_mode = ags_audio_buffer_util_get_copy_mode(audio_buffer_util_format,
-						  audio_buffer_util_format);
+  copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(AGS_AUDIO_SIGNAL(audio_signal)->audio_buffer_util,
+							      audio_buffer_util_format,
+							      audio_buffer_util_format);
 
   g_rec_mutex_lock(stream_mutex);
 
@@ -2616,7 +2621,8 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
       copy_count = frame_count - i;
     }
 
-    ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, 0,
+    ags_audio_buffer_util_copy_buffer_to_buffer(AGS_AUDIO_SIGNAL(audio_signal)->audio_buffer_util,
+						stream->data, 1, 0,
 						buffer, 1, i,
 						copy_count, copy_mode);
 

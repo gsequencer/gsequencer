@@ -1,3 +1,75 @@
+ags (7.0.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* NOTE:JK: incompatible ags_audio_buffer_util_get_copy_mode() due to refactoring,
+	  use ags_audio_buffer_util_get_copy_mode_from_format() instead
+	* NOTE:JK: incompatible ags_midi_parser_read_varlength() due to refactoring
+	* NOTE:JK: incompatible ags_midi_util_put_pitch_bend() due to bug
+	* NOTE:JK: incompatible ags_midi_util_get_pitch_bend() due to bug
+	* NOTE:JK: incompatible ags_midi_smf_util_put_pitch_bend() due to bug
+	* NOTE:JK: incompatible ags_midi_smf_util_get_pitch_bend() due to bug
+	* NOTE:JK: incompatible ags_midi_ump_util_put_midi1_pitch_bend() due to bug
+	* NOTE:JK: incompatible ags_midi_ump_util_get_midi1_pitch_bend() due to bug
+	* NOTE:JK: incompatible AgsMidiBuilder::pitch-bend() due to bug
+	* NOTE:JK: incompatible ags_fourier_transform_util_compute_stft_s8() due to refactoring
+	* NOTE:JK: incompatible ags_fourier_transform_util_compute_stft_s16() due to refactoring
+	* NOTE:JK: incompatible ags_fourier_transform_util_compute_stft_s24() due to refactoring
+	* NOTE:JK: incompatible ags_fourier_transform_util_compute_stft_s32() due to refactoring
+	* NOTE:JK: incompatible ags_fourier_transform_util_compute_stft_s64() due to refactoring
+	* NOTE:JK: incompatible ags_fourier_transform_util_compute_stft_float() due to refactoring
+	* NOTE:JK: incompatible ags_fourier_transform_util_compute_stft_double() due to refactoring
+	* NOTE:JK: incompatible ags_fourier_transform_util_compute_stft_complex() due to refactoring
+	* NOTE:JK: incompatible ags_fourier_transform_util_inverse_stft_s8() due to refactoring
+	* NOTE:JK: incompatible ags_fourier_transform_util_inverse_stft_s16() due to refactoring
+	* NOTE:JK: incompatible ags_fourier_transform_util_inverse_stft_s24() due to refactoring
+	* NOTE:JK: incompatible ags_fourier_transform_util_inverse_stft_s32() due to refactoring
+	* NOTE:JK: incompatible ags_fourier_transform_util_inverse_stft_s64() due to refactoring
+	* NOTE:JK: incompatible ags_fourier_transform_util_inverse_stft_float() due to refactoring
+	* NOTE:JK: incompatible ags_fourier_transform_util_inverse_stft_double() due to refactoring
+	* NOTE:JK: incompatible ags_fourier_transform_util_inverse_stft_complex() due to refactoring
+	* NOTE:JK: removed ags_envelope_util_get_wah_wah_enabled()
+	* NOTE:JK: removed ags_envelope_util_set_wah_wah_enabled()
+	* NOTE:JK: removed ags_envelope_util_get_wah_wah_lfo_depth()
+	* NOTE:JK: removed ags_envelope_util_set_wah_wah_lfo_depth()
+	* NOTE:JK: removed ags_envelope_util_get_wah_wah_lfo_freq()
+	* NOTE:JK: removed ags_envelope_util_set_wah_wah_lfo_freq()
+	* NOTE:JK: removed ags_envelope_util_get_wah_wah_tuning()
+	* NOTE:JK: removed ags_envelope_util_set_wah_wah_tuning()
+	* NOTE:JK: removed ags_envelope_util_get_wah_wah_lfo_offset()
+	* NOTE:JK: removed ags_envelope_util_set_wah_wah_lfo_offset()
+	* implemented AgsVector256Manager
+	* implemented AgsVDSP256Manager
+	* implemented ags_recall_midi1_control_change()
+	* implemented ags_recall_midi2_control_change()
+	* implemented utility functions initializers
+	* implemented ags-fx-notation MIDI version 2 support
+	* implemented LFO of AgsEnvelopeUtil
+	* implemented ags-fx-envelope LFO enabled port
+	* implemented ags_sequencer_get_midi_version()
+	* optimized ags/audio/ags_audio_buffer_util.c
+	* optimized ags/audio/ags_volume_util.c
+	* optimized ags/audio/ags_envelope_util.c
+	* refactored envelope to support LFO
+	* refactored ags/audio/ags_fourier_transform_util.h
+	* refactored ags/audio/ags_audio_buffer_util.h
+	* refactored AgsAudioBufferUtil breaking ABI
+	* refactored AgsSynthUtil breaking ABI
+	* refactored ags_audio_buffer_util_get_copy_mode_from_format() breaking ABI due to renaming and conflict
+	* refactored ags_sf2_synth_util_copy() renamed
+	* refactored ags_sfz_synth_util_copy() renamed
+	* refactored ags_time_stretch_util_get_buffer_length() renamed
+	* refactored ags_time_stretch_util_set_buffer_length() renamed
+	* refactored AgsApplySoundConfig
+	* removed deprecated functions
+	* fixed ags_midi_ump_util_put_midi1_pitch_bend() prototype declaration
+	* fixed ags_midi_ump_util_get_midi1_pitch_bend() prototype declaration
+	* fixed ags_midi_util_put_pitch_bend() prototype declaration
+	* fixed ags_midi_util_get_pitch_bend() prototype declaration
+	* fixed ags_midi_smf_util_put_pitch_bend() prototype declaration
+	* fixed ags_midi_smf_util_get_pitch_bend() prototype declaration
+	* fixed ags_midi_builder_append_change_pitch_bend() prototype declaration
+	* fixed ags_midi_parser_change_pitch_bend() parse transmitter attribute as 14 bit value
+
 ags (6.16.23)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
@@ -6084,7 +6156,6 @@ ags (0.7.116)
 	* fixed possible NULL pointer access in ags_midiin_list_cards()
 	* fixed AgsMidiin to always set nth_buffer during record
 	* fixed in ags_midiin_set_device() to duplicate string and handle OSS4
->>>>>>> master
 
 ags (0.7.115)
 

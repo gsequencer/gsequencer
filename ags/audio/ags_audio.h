@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -137,6 +137,8 @@ struct _AgsAudio
 
   guint midi_start_mapping;
   guint midi_end_mapping;
+
+  guint midi_group;
 
   guint midi_channel;
 
@@ -359,6 +361,10 @@ void ags_audio_set_audio_start_mapping(AgsAudio *audio,
 guint ags_audio_get_midi_start_mapping(AgsAudio *audio);
 void ags_audio_set_midi_start_mapping(AgsAudio *audio,
 				      guint midi_start_mapping);
+
+guint ags_audio_get_midi_group(AgsAudio *audio);
+void ags_audio_set_midi_group(AgsAudio *audio,
+			      guint midi_group);
 
 guint ags_audio_get_midi_channel(AgsAudio *audio);
 void ags_audio_set_midi_channel(AgsAudio *audio,

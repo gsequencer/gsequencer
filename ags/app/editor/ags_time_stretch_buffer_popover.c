@@ -358,6 +358,7 @@ ags_time_stretch_buffer_popover_apply(AgsApplicable *applicable)
   AgsNotebook *notebook;
 
   AgsAudio *audio;
+  AgsAudioBufferUtil *audio_buffer_util;
   
   AgsTimestamp *timestamp;
 
@@ -371,7 +372,7 @@ ags_time_stretch_buffer_popover_apply(AgsApplicable *applicable)
   GList *start_new_wave, *new_wave;
   
   guint samplerate;
-  guint buffer_size;
+  guint buffer_length;
   guint format;
   gdouble delay;
   guint64 relative_offset;
@@ -397,10 +398,12 @@ ags_time_stretch_buffer_popover_apply(AgsApplicable *applicable)
   
   audio = machine->audio;
 
+  audio_buffer_util = ags_audio_buffer_util_alloc();
+  
   output_soundcard = NULL;
 
   samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  buffer_length = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   format = AGS_SOUNDCARD_DEFAULT_FORMAT;  
 
   start_wave = NULL;
@@ -408,7 +411,7 @@ ags_time_stretch_buffer_popover_apply(AgsApplicable *applicable)
   g_object_get(audio,
 	       "output-soundcard", &output_soundcard,
 	       "samplerate", &samplerate,
-	       "buffer-size", &buffer_size,
+	       "buffer-size", &buffer_length,
 	       "format", &format,
 	       "wave", &start_wave,
 	       NULL);
@@ -432,7 +435,7 @@ ags_time_stretch_buffer_popover_apply(AgsApplicable *applicable)
   time_stretch_util.destination_stride = 1;
   time_stretch_util.destination_buffer_length = 0;
   
-  time_stretch_util.buffer_size = buffer_size;
+  time_stretch_util.buffer_length = buffer_length;
   time_stretch_util.format = format;
   time_stretch_util.samplerate = samplerate;
 
@@ -443,8 +446,11 @@ ags_time_stretch_buffer_popover_apply(AgsApplicable *applicable)
 
   factor = time_stretch_util.new_bpm / time_stretch_util.orig_bpm;
   
-  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
-						  ags_audio_buffer_util_format_from_soundcard(format));
+  copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(audio_buffer_util,
+							      ags_audio_buffer_util_format_from_soundcard(audio_buffer_util,
+													  format),
+							      ags_audio_buffer_util_format_from_soundcard(audio_buffer_util,
+													  format));
   
   i = 0;
   
@@ -479,7 +485,7 @@ ags_time_stretch_buffer_popover_apply(AgsApplicable *applicable)
 	    x0 = ags_buffer_get_x(buffer->data);
 	  }
 	  
-	  x1 = ags_buffer_get_x(buffer->data) + buffer_size;
+	  x1 = ags_buffer_get_x(buffer->data) + buffer_length;
 	  
 	  has_selection = TRUE;
 	}
@@ -510,12 +516,15 @@ ags_time_stretch_buffer_popover_apply(AgsApplicable *applicable)
 	    if(current_x >= x0 && current_x < x1){
 	      ags_buffer_lock(buffer->data);
 	      
-	      ags_audio_buffer_util_copy_buffer_to_buffer(time_stretch_util.source, 1, current_x - x0,
+	      ags_audio_buffer_util_copy_buffer_to_buffer(audio_buffer_util,
+							  time_stretch_util.source, 1, current_x - x0,
 							  ags_buffer_get_data(buffer->data), 1, 0,
-							  buffer_size, copy_mode);
+							  buffer_length, copy_mode);
 
-	      ags_audio_buffer_util_clear_buffer(ags_buffer_get_data(buffer->data), 1,
-						 buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
+	      ags_audio_buffer_util_clear_buffer(audio_buffer_util,
+						 ags_buffer_get_data(buffer->data), 1,
+						 buffer_length, ags_audio_buffer_util_format_from_soundcard(audio_buffer_util,
+													  format));
 	      
 	      ags_buffer_unlock(buffer->data);
 	    }
@@ -534,7 +543,7 @@ ags_time_stretch_buffer_popover_apply(AgsApplicable *applicable)
 
 	g_object_set(current_new_wave,
 		     "samplerate", samplerate,
-		     "buffer-size", buffer_size,
+		     "buffer-size", buffer_length,
 		     "format", format,
 		     NULL);
 	
@@ -554,7 +563,7 @@ ags_time_stretch_buffer_popover_apply(AgsApplicable *applicable)
 	  g_object_set(current_new_buffer,
 		       "x", j,
 		       "samplerate", samplerate,
-		       "buffer-size", buffer_size,
+		       "buffer-size", buffer_length,
 		       "format", format,
 		       NULL);
 
@@ -562,32 +571,33 @@ ags_time_stretch_buffer_popover_apply(AgsApplicable *applicable)
 			      current_new_buffer,
 			      FALSE);
 	      
-	  frame_count = buffer_size;
+	  frame_count = buffer_length;
 	  
 	  if(floor(j / relative_offset) < floor((j + frame_count) / relative_offset)){
-	    frame_count = buffer_size - ((j + frame_count) % relative_offset);
+	    frame_count = buffer_length - ((j + frame_count) % relative_offset);
 	  }
 	  
 	  ags_buffer_lock(current_new_buffer);
 
-	  ags_audio_buffer_util_copy_buffer_to_buffer(ags_buffer_get_data(current_new_buffer), 1, 0,
+	  ags_audio_buffer_util_copy_buffer_to_buffer(audio_buffer_util,
+						      ags_buffer_get_data(current_new_buffer), 1, 0,
 						      time_stretch_util.destination, 1, j - x0,
 						      frame_count, copy_mode);
 
 	  ags_buffer_unlock(current_new_buffer);
       
 	  /* iterate */
-	  if(floor(j / relative_offset) < floor((j + buffer_size) / relative_offset)){
+	  if(floor(j / relative_offset) < floor((j + buffer_length) / relative_offset)){
 	    current_new_wave = ags_wave_new((GObject *) audio,
 					    i);
 
 	    g_object_set(current_new_wave,
 			 "samplerate", samplerate,
-			 "buffer-size", buffer_size,
+			 "buffer-size", buffer_length,
 			 "format", format,
 			 NULL);
 	
-	    current_new_wave->timestamp->timer.ags_offset.offset = (guint64) relative_offset * floor((j + buffer_size) / relative_offset);
+	    current_new_wave->timestamp->timer.ags_offset.offset = (guint64) relative_offset * floor((j + buffer_length) / relative_offset);
 
 	    start_new_wave = g_list_insert_sorted(start_new_wave,
 						  current_new_wave,
@@ -673,6 +683,8 @@ ags_time_stretch_buffer_popover_apply(AgsApplicable *applicable)
     /* iterate */
     i++;
   }    
+  
+  ags_audio_buffer_util_free(audio_buffer_util);
   
   g_list_free_full(start_wave,
 		   (GDestroyNotify) g_object_unref);

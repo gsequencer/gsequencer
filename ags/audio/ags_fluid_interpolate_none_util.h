@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,6 +33,27 @@ G_BEGIN_DECLS
 #define AGS_TYPE_FLUID_INTERPOLATE_NONE_UTIL         (ags_fluid_interpolate_none_util_get_type())
 #define AGS_FLUID_INTERPOLATE_NONE_UTIL(ptr) ((AgsFluidInterpolateNoneUtil *)(ptr))
 
+#define AGS_FLUID_INTERPOLATE_NONE_UTIL_INITIALIZER ((AgsFluidInterpolateNoneUtil) { \
+      .source = NULL,							\
+      .source_stride = 1,						\
+      .destination = NULL,						\
+      .destination_stride = 1,						\
+      .buffer_length = 0,						\
+      .format = AGS_SOUNDCARD_DEFAULT_FORMAT,				\
+      .samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE,			\
+      .base_key = 0.0,							\
+      .tuning = 0.0,							\
+      .phase_increment = 0.0,						\
+      .vibrato_enabled = FALSE,						\
+      .vibrato_gain = 1.0,						\
+      .vibrato_lfo_depth = 1.0,						\
+      .vibrato_lfo_freq = 8.172,					\
+      .vibrato_tuning = 0.0,						\
+      .frame_count = (AGS_SOUNDCARD_DEFAULT_SAMPLERATE / 8.172),	\
+      .offset = 0,							\
+      .note_256th_mode = FALSE,						\
+      .offset_256th = 0 })
+
 typedef struct _AgsFluidInterpolateNoneUtil AgsFluidInterpolateNoneUtil;
 
 struct _AgsFluidInterpolateNoneUtil
@@ -59,9 +80,6 @@ struct _AgsFluidInterpolateNoneUtil
   gdouble vibrato_lfo_freq;
   gdouble vibrato_tuning;
   
-  guint vibrato_lfo_frame_count;
-  guint vibrato_lfo_offset;
-
   guint frame_count;
   guint offset;
   
@@ -137,12 +155,6 @@ gdouble ags_fluid_interpolate_none_util_get_vibrato_tuning(AgsFluidInterpolateNo
 void ags_fluid_interpolate_none_util_set_vibrato_tuning(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util,
 							gdouble vibrato_tuning);
 
-G_DEPRECATED_FOR(ags_fluid_interpolate_none_util_get_offset)
-guint ags_fluid_interpolate_none_util_get_vibrato_lfo_offset(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
-G_DEPRECATED_FOR(ags_fluid_interpolate_none_util_set_offset)
-void ags_fluid_interpolate_none_util_set_vibrato_lfo_offset(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util,
-							    guint vibrato_lfo_offset);
-
 guint ags_fluid_interpolate_none_util_get_frame_count(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
 void ags_fluid_interpolate_none_util_set_frame_count(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util,
 						     guint frame_count);
@@ -167,6 +179,7 @@ void ags_fluid_interpolate_none_util_pitch_s64(AgsFluidInterpolateNoneUtil *flui
 void ags_fluid_interpolate_none_util_pitch_float(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
 void ags_fluid_interpolate_none_util_pitch_double(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
 void ags_fluid_interpolate_none_util_pitch_complex(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
+
 void ags_fluid_interpolate_none_util_pitch(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
 
 G_END_DECLS

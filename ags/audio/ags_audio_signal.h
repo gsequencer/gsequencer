@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,7 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_audio_buffer_util.h>
 #include <ags/audio/ags_note.h>
 
 G_BEGIN_DECLS
@@ -114,6 +115,7 @@ struct _AgsAudioSignal
 
   gdouble delay;
   guint attack;
+  guint note_256th_attack;
 
   AgsComplex damping;
   AgsComplex vibration;
@@ -135,11 +137,11 @@ struct _AgsAudioSignal
 
   AgsAudioSignalStreamMode stream_mode;
 
+  AgsAudioBufferUtil *audio_buffer_util;
+  
   GRecMutex backlog_mutex;
 
   gboolean has_backlog;
-
-  guint note_256th_attack;
 };
 
 struct _AgsAudioSignalClass

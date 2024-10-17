@@ -1759,69 +1759,71 @@ ags_soundcard_editor_add_port(AgsSoundcardEditor *soundcard_editor,
 
   soundcard_editor->soundcard = soundcard;
 
-  start_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
-  g_list_foreach(start_soundcard,
-		 (GFunc) g_object_unref,
-		 NULL);
+  if(soundcard != NULL){
+    start_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+    g_list_foreach(start_soundcard,
+		   (GFunc) g_object_unref,
+		   NULL);
   
-  start_soundcard = g_list_append(start_soundcard,
-				  soundcard);
-  ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
-				   start_soundcard);
+    start_soundcard = g_list_append(start_soundcard,
+				    soundcard);
+    ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
+				     start_soundcard);
 
-  /* add AgsAudio to AgsSoundcard */
+    /* add AgsAudio to AgsSoundcard */
 #if 0
-  if(initial_soundcard){
-    GList *start_machine, *machine;
-    GList *start_list, *list;
+    if(initial_soundcard){
+      GList *start_machine, *machine;
+      GList *start_list, *list;
     
-    machine = 
-      start_machine = ags_window_get_machine(window);
+      machine = 
+	start_machine = ags_window_get_machine(window);
 
-    while(machine != NULL){
-      g_object_ref(G_OBJECT(AGS_MACHINE(machine->data)->audio));
+      while(machine != NULL){
+	g_object_ref(G_OBJECT(AGS_MACHINE(machine->data)->audio));
   
-      list =
-	start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
-      g_list_foreach(start_list,
-		     (GFunc) g_object_unref,
-		     NULL);
+	list =
+	  start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
+	g_list_foreach(start_list,
+		       (GFunc) g_object_unref,
+		       NULL);
       
-      list = g_list_append(start_list,
-			   AGS_MACHINE(machine->data)->audio);
-      ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(application_context),
-				   start_list);
+	list = g_list_append(start_list,
+			     AGS_MACHINE(machine->data)->audio);
+	ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(application_context),
+				     start_list);
 
-      machine = machine->next;
+	machine = machine->next;
+      }
+      g_list_free(start_machine);
     }
-    g_list_free(start_machine);
-  }
 #endif
       
-  g_object_ref(soundcard);
+    g_object_ref(soundcard);
 
-  soundcard_thread = (AgsThread *) ags_soundcard_thread_new(soundcard,
-							    ags_soundcard_get_capability(AGS_SOUNDCARD(soundcard)));
-  soundcard_editor->soundcard_thread = (GObject *) soundcard_thread;
+    soundcard_thread = (AgsThread *) ags_soundcard_thread_new(soundcard,
+							      ags_soundcard_get_capability(AGS_SOUNDCARD(soundcard)));
+    soundcard_editor->soundcard_thread = (GObject *) soundcard_thread;
   
-  ags_thread_add_child_extended(main_loop,
-				soundcard_thread,
-				TRUE, TRUE);
+    ags_thread_add_child_extended(main_loop,
+				  soundcard_thread,
+				  TRUE, TRUE);
 
-  if((default_soundcard_thread = (AgsThread *) ags_sound_provider_get_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context))) == NULL){
-    ags_sound_provider_set_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context),
-						    (GObject *) soundcard_thread);
-  }else{
-    g_object_unref(default_soundcard_thread);
+    if((default_soundcard_thread = (AgsThread *) ags_sound_provider_get_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context))) == NULL){
+      ags_sound_provider_set_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context),
+						      (GObject *) soundcard_thread);
+    }else{
+      g_object_unref(default_soundcard_thread);
+    }
+
+    /* export thread */
+    export_thread = (AgsThread *) ags_export_thread_new(soundcard,
+							NULL);
+    ags_thread_add_child_extended(main_loop,
+				  (AgsThread *) export_thread,
+				  TRUE, TRUE);
   }
-
-  /* export thread */
-  export_thread = (AgsThread *) ags_export_thread_new(soundcard,
-						      NULL);
-  ags_thread_add_child_extended(main_loop,
-				(AgsThread *) export_thread,
-				TRUE, TRUE);
-
+  
   /*  */
   card_name = NULL;
   card_uri = NULL;

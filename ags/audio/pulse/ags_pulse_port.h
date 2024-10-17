@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -30,6 +30,8 @@
 #endif
 
 #include <ags/libags.h>
+
+#include <ags/audio/ags_audio_buffer_util.h>
 
 G_BEGIN_DECLS
 
@@ -121,6 +123,8 @@ struct _AgsPulsePort
   guint nth_empty_buffer;
   
   volatile guint queued;
+
+  AgsAudioBufferUtil *audio_buffer_util;
 };
 
 struct _AgsPulsePortClass

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,11 +32,18 @@ G_BEGIN_DECLS
 #define AGS_TYPE_PEAK_UTIL         (ags_peak_util_get_type())
 #define AGS_PEAK_UTIL(ptr) ((AgsPeakUtil *)(ptr))
 
-#define AGS_PEAK_UTIL_DEFAULT_FORMAT (AGS_SOUNDCARD_SIGNED_16_BIT)
-#define AGS_PEAK_UTIL_DEFAULT_AUDIO_BUFFER_UTIL_FORMAT (AGS_AUDIO_BUFFER_UTIL_S16)
-#define AGS_PEAK_UTIL_DEFAULT_SAMPLERATE (AGS_SOUNDCARD_DEFAULT_SAMPLERATE)
 #define AGS_PEAK_UTIL_DEFAULT_HARMONIC_RATE (440.0)
 #define AGS_PEAK_UTIL_DEFAULT_PRESSURE_FACTOR (1.0)
+
+#define AGS_PEAK_UTIL_INITIALIZER ((AgsPeakUtil) {		\
+      .source = NULL,						\
+      .source_stride = 1,					\
+      .buffer_length = 0,					\
+      .format = AGS_SOUNDCARD_DEFAULT_FORMAT,			\
+      .samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE,		\
+      .harmonic_rate = AGS_PEAK_UTIL_DEFAULT_HARMONIC_RATE,	\
+      .pressure_factor = AGS_PEAK_UTIL_DEFAULT_PRESSURE_FACTOR,	\
+      .peak = 0.0 })
 
 typedef struct _AgsPeakUtil AgsPeakUtil;
 

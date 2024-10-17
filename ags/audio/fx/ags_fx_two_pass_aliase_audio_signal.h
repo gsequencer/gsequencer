@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,6 +28,10 @@
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recall_audio_signal.h>
 
+#include <ags/audio/ags_audio_buffer_util.h>
+#include <ags/audio/ags_phase_shift_util.h>
+#include <ags/audio/ags_frequency_aliase_util.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_FX_TWO_PASS_ALIASE_AUDIO_SIGNAL                (ags_fx_two_pass_aliase_audio_signal_get_type())
@@ -43,6 +47,11 @@ typedef struct _AgsFxTwoPassAliaseAudioSignalClass AgsFxTwoPassAliaseAudioSignal
 struct _AgsFxTwoPassAliaseAudioSignal
 {
   AgsRecallAudioSignal recall_audio_signal;
+
+  AgsAudioBufferUtil audio_buffer_util;
+
+  AgsPhaseShiftUtil phase_shift_util;
+  AgsFrequencyAliaseUtil frequency_aliase_util;
 };
 
 struct _AgsFxTwoPassAliaseAudioSignalClass

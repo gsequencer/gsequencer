@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,6 +32,34 @@ G_BEGIN_DECLS
 
 #define AGS_TYPE_FLUID_IIR_FILTER_UTIL         (ags_fluid_iir_filter_util_get_type())
 #define AGS_FLUID_IIR_FILTER_UTIL(ptr)         ((AgsFluidIIRFilterUtil *)(ptr))
+
+#define AGS_FLUID_IIR_FILTER_UTIL_INITIALIZER ((AgsFluidIIRFilterUtil) { \
+      .source = NULL,							\
+      .source_stride = 1,						\
+      .destination = NULL,						\
+      .destination_stride = 1,						\
+      .buffer_length = 0,						\
+      .format = AGS_SOUNDCARD_DEFAULT_FORMAT,				\
+      .samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE,			\
+      .filter_type = 0,							\
+      .flags = 0,							\
+      .b02 = 0.0,							\
+      .b1 = 0.0,							\
+      .a1 = 0.0,							\
+      .a2 = 0.0,							\
+      .b02_incr = 0.0,							\
+      .b1_incr = 0.0,							\
+      .a1_incr = 0.0,							\
+      .a2_incr = 0.0,							\
+      .filter_coeff_incr_count = 0,					\
+      .compensate_incr = 0,						\
+      .hist1 = 0.0,							\
+      .hist2 = 0.0,							\
+      .filter_startup = TRUE,						\
+      .fres = 0.0,							\
+      .last_fres = 0.0,							\
+      .q_lin = 0.0,							\
+      .filter_gain = 1.0 })
 
 typedef struct _AgsFluidIIRFilterUtil AgsFluidIIRFilterUtil;
 
@@ -155,6 +183,7 @@ void ags_fluid_iir_filter_util_process_s64(AgsFluidIIRFilterUtil *fluid_iir_filt
 void ags_fluid_iir_filter_util_process_float(AgsFluidIIRFilterUtil *fluid_iir_filter_util);
 void ags_fluid_iir_filter_util_process_double(AgsFluidIIRFilterUtil *fluid_iir_filter_util);
 void ags_fluid_iir_filter_util_process_complex(AgsFluidIIRFilterUtil *fluid_iir_filter_util);
+
 void ags_fluid_iir_filter_util_process(AgsFluidIIRFilterUtil *fluid_iir_filter_util);
 
 G_END_DECLS

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -534,7 +534,6 @@ void ags_midi_ump_util_put_midi1_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
 					    guchar *buffer,
 					    gint group,
 					    gint channel,
-					    gint pitch,
 					    gint data,
 					    gchar **extension_name, GValue *extension_value,
 					    guint extension_count);
@@ -542,7 +541,6 @@ guint ags_midi_ump_util_get_midi1_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
 					     guchar *buffer,
 					     gint *group,
 					     gint *channel,
-					     gint *pitch,
 					     gint *data,
 					     gchar ***extension_name, GValue **extension_value,
 					     guint *extension_count);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,7 +21,6 @@
 
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>
-#include <ags/audio/ags_audio_buffer_util.h>
 #include <ags/audio/ags_resample_util.h>
 #include <ags/audio/ags_note.h>
 
@@ -925,6 +924,7 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
   /* offset */
   audio_signal->delay = 0.0;
   audio_signal->attack = 0;
+  audio_signal->note_256th_attack = 0;
 
   /* timbre */
   z = 0.0 + I * 1.0;  
@@ -957,11 +957,11 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
 
   audio_signal->stream_mode = AGS_AUDIO_SIGNAL_STREAM_CONTINUES_FEED;
 
+  audio_signal->audio_buffer_util = ags_audio_buffer_util_alloc();
+
   g_rec_mutex_init(&(audio_signal->backlog_mutex));
 
   audio_signal->has_backlog = FALSE;
-
-  audio_signal->note_256th_attack = 0;
 }
 
 void
@@ -2802,8 +2802,11 @@ ags_audio_signal_set_samplerate(AgsAudioSignal *audio_signal, guint samplerate)
   
   stream_length = g_list_length(audio_signal->stream);
 
-  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
-						  ags_audio_buffer_util_format_from_soundcard(format));
+  copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(audio_signal->audio_buffer_util,
+							      ags_audio_buffer_util_format_from_soundcard(audio_signal->audio_buffer_util,
+													  format),
+							      ags_audio_buffer_util_format_from_soundcard(audio_signal->audio_buffer_util,
+													  format));
   
   switch(format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
@@ -2863,7 +2866,8 @@ ags_audio_signal_set_samplerate(AgsAudioSignal *audio_signal, guint samplerate)
   offset = 0;
   
   while(stream != NULL){
-    ags_audio_buffer_util_copy_buffer_to_buffer(data, 1, offset,
+    ags_audio_buffer_util_copy_buffer_to_buffer(audio_signal->audio_buffer_util,
+						data, 1, offset,
 						stream->data, 1, 0,
 						buffer_size, copy_mode);
 
@@ -2932,16 +2936,20 @@ ags_audio_signal_set_samplerate(AgsAudioSignal *audio_signal, guint samplerate)
   offset = 0;
 
   while(stream != NULL && offset < stream_length * buffer_size){
-    ags_audio_buffer_util_clear_buffer(stream->data, 1,
-				       buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
+    ags_audio_buffer_util_clear_buffer(audio_signal->audio_buffer_util,
+				       stream->data, 1,
+				       buffer_size, ags_audio_buffer_util_format_from_soundcard(audio_signal->audio_buffer_util,
+												format));
     
     if(offset + buffer_size < stream_length * buffer_size){
-      ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, 0,
+      ags_audio_buffer_util_copy_buffer_to_buffer(audio_signal->audio_buffer_util,
+						  stream->data, 1, 0,
 						  resampled_data, 1, offset,
 						  buffer_size, copy_mode);
     }else{
       if(end_offset > offset){
-	ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, 0,
+	ags_audio_buffer_util_copy_buffer_to_buffer(audio_signal->audio_buffer_util,
+						    stream->data, 1, 0,
 						    resampled_data, 1, offset,
 						    end_offset - offset, copy_mode);
       }
@@ -3047,8 +3055,11 @@ ags_audio_signal_set_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size
   stream_length = g_list_length(audio_signal->stream);
   word_size = 1;
 
-  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
-						  ags_audio_buffer_util_format_from_soundcard(format));
+  copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(audio_signal->audio_buffer_util,
+							      ags_audio_buffer_util_format_from_soundcard(audio_signal->audio_buffer_util,
+													  format),
+							      ags_audio_buffer_util_format_from_soundcard(audio_signal->audio_buffer_util,
+													  format));
   
   switch(format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
@@ -3124,7 +3135,8 @@ ags_audio_signal_set_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size
   offset = 0;
   
   while(stream != NULL){
-    ags_audio_buffer_util_copy_buffer_to_buffer(data, 1, offset,
+    ags_audio_buffer_util_copy_buffer_to_buffer(audio_signal->audio_buffer_util,
+						data, 1, offset,
 						stream->data, 1, 0,
 						old_buffer_size, copy_mode);
 
@@ -3208,16 +3220,20 @@ ags_audio_signal_set_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size
       g_warning("ags_audio_signal_set_buffer_size() - unsupported format");
     }
 
-    ags_audio_buffer_util_clear_buffer(stream->data, 1,
-				       buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
+    ags_audio_buffer_util_clear_buffer(audio_signal->audio_buffer_util,
+				       stream->data, 1,
+				       buffer_size, ags_audio_buffer_util_format_from_soundcard(audio_signal->audio_buffer_util,
+												format));
     
     if(offset + buffer_size < end_offset){
-      ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, 0,
+      ags_audio_buffer_util_copy_buffer_to_buffer(audio_signal->audio_buffer_util,
+						  stream->data, 1, 0,
 						  data, 1, offset,
 						  buffer_size, copy_mode);
     }else{
       if(end_offset > offset){
-	ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, 0,
+	ags_audio_buffer_util_copy_buffer_to_buffer(audio_signal->audio_buffer_util,
+						    stream->data, 1, 0,
 						    data, 1, offset,
 						    end_offset - offset, copy_mode);
       }
@@ -3349,8 +3365,11 @@ ags_audio_signal_set_format(AgsAudioSignal *audio_signal, AgsSoundcardFormat for
 
   stream = audio_signal->stream;
     
-  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
-						  ags_audio_buffer_util_format_from_soundcard(old_format));
+  copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(audio_signal->audio_buffer_util,
+							      ags_audio_buffer_util_format_from_soundcard(audio_signal->audio_buffer_util,
+													  format),
+							      ags_audio_buffer_util_format_from_soundcard(audio_signal->audio_buffer_util,
+													  old_format));
 
   while(stream != NULL){
     if(ags_audio_signal_test_flags(audio_signal, AGS_AUDIO_SIGNAL_SLICE_ALLOC)){
@@ -3361,7 +3380,8 @@ ags_audio_signal_set_format(AgsAudioSignal *audio_signal, AgsSoundcardFormat for
 			      format);
     }
     
-    ags_audio_buffer_util_copy_buffer_to_buffer(data, 1, 0,
+    ags_audio_buffer_util_copy_buffer_to_buffer(audio_signal->audio_buffer_util,
+						data, 1, 0,
 						stream->data, 1, 0,
 						buffer_size, copy_mode);
 
@@ -3774,8 +3794,10 @@ ags_audio_signal_clear(AgsAudioSignal *audio_signal)
   stream = audio_signal->stream;
     
   while(stream != NULL){
-    ags_audio_buffer_util_clear_buffer(stream->data, 1,
-				       buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
+    ags_audio_buffer_util_clear_buffer(audio_signal->audio_buffer_util,
+				       stream->data, 1,
+				       buffer_size, ags_audio_buffer_util_format_from_soundcard(audio_signal->audio_buffer_util,
+												format));
 
     /* iterate */
     stream = stream->next;
@@ -3866,8 +3888,11 @@ ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
   ags_audio_signal_stream_resize(audio_signal,
 				 g_list_length(default_template->stream));
 
-  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
-						  ags_audio_buffer_util_format_from_soundcard(default_template_format));
+  copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(audio_signal->audio_buffer_util,
+							      ags_audio_buffer_util_format_from_soundcard(audio_signal->audio_buffer_util,
+													  format),
+							      ags_audio_buffer_util_format_from_soundcard(audio_signal->audio_buffer_util,
+													  default_template_format));
 
 
   //NOTE:JK: lock only default_template
@@ -3877,7 +3902,8 @@ ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
   stream = audio_signal->stream;
     
   while(default_template_stream != NULL){
-    ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, 0,
+    ags_audio_buffer_util_copy_buffer_to_buffer(audio_signal->audio_buffer_util,
+						stream->data, 1, 0,
 						default_template_stream->data, 1, 0,
 						buffer_size, copy_mode);
 
@@ -4047,8 +4073,11 @@ ags_audio_signal_feed_extended(AgsAudioSignal *audio_signal,
   }
   
   /* copy mode */
-  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
- 						  ags_audio_buffer_util_format_from_soundcard(default_template_format));
+  copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(audio_signal->audio_buffer_util,
+							      ags_audio_buffer_util_format_from_soundcard(audio_signal->audio_buffer_util,
+													  format),
+							      ags_audio_buffer_util_format_from_soundcard(audio_signal->audio_buffer_util,
+													  default_template_format));
 
   /* generic copying */
   g_rec_mutex_lock(default_template_stream_mutex);
@@ -4095,7 +4124,8 @@ ags_audio_signal_feed_extended(AgsAudioSignal *audio_signal,
     
     /* copy */
     if(i + copy_n_frames >= old_frame_count){
-      ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, i % buffer_size,
+      ags_audio_buffer_util_copy_buffer_to_buffer(audio_signal->audio_buffer_util,
+						  stream->data, 1, i % buffer_size,
 						  default_template_stream->data, 1, j % buffer_size,
 						  copy_n_frames, copy_mode);
     }

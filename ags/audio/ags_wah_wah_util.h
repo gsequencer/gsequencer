@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,8 +32,25 @@ G_BEGIN_DECLS
 #define AGS_TYPE_WAH_WAH_UTIL         (ags_wah_wah_util_get_type())
 #define AGS_WAH_WAH_UTIL(ptr) ((AgsWahWahUtil *)(ptr))
 
-#define AGS_WAH_WAH_UTIL_DEFAULT_FORMAT (AGS_SOUNDCARD_SIGNED_16_BIT)
-#define AGS_WAH_WAH_UTIL_DEFAULT_AUDIO_BUFFER_UTIL_FORMAT (AGS_AUDIO_BUFFER_UTIL_S16)
+#define AGS_WAH_WAH_UTIL_INITIALIZER ((AgsWahWahUtil) {		\
+      .source = NULL,						\
+      .source_stride = 1,					\
+      .destination = NULL,					\
+      .destination_stride = 1,					\
+      .buffer_length = 0,					\
+      .format = AGS_SOUNDCARD_DEFAULT_FORMAT,			\
+      .samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE,		\
+      .volume = 1.0,						\
+      .amount = 0.0,						\
+      .wah_wah_enabled = FALSE,					\
+      .wah_wah_delay = 0.0,					\
+      .wah_wah_lfo_depth = 1.0,					\
+      .wah_wah_lfo_freq = 6.0,					\
+      .wah_wah_tuning = 0.0,					\
+      .frame_count = (AGS_SOUNDCARD_DEFAULT_SAMPLERATE / 6.0),	\
+      .offset = 0,						\
+      .note_256th_mode = TRUE,					\
+      .offset_256th = 0 })
 
 typedef struct _AgsWahWahUtil AgsWahWahUtil;
 
@@ -59,9 +76,6 @@ struct _AgsWahWahUtil
   gdouble wah_wah_lfo_depth;
   gdouble wah_wah_lfo_freq;
   gdouble wah_wah_tuning;
-
-  guint wah_wah_lfo_frame_count;
-  guint wah_wah_lfo_offset;
 
   guint frame_count;
   guint offset;
@@ -121,12 +135,6 @@ void ags_wah_wah_util_set_wah_wah_lfo_freq(AgsWahWahUtil *wah_wah_util,
 gdouble ags_wah_wah_util_get_wah_wah_tuning(AgsWahWahUtil *wah_wah_util);
 void ags_wah_wah_util_set_wah_wah_tuning(AgsWahWahUtil *wah_wah_util,
 					 gdouble wah_wah_tuning);
-
-G_DEPRECATED_FOR(ags_wah_wah_util_get_offset)
-guint ags_wah_wah_util_get_wah_wah_lfo_offset(AgsWahWahUtil *wah_wah_util);
-G_DEPRECATED_FOR(ags_wah_wah_util_set_offset)
-void ags_wah_wah_util_set_wah_wah_lfo_offset(AgsWahWahUtil *wah_wah_util,
-					      guint wah_wah_lfo_offset);
 
 guint ags_wah_wah_util_get_frame_count(AgsWahWahUtil *wah_wah_util);
 void ags_wah_wah_util_set_frame_count(AgsWahWahUtil *wah_wah_util,

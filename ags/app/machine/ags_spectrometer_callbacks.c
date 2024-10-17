@@ -57,7 +57,8 @@ ags_spectrometer_update_ui_callback(GObject *ui_provider,
     return;
   }
     
-  ags_audio_buffer_util_clear_double(spectrometer->magnitude, 1,
+  ags_audio_buffer_util_clear_double(spectrometer->audio_buffer_util,
+				     spectrometer->magnitude, 1,
 				     buffer_size);
 
   copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_DOUBLE;
@@ -90,7 +91,8 @@ ags_spectrometer_update_ui_callback(GObject *ui_provider,
     }
 
     /* copy cache */
-    ags_audio_buffer_util_copy_buffer_to_buffer(spectrometer->magnitude, 1, 0,
+    ags_audio_buffer_util_copy_buffer_to_buffer(spectrometer->audio_buffer_util,
+						spectrometer->magnitude, 1, 0,
 						spectrometer->magnitude_cache, 1, 0,
 						buffer_size, copy_mode);
       
@@ -123,7 +125,8 @@ ags_spectrometer_update_ui_callback(GObject *ui_provider,
     }
 
     /* copy cache */
-    ags_audio_buffer_util_copy_buffer_to_buffer(spectrometer->magnitude, 1, 0,
+    ags_audio_buffer_util_copy_buffer_to_buffer(spectrometer->audio_buffer_util,
+						spectrometer->magnitude, 1, 0,
 						spectrometer->magnitude_cache, 1, 0,
 						buffer_size, copy_mode);
       

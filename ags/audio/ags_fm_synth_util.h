@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -35,6 +35,25 @@ G_BEGIN_DECLS
 #define AGS_FM_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY (12.0)
 #define AGS_FM_SYNTH_UTIL_DEFAULT_LFO_DEPTH (0.0)
 #define AGS_FM_SYNTH_UTIL_DEFAULT_TUNING (0.0)
+
+#define AGS_FM_SYNTH_UTIL_INITIALIZER ((AgsFMSynthUtil) {	\
+      .source = NULL,						\
+      .source_stride = 1,					\
+      .buffer_length = 0,					\
+      .format = AGS_SOUNDCARD_DEFAULT_FORMAT,			\
+      .samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE,		\
+      .synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_SIN,	\
+      .frequency = AGS_FM_SYNTH_UTIL_DEFAULT_FREQUENCY,		\
+      .phase = 0.0,						\
+      .volume = 1.0,						\
+      .lfo_oscillator_mode = AGS_SYNTH_OSCILLATOR_SIN,		\
+      .lfo_frequency = AGS_FM_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY,	\
+      .lfo_depth = AGS_FM_SYNTH_UTIL_DEFAULT_LFO_DEPTH,		\
+      .tuning = AGS_FM_SYNTH_UTIL_DEFAULT_TUNING,		\
+      .frame_count = (AGS_SOUNDCARD_DEFAULT_SAMPLERATE / 6.0),	\
+      .offset = 0,						\
+      .note_256th_mode = TRUE,					\
+      .offset_256th = 0 })
 
 typedef struct _AgsFMSynthUtil AgsFMSynthUtil;
 

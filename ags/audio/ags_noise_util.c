@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -121,30 +121,7 @@ ags_noise_util_alloc()
   ptr = (AgsNoiseUtil *) g_new(AgsNoiseUtil,
 			       1);
 
-  ptr->source = NULL;
-  ptr->source_stride = 1;
-
-  ptr->destination = NULL;
-  ptr->destination_stride = 1;
-
-  ptr->noise = NULL;
-  
-  ptr->buffer_length = 0;
-  ptr->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
-  ptr->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-
-  ptr->mode = AGS_NOISE_UTIL_WHITE_NOISE;
-
-  ptr->volume = 0.0;
-
-  ptr->frequency = AGS_NOISE_UTIL_DEFAULT_FREQUENCY;
-
-  ptr->frame_count = 0;
-  ptr->offset = 0;
-
-  ptr->note_256th_mode = TRUE;
-
-  ptr->offset_256th = 0;
+  ptr[0] = AGS_NOISE_UTIL_INITIALIZER;
 
   return(ptr);
 }
@@ -163,6 +140,8 @@ gpointer
 ags_noise_util_copy(AgsNoiseUtil *ptr)
 {
   AgsNoiseUtil *new_ptr;
+
+  g_return_val_if_fail(ptr != NULL, NULL);
   
   new_ptr = (AgsNoiseUtil *) g_new(AgsNoiseUtil,
 				   1);
@@ -204,6 +183,8 @@ ags_noise_util_copy(AgsNoiseUtil *ptr)
 void
 ags_noise_util_free(AgsNoiseUtil *ptr)
 {
+  g_return_if_fail(ptr != NULL);
+
   g_free(ptr->destination);
 
   if(ptr->destination != ptr->source){

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,9 +32,6 @@ G_BEGIN_DECLS
 #define AGS_IS_SEQUENCER_INTERFACE(vtable)    (G_TYPE_CHECK_CLASS_TYPE((vtable), AGS_TYPE_SEQUENCER))
 #define AGS_SEQUENCER_GET_INTERFACE(obj)      (G_TYPE_INSTANCE_GET_INTERFACE((obj), AGS_TYPE_SEQUENCER, AgsSequencerInterface))
 
-typedef struct _AgsSequencer AgsSequencer;
-typedef struct _AgsSequencerInterface AgsSequencerInterface;
-
 #define AGS_SEQUENCER_MAX_MIDI_CHANNELS (16)
 
 #define AGS_SEQUENCER_MAX_MIDI_KEYS (128)
@@ -56,6 +53,21 @@ typedef struct _AgsSequencerInterface AgsSequencerInterface;
 #define AGS_SEQUENCER_DEFAULT_PERIOD (64.0)
 
 #define AGS_SEQUENCER_DEFAULT_LATENCY (400)
+
+typedef struct _AgsSequencer AgsSequencer;
+typedef struct _AgsSequencerInterface AgsSequencerInterface;
+
+/**
+ * AgsSequencerMidiVersion:
+ * @AGS_SEQUENCER_MIDI1: MIDI version 1
+ * @AGS_SEQUENCER_MIDI2: MIDI version 2
+ * 
+ * Enum values to tell about version.
+ */
+typedef enum{
+  AGS_SEQUENCER_MIDI1   = 1,
+  AGS_SEQUENCER_MIDI2   = 1 <<  1,
+}AgsSequencerMidiVersion;
 
 struct _AgsSequencerInterface
 {
@@ -113,6 +125,10 @@ struct _AgsSequencerInterface
   void (*set_note_offset)(AgsSequencer *sequencer,
 			  guint note_offset);
   guint (*get_note_offset)(AgsSequencer *sequencer);
+
+  AgsSequencerMidiVersion (*get_midi_version)(AgsSequencer *sequencer);  
+  void (*set_midi_version)(AgsSequencer *sequencer,
+			   AgsSequencerMidiVersion midi_version);  
 };
 
 GType ags_sequencer_get_type();
@@ -169,6 +185,8 @@ guint ags_sequencer_get_start_note_offset(AgsSequencer *sequencer);
 void ags_sequencer_set_note_offset(AgsSequencer *sequencer,
 				   guint note_offset);
 guint ags_sequencer_get_note_offset(AgsSequencer *sequencer);
+
+AgsSequencerMidiVersion ags_sequencer_get_midi_version(AgsSequencer *sequencer);  
 
 G_END_DECLS
 

@@ -443,6 +443,8 @@ test_play_sine_buffer()
   AgsStartSoundcard *start_soundcard;
   AgsCancelAudio *cancel_audio;
 
+  AgsAudioBufferUtil audio_buffer_util;
+  
   AgsTaskLauncher *task_launcher;
   
   GList *start_wave, *wave;
@@ -481,7 +483,8 @@ test_play_sine_buffer()
 			  buffer,
 			  FALSE);
 
-      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
+      ags_audio_buffer_util_copy_buffer_to_buffer(&audio_buffer_util,
+						  buffer->data, 1, 0,
 						  test_sine_buffer, 1, j * TEST_BUFFER_SIZE,
 						  TEST_BUFFER_SIZE, TEST_COPY_MODE);
 
@@ -566,7 +569,8 @@ test_play_new_sine_buffer()
 			  buffer,
 			  FALSE);
 
-      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
+      ags_audio_buffer_util_copy_buffer_to_buffer(&audio_buffer_util,
+						  buffer->data, 1, 0,
 						  test_new_sine_buffer, 1, j * TEST_BUFFER_SIZE,
 						  TEST_BUFFER_SIZE, TEST_COPY_MODE);
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -328,6 +328,7 @@ void
 ags_fm_synth_util_test_compute_sin_s8()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   gint8 *buffer;
 
@@ -360,7 +361,8 @@ ags_fm_synth_util_test_compute_sin_s8()
   
   ags_fm_synth_util_compute_sin_s8(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_S8,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -371,6 +373,7 @@ void
 ags_fm_synth_util_test_compute_sin_s16()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   gint16 *buffer;
 
@@ -403,7 +406,8 @@ ags_fm_synth_util_test_compute_sin_s16()
   
   ags_fm_synth_util_compute_sin_s16(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_S16,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -414,6 +418,7 @@ void
 ags_fm_synth_util_test_compute_sin_s24()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   gint32 *buffer;
 
@@ -446,7 +451,8 @@ ags_fm_synth_util_test_compute_sin_s24()
   
   ags_fm_synth_util_compute_sin_s24(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_S24,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -457,6 +463,7 @@ void
 ags_fm_synth_util_test_compute_sin_s32()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   gint32 *buffer;
 
@@ -489,7 +496,8 @@ ags_fm_synth_util_test_compute_sin_s32()
   
   ags_fm_synth_util_compute_sin_s32(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_S32,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -500,6 +508,7 @@ void
 ags_fm_synth_util_test_compute_sin_s64()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   gint64 *buffer;
 
@@ -532,7 +541,8 @@ ags_fm_synth_util_test_compute_sin_s64()
   
   ags_fm_synth_util_compute_sin_s64(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_S64,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -543,6 +553,7 @@ void
 ags_fm_synth_util_test_compute_sin_float()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   gfloat *buffer;
 
@@ -575,7 +586,8 @@ ags_fm_synth_util_test_compute_sin_float()
   
   ags_fm_synth_util_compute_sin_float(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_FLOAT,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -586,6 +598,7 @@ void
 ags_fm_synth_util_test_compute_sin_double()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   gdouble *buffer;
 
@@ -618,7 +631,8 @@ ags_fm_synth_util_test_compute_sin_double()
   
   ags_fm_synth_util_compute_sin_double(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_DOUBLE,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -629,6 +643,7 @@ void
 ags_fm_synth_util_test_compute_sin_complex()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   AgsComplex *buffer;
 
@@ -661,7 +676,8 @@ ags_fm_synth_util_test_compute_sin_complex()
   
   ags_fm_synth_util_compute_sin_complex(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_COMPLEX,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -673,6 +689,7 @@ void
 ags_fm_synth_util_test_compute_sawtooth_s8()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   gint8 *buffer;
 
@@ -705,7 +722,8 @@ ags_fm_synth_util_test_compute_sawtooth_s8()
   
   ags_fm_synth_util_compute_sawtooth_s8(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_S8,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -716,6 +734,7 @@ void
 ags_fm_synth_util_test_compute_sawtooth_s16()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   gint16 *buffer;
 
@@ -748,7 +767,8 @@ ags_fm_synth_util_test_compute_sawtooth_s16()
   
   ags_fm_synth_util_compute_sawtooth_s16(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_S16,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -759,6 +779,7 @@ void
 ags_fm_synth_util_test_compute_sawtooth_s24()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   gint32 *buffer;
 
@@ -791,7 +812,8 @@ ags_fm_synth_util_test_compute_sawtooth_s24()
   
   ags_fm_synth_util_compute_sawtooth_s24(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_S24,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -802,6 +824,7 @@ void
 ags_fm_synth_util_test_compute_sawtooth_s32()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   gint32 *buffer;
 
@@ -834,7 +857,8 @@ ags_fm_synth_util_test_compute_sawtooth_s32()
   
   ags_fm_synth_util_compute_sawtooth_s32(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_S32,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -845,6 +869,7 @@ void
 ags_fm_synth_util_test_compute_sawtooth_s64()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   gint64 *buffer;
 
@@ -877,7 +902,8 @@ ags_fm_synth_util_test_compute_sawtooth_s64()
   
   ags_fm_synth_util_compute_sawtooth_s64(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_S64,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -888,6 +914,7 @@ void
 ags_fm_synth_util_test_compute_sawtooth_float()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   gfloat *buffer;
 
@@ -920,7 +947,8 @@ ags_fm_synth_util_test_compute_sawtooth_float()
   
   ags_fm_synth_util_compute_sawtooth_float(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_FLOAT,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -931,6 +959,7 @@ void
 ags_fm_synth_util_test_compute_sawtooth_double()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   gdouble *buffer;
 
@@ -963,7 +992,8 @@ ags_fm_synth_util_test_compute_sawtooth_double()
   
   ags_fm_synth_util_compute_sawtooth_double(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_DOUBLE,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -974,6 +1004,7 @@ void
 ags_fm_synth_util_test_compute_sawtooth_complex()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   AgsComplex *buffer;
 
@@ -1006,7 +1037,8 @@ ags_fm_synth_util_test_compute_sawtooth_complex()
   
   ags_fm_synth_util_compute_sawtooth_complex(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_COMPLEX,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -1017,6 +1049,7 @@ void
 ags_fm_synth_util_test_compute_triangle_s8()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   gint8 *buffer;
 
@@ -1049,7 +1082,8 @@ ags_fm_synth_util_test_compute_triangle_s8()
   
   ags_fm_synth_util_compute_triangle_s8(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_S8,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -1060,6 +1094,7 @@ void
 ags_fm_synth_util_test_compute_triangle_s16()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   gint16 *buffer;
 
@@ -1092,7 +1127,8 @@ ags_fm_synth_util_test_compute_triangle_s16()
   
   ags_fm_synth_util_compute_triangle_s16(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_S16,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -1103,6 +1139,7 @@ void
 ags_fm_synth_util_test_compute_triangle_s24()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   gint32 *buffer;
 
@@ -1135,7 +1172,8 @@ ags_fm_synth_util_test_compute_triangle_s24()
   
   ags_fm_synth_util_compute_triangle_s24(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_S24,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -1146,6 +1184,7 @@ void
 ags_fm_synth_util_test_compute_triangle_s32()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   gint32 *buffer;
 
@@ -1178,7 +1217,8 @@ ags_fm_synth_util_test_compute_triangle_s32()
   
   ags_fm_synth_util_compute_triangle_s32(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_S32,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -1189,6 +1229,7 @@ void
 ags_fm_synth_util_test_compute_triangle_s64()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   gint64 *buffer;
 
@@ -1221,7 +1262,8 @@ ags_fm_synth_util_test_compute_triangle_s64()
   
   ags_fm_synth_util_compute_triangle_s64(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_S64,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -1232,6 +1274,7 @@ void
 ags_fm_synth_util_test_compute_triangle_float()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   gfloat *buffer;
 
@@ -1264,7 +1307,8 @@ ags_fm_synth_util_test_compute_triangle_float()
   
   ags_fm_synth_util_compute_triangle_float(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_FLOAT,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -1275,6 +1319,7 @@ void
 ags_fm_synth_util_test_compute_triangle_double()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   gdouble *buffer;
 
@@ -1307,7 +1352,8 @@ ags_fm_synth_util_test_compute_triangle_double()
   
   ags_fm_synth_util_compute_triangle_double(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_DOUBLE,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -1318,6 +1364,7 @@ void
 ags_fm_synth_util_test_compute_triangle_complex()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   AgsComplex *buffer;
 
@@ -1350,7 +1397,8 @@ ags_fm_synth_util_test_compute_triangle_complex()
   
   ags_fm_synth_util_compute_triangle_complex(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_COMPLEX,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -1361,6 +1409,7 @@ void
 ags_fm_synth_util_test_compute_square_s8()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   gint8 *buffer;
 
@@ -1393,7 +1442,8 @@ ags_fm_synth_util_test_compute_square_s8()
   
   ags_fm_synth_util_compute_square_s8(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_S8,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -1404,6 +1454,7 @@ void
 ags_fm_synth_util_test_compute_square_s16()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   gint16 *buffer;
 
@@ -1436,7 +1487,8 @@ ags_fm_synth_util_test_compute_square_s16()
   
   ags_fm_synth_util_compute_square_s16(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_S16,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -1447,6 +1499,7 @@ void
 ags_fm_synth_util_test_compute_square_s24()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   gint32 *buffer;
 
@@ -1479,7 +1532,8 @@ ags_fm_synth_util_test_compute_square_s24()
   
   ags_fm_synth_util_compute_square_s24(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_S24,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -1490,6 +1544,7 @@ void
 ags_fm_synth_util_test_compute_square_s32()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   gint32 *buffer;
 
@@ -1522,7 +1577,8 @@ ags_fm_synth_util_test_compute_square_s32()
   
   ags_fm_synth_util_compute_square_s32(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_S32,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -1533,6 +1589,7 @@ void
 ags_fm_synth_util_test_compute_square_s64()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   gint64 *buffer;
 
@@ -1565,7 +1622,8 @@ ags_fm_synth_util_test_compute_square_s64()
   
   ags_fm_synth_util_compute_square_s64(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_S64,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -1576,6 +1634,7 @@ void
 ags_fm_synth_util_test_compute_square_float()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   gfloat *buffer;
 
@@ -1608,7 +1667,8 @@ ags_fm_synth_util_test_compute_square_float()
   
   ags_fm_synth_util_compute_square_float(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_FLOAT,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -1619,6 +1679,7 @@ void
 ags_fm_synth_util_test_compute_square_double()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   gdouble *buffer;
 
@@ -1651,7 +1712,8 @@ ags_fm_synth_util_test_compute_square_double()
   
   ags_fm_synth_util_compute_square_double(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_DOUBLE,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -1662,6 +1724,7 @@ void
 ags_fm_synth_util_test_compute_square_complex()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   AgsComplex *buffer;
 
@@ -1694,7 +1757,8 @@ ags_fm_synth_util_test_compute_square_complex()
   
   ags_fm_synth_util_compute_square_complex(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_COMPLEX,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -1705,6 +1769,7 @@ void
 ags_fm_synth_util_test_compute_impulse_s8()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   gint8 *buffer;
 
@@ -1737,7 +1802,8 @@ ags_fm_synth_util_test_compute_impulse_s8()
   
   ags_fm_synth_util_compute_impulse_s8(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_S8,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -1748,6 +1814,7 @@ void
 ags_fm_synth_util_test_compute_impulse_s16()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   gint16 *buffer;
 
@@ -1780,7 +1847,8 @@ ags_fm_synth_util_test_compute_impulse_s16()
   
   ags_fm_synth_util_compute_impulse_s16(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_S16,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -1791,6 +1859,7 @@ void
 ags_fm_synth_util_test_compute_impulse_s24()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   gint32 *buffer;
 
@@ -1823,7 +1892,8 @@ ags_fm_synth_util_test_compute_impulse_s24()
   
   ags_fm_synth_util_compute_impulse_s24(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_S24,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -1834,6 +1904,7 @@ void
 ags_fm_synth_util_test_compute_impulse_s32()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   gint32 *buffer;
 
@@ -1866,7 +1937,8 @@ ags_fm_synth_util_test_compute_impulse_s32()
   
   ags_fm_synth_util_compute_impulse_s32(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_S32,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -1877,6 +1949,7 @@ void
 ags_fm_synth_util_test_compute_impulse_s64()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   gint64 *buffer;
 
@@ -1909,7 +1982,8 @@ ags_fm_synth_util_test_compute_impulse_s64()
   
   ags_fm_synth_util_compute_impulse_s64(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_S64,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -1920,6 +1994,7 @@ void
 ags_fm_synth_util_test_compute_impulse_float()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   gfloat *buffer;
 
@@ -1952,7 +2027,8 @@ ags_fm_synth_util_test_compute_impulse_float()
   
   ags_fm_synth_util_compute_impulse_float(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_FLOAT,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -1963,6 +2039,7 @@ void
 ags_fm_synth_util_test_compute_impulse_double()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   gdouble *buffer;
 
@@ -1995,7 +2072,8 @@ ags_fm_synth_util_test_compute_impulse_double()
   
   ags_fm_synth_util_compute_impulse_double(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_DOUBLE,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 
@@ -2006,6 +2084,7 @@ void
 ags_fm_synth_util_test_compute_impulse_complex()
 {
   AgsFMSynthUtil fm_synth_util;
+  AgsSynthUtil synth_util;
   
   AgsComplex *buffer;
 
@@ -2038,7 +2117,8 @@ ags_fm_synth_util_test_compute_impulse_complex()
   
   ags_fm_synth_util_compute_impulse_complex(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
+  xcross_count = ags_synth_util_get_xcross_count(&synth_util,
+						 buffer,
 						 AGS_AUDIO_BUFFER_UTIL_COMPLEX,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
 

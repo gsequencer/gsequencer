@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,16 +32,16 @@
 G_BEGIN_DECLS
 
 #define AGS_TYPE_OPEN_SF2_SAMPLE                (ags_open_sf2_sample_get_type())
-#define AGS_OPEN_SF2_SAMPLE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OPEN_SF2_SAMPLE, AgsOpenSf2Sample))
-#define AGS_OPEN_SF2_SAMPLE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_OPEN_SF2_SAMPLE, AgsOpenSf2SampleClass))
+#define AGS_OPEN_SF2_SAMPLE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OPEN_SF2_SAMPLE, AgsOpenSF2Sample))
+#define AGS_OPEN_SF2_SAMPLE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_OPEN_SF2_SAMPLE, AgsOpenSF2SampleClass))
 #define AGS_IS_OPEN_SF2_SAMPLE(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_OPEN_SF2_SAMPLE))
 #define AGS_IS_OPEN_SF2_SAMPLE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_OPEN_SF2_SAMPLE))
-#define AGS_OPEN_SF2_SAMPLE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_OPEN_SF2_SAMPLE, AgsOpenSf2SampleClass))
+#define AGS_OPEN_SF2_SAMPLE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_OPEN_SF2_SAMPLE, AgsOpenSF2SampleClass))
 
-typedef struct _AgsOpenSf2Sample AgsOpenSf2Sample;
-typedef struct _AgsOpenSf2SampleClass AgsOpenSf2SampleClass;
+typedef struct _AgsOpenSF2Sample AgsOpenSF2Sample;
+typedef struct _AgsOpenSF2SampleClass AgsOpenSF2SampleClass;
 
-struct _AgsOpenSf2Sample
+struct _AgsOpenSF2Sample
 {
   AgsTask task;
 
@@ -58,14 +58,14 @@ struct _AgsOpenSf2Sample
   guint audio_channel;
 };
 
-struct _AgsOpenSf2SampleClass
+struct _AgsOpenSF2SampleClass
 {
   AgsTaskClass task;
 };
 
 GType ags_open_sf2_sample_get_type();
 
-AgsOpenSf2Sample* ags_open_sf2_sample_new(AgsChannel *channel,
+AgsOpenSF2Sample* ags_open_sf2_sample_new(AgsChannel *channel,
 					  AgsIpatchSample *ipatch_sample,
 					  gchar *filename,
 					  gchar *preset,

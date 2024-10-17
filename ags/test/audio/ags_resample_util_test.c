@@ -113,8 +113,8 @@ ags_resample_util_test_alloc()
   CU_ASSERT(resample_util->source_stride == 1);
   
   CU_ASSERT(resample_util->buffer_length == 0);
-  CU_ASSERT(resample_util->format == AGS_RESAMPLE_UTIL_DEFAULT_FORMAT);
-  CU_ASSERT(resample_util->samplerate == AGS_RESAMPLE_UTIL_DEFAULT_SAMPLERATE);
+  CU_ASSERT(resample_util->format == AGS_SOUNDCARD_DEFAULT_FORMAT);
+  CU_ASSERT(resample_util->samplerate == AGS_SOUNDCARD_DEFAULT_SAMPLERATE);
   
   CU_ASSERT(resample_util->target_samplerate == AGS_RESAMPLE_UTIL_DEFAULT_TARGET_SAMPLERATE);
 }
@@ -132,6 +132,7 @@ ags_resample_util_test_copy()
 			       AGS_RESAMPLE_UTIL_TEST_COPY_FORMAT),
     .source_stride = AGS_RESAMPLE_UTIL_TEST_COPY_SOURCE_AUDIO_CHANNELS,
     .buffer_length = AGS_RESAMPLE_UTIL_TEST_COPY_BUFFER_SIZE,
+    .format = AGS_RESAMPLE_UTIL_TEST_COPY_FORMAT,
     .samplerate = AGS_RESAMPLE_UTIL_TEST_COPY_SAMPLERATE,
     .target_samplerate = AGS_RESAMPLE_UTIL_TEST_COPY_TARGET_SAMPLERATE
   };

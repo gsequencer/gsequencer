@@ -21,7 +21,6 @@
 
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_soundcard_util.h>
-#include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/core-audio/ags_core_audio_server.h>
 #include <ags/audio/core-audio/ags_core_audio_client.h>
@@ -2192,12 +2191,14 @@ ags_core_audio_devout_port_play(AgsSoundcard *soundcard,
     case AGS_SOUNDCARD_SIGNED_16_BIT:
       {
 	if(cache_offset == 0){
-	  ags_audio_buffer_util_clear_buffer(core_audio_port->cache[write_cache], 1,
+	  ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
+					     core_audio_port->cache[write_cache], 1,
 					     pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_S16);
 	}
 
 	if(buffer != NULL){
-	  ags_audio_buffer_util_copy_s16_to_s16((gint16 *) core_audio_port->cache[write_cache] + (pcm_channels * cache_offset), 1,
+	  ags_audio_buffer_util_copy_s16_to_s16(core_audio_port->audio_buffer_util,
+						(gint16 *) core_audio_port->cache[write_cache] + (pcm_channels * cache_offset), 1,
 						(gint16 *) buffer, 1,
 						pcm_channels * buffer_size);
 	}
@@ -2206,12 +2207,14 @@ ags_core_audio_devout_port_play(AgsSoundcard *soundcard,
     case AGS_SOUNDCARD_SIGNED_24_BIT:
       {
 	if(cache_offset == 0){
-	  ags_audio_buffer_util_clear_buffer(core_audio_port->cache[write_cache], 1,
+	  ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
+					     core_audio_port->cache[write_cache], 1,
 					     pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_S32);
 	}
 
 	if(buffer != NULL){
-	  ags_audio_buffer_util_copy_s24_to_s24((gint32 *) core_audio_port->cache[write_cache] + (pcm_channels * cache_offset), 1,
+	  ags_audio_buffer_util_copy_s24_to_s24(core_audio_port->audio_buffer_util,
+						(gint32 *) core_audio_port->cache[write_cache] + (pcm_channels * cache_offset), 1,
 						(gint32 *) buffer, 1,
 						pcm_channels * buffer_size);
 	}
@@ -2220,12 +2223,14 @@ ags_core_audio_devout_port_play(AgsSoundcard *soundcard,
     case AGS_SOUNDCARD_SIGNED_32_BIT:
       {
 	if(cache_offset == 0){
-	  ags_audio_buffer_util_clear_buffer(core_audio_port->cache[write_cache], 1,
+	  ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
+					     core_audio_port->cache[write_cache], 1,
 					     pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_S32);
 	}
 
 	if(buffer != NULL){
-	  ags_audio_buffer_util_copy_s32_to_s32((gint32 *) core_audio_port->cache[write_cache] + (pcm_channels * cache_offset), 1,
+	  ags_audio_buffer_util_copy_s32_to_s32(core_audio_port->audio_buffer_util,
+						(gint32 *) core_audio_port->cache[write_cache] + (pcm_channels * cache_offset), 1,
 						(gint32 *) buffer, 1,
 						pcm_channels * buffer_size);
 	}
@@ -2385,37 +2390,49 @@ ags_core_audio_devout_port_free(AgsSoundcard *soundcard)
   switch(core_audio_port->format){
   case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
-      ags_audio_buffer_util_clear_buffer(core_audio_port->cache[0], 1,
+      ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
+					 core_audio_port->cache[0], 1,
 					 pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_S16);
-      ags_audio_buffer_util_clear_buffer(core_audio_port->cache[1], 1,
+      ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
+					 core_audio_port->cache[1], 1,
 					 pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_S16);
-      ags_audio_buffer_util_clear_buffer(core_audio_port->cache[2], 1,
+      ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
+					 core_audio_port->cache[2], 1,
 					 pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_S16);
-      ags_audio_buffer_util_clear_buffer(core_audio_port->cache[3], 1,
+      ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
+					 core_audio_port->cache[3], 1,
 					 pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_S16);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
     {
-      ags_audio_buffer_util_clear_buffer(core_audio_port->cache[0], 1,
+      ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
+					 core_audio_port->cache[0], 1,
 					 pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_S32);
-      ags_audio_buffer_util_clear_buffer(core_audio_port->cache[1], 1,
+      ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
+					 core_audio_port->cache[1], 1,
 					 pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_S32);
-      ags_audio_buffer_util_clear_buffer(core_audio_port->cache[2], 1,
+      ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
+					 core_audio_port->cache[2], 1,
 					 pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_S32);
-      ags_audio_buffer_util_clear_buffer(core_audio_port->cache[3], 1,
+      ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
+					 core_audio_port->cache[3], 1,
 					 pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_S32);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
     {
-      ags_audio_buffer_util_clear_buffer(core_audio_port->cache[0], 1,
+      ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
+					 core_audio_port->cache[0], 1,
 					 pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_S32);
-      ags_audio_buffer_util_clear_buffer(core_audio_port->cache[1], 1,
+      ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
+					 core_audio_port->cache[1], 1,
 					 pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_S32);
-      ags_audio_buffer_util_clear_buffer(core_audio_port->cache[2], 1,
+      ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
+					 core_audio_port->cache[2], 1,
 					 pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_S32);
-      ags_audio_buffer_util_clear_buffer(core_audio_port->cache[3], 1,
+      ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
+					 core_audio_port->cache[3], 1,
 					 pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_S32);
     }
     break;

@@ -21,7 +21,6 @@
 
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_audio_signal.h>
-#include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/thread/ags_audio_loop.h>
 
@@ -426,6 +425,8 @@ ags_pulse_port_init(AgsPulsePort *pulse_port)
   
   g_atomic_int_set(&(pulse_port->queued),
 		   0);
+  
+  pulse_port->audio_buffer_util = ags_audio_buffer_util_alloc();
 }
 
 void
@@ -678,6 +679,14 @@ ags_pulse_port_finalize(GObject *gobject)
   if(pulse_port->buffer_attr != NULL){
     free(pulse_port->buffer_attr);
   }
+
+  ags_audio_buffer_util_set_source(pulse_port->audio_buffer_util,
+				   NULL);
+      
+  ags_audio_buffer_util_set_destination(pulse_port->audio_buffer_util,
+					NULL);
+
+  ags_audio_buffer_util_free(pulse_port->audio_buffer_util);
 
   /* call parent */
   G_OBJECT_CLASS(ags_pulse_port_parent_class)->finalize(gobject);

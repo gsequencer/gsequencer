@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,22 +32,13 @@ G_BEGIN_DECLS
 
 #define AGS_TYPE_FOURIER_TRANSFORM_UTIL         (ags_fourier_transform_util_get_type())
 
-typedef struct _AgsFourierTransformUtil AgsFourierTransformUtil;
-
-struct _AgsFourierTransformUtil
-{
-  gpointer source;
-  guint source_stride;
-
-  AgsComplex *destination;
-  guint destination_stride;
-  
-  guint buffer_length;
-  AgsSoundcardFormat format;
-  guint samplerate;
-};
-
-GType ags_fourier_transform_util_get_type(void);
+#define AGS_FOURIER_TRANSFORM_UTIL_INITIALIZER ((AgsFourierTransformUtil) {	\
+      .source = NULL,						\
+      .source_stride = 1,					\
+      .frequency_domain = NULL,					\
+      .buffer_length = 0,					\
+      .format = AGS_SOUNDCARD_DEFAULT_FORMAT,			\
+      .samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE })
 
 #define AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S8_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { double _Complex l_z; \
     gdouble l_h;							\
@@ -253,55 +244,72 @@ GType ags_fourier_transform_util_get_type(void);
 
 #define AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(x) (x + 1.0)
 
-void ags_fourier_transform_util_compute_stft_s8(gint8 *buffer, guint channels,
-						guint buffer_length,
-						AgsComplex **retval);
-void ags_fourier_transform_util_compute_stft_s16(gint16 *buffer, guint channels,
-						 guint buffer_length,
-						 AgsComplex **retval);
-void ags_fourier_transform_util_compute_stft_s24(gint32 *buffer, guint channels,
-						 guint buffer_length,
-						 AgsComplex **retval);
-void ags_fourier_transform_util_compute_stft_s32(gint32 *buffer, guint channels,
-						 guint buffer_length,
-						 AgsComplex **retval);
-void ags_fourier_transform_util_compute_stft_s64(gint64 *buffer, guint channels,
-						 guint buffer_length,
-						 AgsComplex **retval);
-void ags_fourier_transform_util_compute_stft_float(gfloat *buffer, guint channels,
-						   guint buffer_length,
-						   AgsComplex **retval);
-void ags_fourier_transform_util_compute_stft_double(gdouble *buffer, guint channels,
-						    guint buffer_length,
- 						    AgsComplex **retval);
-void ags_fourier_transform_util_compute_stft_complex(AgsComplex *buffer, guint channels,
-						     guint buffer_length,
-						     AgsComplex **retval);
+typedef struct _AgsFourierTransformUtil AgsFourierTransformUtil;
 
-void ags_fourier_transform_util_inverse_stft_s8(AgsComplex *buffer, guint channels,
-						guint buffer_length,
-						gint8 **retval);
-void ags_fourier_transform_util_inverse_stft_s16(AgsComplex *buffer, guint channels,
-						 guint buffer_length,
-						 gint16 **retval);
-void ags_fourier_transform_util_inverse_stft_s24(AgsComplex *buffer, guint channels,
-						 guint buffer_length,
-						 gint32 **retval);
-void ags_fourier_transform_util_inverse_stft_s32(AgsComplex *buffer, guint channels,
-						 guint buffer_length,
-						 gint32 **retval);
-void ags_fourier_transform_util_inverse_stft_s64(AgsComplex *buffer, guint channels,
-						 guint buffer_length,
-						 gint64 **retval);
-void ags_fourier_transform_util_inverse_stft_float(AgsComplex *buffer, guint channels,
-						   guint buffer_length,
-						   gfloat **retval);
-void ags_fourier_transform_util_inverse_stft_double(AgsComplex *buffer, guint channels,
-						    guint buffer_length,
-						    gdouble **retval);
-void ags_fourier_transform_util_inverse_stft_complex(AgsComplex *buffer, guint channels,
-						     guint buffer_length,
-						     AgsComplex **retval);
+struct _AgsFourierTransformUtil
+{
+  gpointer source;
+  guint source_stride;
+
+  AgsComplex *frequency_domain;
+  
+  guint buffer_length;
+  AgsSoundcardFormat format;
+  guint samplerate;
+};
+
+GType ags_fourier_transform_util_get_type(void);
+
+AgsFourierTransformUtil* ags_fourier_transform_util_alloc();
+
+gpointer ags_fourier_transform_util_copy(AgsFourierTransformUtil *ptr);
+void ags_fourier_transform_util_free(AgsFourierTransformUtil *ptr);
+
+gpointer ags_fourier_transform_util_get_source(AgsFourierTransformUtil *fourier_transform_util);
+void ags_fourier_transform_util_set_source(AgsFourierTransformUtil *fourier_transform_util,
+					   gpointer source);
+
+guint ags_fourier_transform_util_get_source_stride(AgsFourierTransformUtil *fourier_transform_util);
+void ags_fourier_transform_util_set_source_stride(AgsFourierTransformUtil *fourier_transform_util,
+						  guint source_stride);
+
+AgsComplex* ags_fourier_transform_util_get_frequency_domain(AgsFourierTransformUtil *fourier_transform_util);
+void ags_fourier_transform_util_set_frequency_domain(AgsFourierTransformUtil *fourier_transform_util,
+						     AgsComplex *frequency_domain);
+
+guint ags_fourier_transform_util_get_buffer_length(AgsFourierTransformUtil *fourier_transform_util);
+void ags_fourier_transform_util_set_buffer_length(AgsFourierTransformUtil *fourier_transform_util,
+						  guint buffer_length);
+
+AgsSoundcardFormat ags_fourier_transform_util_get_format(AgsFourierTransformUtil *fourier_transform_util);
+void ags_fourier_transform_util_set_format(AgsFourierTransformUtil *fourier_transform_util,
+					   AgsSoundcardFormat format);
+
+guint ags_fourier_transform_util_get_samplerate(AgsFourierTransformUtil *fourier_transform_util);
+void ags_fourier_transform_util_set_samplerate(AgsFourierTransformUtil *fourier_transform_util,
+					       guint samplerate);
+
+void ags_fourier_transform_util_compute_stft_s8(AgsFourierTransformUtil *fourier_transform_util);
+void ags_fourier_transform_util_compute_stft_s16(AgsFourierTransformUtil *fourier_transform_util);
+void ags_fourier_transform_util_compute_stft_s24(AgsFourierTransformUtil *fourier_transform_util);
+void ags_fourier_transform_util_compute_stft_s32(AgsFourierTransformUtil *fourier_transform_util);
+void ags_fourier_transform_util_compute_stft_s64(AgsFourierTransformUtil *fourier_transform_util);
+void ags_fourier_transform_util_compute_stft_float(AgsFourierTransformUtil *fourier_transform_util);
+void ags_fourier_transform_util_compute_stft_double(AgsFourierTransformUtil *fourier_transform_util);
+void ags_fourier_transform_util_compute_stft_complex(AgsFourierTransformUtil *fourier_transform_util);
+
+void ags_fourier_transform_util_compute_stft(AgsFourierTransformUtil *fourier_transform_util);
+
+void ags_fourier_transform_util_inverse_stft_s8(AgsFourierTransformUtil *fourier_transform_util);
+void ags_fourier_transform_util_inverse_stft_s16(AgsFourierTransformUtil *fourier_transform_util);
+void ags_fourier_transform_util_inverse_stft_s24(AgsFourierTransformUtil *fourier_transform_util);
+void ags_fourier_transform_util_inverse_stft_s32(AgsFourierTransformUtil *fourier_transform_util);
+void ags_fourier_transform_util_inverse_stft_s64(AgsFourierTransformUtil *fourier_transform_util);
+void ags_fourier_transform_util_inverse_stft_float(AgsFourierTransformUtil *fourier_transform_util);
+void ags_fourier_transform_util_inverse_stft_double(AgsFourierTransformUtil *fourier_transform_util);
+void ags_fourier_transform_util_inverse_stft_complex(AgsFourierTransformUtil *fourier_transform_util);
+
+void ags_fourier_transform_util_inverse_stft(AgsFourierTransformUtil *fourier_transform_util);
 
 G_END_DECLS
 

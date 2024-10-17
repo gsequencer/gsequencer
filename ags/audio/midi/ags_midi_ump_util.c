@@ -3610,7 +3610,6 @@ ags_midi_ump_util_is_midi1_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
  * @buffer: the buffer
  * @group: the group
  * @channel: the channel number
- * @pitch: the pitch
  * @data: the data
  * @extension_name: the extension name string vector
  * @extension_value: the extension value array
@@ -3625,7 +3624,6 @@ ags_midi_ump_util_put_midi1_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
 				       guchar *buffer,
 				       gint group,
 				       gint channel,
-				       gint pitch,
 				       gint data,
 				       gchar **extension_name, GValue *extension_value,
 				       guint extension_count)
@@ -3645,10 +3643,7 @@ ags_midi_ump_util_put_midi1_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
   buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
   nth++;
   
-  /* index pitch and data */
-  buffer[nth] = (0xff & (pitch));
-  nth++;
-  
+  /* data */
   buffer[nth] = (0xff & (data));
   buffer[nth + 1] = (0xff00 & (data >> 8));
   nth += 2;
@@ -3660,7 +3655,6 @@ ags_midi_ump_util_put_midi1_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
  * @buffer: the buffer
  * @group: (out): the return location of group
  * @channel: (out): the return location of channel number
- * @pitch: (out): the return location of pitch
  * @data: (out): the return location of data
  * @extension_name: (out): the return location of extension name string vector
  * @extension_value: (out): the return location of extension value array
@@ -3677,7 +3671,6 @@ ags_midi_ump_util_get_midi1_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
 				       guchar *buffer,
 				       gint *group,
 				       gint *channel,
-				       gint *pitch,
 				       gint *data,
 				       gchar ***extension_name, GValue **extension_value,
 				       guint *extension_count)
@@ -3698,13 +3691,6 @@ ags_midi_ump_util_get_midi1_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
   }
 		       
   nth = 2;
-
-  /* pitch */
-  if(pitch != NULL){
-    pitch[0] = 0xff & buffer[nth];
-  }
-
-  nth++;
 
   /* data */
   if(data != NULL){

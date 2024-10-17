@@ -685,7 +685,7 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
     fx_wah_wah_audio_signal->wah_wah_util.wah_wah_lfo_freq = wah_wah_lfo_freq;
     fx_wah_wah_audio_signal->wah_wah_util.wah_wah_tuning = wah_wah_tuning;
 
-    fx_wah_wah_audio_signal->wah_wah_util.wah_wah_lfo_frame_count = samplerate / wah_wah_lfo_freq;
+    fx_wah_wah_audio_signal->wah_wah_util.frame_count = samplerate / wah_wah_lfo_freq;
 
     if(start_note != NULL){
       note = start_note;

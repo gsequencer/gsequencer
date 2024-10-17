@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -31,6 +31,7 @@
 #include <libinstpatch/libinstpatch.h>
 #endif
 
+#include <ags/audio/ags_audio_buffer_util.h>
 #include <ags/audio/ags_resample_util.h>
 #include <ags/audio/ags_common_pitch_util.h>
 #include <ags/audio/ags_volume_util.h>
@@ -43,6 +44,41 @@ G_BEGIN_DECLS
 
 #define AGS_TYPE_SF2_SYNTH_UTIL         (ags_sf2_synth_util_get_type())
 #define AGS_SF2_SYNTH_UTIL(ptr) ((AgsSF2SynthUtil *)(ptr))
+
+#define AGS_SF2_SYNTH_UTIL_INITIALIZER ((AgsSF2SynthUtil) {		\
+      .flags = 0,							\
+      .sf2_file = NULL,							\
+      .sf2_sample_count = 0,						\
+      .sf2_sample_arr = (IpatchSample **) g_malloc(128 * sizeof(IpatchSample*)), \
+      .sf2_note_range = (gint **) g_malloc(128 * sizeof(gint*)),	\
+      .sf2_orig_buffer = (gpointer *) g_malloc(128 * sizeof(gpointer)), \
+      .sf2_resampled_buffer = (gpointer *) g_malloc(128 * sizeof(gpointer)), \
+      .source = NULL,							\
+      .source_stride = 1,						\
+      .sample_buffer = NULL,						\
+      .im_buffer = NULL,						\
+      .buffer_length = 0,						\
+      .format = AGS_SOUNDCARD_DEFAULT_FORMAT,				\
+      .samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE,			\
+      .preset = NULL,							\
+      .instrument = NULL,						\
+      .bank = -1,							\
+      .program = -1,							\
+      .midi_key = -1,							\
+      .note = 0.0,							\
+      .volume = 1.0,							\
+      .frame_count = 0,							\
+      .offset = 0,							\
+      .loop_mode = AGS_SF2_SYNTH_UTIL_LOOP_NONE,			\
+      .loop_start = 0,							\
+      .loop_end = 0,							\
+      .audio_buffer_util = ags_audio_buffer_util_alloc(),		\
+      .resample_util = ags_resample_util_alloc(),			\
+      .pitch_type = AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL,		\
+      .pitch_util = ags_fluid_interpolate_4th_order_util_alloc(),	\
+      .volume_util = ags_volume_util_alloc(),				\
+      .note_256th_mode = FALSE,						\
+      .offset_256th = 0 })
 
 typedef enum{
   AGS_SF2_SYNTH_UTIL_COMPUTE_INSTRUMENT    = 1,
@@ -121,6 +157,8 @@ struct _AgsSF2SynthUtil
 
   gint loop_start;
   gint loop_end;
+  
+  AgsAudioBufferUtil *audio_buffer_util;
 
   AgsResampleUtil *resample_util;
 
@@ -139,9 +177,6 @@ GType ags_sf2_synth_util_get_type(void);
 GType ags_sf2_synth_util_loop_mode_get_type();
 
 AgsSF2SynthUtil* ags_sf2_synth_util_alloc();
-
-G_DEPRECATED_FOR(ags_sf2_synth_util_copy)
-gpointer ags_sf2_synth_util_boxed_copy(AgsSF2SynthUtil *ptr);
 
 gpointer ags_sf2_synth_util_copy(AgsSF2SynthUtil *ptr);
 void ags_sf2_synth_util_free(AgsSF2SynthUtil *ptr);
@@ -257,6 +292,7 @@ void ags_sf2_synth_util_compute_s64(AgsSF2SynthUtil *sf2_synth_util);
 void ags_sf2_synth_util_compute_float(AgsSF2SynthUtil *sf2_synth_util);
 void ags_sf2_synth_util_compute_double(AgsSF2SynthUtil *sf2_synth_util);
 void ags_sf2_synth_util_compute_complex(AgsSF2SynthUtil *sf2_synth_util);
+
 void ags_sf2_synth_util_compute(AgsSF2SynthUtil *sf2_synth_util);
 
 AgsIpatchSample* ags_sf2_synth_util_midi_locale_find_sample_near_midi_key(AgsIpatch *ipatch,

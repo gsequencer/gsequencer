@@ -341,39 +341,39 @@ include $(top_srcdir)/introspection.mk
 if HAVE_INTROSPECTION
 introspection_sources = $(libags_la_SOURCES) $(libags_thread_la_SOURCES) $(libags_server_la_SOURCES) $(libags_audio_la_SOURCES) $(libags_gui_la_SOURCES)
 
-Ags-6.0.gir: libags.la libags_thread.la libags_server.la
-Ags_6_0_gir_INCLUDES = libxml2-2.0 GObject-2.0 Soup-3.0
-Ags_6_0_gir_C_INCLUDES = ags/libags.h
-Ags_6_0_gir_CFLAGS = $(INCLUDES) $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS) $(LIBSOUP_CFLAGS)
-Ags_6_0_gir_LIBS = libags.la libags_thread.la libags_server.la
-Ags_6_0_gir_FILES = $(libags_la_HEADERS_0) $(libags_la_SOURCES) $(libags_thread_la_HEADERS_0) $(libags_thread_la_SOURCES) $(libags_server_la_HEADERS_0) $(libags_server_la_SOURCES)
-Ags_6_0_gir_NAMESPACE = Ags
-Ags_6_0_gir_VERSION = 6.0
-Ags_6_0_gir_SCANNERFLAGS = --add-include-path=$(top_srcdir) --add-include-path=$(top_builddir) -I$(top_srcdir) -I$(top_builddir) --warn-all --include=Soup-3.0 --include=GObject-2.0 --include=libxml2-2.0 --namespace=Ags --nsversion=6.0 --identifier-prefix=Ags --symbol-prefix=ags_ --output=$(top_builddir)/Ags-6.0.gir
-INTROSPECTION_GIRS += Ags-6.0.gir
+Ags-7.0.gir: libags.la libags_thread.la libags_server.la
+Ags_7_0_gir_INCLUDES = libxml2-2.0 GObject-2.0 Soup-3.0
+Ags_7_0_gir_C_INCLUDES = ags/libags.h
+Ags_7_0_gir_CFLAGS = $(INCLUDES) $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS) $(LIBSOUP_CFLAGS)
+Ags_7_0_gir_LIBS = libags.la libags_thread.la libags_server.la
+Ags_7_0_gir_FILES = $(libags_la_HEADERS_0) $(libags_la_SOURCES) $(libags_thread_la_HEADERS_0) $(libags_thread_la_SOURCES) $(libags_server_la_HEADERS_0) $(libags_server_la_SOURCES)
+Ags_7_0_gir_NAMESPACE = Ags
+Ags_7_0_gir_VERSION = 7.0
+Ags_7_0_gir_SCANNERFLAGS = --add-include-path=$(top_srcdir) --add-include-path=$(top_builddir) -I$(top_srcdir) -I$(top_builddir) --warn-all --include=Soup-3.0 --include=GObject-2.0 --include=libxml2-2.0 --namespace=Ags --nsversion=7.0 --identifier-prefix=Ags --symbol-prefix=ags_ --output=$(top_builddir)/Ags-7.0.gir
+INTROSPECTION_GIRS += Ags-7.0.gir
 
-AgsAudio-6.0.gir: libags_audio.la $(top_builddir)/Ags-6.0.gir
-AgsAudio_6_0_gir_INCLUDES = libxml2-2.0 GObject-2.0 Soup-3.0 Gst-1.0 GstBase-1.0 GstAudio-1.0 Ags-6.0
-AgsAudio_6_0_gir_C_INCLUDES = ags/libags-audio.h
-AgsAudio_6_0_gir_CFLAGS = $(INCLUDES) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SAMPLERATE_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JSON_GLIB_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS)
-AgsAudio_6_0_gir_LIBS = libags_audio.la
-AgsAudio_6_0_gir_FILES = $(libags_audio_la_HEADERS_0) $(libags_audio_la_SOURCES)
+AgsAudio-7.0.gir: libags_audio.la $(top_builddir)/Ags-7.0.gir
+AgsAudio_7_0_gir_INCLUDES = libxml2-2.0 GObject-2.0 Soup-3.0 Gst-1.0 GstBase-1.0 GstAudio-1.0 Ags-7.0
+AgsAudio_7_0_gir_C_INCLUDES = ags/libags-audio.h
+AgsAudio_7_0_gir_CFLAGS = $(INCLUDES) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SAMPLERATE_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JSON_GLIB_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS)
+AgsAudio_7_0_gir_LIBS = libags_audio.la
+AgsAudio_7_0_gir_FILES = $(libags_audio_la_HEADERS_0) $(libags_audio_la_SOURCES)
 
-AgsAudio_6_0_gir_NAMESPACE = AgsAudio
-AgsAudio_6_0_gir_VERSION = 6.0
-AgsAudio_6_0_gir_SCANNERFLAGS = --add-include-path=$(top_srcdir) --add-include-path=$(top_builddir) -I$(top_srcdir) -I$(top_builddir) --warn-all --include=Gst-1.0 --include=GstBase-1.0 --include=GstAudio-1.0 --include=Soup-3.0 --include=GObject-2.0 --include=libxml2-2.0 --include=Ags-6.0 --namespace=AgsAudio --nsversion=6.0 --identifier-prefix=Ags --symbol-prefix=ags_ --output=$(top_builddir)/AgsAudio-6.0.gir
-INTROSPECTION_GIRS += AgsAudio-6.0.gir
+AgsAudio_7_0_gir_NAMESPACE = AgsAudio
+AgsAudio_7_0_gir_VERSION = 7.0
+AgsAudio_7_0_gir_SCANNERFLAGS = --add-include-path=$(top_srcdir) --add-include-path=$(top_builddir) -I$(top_srcdir) -I$(top_builddir) --warn-all --include=Gst-1.0 --include=GstBase-1.0 --include=GstAudio-1.0 --include=Soup-3.0 --include=GObject-2.0 --include=libxml2-2.0 --include=Ags-7.0 --namespace=AgsAudio --nsversion=7.0 --identifier-prefix=Ags --symbol-prefix=ags_ --output=$(top_builddir)/AgsAudio-7.0.gir
+INTROSPECTION_GIRS += AgsAudio-7.0.gir
 
-AgsGui-6.0.gir: libags_gui.la
-AgsGui_6_0_gir_INCLUDES = GObject-2.0 Gtk-4.0
-AgsGui_6_0_gir_C_INCLUDES = ags/libags-gui.h
-AgsGui_6_0_gir_CFLAGS = $(INCLUDES) $(GTK_CFLAGS) $(LIBXML2_CFLAGS)
-AgsGui_6_0_gir_LIBS = libags_gui.la
-AgsGui_6_0_gir_FILES = $(libags_gui_la_HEADERS_0) $(libags_gui_la_SOURCES)
-AgsGui_6_0_gir_NAMESPACE = AgsGui
-AgsGui_6_0_gir_VERSION = 6.0
-AgsGui_6_0_gir_SCANNERFLAGS = --add-include-path=$(top_srcdir) --add-include-path=$(top_builddir) -I$(top_srcdir) -I$(top_builddir) --warn-all --include=Gtk-4.0 --include=libxml2-2.0 --namespace=AgsGui --nsversion=6.0 --identifier-prefix=Ags --symbol-prefix=ags_ --output=$(top_builddir)/AgsGui-6.0.gir
-INTROSPECTION_GIRS += AgsGui-6.0.gir
+AgsGui-7.0.gir: libags_gui.la
+AgsGui_7_0_gir_INCLUDES = GObject-2.0 Gtk-4.0
+AgsGui_7_0_gir_C_INCLUDES = ags/libags-gui.h
+AgsGui_7_0_gir_CFLAGS = $(INCLUDES) $(GTK_CFLAGS) $(LIBXML2_CFLAGS)
+AgsGui_7_0_gir_LIBS = libags_gui.la
+AgsGui_7_0_gir_FILES = $(libags_gui_la_HEADERS_0) $(libags_gui_la_SOURCES)
+AgsGui_7_0_gir_NAMESPACE = AgsGui
+AgsGui_7_0_gir_VERSION = 7.0
+AgsGui_7_0_gir_SCANNERFLAGS = --add-include-path=$(top_srcdir) --add-include-path=$(top_builddir) -I$(top_srcdir) -I$(top_builddir) --warn-all --include=Gtk-4.0 --include=libxml2-2.0 --namespace=AgsGui --nsversion=7.0 --identifier-prefix=Ags --symbol-prefix=ags_ --output=$(top_builddir)/AgsGui-7.0.gir
+INTROSPECTION_GIRS += AgsGui-7.0.gir
 
 girdir = $(datadir)/gir-1.0
 gir_DATA = $(INTROSPECTION_GIRS)
@@ -772,7 +772,7 @@ defexec_DATA =
 libags_la_CPPFLAGS = -std=gnu99 $(CPPFLAGS) $(LIBAGS_CPPFLAGS)
 libags_la_CFLAGS =  $(PICFLAGS) $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS) $(W32API_CFLAGS)
 libags_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS) $(W32API_CFLAGS)
-libags_la_LDFLAGS = $(LDFLAGS) -version-info 6:0:0 -pthread
+libags_la_LDFLAGS = $(LDFLAGS) -version-info 7:0:0 -pthread
 libags_la_LIBADD = -lm
 libags_la_LDFLAGS += $(UUID_LIBS) $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(GIO_LIBS) $(W32API_LIBS) 
 
@@ -796,7 +796,7 @@ endif
 libags_thread_la_CPPFLAGS = -std=gnu99 $(CPPFLAGS) $(LIBAGS_THREAD_CPPFLAGS)
 libags_thread_la_CFLAGS = $(PICFLAGS) $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(W32API_CFLAGS)
 libags_thread_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(W32API_CFLAGS)
-libags_thread_la_LDFLAGS = $(LDFLAGS) -version-info 6:0:0 -pthread
+libags_thread_la_LDFLAGS = $(LDFLAGS) -version-info 7:0:0 -pthread
 libags_thread_la_LIBADD = libags.la -lm
 libags_thread_la_LDFLAGS += $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(W32API_LIBS)
 
@@ -820,7 +820,7 @@ endif
 libags_server_la_CPPFLAGS = -std=gnu99 $(CPPFLAGS) $(LIBAGS_SERVER_CPPFLAGS)
 libags_server_la_CFLAGS = $(PICFLAGS) $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(W32API_CFLAGS)
 libags_server_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(W32API_CFLAGS)
-libags_server_la_LDFLAGS = $(LDFLAGS) -version-info 6:0:0 -pthread
+libags_server_la_LDFLAGS = $(LDFLAGS) -version-info 7:0:0 -pthread
 libags_server_la_LIBADD = -lm libags_thread.la libags.la
 libags_server_la_LDFLAGS += $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(W32API_LIBS)
 
@@ -851,7 +851,7 @@ libags_audio_la_CPPFLAGS += $(CPPFLAGS) $(LIBAGS_AUDIO_CPPFLAGS)
 
 libags_audio_la_CFLAGS = $(PICFLAGS) $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SAMPLERATE_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JSON_GLIB_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(W32API_CFLAGS)
 libags_audio_la_CXXFLAGS = $(CXXFLAGS) $(libags_vst3_CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SAMPLERATE_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(JSON_GLIB_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(W32API_CFLAGS)
-libags_audio_la_LDFLAGS = $(LDFLAGS) -version-info 6:0:0 -pthread 
+libags_audio_la_LDFLAGS = $(LDFLAGS) -version-info 7:0:0 -pthread 
 libags_audio_la_LIBADD = -lm 
 
 if WITH_VST3
@@ -859,7 +859,7 @@ libags_audio_la_LIBADD += $(libags_vst3_LIBDIR) $(libags_vst3_LIBS) libags_vst.l
 endif
 
 if WITH_W32API
-libags_audio_la_CPPFLAGS += -DAGS_VECTORIZED_BUILTIN_FUNCTIONS=1 -DAGS_W32API=1 -DAGS_LIBRARY_SUFFIX=\".dll\" -include $(top_srcdir)/ags/config.h -I$(top_srcdir) -I$(top_srcdir)/lib -I/mingw64/include -I/mingw64/include/dssi -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized
+libags_audio_la_CPPFLAGS += -DAGS_VECTORIZED_BUILTIN_FUNCTIONS=1 -DAGS_VECTOR_256_FUNCTIONS=1 -DAGS_W32API=1 -DAGS_LIBRARY_SUFFIX=\".dll\" -include $(top_srcdir)/ags/config.h -I$(top_srcdir) -I$(top_srcdir)/lib -I/mingw64/include -I/mingw64/include/dssi -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized
 libags_audio_la_LDFLAGS += -Wl,--export-all-symbols,--out-implib=libags_audio.dll.a
 
 libags_audio_la_LDFLAGS += -Wl,--output-def,libags_audio-$(DLL_VERSION).def
@@ -871,7 +871,7 @@ if WITH_OSXAPI
 libags_audio_la_CPPFLAGS += -DAGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS=1 -DAGS_OSXAPI=1 -I/usr/include -I/opt/local/include -I/opt/local/include/dssi -DAGS_LIBRARY_SUFFIX=\".dylib\"
 libags_audio_la_LDFLAGS += -Wl,-headerpad_max_install_names -export-symbols libags_audio.sym -Wl,-install_name,libags_audio.dylib
 else
-libags_audio_la_CPPFLAGS += -DAGS_VECTORIZED_BUILTIN_FUNCTIONS=1 -DAGS_LIBRARY_SUFFIX=\".so\" -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized
+libags_audio_la_CPPFLAGS += -DAGS_VECTORIZED_BUILTIN_FUNCTIONS=1 -DAGS_VECTOR_256_FUNCTIONS=1 -DAGS_LIBRARY_SUFFIX=\".so\" -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized
 libags_audio_la_LDFLAGS += -export-symbols libags_audio.sym -Wl,-soname,libags_audio.so
 libags_audio_la_LIBADD += -ldl
 endif
@@ -886,7 +886,7 @@ libags_audio_la_LDFLAGS += $(CORE_AUDIO_LIBS) $(WASAPI_LIBS) $(LIBASOUND2_LIBS) 
 libags_gui_la_CPPFLAGS = -std=gnu99 $(CPPFLAGS) $(LIBAGS_GUI_CPPFLAGS)
 libags_gui_la_CFLAGS = $(PICFLAGS) $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(GOBJECT_CFLAGS) $(LIBXML2_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(W32API_CFLAGS)
 libags_gui_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(GOBJECT_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(W32API_CFLAGS)
-libags_gui_la_LDFLAGS = $(LDFLAGS) -version-info 6:0:0 -pthread
+libags_gui_la_LDFLAGS = $(LDFLAGS) -version-info 7:0:0 -pthread
 libags_gui_la_LIBADD = -lm
 libags_gui_la_LDFLAGS += $(GOBJECT_LIBS) $(LIBXML2_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(W32API_LIBS)
 
@@ -948,7 +948,7 @@ libgsequencer_la_LDFLAGS += $(CORE_AUDIO_LIBS) $(WASAPI_LIBS) $(LIBASOUND2_LIBS)
 if WITH_VST3
 libags_vst_la_CPPFLAGS = -std=c++2a $(libags_vst3_RELEASE_TYPE) $(libags_vst3_CPPFLAGS) -Wall -Wformat -Werror=format-security -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized
 libags_vst_la_CXXFLAGS = $(PICFLAGS) $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(GLIB_CFLAGS) $(libags_vst3_CXXFLAGS) $(W32API_CFLAGS)
-libags_vst_la_LDFLAGS = $(LDFLAGS) $(libags_vst3_LDFLAGS) -version-info 6:0:0 -pthread 
+libags_vst_la_LDFLAGS = $(LDFLAGS) $(libags_vst3_LDFLAGS) -version-info 7:0:0 -pthread 
 libags_vst_la_LIBADD = -lm
 
 if WITH_W32API
@@ -1319,6 +1319,7 @@ deprecated_libags_audio_h_sources =
 
 libags_audio_h_sources = \
 	$(deprecated_libags_audio_h_sources) \
+	ags/audio/ags_sound_types.h \
 	ags/audio/ags_sound_enums.h \
 	ags/audio/ags_synth_enums.h \
 	ags/audio/ags_acceleration.h \
@@ -1397,6 +1398,8 @@ libags_audio_h_sources = \
 	ags/audio/ags_time_stretch_util.h \
 	ags/audio/ags_track.h \
 	ags/audio/ags_tremolo_util.h \
+	ags/audio/ags_vector_256_manager.h \
+	ags/audio/ags_vdsp_256_manager.h \
 	ags/audio/ags_volume_util.h \
 	ags/audio/ags_wah_wah_util.h \
 	ags/audio/ags_wave.h
@@ -1499,6 +1502,8 @@ libags_audio_c_sources = \
 	ags/audio/ags_time_stretch_util.c \
 	ags/audio/ags_track.c \
 	ags/audio/ags_tremolo_util.c \
+	ags/audio/ags_vector_256_manager.c \
+	ags/audio/ags_vdsp_256_manager.c \
 	ags/audio/ags_volume_util.c \
 	ags/audio/ags_wah_wah_util.c \
 	ags/audio/ags_wave.c
@@ -3534,9 +3539,9 @@ sphinx:
 	pandoc -f docbook $(top_builddir)/xml/oscBook.xml -o $(top_builddir)/sphinx/oscBook.rst
 
 gi-docgen:
-	gi-docgen generate --add-include-path ./ -C docs/reference/libags/Ags.conf --output-dir docs/reference/libags/ Ags-6.0.gir
-	gi-docgen generate --add-include-path ./ -C docs/reference/libags-audio/AgsAudio.conf --output-dir docs/reference/libags-audio/ AgsAudio-6.0.gir
-	gi-docgen generate --add-include-path ./ -C docs/reference/libags-gui/AgsGui.conf --output-dir docs/reference/libags-gui/ AgsGui-6.0.gir
+	gi-docgen generate --add-include-path ./ -C docs/reference/libags/Ags.conf --output-dir docs/reference/libags/ Ags-7.0.gir
+	gi-docgen generate --add-include-path ./ -C docs/reference/libags-audio/AgsAudio.conf --output-dir docs/reference/libags-audio/ AgsAudio-7.0.gir
+	gi-docgen generate --add-include-path ./ -C docs/reference/libags-gui/AgsGui.conf --output-dir docs/reference/libags-gui/ AgsGui-7.0.gir
 
 doxygen:
 	doxygen

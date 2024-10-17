@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,7 +20,6 @@
 #include <ags/audio/file/ags_gstreamer_file.h>
 
 #include <ags/audio/ags_audio_signal.h>
-#include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/file/ags_sound_resource.h>
 
@@ -416,6 +415,8 @@ ags_gstreamer_file_init(AgsGstreamerFile *gstreamer_file)
   gstreamer_file->rw_info = NULL;
   gstreamer_file->rw_current_buffer = NULL;
   gstreamer_file->rw_current_info = NULL;
+
+  gstreamer_file->audio_buffer_util = ags_audio_buffer_util_alloc();
 }
 
 void
@@ -639,6 +640,18 @@ ags_gstreamer_file_dispose(GObject *gobject)
 void
 ags_gstreamer_file_finalize(GObject *gobject)
 {
+  AgsGstreamerFile *gstreamer_file;
+
+  gstreamer_file = AGS_GSTREAMER_FILE(gobject);
+
+  ags_audio_buffer_util_set_source(gstreamer_file->audio_buffer_util,
+				   NULL);
+      
+  ags_audio_buffer_util_set_destination(gstreamer_file->audio_buffer_util,
+					NULL);
+
+  ags_audio_buffer_util_free(gstreamer_file->audio_buffer_util);
+
   /* call parent */
   G_OBJECT_CLASS(ags_gstreamer_file_parent_class)->finalize(gobject);
 }
@@ -2054,8 +2067,11 @@ ags_gstreamer_file_read(AgsSoundResource *sound_resource,
   /* read */
   read_frame_count = 0;
 
-  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
-						  ags_audio_buffer_util_format_from_soundcard(source_format));
+  copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(gstreamer_file->audio_buffer_util,
+							      ags_audio_buffer_util_format_from_soundcard(gstreamer_file->audio_buffer_util,
+													  format),
+							      ags_audio_buffer_util_format_from_soundcard(gstreamer_file->audio_buffer_util,
+													  source_format));
 
   for(read_frame_count = 0; read_frame_count < frame_count && offset + read_frame_count < total_frame_count;){
     GstSample *sample;
@@ -2092,7 +2108,8 @@ ags_gstreamer_file_read(AgsSoundResource *sound_resource,
 	copy_frame_count = (info.size / saudio_channels / sizeof(gint16)) - prev_frame_count;
       }
       
-      ags_audio_buffer_util_copy_buffer_to_buffer(dbuffer, daudio_channels, daudio_channels * read_frame_count,
+      ags_audio_buffer_util_copy_buffer_to_buffer(gstreamer_file->audio_buffer_util,
+						  dbuffer, daudio_channels, daudio_channels * read_frame_count,
 						  info.data, saudio_channels, saudio_channels * prev_frame_count + audio_channel,
 						  copy_frame_count, copy_mode);
 
@@ -2136,7 +2153,8 @@ ags_gstreamer_file_read(AgsSoundResource *sound_resource,
 	  copy_frame_count = (info.size / saudio_channels / sizeof(gint16)) - prev_frame_count;
 	}
 
-	ags_audio_buffer_util_copy_buffer_to_buffer(dbuffer, daudio_channels, daudio_channels * read_frame_count,
+	ags_audio_buffer_util_copy_buffer_to_buffer(gstreamer_file->audio_buffer_util,
+						    dbuffer, daudio_channels, daudio_channels * read_frame_count,
 						    info.data, saudio_channels, audio_channel,
 						    copy_frame_count, copy_mode);
 
@@ -2281,8 +2299,11 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
     break;
   }
   
-  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(destination_format),
-						  ags_audio_buffer_util_format_from_soundcard(format));
+  copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(gstreamer_file->audio_buffer_util,
+							      ags_audio_buffer_util_format_from_soundcard(gstreamer_file->audio_buffer_util,
+													  destination_format),
+							      ags_audio_buffer_util_format_from_soundcard(gstreamer_file->audio_buffer_util,
+													  format));
 
   start_rw_current_buffer = g_list_reverse(start_rw_current_buffer);
   start_rw_current_info = g_list_reverse(start_rw_current_info);
@@ -2367,8 +2388,10 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
       
       g_rec_mutex_unlock(gstreamer_file_mutex);
 
-      ags_audio_buffer_util_clear_buffer(info->data, 1,
-					 AGS_GSTREAMER_FILE_CHUNK_FRAME_COUNT(daudio_channels), ags_audio_buffer_util_format_from_soundcard(destination_format));
+      ags_audio_buffer_util_clear_buffer(gstreamer_file->audio_buffer_util,
+					 info->data, 1,
+					 AGS_GSTREAMER_FILE_CHUNK_FRAME_COUNT(daudio_channels), ags_audio_buffer_util_format_from_soundcard(gstreamer_file->audio_buffer_util,
+																	    destination_format));
 
     }else{
       if(copy_frame_count == AGS_GSTREAMER_FILE_CHUNK_FRAME_COUNT(daudio_channels) / daudio_channels){
@@ -2382,7 +2405,8 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
 
     if(info != NULL &&
        info->data != NULL){
-      ags_audio_buffer_util_copy_buffer_to_buffer(info->data, daudio_channels, (daudio_channels * dbuffer_offset) + audio_channel,
+      ags_audio_buffer_util_copy_buffer_to_buffer(gstreamer_file->audio_buffer_util,
+						  info->data, daudio_channels, (daudio_channels * dbuffer_offset) + audio_channel,
 						  sbuffer, saudio_channels, saudio_channels * sbuffer_offset,
 						  copy_frame_count, copy_mode);
     }

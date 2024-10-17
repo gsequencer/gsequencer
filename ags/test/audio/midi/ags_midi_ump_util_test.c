@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1875,7 +1875,6 @@ ags_midi_ump_util_test_put_midi1_pitch_bend()
   guchar buffer[512];
   const guchar filled_buffer[512] = "\x20\xe0\x30\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
-  gint pitch = 48;
   gint data = 127;
   
   midi_ump_util = ags_midi_ump_util_alloc();
@@ -1886,7 +1885,6 @@ ags_midi_ump_util_test_put_midi1_pitch_bend()
 					 buffer,
 					 0,
 					 0,
-					 pitch,
 					 data,
 					 NULL, NULL,
 					 0);
@@ -1903,7 +1901,6 @@ ags_midi_ump_util_test_get_midi1_pitch_bend()
 
   gint group;
   gint channel;
-  gint pitch;
   gint data;
 
   midi_ump_util = ags_midi_ump_util_alloc();
@@ -1912,14 +1909,12 @@ ags_midi_ump_util_test_get_midi1_pitch_bend()
 					 buffer,
 					 &group,
 					 &channel,
-					 &pitch,
 					 &data,
 					 NULL, NULL,
 					 0);
   
   CU_ASSERT(group == 0);
   CU_ASSERT(channel == 0);
-  CU_ASSERT(pitch == 48);
   CU_ASSERT(data == 127);
 }
 

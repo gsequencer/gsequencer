@@ -206,6 +206,10 @@ enum{
   PROP_PARENT,
   PROP_CHILD_TYPE,
   PROP_CHILD,
+  PROP_MIDI1_CC_TO_VALUE,
+  PROP_MIDI1_CC_TO_PORT_SPECIFIER,
+  PROP_MIDI2_CC_TO_VALUE,
+  PROP_MIDI2_CC_TO_PORT_SPECIFIER,
 };
 
 static gpointer ags_recall_parent_class = NULL;
@@ -672,7 +676,67 @@ ags_recall_class_init(AgsRecallClass *recall)
   g_object_class_install_property(gobject,
 				  PROP_CHILD,
 				  param_spec);
+
+  /**
+   * AgsRecall:midi1-cc-to-value: (type GHashTable(gpointer)) (transfer container)
+   *
+   * The MIDI version 1 control change to value.
+   * 
+   * Since: 7.0.0
+   */
+  param_spec = g_param_spec_pointer("midi1-cc-to-value",
+				    i18n_pspec("MIDI version 1 control change to value"),
+				    i18n_pspec("The MIDI version 1 control change to value"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MIDI1_CC_TO_VALUE,
+				  param_spec);
+
+  /**
+   * AgsRecall:midi1-cc-to-port-specifier: (type GHashTable(utf8)) (transfer container)
+   *
+   * The MIDI version 1 control change to port specifier.
+   * 
+   * Since: 7.0.0
+   */
+  param_spec = g_param_spec_pointer("midi1-cc-to-port-specifier",
+				    i18n_pspec("MIDI version 1 control change to port specifier"),
+				    i18n_pspec("The MIDI version 1 control change to port specifier"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MIDI1_CC_TO_PORT_SPECIFIER,
+				  param_spec);
   
+  /**
+   * AgsRecall:midi2-cc-to-value: (type GHashTable(gpointer)) (transfer container)
+   *
+   * The MIDI version 1 control change to value.
+   * 
+   * Since: 7.0.0
+   */
+  param_spec = g_param_spec_pointer("midi2-cc-to-value",
+				    i18n_pspec("MIDI version 1 control change to value"),
+				    i18n_pspec("The MIDI version 1 control change to value"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MIDI2_CC_TO_VALUE,
+				  param_spec);
+
+  /**
+   * AgsRecall:midi2-cc-to-port-specifier: (type GHashTable(utf8)) (transfer container)
+   *
+   * The MIDI version 1 control change to port specifier.
+   * 
+   * Since: 7.0.0
+   */
+  param_spec = g_param_spec_pointer("midi2-cc-to-port-specifier",
+				    i18n_pspec("MIDI version 1 control change to port specifier"),
+				    i18n_pspec("The MIDI version 1 control change to port specifier"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MIDI2_CC_TO_PORT_SPECIFIER,
+				  param_spec);
+
   /* AgsRecallClass */
   recall->resolve_dependency = ags_recall_real_resolve_dependency;
   recall->check_rt_data = ags_recall_real_check_rt_data;
@@ -1200,15 +1264,18 @@ ags_recall_init(AgsRecall *recall)
 
   recall->children = NULL;
 
-  recall->midi_util = ags_midi_util_alloc();
+  recall->midi_util = NULL;
 
-  recall->midi_ump_util = ags_midi_ump_util_alloc();
-
-  recall->midi1_control_change = NULL;
+  recall->midi_ump_util = NULL;
   
-  recall->midi2_control_change = NULL;
+  recall->midi1_cc_to_value = NULL;
+  recall->midi1_cc_to_port_specifier = NULL;
+  
+  recall->midi2_cc_to_value = NULL;
+  recall->midi2_cc_to_port_specifier = NULL;
 
-  recall->jack_metadata = NULL;
+  recall->jack_metadata_to_value = NULL;
+  recall->jack_metadata_to_port_specifier = NULL;
 }
 
 void
@@ -1545,6 +1612,98 @@ ags_recall_set_property(GObject *gobject,
       ags_recall_add_child(recall, child);
     }
     break;
+  case PROP_MIDI1_CC_TO_VALUE:
+    {
+      GHashTable *midi1_cc_to_value;
+      
+      midi1_cc_to_value = (GHashTable *) g_value_get_pointer(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(recall->midi1_cc_to_value == midi1_cc_to_value){
+	g_rec_mutex_unlock(recall_mutex);
+	
+	return;
+      }
+
+      if(midi1_cc_to_value != NULL){
+	g_hash_table_ref(midi1_cc_to_value);
+      }
+      
+      recall->midi1_cc_to_value = midi1_cc_to_value;
+      
+      g_rec_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_MIDI1_CC_TO_PORT_SPECIFIER:
+    {
+      GHashTable *midi1_cc_to_port_specifier;
+      
+      midi1_cc_to_port_specifier = (GHashTable *) g_value_get_pointer(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(recall->midi1_cc_to_port_specifier == midi1_cc_to_port_specifier){
+	g_rec_mutex_unlock(recall_mutex);
+	
+	return;
+      }
+
+      if(midi1_cc_to_port_specifier != NULL){
+	g_hash_table_ref(midi1_cc_to_port_specifier);
+      }
+      
+      recall->midi1_cc_to_port_specifier = midi1_cc_to_port_specifier;
+      
+      g_rec_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_MIDI2_CC_TO_VALUE:
+    {
+      GHashTable *midi2_cc_to_value;
+      
+      midi2_cc_to_value = (GHashTable *) g_value_get_pointer(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(recall->midi2_cc_to_value == midi2_cc_to_value){
+	g_rec_mutex_unlock(recall_mutex);
+	
+	return;
+      }
+
+      if(midi2_cc_to_value != NULL){
+	g_hash_table_ref(midi2_cc_to_value);
+      }
+      
+      recall->midi2_cc_to_value = midi2_cc_to_value;
+      
+      g_rec_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_MIDI2_CC_TO_PORT_SPECIFIER:
+    {
+      GHashTable *midi2_cc_to_port_specifier;
+      
+      midi2_cc_to_port_specifier = (GHashTable *) g_value_get_pointer(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(recall->midi2_cc_to_port_specifier == midi2_cc_to_port_specifier){
+	g_rec_mutex_unlock(recall_mutex);
+	
+	return;
+      }
+
+      if(midi2_cc_to_port_specifier != NULL){
+	g_hash_table_ref(midi2_cc_to_port_specifier);
+      }
+      
+      recall->midi2_cc_to_port_specifier = midi2_cc_to_port_specifier;
+      
+      g_rec_mutex_unlock(recall_mutex);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -1763,6 +1922,66 @@ ags_recall_get_property(GObject *gobject,
       g_value_set_gtype(value,
 			recall->child_type);
 
+      g_rec_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_MIDI1_CC_TO_VALUE:
+    {
+      GHashTable *midi1_cc_to_value;
+
+      g_rec_mutex_lock(recall_mutex);
+      
+      midi1_cc_to_value = recall->midi1_cc_to_value;
+
+      g_hash_table_ref(midi1_cc_to_value);
+      
+      g_value_set_pointer(value, midi1_cc_to_value);      
+      
+      g_rec_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_MIDI1_CC_TO_PORT_SPECIFIER:
+    {
+      GHashTable *midi1_cc_to_port_specifier;
+
+      g_rec_mutex_lock(recall_mutex);
+      
+      midi1_cc_to_port_specifier = recall->midi1_cc_to_port_specifier;
+
+      g_hash_table_ref(midi1_cc_to_port_specifier);
+      
+      g_value_set_pointer(value, midi1_cc_to_port_specifier);      
+      
+      g_rec_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_MIDI2_CC_TO_VALUE:
+    {
+      GHashTable *midi2_cc_to_value;
+
+      g_rec_mutex_lock(recall_mutex);
+      
+      midi2_cc_to_value = recall->midi2_cc_to_value;
+
+      g_hash_table_ref(midi2_cc_to_value);
+      
+      g_value_set_pointer(value, midi2_cc_to_value);      
+      
+      g_rec_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_MIDI2_CC_TO_PORT_SPECIFIER:
+    {
+      GHashTable *midi2_cc_to_port_specifier;
+
+      g_rec_mutex_lock(recall_mutex);
+      
+      midi2_cc_to_port_specifier = recall->midi2_cc_to_port_specifier;
+
+      g_hash_table_ref(midi2_cc_to_port_specifier);
+      
+      g_value_set_pointer(value, midi2_cc_to_port_specifier);      
+      
       g_rec_mutex_unlock(recall_mutex);
     }
     break;
@@ -2027,7 +2246,40 @@ ags_recall_finalize(GObject *gobject)
 
     g_list_free(start_list);
   }
+
+  /*  */
+  if(recall->midi_util != NULL){
+    ags_midi_util_free(recall->midi_util);
+  }
+
+  if(recall->midi_ump_util != NULL){
+    ags_midi_ump_util_free(recall->midi_ump_util);
+  }
+
+  if(recall->midi1_cc_to_value != NULL){
+    g_hash_table_unref(recall->midi1_cc_to_value);
+  }
+
+  if(recall->midi1_cc_to_port_specifier != NULL){
+    g_hash_table_unref(recall->midi1_cc_to_port_specifier);
+  }
+
+  if(recall->midi2_cc_to_value != NULL){
+    g_hash_table_unref(recall->midi2_cc_to_value);
+  }
+
+  if(recall->midi2_cc_to_port_specifier != NULL){
+    g_hash_table_unref(recall->midi2_cc_to_port_specifier);
+  }
+
+  if(recall->jack_metadata_to_value != NULL){
+    g_hash_table_unref(recall->jack_metadata_to_value);
+  }
   
+  if(recall->jack_metadata_to_port_specifier != NULL){
+    g_hash_table_unref(recall->jack_metadata_to_port_specifier);
+  }
+
   /* call parent */
   G_OBJECT_CLASS(ags_recall_parent_class)->finalize(gobject);
 }
@@ -2518,9 +2770,53 @@ ags_recall_set_flags(AgsRecall *recall, AgsRecallFlags flags)
 
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
-
+  
   /* set flags */
   g_rec_mutex_lock(recall_mutex);
+
+  if((AGS_RECALL_MIDI1 & flags) != 0){
+    if(recall->midi_util != NULL){
+      recall->midi_util = ags_midi_util_alloc();
+    }
+  }
+
+  if((AGS_RECALL_MIDI1_CONTROL_CHANGE & flags) != 0){
+    if(recall->midi1_cc_to_value == NULL){
+      recall->midi1_cc_to_value = g_hash_table_new_full(g_direct_hash,
+							g_direct_equal,
+							NULL,
+							NULL);
+    }
+
+    if(recall->midi1_cc_to_port_specifier == NULL){
+      recall->midi1_cc_to_port_specifier = g_hash_table_new_full(g_direct_hash,
+								 g_direct_equal,
+								 NULL,
+								 g_free);
+    }
+  }
+
+  if((AGS_RECALL_MIDI2 & flags) != 0){
+    if(recall->midi_ump_util != NULL){
+      recall->midi_ump_util = ags_midi_ump_util_alloc();
+    }        
+  }
+
+  if((AGS_RECALL_MIDI2_CONTROL_CHANGE & flags) != 0){
+    if(recall->midi2_cc_to_value == NULL){
+      recall->midi2_cc_to_value = g_hash_table_new_full(g_direct_hash,
+							g_direct_equal,
+							NULL,
+							NULL);
+    }
+
+    if(recall->midi2_cc_to_port_specifier == NULL){
+      recall->midi2_cc_to_port_specifier = g_hash_table_new_full(g_direct_hash,
+								 g_direct_equal,
+								 NULL,
+								 g_free);
+    }
+  }
 
   recall->flags |= flags;
 
@@ -2548,8 +2844,52 @@ ags_recall_unset_flags(AgsRecall *recall, AgsRecallFlags flags)
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
-  /* set flags */
+  /* unset flags */
   g_rec_mutex_lock(recall_mutex);
+
+  if((AGS_RECALL_MIDI1 & flags) != 0){
+    if(recall->midi_util != NULL){
+      ags_midi_util_free(recall->midi_util);
+
+      recall->midi_util = NULL;
+    }
+  }
+  
+  if((AGS_RECALL_MIDI1_CONTROL_CHANGE & flags) != 0){
+    if(recall->midi1_cc_to_value != NULL){
+      g_hash_table_unref(recall->midi1_cc_to_value);
+
+      recall->midi1_cc_to_value = NULL;
+    }
+
+    if(recall->midi1_cc_to_port_specifier != NULL){
+      g_hash_table_unref(recall->midi1_cc_to_port_specifier);
+
+      recall->midi1_cc_to_port_specifier = NULL;
+    }
+  }
+
+  if((AGS_RECALL_MIDI2 & flags) != 0){
+    if(recall->midi_ump_util != NULL){
+      ags_midi_ump_util_free(recall->midi_ump_util);
+
+      recall->midi_ump_util = NULL;
+    }
+  }
+  
+  if((AGS_RECALL_MIDI2_CONTROL_CHANGE & flags) != 0){
+    if(recall->midi2_cc_to_value != NULL){
+      g_hash_table_unref(recall->midi2_cc_to_value);
+
+      recall->midi2_cc_to_value = NULL;
+    }
+
+    if(recall->midi2_cc_to_port_specifier != NULL){
+      g_hash_table_unref(recall->midi2_cc_to_port_specifier);
+
+      recall->midi2_cc_to_port_specifier = NULL;
+    }
+  }
 
   recall->flags &= (~flags);
 
@@ -5007,6 +5347,118 @@ ags_recall_set_format(AgsRecall *recall, AgsSoundcardFormat format)
   g_rec_mutex_unlock(recall_mutex);
 }
 
+/**
+ * ags_recall_get_midi1_cc_to_value:
+ * @recall: the #AgsRecall
+ *
+ * Gets MIDI version 1 control change to value mapped hash table.
+ * 
+ * Returns: (transfer container): the MIDI version 1 control change to value hash table
+ * 
+ * Since: 7.0.0
+ */
+GHashTable*
+ags_recall_get_midi1_cc_to_value(AgsRecall *recall)
+{
+  GHashTable *midi1_cc_to_value;
+  
+  if(!AGS_IS_RECALL(recall)){
+    return(0);
+  }
+
+  midi1_cc_to_value = NULL;
+
+  g_object_get(recall,
+	       "midi1-cc-to-value", &midi1_cc_to_value,
+	       NULL);
+
+  return(midi1_cc_to_value);
+}
+
+/**
+ * ags_recall_get_midi1_cc_to_port_specifier:
+ * @recall: the #AgsRecall
+ *
+ * Gets MIDI version 1 control change to port specifier mapped hash table.
+ * 
+ * Returns: (transfer container): the MIDI version 1 control change to port specifier hash table
+ * 
+ * Since: 7.0.0
+ */
+GHashTable*
+ags_recall_get_midi1_cc_to_port_specifier(AgsRecall *recall)
+{
+  GHashTable *midi1_cc_to_port_specifier;
+  
+  if(!AGS_IS_RECALL(recall)){
+    return(0);
+  }
+
+  midi1_cc_to_port_specifier = NULL;
+
+  g_object_get(recall,
+	       "midi1-cc-to-port-specifier", &midi1_cc_to_port_specifier,
+	       NULL);
+
+  return(midi1_cc_to_port_specifier);
+}
+
+/**
+ * ags_recall_get_midi2_cc_to_value:
+ * @recall: the #AgsRecall
+ *
+ * Gets MIDI version 1 control change to value mapped hash table.
+ * 
+ * Returns: (transfer container): the MIDI version 1 control change to value hash table
+ * 
+ * Since: 7.0.0
+ */
+GHashTable*
+ags_recall_get_midi2_cc_to_value(AgsRecall *recall)
+{
+  GHashTable *midi2_cc_to_value;
+  
+  if(!AGS_IS_RECALL(recall)){
+    return(0);
+  }
+
+  midi2_cc_to_value = NULL;
+
+  g_object_get(recall,
+	       "midi2-cc-to-value", &midi2_cc_to_value,
+	       NULL);
+
+  return(midi2_cc_to_value);
+}
+
+/**
+ * ags_recall_get_midi2_cc_to_port_specifier:
+ * @recall: the #AgsRecall
+ *
+ * Gets MIDI version 1 control change to port specifier mapped hash table.
+ * 
+ * Returns: (transfer container): the MIDI version 1 control change to port specifier hash table
+ * 
+ * Since: 7.0.0
+ */
+GHashTable*
+ags_recall_get_midi2_cc_to_port_specifier(AgsRecall *recall)
+{
+  GHashTable *midi2_cc_to_port_specifier;
+  
+  if(!AGS_IS_RECALL(recall)){
+    return(0);
+  }
+
+  midi2_cc_to_port_specifier = NULL;
+
+  g_object_get(recall,
+	       "midi2-cc-to-port-specifier", &midi2_cc_to_port_specifier,
+	       NULL);
+
+  return(midi2_cc_to_port_specifier);
+}
+
 void
 ags_recall_real_resolve_dependency(AgsRecall *recall)
 {
@@ -5658,14 +6110,13 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 
   GObject *input_sequencer;
 
-  GHashTable *midi1_control_change;
-  
+  GHashTable *midi1_cc_to_value;
+  GHashTable *midi1_cc_to_port_specifier;
+    
   GList *start_port, *port;
 
   guchar *midi_buffer;
 
-  gint midi_controller[31];
-		   
   guint buffer_length;
   
   GRecMutex *recall_mutex;
@@ -5677,7 +6128,7 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 
   input_sequencer = NULL;
 
-  midi1_control_change = NULL;
+  midi1_cc_to_value = NULL;
 
   start_port = NULL;
   port = NULL;
@@ -5720,18 +6171,18 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 
   input_sequencer = ags_audio_get_input_sequencer(audio);
 
-  memset(midi_controller, 0, 31 * sizeof(gint));
+  midi1_cc_to_port_specifier = recall->midi1_cc_to_port_specifier;
   
   if(input_sequencer != NULL &&
      (AGS_IS_RECALL_AUDIO(recall) ||
       AGS_IS_RECALL_CHANNEL(recall))){
     g_rec_mutex_lock(recall_mutex);
     
-    midi1_control_change = recall->midi1_control_change;
+    midi1_cc_to_value = recall->midi1_cc_to_value;
     
     g_rec_mutex_unlock(recall_mutex);
     
-    if(midi1_control_change != NULL){
+    if(midi1_cc_to_value != NULL){
       /* retrieve buffer */
       midi_buffer = ags_sequencer_get_buffer(AGS_SEQUENCER(input_sequencer),
 					     &buffer_length);
@@ -5756,9 +6207,13 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 	    midi_iter += 3;
 	  }else if(ags_midi_util_is_key_pressure(recall->midi_util,
 						 midi_iter)){
+	    /* key pressure */
+	    
 	    midi_iter += 3;
 	  }else if(ags_midi_util_is_change_parameter(recall->midi_util,
 						     midi_iter)){
+	    gpointer ptr;
+	    
 	    gchar *port_specifier;
 
 	    gint channel;
@@ -5772,17 +6227,22 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 
 	    if(control >= 0 && control <= 31){
 	      /* MSB */
-	      midi_controller[control] = (value << 7);
+	      g_hash_table_insert(midi1_cc_to_port_specifier,
+				  GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, control)), GUINT_TO_POINTER(value << 7));
 	    }else{
+	      ptr = g_hash_table_lookup(midi1_cc_to_port_specifier,
+					GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, control)));
+	      
 	      /* LSB */
-	      midi_controller[control] |= value;
+	      g_hash_table_insert(midi1_cc_to_port_specifier,
+				  GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, control)), GUINT_TO_POINTER(((guint) ptr) | value));
 
 	      start_port = ags_recall_get_port(recall);
 	    
 	      g_rec_mutex_lock(recall_mutex);
 	    
-	      port_specifier = g_hash_table_lookup(midi1_control_change,
-						   GINT_TO_POINTER(control));
+	      port_specifier = g_hash_table_lookup(midi1_cc_to_value,
+						   GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, control)));
 
 	      g_rec_mutex_unlock(recall_mutex);
 
@@ -5805,9 +6265,12 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 
 		  lower = ags_plugin_port_get_lower_value(plugin_port);
 		  upper = ags_plugin_port_get_upper_value(plugin_port);
+
+		  ptr = g_hash_table_lookup(midi1_cc_to_port_specifier,
+					    GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, control)));
 		
 		  g_value_set_float(&port_value,
-				    (gfloat) midi_controller[control] * ((g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(14.0) - 1.0)));
+				    ((gfloat) ((guint) ptr)) * ((g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(14.0) - 1.0)));
 		
 		  ags_port_safe_write(port->data,
 				      &port_value);
@@ -5825,8 +6288,68 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 	    midi_iter += 3;
 	  }else if(ags_midi_util_is_pitch_bend(recall->midi_util,
 					       midi_iter)){
-	    /* change parameter */
-	    //TODO:JK: implement me	  
+	    gpointer ptr;
+	    
+	    gchar *port_specifier;
+
+	    gint channel;
+	    gint transmitter;
+
+	    /* pitch bend */
+	    ags_midi_util_get_pitch_bend(recall->midi_util,
+					 midi_iter,      
+					 &channel, &transmitter);
+	    
+	    /* MSB and LSB */
+	    g_hash_table_insert(midi1_cc_to_port_specifier,
+				GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xe0, 0x0)), GUINT_TO_POINTER(transmitter));
+
+	    start_port = ags_recall_get_port(recall);
+	    
+	    g_rec_mutex_lock(recall_mutex);
+	    
+	    port_specifier = g_hash_table_lookup(midi1_cc_to_value,
+						 GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xe0, 0x0)));
+
+	    g_rec_mutex_unlock(recall_mutex);
+
+	    if(port_specifier != NULL){
+	      port = ags_port_find_specifier(start_port,
+					     port_specifier);
+
+	      if(port != NULL){
+		AgsPluginPort *plugin_port;
+
+		GValue *upper;
+		GValue *lower;	    
+		
+		GValue port_value = G_VALUE_INIT;
+
+		plugin_port = (AgsPluginPort *) ags_port_get_plugin_port(port->data);
+		
+		g_value_init(&port_value,
+			     G_TYPE_FLOAT);
+
+		lower = ags_plugin_port_get_lower_value(plugin_port);
+		upper = ags_plugin_port_get_upper_value(plugin_port);
+
+		ptr = g_hash_table_lookup(midi1_cc_to_port_specifier,
+					  GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xe0, 0x0)));
+		
+		g_value_set_float(&port_value,
+				  ((gfloat) ((guint) ptr)) * ((g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(14.0) - 1.0)));
+		
+		ags_port_safe_write(port->data,
+				    &port_value);
+
+		if(plugin_port != NULL){
+		  g_object_unref(plugin_port);
+		}
+	      }
+	    }
+	    
+	    g_list_free_full(start_port,
+			     (GDestroyNotify) g_object_unref);
 	  
 	    midi_iter += 3;
 	  }else if(ags_midi_util_is_change_program(recall->midi_util,
@@ -5891,7 +6414,7 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 				  midi_buffer);
     }
   }
-
+  
   if(audio != NULL){
     g_object_unref(audio);
   }
@@ -5922,7 +6445,448 @@ ags_recall_midi1_control_change(AgsRecall *recall)
 void
 ags_recall_real_midi2_control_change(AgsRecall *recall)
 {
-  //TODO:JK: implement me
+  AgsAudio *audio;
+
+  GObject *input_sequencer;
+
+  GHashTable *midi2_cc_to_value;
+  GHashTable *midi2_cc_to_port_specifier;
+    
+  GList *start_port, *port;
+
+  guchar *midi_buffer;
+
+  guint buffer_length;
+  
+  GRecMutex *recall_mutex;
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
+  
+  audio = NULL;
+
+  input_sequencer = NULL;
+
+  midi2_cc_to_value = NULL;
+
+  start_port = NULL;
+  port = NULL;
+
+  midi_buffer = NULL;
+  
+  buffer_length = 0;
+  
+  if(AGS_IS_RECALL_AUDIO(recall)){
+    g_rec_mutex_lock(recall_mutex);
+
+    audio = AGS_RECALL_AUDIO(recall)->audio;
+
+    if(audio != NULL){
+      g_object_ref(audio);
+    }
+    
+    g_rec_mutex_unlock(recall_mutex);    
+  }
+  
+  if(AGS_IS_RECALL_CHANNEL(recall)){
+    AgsChannel *channel;
+
+    g_rec_mutex_lock(recall_mutex);
+
+    channel = AGS_RECALL_CHANNEL(recall)->source;
+
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
+    
+    g_rec_mutex_unlock(recall_mutex);
+
+    if(channel != NULL){
+      audio = (AgsAudio *) ags_channel_get_audio(channel);
+
+      g_object_unref(channel);
+    }    
+  }
+
+  input_sequencer = ags_audio_get_input_sequencer(audio);
+
+  midi2_cc_to_port_specifier = recall->midi2_cc_to_port_specifier;
+  
+  if(input_sequencer != NULL &&
+     (AGS_IS_RECALL_AUDIO(recall) ||
+      AGS_IS_RECALL_CHANNEL(recall))){
+    g_rec_mutex_lock(recall_mutex);
+    
+    midi2_cc_to_value = recall->midi2_cc_to_value;
+    
+    g_rec_mutex_unlock(recall_mutex);
+
+    if(midi2_cc_to_value != NULL){
+      /* retrieve buffer */
+      midi_buffer = ags_sequencer_get_buffer(AGS_SEQUENCER(input_sequencer),
+					     &buffer_length);
+  
+      ags_sequencer_lock_buffer(AGS_SEQUENCER(input_sequencer),
+				midi_buffer);
+
+      if(midi_buffer != NULL){
+	guchar *midi_iter;
+      
+	/* parse bytes */
+	midi_iter = midi_buffer;
+    
+	while(midi_iter < midi_buffer + buffer_length){
+	  if(ags_midi_ump_util_is_midi1_note_on(recall->midi_ump_util, midi_iter)){
+	    /* key on */
+	    
+	    midi_iter += 4;
+	  }else if(ags_midi_ump_util_is_midi1_note_off(recall->midi_ump_util, midi_iter)){
+	    /* key off */
+	    
+	    midi_iter += 4;
+	  }else if(ags_midi_ump_util_is_midi1_polyphonic_aftertouch(recall->midi_ump_util, midi_iter)){
+	    /* key pressure */
+	    
+	    midi_iter += 4;
+	  }else if(ags_midi_ump_util_is_midi1_control_change(recall->midi_ump_util, midi_iter)){
+	    gpointer ptr;
+	    
+	    gchar *port_specifier;
+
+	    gint group;
+	    gint channel;
+	    gint index_key;
+	    gint data;
+
+	    ags_midi_ump_util_get_midi1_control_change(recall->midi_ump_util,
+						       midi_iter,
+						       &group,
+						       &channel,
+						       &index_key,
+						       &data,
+						       NULL,
+						       NULL,
+						       NULL);
+	    if(index_key >= 0 && index_key <= 31){
+	      /* MSB */
+	      g_hash_table_insert(midi2_cc_to_port_specifier,
+				  GUINT_TO_POINTER(AGS_RECALL_MIDI2_CONTROL_CHANGE(0xb0, index_key, 0x0, 0)), GUINT_TO_POINTER(data << 7));
+	    }else{
+	      ptr = g_hash_table_lookup(midi2_cc_to_port_specifier,
+					GUINT_TO_POINTER(AGS_RECALL_MIDI2_CONTROL_CHANGE(0xb0, index_key, 0x0, 0)));
+	      
+	      /* LSB */
+	      g_hash_table_insert(midi2_cc_to_port_specifier,
+				  GUINT_TO_POINTER(AGS_RECALL_MIDI2_CONTROL_CHANGE(0xb0, index_key, 0x0, 0)), GUINT_TO_POINTER(((guint) ptr) | data));
+
+	      start_port = ags_recall_get_port(recall);
+	    
+	      g_rec_mutex_lock(recall_mutex);
+	    
+	      port_specifier = g_hash_table_lookup(midi2_cc_to_value,
+						   GUINT_TO_POINTER(AGS_RECALL_MIDI2_CONTROL_CHANGE(0xb0, index_key, 0x0, 0)));
+
+	      g_rec_mutex_unlock(recall_mutex);
+
+	      if(port_specifier != NULL){
+		port = ags_port_find_specifier(start_port,
+					       port_specifier);
+
+		if(port != NULL){
+		  AgsPluginPort *plugin_port;
+
+		  GValue *upper;
+		  GValue *lower;	    
+		
+		  GValue port_value = G_VALUE_INIT;
+
+		  plugin_port = (AgsPluginPort *) ags_port_get_plugin_port(port->data);
+		
+		  g_value_init(&port_value,
+			       G_TYPE_FLOAT);
+
+		  lower = ags_plugin_port_get_lower_value(plugin_port);
+		  upper = ags_plugin_port_get_upper_value(plugin_port);
+
+		  ptr = g_hash_table_lookup(midi2_cc_to_port_specifier,
+					    GUINT_TO_POINTER(AGS_RECALL_MIDI2_CONTROL_CHANGE(0xb0, index_key, 0x0, 0)));
+		
+		  g_value_set_float(&port_value,
+				    ((gfloat) ((guint) ptr)) * ((g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(14.0) - 1.0)));
+		
+		  ags_port_safe_write(port->data,
+				      &port_value);
+
+		  if(plugin_port != NULL){
+		    g_object_unref(plugin_port);
+		  }
+		}
+	      }
+	    
+	      g_list_free_full(start_port,
+			       (GDestroyNotify) g_object_unref);
+	    }
+	    
+	    midi_iter += 4;
+	  }else if(ags_midi_ump_util_is_midi1_pitch_bend(recall->midi_ump_util, midi_iter)){
+	    gpointer ptr;
+	    
+	    gchar *port_specifier;
+
+	    gint group;
+	    gint channel;
+	    gint data;
+
+	    ags_midi_ump_util_get_midi1_pitch_bend(recall->midi_ump_util,
+						   midi_iter,
+						   &group,
+						   &channel,
+						   &data,
+						   NULL,
+						   NULL,
+						   NULL);
+
+	    g_hash_table_insert(midi2_cc_to_port_specifier,
+				GUINT_TO_POINTER(AGS_RECALL_MIDI2_MIDI1_PITCH_BEND), GUINT_TO_POINTER(data));
+
+	    start_port = ags_recall_get_port(recall);
+	    
+	    g_rec_mutex_lock(recall_mutex);
+	    
+	    port_specifier = g_hash_table_lookup(midi2_cc_to_value,
+						 GUINT_TO_POINTER(AGS_RECALL_MIDI2_MIDI1_PITCH_BEND));
+	    
+	    g_rec_mutex_unlock(recall_mutex);
+
+	    if(port_specifier != NULL){
+	      port = ags_port_find_specifier(start_port,
+					     port_specifier);
+
+	      if(port != NULL){
+		AgsPluginPort *plugin_port;
+
+		GValue *upper;
+		GValue *lower;	    
+		
+		GValue port_value = G_VALUE_INIT;
+
+		plugin_port = (AgsPluginPort *) ags_port_get_plugin_port(port->data);
+		
+		g_value_init(&port_value,
+			     G_TYPE_FLOAT);
+
+		lower = ags_plugin_port_get_lower_value(plugin_port);
+		upper = ags_plugin_port_get_upper_value(plugin_port);
+
+		ptr = g_hash_table_lookup(midi2_cc_to_port_specifier,
+					  GUINT_TO_POINTER(AGS_RECALL_MIDI2_MIDI1_PITCH_BEND));
+		
+		g_value_set_float(&port_value,
+				  ((gfloat) ((guint) ptr)) * ((g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(14.0) - 1.0)));
+		
+		ags_port_safe_write(port->data,
+				    &port_value);
+
+		if(plugin_port != NULL){
+		  g_object_unref(plugin_port);
+		}
+	      }
+	    }
+	    
+	    g_list_free_full(start_port,
+			     (GDestroyNotify) g_object_unref);
+	    
+	    midi_iter += 4;
+	  }else if(ags_midi_ump_util_is_midi1_program_change(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	    
+	    midi_iter += 4;
+	  }else if(ags_midi_ump_util_is_midi1_channel_pressure(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	    
+	    midi_iter += 4;
+	  }else if(ags_midi_ump_util_is_midi2_note_on(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	    	    
+	    midi_iter += 8;
+	  }else if(ags_midi_ump_util_is_midi2_note_off(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	    	    
+	    midi_iter += 8;
+	  }else if(ags_midi_ump_util_is_midi2_polyphonic_aftertouch(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	    	    
+	    midi_iter += 8;
+	  }else if(ags_midi_ump_util_is_midi2_registered_per_note_controller(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	    	    
+	    midi_iter += 8;
+	  }else if(ags_midi_ump_util_is_midi2_assignable_per_note_controller(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	    	    
+	    midi_iter += 8;
+	  }else if(ags_midi_ump_util_is_midi2_control_change(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	    	    
+	    midi_iter += 8;
+	  }else if(ags_midi_ump_util_is_midi2_rpn_pitch_bend_range(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	    	    
+	    midi_iter += 8;
+	  }else if(ags_midi_ump_util_is_midi2_rpn_coarse_tuning(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	    	    
+	    midi_iter += 8;
+	  }else if(ags_midi_ump_util_is_midi2_rpn_tuning_program_change(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	    	    
+	    midi_iter += 8;
+	  }else if(ags_midi_ump_util_is_midi2_rpn_tuning_bank_select(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	    	    
+	    midi_iter += 8;
+	  }else if(ags_midi_ump_util_is_midi2_rpn_mpe_mcm(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	    	    
+	    midi_iter += 8;
+	  }else if(ags_midi_ump_util_is_midi2_program_change(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	    	    
+	    midi_iter += 8;
+	  }else if(ags_midi_ump_util_is_midi2_channel_pressure(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	    	    
+	    midi_iter += 8;
+	  }else if(ags_midi_ump_util_is_midi2_pitch_bend(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	    	    
+	    midi_iter += 8;
+	  }else if(ags_midi_ump_util_is_midi2_per_note_pitch_bend(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	    	    
+	    midi_iter += 8;
+	  }else if(ags_midi_ump_util_is_flex_set_tempo(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+
+	    midi_iter += 16;
+	  }else if(ags_midi_ump_util_is_flex_set_time_signature(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+
+	    midi_iter += 16;
+	  }else if(ags_midi_ump_util_is_flex_set_metronome(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+
+	    midi_iter += 16;
+	  }else if(ags_midi_ump_util_is_flex_set_key_signature(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+
+	    midi_iter += 16;
+	  }else if(ags_midi_ump_util_is_flex_set_chord_name(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+
+	    midi_iter += 16;
+	  }else if(ags_midi_ump_util_is_endpoint_discovery(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+
+	    midi_iter += 16;
+	  }else if(ags_midi_ump_util_is_endpoint_info_notification(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+
+	    midi_iter += 16;
+	  }else if(ags_midi_ump_util_is_device_identity_notification(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+
+	    midi_iter += 16;
+	  }else if(ags_midi_ump_util_is_endpoint_name_notification(recall->midi_ump_util, midi_iter)){
+	    guint msg_length;
+	    
+	    msg_length = ags_midi_ump_util_get_endpoint_name_notification(recall->midi_ump_util,
+									  midi_iter,
+									  NULL,
+									  NULL,
+									  NULL,
+									  NULL);
+
+	    midi_iter += msg_length;
+	  }else if(ags_midi_ump_util_is_product_instance_id_notification(recall->midi_ump_util, midi_iter)){
+	    guint msg_length;
+	    
+	    msg_length = ags_midi_ump_util_get_product_instance_id_notification(recall->midi_ump_util,
+										midi_iter,
+										NULL,
+										NULL,
+										NULL,
+										NULL);
+
+	    midi_iter += msg_length;
+	  }else if(ags_midi_ump_util_is_stream_configuration_request(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+
+	    midi_iter += 16;
+	  }else if(ags_midi_ump_util_is_function_block_discovery(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+
+	    midi_iter += 16;
+	  }else if(ags_midi_ump_util_is_function_block_info_notification(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+
+	    midi_iter += 20;
+	  }else if(ags_midi_ump_util_is_function_block_name_notification(recall->midi_ump_util, midi_iter)){
+	    guint msg_length;
+	    
+	    msg_length = ags_midi_ump_util_get_function_block_name_notification(recall->midi_ump_util,
+										midi_iter,
+										NULL,
+										NULL,
+										NULL,
+										NULL,
+										NULL);
+
+	    midi_iter += msg_length;
+	  }else if(ags_midi_ump_util_is_start_of_clip(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+
+	    midi_iter += 16;
+	  }else if(ags_midi_ump_util_is_end_of_clip(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+
+	    midi_iter += 16;
+	  }else if(ags_midi_ump_util_is_noop(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	    	    
+	    midi_iter += 4;
+	  }else if(ags_midi_ump_util_is_jr_clock(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	    	    
+	    midi_iter += 4;
+	  }else if(ags_midi_ump_util_is_jr_timestamp(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	    	    
+	    midi_iter += 4;
+	  }else if(ags_midi_ump_util_is_delta_clock_ticks_per_quarter_note(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else if(ags_midi_ump_util_is_delta_clock_ticks_since_last_event(recall->midi_ump_util, midi_iter)){
+	    //TODO:JK: implement me
+	  }else{
+	    g_warning("ags_recall.c - unexpected byte %x", midi_iter[0]);
+	    
+	    midi_iter++;
+	  }
+	}
+      }
+      
+      ags_sequencer_unlock_buffer(AGS_SEQUENCER(input_sequencer),
+				  midi_buffer);
+    }
+  }
+  
+  if(audio != NULL){
+    g_object_unref(audio);
+  }
+
+  if(input_sequencer != NULL){
+    g_object_unref(input_sequencer);
+  }  
 }
 
 /**

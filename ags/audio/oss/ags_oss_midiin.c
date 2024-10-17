@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -130,6 +130,8 @@ guint ags_oss_midiin_get_start_note_offset(AgsSequencer *sequencer);
 void ags_oss_midiin_set_note_offset(AgsSequencer *sequencer,
 				    guint note_offset);
 guint ags_oss_midiin_get_note_offset(AgsSequencer *sequencer);
+
+AgsSequencerMidiVersion ags_oss_midiin_get_midi_version(AgsSequencer *sequencer);  
 
 enum{
   PROP_0,
@@ -388,6 +390,9 @@ ags_oss_midiin_sequencer_interface_init(AgsSequencerInterface *sequencer)
 
   sequencer->set_note_offset = ags_oss_midiin_set_note_offset;
   sequencer->get_note_offset = ags_oss_midiin_get_note_offset;
+
+  sequencer->get_midi_version = ags_oss_midiin_get_midi_version;
+  sequencer->set_midi_version = NULL;
 }
 
 void
@@ -438,6 +443,7 @@ ags_oss_midiin_init(AgsOssMidiin *oss_midiin)
   for(i = 0; i < AGS_OSS_MIDIIN_DEFAULT_APP_BUFFER_SIZE; i++){
     oss_midiin->app_buffer[i] = NULL;
 
+    oss_midiin->allocated_app_buffer_size[i] = 0;
     oss_midiin->app_buffer_size[i] = 0;
   }
   
@@ -448,6 +454,7 @@ ags_oss_midiin_init(AgsOssMidiin *oss_midiin)
   for(i = 0; i < AGS_OSS_MIDIIN_DEFAULT_BACKEND_BUFFER_SIZE; i++){
     oss_midiin->backend_buffer[i] = NULL;
 
+    oss_midiin->allocated_backend_buffer_size[i] = 0;
     oss_midiin->backend_buffer_size[i] = 0;
   }
 
@@ -483,6 +490,8 @@ ags_oss_midiin_init(AgsOssMidiin *oss_midiin)
   oss_midiin->tact_counter = 0.0;
   oss_midiin->delay_counter = 0;
   oss_midiin->tic_counter = 0;
+
+  oss_midiin->midi_version = AGS_SEQUENCER_MIDI1;
 }
 
 void
@@ -1266,12 +1275,16 @@ ags_oss_midiin_device_record(AgsSequencer *sequencer,
   GList *task;
 
   char **backend_buffer;
+  char **app_buffer;
   char buf[128];
   
   gboolean no_event;
-  guint app_buffer_mode;
-  guint backend_buffer_mode;
+  AgsOssMidiinBackendBufferMode backend_buffer_mode;
+  AgsOssMidiinAppBufferMode app_buffer_mode;
+  guint allocated_backend_buffer_size;
   guint backend_buffer_size;
+  guint allocated_app_buffer_size;
+  guint app_buffer_size;
   int device_fd;
   int num_read;
   
@@ -1297,27 +1310,31 @@ ags_oss_midiin_device_record(AgsSequencer *sequencer,
 
   device_fd = oss_midiin->device_fd;
 
-  if(oss_midiin->app_buffer_mode + 1 > AGS_OSS_MIDIIN_APP_BUFFER_3){
-    app_buffer_mode = AGS_OSS_MIDIIN_APP_BUFFER_0;
-  }else{
-    app_buffer_mode = oss_midiin->app_buffer_mode + 1;
-  }
-
   if(oss_midiin->backend_buffer_mode + 1 > AGS_OSS_MIDIIN_BACKEND_BUFFER_7){
     backend_buffer_mode = AGS_OSS_MIDIIN_BACKEND_BUFFER_0;
   }else{
     backend_buffer_mode = oss_midiin->backend_buffer_mode + 1;
   }
-  
-  if(oss_midiin->backend_buffer[backend_buffer_mode] != NULL){
-    g_free(oss_midiin->backend_buffer[backend_buffer_mode]);
-  }
 
-  oss_midiin->backend_buffer[backend_buffer_mode] = NULL;
-  oss_midiin->backend_buffer_size[backend_buffer_mode] = 0;
-      
+  if(oss_midiin->app_buffer_mode + 1 > AGS_OSS_MIDIIN_APP_BUFFER_3){
+    app_buffer_mode = AGS_OSS_MIDIIN_APP_BUFFER_0;
+  }else{
+    app_buffer_mode = oss_midiin->app_buffer_mode + 1;
+  }
+        
   backend_buffer = oss_midiin->backend_buffer;
-  backend_buffer_size = oss_midiin->backend_buffer_size[backend_buffer_mode];
+
+  allocated_backend_buffer_size = oss_midiin->allocated_backend_buffer_size[backend_buffer_mode];
+  backend_buffer_size = 0;
+
+  if(allocated_backend_buffer_size > 0){
+    memset(backend_buffer[backend_buffer_mode], 0, allocated_backend_buffer_size * sizeof(char));
+  }
+  
+  app_buffer = oss_midiin->app_buffer;
+
+  allocated_app_buffer_size = oss_midiin->allocated_app_buffer_size[app_buffer_mode];
+  app_buffer_size = 0;
   
   g_rec_mutex_unlock(oss_midiin_mutex);
 
@@ -1334,47 +1351,55 @@ ags_oss_midiin_device_record(AgsSequencer *sequencer,
     }
 
     if(num_read > 0){
-      if(backend_buffer[backend_buffer_mode] == NULL ||
-	 ceil((backend_buffer_size + num_read) / AGS_OSS_MIDIIN_DEFAULT_BUFFER_SIZE) > ceil(backend_buffer_size / AGS_OSS_MIDIIN_DEFAULT_BUFFER_SIZE)){
+      if(backend_buffer_size + num_read >= allocated_backend_buffer_size){
 	if(backend_buffer[backend_buffer_mode] == NULL){
 	  backend_buffer[backend_buffer_mode] = (char *) g_malloc(AGS_OSS_MIDIIN_DEFAULT_BUFFER_SIZE * sizeof(char));
 	}else{
 	  backend_buffer[backend_buffer_mode] = (char *) g_realloc(backend_buffer[backend_buffer_mode],
-								   (AGS_OSS_MIDIIN_DEFAULT_BUFFER_SIZE * ceil(backend_buffer_size / AGS_OSS_MIDIIN_DEFAULT_BUFFER_SIZE) + AGS_OSS_MIDIIN_DEFAULT_BUFFER_SIZE) * sizeof(char));
+								   (allocated_backend_buffer_size + AGS_OSS_MIDIIN_DEFAULT_BUFFER_SIZE) * sizeof(char));
 	}
+
+	memset(backend_buffer[backend_buffer_mode] + allocated_backend_buffer_size, 0, AGS_OSS_MIDIIN_DEFAULT_BUFFER_SIZE * sizeof(char));
+
+	allocated_backend_buffer_size = 
+	  oss_midiin->allocated_backend_buffer_size[backend_buffer_mode] = allocated_backend_buffer_size + AGS_OSS_MIDIIN_DEFAULT_BUFFER_SIZE;
       }
 
-      memcpy(&(backend_buffer[backend_buffer_mode][backend_buffer_size]),
-	     buf,
-	     num_read);
-      backend_buffer_size += num_read;
+      memcpy(backend_buffer[backend_buffer_mode] + backend_buffer_size, buf, num_read);
+
+      backend_buffer_size = 
+	oss_midiin->backend_buffer_size[backend_buffer_mode] = backend_buffer_size + num_read;
     }
 #endif
   }
       
-  /* switch buffer */
+  /* fill buffer */
   g_rec_mutex_lock(oss_midiin_mutex);
 
-  /* update byte array and buffer size */
-  if(oss_midiin->app_buffer[app_buffer_mode] != NULL){
-    g_free(oss_midiin->app_buffer[app_buffer_mode]);
+  if(allocated_backend_buffer_size > allocated_app_buffer_size){
+    allocated_app_buffer_size = allocated_backend_buffer_size;
+    
+    if(app_buffer[app_buffer_mode] == NULL){
+      app_buffer[app_buffer_mode] = (char *) g_malloc(allocated_app_buffer_size * sizeof(char));
+    }else{
+      app_buffer[app_buffer_mode] = (char *) g_realloc(app_buffer[app_buffer_mode],
+						       allocated_app_buffer_size * sizeof(char));
+    }
+
+    oss_midiin->allocated_app_buffer_size[app_buffer_mode] = allocated_app_buffer_size;	
   }
 
-  oss_midiin->app_buffer[app_buffer_mode] = NULL;
-      
-  oss_midiin->backend_buffer_size[backend_buffer_mode] = backend_buffer_size;
-
-  oss_midiin->app_buffer_size[app_buffer_mode] = backend_buffer_size;
-
-  /* fill buffer */
   if(backend_buffer_size > 0){
-    oss_midiin->app_buffer[app_buffer_mode] = (char *) g_malloc(backend_buffer_size * sizeof(char));
-	
-    memcpy(oss_midiin->app_buffer[app_buffer_mode], backend_buffer[backend_buffer_mode], backend_buffer_size * sizeof(char));
+    app_buffer_size = 
+      oss_midiin->app_buffer_size[app_buffer_mode] = backend_buffer_size;
+  
+    memset(app_buffer[app_buffer_mode], 0, allocated_app_buffer_size * sizeof(char));
+    memcpy(oss_midiin->app_buffer[app_buffer_mode], backend_buffer[backend_buffer_mode], app_buffer_size * sizeof(char));
   }
       
   g_rec_mutex_unlock(oss_midiin_mutex);
 
+  /* switch buffer */
   g_rec_mutex_lock(oss_midiin_mutex);
 
   ags_oss_midiin_switch_buffer_flag(oss_midiin);
@@ -1440,18 +1465,10 @@ ags_oss_midiin_device_free(AgsSequencer *sequencer)
   oss_midiin->backend_buffer_mode = AGS_OSS_MIDIIN_BACKEND_BUFFER_0;
 
   for(i = 0; i < AGS_OSS_MIDIIN_DEFAULT_APP_BUFFER_SIZE; i++){
-    g_free(oss_midiin->app_buffer[i]);
-
-    oss_midiin->app_buffer[i] = NULL;
-    
     oss_midiin->app_buffer_size[i] = 0;
   }
 
   for(i = 0; i < AGS_OSS_MIDIIN_DEFAULT_BACKEND_BUFFER_SIZE; i++){
-    g_free(oss_midiin->backend_buffer[i]);
-
-    oss_midiin->backend_buffer[i] = NULL;
-
     oss_midiin->backend_buffer_size[i] = 0;
   }
 
@@ -1825,6 +1842,30 @@ ags_oss_midiin_get_note_offset(AgsSequencer *sequencer)
   g_rec_mutex_unlock(oss_midiin_mutex);
 
   return(note_offset);
+}
+
+AgsSequencerMidiVersion
+ags_oss_midiin_get_midi_version(AgsSequencer *sequencer)
+{
+  AgsOssMidiin *oss_midiin;
+
+  AgsSequencerMidiVersion midi_version;
+  
+  GRecMutex *oss_midiin_mutex;  
+
+  oss_midiin = AGS_OSS_MIDIIN(sequencer);
+
+  /* get oss_midiin mutex */
+  oss_midiin_mutex = AGS_OSS_MIDIIN_GET_OBJ_MUTEX(oss_midiin);
+
+  /* set note offset */
+  g_rec_mutex_lock(oss_midiin_mutex);
+
+  midi_version = oss_midiin->midi_version;
+
+  g_rec_mutex_unlock(oss_midiin_mutex);
+
+  return(midi_version);
 }
 
 /**

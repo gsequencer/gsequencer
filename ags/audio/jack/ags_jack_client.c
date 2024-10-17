@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,7 +20,6 @@
 #include <ags/audio/jack/ags_jack_client.h>
 
 #include <ags/audio/ags_sound_provider.h>
-#include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/jack/ags_jack_server.h>
 #include <ags/audio/jack/ags_jack_port.h>
@@ -283,6 +282,8 @@ ags_jack_client_init(AgsJackClient *jack_client)
 
   g_atomic_int_set(&(jack_client->queued),
 		   0);
+
+  jack_client->audio_buffer_util = ags_audio_buffer_util_alloc();
 }
 
 void
@@ -538,6 +539,14 @@ ags_jack_client_finalize(GObject *gobject)
 		     g_object_unref);
   }
   
+  ags_audio_buffer_util_set_source(jack_client->audio_buffer_util,
+				   NULL);
+      
+  ags_audio_buffer_util_set_destination(jack_client->audio_buffer_util,
+					NULL);
+
+  ags_audio_buffer_util_free(jack_client->audio_buffer_util);
+
   /* call parent */
   G_OBJECT_CLASS(ags_jack_client_parent_class)->finalize(gobject);
 }
@@ -1607,22 +1616,25 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 		}else if(jack_midiin->app_buffer_mode == AGS_JACK_MIDIIN_APP_BUFFER_3){
 		  nth_buffer = 0;
 		}
-
-		if(ceil((jack_midiin->app_buffer_size[nth_buffer] + in_event.size) / 4096.0) > ceil(jack_midiin->app_buffer_size[nth_buffer] / 4096.0)){
+		
+		if(jack_midiin->app_buffer_size[nth_buffer] + in_event.size >= jack_midiin->allocated_app_buffer_size[nth_buffer]){
 		  if(jack_midiin->app_buffer[nth_buffer] == NULL){
-		    jack_midiin->app_buffer[nth_buffer] = g_malloc(4096 * sizeof(char));
+		    jack_midiin->app_buffer[nth_buffer] = (char *) g_malloc(AGS_JACK_MIDIIN_DEFAULT_BUFFER_SIZE * sizeof(char));
 		  }else{
-		    jack_midiin->app_buffer[nth_buffer] = g_realloc(jack_midiin->app_buffer[nth_buffer],
-								    (ceil(jack_midiin->app_buffer_size[nth_buffer] / 4096.0) * 4096 + 4096) * sizeof(char));
+		    jack_midiin->app_buffer[nth_buffer] = (char *) g_realloc(jack_midiin->app_buffer[nth_buffer],
+									     (jack_midiin->allocated_app_buffer_size[nth_buffer] + AGS_JACK_MIDIIN_DEFAULT_BUFFER_SIZE) * sizeof(char));
 		  }
+		  
+		  memset(jack_midiin->app_buffer[nth_buffer] + jack_midiin->allocated_app_buffer_size[nth_buffer], 0, AGS_JACK_MIDIIN_DEFAULT_BUFFER_SIZE * sizeof(char));
+
+		  jack_midiin->allocated_app_buffer_size[nth_buffer] = 
+		    jack_midiin->allocated_app_buffer_size[nth_buffer] = jack_midiin->allocated_app_buffer_size[nth_buffer] + AGS_JACK_MIDIIN_DEFAULT_BUFFER_SIZE;
 		}
 
-		memcpy(&(jack_midiin->app_buffer[nth_buffer][jack_midiin->app_buffer_size[nth_buffer]]),
-		       in_event.buffer,
-		       in_event.size);
-		jack_midiin->app_buffer_size[nth_buffer] += in_event.size;
+		memcpy(jack_midiin->app_buffer[nth_buffer] + jack_midiin->app_buffer_size[nth_buffer], in_event.buffer, in_event.size);
+		
+		jack_midiin->app_buffer_size[nth_buffer] = jack_midiin->app_buffer_size[nth_buffer] + in_event.size;
 	      }
-
 	    }	  
 
 	    jack_midi_clear_buffer(port_buf);
@@ -1728,8 +1740,10 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
       }
 
       /* get copy mode */
-      copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(jack_devin->format),
-						      AGS_AUDIO_BUFFER_UTIL_FLOAT);
+      copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(jack_client->audio_buffer_util,
+								  ags_audio_buffer_util_format_from_soundcard(jack_client->audio_buffer_util,
+													      jack_devin->format),
+								  AGS_AUDIO_BUFFER_UTIL_FLOAT);
 
       /* check buffer flag */
       switch(jack_devin->format){
@@ -1779,7 +1793,8 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 	if(!no_event && in != NULL){
 	  ags_soundcard_lock_buffer(AGS_SOUNDCARD(jack_devin), jack_devin->app_buffer[nth_buffer]);
 	    
-	  ags_audio_buffer_util_copy_buffer_to_buffer(jack_devin->app_buffer[nth_buffer], jack_devin->pcm_channels, i,
+	  ags_audio_buffer_util_copy_buffer_to_buffer(jack_client->audio_buffer_util,
+						      jack_devin->app_buffer[nth_buffer], jack_devin->pcm_channels, i,
 						      in, 1, 0,
 						      jack_devin->buffer_size, copy_mode);
 	    
@@ -1799,7 +1814,8 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 				   jack_devin->buffer_size);
 
 	if(out != NULL){
-	  ags_audio_buffer_util_clear_float(out, 1,
+	  ags_audio_buffer_util_clear_float(jack_client->audio_buffer_util,
+					    out, 1,
 					    jack_devin->buffer_size);
 	}
 
@@ -1895,7 +1911,8 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 				   jack_devout->buffer_size);
 
 	if(out != NULL){
-	  ags_audio_buffer_util_clear_float(out, 1,
+	  ags_audio_buffer_util_clear_float(jack_client->audio_buffer_util,
+					    out, 1,
 					    jack_devout->buffer_size);
 	}
 
@@ -1921,8 +1938,10 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
       }
 
       /* get copy mode */
-      copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_FLOAT,
-						      ags_audio_buffer_util_format_from_soundcard(jack_devout->format));
+      copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(jack_client->audio_buffer_util,
+								  AGS_AUDIO_BUFFER_UTIL_FLOAT,
+								  ags_audio_buffer_util_format_from_soundcard(jack_client->audio_buffer_util,
+													      jack_devout->format));
 
       /* check buffer flag */
       switch(jack_devout->format){
@@ -1972,7 +1991,8 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 	if(!no_event && out != NULL){
 	  ags_soundcard_lock_buffer(AGS_SOUNDCARD(jack_devout), jack_devout->app_buffer[nth_buffer]);
 	    
-	  ags_audio_buffer_util_copy_buffer_to_buffer(out, 1, 0,
+	  ags_audio_buffer_util_copy_buffer_to_buffer(jack_client->audio_buffer_util,
+						      out, 1, 0,
 						      jack_devout->app_buffer[nth_buffer], jack_devout->pcm_channels, i,
 						      jack_devout->buffer_size, copy_mode);
 	  

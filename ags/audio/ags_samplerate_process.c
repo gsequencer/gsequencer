@@ -35,8 +35,11 @@ prepare_data(AgsResampleUtil *resample_util, int half_filter_chan_len)
   if (resample_util->data_in == NULL)
     return 0;
   
-  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(resample_util->format),
-						  ags_audio_buffer_util_format_from_soundcard(resample_util->format));
+  copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(resample_util->audio_buffer_util,
+							      ags_audio_buffer_util_format_from_soundcard(resample_util->audio_buffer_util,
+													  resample_util->format),
+							      ags_audio_buffer_util_format_from_soundcard(resample_util->audio_buffer_util,
+													  resample_util->format));
 
   if (resample_util->b_current == 0){
     /* Initial state. Set up zeros at the start of the buffer and
@@ -56,10 +59,13 @@ prepare_data(AgsResampleUtil *resample_util, int half_filter_chan_len)
 
     if(half_filter_chan_len + len < resample_util->buffer_length &&
        offset + half_filter_chan_len + len < resample_util->input_frames){
-      ags_audio_buffer_util_clear_buffer(resample_util->buffer, 1,
-					 half_filter_chan_len + len, ags_audio_buffer_util_format_from_soundcard(resample_util->format));
+      ags_audio_buffer_util_clear_buffer(resample_util->audio_buffer_util,
+					 resample_util->buffer, 1,
+					 half_filter_chan_len + len, ags_audio_buffer_util_format_from_soundcard(resample_util->audio_buffer_util,
+														 resample_util->format));
           
-      ags_audio_buffer_util_copy_buffer_to_buffer(resample_util->buffer, 1, 0,
+      ags_audio_buffer_util_copy_buffer_to_buffer(resample_util->audio_buffer_util,
+						  resample_util->buffer, 1, 0,
 						  resample_util->data_in, 1, (resample_util->b_current - half_filter_chan_len),
 						  half_filter_chan_len + len, copy_mode);
     }
@@ -90,55 +96,72 @@ prepare_data(AgsResampleUtil *resample_util, int half_filter_chan_len)
     switch(resample_util->format){
     case AGS_SOUNDCARD_SIGNED_8_BIT:
       {
-	ags_audio_buffer_util_clear_buffer(((gint8 *) resample_util->buffer) + resample_util->b_end, 1,
-					   len - offset, ags_audio_buffer_util_format_from_soundcard(resample_util->format));
+	ags_audio_buffer_util_clear_buffer(resample_util->audio_buffer_util,
+					   ((gint8 *) resample_util->buffer) + resample_util->b_end, 1,
+					   len - offset, ags_audio_buffer_util_format_from_soundcard(resample_util->audio_buffer_util,
+												     resample_util->format));
       }
       break;
     case AGS_SOUNDCARD_SIGNED_16_BIT:
       {
-	ags_audio_buffer_util_clear_buffer(((gint16 *) resample_util->buffer) + resample_util->b_end, 1,
-					   len - offset, ags_audio_buffer_util_format_from_soundcard(resample_util->format));
+	ags_audio_buffer_util_clear_buffer(resample_util->audio_buffer_util,
+					   ((gint16 *) resample_util->buffer) + resample_util->b_end, 1,
+					   len - offset, ags_audio_buffer_util_format_from_soundcard(resample_util->audio_buffer_util,
+												     resample_util->format));
       }
       break;
     case AGS_SOUNDCARD_SIGNED_24_BIT:
       {
-	ags_audio_buffer_util_clear_buffer(((gint32 *) resample_util->buffer) + resample_util->b_end, 1,
-					   len - offset, ags_audio_buffer_util_format_from_soundcard(resample_util->format));
+	ags_audio_buffer_util_clear_buffer(resample_util->audio_buffer_util,
+					   ((gint32 *) resample_util->buffer) + resample_util->b_end, 1,
+					   len - offset, ags_audio_buffer_util_format_from_soundcard(resample_util->audio_buffer_util,
+												     resample_util->format));
       }
       break;
     case AGS_SOUNDCARD_SIGNED_32_BIT:
       {
-	ags_audio_buffer_util_clear_buffer(((gint32 *) resample_util->buffer) + resample_util->b_end, 1,
-					   len - offset, ags_audio_buffer_util_format_from_soundcard(resample_util->format));
+	ags_audio_buffer_util_clear_buffer(resample_util->audio_buffer_util,
+					   ((gint32 *) resample_util->buffer) + resample_util->b_end, 1,
+					   len - offset, ags_audio_buffer_util_format_from_soundcard(resample_util->audio_buffer_util,
+												     resample_util->format));
       }
       break;
     case AGS_SOUNDCARD_SIGNED_64_BIT:
       {
-	ags_audio_buffer_util_clear_buffer(((gint64 *) resample_util->buffer) + resample_util->b_end, 1,
-					   len - offset, ags_audio_buffer_util_format_from_soundcard(resample_util->format));
+	ags_audio_buffer_util_clear_buffer(resample_util->audio_buffer_util,
+					   ((gint64 *) resample_util->buffer) + resample_util->b_end, 1,
+					   len - offset, ags_audio_buffer_util_format_from_soundcard(resample_util->audio_buffer_util,
+												     resample_util->format));
       }
       break;
     case AGS_SOUNDCARD_FLOAT:
       {
-	ags_audio_buffer_util_clear_buffer(((gfloat *) resample_util->buffer) + resample_util->b_end, 1,
-					   len - offset, ags_audio_buffer_util_format_from_soundcard(resample_util->format));
+	ags_audio_buffer_util_clear_buffer(resample_util->audio_buffer_util,
+					   ((gfloat *) resample_util->buffer) + resample_util->b_end, 1,
+					   len - offset, ags_audio_buffer_util_format_from_soundcard(resample_util->audio_buffer_util,
+												     resample_util->format));
       }
       break;
     case AGS_SOUNDCARD_DOUBLE:
       {
-	ags_audio_buffer_util_clear_buffer(((gdouble *) resample_util->buffer) + resample_util->b_end, 1,
-					   len - offset, ags_audio_buffer_util_format_from_soundcard(resample_util->format));
+	ags_audio_buffer_util_clear_buffer(resample_util->audio_buffer_util,
+					   ((gdouble *) resample_util->buffer) + resample_util->b_end, 1,
+					   len - offset, ags_audio_buffer_util_format_from_soundcard(resample_util->audio_buffer_util,
+												     resample_util->format));
       }
       break;
     case AGS_SOUNDCARD_COMPLEX:
       {
-	ags_audio_buffer_util_clear_buffer(((AgsComplex *) resample_util->buffer) + resample_util->b_end, 1,
-					   len - offset, ags_audio_buffer_util_format_from_soundcard(resample_util->format));
+	ags_audio_buffer_util_clear_buffer(resample_util->audio_buffer_util,
+					   ((AgsComplex *) resample_util->buffer) + resample_util->b_end, 1,
+					   len - offset, ags_audio_buffer_util_format_from_soundcard(resample_util->audio_buffer_util,
+												     resample_util->format));
       }
       break;
     }
     
-    ags_audio_buffer_util_copy_buffer_to_buffer(resample_util->buffer, 1, resample_util->b_end,
+    ags_audio_buffer_util_copy_buffer_to_buffer(resample_util->audio_buffer_util,
+						resample_util->buffer, 1, resample_util->b_end,
 						resample_util->data_in, 1, resample_util->in_used,
 						len - offset, copy_mode);
   }
@@ -160,10 +183,13 @@ prepare_data(AgsResampleUtil *resample_util, int half_filter_chan_len)
 
       if(half_filter_chan_len + len < resample_util->buffer_length &&
 	 offset + half_filter_chan_len + len < resample_util->input_frames){
-	ags_audio_buffer_util_clear_buffer(resample_util->buffer, 1,
-					   half_filter_chan_len + len, ags_audio_buffer_util_format_from_soundcard(resample_util->format));
+	ags_audio_buffer_util_clear_buffer(resample_util->audio_buffer_util,
+					   resample_util->buffer, 1,
+					   half_filter_chan_len + len, ags_audio_buffer_util_format_from_soundcard(resample_util->audio_buffer_util,
+														   resample_util->format));
 	
-	ags_audio_buffer_util_copy_buffer_to_buffer(resample_util->buffer, 1, 0,
+	ags_audio_buffer_util_copy_buffer_to_buffer(resample_util->audio_buffer_util,
+						    resample_util->buffer, 1, 0,
 						    resample_util->data_in, 1, resample_util->b_current - half_filter_chan_len,
 						    half_filter_chan_len + len, copy_mode);
       }
@@ -507,15 +533,21 @@ ags_samplerate_process_resample_util(AgsResampleUtil *resample_util)
 
   resample_util->last_ratio = resample_util->src_ratio;
 
-  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(resample_util->format),
-						  ags_audio_buffer_util_format_from_soundcard(resample_util->format));
+  copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(resample_util->audio_buffer_util,
+							      ags_audio_buffer_util_format_from_soundcard(resample_util->audio_buffer_util,
+													  resample_util->format),
+							      ags_audio_buffer_util_format_from_soundcard(resample_util->audio_buffer_util,
+													  resample_util->format));
 
   length = resample_util->input_frames;
 
-  ags_audio_buffer_util_clear_buffer(resample_util->buffer, 1,
-				     MAX(length, 4096), ags_audio_buffer_util_format_from_soundcard(resample_util->format));
+  ags_audio_buffer_util_clear_buffer(resample_util->audio_buffer_util,
+				     resample_util->buffer, 1,
+				     MAX(length, 4096), ags_audio_buffer_util_format_from_soundcard(resample_util->audio_buffer_util,
+												    resample_util->format));
   
-  ags_audio_buffer_util_copy_buffer_to_buffer(resample_util->buffer, 1, 0,
+  ags_audio_buffer_util_copy_buffer_to_buffer(resample_util->audio_buffer_util,
+					      resample_util->buffer, 1, 0,
 					      resample_util->data_in, 1, 0,
 					      length, copy_mode);
   

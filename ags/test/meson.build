@@ -28,12 +28,19 @@ if get_option('gstreamer')
   interactive_test_dependencies += gstreamer_pbutils_dependency
 endif
 
+compiler_test_flags = [
+  compiler_flags,
+  '-fpermissive',
+  '-Wno-error=incompatible-pointer-types',
+  '-Wno-error=pedantic'
+]
+
 foreach interactive_test : interactive_tests
   source = ['@0@.c'.format(interactive_test)]
   executable(
     interactive_test,
     source,
-    c_args: compiler_flags,
+    c_args: compiler_test_flags,
     include_directories: [includes],
     dependencies: [interactive_test_dependencies],
     link_with: [

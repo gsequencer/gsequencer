@@ -111,7 +111,7 @@ ags_envelope_util_test_alloc()
   CU_ASSERT(envelope_util->source_stride == 1);
   
   CU_ASSERT(envelope_util->buffer_length == 0);
-  CU_ASSERT(envelope_util->format == AGS_ENVELOPE_UTIL_DEFAULT_FORMAT);
+  CU_ASSERT(envelope_util->format == AGS_SOUNDCARD_DEFAULT_FORMAT);
 
   CU_ASSERT(envelope_util->volume == 1.0);
   CU_ASSERT(envelope_util->amount == 0.0);

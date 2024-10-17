@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,11 +32,45 @@ G_BEGIN_DECLS
 #define AGS_TYPE_RESAMPLE_UTIL         (ags_resample_util_get_type())
 #define AGS_RESAMPLE_UTIL(ptr) ((AgsResampleUtil *)(ptr))
 
-#define AGS_RESAMPLE_UTIL_DEFAULT_FORMAT (AGS_SOUNDCARD_SIGNED_16_BIT)
-#define AGS_RESAMPLE_UTIL_DEFAULT_SAMPLERATE (AGS_SOUNDCARD_DEFAULT_SAMPLERATE)
-
-#define AGS_RESAMPLE_UTIL_DEFAULT_AUDIO_BUFFER_UTIL_FORMAT (AGS_AUDIO_BUFFER_UTIL_S16)
 #define AGS_RESAMPLE_UTIL_DEFAULT_TARGET_SAMPLERATE (AGS_SOUNDCARD_DEFAULT_SAMPLERATE)
+
+#define AGS_RESAMPLE_UTIL_INITIALIZER ((AgsResampleUtil) {		\
+      .source = NULL,							\
+      .source_stride = 1,						\
+      .destination = NULL,						\
+      .destination_stride = 1,						\
+      .buffer_length = 0,						\
+      .format = AGS_SOUNDCARD_DEFAULT_FORMAT,				\
+      .samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE,			\
+      .target_samplerate = AGS_RESAMPLE_UTIL_DEFAULT_TARGET_SAMPLERATE, \
+      .src_ratio = 1.0, 						\
+      .saved_frames = 0,						\
+      .input_frames_used = 0,						\
+      .end_of_input = 0,						\
+      .input_frames = 0,						\
+      .data_in = NULL,							\
+      .output_frames = 0,						\
+      .data_out = NULL,							\
+      .increment = 2381,						\
+      .bypass_cache = FALSE,						\
+      .in_count = 0,							\
+      .in_used = 0,							\
+      .out_count = 0,							\
+      .out_gen = 0,							\
+      .coeff_half_len = ARRAY_LEN (ags_samplerate_coeffs) - 2,		\
+      .index_inc = 2381,						\
+      .input_index = 0,							\
+      .b_current = 0,							\
+      .b_end = 0,							\
+      .b_real_end = -1,							\
+      .b_len = 0,							\
+      .coeffs = ags_samplerate_coeffs,					\
+      .left_calc = 0.0,							\
+      .right_calc = 0.0,						\
+      .last_ratio = -1.0,						\
+      .last_position = 0.0,						\
+      .buffer = NULL,							\
+      .audio_buffer_util = ags_audio_buffer_util_alloc() })
 
 typedef struct _AgsResampleUtil AgsResampleUtil;
 
@@ -96,6 +130,8 @@ struct _AgsResampleUtil
   gdouble last_position;
 
   gpointer buffer;  
+
+  AgsAudioBufferUtil *audio_buffer_util;
 };
 
 GType ags_resample_util_get_type(void);

@@ -139,7 +139,7 @@ gboolean ags_midi_util_get_change_parameter(AgsMidiUtil *midi_util,
 					    gint *channel, gint *control, gint *value);
 gboolean ags_midi_util_get_pitch_bend(AgsMidiUtil *midi_util,
 				      guchar *buffer,
-				      gint *channel, gint *pitch, gint *transmitter);
+				      gint *channel, gint *transmitter);
 gboolean ags_midi_util_get_change_program(AgsMidiUtil *midi_util,
 					  guchar *buffer,
 					  gint *channel, gint *program);

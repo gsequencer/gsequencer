@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,7 +20,6 @@
 #include <ags/audio/file/ags_sndfile.h>
 
 #include <ags/audio/ags_audio_signal.h>
-#include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/file/ags_sound_resource.h>
 
@@ -375,6 +374,8 @@ ags_sndfile_init(AgsSndfile *sndfile)
 
   sndfile->info = NULL;
   sndfile->file = NULL;
+
+  sndfile->audio_buffer_util = ags_audio_buffer_util_alloc();
 }
 
 void
@@ -566,6 +567,18 @@ ags_sndfile_dispose(GObject *gobject)
 void
 ags_sndfile_finalize(GObject *gobject)
 {
+  AgsSndfile *sndfile;
+  
+  sndfile = AGS_SNDFILE(gobject);
+
+  ags_audio_buffer_util_set_source(sndfile->audio_buffer_util,
+				   NULL);
+      
+  ags_audio_buffer_util_set_destination(sndfile->audio_buffer_util,
+					NULL);
+
+  ags_audio_buffer_util_free(sndfile->audio_buffer_util);
+
   /* call parent */
   G_OBJECT_CLASS(ags_sndfile_parent_class)->finalize(gobject);
 }
@@ -1402,8 +1415,11 @@ ags_sndfile_read(AgsSoundResource *sound_resource,
   
   read_count = sndfile->buffer_size;
 
-  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
-						  ags_audio_buffer_util_format_from_soundcard(sndfile->format));
+  copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(sndfile->audio_buffer_util,
+							      ags_audio_buffer_util_format_from_soundcard(sndfile->audio_buffer_util,
+													  format),
+							      ags_audio_buffer_util_format_from_soundcard(sndfile->audio_buffer_util,
+													  sndfile->format));
       
   for(i = 0; i < frame_count && sndfile->offset + i < total_frame_count; ){
     sf_count_t retval;
@@ -1470,7 +1486,8 @@ ags_sndfile_read(AgsSoundResource *sound_resource,
       }    
       //    }
 
-    ags_audio_buffer_util_copy_buffer_to_buffer(dbuffer, daudio_channels, (i * daudio_channels),
+    ags_audio_buffer_util_copy_buffer_to_buffer(sndfile->audio_buffer_util,
+						dbuffer, daudio_channels, (i * daudio_channels),
 						sndfile->buffer, sndfile->info->channels, audio_channel,
 						read_count, copy_mode);
     //    g_message("[%d] %d", audio_channel, ags_synth_util_get_xcross_count_s16(dbuffer, read_count));
@@ -1505,10 +1522,14 @@ ags_sndfile_write(AgsSoundResource *sound_resource,
   
   g_rec_mutex_lock(sndfile_mutex);
 
-  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(sndfile->format),
-						  ags_audio_buffer_util_format_from_soundcard(format));
+  copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(sndfile->audio_buffer_util,
+							      ags_audio_buffer_util_format_from_soundcard(sndfile->audio_buffer_util,
+													  sndfile->format),
+							      ags_audio_buffer_util_format_from_soundcard(sndfile->audio_buffer_util,
+													  format));
   
-  ags_audio_buffer_util_copy_buffer_to_buffer(sndfile->buffer, sndfile->info->channels, audio_channel,
+  ags_audio_buffer_util_copy_buffer_to_buffer(sndfile->audio_buffer_util,
+					      sndfile->buffer, sndfile->info->channels, audio_channel,
 					      sbuffer, saudio_channels, audio_channel,
 					      frame_count, copy_mode);
 
@@ -1564,14 +1585,18 @@ ags_sndfile_write(AgsSoundResource *sound_resource,
     }
 
     if(sndfile->format == AGS_SOUNDCARD_DOUBLE){
-      ags_audio_buffer_util_clear_double(sndfile->buffer, sndfile->info->channels,
+      ags_audio_buffer_util_clear_double(sndfile->audio_buffer_util,
+					 sndfile->buffer, sndfile->info->channels,
 					 frame_count);
     }else if(sndfile->format == AGS_SOUNDCARD_FLOAT){
-      ags_audio_buffer_util_clear_float(sndfile->buffer, sndfile->info->channels,
+      ags_audio_buffer_util_clear_float(sndfile->audio_buffer_util,
+					sndfile->buffer, sndfile->info->channels,
 					frame_count);
     }else{
-      ags_audio_buffer_util_clear_buffer(sndfile->buffer, sndfile->info->channels,
-					 frame_count, ags_audio_buffer_util_format_from_soundcard(sndfile->format));
+      ags_audio_buffer_util_clear_buffer(sndfile->audio_buffer_util,
+					 sndfile->buffer, sndfile->info->channels,
+					 frame_count, ags_audio_buffer_util_format_from_soundcard(sndfile->audio_buffer_util,
+												  sndfile->format));
     }
     
     sndfile->offset += frame_count;

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1386,7 +1386,7 @@ ags_ffplayer_update(AgsFFPlayer *ffplayer)
 
   AgsResizeAudio *resize_audio;
   AgsApplySF2Synth *apply_sf2_synth;
-  AgsOpenSf2Instrument *open_sf2_instrument;
+  AgsOpenSF2Instrument *open_sf2_instrument;
 
   AgsApplicationContext *application_context;
 

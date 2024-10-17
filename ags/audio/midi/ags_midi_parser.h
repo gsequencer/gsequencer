@@ -146,7 +146,7 @@ GType ags_midi_parser_get_type(void);
 gint16 ags_midi_parser_read_gint16(AgsMidiParser *midi_parser);
 gint32 ags_midi_parser_read_gint24(AgsMidiParser *midi_parser);
 gint32 ags_midi_parser_read_gint32(AgsMidiParser *midi_parser);
-glong ags_midi_parser_read_varlength(AgsMidiParser *midi_parser);
+gint ags_midi_parser_read_varlength(AgsMidiParser *midi_parser);
 
 gchar* ags_midi_parser_read_text(AgsMidiParser *midi_parser,
 				 gint length);

@@ -19,8 +19,6 @@
 
 #include <ags/audio/fx/ags_fx_analyse_channel_processor.h>
 
-#include <ags/audio/ags_audio_buffer_util.h>
-
 #include <ags/audio/fx/ags_fx_analyse_channel.h>
 #include <ags/audio/fx/ags_fx_analyse_recycling.h>
 
@@ -135,6 +133,7 @@ void
 ags_fx_analyse_channel_processor_real_run_inter(AgsRecall *recall)
 {
   AgsFxAnalyseChannel *fx_analyse_channel;
+  AgsFxAnalyseChannelProcessor *fx_analyse_channel_processor;
   
   guint buffer_size;
   gint sound_scope;
@@ -142,6 +141,8 @@ ags_fx_analyse_channel_processor_real_run_inter(AgsRecall *recall)
 
   GRecMutex *fx_analyse_channel_mutex;
 
+  fx_analyse_channel_processor = (AgsFxAnalyseChannelProcessor *) recall;
+  
   sound_scope = ags_recall_get_sound_scope(recall);
   
   fx_analyse_channel = NULL;
@@ -185,7 +186,8 @@ ags_fx_analyse_channel_processor_real_run_inter(AgsRecall *recall)
 
       g_rec_mutex_lock(port_mutex);
 
-      ags_audio_buffer_util_clear_buffer(magnitude->port_value.ags_port_double_ptr, 1,
+      ags_audio_buffer_util_clear_buffer(&(fx_analyse_channel_processor->audio_buffer_util),
+					 magnitude->port_value.ags_port_double_ptr, 1,
 					 buffer_size, AGS_AUDIO_BUFFER_UTIL_DOUBLE);
       
       g_rec_mutex_unlock(port_mutex);

@@ -116,7 +116,6 @@ struct _AgsMidiBuilderClass
   void (*append_change_pitch_bend)(AgsMidiBuilder *midi_builder,
 				   guint delta_time,
 				   guint channel,
-				   guint pitch,
 				   guint transmitter);
   void (*append_change_program)(AgsMidiBuilder *midi_builder,
 				guint delta_time,
@@ -253,7 +252,6 @@ void ags_midi_builder_append_change_parameter(AgsMidiBuilder *midi_builder,
 void ags_midi_builder_append_change_pitch_bend(AgsMidiBuilder *midi_builder,
 					       guint delta_time,
 					       guint channel,
-					       guint pitch,
 					       guint transmitter);
 void ags_midi_builder_append_change_program(AgsMidiBuilder *midi_builder,
 					    guint delta_time,

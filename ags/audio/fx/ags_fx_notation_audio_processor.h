@@ -47,7 +47,8 @@ typedef struct _AgsFxNotationAudioProcessorClass AgsFxNotationAudioProcessorClas
 
 typedef enum{
   AGS_FX_NOTATION_AUDIO_PROCESSOR_KEY_MODE_PLAY,
-  AGS_FX_NOTATION_AUDIO_PROCESSOR_KEY_MODE_RECORD,
+  AGS_FX_NOTATION_AUDIO_PROCESSOR_KEY_MODE_MIDI1_RECORD,
+  AGS_FX_NOTATION_AUDIO_PROCESSOR_KEY_MODE_MIDI2_RECORD,
   AGS_FX_NOTATION_AUDIO_PROCESSOR_KEY_MODE_FEED,
 }AgsFxNotationAudioProcessorKeyMode;
 
@@ -55,8 +56,6 @@ struct _AgsFxNotationAudioProcessor
 {
   AgsRecallAudioRun recall_audio_run;
 
-  AgsMidiUtil *midi_util;
-  
   gdouble delay_completion;
 
   gdouble delay_counter;
@@ -107,7 +106,8 @@ struct _AgsFxNotationAudioProcessorClass
 		       guint key_mode);
   
   void (*play)(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
-  void (*record)(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
+  void (*midi1_record)(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
+  void (*midi2_record)(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
   void (*feed)(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
 
   void (*counter_change)(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
@@ -129,9 +129,8 @@ void ags_fx_notation_audio_processor_key_pressure(AgsFxNotationAudioProcessor *f
 						  guint key_mode);
 
 void ags_fx_notation_audio_processor_play(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
-
-G_DEPRECATED
-void ags_fx_notation_audio_processor_record(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
+void ags_fx_notation_audio_processor_midi1_record(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
+void ags_fx_notation_audio_processor_midi2_record(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
 void ags_fx_notation_audio_processor_feed(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
 
 void ags_fx_notation_audio_processor_counter_change(AgsFxNotationAudioProcessor *fx_notation_audio_processor);

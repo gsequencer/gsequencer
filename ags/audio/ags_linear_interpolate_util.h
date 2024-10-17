@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,6 +32,16 @@ G_BEGIN_DECLS
 
 #define AGS_TYPE_LINEAR_INTERPOLATE_UTIL         (ags_linear_interpolate_util_get_type())
 #define AGS_LINEAR_INTERPOLATE_UTIL(ptr) ((AgsLinearInterpolateUtil *)(ptr))
+
+#define AGS_LINEAR_UTIL_INITIALIZER ((AgsLinearInterpolateUtil) {	\
+      .source = NULL,							\
+      .source_stride = 1,						\
+      .destination = NULL,						\
+      .destination_stride = 1,						\
+      .buffer_length = 0,						\
+      .format = AGS_SOUNDCARD_DEFAULT_FORMAT,				\
+      .samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE,			\
+      .factor = 0.0 })
 
 typedef struct _AgsLinearInterpolateUtil AgsLinearInterpolateUtil;
 
@@ -97,6 +107,7 @@ void ags_linear_interpolate_util_pitch_s64(AgsLinearInterpolateUtil *linear_inte
 void ags_linear_interpolate_util_pitch_float(AgsLinearInterpolateUtil *linear_interpolate_util);
 void ags_linear_interpolate_util_pitch_double(AgsLinearInterpolateUtil *linear_interpolate_util);
 void ags_linear_interpolate_util_pitch_complex(AgsLinearInterpolateUtil *linear_interpolate_util);
+
 void ags_linear_interpolate_util_pitch(AgsLinearInterpolateUtil *linear_interpolate_util);
 
 G_END_DECLS

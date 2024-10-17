@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -57,6 +57,23 @@ G_BEGIN_DECLS
 #define AGS_TYPE_NOISE_UTIL         (ags_noise_util_get_type())
 
 #define AGS_NOISE_UTIL_DEFAULT_FREQUENCY (440.0)
+
+#define AGS_NOISE_UTIL_INITIALIZER ((AgsNoiseUtil) {	\
+      .source = NULL,					\
+	.source_stride = 1,				\
+	.destination = NULL,				\
+	.destination_stride = 1,			\
+	.noise = NULL,					\
+	.buffer_length = 0,				\
+	.format = AGS_SOUNDCARD_DEFAULT_FORMAT,		\
+	.samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE,	\
+	.frequency = AGS_NOISE_UTIL_DEFAULT_FREQUENCY,	\
+	.mode = AGS_NOISE_UTIL_WHITE_NOISE,		\
+	.volume = 0.0,					\
+	.offset = 0,					\
+	.frame_count = 0,				\
+	.note_256th_mode = FALSE,			\
+	.offset_256th = 0 })
 
 #define AGS_NOISE_UTIL_RESET(noise, ptr_last_value) {			\
     guint j;								\
@@ -200,6 +217,7 @@ void ags_noise_util_compute_s64(AgsNoiseUtil *noise_util);
 void ags_noise_util_compute_float(AgsNoiseUtil *noise_util);
 void ags_noise_util_compute_double(AgsNoiseUtil *noise_util);
 void ags_noise_util_compute_complex(AgsNoiseUtil *noise_util);
+
 void ags_noise_util_compute(AgsNoiseUtil *noise_util);
 
 G_END_DECLS

@@ -35,6 +35,30 @@ G_BEGIN_DECLS
 
 #define AGS_PITCH_2X_ALIAS_UTIL_DEFAULT_MAX_BUFFER_SIZE (64 * 65536)
 
+#define AGS_PITCH_2X_ALIAS_UTIL_INITIALIZER ((AgsPitch2xAliasUtil) {	\
+      .source = NULL,							\
+      .source_stride = 1,						\
+      .destination = NULL,						\
+      .destination_stride = 1,						\
+      .alias_source_buffer = ags_stream_alloc(AGS_PITCH_2X_ALIAS_UTIL_DEFAULT_MAX_BUFFER_SIZE, AGS_SOUNDCARD_DEFAULT_FORMAT), \
+      .alias_source_max_buffer_length = AGS_PITCH_2X_ALIAS_UTIL_DEFAULT_MAX_BUFFER_SIZE, \
+      .alias_new_source_buffer = ags_stream_alloc(AGS_PITCH_2X_ALIAS_UTIL_DEFAULT_MAX_BUFFER_SIZE, AGS_SOUNDCARD_DEFAULT_FORMAT), \
+      .alias_new_source_max_buffer_length = AGS_PITCH_2X_ALIAS_UTIL_DEFAULT_MAX_BUFFER_SIZE, \
+      .buffer_length = 0,						\
+      .format = AGS_SOUNDCARD_DEFAULT_FORMAT,				\
+      .samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE,			\
+      .base_key = 0.0,							\
+      .tuning = 0.0,							\
+      .vibrato_enabled = FALSE,						\
+      .vibrato_gain = 1.0,						\
+      .vibrato_lfo_depth = 1.0,						\
+      .vibrato_lfo_freq = 8.172,					\
+      .vibrato_tuning = 0.0,						\
+      .frame_count = (AGS_SOUNDCARD_DEFAULT_SAMPLERATE / 8.172),	\
+      .offset = 0,							\
+      .note_256th_mode = FALSE,						\
+      .offset_256th = 0 })
+
 typedef struct _AgsPitch2xAliasUtil AgsPitch2xAliasUtil;
 
 struct _AgsPitch2xAliasUtil
@@ -139,12 +163,6 @@ gdouble ags_pitch_2x_alias_util_get_vibrato_tuning(AgsPitch2xAliasUtil *pitch_2x
 void ags_pitch_2x_alias_util_set_vibrato_tuning(AgsPitch2xAliasUtil *pitch_2x_alias_util,
 						gdouble vibrato_tuning);
 
-G_DEPRECATED_FOR(ags_pitch_2x_alias_util_get_offset)
-  guint ags_pitch_2x_alias_util_get_vibrato_lfo_offset(AgsPitch2xAliasUtil *pitch_2x_alias_util);
-G_DEPRECATED_FOR(ags_pitch_2x_alias_util_set_offset)
-  void ags_pitch_2x_alias_util_set_vibrato_lfo_offset(AgsPitch2xAliasUtil *pitch_2x_alias_util,
-						      guint vibrato_lfo_offset);
-
 guint ags_pitch_2x_alias_util_get_frame_count(AgsPitch2xAliasUtil *pitch_2x_alias_util);
 void ags_pitch_2x_alias_util_set_frame_count(AgsPitch2xAliasUtil *pitch_2x_alias_util,
 					     guint frame_count);
@@ -169,6 +187,7 @@ void ags_pitch_2x_alias_util_pitch_s64(AgsPitch2xAliasUtil *pitch_2x_alias_util)
 void ags_pitch_2x_alias_util_pitch_float(AgsPitch2xAliasUtil *pitch_2x_alias_util);
 void ags_pitch_2x_alias_util_pitch_double(AgsPitch2xAliasUtil *pitch_2x_alias_util);
 void ags_pitch_2x_alias_util_pitch_complex(AgsPitch2xAliasUtil *pitch_2x_alias_util);
+
 void ags_pitch_2x_alias_util_pitch(AgsPitch2xAliasUtil *pitch_2x_alias_util);
 
 G_END_DECLS

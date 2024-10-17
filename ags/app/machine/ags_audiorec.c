@@ -883,7 +883,8 @@ ags_audiorec_fast_export_run(void *ptr)
   AgsAudio *audio;
   AgsBuffer *buffer;
   AgsAudioFile *audio_file;
-
+  AgsAudioBufferUtil *audio_buffer_util;
+  
   AgsTimestamp *timestamp;
 
   struct _AgsAudiorecFastExport *fast_export;
@@ -925,6 +926,8 @@ ags_audiorec_fast_export_run(void *ptr)
   timestamp = ags_timestamp_new();
   timestamp->flags = AGS_TIMESTAMP_OFFSET;
   
+  audio_buffer_util = ags_audio_buffer_util_alloc();
+
   data = ags_stream_alloc(audio_channels * buffer_size,
 			  format);
   
@@ -936,8 +939,10 @@ ags_audiorec_fast_export_run(void *ptr)
     ags_timestamp_set_ags_offset(timestamp,
 				 default_offset * floor((gdouble) i / (gdouble) default_offset));
     
-    ags_audio_buffer_util_clear_buffer(data, audio_channels,
-				       buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
+    ags_audio_buffer_util_clear_buffer(audio_buffer_util,
+				       data, audio_channels,
+				       buffer_size, ags_audio_buffer_util_format_from_soundcard(audio_buffer_util,
+												format));
 
     current_buffer_size = buffer_size;
     
@@ -970,8 +975,11 @@ ags_audiorec_fast_export_run(void *ptr)
 		     "format", &source_format,
 		     NULL);
 	
-	copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
-							ags_audio_buffer_util_format_from_soundcard(source_format));
+	copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(audio_buffer_util,
+								    ags_audio_buffer_util_format_from_soundcard(audio_buffer_util,
+														format),
+								    ags_audio_buffer_util_format_from_soundcard(audio_buffer_util,
+														source_format));
 	
 	buffer_mutex = AGS_BUFFER_GET_OBJ_MUTEX(buffer);
 
@@ -979,7 +987,8 @@ ags_audiorec_fast_export_run(void *ptr)
 
 	g_rec_mutex_lock(buffer_mutex);
       
-	ags_audio_buffer_util_copy_buffer_to_buffer(data, audio_channels, destination_offset,
+	ags_audio_buffer_util_copy_buffer_to_buffer(audio_buffer_util,
+						    data, audio_channels, destination_offset,
 						    buffer->data, 1, source_offset,
 						    current_buffer_size, copy_mode);
 
@@ -994,6 +1003,8 @@ ags_audiorec_fast_export_run(void *ptr)
     
     i += current_buffer_size;
   }
+
+  ags_audio_buffer_util_free(audio_buffer_util);
   
   ags_audio_file_flush(audio_file);
   ags_audio_file_close(audio_file);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,6 +36,8 @@
 #endif
 
 #include <ags/libags.h>
+
+#include <ags/audio/ags_audio_buffer_util.h>
 
 G_BEGIN_DECLS
 
@@ -162,6 +164,8 @@ struct _AgsCoreAudioPort
   gint64 input_device;
   gint64 input_proc_id;
 #endif
+
+  AgsAudioBufferUtil *audio_buffer_util;
 };
 
 struct _AgsCoreAudioPortClass

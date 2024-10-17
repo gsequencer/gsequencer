@@ -130,14 +130,6 @@ void ags_common_pitch_util_set_vibrato_tuning(gpointer pitch_util,
 					      GType pitch_type,
 					      gdouble vibrato_tuning);
 
-G_DEPRECATED_FOR(ags_common_pitch_util_get_offset)
-guint ags_common_pitch_util_get_vibrato_lfo_offset(gpointer pitch_util,
-						   GType pitch_type);
-G_DEPRECATED_FOR(ags_common_pitch_util_set_offset)
-void ags_common_pitch_util_set_vibrato_lfo_offset(gpointer pitch_util,
-						  GType pitch_type,
-						  guint vibrato_lfo_offset);
-
 guint ags_common_pitch_util_get_frame_count(gpointer pitch_util,
 					    GType pitch_type);
 void ags_common_pitch_util_set_frame_count(gpointer pitch_util,

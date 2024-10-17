@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -74,31 +74,7 @@ ags_fm_synth_util_alloc()
   ptr = (AgsFMSynthUtil *) g_new(AgsFMSynthUtil,
 				 1);
 
-  ptr->source = NULL;
-  ptr->source_stride = 1;
-
-  ptr->buffer_length = 0;
-  ptr->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
-  ptr->samplerate = 0;
-  
-  ptr->synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_SIN;
-
-  ptr->frequency = AGS_FM_SYNTH_UTIL_DEFAULT_FREQUENCY;
-  ptr->phase = 0.0;
-  ptr->volume = 1.0;
-  
-  ptr->lfo_oscillator_mode = AGS_SYNTH_OSCILLATOR_SIN;
-
-  ptr->lfo_frequency = AGS_FM_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY;
-  ptr->lfo_depth = AGS_FM_SYNTH_UTIL_DEFAULT_LFO_DEPTH;
-  ptr->tuning = AGS_FM_SYNTH_UTIL_DEFAULT_TUNING;
-
-  ptr->frame_count = 0;
-  ptr->offset = 0;
-
-  ptr->note_256th_mode = TRUE;
-
-  ptr->offset_256th = 0;
+  ptr[0] = AGS_FM_SYNTH_UTIL_INITIALIZER;
 
   return(ptr);
 }
@@ -117,7 +93,9 @@ gpointer
 ags_fm_synth_util_copy(AgsFMSynthUtil *ptr)
 {
   AgsFMSynthUtil *new_ptr;
-  
+
+  g_return_val_if_fail(ptr != NULL, NULL);
+
   new_ptr = (AgsFMSynthUtil *) g_new(AgsFMSynthUtil,
 				     1);
   
@@ -161,6 +139,8 @@ ags_fm_synth_util_copy(AgsFMSynthUtil *ptr)
 void
 ags_fm_synth_util_free(AgsFMSynthUtil *ptr)
 {
+  g_return_if_fail(ptr != NULL);
+
   g_free(ptr->source);
   
   g_free(ptr);

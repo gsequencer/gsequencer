@@ -43,6 +43,8 @@ typedef struct _AgsFxEnvelopeAudioClass AgsFxEnvelopeAudioClass;
 struct _AgsFxEnvelopeAudio
 {
   AgsRecallAudio recall_audio;
+
+  AgsPort *lfo_enabled;
 };
 
 struct _AgsFxEnvelopeAudioClass

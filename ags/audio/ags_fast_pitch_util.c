@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -111,10 +111,7 @@ ags_fast_pitch_util_alloc()
   ptr->vibrato_lfo_freq = 8.172;
   ptr->vibrato_tuning = 0.0;
 
-  ptr->vibrato_lfo_frame_count = ptr->samplerate / ptr->vibrato_lfo_freq;
-  ptr->vibrato_lfo_offset = 0;
-
-  ptr->frame_count = 0;
+  ptr->frame_count = ptr->samplerate / ptr->vibrato_lfo_freq;
   ptr->offset = 0;
 
   ptr->note_256th_mode = TRUE;
@@ -138,6 +135,8 @@ gpointer
 ags_fast_pitch_util_copy(AgsFastPitchUtil *ptr)
 {
   AgsFastPitchUtil *new_ptr;
+
+  g_return_val_if_fail(ptr != NULL, NULL);
   
   new_ptr = (AgsFastPitchUtil *) g_new(AgsFastPitchUtil,
 				       1);
@@ -182,9 +181,6 @@ ags_fast_pitch_util_copy(AgsFastPitchUtil *ptr)
   new_ptr->vibrato_lfo_freq = ptr->vibrato_lfo_freq;
   new_ptr->vibrato_tuning = ptr->vibrato_tuning;
 
-  new_ptr->vibrato_lfo_frame_count = ptr->vibrato_lfo_frame_count;
-  new_ptr->vibrato_lfo_offset = ptr->vibrato_lfo_offset;
-
   new_ptr->frame_count = ptr->frame_count;
   new_ptr->offset = ptr->offset;
 
@@ -206,9 +202,7 @@ ags_fast_pitch_util_copy(AgsFastPitchUtil *ptr)
 void
 ags_fast_pitch_util_free(AgsFastPitchUtil *ptr)
 {
-  if(ptr == NULL){
-    return;
-  }
+  g_return_if_fail(ptr != NULL);
   
   g_free(ptr->destination);
 
@@ -803,46 +797,6 @@ ags_fast_pitch_util_set_vibrato_tuning(AgsFastPitchUtil *fast_pitch_util,
   }
 
   fast_pitch_util->vibrato_tuning = vibrato_tuning;
-}
-
-/**
- * ags_fast_pitch_util_get_vibrato_lfo_offset:
- * @fast_pitch_util: the #AgsFastPitchUtil-struct
- * 
- * Get vibrato lfo_offset of @fast_pitch_util.
- * 
- * Returns: the vibrato lfo_offset
- * 
- * Since: 5.2.4
- */
-guint
-ags_fast_pitch_util_get_vibrato_lfo_offset(AgsFastPitchUtil *fast_pitch_util)
-{
-  if(fast_pitch_util == NULL){
-    return(0);
-  }
-
-  return(fast_pitch_util->vibrato_lfo_offset);
-}
-
-/**
- * ags_fast_pitch_util_set_vibrato_lfo_offset:
- * @fast_pitch_util: the #AgsFastPitchUtil-struct
- * @vibrato_lfo_offset: the vibrato lfo_offset
- *
- * Set @vibrato_lfo_offset of @fast_pitch_util.
- *
- * Since: 5.2.4
- */
-void
-ags_fast_pitch_util_set_vibrato_lfo_offset(AgsFastPitchUtil *fast_pitch_util,
-					   guint vibrato_lfo_offset)
-{
-  if(fast_pitch_util == NULL){
-    return;
-  }
-
-  fast_pitch_util->vibrato_lfo_offset = vibrato_lfo_offset;
 }
 
 /**

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -37,6 +37,8 @@ G_BEGIN_DECLS
 #define AGS_JACK_MIDIIN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_JACK_MIDIIN, AgsJackMidiinClass))
 
 #define AGS_JACK_MIDIIN_GET_OBJ_MUTEX(obj) (&(((AgsJackMidiin *) obj)->obj_mutex))
+
+#define AGS_JACK_MIDIIN_DEFAULT_APP_BUFFER_SIZE (4)
 
 #define AGS_JACK_MIDIIN_DEFAULT_BUFFER_SIZE (256)
 
@@ -126,8 +128,10 @@ struct _AgsJackMidiin
   AgsJackMidiinAppBufferMode app_buffer_mode;
 
   GRecMutex **app_buffer_mutex;
+
   char **app_buffer;
-  guint app_buffer_size[4];
+  guint allocated_app_buffer_size[AGS_JACK_MIDIIN_DEFAULT_APP_BUFFER_SIZE];
+  guint app_buffer_size[AGS_JACK_MIDIIN_DEFAULT_APP_BUFFER_SIZE];
 
   double bpm; // beats per minute
 
@@ -154,6 +158,8 @@ struct _AgsJackMidiin
 
   GMutex callback_finish_mutex;
   GCond callback_finish_cond;    
+
+  AgsSequencerMidiVersion midi_version;
 };
 
 struct _AgsJackMidiinClass

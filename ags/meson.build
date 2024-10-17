@@ -228,7 +228,7 @@ libags = library('ags',
   c_args: compiler_flags,
   include_directories: [includes],
   dependencies: libags_dependencies,
-  version: '6.0.0',
+  version: '7.0.0',
   install: true,
 )
 
@@ -262,7 +262,7 @@ libags_thread = library('ags_thread',
   link_with: [
     libags,
   ],
-  version: '6.0.0',
+  version: '7.0.0',
   install: true,
 )
 
@@ -306,7 +306,7 @@ libags_server = library('libags_server',
     libags,
     libags_thread,
   ],
-  version: '6.0.0',
+  version: '7.0.0',
   install: true,
 )
 
@@ -415,6 +415,7 @@ libags_audio_sources = files(
   'audio/ags_time_stretch_util.c',
   'audio/ags_track.c',
   'audio/ags_tremolo_util.c',
+  'audio/ags_vector_256_manager.c',
   'audio/ags_volume_util.c',
   'audio/ags_wah_wah_util.c',
   'audio/ags_wave.c',
@@ -766,7 +767,7 @@ libags_audio = library('ags_audio',
     libags_thread,
     libags_server,
   ],
-  version: '6.0.0',
+  version: '7.0.0',
   install: true,
 )
 
@@ -846,7 +847,7 @@ if get_option('vst3')
     cpp_args: cxx_compiler_flags,
     dependencies: libags_vst_dependencies,
     include_directories: [includes],
-    version: '6.0.0',
+    version: '7.0.0',
     install: true,
   )
 
@@ -889,7 +890,7 @@ libags_gui = library('ags_gui',
   c_args: compiler_flags,
   include_directories: [includes],
   dependencies: libags_gui_dependencies,
-  version: '6.0.0',
+  version: '7.0.0',
   install: true,
 )
 
@@ -1563,6 +1564,7 @@ libags_audio_audio_headers = [
   'audio/ags_sfz_synth_generator.h',
   'audio/ags_sfz_synth_util.h',
   'audio/ags_sound_enums.h',
+  'audio/ags_sound_types.h',
   'audio/ags_sound_provider.h',
   'audio/ags_soundcard_util.h',
   'audio/ags_synth_enums.h',
@@ -1571,6 +1573,7 @@ libags_audio_audio_headers = [
   'audio/ags_time_stretch_util.h',
   'audio/ags_track.h',
   'audio/ags_tremolo_util.h',
+  'audio/ags_vector_256_manager.h',
   'audio/ags_volume_util.h',
   'audio/ags_wah_wah_util.h',
   'audio/ags_wave.h',

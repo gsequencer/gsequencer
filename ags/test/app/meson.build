@@ -15,7 +15,6 @@ interactive_test_dependencies = [
   instpatch_dependency,
   json_glib_dependency,
   dependency('cairo-xlib'),
-  dependency('xtst'),
   compiler.find_library('m', required: true),
 ]
 
@@ -34,7 +33,7 @@ libgsequencer_test_sources = [
 libgsequencer_test = static_library(
   'libgsequencer_test',
   libgsequencer_test_sources,
-  c_args: [compiler_flags, srcdir_def],
+  c_args: [compiler_test_flags, srcdir_def],
   include_directories: [includes],
   dependencies: [interactive_test_dependencies],
 )
@@ -85,7 +84,7 @@ foreach interactive_test : interactive_tests
   interactive_test_bin = executable(
     interactive_test,
     source,
-    c_args: [compiler_flags, srcdir_def],
+    c_args: [compiler_test_flags, srcdir_def],
     include_directories: [includes],
     dependencies: [interactive_test_dependencies],
     link_with: [

@@ -102,7 +102,7 @@ ags_peak_util_test_alloc()
   CU_ASSERT(peak_util->source_stride == 1);
   
   CU_ASSERT(peak_util->buffer_length == 0);
-  CU_ASSERT(peak_util->format == AGS_PEAK_UTIL_DEFAULT_FORMAT);
+  CU_ASSERT(peak_util->format == AGS_SOUNDCARD_DEFAULT_FORMAT);
 
   CU_ASSERT(peak_util->peak == 0.0);
 }

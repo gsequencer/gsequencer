@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -111,42 +111,7 @@ ags_fluid_iir_filter_util_alloc()
   ptr = (AgsFluidIIRFilterUtil *) g_new(AgsFluidIIRFilterUtil,
 					1);
 
-  ptr->source = NULL;
-  ptr->source_stride = 1;
-
-  ptr->destination = NULL;
-  ptr->destination_stride = 1;
-
-  ptr->buffer_length = 0;
-  ptr->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
-  ptr->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-
-  ptr->filter_type = 0;
-
-  ptr->flags = 0;
-  
-  ptr->b02 = 0.0;
-  ptr->b1 = 0.0;
-  ptr->a1 = 0.0;
-  ptr->a2 = 0.0;
-  ptr->b02_incr = 0.0;
-  ptr->b1_incr = 0.0;
-  ptr->a1_incr = 0.0;
-  ptr->a2_incr = 0.0;
-
-  ptr->filter_coeff_incr_count = 0;
-  ptr->compensate_incr = 0;
-
-  ptr->hist1 = 0.0;
-  ptr->hist2 = 0.0;
-
-  ptr->filter_startup = TRUE;
-
-  ptr->fres = 0.0;
-  ptr->last_fres = 0.0;
-  
-  ptr->q_lin = 0.0;
-  ptr->filter_gain = 1.0;
+  ptr[0] = AGS_FLUID_IIR_FILTER_UTIL_INITIALIZER;
   
   return(ptr);
 }
@@ -165,6 +130,8 @@ gpointer
 ags_fluid_iir_filter_util_copy(AgsFluidIIRFilterUtil *ptr)
 {
   AgsFluidIIRFilterUtil *new_ptr;
+
+  g_return_val_if_fail(ptr != NULL, NULL);
   
   new_ptr = (AgsFluidIIRFilterUtil *) g_new(AgsFluidIIRFilterUtil,
 					    1);
@@ -220,6 +187,8 @@ ags_fluid_iir_filter_util_copy(AgsFluidIIRFilterUtil *ptr)
 void
 ags_fluid_iir_filter_util_free(AgsFluidIIRFilterUtil *ptr)
 {
+  g_return_if_fail(ptr != NULL);
+
   g_free(ptr->destination);
 
   if(ptr->destination != ptr->source){

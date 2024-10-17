@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,6 +34,34 @@ G_BEGIN_DECLS
 #define AGS_FAST_PITCH_UTIL(ptr) ((AgsFastPitchUtil *)(ptr))
 
 #define AGS_FAST_PITCH_UTIL_DEFAULT_MAX_BUFFER_SIZE (65536)
+
+#define AGS_FAST_PITCH_UTIL_INITIALIZER ((AgsFastPitchUtil) {		\
+      .source = NULL,							\
+      .source_stride = 1,						\
+      .destination = NULL,						\
+      .destination_stride = 1,						\
+      .mix_buffer = ags_stream_alloc(AGS_FAST_PITCH_UTIL_DEFAULT_MAX_BUFFER_SIZE, AGS_SOUNDCARD_DEFAULT_FORMAT), \
+      .mix_buffer_max_buffer_length = AGS_FAST_PITCH_UTIL_DEFAULT_MAX_BUFFER_SIZE, \
+      .im_mix_buffer = ags_stream_alloc(AGS_FAST_PITCH_UTIL_DEFAULT_MAX_BUFFER_SIZE, AGS_SOUNDCARD_DEFAULT_FORMAT), \
+      .im_mix_buffer_max_buffer_length = AGS_FAST_PITCH_UTIL_DEFAULT_MAX_BUFFER_SIZE, \
+      .low_mix_buffer = ags_stream_alloc(AGS_FAST_PITCH_UTIL_DEFAULT_MAX_BUFFER_SIZE, AGS_SOUNDCARD_DEFAULT_FORMAT), \
+      .low_mix_buffer_max_buffer_length = AGS_FAST_PITCH_UTIL_DEFAULT_MAX_BUFFER_SIZE, \
+      .new_mix_buffer = ags_stream_alloc(AGS_FAST_PITCH_UTIL_DEFAULT_MAX_BUFFER_SIZE, AGS_SOUNDCARD_DEFAULT_FORMAT), \
+      .new_mix_buffer_max_buffer_length = AGS_FAST_PITCH_UTIL_DEFAULT_MAX_BUFFER_SIZE, \
+      .buffer_length = 0,						\
+      .format = AGS_SOUNDCARD_DEFAULT_FORMAT,				\
+      .samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE,			\
+      .base_key = 0.0,							\
+      .tuning = 0.0,							\
+      .vibrato_enabled = FALSE,						\
+      .vibrato_gain = 1.0,						\
+      .vibrato_lfo_depth = 1.0,						\
+      .vibrato_lfo_freq = 8.172,					\
+      .vibrato_tuning = 0.0,						\
+      .frame_count = (AGS_SOUNDCARD_DEFAULT_SAMPLERATE / 8.172),	\
+      .offset = 0,							\
+      .note_256th_mode = FALSE,						\
+      .offset_256th = 0 })
 
 typedef struct _AgsFastPitchUtil AgsFastPitchUtil;
 
@@ -71,9 +99,6 @@ struct _AgsFastPitchUtil
   gdouble vibrato_lfo_freq;
   gdouble vibrato_tuning;
   
-  guint vibrato_lfo_frame_count;
-  guint vibrato_lfo_offset;
-
   guint frame_count;
   guint offset;
   
@@ -145,12 +170,6 @@ gdouble ags_fast_pitch_util_get_vibrato_tuning(AgsFastPitchUtil *fast_pitch_util
 void ags_fast_pitch_util_set_vibrato_tuning(AgsFastPitchUtil *fast_pitch_util,
 					    gdouble vibrato_tuning);
 
-G_DEPRECATED_FOR(ags_fast_pitch_util_get_offset)
-guint ags_fast_pitch_util_get_vibrato_lfo_offset(AgsFastPitchUtil *fast_pitch_util);
-G_DEPRECATED_FOR(ags_fast_pitch_util_set_offset)
-void ags_fast_pitch_util_set_vibrato_lfo_offset(AgsFastPitchUtil *fast_pitch_util,
-						guint vibrato_lfo_offset);
-
 guint ags_fast_pitch_util_get_frame_count(AgsFastPitchUtil *fast_pitch_util);
 void ags_fast_pitch_util_set_frame_count(AgsFastPitchUtil *fast_pitch_util,
 					 guint frame_count);
@@ -175,6 +194,7 @@ void ags_fast_pitch_util_pitch_s64(AgsFastPitchUtil *fast_pitch_util);
 void ags_fast_pitch_util_pitch_float(AgsFastPitchUtil *fast_pitch_util);
 void ags_fast_pitch_util_pitch_double(AgsFastPitchUtil *fast_pitch_util);
 void ags_fast_pitch_util_pitch_complex(AgsFastPitchUtil *fast_pitch_util);
+
 void ags_fast_pitch_util_pitch(AgsFastPitchUtil *fast_pitch_util);
 
 G_END_DECLS

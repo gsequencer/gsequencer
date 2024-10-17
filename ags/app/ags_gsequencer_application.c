@@ -683,9 +683,6 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
 		   G_CALLBACK(ags_gsequencer_edit_tempo_callback), gsequencer_app);
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
 			  G_ACTION(edit_tempo_action));
-
-  /* initial refresh window menu */
-  ags_gsequencer_application_refresh_window_menu(gsequencer_app);
 }
 
 void
@@ -850,6 +847,9 @@ ags_gsequencer_application_startup(GApplication *app)
 			-1,
 			i18n("Help"),
 			G_MENU_MODEL(gsequencer_app->help_menu));
+
+  /* initial refresh window menu */
+  ags_gsequencer_application_refresh_window_menu(gsequencer_app);
 }
 
 void
@@ -997,7 +997,7 @@ ags_gsequencer_application_open(GApplication *application,
       ags_connectable_connect(AGS_CONNECTABLE(composite_editor));
 
       if(files != NULL){
-	AGS_WINDOW(window)->filename = g_file_get_path(files[0]);
+	AGS_WINDOW(window)->queued_filename = g_file_get_path(files[0]);
       }
     }
   }
@@ -1023,16 +1023,17 @@ ags_gsequencer_application_refresh_window_menu(AgsGSequencerApplication *app)
 #if defined(AGS_OSX_DMG_ENV)
   /* application context */
   application_context = ags_application_context_get_instance();
-  
-  g_menu_remove_all(app->window_menu);
 
+  g_menu_remove_all(app->window_menu);
+  
   item = g_menu_item_new(i18n("application window"),
 			 "app.present_app_window");
   g_menu_insert_item(app->window_menu,
 		     -1,
 		     item);
 
-  if(gtk_widget_is_visible(ags_ui_provider_get_preferences(AGS_UI_PROVIDER(application_context)))){
+  if(ags_ui_provider_get_preferences(AGS_UI_PROVIDER(application_context)) != NULL &&
+     gtk_widget_is_visible(ags_ui_provider_get_preferences(AGS_UI_PROVIDER(application_context)))){
     item = g_menu_item_new(i18n("preferences"),
 			   "app.present_preferences_window");
     g_menu_insert_item(app->window_menu,
@@ -1040,7 +1041,8 @@ ags_gsequencer_application_refresh_window_menu(AgsGSequencerApplication *app)
 		       item);
   }
 
-  if(gtk_widget_is_visible(ags_ui_provider_get_meta_data_window(AGS_UI_PROVIDER(application_context)))){
+  if(ags_ui_provider_get_meta_data_window(AGS_UI_PROVIDER(application_context)) != NULL &&
+     gtk_widget_is_visible(ags_ui_provider_get_meta_data_window(AGS_UI_PROVIDER(application_context)))){
     item = g_menu_item_new(i18n("meta-data"),
 			   "app.present_meta_data_window");
     g_menu_insert_item(app->window_menu,
@@ -1048,7 +1050,8 @@ ags_gsequencer_application_refresh_window_menu(AgsGSequencerApplication *app)
 		       item);
   }
   
-  if(gtk_widget_is_visible(ags_ui_provider_get_export_window(AGS_UI_PROVIDER(application_context)))){
+  if(ags_ui_provider_get_export_window(AGS_UI_PROVIDER(application_context)) != NULL &&
+     gtk_widget_is_visible(ags_ui_provider_get_export_window(AGS_UI_PROVIDER(application_context)))){
     item = g_menu_item_new(i18n("audio export"),
 			   "app.present_export_window");
     g_menu_insert_item(app->window_menu,
@@ -1056,7 +1059,8 @@ ags_gsequencer_application_refresh_window_menu(AgsGSequencerApplication *app)
 		       item);
   }
   
-  if(gtk_widget_is_visible(ags_ui_provider_get_midi_import_wizard(AGS_UI_PROVIDER(application_context)))){
+  if(ags_ui_provider_get_midi_import_wizard(AGS_UI_PROVIDER(application_context)) != NULL &&
+     gtk_widget_is_visible(ags_ui_provider_get_midi_import_wizard(AGS_UI_PROVIDER(application_context)))){
     item = g_menu_item_new(i18n("SMF import"),
 			   "app.present_smf_import_window");
     g_menu_insert_item(app->window_menu,
@@ -1064,7 +1068,8 @@ ags_gsequencer_application_refresh_window_menu(AgsGSequencerApplication *app)
 		       item);
   }
   
-  if(gtk_widget_is_visible(ags_ui_provider_get_midi_export_wizard(AGS_UI_PROVIDER(application_context)))){
+  if(ags_ui_provider_get_midi_export_wizard(AGS_UI_PROVIDER(application_context)) != NULL &&
+     gtk_widget_is_visible(ags_ui_provider_get_midi_export_wizard(AGS_UI_PROVIDER(application_context)))){
     item = g_menu_item_new(i18n("SMF export"),
 			   "app.present_smf_export_window");
     g_menu_insert_item(app->window_menu,
@@ -1072,7 +1077,8 @@ ags_gsequencer_application_refresh_window_menu(AgsGSequencerApplication *app)
 		       item);
   }
   
-  if(gtk_widget_is_visible(ags_ui_provider_get_online_help_window(AGS_UI_PROVIDER(application_context)))){
+  if(ags_ui_provider_get_online_help_window(AGS_UI_PROVIDER(application_context)) != NULL &&
+     gtk_widget_is_visible(ags_ui_provider_get_online_help_window(AGS_UI_PROVIDER(application_context)))){
     item = g_menu_item_new(i18n("help"),
 			   "app.present_help_window");
     g_menu_insert_item(app->window_menu,

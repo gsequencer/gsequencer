@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,11 +25,13 @@
 
 #include <ags/ags_api_config.h>
 
-#ifdef AGS_WITH_JACK
+#if defined(AGS_WITH_JACK)
 #include <jack/jack.h>
 #endif
 
 #include <ags/libags.h>
+
+#include <ags/audio/ags_audio_buffer_util.h>
 
 G_BEGIN_DECLS
 
@@ -82,6 +84,8 @@ struct _AgsJackClient
   GList *port;
   
   volatile guint queued;
+
+  AgsAudioBufferUtil *audio_buffer_util;
 };
 
 struct _AgsJackClientClass

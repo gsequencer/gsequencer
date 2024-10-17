@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,7 +20,6 @@
 #include <ags/audio/file/ags_ipatch_sample.h>
 
 #include <ags/audio/ags_audio_signal.h>
-#include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/file/ags_sound_resource.h>
 
@@ -305,6 +304,8 @@ ags_ipatch_sample_init(AgsIpatchSample *ipatch_sample)
   ipatch_sample->length = 0;
 
   ipatch_sample->sample = NULL;
+
+  ipatch_sample->audio_buffer_util = ags_audio_buffer_util_alloc();
 }
 
 void
@@ -480,6 +481,14 @@ ags_ipatch_sample_finalize(GObject *gobject)
 
     ipatch_sample->sample = NULL;
   }
+
+  ags_audio_buffer_util_set_source(ipatch_sample->audio_buffer_util,
+				   NULL);
+      
+  ags_audio_buffer_util_set_destination(ipatch_sample->audio_buffer_util,
+					NULL);
+
+  ags_audio_buffer_util_free(ipatch_sample->audio_buffer_util);
   
   /* call parent */  
   G_OBJECT_CLASS(ags_ipatch_sample_parent_class)->finalize(gobject);
@@ -873,9 +882,12 @@ ags_ipatch_sample_read(AgsSoundResource *sound_resource,
 
   g_rec_mutex_lock(ipatch_sample_mutex);
 
-  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
-						  ags_audio_buffer_util_format_from_soundcard(ipatch_sample->format));
-
+  copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(ipatch_sample->audio_buffer_util,
+							      ags_audio_buffer_util_format_from_soundcard(ipatch_sample->audio_buffer_util,
+													  format),
+							      ags_audio_buffer_util_format_from_soundcard(ipatch_sample->audio_buffer_util,
+													  ipatch_sample->format));
+  
   ags_sound_resource_info(sound_resource,
 			  &total_frame_count,
 			  NULL, NULL);
@@ -971,7 +983,8 @@ ags_ipatch_sample_read(AgsSoundResource *sound_resource,
     g_error_free(error);
   }
   
-  ags_audio_buffer_util_copy_buffer_to_buffer(dbuffer, daudio_channels, 0,
+  ags_audio_buffer_util_copy_buffer_to_buffer(ipatch_sample->audio_buffer_util,
+					      dbuffer, daudio_channels, 0,
 					      ipatch_sample->buffer, 1, 0,
 					      frame_count, copy_mode);
 
@@ -1003,10 +1016,14 @@ ags_ipatch_sample_write(AgsSoundResource *sound_resource,
 
   g_rec_mutex_lock(ipatch_sample_mutex);
 
-  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(ipatch_sample->format),
-						  ags_audio_buffer_util_format_from_soundcard(format));
+  copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(ipatch_sample->audio_buffer_util,
+							      ags_audio_buffer_util_format_from_soundcard(ipatch_sample->audio_buffer_util,
+													  ipatch_sample->format),
+							      ags_audio_buffer_util_format_from_soundcard(ipatch_sample->audio_buffer_util,
+													  format));
 
-  ags_audio_buffer_util_copy_buffer_to_buffer(ipatch_sample->buffer, 1, audio_channel,
+  ags_audio_buffer_util_copy_buffer_to_buffer(ipatch_sample->audio_buffer_util,
+					      ipatch_sample->buffer, 1, audio_channel,
 					      sbuffer, saudio_channels, 0,
 					      frame_count, copy_mode);
 

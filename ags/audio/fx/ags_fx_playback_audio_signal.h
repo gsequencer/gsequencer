@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,8 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_audio_buffer_util.h>
+#include <ags/audio/ags_resample_util.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recall_audio_signal.h>
 
@@ -45,6 +47,9 @@ struct _AgsFxPlaybackAudioSignal
   AgsRecallAudioSignal recall_audio_signal;
 
   gboolean *sub_block_processed;
+
+  AgsAudioBufferUtil audio_buffer_util;
+  AgsResampleUtil resample_util;
 };
 
 struct _AgsFxPlaybackAudioSignalClass

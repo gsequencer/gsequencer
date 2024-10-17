@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,8 +20,6 @@
 #include <ags/audio/fx/ags_fx_volume_audio_signal.h>
 
 #include <ags/audio/ags_port.h>
-#include <ags/audio/ags_audio_buffer_util.h>
-#include <ags/audio/ags_volume_util.h>
 
 #include <ags/audio/fx/ags_fx_volume_audio.h>
 #include <ags/audio/fx/ags_fx_volume_channel.h>
@@ -277,8 +275,10 @@ ags_fx_volume_audio_signal_real_run_inter(AgsRecall *recall)
     if(!muted){
       ags_volume_util_compute(&(fx_volume_audio_signal->volume_util));
     }else{
-      ags_audio_buffer_util_clear_buffer(source->stream_current->data, 1,
-					 buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
+      ags_audio_buffer_util_clear_buffer(&(fx_volume_audio_signal->audio_buffer_util),
+					 source->stream_current->data, 1,
+					 buffer_size, ags_audio_buffer_util_format_from_soundcard(&(fx_volume_audio_signal->audio_buffer_util),
+												  format));
     }
     
     g_rec_mutex_unlock(stream_mutex);

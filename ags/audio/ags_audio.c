@@ -334,6 +334,7 @@ enum{
   PROP_AUDIO_END_MAPPING,
   PROP_MIDI_START_MAPPING,
   PROP_MIDI_END_MAPPING,
+  PROP_MIDI_GROUP,
   PROP_MIDI_CHANNEL,
   PROP_NUMERATOR,
   PROP_DENOMINATOR,
@@ -851,13 +852,13 @@ ags_audio_class_init(AgsAudioClass *audio)
   /**
    * AgsAudio:midi-start-mapping:
    *
-   * The midi start mapping.
+   * The MIDI start mapping.
    * 
    * Since: 3.0.0
    */
   param_spec =  g_param_spec_uint("midi-start-mapping",
-				  i18n_pspec("midi start mapping range"),
-				  i18n_pspec("The midi mapping range's start"),
+				  i18n_pspec("MIDI start mapping range"),
+				  i18n_pspec("The MIDI mapping range's start"),
 				  0,
 				  G_MAXUINT32,
 				  0,
@@ -869,13 +870,13 @@ ags_audio_class_init(AgsAudioClass *audio)
   /**
    * AgsAudio:midi-end-mapping:
    *
-   * The midi end mapping.
+   * The MIDI end mapping.
    * 
    * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("midi-end-mapping",
-				 i18n_pspec("midi end mapping range"),
-				 i18n_pspec("The midi mapping range's start"),
+				 i18n_pspec("MIDI end mapping range"),
+				 i18n_pspec("The MIDI mapping range's start"),
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -885,15 +886,33 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  param_spec);
 
   /**
+   * AgsAudio:midi-group:
+   *
+   * The MIDI group.
+   * 
+   * Since: 7.0.0
+   */
+  param_spec = g_param_spec_uint("midi-group",
+				 i18n_pspec("MIDI group"),
+				 i18n_pspec("The MIDI group"),
+				 0,
+				 16,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MIDI_GROUP,
+				  param_spec);
+
+  /**
    * AgsAudio:midi-channel:
    *
-   * The midi channel.
+   * The MIDI channel.
    * 
    * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("midi-channel",
-				 i18n_pspec("midi channel"),
-				 i18n_pspec("The midi channel"),
+				 i18n_pspec("MIDI channel"),
+				 i18n_pspec("The MIDI channel"),
 				 0,
 				 16,
 				 0,
@@ -901,7 +920,7 @@ ags_audio_class_init(AgsAudioClass *audio)
   g_object_class_install_property(gobject,
 				  PROP_MIDI_CHANNEL,
 				  param_spec);
-
+  
   /**
    * AgsAudio:numerator:
    *
@@ -1306,7 +1325,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    */
   param_spec = g_param_spec_pointer("midi",
 				    i18n_pspec("containing midi"),
-				    i18n_pspec("The midi it contains"),
+				    i18n_pspec("The MIDI it contains"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_MIDI,
@@ -1320,8 +1339,8 @@ ags_audio_class_init(AgsAudioClass *audio)
    * Since: 3.0.0
    */
   param_spec = g_param_spec_object("output-midi-file",
-				   i18n_pspec("assigned output midi file"),
-				   i18n_pspec("The output midi file it is assigned with"),
+				   i18n_pspec("assigned output MIDI file"),
+				   i18n_pspec("The output MIDI file it is assigned with"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -1336,8 +1355,8 @@ ags_audio_class_init(AgsAudioClass *audio)
    * Since: 3.0.0
    */
   param_spec = g_param_spec_object("input-midi-file",
-				   i18n_pspec("assigned input midi file"),
-				   i18n_pspec("The input midi file it is assigned with"),
+				   i18n_pspec("assigned input MIDI file"),
+				   i18n_pspec("The input MIDI file it is assigned with"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -1805,12 +1824,14 @@ ags_audio_init(AgsAudio *audio)
   audio->input_pads = 0;
   audio->input_lines = 0;
   
-  /* midi mapping */
+  /* MIDI mapping */
   audio->audio_start_mapping = 0;
   audio->audio_end_mapping = 0;
 
   audio->midi_start_mapping = 0;
   audio->midi_end_mapping = 0;
+
+  audio->midi_group = 0;
 
   audio->midi_channel = 0;
 
@@ -1872,7 +1893,7 @@ ags_audio_init(AgsAudio *audio)
   audio->output_audio_file = NULL;
   audio->input_audio_file = NULL;
 
-  /* midi */
+  /* MIDI */
   audio->midi = NULL;
 
   audio->output_midi_file = NULL;
@@ -3456,7 +3477,7 @@ ags_audio_dispose(GObject *gobject)
     g_object_unref(tmp);
   }
 
-  /* midi */
+  /* MIDI */
   if(audio->midi != NULL){
     list =
       start_list = audio->midi;
@@ -3475,7 +3496,7 @@ ags_audio_dispose(GObject *gobject)
 		     g_object_unref);
   }
 
-  /* output midi file */
+  /* output MIDI file */
   if(audio->output_midi_file != NULL){
     gpointer tmp;
 
@@ -3486,7 +3507,7 @@ ags_audio_dispose(GObject *gobject)
     g_object_unref(tmp);
   }
   
-  /* input midi file */
+  /* input MIDI file */
   if(audio->input_midi_file != NULL){
     gpointer tmp;
 
@@ -3846,7 +3867,7 @@ ags_audio_finalize(GObject *gobject)
     g_object_unref(tmp);
   }
 
-  /* midi */
+  /* MIDI */
   if(audio->midi != NULL){
     list =
       start_list = audio->midi;
@@ -3865,7 +3886,7 @@ ags_audio_finalize(GObject *gobject)
 		     g_object_unref);
   }
 
-  /* output midi file */
+  /* output MIDI file */
   if(audio->output_midi_file != NULL){
     gpointer tmp;
 
@@ -3876,7 +3897,7 @@ ags_audio_finalize(GObject *gobject)
     g_object_unref(tmp);
   }
   
-  /* input midi file */
+  /* input MIDI file */
   if(audio->input_midi_file != NULL){
     gpointer tmp;
 
@@ -5303,7 +5324,7 @@ ags_audio_set_ability_flags(AgsAudio *audio, AgsSoundAbilityFlags ability_flags)
 				    TRUE, TRUE);
     }
 
-    /* midi ability */
+    /* MIDI ability */
     if((AGS_SOUND_ABILITY_MIDI & (ability_flags)) != 0 &&
        (AGS_SOUND_ABILITY_MIDI & (audio_ability_flags)) == 0){
       AgsAudioThread *audio_thread;
@@ -5497,7 +5518,7 @@ ags_audio_unset_ability_flags(AgsAudio *audio, AgsSoundAbilityFlags ability_flag
 					 AGS_SOUND_SCOPE_WAVE);
   }
 
-  /* midi ability */
+  /* MIDI ability */
   if((AGS_SOUND_ABILITY_MIDI & (ability_flags)) == 0 &&
      (AGS_SOUND_ABILITY_MIDI & (audio_ability_flags)) != 0){
     AgsAudioThread *audio_thread;
@@ -9704,9 +9725,9 @@ ags_audio_set_audio_start_mapping(AgsAudio *audio, guint audio_start_mapping)
  * ags_audio_get_midi_start_mapping:
  * @audio: the #AgsAudio
  *
- * Gets midi start mapping.
+ * Gets MIDI start mapping.
  * 
- * Returns: the midi start mapping
+ * Returns: the MIDI start mapping
  * 
  * Since: 3.1.0
  */
@@ -9729,9 +9750,9 @@ ags_audio_get_midi_start_mapping(AgsAudio *audio)
 /**
  * ags_audio_set_midi_start_mapping:
  * @audio: the #AgsAudio
- * @midi_start_mapping: the midi start mapping
+ * @midi_start_mapping: the MIDI start mapping
  *
- * Sets midi start mapping.
+ * Sets MIDI start mapping.
  * 
  * Since: 3.1.0
  */
@@ -9748,12 +9769,59 @@ ags_audio_set_midi_start_mapping(AgsAudio *audio, guint midi_start_mapping)
 }
 
 /**
+ * ags_audio_get_midi_group:
+ * @audio: the #AgsAudio
+ *
+ * Gets MIDI group.
+ * 
+ * Returns: the MIDI group
+ * 
+ * Since: 7.0.0
+ */
+guint
+ags_audio_get_midi_group(AgsAudio *audio)
+{
+  guint midi_group;
+  
+  if(!AGS_IS_AUDIO(audio)){
+    return(0);
+  }
+
+  g_object_get(audio,
+	       "midi-group", &midi_group,
+	       NULL);
+
+  return(midi_group);
+}
+
+/**
+ * ags_audio_set_midi_group:
+ * @audio: the #AgsAudio
+ * @midi_group: the MIDI group
+ *
+ * Sets MIDI group.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_set_midi_group(AgsAudio *audio, guint midi_group)
+{
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  g_object_set(audio,
+	       "midi-group", midi_group,
+	       NULL);
+}
+
+/**
  * ags_audio_get_midi_channel:
  * @audio: the #AgsAudio
  *
- * Gets midi channel.
+ * Gets MIDI channel.
  * 
- * Returns: the midi channel
+ * Returns: the MIDI channel
  * 
  * Since: 3.1.0
  */
@@ -9776,9 +9844,9 @@ ags_audio_get_midi_channel(AgsAudio *audio)
 /**
  * ags_audio_set_midi_channel:
  * @audio: the #AgsAudio
- * @midi_channel: the midi channel
+ * @midi_channel: the MIDI channel
  *
- * Sets midi channel.
+ * Sets MIDI channel.
  * 
  * Since: 3.1.0
  */
@@ -12051,7 +12119,7 @@ ags_audio_get_midi(AgsAudio *audio)
  * @audio: the #AgsAudio
  * @midi: (element-type AgsAudio.Midi) (transfer full): the #GList-struct containing #AgsMidi
  * 
- * Set midi by replacing existing.
+ * Set MIDI by replacing existing.
  * 
  * Since: 3.1.0
  */
@@ -12104,7 +12172,7 @@ ags_audio_add_midi(AgsAudio *audio, GObject *midi)
   /* get audio mutex */
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
-  /* add midi */
+  /* add MIDI */
   success = FALSE;
 
   g_rec_mutex_lock(audio_mutex);
@@ -12151,7 +12219,7 @@ ags_audio_remove_midi(AgsAudio *audio, GObject *midi)
   /* get audio mutex */
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
-  /* remove midi */
+  /* remove MIDI */
   success = FALSE;
 
   g_rec_mutex_lock(audio_mutex);

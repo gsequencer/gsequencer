@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,8 @@
 #include <glib-object.h>
 
 #include <ags/libags.h>
+
+#include <ags/audio/ags_audio_buffer_util.h>
 
 #include <AudioToolbox/AudioToolbox.h>
 
@@ -82,6 +84,8 @@ struct _AgsAudioToolbox
   AudioBufferList *audio_buffer_list;
   AudioStreamBasicDescription *stream;
   AudioStreamBasicDescription *client_stream;
+
+  AgsAudioBufferUtil *audio_buffer_util;
 };
 
 struct _AgsAudioToolboxClass

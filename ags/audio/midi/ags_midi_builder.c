@@ -76,7 +76,6 @@ void ags_midi_builder_real_append_change_parameter(AgsMidiBuilder *midi_builder,
 void ags_midi_builder_real_append_change_pitch_bend(AgsMidiBuilder *midi_builder,
 						    guint delta_time,
 						    guint channel,
-						    guint pitch,
 						    guint transmitter);
 void ags_midi_builder_real_append_change_program(AgsMidiBuilder *midi_builder,
 						 guint delta_time,
@@ -464,8 +463,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    * @midi_builder: the builder
    * @delta_time: delta-time
    * @channel: the audio channel
-   * @pitch: amount of pitch as 14 bit quantifier, 0, 0x2000 to 0x3fff
-   * @transmitter: sensitivy of the wheel
+   * @transmitter: amount of pitch as 14 bit quantifier, 0, 0x2000 to 0x3fff
    *
    * The ::append-change-pitch-bend signal is emited during building of event.
    *
@@ -477,9 +475,8 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_change_pitch_bend),
 		 NULL, NULL,
-		 ags_cclosure_marshal_VOID__UINT_UINT_UINT_UINT,
-		 G_TYPE_NONE, 4,
-		 G_TYPE_UINT,
+		 ags_cclosure_marshal_VOID__UINT_UINT_UINT,
+		 G_TYPE_NONE, 3,
 		 G_TYPE_UINT,
 		 G_TYPE_UINT,
 		 G_TYPE_UINT);
@@ -1596,7 +1593,6 @@ void
 ags_midi_builder_real_append_change_pitch_bend(AgsMidiBuilder *midi_builder,
 					       guint delta_time,
 					       guint channel,
-					       guint pitch,
 					       guint transmitter)
 {
   guchar *buffer;
@@ -1611,7 +1607,6 @@ ags_midi_builder_real_append_change_pitch_bend(AgsMidiBuilder *midi_builder,
 				   buffer,
 				   delta_time,
 				   channel,
-				   pitch,
 				   transmitter);
   ags_midi_builder_track_insert_midi_message(midi_builder->current_midi_track,
 					     buffer, delta_time_size + 3);
@@ -1622,7 +1617,6 @@ ags_midi_builder_real_append_change_pitch_bend(AgsMidiBuilder *midi_builder,
  * @midi_builder: the #AgsMidiBuilder
  * @delta_time: the delta time
  * @channel: the channel
- * @pitch: the pitch
  * @transmitter: the transmitter
  *
  * Change pitch bend.
@@ -1633,7 +1627,6 @@ void
 ags_midi_builder_append_change_pitch_bend(AgsMidiBuilder *midi_builder,
 					  guint delta_time,
 					  guint channel,
-					  guint pitch,
 					  guint transmitter)
 {
   g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
@@ -1643,7 +1636,6 @@ ags_midi_builder_append_change_pitch_bend(AgsMidiBuilder *midi_builder,
 		midi_builder_signals[CHANGE_PITCH_BEND], 0,
 		delta_time,
 		channel,
-		pitch,
 		transmitter);
   g_object_unref((GObject *) midi_builder);
 }
@@ -2668,7 +2660,7 @@ ags_midi_builder_append_xml_node_message(AgsMidiBuilder *midi_builder,
   }else if(!xmlStrncmp(event,
 		       "pitch-bend",
 		       11)){
-    guint channel, pitch, transmitter;
+    guint channel, transmitter;
 
     /* channel */
     channel = 0;
@@ -2682,32 +2674,35 @@ ags_midi_builder_append_xml_node_message(AgsMidiBuilder *midi_builder,
     }
 
     /* pitch */
-    pitch = 0;
+    transmitter = 0;
+
     str = xmlGetProp(node,
 		     "pitch-bend");
       
     if(str != NULL){
+      gint pitch;
+      
       pitch = g_ascii_strtoull(str,
 			       NULL,
 			       10);
+
+      transmitter = (pitch << 7);
     }
 
     /* transmitter */
-    transmitter = 0;
     str = xmlGetProp(node,
 		     "transmitter");
       
     if(str != NULL){
-      transmitter = g_ascii_strtoull(str,
-				     NULL,
-				     10);
+      transmitter |= (0x7f & g_ascii_strtoull(str,
+					      NULL,
+					      10));
     }
 
     /* append */
     ags_midi_builder_append_change_pitch_bend(midi_builder,
 					      delta_time,
 					      channel,
-					      pitch,
 					      transmitter);
   }else if(!xmlStrncmp(event,
 		       "program-change",

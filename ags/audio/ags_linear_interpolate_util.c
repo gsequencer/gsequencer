@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -68,17 +68,7 @@ ags_linear_interpolate_util_alloc()
   ptr = (AgsLinearInterpolateUtil *) g_new(AgsLinearInterpolateUtil,
 					   1);
 
-  ptr->source = NULL;
-  ptr->source_stride = 1;
-
-  ptr->destination = NULL;
-  ptr->destination_stride = 1;
-
-  ptr->buffer_length = 0;
-  ptr->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
-  ptr->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-
-  ptr->factor = 0.0;
+  ptr[0] = AGS_LINEAR_UTIL_INITIALIZER;
 
   return(ptr);
 }
@@ -97,6 +87,8 @@ gpointer
 ags_linear_interpolate_util_copy(AgsLinearInterpolateUtil *ptr)
 {
   AgsLinearInterpolateUtil *new_ptr;
+
+  g_return_val_if_fail(ptr != NULL, NULL);
   
   new_ptr = (AgsLinearInterpolateUtil *) g_new(AgsLinearInterpolateUtil,
 					       1);
@@ -127,6 +119,8 @@ ags_linear_interpolate_util_copy(AgsLinearInterpolateUtil *ptr)
 void
 ags_linear_interpolate_util_free(AgsLinearInterpolateUtil *ptr)
 {
+  g_return_if_fail(ptr != NULL);
+
   g_free(ptr->destination);
 
   if(ptr->destination != ptr->source){

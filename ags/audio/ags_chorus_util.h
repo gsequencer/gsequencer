@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -47,6 +47,32 @@ G_BEGIN_DECLS
 #define AGS_CHORUS_UTIL_DEFAULT_MIX (1.0)
 #define AGS_CHORUS_UTIL_DEFAULT_DELAY (0.0)
 
+#define AGS_CHORUS_UTIL_INITIALIZER ((AgsChorusUtil) {			\
+      .source = NULL,							\
+      .source_stride = 1,						\
+      .destination = NULL,						\
+      .destination_stride = 1,						\
+      .pitch_mix_buffer = NULL,						\
+      .pitch_mix_buffer_max_length = AGS_CHORUS_UTIL_DEFAULT_PITCH_MIX_BUFFER_SIZE, \
+      .pitch_mix_buffer_history = NULL,					\
+      .pitch_mix_buffer_history_max_length = AGS_CHORUS_UTIL_DEFAULT_HISTORY_BUFFER_LENGTH, \
+      .buffer_length = 0,						\
+      .format = AGS_SOUNDCARD_DEFAULT_FORMAT,				\
+      .samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE,			\
+      .offset = 0,							\
+      .base_key = 0.0,							\
+      .input_volume = 1.0,						\
+      .output_volume = 1.0,						\
+      .lfo_oscillator = AGS_CHORUS_UTIL_DEFAULT_LFO_OSCILLATOR,		\
+      .lfo_frequency = AGS_CHORUS_UTIL_DEFAULT_LFO_FREQUENCY,		\
+      .depth = AGS_CHORUS_UTIL_DEFAULT_DEPTH,				\
+      .mix = AGS_CHORUS_UTIL_DEFAULT_MIX,				\
+      .delay = AGS_CHORUS_UTIL_DEFAULT_DELAY,				\
+      .pitch_type = G_TYPE_NONE,					\
+      .pitch_util = NULL,						\
+      .note_256th_mode = TRUE,						\
+      .offset_256th = 0 })
+
 typedef struct _AgsChorusUtil AgsChorusUtil;
 
 struct _AgsChorusUtil
@@ -64,7 +90,7 @@ struct _AgsChorusUtil
   guint history_buffer_length;
   
   guint buffer_length;
-  guint format;
+  AgsSoundcardFormat format;
   guint samplerate;
 
   guint64 offset;
@@ -184,6 +210,7 @@ void ags_chorus_util_compute_s64(AgsChorusUtil *chorus_util);
 void ags_chorus_util_compute_float(AgsChorusUtil *chorus_util);
 void ags_chorus_util_compute_double(AgsChorusUtil *chorus_util);
 void ags_chorus_util_compute_complex(AgsChorusUtil *chorus_util);
+
 void ags_chorus_util_compute(AgsChorusUtil *chorus_util);
 
 G_END_DECLS

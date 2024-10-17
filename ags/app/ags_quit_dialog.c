@@ -494,7 +494,7 @@ ags_quit_dialog_save_file(AgsQuitDialog *quit_dialog)
   window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
   
   simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
-					       "filename", window->name,
+					       "filename", window->loaded_filename,
 					       NULL);
       
   error = NULL;
