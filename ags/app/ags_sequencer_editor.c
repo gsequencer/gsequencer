@@ -726,22 +726,24 @@ ags_sequencer_editor_add_source(AgsSequencerEditor *sequencer_editor,
   
   sequencer_editor->sequencer = (GObject *) input_sequencer;
 
-  start_sequencer = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
-  g_list_foreach(start_sequencer,
-		 (GFunc) g_object_unref,
-		 NULL);
+  if(input_sequencer != NULL){
+    start_sequencer = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
+    g_list_foreach(start_sequencer,
+		   (GFunc) g_object_unref,
+		   NULL);
 
-  g_object_ref(input_sequencer);
-  ags_sound_provider_set_sequencer(AGS_SOUND_PROVIDER(application_context),
-				   g_list_append(start_sequencer,
-						 input_sequencer));
+    g_object_ref(input_sequencer);
+    ags_sound_provider_set_sequencer(AGS_SOUND_PROVIDER(application_context),
+				     g_list_append(start_sequencer,
+						   input_sequencer));
       
-  sequencer_thread = (AgsThread *) ags_sequencer_thread_new((GObject *) input_sequencer);
-  sequencer_editor->sequencer_thread = (GObject *) sequencer_thread;
+    sequencer_thread = (AgsThread *) ags_sequencer_thread_new((GObject *) input_sequencer);
+    sequencer_editor->sequencer_thread = (GObject *) sequencer_thread;
   
-  ags_thread_add_child_extended(main_loop,
-				sequencer_thread,
-				TRUE, TRUE);
+    ags_thread_add_child_extended(main_loop,
+				  sequencer_thread,
+				  TRUE, TRUE);
+  }
 
   /*  */
   card_name = NULL;
