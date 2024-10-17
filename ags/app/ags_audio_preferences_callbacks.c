@@ -68,18 +68,8 @@ ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *audio
 
   main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
-  /* retrieve first soundcard */
+  /* soundcard */
   soundcard = NULL;
-
-  list =
-    start_list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
-  
-  if(list != NULL){
-    soundcard = list->data;
-  }
-
-  g_list_free_full(start_list,
-		   g_object_unref);
   
   /* soundcard editor */
   soundcard_editor = ags_soundcard_editor_new();
@@ -95,11 +85,8 @@ ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *audio
 			     FALSE);
   }
 
-  audio_preferences->soundcard_editor = g_list_prepend(audio_preferences->soundcard_editor,
-						       soundcard_editor);
-  
-  gtk_box_append((GtkBox *) audio_preferences->soundcard_editor_box,
-		 (GtkWidget *) soundcard_editor);
+  ags_audio_preferences_add_soundcard_editor(audio_preferences,
+					     soundcard_editor);
   
   ags_applicable_reset(AGS_APPLICABLE(soundcard_editor));
   ags_connectable_connect(AGS_CONNECTABLE(soundcard_editor));

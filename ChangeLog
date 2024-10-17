@@ -59,6 +59,7 @@ ags (7.0.0)
 	* refactored ags_sfz_synth_util_copy() renamed
 	* refactored ags_time_stretch_util_get_buffer_length() renamed
 	* refactored ags_time_stretch_util_set_buffer_length() renamed
+	* refactored AgsApplySoundConfig
 	* removed deprecated functions
 	* fixed ags_midi_ump_util_put_midi1_pitch_bend() prototype declaration
 	* fixed ags_midi_ump_util_get_midi1_pitch_bend() prototype declaration

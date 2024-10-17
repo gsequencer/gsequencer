@@ -50,6 +50,20 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="7.0.0" date="2024-10-17">
+      <description>
+	<p>
+	  Initial MIDI version 2 playback support and support for control change messages.
+	</p>
+	<p>
+	  Improved soundcard and sequencer configuration.
+	</p>
+	<p>
+	  Implemented accelerated utility functions using vector 256 manager.
+	</p>
+      </description>
+    </release>
+
     <release version="6.16.22" date="2024-09-23">
       <description>
 	<p>

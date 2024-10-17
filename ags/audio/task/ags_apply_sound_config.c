@@ -802,6 +802,9 @@ ags_apply_sound_config_soundcard_presets(AgsTask *task,
       i++;
     }
   }
+  
+  ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
+				   start_soundcard);
 }
 
 void
@@ -976,6 +979,11 @@ ags_apply_sound_config_sequencer_presets(AgsTask *task,
 
 	  start_sequencer = g_list_append(start_sequencer,
 					  io_sequencer);
+
+	  sequencer_thread = (AgsThread *) ags_sequencer_thread_new(io_sequencer);
+	  ags_thread_add_child_extended(AGS_THREAD(audio_loop),
+					(AgsThread *) sequencer_thread,
+					TRUE, TRUE);
 	}
       }else{
 	sequencer = start_sequencer;
@@ -1057,6 +1065,9 @@ ags_apply_sound_config_sequencer_presets(AgsTask *task,
       i++;
     }
   }
+
+  ags_sound_provider_set_sequencer(AGS_SOUND_PROVIDER(application_context),
+				   start_sequencer);  
 }
 
 void
@@ -1541,11 +1552,17 @@ ags_apply_sound_config_launch(AgsTask *task)
 
   ags_apply_sound_config_soundcard_presets(task,
 					   AGS_TYPE_WASAPI_DEVIN, wasapi_devin_count);
+
+  /* default soundcard and soundcard thread */
+  start_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+  start_sequencer = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));  
   
   ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
 				   start_soundcard);
 
-  /* default soundcard and soundcard thread */
+  ags_sound_provider_set_sequencer(AGS_SOUND_PROVIDER(application_context),
+				   start_sequencer);
+
   if(start_soundcard != NULL){
     ags_sound_provider_set_default_soundcard(AGS_SOUND_PROVIDER(application_context),
 					     start_soundcard->data);

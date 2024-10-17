@@ -69,18 +69,8 @@ ags_midi_preferences_add_callback(GtkWidget *widget, AgsMidiPreferences *midi_pr
 
   main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
   
-  /* retrieve first sequencer */
+  /* sequencer */
   sequencer = NULL;
-
-  list =
-    start_list = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
-  
-  if(list != NULL){
-    sequencer = list->data;
-  }
-
-  g_list_free_full(start_list,
-		   g_object_unref);
   
   /* sequencer editor */
   sequencer_editor = ags_sequencer_editor_new();
