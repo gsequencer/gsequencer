@@ -34,6 +34,9 @@
 // #define AGS_VDSP_256_FUNCTIONS
 #endif
 
+//FIXME:JK: disabled because of unstable code
+#undef AGS_VECTOR_256_FUNCTIONS
+
 /**
  * SECTION:ags_volume_util
  * @short_description: Boxed type of volume util
@@ -468,22 +471,23 @@ ags_volume_util_compute_s8(AgsVolumeUtil *volume_util)
     }
 
     ags_audio_buffer_util_fill_v8double_from_s8(NULL,
-						 vector_arr->vector.vec_double->mem_double, 1,
-						 source, source_stride,
-						 32);
+						vector_arr->vector.vec_double->mem_double, 1,
+						source, source_stride,
+						256);
 
     for(j = 0; j < 32; j++){
       vector_arr->vector.vec_double->mem_double[j] *= volume_util->volume;
     }
     
     ags_audio_buffer_util_fetch_v8double_as_s8(NULL,
-						source, source_stride,
-						vector_arr->vector.vec_double->mem_double, 1,
-						32);
+					       destination, destination_stride,
+					       vector_arr->vector.vec_double->mem_double, 1,
+					       256);
 
     ags_vector_256_manager_release(vector_256_manager,
 				   vector_arr);
 
+    destination += (256 * destination_stride);
     source += (256 * source_stride);
     i += 256;
   }
@@ -584,6 +588,7 @@ ags_volume_util_compute_s8(AgsVolumeUtil *volume_util)
     ags_vdsp_256_manager_release(vdsp_256_manager,
 				 result_arr);
 
+    destination += (256 * destination_stride);
     source += (256 * source_stride);
     i += 256;
   }
@@ -700,20 +705,21 @@ ags_volume_util_compute_s16(AgsVolumeUtil *volume_util)
     ags_audio_buffer_util_fill_v8double_from_s16(NULL,
 						 vector_arr->vector.vec_double->mem_double, 1,
 						 source, source_stride,
-						 32);
+						 256);
 
     for(j = 0; j < 32; j++){
       vector_arr->vector.vec_double->mem_double[j] *= volume_util->volume;
     }
     
     ags_audio_buffer_util_fetch_v8double_as_s16(NULL,
-						source, source_stride,
+						destination, destination_stride,
 						vector_arr->vector.vec_double->mem_double, 1,
-						32);
+						256);
 
     ags_vector_256_manager_release(vector_256_manager,
 				   vector_arr);
 
+    destination += (256 * destination_stride);
     source += (256 * source_stride);
     i += 256;
   }
@@ -799,7 +805,7 @@ ags_volume_util_compute_s16(AgsVolumeUtil *volume_util)
 
     ags_audio_buffer_util_put_double_from_s16(NULL,
 					      source_arr->vdsp.vec_double->mem_double, 1,
-					     source, source_stride,
+					      source, source_stride,
 					      256);
 
     vDSP_vsmulD(source_arr->vdsp.vec_double->mem_double, 1, &(volume_util->volume), result_arr->vdsp.vec_double->mem_double, 1, 256);
@@ -814,6 +820,7 @@ ags_volume_util_compute_s16(AgsVolumeUtil *volume_util)
     ags_vdsp_256_manager_release(vdsp_256_manager,
 				 result_arr);
 
+    destination += (256 * destination_stride);
     source += (256 * source_stride);
     i += 256;
   }
@@ -930,20 +937,21 @@ ags_volume_util_compute_s24(AgsVolumeUtil *volume_util)
     ags_audio_buffer_util_fill_v8double_from_s32(NULL,
 						 vector_arr->vector.vec_double->mem_double, 1,
 						 source, source_stride,
-						 32);
+						 256);
 
     for(j = 0; j < 32; j++){
       vector_arr->vector.vec_double->mem_double[j] *= volume_util->volume;
     }
     
     ags_audio_buffer_util_fetch_v8double_as_s32(NULL,
-						source, source_stride,
+						destination, destination_stride,
 						vector_arr->vector.vec_double->mem_double, 1,
-						32);
+						256);
 
     ags_vector_256_manager_release(vector_256_manager,
 				   vector_arr);
 
+    destination += (256 * destination_stride);
     source += (256 * source_stride);
     i += 256;
   }
@@ -1029,7 +1037,7 @@ ags_volume_util_compute_s24(AgsVolumeUtil *volume_util)
 
     ags_audio_buffer_util_put_double_from_s32(NULL,
 					      source_arr->vdsp.vec_double->mem_double, 1,
-					     source, source_stride,
+					      source, source_stride,
 					      256);
 
     vDSP_vsmulD(source_arr->vdsp.vec_double->mem_double, 1, &(volume_util->volume), result_arr->vdsp.vec_double->mem_double, 1, 256);
@@ -1044,6 +1052,7 @@ ags_volume_util_compute_s24(AgsVolumeUtil *volume_util)
     ags_vdsp_256_manager_release(vdsp_256_manager,
 				 result_arr);
 
+    destination += (256 * destination_stride);
     source += (256 * source_stride);
     i += 256;
   }
@@ -1160,20 +1169,21 @@ ags_volume_util_compute_s32(AgsVolumeUtil *volume_util)
     ags_audio_buffer_util_fill_v8double_from_s32(NULL,
 						 vector_arr->vector.vec_double->mem_double, 1,
 						 source, source_stride,
-						 32);
+						 256);
 
     for(j = 0; j < 32; j++){
       vector_arr->vector.vec_double->mem_double[j] *= volume_util->volume;
     }
     
     ags_audio_buffer_util_fetch_v8double_as_s32(NULL,
-						source, source_stride,
+						destination, destination_stride,
 						vector_arr->vector.vec_double->mem_double, 1,
-						32);
+						256);
 
     ags_vector_256_manager_release(vector_256_manager,
 				   vector_arr);
 
+    destination += (256 * destination_stride);
     source += (256 * source_stride);
     i += 256;
   }
@@ -1274,6 +1284,7 @@ ags_volume_util_compute_s32(AgsVolumeUtil *volume_util)
     ags_vdsp_256_manager_release(vdsp_256_manager,
 				 result_arr);
 
+    destination += (256 * destination_stride);
     source += (256 * source_stride);
     i += 256;
   }
@@ -1392,20 +1403,21 @@ ags_volume_util_compute_s64(AgsVolumeUtil *volume_util)
     ags_audio_buffer_util_fill_v8double_from_s64(NULL,
 						 vector_arr->vector.vec_double->mem_double, 1,
 						 source, source_stride,
-						 32);
+						 256);
 
     for(j = 0; j < 32; j++){
       vector_arr->vector.vec_double->mem_double[j] *= volume_util->volume;
     }
     
     ags_audio_buffer_util_fetch_v8double_as_s64(NULL,
-						source, source_stride,
+						destination, destination_stride,
 						vector_arr->vector.vec_double->mem_double, 1,
-						32);
+						256);
 
     ags_vector_256_manager_release(vector_256_manager,
 				   vector_arr);
 
+    destination += (256 * destination_stride);
     source += (256 * source_stride);
     i += 256;
   }
@@ -1506,6 +1518,7 @@ ags_volume_util_compute_s64(AgsVolumeUtil *volume_util)
     ags_vdsp_256_manager_release(vdsp_256_manager,
 				 result_arr);
 
+    destination += (256 * destination_stride);
     source += (256 * source_stride);
     i += 256;
   }
@@ -1622,20 +1635,21 @@ ags_volume_util_compute_float(AgsVolumeUtil *volume_util)
     ags_audio_buffer_util_fill_v8double_from_float(NULL,
 						   vector_arr->vector.vec_double->mem_double, 1,
 						   source, source_stride,
-						   32);
+						   256);
 
     for(j = 0; j < 32; j++){
       vector_arr->vector.vec_double->mem_double[j] *= volume_util->volume;
     }
     
     ags_audio_buffer_util_fetch_v8double_as_float(NULL,
-						  source, source_stride,
+						  destination, destination_stride,
 						  vector_arr->vector.vec_double->mem_double, 1,
-						  32);
+						  256);
 
     ags_vector_256_manager_release(vector_256_manager,
 				   vector_arr);
 
+    destination += (256 * destination_stride);
     source += (256 * source_stride);
     i += 256;
   }
@@ -1736,6 +1750,7 @@ ags_volume_util_compute_float(AgsVolumeUtil *volume_util)
     ags_vdsp_256_manager_release(vdsp_256_manager,
 				 result_arr);
 
+    destination += (256 * destination_stride);
     source += (256 * source_stride);
     i += 256;
   }
@@ -1852,20 +1867,21 @@ ags_volume_util_compute_double(AgsVolumeUtil *volume_util)
     ags_audio_buffer_util_fill_v8double(NULL,
 					vector_arr->vector.vec_double->mem_double, 1,
 					source, source_stride,
-					32);
+					256);
     
     for(j = 0; j < 32; j++){
       vector_arr->vector.vec_double->mem_double[j] *= volume_util->volume;
     }
     
     ags_audio_buffer_util_fetch_v8double(NULL,
-					 source, source_stride,
+					 destination, destination_stride,
 					 vector_arr->vector.vec_double->mem_double, 1,
-					 32);
+					 256);
 
     ags_vector_256_manager_release(vector_256_manager,
 				   vector_arr);
 
+    destination += (256 * destination_stride);
     source += (256 * source_stride);
     i += 256;
   }
@@ -1966,6 +1982,7 @@ ags_volume_util_compute_double(AgsVolumeUtil *volume_util)
     ags_vdsp_256_manager_release(vdsp_256_manager,
 				 result_arr);
 
+    destination += (256 * destination_stride);
     source += (256 * source_stride);
     i += 256;
   }
@@ -2097,44 +2114,44 @@ ags_volume_util_compute(AgsVolumeUtil *volume_util)
 
   switch(volume_util->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
-  {
-    ags_volume_util_compute_s8(volume_util);
-  }
-  break;
+    {
+      ags_volume_util_compute_s8(volume_util);
+    }
+    break;
   case AGS_SOUNDCARD_SIGNED_16_BIT:
-  {
-    ags_volume_util_compute_s16(volume_util);
-  }
-  break;
+    {
+      ags_volume_util_compute_s16(volume_util);
+    }
+    break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
-  {
-    ags_volume_util_compute_s24(volume_util);
-  }
-  break;
+    {
+      ags_volume_util_compute_s24(volume_util);
+    }
+    break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
-  {
-    ags_volume_util_compute_s32(volume_util);
-  }
-  break;
+    {
+      ags_volume_util_compute_s32(volume_util);
+    }
+    break;
   case AGS_SOUNDCARD_SIGNED_64_BIT:
-  {
-    ags_volume_util_compute_s64(volume_util);
-  }
-  break;
+    {
+      ags_volume_util_compute_s64(volume_util);
+    }
+    break;
   case AGS_SOUNDCARD_FLOAT:
-  {
-    ags_volume_util_compute_float(volume_util);
-  }
-  break;
+    {
+      ags_volume_util_compute_float(volume_util);
+    }
+    break;
   case AGS_SOUNDCARD_DOUBLE:
-  {
-    ags_volume_util_compute_double(volume_util);
-  }
-  break;
+    {
+      ags_volume_util_compute_double(volume_util);
+    }
+    break;
   case AGS_SOUNDCARD_COMPLEX:
-  {
-    ags_volume_util_compute_complex(volume_util);
-  }
-  break;
+    {
+      ags_volume_util_compute_complex(volume_util);
+    }
+    break;
   }
 }

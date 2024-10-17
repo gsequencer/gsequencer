@@ -29,6 +29,9 @@
 #define AGS_VECTOR_256_FUNCTIONS 1
 #endif
 
+//FIXME:JK: disabled because of unstable code
+#undef AGS_VECTOR_256_FUNCTIONS
+
 /**
  * SECTION:ags_envelope_util
  * @short_description: Boxed type of envelope util
@@ -725,7 +728,7 @@ ags_envelope_util_compute_s8(AgsEnvelopeUtil *envelope_util)
     ags_audio_buffer_util_fill_v8double_from_s8(NULL,
 						buffer_arr->vector.vec_double->mem_double, 1,
 						source, source_stride,
-						32);
+						256);
     
     if(lfo_enabled){
       for(j = 0; j < 32; j++){
@@ -760,9 +763,9 @@ ags_envelope_util_compute_s8(AgsEnvelopeUtil *envelope_util)
     }
     
     ags_audio_buffer_util_fetch_v8double_as_s8(NULL,
-					       source, source_stride,
+					       destination, destination_stride,
 					       buffer_arr->vector.vec_double->mem_double, 1,
-					       32);
+					       256);
 
     ags_vector_256_manager_release(vector_256_manager,
 				   buffer_arr);
@@ -771,6 +774,7 @@ ags_envelope_util_compute_s8(AgsEnvelopeUtil *envelope_util)
     ags_vector_256_manager_release(vector_256_manager,
 				   volume_arr);
 
+    destination += (256 * destination_stride);
     source += (256 * source_stride);
     i += 256;
   }
@@ -851,14 +855,14 @@ ags_envelope_util_compute_s8(AgsEnvelopeUtil *envelope_util)
       (double) *(source += source_stride)};
 
     double v_volume[] = {(double) start_volume + i * amount,
-      (double) (start_volume + (i) * amount),
-      (double) (start_volume + (i + 1) * amount),
-      (double) (start_volume + (i + 2) * amount),
-      (double) (start_volume + (i + 3) * amount),
-      (double) (start_volume + (i + 4) * amount),
-      (double) (start_volume + (i + 5) * amount),
-      (double) (start_volume + (i + 6) * amount),
-      (double) (start_volume + (i + 7) * amount)};
+			 (double) (start_volume + (i) * amount),
+			 (double) (start_volume + (i + 1) * amount),
+			 (double) (start_volume + (i + 2) * amount),
+			 (double) (start_volume + (i + 3) * amount),
+			 (double) (start_volume + (i + 4) * amount),
+			 (double) (start_volume + (i + 5) * amount),
+			 (double) (start_volume + (i + 6) * amount),
+			 (double) (start_volume + (i + 7) * amount)};
     
     source += source_stride;
 
@@ -866,13 +870,13 @@ ags_envelope_util_compute_s8(AgsEnvelopeUtil *envelope_util)
       double ret_sine_buffer[8];
       
       double v_sine[] = {sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
-	sin((gdouble) (offset + i + 1) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
-	sin((gdouble) (offset + i + 2) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
-	sin((gdouble) (offset + i + 3) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
-	sin((gdouble) (offset + i + 4) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
-	sin((gdouble) (offset + i + 5) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
-	sin((gdouble) (offset + i + 6) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
-	sin((gdouble) (offset + i + 7) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate)};
+			 sin((gdouble) (offset + i + 1) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+			 sin((gdouble) (offset + i + 2) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+			 sin((gdouble) (offset + i + 3) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+			 sin((gdouble) (offset + i + 4) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+			 sin((gdouble) (offset + i + 5) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+			 sin((gdouble) (offset + i + 6) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+			 sin((gdouble) (offset + i + 7) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate)};
     
       vDSP_vmulD(v_buffer, 1, v_sine, 1, ret_sine_buffer, 1, 8);
 
@@ -1002,7 +1006,7 @@ ags_envelope_util_compute_s16(AgsEnvelopeUtil *envelope_util)
     ags_audio_buffer_util_fill_v8double_from_s16(NULL,
 						 buffer_arr->vector.vec_double->mem_double, 1,
 						 source, source_stride,
-						 32);
+						 256);
     
     if(lfo_enabled){
       for(j = 0; j < 32; j++){
@@ -1037,9 +1041,9 @@ ags_envelope_util_compute_s16(AgsEnvelopeUtil *envelope_util)
     }
     
     ags_audio_buffer_util_fetch_v8double_as_s16(NULL,
-						source, source_stride,
+						destination, destination_stride,
 						buffer_arr->vector.vec_double->mem_double, 1,
-						32);
+						256);
 
     ags_vector_256_manager_release(vector_256_manager,
 				   buffer_arr);
@@ -1048,6 +1052,7 @@ ags_envelope_util_compute_s16(AgsEnvelopeUtil *envelope_util)
     ags_vector_256_manager_release(vector_256_manager,
 				   volume_arr);
 
+    destination += (256 * destination_stride);
     source += (256 * source_stride);
     i += 256;
   }
@@ -1128,14 +1133,14 @@ ags_envelope_util_compute_s16(AgsEnvelopeUtil *envelope_util)
       (double) *(source += source_stride)};
 
     double v_volume[] = {(double) start_volume + i * amount,
-      (double) (start_volume + (i) * amount),
-      (double) (start_volume + (i + 1) * amount),
-      (double) (start_volume + (i + 2) * amount),
-      (double) (start_volume + (i + 3) * amount),
-      (double) (start_volume + (i + 4) * amount),
-      (double) (start_volume + (i + 5) * amount),
-      (double) (start_volume + (i + 6) * amount),
-      (double) (start_volume + (i + 7) * amount)};
+			 (double) (start_volume + (i) * amount),
+			 (double) (start_volume + (i + 1) * amount),
+			 (double) (start_volume + (i + 2) * amount),
+			 (double) (start_volume + (i + 3) * amount),
+			 (double) (start_volume + (i + 4) * amount),
+			 (double) (start_volume + (i + 5) * amount),
+			 (double) (start_volume + (i + 6) * amount),
+			 (double) (start_volume + (i + 7) * amount)};
 
     source += source_stride;
 
@@ -1143,13 +1148,13 @@ ags_envelope_util_compute_s16(AgsEnvelopeUtil *envelope_util)
       double ret_sine_buffer[8];
       
       double v_sine[] = {sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
-	sin((gdouble) (offset + i + 1) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
-	sin((gdouble) (offset + i + 2) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
-	sin((gdouble) (offset + i + 3) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
-	sin((gdouble) (offset + i + 4) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
-	sin((gdouble) (offset + i + 5) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
-	sin((gdouble) (offset + i + 6) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
-	sin((gdouble) (offset + i + 7) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate)};
+			 sin((gdouble) (offset + i + 1) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+			 sin((gdouble) (offset + i + 2) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+			 sin((gdouble) (offset + i + 3) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+			 sin((gdouble) (offset + i + 4) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+			 sin((gdouble) (offset + i + 5) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+			 sin((gdouble) (offset + i + 6) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+			 sin((gdouble) (offset + i + 7) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate)};
     
       vDSP_vmulD(v_buffer, 1, v_sine, 1, ret_sine_buffer, 1, 8);
 
@@ -1279,7 +1284,7 @@ ags_envelope_util_compute_s24(AgsEnvelopeUtil *envelope_util)
     ags_audio_buffer_util_fill_v8double_from_s32(NULL,
 						 buffer_arr->vector.vec_double->mem_double, 1,
 						 source, source_stride,
-						 32);
+						 256);
     
     if(lfo_enabled){
       for(j = 0; j < 32; j++){
@@ -1314,9 +1319,9 @@ ags_envelope_util_compute_s24(AgsEnvelopeUtil *envelope_util)
     }
     
     ags_audio_buffer_util_fetch_v8double_as_s32(NULL,
-						source, source_stride,
+						destination, destination_stride,
 						buffer_arr->vector.vec_double->mem_double, 1,
-						32);
+						256);
 
     ags_vector_256_manager_release(vector_256_manager,
 				   buffer_arr);
@@ -1325,6 +1330,7 @@ ags_envelope_util_compute_s24(AgsEnvelopeUtil *envelope_util)
     ags_vector_256_manager_release(vector_256_manager,
 				   volume_arr);
 
+    destination += (256 * destination_stride);
     source += (256 * source_stride);
     i += 256;
   }
@@ -1405,14 +1411,14 @@ ags_envelope_util_compute_s24(AgsEnvelopeUtil *envelope_util)
       (double) *(source += source_stride)};
 
     double v_volume[] = {(double) start_volume + i * amount,
-      (double) (start_volume + (i) * amount),
-      (double) (start_volume + (i + 1) * amount),
-      (double) (start_volume + (i + 2) * amount),
-      (double) (start_volume + (i + 3) * amount),
-      (double) (start_volume + (i + 4) * amount),
-      (double) (start_volume + (i + 5) * amount),
-      (double) (start_volume + (i + 6) * amount),
-      (double) (start_volume + (i + 7) * amount)};
+			 (double) (start_volume + (i) * amount),
+			 (double) (start_volume + (i + 1) * amount),
+			 (double) (start_volume + (i + 2) * amount),
+			 (double) (start_volume + (i + 3) * amount),
+			 (double) (start_volume + (i + 4) * amount),
+			 (double) (start_volume + (i + 5) * amount),
+			 (double) (start_volume + (i + 6) * amount),
+			 (double) (start_volume + (i + 7) * amount)};
 
     source += source_stride;
 
@@ -1420,13 +1426,13 @@ ags_envelope_util_compute_s24(AgsEnvelopeUtil *envelope_util)
       double ret_sine_buffer[8];
       
       double v_sine[] = {sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
-	sin((gdouble) (offset + i + 1) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
-	sin((gdouble) (offset + i + 2) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
-	sin((gdouble) (offset + i + 3) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
-	sin((gdouble) (offset + i + 4) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
-	sin((gdouble) (offset + i + 5) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
-	sin((gdouble) (offset + i + 6) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
-	sin((gdouble) (offset + i + 7) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate)};
+			 sin((gdouble) (offset + i + 1) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+			 sin((gdouble) (offset + i + 2) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+			 sin((gdouble) (offset + i + 3) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+			 sin((gdouble) (offset + i + 4) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+			 sin((gdouble) (offset + i + 5) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+			 sin((gdouble) (offset + i + 6) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+			 sin((gdouble) (offset + i + 7) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate)};
     
       vDSP_vmulD(v_buffer, 1, v_sine, 1, ret_sine_buffer, 1, 8);
 
@@ -1556,7 +1562,7 @@ ags_envelope_util_compute_s32(AgsEnvelopeUtil *envelope_util)
     ags_audio_buffer_util_fill_v8double_from_s32(NULL,
 						 buffer_arr->vector.vec_double->mem_double, 1,
 						 source, source_stride,
-						 32);
+						 256);
     
     if(lfo_enabled){
       for(j = 0; j < 32; j++){
@@ -1591,9 +1597,9 @@ ags_envelope_util_compute_s32(AgsEnvelopeUtil *envelope_util)
     }
     
     ags_audio_buffer_util_fetch_v8double_as_s32(NULL,
-						source, source_stride,
+						destination, destination_stride,
 						buffer_arr->vector.vec_double->mem_double, 1,
-						32);
+						256);
 
     ags_vector_256_manager_release(vector_256_manager,
 				   buffer_arr);
@@ -1602,6 +1608,7 @@ ags_envelope_util_compute_s32(AgsEnvelopeUtil *envelope_util)
     ags_vector_256_manager_release(vector_256_manager,
 				   volume_arr);
 
+    destination += (256 * destination_stride);
     source += (256 * source_stride);
     i += 256;
   }
@@ -1682,14 +1689,14 @@ ags_envelope_util_compute_s32(AgsEnvelopeUtil *envelope_util)
       (double) *(source += source_stride)};
 
     double v_volume[] = {(double) start_volume + i * amount,
-      (double) (start_volume + (i) * amount),
-      (double) (start_volume + (i + 1) * amount),
-      (double) (start_volume + (i + 2) * amount),
-      (double) (start_volume + (i + 3) * amount),
-      (double) (start_volume + (i + 4) * amount),
-      (double) (start_volume + (i + 5) * amount),
-      (double) (start_volume + (i + 6) * amount),
-      (double) (start_volume + (i + 7) * amount)};
+			 (double) (start_volume + (i) * amount),
+			 (double) (start_volume + (i + 1) * amount),
+			 (double) (start_volume + (i + 2) * amount),
+			 (double) (start_volume + (i + 3) * amount),
+			 (double) (start_volume + (i + 4) * amount),
+			 (double) (start_volume + (i + 5) * amount),
+			 (double) (start_volume + (i + 6) * amount),
+			 (double) (start_volume + (i + 7) * amount)};
 
     source += source_stride;
 
@@ -1697,13 +1704,13 @@ ags_envelope_util_compute_s32(AgsEnvelopeUtil *envelope_util)
       double ret_sine_buffer[8];
       
       double v_sine[] = {sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
-	sin((gdouble) (offset + i + 1) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
-	sin((gdouble) (offset + i + 2) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
-	sin((gdouble) (offset + i + 3) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
-	sin((gdouble) (offset + i + 4) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
-	sin((gdouble) (offset + i + 5) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
-	sin((gdouble) (offset + i + 6) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
-	sin((gdouble) (offset + i + 7) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate)};
+			 sin((gdouble) (offset + i + 1) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+			 sin((gdouble) (offset + i + 2) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+			 sin((gdouble) (offset + i + 3) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+			 sin((gdouble) (offset + i + 4) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+			 sin((gdouble) (offset + i + 5) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+			 sin((gdouble) (offset + i + 6) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+			 sin((gdouble) (offset + i + 7) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate)};
     
       vDSP_vmulD(v_buffer, 1, v_sine, 1, ret_sine_buffer, 1, 8);
 
@@ -1833,7 +1840,7 @@ ags_envelope_util_compute_s64(AgsEnvelopeUtil *envelope_util)
     ags_audio_buffer_util_fill_v8double_from_s64(NULL,
 						 buffer_arr->vector.vec_double->mem_double, 1,
 						 source, source_stride,
-						 32);
+						 256);
     
     if(lfo_enabled){
       for(j = 0; j < 32; j++){
@@ -1868,9 +1875,9 @@ ags_envelope_util_compute_s64(AgsEnvelopeUtil *envelope_util)
     }
     
     ags_audio_buffer_util_fetch_v8double_as_s64(NULL,
-						source, source_stride,
+						destination, destination_stride,
 						buffer_arr->vector.vec_double->mem_double, 1,
-						32);
+						256);
 
     ags_vector_256_manager_release(vector_256_manager,
 				   buffer_arr);
@@ -1879,6 +1886,7 @@ ags_envelope_util_compute_s64(AgsEnvelopeUtil *envelope_util)
     ags_vector_256_manager_release(vector_256_manager,
 				   volume_arr);
 
+    destination += (256 * destination_stride);
     source += (256 * source_stride);
     i += 256;
   }
@@ -1959,14 +1967,14 @@ ags_envelope_util_compute_s64(AgsEnvelopeUtil *envelope_util)
       (double) *(source += source_stride)};
 
     double v_volume[] = {(double) start_volume + i * amount,
-      (double) (start_volume + (i) * amount),
-      (double) (start_volume + (i + 1) * amount),
-      (double) (start_volume + (i + 2) * amount),
-      (double) (start_volume + (i + 3) * amount),
-      (double) (start_volume + (i + 4) * amount),
-      (double) (start_volume + (i + 5) * amount),
-      (double) (start_volume + (i + 6) * amount),
-      (double) (start_volume + (i + 7) * amount)};
+			 (double) (start_volume + (i) * amount),
+			 (double) (start_volume + (i + 1) * amount),
+			 (double) (start_volume + (i + 2) * amount),
+			 (double) (start_volume + (i + 3) * amount),
+			 (double) (start_volume + (i + 4) * amount),
+			 (double) (start_volume + (i + 5) * amount),
+			 (double) (start_volume + (i + 6) * amount),
+			 (double) (start_volume + (i + 7) * amount)};
 
     source += source_stride;
 
@@ -1974,13 +1982,13 @@ ags_envelope_util_compute_s64(AgsEnvelopeUtil *envelope_util)
       double ret_sine_buffer[8];
       
       double v_sine[] = {sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
-	sin((gdouble) (offset + i + 1) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
-	sin((gdouble) (offset + i + 2) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
-	sin((gdouble) (offset + i + 3) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
-	sin((gdouble) (offset + i + 4) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
-	sin((gdouble) (offset + i + 5) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
-	sin((gdouble) (offset + i + 6) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
-	sin((gdouble) (offset + i + 7) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate)};
+			 sin((gdouble) (offset + i + 1) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+			 sin((gdouble) (offset + i + 2) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+			 sin((gdouble) (offset + i + 3) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+			 sin((gdouble) (offset + i + 4) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+			 sin((gdouble) (offset + i + 5) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+			 sin((gdouble) (offset + i + 6) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate),
+			 sin((gdouble) (offset + i + 7) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate)};
     
       vDSP_vmulD(v_buffer, 1, v_sine, 1, ret_sine_buffer, 1, 8);
 
@@ -2115,7 +2123,7 @@ ags_envelope_util_compute_float(AgsEnvelopeUtil *envelope_util)
       ags_audio_buffer_util_fill_v8double_from_float(NULL,
 						     buffer_arr->vector.vec_double->mem_double, 1,
 						     source, source_stride,
-						     32);
+						     256);
     
       if(lfo_enabled){
 	for(j = 0; j < 32; j++){
@@ -2150,9 +2158,9 @@ ags_envelope_util_compute_float(AgsEnvelopeUtil *envelope_util)
       }
     
       ags_audio_buffer_util_fetch_v8double_as_float(NULL,
-						    source, source_stride,
+						    destination, destination_stride,
 						    buffer_arr->vector.vec_double->mem_double, 1,
-						    32);
+						    256);
 
       ags_vector_256_manager_release(vector_256_manager,
 				     buffer_arr);
@@ -2161,6 +2169,7 @@ ags_envelope_util_compute_float(AgsEnvelopeUtil *envelope_util)
       ags_vector_256_manager_release(vector_256_manager,
 				     volume_arr);
 
+      destination += (256 * destination_stride);
       source += (256 * source_stride);
       i += 256;
     }
@@ -2387,7 +2396,7 @@ ags_envelope_util_compute_double(AgsEnvelopeUtil *envelope_util)
     ags_audio_buffer_util_fill_v8double(NULL,
 					buffer_arr->vector.vec_double->mem_double, 1,
 					source, source_stride,
-					32);
+					256);
     
     if(lfo_enabled){
       for(j = 0; j < 32; j++){
@@ -2422,9 +2431,9 @@ ags_envelope_util_compute_double(AgsEnvelopeUtil *envelope_util)
     }
     
     ags_audio_buffer_util_fetch_v8double(NULL,
-					 source, source_stride,
+					 destination, destination_stride,
 					 buffer_arr->vector.vec_double->mem_double, 1,
-					 32);
+					 256);
     
     ags_vector_256_manager_release(vector_256_manager,
 				   buffer_arr);
@@ -2433,6 +2442,7 @@ ags_envelope_util_compute_double(AgsEnvelopeUtil *envelope_util)
     ags_vector_256_manager_release(vector_256_manager,
 				   volume_arr);
 
+    destination += (256 * destination_stride);
     source += (256 * source_stride);
     i += 256;
   }

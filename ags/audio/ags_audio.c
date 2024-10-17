@@ -2186,6 +2186,19 @@ ags_audio_set_property(GObject *gobject,
     g_rec_mutex_unlock(audio_mutex);
   }
   break;
+  case PROP_MIDI_GROUP:
+  {
+    guint midi_group;
+
+    midi_group = g_value_get_uint(value);
+
+    g_rec_mutex_lock(audio_mutex);
+
+    audio->midi_group = midi_group;
+
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_MIDI_CHANNEL:
   {
     guint midi_channel;
@@ -2877,6 +2890,16 @@ ags_audio_get_property(GObject *gobject,
 
     g_value_set_uint(value,
 		     audio->midi_end_mapping);
+
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
+  case PROP_MIDI_GROUP:
+  {
+    g_rec_mutex_lock(audio_mutex);
+
+    g_value_set_uint(value,
+		     audio->midi_group);
 
     g_rec_mutex_unlock(audio_mutex);
   }

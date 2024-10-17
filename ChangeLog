@@ -1,3 +1,11 @@
+ags (7.0.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsAudio missing getter/setter midi group
+	* fixed bugs in ags_audio_buffer_util.c
+	* fixed bugs in ags_envelope_util.c
+	* disabled by undef unstable vector 256 code
+
 ags (7.0.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
