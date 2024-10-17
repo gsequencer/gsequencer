@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-10-17 13:06+0200\n"
+"POT-Creation-Date: 2024-10-17 15:06+0200\n"
 "PO-Revision-Date: 2021-01-11 21:07+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: français <jkraehemann@gmail.com>\n"
@@ -178,7 +178,7 @@ msgid "machine editor"
 msgstr "machine type: "
 
 #: ags/app/ags_machine_editor_dialog.c:192
-#: ags/app/editor/ags_envelope_dialog.c:362 ags/app/ags_midi_dialog.c:542
+#: ags/app/editor/ags_envelope_dialog.c:362 ags/app/ags_midi_dialog.c:556
 #: ags/app/ags_plugin_browser.c:364 ags/app/ags_preferences.c:282
 msgid "ok"
 msgstr ""
@@ -1341,26 +1341,31 @@ msgid "MIDI connection"
 msgstr "MIDI connexion"
 
 #: ags/app/ags_midi_dialog.c:303
+#, fuzzy
+msgid "midi group"
+msgstr "groupe"
+
+#: ags/app/ags_midi_dialog.c:317
 msgid "midi channel"
 msgstr "midi canal"
 
-#: ags/app/ags_midi_dialog.c:340
+#: ags/app/ags_midi_dialog.c:354
 msgid "audio start mapping"
 msgstr "audio premier assigner"
 
-#: ags/app/ags_midi_dialog.c:377
+#: ags/app/ags_midi_dialog.c:391
 msgid "audio end mapping"
 msgstr "audio dernier assigner"
 
-#: ags/app/ags_midi_dialog.c:408
+#: ags/app/ags_midi_dialog.c:422
 msgid "midi start mapping"
 msgstr "midi premier assigner"
 
-#: ags/app/ags_midi_dialog.c:445
+#: ags/app/ags_midi_dialog.c:459
 msgid "midi end mapping"
 msgstr "midi dernier assigner"
 
-#: ags/app/ags_midi_dialog.c:498
+#: ags/app/ags_midi_dialog.c:512
 msgid "midi device"
 msgstr "midi équipement"
 
