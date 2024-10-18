@@ -1,4 +1,12 @@
-ags (7.0.1)
+ags (7.0.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags-fx-notation
+	* fixed AgsCoreMIDI port block
+	* fixed ags_recall_set_flags() MIDI 1 and 2 allocation
+	* fixed AgsUmpUtil byte order
+
+ags (7.0.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented spin button of AgsMidiDialog to select MIDI group
