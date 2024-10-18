@@ -5,6 +5,7 @@ ags (7.0.3)
 	* fixed AgsCoreMIDI port block
 	* fixed ags_recall_set_flags() MIDI 1 and 2 allocation
 	* fixed AgsUmpUtil byte order
+	* initial MIDI 2 playback works on macOS
 
 ags (7.0.2)
 

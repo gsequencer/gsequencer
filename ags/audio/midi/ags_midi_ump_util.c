@@ -822,6 +822,7 @@ ags_midi_ump_util_get_device_identity_notification(AgsMidiUmpUtil *midi_ump_util
   g_return_val_if_fail((0x0c & (buffer[3])) == 0x0, 0);
   g_return_val_if_fail(((0x300 & (buffer[3] << 8)) | (0xff & (buffer[2]))) == 0x02, 0);
 
+  offset = 0;
   nth = 1;
 
   /* reserved */
@@ -2150,7 +2151,7 @@ ags_midi_ump_util_put_function_block_name_notification(AgsMidiUmpUtil *midi_ump_
 	j_stop = (function_block_name_length - j) % 14;
       }
 
-      k_stop = k_j_stop;
+      k_stop = j_stop;
 
       for(k = 0; k < k_stop; j++, k++){
 	buffer[offset + nth] = function_block_name[j];
@@ -2572,7 +2573,7 @@ ags_midi_ump_util_put_noop(AgsMidiUmpUtil *midi_ump_util,
   buffer[offset + nth] = 0x0;
   nth--;
 
-  buffer[offset + nth] = 0x0
+  buffer[offset + nth] = 0x0;
   nth--;
   
   /* NOOP */
@@ -2814,6 +2815,7 @@ ags_midi_ump_util_get_jr_timestamp(AgsMidiUmpUtil *midi_ump_util,
 				   gchar ***extension_name, GValue **extension_value,
 				   guint *extension_count)
 {
+  guint offset;
   gint nth;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
@@ -4445,8 +4447,8 @@ ags_midi_ump_util_get_midi2_note_on(AgsMidiUmpUtil *midi_ump_util,
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x40, 0);
-  g_return_val_if_fail((0xf0 & buffer[1]) == 0x90, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0x40, 0);
+  g_return_val_if_fail((0xf0 & buffer[2]) == 0x90, 0);
 
   offset = 0;
 
@@ -7434,6 +7436,7 @@ ags_midi_ump_util_get_flex_set_metronome(AgsMidiUmpUtil *midi_ump_util,
 {
   guint offset;
   gint nth;
+  guint i;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
