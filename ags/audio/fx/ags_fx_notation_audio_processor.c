@@ -2768,12 +2768,16 @@ ags_fx_notation_audio_processor_real_midi2_record(AgsFxNotationAudioProcessor *f
 	midi_iter += 4;
       }else if(ags_midi_ump_util_is_delta_clock_ticks_per_quarter_note(recall->midi_ump_util, midi_iter)){
 	//TODO:JK: implement me
+
+	midi_iter += 4;
       }else if(ags_midi_ump_util_is_delta_clock_ticks_since_last_event(recall->midi_ump_util, midi_iter)){
 	//TODO:JK: implement me
+
+	midi_iter += 4;
       }else{
 	g_warning("ags_fx_notation_audio_processor.c - unexpected byte %x", midi_iter[0]);
 	    
-	midi_iter++;
+	midi_iter += 4;
       }
     }
   }

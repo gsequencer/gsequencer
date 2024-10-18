@@ -2014,8 +2014,6 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 
 						 callback_mutex = &(core_audio_midiin->callback_mutex);
 						 callback_finish_mutex = &(core_audio_midiin->callback_finish_mutex);
-  
-						 g_rec_mutex_unlock(device_mutex);
 						   
 						 /* wait callback */
 						 g_atomic_int_inc(&(core_audio_port->queued));
@@ -2023,6 +2021,8 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 						 no_event = TRUE;
   
 						 if((AGS_CORE_AUDIO_MIDIIN_PASS_THROUGH & (g_atomic_int_get(&(core_audio_midiin->sync_flags)))) == 0){
+						   g_rec_mutex_unlock(device_mutex);
+						   
 						   /* force wait */
 						   g_atomic_int_or(&(core_audio_midiin->sync_flags),
 								   AGS_CORE_AUDIO_MIDIIN_DO_SYNC);
@@ -2047,6 +2047,8 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 								   (AGS_CORE_AUDIO_MIDIIN_CALLBACK_WAIT | AGS_CORE_AUDIO_MIDIIN_CALLBACK_DONE));
     
 						   /* lock device */
+						   g_rec_mutex_lock(device_mutex);
+						 
 						   no_event = FALSE;
 						 }else{
 						   g_atomic_int_set(&(core_audio_port->is_empty),
@@ -2054,8 +2056,6 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 						 }
 
 						 /* get buffer */  
-						 g_rec_mutex_lock(device_mutex);
-  
 						 nth_buffer = 0;
 						 
 						 if((AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_0 & (core_audio_midiin->flags)) != 0){
@@ -2067,7 +2067,11 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 						 }else if((AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_3 & (core_audio_midiin->flags)) != 0){
 						   nth_buffer = 0;
 						 }
-  
+
+						 core_audio_midiin->app_buffer_size[nth_buffer] = 0;
+						 
+						 memset(core_audio_midiin->app_buffer[nth_buffer], 0, core_audio_midiin->allocated_app_buffer_size[nth_buffer] * sizeof(char));
+						 
 						 event_packet = &evtlist->packet[0];
 						 num_packets = evtlist->numPackets;
 
@@ -2092,8 +2096,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 		  
 						     memset(core_audio_midiin->app_buffer[nth_buffer] + core_audio_midiin->allocated_app_buffer_size[nth_buffer], 0, AGS_CORE_AUDIO_MIDIIN_DEFAULT_BUFFER_SIZE * sizeof(char));
 
-						     core_audio_midiin->allocated_app_buffer_size[nth_buffer] = 
-						       core_audio_midiin->allocated_app_buffer_size[nth_buffer] = core_audio_midiin->allocated_app_buffer_size[nth_buffer] + AGS_CORE_AUDIO_MIDIIN_DEFAULT_BUFFER_SIZE;
+						     core_audio_midiin->allocated_app_buffer_size[nth_buffer] = core_audio_midiin->allocated_app_buffer_size[nth_buffer] + AGS_CORE_AUDIO_MIDIIN_DEFAULT_BUFFER_SIZE;
 						   }
 
 						   memcpy(core_audio_midiin->app_buffer[nth_buffer] + core_audio_midiin->app_buffer_size[nth_buffer], event_packet->words, (4 * length));
