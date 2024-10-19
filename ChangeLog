@@ -1,4 +1,21 @@
-ags (7.0.1)
+ags (7.0.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsMidiUmpUtil
+	* fixed ags_midi_ump_util_test.c
+	* fixed ags-fx-synth q_lin range from -100.0 to 100.0
+	* fixed ags-fx-fm-synth q_lin range from -100.0 to 100.0
+
+ags (7.0.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags-fx-notation
+	* fixed AgsCoreMIDI port block
+	* fixed ags_recall_set_flags() MIDI 1 and 2 allocation
+	* fixed AgsUmpUtil byte order
+	* initial MIDI 2 playback works on macOS
+
+ags (7.0.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented spin button of AgsMidiDialog to select MIDI group

@@ -2775,7 +2775,7 @@ ags_recall_set_flags(AgsRecall *recall, AgsRecallFlags flags)
   g_rec_mutex_lock(recall_mutex);
 
   if((AGS_RECALL_MIDI1 & flags) != 0){
-    if(recall->midi_util != NULL){
+    if(recall->midi_util == NULL){
       recall->midi_util = ags_midi_util_alloc();
     }
   }
@@ -2797,7 +2797,7 @@ ags_recall_set_flags(AgsRecall *recall, AgsRecallFlags flags)
   }
 
   if((AGS_RECALL_MIDI2 & flags) != 0){
-    if(recall->midi_ump_util != NULL){
+    if(recall->midi_ump_util == NULL){
       recall->midi_ump_util = ags_midi_ump_util_alloc();
     }        
   }
