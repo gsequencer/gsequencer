@@ -2101,9 +2101,9 @@ ags_fx_notation_audio_processor_real_midi1_record(AgsFxNotationAudioProcessor *f
 	  
 	midi_iter += (3 + midi_iter[2]);
       }else{
-#if defined(AGS_DEBUG)
+	//#if defined(AGS_DEBUG)
 	g_warning("ags_fx_notation_audio_processor.c - unexpected byte %x", midi_iter[0]);
-#endif
+	//#endif
 	
 	midi_iter++;
       }
@@ -2993,10 +2993,14 @@ ags_fx_notation_audio_processor_real_midi2_record(AgsFxNotationAudioProcessor *f
 	//TODO:JK: implement me
 
 	midi_iter += 4;
+      }else if(ags_midi_ump_util_is_system_common(recall->midi_ump_util, midi_iter)){
+	//TODO:JK: implement me
+
+	midi_iter += 4;
       }else{
-#if defined(AGS_DEBUG)
+	//#if defined(AGS_DEBUG)
 	g_warning("ags_fx_notation_audio_processor.c - unexpected bytes %x %x %x %x", midi_iter[3], midi_iter[2], midi_iter[1], midi_iter[0]);
-#endif
+	//#endif
 	
 	midi_iter += 4;
       }

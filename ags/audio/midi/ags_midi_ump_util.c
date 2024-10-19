@@ -295,30 +295,32 @@ ags_midi_ump_util_put_endpoint_discovery(AgsMidiUmpUtil *midi_ump_util,
   
   nth = 3;
   
-  buffer[nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
+  buffer[offset + nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
   nth--;
 
-  buffer[nth] = (0xff & status);
+  buffer[offset + nth] = (0xff & status);
   nth--;
 
-  buffer[nth] = (0xff & major);
+  buffer[offset + nth] = (0xff & major);
   nth--;
 
-  buffer[nth] = (0xff & minor);
+  buffer[offset + nth] = (0xff & minor);
 
   offset += 4;
+
+  nth = 3;  
 
   /* reserved */
-  buffer[offset + 3] = 0x0;
-  buffer[offset + 2] = 0x0;
-  buffer[offset + 1] = 0x0;
-  
-  memset(buffer + nth, 0, 3 * sizeof(guchar));
+  buffer[offset + nth] = 0x0;
+  buffer[offset + nth - 1] = 0x0;
+  buffer[offset + nth - 2] = 0x0;
 
   /* filter bitmap */
-  buffer[offset] = (0xff & filter);
+  buffer[offset + nth - 3] = (0xff & filter);
 
   offset += 4;
+
+  nth = 3;  
 
   /* reserved */
   buffer[offset + 3] = 0x0;
@@ -327,6 +329,8 @@ ags_midi_ump_util_put_endpoint_discovery(AgsMidiUmpUtil *midi_ump_util,
   buffer[offset] = 0x0;
   
   offset += 4;
+
+  nth = 3;  
 
   buffer[offset + 3] = 0x0;
   buffer[offset + 2] = 0x0;
@@ -480,16 +484,16 @@ ags_midi_ump_util_put_endpoint_info_notification(AgsMidiUmpUtil *midi_ump_util,
   
   nth = 3;
   
-  buffer[nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
+  buffer[offset + nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
   nth--;
 
-  buffer[nth] = (0xff & status);
+  buffer[offset + nth] = (0xff & status);
   nth--;
 
-  buffer[nth] = (0xff & major);
+  buffer[offset + nth] = (0xff & major);
   nth--;
 
-  buffer[nth] = (0xff & minor);
+  buffer[offset + nth] = (0xff & minor);
 
   offset += 4;
 
@@ -534,6 +538,8 @@ ags_midi_ump_util_put_endpoint_info_notification(AgsMidiUmpUtil *midi_ump_util,
   }
 
   offset += 4;
+
+  nth = 3;
   
   /* reserved */
   buffer[offset + 3] = 0x0;
@@ -601,14 +607,14 @@ ags_midi_ump_util_get_endpoint_info_notification(AgsMidiUmpUtil *midi_ump_util,
 
   /* major */
   if(major != NULL){
-    major[0] = buffer[nth];
+    major[0] = buffer[offset + nth];
   }
 
   nth--;
 
   /* minor */
   if(minor != NULL){
-    minor[0] = buffer[nth];
+    minor[0] = buffer[offset + nth];
   }
 
   offset += 4;
@@ -617,11 +623,11 @@ ags_midi_ump_util_get_endpoint_info_notification(AgsMidiUmpUtil *midi_ump_util,
   nth = 3;
 
   if(static_function_blocks != NULL){
-    static_function_blocks[0] = ((0x80 & buffer[nth]) != 0) ? TRUE: FALSE;
+    static_function_blocks[0] = ((0x80 & buffer[offset + nth]) != 0) ? TRUE: FALSE;
   }
   
   if(function_block_count != NULL){
-    function_block_count[0] = (0x7f & buffer[nth]);
+    function_block_count[0] = (0x7f & buffer[offset + nth]);
   }
 
   nth--;
@@ -721,17 +727,17 @@ ags_midi_ump_util_put_device_identity_notification(AgsMidiUmpUtil *midi_ump_util
   
   nth = 3;
   
-  buffer[nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
+  buffer[offset + nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
   nth--;
 
-  buffer[nth] = (0xff & status);
+  buffer[offset + nth] = (0xff & status);
   nth--;
 
   /* reserved */
-  buffer[nth] = 0x0;
+  buffer[offset + nth] = 0x0;
   nth--;
 
-  buffer[nth] = 0x0;
+  buffer[offset + nth] = 0x0;
 
   offset += 4;
 
@@ -3219,6 +3225,8 @@ ags_midi_ump_util_get_midi1_note_off(AgsMidiUmpUtil *midi_ump_util,
     channel[0] = 0x0f & buffer[offset + nth];
   }
 
+  nth--;
+  
   /* key */
   if(key != NULL){
     key[0] = 0xff & buffer[offset + nth];
@@ -3646,7 +3654,7 @@ ags_midi_ump_util_get_midi1_control_change(AgsMidiUmpUtil *midi_ump_util,
   nth = 3;
   
   if(group != NULL){
-    group[0] = 0x0f & buffer[offset];
+    group[0] = 0x0f & buffer[offset + nth];
   }
 
   nth--;
@@ -4300,7 +4308,7 @@ ags_midi_ump_util_get_midi2_note_off(AgsMidiUmpUtil *midi_ump_util,
     velocity[0] = (0xff00 & (buffer[offset + nth] << 8)) | (0xff & buffer[offset + nth - 1]);
   }
 
-  nth--;
+  nth -= 2;
 
   /* attribute */
   if(attribute != NULL){
@@ -4970,8 +4978,8 @@ ags_midi_ump_util_get_midi2_assignable_per_note_controller(AgsMidiUmpUtil *midi_
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x40, 0);
-  g_return_val_if_fail((0xf0 & buffer[1]) == 0x10, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0x40, 0);
+  g_return_val_if_fail((0xf0 & buffer[2]) == 0x10, 0);
 
   offset = 0;
 
@@ -5132,8 +5140,8 @@ ags_midi_ump_util_get_midi2_per_note_management(AgsMidiUmpUtil *midi_ump_util,
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x40, 0);
-  g_return_val_if_fail((0xf0 & buffer[1]) == 0xf0, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0x40, 0);
+  g_return_val_if_fail((0xf0 & buffer[2]) == 0xf0, 0);
 
   offset = 0;
 
@@ -5312,8 +5320,8 @@ ags_midi_ump_util_get_midi2_control_change(AgsMidiUmpUtil *midi_ump_util,
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x40, 0);
-  g_return_val_if_fail((0xf0 & buffer[1]) == 0xb0, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0x40, 0);
+  g_return_val_if_fail((0xf0 & buffer[2]) == 0xb0, 0);
 
   offset = 0;
 
@@ -5458,10 +5466,11 @@ ags_midi_ump_util_put_midi2_rpn_pitch_bend_range(AgsMidiUmpUtil *midi_ump_util,
   buffer[offset + nth] = (0xff & (index_key));
 
   offset += 4;
+
   nth = 3;
 
   /* semitones */
-  buffer[offset + nth] = 0xfe & ((0x7f & (semitones)) << 1) | ((0x40 & (cents)) >> 6);
+  buffer[offset + nth] = 0xfe & ((0x7f & (semitones)) << 1) | ((0x70 & (cents)) >> 6);
   nth--;
 
   /* cents */
@@ -5507,10 +5516,10 @@ ags_midi_ump_util_get_midi2_rpn_pitch_bend_range(AgsMidiUmpUtil *midi_ump_util,
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x40, 0);
-  g_return_val_if_fail((0xf0 & buffer[1]) == 0x20, 0);
-  g_return_val_if_fail((0xff & buffer[2]) == 0x00, 0);
-  g_return_val_if_fail((0xff & buffer[3]) == 0x00, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0x40, 0);
+  g_return_val_if_fail((0xf0 & buffer[2]) == 0x20, 0);
+  g_return_val_if_fail((0xff & buffer[1]) == 0x00, 0);
+  g_return_val_if_fail((0xff & buffer[0]) == 0x00, 0);
 
   offset = 0;
 
@@ -5535,13 +5544,11 @@ ags_midi_ump_util_get_midi2_rpn_pitch_bend_range(AgsMidiUmpUtil *midi_ump_util,
     semitones[0] = 0x7f & (buffer[offset + nth] >> 1);
   }
 
-  nth--;
-  
   if(cents != NULL){
-    cents[0] = ((0x01 & buffer[nth]) << 6) | ((0xfc & buffer[offset + nth]) >> 2);
+    cents[0] = ((0x07 & buffer[offset + nth]) << 6) | ((0xfc & buffer[offset + nth - 1]) >> 2);
   }
 
-  nth--;
+  nth -= 2;
 
   /* undefined */
   offset += 4;
@@ -5682,7 +5689,7 @@ ags_midi_ump_util_get_midi2_rpn_coarse_tuning(AgsMidiUmpUtil *midi_ump_util,
 
   offset = 0;
 
-  nth = 1;
+  nth = 3;
   
   if(group != NULL){
     group[0] = 0x0f & buffer[offset + nth];
@@ -5843,7 +5850,7 @@ ags_midi_ump_util_get_midi2_rpn_tuning_program_change(AgsMidiUmpUtil *midi_ump_u
 
   offset = 0;
 
-  nth = 1;
+  nth = 3;
   
   if(group != NULL){
     group[0] = 0x0f & buffer[offset + nth];
@@ -6004,7 +6011,7 @@ ags_midi_ump_util_get_midi2_rpn_tuning_bank_select(AgsMidiUmpUtil *midi_ump_util
 
   offset = 0;
 
-  nth = 1;
+  nth = 3;
   
   if(group != NULL){
     group[0] = 0x0f & buffer[offset + nth];
@@ -6164,7 +6171,7 @@ ags_midi_ump_util_get_midi2_rpn_mpe_mcm(AgsMidiUmpUtil *midi_ump_util,
 
   offset = 0;
 
-  nth = 1;
+  nth = 3;
   
   if(group != NULL){
     group[0] = 0x0f & buffer[offset + nth];
@@ -6329,8 +6336,8 @@ ags_midi_ump_util_get_midi2_program_change(AgsMidiUmpUtil *midi_ump_util,
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x40, 0);
-  g_return_val_if_fail((0xf0 & buffer[1]) == 0xc0, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0x40, 0);
+  g_return_val_if_fail((0xf0 & buffer[2]) == 0xc0, 0);
 
   offset = 0;
 
@@ -6664,8 +6671,8 @@ ags_midi_ump_util_get_midi2_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x40, 0);
-  g_return_val_if_fail((0xf0 & buffer[1]) == 0xe0, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0x40, 0);
+  g_return_val_if_fail((0xf0 & buffer[2]) == 0xe0, 0);
 
   offset = 0;
 
@@ -7210,7 +7217,7 @@ ags_midi_ump_util_get_flex_set_time_signature(AgsMidiUmpUtil *midi_ump_util,
 
   offset = 0;
 
-  nth = 1;
+  nth = 3;
   
   if(group != NULL){
     group[0] = 0x0f & buffer[offset + nth];
@@ -7447,7 +7454,7 @@ ags_midi_ump_util_get_flex_set_metronome(AgsMidiUmpUtil *midi_ump_util,
 
   offset = 0;
   
-  nth = 1;
+  nth = 3;
   
   if(group != NULL){
     group[0] = 0x0f & buffer[offset + nth];
@@ -7668,7 +7675,7 @@ ags_midi_ump_util_get_flex_set_key_signature(AgsMidiUmpUtil *midi_ump_util,
 
   offset = 0;
 
-  nth = 1;
+  nth = 3;
   
   if(group != NULL){
     group[0] = 0x0f & buffer[offset + nth];
@@ -7954,7 +7961,7 @@ ags_midi_ump_util_get_flex_set_chord_name(AgsMidiUmpUtil *midi_ump_util,
 
   offset = 0;
 
-  nth = 1;
+  nth = 3;
   
   if(group != NULL){
     group[0] = 0x0f & buffer[offset + nth];

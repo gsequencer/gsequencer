@@ -7068,9 +7068,9 @@ ags_fx_synth_audio_get_low_pass_q_lin_plugin_port()
     g_value_set_float(plugin_port->default_value,
 		      0.0);
     g_value_set_float(plugin_port->lower_value,
-		      0.0);
+		      -100.0);
     g_value_set_float(plugin_port->upper_value,
-		      1.0);
+		      100.0);
   }
 
   g_mutex_unlock(&mutex);
@@ -7186,9 +7186,9 @@ ags_fx_synth_audio_get_high_pass_q_lin_plugin_port()
     g_value_set_float(plugin_port->default_value,
 		      0.0);
     g_value_set_float(plugin_port->lower_value,
-		      0.0);
+		      -100.0);
     g_value_set_float(plugin_port->upper_value,
-		      1.0);
+		      100.0);
   }
 
   g_mutex_unlock(&mutex);

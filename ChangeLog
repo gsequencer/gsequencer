@@ -1,3 +1,11 @@
+ags (7.0.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsMidiUmpUtil
+	* fixed ags_midi_ump_util_test.c
+	* fixed ags-fx-synth q_lin range from -100.0 to 100.0
+	* fixed ags-fx-fm-synth q_lin range from -100.0 to 100.0
+
 ags (7.0.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
