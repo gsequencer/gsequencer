@@ -13963,7 +13963,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 			  ags_dial_get_value(hybrid_fm_synth->synth_0_lfo_depth));
     
     xmlNewProp(node,
-	       "synth-0-lfo_depth",
+	       "synth-0-lfo-depth",
 	       str);
 
     g_free(str);    
@@ -14044,7 +14044,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 			  ags_dial_get_value(hybrid_fm_synth->synth_1_lfo_depth));
     
     xmlNewProp(node,
-	       "synth-1-lfo_depth",
+	       "synth-1-lfo-depth",
 	       str);
 
     g_free(str);    
@@ -14125,7 +14125,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 			  ags_dial_get_value(hybrid_fm_synth->synth_2_lfo_depth));
     
     xmlNewProp(node,
-	       "synth-2-lfo_depth",
+	       "synth-2-lfo-depth",
 	       str);
 
     g_free(str);    
