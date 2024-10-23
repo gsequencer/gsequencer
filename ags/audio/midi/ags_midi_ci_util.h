@@ -135,8 +135,8 @@ guint ags_midi_ci_util_get_muid(AgsMidiCIUtil *midi_ci_util,
 
 void ags_midi_ci_util_put_muid_with_position(AgsMidiCIUtil *midi_ci_util,
 					     guchar *buffer,
-					     AgsMUID muid,
-					     gint position);
+					     gint position,
+					     AgsMUID muid);
 guint ags_midi_ci_util_get_muid_with_position(AgsMidiCIUtil *midi_ci_util,
 					      guchar *buffer,
 					      gint position,

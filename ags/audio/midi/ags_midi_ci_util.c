@@ -210,8 +210,8 @@ ags_midi_ci_util_get_muid(AgsMidiCIUtil *midi_ci_util,
 void
 ags_midi_ci_util_put_muid_with_position(AgsMidiCIUtil *midi_ci_util,
 					guchar *buffer,
-					AgsMUID muid,
-					gint position)
+					gint position,
+					AgsMUID muid)
 {
   guint offset;
   gint nth;
@@ -219,7 +219,8 @@ ags_midi_ci_util_put_muid_with_position(AgsMidiCIUtil *midi_ci_util,
   g_return_if_fail(midi_ci_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  offset = 0;
+  offset = (guint) floor(position / 4.0);
+
   nth = 3 - (position % 4);
   
   buffer[offset + nth] = ((0x0f000000 & muid) >> 24) | ((0x800000 & muid) >> 17) | ((0x8000 & muid) >> 10) | ((0x80 & muid) >> 3);
@@ -279,12 +280,11 @@ ags_midi_ci_util_get_muid_with_position(AgsMidiCIUtil *midi_ci_util,
   g_return_val_if_fail(midi_ci_util != NULL, 0);
   g_return_val_if_fail(buffer != NULL, 0);
 
-  offset = 0;
+  offset = (guint) floor(position / 4.0);
   
   nth = 3 - (position % 4);
   
-  local_muid = ((0x0f & buffer[offset + nth]) << 24);
-  local_muid |= ((0x40 & buffer[3]) << 17) | ((0x20 & buffer[3]) << 10) | ((0x10 & buffer[3]) << 3);
+  local_muid = ((0x0f & buffer[offset + nth]) << 24) | ((0x40 & buffer[offset + nth]) << 17) | ((0x20 & buffer[offset + nth]) << 10) | ((0x10 & buffer[offset + nth]) << 3);
   nth--;
 
   if(nth < 0){
@@ -293,7 +293,7 @@ ags_midi_ci_util_get_muid_with_position(AgsMidiCIUtil *midi_ci_util,
     nth = 3;
   }
   
-  local_muid |= ((0x7f & buffer[offset + nth]) << 16);
+  local_muid = local_muid | ((0x7f & buffer[offset + nth]) << 16);
   nth--;
 
   if(nth < 0){
@@ -302,7 +302,7 @@ ags_midi_ci_util_get_muid_with_position(AgsMidiCIUtil *midi_ci_util,
     nth = 3;
   }
   
-  local_muid |= ((0x7f & buffer[offset + nth]) << 8);
+  local_muid = local_muid | ((0x7f & buffer[offset + nth]) << 8);
   nth--;
 
   if(nth < 0){
@@ -311,12 +311,12 @@ ags_midi_ci_util_get_muid_with_position(AgsMidiCIUtil *midi_ci_util,
     nth = 3;
   }
   
-  local_muid |= (0x7f & buffer[0]);
+  local_muid = local_muid | (0x7f & buffer[offset + nth]);
   
   if(muid != NULL){
     muid[0] = local_muid;
   }
-
+  
   return(4);
 }
 
@@ -379,7 +379,7 @@ ags_midi_ci_util_put_discovery(AgsMidiCIUtil *midi_ci_util,
 			       guint32 max_sysex_message_size)
 {
   guint offset;
-  guint nth;
+  gint nth;
   guint i;
   
   g_return_if_fail(midi_ci_util != NULL);
@@ -417,6 +417,8 @@ ags_midi_ci_util_put_discovery(AgsMidiCIUtil *midi_ci_util,
 					  3 - nth,
 					  source);
   offset += 4;
+
+  nth = 1;
   
   /* broadcast */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
@@ -432,13 +434,13 @@ ags_midi_ci_util_put_discovery(AgsMidiCIUtil *midi_ci_util,
   nth--;
   
   buffer[offset + nth] = 0x0;
-  nth--;
-  
-  buffer[offset + nth] = 0x0;
 
   offset += 4;
 
   nth = 3;
+  
+  buffer[offset + nth] = 0x0;
+  nth--;
 
   /* device family */
   buffer[offset + nth] = (0xff & device_family);
@@ -449,13 +451,13 @@ ags_midi_ci_util_put_discovery(AgsMidiCIUtil *midi_ci_util,
 
   /* device family model number */
   buffer[offset + nth] = (0xff & device_family_model_number);
-  nth--;
-  
-  buffer[offset + nth] = (0xff00 & device_family_model_number) >> 8;
 
   offset += 4;
 
   nth = 3;
+  
+  buffer[offset + nth] = (0xff00 & device_family_model_number) >> 8;
+  nth--;
 
   /* software revision level */
   buffer[offset + nth] = software_revision_level[0];
@@ -465,13 +467,13 @@ ags_midi_ci_util_put_discovery(AgsMidiCIUtil *midi_ci_util,
   nth--;
   
   buffer[offset + nth] = software_revision_level[2];
-  nth--;
-  
-  buffer[offset + nth] = software_revision_level[3];
 
   offset += 4;
 
   nth = 3;
+  
+  buffer[offset + nth] = software_revision_level[3];
+  nth--;
 
   /* capability */
   buffer[offset + nth] = capability;
@@ -482,16 +484,16 @@ ags_midi_ci_util_put_discovery(AgsMidiCIUtil *midi_ci_util,
   nth--;
   
   buffer[offset + nth] = (0xff00 & max_sysex_message_size) >> 8;
-  nth--;
+
+  offset += 4;
+
+  nth = 3;
 
   buffer[offset + nth] = (0xff0000 & max_sysex_message_size) >> 16;
   nth--;
 
   buffer[offset + nth] = (0xff000000 & max_sysex_message_size) >> 24;
-
-  offset += 4;
-
-  nth = 3;
+  nth--;
   
   buffer[offset + nth] = 0xf7;
   nth--;
@@ -554,16 +556,16 @@ ags_midi_ci_util_get_discovery(AgsMidiCIUtil *midi_ci_util,
     device_id[0] = buffer[offset + nth];
   }
 
-  nth--;
+  offset += 4;
+
+  nth = 2;
 
   /* version */
   if(version != NULL){
     version[0] = buffer[offset + nth];
   }
 
-  offset += 4;
-  
-  nth = 3;
+  nth--;
   
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
@@ -573,53 +575,71 @@ ags_midi_ci_util_get_discovery(AgsMidiCIUtil *midi_ci_util,
 
   offset += 4;
   
-  nth = 3;
+  nth = 1;
 
   /* destination - broadcast */
   //NOTE:JK: validate first - see top of function
   
   offset += 4;
   
-  nth = 3;
+  nth = 1;
 
   /* manufacturer */
   if(manufacturer_id != NULL){
     manufacturer_id[0] = buffer[offset + nth];
-    manufacturer_id[1] = buffer[offset + nth - 1];
-    manufacturer_id[2] = buffer[offset + nth - 2];
-  }
+    nth--;
+    
+    manufacturer_id[1] = buffer[offset + nth];
 
-  nth -= 3;
+    offset += 4;
+    
+    nth = 3;
+    
+    manufacturer_id[2] = buffer[offset + nth];
+    nth--;
+  }else{
+    offset += 4;
+
+    nth = 2;
+  }
 
   /* device family */
   if(device_family != NULL){
-    device_family[0] = ((buffer[offset + nth]) | (buffer[offset + nth - 1 + 4] << 8));
+    device_family[0] = ((buffer[offset + nth]) | (buffer[offset + nth - 1] << 8));
   }
 
-  offset += 4;
-
-  nth = 2;
+  nth = 0;
 
   /* device family model number */
   if(device_family_model_number != NULL){
-    device_family_model_number[0] = ((buffer[offset + nth]) | (buffer[offset + nth - 1] << 8));
+    device_family_model_number[0] = ((buffer[offset + nth]) | (buffer[offset + 7] << 8));
   }
 
   offset += 4;
   
-  nth = 3;
+  nth = 2;
 
   /* software revision level */
   if(software_revision_level != NULL){
     software_revision_level[0] = buffer[offset + nth];
-    software_revision_level[1] = buffer[offset + nth - 1];
-    software_revision_level[2] = buffer[offset + nth - 2];
-    software_revision_level[3] = buffer[offset + nth - 3];
+    nth--;
+    
+    software_revision_level[1] = buffer[offset + nth];
+    nth--;
+
+    software_revision_level[2] = buffer[offset + nth];
+
+    offset += 4;
+
+    nth = 3;
+
+    software_revision_level[3] = buffer[offset + nth];
+    nth--;
+  }else{
+    offset += 4;
+    
+    nth = 2;
   }
-
-  offset += 4;
-
-  nth = 3;
   
   /* capability */
   if(capability != NULL){
@@ -630,12 +650,12 @@ ags_midi_ci_util_get_discovery(AgsMidiCIUtil *midi_ci_util,
 
   /* maximum sysex message size */
   if(max_sysex_message_size != NULL){
-    max_sysex_message_size[0] = (buffer[offset + nth]) | (buffer[offset + nth - 1] << 8) | (buffer[offset + nth - 2] << 16) | (buffer[offset + nth - 3 + 4] << 24);
+    max_sysex_message_size[0] = (buffer[offset + nth]) | (buffer[offset + nth - 1] << 8) | (buffer[offset + 7] << 16) | (buffer[offset + nth + 6] << 24);
   }
 
   offset += 4;
 
-  nth = 2;
+  nth = 1;
 
   /* sysex end */
   if(buffer[offset + nth] == 0xf7){
@@ -893,7 +913,7 @@ ags_midi_ci_util_get_discovery_reply(AgsMidiCIUtil *midi_ci_util,
 
   offset += 4;
   
-  nth = 3;
+  nth = 2;
 
   /* version */
   if(version != NULL){
@@ -926,7 +946,7 @@ ags_midi_ci_util_get_discovery_reply(AgsMidiCIUtil *midi_ci_util,
   if(manufacturer_id != NULL){
     manufacturer_id[0] = buffer[offset + nth];
     manufacturer_id[1] = buffer[offset + nth - 1];
-    manufacturer_id[2] = buffer[offset + nth + 4];
+    manufacturer_id[2] = buffer[offset + 7];
   }
 
   offset += 4;
@@ -938,23 +958,23 @@ ags_midi_ci_util_get_discovery_reply(AgsMidiCIUtil *midi_ci_util,
     device_family[0] = ((buffer[offset + nth]) | (buffer[offset + nth - 1] << 8));
   }
   
-  offset += 4;
-
-  nth = 3;
+  nth = 0;
 
   /* device family model number */
   if(device_family_model_number != NULL){
-    device_family_model_number[0] = ((buffer[offset + nth]) | (buffer[offset + nth - 1] << 8));
+    device_family_model_number[0] = ((buffer[offset + nth]) | (buffer[offset + 7] << 8));
   }
+
+  offset += 4;
   
-  nth = 1;
+  nth = 2;
 
   /* software revision level */
   if(software_revision_level != NULL){
     software_revision_level[0] = buffer[offset + nth];
     software_revision_level[1] = buffer[offset + nth - 1];
-    software_revision_level[2] = buffer[offset + nth + 4];
-    software_revision_level[3] = buffer[offset + nth + 4 - 1];
+    software_revision_level[2] = buffer[offset + nth - 2];
+    software_revision_level[3] = buffer[offset + 6];
   }
 
   offset += 4;
@@ -970,7 +990,7 @@ ags_midi_ci_util_get_discovery_reply(AgsMidiCIUtil *midi_ci_util,
 
   /* maximum sysex message size */
   if(max_sysex_message_size != NULL){
-    max_sysex_message_size[0] = (buffer[offset + nth]) | (buffer[offset + nth - 1] << 8) | (buffer[offset + nth + 4] << 16) | (buffer[offset + nth + 4 - 1] << 24);
+    max_sysex_message_size[0] = (buffer[offset + nth]) | (buffer[offset + nth - 1] << 8) | (buffer[offset + 7] << 16) | (buffer[offset + 6] << 24);
   }
 
   offset += 4;
@@ -3951,16 +3971,14 @@ ags_midi_ci_util_get_profile_reply(AgsMidiCIUtil *midi_ci_util,
     device_id[0] = buffer[offset + nth];
   }
 
-  nth--;
+  nth = 2;
 
   /* version */
   if(version != NULL){
     version[0] = buffer[offset + nth];
   }
 
-  offset += 4;
-
-  nth = 3;
+  nth--;
   
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
@@ -3968,7 +3986,9 @@ ags_midi_ci_util_get_profile_reply(AgsMidiCIUtil *midi_ci_util,
 					  nth,
 					  source);
 
-  nth--;
+  offset += 4;
+
+  nth = 1;
 
   /* destination */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
@@ -3976,15 +3996,17 @@ ags_midi_ci_util_get_profile_reply(AgsMidiCIUtil *midi_ci_util,
 					  nth,
 					  destination);
 
-  nth--;
+  offset += 4;
+
+  nth = 1;
 
   /* enabled profile count */
-  if(enabled_profile_count != NULL){
-    enabled_profile_count[0] = ((buffer[offset + nth]) | (buffer[offset + nth - 1] << 8));
-  }
-  
   i_stop = ((buffer[offset + nth]) | (buffer[offset + nth - 1] << 8));
 
+  if(enabled_profile_count != NULL){
+    enabled_profile_count[0] = i_stop;
+  }
+  
   offset += 4;
   
   nth = 3;
