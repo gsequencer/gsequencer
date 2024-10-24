@@ -497,7 +497,7 @@ ags_midi_ci_util_put_discovery(AgsMidiCIUtil *midi_ci_util,
   
   buffer[offset + nth] = 0xf7;
   nth--;
-  
+
   for(i = 0; nth >= 0; i++){
     buffer[offset + nth] = 0x0;
     nth--;
@@ -759,7 +759,6 @@ ags_midi_ci_util_put_discovery_reply(AgsMidiCIUtil *midi_ci_util,
 
   /* version */
   buffer[offset + nth] = version;
-
   nth--;
   
   /* source */
@@ -851,7 +850,7 @@ ags_midi_ci_util_put_discovery_reply(AgsMidiCIUtil *midi_ci_util,
   /* sysex end */
   buffer[offset + nth] = 0xf7;
   nth--;
-  
+
   for(i = 0; nth >= 0; i++){
     buffer[offset + nth] = 0x0;
     nth--;
@@ -1082,18 +1081,16 @@ ags_midi_ci_util_put_invalidate_muid(AgsMidiCIUtil *midi_ci_util,
   nth = 3;
   
   buffer[offset + nth] = 0x7e; // Sub-ID#2 - invalidate MUID
-
   nth--;
 
   /* version */
   buffer[offset + nth] = version;
-
   nth--;
   
   /* source */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -1103,7 +1100,7 @@ ags_midi_ci_util_put_invalidate_muid(AgsMidiCIUtil *midi_ci_util,
   /* broadcast */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  AGS_MIDI_CI_UTIL_BROADCAST_MUID);
 
   offset += 4;
@@ -1113,7 +1110,7 @@ ags_midi_ci_util_put_invalidate_muid(AgsMidiCIUtil *midi_ci_util,
   /* target muid */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  target_muid);
 
   offset += 4;
@@ -1174,7 +1171,7 @@ ags_midi_ci_util_get_invalidate_muid(AgsMidiCIUtil *midi_ci_util,
 
   offset += 4;
 
-  nth = 3;
+  nth = 2;
 
   /* version */
   if(version != NULL){
@@ -1186,27 +1183,31 @@ ags_midi_ci_util_get_invalidate_muid(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
-
+  
   offset += 4;
   
-  nth = 2;
+  nth = 1;
 
   /* destination - broadcast */
   //NOTE:JK: validate first - see top of function
+
+  offset += 4;
+  
+  nth = 1;
 
   /* target muid */
   if(target_muid != NULL){
     ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					    buffer + offset,
-					  nth,
+					    3 - nth,
 					    target_muid);
   }
 
   offset += 4;
   
-  nth = 2;
+  nth = 1;
 
   /* sysex end */
   if(buffer[offset + nth] == 0xf7){
@@ -1314,7 +1315,7 @@ ags_midi_ci_util_put_ack(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -1324,7 +1325,7 @@ ags_midi_ci_util_put_ack(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
   
   offset += 4;
@@ -1371,19 +1372,22 @@ ags_midi_ci_util_put_ack(AgsMidiCIUtil *midi_ci_util,
   
   buffer[offset + nth] = (0xff00 & message_length) >> 8;
 
+  offset += 4;
+  
   nth = 3;
 
   /* message */
-  if(message != NULL){
-    for(i = 0; i < message_length; i++){
+  for(i = 0; i < message_length; i++){
+    if(message != NULL){
       buffer[offset + nth] = message[i];
-      nth--;
+    }	
 
-      if(nth < 0){
-	nth = 3;
+    nth--;
 
-	offset += 4;
-      }	
+    if(nth < 0){
+      nth = 3;
+
+      offset += 4;
     }
   }
   
@@ -1391,7 +1395,7 @@ ags_midi_ci_util_put_ack(AgsMidiCIUtil *midi_ci_util,
   buffer[offset + nth] = 0xf7;
   nth--;
   
-  for(i = 0; nth >= 0; i++){
+  for(i = 0; nth >= 0 && i < 3; i++){
     buffer[offset + nth] = 0x0;
     nth--;
   }
@@ -1455,7 +1459,7 @@ ags_midi_ci_util_get_ack(AgsMidiCIUtil *midi_ci_util,
 
   offset += 4;
 
-  nth = 3;
+  nth = 2;
   
   /* version */
   if(version != NULL){
@@ -1467,38 +1471,38 @@ ags_midi_ci_util_get_ack(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
 
-  nth = 2;
+  nth = 1;
 
   /* destination */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
 
-  nth = 2;
+  nth = 1;
 
   /* original transaction */
   if(orig_transaction != NULL){
     orig_transaction[0] = buffer[offset + nth];
   }
 
-  offset += 4;
-
-  nth = 2;
+  nth--;
 
   /* status code */
   if(status_code != NULL){
     status_code[0] = buffer[offset + nth];
   }
 
-  nth--;
+  offset += 4;
+
+  nth = 3;
 
   /* status data */
   if(status_data != NULL){
@@ -1510,30 +1514,26 @@ ags_midi_ci_util_get_ack(AgsMidiCIUtil *midi_ci_util,
   /* details */
   if(details != NULL){
     details[0] = buffer[offset + nth];
-    details[1] = buffer[offset + nth + 4];
-    details[2] = buffer[offset + nth + 4 - 1];
-    details[3] = buffer[offset + nth + 4 - 2];
-    details[4] = buffer[offset + nth + 8 - 3];
+    details[1] = buffer[offset + nth - 1];
+    details[2] = buffer[offset + nth - 2];
+    details[3] = buffer[offset + 7];
+    details[4] = buffer[offset + 6];
   }
 
   offset += 4;
 
-  nth = 0;
+  nth = 1;
   
-  /* message length */
-  if(message_length != NULL){
-    message_length[0] = ((buffer[offset + nth]) | (buffer[offset + nth + 4] << 8));
-  }
-
-  offset += 4;
-
-  nth = 2;
-  
+  /* message length */  
   i_stop = ((buffer[offset + nth]) | (buffer[offset + nth - 1] << 8));
+  
+  if(message_length != NULL){
+    message_length[0] = i_stop;
+  }
 
   offset += 4;
 
-  nth = 0;
+  nth = 3;
 
   /* message */
   if(i_stop > 0){
@@ -1655,7 +1655,7 @@ ags_midi_ci_util_put_nak(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -1665,7 +1665,7 @@ ags_midi_ci_util_put_nak(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -1737,7 +1737,7 @@ ags_midi_ci_util_get_nak(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -1747,7 +1747,7 @@ ags_midi_ci_util_get_nak(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -1854,7 +1854,7 @@ ags_midi_ci_util_put_initiate_protocol_negotiation(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
   
   offset += 4;
@@ -1864,7 +1864,7 @@ ags_midi_ci_util_put_initiate_protocol_negotiation(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -2002,7 +2002,7 @@ ags_midi_ci_util_get_initiate_protocol_negotiation(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -2012,7 +2012,7 @@ ags_midi_ci_util_get_initiate_protocol_negotiation(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -2208,7 +2208,7 @@ ags_midi_ci_util_put_initiate_protocol_negotiation_reply(AgsMidiCIUtil *midi_ci_
   /* source */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
   
   offset += 4;
@@ -2218,7 +2218,7 @@ ags_midi_ci_util_put_initiate_protocol_negotiation_reply(AgsMidiCIUtil *midi_ci_
   /* destination */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
   
   offset += 4;
@@ -2356,7 +2356,7 @@ ags_midi_ci_util_get_initiate_protocol_negotiation_reply(AgsMidiCIUtil *midi_ci_
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   nth--;
@@ -2366,7 +2366,7 @@ ags_midi_ci_util_get_initiate_protocol_negotiation_reply(AgsMidiCIUtil *midi_ci_
   /* destination */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -2560,7 +2560,7 @@ ags_midi_ci_util_put_set_protocol_type(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -2570,7 +2570,7 @@ ags_midi_ci_util_put_set_protocol_type(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -2673,7 +2673,7 @@ ags_midi_ci_util_get_set_protocol_type(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -2683,7 +2683,7 @@ ags_midi_ci_util_get_set_protocol_type(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
   nth--;
   
@@ -2829,7 +2829,7 @@ ags_midi_ci_util_put_confirm_protocol_type(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
   
   offset += 4;
@@ -2839,7 +2839,7 @@ ags_midi_ci_util_put_confirm_protocol_type(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -2945,7 +2945,7 @@ ags_midi_ci_util_get_confirm_protocol_type(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -2955,7 +2955,7 @@ ags_midi_ci_util_get_confirm_protocol_type(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -3100,7 +3100,7 @@ ags_midi_ci_util_put_confirm_protocol_type_reply(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -3110,7 +3110,7 @@ ags_midi_ci_util_put_confirm_protocol_type_reply(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -3216,7 +3216,7 @@ ags_midi_ci_util_get_confirm_protocol_type_reply(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -3226,7 +3226,7 @@ ags_midi_ci_util_get_confirm_protocol_type_reply(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -3360,7 +3360,7 @@ ags_midi_ci_util_put_confirm_protocol_type_established(AgsMidiCIUtil *midi_ci_ut
   /* source */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -3370,7 +3370,7 @@ ags_midi_ci_util_put_confirm_protocol_type_established(AgsMidiCIUtil *midi_ci_ut
   /* destination */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -3443,7 +3443,7 @@ ags_midi_ci_util_get_confirm_protocol_type_established(AgsMidiCIUtil *midi_ci_ut
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -3453,7 +3453,7 @@ ags_midi_ci_util_get_confirm_protocol_type_established(AgsMidiCIUtil *midi_ci_ut
   /* destination */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -3561,7 +3561,7 @@ ags_midi_ci_util_put_profile(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -3571,7 +3571,7 @@ ags_midi_ci_util_put_profile(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -3580,9 +3580,6 @@ ags_midi_ci_util_put_profile(AgsMidiCIUtil *midi_ci_util,
 
   /* sysex end */
   buffer[offset + nth] = 0xf7;
-  nth--;
-  
-  buffer[offset + nth] = 0x0;
   nth--;
   
   for(i = 0; nth >= 0; i++){
@@ -3632,36 +3629,36 @@ ags_midi_ci_util_get_profile(AgsMidiCIUtil *midi_ci_util,
     device_id[0] = buffer[offset + nth];
   }
 
-  nth--;
+  offset += 4;
+
+  nth = 2;
 
   /* version */
   if(version != NULL){
     version[0] = buffer[offset + nth];
   }
 
-  offset += 4;
-  
-  nth = 3;
+  nth--;  
   
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;  
 
-  nth = 3;
+  nth = 1;
 
   /* destination */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
   
-  nth = 3;
+  nth = 1;
 
   /* sysex end */
   if(buffer[offset + nth] == 0xf7){
@@ -3765,7 +3762,7 @@ ags_midi_ci_util_put_profile_reply(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -3775,7 +3772,7 @@ ags_midi_ci_util_put_profile_reply(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
   
   offset += 4;
@@ -3971,6 +3968,8 @@ ags_midi_ci_util_get_profile_reply(AgsMidiCIUtil *midi_ci_util,
     device_id[0] = buffer[offset + nth];
   }
 
+  offset += 4;
+
   nth = 2;
 
   /* version */
@@ -3983,7 +3982,7 @@ ags_midi_ci_util_get_profile_reply(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -3993,7 +3992,7 @@ ags_midi_ci_util_get_profile_reply(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -4283,7 +4282,7 @@ ags_midi_ci_util_put_profile_enabled_report(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
   offset += 4;
 
@@ -4292,7 +4291,7 @@ ags_midi_ci_util_put_profile_enabled_report(AgsMidiCIUtil *midi_ci_util,
   /* broadcast */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  AGS_MIDI_CI_UTIL_BROADCAST_MUID);  
   offset += 4;
 
@@ -4325,9 +4324,6 @@ ags_midi_ci_util_put_profile_enabled_report(AgsMidiCIUtil *midi_ci_util,
   nth = 3;
   
   buffer[offset + nth] = (0xff00 & enabled_channel_count) >> 8;
-
-  offset += 4;
-
   nth--;
   
   /* sysex end */
@@ -4384,33 +4380,33 @@ ags_midi_ci_util_get_profile_enabled_report(AgsMidiCIUtil *midi_ci_util,
     device_id[0] = buffer[offset + nth];
   }
   
-  nth--;
+  offset += 4;
+
+  nth = 2;
 
   /* version */
   if(version != NULL){
     version[0] = buffer[offset + nth];
   }
-
-  offset += 4;
   
-  nth = 3;
+  nth = 1;
   
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
 
-  nth = 3;
+  nth = 1;
 
   /* destination - broadcast */
   //NOTE:JK: validate first - see top of function
 
   offset += 4;
 
-  nth = 3;
+  nth = 1;
 
   /* enabled profile */
   if(enabled_profile != NULL){
@@ -4422,8 +4418,10 @@ ags_midi_ci_util_get_profile_enabled_report(AgsMidiCIUtil *midi_ci_util,
   if(enabled_profile != NULL){
     enabled_profile[1] = buffer[offset + nth];
   }
+
+  offset += 4;
   
-  nth--;
+  nth = 3;
   
   if(enabled_profile != NULL){
     enabled_profile[2] = buffer[offset + nth];
@@ -4435,9 +4433,7 @@ ags_midi_ci_util_get_profile_enabled_report(AgsMidiCIUtil *midi_ci_util,
     enabled_profile[3] = buffer[offset + nth];
   }
 
-  offset += 4;
-
-  nth = 3;
+  nth--;
   
   if(enabled_profile != NULL){
     enabled_profile[4] = buffer[offset + nth];
@@ -4447,10 +4443,12 @@ ags_midi_ci_util_get_profile_enabled_report(AgsMidiCIUtil *midi_ci_util,
 
   /* enabled channel count */
   if(enabled_channel_count != NULL){
-    enabled_channel_count[0] = (buffer[offset + nth]) | (buffer[offset + nth - 1] << 8);
+    enabled_channel_count[0] = (buffer[offset + nth]) | (buffer[offset + 7] << 8);
   }
   
-  nth -= 2;
+  offset += 4;
+
+  nth = 2;
   
   /* sysex end */
   if(buffer[offset + nth] == 0xf7){
@@ -4548,7 +4546,7 @@ ags_midi_ci_util_put_profile_disabled_report(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -4558,7 +4556,7 @@ ags_midi_ci_util_put_profile_disabled_report(AgsMidiCIUtil *midi_ci_util,
   /* broadcast */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  AGS_MIDI_CI_UTIL_BROADCAST_MUID);  
 
   offset += 4;
@@ -4648,59 +4646,61 @@ ags_midi_ci_util_get_profile_disabled_report(AgsMidiCIUtil *midi_ci_util,
     device_id[0] = buffer[offset + nth];
   }
 
-  nth--;
+  offset += 4;
+  
+  nth = 2;
 
   /* version */
   if(version != NULL){
     version[0] = buffer[offset + nth];
   }
 
-  offset += 4;
-  
-  nth = 3;
+  nth--;
   
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
   
-  nth = 3;
+  nth = 1;
 
   /* destination - broadcast */
   //NOTE:JK: validate first - see top of function
   
   offset += 4;
   
-  nth = 3;
+  nth = 1;
 
   /* disabled profile */
   disabled_profile[0] = buffer[offset + nth];
   nth--;
 
   disabled_profile[1] = buffer[offset + nth];
-  nth--;
+
+  offset += 4;
+
+  nth = 3;
 
   disabled_profile[2] = buffer[offset + nth];
   nth--;
 
   disabled_profile[3] = buffer[offset + nth];
-
-  offset += 4;
-  
-  nth = 3;
+  nth--;
 
   disabled_profile[4] = buffer[offset + nth];
   nth--;
   
   /* disabled channel count */
   if(disabled_channel_count != NULL){
-    disabled_channel_count[0] = (buffer[offset + nth]) | (buffer[offset + nth - 1] << 8);
+    disabled_channel_count[0] = (buffer[offset + nth]) | (buffer[offset + 7] << 8);
   }
 
-  nth -= 2;
+  offset += 4;
+
+  nth = 2;
   
   /* sysex end */
   if(buffer[offset + nth] == 0xf7){
@@ -4796,7 +4796,7 @@ ags_midi_ci_util_put_profile_added(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -4806,7 +4806,7 @@ ags_midi_ci_util_put_profile_added(AgsMidiCIUtil *midi_ci_util,
   /* broadcast */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  AGS_MIDI_CI_UTIL_BROADCAST_MUID);  
 
   offset += 4;
@@ -4871,7 +4871,8 @@ ags_midi_ci_util_get_profile_added(AgsMidiCIUtil *midi_ci_util,
   g_return_val_if_fail(midi_ci_util != NULL, 0);
   g_return_val_if_fail(buffer[3] == 0xf0, 0);
   g_return_val_if_fail(buffer[2] == 0x7e, 0);
-  g_return_val_if_fail(buffer[0] == 0x26, 0);
+  g_return_val_if_fail(buffer[0] == 0x0d, 0);
+  g_return_val_if_fail(buffer[7] == 0x26, 0);
   g_return_val_if_fail(buffer[12] == 0x7f || buffer[11] == 0x7f || buffer[10] == 0x7f || buffer[9] == 0x7f, 0);
 
   offset = 0;
@@ -4883,49 +4884,49 @@ ags_midi_ci_util_get_profile_added(AgsMidiCIUtil *midi_ci_util,
     device_id[0] = buffer[offset + nth];
   }
 
-  nth--;
+  offset += 4;
+
+  nth = 2;
 
   /* version */
   if(version != NULL){
     version[0] = buffer[offset + nth];
   }
-
-  offset += 4;
   
-  nth = 3;
+  nth--;
   
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
 
-  nth = 3;
+  nth = 1;
 
   /* destination - broadcast */
   //NOTE:JK: validate first - see top of function
 
   offset += 4;
 
-  nth = 3;
+  nth = 1;
 
   /* add profile */
   add_profile[0] = buffer[offset + nth];
   nth--;
   
   add_profile[1] = buffer[offset + nth];
-  nth--;
+
+  offset += 4;
+
+  nth = 3;
 
   add_profile[2] = buffer[offset + nth];
   nth--;
 
   add_profile[3] = buffer[offset + nth];
-
-  offset += 4;
-
-  nth = 3;
+  nth--;
 
   add_profile[4] = buffer[offset + nth];
   nth--;
@@ -5024,7 +5025,7 @@ ags_midi_ci_util_put_profile_removed(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -5034,7 +5035,7 @@ ags_midi_ci_util_put_profile_removed(AgsMidiCIUtil *midi_ci_util,
   /* broadcast */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  AGS_MIDI_CI_UTIL_BROADCAST_MUID);  
 
   offset += 4;
@@ -5062,6 +5063,12 @@ ags_midi_ci_util_put_profile_removed(AgsMidiCIUtil *midi_ci_util,
   
   /* sysex end */
   buffer[offset + nth] = 0xf7;
+  nth--;
+  
+  for(i = 0; nth >= 0; i++){
+    buffer[offset + nth] = 0x0;
+    nth--;
+  }
 }
 
 /**
@@ -5093,7 +5100,8 @@ ags_midi_ci_util_get_profile_removed(AgsMidiCIUtil *midi_ci_util,
   g_return_val_if_fail(midi_ci_util != NULL, 0);
   g_return_val_if_fail(buffer[3] == 0xf0, 0);
   g_return_val_if_fail(buffer[2] == 0x7e, 0);
-  g_return_val_if_fail(buffer[0] == 0x27, 0);
+  g_return_val_if_fail(buffer[0] == 0x0d, 0);
+  g_return_val_if_fail(buffer[7] == 0x27, 0);
   g_return_val_if_fail(buffer[12] == 0x7f || buffer[11] == 0x7f || buffer[10] == 0x7f || buffer[9] == 0x7f, 0);
 
   offset = 0;
@@ -5105,47 +5113,49 @@ ags_midi_ci_util_get_profile_removed(AgsMidiCIUtil *midi_ci_util,
     device_id[0] = buffer[offset + nth];
   }
 
-  nth--;
+  offset += 4;
+
+  nth = 2;
 
   /* version */
   if(version != NULL){
     version[0] = buffer[offset + nth];
   }
 
-  nth = 3;
+  nth--;
   
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
   
-  nth = 3;
+  nth = 1;
 
   /* destination - broadcast */
   //NOTE:JK: validate first - see top of function
   
   offset += 4;
   
-  nth = 3;
+  nth = 1;
 
   /* remove profile */
   remove_profile[0] = buffer[offset + nth];
   nth--;
 
   remove_profile[1] = buffer[offset + nth];
-  nth--;
+
+  offset += 4;
+
+  nth = 3;
 
   remove_profile[2] = buffer[offset + nth];
   nth--;
 
   remove_profile[3] = buffer[offset + nth];
-
-  offset += 4;
-  
-  nth = 3;
+  nth--;
 
   remove_profile[4] = buffer[offset + nth];
   nth--;
@@ -5245,13 +5255,12 @@ ags_midi_ci_util_put_profile_specific_data(AgsMidiCIUtil *midi_ci_util,
 
   /* version */
   buffer[offset + nth] = version;
-
-  nth++;
+  nth--;
   
   /* source */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
   
   offset += 4;
@@ -5261,7 +5270,7 @@ ags_midi_ci_util_put_profile_specific_data(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
   
   offset += 4;
@@ -5304,17 +5313,18 @@ ags_midi_ci_util_put_profile_specific_data(AgsMidiCIUtil *midi_ci_util,
   nth--;
 
   /* profile specific data */
-  if(profile_specific_data != NULL){
-    for(i = 0; i < profile_specific_data_length; i++){
+  for(i = 0; i < profile_specific_data_length; i++){
+    if(profile_specific_data != NULL){
       buffer[offset + nth] = profile_specific_data[i];
-      nth--;
-
-      if(nth < 0){
-	nth = 3;
-	
-	offset += 4;
-      }      
     }
+
+    nth--;
+
+    if(nth < 0){
+      nth = 3;
+	
+      offset += 4;
+    }      
   }
   
   /* sysex end */
@@ -5375,34 +5385,36 @@ ags_midi_ci_util_get_profile_specific_data(AgsMidiCIUtil *midi_ci_util,
     device_id[0] = buffer[offset + nth];
   }
 
-  nth--;
+  offset += 4;
+
+  nth = 2;
 
   /* version */
   if(version != NULL){
     version[0] = buffer[offset + nth];
   }
 
-  nth = 3;
+  nth--;
   
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
   
-  nth = 3;
+  nth = 1;
 
   /* destination */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
   
-  nth = 3;
+  nth = 1;
 
   /* profile ID */
   if(profile_id != NULL){
@@ -5410,50 +5422,53 @@ ags_midi_ci_util_get_profile_specific_data(AgsMidiCIUtil *midi_ci_util,
     nth--;
 
     profile_id[1] = buffer[offset + nth];
-    nth--;
+
+    offset += 4;
+    
+    nth = 3;
 
     profile_id[2] = buffer[offset + nth];
     nth--;
 
     profile_id[3] = buffer[offset + nth];
-
-    offset += 4;
-    
-    nth = 3;
+    nth--;
 
     profile_id[4] = buffer[offset + nth];
     nth--;
   }else{
     offset += 4;
 
-    nth = 2;
+    nth = 0;
   }
   
   /* profile specific data length */
+  i_stop = ((buffer[offset + nth]) | (buffer[offset + 7] << 8) | (buffer[offset + 6] << 16) | (buffer[offset + 5] << 24));
+
   if(profile_specific_data_length != NULL){
-    profile_specific_data_length[0] = ((buffer[offset + nth]) | (buffer[offset + nth - 1] << 8) | (buffer[offset + nth - 2] << 16) | (buffer[offset + 4 + 3] << 24));
+    profile_specific_data_length[0] = i_stop;
   }
   
-  i_stop = ((buffer[offset + nth]) | (buffer[offset + nth - 1] << 8) | (buffer[offset + nth + 2] << 16) | (buffer[offset + nth + 4 + 3] << 24));
-
   offset += 4;
 
-  nth = 2;
+  nth = 1;
   
   /* profile specific data */
   if(i_stop > 0){
     if(profile_specific_data != NULL){
       profile_specific_data[0] = g_malloc(i_stop * sizeof(guchar));
-
-      for(i = 0; i < i_stop; i++){
+    }
+    
+    for(i = 0; i < i_stop; i++){
+      if(profile_specific_data != NULL){
 	profile_specific_data[0][i] = buffer[offset + nth];
-	nth--;
+      }
+      
+      nth--;
+      
+      if(nth < 0){
+	offset += 4;
 	
-	if(nth < 0){
-	  offset += 4;
-	  
-	  nth = 3;
-	}
+	nth = 3;
       }
     }
   }else{
@@ -5562,22 +5577,22 @@ ags_midi_ci_util_put_property_exchange_capabilities(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
 
-  nth = 2;
+  nth = 1;
 
   /* destination */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
 
-  nth = 2;
+  nth = 1;
 
   /* supported property exchange count */
   buffer[offset + nth] = supported_property_exchange_count;
@@ -5585,14 +5600,14 @@ ags_midi_ci_util_put_property_exchange_capabilities(AgsMidiCIUtil *midi_ci_util,
 
   /* major */
   buffer[offset + nth] = property_exchange_major;
-  nth--;
-
-  /* minor */
-  buffer[offset + nth] = property_exchange_minor;
 
   offset += 4;
 
   nth = 3;
+
+  /* minor */
+  buffer[offset + nth] = property_exchange_minor;
+  nth--;
 
   /* sysex end */
   buffer[offset + nth] = 0xf7;
@@ -5639,7 +5654,8 @@ ags_midi_ci_util_get_property_exchange_capabilities(AgsMidiCIUtil *midi_ci_util,
   g_return_val_if_fail(midi_ci_util != NULL, 0);
   g_return_val_if_fail(buffer[3] == 0xf0, 0);
   g_return_val_if_fail(buffer[2] == 0x7e, 0);
-  g_return_val_if_fail(buffer[0] == 0x30, 0);
+  g_return_val_if_fail(buffer[0] == 0x0d, 0);
+  g_return_val_if_fail(buffer[7] == 0x30, 0);
 
   offset = 0;
 
@@ -5664,7 +5680,7 @@ ags_midi_ci_util_get_property_exchange_capabilities(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -5674,7 +5690,7 @@ ags_midi_ci_util_get_property_exchange_capabilities(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -5794,7 +5810,7 @@ ags_midi_ci_util_put_property_exchange_capabilities_reply(AgsMidiCIUtil *midi_ci
   /* source */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -5804,7 +5820,7 @@ ags_midi_ci_util_put_property_exchange_capabilities_reply(AgsMidiCIUtil *midi_ci
   /* destination */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -5897,7 +5913,7 @@ ags_midi_ci_util_get_property_exchange_capabilities_reply(AgsMidiCIUtil *midi_ci
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -5907,7 +5923,7 @@ ags_midi_ci_util_get_property_exchange_capabilities_reply(AgsMidiCIUtil *midi_ci
   /* destination */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -6038,7 +6054,7 @@ ags_midi_ci_util_put_get_property_data(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;  
@@ -6048,7 +6064,7 @@ ags_midi_ci_util_put_get_property_data(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -6239,7 +6255,7 @@ ags_midi_ci_util_get_get_property_data(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -6249,7 +6265,7 @@ ags_midi_ci_util_get_get_property_data(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -6473,7 +6489,7 @@ ags_midi_ci_util_put_get_property_data_reply(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -6483,7 +6499,7 @@ ags_midi_ci_util_put_get_property_data_reply(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -6653,7 +6669,7 @@ ags_midi_ci_util_get_get_property_data_reply(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -6663,7 +6679,7 @@ ags_midi_ci_util_get_get_property_data_reply(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -6948,7 +6964,7 @@ ags_midi_ci_util_put_set_property_data(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -6958,7 +6974,7 @@ ags_midi_ci_util_put_set_property_data(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -7150,7 +7166,7 @@ ags_midi_ci_util_get_set_property_data(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -7160,7 +7176,7 @@ ags_midi_ci_util_get_set_property_data(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -7406,7 +7422,7 @@ ags_midi_ci_util_put_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -7416,7 +7432,7 @@ ags_midi_ci_util_put_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -7617,7 +7633,7 @@ ags_midi_ci_util_get_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -7627,7 +7643,7 @@ ags_midi_ci_util_get_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -7885,7 +7901,7 @@ ags_midi_ci_util_put_subscription(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -7895,7 +7911,7 @@ ags_midi_ci_util_put_subscription(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -8075,7 +8091,7 @@ ags_midi_ci_util_get_subscription(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -8085,7 +8101,7 @@ ags_midi_ci_util_get_subscription(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -8341,7 +8357,7 @@ ags_midi_ci_util_put_subscription_reply(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -8351,7 +8367,7 @@ ags_midi_ci_util_put_subscription_reply(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -8549,7 +8565,7 @@ ags_midi_ci_util_get_subscription_reply(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -8559,7 +8575,7 @@ ags_midi_ci_util_get_subscription_reply(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -8805,7 +8821,7 @@ ags_midi_ci_util_put_process_capabilities(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -8815,7 +8831,7 @@ ags_midi_ci_util_put_process_capabilities(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -8887,7 +8903,7 @@ ags_midi_ci_util_get_process_capabilities(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -8897,7 +8913,7 @@ ags_midi_ci_util_get_process_capabilities(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -9000,7 +9016,7 @@ ags_midi_ci_util_put_process_capabilities_reply(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -9010,7 +9026,7 @@ ags_midi_ci_util_put_process_capabilities_reply(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -9086,7 +9102,7 @@ ags_midi_ci_util_get_process_capabilities_reply(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -9096,7 +9112,7 @@ ags_midi_ci_util_get_process_capabilities_reply(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -9212,7 +9228,7 @@ ags_midi_ci_util_put_message_report(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -9222,7 +9238,7 @@ ags_midi_ci_util_put_message_report(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -9322,7 +9338,7 @@ ags_midi_ci_util_get_message_report(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -9332,7 +9348,7 @@ ags_midi_ci_util_get_message_report(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -9479,7 +9495,7 @@ ags_midi_ci_util_put_message_report_reply(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -9489,7 +9505,7 @@ ags_midi_ci_util_put_message_report_reply(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -9588,7 +9604,7 @@ ags_midi_ci_util_get_message_report_reply(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -9598,7 +9614,7 @@ ags_midi_ci_util_get_message_report_reply(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -9731,7 +9747,7 @@ ags_midi_ci_util_put_end_of_message_report(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -9741,7 +9757,7 @@ ags_midi_ci_util_put_end_of_message_report(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
@@ -9813,7 +9829,7 @@ ags_midi_ci_util_get_end_of_message_report(AgsMidiCIUtil *midi_ci_util,
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  source);
 
   offset += 4;
@@ -9823,7 +9839,7 @@ ags_midi_ci_util_get_end_of_message_report(AgsMidiCIUtil *midi_ci_util,
   /* destination */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
-					  nth,
+					  3 - nth,
 					  destination);
 
   offset += 4;
