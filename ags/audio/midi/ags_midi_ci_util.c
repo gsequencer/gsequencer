@@ -7121,12 +7121,6 @@ ags_midi_ci_util_put_set_property_data(AgsMidiCIUtil *midi_ci_util,
   for(i = 0; nth >= 0; i++){
     buffer[offset + nth] = 0x0;
     nth--;
-
-    if(nth < 0){
-      nth = 3;
-
-      offset += 4;
-    }	
   }
 }
 
@@ -7265,6 +7259,7 @@ ags_midi_ci_util_get_set_property_data(AgsMidiCIUtil *midi_ci_util,
       if(header_data != NULL){
 	header_data[0][i] = buffer[offset + nth];
       }
+
       nth--;
 
       if(nth < 0){
@@ -7280,18 +7275,50 @@ ags_midi_ci_util_get_set_property_data(AgsMidiCIUtil *midi_ci_util,
   }
 
   /* chunk count */
-  if(chunk_count != NULL){
-    chunk_count[0] = ((buffer[offset + nth]) | (buffer[offset + nth + 1] << 8));
-  }
+  if(nth > 0){
+    if(chunk_count != NULL){
+      chunk_count[0] = ((buffer[offset + nth]) | (buffer[offset + nth + 1] << 8));
+    }
 
-  nth += 2;
+    nth -= 2;
+
+    if(nth < 0){
+      offset += 4;
+
+      nth = 3;
+    }
+  }else{
+    if(chunk_count != NULL){
+      chunk_count[0] = ((buffer[offset + nth]) | (buffer[offset + 7] << 8));
+    }
+
+    offset += 4;
+
+    nth = 2;
+  }
 
   /* nth chunk */
-  if(nth_chunk != NULL){
-    nth_chunk[0] = ((buffer[offset + nth]) | (buffer[offset + nth + 1] << 8));
-  }
+  if(nth > 0){
+    if(nth_chunk != NULL){
+      nth_chunk[0] = ((buffer[offset + nth]) | (buffer[offset + nth + 1] << 8));
+    }
 
-  nth += 2;
+    nth -= 2;
+
+    if(nth < 0){
+      offset += 4;
+
+      nth = 3;
+    }
+  }else{
+    if(nth_chunk != NULL){
+      nth_chunk[0] = ((buffer[offset + nth]) | (buffer[offset + 7] << 8));
+    }
+    
+    offset += 4;
+    
+    nth = 2;
+  }
 
   /* property data length */
   if(nth > 0){
@@ -7334,6 +7361,7 @@ ags_midi_ci_util_get_set_property_data(AgsMidiCIUtil *midi_ci_util,
       if(property_data != NULL){
 	property_data[0][i] = buffer[offset + nth];
       }
+
       nth--;
 
       if(nth < 0){
@@ -7485,9 +7513,6 @@ ags_midi_ci_util_put_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
   nth = 3;
   
   buffer[offset + nth] = (0xff00 & header_data_length) >> 8;
-
-  offset += 4;
-
   nth--;
 
   /* header data */
@@ -7588,12 +7613,6 @@ ags_midi_ci_util_put_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
   for(i = 0; nth >= 0; i++){
     buffer[offset + nth] = 0x0;
     nth--;
-
-    if(nth < 0){
-      nth = 3;
-
-      offset += 4;
-    }	
   }
 }
 
@@ -7701,8 +7720,6 @@ ags_midi_ci_util_get_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
   if(header_data_length != NULL){
     header_data_length[0] = i_stop;
   }
-
-  nth--;
 
   /* header data */
   if(i_stop > 0){
@@ -8106,14 +8123,16 @@ ags_midi_ci_util_get_subscription(AgsMidiCIUtil *midi_ci_util,
 
   offset = 0;
 
-  nth = 3;
+  nth = 1;
   
   /* device ID */
   if(device_id != NULL){
     device_id[0] = buffer[offset + nth];
   }
 
-  nth--;
+  offset += 4;
+
+  nth = 2;
 
   /* version */
   if(version != NULL){
@@ -8520,12 +8539,6 @@ ags_midi_ci_util_put_subscription_reply(AgsMidiCIUtil *midi_ci_util,
   for(i = 0; nth >= 0; i++){
     buffer[offset + nth] = 0x0;
     nth--;
-
-    if(nth < 0){
-      nth = 3;
-
-      offset += 4;
-    }	
   }
 }
 
@@ -8587,7 +8600,7 @@ ags_midi_ci_util_get_subscription_reply(AgsMidiCIUtil *midi_ci_util,
 
   offset += 4;
   
-  nth = 3;
+  nth = 2;
 
   /* version */
   if(version != NULL){
@@ -8604,7 +8617,7 @@ ags_midi_ci_util_get_subscription_reply(AgsMidiCIUtil *midi_ci_util,
 
   offset += 4;
 
-  nth = 2;
+  nth = 1;
 
   /* destination */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
@@ -8614,7 +8627,7 @@ ags_midi_ci_util_get_subscription_reply(AgsMidiCIUtil *midi_ci_util,
 
   offset += 4;
 
-  nth = 2;
+  nth = 1;
 
   /* request ID */
   if(request_id != NULL){
@@ -8633,8 +8646,6 @@ ags_midi_ci_util_get_subscription_reply(AgsMidiCIUtil *midi_ci_util,
   if(header_data_length != NULL){
     header_data_length[0] = i_stop;
   }
-
-  nth--;
 
   /* header data */
   if(i_stop > 0){
@@ -8687,7 +8698,7 @@ ags_midi_ci_util_get_subscription_reply(AgsMidiCIUtil *midi_ci_util,
   /* nth chunk */
   if(nth > 0){
     if(nth_chunk != NULL){
-      nth_chunk[0] = ((buffer[offset + nth]) | (buffer[offset + nth + 1] << 8));
+      nth_chunk[0] = ((buffer[offset + nth]) | (buffer[offset + nth - 1] << 8));
     }
   }else{
     if(nth_chunk != NULL){
@@ -8715,7 +8726,7 @@ ags_midi_ci_util_get_subscription_reply(AgsMidiCIUtil *midi_ci_util,
   if(nth > 0){
     i_stop = ((buffer[offset + nth]) | (buffer[offset + nth - 1] << 8));
   }else{
-    i_stop = ((buffer[offset + nth]) | (buffer[offset + nth + 7] << 8));
+    i_stop = ((buffer[offset + nth]) | (buffer[offset + 7] << 8));
   }
 
   nth--;
@@ -8845,8 +8856,6 @@ ags_midi_ci_util_put_process_capabilities(AgsMidiCIUtil *midi_ci_util,
   
   buffer[offset + nth] = 0x40; // Sub-ID#2 - process capabilities
   nth--;
-
-  nth = 0;
 
   /* version */
   buffer[offset + nth] = version;
@@ -9055,7 +9064,7 @@ ags_midi_ci_util_put_process_capabilities_reply(AgsMidiCIUtil *midi_ci_util,
 
   offset += 4;
 
-  nth = 2;
+  nth = 1;
 
   /* destination */
   ags_midi_ci_util_put_muid_with_position(midi_ci_util,
@@ -9065,7 +9074,7 @@ ags_midi_ci_util_put_process_capabilities_reply(AgsMidiCIUtil *midi_ci_util,
 
   offset += 4;
 
-  nth = 2;
+  nth = 1;
 
   /* supported features */
   buffer[offset + nth] = supported_features;
@@ -9073,7 +9082,6 @@ ags_midi_ci_util_put_process_capabilities_reply(AgsMidiCIUtil *midi_ci_util,
 
   /* sysex end */
   buffer[offset + nth] = 0xf7;
-  nth--;
 
   for(i = 0; nth >= 0; i++){
     buffer[offset + nth] = 0x0;
@@ -9123,6 +9131,8 @@ ags_midi_ci_util_get_process_capabilities_reply(AgsMidiCIUtil *midi_ci_util,
   if(device_id != NULL){
     device_id[0] = buffer[offset + nth];
   }
+
+  offset += 4;
 
   nth = 2;
 
