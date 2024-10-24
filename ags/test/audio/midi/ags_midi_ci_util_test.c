@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -171,22 +171,20 @@ ags_midi_ci_util_test_put_discovery()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x70\x01\x7e\x2d\x3e\x6f\x7f\x7f\x7f\x7f\x08\x00\x00\xfe\xaf\x52\x0a\x00\x05\x00\x05\x05\x00\x02\x00\x00\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2d\x7e\x01\x70\x7f\x7f\x6f\x3e\x00\x08\x7f\x7f\x52\xaf\xfe\x00\x00\x05\x00\x0a\x02\x00\x05\x05\x00\xf7\x00\x00";
 
   AgsMUID source = 0x0eadbeef;
   
   guchar device_id = 0x7f;
   guchar version = '\x01';
-  guchar manufacturer_id[] = "\x08\x00\x00";
+  guchar manufacturer_id[3] = "\x08\x00\x00";
   guint16 device_family = 0xaffe;
   guint16 device_family_model_number = 0x0a52;  
-  guchar software_revision_level[] = "\x00\x05\x00\x05";
+  guchar software_revision_level[4] = "\x00\x05\x00\x05";
   guchar capability = '\x05';
   guint32 max_sysex_message_size = 512;
   
   midi_ci_util = ags_midi_ci_util_alloc();
-
-  memset(buffer, 0, 512 * sizeof(guchar));
 
   ags_midi_ci_util_put_discovery(midi_ci_util,
 				 buffer,
@@ -208,7 +206,7 @@ ags_midi_ci_util_test_get_discovery()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x70\x01\x7e\x2d\x3e\x6f\x7f\x7f\x7f\x7f\x08\x00\x00\xfe\xaf\x52\x0a\x00\x05\x00\x05\x05\x00\x02\x00\x00\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2d\x7e\x01\x70\x7f\x7f\x6f\x3e\x00\x08\x7f\x7f\x52\xaf\xfe\x00\x00\x05\x00\x0a\x02\x00\x05\x05\x00\xf7\x00\x00";
 
   AgsMUID source;
 
@@ -252,7 +250,7 @@ ags_midi_ci_util_test_put_discovery_reply()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x71\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x08\x00\x00\xfe\xaf\x52\x0a\x00\x05\x00\x05\x05\x00\x02\x00\x00\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x71\x2d\x7e\x10\x60\x00\x08\x6f\x3e\x52\xaf\xfe\x00\x00\x05\x00\x0a\x02\x00\x05\x05\x00\xf7\x00\x00";
 
   AgsMUID source = 0x0cafe010;
   AgsMUID destination = 0x0eadbeef;
@@ -291,7 +289,7 @@ ags_midi_ci_util_test_get_discovery_reply()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x71\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x08\x00\x00\xfe\xaf\x52\x0a\x00\x05\x00\x05\x05\x00\x02\x00\x00\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x71\x2d\x7e\x10\x60\x00\x08\x6f\x3e\x52\xaf\xfe\x00\x00\x05\x00\x0a\x02\x00\x05\x05\x00\xf7\x00\x00";
 
   AgsMUID source;
   AgsMUID destination;
@@ -338,7 +336,7 @@ ags_midi_ci_util_test_put_invalidate_muid()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x7e\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x7e\x2d\x3e\x6f\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x7e\x7f\x7f\x10\x60\x2d\x7e\x7f\x7f\x00\xf7\x6f\x3e\x00\x00\x00\x00";
 
   AgsMUID source = 0x0cafe010;
   AgsMUID target_muid = 0x0eadbeef;
@@ -357,7 +355,7 @@ ags_midi_ci_util_test_put_invalidate_muid()
 				       source,
 				       target_muid);
 
-  CU_ASSERT(!memcmp(buffer, filled_buffer, 19 * sizeof(guchar)));
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 24 * sizeof(guchar)));
 }
 
 void
@@ -365,7 +363,7 @@ ags_midi_ci_util_test_get_invalidate_muid()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x7e\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x7e\x2d\x3e\x6f\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x7e\x7f\x7f\x10\x60\x2d\x7e\x7f\x7f\x00\xf7\x6f\x3e\x00\x00\x00\x00";
 
   AgsMUID source;
   AgsMUID target_muid;
@@ -394,7 +392,7 @@ ags_midi_ci_util_test_put_ack()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x7d\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x34\x00\x00\x00\x00\x00\x00\x00\x00\x00\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x7d\x2d\x7e\x10\x60\x00\x34\x6f\x3e\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xf7\x00\x00\x00\x00";
 
   AgsMUID source = 0x0cafe010;
   AgsMUID destination = 0x0eadbeef;
@@ -425,7 +423,7 @@ ags_midi_ci_util_test_put_ack()
 			   message_length,
 			   message);
 
-  CU_ASSERT(!memcmp(buffer, filled_buffer, 24 * sizeof(guchar)));
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 32 * sizeof(guchar)));
 }
 
 void
@@ -433,7 +431,7 @@ ags_midi_ci_util_test_get_ack()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x7d\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x34\x00\x00\x00\x00\x00\x00\x00\x00\x00\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x7d\x2d\x7e\x10\x60\x00\x34\x6f\x3e\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xf7\x00\x00\x00\x00";
 
   AgsMUID source;
   AgsMUID destination;
@@ -480,7 +478,7 @@ ags_midi_ci_util_test_put_nak()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x7f\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x7f\x2d\x7e\x10\x60\x00\xf7\x6f\x3e\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   AgsMUID source = 0x0cafe010;
   AgsMUID destination = 0x0eadbeef;
@@ -499,7 +497,7 @@ ags_midi_ci_util_test_put_nak()
 			   source,
 			   destination);
 
-  CU_ASSERT(!memcmp(buffer, filled_buffer, 15 * sizeof(guchar)));
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
 
 void
@@ -507,7 +505,7 @@ ags_midi_ci_util_test_get_nak()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x7f\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x7f\x2d\x7e\x10\x60\x00\xf7\x6f\x3e\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   AgsMUID source;
   AgsMUID destination;
@@ -608,7 +606,7 @@ ags_midi_ci_util_test_put_profile()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x20\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x20\x2d\x7e\x10\x60\x00\xf7\x6f\x3e\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   AgsMUID source = 0x0cafe010;
   AgsMUID destination = 0x0eadbeef;
@@ -627,7 +625,7 @@ ags_midi_ci_util_test_put_profile()
 			       source,
 			       destination);
 
-  CU_ASSERT(!memcmp(buffer, filled_buffer, 15 * sizeof(guchar)));
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
 
 void
@@ -635,7 +633,7 @@ ags_midi_ci_util_test_get_profile()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x20\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x20\x2d\x7e\x10\x60\x00\xf7\x6f\x3e\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   AgsMUID source;
   AgsMUID destination;
@@ -664,14 +662,14 @@ ags_midi_ci_util_test_put_profile_reply()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x21\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x03\x00\x7e\x00\x00\x01\x02\x7e\x00\x00\x01\x03\x7e\x00\x00\x01\x09\x01\x00\x7e\x00\x00\x01\x01\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x21\x2d\x7e\x10\x60\x00\x03\x6f\x3e\x01\x00\x00\x7e\x00\x00\x7e\x02\x00\x7e\x03\x01\x01\x09\x01\x00\x00\x00\x7e\x00\x00\xf7\x01\x01";
 
-  const guchar* enabled_profile[5] = {
+  static const guchar* const enabled_profile[5] = {
     "\x7e\x00\x00\x01\x02",
     "\x7e\x00\x00\x01\x03",
     "\x7e\x00\x00\x01\x09",
   };
-  const guchar* disabled_profile[5] = {
+  static const guchar* const disabled_profile[5] = {
     "\x7e\x00\x00\x01\x01",
   };
   
@@ -698,7 +696,7 @@ ags_midi_ci_util_test_put_profile_reply()
 				     disabled_profile_count,
 				     disabled_profile);
 
-  CU_ASSERT(!memcmp(buffer, filled_buffer, 39 * sizeof(guchar)));
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 40 * sizeof(guchar)));
 }
 
 void
@@ -706,16 +704,17 @@ ags_midi_ci_util_test_get_profile_reply()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x21\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x03\x00\x7e\x00\x00\x01\x02\x7e\x00\x00\x01\x03\x7e\x00\x00\x01\x09\x01\x00\x7e\x00\x00\x01\x01\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x21\x2d\x7e\x10\x60\x00\x03\x6f\x3e\x01\x00\x00\x7e\x00\x00\x7e\x02\x00\x7e\x03\x01\x01\x09\x01\x00\x00\x00\x7e\x00\x00\xf7\x01\x01";
+  
   guchar **enabled_profile;
   guchar **disabled_profile;
 
-  const guchar* filled_enabled_profile[5] = {
+  static const guchar* const filled_enabled_profile[5] = {
     "\x7e\x00\x00\x01\x02",
     "\x7e\x00\x00\x01\x03",
     "\x7e\x00\x00\x01\x09",
   };
-  const guchar* filled_disabled_profile[5] = {
+  static const guchar* const filled_disabled_profile[5] = {
     "\x7e\x00\x00\x01\x01",
   };
 
@@ -783,7 +782,7 @@ ags_midi_ci_util_test_put_profile_enabled_report()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x24\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x7e\x00\x00\x01\x01\x00\x00\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x24\x7f\x7f\x10\x60\x00\x7e\x7f\x7f\x00\x01\x01\x00\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   const guchar add_profile[] = "\x7e\x00\x00\x01\x01";
   
@@ -805,7 +804,7 @@ ags_midi_ci_util_test_put_profile_enabled_report()
 					      add_profile,
 					      enabled_channel_count);
 
-  CU_ASSERT(!memcmp(buffer, filled_buffer, 22 * sizeof(guchar)));
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 32 * sizeof(guchar)));
 }
 
 void
@@ -813,7 +812,7 @@ ags_midi_ci_util_test_get_profile_enabled_report()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x24\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x7e\x00\x00\x01\x01\x00\x00\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x24\x7f\x7f\x10\x60\x00\x7e\x7f\x7f\x00\x01\x01\x00\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   guchar enabled_profile[5];
 
   const guchar filled_enabled_profile[5] = "\x7e\x00\x00\x01\x01";
@@ -857,7 +856,7 @@ ags_midi_ci_util_test_put_profile_disabled_report()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x25\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x7e\x00\x00\x01\x01\x00\x00\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x25\x7f\x7f\x10\x60\x00\x7e\x7f\x7f\x00\x01\x01\x00\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   const guchar enabled_profile[] = "\x7e\x00\x00\x01\x01";
   
@@ -879,7 +878,7 @@ ags_midi_ci_util_test_put_profile_disabled_report()
 					       enabled_profile,
 					       enabled_channel_count);
 
-  CU_ASSERT(!memcmp(buffer, filled_buffer, 22 * sizeof(guchar)));
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 32 * sizeof(guchar)));
 }
 
 void
@@ -887,7 +886,7 @@ ags_midi_ci_util_test_get_profile_disabled_report()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x25\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x7e\x00\x00\x01\x01\x00\x00\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x25\x7f\x7f\x10\x60\x00\x7e\x7f\x7f\x00\x01\x01\x00\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   guchar enabled_profile[5];
 
   const guchar filled_enabled_profile[5] = "\x7e\x00\x00\x01\x01";
@@ -931,7 +930,7 @@ ags_midi_ci_util_test_put_profile_added()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x26\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x7e\x00\x00\x01\x01\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x26\x7f\x7f\x10\x60\x00\x7e\x7f\x7f\xf7\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   const guchar add_profile[] = "\x7e\x00\x00\x01\x01";
   
@@ -951,7 +950,7 @@ ags_midi_ci_util_test_put_profile_added()
 				     source,
 				     add_profile);
 
-  CU_ASSERT(!memcmp(buffer, filled_buffer, 20 * sizeof(guchar)));
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 32 * sizeof(guchar)));
 }
 
 void
@@ -959,7 +958,7 @@ ags_midi_ci_util_test_get_profile_added()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x26\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x7e\x00\x00\x01\x01\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x26\x7f\x7f\x10\x60\x00\x7e\x7f\x7f\xf7\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   guchar add_profile[5];
 
   const guchar filled_add_profile[5] = "\x7e\x00\x00\x01\x01";
@@ -1000,7 +999,7 @@ ags_midi_ci_util_test_put_profile_removed()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x27\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x7e\x00\x00\x01\x01\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x27\x7f\x7f\x10\x60\x00\x7e\x7f\x7f\xf7\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   const guchar remove_profile[] = "\x7e\x00\x00\x01\x01";
   
@@ -1028,7 +1027,7 @@ ags_midi_ci_util_test_get_profile_removed()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x27\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x7e\x00\x00\x01\x01\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x27\x7f\x7f\x10\x60\x00\x7e\x7f\x7f\xf7\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   guchar remove_profile[5];
 
   const guchar filled_remove_profile[5] = "\x7e\x00\x00\x01\x01";
@@ -1069,7 +1068,7 @@ ags_midi_ci_util_test_put_profile_specific_data()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x2f\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x7e\x00\x00\x01\x01\x00\x00\x00\x00\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x2f\x7f\x7f\x10\x60\x00\x7e\x7f\x7f\x00\x01\x01\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   guchar *profile_specific_data;
   
   const guchar profile_id[] = "\x7e\x00\x00\x01\x01";
@@ -1106,7 +1105,7 @@ ags_midi_ci_util_test_get_profile_specific_data()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x2f\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x7e\x00\x00\x01\x01\x00\x00\x00\x00\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x2f\x7f\x7f\x10\x60\x00\x7e\x7f\x7f\x00\x01\x01\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   guchar profile_id[5];
   guchar *profile_specific_data;
 

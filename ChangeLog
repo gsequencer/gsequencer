@@ -3,6 +3,7 @@ ags (7.0.5)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed AgsMidiCIUtil
 	* fixed AgsHybridFMSynth synth-*-lfo-depth XML project file persistence
+	* TODO:JK: fixed ags_midi_ci_util_test.c
 
 ags (7.0.4)
 
