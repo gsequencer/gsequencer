@@ -1155,7 +1155,7 @@ ags_midi_ci_util_test_put_property_exchange_capabilities()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x30\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x01\x01\x00\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x30\x7f\x7f\x10\x60\x01\x01\x7f\x7f\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   
   AgsMUID source = 0x0cafe010;
   AgsMUID destination = AGS_MIDI_CI_UTIL_BROADCAST_MUID;
@@ -1180,7 +1180,7 @@ ags_midi_ci_util_test_put_property_exchange_capabilities()
 						      major,
 						      minor);
 
-  CU_ASSERT(!memcmp(buffer, filled_buffer, 18 * sizeof(guchar)));
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 24 * sizeof(guchar)));
 }
 
 void
@@ -1188,7 +1188,7 @@ ags_midi_ci_util_test_get_property_exchange_capabilities()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x30\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x01\x01\x00\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x30\x7f\x7f\x10\x60\x01\x01\x7f\x7f\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   AgsMUID source;
   AgsMUID destination;
@@ -1227,7 +1227,7 @@ ags_midi_ci_util_test_put_property_exchange_capabilities_reply()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x31\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x01\x01\x00\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x31\x7f\x7f\x10\x60\x01\x01\x7f\x7f\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   
   AgsMUID source = 0x0cafe010;
   AgsMUID destination = AGS_MIDI_CI_UTIL_BROADCAST_MUID;
@@ -1252,7 +1252,7 @@ ags_midi_ci_util_test_put_property_exchange_capabilities_reply()
 							    major,
 							    minor);
 
-  CU_ASSERT(!memcmp(buffer, filled_buffer, 18 * sizeof(guchar)));
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 24 * sizeof(guchar)));
 }
 
 void
@@ -1260,7 +1260,7 @@ ags_midi_ci_util_test_get_property_exchange_capabilities_reply()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x31\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x01\x01\x00\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x31\x7f\x7f\x10\x60\x01\x01\x7f\x7f\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   AgsMUID source;
   AgsMUID destination;
@@ -1299,7 +1299,7 @@ ags_midi_ci_util_test_put_get_property_data()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x34\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x01\x00\x00\x00\x00\x01\x00\x00\x00\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x34\x2d\x7e\x10\x60\x00\x01\x6f\x3e\x01\x00\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   guchar *header_data = NULL;
   guchar *property_data = NULL;
   
@@ -1340,7 +1340,7 @@ ags_midi_ci_util_test_get_get_property_data()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x34\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x01\x00\x00\x00\x00\x01\x00\x00\x00\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x34\x2d\x7e\x10\x60\x00\x01\x6f\x3e\x01\x00\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   guint16 header_data_length;  
   guchar *header_data;
   guint16 property_data_length;  
@@ -1391,7 +1391,7 @@ ags_midi_ci_util_test_put_get_property_data_reply()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x35\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x01\x00\x00\x00\x00\x01\x00\x00\x00\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x35\x2d\x7e\x10\x60\x00\x01\x6f\x3e\x01\x00\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   guchar *header_data = NULL;
   guchar *property_data = NULL;
   
@@ -1432,7 +1432,7 @@ ags_midi_ci_util_test_get_get_property_data_reply()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x35\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x01\x00\x00\x00\x00\x01\x00\x00\x00\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x35\x2d\x7e\x10\x60\x00\x01\x6f\x3e\x01\x00\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   guint16 header_data_length;  
   guchar *header_data;
   guint16 property_data_length;  
@@ -1524,7 +1524,7 @@ ags_midi_ci_util_test_get_set_property_data()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x36\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x01\x00\x00\x00\x00\x01\x00\x00\x00\xf7";
+  guchar buffer[] = "\x0d\x7e\x7f\x0f\x36\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x01\x00\x00\x00\x00\x01\x00\x00\x00\xf7";
   guint16 header_data_length;  
   guchar *header_data;
   guint16 property_data_length;  
@@ -1575,7 +1575,7 @@ ags_midi_ci_util_test_put_set_property_data_reply()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x37\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x01\x00\x00\x00\x00\x01\x00\x00\x00\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x35 \x2d\x7e\x10\x60\x00\x01\x6f\x3e\x01\x00\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   guchar *header_data = NULL;
   guchar *property_data = NULL;
   
@@ -1616,7 +1616,7 @@ ags_midi_ci_util_test_get_set_property_data_reply()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x37\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x01\x00\x00\x00\x00\x01\x00\x00\x00\xf7";
+  static const guchar buffer[] = "\x00\x7f\x7e\x0d\x2f\x6c\x01\x35\x2d\x7e\x10\x60\x00\x01\x6f\x3e\x01\x00\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   guint16 header_data_length;  
   guchar *header_data;
   guint16 property_data_length;  
@@ -1772,7 +1772,7 @@ ags_midi_ci_util_test_put_subscription_reply()
   guint16 header_data_length = 0;
   guint16 property_data_length = 0;  
   guint16 chunk_count = 0;
-  guint16 nth_chunk = 1;  
+  guint16 nth_chunk = 0x1;  
   
   midi_ci_util = ags_midi_ci_util_alloc();
 
@@ -2072,7 +2072,6 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c get subscription", ags_midi_ci_util_test_get_subscription) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c put subscription reply", ags_midi_ci_util_test_put_subscription_reply) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c get subscription reply", ags_midi_ci_util_test_get_subscription_reply) == NULL) ||
-
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c put process capabilities", ags_midi_ci_util_test_put_process_capabilities) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c get process capabilities", ags_midi_ci_util_test_get_process_capabilities) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c put process capabilities reply", ags_midi_ci_util_test_put_process_capabilities_reply) == NULL) ||
