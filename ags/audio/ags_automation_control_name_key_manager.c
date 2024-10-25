@@ -40,12 +40,12 @@ void ags_automation_control_name_key_manager_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_automation_control_name_key_manager
- * @short_description: The audio file manager
+ * @short_description: The program control name to key manager
  * @title: AgsAutomationControlNameKeyManager
  * @section_id:
- * @include: ags/automation_control_name_key/ags_automation_control_name_key_manager.h
+ * @include: ags/audio/ags_automation_control_name_key_manager.h
  *
- * #AgsAutomationControlNameKeyManager stores audio files.
+ * #AgsAutomationControlNameKeyManager maps program control names to keys.
  */
 
 enum{
@@ -172,9 +172,9 @@ ags_automation_control_name_key_manager_set_property(GObject *gobject,
 
 void
 ags_automation_control_name_key_manager_get_property(GObject *gobject,
-				    guint prop_id,
-				    GValue *value,
-				    GParamSpec *param_spec)
+						     guint prop_id,
+						     GValue *value,
+						     GParamSpec *param_spec)
 {
   AgsAutomationControlNameKeyManager *automation_control_name_key_manager;
 
@@ -219,6 +219,17 @@ ags_automation_control_name_key_manager_get_obj_mutex(AgsAutomationControlNameKe
   return(&(automation_control_name_key_manager->obj_mutex));
 }
 
+/**
+ * ags_automation_control_name_key_manager_find_automation:
+ * @automation_control_name_key_manager: the #AgsAutomationControlNameKeyManager
+ * @control_name: the automation's control name
+ * 
+ * Lookup control name of automation or insert it and get its automation key.
+ *
+ * Returns: (transfer none): the key found or inserted
+ * 
+ * Since: 5.4.0
+ */
 gpointer
 ags_automation_control_name_key_manager_find_automation(AgsAutomationControlNameKeyManager *automation_control_name_key_manager,
 							gchar *control_name)

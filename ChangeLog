@@ -1,3 +1,8 @@
+ags (7.0.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved gtk-doc missing xi:include
+
 ags (7.0.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
