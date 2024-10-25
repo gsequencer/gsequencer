@@ -1204,7 +1204,7 @@ ags_midi_ump_util_put_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_
   
   is_end = FALSE;
   
-  for(i = 0, j = 0; i < 48 && !is_end;){
+  for(i = 0, j = 0; i < 43 && !is_end;){
     nth = 3;
   
     buffer[offset + nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
@@ -1225,7 +1225,7 @@ ags_midi_ump_util_put_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_
 
       k_stop = j_stop;
       
-      for(k = 0; k < k_stop; j++, k++){
+      for(k = 0; k < k_stop && j < 14 && i < 43; i++, j++, k++){
 	buffer[offset + nth] = product_instance_id[j];
 	nth--;
 
@@ -1255,8 +1255,12 @@ ags_midi_ump_util_put_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_
 
       j_stop = 0;
     }
-    
-    nth = 3;
+
+    if(nth != 3){
+      nth = 3;
+
+      offset += 4;
+    }
     
     /* break condition */
     if(is_complete){
@@ -1340,9 +1344,15 @@ ags_midi_ump_util_get_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_
   is_end = FALSE;
 
   for(i = 0; i < 43 && !is_end;){
-    nth = 1;    
+    nth = 3;
+  
+    nth--;
+    i++;
 
-    for(j = 0; j < 14; i++, j++){
+    nth--;
+    i++;
+
+    for(j = 0; j < 14 && i < 43; i++, j++){
       str[i] = buffer[offset + nth];
       nth--;
 
@@ -1353,8 +1363,12 @@ ags_midi_ump_util_get_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_
       }	
     }
     
-    nth = 3;
+    if(nth != 3){
+      nth = 3;
     
+      offset += 4;
+    }
+
     format = ((0x0c & (buffer[offset + nth])) >> 2);
 
     /* break condition */
