@@ -531,73 +531,401 @@ ags_midi_ci_util_test_get_nak()
 void
 ags_midi_ci_util_test_put_initiate_protocol_negotiation()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  guchar buffer[512];
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x10\x2d\x7e\x10\x60\x00\x10\x6f\x3e\x00\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  AgsMUID source = 0x0cafe010;
+  AgsMUID destination = 0x0eadbeef;
+
+  guchar device_id = '\x7f';
+  guchar version = '\x01';
+  AgsMidiCIAuthorityLevel authority_level = AGS_MIDI_CI_TRANSPORT;
+  guchar number_of_supported_protocols = 0;
+  guchar **preferred_protocol_type = NULL;
+  
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  memset(buffer, 0, 512 * sizeof(guchar));
+
+  ags_midi_ci_util_put_initiate_protocol_negotiation(midi_ci_util,
+						     buffer,
+						     device_id,
+						     version,
+						     source,
+						     destination,
+						     authority_level,
+						     number_of_supported_protocols,
+						     preferred_protocol_type);
+
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 32 * sizeof(guchar)));
 }
 
 void
 ags_midi_ci_util_test_get_initiate_protocol_negotiation()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x10\x2d\x7e\x10\x60\x00\x10\x6f\x3e\x00\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  guchar **preferred_protocol_type;
+
+  AgsMUID source;
+  AgsMUID destination;
+  
+  guchar device_id;
+  guchar version;
+  AgsMidiCIAuthorityLevel authority_level;
+  guchar number_of_supported_protocols;
+
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  preferred_protocol_type = NULL;
+  
+  ags_midi_ci_util_get_initiate_protocol_negotiation(midi_ci_util,
+						     buffer,
+						     &device_id,
+						     &version,
+						     &source,
+						     &destination,
+						     &authority_level,
+						     &number_of_supported_protocols,
+						     preferred_protocol_type);
+
+  CU_ASSERT(device_id == 0x7f);
+  CU_ASSERT(version == 0x01);
+  CU_ASSERT(source == 0x0cafe010);
+  CU_ASSERT(destination == 0x0eadbeef);
+  CU_ASSERT(authority_level == AGS_MIDI_CI_TRANSPORT);
+  CU_ASSERT(number_of_supported_protocols == 0x0);
+  CU_ASSERT(preferred_protocol_type == NULL);
 }
 
 void
 ags_midi_ci_util_test_put_initiate_protocol_negotiation_reply()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  guchar buffer[512];
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x11\x2d\x7e\x10\x60\x00\x10\x6f\x3e\x00\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  AgsMUID source = 0x0cafe010;
+  AgsMUID destination = 0x0eadbeef;
+
+  guchar device_id = '\x7f';
+  guchar version = '\x01';
+  AgsMidiCIAuthorityLevel authority_level = AGS_MIDI_CI_TRANSPORT;
+  guchar number_of_supported_protocols = 0;
+  guchar **preferred_protocol_type = NULL;
+  
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  memset(buffer, 0, 512 * sizeof(guchar));
+
+  ags_midi_ci_util_put_initiate_protocol_negotiation_reply(midi_ci_util,
+							   buffer,
+							   device_id,
+							   version,
+							   source,
+							   destination,
+							   authority_level,
+							   number_of_supported_protocols,
+							   preferred_protocol_type);
+
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 32 * sizeof(guchar)));
 }
 
 void
 ags_midi_ci_util_test_get_initiate_protocol_negotiation_reply()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x11\x2d\x7e\x10\x60\x00\x10\x6f\x3e\x00\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  guchar **preferred_protocol_type;
+
+  AgsMUID source;
+  AgsMUID destination;
+  
+  guchar device_id;
+  guchar version;
+  AgsMidiCIAuthorityLevel authority_level;
+  guchar number_of_supported_protocols;
+
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  preferred_protocol_type = NULL;
+  
+  ags_midi_ci_util_get_initiate_protocol_negotiation_reply(midi_ci_util,
+							   buffer,
+							   &device_id,
+							   &version,
+							   &source,
+							   &destination,
+							   &authority_level,
+							   &number_of_supported_protocols,
+							   preferred_protocol_type);
+  
+  CU_ASSERT(device_id == 0x7f);
+  CU_ASSERT(version == 0x01);
+  CU_ASSERT(source == 0x0cafe010);
+  CU_ASSERT(destination == 0x0eadbeef);
+  CU_ASSERT(authority_level == AGS_MIDI_CI_TRANSPORT);
+  CU_ASSERT(number_of_supported_protocols == 0x0);
+  CU_ASSERT(preferred_protocol_type == NULL);
 }
 
 void
 ags_midi_ci_util_test_put_set_protocol_type()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  guchar buffer[512];
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x12\x2d\x7e\x10\x60\xf7\x10\x6f\x3e\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  guchar **protocol_type = NULL;
+
+  AgsMUID source = 0x0cafe010;
+  AgsMUID destination = 0x0eadbeef;
+
+  guchar device_id = '\x7f';
+  guchar version = '\x01';
+  AgsMidiCIAuthorityLevel authority_level = AGS_MIDI_CI_TRANSPORT;
+  
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  memset(buffer, 0, 512 * sizeof(guchar));
+
+  ags_midi_ci_util_put_set_protocol_type(midi_ci_util,
+					 buffer,
+					 device_id,
+					 version,
+					 source,
+					 destination,
+					 authority_level,
+					 protocol_type);
+
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 32 * sizeof(guchar)));
 }
 
 void
 ags_midi_ci_util_test_get_set_protocol_type()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x12\x2d\x7e\x10\x60\xf7\x10\x6f\x3e\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  guchar **protocol_type;
+
+  AgsMUID source;
+  AgsMUID destination;
+  
+  guchar device_id;
+  guchar version;
+  AgsMidiCIAuthorityLevel authority_level;
+
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  protocol_type = NULL;
+  
+  ags_midi_ci_util_get_set_protocol_type(midi_ci_util,
+					 buffer,
+					 &device_id,
+					 &version,
+					 &source,
+					 &destination,
+					 &authority_level,
+					 protocol_type);
+
+  CU_ASSERT(device_id == 0x7f);
+  CU_ASSERT(version == 0x01);
+  CU_ASSERT(source == 0x0cafe010);
+  CU_ASSERT(destination == 0x0eadbeef);
+  CU_ASSERT(authority_level == AGS_MIDI_CI_TRANSPORT);
+  CU_ASSERT(protocol_type == NULL);
 }
 
 void
 ags_midi_ci_util_test_put_confirm_protocol_type()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  guchar buffer[512];
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x13\x2d\x7e\x10\x60\x00\x10\x6f\x3e\x04\x03\x02\x01\x08\x07\x06\x05\x0c\x0b\x0a\x09\x10\x0f\x0e\x0d\x14\x13\x12\x11\x18\x17\x16\x15\x1c\x1b\x1a\x19\x20\x1f\x1e\x1d\x24\x23\x22\x21\x28\x27\x26\x25\x2c\x2b\x2a\x29\xf7\x2f\x2e\x2d";
+
+  AgsMUID source = 0x0cafe010;
+  AgsMUID destination = 0x0eadbeef;
+
+  guchar device_id = '\x7f';
+  guchar version = '\x01';
+  AgsMidiCIAuthorityLevel authority_level = AGS_MIDI_CI_TRANSPORT;
+  
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  memset(buffer, 0, 512 * sizeof(guchar));
+
+  ags_midi_ci_util_put_confirm_protocol_type(midi_ci_util,
+					     buffer,
+					     device_id,
+					     version,
+					     source,
+					     destination,
+					     authority_level);
+
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 64 * sizeof(guchar)));
 }
 
 void
 ags_midi_ci_util_test_get_confirm_protocol_type()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x13\x2d\x7e\x10\x60\x00\x10\x6f\x3e\x04\x03\x02\x01\x08\x07\x06\x05\x0c\x0b\x0a\x09\x10\x0f\x0e\x0d\x14\x13\x12\x11\x18\x17\x16\x15\x1c\x1b\x1a\x19\x20\x1f\x1e\x1d\x24\x23\x22\x21\x28\x27\x26\x25\x2c\x2b\x2a\x29\xf7\x2f\x2e\x2d";
+
+  AgsMUID source;
+  AgsMUID destination;
+  
+  guchar device_id;
+  guchar version;
+  AgsMidiCIAuthorityLevel authority_level;
+
+  midi_ci_util = ags_midi_ci_util_alloc();
+  
+  ags_midi_ci_util_get_confirm_protocol_type(midi_ci_util,
+					     buffer,
+					     &device_id,
+					     &version,
+					     &source,
+					     &destination,
+					     &authority_level);
+
+  CU_ASSERT(device_id == 0x7f);
+  CU_ASSERT(version == 0x01);
+  CU_ASSERT(source == 0x0cafe010);
+  CU_ASSERT(destination == 0x0eadbeef);
+  CU_ASSERT(authority_level == AGS_MIDI_CI_TRANSPORT);
 }
 
 void
 ags_midi_ci_util_test_put_confirm_protocol_type_reply()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  guchar buffer[512];
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x14\x2d\x7e\x10\x60\x00\x10\x6f\x3e\x04\x03\x02\x01\x08\x07\x06\x05\x0c\x0b\x0a\x09\x10\x0f\x0e\x0d\x14\x13\x12\x11\x18\x17\x16\x15\x1c\x1b\x1a\x19\x20\x1f\x1e\x1d\x24\x23\x22\x21\x28\x27\x26\x25\x2c\x2b\x2a\x29\xf7\x2f\x2e\x2d";
+
+  AgsMUID source = 0x0cafe010;
+  AgsMUID destination = 0x0eadbeef;
+
+  guchar device_id = '\x7f';
+  guchar version = '\x01';
+  AgsMidiCIAuthorityLevel authority_level = AGS_MIDI_CI_TRANSPORT;
+  
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  memset(buffer, 0, 512 * sizeof(guchar));
+
+  ags_midi_ci_util_put_confirm_protocol_type_reply(midi_ci_util,
+						   buffer,
+						   device_id,
+						   version,
+						   source,
+						   destination,
+						   authority_level);
+
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 64 * sizeof(guchar)));
 }
 
 void
 ags_midi_ci_util_test_get_confirm_protocol_type_reply()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x14\x2d\x7e\x10\x60\x00\x10\x6f\x3e\x04\x03\x02\x01\x08\x07\x06\x05\x0c\x0b\x0a\x09\x10\x0f\x0e\x0d\x14\x13\x12\x11\x18\x17\x16\x15\x1c\x1b\x1a\x19\x20\x1f\x1e\x1d\x24\x23\x22\x21\x28\x27\x26\x25\x2c\x2b\x2a\x29\xf7\x2f\x2e\x2d";
+
+  AgsMUID source;
+  AgsMUID destination;
+  
+  guchar device_id;
+  guchar version;
+  AgsMidiCIAuthorityLevel authority_level;
+
+  midi_ci_util = ags_midi_ci_util_alloc();
+  
+  ags_midi_ci_util_get_confirm_protocol_type_reply(midi_ci_util,
+						   buffer,
+						   &device_id,
+						   &version,
+						   &source,
+						   &destination,
+						   &authority_level);
+
+  CU_ASSERT(device_id == 0x7f);
+  CU_ASSERT(version == 0x01);
+  CU_ASSERT(source == 0x0cafe010);
+  CU_ASSERT(destination == 0x0eadbeef);
+  CU_ASSERT(authority_level == AGS_MIDI_CI_TRANSPORT);
 }
 
 void
 ags_midi_ci_util_test_put_confirm_protocol_type_established()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  guchar buffer[512];
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x15\x2d\x7e\x10\x60\xf7\x10\x6f\x3e";
+
+  AgsMUID source = 0x0cafe010;
+  AgsMUID destination = 0x0eadbeef;
+
+  guchar device_id = '\x7f';
+  guchar version = '\x01';
+  AgsMidiCIAuthorityLevel authority_level = AGS_MIDI_CI_TRANSPORT;
+  
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  memset(buffer, 0, 512 * sizeof(guchar));
+
+  ags_midi_ci_util_put_confirm_protocol_type_established(midi_ci_util,
+							 buffer,
+							 device_id,
+							 version,
+							 source,
+							 destination,
+							 authority_level);
+
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
 
 void
 ags_midi_ci_util_test_get_confirm_protocol_type_established()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x15\x2d\x7e\x10\x60\xf7\x10\x6f\x3e";
+
+  AgsMUID source;
+  AgsMUID destination;
+  
+  guchar device_id;
+  guchar version;
+  AgsMidiCIAuthorityLevel authority_level;
+
+  midi_ci_util = ags_midi_ci_util_alloc();
+  
+  ags_midi_ci_util_get_confirm_protocol_type_established(midi_ci_util,
+							 buffer,
+							 &device_id,
+							 &version,
+							 &source,
+							 &destination,
+							 &authority_level);
+
+  CU_ASSERT(device_id == 0x7f);
+  CU_ASSERT(version == 0x01);
+  CU_ASSERT(source == 0x0cafe010);
+  CU_ASSERT(destination == 0x0eadbeef);
+  CU_ASSERT(authority_level == AGS_MIDI_CI_TRANSPORT);
 }
 
 void
@@ -1965,37 +2293,214 @@ ags_midi_ci_util_test_get_process_capabilities_reply()
 void
 ags_midi_ci_util_test_put_message_report()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  guchar buffer[512];
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x42\x2d\x7e\x10\x60\x00\x00\x6f\x3e\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  AgsMUID source = 0x0cafe010;
+  AgsMUID destination = 0x0eadbeef;
+
+  guchar device_id = '\x7f';
+  guchar version = '\x01';
+  guchar data_control = '\x00';
+  guchar system_messages = '\x00';
+  guchar other_messages = '\x00';
+  guchar channel_controller_messages = '\x00';
+  guchar note_data_messages = '\x00';
+  
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  memset(buffer, 0, 512 * sizeof(guchar));
+
+  ags_midi_ci_util_put_message_report(midi_ci_util,
+				      buffer,
+				      device_id,
+				      version,
+				      source,
+				      destination,
+				      data_control,
+				      system_messages,
+				      other_messages,
+				      channel_controller_messages,
+				      note_data_messages);
+
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 32 * sizeof(guchar)));
 }
 
 void
 ags_midi_ci_util_test_get_message_report()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x42\x2d\x7e\x10\x60\x00\x00\x6f\x3e\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  AgsMUID source;
+  AgsMUID destination;
+  
+  guchar device_id;
+  guchar version;
+  guchar data_control;
+  guchar system_messages;
+  guchar other_messages;
+  guchar channel_controller_messages;
+  guchar note_data_messages;
+
+  midi_ci_util = ags_midi_ci_util_alloc();
+  
+  ags_midi_ci_util_get_message_report(midi_ci_util,
+				      buffer,
+				      &device_id,
+				      &version,
+				      &source,
+				      &destination,
+				      &data_control,
+				      &system_messages,
+				      &other_messages,
+				      &channel_controller_messages,
+				      &note_data_messages);
+
+  CU_ASSERT(device_id == 0x7f);
+  CU_ASSERT(version == 0x01);
+  CU_ASSERT(source == 0x0cafe010);
+  CU_ASSERT(destination == 0x0eadbeef);
+  CU_ASSERT(data_control == 0x00);
+  CU_ASSERT(system_messages == 0x00);
+  CU_ASSERT(other_messages == 0x00);
+  CU_ASSERT(channel_controller_messages == 0x00);
+  CU_ASSERT(note_data_messages == 0x00);
 }
 
 void
 ags_midi_ci_util_test_put_message_report_reply()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  guchar buffer[512];
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x43\x2d\x7e\x10\x60\x00\x00\x6f\x3e\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  AgsMUID source = 0x0cafe010;
+  AgsMUID destination = 0x0eadbeef;
+
+  guchar device_id = '\x7f';
+  guchar version = '\x01';
+  guchar system_messages = '\x00';
+  guchar other_messages = '\x00';
+  guchar channel_controller_messages = '\x00';
+  guchar note_data_messages = '\x00';
+  
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  memset(buffer, 0, 512 * sizeof(guchar));
+
+  ags_midi_ci_util_put_message_report_reply(midi_ci_util,
+					    buffer,
+					    device_id,
+					    version,
+					    source,
+					    destination,
+					    system_messages,
+					    other_messages,
+					    channel_controller_messages,
+					    note_data_messages);
+
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 32 * sizeof(guchar)));
 }
 
 void
 ags_midi_ci_util_test_get_message_report_reply()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x43\x2d\x7e\x10\x60\x00\x00\x6f\x3e\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  AgsMUID source;
+  AgsMUID destination;
+  
+  guchar device_id;
+  guchar version;
+  guchar system_messages;
+  guchar other_messages;
+  guchar channel_controller_messages;
+  guchar note_data_messages;
+
+  midi_ci_util = ags_midi_ci_util_alloc();
+  
+  ags_midi_ci_util_get_message_report_reply(midi_ci_util,
+					    buffer,
+					    &device_id,
+					    &version,
+					    &source,
+					    &destination,
+					    &system_messages,
+					    &other_messages,
+					    &channel_controller_messages,
+					    &note_data_messages);
+
+  CU_ASSERT(device_id == 0x7f);
+  CU_ASSERT(version == 0x01);
+  CU_ASSERT(source == 0x0cafe010);
+  CU_ASSERT(destination == 0x0eadbeef);
+  CU_ASSERT(system_messages == 0x00);
+  CU_ASSERT(other_messages == 0x00);
+  CU_ASSERT(channel_controller_messages == 0x00);
+  CU_ASSERT(note_data_messages == 0x00);
 }
 
 void
 ags_midi_ci_util_test_put_end_of_message_report()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  guchar buffer[512];
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x44\x2d\x7e\x10\x60\x00\xf7\x6f\x3e";
+
+  AgsMUID source = 0x0cafe010;
+  AgsMUID destination = 0x0eadbeef;
+
+  guchar device_id = '\x7f';
+  guchar version = '\x01';
+  
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  memset(buffer, 0, 512 * sizeof(guchar));
+
+  ags_midi_ci_util_put_end_of_message_report(midi_ci_util,
+					     buffer,
+					     device_id,
+					     version,
+					     source,
+					     destination);
+
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
 
 void
 ags_midi_ci_util_test_get_end_of_message_report()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x44\x2d\x7e\x10\x60\x00\xf7\x6f\x3e";
+
+  AgsMUID source;
+  AgsMUID destination;
+  
+  guchar device_id;
+  guchar version;
+
+  midi_ci_util = ags_midi_ci_util_alloc();
+  
+  ags_midi_ci_util_get_end_of_message_report(midi_ci_util,
+					     buffer,
+					     &device_id,
+					     &version,
+					     &source,
+					     &destination);
+
+  CU_ASSERT(device_id == 0x7f);
+  CU_ASSERT(version == 0x01);
+  CU_ASSERT(source == 0x0cafe010);
+  CU_ASSERT(destination == 0x0eadbeef);
 }
 
 int
@@ -2042,6 +2547,8 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c get confirm protocol type", ags_midi_ci_util_test_get_confirm_protocol_type) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c put confirm protocol type reply", ags_midi_ci_util_test_put_confirm_protocol_type_reply) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c get confirm protocol type reply", ags_midi_ci_util_test_get_confirm_protocol_type_reply) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_ci_util.c put confirm protocol type established", ags_midi_ci_util_test_put_confirm_protocol_type_established) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_ci_util.c get confirm protocol type established", ags_midi_ci_util_test_get_confirm_protocol_type_established) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c put profile inquiry", ags_midi_ci_util_test_put_profile) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c get profile inquiry", ags_midi_ci_util_test_get_profile) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c put profile inquiry reply", ags_midi_ci_util_test_put_profile_reply) == NULL) ||
@@ -2095,3 +2602,4 @@ main(int argc, char **argv)
   
   return(CU_get_error());
 }
+

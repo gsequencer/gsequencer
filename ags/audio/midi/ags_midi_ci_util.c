@@ -1988,16 +1988,16 @@ ags_midi_ci_util_get_initiate_protocol_negotiation(AgsMidiCIUtil *midi_ci_util,
     device_id[0] = buffer[offset + nth];
   }
 
-  nth--;
+  offset += 4;
+
+  nth = 2;
 
   /* version */
   if(version != NULL){
     version[0] = buffer[offset + nth];
   }
 
-  offset += 4;
-
-  nth = 3;
+  nth--;
   
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
@@ -2007,7 +2007,7 @@ ags_midi_ci_util_get_initiate_protocol_negotiation(AgsMidiCIUtil *midi_ci_util,
 
   offset += 4;
 
-  nth = 3;
+  nth = 1;
 
   /* destination */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
@@ -2017,7 +2017,7 @@ ags_midi_ci_util_get_initiate_protocol_negotiation(AgsMidiCIUtil *midi_ci_util,
 
   offset += 4;
   
-  nth = 3;
+  nth = 1;
   
   /* authority level */
   if(authority_level != NULL){
@@ -2027,13 +2027,15 @@ ags_midi_ci_util_get_initiate_protocol_negotiation(AgsMidiCIUtil *midi_ci_util,
   nth--;
 
   /* authority level */
-  if(number_of_supported_protocols != NULL){
-    number_of_supported_protocols[0] = buffer[offset + nth];
-  }
-
   i_stop = buffer[offset + nth];
   
-  nth--;
+  if(number_of_supported_protocols != NULL){
+    number_of_supported_protocols[0] = i_stop;
+  }
+
+  offset += 4;
+  
+  nth = 3;
 
   /* preferred protocol type */
   for(i = 0; i < i_stop; i++){
@@ -2342,26 +2344,26 @@ ags_midi_ci_util_get_initiate_protocol_negotiation_reply(AgsMidiCIUtil *midi_ci_
     device_id[0] = buffer[offset + nth];
   }
 
-  nth--;
+  offset += 4;
+
+  nth = 2;
 
   /* version */
   if(version != NULL){
     version[0] = buffer[offset + nth];
   }
 
-  nth = 3;
-
-  offset += 4;
+  nth--;
   
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
 					  3 - nth,
 					  source);
-
-  nth--;
   
   offset += 4;
+
+  nth = 1;
 
   /* destination */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
@@ -2371,7 +2373,7 @@ ags_midi_ci_util_get_initiate_protocol_negotiation_reply(AgsMidiCIUtil *midi_ci_
 
   offset += 4;
 
-  nth = 2;
+  nth = 1;
   
   /* authority level */
   if(authority_level != NULL){
@@ -2381,13 +2383,15 @@ ags_midi_ci_util_get_initiate_protocol_negotiation_reply(AgsMidiCIUtil *midi_ci_
   nth--;
 
   /* number of supported protocols */
-  if(number_of_supported_protocols != NULL){
-    number_of_supported_protocols[0] = buffer[offset + nth];
-  }
-
   i_stop = buffer[offset + nth];
   
-  nth--;
+  if(number_of_supported_protocols != NULL){
+    number_of_supported_protocols[0] = i_stop;
+  }
+
+  offset += 4;
+  
+  nth = 3;
 
   /* preferred protocol type */
   for(i = 0; i < i_stop; i++){
@@ -2582,26 +2586,52 @@ ags_midi_ci_util_put_set_protocol_type(AgsMidiCIUtil *midi_ci_util,
   nth--;
 
   /* preferred protocol type */
-  buffer[offset + nth] = protocol_type[0];
+  if(protocol_type != NULL){
+    buffer[offset + nth] = protocol_type[0];
+    nth--;
 
-  offset += 4;
+    if(nth < 0){
+      nth = 3;
 
-  nth = 3;
+      offset += 4;
+    }	
 
-  buffer[offset + nth] = protocol_type[1];
-  nth--;
+    buffer[offset + nth] = protocol_type[1];
+    nth--;
+
+    if(nth < 0){
+      nth = 3;
+
+      offset += 4;
+    }	
   
-  buffer[offset + nth] = protocol_type[2];
-  nth--;
+    buffer[offset + nth] = protocol_type[2];
+    nth--;
 
-  buffer[offset + nth] = protocol_type[3];
-  nth--;
+    if(nth < 0){
+      nth = 3;
 
-  buffer[offset + nth] = protocol_type[4];
+      offset += 4;
+    }	
 
-  offset += 4;
+    buffer[offset + nth] = protocol_type[3];
+    nth--;
 
-  nth = 3;
+    if(nth < 0){
+      nth = 3;
+
+      offset += 4;
+    }	
+
+    buffer[offset + nth] = protocol_type[4];
+    nth--;
+
+    if(nth < 0){
+      nth = 3;
+
+      offset += 4;
+    }	
+  }
   
   /* sysex end */
   buffer[offset + nth] = 0xf7;
@@ -2659,16 +2689,16 @@ ags_midi_ci_util_get_set_protocol_type(AgsMidiCIUtil *midi_ci_util,
     device_id[0] = buffer[offset + nth];
   }
  
-  nth--;
+  offset += 4;
+
+  nth = 2;
 
   /* version */
   if(version != NULL){
     version[0] = buffer[offset + nth];
   }
 
-  offset += 4;
-
-  nth = 3;
+  nth--;
   
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
@@ -2678,14 +2708,17 @@ ags_midi_ci_util_get_set_protocol_type(AgsMidiCIUtil *midi_ci_util,
 
   offset += 4;
 
-  nth = 3;
+  nth = 1;
 
   /* destination */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
 					  3 - nth,
 					  destination);
-  nth--;
+
+  offset += 4;
+
+  nth = 1;
   
   /* authority level */
   if(authority_level != NULL){
@@ -2699,24 +2732,47 @@ ags_midi_ci_util_get_set_protocol_type(AgsMidiCIUtil *midi_ci_util,
     protocol_type[0] = buffer[offset + nth];
     nth--;
     
-    protocol_type[1] = buffer[offset + nth];
+    if(nth < 0){
+      nth = 3;
 
-    offset += 4;
-
-    nth = 3;
+      offset += 4;
+    }	
     
+    protocol_type[1] = buffer[offset + nth];    
+    nth--;
+    
+    if(nth < 0){
+      nth = 3;
+
+      offset += 4;
+    }	
+
     protocol_type[2] = buffer[offset + nth];
     nth--;
+    
+    if(nth < 0){
+      nth = 3;
+
+      offset += 4;
+    }	
 
     protocol_type[3] = buffer[offset + nth];
     nth--;
+    
+    if(nth < 0){
+      nth = 3;
+
+      offset += 4;
+    }	
 
     protocol_type[4] = buffer[offset + nth];
     nth--;
-  }else{
-    offset += 4;
+    
+    if(nth < 0){
+      nth = 3;
 
-    nth = 0;
+      offset += 4;
+    }	
   }
   
   /* sysex end */
@@ -2931,16 +2987,16 @@ ags_midi_ci_util_get_confirm_protocol_type(AgsMidiCIUtil *midi_ci_util,
     device_id[0] = buffer[offset + nth];
   }
 
-  nth--;
+  offset += 4;
+  
+  nth = 2;
 
   /* version */
   if(version != NULL){
     version[0] = buffer[offset + nth];
   }
 
-  offset += 4;
-  
-  nth = 3;
+  nth--;  
   
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
@@ -2950,7 +3006,7 @@ ags_midi_ci_util_get_confirm_protocol_type(AgsMidiCIUtil *midi_ci_util,
 
   offset += 4;
 
-  nth = 3;
+  nth = 1;
 
   /* destination */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
@@ -2960,7 +3016,7 @@ ags_midi_ci_util_get_confirm_protocol_type(AgsMidiCIUtil *midi_ci_util,
 
   offset += 4;
 
-  nth = 3;
+  nth = 1;
   
   /* authority level */
   if(authority_level != NULL){
@@ -3123,7 +3179,7 @@ ags_midi_ci_util_put_confirm_protocol_type_reply(AgsMidiCIUtil *midi_ci_util,
 
   /* test data */
   for(i = 0; i < 48; i++){
-    test_data[i] = buffer[offset + nth];
+    buffer[offset + nth] = test_data[i];
     nth--;
     
     if(nth < 0){
@@ -3175,7 +3231,7 @@ ags_midi_ci_util_get_confirm_protocol_type_reply(AgsMidiCIUtil *midi_ci_util,
   
   static GMutex mutex = {0,};
 
-  static guchar *test_data;
+  static guchar test_data[48];
 
   static gboolean init_test_data = FALSE;
   
@@ -3201,18 +3257,18 @@ ags_midi_ci_util_get_confirm_protocol_type_reply(AgsMidiCIUtil *midi_ci_util,
   if(device_id != NULL){
     device_id[0] = buffer[offset + nth];
   }
- 
-  nth--;
 
+  offset += 4;
+
+  nth = 2;
+ 
   /* version */
   if(version != NULL){
     version[0] = buffer[offset + nth];
   }
-
-  offset += 4;
-
-  nth = 3;
   
+  nth--;
+
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
 					  buffer + offset,
@@ -3221,7 +3277,7 @@ ags_midi_ci_util_get_confirm_protocol_type_reply(AgsMidiCIUtil *midi_ci_util,
 
   offset += 4;
 
-  nth = 2;
+  nth = 1;
 
   /* destination */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
@@ -3231,14 +3287,12 @@ ags_midi_ci_util_get_confirm_protocol_type_reply(AgsMidiCIUtil *midi_ci_util,
 
   offset += 4;
 
-  nth = 2;
+  nth = 1;
   
   /* authority level */
   if(authority_level != NULL){
     authority_level[0] = buffer[offset + nth];
   }
-
-  offset += 4;
 
   nth--;
 
@@ -3429,16 +3483,16 @@ ags_midi_ci_util_get_confirm_protocol_type_established(AgsMidiCIUtil *midi_ci_ut
     device_id[0] = buffer[offset + nth];
   }
  
-  nth--;
+  offset += 4;
+
+  nth = 2;
 
   /* version */
   if(version != NULL){
     version[0] = buffer[offset + nth];
   }
 
-  offset += 4;
-
-  nth = 3;
+  nth--;
   
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
@@ -3448,7 +3502,7 @@ ags_midi_ci_util_get_confirm_protocol_type_established(AgsMidiCIUtil *midi_ci_ut
 
   offset += 4;
 
-  nth--;
+  nth = 1;
 
   /* destination */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
@@ -9260,6 +9314,8 @@ ags_midi_ci_util_put_message_report(AgsMidiCIUtil *midi_ci_util,
 
   buffer[offset + nth] = 0x0d; // Sub-ID#1 - MIDI-CI
 
+  offset += 4;
+  
   nth = 3;
 
   buffer[offset + nth] = 0x42; // Sub-ID#2 - message report
@@ -9370,14 +9426,16 @@ ags_midi_ci_util_get_message_report(AgsMidiCIUtil *midi_ci_util,
     device_id[0] = buffer[offset + nth];
   }
 
-  nth--;
+  offset += 4;
+  
+  nth = 2;
 
   /* version */
   if(version != NULL){
     version[0] = buffer[offset + nth];
   }
 
-  nth = 3;
+  nth--;
   
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
@@ -9387,7 +9445,7 @@ ags_midi_ci_util_get_message_report(AgsMidiCIUtil *midi_ci_util,
 
   offset += 4;
 
-  nth = 3;
+  nth = 1;
 
   /* destination */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
@@ -9397,7 +9455,7 @@ ags_midi_ci_util_get_message_report(AgsMidiCIUtil *midi_ci_util,
 
   offset += 4;
 
-  nth = 3;
+  nth = 1;
 
   /* data control */
   if(data_control != NULL){
@@ -9411,7 +9469,9 @@ ags_midi_ci_util_get_message_report(AgsMidiCIUtil *midi_ci_util,
     system_messages[0] = buffer[offset + nth];
   }
 
-  nth--;
+  offset += 4;
+  
+  nth = 3;
 
   /* other essages */
   if(other_messages != NULL){
@@ -9424,10 +9484,8 @@ ags_midi_ci_util_get_message_report(AgsMidiCIUtil *midi_ci_util,
   if(channel_controller_messages != NULL){
     channel_controller_messages[0] = buffer[offset + nth];
   }
-
-  offset += 4;
   
-  nth = 3;
+  nth--;
 
   /* note data messages */
   if(note_data_messages != NULL){
@@ -9634,16 +9692,16 @@ ags_midi_ci_util_get_message_report_reply(AgsMidiCIUtil *midi_ci_util,
     device_id[0] = buffer[offset + nth];
   }
 
-  nth--;
+  offset += 4;
+
+  nth = 2;
 
   /* version */
   if(version != NULL){
     version[0] = buffer[offset + nth];
   }
   
-  offset += 4;
-
-  nth = 3;
+  nth--;
   
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
@@ -9653,7 +9711,7 @@ ags_midi_ci_util_get_message_report_reply(AgsMidiCIUtil *midi_ci_util,
 
   offset += 4;
 
-  nth = 2;
+  nth = 1;
 
   /* destination */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
@@ -9663,7 +9721,7 @@ ags_midi_ci_util_get_message_report_reply(AgsMidiCIUtil *midi_ci_util,
 
   offset += 4;
 
-  nth = 2;
+  nth = 1;
 
   /* system messages */
   if(system_messages != NULL){
@@ -9677,16 +9735,16 @@ ags_midi_ci_util_get_message_report_reply(AgsMidiCIUtil *midi_ci_util,
     other_messages[0] = buffer[offset + nth];
   }
 
-  nth--;
+  offset += 4;
+
+  nth = 3;
 
   /* channel controller messages */
   if(channel_controller_messages != NULL){
     channel_controller_messages[0] = buffer[offset + nth];
   }
 
-  offset += 4;
-
-  nth = 3;
+  nth--;
 
   /* note data messages */
   if(note_data_messages != NULL){
@@ -9859,16 +9917,16 @@ ags_midi_ci_util_get_end_of_message_report(AgsMidiCIUtil *midi_ci_util,
     device_id[0] = buffer[offset + nth];
   }
 
-  nth--;
+  offset += 4;
+
+  nth = 2;
 
   /* version */
   if(version != NULL){
     version[0] = buffer[offset + nth];
   }
 
-  offset += 4;
-
-  nth = 3;
+  nth--;
   
   /* source */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
@@ -9878,7 +9936,7 @@ ags_midi_ci_util_get_end_of_message_report(AgsMidiCIUtil *midi_ci_util,
 
   offset += 4;
 
-  nth = 3;
+  nth = 1;
 
   /* destination */
   ags_midi_ci_util_get_muid_with_position(midi_ci_util,
@@ -9888,7 +9946,7 @@ ags_midi_ci_util_get_end_of_message_report(AgsMidiCIUtil *midi_ci_util,
 
   offset += 4;
 
-  nth = 3;
+  nth = 1;
 
   /* sysex end */
   if(buffer[offset] == 0xf7){
