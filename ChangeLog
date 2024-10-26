@@ -1,6 +1,7 @@
 ags (7.0.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsApplySynth default template's length, fixes silent AgsSyncsynth and AgsFMSyncsynth
 	* improved gtk-doc missing xi:include
 
 ags (7.0.6)

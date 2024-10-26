@@ -309,7 +309,7 @@ ags_fm_synth_connect(AgsConnectable *connectable)
 {
   AgsFMSynth *fm_synth;
 
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -333,7 +333,7 @@ ags_fm_synth_disconnect(AgsConnectable *connectable)
 {
   AgsFMSynth *fm_synth;
 
-  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 

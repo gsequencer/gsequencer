@@ -441,7 +441,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
   param_spec = g_param_spec_double("fm-lfo-frequency",
 				   i18n_pspec("using fm LFO frequency"),
 				   i18n_pspec("The fm LFO frequency to be used"),
-				   0.001,
+				   0.0,
 				   27.5,
 				   AGS_SYNTH_GENERATOR_DEFAULT_FM_LFO_FREQUENCY,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -477,7 +477,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
   param_spec = g_param_spec_double("fm-tuning",
 				   i18n_pspec("using FM tuning"),
 				   i18n_pspec("The FM tuning to be used"),
-				   0.0,
+				   -1200.0,
 				   1200.0,
 				   AGS_SYNTH_GENERATOR_DEFAULT_FM_TUNING,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
