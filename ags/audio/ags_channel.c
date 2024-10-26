@@ -7677,6 +7677,62 @@ ags_channel_set_input_soundcard_channel(AgsChannel *channel, gint input_soundcar
 }
 
 /**
+ * ags_channel_get_first_recycling:
+ * @channel: the #AgsChannel
+ *
+ * Get the first recycling object of @channel.
+ *
+ * Returns: (transfer full): the first recycling
+ * 
+ * Since: 7.0.7
+ */
+GObject*
+ags_channel_get_first_recycling(AgsChannel *channel)
+{
+  GObject *first_recycling;
+  
+  if(!AGS_IS_CHANNEL(channel)){
+    return(NULL);
+  }
+
+  first_recycling = NULL;
+
+  g_object_get(channel,
+	       "first-recycling", &first_recycling,
+	       NULL);
+
+  return(first_recycling);
+}
+
+/**
+ * ags_channel_get_last_recycling:
+ * @channel: the #AgsChannel
+ *
+ * Get the last recycling object of @channel.
+ *
+ * Returns: (transfer full): the last recycling
+ * 
+ * Since: 7.0.7
+ */
+GObject*
+ags_channel_get_last_recycling(AgsChannel *channel)
+{
+  GObject *last_recycling;
+  
+  if(!AGS_IS_CHANNEL(channel)){
+    return(NULL);
+  }
+
+  last_recycling = NULL;
+
+  g_object_get(channel,
+	       "last-recycling", &last_recycling,
+	       NULL);
+
+  return(last_recycling);
+}
+
+/**
  * ags_channel_get_samplerate:
  * @channel: the #AgsChannel
  *

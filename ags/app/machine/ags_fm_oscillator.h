@@ -53,8 +53,8 @@ struct _AgsFMOscillator
 {
   GtkFrame frame;
 
-  guint flags;
-  guint connectable_flags;
+  AgsFMOscillatorFlags flags;
+  AgsConnectableFlags connectable_flags;
 
   GtkCheckButton *selector;
   

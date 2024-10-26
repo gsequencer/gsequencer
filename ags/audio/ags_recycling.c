@@ -2101,10 +2101,12 @@ ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
     old_template = ags_audio_signal_get_default_template(start_list);
     
     /* remove old template */
-    ags_recycling_remove_audio_signal(recycling,
-				      old_template);
-
-    g_object_unref(old_template);
+    if(old_template != NULL){
+      ags_recycling_remove_audio_signal(recycling,
+					old_template);
+    
+      g_object_unref(old_template);
+    }
     
     /* add new template */
     g_rec_mutex_lock(recycling_mutex);
@@ -2255,22 +2257,19 @@ ags_recycling_real_remove_audio_signal(AgsRecycling *recycling,
   g_rec_mutex_lock(recycling_mutex);
 
   if(g_list_find(recycling->audio_signal,
-		 audio_signal) == NULL){
-    g_rec_mutex_unlock(recycling_mutex);
-    
-    return;
-  }
+		 audio_signal) != NULL){
   
-  recycling->audio_signal = g_list_remove(recycling->audio_signal,
-					  audio_signal);
+    recycling->audio_signal = g_list_remove(recycling->audio_signal,
+					    audio_signal);
+
+    g_object_set(audio_signal,
+		 "recycling", NULL,
+		 NULL);
+  
+    g_object_unref(audio_signal);
+  }
 
   g_rec_mutex_unlock(recycling_mutex);
-
-  g_object_set(audio_signal,
-	       "recycling", NULL,
-	       NULL);
-  
-  g_object_unref(audio_signal);
 }
 
 /**

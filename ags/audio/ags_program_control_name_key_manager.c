@@ -40,12 +40,12 @@ void ags_program_control_name_key_manager_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_program_control_name_key_manager
- * @short_description: The audio file manager
+ * @short_description: The program control name to key manager
  * @title: AgsProgramControlNameKeyManager
  * @section_id:
- * @include: ags/program_control_name_key/ags_program_control_name_key_manager.h
+ * @include: ags/audio/ags_program_control_name_key_manager.h
  *
- * #AgsProgramControlNameKeyManager stores audio files.
+ * #AgsProgramControlNameKeyManager maps program control names to keys.
  */
 
 enum{
@@ -219,6 +219,17 @@ ags_program_control_name_key_manager_get_obj_mutex(AgsProgramControlNameKeyManag
   return(&(program_control_name_key_manager->obj_mutex));
 }
 
+/**
+ * ags_program_control_name_key_manager_find_program:
+ * @program_control_name_key_manager: the #AgsProgramControlNameKeyManager
+ * @control_name: the program's control name
+ * 
+ * Lookup control name of program or insert it and get its program key.
+ *
+ * Returns: (transfer none): the key found or inserted
+ * 
+ * Since: 5.4.0
+ */
 gpointer
 ags_program_control_name_key_manager_find_program(AgsProgramControlNameKeyManager *program_control_name_key_manager,
 						  gchar *control_name)
@@ -227,6 +238,9 @@ ags_program_control_name_key_manager_find_program(AgsProgramControlNameKeyManage
 
   GRecMutex *program_control_name_key_manager_mutex;
 
+  g_return_val_if_fail(AGS_IS_PROGRAM_CONTROL_NAME_KEY_MANAGER(program_control_name_key_manager), NULL);
+  g_return_val_if_fail(control_name != NULL, NULL);
+  
   /* get program control name key manager mutex */
   program_control_name_key_manager_mutex = AGS_PROGRAM_CONTROL_NAME_KEY_MANAGER_GET_OBJ_MUTEX(program_control_name_key_manager);
 

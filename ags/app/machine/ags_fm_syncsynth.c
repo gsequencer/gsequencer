@@ -631,13 +631,32 @@ ags_fm_syncsynth_resize_pads(AgsMachine *machine, GType type,
 {
   AgsFMSyncsynth *fm_syncsynth;
 
+  AgsChannel *start_input, *input;
+  
+  AgsAddAudioSignal *add_audio_signal;
+
+  AgsApplicationContext *application_context;
+
+  GObject *output_soundcard;
+
+  GList *task;
+  
+  guint i;
   gboolean grow;
 
   if(pads == pads_old){
     return;
   }
 
+  application_context = ags_application_context_get_instance();
+
   fm_syncsynth = (AgsFMSyncsynth *) machine;
+
+  output_soundcard = ags_audio_get_output_soundcard(machine->audio);
+
+  start_input = ags_audio_get_input(machine->audio);
+
+  task = NULL;
   
   if(pads_old < pads){
     grow = TRUE;
@@ -647,6 +666,32 @@ ags_fm_syncsynth_resize_pads(AgsMachine *machine, GType type,
   
   if(type == AGS_TYPE_INPUT){
     if(grow){
+#if 0
+      for(i = pads_old; i < pads; i++){
+	AgsRecycling *first_recycling;
+
+	input = ags_channel_pad_nth(start_input, i);
+
+	first_recycling = (AgsRecycling *) ags_channel_get_first_recycling(input);
+	
+	add_audio_signal = ags_add_audio_signal_new(first_recycling,
+						    NULL,
+						    output_soundcard,
+						    NULL,
+						    AGS_AUDIO_SIGNAL_TEMPLATE);
+
+	task = g_list_prepend(task,
+			      add_audio_signal);
+	
+	if(input != NULL){
+	  g_object_unref(input);
+	}
+      }
+#endif
+      
+      ags_ui_provider_schedule_task_all(AGS_UI_PROVIDER(application_context),
+					g_list_reverse(task));
+      
       if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
 	/* depending on destination */
 	ags_fm_syncsynth_input_map_recall(fm_syncsynth,
@@ -666,6 +711,14 @@ ags_fm_syncsynth_resize_pads(AgsMachine *machine, GType type,
     }else{
       fm_syncsynth->mapped_output_pad = pads;
     }
+  }
+      
+  if(output_soundcard != NULL){
+    g_object_unref(output_soundcard);
+  }
+
+  if(start_input != NULL){
+    g_object_unref(start_input);
   }
 }
 
@@ -1148,6 +1201,7 @@ ags_fm_syncsynth_update(AgsFMSyncsynth *fm_syncsynth)
   while(channel != NULL){
     AgsRecycling *first_recycling;
     AgsAudioSignal *template;
+    AgsAudioSignal *rt_template;
 
     GList *start_list;
     

@@ -610,7 +610,7 @@ ags_vector_256_manager_try_acquire_dual(AgsVector256Manager *vector_256_manager,
 }
 
 /**
- * ags_vector_256_manager_try_acquire_dual:
+ * ags_vector_256_manager_try_acquire_triple:
  * @vector_256_manager: the #AgsVector256Manager
  * @vector_type_a: the first vector type
  * @vector_type_b: the second vector type
