@@ -1208,8 +1208,8 @@ ags_apply_sound_config_launch(AgsTask *task)
 					  AGS_TYPE_SEQUENCER_THREAD);
 
   while(sequencer_thread != NULL){
-    if(!AGS_IS_CORE_AUDIO_MIDIIN(AGS_SEQUENCER_THREAD(sequencer_thread)->sequencer) &&
-       AGS_IS_SEQUENCER_THREAD(sequencer_thread)){
+    if(AGS_IS_SEQUENCER_THREAD(sequencer_thread) &&
+       !AGS_IS_CORE_AUDIO_MIDIIN(AGS_SEQUENCER_THREAD(sequencer_thread)->sequencer)){
       ags_thread_stop(sequencer_thread);
     }
     
