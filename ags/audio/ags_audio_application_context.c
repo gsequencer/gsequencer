@@ -3934,7 +3934,7 @@ ags_audio_application_context_loader_timeout(AgsAudioApplicationContext *audio_a
 			    AGS_LIBRARY_SUFFIX) &&
 	   !g_list_find_custom(vst3_manager->vst3_plugin_blacklist,
 			       arch_filename,
-			       strcmp)){
+			       (GCompareFunc) strcmp)){
 	  ags_vst3_manager_load_file(vst3_manager,
 				     arch_path,
 				     arch_filename);

@@ -1,3 +1,8 @@
+ags (7.0.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* updated libags_vst3.so ABI breaking in libags_audio.so
+
 ags (7.0.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

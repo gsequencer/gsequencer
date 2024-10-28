@@ -7157,8 +7157,8 @@ ags_simple_file_read_instantiate_vst3_plugin(AgsSimpleFile *simple_file, xmlNode
       if(ags_base_plugin_test_flags((AgsBasePlugin *) vst3_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
 	/*  */
 	if(ags_audio_test_ability_flags(audio, AGS_SOUND_ABILITY_PLAYBACK)){
-	  audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
-							      AGS_SOUND_SCOPE_PLAYBACK);
+	  audio_thread = (AgsAudioThread *) ags_playback_domain_get_audio_thread(playback_domain,
+										 AGS_SOUND_SCOPE_PLAYBACK);
 
 	  task_launcher = ags_audio_thread_get_task_launcher(audio_thread);
 	
@@ -7167,7 +7167,7 @@ ags_simple_file_read_instantiate_vst3_plugin(AgsSimpleFile *simple_file, xmlNode
 								     -1,
 								     FALSE);
 	  ags_task_launcher_add_task(task_launcher,
-				     instantiate_vst3_plugin);
+				     (AgsTask *) instantiate_vst3_plugin);
 
 	  g_object_unref(audio_thread);
 
@@ -7176,8 +7176,8 @@ ags_simple_file_read_instantiate_vst3_plugin(AgsSimpleFile *simple_file, xmlNode
 	
 	/*  */
 	if(ags_audio_test_ability_flags(audio, AGS_SOUND_ABILITY_SEQUENCER)){
-	  audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
-							      AGS_SOUND_SCOPE_SEQUENCER);
+	  audio_thread = (AgsAudioThread *) ags_playback_domain_get_audio_thread(playback_domain,
+										 AGS_SOUND_SCOPE_SEQUENCER);
 
 	  task_launcher = ags_audio_thread_get_task_launcher(audio_thread);
 	
@@ -7186,7 +7186,7 @@ ags_simple_file_read_instantiate_vst3_plugin(AgsSimpleFile *simple_file, xmlNode
 								     -1,
 								     FALSE);
 	  ags_task_launcher_add_task(task_launcher,
-				     instantiate_vst3_plugin);
+				     (AgsTask *) instantiate_vst3_plugin);
 
 	  g_object_unref(audio_thread);
 
@@ -7195,8 +7195,8 @@ ags_simple_file_read_instantiate_vst3_plugin(AgsSimpleFile *simple_file, xmlNode
 	
 	/*  */
 	if(ags_audio_test_ability_flags(audio, AGS_SOUND_ABILITY_NOTATION)){
-	  audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
-							      AGS_SOUND_SCOPE_NOTATION);
+	  audio_thread = (AgsAudioThread *) ags_playback_domain_get_audio_thread(playback_domain,
+										 AGS_SOUND_SCOPE_NOTATION);
 
 	  task_launcher = ags_audio_thread_get_task_launcher(audio_thread);
 	
@@ -7205,7 +7205,7 @@ ags_simple_file_read_instantiate_vst3_plugin(AgsSimpleFile *simple_file, xmlNode
 								     -1,
 								     FALSE);
 	  ags_task_launcher_add_task(task_launcher,
-				     instantiate_vst3_plugin);
+				     (AgsTask *) instantiate_vst3_plugin);
 
 	  g_object_unref(audio_thread);
 
@@ -7248,8 +7248,8 @@ ags_simple_file_read_instantiate_vst3_plugin(AgsSimpleFile *simple_file, xmlNode
 	  
 	  /*  */
 	  if(ags_audio_test_ability_flags(audio, AGS_SOUND_ABILITY_PLAYBACK)){
-	    channel_thread = ags_playback_get_channel_thread(playback->data,
-							     AGS_SOUND_SCOPE_PLAYBACK);
+	    channel_thread = (AgsChannelThread *) ags_playback_get_channel_thread(playback->data,
+										  AGS_SOUND_SCOPE_PLAYBACK);
 	
 	    task_launcher = ags_channel_thread_get_task_launcher(channel_thread);
 	
@@ -7258,7 +7258,7 @@ ags_simple_file_read_instantiate_vst3_plugin(AgsSimpleFile *simple_file, xmlNode
 								       -1,
 								       FALSE);
 	    ags_task_launcher_add_task(task_launcher,
-				       instantiate_vst3_plugin);
+				       (AgsTask *) instantiate_vst3_plugin);
 
 	    g_object_unref(channel_thread);
 
@@ -7267,8 +7267,8 @@ ags_simple_file_read_instantiate_vst3_plugin(AgsSimpleFile *simple_file, xmlNode
 	  
 	  /*  */
 	  if(ags_audio_test_ability_flags(audio, AGS_SOUND_ABILITY_SEQUENCER)){
-	    channel_thread = ags_playback_get_channel_thread(playback->data,
-							     AGS_SOUND_SCOPE_SEQUENCER);
+	    channel_thread = (AgsChannelThread *) ags_playback_get_channel_thread(playback->data,
+										  AGS_SOUND_SCOPE_SEQUENCER);
 
 	    task_launcher = ags_channel_thread_get_task_launcher(channel_thread);
 
@@ -7277,7 +7277,7 @@ ags_simple_file_read_instantiate_vst3_plugin(AgsSimpleFile *simple_file, xmlNode
 								       -1,
 								       FALSE);
 	    ags_task_launcher_add_task(task_launcher,
-				       instantiate_vst3_plugin);
+				       (AgsTask *) instantiate_vst3_plugin);
 
 	    g_object_unref(channel_thread);
 
@@ -7286,8 +7286,8 @@ ags_simple_file_read_instantiate_vst3_plugin(AgsSimpleFile *simple_file, xmlNode
 	  
 	  /*  */
 	  if(ags_audio_test_ability_flags(audio, AGS_SOUND_ABILITY_NOTATION)){
-	    channel_thread = ags_playback_get_channel_thread(playback->data,
-							     AGS_SOUND_SCOPE_NOTATION);
+	    channel_thread = (AgsChannelThread *) ags_playback_get_channel_thread(playback->data,
+										  AGS_SOUND_SCOPE_NOTATION);
 
 	    task_launcher = ags_channel_thread_get_task_launcher(channel_thread);
 
@@ -7296,7 +7296,7 @@ ags_simple_file_read_instantiate_vst3_plugin(AgsSimpleFile *simple_file, xmlNode
 								       -1,
 								       FALSE);
 	    ags_task_launcher_add_task(task_launcher,
-				       instantiate_vst3_plugin);
+				       (AgsTask *) instantiate_vst3_plugin);
 
 	    g_object_unref(channel_thread);
 
@@ -7325,13 +7325,13 @@ ags_simple_file_read_instantiate_vst3_plugin(AgsSimpleFile *simple_file, xmlNode
 void
 ags_simple_file_read_vst3_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsVst3Bridge *vst3_bridge)
 {
-  ags_simple_file_read_instantiate_vst3_plugin(simple_file, node, vst3_bridge, vst3_bridge->vst3_plugin);
+  ags_simple_file_read_instantiate_vst3_plugin(simple_file, node, (AgsMachine *) vst3_bridge, vst3_bridge->vst3_plugin);
 }
 
 void
 ags_simple_file_read_live_vst3_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsLiveVst3Bridge *live_vst3_bridge)
 {
-  ags_simple_file_read_instantiate_vst3_plugin(simple_file, node, live_vst3_bridge, live_vst3_bridge->vst3_plugin);
+  ags_simple_file_read_instantiate_vst3_plugin(simple_file, node, (AgsMachine *) live_vst3_bridge, live_vst3_bridge->vst3_plugin);
 }
 #endif
 

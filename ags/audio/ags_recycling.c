@@ -522,6 +522,9 @@ ags_recycling_init(AgsRecycling *recycling)
   recycling->prev = NULL;
 
   /* audio signal */
+  recycling->audio_signal = NULL;
+
+  /* audio signal - default template */
   audio_signal = ags_audio_signal_new(NULL,
 				      (GObject *) recycling,
 				      NULL);

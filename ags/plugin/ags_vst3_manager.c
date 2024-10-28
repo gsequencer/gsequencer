@@ -799,14 +799,14 @@ ags_vst3_manager_load_file(AgsVst3Manager *vst3_manager,
 	vst3_plugin->plugin_init = InitDll;
 	vst3_plugin->plugin_exit = ExitDll;
 #else
-	vst3_plugin->plugin_init = ModuleEntry;
-	vst3_plugin->plugin_exit = ModuleExit;
+	vst3_plugin->plugin_init = (void * (*)(void *)) ModuleEntry;
+	vst3_plugin->plugin_exit = (void * (*)(void *)) ModuleExit;
 #endif
 #endif
 	
 	vst3_plugin->get_plugin_factory = GetPluginFactory;
 	
-	vst3_plugin->cid = (gchar **) ags_vst_pclass_info_get_cid(info);
+	vst3_plugin->cid = (gchar *) ags_vst_pclass_info_get_cid(info);
 	
 	ags_base_plugin_load_plugin((AgsBasePlugin *) vst3_plugin);
 
