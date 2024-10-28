@@ -1093,18 +1093,18 @@ ags_fx_vst3_audio_channel_data_alloc()
 					       AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES);
 
   iparameter_changes = NULL;
-  ags_vst_funknown_query_interface(channel_data->input_parameter_changes,
-				   ags_vst_iparameter_changes_get_iid(), &iparameter_changes);
+  ags_vst_funknown_query_interface((AgsVstFUnknown *) channel_data->input_parameter_changes,
+				   ags_vst_iparameter_changes_get_iid(), (void **) &iparameter_changes);
   
   ags_vst_process_data_set_input_iparameter_changes(channel_data->process_data,
 						    iparameter_changes);
   
   /* event list */
-  channel_data->input_event = ags_vst_event_list_new();
+  channel_data->input_event = (AgsVstIEventList *) ags_vst_event_list_new();
 
   ievent_list = NULL;
-  ags_vst_funknown_query_interface(channel_data->input_event,
-				   ags_vst_ievent_list_get_iid(), &ievent_list);
+  ags_vst_funknown_query_interface((AgsVstFUnknown *) channel_data->input_event,
+				   ags_vst_ievent_list_get_iid(), (void **) &ievent_list);
 
   ags_vst_process_data_set_input_events(channel_data->process_data,
 					ievent_list);
@@ -1265,8 +1265,8 @@ ags_fx_vst3_audio_input_data_alloc()
 					       AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES);
 
   iparameter_changes = NULL;
-  ags_vst_funknown_query_interface(input_data->input_parameter_changes,
-				   ags_vst_iparameter_changes_get_iid(), &iparameter_changes);
+  ags_vst_funknown_query_interface((AgsVstFUnknown *) input_data->input_parameter_changes,
+				   ags_vst_iparameter_changes_get_iid(), (void **) &iparameter_changes);
 
   ags_vst_process_data_set_input_iparameter_changes(input_data->process_data,
 						    iparameter_changes);
@@ -1274,11 +1274,11 @@ ags_fx_vst3_audio_input_data_alloc()
   input_data->parameter_changes[0].param_id = ~0;
 
   /* event list */
-  input_data->input_event = ags_vst_event_list_new();
+  input_data->input_event = (AgsVstIEventList *) ags_vst_event_list_new();
 
   ievent_list = NULL;
-  ags_vst_funknown_query_interface(input_data->input_event,
-				   ags_vst_ievent_list_get_iid(), &ievent_list);
+  ags_vst_funknown_query_interface((AgsVstFUnknown *) input_data->input_event,
+				   ags_vst_ievent_list_get_iid(), (void **) &ievent_list);
 
   ags_vst_process_data_set_input_events(input_data->process_data,
 					ievent_list);
@@ -2264,8 +2264,8 @@ ags_fx_vst3_audio_safe_write_callback(AgsPort *port, GValue *value,
       for(j = 0; j < AGS_SOUND_SCOPE_LAST; j++){
 	AgsWriteVst3Port *write_vst3_port;
 
-	audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
-							    j);
+	audio_thread = (AgsAudioThread *) ags_playback_domain_get_audio_thread(playback_domain,
+									       j);
 
 	output = ags_channel_nth(start_output,
 				 i);
@@ -2301,8 +2301,8 @@ ags_fx_vst3_audio_safe_write_callback(AgsPort *port, GValue *value,
 	channel_thread = NULL;
 
 	if(output_playback != NULL){
-	  channel_thread = ags_playback_get_channel_thread(output_playback->data,
-							   j);
+	  channel_thread = (AgsChannelThread *) ags_playback_get_channel_thread(output_playback->data,
+										j);
 	}
 
 	task_launcher = NULL;
@@ -2373,7 +2373,7 @@ ags_fx_vst3_audio_safe_write_callback(AgsPort *port, GValue *value,
 						      i);
 
 	    ags_task_launcher_add_task(task_launcher,
-				       write_vst3_port);	    
+				       (AgsTask *) write_vst3_port);	    
 	  }	  
 
 	  g_object_unref(task_launcher);
@@ -2487,8 +2487,8 @@ ags_fx_vst3_audio_change_program(AgsFxVst3Audio *fx_vst3_audio,
 	  if(channel_data->iedit_controller != NULL){
 	    iprogram_list_data = NULL;
 	    
-	    val = ags_vst_funknown_query_interface(channel_data->iedit_controller,
-						   ags_vst_iprogram_list_data_get_iid(), &iprogram_list_data);
+	    val = ags_vst_funknown_query_interface((AgsVstFUnknown *) channel_data->iedit_controller,
+						   ags_vst_iprogram_list_data_get_iid(), (void **) &iprogram_list_data);
 
 	    if(iprogram_list_data != NULL){
 	      AgsVstIBStream *data;
@@ -2514,8 +2514,8 @@ ags_fx_vst3_audio_change_program(AgsFxVst3Audio *fx_vst3_audio,
 	    if(input_data->iedit_controller != NULL){
 	      iprogram_list_data = NULL;
 	    
-	      val = ags_vst_funknown_query_interface(input_data->iedit_controller,
-						     ags_vst_iprogram_list_data_get_iid(), &iprogram_list_data);
+	      val = ags_vst_funknown_query_interface((AgsVstFUnknown *) input_data->iedit_controller,
+						     ags_vst_iprogram_list_data_get_iid(), (void **) &iprogram_list_data);
 
 
 	      if(iprogram_list_data != NULL){

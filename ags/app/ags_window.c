@@ -1273,42 +1273,13 @@ ags_window_load_file_timeout(AgsWindow *window)
   if(g_hash_table_lookup(ags_window_load_file,
 			 window) != NULL){
     if(window->queued_filename != NULL){
-      GtkLabel *label;
-      
       AgsSimpleFile *simple_file;
-
-      gchar *window_title;
       
       GError *error;
-
-#if defined(AGS_OSXAPI) || defined(AGS_W32API)
-#else
-      locale_t current;
-#endif
 
       if(ags_ui_provider_get_show_animation(AGS_UI_PROVIDER(application_context))){
 	return(TRUE);
       }
-
-      g_mutex_lock(&locale_mutex);
-
-      if(!locale_initialized){
-#if defined(AGS_OSXAPI) || defined(AGS_W32API)
-	locale_env = getenv("LC_ALL");
-#else
-	c_utf8_locale = newlocale(LC_ALL_MASK, "C.UTF-8", (locale_t) 0);
-#endif
-    
-	locale_initialized = TRUE;
-      }
-
-      g_mutex_unlock(&locale_mutex);
-
-#if defined(AGS_OSXAPI) || defined(AGS_W32API)
-      setlocale(LC_ALL, "C.UTF-8");
-#else
-      current = uselocale(c_utf8_locale);
-#endif
       
       simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
 						   "filename", window->queued_filename,
@@ -1324,37 +1295,6 @@ ags_window_load_file_timeout(AgsWindow *window)
       }
 
       ags_simple_file_read(simple_file);
-      ags_simple_file_close(simple_file);
-      
-      /* set name */
-      window->loaded_filename = g_strdup(window->queued_filename);
-
-      window_title = g_strdup_printf("GSequencer - %s", window->loaded_filename);
-      
-      gtk_window_set_title((GtkWindow *) window,
-			   window_title);
-
-      g_free(window_title);
-
-      label = (GtkLabel *) gtk_header_bar_get_title_widget(window->header_bar);
-
-      if(label != NULL){
-	window_title = g_strdup_printf("GSequencer\n<small>%s</small>",
-				       window->loaded_filename);
-
-	gtk_label_set_label(label,
-			    window_title);
-
-	g_free(window_title);
-      }
-      
-      window->queued_filename = NULL;
-
-#if defined(AGS_OSXAPI) || defined(AGS_W32API)
-      setlocale(LC_ALL, locale_env);
-#else
-      uselocale(current);
-#endif
     }
 
     return(TRUE);

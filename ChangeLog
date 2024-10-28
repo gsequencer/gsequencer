@@ -1,3 +1,20 @@
+ags (7.0.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* updated libags_vst3.so ABI breaking in libags_audio.so
+	* improved ags_simple_file_real_read_start() to be performed by timeout
+
+ags (7.0.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential SIGSEGV with AgsMidiPreferences remove sequencer editor callback
+
+ags (7.0.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags_navigation_play_callback()
+	* improved ags_recycling_init()
+
 ags (7.0.9)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

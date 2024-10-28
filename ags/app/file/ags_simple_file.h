@@ -99,6 +99,8 @@ struct _AgsSimpleFile
   GList *lookup;
   GList *launch;
 
+  GList *launch_queue;
+  
   gboolean no_config;
 
   AgsFileUtil *file_util;
@@ -162,6 +164,8 @@ void ags_simple_file_read_resolve(AgsSimpleFile *simple_file);
 void ags_simple_file_read_start(AgsSimpleFile *simple_file);
 
 void ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, AgsConfig **ags_config);
+
+gboolean ags_simple_file_start_queue_timeout(AgsSimpleFile *simple_file);
 
 /* */
 AgsSimpleFile* ags_simple_file_new();

@@ -478,7 +478,7 @@ ags_fx_vst3_channel_input_data_alloc()
 					       AGS_FX_VST3_CHANNEL_MAX_PARAMETER_CHANGES);
 
   ags_vst_process_data_set_input_iparameter_changes(input_data->process_data,
-						    input_data->input_parameter_changes);
+						    (AgsVstIParameterChanges *) input_data->input_parameter_changes);
 
   input_data->parameter_changes[0].param_id = ~0;
 
@@ -830,7 +830,7 @@ ags_fx_vst3_channel_load_port(AgsFxVst3Channel *fx_vst3_channel)
 			      vst3_port[nth]);
 	
 	  g_signal_connect_after(vst3_port[nth], "safe-write",
-				 ags_fx_vst3_channel_safe_write_callback, fx_vst3_channel);
+				 G_CALLBACK(ags_fx_vst3_channel_safe_write_callback), fx_vst3_channel);
 
 	  g_free(plugin_name);
 	  g_free(specifier);
@@ -1016,7 +1016,7 @@ ags_fx_vst3_channel_load_port(AgsFxVst3Channel *fx_vst3_channel)
 			      vst3_port[nth]);
 	
 	  g_signal_connect(vst3_port[nth], "safe-write",
-			   ags_fx_vst3_channel_safe_write_callback, fx_vst3_channel);
+			   G_CALLBACK(ags_fx_vst3_channel_safe_write_callback), fx_vst3_channel);
       
 	  g_free(plugin_name);
 	  g_free(specifier);
@@ -1223,8 +1223,8 @@ ags_fx_vst3_channel_safe_write_callback(AgsPort *port, GValue *value,
       for(j = 0; j < AGS_SOUND_SCOPE_LAST; j++){
 	AgsWriteVst3Port *write_vst3_port;
 
-	audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
-							    j);
+	audio_thread = (AgsAudioThread *) ags_playback_domain_get_audio_thread(playback_domain,
+									       j);
 
 	output = ags_channel_nth(start_output,
 				 i);
@@ -1260,8 +1260,8 @@ ags_fx_vst3_channel_safe_write_callback(AgsPort *port, GValue *value,
 	channel_thread = NULL;
 
 	if(output_playback != NULL){
-	  channel_thread = ags_playback_get_channel_thread(output_playback->data,
-							   j);
+	  channel_thread = (AgsChannelThread *) ags_playback_get_channel_thread(output_playback->data,
+										j);
 	}
 
 	task_launcher = NULL;
@@ -1287,7 +1287,7 @@ ags_fx_vst3_channel_safe_write_callback(AgsPort *port, GValue *value,
 						  i);
 
 	ags_task_launcher_add_task(task_launcher,
-				   write_vst3_port);
+				   (AgsTask *) write_vst3_port);
 
 	if(task_launcher != NULL){
 	  g_object_unref(task_launcher);
@@ -1309,8 +1309,8 @@ ags_fx_vst3_channel_safe_write_callback(AgsPort *port, GValue *value,
 
       gint audio_channel;
       
-      audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
-							  j);
+      audio_thread = (AgsAudioThread *) ags_playback_domain_get_audio_thread(playback_domain,
+									     j);
 
       output = NULL;
       audio_channel = -1;
@@ -1356,8 +1356,8 @@ ags_fx_vst3_channel_safe_write_callback(AgsPort *port, GValue *value,
       channel_thread = NULL;
 
       if(output_playback != NULL){
-	channel_thread = ags_playback_get_channel_thread(output_playback->data,
-							 j);
+	channel_thread = (AgsChannelThread *) ags_playback_get_channel_thread(output_playback->data,
+									      j);
       }
 
       task_launcher = NULL;
@@ -1379,12 +1379,12 @@ ags_fx_vst3_channel_safe_write_callback(AgsPort *port, GValue *value,
       if(audio_channel != -1){
 	write_vst3_port = ags_write_vst3_port_new(fx_vst3_audio,
 						  port,
-						  g_value_get_double(&value),
+						  g_value_get_double(value),
 						  j,
 						  audio_channel);
 	
 	ags_task_launcher_add_task(task_launcher,
-				   write_vst3_port);
+				   (AgsTask *) write_vst3_port);
       }
 
       if(task_launcher != NULL){

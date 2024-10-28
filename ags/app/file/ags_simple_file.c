@@ -646,6 +646,8 @@ ags_simple_file_init(AgsSimpleFile *simple_file)
   simple_file->lookup = NULL;
   simple_file->launch = NULL;
 
+  simple_file->launch_queue = NULL;
+
   simple_file->no_config = FALSE;
   
   simple_file->file_util = ags_file_util_alloc(NULL,
@@ -1238,11 +1240,15 @@ ags_simple_file_write_resolve(AgsSimpleFile *simple_file)
 void
 ags_simple_file_real_read(AgsSimpleFile *simple_file)
 {
+  AgsWindow *window;
+  
   AgsApplicationContext *application_context;
 
   xmlNode *root_node, *child;
   
   application_context = ags_application_context_get_instance();
+
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
   root_node = simple_file->root_node;
 
@@ -1334,11 +1340,11 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
   gtk_widget_show(ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
   
   /* start */
+  window->loaded_filename = g_strdup(window->queued_filename);
+  
+  window->queued_filename = NULL;
+  
   ags_simple_file_read_start(simple_file);
-
-  /* set file ready */
-  ags_ui_provider_set_file_ready(AGS_UI_PROVIDER(application_context),
-				 TRUE);
 }
 
 void
@@ -1383,18 +1389,11 @@ ags_simple_file_read_resolve(AgsSimpleFile *simple_file)
 void
 ags_simple_file_real_read_start(AgsSimpleFile *simple_file)
 {
-  GList *start_list, *list;
+  simple_file->launch_queue = g_list_reverse(g_list_copy(simple_file->launch));
 
-  list = 
-    start_list = g_list_reverse(g_list_copy(simple_file->launch));
-
-  while(list != NULL){
-    ags_file_launch_start(AGS_FILE_LAUNCH(list->data));
-
-    list = list->next;
-  }
-
-  g_list_free(start_list);
+  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000,
+		(GSourceFunc) ags_simple_file_start_queue_timeout,
+		simple_file);
 }
 
 void
@@ -2323,12 +2322,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
     /* add to sound provider */
     if(gobject != NULL){
       /* ref audio */
-      g_object_ref(gobject->audio);
-
       start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
-      g_list_foreach(start_list,
-		     (GFunc) g_object_unref,
-		     NULL);
 
       g_object_ref(gobject->audio);
       start_list = g_list_append(start_list,
@@ -7157,8 +7151,8 @@ ags_simple_file_read_instantiate_vst3_plugin(AgsSimpleFile *simple_file, xmlNode
       if(ags_base_plugin_test_flags((AgsBasePlugin *) vst3_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
 	/*  */
 	if(ags_audio_test_ability_flags(audio, AGS_SOUND_ABILITY_PLAYBACK)){
-	  audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
-							      AGS_SOUND_SCOPE_PLAYBACK);
+	  audio_thread = (AgsAudioThread *) ags_playback_domain_get_audio_thread(playback_domain,
+										 AGS_SOUND_SCOPE_PLAYBACK);
 
 	  task_launcher = ags_audio_thread_get_task_launcher(audio_thread);
 	
@@ -7167,7 +7161,7 @@ ags_simple_file_read_instantiate_vst3_plugin(AgsSimpleFile *simple_file, xmlNode
 								     -1,
 								     FALSE);
 	  ags_task_launcher_add_task(task_launcher,
-				     instantiate_vst3_plugin);
+				     (AgsTask *) instantiate_vst3_plugin);
 
 	  g_object_unref(audio_thread);
 
@@ -7176,8 +7170,8 @@ ags_simple_file_read_instantiate_vst3_plugin(AgsSimpleFile *simple_file, xmlNode
 	
 	/*  */
 	if(ags_audio_test_ability_flags(audio, AGS_SOUND_ABILITY_SEQUENCER)){
-	  audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
-							      AGS_SOUND_SCOPE_SEQUENCER);
+	  audio_thread = (AgsAudioThread *) ags_playback_domain_get_audio_thread(playback_domain,
+										 AGS_SOUND_SCOPE_SEQUENCER);
 
 	  task_launcher = ags_audio_thread_get_task_launcher(audio_thread);
 	
@@ -7186,7 +7180,7 @@ ags_simple_file_read_instantiate_vst3_plugin(AgsSimpleFile *simple_file, xmlNode
 								     -1,
 								     FALSE);
 	  ags_task_launcher_add_task(task_launcher,
-				     instantiate_vst3_plugin);
+				     (AgsTask *) instantiate_vst3_plugin);
 
 	  g_object_unref(audio_thread);
 
@@ -7195,8 +7189,8 @@ ags_simple_file_read_instantiate_vst3_plugin(AgsSimpleFile *simple_file, xmlNode
 	
 	/*  */
 	if(ags_audio_test_ability_flags(audio, AGS_SOUND_ABILITY_NOTATION)){
-	  audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
-							      AGS_SOUND_SCOPE_NOTATION);
+	  audio_thread = (AgsAudioThread *) ags_playback_domain_get_audio_thread(playback_domain,
+										 AGS_SOUND_SCOPE_NOTATION);
 
 	  task_launcher = ags_audio_thread_get_task_launcher(audio_thread);
 	
@@ -7205,7 +7199,7 @@ ags_simple_file_read_instantiate_vst3_plugin(AgsSimpleFile *simple_file, xmlNode
 								     -1,
 								     FALSE);
 	  ags_task_launcher_add_task(task_launcher,
-				     instantiate_vst3_plugin);
+				     (AgsTask *) instantiate_vst3_plugin);
 
 	  g_object_unref(audio_thread);
 
@@ -7248,8 +7242,8 @@ ags_simple_file_read_instantiate_vst3_plugin(AgsSimpleFile *simple_file, xmlNode
 	  
 	  /*  */
 	  if(ags_audio_test_ability_flags(audio, AGS_SOUND_ABILITY_PLAYBACK)){
-	    channel_thread = ags_playback_get_channel_thread(playback->data,
-							     AGS_SOUND_SCOPE_PLAYBACK);
+	    channel_thread = (AgsChannelThread *) ags_playback_get_channel_thread(playback->data,
+										  AGS_SOUND_SCOPE_PLAYBACK);
 	
 	    task_launcher = ags_channel_thread_get_task_launcher(channel_thread);
 	
@@ -7258,7 +7252,7 @@ ags_simple_file_read_instantiate_vst3_plugin(AgsSimpleFile *simple_file, xmlNode
 								       -1,
 								       FALSE);
 	    ags_task_launcher_add_task(task_launcher,
-				       instantiate_vst3_plugin);
+				       (AgsTask *) instantiate_vst3_plugin);
 
 	    g_object_unref(channel_thread);
 
@@ -7267,8 +7261,8 @@ ags_simple_file_read_instantiate_vst3_plugin(AgsSimpleFile *simple_file, xmlNode
 	  
 	  /*  */
 	  if(ags_audio_test_ability_flags(audio, AGS_SOUND_ABILITY_SEQUENCER)){
-	    channel_thread = ags_playback_get_channel_thread(playback->data,
-							     AGS_SOUND_SCOPE_SEQUENCER);
+	    channel_thread = (AgsChannelThread *) ags_playback_get_channel_thread(playback->data,
+										  AGS_SOUND_SCOPE_SEQUENCER);
 
 	    task_launcher = ags_channel_thread_get_task_launcher(channel_thread);
 
@@ -7277,7 +7271,7 @@ ags_simple_file_read_instantiate_vst3_plugin(AgsSimpleFile *simple_file, xmlNode
 								       -1,
 								       FALSE);
 	    ags_task_launcher_add_task(task_launcher,
-				       instantiate_vst3_plugin);
+				       (AgsTask *) instantiate_vst3_plugin);
 
 	    g_object_unref(channel_thread);
 
@@ -7286,8 +7280,8 @@ ags_simple_file_read_instantiate_vst3_plugin(AgsSimpleFile *simple_file, xmlNode
 	  
 	  /*  */
 	  if(ags_audio_test_ability_flags(audio, AGS_SOUND_ABILITY_NOTATION)){
-	    channel_thread = ags_playback_get_channel_thread(playback->data,
-							     AGS_SOUND_SCOPE_NOTATION);
+	    channel_thread = (AgsChannelThread *) ags_playback_get_channel_thread(playback->data,
+										  AGS_SOUND_SCOPE_NOTATION);
 
 	    task_launcher = ags_channel_thread_get_task_launcher(channel_thread);
 
@@ -7296,7 +7290,7 @@ ags_simple_file_read_instantiate_vst3_plugin(AgsSimpleFile *simple_file, xmlNode
 								       -1,
 								       FALSE);
 	    ags_task_launcher_add_task(task_launcher,
-				       instantiate_vst3_plugin);
+				       (AgsTask *) instantiate_vst3_plugin);
 
 	    g_object_unref(channel_thread);
 
@@ -7325,13 +7319,13 @@ ags_simple_file_read_instantiate_vst3_plugin(AgsSimpleFile *simple_file, xmlNode
 void
 ags_simple_file_read_vst3_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsVst3Bridge *vst3_bridge)
 {
-  ags_simple_file_read_instantiate_vst3_plugin(simple_file, node, vst3_bridge, vst3_bridge->vst3_plugin);
+  ags_simple_file_read_instantiate_vst3_plugin(simple_file, node, (AgsMachine *) vst3_bridge, vst3_bridge->vst3_plugin);
 }
 
 void
 ags_simple_file_read_live_vst3_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsLiveVst3Bridge *live_vst3_bridge)
 {
-  ags_simple_file_read_instantiate_vst3_plugin(simple_file, node, live_vst3_bridge, live_vst3_bridge->vst3_plugin);
+  ags_simple_file_read_instantiate_vst3_plugin(simple_file, node, (AgsMachine *) live_vst3_bridge, live_vst3_bridge->vst3_plugin);
 }
 #endif
 
@@ -17338,6 +17332,72 @@ ags_simple_file_write_program(AgsSimpleFile *simple_file, xmlNode *parent, AgsPr
 	      node);
 
   return(node);
+}
+
+gboolean
+ags_simple_file_start_queue_timeout(AgsSimpleFile *simple_file)
+{
+  AgsWindow *window;
+  GtkLabel *label;    
+  
+  AgsApplicationContext *application_context;
+
+  gchar *window_title;
+
+  gint64 start_time, current_time;
+  
+  application_context = ags_application_context_get_instance();
+
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  
+  start_time = g_get_monotonic_time();
+  
+  do{
+    if(simple_file->launch_queue != NULL){
+      gpointer data;
+
+      data = simple_file->launch_queue->data;
+      
+      ags_file_launch_start(AGS_FILE_LAUNCH(data));
+      
+      simple_file->launch_queue = g_list_remove(simple_file->launch_queue,
+						data);
+    }
+    
+    current_time = g_get_monotonic_time();
+  }while(current_time < start_time + (AGS_UI_PROVIDER_DEFAULT_TIMEOUT / 2.0 * 1000000));
+  
+  if(simple_file->launch_queue != NULL){
+    return(G_SOURCE_CONTINUE);
+  }else{
+    ags_simple_file_close(simple_file);    
+
+    /* set file ready */
+    ags_ui_provider_set_file_ready(AGS_UI_PROVIDER(application_context),
+				   TRUE);
+    
+    /* set name */
+    window_title = g_strdup_printf("GSequencer - %s", window->loaded_filename);
+      
+    gtk_window_set_title((GtkWindow *) window,
+			 window_title);
+
+    g_free(window_title);
+
+    label = (GtkLabel *) gtk_header_bar_get_title_widget(window->header_bar);
+
+    if(label != NULL){
+      window_title = g_strdup_printf("GSequencer\n<small>%s</small>",
+				     window->loaded_filename);
+
+      gtk_label_set_label(label,
+			  window_title);
+
+      g_free(window_title);
+    }
+      
+    return(G_SOURCE_REMOVE);
+  }
 }
 
 AgsSimpleFile*

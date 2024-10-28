@@ -281,7 +281,7 @@ ags_fx_vst3_audio_processor_run_inter(AgsRecall *recall)
 	  ags_vst_process_context_set_state(channel_data->process_context,
 					    AGS_VST_KPLAYING);
 	
-	  ags_base_plugin_activate(vst3_plugin,
+	  ags_base_plugin_activate((AgsBasePlugin *) vst3_plugin,
 				   channel_data->icomponent);
 
 //	  ags_vst_icomponent_activate_bus(channel_data->icomponent,
@@ -345,7 +345,7 @@ ags_fx_vst3_audio_processor_run_inter(AgsRecall *recall)
 	    ags_vst_process_context_set_state(input_data->process_context,
 					      AGS_VST_KPLAYING);
 	  
-	    ags_base_plugin_activate(vst3_plugin,
+	    ags_base_plugin_activate((AgsBasePlugin *) vst3_plugin,
 				     input_data->icomponent);
 
 //	    ags_vst_icomponent_activate_bus(input_data->icomponent,
@@ -585,7 +585,7 @@ ags_fx_vst3_audio_processor_done(AgsRecall *recall)
 	ags_vst_process_context_set_state(channel_data->process_context,
 					  0);
 	
-	ags_base_plugin_deactivate(vst3_plugin,
+	ags_base_plugin_deactivate((AgsBasePlugin *) vst3_plugin,
 				   channel_data->icomponent);
 
 //	ags_vst_icomponent_activate_bus(channel_data->icomponent,
@@ -613,7 +613,7 @@ ags_fx_vst3_audio_processor_done(AgsRecall *recall)
 	  ags_vst_process_context_set_state(input_data->process_context,
 					    0);
 	
-	  ags_base_plugin_deactivate(vst3_plugin,
+	  ags_base_plugin_deactivate((AgsBasePlugin *) vst3_plugin,
 				     input_data->icomponent);
 
 //	  ags_vst_icomponent_activate_bus(input_data->icomponent,
@@ -671,7 +671,7 @@ ags_fx_vst3_audio_processor_key_on(AgsFxNotationAudioProcessor *fx_notation_audi
 
   y = 0;
 
-  sound_scope = ags_recall_get_sound_scope(fx_notation_audio_processor);
+  sound_scope = ags_recall_get_sound_scope((AgsRecall *) fx_notation_audio_processor);
 
   audio_channel = 0;
   

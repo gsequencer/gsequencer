@@ -149,7 +149,7 @@ ags_fx_vst3_channel_processor_run_inter(AgsRecall *recall)
   AgsVst3Plugin *vst3_plugin;
 
   AgsFxVst3ChannelInputData *input_data;
-
+      
   GObject *output_soundcard;
 
   guint note_offset;
@@ -177,7 +177,7 @@ ags_fx_vst3_channel_processor_run_inter(AgsRecall *recall)
   fx_vst3_channel = NULL;
 
   output_soundcard = NULL;
-  
+
   g_object_get(recall,
 	       "recall-audio", &fx_vst3_audio,
 	       "recall-channel", &fx_vst3_channel,
@@ -229,12 +229,12 @@ ags_fx_vst3_channel_processor_run_inter(AgsRecall *recall)
     if(!activated){
       g_rec_mutex_lock(fx_vst3_audio_mutex);
 
-      input_data = fx_vst3_audio->scope_data[sound_scope];
+      input_data = fx_vst3_channel->input_data[sound_scope];
     
       ags_vst_process_context_set_state(input_data->process_context,
 					AGS_VST_KPLAYING);
 
-      ags_base_plugin_activate(vst3_plugin,
+      ags_base_plugin_activate((AgsBasePlugin *) vst3_plugin,
 			       input_data->icomponent);
     
       ags_vst_icomponent_activate_bus(input_data->icomponent,
@@ -328,6 +328,7 @@ void
 ags_fx_vst3_channel_processor_done(AgsRecall *recall)
 {
   AgsFxVst3Audio *fx_vst3_audio;
+  AgsFxVst3Channel *fx_vst3_channel;
   
   AgsVst3Plugin *vst3_plugin;
 
@@ -341,9 +342,11 @@ ags_fx_vst3_channel_processor_done(AgsRecall *recall)
   GRecMutex *fx_vst3_audio_mutex;
   
   fx_vst3_audio = NULL;
+  fx_vst3_channel = NULL;
 
   g_object_get(recall,
 	       "recall-audio", &fx_vst3_audio,
+	       "recall-channel", &fx_vst3_channel,
 	       NULL);
 
   sound_scope = ags_recall_get_sound_scope(recall);
@@ -371,12 +374,12 @@ ags_fx_vst3_channel_processor_done(AgsRecall *recall)
 
   g_rec_mutex_lock(fx_vst3_audio_mutex);
 
-  input_data = fx_vst3_audio->scope_data[sound_scope];
+  input_data = fx_vst3_channel->input_data[sound_scope];
 
   ags_vst_process_context_set_state(input_data->process_context,
 				    0);	
 
-  ags_base_plugin_deactivate(vst3_plugin,
+  ags_base_plugin_deactivate((AgsBasePlugin *) vst3_plugin,
 			     input_data->icomponent);
 
   ags_vst_icomponent_activate_bus(input_data->icomponent,
@@ -399,6 +402,10 @@ ags_fx_vst3_channel_processor_done(AgsRecall *recall)
   /* unref */
   if(fx_vst3_audio != NULL){
     g_object_unref(fx_vst3_audio);
+  }
+
+  if(fx_vst3_channel != NULL){
+    g_object_unref(fx_vst3_channel);
   }
   
   /* call parent */

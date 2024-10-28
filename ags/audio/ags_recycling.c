@@ -522,13 +522,24 @@ ags_recycling_init(AgsRecycling *recycling)
   recycling->prev = NULL;
 
   /* audio signal */
+  recycling->audio_signal = NULL;
+
+  /* audio signal - default template */
   audio_signal = ags_audio_signal_new(NULL,
 				      (GObject *) recycling,
 				      NULL);
-  audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+  g_object_ref(audio_signal);
+	
+  ags_audio_signal_set_flags(audio_signal,
+			     AGS_AUDIO_SIGNAL_TEMPLATE);
 
-  recycling->audio_signal = g_list_alloc();
-  recycling->audio_signal->data = audio_signal;
+  ags_recycling_create_audio_signal_with_frame_count(recycling,
+						     audio_signal,
+						     2 * AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE,
+						     0.0, 0);
+	
+  ags_recycling_add_audio_signal(recycling,
+				 audio_signal);
 }
 
 void

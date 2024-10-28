@@ -5240,7 +5240,7 @@ ags_gsequencer_application_context_loader_timeout(AgsGSequencerApplicationContex
 		       G_FILE_TEST_IS_DIR) &&
 	   !g_list_find_custom(vst3_manager->vst3_plugin_blacklist,
 			       filename,
-			       g_strcmp0)){
+			       (GCompareFunc) g_strcmp0)){
 	  gsequencer_application_context->vst3_loader = g_list_prepend(gsequencer_application_context->vst3_loader,
 								       g_strdup(plugin_path));
 	}
@@ -5643,7 +5643,7 @@ ags_gsequencer_application_context_loader_timeout(AgsGSequencerApplicationContex
 #if defined(AGS_OSXAPI)
 	if(!g_list_find_custom(vst3_manager->vst3_plugin_blacklist,
 			       arch_filename,
-			       g_strcmp0)){
+			       (GCompareFunc) g_strcmp0)){
 	  ags_vst3_manager_load_file(vst3_manager,
 				     arch_path,
 				     arch_filename);
@@ -5653,7 +5653,7 @@ ags_gsequencer_application_context_loader_timeout(AgsGSequencerApplicationContex
 			    AGS_LIBRARY_SUFFIX) &&
 	   !g_list_find_custom(vst3_manager->vst3_plugin_blacklist,
 			       arch_filename,
-			       strcmp)){
+			       (GCompareFunc) strcmp)){
 	  ags_vst3_manager_load_file(vst3_manager,
 				     arch_path,
 				     arch_filename);
