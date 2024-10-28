@@ -449,6 +449,8 @@ ags_apply_synth_launch(AgsTask *task)
 	audio_signal = ags_audio_signal_new(output_soundcard,
 					    (GObject *) first_recycling,
 					    NULL);
+	g_object_ref(audio_signal);
+	
 	ags_audio_signal_set_flags(audio_signal,
 				   AGS_AUDIO_SIGNAL_TEMPLATE);
 
@@ -459,8 +461,6 @@ ags_apply_synth_launch(AgsTask *task)
 	
 	ags_recycling_add_audio_signal(first_recycling,
 				       audio_signal);
-
-	g_object_ref(audio_signal);
       }
 	
       /* compute audio signal */

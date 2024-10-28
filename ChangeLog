@@ -1,3 +1,9 @@
+ags (7.0.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags_navigation_play_callback()
+	* improved ags_recycling_init()
+
 ags (7.0.9)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
