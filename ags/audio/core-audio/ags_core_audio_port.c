@@ -22,6 +22,8 @@
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_audio_signal.h>
 
+#include <ags/audio/midi/ags_midi_ump_util.h>
+
 #include <ags/audio/thread/ags_audio_loop.h>
 
 #include <ags/audio/core-audio/ags_core_audio_server.h>
@@ -2067,10 +2069,6 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 						 }else if(core_audio_midiin->app_buffer_mode == AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_3){
 						   nth_buffer = 0;
 						 }
-
-						 core_audio_midiin->app_buffer_size[nth_buffer] = 0;
-						 
-						 memset(core_audio_midiin->app_buffer[nth_buffer], 0, core_audio_midiin->allocated_app_buffer_size[nth_buffer] * sizeof(char));
 						 
 						 event_packet = &evtlist->packet[0];
 						 num_packets = evtlist->numPackets;
@@ -2086,7 +2084,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 						     continue;
 						   }
 
-						   if(core_audio_midiin->app_buffer_size[nth_buffer] + (4 * length) >= core_audio_midiin->allocated_app_buffer_size[nth_buffer]){
+						   if(core_audio_midiin->app_buffer_size[nth_buffer] + (length * sizeof(AgsUmpWord)) >= core_audio_midiin->allocated_app_buffer_size[nth_buffer]){
 						     if(core_audio_midiin->app_buffer[nth_buffer] == NULL){
 						       core_audio_midiin->app_buffer[nth_buffer] = (char *) g_malloc(AGS_CORE_AUDIO_MIDIIN_DEFAULT_BUFFER_SIZE * sizeof(char));
 						     }else{
@@ -2099,9 +2097,9 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 						     core_audio_midiin->allocated_app_buffer_size[nth_buffer] += AGS_CORE_AUDIO_MIDIIN_DEFAULT_BUFFER_SIZE;
 						   }
 
-						   memcpy(core_audio_midiin->app_buffer[nth_buffer] + core_audio_midiin->app_buffer_size[nth_buffer], event_packet->words, (4 * length));
+						   memcpy(core_audio_midiin->app_buffer[nth_buffer] + core_audio_midiin->app_buffer_size[nth_buffer], event_packet->words, length * sizeof(AgsUmpWord));
 		
-						   core_audio_midiin->app_buffer_size[nth_buffer] += (4 * length);
+						   core_audio_midiin->app_buffer_size[nth_buffer] += (length * sizeof(AgsUmpWord));
 
 						   event_packet = MIDIEventPacketNext(event_packet);
 						 }

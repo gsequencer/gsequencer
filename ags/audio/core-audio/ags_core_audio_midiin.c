@@ -2039,21 +2039,29 @@ ags_core_audio_midiin_switch_buffer_flag(AgsCoreAudioMidiin *core_audio_midiin)
     core_audio_midiin->app_buffer_mode = AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_1;
 
     /* clear buffer */
+    memset(core_audio_midiin->app_buffer[3], 0, core_audio_midiin->app_buffer_size[3] * sizeof(char));
+    
     core_audio_midiin->app_buffer_size[3] = 0;
   }else if(core_audio_midiin->app_buffer_mode == AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_1){
     core_audio_midiin->app_buffer_mode = AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_2;
 
     /* clear buffer */
+    memset(core_audio_midiin->app_buffer[0], 0, core_audio_midiin->app_buffer_size[0] * sizeof(char));
+    
     core_audio_midiin->app_buffer_size[0] = 0;
   }else if(core_audio_midiin->app_buffer_mode == AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_2){
     core_audio_midiin->app_buffer_mode = AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_3;
 
     /* clear buffer */
+    memset(core_audio_midiin->app_buffer[1], 0, core_audio_midiin->app_buffer_size[1] * sizeof(char));
+    
     core_audio_midiin->app_buffer_size[1] = 0;
   }else if(core_audio_midiin->app_buffer_mode == AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_3){
     core_audio_midiin->app_buffer_mode = AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_0;
 
     /* clear buffer */
+    memset(core_audio_midiin->app_buffer[2], 0, core_audio_midiin->app_buffer_size[2] * sizeof(char));
+    
     core_audio_midiin->app_buffer_size[2] = 0;
   }
 
