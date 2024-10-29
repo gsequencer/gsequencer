@@ -1104,7 +1104,7 @@ ags_machine_util_new_vst3_bridge(gchar *filename, gchar *effect)
 				    effect);
   
   if(vst3_plugin != NULL &&
-     ags_base_plugin_test_flags(vst3_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
+     ags_base_plugin_test_flags((AgsBasePlugin *) vst3_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
     ags_audio_set_flags(AGS_MACHINE(vst3_bridge)->audio, (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 							  AGS_AUDIO_INPUT_HAS_RECYCLING |
 							  AGS_AUDIO_SYNC |
@@ -1136,7 +1136,7 @@ ags_machine_util_new_vst3_bridge(gchar *filename, gchar *effect)
 			       2, 0);
 
   if(vst3_plugin != NULL){
-    if(!ags_base_plugin_test_flags(vst3_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
+    if(!ags_base_plugin_test_flags((AgsBasePlugin *) vst3_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
       ags_audio_set_pads(AGS_MACHINE(vst3_bridge)->audio,
 			 AGS_TYPE_INPUT,
 			 1, 0);
@@ -1576,7 +1576,7 @@ ags_machine_util_new_live_vst3_bridge(gchar *filename, gchar *effect)
 
   /*  */
   if(vst3_plugin != NULL){
-    if(!ags_base_plugin_test_flags(vst3_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
+    if(!ags_base_plugin_test_flags((AgsBasePlugin *) vst3_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
       ags_audio_set_pads(AGS_MACHINE(live_vst3_bridge)->audio,
 			 AGS_TYPE_INPUT,
 			 1, 0);

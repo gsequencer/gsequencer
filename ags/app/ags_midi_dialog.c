@@ -294,6 +294,20 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
   gtk_box_append(vbox,
 		 (GtkWidget *) midi_dialog->io_options);
 
+  /* midi group */
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
+  gtk_box_append(midi_dialog->io_options,
+		 (GtkWidget *) hbox);
+  
+  label = (GtkLabel *) gtk_label_new(i18n("midi group"));
+  gtk_box_append(hbox,
+		 (GtkWidget *) label);
+  
+  midi_dialog->midi_group = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 15.0, 1.0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) midi_dialog->midi_group);
+
   /* midi channel */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				AGS_UI_PROVIDER_DEFAULT_SPACING);
@@ -702,6 +716,7 @@ ags_midi_dialog_apply(AgsApplicable *applicable)
   
   /* set properties */
   g_object_set(audio,
+	       "midi-group", gtk_spin_button_get_value_as_int(midi_dialog->midi_group),
 	       "midi-channel", gtk_spin_button_get_value_as_int(midi_dialog->midi_channel),
 	       "audio-start-mapping", gtk_spin_button_get_value_as_int(midi_dialog->audio_start),
 	       "audio-end-mapping", gtk_spin_button_get_value_as_int(midi_dialog->audio_end),
@@ -950,6 +965,11 @@ void
 ags_midi_dialog_real_response(AgsMidiDialog *midi_dialog,
 			      gint response_id)
 {
+  if(response_id == GTK_RESPONSE_OK ||
+     response_id == GTK_RESPONSE_ACCEPT){
+    ags_applicable_apply(AGS_APPLICABLE(midi_dialog));
+  }
+  
   gtk_window_destroy((GtkWindow *) midi_dialog);
 }
 

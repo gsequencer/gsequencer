@@ -1357,7 +1357,7 @@ ags_effect_bulk_add_ladspa_plugin(AgsEffectBulk *effect_bulk,
 			    GTK_ALIGN_FILL);
       
       ags_effect_bulk_add_bulk_member(effect_bulk,
-				      (AgsBulkMember *) bulk_member,
+				      bulk_member,
 				      x, y,
 				      1, 1);
       ags_connectable_connect(AGS_CONNECTABLE(bulk_member));
@@ -2712,7 +2712,7 @@ ags_effect_bulk_add_vst3_plugin(AgsEffectBulk *effect_bulk,
 			    GTK_ALIGN_FILL);
       
       ags_effect_bulk_add_bulk_member(effect_bulk,
-				      (GtkWidget *) bulk_member,
+				      bulk_member,
 				      x, y,
 				      1, 1);
       ags_connectable_connect(AGS_CONNECTABLE(bulk_member));

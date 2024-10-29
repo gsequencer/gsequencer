@@ -354,9 +354,12 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
 						 frame_count,
 						 delay, buffer_size);
 
+	/*
+	 * check if feed loop exceeded or if soundcard loop reseted x0 256th note offset per quarter note tolerance.
+	 */
 	if(!pattern_mode &&
 	   (note_256th_offset_upper > x1_256th ||
-	    note_256th_offset_lower < x0_256th)){
+	    note_256th_offset_lower + ((guint) floor(256.0 / absolute_delay / 16.0) + 64) < x0_256th)){
 	  ags_audio_signal_remove_note(source,
 				       note->data);
 

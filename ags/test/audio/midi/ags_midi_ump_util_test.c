@@ -278,8 +278,8 @@ ags_midi_ump_util_test_is_endpoint_discovery()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\xf0\x00\x01\x01\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00";
-
+  const guchar buffer[512] = "\x01\x01\x00\xf0\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  
   midi_ump_util = ags_midi_ump_util_alloc();
 
   retval = ags_midi_ump_util_is_endpoint_discovery(midi_ump_util,
@@ -294,7 +294,7 @@ ags_midi_ump_util_test_put_endpoint_discovery()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\xf0\x00\x01\x01\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x01\x01\x00\xf0\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   
   gint major = 1;
   gint minor = 1;
@@ -320,7 +320,7 @@ ags_midi_ump_util_test_get_endpoint_discovery()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\xf0\x00\x01\x01\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x01\x01\x00\xf0\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint major;
   gint minor;
@@ -348,8 +348,8 @@ ags_midi_ump_util_test_is_endpoint_info_notification()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\xf0\x01\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
-
+  const guchar buffer[512] = "\x01\x01\x01\xf0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  
   midi_ump_util = ags_midi_ump_util_alloc();
 
   retval = ags_midi_ump_util_is_endpoint_info_notification(midi_ump_util,
@@ -364,7 +364,7 @@ ags_midi_ump_util_test_put_endpoint_info_notification()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\xf0\x01\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x01\x01\x01\xf0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   
   gint major = 1;
   gint minor = 1;
@@ -400,7 +400,7 @@ ags_midi_ump_util_test_get_endpoint_info_notification()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\xf0\x01\x01\x01\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x01\x01\x01\xf0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint major;
   gint minor;
@@ -443,8 +443,8 @@ ags_midi_ump_util_test_is_device_identity_notification()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\xf0\x2\x0\x0\x0\x7e\x15\x3\x2d\x3d\x6f\x7d\x0\x2\x0";
-
+  const guchar buffer[512] = "\x0\x0\x2\xf0\x3\x15\x7e\x0\x7d\x6f\x3d\x2d\x0\x0\x2\x0";
+  
   midi_ump_util = ags_midi_ump_util_alloc();
 
   retval = ags_midi_ump_util_is_device_identity_notification(midi_ump_util,
@@ -459,7 +459,7 @@ ags_midi_ump_util_test_put_device_identity_notification()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\xf0\x2\x0\x0\x0\x3\x15\x7e\x2d\x3d\x6f\x7d\x0\x2\x0";
+  const guchar filled_buffer[512] = "\x0\x0\x2\xf0\x7e\x15\x3\x0\x7d\x6f\x3d\x2d\x0\x0\x2\x0";
   
   gint device_manufacturer = 0xcafe;
   gint device_family = 0xdead;
@@ -487,7 +487,7 @@ ags_midi_ump_util_test_get_device_identity_notification()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\xf0\x2\x0\x0\x0\x3\x15\x7e\x2d\x3d\x6f\x7d\x0\x2\x0";
+  const guchar buffer[512] = "\x0\x0\x2\xf0\x7e\x15\x3\x0\x7d\x6f\x3d\x2d\x0\x0\x2\x0";
 
   gint device_manufacturer;
   gint device_family;
@@ -517,8 +517,8 @@ ags_midi_ump_util_test_is_endpoint_name_notification()
   AgsMidiUmpUtil *midi_ump_util;
 
   gboolean retval;
-  
-  const guchar buffer[512] = "\xf0\x03\x6c\x69\x67\x68\x74\x79\x65\x61\x72\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  const guchar buffer[512] = "\x69\x6c\x03\xf0\x79\x74\x68\x67\x00\x72\x61\x65\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -534,7 +534,7 @@ ags_midi_ump_util_test_put_endpoint_name_notification()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\xf0\x03\x6c\x69\x67\x68\x74\x79\x65\x61\x72\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x69\x6c\x03\xf0\x79\x74\x68\x67\x00\x72\x61\x65\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   
   gchar *endpoint_name = "lightyear";
   
@@ -556,7 +556,7 @@ ags_midi_ump_util_test_get_endpoint_name_notification()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\xf0\x03\x6c\x69\x67\x68\x74\x79\x65\x61\x72\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x69\x6c\x03\xf0\x79\x74\x68\x67\x00\x72\x61\x65\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gchar *endpoint_name;
 
@@ -578,8 +578,8 @@ ags_midi_ump_util_test_is_product_instance_id_notification()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\xf0\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
-
+  const guchar buffer[512] = "\x00\x00\x04\xf0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  
   midi_ump_util = ags_midi_ump_util_alloc();
 
   retval = ags_midi_ump_util_is_product_instance_id_notification(midi_ump_util,
@@ -594,7 +594,7 @@ ags_midi_ump_util_test_put_product_instance_id_notification()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\xf0\x04\x62\x75\x7a\x7a\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x75\x62\x04\xf0\x00\x00\x7a\x7a\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   
   gchar *product_instance_id = "buzz";
   
@@ -616,7 +616,7 @@ ags_midi_ump_util_test_get_product_instance_id_notification()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\xf0\x04\x62\x75\x7a\x7a\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x75\x62\x04\xf0\x00\x00\x7a\x7a\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gchar *product_instance_id;
 
@@ -638,7 +638,7 @@ ags_midi_ump_util_test_is_stream_configuration_request()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\xf0\x05\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x02\x05\xf0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -654,7 +654,7 @@ ags_midi_ump_util_test_put_stream_configuration_request()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\xf0\x05\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x00\x02\x05\xf0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   
   gint protocol = 0x2;
   gboolean rx_jitter_reduction = FALSE;
@@ -679,7 +679,7 @@ ags_midi_ump_util_test_get_stream_configuration_request()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\xf0\x05\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x02\x05\xf0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint protocol;
   gboolean rx_jitter_reduction;
@@ -706,7 +706,7 @@ ags_midi_ump_util_test_is_stream_configuration_notification()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\xf0\x06\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x02\x06\xf0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -722,7 +722,7 @@ ags_midi_ump_util_test_put_stream_configuration_notification()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\xf0\x06\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x00\x02\x06\xf0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   
   gint protocol = 0x2;
   gboolean rx_jitter_reduction = FALSE;
@@ -747,7 +747,7 @@ ags_midi_ump_util_test_get_stream_configuration_notification()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\xf0\x06\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x02\x06\xf0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint protocol;
   gboolean rx_jitter_reduction;
@@ -774,7 +774,7 @@ ags_midi_ump_util_test_is_function_block_discovery()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\xf0\x10\x01f\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x02\x1f\x10\xf0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -790,7 +790,7 @@ ags_midi_ump_util_test_put_function_block_discovery()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\xf0\x10\x01f\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x02\x1f\x10\xf0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint function_block = 0x1f;
   gint filter = 0x2;
@@ -814,7 +814,7 @@ ags_midi_ump_util_test_get_function_block_discovery()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\xf0\x10\x1f\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x02\x1f\x10\xf0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint function_block;
   gint filter;
@@ -839,7 +839,7 @@ ags_midi_ump_util_test_is_function_block_info_notification()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\xf0\x11\x9f\x00\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x02\x9f\x11\xf0\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -855,7 +855,7 @@ ags_midi_ump_util_test_put_function_block_info_notification()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\xf0\x11\x9f\x02\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x02\x9f\x11\xf0\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gboolean function_block_active = TRUE;
   gint function_block = 0x1f;
@@ -893,7 +893,7 @@ ags_midi_ump_util_test_get_function_block_info_notification()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\xf0\x11\x9f\x02\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x02\x9f\x11\xf0\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gboolean function_block_active = TRUE;
   gint function_block = 0x1f;
@@ -939,7 +939,7 @@ ags_midi_ump_util_test_is_function_block_name_notification()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\xf0\x12\x1f\x6c\x69\x67\x68\x74\x79\x65\x61\x72\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x6c\x1f\x12\xf0\x74\x68\x67\x69\x72\x61\x65\x79\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -955,7 +955,7 @@ ags_midi_ump_util_test_put_function_block_name_notification()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\xf0\x12\x1f\x6c\x69\x67\x68\x74\x79\x65\x61\x72\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x6c\x1f\x12\xf0\x74\x68\x67\x69\x72\x61\x65\x79\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   
   gchar *function_block_name = "lightyear";
 
@@ -980,7 +980,7 @@ ags_midi_ump_util_test_get_function_block_name_notification()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\xf0\x12\x1f\x6c\x69\x67\x68\x74\x79\x65\x61\x72\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x6c\x1f\x12\xf0\x74\x68\x67\x69\x72\x61\x65\x79\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gchar *function_block_name;
 
@@ -1006,7 +1006,7 @@ ags_midi_ump_util_test_is_start_of_clip()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\xf0\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x00\x20\xf0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -1022,7 +1022,7 @@ ags_midi_ump_util_test_put_start_of_clip()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\xf0\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x00\x00\x20\xf0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -1041,7 +1041,7 @@ ags_midi_ump_util_test_get_start_of_clip()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\xf0\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x00\x20\xf0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -1058,7 +1058,7 @@ ags_midi_ump_util_test_is_end_of_clip()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\xf0\x21\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x00\x21\xf0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -1074,7 +1074,7 @@ ags_midi_ump_util_test_put_end_of_clip()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\xf0\x21\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x00\x00\x21\xf0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -1093,7 +1093,7 @@ ags_midi_ump_util_test_get_end_of_clip()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\xf0\x21\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x00\x21\xf0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -1162,7 +1162,7 @@ ags_midi_ump_util_test_is_jr_clock()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\x00\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x00\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -1178,7 +1178,7 @@ ags_midi_ump_util_test_put_jr_clock()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\x00\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x00\x00\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   guint16 sender_clock_time = 0;
   
@@ -1200,7 +1200,7 @@ ags_midi_ump_util_test_get_jr_clock()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\x00\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x00\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   
   guint16 sender_clock_time;
 
@@ -1222,7 +1222,7 @@ ags_midi_ump_util_test_is_jr_timestamp()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\x00\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x00\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -1238,7 +1238,7 @@ ags_midi_ump_util_test_put_jr_timestamp()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\x00\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x00\x00\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   guint16 sender_clock_time = 0;
   
@@ -1260,7 +1260,7 @@ ags_midi_ump_util_test_get_jr_timestamp()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\x00\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x00\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   
   guint16 sender_clock_time;
 
@@ -1282,7 +1282,7 @@ ags_midi_ump_util_test_is_delta_clock_ticks_per_quarter_note()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\x00\x30\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x01\x00\x30\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -1298,7 +1298,7 @@ ags_midi_ump_util_test_put_delta_clock_ticks_per_quarter_note()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\x00\x30\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x01\x00\x30\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   guint16 ticks_per_quarter_note = 1;
   
@@ -1320,7 +1320,7 @@ ags_midi_ump_util_test_get_delta_clock_ticks_per_quarter_note()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\x00\x30\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x01\x00\x30\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   
   guint16 ticks_per_quarter_note;
 
@@ -1342,7 +1342,7 @@ ags_midi_ump_util_test_is_delta_clock_ticks_since_last_event()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\x00\x40\x01\x90\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x90\x01\x40\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -1358,7 +1358,7 @@ ags_midi_ump_util_test_put_delta_clock_ticks_since_last_event()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\x00\x40\x01\x90\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x90\x01\x40\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   guint16 ticks_since_last_event = 400;
   
@@ -1380,7 +1380,7 @@ ags_midi_ump_util_test_get_delta_clock_ticks_since_last_event()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\x00\x40\x01\x90\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x90\x01\x40\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   
   guint16 ticks_since_last_event;
 
@@ -1402,7 +1402,7 @@ ags_midi_ump_util_test_is_midi1_channel_voice()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\x20\x80\x30\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x7f\x30\x80\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -1419,7 +1419,7 @@ ags_midi_ump_util_test_is_midi1_note_off()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\x20\x80\x30\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x7f\x30\x80\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -1435,7 +1435,7 @@ ags_midi_ump_util_test_put_midi1_note_off()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\x20\x80\x30\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x7f\x30\x80\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint key = 48;
   gint velocity = 127;
@@ -1461,7 +1461,7 @@ ags_midi_ump_util_test_get_midi1_note_off()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\x20\x80\x30\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x7f\x30\x80\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint group;
   gint channel;
@@ -1492,7 +1492,7 @@ ags_midi_ump_util_test_is_midi1_note_on()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\x20\x90\x30\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x7f\x30\x90\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -1508,7 +1508,7 @@ ags_midi_ump_util_test_put_midi1_note_on()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\x20\x90\x30\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x7f\x30\x90\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint key = 48;
   gint velocity = 127;
@@ -1534,7 +1534,7 @@ ags_midi_ump_util_test_get_midi1_note_on()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\x20\x90\x30\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x7f\x30\x90\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint group;
   gint channel;
@@ -1565,7 +1565,7 @@ ags_midi_ump_util_test_is_midi1_polyphonic_aftertouch()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\x20\xa0\x30\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x7f\x30\xa0\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -1581,7 +1581,7 @@ ags_midi_ump_util_test_put_midi1_polyphonic_aftertouch()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\x20\xa0\x30\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x7f\x30\xa0\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint key = 48;
   gint data = 127;
@@ -1607,7 +1607,7 @@ ags_midi_ump_util_test_get_midi1_polyphonic_aftertouch()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\x20\xa0\x30\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x7f\x30\xa0\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint group;
   gint channel;
@@ -1638,7 +1638,7 @@ ags_midi_ump_util_test_is_midi1_control_change()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\x20\xb0\x30\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x7f\x30\xb0\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -1654,7 +1654,7 @@ ags_midi_ump_util_test_put_midi1_control_change()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\x20\xb0\x30\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x7f\x30\xb0\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint index_key = 48;
   gint data = 127;
@@ -1680,7 +1680,7 @@ ags_midi_ump_util_test_get_midi1_control_change()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\x20\xb0\x30\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x7f\x30\xb0\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint group;
   gint channel;
@@ -1711,7 +1711,7 @@ ags_midi_ump_util_test_is_midi1_program_change()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\x20\xc0\x30\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x7f\x30\xc0\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -1727,7 +1727,7 @@ ags_midi_ump_util_test_put_midi1_program_change()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\x20\xc0\x30\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x7f\x30\xc0\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint program = 48;
   gint data = 127;
@@ -1753,7 +1753,7 @@ ags_midi_ump_util_test_get_midi1_program_change()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\x20\xc0\x30\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x7f\x30\xc0\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint group;
   gint channel;
@@ -1784,7 +1784,7 @@ ags_midi_ump_util_test_is_midi1_channel_pressure()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\x20\xd0\x30\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x7f\x30\xd0\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -1800,7 +1800,7 @@ ags_midi_ump_util_test_put_midi1_channel_pressure()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\x20\xd0\x30\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x7f\x30\xd0\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint pressure = 48;
   gint data = 127;
@@ -1826,7 +1826,7 @@ ags_midi_ump_util_test_get_midi1_channel_pressure()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\x20\xd0\x30\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x7f\x30\xd0\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint group;
   gint channel;
@@ -1857,7 +1857,7 @@ ags_midi_ump_util_test_is_midi1_pitch_bend()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\x20\xe0\x30\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x7f\xe0\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -1873,7 +1873,7 @@ ags_midi_ump_util_test_put_midi1_pitch_bend()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\x20\xe0\x30\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x00\x7f\xe0\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint data = 127;
   
@@ -1897,7 +1897,7 @@ ags_midi_ump_util_test_get_midi1_pitch_bend()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\x20\xe0\x30\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x7f\xe0\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint group;
   gint channel;
@@ -1925,7 +1925,7 @@ ags_midi_ump_util_test_is_midi2_channel_voice()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\x40\x80\x30\x00\x7f\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x30\x80\x40\x00\x00\x7f\xff\x00\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -1942,8 +1942,8 @@ ags_midi_ump_util_test_is_midi2_note_off()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\x40\x80\x30\x00\x7f\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
-
+  const guchar buffer[512] = "\x00\x30\x80\x40\x00\x00\xff\x7f\x00\x00\x00\x00\x00\x00\x00\x00";
+  
   midi_ump_util = ags_midi_ump_util_alloc();
 
   retval = ags_midi_ump_util_is_midi2_note_off(midi_ump_util,
@@ -1958,7 +1958,7 @@ ags_midi_ump_util_test_put_midi2_note_off()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\x40\x80\x30\x00\x7f\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x00\x30\x80\x40\x00\x00\xff\x7f\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint key = 48;
   gint velocity = 0x7fff;
@@ -1986,7 +1986,7 @@ ags_midi_ump_util_test_get_midi2_note_off()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\x40\x80\x30\x00\x7f\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x30\x80\x40\x00\x00\xff\x7f\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint group;
   gint channel;
@@ -2023,7 +2023,7 @@ ags_midi_ump_util_test_is_midi2_note_on()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\x40\x90\x30\x00\x7f\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x30\x90\x40\x00\x00\xff\x7f\x00\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -2039,7 +2039,7 @@ ags_midi_ump_util_test_put_midi2_note_on()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\x40\x90\x30\x00\x7f\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x00\x30\x90\x40\x00\x00\xff\x7f\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint key = 48;
   gint velocity = 0x7fff;
@@ -2067,7 +2067,7 @@ ags_midi_ump_util_test_get_midi2_note_on()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\x40\x90\x30\x00\x7f\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x30\x90\x40\x00\x00\xff\x7f\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint group;
   gint channel;
@@ -2104,7 +2104,7 @@ ags_midi_ump_util_test_is_midi2_polyphonic_aftertouch()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\x40\xa0\x30\x00\x00\x00\x7f\xff\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x30\xa0\x40\xff\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -2120,7 +2120,7 @@ ags_midi_ump_util_test_put_midi2_polyphonic_aftertouch()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\x40\xa0\x30\x00\x00\x00\x7f\xff\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x00\x30\xa0\x40\xff\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint key = 48;
   gint data = 0x7fff;
@@ -2146,7 +2146,7 @@ ags_midi_ump_util_test_get_midi2_polyphonic_aftertouch()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\x40\xa0\x30\x00\x00\x00\x7f\xff\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x30\xa0\x40\xff\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint group;
   gint channel;
@@ -2177,7 +2177,7 @@ ags_midi_ump_util_test_is_midi2_registered_per_note_controller()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\x40\x00\x30\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x30\x00\x40\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -2193,7 +2193,7 @@ ags_midi_ump_util_test_put_midi2_registered_per_note_controller()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\x40\x00\x30\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x00\x30\x00\x40\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint key = 48;
   gint data_index = 0x0;
@@ -2221,7 +2221,7 @@ ags_midi_ump_util_test_get_midi2_registered_per_note_controller()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\x40\x00\x30\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x30\x00\x40\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint group;
   gint channel;
@@ -2255,7 +2255,7 @@ ags_midi_ump_util_test_is_midi2_assignable_per_note_controller()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\x40\x10\x30\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x30\x10\x40\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -2271,7 +2271,7 @@ ags_midi_ump_util_test_put_midi2_assignable_per_note_controller()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\x40\x10\x30\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x00\x30\x10\x40\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint key = 48;
   gint data_index = 0x0;
@@ -2299,7 +2299,7 @@ ags_midi_ump_util_test_get_midi2_assignable_per_note_controller()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\x40\x10\x30\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x30\x10\x40\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint group;
   gint channel;
@@ -2333,8 +2333,8 @@ ags_midi_ump_util_test_is_midi2_per_note_management()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\x40\xf0\x30\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
-
+  const guchar buffer[512] = "\x00\x30\xf0\x40\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  
   midi_ump_util = ags_midi_ump_util_alloc();
 
   retval = ags_midi_ump_util_is_midi2_per_note_management(midi_ump_util,
@@ -2349,7 +2349,7 @@ ags_midi_ump_util_test_put_midi2_per_note_management()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\x40\xf0\x30\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x00\x30\xf0\x40\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint key = 48;
   gint options_flags = 0x0;
@@ -2375,7 +2375,7 @@ ags_midi_ump_util_test_get_midi2_per_note_management()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\x40\xf0\x30\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x30\xf0\x40\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint group;
   gint channel;
@@ -2406,7 +2406,7 @@ ags_midi_ump_util_test_is_midi2_control_change()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\x40\xb0\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x7f\xb0\x40\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -2422,7 +2422,7 @@ ags_midi_ump_util_test_put_midi2_control_change()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\x40\xb0\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x00\x7f\xb0\x40\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint index_key = 0x7f;
 
@@ -2446,7 +2446,7 @@ ags_midi_ump_util_test_get_midi2_control_change()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\x40\xb0\x7f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x7f\xb0\x40\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint group;
   gint channel;
@@ -2474,7 +2474,7 @@ ags_midi_ump_util_test_is_midi2_rpn_pitch_bend_range()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\x40\x20\x00\x00\x1f\xc0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x00\x20\x40\x00\x00\xfc\x11\x00\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -2490,7 +2490,7 @@ ags_midi_ump_util_test_put_midi2_rpn_pitch_bend_range()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\x40\x20\x00\x00\x11\xfc\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x00\x00\x20\x40\x00\x00\xfc\x11\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint semitones = 8;
   gint cents = 127;
@@ -2516,7 +2516,7 @@ ags_midi_ump_util_test_get_midi2_rpn_pitch_bend_range()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\x40\x20\x00\x00\x11\xfc\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x00\x20\x40\x00\x00\xfc\x11\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint group;
   gint channel;
@@ -2547,7 +2547,7 @@ ags_midi_ump_util_test_is_midi2_rpn_coarse_tuning()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\x40\x20\x00\x02\xfe\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x02\x00\x20\x40\x00\x00\x00\xfe\x00\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -2563,7 +2563,7 @@ ags_midi_ump_util_test_put_midi2_rpn_coarse_tuning()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\x40\x20\x00\x02\xfe\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x02\x00\x20\x40\x00\x00\x00\xfe\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint coarse_tuning = 127;
 
@@ -2587,7 +2587,7 @@ ags_midi_ump_util_test_get_midi2_rpn_coarse_tuning()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\x40\x20\x00\x02\xfe\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x02\x00\x20\x40\x00\x00\x00\xfe\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint group;
   gint channel;
@@ -2615,7 +2615,7 @@ ags_midi_ump_util_test_is_midi2_rpn_tuning_program_change()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\x40\x20\x00\x03\xfe\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x03\x00\x20\x40\x00\x00\x00\xfe\x00\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -2631,7 +2631,7 @@ ags_midi_ump_util_test_put_midi2_rpn_tuning_program_change()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\x40\x20\x00\x03\xfe\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x03\x00\x20\x40\x00\x00\x00\xfe\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint tuning_program_number = 127;
 
@@ -2655,7 +2655,7 @@ ags_midi_ump_util_test_get_midi2_rpn_tuning_program_change()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\x40\x20\x00\x03\xfe\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x03\x00\x20\x40\x00\x00\x00\xfe\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint group;
   gint channel;
@@ -2683,7 +2683,7 @@ ags_midi_ump_util_test_is_midi2_rpn_tuning_bank_select()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\x40\x20\x00\x04\xfe\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x04\x00\x20\x40\x00\x00\x00\xfe\x00\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -2699,7 +2699,7 @@ ags_midi_ump_util_test_put_midi2_rpn_tuning_bank_select()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\x40\x20\x00\x04\xfe\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x04\x00\x20\x40\x00\x00\x00\xfe\x00\x00\x00\x00\x00\x00\x00\x00";
   
   gint tuning_bank_number = 0x7f;
   
@@ -2723,7 +2723,7 @@ ags_midi_ump_util_test_get_midi2_rpn_tuning_bank_select()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\x40\x20\x00\x04\xfe\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x04\x00\x20\x40\x00\x00\x00\xfe\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint group;
   gint channel;
@@ -2751,7 +2751,7 @@ ags_midi_ump_util_test_is_midi2_rpn_mpe_mcm()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\x40\x20\x00\x06\xfe\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x06\x00\x20\x40\x00\x00\x00\xfe\x00\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -2767,7 +2767,7 @@ ags_midi_ump_util_test_put_midi2_rpn_mpe_mcm()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\x40\x20\x00\x06\xfe\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x06\x00\x20\x40\x00\x00\x00\xfe\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint channel_count = 127;
 
@@ -2791,7 +2791,7 @@ ags_midi_ump_util_test_get_midi2_rpn_mpe_mcm()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\x40\x20\x00\x06\xfe\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x06\x00\x20\x40\x00\x00\x00\xfe\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint group;
   gint channel;
@@ -2819,7 +2819,7 @@ ags_midi_ump_util_test_is_midi2_program_change()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\x40\xc0\x00\x00\x30\x00\x7f\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x00\xc0\x40\xff\x7f\x00\x30\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -2835,7 +2835,7 @@ ags_midi_ump_util_test_put_midi2_program_change()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\x40\xc0\x00\x00\x30\x00\x7f\xff\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x00\x00\xc0\x40\xff\x7f\x00\x30\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint option_flags = 0x0;
   gint program = 48;
@@ -2863,7 +2863,7 @@ ags_midi_ump_util_test_get_midi2_program_change()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\x40\xc0\x00\x00\x30\x00\x7f\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x00\xc0\x40\xff\x7f\x00\x30\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint group;
   gint channel;
@@ -2897,7 +2897,7 @@ ags_midi_ump_util_test_is_midi2_channel_pressure()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\x40\xd0\x00\x00\x7f\xff\xca\xfe\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x00\xd0\x40\xfe\xaf\xff\x7f\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -2913,7 +2913,7 @@ ags_midi_ump_util_test_put_midi2_channel_pressure()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\x40\xd0\x00\x00\x7f\xff\xaf\xfe\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x00\x00\xd0\x40\xfe\xaf\xff\x7f\x00\x00\x00\x00\x00\x00\x00";
 
   gint data = 0x7fffaffe;
   
@@ -2937,7 +2937,7 @@ ags_midi_ump_util_test_get_midi2_channel_pressure()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\x40\xd0\x00\x00\x7f\xff\xbe\xef\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x00\xd0\x40\xfe\xaf\xff\x7f\x00\x00\x00\x00\x00\x00\x00";
 
   gint group;
   gint channel;
@@ -2955,7 +2955,7 @@ ags_midi_ump_util_test_get_midi2_channel_pressure()
   
   CU_ASSERT(group == 0);
   CU_ASSERT(channel == 0);
-  CU_ASSERT(data == 0x7fffbeef);
+  CU_ASSERT(data == 0x7fffaffe);
 }
 
 void
@@ -2965,7 +2965,7 @@ ags_midi_ump_util_test_is_midi2_pitch_bend()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\x40\xe0\x00\x00\x7f\xff\xca\xfe\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x00\xe0\x40\xfe\xca\xff\x7f\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -2981,7 +2981,7 @@ ags_midi_ump_util_test_put_midi2_pitch_bend()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\x40\xe0\x00\x00\x7f\xff\xaf\xfe\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x00\x00\xe0\x40\xfe\xaf\xff\x7f\x00\x00\x00\x00\x00\x00\x00";
 
   gint data = 0x7fffaffe;
   
@@ -3005,7 +3005,7 @@ ags_midi_ump_util_test_get_midi2_pitch_bend()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\x40\xe0\x00\x00\x7f\xff\xbe\xef\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x00\xe0\x40\xfe\xaf\xff\x7f\x00\x00\x00\x00\x00\x00\x00";
 
   gint group;
   gint channel;
@@ -3023,7 +3023,7 @@ ags_midi_ump_util_test_get_midi2_pitch_bend()
   
   CU_ASSERT(group == 0);
   CU_ASSERT(channel == 0);
-  CU_ASSERT(data == 0x7fffbeef);
+  CU_ASSERT(data == 0x7fffaffe);
 }
 
 void
@@ -3033,7 +3033,7 @@ ags_midi_ump_util_test_is_midi2_per_note_pitch_bend()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\x40\x60\x30\x00\x7f\xff\xca\xfe\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x30\x60\x40\xfe\xca\xff\x7f\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -3049,7 +3049,7 @@ ags_midi_ump_util_test_put_midi2_per_note_pitch_bend()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\x40\x60\x30\x00\x7f\xff\xca\xfe\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x00\x30\x60\x40\xfe\xca\xff\x7f\x00\x00\x00\x00\x00\x00\x00";
 
   gint key = 48;
   gint data = 0x7fffcafe;
@@ -3075,7 +3075,7 @@ ags_midi_ump_util_test_get_midi2_per_note_pitch_bend()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\x40\x60\x30\x00\x7f\xff\xbe\xef\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x30\x60\x40\xfe\xca\xff\x7f\x00\x00\x00\x00\x00\x00\x00";
 
   gint group;
   gint channel;
@@ -3096,7 +3096,7 @@ ags_midi_ump_util_test_get_midi2_per_note_pitch_bend()
   CU_ASSERT(group == 0);
   CU_ASSERT(channel == 0);
   CU_ASSERT(key == 48);
-  CU_ASSERT(data == 0x7fffbeef);
+  CU_ASSERT(data == 0x7fffcafe);
 }
 
 void
@@ -3106,7 +3106,7 @@ ags_midi_ump_util_test_is_flex_set_tempo()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\xd0\x10\x00\x00\x7f\xff\xca\xfe\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x00\x10\xd0\xfe\xca\xff\x7f\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -3122,7 +3122,7 @@ ags_midi_ump_util_test_put_flex_set_tempo()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\xd0\x10\x00\x00\x7f\xff\xca\xfe\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x00\x00\x10\xd0\xfe\xca\xff\x7f\x00\x00\x00\x00\x00\x00\x00";
 
   gint ten_ns_per_quarter_note = 0x7fffcafe;
   
@@ -3146,7 +3146,7 @@ ags_midi_ump_util_test_get_flex_set_tempo()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\xd0\x10\x00\x00\x7f\xff\xca\xfe\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x00\x00\x10\xd0\xfe\xca\xff\x7f\x00\x00\x00\x00\x00\x00\x00";
 
   gint group;
   gint channel;
@@ -3174,7 +3174,7 @@ ags_midi_ump_util_test_is_flex_set_time_signature()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\xd0\x10\x00\x01\x04\x04\x10\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x01\x00\x10\xd0\x00\x10\x04\x04\x00\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -3190,7 +3190,7 @@ ags_midi_ump_util_test_put_flex_set_time_signature()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\xd0\x10\x00\x01\x04\x04\x10\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x01\x00\x10\xd0\x00\x10\x04\x04\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint numerator = 4;
   gint denominator = 4;
@@ -3218,7 +3218,7 @@ ags_midi_ump_util_test_get_flex_set_time_signature()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\xd0\x10\x00\x01\x04\x04\x10\x0\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x01\x00\x10\xd0\x00\x10\x04\x04\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint group;
   gint channel;
@@ -3252,7 +3252,7 @@ ags_midi_ump_util_test_is_flex_set_metronome()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\xd0\x10\x00\x02\x04\x00\x00\x00\x10\x10\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x02\x00\x10\xd0\x00\x00\x00\x04\x00\x00\x10\x10\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -3268,7 +3268,7 @@ ags_midi_ump_util_test_put_flex_set_metronome()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\xd0\x10\x00\x02\x04\x00\x00\x00\x10\x10\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x02\x00\x10\xd0\x00\x00\x00\x04\x00\x00\x10\x10\x00\x00\x00\x00";
 
   gint clocks_per_primary_click = 4;
   gint bar_accent_part_1 = 0;
@@ -3302,7 +3302,7 @@ ags_midi_ump_util_test_get_flex_set_metronome()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\xd0\x10\x00\x02\x04\x00\x00\x00\x10\x10\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x02\x00\x10\xd0\x00\x00\x00\x04\x00\x00\x10\x10\x00\x00\x00\x00";
 
   gint group;
   gint channel;
@@ -3344,8 +3344,8 @@ ags_midi_ump_util_test_is_flex_set_key_signature()
   AgsMidiUmpUtil *midi_ump_util;
 
   gboolean retval;
-  
-  const guchar buffer[512] = "\xd0\x00\x00\x05\x73\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  const guchar buffer[512] = "\x05\x00\x00\xd0\x00\x00\x00\x73\x00\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -3361,7 +3361,7 @@ ags_midi_ump_util_test_put_flex_set_key_signature()
   AgsMidiUmpUtil *midi_ump_util;
 
   guchar buffer[512];
-  const guchar filled_buffer[512] = "\xd0\x00\x00\x05\x73\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar filled_buffer[512] = "\x05\x00\x00\xd0\x00\x00\x00\x73\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint sharp_flats = 7;
   gint tonic_note = 3;
@@ -3387,7 +3387,7 @@ ags_midi_ump_util_test_get_flex_set_key_signature()
 {
   AgsMidiUmpUtil *midi_ump_util;
 
-  const guchar buffer[512] = "\xd0\x00\x00\x05\x73\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x05\x00\x00\xd0\x00\x00\x00\x73\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint group;
   gint channel;
@@ -3418,7 +3418,7 @@ ags_midi_ump_util_test_is_flex_set_chord_name()
 
   gboolean retval;
   
-  const guchar buffer[512] = "\xd0\x10\x00\x06\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  const guchar buffer[512] = "\x06\x00\x10\xd0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   midi_ump_util = ags_midi_ump_util_alloc();
 

@@ -113,9 +113,12 @@
       <xi:include href="xml/ags_synth_enums.xml"/>
       <xi:include href="xml/ags_soundcard_util.xml"/>
       <xi:include href="xml/ags_sequencer_util.xml"/>
+      <xi:include href="xml/ags_automation_control_name_key_manager.xml"/>
+      <xi:include href="xml/ags_program_control_name_key_manager.xml"/>
       <xi:include href="xml/ags_char_buffer_util.xml"/>
       <xi:include href="xml/ags_chorus_util.xml"/>
       <xi:include href="xml/ags_common_pitch_util.xml"/>
+      <xi:include href="xml/ags_diatonic_scale.xml"/>
       <xi:include href="xml/ags_linear_interpolate_util.xml"/>
       <xi:include href="xml/ags_fourier_transform_util.xml"/>
       <xi:include href="xml/ags_fast_pitch_util.xml"/>
@@ -135,11 +138,13 @@
       <xi:include href="xml/ags_fm_synth_util.xml"/>
       <xi:include href="xml/ags_sfz_synth_util.xml"/>
       <xi:include href="xml/ags_lfo_synth_util.xml"/>
+      <xi:include href="xml/ags_port_util.xml"/>
       <xi:include href="xml/ags_synth_generator.xml"/>
       <xi:include href="xml/ags_sfz_synth_generator.xml"/>
 
 @LIBAGS_AUDIO_LIBINSTPATCH_SF2_XINCLUDE@
       
+      <xi:include href="xml/ags_vector_256_manager.xml"/>
     </chapter>
 
     <chapter id="audio-fluid">
@@ -295,6 +300,9 @@
       <xi:include href="xml/ags_export_thread.xml"/>
       <xi:include href="xml/ags_sequencer_thread.xml"/>
       <xi:include href="xml/ags_soundcard_thread.xml"/>
+
+@LIBAGS_AUDIO_LIBINSTPATCH_THREAD_XINCLUDE@
+
       <xi:include href="xml/ags_sfz_loader.xml"/>
       <xi:include href="xml/ags_sfz_instrument_loader.xml"/>
       <xi:include href="xml/ags_wave_loader.xml"/>
@@ -481,8 +489,15 @@
       <xi:include href="xml/ags_fx_fm_synth_channel_processor.xml"/>
       <xi:include href="xml/ags_fx_fm_synth_recycling.xml"/>
 
-@LIBAGS_AUDIO_LIBINSTPATCH_FX_XINCLUDE@
-      
+@LIBAGS_AUDIO_LIBINSTPATCH_FX_XINCLUDE@      
+
+      <xi:include href="xml/ags_fx_sfz_synth_audio.xml"/>
+      <xi:include href="xml/ags_fx_sfz_synth_audio_processor.xml"/>
+      <xi:include href="xml/ags_fx_sfz_synth_audio_signal.xml"/>
+      <xi:include href="xml/ags_fx_sfz_synth_channel.xml"/>
+      <xi:include href="xml/ags_fx_sfz_synth_channel_processor.xml"/>
+      <xi:include href="xml/ags_fx_sfz_synth_recycling.xml"/>
+
     </chapter>
 
     <chapter id="audio-fx-peak-and-analyse">

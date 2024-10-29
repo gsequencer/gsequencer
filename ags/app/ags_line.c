@@ -2800,7 +2800,7 @@ ags_line_add_vst3_plugin(AgsLine *line,
 	       "effect", effect,
 	       NULL);
   ags_line_add_effect_separator(line,
-				(GtkWidget *) separator,
+				separator,
 				0, y,
 				AGS_LINE_COLUMNS_COUNT, 1);
   gtk_widget_show((GtkWidget *) separator);
@@ -3244,7 +3244,7 @@ ags_line_add_vst3_plugin(AgsLine *line,
 #endif
 
       ags_line_add_line_member(line,
-			       (GtkWidget *) line_member,
+			       line_member,
 			       x % AGS_LINE_COLUMNS_COUNT, y,
 			       1, 1);
       ags_connectable_connect(AGS_CONNECTABLE(line_member));

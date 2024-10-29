@@ -67,6 +67,7 @@ struct _AgsMidiDialog
 
   GtkBox *io_options;
   
+  GtkSpinButton *midi_group;
   GtkSpinButton *midi_channel;
   
   GtkCheckButton *playback;

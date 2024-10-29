@@ -153,13 +153,20 @@ ags_navigation_play_callback(GtkWidget *widget,
 {
   AgsWindow *window;
 
+  AgsStartAudio *start_audio;
+  AgsStartSoundcard *start_soundcard;
+  AgsStartSequencer *start_sequencer;
+
   AgsApplicationContext *application_context;
 
   GObject *default_soundcard;
 
   GList *machines, *machines_start;
-
+  GList *start_task;
+  GList *start_list;  
+  
   gboolean initialized_time;
+  gboolean no_soundcard;
   
   if((AGS_NAVIGATION_BLOCK_PLAY & (navigation->flags)) != 0){
     return;
@@ -167,12 +174,29 @@ ags_navigation_play_callback(GtkWidget *widget,
 
   application_context = ags_application_context_get_instance();
 
+  no_soundcard = FALSE;
+
+  if((start_list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context))) == NULL){
+    no_soundcard = TRUE;
+  }
+
+  g_list_free_full(start_list,
+		   g_object_unref);
+
+  if(no_soundcard){
+    g_message("No soundcard available");
+    
+    return;
+  }
+
   window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
   
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
   
   machines =
     machines_start = ags_window_get_machine(window);
+
+  start_task = NULL;
   
   initialized_time = FALSE;
   
@@ -191,10 +215,20 @@ ags_navigation_play_callback(GtkWidget *widget,
 	initialized_time = TRUE;
 	navigation->start_tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(default_soundcard));
       }
+
+      if(!gtk_check_button_get_active(navigation->exclude_sequencer)){
+	/* create start task */
+	start_audio = ags_start_audio_new(current_machine->audio,
+					  AGS_SOUND_SCOPE_SEQUENCER);
+	start_task = g_list_prepend(start_task,
+				    start_audio);
+      }
       
-      ags_machine_set_run_extended(current_machine,
-				   TRUE,
-				   !gtk_check_button_get_active(navigation->exclude_sequencer), TRUE, FALSE, FALSE);
+      /* create start task */
+      start_audio = ags_start_audio_new(current_machine->audio,
+					AGS_SOUND_SCOPE_NOTATION);
+      start_task = g_list_prepend(start_task,
+				  start_audio);
     }else if((AGS_MACHINE_IS_WAVE_PLAYER & (current_machine->flags)) != 0){
 #ifdef AGS_DEBUG
       g_message("found machine to play!\n");
@@ -205,12 +239,33 @@ ags_navigation_play_callback(GtkWidget *widget,
 	navigation->start_tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(default_soundcard));
       }
       
-      ags_machine_set_run_extended(current_machine,
-				   TRUE,
-				   FALSE, TRUE, FALSE, FALSE);
+      /* create start task */
+      start_audio = ags_start_audio_new(current_machine->audio,
+					AGS_SOUND_SCOPE_NOTATION);
+      start_task = g_list_prepend(start_task,
+				  start_audio);
     }
 
     machines = machines->next;
+  }
+
+  /* create start task */
+  if(start_task != NULL){
+    /* start soundcard */
+    start_soundcard = ags_start_soundcard_new();
+    start_task = g_list_prepend(start_task,
+				start_soundcard);
+
+    /* start sequencer */
+    start_sequencer = ags_start_sequencer_new();
+    start_task = g_list_prepend(start_task,
+				start_sequencer);
+      
+    /* append AgsStartSoundcard and AgsStartSequencer */
+    start_task = g_list_reverse(start_task);
+      
+    ags_ui_provider_schedule_task_all(AGS_UI_PROVIDER(application_context),
+				      start_task);
   }
 
   g_list_free(machines_start);

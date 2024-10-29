@@ -1,3 +1,77 @@
+ags (7.0.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* modified mutex order in CoreMidi objective-C codeblock
+
+ags (7.0.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* updated libags_vst3.so ABI breaking in libags_audio.so
+	* improved ags_simple_file_real_read_start() to be performed by timeout
+
+ags (7.0.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential SIGSEGV with AgsMidiPreferences remove sequencer editor callback
+
+ags (7.0.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags_navigation_play_callback()
+	* improved ags_recycling_init()
+
+ags (7.0.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed SIGSEGV of AgsApplySoundConfig::launch()
+
+ags (7.0.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags-fx-notation pre-mature audio signal removal, caused sequencer not accepting keys
+	* fixed broken test ags_fourier_transform_util_test.c
+
+ags (7.0.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsApplySynth default template's length, fixes silent AgsSyncsynth and AgsFMSyncsynth
+	* improved gtk-doc missing xi:include
+
+ags (7.0.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_midi_ump_util_(get,put)_product_instance_id_notification() string length
+
+ags (7.0.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsMidiCIUtil
+	* fixed AgsHybridFMSynth synth-*-lfo-depth XML project file persistence
+	* fixed ags_midi_ci_util_test.c
+
+ags (7.0.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsMidiUmpUtil
+	* fixed ags_midi_ump_util_test.c
+	* fixed ags-fx-synth q_lin range from -100.0 to 100.0
+	* fixed ags-fx-fm-synth q_lin range from -100.0 to 100.0
+
+ags (7.0.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags-fx-notation
+	* fixed AgsCoreMIDI port block
+	* fixed ags_recall_set_flags() MIDI 1 and 2 allocation
+	* fixed AgsUmpUtil byte order
+	* initial MIDI 2 playback works on macOS
+
+ags (7.0.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented spin button of AgsMidiDialog to select MIDI group
+	* fixed AgsMidiDialog missing apply for response accept
+
 ags (7.0.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -171,22 +171,20 @@ ags_midi_ci_util_test_put_discovery()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x70\x01\x7e\x2d\x3e\x6f\x7f\x7f\x7f\x7f\x08\x00\x00\xfe\xaf\x52\x0a\x00\x05\x00\x05\x05\x00\x02\x00\x00\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2d\x7e\x01\x70\x7f\x7f\x6f\x3e\x00\x08\x7f\x7f\x52\xaf\xfe\x00\x00\x05\x00\x0a\x02\x00\x05\x05\x00\xf7\x00\x00";
 
   AgsMUID source = 0x0eadbeef;
   
   guchar device_id = 0x7f;
   guchar version = '\x01';
-  guchar manufacturer_id[] = "\x08\x00\x00";
+  guchar manufacturer_id[3] = "\x08\x00\x00";
   guint16 device_family = 0xaffe;
   guint16 device_family_model_number = 0x0a52;  
-  guchar software_revision_level[] = "\x00\x05\x00\x05";
+  guchar software_revision_level[4] = "\x00\x05\x00\x05";
   guchar capability = '\x05';
   guint32 max_sysex_message_size = 512;
   
   midi_ci_util = ags_midi_ci_util_alloc();
-
-  memset(buffer, 0, 512 * sizeof(guchar));
 
   ags_midi_ci_util_put_discovery(midi_ci_util,
 				 buffer,
@@ -208,7 +206,7 @@ ags_midi_ci_util_test_get_discovery()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x70\x01\x7e\x2d\x3e\x6f\x7f\x7f\x7f\x7f\x08\x00\x00\xfe\xaf\x52\x0a\x00\x05\x00\x05\x05\x00\x02\x00\x00\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2d\x7e\x01\x70\x7f\x7f\x6f\x3e\x00\x08\x7f\x7f\x52\xaf\xfe\x00\x00\x05\x00\x0a\x02\x00\x05\x05\x00\xf7\x00\x00";
 
   AgsMUID source;
 
@@ -252,7 +250,7 @@ ags_midi_ci_util_test_put_discovery_reply()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x71\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x08\x00\x00\xfe\xaf\x52\x0a\x00\x05\x00\x05\x05\x00\x02\x00\x00\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x71\x2d\x7e\x10\x60\x00\x08\x6f\x3e\x52\xaf\xfe\x00\x00\x05\x00\x0a\x02\x00\x05\x05\x00\xf7\x00\x00";
 
   AgsMUID source = 0x0cafe010;
   AgsMUID destination = 0x0eadbeef;
@@ -291,7 +289,7 @@ ags_midi_ci_util_test_get_discovery_reply()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x71\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x08\x00\x00\xfe\xaf\x52\x0a\x00\x05\x00\x05\x05\x00\x02\x00\x00\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x71\x2d\x7e\x10\x60\x00\x08\x6f\x3e\x52\xaf\xfe\x00\x00\x05\x00\x0a\x02\x00\x05\x05\x00\xf7\x00\x00";
 
   AgsMUID source;
   AgsMUID destination;
@@ -338,7 +336,7 @@ ags_midi_ci_util_test_put_invalidate_muid()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x7e\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x7e\x2d\x3e\x6f\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x7e\x7f\x7f\x10\x60\x2d\x7e\x7f\x7f\x00\xf7\x6f\x3e\x00\x00\x00\x00";
 
   AgsMUID source = 0x0cafe010;
   AgsMUID target_muid = 0x0eadbeef;
@@ -357,7 +355,7 @@ ags_midi_ci_util_test_put_invalidate_muid()
 				       source,
 				       target_muid);
 
-  CU_ASSERT(!memcmp(buffer, filled_buffer, 19 * sizeof(guchar)));
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 24 * sizeof(guchar)));
 }
 
 void
@@ -365,7 +363,7 @@ ags_midi_ci_util_test_get_invalidate_muid()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x7e\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x7e\x2d\x3e\x6f\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x7e\x7f\x7f\x10\x60\x2d\x7e\x7f\x7f\x00\xf7\x6f\x3e\x00\x00\x00\x00";
 
   AgsMUID source;
   AgsMUID target_muid;
@@ -394,7 +392,7 @@ ags_midi_ci_util_test_put_ack()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x7d\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x34\x00\x00\x00\x00\x00\x00\x00\x00\x00\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x7d\x2d\x7e\x10\x60\x00\x34\x6f\x3e\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xf7\x00\x00\x00\x00";
 
   AgsMUID source = 0x0cafe010;
   AgsMUID destination = 0x0eadbeef;
@@ -425,7 +423,7 @@ ags_midi_ci_util_test_put_ack()
 			   message_length,
 			   message);
 
-  CU_ASSERT(!memcmp(buffer, filled_buffer, 24 * sizeof(guchar)));
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 32 * sizeof(guchar)));
 }
 
 void
@@ -433,7 +431,7 @@ ags_midi_ci_util_test_get_ack()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x7d\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x34\x00\x00\x00\x00\x00\x00\x00\x00\x00\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x7d\x2d\x7e\x10\x60\x00\x34\x6f\x3e\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xf7\x00\x00\x00\x00";
 
   AgsMUID source;
   AgsMUID destination;
@@ -480,7 +478,7 @@ ags_midi_ci_util_test_put_nak()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x7f\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x7f\x2d\x7e\x10\x60\x00\xf7\x6f\x3e\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   AgsMUID source = 0x0cafe010;
   AgsMUID destination = 0x0eadbeef;
@@ -499,7 +497,7 @@ ags_midi_ci_util_test_put_nak()
 			   source,
 			   destination);
 
-  CU_ASSERT(!memcmp(buffer, filled_buffer, 15 * sizeof(guchar)));
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
 
 void
@@ -507,7 +505,7 @@ ags_midi_ci_util_test_get_nak()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x7f\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x7f\x2d\x7e\x10\x60\x00\xf7\x6f\x3e\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   AgsMUID source;
   AgsMUID destination;
@@ -533,73 +531,401 @@ ags_midi_ci_util_test_get_nak()
 void
 ags_midi_ci_util_test_put_initiate_protocol_negotiation()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  guchar buffer[512];
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x10\x2d\x7e\x10\x60\x00\x10\x6f\x3e\x00\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  AgsMUID source = 0x0cafe010;
+  AgsMUID destination = 0x0eadbeef;
+
+  guchar device_id = '\x7f';
+  guchar version = '\x01';
+  AgsMidiCIAuthorityLevel authority_level = AGS_MIDI_CI_TRANSPORT;
+  guchar number_of_supported_protocols = 0;
+  guchar **preferred_protocol_type = NULL;
+  
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  memset(buffer, 0, 512 * sizeof(guchar));
+
+  ags_midi_ci_util_put_initiate_protocol_negotiation(midi_ci_util,
+						     buffer,
+						     device_id,
+						     version,
+						     source,
+						     destination,
+						     authority_level,
+						     number_of_supported_protocols,
+						     preferred_protocol_type);
+
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 32 * sizeof(guchar)));
 }
 
 void
 ags_midi_ci_util_test_get_initiate_protocol_negotiation()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x10\x2d\x7e\x10\x60\x00\x10\x6f\x3e\x00\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  guchar **preferred_protocol_type;
+
+  AgsMUID source;
+  AgsMUID destination;
+  
+  guchar device_id;
+  guchar version;
+  AgsMidiCIAuthorityLevel authority_level;
+  guchar number_of_supported_protocols;
+
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  preferred_protocol_type = NULL;
+  
+  ags_midi_ci_util_get_initiate_protocol_negotiation(midi_ci_util,
+						     buffer,
+						     &device_id,
+						     &version,
+						     &source,
+						     &destination,
+						     &authority_level,
+						     &number_of_supported_protocols,
+						     preferred_protocol_type);
+
+  CU_ASSERT(device_id == 0x7f);
+  CU_ASSERT(version == 0x01);
+  CU_ASSERT(source == 0x0cafe010);
+  CU_ASSERT(destination == 0x0eadbeef);
+  CU_ASSERT(authority_level == AGS_MIDI_CI_TRANSPORT);
+  CU_ASSERT(number_of_supported_protocols == 0x0);
+  CU_ASSERT(preferred_protocol_type == NULL);
 }
 
 void
 ags_midi_ci_util_test_put_initiate_protocol_negotiation_reply()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  guchar buffer[512];
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x11\x2d\x7e\x10\x60\x00\x10\x6f\x3e\x00\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  AgsMUID source = 0x0cafe010;
+  AgsMUID destination = 0x0eadbeef;
+
+  guchar device_id = '\x7f';
+  guchar version = '\x01';
+  AgsMidiCIAuthorityLevel authority_level = AGS_MIDI_CI_TRANSPORT;
+  guchar number_of_supported_protocols = 0;
+  guchar **preferred_protocol_type = NULL;
+  
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  memset(buffer, 0, 512 * sizeof(guchar));
+
+  ags_midi_ci_util_put_initiate_protocol_negotiation_reply(midi_ci_util,
+							   buffer,
+							   device_id,
+							   version,
+							   source,
+							   destination,
+							   authority_level,
+							   number_of_supported_protocols,
+							   preferred_protocol_type);
+
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 32 * sizeof(guchar)));
 }
 
 void
 ags_midi_ci_util_test_get_initiate_protocol_negotiation_reply()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x11\x2d\x7e\x10\x60\x00\x10\x6f\x3e\x00\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  guchar **preferred_protocol_type;
+
+  AgsMUID source;
+  AgsMUID destination;
+  
+  guchar device_id;
+  guchar version;
+  AgsMidiCIAuthorityLevel authority_level;
+  guchar number_of_supported_protocols;
+
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  preferred_protocol_type = NULL;
+  
+  ags_midi_ci_util_get_initiate_protocol_negotiation_reply(midi_ci_util,
+							   buffer,
+							   &device_id,
+							   &version,
+							   &source,
+							   &destination,
+							   &authority_level,
+							   &number_of_supported_protocols,
+							   preferred_protocol_type);
+  
+  CU_ASSERT(device_id == 0x7f);
+  CU_ASSERT(version == 0x01);
+  CU_ASSERT(source == 0x0cafe010);
+  CU_ASSERT(destination == 0x0eadbeef);
+  CU_ASSERT(authority_level == AGS_MIDI_CI_TRANSPORT);
+  CU_ASSERT(number_of_supported_protocols == 0x0);
+  CU_ASSERT(preferred_protocol_type == NULL);
 }
 
 void
 ags_midi_ci_util_test_put_set_protocol_type()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  guchar buffer[512];
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x12\x2d\x7e\x10\x60\xf7\x10\x6f\x3e\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  guchar **protocol_type = NULL;
+
+  AgsMUID source = 0x0cafe010;
+  AgsMUID destination = 0x0eadbeef;
+
+  guchar device_id = '\x7f';
+  guchar version = '\x01';
+  AgsMidiCIAuthorityLevel authority_level = AGS_MIDI_CI_TRANSPORT;
+  
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  memset(buffer, 0, 512 * sizeof(guchar));
+
+  ags_midi_ci_util_put_set_protocol_type(midi_ci_util,
+					 buffer,
+					 device_id,
+					 version,
+					 source,
+					 destination,
+					 authority_level,
+					 protocol_type);
+
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 32 * sizeof(guchar)));
 }
 
 void
 ags_midi_ci_util_test_get_set_protocol_type()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x12\x2d\x7e\x10\x60\xf7\x10\x6f\x3e\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  guchar **protocol_type;
+
+  AgsMUID source;
+  AgsMUID destination;
+  
+  guchar device_id;
+  guchar version;
+  AgsMidiCIAuthorityLevel authority_level;
+
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  protocol_type = NULL;
+  
+  ags_midi_ci_util_get_set_protocol_type(midi_ci_util,
+					 buffer,
+					 &device_id,
+					 &version,
+					 &source,
+					 &destination,
+					 &authority_level,
+					 protocol_type);
+
+  CU_ASSERT(device_id == 0x7f);
+  CU_ASSERT(version == 0x01);
+  CU_ASSERT(source == 0x0cafe010);
+  CU_ASSERT(destination == 0x0eadbeef);
+  CU_ASSERT(authority_level == AGS_MIDI_CI_TRANSPORT);
+  CU_ASSERT(protocol_type == NULL);
 }
 
 void
 ags_midi_ci_util_test_put_confirm_protocol_type()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  guchar buffer[512];
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x13\x2d\x7e\x10\x60\x00\x10\x6f\x3e\x04\x03\x02\x01\x08\x07\x06\x05\x0c\x0b\x0a\x09\x10\x0f\x0e\x0d\x14\x13\x12\x11\x18\x17\x16\x15\x1c\x1b\x1a\x19\x20\x1f\x1e\x1d\x24\x23\x22\x21\x28\x27\x26\x25\x2c\x2b\x2a\x29\xf7\x2f\x2e\x2d";
+
+  AgsMUID source = 0x0cafe010;
+  AgsMUID destination = 0x0eadbeef;
+
+  guchar device_id = '\x7f';
+  guchar version = '\x01';
+  AgsMidiCIAuthorityLevel authority_level = AGS_MIDI_CI_TRANSPORT;
+  
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  memset(buffer, 0, 512 * sizeof(guchar));
+
+  ags_midi_ci_util_put_confirm_protocol_type(midi_ci_util,
+					     buffer,
+					     device_id,
+					     version,
+					     source,
+					     destination,
+					     authority_level);
+
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 64 * sizeof(guchar)));
 }
 
 void
 ags_midi_ci_util_test_get_confirm_protocol_type()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x13\x2d\x7e\x10\x60\x00\x10\x6f\x3e\x04\x03\x02\x01\x08\x07\x06\x05\x0c\x0b\x0a\x09\x10\x0f\x0e\x0d\x14\x13\x12\x11\x18\x17\x16\x15\x1c\x1b\x1a\x19\x20\x1f\x1e\x1d\x24\x23\x22\x21\x28\x27\x26\x25\x2c\x2b\x2a\x29\xf7\x2f\x2e\x2d";
+
+  AgsMUID source;
+  AgsMUID destination;
+  
+  guchar device_id;
+  guchar version;
+  AgsMidiCIAuthorityLevel authority_level;
+
+  midi_ci_util = ags_midi_ci_util_alloc();
+  
+  ags_midi_ci_util_get_confirm_protocol_type(midi_ci_util,
+					     buffer,
+					     &device_id,
+					     &version,
+					     &source,
+					     &destination,
+					     &authority_level);
+
+  CU_ASSERT(device_id == 0x7f);
+  CU_ASSERT(version == 0x01);
+  CU_ASSERT(source == 0x0cafe010);
+  CU_ASSERT(destination == 0x0eadbeef);
+  CU_ASSERT(authority_level == AGS_MIDI_CI_TRANSPORT);
 }
 
 void
 ags_midi_ci_util_test_put_confirm_protocol_type_reply()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  guchar buffer[512];
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x14\x2d\x7e\x10\x60\x00\x10\x6f\x3e\x04\x03\x02\x01\x08\x07\x06\x05\x0c\x0b\x0a\x09\x10\x0f\x0e\x0d\x14\x13\x12\x11\x18\x17\x16\x15\x1c\x1b\x1a\x19\x20\x1f\x1e\x1d\x24\x23\x22\x21\x28\x27\x26\x25\x2c\x2b\x2a\x29\xf7\x2f\x2e\x2d";
+
+  AgsMUID source = 0x0cafe010;
+  AgsMUID destination = 0x0eadbeef;
+
+  guchar device_id = '\x7f';
+  guchar version = '\x01';
+  AgsMidiCIAuthorityLevel authority_level = AGS_MIDI_CI_TRANSPORT;
+  
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  memset(buffer, 0, 512 * sizeof(guchar));
+
+  ags_midi_ci_util_put_confirm_protocol_type_reply(midi_ci_util,
+						   buffer,
+						   device_id,
+						   version,
+						   source,
+						   destination,
+						   authority_level);
+
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 64 * sizeof(guchar)));
 }
 
 void
 ags_midi_ci_util_test_get_confirm_protocol_type_reply()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x14\x2d\x7e\x10\x60\x00\x10\x6f\x3e\x04\x03\x02\x01\x08\x07\x06\x05\x0c\x0b\x0a\x09\x10\x0f\x0e\x0d\x14\x13\x12\x11\x18\x17\x16\x15\x1c\x1b\x1a\x19\x20\x1f\x1e\x1d\x24\x23\x22\x21\x28\x27\x26\x25\x2c\x2b\x2a\x29\xf7\x2f\x2e\x2d";
+
+  AgsMUID source;
+  AgsMUID destination;
+  
+  guchar device_id;
+  guchar version;
+  AgsMidiCIAuthorityLevel authority_level;
+
+  midi_ci_util = ags_midi_ci_util_alloc();
+  
+  ags_midi_ci_util_get_confirm_protocol_type_reply(midi_ci_util,
+						   buffer,
+						   &device_id,
+						   &version,
+						   &source,
+						   &destination,
+						   &authority_level);
+
+  CU_ASSERT(device_id == 0x7f);
+  CU_ASSERT(version == 0x01);
+  CU_ASSERT(source == 0x0cafe010);
+  CU_ASSERT(destination == 0x0eadbeef);
+  CU_ASSERT(authority_level == AGS_MIDI_CI_TRANSPORT);
 }
 
 void
 ags_midi_ci_util_test_put_confirm_protocol_type_established()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  guchar buffer[512];
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x15\x2d\x7e\x10\x60\xf7\x10\x6f\x3e";
+
+  AgsMUID source = 0x0cafe010;
+  AgsMUID destination = 0x0eadbeef;
+
+  guchar device_id = '\x7f';
+  guchar version = '\x01';
+  AgsMidiCIAuthorityLevel authority_level = AGS_MIDI_CI_TRANSPORT;
+  
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  memset(buffer, 0, 512 * sizeof(guchar));
+
+  ags_midi_ci_util_put_confirm_protocol_type_established(midi_ci_util,
+							 buffer,
+							 device_id,
+							 version,
+							 source,
+							 destination,
+							 authority_level);
+
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
 
 void
 ags_midi_ci_util_test_get_confirm_protocol_type_established()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x15\x2d\x7e\x10\x60\xf7\x10\x6f\x3e";
+
+  AgsMUID source;
+  AgsMUID destination;
+  
+  guchar device_id;
+  guchar version;
+  AgsMidiCIAuthorityLevel authority_level;
+
+  midi_ci_util = ags_midi_ci_util_alloc();
+  
+  ags_midi_ci_util_get_confirm_protocol_type_established(midi_ci_util,
+							 buffer,
+							 &device_id,
+							 &version,
+							 &source,
+							 &destination,
+							 &authority_level);
+
+  CU_ASSERT(device_id == 0x7f);
+  CU_ASSERT(version == 0x01);
+  CU_ASSERT(source == 0x0cafe010);
+  CU_ASSERT(destination == 0x0eadbeef);
+  CU_ASSERT(authority_level == AGS_MIDI_CI_TRANSPORT);
 }
 
 void
@@ -608,7 +934,7 @@ ags_midi_ci_util_test_put_profile()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x20\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x20\x2d\x7e\x10\x60\x00\xf7\x6f\x3e\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   AgsMUID source = 0x0cafe010;
   AgsMUID destination = 0x0eadbeef;
@@ -627,7 +953,7 @@ ags_midi_ci_util_test_put_profile()
 			       source,
 			       destination);
 
-  CU_ASSERT(!memcmp(buffer, filled_buffer, 15 * sizeof(guchar)));
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
 
 void
@@ -635,7 +961,7 @@ ags_midi_ci_util_test_get_profile()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x20\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x20\x2d\x7e\x10\x60\x00\xf7\x6f\x3e\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   AgsMUID source;
   AgsMUID destination;
@@ -664,14 +990,14 @@ ags_midi_ci_util_test_put_profile_reply()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x21\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x03\x00\x7e\x00\x00\x01\x02\x7e\x00\x00\x01\x03\x7e\x00\x00\x01\x09\x01\x00\x7e\x00\x00\x01\x01\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x21\x2d\x7e\x10\x60\x00\x03\x6f\x3e\x01\x00\x00\x7e\x00\x00\x7e\x02\x00\x7e\x03\x01\x01\x09\x01\x00\x00\x00\x7e\x00\x00\xf7\x01\x01";
 
-  const guchar* enabled_profile[5] = {
+  static const guchar* const enabled_profile[5] = {
     "\x7e\x00\x00\x01\x02",
     "\x7e\x00\x00\x01\x03",
     "\x7e\x00\x00\x01\x09",
   };
-  const guchar* disabled_profile[5] = {
+  static const guchar* const disabled_profile[5] = {
     "\x7e\x00\x00\x01\x01",
   };
   
@@ -698,7 +1024,7 @@ ags_midi_ci_util_test_put_profile_reply()
 				     disabled_profile_count,
 				     disabled_profile);
 
-  CU_ASSERT(!memcmp(buffer, filled_buffer, 39 * sizeof(guchar)));
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 40 * sizeof(guchar)));
 }
 
 void
@@ -706,16 +1032,17 @@ ags_midi_ci_util_test_get_profile_reply()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x21\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x03\x00\x7e\x00\x00\x01\x02\x7e\x00\x00\x01\x03\x7e\x00\x00\x01\x09\x01\x00\x7e\x00\x00\x01\x01\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x21\x2d\x7e\x10\x60\x00\x03\x6f\x3e\x01\x00\x00\x7e\x00\x00\x7e\x02\x00\x7e\x03\x01\x01\x09\x01\x00\x00\x00\x7e\x00\x00\xf7\x01\x01";
+  
   guchar **enabled_profile;
   guchar **disabled_profile;
 
-  const guchar* filled_enabled_profile[5] = {
+  static const guchar* const filled_enabled_profile[5] = {
     "\x7e\x00\x00\x01\x02",
     "\x7e\x00\x00\x01\x03",
     "\x7e\x00\x00\x01\x09",
   };
-  const guchar* filled_disabled_profile[5] = {
+  static const guchar* const filled_disabled_profile[5] = {
     "\x7e\x00\x00\x01\x01",
   };
 
@@ -783,7 +1110,7 @@ ags_midi_ci_util_test_put_profile_enabled_report()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x24\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x7e\x00\x00\x01\x01\x00\x00\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x24\x7f\x7f\x10\x60\x00\x7e\x7f\x7f\x00\x01\x01\x00\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   const guchar add_profile[] = "\x7e\x00\x00\x01\x01";
   
@@ -805,7 +1132,7 @@ ags_midi_ci_util_test_put_profile_enabled_report()
 					      add_profile,
 					      enabled_channel_count);
 
-  CU_ASSERT(!memcmp(buffer, filled_buffer, 22 * sizeof(guchar)));
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 32 * sizeof(guchar)));
 }
 
 void
@@ -813,7 +1140,7 @@ ags_midi_ci_util_test_get_profile_enabled_report()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x24\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x7e\x00\x00\x01\x01\x00\x00\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x24\x7f\x7f\x10\x60\x00\x7e\x7f\x7f\x00\x01\x01\x00\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   guchar enabled_profile[5];
 
   const guchar filled_enabled_profile[5] = "\x7e\x00\x00\x01\x01";
@@ -857,7 +1184,7 @@ ags_midi_ci_util_test_put_profile_disabled_report()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x25\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x7e\x00\x00\x01\x01\x00\x00\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x25\x7f\x7f\x10\x60\x00\x7e\x7f\x7f\x00\x01\x01\x00\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   const guchar enabled_profile[] = "\x7e\x00\x00\x01\x01";
   
@@ -879,7 +1206,7 @@ ags_midi_ci_util_test_put_profile_disabled_report()
 					       enabled_profile,
 					       enabled_channel_count);
 
-  CU_ASSERT(!memcmp(buffer, filled_buffer, 22 * sizeof(guchar)));
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 32 * sizeof(guchar)));
 }
 
 void
@@ -887,7 +1214,7 @@ ags_midi_ci_util_test_get_profile_disabled_report()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x25\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x7e\x00\x00\x01\x01\x00\x00\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x25\x7f\x7f\x10\x60\x00\x7e\x7f\x7f\x00\x01\x01\x00\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   guchar enabled_profile[5];
 
   const guchar filled_enabled_profile[5] = "\x7e\x00\x00\x01\x01";
@@ -931,7 +1258,7 @@ ags_midi_ci_util_test_put_profile_added()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x26\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x7e\x00\x00\x01\x01\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x26\x7f\x7f\x10\x60\x00\x7e\x7f\x7f\xf7\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   const guchar add_profile[] = "\x7e\x00\x00\x01\x01";
   
@@ -951,7 +1278,7 @@ ags_midi_ci_util_test_put_profile_added()
 				     source,
 				     add_profile);
 
-  CU_ASSERT(!memcmp(buffer, filled_buffer, 20 * sizeof(guchar)));
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 32 * sizeof(guchar)));
 }
 
 void
@@ -959,7 +1286,7 @@ ags_midi_ci_util_test_get_profile_added()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x26\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x7e\x00\x00\x01\x01\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x26\x7f\x7f\x10\x60\x00\x7e\x7f\x7f\xf7\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   guchar add_profile[5];
 
   const guchar filled_add_profile[5] = "\x7e\x00\x00\x01\x01";
@@ -1000,7 +1327,7 @@ ags_midi_ci_util_test_put_profile_removed()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x27\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x7e\x00\x00\x01\x01\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x27\x7f\x7f\x10\x60\x00\x7e\x7f\x7f\xf7\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   const guchar remove_profile[] = "\x7e\x00\x00\x01\x01";
   
@@ -1028,7 +1355,7 @@ ags_midi_ci_util_test_get_profile_removed()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x27\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x7e\x00\x00\x01\x01\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x27\x7f\x7f\x10\x60\x00\x7e\x7f\x7f\xf7\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   guchar remove_profile[5];
 
   const guchar filled_remove_profile[5] = "\x7e\x00\x00\x01\x01";
@@ -1069,7 +1396,7 @@ ags_midi_ci_util_test_put_profile_specific_data()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x2f\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x7e\x00\x00\x01\x01\x00\x00\x00\x00\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x2f\x7f\x7f\x10\x60\x00\x7e\x7f\x7f\x00\x01\x01\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   guchar *profile_specific_data;
   
   const guchar profile_id[] = "\x7e\x00\x00\x01\x01";
@@ -1106,7 +1433,7 @@ ags_midi_ci_util_test_get_profile_specific_data()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x2f\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x7e\x00\x00\x01\x01\x00\x00\x00\x00\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x2f\x7f\x7f\x10\x60\x00\x7e\x7f\x7f\x00\x01\x01\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   guchar profile_id[5];
   guchar *profile_specific_data;
 
@@ -1156,7 +1483,7 @@ ags_midi_ci_util_test_put_property_exchange_capabilities()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x30\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x01\x01\x00\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x30\x7f\x7f\x10\x60\x01\x01\x7f\x7f\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   
   AgsMUID source = 0x0cafe010;
   AgsMUID destination = AGS_MIDI_CI_UTIL_BROADCAST_MUID;
@@ -1181,7 +1508,7 @@ ags_midi_ci_util_test_put_property_exchange_capabilities()
 						      major,
 						      minor);
 
-  CU_ASSERT(!memcmp(buffer, filled_buffer, 18 * sizeof(guchar)));
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 24 * sizeof(guchar)));
 }
 
 void
@@ -1189,7 +1516,7 @@ ags_midi_ci_util_test_get_property_exchange_capabilities()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x30\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x01\x01\x00\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x30\x7f\x7f\x10\x60\x01\x01\x7f\x7f\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   AgsMUID source;
   AgsMUID destination;
@@ -1228,7 +1555,7 @@ ags_midi_ci_util_test_put_property_exchange_capabilities_reply()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x31\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x01\x01\x00\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x31\x7f\x7f\x10\x60\x01\x01\x7f\x7f\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   
   AgsMUID source = 0x0cafe010;
   AgsMUID destination = AGS_MIDI_CI_UTIL_BROADCAST_MUID;
@@ -1253,7 +1580,7 @@ ags_midi_ci_util_test_put_property_exchange_capabilities_reply()
 							    major,
 							    minor);
 
-  CU_ASSERT(!memcmp(buffer, filled_buffer, 18 * sizeof(guchar)));
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 24 * sizeof(guchar)));
 }
 
 void
@@ -1261,7 +1588,7 @@ ags_midi_ci_util_test_get_property_exchange_capabilities_reply()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x31\x01\x6c\x2f\x60\x10\x7f\x7f\x7f\x7f\x01\x01\x00\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x31\x7f\x7f\x10\x60\x01\x01\x7f\x7f\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   AgsMUID source;
   AgsMUID destination;
@@ -1300,7 +1627,7 @@ ags_midi_ci_util_test_put_get_property_data()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x34\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x01\x00\x00\x00\x00\x01\x00\x00\x00\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x34\x2d\x7e\x10\x60\x00\x01\x6f\x3e\x01\x00\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   guchar *header_data = NULL;
   guchar *property_data = NULL;
   
@@ -1341,7 +1668,7 @@ ags_midi_ci_util_test_get_get_property_data()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x34\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x01\x00\x00\x00\x00\x01\x00\x00\x00\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x34\x2d\x7e\x10\x60\x00\x01\x6f\x3e\x01\x00\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   guint16 header_data_length;  
   guchar *header_data;
   guint16 property_data_length;  
@@ -1392,7 +1719,7 @@ ags_midi_ci_util_test_put_get_property_data_reply()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x35\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x01\x00\x00\x00\x00\x01\x00\x00\x00\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x35\x2d\x7e\x10\x60\x00\x01\x6f\x3e\x01\x00\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   guchar *header_data = NULL;
   guchar *property_data = NULL;
   
@@ -1433,7 +1760,7 @@ ags_midi_ci_util_test_get_get_property_data_reply()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x35\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x01\x00\x00\x00\x00\x01\x00\x00\x00\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x35\x2d\x7e\x10\x60\x00\x01\x6f\x3e\x01\x00\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   guint16 header_data_length;  
   guchar *header_data;
   guint16 property_data_length;  
@@ -1484,7 +1811,7 @@ ags_midi_ci_util_test_put_set_property_data()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x36\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x01\x00\x00\x00\x00\x01\x00\x00\x00\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x36\x2d\x7e\x10\x60\x00\x01\x6f\x3e\x01\x00\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   guchar *header_data = NULL;
   guchar *property_data = NULL;
   
@@ -1525,7 +1852,7 @@ ags_midi_ci_util_test_get_set_property_data()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x36\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x01\x00\x00\x00\x00\x01\x00\x00\x00\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x36\x2d\x7e\x10\x60\x00\x01\x6f\x3e\x01\x00\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   guint16 header_data_length;  
   guchar *header_data;
   guint16 property_data_length;  
@@ -1576,7 +1903,7 @@ ags_midi_ci_util_test_put_set_property_data_reply()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x37\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x01\x00\x00\x00\x00\x01\x00\x00\x00\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x37\x2d\x7e\x10\x60\x00\x01\x6f\x3e\x01\x00\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   guchar *header_data = NULL;
   guchar *property_data = NULL;
   
@@ -1617,7 +1944,7 @@ ags_midi_ci_util_test_get_set_property_data_reply()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x37\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x01\x00\x00\x00\x00\x01\x00\x00\x00\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x37\x2d\x7e\x10\x60\x00\x01\x6f\x3e\x01\x00\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   guint16 header_data_length;  
   guchar *header_data;
   guint16 property_data_length;  
@@ -1668,7 +1995,7 @@ ags_midi_ci_util_test_put_subscription()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x38\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x01\x00\x00\x00\x00\x01\x00\x00\x00\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x38\x2d\x7e\x10\x60\x00\x01\x6f\x3e\x01\x00\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   guchar *header_data = NULL;
   guchar *property_data = NULL;
   
@@ -1709,7 +2036,7 @@ ags_midi_ci_util_test_get_subscription()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x38\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x01\x00\x00\x00\x00\x01\x00\x00\x00\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x38\x2d\x7e\x10\x60\x00\x01\x6f\x3e\x01\x00\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   guint16 header_data_length;  
   guchar *header_data;
   guint16 property_data_length;  
@@ -1760,7 +2087,7 @@ ags_midi_ci_util_test_put_subscription_reply()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x39\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x01\x00\x00\x00\x00\x01\x00\x00\x00\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x39\x2d\x7e\x10\x60\x00\x01\x6f\x3e\x01\x00\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   guchar *header_data = NULL;
   guchar *property_data = NULL;
   
@@ -1773,7 +2100,7 @@ ags_midi_ci_util_test_put_subscription_reply()
   guint16 header_data_length = 0;
   guint16 property_data_length = 0;  
   guint16 chunk_count = 0;
-  guint16 nth_chunk = 1;  
+  guint16 nth_chunk = 0x1;  
   
   midi_ci_util = ags_midi_ci_util_alloc();
 
@@ -1801,7 +2128,7 @@ ags_midi_ci_util_test_get_subscription_reply()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x39\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x01\x00\x00\x00\x00\x01\x00\x00\x00\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x39\x2d\x7e\x10\x60\x00\x01\x6f\x3e\x01\x00\x00\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
   guint16 header_data_length;  
   guchar *header_data;
   guint16 property_data_length;  
@@ -1852,7 +2179,7 @@ ags_midi_ci_util_test_put_process_capabilities()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x40\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x40\x2d\x7e\x10\x60\x00\xf7\x6f\x3e\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   AgsMUID source = 0x0cafe010;
   AgsMUID destination = 0x0eadbeef;
@@ -1871,7 +2198,7 @@ ags_midi_ci_util_test_put_process_capabilities()
 					    source,
 					    destination);
 
-  CU_ASSERT(!memcmp(buffer, filled_buffer, 15 * sizeof(guchar)));
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
 
 void
@@ -1879,7 +2206,7 @@ ags_midi_ci_util_test_get_process_capabilities()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x40\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x40\x2d\x7e\x10\x60\x00\xf7\x6f\x3e\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   AgsMUID source;
   AgsMUID destination;
@@ -1908,7 +2235,7 @@ ags_midi_ci_util_test_put_process_capabilities_reply()
   AgsMidiCIUtil *midi_ci_util;
 
   guchar buffer[512];
-  guchar filled_buffer[] = "\xf0\x7e\x7f\x0d\x41\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x00\xf7";
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x41\x2d\x7e\x10\x60\x00\x00\x6f\x3e\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   AgsMUID source = 0x0cafe010;
   AgsMUID destination = 0x0eadbeef;
@@ -1937,7 +2264,7 @@ ags_midi_ci_util_test_get_process_capabilities_reply()
 {
   AgsMidiCIUtil *midi_ci_util;
 
-  guchar buffer[] = "\xf0\x7e\x7f\x0d\x41\x01\x6c\x2f\x60\x10\x7e\x2d\x3e\x6f\x00\xf7";
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x41\x2d\x7e\x10\x60\x00\x00\x6f\x3e\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   AgsMUID source;
   AgsMUID destination;
@@ -1966,37 +2293,214 @@ ags_midi_ci_util_test_get_process_capabilities_reply()
 void
 ags_midi_ci_util_test_put_message_report()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  guchar buffer[512];
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x42\x2d\x7e\x10\x60\x00\x00\x6f\x3e\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  AgsMUID source = 0x0cafe010;
+  AgsMUID destination = 0x0eadbeef;
+
+  guchar device_id = '\x7f';
+  guchar version = '\x01';
+  guchar data_control = '\x00';
+  guchar system_messages = '\x00';
+  guchar other_messages = '\x00';
+  guchar channel_controller_messages = '\x00';
+  guchar note_data_messages = '\x00';
+  
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  memset(buffer, 0, 512 * sizeof(guchar));
+
+  ags_midi_ci_util_put_message_report(midi_ci_util,
+				      buffer,
+				      device_id,
+				      version,
+				      source,
+				      destination,
+				      data_control,
+				      system_messages,
+				      other_messages,
+				      channel_controller_messages,
+				      note_data_messages);
+
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 32 * sizeof(guchar)));
 }
 
 void
 ags_midi_ci_util_test_get_message_report()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x42\x2d\x7e\x10\x60\x00\x00\x6f\x3e\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  AgsMUID source;
+  AgsMUID destination;
+  
+  guchar device_id;
+  guchar version;
+  guchar data_control;
+  guchar system_messages;
+  guchar other_messages;
+  guchar channel_controller_messages;
+  guchar note_data_messages;
+
+  midi_ci_util = ags_midi_ci_util_alloc();
+  
+  ags_midi_ci_util_get_message_report(midi_ci_util,
+				      buffer,
+				      &device_id,
+				      &version,
+				      &source,
+				      &destination,
+				      &data_control,
+				      &system_messages,
+				      &other_messages,
+				      &channel_controller_messages,
+				      &note_data_messages);
+
+  CU_ASSERT(device_id == 0x7f);
+  CU_ASSERT(version == 0x01);
+  CU_ASSERT(source == 0x0cafe010);
+  CU_ASSERT(destination == 0x0eadbeef);
+  CU_ASSERT(data_control == 0x00);
+  CU_ASSERT(system_messages == 0x00);
+  CU_ASSERT(other_messages == 0x00);
+  CU_ASSERT(channel_controller_messages == 0x00);
+  CU_ASSERT(note_data_messages == 0x00);
 }
 
 void
 ags_midi_ci_util_test_put_message_report_reply()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  guchar buffer[512];
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x43\x2d\x7e\x10\x60\x00\x00\x6f\x3e\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  AgsMUID source = 0x0cafe010;
+  AgsMUID destination = 0x0eadbeef;
+
+  guchar device_id = '\x7f';
+  guchar version = '\x01';
+  guchar system_messages = '\x00';
+  guchar other_messages = '\x00';
+  guchar channel_controller_messages = '\x00';
+  guchar note_data_messages = '\x00';
+  
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  memset(buffer, 0, 512 * sizeof(guchar));
+
+  ags_midi_ci_util_put_message_report_reply(midi_ci_util,
+					    buffer,
+					    device_id,
+					    version,
+					    source,
+					    destination,
+					    system_messages,
+					    other_messages,
+					    channel_controller_messages,
+					    note_data_messages);
+
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 32 * sizeof(guchar)));
 }
 
 void
 ags_midi_ci_util_test_get_message_report_reply()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x43\x2d\x7e\x10\x60\x00\x00\x6f\x3e\x00\xf7\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+  AgsMUID source;
+  AgsMUID destination;
+  
+  guchar device_id;
+  guchar version;
+  guchar system_messages;
+  guchar other_messages;
+  guchar channel_controller_messages;
+  guchar note_data_messages;
+
+  midi_ci_util = ags_midi_ci_util_alloc();
+  
+  ags_midi_ci_util_get_message_report_reply(midi_ci_util,
+					    buffer,
+					    &device_id,
+					    &version,
+					    &source,
+					    &destination,
+					    &system_messages,
+					    &other_messages,
+					    &channel_controller_messages,
+					    &note_data_messages);
+
+  CU_ASSERT(device_id == 0x7f);
+  CU_ASSERT(version == 0x01);
+  CU_ASSERT(source == 0x0cafe010);
+  CU_ASSERT(destination == 0x0eadbeef);
+  CU_ASSERT(system_messages == 0x00);
+  CU_ASSERT(other_messages == 0x00);
+  CU_ASSERT(channel_controller_messages == 0x00);
+  CU_ASSERT(note_data_messages == 0x00);
 }
 
 void
 ags_midi_ci_util_test_put_end_of_message_report()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  guchar buffer[512];
+  static const guchar filled_buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x44\x2d\x7e\x10\x60\x00\xf7\x6f\x3e";
+
+  AgsMUID source = 0x0cafe010;
+  AgsMUID destination = 0x0eadbeef;
+
+  guchar device_id = '\x7f';
+  guchar version = '\x01';
+  
+  midi_ci_util = ags_midi_ci_util_alloc();
+
+  memset(buffer, 0, 512 * sizeof(guchar));
+
+  ags_midi_ci_util_put_end_of_message_report(midi_ci_util,
+					     buffer,
+					     device_id,
+					     version,
+					     source,
+					     destination);
+
+  CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
 
 void
 ags_midi_ci_util_test_get_end_of_message_report()
 {
-  //TODO:JK: implement me
+  AgsMidiCIUtil *midi_ci_util;
+
+  static const guchar buffer[] = "\x0d\x7f\x7e\xf0\x2f\x6c\x01\x44\x2d\x7e\x10\x60\x00\xf7\x6f\x3e";
+
+  AgsMUID source;
+  AgsMUID destination;
+  
+  guchar device_id;
+  guchar version;
+
+  midi_ci_util = ags_midi_ci_util_alloc();
+  
+  ags_midi_ci_util_get_end_of_message_report(midi_ci_util,
+					     buffer,
+					     &device_id,
+					     &version,
+					     &source,
+					     &destination);
+
+  CU_ASSERT(device_id == 0x7f);
+  CU_ASSERT(version == 0x01);
+  CU_ASSERT(source == 0x0cafe010);
+  CU_ASSERT(destination == 0x0eadbeef);
 }
 
 int
@@ -2043,6 +2547,8 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c get confirm protocol type", ags_midi_ci_util_test_get_confirm_protocol_type) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c put confirm protocol type reply", ags_midi_ci_util_test_put_confirm_protocol_type_reply) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c get confirm protocol type reply", ags_midi_ci_util_test_get_confirm_protocol_type_reply) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_ci_util.c put confirm protocol type established", ags_midi_ci_util_test_put_confirm_protocol_type_established) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_ci_util.c get confirm protocol type established", ags_midi_ci_util_test_get_confirm_protocol_type_established) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c put profile inquiry", ags_midi_ci_util_test_put_profile) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c get profile inquiry", ags_midi_ci_util_test_get_profile) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c put profile inquiry reply", ags_midi_ci_util_test_put_profile_reply) == NULL) ||
@@ -2073,7 +2579,6 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c get subscription", ags_midi_ci_util_test_get_subscription) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c put subscription reply", ags_midi_ci_util_test_put_subscription_reply) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c get subscription reply", ags_midi_ci_util_test_get_subscription_reply) == NULL) ||
-
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c put process capabilities", ags_midi_ci_util_test_put_process_capabilities) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c get process capabilities", ags_midi_ci_util_test_get_process_capabilities) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_ci_util.c put process capabilities reply", ags_midi_ci_util_test_put_process_capabilities_reply) == NULL) ||
@@ -2097,3 +2602,4 @@ main(int argc, char **argv)
   
   return(CU_get_error());
 }
+

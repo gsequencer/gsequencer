@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -124,13 +124,26 @@ AgsMidiCIUtil* ags_midi_ci_util_copy(AgsMidiCIUtil *midi_ci_util);
 
 AgsMUID ags_midi_ci_util_generate_muid(AgsMidiCIUtil *midi_ci_util);
 
+G_DEPRECATED_FOR(ags_midi_ci_util_put_muid_with_position)
 void ags_midi_ci_util_put_muid(AgsMidiCIUtil *midi_ci_util,
 			       guchar *buffer,
 			       AgsMUID muid);
+G_DEPRECATED_FOR(ags_midi_ci_util_get_muid_with_position)
 guint ags_midi_ci_util_get_muid(AgsMidiCIUtil *midi_ci_util,
 				guchar *buffer,
 				AgsMUID *muid);
 
+void ags_midi_ci_util_put_muid_with_position(AgsMidiCIUtil *midi_ci_util,
+					     guchar *buffer,
+					     gint position,
+					     AgsMUID muid);
+guint ags_midi_ci_util_get_muid_with_position(AgsMidiCIUtil *midi_ci_util,
+					      guchar *buffer,
+					      gint position,
+					      AgsMUID *muid);
+
+gboolean ags_midi_ci_util_is_discovery(AgsMidiCIUtil *midi_ci_util,
+				       guchar *buffer);
 void ags_midi_ci_util_put_discovery(AgsMidiCIUtil *midi_ci_util,
 				    guchar *buffer,
 				    guchar device_id,
@@ -154,6 +167,8 @@ guint ags_midi_ci_util_get_discovery(AgsMidiCIUtil *midi_ci_util,
 				     guchar *capability,
 				     guint32 *max_sysex_message_size);
 
+gboolean ags_midi_ci_util_is_discovery_reply(AgsMidiCIUtil *midi_ci_util,
+					     guchar *buffer);
 void ags_midi_ci_util_put_discovery_reply(AgsMidiCIUtil *midi_ci_util,
 					  guchar *buffer,
 					  guchar device_id,
@@ -179,6 +194,8 @@ guint ags_midi_ci_util_get_discovery_reply(AgsMidiCIUtil *midi_ci_util,
 					   guchar *capability,
 					   guint32 *max_sysex_message_size);
 
+gboolean ags_midi_ci_util_is_invalidate_muid(AgsMidiCIUtil *midi_ci_util,
+					     guchar *buffer);
 void ags_midi_ci_util_put_invalidate_muid(AgsMidiCIUtil *midi_ci_util,
 					  guchar *buffer,
 					  guchar device_id,
@@ -192,6 +209,8 @@ guint ags_midi_ci_util_get_invalidate_muid(AgsMidiCIUtil *midi_ci_util,
 					   AgsMUID *source,
 					   AgsMUID *target_muid);
 
+gboolean ags_midi_ci_util_is_ack(AgsMidiCIUtil *midi_ci_util,
+				 guchar *buffer);
 void ags_midi_ci_util_put_ack(AgsMidiCIUtil *midi_ci_util,
 			      guchar *buffer,
 			      guchar device_id,
@@ -217,6 +236,8 @@ guint ags_midi_ci_util_get_ack(AgsMidiCIUtil *midi_ci_util,
 			       guint16 *message_length,
 			       guchar **message);
 
+gboolean ags_midi_ci_util_is_nak(AgsMidiCIUtil *midi_ci_util,
+				 guchar *buffer);
 void ags_midi_ci_util_put_nak(AgsMidiCIUtil *midi_ci_util,
 			      guchar *buffer,
 			      guchar device_id,
@@ -230,6 +251,8 @@ guint ags_midi_ci_util_get_nak(AgsMidiCIUtil *midi_ci_util,
 			       AgsMUID *source,
 			       AgsMUID *destination);
 
+gboolean ags_midi_ci_util_is_initiate_protocol_negotiation(AgsMidiCIUtil *midi_ci_util,
+							   guchar *buffer);
 void ags_midi_ci_util_put_initiate_protocol_negotiation(AgsMidiCIUtil *midi_ci_util,
 							guchar *buffer,
 							guchar device_id,
@@ -249,6 +272,8 @@ guint ags_midi_ci_util_get_initiate_protocol_negotiation(AgsMidiCIUtil *midi_ci_
 							 guchar *number_of_supported_protocols,
 							 guchar **preferred_protocol_type);
 
+gboolean ags_midi_ci_util_is_initiate_protocol_negotiation_reply(AgsMidiCIUtil *midi_ci_util,
+								 guchar *buffer);
 void ags_midi_ci_util_put_initiate_protocol_negotiation_reply(AgsMidiCIUtil *midi_ci_util,
 							      guchar *buffer,
 							      guchar device_id,
@@ -268,6 +293,8 @@ guint ags_midi_ci_util_get_initiate_protocol_negotiation_reply(AgsMidiCIUtil *mi
 							       guchar *number_of_supported_protocols,
 							       guchar **preferred_protocol_type);
 
+gboolean ags_midi_ci_util_is_set_protocol_type(AgsMidiCIUtil *midi_ci_util,
+					       guchar *buffer);
 void ags_midi_ci_util_put_set_protocol_type(AgsMidiCIUtil *midi_ci_util,
 					    guchar *buffer,
 					    guchar device_id,
@@ -285,6 +312,8 @@ guint ags_midi_ci_util_get_set_protocol_type(AgsMidiCIUtil *midi_ci_util,
 					     AgsMidiCIAuthorityLevel *authority_level,
 					     guchar *protocol_type);
 
+gboolean ags_midi_ci_util_is_confirm_protocol_type(AgsMidiCIUtil *midi_ci_util,
+						   guchar *buffer);
 void ags_midi_ci_util_put_confirm_protocol_type(AgsMidiCIUtil *midi_ci_util,
 						guchar *buffer,
 						guchar device_id,
@@ -300,6 +329,8 @@ guint ags_midi_ci_util_get_confirm_protocol_type(AgsMidiCIUtil *midi_ci_util,
 						 AgsMUID *destination,
 						 AgsMidiCIAuthorityLevel *authority_level);
 
+gboolean ags_midi_ci_util_is_confirm_protocol_type_reply(AgsMidiCIUtil *midi_ci_util,
+							 guchar *buffer);
 void ags_midi_ci_util_put_confirm_protocol_type_reply(AgsMidiCIUtil *midi_ci_util,
 						      guchar *buffer,
 						      guchar device_id,
@@ -315,6 +346,8 @@ guint ags_midi_ci_util_get_confirm_protocol_type_reply(AgsMidiCIUtil *midi_ci_ut
 						       AgsMUID *destination,
 						       AgsMidiCIAuthorityLevel *authority_level);
 
+gboolean ags_midi_ci_util_is_confirm_protocol_type_established(AgsMidiCIUtil *midi_ci_util,
+							       guchar *buffer);
 void ags_midi_ci_util_put_confirm_protocol_type_established(AgsMidiCIUtil *midi_ci_util,
 							    guchar *buffer,
 							    guchar device_id,
@@ -330,6 +363,8 @@ guint ags_midi_ci_util_get_confirm_protocol_type_established(AgsMidiCIUtil *midi
 							     AgsMUID *destination,
 							     AgsMidiCIAuthorityLevel *authority_level);
 
+gboolean ags_midi_ci_util_is_profile(AgsMidiCIUtil *midi_ci_util,
+				     guchar *buffer);
 void ags_midi_ci_util_put_profile(AgsMidiCIUtil *midi_ci_util,
 				  guchar *buffer,
 				  guchar device_id,
@@ -343,6 +378,8 @@ guint ags_midi_ci_util_get_profile(AgsMidiCIUtil *midi_ci_util,
 				   AgsMUID *source,
 				   AgsMUID *destination);
 
+gboolean ags_midi_ci_util_is_profile_reply(AgsMidiCIUtil *midi_ci_util,
+					   guchar *buffer);
 void ags_midi_ci_util_put_profile_reply(AgsMidiCIUtil *midi_ci_util,
 					guchar *buffer,
 					guchar device_id,
@@ -364,6 +401,8 @@ guint ags_midi_ci_util_get_profile_reply(AgsMidiCIUtil *midi_ci_util,
 					 guint16 *disabled_profile_count,
 					 guchar ***disabled_profile);
 
+gboolean ags_midi_ci_util_is_profile_enabled_report(AgsMidiCIUtil *midi_ci_util,
+						    guchar *buffer);
 void ags_midi_ci_util_put_profile_enabled_report(AgsMidiCIUtil *midi_ci_util,
 						 guchar *buffer,
 						 guchar device_id,
@@ -379,6 +418,8 @@ guint ags_midi_ci_util_get_profile_enabled_report(AgsMidiCIUtil *midi_ci_util,
 						  guchar enabled_profile[5],
 						  guint16 *enabled_channel_count);
 
+gboolean ags_midi_ci_util_is_profile_disabled_report(AgsMidiCIUtil *midi_ci_util,
+						     guchar *buffer);
 void ags_midi_ci_util_put_profile_disabled_report(AgsMidiCIUtil *midi_ci_util,
 						  guchar *buffer,
 						  guchar device_id,
@@ -394,6 +435,8 @@ guint ags_midi_ci_util_get_profile_disabled_report(AgsMidiCIUtil *midi_ci_util,
 						   guchar disabled_profile[5],
 						   guint16 *disabled_channel_count);
 
+gboolean ags_midi_ci_util_is_profile_added(AgsMidiCIUtil *midi_ci_util,
+					   guchar *buffer);
 void ags_midi_ci_util_put_profile_added(AgsMidiCIUtil *midi_ci_util,
 					guchar *buffer,
 					guchar device_id,
@@ -407,6 +450,8 @@ guint ags_midi_ci_util_get_profile_added(AgsMidiCIUtil *midi_ci_util,
 					 AgsMUID *source,
 					 guchar add_profile[5]);
 
+gboolean ags_midi_ci_util_is_profile_removed(AgsMidiCIUtil *midi_ci_util,
+					     guchar *buffer);
 void ags_midi_ci_util_put_profile_removed(AgsMidiCIUtil *midi_ci_util,
 					  guchar *buffer,
 					  guchar device_id,
@@ -420,6 +465,8 @@ guint ags_midi_ci_util_get_profile_removed(AgsMidiCIUtil *midi_ci_util,
 					   AgsMUID *source,
 					   guchar remove_profile[5]);
 
+gboolean ags_midi_ci_util_is_profile_specific_data(AgsMidiCIUtil *midi_ci_util,
+						   guchar *buffer);
 void ags_midi_ci_util_put_profile_specific_data(AgsMidiCIUtil *midi_ci_util,
 						guchar *buffer,
 						guchar device_id,
@@ -477,6 +524,8 @@ guint ags_midi_ci_util_get_property_exchange_capabilities_reply(AgsMidiCIUtil *m
 								guchar *property_exchange_major,
 								guchar *property_exchange_minor);
 
+gboolean ags_midi_ci_util_is_get_property_data(AgsMidiCIUtil *midi_ci_util,
+					       guchar *buffer);
 void ags_midi_ci_util_put_get_property_data(AgsMidiCIUtil *midi_ci_util,
 					    guchar *buffer,
 					    guchar device_id,
@@ -504,6 +553,8 @@ guint ags_midi_ci_util_get_get_property_data(AgsMidiCIUtil *midi_ci_util,
 					     guint16 *property_data_length,
 					     guchar **property_data);
 
+gboolean ags_midi_ci_util_is_get_property_data_reply(AgsMidiCIUtil *midi_ci_util,
+						     guchar *buffer);
 void ags_midi_ci_util_put_get_property_data_reply(AgsMidiCIUtil *midi_ci_util,
 						  guchar *buffer,
 						  guchar device_id,
@@ -531,6 +582,8 @@ guint ags_midi_ci_util_get_get_property_data_reply(AgsMidiCIUtil *midi_ci_util,
 						   guint16 *property_data_length,
 						   guchar **property_data);
 
+gboolean ags_midi_ci_util_is_set_property_data(AgsMidiCIUtil *midi_ci_util,
+					       guchar *buffer);
 void ags_midi_ci_util_put_set_property_data(AgsMidiCIUtil *midi_ci_util,
 					    guchar *buffer,
 					    guchar device_id,
@@ -558,6 +611,8 @@ guint ags_midi_ci_util_get_set_property_data(AgsMidiCIUtil *midi_ci_util,
 					     guint16 *property_data_length,
 					     guchar **property_data);
 
+gboolean ags_midi_ci_util_is_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
+						     guchar *buffer);
 void ags_midi_ci_util_put_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
 						  guchar *buffer,
 						  guchar device_id,
@@ -585,6 +640,8 @@ guint ags_midi_ci_util_get_set_property_data_reply(AgsMidiCIUtil *midi_ci_util,
 						   guint16 *property_data_length,
 						   guchar **property_data);
 
+gboolean ags_midi_ci_util_is_subscription(AgsMidiCIUtil *midi_ci_util,
+					  guchar *buffer);
 void ags_midi_ci_util_put_subscription(AgsMidiCIUtil *midi_ci_util,
 				       guchar *buffer,
 				       guchar device_id,
@@ -612,6 +669,8 @@ guint ags_midi_ci_util_get_subscription(AgsMidiCIUtil *midi_ci_util,
 					guint16 *property_data_length,
 					guchar **property_data);
 
+gboolean ags_midi_ci_util_is_subscription_reply(AgsMidiCIUtil *midi_ci_util,
+						guchar *buffer);
 void ags_midi_ci_util_put_subscription_reply(AgsMidiCIUtil *midi_ci_util,
 					     guchar *buffer,
 					     guchar device_id,
@@ -639,6 +698,8 @@ guint ags_midi_ci_util_get_subscription_reply(AgsMidiCIUtil *midi_ci_util,
 					      guint16 *property_data_length,
 					      guchar **property_data);
 
+gboolean ags_midi_ci_util_is_process_capabilities(AgsMidiCIUtil *midi_ci_util,
+						  guchar *buffer);
 void ags_midi_ci_util_put_process_capabilities(AgsMidiCIUtil *midi_ci_util,
 					       guchar *buffer,
 					       guchar device_id,
@@ -652,6 +713,8 @@ guint ags_midi_ci_util_get_process_capabilities(AgsMidiCIUtil *midi_ci_util,
 						AgsMUID *source,
 						AgsMUID *destination);
 
+gboolean ags_midi_ci_util_is_process_capabilities_reply(AgsMidiCIUtil *midi_ci_util,
+							guchar *buffer);
 void ags_midi_ci_util_put_process_capabilities_reply(AgsMidiCIUtil *midi_ci_util,
 						     guchar *buffer,
 						     guchar device_id,
@@ -667,6 +730,8 @@ guint ags_midi_ci_util_get_process_capabilities_reply(AgsMidiCIUtil *midi_ci_uti
 						      AgsMUID *destination,
 						      guchar *supported_features);
 
+gboolean ags_midi_ci_util_is_message_report(AgsMidiCIUtil *midi_ci_util,
+					    guchar *buffer);
 void ags_midi_ci_util_put_message_report(AgsMidiCIUtil *midi_ci_util,
 					 guchar *buffer,
 					 guchar device_id,
@@ -690,6 +755,8 @@ guint ags_midi_ci_util_get_message_report(AgsMidiCIUtil *midi_ci_util,
 					  guchar *channel_controller_messages,
 					  guchar *note_data_messages);
 
+gboolean ags_midi_ci_util_is_message_report_reply(AgsMidiCIUtil *midi_ci_util,
+						  guchar *buffer);
 void ags_midi_ci_util_put_message_report_reply(AgsMidiCIUtil *midi_ci_util,
 					       guchar *buffer,
 					       guchar device_id,
@@ -711,6 +778,8 @@ guint ags_midi_ci_util_get_message_report_reply(AgsMidiCIUtil *midi_ci_util,
 						guchar *channel_controller_messages,
 						guchar *note_data_messages);
 
+gboolean ags_midi_ci_util_is_end_of_message_report(AgsMidiCIUtil *midi_ci_util,
+						   guchar *buffer);
 void ags_midi_ci_util_put_end_of_message_report(AgsMidiCIUtil *midi_ci_util,
 						guchar *buffer,
 						guchar device_id,

@@ -157,7 +157,7 @@ ags_vst3_browser_init(AgsVst3Browser *vst3_browser)
   gtk_orientable_set_orientation(GTK_ORIENTABLE(vst3_browser),
 				 GTK_ORIENTATION_VERTICAL);
 
-  gtk_box_set_spacing(vst3_browser,
+  gtk_box_set_spacing((GtkBox *) vst3_browser,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   vst3_browser->connectable_flags = 0;
@@ -226,7 +226,7 @@ ags_vst3_browser_init(AgsVst3Browser *vst3_browser)
 
     list =
       start_list = g_list_sort(list,
-			       g_strcmp0);
+			       (GCompareFunc) g_strcmp0);
 
     while(list != NULL){
       GtkTreeIter tree_iter;
@@ -533,7 +533,7 @@ ags_vst3_browser_add_port_editor(AgsVst3Browser *vst3_browser,
 					       port_editor);
     
     gtk_grid_attach(vst3_browser->port_editor_grid,
-		    port_editor,
+		    (GtkWidget *) port_editor,
 		    x, y,
 		    width, height);
   }
@@ -560,7 +560,7 @@ ags_vst3_browser_remove_port_editor(AgsVst3Browser *vst3_browser,
 					      port_editor);
     
     gtk_grid_remove(vst3_browser->port_editor_grid,
-		    port_editor);
+		    (GtkWidget *) port_editor);
   }
 }
 

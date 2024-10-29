@@ -279,6 +279,10 @@ void ags_channel_set_input_soundcard(AgsChannel *channel, GObject *input_soundca
 gint ags_channel_get_input_soundcard_channel(AgsChannel *channel);
 void ags_channel_set_input_soundcard_channel(AgsChannel *channel, gint input_soundcard_channel);
 
+/* recycling */
+GObject* ags_channel_get_first_recycling(AgsChannel *channel);
+GObject* ags_channel_get_last_recycling(AgsChannel *channel);
+
 /* presets */
 guint ags_channel_get_samplerate(AgsChannel *channel);
 void ags_channel_set_samplerate(AgsChannel *channel, guint samplerate);

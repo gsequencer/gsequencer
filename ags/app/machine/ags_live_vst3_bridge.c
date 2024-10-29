@@ -233,7 +233,7 @@ ags_live_vst3_bridge_init(AgsLiveVst3Bridge *live_vst3_bridge)
   action_group = g_simple_action_group_new();
   gtk_widget_insert_action_group((GtkWidget *) live_vst3_bridge,
 				 "live_vst3_bridge",
-				 action_group);
+				 G_ACTION_GROUP(action_group));
 
   /* add index */
   action = g_simple_action_new("show_vst3_ui",
@@ -265,15 +265,15 @@ ags_live_vst3_bridge_init(AgsLiveVst3Bridge *live_vst3_bridge)
   g_free(machine_name);
 
   /* machine selector */
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   position = g_list_length(window->machine);
   
   ags_machine_selector_popup_insert_machine(composite_editor->machine_selector,
 					    position,
-					    live_vst3_bridge);
+					    (AgsMachine *) live_vst3_bridge);
 
   audio = AGS_MACHINE(live_vst3_bridge)->audio;
   ags_audio_set_flags(audio, (AGS_AUDIO_SYNC |
@@ -357,7 +357,7 @@ ags_live_vst3_bridge_init(AgsLiveVst3Bridge *live_vst3_bridge)
   gtk_box_append(hbox,
 		 (GtkWidget *) label);
 
-  live_vst3_bridge->program = (GtkComboBoxText *) gtk_combo_box_text_new();
+  live_vst3_bridge->program = (GtkComboBox *) gtk_combo_box_text_new();
 
   cell_renderer = gtk_cell_renderer_text_new();
   gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(live_vst3_bridge->program),
@@ -388,11 +388,11 @@ ags_live_vst3_bridge_init(AgsLiveVst3Bridge *live_vst3_bridge)
   
   
   /* effect bridge */
-  AGS_MACHINE(live_vst3_bridge)->bridge = ags_effect_bridge_new(audio);
+  AGS_MACHINE(live_vst3_bridge)->bridge = (GtkGrid *) ags_effect_bridge_new(audio);
 
-  AGS_EFFECT_BRIDGE(AGS_MACHINE(live_vst3_bridge)->bridge)->parent_machine = live_vst3_bridge;
+  AGS_EFFECT_BRIDGE(AGS_MACHINE(live_vst3_bridge)->bridge)->parent_machine = (GtkWidget *) live_vst3_bridge;
 
-  gtk_widget_set_hexpand(AGS_MACHINE(live_vst3_bridge)->bridge,
+  gtk_widget_set_hexpand((GtkWidget *) AGS_MACHINE(live_vst3_bridge)->bridge,
 			 FALSE);
 
   gtk_box_append(vbox,
@@ -428,7 +428,7 @@ ags_live_vst3_bridge_init(AgsLiveVst3Bridge *live_vst3_bridge)
   live_vst3_bridge->vst3_menu = (GMenu *) g_menu_new();
   g_menu_append_submenu(AGS_MACHINE(live_vst3_bridge)->context_menu,
 			"VST3",
-			live_vst3_bridge->vst3_menu);
+			G_MENU_MODEL(live_vst3_bridge->vst3_menu));
 
   item = g_menu_item_new(i18n("show VST3 UI"),
 			 "live_vst3_bridge.show_vst3_ui");
@@ -1156,14 +1156,14 @@ ags_live_vst3_bridge_load(AgsLiveVst3Bridge *live_vst3_bridge)
   
   component_handler = ags_vst_component_handler_new();
 
-  ags_vst_funknown_query_interface(component_handler,
-				   ags_vst_icomponent_handler_get_iid(), &(live_vst3_bridge->icomponent_handler));
+  ags_vst_funknown_query_interface((AgsVstFUnknown *) component_handler,
+				   ags_vst_icomponent_handler_get_iid(), (void **) &(live_vst3_bridge->icomponent_handler));
 
   live_vst3_bridge->perform_edit_handler = ags_vst_component_handler_connect_handler(component_handler, "performEdit", ags_live_vst3_bridge_perform_edit_callback, live_vst3_bridge);
   live_vst3_bridge->restart_component_handler = ags_vst_component_handler_connect_handler(component_handler, "restartComponent", ags_live_vst3_bridge_restart_component_callback, live_vst3_bridge);
   
   ags_vst_iedit_controller_set_component_handler(live_vst3_bridge->iedit_controller,
-						 live_vst3_bridge->icomponent_handler);
+						 (AgsVstIComponentHandler *) live_vst3_bridge->icomponent_handler);
 
   g_strfreev(parameter_name);
   g_free(value);
@@ -1174,8 +1174,8 @@ ags_live_vst3_bridge_load(AgsLiveVst3Bridge *live_vst3_bridge)
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(live_vst3_bridge->program))));
 
   iunit_info = NULL;
-  val = ags_vst_funknown_query_interface(vst3_plugin->iedit_controller,
-					 ags_vst_iunit_info_get_iid(), &iunit_info);
+  val = ags_vst_funknown_query_interface((AgsVstFUnknown *) vst3_plugin->iedit_controller,
+					 ags_vst_iunit_info_get_iid(), (void **) &iunit_info);
 
   if(iunit_info != NULL){
     program =

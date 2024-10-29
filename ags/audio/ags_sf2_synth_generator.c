@@ -52,7 +52,7 @@ void ags_sf2_synth_generator_finalize(GObject *gobject);
  * @short_description: generate wave-form
  * @title: AgsSF2SynthGenerator
  * @section_id:
- * @include: ags/file/ags_sf2_synth_generator.h
+ * @include: ags/audio/ags_sf2_synth_generator.h
  *
  * The #AgsSF2SynthGenerator generates wave-forms with oscillators.
  */

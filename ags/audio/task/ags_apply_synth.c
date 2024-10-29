@@ -440,6 +440,7 @@ ags_apply_synth_launch(AgsTask *task)
       g_object_get(first_recycling,
 		   "output-soundcard", &output_soundcard,
 		   "audio-signal", &list_start,
+		   "buffer-size", &buffer_size,
 		   NULL);
 	
       audio_signal = ags_audio_signal_get_default_template(list_start);
@@ -448,19 +449,22 @@ ags_apply_synth_launch(AgsTask *task)
 	audio_signal = ags_audio_signal_new(output_soundcard,
 					    (GObject *) first_recycling,
 					    NULL);
-	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+	g_object_ref(audio_signal);
+	
+	ags_audio_signal_set_flags(audio_signal,
+				   AGS_AUDIO_SIGNAL_TEMPLATE);
+
+	ags_recycling_create_audio_signal_with_frame_count(first_recycling,
+							   audio_signal,
+							   requested_frame_count,
+							   0.0, 0);
+	
 	ags_recycling_add_audio_signal(first_recycling,
 				       audio_signal);
-
-	g_object_ref(audio_signal);
       }
 	
       /* compute audio signal */
       note = apply_synth->base_note + i;
-	
-      ags_synth_generator_compute(synth_generator,
-				  (GObject *) audio_signal,
-				  note);
 
       g_object_get(audio_signal,
 		   "buffer-size", &buffer_size,
@@ -470,15 +474,15 @@ ags_apply_synth_launch(AgsTask *task)
 		   "length", (guint) ceil(requested_frame_count / buffer_size),
 		   "frame-count", requested_frame_count,
 		   NULL);
+	
+      ags_synth_generator_compute(synth_generator,
+				  (GObject *) audio_signal,
+				  note);
 
       rt_template = 
 	rt_template_start = ags_audio_signal_get_rt_template(list_start);
 
       while(rt_template != NULL){
-	ags_synth_generator_compute(synth_generator,
-				    rt_template->data,
-				    note);
-
 	g_object_get(rt_template->data,
 		     "buffer-size", &buffer_size,
 		     NULL);
@@ -487,6 +491,10 @@ ags_apply_synth_launch(AgsTask *task)
 		     "length", (guint) ceil(requested_frame_count / buffer_size),
 		     "frame-count", requested_frame_count,
 		     NULL);
+
+	ags_synth_generator_compute(synth_generator,
+				    rt_template->data,
+				    note);
 
 	rt_template = rt_template->next;
       }

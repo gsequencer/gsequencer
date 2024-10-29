@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -155,7 +155,7 @@ ags_midi_ump_util_is_system_common(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0x10){
+  if((0xf0 & (buffer[3])) == 0x10){
     return(TRUE);
   }
   
@@ -179,7 +179,7 @@ ags_midi_ump_util_is_data_message_with_sysex(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0x30){
+  if((0xf0 & (buffer[3])) == 0x30){
     return(TRUE);
   }
   
@@ -203,7 +203,7 @@ ags_midi_ump_util_is_data_message(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0x50){
+  if((0xf0 & (buffer[3])) == 0x50){
     return(TRUE);
   }
   
@@ -227,7 +227,7 @@ ags_midi_ump_util_is_stream_message(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0xf0){
+  if((0xf0 & (buffer[3])) == 0xf0){
     return(TRUE);
   }
   
@@ -251,8 +251,8 @@ ags_midi_ump_util_is_endpoint_discovery(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0xf0 &&
-     ((0x300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x00){
+  if((0xf0 & (buffer[3])) == 0xf0 &&
+     ((0x300 & (buffer[3] << 8)) | (0xff & (buffer[2]))) == 0x00){
     return(TRUE);
   }
   
@@ -282,39 +282,62 @@ ags_midi_ump_util_put_endpoint_discovery(AgsMidiUmpUtil *midi_ump_util,
 					 gint filter,
 					 gchar **extension_name, GValue *extension_value,
 					 guint extension_count)
-{  
-  guint nth;
+{
+  guint offset;
+  gint nth;
   const gint status = 0x0;
   const gint format = 0x0;
   
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
+  offset = 0;
   
-  buffer[nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
+  nth--;
 
-  buffer[nth] = (0xff & status);
-  nth++;
+  buffer[offset + nth] = (0xff & status);
+  nth--;
 
-  buffer[nth] = (0xff & major);
-  nth++;
+  buffer[offset + nth] = (0xff & major);
+  nth--;
 
-  buffer[nth] = (0xff & minor);
-  nth++;
+  buffer[offset + nth] = (0xff & minor);
+
+  offset += 4;
+
+  nth = 3;  
 
   /* reserved */
-  memset(buffer + nth, 0, 3 * sizeof(guchar));
-  nth += 3;
+  buffer[offset + nth] = 0x0;
+  buffer[offset + nth - 1] = 0x0;
+  buffer[offset + nth - 2] = 0x0;
 
   /* filter bitmap */
-  buffer[nth] = (0xff & filter);
-  nth++;
+  buffer[offset + nth - 3] = (0xff & filter);
+
+  offset += 4;
+
+  nth = 3;  
 
   /* reserved */
-  memset(buffer + nth, 0, 8 * sizeof(guchar));
-  nth += 8;
+  buffer[offset + 3] = 0x0;
+  buffer[offset + 2] = 0x0;
+  buffer[offset + 1] = 0x0;
+  buffer[offset] = 0x0;
+  
+  offset += 4;
+
+  nth = 3;  
+
+  buffer[offset + 3] = 0x0;
+  buffer[offset + 2] = 0x0;
+  buffer[offset + 1] = 0x0;
+  buffer[offset] = 0x0;
+
+  offset += 4;
 }
 
 /**
@@ -343,41 +366,48 @@ ags_midi_ump_util_get_endpoint_discovery(AgsMidiUmpUtil *midi_ump_util,
 					 gchar ***extension_name, GValue **extension_value,
 					 guint *extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0xf0, 0);
-  g_return_val_if_fail(((0x300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x0, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0xf0, 0);
+  g_return_val_if_fail(((0x300 & (buffer[3] << 8)) | (0xff & (buffer[2]))) == 0x0, 0);
 
-  nth = 2;
+  offset = 0;
+  
+  nth = 3;
+
+  nth -=2;
 
   /* major */
   if(major != NULL){
     major[0] = buffer[nth];
   }
 
-  nth++;
+  nth--;
 
   /* minor */
   if(minor != NULL){
     minor[0] = buffer[nth];
   }
 
-  nth++;
+  offset += 4;
 
   /* reserved */
-  nth += 3;
+  nth = 3;
+
+  nth -= 3;
 
   /* filter bitmap */
   if(filter != NULL){
-    filter[0] = buffer[nth];
+    filter[0] = buffer[offset + nth];
   }
 
-  nth++;
+  offset += 4;
 
   /* reserved */
-  nth += 8;
+  offset += 8;
   
   return(nth);
 }
@@ -399,9 +429,9 @@ ags_midi_ump_util_is_endpoint_info_notification(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0xf0 &&
-     (0x0c & (buffer[0])) == 0x0 &&
-     ((0x300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x01){
+  if((0xf0 & (buffer[3])) == 0xf0 &&
+     (0x0c & (buffer[3])) == 0x0 &&
+     ((0x300 & (buffer[3] << 8)) | (0xff & (buffer[2]))) == 0x01){
     return(TRUE);
   }
   
@@ -441,71 +471,90 @@ ags_midi_ump_util_put_endpoint_info_notification(AgsMidiUmpUtil *midi_ump_util,
 						 gboolean tx_jitter_reduction,
 						 gchar **extension_name, GValue *extension_value,
 						 guint extension_count)
-{  
-  guint nth;
+{
+  guint offset;
+  gint nth;
   const gint status = 0x1;
   const gint format = 0x0;
   
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
+  offset = 0;
   
-  buffer[nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
+  nth--;
 
-  buffer[nth] = (0xff & status);
-  nth++;
+  buffer[offset + nth] = (0xff & status);
+  nth--;
 
-  buffer[nth] = (0xff & major);
-  nth++;
+  buffer[offset + nth] = (0xff & major);
+  nth--;
 
-  buffer[nth] = (0xff & minor);
-  nth++;
+  buffer[offset + nth] = (0xff & minor);
+
+  offset += 4;
 
   /* function block */
-  buffer[nth] = 0x00;
+  nth = 3;
+  
+  buffer[offset + nth] = 0x00;
   
   if(static_function_blocks){
-    buffer[nth] = 0x80;
+    buffer[offset + nth] = 0x80;
   }
 
-  buffer[nth] |= (0x7f & (function_block_count));
-  nth++;
+  buffer[offset + nth] |= (0x7f & (function_block_count));
+  nth--;
 
   /* reserved */
-  buffer[nth] = 0x00;
-  nth++;
+  buffer[offset + nth] = 0x00;
+  nth--;
   
   /* MIDI support */
-  buffer[nth] = 0x00;
+  buffer[offset + nth] = 0x00;
 
   if(midi_v2_0_support){
-    buffer[nth] |= 0x02;
+    buffer[offset + nth] |= 0x02;
   }
 
   if(midi_v1_0_support){
-    buffer[nth] |= 0x01;
+    buffer[offset + nth] |= 0x01;
   }
 
-  nth++;
+  nth--;
 
   /* jitter reduction  */
-  buffer[nth] = 0x00;
+  buffer[offset + nth] = 0x00;
 
   if(rx_jitter_reduction){
-    buffer[nth] |= 0x02;
+    buffer[offset + nth] |= 0x02;
   }
 
   if(tx_jitter_reduction){
-    buffer[nth] |= 0x01;
+    buffer[offset + nth] |= 0x01;
   }
 
-  nth++;
+  offset += 4;
+
+  nth = 3;
   
   /* reserved */
-  memset(buffer + nth, 0, 8 * sizeof(guchar));
-  nth += 8;
+  buffer[offset + 3] = 0x0;
+  buffer[offset + 2] = 0x0;
+  buffer[offset + 1] = 0x0;
+  buffer[offset] = 0x0;
+  
+  offset += 4;
+
+  buffer[offset + 3] = 0x0;
+  buffer[offset + 2] = 0x0;
+  buffer[offset + 1] = 0x0;
+  buffer[offset] = 0x0;
+
+  offset += 4;
 }
 
 /**
@@ -544,69 +593,74 @@ ags_midi_ump_util_get_endpoint_info_notification(AgsMidiUmpUtil *midi_ump_util,
 						 gchar ***extension_name, GValue **extension_value,
 						 guint *extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0xf0, 0);
-  g_return_val_if_fail(((0x300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x01, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0xf0, 0);
+  g_return_val_if_fail(((0x300 & (buffer[3] << 8)) | (0xff & (buffer[2]))) == 0x01, 0);
 
-  nth = 2;
+  offset = 0;
+  
+  nth = 1;
 
   /* major */
   if(major != NULL){
-    major[0] = buffer[nth];
+    major[0] = buffer[offset + nth];
   }
 
-  nth++;
+  nth--;
 
   /* minor */
   if(minor != NULL){
-    minor[0] = buffer[nth];
+    minor[0] = buffer[offset + nth];
   }
 
-  nth++;
+  offset += 4;
 
   /* static function blocks and function block count */
+  nth = 3;
+
   if(static_function_blocks != NULL){
-    static_function_blocks[0] = ((0x80 & buffer[nth]) != 0) ? TRUE: FALSE;
+    static_function_blocks[0] = ((0x80 & buffer[offset + nth]) != 0) ? TRUE: FALSE;
   }
   
   if(function_block_count != NULL){
-    function_block_count[0] = (0x7f & buffer[nth]);
+    function_block_count[0] = (0x7f & buffer[offset + nth]);
   }
 
-  nth++;
+  nth--;
 
   /* reserved */
-  nth++;
+  nth--;
 
   /* MIDI v1.0 and v2.0 support */
   if(midi_v2_0_support != NULL){
-    midi_v2_0_support[0] = ((0x2 & buffer[nth]) != 0) ? TRUE: FALSE;
+    midi_v2_0_support[0] = ((0x2 & buffer[offset + nth]) != 0) ? TRUE: FALSE;
   }
 
   if(midi_v1_0_support != NULL){
-    midi_v1_0_support[0] = ((0x1 & buffer[nth]) != 0) ? TRUE: FALSE;
+    midi_v1_0_support[0] = ((0x1 & buffer[offset + nth]) != 0) ? TRUE: FALSE;
   }
 
-  nth++;
+  nth--;
 
   /* RX/TX jitter reduction */
   if(rx_jitter_reduction != NULL){
-    rx_jitter_reduction[0] = ((0x2 & buffer[0]) != 0) ? TRUE: FALSE;
+    rx_jitter_reduction[0] = ((0x2 & buffer[offset + nth]) != 0) ? TRUE: FALSE;
   }
   
   if(tx_jitter_reduction != NULL){
-    tx_jitter_reduction[0] = ((0x2 & buffer[0]) != 0) ? TRUE: FALSE;
+    tx_jitter_reduction[0] = ((0x2 & buffer[offset + nth]) != 0) ? TRUE: FALSE;
   }
 
-  nth++;
+  offset += 4;
   
   /* reserved */
-  nth += 8;
+  offset += 8;
   
-  return(nth);
+  return(20);
 }
 
 /**
@@ -626,9 +680,9 @@ ags_midi_ump_util_is_device_identity_notification(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0xf0 &&
-     (0x0c & (buffer[0])) == 0x0 &&
-     ((0x300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x02){
+  if((0xf0 & (buffer[3])) == 0xf0 &&
+     (0x0c & (buffer[3])) == 0x0 &&
+     ((0x300 & (buffer[3] << 8)) | (0xff & (buffer[2]))) == 0x02){
     return(TRUE);
   }
   
@@ -661,61 +715,80 @@ ags_midi_ump_util_put_device_identity_notification(AgsMidiUmpUtil *midi_ump_util
 						   gchar **extension_name, GValue *extension_value,
 						   guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
   const gint status = 0x2;
   const gint format = 0x0;
   
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
+  offset = 0;
   
-  buffer[nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
+  nth--;
 
-  buffer[nth] = (0xff & status);
-  nth++;
+  buffer[offset + nth] = (0xff & status);
+  nth--;
 
   /* reserved */
-  memset(buffer + nth, 0, 3 * sizeof(guchar));
-  nth += 3;
+  buffer[offset + nth] = 0x0;
+  nth--;
+
+  buffer[offset + nth] = 0x0;
+
+  offset += 4;
+
+  nth = 3;
+  
+  buffer[offset + nth] = 0x0;
+  nth--;
 
   /* device manufacturer */
-  buffer[nth] = 0x7f & (device_manufacturer >> 14);
-  nth++;
+  buffer[offset + nth] = 0x7f & (device_manufacturer >> 14);
+  nth--;
 
-  buffer[nth] = 0x7f & (device_manufacturer >> 7);
-  nth++;
+  buffer[offset + nth] = 0x7f & (device_manufacturer >> 7);
+  nth--;
 
-  buffer[nth] = (0x7f & device_manufacturer);
-  nth++;
+  buffer[offset + nth] = (0x7f & device_manufacturer);
+
+  offset += 4;
   
   /* device family */
-  buffer[nth] = (0x7f & device_family);
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = (0x7f & device_family);
+  nth--;
 
-  buffer[nth] = 0x7f & (device_family >> 7);
-  nth++;
+  buffer[offset + nth] = 0x7f & (device_family >> 7);
+  nth--;
 
   /* device family model */
-  buffer[nth] = (0x7f & device_family_model);
-  nth++;
+  buffer[offset + nth] = (0x7f & device_family_model);
+  nth--;
 
-  buffer[nth] = 0x7f & (device_family_model >> 7);
-  nth++;
+  buffer[offset + nth] = 0x7f & (device_family_model >> 7);
+
+  offset += 4;
 
   /* software revision */
-  buffer[nth] = (0x7f & software_revision);
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = (0x7f & software_revision);
+  nth--;
 
-  buffer[nth] = 0x7f & (software_revision >> 7);
-  nth++;
+  buffer[offset + nth] = 0x7f & (software_revision >> 7);
+  nth--;
 
-  buffer[nth] = 0x7f & (software_revision >> 14);
-  nth++;
+  buffer[offset + nth] = 0x7f & (software_revision >> 14);
+  nth--;
 
-  buffer[nth] = 0x7f & (software_revision >> 21);
-  nth++;
+  buffer[offset + nth] = 0x7f & (software_revision >> 21);
+
+  offset += 4;
 }
 
 /**
@@ -746,54 +819,62 @@ ags_midi_ump_util_get_device_identity_notification(AgsMidiUmpUtil *midi_ump_util
 						   gchar ***extension_name, GValue **extension_value,
 						   guint *extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0xf0, 0);
-  g_return_val_if_fail((0x0c & (buffer[0])) == 0x0, 0);
-  g_return_val_if_fail(((0x300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x02, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0xf0, 0);
+  g_return_val_if_fail((0x0c & (buffer[3])) == 0x0, 0);
+  g_return_val_if_fail(((0x300 & (buffer[3] << 8)) | (0xff & (buffer[2]))) == 0x02, 0);
 
-  nth = 2;
-
-  /* reserved */
-  nth++;
+  offset = 0;
+  nth = 1;
 
   /* reserved */
-  nth++;
+  nth--;
 
   /* reserved */
-  nth++;
+  offset += 4;
+
+  /* reserved */
+  nth = 3;
+  
+  nth--;
 
   /* device manufacturer */
   if(device_manufacturer != NULL){
-    device_manufacturer[0] = (0x1fc000 & (buffer[nth] << 14)) | (0x03f80 & (buffer[nth + 1] << 7)) | (0x7f & buffer[nth + 2]);
+    device_manufacturer[0] = (0x1fc000 & (buffer[offset + nth] << 14)) | (0x03f80 & (buffer[offset + nth - 1] << 7)) | (0x7f & buffer[offset + nth - 2]);
   }
 
-  nth += 3;
+  offset += 4;
 
   /* device family */
+  nth = 3;
+  
   if(device_family != NULL){
-    device_family[0] = (0x03f80 & (buffer[nth + 1] << 7)) | (0x7f & buffer[nth]);
+    device_family[0] = (0x03f80 & (buffer[offset + nth - 1] << 7)) | (0x7f & buffer[offset + nth]);
   }
 
-  nth += 2;
+  nth -= 2;
 
   /* device family model */
   if(device_family_model != NULL){
-    device_family_model[0] = (0x03f80 & (buffer[nth + 1] << 7)) | (0x7f & buffer[nth]);
+    device_family_model[0] = (0x03f80 & (buffer[offset + nth - 1] << 7)) | (0x7f & buffer[offset + nth]);
   }
 
-  nth += 2;
+  offset += 4;
 
   /* software revision */
+  nth = 3;
+  
   if(software_revision != NULL){
-    software_revision[0] = (0x0fe00000 & (buffer[nth + 3]) << 21) | (0x1fc000 & (buffer[nth + 2]) << 14) | (0x03f80 & (buffer[nth + 1]) << 7) | (0x7f & buffer[nth]);
+    software_revision[0] = (0x0fe00000 & (buffer[offset + nth - 3]) << 21) | (0x1fc000 & (buffer[offset + nth - 2]) << 14) | (0x03f80 & (buffer[offset + nth - 1]) << 7) | (0x7f & buffer[offset + nth]);
   }
 
-  nth += 4;
+  offset += 4;
 
-  return(nth);
+  return(16);
 }
 
 /**
@@ -813,8 +894,8 @@ ags_midi_ump_util_is_endpoint_name_notification(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0xf0 &&
-     ((0x300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x03){
+  if((0xf0 & (buffer[3])) == 0xf0 &&
+     ((0x300 & (buffer[3] << 8)) | (0xff & (buffer[2]))) == 0x03){
     return(TRUE);
   }
   
@@ -841,10 +922,12 @@ ags_midi_ump_util_put_endpoint_name_notification(AgsMidiUmpUtil *midi_ump_util,
 						 gchar **extension_name, GValue *extension_value,
 						 guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
   gint endpoint_name_length;
   guint i;
   guint j, j_stop;
+  guint k, k_stop;
   gboolean is_complete, is_end;
   gint format;
   
@@ -857,6 +940,8 @@ ags_midi_ump_util_put_endpoint_name_notification(AgsMidiUmpUtil *midi_ump_util,
   
   g_return_if_fail(endpoint_name_length <= 98);
 
+  offset = 0;
+  
   /* put endpoint name - may be in multiple chunks  */
   format = 0x0;
   is_complete = TRUE;
@@ -869,14 +954,14 @@ ags_midi_ump_util_put_endpoint_name_notification(AgsMidiUmpUtil *midi_ump_util,
   is_end = FALSE;
   
   for(i = 0, j = 0; i < 128 && !is_end;){
-    nth = 0;
+    nth = 3;
   
-    buffer[nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
-    nth++;
+    buffer[offset + nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
+    nth--;
     i++;
 
-    buffer[nth] = (0xff & status);
-    nth++;
+    buffer[offset + nth] = (0xff & status);
+    nth--;
     i++;
 
     /* fill in endpoint name */
@@ -886,20 +971,41 @@ ags_midi_ump_util_put_endpoint_name_notification(AgsMidiUmpUtil *midi_ump_util,
       }else{
 	j_stop = (endpoint_name_length - j) % 14;
       }
+
+      k_stop = j_stop;
       
-      memcpy(buffer + nth, endpoint_name + j, j_stop * sizeof(gchar));
+      for(k = 0; k < k_stop; j++, k++){
+	buffer[offset + nth] = endpoint_name[j];
+	nth--;
+
+	if(nth < 0){
+	  nth = 3;
+
+	  offset += 4;
+	}
+      }
 
       if(j_stop < 14){
-	memset(buffer + nth + j_stop, 0, (14 - j_stop) * sizeof(gchar));
+	k_stop = 14 - j_stop;
+	
+	for(k = 0; k < k_stop; k++){
+	  buffer[offset + nth] = 0x0;
+	  nth--;
+
+	  if(nth < 0){
+	    nth = 3;
+
+	    offset += 4;
+	  }
+	}
       }
     }else{
       g_warning("malformed MIDI UMP data");
 
       j_stop = 0;
     }
-    
-    nth += 14;
-    j += j_stop;
+
+    nth = 3;
     
     /* break condition */
     if(is_complete){
@@ -911,8 +1017,6 @@ ags_midi_ump_util_put_endpoint_name_notification(AgsMidiUmpUtil *midi_ump_util,
     }
 
     /* iterate */
-    buffer += nth;
-
     if(format == 0x2){
       if(j + 14 < endpoint_name_length){
 	format = 0x2;
@@ -954,21 +1058,28 @@ ags_midi_ump_util_get_endpoint_name_notification(AgsMidiUmpUtil *midi_ump_util,
 						 guint *extension_count)
 {
   gchar *str;
-  
-  guint nth;
+
+  guint offset;
+  gint nth;
   gboolean is_complete, is_end;
   gint format;
   guint i;
+  guint j;
+  guint k;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0xf0, 0);
-  g_return_val_if_fail(((0x0300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x3, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0xf0, 0);
+  g_return_val_if_fail(((0x0300 & (buffer[3] << 8)) | (0xff & (buffer[2]))) == 0x3, 0);
 
+  offset = 0;
+
+  nth = 3;
+  
   str = (gchar *) g_malloc(99 * sizeof(gchar));
   memset(str, 0, 99 * sizeof(gchar));
-
-  format = ((0x0c & (buffer[0])) >> 2);
+  
+  format = ((0x0c & (buffer[3])) >> 2);
 
   is_complete = TRUE;
 
@@ -978,16 +1089,23 @@ ags_midi_ump_util_get_endpoint_name_notification(AgsMidiUmpUtil *midi_ump_util,
 
   is_end = FALSE;
 
-  nth = 0;
+  j = 0;
 
   for(i = 0; i < 99 && !is_end;){
-    nth += 2;    
+    nth = 1;   
+
+    for(k = 0; k < 14; i++, j++, k++){
+      str[i] = buffer[offset + nth];
+      nth--;
+
+      if(nth < 0){
+	nth = 3;
+
+	offset += 4;
+      }
+    }
     
-    memcpy(str + i, buffer + nth, 14 * sizeof(gchar));
-    nth += 14;
-    i += 14;
-    
-    format = ((0x0c & (buffer[nth])) >> 2);
+    format = ((0x0c & (buffer[offset + nth])) >> 2);
 
     /* break condition */
     if(is_complete){
@@ -1005,7 +1123,7 @@ ags_midi_ump_util_get_endpoint_name_notification(AgsMidiUmpUtil *midi_ump_util,
     g_free(str);
   }
   
-  return(nth);
+  return(offset);
 }
 
 /**
@@ -1025,8 +1143,8 @@ ags_midi_ump_util_is_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_u
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0xf0 &&
-     ((0x0300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x04){
+  if((0xf0 & (buffer[3])) == 0xf0 &&
+     ((0x0300 & (buffer[3] << 8)) | (0xff & (buffer[2]))) == 0x04){
     return(TRUE);
   }
   
@@ -1053,10 +1171,12 @@ ags_midi_ump_util_put_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_
 						       gchar **extension_name, GValue *extension_value,
 						       guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
   gint product_instance_id_length;
   guint i;
   guint j, j_stop;
+  guint k, k_stop;
   gboolean is_complete, is_end;
   gint format;
   
@@ -1069,6 +1189,10 @@ ags_midi_ump_util_put_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_
   
   g_return_if_fail(product_instance_id_length <= 42);
 
+  offset = 0;
+
+  nth = 3;
+  
   /* put endpoint name - may be in multiple chunks  */
   format = 0x0;
   is_complete = TRUE;
@@ -1080,15 +1204,15 @@ ags_midi_ump_util_put_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_
   
   is_end = FALSE;
   
-  for(i = 0, j = 0; i < 48 && !is_end;){
-    nth = 0;
+  for(i = 0, j = 0; i < 43 && !is_end;){
+    nth = 3;
   
-    buffer[nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
-    nth++;
+    buffer[offset + nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
+    nth--;
     i++;
 
     buffer[nth] = (0xff & status);
-    nth++;
+    nth--;
     i++;
 
     /* fill in endpoint name */
@@ -1098,20 +1222,45 @@ ags_midi_ump_util_put_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_
       }else{
 	j_stop = (product_instance_id_length - j) % 14;
       }
+
+      k_stop = j_stop;
       
-      memcpy(buffer + nth, product_instance_id + j, j_stop * sizeof(gchar));
+      for(k = 0; k < k_stop && j < 14 && i < 43; i++, j++, k++){
+	buffer[offset + nth] = product_instance_id[j];
+	nth--;
+
+	if(nth < 0){
+	  nth = 3;
+
+	  offset += 4;
+	}	
+      }
 
       if(j_stop < 14){
-	memset(buffer + nth + j_stop, 0, (14 - j_stop) * sizeof(gchar));
+	k_stop = 14 - j_stop;
+	
+	for(k = 0; k < k_stop; k++){
+	  buffer[offset + nth] = 0x0;
+	  nth--;
+
+	  if(nth < 0){
+	    nth = 3;
+
+	    offset += 4;
+	  }
+	}
       }
     }else{
       g_warning("malformed MIDI UMP data");
 
       j_stop = 0;
     }
-    
-    nth += 14;
-    j += j_stop;
+
+    if(nth != 3){
+      nth = 3;
+
+      offset += 4;
+    }
     
     /* break condition */
     if(is_complete){
@@ -1123,8 +1272,6 @@ ags_midi_ump_util_put_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_
     }
 
     /* iterate */
-    buffer += nth;
-    
     if(format == 0x2){
       if(j + 14 < product_instance_id_length){
 	format = 0x2;
@@ -1166,18 +1313,22 @@ ags_midi_ump_util_get_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_
 						       guint *extension_count)
 {
   gchar *str;
-  
-  guint nth;
+
+  guint offset;
+  gint nth;
   gboolean is_complete, is_end;
   gint format;
   guint i;
+  guint j;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0xf0, 0);
-  g_return_val_if_fail(((0x0300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x04, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0xf0, 0);
+  g_return_val_if_fail(((0x0300 & (buffer[3] << 8)) | (0xff & (buffer[2]))) == 0x04, 0);
 
-  nth = 0;
+  offset = 0;
+  
+  nth = 3;
 
   str = (gchar *) g_malloc(43 * sizeof(gchar));
   memset(str, 0, 43 * sizeof(gchar));
@@ -1193,13 +1344,32 @@ ags_midi_ump_util_get_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_
   is_end = FALSE;
 
   for(i = 0; i < 43 && !is_end;){
-    nth += 2;    
+    nth = 3;
+  
+    nth--;
+    i++;
+
+    nth--;
+    i++;
+
+    for(j = 0; j < 14 && i < 43; i++, j++){
+      str[i] = buffer[offset + nth];
+      nth--;
+
+      if(nth < 0){
+	nth = 3;
+
+	offset += 4;
+      }	
+    }
     
-    memcpy(str + i, buffer + nth, 14 * sizeof(gchar));
-    nth += 14;
-    i += 14;
+    if(nth != 3){
+      nth = 3;
     
-    format = ((0x0c & (buffer[nth])) >> 2);
+      offset += 4;
+    }
+
+    format = ((0x0c & (buffer[offset + nth])) >> 2);
 
     /* break condition */
     if(is_complete){
@@ -1217,7 +1387,7 @@ ags_midi_ump_util_get_product_instance_id_notification(AgsMidiUmpUtil *midi_ump_
     g_free(str);
   }
   
-  return(0);
+  return(offset);
 }
 
 /**
@@ -1237,8 +1407,8 @@ ags_midi_ump_util_is_stream_configuration_request(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0xf0 &&
-     (((0x3 & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x05){
+  if((0xf0 & (buffer[3])) == 0xf0 &&
+     (((0x3 & (buffer[3])) << 8) | (0xff & (buffer[2]))) == 0x05){
     return(TRUE);
   }
 
@@ -1268,8 +1438,10 @@ ags_midi_ump_util_put_stream_configuration_request(AgsMidiUmpUtil *midi_ump_util
 						   gchar **extension_name, GValue *extension_value,
 						   guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
   gint format;
+  guint i;
   
   const gint status = 0x05;
 
@@ -1278,22 +1450,34 @@ ags_midi_ump_util_put_stream_configuration_request(AgsMidiUmpUtil *midi_ump_util
   
   format = 0x00;
 
-  nth = 0;
+  offset = 0;
+  nth = 3;
   
-  buffer[nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
-  nth++;
+  buffer[offset + nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
+  nth--;
 
-  buffer[nth] = (0xff & status);
-  nth++;
+  buffer[offset + nth] = (0xff & status);
+  nth--;
   
-  buffer[nth] = (0xff) & (protocol);
-  nth++;
+  buffer[offset + nth] = (0xff) & (protocol);
+  nth--;
 
-  buffer[nth] = (0xff) & ((rx_jitter_reduction ? (0x01 << 1): 0x0) | (rx_jitter_reduction ? (0x01): 0x0));
-  nth++;
+  buffer[offset + nth] = (0xff) & ((rx_jitter_reduction ? (0x01 << 1): 0x0) | (rx_jitter_reduction ? (0x01): 0x0));
 
-  memset(buffer + nth, 0, 12 * sizeof(guchar));
-  nth += 12;
+  nth = 3;
+  
+  offset += 4;
+
+  for(i = 0; i < 12; i++){
+    buffer[offset + nth] = 0x0;
+    nth--;
+
+    if(nth < 0){
+      nth = 3;
+
+      offset += 4;
+    }	
+  }
 }
 
 /**
@@ -1320,35 +1504,38 @@ ags_midi_ump_util_get_stream_configuration_request(AgsMidiUmpUtil *midi_ump_util
 						   gboolean *rx_jitter_reduction, gboolean *tx_jitter_reduction,
 						   gchar ***extension_name, GValue **extension_value,
 						   guint *extension_count)
-{  
-  guint nth;
+{
+  guint offset;
+  gint nth;
 
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0xf0, 0);
-  g_return_val_if_fail(((0x0300 & (buffer[0]) << 8)) | (0xff & (buffer[1])) == 0x5, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0xf0, 0);
+  g_return_val_if_fail(((0x0300 & (buffer[3]) << 8)) | (0xff & (buffer[2])) == 0x5, 0);
 
-  nth = 2;
+  offset = 0;
+  
+  nth = 1;
 
   /* protocol */
   if(protocol != NULL){
     protocol[0] = 0xff & buffer[nth];
   }
 
-  nth++;
+  nth--;
 
   /* RX/TX jitter reduction */
   if(rx_jitter_reduction != NULL){
-    rx_jitter_reduction[0] = ((0x2 & buffer[nth]) != 0) ? TRUE: FALSE;
+    rx_jitter_reduction[0] = ((0x2 & buffer[offset + nth]) != 0) ? TRUE: FALSE;
   }
 
   if(tx_jitter_reduction != NULL){
-    tx_jitter_reduction[0] = ((0x1 & buffer[nth]) != 0) ? TRUE: FALSE;
+    tx_jitter_reduction[0] = ((0x1 & buffer[offset + nth]) != 0) ? TRUE: FALSE;
   }
 
-  nth += 12;
+  offset += 12;
   
-  return(nth);
+  return(16);
 }
 
 /**
@@ -1368,8 +1555,8 @@ ags_midi_ump_util_is_stream_configuration_notification(AgsMidiUmpUtil *midi_ump_
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0xf0 &&
-     ((0x300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x06){
+  if((0xf0 & (buffer[3])) == 0xf0 &&
+     ((0x300 & (buffer[3] << 8)) | (0xff & (buffer[2]))) == 0x06){
     return(TRUE);
   }
 
@@ -1399,32 +1586,49 @@ ags_midi_ump_util_put_stream_configuration_notification(AgsMidiUmpUtil *midi_ump
 							gchar **extension_name, GValue *extension_value,
 							guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
   gint format;
+  guint i;
   
   const gint status = 0x06;
 
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
+
+  offset = 0;
+
+  nth = 3;
   
   format = 0x00;
-
-  nth = 0;
   
-  buffer[nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
-  nth++;
+  buffer[offset + nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
+  nth--;
 
-  buffer[nth] = (0xff & status);
-  nth++;
+  buffer[offset + nth] = (0xff & status);
+  nth--;
   
-  buffer[nth] = (0xff) & (protocol);
-  nth++;
+  buffer[offset + nth] = (0xff) & (protocol);
+  nth--;
 
-  buffer[nth] = (0xff) & ((rx_jitter_reduction ? (0x01 << 1): 0x0) | (rx_jitter_reduction ? (0x01): 0x0));
-  nth++;
+  buffer[offset + nth] = (0xff) & ((rx_jitter_reduction ? (0x01 << 1): 0x0) | (rx_jitter_reduction ? (0x01): 0x0));
 
-  memset(buffer + nth, 0, 12 * sizeof(guchar));
-  nth += 12;
+  nth = 3;
+
+  offset += 4;
+
+  for(i = 0; i < 12; i++){
+    buffer[offset + nth] = 0x0;
+    nth--;
+
+    if(nth < 0){
+      nth = 3;
+
+      offset += 4;
+    }
+  }
+
+  offset += 12;
 }
 
 /**
@@ -1451,35 +1655,38 @@ ags_midi_ump_util_get_stream_configuration_notification(AgsMidiUmpUtil *midi_ump
 							gboolean *rx_jitter_reduction, gboolean *tx_jitter_reduction,
 							gchar ***extension_name, GValue **extension_value,
 							guint *extension_count)
-{  
-  guint nth;
+{
+  guint offset;
+  gint nth;
 
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0xf0, 0);
-  g_return_val_if_fail(((0x0300 & (buffer[0]) << 8)) | (0xff & (buffer[1])) == 0x6, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0xf0, 0);
+  g_return_val_if_fail(((0x0300 & (buffer[3]) << 8)) | (0xff & (buffer[2])) == 0x6, 0);
 
-  nth = 2;
+  offset = 0;
+  
+  nth = 1;
 
   /* protocol */
   if(protocol != NULL){
-    protocol[0] = 0xff & buffer[nth];
+    protocol[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
+  nth--;
 
   /* RX/TX jitter reduction */
   if(rx_jitter_reduction != NULL){
-    rx_jitter_reduction[0] = ((0x2 & buffer[nth]) != 0) ? TRUE: FALSE;
+    rx_jitter_reduction[0] = ((0x2 & buffer[offset + nth]) != 0) ? TRUE: FALSE;
   }
 
   if(tx_jitter_reduction != NULL){
-    tx_jitter_reduction[0] = ((0x1 & buffer[nth]) != 0) ? TRUE: FALSE;
+    tx_jitter_reduction[0] = ((0x1 & buffer[offset + nth]) != 0) ? TRUE: FALSE;
   }
 
-  nth += 12;
+  offset += 16;
   
-  return(nth);
+  return(offset);
 }
 
 /**
@@ -1499,8 +1706,8 @@ ags_midi_ump_util_is_function_block_discovery(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0xf0 &&
-     ((0x0300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x10){
+  if((0xf0 & (buffer[3])) == 0xf0 &&
+     ((0x0300 & (buffer[3] << 8)) | (0xff & (buffer[2]))) == 0x10){
     return(TRUE);
   }
   
@@ -1529,32 +1736,46 @@ ags_midi_ump_util_put_function_block_discovery(AgsMidiUmpUtil *midi_ump_util,
 					       gchar **extension_name, GValue *extension_value,
 					       guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
   gint format;
+  guint i;
   
   const gint status = 0x10;
 
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
+
+  offset = 0;
+  nth = 3;
   
   format = 0x00;
-
-  nth = 0;
   
-  buffer[nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
-  nth++;
+  buffer[offset + nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
+  nth--;
 
-  buffer[nth] = (0xff & status);
-  nth++;
+  buffer[offset + nth] = (0xff & status);
+  nth--;
 
-  buffer[nth] = (0xff) & (function_block);
-  nth++;
+  buffer[offset + nth] = (0xff) & (function_block);
+  nth--;
 
-  buffer[nth] = (0xff) & (filter);
-  nth++;
+  buffer[offset + nth] = (0xff) & (filter);
 
-  memset(buffer + nth, 0, 12 * sizeof(guchar));
-  nth += 12;
+  nth = 3;
+  
+  offset += 4;
+
+  for(i = 0; i < 12; i++){
+    buffer[offset + nth] = 0x0;
+    nth--;
+
+    if(nth < 0){
+      nth = 3;
+
+      offset += 4;
+    }	
+  }
 }
 
 /**
@@ -1581,35 +1802,38 @@ ags_midi_ump_util_get_function_block_discovery(AgsMidiUmpUtil *midi_ump_util,
 					       gchar ***extension_name, GValue **extension_value,
 					       guint *extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0xf0, 0);
-  g_return_val_if_fail(((0x0300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x10, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0xf0, 0);
+  g_return_val_if_fail(((0x0300 & (buffer[3] << 8)) | (0xff & (buffer[2]))) == 0x10, 0);
 
-  nth = 2;
+  offset = 0;
+  
+  nth = 1;
 
   /* function block */
   if(function_block != NULL){
     function_block[0] = buffer[nth];
   }
 
-  nth++;
+  nth--;
 
   /* filter */
   if(filter != NULL){
     filter[0] = buffer[nth];
   }
 
-  nth++;
+  offset += 4;
     
   /* reserved */
-  nth += 12;
+  offset += 12;
   
   //TODO:JK: implement me
 
-  return(nth);
+  return(offset);
 }
 
 /**
@@ -1629,8 +1853,8 @@ ags_midi_ump_util_is_function_block_info_notification(AgsMidiUmpUtil *midi_ump_u
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0xf0 &&
-     (((0x03 & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x11){
+  if((0xf0 & (buffer[3])) == 0xf0 &&
+     (((0x03 & (buffer[3])) << 8) | (0xff & (buffer[2]))) == 0x11){
     return(TRUE);
   }
   
@@ -1673,44 +1897,62 @@ ags_midi_ump_util_put_function_block_info_notification(AgsMidiUmpUtil *midi_ump_
 						       gchar **extension_name, GValue *extension_value,
 						       guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
   gint format;
+  guint i;
   
   const gint status = 0x11;
 
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
+
+  offset = 0;
+
+  nth = 3;
   
   format = 0x00;
-
-  nth = 0;
   
-  buffer[nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
-  nth++;
+  buffer[offset + nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
+  nth--;
 
-  buffer[nth] = (0xff & status);
-  nth++;
+  buffer[offset + nth] = (0xff & status);
+  nth--;
 
-  buffer[nth] = (0xff) & ((function_block_active ? (0x80): 0x00) | (function_block));
-  nth++;
+  buffer[offset + nth] = (0xff) & ((function_block_active ? (0x80): 0x00) | (function_block));
+  nth--;
 
-  buffer[nth] = (0xff) & ((direction) | (midi1_port << 2) | (ui_hint << 4));
-  nth++;
+  buffer[offset + nth] = (0xff) & ((direction) | (midi1_port << 2) | (ui_hint << 4));
 
-  buffer[nth] = (0xff) & (first_group);
-  nth++;
+  offset += 4;
+
+  nth = 3;
+
+  buffer[offset + nth] = (0xff) & (first_group);
+  nth--;
   
-  buffer[nth] = (0xff) & (group_count);
-  nth++;
+  buffer[offset + nth] = (0xff) & (group_count);
+  nth--;
 
-  buffer[nth] = (0xff) & (message_version);
-  nth++;
+  buffer[offset + nth] = (0xff) & (message_version);
+  nth--;
 
-  buffer[nth] = (0xff) & (max_sysex8_stream_count);
-  nth++;
-  
-  memset(buffer + nth, 0, 8 * sizeof(guchar));
-  nth += 12;
+  buffer[offset + nth] = (0xff) & (max_sysex8_stream_count);
+
+  offset += 4;
+
+  nth = 3;
+
+  for(i = 0; i < 8; i++){
+    buffer[offset + nth] = 0x0;
+    nth--;
+
+    if(nth < 0){
+      nth = 3;
+
+      offset += 4;
+    }    
+  }
 }
 
 /**
@@ -1751,73 +1993,78 @@ ags_midi_ump_util_get_function_block_info_notification(AgsMidiUmpUtil *midi_ump_
 						       gchar ***extension_name, GValue **extension_value,
 						       guint *extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
 
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0xf0, 0);
-  g_return_val_if_fail(((0x0300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x11, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0xf0, 0);
+  g_return_val_if_fail(((0x0300 & (buffer[3] << 8)) | (0xff & (buffer[2]))) == 0x11, 0);
 
-  nth = 2;
+  offset = 0;
+  
+  nth = 1;
 
   /* function block active and function block */
   if(function_block_active != NULL){
-    function_block_active[0] = ((0x01 & buffer[nth]) != 0) ? TRUE: FALSE;
+    function_block_active[0] = ((0x01 & buffer[offset + nth]) != 0) ? TRUE: FALSE;
   }
 
   if(function_block != NULL){
-    function_block[0] = 0x7f & buffer[nth];
+    function_block[0] = 0x7f & buffer[offset + nth];
   }
 
-  nth++;
+  nth--;
 
   /* direction, MIDI v1.0 port and UI hint */
   if(direction != NULL){
-    direction[0] = 0x3 & buffer[nth];
+    direction[0] = 0x3 & buffer[offset + nth];
   }
 
   if(midi1_port != NULL){
-    midi1_port[0] = (0x0c & buffer[nth]) >> 2;
+    midi1_port[0] = (0x0c & buffer[offset + nth]) >> 2;
   }
 
   if(ui_hint != NULL){
-    ui_hint[0] = (0x30 & buffer[nth]) >> 4;
+    ui_hint[0] = (0x30 & buffer[offset + nth]) >> 4;
   }
+
+  offset += 4;
   
-  nth++;
+  nth = 3;
 
   /* first group */
   if(first_group != NULL){
-    first_group[0] = buffer[nth];
+    first_group[0] = buffer[offset + nth];
   }
   
-  nth++;
+  nth--;
 
   /* group count */
   if(group_count != NULL){
-    group_count[0] = buffer[nth];
+    group_count[0] = buffer[offset + nth];
   }
   
-  nth++;
+  nth--;
 
   /* message version */
   if(message_version != NULL){
-    message_version[0] = buffer[nth];    
+    message_version[0] = buffer[offset + nth];    
   }
   
-  nth++;
+  nth--;
 
   /* max SYSEX8 stream count */
   if(max_sysex8_stream_count != NULL){
-    max_sysex8_stream_count[0] = buffer[nth];
+    max_sysex8_stream_count[0] = buffer[offset + nth];
   }
   
-  nth++;
+  offset += 4;
 
   /* reserved */
-  nth += 8;
+  offset += 8;
   
-  return(nth);
+  return(offset);
 }
 
 /**
@@ -1837,8 +2084,8 @@ ags_midi_ump_util_is_function_block_name_notification(AgsMidiUmpUtil *midi_ump_u
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0xf0 &&
-     (((0x03 & (buffer[0])) << 8) | (0xff & (buffer[1]))) == 0x12){
+  if((0xf0 & (buffer[3])) == 0xf0 &&
+     (((0x03 & (buffer[3])) << 8) | (0xff & (buffer[2]))) == 0x12){
     return(TRUE);
   }
   
@@ -1867,10 +2114,12 @@ ags_midi_ump_util_put_function_block_name_notification(AgsMidiUmpUtil *midi_ump_
 						       gchar **extension_name, GValue *extension_value,
 						       guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
   gint function_block_name_length;
   guint i;
   guint j, j_stop;
+  guint k, k_stop;
   gboolean is_complete, is_end;
   gint format;
   
@@ -1883,6 +2132,10 @@ ags_midi_ump_util_put_function_block_name_notification(AgsMidiUmpUtil *midi_ump_
   
   g_return_if_fail(function_block_name_length <= 98);
 
+  offset = 0;
+
+  nth = 3;
+  
   /* put function_block name - may be in multiple chunks  */
   format = 0x0;
   is_complete = TRUE;
@@ -1895,19 +2148,19 @@ ags_midi_ump_util_put_function_block_name_notification(AgsMidiUmpUtil *midi_ump_
   is_end = FALSE;
 
   for(i = 0, j = 0; i < 128 && !is_end;){
-    nth = 0;
+    nth = 3;
   
-    buffer[nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
-    nth++;
+    buffer[offset + nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
+    nth--;
     i++;
 
-    buffer[nth] = (0xff & status);
-    nth++;
+    buffer[offset + nth] = (0xff & status);
+    nth--;
     i++;
 
     /* function block */    
-    buffer[nth] = (0xff & function_block);
-    nth++;
+    buffer[offset + nth] = (0xff & function_block);
+    nth--;
     i++;
 
     /* fill in function block name */
@@ -1917,11 +2170,33 @@ ags_midi_ump_util_put_function_block_name_notification(AgsMidiUmpUtil *midi_ump_
       }else{
 	j_stop = (function_block_name_length - j) % 14;
       }
-      
-      memcpy(buffer + nth, function_block_name + j, j_stop * sizeof(gchar));
+
+      k_stop = j_stop;
+
+      for(k = 0; k < k_stop; j++, k++){
+	buffer[offset + nth] = function_block_name[j];
+	nth--;
+
+	if(nth < 0){
+	  nth = 3;
+
+	  offset += 4;
+	}	
+      }
 
       if(j_stop < 14){
-	memset(buffer + nth + j_stop, 0, (14 - j_stop) * sizeof(gchar));
+	k_stop = 14 - j_stop;
+	
+	for(k = 0; k < k_stop; k++){
+	  buffer[offset + nth] = 0x0;
+	  nth--;
+
+	  if(nth < 0){
+	    nth = 3;
+
+	    offset += 4;
+	  }
+	}
       }
     }else{
       g_warning("malformed MIDI UMP data");
@@ -1929,8 +2204,7 @@ ags_midi_ump_util_put_function_block_name_notification(AgsMidiUmpUtil *midi_ump_
       j_stop = 0;
     }
     
-    nth += 14;
-    j += j_stop;
+    nth = 3;
     
     /* break condition */
     if(is_complete){
@@ -1942,8 +2216,6 @@ ags_midi_ump_util_put_function_block_name_notification(AgsMidiUmpUtil *midi_ump_
     }
 
     /* iterate */
-    buffer += nth;
-
     if(format == 0x2){
       if(j + 14 < function_block_name_length){
 	format = 0x2;
@@ -1987,22 +2259,29 @@ ags_midi_ump_util_get_function_block_name_notification(AgsMidiUmpUtil *midi_ump_
 						       guint *extension_count)
 {
   gchar *str;
-  
-  guint nth;
+
+  guint offset;
+  gint nth;
   gboolean is_complete, is_end;
   gint format;
   guint i;
+  guint j;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0xf0, 0);
-  g_return_val_if_fail(((0x0300 & (buffer[0]) << 8)) | (0xff & (buffer[1])) == 0x12, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0xf0, 0);
+  g_return_val_if_fail(((0x0300 & (buffer[3]) << 8)) | (0xff & (buffer[2])) == 0x12, 0);
 
+  offset = 0;
+
+  nth = 3;
+  
   str = (gchar *) g_malloc(99 * sizeof(gchar));
   memset(str, 0, 99 * sizeof(gchar));
 
-  format = ((0x0c & (buffer[0])) >> 2);
-
+  format = ((0x0c & (buffer[offset + nth])) >> 2);
+  nth--;
+  
   is_complete = TRUE;
 
   if(format != 0x0){
@@ -2011,20 +2290,30 @@ ags_midi_ump_util_get_function_block_name_notification(AgsMidiUmpUtil *midi_ump_
 
   is_end = FALSE;
 
+  /*  */
+  nth--;
+
   if(function_block != NULL){
-    function_block[0] =  0xff & buffer[2];
+    function_block[0] =  0xff & buffer[offset + nth];
   }
   
-  nth = 0;
+  nth = 3;
 
   for(i = 0; i < 99 && !is_end;){
-    nth += 3;    
+    nth -= 3;    
+
+    for(j = 0; j < 14; i++, j++){
+      str[i] = buffer[offset + nth];
+      nth--;
+
+      if(nth < 0){
+	nth = 3;
+
+	offset += 4;
+      }      
+    }
     
-    memcpy(str + i, buffer + nth, 14 * sizeof(gchar));
-    nth += 14;
-    i += 14;
-    
-    format = ((0x0c & (buffer[nth])) >> 2);
+    format = ((0x0c & (buffer[offset + nth])) >> 2);
 
     /* break condition */
     if(is_complete){
@@ -2062,8 +2351,8 @@ ags_midi_ump_util_is_start_of_clip(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0xf0 &&
-     ((0x0300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x20){
+  if((0xf0 & (buffer[3])) == 0xf0 &&
+     ((0x0300 & (buffer[3] << 8)) | (0xff & (buffer[2]))) == 0x20){
     return(TRUE);
   }
   
@@ -2088,24 +2377,37 @@ ags_midi_ump_util_put_start_of_clip(AgsMidiUmpUtil *midi_ump_util,
 				    gchar **extension_name, GValue *extension_value,
 				    guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
+  guint i;
+  
   const gint status = 0x20;
   const gint format = 0x0;
   
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
+  offset = 0;
   
-  buffer[nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
+  nth--;
 
-  buffer[nth] = (0xff & status);
-  nth++;
+  buffer[offset + nth] = (0xff & status);
+  nth--;
 
   /* reserved */
-  memset(buffer + nth, 0, 14 * sizeof(guchar));
-  nth += 14;
+  for(i = 0; i < 14; i++){
+    buffer[offset + nth] = 0x0;
+    nth--;
+
+    if(nth < 0){
+      nth = 3;
+
+      offset += 4;
+    }	
+  }
 }
 
 guint
@@ -2114,20 +2416,22 @@ ags_midi_ump_util_get_start_of_clip(AgsMidiUmpUtil *midi_ump_util,
 				    gchar ***extension_name, GValue **extension_value,
 				    guint *extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
 
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0xf0, 0);
-  g_return_val_if_fail(((0x0300 & (buffer[0] << 8)) | (0xff & (buffer[1]))) == 0x20, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0xf0, 0);
+  g_return_val_if_fail(((0x0300 & (buffer[3] << 8)) | (0xff & (buffer[2]))) == 0x20, 0);
 
-  nth = 2;
+  offset = 0;
+  
+  nth = 1;
 
   /* reserved */
-  memset(buffer + nth, 0, 14 * sizeof(guchar));
-  nth += 14;
+  offset += 16;
 
-  return(nth);
+  return(offset);
 }
 
 
@@ -2148,8 +2452,8 @@ ags_midi_ump_util_is_end_of_clip(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0xf0 &&
-     ((0x0300 & (buffer[0]) << 8)) | (0xff & (buffer[1])) == 0x21){
+  if((0xf0 & (buffer[3])) == 0xf0 &&
+     ((0x0300 & (buffer[3]) << 8)) | (0xff & (buffer[2])) == 0x21){
     return(TRUE);
   }
   
@@ -2174,24 +2478,37 @@ ags_midi_ump_util_put_end_of_clip(AgsMidiUmpUtil *midi_ump_util,
 				  gchar **extension_name, GValue *extension_value,
 				  guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
+  guint i;
+  
   const gint status = 0x21;
   const gint format = 0x0;
   
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
+  offset = 0;
   
-  buffer[nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = (0xf0) | ((0x03 & format) << 2) | ((0x300 & status) >> 8);
+  nth--;
 
-  buffer[nth] = (0xff & status);
-  nth++;
+  buffer[offset + nth] = (0xff & status);
+  nth--;
 
   /* reserved */
-  memset(buffer + nth, 0, 14 * sizeof(guchar));
-  nth += 14;
+  for(i = 0; i < 14; i++){
+    buffer[offset + nth] = 0x0;
+    nth--;
+
+    if(nth < 0){
+      nth = 3;
+
+      offset += 4;
+    }	
+  }
 }
 
 guint
@@ -2200,18 +2517,20 @@ ags_midi_ump_util_get_end_of_clip(AgsMidiUmpUtil *midi_ump_util,
 				  gchar ***extension_name, GValue **extension_value,
 				  guint *extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
 
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0xf0, 0);
-  g_return_val_if_fail(((0x0300 & (buffer[0]) << 8)) | (0xff & (buffer[1])) == 0x21, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0xf0, 0);
+  g_return_val_if_fail(((0x0300 & (buffer[3]) << 8)) | (0xff & (buffer[2])) == 0x21, 0);
 
-  nth = 2;
+  offset = 0;
+  
+  nth = 1;
 
   /* reserved */
-  memset(buffer + nth, 0, 14 * sizeof(guchar));
-  nth += 14;
+  offset += 16;
 
   return(nth);
 }
@@ -2233,8 +2552,8 @@ ags_midi_ump_util_is_noop(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0x00 &&
-     (0x0f & (buffer[1])) == 0x00){
+  if((0xf0 & (buffer[3])) == 0x00 &&
+     (0x0f & (buffer[2])) == 0x00){
     return(TRUE);
   }
   
@@ -2259,27 +2578,29 @@ ags_midi_ump_util_put_noop(AgsMidiUmpUtil *midi_ump_util,
 			   gchar **extension_name, GValue *extension_value,
 			   guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
   const gint status = 0x00;
   const gint mt = 0x00;
   
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
+  offset = 0;
   
-  buffer[nth] = ((0x07 & mt) << 4);
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = 0x0;
+  nth--;
 
-  buffer[nth] = (0xff) & (status << 4);
-  nth++;
+  buffer[offset + nth] = 0x0;
+  nth--;
   
   /* NOOP */
-  buffer[nth] = 0x00;
-  nth++;
+  buffer[offset + nth] = 0x00;
+  nth--;
 
-  buffer[nth] = 0x00;
-  nth++;
+  buffer[offset + nth] = 0x00;
 }
 
 guint
@@ -2288,19 +2609,22 @@ ags_midi_ump_util_get_noop(AgsMidiUmpUtil *midi_ump_util,
 			   gchar ***extension_name, GValue **extension_value,
 			   guint *extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
 
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x00, 0);
-  g_return_val_if_fail((0xf0 & (buffer[0])) == 0x00 && (0x0f & (buffer[1])) == 0x00, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0x00, 0);
+  g_return_val_if_fail((0xf0 & (buffer[3])) == 0x00 && (0x0f & (buffer[2])) == 0x00, 0);
 
-  nth = 2;
+  offset = 0;
+  
+  nth = 1;
 
   /* 0000 */
-  nth += 2;
+  offset += 4;
 
-  return(nth);
+  return(offset);
 }
 
 /**
@@ -2320,8 +2644,8 @@ ags_midi_ump_util_is_jr_clock(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0x00 &&
-     (0xf0 & (buffer[1])) == 0x10){
+  if((0xf0 & (buffer[3])) == 0x00 &&
+     (0xf0 & (buffer[2])) == 0x10){
     return(TRUE);
   }
   
@@ -2348,27 +2672,29 @@ ags_midi_ump_util_put_jr_clock(AgsMidiUmpUtil *midi_ump_util,
 			       gchar **extension_name, GValue *extension_value,
 			       guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
   const gint status = 0x01;
   const gint mt = 0x00;
   
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
+  offset = 0;
   
-  buffer[nth] = ((0x07 & mt) << 4);
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = ((0x07 & mt) << 4);
+  nth--;
 
-  buffer[nth] = (0xff) & (status << 4);
-  nth++;
+  buffer[offset + nth] = (0xff) & (status << 4);
+  nth--;
   
   /* JR clock */
-  buffer[nth] = (0xff & (sender_clock_time >> 8));
-  nth++;
+  buffer[offset + nth] = (0xff & (sender_clock_time >> 8));
+  nth--;
   
-  buffer[nth] = (0xff & (sender_clock_time));
-  nth++;
+  buffer[offset + nth] = (0xff & (sender_clock_time));
 }
 
 /**
@@ -2393,23 +2719,26 @@ ags_midi_ump_util_get_jr_clock(AgsMidiUmpUtil *midi_ump_util,
 			       gchar ***extension_name, GValue **extension_value,
 			       guint *extension_count)
 {
+  guint offset;
   gint nth;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x00, 0);
-  g_return_val_if_fail((0xf0 & (buffer[1])) == 0x10, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0x00, 0);
+  g_return_val_if_fail((0xf0 & (buffer[2])) == 0x10, 0);
 
-  nth = 2;
+  offset = 0;
+  
+  nth = 1;
 
   /* sender clock time */
   if(sender_clock_time != NULL){
-    sender_clock_time[0] = (0xff00 & (buffer[nth] << 8)) | (0xff & buffer[nth + 1]);
+    sender_clock_time[0] = (0xff00 & (buffer[offset + nth] << 8)) | (0xff & buffer[offset + nth - 1]);
   }
 
-  nth += 2;
+  offset += 4;
   
-  return(nth);
+  return(offset);
 }
 
 /**
@@ -2429,8 +2758,8 @@ ags_midi_ump_util_is_jr_timestamp(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0x00 &&
-     (0xf0 & (buffer[1])) == 0x20){
+  if((0xf0 & (buffer[3])) == 0x00 &&
+     (0xf0 & (buffer[2])) == 0x20){
     return(TRUE);
   }
   
@@ -2457,27 +2786,31 @@ ags_midi_ump_util_put_jr_timestamp(AgsMidiUmpUtil *midi_ump_util,
 				   gchar **extension_name, GValue *extension_value,
 				   guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
+  
   const gint status = 0x02;
   const gint mt = 0x00;
   
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
+  offset = 0;
   
-  buffer[nth] = ((0x07 & mt) << 4);
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = ((0x07 & mt) << 4);
+  nth--;
 
-  buffer[nth] = (0xff) & (status << 4);
-  nth++;
+  buffer[offset + nth] = (0xff) & (status << 4);
+  nth--;
   
   /* JR timestamp */
-  buffer[nth] = (0xff & (sender_clock_timestamp >> 8));
-  nth++;
+  buffer[offset + nth] = (0xff & (sender_clock_timestamp >> 8));
+  nth--;
   
-  buffer[nth] = (0xff & (sender_clock_timestamp));
-  nth++;
+  buffer[offset + nth] = (0xff & (sender_clock_timestamp));
+  nth--;
 }
 
 /**
@@ -2502,23 +2835,26 @@ ags_midi_ump_util_get_jr_timestamp(AgsMidiUmpUtil *midi_ump_util,
 				   gchar ***extension_name, GValue **extension_value,
 				   guint *extension_count)
 {
+  guint offset;
   gint nth;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x00, 0);
-  g_return_val_if_fail((0xf0 & (buffer[1])) == 0x20, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0x00, 0);
+  g_return_val_if_fail((0xf0 & (buffer[2])) == 0x20, 0);
 
-  nth = 2;
+  offset = 0;
+  
+  nth = 1;
 
   /* sender timestamp time */
   if(sender_clock_timestamp != NULL){
-    sender_clock_timestamp[0] = (0xff00 & (buffer[nth] << 8)) | (0xff & buffer[nth + 1]);
+    sender_clock_timestamp[0] = (0xff00 & (buffer[offset + nth] << 8)) | (0xff & buffer[offset + nth - 1]);
   }
 
-  nth += 2;
+  offset += 4;
   
-  return(nth);
+  return(offset);
 }
 
 /**
@@ -2538,8 +2874,8 @@ ags_midi_ump_util_is_delta_clock_ticks_per_quarter_note(AgsMidiUmpUtil *midi_ump
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0x00 &&
-     (0xf0 & (buffer[1])) == 0x30){
+  if((0xf0 & (buffer[3])) == 0x00 &&
+     (0xf0 & (buffer[2])) == 0x30){
     return(TRUE);
   }
   
@@ -2566,27 +2902,31 @@ ags_midi_ump_util_put_delta_clock_ticks_per_quarter_note(AgsMidiUmpUtil *midi_um
 							 gchar **extension_name, GValue *extension_value,
 							 guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
+
   const gint status = 0x03;
   const gint mt = 0x00;
   
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
+  offset = 0;
   
-  buffer[nth] = ((0x07 & mt) << 4);
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = ((0x07 & mt) << 4);
+  nth--;
 
-  buffer[nth] = (0xff) & (status << 4);
-  nth++;
+  buffer[offset + nth] = (0xff) & (status << 4);
+  nth--;
   
   /* delta clock ticks per quarter note count */
-  buffer[nth] = (0xff & (ticks_per_quarter_note_count >> 8));
-  nth++;
+  buffer[offset + nth] = (0xff & (ticks_per_quarter_note_count >> 8));
+  nth--;
   
-  buffer[nth] = (0xff & (ticks_per_quarter_note_count));
-  nth++;
+  buffer[offset + nth] = (0xff & (ticks_per_quarter_note_count));
+  nth--;
 }
 
 /**
@@ -2611,23 +2951,26 @@ ags_midi_ump_util_get_delta_clock_ticks_per_quarter_note(AgsMidiUmpUtil *midi_um
 							 gchar ***extension_name, GValue **extension_value,
 							 guint *extension_count)
 {
+  guint offset;
   gint nth;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x00, 0);
-  g_return_val_if_fail((0xf0 & (buffer[1])) == 0x30, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0x00, 0);
+  g_return_val_if_fail((0xf0 & (buffer[2])) == 0x30, 0);
 
-  nth = 2;
+  offset = 0;
+  
+  nth = 1;
 
   /* ticks per quarter note count */
   if(ticks_per_quarter_note_count != NULL){
-    ticks_per_quarter_note_count[0] = (0xff00 & (buffer[nth] << 8)) | (0xff & buffer[nth + 1]);
+    ticks_per_quarter_note_count[0] = (0xff00 & (buffer[offset + nth] << 8)) | (0xff & buffer[offset + nth - 1]);
   }
 
-  nth += 2;
+  offset += 4;
 
-  return(nth);
+  return(offset);
 }
 
 /**
@@ -2647,8 +2990,8 @@ ags_midi_ump_util_is_delta_clock_ticks_since_last_event(AgsMidiUmpUtil *midi_ump
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0x00 &&
-     (0xf0 & (buffer[1])) == 0x40){
+  if((0xf0 & (buffer[3])) == 0x00 &&
+     (0xf0 & (buffer[2])) == 0x40){
     return(TRUE);
   }
   
@@ -2675,27 +3018,30 @@ ags_midi_ump_util_put_delta_clock_ticks_since_last_event(AgsMidiUmpUtil *midi_um
 							 gchar **extension_name, GValue *extension_value,
 							 guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
+
   const gint status = 0x04;
   const gint mt = 0x00;
   
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
+  offset = 0;
   
-  buffer[nth] = ((0x07 & mt) << 4);
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = ((0x07 & mt) << 4);
+  nth--;
 
-  buffer[nth] = (0xff) & (status << 4);
-  nth++;
+  buffer[offset + nth] = (0xff) & (status << 4);
+  nth--;
   
   /* delta clock ticks per quarter note count */
-  buffer[nth] = (0xff & (ticks_since_last_event_count >> 8));
-  nth++;
+  buffer[offset + nth] = (0xff & (ticks_since_last_event_count >> 8));
+  nth--;
   
-  buffer[nth] = (0xff & (ticks_since_last_event_count));
-  nth++;
+  buffer[offset + nth] = (0xff & (ticks_since_last_event_count));
 }
 
 /**
@@ -2720,23 +3066,26 @@ ags_midi_ump_util_get_delta_clock_ticks_since_last_event(AgsMidiUmpUtil *midi_um
 							 gchar ***extension_name, GValue **extension_value,
 							 guint *extension_count)
 {
+  guint offset;
   gint nth;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x00, 0);
-  g_return_val_if_fail((0xf0 & (buffer[1])) == 0x40, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0x00, 0);
+  g_return_val_if_fail((0xf0 & (buffer[2])) == 0x40, 0);
 
-  nth = 2;
+  offset = 0;
+  
+  nth = 1;
 
   /* ticks per quarter note count */
   if(ticks_since_last_event_count != NULL){
-    ticks_since_last_event_count[0] = (0xff00 & (buffer[nth] << 8)) | (0xff & buffer[nth + 1]);
+    ticks_since_last_event_count[0] = (0xff00 & (buffer[offset + nth] << 8)) | (0xff & buffer[offset + nth - 1]);
   }
 
-  nth += 2;
+  offset += 4;
 
-  return(nth);
+  return(offset);
 }
 
 /**
@@ -2756,7 +3105,7 @@ ags_midi_ump_util_is_midi1_channel_voice(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0x20){
+  if((0xf0 & (buffer[3])) == 0x20){
     return(TRUE);
   }
   
@@ -2780,8 +3129,8 @@ ags_midi_ump_util_is_midi1_note_off(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0x20 &&
-     (0xf0 & (buffer[1])) == 0x80){
+  if((0xf0 & (buffer[3])) == 0x20 &&
+     (0xf0 & (buffer[2])) == 0x80){
     return(TRUE);
   }
   
@@ -2814,27 +3163,30 @@ ags_midi_ump_util_put_midi1_note_off(AgsMidiUmpUtil *midi_ump_util,
 				     gchar **extension_name, GValue *extension_value,
 				     guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
+
   const gint opcode = 0x08;
   const gint mt = 0x02;
   
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
+  offset = 0;
   
-  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth--;
 
-  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
-  nth++;
+  buffer[offset + nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
+  nth--;
   
   /* index key and velocity */
-  buffer[nth] = (0xff & (key));
-  nth++;
+  buffer[offset + nth] = (0xff & (key));
+  nth--;
   
-  buffer[nth] = (0xff & (velocity));
-  nth++;
+  buffer[offset + nth] = (0xff & (velocity));
 }
 
 /**
@@ -2865,38 +3217,45 @@ ags_midi_ump_util_get_midi1_note_off(AgsMidiUmpUtil *midi_ump_util,
 				     gchar ***extension_name, GValue **extension_value,
 				     guint *extension_count)
 {
+  guint offset;
   gint nth;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x20, 0);
-  g_return_val_if_fail((0xf0 & buffer[1]) == 0x80, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0x20, 0);
+  g_return_val_if_fail((0xf0 & buffer[2]) == 0x80, 0);
+
+  offset = 0;
+  
+  nth = 3;
 
   if(group != NULL){
-    group[0] = 0x0f & buffer[0];
+    group[0] = 0x0f & buffer[offset + nth];
   }
 
+  nth--;
+  
   if(channel != NULL){
-    channel[0] = 0x0f & buffer[1];
+    channel[0] = 0x0f & buffer[offset + nth];
   }
-		       
-  nth = 2;
 
+  nth--;
+  
   /* key */
   if(key != NULL){
-    key[0] = 0xff & buffer[nth];
+    key[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
+  nth--;
 
   /* velocity */
   if(velocity != NULL){
-    velocity[0] = 0xff & buffer[nth];
+    velocity[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
+  offset += 4;
 
-  return(nth);
+  return(offset);
 }
 
 /**
@@ -2916,8 +3275,8 @@ ags_midi_ump_util_is_midi1_note_on(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0x20 &&
-     (0xf0 & (buffer[1])) == 0x90){
+  if((0xf0 & (buffer[3])) == 0x20 &&
+     (0xf0 & (buffer[2])) == 0x90){
     return(TRUE);
   }
   
@@ -2950,27 +3309,30 @@ ags_midi_ump_util_put_midi1_note_on(AgsMidiUmpUtil *midi_ump_util,
 				    gchar **extension_name, GValue *extension_value,
 				    guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
+  
   const gint opcode = 0x09;
   const gint mt = 0x02;
   
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
+  offset = 0;
   
-  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth--;
 
-  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
-  nth++;
+  buffer[offset + nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
+  nth--;
   
   /* index key and velocity */
-  buffer[nth] = (0xff & (key));
-  nth++;
+  buffer[offset + nth] = (0xff & (key));
+  nth--;
   
-  buffer[nth] = (0xff & (velocity));
-  nth++;
+  buffer[offset + nth] = (0xff & (velocity));
 }
 
 /**
@@ -3001,38 +3363,45 @@ ags_midi_ump_util_get_midi1_note_on(AgsMidiUmpUtil *midi_ump_util,
 				    gchar ***extension_name, GValue **extension_value,
 				    guint *extension_count)
 {
+  guint offset;
   gint nth;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x20, 0);
-  g_return_val_if_fail((0xf0 & buffer[1]) == 0x90, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0x20, 0);
+  g_return_val_if_fail((0xf0 & buffer[2]) == 0x90, 0);
 
+  offset = 0;
+
+  nth = 3;
+  
   if(group != NULL){
-    group[0] = 0x0f & buffer[0];
+    group[0] = 0x0f & buffer[offset + nth];
   }
 
+  nth--;
+  
   if(channel != NULL){
-    channel[0] = 0x0f & buffer[1];
+    channel[0] = 0x0f & buffer[offset + nth];
   }
 		       
-  nth = 2;
+  nth--;
 
   /* key */
   if(key != NULL){
-    key[0] = 0xff & buffer[nth];
+    key[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
+  nth--;
 
   /* velocity */
   if(velocity != NULL){
-    velocity[0] = 0xff & buffer[nth];
+    velocity[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
+  offset += 4;
 
-  return(nth);
+  return(offset);
 }
 
 /**
@@ -3052,8 +3421,8 @@ ags_midi_ump_util_is_midi1_polyphonic_aftertouch(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0x20 &&
-     (0xf0 & (buffer[1])) == 0xa0){
+  if((0xf0 & (buffer[3])) == 0x20 &&
+     (0xf0 & (buffer[2])) == 0xa0){
     return(TRUE);
   }
   
@@ -3086,27 +3455,30 @@ ags_midi_ump_util_put_midi1_polyphonic_aftertouch(AgsMidiUmpUtil *midi_ump_util,
 						  gchar **extension_name, GValue *extension_value,
 						  guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
+  
   const gint opcode = 0x0a;
   const gint mt = 0x02;
   
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
-  
-  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
-  nth++;
+  offset = 0;
 
-  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth--;
+
+  buffer[offset + nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
+  nth--;
   
   /* index key and data */
-  buffer[nth] = (0xff & (key));
-  nth++;
+  buffer[offset + nth] = (0xff & (key));
+  nth--;
   
-  buffer[nth] = (0xff & (data));
-  nth++;
+  buffer[offset + nth] = (0xff & (data));
 }
 
 /**
@@ -3137,38 +3509,45 @@ ags_midi_ump_util_get_midi1_polyphonic_aftertouch(AgsMidiUmpUtil *midi_ump_util,
 						  gchar ***extension_name, GValue **extension_value,
 						  guint *extension_count)
 {
+  guint offset;
   gint nth;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x20, 0);
-  g_return_val_if_fail((0xf0 & buffer[1]) == 0xa0, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0x20, 0);
+  g_return_val_if_fail((0xf0 & buffer[2]) == 0xa0, 0);
 
+  offset = 0;
+
+  nth = 3;
+  
   if(group != NULL){
-    group[0] = 0x0f & buffer[0];
+    group[0] = 0x0f & buffer[offset + nth];
   }
+
+  nth--;
 
   if(channel != NULL){
-    channel[0] = 0x0f & buffer[1];
+    channel[0] = 0x0f & buffer[offset + nth];
   }
 		       
-  nth = 2;
+  nth--;
 
   /* key */
   if(key != NULL){
-    key[0] = 0xff & buffer[nth];
+    key[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
+  nth--;
 
   /* data */
   if(data != NULL){
-    data[0] = 0xff & buffer[nth];
+    data[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
-
-  return(nth);
+  offset += 4;
+  
+  return(offset);
 }
 
 /**
@@ -3188,8 +3567,8 @@ ags_midi_ump_util_is_midi1_control_change(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0x20 &&
-     (0xf0 & (buffer[1])) == 0xb0){
+  if((0xf0 & (buffer[3])) == 0x20 &&
+     (0xf0 & (buffer[2])) == 0xb0){
     return(TRUE);
   }
   
@@ -3222,27 +3601,30 @@ ags_midi_ump_util_put_midi1_control_change(AgsMidiUmpUtil *midi_ump_util,
 					   gchar **extension_name, GValue *extension_value,
 					   guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
+  
   const gint opcode = 0x0b;
   const gint mt = 0x02;
   
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
+  offset = 0;
   
-  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth--;
 
-  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
-  nth++;
+  buffer[offset + nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
+  nth--;
   
   /* index key and data */
-  buffer[nth] = (0xff & (index_key));
-  nth++;
+  buffer[offset + nth] = (0xff & (index_key));
+  nth--;
   
-  buffer[nth] = (0xff & (data));
-  nth++;
+  buffer[offset + nth] = (0xff & (data));
 }
 
 /**
@@ -3273,38 +3655,45 @@ ags_midi_ump_util_get_midi1_control_change(AgsMidiUmpUtil *midi_ump_util,
 					   gchar ***extension_name, GValue **extension_value,
 					   guint *extension_count)
 {
+  guint offset;
   gint nth;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x20, 0);
-  g_return_val_if_fail((0xf0 & buffer[1]) == 0xb0, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0x20, 0);
+  g_return_val_if_fail((0xf0 & buffer[2]) == 0xb0, 0);
 
+  offset = 0;
+  
+  nth = 3;
+  
   if(group != NULL){
-    group[0] = 0x0f & buffer[0];
+    group[0] = 0x0f & buffer[offset + nth];
   }
 
+  nth--;
+  
   if(channel != NULL){
-    channel[0] = 0x0f & buffer[1];
+    channel[0] = 0x0f & buffer[offset + nth];
   }
 		       
-  nth = 2;
+  nth--;
 
   /* index key */
   if(index_key != NULL){
-    index_key[0] = 0xff & buffer[nth];
+    index_key[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
+  nth--;
 
   /* data */
   if(data != NULL){
-    data[0] = 0xff & buffer[nth];
+    data[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
-
-  return(nth);
+  offset += 4;
+  
+  return(offset);
 }
 
 /**
@@ -3324,8 +3713,8 @@ ags_midi_ump_util_is_midi1_program_change(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0x20 &&
-     (0xf0 & (buffer[1])) == 0xc0){
+  if((0xf0 & (buffer[3])) == 0x20 &&
+     (0xf0 & (buffer[2])) == 0xc0){
     return(TRUE);
   }
   
@@ -3358,27 +3747,30 @@ ags_midi_ump_util_put_midi1_program_change(AgsMidiUmpUtil *midi_ump_util,
 					   gchar **extension_name, GValue *extension_value,
 					   guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
+
   const gint opcode = 0x0c;
   const gint mt = 0x02;
   
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
+  offset = 0;
   
-  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth--;
 
-  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
-  nth++;
+  buffer[offset + nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
+  nth--;
   
   /* index program and data */
-  buffer[nth] = (0xff & (program));
-  nth++;
+  buffer[offset + nth] = (0xff & (program));
+  nth--;
   
-  buffer[nth] = (0xff & (data));
-  nth++;
+  buffer[offset + nth] = (0xff & (data));
 }
 
 /**
@@ -3409,38 +3801,45 @@ ags_midi_ump_util_get_midi1_program_change(AgsMidiUmpUtil *midi_ump_util,
 					   gchar ***extension_name, GValue **extension_value,
 					   guint *extension_count)
 {
+  guint offset;
   gint nth;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x20, 0);
-  g_return_val_if_fail((0xf0 & buffer[1]) == 0xc0, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0x20, 0);
+  g_return_val_if_fail((0xf0 & buffer[2]) == 0xc0, 0);
 
+  offset = 0;
+  
+  nth = 3;
+  
   if(group != NULL){
-    group[0] = 0x0f & buffer[0];
-  }
-
-  if(channel != NULL){
-    channel[0] = 0x0f & buffer[1];
+    group[0] = 0x0f & buffer[offset + nth];
   }
 		       
-  nth = 2;
+  nth--;
+
+  if(channel != NULL){
+    channel[0] = 0x0f & buffer[offset + nth];
+  }
+		       
+  nth--;
 
   /* program */
   if(program != NULL){
-    program[0] = 0xff & buffer[nth];
+    program[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
+  nth--;
 
   /* data */
   if(data != NULL){
-    data[0] = 0xff & buffer[nth];
+    data[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
+  offset += 4;
 
-  return(nth);
+  return(offset);
 }
 
 /**
@@ -3460,8 +3859,8 @@ ags_midi_ump_util_is_midi1_channel_pressure(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0x20 &&
-     (0xf0 & (buffer[1])) == 0xd0){
+  if((0xf0 & (buffer[3])) == 0x20 &&
+     (0xf0 & (buffer[2])) == 0xd0){
     return(TRUE);
   }
   
@@ -3494,27 +3893,29 @@ ags_midi_ump_util_put_midi1_channel_pressure(AgsMidiUmpUtil *midi_ump_util,
 					     gchar **extension_name, GValue *extension_value,
 					     guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
   const gint opcode = 0x0d;
   const gint mt = 0x02;
   
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
+  offset = 0;
   
-  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth--;
 
-  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
-  nth++;
+  buffer[offset + nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
+  nth--;
   
   /* index pressure and data */
-  buffer[nth] = (0xff & (pressure));
-  nth++;
+  buffer[offset + nth] = (0xff & (pressure));
+  nth--;
   
-  buffer[nth] = (0xff & (data));
-  nth++;
+  buffer[offset + nth] = (0xff & (data));
 }
 
 /**
@@ -3545,38 +3946,45 @@ ags_midi_ump_util_get_midi1_channel_pressure(AgsMidiUmpUtil *midi_ump_util,
 					     gchar ***extension_name, GValue **extension_value,
 					     guint *extension_count)
 {
+  guint offset;
   gint nth;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x20, 0);
-  g_return_val_if_fail((0xf0 & buffer[1]) == 0xd0, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0x20, 0);
+  g_return_val_if_fail((0xf0 & buffer[2]) == 0xd0, 0);
 
+  offset = 0;
+  
+  nth = 3;
+  
   if(group != NULL){
-    group[0] = 0x0f & buffer[0];
+    group[0] = 0x0f & buffer[offset + nth];
   }
 
+  nth--;
+  
   if(channel != NULL){
-    channel[0] = 0x0f & buffer[1];
+    channel[0] = 0x0f & buffer[offset + nth];
   }
 		       
-  nth = 2;
+  nth--;
 
   /* pressure */
   if(pressure != NULL){
-    pressure[0] = 0xff & buffer[nth];
+    pressure[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
+  nth--;
 
   /* data */
   if(data != NULL){
-    data[0] = 0xff & buffer[nth];
+    data[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
-
-  return(nth);
+  offset += 4;
+  
+  return(offset);
 }
 
 /**
@@ -3596,8 +4004,8 @@ ags_midi_ump_util_is_midi1_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0x20 &&
-     (0xf0 & (buffer[1])) == 0xe0){
+  if((0xf0 & (buffer[3])) == 0x20 &&
+     (0xf0 & (buffer[2])) == 0xe0){
     return(TRUE);
   }
   
@@ -3628,25 +4036,30 @@ ags_midi_ump_util_put_midi1_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
 				       gchar **extension_name, GValue *extension_value,
 				       guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
+  
   const gint opcode = 0x0e;
   const gint mt = 0x02;
   
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
+  offset = 0;
   
-  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth--;
 
-  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
-  nth++;
+  buffer[offset + nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
+  nth--;
   
   /* data */
-  buffer[nth] = (0xff & (data));
-  buffer[nth + 1] = (0xff00 & (data >> 8));
-  nth += 2;
+  buffer[offset + nth] = (0xff & (data));
+  nth--;
+  
+  buffer[offset + nth] = (0xff00 & (data >> 8));
 }
 
 /**
@@ -3675,31 +4088,38 @@ ags_midi_ump_util_get_midi1_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
 				       gchar ***extension_name, GValue **extension_value,
 				       guint *extension_count)
 {
+  guint offset;
   gint nth;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x20, 0);
-  g_return_val_if_fail((0xf0 & buffer[1]) == 0xe0, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0x20, 0);
+  g_return_val_if_fail((0xf0 & buffer[2]) == 0xe0, 0);
 
+  offset = 0;
+
+  nth = 3;
+  
   if(group != NULL){
-    group[0] = 0x0f & buffer[0];
+    group[0] = 0x0f & buffer[offset + nth];
   }
 
+  nth--;
+  
   if(channel != NULL){
-    channel[0] = 0x0f & buffer[1];
+    channel[0] = 0x0f & buffer[offset + nth];
   }
 		       
-  nth = 2;
+  nth--;
 
   /* data */
   if(data != NULL){
-    data[0] = (0xff00 & (buffer[nth + 1] << 8)) | (0xff & buffer[nth]);
+    data[0] = (0xff00 & (buffer[offset + nth - 1] << 8)) | (0xff & buffer[offset + nth]);
   }
 
-  nth += 2;
+  offset += 4;
 
-  return(nth);
+  return(offset);
 }
 
 /**
@@ -3719,7 +4139,7 @@ ags_midi_ump_util_is_midi2_channel_voice(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0x40){
+  if((0xf0 & (buffer[3])) == 0x40){
     return(TRUE);
   }
   
@@ -3743,8 +4163,8 @@ ags_midi_ump_util_is_midi2_note_off(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0x40 &&
-     (0xf0 & (buffer[1])) == 0x80){
+  if((0xf0 & (buffer[3])) == 0x40 &&
+     (0xf0 & (buffer[2])) == 0x80){
     return(TRUE);
   }
   
@@ -3781,42 +4201,48 @@ ags_midi_ump_util_put_midi2_note_off(AgsMidiUmpUtil *midi_ump_util,
 				     gchar **extension_name, GValue *extension_value,
 				     guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
+  
   const gint opcode = 0x08;
   const gint mt = 0x04;
   
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
+  offset = 0;
   
-  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth--;
 
-  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
-  nth++;
+  buffer[offset + nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
+  nth--;
   
   /* key */
-  buffer[nth] = (0xff & (key));
-  nth++;
+  buffer[offset + nth] = (0xff & (key));
+  nth--;
 
   /* attribute type */
-  buffer[nth] = (0xff & (attribute_type));
-  nth++;
+  buffer[offset + nth] = (0xff & (attribute_type));
+
+  offset += 4;
+  
+  nth = 3;
 
   /* velocity */
-  buffer[nth] = (0xff & (velocity >> 8));
-  nth++;
+  buffer[offset + nth] = (0xff & (velocity >> 8));
+  nth--;
 
-  buffer[nth] = (0xff & (velocity));
-  nth++;
+  buffer[offset + nth] = (0xff & (velocity));
+  nth--;
 
   /* attribute */
-  buffer[nth] = (0xff & (attribute >> 8));
-  nth++;
+  buffer[offset + nth] = (0xff & (attribute >> 8));
+  nth--;
 
-  buffer[nth] = (0xff & (attribute));
-  nth++;
+  buffer[offset + nth] = (0xff & (attribute));
 }
 
 /**
@@ -3851,52 +4277,61 @@ ags_midi_ump_util_get_midi2_note_off(AgsMidiUmpUtil *midi_ump_util,
 				     gchar ***extension_name, GValue **extension_value,
 				     guint *extension_count)
 {
+  guint offset;
   gint nth;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x40, 0);
-  g_return_val_if_fail((0xf0 & buffer[1]) == 0x80, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0x40, 0);
+  g_return_val_if_fail((0xf0 & buffer[2]) == 0x80, 0);
 
+  offset = 0;
+
+  nth = 3;
+  
   if(group != NULL){
-    group[0] = 0x0f & buffer[0];
+    group[0] = 0x0f & buffer[offset + nth];
   }
+
+  nth--;
 
   if(channel != NULL){
-    channel[0] = 0x0f & buffer[1];
+    channel[0] = 0x0f & buffer[offset + nth];
   }
   
-  nth = 2;
+  nth--;
   
   /* key */
   if(key != NULL){
-    key[0] = 0xff & buffer[nth];
+    key[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
+  nth--;
 
   /* attribute type */
   if(attribute_type != NULL){
-    attribute_type[0] = 0xff & buffer[nth];
+    attribute_type[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
+  offset += 4;
+  
+  nth = 3;
 
   /* velocity */
   if(velocity != NULL){
-    velocity[0] = (0xff00 & (buffer[nth] << 8)) | (0xff & buffer[nth + 1]);
+    velocity[0] = (0xff00 & (buffer[offset + nth] << 8)) | (0xff & buffer[offset + nth - 1]);
   }
 
-  nth += 2;
+  nth -= 2;
 
   /* attribute */
   if(attribute != NULL){
-    attribute[0] = (0xff00 & (buffer[nth] << 8)) | (0xff & buffer[nth + 1]);
+    attribute[0] = (0xff00 & (buffer[offset + nth] << 8)) | (0xff & buffer[offset + nth - 1]);
   }
 
-  nth += 2;
+  offset += 4;
 
-  return(nth);
+  return(offset);
 }
 
 /**
@@ -3916,8 +4351,8 @@ ags_midi_ump_util_is_midi2_note_on(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0x40 &&
-     (0xf0 & (buffer[1])) == 0x90){
+  if((0xf0 & (buffer[3])) == 0x40 &&
+     (0xf0 & (buffer[2])) == 0x90){
     return(TRUE);
   }
   
@@ -3954,42 +4389,47 @@ ags_midi_ump_util_put_midi2_note_on(AgsMidiUmpUtil *midi_ump_util,
 				    gchar **extension_name, GValue *extension_value,
 				    guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
+
   const gint opcode = 0x09;
   const gint mt = 0x04;
   
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
+  offset = 0;
   
-  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth--;
 
-  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
-  nth++;
+  buffer[offset + nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
+  nth--;
   
   /* key */
-  buffer[nth] = (0xff & (key));
-  nth++;
+  buffer[offset + nth] = (0xff & (key));
+  nth--;
 
   /* attribute type */
-  buffer[nth] = (0xff & (attribute_type));
-  nth++;
+  buffer[offset + nth] = (0xff & (attribute_type));
+
+  offset += 4;
+  nth = 3;
 
   /* velocity */
-  buffer[nth] = (0xff & (velocity >> 8));
-  nth++;
+  buffer[offset + nth] = (0xff & (velocity >> 8));
+  nth--;
 
-  buffer[nth] = (0xff & (velocity));
-  nth++;
+  buffer[offset + nth] = (0xff & (velocity));
+  nth--;
 
   /* attribute */
-  buffer[nth] = (0xff & (attribute >> 8));
-  nth++;
+  buffer[offset + nth] = (0xff & (attribute >> 8));
+  nth--;
 
-  buffer[nth] = (0xff & (attribute));
-  nth++;
+  buffer[offset + nth] = (0xff & (attribute));
 }
 
 /**
@@ -4024,52 +4464,60 @@ ags_midi_ump_util_get_midi2_note_on(AgsMidiUmpUtil *midi_ump_util,
 				    gchar ***extension_name, GValue **extension_value,
 				    guint *extension_count)
 {
+  guint offset;
   gint nth;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x40, 0);
-  g_return_val_if_fail((0xf0 & buffer[1]) == 0x90, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0x40, 0);
+  g_return_val_if_fail((0xf0 & buffer[2]) == 0x90, 0);
 
+  offset = 0;
+
+  nth = 3;
+  
   if(group != NULL){
-    group[0] = 0x0f & buffer[0];
+    group[0] = 0x0f & buffer[offset + nth];
   }
 
+  nth--;
+  
   if(channel != NULL){
-    channel[0] = 0x0f & buffer[1];
+    channel[0] = 0x0f & buffer[offset + nth];
   }
   
-  nth = 2;
+  nth--;
   
   /* key */
   if(key != NULL){
-    key[0] = 0xff & buffer[nth];
+    key[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
+  nth--;
 
   /* attribute type */
   if(attribute_type != NULL){
-    attribute_type[0] = 0xff & buffer[nth];
+    attribute_type[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
+  offset += 4;
+  nth = 3;
 
   /* velocity */
   if(velocity != NULL){
-    velocity[0] = (0xff00 & (buffer[nth] << 8)) | (0xff & buffer[nth + 1]);
+    velocity[0] = (0xff00 & (buffer[offset + nth] << 8)) | (0xff & buffer[offset + nth - 1]);
   }
 
-  nth += 2;
+  nth -= 2;
 
   /* attribute */
   if(attribute != NULL){
-    attribute[0] = (0xff00 & (buffer[nth] << 8)) | (0xff & buffer[nth + 1]);
+    attribute[0] = (0xff00 & (buffer[offset + nth] << 8)) | (0xff & buffer[offset + nth - 1]);
   }
 
-  nth += 2;
+  offset += 4;
 
-  return(nth);
+  return(offset);
 }
 
 /**
@@ -4089,8 +4537,8 @@ ags_midi_ump_util_is_midi2_polyphonic_aftertouch(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0x40 &&
-     (0xf0 & (buffer[1])) == 0xa0){
+  if((0xf0 & (buffer[3])) == 0x40 &&
+     (0xf0 & (buffer[2])) == 0xa0){
     return(TRUE);
   }
   
@@ -4123,40 +4571,45 @@ ags_midi_ump_util_put_midi2_polyphonic_aftertouch(AgsMidiUmpUtil *midi_ump_util,
 						  gchar **extension_name, GValue *extension_value,
 						  guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
+
   const gint opcode = 0x0a;
   const gint mt = 0x04;
   
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
+  offset = 0;
   
-  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth--;
 
-  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
-  nth++;
+  buffer[offset + nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
+  nth--;
   
   /* index key */
-  buffer[nth] = (0xff & (key));
-  nth++;
+  buffer[offset + nth] = (0xff & (key));
+  nth--;
 
   /* reserved */
-  nth++;
+  offset += 4;
+
+  nth = 3;
   
   /* data */
-  buffer[nth] = (0xff & (data >> 24));
-  nth++;
+  buffer[offset + nth] = (0xff & (data >> 24));
+  nth--;
 
-  buffer[nth] = (0xff & (data >> 16));
-  nth++;
+  buffer[offset + nth] = (0xff & (data >> 16));
+  nth--;
 
-  buffer[nth] = (0xff & (data >> 8));
-  nth++;
+  buffer[offset + nth] = (0xff & (data >> 8));
+  nth--;
 
-  buffer[nth] = (0xff & (data));
-  nth++;
+  buffer[offset + nth] = (0xff & (data));
 }
 
 /**
@@ -4187,41 +4640,49 @@ ags_midi_ump_util_get_midi2_polyphonic_aftertouch(AgsMidiUmpUtil *midi_ump_util,
 						  gchar ***extension_name, GValue **extension_value,
 						  guint *extension_count)
 {
+  guint offset;
   gint nth;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x40, 0);
-  g_return_val_if_fail((0xf0 & buffer[1]) == 0xa0, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0x40, 0);
+  g_return_val_if_fail((0xf0 & buffer[2]) == 0xa0, 0);
 
+  offset = 0;
+
+  nth = 3;
+  
   if(group != NULL){
-    group[0] = 0x0f & buffer[0];
+    group[0] = 0x0f & buffer[offset + nth];
   }
 
+  nth--;
+  
   if(channel != NULL){
-    channel[0] = 0x0f & buffer[1];
+    channel[0] = 0x0f & buffer[offset + nth];
   }
   
-  nth = 2;
+  nth--;
   
   /* key */
   if(key != NULL){
-    key[0] = 0xff & buffer[nth];
+    key[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
+  nth--;
 
   /* reserved */
-  nth++;
+  offset += 4;
+  nth = 3;
 
   /* data */
   if(data != NULL){
-    data[0] = (0xff000000 & (buffer[nth] << 24)) | (0xff0000 & (buffer[nth + 1] << 16)) | (0xff00 & (buffer[nth + 2] << 8)) | (0xff & buffer[nth + 3]);
+    data[0] = (0xff000000 & (buffer[offset + nth] << 24)) | (0xff0000 & (buffer[offset + nth - 1] << 16)) | (0xff00 & (buffer[offset + nth - 2] << 8)) | (0xff & buffer[offset + nth - 3]);
   }
 
-  nth += 4;
+  offset += 4;
 
-  return(nth);
+  return(offset);
 }
 
 /**
@@ -4241,8 +4702,8 @@ ags_midi_ump_util_is_midi2_registered_per_note_controller(AgsMidiUmpUtil *midi_u
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0x40 &&
-     (0xf0 & (buffer[1])) == 0x00){
+  if((0xf0 & (buffer[3])) == 0x40 &&
+     (0xf0 & (buffer[2])) == 0x00){
     return(TRUE);
   }
   
@@ -4277,41 +4738,47 @@ ags_midi_ump_util_put_midi2_registered_per_note_controller(AgsMidiUmpUtil *midi_
 							   gchar **extension_name, GValue *extension_value,
 							   guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
+
   const gint opcode = 0x00;
   const gint mt = 0x04;
   
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
+  offset = 0;
   
-  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth--;
 
-  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
-  nth++;
+  buffer[offset + nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
+  nth--;
   
   /* key */
-  buffer[nth] = (0xff & (key));
-  nth++;
+  buffer[offset + nth] = (0xff & (key));
+  nth--;
 
   /* data index */
-  buffer[nth] = (0xff & (data_index));
-  nth++;
+  buffer[offset + nth] = (0xff & (data_index));
+
+  offset += 4;
+
+  nth = 3;
 
   /* data */
-  buffer[nth] = (0xff & (data >> 24));
-  nth++;
+  buffer[offset + nth] = (0xff & (data >> 24));
+  nth--;
 
-  buffer[nth] = (0xff & (data >> 16));
-  nth++;
+  buffer[offset + nth] = (0xff & (data >> 16));
+  nth--;
 
-  buffer[nth] = (0xff & (data >> 8));
-  nth++;
+  buffer[offset + nth] = (0xff & (data >> 8));
+  nth--;
 
-  buffer[nth] = (0xff & (data));
-  nth++;
+  buffer[offset + nth] = (0xff & (data));
 }
 
 /**
@@ -4344,45 +4811,54 @@ ags_midi_ump_util_get_midi2_registered_per_note_controller(AgsMidiUmpUtil *midi_
 							   gchar ***extension_name, GValue **extension_value,
 							   guint *extension_count)
 {
+  guint offset;
   gint nth;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x40, 0);
-  g_return_val_if_fail((0xf0 & buffer[1]) == 0x00, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0x40, 0);
+  g_return_val_if_fail((0xf0 & buffer[2]) == 0x00, 0);
 
+  offset = 0;
+
+  nth = 3;
+  
   if(group != NULL){
-    group[0] = 0x0f & buffer[0];
+    group[0] = 0x0f & buffer[offset + nth];
   }
+
+  nth--;
 
   if(channel != NULL){
-    channel[0] = 0x0f & buffer[1];
+    channel[0] = 0x0f & buffer[offset + nth];
   }
   
-  nth = 2;
+  nth--;
   
   /* key */
   if(key != NULL){
-    key[0] = 0xff & buffer[nth];
+    key[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
+  nth--;
 
   /* data index */
   if(data_index != NULL){
-    data_index[0] = 0xff & buffer[nth];
+    data_index[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
+  offset += 4;
+
+  nth = 3;
 
   /* data */
   if(data != NULL){
-    data[0] = (0xff000000 & (buffer[nth] << 24)) | (0xff0000 & (buffer[nth + 1] << 16)) | (0xff00 & (buffer[nth + 2] << 8)) | (0xff & buffer[nth + 3]);
+    data[0] = (0xff000000 & (buffer[offset + nth] << 24)) | (0xff0000 & (buffer[offset + nth - 1] << 16)) | (0xff00 & (buffer[offset + nth - 2] << 8)) | (0xff & buffer[offset + nth - 3]);
   }
 
-  nth += 4;
+  offset += 4;
 
-  return(nth);
+  return(offset);
 }
 
 /**
@@ -4402,8 +4878,8 @@ ags_midi_ump_util_is_midi2_assignable_per_note_controller(AgsMidiUmpUtil *midi_u
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0x40 &&
-     (0xf0 & (buffer[1])) == 0x10){
+  if((0xf0 & (buffer[3])) == 0x40 &&
+     (0xf0 & (buffer[2])) == 0x10){
     return(TRUE);
   }
   
@@ -4438,41 +4914,47 @@ ags_midi_ump_util_put_midi2_assignable_per_note_controller(AgsMidiUmpUtil *midi_
 							   gchar **extension_name, GValue *extension_value,
 							   guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
+
   const gint opcode = 0x01;
   const gint mt = 0x04;
   
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
+  offset = 0;
   
-  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth--;
 
-  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
-  nth++;
+  buffer[offset + nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
+  nth--;
   
   /* key */
-  buffer[nth] = (0xff & (key));
-  nth++;
+  buffer[offset + nth] = (0xff & (key));
+  nth--;
 
   /* data index */
-  buffer[nth] = (0xff & (data_index));
-  nth++;
+  buffer[offset + nth] = (0xff & (data_index));
+
+  offset += 4;
+  
+  nth = 3;
 
   /* data */
-  buffer[nth] = (0xff & (data >> 24));
-  nth++;
+  buffer[offset + nth] = (0xff & (data >> 24));
+  nth--;
 
-  buffer[nth] = (0xff & (data >> 16));
-  nth++;
+  buffer[offset + nth] = (0xff & (data >> 16));
+  nth--;
 
-  buffer[nth] = (0xff & (data >> 8));
-  nth++;
+  buffer[offset + nth] = (0xff & (data >> 8));
+  nth--;
 
-  buffer[nth] = (0xff & (data));
-  nth++;
+  buffer[offset + nth] = (0xff & (data));
 }
 
 /**
@@ -4505,45 +4987,54 @@ ags_midi_ump_util_get_midi2_assignable_per_note_controller(AgsMidiUmpUtil *midi_
 							   gchar ***extension_name, GValue **extension_value,
 							   guint *extension_count)
 {
+  guint offset;
   gint nth;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x40, 0);
-  g_return_val_if_fail((0xf0 & buffer[1]) == 0x10, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0x40, 0);
+  g_return_val_if_fail((0xf0 & buffer[2]) == 0x10, 0);
 
+  offset = 0;
+
+  nth = 3;
+  
   if(group != NULL){
-    group[0] = 0x0f & buffer[0];
+    group[0] = 0x0f & buffer[offset + nth];
   }
+
+  nth--;
 
   if(channel != NULL){
-    channel[0] = 0x0f & buffer[1];
+    channel[0] = 0x0f & buffer[offset + nth];
   }
   
-  nth = 2;
+  nth--;
   
   /* key */
   if(key != NULL){
-    key[0] = 0xff & buffer[nth];
+    key[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
+  nth--;
 
   /* data index */
   if(data_index != NULL){
-    data_index[0] = 0xff & buffer[nth];
+    data_index[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
+  offset += 4;
+
+  nth = 3;
 
   /* data */
   if(data != NULL){
-    data[0] = (0xff000000 & (buffer[nth] << 24)) | (0xff0000 & (buffer[nth + 1] << 16)) | (0xff00 & (buffer[nth + 2] << 8)) | (0xff & buffer[nth + 3]);
+    data[0] = (0xff000000 & (buffer[offset + nth] << 24)) | (0xff0000 & (buffer[offset + nth - 1] << 16)) | (0xff00 & (buffer[offset + nth - 2] << 8)) | (0xff & buffer[offset + nth - 3]);
   }
 
-  nth += 4;
+  offset += 4;
 
-  return(nth);
+  return(offset);
 }
 
 /**
@@ -4563,8 +5054,8 @@ ags_midi_ump_util_is_midi2_per_note_management(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0x40 &&
-     (0xf0 & (buffer[1])) == 0xf0){
+  if((0xf0 & (buffer[3])) == 0x40 &&
+     (0xf0 & (buffer[2])) == 0xf0){
     return(TRUE);
   }
   
@@ -4597,31 +5088,37 @@ ags_midi_ump_util_put_midi2_per_note_management(AgsMidiUmpUtil *midi_ump_util,
 						gchar **extension_name, GValue *extension_value,
 						guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
+
   const gint opcode = 0x0f;
   const gint mt = 0x04;
   
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
+  offset = 0;
   
-  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth--;
 
-  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
-  nth++;
+  buffer[offset + nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
+  nth--;
   
   /* key */
-  buffer[nth] = (0xff & (key));
-  nth++;
+  buffer[offset + nth] = (0xff & (key));
+  nth--;
 
   /* options flags */
-  buffer[nth] = (0xff & (options_flags));
-  nth++;
+  buffer[offset + nth] = (0xff & (options_flags));
 
+  offset += 4;
+
+  nth = 3;
+  
   /* reserved */
-  nth += 4;
 }
 
 /**
@@ -4652,41 +5149,50 @@ ags_midi_ump_util_get_midi2_per_note_management(AgsMidiUmpUtil *midi_ump_util,
 						gchar ***extension_name, GValue **extension_value,
 						guint *extension_count)
 {
+  guint offset;
   gint nth;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x40, 0);
-  g_return_val_if_fail((0xf0 & buffer[1]) == 0xf0, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0x40, 0);
+  g_return_val_if_fail((0xf0 & buffer[2]) == 0xf0, 0);
 
+  offset = 0;
+
+  nth = 3;
+  
   if(group != NULL){
-    group[0] = 0x0f & buffer[0];
+    group[0] = 0x0f & buffer[offset + nth];
   }
+
+  nth--;
 
   if(channel != NULL){
-    channel[0] = 0x0f & buffer[1];
+    channel[0] = 0x0f & buffer[offset + nth];
   }
   
-  nth = 2;
+  nth--;
   
   /* key */
   if(key != NULL){
-    key[0] = 0xff & buffer[nth];
+    key[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
+  nth--;
 
   /* options flags */
   if(options_flags != NULL){
-    options_flags[0] = 0xff & buffer[nth];
+    options_flags[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
+  offset += 4;
+
+  nth = 3;
 
   /* reserved */
-  nth += 4;
+  offset += 4;
 
-  return(nth);
+  return(offset);
 }
 
 /**
@@ -4706,8 +5212,8 @@ ags_midi_ump_util_is_midi2_control_change(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0x40 &&
-     (0xf0 & (buffer[1])) == 0xb0){
+  if((0xf0 & (buffer[3])) == 0x40 &&
+     (0xf0 & (buffer[2])) == 0xb0){
     return(TRUE);
   }
   
@@ -4738,7 +5244,8 @@ ags_midi_ump_util_put_midi2_control_change(AgsMidiUmpUtil *midi_ump_util,
 					   gchar **extension_name, GValue *extension_value,
 					   guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
   gint position;
   
   const gint opcode = 0x0b;
@@ -4747,45 +5254,52 @@ ags_midi_ump_util_put_midi2_control_change(AgsMidiUmpUtil *midi_ump_util,
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
+  offset = 0;
   
-  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth--;
 
-  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
-  nth++;
+  buffer[offset + nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
+  nth--;
   
   /* index key */
-  buffer[nth] = (0xff & (index_key));
-  nth++;
+  buffer[offset + nth] = (0xff & (index_key));
+  nth--;
 
   /* reserved */
-  buffer[nth] = 0x0;  
-  nth++;
+  buffer[offset + nth] = 0x0;
+
+  offset += 4;
+  
+  nth = 3;
 
   /* data */
-  buffer[nth] = 0x0;  
-  buffer[nth + 1] = 0x0;  
-  buffer[nth + 2] = 0x0;  
-  buffer[nth + 3] = 0x0;  
+  buffer[offset + nth] = 0x0;  
+  buffer[offset + nth - 1] = 0x0;  
+  buffer[offset + nth - 2] = 0x0;  
+  buffer[offset + nth - 3] = 0x0;  
 
   if((position = ags_strv_index(extension_name, "portamento")) >= 0){
     gint source_note_number;
 
     source_note_number = g_value_get_int(extension_value + position);
 
-    buffer[nth] = 0xfe & (source_note_number << 1);    
+    buffer[offset + nth] = 0xfe & (source_note_number << 1);    
   }
+
+  nth--;
 
   if((position = ags_strv_index(extension_name, "omni-off")) >= 0){
     gint channels_count;
 
     channels_count = g_value_get_int(extension_value + position);
 
-    buffer[nth] = 0xfe & (channels_count << 1);
+    buffer[offset + nth] = 0xfe & (channels_count << 1);
   }
 
-  nth += 4;
+  nth--;
 }
 
 /**
@@ -4814,34 +5328,43 @@ ags_midi_ump_util_get_midi2_control_change(AgsMidiUmpUtil *midi_ump_util,
 					   gchar ***extension_name, GValue **extension_value,
 					   guint *extension_count)
 {
+  guint offset;
   gint nth;
   gint position;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x40, 0);
-  g_return_val_if_fail((0xf0 & buffer[1]) == 0xb0, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0x40, 0);
+  g_return_val_if_fail((0xf0 & buffer[2]) == 0xb0, 0);
 
+  offset = 0;
+
+  nth = 3;
+  
   if(group != NULL){
-    group[0] = 0x0f & buffer[0];
+    group[0] = 0x0f & buffer[offset + nth];
   }
+
+  nth--;
 
   if(channel != NULL){
-    channel[0] = 0x0f & buffer[1];
+    channel[0] = 0x0f & buffer[offset + nth];
   }
   
-  nth = 2;
+  nth--;
   
   /* index key */
   if(index_key != NULL){
-    index_key[0] = 0xff & buffer[nth];
+    index_key[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
+  nth--;
 
   /* reserved */
-  nth++;
+  offset += 4;
 
+  nth = 3;
+  
   /* data */
   if(extension_name != NULL){
     if((position = ags_strv_index(extension_name[0], "portamento")) >= 0){
@@ -4850,9 +5373,11 @@ ags_midi_ump_util_get_midi2_control_change(AgsMidiUmpUtil *midi_ump_util,
       source_note_number = g_value_get_pointer(extension_value[0] + position);
 
       if(source_note_number != NULL){
-	((gint *) source_note_number)[0] = (0xfe & buffer[nth]) >> 1;
+	((gint *) source_note_number)[0] = (0xfe & buffer[offset + nth]) >> 1;
       }
     }
+
+    nth--;
 
     if((position = ags_strv_index(extension_name[0], "omni-off")) >= 0){
       gpointer channels_count;
@@ -4860,14 +5385,16 @@ ags_midi_ump_util_get_midi2_control_change(AgsMidiUmpUtil *midi_ump_util,
       channels_count = g_value_get_pointer(extension_value[0] + position);
 
       if(channels_count != NULL){
-	((gint *) channels_count)[0] = (0xfe & buffer[nth]) >> 1;
+	((gint *) channels_count)[0] = (0xfe & buffer[offset + nth]) >> 1;
       }
     }
   }
+
+  nth--;
+
+  offset += 4;
   
-  nth += 4;
-  
-  return(nth);
+  return(offset);
 }
 
 /**
@@ -4887,10 +5414,10 @@ ags_midi_ump_util_is_midi2_rpn_pitch_bend_range(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0x40 &&
-     (0xf0 & (buffer[1])) == 0x20 &&
-     (0xff & (buffer[2])) == 0x00 &&
-     (0xff & (buffer[3])) == 0x00){
+  if((0xf0 & (buffer[3])) == 0x40 &&
+     (0xf0 & (buffer[2])) == 0x20 &&
+     (0xff & (buffer[1])) == 0x00 &&
+     (0xff & (buffer[0])) == 0x00){
     return(TRUE);
   }
   
@@ -4923,7 +5450,8 @@ ags_midi_ump_util_put_midi2_rpn_pitch_bend_range(AgsMidiUmpUtil *midi_ump_util,
 						 gchar **extension_name, GValue *extension_value,
 						 guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
   gint position;
 
   const gint bank = 0x0;
@@ -4934,35 +5462,38 @@ ags_midi_ump_util_put_midi2_rpn_pitch_bend_range(AgsMidiUmpUtil *midi_ump_util,
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
+  offset = 0;
   
-  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth--;
 
-  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
-  nth++;
+  buffer[offset + nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
+  nth--;
   
   /* bank */
-  buffer[nth] = (0xff & (bank));
-  nth++;
+  buffer[offset + nth] = (0xff & (bank));
+  nth--;
 
   /* index key */
-  buffer[nth] = (0xff & (index_key));
-  nth++;
+  buffer[offset + nth] = (0xff & (index_key));
+
+  offset += 4;
+
+  nth = 3;
 
   /* semitones */
-  buffer[nth] = 0xfe & ((0x7f & (semitones)) << 1) | ((0x40 & (cents)) >> 6);
-  nth++;
+  buffer[offset + nth] = 0xfe & ((0x7f & (semitones)) << 1) | ((0x70 & (cents)) >> 6);
+  nth--;
 
   /* cents */
-  buffer[nth] = 0xfc & ((0x7f & (cents)) << 2);
-  nth++;
+  buffer[offset + nth] = 0xfc & ((0x7f & (cents)) << 2);
+  nth--;
 
   /* undefined */
-  buffer[nth] = 0x0;  
-  buffer[nth + 1] = 0x0;  
-
-  nth += 2;
+  buffer[offset + nth] = 0x0;  
+  buffer[offset + nth - 1] = 0x0;  
 }
 
 /**
@@ -4993,41 +5524,50 @@ ags_midi_ump_util_get_midi2_rpn_pitch_bend_range(AgsMidiUmpUtil *midi_ump_util,
 						 gchar ***extension_name, GValue **extension_value,
 						 guint *extension_count)
 {
+  guint offset;
   gint nth;
   gint position;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x40, 0);
-  g_return_val_if_fail((0xf0 & buffer[1]) == 0x20, 0);
-  g_return_val_if_fail((0xff & buffer[2]) == 0x00, 0);
-  g_return_val_if_fail((0xff & buffer[3]) == 0x00, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0x40, 0);
+  g_return_val_if_fail((0xf0 & buffer[2]) == 0x20, 0);
+  g_return_val_if_fail((0xff & buffer[1]) == 0x00, 0);
+  g_return_val_if_fail((0xff & buffer[0]) == 0x00, 0);
 
-  if(group != NULL){
-    group[0] = 0x0f & buffer[0];
-  }
+  offset = 0;
 
-  if(channel != NULL){
-    channel[0] = 0x0f & buffer[1];
-  }
+  nth = 1;
   
-  nth = 4;
+  if(group != NULL){
+    group[0] = 0x0f & buffer[offset + nth];
+  }
+
+  nth--;
+  
+  if(channel != NULL){
+    channel[0] = 0x0f & buffer[offset + nth];
+  }
+
+  offset += 4;
+
+  nth = 3;
   
   /* semitones and cents */
   if(semitones != NULL){
-    semitones[0] = 0x7f & (buffer[nth] >> 1);
-  }
-  
-  if(cents != NULL){
-    cents[0] = ((0x01 & buffer[nth]) << 6) | ((0xfc & buffer[nth + 1]) >> 2);
+    semitones[0] = 0x7f & (buffer[offset + nth] >> 1);
   }
 
-  nth += 2;
+  if(cents != NULL){
+    cents[0] = ((0x07 & buffer[offset + nth]) << 6) | ((0xfc & buffer[offset + nth - 1]) >> 2);
+  }
+
+  nth -= 2;
 
   /* undefined */
-  nth += 2;
+  offset += 4;
   
-  return(nth);
+  return(offset);
 }
 
 /**
@@ -5047,10 +5587,10 @@ ags_midi_ump_util_is_midi2_rpn_coarse_tuning(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0x40 &&
-     (0xf0 & (buffer[1])) == 0x20 &&
-     (0xff & (buffer[2])) == 0x00 &&
-     (0xff & (buffer[3])) == 0x02){
+  if((0xf0 & (buffer[3])) == 0x40 &&
+     (0xf0 & (buffer[2])) == 0x20 &&
+     (0xff & (buffer[1])) == 0x00 &&
+     (0xff & (buffer[0])) == 0x02){
     return(TRUE);
   }
   
@@ -5081,7 +5621,8 @@ ags_midi_ump_util_put_midi2_rpn_coarse_tuning(AgsMidiUmpUtil *midi_ump_util,
 					      gchar **extension_name, GValue *extension_value,
 					      guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
   gint position;
 
   const gint bank = 0x0;
@@ -5092,32 +5633,35 @@ ags_midi_ump_util_put_midi2_rpn_coarse_tuning(AgsMidiUmpUtil *midi_ump_util,
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
+  offset = 0;
   
-  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth--;
 
-  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
-  nth++;
+  buffer[offset + nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
+  nth--;
   
   /* bank */
-  buffer[nth] = (0xff & (bank));
-  nth++;
+  buffer[offset + nth] = (0xff & (bank));
+  nth--;
 
   /* index key */
-  buffer[nth] = (0xff & (index_key));
-  nth++;
+  buffer[offset + nth] = (0xff & (index_key));
+
+  offset += 4;
+  
+  nth = 3;
 
   /* coarse tuning */
-  buffer[nth] = 0xfe & ((0x7f & (coarse_tuning)) << 1);
-  nth++;
+  buffer[offset + nth] = 0xfe & ((0x7f & (coarse_tuning)) << 1);
+  nth--;
 
   /* undefined */
-  buffer[nth] = 0x0;  
-  buffer[nth + 1] = 0x0;  
-  buffer[nth + 2] = 0x0;  
-
-  nth += 3;
+  buffer[offset + nth] = 0x0;  
+  buffer[offset + nth - 1] = 0x0;  
+  buffer[offset + nth - 2] = 0x0;  
 }
 
 /**
@@ -5146,35 +5690,44 @@ ags_midi_ump_util_get_midi2_rpn_coarse_tuning(AgsMidiUmpUtil *midi_ump_util,
 					      gchar ***extension_name, GValue **extension_value,
 					      guint *extension_count)
 {
+  guint offset;
   gint nth;
   gint position;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x40, 0);
-  g_return_val_if_fail((0xf0 & buffer[1]) == 0x20, 0);
-  g_return_val_if_fail((0xff & buffer[2]) == 0x00, 0);
-  g_return_val_if_fail((0xff & buffer[3]) == 0x02, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0x40, 0);
+  g_return_val_if_fail((0xf0 & buffer[2]) == 0x20, 0);
+  g_return_val_if_fail((0xff & buffer[1]) == 0x00, 0);
+  g_return_val_if_fail((0xff & buffer[0]) == 0x02, 0);
 
+  offset = 0;
+
+  nth = 3;
+  
   if(group != NULL){
-    group[0] = 0x0f & buffer[0];
+    group[0] = 0x0f & buffer[offset + nth];
   }
+
+  nth--;
 
   if(channel != NULL){
-    channel[0] = 0x0f & buffer[1];
+    channel[0] = 0x0f & buffer[offset + nth];
   }
   
-  nth = 4;
+  offset += 4;
   
+  nth = 3;
+
   /* coarse tuning */
   if(coarse_tuning != NULL){
-    coarse_tuning[0] = (0x7f & (buffer[nth] >> 1));
+    coarse_tuning[0] = (0x7f & (buffer[offset + nth] >> 1));
   }
 
-  nth += 1;
+  nth--;
 
   /* undefined */
-  nth += 3;
+  offset += 4;
   
   return(nth);
 }
@@ -5196,10 +5749,10 @@ ags_midi_ump_util_is_midi2_rpn_tuning_program_change(AgsMidiUmpUtil *midi_ump_ut
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0x40 &&
-     (0xf0 & (buffer[1])) == 0x20 &&
-     (0xff & (buffer[2])) == 0x00 &&
-     (0xff & (buffer[3])) == 0x03){
+  if((0xf0 & (buffer[3])) == 0x40 &&
+     (0xf0 & (buffer[2])) == 0x20 &&
+     (0xff & (buffer[1])) == 0x00 &&
+     (0xff & (buffer[0])) == 0x03){
     return(TRUE);
   }
   
@@ -5230,7 +5783,8 @@ ags_midi_ump_util_put_midi2_rpn_tuning_program_change(AgsMidiUmpUtil *midi_ump_u
 						      gchar **extension_name, GValue *extension_value,
 						      guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
   gint position;
 
   const gint bank = 0x0;
@@ -5241,31 +5795,34 @@ ags_midi_ump_util_put_midi2_rpn_tuning_program_change(AgsMidiUmpUtil *midi_ump_u
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
+  offset = 0;
   
-  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth--;
 
-  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
-  nth++;
+  buffer[offset + nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
+  nth--;
   
   /* bank */
-  buffer[nth] = (0xff & (bank));
-  nth++;
+  buffer[offset + nth] = (0xff & (bank));
+  nth--;
 
   /* index key */
-  buffer[nth] = (0xff & (index_key));
-  nth++;
+  buffer[offset + nth] = (0xff & (index_key));
+
+  offset += 4;
+
+  nth = 3;
 
   /* tuning program number */
-  buffer[nth] = 0xfe & ((0x7f & (tuning_program_number)) << 1);
-  nth++;
+  buffer[offset + nth] = 0xfe & ((0x7f & (tuning_program_number)) << 1);
+  nth--;
 
   /* undefined */
-  buffer[nth] = 0x0;  
-  buffer[nth + 1] = 0x0;  
-
-  nth += 2;
+  buffer[offset + nth] = 0x0;  
+  buffer[offset + nth - 1] = 0x0;  
 }
 
 /**
@@ -5294,37 +5851,46 @@ ags_midi_ump_util_get_midi2_rpn_tuning_program_change(AgsMidiUmpUtil *midi_ump_u
 						      gchar ***extension_name, GValue **extension_value,
 						      guint *extension_count)
 {
+  guint offset;
   gint nth;
   gint position;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x40, 0);
-  g_return_val_if_fail((0xf0 & buffer[1]) == 0x20, 0);
-  g_return_val_if_fail((0xff & buffer[2]) == 0x00, 0);
-  g_return_val_if_fail((0xff & buffer[3]) == 0x03, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0x40, 0);
+  g_return_val_if_fail((0xf0 & buffer[2]) == 0x20, 0);
+  g_return_val_if_fail((0xff & buffer[1]) == 0x00, 0);
+  g_return_val_if_fail((0xff & buffer[0]) == 0x03, 0);
 
-  if(group != NULL){
-    group[0] = 0x0f & buffer[0];
-  }
+  offset = 0;
 
-  if(channel != NULL){
-    channel[0] = 0x0f & buffer[1];
-  }
+  nth = 3;
   
-  nth = 4;
+  if(group != NULL){
+    group[0] = 0x0f & buffer[offset + nth];
+  }
+
+  nth--;
+  
+  if(channel != NULL){
+    channel[0] = 0x0f & buffer[offset + nth];
+  }
+
+  offset += 4;
+  
+  nth = 3;
   
   /* tuning program number */
   if(tuning_program_number != NULL){
-    tuning_program_number[0] = (0x7f & (buffer[nth] >> 1));
+    tuning_program_number[0] = (0x7f & (buffer[offset + nth] >> 1));
   }
 
-  nth += 1;
+  nth--;
 
   /* undefined */
-  nth += 3;
+  offset += 4;
   
-  return(nth);
+  return(offset);
 }
 
 /**
@@ -5344,10 +5910,10 @@ ags_midi_ump_util_is_midi2_rpn_tuning_bank_select(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0x40 &&
-     (0xf0 & (buffer[1])) == 0x20 &&
-     (0xff & (buffer[2])) == 0x00 &&
-     (0xff & (buffer[3])) == 0x04){
+  if((0xf0 & (buffer[3])) == 0x40 &&
+     (0xf0 & (buffer[2])) == 0x20 &&
+     (0xff & (buffer[1])) == 0x00 &&
+     (0xff & (buffer[0])) == 0x04){
     return(TRUE);
   }
   
@@ -5378,7 +5944,8 @@ ags_midi_ump_util_put_midi2_rpn_tuning_bank_select(AgsMidiUmpUtil *midi_ump_util
 						   gchar **extension_name, GValue *extension_value,
 						   guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
   gint position;
 
   const gint bank = 0x0;
@@ -5389,31 +5956,34 @@ ags_midi_ump_util_put_midi2_rpn_tuning_bank_select(AgsMidiUmpUtil *midi_ump_util
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
-  
-  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
-  nth++;
+  offset = 0;
 
-  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth--;
+
+  buffer[offset + nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
+  nth--;
   
   /* bank */
-  buffer[nth] = (0xff & (bank));
-  nth++;
+  buffer[offset + nth] = (0xff & (bank));
+  nth--;
 
   /* index key */
-  buffer[nth] = (0xff & (index_key));
-  nth++;
+  buffer[offset + nth] = (0xff & (index_key));
+
+  offset += 4;
+  
+  nth = 3;
 
   /* tuning bank number */
-  buffer[nth] = 0xfe & ((tuning_bank_number) << 1);
-  nth++;
+  buffer[offset + nth] = 0xfe & ((tuning_bank_number) << 1);
+  nth--;
 
   /* undefined */
-  buffer[nth] = 0x0;  
-  buffer[nth + 1] = 0x0;  
-
-  nth += 2;
+  buffer[offset + nth] = 0x0;  
+  buffer[offset + nth - 1] = 0x0;  
 }
 
 /**
@@ -5442,35 +6012,44 @@ ags_midi_ump_util_get_midi2_rpn_tuning_bank_select(AgsMidiUmpUtil *midi_ump_util
 						   gchar ***extension_name, GValue **extension_value,
 						   guint *extension_count)
 {
+  guint offset;
   gint nth;
   gint position;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x40, 0);
-  g_return_val_if_fail((0xf0 & buffer[1]) == 0x20, 0);
-  g_return_val_if_fail((0xff & buffer[2]) == 0x00, 0);
-  g_return_val_if_fail((0xff & buffer[3]) == 0x04, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0x40, 0);
+  g_return_val_if_fail((0xf0 & buffer[2]) == 0x20, 0);
+  g_return_val_if_fail((0xff & buffer[1]) == 0x00, 0);
+  g_return_val_if_fail((0xff & buffer[0]) == 0x04, 0);
 
+  offset = 0;
+
+  nth = 3;
+  
   if(group != NULL){
-    group[0] = 0x0f & buffer[0];
+    group[0] = 0x0f & buffer[offset + nth];
   }
+
+  nth--;
 
   if(channel != NULL){
-    channel[0] = 0x0f & buffer[1];
+    channel[0] = 0x0f & buffer[offset + nth];
   }
+
+  offset += 4;
   
-  nth = 4;
+  nth = 3;
   
   /* tuning bank number */
   if(tuning_bank_number != NULL){
-    tuning_bank_number[0] = (0x7f & (buffer[nth] >> 1));
+    tuning_bank_number[0] = (0x7f & (buffer[offset + nth] >> 1));
   }
 
-  nth += 1;
+  nth--;
 
   /* undefined */
-  nth += 3;
+  offset += 4;
   
   return(nth);
 }
@@ -5492,10 +6071,10 @@ ags_midi_ump_util_is_midi2_rpn_mpe_mcm(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0x40 &&
-     (0xf0 & (buffer[1])) == 0x20 &&
-     (0xff & (buffer[2])) == 0x00 &&
-     (0xff & (buffer[3])) == 0x06){
+  if((0xf0 & (buffer[3])) == 0x40 &&
+     (0xf0 & (buffer[2])) == 0x20 &&
+     (0xff & (buffer[1])) == 0x00 &&
+     (0xff & (buffer[0])) == 0x06){
     return(TRUE);
   }
   
@@ -5526,7 +6105,8 @@ ags_midi_ump_util_put_midi2_rpn_mpe_mcm(AgsMidiUmpUtil *midi_ump_util,
 					gchar **extension_name, GValue *extension_value,
 					guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
   gint position;
 
   const gint bank = 0x0;
@@ -5537,31 +6117,33 @@ ags_midi_ump_util_put_midi2_rpn_mpe_mcm(AgsMidiUmpUtil *midi_ump_util,
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
+  offset = 0;
   
-  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth--;
 
-  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
-  nth++;
+  buffer[offset + nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
+  nth--;
   
   /* bank */
-  buffer[nth] = (0xff & (bank));
-  nth++;
+  buffer[offset + nth] = (0xff & (bank));
+  nth--;
 
   /* index key */
-  buffer[nth] = (0xff & (index_key));
-  nth++;
+  buffer[offset + nth] = (0xff & (index_key));
+
+  offset += 4;
+  nth = 3;
 
   /* channel count */
-  buffer[nth] = 0xfe & (channel_count << 1);
-  nth++;
+  buffer[offset + nth] = 0xfe & (channel_count << 1);
+  nth--;
 
   /* undefined */
-  buffer[nth] = 0x0;  
-  buffer[nth + 1] = 0x0;  
-
-  nth += 2;
+  buffer[offset + nth] = 0x0;  
+  buffer[offset + nth - 1] = 0x0;  
 }
 
 /**
@@ -5590,37 +6172,46 @@ ags_midi_ump_util_get_midi2_rpn_mpe_mcm(AgsMidiUmpUtil *midi_ump_util,
 					gchar ***extension_name, GValue **extension_value,
 					guint *extension_count)
 {
+  guint offset;
   gint nth;
   gint position;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x40, 0);
-  g_return_val_if_fail((0xf0 & buffer[1]) == 0x20, 0);
-  g_return_val_if_fail((0xff & buffer[2]) == 0x00, 0);
-  g_return_val_if_fail((0xff & buffer[3]) == 0x06, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0x40, 0);
+  g_return_val_if_fail((0xf0 & buffer[2]) == 0x20, 0);
+  g_return_val_if_fail((0xff & buffer[1]) == 0x00, 0);
+  g_return_val_if_fail((0xff & buffer[0]) == 0x06, 0);
 
-  if(group != NULL){
-    group[0] = 0x0f & buffer[0];
-  }
+  offset = 0;
 
-  if(channel != NULL){
-    channel[0] = 0x0f & buffer[1];
-  }
+  nth = 3;
   
-  nth = 4;
+  if(group != NULL){
+    group[0] = 0x0f & buffer[offset + nth];
+  }
+
+  nth--;
+  
+  if(channel != NULL){
+    channel[0] = 0x0f & buffer[offset + nth];
+  }
+
+  offset += 4;
+  
+  nth = 3;
   
   /* channel count */
   if(channel_count != NULL){
-    channel_count[0] = (0x7f & (buffer[nth] >> 1));
+    channel_count[0] = (0x7f & (buffer[offset + nth] >> 1));
   }
 
-  nth += 1;
+  nth--;
 
   /* undefined */
-  nth += 3;
+  offset += 4;
   
-  return(nth);
+  return(offset);
 }
 
 /**
@@ -5640,8 +6231,8 @@ ags_midi_ump_util_is_midi2_program_change(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0x40 &&
-     (0xf0 & (buffer[1])) == 0xc0){
+  if((0xf0 & (buffer[3])) == 0x40 &&
+     (0xf0 & (buffer[2])) == 0xc0){
     return(TRUE);
   }
   
@@ -5676,7 +6267,8 @@ ags_midi_ump_util_put_midi2_program_change(AgsMidiUmpUtil *midi_ump_util,
 					   gchar **extension_name, GValue *extension_value,
 					   guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
   gint position;
 
   const gint opcode = 0x0c;
@@ -5685,37 +6277,41 @@ ags_midi_ump_util_put_midi2_program_change(AgsMidiUmpUtil *midi_ump_util,
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
+  offset = 0;
   
-  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth--;
 
-  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
-  nth++;
+  buffer[offset + nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
+  nth--;
 
   /* reserved */
-  buffer[nth] = 0x0;
-  nth++;
+  buffer[offset + nth] = 0x0;
+  nth--;
   
   /* option flags */
-  buffer[nth] = (0xff & (option_flags));
-  nth++;
+  buffer[offset + nth] = (0xff & (option_flags));
+
+  offset += 4;
+  
+  nth = 3;
 
   /* program */
-  buffer[nth] = (0xff & (program));
-  nth++;
+  buffer[offset + nth] = (0xff & (program));
+  nth--;
 
   /* reserved */
-  buffer[nth] = 0x0;
-  nth++;
+  buffer[offset + nth] = 0x0;
+  nth--;
 
   /* bank MSB */
-  buffer[nth] = (0xff & (bank >> 8));
-  nth++;
+  buffer[offset + nth] = (0xff & (bank >> 8));
+  nth--;
 
   /* bank LSB */
-  buffer[nth] = (0xff & (bank));
-  nth++;
+  buffer[offset + nth] = (0xff & (bank));
 }
 
 /**
@@ -5748,52 +6344,61 @@ ags_midi_ump_util_get_midi2_program_change(AgsMidiUmpUtil *midi_ump_util,
 					   gchar ***extension_name, GValue **extension_value,
 					   guint *extension_count)
 {
+  guint offset;
   gint nth;
   gint position;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x40, 0);
-  g_return_val_if_fail((0xf0 & buffer[1]) == 0xc0, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0x40, 0);
+  g_return_val_if_fail((0xf0 & buffer[2]) == 0xc0, 0);
 
+  offset = 0;
+
+  nth = 3;
+  
   if(group != NULL){
-    group[0] = 0x0f & buffer[0];
+    group[0] = 0x0f & buffer[offset + nth];
   }
+
+  nth--;
 
   if(channel != NULL){
-    channel[0] = 0x0f & buffer[1];
+    channel[0] = 0x0f & buffer[offset + nth];
   }
   
-  nth = 2;
+  nth--;
 
   /* reserved */
-  nth++;
+  nth--;
   
   /* option flags */
   if(option_flags != NULL){
-    option_flags[0] = 0xff & buffer[nth];
+    option_flags[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
+  offset += 4;
+
+  nth = 3;
 
   /* program */
   if(program != NULL){
-    program[0] = 0xff & buffer[nth];
+    program[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
+  nth--;
 
   /* reserved */
-  nth++;
+  nth--;
   
   /* bank */
   if(bank != NULL){
-    bank[0] = (0xff00 & (buffer[nth] << 8)) | (0xff & (buffer[nth + 1]));
+    bank[0] = (0xff00 & (buffer[offset + nth] << 8)) | (0xff & (buffer[offset + nth - 1]));
   }
 
-  nth += 2;
+  offset += 4;
   
-  return(nth);
+  return(offset);
 }
 
 /**
@@ -5813,8 +6418,8 @@ ags_midi_ump_util_is_midi2_channel_pressure(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0x40 &&
-     (0xf0 & (buffer[1])) == 0xd0){
+  if((0xf0 & (buffer[3])) == 0x40 &&
+     (0xf0 & (buffer[2])) == 0xd0){
     return(TRUE);
   }
   
@@ -5845,7 +6450,8 @@ ags_midi_ump_util_put_midi2_channel_pressure(AgsMidiUmpUtil *midi_ump_util,
 					     gchar **extension_name, GValue *extension_value,
 					     guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
   gint position;
 
   const gint opcode = 0x0d;
@@ -5854,34 +6460,38 @@ ags_midi_ump_util_put_midi2_channel_pressure(AgsMidiUmpUtil *midi_ump_util,
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
+  offset = 0;
   
-  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth--;
 
-  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
-  nth++;
+  buffer[offset + nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
+  nth--;
 
   /* reserved */
-  buffer[nth] = 0x0;
-  nth++;
+  buffer[offset + nth] = 0x0;
+  nth--;
   
   /* reserved */
-  buffer[nth] = 0x0;
-  nth++;
+  buffer[offset + nth] = 0x0;
+
+  offset += 4;
+  
+  nth = 3;
 
   /* data */
-  buffer[nth] = (0xff & (data >> 24));
-  nth++;
+  buffer[offset + nth] = (0xff & (data >> 24));
+  nth--;
 
-  buffer[nth] = (0xff & (data >> 16));
-  nth++;
+  buffer[offset + nth] = (0xff & (data >> 16));
+  nth--;
 
-  buffer[nth] = (0xff & (data >> 8));
-  nth++;
+  buffer[offset + nth] = (0xff & (data >> 8));
+  nth--;
 
-  buffer[nth] = (0xff & (data));
-  nth++;
+  buffer[offset + nth] = (0xff & (data));
 }
 
 /**
@@ -5910,35 +6520,44 @@ ags_midi_ump_util_get_midi2_channel_pressure(AgsMidiUmpUtil *midi_ump_util,
 					     gchar ***extension_name, GValue **extension_value,
 					     guint *extension_count)
 {
+  guint offset;
   gint nth;
   gint position;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x40, 0);
-  g_return_val_if_fail((0xf0 & buffer[1]) == 0xd0, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0x40, 0);
+  g_return_val_if_fail((0xf0 & buffer[2]) == 0xd0, 0);
 
+  offset = 0;
+
+  nth = 3;
+  
   if(group != NULL){
-    group[0] = 0x0f & buffer[0];
+    group[0] = 0x0f & buffer[offset + nth];
   }
+
+  nth--;
 
   if(channel != NULL){
-    channel[0] = 0x0f & buffer[1];
+    channel[0] = 0x0f & buffer[offset + nth];
   }
   
-  nth = 2;
+  nth--;
 
   /* reserved */
-  nth += 2;
+  offset += 4;
+
+  nth = 3;
     
   /* data */
   if(data != NULL){
-    data[0] = (0xff000000 & (buffer[nth] << 24)) | (0xff0000 & (buffer[nth + 1] << 16)) | (0xff00 & (buffer[nth + 2] << 8)) | (0xff & (buffer[nth + 3]));
+    data[0] = (0xff000000 & (buffer[offset + nth] << 24)) | (0xff0000 & (buffer[offset + nth - 1] << 16)) | (0xff00 & (buffer[offset + nth - 2] << 8)) | (0xff & (buffer[offset + nth - 3]));
   }
 
-  nth += 4;
+  offset += 4;
   
-  return(nth);
+  return(offset);
 }
 
 /**
@@ -5958,8 +6577,8 @@ ags_midi_ump_util_is_midi2_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0x40 &&
-     (0xf0 & (buffer[1])) == 0xe0){
+  if((0xf0 & (buffer[3])) == 0x40 &&
+     (0xf0 & (buffer[2])) == 0xe0){
     return(TRUE);
   }
   
@@ -5990,7 +6609,8 @@ ags_midi_ump_util_put_midi2_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
 				       gchar **extension_name, GValue *extension_value,
 				       guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
   gint position;
 
   const gint opcode = 0x0e;
@@ -5999,34 +6619,38 @@ ags_midi_ump_util_put_midi2_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
+  offset = 0;
   
-  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth--;
 
-  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
-  nth++;
+  buffer[offset + nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
+  nth--;
 
   /* reserved */
-  buffer[nth] = 0x0;
-  nth++;
+  buffer[offset + nth] = 0x0;
+  nth--;
   
   /* reserved */
-  buffer[nth] = 0x0;
-  nth++;
+  buffer[offset + nth] = 0x0;
+
+  offset = 4;
+  
+  nth = 3;
 
   /* data */
-  buffer[nth] = (0xff & (data >> 24));
-  nth++;
+  buffer[offset + nth] = (0xff & (data >> 24));
+  nth--;
 
-  buffer[nth] = (0xff & (data >> 16));
-  nth++;
+  buffer[offset + nth] = (0xff & (data >> 16));
+  nth--;
 
-  buffer[nth] = (0xff & (data >> 8));
-  nth++;
+  buffer[offset + nth] = (0xff & (data >> 8));
+  nth--;
 
-  buffer[nth] = (0xff & (data));
-  nth++;
+  buffer[offset + nth] = (0xff & (data));
 }
 
 /**
@@ -6055,35 +6679,44 @@ ags_midi_ump_util_get_midi2_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
 				       gchar ***extension_name, GValue **extension_value,
 				       guint *extension_count)
 {
+  guint offset;
   gint nth;
   gint position;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x40, 0);
-  g_return_val_if_fail((0xf0 & buffer[1]) == 0xe0, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0x40, 0);
+  g_return_val_if_fail((0xf0 & buffer[2]) == 0xe0, 0);
 
+  offset = 0;
+
+  nth = 3;
+  
   if(group != NULL){
-    group[0] = 0x0f & buffer[0];
+    group[0] = 0x0f & buffer[offset + nth];
   }
+
+  nth--;
 
   if(channel != NULL){
-    channel[0] = 0x0f & buffer[1];
+    channel[0] = 0x0f & buffer[offset + nth];
   }
   
-  nth = 2;
+  nth--;
 
   /* reserved */
-  nth += 2;
+  offset += 4;
+
+  nth = 3;
     
   /* data */
   if(data != NULL){
-    data[0] = (0xff000000 & (buffer[nth] << 24)) | (0xff0000 & (buffer[nth + 1] << 16)) | (0xff00 & (buffer[nth + 2] << 8)) | (0xff & (buffer[nth + 3]));
+    data[0] = (0xff000000 & (buffer[offset + nth] << 24)) | (0xff0000 & (buffer[offset + nth - 1] << 16)) | (0xff00 & (buffer[offset + nth - 2] << 8)) | (0xff & (buffer[offset + nth - 3]));
   }
 
-  nth += 4;
+  offset += 4;
   
-  return(nth);
+  return(offset);
 }
 
 /**
@@ -6103,8 +6736,8 @@ ags_midi_ump_util_is_midi2_per_note_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0x40 &&
-     (0xf0 & (buffer[1])) == 0x60){
+  if((0xf0 & (buffer[3])) == 0x40 &&
+     (0xf0 & (buffer[2])) == 0x60){
     return(TRUE);
   }
   
@@ -6137,7 +6770,8 @@ ags_midi_ump_util_put_midi2_per_note_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
 						gchar **extension_name, GValue *extension_value,
 						guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
   gint position;
 
   const gint opcode = 0x06;
@@ -6146,34 +6780,38 @@ ags_midi_ump_util_put_midi2_per_note_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
+  offset = 0;
   
-  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth--;
 
-  buffer[nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
-  nth++;
+  buffer[offset + nth] = (0xf0 & (opcode << 4)) | (0x0f & (channel));
+  nth--;
 
   /* key */
-  buffer[nth] = 0xff & (key);
-  nth++;
+  buffer[offset + nth] = 0xff & (key);
+  nth--;
   
   /* reserved */
-  buffer[nth] = 0x0;
-  nth++;
+  buffer[offset + nth] = 0x0;
+
+  offset += 4;
+  
+  nth = 3;
 
   /* data */
-  buffer[nth] = (0xff & (data >> 24));
-  nth++;
+  buffer[offset + nth] = (0xff & (data >> 24));
+  nth--;
 
-  buffer[nth] = (0xff & (data >> 16));
-  nth++;
+  buffer[offset + nth] = (0xff & (data >> 16));
+  nth--;
 
-  buffer[nth] = (0xff & (data >> 8));
-  nth++;
+  buffer[offset + nth] = (0xff & (data >> 8));
+  nth--;
 
-  buffer[nth] = (0xff & (data));
-  nth++;
+  buffer[offset + nth] = (0xff & (data));
 }
 
 /**
@@ -6204,42 +6842,51 @@ ags_midi_ump_util_get_midi2_per_note_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
 						gchar ***extension_name, GValue **extension_value,
 						guint *extension_count)
 {
+  guint offset;
   gint nth;
   gint position;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0x40, 0);
-  g_return_val_if_fail((0xf0 & buffer[1]) == 0x60, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0x40, 0);
+  g_return_val_if_fail((0xf0 & buffer[2]) == 0x60, 0);
 
+  offset = 0;
+
+  nth = 3;
+  
   if(group != NULL){
-    group[0] = 0x0f & buffer[0];
+    group[0] = 0x0f & buffer[offset + nth];
   }
+
+  nth--;
 
   if(channel != NULL){
-    channel[0] = 0x0f & buffer[1];
+    channel[0] = 0x0f & buffer[offset + nth];
   }
   
-  nth = 2;
+  nth--;
 
   /* key */
   if(key != NULL){
-    key[0] = 0xff & (buffer[nth]);
+    key[0] = 0xff & (buffer[offset + nth]);
   }
 
-  nth++;
+  nth--;
   
   /* reserved */
-  nth++;
+  offset += 4;
+  
+  nth = 3;
     
   /* data */
   if(data != NULL){
-    data[0] = (0xff000000 & (buffer[nth] << 24)) | (0xff0000 & (buffer[nth + 1] << 16)) | (0xff00 & (buffer[nth + 2] << 8)) | (0xff & (buffer[nth + 3]));
+    data[0] = (0xff000000 & (buffer[offset + nth] << 24)) | (0xff0000 & (buffer[offset + nth - 1] << 16)) | (0xff00 & (buffer[offset + nth - 2] << 8)) | (0xff & (buffer[offset + nth - 3]));
   }
 
-  nth += 4;
+  offset += 4;
   
-  return(nth);
+  return(offset);
 }
 
 /**
@@ -6259,10 +6906,10 @@ ags_midi_ump_util_is_flex_set_tempo(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0xd0 &&
-     (0x30 & (buffer[1])) == 0x10 &&
-     (0xff & (buffer[2])) == 0x00 &&
-     (0xff & (buffer[3])) == 0x00){
+  if((0xf0 & (buffer[3])) == 0xd0 &&
+     (0x30 & (buffer[2])) == 0x10 &&
+     (0xff & (buffer[1])) == 0x00 &&
+     (0xff & (buffer[0])) == 0x00){
     return(TRUE);
   }
   
@@ -6293,9 +6940,12 @@ ags_midi_ump_util_put_flex_set_tempo(AgsMidiUmpUtil *midi_ump_util,
 				     gchar **extension_name, GValue *extension_value,
 				     guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
   gint position;
 
+  guint i;
+  
   const gint status_bank = 0;
   const gint status = 0;
   const gint form = 0x00;
@@ -6305,38 +6955,54 @@ ags_midi_ump_util_put_flex_set_tempo(AgsMidiUmpUtil *midi_ump_util,
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
+  offset = 0;
   
-  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth--;
 
-  buffer[nth] = (0xc0 & (form << 6)) | (0x30 & (addr << 4)) | (0x0f & (channel));
-  nth++;
+  buffer[offset + nth] = (0xc0 & (form << 6)) | (0x30 & (addr << 4)) | (0x0f & (channel));
+  nth--;
 
   /* status bank */
-  buffer[nth] = 0xff & (status_bank);
-  nth++;
+  buffer[offset + nth] = 0xff & (status_bank);
+  nth--;
 
   /* status */
-  buffer[nth] = 0xff & (status);
-  nth++;
+  buffer[offset + nth] = 0xff & (status);
+
+  offset += 4;
+  
+  nth = 3;
 
   /* ten ns per quarter note, */
-  buffer[nth] = (0xff & (ten_ns_per_quarter_note >> 24));
-  nth++;
+  buffer[offset + nth] = (0xff & (ten_ns_per_quarter_note >> 24));
+  nth--;
 
-  buffer[nth] = (0xff & (ten_ns_per_quarter_note >> 16));
-  nth++;
+  buffer[offset + nth] = (0xff & (ten_ns_per_quarter_note >> 16));
+  nth--;
 
-  buffer[nth] = (0xff & (ten_ns_per_quarter_note >> 8));
-  nth++;
+  buffer[offset + nth] = (0xff & (ten_ns_per_quarter_note >> 8));
+  nth--;
 
-  buffer[nth] = (0xff & (ten_ns_per_quarter_note));
-  nth++;
+  buffer[offset + nth] = (0xff & (ten_ns_per_quarter_note));
+
+  offset += 4;
+  
+  nth = 3;
 
   /* reserved */
-  memset(buffer + nth, 0, 8 * sizeof(guchar));
-  nth += 8;
+  for(i = 0; i < 8; i++){
+    buffer[offset + nth] = 0x0;
+    nth--;
+
+    if(nth < 0){
+      nth = 3;
+
+      offset += 4;
+    }	
+  }
 }
 
 /**
@@ -6365,35 +7031,44 @@ ags_midi_ump_util_get_flex_set_tempo(AgsMidiUmpUtil *midi_ump_util,
 				     gchar ***extension_name, GValue **extension_value,
 				     guint *extension_count)
 {
+  guint offset;
   gint nth;
   gint position;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0xd0, 0);
-  g_return_val_if_fail((0x30 & buffer[1]) == 0x10, 0);
-  g_return_val_if_fail((0xff & buffer[2]) == 0x00, 0);
-  g_return_val_if_fail((0xff & buffer[3]) == 0x00, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0xd0, 0);
+  g_return_val_if_fail((0x30 & buffer[2]) == 0x10, 0);
+  g_return_val_if_fail((0xff & buffer[1]) == 0x00, 0);
+  g_return_val_if_fail((0xff & buffer[0]) == 0x00, 0);
 
+  offset = 0;
+
+  nth = 1;
+  
   if(group != NULL){
-    group[0] = 0x0f & buffer[0];
+    group[0] = 0x0f & buffer[offset + nth];
   }
+
+  nth--;
 
   if(channel != NULL){
-    channel[0] = 0x0f & buffer[1];
+    channel[0] = 0x0f & buffer[offset + nth];
   }
+
+  offset += 4;
   
-  nth = 4;
+  nth = 3;
     
   /* 10 ns per quarter note */
   if(ten_ns_per_quarter_note != NULL){
-    ten_ns_per_quarter_note[0] = (0xff000000 & (buffer[nth] << 24)) | (0xff0000 & (buffer[nth + 1] << 16)) | (0xff00 & (buffer[nth + 2] << 8)) | (0xff & (buffer[nth + 3]));
+    ten_ns_per_quarter_note[0] = (0xff000000 & (buffer[offset + nth] << 24)) | (0xff0000 & (buffer[offset + nth - 1] << 16)) | (0xff00 & (buffer[offset + nth - 2] << 8)) | (0xff & (buffer[offset + nth - 3]));
   }
 
-  nth += 4;
+  offset += 4;
 
   /* reserved */
-  nth += 8;
+  offset += 8;
   
   return(nth);
 }
@@ -6415,10 +7090,10 @@ ags_midi_ump_util_is_flex_set_time_signature(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0xd0 &&
-     (0x30 & (buffer[1])) == 0x10 &&
-     (0xff & (buffer[2])) == 0x00 &&
-     (0xff & (buffer[3])) == 0x01){
+  if((0xf0 & (buffer[3])) == 0xd0 &&
+     (0x30 & (buffer[2])) == 0x10 &&
+     (0xff & (buffer[1])) == 0x00 &&
+     (0xff & (buffer[0])) == 0x01){
     return(TRUE);
   }
   
@@ -6453,9 +7128,11 @@ ags_midi_ump_util_put_flex_set_time_signature(AgsMidiUmpUtil *midi_ump_util,
 					      gchar **extension_name, GValue *extension_value,
 					      guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
   gint position;
-
+  guint i;
+  
   const gint status_bank = 0;
   const gint status = 1;
   const gint form = 0x00;
@@ -6465,37 +7142,50 @@ ags_midi_ump_util_put_flex_set_time_signature(AgsMidiUmpUtil *midi_ump_util,
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
+  offset = 0;
   
-  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth--;
 
-  buffer[nth] = (0xc0 & (form << 6)) | (0x30 & (addr << 4)) | (0x0f & (channel));
-  nth++;
+  buffer[offset + nth] = (0xc0 & (form << 6)) | (0x30 & (addr << 4)) | (0x0f & (channel));
+  nth--;
 
   /* status bank */
-  buffer[nth] = 0xff & (status_bank);
-  nth++;
+  buffer[offset + nth] = 0xff & (status_bank);
+  nth--;
 
   /* status */
-  buffer[nth] = 0xff & (status);
-  nth++;
+  buffer[offset + nth] = 0xff & (status);
+
+  offset += 4;
+  
+  nth = 3;
 
   /* numerator */
-  buffer[nth] = 0xff & (numerator);
-  nth++;
+  buffer[offset + nth] = 0xff & (numerator);
+  nth--;
 
   /* denominator */
-  buffer[nth] = 0xff & (denominator);
-  nth++;
+  buffer[offset + nth] = 0xff & (denominator);
+  nth--;
 
   /* 1/32 ticks */
-  buffer[nth] = 0xff & (thirty_two_ticks);
-  nth++;
+  buffer[offset + nth] = 0xff & (thirty_two_ticks);
+  nth--;
 
   /* reserved */
-  memset(buffer + nth, 0, 9 * sizeof(guchar));
-  nth += 9;
+  for(i = 0; i < 9; i++){
+    buffer[offset + nth] = 0x0;
+    nth--;
+
+    if(nth < 0){
+      nth = 3;
+
+      offset += 4;
+    }	
+  }
 }
 
 /**
@@ -6528,50 +7218,69 @@ ags_midi_ump_util_get_flex_set_time_signature(AgsMidiUmpUtil *midi_ump_util,
 					      gchar ***extension_name, GValue **extension_value,
 					      guint *extension_count)
 {
+  guint offset;
   gint nth;
+  guint i;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0xd0, 0);
-  g_return_val_if_fail((0x30 & buffer[1]) == 0x10, 0);
-  g_return_val_if_fail((0xff & buffer[2]) == 0x00, 0);
-  g_return_val_if_fail((0xff & buffer[3]) == 0x01, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0xd0, 0);
+  g_return_val_if_fail((0x30 & buffer[2]) == 0x10, 0);
+  g_return_val_if_fail((0xff & buffer[1]) == 0x00, 0);
+  g_return_val_if_fail((0xff & buffer[0]) == 0x01, 0);
 
-  if(group != NULL){
-    group[0] = 0x0f & buffer[0];
-  }
+  offset = 0;
 
-  if(channel != NULL){
-    channel[0] = 0x0f & buffer[1];
-  }
+  nth = 3;
   
-  nth = 4;
+  if(group != NULL){
+    group[0] = 0x0f & buffer[offset + nth];
+  }
+
+  nth--;
+  
+  if(channel != NULL){
+    channel[0] = 0x0f & buffer[offset + nth];
+  }
+
+  offset += 4;
+  
+  nth = 3;
 
   /* numerator */
   if(numerator != NULL){
-    numerator[0] = 0xff & buffer[nth];
+    numerator[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
+  nth--;
 
   /* denominator */
   if(denominator != NULL){
-    denominator[0] = 0xff & buffer[nth];
+    denominator[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
+  nth--;
 
   /* 1/32 ticks */
   if(thirty_two_ticks != NULL){
-    thirty_two_ticks[0] = 0xff & buffer[nth];
+    thirty_two_ticks[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
+  nth--;
   
   /* reserved */
-  nth += 9;
+  for(i = 0; i < 9; i++){
+    buffer[offset + nth] = 0x0;
+    nth--;
+
+    if(nth < 0){
+      nth = 3;
+
+      offset += 4;
+    }	
+  }
   
-  return(nth);
+  return(offset);
 }
 
 /**
@@ -6591,10 +7300,10 @@ ags_midi_ump_util_is_flex_set_metronome(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0xd0 &&
-     (0x30 & (buffer[1])) == 0x10 &&
-     (0xff & (buffer[2])) == 0x00 &&
-     (0xff & (buffer[3])) == 0x02){
+  if((0xf0 & (buffer[3])) == 0xd0 &&
+     (0x30 & (buffer[2])) == 0x10 &&
+     (0xff & (buffer[1])) == 0x00 &&
+     (0xff & (buffer[0])) == 0x02){
     return(TRUE);
   }
   
@@ -6635,8 +7344,10 @@ ags_midi_ump_util_put_flex_set_metronome(AgsMidiUmpUtil *midi_ump_util,
 					 gchar **extension_name, GValue *extension_value,
 					 guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
   gint position;
+  guint i;
 
   const gint status_bank = 0x0;
   const gint status = 0x2;
@@ -6647,49 +7358,65 @@ ags_midi_ump_util_put_flex_set_metronome(AgsMidiUmpUtil *midi_ump_util,
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
+  offset = 0;
   
-  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth--;
 
-  buffer[nth] = (0xc0 & (form << 6)) | (0x30 & (addr << 4)) | (0x0f & (channel));
-  nth++;
+  buffer[offset + nth] = (0xc0 & (form << 6)) | (0x30 & (addr << 4)) | (0x0f & (channel));
+  nth--;
 
   /* status bank */
-  buffer[nth] = 0xff & (status_bank);
-  nth++;
+  buffer[offset + nth] = 0xff & (status_bank);
+  nth--;
 
   /* status */
-  buffer[nth] = 0xff & (status);
-  nth++;
+  buffer[offset + nth] = 0xff & (status);
+
+  offset += 4;
+  
+  nth = 3;
 
   /* clocks per primary click */
-  buffer[nth] = 0xff & (clocks_per_primary_click);
-  nth++;
+  buffer[offset + nth] = 0xff & (clocks_per_primary_click);
+  nth--;
 
   /* bar accent part 1 */
-  buffer[nth] = 0xff & (bar_accent_part_1);
-  nth++;
+  buffer[offset + nth] = 0xff & (bar_accent_part_1);
+  nth--;
 
   /* bar accent part 2 */
-  buffer[nth] = 0xff & (bar_accent_part_2);
-  nth++;
+  buffer[offset + nth] = 0xff & (bar_accent_part_2);
+  nth--;
 
   /* bar accent part 3 */
-  buffer[nth] = 0xff & (bar_accent_part_3);
-  nth++;
+  buffer[offset + nth] = 0xff & (bar_accent_part_3);
+
+  offset += 4;
+
+  nth = 3;
 
   /* subdivision clicks 1 */
-  buffer[nth] = 0xff & (subdivision_clicks_1);
-  nth++;
+  buffer[offset + nth] = 0xff & (subdivision_clicks_1);
+  nth--;
 
   /* subdivision clicks 2 */
-  buffer[nth] = 0xff & (subdivision_clicks_2);
-  nth++;
+  buffer[offset + nth] = 0xff & (subdivision_clicks_2);
+  nth--;
 
   /* reserved */
-  memset(buffer + nth, 0, 6 * sizeof(guchar));
-  nth += 6;
+  for(i = 0; i < 6; i++){
+    buffer[offset + nth] = 0x0;
+    nth--;
+
+    if(nth < 0){
+      nth = 3;
+
+      offset += 4;
+    }	
+  }
 }
 
 /**
@@ -6728,71 +7455,92 @@ ags_midi_ump_util_get_flex_set_metronome(AgsMidiUmpUtil *midi_ump_util,
 					 gchar ***extension_name, GValue **extension_value,
 					 guint *extension_count)
 {
+  guint offset;
   gint nth;
+  guint i;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0xd0, 0);
-  g_return_val_if_fail((0x30 & buffer[1]) == 0x10, 0);
-  g_return_val_if_fail((0xff & buffer[2]) == 0x00, 0);
-  g_return_val_if_fail((0xff & buffer[3]) == 0x02, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0xd0, 0);
+  g_return_val_if_fail((0x30 & buffer[2]) == 0x10, 0);
+  g_return_val_if_fail((0xff & buffer[1]) == 0x00, 0);
+  g_return_val_if_fail((0xff & buffer[0]) == 0x02, 0);
 
+  offset = 0;
+  
+  nth = 3;
+  
   if(group != NULL){
-    group[0] = 0x0f & buffer[0];
+    group[0] = 0x0f & buffer[offset + nth];
   }
+
+  nth--;
 
   if(channel != NULL){
-    channel[0] = 0x0f & buffer[1];
+    channel[0] = 0x0f & buffer[offset + nth];
   }
+
+  offset += 4;
   
-  nth = 4;
+  nth = 3;
 
   /* clocks per primary click */
   if(clocks_per_primary_click != NULL){
-    clocks_per_primary_click[0] = 0xff & buffer[nth];
+    clocks_per_primary_click[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
+  nth--;
   
   /* bar accent part 1 */
   if(bar_accent_part_1 != NULL){
-    bar_accent_part_1[0] = 0xff & buffer[nth];
+    bar_accent_part_1[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
+  nth--;
   
   /* bar accent part 2 */
   if(bar_accent_part_2 != NULL){
-    bar_accent_part_2[0] = 0xff & buffer[nth];
+    bar_accent_part_2[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
+  nth--;
   
   /* bar accent part 3 */
   if(bar_accent_part_3 != NULL){
-    bar_accent_part_3[0] = 0xff & buffer[nth];
+    bar_accent_part_3[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
+  offset += 4;
+  
+  nth = 3;
   
   /* subdivision clicks 1 */
   if(subdivision_clicks_1 != NULL){
-    subdivision_clicks_1[0] = 0xff & buffer[nth];
+    subdivision_clicks_1[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
+  nth--;
   
   /* subdivision clicks 2 */
   if(subdivision_clicks_2 != NULL){
-    subdivision_clicks_2[0] = 0xff & buffer[nth];
+    subdivision_clicks_2[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
+  nth--;
 
   /* reserved */
-  nth += 6;
+  for(i = 0; i < 6; i++){
+    buffer[offset + nth] = 0x0;
+    nth--;
+
+    if(nth < 0){
+      nth = 3;
+
+      offset += 4;
+    }	
+  }
   
-  return(nth);
+  return(offset);
 }
 
 /**
@@ -6812,10 +7560,10 @@ ags_midi_ump_util_is_flex_set_key_signature(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0xd0 &&
-     (0x30 & (buffer[1])) == 0x00 &&
-     (0xff & (buffer[2])) == 0x00 &&
-     (0xff & (buffer[3])) == 0x05){
+  if((0xf0 & (buffer[3])) == 0xd0 &&
+     (0x30 & (buffer[2])) == 0x00 &&
+     (0xff & (buffer[1])) == 0x00 &&
+     (0xff & (buffer[0])) == 0x05){
     return(TRUE);
   }
   
@@ -6848,9 +7596,11 @@ ags_midi_ump_util_put_flex_set_key_signature(AgsMidiUmpUtil *midi_ump_util,
 					     gchar **extension_name, GValue *extension_value,
 					     guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
   gint position;
-
+  guint i;
+  
   const gint status_bank = 0x0;
   const gint status = 0x05;
   const gint form = 0x00;
@@ -6860,29 +7610,42 @@ ags_midi_ump_util_put_flex_set_key_signature(AgsMidiUmpUtil *midi_ump_util,
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
-  
-  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
-  nth++;
+  offset = 0;
 
-  buffer[nth] = (0xc0 & (form << 6)) | (0x30 & (addr << 4)) | (0x0f & (channel));
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth--;
+
+  buffer[offset + nth] = (0xc0 & (form << 6)) | (0x30 & (addr << 4)) | (0x0f & (channel));
+  nth--;
 
   /* status bank */
-  buffer[nth] = 0xff & (status_bank);
-  nth++;
+  buffer[offset + nth] = 0xff & (status_bank);
+  nth--;
 
   /* status */
-  buffer[nth] = 0xff & (status);
-  nth++;
+  buffer[offset + nth] = 0xff & (status);
+
+  offset += 4;
+  
+  nth = 3;
 
   /* sharp flats and tonic note */
-  buffer[nth] = (0xf0 & (sharp_flats << 4)) | (0x0f & (tonic_note));
-  nth++;
+  buffer[offset + nth] = (0xf0 & (sharp_flats << 4)) | (0x0f & (tonic_note));
+  nth--;
 
   /* reserved */
-  memset(buffer + nth, 0, 11 * sizeof(guchar));
-  nth += 11;
+  for(i = 0; i < 11; i++){
+    buffer[offset + nth] = 0x0;
+    nth--;
+
+    if(nth < 0){
+      nth = 3;
+
+      offset += 4;
+    }	
+  }
 }
 
 /**
@@ -6913,38 +7676,57 @@ ags_midi_ump_util_get_flex_set_key_signature(AgsMidiUmpUtil *midi_ump_util,
 					     gchar ***extension_name, GValue **extension_value,
 					     guint *extension_count)
 {
+  guint offset;
   gint nth;
+  guint i;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0xd0, 0);
-  g_return_val_if_fail((0x30 & buffer[1]) == 0x00, 0);
-  g_return_val_if_fail((0xff & buffer[2]) == 0x00, 0);
-  g_return_val_if_fail((0xff & buffer[3]) == 0x05, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0xd0, 0);
+  g_return_val_if_fail((0x30 & buffer[2]) == 0x00, 0);
+  g_return_val_if_fail((0xff & buffer[1]) == 0x00, 0);
+  g_return_val_if_fail((0xff & buffer[0]) == 0x05, 0);
 
+  offset = 0;
+
+  nth = 3;
+  
   if(group != NULL){
-    group[0] = 0x0f & buffer[0];
+    group[0] = 0x0f & buffer[offset + nth];
   }
+
+  nth--;
 
   if(channel != NULL){
-    channel[0] = 0x0f & buffer[1];
+    channel[0] = 0x0f & buffer[offset + nth];
   }
-  
-  nth = 4;
+
+  offset += 4;
+
+  nth = 3;
 
   /* sharp flats and tonic note */
   if(sharp_flats != NULL){
-    sharp_flats[0] = 0x0f & (buffer[nth] >> 4);
+    sharp_flats[0] = 0x0f & (buffer[offset + nth] >> 4);
   }
 
   if(tonic_note != NULL){
-    tonic_note[0] = 0x0f & buffer[nth];
+    tonic_note[0] = 0x0f & buffer[offset + nth];
   }
 
-  nth++;
+  nth--;
 
   /* reserved */
-  nth += 13;
+  for(i = 0; i < 13; i++){
+    buffer[offset + nth] = 0x0;
+    nth--;
+
+    if(nth < 0){
+      nth = 3;
+
+      offset += 4;
+    }	
+  }
   
   return(nth);
 }
@@ -6966,10 +7748,10 @@ ags_midi_ump_util_is_flex_set_chord_name(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0xd0 &&
-     (0x30 & (buffer[1])) == 0x10 &&
-     (0xff & (buffer[2])) == 0x00 &&
-     (0xff & (buffer[3])) == 0x06){
+  if((0xf0 & (buffer[3])) == 0xd0 &&
+     (0x30 & (buffer[2])) == 0x10 &&
+     (0xff & (buffer[1])) == 0x00 &&
+     (0xff & (buffer[0])) == 0x06){
     return(TRUE);
   }
   
@@ -7034,7 +7816,8 @@ ags_midi_ump_util_put_flex_set_chord_name(AgsMidiUmpUtil *midi_ump_util,
 					  gchar **extension_name, GValue *extension_value,
 					  guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
   gint position;
 
   const gint status_bank = 0x0;
@@ -7046,68 +7829,78 @@ ags_midi_ump_util_put_flex_set_chord_name(AgsMidiUmpUtil *midi_ump_util,
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
-  nth = 0;
+  offset = 0;
   
-  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
-  nth++;
+  nth = 3;
+  
+  buffer[offset + nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth--;
 
-  buffer[nth] = (0xc0 & (form << 6)) | (0x30 & (addr << 4)) | (0x0f & (channel));
-  nth++;
+  buffer[offset + nth] = (0xc0 & (form << 6)) | (0x30 & (addr << 4)) | (0x0f & (channel));
+  nth--;
 
   /* status bank */
-  buffer[nth] = 0xff & (status_bank);
-  nth++;
+  buffer[offset + nth] = 0xff & (status_bank);
+  nth--;
 
   /* status */
-  buffer[nth] = 0xff & (status);
-  nth++;
+  buffer[offset + nth] = 0xff & (status);
+
+  offset += 4;
+  
+  nth = 3;
 
   /* sharp flats and chord tonic */
-  buffer[nth] = (0xf0 & (t_sharp_flats << 4)) | (0x0f & (chord_tonic));
-  nth++;
+  buffer[offset + nth] = (0xf0 & (t_sharp_flats << 4)) | (0x0f & (chord_tonic));
+  nth--;
 
   /* chord type */
-  buffer[nth] = 0xff & (chord_type);
-  nth++;
+  buffer[offset + nth] = 0xff & (chord_type);
+  nth--;
 
   /* alter 1 type and degree */
-  buffer[nth] = (0xf0 & (alter_1_type << 4)) | (0x0f & (alter_1_degree));
-  nth++;
+  buffer[offset + nth] = (0xf0 & (alter_1_type << 4)) | (0x0f & (alter_1_degree));
+  nth--;
 
   /* alter 2 type and degree */
-  buffer[nth] = (0xf0 & (alter_2_type << 4)) | (0x0f & (alter_2_degree));
-  nth++;
+  buffer[offset + nth] = (0xf0 & (alter_2_type << 4)) | (0x0f & (alter_2_degree));
+
+  offset += 4;
+
+  nth = 3;
 
   /* alter 3 type and degree */
-  buffer[nth] = (0xf0 & (alter_3_type << 4)) | (0x0f & (alter_3_degree));
-  nth++;
+  buffer[offset + nth] = (0xf0 & (alter_3_type << 4)) | (0x0f & (alter_3_degree));
+  nth--;
 
   /* alter 4 type and degree */
-  buffer[nth] = (0xf0 & (alter_4_type << 4)) | (0x0f & (alter_4_degree));
-  nth++;
+  buffer[offset + nth] = (0xf0 & (alter_4_type << 4)) | (0x0f & (alter_4_degree));
+  nth--;
 
   /* reserved */
-  buffer[nth] = 0x0;
-  nth++;
+  buffer[offset + nth] = 0x0;
+  nth--;
 
-  buffer[nth] = 0x0;
-  nth++;
+  buffer[offset + nth] = 0x0;
+
+  offset += 4;
+
+  nth = 3;
 
   /* b sharp flats and bass note */
-  buffer[nth] = (0xf0 & (b_sharp_flats << 4)) | (0x0f & (bass_note));
-  nth++;
+  buffer[offset + nth] = (0xf0 & (b_sharp_flats << 4)) | (0x0f & (bass_note));
+  nth--;
 
   /* bass chord type */
-  buffer[nth] = 0xff & (bass_chord_type);
-  nth++;
+  buffer[offset + nth] = 0xff & (bass_chord_type);
+  nth--;
 
   /* alter 1 type and degree */
-  buffer[nth] = (0xf0 & (b_alter_1_type << 4)) | (0x0f & (b_alter_1_degree));
-  nth++;
+  buffer[offset + nth] = (0xf0 & (b_alter_1_type << 4)) | (0x0f & (b_alter_1_degree));
+  nth--;
 
   /* alter 2 type and degree */
-  buffer[nth] = (0xf0 & (b_alter_2_type << 4)) | (0x0f & (b_alter_2_degree));
-  nth++;
+  buffer[offset + nth] = (0xf0 & (b_alter_2_type << 4)) | (0x0f & (b_alter_2_degree));
 }
 
 /**
@@ -7170,131 +7963,144 @@ ags_midi_ump_util_get_flex_set_chord_name(AgsMidiUmpUtil *midi_ump_util,
 					  gchar ***extension_name, GValue **extension_value,
 					  guint *extension_count)
 {
+  guint offset;
   gint nth;
   
   g_return_val_if_fail(midi_ump_util != NULL, 0);     
   g_return_val_if_fail(buffer != NULL, 0);
-  g_return_val_if_fail((0xf0 & buffer[0]) == 0xd0, 0);
-  g_return_val_if_fail((0x30 & buffer[1]) == 0x10, 0);
-  g_return_val_if_fail((0xff & buffer[2]) == 0x00, 0);
-  g_return_val_if_fail((0xff & buffer[3]) == 0x06, 0);
+  g_return_val_if_fail((0xf0 & buffer[3]) == 0xd0, 0);
+  g_return_val_if_fail((0x30 & buffer[2]) == 0x10, 0);
+  g_return_val_if_fail((0xff & buffer[1]) == 0x00, 0);
+  g_return_val_if_fail((0xff & buffer[0]) == 0x06, 0);
 
+  offset = 0;
+
+  nth = 3;
+  
   if(group != NULL){
-    group[0] = 0x0f & buffer[0];
+    group[0] = 0x0f & buffer[offset + nth];
   }
+
+  nth--;
 
   if(channel != NULL){
-    channel[0] = 0x0f & buffer[1];
+    channel[0] = 0x0f & buffer[offset + nth];
   }
+
+  offset += 4;
   
-  nth = 4;
+  nth = 3;
 
   /* sharp flats and tonic note */
   if(t_sharp_flats != NULL){
-    t_sharp_flats[0] = 0x0f & (buffer[nth] >> 4);
+    t_sharp_flats[0] = 0x0f & (buffer[offset + nth] >> 4);
   }
 
   if(chord_tonic != NULL){
-    chord_tonic[0] = 0x0f & buffer[nth];
+    chord_tonic[0] = 0x0f & buffer[offset + nth];
   }
 
-  nth++;
+  nth--;
 
   /* chord type */
   if(chord_type != NULL){
-    chord_type[0] = 0xff & buffer[nth];
+    chord_type[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
+  nth--;
 
   /* alter 1 type and degree */
   if(alter_1_type != NULL){
-    alter_1_type[0] = 0x0f & (buffer[nth] >> 4);
+    alter_1_type[0] = 0x0f & (buffer[offset + nth] >> 4);
   }
 
   if(alter_1_degree != NULL){
-    alter_1_degree[0] = 0x0f & (buffer[nth]);
+    alter_1_degree[0] = 0x0f & (buffer[offset + nth]);
   }
 
-  nth++;
+  nth--;
 
   /* alter 2 type and degree */
   if(alter_2_type != NULL){
-    alter_2_type[0] = 0x0f & (buffer[nth] >> 4);
+    alter_2_type[0] = 0x0f & (buffer[offset + nth] >> 4);
   }
 
   if(alter_2_degree != NULL){
-    alter_2_degree[0] = 0x0f & (buffer[nth]);
+    alter_2_degree[0] = 0x0f & (buffer[offset + nth]);
   }
 
-  nth++;
+  offset += 4;
+
+  nth = 3;
 
   /* alter 3 type and degree */
   if(alter_3_type != NULL){
-    alter_3_type[0] = 0x0f & (buffer[nth] >> 4);
+    alter_3_type[0] = 0x0f & (buffer[offset + nth] >> 4);
   }
 
   if(alter_3_degree != NULL){
-    alter_3_degree[0] = 0x0f & (buffer[nth]);
+    alter_3_degree[0] = 0x0f & (buffer[offset + nth]);
   }
 
-  nth++;
+  nth--;
 
   /* alter 4 type and degree */
   if(alter_4_type != NULL){
-    alter_4_type[0] = 0x0f & (buffer[nth] >> 4);
+    alter_4_type[0] = 0x0f & (buffer[offset + nth] >> 4);
   }
 
   if(alter_4_degree != NULL){
-    alter_4_degree[0] = 0x0f & (buffer[nth]);
+    alter_4_degree[0] = 0x0f & (buffer[offset + nth]);
   }
 
-  nth++;
+  nth--;
 
   /* reserved */
-  nth += 2;
+  offset += 4;
+
+  nth = 3;
 
   /* b sharp flats and bass note */
   if(b_sharp_flats != NULL){
-    b_sharp_flats[0] = 0x0f & (buffer[nth] >> 4);
+    b_sharp_flats[0] = 0x0f & (buffer[offset + nth] >> 4);
   }
 
   if(bass_note != NULL){
-    bass_note[0] = 0x0f & buffer[nth];
+    bass_note[0] = 0x0f & buffer[offset + nth];
   }
 
-  nth++;
+  nth--;
 
   /* bass chord type */
   if(bass_chord_type != NULL){
-    bass_chord_type[0] = 0xff & buffer[nth];
+    bass_chord_type[0] = 0xff & buffer[offset + nth];
   }
 
-  nth++;
+  nth--;
 
   /* b alter 1 type and degree */
   if(b_alter_1_type != NULL){
-    b_alter_1_type[0] = 0x0f & (buffer[nth] >> 4);
+    b_alter_1_type[0] = 0x0f & (buffer[offset + nth] >> 4);
   }
 
   if(b_alter_1_degree != NULL){
-    b_alter_1_degree[0] = 0x0f & (buffer[nth]);
+    b_alter_1_degree[0] = 0x0f & (buffer[offset + nth]);
   }
 
-  nth++;
+  nth--;
 
   /* b alter 2 type and degree */
   if(b_alter_2_type != NULL){
-    b_alter_2_type[0] = 0x0f & (buffer[nth] >> 4);
+    b_alter_2_type[0] = 0x0f & (buffer[offset + nth] >> 4);
   }
 
   if(b_alter_2_degree != NULL){
-    b_alter_2_degree[0] = 0x0f & (buffer[nth]);
+    b_alter_2_degree[0] = 0x0f & (buffer[offset + nth]);
   }
 
-  nth++;  
+  offset += 4;
   
-  return(nth);
+  return(offset);
 }
 
 /**
@@ -7314,8 +8120,8 @@ ags_midi_ump_util_is_flex_set_text(AgsMidiUmpUtil *midi_ump_util,
 {
   g_return_val_if_fail(buffer != NULL, FALSE);
 
-  if((0xf0 & (buffer[0])) == 0xd0 &&
-     (0x30 & (buffer[1])) == 0x10){
+  if((0xf0 & (buffer[3])) == 0xd0 &&
+     (0x30 & (buffer[2])) == 0x10){
     return(TRUE);
   }
   
@@ -7350,7 +8156,8 @@ ags_midi_ump_util_put_flex_set_text(AgsMidiUmpUtil *midi_ump_util,
 				    gchar **extension_name, GValue *extension_value,
 				    guint extension_count)
 {
-  guint nth;
+  guint offset;
+  gint nth;
   gint position;
 
   const gint form = 0x00;
@@ -7360,21 +8167,23 @@ ags_midi_ump_util_put_flex_set_text(AgsMidiUmpUtil *midi_ump_util,
   g_return_if_fail(midi_ump_util != NULL);
   g_return_if_fail(buffer != NULL);
 
+  offset = 0;
+  
   nth = 0;
   
-  buffer[nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
-  nth++;
+  buffer[offset + nth] = (0xf0 & (mt << 4)) | (0x0f & (group));
+  nth--;
 
-  buffer[nth] = (0xc0 & (form << 6)) | (0x30 & (addr << 4)) | (0x0f & (channel));
-  nth++;
+  buffer[offset + nth] = (0xc0 & (form << 6)) | (0x30 & (addr << 4)) | (0x0f & (channel));
+  nth--;
 
   /* status bank */
-  buffer[nth] = 0xff & (status_bank);
-  nth++;
+  buffer[offset + nth] = 0xff & (status_bank);
+  nth--;
 
   /* status */
-  buffer[nth] = 0xff & (status);
-  nth++;
+  buffer[offset + nth] = 0xff & (status);
+  nth--;
 
   //TODO:JK: implement me
 }

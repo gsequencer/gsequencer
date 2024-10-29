@@ -111,7 +111,4 @@ ags_midi_preferences_remove_sequencer_editor_callback(GtkWidget *button,
 
   ags_midi_preferences_remove_sequencer_editor(midi_preferences,
 					       sequencer_editor);
-  
-  g_object_run_dispose(G_OBJECT(sequencer_editor));  
-  g_object_unref(G_OBJECT(sequencer_editor));  
 }
