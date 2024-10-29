@@ -310,7 +310,7 @@ void ags_thread_start(AgsThread *thread);
 void ags_thread_run(AgsThread *thread);
 void ags_thread_stop(AgsThread *thread);
 
-void ags_thread_recover_dead_lock(thread);
+void ags_thread_recover_dead_lock(AgsThread *thread);
 
 AgsThread* ags_thread_new();
 

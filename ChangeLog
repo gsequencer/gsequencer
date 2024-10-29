@@ -2,6 +2,9 @@ ags (7.1.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented dead-lock recover signal of AgsThread
+	* implemented dead-lock recover of CoreAudio soundcard and sequencer
+	* implemented dead-lock recover of JackAudio Connection soundcard and sequencer
+	* implemented dead-lock recover of Pulseaudio soundcard
 	* extended AgsThread struct adding field is_running
 
 ags (7.0.13)
