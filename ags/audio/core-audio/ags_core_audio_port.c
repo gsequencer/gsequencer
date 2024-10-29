@@ -2043,12 +2043,12 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
     
 						   g_mutex_unlock(callback_mutex);
 
-						   g_atomic_int_or(&(core_audio_midiin->sync_flags),
-								   (AGS_CORE_AUDIO_MIDIIN_CALLBACK_WAIT | AGS_CORE_AUDIO_MIDIIN_CALLBACK_DONE));
-    
 						   /* lock device */
 						   g_rec_mutex_lock(device_mutex);
-						 
+
+						   g_atomic_int_or(&(core_audio_midiin->sync_flags),
+								   (AGS_CORE_AUDIO_MIDIIN_CALLBACK_WAIT | AGS_CORE_AUDIO_MIDIIN_CALLBACK_DONE));
+    						 
 						   no_event = FALSE;
 						 }else{
 						   g_atomic_int_set(&(core_audio_port->is_empty),
