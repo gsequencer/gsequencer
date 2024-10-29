@@ -163,6 +163,7 @@ ags_thread_add_start_queue_all
 ags_thread_start
 ags_thread_run
 ags_thread_stop
+ags_thread_recover_dead_lock
 ags_thread_new
 ags_message_queue_get_type
 ags_message_queue_set_sender_namespace

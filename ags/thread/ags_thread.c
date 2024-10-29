@@ -68,6 +68,8 @@ guint ags_thread_real_clock(AgsThread *thread);
 void ags_thread_real_start(AgsThread *thread);
 void ags_thread_real_stop(AgsThread *thread);
 
+void ags_thread_real_recover_dead_lock(AgsThread *thread);
+
 void* ags_thread_loop(void *ptr);
 
 /**
@@ -3076,16 +3078,34 @@ ags_thread_loop(void *ptr)
 void
 ags_thread_real_start(AgsThread *thread)
 {
-  if(thread->thread != NULL ||
-     ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_RUNNING)){
+  gint64 start_time, current_time;
+
+  if(ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_RUNNING)){
     return;
   }
-
+  
   //NOTE:JK: ouch, recover dead-lock
-  if(g_atomic_int_get(&(thread->is_running)) > 0){
+  start_time = g_get_monotonic_time();
+  
+  do{
+    g_thread_yield();
+    
+    current_time = g_get_monotonic_time();
+  }while(current_time < start_time + G_USEC_PER_SEC &&
+	 thread->thread != NULL);
+
+  if(thread->thread != NULL ||
+     g_atomic_int_get(&(thread->is_running)) > 0){
     ags_thread_recover_dead_lock(thread);
   }
   
+  if(thread->thread != NULL ||
+     g_atomic_int_get(&(thread->is_running)) > 0){
+    g_critical("failed to recover dead-lock");
+    
+    return;
+  }
+
 #ifdef AGS_DEBUG
   g_message("thread start: %s", G_OBJECT_TYPE_NAME(thread));
 #endif
@@ -3244,7 +3264,78 @@ ags_thread_stop(AgsThread *thread)
 void
 ags_thread_real_recover_dead_lock(AgsThread *thread)
 {
-  //TODO:JK: implement me
+  GMutex *wait_mutex;
+  GCond *wait_cond;
+
+  gint64 start_time, current_time;
+
+  g_critical("recover dead-lock");
+  
+  wait_mutex = AGS_THREAD_GET_WAIT_MUTEX(thread);
+  wait_cond = AGS_THREAD_GET_WAIT_COND(thread);
+  
+  /* unset all wait */
+  start_time = g_get_monotonic_time();
+  
+  do{
+    g_mutex_lock(wait_mutex);
+    
+    ags_thread_unset_status_flags(thread,
+				  AGS_THREAD_STATUS_WAITING);
+
+    if(ags_thread_test_sync_tic_flags(thread, (AGS_THREAD_SYNC_TIC_WAIT_0 ||
+					       AGS_THREAD_SYNC_TIC_WAIT_1 ||
+					       AGS_THREAD_SYNC_TIC_WAIT_2 ||
+					       AGS_THREAD_SYNC_TIC_WAIT_3 ||
+					       AGS_THREAD_SYNC_TIC_WAIT_4 ||
+					       AGS_THREAD_SYNC_TIC_WAIT_5 ||
+					       AGS_THREAD_SYNC_TIC_WAIT_6 ||
+					       AGS_THREAD_SYNC_TIC_WAIT_7 ||
+					       AGS_THREAD_SYNC_TIC_WAIT_8))){
+      ags_thread_unset_sync_tic_flags(thread,
+				      (AGS_THREAD_SYNC_TIC_WAIT_0 ||
+				       AGS_THREAD_SYNC_TIC_WAIT_1 ||
+				       AGS_THREAD_SYNC_TIC_WAIT_2 ||
+				       AGS_THREAD_SYNC_TIC_WAIT_3 ||
+				       AGS_THREAD_SYNC_TIC_WAIT_4 ||
+				       AGS_THREAD_SYNC_TIC_WAIT_5 ||
+				       AGS_THREAD_SYNC_TIC_WAIT_6 ||
+				       AGS_THREAD_SYNC_TIC_WAIT_7 ||
+				       AGS_THREAD_SYNC_TIC_WAIT_8));
+      ags_thread_set_sync_tic_flags(thread,
+				    (AGS_THREAD_SYNC_TIC_DONE_0 ||
+				     AGS_THREAD_SYNC_TIC_DONE_1 ||
+				     AGS_THREAD_SYNC_TIC_DONE_2 ||
+				     AGS_THREAD_SYNC_TIC_DONE_3 ||
+				     AGS_THREAD_SYNC_TIC_DONE_4 ||
+				     AGS_THREAD_SYNC_TIC_DONE_5 ||
+				     AGS_THREAD_SYNC_TIC_DONE_6 ||
+				     AGS_THREAD_SYNC_TIC_DONE_7 ||
+				     AGS_THREAD_SYNC_TIC_DONE_8));
+      
+      g_cond_signal(wait_cond);
+    }else{
+      ags_thread_unset_sync_tic_flags(thread,
+				      0x3f);
+      ags_thread_set_sync_tic_flags(thread,
+				    (AGS_THREAD_SYNC_TIC_DONE_0 ||
+				     AGS_THREAD_SYNC_TIC_DONE_1 ||
+				     AGS_THREAD_SYNC_TIC_DONE_2 ||
+				     AGS_THREAD_SYNC_TIC_DONE_3 ||
+				     AGS_THREAD_SYNC_TIC_DONE_4 ||
+				     AGS_THREAD_SYNC_TIC_DONE_5 ||
+				     AGS_THREAD_SYNC_TIC_DONE_6 ||
+				     AGS_THREAD_SYNC_TIC_DONE_7 ||
+				     AGS_THREAD_SYNC_TIC_DONE_8));
+    }
+    
+    g_mutex_unlock(wait_mutex);
+
+    g_thread_yield();
+    
+    current_time = g_get_monotonic_time();
+  }while(current_time < start_time + G_USEC_PER_SEC &&
+	 g_atomic_int_get(&(thread->is_running)) > 0);
 }
 
 /**

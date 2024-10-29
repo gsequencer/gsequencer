@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -63,6 +63,8 @@ void ags_soundcard_thread_stop(AgsThread *thread);
 
 void ags_soundcard_thread_stopped_all_callback(AgsAudioLoop *audio_loop,
 					       AgsSoundcardThread *soundcard_thread);
+
+void ags_soundcard_thread_real_recover_dead_lock(AgsThread *thread);
 
 /**
  * SECTION:ags_soundcard_thread
@@ -182,6 +184,8 @@ ags_soundcard_thread_class_init(AgsSoundcardThreadClass *soundcard_thread)
   thread->start = ags_soundcard_thread_start;
   thread->run = ags_soundcard_thread_run;
   thread->stop = ags_soundcard_thread_stop;
+
+  thread->recover_dead_lock = ags_soundcard_thread_real_recover_dead_lock;
 }
 
 void
@@ -578,6 +582,281 @@ ags_soundcard_thread_stopped_all_callback(AgsAudioLoop *audio_loop,
   if(ags_soundcard_is_playing(soundcard)){
     ags_thread_stop((AgsThread *) soundcard_thread);
   }
+}
+
+void
+ags_soundcard_thread_real_recover_dead_lock(AgsThread *thread)
+{
+  AgsSoundcardThread *soundcard_thread;
+
+  soundcard_thread = (AgsSoundcardThread *) thread;
+  
+  if(soundcard_thread->soundcard != NULL){
+    if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard_thread->soundcard)){
+      AgsCoreAudioDevout *core_audio_devout;
+      
+      GMutex *callback_mutex;      
+      GMutex *callback_finish_mutex;
+      
+      core_audio_devout = AGS_CORE_AUDIO_DEVOUT(soundcard_thread->soundcard);
+
+      callback_mutex = &(core_audio_devout->callback_mutex);
+      
+      callback_finish_mutex = &(core_audio_devout->callback_finish_mutex);
+		       
+      g_atomic_int_or(&(core_audio_devout->sync_flags),
+		      (AGS_CORE_AUDIO_DEVOUT_PASS_THROUGH));            
+
+      g_mutex_lock(callback_mutex);
+
+      if((AGS_CORE_AUDIO_DEVOUT_CALLBACK_DONE & (g_atomic_int_get(&(core_audio_devout->sync_flags)))) == 0){
+	g_atomic_int_and(&(core_audio_devout->sync_flags),
+			 (~(AGS_CORE_AUDIO_DEVOUT_INITIAL_CALLBACK |
+			    AGS_CORE_AUDIO_DEVOUT_CALLBACK_WAIT)));
+	g_atomic_int_or(&(core_audio_devout->sync_flags),
+			AGS_CORE_AUDIO_DEVOUT_CALLBACK_DONE);
+	
+	g_cond_signal(&(core_audio_devout->callback_cond));
+      }else{
+	g_atomic_int_and(&(core_audio_devout->sync_flags),
+			 (~(AGS_CORE_AUDIO_DEVOUT_INITIAL_CALLBACK |
+			    AGS_CORE_AUDIO_DEVOUT_CALLBACK_WAIT)));	
+	g_atomic_int_or(&(core_audio_devout->sync_flags),
+			AGS_CORE_AUDIO_DEVOUT_CALLBACK_DONE);
+      }
+
+      g_mutex_unlock(callback_mutex);
+
+      g_mutex_lock(callback_finish_mutex);
+
+      if((AGS_CORE_AUDIO_DEVOUT_CALLBACK_DONE & (g_atomic_int_get(&(core_audio_devout->sync_flags)))) == 0){
+	g_atomic_int_and(&(core_audio_devout->sync_flags),
+			 (~(AGS_CORE_AUDIO_DEVOUT_CALLBACK_FINISH_WAIT)));
+	g_atomic_int_or(&(core_audio_devout->sync_flags),
+			AGS_CORE_AUDIO_DEVOUT_CALLBACK_FINISH_DONE);
+	
+	g_cond_signal(&(core_audio_devout->callback_finish_cond));
+      }else{
+	g_atomic_int_and(&(core_audio_devout->sync_flags),
+			 (~(AGS_CORE_AUDIO_DEVOUT_CALLBACK_FINISH_WAIT)));
+	g_atomic_int_or(&(core_audio_devout->sync_flags),
+			AGS_CORE_AUDIO_DEVOUT_CALLBACK_FINISH_DONE);	
+      }
+      
+      g_mutex_unlock(callback_finish_mutex);
+    }else if(AGS_IS_CORE_AUDIO_DEVIN(soundcard_thread->soundcard)){
+      AgsCoreAudioDevin *core_audio_devin;
+      
+      GMutex *callback_mutex;
+      GMutex *callback_finish_mutex;
+      
+      core_audio_devin = AGS_CORE_AUDIO_DEVIN(soundcard_thread->soundcard);
+
+      callback_mutex = &(core_audio_devin->callback_mutex);
+
+      callback_finish_mutex = &(core_audio_devin->callback_finish_mutex);
+
+      g_atomic_int_or(&(core_audio_devin->sync_flags),
+		      (AGS_CORE_AUDIO_DEVIN_PASS_THROUGH));      
+
+      g_mutex_lock(callback_mutex);
+
+      if((AGS_CORE_AUDIO_DEVIN_CALLBACK_DONE & (g_atomic_int_get(&(core_audio_devin->sync_flags)))) == 0){
+	g_atomic_int_and(&(core_audio_devin->sync_flags),
+			 (~(AGS_CORE_AUDIO_DEVIN_INITIAL_CALLBACK |
+			    AGS_CORE_AUDIO_DEVIN_CALLBACK_WAIT)));
+	g_atomic_int_or(&(core_audio_devin->sync_flags),
+			AGS_CORE_AUDIO_DEVIN_CALLBACK_DONE);
+	
+	g_cond_signal(&(core_audio_devin->callback_cond));
+      }else{
+	g_atomic_int_and(&(core_audio_devin->sync_flags),
+			 (~(AGS_CORE_AUDIO_DEVIN_INITIAL_CALLBACK |
+			    AGS_CORE_AUDIO_DEVIN_CALLBACK_WAIT)));
+	g_atomic_int_or(&(core_audio_devin->sync_flags),
+			AGS_CORE_AUDIO_DEVIN_CALLBACK_DONE);
+      }
+
+      g_mutex_unlock(callback_mutex);
+
+      g_mutex_lock(callback_finish_mutex);
+
+      if((AGS_CORE_AUDIO_DEVIN_CALLBACK_FINISH_DONE & (g_atomic_int_get(&(core_audio_devin->sync_flags)))) == 0){
+	g_atomic_int_and(&(core_audio_devin->sync_flags),
+			 (~(AGS_CORE_AUDIO_DEVIN_CALLBACK_FINISH_WAIT)));
+	g_atomic_int_or(&(core_audio_devin->sync_flags),
+			AGS_CORE_AUDIO_DEVIN_CALLBACK_FINISH_DONE);
+	
+	g_cond_signal(&(core_audio_devin->callback_finish_cond));
+      }else{
+	g_atomic_int_and(&(core_audio_devin->sync_flags),
+			 (~(AGS_CORE_AUDIO_DEVIN_CALLBACK_FINISH_WAIT)));
+	g_atomic_int_or(&(core_audio_devin->sync_flags),
+			AGS_CORE_AUDIO_DEVIN_CALLBACK_FINISH_DONE);
+      }
+
+      g_mutex_unlock(callback_finish_mutex);
+    }else if(AGS_IS_JACK_DEVOUT(soundcard_thread->soundcard)){
+      AgsJackDevout *jack_devout;
+      
+      GMutex *callback_mutex;
+      GMutex *callback_finish_mutex;
+      
+      jack_devout = AGS_JACK_DEVOUT(soundcard_thread->soundcard);
+
+      callback_mutex = &(jack_devout->callback_mutex);
+
+      callback_finish_mutex = &(jack_devout->callback_finish_mutex);
+		       
+      g_atomic_int_or(&(jack_devout->sync_flags),
+		      (AGS_JACK_DEVOUT_PASS_THROUGH));      
+
+      g_mutex_lock(callback_mutex);
+
+      if((AGS_JACK_DEVOUT_CALLBACK_DONE & (g_atomic_int_get(&(jack_devout->sync_flags)))) == 0){
+	g_atomic_int_and(&(jack_devout->sync_flags),
+			 (~(AGS_JACK_DEVOUT_INITIAL_CALLBACK |
+			    AGS_JACK_DEVOUT_CALLBACK_WAIT)));
+	g_atomic_int_or(&(jack_devout->sync_flags),
+			AGS_JACK_DEVOUT_CALLBACK_DONE);
+	
+	g_cond_signal(&(jack_devout->callback_cond));
+      }else{
+	g_atomic_int_and(&(jack_devout->sync_flags),
+			 (~(AGS_JACK_DEVOUT_INITIAL_CALLBACK |
+			    AGS_JACK_DEVOUT_CALLBACK_WAIT)));	
+	g_atomic_int_or(&(jack_devout->sync_flags),
+			AGS_JACK_DEVOUT_CALLBACK_DONE);
+      }
+
+      g_mutex_unlock(callback_mutex);
+
+      g_mutex_lock(callback_finish_mutex);
+      
+      if((AGS_JACK_DEVOUT_CALLBACK_FINISH_DONE & (g_atomic_int_get(&(jack_devout->sync_flags)))) == 0){
+	g_atomic_int_and(&(jack_devout->sync_flags),
+			 (~(AGS_JACK_DEVOUT_CALLBACK_FINISH_WAIT)));
+	g_atomic_int_or(&(jack_devout->sync_flags),
+			AGS_JACK_DEVOUT_CALLBACK_FINISH_DONE);
+	
+	g_cond_signal(&(jack_devout->callback_finish_cond));
+      }else{
+	g_atomic_int_and(&(jack_devout->sync_flags),
+			 (~(AGS_JACK_DEVOUT_CALLBACK_FINISH_WAIT)));	
+	g_atomic_int_or(&(jack_devout->sync_flags),
+			AGS_JACK_DEVOUT_CALLBACK_FINISH_DONE);
+      }
+
+      g_mutex_unlock(callback_finish_mutex);      
+    }else if(AGS_IS_JACK_DEVIN(soundcard_thread->soundcard)){
+      AgsJackDevin *jack_devin;
+      
+      GMutex *callback_mutex;
+      GMutex *callback_finish_mutex;
+      
+      jack_devin = AGS_JACK_DEVIN(soundcard_thread->soundcard);
+
+      callback_mutex = &(jack_devin->callback_mutex);
+
+      callback_finish_mutex = &(jack_devin->callback_finish_mutex);
+
+      g_atomic_int_or(&(jack_devin->sync_flags),
+		      (AGS_JACK_DEVIN_PASS_THROUGH));      
+
+      g_mutex_lock(callback_mutex);
+
+      if((AGS_JACK_DEVIN_CALLBACK_DONE & (g_atomic_int_get(&(jack_devin->sync_flags)))) == 0){
+	g_atomic_int_and(&(jack_devin->sync_flags),
+			 (~(AGS_JACK_DEVIN_INITIAL_CALLBACK |
+			    AGS_JACK_DEVIN_CALLBACK_WAIT)));
+	g_atomic_int_or(&(jack_devin->sync_flags),
+			 AGS_JACK_DEVIN_CALLBACK_DONE);
+	
+	g_cond_signal(&(jack_devin->callback_cond));
+      }else{
+	g_atomic_int_and(&(jack_devin->sync_flags),
+			 (~(AGS_JACK_DEVIN_INITIAL_CALLBACK |
+			    AGS_JACK_DEVIN_CALLBACK_WAIT)));
+	g_atomic_int_or(&(jack_devin->sync_flags),
+			 AGS_JACK_DEVIN_CALLBACK_DONE);
+      }
+
+      g_mutex_unlock(callback_mutex);
+
+      g_mutex_lock(callback_finish_mutex);
+
+      if((AGS_JACK_DEVIN_CALLBACK_FINISH_DONE & (g_atomic_int_get(&(jack_devin->sync_flags)))) == 0){
+	g_atomic_int_and(&(jack_devin->sync_flags),
+			 (~(AGS_JACK_DEVIN_CALLBACK_FINISH_WAIT)));
+	g_atomic_int_or(&(jack_devin->sync_flags),
+			 AGS_JACK_DEVIN_CALLBACK_FINISH_DONE);
+	
+	g_cond_signal(&(jack_devin->callback_finish_cond));
+      }else{
+	g_atomic_int_and(&(jack_devin->sync_flags),
+			 (~(AGS_JACK_DEVIN_CALLBACK_FINISH_WAIT)));
+	g_atomic_int_or(&(jack_devin->sync_flags),
+			 AGS_JACK_DEVIN_CALLBACK_FINISH_DONE);
+      }
+
+      g_mutex_unlock(callback_finish_mutex);
+    }else if(AGS_IS_PULSE_DEVOUT(soundcard_thread->soundcard)){
+      AgsPulseDevout *pulse_devout;
+      
+      GMutex *callback_mutex;
+      GMutex *callback_finish_mutex;
+      
+      pulse_devout = AGS_PULSE_DEVOUT(soundcard_thread->soundcard);
+
+      callback_mutex = &(pulse_devout->callback_mutex);
+
+      callback_finish_mutex = &(pulse_devout->callback_finish_mutex);
+		       
+      g_atomic_int_or(&(pulse_devout->sync_flags),
+		      (AGS_PULSE_DEVOUT_PASS_THROUGH));            
+
+      g_mutex_lock(callback_mutex);
+
+      if((AGS_PULSE_DEVOUT_CALLBACK_DONE & (g_atomic_int_get(&(pulse_devout->sync_flags)))) == 0){
+	g_atomic_int_and(&(pulse_devout->sync_flags),
+			 (~(AGS_PULSE_DEVOUT_INITIAL_CALLBACK |
+			    AGS_PULSE_DEVOUT_CALLBACK_WAIT)));
+	g_atomic_int_or(&(pulse_devout->sync_flags),
+			 AGS_PULSE_DEVOUT_CALLBACK_DONE);
+	
+	g_cond_signal(&(pulse_devout->callback_cond));
+      }else{
+	g_atomic_int_and(&(pulse_devout->sync_flags),
+			 (~(AGS_PULSE_DEVOUT_INITIAL_CALLBACK |
+			    AGS_PULSE_DEVOUT_CALLBACK_WAIT)));	
+	g_atomic_int_or(&(pulse_devout->sync_flags),
+			 AGS_PULSE_DEVOUT_CALLBACK_DONE);
+      }
+
+      g_mutex_unlock(callback_mutex);
+
+      g_mutex_lock(callback_finish_mutex);
+      
+      if((AGS_PULSE_DEVOUT_CALLBACK_FINISH_DONE & (g_atomic_int_get(&(pulse_devout->sync_flags)))) == 0){
+	g_atomic_int_and(&(pulse_devout->sync_flags),
+			 (~(AGS_PULSE_DEVOUT_CALLBACK_FINISH_WAIT)));
+	g_atomic_int_or(&(pulse_devout->sync_flags),
+			 AGS_PULSE_DEVOUT_CALLBACK_FINISH_DONE);
+	
+	g_cond_signal(&(pulse_devout->callback_finish_cond));
+      }else{
+	g_atomic_int_and(&(pulse_devout->sync_flags),
+			 (~(AGS_PULSE_DEVOUT_CALLBACK_FINISH_WAIT)));	
+	g_atomic_int_or(&(pulse_devout->sync_flags),
+			 AGS_PULSE_DEVOUT_CALLBACK_FINISH_DONE);
+      }
+
+      g_mutex_unlock(callback_finish_mutex);
+    }
+  }
+  
+  /* call parent */
+  AGS_THREAD_CLASS(ags_soundcard_thread_parent_class)->recover_dead_lock(thread);
 }
 
 /**
