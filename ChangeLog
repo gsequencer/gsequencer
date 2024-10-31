@@ -1,3 +1,10 @@
+ags (7.1.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved AgsCoreAudioMidiin prefaulted buffer
+	* improved AgsSequencerThread:sequencer property to be readable
+	* fixed AgsSequencerThread AgsSequencer::record_init() to be called always
+
 ags (7.1.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

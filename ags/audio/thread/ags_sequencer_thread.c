@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -150,7 +150,7 @@ ags_sequencer_thread_class_init(AgsSequencerThreadClass *sequencer_thread)
 				   i18n_pspec("sequencer assigned to"),
 				   i18n_pspec("The AgsSequencer it is assigned to"),
 				   G_TYPE_OBJECT,
-				   G_PARAM_WRITABLE);
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_SEQUENCER,
 				  param_spec);
@@ -360,17 +360,14 @@ ags_sequencer_thread_start(AgsThread *thread)
     return;
   }
 
-  /* check if already initialized */
+#ifdef AGS_DEBUG
+  g_message("ags_sequencer_record");
+#endif
+
   sequencer_thread->error = NULL;
 
-  if(ags_sequencer_get_buffer(sequencer,
-			      NULL) == NULL){
-    ags_sequencer_record_init(sequencer,
+  ags_sequencer_record_init(sequencer,
 			    &(sequencer_thread->error));
-#ifdef AGS_DEBUG
-    g_message("ags_sequencer_record");
-#endif
-  }
 
   AGS_THREAD_CLASS(ags_sequencer_thread_parent_class)->start(thread);
 }
