@@ -21,6 +21,8 @@
 
 #include <ags/audio/ags_sound_provider.h>
 
+#include <ags/audio/midi/ags_midi_ump_util.h>
+
 #include <ags/audio/core-audio/ags_core_audio_server.h>
 #include <ags/audio/core-audio/ags_core_audio_client.h>
 #include <ags/audio/core-audio/ags_core_audio_port.h>
@@ -457,9 +459,9 @@ ags_core_audio_midiin_init(AgsCoreAudioMidiin *core_audio_midiin)
   core_audio_midiin->app_buffer = (char **) g_malloc(AGS_CORE_AUDIO_MIDIIN_DEFAULT_APP_BUFFER_SIZE * sizeof(char *));
 
   for(i = 0; i < AGS_CORE_AUDIO_MIDIIN_DEFAULT_APP_BUFFER_SIZE; i++){
-    core_audio_midiin->app_buffer[i] = NULL;
+    core_audio_midiin->app_buffer[i] = (char *) g_malloc(AGS_CORE_AUDIO_MIDIIN_DEFAULT_BUFFER_SIZE * sizeof(char));
 
-    core_audio_midiin->allocated_app_buffer_size[i] = 0;
+    core_audio_midiin->allocated_app_buffer_size[i] = AGS_CORE_AUDIO_MIDIIN_DEFAULT_BUFFER_SIZE;
     core_audio_midiin->app_buffer_size[i] = 0;
   }
 
@@ -2039,21 +2041,29 @@ ags_core_audio_midiin_switch_buffer_flag(AgsCoreAudioMidiin *core_audio_midiin)
     core_audio_midiin->app_buffer_mode = AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_1;
 
     /* clear buffer */
+    memset(core_audio_midiin->app_buffer[3], 0, core_audio_midiin->app_buffer_size[3] * sizeof(char));
+    
     core_audio_midiin->app_buffer_size[3] = 0;
   }else if(core_audio_midiin->app_buffer_mode == AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_1){
     core_audio_midiin->app_buffer_mode = AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_2;
 
     /* clear buffer */
+    memset(core_audio_midiin->app_buffer[0], 0, core_audio_midiin->app_buffer_size[0] * sizeof(char));
+    
     core_audio_midiin->app_buffer_size[0] = 0;
   }else if(core_audio_midiin->app_buffer_mode == AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_2){
     core_audio_midiin->app_buffer_mode = AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_3;
 
     /* clear buffer */
+    memset(core_audio_midiin->app_buffer[1], 0, core_audio_midiin->app_buffer_size[1] * sizeof(char));
+    
     core_audio_midiin->app_buffer_size[1] = 0;
   }else if(core_audio_midiin->app_buffer_mode == AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_3){
     core_audio_midiin->app_buffer_mode = AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_0;
 
     /* clear buffer */
+    memset(core_audio_midiin->app_buffer[2], 0, core_audio_midiin->app_buffer_size[2] * sizeof(char));
+    
     core_audio_midiin->app_buffer_size[2] = 0;
   }
 
