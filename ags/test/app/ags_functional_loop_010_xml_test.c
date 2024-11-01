@@ -156,6 +156,12 @@ ags_functional_loop_010_xml_test_file_setup()
   gboolean expired;
   gboolean success;
 
+  while(!ags_ui_provider_get_file_ready(AGS_UI_PROVIDER(gsequencer_application_context))){
+    g_usleep(G_USEC_PER_SEC);
+  }
+
+  g_usleep(5 * G_USEC_PER_SEC);
+
   /* get buttons */
   play_button = AGS_WINDOW(gsequencer_application_context->window)->navigation->play;
   stop_button = AGS_WINDOW(gsequencer_application_context->window)->navigation->stop;

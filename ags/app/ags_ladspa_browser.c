@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -642,9 +642,6 @@ ags_ladspa_browser_clear(AgsLadspaBrowser *ladspa_browser)
   while(port_editor != NULL){
     ags_ladspa_browser_remove_port_editor(ladspa_browser,
 					  port_editor->data);
-      
-    g_object_run_dispose(port_editor->data);
-    g_object_unref(port_editor->data);
 
     port_editor = port_editor->next;
   }

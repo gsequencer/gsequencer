@@ -2365,9 +2365,6 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 	  ags_machine_remove_input_pad(machine,
 				       list_input_pad->data);
 
-	  g_object_run_dispose(list_input_pad->data);
-	  g_object_unref(list_input_pad->data);
-
 	  list_input_pad = list_input_pad->next;
 	}
       }
@@ -2377,9 +2374,6 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 	while(list_output_pad != NULL){
 	  ags_machine_remove_output_pad(machine,
 					list_output_pad->data);
-	  
-	  g_object_run_dispose(list_output_pad->data);
-	  g_object_unref(list_output_pad->data);
 	  
 	  list_output_pad = list_output_pad->next;
 	}
@@ -2650,9 +2644,6 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
 	if(list != NULL){
 	  ags_machine_remove_input_pad(machine,
 				       list->data);
-
-	  g_object_run_dispose(list->data);
-	  g_object_unref(list->data);
 	}
 	
 	g_list_free(list_start);
@@ -2669,9 +2660,6 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
 	if(list != NULL){
 	  ags_machine_remove_output_pad(machine,
 					list->data);
-
-	  g_object_run_dispose(list->data);
-	  g_object_unref(list->data);
 	}
 	
 	g_list_free(list_start);
