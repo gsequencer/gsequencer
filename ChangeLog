@@ -1,3 +1,10 @@
+ags (7.1.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_sf2_synth_util_set_pitch_type()
+	* fixed ags_sfz_synth_util_set_pitch_type()
+	* fixed ags_chorus_util_set_pitch_type()
+
 ags (7.1.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

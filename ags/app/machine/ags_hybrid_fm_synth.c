@@ -1385,7 +1385,7 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
   adjustment = ags_dial_get_adjustment(hybrid_fm_synth->low_pass_q_lin);
 
   gtk_adjustment_set_lower(adjustment,
-			   100.0);
+			   -100.0);
   gtk_adjustment_set_upper(adjustment,
 			   100.0);
 
@@ -1478,9 +1478,9 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
   adjustment = ags_dial_get_adjustment(hybrid_fm_synth->high_pass_q_lin);
 
   gtk_adjustment_set_lower(adjustment,
-			   0.0);
+			   -100.0);
   gtk_adjustment_set_upper(adjustment,
-			   1.0);
+			   100.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);

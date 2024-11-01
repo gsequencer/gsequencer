@@ -1312,7 +1312,14 @@ ags_sf2_synth_util_set_pitch_type(AgsSF2SynthUtil *sf2_synth_util,
   gpointer destination;    
 
   GType tmp_pitch_type;
-  
+
+  guint source_stride;
+  guint destination_stride;
+  guint buffer_length;
+  AgsSoundcardFormat format;
+  guint samplerate;
+  gdouble base_key;
+  gdouble tuning;
   gboolean success;
   
   if(sf2_synth_util == NULL){
@@ -1367,10 +1374,31 @@ ags_sf2_synth_util_set_pitch_type(AgsSF2SynthUtil *sf2_synth_util,
   if(success){
     sf2_synth_util->pitch_type = pitch_type;
 
+    source_stride = 1;
+    
+    destination_stride = 1;
+
+    buffer_length = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+    format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+
+    base_key = 0.0;
+    tuning = 0.0;
+    
     if(tmp_pitch_type == AGS_TYPE_FLUID_INTERPOLATE_NONE_UTIL){
       source = ags_fluid_interpolate_none_util_get_source(tmp_pitch_util);
+      source_stride = ags_fluid_interpolate_none_util_get_source_stride(tmp_pitch_util);
+
       destination = ags_fluid_interpolate_none_util_get_destination(tmp_pitch_util);
+      destination_stride = ags_fluid_interpolate_none_util_get_destination_stride(tmp_pitch_util);
       
+      buffer_length = ags_fluid_interpolate_none_util_get_buffer_length(tmp_pitch_util);
+      format = ags_fluid_interpolate_none_util_get_format(tmp_pitch_util);
+      samplerate = ags_fluid_interpolate_none_util_get_samplerate(tmp_pitch_util);
+
+      base_key = ags_fluid_interpolate_none_util_get_base_key(tmp_pitch_util);
+      tuning = ags_fluid_interpolate_none_util_get_tuning(tmp_pitch_util);
+
       ags_fluid_interpolate_none_util_set_source(tmp_pitch_util,
 						 NULL);
       
@@ -1380,7 +1408,17 @@ ags_sf2_synth_util_set_pitch_type(AgsSF2SynthUtil *sf2_synth_util,
       ags_fluid_interpolate_none_util_free(tmp_pitch_util);
     }else if(tmp_pitch_type == AGS_TYPE_FLUID_INTERPOLATE_LINEAR_UTIL){
       source = ags_fluid_interpolate_linear_util_get_source(tmp_pitch_util);
+      source_stride = ags_fluid_interpolate_linear_util_get_source_stride(tmp_pitch_util);
+
       destination = ags_fluid_interpolate_linear_util_get_destination(tmp_pitch_util);
+      destination_stride = ags_fluid_interpolate_linear_util_get_destination_stride(tmp_pitch_util);
+      
+      buffer_length = ags_fluid_interpolate_linear_util_get_buffer_length(tmp_pitch_util);
+      format = ags_fluid_interpolate_linear_util_get_format(tmp_pitch_util);
+      samplerate = ags_fluid_interpolate_linear_util_get_samplerate(tmp_pitch_util);
+
+      base_key = ags_fluid_interpolate_linear_util_get_base_key(tmp_pitch_util);
+      tuning = ags_fluid_interpolate_linear_util_get_tuning(tmp_pitch_util);
 
       ags_fluid_interpolate_linear_util_set_source(tmp_pitch_util,
 						   NULL);
@@ -1391,7 +1429,17 @@ ags_sf2_synth_util_set_pitch_type(AgsSF2SynthUtil *sf2_synth_util,
       ags_fluid_interpolate_linear_util_free(tmp_pitch_util);
     }else if(tmp_pitch_type == AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL){
       source = ags_fluid_interpolate_4th_order_util_get_source(tmp_pitch_util);
+      source_stride = ags_fluid_interpolate_4th_order_util_get_source_stride(tmp_pitch_util);
+
       destination = ags_fluid_interpolate_4th_order_util_get_destination(tmp_pitch_util);
+      destination_stride = ags_fluid_interpolate_4th_order_util_get_destination_stride(tmp_pitch_util);
+      
+      buffer_length = ags_fluid_interpolate_4th_order_util_get_buffer_length(tmp_pitch_util);
+      format = ags_fluid_interpolate_4th_order_util_get_format(tmp_pitch_util);
+      samplerate = ags_fluid_interpolate_4th_order_util_get_samplerate(tmp_pitch_util);
+
+      base_key = ags_fluid_interpolate_4th_order_util_get_base_key(tmp_pitch_util);
+      tuning = ags_fluid_interpolate_4th_order_util_get_tuning(tmp_pitch_util);
 
       ags_fluid_interpolate_4th_order_util_set_source(tmp_pitch_util,
 						      NULL);
@@ -1402,7 +1450,17 @@ ags_sf2_synth_util_set_pitch_type(AgsSF2SynthUtil *sf2_synth_util,
       ags_fluid_interpolate_4th_order_util_free(tmp_pitch_util);
     }else if(tmp_pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
       source = ags_fluid_interpolate_7th_order_util_get_source(tmp_pitch_util);
+      source_stride = ags_fluid_interpolate_7th_order_util_get_source_stride(tmp_pitch_util);
+
       destination = ags_fluid_interpolate_7th_order_util_get_destination(tmp_pitch_util);
+      destination_stride = ags_fluid_interpolate_7th_order_util_get_destination_stride(tmp_pitch_util);
+      
+      buffer_length = ags_fluid_interpolate_7th_order_util_get_buffer_length(tmp_pitch_util);
+      format = ags_fluid_interpolate_7th_order_util_get_format(tmp_pitch_util);
+      samplerate = ags_fluid_interpolate_7th_order_util_get_samplerate(tmp_pitch_util);
+
+      base_key = ags_fluid_interpolate_7th_order_util_get_base_key(tmp_pitch_util);
+      tuning = ags_fluid_interpolate_7th_order_util_get_tuning(tmp_pitch_util);
 
       ags_fluid_interpolate_7th_order_util_set_source(tmp_pitch_util,
 						      NULL);
@@ -1413,7 +1471,17 @@ ags_sf2_synth_util_set_pitch_type(AgsSF2SynthUtil *sf2_synth_util,
       ags_fluid_interpolate_7th_order_util_free(tmp_pitch_util);
     }else if(tmp_pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
       source = ags_pitch_2x_alias_util_get_source(tmp_pitch_util);
+      source_stride = ags_pitch_2x_alias_util_get_source_stride(tmp_pitch_util);
+
       destination = ags_pitch_2x_alias_util_get_destination(tmp_pitch_util);
+      destination_stride = ags_pitch_2x_alias_util_get_destination_stride(tmp_pitch_util);
+      
+      buffer_length = ags_pitch_2x_alias_util_get_buffer_length(tmp_pitch_util);
+      format = ags_pitch_2x_alias_util_get_format(tmp_pitch_util);
+      samplerate = ags_pitch_2x_alias_util_get_samplerate(tmp_pitch_util);
+
+      base_key = ags_pitch_2x_alias_util_get_base_key(tmp_pitch_util);
+      tuning = ags_pitch_2x_alias_util_get_tuning(tmp_pitch_util);
 
       ags_pitch_2x_alias_util_set_source(tmp_pitch_util,
 					 NULL);
@@ -1424,7 +1492,17 @@ ags_sf2_synth_util_set_pitch_type(AgsSF2SynthUtil *sf2_synth_util,
       ags_pitch_2x_alias_util_free(tmp_pitch_util);
     }else if(tmp_pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
       source = ags_pitch_4x_alias_util_get_source(tmp_pitch_util);
+      source_stride = ags_pitch_4x_alias_util_get_source_stride(tmp_pitch_util);
+
       destination = ags_pitch_4x_alias_util_get_destination(tmp_pitch_util);
+      destination_stride = ags_pitch_4x_alias_util_get_destination_stride(tmp_pitch_util);
+      
+      buffer_length = ags_pitch_4x_alias_util_get_buffer_length(tmp_pitch_util);
+      format = ags_pitch_4x_alias_util_get_format(tmp_pitch_util);
+      samplerate = ags_pitch_4x_alias_util_get_samplerate(tmp_pitch_util);
+
+      base_key = ags_pitch_4x_alias_util_get_base_key(tmp_pitch_util);
+      tuning = ags_pitch_4x_alias_util_get_tuning(tmp_pitch_util);
 
       ags_pitch_4x_alias_util_set_source(tmp_pitch_util,
 					 NULL);
@@ -1435,13 +1513,23 @@ ags_sf2_synth_util_set_pitch_type(AgsSF2SynthUtil *sf2_synth_util,
       ags_pitch_4x_alias_util_free(tmp_pitch_util);
     }else if(tmp_pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
       source = ags_pitch_16x_alias_util_get_source(tmp_pitch_util);
+      source_stride = ags_pitch_16x_alias_util_get_source_stride(tmp_pitch_util);
+
       destination = ags_pitch_16x_alias_util_get_destination(tmp_pitch_util);
+      destination_stride = ags_pitch_16x_alias_util_get_destination_stride(tmp_pitch_util);
+      
+      buffer_length = ags_pitch_16x_alias_util_get_buffer_length(tmp_pitch_util);
+      format = ags_pitch_16x_alias_util_get_format(tmp_pitch_util);
+      samplerate = ags_pitch_16x_alias_util_get_samplerate(tmp_pitch_util);
+
+      base_key = ags_pitch_16x_alias_util_get_base_key(tmp_pitch_util);
+      tuning = ags_pitch_16x_alias_util_get_tuning(tmp_pitch_util);
 
       ags_pitch_16x_alias_util_set_source(tmp_pitch_util,
-					 NULL);
+					  NULL);
 
       ags_pitch_16x_alias_util_set_destination(tmp_pitch_util,
-					      NULL);
+					       NULL);
 
       ags_pitch_16x_alias_util_free(tmp_pitch_util);
     }
@@ -1450,45 +1538,157 @@ ags_sf2_synth_util_set_pitch_type(AgsSF2SynthUtil *sf2_synth_util,
     if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_NONE_UTIL){
       ags_fluid_interpolate_none_util_set_source(pitch_util,
 						 source);
+      ags_fluid_interpolate_none_util_set_source_stride(pitch_util,
+							source_stride);
       
       ags_fluid_interpolate_none_util_set_destination(pitch_util,
 						      destination);
+      ags_fluid_interpolate_none_util_set_destination_stride(pitch_util,
+							     destination_stride);      
+
+      ags_fluid_interpolate_none_util_set_buffer_length(pitch_util,
+							buffer_length);      
+      ags_fluid_interpolate_none_util_set_format(pitch_util,
+						 format);      
+      ags_fluid_interpolate_none_util_set_samplerate(pitch_util,
+						     samplerate);      
+
+      ags_fluid_interpolate_none_util_set_base_key(pitch_util,
+						   base_key);      
+      ags_fluid_interpolate_none_util_set_tuning(pitch_util,
+						 tuning);      
     }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_LINEAR_UTIL){
       ags_fluid_interpolate_linear_util_set_source(pitch_util,
 						   source);
-
+      ags_fluid_interpolate_linear_util_set_source_stride(pitch_util,
+							  source_stride);
+      
       ags_fluid_interpolate_linear_util_set_destination(pitch_util,
 							destination);
+      ags_fluid_interpolate_linear_util_set_destination_stride(pitch_util,
+							       destination_stride);      
+
+      ags_fluid_interpolate_linear_util_set_buffer_length(pitch_util,
+							  buffer_length);      
+      ags_fluid_interpolate_linear_util_set_format(pitch_util,
+						   format);      
+      ags_fluid_interpolate_linear_util_set_samplerate(pitch_util,
+						       samplerate);      
+
+      ags_fluid_interpolate_linear_util_set_base_key(pitch_util,
+						     base_key);      
+      ags_fluid_interpolate_linear_util_set_tuning(pitch_util,
+						   tuning);      
     }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL){
       ags_fluid_interpolate_4th_order_util_set_source(pitch_util,
 						      source);
-
+      ags_fluid_interpolate_4th_order_util_set_source_stride(pitch_util,
+							     source_stride);
+      
       ags_fluid_interpolate_4th_order_util_set_destination(pitch_util,
 							   destination);
+      ags_fluid_interpolate_4th_order_util_set_destination_stride(pitch_util,
+								  destination_stride);      
+
+      ags_fluid_interpolate_4th_order_util_set_buffer_length(pitch_util,
+							     buffer_length);      
+      ags_fluid_interpolate_4th_order_util_set_format(pitch_util,
+						      format);      
+      ags_fluid_interpolate_4th_order_util_set_samplerate(pitch_util,
+							  samplerate);      
+
+      ags_fluid_interpolate_4th_order_util_set_base_key(pitch_util,
+							base_key);      
+      ags_fluid_interpolate_4th_order_util_set_tuning(pitch_util,
+						      tuning);      
     }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
       ags_fluid_interpolate_7th_order_util_set_source(pitch_util,
 						      source);
-
+      ags_fluid_interpolate_7th_order_util_set_source_stride(pitch_util,
+							     source_stride);
+      
       ags_fluid_interpolate_7th_order_util_set_destination(pitch_util,
 							   destination);
+      ags_fluid_interpolate_7th_order_util_set_destination_stride(pitch_util,
+								  destination_stride);      
+
+      ags_fluid_interpolate_7th_order_util_set_buffer_length(pitch_util,
+							     buffer_length);      
+      ags_fluid_interpolate_7th_order_util_set_format(pitch_util,
+						      format);      
+      ags_fluid_interpolate_7th_order_util_set_samplerate(pitch_util,
+							  samplerate);      
+
+      ags_fluid_interpolate_7th_order_util_set_base_key(pitch_util,
+							base_key);      
+      ags_fluid_interpolate_7th_order_util_set_tuning(pitch_util,
+						      tuning);      
     }else if(pitch_type == AGS_TYPE_PITCH_2X_ALIAS_UTIL){
       ags_pitch_2x_alias_util_set_source(pitch_util,
 					 source);
-
+      ags_pitch_2x_alias_util_set_source_stride(pitch_util,
+						source_stride);
+      
       ags_pitch_2x_alias_util_set_destination(pitch_util,
 					      destination);
+      ags_pitch_2x_alias_util_set_destination_stride(pitch_util,
+						     destination_stride);      
+
+      ags_pitch_2x_alias_util_set_buffer_length(pitch_util,
+						buffer_length);      
+      ags_pitch_2x_alias_util_set_format(pitch_util,
+					 format);      
+      ags_pitch_2x_alias_util_set_samplerate(pitch_util,
+					     samplerate);      
+
+      ags_pitch_2x_alias_util_set_base_key(pitch_util,
+					   base_key);      
+      ags_pitch_2x_alias_util_set_tuning(pitch_util,
+					 tuning);      
     }else if(pitch_type == AGS_TYPE_PITCH_4X_ALIAS_UTIL){
       ags_pitch_4x_alias_util_set_source(pitch_util,
 					 source);
-
+      ags_pitch_4x_alias_util_set_source_stride(pitch_util,
+						source_stride);
+      
       ags_pitch_4x_alias_util_set_destination(pitch_util,
 					      destination);
+      ags_pitch_4x_alias_util_set_destination_stride(pitch_util,
+						     destination_stride);      
+
+      ags_pitch_4x_alias_util_set_buffer_length(pitch_util,
+						buffer_length);      
+      ags_pitch_4x_alias_util_set_format(pitch_util,
+					 format);      
+      ags_pitch_4x_alias_util_set_samplerate(pitch_util,
+					     samplerate);      
+
+      ags_pitch_4x_alias_util_set_base_key(pitch_util,
+					   base_key);      
+      ags_pitch_4x_alias_util_set_tuning(pitch_util,
+					 tuning);      
     }else if(pitch_type == AGS_TYPE_PITCH_16X_ALIAS_UTIL){
       ags_pitch_16x_alias_util_set_source(pitch_util,
 					  source);
-
+      ags_pitch_16x_alias_util_set_source_stride(pitch_util,
+						 source_stride);
+      
       ags_pitch_16x_alias_util_set_destination(pitch_util,
 					       destination);
+      ags_pitch_16x_alias_util_set_destination_stride(pitch_util,
+						      destination_stride);      
+
+      ags_pitch_16x_alias_util_set_buffer_length(pitch_util,
+						 buffer_length);      
+      ags_pitch_16x_alias_util_set_format(pitch_util,
+					  format);      
+      ags_pitch_16x_alias_util_set_samplerate(pitch_util,
+					      samplerate);      
+
+      ags_pitch_16x_alias_util_set_base_key(pitch_util,
+					    base_key);      
+      ags_pitch_16x_alias_util_set_tuning(pitch_util,
+					  tuning);      
     }
   }
 }
