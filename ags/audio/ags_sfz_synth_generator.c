@@ -1621,7 +1621,7 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
   audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(AGS_AUDIO_SIGNAL(audio_signal)->audio_buffer_util,
 									 format);
 
-  buffer = ags_stream_alloc(frame_count,
+  buffer = ags_stream_alloc(requested_frame_count,
 			    format);
 
   if(sfz_sample != NULL){
