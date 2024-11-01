@@ -1291,7 +1291,9 @@ ags_ffplayer_open_filename(AgsFFPlayer *ffplayer,
   AgsSF2Loader *sf2_loader;
 
   if(!AGS_IS_FFPLAYER(ffplayer) ||
-     filename == NULL){
+     filename == NULL ||
+     strlen(filename) == 0 ||
+     !g_file_test(filename, G_FILE_TEST_EXISTS)){
     return;
   }
   

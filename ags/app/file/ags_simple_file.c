@@ -5070,35 +5070,37 @@ ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *n
 						       key_count));
   }
 
-  ags_pitch_sampler_open_filename(pitch_sampler,
-				  filename);
+  if(g_file_test(filename, G_FILE_TEST_EXISTS)){
+    ags_pitch_sampler_open_filename(pitch_sampler,
+				    filename);
 
-  ags_pitch_sampler_sfz_loader_completed_timeout(pitch_sampler);
+    ags_pitch_sampler_sfz_loader_completed_timeout(pitch_sampler);
 
-  g_usleep(G_USEC_PER_SEC);
+    g_usleep(G_USEC_PER_SEC);
 
-  i = 0;
-  i_stop = 16;
+    i = 0;
+    i_stop = 16;
   
-  if(pitch_sampler->sfz_loader != NULL ||
-     pitch_sampler->audio_container == NULL ||
-     pitch_sampler->audio_container->sound_container == NULL){
-    while(!ags_sfz_loader_test_flags(pitch_sampler->sfz_loader, AGS_SFZ_LOADER_HAS_COMPLETED) ||
-	  pitch_sampler->audio_container == NULL ||
-	  pitch_sampler->audio_container->sound_container == NULL){
-      ags_pitch_sampler_sfz_loader_completed_timeout(pitch_sampler);
+    if(pitch_sampler->sfz_loader != NULL ||
+       pitch_sampler->audio_container == NULL ||
+       pitch_sampler->audio_container->sound_container == NULL){
+      while(!ags_sfz_loader_test_flags(pitch_sampler->sfz_loader, AGS_SFZ_LOADER_HAS_COMPLETED) ||
+	    pitch_sampler->audio_container == NULL ||
+	    pitch_sampler->audio_container->sound_container == NULL){
+	ags_pitch_sampler_sfz_loader_completed_timeout(pitch_sampler);
 
-      g_usleep(G_USEC_PER_SEC / 2);
+	g_usleep(G_USEC_PER_SEC / 2);
 
-      i++;
+	i++;
       
-      if(i >= i_stop){
-	break;
+	if(i >= i_stop){
+	  break;
+	}
       }
     }
-  }
   
-  ags_pitch_sampler_update(pitch_sampler);
+    ags_pitch_sampler_update(pitch_sampler);
+  }
 
   /* aliase */
   str = xmlGetProp(node,
@@ -5283,37 +5285,39 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
 			  filename);
   }
   
-  ags_sfz_synth_open_filename(sfz_synth,
-			      filename);
+  if(g_file_test(filename, G_FILE_TEST_EXISTS)){
+    ags_sfz_synth_open_filename(sfz_synth,
+				filename);
 
-  ags_sfz_synth_sfz_loader_completed_timeout(sfz_synth);
+    ags_sfz_synth_sfz_loader_completed_timeout(sfz_synth);
 
-  g_usleep(G_USEC_PER_SEC);
+    g_usleep(G_USEC_PER_SEC);
 
-  i = 0;
-  i_stop = 16;
+    i = 0;
+    i_stop = 16;
 
-  if(sfz_synth->sfz_loader != NULL ||
-     sfz_synth->audio_container == NULL ||
-     sfz_synth->audio_container->sound_container == NULL){
-    while(!ags_sfz_loader_test_flags(sfz_synth->sfz_loader, AGS_SFZ_LOADER_HAS_COMPLETED) ||
-	  sfz_synth->audio_container == NULL ||
-	  sfz_synth->audio_container->sound_container == NULL){
-      ags_sfz_synth_sfz_loader_completed_timeout(sfz_synth);
+    if(sfz_synth->sfz_loader != NULL ||
+       sfz_synth->audio_container == NULL ||
+       sfz_synth->audio_container->sound_container == NULL){
+      while(!ags_sfz_loader_test_flags(sfz_synth->sfz_loader, AGS_SFZ_LOADER_HAS_COMPLETED) ||
+	    sfz_synth->audio_container == NULL ||
+	    sfz_synth->audio_container->sound_container == NULL){
+	ags_sfz_synth_sfz_loader_completed_timeout(sfz_synth);
 
-      g_usleep(G_USEC_PER_SEC / 2);
+	g_usleep(G_USEC_PER_SEC / 2);
 
-      i++;
+	i++;
       
-      if(i >= i_stop){
-	break;
+	if(i >= i_stop){
+	  break;
+	}
       }
     }
-  }
   
-  ags_sfz_synth_sfz_loader_completed_timeout(sfz_synth);
+    ags_sfz_synth_sfz_loader_completed_timeout(sfz_synth);
 
-  ags_sfz_synth_load_opcode(sfz_synth);
+    ags_sfz_synth_load_opcode(sfz_synth);
+  }
   
   /* synth */
   str = xmlGetProp(node,
@@ -5982,35 +5986,37 @@ ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simple_file, xmlNode *node, 
   ffplayer->load_preset = g_strdup(preset);
   ffplayer->load_instrument = g_strdup(instrument);
 
-  ags_ffplayer_open_filename(ffplayer,
-			     filename);
+  if(g_file_test(filename, G_FILE_TEST_EXISTS)){
+    ags_ffplayer_open_filename(ffplayer,
+			       filename);
 
-  ags_ffplayer_sf2_loader_completed_timeout(ffplayer);
+    ags_ffplayer_sf2_loader_completed_timeout(ffplayer);
   
-  g_usleep(G_USEC_PER_SEC);
+    g_usleep(G_USEC_PER_SEC);
 
-  i = 0;
-  i_stop = 16;
+    i = 0;
+    i_stop = 16;
 
-  if(ffplayer->sf2_loader != NULL ||
-     ffplayer->audio_container == NULL ||
-     ffplayer->audio_container->sound_container == NULL){
-    while(!ags_sf2_loader_test_flags(ffplayer->sf2_loader, AGS_SF2_LOADER_HAS_COMPLETED) ||
-	  ffplayer->audio_container == NULL ||
-	  ffplayer->audio_container->sound_container == NULL){
-      ags_ffplayer_sf2_loader_completed_timeout(ffplayer);
+    if(ffplayer->sf2_loader != NULL ||
+       ffplayer->audio_container == NULL ||
+       ffplayer->audio_container->sound_container == NULL){
+      while(!ags_sf2_loader_test_flags(ffplayer->sf2_loader, AGS_SF2_LOADER_HAS_COMPLETED) ||
+	    ffplayer->audio_container == NULL ||
+	    ffplayer->audio_container->sound_container == NULL){
+	ags_ffplayer_sf2_loader_completed_timeout(ffplayer);
   
-      g_usleep(G_USEC_PER_SEC / 2);
+	g_usleep(G_USEC_PER_SEC / 2);
 
-      i++;
+	i++;
       
-      if(i >= i_stop){
-	break;
+	if(i >= i_stop){
+	  break;
+	}
       }
     }
-  }
 
-  ags_ffplayer_update(ffplayer);
+    ags_ffplayer_update(ffplayer);
+  }
   
   /* aliase */
   str = xmlGetProp(node,
@@ -6174,38 +6180,40 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
 			  filename);
   }
   
-  ags_sf2_synth_open_filename(sf2_synth,
-			      filename);
+  if(g_file_test(filename, G_FILE_TEST_EXISTS)){
+    ags_sf2_synth_open_filename(sf2_synth,
+				filename);
 
-  ags_sf2_synth_sf2_loader_completed_timeout(sf2_synth);
+    ags_sf2_synth_sf2_loader_completed_timeout(sf2_synth);
 
-  g_usleep(G_USEC_PER_SEC);
+    g_usleep(G_USEC_PER_SEC);
 
-  i = 0;
-  i_stop = 16;
+    i = 0;
+    i_stop = 16;
   
-  if(sf2_synth->sf2_loader != NULL ||
-     sf2_synth->audio_container == NULL ||
-     sf2_synth->audio_container->sound_container == NULL){
-    while(!ags_sf2_loader_test_flags(sf2_synth->sf2_loader, AGS_SF2_LOADER_HAS_COMPLETED) ||
-	  sf2_synth->audio_container == NULL ||
-	  sf2_synth->audio_container->sound_container == NULL){
-      ags_sf2_synth_sf2_loader_completed_timeout(sf2_synth);
+    if(sf2_synth->sf2_loader != NULL ||
+       sf2_synth->audio_container == NULL ||
+       sf2_synth->audio_container->sound_container == NULL){
+      while(!ags_sf2_loader_test_flags(sf2_synth->sf2_loader, AGS_SF2_LOADER_HAS_COMPLETED) ||
+	    sf2_synth->audio_container == NULL ||
+	    sf2_synth->audio_container->sound_container == NULL){
+	ags_sf2_synth_sf2_loader_completed_timeout(sf2_synth);
       
-      g_usleep(G_USEC_PER_SEC / 2);
+	g_usleep(G_USEC_PER_SEC / 2);
 
-      i++;
+	i++;
       
-      if(i >= i_stop){
-	break;
+	if(i >= i_stop){
+	  break;
+	}
       }
     }
+
+    ags_sf2_synth_load_midi_locale(sf2_synth,
+				   load_bank,
+				   load_program);
   }
-
-  ags_sf2_synth_load_midi_locale(sf2_synth,
-				 load_bank,
-				 load_program);
-
+  
   /* synth */
   str = xmlGetProp(node,
 		   "synth-octave");
@@ -6782,22 +6790,24 @@ ags_simple_file_read_audiorec_launch(AgsSimpleFile *simple_file, xmlNode *node, 
   str = xmlGetProp(node,
 		   "filename");
     
-  ags_audiorec_open_filename(audiorec,
-			     str);
+  if(g_file_test(str, G_FILE_TEST_EXISTS)){
+    ags_audiorec_open_filename(audiorec,
+			       str);
 
-  g_usleep(G_USEC_PER_SEC);
+    g_usleep(G_USEC_PER_SEC);
 
-  i = 0;
-  i_stop = 16;
+    i = 0;
+    i_stop = 16;
 
-  if(audiorec->wave_loader != NULL){
-    while(!ags_wave_loader_test_flags(audiorec->wave_loader, AGS_WAVE_LOADER_HAS_COMPLETED)){
-      g_usleep(G_USEC_PER_SEC / 2);
+    if(audiorec->wave_loader != NULL){
+      while(!ags_wave_loader_test_flags(audiorec->wave_loader, AGS_WAVE_LOADER_HAS_COMPLETED)){
+	g_usleep(G_USEC_PER_SEC / 2);
 
-      i++;
+	i++;
       
-      if(i >= i_stop){
-	break;
+	if(i >= i_stop){
+	  break;
+	}
       }
     }
   }

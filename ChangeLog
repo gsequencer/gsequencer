@@ -1,3 +1,8 @@
+ags (7.1.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved AgsSimpleFile test filename if exists
+
 ags (7.1.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
