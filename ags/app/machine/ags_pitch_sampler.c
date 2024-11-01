@@ -1451,7 +1451,9 @@ ags_pitch_sampler_open_filename(AgsPitchSampler *pitch_sampler,
   AgsSFZLoader *sfz_loader;
 
   if(!AGS_IS_PITCH_SAMPLER(pitch_sampler) ||
-     filename == NULL){
+     filename == NULL ||
+     strlen(filename) == 0 || 
+     !g_file_test(filename, G_FILE_TEST_EXISTS)){
     return;
   }
   

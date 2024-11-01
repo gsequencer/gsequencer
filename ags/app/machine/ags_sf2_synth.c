@@ -3075,7 +3075,9 @@ ags_sf2_synth_open_filename(AgsSF2Synth *sf2_synth,
   AgsSF2Loader *sf2_loader;
 
   if(!AGS_IS_SF2_SYNTH(sf2_synth) ||
-     filename == NULL){
+     filename == NULL ||
+     strlen(filename) == 0 ||
+     !g_file_test(filename, G_FILE_TEST_EXISTS)){
     return;
   }
   
