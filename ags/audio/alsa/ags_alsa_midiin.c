@@ -414,9 +414,9 @@ ags_alsa_midiin_init(AgsAlsaMidiin *alsa_midiin)
   alsa_midiin->app_buffer = (char **) g_malloc(AGS_ALSA_MIDIIN_DEFAULT_APP_BUFFER_SIZE * sizeof(char *));
   
   for(i = 0; i < AGS_ALSA_MIDIIN_DEFAULT_APP_BUFFER_SIZE; i++){
-    alsa_midiin->app_buffer[i] = NULL;
+    alsa_midiin->app_buffer[i] = (char *) g_malloc(AGS_ALSA_MIDIIN_DEFAULT_BUFFER_SIZE * sizeof(char));
 
-    alsa_midiin->allocated_app_buffer_size[i] = 0;
+    alsa_midiin->allocated_app_buffer_size[i] = AGS_ALSA_MIDIIN_DEFAULT_BUFFER_SIZE;
     alsa_midiin->app_buffer_size[i] = 0;
   }
   
@@ -425,9 +425,9 @@ ags_alsa_midiin_init(AgsAlsaMidiin *alsa_midiin)
   alsa_midiin->backend_buffer = (char **) g_malloc(AGS_ALSA_MIDIIN_DEFAULT_BACKEND_BUFFER_SIZE * sizeof(char *));
 
   for(i = 0; i < AGS_ALSA_MIDIIN_DEFAULT_BACKEND_BUFFER_SIZE; i++){
-    alsa_midiin->backend_buffer[i] = NULL;
+    alsa_midiin->backend_buffer[i] = (char *) g_malloc(AGS_ALSA_MIDIIN_DEFAULT_BUFFER_SIZE * sizeof(char));
 
-    alsa_midiin->allocated_backend_buffer_size[i] = 0;
+    alsa_midiin->allocated_backend_buffer_size[i] = AGS_ALSA_MIDIIN_DEFAULT_BUFFER_SIZE;
     alsa_midiin->backend_buffer_size[i] = 0;
   }
 
@@ -1264,10 +1264,6 @@ ags_alsa_midiin_device_record(AgsSequencer *sequencer,
 
   allocated_backend_buffer_size = alsa_midiin->allocated_backend_buffer_size[backend_buffer_mode];
   backend_buffer_size = 0;
-
-  if(allocated_backend_buffer_size > 0){
-    memset(backend_buffer[backend_buffer_mode], 0, allocated_backend_buffer_size * sizeof(char));
-  }
   
   app_buffer = alsa_midiin->app_buffer;
 
@@ -1275,6 +1271,11 @@ ags_alsa_midiin_device_record(AgsSequencer *sequencer,
   app_buffer_size = 0;
 
   g_rec_mutex_unlock(alsa_midiin_mutex);
+
+  if(backend_buffer[backend_buffer_mode] != NULL &&
+     allocated_backend_buffer_size > 0){
+    memset(backend_buffer[backend_buffer_mode], 0, allocated_backend_buffer_size * sizeof(char));
+  }
 
   /* poll MIDI device */
   status = 0;
@@ -1316,23 +1317,23 @@ ags_alsa_midiin_device_record(AgsSequencer *sequencer,
   g_rec_mutex_lock(alsa_midiin_mutex);
 
   if(allocated_backend_buffer_size > allocated_app_buffer_size){
-    allocated_app_buffer_size = allocated_backend_buffer_size;
-    
     if(app_buffer[app_buffer_mode] == NULL){
-      app_buffer[app_buffer_mode] = (char *) g_malloc(allocated_app_buffer_size * sizeof(char));
+      app_buffer[app_buffer_mode] = (char *) g_malloc(allocated_backend_buffer_size * sizeof(char));
     }else{
       app_buffer[app_buffer_mode] = (char *) g_realloc(app_buffer[app_buffer_mode],
-						       allocated_app_buffer_size * sizeof(char));
+						       allocated_backend_buffer_size * sizeof(char));
     }
 
-    alsa_midiin->allocated_app_buffer_size[app_buffer_mode] = allocated_app_buffer_size;	
-  }
+    memset(app_buffer[app_buffer_mode] + allocated_app_buffer_size, 0, (allocated_backend_buffer_size - allocated_app_buffer_size) * sizeof(char));
 
+    allocated_app_buffer_size = 
+      alsa_midiin->allocated_app_buffer_size[app_buffer_mode] = allocated_backend_buffer_size;	
+  }
+  
   if(backend_buffer_size > 0){
     app_buffer_size = 
       alsa_midiin->app_buffer_size[app_buffer_mode] = backend_buffer_size;
   
-    memset(app_buffer[app_buffer_mode], 0, allocated_app_buffer_size * sizeof(char));
     memcpy(alsa_midiin->app_buffer[app_buffer_mode], backend_buffer[backend_buffer_mode], app_buffer_size * sizeof(char));
   }
   
@@ -1835,10 +1836,34 @@ ags_alsa_midiin_switch_buffer_flag(AgsAlsaMidiin *alsa_midiin)
   /* switch buffer flag */
   g_rec_mutex_lock(alsa_midiin_mutex);
 
-  if(alsa_midiin->app_buffer_mode < AGS_ALSA_MIDIIN_APP_BUFFER_3){
-    alsa_midiin->app_buffer_mode += 1;
-  }else{
+  if(alsa_midiin->app_buffer_mode == AGS_ALSA_MIDIIN_APP_BUFFER_0){
+    alsa_midiin->app_buffer_mode = AGS_ALSA_MIDIIN_APP_BUFFER_1;
+
+    /* clear buffer */
+    memset(alsa_midiin->app_buffer[3], 0, alsa_midiin->app_buffer_size[3] * sizeof(char));
+    
+    alsa_midiin->app_buffer_size[3] = 0;
+  }else if(alsa_midiin->app_buffer_mode == AGS_ALSA_MIDIIN_APP_BUFFER_1){
+    alsa_midiin->app_buffer_mode = AGS_ALSA_MIDIIN_APP_BUFFER_2;
+
+    /* clear buffer */
+    memset(alsa_midiin->app_buffer[0], 0, alsa_midiin->app_buffer_size[0] * sizeof(char));
+    
+    alsa_midiin->app_buffer_size[0] = 0;
+  }else if(alsa_midiin->app_buffer_mode == AGS_ALSA_MIDIIN_APP_BUFFER_2){
+    alsa_midiin->app_buffer_mode = AGS_ALSA_MIDIIN_APP_BUFFER_3;
+
+    /* clear buffer */
+    memset(alsa_midiin->app_buffer[1], 0, alsa_midiin->app_buffer_size[1] * sizeof(char));
+    
+    alsa_midiin->app_buffer_size[1] = 0;
+  }else if(alsa_midiin->app_buffer_mode == AGS_ALSA_MIDIIN_APP_BUFFER_3){
     alsa_midiin->app_buffer_mode = AGS_ALSA_MIDIIN_APP_BUFFER_0;
+
+    /* clear buffer */
+    memset(alsa_midiin->app_buffer[2], 0, alsa_midiin->app_buffer_size[2] * sizeof(char));
+    
+    alsa_midiin->app_buffer_size[2] = 0;
   }
 
   g_rec_mutex_unlock(alsa_midiin_mutex);

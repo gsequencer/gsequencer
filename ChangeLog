@@ -2,6 +2,8 @@ ags (7.1.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* improved AgsSimpleFile test filename if exists
+	* improved AgsAlsaMidiin prefaulted buffer
+	* improved AgsOssMidiin prefaulted buffer
 
 ags (7.1.3)
 
