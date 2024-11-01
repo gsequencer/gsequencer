@@ -2,6 +2,7 @@ ags (7.1.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed potential SIGSEGV with AgsSFZSynthGenerator
+	* fixed potential SIGSEGV with AgsSF2SynthGenerator
 	* fixed AgsHybridSynth and AgsHybridFMSynth q_lin upper and lower range to cents
 	* fixed removed remaining calls to g_object_run_dispose() with widgets
 
