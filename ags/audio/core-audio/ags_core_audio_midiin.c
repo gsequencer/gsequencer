@@ -460,7 +460,8 @@ ags_core_audio_midiin_init(AgsCoreAudioMidiin *core_audio_midiin)
 
   for(i = 0; i < AGS_CORE_AUDIO_MIDIIN_DEFAULT_APP_BUFFER_SIZE; i++){
     core_audio_midiin->app_buffer[i] = (char *) g_malloc(AGS_CORE_AUDIO_MIDIIN_DEFAULT_BUFFER_SIZE * sizeof(char));
-
+    memset(core_audio_midiin->app_buffer[i], 0, AGS_CORE_AUDIO_MIDIIN_DEFAULT_BUFFER_SIZE * sizeof(char));
+    
     core_audio_midiin->allocated_app_buffer_size[i] = AGS_CORE_AUDIO_MIDIIN_DEFAULT_BUFFER_SIZE;
     core_audio_midiin->app_buffer_size[i] = 0;
   }

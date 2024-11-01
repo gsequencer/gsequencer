@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1436,9 +1436,9 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
   adjustment = ags_dial_get_adjustment(hybrid_synth->low_pass_q_lin);
 
   gtk_adjustment_set_lower(adjustment,
-			   0.0);
+			   -100.0);
   gtk_adjustment_set_upper(adjustment,
-			   1.0);
+			   100.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
