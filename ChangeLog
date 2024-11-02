@@ -1,3 +1,8 @@
+ags (7.1.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags-fx-sf2-synth and ags-fx-sfz-synth chorus callback
+
 ags (7.1.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

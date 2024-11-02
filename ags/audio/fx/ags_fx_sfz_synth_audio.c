@@ -660,7 +660,7 @@ ags_fx_sfz_synth_audio_init(AgsFxSFZSynthAudio *fx_sfz_synth_audio)
   position++;
 
   g_signal_connect_after(fx_sfz_synth_audio->chorus_pitch_type, "safe-write",
-			 G_CALLBACK(ags_fx_sfz_synth_audio_chorus_pitch_type_callback), NULL);
+			 G_CALLBACK(ags_fx_sfz_synth_audio_chorus_pitch_type_callback), fx_sfz_synth_audio);
     
   /* chorus input volume */
   fx_sfz_synth_audio->chorus_input_volume = g_object_new(AGS_TYPE_PORT,
