@@ -3424,12 +3424,6 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
       }
 
       g_mutex_unlock(&locale_mutex);
-
-#if defined(AGS_OSXAPI) || defined(AGS_W32API)
-      setlocale(LC_ALL, "C");
-#else
-      current = uselocale(c_locale);
-#endif
       
       simple_file = ags_simple_file_new();
       g_object_set(simple_file,
@@ -3490,12 +3484,6 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
       }
       
     ags_gsequencer_application_context_setup_RESTORE_LOCALE:
-
-#if defined(AGS_OSXAPI) || defined(AGS_W32API)
-      setlocale(LC_ALL, locale_env);
-#else
-      uselocale(current);
-#endif
       
       i++;
       

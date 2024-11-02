@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -89,7 +89,7 @@ ags_osc_server_preferences_any_address_callback(GtkButton *button, AgsOscServerP
     start_list = ags_sound_provider_get_osc_server(AGS_SOUND_PROVIDER(application_context));
 
   if(list != NULL){
-    if(gtk_toggle_button_get_active((GtkToggleButton *) button)){
+    if(gtk_check_button_get_active((GtkCheckButton *) button)){
       ags_osc_server_set_flags(list->data,
 			       AGS_OSC_SERVER_ANY_ADDRESS);
     }else{
@@ -102,7 +102,7 @@ ags_osc_server_preferences_any_address_callback(GtkButton *button, AgsOscServerP
   }
   
   /* set address fields in-/sensitive */
-  if(gtk_toggle_button_get_active((GtkToggleButton *) button)){
+  if(gtk_check_button_get_active((GtkCheckButton *) button)){
     gtk_widget_set_sensitive((GtkWidget *) osc_server_preferences->ip4_address,
 			     FALSE);
 
@@ -134,7 +134,7 @@ ags_osc_server_preferences_enable_ip4_callback(GtkButton *button, AgsOscServerPr
     start_list = ags_sound_provider_get_osc_server(AGS_SOUND_PROVIDER(application_context));
 
   if(list != NULL){
-    if(gtk_toggle_button_get_active((GtkToggleButton *) button)){
+    if(gtk_check_button_get_active((GtkCheckButton *) button)){
       ags_osc_server_set_flags(list->data,
 			       AGS_OSC_SERVER_INET4);
     }else{
@@ -194,7 +194,7 @@ ags_osc_server_preferences_enable_ip6_callback(GtkButton *button, AgsOscServerPr
     start_list = ags_sound_provider_get_osc_server(AGS_SOUND_PROVIDER(application_context));
 
   if(list != NULL){
-    if(gtk_toggle_button_get_active((GtkToggleButton *) button)){
+    if(gtk_check_button_get_active((GtkCheckButton *) button)){
       ags_osc_server_set_flags(list->data,
 			       AGS_OSC_SERVER_INET6);
     }else{

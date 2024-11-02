@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-11-02 20:50+0100\n"
+"POT-Creation-Date: 2024-11-02 23:33+0100\n"
 "PO-Revision-Date: 2021-01-03 08:52+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: Deutsch <jkraehemann@gmail.com>\n"
@@ -238,21 +238,21 @@ msgstr "Eingang"
 msgid "bulk input"
 msgstr "Eingabe verknüpfen"
 
-#: ags/app/ags_gsequencer_application_context.c:3787
+#: ags/app/ags_gsequencer_application_context.c:3775
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr "unbekannte Soundkarten Schnittstelle - %s"
 
-#: ags/app/ags_gsequencer_application_context.c:3797
+#: ags/app/ags_gsequencer_application_context.c:3785
 msgid "unknown soundcard backend - NULL"
 msgstr "unbekannte Soundkarten Schnittstelle - NULL"
 
-#: ags/app/ags_gsequencer_application_context.c:4040
+#: ags/app/ags_gsequencer_application_context.c:4028
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr "unbekannte Sequenzer Schnittstelle - %s"
 
-#: ags/app/ags_gsequencer_application_context.c:4050
+#: ags/app/ags_gsequencer_application_context.c:4038
 msgid "unknown sequencer backend - NULL"
 msgstr "unbekannte Sequenzer Schnittstelle - NULL"
 
@@ -297,27 +297,27 @@ msgstr "Überschreibe bestehende Verknüpfungen"
 msgid "open"
 msgstr "öffnen"
 
-#: ags/app/ags_performance_preferences.c:156
+#: ags/app/ags_performance_preferences.c:157
 msgid "Auto-sense on stream"
 msgstr "Automatischer Sinn des Stroms"
 
-#: ags/app/ags_performance_preferences.c:161
+#: ags/app/ags_performance_preferences.c:162
 msgid "Super threaded - audio"
 msgstr "Super threaded - audio"
 
-#: ags/app/ags_performance_preferences.c:166
+#: ags/app/ags_performance_preferences.c:167
 msgid "Super threaded - channel"
 msgstr "Super threaded - channel"
 
-#: ags/app/ags_performance_preferences.c:176
+#: ags/app/ags_performance_preferences.c:177
 msgid "thread pool - max unused threads"
 msgstr "Thread Pool - maximum unbenützte Threads"
 
-#: ags/app/ags_performance_preferences.c:192
+#: ags/app/ags_performance_preferences.c:193
 msgid "max precision of threads [Hz]"
 msgstr "Maximale Präzision der Threads [Hz]"
 
-#: ags/app/ags_performance_preferences.c:212
+#: ags/app/ags_performance_preferences.c:213
 msgid "update UI timeout[s]"
 msgstr ""
 
@@ -1295,7 +1295,7 @@ msgstr "Kanal grösse anpassen"
 msgid "open file"
 msgstr "Öffne Datei"
 
-#: ags/app/ags_app_action_util.c:686
+#: ags/app/ags_app_action_util.c:662
 #, fuzzy
 msgid "save file as"
 msgstr "Speichern unter"
