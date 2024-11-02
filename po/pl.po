@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-11-02 10:03+0100\n"
+"POT-Creation-Date: 2024-11-02 20:50+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -238,41 +238,41 @@ msgstr "wejście"
 msgid "bulk input"
 msgstr "połącz wejście"
 
-#: ags/app/ags_gsequencer_application_context.c:3770
+#: ags/app/ags_gsequencer_application_context.c:3787
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr "nieznany backend karty dźwiękowej - %s"
 
-#: ags/app/ags_gsequencer_application_context.c:3780
+#: ags/app/ags_gsequencer_application_context.c:3797
 msgid "unknown soundcard backend - NULL"
 msgstr "nieznany backend karty dźwiękowej - NULL"
 
-#: ags/app/ags_gsequencer_application_context.c:4023
+#: ags/app/ags_gsequencer_application_context.c:4040
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr "nieznany backend sekwencera - %s"
 
-#: ags/app/ags_gsequencer_application_context.c:4033
+#: ags/app/ags_gsequencer_application_context.c:4050
 msgid "unknown sequencer backend - NULL"
 msgstr "nieznany backend sekwencera - NULL"
 
-#: ags/app/ags_generic_preferences.c:148
+#: ags/app/ags_generic_preferences.c:166
 msgid "autosave thread"
 msgstr "autozapis wątku"
 
-#: ags/app/ags_generic_preferences.c:158
+#: ags/app/ags_generic_preferences.c:176
 msgid "segmentation"
 msgstr "segmentacja"
 
-#: ags/app/ags_generic_preferences.c:179
+#: ags/app/ags_generic_preferences.c:197
 msgid "engine mode"
 msgstr "tryb silnika"
 
-#: ags/app/ags_generic_preferences.c:198
+#: ags/app/ags_generic_preferences.c:216
 msgid "rt-safe"
 msgstr ""
 
-#: ags/app/ags_generic_preferences.c:209
+#: ags/app/ags_generic_preferences.c:227
 msgid "GUI scale factor"
 msgstr "Współczynnik skali GUI"
 
@@ -297,25 +297,29 @@ msgstr "nadpisz istniejące połączenie"
 msgid "open"
 msgstr "otwórz"
 
-#: ags/app/ags_performance_preferences.c:141
+#: ags/app/ags_performance_preferences.c:156
 msgid "Auto-sense on stream"
 msgstr "Auto-sense strumienia"
 
-#: ags/app/ags_performance_preferences.c:146
+#: ags/app/ags_performance_preferences.c:161
 msgid "Super threaded - audio"
 msgstr "Super wątkowwanie - audio"
 
-#: ags/app/ags_performance_preferences.c:151
+#: ags/app/ags_performance_preferences.c:166
 msgid "Super threaded - channel"
 msgstr "Super wątkowanie - kanał"
 
-#: ags/app/ags_performance_preferences.c:161
+#: ags/app/ags_performance_preferences.c:176
 msgid "thread pool - max unused threads"
 msgstr "pula wątków - max liczba nieużytych wątków"
 
-#: ags/app/ags_performance_preferences.c:177
+#: ags/app/ags_performance_preferences.c:192
 msgid "max precision of threads [Hz]"
 msgstr "max precyzja wątków [Hz]"
+
+#: ags/app/ags_performance_preferences.c:212
+msgid "update UI timeout[s]"
+msgstr ""
 
 #: ags/app/ags_bulk_member.c:887 ags/app/machine/ags_dssi_bridge.c:419
 #: ags/app/machine/ags_live_dssi_bridge.c:422

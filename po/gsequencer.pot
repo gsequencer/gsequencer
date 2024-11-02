@@ -18,9 +18,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 7.1.6\n"
+"Project-Id-Version: gsequencer 7.1.7\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-11-02 10:03+0100\n"
+"POT-Creation-Date: 2024-11-02 20:50+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -224,41 +224,41 @@ msgstr ""
 msgid "bulk input"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application_context.c:3770
+#: ags/app/ags_gsequencer_application_context.c:3787
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application_context.c:3780
+#: ags/app/ags_gsequencer_application_context.c:3797
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application_context.c:4023
+#: ags/app/ags_gsequencer_application_context.c:4040
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application_context.c:4033
+#: ags/app/ags_gsequencer_application_context.c:4050
 msgid "unknown sequencer backend - NULL"
 msgstr ""
 
-#: ags/app/ags_generic_preferences.c:148
+#: ags/app/ags_generic_preferences.c:166
 msgid "autosave thread"
 msgstr ""
 
-#: ags/app/ags_generic_preferences.c:158
+#: ags/app/ags_generic_preferences.c:176
 msgid "segmentation"
 msgstr ""
 
-#: ags/app/ags_generic_preferences.c:179
+#: ags/app/ags_generic_preferences.c:197
 msgid "engine mode"
 msgstr ""
 
-#: ags/app/ags_generic_preferences.c:198
+#: ags/app/ags_generic_preferences.c:216
 msgid "rt-safe"
 msgstr ""
 
-#: ags/app/ags_generic_preferences.c:209
+#: ags/app/ags_generic_preferences.c:227
 msgid "GUI scale factor"
 msgstr ""
 
@@ -282,24 +282,28 @@ msgstr ""
 msgid "open"
 msgstr ""
 
-#: ags/app/ags_performance_preferences.c:141
+#: ags/app/ags_performance_preferences.c:156
 msgid "Auto-sense on stream"
 msgstr ""
 
-#: ags/app/ags_performance_preferences.c:146
+#: ags/app/ags_performance_preferences.c:161
 msgid "Super threaded - audio"
 msgstr ""
 
-#: ags/app/ags_performance_preferences.c:151
+#: ags/app/ags_performance_preferences.c:166
 msgid "Super threaded - channel"
 msgstr ""
 
-#: ags/app/ags_performance_preferences.c:161
+#: ags/app/ags_performance_preferences.c:176
 msgid "thread pool - max unused threads"
 msgstr ""
 
-#: ags/app/ags_performance_preferences.c:177
+#: ags/app/ags_performance_preferences.c:192
 msgid "max precision of threads [Hz]"
+msgstr ""
+
+#: ags/app/ags_performance_preferences.c:212
+msgid "update UI timeout[s]"
 msgstr ""
 
 #: ags/app/ags_bulk_member.c:887 ags/app/machine/ags_dssi_bridge.c:419
