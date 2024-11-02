@@ -609,6 +609,10 @@ ags_gsequencer_application_context_init(AgsGSequencerApplicationContext *gsequen
 {
   AgsConfig *config;
   AgsLog *log;
+
+  gchar *str;
+  
+  gdouble update_ui_timeout;
   
   if(ags_application_context == NULL){
     ags_application_context = (AgsApplicationContext *) gsequencer_application_context;
@@ -720,7 +724,20 @@ ags_gsequencer_application_context_init(AgsGSequencerApplicationContext *gsequen
 		(GSourceFunc) ags_gsequencer_application_context_loader_timeout,
 		gsequencer_application_context);
 
-  g_timeout_add((guint) (1000.0 * AGS_UI_PROVIDER_UPDATE_UI_TIMEOUT),
+  update_ui_timeout = AGS_UI_PROVIDER_UPDATE_UI_TIMEOUT;
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "update-ui-timeout");
+  
+  if(str != NULL){
+    update_ui_timeout = g_strtod(str,
+				 NULL);
+
+    g_free(str);
+  }
+  
+  g_timeout_add((guint) (1000.0 * update_ui_timeout),
   		(GSourceFunc) ags_gsequencer_application_context_update_ui_timeout,
   		(gpointer) gsequencer_application_context);
 }

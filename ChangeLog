@@ -1,3 +1,10 @@
+ags (7.1.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented config value update UI timeout refresh rate
+	* lower UI refresh rate
+	* added config group "generic" with key "update-ui-timeout" as double value
+
 ags (7.1.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
