@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -42,14 +42,11 @@ G_BEGIN_DECLS
 typedef struct _AgsPerformancePreferences AgsPerformancePreferences;
 typedef struct _AgsPerformancePreferencesClass AgsPerformancePreferencesClass;
 
-typedef enum{
-  AGS_PERFORMANCE_PREFERENCES_CONNECTED    = 1,
-}AgsPerformancePreferencesFlags;
-
 struct _AgsPerformancePreferences
 {
   GtkBox box;
 
+  AgsConnectableFlags connectable_flags;
   guint flags;
   
   GtkCheckButton *stream_auto_sense;
@@ -60,6 +57,8 @@ struct _AgsPerformancePreferences
   GtkSpinButton *thread_pool_max_unused_threads;
   
   GtkComboBoxText *max_precision;
+
+  GtkSpinButton *update_ui_timeout;
 };
 
 struct _AgsPerformancePreferencesClass

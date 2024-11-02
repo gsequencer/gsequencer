@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -31,6 +31,7 @@ void ags_performance_preferences_connectable_interface_init(AgsConnectableInterf
 void ags_performance_preferences_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_performance_preferences_init(AgsPerformancePreferences *performance_preferences);
 
+gboolean ags_performance_preferences_is_connected(AgsConnectable *connectable);
 void ags_performance_preferences_connect(AgsConnectable *connectable);
 void ags_performance_preferences_disconnect(AgsConnectable *connectable);
 
@@ -109,10 +110,24 @@ ags_performance_preferences_class_init(AgsPerformancePreferencesClass *performan
 void
 ags_performance_preferences_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_performance_preferences_is_connected;  
   connectable->connect = ags_performance_preferences_connect;
   connectable->disconnect = ags_performance_preferences_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -187,6 +202,41 @@ ags_performance_preferences_init(AgsPerformancePreferences *performance_preferen
 				 "1000");
   gtk_box_append(GTK_BOX(hbox),
 		 GTK_WIDGET(performance_preferences->max_precision));
+
+  /* update-ui */
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
+  gtk_box_append((GtkBox *) performance_preferences,
+		 (GtkWidget *) hbox);
+
+  label = (GtkLabel *) gtk_label_new(i18n("update UI timeout[s]"));
+  gtk_box_append(hbox,
+		 (GtkWidget *) label);
+
+  performance_preferences->update_ui_timeout = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0333,
+											    1.0,
+											    0.0625);
+  gtk_spin_button_set_value(performance_preferences->update_ui_timeout,
+			    AGS_UI_PROVIDER_UPDATE_UI_TIMEOUT);
+  gtk_spin_button_set_digits(performance_preferences->update_ui_timeout,
+			     4);
+  gtk_box_append(hbox,
+		 (GtkWidget *) performance_preferences->update_ui_timeout);
+}
+
+gboolean
+ags_performance_preferences_is_connected(AgsConnectable *connectable)
+{
+  AgsPerformancePreferences *performance_preferences;
+  
+  gboolean is_connected;
+  
+  performance_preferences = AGS_PERFORMANCE_PREFERENCES(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (performance_preferences->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
 }
 
 void
@@ -196,11 +246,11 @@ ags_performance_preferences_connect(AgsConnectable *connectable)
   
   performance_preferences = AGS_PERFORMANCE_PREFERENCES(connectable);
 
-  if((AGS_PERFORMANCE_PREFERENCES_CONNECTED & (performance_preferences->flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
-  performance_preferences->flags |= AGS_PERFORMANCE_PREFERENCES_CONNECTED;
+  performance_preferences->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
   
   g_signal_connect_after(G_OBJECT(performance_preferences->super_threaded_channel), "toggled",
 			 G_CALLBACK(ags_performance_preferences_super_threaded_channel_callback), performance_preferences);
@@ -213,11 +263,11 @@ ags_performance_preferences_disconnect(AgsConnectable *connectable)
   
   performance_preferences = AGS_PERFORMANCE_PREFERENCES(connectable);
 
-  if((AGS_PERFORMANCE_PREFERENCES_CONNECTED & (performance_preferences->flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
-  performance_preferences->flags &= (~AGS_PERFORMANCE_PREFERENCES_CONNECTED);
+  performance_preferences->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
   
   g_object_disconnect(G_OBJECT(performance_preferences->super_threaded_channel),
 		      "any_signal::toggled",
@@ -242,6 +292,7 @@ ags_performance_preferences_apply(AgsApplicable *applicable)
   gchar *str;
 
   guint max_precision;
+  gdouble update_ui_timeout;
   
   performance_preferences = AGS_PERFORMANCE_PREFERENCES(applicable);
 
@@ -333,6 +384,18 @@ ags_performance_preferences_apply(AgsApplicable *applicable)
     g_free(str);
   }
 
+  /* update UI */
+  update_ui_timeout = gtk_spin_button_get_value(performance_preferences->update_ui_timeout);
+  
+  str = g_strdup_printf("%.4f",
+			update_ui_timeout);
+  ags_config_set_value(config,
+		       AGS_CONFIG_GENERIC,
+		       "update-ui-timeout",
+		       str);
+  
+  g_free(str);
+
   //TODO:JK: implement me
 }
 
@@ -346,6 +409,7 @@ ags_performance_preferences_reset(AgsApplicable *applicable)
   gchar *str;
 
   guint max_precision;
+  gdouble update_ui_timeout;
   
   performance_preferences = AGS_PERFORMANCE_PREFERENCES(applicable);
 
@@ -425,6 +489,19 @@ ags_performance_preferences_reset(AgsApplicable *applicable)
       g_warning("unknown max-precision configuration");
     }
   }
+
+  /* update UI timeout */
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "update-ui-timeout");
+
+  if(str != NULL){
+    gtk_spin_button_set_value(performance_preferences->update_ui_timeout,
+			      g_strtod(str,
+				       NULL));
+  }
+  
+  g_free(str);
 
   //TODO:JK: implement me
 }

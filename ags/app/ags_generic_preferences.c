@@ -32,6 +32,7 @@ void ags_generic_preferences_applicable_interface_init(AgsApplicableInterface *a
 void ags_generic_preferences_init(AgsGenericPreferences *generic_preferences);
 static void ags_generic_preferences_finalize(GObject *gobject);
 
+gboolean ags_generic_preferences_is_connected(AgsConnectable *connectable);
 void ags_generic_preferences_connect(AgsConnectable *connectable);
 void ags_generic_preferences_disconnect(AgsConnectable *connectable);
 
@@ -119,10 +120,24 @@ ags_generic_preferences_class_init(AgsGenericPreferencesClass *generic_preferenc
 void
 ags_generic_preferences_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_generic_preferences_is_connected;  
   connectable->connect = ags_generic_preferences_connect;
   connectable->disconnect = ags_generic_preferences_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -138,6 +153,9 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
 {
   GtkBox *hbox;
   GtkLabel *label;
+
+  generic_preferences->flags = 0;
+  generic_preferences->connectable_flags = 0;
 
   gtk_orientable_set_orientation(GTK_ORIENTABLE(generic_preferences),
 				 GTK_ORIENTATION_VERTICAL);
@@ -231,6 +249,21 @@ ags_generic_preferences_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_generic_preferences_parent_class)->finalize(gobject);
 }
 
+gboolean
+ags_generic_preferences_is_connected(AgsConnectable *connectable)
+{
+  AgsGenericPreferences *generic_preferences;
+  
+  gboolean is_connected;
+  
+  generic_preferences = AGS_GENERIC_PREFERENCES(connectable);
+
+  /* check is connected */
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (generic_preferences->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
+}
+
 void
 ags_generic_preferences_connect(AgsConnectable *connectable)
 {
@@ -238,11 +271,11 @@ ags_generic_preferences_connect(AgsConnectable *connectable)
   
   generic_preferences = AGS_GENERIC_PREFERENCES(connectable);
 
-  if((AGS_GENERIC_PREFERENCES_CONNECTED & (generic_preferences->flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
-  generic_preferences->flags |= AGS_GENERIC_PREFERENCES_CONNECTED;
+  generic_preferences->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
   
   g_signal_connect_after(G_OBJECT(generic_preferences->rt_safe), "toggled",
 			 G_CALLBACK(ags_generic_preferences_rt_safe_callback), generic_preferences);
@@ -255,11 +288,11 @@ ags_generic_preferences_disconnect(AgsConnectable *connectable)
   
   generic_preferences = AGS_GENERIC_PREFERENCES(connectable);
 
-  if((AGS_GENERIC_PREFERENCES_CONNECTED & (generic_preferences->flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
-  generic_preferences->flags &= (~AGS_GENERIC_PREFERENCES_CONNECTED);
+  generic_preferences->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
   
   g_object_disconnect(G_OBJECT(generic_preferences->rt_safe),
 		      "any_signal::toggled",
@@ -342,7 +375,7 @@ ags_generic_preferences_reset(AgsApplicable *applicable)
   AgsConfig *config;
 
   gchar *str;
-  
+    
   generic_preferences = AGS_GENERIC_PREFERENCES(applicable);
 
   config = ags_config_get_instance();
