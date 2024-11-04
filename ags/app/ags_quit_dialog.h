@@ -56,6 +56,8 @@ struct _AgsQuitDialog
   guint connectable_flags;
 
   guint current_question;
+
+  GtkScrolledWindow *scrolled_window;
   
   GtkLabel *save_file_question;
   GtkLabel *export_wave_question;

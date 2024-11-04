@@ -187,6 +187,7 @@ void
 ags_quit_dialog_init(AgsQuitDialog *quit_dialog)
 {
   GtkBox *vbox;  
+  GtkBox *inner_vbox;  
   GtkBox *hbox;
   
   GtkEventController *event_controller;
@@ -196,6 +197,9 @@ ags_quit_dialog_init(AgsQuitDialog *quit_dialog)
   g_object_set(quit_dialog,
 	       "title", i18n("Exit GSequencer"),
 	       NULL);
+
+  gtk_window_set_default_size((GtkWindow *) quit_dialog,
+			      AGS_UI_PROVIDER_DEFAULT_QUIT_DIALOG_WIDTH, AGS_UI_PROVIDER_DEFAULT_QUIT_DIALOG_HEIGHT);
 
   g_signal_connect(quit_dialog, "close-request",
 		   G_CALLBACK(ags_quit_dialog_close_request_callback), quit_dialog);
@@ -218,28 +222,55 @@ ags_quit_dialog_init(AgsQuitDialog *quit_dialog)
 				AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   gtk_widget_set_valign((GtkWidget *) vbox,
-			GTK_ALIGN_START);
+			GTK_ALIGN_FILL);
   gtk_widget_set_vexpand((GtkWidget *) vbox,
-			 FALSE);
+			 TRUE);
   
   gtk_box_set_spacing((GtkBox *) vbox,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   gtk_window_set_child((GtkWindow *) quit_dialog,
 		       (GtkWidget *) vbox);
-  
+
+  /* content */
   quit_dialog->current_question = AGS_QUIT_DIALOG_QUESTION_SAVE_FILE;
+
+  quit_dialog->scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
+
+  gtk_widget_set_valign((GtkWidget *) quit_dialog->scrolled_window,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_vexpand((GtkWidget *) quit_dialog->scrolled_window,
+			 TRUE);
+
+  gtk_box_append(vbox,
+		 (GtkWidget *) quit_dialog->scrolled_window);
+
+  /* inner vbox */
+  inner_vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_widget_set_valign((GtkWidget *) inner_vbox,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_vexpand((GtkWidget *) inner_vbox,
+			 TRUE);
   
+  gtk_box_set_spacing((GtkBox *) inner_vbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_scrolled_window_set_child(quit_dialog->scrolled_window,
+				(GtkWidget *) inner_vbox);
+
+  /* question */
   quit_dialog->save_file_question = (GtkLabel *) gtk_label_new(i18n("Do you want to save before quit?"));
   gtk_label_set_xalign(quit_dialog->save_file_question,
 		       0.0);
-  gtk_box_append(vbox,
+  gtk_box_append(inner_vbox,
 		 (GtkWidget *) quit_dialog->save_file_question);
 
   quit_dialog->export_wave_question = (GtkLabel *) gtk_label_new(i18n("Do you want to fast export before quit?"));
   gtk_label_set_xalign(quit_dialog->export_wave_question,
 		       0.0);
-  gtk_box_append(vbox,
+  gtk_box_append(inner_vbox,
 		 (GtkWidget *) quit_dialog->export_wave_question);
 
   gtk_widget_set_visible((GtkWidget *) quit_dialog->export_wave_question,
@@ -257,7 +288,7 @@ ags_quit_dialog_init(AgsQuitDialog *quit_dialog)
   gtk_box_set_spacing((GtkBox *) hbox,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
 
-  gtk_box_append(vbox,
+  gtk_box_append(inner_vbox,
 		 (GtkWidget *) hbox);
   
   quit_dialog->export_wave = (GtkLabel *) gtk_label_new(i18n("Current filename of export wave:"));
@@ -275,7 +306,7 @@ ags_quit_dialog_init(AgsQuitDialog *quit_dialog)
 			 FALSE);
 
   quit_dialog->accept_all = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("accept all"));
-  gtk_box_append(vbox,
+  gtk_box_append(inner_vbox,
 		 (GtkWidget *) quit_dialog->accept_all);
 
   quit_dialog->nth_wave_export_machine = 0;

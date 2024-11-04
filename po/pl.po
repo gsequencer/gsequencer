@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-11-02 23:33+0100\n"
+"POT-Creation-Date: 2024-11-04 15:29+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -183,38 +183,38 @@ msgstr "tym urządzenia: "
 msgid "ok"
 msgstr ""
 
-#: ags/app/ags_quit_dialog.c:197
+#: ags/app/ags_quit_dialog.c:198
 #, fuzzy
 msgid "Exit GSequencer"
 msgstr "sekwencja"
 
-#: ags/app/ags_quit_dialog.c:233
+#: ags/app/ags_quit_dialog.c:264
 msgid "Do you want to save before quit?"
 msgstr "Czy chcesz zapisać zmiany?"
 
-#: ags/app/ags_quit_dialog.c:239
+#: ags/app/ags_quit_dialog.c:270
 msgid "Do you want to fast export before quit?"
 msgstr "Czy chcesz wyeksportować zmiany?"
 
-#: ags/app/ags_quit_dialog.c:263
+#: ags/app/ags_quit_dialog.c:294
 msgid "Current filename of export wave:"
 msgstr ""
 
-#: ags/app/ags_quit_dialog.c:277
+#: ags/app/ags_quit_dialog.c:308
 msgid "accept all"
 msgstr "zaakceptuj wszystko"
 
-#: ags/app/ags_quit_dialog.c:305
+#: ags/app/ags_quit_dialog.c:336
 #, fuzzy
 msgid "yes"
 msgstr "Tak"
 
-#: ags/app/ags_quit_dialog.c:309
+#: ags/app/ags_quit_dialog.c:340
 #, fuzzy
 msgid "no"
 msgstr "info"
 
-#: ags/app/ags_quit_dialog.c:313
+#: ags/app/ags_quit_dialog.c:344
 #, fuzzy
 msgid "cancel"
 msgstr "Kasuj"
