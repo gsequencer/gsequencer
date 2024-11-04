@@ -143,6 +143,9 @@ ags_performance_preferences_init(AgsPerformancePreferences *performance_preferen
 {
   GtkBox *hbox;
   GtkLabel *label;
+  
+  performance_preferences->flags = 0;
+  performance_preferences->connectable_flags = 0;  
 
   gtk_orientable_set_orientation(GTK_ORIENTABLE(performance_preferences),
 				 GTK_ORIENTATION_VERTICAL);  
@@ -150,8 +153,6 @@ ags_performance_preferences_init(AgsPerformancePreferences *performance_preferen
   gtk_box_set_spacing((GtkBox *) performance_preferences,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
 
-  performance_preferences->flags = 0;
-  
   /* auto-sense */
   performance_preferences->stream_auto_sense = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("Auto-sense on stream"));
   gtk_box_append(GTK_BOX(performance_preferences),

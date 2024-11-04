@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,9 +25,9 @@ void
 ags_performance_preferences_super_threaded_channel_callback(GtkWidget *button,
 							    AgsPerformancePreferences *performance_preferences)
 {
-  if(gtk_toggle_button_get_active((GtkToggleButton *) button)){
-    gtk_toggle_button_set_active((GtkToggleButton *) performance_preferences->super_threaded_audio,
-				 TRUE);
+  if(gtk_check_button_get_active((GtkCheckButton *) button)){
+    gtk_check_button_set_active((GtkCheckButton *) performance_preferences->super_threaded_audio,
+				TRUE);
     gtk_widget_set_sensitive((GtkWidget *) performance_preferences->super_threaded_audio,
 			     FALSE);
   }else{

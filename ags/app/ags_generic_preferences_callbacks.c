@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -31,7 +31,7 @@ ags_generic_preferences_autosave_thread_clicked_callback(GtkWidget *check_button
 {
   //FIXME:JK: defunct
 #if 0
-  if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_button))){
+  if(gtk_check_button_get_active(GTK_CHECK_BUTTON(check_button))){
     ags_thread_start((AgsThread *) autosave_thread);
   }else{
     ags_thread_stop((AgsThread *) autosave_thread);
@@ -43,8 +43,8 @@ void
 ags_generic_preferences_rt_safe_callback(GtkWidget *check_button,
 					 AgsGenericPreferences *generic_preferences)
 {
-  if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_button))){
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(generic_preferences->engine_mode),
+  if(gtk_check_button_get_active(GTK_CHECK_BUTTON(check_button))){
+    gtk_check_button_set_active(GTK_CHECK_BUTTON(generic_preferences->engine_mode),
 				 1);
 
     gtk_widget_set_sensitive(GTK_WIDGET(generic_preferences->engine_mode),

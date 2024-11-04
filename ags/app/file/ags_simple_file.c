@@ -17394,18 +17394,20 @@ ags_simple_file_start_queue_timeout(AgsSimpleFile *simple_file)
 
     g_free(window_title);
 
-    label = (GtkLabel *) gtk_header_bar_get_title_widget(window->header_bar);
+    if(window->header_bar != NULL){
+      label = (GtkLabel *) gtk_header_bar_get_title_widget(window->header_bar);
 
-    if(label != NULL){
-      window_title = g_strdup_printf("GSequencer\n<small>%s</small>",
-				     window->loaded_filename);
+      if(label != NULL){
+	window_title = g_strdup_printf("GSequencer\n<small>%s</small>",
+				       window->loaded_filename);
 
-      gtk_label_set_label(label,
-			  window_title);
+	gtk_label_set_label(label,
+			    window_title);
 
-      g_free(window_title);
+	g_free(window_title);
+      }
     }
-      
+    
     return(G_SOURCE_REMOVE);
   }
 }

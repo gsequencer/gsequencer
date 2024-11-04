@@ -490,12 +490,6 @@ ags_app_action_util_save()
 
     g_mutex_unlock(&locale_mutex);
 
-#if defined(AGS_OSXAPI) || defined(AGS_W32API)
-    setlocale(LC_ALL, "C.UTF-8");
-#else
-    current = uselocale(c_utf8_locale);
-#endif
-
     simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
 						 "filename", window->loaded_filename,
 						 NULL);
@@ -515,12 +509,6 @@ ags_app_action_util_save()
     ags_simple_file_close(simple_file);
 
     g_object_unref(G_OBJECT(simple_file));
-
-#if defined(AGS_OSXAPI) || defined(AGS_W32API)
-    setlocale(LC_ALL, locale_env);
-#else
-    uselocale(current);
-#endif
   }else{
     AgsFile *file;
 
@@ -608,12 +596,6 @@ ags_app_action_util_save_as_response_callback(AgsFileDialog *file_dialog,
 
     g_mutex_unlock(&locale_mutex);
 
-#if defined(AGS_OSXAPI) || defined(AGS_W32API)
-    setlocale(LC_ALL, "C.UTF-8");
-#else
-    current = uselocale(c_utf8_locale);
-#endif
-
     simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
 						 "filename", filename,
 						 NULL);
@@ -633,12 +615,6 @@ ags_app_action_util_save_as_response_callback(AgsFileDialog *file_dialog,
     ags_simple_file_close(simple_file);
 
     g_object_unref(G_OBJECT(simple_file));
-
-#if defined(AGS_OSXAPI) || defined(AGS_W32API)
-    setlocale(LC_ALL, locale_env);
-#else
-    uselocale(current);
-#endif
 
     window->loaded_filename = g_strdup(filename);
 
