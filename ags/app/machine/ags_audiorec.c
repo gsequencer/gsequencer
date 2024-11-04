@@ -865,7 +865,8 @@ ags_audiorec_open_filename(AgsAudiorec *audiorec,
   
   if(!AGS_IS_AUDIOREC(audiorec) ||
      filename == NULL ||
-     strlen(filename) == 0){
+     strlen(filename) == 0 ||
+     !g_file_test(filename, G_FILE_TEST_EXISTS)){
     return;
   }
   

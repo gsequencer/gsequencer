@@ -2172,11 +2172,11 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
 	       NULL);
 
   current_frame_count = length * buffer_size;
-  requested_frame_count = (guint) ceil(((floor(delay) * buffer_size + attack) + frame_count) / buffer_size) * buffer_size;
+  requested_frame_count = ((guint) floor(((floor(delay) * buffer_size + attack) + frame_count) / buffer_size) + 1) * buffer_size;
   
   if(current_frame_count < requested_frame_count){
     ags_audio_signal_stream_resize((AgsAudioSignal *) audio_signal,
-				   ceil(requested_frame_count / buffer_size));
+				   (guint) floor(requested_frame_count / buffer_size) + 1);
   }
 
   ags_audio_signal_clear((AgsAudioSignal *) audio_signal);
@@ -2201,7 +2201,7 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
   allocated_frame_count = buffer_size;
 
   if(frame_count > buffer_size){
-    allocated_frame_count = frame_count;
+    allocated_frame_count = requested_frame_count;
   }
 
   buffer = ags_stream_alloc(allocated_frame_count,
@@ -2269,7 +2269,7 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
 
 #if defined(AGS_WITH_LIBINSTPATCH)
   ags_sf2_synth_util_set_buffer_length(sf2_synth_util,
-				       frame_count);
+				       allocated_frame_count);
 
   ags_sf2_synth_util_set_format(sf2_synth_util,
 				format);
@@ -2499,11 +2499,11 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
 	       NULL);
 
   current_frame_count = AGS_AUDIO_SIGNAL(audio_signal)->length * buffer_size;
-  requested_frame_count = (guint) ceil(((floor(delay) * buffer_size + attack) + frame_count) / buffer_size) * buffer_size;
+  requested_frame_count = ((guint) floor(((floor(delay) * buffer_size + attack) + frame_count) / buffer_size) + 1) * buffer_size;
   
   if(current_frame_count < requested_frame_count){
     ags_audio_signal_stream_resize((AgsAudioSignal *) audio_signal,
-				   ceil(requested_frame_count / buffer_size));
+				   (guint) floor(requested_frame_count / buffer_size) + 1);
   }
 
 #if defined(AGS_WITH_LIBINSTPATCH)
@@ -2552,7 +2552,7 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
   audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(AGS_AUDIO_SIGNAL(audio_signal)->audio_buffer_util,
 									 format);
 
-  buffer = ags_stream_alloc(frame_count,
+  buffer = ags_stream_alloc(requested_frame_count,
 			    format);
 
   g_rec_mutex_lock(sf2_synth_generator_mutex);
@@ -2575,7 +2575,7 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
 				     program);
 
   ags_sf2_synth_util_set_buffer_length(sf2_synth_generator->sf2_synth_util,
-				       frame_count);
+				       requested_frame_count);
 
   ags_sf2_synth_util_set_format(sf2_synth_generator->sf2_synth_util,
 				format);

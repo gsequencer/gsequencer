@@ -1595,11 +1595,11 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
 	       NULL);
 
   current_frame_count = length * buffer_size;
-  requested_frame_count = (guint) ceil(((floor(delay) * buffer_size + attack) + frame_count) / buffer_size) * buffer_size;
+  requested_frame_count = ((guint) floor(((floor(delay) * buffer_size + attack) + frame_count) / buffer_size) + 1) * buffer_size;
   
   if(current_frame_count < requested_frame_count){
     ags_audio_signal_stream_resize((AgsAudioSignal *) audio_signal,
-				   ceil(requested_frame_count / buffer_size));
+				   (guint) floor(requested_frame_count / buffer_size) + 1);
   }
 
   ags_audio_signal_clear((AgsAudioSignal *) audio_signal);
@@ -1621,7 +1621,7 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
   audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(AGS_AUDIO_SIGNAL(audio_signal)->audio_buffer_util,
 									 format);
 
-  buffer = ags_stream_alloc(frame_count,
+  buffer = ags_stream_alloc(requested_frame_count,
 			    format);
 
   if(sfz_sample != NULL){
@@ -1650,7 +1650,7 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
 				       1);
 
   ags_sfz_synth_util_set_buffer_length(sfz_synth_generator->sfz_synth_util,
-				       frame_count);
+				       requested_frame_count);
 
   ags_sfz_synth_util_set_format(sfz_synth_generator->sfz_synth_util,
 				format);

@@ -2998,7 +2998,9 @@ ags_sfz_synth_open_filename(AgsSFZSynth *sfz_synth,
   AgsSFZLoader *sfz_loader;
 
   if(!AGS_IS_SFZ_SYNTH(sfz_synth) ||
-     filename == NULL){
+     filename == NULL ||
+     strlen(filename) == 0 ||
+     !g_file_test(filename, G_FILE_TEST_EXISTS)){
     return;
   }
   

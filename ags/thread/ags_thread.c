@@ -68,6 +68,8 @@ guint ags_thread_real_clock(AgsThread *thread);
 void ags_thread_real_start(AgsThread *thread);
 void ags_thread_real_stop(AgsThread *thread);
 
+void ags_thread_real_recover_dead_lock(AgsThread *thread);
+
 void* ags_thread_loop(void *ptr);
 
 /**
@@ -145,6 +147,7 @@ enum{
   START,
   RUN,
   STOP,
+  RECOVER_DEAD_LOCK,
   LAST_SIGNAL,
 };
 
@@ -365,6 +368,8 @@ ags_thread_class_init(AgsThreadClass *thread)
   thread->start = ags_thread_real_start;
   thread->run = NULL;
   thread->stop = ags_thread_real_stop;
+
+  thread->recover_dead_lock = ags_thread_real_recover_dead_lock;
   
   /* signals */
   /**
@@ -437,6 +442,23 @@ ags_thread_class_init(AgsThreadClass *thread)
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
+
+  /**
+   * AgsThread::recover-dead-lock:
+   * @thread: the #AgsThread
+   *
+   * The ::recover-dead-lock() signal is invoked as thread needs to recover dead-lock.
+   * 
+   * Since: 7.1.0
+   */
+  thread_signals[RECOVER_DEAD_LOCK] =
+    g_signal_new("recover-dead-lock",
+		 G_TYPE_FROM_CLASS (thread),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsThreadClass, recover_dead_lock),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
 }
 
 void
@@ -485,6 +507,9 @@ ags_thread_init(AgsThread *thread)
   g_atomic_int_set(&(thread->sync_tic_flags),
 		   0);
 
+  g_atomic_int_set(&(thread->is_running),
+		   0);
+  
   /* uuid */
   thread->uuid = ags_uuid_alloc();
   ags_uuid_generate(thread->uuid);
@@ -3041,6 +3066,8 @@ ags_thread_loop(void *ptr)
   /* exit thread */
   ags_thread_unset_flags(thread, AGS_THREAD_MARK_SYNCED);
 
+  g_atomic_int_dec_and_test(&(thread->is_running));
+
   thread->thread = NULL;
   
   g_thread_exit(NULL);
@@ -3051,16 +3078,41 @@ ags_thread_loop(void *ptr)
 void
 ags_thread_real_start(AgsThread *thread)
 {
-  if(thread->thread != NULL ||
-     ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_RUNNING)){
+  gint64 start_time, current_time;
+
+  if(ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_RUNNING)){
     return;
   }
   
+  //NOTE:JK: ouch, recover dead-lock
+  start_time = g_get_monotonic_time();
+  
+  do{
+    g_thread_yield();
+    
+    current_time = g_get_monotonic_time();
+  }while(current_time < start_time + G_USEC_PER_SEC &&
+	 thread->thread != NULL);
+
+  if(thread->thread != NULL ||
+     g_atomic_int_get(&(thread->is_running)) > 0){
+    ags_thread_recover_dead_lock(thread);
+  }
+  
+  if(thread->thread != NULL ||
+     g_atomic_int_get(&(thread->is_running)) > 0){
+    g_critical("failed to recover dead-lock");
+    
+    return;
+  }
+
 #ifdef AGS_DEBUG
   g_message("thread start: %s", G_OBJECT_TYPE_NAME(thread));
 #endif
   
   /*  */
+  g_atomic_int_inc(&(thread->is_running));
+  
   thread->thread = g_thread_new("Advanced Gtk+ Sequencer - clock",
 				ags_thread_loop,
 				thread);
@@ -3207,6 +3259,102 @@ ags_thread_stop(AgsThread *thread)
   g_signal_emit(G_OBJECT(thread),
 		thread_signals[STOP], 0);
   g_object_unref(G_OBJECT(thread));
+}
+
+void
+ags_thread_real_recover_dead_lock(AgsThread *thread)
+{
+  GMutex *wait_mutex;
+  GCond *wait_cond;
+
+  gint64 start_time, current_time;
+
+  g_critical("recover dead-lock");
+  
+  wait_mutex = AGS_THREAD_GET_WAIT_MUTEX(thread);
+  wait_cond = AGS_THREAD_GET_WAIT_COND(thread);
+  
+  /* unset all wait */
+  start_time = g_get_monotonic_time();
+  
+  do{
+    g_mutex_lock(wait_mutex);
+    
+    ags_thread_unset_status_flags(thread,
+				  AGS_THREAD_STATUS_WAITING);
+
+    if(ags_thread_test_sync_tic_flags(thread, (AGS_THREAD_SYNC_TIC_WAIT_0 ||
+					       AGS_THREAD_SYNC_TIC_WAIT_1 ||
+					       AGS_THREAD_SYNC_TIC_WAIT_2 ||
+					       AGS_THREAD_SYNC_TIC_WAIT_3 ||
+					       AGS_THREAD_SYNC_TIC_WAIT_4 ||
+					       AGS_THREAD_SYNC_TIC_WAIT_5 ||
+					       AGS_THREAD_SYNC_TIC_WAIT_6 ||
+					       AGS_THREAD_SYNC_TIC_WAIT_7 ||
+					       AGS_THREAD_SYNC_TIC_WAIT_8))){
+      ags_thread_unset_sync_tic_flags(thread,
+				      (AGS_THREAD_SYNC_TIC_WAIT_0 ||
+				       AGS_THREAD_SYNC_TIC_WAIT_1 ||
+				       AGS_THREAD_SYNC_TIC_WAIT_2 ||
+				       AGS_THREAD_SYNC_TIC_WAIT_3 ||
+				       AGS_THREAD_SYNC_TIC_WAIT_4 ||
+				       AGS_THREAD_SYNC_TIC_WAIT_5 ||
+				       AGS_THREAD_SYNC_TIC_WAIT_6 ||
+				       AGS_THREAD_SYNC_TIC_WAIT_7 ||
+				       AGS_THREAD_SYNC_TIC_WAIT_8));
+      ags_thread_set_sync_tic_flags(thread,
+				    (AGS_THREAD_SYNC_TIC_DONE_0 ||
+				     AGS_THREAD_SYNC_TIC_DONE_1 ||
+				     AGS_THREAD_SYNC_TIC_DONE_2 ||
+				     AGS_THREAD_SYNC_TIC_DONE_3 ||
+				     AGS_THREAD_SYNC_TIC_DONE_4 ||
+				     AGS_THREAD_SYNC_TIC_DONE_5 ||
+				     AGS_THREAD_SYNC_TIC_DONE_6 ||
+				     AGS_THREAD_SYNC_TIC_DONE_7 ||
+				     AGS_THREAD_SYNC_TIC_DONE_8));
+      
+      g_cond_signal(wait_cond);
+    }else{
+      ags_thread_unset_sync_tic_flags(thread,
+				      0x3f);
+      ags_thread_set_sync_tic_flags(thread,
+				    (AGS_THREAD_SYNC_TIC_DONE_0 ||
+				     AGS_THREAD_SYNC_TIC_DONE_1 ||
+				     AGS_THREAD_SYNC_TIC_DONE_2 ||
+				     AGS_THREAD_SYNC_TIC_DONE_3 ||
+				     AGS_THREAD_SYNC_TIC_DONE_4 ||
+				     AGS_THREAD_SYNC_TIC_DONE_5 ||
+				     AGS_THREAD_SYNC_TIC_DONE_6 ||
+				     AGS_THREAD_SYNC_TIC_DONE_7 ||
+				     AGS_THREAD_SYNC_TIC_DONE_8));
+    }
+    
+    g_mutex_unlock(wait_mutex);
+
+    g_thread_yield();
+    
+    current_time = g_get_monotonic_time();
+  }while(current_time < start_time + G_USEC_PER_SEC &&
+	 g_atomic_int_get(&(thread->is_running)) > 0);
+}
+
+/**
+ * ags_thread_recover_dead_lock:
+ * @thread: the #AgsThread instance
+ *
+ * Recover dead-lock of the thread.
+ *
+ * Since: 7.1.0
+ */
+void
+ags_thread_recover_dead_lock(AgsThread *thread)
+{
+  g_return_if_fail(AGS_IS_THREAD(thread));
+  
+  g_object_ref(thread);
+  g_signal_emit(thread,
+		thread_signals[RECOVER_DEAD_LOCK], 0);
+  g_object_unref(thread);
 }
 
 /**

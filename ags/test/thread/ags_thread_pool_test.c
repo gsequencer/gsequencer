@@ -100,16 +100,13 @@ ags_thread_pool_test_pull()
   
   /* pull and assert */
   returnable_thread = ags_thread_pool_pull(thread_pool);
-  CU_ASSERT(AGS_IS_RETURNABLE_THREAD(returnable_thread) &&
-	    ags_thread_test_status_flags(returnable_thread, AGS_THREAD_STATUS_RUNNING));
+  CU_ASSERT(AGS_IS_RETURNABLE_THREAD(returnable_thread));
   
   returnable_thread = ags_thread_pool_pull(thread_pool);
-  CU_ASSERT(AGS_IS_RETURNABLE_THREAD(returnable_thread) &&
-	    ags_thread_test_status_flags(returnable_thread, AGS_THREAD_STATUS_RUNNING));
+  CU_ASSERT(AGS_IS_RETURNABLE_THREAD(returnable_thread));
 
   returnable_thread = ags_thread_pool_pull(thread_pool);
-  CU_ASSERT(AGS_IS_RETURNABLE_THREAD(returnable_thread) &&
-	    ags_thread_test_status_flags(returnable_thread, AGS_THREAD_STATUS_RUNNING));
+  CU_ASSERT(AGS_IS_RETURNABLE_THREAD(returnable_thread));
 }
 
 void

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -42,14 +42,11 @@ G_BEGIN_DECLS
 typedef struct _AgsGenericPreferences AgsGenericPreferences;
 typedef struct _AgsGenericPreferencesClass AgsGenericPreferencesClass;
 
-typedef enum{
-  AGS_GENERIC_PREFERENCES_CONNECTED      = 1,
-}AgsGenericPreferencesFlags;
-
 struct _AgsGenericPreferences
 {
   GtkBox box;
 
+  AgsConnectableFlags connectable_flags;
   guint flags;
   
   GtkCheckButton *autosave_thread;

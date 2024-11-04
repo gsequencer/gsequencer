@@ -175,6 +175,8 @@ struct _AgsThread
   guint connectable_flags;
   volatile guint status_flags;
   volatile guint sync_tic_flags;
+
+  volatile gint is_running;
   
   GRecMutex obj_mutex;
 
@@ -221,6 +223,8 @@ struct _AgsThreadClass
   void (*start)(AgsThread *thread);
   void (*run)(AgsThread *thread);
   void (*stop)(AgsThread *thread);
+
+  void (*recover_dead_lock)(AgsThread *thread);
 };
 
 GType ags_thread_get_type();
@@ -305,6 +309,8 @@ void ags_thread_add_start_queue_all(AgsThread *thread,
 void ags_thread_start(AgsThread *thread);
 void ags_thread_run(AgsThread *thread);
 void ags_thread_stop(AgsThread *thread);
+
+void ags_thread_recover_dead_lock(AgsThread *thread);
 
 AgsThread* ags_thread_new();
 
