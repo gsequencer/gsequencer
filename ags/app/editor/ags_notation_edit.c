@@ -2826,6 +2826,7 @@ ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
 
   GdkRGBA fg_color;
   GdkRGBA bg_color;
+  GdkRGBA selected_bg_color;
   GdkRGBA shadow_color;
   GdkRGBA highlight_color;
   
@@ -2839,8 +2840,9 @@ ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
   double width, height;
   gboolean dark_theme;
   gboolean fg_success;
-  gboolean highlight_success;
   gboolean bg_success;
+  gboolean selected_bg_success;
+  gboolean highlight_success;
   gboolean shadow_success;
 
   GValue value = G_VALUE_INIT;
@@ -2874,6 +2876,10 @@ ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
   bg_success = gtk_style_context_lookup_color(style_context,
 					      "theme_bg_color",
 					      &bg_color);
+
+  //  selected_bg_success = gtk_style_context_lookup_color(style_context,
+  //						       "theme_selected_bg_color",
+  //						       &selected_bg_color);
     
   shadow_success = gtk_style_context_lookup_color(style_context,
 						  "theme_shadow_color",
@@ -2895,6 +2901,9 @@ ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
     }
   }
 
+  gdk_rgba_parse(&selected_bg_color,
+		 "#3584e4");
+  
   if(!highlight_success){
     if(!dark_theme){
       gdk_rgba_parse(&highlight_color,
@@ -2991,33 +3000,7 @@ ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
   if(y + height > allocation.height){
     height = ((double) allocation.height) - y;
   }
-  
-  /* draw note */
-  cairo_set_source_rgba(cr,
-			fg_color.red,
-			fg_color.blue,
-			fg_color.green,
-			opacity * fg_color.alpha);
-  
-  cairo_rectangle(cr,
-		  x, y,
-		  width, height);
-  cairo_fill(cr);
-
-  /* draw note shadow */
-  cairo_set_line_width(cr, 2.0);
-
-  cairo_set_source_rgba(cr,
-			highlight_color.red,
-			highlight_color.blue,
-			highlight_color.green,
-			opacity * highlight_color.alpha);
-  
-  cairo_rectangle(cr,
-		  x, y,
-		  width, height);
-  cairo_stroke(cr);
-  
+    
   /* check note selected */
   if((AGS_NOTE_IS_SELECTED & (note->flags)) != 0){
     double selected_x, selected_y;
@@ -3048,16 +3031,42 @@ ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
 
     /* draw selected note */
     cairo_set_source_rgba(cr,
-			  highlight_color.red,
-			  highlight_color.blue,
-			  highlight_color.green,
-			  opacity / 3.0);
+			  selected_bg_color.red,
+			  selected_bg_color.blue,
+			  selected_bg_color.green,
+			  1.0 /* opacity * selected_bg_color.alpha */ );
     
     cairo_rectangle(cr,
 		    selected_x, selected_y,
 		    selected_width, selected_height);
     cairo_fill(cr);
   }
+
+  /* draw note */
+  cairo_set_source_rgba(cr,
+			fg_color.red,
+			fg_color.blue,
+			fg_color.green,
+			opacity * fg_color.alpha);
+  
+  cairo_rectangle(cr,
+		  x, y,
+		  width, height);
+  cairo_fill(cr);
+
+  /* draw note shadow */
+  cairo_set_line_width(cr, 2.0);
+
+  cairo_set_source_rgba(cr,
+			highlight_color.red,
+			highlight_color.blue,
+			highlight_color.green,
+			opacity * highlight_color.alpha);
+  
+  cairo_rectangle(cr,
+		  x, y,
+		  width, height);
+  cairo_stroke(cr);
 }
 
 void

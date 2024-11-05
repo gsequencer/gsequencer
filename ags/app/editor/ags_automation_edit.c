@@ -3661,6 +3661,7 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
 
   GdkRGBA fg_color;
   GdkRGBA bg_color;
+  GdkRGBA selected_bg_color;
   GdkRGBA shadow_color;
 
   gdouble gui_scale_factor;
@@ -3678,6 +3679,7 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
   gboolean dark_theme;
   gboolean fg_success;
   gboolean bg_success;
+  gboolean selected_bg_success;
   gboolean shadow_success;
 
   GValue value = {0};
@@ -3726,6 +3728,10 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
   bg_success = gtk_style_context_lookup_color(style_context,
 					      "theme_bg_color",
 					      &bg_color);
+
+  //  selected_bg_success = gtk_style_context_lookup_color(style_context,
+  //						       "theme_selected_bg_color",
+  //						       &selected_bg_color);
     
   shadow_success = gtk_style_context_lookup_color(style_context,
 						  "theme_shadow_color",
@@ -3748,6 +3754,9 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
 		     "#202020");
     }
   }
+
+  gdk_rgba_parse(&selected_bg_color,
+		 "#3584e4");
 
   allocation_width = gtk_widget_get_width((GtkWidget *) automation_edit->drawing_area);
   allocation_height = gtk_widget_get_height((GtkWidget *) automation_edit->drawing_area);
@@ -3928,10 +3937,10 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
 
     /* draw selected acceleration - dot */
     cairo_set_source_rgba(cr,
-			  shadow_color.red,
-			  shadow_color.blue,
-			  shadow_color.green,
-			  opacity / 3.0);
+			  selected_bg_color.red,
+			  selected_bg_color.blue,
+			  selected_bg_color.green,
+			  1.0 /* opacity * selected_bg_color.alpha */ );
     
     cairo_arc(cr,
 	      selected_x, selected_y,
