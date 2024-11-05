@@ -3121,8 +3121,8 @@ ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit, cairo_t *cr
   
   cairo_set_source_rgba(cr,
 			fg_color.red,
-			fg_color.blue,
 			fg_color.green,
+			fg_color.blue,
 			fg_color.alpha);
   
   if(i < width &&
@@ -3310,8 +3310,8 @@ ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit, cairo_t *c
   /* draw fader */
   cairo_set_source_rgba(cr,
 			fg_color.red,
-			fg_color.blue,
 			fg_color.green,
+			fg_color.blue,
 			fg_color.alpha);
 
   cairo_rectangle(cr,
@@ -3476,8 +3476,8 @@ ags_automation_edit_draw_cursor(AgsAutomationEdit *automation_edit, cairo_t *cr)
   /* draw cursor */
   cairo_set_source_rgba(cr,
 			fg_color.red,
-			fg_color.blue,
 			fg_color.green,
+			fg_color.blue,
 			fg_color.alpha);
 
   cairo_move_to(cr,
@@ -3581,6 +3581,11 @@ ags_automation_edit_draw_selection(AgsAutomationEdit *automation_edit, cairo_t *
   zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) composite_toolbar->zoom) - 2.0);
   
   /* get offset and dimensions */
+  if(automation_edit->selection_x0 == automation_edit->selection_x1 &&
+     automation_edit->selection_y0 == automation_edit->selection_y1){
+    return;
+  }
+  
   if(automation_edit->selection_x0 < automation_edit->selection_x1){
     x = (((double) automation_edit->selection_x0) - gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar))) / zoom_factor;
     width = ((double) automation_edit->selection_x1 - (double) automation_edit->selection_x0) / zoom_factor;
@@ -3628,8 +3633,8 @@ ags_automation_edit_draw_selection(AgsAutomationEdit *automation_edit, cairo_t *
   /* draw selection */
   cairo_set_source_rgba(cr,
 			fg_color.red,
-			fg_color.blue,
 			fg_color.green,
+			fg_color.blue,
 			1.0 / 3.0);
 
   cairo_rectangle(cr,
@@ -3884,8 +3889,8 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
   /* draw acceleration - dot */
   cairo_set_source_rgba(cr,
 			fg_color.red,
-			fg_color.blue,
 			fg_color.green,
+			fg_color.blue,
 			opacity * fg_color.alpha);
   
   cairo_arc(cr,
@@ -3899,8 +3904,8 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
   /* draw acceleration - area */
   cairo_set_source_rgba(cr,
 			fg_color.red,
-			fg_color.blue,
 			fg_color.green,
+			fg_color.blue,
 			opacity * fg_color.alpha);
   cairo_rectangle(cr,
 		  (double) x, (double) y,
@@ -3938,9 +3943,9 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
     /* draw selected acceleration - dot */
     cairo_set_source_rgba(cr,
 			  selected_bg_color.red,
-			  selected_bg_color.blue,
 			  selected_bg_color.green,
-			  1.0 /* opacity * selected_bg_color.alpha */ );
+			  selected_bg_color.blue,
+			  opacity * selected_bg_color.alpha);
     
     cairo_arc(cr,
 	      selected_x, selected_y,
