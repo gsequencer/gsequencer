@@ -74,7 +74,7 @@
       synchronizes the thread tree by AgsThread::clock() event. It is somekind of parallelism trap.
     </para>
 
-    <imagedata fileref="../images/ags-threading.png" />
+    <imagedata fileref="../images/ags-threading.png" format="PNG" />
     
     <para>
       All threads within tree synchronize to AgsThread:max-precision per second, because all threads
