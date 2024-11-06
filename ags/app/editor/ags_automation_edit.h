@@ -174,6 +174,9 @@ struct _AgsAutomationEdit
 
   guint note_offset_256th;
   guint note_offset_256th_absolute;
+
+  gdouble resize_position_x;
+  gdouble resize_position_y;
 };
 
 struct _AgsAutomationEditClass
