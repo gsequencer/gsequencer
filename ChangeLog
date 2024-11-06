@@ -1,6 +1,7 @@
 ags (7.2.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented resize notes in editor using shift key
 	* improved notation, automation and wave editor selection color
 
 ags (7.1.9)

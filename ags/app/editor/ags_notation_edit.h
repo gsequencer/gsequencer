@@ -75,6 +75,7 @@ typedef enum{
   AGS_NOTATION_EDIT_ADD_NOTE,
   AGS_NOTATION_EDIT_DELETE_NOTE,
   AGS_NOTATION_EDIT_SELECT_NOTE,
+  AGS_NOTATION_EDIT_RESIZE_NOTE,
 }AgsNotationEditMode;
 
 typedef enum{
@@ -141,6 +142,9 @@ struct _AgsNotationEdit
 
   gdouble trace_position_x;
   gdouble trace_position_y;
+
+  gdouble resize_position_x;
+  gdouble resize_position_y;
 };
 
 struct _AgsNotationEditClass
