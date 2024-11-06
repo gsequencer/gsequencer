@@ -22,7 +22,7 @@
   <title>The navigation</title>
   <mediaobject>
     <imageobject>
-      <imagedata width="100%" scalefit="1" fileref="../&images;/ags_navigation.png" />
+      <imagedata width="100%" scalefit="1" fileref="../&images;/ags_navigation.png" format="PNG" />
     </imageobject>
     <caption>
       <para>
@@ -76,32 +76,32 @@
 	</thead>
 	<tbody>
 	  <row>
-	    <entry><imagedata fileref="&backwardIcon;" width="1em" /></entry>
+	    <entry><imagedata fileref="&backwardIcon;" format="PNG" width="1em" /></entry>
 	    <entry>backward</entry>
 	    <entry>Seeking back until it&apos;s pressed again.</entry>
 	  </row>
 	  <row>
-	    <entry><imagedata fileref="&previousIcon;" width="1em" /></entry>
+	    <entry><imagedata fileref="&previousIcon;" format="PNG" width="1em" /></entry>
 	    <entry>previous</entry>
 	    <entry>Seeking back until it&apos;s not pressed anymore.</entry>
 	  </row>
 	  <row>
-	    <entry><imagedata fileref="&playIcon;" width="1em" /></entry>
+	    <entry><imagedata fileref="&playIcon;" format="PNG" width="1em" /></entry>
 	    <entry>play</entry>
 	    <entry>Starts the engines and the piano roll.</entry>
 	  </row>
 	  <row>
-	    <entry><imagedata fileref="&stopIcon;" width="1em" /></entry>
+	    <entry><imagedata fileref="&stopIcon;" format="PNG" width="1em" /></entry>
 	    <entry>stop</entry>
 	    <entry>Stops the engines and the piano roll.</entry>
 	  </row>
 	  <row>
-	    <entry><imagedata fileref="&nextIcon;" width="1em" /></entry>
+	    <entry><imagedata fileref="&nextIcon;" format="PNG" width="1em" /></entry>
 	    <entry>next</entry>
 	    <entry>Seeking forward until it&apos;s not pressed anymore.</entry>
 	  </row>
 	  <row>
-	    <entry><imagedata fileref="&forwardIcon;" width="1em" /></entry>
+	    <entry><imagedata fileref="&forwardIcon;" format="PNG" width="1em" /></entry>
 	    <entry>forward</entry>
 	    <entry>Seeking forward until it&apos;s pressed again.</entry>
 	  </row>
