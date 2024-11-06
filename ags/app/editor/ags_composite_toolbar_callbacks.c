@@ -34,9 +34,17 @@
 void
 ags_composite_toolbar_position_callback(GtkToggleButton *button, AgsCompositeToolbar *composite_toolbar)
 {
+  AgsCompositeEditor *composite_editor;
+
+  AgsApplicationContext *application_context;
+
   if(composite_toolbar->block_selected_tool){
     return;
   }
+
+  application_context = ags_application_context_get_instance();
+
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   composite_toolbar->block_selected_tool = TRUE;
 
@@ -44,14 +52,31 @@ ags_composite_toolbar_position_callback(GtkToggleButton *button, AgsCompositeToo
 					  (GtkToggleButton *) button);
   
   composite_toolbar->block_selected_tool = FALSE;
+
+  if(composite_editor != NULL){
+    gtk_widget_set_cursor_from_name((GtkWidget *) composite_editor->notation_edit,
+				    "arrow");
+    gtk_widget_set_cursor_from_name((GtkWidget *) composite_editor->automation_edit,
+				    "arrow");
+    gtk_widget_set_cursor_from_name((GtkWidget *) composite_editor->wave_edit,
+				    "arrow");
+  }
 }
 
 void
 ags_composite_toolbar_edit_callback(GtkToggleButton *button, AgsCompositeToolbar *composite_toolbar)
 {
+  AgsCompositeEditor *composite_editor;
+
+  AgsApplicationContext *application_context;
+
   if(composite_toolbar->block_selected_tool){
     return;
   }
+
+  application_context = ags_application_context_get_instance();
+
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   composite_toolbar->block_selected_tool = TRUE;
 
@@ -59,14 +84,31 @@ ags_composite_toolbar_edit_callback(GtkToggleButton *button, AgsCompositeToolbar
 					  (GtkToggleButton *) button);
   
   composite_toolbar->block_selected_tool = FALSE;
+
+  if(composite_editor != NULL){
+    gtk_widget_set_cursor_from_name((GtkWidget *) composite_editor->notation_edit,
+				    "pencil");
+    gtk_widget_set_cursor_from_name((GtkWidget *) composite_editor->automation_edit,
+				    "pencil");
+    gtk_widget_set_cursor_from_name((GtkWidget *) composite_editor->wave_edit,
+				    "arrow");
+  }
 }
 
 void
 ags_composite_toolbar_clear_callback(GtkToggleButton *button, AgsCompositeToolbar *composite_toolbar)
 {
+  AgsCompositeEditor *composite_editor;
+
+  AgsApplicationContext *application_context;
+
   if(composite_toolbar->block_selected_tool){
     return;
   }
+
+  application_context = ags_application_context_get_instance();
+
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   composite_toolbar->block_selected_tool = TRUE;
 
@@ -74,14 +116,31 @@ ags_composite_toolbar_clear_callback(GtkToggleButton *button, AgsCompositeToolba
 					  (GtkToggleButton *) button);
   
   composite_toolbar->block_selected_tool = FALSE;
+
+  if(composite_editor != NULL){
+    gtk_widget_set_cursor_from_name((GtkWidget *) composite_editor->notation_edit,
+				    "cross");
+    gtk_widget_set_cursor_from_name((GtkWidget *) composite_editor->automation_edit,
+				    "cross");
+    gtk_widget_set_cursor_from_name((GtkWidget *) composite_editor->wave_edit,
+				    "arrow");
+  }
 }
 
 void
 ags_composite_toolbar_select_callback(GtkToggleButton *button, AgsCompositeToolbar *composite_toolbar)
 {
+  AgsCompositeEditor *composite_editor;
+
+  AgsApplicationContext *application_context;
+
   if(composite_toolbar->block_selected_tool){
     return;
   }
+
+  application_context = ags_application_context_get_instance();
+
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   composite_toolbar->block_selected_tool = TRUE;
 
@@ -89,6 +148,15 @@ ags_composite_toolbar_select_callback(GtkToggleButton *button, AgsCompositeToolb
 					  (GtkToggleButton *) button);
   
   composite_toolbar->block_selected_tool = FALSE;
+
+  if(composite_editor != NULL){
+    gtk_widget_set_cursor_from_name((GtkWidget *) composite_editor->notation_edit,
+				    "text");
+    gtk_widget_set_cursor_from_name((GtkWidget *) composite_editor->automation_edit,
+				    "text");
+    gtk_widget_set_cursor_from_name((GtkWidget *) composite_editor->wave_edit,
+				    "text");
+  }
 }
 
 void

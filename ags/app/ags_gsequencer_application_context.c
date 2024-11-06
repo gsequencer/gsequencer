@@ -3346,6 +3346,7 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
   atexit(ags_gsequencer_application_context_signal_cleanup);
 
   /* Ignore interactive and job-control signals.  */
+#if 0
 #if !defined(AGS_W32API)
   signal(SIGINT, SIG_IGN);
   signal(SIGQUIT, SIG_IGN);
@@ -3360,6 +3361,7 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
   ags_sigact.sa_flags = 0;
   sigaction(SIGINT, &ags_sigact, (struct sigaction *) NULL);
   sigaction(SA_RESTART, &ags_sigact, (struct sigaction *) NULL);
+#endif
 #endif
 #endif
   

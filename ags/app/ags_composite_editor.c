@@ -947,6 +947,8 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
 			(gpointer) composite_editor,
 			NULL);
   }
+
+  composite_toolbar = composite_editor->toolbar;
   
   /* selected machine */
   composite_editor->selected_machine = machine;
@@ -1502,7 +1504,37 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
 
     g_signal_connect_after(machine, "resize-pads",
 			   G_CALLBACK(ags_composite_editor_resize_pads_callback), composite_editor);
-  }  
+  }
+
+  if(ags_composite_toolbar_test_tool(composite_toolbar, AGS_COMPOSITE_TOOLBAR_TOOL_POSITION)){
+    gtk_widget_set_cursor_from_name((GtkWidget *) composite_editor->notation_edit,
+				    "arrow");
+    gtk_widget_set_cursor_from_name((GtkWidget *) composite_editor->automation_edit,
+				    "arrow");
+    gtk_widget_set_cursor_from_name((GtkWidget *) composite_editor->wave_edit,
+				    "arrow");
+  }else if(ags_composite_toolbar_test_tool(composite_toolbar, AGS_COMPOSITE_TOOLBAR_TOOL_EDIT)){
+    gtk_widget_set_cursor_from_name((GtkWidget *) composite_editor->notation_edit,
+				    "pencil");
+    gtk_widget_set_cursor_from_name((GtkWidget *) composite_editor->automation_edit,
+				    "pencil");
+    gtk_widget_set_cursor_from_name((GtkWidget *) composite_editor->wave_edit,
+				    "arrow");
+  }else if(ags_composite_toolbar_test_tool(composite_toolbar, AGS_COMPOSITE_TOOLBAR_TOOL_CLEAR)){
+    gtk_widget_set_cursor_from_name((GtkWidget *) composite_editor->notation_edit,
+				    "cross");
+    gtk_widget_set_cursor_from_name((GtkWidget *) composite_editor->automation_edit,
+				    "cross");
+    gtk_widget_set_cursor_from_name((GtkWidget *) composite_editor->wave_edit,
+				    "arrow");
+  }else if(ags_composite_toolbar_test_tool(composite_toolbar, AGS_COMPOSITE_TOOLBAR_TOOL_SELECT)){
+    gtk_widget_set_cursor_from_name((GtkWidget *) composite_editor->notation_edit,
+				    "text");
+    gtk_widget_set_cursor_from_name((GtkWidget *) composite_editor->automation_edit,
+				    "text");
+    gtk_widget_set_cursor_from_name((GtkWidget *) composite_editor->wave_edit,
+				    "text");
+  }
 }
 
 /**

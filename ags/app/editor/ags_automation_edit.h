@@ -91,6 +91,7 @@ typedef enum{
   AGS_AUTOMATION_EDIT_ADD_ACCELERATION,
   AGS_AUTOMATION_EDIT_DELETE_ACCELERATION,
   AGS_AUTOMATION_EDIT_SELECT_ACCELERATION,
+  AGS_AUTOMATION_EDIT_RESIZE_ACCELERATION,
 }AgsAutomationEditMode;
 
 typedef enum{
@@ -173,6 +174,9 @@ struct _AgsAutomationEdit
 
   guint note_offset_256th;
   guint note_offset_256th_absolute;
+
+  gdouble resize_position_x;
+  gdouble resize_position_y;
 };
 
 struct _AgsAutomationEditClass
