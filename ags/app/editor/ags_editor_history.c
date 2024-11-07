@@ -19,6 +19,14 @@
 
 #include <ags/app/editor/ags_editor_history.h>
 
+#include <ags/app/ags_machine.h>
+
+#include <libxml/xlink.h>
+#include <libxml/valid.h>
+#include <libxml/xmlIO.h>
+#include <libxml/xmlmemory.h>
+#include <libxml/xmlsave.h>
+
 void ags_editor_history_class_init(AgsEditorHistoryClass *editor_history);
 void ags_editor_history_init (AgsEditorHistory *editor_history);
 void ags_editor_history_dispose(GObject *gobject);
@@ -86,7 +94,10 @@ ags_editor_history_class_init(AgsEditorHistoryClass *editor_history)
 void
 ags_editor_history_init(AgsEditorHistory *editor_history)
 {
+  editor_history->encoding = "UTF-8";
+  
   editor_history->journal_position = -1;
+  editor_history->edit_position = -1;
 
   editor_history->journal_entry = NULL;
 }
@@ -113,6 +124,77 @@ ags_editor_history_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_editor_history_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_extern_data_alloc:
+ *
+ * Alloc editor journal.
+ *
+ * Returns: (transfer full): the newly allocated #AgsExternData-struct
+ * 
+ * Since: 7.2.0 
+ */
+AgsExternData*
+ags_extern_data_alloc()
+{
+  AgsExternData *extern_data;
+  
+  extern_data = (AgsExternData *) g_malloc(sizeof(AgsExternData));
+
+  extern_data->ref_count = 1;
+
+  extern_data->data_uuid = g_uuid_string_random();
+  
+  extern_data->data_length = 0;
+  extern_data->data = NULL;
+
+  return(extern_data);
+}
+
+/**
+ * ags_extern_data_free:
+ * @extern_data: the #AgsExternData-struct
+ *
+ * Free @extern_data.
+ *
+ * Since: 7.2.0 
+ */
+void
+ags_extern_data_free(AgsExternData *extern_data)
+{
+  g_return_if_fail(extern_data != NULL);
+
+  g_free(extern_data->data_uuid);
+  
+  g_free(extern_data->data);
+  
+  g_free(extern_data);
+}
+
+/**
+ * ags_extern_data_free:
+ * @a: the #AgsExternData-struct
+ * @b: the other #AgsExternData-struct
+ *
+ * Compare @a to @b.
+ *
+ * Since: 7.2.0 
+ */
+gint
+ags_extern_data_cmp(AgsExternData *a,
+		    AgsExternData *b)
+{
+  return(g_strcmp0(a->data_uuid, b->data_uuid));
+}
+			 
+/**
+ * ags_editor_journal_alloc:
+ *
+ * Alloc editor journal.
+ *
+ * Returns: (transfer full): the newly allocated #AgsEditorJournal-struct
+ * 
+ * Since: 7.2.0 
+ */
 AgsEditorJournal*
 ags_editor_journal_alloc()
 {
@@ -120,7 +202,12 @@ ags_editor_journal_alloc()
   
   editor_journal = (AgsEditorJournal *) g_malloc(sizeof(AgsEditorJournal));
 
+  editor_journal->selected_machine_uuid = NULL;
   editor_journal->selected_machine = NULL;
+
+  editor_journal->pad = 0;
+  editor_journal->audio_channel = 0;
+  editor_journal->line = 0;
 
   editor_journal->scope = NULL;
   editor_journal->journal_type = NULL;
@@ -131,20 +218,59 @@ ags_editor_journal_alloc()
   editor_journal->data_access_type = NULL;
   editor_journal->content_type = NULL;
 
+  editor_journal->orig_data_offset = 0;
+  editor_journal->orig_data_length = 0;
   editor_journal->orig_data = NULL;
+
+  editor_journal->extern_orig_data = NULL;
+
+  editor_journal->new_data_offset = 0;
+  editor_journal->new_data_length = 0;
   editor_journal->new_data = NULL;
+
+  editor_journal->extern_new_data = NULL;
 
   return(editor_journal);
 }
 
+/**
+ * ags_editor_journal_free:
+ * @editor_journal: the #AgsEditorJournal-struct
+ *
+ * Free @editor_journal.
+ *
+ * Since: 7.2.0 
+ */
 void
 ags_editor_journal_free(AgsEditorJournal *editor_journal)
 {
   g_return_if_fail(editor_journal != NULL);
 
+  g_free(editor_journal->scope);
+  g_free(editor_journal->journal_type);
+  
+  g_free(editor_journal->action);
+  g_free(editor_journal->detail);
+  
+  g_free(editor_journal->data_access_type);
+  g_free(editor_journal->content_type);
+  
+  g_free(editor_journal->orig_data);
+
+  g_free(editor_journal->new_data);
+
   g_free(editor_journal);
 }
 
+/**
+ * ags_editor_history_append:
+ * @editor_history: the #AgsEditorHistory
+ * @editor_journal: the #AgsEditorJournal
+ *
+ * Append @editor_journal to @editor_history.
+ *
+ * Since: 7.2.0 
+ */
 void
 ags_editor_history_append(AgsEditorHistory *editor_history,
 			  AgsEditorJournal *editor_journal)
@@ -156,20 +282,848 @@ ags_editor_history_append(AgsEditorHistory *editor_history,
 						 editor_journal);
 }
 
+/**
+ * ags_editor_journal_undo:
+ * @editor_journal: the #AgsEditorJournal
+ *
+ * Undo @editor_journal.
+ *
+ * Since: 7.2.0 
+ */
 void
-ags_editor_history_export_to_data(AgsEditorHistory *editor_history,
-				  gchar **exported_data,
-				  guint *data_length)
+ags_editor_history_undo(AgsEditorHistory *editor_history)
+{
+  AgsTimestamp *timestamp;
+  
+  AgsEditorJournal *editor_journal;
+  AgsEditorJournal *new_editor_journal;
+
+  GList *start_list, *list;
+
+  xmlChar *str;
+  
+  gint edit_position;
+  guint pad;
+  guint audio_channel;
+  guint line;
+
+  if(editor_history->journal_entry == NULL){
+    return;
+  }
+  
+  edit_position = editor_history->edit_position;
+  
+  if(edit_position == -1){
+    edit_position = g_list_length(editor_history->journal_entry);
+  }
+
+  edit_position--;
+
+  editor_journal = g_list_nth_data(editor_history->journal_entry,
+				   edit_position);
+
+  timestamp = ags_timestamp_new();
+  ags_timestamp_set_flags(timestamp,
+			  AGS_TIMESTAMP_OFFSET);
+  
+  if(!g_ascii_strncasecmp(editor_journal->scope,
+			  AGS_EDITOR_HISTORY_SCOPE_NOTATION,
+			  strlen(AGS_EDITOR_HISTORY_SCOPE_NOTATION))){
+    if(!g_ascii_strncasecmp(editor_journal->action,
+			    AGS_EDITOR_HISTORY_ACTION_NOTE_ADD,
+			    strlen(AGS_EDITOR_HISTORY_ACTION_NOTE_ADD))){
+      AgsNote *current_note;      
+      AgsNote *add_note;
+
+      GList *start_note, *note;	
+
+      guint x0, x1;
+      guint y;
+      
+      ags_timestamp_set_ags_offset(timestamp,
+				   editor_journal->new_data_offset);
+
+      start_list = ags_audio_get_notation(AGS_MACHINE(editor_journal->selected_machine)->audio);
+      
+      audio_channel = editor_journal->audio_channel;
+      
+      list = ags_notation_find_near_timestamp(start_list, audio_channel,
+					      timestamp);
+
+      add_note = ags_note_from_string(editor_journal->new_data);
+
+      x0 = ags_note_get_x0(add_note);
+      x1 = ags_note_get_x1(add_note);
+
+      y = ags_note_get_y(add_note);
+
+      g_object_unref(add_note);
+      
+      current_note = ags_notation_find_point(list->data,
+					     x0, y,
+					     FALSE);
+      
+      if(current_note != NULL){
+	if(ags_note_get_x0(current_note) == x0 &&
+	   ags_note_get_x1(current_note) == x1 &&
+	   ags_note_get_y(current_note) == y){
+	  ags_notation_remove_note(list->data,
+				   current_note,
+				   FALSE);
+	}else{
+	  start_note = ags_notation_get_note(list->data);
+
+	  note = g_list_find(start_note,
+			     current_note);
+
+	  while(note != NULL){
+	    /* remove if match */
+	    if(ags_note_get_x0(note->data) == x0 &&
+	       ags_note_get_x1(note->data) == x1 &&
+	       ags_note_get_y(note->data) == y){
+	      ags_notation_remove_note(list->data,
+				       note->data,
+				       FALSE);
+	      
+	      break;
+	    }
+
+	    /* premature end */
+	    if(ags_note_get_x0(note->data) != x0){
+	      break;
+	    }
+	    
+	    note = note->next;
+	  }
+	  
+	  g_list_free_full(start_note,
+			   (GDestroyNotify) g_object_unref);
+	}
+      }
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_NOTE_RESIZE,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_NOTE_RESIZE))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_NOTE_REMOVE,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_NOTE_REMOVE))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_NOTE_COPY,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_NOTE_COPY))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_NOTE_CUT,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_NOTE_CUT))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_NOTE_PASTE,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_NOTE_PASTE))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_NOTE_INVERT,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_NOTE_INVERT))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_NOTE_SELECT,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_NOTE_SELECT))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_NOTE_POSITION,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_NOTE_POSITION))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_NOTE_MOVE,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_NOTE_MOVE))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_NOTE_CROP,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_NOTE_CROP))){
+      //TODO:JK: implement me
+    }
+  }else if(!g_ascii_strncasecmp(editor_journal->scope,
+				AGS_EDITOR_HISTORY_SCOPE_AUTOMATION,
+				strlen(AGS_EDITOR_HISTORY_SCOPE_AUTOMATION))){
+    if(!g_ascii_strncasecmp(editor_journal->action,
+			    AGS_EDITOR_HISTORY_ACTION_ACCELERATION_ADD,
+			    strlen(AGS_EDITOR_HISTORY_ACTION_ACCELERATION_ADD))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_ACCELERATION_RESIZE,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_ACCELERATION_RESIZE))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_ACCELERATION_REMOVE,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_ACCELERATION_REMOVE))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_ACCELERATION_COPY,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_ACCELERATION_COPY))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_ACCELERATION_CUT,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_ACCELERATION_CUT))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_ACCELERATION_PASTE,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_ACCELERATION_PASTE))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_ACCELERATION_SELECT,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_ACCELERATION_SELECT))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_ACCELERATION_POSITION,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_ACCELERATION_POSITION))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_ACCELERATION_RAMP,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_ACCELERATION_RAMP))){
+      //TODO:JK: implement me
+    }
+  }else if(!g_ascii_strncasecmp(editor_journal->scope,
+				AGS_EDITOR_HISTORY_SCOPE_WAVE,
+				strlen(AGS_EDITOR_HISTORY_SCOPE_WAVE))){
+    if(!g_ascii_strncasecmp(editor_journal->action,
+			    AGS_EDITOR_HISTORY_ACTION_BUFFER_ADD,
+			    strlen(AGS_EDITOR_HISTORY_ACTION_BUFFER_ADD))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_BUFFER_REMOVE,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_BUFFER_REMOVE))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_BUFFER_COPY,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_BUFFER_COPY))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_BUFFER_CUT,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_BUFFER_CUT))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_BUFFER_PASTE,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_BUFFER_PASTE))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_BUFFER_SELECT,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_BUFFER_SELECT))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_BUFFER_POSITION,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_BUFFER_POSITION))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_BUFFER_TIME_STRETCH,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_BUFFER_TIME_STRETCH))){
+      //TODO:JK: implement me
+    }
+  }
+  
+  /* undo action */
+  new_editor_journal = ags_editor_journal_alloc();
+
+  new_editor_journal->selected_machine_uuid = g_strdup(editor_journal->selected_machine_uuid);
+  new_editor_journal->selected_machine = editor_journal->selected_machine;
+
+  new_editor_journal->scope = g_strdup(editor_journal->scope);
+  new_editor_journal->journal_type = g_strdup(editor_journal->journal_type);
+
+  new_editor_journal->action = g_strdup(AGS_EDITOR_HISTORY_JOURNAL_TYPE_UNDO);
+  new_editor_journal->detail = g_strdup(editor_journal->detail);
+
+  new_editor_journal->data_access_type = g_strdup(editor_journal->data_access_type);
+  new_editor_journal->content_type = g_strdup(editor_journal->content_type);
+
+  new_editor_journal->orig_data_offset = editor_journal->orig_data_offset;
+  new_editor_journal->orig_data_length = editor_journal->orig_data_length;
+  new_editor_journal->orig_data = g_memdup2(editor_journal->orig_data,
+					    new_editor_journal->orig_data_length);
+  
+  new_editor_journal->extern_orig_data = editor_journal->extern_orig_data;
+
+  if(new_editor_journal->extern_orig_data != NULL){
+    new_editor_journal->extern_orig_data->ref_count += 1;
+  }
+  
+  new_editor_journal->new_data_offset = editor_journal->new_data_offset;
+  new_editor_journal->new_data_length = editor_journal->new_data_length;
+  new_editor_journal->new_data = g_memdup2(editor_journal->new_data,
+					   new_editor_journal->new_data_length);
+  
+  new_editor_journal->extern_new_data = editor_journal->extern_new_data;
+
+  if(new_editor_journal->extern_new_data != NULL){
+    new_editor_journal->extern_new_data->ref_count += 1;
+  }
+  
+  ags_editor_history_append(editor_history,
+			    new_editor_journal);
+  
+  /* reset position */
+  editor_history->edit_position = edit_position;
+}
+
+/**
+ * ags_editor_journal_redo:
+ * @editor_journal: the #AgsEditorJournal
+ *
+ * Redo @editor_journal.
+ *
+ * Since: 7.2.0 
+ */
+void
+ags_editor_history_redo(AgsEditorHistory *editor_history)
+{
+  AgsEditorJournal *editor_journal;
+  AgsEditorJournal *new_editor_journal;
+  
+  gint edit_position;
+
+  if(editor_history->journal_entry == NULL ||
+     editor_history->edit_position == -1){
+    return;
+  }
+  
+  edit_position = editor_history->edit_position;
+  
+  edit_position++;
+
+  editor_journal = g_list_nth_data(editor_history->journal_entry,
+				   edit_position);
+
+  if(!g_ascii_strncasecmp(editor_journal->scope,
+			  AGS_EDITOR_HISTORY_SCOPE_NOTATION,
+			  strlen(AGS_EDITOR_HISTORY_SCOPE_NOTATION))){
+    if(!g_ascii_strncasecmp(editor_journal->action,
+			    AGS_EDITOR_HISTORY_ACTION_NOTE_ADD,
+			    strlen(AGS_EDITOR_HISTORY_ACTION_NOTE_ADD))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_NOTE_RESIZE,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_NOTE_RESIZE))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_NOTE_REMOVE,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_NOTE_REMOVE))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_NOTE_COPY,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_NOTE_COPY))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_NOTE_CUT,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_NOTE_CUT))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_NOTE_PASTE,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_NOTE_PASTE))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_NOTE_INVERT,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_NOTE_INVERT))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_NOTE_SELECT,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_NOTE_SELECT))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_NOTE_POSITION,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_NOTE_POSITION))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_NOTE_MOVE,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_NOTE_MOVE))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_NOTE_CROP,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_NOTE_CROP))){
+      //TODO:JK: implement me
+    }
+  }else if(!g_ascii_strncasecmp(editor_journal->scope,
+				AGS_EDITOR_HISTORY_SCOPE_AUTOMATION,
+				strlen(AGS_EDITOR_HISTORY_SCOPE_AUTOMATION))){
+    if(!g_ascii_strncasecmp(editor_journal->action,
+			    AGS_EDITOR_HISTORY_ACTION_ACCELERATION_ADD,
+			    strlen(AGS_EDITOR_HISTORY_ACTION_ACCELERATION_ADD))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_ACCELERATION_RESIZE,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_ACCELERATION_RESIZE))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_ACCELERATION_REMOVE,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_ACCELERATION_REMOVE))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_ACCELERATION_COPY,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_ACCELERATION_COPY))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_ACCELERATION_CUT,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_ACCELERATION_CUT))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_ACCELERATION_PASTE,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_ACCELERATION_PASTE))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_ACCELERATION_SELECT,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_ACCELERATION_SELECT))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_ACCELERATION_POSITION,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_ACCELERATION_POSITION))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_ACCELERATION_RAMP,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_ACCELERATION_RAMP))){
+      //TODO:JK: implement me
+    }
+  }else if(!g_ascii_strncasecmp(editor_journal->scope,
+				AGS_EDITOR_HISTORY_SCOPE_WAVE,
+				strlen(AGS_EDITOR_HISTORY_SCOPE_WAVE))){
+    if(!g_ascii_strncasecmp(editor_journal->action,
+			    AGS_EDITOR_HISTORY_ACTION_BUFFER_ADD,
+			    strlen(AGS_EDITOR_HISTORY_ACTION_BUFFER_ADD))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_BUFFER_REMOVE,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_BUFFER_REMOVE))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_BUFFER_COPY,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_BUFFER_COPY))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_BUFFER_CUT,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_BUFFER_CUT))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_BUFFER_PASTE,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_BUFFER_PASTE))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_BUFFER_SELECT,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_BUFFER_SELECT))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_BUFFER_POSITION,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_BUFFER_POSITION))){
+      //TODO:JK: implement me
+    }else if(!g_ascii_strncasecmp(editor_journal->action,
+				  AGS_EDITOR_HISTORY_ACTION_BUFFER_TIME_STRETCH,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_BUFFER_TIME_STRETCH))){
+      //TODO:JK: implement me
+    }
+  }
+
+  /* redo action */
+  new_editor_journal = ags_editor_journal_alloc();
+
+  new_editor_journal->selected_machine_uuid = g_strdup(editor_journal->selected_machine_uuid);
+  new_editor_journal->selected_machine = editor_journal->selected_machine;
+
+  new_editor_journal->scope = g_strdup(editor_journal->scope);
+  new_editor_journal->journal_type = g_strdup(editor_journal->journal_type);
+
+  new_editor_journal->action = g_strdup(AGS_EDITOR_HISTORY_JOURNAL_TYPE_REDO);
+  new_editor_journal->detail = g_strdup(editor_journal->detail);
+
+  new_editor_journal->data_access_type = g_strdup(editor_journal->data_access_type);
+  new_editor_journal->content_type = g_strdup(editor_journal->content_type);
+
+  new_editor_journal->orig_data_offset = editor_journal->orig_data_offset;
+  new_editor_journal->orig_data_length = editor_journal->orig_data_length;
+  new_editor_journal->orig_data = g_memdup2(editor_journal->orig_data,
+					    new_editor_journal->orig_data_length);
+  
+  new_editor_journal->extern_orig_data = editor_journal->extern_orig_data;
+
+  if(new_editor_journal->extern_orig_data != NULL){
+    new_editor_journal->extern_orig_data->ref_count += 1;
+  }
+
+  new_editor_journal->new_data_offset = editor_journal->new_data_offset;
+  new_editor_journal->new_data_length = editor_journal->new_data_length;
+  new_editor_journal->new_data = g_memdup2(editor_journal->new_data,
+					   new_editor_journal->new_data_length);
+  
+  new_editor_journal->extern_new_data = editor_journal->extern_new_data;
+
+  if(new_editor_journal->extern_new_data != NULL){
+    new_editor_journal->extern_new_data->ref_count += 1;
+  }
+
+  ags_editor_history_append(editor_history,
+			    new_editor_journal);
+
+  /* reset position */
+  editor_history->edit_position = edit_position;
+}
+
+/**
+ * ags_editor_history_release_unused:
+ * @editor_history: the #AgsEditorHistory
+ *
+ * Release unused history.
+ *
+ * Since: 7.2.0 
+ */
+void
+ags_editor_history_release_unused(AgsEditorHistory *editor_history)
 {
   //TODO:JK: implement me
 }
 
+/**
+ * ags_editor_history_export_to_path:
+ * @editor_history: the #AgsEditorHistory
+ * @location: the location
+ *
+ * Export to path.
+ *
+ * Since: 7.2.0 
+ */
 void
-ags_editor_history_import_from_data(AgsEditorHistory *editor_history,
-				    gchar *exported_data,
-				    guint data_length)
+ags_editor_history_export_to_path(AgsEditorHistory *editor_history,
+				  gchar *location)
 {
-  //TODO:JK: implement me
+  xmlDoc *doc;
+  xmlNode *root_node;
+  xmlNode *node;
+  xmlNode *child;
+
+  GList *data_entry;
+  GList *journal_entry;
+  
+  gchar *filename;
+
+  GError *error;
+  
+  static const gchar *history_filename = "ags_history.xml";
+
+  filename = g_strdup_printf("%s/%s",
+			     location,
+			     history_filename);
+
+  doc = xmlNewDoc("1.0");
+
+  root_node = xmlNewNode(NULL, "ags-history");
+
+  xmlDocSetRootElement(doc,
+		       root_node);
+
+  /* extern data */
+  node = xmlNewNode(NULL, "ags-data-entry-list");
+  xmlAddChild(root_node,
+	      node);
+  
+  data_entry = editor_history->data_entry;
+
+  while(data_entry != NULL){
+    gchar *extern_data_filename;
+
+    child = xmlNewNode(NULL, "ags-data-entry");
+
+    xmlAddChild(node,
+		child);
+
+    xmlNewProp(child,
+	       "data-uuid",
+	       AGS_EXTERN_DATA(data_entry->data)->data_uuid);
+
+    extern_data_filename = g_strdup_printf("%s/%s",
+					   location,
+					   AGS_EXTERN_DATA(data_entry->data)->data_uuid);
+
+    xmlNewProp(child,
+	       "fileref",
+	       AGS_EXTERN_DATA(data_entry->data)->data_uuid);
+
+    error = NULL;
+    g_file_set_contents(extern_data_filename,
+			AGS_EXTERN_DATA(data_entry->data)->data,
+			AGS_EXTERN_DATA(data_entry->data)->data_length,
+			&error);
+
+    g_free(extern_data_filename);
+    
+    data_entry = data_entry->next;
+  }
+  
+  /* editor journal */
+  node = xmlNewNode(NULL, "ags-journal-entry-list");
+  xmlAddChild(root_node,
+	      node);
+  
+  journal_entry = editor_history->journal_entry;
+
+  while(journal_entry != NULL){
+    child = xmlNewNode(NULL, "ags-journal-entry");
+
+    xmlAddChild(node,
+		child);
+
+    xmlNewProp(child,
+	       "scope",
+	       AGS_EDITOR_JOURNAL(journal_entry->data)->scope);
+
+    xmlNewProp(child,
+	       "journal-type",
+	       AGS_EDITOR_JOURNAL(journal_entry->data)->journal_type);
+
+    xmlNewProp(child,
+	       "action",
+	       AGS_EDITOR_JOURNAL(journal_entry->data)->action);
+
+    xmlNewProp(child,
+	       "detail",
+	       AGS_EDITOR_JOURNAL(journal_entry->data)->detail);
+
+    xmlNewProp(child,
+	       "data-access-type",
+	       AGS_EDITOR_JOURNAL(journal_entry->data)->data_access_type);
+
+    xmlNewProp(child,
+	       "content-type",
+	       AGS_EDITOR_JOURNAL(journal_entry->data)->content_type);
+
+    if(!g_ascii_strncasecmp(AGS_EDITOR_JOURNAL(journal_entry->data)->data_access_type,
+			    AGS_EDITOR_HISTORY_DATA_ACCESS_RAW_AUDIO_BASE64_SERIALIZER,
+			    strlen(AGS_EDITOR_HISTORY_DATA_ACCESS_RAW_AUDIO_BASE64_SERIALIZER))){
+      xmlNewProp(child,
+		 "extern-orig-data",
+		 AGS_EDITOR_JOURNAL(journal_entry->data)->extern_orig_data->data_uuid);
+
+      xmlNewProp(child,
+		 "extern-new-data",
+		 AGS_EDITOR_JOURNAL(journal_entry->data)->extern_new_data->data_uuid);
+    }else if(!g_ascii_strncasecmp(AGS_EDITOR_JOURNAL(journal_entry->data)->data_access_type,
+				  AGS_EDITOR_HISTORY_DATA_ACCESS_XML_SERIALIZER,
+				  strlen(AGS_EDITOR_HISTORY_DATA_ACCESS_XML_SERIALIZER))){
+      xmlNode *orig_data;
+      xmlNode *new_data;
+      xmlNode *cdata;
+
+      /* orig data */
+      orig_data = xmlNewNode(NULL, "ags-orig-data");
+
+      xmlAddChild(child,
+		  orig_data);
+      
+      cdata = xmlNewCDataBlock(doc,
+			       AGS_EDITOR_JOURNAL(journal_entry->data)->orig_data,
+			       AGS_EDITOR_JOURNAL(journal_entry->data)->orig_data_length);
+
+      xmlAddChild(node,
+		  cdata);
+
+      /* new data */
+      new_data = xmlNewNode(NULL, "ags-new-data");
+
+      xmlAddChild(child,
+		  new_data);
+      
+      cdata = xmlNewCDataBlock(doc,
+			       AGS_EDITOR_JOURNAL(journal_entry->data)->new_data,
+			       AGS_EDITOR_JOURNAL(journal_entry->data)->new_data_length);
+
+      xmlAddChild(node,
+		  cdata);
+    }else{
+      g_warning("unsupported data access");
+    }
+    
+    journal_entry = journal_entry->next;
+  }
+
+  g_free(filename);
+}
+
+/**
+ * ags_editor_history_import_from_path:
+ * @editor_history: the #AgsEditorHistory
+ * @location: the location
+ *
+ * Import from path.
+ *
+ * Since: 7.2.0 
+ */
+void
+ags_editor_history_import_from_path(AgsEditorHistory *editor_history,
+				    gchar *location)
+{
+  xmlDoc *doc;
+  xmlNode *root_node;
+  xmlNode *node;
+  xmlNode *child;
+  AgsExternData *current_data_entry;
+  AgsEditorJournal *current_journal_entry;
+  
+  GList *data_entry;
+  GList *journal_entry;
+
+  xmlChar *str;
+  gchar *filename;
+  gchar *extern_audio_data_filename;
+
+  GError *error;
+  
+  static const gchar *history_filename = "ags_history.xml";
+
+  filename = g_strdup_printf("%s/%s",
+			     location,
+			     history_filename);
+  
+  doc = xmlReadFile(filename, NULL, 0);
+
+  root_node = xmlDocGetRootElement(doc);
+
+  if((!g_ascii_strncasecmp(root_node->name, "ags-history", 12)) == FALSE){
+    return;
+  }
+
+  /* read extern data */
+  node = root_node->children;
+
+  while(node != NULL){
+    if(node->type == XML_ELEMENT_NODE){
+      if(!g_ascii_strncasecmp(node->name, "ags-data-entry-list", 19)){
+	child = node->children;
+	
+	while(child != NULL){
+	  if(child->type == XML_ELEMENT_NODE){
+	    if(!g_ascii_strncasecmp(child->name, "ags-data-entry", 14)){
+	      xmlNode *data_node;
+	      
+	      gchar *extern_audio_data_filename;
+	      
+	      current_data_entry = ags_extern_data_alloc();
+
+	      editor_history->data_entry = g_list_append(editor_history->data_entry,
+							 current_data_entry);
+
+	      str = xmlGetProp(child,
+			       "data-uuid");
+
+	      current_data_entry->data_uuid = str;
+
+	      str = xmlGetProp(child,
+			       "fileref");
+
+	      extern_audio_data_filename = g_strdup_printf("%s/%s",
+							   location,
+							   str);
+
+	      error = NULL;
+	      g_file_get_contents(extern_audio_data_filename,
+				  &(current_data_entry->data),
+				  &(current_data_entry->data_length),
+				  &error);
+	    }
+	  }
+        
+	  child = child->next;
+	}
+      }
+    }
+    
+    node = node->next;
+  }
+
+  /* read editor journal */
+  node = root_node->children;
+
+  while(node != NULL){
+    if(node->type == XML_ELEMENT_NODE){
+      if(!g_ascii_strncasecmp(node->name, "ags-journal-entry-list", 22)){
+	child = node->children;
+	
+	while(child != NULL){
+	  if(child->type == XML_ELEMENT_NODE){
+	    if(!g_ascii_strncasecmp(child->name, "ags-journal-entry", 17)){
+	      xmlNode *data_node;
+	      GList *tmp;
+	      
+	      current_journal_entry = ags_editor_journal_alloc();
+
+	      editor_history->journal_entry = g_list_append(editor_history->journal_entry,
+							    current_journal_entry);
+	      
+	      str = xmlGetProp(child,
+			       "scope");
+
+	      current_journal_entry->scope = str;
+  
+	      str = xmlGetProp(child,
+			       "journal-type");
+
+	      current_journal_entry->journal_type = str;
+  
+	      str = xmlGetProp(child,
+			       "action");
+
+	      current_journal_entry->action = str;
+  
+	      str = xmlGetProp(child,
+			       "detail");
+
+	      current_journal_entry->detail = str;
+  
+	      str = xmlGetProp(child,
+			       "data-access-type");
+
+	      current_journal_entry->data_access_type = str;
+  
+	      str = xmlGetProp(child,
+			       "content-type");
+
+	      current_journal_entry->content_type = str;
+
+	      str = xmlGetProp(child,
+			       "extern-orig-data");
+
+	      tmp = g_list_find_custom(editor_history->data_entry,
+				       str,
+				       (GCompareFunc) ags_extern_data_cmp);
+
+	      if(tmp != NULL){
+		current_journal_entry->extern_orig_data = tmp->data;
+	      }
+	      
+	      data_node = child->children;
+	      
+	      while(data_node != NULL){
+		if(data_node->type == XML_ELEMENT_NODE){
+		  if(!g_ascii_strncasecmp(data_node->name, "ags-orig-data", 13)){
+		    xmlChar *content;
+		      
+		    content = xmlNodeGetContent(node);
+
+		    current_journal_entry->orig_data = content;
+		    current_journal_entry->orig_data_length = strlen(content);
+		  }else if(!g_ascii_strncasecmp(data_node->name, "ags-new-data", 12)){
+		    xmlChar *content;
+		      
+		    content = xmlNodeGetContent(node);
+
+		    current_journal_entry->new_data = content;
+		    current_journal_entry->new_data_length = strlen(content);
+		  }
+		}
+    
+		data_node = data_node->next;
+	      }
+	    }
+	  }
+    
+	  child = child->next;
+	}
+      }
+    }
+    
+    node = node->next;
+  }
 }
 
 /**

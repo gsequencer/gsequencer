@@ -23,6 +23,12 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <gio/gio.h>
+
+#include <libxml/tree.h>
+#include <libxml/parser.h>
+#include <libxml/xpath.h>
+
 #include <gtk/gtk.h>
 
 #include <ags/libags.h>
@@ -38,6 +44,9 @@ G_BEGIN_DECLS
 #define AGS_IS_EDITOR_HISTORY(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_EDITOR_HISTORY))
 #define AGS_IS_EDITOR_HISTORY_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_EDITOR_HISTORY))
 #define AGS_EDITOR_HISTORY_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_EDITOR_HISTORY, AgsEditorHistoryClass))
+
+#define AGS_EXTERN_DATA(ptr) ((AgsExternData *)(ptr))
+#define AGS_EDITOR_JOURNAL(ptr) ((AgsEditorJournal *)(ptr))
 
 #define AGS_EDITOR_HISTORY_SCOPE_NOTATION "ags-notation"
 #define AGS_EDITOR_HISTORY_SCOPE_AUTOMATION "ags-automation"
@@ -83,14 +92,19 @@ G_BEGIN_DECLS
 
 typedef struct _AgsEditorHistory AgsEditorHistory;
 typedef struct _AgsEditorHistoryClass AgsEditorHistoryClass;
+typedef struct _AgsExternData AgsExternData;
 typedef struct _AgsEditorJournal AgsEditorJournal;
 
 struct _AgsEditorHistory
 {
   GObject gobject;
 
-  gint journal_position;
+  gchar *encoding;
   
+  gint journal_position;
+  gint edit_position;
+
+  GList *data_entry;
   GList *journal_entry;
 };
 
@@ -99,9 +113,24 @@ struct _AgsEditorHistoryClass
   GObjectClass gobject;
 };
 
+struct _AgsExternData
+{
+  gint ref_count;
+  
+  gchar *data_uuid;
+
+  gsize data_length;
+  gchar *data;
+};
+
 struct _AgsEditorJournal
 {
+  gchar *selected_machine_uuid;
   GtkWidget *selected_machine;
+
+  guint pad;
+  guint audio_channel;
+  guint line;
   
   gchar *scope;
   gchar *journal_type;
@@ -112,11 +141,26 @@ struct _AgsEditorJournal
   gchar *data_access_type;
   gchar *content_type;
 
+  guint64 orig_data_offset;
+  gsize orig_data_length;
   gchar *orig_data;
+
+  AgsExternData *extern_orig_data;
+  
+  guint64 new_data_offset;
+  gsize new_data_length;
   gchar *new_data;
+
+  AgsExternData *extern_new_data;
 };
 
 GType ags_editor_history_get_type(void);
+
+AgsExternData* ags_extern_data_alloc();
+void ags_extern_data_free(AgsExternData *extern_data);
+
+gint ags_extern_data_cmp(AgsExternData *a,
+			 AgsExternData *b);
 
 AgsEditorJournal* ags_editor_journal_alloc();
 void ags_editor_journal_free(AgsEditorJournal *editor_journal);
@@ -124,12 +168,15 @@ void ags_editor_journal_free(AgsEditorJournal *editor_journal);
 void ags_editor_history_append(AgsEditorHistory *editor_history,
 			       AgsEditorJournal *editor_journal);
 
-void ags_editor_history_export_to_data(AgsEditorHistory *editor_history,
-				       gchar **exported_data,
-				       guint *data_length);
-void ags_editor_history_import_from_data(AgsEditorHistory *editor_history,
-					 gchar *exported_data,
-					 guint data_length);
+void ags_editor_history_undo(AgsEditorHistory *editor_history);
+void ags_editor_history_redo(AgsEditorHistory *editor_history);
+
+void ags_editor_history_release_unused(AgsEditorHistory *editor_history);
+
+void ags_editor_history_export_to_path(AgsEditorHistory *editor_history,
+				       gchar *location);
+void ags_editor_history_import_from_path(AgsEditorHistory *editor_history,
+					 gchar *location);
 
 /*  */
 AgsEditorHistory* ags_editor_history_get_instance();
