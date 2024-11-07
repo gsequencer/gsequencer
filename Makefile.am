@@ -3169,6 +3169,7 @@ libgsequencer_editor_h_sources = \
 	ags/app/editor/ags_composite_toolbar_callbacks.h \
 	ags/app/editor/ags_crop_note_popover_callbacks.h \
 	ags/app/editor/ags_crop_note_popover.h \
+	ags/app/editor/ags_editor_history.h \
 	ags/app/editor/ags_envelope_dialog_callbacks.h \
 	ags/app/editor/ags_envelope_dialog.h \
 	ags/app/editor/ags_envelope_editor_callbacks.h \
@@ -3244,6 +3245,7 @@ libgsequencer_editor_c_sources = \
 	ags/app/editor/ags_envelope_editor.c \
 	ags/app/editor/ags_envelope_info_callbacks.c \
 	ags/app/editor/ags_envelope_info.c \
+	ags/app/editor/ags_editor_history.c \
 	ags/app/editor/ags_machine_radio_button.c \
 	ags/app/editor/ags_machine_radio_button_callbacks.c \
 	ags/app/editor/ags_machine_selection.c \
