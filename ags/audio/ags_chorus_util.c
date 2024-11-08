@@ -197,12 +197,6 @@ ags_chorus_util_free(AgsChorusUtil *ptr)
 {
   g_return_if_fail(ptr != NULL);
 
-  ags_stream_free(ptr->destination);
-
-  if(ptr->destination != ptr->source){
-    ags_stream_free(ptr->source);
-  }
-
   ags_stream_free(ptr->pitch_mix_buffer);
 
   ags_stream_free(ptr->pitch_mix_buffer_history);
@@ -233,7 +227,7 @@ ags_chorus_util_get_destination(AgsChorusUtil *chorus_util)
 /**
  * ags_chorus_util_set_destination:
  * @chorus_util: the #AgsChorusUtil-struct
- * @destination: the destination buffer
+ * @destination: (transfer none): the destination buffer
  *
  * Set @destination buffer of @chorus_util.
  *
@@ -313,7 +307,7 @@ ags_chorus_util_get_source(AgsChorusUtil *chorus_util)
 /**
  * ags_chorus_util_set_source:
  * @chorus_util: the #AgsChorusUtil-struct
- * @source: the source buffer
+ * @source: (transfer none): the source buffer
  *
  * Set @source buffer of @chorus_util.
  *

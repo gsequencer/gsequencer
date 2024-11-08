@@ -147,12 +147,6 @@ void
 ags_pitch_4x_alias_util_free(AgsPitch4xAliasUtil *ptr)
 {
   g_return_if_fail(ptr != NULL);
-  
-  g_free(ptr->destination);
-
-  if(ptr->destination != ptr->source){
-    g_free(ptr->source);
-  }
 
   ags_stream_free(ptr->alias_source_buffer);
   ags_stream_free(ptr->alias_new_source_buffer);
@@ -183,7 +177,7 @@ ags_pitch_4x_alias_util_get_destination(AgsPitch4xAliasUtil *pitch_4x_alias_util
 /**
  * ags_pitch_4x_alias_util_set_destination:
  * @pitch_4x_alias_util: the #AgsPitch4xAliasUtil-struct
- * @destination: the destination buffer
+ * @destination: (transfer none): the destination buffer
  *
  * Set @destination buffer of @pitch_4x_alias_util.
  *
@@ -263,7 +257,7 @@ ags_pitch_4x_alias_util_get_source(AgsPitch4xAliasUtil *pitch_4x_alias_util)
 /**
  * ags_pitch_4x_alias_util_set_source:
  * @pitch_4x_alias_util: the #AgsPitch4xAliasUtil-struct
- * @source: the source buffer
+ * @source: (transfer none): the source buffer
  *
  * Set @source buffer of @pitch_4x_alias_util.
  *

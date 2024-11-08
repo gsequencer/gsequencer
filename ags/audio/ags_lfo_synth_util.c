@@ -133,8 +133,6 @@ void
 ags_lfo_synth_util_free(AgsLFOSynthUtil *ptr)
 {
   g_return_if_fail(ptr != NULL);
-
-  g_free(ptr->source);
   
   g_free(ptr);
 }
@@ -162,7 +160,7 @@ ags_lfo_synth_util_get_source(AgsLFOSynthUtil *lfo_synth_util)
 /**
  * ags_lfo_synth_util_set_source:
  * @lfo_synth_util: the #AgsLFOSynthUtil-struct
- * @source: the source buffer
+ * @source: (transfer none): the source buffer
  *
  * Set @source buffer of @lfo_synth_util.
  *

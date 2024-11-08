@@ -134,8 +134,6 @@ void
 ags_fourier_transform_util_free(AgsFourierTransformUtil *ptr)
 {
   g_return_if_fail(ptr != NULL);
-
-  g_free(ptr->source);
   
   g_free(ptr);
 }
@@ -163,7 +161,7 @@ ags_fourier_transform_util_get_source(AgsFourierTransformUtil *fourier_transform
 /**
  * ags_fourier_transform_util_set_source:
  * @fourier_transform_util: the #AgsFourierTransformUtil-struct
- * @source: the source buffer
+ * @source: (transfer none): the source buffer
  *
  * Set @source buffer of @fourier_transform_util.
  *

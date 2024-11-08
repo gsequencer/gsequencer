@@ -133,12 +133,6 @@ void
 ags_tremolo_util_free(AgsTremoloUtil *ptr)
 {
   g_return_if_fail(ptr != NULL);
-
-  g_free(ptr->destination);
-
-  if(ptr->destination != ptr->source){
-    g_free(ptr->source);
-  }
   
   g_free(ptr);
 }
@@ -166,7 +160,7 @@ ags_tremolo_util_get_destination(AgsTremoloUtil *tremolo_util)
 /**
  * ags_tremolo_util_set_destination:
  * @tremolo_util: the #AgsTremoloUtil-struct
- * @destination: the destination buffer
+ * @destination: (transfer none): the destination buffer
  *
  * Set @destination buffer of @tremolo_util.
  *
@@ -246,7 +240,7 @@ ags_tremolo_util_get_source(AgsTremoloUtil *tremolo_util)
 /**
  * ags_tremolo_util_set_source:
  * @tremolo_util: the #AgsTremoloUtil-struct
- * @source: the source buffer
+ * @source: (transfer none): the source buffer
  *
  * Set @source buffer of @tremolo_util.
  *

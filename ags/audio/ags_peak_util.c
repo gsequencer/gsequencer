@@ -124,8 +124,6 @@ ags_peak_util_free(AgsPeakUtil *ptr)
 {
   g_return_if_fail(ptr != NULL);
 
-  g_free(ptr->source);
-
   g_free(ptr);
 }
 
@@ -152,7 +150,7 @@ ags_peak_util_get_source(AgsPeakUtil *peak_util)
 /**
  * ags_peak_util_set_source:
  * @peak_util: the #AgsPeakUtil-struct
- * @source: the source buffer
+ * @source: (transfer none): the source buffer
  *
  * Set @source buffer of @peak_util.
  *

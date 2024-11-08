@@ -522,18 +522,18 @@ ags_fx_sfz_synth_audio_init(AgsFxSFZSynthAudio *fx_sfz_synth_audio)
   AGS_RECALL(fx_sfz_synth_audio)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(fx_sfz_synth_audio)->xml_type = "ags-fx-sfz-synth-audio";
 
-  position = 0;
+  position = 0;  
 
-  /* synth octave */  
+  /* synth octave */
   fx_sfz_synth_audio->synth_octave = g_object_new(AGS_TYPE_PORT,
-						  "plugin-name", ags_fx_sfz_synth_audio_plugin_name,
-						  "specifier", ags_fx_sfz_synth_audio_specifier[position],
-						  "control-port", ags_fx_sfz_synth_audio_control_port[position],
-						  "port-value-is-pointer", FALSE,
-						  "port-value-type", G_TYPE_FLOAT,
-						  "port-value-size", sizeof(gfloat),
-						  "port-value-length", 1,
-						  NULL);
+						   "plugin-name", ags_fx_sfz_synth_audio_plugin_name,
+						   "specifier", "./synth-octave[0]",
+						   "control-port", "1/18",
+						   "port-value-is-pointer", FALSE,
+						   "port-value-type", G_TYPE_FLOAT,
+						   "port-value-size", sizeof(gfloat),
+						   "port-value-length", 1,
+						   NULL);
   
   fx_sfz_synth_audio->synth_octave->port_value.ags_port_float = (gfloat) 0.0;
 
@@ -548,14 +548,14 @@ ags_fx_sfz_synth_audio_init(AgsFxSFZSynthAudio *fx_sfz_synth_audio)
   
   /* synth key */
   fx_sfz_synth_audio->synth_key = g_object_new(AGS_TYPE_PORT,
-					       "plugin-name", ags_fx_sfz_synth_audio_plugin_name,
-					       "specifier", ags_fx_sfz_synth_audio_specifier[position],
-					       "control-port", ags_fx_sfz_synth_audio_control_port[position],
-					       "port-value-is-pointer", FALSE,
-					       "port-value-type", G_TYPE_FLOAT,
-					       "port-value-size", sizeof(gfloat),
-					       "port-value-length", 1,
-					       NULL);
+						"plugin-name", ags_fx_sfz_synth_audio_plugin_name,
+						"specifier", "./synth-key[0]",
+						"control-port", "2/18",
+						"port-value-is-pointer", FALSE,
+						"port-value-type", G_TYPE_FLOAT,
+						"port-value-size", sizeof(gfloat),
+						"port-value-length", 1,
+						NULL);
   
   fx_sfz_synth_audio->synth_key->port_value.ags_port_float = (gfloat) 2.0;
 
@@ -571,8 +571,8 @@ ags_fx_sfz_synth_audio_init(AgsFxSFZSynthAudio *fx_sfz_synth_audio)
   /* synth pitch type */
   fx_sfz_synth_audio->synth_pitch_type = g_object_new(AGS_TYPE_PORT,
 						      "plugin-name", ags_fx_sfz_synth_audio_plugin_name,
-						      "specifier", ags_fx_sfz_synth_audio_specifier[position],
-						      "control-port", ags_fx_sfz_synth_audio_control_port[position],
+						      "specifier", "./synth-pitch-type[0]",
+						      "control-port", "3/18",
 						      "port-value-is-pointer", FALSE,
 						      "port-value-type", G_TYPE_FLOAT,
 						      "port-value-size", sizeof(gfloat),
@@ -595,14 +595,14 @@ ags_fx_sfz_synth_audio_init(AgsFxSFZSynthAudio *fx_sfz_synth_audio)
   
   /* synth volume */
   fx_sfz_synth_audio->synth_volume = g_object_new(AGS_TYPE_PORT,
-						  "plugin-name", ags_fx_sfz_synth_audio_plugin_name,
-						  "specifier", ags_fx_sfz_synth_audio_specifier[position],
-						  "control-port", ags_fx_sfz_synth_audio_control_port[position],
-						  "port-value-is-pointer", FALSE,
-						  "port-value-type", G_TYPE_FLOAT,
-						  "port-value-size", sizeof(gfloat),
-						  "port-value-length", 1,
-						  NULL);
+						   "plugin-name", ags_fx_sfz_synth_audio_plugin_name,
+						   "specifier", "./synth-volume[0]",
+						   "control-port", "4/18",
+						   "port-value-is-pointer", FALSE,
+						   "port-value-type", G_TYPE_FLOAT,
+						   "port-value-size", sizeof(gfloat),
+						   "port-value-length", 1,
+						   NULL);
   
   fx_sfz_synth_audio->synth_volume->port_value.ags_port_float = (gfloat) 0.5;
 
@@ -613,18 +613,18 @@ ags_fx_sfz_synth_audio_init(AgsFxSFZSynthAudio *fx_sfz_synth_audio)
   ags_recall_add_port((AgsRecall *) fx_sfz_synth_audio,
 		      fx_sfz_synth_audio->synth_volume);
 
-  position++;
+  position++;  
   
   /* chorus enabled */
   fx_sfz_synth_audio->chorus_enabled = g_object_new(AGS_TYPE_PORT,
-						    "plugin-name", ags_fx_sfz_synth_audio_plugin_name,
-						    "specifier", ags_fx_sfz_synth_audio_specifier[position],
-						    "control-port", ags_fx_sfz_synth_audio_control_port[position],
-						    "port-value-is-pointer", FALSE,
-						    "port-value-type", G_TYPE_FLOAT,
-						    "port-value-size", sizeof(gfloat),
-						    "port-value-length", 1,
-						    NULL);
+						   "plugin-name", ags_fx_sfz_synth_audio_plugin_name,
+						   "specifier", "./chorus-enabled[0]",
+						   "control-port", "5/18",
+						   "port-value-is-pointer", FALSE,
+						   "port-value-type", G_TYPE_FLOAT,
+						   "port-value-size", sizeof(gfloat),
+						   "port-value-length", 1,
+						   NULL);
   
   fx_sfz_synth_audio->chorus_enabled->port_value.ags_port_float = (gfloat) TRUE;
 
@@ -636,12 +636,12 @@ ags_fx_sfz_synth_audio_init(AgsFxSFZSynthAudio *fx_sfz_synth_audio)
 		      fx_sfz_synth_audio->chorus_enabled);
 
   position++;
-
+  
   /* chorus pitch type */
   fx_sfz_synth_audio->chorus_pitch_type = g_object_new(AGS_TYPE_PORT,
 						      "plugin-name", ags_fx_sfz_synth_audio_plugin_name,
-						      "specifier", ags_fx_sfz_synth_audio_specifier[position],
-						      "control-port", ags_fx_sfz_synth_audio_control_port[position],
+						      "specifier", "./chorus-pitch-type[0]",
+						      "control-port", "6/18",
 						      "port-value-is-pointer", FALSE,
 						      "port-value-type", G_TYPE_FLOAT,
 						      "port-value-size", sizeof(gfloat),
@@ -661,17 +661,17 @@ ags_fx_sfz_synth_audio_init(AgsFxSFZSynthAudio *fx_sfz_synth_audio)
 
   g_signal_connect_after(fx_sfz_synth_audio->chorus_pitch_type, "safe-write",
 			 G_CALLBACK(ags_fx_sfz_synth_audio_chorus_pitch_type_callback), fx_sfz_synth_audio);
-    
+  
   /* chorus input volume */
   fx_sfz_synth_audio->chorus_input_volume = g_object_new(AGS_TYPE_PORT,
-							 "plugin-name", ags_fx_sfz_synth_audio_plugin_name,
-							 "specifier", ags_fx_sfz_synth_audio_specifier[position],
-							 "control-port", ags_fx_sfz_synth_audio_control_port[position],
-							 "port-value-is-pointer", FALSE,
-							 "port-value-type", G_TYPE_FLOAT,
-							 "port-value-size", sizeof(gfloat),
-							 "port-value-length", 1,
-							 NULL);
+							"plugin-name", ags_fx_sfz_synth_audio_plugin_name,
+							"specifier", "./chorus-input-volume[0]",
+							"control-port", "7/18",
+							"port-value-is-pointer", FALSE,
+							"port-value-type", G_TYPE_FLOAT,
+							"port-value-size", sizeof(gfloat),
+							"port-value-length", 1,
+							NULL);
   
   fx_sfz_synth_audio->chorus_input_volume->port_value.ags_port_float = (gfloat) 1.0;
 
@@ -686,14 +686,14 @@ ags_fx_sfz_synth_audio_init(AgsFxSFZSynthAudio *fx_sfz_synth_audio)
   
   /* chorus output volume */
   fx_sfz_synth_audio->chorus_output_volume = g_object_new(AGS_TYPE_PORT,
-							  "plugin-name", ags_fx_sfz_synth_audio_plugin_name,
-							  "specifier", ags_fx_sfz_synth_audio_specifier[position],
-							  "control-port", ags_fx_sfz_synth_audio_control_port[position],
-							  "port-value-is-pointer", FALSE,
-							  "port-value-type", G_TYPE_FLOAT,
-							  "port-value-size", sizeof(gfloat),
-							  "port-value-length", 1,
-							  NULL);
+							 "plugin-name", ags_fx_sfz_synth_audio_plugin_name,
+							 "specifier", "./chorus-output-volume[0]",
+							 "control-port", "8/18",
+							 "port-value-is-pointer", FALSE,
+							 "port-value-type", G_TYPE_FLOAT,
+							 "port-value-size", sizeof(gfloat),
+							 "port-value-length", 1,
+							 NULL);
   
   fx_sfz_synth_audio->chorus_output_volume->port_value.ags_port_float = (gfloat) 1.0;
 
@@ -708,14 +708,14 @@ ags_fx_sfz_synth_audio_init(AgsFxSFZSynthAudio *fx_sfz_synth_audio)
   
   /* chorus LFO oscillator */
   fx_sfz_synth_audio->chorus_lfo_oscillator = g_object_new(AGS_TYPE_PORT,
-							   "plugin-name", ags_fx_sfz_synth_audio_plugin_name,
-							   "specifier", ags_fx_sfz_synth_audio_specifier[position],
-							   "control-port", ags_fx_sfz_synth_audio_control_port[position],
-							   "port-value-is-pointer", FALSE,
-							   "port-value-type", G_TYPE_FLOAT,
-							   "port-value-size", sizeof(gfloat),
-							   "port-value-length", 1,
-							   NULL);
+							  "plugin-name", ags_fx_sfz_synth_audio_plugin_name,
+							  "specifier", "./chorus-lfo-oscillator[0]",
+							  "control-port", "9/18",
+							  "port-value-is-pointer", FALSE,
+							  "port-value-type", G_TYPE_FLOAT,
+							  "port-value-size", sizeof(gfloat),
+							  "port-value-length", 1,
+							  NULL);
   
   fx_sfz_synth_audio->chorus_lfo_oscillator->port_value.ags_port_float = (gfloat) AGS_SYNTH_OSCILLATOR_SIN;
 
@@ -730,14 +730,14 @@ ags_fx_sfz_synth_audio_init(AgsFxSFZSynthAudio *fx_sfz_synth_audio)
   
   /* chorus LFO frequency */
   fx_sfz_synth_audio->chorus_lfo_frequency = g_object_new(AGS_TYPE_PORT,
-							  "plugin-name", ags_fx_sfz_synth_audio_plugin_name,
-							  "specifier", ags_fx_sfz_synth_audio_specifier[position],
-							  "control-port", ags_fx_sfz_synth_audio_control_port[position],
-							  "port-value-is-pointer", FALSE,
-							  "port-value-type", G_TYPE_FLOAT,
-							  "port-value-size", sizeof(gfloat),
-							  "port-value-length", 1,
-							  NULL);
+							 "plugin-name", ags_fx_sfz_synth_audio_plugin_name,
+							 "specifier", "./chorus-lfo-frequency[0]",
+							 "control-port", "10/18",
+							 "port-value-is-pointer", FALSE,
+							 "port-value-type", G_TYPE_FLOAT,
+							 "port-value-size", sizeof(gfloat),
+							 "port-value-length", 1,
+							 NULL);
   
   fx_sfz_synth_audio->chorus_lfo_frequency->port_value.ags_port_float = (gfloat) 0.01;
 
@@ -752,14 +752,14 @@ ags_fx_sfz_synth_audio_init(AgsFxSFZSynthAudio *fx_sfz_synth_audio)
   
   /* chorus depth */
   fx_sfz_synth_audio->chorus_depth = g_object_new(AGS_TYPE_PORT,
-						  "plugin-name", ags_fx_sfz_synth_audio_plugin_name,
-						  "specifier", ags_fx_sfz_synth_audio_specifier[position],
-						  "control-port", ags_fx_sfz_synth_audio_control_port[position],
-						  "port-value-is-pointer", FALSE,
-						  "port-value-type", G_TYPE_FLOAT,
-						  "port-value-size", sizeof(gfloat),
-						  "port-value-length", 1,
-						  NULL);
+						 "plugin-name", ags_fx_sfz_synth_audio_plugin_name,
+						 "specifier", "./chorus-depth[0]",
+						 "control-port", "11/18",
+						 "port-value-is-pointer", FALSE,
+						 "port-value-type", G_TYPE_FLOAT,
+						 "port-value-size", sizeof(gfloat),
+						 "port-value-length", 1,
+						 NULL);
   
   fx_sfz_synth_audio->chorus_depth->port_value.ags_port_float = (gfloat) 0.0;
 
@@ -774,14 +774,14 @@ ags_fx_sfz_synth_audio_init(AgsFxSFZSynthAudio *fx_sfz_synth_audio)
   
   /* chorus mix */
   fx_sfz_synth_audio->chorus_mix = g_object_new(AGS_TYPE_PORT,
-						"plugin-name", ags_fx_sfz_synth_audio_plugin_name,
-						"specifier", ags_fx_sfz_synth_audio_specifier[position],
-						"control-port", ags_fx_sfz_synth_audio_control_port[position],
-						"port-value-is-pointer", FALSE,
-						"port-value-type", G_TYPE_FLOAT,
-						"port-value-size", sizeof(gfloat),
-						"port-value-length", 1,
-						NULL);
+					       "plugin-name", ags_fx_sfz_synth_audio_plugin_name,
+					       "specifier", "./chorus-mix[0]",
+					       "control-port", "12/18",
+					       "port-value-is-pointer", FALSE,
+					       "port-value-type", G_TYPE_FLOAT,
+					       "port-value-size", sizeof(gfloat),
+					       "port-value-length", 1,
+					       NULL);
   
   fx_sfz_synth_audio->chorus_mix->port_value.ags_port_float = (gfloat) 0.5;
 
@@ -796,14 +796,14 @@ ags_fx_sfz_synth_audio_init(AgsFxSFZSynthAudio *fx_sfz_synth_audio)
   
   /* chorus delay */
   fx_sfz_synth_audio->chorus_delay = g_object_new(AGS_TYPE_PORT,
-						  "plugin-name", ags_fx_sfz_synth_audio_plugin_name,
-						  "specifier", ags_fx_sfz_synth_audio_specifier[position],
-						  "control-port", ags_fx_sfz_synth_audio_control_port[position],
-						  "port-value-is-pointer", FALSE,
-						  "port-value-type", G_TYPE_FLOAT,
-						  "port-value-size", sizeof(gfloat),
-						  "port-value-length", 1,
-						  NULL);
+						 "plugin-name", ags_fx_sfz_synth_audio_plugin_name,
+						 "specifier", "./chorus-delay[0]",
+						 "control-port", "13/18",
+						 "port-value-is-pointer", FALSE,
+						 "port-value-type", G_TYPE_FLOAT,
+						 "port-value-size", sizeof(gfloat),
+						 "port-value-length", 1,
+						 NULL);
   
   fx_sfz_synth_audio->chorus_delay->port_value.ags_port_float = (gfloat) 0.0;
 
@@ -819,8 +819,8 @@ ags_fx_sfz_synth_audio_init(AgsFxSFZSynthAudio *fx_sfz_synth_audio)
   /* vibrato enabled */
   fx_sfz_synth_audio->vibrato_enabled = g_object_new(AGS_TYPE_PORT,
 						     "plugin-name", ags_fx_sfz_synth_audio_plugin_name,
-						     "specifier", ags_fx_sfz_synth_audio_specifier[position],
-						     "control-port", ags_fx_sfz_synth_audio_control_port[position],
+						     "specifier", "./vibrato-enabled[0]",
+						     "control-port", "14/18",
 						     "port-value-is-pointer", FALSE,
 						     "port-value-type", G_TYPE_FLOAT,
 						     "port-value-size", sizeof(gfloat),
@@ -841,8 +841,8 @@ ags_fx_sfz_synth_audio_init(AgsFxSFZSynthAudio *fx_sfz_synth_audio)
   /* vibrato gain */
   fx_sfz_synth_audio->vibrato_gain = g_object_new(AGS_TYPE_PORT,
 						  "plugin-name", ags_fx_sfz_synth_audio_plugin_name,
-						  "specifier", ags_fx_sfz_synth_audio_specifier[position],
-						  "control-port", ags_fx_sfz_synth_audio_control_port[position],
+						  "specifier", "./vibrato-gain[0]",
+						  "control-port", "15/18",
 						  "port-value-is-pointer", FALSE,
 						  "port-value-type", G_TYPE_FLOAT,
 						  "port-value-size", sizeof(gfloat),
@@ -863,8 +863,8 @@ ags_fx_sfz_synth_audio_init(AgsFxSFZSynthAudio *fx_sfz_synth_audio)
   /* vibrato LFO depth */
   fx_sfz_synth_audio->vibrato_lfo_depth = g_object_new(AGS_TYPE_PORT,
 						       "plugin-name", ags_fx_sfz_synth_audio_plugin_name,
-						       "specifier", ags_fx_sfz_synth_audio_specifier[position],
-						       "control-port", ags_fx_sfz_synth_audio_control_port[position],
+						       "specifier", "./vibrato-lfo-depth[0]",
+						       "control-port", "16/18",
 						       "port-value-is-pointer", FALSE,
 						       "port-value-type", G_TYPE_FLOAT,
 						       "port-value-size", sizeof(gfloat),
@@ -885,8 +885,8 @@ ags_fx_sfz_synth_audio_init(AgsFxSFZSynthAudio *fx_sfz_synth_audio)
   /* vibrato LFO freq */
   fx_sfz_synth_audio->vibrato_lfo_freq = g_object_new(AGS_TYPE_PORT,
 						      "plugin-name", ags_fx_sfz_synth_audio_plugin_name,
-						      "specifier", ags_fx_sfz_synth_audio_specifier[position],
-						      "control-port", ags_fx_sfz_synth_audio_control_port[position],
+						      "specifier", "./vibrato-lfo-freq[0]",
+						      "control-port", "17/18",
 						      "port-value-is-pointer", FALSE,
 						      "port-value-type", G_TYPE_FLOAT,
 						      "port-value-size", sizeof(gfloat),
@@ -907,8 +907,8 @@ ags_fx_sfz_synth_audio_init(AgsFxSFZSynthAudio *fx_sfz_synth_audio)
   /* vibrato tuning */
   fx_sfz_synth_audio->vibrato_tuning = g_object_new(AGS_TYPE_PORT,
 						    "plugin-name", ags_fx_sfz_synth_audio_plugin_name,
-						    "specifier", ags_fx_sfz_synth_audio_specifier[position],
-						    "control-port", ags_fx_sfz_synth_audio_control_port[position],
+						    "specifier", "./vibrato-tuning[0]",
+						    "control-port", "18/18",
 						    "port-value-is-pointer", FALSE,
 						    "port-value-type", G_TYPE_FLOAT,
 						    "port-value-size", sizeof(gfloat),

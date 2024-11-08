@@ -157,12 +157,6 @@ ags_audio_buffer_util_copy(AgsAudioBufferUtil *ptr)
 void
 ags_audio_buffer_util_free(AgsAudioBufferUtil *ptr)
 {
-  g_free(ptr->destination);
-
-  if(ptr->destination != ptr->source){
-    g_free(ptr->source);
-  }
-  
   g_free(ptr);
 }
 
@@ -189,7 +183,7 @@ ags_audio_buffer_util_get_destination(AgsAudioBufferUtil *audio_buffer_util)
 /**
  * ags_audio_buffer_util_set_destination:
  * @audio_buffer_util: the #AgsAudioBufferUtil-struct
- * @destination: the destination buffer
+ * @destination: (transfer none): the destination buffer
  *
  * Set @destination buffer of @audio_buffer_util.
  *
@@ -316,7 +310,7 @@ ags_audio_buffer_util_get_source(AgsAudioBufferUtil *audio_buffer_util)
 /**
  * ags_audio_buffer_util_set_source:
  * @audio_buffer_util: the #AgsAudioBufferUtil-struct
- * @source: the source buffer
+ * @source: (transfer none): the source buffer
  *
  * Set @source buffer of @audio_buffer_util.
  *

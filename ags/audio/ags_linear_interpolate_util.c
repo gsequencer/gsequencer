@@ -120,12 +120,6 @@ void
 ags_linear_interpolate_util_free(AgsLinearInterpolateUtil *ptr)
 {
   g_return_if_fail(ptr != NULL);
-
-  g_free(ptr->destination);
-
-  if(ptr->destination != ptr->source){
-    g_free(ptr->source);
-  }
   
   g_free(ptr);
 }
@@ -153,7 +147,7 @@ ags_linear_interpolate_util_get_destination(AgsLinearInterpolateUtil *linear_int
 /**
  * ags_linear_interpolate_util_set_destination:
  * @linear_interpolate_util: the #AgsLinearInterpolateUtil-struct
- * @destination: the destination buffer
+ * @destination: (transfer none): the destination buffer
  *
  * Set @destination buffer of @linear_interpolate_util.
  *
@@ -233,7 +227,7 @@ ags_linear_interpolate_util_get_source(AgsLinearInterpolateUtil *linear_interpol
 /**
  * ags_linear_interpolate_util_set_source:
  * @linear_interpolate_util: the #AgsLinearInterpolateUtil-struct
- * @source: the source buffer
+ * @source: (transfer none): the source buffer
  *
  * Set @source buffer of @linear_interpolate_util.
  *

@@ -185,8 +185,8 @@ ags_fx_low_pass_channel_init(AgsFxLowPassChannel *fx_low_pass_channel)
   /* enabled */
   fx_low_pass_channel->enabled = g_object_new(AGS_TYPE_PORT,
 					      "plugin-name", ags_fx_low_pass_channel_plugin_name,
-					      "specifier", ags_fx_low_pass_channel_specifier[0],
-					      "control-port", ags_fx_low_pass_channel_control_port[0],
+					      "specifier", "./enabled[0]",
+					      "control-port", "1/3",
 					      "port-value-is-pointer", FALSE,
 					      "port-value-type", G_TYPE_FLOAT,
 					      "port-value-size", sizeof(gfloat),
@@ -205,8 +205,8 @@ ags_fx_low_pass_channel_init(AgsFxLowPassChannel *fx_low_pass_channel)
   /* q-lin */
   fx_low_pass_channel->q_lin = g_object_new(AGS_TYPE_PORT,
 					    "plugin-name", ags_fx_low_pass_channel_plugin_name,
-					    "specifier", ags_fx_low_pass_channel_specifier[1],
-					    "control-port", ags_fx_low_pass_channel_control_port[1],
+					    "specifier", "./q-lin[0]",
+					    "control-port", "2/3",
 					    "port-value-is-pointer", FALSE,
 					    "port-value-type", G_TYPE_FLOAT,
 					    "port-value-size", sizeof(gfloat),
@@ -225,8 +225,8 @@ ags_fx_low_pass_channel_init(AgsFxLowPassChannel *fx_low_pass_channel)
   /* filter gain */
   fx_low_pass_channel->filter_gain = g_object_new(AGS_TYPE_PORT,
 					       "plugin-name", ags_fx_low_pass_channel_plugin_name,
-					       "specifier", ags_fx_low_pass_channel_specifier[2],
-					       "control-port", ags_fx_low_pass_channel_control_port[2],
+					       "specifier", "./filter-gain[0]",
+					       "control-port", "3/3",
 					       "port-value-is-pointer", FALSE,
 					       "port-value-type", G_TYPE_FLOAT,
 					       "port-value-size", sizeof(gfloat),
