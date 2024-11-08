@@ -2626,9 +2626,9 @@ ags_notation_edit_draw_position(AgsNotationEdit *notation_edit, cairo_t *cr)
 	       NULL);
   
   /* get offset and dimensions */
-  if(notation_edit->note_offset == 0){
-    return;
-  }
+  //  if(notation_edit->note_offset == 0){
+  //    return;
+  //  }
   
   position = ((double) notation_edit->note_offset) * ((double) notation_edit->control_width) / zoom_factor;
   
