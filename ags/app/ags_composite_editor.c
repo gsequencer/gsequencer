@@ -2246,7 +2246,7 @@ ags_composite_editor_paste_notation_all(AgsCompositeEditor *composite_editor,
   AgsNotation *current_notation;
 		
   GList *start_notation, *notation;
-    
+
   gint first_x;
   guint current_x;
   gint i;

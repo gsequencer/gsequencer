@@ -8,10 +8,10 @@
 # Process this file with autoconf to produce a configure script.
 
 LT_CURRENT=7
-LT_REVISION=1
-LT_AGE=9
+LT_REVISION=2
+LT_AGE=0
 
-m4_define([ags_version], [7.1.9])
+m4_define([ags_version], [7.2.0])
 
 AC_PREREQ([2.69])
 AC_INIT([gsequencer],m4_defn([ags_version]),[jkraehemann@gmail.com])
@@ -237,6 +237,11 @@ AC_ARG_WITH([gstreamer],
                             [disable support for gstreamer])],
             [],
             [with_gstreamer=yes])
+AC_ARG_WITH([tooltips],
+            [AS_HELP_STRING([--with-tooltips],
+                            [enable support for tooltips])],
+            [],
+            [with_tooltips=no])
 
 # Checks for programs.
 AC_PROG_CXX
@@ -729,6 +734,11 @@ AS_IF([test "x$with_gstreamer" != xno],
                  [Define if you have gstreamer])
       ])
 AM_CONDITIONAL([WITH_GSTREAMER], [test "x$with_gstreamer" == xyes])
+
+AS_IF([test "x$with_tooltips" != xno],
+      [AC_DEFINE([AGS_WITH_TOOLTIPS], [1],
+                 [Define if you have tooltips])
+      ])
 
 AS_IF([test "x$enable_run_functional_tests" == xyes],
       [AC_MSG_NOTICE([run functional tests enabled])],
