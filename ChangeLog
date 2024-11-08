@@ -3,7 +3,10 @@ ags (7.2.0)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented resize notation in editor using shift key and mouse
 	* implemented resize automation in editor using shift key and mouse
+	* implemented ags_note_to_string() and ags_note_from_string()
 	* improved notation, automation and wave editor selection color
+	* added AgsEditorHistory prototype
+	* work-around for tooltips disable them by configure
 
 ags (7.1.9)
 

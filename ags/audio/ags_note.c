@@ -2515,6 +2515,8 @@ ags_note_from_string(gchar *str)
   GType *gtype_iter;
   
   const gchar* arg_strv[] = {
+    "flags",
+    "key-format",
     "is-minor",
     "sharp-flats",
     "x0",
@@ -2539,6 +2541,8 @@ ags_note_from_string(gchar *str)
   };
 
   const GType arg_gtype[] = {
+    G_TYPE_UINT,
+    G_TYPE_UINT,
     G_TYPE_BOOLEAN,
     G_TYPE_UINT,
     G_TYPE_UINT,
@@ -2664,6 +2668,14 @@ ags_note_to_string(AgsNote *note)
   gchar *str;
 
   builder = g_string_new("<ags-note");
+
+  g_string_printf(builder,
+		  " flags=\"%d\"",
+		  note->flags);
+
+  g_string_printf(builder,
+		  " key-format=\"%d\"",
+		  note->key_format);
 
   g_string_printf(builder,
 		  " is-minor=\"%s\"",
