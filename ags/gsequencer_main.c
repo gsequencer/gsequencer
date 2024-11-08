@@ -300,11 +300,16 @@ main(int argc, char **argv)
 #ifdef AGS_WITH_RT
   const rlim_t kStackSize = 64L * 1024L * 1024L;   // min stack size = 64 Mb
 #endif
-  
+
+#if 0
   setlocale(LC_ALL, "");
   bindtextdomain(PACKAGE, LOCALEDIR);
   textdomain(PACKAGE);
-
+#else
+  putenv("LANG=C.UTF-8");
+  putenv("LC_ALL=C.UTF-8");
+#endif
+  
   builtin_theme_disabled = FALSE;
 
 //  mtrace();

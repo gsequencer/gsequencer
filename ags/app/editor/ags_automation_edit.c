@@ -3607,9 +3607,9 @@ ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit, cairo_t *c
   }
   
   /* get offset and dimensions */
-  if(automation_edit->note_offset == 0){
-    return;
-  }
+  //  if(automation_edit->note_offset == 0){
+  //    return;
+  //  }
 
   position = ((double) automation_edit->note_offset) * ((double) automation_edit->control_width) / zoom_factor;
   
