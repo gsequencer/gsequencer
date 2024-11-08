@@ -184,12 +184,6 @@ void
 ags_noise_util_free(AgsNoiseUtil *ptr)
 {
   g_return_if_fail(ptr != NULL);
-
-  g_free(ptr->destination);
-
-  if(ptr->destination != ptr->source){
-    g_free(ptr->source);
-  }
   
   g_free(ptr);
 }
@@ -217,7 +211,7 @@ ags_noise_util_get_destination(AgsNoiseUtil *noise_util)
 /**
  * ags_noise_util_set_destination:
  * @noise_util: the #AgsNoiseUtil-struct
- * @destination: the destination buffer
+ * @destination: (transfer none): the destination buffer
  *
  * Set @destination buffer of @noise_util.
  *
@@ -297,7 +291,7 @@ ags_noise_util_get_source(AgsNoiseUtil *noise_util)
 /**
  * ags_noise_util_set_source:
  * @noise_util: the #AgsNoiseUtil-struct
- * @source: the source buffer
+ * @source: (transfer none): the source buffer
  *
  * Set @source buffer of @noise_util.
  *

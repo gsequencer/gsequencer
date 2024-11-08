@@ -135,8 +135,6 @@ void
 ags_synth_util_free(AgsSynthUtil *ptr)
 {
   g_return_if_fail(ptr != NULL);
-
-  g_free(ptr->source);
   
   g_free(ptr);
 }
@@ -164,7 +162,7 @@ ags_synth_util_get_source(AgsSynthUtil *synth_util)
 /**
  * ags_synth_util_set_source:
  * @synth_util: the #AgsSynthUtil-struct
- * @source: the source buffer
+ * @source: (transfer none): the source buffer
  *
  * Set @source buffer of @synth_util.
  *

@@ -235,7 +235,7 @@ ags_sfz_synth_util_free(AgsSFZSynthUtil *ptr)
 {
   g_return_if_fail(ptr != NULL);
 
-  g_free(ptr->source);
+  //  g_free(ptr->source);
 
   ags_audio_buffer_util_set_source(ptr->audio_buffer_util,
 				   NULL);
@@ -406,7 +406,7 @@ ags_sfz_synth_util_get_source(AgsSFZSynthUtil *sfz_synth_util)
 /**
  * ags_sfz_synth_util_set_source:
  * @sfz_synth_util: the #AgsSFZSynthUtil-struct
- * @source: the source buffer
+ * @source: (transfer none): the source buffer
  *
  * Set @source buffer of @sfz_synth_util.
  *

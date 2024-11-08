@@ -233,7 +233,7 @@ ags_sf2_synth_util_free(AgsSF2SynthUtil *ptr)
 {
   g_return_if_fail(ptr != NULL);
 
-  ags_stream_free(ptr->source);
+  //  ags_stream_free(ptr->source);
 
   ags_stream_free(ptr->sample_buffer);
   ags_stream_free(ptr->im_buffer);
@@ -412,7 +412,7 @@ ags_sf2_synth_util_get_source(AgsSF2SynthUtil *sf2_synth_util)
 /**
  * ags_sf2_synth_util_set_source:
  * @sf2_synth_util: the #AgsSF2SynthUtil-struct
- * @source: the source buffer
+ * @source: (transfer none): the source buffer
  *
  * Set @source buffer of @sf2_synth_util.
  *

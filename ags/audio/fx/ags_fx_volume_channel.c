@@ -184,8 +184,8 @@ ags_fx_volume_channel_init(AgsFxVolumeChannel *fx_volume_channel)
   /* muted */
   fx_volume_channel->muted = g_object_new(AGS_TYPE_PORT,
 					  "plugin-name", ags_fx_volume_channel_plugin_name,
-					  "specifier", ags_fx_volume_channel_specifier[0],
-					  "control-port", ags_fx_volume_channel_control_port[0],
+					  "specifier", "./muted[0]",
+					  "control-port", "1/2",
 					  "port-value-is-pointer", FALSE,
 					  "port-value-type", G_TYPE_FLOAT,
 					  "port-value-size", sizeof(gfloat),
@@ -204,8 +204,8 @@ ags_fx_volume_channel_init(AgsFxVolumeChannel *fx_volume_channel)
   /* volume */
   fx_volume_channel->volume = g_object_new(AGS_TYPE_PORT,
 					   "plugin-name", ags_fx_volume_channel_plugin_name,
-					   "specifier", ags_fx_volume_channel_specifier[1],
-					   "control-port", ags_fx_volume_channel_control_port[1],
+					   "specifier", "./volume[0]",
+					   "control-port", "2/2",
 					   "port-value-is-pointer", FALSE,
 					   "port-value-type", G_TYPE_FLOAT,
 					   "port-value-size", sizeof(gfloat),

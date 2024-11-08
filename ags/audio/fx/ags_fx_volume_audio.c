@@ -164,8 +164,8 @@ ags_fx_volume_audio_init(AgsFxVolumeAudio *fx_volume_audio)
   /* muted */
   fx_volume_audio->muted = g_object_new(AGS_TYPE_PORT,
 					"plugin-name", ags_fx_volume_audio_plugin_name,
-					"specifier", ags_fx_volume_audio_specifier[0],
-					"control-port", ags_fx_volume_audio_control_port[0],
+					"specifier", "./muted[0]",
+					"control-port", "1/1",
 					"port-value-is-pointer", FALSE,
 					"port-value-type", G_TYPE_FLOAT,
 					"port-value-size", sizeof(gfloat),

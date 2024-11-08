@@ -1,3 +1,10 @@
+ags (7.2.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing transfer none of audio utility structs source and destination
+	* fixed ags-fx-synth missing ports
+	* refactored string vector use in ags-fx for port specifier and control port
+
 ags (7.2.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

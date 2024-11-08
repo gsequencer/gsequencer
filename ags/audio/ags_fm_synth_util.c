@@ -140,8 +140,6 @@ void
 ags_fm_synth_util_free(AgsFMSynthUtil *ptr)
 {
   g_return_if_fail(ptr != NULL);
-
-  g_free(ptr->source);
   
   g_free(ptr);
 }
@@ -169,7 +167,7 @@ ags_fm_synth_util_get_source(AgsFMSynthUtil *fm_synth_util)
 /**
  * ags_fm_synth_util_set_source:
  * @fm_synth_util: the #AgsFMSynthUtil-struct
- * @source: the source buffer
+ * @source: (transfer none): the source buffer
  *
  * Set @source buffer of @fm_synth_util.
  *
