@@ -214,6 +214,8 @@ ags_editor_journal_alloc()
   editor_journal->scope = NULL;
   editor_journal->journal_type = NULL;
 
+  editor_journal->action_uuid = NULL;
+
   editor_journal->action = NULL;
   editor_journal->detail = NULL;
 
@@ -1056,7 +1058,7 @@ ags_editor_history_undo(AgsEditorHistory *editor_history)
     }else if(!g_ascii_strncasecmp(editor_journal->action,
 				  AGS_EDITOR_HISTORY_ACTION_NOTE_POSITION,
 				  strlen(AGS_EDITOR_HISTORY_ACTION_NOTE_POSITION))){
-      //TODO:JK: implement me
+      //TODO:JK: implement me 
     }else if(!g_ascii_strncasecmp(editor_journal->action,
 				  AGS_EDITOR_HISTORY_ACTION_NOTE_MOVE,
 				  strlen(AGS_EDITOR_HISTORY_ACTION_NOTE_MOVE))){
@@ -1143,47 +1145,7 @@ ags_editor_history_undo(AgsEditorHistory *editor_history)
       //TODO:JK: implement me
     }
   }
-  
-  /* undo action */
-  new_editor_journal = ags_editor_journal_alloc();
-
-  new_editor_journal->selected_machine_uuid = g_strdup(editor_journal->selected_machine_uuid);
-  new_editor_journal->selected_machine = editor_journal->selected_machine;
-
-  new_editor_journal->scope = g_strdup(editor_journal->scope);
-  new_editor_journal->journal_type = g_strdup(editor_journal->journal_type);
-
-  new_editor_journal->action = g_strdup(AGS_EDITOR_HISTORY_JOURNAL_TYPE_UNDO);
-  new_editor_journal->detail = g_strdup(editor_journal->detail);
-
-  new_editor_journal->data_access_type = g_strdup(editor_journal->data_access_type);
-  new_editor_journal->content_type = g_strdup(editor_journal->content_type);
-
-  new_editor_journal->orig_data_offset = editor_journal->orig_data_offset;
-  new_editor_journal->orig_data_length = editor_journal->orig_data_length;
-  new_editor_journal->orig_data = g_memdup2(editor_journal->orig_data,
-					    new_editor_journal->orig_data_length);
-  
-  new_editor_journal->extern_orig_data = editor_journal->extern_orig_data;
-
-  if(new_editor_journal->extern_orig_data != NULL){
-    new_editor_journal->extern_orig_data->ref_count += 1;
-  }
-  
-  new_editor_journal->new_data_offset = editor_journal->new_data_offset;
-  new_editor_journal->new_data_length = editor_journal->new_data_length;
-  new_editor_journal->new_data = g_memdup2(editor_journal->new_data,
-					   new_editor_journal->new_data_length);
-  
-  new_editor_journal->extern_new_data = editor_journal->extern_new_data;
-
-  if(new_editor_journal->extern_new_data != NULL){
-    new_editor_journal->extern_new_data->ref_count += 1;
-  }
-  
-  ags_editor_history_append(editor_history,
-			    new_editor_journal);
-  
+    
   /* reset position */
   editor_history->edit_position = edit_position;
 }
@@ -1341,46 +1303,6 @@ ags_editor_history_redo(AgsEditorHistory *editor_history)
       //TODO:JK: implement me
     }
   }
-
-  /* redo action */
-  new_editor_journal = ags_editor_journal_alloc();
-
-  new_editor_journal->selected_machine_uuid = g_strdup(editor_journal->selected_machine_uuid);
-  new_editor_journal->selected_machine = editor_journal->selected_machine;
-
-  new_editor_journal->scope = g_strdup(editor_journal->scope);
-  new_editor_journal->journal_type = g_strdup(editor_journal->journal_type);
-
-  new_editor_journal->action = g_strdup(AGS_EDITOR_HISTORY_JOURNAL_TYPE_REDO);
-  new_editor_journal->detail = g_strdup(editor_journal->detail);
-
-  new_editor_journal->data_access_type = g_strdup(editor_journal->data_access_type);
-  new_editor_journal->content_type = g_strdup(editor_journal->content_type);
-
-  new_editor_journal->orig_data_offset = editor_journal->orig_data_offset;
-  new_editor_journal->orig_data_length = editor_journal->orig_data_length;
-  new_editor_journal->orig_data = g_memdup2(editor_journal->orig_data,
-					    new_editor_journal->orig_data_length);
-  
-  new_editor_journal->extern_orig_data = editor_journal->extern_orig_data;
-
-  if(new_editor_journal->extern_orig_data != NULL){
-    new_editor_journal->extern_orig_data->ref_count += 1;
-  }
-
-  new_editor_journal->new_data_offset = editor_journal->new_data_offset;
-  new_editor_journal->new_data_length = editor_journal->new_data_length;
-  new_editor_journal->new_data = g_memdup2(editor_journal->new_data,
-					   new_editor_journal->new_data_length);
-  
-  new_editor_journal->extern_new_data = editor_journal->extern_new_data;
-
-  if(new_editor_journal->extern_new_data != NULL){
-    new_editor_journal->extern_new_data->ref_count += 1;
-  }
-
-  ags_editor_history_append(editor_history,
-			    new_editor_journal);
 
   /* reset position */
   editor_history->edit_position = edit_position;

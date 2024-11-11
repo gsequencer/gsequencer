@@ -135,6 +135,8 @@ struct _AgsEditorJournal
   gchar *scope;
   gchar *journal_type;
 
+  gchar *action_uuid;
+  
   gchar *action;
   gchar *detail;
 
