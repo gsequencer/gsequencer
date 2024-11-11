@@ -38,6 +38,10 @@ void ags_position_notation_cursor_popover_applicable_interface_init(AgsApplicabl
 void ags_position_notation_cursor_popover_init(AgsPositionNotationCursorPopover *position_notation_cursor_popover);
 void ags_position_notation_cursor_popover_finalize(GObject *gobject);
 
+xmlNode* ags_position_notation_cursor_popover_xml_compose(AgsConnectable *connectable);
+void ags_position_notation_cursor_popover_xml_parse(AgsConnectable *connectable,
+						    xmlNode *node);
+
 gboolean ags_position_notation_cursor_popover_is_connected(AgsConnectable *connectable);
 void ags_position_notation_cursor_popover_connect(AgsConnectable *connectable);
 void ags_position_notation_cursor_popover_disconnect(AgsConnectable *connectable);
@@ -149,8 +153,8 @@ ags_position_notation_cursor_popover_connectable_interface_init(AgsConnectableIn
   connectable->remove_from_registry = NULL;
 
   connectable->list_resource = NULL;
-  connectable->xml_compose = NULL;
-  connectable->xml_parse = NULL;
+  connectable->xml_compose = ags_position_notation_cursor_popover_xml_compose;
+  connectable->xml_parse = ags_position_notation_cursor_popover_xml_parse;
 
   connectable->is_connected = ags_position_notation_cursor_popover_is_connected;  
   connectable->connect = ags_position_notation_cursor_popover_connect;
@@ -268,6 +272,93 @@ ags_position_notation_cursor_popover_init(AgsPositionNotationCursorPopover *posi
 
   gtk_popover_set_default_widget((GtkPopover *) position_notation_cursor_popover,
 				 (GtkWidget *) position_notation_cursor_popover->activate_button);
+}
+
+xmlNode*
+ags_position_notation_cursor_popover_xml_compose(AgsConnectable *connectable)
+{
+  AgsPositionNotationCursorPopover *position_notation_cursor_popover;
+  
+  xmlNode *node;
+
+  gchar *str;
+  
+  position_notation_cursor_popover = AGS_POSITION_NOTATION_CURSOR_POPOVER(connectable);
+
+  node = xmlNewNode(NULL,
+		    BAD_CAST "ags-position-notation-cursor-popover");
+
+  /* set focus */
+  str = g_strdup_printf("%s",
+			((gtk_check_button_get_active(position_notation_cursor_popover->set_focus)) ? "true": "false"));
+  
+  xmlNewProp(node,
+	     BAD_CAST "set-focus",
+	     BAD_CAST str);
+  
+  g_free(str);
+
+  /* position x */
+  str = g_strdup_printf("%f",
+			gtk_spin_button_get_value(position_notation_cursor_popover->position_x));
+  
+  xmlNewProp(node,
+	     BAD_CAST "position-x",
+	     BAD_CAST str);
+  
+  g_free(str);
+
+  /* position y */
+  str = g_strdup_printf("%f",
+			gtk_spin_button_get_value(position_notation_cursor_popover->position_y));
+  
+  xmlNewProp(node,
+	     BAD_CAST "position-y",
+	     BAD_CAST str);
+  
+  g_free(str);
+  
+  return(node);
+}
+
+void
+ags_position_notation_cursor_popover_xml_parse(AgsConnectable *connectable,
+					       xmlNode *node)
+{  
+  AgsPositionNotationCursorPopover *position_notation_cursor_popover;
+
+  xmlChar *str;
+  
+  position_notation_cursor_popover = AGS_POSITION_NOTATION_CURSOR_POPOVER(connectable);
+
+  /* set-focus */
+  str = xmlGetProp(node,
+		   "set-focus");
+
+  gtk_check_button_set_active(position_notation_cursor_popover->set_focus,
+			      ((!g_ascii_strncasecmp(str, "false", 6) == FALSE) ? TRUE: FALSE));
+
+  xmlFree(str);
+
+  /* position x */
+  str = xmlGetProp(node,
+		   "position-x");
+
+  gtk_spin_button_set_value(position_notation_cursor_popover->position_x,
+			    g_ascii_strtod(str,
+					   NULL));
+  
+  xmlFree(str);
+
+  /* position y */
+  str = xmlGetProp(node,
+		   "position-y");
+
+  gtk_spin_button_set_value(position_notation_cursor_popover->position_y,
+			    g_ascii_strtod(str,
+					   NULL));
+  
+  xmlFree(str);
 }
 
 gboolean
