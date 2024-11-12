@@ -942,9 +942,9 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
     g_value_unset(&value);
 
     /* pitch base key */
-    ags_common_pitch_util_set_base_key(channel_data->pitch_util,
-				       channel_data->pitch_type,
-				       (gdouble) midi_note - 48.0);
+    //    ags_common_pitch_util_set_base_key(channel_data->pitch_util,
+    //				       channel_data->pitch_type,
+    //				       (gdouble) midi_note - 48.0);
     
     /* pitch tuning */    
     g_object_get(fx_synth_audio,
@@ -1897,6 +1897,10 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
     /* pitch */
     if(ags_common_pitch_util_get_tuning(channel_data->pitch_util,
 					channel_data->pitch_type) != 0.0){
+      ags_common_pitch_util_set_destination(channel_data->pitch_util,
+					    channel_data->pitch_type,
+					    source->stream_current->data);
+
       ags_common_pitch_util_set_source(channel_data->pitch_util,
 				       channel_data->pitch_type,
 				       source->stream_current->data);
@@ -1918,17 +1922,11 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
 
       g_rec_mutex_unlock(source_stream_mutex);
 
-      ags_audio_buffer_util_clear_buffer(&(fx_synth_audio_signal->audio_buffer_util),
-					 source->stream_current->data, 1,
-					 buffer_size, audio_buffer_util_format);
-
-      ags_audio_buffer_util_copy_buffer_to_buffer(&(fx_synth_audio_signal->audio_buffer_util),
-						  source->stream_current->data, 1, 0,
-						  ags_common_pitch_util_get_destination(channel_data->pitch_util,
-											channel_data->pitch_type), 1, 0,
-						  buffer_size, copy_mode);
-
       /* reset */
+      ags_common_pitch_util_set_destination(channel_data->pitch_util,
+					    channel_data->pitch_type,
+					    NULL);
+
       ags_common_pitch_util_set_source(channel_data->pitch_util,
 				       channel_data->pitch_type,
 				       NULL);
