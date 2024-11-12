@@ -1,3 +1,8 @@
+ags (7.2.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* minor improvements fixed missing presets of ags-fx-synth and ags-fx-fm-synth pitch
+
 ags (7.2.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

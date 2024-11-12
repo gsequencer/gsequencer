@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-11-09 02:08+0100\n"
+"POT-Creation-Date: 2024-11-12 07:11+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -480,33 +480,33 @@ msgid "Note:y"
 msgstr ""
 
 #: ags/app/editor/ags_position_wave_cursor_popover.c:205
-#: ags/app/editor/ags_position_notation_cursor_popover.c:205
+#: ags/app/editor/ags_position_notation_cursor_popover.c:209
 #: ags/app/editor/ags_position_sheet_cursor_dialog.c:158
 #: ags/app/editor/ags_position_automation_cursor_popover.c:205
 msgid "set focus"
 msgstr ""
 
 #: ags/app/editor/ags_position_wave_cursor_popover.c:218
-#: ags/app/editor/ags_position_notation_cursor_popover.c:218
+#: ags/app/editor/ags_position_notation_cursor_popover.c:222
 #: ags/app/editor/ags_position_sheet_cursor_dialog.c:171
 #: ags/app/editor/ags_position_automation_cursor_popover.c:218
 msgid "position x"
 msgstr ""
 
 #: ags/app/editor/ags_position_wave_cursor_popover.c:241
-#: ags/app/editor/ags_position_notation_cursor_popover.c:261
+#: ags/app/editor/ags_position_notation_cursor_popover.c:265
 #: ags/app/editor/ags_ramp_acceleration_popover.c:324
 #: ags/app/editor/ags_time_stretch_buffer_popover.c:280
-#: ags/app/editor/ags_crop_note_popover.c:272
+#: ags/app/editor/ags_crop_note_popover.c:276
 #: ags/app/editor/ags_position_automation_cursor_popover.c:241
 #: ags/app/editor/ags_select_acceleration_popover.c:272
 #: ags/app/editor/ags_select_buffer_popover.c:265
-#: ags/app/editor/ags_move_note_popover.c:267
+#: ags/app/editor/ags_move_note_popover.c:271
 #: ags/app/editor/ags_select_note_popover.c:302
 msgid "apply"
 msgstr ""
 
-#: ags/app/editor/ags_position_notation_cursor_popover.c:238
+#: ags/app/editor/ags_position_notation_cursor_popover.c:242
 #: ags/app/editor/ags_position_sheet_cursor_dialog.c:191
 msgid "position y"
 msgstr ""
@@ -576,24 +576,24 @@ msgstr ""
 msgid "new BPM"
 msgstr ""
 
-#: ags/app/editor/ags_crop_note_popover.c:206
-#: ags/app/editor/ags_move_note_popover.c:211
+#: ags/app/editor/ags_crop_note_popover.c:210
+#: ags/app/editor/ags_move_note_popover.c:215
 msgid "absolute"
 msgstr ""
 
-#: ags/app/editor/ags_crop_note_popover.c:211
+#: ags/app/editor/ags_crop_note_popover.c:215
 msgid "in-place"
 msgstr ""
 
-#: ags/app/editor/ags_crop_note_popover.c:216
+#: ags/app/editor/ags_crop_note_popover.c:220
 msgid "do resize"
 msgstr ""
 
-#: ags/app/editor/ags_crop_note_popover.c:229
+#: ags/app/editor/ags_crop_note_popover.c:233
 msgid "crop note"
 msgstr ""
 
-#: ags/app/editor/ags_crop_note_popover.c:249
+#: ags/app/editor/ags_crop_note_popover.c:253
 msgid "padding note"
 msgstr ""
 
@@ -992,15 +992,15 @@ msgstr ""
 msgid "notation x1"
 msgstr ""
 
-#: ags/app/editor/ags_move_note_popover.c:206
+#: ags/app/editor/ags_move_note_popover.c:210
 msgid "relative"
 msgstr ""
 
-#: ags/app/editor/ags_move_note_popover.c:224
+#: ags/app/editor/ags_move_note_popover.c:228
 msgid "move x"
 msgstr ""
 
-#: ags/app/editor/ags_move_note_popover.c:244
+#: ags/app/editor/ags_move_note_popover.c:248
 msgid "move y"
 msgstr ""
 
