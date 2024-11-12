@@ -1465,6 +1465,13 @@ ags_fx_fm_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_a
       ags_fluid_iir_filter_util_set_destination(channel_data->low_pass_filter,
 						source->stream_current->data);
 
+      ags_fluid_iir_filter_util_set_samplerate(channel_data->low_pass_filter,
+					       samplerate);
+      ags_fluid_iir_filter_util_set_buffer_length(channel_data->low_pass_filter,
+						  buffer_size);
+      ags_fluid_iir_filter_util_set_format(channel_data->low_pass_filter,
+					   format);
+
       g_rec_mutex_lock(source_stream_mutex);
       
       ags_fluid_iir_filter_util_process(channel_data->low_pass_filter);
@@ -1486,6 +1493,13 @@ ags_fx_fm_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_a
 
       ags_fluid_iir_filter_util_set_destination(channel_data->high_pass_filter,
 						source->stream_current->data);
+
+      ags_fluid_iir_filter_util_set_samplerate(channel_data->high_pass_filter,
+					       samplerate);
+      ags_fluid_iir_filter_util_set_buffer_length(channel_data->high_pass_filter,
+						  buffer_size);
+      ags_fluid_iir_filter_util_set_format(channel_data->high_pass_filter,
+					   format);
 
       g_rec_mutex_lock(source_stream_mutex);
 

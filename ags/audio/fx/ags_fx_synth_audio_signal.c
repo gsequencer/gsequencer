@@ -1942,6 +1942,13 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
       ags_fluid_iir_filter_util_set_destination(channel_data->low_pass_filter,
 						source->stream_current->data);
 
+      ags_fluid_iir_filter_util_set_samplerate(channel_data->low_pass_filter,
+					       samplerate);
+      ags_fluid_iir_filter_util_set_buffer_length(channel_data->low_pass_filter,
+						  buffer_size);
+      ags_fluid_iir_filter_util_set_format(channel_data->low_pass_filter,
+					   format);
+
       g_rec_mutex_lock(source_stream_mutex);
 
       ags_fluid_iir_filter_util_process(channel_data->low_pass_filter);
@@ -1964,6 +1971,13 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
       ags_fluid_iir_filter_util_set_destination(channel_data->high_pass_filter,
 						source->stream_current->data);
 
+      ags_fluid_iir_filter_util_set_samplerate(channel_data->high_pass_filter,
+					       samplerate);
+      ags_fluid_iir_filter_util_set_buffer_length(channel_data->high_pass_filter,
+						  buffer_size);
+      ags_fluid_iir_filter_util_set_format(channel_data->high_pass_filter,
+					   format);
+
       g_rec_mutex_lock(source_stream_mutex);
 
       ags_fluid_iir_filter_util_process(channel_data->high_pass_filter);
@@ -1971,10 +1985,10 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
       g_rec_mutex_unlock(source_stream_mutex);
 
       /* reset */
-      ags_fluid_iir_filter_util_set_source(channel_data->low_pass_filter,
+      ags_fluid_iir_filter_util_set_source(channel_data->high_pass_filter,
 					   NULL);
 
-      ags_fluid_iir_filter_util_set_destination(channel_data->low_pass_filter,
+      ags_fluid_iir_filter_util_set_destination(channel_data->high_pass_filter,
 						NULL);
     }
 
