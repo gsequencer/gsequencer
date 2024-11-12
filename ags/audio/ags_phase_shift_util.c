@@ -122,12 +122,6 @@ void
 ags_phase_shift_util_free(AgsPhaseShiftUtil *ptr)
 {
   g_return_if_fail(ptr != NULL);
-
-  g_free(ptr->destination);
-
-  if(ptr->destination != ptr->source){
-    g_free(ptr->source);
-  }
   
   g_free(ptr);
 }
@@ -155,7 +149,7 @@ ags_phase_shift_util_get_destination(AgsPhaseShiftUtil *phase_shift_util)
 /**
  * ags_phase_shift_util_set_destination:
  * @phase_shift_util: the #AgsPhaseShiftUtil-struct
- * @destination: the destination buffer
+ * @destination: (transfer none): the destination buffer
  *
  * Set @destination buffer of @phase_shift_util.
  *
@@ -235,7 +229,7 @@ ags_phase_shift_util_get_source(AgsPhaseShiftUtil *phase_shift_util)
 /**
  * ags_phase_shift_util_set_source:
  * @phase_shift_util: the #AgsPhaseShiftUtil-struct
- * @source: the source buffer
+ * @source: (transfer none): the source buffer
  *
  * Set @source buffer of @phase_shift_util.
  *

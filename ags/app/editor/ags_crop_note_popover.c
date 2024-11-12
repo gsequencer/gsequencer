@@ -39,6 +39,10 @@ void ags_crop_note_popover_applicable_interface_init(AgsApplicableInterface *app
 void ags_crop_note_popover_init(AgsCropNotePopover *crop_note_popover);
 void ags_crop_note_popover_finalize(GObject *gobject);
 
+xmlNode* ags_crop_note_popover_xml_compose(AgsConnectable *connectable);
+void ags_crop_note_popover_xml_parse(AgsConnectable *connectable,
+				     xmlNode *node);
+
 gboolean ags_crop_note_popover_is_connected(AgsConnectable *connectable);
 void ags_crop_note_popover_connect(AgsConnectable *connectable);
 void ags_crop_note_popover_disconnect(AgsConnectable *connectable);
@@ -150,8 +154,8 @@ ags_crop_note_popover_connectable_interface_init(AgsConnectableInterface *connec
   connectable->remove_from_registry = NULL;
 
   connectable->list_resource = NULL;
-  connectable->xml_compose = NULL;
-  connectable->xml_parse = NULL;
+  connectable->xml_compose = ags_crop_note_popover_xml_compose;
+  connectable->xml_parse = ags_crop_note_popover_xml_parse;
 
   connectable->is_connected = ags_crop_note_popover_is_connected;  
   connectable->connect = ags_crop_note_popover_connect;
@@ -279,6 +283,131 @@ ags_crop_note_popover_init(AgsCropNotePopover *crop_note_popover)
 
   gtk_popover_set_default_widget((GtkPopover *) crop_note_popover,
 				 (GtkWidget *) crop_note_popover->activate_button);
+}
+
+xmlNode*
+ags_crop_note_popover_xml_compose(AgsConnectable *connectable)
+{
+  AgsCropNotePopover *crop_note_popover;
+  
+  xmlNode *node;
+
+  gchar *str;
+  
+  crop_note_popover = AGS_CROP_NOTE_POPOVER(connectable);
+
+  node = xmlNewNode(NULL,
+		    BAD_CAST "ags-crop-note-popover");
+
+  /* absolute */
+  str = g_strdup_printf("%s",
+			((gtk_check_button_get_active(crop_note_popover->absolute)) ? "true": "false"));
+  
+  xmlNewProp(node,
+	     BAD_CAST "absolute",
+	     BAD_CAST str);
+  
+  g_free(str);
+
+  /* in place */
+  str = g_strdup_printf("%s",
+			((gtk_check_button_get_active(crop_note_popover->in_place)) ? "true": "false"));
+  
+  xmlNewProp(node,
+	     BAD_CAST "in-place",
+	     BAD_CAST str);
+  
+  g_free(str);
+
+  /* do resize */
+  str = g_strdup_printf("%s",
+			((gtk_check_button_get_active(crop_note_popover->do_resize)) ? "true": "false"));
+  
+  xmlNewProp(node,
+	     BAD_CAST "do-resize",
+	     BAD_CAST str);
+  
+  g_free(str);
+
+  /* crop note */
+  str = g_strdup_printf("%f",
+			gtk_spin_button_get_value(crop_note_popover->crop_note));
+  
+  xmlNewProp(node,
+	     BAD_CAST "crop-note",
+	     BAD_CAST str);
+  
+  g_free(str);
+
+  /* padding note */
+  str = g_strdup_printf("%f",
+			gtk_spin_button_get_value(crop_note_popover->padding_note));
+  
+  xmlNewProp(node,
+	     BAD_CAST "padding-note",
+	     BAD_CAST str);
+  
+  g_free(str);
+
+  return(node);
+}
+
+void
+ags_crop_note_popover_xml_parse(AgsConnectable *connectable,
+				xmlNode *node)
+{
+  AgsCropNotePopover *crop_note_popover;
+  
+  gchar *str;
+  
+  crop_note_popover = AGS_CROP_NOTE_POPOVER(connectable);
+
+  /* absolute */
+  str = xmlGetProp(node,
+		   "absolute");
+
+  gtk_check_button_set_active(crop_note_popover->absolute,
+			      ((!g_ascii_strncasecmp(str, "false", 6) == FALSE) ? TRUE: FALSE));
+
+  xmlFree(str);
+
+  /* in place */
+  str = xmlGetProp(node,
+		   "in-place");
+
+  gtk_check_button_set_active(crop_note_popover->in_place,
+			      ((!g_ascii_strncasecmp(str, "false", 6) == FALSE) ? TRUE: FALSE));
+
+  xmlFree(str);
+
+  /* do resize */
+  str = xmlGetProp(node,
+		   "do-resize");
+
+  gtk_check_button_set_active(crop_note_popover->do_resize,
+			      ((!g_ascii_strncasecmp(str, "false", 6) == FALSE) ? TRUE: FALSE));
+
+  xmlFree(str);
+
+  /* crop note */
+  str = xmlGetProp(node,
+		   "crop-note");
+
+  gtk_spin_button_set_value(crop_note_popover->crop_note,
+			    g_ascii_strtod(str,
+					   NULL));
+  
+  xmlFree(str);
+
+  /* padding note */
+  str = xmlGetProp(node,
+		   "padding-note");
+
+  gtk_spin_button_set_value(crop_note_popover->padding_note,
+			    g_ascii_strtod(str,
+					   NULL));
+  
+  xmlFree(str);
 }
 
 gboolean

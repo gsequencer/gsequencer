@@ -190,12 +190,6 @@ void
 ags_fluid_interpolate_linear_util_free(AgsFluidInterpolateLinearUtil *ptr)
 {
   g_return_if_fail(ptr != NULL);
-
-  g_free(ptr->destination);
-
-  if(ptr->destination != ptr->source){
-    g_free(ptr->source);
-  }
   
   g_free(ptr);
 }
@@ -223,7 +217,7 @@ ags_fluid_interpolate_linear_util_get_destination(AgsFluidInterpolateLinearUtil 
 /**
  * ags_fluid_interpolate_linear_util_set_destination:
  * @fluid_interpolate_linear_util: the #AgsFluidInterpolateLinearUtil-struct
- * @destination: the destination buffer
+ * @destination: (transfer none): the destination buffer
  *
  * Set @destination buffer of @fluid_interpolate_linear_util.
  *
@@ -303,7 +297,7 @@ ags_fluid_interpolate_linear_util_get_source(AgsFluidInterpolateLinearUtil *flui
 /**
  * ags_fluid_interpolate_linear_util_set_source:
  * @fluid_interpolate_linear_util: the #AgsFluidInterpolateLinearUtil-struct
- * @source: the source buffer
+ * @source: (transfer none): the source buffer
  *
  * Set @source buffer of @fluid_interpolate_linear_util.
  *

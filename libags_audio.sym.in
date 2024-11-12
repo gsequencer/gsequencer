@@ -334,6 +334,8 @@ ags_note_from_raw_midi_extended
 ags_note_from_seq_event
 ags_note_from_seq_event_extended
 ags_note_duplicate
+ags_note_from_string
+ags_note_to_string
 ags_note_new
 ags_note_new_with_offset
 ags_audio_application_context_get_type

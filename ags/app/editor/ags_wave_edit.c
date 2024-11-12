@@ -1800,8 +1800,8 @@ ags_wave_edit_draw_segment(AgsWaveEdit *wave_edit, cairo_t *cr)
   
   cairo_set_source_rgba(cr,
 			fg_color.red,
-			fg_color.blue,
 			fg_color.green,
+			fg_color.blue,
 			fg_color.alpha);
 
   if(i < width &&
@@ -1989,8 +1989,8 @@ ags_wave_edit_draw_position(AgsWaveEdit *wave_edit, cairo_t *cr)
   /* draw fader */
   cairo_set_source_rgba(cr,
 			fg_color.red,
-			fg_color.blue,
 			fg_color.green,
+			fg_color.blue,
 			fg_color.alpha);
 
   cairo_rectangle(cr,
@@ -2105,8 +2105,8 @@ ags_wave_edit_draw_cursor(AgsWaveEdit *wave_edit, cairo_t *cr)
   /* draw cursor */
   cairo_set_source_rgba(cr,
 			fg_color.red,
-			fg_color.blue,
 			fg_color.green,
+			fg_color.blue,
 			fg_color.alpha);
 
   cairo_rectangle(cr,
@@ -2253,8 +2253,8 @@ ags_wave_edit_draw_selection(AgsWaveEdit *wave_edit, cairo_t *cr)
   /* draw selection */
   cairo_set_source_rgba(cr,
 			fg_color.red,
-			fg_color.blue,
 			fg_color.green,
+			fg_color.blue,
 			1.0 / 3.0);
 
   cairo_rectangle(cr,
@@ -2289,6 +2289,7 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
 
   GdkRGBA fg_color;
   GdkRGBA bg_color;
+  GdkRGBA selected_bg_color;
   GdkRGBA shadow_color;
 
   GObject *soundcard;
@@ -2314,6 +2315,7 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
   gboolean dark_theme;
   gboolean fg_success;
   gboolean bg_success;
+  gboolean selected_bg_success;
   gboolean shadow_success;
 
   GValue value = {0};
@@ -2364,6 +2366,10 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
   bg_success = gtk_style_context_lookup_color(style_context,
 					      "theme_bg_color",
 					      &bg_color);
+
+  //  selected_bg_success = gtk_style_context_lookup_color(style_context,
+  //						       "theme_selected_bg_color",
+  //						       &selected_bg_color);
     
   shadow_success = gtk_style_context_lookup_color(style_context,
 						  "theme_shadow_color",
@@ -2380,6 +2386,9 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
 		     "#eeeeec");
     }
   }
+  
+  gdk_rgba_parse(&selected_bg_color,
+		 "#3584e4");
   
   gtk_widget_get_allocation(GTK_WIDGET(wave_edit->drawing_area),
 			    &allocation);
@@ -2441,8 +2450,8 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
   /* draw buffer */
   cairo_set_source_rgba(cr,
 			fg_color.red,
-			fg_color.blue,
 			fg_color.green,
+			fg_color.blue,
 			opacity * fg_color.alpha);
   
   cairo_set_line_width(cr, 1.0);
@@ -2512,10 +2521,10 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
   if(ags_buffer_test_flags(buffer, AGS_BUFFER_IS_SELECTED)){
     /* draw selected buffer */
     cairo_set_source_rgba(cr,
-			  fg_color.red,
-			  fg_color.blue,
-			  fg_color.green,
-			  opacity / 3.0);
+			  selected_bg_color.red,
+			  selected_bg_color.green,
+			  selected_bg_color.blue,
+			  opacity * selected_bg_color.alpha);
 
     cairo_set_line_width(cr, 1.0 + (double) wave_edit->selected_buffer_border);
 

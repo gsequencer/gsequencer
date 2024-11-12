@@ -49,6 +49,8 @@
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
 
+#include <ags/config.h>
+
 #include <ags/i18n.h>
 
 void ags_composite_toolbar_class_init(AgsCompositeToolbarClass *composite_toolbar);
@@ -913,8 +915,10 @@ ags_composite_toolbar_set_tool(AgsCompositeToolbar *composite_toolbar, guint too
     g_object_set(composite_toolbar->position,
 		 "label", i18n("Position"),
 		 "icon-name", "go-jump",
+#if defined(AGS_WITH_TOOLTIPS)
 		 "has-tooltip", TRUE,
 		 "tooltip-text", i18n("position tool"),
+#endif
 		 NULL);
     gtk_box_insert_child_after((GtkBox *) composite_toolbar,
 			       (GtkWidget *) composite_toolbar->position,
@@ -932,8 +936,10 @@ ags_composite_toolbar_set_tool(AgsCompositeToolbar *composite_toolbar, guint too
     g_object_set(composite_toolbar->edit,
 		 "label", i18n("Edit"),
 		 "icon-name", "text-editor",
+#if defined(AGS_WITH_TOOLTIPS)
 		 "has-tooltip", TRUE,
 		 "tooltip-text", i18n("edit tool"),
+#endif
 		 NULL);
     gtk_box_insert_child_after((GtkBox *) composite_toolbar,
 			       (GtkWidget *) composite_toolbar->edit,
@@ -951,8 +957,10 @@ ags_composite_toolbar_set_tool(AgsCompositeToolbar *composite_toolbar, guint too
     g_object_set(composite_toolbar->clear,
 		 "label", i18n("Clear"),
 		 "icon-name", "edit-clear",
+#if defined(AGS_WITH_TOOLTIPS)
 		 "has-tooltip", TRUE,
 		 "tooltip-text", i18n("clear tool"),
+#endif
 		 NULL);
     gtk_box_insert_child_after((GtkBox *) composite_toolbar,
 			       (GtkWidget *) composite_toolbar->clear,
@@ -970,8 +978,10 @@ ags_composite_toolbar_set_tool(AgsCompositeToolbar *composite_toolbar, guint too
     g_object_set(composite_toolbar->select,
 		 "label", i18n("Select"),
 		 "icon-name", "edit-select",
+#if defined(AGS_WITH_TOOLTIPS)
 		 "has-tooltip", TRUE,
 		 "tooltip-text", i18n("selection tool"),
+#endif
 		 NULL);
     gtk_box_insert_child_after((GtkBox *) composite_toolbar,
 			       (GtkWidget *) composite_toolbar->select,
@@ -1108,8 +1118,10 @@ ags_composite_toolbar_set_action(AgsCompositeToolbar *composite_toolbar, guint a
     g_object_set(composite_toolbar->invert,
 		 "label", i18n("Invert"),
 		 "icon-name", "object-flip-vertical",
+#if defined(AGS_WITH_TOOLTIPS)
 		 "has-tooltip", TRUE,
 		 "tooltip-text", i18n("invert action"),
+#endif
 		 NULL);
     gtk_box_insert_child_after((GtkBox *) composite_toolbar,
 			       (GtkWidget *) composite_toolbar->invert,
@@ -1128,8 +1140,10 @@ ags_composite_toolbar_set_action(AgsCompositeToolbar *composite_toolbar, guint a
     g_object_set(composite_toolbar->copy,
 		 "label", i18n("Copy"),
 		 "icon-name", "edit-copy",
+#if defined(AGS_WITH_TOOLTIPS)
 		 "has-tooltip", TRUE,
 		 "tooltip-text", i18n("copy action"),
+#endif
 		 NULL);
     gtk_box_insert_child_after((GtkBox *) composite_toolbar,
 			       (GtkWidget *) composite_toolbar->copy,
@@ -1148,8 +1162,10 @@ ags_composite_toolbar_set_action(AgsCompositeToolbar *composite_toolbar, guint a
     g_object_set(composite_toolbar->cut,
 		 "label", i18n("Cut"),
 		 "icon-name", "edit-cut",
+#if defined(AGS_WITH_TOOLTIPS)
 		 "has-tooltip", TRUE,
 		 "tooltip-text", i18n("cut action"),
+#endif
 		 NULL);
     gtk_box_insert_child_after((GtkBox *) composite_toolbar,
 			       (GtkWidget *) composite_toolbar->cut,
@@ -1168,8 +1184,10 @@ ags_composite_toolbar_set_action(AgsCompositeToolbar *composite_toolbar, guint a
     g_object_set(composite_toolbar->paste,
 		 "label", i18n("Paste"),
 		 "icon-name", "edit-paste",
+#if defined(AGS_WITH_TOOLTIPS)
 		 "has-tooltip", TRUE,
 		 "tooltip-text", i18n("paste menu action"),
+#endif
 		 NULL);
     gtk_box_insert_child_after((GtkBox *) composite_toolbar,
 			       (GtkWidget *) composite_toolbar->paste,
@@ -1336,8 +1354,10 @@ ags_composite_toolbar_set_option(AgsCompositeToolbar *composite_toolbar, guint o
 								  NULL);
     g_object_set(composite_toolbar->menu_tool,
 		 "label", i18n("tool"),
+#if defined(AGS_WITH_TOOLTIPS)
 		 "has-tooltip", TRUE,
 		 "tooltip-text", i18n("tool dialog option"),
+#endif
 		 NULL);
     gtk_box_append(composite_toolbar->menu_tool_box,
 		   (GtkWidget *) composite_toolbar->menu_tool);

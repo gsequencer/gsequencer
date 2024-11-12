@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -314,8 +314,8 @@ ags_fx_pattern_audio_init(AgsFxPatternAudio *fx_pattern_audio)
   /* bpm */
   fx_pattern_audio->bpm = g_object_new(AGS_TYPE_PORT,
 				       "plugin-name", ags_fx_pattern_audio_plugin_name,
-				       "specifier", ags_fx_pattern_audio_specifier[0],
-				       "control-port", ags_fx_pattern_audio_control_port[0],
+				       "specifier", "./bpm[0]",
+				       "control-port", "1/9",
 				       "port-value-is-pointer", FALSE,
 				       "port-value-type", G_TYPE_DOUBLE,
 				       "port-value-size", sizeof(gdouble),
@@ -330,8 +330,8 @@ ags_fx_pattern_audio_init(AgsFxPatternAudio *fx_pattern_audio)
   /* tact */
   fx_pattern_audio->tact = g_object_new(AGS_TYPE_PORT,
 					"plugin-name", ags_fx_pattern_audio_plugin_name,
-					"specifier", ags_fx_pattern_audio_specifier[1],
-					"control-port", ags_fx_pattern_audio_control_port[1],
+					"specifier", "./tact[0]",
+					"control-port", "2/9",
 					"port-value-is-pointer", FALSE,
 					"port-value-type", G_TYPE_DOUBLE,
 					"port-value-size", sizeof(gdouble),
@@ -346,8 +346,8 @@ ags_fx_pattern_audio_init(AgsFxPatternAudio *fx_pattern_audio)
   /* delay */
   fx_pattern_audio->delay = g_object_new(AGS_TYPE_PORT,
 					 "plugin-name", ags_fx_pattern_audio_plugin_name,
-					 "specifier", ags_fx_pattern_audio_specifier[2],
-					 "control-port", ags_fx_pattern_audio_control_port[2],
+					 "specifier", "./delay[0]",
+					 "control-port", "3/9",
 					 "port-value-is-pointer", FALSE,
 					 "port-value-type", G_TYPE_DOUBLE,
 					 "port-value-size", sizeof(gdouble),
@@ -362,8 +362,8 @@ ags_fx_pattern_audio_init(AgsFxPatternAudio *fx_pattern_audio)
   /* duration */
   fx_pattern_audio->duration = g_object_new(AGS_TYPE_PORT,
 					    "plugin-name", ags_fx_pattern_audio_plugin_name,
-					    "specifier", ags_fx_pattern_audio_specifier[3],
-					    "control-port", ags_fx_pattern_audio_control_port[3],
+					    "specifier", "./duration[0]",
+					    "control-port", "4/9",
 					    "port-value-is-pointer", FALSE,
 					    "port-value-type", G_TYPE_DOUBLE,
 					    "port-value-size", sizeof(gdouble),
@@ -378,8 +378,8 @@ ags_fx_pattern_audio_init(AgsFxPatternAudio *fx_pattern_audio)
   /* loop */
   fx_pattern_audio->loop = g_object_new(AGS_TYPE_PORT,
 					"plugin-name", ags_fx_pattern_audio_plugin_name,
-					"specifier", ags_fx_pattern_audio_specifier[4],
-					"control-port", ags_fx_pattern_audio_control_port[4],
+					"specifier", "./loop[0]",
+					"control-port", "5/9",
 					"port-value-is-pointer", FALSE,
 					"port-value-type", G_TYPE_BOOLEAN,
 					"port-value-size", sizeof(gboolean),
@@ -394,8 +394,8 @@ ags_fx_pattern_audio_init(AgsFxPatternAudio *fx_pattern_audio)
   /* loop-start */
   fx_pattern_audio->loop_start = g_object_new(AGS_TYPE_PORT,
 					      "plugin-name", ags_fx_pattern_audio_plugin_name,
-					      "specifier", ags_fx_pattern_audio_specifier[5],
-					      "control-port", ags_fx_pattern_audio_control_port[5],
+					      "specifier", "./loop-start[0]",
+					      "control-port", "6/9",
 					      "port-value-is-pointer", FALSE,
 					      "port-value-type", G_TYPE_UINT64,
 					      "port-value-size", sizeof(guint64),
@@ -410,8 +410,8 @@ ags_fx_pattern_audio_init(AgsFxPatternAudio *fx_pattern_audio)
   /* loop-end */
   fx_pattern_audio->loop_end = g_object_new(AGS_TYPE_PORT,
 					    "plugin-name", ags_fx_pattern_audio_plugin_name,
-					    "specifier", ags_fx_pattern_audio_specifier[6],
-					    "control-port", ags_fx_pattern_audio_control_port[6],
+					    "specifier", "./loop-end[0]",
+					    "control-port", "7/9",
 					    "port-value-is-pointer", FALSE,
 					    "port-value-type", G_TYPE_UINT64,
 					    "port-value-size", sizeof(guint64),
@@ -426,8 +426,8 @@ ags_fx_pattern_audio_init(AgsFxPatternAudio *fx_pattern_audio)
   /* bank-index 0 */
   fx_pattern_audio->bank_index_0 = g_object_new(AGS_TYPE_PORT,
 						"plugin-name", ags_fx_pattern_audio_plugin_name,
-						"specifier", ags_fx_pattern_audio_specifier[7],
-						"control-port", ags_fx_pattern_audio_control_port[7],
+						"specifier", "./bank-index-0[0]",
+						"control-port", "8/9",
 						"port-value-is-pointer", FALSE,
 						"port-value-type", G_TYPE_FLOAT,
 						"port-value-size", sizeof(gfloat),
@@ -442,8 +442,8 @@ ags_fx_pattern_audio_init(AgsFxPatternAudio *fx_pattern_audio)
   /* bank-index 1 */
   fx_pattern_audio->bank_index_1 = g_object_new(AGS_TYPE_PORT,
 						"plugin-name", ags_fx_pattern_audio_plugin_name,
-						"specifier", ags_fx_pattern_audio_specifier[8],
-						"control-port", ags_fx_pattern_audio_control_port[8],
+						"specifier", "./bank-index-1[0]",
+						"control-port", "9/9",
 						"port-value-is-pointer", FALSE,
 						"port-value-type", G_TYPE_FLOAT,
 						"port-value-size", sizeof(gfloat),

@@ -2499,6 +2499,278 @@ ags_note_duplicate(AgsNote *note)
 }
 
 /**
+ * ags_note_from_string:
+ * @str: the string
+ *
+ * Deserialize note.
+ *
+ * Since: 7.2.0
+ */
+AgsNote*
+ags_note_from_string(gchar *str)
+{
+  AgsNote *note;
+
+  gchar **strv_iter;
+  GType *gtype_iter;
+  
+  const gchar* arg_strv[] = {
+    "flags",
+    "key-format",
+    "is-minor",
+    "sharp-flats",
+    "x0",
+    "x1",
+    "y",
+    "rt-offset",
+    "rt-attack",
+    "stream-delay",
+    "stream-attack",
+    "stream-frame-count",
+    "attack",
+    "decay",
+    "sustain",
+    "release",
+    "ratio",
+    "note-name",
+    "frequency",
+    "feed-x-256th",
+    "x0-256th",
+    "x1-256th",
+    NULL,
+  };
+
+  const GType arg_gtype[] = {
+    G_TYPE_UINT,
+    G_TYPE_UINT,
+    G_TYPE_BOOLEAN,
+    G_TYPE_UINT,
+    G_TYPE_UINT,
+    G_TYPE_UINT,
+    G_TYPE_UINT,
+    G_TYPE_UINT64,
+    G_TYPE_UINT,
+    G_TYPE_DOUBLE,
+    G_TYPE_DOUBLE,
+    G_TYPE_UINT64,
+    AGS_TYPE_COMPLEX,
+    AGS_TYPE_COMPLEX,
+    AGS_TYPE_COMPLEX,
+    AGS_TYPE_COMPLEX,
+    AGS_TYPE_COMPLEX,
+    G_TYPE_STRING,
+    G_TYPE_DOUBLE,
+    G_TYPE_BOOLEAN,
+    G_TYPE_UINT,
+    G_TYPE_UINT,
+  };
+  
+  note = ags_note_new();
+
+  for(strv_iter = (gchar **) arg_strv, gtype_iter = arg_gtype; strv_iter[0] != NULL; strv_iter++, gtype_iter++){
+    gchar *param;
+    gchar *str_iter;
+    
+    GValue value = G_VALUE_INIT;
+
+    param = g_strdup_printf("%s=\"",
+			    strv_iter[0]);
+    
+    if(gtype_iter[0] == G_TYPE_BOOLEAN){
+      g_value_init(&value,
+		   G_TYPE_BOOLEAN);
+
+      str_iter = strstr(str, param);
+      
+      if(str_iter != NULL){
+	if(!g_ascii_strncasecmp(str_iter + strlen(param), "false", 5)){
+	  g_value_set_boolean(&value,
+			      FALSE);
+	}else{
+	  g_value_set_boolean(&value,
+			      TRUE);
+	}
+      }
+    }else if(gtype_iter[0] == G_TYPE_UINT){
+      g_value_init(&value,
+		   G_TYPE_UINT);
+
+      str_iter = strstr(str, param);
+      
+      if(str_iter != NULL){
+	g_value_set_uint(&value,
+			 (guint) g_ascii_strtoull(str_iter + strlen(param),
+						  NULL,
+						  10));
+      }
+    }else if(gtype_iter[0] == G_TYPE_UINT64){
+      g_value_init(&value,
+		   G_TYPE_UINT64);
+
+      str_iter = strstr(str, param);
+      
+      if(str_iter != NULL){
+	g_value_set_uint64(&value,
+			   g_ascii_strtoull(str_iter + strlen(param),
+					    NULL,
+					    10));
+      }
+    }else if(gtype_iter[0] == G_TYPE_DOUBLE){
+      g_value_init(&value,
+		   G_TYPE_DOUBLE);
+
+      str_iter = strstr(str, param);
+      
+      if(str_iter != NULL){
+	g_value_set_double(&value,
+			   g_ascii_strtod(str_iter + strlen(param),
+					  NULL));
+      }
+    }else if(gtype_iter[0] == AGS_TYPE_COMPLEX){
+      AgsComplex val;
+      
+      g_value_init(&value,
+		   AGS_TYPE_COMPLEX);
+
+      str_iter = strstr(str, param);
+      
+      if(str_iter != NULL){
+	sscanf(str_iter + strlen(param), "%f %f", &(val.real), &(val.imag));
+	
+	g_value_set_boxed(&value,
+			  &val);
+      }
+    }
+
+    g_object_set_property((GObject *) note,
+			  strv_iter[0],
+			  &value);
+
+    g_free(param);
+  }
+  
+  return(note);
+}
+
+/**
+ * ags_note_to_string:
+ * @note: the #AgsNote
+ *
+ * Serialize note.
+ * 
+ * Since: 7.2.0
+ */
+gchar*
+ags_note_to_string(AgsNote *note)
+{
+  GString *builder;
+  
+  gchar *str;
+
+  builder = g_string_new("<ags-note");
+
+  g_string_printf(builder,
+		  " flags=\"%d\"",
+		  note->flags);
+
+  g_string_printf(builder,
+		  " key-format=\"%d\"",
+		  note->key_format);
+
+  g_string_printf(builder,
+		  " is-minor=\"%s\"",
+		  (note->is_minor ? "true": "false"));
+
+  g_string_printf(builder,
+		  " sharp-flats=\"%d\"",
+		  note->sharp_flats);
+
+  g_string_printf(builder,
+		  " x0=\"%d\"",
+		  note->x[0]);
+
+  g_string_printf(builder,
+		  " x1=\"%d\"",
+		  note->x[1]);
+
+  g_string_printf(builder,
+		  " y=\"%d\"",
+		  note->y);
+
+  g_string_printf(builder,
+		  " rt-offset=\"%d\"",
+		  note->rt_offset);
+
+  g_string_printf(builder,
+		  " rt-attack=\"%d\"",
+		  note->rt_attack);
+  
+  g_string_printf(builder,
+		  " stream-delay=\"%f\"",
+		  note->stream_delay);
+  
+  g_string_printf(builder,
+		  " stream-attack=\"%f\"",
+		  note->stream_attack);
+  
+  g_string_printf(builder,
+		  " stream-frame-count=\"%d\"",
+		  note->stream_frame_count);
+  
+  g_string_printf(builder,
+		  " attack=\"%f %f\"",
+		  note->attack.real,
+		  note->attack.imag);
+  
+  g_string_printf(builder,
+		  " decay=\"%f %f\"",
+		  note->decay.real,
+		  note->decay.imag);
+  
+  g_string_printf(builder,
+		  " sustain=\"%f %f\"",
+		  note->sustain.real,
+		  note->sustain.imag);
+  
+  g_string_printf(builder,
+		  " release=\"%f %f\"",
+		  note->release.real,
+		  note->release.imag);
+  
+  g_string_printf(builder,
+		  " ratio=\"%f %f\"",
+		  note->ratio.real,
+		  note->ratio.imag);
+  
+  g_string_printf(builder,
+		  " note-name=\"%s\"",
+		  note->note_name);
+  
+  g_string_printf(builder,
+		  " frequency=\"%f\"",
+		  note->frequency);
+
+  g_string_printf(builder,
+		  " feed-x-256th=\"%s\"",
+		  (note->feed_x_256th ? "true": "false"));
+  
+  g_string_printf(builder,
+		  " x0-256th=\"%d\"",
+		  note->x_256th[0]);
+
+  g_string_printf(builder,
+		  " x1-256th=\"%d\"",
+		  note->x_256th[1]);
+
+  g_string_append(builder,
+		  "/>");
+  
+  str = g_strdup(builder->str);
+  
+  return(str);
+}
+
+/**
  * ags_note_new:
  *
  * Creates a new instance of #AgsNote

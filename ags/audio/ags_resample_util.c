@@ -215,13 +215,7 @@ ags_resample_util_free(AgsResampleUtil *ptr)
 
   ags_stream_free(ptr->data_in);
   ags_stream_free(ptr->data_out);
-  
-  ags_stream_free(ptr->destination);
-
-  if(ptr->destination != ptr->source){
-    ags_stream_free(ptr->source);
-  }
-  
+    
   ags_stream_free(ptr->buffer);
   
   g_free(ptr);
@@ -250,7 +244,7 @@ ags_resample_util_get_destination(AgsResampleUtil *resample_util)
 /**
  * ags_resample_util_set_destination:
  * @resample_util: the #AgsResampleUtil-struct
- * @destination: the destination buffer
+ * @destination: (transfer none): the destination buffer
  *
  * Set @destination buffer of @resample_util.
  *
@@ -330,7 +324,7 @@ ags_resample_util_get_source(AgsResampleUtil *resample_util)
 /**
  * ags_resample_util_set_source:
  * @resample_util: the #AgsResampleUtil-struct
- * @source: the source buffer
+ * @source: (transfer none): the source buffer
  *
  * Set @source buffer of @resample_util.
  *

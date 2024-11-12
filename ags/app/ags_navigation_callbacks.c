@@ -53,7 +53,7 @@ ags_navigation_update_ui_callback(GObject *ui_provider,
 		 NULL);
     g_free(str);
   
-    gtk_widget_queue_draw((GtkWidget *) navigation->duration_time);
+    //    gtk_widget_queue_draw((GtkWidget *) navigation->duration_time);
   }
 }
 

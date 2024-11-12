@@ -183,12 +183,6 @@ ags_pitch_2x_alias_util_free(AgsPitch2xAliasUtil *ptr)
     return;
   }
   
-  g_free(ptr->destination);
-
-  if(ptr->destination != ptr->source){
-    g_free(ptr->source);
-  }
-
   ags_stream_free(ptr->alias_source_buffer);
   ags_stream_free(ptr->alias_new_source_buffer);
   
@@ -218,7 +212,7 @@ ags_pitch_2x_alias_util_get_destination(AgsPitch2xAliasUtil *pitch_2x_alias_util
 /**
  * ags_pitch_2x_alias_util_set_destination:
  * @pitch_2x_alias_util: the #AgsPitch2xAliasUtil-struct
- * @destination: the destination buffer
+ * @destination: (transfer none): the destination buffer
  *
  * Set @destination buffer of @pitch_2x_alias_util.
  *
@@ -298,7 +292,7 @@ ags_pitch_2x_alias_util_get_source(AgsPitch2xAliasUtil *pitch_2x_alias_util)
 /**
  * ags_pitch_2x_alias_util_set_source:
  * @pitch_2x_alias_util: the #AgsPitch2xAliasUtil-struct
- * @source: the source buffer
+ * @source: (transfer none): the source buffer
  *
  * Set @source buffer of @pitch_2x_alias_util.
  *

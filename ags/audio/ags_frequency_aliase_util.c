@@ -120,12 +120,6 @@ void
 ags_frequency_aliase_util_free(AgsFrequencyAliaseUtil *ptr)
 {
   g_return_if_fail(ptr != NULL);
-
-  g_free(ptr->destination);
-
-  if(ptr->destination != ptr->source){
-    g_free(ptr->source);
-  }
   
   g_free(ptr);
 }
@@ -153,7 +147,7 @@ ags_frequency_aliase_util_get_destination(AgsFrequencyAliaseUtil *frequency_alia
 /**
  * ags_frequency_aliase_util_set_destination:
  * @frequency_aliase_util: the #AgsFrequencyAliaseUtil-struct
- * @destination: the destination buffer
+ * @destination: (transfer none): the destination buffer
  *
  * Set @destination buffer of @frequency_aliase_util.
  *
@@ -233,7 +227,7 @@ ags_frequency_aliase_util_get_source(AgsFrequencyAliaseUtil *frequency_aliase_ut
 /**
  * ags_frequency_aliase_util_set_source:
  * @frequency_aliase_util: the #AgsFrequencyAliaseUtil-struct
- * @source: the source buffer
+ * @source: (transfer none): the source buffer
  *
  * Set @source buffer of @frequency_aliase_util.
  *

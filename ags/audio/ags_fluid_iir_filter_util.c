@@ -188,12 +188,6 @@ void
 ags_fluid_iir_filter_util_free(AgsFluidIIRFilterUtil *ptr)
 {
   g_return_if_fail(ptr != NULL);
-
-  g_free(ptr->destination);
-
-  if(ptr->destination != ptr->source){
-    g_free(ptr->source);
-  }
   
   g_free(ptr);
 }
@@ -221,7 +215,7 @@ ags_fluid_iir_filter_util_get_destination(AgsFluidIIRFilterUtil *fluid_iir_filte
 /**
  * ags_fluid_iir_filter_util_set_destination:
  * @fluid_iir_filter_util: the #AgsFluidIIRFilterUtil-struct
- * @destination: the destination buffer
+ * @destination: (transfer none): the destination buffer
  *
  * Set @destination buffer of @fluid_iir_filter_util.
  *
@@ -301,7 +295,7 @@ ags_fluid_iir_filter_util_get_source(AgsFluidIIRFilterUtil *fluid_iir_filter_uti
 /**
  * ags_fluid_iir_filter_util_set_source:
  * @fluid_iir_filter_util: the #AgsFluidIIRFilterUtil-struct
- * @source: the source buffer
+ * @source: (transfer none): the source buffer
  *
  * Set @source buffer of @fluid_iir_filter_util.
  *

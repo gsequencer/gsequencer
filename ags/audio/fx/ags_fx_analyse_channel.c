@@ -194,8 +194,8 @@ ags_fx_analyse_channel_init(AgsFxAnalyseChannel *fx_analyse_channel)
   /* frequency */
   fx_analyse_channel->frequency = g_object_new(AGS_TYPE_PORT,
 					       "plugin-name", ags_fx_analyse_channel_plugin_name,
-					       "specifier", ags_fx_analyse_channel_specifier[0],
-					       "control-port", ags_fx_analyse_channel_control_port[0],
+					       "specifier", "./frequency[0]",
+					       "control-port", "1/2",
 					       "port-value-is-pointer", TRUE,
 					       "port-value-type", G_TYPE_DOUBLE,
 					       "port-value-size", sizeof(gdouble),
@@ -218,8 +218,8 @@ ags_fx_analyse_channel_init(AgsFxAnalyseChannel *fx_analyse_channel)
   /* magnitude */
   fx_analyse_channel->magnitude = g_object_new(AGS_TYPE_PORT,
 					       "plugin-name", ags_fx_analyse_channel_plugin_name,
-					       "specifier", ags_fx_analyse_channel_specifier[1],
-					       "control-port", ags_fx_analyse_channel_control_port[1],
+					       "specifier", "./magnitude[0]",
+					       "control-port", "2/2",
 					       "port-value-is-pointer", TRUE,
 					       "port-value-type", G_TYPE_DOUBLE,
 					       "port-value-size", sizeof(gdouble),

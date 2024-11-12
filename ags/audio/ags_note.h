@@ -221,6 +221,9 @@ GList* ags_note_from_seq_event_extended(snd_seq_event_t *event,
 
 AgsNote* ags_note_duplicate(AgsNote *note);
 
+AgsNote* ags_note_from_string(gchar *str);
+gchar* ags_note_to_string(AgsNote *note);
+
 AgsNote* ags_note_new();
 AgsNote* ags_note_new_with_offset(guint x0, guint x1,
 				  guint y,

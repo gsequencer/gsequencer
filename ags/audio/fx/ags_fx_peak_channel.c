@@ -167,8 +167,8 @@ ags_fx_peak_channel_init(AgsFxPeakChannel *fx_peak_channel)
   /* peak */
   fx_peak_channel->peak = g_object_new(AGS_TYPE_PORT,
 				       "plugin-name", ags_fx_peak_channel_plugin_name,
-				       "specifier", ags_fx_peak_channel_specifier[0],
-				       "control-port", ags_fx_peak_channel_control_port[0],
+				       "specifier", "./peak[0]",
+				       "control-port", "1/1",
 				       "port-value-is-pointer", FALSE,
 				       "port-value-type", G_TYPE_FLOAT,
 				       "port-value-size", sizeof(gfloat),

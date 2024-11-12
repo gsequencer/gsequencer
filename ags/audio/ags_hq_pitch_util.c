@@ -146,12 +146,6 @@ ags_hq_pitch_util_free(AgsHQPitchUtil *ptr)
 {
   g_return_if_fail(ptr != NULL);
   
-  g_free(ptr->destination);
-
-  if(ptr->destination != ptr->source){
-    g_free(ptr->source);
-  }
-
   ags_stream_free(ptr->low_mix_buffer);
   ags_stream_free(ptr->new_mix_buffer);
   
@@ -181,7 +175,7 @@ ags_hq_pitch_util_get_destination(AgsHQPitchUtil *hq_pitch_util)
 /**
  * ags_hq_pitch_util_set_destination:
  * @hq_pitch_util: the #AgsHQPitchUtil-struct
- * @destination: the destination buffer
+ * @destination: (transfer none): the destination buffer
  *
  * Set @destination buffer of @hq_pitch_util.
  *
@@ -261,7 +255,7 @@ ags_hq_pitch_util_get_source(AgsHQPitchUtil *hq_pitch_util)
 /**
  * ags_hq_pitch_util_set_source:
  * @hq_pitch_util: the #AgsHQPitchUtil-struct
- * @source: the source buffer
+ * @source: (transfer none): the source buffer
  *
  * Set @source buffer of @hq_pitch_util.
  *

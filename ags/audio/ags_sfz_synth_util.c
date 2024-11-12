@@ -235,7 +235,7 @@ ags_sfz_synth_util_free(AgsSFZSynthUtil *ptr)
 {
   g_return_if_fail(ptr != NULL);
 
-  g_free(ptr->source);
+  //  g_free(ptr->source);
 
   ags_audio_buffer_util_set_source(ptr->audio_buffer_util,
 				   NULL);
@@ -406,7 +406,7 @@ ags_sfz_synth_util_get_source(AgsSFZSynthUtil *sfz_synth_util)
 /**
  * ags_sfz_synth_util_set_source:
  * @sfz_synth_util: the #AgsSFZSynthUtil-struct
- * @source: the source buffer
+ * @source: (transfer none): the source buffer
  *
  * Set @source buffer of @sfz_synth_util.
  *
@@ -2072,12 +2072,15 @@ ags_sfz_synth_util_compute_s8(AgsSFZSynthUtil *sfz_synth_util)
 
   ags_audio_buffer_util_clear_buffer(sfz_synth_util->audio_buffer_util,
 				     im_buffer, 1,
-				     buffer_length, AGS_AUDIO_BUFFER_UTIL_DOUBLE);      
-    
+				     buffer_length, ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->audio_buffer_util,
+												sfz_synth_util->format));
+      
   if((double) midi_key + note == (double) root_note){
     copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(sfz_synth_util->audio_buffer_util,
-								AGS_AUDIO_BUFFER_UTIL_DOUBLE,
-								AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+								ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->audio_buffer_util,
+													    sfz_synth_util->format),
+								ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->audio_buffer_util,
+													    sfz_synth_util->format));
     
     ags_audio_buffer_util_copy_buffer_to_buffer(sfz_synth_util->audio_buffer_util,
 						im_buffer, 1, 0,
@@ -2402,12 +2405,15 @@ ags_sfz_synth_util_compute_s16(AgsSFZSynthUtil *sfz_synth_util)
 
   ags_audio_buffer_util_clear_buffer(sfz_synth_util->audio_buffer_util,
 				     im_buffer, 1,
-				     buffer_length, AGS_AUDIO_BUFFER_UTIL_DOUBLE);      
+				     buffer_length, ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->audio_buffer_util,
+												sfz_synth_util->format));
     
   if((double) midi_key + note == (double) root_note){
     copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(sfz_synth_util->audio_buffer_util,
-								AGS_AUDIO_BUFFER_UTIL_DOUBLE,
-								AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+								ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->audio_buffer_util,
+													    sfz_synth_util->format),
+								ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->audio_buffer_util,
+													    sfz_synth_util->format));
     
     ags_audio_buffer_util_copy_buffer_to_buffer(sfz_synth_util->audio_buffer_util,
 						im_buffer, 1, 0,
@@ -2728,12 +2734,15 @@ ags_sfz_synth_util_compute_s24(AgsSFZSynthUtil *sfz_synth_util)
 
   ags_audio_buffer_util_clear_buffer(sfz_synth_util->audio_buffer_util,
 				     im_buffer, 1,
-				     buffer_length, AGS_AUDIO_BUFFER_UTIL_DOUBLE);      
+				     buffer_length, ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->audio_buffer_util,
+												sfz_synth_util->format));
     
   if((double) midi_key + note == (double) root_note){
     copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(sfz_synth_util->audio_buffer_util,
-								AGS_AUDIO_BUFFER_UTIL_DOUBLE,
-								AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+								ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->audio_buffer_util,
+													    sfz_synth_util->format),
+								ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->audio_buffer_util,
+													    sfz_synth_util->format));
     
     ags_audio_buffer_util_copy_buffer_to_buffer(sfz_synth_util->audio_buffer_util,
 						im_buffer, 1, 0,
@@ -3062,12 +3071,15 @@ ags_sfz_synth_util_compute_s32(AgsSFZSynthUtil *sfz_synth_util)
 
   ags_audio_buffer_util_clear_buffer(sfz_synth_util->audio_buffer_util,
 				     im_buffer, 1,
-				     buffer_length, AGS_AUDIO_BUFFER_UTIL_DOUBLE);      
+				     buffer_length, ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->audio_buffer_util,
+												sfz_synth_util->format));
     
   if((double) midi_key + note == (double) root_note){
     copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(sfz_synth_util->audio_buffer_util,
-								AGS_AUDIO_BUFFER_UTIL_DOUBLE,
-								AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+								ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->audio_buffer_util,
+													    sfz_synth_util->format),
+								ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->audio_buffer_util,
+													    sfz_synth_util->format));
     
     ags_audio_buffer_util_copy_buffer_to_buffer(sfz_synth_util->audio_buffer_util,
 						im_buffer, 1, 0,
@@ -3388,12 +3400,15 @@ ags_sfz_synth_util_compute_s64(AgsSFZSynthUtil *sfz_synth_util)
 
   ags_audio_buffer_util_clear_buffer(sfz_synth_util->audio_buffer_util,
 				     im_buffer, 1,
-				     buffer_length, AGS_AUDIO_BUFFER_UTIL_DOUBLE);      
+				     buffer_length, ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->audio_buffer_util,
+												sfz_synth_util->format));
     
   if((double) midi_key + note == (double) root_note){
     copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(sfz_synth_util->audio_buffer_util,
-								AGS_AUDIO_BUFFER_UTIL_DOUBLE,
-								AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+								ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->audio_buffer_util,
+													    sfz_synth_util->format),
+								ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->audio_buffer_util,
+													    sfz_synth_util->format));
     
     ags_audio_buffer_util_copy_buffer_to_buffer(sfz_synth_util->audio_buffer_util,
 						im_buffer, 1, 0,
@@ -3714,12 +3729,15 @@ ags_sfz_synth_util_compute_float(AgsSFZSynthUtil *sfz_synth_util)
 
   ags_audio_buffer_util_clear_buffer(sfz_synth_util->audio_buffer_util,
 				     im_buffer, 1,
-				     buffer_length, AGS_AUDIO_BUFFER_UTIL_DOUBLE);      
+				     buffer_length, ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->audio_buffer_util,
+												sfz_synth_util->format));
     
   if((double) midi_key + note == (double) root_note){
     copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(sfz_synth_util->audio_buffer_util,
-								AGS_AUDIO_BUFFER_UTIL_DOUBLE,
-								AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+								ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->audio_buffer_util,
+													    sfz_synth_util->format),
+								ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->audio_buffer_util,
+													    sfz_synth_util->format));
     
     ags_audio_buffer_util_copy_buffer_to_buffer(sfz_synth_util->audio_buffer_util,
 						im_buffer, 1, 0,
@@ -4040,12 +4058,15 @@ ags_sfz_synth_util_compute_double(AgsSFZSynthUtil *sfz_synth_util)
 
   ags_audio_buffer_util_clear_buffer(sfz_synth_util->audio_buffer_util,
 				     im_buffer, 1,
-				     buffer_length, AGS_AUDIO_BUFFER_UTIL_DOUBLE);      
+				     buffer_length, ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->audio_buffer_util,
+												sfz_synth_util->format));
     
   if((double) midi_key + note == (double) root_note){
     copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(sfz_synth_util->audio_buffer_util,
-								AGS_AUDIO_BUFFER_UTIL_DOUBLE,
-								AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+								ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->audio_buffer_util,
+													    sfz_synth_util->format),
+								ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->audio_buffer_util,
+													    sfz_synth_util->format));
     
     ags_audio_buffer_util_copy_buffer_to_buffer(sfz_synth_util->audio_buffer_util,
 						im_buffer, 1, 0,
@@ -4367,12 +4388,15 @@ ags_sfz_synth_util_compute_complex(AgsSFZSynthUtil *sfz_synth_util)
 
   ags_audio_buffer_util_clear_buffer(sfz_synth_util->audio_buffer_util,
 				     im_buffer, 1,
-				     buffer_length, AGS_AUDIO_BUFFER_UTIL_DOUBLE);      
+				     buffer_length, ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->audio_buffer_util,
+												sfz_synth_util->format));
     
   if((double) midi_key + note == (double) root_note){
     copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(sfz_synth_util->audio_buffer_util,
-								AGS_AUDIO_BUFFER_UTIL_DOUBLE,
-								AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+								ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->audio_buffer_util,
+													    sfz_synth_util->format),
+								ags_audio_buffer_util_format_from_soundcard(sfz_synth_util->audio_buffer_util,
+													    sfz_synth_util->format));
     
     ags_audio_buffer_util_copy_buffer_to_buffer(sfz_synth_util->audio_buffer_util,
 						im_buffer, 1, 0,
