@@ -297,7 +297,7 @@ ags_crop_note_popover_xml_compose(AgsConnectable *connectable)
   crop_note_popover = AGS_CROP_NOTE_POPOVER(connectable);
 
   node = xmlNewNode(NULL,
-		    BAD_CAST "ags-move-note-popover");
+		    BAD_CAST "ags-crop-note-popover");
 
   /* absolute */
   str = g_strdup_printf("%s",
