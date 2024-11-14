@@ -4,6 +4,11 @@ ags (7.3.0)
 	* fixed ags-fx-synth missing low and high-pass filter presets
 	* fixed ags-fx-fm-synth missing low and high-pass filter presets
 
+ags (7.2.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* minor improvements fixed missing presets of ags-fx-synth and ags-fx-fm-synth pitch
+
 ags (7.2.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
