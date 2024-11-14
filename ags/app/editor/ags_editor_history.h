@@ -64,9 +64,10 @@ G_BEGIN_DECLS
 #define AGS_EDITOR_HISTORY_ACTION_NOTE_PASTE "paste-note"
 #define AGS_EDITOR_HISTORY_ACTION_NOTE_INVERT "invert-note"
 #define AGS_EDITOR_HISTORY_ACTION_NOTE_SELECT "select-note"
-#define AGS_EDITOR_HISTORY_ACTION_NOTE_POSITION "position-note"
-#define AGS_EDITOR_HISTORY_ACTION_NOTE_MOVE "move-note"
-#define AGS_EDITOR_HISTORY_ACTION_NOTE_CROP "crop-note"
+#define AGS_EDITOR_HISTORY_ACTION_POPOVER_NOTE_SELECT "popover-select-note"
+#define AGS_EDITOR_HISTORY_ACTION_POPOVER_NOTE_POSITION "popover-position-note"
+#define AGS_EDITOR_HISTORY_ACTION_POPOVER_NOTE_MOVE "popover-move-note"
+#define AGS_EDITOR_HISTORY_ACTION_POPOVER_NOTE_CROP "popover-crop-note"
 
 #define AGS_EDITOR_HISTORY_ACTION_ACCELERATION_ADD "add-acceleration"
 #define AGS_EDITOR_HISTORY_ACTION_ACCELERATION_RESIZE "resize-acceleration"
@@ -75,8 +76,9 @@ G_BEGIN_DECLS
 #define AGS_EDITOR_HISTORY_ACTION_ACCELERATION_CUT "cut-acceleration"
 #define AGS_EDITOR_HISTORY_ACTION_ACCELERATION_PASTE "paste-acceleration"
 #define AGS_EDITOR_HISTORY_ACTION_ACCELERATION_SELECT "select-acceleration"
-#define AGS_EDITOR_HISTORY_ACTION_ACCELERATION_POSITION "position-acceleration"
-#define AGS_EDITOR_HISTORY_ACTION_ACCELERATION_RAMP "ramp-acceleration"
+#define AGS_EDITOR_HISTORY_ACTION_POPOVER_ACCELERATION_SELECT "popover-select-acceleration"
+#define AGS_EDITOR_HISTORY_ACTION_POPOVER_ACCELERATION_POSITION "popover-position-acceleration"
+#define AGS_EDITOR_HISTORY_ACTION_POPOVER_ACCELERATION_RAMP "popover-ramp-acceleration"
 
 #define AGS_EDITOR_HISTORY_ACTION_BUFFER_ADD "add-buffer"
 #define AGS_EDITOR_HISTORY_ACTION_BUFFER_REMOVE "remove-buffer"
@@ -84,8 +86,9 @@ G_BEGIN_DECLS
 #define AGS_EDITOR_HISTORY_ACTION_BUFFER_CUT "cut-buffer"
 #define AGS_EDITOR_HISTORY_ACTION_BUFFER_PASTE "paste-buffer"
 #define AGS_EDITOR_HISTORY_ACTION_BUFFER_SELECT "select-buffer"
-#define AGS_EDITOR_HISTORY_ACTION_BUFFER_POSITION "position-buffer"
-#define AGS_EDITOR_HISTORY_ACTION_BUFFER_TIME_STRETCH "time-stretch-buffer"
+#define AGS_EDITOR_HISTORY_ACTION_POPOVER_BUFFER_SELECT "popover-select-buffer"
+#define AGS_EDITOR_HISTORY_ACTION_POPOVER_BUFFER_POSITION "popover-position-buffer"
+#define AGS_EDITOR_HISTORY_ACTION_POPOVER_BUFFER_TIME_STRETCH "popover-time-stretch-buffer"
 
 #define AGS_EDITOR_HISTORY_DATA_ACCESS_XML_SERIALIZER "xml-serializer"
 #define AGS_EDITOR_HISTORY_DATA_ACCESS_RAW_AUDIO_BASE64_SERIALIZER "raw-audio-base64-serializer"
@@ -131,6 +134,8 @@ struct _AgsEditorJournal
   guint pad;
   guint audio_channel;
   guint line;
+
+  gchar *specifier;
   
   gchar *scope;
   gchar *journal_type;
