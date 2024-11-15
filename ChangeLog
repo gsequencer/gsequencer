@@ -1,3 +1,8 @@
+ags (7.2.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved export window to set default backend and card
+
 ags (7.2.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

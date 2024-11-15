@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-11-15 00:48+0100\n"
+"POT-Creation-Date: 2024-11-15 02:45+0100\n"
 "PO-Revision-Date: 2021-01-11 21:07+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: français <jkraehemann@gmail.com>\n"
@@ -31,7 +31,7 @@ msgstr ""
 
 #: ags/app/ags_connection_editor_bulk.c:172
 #: ags/app/ags_connection_editor_bulk.c:283 ags/app/ags_soundcard_editor.c:257
-#: ags/app/ags_export_soundcard.c:261
+#: ags/app/ags_export_soundcard.c:259
 msgid "soundcard"
 msgstr "carte son"
 
@@ -238,21 +238,21 @@ msgstr "intrant"
 msgid "bulk input"
 msgstr "lien intrant"
 
-#: ags/app/ags_gsequencer_application_context.c:3777
+#: ags/app/ags_gsequencer_application_context.c:3783
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr "carte son backend inconnu - %s"
 
-#: ags/app/ags_gsequencer_application_context.c:3787
+#: ags/app/ags_gsequencer_application_context.c:3793
 msgid "unknown soundcard backend - NULL"
 msgstr "carte son backend inconnu - NULL"
 
-#: ags/app/ags_gsequencer_application_context.c:4030
+#: ags/app/ags_gsequencer_application_context.c:4036
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr "séquencer backend inconnu - %s"
 
-#: ags/app/ags_gsequencer_application_context.c:4040
+#: ags/app/ags_gsequencer_application_context.c:4046
 msgid "unknown sequencer backend - NULL"
 msgstr "séquencer backend inconnu - NULL"
 
@@ -293,7 +293,7 @@ msgstr "écraser exister liens"
 #: ags/app/export/ags_midi_export_wizard.c:474
 #: ags/app/export/ags_wave_export_dialog.c:417
 #: ags/app/import/ags_midi_import_wizard.c:465
-#: ags/app/ags_export_soundcard.c:339
+#: ags/app/ags_export_soundcard.c:336
 msgid "open"
 msgstr "ouvrir"
 
@@ -362,13 +362,13 @@ msgid "end tact"
 msgstr "dernier tact"
 
 #: ags/app/export/ags_wave_export_dialog.c:362
-#: ags/app/ags_export_soundcard.c:344
+#: ags/app/ags_export_soundcard.c:341
 msgid "output format"
 msgstr "sortant format"
 
 #: ags/app/export/ags_wave_export_dialog.c:404
 #: ags/app/machine/ags_pitch_sampler.c:311 ags/app/machine/ags_audiorec.c:272
-#: ags/app/ags_export_soundcard.c:292
+#: ags/app/ags_export_soundcard.c:289
 msgid "file"
 msgstr "fichier"
 
@@ -400,7 +400,7 @@ msgid "default"
 msgstr "default"
 
 #: ags/app/ags_sequencer_editor.c:181 ags/app/ags_soundcard_editor.c:192
-#: ags/app/ags_export_soundcard.c:200
+#: ags/app/ags_export_soundcard.c:198
 msgid "backend"
 msgstr "backend"
 

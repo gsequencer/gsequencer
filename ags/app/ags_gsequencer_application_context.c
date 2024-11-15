@@ -3254,6 +3254,12 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
   export_soundcard = ags_export_soundcard_new();
   ags_export_window_add_export_soundcard(export_window,
 					 export_soundcard);
+
+  gtk_combo_box_set_active((GtkComboBox *) export_soundcard->backend,
+			   0);
+  
+  gtk_combo_box_set_active((GtkComboBox *) export_soundcard->card,
+			   0);
   
   /* AgsMetaDataWindow */
   widget = (GtkWidget *) ags_meta_data_window_new();
