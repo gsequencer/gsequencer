@@ -1163,12 +1163,12 @@ ags_editor_history_undo(AgsEditorHistory *editor_history)
 				    strlen(AGS_EDITOR_HISTORY_ACTION_ACCELERATION_SELECT))){
 	//TODO:JK: implement me
       }else if(!g_ascii_strncasecmp(editor_journal->action,
-				    AGS_EDITOR_HISTORY_ACTION_ACCELERATION_POSITION,
-				    strlen(AGS_EDITOR_HISTORY_ACTION_ACCELERATION_POSITION))){
+				    AGS_EDITOR_HISTORY_ACTION_POPOVER_ACCELERATION_POSITION,
+				    strlen(AGS_EDITOR_HISTORY_ACTION_POPOVER_ACCELERATION_POSITION))){
 	//TODO:JK: implement me
       }else if(!g_ascii_strncasecmp(editor_journal->action,
-				    AGS_EDITOR_HISTORY_ACTION_ACCELERATION_RAMP,
-				    strlen(AGS_EDITOR_HISTORY_ACTION_ACCELERATION_RAMP))){
+				    AGS_EDITOR_HISTORY_ACTION_POPOVER_ACCELERATION_RAMP,
+				    strlen(AGS_EDITOR_HISTORY_ACTION_POPOVER_ACCELERATION_RAMP))){
 	//TODO:JK: implement me
       }
     }else if(!g_ascii_strncasecmp(editor_journal->scope,
@@ -1199,12 +1199,12 @@ ags_editor_history_undo(AgsEditorHistory *editor_history)
 				    strlen(AGS_EDITOR_HISTORY_ACTION_BUFFER_SELECT))){
 	//TODO:JK: implement me
       }else if(!g_ascii_strncasecmp(editor_journal->action,
-				    AGS_EDITOR_HISTORY_ACTION_BUFFER_POSITION,
-				    strlen(AGS_EDITOR_HISTORY_ACTION_BUFFER_POSITION))){
+				    AGS_EDITOR_HISTORY_ACTION_POPOVER_BUFFER_POSITION,
+				    strlen(AGS_EDITOR_HISTORY_ACTION_POPOVER_BUFFER_POSITION))){
 	//TODO:JK: implement me
       }else if(!g_ascii_strncasecmp(editor_journal->action,
-				    AGS_EDITOR_HISTORY_ACTION_BUFFER_TIME_STRETCH,
-				    strlen(AGS_EDITOR_HISTORY_ACTION_BUFFER_TIME_STRETCH))){
+				    AGS_EDITOR_HISTORY_ACTION_POPOVER_BUFFER_TIME_STRETCH,
+				    strlen(AGS_EDITOR_HISTORY_ACTION_POPOVER_BUFFER_TIME_STRETCH))){
 	//TODO:JK: implement me
       }
     }
@@ -1280,16 +1280,16 @@ ags_editor_history_redo(AgsEditorHistory *editor_history)
 				  strlen(AGS_EDITOR_HISTORY_ACTION_NOTE_SELECT))){
       //TODO:JK: implement me
     }else if(!g_ascii_strncasecmp(editor_journal->action,
-				  AGS_EDITOR_HISTORY_ACTION_NOTE_POSITION,
-				  strlen(AGS_EDITOR_HISTORY_ACTION_NOTE_POSITION))){
+				  AGS_EDITOR_HISTORY_ACTION_POPOVER_NOTE_POSITION,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_POPOVER_NOTE_POSITION))){
       //TODO:JK: implement me
     }else if(!g_ascii_strncasecmp(editor_journal->action,
-				  AGS_EDITOR_HISTORY_ACTION_NOTE_MOVE,
-				  strlen(AGS_EDITOR_HISTORY_ACTION_NOTE_MOVE))){
+				  AGS_EDITOR_HISTORY_ACTION_POPOVER_NOTE_MOVE,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_POPOVER_NOTE_MOVE))){
       //TODO:JK: implement me
     }else if(!g_ascii_strncasecmp(editor_journal->action,
-				  AGS_EDITOR_HISTORY_ACTION_NOTE_CROP,
-				  strlen(AGS_EDITOR_HISTORY_ACTION_NOTE_CROP))){
+				  AGS_EDITOR_HISTORY_ACTION_POPOVER_NOTE_CROP,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_POPOVER_NOTE_CROP))){
       //TODO:JK: implement me
     }
   }else if(!g_ascii_strncasecmp(editor_journal->scope,
@@ -1324,12 +1324,12 @@ ags_editor_history_redo(AgsEditorHistory *editor_history)
 				  strlen(AGS_EDITOR_HISTORY_ACTION_ACCELERATION_SELECT))){
       //TODO:JK: implement me
     }else if(!g_ascii_strncasecmp(editor_journal->action,
-				  AGS_EDITOR_HISTORY_ACTION_ACCELERATION_POSITION,
-				  strlen(AGS_EDITOR_HISTORY_ACTION_ACCELERATION_POSITION))){
+				  AGS_EDITOR_HISTORY_ACTION_POPOVER_ACCELERATION_POSITION,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_POPOVER_ACCELERATION_POSITION))){
       //TODO:JK: implement me
     }else if(!g_ascii_strncasecmp(editor_journal->action,
-				  AGS_EDITOR_HISTORY_ACTION_ACCELERATION_RAMP,
-				  strlen(AGS_EDITOR_HISTORY_ACTION_ACCELERATION_RAMP))){
+				  AGS_EDITOR_HISTORY_ACTION_POPOVER_ACCELERATION_RAMP,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_POPOVER_ACCELERATION_RAMP))){
       //TODO:JK: implement me
     }
   }else if(!g_ascii_strncasecmp(editor_journal->scope,
@@ -1360,12 +1360,12 @@ ags_editor_history_redo(AgsEditorHistory *editor_history)
 				  strlen(AGS_EDITOR_HISTORY_ACTION_BUFFER_SELECT))){
       //TODO:JK: implement me
     }else if(!g_ascii_strncasecmp(editor_journal->action,
-				  AGS_EDITOR_HISTORY_ACTION_BUFFER_POSITION,
-				  strlen(AGS_EDITOR_HISTORY_ACTION_BUFFER_POSITION))){
+				  AGS_EDITOR_HISTORY_ACTION_POPOVER_BUFFER_POSITION,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_POPOVER_BUFFER_POSITION))){
       //TODO:JK: implement me
     }else if(!g_ascii_strncasecmp(editor_journal->action,
-				  AGS_EDITOR_HISTORY_ACTION_BUFFER_TIME_STRETCH,
-				  strlen(AGS_EDITOR_HISTORY_ACTION_BUFFER_TIME_STRETCH))){
+				  AGS_EDITOR_HISTORY_ACTION_POPOVER_BUFFER_TIME_STRETCH,
+				  strlen(AGS_EDITOR_HISTORY_ACTION_POPOVER_BUFFER_TIME_STRETCH))){
       //TODO:JK: implement me
     }
   }

@@ -1138,3 +1138,48 @@ ags_ui_provider_set_visible_window(AgsUiProvider *ui_provider,
   ui_provider_interface->set_visible_window(ui_provider,
 					    visible_window);
 }
+
+/**
+ * ags_ui_provider_get_download_window:
+ * @ui_provider: the #AgsUiProvider
+ * 
+ * Get download window.
+ * 
+ * Returns: the #GtkWidget
+ * 
+ * Since: 7.3.0
+ */
+GtkWidget*
+ags_ui_provider_get_download_window(AgsUiProvider *ui_provider)
+{
+  AgsUiProviderInterface *ui_provider_interface;
+
+  g_return_val_if_fail(AGS_IS_UI_PROVIDER(ui_provider), NULL);
+  ui_provider_interface = AGS_UI_PROVIDER_GET_INTERFACE(ui_provider);
+  g_return_val_if_fail(ui_provider_interface->get_download_window, NULL);
+
+  return(ui_provider_interface->get_download_window(ui_provider));
+}
+
+/**
+ * ags_ui_provider_set_download_window:
+ * @ui_provider: the #AgsUiProvider
+ * @download_window: the #GtkWidget
+ * 
+ * Set download window.
+ * 
+ * Since: 7.3.0
+ */
+void
+ags_ui_provider_set_download_window(AgsUiProvider *ui_provider,
+				    GtkWidget *download_window)
+{
+  AgsUiProviderInterface *ui_provider_interface;
+
+  g_return_if_fail(AGS_IS_UI_PROVIDER(ui_provider));
+  ui_provider_interface = AGS_UI_PROVIDER_GET_INTERFACE(ui_provider);
+  g_return_if_fail(ui_provider_interface->set_download_window);
+
+  ui_provider_interface->set_download_window(ui_provider,
+					     download_window);
+}

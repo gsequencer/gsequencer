@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -17,10 +17,21 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __RESOURCE_ags_gsequencer_H__
-#define __RESOURCE_ags_gsequencer_H__
+#include <ags/app/ags_download_window_callbacks.h>
 
-#include <gio/gio.h>
+#include <ags/app/ags_ui_provider.h>
+#include <ags/app/ags_gsequencer_application.h>
 
-extern GResource *ags_gsequencer_get_resource (void);
-#endif
+#include <ags/i18n.h>
+
+gboolean
+ags_download_window_close_request_callback(GtkWindow *window, gpointer user_data)
+{
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+  
+  ags_gsequencer_application_refresh_window_menu((AgsGSequencerApplication *) ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
+  
+  return(FALSE);
+}

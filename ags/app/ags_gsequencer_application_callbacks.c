@@ -59,6 +59,13 @@ ags_gsequencer_export_callback(GAction *action, GVariant *parameter,
 }
 
 void
+ags_gsequencer_download_callback(GAction *action, GVariant *parameter,
+			       AgsGSequencerApplication *gsequencer_app)
+{
+  ags_app_action_util_download();
+}
+
+void
 ags_gsequencer_smf_import_callback(GAction *action, GVariant *parameter,
 				   AgsGSequencerApplication *gsequencer_app)
 {
@@ -142,6 +149,17 @@ ags_gsequencer_present_export_window_callback(GAction *action, GVariant *paramet
   application_context = ags_application_context_get_instance();
     
   gtk_window_present((GtkWindow *) ags_ui_provider_get_export_window(AGS_UI_PROVIDER(application_context)));
+}
+
+void
+ags_gsequencer_present_download_window_callback(GAction *action, GVariant *parameter,
+					      AgsGSequencerApplication *gsequencer_app)
+{
+  AgsApplicationContext *application_context;
+  
+  application_context = ags_application_context_get_instance();
+    
+  gtk_window_present((GtkWindow *) ags_ui_provider_get_download_window(AGS_UI_PROVIDER(application_context)));
 }
 
 void

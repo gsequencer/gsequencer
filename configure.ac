@@ -237,6 +237,13 @@ AC_ARG_WITH([gstreamer],
                             [disable support for gstreamer])],
             [],
             [with_gstreamer=yes])
+
+AC_ARG_WITH([vte],
+            [AS_HELP_STRING([--with-vte],
+                            [enable support for vte])],
+            [],
+            [with_vte=no])
+
 AC_ARG_WITH([tooltips],
             [AS_HELP_STRING([--with-tooltips],
                             [enable support for tooltips])],
@@ -734,6 +741,14 @@ AS_IF([test "x$with_gstreamer" != xno],
                  [Define if you have gstreamer])
       ])
 AM_CONDITIONAL([WITH_GSTREAMER], [test "x$with_gstreamer" == xyes])
+
+AS_IF([test "x$with_vte" != xno],
+      [PKG_CHECK_MODULES([VTE], [vte-2.91-gtk4 >= 0.76.0])
+       AC_SUBST(VTE_CFLAGS)
+       AC_SUBST(VTE_LIBS)
+       AC_DEFINE([AGS_WITH_VTE], [1],
+                 [Define if you have vte])
+      ])
 
 AS_IF([test "x$with_tooltips" != xno],
       [AC_DEFINE([AGS_WITH_TOOLTIPS], [1],
