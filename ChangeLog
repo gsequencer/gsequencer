@@ -1,3 +1,9 @@
+ags (7.2.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed export window initial backend and card
+	* fixed export window initial filename
+
 ags (7.2.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
