@@ -3,6 +3,12 @@ ags (7.3.0)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* TODO:JK: implemented undo/redo in editor
 
+ags (7.2.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved file dialog
+	* improved PCM file dialog
+
 ags (7.2.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

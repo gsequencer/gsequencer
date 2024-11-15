@@ -21,6 +21,8 @@
 
 #include <ags/app/ags_ui_provider.h>
 
+#include <glib/gstdio.h>
+
 #include <ags/i18n.h>
 
 void ags_pcm_file_dialog_class_init(AgsPCMFileDialogClass *pcm_file_dialog);
@@ -465,8 +467,74 @@ void
 ags_pcm_file_dialog_activate_button_callback(GtkButton *activate_button,
 					     AgsPCMFileDialog *pcm_file_dialog)
 {
-  ags_pcm_file_dialog_response(pcm_file_dialog,
-			       GTK_RESPONSE_ACCEPT);
+  gchar *filename;
+  gchar *basename;
+  gchar *dirname;
+
+  filename = ags_file_widget_get_filename(pcm_file_dialog->file_widget);
+
+  dirname = g_path_get_dirname(filename);
+  basename = g_path_get_basename(filename);
+
+  if(pcm_file_dialog->file_widget->file_action == AGS_FILE_WIDGET_SAVE_AS){  
+    gboolean writable_location;
+    
+    writable_location = (g_access(dirname, W_OK) == 0) ? TRUE: FALSE;
+    
+    if(writable_location &&
+       basename != NULL &&
+       strlen(basename) > 0 &&
+       (!g_strncasecmp(basename, ".", 2)) == FALSE &&
+       (!g_strncasecmp(basename, "..", 3)) == FALSE &&
+       !g_file_test(filename, G_FILE_TEST_IS_DIR)){
+      ags_pcm_file_dialog_response(pcm_file_dialog,
+				   GTK_RESPONSE_ACCEPT);
+    }    
+  }else{
+    GSList *start_filenames, *filenames;
+
+    gboolean readable_location;
+    gboolean success;
+
+    filenames =
+      start_filenames = ags_file_widget_get_filenames(pcm_file_dialog->file_widget);
+
+    readable_location = (g_access(basename, R_OK) == 0) ? TRUE: FALSE;
+    
+    if(readable_location &&
+       basename != NULL &&
+       strlen(basename) > 0){
+      success = FALSE;
+      
+      if(!g_file_test(filename, G_FILE_TEST_IS_DIR)){
+	success = TRUE;
+		
+	ags_pcm_file_dialog_response(pcm_file_dialog,
+				     GTK_RESPONSE_ACCEPT);
+      }
+
+      if(!success){
+	while(!success &&
+	      filenames != NULL){
+	  if(!g_file_test(filenames->data, G_FILE_TEST_IS_DIR)){
+	    success = TRUE;
+	
+	    ags_pcm_file_dialog_response(pcm_file_dialog,
+					 GTK_RESPONSE_ACCEPT);
+	  }
+
+	  filenames = filenames->next;
+	}
+      }
+    }    
+
+    g_slist_free_full(start_filenames,
+		      g_free);
+  }
+
+  g_free(filename);
+  g_free(dirname);
+  g_free(basename);
 }
 
 gboolean
