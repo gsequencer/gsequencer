@@ -2,6 +2,23 @@ ags (7.3.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* TODO:JK: implemented undo/redo in editor
+	* added optional VTE dependency
+
+ags (7.2.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed export window initial backend and card
+	* fixed export window initial filename
+
+ags (7.2.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented download samples link
+
+ags (7.2.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved export window to set default backend and card
 
 ags (7.2.6)
 

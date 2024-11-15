@@ -17,7 +17,11 @@
 # along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
 
 ags_file_dialog_get_type
+ags_file_dialog_test_flags
+ags_file_dialog_set_flags
+ags_file_dialog_unset_flags
 ags_file_dialog_get_file_widget
+ags_file_dialog_get_download_link
 ags_file_dialog_response
 ags_file_dialog_new
 ags_led_get_type
