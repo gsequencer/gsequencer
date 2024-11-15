@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-11-12 07:11+0100\n"
+"POT-Creation-Date: 2024-11-15 00:48+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -262,19 +262,19 @@ msgstr ""
 msgid "GUI scale factor"
 msgstr ""
 
-#: ags/app/ags_pcm_file_dialog.c:234 ags/app/editor/ags_envelope_info.c:250
+#: ags/app/ags_pcm_file_dialog.c:236 ags/app/editor/ags_envelope_info.c:250
 msgid "audio channel"
 msgstr ""
 
-#: ags/app/ags_pcm_file_dialog.c:257
+#: ags/app/ags_pcm_file_dialog.c:259
 msgid "open in new channel"
 msgstr ""
 
-#: ags/app/ags_pcm_file_dialog.c:268
+#: ags/app/ags_pcm_file_dialog.c:270
 msgid "override existing links"
 msgstr ""
 
-#: ags/app/ags_pcm_file_dialog.c:279
+#: ags/app/ags_pcm_file_dialog.c:281
 #: ags/app/export/ags_midi_export_wizard.c:474
 #: ags/app/export/ags_wave_export_dialog.c:417
 #: ags/app/import/ags_midi_import_wizard.c:465
