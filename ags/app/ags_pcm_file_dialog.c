@@ -216,6 +216,7 @@ ags_pcm_file_dialog_init(AgsPCMFileDialog *pcm_file_dialog)
   gtk_box_append(vbox,
 		 (GtkWidget *) pcm_file_dialog->file_widget);
 
+  /* grid */
   grid = (GtkGrid *) gtk_grid_new();
 
   gtk_widget_set_vexpand((GtkWidget *) grid,
@@ -277,6 +278,15 @@ ags_pcm_file_dialog_init(AgsPCMFileDialog *pcm_file_dialog)
 		  0, 2,
 		  1, 1);
 
+  /* download link */
+  pcm_file_dialog->download_link = (GtkLinkButton *) gtk_link_button_new_with_label("https://gsequencer.com",
+										    i18n("download"));
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) pcm_file_dialog->download_link,
+		  0, 3,
+		  1, 1);
+  
   /* button */
   pcm_file_dialog->activate_button = (GtkButton *) gtk_button_new_with_label(i18n("open"));
   gtk_widget_set_halign((GtkWidget *) pcm_file_dialog->activate_button,
@@ -310,6 +320,11 @@ ags_pcm_file_dialog_show(GtkWidget *widget)
   
   if((AGS_PCM_FILE_DIALOG_SHOW_EXISTING_CHANNEL & (pcm_file_dialog->flags)) == 0){
     gtk_widget_set_visible((GtkWidget *) pcm_file_dialog->existing_channel,
+			   FALSE);
+  }
+  
+  if((AGS_PCM_FILE_DIALOG_SHOW_DOWNLOAD_LINK & (pcm_file_dialog->flags)) == 0){
+    gtk_widget_set_visible((GtkWidget *) pcm_file_dialog->download_link,
 			   FALSE);
   }
   
@@ -453,6 +468,24 @@ ags_pcm_file_dialog_get_existing_channel(AgsPCMFileDialog *pcm_file_dialog)
   g_return_val_if_fail(AGS_IS_PCM_FILE_DIALOG(pcm_file_dialog), NULL);
 
   return(pcm_file_dialog->existing_channel);
+}
+
+/**
+ * ags_pcm_file_dialog_get_download_link:
+ * @pcm_file_dialog: the #AgsPCMFileDialog
+ *
+ * Get download link of @pcm_file_dialog.
+ * 
+ * Returns: the #GtkLinkButton or %NULL
+ * 
+ * Since: 7.2.8
+ */
+GtkLinkButton*
+ags_pcm_file_dialog_get_download_link(AgsPCMFileDialog *pcm_file_dialog)
+{
+  g_return_val_if_fail(AGS_IS_PCM_FILE_DIALOG(pcm_file_dialog), NULL);
+
+  return(pcm_file_dialog->download_link);
 }
 
 void

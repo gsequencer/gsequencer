@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-11-15 02:45+0100\n"
+"POT-Creation-Date: 2024-11-15 05:37+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -276,20 +276,24 @@ msgstr ""
 msgid "GUI scale factor"
 msgstr "Współczynnik skali GUI"
 
-#: ags/app/ags_pcm_file_dialog.c:236 ags/app/editor/ags_envelope_info.c:250
+#: ags/app/ags_pcm_file_dialog.c:237 ags/app/editor/ags_envelope_info.c:250
 msgid "audio channel"
 msgstr "kanał audio"
 
-#: ags/app/ags_pcm_file_dialog.c:259
+#: ags/app/ags_pcm_file_dialog.c:260
 msgid "open in new channel"
 msgstr "otwórz jako nowy kanał"
 
-#: ags/app/ags_pcm_file_dialog.c:270
+#: ags/app/ags_pcm_file_dialog.c:271
 #, fuzzy
 msgid "override existing links"
 msgstr "nadpisz istniejące połączenie"
 
-#: ags/app/ags_pcm_file_dialog.c:281
+#: ags/app/ags_pcm_file_dialog.c:283
+msgid "download"
+msgstr ""
+
+#: ags/app/ags_pcm_file_dialog.c:291
 #: ags/app/export/ags_midi_export_wizard.c:474
 #: ags/app/export/ags_wave_export_dialog.c:417
 #: ags/app/import/ags_midi_import_wizard.c:465
@@ -1093,7 +1097,7 @@ msgstr "częstotliwośc próbkowania"
 #: ags/app/ags_export_soundcard_callbacks.c:454
 #: ags/app/machine/ags_audiorec_callbacks.c:153
 #: ags/app/machine/ags_drum_input_pad_callbacks.c:81
-#: ags/app/machine/ags_drum_callbacks.c:83
+#: ags/app/machine/ags_drum_callbacks.c:84
 #, fuzzy
 msgid "open audio files"
 msgstr "Otwórz plik audio"
@@ -1552,6 +1556,12 @@ msgstr "zbierz"
 msgid "selected"
 msgstr "zaznaczone"
 
+#: ags/app/machine/ags_drum_callbacks.c:96
+#: ags/app/machine/ags_ffplayer_callbacks.c:276
+#: ags/app/machine/ags_sf2_synth_callbacks.c:97
+msgid "download samples"
+msgstr ""
+
 #: ags/app/machine/ags_sfz_synth.c:397
 msgid "opcode"
 msgstr ""
@@ -1730,8 +1740,8 @@ msgid "loop end"
 msgstr "koniec pętli"
 
 #: ags/app/machine/ags_sfz_synth_callbacks.c:84
-#: ags/app/machine/ags_ffplayer_callbacks.c:265
-#: ags/app/machine/ags_sf2_synth_callbacks.c:84
+#: ags/app/machine/ags_ffplayer_callbacks.c:266
+#: ags/app/machine/ags_sf2_synth_callbacks.c:85
 #: ags/app/machine/ags_pitch_sampler_callbacks.c:73
 #, fuzzy
 msgid "open Soundfont2 file"

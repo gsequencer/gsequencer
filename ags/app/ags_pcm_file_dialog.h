@@ -46,6 +46,7 @@ typedef enum{
   AGS_PCM_FILE_DIALOG_SHOW_AUDIO_CHANNEL        = 1,
   AGS_PCM_FILE_DIALOG_SHOW_NEW_CHANNEL          = 1 <<  1,
   AGS_PCM_FILE_DIALOG_SHOW_EXISTING_CHANNEL     = 1 <<  2,
+  AGS_PCM_FILE_DIALOG_SHOW_DOWNLOAD_LINK        = 1 <<  3,
 }AgsPCMFileDialogFlags;
 
 struct _AgsPCMFileDialog
@@ -62,6 +63,8 @@ struct _AgsPCMFileDialog
   GtkCheckButton *new_channel;
   GtkCheckButton *existing_channel;
 
+  GtkLinkButton *download_link;
+  
   GtkButton *activate_button;
 };
 
@@ -88,6 +91,8 @@ GtkSpinButton* ags_pcm_file_dialog_get_audio_channel(AgsPCMFileDialog *pcm_file_
 
 GtkCheckButton* ags_pcm_file_dialog_get_new_channel(AgsPCMFileDialog *pcm_file_dialog);
 GtkCheckButton* ags_pcm_file_dialog_get_existing_channel(AgsPCMFileDialog *pcm_file_dialog);
+
+GtkLinkButton* ags_pcm_file_dialog_get_download_link(AgsPCMFileDialog *pcm_file_dialog);
 
 void ags_pcm_file_dialog_response(AgsPCMFileDialog *pcm_file_dialog,
 				  gint response_id);

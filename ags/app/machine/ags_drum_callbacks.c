@@ -43,6 +43,7 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
 {
   AgsPCMFileDialog *pcm_file_dialog;
   AgsFileWidget *file_widget;
+  GtkLinkButton *link_button;
   
   AgsApplicationContext *application_context;
 
@@ -83,6 +84,16 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
 					    i18n("open audio files"));
 
   drum->open_dialog = pcm_file_dialog;
+
+  ags_pcm_file_dialog_set_flags(pcm_file_dialog,
+				AGS_PCM_FILE_DIALOG_SHOW_DOWNLOAD_LINK);
+
+  link_button = ags_pcm_file_dialog_get_download_link(pcm_file_dialog);
+ 
+  gtk_link_button_set_uri(link_button,
+			  "https://gsequencer.com/samples.html");
+  gtk_button_set_label((GtkButton *) link_button,
+		       i18n("download samples"));
 
   file_widget = ags_pcm_file_dialog_get_file_widget(pcm_file_dialog);
 
