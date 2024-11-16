@@ -17,8 +17,8 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_PATTERN_BOX_CALLBACKS_H__
-#define __AGS_PATTERN_BOX_CALLBACKS_H__
+#ifndef __AGS_DOWNLOAD_WINDOW_CALLBACKS_H__
+#define __AGS_DOWNLOAD_WINDOW_CALLBACKS_H__
 
 #include <glib.h>
 #include <glib-object.h>
@@ -29,21 +29,12 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
-#include <ags/app/machine/ags_pattern_box.h>
+#include <ags/app/ags_download_window.h>
 
 G_BEGIN_DECLS
 
-void ags_pattern_box_update_ui_callback(GObject *ui_provider,
-					AgsPatternBox *pattern_box);
-
-/* controls */
-void ags_pattern_box_pad_callback(GObject *gobject,
-				  GParamSpec *pspec,
-				  AgsPatternBox *pattern_box);
-void ags_pattern_box_offset_callback(GObject *gobject,
-				     GParamSpec *pspec,
-				     AgsPatternBox *pattern_box);
+gboolean ags_download_window_close_request_callback(GtkWindow *window, gpointer user_data);
 
 G_END_DECLS
 
-#endif /*__AGS_PATTERN_BOX_CALLBACKS_H__*/
+#endif /*__AGS_DOWNLOAD_WINDOW_CALLBACKS_H__*/

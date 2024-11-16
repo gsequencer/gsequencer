@@ -44,7 +44,8 @@ ags_sf2_synth_open_clicked_callback(GtkWidget *widget, AgsSF2Synth *sf2_synth)
   AgsWindow *window;
   AgsFileDialog *file_dialog;
   AgsFileWidget *file_widget;
-
+  GtkLinkButton *link_button;
+  
   AgsApplicationContext *application_context;
 
   gchar *recently_used_filename;
@@ -85,8 +86,18 @@ ags_sf2_synth_open_clicked_callback(GtkWidget *widget, AgsSF2Synth *sf2_synth)
   
   sf2_synth->open_dialog = (GtkWidget *) file_dialog;
 
-  file_widget = ags_file_dialog_get_file_widget(file_dialog);
+  ags_file_dialog_set_flags(file_dialog,
+			    AGS_FILE_DIALOG_SHOW_DOWNLOAD_LINK);
 
+  link_button = ags_file_dialog_get_download_link(file_dialog);
+ 
+  gtk_link_button_set_uri(link_button,
+			  "https://gsequencer.com/samples.html");
+  gtk_button_set_label((GtkButton *) link_button,
+		       i18n("download samples"));
+  
+  file_widget = ags_file_dialog_get_file_widget(file_dialog);
+  
   home_path = ags_file_widget_get_home_path(file_widget);
 
   sandbox_path = NULL;

@@ -338,6 +338,8 @@ USE_NLS = @USE_NLS@
 UUID_CFLAGS = @UUID_CFLAGS@
 UUID_LIBS = @UUID_LIBS@
 VERSION = @VERSION@
+VTE_CFLAGS = @VTE_CFLAGS@
+VTE_LIBS = @VTE_LIBS@
 W32API_CFLAGS = @W32API_CFLAGS@
 W32API_LIBS = @W32API_LIBS@
 WASAPI_CFLAGS = @WASAPI_CFLAGS@
@@ -460,9 +462,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign m4/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu m4/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign m4/Makefile
+	  $(AUTOMAKE) --gnu m4/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \

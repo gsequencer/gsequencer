@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-11-09 02:08+0100\n"
+"POT-Creation-Date: 2024-11-16 06:26+0100\n"
 "PO-Revision-Date: 2021-01-03 08:52+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: Deutsch <jkraehemann@gmail.com>\n"
@@ -31,7 +31,7 @@ msgstr ""
 
 #: ags/app/ags_connection_editor_bulk.c:172
 #: ags/app/ags_connection_editor_bulk.c:283 ags/app/ags_soundcard_editor.c:257
-#: ags/app/ags_export_soundcard.c:261
+#: ags/app/ags_export_soundcard.c:259
 msgid "soundcard"
 msgstr "Soundkarte"
 
@@ -238,21 +238,21 @@ msgstr "Eingang"
 msgid "bulk input"
 msgstr "Eingabe verknüpfen"
 
-#: ags/app/ags_gsequencer_application_context.c:3777
+#: ags/app/ags_gsequencer_application_context.c:3886
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr "unbekannte Soundkarten Schnittstelle - %s"
 
-#: ags/app/ags_gsequencer_application_context.c:3787
+#: ags/app/ags_gsequencer_application_context.c:3896
 msgid "unknown soundcard backend - NULL"
 msgstr "unbekannte Soundkarten Schnittstelle - NULL"
 
-#: ags/app/ags_gsequencer_application_context.c:4030
+#: ags/app/ags_gsequencer_application_context.c:4139
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr "unbekannte Sequenzer Schnittstelle - %s"
 
-#: ags/app/ags_gsequencer_application_context.c:4040
+#: ags/app/ags_gsequencer_application_context.c:4149
 msgid "unknown sequencer backend - NULL"
 msgstr "unbekannte Sequenzer Schnittstelle - NULL"
 
@@ -276,24 +276,28 @@ msgstr "RT-Sicher"
 msgid "GUI scale factor"
 msgstr "GUI Skalierungs faktor"
 
-#: ags/app/ags_pcm_file_dialog.c:234 ags/app/editor/ags_envelope_info.c:250
+#: ags/app/ags_pcm_file_dialog.c:237 ags/app/editor/ags_envelope_info.c:250
 msgid "audio channel"
 msgstr "Audio Kanal"
 
-#: ags/app/ags_pcm_file_dialog.c:257
+#: ags/app/ags_pcm_file_dialog.c:260
 msgid "open in new channel"
 msgstr "In einem neuen Kanal öffnen"
 
-#: ags/app/ags_pcm_file_dialog.c:268
+#: ags/app/ags_pcm_file_dialog.c:271
 #, fuzzy
 msgid "override existing links"
 msgstr "Überschreibe bestehende Verknüpfungen"
 
-#: ags/app/ags_pcm_file_dialog.c:279
+#: ags/app/ags_pcm_file_dialog.c:283
+msgid "download"
+msgstr ""
+
+#: ags/app/ags_pcm_file_dialog.c:291
 #: ags/app/export/ags_midi_export_wizard.c:474
 #: ags/app/export/ags_wave_export_dialog.c:417
 #: ags/app/import/ags_midi_import_wizard.c:465
-#: ags/app/ags_export_soundcard.c:339
+#: ags/app/ags_export_soundcard.c:336
 msgid "open"
 msgstr "öffnen"
 
@@ -362,13 +366,13 @@ msgid "end tact"
 msgstr "End-Takt"
 
 #: ags/app/export/ags_wave_export_dialog.c:362
-#: ags/app/ags_export_soundcard.c:344
+#: ags/app/ags_export_soundcard.c:341
 msgid "output format"
 msgstr "ausgabe format"
 
 #: ags/app/export/ags_wave_export_dialog.c:404
 #: ags/app/machine/ags_pitch_sampler.c:311 ags/app/machine/ags_audiorec.c:272
-#: ags/app/ags_export_soundcard.c:292
+#: ags/app/ags_export_soundcard.c:289
 msgid "file"
 msgstr "datei"
 
@@ -400,7 +404,7 @@ msgid "default"
 msgstr "default"
 
 #: ags/app/ags_sequencer_editor.c:181 ags/app/ags_soundcard_editor.c:192
-#: ags/app/ags_export_soundcard.c:200
+#: ags/app/ags_export_soundcard.c:198
 msgid "backend"
 msgstr "Backend"
 
@@ -500,33 +504,33 @@ msgid "Note:y"
 msgstr "Note:y"
 
 #: ags/app/editor/ags_position_wave_cursor_popover.c:205
-#: ags/app/editor/ags_position_notation_cursor_popover.c:205
+#: ags/app/editor/ags_position_notation_cursor_popover.c:209
 #: ags/app/editor/ags_position_sheet_cursor_dialog.c:158
 #: ags/app/editor/ags_position_automation_cursor_popover.c:205
 msgid "set focus"
 msgstr "setze Fokus"
 
 #: ags/app/editor/ags_position_wave_cursor_popover.c:218
-#: ags/app/editor/ags_position_notation_cursor_popover.c:218
+#: ags/app/editor/ags_position_notation_cursor_popover.c:222
 #: ags/app/editor/ags_position_sheet_cursor_dialog.c:171
 #: ags/app/editor/ags_position_automation_cursor_popover.c:218
 msgid "position x"
 msgstr "positioniere x"
 
 #: ags/app/editor/ags_position_wave_cursor_popover.c:241
-#: ags/app/editor/ags_position_notation_cursor_popover.c:261
+#: ags/app/editor/ags_position_notation_cursor_popover.c:265
 #: ags/app/editor/ags_ramp_acceleration_popover.c:324
 #: ags/app/editor/ags_time_stretch_buffer_popover.c:280
-#: ags/app/editor/ags_crop_note_popover.c:272
+#: ags/app/editor/ags_crop_note_popover.c:276
 #: ags/app/editor/ags_position_automation_cursor_popover.c:241
 #: ags/app/editor/ags_select_acceleration_popover.c:272
 #: ags/app/editor/ags_select_buffer_popover.c:265
-#: ags/app/editor/ags_move_note_popover.c:267
+#: ags/app/editor/ags_move_note_popover.c:271
 #: ags/app/editor/ags_select_note_popover.c:302
 msgid "apply"
 msgstr ""
 
-#: ags/app/editor/ags_position_notation_cursor_popover.c:238
+#: ags/app/editor/ags_position_notation_cursor_popover.c:242
 #: ags/app/editor/ags_position_sheet_cursor_dialog.c:191
 msgid "position y"
 msgstr "positioniere y"
@@ -598,24 +602,24 @@ msgstr ""
 msgid "new BPM"
 msgstr ""
 
-#: ags/app/editor/ags_crop_note_popover.c:206
-#: ags/app/editor/ags_move_note_popover.c:211
+#: ags/app/editor/ags_crop_note_popover.c:210
+#: ags/app/editor/ags_move_note_popover.c:215
 msgid "absolute"
 msgstr "absolut"
 
-#: ags/app/editor/ags_crop_note_popover.c:211
+#: ags/app/editor/ags_crop_note_popover.c:215
 msgid "in-place"
 msgstr "vor Ort"
 
-#: ags/app/editor/ags_crop_note_popover.c:216
+#: ags/app/editor/ags_crop_note_popover.c:220
 msgid "do resize"
 msgstr "grösse ändern"
 
-#: ags/app/editor/ags_crop_note_popover.c:229
+#: ags/app/editor/ags_crop_note_popover.c:233
 msgid "crop note"
 msgstr "Noten scheren"
 
-#: ags/app/editor/ags_crop_note_popover.c:249
+#: ags/app/editor/ags_crop_note_popover.c:253
 msgid "padding note"
 msgstr "Noten Abstand"
 
@@ -1033,15 +1037,15 @@ msgstr "Notation"
 msgid "notation x1"
 msgstr "Notation"
 
-#: ags/app/editor/ags_move_note_popover.c:206
+#: ags/app/editor/ags_move_note_popover.c:210
 msgid "relative"
 msgstr "relativ"
 
-#: ags/app/editor/ags_move_note_popover.c:224
+#: ags/app/editor/ags_move_note_popover.c:228
 msgid "move x"
 msgstr "bewege x"
 
-#: ags/app/editor/ags_move_note_popover.c:244
+#: ags/app/editor/ags_move_note_popover.c:248
 msgid "move y"
 msgstr "bewege y"
 
@@ -1094,7 +1098,7 @@ msgstr "Wiederholrate"
 #: ags/app/ags_export_soundcard_callbacks.c:454
 #: ags/app/machine/ags_audiorec_callbacks.c:153
 #: ags/app/machine/ags_drum_input_pad_callbacks.c:81
-#: ags/app/machine/ags_drum_callbacks.c:83
+#: ags/app/machine/ags_drum_callbacks.c:84
 #, fuzzy
 msgid "open audio files"
 msgstr "Öffne Audio-Dateien"
@@ -1553,6 +1557,12 @@ msgstr "ziehen"
 msgid "selected"
 msgstr "ausgewählt"
 
+#: ags/app/machine/ags_drum_callbacks.c:96
+#: ags/app/machine/ags_ffplayer_callbacks.c:276
+#: ags/app/machine/ags_sf2_synth_callbacks.c:97
+msgid "download samples"
+msgstr ""
+
 #: ags/app/machine/ags_sfz_synth.c:397
 msgid "opcode"
 msgstr ""
@@ -1731,8 +1741,8 @@ msgid "loop end"
 msgstr "schleifen Ende"
 
 #: ags/app/machine/ags_sfz_synth_callbacks.c:84
-#: ags/app/machine/ags_ffplayer_callbacks.c:265
-#: ags/app/machine/ags_sf2_synth_callbacks.c:84
+#: ags/app/machine/ags_ffplayer_callbacks.c:266
+#: ags/app/machine/ags_sf2_synth_callbacks.c:85
 #: ags/app/machine/ags_pitch_sampler_callbacks.c:73
 #, fuzzy
 msgid "open Soundfont2 file"

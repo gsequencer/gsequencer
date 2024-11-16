@@ -17,33 +17,21 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_PATTERN_BOX_CALLBACKS_H__
-#define __AGS_PATTERN_BOX_CALLBACKS_H__
+#include <ags/app/ags_download_window_callbacks.h>
 
-#include <glib.h>
-#include <glib-object.h>
+#include <ags/app/ags_ui_provider.h>
+#include <ags/app/ags_gsequencer_application.h>
 
-#include <gtk/gtk.h>
+#include <ags/i18n.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
+gboolean
+ags_download_window_close_request_callback(GtkWindow *window, gpointer user_data)
+{
+  AgsApplicationContext *application_context;
 
-#include <ags/app/machine/ags_pattern_box.h>
-
-G_BEGIN_DECLS
-
-void ags_pattern_box_update_ui_callback(GObject *ui_provider,
-					AgsPatternBox *pattern_box);
-
-/* controls */
-void ags_pattern_box_pad_callback(GObject *gobject,
-				  GParamSpec *pspec,
-				  AgsPatternBox *pattern_box);
-void ags_pattern_box_offset_callback(GObject *gobject,
-				     GParamSpec *pspec,
-				     AgsPatternBox *pattern_box);
-
-G_END_DECLS
-
-#endif /*__AGS_PATTERN_BOX_CALLBACKS_H__*/
+  application_context = ags_application_context_get_instance();
+  
+  ags_gsequencer_application_refresh_window_menu((AgsGSequencerApplication *) ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
+  
+  return(FALSE);
+}

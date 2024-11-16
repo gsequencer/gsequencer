@@ -537,7 +537,7 @@ ags_drum_connect(AgsConnectable *connectable)
 {
   AgsDrum *drum;
 
-  int i;
+  guint i;
 
   if(ags_connectable_is_connected(connectable)){
     return;
@@ -552,20 +552,20 @@ ags_drum_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) drum->open, "clicked",
 		   G_CALLBACK(ags_drum_open_callback), (gpointer) drum);
 
-  g_signal_connect((GObject *) drum->loop_button, "toggled",
+  g_signal_connect((GObject *) drum->loop_button, "notify::active",
 		   G_CALLBACK(ags_drum_loop_button_callback), (gpointer) drum);
 
   g_signal_connect_after((GObject *) drum->length_spin, "value-changed",
 			 G_CALLBACK(ags_drum_length_spin_callback), (gpointer) drum);
 
-  for(i = 0; i < 12; i++){
-    g_signal_connect(G_OBJECT(drum->index1[i]), "toggled",
-		     G_CALLBACK(ags_drum_index1_callback), (gpointer) drum);
+  for(i = 0; i < 4; i++){
+    g_signal_connect((GObject *) (drum->index0[i]), "notify::active",
+		     G_CALLBACK(ags_drum_index0_callback), (gpointer) drum);
   }
 
-  for(i = 0; i < 4; i++){
-    g_signal_connect(G_OBJECT(drum->index0[i]), "toggled",
-		     G_CALLBACK(ags_drum_index0_callback), (gpointer) drum);
+  for(i = 0; i < 12; i++){
+    g_signal_connect((GObject *) (drum->index1[i]), "notify::active",
+		     G_CALLBACK(ags_drum_index1_callback), (gpointer) drum);
   }
 
   ags_connectable_connect(AGS_CONNECTABLE(drum->pattern_box));
@@ -580,7 +580,7 @@ ags_drum_disconnect(AgsConnectable *connectable)
 {
   AgsDrum *drum;
 
-  int i;
+  guint i;
 
   if(!ags_connectable_is_connected(connectable)){
     return;
@@ -596,7 +596,7 @@ ags_drum_disconnect(AgsConnectable *connectable)
 		      NULL);
 
   g_object_disconnect((GObject *) drum->loop_button,
-		      "any_signal::toggled",
+		      "any_signal::notify::active",
 		      G_CALLBACK(ags_drum_loop_button_callback),
 		      (gpointer) drum,
 		      NULL);
@@ -607,18 +607,18 @@ ags_drum_disconnect(AgsConnectable *connectable)
 		      (gpointer) drum,
 		      NULL);
 
-  for(i = 0; i < 12; i++){
-    g_object_disconnect(G_OBJECT(drum->index1[i]),
-			"any_signal::toggled",
-			G_CALLBACK(ags_drum_index1_callback),
+  for(i = 0; i < 4; i++){
+    g_object_disconnect(G_OBJECT(drum->index0[i]),
+			"any_signal::notify::active",
+			G_CALLBACK(ags_drum_index0_callback),
 			(gpointer) drum,
 			NULL);
   }
 
-  for(i = 0; i < 4; i++){
-    g_object_disconnect(G_OBJECT(drum->index0[i]),
-			"any_signal::toggled",
-			G_CALLBACK(ags_drum_index0_callback),
+  for(i = 0; i < 12; i++){
+    g_object_disconnect(G_OBJECT(drum->index1[i]),
+			"any_signal::notify::active",
+			G_CALLBACK(ags_drum_index1_callback),
 			(gpointer) drum,
 			NULL);
   }

@@ -106,6 +106,7 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   GSimpleAction *save_as_action;
   GSimpleAction *meta_data_action;
   GSimpleAction *export_action;
+  GSimpleAction *download_action;
   GSimpleAction *smf_import_action;
   GSimpleAction *smf_export_action;
   GSimpleAction *preferences_action;
@@ -117,6 +118,7 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   GSimpleAction *present_preferences_window_action;
   GSimpleAction *present_meta_data_window_action;
   GSimpleAction *present_export_window_action;
+  GSimpleAction *present_download_window_action;
   GSimpleAction *present_smf_import_window_action;
   GSimpleAction *present_smf_export_window_action;
   GSimpleAction *present_help_window_action;
@@ -307,6 +309,14 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
 			  G_ACTION(export_action));
 
+  /* download */
+  download_action = g_simple_action_new("download",
+				      NULL);
+  g_signal_connect(download_action, "activate",
+		   G_CALLBACK(ags_gsequencer_download_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(download_action));
+
   /* SMF import */
   smf_import_action = g_simple_action_new("smf_import",
 					  NULL);
@@ -386,6 +396,14 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
 		   G_CALLBACK(ags_gsequencer_present_meta_data_window_callback), gsequencer_app);
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
 			  G_ACTION(present_meta_data_window_action));
+
+  /* present download window */
+  present_download_window_action = g_simple_action_new("present_download_window",
+						     NULL);
+  g_signal_connect(present_download_window_action, "activate",
+		   G_CALLBACK(ags_gsequencer_present_download_window_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(present_download_window_action));
 
   /* present export window */
   present_export_window_action = g_simple_action_new("present_export_window",
@@ -795,6 +813,11 @@ ags_gsequencer_application_startup(GApplication *app)
   g_menu_append_item(gsequencer_app->edit_menu,
 		     item);  
 
+  item = g_menu_item_new(i18n("Downloads"),
+			 "app.downloads");
+  g_menu_append_item(gsequencer_app->edit_menu,
+		     item);  
+
   g_menu_insert_submenu(gsequencer_app->menubar,
 			-1,
 			i18n("Edit"),
@@ -1036,6 +1059,15 @@ ags_gsequencer_application_refresh_window_menu(AgsGSequencerApplication *app)
      gtk_widget_is_visible(ags_ui_provider_get_preferences(AGS_UI_PROVIDER(application_context)))){
     item = g_menu_item_new(i18n("preferences"),
 			   "app.present_preferences_window");
+    g_menu_insert_item(app->window_menu,
+		       -1,
+		       item);
+  }
+  
+  if(ags_ui_provider_get_download_window(AGS_UI_PROVIDER(application_context)) != NULL &&
+     gtk_widget_is_visible(ags_ui_provider_get_download_window(AGS_UI_PROVIDER(application_context)))){
+    item = g_menu_item_new(i18n("sample downloads"),
+			   "app.present_download_window");
     g_menu_insert_item(app->window_menu,
 		       -1,
 		       item);

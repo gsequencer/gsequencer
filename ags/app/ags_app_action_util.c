@@ -26,6 +26,7 @@
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_composite_editor.h>
 #include <ags/app/ags_export_window.h>
+#include <ags/app/ags_download_window.h>
 #include <ags/app/ags_meta_data_window.h>
 #include <ags/app/ags_preferences.h>
 #include <ags/app/ags_online_help_window.h>
@@ -814,6 +815,24 @@ ags_app_action_util_export()
 			 TRUE);
 
   gtk_window_present((GtkWindow *) export_window);
+
+  ags_gsequencer_application_refresh_window_menu((AgsGSequencerApplication *) ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
+}
+
+void
+ags_app_action_util_download()
+{  
+  AgsDownloadWindow *download_window;
+
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+
+  download_window = (AgsDownloadWindow *) ags_ui_provider_get_download_window(AGS_UI_PROVIDER(application_context));
+  gtk_widget_set_visible((GtkWidget *) download_window,
+			 TRUE);
+
+  gtk_window_present((GtkWindow *) download_window);
 
   ags_gsequencer_application_refresh_window_menu((AgsGSequencerApplication *) ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
 }

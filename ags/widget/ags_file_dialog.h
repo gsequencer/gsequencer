@@ -39,6 +39,10 @@ G_BEGIN_DECLS
 typedef struct _AgsFileDialog AgsFileDialog;
 typedef struct _AgsFileDialogClass AgsFileDialogClass;
 
+typedef enum{
+  AGS_FILE_DIALOG_SHOW_DOWNLOAD_LINK       = 1,
+}AgsFileDialogFlags;
+
 struct _AgsFileDialog
 {
   GtkWindow window;
@@ -48,6 +52,8 @@ struct _AgsFileDialog
   GtkBox *vbox;
 
   AgsFileWidget *file_widget;
+  
+  GtkLinkButton *download_link;
   
   GtkButton *activate_button;
 };
@@ -62,7 +68,16 @@ struct _AgsFileDialogClass
 
 GType ags_file_dialog_get_type();
 
+gboolean ags_file_dialog_test_flags(AgsFileDialog *file_dialog,
+				    guint flags);
+void ags_file_dialog_set_flags(AgsFileDialog *file_dialog,
+			       guint flags);
+void ags_file_dialog_unset_flags(AgsFileDialog *file_dialog,
+				 guint flags);
+
 AgsFileWidget* ags_file_dialog_get_file_widget(AgsFileDialog *file_dialog);
+
+GtkLinkButton* ags_file_dialog_get_download_link(AgsFileDialog *file_dialog);
 
 void ags_file_dialog_response(AgsFileDialog *file_dialog,
 			      gint response_id);

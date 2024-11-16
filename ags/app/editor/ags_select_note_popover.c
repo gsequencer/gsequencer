@@ -39,6 +39,10 @@ void ags_select_note_popover_applicable_interface_init(AgsApplicableInterface *a
 void ags_select_note_popover_init(AgsSelectNotePopover *select_note_popover);
 void ags_select_note_popover_finalize(GObject *gobject);
 
+xmlNode* ags_select_note_popover_xml_compose(AgsConnectable *connectable);
+void ags_select_note_popover_xml_parse(AgsConnectable *connectable,
+				       xmlNode *node);
+
 gboolean ags_select_note_popover_is_connected(AgsConnectable *connectable);
 void ags_select_note_popover_connect(AgsConnectable *connectable);
 void ags_select_note_popover_disconnect(AgsConnectable *connectable);
@@ -150,8 +154,8 @@ ags_select_note_popover_connectable_interface_init(AgsConnectableInterface *conn
   connectable->remove_from_registry = NULL;
 
   connectable->list_resource = NULL;
-  connectable->xml_compose = NULL;
-  connectable->xml_parse = NULL;
+  connectable->xml_compose = ags_select_note_popover_xml_compose;
+  connectable->xml_parse = ags_select_note_popover_xml_parse;
 
   connectable->is_connected = ags_select_note_popover_is_connected;  
   connectable->connect = ags_select_note_popover_connect;
@@ -309,6 +313,133 @@ ags_select_note_popover_init(AgsSelectNotePopover *select_note_popover)
 
   gtk_popover_set_default_widget((GtkPopover *) select_note_popover,
 				 (GtkWidget *) select_note_popover->activate_button);
+}
+
+xmlNode*
+ags_select_note_popover_xml_compose(AgsConnectable *connectable)
+{
+  AgsSelectNotePopover *select_note_popover;
+  
+  xmlNode *node;
+
+  gchar *str;
+  
+  select_note_popover = AGS_SELECT_NOTE_POPOVER(connectable);
+
+  node = xmlNewNode(NULL,
+		    BAD_CAST "ags-select-note-popover");
+
+  /* absolute */
+  str = g_strdup_printf("%s",
+			((gtk_check_button_get_active(select_note_popover->copy_selection)) ? "true": "false"));
+  
+  xmlNewProp(node,
+	     BAD_CAST "copy-selection",
+	     BAD_CAST str);
+  
+  g_free(str);
+
+  /* select x0 */
+  str = g_strdup_printf("%f",
+			gtk_spin_button_get_value(select_note_popover->select_x0));
+  
+  xmlNewProp(node,
+	     BAD_CAST "select-x0",
+	     BAD_CAST str);
+  
+  g_free(str);
+
+  /* select y0 */
+  str = g_strdup_printf("%f",
+			gtk_spin_button_get_value(select_note_popover->select_y0));
+  
+  xmlNewProp(node,
+	     BAD_CAST "select-y0",
+	     BAD_CAST str);
+  
+  g_free(str);
+
+  /* select x1 */
+  str = g_strdup_printf("%f",
+			gtk_spin_button_get_value(select_note_popover->select_x1));
+  
+  xmlNewProp(node,
+	     BAD_CAST "select-x1",
+	     BAD_CAST str);
+  
+  g_free(str);
+
+  /* select y1 */
+  str = g_strdup_printf("%f",
+			gtk_spin_button_get_value(select_note_popover->select_y1));
+  
+  xmlNewProp(node,
+	     BAD_CAST "select-y1",
+	     BAD_CAST str);
+  
+  g_free(str);
+
+  return(node);
+}
+
+void
+ags_select_note_popover_xml_parse(AgsConnectable *connectable,
+				xmlNode *node)
+{
+  AgsSelectNotePopover *select_note_popover;
+  
+  gchar *str;
+  
+  select_note_popover = AGS_SELECT_NOTE_POPOVER(connectable);
+
+  /* absolute */
+  str = xmlGetProp(node,
+		   "copy-selection");
+
+  gtk_check_button_set_active(select_note_popover->copy_selection,
+			      ((!g_ascii_strncasecmp(str, "false", 6) == FALSE) ? TRUE: FALSE));
+
+  xmlFree(str);
+
+  /* select x0 */
+  str = xmlGetProp(node,
+		   "select-x0");
+
+  gtk_spin_button_set_value(select_note_popover->select_x0,
+			    g_ascii_strtod(str,
+					   NULL));
+  
+  xmlFree(str);
+
+  /* select y0 */
+  str = xmlGetProp(node,
+		   "select-y0");
+
+  gtk_spin_button_set_value(select_note_popover->select_y0,
+			    g_ascii_strtod(str,
+					   NULL));
+  
+  xmlFree(str);
+
+  /* select x1 */
+  str = xmlGetProp(node,
+		   "select-x1");
+
+  gtk_spin_button_set_value(select_note_popover->select_x1,
+			    g_ascii_strtod(str,
+					   NULL));
+  
+  xmlFree(str);
+
+  /* select y1 */
+  str = xmlGetProp(node,
+		   "select-y1");
+
+  gtk_spin_button_set_value(select_note_popover->select_y1,
+			    g_ascii_strtod(str,
+					   NULL));
+  
+  xmlFree(str);
 }
 
 gboolean

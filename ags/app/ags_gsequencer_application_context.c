@@ -26,6 +26,7 @@
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_export_window.h>
 #include <ags/app/ags_export_soundcard.h>
+#include <ags/app/ags_download_window.h>
 #include <ags/app/ags_preferences.h>
 #include <ags/app/ags_meta_data_window.h>
 #include <ags/app/ags_effect_bridge.h>
@@ -255,6 +256,10 @@ void ags_gsequencer_application_context_set_meta_data_window(AgsUiProvider *ui_p
 GList* ags_gsequencer_application_context_get_visible_window(AgsUiProvider *ui_provider);
 void ags_gsequencer_application_context_set_visible_window(AgsUiProvider *ui_provider,
 							   GList *visible_window);
+
+GtkWidget* ags_gsequencer_application_context_get_download_window(AgsUiProvider *ui_provider);
+void ags_gsequencer_application_context_set_download_window(AgsUiProvider *ui_provider,
+							  GtkWidget *widget);
 
 void ags_gsequencer_application_context_prepare(AgsApplicationContext *application_context);
 void ags_gsequencer_application_context_setup(AgsApplicationContext *application_context);
@@ -602,6 +607,9 @@ ags_gsequencer_application_context_ui_provider_interface_init(AgsUiProviderInter
 
   ui_provider->get_visible_window = ags_gsequencer_application_context_get_visible_window;
   ui_provider->set_visible_window = ags_gsequencer_application_context_set_visible_window;
+
+  ui_provider->get_download_window = ags_gsequencer_application_context_get_download_window;
+  ui_provider->set_download_window = ags_gsequencer_application_context_set_download_window;
 }
 
 void
@@ -740,6 +748,8 @@ ags_gsequencer_application_context_init(AgsGSequencerApplicationContext *gsequen
   g_timeout_add((guint) (1000.0 * update_ui_timeout),
   		(GSourceFunc) ags_gsequencer_application_context_update_ui_timeout,
   		(gpointer) gsequencer_application_context);
+
+  gsequencer_application_context->download_window = NULL;
 }
 
 void
@@ -1028,10 +1038,24 @@ void
 ags_gsequencer_application_context_connect(AgsConnectable *connectable)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
+  AgsExportSoundcard *export_soundcard;
 
+  GList *start_list;
   GList *start_soundcard, *soundcard;
   GList *start_sequencer, *sequencer;
 
+  gchar *export_dirname;
+  gchar *str;
+  
+  gint backend_position;
+  gint card_position;
+
+#ifndef AGS_W32API
+  struct passwd *pw;
+
+  uid_t uid;
+#endif
+  
   gsequencer_application_context = AGS_GSEQUENCER_APPLICATION_CONTEXT(connectable);
 
   if(ags_connectable_is_connected(connectable)){
@@ -1043,10 +1067,47 @@ ags_gsequencer_application_context_connect(AgsConnectable *connectable)
   /* soundcard */
   soundcard = 
     start_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(gsequencer_application_context));
+
+  backend_position = -1;
+  card_position = -1;
   
   while(soundcard != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(soundcard->data));
 
+    if(backend_position == -1){
+      backend_position = 0;
+      card_position = 0;
+      
+      if(AGS_IS_PULSE_DEVOUT(soundcard->data)){
+	backend_position = 0;
+      }else if(AGS_IS_JACK_DEVOUT(soundcard->data)){	
+#if defined(AGS_WITH_PULSE)
+	backend_position++;
+#endif
+      }else if(AGS_IS_ALSA_DEVOUT(soundcard->data)){
+	GList *start_card_id, *card_id;
+	
+	gchar *device;
+	
+#if defined(AGS_WITH_PULSE)
+	backend_position++;
+#endif
+	
+#if defined(AGS_WITH_JACK)
+	backend_position++;
+#endif
+      }else if(AGS_IS_OSS_DEVOUT(soundcard->data)){
+#if defined(AGS_WITH_PULSE)
+	backend_position++;
+#endif
+	
+#if defined(AGS_WITH_JACK)
+	backend_position++;
+#endif
+      }
+      
+    }
+    
     soundcard = soundcard->next;
   }
 
@@ -1071,6 +1132,67 @@ ags_gsequencer_application_context_connect(AgsConnectable *connectable)
 
   /* export window */
   ags_connectable_connect(AGS_CONNECTABLE(gsequencer_application_context->export_window));
+
+  export_soundcard = NULL;
+
+  start_list = ags_export_window_get_export_soundcard((AgsExportWindow *) gsequencer_application_context->export_window);
+  
+  if(start_list != NULL){
+    export_soundcard = start_list->data;
+  }
+
+  if(backend_position != -1){
+    gtk_combo_box_set_active((GtkComboBox *) export_soundcard->backend,
+			     backend_position);
+  }else{  
+    gtk_combo_box_set_active((GtkComboBox *) export_soundcard->backend,
+			     0);
+  }
+
+  ags_export_soundcard_refresh_card(export_soundcard);
+  
+  if(card_position != -1){
+    gtk_combo_box_set_active((GtkComboBox *) export_soundcard->card,
+			     card_position);
+  }else{
+    gtk_combo_box_set_active((GtkComboBox *) export_soundcard->card,
+			     0);
+  }
+
+  export_dirname = g_strdup(".");
+    
+#if defined(AGS_OSX_DMG_ENV)
+  uid = getuid();
+  pw = getpwuid(uid);
+
+  g_free(export_dirname);
+  
+  export_dirname = g_strdup_printf("%s/Music/GSequencer/workspace/default",
+				   pw->pw_dir);
+#endif
+  
+#if !defined(AGS_W32_EXE_ENV) && !defined(AGS_OSX_DMG_ENV)
+  uid = getuid();
+  pw = getpwuid(uid);  
+
+  g_free(export_dirname);
+
+  export_dirname = g_strdup(pw->pw_dir);
+#endif
+
+  str = g_strdup_printf("%s/out.wav",
+			export_dirname);
+  
+  gtk_editable_set_text(GTK_EDITABLE(export_soundcard->filename),
+			str);
+
+  g_list_free(start_list);
+
+  g_free(export_dirname);
+  g_free(str);
+
+  /* download window */
+  ags_connectable_connect(AGS_CONNECTABLE(gsequencer_application_context->download_window));
 }
 
 void
@@ -1120,6 +1242,9 @@ ags_gsequencer_application_context_disconnect(AgsConnectable *connectable)
 
   /* export window */
   ags_connectable_disconnect(AGS_CONNECTABLE(gsequencer_application_context->export_window));
+
+  /* download window */
+  ags_connectable_disconnect(AGS_CONNECTABLE(gsequencer_application_context->download_window));
 }
 
 AgsThread*
@@ -2812,6 +2937,33 @@ ags_gsequencer_application_context_set_visible_window(AgsUiProvider *ui_provider
   gsequencer_application_context->visible_window = visible_window;
 }
 
+GtkWidget*
+ags_gsequencer_application_context_get_download_window(AgsUiProvider *ui_provider)
+{
+  GtkWidget *download_window;
+  
+  AgsGSequencerApplicationContext *gsequencer_application_context;
+
+  gsequencer_application_context = AGS_GSEQUENCER_APPLICATION_CONTEXT(ui_provider);
+
+  /* get download window */
+  download_window = gsequencer_application_context->download_window;
+
+  return(download_window);
+}
+
+void
+ags_gsequencer_application_context_set_download_window(AgsUiProvider *ui_provider,
+						       GtkWidget *widget)
+{
+  AgsGSequencerApplicationContext *gsequencer_application_context;
+
+  gsequencer_application_context = AGS_GSEQUENCER_APPLICATION_CONTEXT(ui_provider);
+
+  /* set download window */
+  gsequencer_application_context->download_window = widget;
+}
+
 void
 ags_gsequencer_application_context_prepare(AgsApplicationContext *application_context)
 {
@@ -2824,6 +2976,7 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
   AgsWaveEditBox *wave_edit_box;
   AgsExportWindow *export_window;
   AgsExportSoundcard *export_soundcard;  
+  AgsDownloadWindow *download_window;
   
   GtkAdjustment *adjustment;
   GtkAdjustment *edit_adjustment;
@@ -3257,6 +3410,9 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
   
   /* AgsMetaDataWindow */
   widget = (GtkWidget *) ags_meta_data_window_new();
+
+  /* AgsDownloadWindow */
+  download_window = ags_download_window_new((GtkWindow *) window);
 }
 
 void

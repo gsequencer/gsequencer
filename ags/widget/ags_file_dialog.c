@@ -19,6 +19,8 @@
 
 #include "ags_file_dialog.h"
 
+#include <glib/gstdio.h>
+
 #include <gdk/gdkkeysyms.h>
 
 #include <ags/i18n.h>
@@ -36,6 +38,8 @@ void ags_file_dialog_get_property(GObject *gobject,
 				  GParamSpec *param_spec);
 void ags_file_dialog_dispose(GObject *gobject);
 void ags_file_dialog_finalize(GObject *gobject);
+
+void ags_file_dialog_show(GtkWidget *widget);
 
 void ags_file_dialog_close_request_callback(GtkWindow *window,
 					    AgsFileDialog *file_dialog);
@@ -132,6 +136,11 @@ ags_file_dialog_class_init(AgsFileDialogClass *file_dialog)
   gobject->dispose = ags_file_dialog_dispose;
   gobject->finalize = ags_file_dialog_finalize;
 
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) file_dialog;
+
+  widget->show = ags_file_dialog_show;
+
   /* properties */
   /**
    * AgsFileWidget:file-widget:
@@ -175,6 +184,7 @@ void
 ags_file_dialog_init(AgsFileDialog *file_dialog)
 {  
   GtkEventController *event_controller;
+  GtkGrid *grid;
   
   file_dialog->flags = 0;
   
@@ -230,6 +240,31 @@ ags_file_dialog_init(AgsFileDialog *file_dialog)
   
   gtk_box_append(file_dialog->vbox,
 		 (GtkWidget *) file_dialog->file_widget);
+
+  /* grid */
+  grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_widget_set_vexpand((GtkWidget *) grid,
+			 FALSE);
+  gtk_widget_set_hexpand((GtkWidget *) grid,
+			 FALSE);
+
+  gtk_grid_set_column_spacing(grid,
+			      6);
+  gtk_grid_set_row_spacing(grid,
+			   6);
+
+  gtk_box_append(file_dialog->vbox,
+		 (GtkWidget *) grid);
+
+  /* download link */
+  file_dialog->download_link = (GtkLinkButton *) gtk_link_button_new_with_label("https://gsequencer.com",
+										i18n("download"));
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) file_dialog->download_link,
+		  0, 0,
+		  1, 1);
   
   /* button */
   file_dialog->activate_button = (GtkButton *) gtk_button_new_with_label(i18n("open"));
@@ -320,8 +355,74 @@ void
 ags_file_dialog_activate_button_callback(GtkButton *activate_button,
 					 AgsFileDialog *file_dialog)
 {
-  ags_file_dialog_response(file_dialog,
-			   GTK_RESPONSE_ACCEPT);
+  gchar *filename;
+  gchar *basename;
+  gchar *dirname;
+
+  filename = ags_file_widget_get_filename(file_dialog->file_widget);
+
+  dirname = g_path_get_dirname(filename);
+  basename = g_path_get_basename(filename);
+
+  if(file_dialog->file_widget->file_action == AGS_FILE_WIDGET_SAVE_AS){  
+    gboolean writable_location;
+    
+    writable_location = (g_access(dirname, W_OK) == 0) ? TRUE: FALSE;
+    
+    if(writable_location &&
+       basename != NULL &&
+       strlen(basename) > 0 &&
+       (!g_strncasecmp(basename, ".", 2)) == FALSE &&
+       (!g_strncasecmp(basename, "..", 3)) == FALSE &&
+       !g_file_test(filename, G_FILE_TEST_IS_DIR)){
+      ags_file_dialog_response(file_dialog,
+			       GTK_RESPONSE_ACCEPT);
+    }    
+  }else{
+    GSList *start_filenames, *filenames;
+
+    gboolean readable_location;
+    gboolean success;
+    
+    filenames =
+      start_filenames = ags_file_widget_get_filenames(file_dialog->file_widget);
+    
+    readable_location = (g_access(dirname, R_OK) == 0) ? TRUE: FALSE;
+    
+    if(readable_location &&
+       basename != NULL &&
+       strlen(basename) > 0){
+      success = FALSE;
+      
+      if(!g_file_test(filename, G_FILE_TEST_IS_DIR)){
+	success = TRUE;
+	
+	ags_file_dialog_response(file_dialog,
+				 GTK_RESPONSE_ACCEPT);
+      }
+
+      if(!success){
+	while(!success &&
+	      filenames != NULL){
+	  if(!g_file_test(filenames->data, G_FILE_TEST_IS_DIR)){
+	    success = TRUE;
+	
+	    ags_file_dialog_response(file_dialog,
+				     GTK_RESPONSE_ACCEPT);
+	  }
+
+	  filenames = filenames->next;
+	}
+      }
+    }
+
+    g_slist_free_full(start_filenames,
+		      g_free);
+  }
+
+  g_free(filename);
+  g_free(dirname);
+  g_free(basename);
 }
 
 gboolean
@@ -389,6 +490,89 @@ ags_file_dialog_modifiers_callback(GtkEventControllerKey *event_controller,
   return(FALSE);
 }
 
+void
+ags_file_dialog_show(GtkWidget *widget)
+{
+  AgsFileDialog *file_dialog;
+
+  file_dialog = AGS_FILE_DIALOG(widget);
+
+  /* hide unneeded */
+  if((AGS_FILE_DIALOG_SHOW_DOWNLOAD_LINK & (file_dialog->flags)) == 0){
+    gtk_widget_set_visible((GtkWidget *) file_dialog->download_link,
+			   FALSE);
+  }
+  
+  /* call parent */
+  GTK_WIDGET_CLASS(ags_file_dialog_parent_class)->show(widget);
+}
+
+/**
+ * ags_file_dialog_test_flags:
+ * @file_dialog: the #AgsFileDialog
+ * @flags: the flags
+ *
+ * Test @flags of @file_dialog.
+ * 
+ * Returns: %TRUE if flags set, otherwise %FALSE
+ * 
+ * Since: 7.2.8
+ */
+gboolean
+ags_file_dialog_test_flags(AgsFileDialog *file_dialog,
+			   guint flags)
+{
+  gboolean success;
+
+  if(!AGS_IS_FILE_DIALOG(file_dialog)){
+    return(FALSE);
+  }
+  
+  success = ((flags & (file_dialog->flags)) != 0) ? TRUE: FALSE;
+  
+  return(success);
+}
+
+/**
+ * ags_file_dialog_set_flags:
+ * @file_dialog: the #AgsFileDialog
+ * @flags: the flags
+ *
+ * Set @flags of @file_dialog.
+ * 
+ * Since: 7.2.8
+ */
+void
+ags_file_dialog_set_flags(AgsFileDialog *file_dialog,
+			  guint flags)
+{
+  if(!AGS_IS_FILE_DIALOG(file_dialog)){
+    return;
+  }
+  
+  file_dialog->flags |= flags;
+}
+
+/**
+ * ags_file_dialog_unset_flags:
+ * @file_dialog: the #AgsFileDialog
+ * @flags: the flags
+ *
+ * Set @flags of @file_dialog.
+ * 
+ * Since: 7.2.8
+ */
+void
+ags_file_dialog_unset_flags(AgsFileDialog *file_dialog,
+			    guint flags)
+{
+  if(!AGS_IS_FILE_DIALOG(file_dialog)){
+    return;
+  }
+
+  file_dialog->flags &= (~flags);
+}
+
 /**
  * ags_file_dialog_get_widget:
  * @file_dialog: the #AgsFileDialog
@@ -405,6 +589,24 @@ ags_file_dialog_get_file_widget(AgsFileDialog *file_dialog)
   g_return_val_if_fail(AGS_IS_FILE_DIALOG(file_dialog), NULL);
 
   return(file_dialog->file_widget);
+}
+
+/**
+ * ags_file_dialog_get_download_link:
+ * @file_dialog: the #AgsFileDialog
+ *
+ * Get download link of @file_dialog.
+ * 
+ * Returns: the #GtkLinkButton or %NULL
+ * 
+ * Since: 7.2.8
+ */
+GtkLinkButton*
+ags_file_dialog_get_download_link(AgsFileDialog *file_dialog)
+{
+  g_return_val_if_fail(AGS_IS_FILE_DIALOG(file_dialog), NULL);
+
+  return(file_dialog->download_link);
 }
 
 void

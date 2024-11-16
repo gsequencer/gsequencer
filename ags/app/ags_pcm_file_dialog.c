@@ -21,6 +21,8 @@
 
 #include <ags/app/ags_ui_provider.h>
 
+#include <glib/gstdio.h>
+
 #include <ags/i18n.h>
 
 void ags_pcm_file_dialog_class_init(AgsPCMFileDialogClass *pcm_file_dialog);
@@ -214,6 +216,7 @@ ags_pcm_file_dialog_init(AgsPCMFileDialog *pcm_file_dialog)
   gtk_box_append(vbox,
 		 (GtkWidget *) pcm_file_dialog->file_widget);
 
+  /* grid */
   grid = (GtkGrid *) gtk_grid_new();
 
   gtk_widget_set_vexpand((GtkWidget *) grid,
@@ -275,6 +278,15 @@ ags_pcm_file_dialog_init(AgsPCMFileDialog *pcm_file_dialog)
 		  0, 2,
 		  1, 1);
 
+  /* download link */
+  pcm_file_dialog->download_link = (GtkLinkButton *) gtk_link_button_new_with_label("https://gsequencer.com",
+										    i18n("download"));
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) pcm_file_dialog->download_link,
+		  0, 3,
+		  1, 1);
+  
   /* button */
   pcm_file_dialog->activate_button = (GtkButton *) gtk_button_new_with_label(i18n("open"));
   gtk_widget_set_halign((GtkWidget *) pcm_file_dialog->activate_button,
@@ -308,6 +320,11 @@ ags_pcm_file_dialog_show(GtkWidget *widget)
   
   if((AGS_PCM_FILE_DIALOG_SHOW_EXISTING_CHANNEL & (pcm_file_dialog->flags)) == 0){
     gtk_widget_set_visible((GtkWidget *) pcm_file_dialog->existing_channel,
+			   FALSE);
+  }
+  
+  if((AGS_PCM_FILE_DIALOG_SHOW_DOWNLOAD_LINK & (pcm_file_dialog->flags)) == 0){
+    gtk_widget_set_visible((GtkWidget *) pcm_file_dialog->download_link,
 			   FALSE);
   }
   
@@ -453,6 +470,24 @@ ags_pcm_file_dialog_get_existing_channel(AgsPCMFileDialog *pcm_file_dialog)
   return(pcm_file_dialog->existing_channel);
 }
 
+/**
+ * ags_pcm_file_dialog_get_download_link:
+ * @pcm_file_dialog: the #AgsPCMFileDialog
+ *
+ * Get download link of @pcm_file_dialog.
+ * 
+ * Returns: the #GtkLinkButton or %NULL
+ * 
+ * Since: 7.2.8
+ */
+GtkLinkButton*
+ags_pcm_file_dialog_get_download_link(AgsPCMFileDialog *pcm_file_dialog)
+{
+  g_return_val_if_fail(AGS_IS_PCM_FILE_DIALOG(pcm_file_dialog), NULL);
+
+  return(pcm_file_dialog->download_link);
+}
+
 void
 ags_pcm_file_dialog_close_request_callback(GtkWindow *window,
 					   AgsPCMFileDialog *pcm_file_dialog)
@@ -465,8 +500,74 @@ void
 ags_pcm_file_dialog_activate_button_callback(GtkButton *activate_button,
 					     AgsPCMFileDialog *pcm_file_dialog)
 {
-  ags_pcm_file_dialog_response(pcm_file_dialog,
-			       GTK_RESPONSE_ACCEPT);
+  gchar *filename;
+  gchar *basename;
+  gchar *dirname;
+
+  filename = ags_file_widget_get_filename(pcm_file_dialog->file_widget);
+
+  dirname = g_path_get_dirname(filename);
+  basename = g_path_get_basename(filename);
+
+  if(pcm_file_dialog->file_widget->file_action == AGS_FILE_WIDGET_SAVE_AS){  
+    gboolean writable_location;
+    
+    writable_location = (g_access(dirname, W_OK) == 0) ? TRUE: FALSE;
+    
+    if(writable_location &&
+       basename != NULL &&
+       strlen(basename) > 0 &&
+       (!g_strncasecmp(basename, ".", 2)) == FALSE &&
+       (!g_strncasecmp(basename, "..", 3)) == FALSE &&
+       !g_file_test(filename, G_FILE_TEST_IS_DIR)){
+      ags_pcm_file_dialog_response(pcm_file_dialog,
+				   GTK_RESPONSE_ACCEPT);
+    }    
+  }else{
+    GSList *start_filenames, *filenames;
+
+    gboolean readable_location;
+    gboolean success;
+
+    filenames =
+      start_filenames = ags_file_widget_get_filenames(pcm_file_dialog->file_widget);
+
+    readable_location = (g_access(dirname, R_OK) == 0) ? TRUE: FALSE;
+    
+    if(readable_location &&
+       basename != NULL &&
+       strlen(basename) > 0){
+      success = FALSE;
+      
+      if(!g_file_test(filename, G_FILE_TEST_IS_DIR)){
+	success = TRUE;
+		
+	ags_pcm_file_dialog_response(pcm_file_dialog,
+				     GTK_RESPONSE_ACCEPT);
+      }
+
+      if(!success){
+	while(!success &&
+	      filenames != NULL){
+	  if(!g_file_test(filenames->data, G_FILE_TEST_IS_DIR)){
+	    success = TRUE;
+	
+	    ags_pcm_file_dialog_response(pcm_file_dialog,
+					 GTK_RESPONSE_ACCEPT);
+	  }
+
+	  filenames = filenames->next;
+	}
+      }
+    }    
+
+    g_slist_free_full(start_filenames,
+		      g_free);
+  }
+
+  g_free(filename);
+  g_free(dirname);
+  g_free(basename);
 }
 
 gboolean
