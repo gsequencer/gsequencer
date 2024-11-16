@@ -50,6 +50,17 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="7.2.11" date="2024-11-16">
+      <description>
+	<p>
+	  Improved signal handling of toggle and check buttons.
+	</p>
+	<p>
+	  Improved file dialog, check readable or writable location.
+	</p>
+      </description>
+    </release>
+
     <release version="7.0.0" date="2024-10-17">
       <description>
 	<p>

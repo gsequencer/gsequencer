@@ -387,7 +387,7 @@ ags_file_dialog_activate_button_callback(GtkButton *activate_button,
     filenames =
       start_filenames = ags_file_widget_get_filenames(file_dialog->file_widget);
     
-    readable_location = (g_access(basename, R_OK) == 0) ? TRUE: FALSE;
+    readable_location = (g_access(dirname, R_OK) == 0) ? TRUE: FALSE;
     
     if(readable_location &&
        basename != NULL &&
