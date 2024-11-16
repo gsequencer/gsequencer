@@ -461,7 +461,7 @@ ags_matrix_connect(AgsConnectable *connectable)
   matrix = AGS_MATRIX(connectable);
 
   for(i  = 0; i < 9; i++){
-    g_signal_connect(G_OBJECT (matrix->index[i]), "toggled",
+    g_signal_connect(G_OBJECT (matrix->index[i]), "notify::active",
 		     G_CALLBACK (ags_matrix_index_callback), (gpointer) matrix);
   }
 
@@ -470,7 +470,7 @@ ags_matrix_connect(AgsConnectable *connectable)
   g_signal_connect_after((GObject *) matrix->length_spin, "value-changed",
 			 G_CALLBACK(ags_matrix_length_spin_callback), (gpointer) matrix);
 
-  g_signal_connect((GObject *) matrix->loop_button, "toggled",
+  g_signal_connect((GObject *) matrix->loop_button, "notify::active",
 		   G_CALLBACK(ags_matrix_loop_button_callback), (gpointer) matrix);
 
   g_signal_connect_after(G_OBJECT(matrix), "stop",

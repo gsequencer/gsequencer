@@ -43,8 +43,6 @@ gboolean ags_export_soundcard_is_connected(AgsConnectable *connectable);
 void ags_export_soundcard_connect(AgsConnectable *connectable);
 void ags_export_soundcard_disconnect(AgsConnectable *connectable);
 
-void ags_export_soundcard_show(GtkWidget *widget);
-
 /**
  * SECTION:ags_export_soundcard
  * @short_description: The export soundcard widget
@@ -286,7 +284,6 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
 		  (GtkWidget *) export_soundcard->card,
 		  1, 1,
 		  1, 1);
-
   
   /* filename */
   label = (GtkLabel *) gtk_label_new(i18n("file"));

@@ -2031,6 +2031,11 @@ ags_file_widget_location_drop_down_callback(GObject *location,
 
   item = gtk_drop_down_get_selected_item((GtkDropDown *) location);
 
+  if(item == NULL ||
+     !GTK_IS_STRING_OBJECT(item)){
+    return;
+  }
+  
   current_path = gtk_string_object_get_string((GtkStringObject *) item);
 
   prev_current_path = file_widget->current_path;

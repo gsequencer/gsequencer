@@ -43,6 +43,7 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
 {
   AgsPCMFileDialog *pcm_file_dialog;
   AgsFileWidget *file_widget;
+  GtkLinkButton *link_button;
   
   AgsApplicationContext *application_context;
 
@@ -83,6 +84,16 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
 					    i18n("open audio files"));
 
   drum->open_dialog = pcm_file_dialog;
+
+  ags_pcm_file_dialog_set_flags(pcm_file_dialog,
+				AGS_PCM_FILE_DIALOG_SHOW_DOWNLOAD_LINK);
+
+  link_button = ags_pcm_file_dialog_get_download_link(pcm_file_dialog);
+ 
+  gtk_link_button_set_uri(link_button,
+			  "https://gsequencer.com/samples.html");
+  gtk_button_set_label((GtkButton *) link_button,
+		       i18n("download samples"));
 
   file_widget = ags_pcm_file_dialog_get_file_widget(pcm_file_dialog);
 
@@ -268,13 +279,15 @@ ags_drum_open_response_callback(AgsPCMFileDialog *pcm_file_dialog, gint response
 }
 
 void
-ags_drum_loop_button_callback(GtkWidget *button, AgsDrum *drum)
+ags_drum_loop_button_callback(GObject *gobject,
+			      GParamSpec *pspec,
+			      AgsDrum *drum)
 {
   GList *start_list, *list;
 
   gboolean loop;
 
-  loop = gtk_check_button_get_active(GTK_CHECK_BUTTON(button));
+  loop = gtk_check_button_get_active(GTK_CHECK_BUTTON(gobject));
 
   /* play - ags-fx-pattern */
   g_object_get(AGS_MACHINE(drum)->audio,
@@ -388,12 +401,14 @@ ags_drum_length_spin_callback(GtkWidget *spin_button, AgsDrum *drum)
 }
 
 void
-ags_drum_index0_callback(GtkWidget *widget, AgsDrum *drum)
+ags_drum_index0_callback(GObject *gobject,
+			 GParamSpec *pspec,
+			 AgsDrum *drum)
 {
   if(drum->selected0 != NULL){
     GtkToggleButton *toggle_button;
 
-    if(GTK_TOGGLE_BUTTON(widget) != drum->selected0){
+    if(GTK_TOGGLE_BUTTON(gobject) != drum->selected0){
       GList *start_list, *list;
 
       gchar *str;
@@ -406,7 +421,7 @@ ags_drum_index0_callback(GtkWidget *widget, AgsDrum *drum)
       gtk_toggle_button_set_active(toggle_button,
 				   FALSE);
 
-      drum->selected0 = (GtkToggleButton*) widget;
+      drum->selected0 = (GtkToggleButton *) gobject;
 
       /* calculate index 0 */
       str = gtk_button_get_label((GtkButton *) drum->selected0);
@@ -503,10 +518,10 @@ ags_drum_index0_callback(GtkWidget *widget, AgsDrum *drum)
     }else if(! gtk_toggle_button_get_active(drum->selected0)){
       drum->selected0 = NULL;
 
-      gtk_toggle_button_set_active((GtkToggleButton *) widget,
+      gtk_toggle_button_set_active((GtkToggleButton *) gobject,
 				   TRUE);
 
-      drum->selected0 = (GtkToggleButton*) widget;
+      drum->selected0 = (GtkToggleButton *) gobject;
     }
 
     ags_pattern_box_set_pattern(drum->pattern_box);
@@ -514,12 +529,14 @@ ags_drum_index0_callback(GtkWidget *widget, AgsDrum *drum)
 }
 
 void
-ags_drum_index1_callback(GtkWidget *widget, AgsDrum *drum)
+ags_drum_index1_callback(GObject *gobject,
+			 GParamSpec *pspec,
+			 AgsDrum *drum)
 {
   if(drum->selected1 != NULL){
     GtkToggleButton *toggle_button;
 
-    if(GTK_TOGGLE_BUTTON(widget) != drum->selected1){
+    if(GTK_TOGGLE_BUTTON(gobject) != drum->selected1){
       GList *start_list, *list;
 
       gchar *str;
@@ -532,7 +549,7 @@ ags_drum_index1_callback(GtkWidget *widget, AgsDrum *drum)
       gtk_toggle_button_set_active(toggle_button,
 				   FALSE);
 
-      drum->selected1 = (GtkToggleButton*) widget;
+      drum->selected1 = (GtkToggleButton *) gobject;
 
       /* calculate index 1 */
       str = gtk_button_get_label((GtkButton *) drum->selected1);
@@ -629,10 +646,10 @@ ags_drum_index1_callback(GtkWidget *widget, AgsDrum *drum)
     }else if(!gtk_toggle_button_get_active(drum->selected1)){
       drum->selected1 = NULL;
 
-      gtk_toggle_button_set_active((GtkToggleButton *) widget,
+      gtk_toggle_button_set_active((GtkToggleButton *) gobject,
 				   TRUE);
 
-      drum->selected1 = (GtkToggleButton*) widget;
+      drum->selected1 = (GtkToggleButton *) gobject;
     }
 
     ags_pattern_box_set_pattern(drum->pattern_box);

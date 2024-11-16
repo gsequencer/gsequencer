@@ -755,8 +755,6 @@ ags_export_window_remove_export_soundcard(AgsExportWindow *export_window,
 
     gtk_box_remove(export_window->export_soundcard_box,
 		   (GtkWidget *) export_soundcard);
-    
-    g_object_unref(export_soundcard);
   }
 }
 

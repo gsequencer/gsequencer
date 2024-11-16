@@ -153,7 +153,9 @@ ags_pattern_box_update_ui_callback(GObject *ui_provider,
 }
 
 void
-ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_box)
+ags_pattern_box_pad_callback(GObject *gobject,
+			     GParamSpec *pspec,
+			     AgsPatternBox *pattern_box)
 {
   AgsMachine *machine;
   AgsLine *selected_line;
@@ -183,7 +185,7 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
   list =
     start_list = ags_pattern_box_get_pad(pattern_box);
 
-  for(i = 0; i < pattern_box->n_controls && toggle_button != list->data; i++){
+  for(i = 0; i < pattern_box->n_controls && gobject != list->data; i++){
     list = list->next;
   }
 
@@ -238,7 +240,9 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
 }
 
 void
-ags_pattern_box_offset_callback(GtkWidget *widget, AgsPatternBox *pattern_box)
+ags_pattern_box_offset_callback(GObject *gobject,
+				GParamSpec *pspec,
+				AgsPatternBox *pattern_box)
 {
   ags_pattern_box_set_pattern(pattern_box);
 }

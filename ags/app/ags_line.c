@@ -863,8 +863,8 @@ ags_line_connect(AgsConnectable *connectable)
   }
 
   /* connect group button */
-  g_signal_connect_after((GObject *) line->group, "toggled",
-			 G_CALLBACK(ags_line_group_toggled_callback), (gpointer) line);
+  g_signal_connect_after((GObject *) line->group, "notify::active",
+			 G_CALLBACK(ags_line_group_callback), (gpointer) line);
 
   /* connect line members */
   list =
@@ -905,8 +905,8 @@ ags_line_disconnect(AgsConnectable *connectable)
   if(line->group != NULL &&
      GTK_IS_BUTTON(line->group)){
     g_object_disconnect(line->group,
-			"any_signal::toggled",
-			G_CALLBACK(ags_line_group_toggled_callback),
+			"any_signal::notify::active",
+			G_CALLBACK(ags_line_group_callback),
 			(gpointer) line,
 			NULL);
   }

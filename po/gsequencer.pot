@@ -18,9 +18,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 7.2.6\n"
+"Project-Id-Version: gsequencer 7.2.11\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-11-15 00:48+0100\n"
+"POT-Creation-Date: 2024-11-16 06:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,7 +31,7 @@ msgstr ""
 
 #: ags/app/ags_connection_editor_bulk.c:172
 #: ags/app/ags_connection_editor_bulk.c:283 ags/app/ags_soundcard_editor.c:257
-#: ags/app/ags_export_soundcard.c:261
+#: ags/app/ags_export_soundcard.c:259
 msgid "soundcard"
 msgstr ""
 
@@ -224,21 +224,21 @@ msgstr ""
 msgid "bulk input"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application_context.c:3777
+#: ags/app/ags_gsequencer_application_context.c:3886
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application_context.c:3787
+#: ags/app/ags_gsequencer_application_context.c:3896
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application_context.c:4030
+#: ags/app/ags_gsequencer_application_context.c:4139
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application_context.c:4040
+#: ags/app/ags_gsequencer_application_context.c:4149
 msgid "unknown sequencer backend - NULL"
 msgstr ""
 
@@ -262,23 +262,27 @@ msgstr ""
 msgid "GUI scale factor"
 msgstr ""
 
-#: ags/app/ags_pcm_file_dialog.c:236 ags/app/editor/ags_envelope_info.c:250
+#: ags/app/ags_pcm_file_dialog.c:237 ags/app/editor/ags_envelope_info.c:250
 msgid "audio channel"
 msgstr ""
 
-#: ags/app/ags_pcm_file_dialog.c:259
+#: ags/app/ags_pcm_file_dialog.c:260
 msgid "open in new channel"
 msgstr ""
 
-#: ags/app/ags_pcm_file_dialog.c:270
+#: ags/app/ags_pcm_file_dialog.c:271
 msgid "override existing links"
 msgstr ""
 
-#: ags/app/ags_pcm_file_dialog.c:281
+#: ags/app/ags_pcm_file_dialog.c:283
+msgid "download"
+msgstr ""
+
+#: ags/app/ags_pcm_file_dialog.c:291
 #: ags/app/export/ags_midi_export_wizard.c:474
 #: ags/app/export/ags_wave_export_dialog.c:417
 #: ags/app/import/ags_midi_import_wizard.c:465
-#: ags/app/ags_export_soundcard.c:339
+#: ags/app/ags_export_soundcard.c:336
 msgid "open"
 msgstr ""
 
@@ -344,13 +348,13 @@ msgid "end tact"
 msgstr ""
 
 #: ags/app/export/ags_wave_export_dialog.c:362
-#: ags/app/ags_export_soundcard.c:344
+#: ags/app/ags_export_soundcard.c:341
 msgid "output format"
 msgstr ""
 
 #: ags/app/export/ags_wave_export_dialog.c:404
 #: ags/app/machine/ags_pitch_sampler.c:311 ags/app/machine/ags_audiorec.c:272
-#: ags/app/ags_export_soundcard.c:292
+#: ags/app/ags_export_soundcard.c:289
 msgid "file"
 msgstr ""
 
@@ -382,7 +386,7 @@ msgid "default"
 msgstr ""
 
 #: ags/app/ags_sequencer_editor.c:181 ags/app/ags_soundcard_editor.c:192
-#: ags/app/ags_export_soundcard.c:200
+#: ags/app/ags_export_soundcard.c:198
 msgid "backend"
 msgstr ""
 
@@ -1050,7 +1054,7 @@ msgstr ""
 #: ags/app/ags_export_soundcard_callbacks.c:454
 #: ags/app/machine/ags_audiorec_callbacks.c:153
 #: ags/app/machine/ags_drum_input_pad_callbacks.c:81
-#: ags/app/machine/ags_drum_callbacks.c:83
+#: ags/app/machine/ags_drum_callbacks.c:84
 msgid "open audio files"
 msgstr ""
 
@@ -1494,6 +1498,12 @@ msgstr ""
 msgid "selected"
 msgstr ""
 
+#: ags/app/machine/ags_drum_callbacks.c:96
+#: ags/app/machine/ags_ffplayer_callbacks.c:276
+#: ags/app/machine/ags_sf2_synth_callbacks.c:97
+msgid "download samples"
+msgstr ""
+
 #: ags/app/machine/ags_sfz_synth.c:397
 msgid "opcode"
 msgstr ""
@@ -1664,8 +1674,8 @@ msgid "loop end"
 msgstr ""
 
 #: ags/app/machine/ags_sfz_synth_callbacks.c:84
-#: ags/app/machine/ags_ffplayer_callbacks.c:265
-#: ags/app/machine/ags_sf2_synth_callbacks.c:84
+#: ags/app/machine/ags_ffplayer_callbacks.c:266
+#: ags/app/machine/ags_sf2_synth_callbacks.c:85
 #: ags/app/machine/ags_pitch_sampler_callbacks.c:73
 msgid "open Soundfont2 file"
 msgstr ""
