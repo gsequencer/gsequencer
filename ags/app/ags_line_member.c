@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1294,10 +1294,10 @@ ags_line_member_connect(AgsConnectable *connectable)
     g_signal_connect_after(GTK_WIDGET(control), "value-changed",
 			   G_CALLBACK(ags_line_member_spin_button_changed_callback), line_member);
   }else if(line_member->widget_type == GTK_TYPE_CHECK_BUTTON){
-    g_signal_connect_after(GTK_WIDGET(control), "toggled",
+    g_signal_connect_after(GTK_WIDGET(control), "notify::active",
 			   G_CALLBACK(ags_line_member_check_button_toggled_callback), line_member);
   }else if(line_member->widget_type == GTK_TYPE_TOGGLE_BUTTON){
-    g_signal_connect_after(GTK_WIDGET(control), "toggled",
+    g_signal_connect_after(GTK_WIDGET(control), "notify::active",
 			   G_CALLBACK(ags_line_member_toggle_button_toggled_callback), line_member);
   }else if(line_member->widget_type == GTK_TYPE_BUTTON){
     g_signal_connect_after(GTK_WIDGET(control), "clicked",

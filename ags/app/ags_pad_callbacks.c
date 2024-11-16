@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,7 +25,9 @@
 #include <ags/app/ags_line_callbacks.h>
 
 void
-ags_pad_group_clicked_callback(GtkWidget *widget, AgsPad *pad)
+ags_pad_group_callback(GObject *gobject,
+		       GParamSpec *pspec,
+		       AgsPad *pad)
 {
   AgsLine *line;
   
@@ -64,7 +66,9 @@ ags_pad_group_clicked_callback(GtkWidget *widget, AgsPad *pad)
 }
 
 void
-ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
+ags_pad_mute_callback(GObject *gobject,
+		      GParamSpec *pspec,
+		      AgsPad *pad)
 {
   AgsMachine *machine;
 
@@ -189,7 +193,9 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
 }
 
 void
-ags_pad_solo_clicked_callback(GtkWidget *widget, AgsPad *pad)
+ags_pad_solo_callback(GObject *gobject,
+		      GParamSpec *pspec,
+		      AgsPad *pad)
 {
   AgsMachine *machine;
   

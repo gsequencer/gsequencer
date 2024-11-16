@@ -1274,10 +1274,10 @@ ags_bulk_member_connect(AgsConnectable *connectable)
     g_signal_connect_after(GTK_WIDGET(control), "value-changed",
 			   G_CALLBACK(ags_bulk_member_spin_button_changed_callback), bulk_member);
   }else if(bulk_member->widget_type == GTK_TYPE_CHECK_BUTTON){
-    g_signal_connect_after(GTK_WIDGET(control), "toggled",
+    g_signal_connect_after(GTK_WIDGET(control), "notify::active",
 			   G_CALLBACK(ags_bulk_member_check_button_toggled_callback), bulk_member);
   }else if(bulk_member->widget_type == GTK_TYPE_TOGGLE_BUTTON){
-    g_signal_connect_after(GTK_WIDGET(control), "toggled",
+    g_signal_connect_after(GTK_WIDGET(control), "notify::active",
 			   G_CALLBACK(ags_bulk_member_toggle_button_toggled_callback), bulk_member);
   }else if(bulk_member->widget_type == GTK_TYPE_BUTTON){
     g_signal_connect_after(GTK_WIDGET(control), "clicked",
@@ -1322,13 +1322,13 @@ ags_bulk_member_disconnect(AgsConnectable *connectable)
 			NULL);
   }else if(bulk_member->widget_type == GTK_TYPE_CHECK_BUTTON){
     g_object_disconnect(GTK_WIDGET(control),
-			"any_signal::toggled",
+			"any_signal::notify::active",
 			G_CALLBACK(ags_bulk_member_check_button_toggled_callback),
 			bulk_member,
 			NULL);
   }else if(bulk_member->widget_type == GTK_TYPE_TOGGLE_BUTTON){
     g_object_disconnect(GTK_WIDGET(control),
-			"any_signal::toggled",
+			"any_signal::notify::active",
 			G_CALLBACK(ags_bulk_member_toggle_button_toggled_callback),
 			bulk_member,
 			NULL);

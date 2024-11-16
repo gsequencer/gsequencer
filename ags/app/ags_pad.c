@@ -682,14 +682,14 @@ ags_pad_connect(AgsConnectable *connectable)
   }
 
   /* GtkToggleButton */
-  g_signal_connect_after((GObject *) pad->group, "clicked",
-			 G_CALLBACK(ags_pad_group_clicked_callback), (gpointer) pad);
+  g_signal_connect_after((GObject *) pad->group, "notify::active",
+			 G_CALLBACK(ags_pad_group_callback), (gpointer) pad);
 
-  g_signal_connect_after((GObject *) pad->mute, "clicked",
-			 G_CALLBACK(ags_pad_mute_clicked_callback), (gpointer) pad);
+  g_signal_connect_after((GObject *) pad->mute, "notify::active",
+			 G_CALLBACK(ags_pad_mute_callback), (gpointer) pad);
 
-  g_signal_connect_after((GObject *) pad->solo, "clicked",
-			 G_CALLBACK(ags_pad_solo_clicked_callback), (gpointer) pad);
+  g_signal_connect_after((GObject *) pad->solo, "notify::active",
+			 G_CALLBACK(ags_pad_solo_callback), (gpointer) pad);
 
   /* AgsLine */
   line =

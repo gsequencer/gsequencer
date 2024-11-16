@@ -37,8 +37,12 @@ void ags_bulk_member_dial_changed_callback(GtkWidget *dial, AgsBulkMember *bulk_
 void ags_bulk_member_vscale_changed_callback(GtkWidget *vscale, AgsBulkMember *bulk_member);
 void ags_bulk_member_hscale_changed_callback(GtkWidget *hscale, AgsBulkMember *bulk_member);
 void ags_bulk_member_spin_button_changed_callback(GtkWidget *spin_button, AgsBulkMember *bulk_member);
-void ags_bulk_member_check_button_toggled_callback(GtkWidget *check_button, AgsBulkMember *bulk_member);
-void ags_bulk_member_toggle_button_toggled_callback(GtkWidget *toggle_button, AgsBulkMember *bulk_member);
+void ags_bulk_member_check_button_toggled_callback(GObject *gobject,
+						   GParamSpec *pspec,
+						   AgsBulkMember *bulk_member);
+void ags_bulk_member_toggle_button_toggled_callback(GObject *gobject,
+						    GParamSpec *pspec,
+						    AgsBulkMember *bulk_member);
 void ags_bulk_member_button_clicked_callback(GtkWidget *button, AgsBulkMember *bulk_member);
 
 void ags_bulk_member_port_safe_write_callback(AgsPort *port, GValue *value,
