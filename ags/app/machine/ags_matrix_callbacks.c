@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,12 +26,14 @@
 #include <math.h>
 
 void
-ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
+ags_matrix_index_callback(GObject *gobject,
+			  GParamSpec *pspec,
+			  AgsMatrix *matrix)
 {
   if(matrix->selected != NULL){
     GtkToggleButton *toggle;
 
-    if(GTK_TOGGLE_BUTTON(widget) != matrix->selected){
+    if(GTK_TOGGLE_BUTTON(gobject) != matrix->selected){
       GList *start_list, *list;
 
       gchar *str;
@@ -44,7 +46,7 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
       gtk_toggle_button_set_active(toggle,
 				   FALSE);
 
-      matrix->selected = (GtkToggleButton*) widget;
+      matrix->selected = (GtkToggleButton*) gobject;
 
       gtk_widget_queue_draw((GtkWidget *) matrix->cell_pattern->drawing_area);
 
@@ -146,10 +148,10 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
     }else{
       matrix->selected = NULL;
       
-      gtk_toggle_button_set_active((GtkToggleButton *) widget,
+      gtk_toggle_button_set_active((GtkToggleButton *) gobject,
 				   TRUE);
       
-      matrix->selected = (GtkToggleButton *) widget;
+      matrix->selected = (GtkToggleButton *) gobject;
     }
   }
 }
@@ -176,13 +178,15 @@ ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
 }
 
 void
-ags_matrix_loop_button_callback(GtkWidget *button, AgsMatrix *matrix)
+ags_matrix_loop_button_callback(GObject *gobject,
+				GParamSpec *pspec,
+				AgsMatrix *matrix)
 {
   GList *start_list, *list;
 
   gboolean loop;
 
-  loop = gtk_check_button_get_active(GTK_CHECK_BUTTON(button));
+  loop = gtk_check_button_get_active(GTK_CHECK_BUTTON(gobject));
 
   /* play - ags-fx-pattern */
   g_object_get(AGS_MACHINE(matrix)->audio,

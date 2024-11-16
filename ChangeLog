@@ -4,6 +4,17 @@ ags (7.3.0)
 	* TODO:JK: implemented undo/redo in editor
 	* added optional VTE dependency
 
+ags (7.2.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed file dialog single selection open
+	* improved signal handling of check and toggle buttons, listen to property active
+
+ags (7.2.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential SIGSEGV in ags_export_window.c after removed soundcard editor
+
 ags (7.2.9)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

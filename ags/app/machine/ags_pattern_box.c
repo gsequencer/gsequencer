@@ -328,7 +328,7 @@ ags_pattern_box_connect(AgsConnectable *connectable)
     start_list = ags_pattern_box_get_pad(pattern_box);
 
   while(list != NULL){
-    g_signal_connect(G_OBJECT(list->data), "toggled",
+    g_signal_connect(G_OBJECT(list->data), "notify::active",
 		     G_CALLBACK(ags_pattern_box_pad_callback), (gpointer) pattern_box);
 
     list = list->next;
@@ -337,16 +337,16 @@ ags_pattern_box_connect(AgsConnectable *connectable)
   g_list_free(start_list);
 
   /* connect pattern offset range */
-  g_signal_connect_after(G_OBJECT(pattern_box->page_0_15), "toggled",
+  g_signal_connect_after(G_OBJECT(pattern_box->page_0_15), "notify::active",
 			 G_CALLBACK(ags_pattern_box_offset_callback), (gpointer) pattern_box);
 
-  g_signal_connect_after(G_OBJECT(pattern_box->page_16_31), "toggled",
+  g_signal_connect_after(G_OBJECT(pattern_box->page_16_31), "notify::active",
 			 G_CALLBACK(ags_pattern_box_offset_callback), (gpointer) pattern_box);
 
-  g_signal_connect_after(G_OBJECT(pattern_box->page_32_47), "toggled",
+  g_signal_connect_after(G_OBJECT(pattern_box->page_32_47), "notify::active",
 			 G_CALLBACK(ags_pattern_box_offset_callback), (gpointer) pattern_box);
 
-  g_signal_connect_after(G_OBJECT(pattern_box->page_48_63), "toggled",
+  g_signal_connect_after(G_OBJECT(pattern_box->page_48_63), "notify::active",
 			 G_CALLBACK(ags_pattern_box_offset_callback), (gpointer) pattern_box);
 }
 
@@ -372,7 +372,7 @@ ags_pattern_box_disconnect(AgsConnectable *connectable)
 
   while(list != NULL){
     g_object_disconnect(G_OBJECT(list->data),
-			"any_signal::toggled",
+			"any_signal::notify::active",
 			G_CALLBACK(ags_pattern_box_pad_callback),
 			(gpointer) pattern_box,
 			NULL);
@@ -384,25 +384,25 @@ ags_pattern_box_disconnect(AgsConnectable *connectable)
 
   /* disconnect pattern offset range */
   g_object_disconnect(G_OBJECT(pattern_box->page_0_15),
-		      "any_signal::toggled",
+		      "any_signal::notify::active",
 		      G_CALLBACK(ags_pattern_box_offset_callback),
 		      (gpointer) pattern_box,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(pattern_box->page_16_31),
-		      "any_signal::toggled",
+		      "any_signal::notify::active",
 		      G_CALLBACK(ags_pattern_box_offset_callback),
 		      (gpointer) pattern_box,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(pattern_box->page_32_47),
-		      "any_signal::toggled",
+		      "any_signal::notify::active",
 		      G_CALLBACK(ags_pattern_box_offset_callback),
 		      (gpointer) pattern_box,
 		      NULL);
   
   g_object_disconnect(G_OBJECT(pattern_box->page_48_63),
-		      "any_signal::toggled",
+		      "any_signal::notify::active",
 		      G_CALLBACK(ags_pattern_box_offset_callback),
 		      (gpointer) pattern_box,
 		      NULL);

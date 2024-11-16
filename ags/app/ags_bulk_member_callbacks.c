@@ -98,7 +98,9 @@ ags_bulk_member_spin_button_changed_callback(GtkWidget *spin_button, AgsBulkMemb
 }
 
 void
-ags_bulk_member_check_button_toggled_callback(GtkWidget *check_button, AgsBulkMember *bulk_member)
+ags_bulk_member_check_button_toggled_callback(GObject *gobject,
+					      GParamSpec *pspec,
+					      AgsBulkMember *bulk_member)
 {
   gboolean active;
 
@@ -106,13 +108,15 @@ ags_bulk_member_check_button_toggled_callback(GtkWidget *check_button, AgsBulkMe
     return;
   }
 
-  active = gtk_toggle_button_get_active((GtkToggleButton *) check_button);
+  active = gtk_check_button_get_active((GtkCheckButton *) gobject);
   ags_bulk_member_change_port(bulk_member,
 			      &(active));
 }
 
 void
-ags_bulk_member_toggle_button_toggled_callback(GtkWidget *toggle_button, AgsBulkMember *bulk_member)
+ags_bulk_member_toggle_button_toggled_callback(GObject *gobject,
+					       GParamSpec *pspec,
+					       AgsBulkMember *bulk_member)
 {
   gboolean active;
 
@@ -120,7 +124,7 @@ ags_bulk_member_toggle_button_toggled_callback(GtkWidget *toggle_button, AgsBulk
     return;
   }
 
-  active = gtk_toggle_button_get_active((GtkToggleButton *) toggle_button);
+  active = gtk_toggle_button_get_active((GtkToggleButton *) gobject);
   ags_bulk_member_change_port(bulk_member,
 			      &(active));
 }

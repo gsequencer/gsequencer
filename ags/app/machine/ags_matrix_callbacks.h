@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -35,12 +35,17 @@
 G_BEGIN_DECLS
 
 /* controls */
-void ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix);
+void ags_matrix_index_callback(GObject *gobject,
+			       GParamSpec *pspec,
+			       AgsMatrix *matrix);
+
 void ags_matrix_adjustment_value_changed_callback(GtkWidget *widget, AgsMatrix *matrix);
 
 void ags_matrix_bpm_callback(GtkWidget *spin_button, AgsMatrix *matrix);
 void ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix);
-void ags_matrix_loop_button_callback(GtkWidget *button, AgsMatrix *matrix);
+void ags_matrix_loop_button_callback(GObject *gobject,
+				     GParamSpec *pspec,
+				     AgsMatrix *matrix);
 
 /* forwarded callbacks */
 void ags_matrix_stop_callback(AgsMatrix *matrix,
