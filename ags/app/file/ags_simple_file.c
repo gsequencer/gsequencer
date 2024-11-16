@@ -3258,7 +3258,7 @@ ags_simple_file_read_drum_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsD
     if(bank_0 < 4){
       gtk_toggle_button_set_active(drum->index0[bank_0],
 				   TRUE);
-      g_signal_emit_by_name(drum->index0[bank_0], "clicked");
+      //      g_signal_emit_by_name(drum->index0[bank_0], "clicked");
     }
 
     xmlFree(str);
@@ -3276,7 +3276,7 @@ ags_simple_file_read_drum_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsD
     if(bank_1 < 12){
       gtk_toggle_button_set_active(drum->index1[bank_1],
 				   TRUE);
-      g_signal_emit_by_name(drum->index1[bank_1], "clicked");
+      //      g_signal_emit_by_name(drum->index1[bank_1], "clicked");
     }
 
     xmlFree(str);
@@ -3338,7 +3338,7 @@ ags_simple_file_read_drum_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsD
 	  gtk_toggle_button_set_active(toggle,
 				       TRUE);
 
-	  g_signal_emit_by_name(toggle, "clicked");
+	  //	  g_signal_emit_by_name(toggle, "clicked");
 	}
       }
     }
@@ -3376,7 +3376,7 @@ ags_simple_file_read_matrix_launch(AgsSimpleFile *simple_file, xmlNode *node, Ag
       gtk_toggle_button_set_active(matrix->index[bank_1],
 				   TRUE);
 
-      g_signal_emit_by_name(matrix->index[bank_1], "clicked");
+      //      g_signal_emit_by_name(matrix->index[bank_1], "clicked");
     }
       
     xmlFree(str);
@@ -7655,7 +7655,7 @@ ags_simple_file_read_bulk_member_launch(AgsSimpleFile *simple_file, xmlNode *nod
     if(str != NULL){
       gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
 				   ((!g_ascii_strncasecmp(str, "true", 5)) ? TRUE: FALSE));
-      g_signal_emit_by_name(child_widget, "clicked");
+      //      g_signal_emit_by_name(child_widget, "clicked");
     }
   }else if(GTK_IS_CHECK_BUTTON(child_widget)){
     if(str != NULL){
@@ -8110,7 +8110,7 @@ ags_simple_file_read_pad_launch(AgsFileLaunch *file_launch,
 			     "false")){
 	gtk_toggle_button_set_active(pad->group,
 				     FALSE);
-	g_signal_emit_by_name(pad->group, "clicked");
+	//	g_signal_emit_by_name(pad->group, "clicked");
       }
       
       xmlFree(str);
@@ -8124,7 +8124,7 @@ ags_simple_file_read_pad_launch(AgsFileLaunch *file_launch,
 			     "true")){
 	gtk_toggle_button_set_active(pad->mute,
 				     TRUE);
-	g_signal_emit_by_name(pad->mute, "clicked");
+	//	g_signal_emit_by_name(pad->mute, "clicked");
       }
       
       xmlFree(str);
@@ -8138,7 +8138,7 @@ ags_simple_file_read_pad_launch(AgsFileLaunch *file_launch,
 			     "true")){
 	gtk_toggle_button_set_active(pad->solo,
 				     TRUE);
-	g_signal_emit_by_name(pad->solo, "clicked");
+	//	g_signal_emit_by_name(pad->solo, "clicked");
       }
       
       xmlFree(str);
@@ -8345,12 +8345,12 @@ ags_simple_file_read_line_member(AgsSimpleFile *simple_file, xmlNode *node, AgsL
     }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
       gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
 				   ((!g_ascii_strncasecmp(str, "true", 5)) ? TRUE: FALSE));
-      g_signal_emit_by_name(child_widget, "clicked");
+      //      g_signal_emit_by_name(child_widget, "clicked");
     }else if(GTK_IS_CHECK_BUTTON(child_widget)){
       gtk_check_button_set_active((GtkCheckButton *) child_widget,
 				  ((!g_ascii_strncasecmp(str, "true", 5)) ? TRUE: FALSE));
     }else{
-      g_warning("ags_simple_file_read_line() - unknown line member type");
+      g_warning("ags_simple_file_read_line_member() - unknown line member type");
     }
 
     xmlFree(str);
@@ -9249,7 +9249,7 @@ ags_simple_file_read_line_launch(AgsFileLaunch *file_launch,
 			     "false")){
 	gtk_toggle_button_set_active(line->group,
 				     FALSE);
-	g_signal_emit_by_name(line->group, "clicked");
+	//	g_signal_emit_by_name(line->group, "clicked");
       }
       
       xmlFree(str);

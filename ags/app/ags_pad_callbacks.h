@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,9 +33,15 @@
 
 G_BEGIN_DECLS
 
-void ags_pad_group_clicked_callback(GtkWidget *widget, AgsPad *pad);
-void ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad);
-void ags_pad_solo_clicked_callback(GtkWidget *widget, AgsPad *pad);
+void ags_pad_group_callback(GObject *gobject,
+			    GParamSpec *pspec,
+			    AgsPad *pad);
+void ags_pad_mute_callback(GObject *gobject,
+			   GParamSpec *pspec,
+			   AgsPad *pad);
+void ags_pad_solo_callback(GObject *gobject,
+			   GParamSpec *pspec,
+			   AgsPad *pad);
 
 G_END_DECLS
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -82,22 +82,26 @@ ags_line_member_spin_button_changed_callback(GtkWidget *spin_button, AgsLineMemb
 }
 
 void
-ags_line_member_check_button_toggled_callback(GtkWidget *check_button, AgsLineMember *line_member)
+ags_line_member_check_button_toggled_callback(GObject *gobject,
+					      GParamSpec *pspec,
+					      AgsLineMember *line_member)
 {
-  line_member->active = gtk_check_button_get_active((GtkCheckButton *) check_button);
+  line_member->active = gtk_check_button_get_active((GtkCheckButton *) gobject);
   ags_line_member_change_port(line_member,
 			      &(line_member->active));
   ags_line_member_chained_event(line_member);
 }
 
 void
-ags_line_member_toggle_button_toggled_callback(GtkWidget *toggle_button, AgsLineMember *line_member)
+ags_line_member_toggle_button_toggled_callback(GObject *gobject,
+					       GParamSpec *pspec,
+					       AgsLineMember *line_member)
 {  
   if((AGS_LINE_MEMBER_NO_UPDATE & (line_member->flags)) != 0){
     return;
   }
 
-  line_member->active = gtk_toggle_button_get_active((GtkToggleButton *) toggle_button);
+  line_member->active = gtk_toggle_button_get_active((GtkToggleButton *) gobject);
   ags_line_member_change_port(line_member,
 			      &(line_member->active));
   ags_line_member_chained_event(line_member);

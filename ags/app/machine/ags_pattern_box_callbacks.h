@@ -37,8 +37,12 @@ void ags_pattern_box_update_ui_callback(GObject *ui_provider,
 					AgsPatternBox *pattern_box);
 
 /* controls */
-void ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_box);
-void ags_pattern_box_offset_callback(GtkWidget *widget, AgsPatternBox *pattern_box);
+void ags_pattern_box_pad_callback(GObject *gobject,
+				  GParamSpec *pspec,
+				  AgsPatternBox *pattern_box);
+void ags_pattern_box_offset_callback(GObject *gobject,
+				     GParamSpec *pspec,
+				     AgsPatternBox *pattern_box);
 
 G_END_DECLS
 
