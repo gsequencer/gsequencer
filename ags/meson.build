@@ -1331,14 +1331,14 @@ midi2xml = executable(
   install: true,
 )
 
-install_data(join_paths(meson.source_root(), 'gsequencer.share/styles/ags.css'),
+install_data(join_paths(meson.source_root(), 'gsequencer.share/gsequencer/styles/ags.css'),
              install_dir: join_paths(get_option('datadir'),
                                      meson.project_name(), 'styles'))
 
-install_data(join_paths(meson.source_root(), 'gsequencer.share/images/ags.png'),
+install_data(join_paths(meson.source_root(), 'gsequencer.share/gsequencer/images/ags.png'),
              install_dir: join_paths(get_option('datadir'),
                                      meson.project_name(), 'images'))
-install_data(join_paths(meson.source_root(), 'gsequencer.share/images/gsequencer-800x450.png'),
+install_data(join_paths(meson.source_root(), 'gsequencer.share/gsequencer/images/gsequencer-800x450.png'),
              install_dir: join_paths(get_option('datadir'),
                                      meson.project_name(), 'images'))
 

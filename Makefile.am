@@ -9,7 +9,8 @@ AUTOMAKE_OPTIONS = foreign
 
 SUBDIRS = m4 po lib
 
-AM_DISTCHECK_CONFIGURE_FLAGS = --enable-introspection --with-poppler --with-gtk-unix-print --with-vte
+# --with-vte
+AM_DISTCHECK_CONFIGURE_FLAGS = --enable-introspection --with-poppler --with-gtk-unix-print
 
 ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 
