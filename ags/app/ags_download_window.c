@@ -24,8 +24,12 @@
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_navigation.h>
 
+#include "config.h"
+
+#if defined(AGS_WITH_VTE)
 #include <pty.h>
 #include <vte/vte.h>
+#endif
 
 #include <stdlib.h>
 #include <ags/i18n.h>
@@ -149,8 +153,14 @@ void
 ags_download_window_init(AgsDownloadWindow *download_window)
 {
   GtkBox *vbox;
+
+#if defined(AGS_WITH_VTE)
   VteTerminal *terminal;
   VtePty *pty;
+#else
+  gpointer terminal;
+  gpointer pty;
+#endif
   
   GtkEventController *event_controller;
 
@@ -215,12 +225,19 @@ ags_download_window_init(AgsDownloadWindow *download_window)
   /*  */
   download_window->download_script = g_strdup(AGS_DOWNLOAD_WINDOW_DEFAULT_DOWNLOAD_SCRIPT);
 
+#if defined(AGS_WITH_VTE)
   terminal = (VteTerminal *) vte_terminal_new();
-
+#else
+  terminal = NULL;
+#endif
+  
   download_window->terminal = (GtkWidget *) terminal;
   
-  vte_terminal_set_scrollback_lines(VTE_TERMINAL (terminal), -1); /* infinite scrollback */
-
+#if defined(AGS_WITH_VTE)
+   /* infinite scrollback */
+  vte_terminal_set_scrollback_lines(VTE_TERMINAL (terminal),
+				    -1);
+  
   gtk_widget_set_valign((GtkWidget *) terminal,
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign((GtkWidget *) terminal,
@@ -233,6 +250,7 @@ ags_download_window_init(AgsDownloadWindow *download_window)
   
   gtk_box_append(vbox,
 		 (GtkWidget *) terminal);
+#endif
 
   /* button */
   download_window->activate_button = (GtkButton *) gtk_button_new_with_label(i18n("download"));
@@ -309,7 +327,21 @@ ags_download_window_activate_button_callback(GtkButton *activate_button,
 
   GError *error;
 
-  vte_terminal_spawn_async(VTE_TERMINAL(download_window->terminal), VTE_PTY_NO_HELPER, NULL, argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, 2000, NULL, NULL, NULL);
+#if defined(AGS_WITH_VTE)
+  vte_terminal_spawn_async(VTE_TERMINAL(download_window->terminal),
+			   VTE_PTY_NO_HELPER,
+			   NULL,
+			   argv,
+			   NULL,
+			   G_SPAWN_SEARCH_PATH,
+			   NULL,
+			   NULL,
+			   NULL,
+			   2000,
+			   NULL,
+			   NULL,
+			   NULL);
+#endif
 }
 
 gboolean

@@ -154,6 +154,7 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
   GtkGrid *synth_1_grid;
   GtkGrid *synth_2_grid;
   GtkGrid *misc_grid;
+  GtkBox *pitch_type_hbox;
   GtkBox *band_hbox;
   GtkGrid *low_pass_grid;
   GtkGrid *high_pass_grid;
@@ -173,6 +174,17 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 
   gint position;
   gdouble gui_scale_factor;
+
+  const gchar* pitch_type_strv[] = {
+    "fluid-interpolate-none",
+    "fluid-interpolate-linear",
+    "fluid-interpolate-4th-order",
+    "fluid-interpolate-7th-order",
+    "ags-pitch-2x-alias",    
+    "ags-pitch-4x-alias",    
+    "ags-pitch-16x-alias",
+    NULL,
+  };
 
   application_context = ags_application_context_get_instance();
   
@@ -1272,13 +1284,45 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 		  3, 0,
 		  1, 1);
 
+  /* pitch type */
+  pitch_type_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+					   AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_widget_set_valign((GtkWidget *) pitch_type_hbox,
+			GTK_ALIGN_START);  
+  gtk_widget_set_halign((GtkWidget *) pitch_type_hbox,
+			GTK_ALIGN_START);
+
+  gtk_widget_set_hexpand((GtkWidget *) pitch_type_hbox,
+			 FALSE);
+
+  gtk_grid_attach(misc_grid,
+		  (GtkWidget *) pitch_type_hbox,
+		  0, 1,
+		  2, 1);
+  
+  label = (GtkLabel *) gtk_label_new(i18n("pitch type"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+
+  gtk_box_append(pitch_type_hbox,
+		 (GtkWidget *) label);
+
+  hybrid_fm_synth->pitch_type = (GtkDropDown *) gtk_drop_down_new_from_strings(pitch_type_strv);
+
+  gtk_drop_down_set_selected(hybrid_fm_synth->pitch_type,
+			     2);
+
+  gtk_box_append(pitch_type_hbox,
+		 (GtkWidget *) hybrid_fm_synth->pitch_type);
+  
   /* pitch */
   label = (GtkLabel *) gtk_label_new(i18n("pitch tuning"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(misc_grid,
 		  (GtkWidget *) label,
-		  4, 0,
+		  0, 2,
 		  1, 1);
 
   hybrid_fm_synth->pitch_tuning = (AgsDial *) ags_dial_new();
@@ -1303,7 +1347,7 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
   
   gtk_grid_attach(misc_grid,
 		  (GtkWidget *) hybrid_fm_synth->pitch_tuning,
-		  5, 0,
+		  1, 2,
 		  1, 1);
   
   /* noise */
@@ -1312,7 +1356,7 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 			GTK_ALIGN_START);
   gtk_grid_attach(misc_grid,
 		  (GtkWidget *) label,
-		  6, 0,
+		  0, 3,
 		  1, 1);
 
   hybrid_fm_synth->noise_gain = (AgsDial *) ags_dial_new();
@@ -1337,7 +1381,7 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
   
   gtk_grid_attach(misc_grid,
 		  (GtkWidget *) hybrid_fm_synth->noise_gain,
-		  7, 0,
+		  1, 3,
 		  1, 1);
 
   /* band */
@@ -1877,6 +1921,9 @@ ags_hybrid_fm_synth_connect(AgsConnectable *connectable)
   g_signal_connect_after(hybrid_fm_synth->sequencer_sign, "changed",
 			 G_CALLBACK(ags_hybrid_fm_synth_sequencer_sign_callback), hybrid_fm_synth);
   
+  g_signal_connect((GObject *) hybrid_fm_synth->pitch_type, "notify::selected",
+		   G_CALLBACK(ags_hybrid_fm_synth_synth_pitch_type_callback), (gpointer) hybrid_fm_synth);
+
   g_signal_connect_after(hybrid_fm_synth->pitch_tuning, "value-changed",
 			 G_CALLBACK(ags_hybrid_fm_synth_pitch_tuning_callback), hybrid_fm_synth);
   
@@ -2112,6 +2159,12 @@ ags_hybrid_fm_synth_disconnect(AgsConnectable *connectable)
 		      "any_signal::changed",
 		      G_CALLBACK(ags_hybrid_fm_synth_sequencer_sign_callback),
 		      hybrid_fm_synth,
+		      NULL);
+
+  g_object_disconnect((GObject *) hybrid_fm_synth->pitch_type,
+		      "any_signal::notify::selected",
+		      G_CALLBACK(ags_hybrid_fm_synth_synth_pitch_type_callback),
+		      (gpointer) hybrid_fm_synth,
 		      NULL);
   
   g_object_disconnect(hybrid_fm_synth->pitch_tuning,

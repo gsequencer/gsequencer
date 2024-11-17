@@ -84,34 +84,34 @@ install_data(join_paths(meson.source_root(), 'COPYING'),
                                      meson.project_name(), 'license'),
 	     rename: 'GPL-3')
 
-install_data(join_paths(meson.source_root(), 'gsequencer.share', 'icons', 'ags.xpm'),
+install_data(join_paths(meson.source_root(), 'gsequencer.share', 'gsequencer', 'icons', 'ags.xpm'),
              install_dir: join_paths(get_option('datadir'),
                                      meson.project_name(), 'icons'))
-install_data(join_paths(meson.source_root(), 'gsequencer.share', 'icons', 'ags.png'),
+install_data(join_paths(meson.source_root(), 'gsequencer.share', 'gsequencer', 'icons', 'ags.png'),
              install_dir: join_paths(get_option('datadir'),
                                      meson.project_name(), 'icons'))
-install_data(join_paths(meson.source_root(), 'gsequencer.share', 'icons', 'jumper.png'),
+install_data(join_paths(meson.source_root(), 'gsequencer.share', 'gsequencer', 'icons', 'jumper.png'),
              install_dir: join_paths(get_option('datadir'),
                                      meson.project_name(), 'icons'))
 
-install_data(join_paths(meson.source_root(), 'gsequencer.share', 'icons', 'gsequencer-32x32.png'),
+install_data(join_paths(meson.source_root(), 'gsequencer.share', 'gsequencer', 'icons', 'gsequencer-32x32.png'),
              install_dir: join_paths(get_option('datadir'),
                                      'icons', 'hicolor', '32x32', 'apps'),
 	     rename: 'gsequencer.png')
-install_data(join_paths(meson.source_root(), 'gsequencer.share', 'icons', 'gsequencer-48x48.png'),
+install_data(join_paths(meson.source_root(), 'gsequencer.share', 'gsequencer', 'icons', 'gsequencer-48x48.png'),
              install_dir: join_paths(get_option('datadir'),
                                      'icons', 'hicolor', '48x48', 'apps'),
 	     rename: 'gsequencer.png')
-install_data(join_paths(meson.source_root(), 'gsequencer.share', 'icons', 'gsequencer-64x64.png'),
+install_data(join_paths(meson.source_root(), 'gsequencer.share', 'gsequencer', 'icons', 'gsequencer-64x64.png'),
              install_dir: join_paths(get_option('datadir'),
                                      'icons', 'hicolor', '64x64', 'apps'),
 	     rename: 'gsequencer.png')
-install_data(join_paths(meson.source_root(), 'gsequencer.share', 'icons', 'gsequencer-128x128.png'),
+install_data(join_paths(meson.source_root(), 'gsequencer.share', 'gsequencer', 'icons', 'gsequencer-128x128.png'),
              install_dir: join_paths(get_option('datadir'),
                                      'icons', 'hicolor', '128x128', 'apps'),
 	     rename: 'gsequencer.png')
 
-install_data(join_paths(meson.source_root(), 'gsequencer.share', 'icons', 'ags-light.svg'),
+install_data(join_paths(meson.source_root(), 'gsequencer.share', 'gsequencer', 'icons', 'ags-light.svg'),
              install_dir: join_paths(get_option('datadir'),
                                      'icons', 'hicolor', 'scalable', 'apps'),
 	     rename: 'gsequencer.svg')
