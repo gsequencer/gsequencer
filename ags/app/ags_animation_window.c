@@ -124,9 +124,10 @@ ags_animation_window_init(AgsAnimationWindow *animation_window)
   /* create gdk cairo graphics context */
   filename = NULL;
   
-#ifdef AGS_ANIMATION_FILENAME
-  filename = g_strdup(AGS_ANIMATION_FILENAME);
-#else
+#ifdef AGS_ANIMATION_WINDOW_FILENAME
+  filename = g_strdup(AGS_ANIMATION_WINDOW_FILENAME);
+#endif
+  
   if((filename = getenv("AGS_ANIMATION_FILENAME")) == NULL){
 #if defined(AGS_W32API)
     app_dir = NULL;
@@ -160,7 +161,6 @@ ags_animation_window_init(AgsAnimationWindow *animation_window)
   }else{
     filename = g_strdup(filename);
   }
-#endif
 
   animation_window->filename = filename;
 

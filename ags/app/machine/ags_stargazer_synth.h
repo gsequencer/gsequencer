@@ -80,21 +80,52 @@ struct _AgsStargazerSynth
   AgsDial *synth_0_sync_attack_3;
   AgsDial *synth_0_sync_phase_3;
 
-  AgsDial *synth_0_pitch_tuning;
+  GtkComboBox *synth_1_oscillator;
 
-  GtkCheckButton *synth_0_tremolo_enabled;
+  AgsDial *synth_1_octave;
+  AgsDial *synth_1_key;
 
-  AgsDial *synth_0_tremolo_gain;
-  AgsDial *synth_0_tremolo_lfo_depth;
-  AgsDial *synth_0_tremolo_lfo_freq;
-  AgsDial *synth_0_tremolo_tuning;
+  AgsDial *synth_1_phase;
+  AgsDial *synth_1_volume;
 
-  GtkCheckButton *synth_0_vibrato_enabled;
+  GtkComboBox *synth_1_lfo_oscillator;
 
-  AgsDial *synth_0_vibrato_gain; 
-  AgsDial *synth_0_vibrato_lfo_depth;
-  AgsDial *synth_0_vibrato_lfo_freq;
-  AgsDial *synth_0_vibrato_tuning;
+  GtkSpinButton *synth_1_lfo_frequency;
+  AgsDial *synth_1_lfo_depth;
+  AgsDial *synth_1_lfo_tuning;
+
+  GtkCheckButton *synth_1_sync_enabled;
+  
+  AgsDial *synth_1_sync_relative_attack_factor;
+
+  AgsDial *synth_1_sync_attack_0;
+  AgsDial *synth_1_sync_phase_0;
+
+  AgsDial *synth_1_sync_attack_1;
+  AgsDial *synth_1_sync_phase_1;
+
+  AgsDial *synth_1_sync_attack_2;
+  AgsDial *synth_1_sync_phase_2;
+
+  AgsDial *synth_1_sync_attack_3;
+  AgsDial *synth_1_sync_phase_3;
+
+  GtkDropDown *pitch_type;
+  AgsDial *pitch_tuning;
+
+  GtkCheckButton *tremolo_enabled;
+
+  AgsDial *tremolo_gain;
+  AgsDial *tremolo_lfo_depth;
+  AgsDial *tremolo_lfo_freq;
+  AgsDial *tremolo_tuning;
+
+  GtkCheckButton *vibrato_enabled;
+
+  AgsDial *vibrato_gain; 
+  AgsDial *vibrato_lfo_depth;
+  AgsDial *vibrato_lfo_freq;
+  AgsDial *vibrato_tuning;
 
   GtkCheckButton *chorus_enabled;
 

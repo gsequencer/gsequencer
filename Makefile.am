@@ -193,7 +193,7 @@ EXTRA_DIST = config.rpath \
 	docs/images/README \
 	gsequencer.share/icons/README \
 	gsequencer.share/images/README \
-	download_all.sh
+	gsequencer.share/scripts/download_all.sh
 
 EXTRA_DIST += \
 	ags_license_header \
@@ -3572,21 +3572,22 @@ install-data-local:
 	mkdir -p $(DESTDIR)$(datadir)/icons/hicolor/scalable/apps
 	mkdir -p $(DESTDIR)$(datadir)/gsequencer/images
 	mkdir -p $(DESTDIR)$(datadir)/gsequencer/styles
+	mkdir -p $(DESTDIR)$(datadir)/gsequencer/scripts
 	mkdir -p $(DESTDIR)$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)
 	mkdir -p $(DESTDIR)$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml
 	mkdir -p $(DESTDIR)$(datadir)/mime/packages
 	mkdir -p $(DESTDIR)$(datadir)/metainfo
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/ags.xpm $(DESTDIR)$(datadir)/gsequencer/icons/ags.xpm
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/jumper.png $(DESTDIR)$(datadir)/gsequencer/icons/jumper.png
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/ags.png $(DESTDIR)$(datadir)/gsequencer/icons/ags.png
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/gsequencer-32x32.png $(DESTDIR)$(datadir)/icons/hicolor/32x32/apps/gsequencer.png
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/gsequencer-48x48.png $(DESTDIR)$(datadir)/icons/hicolor/48x48/apps/gsequencer.png
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/gsequencer-64x64.png $(DESTDIR)$(datadir)/icons/hicolor/64x64/apps/gsequencer.png
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/gsequencer-128x128.png $(DESTDIR)$(datadir)/icons/hicolor/128x128/apps/gsequencer.png
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/ags-light.svg $(DESTDIR)$(datadir)/icons/hicolor/scalable/apps/gsequencer.svg
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/images/ags.png $(DESTDIR)$(datadir)/gsequencer/images/ags.png
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/images/gsequencer-800x450.png $(DESTDIR)$(datadir)/gsequencer/images/gsequencer-800x450.png
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/styles/ags.css $(DESTDIR)$(datadir)/gsequencer/styles/ags.css
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/gsequencer/icons/ags.xpm $(DESTDIR)$(datadir)/gsequencer/icons/ags.xpm
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/gsequencer/icons/jumper.png $(DESTDIR)$(datadir)/gsequencer/icons/jumper.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/gsequencer/icons/ags.png $(DESTDIR)$(datadir)/gsequencer/icons/ags.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/gsequencer/icons/gsequencer-32x32.png $(DESTDIR)$(datadir)/icons/hicolor/32x32/apps/gsequencer.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/gsequencer/icons/gsequencer-48x48.png $(DESTDIR)$(datadir)/icons/hicolor/48x48/apps/gsequencer.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/gsequencer/icons/gsequencer-64x64.png $(DESTDIR)$(datadir)/icons/hicolor/64x64/apps/gsequencer.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/gsequencer/icons/gsequencer-128x128.png $(DESTDIR)$(datadir)/icons/hicolor/128x128/apps/gsequencer.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/gsequencer/icons/ags-light.svg $(DESTDIR)$(datadir)/icons/hicolor/scalable/apps/gsequencer.svg
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/gsequencer/images/ags.png $(DESTDIR)$(datadir)/gsequencer/images/ags.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/gsequencer/images/gsequencer-800x450.png $(DESTDIR)$(datadir)/gsequencer/images/gsequencer-800x450.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/gsequencer/styles/ags.css $(DESTDIR)$(datadir)/gsequencer/styles/ags.css
 	install -c -p -m 644 $(top_srcdir)/ags/app/file/ags_simple_file.dtd $(DESTDIR)$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
 	install -c -p -m 644 $(top_srcdir)/ags/audio/midi/ags_midi_file.dtd $(DESTDIR)$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
 	install -c -p -m 644 $(top_srcdir)/ags/audio/osc/ags_osc_file.dtd $(DESTDIR)$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
@@ -3595,6 +3596,7 @@ install-data-local:
 	install -c -p -m 644 $(top_srcdir)/ags-simple.xsl $(DESTDIR)$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
 	install -c -p -m 644 $(top_srcdir)/application-x-gsequencer.xml $(DESTDIR)$(datadir)/mime/packages/gsequencer.xml
 	install -c -p -m 644 $(top_srcdir)/org.nongnu.gsequencer.gsequencer.appdata.xml $(DESTDIR)$(datadir)/metainfo/
+	install -c -p -m 755 $(top_srcdir)/gsequencer.share/gsequencer/download_all.sh $(DESTDIR)$(datadir)/gsequencer/scripts/
 
 fix-local-html:
 	find $(top_builddir)/docs/reference/libags/libags-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../gobject@$(GOBJECT_API_DOC)@g' {} \;

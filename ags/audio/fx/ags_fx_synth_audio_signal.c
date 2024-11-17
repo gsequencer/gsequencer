@@ -942,9 +942,9 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
     g_value_unset(&value);
 
     /* pitch base key */
-    //    ags_common_pitch_util_set_base_key(channel_data->pitch_util,
-    //				       channel_data->pitch_type,
-    //				       (gdouble) midi_note - 48.0);
+    ags_common_pitch_util_set_base_key(channel_data->pitch_util,
+				       channel_data->pitch_type,
+				       (gdouble) midi_note - 48.0);
     
     /* pitch tuning */    
     g_object_get(fx_synth_audio,

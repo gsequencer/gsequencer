@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -116,6 +116,7 @@ struct _AgsHybridFMSynth
   GtkCheckButton *sequencer_enabled;
   GtkComboBox *sequencer_sign;
 
+  GtkDropDown *pitch_type;
   AgsDial *pitch_tuning;
 
   AgsDial *noise_gain;

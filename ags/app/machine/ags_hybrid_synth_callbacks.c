@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1781,6 +1781,42 @@ ags_hybrid_synth_sequencer_sign_callback(GtkComboBox *combo_box, AgsHybridSynth 
 
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
+}
+
+void
+ags_hybrid_synth_synth_pitch_type_callback(GObject *gobject,
+					   GParamSpec *pspec,
+					   AgsHybridSynth *hybrid_synth)
+{
+  AgsFxSynthAudio *fx_synth_audio;
+    
+  guint selected;
+
+  GValue value = G_VALUE_INIT;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_synth)->flags)) != 0){
+    return;
+  }
+  
+  selected = gtk_drop_down_get_selected((GtkDropDown *) gobject);
+
+  g_value_init(&value,
+	       G_TYPE_FLOAT);
+  
+  g_value_set_float(&value,
+		    (gfloat) selected);
+
+  /* play */
+  fx_synth_audio = (AgsFxSynthAudio *) ags_recall_container_get_recall_audio(hybrid_synth->synth_play_container);
+
+  ags_port_safe_write(fx_synth_audio->pitch_type,
+		      &value);
+
+  /* recall */
+  fx_synth_audio = (AgsFxSynthAudio *) ags_recall_container_get_recall_audio(hybrid_synth->synth_recall_container);
+  
+  ags_port_safe_write(fx_synth_audio->pitch_type,
+		      &value);
 }
 
 void
