@@ -8,10 +8,10 @@
 # Process this file with autoconf to produce a configure script.
 
 LT_CURRENT=7
-LT_REVISION=2
-LT_AGE=11
+LT_REVISION=3
+LT_AGE=0
 
-m4_define([ags_version], [7.2.11])
+m4_define([ags_version], [7.3.0])
 
 AC_PREREQ([2.69])
 AC_INIT([gsequencer],m4_defn([ags_version]),[jkraehemann@gmail.com])
@@ -454,7 +454,7 @@ AS_IF([test "x$enable_core_audio" != xno],
       [AC_DEFINE([AGS_WITH_CORE_AUDIO], [1], [core-audio enabled])
 
       CORE_AUDIO_CFLAGS= 
-      CORE_AUDIO_LIBS="-framework CoreAudio -framework AudioToolbox -framework CoreMIDI"
+      CORE_AUDIO_LIBS="-framework AVFoundation -framework AVKit -framework CoreAudio -framework AudioToolbox -framework CoreMIDI"
       AC_SUBST(CORE_AUDIO_CFLAGS)
       AC_SUBST(CORE_AUDIO_LIBS)
 

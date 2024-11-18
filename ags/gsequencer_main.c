@@ -56,8 +56,11 @@
 #include <glib.h>
 
 #if defined(AGS_OSX_DMG_ENV)
+#include <AVFoundation/AVFoundation.h>
 #include <Cocoa/Cocoa.h>
+#include <CoreFoundation/CoreFoundation.h>
 #include <Foundation/Foundation.h>
+
 
 #include <uuid/uuid.h>
 #endif

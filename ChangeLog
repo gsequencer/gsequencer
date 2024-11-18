@@ -1,8 +1,9 @@
 ags (7.3.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: implemented undo/redo in editor
 	* added optional VTE dependency
+	* fixed preferences soundcard order
+	* fixed audio connection hide on close
 
 ags (7.2.11)
 

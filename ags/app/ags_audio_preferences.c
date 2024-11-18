@@ -418,17 +418,20 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
 {
   AgsAudioPreferences *audio_preferences;
 
-  GList *list;
+  GList *start_list, *list;
 
   audio_preferences = AGS_AUDIO_PREFERENCES(applicable);
 
-  list = audio_preferences->soundcard_editor;
+  list =
+    start_list = ags_audio_preferences_get_soundcard_editor(audio_preferences);
 
   while(list != NULL){
     ags_applicable_apply(AGS_APPLICABLE(list->data));
 
     list = list->next;
   }
+
+  g_list_free(start_list);
 }
 
 void

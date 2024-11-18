@@ -58,8 +58,8 @@ void ags_fx_playback_audio_processor_test_counter_change();
   "capability=playback\n"				\
   "backend=alsa\n"					\
   "device=default\n"					\
-  "samplerate=48000\n"					\
-  "buffer-size=1024\n"					\
+  "samplerate=44100\n"					\
+  "buffer-size=2048\n"					\
   "pcm-channels=2\n"					\
   "dsp-channels=2\n"					\
   "format=16\n"						\
@@ -68,8 +68,8 @@ void ags_fx_playback_audio_processor_test_counter_change();
   "capability=capture\n"				\
   "backend=alsa\n"					\
   "device=default\n"					\
-  "samplerate=48000\n"					\
-  "buffer-size=1024\n"					\
+  "samplerate=44100\n"					\
+  "buffer-size=2048\n"					\
   "pcm-channels=2\n"					\
   "dsp-channels=2\n"					\
   "format=16\n"						\
@@ -147,10 +147,16 @@ ags_fx_playback_audio_processor_test_run_inter()
   AgsFxPlaybackAudio *fx_playback_audio;
   AgsFxPlaybackAudioProcessor *fx_playback_audio_processor;
 
+  GList *tmp_list;
+  
   guint i;
   
   alsa_devout = audio_application_context->default_soundcard;
-  alsa_devin = ags_list_util_find_type(audio_application_context->soundcard, AGS_TYPE_ALSA_DEVIN)->data;
+  alsa_devin = NULL;
+
+  if((tmp_list = ags_list_util_find_type(audio_application_context->soundcard, AGS_TYPE_ALSA_DEVIN)) != NULL){
+    alsa_devin = tmp_list->data;
+  }
   
   parent_recall_id = ags_recall_id_new();
   recall_id = ags_recall_id_new();
@@ -264,10 +270,16 @@ ags_fx_playback_audio_processor_test_data_put()
   AgsFxPlaybackAudio *fx_playback_audio;
   AgsFxPlaybackAudioProcessor *fx_playback_audio_processor;
 
+  GList *tmp_list;
+  
   guint i;
   
   alsa_devout = audio_application_context->default_soundcard;
-  alsa_devin = ags_list_util_find_type(audio_application_context->soundcard, AGS_TYPE_ALSA_DEVIN)->data;
+  alsa_devin = NULL;
+
+  if((tmp_list = ags_list_util_find_type(audio_application_context->soundcard, AGS_TYPE_ALSA_DEVIN)) != NULL){
+    alsa_devin = tmp_list->data;
+  }
   
   parent_recall_id = ags_recall_id_new();
   recall_id = ags_recall_id_new();
@@ -385,10 +397,16 @@ ags_fx_playback_audio_processor_test_data_get()
   AgsFxPlaybackAudio *fx_playback_audio;
   AgsFxPlaybackAudioProcessor *fx_playback_audio_processor;
 
+  GList *tmp_list;
+  
   guint i;
   
   alsa_devout = audio_application_context->default_soundcard;
-  alsa_devin = ags_list_util_find_type(audio_application_context->soundcard, AGS_TYPE_ALSA_DEVIN)->data;
+  alsa_devin = NULL;
+
+  if((tmp_list = ags_list_util_find_type(audio_application_context->soundcard, AGS_TYPE_ALSA_DEVIN)) != NULL){
+    alsa_devin = tmp_list->data;
+  }
   
   parent_recall_id = ags_recall_id_new();
   recall_id = ags_recall_id_new();
@@ -507,10 +525,16 @@ ags_fx_playback_audio_processor_test_play()
   AgsFxPlaybackAudio *fx_playback_audio;
   AgsFxPlaybackAudioProcessor *fx_playback_audio_processor;
 
+  GList *tmp_list;
+  
   guint i;
   
   alsa_devout = audio_application_context->default_soundcard;
-  alsa_devin = ags_list_util_find_type(audio_application_context->soundcard, AGS_TYPE_ALSA_DEVIN)->data;
+  alsa_devin = NULL;
+
+  if((tmp_list = ags_list_util_find_type(audio_application_context->soundcard, AGS_TYPE_ALSA_DEVIN)) != NULL){
+    alsa_devin = tmp_list->data;
+  }
   
   parent_recall_id = ags_recall_id_new();
   recall_id = ags_recall_id_new();
@@ -637,10 +661,15 @@ ags_fx_playback_audio_processor_test_record()
   AgsFxPlaybackAudio *fx_playback_audio;
   AgsFxPlaybackAudioProcessor *fx_playback_audio_processor;
 
+  GList *tmp_list;
   guint i;
   
   alsa_devout = audio_application_context->default_soundcard;
-  alsa_devin = ags_list_util_find_type(audio_application_context->soundcard, AGS_TYPE_ALSA_DEVIN)->data;
+  alsa_devin = NULL;
+
+  if((tmp_list = ags_list_util_find_type(audio_application_context->soundcard, AGS_TYPE_ALSA_DEVIN)) != NULL){
+    alsa_devin = tmp_list->data;
+  }
   
   parent_recall_id = ags_recall_id_new();
   recall_id = ags_recall_id_new();
@@ -755,10 +784,16 @@ ags_fx_playback_audio_processor_test_feed()
   AgsFxPlaybackAudio *fx_playback_audio;
   AgsFxPlaybackAudioProcessor *fx_playback_audio_processor;
 
+  GList *tmp_list;
+  
   guint i;
   
   alsa_devout = audio_application_context->default_soundcard;
-  alsa_devin = ags_list_util_find_type(audio_application_context->soundcard, AGS_TYPE_ALSA_DEVIN)->data;
+  alsa_devin = NULL;
+
+  if((tmp_list = ags_list_util_find_type(audio_application_context->soundcard, AGS_TYPE_ALSA_DEVIN)) != NULL){
+    alsa_devin = tmp_list->data;
+  }
   
   parent_recall_id = ags_recall_id_new();
   recall_id = ags_recall_id_new();
@@ -885,10 +920,16 @@ ags_fx_playback_audio_processor_test_master()
   AgsFxPlaybackAudio *fx_playback_audio;
   AgsFxPlaybackAudioProcessor *fx_playback_audio_processor;
 
+  GList *tmp_list;
+  
   guint i;
   
   alsa_devout = audio_application_context->default_soundcard;
-  alsa_devin = ags_list_util_find_type(audio_application_context->soundcard, AGS_TYPE_ALSA_DEVIN)->data;
+  alsa_devin = NULL;
+
+  if((tmp_list = ags_list_util_find_type(audio_application_context->soundcard, AGS_TYPE_ALSA_DEVIN)) != NULL){
+    alsa_devin = tmp_list->data;
+  }
   
   parent_recall_id = ags_recall_id_new();
   recall_id = ags_recall_id_new();
@@ -1014,10 +1055,16 @@ ags_fx_playback_audio_processor_test_counter_change()
   AgsFxPlaybackAudio *fx_playback_audio;
   AgsFxPlaybackAudioProcessor *fx_playback_audio_processor;
 
+  GList *tmp_list;
+  
   guint i;
   
   alsa_devout = audio_application_context->default_soundcard;
-  alsa_devin = ags_list_util_find_type(audio_application_context->soundcard, AGS_TYPE_ALSA_DEVIN)->data;
+  alsa_devin = NULL;
+
+  if((tmp_list = ags_list_util_find_type(audio_application_context->soundcard, AGS_TYPE_ALSA_DEVIN)) != NULL){
+    alsa_devin = tmp_list->data;
+  }
   
   parent_recall_id = ags_recall_id_new();
   recall_id = ags_recall_id_new();

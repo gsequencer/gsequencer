@@ -443,9 +443,9 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
 		  0, y0,
 		  1, 1);
 
-  soundcard_editor->buffer_size = (GtkSpinButton *) gtk_spin_button_new_with_range(1.0, 65535.0, 1.0);
+  soundcard_editor->buffer_size = (GtkSpinButton *) gtk_spin_button_new_with_range((gdouble) AGS_SOUNDCARD_MIN_BUFFER_SIZE, (gdouble) AGS_SOUNDCARD_MAX_BUFFER_SIZE, 1.0);
   gtk_spin_button_set_value(soundcard_editor->buffer_size,
-			    512.0);
+			    (gdouble) AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE);
 
   gtk_widget_set_valign((GtkWidget *) soundcard_editor->buffer_size,
 			GTK_ALIGN_FILL);
@@ -542,7 +542,7 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
 
   soundcard_editor->cache_buffer_size = (GtkSpinButton *) gtk_spin_button_new_with_range(1.0, 65535.0, 1.0);
   gtk_spin_button_set_value(soundcard_editor->cache_buffer_size,
-			    4096.0);
+			    (gdouble) AGS_SOUNDCARD_DEFAULT_CACHE_BUFFER_SIZE);
 
   gtk_widget_set_valign((GtkWidget *) soundcard_editor->cache_buffer_size,
 			GTK_ALIGN_FILL);
@@ -1469,24 +1469,24 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
 			   &error);
 
     if(error != NULL){
-      channels_min = 0.0;
-      channels_max = 24.0;
-      samplerate_min = 8000.0;
-      samplerate_max = 192000.0;
-      buffer_size_min = 2.0;
-      buffer_size_max = 65535.0;
+      channels_min = (gdouble) AGS_SOUNDCARD_MIN_PCM_CHANNELS;
+      channels_max = (gdouble) AGS_SOUNDCARD_MAX_PCM_CHANNELS;
+      samplerate_min = (gdouble) AGS_SOUNDCARD_MIN_SAMPLERATE;
+      samplerate_max = (gdouble) AGS_SOUNDCARD_MAX_SAMPLERATE;
+      buffer_size_min = (gdouble) AGS_SOUNDCARD_MIN_BUFFER_SIZE;
+      buffer_size_max = (gdouble) AGS_SOUNDCARD_MAX_BUFFER_SIZE;
 
       g_message("%s", error->message);
       
       g_error_free(error);
     }
   }else{
-    channels_min = 0.0;
-    channels_max = 24.0;
-    samplerate_min = 8000.0;
-    samplerate_max = 192000.0;
-    buffer_size_min = 2.0;
-    buffer_size_max = 65535.0;
+    channels_min = (gdouble) AGS_SOUNDCARD_MIN_PCM_CHANNELS;
+    channels_max = (gdouble) AGS_SOUNDCARD_MAX_PCM_CHANNELS;
+    samplerate_min = (gdouble) AGS_SOUNDCARD_MIN_SAMPLERATE;
+    samplerate_max = (gdouble) AGS_SOUNDCARD_MAX_SAMPLERATE;
+    buffer_size_min = (gdouble) AGS_SOUNDCARD_MIN_BUFFER_SIZE;
+    buffer_size_max = (gdouble) AGS_SOUNDCARD_MAX_BUFFER_SIZE;
   }
   
   gtk_spin_button_set_range(soundcard_editor->audio_channels,
@@ -1563,7 +1563,7 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
 				  use_cache);
 
       gtk_spin_button_set_value(soundcard_editor->cache_buffer_size,
-				cache_buffer_size);
+				(gdouble) cache_buffer_size);
     }
 
     g_list_free_full(start_port,
