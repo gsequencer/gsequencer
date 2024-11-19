@@ -418,17 +418,20 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
 {
   AgsAudioPreferences *audio_preferences;
 
-  GList *list;
+  GList *start_list, *list;
 
   audio_preferences = AGS_AUDIO_PREFERENCES(applicable);
 
-  list = audio_preferences->soundcard_editor;
+  list =
+    start_list = ags_audio_preferences_get_soundcard_editor(audio_preferences);
 
   while(list != NULL){
     ags_applicable_apply(AGS_APPLICABLE(list->data));
 
     list = list->next;
   }
+
+  g_list_free(start_list);
 }
 
 void
@@ -443,7 +446,13 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
   AgsApplicationContext *application_context;
   
   GList *start_list, *list;
+  GList *start_soundcard, *soundcard;
 
+  guint channels;
+  guint samplerate;
+  guint buffer_size;
+  AgsSoundcardFormat format;
+  
   audio_preferences = AGS_AUDIO_PREFERENCES(applicable);
   
   application_context = ags_application_context_get_instance();
@@ -454,7 +463,7 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
 
   /* clear */
   list =
-    start_list = g_list_copy(audio_preferences->soundcard_editor);
+    start_list = ags_audio_preferences_get_soundcard_editor(audio_preferences);
 
   while(list != NULL){
     ags_audio_preferences_remove_soundcard_editor(audio_preferences,
@@ -466,19 +475,64 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
   g_list_free(start_list);
 
   /* reset */
-  list =
-    start_list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+  soundcard =
+    start_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
 
-  while(list != NULL){
+  channels = AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS;
+  
+  samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+
+  format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  
+  if(soundcard != NULL){
+    ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard->data),
+			      &channels,
+			      &samplerate,
+			      &buffer_size,
+			      &format);
+  }
+  
+  while(soundcard != NULL){
     soundcard_editor = ags_soundcard_editor_new();    
 
-    soundcard_editor->soundcard = list->data;
+    soundcard_editor->soundcard = soundcard->data;
     soundcard_editor->soundcard_thread = (GObject *) ags_soundcard_thread_find_soundcard((AgsSoundcardThread *) soundcard_thread,
-											 list->data);
+											 soundcard->data);
   
     if(audio_preferences->soundcard_editor != NULL){
-      gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->buffer_size,
-			       FALSE);
+      gtk_spin_button_set_value(soundcard_editor->audio_channels,
+				(gdouble) channels);
+      
+      gtk_spin_button_set_value(soundcard_editor->samplerate,
+				(gdouble) samplerate);
+      
+      gtk_spin_button_set_value(soundcard_editor->buffer_size,
+				(gdouble) buffer_size);
+
+      switch(format){
+      case AGS_SOUNDCARD_SIGNED_8_BIT:
+	gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->format),
+				 0);
+	break;
+      case AGS_SOUNDCARD_SIGNED_16_BIT:
+	gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->format),
+				 1);
+	break;
+      case AGS_SOUNDCARD_SIGNED_24_BIT:
+	gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->format),
+				 2);
+	break;
+      case AGS_SOUNDCARD_SIGNED_32_BIT:
+	gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->format),
+				 3);
+	break;
+      case AGS_SOUNDCARD_SIGNED_64_BIT:
+	gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->format),
+				 4);
+	break;
+      }
     }
 
     ags_audio_preferences_add_soundcard_editor(audio_preferences,
@@ -490,10 +544,10 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
     g_signal_connect(soundcard_editor->remove, "clicked",
 		   G_CALLBACK(ags_audio_preferences_remove_soundcard_editor_callback), audio_preferences);
     
-    list = list->next;
+    soundcard = soundcard->next;
   }
 
-  g_list_free_full(start_list,
+  g_list_free_full(start_soundcard,
 		   (GDestroyNotify) g_object_unref);
   
   gtk_widget_show((GtkWidget *) audio_preferences->soundcard_editor_box);

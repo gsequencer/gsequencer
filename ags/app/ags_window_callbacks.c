@@ -25,6 +25,12 @@
 #include <ags/app/ags_gsequencer_application_context.h>
 #include <ags/app/ags_app_action_util.h>
 
+#if defined(AGS_OSX_DMG_ENV)
+#include <AVFoundation/AVFoundation.h>
+#include <CoreFoundation/CoreFoundation.h>
+#include <Foundation/Foundation.h>
+#endif
+
 #include <ags/i18n.h>
 
 void
@@ -84,6 +90,44 @@ ags_window_setup_completed_callback(AgsApplicationContext *application_context, 
   
   /* connect and show window */
   gtk_widget_show((GtkWidget *) window);
+
+#if defined(AGS_OSX_DMG_ENV)
+  // Request permission to access the camera and microphone.
+  switch ([AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio])
+    {
+    case AVAuthorizationStatusAuthorized:
+      {
+        // The user has previously granted access to the microphone.
+        break;
+      }
+    case AVAuthorizationStatusNotDetermined:
+      {
+        // The app hasn't yet asked the user for microphone access.
+        [AVCaptureDevice requestAccessForMediaType:AVMediaTypeAudio completionHandler:^(BOOL granted) {
+	    if(granted){
+	      g_message("microphone access granted");
+	    }else{
+	      g_message("microphone access not granted");
+	    }
+	  }];
+        break;
+      }
+    case AVAuthorizationStatusDenied:
+      {
+        // The user has previously denied access.
+	g_message("microphone denied");
+
+	break;
+      }
+    case AVAuthorizationStatusRestricted:
+      {
+        // The user can't grant access due to restrictions.
+	g_message("microphone disabled");
+
+	break;
+      }
+    }
+#endif
 }
 
 gboolean

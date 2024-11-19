@@ -80,11 +80,6 @@ ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *audio
 									  AGS_TYPE_SOUNDCARD_THREAD);
    }
   
-  if(audio_preferences->soundcard_editor != NULL){
-    gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->buffer_size,
-			     FALSE);
-  }
-
   ags_audio_preferences_add_soundcard_editor(audio_preferences,
 					     soundcard_editor);
   
@@ -106,6 +101,8 @@ ags_audio_preferences_remove_soundcard_editor_callback(GtkWidget *button,
 {
   AgsSoundcardEditor *soundcard_editor;
 
+  GList *start_list;
+  
   soundcard_editor = (AgsSoundcardEditor *) gtk_widget_get_ancestor(button,
 								    AGS_TYPE_SOUNDCARD_EDITOR);
 
@@ -116,12 +113,6 @@ ags_audio_preferences_remove_soundcard_editor_callback(GtkWidget *button,
 
   ags_audio_preferences_remove_soundcard_editor(audio_preferences,
 						soundcard_editor);
-  
-  /* reset default card */
-  if(audio_preferences->soundcard_editor != NULL){
-    gtk_widget_set_sensitive((GtkWidget *) AGS_SOUNDCARD_EDITOR(audio_preferences->soundcard_editor->data)->buffer_size,
-			     TRUE);
-  }
 }
 
 void

@@ -42,7 +42,7 @@ G_BEGIN_DECLS
 #define AGS_DOWNLOAD_WINDOW_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_DOWNLOAD_WINDOW, AgsDownloadWindowClass))
 
 #define AGS_DOWNLOAD_WINDOW_DEFAULT_SCRIPT_LOCATION AGS_DATA_DIR "/gsequencer/scripts/"
-#define AGS_DOWNLOAD_WINDOW_DEFAULT_DOWNLOAD_SCRIPT AGS_DOWNLOAD_WINDOW_DEFAULT_SCRIPT_LOCATION "download_all.sh"
+#define AGS_DOWNLOAD_WINDOW_DEFAULT_DOWNLOAD_SCRIPT AGS_DOWNLOAD_WINDOW_DEFAULT_SCRIPT_LOCATION "download_all.command"
 
 typedef struct _AgsDownloadWindow AgsDownloadWindow;
 typedef struct _AgsDownloadWindowClass AgsDownloadWindowClass;

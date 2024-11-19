@@ -821,7 +821,39 @@ ags_app_action_util_export()
 
 void
 ags_app_action_util_download()
-{  
+{
+#if defined(AGS_OSX_DMG_ENV)
+  gchar *app_dir = [[NSBundle mainBundle] bundlePath].UTF8String;
+
+  gchar *download_command = g_strdup_printf("%s/Contents/Resources/share/gsequencer/scripts/download_all.command",
+					    app_dir);
+  
+  gchar* argv[3] = {
+    "/usr/bin/open",
+    download_command,
+    NULL
+  };
+
+  GError *error;
+
+  error = NULL;
+  g_spawn_async(NULL,
+		argv,
+		NULL,
+		G_SPAWN_DEFAULT,
+		NULL,
+		NULL,
+		NULL,
+		&error);
+
+  if(error != NULL){
+    g_message("failed to start download_all.command script");
+
+    g_error_free(error);
+  }
+  
+  g_free(download_command);
+#else
   AgsDownloadWindow *download_window;
 
   AgsApplicationContext *application_context;
@@ -835,6 +867,7 @@ ags_app_action_util_download()
   gtk_window_present((GtkWindow *) download_window);
 
   ags_gsequencer_application_refresh_window_menu((AgsGSequencerApplication *) ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
+#endif
 }
 
 void

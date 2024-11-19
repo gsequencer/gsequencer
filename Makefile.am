@@ -9,7 +9,7 @@ AUTOMAKE_OPTIONS = foreign
 
 SUBDIRS = m4 po lib
 
-AM_DISTCHECK_CONFIGURE_FLAGS = --enable-introspection --with-poppler --with-gtk-unix-print --with-vte
+AM_DISTCHECK_CONFIGURE_FLAGS = --enable-introspection --with-poppler --with-gtk-unix-print
 
 ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 
@@ -191,9 +191,9 @@ EXTRA_DIST = config.rpath \
 	ags/test/app/examples/ags-loop-008.xml \
 	ags/test/app/examples/ags-loop-010.xml \
 	docs/images/README \
-	gsequencer.share/icons/README \
-	gsequencer.share/images/README \
-	gsequencer.share/scripts/download_all.sh
+	gsequencer.share/gsequencer/icons/README \
+	gsequencer.share/gsequencer/images/README \
+	gsequencer.share/gsequencer/scripts/download_all.command
 
 EXTRA_DIST += \
 	ags_license_header \
@@ -992,7 +992,7 @@ gsequencer_LDADD += $(libags_vst3_LIBDIR) $(libags_vst3_LIBS) libags_vst.la
 endif
 
 gsequencer_LDADD += libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
-gsequencer_LDFLAGS +=  $(RT_LIBS) $(X11_LIBS) $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_LIBS) $(LIBDSSIALSACOMPAT_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(LIBSOUP_LIBS) $(SNDFILE_LIBS) $(JACK_LIBS) $(PULSE_LIBS) $(GSTREAMER_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JSON_GLIB_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(GTK_UNIX_PRINT_LIBS) $(POPPLER_LIBS) $(VTE_LIBS) $(W32API_LIBS)
+gsequencer_LDFLAGS +=  $(RT_LIBS) $(X11_LIBS) $(CORE_AUDIO_LIBS) $(WASAPI_LIBS) $(LIBASOUND2_LIBS) $(LIBDSSIALSACOMPAT_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(LIBSOUP_LIBS) $(SNDFILE_LIBS) $(JACK_LIBS) $(PULSE_LIBS) $(GSTREAMER_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JSON_GLIB_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(GTK_UNIX_PRINT_LIBS) $(POPPLER_LIBS) $(VTE_LIBS) $(W32API_LIBS)
 
 if WITH_OSXAPI
 gsequencer_LDFLAGS += -framework Cocoa
@@ -3596,7 +3596,7 @@ install-data-local:
 	install -c -p -m 644 $(top_srcdir)/ags-simple.xsl $(DESTDIR)$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
 	install -c -p -m 644 $(top_srcdir)/application-x-gsequencer.xml $(DESTDIR)$(datadir)/mime/packages/gsequencer.xml
 	install -c -p -m 644 $(top_srcdir)/org.nongnu.gsequencer.gsequencer.appdata.xml $(DESTDIR)$(datadir)/metainfo/
-	install -c -p -m 755 $(top_srcdir)/gsequencer.share/gsequencer/download_all.sh $(DESTDIR)$(datadir)/gsequencer/scripts/
+	install -c -p -m 755 $(top_srcdir)/gsequencer.share/gsequencer/scripts/download_all.command $(DESTDIR)$(datadir)/gsequencer/scripts/
 
 fix-local-html:
 	find $(top_builddir)/docs/reference/libags/libags-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../gobject@$(GOBJECT_API_DOC)@g' {} \;
