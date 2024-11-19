@@ -1,3 +1,8 @@
+ags (7.3.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed meson build
+
 ags (7.3.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
