@@ -310,9 +310,9 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
 			  G_ACTION(export_action));
 
   /* download */
-#if defined(AGS_WITH_VTE)
+#if defined(AGS_OSX_DMG_ENV) || defined(AGS_WITH_VTE)
   download_action = g_simple_action_new("download",
-				      NULL);
+					NULL);
   g_signal_connect(download_action, "activate",
 		   G_CALLBACK(ags_gsequencer_download_callback), gsequencer_app);
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
@@ -817,9 +817,9 @@ ags_gsequencer_application_startup(GApplication *app)
   g_menu_append_item(gsequencer_app->edit_menu,
 		     item);  
 
-#if defined(AGS_WITH_VTE)
+#if defined(AGS_OSX_DMG_ENV)
   item = g_menu_item_new(i18n("Downloads"),
-			 "app.downloads");
+			 "app.download");
   g_menu_append_item(gsequencer_app->edit_menu,
 		     item);  
 #endif

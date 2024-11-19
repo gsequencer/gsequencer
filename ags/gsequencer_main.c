@@ -223,13 +223,15 @@ install_data()
 			    NULL,
 			    NULL,
 			    &error);
-  
+
+#if 0
   error = NULL;
   g_spawn_command_line_sync(free_sounds_cp_cmd,
 			    NULL,
 			    NULL,
 			    NULL,
 			    &error);
+#endif
   
   error = NULL;
   g_spawn_command_line_sync(ags_conf_dirs_mkdir_cmd,

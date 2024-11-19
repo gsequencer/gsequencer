@@ -418,7 +418,7 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
   core_audio_port->input_property_address->mScope = kAudioObjectPropertyScopeGlobal;
 
   core_audio_port->input_device = 0;  
-#else
+
   //core_audio_port->aq_ref = (AudioQueueRef *) malloc(sizeof(AudioQueueRef));
   memset(&(core_audio_port->aq_ref), 0, sizeof(AudioQueueRef));
   memset(&(core_audio_port->record_aq_ref), 0, sizeof(AudioQueueRef));
@@ -426,7 +426,7 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
   //core_audio_port->data_format = (AudioStreamBasicDescription *) malloc(sizeof(AudioStreamBasicDescription));
   memset(&(core_audio_port->data_format), 0, sizeof(AudioStreamBasicDescription));
 
-  size_t bytesPerSample = sizeof(gint16);
+  size_t bytesPerSample = sizeof(gfloat);
 
   core_audio_port->data_format.mBitsPerChannel = 8 * bytesPerSample;
 
@@ -437,7 +437,7 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
   core_audio_port->data_format.mChannelsPerFrame = core_audio_port->pcm_channels;
 
   core_audio_port->data_format.mFormatID = kAudioFormatLinearPCM;
-  core_audio_port->data_format.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
+  core_audio_port->data_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagIsPacked;
   
   core_audio_port->data_format.mSampleRate = (float) core_audio_port->samplerate;
 
@@ -452,7 +452,7 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
   core_audio_port->record_format.mChannelsPerFrame = core_audio_port->pcm_channels;
 
   core_audio_port->record_format.mFormatID = kAudioFormatLinearPCM;
-  core_audio_port->record_format.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
+  core_audio_port->record_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagIsPacked;
   
   core_audio_port->record_format.mSampleRate = (float) core_audio_port->samplerate;
 #endif
@@ -1790,11 +1790,11 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
       for(i = 0; i < 8; i++){
 	if(use_cache){
 	  AudioQueueAllocateBuffer(core_audio_port->aq_ref,
-				   (core_audio_port->pcm_channels * core_audio_port->cache_buffer_size * sizeof(gint16)),
+				   (core_audio_port->pcm_channels * core_audio_port->cache_buffer_size * sizeof(gfloat)),
 				   &(core_audio_port->buf_ref[i]));
 	}else{
 	  AudioQueueAllocateBuffer(core_audio_port->aq_ref,
-				   (core_audio_port->pcm_channels * core_audio_port->buffer_size * sizeof(gint16)),
+				   (core_audio_port->pcm_channels * core_audio_port->buffer_size * sizeof(gfloat)),
 				   &(core_audio_port->buf_ref[i]));
 	}
 	
@@ -1923,7 +1923,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
       
       for(i = 0; i < 16; i++){
 	AudioQueueAllocateBuffer(core_audio_port->record_aq_ref,
-				 (core_audio_port->pcm_channels * core_audio_port->buffer_size * sizeof(gint16)),
+				 (core_audio_port->pcm_channels * core_audio_port->buffer_size * sizeof(gfloat)),
 				 &(core_audio_port->record_buf_ref[i]));
 
  	AudioQueueEnqueueBuffer(core_audio_port->record_aq_ref,
@@ -2276,7 +2276,7 @@ ags_core_audio_port_cached_handle_output_buffer(AgsCoreAudioPort *core_audio_por
   }
 
   frame_size = core_audio_port->pcm_channels * core_audio_port->cache_buffer_size;
-  in_buffer->mAudioDataByteSize = frame_size * sizeof(gint16);
+  in_buffer->mAudioDataByteSize = frame_size * sizeof(gfloat);
   
   current_cache = core_audio_port->current_cache;
   
@@ -2337,7 +2337,7 @@ ags_core_audio_port_cached_handle_output_buffer(AgsCoreAudioPort *core_audio_por
   // g_message("p %d", played_cache);
   ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
 				     in_buffer->mAudioData, 1,
-				     (in_buffer->mAudioDataByteSize / sizeof(gint16)), AGS_AUDIO_BUFFER_UTIL_S16);
+				     (in_buffer->mAudioDataByteSize / sizeof(gfloat)), AGS_AUDIO_BUFFER_UTIL_S16);
   ags_audio_buffer_util_copy_buffer_to_buffer(core_audio_port->audio_buffer_util,
 					      in_buffer->mAudioData, 1, 0,
 					      core_audio_port->cache[played_cache], 1, 0,
@@ -2416,10 +2416,10 @@ ags_core_audio_port_handle_output_buffer(AgsCoreAudioPort *core_audio_port,
 
   audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
-  in_buffer->mAudioDataByteSize = core_audio_port->pcm_channels * core_audio_port->buffer_size * sizeof(gint16);
+  in_buffer->mAudioDataByteSize = core_audio_port->pcm_channels * core_audio_port->buffer_size * sizeof(gfloat);
   ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
 				     in_buffer->mAudioData, 1,
-				     (in_buffer->mAudioDataByteSize / sizeof(gint16)), AGS_AUDIO_BUFFER_UTIL_S16);
+				     (in_buffer->mAudioDataByteSize / sizeof(gfloat)), AGS_AUDIO_BUFFER_UTIL_S16);
 
   if(audio_loop == NULL){
     g_atomic_int_dec_and_test(&(core_audio_port->queued));
@@ -2837,14 +2837,14 @@ ags_core_audio_port_handle_input_buffer(AgsCoreAudioPort *core_audio_port,
     copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(core_audio_port->audio_buffer_util,
 								ags_audio_buffer_util_format_from_soundcard(core_audio_port->audio_buffer_util,
 													    core_audio_devin->format),
-								AGS_AUDIO_BUFFER_UTIL_S16);
+								AGS_AUDIO_BUFFER_UTIL_FLOAT);
 
 #if 0
-    g_message("%d: %x %x %x %x", core_audio_port->pcm_channels * core_audio_port->buffer_size,
-	      ((gint16 *) in_buffer->mAudioData)[0],
-	      ((gint16 *) in_buffer->mAudioData)[1],
-	      ((gint16 *) in_buffer->mAudioData)[2],
-	      ((gint16 *) in_buffer->mAudioData)[3]);
+    g_message("%d: %f %f %f %f", core_audio_port->pcm_channels * core_audio_port->buffer_size,
+	      ((gfloat *) in_buffer->mAudioData)[0],
+	      ((gfloat *) in_buffer->mAudioData)[1],
+	      ((gfloat *) in_buffer->mAudioData)[2],
+	      ((gfloat *) in_buffer->mAudioData)[3]);
 #endif
 
     ags_soundcard_lock_buffer(AGS_SOUNDCARD(core_audio_devin), core_audio_devin->app_buffer[nth_buffer]);
@@ -2857,10 +2857,10 @@ ags_core_audio_port_handle_input_buffer(AgsCoreAudioPort *core_audio_port,
     ags_soundcard_unlock_buffer(AGS_SOUNDCARD(core_audio_devin), core_audio_devin->app_buffer[nth_buffer]);    
   }
 
-  in_buffer->mAudioDataByteSize = core_audio_port->pcm_channels * core_audio_port->buffer_size * sizeof(gint16);
+  in_buffer->mAudioDataByteSize = core_audio_port->pcm_channels * core_audio_port->buffer_size * sizeof(gfloat);
   ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
 				     in_buffer->mAudioData, 1,
-				     (in_buffer->mAudioDataByteSize / sizeof(gint16)), AGS_AUDIO_BUFFER_UTIL_S16);
+				     (in_buffer->mAudioDataByteSize / sizeof(gfloat)), AGS_AUDIO_BUFFER_UTIL_S16);
   AudioQueueEnqueueBuffer(core_audio_port->record_aq_ref,
 			  in_buffer,
 			  0,

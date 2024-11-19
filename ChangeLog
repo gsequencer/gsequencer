@@ -1,3 +1,9 @@
+ags (7.3.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* show download on macOS
+	* modified data type in ags_core_audio_port.c from gint16 to gfloat
+
 ags (7.3.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
