@@ -918,6 +918,7 @@ libgsequencer_sources = files(
   'app/ags_connection_editor_dialog.c',
   'app/ags_connection_editor_dialog_callbacks.c',
   'app/ags_download_window.c',
+  'app/ags_download_window_callbacks.c',
   'app/ags_effect_bridge.c',
   'app/ags_effect_bridge_callbacks.c',
   'app/ags_effect_bulk.c',
