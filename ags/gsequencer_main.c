@@ -224,7 +224,7 @@ install_data()
 			    NULL,
 			    &error);
 
-#if 0
+#if 1
   error = NULL;
   g_spawn_command_line_sync(free_sounds_cp_cmd,
 			    NULL,
