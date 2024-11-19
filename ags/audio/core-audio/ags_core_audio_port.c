@@ -418,7 +418,7 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
   core_audio_port->input_property_address->mScope = kAudioObjectPropertyScopeGlobal;
 
   core_audio_port->input_device = 0;  
-
+#else
   //core_audio_port->aq_ref = (AudioQueueRef *) malloc(sizeof(AudioQueueRef));
   memset(&(core_audio_port->aq_ref), 0, sizeof(AudioQueueRef));
   memset(&(core_audio_port->record_aq_ref), 0, sizeof(AudioQueueRef));
@@ -1454,10 +1454,6 @@ ags_core_audio_port_hw_input_callback(AudioObjectID device,
   
   // g_message("p %d", played_cache);
   in_buffer = in->mBuffers;
-  
-  ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
-				     in_buffer->mData, 1,
-				     in_buffer->mNumberChannels * (in_buffer->mDataByteSize / sizeof(float)), AGS_AUDIO_BUFFER_UTIL_FLOAT);
 
   if(is_recording){
     pcm_channels = AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS;
@@ -1480,7 +1476,7 @@ ags_core_audio_port_hw_input_callback(AudioObjectID device,
     buffer = ags_soundcard_get_buffer(AGS_SOUNDCARD(soundcard));
 
     //TODO:JK: improve misconfigured hw
-    if(in_buffer->mDataByteSize / sizeof(float) >= buffer_size &&
+    if(in_buffer->mDataByteSize / sizeof(gfloat) >= buffer_size &&
        in_buffer->mNumberChannels >= pcm_channels){
       ags_soundcard_lock_buffer(AGS_SOUNDCARD(soundcard),
 				buffer);
@@ -1494,7 +1490,7 @@ ags_core_audio_port_hw_input_callback(AudioObjectID device,
       
       ags_soundcard_unlock_buffer(AGS_SOUNDCARD(soundcard),
 				  buffer);
-    }else if(in_buffer->mDataByteSize / sizeof(float) >= buffer_size){
+    }else if(in_buffer->mDataByteSize / sizeof(gfloat) >= buffer_size){
       ags_soundcard_lock_buffer(AGS_SOUNDCARD(soundcard),
 				buffer);
 
@@ -1515,7 +1511,7 @@ ags_core_audio_port_hw_input_callback(AudioObjectID device,
 	ags_audio_buffer_util_copy_buffer_to_buffer(core_audio_port->audio_buffer_util,
 						    buffer, pcm_channels, i,
 						    in_buffer->mData, in_buffer->mNumberChannels, i,
-						    in_buffer->mDataByteSize / sizeof(float), copy_mode);
+						    in_buffer->mDataByteSize / sizeof(gfloat), copy_mode);
       }
       
       ags_soundcard_unlock_buffer(AGS_SOUNDCARD(soundcard),
@@ -1524,6 +1520,10 @@ ags_core_audio_port_hw_input_callback(AudioObjectID device,
   }else{
     empty_run = TRUE;
   }
+  
+  ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
+				     in_buffer->mData, 1,
+				     in_buffer->mNumberChannels * (in_buffer->mDataByteSize / sizeof(gfloat)), AGS_AUDIO_BUFFER_UTIL_FLOAT);
   
   /* signal finish */ 
   if(!no_event){
@@ -1771,6 +1771,23 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 	}
       }
 
+      /* apply presets */
+      size_t bytesPerSample = sizeof(gfloat);
+
+      core_audio_port->data_format.mBitsPerChannel = 8 * bytesPerSample;
+
+      core_audio_port->data_format.mBytesPerPacket = core_audio_port->pcm_channels * bytesPerSample;
+      core_audio_port->data_format.mBytesPerFrame = core_audio_port->pcm_channels * bytesPerSample;
+  
+      core_audio_port->data_format.mFramesPerPacket = 1;
+      core_audio_port->data_format.mChannelsPerFrame = core_audio_port->pcm_channels;
+
+      core_audio_port->data_format.mFormatID = kAudioFormatLinearPCM;
+      core_audio_port->data_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagIsPacked;
+  
+      core_audio_port->data_format.mSampleRate = (float) core_audio_port->samplerate;
+
+      
       if(use_cache){
 	AudioQueueNewOutput(&(core_audio_port->data_format),
 			    ,
@@ -1913,6 +1930,22 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 	
       }
 #endif
+
+      /* apply presets */      
+      size_t bytesPerSample = sizeof(gfloat);
+      
+      core_audio_port->record_format.mBitsPerChannel = 8 * bytesPerSample;
+
+      core_audio_port->record_format.mBytesPerPacket = core_audio_port->pcm_channels * bytesPerSample;
+      core_audio_port->record_format.mBytesPerFrame = core_audio_port->pcm_channels * bytesPerSample;
+  
+      core_audio_port->record_format.mFramesPerPacket = 1;
+      core_audio_port->record_format.mChannelsPerFrame = core_audio_port->pcm_channels;
+
+      core_audio_port->record_format.mFormatID = kAudioFormatLinearPCM;
+      core_audio_port->record_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagIsPacked;
+  
+      core_audio_port->record_format.mSampleRate = (float) core_audio_port->samplerate;
       
       AudioQueueNewInput(&(core_audio_port->record_format),
 			 ags_core_audio_port_handle_input_buffer,

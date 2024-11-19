@@ -1,3 +1,9 @@
+ags (7.3.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved CoreAudio recording
+	* fixed open download script
+
 ags (7.3.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

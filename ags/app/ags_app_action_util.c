@@ -829,7 +829,7 @@ ags_app_action_util_download()
 					    app_dir);
   
   gchar* argv[3] = {
-    "open",
+    "/usr/bin/open",
     download_command,
     NULL
   };
