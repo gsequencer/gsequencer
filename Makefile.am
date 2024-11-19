@@ -9,7 +9,7 @@ AUTOMAKE_OPTIONS = foreign
 
 SUBDIRS = m4 po lib
 
-AM_DISTCHECK_CONFIGURE_FLAGS = --enable-introspection --with-poppler --with-gtk-unix-print --with-vte
+AM_DISTCHECK_CONFIGURE_FLAGS = --enable-introspection --with-poppler --with-gtk-unix-print
 
 ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 
@@ -193,7 +193,7 @@ EXTRA_DIST = config.rpath \
 	docs/images/README \
 	gsequencer.share/gsequencer/icons/README \
 	gsequencer.share/gsequencer/images/README \
-	gsequencer.share/gsequencer/scripts/download_all.sh
+	gsequencer.share/gsequencer/scripts/download_all.command
 
 EXTRA_DIST += \
 	ags_license_header \
@@ -3596,7 +3596,7 @@ install-data-local:
 	install -c -p -m 644 $(top_srcdir)/ags-simple.xsl $(DESTDIR)$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
 	install -c -p -m 644 $(top_srcdir)/application-x-gsequencer.xml $(DESTDIR)$(datadir)/mime/packages/gsequencer.xml
 	install -c -p -m 644 $(top_srcdir)/org.nongnu.gsequencer.gsequencer.appdata.xml $(DESTDIR)$(datadir)/metainfo/
-	install -c -p -m 755 $(top_srcdir)/gsequencer.share/gsequencer/scripts/download_all.sh $(DESTDIR)$(datadir)/gsequencer/scripts/
+	install -c -p -m 755 $(top_srcdir)/gsequencer.share/gsequencer/scripts/download_all.command $(DESTDIR)$(datadir)/gsequencer/scripts/
 
 fix-local-html:
 	find $(top_builddir)/docs/reference/libags/libags-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../gobject@$(GOBJECT_API_DOC)@g' {} \;

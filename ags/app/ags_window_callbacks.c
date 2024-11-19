@@ -26,7 +26,6 @@
 #include <ags/app/ags_app_action_util.h>
 
 #if defined(AGS_OSX_DMG_ENV)
-#include <AVFoundation/AVFormat.h>
 #include <AVFoundation/AVFoundation.h>
 #include <CoreFoundation/CoreFoundation.h>
 #include <Foundation/Foundation.h>

@@ -378,7 +378,7 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
 
   soundcard_editor->audio_channels = (GtkSpinButton *) gtk_spin_button_new_with_range(1.0, 24.0, 1.0);
   gtk_spin_button_set_value(soundcard_editor->audio_channels,
-			    2);
+			    (gdouble) AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS);
 
   gtk_widget_set_valign((GtkWidget *) soundcard_editor->audio_channels,
 			GTK_ALIGN_FILL);
@@ -411,7 +411,8 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
 		  1, 1);
 
   soundcard_editor->samplerate = (GtkSpinButton *) gtk_spin_button_new_with_range(1.0, 192000.0, 1.0);
-  gtk_spin_button_set_value(soundcard_editor->samplerate, 44100);
+  gtk_spin_button_set_value(soundcard_editor->samplerate,
+			    (gdouble) AGS_SOUNDCARD_DEFAULT_SAMPLERATE);
 
   gtk_widget_set_valign((GtkWidget *) soundcard_editor->samplerate,
 			GTK_ALIGN_FILL);
@@ -508,7 +509,7 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
   /* use cache */
   soundcard_editor->use_cache = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("use cache"));
   gtk_check_button_set_active(soundcard_editor->use_cache,
-			      TRUE);
+			      FALSE);
 
   gtk_widget_set_valign((GtkWidget *) soundcard_editor->use_cache,
 			GTK_ALIGN_FILL);
@@ -553,26 +554,6 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
 		  GTK_WIDGET(soundcard_editor->cache_buffer_size),
 		  1, y0,
 		  1, 1);
-
-#if !defined(AGS_WITH_CORE_AUDIO) && defined(AGS_WITH_PULSE)
-  gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->capability),
-			   FALSE);
-#else
-  gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->capability),
-			   TRUE);
-#endif
-  
-#if defined(AGS_WITH_CORE_AUDIO) || defined(AGS_WITH_PULSE)
-  gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->use_cache),
-			   TRUE);
-  gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->cache_buffer_size),
-			   TRUE);
-#else
-  gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->use_cache),
-			   FALSE);
-  gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->cache_buffer_size),
-			   FALSE);
-#endif
   
   y0++;
 
@@ -831,6 +812,8 @@ ags_soundcard_editor_apply(AgsApplicable *applicable)
   
   gint nth;
   guint channels;
+  guint first_samplerate;
+  guint first_buffer_size;
   guint samplerate;
   guint buffer_size;
   guint cache_buffer_size;
@@ -851,11 +834,21 @@ ags_soundcard_editor_apply(AgsApplicable *applicable)
   start_list = ags_audio_preferences_get_soundcard_editor(audio_preferences);
   nth = g_list_index(start_list,
 		     soundcard_editor);
-  g_list_free(start_list);
 
   if(nth < 0){
+    g_list_free(start_list);
+    
     return;
   }
+
+  /* first buffer size and samplerate */
+  if(start_list != NULL){
+    first_buffer_size = gtk_spin_button_get_value(AGS_SOUNDCARD_EDITOR(start_list->data)->buffer_size);
+    
+    first_samplerate = gtk_spin_button_get_value(AGS_SOUNDCARD_EDITOR(start_list->data)->samplerate);
+  }
+  
+  g_list_free(start_list);
   
   soundcard_group = g_strdup_printf("%s-%d",
 				    AGS_CONFIG_SOUNDCARD,
@@ -932,7 +925,10 @@ ags_soundcard_editor_apply(AgsApplicable *applicable)
     }
   }
 
+  
+  /* capability */
   capability = gtk_combo_box_text_get_active_text(soundcard_editor->capability);
+
   ags_config_set_value(config,
 		       soundcard_group,
 		       "capability",
@@ -940,8 +936,10 @@ ags_soundcard_editor_apply(AgsApplicable *applicable)
 
   /* buffer size */
   buffer_size = gtk_spin_button_get_value(soundcard_editor->buffer_size);
+  
   str = g_strdup_printf("%u",
 			buffer_size);
+  
   ags_config_set_value(config,
 		       soundcard_group,
 		       "buffer-size",
@@ -950,8 +948,10 @@ ags_soundcard_editor_apply(AgsApplicable *applicable)
 
   /* pcm channels */
   channels = gtk_spin_button_get_value(soundcard_editor->audio_channels);
+  
   str = g_strdup_printf("%u",
 			channels);
+  
   ags_config_set_value(config,
 		       soundcard_group,
 		       "pcm-channels",
@@ -981,6 +981,7 @@ ags_soundcard_editor_apply(AgsApplicable *applicable)
 
   str = g_strdup_printf("%u",
 			format);
+  
   ags_config_set_value(config,
 		       soundcard_group,
 		       "format",
@@ -989,8 +990,10 @@ ags_soundcard_editor_apply(AgsApplicable *applicable)
 
   /* samplerate */
   samplerate = gtk_spin_button_get_value(soundcard_editor->samplerate);
+
   str = g_strdup_printf("%u",
 			samplerate);
+
   ags_config_set_value(config,
 		       soundcard_group,
 		       "samplerate",
@@ -1091,10 +1094,12 @@ ags_soundcard_editor_apply(AgsApplicable *applicable)
 void
 ags_soundcard_editor_reset(AgsApplicable *applicable)
 {
+  AgsAudioPreferences *audio_preferences;
   AgsSoundcardEditor *soundcard_editor;
 
   GObject *soundcard;
 
+  GList *start_list;	
   GList *card_id, *card_id_start, *card_name, *card_name_start;
 
   gchar *backend, *device, *tmp;
@@ -1104,6 +1109,8 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
 
   guint capability;
   guint nth;
+  guint first_samplerate;
+  guint first_buffer_size;
   guint channels, channels_min, channels_max;
   guint samplerate, samplerate_min, samplerate_max;
   guint buffer_size, buffer_size_min, buffer_size_max;
@@ -1122,8 +1129,22 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
   }
 
   soundcard_editor->flags |= AGS_SOUNDCARD_EDITOR_BLOCK_RESET;
-  
+
   soundcard = soundcard_editor->soundcard;
+
+  audio_preferences = (AgsAudioPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
+								      AGS_TYPE_AUDIO_PREFERENCES);
+
+  /* first buffer size and samplerate */
+  start_list = ags_audio_preferences_get_soundcard_editor(audio_preferences);
+
+  if(start_list != NULL){
+    first_buffer_size = gtk_spin_button_get_value(AGS_SOUNDCARD_EDITOR(start_list->data)->buffer_size);
+    
+    first_samplerate = gtk_spin_button_get_value(AGS_SOUNDCARD_EDITOR(start_list->data)->samplerate);
+  }
+  
+  g_list_free(start_list);
   
   /* refresh */
   backend = NULL;
@@ -1233,9 +1254,6 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
 			       -1);
 #endif
       
-      gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->capability),
-			       TRUE);
-
       //      ags_soundcard_editor_load_core_audio_card(soundcard_editor);
     }else if(!g_ascii_strncasecmp(backend,
 				  "pulse",
@@ -1250,8 +1268,6 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
       
       gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->capability),
 			       0);
-      gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->capability),
-			       FALSE);
       //      ags_soundcard_editor_load_pulse_card(soundcard_editor);
     }else if(!g_ascii_strncasecmp(backend,
 				  "jack",
@@ -1263,11 +1279,6 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
       gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->backend),
 			       -1);
 #endif
-      
-      gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->use_cache),
-			       FALSE);
-      gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->cache_buffer_size),
-			       FALSE);
 
       //      ags_soundcard_editor_load_jack_card(soundcard_editor);
     }else if(!g_ascii_strncasecmp(backend,
@@ -1280,14 +1291,6 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
       gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->backend),
 			       -1);
 #endif
-      
-      gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->capability),
-			       TRUE);
-
-      gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->use_cache),
-			       FALSE);
-      gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->cache_buffer_size),
-			       FALSE);
 
       //      ags_soundcard_editor_load_wasapi_card(soundcard_editor);
     }else if(!g_ascii_strncasecmp(backend,
@@ -1300,14 +1303,6 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
       gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->backend),
 			       -1);
 #endif
-      
-      gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->capability),
-			       TRUE);
-
-      gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->use_cache),
-			       FALSE);
-      gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->cache_buffer_size),
-			       FALSE);
 
       //      ags_soundcard_editor_load_alsa_card(soundcard_editor);
     }else if(!g_ascii_strncasecmp(backend,
@@ -1321,14 +1316,6 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
 			       -1);
 #endif
       
-      gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->capability),
-			       TRUE);
-
-      gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->use_cache),
-			       FALSE);
-      gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->cache_buffer_size),
-			       FALSE);
-
       //      ags_soundcard_editor_load_oss_card(soundcard_editor);
     }
   }
@@ -1419,21 +1406,6 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
     break;
   }
   
-  /*  */
-  ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
-			    &channels,
-			    &samplerate,
-			    &buffer_size,
-			    &format);
-
-  /*  */
-  gtk_spin_button_set_value(soundcard_editor->audio_channels,
-			    (gdouble) channels);
-  gtk_spin_button_set_value(soundcard_editor->samplerate,
-			    (gdouble) samplerate);
-  gtk_spin_button_set_value(soundcard_editor->buffer_size,
-			    (gdouble) buffer_size);
-
   switch(format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->format),
@@ -1457,7 +1429,7 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
     break;
   }
 
-  /*  */
+  /* set range */
   if(device != NULL &&
      soundcard != NULL){
     error = NULL;
@@ -1495,6 +1467,21 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
 			    samplerate_min, samplerate_max);
   gtk_spin_button_set_range(soundcard_editor->buffer_size,
 			    buffer_size_min, buffer_size_max);
+
+  /* get presets */
+  ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+			    &channels,
+			    &samplerate,
+			    &buffer_size,
+			    &format);
+
+  /* set presets value */
+  gtk_spin_button_set_value(soundcard_editor->audio_channels,
+			    (gdouble) channels);
+  gtk_spin_button_set_value(soundcard_editor->samplerate,
+			    (gdouble) samplerate);
+  gtk_spin_button_set_value(soundcard_editor->buffer_size,
+			    (gdouble) buffer_size);
 
   soundcard_editor->flags &= (~AGS_SOUNDCARD_EDITOR_BLOCK_RESET);
 
@@ -2507,21 +2494,7 @@ ags_soundcard_editor_load_wasapi_card(AgsSoundcardEditor *soundcard_editor)
   ags_soundcard_editor_add_soundcard(soundcard_editor,
 				     (GObject *) wasapi_devout);
 
-  /*  */
-  audio_preferences = (AgsAudioPreferences *) gtk_widget_get_ancestor((GtkWidget *) soundcard_editor,
-								      AGS_TYPE_AUDIO_PREFERENCES);
-
-  if(audio_preferences != NULL){
-    start_list = ags_audio_preferences_get_soundcard_editor(audio_preferences);
-    
-    if(start_list->data == soundcard_editor){
-      gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->buffer_size,
-			       TRUE);
-    }
-    
-    g_list_free(start_list);
-  }
-  
+  /*  */  
   soundcard_editor->flags &= (~AGS_SOUNDCARD_EDITOR_BLOCK_LOAD);
 }
 
@@ -2574,21 +2547,7 @@ ags_soundcard_editor_load_alsa_card(AgsSoundcardEditor *soundcard_editor)
   ags_soundcard_editor_add_soundcard(soundcard_editor,
 				     (GObject *) alsa_devout);
 
-  /*  */
-  audio_preferences = (AgsAudioPreferences *) gtk_widget_get_ancestor((GtkWidget *) soundcard_editor,
-								      AGS_TYPE_AUDIO_PREFERENCES);
-
-  if(audio_preferences != NULL){
-    start_list = ags_audio_preferences_get_soundcard_editor(audio_preferences);
-
-    if(start_list->data == soundcard_editor){
-      gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->buffer_size,
-			       TRUE);
-    }
-    
-    g_list_free(start_list);
-  }
-  
+  /*  */  
   soundcard_editor->flags &= (~AGS_SOUNDCARD_EDITOR_BLOCK_LOAD);
 }
 
@@ -2636,19 +2595,6 @@ ags_soundcard_editor_load_oss_card(AgsSoundcardEditor *soundcard_editor)
 				     (GObject *) oss_devout);
 
   /*  */
-  audio_preferences = (AgsAudioPreferences *) gtk_widget_get_ancestor((GtkWidget *) soundcard_editor,
-								      AGS_TYPE_AUDIO_PREFERENCES);
-
-  if(audio_preferences != NULL){  
-    start_list = ags_audio_preferences_get_soundcard_editor(audio_preferences);
-  
-    if(start_list->data == soundcard_editor){
-      gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->buffer_size,
-			       TRUE);
-    }
-
-    g_list_free(start_list);
-  }
 }
 
 void

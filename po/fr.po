@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-11-18 06:12+0100\n"
+"POT-Creation-Date: 2024-11-19 08:57+0100\n"
 "PO-Revision-Date: 2021-01-11 21:07+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: français <jkraehemann@gmail.com>\n"
@@ -420,7 +420,7 @@ msgstr ""
 #: ags/app/ags_sequencer_editor.c:284 ags/app/ags_sequencer_editor.c:289
 #: ags/app/editor/ags_pattern_envelope.c:824
 #: ags/app/editor/ags_envelope_editor.c:222 ags/app/ags_soundcard_editor.c:309
-#: ags/app/ags_soundcard_editor.c:662
+#: ags/app/ags_soundcard_editor.c:643
 #, fuzzy
 msgid "_Remove"
 msgstr "bouger x"
@@ -1087,7 +1087,7 @@ msgstr "sortant composite: "
 msgid "input pads count"
 msgstr "intrant composite: "
 
-#: ags/app/ags_resize_editor.c:243 ags/app/ags_soundcard_editor.c:464
+#: ags/app/ags_resize_editor.c:243 ags/app/ags_soundcard_editor.c:465
 msgid "format"
 msgstr "format"
 
@@ -1405,23 +1405,23 @@ msgstr "aptitude"
 msgid "audio channels"
 msgstr "audio canals"
 
-#: ags/app/ags_soundcard_editor.c:430
+#: ags/app/ags_soundcard_editor.c:431
 msgid "buffer size"
 msgstr "calibre de mémoire"
 
-#: ags/app/ags_soundcard_editor.c:509
+#: ags/app/ags_soundcard_editor.c:510
 msgid "use cache"
 msgstr "utiliser mémoire tampon"
 
-#: ags/app/ags_soundcard_editor.c:527
+#: ags/app/ags_soundcard_editor.c:528
 msgid "cache buffer size"
 msgstr "calibre de mémoire tampon"
 
-#: ags/app/ags_soundcard_editor.c:582
+#: ags/app/ags_soundcard_editor.c:563
 msgid "WASAPI share mode"
 msgstr "WASAPI share mode"
 
-#: ags/app/ags_soundcard_editor.c:620
+#: ags/app/ags_soundcard_editor.c:601
 msgid "WASAPI buffer size"
 msgstr "WASAPI calibre de mémoire"
 
