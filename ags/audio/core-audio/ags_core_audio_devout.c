@@ -873,6 +873,7 @@ ags_core_audio_devout_set_property(GObject *gobject,
 
       g_rec_mutex_unlock(core_audio_devout_mutex);
 
+#if 0
       port = core_audio_devout->core_audio_port;
 
       while(port != NULL){
@@ -882,6 +883,7 @@ ags_core_audio_devout_set_property(GObject *gobject,
 
 	port = port->next;
       }
+#endif
 
       ags_core_audio_devout_realloc_buffer(core_audio_devout);
     }
@@ -906,6 +908,7 @@ ags_core_audio_devout_set_property(GObject *gobject,
 
       g_rec_mutex_unlock(core_audio_devout_mutex);
 
+#if 0
       port = core_audio_devout->core_audio_port;
 
       while(port != NULL){
@@ -915,6 +918,7 @@ ags_core_audio_devout_set_property(GObject *gobject,
 
 	port = port->next;
       }
+#endif
 
       ags_core_audio_devout_realloc_buffer(core_audio_devout);
     }
@@ -939,6 +943,7 @@ ags_core_audio_devout_set_property(GObject *gobject,
 
       g_rec_mutex_unlock(core_audio_devout_mutex);
 
+#if 0
       port = core_audio_devout->core_audio_port;
 
       while(port != NULL){
@@ -948,6 +953,7 @@ ags_core_audio_devout_set_property(GObject *gobject,
 
 	port = port->next;
       }
+#endif
 
       ags_core_audio_devout_realloc_buffer(core_audio_devout);
       ags_core_audio_devout_adjust_delay_and_attack(core_audio_devout);
@@ -973,6 +979,7 @@ ags_core_audio_devout_set_property(GObject *gobject,
 
       g_rec_mutex_unlock(core_audio_devout_mutex);
 
+#if 0
       port = core_audio_devout->core_audio_port;
 
       while(port != NULL){
@@ -982,7 +989,8 @@ ags_core_audio_devout_set_property(GObject *gobject,
 
 	port = port->next;
       }
-
+#endif
+      
       ags_core_audio_devout_realloc_buffer(core_audio_devout);
       ags_core_audio_devout_adjust_delay_and_attack(core_audio_devout);
     }

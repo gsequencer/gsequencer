@@ -519,7 +519,7 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
 
   memset(&(core_audio_port->input_format), 0, sizeof(AudioStreamBasicDescription));
 
-  bytesPerSample = sizeof(gfloat);
+  bytesPerSample = sizeof(gint16);
 
   core_audio_port->input_format.mBitsPerChannel = 8 * bytesPerSample;
 
@@ -530,7 +530,7 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
   core_audio_port->input_format.mChannelsPerFrame = core_audio_port->pcm_channels;
 
   core_audio_port->input_format.mFormatID = kAudioFormatLinearPCM;
-  core_audio_port->input_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagIsPacked;
+  core_audio_port->input_format.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
   
   core_audio_port->input_format.mSampleRate = (float) core_audio_port->samplerate;
   
@@ -2288,7 +2288,16 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 
   port_name = g_strdup(core_audio_port->port_name);
 
-  format = core_audio_port->format;
+  /* work-around for not proper applying presets */
+  if(is_audio){
+    if(!is_output){
+      format =
+	core_audio_port->format = AGS_SOUNDCARD_SIGNED_16_BIT;
+    }else{
+      format =
+	core_audio_port->format = AGS_SOUNDCARD_FLOAT;
+    }
+  }
   
   use_cache = core_audio_port->use_cache;
   

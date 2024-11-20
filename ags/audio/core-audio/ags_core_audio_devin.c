@@ -839,6 +839,7 @@ ags_core_audio_devin_set_property(GObject *gobject,
 
       g_rec_mutex_unlock(core_audio_devin_mutex);
 
+#if 0
       port = core_audio_devin->core_audio_port;
 
       while(port != NULL){
@@ -848,6 +849,7 @@ ags_core_audio_devin_set_property(GObject *gobject,
 
 	port = port->next;
       }
+#endif
       
       ags_core_audio_devin_realloc_buffer(core_audio_devin);
     }
@@ -872,6 +874,7 @@ ags_core_audio_devin_set_property(GObject *gobject,
 
       g_rec_mutex_unlock(core_audio_devin_mutex);
 
+#if 0
       port = core_audio_devin->core_audio_port;
 
       while(port != NULL){
@@ -881,7 +884,8 @@ ags_core_audio_devin_set_property(GObject *gobject,
 
 	port = port->next;
       }
-
+#endif
+      
       ags_core_audio_devin_realloc_buffer(core_audio_devin);
     }
     break;
@@ -905,6 +909,7 @@ ags_core_audio_devin_set_property(GObject *gobject,
 
       g_rec_mutex_unlock(core_audio_devin_mutex);
 
+#if 0
       port = core_audio_devin->core_audio_port;
 
       while(port != NULL){
@@ -914,6 +919,7 @@ ags_core_audio_devin_set_property(GObject *gobject,
 
 	port = port->next;
       }
+#endif
 
       ags_core_audio_devin_realloc_buffer(core_audio_devin);
       ags_core_audio_devin_adjust_delay_and_attack(core_audio_devin);
@@ -939,6 +945,7 @@ ags_core_audio_devin_set_property(GObject *gobject,
 
       g_rec_mutex_unlock(core_audio_devin_mutex);
 
+#if 0
       port = core_audio_devin->core_audio_port;
 
       while(port != NULL){
@@ -948,6 +955,7 @@ ags_core_audio_devin_set_property(GObject *gobject,
 
 	port = port->next;
       }
+#endif
 
       ags_core_audio_devin_realloc_buffer(core_audio_devin);
       ags_core_audio_devin_adjust_delay_and_attack(core_audio_devin);
