@@ -4009,9 +4009,18 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
 			       "format");
 
     if(str != NULL){
-      format = g_ascii_strtoull(str,
-				NULL,
-				10);
+      if(!g_ascii_strncasecmp(str, "float", 6)){
+	format = AGS_SOUNDCARD_FLOAT;
+      }else if(!g_ascii_strncasecmp(str, "double", 7)){
+	format = AGS_SOUNDCARD_DOUBLE;
+      }else if(!g_ascii_strncasecmp(str, "complex", 8)){
+	format = AGS_SOUNDCARD_COMPLEX;
+      }else{
+	format = g_ascii_strtoull(str,
+				  NULL,
+				  10);
+      }
+      
       g_free(str);
     }
 

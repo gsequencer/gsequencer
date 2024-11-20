@@ -314,7 +314,7 @@ ags_core_audio_port_class_init(AgsCoreAudioPortClass *core_audio_port)
 				 i18n_pspec("precision of buffer"),
 				 i18n_pspec("The precision to use for a frame"),
 				 1,
-				 64,
+				 G_MAXUINT,
 				 AGS_SOUNDCARD_DEFAULT_FORMAT,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -967,6 +967,7 @@ ags_core_audio_port_set_property(GObject *gobject,
       if(ags_core_audio_port_test_flags(core_audio_port, AGS_CORE_AUDIO_PORT_IS_AUDIO)){
 	if(ags_core_audio_port_test_flags(core_audio_port, AGS_CORE_AUDIO_PORT_IS_OUTPUT)){
 	  size_t bytesPerSample = sizeof(gfloat);
+	  int output_buffer_size_bytes;
 
 	  if(current_format == AGS_SOUNDCARD_SIGNED_16_BIT){
 	    bytesPerSample = sizeof(gint16);
@@ -990,6 +991,7 @@ ags_core_audio_port_set_property(GObject *gobject,
 				     &output_buffer_size_bytes);
 	}else{
 	  size_t bytesPerSample = sizeof(gfloat);
+	  int input_buffer_size_bytes;
 
 	  if(current_format == AGS_SOUNDCARD_SIGNED_16_BIT){
 	    bytesPerSample = sizeof(gint16);

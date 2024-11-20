@@ -293,6 +293,21 @@ ags_clear_buffer_launch(AgsTask *task)
       word_size = sizeof(gint64);
     }
     break;
+  case AGS_SOUNDCARD_FLOAT:
+    {
+      word_size = sizeof(gfloat);
+    }
+    break;
+  case AGS_SOUNDCARD_DOUBLE:
+    {
+      word_size = sizeof(gdouble);
+    }
+    break;
+  case AGS_SOUNDCARD_COMPLEX:
+    {
+      word_size = sizeof(AgsComplex);
+    }
+    break;
   default:
     g_warning("ags_clear_buffer_launch(): unsupported word size");
       

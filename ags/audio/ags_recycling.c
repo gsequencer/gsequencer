@@ -1963,7 +1963,7 @@ ags_recycling_set_format(AgsRecycling *recycling, guint format)
 {
   AgsAudioSignal *template;
 
-  GList *audio_signal;
+  GList *start_audio_signal, *audio_signal;
   GList *start_rt_template, *rt_template;
   
   GRecMutex *recycling_mutex;
@@ -1977,11 +1977,11 @@ ags_recycling_set_format(AgsRecycling *recycling, guint format)
 
   /* get audio signal */
   g_object_get(recycling,
-	       "audio-signal", &audio_signal,
+	       "audio-signal", &start_audio_signal,
 	       NULL);
 
   /* get template */
-  template = ags_audio_signal_get_default_template(audio_signal);
+  template = ags_audio_signal_get_default_template(start_audio_signal);
     
   if(template != NULL){
     g_object_set(template,
@@ -1993,7 +1993,7 @@ ags_recycling_set_format(AgsRecycling *recycling, guint format)
   
   /* get rt-template */
   rt_template = 
-    start_rt_template = ags_audio_signal_get_rt_template(audio_signal);
+    start_rt_template = ags_audio_signal_get_rt_template(start_audio_signal);
 
   while(rt_template != NULL){
     g_object_set(rt_template->data,
@@ -2007,7 +2007,7 @@ ags_recycling_set_format(AgsRecycling *recycling, guint format)
 		   g_object_unref);
 
   /* free list */
-  g_list_free_full(audio_signal,
+  g_list_free_full(start_audio_signal,
 		   g_object_unref);
 }
 

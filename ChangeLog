@@ -3,6 +3,7 @@ ags (7.3.6)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented set floating point format of CoreAudio
 	* fixed set CoreAudio stream format
+	* fixed various format bugs
 
 ags (7.3.5)
 

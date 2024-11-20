@@ -355,7 +355,7 @@ ags_core_audio_devin_class_init(AgsCoreAudioDevinClass *core_audio_devin)
 				 i18n_pspec("precision of buffer"),
 				 i18n_pspec("The precision to use for a frame"),
 				 1,
-				 64,
+				 G_MAXUINT,
 				 AGS_SOUNDCARD_DEFAULT_FORMAT,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

@@ -2305,7 +2305,7 @@ ags_stream_alloc(guint buffer_size,
     }
     break;
   default:
-    g_warning("ags_stream_alloc(): unsupported word size");
+    g_critical("ags_stream_alloc(): unsupported word size");
     return(NULL);
   }
 

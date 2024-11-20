@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-11-20 07:19+0100\n"
+"POT-Creation-Date: 2024-11-20 11:02+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -233,12 +233,12 @@ msgstr ""
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application_context.c:4186
+#: ags/app/ags_gsequencer_application_context.c:4195
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application_context.c:4196
+#: ags/app/ags_gsequencer_application_context.c:4205
 msgid "unknown sequencer backend - NULL"
 msgstr ""
 
@@ -402,7 +402,7 @@ msgstr ""
 #: ags/app/ags_sequencer_editor.c:284 ags/app/ags_sequencer_editor.c:289
 #: ags/app/editor/ags_pattern_envelope.c:824
 #: ags/app/editor/ags_envelope_editor.c:222 ags/app/ags_soundcard_editor.c:309
-#: ags/app/ags_soundcard_editor.c:643
+#: ags/app/ags_soundcard_editor.c:647
 msgid "_Remove"
 msgstr ""
 
@@ -1350,19 +1350,19 @@ msgstr ""
 msgid "buffer size"
 msgstr ""
 
-#: ags/app/ags_soundcard_editor.c:510
+#: ags/app/ags_soundcard_editor.c:514
 msgid "use cache"
 msgstr ""
 
-#: ags/app/ags_soundcard_editor.c:528
+#: ags/app/ags_soundcard_editor.c:532
 msgid "cache buffer size"
 msgstr ""
 
-#: ags/app/ags_soundcard_editor.c:563
+#: ags/app/ags_soundcard_editor.c:567
 msgid "WASAPI share mode"
 msgstr ""
 
-#: ags/app/ags_soundcard_editor.c:601
+#: ags/app/ags_soundcard_editor.c:605
 msgid "WASAPI buffer size"
 msgstr ""
 
