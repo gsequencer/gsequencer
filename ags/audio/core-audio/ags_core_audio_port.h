@@ -138,6 +138,9 @@ struct _AgsCoreAudioPort
 #ifdef AGS_WITH_CORE_AUDIO
   AudioObjectPropertyAddress *output_samplerate_property_address;
   AudioObjectPropertyAddress *output_buffer_size_property_address;
+  AudioObjectPropertyAddress *output_stream_format_property_address;
+
+  AudioStreamBasicDescription output_format;
   
   AudioObjectPropertyAddress *output_property_address;
   AudioObjectID output_device;
@@ -145,13 +148,17 @@ struct _AgsCoreAudioPort
   
   AudioObjectPropertyAddress *input_samplerate_property_address;
   AudioObjectPropertyAddress *input_buffer_size_property_address;
+  AudioObjectPropertyAddress *input_stream_format_property_address;
 
+  AudioStreamBasicDescription input_format;
+  
   AudioObjectPropertyAddress *input_property_address;
   AudioObjectID input_device; 
   AudioDeviceIOProcID input_proc_id;
 #else
   gpointer output_samplerate_property_address;
   gpointer output_buffer_size_property_address;
+  gpointer output_stream_format_property_address;
   
   gpointer output_property_address;
   gint64 output_device;
@@ -159,6 +166,7 @@ struct _AgsCoreAudioPort
 
   gpointer input_samplerate_property_address;
   gpointer input_buffer_size_property_address;
+  gpointer input_stream_format_property_address;
   
   gpointer input_property_address;
   gint64 input_device;

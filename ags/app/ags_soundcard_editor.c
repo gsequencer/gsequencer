@@ -500,6 +500,10 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
 				 "32");
   gtk_combo_box_text_append_text(soundcard_editor->format,
 				 "64");
+  gtk_combo_box_text_append_text(soundcard_editor->format,
+				 "float");
+  gtk_combo_box_text_append_text(soundcard_editor->format,
+				 "double");
   
   gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->format),
 			   1);
@@ -924,7 +928,6 @@ ags_soundcard_editor_apply(AgsApplicable *applicable)
       use_pulse = FALSE;
     }
   }
-
   
   /* capability */
   capability = gtk_combo_box_text_get_active_text(soundcard_editor->capability);
@@ -960,27 +963,65 @@ ags_soundcard_editor_apply(AgsApplicable *applicable)
 
   /* format */
   format = 0;
+
+  str = NULL;
   
   switch(gtk_combo_box_get_active(GTK_COMBO_BOX(soundcard_editor->format))){
   case 0:
-    format = AGS_SOUNDCARD_SIGNED_8_BIT;
+    {
+      format = AGS_SOUNDCARD_SIGNED_8_BIT;
+      
+      str = g_strdup_printf("%u",
+			    format);
+    }
     break;
   case 1:
-    format = AGS_SOUNDCARD_SIGNED_16_BIT;
+    {
+      format = AGS_SOUNDCARD_SIGNED_16_BIT;
+      
+      str = g_strdup_printf("%u",
+			    format);
+    }
     break;
   case 2:
-    format = AGS_SOUNDCARD_SIGNED_24_BIT;
+    {
+      format = AGS_SOUNDCARD_SIGNED_24_BIT;
+      
+      str = g_strdup_printf("%u",
+			    format);
+    }
     break;
   case 3:
-    format = AGS_SOUNDCARD_SIGNED_32_BIT;
+    {
+      format = AGS_SOUNDCARD_SIGNED_32_BIT;
+      
+      str = g_strdup_printf("%u",
+			    format);
+    }
     break;
   case 4:
-    format = AGS_SOUNDCARD_SIGNED_64_BIT;
+    {
+      format = AGS_SOUNDCARD_SIGNED_64_BIT;
+      
+      str = g_strdup_printf("%u",
+			    format);
+    }
+    break;
+  case 5:
+    {
+      format = AGS_SOUNDCARD_FLOAT;
+      
+      str = g_strdup("float");
+    }
+    break;
+  case 6:
+    {
+      format = AGS_SOUNDCARD_DOUBLE;
+      
+      str = g_strdup("double");
+    }
     break;
   }
-
-  str = g_strdup_printf("%u",
-			format);
   
   ags_config_set_value(config,
 		       soundcard_group,
@@ -1406,29 +1447,6 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
     break;
   }
   
-  switch(format){
-  case AGS_SOUNDCARD_SIGNED_8_BIT:
-    gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->format),
-			     0);
-    break;
-  case AGS_SOUNDCARD_SIGNED_16_BIT:
-    gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->format),
-			     1);
-    break;
-  case AGS_SOUNDCARD_SIGNED_24_BIT:
-    gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->format),
-			     2);
-    break;
-  case AGS_SOUNDCARD_SIGNED_32_BIT:
-    gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->format),
-			     3);
-    break;
-  case AGS_SOUNDCARD_SIGNED_64_BIT:
-    gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->format),
-			     4);
-    break;
-  }
-
   /* set range */
   if(device != NULL &&
      soundcard != NULL){
@@ -1469,11 +1487,50 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
 			    buffer_size_min, buffer_size_max);
 
   /* get presets */
-  ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
-			    &channels,
-			    &samplerate,
-			    &buffer_size,
-			    &format);
+  channels = AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS;
+  samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  
+  if(soundcard != NULL){
+    ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+			      &channels,
+			      &samplerate,
+			      &buffer_size,
+			      &format);
+  }
+  
+  /* format */
+  switch(format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+    gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->format),
+			     0);
+    break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->format),
+			     1);
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->format),
+			     2);
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->format),
+			     3);
+    break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+    gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->format),
+			     4);
+    break;
+  case AGS_SOUNDCARD_FLOAT:
+    gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->format),
+			     5);
+    break;
+  case AGS_SOUNDCARD_DOUBLE:
+    gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->format),
+			     6);
+    break;
+  }
 
   /* set presets value */
   gtk_spin_button_set_value(soundcard_editor->audio_channels,

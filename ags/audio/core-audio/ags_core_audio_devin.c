@@ -821,6 +821,8 @@ ags_core_audio_devin_set_property(GObject *gobject,
     break;
   case PROP_PCM_CHANNELS:
     {
+      GList *port;
+      
       guint pcm_channels;
 
       pcm_channels = g_value_get_uint(value);
@@ -837,11 +839,23 @@ ags_core_audio_devin_set_property(GObject *gobject,
 
       g_rec_mutex_unlock(core_audio_devin_mutex);
 
+      port = core_audio_devin->core_audio_port;
+
+      while(port != NULL){
+	g_object_set(port->data,
+		     "pcm-channels", pcm_channels,
+		     NULL);
+
+	port = port->next;
+      }
+      
       ags_core_audio_devin_realloc_buffer(core_audio_devin);
     }
     break;
   case PROP_FORMAT:
     {
+      GList *port;
+
       AgsSoundcardFormat format;
 
       format = g_value_get_uint(value);
@@ -858,11 +872,23 @@ ags_core_audio_devin_set_property(GObject *gobject,
 
       g_rec_mutex_unlock(core_audio_devin_mutex);
 
+      port = core_audio_devin->core_audio_port;
+
+      while(port != NULL){
+	g_object_set(port->data,
+		     "format", format,
+		     NULL);
+
+	port = port->next;
+      }
+
       ags_core_audio_devin_realloc_buffer(core_audio_devin);
     }
     break;
   case PROP_BUFFER_SIZE:
     {
+      GList *port;
+
       guint buffer_size;
 
       buffer_size = g_value_get_uint(value);
@@ -879,12 +905,24 @@ ags_core_audio_devin_set_property(GObject *gobject,
 
       g_rec_mutex_unlock(core_audio_devin_mutex);
 
+      port = core_audio_devin->core_audio_port;
+
+      while(port != NULL){
+	g_object_set(port->data,
+		     "buffer-size", buffer_size,
+		     NULL);
+
+	port = port->next;
+      }
+
       ags_core_audio_devin_realloc_buffer(core_audio_devin);
       ags_core_audio_devin_adjust_delay_and_attack(core_audio_devin);
     }
     break;
   case PROP_SAMPLERATE:
     {
+      GList *port;
+
       guint samplerate;
 
       samplerate = g_value_get_uint(value);
@@ -900,6 +938,16 @@ ags_core_audio_devin_set_property(GObject *gobject,
       core_audio_devin->samplerate = samplerate;
 
       g_rec_mutex_unlock(core_audio_devin_mutex);
+
+      port = core_audio_devin->core_audio_port;
+
+      while(port != NULL){
+	g_object_set(port->data,
+		     "samplerate", samplerate,
+		     NULL);
+
+	port = port->next;
+      }
 
       ags_core_audio_devin_realloc_buffer(core_audio_devin);
       ags_core_audio_devin_adjust_delay_and_attack(core_audio_devin);
@@ -1935,6 +1983,16 @@ ags_core_audio_devin_port_init(AgsSoundcard *soundcard,
       word_size = sizeof(gint64);
     }
     break;
+  case AGS_SOUNDCARD_FLOAT:
+    {
+      word_size = sizeof(gfloat);
+    }
+    break;
+  case AGS_SOUNDCARD_DOUBLE:
+    {
+      word_size = sizeof(gdouble);
+    }
+    break;
   default:
     g_rec_mutex_unlock(core_audio_devin_mutex);
     
@@ -2035,6 +2093,16 @@ ags_core_audio_devin_port_record(AgsSoundcard *soundcard,
   case AGS_SOUNDCARD_SIGNED_32_BIT:
     {
       word_size = sizeof(gint32);
+    }
+    break;
+  case AGS_SOUNDCARD_FLOAT:
+    {
+      word_size = sizeof(gfloat);
+    }
+    break;
+  case AGS_SOUNDCARD_DOUBLE:
+    {
+      word_size = sizeof(gdouble);
     }
     break;
   default:
@@ -2241,6 +2309,16 @@ ags_core_audio_devin_port_free(AgsSoundcard *soundcard)
   case AGS_SOUNDCARD_SIGNED_64_BIT:
     {
       word_size = sizeof(gint64);
+    }
+    break;
+  case AGS_SOUNDCARD_FLOAT:
+    {
+      word_size = sizeof(gfloat);
+    }
+    break;
+  case AGS_SOUNDCARD_DOUBLE:
+    {
+      word_size = sizeof(gdouble);
     }
     break;
   default:
@@ -3518,6 +3596,16 @@ ags_core_audio_devin_realloc_buffer(AgsCoreAudioDevin *core_audio_devin)
   case AGS_SOUNDCARD_SIGNED_32_BIT:
     {
       word_size = sizeof(gint32);
+    }
+    break;
+  case AGS_SOUNDCARD_FLOAT:
+    {
+      word_size = sizeof(gfloat);
+    }
+    break;
+  case AGS_SOUNDCARD_DOUBLE:
+    {
+      word_size = sizeof(gdouble);
     }
     break;
   default:

@@ -275,6 +275,12 @@ ags_soundcard_editor_format_changed_callback(GtkComboBox *combo_box,
   case 4:
     format = AGS_SOUNDCARD_SIGNED_64_BIT;
     break;
+  case 5:
+    format = AGS_SOUNDCARD_FLOAT;
+    break;
+  case 6:
+    format = AGS_SOUNDCARD_DOUBLE;
+    break;
   default:
     g_warning("unsupported format");
     
