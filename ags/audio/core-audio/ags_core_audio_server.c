@@ -80,10 +80,16 @@ GList* ags_core_audio_server_get_sequencer(AgsSoundServer *sound_server,
 					   gchar *client_uuid);
 GObject* ags_core_audio_server_register_soundcard(AgsSoundServer *sound_server,
 						  gboolean is_output);
+GObject* ags_core_audio_server_register_soundcard_with_params(AgsSoundServer *sound_server,
+							      gboolean is_output,
+							      gchar **param_strv, GValue *param_value);
 void ags_core_audio_server_unregister_soundcard(AgsSoundServer *sound_server,
 						GObject *soundcard);
 GObject* ags_core_audio_server_register_sequencer(AgsSoundServer *sound_server,
 						  gboolean is_output);
+GObject* ags_core_audio_server_register_sequencer_with_params(AgsSoundServer *sound_server,
+							      gboolean is_output,
+							      gchar **param_strv, GValue *param_value);
 void ags_core_audio_server_unregister_sequencer(AgsSoundServer *sound_server,
 						GObject *sequencer);
 
@@ -277,8 +283,10 @@ ags_core_audio_server_sound_server_interface_init(AgsSoundServerInterface *sound
   sound_server->set_sequencer = ags_core_audio_server_set_sequencer;
   sound_server->get_sequencer = ags_core_audio_server_get_sequencer;
   sound_server->register_soundcard = ags_core_audio_server_register_soundcard;
+  sound_server->register_soundcard_with_params = ags_core_audio_server_register_soundcard_with_params;
   sound_server->unregister_soundcard = ags_core_audio_server_unregister_soundcard;
   sound_server->register_sequencer = ags_core_audio_server_register_sequencer;
+  sound_server->register_sequencer_with_params = ags_core_audio_server_register_sequencer_with_params;
   sound_server->unregister_sequencer = ags_core_audio_server_unregister_sequencer;
 }
 
@@ -1051,6 +1059,20 @@ GObject*
 ags_core_audio_server_register_soundcard(AgsSoundServer *sound_server,
 					 gboolean is_output)
 {
+  GObject *soundcard;
+  
+  soundcard = ags_sound_server_register_soundcard_with_params(sound_server,
+							      is_output,
+							      NULL, NULL);
+
+  return(soundcard);
+}
+
+GObject*
+ags_core_audio_server_register_soundcard_with_params(AgsSoundServer *sound_server,
+						     gboolean is_output,
+						     gchar **param_strv, GValue *param_value)
+{
   AgsCoreAudioServer *core_audio_server;
   AgsCoreAudioClient *default_client;
   AgsCoreAudioPort *core_audio_port;
@@ -1070,6 +1092,10 @@ ags_core_audio_server_register_soundcard(AgsSoundServer *sound_server,
   gchar *str;  
 
   guint n_soundcards;
+  guint pcm_channels;
+  guint buffer_size;
+  AgsSoundcardFormat format;
+  guint samplerate;
   gboolean initial_set;
   guint i;
 
@@ -1129,6 +1155,26 @@ ags_core_audio_server_register_soundcard(AgsSoundServer *sound_server,
   
   soundcard = NULL;
 
+  pcm_channels = AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS;
+
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+
+  if(param_strv != NULL){
+    for(i = 0; i < 5 && param_strv[i] != NULL; i++){
+      if(!g_ascii_strncasecmp(param_strv[i], "pcm-channels", 12)){
+	pcm_channels = g_value_get_uint(param_value + i);
+      }else if(!g_ascii_strncasecmp(param_strv[i], "buffer-size", 11)){
+	buffer_size = g_value_get_uint(param_value + i);
+      }else if(!g_ascii_strncasecmp(param_strv[i], "format", 6)){
+	format = g_value_get_uint(param_value + i);
+      }else if(!g_ascii_strncasecmp(param_strv[i], "samplerate", 10)){
+	samplerate = g_value_get_uint(param_value + i);
+      }
+    }
+  }
+  
   /* the soundcard */
   if(is_output){
     core_audio_devout = ags_core_audio_devout_new();
@@ -1146,6 +1192,15 @@ ags_core_audio_server_register_soundcard(AgsSoundServer *sound_server,
     /* register ports */      
     core_audio_port = ags_core_audio_port_new((GObject *) default_client);
 
+    ags_core_audio_port_set_pcm_channels(core_audio_port,
+					 pcm_channels);
+    ags_core_audio_port_set_buffer_size(core_audio_port,
+					buffer_size);
+    ags_core_audio_port_set_format(core_audio_port,
+				   format);
+    ags_core_audio_port_set_samplerate(core_audio_port,
+				       samplerate);
+    
     str = g_strdup_printf("ags-soundcard%d",
 			  n_soundcards);
     
@@ -1330,6 +1385,20 @@ ags_core_audio_server_unregister_soundcard(AgsSoundServer *sound_server,
 GObject*
 ags_core_audio_server_register_sequencer(AgsSoundServer *sound_server,
 					 gboolean is_output)
+{
+  GObject *sequencer;
+  
+  sequencer = ags_sound_server_register_sequencer_with_params(sound_server,
+							      is_output,
+							      NULL, NULL);
+
+  return(sequencer);
+}
+
+GObject*
+ags_core_audio_server_register_sequencer_with_params(AgsSoundServer *sound_server,
+						     gboolean is_output,
+						     gchar **param_strv, GValue *param_value)
 {
   AgsCoreAudioServer *core_audio_server;
   AgsCoreAudioClient *default_client;

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -62,11 +62,17 @@ struct _AgsSoundServerInterface
 
   GObject* (*register_soundcard)(AgsSoundServer *sound_server,
 				 gboolean is_output);
+  GObject* (*register_soundcard_with_params)(AgsSoundServer *sound_server,
+					     gboolean is_output,
+					     gchar **param_strv, GValue *param_value);
   void (*unregister_soundcard)(AgsSoundServer *sound_server,
 			       GObject *soundcard);
 
   GObject* (*register_sequencer)(AgsSoundServer *sound_server,
 				 gboolean is_output);
+  GObject* (*register_sequencer_with_params)(AgsSoundServer *sound_server,
+					     gboolean is_output,
+					     gchar **param_strv, GValue *param_value);
   void (*unregister_sequencer)(AgsSoundServer *sound_server,
 			       GObject *sequencer);
 };
@@ -96,11 +102,17 @@ GList* ags_sound_server_get_sequencer(AgsSoundServer *sound_server,
 
 GObject* ags_sound_server_register_soundcard(AgsSoundServer *sound_server,
 					     gboolean is_output);
+GObject* ags_sound_server_register_soundcard_with_params(AgsSoundServer *sound_server,
+							 gboolean is_output,
+							 gchar **param_strv, GValue *param_value);
 void ags_sound_server_unregister_soundcard(AgsSoundServer *sound_server,
 					   GObject *soundcard);
 
 GObject* ags_sound_server_register_sequencer(AgsSoundServer *sound_server,
 					     gboolean is_output);
+GObject* ags_sound_server_register_sequencer_with_params(AgsSoundServer *sound_server,
+							 gboolean is_output,
+							 gchar **param_strv, GValue *param_value);
 void ags_sound_server_unregister_sequencer(AgsSoundServer *sound_server,
 					   GObject *sequencer);
 
