@@ -388,6 +388,7 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
   gchar *str;
 
   guint word_size;
+  size_t bytes_per_sample;
   guint fixed_size;
   guint i;
   
@@ -471,7 +472,7 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
 
   memset(&(core_audio_port->output_format), 0, sizeof(AudioStreamBasicDescription));
 
-  size_t bytes_per_sample = sizeof(gfloat);
+  bytes_per_sample = sizeof(gfloat);
 
   core_audio_port->output_format.mBitsPerChannel = 8 * bytes_per_sample;
 
@@ -1045,7 +1046,9 @@ ags_core_audio_port_set_property(GObject *gobject,
 
       current_format = core_audio_port->format;
 
-      core_audio_port->format = format;
+      //NOTE:JK: always use float32 with CoreAudio
+      format = 
+	core_audio_port->format = AGS_SOUNDCARD_FLOAT;
 
 #ifdef AGS_WITH_CORE_AUDIO
 #if defined(AGS_CORE_AUDIO_PORT_USE_HW)
@@ -2492,7 +2495,10 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 
   samplerate = core_audio_port->samplerate;
   buffer_size = core_audio_port->buffer_size;
-  format = core_audio_port->format;
+
+  //NOTE:JK: always use float32
+  format =
+    core_audio_port->format = AGS_SOUNDCARD_FLOAT;
 
   use_cache = core_audio_port->use_cache;
   
