@@ -505,9 +505,14 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
   gtk_combo_box_text_append_text(soundcard_editor->format,
 				 "double");
   
+#ifdef AGS_WITH_CORE_AUDIO
+  gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->format),
+			   5);
+#else
   gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->format),
 			   1);
-
+#endif
+  
   y0++;
 
   /* use cache */

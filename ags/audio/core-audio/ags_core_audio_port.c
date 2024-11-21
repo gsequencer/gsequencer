@@ -482,7 +482,7 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
   core_audio_port->output_format.mChannelsPerFrame = core_audio_port->pcm_channels;
 
   core_audio_port->output_format.mFormatID = kAudioFormatLinearPCM;
-  core_audio_port->output_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagIsPacked;
+  core_audio_port->output_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
   
   core_audio_port->output_format.mSampleRate = (float) core_audio_port->samplerate;
   
@@ -519,7 +519,7 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
 
   memset(&(core_audio_port->input_format), 0, sizeof(AudioStreamBasicDescription));
 
-  bytes_per_sample = sizeof(gint32);
+  bytes_per_sample = sizeof(gfloat);
 
   core_audio_port->input_format.mBitsPerChannel = 8 * bytes_per_sample;
 
@@ -530,7 +530,7 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
   core_audio_port->input_format.mChannelsPerFrame = core_audio_port->pcm_channels;
 
   core_audio_port->input_format.mFormatID = kAudioFormatLinearPCM;
-  core_audio_port->input_format.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
+  core_audio_port->input_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
   
   core_audio_port->input_format.mSampleRate = (float) core_audio_port->samplerate;
   
@@ -561,7 +561,7 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
   core_audio_port->data_format.mChannelsPerFrame = core_audio_port->pcm_channels;
 
   core_audio_port->data_format.mFormatID = kAudioFormatLinearPCM;
-  core_audio_port->data_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagIsPacked;
+  core_audio_port->data_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
   
   core_audio_port->data_format.mSampleRate = (float) core_audio_port->samplerate;
 
@@ -576,7 +576,7 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
   core_audio_port->record_format.mChannelsPerFrame = core_audio_port->pcm_channels;
 
   core_audio_port->record_format.mFormatID = kAudioFormatLinearPCM;
-  core_audio_port->record_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagIsPacked;
+  core_audio_port->record_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
   
   core_audio_port->record_format.mSampleRate = (float) core_audio_port->samplerate;
 #endif
@@ -1058,23 +1058,23 @@ ags_core_audio_port_set_property(GObject *gobject,
 	  if(format == AGS_SOUNDCARD_SIGNED_16_BIT){
 	    bytes_per_sample = sizeof(gint16);
 	    
-	    core_audio_port->output_format.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
+	    core_audio_port->output_format.mFormatFlags = kAppleLosslessFormatFlag_16BitSourceData | kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
 	  }else if(format == AGS_SOUNDCARD_SIGNED_24_BIT){
 	    bytes_per_sample = sizeof(gint32);
 
-	    core_audio_port->output_format.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
+	    core_audio_port->output_format.mFormatFlags = kAppleLosslessFormatFlag_24BitSourceData | kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
 	  }else if(format == AGS_SOUNDCARD_SIGNED_32_BIT){
 	    bytes_per_sample = sizeof(gint32);
 
-	    core_audio_port->output_format.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
+	    core_audio_port->output_format.mFormatFlags = kAppleLosslessFormatFlag_32BitSourceData | kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
 	  }else if(format == AGS_SOUNDCARD_FLOAT){
 	    bytes_per_sample = sizeof(gfloat);
 	    
-	    core_audio_port->output_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagIsPacked;
+	    core_audio_port->output_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
 	  }else if(format == AGS_SOUNDCARD_DOUBLE){
 	    bytes_per_sample = sizeof(gdouble);
 
-	    core_audio_port->output_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagIsPacked;
+	    core_audio_port->output_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
 	  }
 
 	  core_audio_port->output_format.mBitsPerChannel = 8 * bytes_per_sample;
@@ -1100,14 +1100,24 @@ ags_core_audio_port_set_property(GObject *gobject,
       
 	  if(format == AGS_SOUNDCARD_SIGNED_16_BIT){
 	    bytes_per_sample = sizeof(gint16);
+	    
+	    core_audio_port->input_format.mFormatFlags = kAppleLosslessFormatFlag_16BitSourceData | kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
 	  }else if(format == AGS_SOUNDCARD_SIGNED_24_BIT){
 	    bytes_per_sample = sizeof(gint32);
+
+	    core_audio_port->input_format.mFormatFlags = kAppleLosslessFormatFlag_24BitSourceData | kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
 	  }else if(format == AGS_SOUNDCARD_SIGNED_32_BIT){
 	    bytes_per_sample = sizeof(gint32);
+
+	    core_audio_port->input_format.mFormatFlags = kAppleLosslessFormatFlag_32BitSourceData | kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
 	  }else if(format == AGS_SOUNDCARD_FLOAT){
 	    bytes_per_sample = sizeof(gfloat);
+	    
+	    core_audio_port->input_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
 	  }else if(format == AGS_SOUNDCARD_DOUBLE){
 	    bytes_per_sample = sizeof(gdouble);
+
+	    core_audio_port->input_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
 	  }
 
 	  core_audio_port->input_format.mBitsPerChannel = 8 * bytes_per_sample;
@@ -1119,7 +1129,6 @@ ags_core_audio_port_set_property(GObject *gobject,
 	  core_audio_port->input_format.mChannelsPerFrame = core_audio_port->pcm_channels;
 
 	  core_audio_port->input_format.mFormatID = kAudioFormatLinearPCM;
-	  core_audio_port->input_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagIsPacked;
 
 	  AudioObjectSetPropertyData(core_audio_port->input_device,
 				     core_audio_port->input_stream_format_property_address,
@@ -2587,19 +2596,31 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
       core_audio_port->output_format.mFormatID = kAudioFormatLinearPCM;
 
       switch(format){
-      case AGS_SOUNDCARD_SIGNED_8_BIT:
       case AGS_SOUNDCARD_SIGNED_16_BIT:
+	{
+	  core_audio_port->output_format.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked | kAppleLosslessFormatFlag_16BitSourceData;
+	}
+	break;
       case AGS_SOUNDCARD_SIGNED_24_BIT:
+	{
+	  core_audio_port->output_format.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked | kAppleLosslessFormatFlag_24BitSourceData;
+	}
+	break;
       case AGS_SOUNDCARD_SIGNED_32_BIT:
+	{
+	  core_audio_port->output_format.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked | kAppleLosslessFormatFlag_32BitSourceData;
+	}
+	break;
+      case AGS_SOUNDCARD_SIGNED_8_BIT:
       case AGS_SOUNDCARD_SIGNED_64_BIT:
 	{
-	  core_audio_port->output_format.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
+	  core_audio_port->output_format.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
 	}
 	break;
       case AGS_SOUNDCARD_FLOAT:
       case AGS_SOUNDCARD_DOUBLE:
 	{
-	  core_audio_port->output_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagIsPacked;
+	  core_audio_port->output_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
 	}
 	break;
       }
@@ -2657,13 +2678,13 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
       case AGS_SOUNDCARD_SIGNED_32_BIT:
       case AGS_SOUNDCARD_SIGNED_64_BIT:
 	{
-	  core_audio_port->data_format.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
+	  core_audio_port->data_format.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
 	}
 	break;
       case AGS_SOUNDCARD_FLOAT:
       case AGS_SOUNDCARD_DOUBLE:
 	{
-	  core_audio_port->data_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagIsPacked;
+	  core_audio_port->data_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
 	}
 	break;
       }
@@ -2758,19 +2779,31 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
       core_audio_port->input_format.mFormatID = kAudioFormatLinearPCM;
 
       switch(format){
-      case AGS_SOUNDCARD_SIGNED_8_BIT:
       case AGS_SOUNDCARD_SIGNED_16_BIT:
+	{
+	  core_audio_port->input_format.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked | kAppleLosslessFormatFlag_16BitSourceData;
+	}
+	break;
       case AGS_SOUNDCARD_SIGNED_24_BIT:
+	{
+	  core_audio_port->input_format.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked | kAppleLosslessFormatFlag_24BitSourceData;
+	}
+	break;
       case AGS_SOUNDCARD_SIGNED_32_BIT:
+	{
+	  core_audio_port->input_format.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked | kAppleLosslessFormatFlag_32BitSourceData;
+	}
+	break;
+      case AGS_SOUNDCARD_SIGNED_8_BIT:
       case AGS_SOUNDCARD_SIGNED_64_BIT:
 	{
-	  core_audio_port->input_format.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
+	  core_audio_port->input_format.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
 	}
 	break;
       case AGS_SOUNDCARD_FLOAT:
       case AGS_SOUNDCARD_DOUBLE:
 	{
-	  core_audio_port->input_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagIsPacked;
+	  core_audio_port->input_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
 	}
 	break;
       }
@@ -2841,13 +2874,13 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
       case AGS_SOUNDCARD_SIGNED_32_BIT:
       case AGS_SOUNDCARD_SIGNED_64_BIT:
 	{
-	  core_audio_port->record_format.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
+	  core_audio_port->record_format.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
 	}
 	break;
       case AGS_SOUNDCARD_FLOAT:
       case AGS_SOUNDCARD_DOUBLE:
 	{
-	  core_audio_port->record_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagIsPacked;
+	  core_audio_port->record_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
 	}
 	break;
       }

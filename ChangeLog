@@ -1,3 +1,9 @@
+ags (7.3.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved default format of soundcard editor on macOS
+	* minor bug-fixes
+
 ags (7.3.9)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

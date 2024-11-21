@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-11-21 09:03+0100\n"
+"POT-Creation-Date: 2024-11-21 14:37+0100\n"
 "PO-Revision-Date: 2021-01-03 08:52+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: Deutsch <jkraehemann@gmail.com>\n"
@@ -420,7 +420,7 @@ msgstr ""
 #: ags/app/ags_sequencer_editor.c:284 ags/app/ags_sequencer_editor.c:289
 #: ags/app/editor/ags_pattern_envelope.c:824
 #: ags/app/editor/ags_envelope_editor.c:222 ags/app/ags_soundcard_editor.c:309
-#: ags/app/ags_soundcard_editor.c:647
+#: ags/app/ags_soundcard_editor.c:652
 #, fuzzy
 msgid "_Remove"
 msgstr "bewege x"
@@ -1409,19 +1409,19 @@ msgstr "Audio Kanäle"
 msgid "buffer size"
 msgstr "Puffer grösse"
 
-#: ags/app/ags_soundcard_editor.c:514
+#: ags/app/ags_soundcard_editor.c:519
 msgid "use cache"
 msgstr "benutze Zwischenspeicher"
 
-#: ags/app/ags_soundcard_editor.c:532
+#: ags/app/ags_soundcard_editor.c:537
 msgid "cache buffer size"
 msgstr "Zwischenspeicher Puffer grösse"
 
-#: ags/app/ags_soundcard_editor.c:567
+#: ags/app/ags_soundcard_editor.c:572
 msgid "WASAPI share mode"
 msgstr "WASAPI Teilungs Modus"
 
-#: ags/app/ags_soundcard_editor.c:605
+#: ags/app/ags_soundcard_editor.c:610
 msgid "WASAPI buffer size"
 msgstr "WASAPI Puffer grösse"
 
