@@ -2388,6 +2388,9 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 
   gchar *name, *uuid;
 
+  guint pcm_channels;
+  guint samplerate;
+  guint buffer_size;
   AgsSoundcardFormat format;
   guint word_size;
   guint i;
@@ -2476,19 +2479,12 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 
   port_name = g_strdup(core_audio_port->port_name);
 
-  /* work-around for not proper applying presets */
-#if 0
-  if(is_audio){
-    if(!is_output){
-      format =
-	core_audio_port->format = AGS_SOUNDCARD_SIGNED_32_BIT;
-    }else{
-      format =
-	core_audio_port->format = AGS_SOUNDCARD_FLOAT;
-    }
-  }
-#endif
-  
+  pcm_channels = core_audio_port->pcm_channels;
+
+  samplerate = core_audio_port->samplerate;
+  buffer_size = core_audio_port->buffer_size;
+  format = core_audio_port->format;
+
   use_cache = core_audio_port->use_cache;
   
   g_rec_mutex_unlock(core_audio_port_mutex);
@@ -2560,7 +2556,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 				 &property_size, 
 				 &(core_audio_port->output_device));
       
-      output_samplerate = (Float64) core_audio_port->samplerate;
+      output_samplerate = (Float64) samplerate;
 
       AudioObjectSetPropertyData(core_audio_port->output_device,
 				 core_audio_port->output_samplerate_property_address,
@@ -2569,7 +2565,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 				 sizeof(output_samplerate),
 				 &output_samplerate);
 
-      output_buffer_size_bytes = core_audio_port->pcm_channels * core_audio_port->buffer_size * sizeof(gfloat);
+      output_buffer_size_bytes = pcm_channels * buffer_size * sizeof(gfloat);
 
       AudioObjectSetPropertyData(core_audio_port->output_device,
 				 core_audio_port->output_buffer_size_property_address,
@@ -2582,11 +2578,11 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
       
       core_audio_port->output_format.mBitsPerChannel = 8 * bytes_per_sample;
 
-      core_audio_port->output_format.mBytesPerPacket = core_audio_port->pcm_channels * bytes_per_sample;
-      core_audio_port->output_format.mBytesPerFrame = core_audio_port->pcm_channels * bytes_per_sample;
+      core_audio_port->output_format.mBytesPerPacket = pcm_channels * bytes_per_sample;
+      core_audio_port->output_format.mBytesPerFrame = pcm_channels * bytes_per_sample;
   
       core_audio_port->output_format.mFramesPerPacket = 1;
-      core_audio_port->output_format.mChannelsPerFrame = core_audio_port->pcm_channels;
+      core_audio_port->output_format.mChannelsPerFrame = pcm_channels;
 
       core_audio_port->output_format.mFormatID = kAudioFormatLinearPCM;
 
@@ -2608,7 +2604,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 	break;
       }
   
-      core_audio_port->output_format.mSampleRate = (float) core_audio_port->samplerate;
+      core_audio_port->output_format.mSampleRate = (float) samplerate;
       
       AudioObjectSetPropertyData(core_audio_port->output_device,
 				 core_audio_port->output_stream_format_property_address,

@@ -1,3 +1,9 @@
+ags (7.3.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved CoreAudio usage of AgsSoundServer::register-soundcard-with-params()
+	* fixed missing initializer of format in ags_core_audio_port_register()
+
 ags (7.3.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

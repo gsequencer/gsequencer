@@ -1695,6 +1695,10 @@ ags_soundcard_editor_add_port(AgsSoundcardEditor *soundcard_editor,
 
   gchar *backend;
 
+  guint pcm_channels;
+  guint buffer_size;
+  AgsSoundcardFormat format;
+  guint samplerate;
   gboolean use_core_audio, use_pulse, use_jack;
   gboolean is_output;
   gboolean initial_soundcard;
@@ -1752,6 +1756,51 @@ ags_soundcard_editor_add_port(AgsSoundcardEditor *soundcard_editor,
       use_jack = TRUE;
     }
   }
+
+  /* presets */
+  pcm_channels = gtk_spin_button_get_value_as_int(soundcard_editor->audio_channels);
+  samplerate = gtk_spin_button_get_value_as_int(soundcard_editor->samplerate);
+  buffer_size = gtk_spin_button_get_value_as_int(soundcard_editor->buffer_size);
+  format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+
+  switch(gtk_combo_box_get_active(GTK_COMBO_BOX(soundcard_editor->format))){
+  case 0:
+    {
+      format = AGS_SOUNDCARD_SIGNED_8_BIT;
+    }
+    break;
+  case 1:
+    {
+      format = AGS_SOUNDCARD_SIGNED_16_BIT;
+    }
+    break;
+  case 2:
+    {
+      format = AGS_SOUNDCARD_SIGNED_24_BIT;
+    }
+    break;
+  case 3:
+    {
+      format = AGS_SOUNDCARD_SIGNED_32_BIT;
+    }
+    break;
+  case 4:
+    {
+      format = AGS_SOUNDCARD_SIGNED_64_BIT;
+    }
+    break;
+  case 5:
+    {
+      format = AGS_SOUNDCARD_FLOAT;
+    }
+    break;
+  case 6:
+    {
+      format = AGS_SOUNDCARD_DOUBLE;
+    }
+    break;
+  }
+  
   
   /* create soundcard */
   sound_server =
@@ -1760,11 +1809,42 @@ ags_soundcard_editor_add_port(AgsSoundcardEditor *soundcard_editor,
   if((sound_server = ags_list_util_find_type(start_sound_server,
 					     server_type)) != NULL){
     if(use_core_audio){
+      GValue *param_value = g_new0(GValue,
+				   4);
+	
+      gchar **param_strv = (gchar **) g_malloc(5 * sizeof(gchar *));
+
+      param_strv[0] = g_strdup("pcm-channels");
+      param_strv[1] = g_strdup("buffer-size");
+      param_strv[2] = g_strdup("format");
+      param_strv[3] = g_strdup("samplerate");
+      param_strv[4] = NULL;
+
+      g_value_init(param_value, G_TYPE_UINT);
+      g_value_set_uint(param_value,
+		       pcm_channels);
+	
+      g_value_init(param_value + 1, G_TYPE_UINT);
+      g_value_set_uint(param_value,
+		       buffer_size);
+
+      g_value_init(param_value + 2, G_TYPE_UINT);
+      g_value_set_uint(param_value,
+		       format);
+
+      g_value_init(param_value + 3, G_TYPE_UINT);
+      g_value_set_uint(param_value,
+		       samplerate);
+      
       core_audio_server = AGS_CORE_AUDIO_SERVER(sound_server->data);
 
-      core_audio_devout = (AgsCoreAudioDevout *) ags_sound_server_register_soundcard(AGS_SOUND_SERVER(core_audio_server),
-										     is_output);
+      core_audio_devout = (AgsCoreAudioDevout *) ags_sound_server_register_soundcard_with_params(AGS_SOUND_SERVER(core_audio_server),
+												 is_output,
+												 (gchar **) param_strv, param_value);
       soundcard = (GObject *) core_audio_devout;
+
+      g_strfreev(param_strv);
+      g_free(param_value);
     }else if(use_pulse){
       pulse_server = AGS_PULSE_SERVER(sound_server->data);
 

@@ -1251,6 +1251,15 @@ ags_core_audio_server_register_soundcard_with_params(AgsSoundServer *sound_serve
     /* register ports */      
     core_audio_port = ags_core_audio_port_new((GObject *) default_client);
 
+    ags_core_audio_port_set_pcm_channels(core_audio_port,
+					 pcm_channels);
+    ags_core_audio_port_set_buffer_size(core_audio_port,
+					buffer_size);
+    ags_core_audio_port_set_format(core_audio_port,
+				   format);
+    ags_core_audio_port_set_samplerate(core_audio_port,
+				       samplerate);
+
     str = g_strdup_printf("ags-soundcard%d",
 			  n_soundcards);
     
