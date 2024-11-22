@@ -2060,9 +2060,11 @@ ags_core_audio_port_hw_output_callback(AudioObjectID device,
     break;
   }
   
-  ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
-				     out_buffer->mData, 1,
-				     (out_buffer->mDataByteSize / word_size), AGS_AUDIO_BUFFER_UTIL_FLOAT);
+  for(i = 0; i < out.mNumberBuffers; i++){
+    ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
+				       out->mBuffers[i].mData, 1,
+				       (out->mBuffers[i].mDataByteSize / word_size), AGS_AUDIO_BUFFER_UTIL_FLOAT);
+  }
 
   if(is_playing){  
     copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(core_audio_port->audio_buffer_util,
@@ -2073,47 +2075,62 @@ ags_core_audio_port_hw_output_callback(AudioObjectID device,
     
     buffer = ags_soundcard_get_buffer(AGS_SOUNDCARD(soundcard));
 
-    //TODO:JK: improve misconfigured hw
-    if(out_buffer->mDataByteSize / (out_buffer->mNumberChannels * word_size) >= buffer_size &&
-       out_buffer->mNumberChannels >= pcm_channels){
+    if(pcm_channels <= out.mNumberBuffers){
       ags_soundcard_lock_buffer(AGS_SOUNDCARD(soundcard),
 				buffer);
   
       for(i = 0; i < pcm_channels; i++){
 	ags_audio_buffer_util_copy_buffer_to_buffer(core_audio_port->audio_buffer_util,
-						    out_buffer->mData, out_buffer->mNumberChannels, i,
+						    out->mBuffers[i].mData, out->mBuffers[i].mNumberChannels, 0,
 						    buffer, pcm_channels, i,
-						    buffer_size, copy_mode);
+						    ((out->mBuffers[i]mDataByteSize / (out->mBuffers[i].mNumberChannels * word_size) >= buffer_size) ? buffer_size: out->mBuffers[i]mDataByteSize / (out->mBuffers[i].mNumberChannels * word_size)), copy_mode);
       }
       
       ags_soundcard_unlock_buffer(AGS_SOUNDCARD(soundcard),
 				  buffer);
-    }else if(out_buffer->mDataByteSize / (out_buffer->mNumberChannels * word_size) >= buffer_size){
-      ags_soundcard_lock_buffer(AGS_SOUNDCARD(soundcard),
-				buffer);
-  
-      for(i = 0; i < pcm_channels && i < out_buffer->mNumberChannels; i++){
-	ags_audio_buffer_util_copy_buffer_to_buffer(core_audio_port->audio_buffer_util,
-						    out_buffer->mData, out_buffer->mNumberChannels, i,
-						    buffer, pcm_channels, i,
-						    buffer_size, copy_mode);
-      }
-      
-      ags_soundcard_unlock_buffer(AGS_SOUNDCARD(soundcard),
-				  buffer);      
     }else{
-      ags_soundcard_lock_buffer(AGS_SOUNDCARD(soundcard),
-				buffer);
-  
-      for(i = 0; i < pcm_channels && i < out_buffer->mNumberChannels; i++){
-	ags_audio_buffer_util_copy_buffer_to_buffer(core_audio_port->audio_buffer_util,
-						    out_buffer->mData, out_buffer->mNumberChannels, i,
-						    buffer, pcm_channels, i,
-						    out_buffer->mDataByteSize / (out_buffer->mNumberChannels * word_size), copy_mode);
-      }
-      
-      ags_soundcard_unlock_buffer(AGS_SOUNDCARD(soundcard),
+      //TODO:JK: improve misconfigured hw
+      if(out_buffer->mDataByteSize / (out_buffer->mNumberChannels * word_size) >= buffer_size &&
+	 out_buffer->mNumberChannels >= pcm_channels){
+	ags_soundcard_lock_buffer(AGS_SOUNDCARD(soundcard),
 				  buffer);
+  
+	for(i = 0; i < pcm_channels; i++){
+	  ags_audio_buffer_util_copy_buffer_to_buffer(core_audio_port->audio_buffer_util,
+						      out_buffer->mData, out_buffer->mNumberChannels, i,
+						      buffer, pcm_channels, i,
+						      buffer_size, copy_mode);
+	}
+      
+	ags_soundcard_unlock_buffer(AGS_SOUNDCARD(soundcard),
+				    buffer);
+      }else if(out_buffer->mDataByteSize / (out_buffer->mNumberChannels * word_size) >= buffer_size){
+	ags_soundcard_lock_buffer(AGS_SOUNDCARD(soundcard),
+				  buffer);
+  
+	for(i = 0; i < pcm_channels && i < out_buffer->mNumberChannels; i++){
+	  ags_audio_buffer_util_copy_buffer_to_buffer(core_audio_port->audio_buffer_util,
+						      out_buffer->mData, out_buffer->mNumberChannels, i,
+						      buffer, pcm_channels, i,
+						      buffer_size, copy_mode);
+	}
+      
+	ags_soundcard_unlock_buffer(AGS_SOUNDCARD(soundcard),
+				    buffer);      
+      }else{
+	ags_soundcard_lock_buffer(AGS_SOUNDCARD(soundcard),
+				  buffer);
+  
+	for(i = 0; i < pcm_channels && i < out_buffer->mNumberChannels; i++){
+	  ags_audio_buffer_util_copy_buffer_to_buffer(core_audio_port->audio_buffer_util,
+						      out_buffer->mData, out_buffer->mNumberChannels, i,
+						      buffer, pcm_channels, i,
+						      out_buffer->mDataByteSize / (out_buffer->mNumberChannels * word_size), copy_mode);
+	}
+      
+	ags_soundcard_unlock_buffer(AGS_SOUNDCARD(soundcard),
+				    buffer);
+      }
     }
   }else{
     empty_run = TRUE;
@@ -2169,7 +2186,7 @@ ags_core_audio_port_hw_input_callback(AudioObjectID device,
   AgsSoundcardFormat format;
   guint word_size;
   guint copy_mode;
-  guint i;
+  guint i, j;
   gboolean is_recording;
   gboolean pass_through;
   gboolean no_event;
@@ -2341,55 +2358,72 @@ ags_core_audio_port_hw_input_callback(AudioObjectID device,
   
     buffer = ags_soundcard_get_buffer(AGS_SOUNDCARD(soundcard));
 
-    //TODO:JK: improve misconfigured hw
-    if(in_buffer->mDataByteSize / (in_buffer->mNumberChannels * word_size) >= buffer_size &&
-       in_buffer->mNumberChannels >= pcm_channels){
+    if(pcm_channels <= in.mNumberBuffers){
       ags_soundcard_lock_buffer(AGS_SOUNDCARD(soundcard),
 				buffer);
 
       for(i = 0; i < pcm_channels; i++){
 	ags_audio_buffer_util_copy_buffer_to_buffer(core_audio_port->audio_buffer_util,
 						    buffer, pcm_channels, i,
-						    in_buffer->mData, in_buffer->mNumberChannels, i,
-						    buffer_size, copy_mode);
-      }
-      
-      ags_soundcard_unlock_buffer(AGS_SOUNDCARD(soundcard),
-				  buffer);
-    }else if(in_buffer->mDataByteSize / (in_buffer->mNumberChannels * word_size) >= buffer_size){
-      ags_soundcard_lock_buffer(AGS_SOUNDCARD(soundcard),
-				buffer);
-
-      for(i = 0; i < pcm_channels && i < in_buffer->mNumberChannels; i++){
-	ags_audio_buffer_util_copy_buffer_to_buffer(core_audio_port->audio_buffer_util,
-						    buffer, pcm_channels, i,
-						    in_buffer->mData, in_buffer->mNumberChannels, i,
-						    buffer_size, copy_mode);
+						    in->mBuffers[i].mData, in->mBuffers[i].mNumberChannels, 0,
+						    ((in->mBuffers[i]mDataByteSize / (in->mBuffers[i].mNumberChannels * word_size) >= buffer_size) ? buffer_size: in->mBuffers[i]mDataByteSize / (in->mBuffers[i].mNumberChannels * word_size)), copy_mode);
       }
       
       ags_soundcard_unlock_buffer(AGS_SOUNDCARD(soundcard),
 				  buffer);
     }else{
-      ags_soundcard_lock_buffer(AGS_SOUNDCARD(soundcard),
-				buffer);
-
-      for(i = 0; i < pcm_channels && i < in_buffer->mNumberChannels; i++){
-	ags_audio_buffer_util_copy_buffer_to_buffer(core_audio_port->audio_buffer_util,
-						    buffer, pcm_channels, i,
-						    in_buffer->mData, in_buffer->mNumberChannels, i,
-						    in_buffer->mDataByteSize / (in_buffer->mNumberChannels * word_size), copy_mode);
-      }
-      
-      ags_soundcard_unlock_buffer(AGS_SOUNDCARD(soundcard),
+      //TODO:JK: improve misconfigured hw
+      if(in_buffer->mDataByteSize / (in_buffer->mNumberChannels * word_size) >= buffer_size &&
+	 in_buffer->mNumberChannels >= pcm_channels){
+	ags_soundcard_lock_buffer(AGS_SOUNDCARD(soundcard),
 				  buffer);
+
+	for(i = 0; i < pcm_channels; i++){
+	  ags_audio_buffer_util_copy_buffer_to_buffer(core_audio_port->audio_buffer_util,
+						      buffer, pcm_channels, i,
+						      in_buffer->mData, in_buffer->mNumberChannels, i,
+						      buffer_size, copy_mode);
+	}
+      
+	ags_soundcard_unlock_buffer(AGS_SOUNDCARD(soundcard),
+				    buffer);
+      }else if(in_buffer->mDataByteSize / (in_buffer->mNumberChannels * word_size) >= buffer_size){
+	ags_soundcard_lock_buffer(AGS_SOUNDCARD(soundcard),
+				  buffer);
+
+	for(i = 0; i < pcm_channels && i < in_buffer->mNumberChannels; i++){
+	  ags_audio_buffer_util_copy_buffer_to_buffer(core_audio_port->audio_buffer_util,
+						      buffer, pcm_channels, i,
+						      in_buffer->mData, in_buffer->mNumberChannels, i,
+						      buffer_size, copy_mode);
+	}
+      
+	ags_soundcard_unlock_buffer(AGS_SOUNDCARD(soundcard),
+				    buffer);
+      }else{
+	ags_soundcard_lock_buffer(AGS_SOUNDCARD(soundcard),
+				  buffer);
+
+	for(i = 0; i < pcm_channels && i < in_buffer->mNumberChannels; i++){
+	  ags_audio_buffer_util_copy_buffer_to_buffer(core_audio_port->audio_buffer_util,
+						      buffer, pcm_channels, i,
+						      in_buffer->mData, in_buffer->mNumberChannels, i,
+						      in_buffer->mDataByteSize / (in_buffer->mNumberChannels * word_size), copy_mode);
+	}
+      
+	ags_soundcard_unlock_buffer(AGS_SOUNDCARD(soundcard),
+				    buffer);
+      }
     }
   }else{
     empty_run = TRUE;
   }
-  
-  ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
-				     in_buffer->mData, 1,
-				     (in_buffer->mDataByteSize / word_size), AGS_AUDIO_BUFFER_UTIL_FLOAT);
+
+  for(i = 0; i < in.mNumberBuffers; i++){
+    ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
+				       in->mBuffers[i].mData, 1,
+				       (in->mBuffers[i].mDataByteSize / word_size), AGS_AUDIO_BUFFER_UTIL_FLOAT);
+  }
   
   /* signal finish */ 
   if(!no_event){
