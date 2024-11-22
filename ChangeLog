@@ -1,3 +1,8 @@
+ags (7.3.16)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved configure format from current format with CoreAudio
+
 ags (7.3.15)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -2841,57 +2841,115 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 				 sizeof(input_samplerate),
 				 &input_samplerate);
 
-      input_buffer_size_bytes = core_audio_port->pcm_channels * core_audio_port->buffer_size * sizeof(gfloat);
 
-      AudioObjectSetPropertyData(core_audio_port->input_device,
-				 core_audio_port->input_buffer_size_property_address,
-				 0,
-				 NULL,
-				 sizeof(input_buffer_size_bytes),
-				 &input_buffer_size_bytes);
-   
-      size_t bytes_per_sample = word_size;
+      AudioStreamBasicDescription current_format;
+
+      AudioObjectGetPropertyDataSize(kAudioObjectSystemObject,
+                                     core_audio_port->input_stream_format_property_address,
+                                     0,
+                                     NULL,
+                                     &property_size);
+
+      if(property_size <= sizeof(AudioStreamBasicDescription)){
+	AudioObjectGetPropertyData(kAudioObjectSystemObject, 
+				   core_audio_port->input_stream_format_property_address,
+				   0, 
+				   NULL, 
+				   &property_size,
+				   &(current_format));
+
+	if((kAudioFormatFlagIsNonInterleaved & (current_format.mFormatFlags)) != 0){
+	  input_buffer_size_bytes = core_audio_port->buffer_size * sizeof(gfloat);
+	}else{
+	  input_buffer_size_bytes = core_audio_port->pcm_channels * core_audio_port->buffer_size * sizeof(gfloat);
+	}
+	
+	AudioObjectSetPropertyData(core_audio_port->input_device,
+				   core_audio_port->input_buffer_size_property_address,
+				   0,
+				   NULL,
+				   sizeof(input_buffer_size_bytes),
+				   &input_buffer_size_bytes);
+	
+	core_audio_port->input_format.mBitsPerChannel = current_format.mBitsPerChannel;
+
+	core_audio_port->input_format.mBytesPerPacket = current_format.mBytesPerPacket;
+	core_audio_port->input_format.mBytesPerFrame = current_format.mBytesPerFrame;
+  
+	core_audio_port->input_format.mFramesPerPacket = current_format.mFramesPerPacket;
+	core_audio_port->input_format.mChannelsPerFrame = current_format.mChannelsPerFrame;
+
+	core_audio_port->input_format.mFormatID = current_format.mFormatID;
+
+	core_audio_port->input_format.mFormatFlags = current_format.mFormatFlags;
+      }else{
+	if(format == AGS_SOUNDCARD_FLOAT ||
+	   format == AGS_SOUNDCARD_DOUBLE){
+	  input_buffer_size_bytes = core_audio_port->buffer_size * sizeof(gfloat);
+	}else{
+	  input_buffer_size_bytes = core_audio_port->pcm_channels * core_audio_port->buffer_size * sizeof(gfloat);
+	}
+	
+	AudioObjectSetPropertyData(core_audio_port->input_device,
+				   core_audio_port->input_buffer_size_property_address,
+				   0,
+				   NULL,
+				   sizeof(input_buffer_size_bytes),
+				   &input_buffer_size_bytes);
+	
+	size_t bytes_per_sample = word_size;
       
-      core_audio_port->input_format.mBitsPerChannel = 8 * bytes_per_sample;
+	core_audio_port->input_format.mBitsPerChannel = 8 * bytes_per_sample;
 
-      core_audio_port->input_format.mBytesPerPacket = core_audio_port->pcm_channels * bytes_per_sample;
-      core_audio_port->input_format.mBytesPerFrame = core_audio_port->pcm_channels * bytes_per_sample;
-  
-      core_audio_port->input_format.mFramesPerPacket = 1;
-      core_audio_port->input_format.mChannelsPerFrame = core_audio_port->pcm_channels;
+	if(format == AGS_SOUNDCARD_FLOAT ||
+	   format == AGS_SOUNDCARD_DOUBLE){
+	  core_audio_port->input_format.mBytesPerPacket = bytes_per_sample;
+	  core_audio_port->input_format.mBytesPerFrame = bytes_per_sample;
+	}else{
+	}
+	
+	core_audio_port->input_format.mFramesPerPacket = 1;
 
-      core_audio_port->input_format.mFormatID = kAudioFormatLinearPCM;
+	if(format == AGS_SOUNDCARD_FLOAT ||
+	   format == AGS_SOUNDCARD_DOUBLE){
+	  core_audio_port->input_format.mChannelsPerFrame = 1;
+	}else{
+	  core_audio_port->input_format.mChannelsPerFrame = core_audio_port->pcm_channels;
+	}
+	
+	core_audio_port->input_format.mFormatID = kAudioFormatLinearPCM;
 
-      switch(format){
-      case AGS_SOUNDCARD_SIGNED_16_BIT:
-	{
-	  core_audio_port->input_format.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked | kAppleLosslessFormatFlag_16BitSourceData;
+	switch(format){
+	case AGS_SOUNDCARD_SIGNED_16_BIT:
+	  {
+	    core_audio_port->input_format.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked | kAppleLosslessFormatFlag_16BitSourceData;
+	  }
+	  break;
+	case AGS_SOUNDCARD_SIGNED_24_BIT:
+	  {
+	    core_audio_port->input_format.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked | kAppleLosslessFormatFlag_24BitSourceData;
+	  }
+	  break;
+	case AGS_SOUNDCARD_SIGNED_32_BIT:
+	  {
+	    core_audio_port->input_format.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked | kAppleLosslessFormatFlag_32BitSourceData;
+	  }
+	  break;
+	case AGS_SOUNDCARD_SIGNED_8_BIT:
+	case AGS_SOUNDCARD_SIGNED_64_BIT:
+	  {
+	    core_audio_port->input_format.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
+	  }
+	  break;
+	case AGS_SOUNDCARD_FLOAT:
+	case AGS_SOUNDCARD_DOUBLE:
+	  {
+	    core_audio_port->input_format.mFormatFlags = kAudioFormatFlagIsNonInterleaved | kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
+	  }
+	  break;
 	}
-	break;
-      case AGS_SOUNDCARD_SIGNED_24_BIT:
-	{
-	  core_audio_port->input_format.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked | kAppleLosslessFormatFlag_24BitSourceData;
-	}
-	break;
-      case AGS_SOUNDCARD_SIGNED_32_BIT:
-	{
-	  core_audio_port->input_format.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked | kAppleLosslessFormatFlag_32BitSourceData;
-	}
-	break;
-      case AGS_SOUNDCARD_SIGNED_8_BIT:
-      case AGS_SOUNDCARD_SIGNED_64_BIT:
-	{
-	  core_audio_port->input_format.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
-	}
-	break;
-      case AGS_SOUNDCARD_FLOAT:
-      case AGS_SOUNDCARD_DOUBLE:
-	{
-	  core_audio_port->input_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
-	}
-	break;
       }
-  
+      
       core_audio_port->input_format.mSampleRate = (float) core_audio_port->samplerate;
       
       AudioObjectSetPropertyData(core_audio_port->input_device,
