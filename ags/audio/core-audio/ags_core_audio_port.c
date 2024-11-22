@@ -524,14 +524,15 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
 
   core_audio_port->input_format.mBitsPerChannel = 8 * bytes_per_sample;
 
-  core_audio_port->input_format.mBytesPerPacket = core_audio_port->pcm_channels * bytes_per_sample;
+  //NOTE:JK: we are using non-interleaved with CoreAudio input
+  core_audio_port->input_format.mBytesPerPacket = bytes_per_sample;; // core_audio_port->pcm_channels * bytes_per_sample;
   core_audio_port->input_format.mBytesPerFrame = core_audio_port->pcm_channels * bytes_per_sample;
   
   core_audio_port->input_format.mFramesPerPacket = 1;
   core_audio_port->input_format.mChannelsPerFrame = core_audio_port->pcm_channels;
 
   core_audio_port->input_format.mFormatID = kAudioFormatLinearPCM;
-  core_audio_port->input_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
+  core_audio_port->input_format.mFormatFlags = kAudioFormatFlagIsNonInterleaved | kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
   
   core_audio_port->input_format.mSampleRate = (float) core_audio_port->samplerate;
   
@@ -860,7 +861,8 @@ ags_core_audio_port_set_property(GObject *gobject,
       
 	  core_audio_port->input_format.mBitsPerChannel = 8 * bytes_per_sample;
 
-	  core_audio_port->input_format.mBytesPerPacket = core_audio_port->pcm_channels * bytes_per_sample;
+	  //NOTE:JK: we are using non-interleaved with CoreAudio
+	  core_audio_port->input_format.mBytesPerPacket = bytes_per_sample; // core_audio_port->pcm_channels * bytes_per_sample;
 	  core_audio_port->input_format.mBytesPerFrame = core_audio_port->pcm_channels * bytes_per_sample;
   
 	  core_audio_port->input_format.mChannelsPerFrame = core_audio_port->pcm_channels;
@@ -1116,16 +1118,16 @@ ags_core_audio_port_set_property(GObject *gobject,
 	  }else if(format == AGS_SOUNDCARD_FLOAT){
 	    bytes_per_sample = sizeof(gfloat);
 	    
-	    core_audio_port->input_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
+	    core_audio_port->input_format.mFormatFlags = kAudioFormatFlagIsNonInterleaved | kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
 	  }else if(format == AGS_SOUNDCARD_DOUBLE){
 	    bytes_per_sample = sizeof(gdouble);
 
-	    core_audio_port->input_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
+	    core_audio_port->input_format.mFormatFlags = kAudioFormatFlagIsNonInterleaved | kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
 	  }
 
 	  core_audio_port->input_format.mBitsPerChannel = 8 * bytes_per_sample;
 
-	  core_audio_port->input_format.mBytesPerPacket = core_audio_port->pcm_channels * bytes_per_sample;
+	  core_audio_port->input_format.mBytesPerPacket = bytes_per_sample; // core_audio_port->pcm_channels * bytes_per_sample;
 	  core_audio_port->input_format.mBytesPerFrame = core_audio_port->pcm_channels * bytes_per_sample;
   
 	  core_audio_port->input_format.mFramesPerPacket = 1;
@@ -2904,18 +2906,14 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 	if(format == AGS_SOUNDCARD_FLOAT ||
 	   format == AGS_SOUNDCARD_DOUBLE){
 	  core_audio_port->input_format.mBytesPerPacket = bytes_per_sample;
-	  core_audio_port->input_format.mBytesPerFrame = bytes_per_sample;
+	  core_audio_port->input_format.mBytesPerFrame = core_audio_port->pcm_channels * bytes_per_sample;
 	}else{
+	  core_audio_port->input_format.mBytesPerPacket = core_audio_port->pcm_channels * bytes_per_sample;
+	  core_audio_port->input_format.mBytesPerFrame = core_audio_port->pcm_channels * bytes_per_sample;
 	}
 	
 	core_audio_port->input_format.mFramesPerPacket = 1;
-
-	if(format == AGS_SOUNDCARD_FLOAT ||
-	   format == AGS_SOUNDCARD_DOUBLE){
-	  core_audio_port->input_format.mChannelsPerFrame = 1;
-	}else{
-	  core_audio_port->input_format.mChannelsPerFrame = core_audio_port->pcm_channels;
-	}
+	core_audio_port->input_format.mChannelsPerFrame = core_audio_port->pcm_channels;
 	
 	core_audio_port->input_format.mFormatID = kAudioFormatLinearPCM;
 
