@@ -2060,7 +2060,7 @@ ags_core_audio_port_hw_output_callback(AudioObjectID device,
     break;
   }
   
-  for(i = 0; i < out.mNumberBuffers; i++){
+  for(i = 0; i < out->mNumberBuffers; i++){
     ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
 				       out->mBuffers[i].mData, 1,
 				       (out->mBuffers[i].mDataByteSize / word_size), AGS_AUDIO_BUFFER_UTIL_FLOAT);
@@ -2075,7 +2075,7 @@ ags_core_audio_port_hw_output_callback(AudioObjectID device,
     
     buffer = ags_soundcard_get_buffer(AGS_SOUNDCARD(soundcard));
 
-    if(pcm_channels <= out.mNumberBuffers){
+    if(pcm_channels <= out->mNumberBuffers){
       ags_soundcard_lock_buffer(AGS_SOUNDCARD(soundcard),
 				buffer);
   
@@ -2083,7 +2083,7 @@ ags_core_audio_port_hw_output_callback(AudioObjectID device,
 	ags_audio_buffer_util_copy_buffer_to_buffer(core_audio_port->audio_buffer_util,
 						    out->mBuffers[i].mData, out->mBuffers[i].mNumberChannels, 0,
 						    buffer, pcm_channels, i,
-						    ((out->mBuffers[i]mDataByteSize / (out->mBuffers[i].mNumberChannels * word_size) >= buffer_size) ? buffer_size: out->mBuffers[i]mDataByteSize / (out->mBuffers[i].mNumberChannels * word_size)), copy_mode);
+						    (((out->mBuffers[i].mDataByteSize / (out->mBuffers[i].mNumberChannels * word_size)) >= buffer_size) ? buffer_size: (out->mBuffers[i].mDataByteSize / (out->mBuffers[i].mNumberChannels * word_size))), copy_mode);
       }
       
       ags_soundcard_unlock_buffer(AGS_SOUNDCARD(soundcard),
@@ -2358,7 +2358,7 @@ ags_core_audio_port_hw_input_callback(AudioObjectID device,
   
     buffer = ags_soundcard_get_buffer(AGS_SOUNDCARD(soundcard));
 
-    if(pcm_channels <= in.mNumberBuffers){
+    if(pcm_channels <= in->mNumberBuffers){
       ags_soundcard_lock_buffer(AGS_SOUNDCARD(soundcard),
 				buffer);
 
@@ -2366,7 +2366,7 @@ ags_core_audio_port_hw_input_callback(AudioObjectID device,
 	ags_audio_buffer_util_copy_buffer_to_buffer(core_audio_port->audio_buffer_util,
 						    buffer, pcm_channels, i,
 						    in->mBuffers[i].mData, in->mBuffers[i].mNumberChannels, 0,
-						    ((in->mBuffers[i]mDataByteSize / (in->mBuffers[i].mNumberChannels * word_size) >= buffer_size) ? buffer_size: in->mBuffers[i]mDataByteSize / (in->mBuffers[i].mNumberChannels * word_size)), copy_mode);
+						    (((in->mBuffers[i].mDataByteSize / (in->mBuffers[i].mNumberChannels * word_size)) >= buffer_size) ? buffer_size: (in->mBuffers[i].mDataByteSize / (in->mBuffers[i].mNumberChannels * word_size))), copy_mode);
       }
       
       ags_soundcard_unlock_buffer(AGS_SOUNDCARD(soundcard),
@@ -2419,7 +2419,7 @@ ags_core_audio_port_hw_input_callback(AudioObjectID device,
     empty_run = TRUE;
   }
 
-  for(i = 0; i < in.mNumberBuffers; i++){
+  for(i = 0; i < in->mNumberBuffers; i++){
     ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
 				       in->mBuffers[i].mData, 1,
 				       (in->mBuffers[i].mDataByteSize / word_size), AGS_AUDIO_BUFFER_UTIL_FLOAT);
