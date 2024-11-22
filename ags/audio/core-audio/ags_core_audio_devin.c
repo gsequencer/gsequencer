@@ -2137,46 +2137,68 @@ ags_core_audio_devin_port_record(AgsSoundcard *soundcard,
     while((AGS_CORE_AUDIO_DEVIN_PASS_THROUGH & (g_atomic_int_get(&(core_audio_devin->sync_flags)))) != 0){
 	usleep(4);
     }
-    
-    /* signal */
-    if((AGS_CORE_AUDIO_DEVIN_INITIAL_CALLBACK & (g_atomic_int_get(&(core_audio_devin->sync_flags)))) == 0){
-      g_mutex_lock(callback_mutex);
 
+    if((AGS_CORE_AUDIO_DEVIN_INITIAL_CALLBACK & (g_atomic_int_get(&(core_audio_devin->sync_flags)))) != 0){
       g_atomic_int_or(&(core_audio_devin->sync_flags),
-		      AGS_CORE_AUDIO_DEVIN_CALLBACK_DONE);
-    
-      if((AGS_CORE_AUDIO_DEVIN_CALLBACK_WAIT & (g_atomic_int_get(&(core_audio_devin->sync_flags)))) != 0){
-	g_cond_signal(&(core_audio_devin->callback_cond));
-      }
-
-      g_mutex_unlock(callback_mutex);
-      //    }
-    
-      /* wait callback */	
-      g_mutex_lock(callback_finish_mutex);
-    
-      if((AGS_CORE_AUDIO_DEVIN_CALLBACK_FINISH_DONE & (g_atomic_int_get(&(core_audio_devin->sync_flags)))) == 0){
-	g_atomic_int_or(&(core_audio_devin->sync_flags),
-			AGS_CORE_AUDIO_DEVIN_CALLBACK_FINISH_WAIT);
-    
-	while((AGS_CORE_AUDIO_DEVIN_CALLBACK_FINISH_DONE & (g_atomic_int_get(&(core_audio_devin->sync_flags)))) == 0 &&
-	      (AGS_CORE_AUDIO_DEVIN_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(core_audio_devin->sync_flags)))) != 0){
-	  g_cond_wait(&(core_audio_devin->callback_finish_cond),
-		      callback_finish_mutex);
+		      AGS_CORE_AUDIO_DEVIN_PRE_SYNC_DEVICE_WAIT);
+	
+      while(((AGS_CORE_AUDIO_DEVIN_PRE_SYNC_DEVICE_WAIT & (g_atomic_int_get(&(core_audio_devin->sync_flags)))) != 0 ||
+	     (AGS_CORE_AUDIO_DEVIN_PRE_SYNC_CALLBACK_WAIT & (g_atomic_int_get(&(core_audio_devin->sync_flags)))) != 0) &&
+	    ((AGS_CORE_AUDIO_DEVIN_PRE_SYNC_DEVICE_DONE & (g_atomic_int_get(&(core_audio_devin->sync_flags)))) == 0 ||
+	     (AGS_CORE_AUDIO_DEVIN_PRE_SYNC_CALLBACK_DONE & (g_atomic_int_get(&(core_audio_devin->sync_flags)))) == 0)){
+	if((AGS_CORE_AUDIO_DEVIN_PRE_SYNC_DEVICE_WAIT & (g_atomic_int_get(&(core_audio_devin->sync_flags)))) != 0 &&
+	   (AGS_CORE_AUDIO_DEVIN_PRE_SYNC_CALLBACK_WAIT & (g_atomic_int_get(&(core_audio_devin->sync_flags)))) != 0){
+	  g_atomic_int_or(&(core_audio_devin->sync_flags),
+			  AGS_CORE_AUDIO_DEVIN_PRE_SYNC_DEVICE_DONE);
 	}
+	
+	g_thread_yield();
       }
-      
-      g_atomic_int_and(&(core_audio_devin->sync_flags),
-		       (~(AGS_CORE_AUDIO_DEVIN_CALLBACK_FINISH_WAIT |
-			  AGS_CORE_AUDIO_DEVIN_CALLBACK_FINISH_DONE)));
-    
-      g_mutex_unlock(callback_finish_mutex);
-    }else{
+	
       g_atomic_int_and(&(core_audio_devin->sync_flags),
 		       (~AGS_CORE_AUDIO_DEVIN_INITIAL_CALLBACK));
-    }
-  }
 
+      g_atomic_int_and(&(core_audio_devin->sync_flags),
+		       (~(AGS_CORE_AUDIO_DEVIN_PRE_SYNC_DEVICE_WAIT |
+			  AGS_CORE_AUDIO_DEVIN_PRE_SYNC_CALLBACK_WAIT |
+			  AGS_CORE_AUDIO_DEVIN_PRE_SYNC_DEVICE_DONE |
+			  AGS_CORE_AUDIO_DEVIN_PRE_SYNC_CALLBACK_DONE)));
+    }
+    
+    /* signal */
+    g_mutex_lock(callback_mutex);
+
+    g_atomic_int_or(&(core_audio_devin->sync_flags),
+		    AGS_CORE_AUDIO_DEVIN_CALLBACK_DONE);
+    
+    if((AGS_CORE_AUDIO_DEVIN_CALLBACK_WAIT & (g_atomic_int_get(&(core_audio_devin->sync_flags)))) != 0){
+      g_cond_signal(&(core_audio_devin->callback_cond));
+    }
+
+    g_mutex_unlock(callback_mutex);
+    //    }
+    
+    /* wait callback */	
+    g_mutex_lock(callback_finish_mutex);
+    
+    if((AGS_CORE_AUDIO_DEVIN_CALLBACK_FINISH_DONE & (g_atomic_int_get(&(core_audio_devin->sync_flags)))) == 0){
+      g_atomic_int_or(&(core_audio_devin->sync_flags),
+		      AGS_CORE_AUDIO_DEVIN_CALLBACK_FINISH_WAIT);
+    
+      while((AGS_CORE_AUDIO_DEVIN_CALLBACK_FINISH_DONE & (g_atomic_int_get(&(core_audio_devin->sync_flags)))) == 0 &&
+	    (AGS_CORE_AUDIO_DEVIN_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(core_audio_devin->sync_flags)))) != 0){
+	g_cond_wait(&(core_audio_devin->callback_finish_cond),
+		    callback_finish_mutex);
+      }
+    }
+      
+    g_atomic_int_and(&(core_audio_devin->sync_flags),
+		     (~(AGS_CORE_AUDIO_DEVIN_CALLBACK_FINISH_WAIT |
+			AGS_CORE_AUDIO_DEVIN_CALLBACK_FINISH_DONE)));
+    
+    g_mutex_unlock(callback_finish_mutex);
+  }
+  
   /* update soundcard */
   task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
 
@@ -2238,8 +2260,15 @@ ags_core_audio_devin_port_free(AgsSoundcard *soundcard)
 
   g_atomic_int_or(&(core_audio_devin->sync_flags),
 		  AGS_CORE_AUDIO_DEVIN_PASS_THROUGH);
+
   g_atomic_int_and(&(core_audio_devin->sync_flags),
 		   (~AGS_CORE_AUDIO_DEVIN_INITIAL_CALLBACK));
+
+  g_atomic_int_and(&(core_audio_devin->sync_flags),
+		   (~(AGS_CORE_AUDIO_DEVIN_PRE_SYNC_DEVICE_WAIT |
+		      AGS_CORE_AUDIO_DEVIN_PRE_SYNC_CALLBACK_WAIT |
+		      AGS_CORE_AUDIO_DEVIN_PRE_SYNC_DEVICE_DONE |
+		      AGS_CORE_AUDIO_DEVIN_PRE_SYNC_CALLBACK_DONE)));
 
   /* signal callback */
   g_mutex_lock(callback_mutex);
