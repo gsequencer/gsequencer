@@ -485,7 +485,7 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
   core_audio_port->output_format.mFormatID = kAudioFormatLinearPCM;
   core_audio_port->output_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
   
-  core_audio_port->output_format.mSampleRate = (float) core_audio_port->samplerate;
+  core_audio_port->output_format.mSampleRate = (Float64) core_audio_port->samplerate;
   
   core_audio_port->output_property_address = (AudioObjectPropertyAddress *) malloc(sizeof(AudioObjectPropertyAddress));
   memset(core_audio_port->output_property_address, 0, sizeof(AudioObjectPropertyAddress));
@@ -534,7 +534,7 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
   core_audio_port->input_format.mFormatID = kAudioFormatLinearPCM;
   core_audio_port->input_format.mFormatFlags = kAudioFormatFlagIsNonInterleaved | kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
   
-  core_audio_port->input_format.mSampleRate = (float) core_audio_port->samplerate;
+  core_audio_port->input_format.mSampleRate = (Float64) core_audio_port->samplerate;
   
   core_audio_port->input_property_address = (AudioObjectPropertyAddress *) malloc(sizeof(AudioObjectPropertyAddress));
   memset(core_audio_port->input_property_address, 0, sizeof(AudioObjectPropertyAddress));
@@ -565,7 +565,7 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
   core_audio_port->data_format.mFormatID = kAudioFormatLinearPCM;
   core_audio_port->data_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
   
-  core_audio_port->data_format.mSampleRate = (float) core_audio_port->samplerate;
+  core_audio_port->data_format.mSampleRate = (Float64) core_audio_port->samplerate;
 
   memset(&(core_audio_port->record_format), 0, sizeof(AudioStreamBasicDescription));
 
@@ -580,7 +580,7 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
   core_audio_port->record_format.mFormatID = kAudioFormatLinearPCM;
   core_audio_port->record_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
   
-  core_audio_port->record_format.mSampleRate = (float) core_audio_port->samplerate;
+  core_audio_port->record_format.mSampleRate = (Float64) core_audio_port->samplerate;
 #endif
   
   /* MIDI */
@@ -809,70 +809,6 @@ ags_core_audio_port_set_property(GObject *gobject,
 
       core_audio_port->pcm_channels = pcm_channels;
       
-#ifdef AGS_WITH_CORE_AUDIO
-#if defined(AGS_CORE_AUDIO_PORT_USE_HW)
-      if(ags_core_audio_port_test_flags(core_audio_port, AGS_CORE_AUDIO_PORT_IS_AUDIO)){
-	if(ags_core_audio_port_test_flags(core_audio_port, AGS_CORE_AUDIO_PORT_IS_OUTPUT)){
-	  size_t bytes_per_sample;
-
-	  bytes_per_sample = sizeof(gfloat);
-	  
-	  if(current_format == AGS_SOUNDCARD_SIGNED_16_BIT){
-	    bytes_per_sample = sizeof(gint16);
-	  }else if(current_format == AGS_SOUNDCARD_SIGNED_24_BIT){
-	    bytes_per_sample = sizeof(gint32);
-	  }else if(current_format == AGS_SOUNDCARD_SIGNED_32_BIT){
-	    bytes_per_sample = sizeof(gint32);
-	  }else if(current_format == AGS_SOUNDCARD_FLOAT){
-	    bytes_per_sample = sizeof(gfloat);
-	  }else if(current_format == AGS_SOUNDCARD_DOUBLE){
-	    bytes_per_sample = sizeof(gdouble);
-	  }
-      
-	  core_audio_port->output_format.mBitsPerChannel = 8 * bytes_per_sample;
-
-	  core_audio_port->output_format.mBytesPerPacket = core_audio_port->pcm_channels * bytes_per_sample;
-	  core_audio_port->output_format.mBytesPerFrame = core_audio_port->pcm_channels * bytes_per_sample;
-  
-	  core_audio_port->output_format.mChannelsPerFrame = core_audio_port->pcm_channels;
-      
-	  AudioObjectSetPropertyData(core_audio_port->output_device,
-				     core_audio_port->output_stream_format_property_address,
-				     0,
-				     NULL,
-				     sizeof(core_audio_port->output_format),
-				     &(core_audio_port->output_format));
-	}else{
-	  AudioStreamBasicDescription current_format;
-
-	  UInt32 property_size = sizeof(AudioStreamBasicDescription);
-
-	  AudioObjectGetPropertyData(kAudioObjectSystemObject, 
-				     core_audio_port->input_stream_format_property_address,
-				     0, 
-				     NULL, 
-				     &property_size,
-				     &(current_format));
-      
-	  core_audio_port->input_format.mBitsPerChannel = current_format.mBitsPerChannel;
-
-	  //NOTE:JK: we are using non-interleaved with CoreAudio
-	  core_audio_port->input_format.mBytesPerPacket = current_format.mBytesPerPacket;
-	  core_audio_port->input_format.mBytesPerFrame = current_format.mBytesPerFrame;
-  
-	  core_audio_port->input_format.mChannelsPerFrame = current_format.mChannelsPerFrame;
-
-	  AudioObjectSetPropertyData(core_audio_port->input_device,
-				     core_audio_port->input_stream_format_property_address,
-				     0,
-				     NULL,
-				     sizeof(core_audio_port->input_format),
-				     &(core_audio_port->input_format));
-	}
-      }
-#endif
-#endif
-      
       g_rec_mutex_unlock(core_audio_port_mutex);
     }
     break;
@@ -893,65 +829,6 @@ ags_core_audio_port_set_property(GObject *gobject,
       current_format = core_audio_port->format;
 
       core_audio_port->samplerate = samplerate;
-
-#ifdef AGS_WITH_CORE_AUDIO
-#if defined(AGS_CORE_AUDIO_PORT_USE_HW)
-      if(ags_core_audio_port_test_flags(core_audio_port, AGS_CORE_AUDIO_PORT_IS_AUDIO)){
-	if(ags_core_audio_port_test_flags(core_audio_port, AGS_CORE_AUDIO_PORT_IS_OUTPUT)){
-	  Float64 output_samplerate;
-	  
-	  output_samplerate = (Float64) core_audio_port->samplerate;
-
-	  AudioObjectSetPropertyData(core_audio_port->output_device,
-				     core_audio_port->output_samplerate_property_address,
-				     0,
-				     NULL,
-				     sizeof(output_samplerate),
-				     &output_samplerate);
-
-	  
-	  core_audio_port->output_format.mSampleRate = (float) core_audio_port->samplerate;
-      
-	  AudioObjectSetPropertyData(core_audio_port->output_device,
-				     core_audio_port->output_stream_format_property_address,
-				     0,
-				     NULL,
-				     sizeof(core_audio_port->output_format),
-				     &(core_audio_port->output_format));
-	}else{
-	  AudioStreamBasicDescription current_format;
-
-	  UInt32 property_size = sizeof(AudioStreamBasicDescription);
-	  Float64 input_samplerate;	  
-
-	  AudioObjectGetPropertyData(kAudioObjectSystemObject, 
-				     core_audio_port->input_stream_format_property_address,
-				     0, 
-				     NULL, 
-				     &property_size,
-				     &(current_format));
-
-	  input_samplerate = (Float64) core_audio_port->samplerate;
-
-	  AudioObjectSetPropertyData(core_audio_port->input_device,
-				     core_audio_port->input_samplerate_property_address,
-				     0,
-				     NULL,
-				     sizeof(input_samplerate),
-				     &input_samplerate);
-	  
-	  core_audio_port->input_format.mSampleRate = (float) core_audio_port->samplerate;
-
-	  AudioObjectSetPropertyData(core_audio_port->input_device,
-				     core_audio_port->input_stream_format_property_address,
-				     0,
-				     NULL,
-				     sizeof(core_audio_port->input_format),
-				     &(core_audio_port->input_format));
-	}
-      }
-#endif
-#endif
       
       g_rec_mutex_unlock(core_audio_port_mutex);
     }
@@ -973,169 +850,21 @@ ags_core_audio_port_set_property(GObject *gobject,
       current_format = core_audio_port->format;
 
       core_audio_port->buffer_size = buffer_size;
-
-#ifdef AGS_WITH_CORE_AUDIO
-#if defined(AGS_CORE_AUDIO_PORT_USE_HW)
-      if(ags_core_audio_port_test_flags(core_audio_port, AGS_CORE_AUDIO_PORT_IS_AUDIO)){
-	if(ags_core_audio_port_test_flags(core_audio_port, AGS_CORE_AUDIO_PORT_IS_OUTPUT)){
-	  size_t bytes_per_sample;
-	  int output_buffer_size_bytes;
-
-	  bytes_per_sample = sizeof(gfloat);
-
-	  if(current_format == AGS_SOUNDCARD_SIGNED_16_BIT){
-	    bytes_per_sample = sizeof(gint16);
-	  }else if(current_format == AGS_SOUNDCARD_SIGNED_24_BIT){
-	    bytes_per_sample = sizeof(gint32);
-	  }else if(current_format == AGS_SOUNDCARD_SIGNED_32_BIT){
-	    bytes_per_sample = sizeof(gint32);
-	  }else if(current_format == AGS_SOUNDCARD_FLOAT){
-	    bytes_per_sample = sizeof(gfloat);
-	  }else if(current_format == AGS_SOUNDCARD_DOUBLE){
-	    bytes_per_sample = sizeof(gdouble);
-	  }
-      
-	  output_buffer_size_bytes = core_audio_port->pcm_channels * core_audio_port->buffer_size * bytes_per_sample;
-
-	  AudioObjectSetPropertyData(core_audio_port->output_device,
-				     core_audio_port->output_buffer_size_property_address,
-				     0,
-				     NULL,
-				     sizeof(output_buffer_size_bytes),
-				     &output_buffer_size_bytes);
-	}else{
-	  size_t bytes_per_sample;
-	  int input_buffer_size_bytes;
-
-	  bytes_per_sample = sizeof(gint32);
-
-	  if(current_format == AGS_SOUNDCARD_SIGNED_16_BIT){
-	    bytes_per_sample = sizeof(gint16);
-	  }else if(current_format == AGS_SOUNDCARD_SIGNED_24_BIT){
-	    bytes_per_sample = sizeof(gint32);
-	  }else if(current_format == AGS_SOUNDCARD_SIGNED_32_BIT){
-	    bytes_per_sample = sizeof(gint32);
-	  }else if(current_format == AGS_SOUNDCARD_FLOAT){
-	    bytes_per_sample = sizeof(gfloat);
-	  }else if(current_format == AGS_SOUNDCARD_DOUBLE){
-	    bytes_per_sample = sizeof(gdouble);
-	  }
-      
-	  input_buffer_size_bytes = core_audio_port->pcm_channels * core_audio_port->buffer_size * bytes_per_sample;
-
-	  AudioObjectSetPropertyData(core_audio_port->input_device,
-				     core_audio_port->input_buffer_size_property_address,
-				     0,
-				     NULL,
-				     sizeof(input_buffer_size_bytes),
-				     &input_buffer_size_bytes);
-	}
-      }
-#endif
-#endif
       
       g_rec_mutex_unlock(core_audio_port_mutex);
     }
     break;
   case PROP_FORMAT:
     {
-      AgsSoundcardFormat format;
-
-      format = g_value_get_uint(value);
-      
       g_rec_mutex_lock(core_audio_port_mutex);
 
-      if(core_audio_port->format == format){
+      if(core_audio_port->format == AGS_SOUNDCARD_FLOAT){
 	g_rec_mutex_unlock(core_audio_port_mutex);
 	
 	return;
       }
 
-      current_format = core_audio_port->format;
-
-      //NOTE:JK: always use float32 with CoreAudio
-      format = 
-	core_audio_port->format = AGS_SOUNDCARD_FLOAT;
-
-#ifdef AGS_WITH_CORE_AUDIO
-#if defined(AGS_CORE_AUDIO_PORT_USE_HW)
-      if(ags_core_audio_port_test_flags(core_audio_port, AGS_CORE_AUDIO_PORT_IS_AUDIO)){
-	if(ags_core_audio_port_test_flags(core_audio_port, AGS_CORE_AUDIO_PORT_IS_OUTPUT)){
-	  size_t bytes_per_sample;
-
-	  bytes_per_sample = sizeof(gfloat);
-      
-	  if(format == AGS_SOUNDCARD_SIGNED_16_BIT){
-	    bytes_per_sample = sizeof(gint16);
-	    
-	    core_audio_port->output_format.mFormatFlags = kAppleLosslessFormatFlag_16BitSourceData | kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
-	  }else if(format == AGS_SOUNDCARD_SIGNED_24_BIT){
-	    bytes_per_sample = sizeof(gint32);
-
-	    core_audio_port->output_format.mFormatFlags = kAppleLosslessFormatFlag_24BitSourceData | kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
-	  }else if(format == AGS_SOUNDCARD_SIGNED_32_BIT){
-	    bytes_per_sample = sizeof(gint32);
-
-	    core_audio_port->output_format.mFormatFlags = kAppleLosslessFormatFlag_32BitSourceData | kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
-	  }else if(format == AGS_SOUNDCARD_FLOAT){
-	    bytes_per_sample = sizeof(gfloat);
-	    
-	    core_audio_port->output_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
-	  }else if(format == AGS_SOUNDCARD_DOUBLE){
-	    bytes_per_sample = sizeof(gdouble);
-
-	    core_audio_port->output_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
-	  }
-
-	  core_audio_port->output_format.mBitsPerChannel = 8 * bytes_per_sample;
-
-	  core_audio_port->output_format.mBytesPerPacket = core_audio_port->pcm_channels * bytes_per_sample;
-	  core_audio_port->output_format.mBytesPerFrame = core_audio_port->pcm_channels * bytes_per_sample;
-  
-	  core_audio_port->output_format.mFramesPerPacket = 1;
-	  core_audio_port->output_format.mChannelsPerFrame = core_audio_port->pcm_channels;
-
-	  core_audio_port->output_format.mFormatID = kAudioFormatLinearPCM;
-      
-	  AudioObjectSetPropertyData(core_audio_port->output_device,
-				     core_audio_port->output_stream_format_property_address,
-				     0,
-				     NULL,
-				     sizeof(core_audio_port->output_format),
-				     &(core_audio_port->output_format));
-	}else{
-	  AudioStreamBasicDescription current_format;
-
-	  UInt32 property_size = sizeof(AudioStreamBasicDescription);
-
-	  AudioObjectGetPropertyData(kAudioObjectSystemObject, 
-				     core_audio_port->input_stream_format_property_address,
-				     0, 
-				     NULL, 
-				     &property_size,
-				     &(current_format));
-
-	  core_audio_port->input_format.mBitsPerChannel = current_format.mBitsPerChannel;
-
-	  //NOTE:JK: we are using non-interleaved with CoreAudio
-	  core_audio_port->input_format.mBytesPerPacket = current_format.mBytesPerPacket;
-	  core_audio_port->input_format.mBytesPerFrame = current_format.mBytesPerFrame;
-  
-	  core_audio_port->input_format.mFramesPerPacket = current_format.mFramesPerPacket;
-	  core_audio_port->input_format.mChannelsPerFrame = current_format.mChannelsPerFrame;
-
-	  core_audio_port->input_format.mFormatID = current_format.mFormatID;
-
-	  AudioObjectSetPropertyData(core_audio_port->input_device,
-				     core_audio_port->input_stream_format_property_address,
-				     0,
-				     NULL,
-				     sizeof(core_audio_port->input_format),
-				     &(core_audio_port->input_format));
-	}
-      }
-#endif
-#endif
+      core_audio_port->format = AGS_SOUNDCARD_FLOAT;
       
       g_rec_mutex_unlock(core_audio_port_mutex);
     }
@@ -2702,7 +2431,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 	break;
       }
   
-      core_audio_port->output_format.mSampleRate = (float) samplerate;
+      core_audio_port->output_format.mSampleRate = (Float64) samplerate;
       
       AudioObjectSetPropertyData(core_audio_port->output_device,
 				 core_audio_port->output_stream_format_property_address,
@@ -2766,7 +2495,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 	break;
       }
   
-      core_audio_port->data_format.mSampleRate = (float) core_audio_port->samplerate;
+      core_audio_port->data_format.mSampleRate = (Float64) core_audio_port->samplerate;
 
       
       if(use_cache){
@@ -2834,7 +2563,6 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 				 sizeof(input_samplerate),
 				 &input_samplerate);
 
-#if 0      
       AudioStreamBasicDescription current_format;
 
       property_size = sizeof(AudioStreamBasicDescription);
@@ -2859,6 +2587,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 				 sizeof(input_buffer_size_bytes),
 				 &input_buffer_size_bytes);
 	
+#if 0      
       core_audio_port->input_format.mBitsPerChannel = current_format.mBitsPerChannel;
 
       core_audio_port->input_format.mBytesPerPacket = current_format.mBytesPerPacket;
@@ -2949,7 +2678,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 	break;
       }
 
-      core_audio_port->record_format.mSampleRate = (float) core_audio_port->samplerate;
+      core_audio_port->record_format.mSampleRate = (Float64) core_audio_port->samplerate;
       
       AudioQueueNewInput(&(core_audio_port->record_format),
 			 ags_core_audio_port_handle_input_buffer,
