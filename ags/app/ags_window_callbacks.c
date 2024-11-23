@@ -50,9 +50,11 @@ ags_window_setup_completed_callback(AgsApplicationContext *application_context, 
   menu = (GMenu *) gtk_builder_get_object(builder,
 					  "ags-add-menu");
 
-  gtk_menu_button_set_menu_model(window->add_button,
-				 G_MENU_MODEL(menu));
-
+  if(window->add_button != NULL){
+    gtk_menu_button_set_menu_model(window->add_button,
+				   G_MENU_MODEL(menu));
+  }
+  
   ags_window_load_add_menu_ladspa(window,
 				  menu);
   ags_window_load_add_menu_ladspa(window,

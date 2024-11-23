@@ -138,6 +138,9 @@ struct _AgsCoreAudioPort
 #ifdef AGS_WITH_CORE_AUDIO
   AudioObjectPropertyAddress *output_samplerate_property_address;
   AudioObjectPropertyAddress *output_buffer_size_property_address;
+  AudioObjectPropertyAddress *output_stream_format_property_address;
+
+  AudioStreamBasicDescription output_format;
   
   AudioObjectPropertyAddress *output_property_address;
   AudioObjectID output_device;
@@ -145,13 +148,17 @@ struct _AgsCoreAudioPort
   
   AudioObjectPropertyAddress *input_samplerate_property_address;
   AudioObjectPropertyAddress *input_buffer_size_property_address;
+  AudioObjectPropertyAddress *input_stream_format_property_address;
 
+  AudioStreamBasicDescription input_format;
+  
   AudioObjectPropertyAddress *input_property_address;
   AudioObjectID input_device; 
   AudioDeviceIOProcID input_proc_id;
 #else
   gpointer output_samplerate_property_address;
   gpointer output_buffer_size_property_address;
+  gpointer output_stream_format_property_address;
   
   gpointer output_property_address;
   gint64 output_device;
@@ -159,6 +166,7 @@ struct _AgsCoreAudioPort
 
   gpointer input_samplerate_property_address;
   gpointer input_buffer_size_property_address;
+  gpointer input_stream_format_property_address;
   
   gpointer input_property_address;
   gint64 input_device;
@@ -166,6 +174,8 @@ struct _AgsCoreAudioPort
 #endif
 
   AgsAudioBufferUtil *audio_buffer_util;
+
+  gboolean is_interleaved;
 };
 
 struct _AgsCoreAudioPortClass
@@ -180,29 +190,40 @@ gboolean ags_core_audio_port_test_flags(AgsCoreAudioPort *core_audio_port, AgsCo
 void ags_core_audio_port_set_flags(AgsCoreAudioPort *core_audio_port, AgsCoreAudioPortFlags flags);
 void ags_core_audio_port_unset_flags(AgsCoreAudioPort *core_audio_port, AgsCoreAudioPortFlags flags);
 
+/* presets */
+void ags_core_audio_port_set_pcm_channels(AgsCoreAudioPort *core_audio_port,
+					  guint pcm_channels);
+guint ags_core_audio_port_get_pcm_channels(AgsCoreAudioPort *core_audio_port);
+
+void ags_core_audio_port_set_buffer_size(AgsCoreAudioPort *core_audio_port,
+					 guint buffer_size);
+guint ags_core_audio_port_get_buffer_size(AgsCoreAudioPort *core_audio_port);
+
+void ags_core_audio_port_set_format(AgsCoreAudioPort *core_audio_port,
+				    AgsSoundcardFormat format);
+AgsSoundcardFormat ags_core_audio_port_get_format(AgsCoreAudioPort *core_audio_port);
+
+void ags_core_audio_port_set_samplerate(AgsCoreAudioPort *core_audio_port,
+					  guint samplerate);
+guint ags_core_audio_port_get_samplerate(AgsCoreAudioPort *core_audio_port);
+
+/*  */
 GList* ags_core_audio_port_find(GList *core_audio_port,
 				gchar *port_name);
 
+/* register/unregister */
 void ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 				  gchar *port_name,
 				  gboolean is_audio, gboolean is_midi,
 				  gboolean is_output);
 void ags_core_audio_port_unregister(AgsCoreAudioPort *core_audio_port);
 
-void ags_core_audio_port_set_format(AgsCoreAudioPort *core_audio_port,
-				    AgsSoundcardFormat format);
-void ags_core_audio_port_set_samplerate(AgsCoreAudioPort *core_audio_port,
-					guint samplerate);
-void ags_core_audio_port_set_pcm_channels(AgsCoreAudioPort *core_audio_port,
-					  guint pcm_channels);
-void ags_core_audio_port_set_buffer_size(AgsCoreAudioPort *core_audio_port,
-					 guint buffer_size);
-
 void ags_core_audio_port_set_cache_buffer_size(AgsCoreAudioPort *core_audio_port,
 					       guint cache_buffer_size);
 
 guint ags_core_audio_port_get_latency(AgsCoreAudioPort *core_audio_port);
 
+/* instantiate */
 AgsCoreAudioPort* ags_core_audio_port_new(GObject *core_audio_client);
 
 G_END_DECLS

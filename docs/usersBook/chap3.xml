@@ -73,7 +73,7 @@
       Further you might shift the displayed piano on the left or reverse the channel
       mapping.
     </para>
-
+    
     <sect2>
       <title>Linking</title>
       <para>
@@ -128,7 +128,8 @@
 	      <entry>notes</entry>
 	      <entry>
 		Add notes by clicking within the piano roll and move to till them having
-		the wished duration.
+		the wished duration. You can resize notes using shift key and mouse click
+		and motion.
 	      </entry>
 	    </row>
 	    <row>
@@ -912,7 +913,8 @@
 	      <entry><imagedata fileref="&accelerationsIcon;" format="PNG" width="1em" /></entry>
 	      <entry>accelerations</entry>
 	      <entry>
-		Add accelerations by clicking within the automation area.
+		Add accelerations by clicking within the automation area. You can modify acceleration
+		using shift key and mouse click and motion.
 	      </entry>
 	    </row>
 	    <row>

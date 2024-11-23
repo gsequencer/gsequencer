@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2024-11-19 19:01+0100\n"
+"POT-Creation-Date: 2024-11-23 14:55+0100\n"
 "PO-Revision-Date: 2021-01-11 21:07+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: français <jkraehemann@gmail.com>\n"
@@ -238,21 +238,21 @@ msgstr "intrant"
 msgid "bulk input"
 msgstr "lien intrant"
 
-#: ags/app/ags_gsequencer_application_context.c:3933
+#: ags/app/ags_gsequencer_application_context.c:4035
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr "carte son backend inconnu - %s"
 
-#: ags/app/ags_gsequencer_application_context.c:3943
+#: ags/app/ags_gsequencer_application_context.c:4046
 msgid "unknown soundcard backend - NULL"
 msgstr "carte son backend inconnu - NULL"
 
-#: ags/app/ags_gsequencer_application_context.c:4186
+#: ags/app/ags_gsequencer_application_context.c:4241
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr "séquencer backend inconnu - %s"
 
-#: ags/app/ags_gsequencer_application_context.c:4196
+#: ags/app/ags_gsequencer_application_context.c:4251
 msgid "unknown sequencer backend - NULL"
 msgstr "séquencer backend inconnu - NULL"
 
@@ -420,7 +420,7 @@ msgstr ""
 #: ags/app/ags_sequencer_editor.c:284 ags/app/ags_sequencer_editor.c:289
 #: ags/app/editor/ags_pattern_envelope.c:824
 #: ags/app/editor/ags_envelope_editor.c:222 ags/app/ags_soundcard_editor.c:309
-#: ags/app/ags_soundcard_editor.c:643
+#: ags/app/ags_soundcard_editor.c:652
 #, fuzzy
 msgid "_Remove"
 msgstr "bouger x"
@@ -1409,19 +1409,19 @@ msgstr "audio canals"
 msgid "buffer size"
 msgstr "calibre de mémoire"
 
-#: ags/app/ags_soundcard_editor.c:510
+#: ags/app/ags_soundcard_editor.c:519
 msgid "use cache"
 msgstr "utiliser mémoire tampon"
 
-#: ags/app/ags_soundcard_editor.c:528
+#: ags/app/ags_soundcard_editor.c:537
 msgid "cache buffer size"
 msgstr "calibre de mémoire tampon"
 
-#: ags/app/ags_soundcard_editor.c:563
+#: ags/app/ags_soundcard_editor.c:572
 msgid "WASAPI share mode"
 msgstr "WASAPI share mode"
 
-#: ags/app/ags_soundcard_editor.c:601
+#: ags/app/ags_soundcard_editor.c:610
 msgid "WASAPI buffer size"
 msgstr "WASAPI calibre de mémoire"
 

@@ -98,6 +98,10 @@ typedef enum{
  * @AGS_CORE_AUDIO_DEVIN_CALLBACK_DONE: sync done, soundcard conditional lock
  * @AGS_CORE_AUDIO_DEVIN_CALLBACK_FINISH_WAIT: sync wait, client conditional lock
  * @AGS_CORE_AUDIO_DEVIN_CALLBACK_FINISH_DONE: sync done, client conditional lock
+ * @AGS_CORE_AUDIO_DEVIN_PRE_SYNC_DEVICE_WAIT: device initial sync wait
+ * @AGS_CORE_AUDIO_DEVIN_PRE_SYNC_DEVICE_DONE: device initial sync done
+ * @AGS_CORE_AUDIO_DEVIN_PRE_SYNC_CALLBACK_WAIT: callback initial sync wait
+ * @AGS_CORE_AUDIO_DEVIN_PRE_SYNC_CALLBACK_DONE: callback initial sync done
  * 
  * Enum values to control the synchronization between soundcard and client.
  */
@@ -108,6 +112,10 @@ typedef enum{
   AGS_CORE_AUDIO_DEVIN_CALLBACK_DONE                  = 1 <<  3,
   AGS_CORE_AUDIO_DEVIN_CALLBACK_FINISH_WAIT           = 1 <<  4,
   AGS_CORE_AUDIO_DEVIN_CALLBACK_FINISH_DONE           = 1 <<  5,
+  AGS_CORE_AUDIO_DEVIN_PRE_SYNC_DEVICE_WAIT           = 1 <<  6,
+  AGS_CORE_AUDIO_DEVIN_PRE_SYNC_DEVICE_DONE           = 1 <<  7,
+  AGS_CORE_AUDIO_DEVIN_PRE_SYNC_CALLBACK_WAIT         = 1 <<  8,
+  AGS_CORE_AUDIO_DEVIN_PRE_SYNC_CALLBACK_DONE         = 1 <<  9,
 }AgsCoreAudioDevinSyncFlags;
 
 #define AGS_CORE_AUDIO_DEVIN_ERROR (ags_core_audio_devin_error_quark())

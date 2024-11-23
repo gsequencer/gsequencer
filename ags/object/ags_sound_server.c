@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -279,6 +279,35 @@ ags_sound_server_register_soundcard(AgsSoundServer *sound_server,
 }
 
 /**
+ * ags_sound_server_register_soundcard_with_params:
+ * @sound_server: The #AgsSoundServer
+ * @is_output: if %TRUE the used as sink, else as source
+ * @param_strv: the parameter string vector
+ * @param_value: the parameter values
+ *
+ * Fetches @soundcard of @sound_server.
+ *
+ * Returns: (transfer full): a new #AgsSoundcard
+ *
+ * Since: 7.3.8
+ */
+GObject*
+ags_sound_server_register_soundcard_with_params(AgsSoundServer *sound_server,
+						gboolean is_output,
+						gchar **param_strv, GValue *param_value)
+{
+  AgsSoundServerInterface *sound_server_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUND_SERVER(sound_server), NULL);
+  sound_server_interface = AGS_SOUND_SERVER_GET_INTERFACE(sound_server);
+  g_return_val_if_fail(sound_server_interface->register_soundcard, NULL);
+
+  return(sound_server_interface->register_soundcard_with_params(sound_server,
+								is_output,
+								param_strv, param_value));
+}
+
+/**
  * ags_sound_server_unregister_soundcard:
  * @sound_server: The #AgsSoundServer
  * @soundcard: the #AgsSoundcard
@@ -324,6 +353,35 @@ ags_sound_server_register_sequencer(AgsSoundServer *sound_server,
 
   return(sound_server_interface->register_sequencer(sound_server,
 						    is_output));
+}
+
+/**
+ * ags_sound_server_register_sequencer_with_params:
+ * @sound_server: The #AgsSoundServer
+ * @is_output: if %TRUE the used as sink, else as source
+ * @param_strv: the parameter string vector
+ * @param_value: the parameter values
+ *
+ * Fetches @sequencer of @sound_server.
+ *
+ * Returns: (transfer full): a new #AgsSequencer
+ *
+ * Since: 7.3.8
+ */
+GObject*
+ags_sound_server_register_sequencer_with_params(AgsSoundServer *sound_server,
+						gboolean is_output,
+						gchar **param_strv, GValue *param_value)
+{
+  AgsSoundServerInterface *sound_server_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUND_SERVER(sound_server), NULL);
+  sound_server_interface = AGS_SOUND_SERVER_GET_INTERFACE(sound_server);
+  g_return_val_if_fail(sound_server_interface->register_sequencer, NULL);
+
+  return(sound_server_interface->register_sequencer_with_params(sound_server,
+								is_output,
+								param_strv, param_value));
 }
 
 /**
