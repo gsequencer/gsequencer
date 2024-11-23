@@ -1,4 +1,4 @@
-</* GSequencer - Advanced GTK Sequencer
+/* GSequencer - Advanced GTK Sequencer
  * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
@@ -2426,17 +2426,53 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
       }
 
       if((kAudioFormatFlagIsFloat & (core_audio_port->output_format.mFormatFlags)) != 0){
+	g_message("output device format float");
+	
 	core_audio_port->format = AGS_SOUNDCARD_FLOAT;
-      }else if((kAudioFormatFlagIsSignedInteger & (core_audio_port->output_format.mFormatFlags)) != 0){
-	core_audio_port->format = AGS_SOUNDCARD_SIGNED_16_BIT;
+      }else{
+	g_message("output device format integer");
 
-	if(((kLinearPCMFormatFlagsSampleFractionMask & (core_audio_port->output_format.mFormatFlags)) >> kLinearPCMFormatFlagsSampleFractionShift) == kAppleLosslessFormatFlag_16BitSourceData){
-	  core_audio_port->format = AGS_SOUNDCARD_SIGNED_16_BIT;
-	}else if(((kLinearPCMFormatFlagsSampleFractionMask & (core_audio_port->output_format.mFormatFlags)) >> kLinearPCMFormatFlagsSampleFractionShift) == kAppleLosslessFormatFlag_24BitSourceData){
-	  core_audio_port->format = AGS_SOUNDCARD_SIGNED_24_BIT;
-	}else if(((kLinearPCMFormatFlagsSampleFractionMask & (core_audio_port->output_format.mFormatFlags)) >> kLinearPCMFormatFlagsSampleFractionShift) == kAppleLosslessFormatFlag_32BitSourceData){
-	  core_audio_port->format = AGS_SOUNDCARD_SIGNED_32_BIT;
+	if((kAudioFormatFlagIsSignedInteger & (core_audio_port->output_format.mFormatFlags)) != 0){
+	  g_message("output device format signed");
 	}
+	
+	core_audio_port->format = AGS_SOUNDCARD_SIGNED_64_BIT;
+
+	switch(8 * (core_audio_port->output_format.mBytesPerFrame / core_audio_port->output_format.mChannelsPerFrame)){
+	case 8:
+	  {
+	    core_audio_port->format = AGS_SOUNDCARD_SIGNED_8_BIT;
+	  }
+	  break;
+	case 16:
+	  {
+	    core_audio_port->format = AGS_SOUNDCARD_SIGNED_16_BIT;
+	  }
+	  break;
+	case 24:
+	  {
+	    core_audio_port->format = AGS_SOUNDCARD_SIGNED_24_BIT;
+	  }
+	  break;
+	case 32:
+	  {
+	    core_audio_port->format = AGS_SOUNDCARD_SIGNED_32_BIT;
+	  }
+	  break;
+	case 64:
+	  {
+	    core_audio_port->format = AGS_SOUNDCARD_SIGNED_64_BIT;
+	  }
+	  break;
+	}
+      }
+
+      if(((kLinearPCMFormatFlagsSampleFractionMask & (core_audio_port->output_format.mFormatFlags)) >> kLinearPCMFormatFlagsSampleFractionShift) == kAppleLosslessFormatFlag_16BitSourceData){
+	core_audio_port->format = AGS_SOUNDCARD_SIGNED_16_BIT;
+      }else if(((kLinearPCMFormatFlagsSampleFractionMask & (core_audio_port->output_format.mFormatFlags)) >> kLinearPCMFormatFlagsSampleFractionShift) == kAppleLosslessFormatFlag_24BitSourceData){
+	core_audio_port->format = AGS_SOUNDCARD_SIGNED_24_BIT;
+      }else if(((kLinearPCMFormatFlagsSampleFractionMask & (core_audio_port->output_format.mFormatFlags)) >> kLinearPCMFormatFlagsSampleFractionShift) == kAppleLosslessFormatFlag_32BitSourceData){
+	core_audio_port->format = AGS_SOUNDCARD_SIGNED_32_BIT;
       }
 #endif
       
@@ -2643,17 +2679,53 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
       }
 
       if((kAudioFormatFlagIsFloat & (core_audio_port->input_format.mFormatFlags)) != 0){
+	g_message("input device format float");
+	
 	core_audio_port->format = AGS_SOUNDCARD_FLOAT;
-      }else if((kAudioFormatFlagIsSignedInteger & (core_audio_port->input_format.mFormatFlags)) != 0){
-	core_audio_port->format = AGS_SOUNDCARD_SIGNED_16_BIT;
+      }else{
+	g_message("input device format integer");
 
-	if(((kLinearPCMFormatFlagsSampleFractionMask & (core_audio_port->input_format.mFormatFlags)) >> kLinearPCMFormatFlagsSampleFractionShift) == kAppleLosslessFormatFlag_16BitSourceData){
-	  core_audio_port->format = AGS_SOUNDCARD_SIGNED_16_BIT;
-	}else if(((kLinearPCMFormatFlagsSampleFractionMask & (core_audio_port->input_format.mFormatFlags)) >> kLinearPCMFormatFlagsSampleFractionShift) == kAppleLosslessFormatFlag_24BitSourceData){
-	  core_audio_port->format = AGS_SOUNDCARD_SIGNED_24_BIT;
-	}else if(((kLinearPCMFormatFlagsSampleFractionMask & (core_audio_port->input_format.mFormatFlags)) >> kLinearPCMFormatFlagsSampleFractionShift) == kAppleLosslessFormatFlag_32BitSourceData){
-	  core_audio_port->format = AGS_SOUNDCARD_SIGNED_32_BIT;
+	if((kAudioFormatFlagIsSignedInteger & (core_audio_port->input_format.mFormatFlags)) != 0){
+	  g_message("input device format signed");
 	}
+	
+	core_audio_port->format = AGS_SOUNDCARD_SIGNED_64_BIT;
+
+	switch(8 * (core_audio_port->input_format.mBytesPerFrame / core_audio_port->input_format.mChannelsPerFrame)){
+	case 8:
+	  {
+	    core_audio_port->format = AGS_SOUNDCARD_SIGNED_8_BIT;
+	  }
+	  break;
+	case 16:
+	  {
+	    core_audio_port->format = AGS_SOUNDCARD_SIGNED_16_BIT;
+	  }
+	  break;
+	case 24:
+	  {
+	    core_audio_port->format = AGS_SOUNDCARD_SIGNED_24_BIT;
+	  }
+	  break;
+	case 32:
+	  {
+	    core_audio_port->format = AGS_SOUNDCARD_SIGNED_32_BIT;
+	  }
+	  break;
+	case 64:
+	  {
+	    core_audio_port->format = AGS_SOUNDCARD_SIGNED_64_BIT;
+	  }
+	  break;
+	}
+      }
+
+      if(((kLinearPCMFormatFlagsSampleFractionMask & (core_audio_port->input_format.mFormatFlags)) >> kLinearPCMFormatFlagsSampleFractionShift) == kAppleLosslessFormatFlag_16BitSourceData){
+	core_audio_port->format = AGS_SOUNDCARD_SIGNED_16_BIT;
+      }else if(((kLinearPCMFormatFlagsSampleFractionMask & (core_audio_port->input_format.mFormatFlags)) >> kLinearPCMFormatFlagsSampleFractionShift) == kAppleLosslessFormatFlag_24BitSourceData){
+	core_audio_port->format = AGS_SOUNDCARD_SIGNED_24_BIT;
+      }else if(((kLinearPCMFormatFlagsSampleFractionMask & (core_audio_port->input_format.mFormatFlags)) >> kLinearPCMFormatFlagsSampleFractionShift) == kAppleLosslessFormatFlag_32BitSourceData){
+	core_audio_port->format = AGS_SOUNDCARD_SIGNED_32_BIT;
       }
 #endif
       

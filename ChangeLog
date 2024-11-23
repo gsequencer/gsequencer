@@ -1,3 +1,8 @@
+ags (7.3.26)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed compile error
+
 ags (7.3.25)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
