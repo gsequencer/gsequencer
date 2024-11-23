@@ -418,7 +418,7 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
 
   core_audio_port->samplerate = ags_soundcard_helper_config_get_samplerate(config);
   core_audio_port->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
-  core_audio_port->format = ags_soundcard_helper_config_get_format(config);
+  core_audio_port->format = AGS_SOUNDCARD_FLOAT;
 
 #if 0
 #if defined(AGS_CORE_AUDIO_PORT_USE_HW)
