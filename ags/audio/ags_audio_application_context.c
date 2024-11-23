@@ -2241,15 +2241,15 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
 			 pcm_channels);
 	
 	g_value_init(param_value + 1, G_TYPE_UINT);
-	g_value_set_uint(param_value,
+	g_value_set_uint(param_value + 1,
 			 buffer_size);
 
 	g_value_init(param_value + 2, G_TYPE_UINT);
-	g_value_set_uint(param_value,
+	g_value_set_uint(param_value + 2,
 			 format);
 
 	g_value_init(param_value + 3, G_TYPE_UINT);
-	g_value_set_uint(param_value,
+	g_value_set_uint(param_value + 3,
 			 samplerate);
 
 	soundcard = ags_sound_server_register_soundcard_with_params(AGS_SOUND_SERVER(core_audio_server),

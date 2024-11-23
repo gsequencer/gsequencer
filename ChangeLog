@@ -1,3 +1,9 @@
+ags (7.3.23)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed misconfigured CoreAudio
+	* modified copy input using memcpy()
+
 ags (7.3.22)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

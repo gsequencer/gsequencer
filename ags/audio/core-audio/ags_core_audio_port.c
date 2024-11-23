@@ -41,6 +41,7 @@
 #endif
 
 #include <time.h>
+#include <string.h>
 
 #define AGS_CORE_AUDIO_PORT_USE_HW (1)
 
@@ -524,15 +525,15 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
 
   core_audio_port->input_format.mBitsPerChannel = 8 * bytes_per_sample;
 
-  //NOTE:JK: we are using non-interleaved with CoreAudio input
-  core_audio_port->input_format.mBytesPerPacket = bytes_per_sample;; // core_audio_port->pcm_channels * bytes_per_sample;
+  //NOTE:JK: we are using interleaved with CoreAudio input
+  core_audio_port->input_format.mBytesPerPacket = core_audio_port->pcm_channels * bytes_per_sample;
   core_audio_port->input_format.mBytesPerFrame = core_audio_port->pcm_channels * bytes_per_sample;
   
   core_audio_port->input_format.mFramesPerPacket = 1;
   core_audio_port->input_format.mChannelsPerFrame = core_audio_port->pcm_channels;
 
   core_audio_port->input_format.mFormatID = kAudioFormatLinearPCM;
-  core_audio_port->input_format.mFormatFlags = kAudioFormatFlagIsNonInterleaved | kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
+  core_audio_port->input_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
   
   core_audio_port->input_format.mSampleRate = (Float64) core_audio_port->samplerate;
   
@@ -2106,6 +2107,7 @@ ags_core_audio_port_hw_input_callback(AudioObjectID device,
       ags_soundcard_lock_buffer(AGS_SOUNDCARD(soundcard),
 				buffer);
 
+#if 0
       for(i = 0; i < pcm_channels && i < in->mBuffers[0].mNumberChannels; i++){
 	available_buffer_size = buffer_size;
 
@@ -2117,6 +2119,9 @@ ags_core_audio_port_hw_input_callback(AudioObjectID device,
 						    buffer, pcm_channels, i,
 						    in->mBuffers[0].mData, in->mBuffers[0].mNumberChannels, i,
 						    available_buffer_size, copy_mode);
+#else
+	memcpy(buffer, in->mBuffers[0].mData, pcm_channels * available_buffer_size * word_size);
+#endif
       }
       
       ags_soundcard_unlock_buffer(AGS_SOUNDCARD(soundcard),
@@ -2577,7 +2582,8 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 				 NULL,
 				 sizeof(input_buffer_size_bytes),
 				 &input_buffer_size_bytes);
-      
+
+#if 0
       core_audio_port->input_format.mSampleRate = (Float64) core_audio_port->samplerate;
 
       core_audio_port->input_format.mFormatID = current_format.mFormatID;
@@ -2598,6 +2604,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 				 NULL,
 				 sizeof(core_audio_port->input_format),
 				 &(core_audio_port->input_format));
+#endif
       
       AudioDeviceCreateIOProcID(core_audio_port->input_device,
 				(OSStatus (*)(AudioObjectID inDevice, const AudioTimeStamp *inNow, const AudioBufferList *inInputData, const AudioTimeStamp *inInputTime, AudioBufferList *outOutputData, const AudioTimeStamp *inOutputTime, void *inClientData)) ags_core_audio_port_hw_input_callback,

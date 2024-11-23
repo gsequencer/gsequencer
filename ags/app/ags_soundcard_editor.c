@@ -1830,15 +1830,15 @@ ags_soundcard_editor_add_port(AgsSoundcardEditor *soundcard_editor,
 		       pcm_channels);
 	
       g_value_init(param_value + 1, G_TYPE_UINT);
-      g_value_set_uint(param_value,
+      g_value_set_uint(param_value + 1,
 		       buffer_size);
 
       g_value_init(param_value + 2, G_TYPE_UINT);
-      g_value_set_uint(param_value,
+      g_value_set_uint(param_value + 2,
 		       format);
 
       g_value_init(param_value + 3, G_TYPE_UINT);
-      g_value_set_uint(param_value,
+      g_value_set_uint(param_value + 3,
 		       samplerate);
       
       core_audio_server = AGS_CORE_AUDIO_SERVER(sound_server->data);
