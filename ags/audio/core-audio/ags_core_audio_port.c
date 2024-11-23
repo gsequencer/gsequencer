@@ -1,4 +1,4 @@
-/* GSequencer - Advanced GTK Sequencer
+</* GSequencer - Advanced GTK Sequencer
  * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
@@ -454,21 +454,21 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
   memset(core_audio_port->output_samplerate_property_address, 0, sizeof(AudioObjectPropertyAddress));
 
   core_audio_port->output_samplerate_property_address->mSelector = kAudioDevicePropertyNominalSampleRate;
-  core_audio_port->output_samplerate_property_address->mElement = kAudioObjectPropertyElementMain;
+  core_audio_port->output_samplerate_property_address->mElement = kAudioObjectPropertyElementOutput;
   core_audio_port->output_samplerate_property_address->mScope = kAudioObjectPropertyScopeGlobal;
   
   core_audio_port->output_buffer_size_property_address = (AudioObjectPropertyAddress *) malloc(sizeof(AudioObjectPropertyAddress));
   memset(core_audio_port->output_buffer_size_property_address, 0, sizeof(AudioObjectPropertyAddress));
 
   core_audio_port->output_buffer_size_property_address->mSelector = kAudioDevicePropertyBufferSize;
-  core_audio_port->output_buffer_size_property_address->mElement = kAudioObjectPropertyElementMain;
+  core_audio_port->output_buffer_size_property_address->mElement = kAudioObjectPropertyElementOutput;
   core_audio_port->output_buffer_size_property_address->mScope = kAudioObjectPropertyScopeGlobal;
 
   core_audio_port->output_stream_format_property_address = (AudioObjectPropertyAddress *) malloc(sizeof(AudioObjectPropertyAddress));
   memset(core_audio_port->output_stream_format_property_address, 0, sizeof(AudioObjectPropertyAddress));
   
   core_audio_port->output_stream_format_property_address->mSelector = kAudioDevicePropertyStreamFormat;
-  core_audio_port->output_stream_format_property_address->mElement = kAudioObjectPropertyElementMain;
+  core_audio_port->output_stream_format_property_address->mElement = kAudioObjectPropertyElementOutput;
   core_audio_port->output_stream_format_property_address->mScope = kAudioObjectPropertyScopeGlobal;
 
   memset(&(core_audio_port->output_format), 0, sizeof(AudioStreamBasicDescription));
@@ -502,21 +502,21 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
   memset(core_audio_port->input_samplerate_property_address, 0, sizeof(AudioObjectPropertyAddress));
 
   core_audio_port->input_samplerate_property_address->mSelector = kAudioDevicePropertyNominalSampleRate;
-  core_audio_port->input_samplerate_property_address->mElement = kAudioObjectPropertyElementMain;
+  core_audio_port->input_samplerate_property_address->mElement = kAudioObjectPropertyElementInput;
   core_audio_port->input_samplerate_property_address->mScope = kAudioObjectPropertyScopeGlobal;
   
   core_audio_port->input_buffer_size_property_address = (AudioObjectPropertyAddress *) malloc(sizeof(AudioObjectPropertyAddress));
   memset(core_audio_port->input_buffer_size_property_address, 0, sizeof(AudioObjectPropertyAddress));
   
   core_audio_port->input_buffer_size_property_address->mSelector = kAudioDevicePropertyBufferSize;
-  core_audio_port->input_buffer_size_property_address->mElement = kAudioObjectPropertyElementMain;
+  core_audio_port->input_buffer_size_property_address->mElement = kAudioObjectPropertyElementInput;
   core_audio_port->input_buffer_size_property_address->mScope = kAudioObjectPropertyScopeGlobal;
 
   core_audio_port->input_stream_format_property_address = (AudioObjectPropertyAddress *) malloc(sizeof(AudioObjectPropertyAddress));
   memset(core_audio_port->input_stream_format_property_address, 0, sizeof(AudioObjectPropertyAddress));
   
   core_audio_port->input_stream_format_property_address->mSelector = kAudioDevicePropertyStreamFormat;
-  core_audio_port->input_stream_format_property_address->mElement = kAudioObjectPropertyElementMain;
+  core_audio_port->input_stream_format_property_address->mElement = kAudioObjectPropertyElementInput;
   core_audio_port->input_stream_format_property_address->mScope = kAudioObjectPropertyScopeGlobal;
 
   memset(&(core_audio_port->input_format), 0, sizeof(AudioStreamBasicDescription));
@@ -1800,62 +1800,44 @@ ags_core_audio_port_hw_output_callback(AudioObjectID device,
     
     buffer = ags_soundcard_get_buffer(AGS_SOUNDCARD(soundcard));
 
-    if(pcm_channels <= out->mNumberBuffers){
+    if(!(core_audio_port->is_interleaved)){      
       ags_soundcard_lock_buffer(AGS_SOUNDCARD(soundcard),
 				buffer);
-  
-      for(i = 0; i < pcm_channels; i++){
+
+      for(i = 0; i < pcm_channels && i < out->mNumberBuffers; i++){
+	available_buffer_size = buffer_size;
+
+	if(out->mBuffers[i].mDataByteSize / word_size < available_buffer_size){
+	  available_buffer_size = out->mBuffers[i].mDataByteSize / word_size;
+	}
+	
 	ags_audio_buffer_util_copy_buffer_to_buffer(core_audio_port->audio_buffer_util,
-						    out->mBuffers[i].mData, out->mBuffers[i].mNumberChannels, 0,
 						    buffer, pcm_channels, i,
-						    (((out->mBuffers[i].mDataByteSize / (out->mBuffers[i].mNumberChannels * word_size)) >= buffer_size) ? buffer_size: (out->mBuffers[i].mDataByteSize / (out->mBuffers[i].mNumberChannels * word_size))), copy_mode);
+						    out->mBuffers[i].mData, 1, 0,
+						    available_buffer_size, copy_mode);
       }
       
       ags_soundcard_unlock_buffer(AGS_SOUNDCARD(soundcard),
 				  buffer);
     }else{
-      //TODO:JK: improve misconfigured hw
-      if(out_buffer->mDataByteSize / (out_buffer->mNumberChannels * word_size) >= buffer_size &&
-	 out_buffer->mNumberChannels >= pcm_channels){
-	ags_soundcard_lock_buffer(AGS_SOUNDCARD(soundcard),
-				  buffer);
-  
-	for(i = 0; i < pcm_channels; i++){
-	  ags_audio_buffer_util_copy_buffer_to_buffer(core_audio_port->audio_buffer_util,
-						      out_buffer->mData, out_buffer->mNumberChannels, i,
-						      buffer, pcm_channels, i,
-						      buffer_size, copy_mode);
+      ags_soundcard_lock_buffer(AGS_SOUNDCARD(soundcard),
+				buffer);
+
+      for(i = 0; i < pcm_channels && i < out->mBuffers[0].mNumberChannels; i++){
+	available_buffer_size = buffer_size;
+
+	if(out->mBuffers[0].mDataByteSize / (out->mBuffers[0].mNumberChannels * word_size) < available_buffer_size){
+	  available_buffer_size = out->mBuffers[0].mDataByteSize / (out->mBuffers[0].mNumberChannels * word_size);
 	}
       
-	ags_soundcard_unlock_buffer(AGS_SOUNDCARD(soundcard),
-				    buffer);
-      }else if(out_buffer->mDataByteSize / (out_buffer->mNumberChannels * word_size) >= buffer_size){
-	ags_soundcard_lock_buffer(AGS_SOUNDCARD(soundcard),
-				  buffer);
-  
-	for(i = 0; i < pcm_channels && i < out_buffer->mNumberChannels; i++){
-	  ags_audio_buffer_util_copy_buffer_to_buffer(core_audio_port->audio_buffer_util,
-						      out_buffer->mData, out_buffer->mNumberChannels, i,
-						      buffer, pcm_channels, i,
-						      buffer_size, copy_mode);
-	}
-      
-	ags_soundcard_unlock_buffer(AGS_SOUNDCARD(soundcard),
-				    buffer);      
-      }else{
-	ags_soundcard_lock_buffer(AGS_SOUNDCARD(soundcard),
-				  buffer);
-  
-	for(i = 0; i < pcm_channels && i < out_buffer->mNumberChannels; i++){
-	  ags_audio_buffer_util_copy_buffer_to_buffer(core_audio_port->audio_buffer_util,
-						      out_buffer->mData, out_buffer->mNumberChannels, i,
-						      buffer, pcm_channels, i,
-						      out_buffer->mDataByteSize / (out_buffer->mNumberChannels * word_size), copy_mode);
-	}
-      
-	ags_soundcard_unlock_buffer(AGS_SOUNDCARD(soundcard),
-				    buffer);
+	ags_audio_buffer_util_copy_buffer_to_buffer(core_audio_port->audio_buffer_util,
+						    buffer, pcm_channels, i,
+						    out->mBuffers[0].mData, out->mBuffers[0].mNumberChannels, i,
+						    available_buffer_size, copy_mode);
       }
+      
+      ags_soundcard_unlock_buffer(AGS_SOUNDCARD(soundcard),
+				  buffer);
     }
   }else{
     empty_run = TRUE;
@@ -2107,7 +2089,6 @@ ags_core_audio_port_hw_input_callback(AudioObjectID device,
       ags_soundcard_lock_buffer(AGS_SOUNDCARD(soundcard),
 				buffer);
 
-#if 0
       for(i = 0; i < pcm_channels && i < in->mBuffers[0].mNumberChannels; i++){
 	available_buffer_size = buffer_size;
 
@@ -2119,9 +2100,6 @@ ags_core_audio_port_hw_input_callback(AudioObjectID device,
 						    buffer, pcm_channels, i,
 						    in->mBuffers[0].mData, in->mBuffers[0].mNumberChannels, i,
 						    available_buffer_size, copy_mode);
-#else
-	memcpy(buffer, in->mBuffers[0].mData, pcm_channels * available_buffer_size * word_size);
-#endif
       }
       
       ags_soundcard_unlock_buffer(AGS_SOUNDCARD(soundcard),
@@ -2352,81 +2330,98 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 				     NULL,
 				     &property_size);
 	
-      AudioObjectGetPropertyData(kAudioObjectSystemObject, 
-				 core_audio_port->output_property_address,
-				 0, 
-				 NULL, 
-				 &property_size, 
-				 &(core_audio_port->output_device));
+      retval = AudioObjectGetPropertyData(kAudioObjectSystemObject, 
+					  core_audio_port->output_property_address,
+					  0, 
+					  NULL, 
+					  &property_size, 
+					  &(core_audio_port->output_device));
+
+      if(retval != NULL){
+	g_warning("failed to retrieve output device [OSStatus]: %d", retval);
+      }
       
       output_samplerate = (Float64) samplerate;
 
-      AudioObjectSetPropertyData(core_audio_port->output_device,
-				 core_audio_port->output_samplerate_property_address,
-				 0,
-				 NULL,
-				 sizeof(output_samplerate),
-				 &output_samplerate);
+      retval = AudioObjectSetPropertyData(core_audio_port->output_device,
+					  core_audio_port->output_samplerate_property_address,
+					  0,
+					  NULL,
+					  sizeof(output_samplerate),
+					  &output_samplerate);
 
-      output_buffer_size_bytes = pcm_channels * buffer_size * sizeof(gfloat);
-
-      AudioObjectSetPropertyData(core_audio_port->output_device,
-				 core_audio_port->output_buffer_size_property_address,
-				 0,
-				 NULL,
-				 sizeof(output_buffer_size_bytes),
-				 &output_buffer_size_bytes);
-
-      size_t bytes_per_sample = word_size;
-      
-      core_audio_port->output_format.mBitsPerChannel = 8 * bytes_per_sample;
-
-      core_audio_port->output_format.mBytesPerPacket = pcm_channels * bytes_per_sample;
-      core_audio_port->output_format.mBytesPerFrame = pcm_channels * bytes_per_sample;
-  
-      core_audio_port->output_format.mFramesPerPacket = 1;
-      core_audio_port->output_format.mChannelsPerFrame = pcm_channels;
-
-      core_audio_port->output_format.mFormatID = kAudioFormatLinearPCM;
-
-      switch(format){
-      case AGS_SOUNDCARD_SIGNED_16_BIT:
-	{
-	  core_audio_port->output_format.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked | kAppleLosslessFormatFlag_16BitSourceData;
-	}
-	break;
-      case AGS_SOUNDCARD_SIGNED_24_BIT:
-	{
-	  core_audio_port->output_format.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked | kAppleLosslessFormatFlag_24BitSourceData;
-	}
-	break;
-      case AGS_SOUNDCARD_SIGNED_32_BIT:
-	{
-	  core_audio_port->output_format.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked | kAppleLosslessFormatFlag_32BitSourceData;
-	}
-	break;
-      case AGS_SOUNDCARD_SIGNED_8_BIT:
-      case AGS_SOUNDCARD_SIGNED_64_BIT:
-	{
-	  core_audio_port->output_format.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
-	}
-	break;
-      case AGS_SOUNDCARD_FLOAT:
-      case AGS_SOUNDCARD_DOUBLE:
-	{
-	  core_audio_port->output_format.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
-	}
-	break;
+      if(retval != NULL){
+	g_warning("failed to set samplerate [OSStatus]: %d", retval);
       }
-  
-      core_audio_port->output_format.mSampleRate = (Float64) samplerate;
+
+      AudioStreamBasicDescription current_format = {0,};
       
-      AudioObjectSetPropertyData(core_audio_port->output_device,
-				 core_audio_port->output_stream_format_property_address,
-				 0,
-				 NULL,
-				 sizeof(core_audio_port->output_format),
-				 &(core_audio_port->output_format));
+      property_size = sizeof(current_format);
+
+      retval = AudioObjectGetPropertyData(core_audio_port->output_device, 
+					  core_audio_port->output_stream_format_property_address,
+					  0, 
+					  NULL, 
+					  &property_size,
+					  &(current_format));
+
+      if(retval != 0){
+	g_warning("failed to retrieve output stream description [OSStatus]: %d", retval);
+      }
+
+      if((kAudioFormatFlagIsNonInterleaved & (current_format.mFormatFlags)) != 0){
+	g_message("found non-interleaved stream");
+	
+	core_audio_port->is_interleaved = FALSE;
+	
+	output_buffer_size_bytes = core_audio_port->buffer_size * sizeof(gfloat);
+      }else{
+	g_message("found interleaved stream");
+	
+	core_audio_port->is_interleaved = TRUE;
+
+	output_buffer_size_bytes = core_audio_port->pcm_channels * core_audio_port->buffer_size * sizeof(gfloat);
+      }
+
+      retval = AudioObjectSetPropertyData(core_audio_port->output_device,
+					  core_audio_port->output_buffer_size_property_address,
+					  0,
+					  NULL,
+					  sizeof(output_buffer_size_bytes),
+					  &output_buffer_size_bytes);
+
+      if(retval != NULL){
+	g_warning("failed to set buffer size [OSStatus]: %d", retval);
+      }
+      
+      core_audio_port->output_format.mSampleRate = current_format.mSampleRate;
+
+      core_audio_port->output_format.mFormatID = current_format.mFormatID;
+      core_audio_port->output_format.mFormatFlags = current_format.mFormatFlags;
+
+      core_audio_port->output_format.mBytesPerPacket = current_format.mBytesPerPacket;
+      core_audio_port->output_format.mFramesPerPacket = current_format.mFramesPerPacket;
+	
+      core_audio_port->output_format.mBytesPerFrame = current_format.mBytesPerFrame;  
+      core_audio_port->output_format.mChannelsPerFrame = current_format.mChannelsPerFrame;
+      core_audio_port->output_format.mBitsPerChannel = current_format.mBitsPerChannel;
+
+      core_audio_port->output_format.mReserved = current_format.mReserved;
+      
+      //NOTE:JK: not allowed
+#if 0
+      retval = AudioObjectSetPropertyData(core_audio_port->output_device,
+					  core_audio_port->output_stream_format_property_address,
+					  0,
+					  NULL,
+					  sizeof(core_audio_port->output_format),
+					  &(core_audio_port->output_format));
+
+
+      if(retval != NULL){
+	g_warning("failed to set output stream description [OSStatus]: %d", retval);
+      }
+#endif
       
       AudioDeviceCreateIOProcID(core_audio_port->output_device,
 				(OSStatus (*)(AudioObjectID inDevice, const AudioTimeStamp *inNow, const AudioBufferList *inInputData, const AudioTimeStamp *inInputTime, AudioBufferList *outOutputData, const AudioTimeStamp *inOutputTime, void *inClientData)) ags_core_audio_port_hw_output_callback,
@@ -2535,32 +2530,44 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 				     NULL,
 				     &property_size);
 	
-      AudioObjectGetPropertyData(kAudioObjectSystemObject, 
-				 core_audio_port->input_property_address,
-				 0, 
-				 NULL, 
-				 &property_size, 
-				 &(core_audio_port->input_device));
+      retval = AudioObjectGetPropertyData(kAudioObjectSystemObject, 
+					  core_audio_port->input_property_address,
+					  0, 
+					  NULL, 
+					  &property_size, 
+					  &(core_audio_port->input_device));
+
+      if(retval != NULL){
+	g_warning("failed to retrieve input device [OSStatus]: %d", retval);
+      }
       
       input_samplerate = (Float64) core_audio_port->samplerate;
       
-      AudioObjectSetPropertyData(core_audio_port->input_device,
-				 core_audio_port->input_samplerate_property_address,
-				 0,
-				 NULL,
-				 sizeof(input_samplerate),
-				 &input_samplerate);
+      retval = AudioObjectSetPropertyData(core_audio_port->input_device,
+					  core_audio_port->input_samplerate_property_address,
+					  0,
+					  NULL,
+					  sizeof(input_samplerate),
+					  &input_samplerate);
+
+      if(retval != NULL){
+	g_warning("failed to set samplerate [OSStatus]: %d", retval);
+      }
 
       AudioStreamBasicDescription current_format = {0,};
       
-      property_size = sizeof(AudioStreamBasicDescription);
+      property_size = sizeof(current_format);
 
-      AudioObjectGetPropertyData(core_audio_port->input_device, 
-				 core_audio_port->input_stream_format_property_address,
-				 0, 
-				 NULL, 
-				 &property_size,
-				 &(current_format));
+      retval = AudioObjectGetPropertyData(core_audio_port->input_device, 
+					  core_audio_port->input_stream_format_property_address,
+					  0, 
+					  NULL, 
+					  &property_size,
+					  &(current_format));
+
+      if(retval != 0){
+	g_warning("failed to retrieve input stream description [OSStatus]: %d", retval);
+      }
 
       if((kAudioFormatFlagIsNonInterleaved & (current_format.mFormatFlags)) != 0){
 	g_message("found non-interleaved stream");
@@ -2576,15 +2583,18 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 	input_buffer_size_bytes = core_audio_port->pcm_channels * core_audio_port->buffer_size * sizeof(gfloat);
       }
 	
-      AudioObjectSetPropertyData(core_audio_port->input_device,
-				 core_audio_port->input_buffer_size_property_address,
-				 0,
-				 NULL,
-				 sizeof(input_buffer_size_bytes),
-				 &input_buffer_size_bytes);
+      retval = AudioObjectSetPropertyData(core_audio_port->input_device,
+					  core_audio_port->input_buffer_size_property_address,
+					  0,
+					  NULL,
+					  sizeof(input_buffer_size_bytes),
+					  &input_buffer_size_bytes);
 
-#if 0
-      core_audio_port->input_format.mSampleRate = (Float64) core_audio_port->samplerate;
+      if(retval != NULL){
+	g_warning("failed to set buffer size [OSStatus]: %d", retval);
+      }
+
+      core_audio_port->input_format.mSampleRate = current_format.mSampleRate;
 
       core_audio_port->input_format.mFormatID = current_format.mFormatID;
       core_audio_port->input_format.mFormatFlags = current_format.mFormatFlags;
@@ -2597,13 +2607,19 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
       core_audio_port->input_format.mBitsPerChannel = current_format.mBitsPerChannel;
 
       core_audio_port->input_format.mReserved = current_format.mReserved;
-      
-      AudioObjectSetPropertyData(core_audio_port->input_device,
-				 core_audio_port->input_stream_format_property_address,
-				 0,
-				 NULL,
-				 sizeof(core_audio_port->input_format),
-				 &(core_audio_port->input_format));
+
+      //NOTE:JK: not allowed
+#if 0
+      retval = AudioObjectSetPropertyData(core_audio_port->input_device,
+					  core_audio_port->input_stream_format_property_address,
+					  0,
+					  NULL,
+					  sizeof(core_audio_port->input_format),
+					  &(core_audio_port->input_format));
+
+      if(retval != NULL){
+	g_warning("failed to set input stream description [OSStatus]: %d", retval);
+      }
 #endif
       
       AudioDeviceCreateIOProcID(core_audio_port->input_device,
