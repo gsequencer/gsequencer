@@ -174,6 +174,8 @@ struct _AgsCoreAudioPort
 #endif
 
   AgsAudioBufferUtil *audio_buffer_util;
+
+  gboolean is_interleaved;
 };
 
 struct _AgsCoreAudioPortClass

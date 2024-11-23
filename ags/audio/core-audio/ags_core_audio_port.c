@@ -694,6 +694,8 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
 		   0);  
 
   core_audio_port->audio_buffer_util = ags_audio_buffer_util_alloc();
+
+  core_audio_port->is_interleaved = TRUE;
 }
 
 void
@@ -2080,71 +2082,39 @@ ags_core_audio_port_hw_input_callback(AudioObjectID device,
   
     buffer = ags_soundcard_get_buffer(AGS_SOUNDCARD(soundcard));
 
-    if(pcm_channels <= in->mNumberBuffers){
+    if(!(core_audio_port->is_interleaved)){
       ags_soundcard_lock_buffer(AGS_SOUNDCARD(soundcard),
 				buffer);
 
-      for(i = 0; i < pcm_channels; i++){
+      for(i = 0; i < pcm_channels && i < in->mNumberBuffers; i++){
 	ags_audio_buffer_util_copy_buffer_to_buffer(core_audio_port->audio_buffer_util,
 						    buffer, pcm_channels, i,
-						    in->mBuffers[i].mData, in->mBuffers[i].mNumberChannels, 0,
-						    (((in->mBuffers[i].mDataByteSize / (in->mBuffers[i].mNumberChannels * word_size)) >= buffer_size) ? buffer_size: (in->mBuffers[i].mDataByteSize / (in->mBuffers[i].mNumberChannels * word_size))), copy_mode);
+						    in->mBuffers[i].mData, 1, 0,
+						    buffer_size, copy_mode);
       }
       
       ags_soundcard_unlock_buffer(AGS_SOUNDCARD(soundcard),
 				  buffer);
     }else{
-      //TODO:JK: improve misconfigured hw
-      if(in_buffer->mDataByteSize / (in_buffer->mNumberChannels * word_size) >= buffer_size &&
-	 in_buffer->mNumberChannels >= pcm_channels){
-	ags_soundcard_lock_buffer(AGS_SOUNDCARD(soundcard),
-				  buffer);
+      ags_soundcard_lock_buffer(AGS_SOUNDCARD(soundcard),
+				buffer);
 
-	for(i = 0; i < pcm_channels; i++){
-	  ags_audio_buffer_util_copy_buffer_to_buffer(core_audio_port->audio_buffer_util,
-						      buffer, pcm_channels, i,
-						      in_buffer->mData, in_buffer->mNumberChannels, i,
-						      buffer_size, copy_mode);
-	}
-      
-	ags_soundcard_unlock_buffer(AGS_SOUNDCARD(soundcard),
-				    buffer);
-      }else if(in_buffer->mDataByteSize / (in_buffer->mNumberChannels * word_size) >= buffer_size){
-	ags_soundcard_lock_buffer(AGS_SOUNDCARD(soundcard),
-				  buffer);
-
-	for(i = 0; i < pcm_channels && i < in_buffer->mNumberChannels; i++){
-	  ags_audio_buffer_util_copy_buffer_to_buffer(core_audio_port->audio_buffer_util,
-						      buffer, pcm_channels, i,
-						      in_buffer->mData, in_buffer->mNumberChannels, i,
-						      buffer_size, copy_mode);
-	}
-      
-	ags_soundcard_unlock_buffer(AGS_SOUNDCARD(soundcard),
-				    buffer);
-      }else{
-	ags_soundcard_lock_buffer(AGS_SOUNDCARD(soundcard),
-				  buffer);
-
-	for(i = 0; i < pcm_channels && i < in_buffer->mNumberChannels; i++){
-	  ags_audio_buffer_util_copy_buffer_to_buffer(core_audio_port->audio_buffer_util,
-						      buffer, pcm_channels, i,
-						      in_buffer->mData, in_buffer->mNumberChannels, i,
-						      in_buffer->mDataByteSize / (in_buffer->mNumberChannels * word_size), copy_mode);
-	}
-      
-	ags_soundcard_unlock_buffer(AGS_SOUNDCARD(soundcard),
-				    buffer);
+      for(i = 0; i < pcm_channels && i < in_buffer->mNumberChannels; i++){
+	ags_audio_buffer_util_copy_buffer_to_buffer(core_audio_port->audio_buffer_util,
+						    buffer, pcm_channels, i,
+						    in_buffer->mData, in_buffer->mNumberChannels, i,
+						    buffer_size, copy_mode);
       }
+      
+      ags_soundcard_unlock_buffer(AGS_SOUNDCARD(soundcard),
+				  buffer);
     }
   }else{
     empty_run = TRUE;
   }
 
   for(i = 0; i < in->mNumberBuffers; i++){
-    ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
-				       in->mBuffers[i].mData, 1,
-				       (in->mBuffers[i].mDataByteSize / word_size), AGS_AUDIO_BUFFER_UTIL_FLOAT);
+    memset(in->mBuffers[i].mData, 0, in->mBuffers[i].mDataByteSize);
   }
   
   /* signal finish */ 
@@ -2575,8 +2545,12 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 				 &(current_format));
 
       if((kAudioFormatFlagIsNonInterleaved & (current_format.mFormatFlags)) != 0){
+	core_audio_port->is_interleaved = FALSE;
+	
 	input_buffer_size_bytes = core_audio_port->buffer_size * sizeof(gfloat);
       }else{
+	core_audio_port->is_interleaved = TRUE;
+
 	input_buffer_size_bytes = core_audio_port->pcm_channels * core_audio_port->buffer_size * sizeof(gfloat);
       }
 	
