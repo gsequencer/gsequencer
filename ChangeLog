@@ -1,3 +1,19 @@
+ags (7.3.22)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed audio object selector of CoreAudio input
+	* fixed save copy buffer size adjustment in ags_core_audio_port_hw_input_callback()
+
+ags (7.3.21)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved non-interleaved stream
+
+ags (7.3.20)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing buffer size
+
 ags (7.3.19)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
