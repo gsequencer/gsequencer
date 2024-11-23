@@ -1,3 +1,8 @@
+ags (7.3.27)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved debugging messages of CoreAudio
+
 ags (7.3.26)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -72,6 +72,13 @@ gboolean ags_core_audio_port_is_connected(AgsConnectable *connectable);
 void ags_core_audio_port_connect(AgsConnectable *connectable);
 void ags_core_audio_port_disconnect(AgsConnectable *connectable);
 
+void ags_core_audio_port_copy_from_24bit(gpointer destination, guint destination_stride, AgsSoundcardFormat destination_format,
+					 gpointer source, guint source_stride,
+					 guint buffer_length);
+void ags_core_audio_port_copy_to_24bit(gpointer destination, guint destination_stride,
+				       gpointer source, guint source_stride, AgsSoundcardFormat source_format,
+				       guint buffer_length);
+
 #ifdef AGS_WITH_CORE_AUDIO
 OSStatus ags_core_audio_port_hw_output_callback(AudioObjectID device,
 						const AudioTimeStamp* time_now,
@@ -1543,6 +1550,44 @@ ags_core_audio_port_find(GList *core_audio_port,
   return(NULL);
 }
 
+void
+ags_core_audio_port_copy_from_24bit(gpointer destination, guint destination_stride, AgsSoundcardFormat destination_format,
+				    gpointer source, guint source_stride,
+				    guint buffer_length)
+{
+  guint i;
+
+  for(i = 0; i < buffer_length; i++){
+    switch(destination_format){
+    case AGS_SOUNDCARD_SIGNED_32_BIT:
+      {
+	((gint32 *) destination)[i * destination_stride] = (((guchar *) source)[(i * 3) * source_stride] << 2) | (((guchar *) source)[(i * 3 + 1) * source_stride] << 1) | (((guchar *) source)[(i * 3 + 2) * source_stride]);
+      }
+      break;
+    }
+  }
+}
+
+void
+ags_core_audio_port_copy_to_24bit(gpointer destination, guint destination_stride,
+				  gpointer source, guint source_stride, AgsSoundcardFormat source_format,
+				  guint buffer_length)
+{
+  guint i;
+
+  for(i = 0; i < buffer_length; i++){
+    switch(source_format){
+    case AGS_SOUNDCARD_SIGNED_32_BIT:
+      {
+	((guchar *) destination)[(i * 3) * destination_stride] = 0xff000 & ((gint32 *) source)[i];
+	((guchar *) destination)[(i * 3 + 1) * destination_stride] = 0xff00 & ((gint32 *) source)[i];
+	((guchar *) destination)[(i * 3 + 2) * destination_stride] = 0xff & ((gint32 *) source)[i];
+      }
+      break;
+    }
+  }
+}
+
 #ifdef AGS_WITH_CORE_AUDIO
 OSStatus
 SetCurrentIOBufferFrameSize(AudioObjectID inDeviceID,
@@ -2421,6 +2466,9 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 	g_warning("failed to set output stream description [OSStatus]: %d", retval);
       }
 #else
+      g_message("output stream bytes per frame: %d", core_audio_port->output_format.mBytesPerFrame);
+      g_message("output stream channels per frame: %d", core_audio_port->output_format.mChannelsPerFrame);
+
       if(core_audio_port->output_format.mFormatID != kAudioFormatLinearPCM){
 	g_warning("output device not linear PCM");
       }
@@ -2674,6 +2722,9 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 	g_warning("failed to set input stream description [OSStatus]: %d", retval);
       }
 #else
+      g_message("input stream bytes per frame: %d", core_audio_port->input_format.mBytesPerFrame);
+      g_message("input stream channels per frame: %d", core_audio_port->input_format.mChannelsPerFrame);
+      
       if(core_audio_port->input_format.mFormatID != kAudioFormatLinearPCM){
 	g_warning("input device not linear PCM");
       }
