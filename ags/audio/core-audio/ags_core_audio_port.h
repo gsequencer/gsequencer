@@ -176,6 +176,7 @@ struct _AgsCoreAudioPort
   AgsAudioBufferUtil *audio_buffer_util;
 
   gboolean is_interleaved;
+  gboolean is_signed;
 };
 
 struct _AgsCoreAudioPortClass
