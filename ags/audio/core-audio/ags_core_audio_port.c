@@ -462,21 +462,21 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
 
   core_audio_port->output_samplerate_property_address->mSelector = kAudioDevicePropertyNominalSampleRate;
   core_audio_port->output_samplerate_property_address->mElement = kAudioObjectPropertyElementMain;
-  core_audio_port->output_samplerate_property_address->mScope = kAudioObjectPropertyScopeOutput;
+  core_audio_port->output_samplerate_property_address->mScope = kAudioObjectPropertyScopeGlobal;
   
   core_audio_port->output_buffer_size_property_address = (AudioObjectPropertyAddress *) malloc(sizeof(AudioObjectPropertyAddress));
   memset(core_audio_port->output_buffer_size_property_address, 0, sizeof(AudioObjectPropertyAddress));
 
   core_audio_port->output_buffer_size_property_address->mSelector = kAudioDevicePropertyBufferSize;
   core_audio_port->output_buffer_size_property_address->mElement = kAudioObjectPropertyElementMain;
-  core_audio_port->output_buffer_size_property_address->mScope = kAudioObjectPropertyScopeOutput;
+  core_audio_port->output_buffer_size_property_address->mScope = kAudioObjectPropertyScopeGlobal;
 
   core_audio_port->output_stream_format_property_address = (AudioObjectPropertyAddress *) malloc(sizeof(AudioObjectPropertyAddress));
   memset(core_audio_port->output_stream_format_property_address, 0, sizeof(AudioObjectPropertyAddress));
   
   core_audio_port->output_stream_format_property_address->mSelector = kAudioDevicePropertyStreamFormat;
   core_audio_port->output_stream_format_property_address->mElement = kAudioObjectPropertyElementMain;
-  core_audio_port->output_stream_format_property_address->mScope = kAudioObjectPropertyScopeOutput;
+  core_audio_port->output_stream_format_property_address->mScope = kAudioObjectPropertyScopeGlobal;
 
   memset(&(core_audio_port->output_format), 0, sizeof(AudioStreamBasicDescription));
 
@@ -510,21 +510,21 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
 
   core_audio_port->input_samplerate_property_address->mSelector = kAudioDevicePropertyNominalSampleRate;
   core_audio_port->input_samplerate_property_address->mElement = kAudioObjectPropertyElementMain;
-  core_audio_port->input_samplerate_property_address->mScope = kAudioObjectPropertyScopeInput;
+  core_audio_port->input_samplerate_property_address->mScope = kAudioObjectPropertyScopeGlobal;
   
   core_audio_port->input_buffer_size_property_address = (AudioObjectPropertyAddress *) malloc(sizeof(AudioObjectPropertyAddress));
   memset(core_audio_port->input_buffer_size_property_address, 0, sizeof(AudioObjectPropertyAddress));
   
   core_audio_port->input_buffer_size_property_address->mSelector = kAudioDevicePropertyBufferSize;
   core_audio_port->input_buffer_size_property_address->mElement = kAudioObjectPropertyElementMain;
-  core_audio_port->input_buffer_size_property_address->mScope = kAudioObjectPropertyScopeInput;
+  core_audio_port->input_buffer_size_property_address->mScope = kAudioObjectPropertyScopeGlobal;
 
   core_audio_port->input_stream_format_property_address = (AudioObjectPropertyAddress *) malloc(sizeof(AudioObjectPropertyAddress));
   memset(core_audio_port->input_stream_format_property_address, 0, sizeof(AudioObjectPropertyAddress));
   
   core_audio_port->input_stream_format_property_address->mSelector = kAudioDevicePropertyStreamFormat;
   core_audio_port->input_stream_format_property_address->mElement = kAudioObjectPropertyElementMain;
-  core_audio_port->input_stream_format_property_address->mScope = kAudioObjectPropertyScopeInput;
+  core_audio_port->input_stream_format_property_address->mScope = kAudioObjectPropertyScopeGlobal;
 
   memset(&(core_audio_port->input_format), 0, sizeof(AudioStreamBasicDescription));
 
@@ -2381,7 +2381,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 					  &property_size, 
 					  &(core_audio_port->output_device));
 
-      if(retval != NULL){
+      if(retval != 0){
 	g_warning("failed to retrieve output device [OSStatus]: %d", retval);
       }
       
@@ -2394,7 +2394,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 					  sizeof(output_samplerate),
 					  &output_samplerate);
 
-      if(retval != NULL){
+      if(retval != 0){
 	g_warning("failed to set samplerate [OSStatus]: %d", retval);
       }
 
@@ -2454,18 +2454,19 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
       
       //NOTE:JK: not allowed
 #if 0
-      retval = AudioObjectSetPropertyData(core_audio_port->output_device,
-					  core_audio_port->output_stream_format_property_address,
-					  0,
-					  NULL,
-					  sizeof(core_audio_port->output_format),
-					  &(core_audio_port->output_format));
+      //      retval = AudioObjectSetPropertyData(core_audio_port->output_device,
+      //				  core_audio_port->output_stream_format_property_address,
+      //				  0,
+      //				  NULL,
+      //				  sizeof(core_audio_port->output_format),
+      //				  &(core_audio_port->output_format));
 
 
-      if(retval != NULL){
-	g_warning("failed to set output stream description [OSStatus]: %d", retval);
-      }
-#else
+      //      if(retval != NULL){
+      //	g_warning("failed to set output stream description [OSStatus]: %d", retval);
+      //      }
+#endif
+
       g_message("output stream bytes per frame: %d", core_audio_port->output_format.mBytesPerFrame);
       g_message("output stream channels per frame: %d", core_audio_port->output_format.mChannelsPerFrame);
 
@@ -2522,7 +2523,6 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
       }else if(((kLinearPCMFormatFlagsSampleFractionMask & (core_audio_port->output_format.mFormatFlags)) >> kLinearPCMFormatFlagsSampleFractionShift) == kAppleLosslessFormatFlag_32BitSourceData){
 	core_audio_port->format = AGS_SOUNDCARD_SIGNED_32_BIT;
       }
-#endif
       
       AudioDeviceCreateIOProcID(core_audio_port->output_device,
 				(OSStatus (*)(AudioObjectID inDevice, const AudioTimeStamp *inNow, const AudioBufferList *inInputData, const AudioTimeStamp *inInputTime, AudioBufferList *outOutputData, const AudioTimeStamp *inOutputTime, void *inClientData)) ags_core_audio_port_hw_output_callback,
@@ -2638,7 +2638,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 					  &property_size, 
 					  &(core_audio_port->input_device));
 
-      if(retval != NULL){
+      if(retval != 0){
 	g_warning("failed to retrieve input device [OSStatus]: %d", retval);
       }
       
@@ -2651,7 +2651,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 					  sizeof(input_samplerate),
 					  &input_samplerate);
 
-      if(retval != NULL){
+      if(retval != 0){
 	g_warning("failed to set samplerate [OSStatus]: %d", retval);
       }
 
@@ -2711,17 +2711,18 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 
       //NOTE:JK: not allowed
 #if 0
-      retval = AudioObjectSetPropertyData(core_audio_port->input_device,
-					  core_audio_port->input_stream_format_property_address,
-					  0,
-					  NULL,
-					  sizeof(core_audio_port->input_format),
-					  &(core_audio_port->input_format));
+      //      retval = AudioObjectSetPropertyData(core_audio_port->input_device,
+      //				  core_audio_port->input_stream_format_property_address,
+      //				  0,
+      //				  NULL,
+      //				  sizeof(core_audio_port->input_format),
+      //				  &(core_audio_port->input_format));
 
-      if(retval != NULL){
-	g_warning("failed to set input stream description [OSStatus]: %d", retval);
-      }
-#else
+      //      if(retval != NULL){
+      //	g_warning("failed to set input stream description [OSStatus]: %d", retval);
+      //      }
+#endif
+
       g_message("input stream bytes per frame: %d", core_audio_port->input_format.mBytesPerFrame);
       g_message("input stream channels per frame: %d", core_audio_port->input_format.mChannelsPerFrame);
       
@@ -2769,16 +2770,15 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 	  }
 	  break;
 	}
-      }
 
-      if(((kLinearPCMFormatFlagsSampleFractionMask & (core_audio_port->input_format.mFormatFlags)) >> kLinearPCMFormatFlagsSampleFractionShift) == kAppleLosslessFormatFlag_16BitSourceData){
-	core_audio_port->format = AGS_SOUNDCARD_SIGNED_16_BIT;
-      }else if(((kLinearPCMFormatFlagsSampleFractionMask & (core_audio_port->input_format.mFormatFlags)) >> kLinearPCMFormatFlagsSampleFractionShift) == kAppleLosslessFormatFlag_24BitSourceData){
-	core_audio_port->format = AGS_SOUNDCARD_SIGNED_24_BIT;
-      }else if(((kLinearPCMFormatFlagsSampleFractionMask & (core_audio_port->input_format.mFormatFlags)) >> kLinearPCMFormatFlagsSampleFractionShift) == kAppleLosslessFormatFlag_32BitSourceData){
-	core_audio_port->format = AGS_SOUNDCARD_SIGNED_32_BIT;
+	if(((kLinearPCMFormatFlagsSampleFractionMask & (core_audio_port->input_format.mFormatFlags)) >> kLinearPCMFormatFlagsSampleFractionShift) == kAppleLosslessFormatFlag_16BitSourceData){
+	  core_audio_port->format = AGS_SOUNDCARD_SIGNED_16_BIT;
+	}else if(((kLinearPCMFormatFlagsSampleFractionMask & (core_audio_port->input_format.mFormatFlags)) >> kLinearPCMFormatFlagsSampleFractionShift) == kAppleLosslessFormatFlag_24BitSourceData){
+	  core_audio_port->format = AGS_SOUNDCARD_SIGNED_24_BIT;
+	}else if(((kLinearPCMFormatFlagsSampleFractionMask & (core_audio_port->input_format.mFormatFlags)) >> kLinearPCMFormatFlagsSampleFractionShift) == kAppleLosslessFormatFlag_32BitSourceData){
+	  core_audio_port->format = AGS_SOUNDCARD_SIGNED_32_BIT;
+	}
       }
-#endif
       
       AudioDeviceCreateIOProcID(core_audio_port->input_device,
 				(OSStatus (*)(AudioObjectID inDevice, const AudioTimeStamp *inNow, const AudioBufferList *inInputData, const AudioTimeStamp *inInputTime, AudioBufferList *outOutputData, const AudioTimeStamp *inOutputTime, void *inClientData)) ags_core_audio_port_hw_input_callback,
