@@ -2761,7 +2761,7 @@ ags_thread_real_clock(AgsThread *thread)
     g_mutex_lock(&(task_launcher->wait_mutex));
   
     if(ags_atomic_uint_get(&(task_launcher->is_running))){
-      g_atomic_int_inc(&(task_launcher->wait_count));
+      ags_atomic_int_increment(&(task_launcher->wait_count));
 
       while(ags_atomic_uint_get(&(task_launcher->is_running)) &&
 	    ags_atomic_uint_get(&(task_launcher->wait_count)) != 0){
@@ -3066,7 +3066,7 @@ ags_thread_loop(void *ptr)
   /* exit thread */
   ags_thread_unset_flags(thread, AGS_THREAD_MARK_SYNCED);
 
-  g_atomic_int_dec_and_test(&(thread->is_running));
+  ags_atomic_int_decrement(&(thread->is_running));
 
   thread->thread = NULL;
   
@@ -3111,7 +3111,7 @@ ags_thread_real_start(AgsThread *thread)
 #endif
   
   /*  */
-  g_atomic_int_inc(&(thread->is_running));
+  ags_atomic_int_increment(&(thread->is_running));
   
   thread->thread = g_thread_new("Advanced Gtk+ Sequencer - clock",
 				ags_thread_loop,
