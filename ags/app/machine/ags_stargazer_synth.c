@@ -546,7 +546,7 @@ ags_stargazer_synth_init(AgsStargazerSynth *stargazer_synth)
   gtk_adjustment_set_lower(adjustment,
 			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   2.0 * M_PI);
+			   12.0 * M_PI);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -614,7 +614,7 @@ ags_stargazer_synth_init(AgsStargazerSynth *stargazer_synth)
   gtk_adjustment_set_lower(adjustment,
 			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   2.0 * M_PI);
+			   12.0 * M_PI);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -682,7 +682,7 @@ ags_stargazer_synth_init(AgsStargazerSynth *stargazer_synth)
   gtk_adjustment_set_lower(adjustment,
 			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   2.0 * M_PI);
+			   12.0 * M_PI);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -750,7 +750,7 @@ ags_stargazer_synth_init(AgsStargazerSynth *stargazer_synth)
   gtk_adjustment_set_lower(adjustment,
 			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   2.0 * M_PI);
+			   12.0 * M_PI);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -1264,7 +1264,7 @@ ags_stargazer_synth_init(AgsStargazerSynth *stargazer_synth)
   gtk_adjustment_set_lower(adjustment,
 			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   2.0 * M_PI);
+			   12.0 * M_PI);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -1332,7 +1332,7 @@ ags_stargazer_synth_init(AgsStargazerSynth *stargazer_synth)
   gtk_adjustment_set_lower(adjustment,
 			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   2.0 * M_PI);
+			   12.0 * M_PI);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -1400,7 +1400,7 @@ ags_stargazer_synth_init(AgsStargazerSynth *stargazer_synth)
   gtk_adjustment_set_lower(adjustment,
 			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   2.0 * M_PI);
+			   12.0 * M_PI);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -1468,7 +1468,7 @@ ags_stargazer_synth_init(AgsStargazerSynth *stargazer_synth)
   gtk_adjustment_set_lower(adjustment,
 			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   2.0 * M_PI);
+			   12.0 * M_PI);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -2347,7 +2347,22 @@ ags_stargazer_synth_map_recall(AgsMachine *machine)
   /* ags-fx-synth */
   start_recall = ags_fx_factory_create(audio,
 				       stargazer_synth->stargazer_synth_play_container, stargazer_synth->stargazer_synth_recall_container,
-				       "ags-fx-stargazer-synth",
+				       "ags-fx-star-synth",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       position,
+				       (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
+				       0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* ags-fx-tremolo */
+  start_recall = ags_fx_factory_create(audio,
+				       stargazer_synth->tremolo_play_container, stargazer_synth->tremolo_recall_container,
+				       "ags-fx-tremolo",
 				       NULL,
 				       NULL,
 				       0, 0,
@@ -2466,7 +2481,7 @@ ags_stargazer_synth_input_map_recall(AgsStargazerSynth *stargazer_synth,
   /* ags-fx-synth */
   start_recall = ags_fx_factory_create(audio,
 				       stargazer_synth->stargazer_synth_play_container, stargazer_synth->stargazer_synth_recall_container,
-				       "ags-fx-stargazer-synth",
+				       "ags-fx-star-synth",
 				       NULL,
 				       NULL,
 				       audio_channel_start, audio_channels,

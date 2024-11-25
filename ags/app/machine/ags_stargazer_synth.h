@@ -62,6 +62,9 @@ struct _AgsStargazerSynth
   AgsRecallContainer *stargazer_synth_play_container;
   AgsRecallContainer *stargazer_synth_recall_container;
 
+  AgsRecallContainer *tremolo_play_container;
+  AgsRecallContainer *tremolo_recall_container;
+
   AgsRecallContainer *volume_play_container;
   AgsRecallContainer *volume_recall_container;
 
