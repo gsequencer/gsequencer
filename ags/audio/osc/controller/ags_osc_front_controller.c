@@ -248,7 +248,7 @@ ags_osc_front_controller_init(AgsOscFrontController *osc_front_controller)
 
   osc_front_controller->delegate_timeout = 0;
 
-  g_atomic_int_set(&(osc_front_controller->do_reset),
+  ags_atomic_int_set(&(osc_front_controller->do_reset),
 		   FALSE);
 
   g_mutex_init(&(osc_front_controller->delegate_mutex));
@@ -383,7 +383,7 @@ ags_osc_front_controller_delegate_thread(void *ptr)
     time_now = g_get_monotonic_time();
     osc_front_controller->delegate_timeout = time_now + (G_TIME_SPAN_SECOND / 30);
     
-    while(!g_atomic_int_get(&(osc_front_controller->do_reset)) &&
+    while(!ags_atomic_int_get(&(osc_front_controller->do_reset)) &&
 	  ((time_now < time_next) &&
 	   (time_now < osc_front_controller->delegate_timeout)) &&
 	  ags_osc_front_controller_test_flags(osc_front_controller, AGS_OSC_FRONT_CONTROLLER_DELEGATE_RUNNING) &&
@@ -395,7 +395,7 @@ ags_osc_front_controller_delegate_thread(void *ptr)
       time_now = g_get_monotonic_time();
     }
 
-    g_atomic_int_set(&(osc_front_controller->do_reset),
+    ags_atomic_int_set(&(osc_front_controller->do_reset),
 		     FALSE);
     
     g_mutex_unlock(&(osc_front_controller->delegate_mutex));

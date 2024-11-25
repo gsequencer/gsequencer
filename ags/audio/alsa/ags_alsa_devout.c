@@ -661,7 +661,7 @@ ags_alsa_devout_init(AgsAlsaDevout *alsa_devout)
     alsa_devout->app_buffer[i] = NULL;
   }
 
-  g_atomic_int_set(&(alsa_devout->available),
+  ags_atomic_int_set(&(alsa_devout->available),
 		   FALSE);
   
   alsa_devout->backend_buffer_mode = AGS_ALSA_DEVOUT_BACKEND_BUFFER_0;
@@ -2036,7 +2036,7 @@ ags_alsa_devout_device_io_func(GIOChannel *source,
 			       GIOCondition condition,
 			       AgsAlsaDevout *alsa_devout)
 {
-  g_atomic_int_set(&(alsa_devout->available), TRUE);
+  ags_atomic_int_set(&(alsa_devout->available), TRUE);
 
   return(TRUE);
 }
@@ -2890,7 +2890,7 @@ ags_alsa_devout_device_play(AgsSoundcard *soundcard,
     g_usleep(1);
   }
   
-  g_atomic_int_set(&(alsa_devout->available),
+  ags_atomic_int_set(&(alsa_devout->available),
 		   FALSE);
   
   g_rec_mutex_lock(alsa_devout_mutex);
@@ -3103,7 +3103,7 @@ ags_alsa_devout_device_free(AgsSoundcard *soundcard)
 
   alsa_devout->io_channel = NULL;
 
-  g_atomic_int_set(&(alsa_devout->available), FALSE);
+  ags_atomic_int_set(&(alsa_devout->available), FALSE);
   
   g_rec_mutex_unlock(alsa_devout_mutex);
 }

@@ -120,22 +120,22 @@ ags_audio_ref_count_test_init_suite()
   ags_application_context_prepare(audio_application_context);
   ags_application_context_setup(audio_application_context);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(audio_application_context)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(audio_application_context)->ref_count));
   g_hash_table_insert(object_ref_count,
 		      "/AgsSoundProvider",
 		      GUINT_TO_POINTER(ref_count));
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(AGS_APPLICATION_CONTEXT(audio_application_context)->main_loop)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(AGS_APPLICATION_CONTEXT(audio_application_context)->main_loop)->ref_count));
   g_hash_table_insert(object_ref_count,
 		      "/AgsConcurrencyProvider/AgsMainLoop",
 		      GUINT_TO_POINTER(ref_count));
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(AGS_APPLICATION_CONTEXT(audio_application_context)->task_launcher)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(AGS_APPLICATION_CONTEXT(audio_application_context)->task_launcher)->ref_count));
   g_hash_table_insert(object_ref_count,
 		      "/AgsConcurrencyProvider/AgsTaskLauncher",
 		      GUINT_TO_POINTER(ref_count));
   
-  ref_count = g_atomic_int_get(&(G_OBJECT(audio_application_context->soundcard->data)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(audio_application_context->soundcard->data)->ref_count));
   g_hash_table_insert(object_ref_count,
 		      "/AgsSoundProvider/AgsSoundcard[0]",
 		      GUINT_TO_POINTER(ref_count));
@@ -177,7 +177,7 @@ ags_audio_ref_count_test_create_audio_tree()
   add_audio = ags_add_audio_new(panel);
   ags_task_launch(add_audio);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(panel)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(panel)->ref_count));
   g_hash_table_insert(object_ref_count,
 		      "/AgsSoundProvider/AgsAudio[0]",
 		      GUINT_TO_POINTER(ref_count));
@@ -199,7 +199,7 @@ ags_audio_ref_count_test_create_audio_tree()
   add_audio = ags_add_audio_new(mixer0);
   ags_task_launch(add_audio);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(mixer0)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(mixer0)->ref_count));
   g_hash_table_insert(object_ref_count,
 		      "/AgsSoundProvider/AgsAudio[1]",
 		      GUINT_TO_POINTER(ref_count));
@@ -221,7 +221,7 @@ ags_audio_ref_count_test_create_audio_tree()
   add_audio = ags_add_audio_new(mixer1);
   ags_task_launch(add_audio);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(mixer1)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(mixer1)->ref_count));
   g_hash_table_insert(object_ref_count,
 		      "/AgsSoundProvider/AgsAudio[2]",
 		      GUINT_TO_POINTER(ref_count));
@@ -243,7 +243,7 @@ ags_audio_ref_count_test_create_audio_tree()
   add_audio = ags_add_audio_new(drum0);
   ags_task_launch(add_audio);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(drum0)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(drum0)->ref_count));
   g_hash_table_insert(object_ref_count,
 		      "/AgsSoundProvider/AgsAudio[3]",
 		      GUINT_TO_POINTER(ref_count));
@@ -265,7 +265,7 @@ ags_audio_ref_count_test_create_audio_tree()
   add_audio = ags_add_audio_new(drum1);
   ags_task_launch(add_audio);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(drum1)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(drum1)->ref_count));
   g_hash_table_insert(object_ref_count,
 		      "/AgsSoundProvider/AgsAudio[4]",
 		      GUINT_TO_POINTER(ref_count));
@@ -287,7 +287,7 @@ ags_audio_ref_count_test_create_audio_tree()
   add_audio = ags_add_audio_new(drum2);
   ags_task_launch(add_audio);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(drum2)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(drum2)->ref_count));
   g_hash_table_insert(object_ref_count,
 		      "/AgsSoundProvider/AgsAudio[5]",
 		      GUINT_TO_POINTER(ref_count));
@@ -374,11 +374,11 @@ ags_audio_ref_count_test_set_link()
 		       mixer0->output->next,
 		       &error);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(panel)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(panel)->ref_count));
   
   CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[0]")) == ref_count);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(mixer0)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(mixer0)->ref_count));
   
   CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[1]")) == ref_count);
   
@@ -392,11 +392,11 @@ ags_audio_ref_count_test_set_link()
 		       mixer1->output->next,
 		       &error);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(mixer0)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(mixer0)->ref_count));
   
   CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[1]")) == ref_count);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(mixer1)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(mixer1)->ref_count));
   
   CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[2]")) == ref_count);
 
@@ -410,11 +410,11 @@ ags_audio_ref_count_test_set_link()
 		       drum0->output->next,
 		       &error);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(mixer1)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(mixer1)->ref_count));
   
   CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[2]")) == ref_count);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(drum0)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(drum0)->ref_count));
   
   CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[3]")) == ref_count);
   
@@ -428,11 +428,11 @@ ags_audio_ref_count_test_set_link()
 		       drum1->output->next,
 		       &error);
   
-  ref_count = g_atomic_int_get(&(G_OBJECT(mixer1)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(mixer1)->ref_count));
   
   CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[2]")) == ref_count);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(drum1)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(drum1)->ref_count));
   
   CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[4]")) == ref_count);
 
@@ -446,11 +446,11 @@ ags_audio_ref_count_test_set_link()
 		       drum2->output->next,
 		       &error);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(mixer1)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(mixer1)->ref_count));
   
   CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[2]")) == ref_count);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(drum2)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(drum2)->ref_count));
   
   CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[5]")) == ref_count);
 }
@@ -516,27 +516,27 @@ ags_audio_ref_count_test_recursive_set_property()
 				     n_params,
 				     parameter_name, value);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(panel)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(panel)->ref_count));
   
   CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[0]")) == ref_count);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(mixer0)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(mixer0)->ref_count));
   
   CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[1]")) == ref_count);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(mixer1)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(mixer1)->ref_count));
   
   CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[2]")) == ref_count);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(drum0)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(drum0)->ref_count));
   
   CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[3]")) == ref_count);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(drum1)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(drum1)->ref_count));
   
   CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[4]")) == ref_count);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(drum2)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(drum2)->ref_count));
   
   CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[5]")) == ref_count);
 
@@ -571,27 +571,27 @@ ags_audio_ref_count_test_recursive_set_property()
 				     n_params,
 				     parameter_name, value);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(panel)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(panel)->ref_count));
   
   CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[0]")) == ref_count);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(mixer0)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(mixer0)->ref_count));
   
   CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[1]")) == ref_count);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(mixer1)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(mixer1)->ref_count));
   
   CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[2]")) == ref_count);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(drum0)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(drum0)->ref_count));
   
   CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[3]")) == ref_count);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(drum1)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(drum1)->ref_count));
   
   CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[4]")) == ref_count);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(drum2)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(drum2)->ref_count));
   
   CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[5]")) == ref_count);
 }
@@ -655,27 +655,27 @@ ags_audio_ref_count_test_recursive_run_stage()
 				  AGS_SOUND_SCOPE_SEQUENCER, (AGS_SOUND_STAGING_AUTOMATE | AGS_SOUND_STAGING_RUN_INTER | AGS_SOUND_STAGING_FX));
 #endif
   
-  ref_count = g_atomic_int_get(&(G_OBJECT(panel)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(panel)->ref_count));
   
   CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[0]")) == ref_count);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(mixer0)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(mixer0)->ref_count));
   
   CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[1]")) == ref_count);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(mixer1)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(mixer1)->ref_count));
   
   CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[2]")) == ref_count);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(drum0)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(drum0)->ref_count));
   
   CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[3]")) == ref_count);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(drum1)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(drum1)->ref_count));
 
   CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[4]")) == ref_count);
   
-  ref_count = g_atomic_int_get(&(G_OBJECT(drum2)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(drum2)->ref_count));
   
   CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[5]")) == ref_count);
 
@@ -719,27 +719,27 @@ ags_audio_ref_count_test_recursive_run_stage()
 		 start_recall_id, AGS_SOUND_SCOPE_SEQUENCER);
 #endif
   
-  ref_count = g_atomic_int_get(&(G_OBJECT(panel)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(panel)->ref_count));
   
   CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[0]")) == ref_count);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(mixer0)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(mixer0)->ref_count));
   
   CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[1]")) == ref_count);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(mixer1)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(mixer1)->ref_count));
   
   CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[2]")) == ref_count);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(drum0)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(drum0)->ref_count));
   
   CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[3]")) == ref_count);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(drum1)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(drum1)->ref_count));
 
   CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[4]")) == ref_count);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(drum2)->ref_count));
+  ref_count = ags_atomic_int_get(&(G_OBJECT(drum2)->ref_count));
   
   CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[5]")) == ref_count);
 }

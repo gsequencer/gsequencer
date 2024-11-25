@@ -660,7 +660,7 @@ ags_oss_devin_init(AgsOssDevin *oss_devin)
     oss_devin->app_buffer[i] = NULL;
   }
 
-  g_atomic_int_set(&(oss_devin->available),
+  ags_atomic_int_set(&(oss_devin->available),
 		   FALSE);
   
   oss_devin->backend_buffer_mode = AGS_OSS_DEVIN_BACKEND_BUFFER_0;
@@ -1995,7 +1995,7 @@ ags_oss_devin_device_record_init(AgsSoundcard *soundcard,
   }
 
   /* allocate ring buffer */
-  g_atomic_int_set(&(oss_devin->available),
+  ags_atomic_int_set(&(oss_devin->available),
 		   FALSE);
   
   for(i = 0; i < AGS_OSS_DEVIN_DEFAULT_BACKEND_BUFFER_SIZE; i++){
@@ -2368,7 +2368,7 @@ ags_oss_devin_device_record(AgsSoundcard *soundcard,
   ags_soundcard_unlock_buffer(soundcard,
 			      oss_devin->app_buffer[oss_devin->app_buffer_mode]);
 
-  g_atomic_int_set(&(oss_devin->available),
+  ags_atomic_int_set(&(oss_devin->available),
 		   FALSE);
   
   if(n_write != oss_devin->pcm_channels * oss_devin->buffer_size * word_size * sizeof (char)){

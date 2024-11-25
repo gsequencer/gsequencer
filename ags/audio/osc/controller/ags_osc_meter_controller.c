@@ -764,7 +764,7 @@ ags_osc_meter_controller_monitor_alloc()
 
   monitor = (AgsOscMeterControllerMonitor *) malloc(sizeof(AgsOscMeterControllerMonitor));
 
-  g_atomic_int_set(&(monitor->ref_count), 0);
+  ags_atomic_int_set(&(monitor->ref_count), 0);
   
   monitor->osc_connection = NULL;
 
@@ -817,7 +817,7 @@ ags_osc_meter_controller_monitor_ref(AgsOscMeterControllerMonitor *monitor)
     return;
   }
   
-  g_atomic_int_inc(&(monitor->ref_count));
+  ags_atomic_int_increment(&(monitor->ref_count));
 }
 
 /**
@@ -836,8 +836,8 @@ ags_osc_meter_controller_monitor_unref(AgsOscMeterControllerMonitor *monitor)
     return;
   }
   
-  if(g_atomic_int_dec_and_test(&(monitor->ref_count)) ||
-     g_atomic_int_get(&(monitor->ref_count)) < 0){
+  if(ags_atomic_int_decrement(&(monitor->ref_count)) ||
+     ags_atomic_int_get(&(monitor->ref_count)) < 0){
     ags_osc_meter_controller_monitor_free(monitor);
   }
 }

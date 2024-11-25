@@ -420,7 +420,7 @@ ags_oss_midiin_init(AgsOssMidiin *oss_midiin)
   config = ags_config_get_instance();
 
   /* sync flags */
-  g_atomic_int_set(&(oss_midiin->sync_flags),
+  ags_atomic_int_set(&(oss_midiin->sync_flags),
 		   (AGS_OSS_MIDIIN_PASS_THROUGH));
 
   /* device */
@@ -1473,7 +1473,7 @@ ags_oss_midiin_device_free(AgsSequencer *sequencer)
     oss_midiin->backend_buffer_size[i] = 0;
   }
 
-  g_atomic_int_or(&(oss_midiin->sync_flags),
+  ags_atomic_int_or(&(oss_midiin->sync_flags),
 		  AGS_OSS_MIDIIN_PASS_THROUGH);
   
   oss_midiin->note_offset = oss_midiin->start_note_offset;

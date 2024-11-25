@@ -247,7 +247,7 @@ ags_audio_thread_init(AgsAudioThread *audio_thread)
 	       "frequency", frequency,
 	       NULL);
 
-  g_atomic_int_set(&(audio_thread->nested_sync_flags),
+  ags_atomic_int_set(&(audio_thread->nested_sync_flags),
 		   0);
   
   audio_thread->default_output_soundcard = NULL;
@@ -1234,7 +1234,7 @@ ags_audio_thread_test_nested_sync_flags(AgsAudioThread *audio_thread, AgsAudioTh
     return(FALSE);
   }
 
-  retval = ((nested_sync_flags & (g_atomic_int_get(&(audio_thread->nested_sync_flags)))) != 0) ? TRUE: FALSE;
+  retval = ((nested_sync_flags & (ags_atomic_int_get(&(audio_thread->nested_sync_flags)))) != 0) ? TRUE: FALSE;
 
   return(retval);
 }
@@ -1255,7 +1255,7 @@ ags_audio_thread_set_nested_sync_flags(AgsAudioThread *audio_thread, AgsAudioThr
     return;
   }
 
-  g_atomic_int_or(&(audio_thread->nested_sync_flags),
+  ags_atomic_int_or(&(audio_thread->nested_sync_flags),
 		  nested_sync_flags);
 }
 
@@ -1275,7 +1275,7 @@ ags_audio_thread_unset_nested_sync_flags(AgsAudioThread *audio_thread, AgsAudioT
     return;
   }
 
-  g_atomic_int_and(&(audio_thread->nested_sync_flags),
+  ags_atomic_int_and(&(audio_thread->nested_sync_flags),
 		   (~nested_sync_flags));
 }
 
@@ -1400,8 +1400,8 @@ ags_audio_thread_scope_data_alloc()
 
   scope_data = (AgsAudioThreadScopeData *) g_malloc(sizeof(AgsAudioThreadScopeData));
 
-  g_atomic_int_set(&(scope_data->fx_done), FALSE);
-  g_atomic_int_set(&(scope_data->fx_wait), 0);
+  ags_atomic_int_set(&(scope_data->fx_done), FALSE);
+  ags_atomic_int_set(&(scope_data->fx_wait), 0);
 
   g_mutex_init(&(scope_data->fx_mutex));
   g_cond_init(&(scope_data->fx_cond));

@@ -606,11 +606,11 @@ ags_functional_test_util_do_run_thread(void *ptr)
 
   is_available = ptr;
   
-  //  g_atomic_int_set(&(gsequencer_application_context->gui_ready),
+  //  ags_atomic_int_set(&(gsequencer_application_context->gui_ready),
   //		   FALSE);
 
   /*  */
-  while(g_atomic_int_get(&(gsequencer_application_context->show_animation))){
+  while(ags_atomic_int_get(&(gsequencer_application_context->show_animation))){
     usleep(500000);
   }
 
@@ -705,7 +705,7 @@ ags_functional_test_util_add_test_thread(void *ptr)
   
   test = ptr;
   
-  while(!g_atomic_int_get(test->is_available)){
+  while(!ags_atomic_int_get(test->is_available)){
     usleep(12500);
   }
 
@@ -737,7 +737,7 @@ ags_functional_test_util_add_test(AgsFunctionalTestUtilAddTest add_test,
 void
 ags_functional_test_util_notify_add_test(volatile gboolean *is_available)
 {
-  g_atomic_int_set(is_available,
+  ags_atomic_int_set(is_available,
 		   TRUE);
 }
 
@@ -809,7 +809,7 @@ ags_functional_test_util_sync_driver_program(guint n_params,
   
   is_done = g_value_get_pointer(param);
 
-  g_atomic_int_set(is_done,
+  ags_atomic_int_set(is_done,
 		   TRUE);
 }
 
@@ -820,7 +820,7 @@ ags_functional_test_util_sync()
 
   volatile gint is_done;
   
-  g_atomic_int_set(&is_done,
+  ags_atomic_int_set(&is_done,
 		   FALSE);
 
   driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
@@ -848,7 +848,7 @@ ags_functional_test_util_sync()
   ags_functional_test_util_add_driver_program(driver_program);
 
 
-  while(!g_atomic_int_get(&is_done)){
+  while(!ags_atomic_int_get(&is_done)){
     g_usleep(1000000);
   }
 }

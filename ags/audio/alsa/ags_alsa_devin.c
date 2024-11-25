@@ -636,7 +636,7 @@ ags_alsa_devin_init(AgsAlsaDevin *alsa_devin)
     alsa_devin->app_buffer[i] = NULL;
   }
 
-  g_atomic_int_set(&(alsa_devin->available),
+  ags_atomic_int_set(&(alsa_devin->available),
 		   FALSE);
   
   alsa_devin->backend_buffer_mode = AGS_ALSA_DEVIN_BACKEND_BUFFER_0;
@@ -2018,7 +2018,7 @@ ags_alsa_devin_device_record_init(AgsSoundcard *soundcard,
 
   /* allocate ring buffer */
 #ifdef AGS_WITH_ALSA
-  g_atomic_int_set(&(alsa_devin->available),
+  ags_atomic_int_set(&(alsa_devin->available),
 		   FALSE);
   
   for(i = 0; i < AGS_ALSA_DEVIN_DEFAULT_BACKEND_BUFFER_SIZE; i++){
@@ -2611,7 +2611,7 @@ ags_alsa_devin_device_record(AgsSoundcard *soundcard,
   ags_soundcard_unlock_buffer(soundcard,
 			      alsa_devin->app_buffer[alsa_devin->app_buffer_mode]);
   
-  g_atomic_int_set(&(alsa_devin->available),
+  ags_atomic_int_set(&(alsa_devin->available),
 		   FALSE);
   
   /* check error flag */

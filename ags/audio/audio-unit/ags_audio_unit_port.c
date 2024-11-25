@@ -318,10 +318,10 @@ ags_audio_unit_port_init(AgsAudioUnitPort *audio_unit_port)
  
   audio_unit_port->midi_port_number = 0;
   
-  g_atomic_int_set(&(audio_unit_port->is_empty),
+  ags_atomic_int_set(&(audio_unit_port->is_empty),
 		   FALSE);
   
-  g_atomic_int_set(&(audio_unit_port->queued),
+  ags_atomic_int_set(&(audio_unit_port->queued),
 		   0);  
 }
 

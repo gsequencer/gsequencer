@@ -268,7 +268,7 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   ags_main_loop_set_syncing(AGS_MAIN_LOOP(audio_loop), FALSE);
 
   ags_main_loop_set_critical_region(AGS_MAIN_LOOP(audio_loop), FALSE);
-  g_atomic_int_set(&(audio_loop->critical_region_ref), 0);
+  ags_atomic_int_set(&(audio_loop->critical_region_ref), 0);
   
   /* recall related lists */
   audio_loop->play_channel_ref = 0;
@@ -456,7 +456,7 @@ ags_audio_loop_set_syncing(AgsMainLoop *main_loop, gboolean is_syncing)
   audio_loop = AGS_AUDIO_LOOP(main_loop);
 
   /* set syncing */
-  g_atomic_int_set(&(audio_loop->is_syncing), is_syncing);
+  ags_atomic_int_set(&(audio_loop->is_syncing), is_syncing);
 }
 
 gboolean
@@ -469,7 +469,7 @@ ags_audio_loop_is_syncing(AgsMainLoop *main_loop)
   audio_loop = AGS_AUDIO_LOOP(main_loop);
 
   /* is syncing */
-  is_syncing = g_atomic_int_get(&(audio_loop->is_syncing));
+  is_syncing = ags_atomic_int_get(&(audio_loop->is_syncing));
 
   return(is_syncing);
 }
@@ -482,7 +482,7 @@ ags_audio_loop_set_critical_region(AgsMainLoop *main_loop, gboolean is_critical_
   audio_loop = AGS_AUDIO_LOOP(main_loop);
 
   /* set critical region */
-  g_atomic_int_set(&(audio_loop->is_critical_region), is_critical_region);
+  ags_atomic_int_set(&(audio_loop->is_critical_region), is_critical_region);
 }
 
 gboolean
@@ -495,7 +495,7 @@ ags_audio_loop_is_critical_region(AgsMainLoop *main_loop)
   audio_loop = AGS_AUDIO_LOOP(main_loop);
 
   /* is critical region */
-  is_critical_region = g_atomic_int_get(&(audio_loop->is_critical_region));
+  is_critical_region = ags_atomic_int_get(&(audio_loop->is_critical_region));
 
   return(is_critical_region);
 }
@@ -508,7 +508,7 @@ ags_audio_loop_inc_queued_critical_region(AgsMainLoop *main_loop)
   audio_loop = AGS_AUDIO_LOOP(main_loop);
 
   /* increment critical region */
-  g_atomic_int_inc(&(audio_loop->critical_region_ref));
+  ags_atomic_int_increment(&(audio_loop->critical_region_ref));
 }
 
 void
@@ -519,7 +519,7 @@ ags_audio_loop_dec_queued_critical_region(AgsMainLoop *main_loop)
   audio_loop = AGS_AUDIO_LOOP(main_loop);
 
   /* decrement critical region */
-  g_atomic_int_dec_and_test(&(audio_loop->critical_region_ref));
+  ags_atomic_int_decrement(&(audio_loop->critical_region_ref));
 }
 
 guint
@@ -532,7 +532,7 @@ ags_audio_loop_test_queued_critical_region(AgsMainLoop *main_loop)
   audio_loop = AGS_AUDIO_LOOP(main_loop);
 
   /* set critical region */
-  critical_region_ref = g_atomic_int_get(&(audio_loop->is_critical_region));
+  critical_region_ref = ags_atomic_int_get(&(audio_loop->is_critical_region));
 
   return(critical_region_ref);
 }

@@ -425,7 +425,7 @@ ags_w32_midiin_init(AgsW32Midiin *w32_midiin)
   config = ags_config_get_instance();
 
   /* sync flags */
-  g_atomic_int_set(&(w32_midiin->sync_flags),
+  ags_atomic_int_set(&(w32_midiin->sync_flags),
 		   (AGS_W32_MIDIIN_PASS_THROUGH));
 
   /* device */
@@ -1479,7 +1479,7 @@ ags_w32_midiin_device_free(AgsSequencer *sequencer)
     w32_midiin->backend_buffer_size[i] = 0;
   }
 
-  g_atomic_int_or(&(w32_midiin->sync_flags),
+  ags_atomic_int_or(&(w32_midiin->sync_flags),
 		  AGS_W32_MIDIIN_PASS_THROUGH);
   
   w32_midiin->note_offset = w32_midiin->start_note_offset;

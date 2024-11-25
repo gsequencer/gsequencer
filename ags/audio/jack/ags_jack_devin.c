@@ -620,7 +620,7 @@ ags_jack_devin_init(AgsJackDevin *jack_devin)
   /* flags */
   jack_devin->flags = 0;
   jack_devin->connectable_flags = 0;
-  g_atomic_int_set(&(jack_devin->sync_flags),
+  ags_atomic_int_set(&(jack_devin->sync_flags),
 		   AGS_JACK_DEVIN_PASS_THROUGH);
 
   /* jack devin mutex */
@@ -1952,9 +1952,9 @@ ags_jack_devin_port_init(AgsSoundcard *soundcard,
 			AGS_JACK_DEVIN_START_RECORD |
 			AGS_JACK_DEVIN_RECORD);
   
-  g_atomic_int_and(&(jack_devin->sync_flags),
+  ags_atomic_int_and(&(jack_devin->sync_flags),
 		   (~(AGS_JACK_DEVIN_PASS_THROUGH)));
-  g_atomic_int_or(&(jack_devin->sync_flags),
+  ags_atomic_int_or(&(jack_devin->sync_flags),
 		  AGS_JACK_DEVIN_INITIAL_CALLBACK);
 
   g_rec_mutex_unlock(jack_devin_mutex);
@@ -2062,13 +2062,13 @@ ags_jack_devin_port_record(AgsSoundcard *soundcard,
 
   if(jack_client_activated){
     /* signal */
-    if((AGS_JACK_DEVIN_INITIAL_CALLBACK & (g_atomic_int_get(&(jack_devin->sync_flags)))) == 0){
+    if((AGS_JACK_DEVIN_INITIAL_CALLBACK & (ags_atomic_int_get(&(jack_devin->sync_flags)))) == 0){
       g_mutex_lock(callback_mutex);
 
-      g_atomic_int_or(&(jack_devin->sync_flags),
+      ags_atomic_int_or(&(jack_devin->sync_flags),
 		      AGS_JACK_DEVIN_CALLBACK_DONE);
     
-      if((AGS_JACK_DEVIN_CALLBACK_WAIT & (g_atomic_int_get(&(jack_devin->sync_flags)))) != 0){
+      if((AGS_JACK_DEVIN_CALLBACK_WAIT & (ags_atomic_int_get(&(jack_devin->sync_flags)))) != 0){
 	g_cond_signal(&(jack_devin->callback_cond));
       }
 
@@ -2076,27 +2076,27 @@ ags_jack_devin_port_record(AgsSoundcard *soundcard,
     }
     
     /* wait callback */	
-    if((AGS_JACK_DEVIN_INITIAL_CALLBACK & (g_atomic_int_get(&(jack_devin->sync_flags)))) == 0){
+    if((AGS_JACK_DEVIN_INITIAL_CALLBACK & (ags_atomic_int_get(&(jack_devin->sync_flags)))) == 0){
       g_mutex_lock(callback_finish_mutex);
     
-      if((AGS_JACK_DEVIN_CALLBACK_FINISH_DONE & (g_atomic_int_get(&(jack_devin->sync_flags)))) == 0){
-	g_atomic_int_or(&(jack_devin->sync_flags),
+      if((AGS_JACK_DEVIN_CALLBACK_FINISH_DONE & (ags_atomic_int_get(&(jack_devin->sync_flags)))) == 0){
+	ags_atomic_int_or(&(jack_devin->sync_flags),
 			AGS_JACK_DEVIN_CALLBACK_FINISH_WAIT);
     
-	while((AGS_JACK_DEVIN_CALLBACK_FINISH_DONE & (g_atomic_int_get(&(jack_devin->sync_flags)))) == 0 &&
-	      (AGS_JACK_DEVIN_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(jack_devin->sync_flags)))) != 0){
+	while((AGS_JACK_DEVIN_CALLBACK_FINISH_DONE & (ags_atomic_int_get(&(jack_devin->sync_flags)))) == 0 &&
+	      (AGS_JACK_DEVIN_CALLBACK_FINISH_WAIT & (ags_atomic_int_get(&(jack_devin->sync_flags)))) != 0){
 	  g_cond_wait(&(jack_devin->callback_finish_cond),
 		      callback_finish_mutex);
 	}
       }
     
-      g_atomic_int_and(&(jack_devin->sync_flags),
+      ags_atomic_int_and(&(jack_devin->sync_flags),
 		       (~(AGS_JACK_DEVIN_CALLBACK_FINISH_WAIT |
 			  AGS_JACK_DEVIN_CALLBACK_FINISH_DONE)));
     
       g_mutex_unlock(callback_finish_mutex);
     }else{
-      g_atomic_int_and(&(jack_devin->sync_flags),
+      ags_atomic_int_and(&(jack_devin->sync_flags),
 		       (~AGS_JACK_DEVIN_INITIAL_CALLBACK));
     }
   }
@@ -2157,7 +2157,7 @@ ags_jack_devin_port_free(AgsSoundcard *soundcard)
     return;
   }
 
-  //  g_atomic_int_or(&(AGS_THREAD(application_context->main_loop)->flags),
+  //  ags_atomic_int_or(&(AGS_THREAD(application_context->main_loop)->flags),
   //		  AGS_THREAD_TIMING);
 
   callback_mutex = &(jack_devin->callback_mutex);
@@ -2166,18 +2166,18 @@ ags_jack_devin_port_free(AgsSoundcard *soundcard)
   jack_devin->app_buffer_mode = AGS_JACK_DEVIN_APP_BUFFER_0;
   jack_devin->flags &= (~(AGS_JACK_DEVIN_RECORD));
 
-  g_atomic_int_or(&(jack_devin->sync_flags),
+  ags_atomic_int_or(&(jack_devin->sync_flags),
 		  AGS_JACK_DEVIN_PASS_THROUGH);
-  g_atomic_int_and(&(jack_devin->sync_flags),
+  ags_atomic_int_and(&(jack_devin->sync_flags),
 		   (~AGS_JACK_DEVIN_INITIAL_CALLBACK));
 
   /* signal callback */
   g_mutex_lock(callback_mutex);
 
-  g_atomic_int_or(&(jack_devin->sync_flags),
+  ags_atomic_int_or(&(jack_devin->sync_flags),
 		  AGS_JACK_DEVIN_CALLBACK_DONE);
     
-  if((AGS_JACK_DEVIN_CALLBACK_WAIT & (g_atomic_int_get(&(jack_devin->sync_flags)))) != 0){
+  if((AGS_JACK_DEVIN_CALLBACK_WAIT & (ags_atomic_int_get(&(jack_devin->sync_flags)))) != 0){
     g_cond_signal(&(jack_devin->callback_cond));
   }
 
@@ -2186,10 +2186,10 @@ ags_jack_devin_port_free(AgsSoundcard *soundcard)
   /* signal thread */
   g_mutex_lock(callback_finish_mutex);
 
-  g_atomic_int_or(&(jack_devin->sync_flags),
+  ags_atomic_int_or(&(jack_devin->sync_flags),
 		  AGS_JACK_DEVIN_CALLBACK_FINISH_DONE);
     
-  if((AGS_JACK_DEVIN_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(jack_devin->sync_flags)))) != 0){
+  if((AGS_JACK_DEVIN_CALLBACK_FINISH_WAIT & (ags_atomic_int_get(&(jack_devin->sync_flags)))) != 0){
     g_cond_signal(&(jack_devin->callback_finish_cond));
   }
 

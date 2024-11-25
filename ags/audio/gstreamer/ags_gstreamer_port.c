@@ -349,16 +349,16 @@ ags_gstreamer_port_init(AgsGstreamerPort *gstreamer_port)
   gstreamer_port->empty_buffer = ags_stream_alloc(8 * gstreamer_port->pcm_channels * gstreamer_port->buffer_size,
 						  AGS_SOUNDCARD_DEFAULT_FORMAT);
 
-  g_atomic_int_set(&(gstreamer_port->is_empty),
+  ags_atomic_int_set(&(gstreamer_port->is_empty),
 		   TRUE);
-  g_atomic_int_set(&(gstreamer_port->underflow),
+  ags_atomic_int_set(&(gstreamer_port->underflow),
 		   0);
-  g_atomic_int_set(&(gstreamer_port->restart),
+  ags_atomic_int_set(&(gstreamer_port->restart),
 		   FALSE);
   
   gstreamer_port->nth_empty_buffer = 0;
   
-  g_atomic_int_set(&(gstreamer_port->queued),
+  ags_atomic_int_set(&(gstreamer_port->queued),
 		   0);
 }
 

@@ -595,7 +595,7 @@ ags_fifoout_init(AgsFifoout *fifoout)
     fifoout->app_buffer[i] = NULL;
   }
   
-  g_atomic_int_set(&(fifoout->available),
+  ags_atomic_int_set(&(fifoout->available),
 		   FALSE);
 
   fifoout->ring_buffer_size = AGS_FIFOOUT_DEFAULT_RING_BUFFER_SIZE;

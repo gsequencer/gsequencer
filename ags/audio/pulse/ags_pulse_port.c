@@ -414,16 +414,16 @@ ags_pulse_port_init(AgsPulsePort *pulse_port)
   pulse_port->empty_buffer = ags_stream_alloc(8 * pulse_port->pcm_channels * pulse_port->buffer_size,
 					      AGS_SOUNDCARD_DEFAULT_FORMAT);
 
-  g_atomic_int_set(&(pulse_port->is_empty),
+  ags_atomic_int_set(&(pulse_port->is_empty),
 		   TRUE);
-  g_atomic_int_set(&(pulse_port->underflow),
+  ags_atomic_int_set(&(pulse_port->underflow),
 		   0);
-  g_atomic_int_set(&(pulse_port->restart),
+  ags_atomic_int_set(&(pulse_port->restart),
 		   FALSE);
   
   pulse_port->nth_empty_buffer = 0;
   
-  g_atomic_int_set(&(pulse_port->queued),
+  ags_atomic_int_set(&(pulse_port->queued),
 		   0);
   
   pulse_port->audio_buffer_util = ags_audio_buffer_util_alloc();
@@ -1468,12 +1468,12 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
   /* get pulse port mutex */
   pulse_port_mutex = AGS_PULSE_PORT_GET_OBJ_MUTEX(pulse_port);
 
-  if(g_atomic_int_get(&(pulse_port->queued)) > 0){
+  if(ags_atomic_int_get(&(pulse_port->queued)) > 0){
     g_warning("drop pulseaudio callback");
     
     return;
   }else{
-    g_atomic_int_inc(&(pulse_port->queued));
+    ags_atomic_int_increment(&(pulse_port->queued));
   }
   
   /*
@@ -1603,7 +1603,7 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
       remaining -= count;
     }
 
-    g_atomic_int_set(&(pulse_port->is_empty),
+    ags_atomic_int_set(&(pulse_port->is_empty),
 		     TRUE);
   }
 
@@ -1615,7 +1615,7 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
   no_event = TRUE;
 
   if(pulse_devout != NULL){
-    if((AGS_PULSE_DEVOUT_PASS_THROUGH & (g_atomic_int_get(&(pulse_devout->sync_flags)))) == 0){
+    if((AGS_PULSE_DEVOUT_PASS_THROUGH & (ags_atomic_int_get(&(pulse_devout->sync_flags)))) == 0){
       callback_mutex = &(pulse_devout->callback_mutex);
 
       g_rec_mutex_unlock(device_mutex);
@@ -1623,13 +1623,13 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
       /* give back computing time until ready */
       g_mutex_lock(callback_mutex);
     
-      if((AGS_PULSE_DEVOUT_CALLBACK_DONE & (g_atomic_int_get(&(pulse_devout->sync_flags)))) == 0){
+      if((AGS_PULSE_DEVOUT_CALLBACK_DONE & (ags_atomic_int_get(&(pulse_devout->sync_flags)))) == 0){
 	gint64 timeout;
 	guint latency;
 
 	timeout = 0;
 	
-	g_atomic_int_or(&(pulse_devout->sync_flags),
+	ags_atomic_int_or(&(pulse_devout->sync_flags),
 			AGS_PULSE_DEVOUT_CALLBACK_WAIT);
 
 	g_rec_mutex_lock(pulse_port_mutex);
@@ -1642,8 +1642,8 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
       
 	timeout += latency;
       
-	while((AGS_PULSE_DEVOUT_CALLBACK_DONE & (g_atomic_int_get(&(pulse_devout->sync_flags)))) == 0 &&
-	      (AGS_PULSE_DEVOUT_CALLBACK_WAIT & (g_atomic_int_get(&(pulse_devout->sync_flags)))) != 0){
+	while((AGS_PULSE_DEVOUT_CALLBACK_DONE & (ags_atomic_int_get(&(pulse_devout->sync_flags)))) == 0 &&
+	      (AGS_PULSE_DEVOUT_CALLBACK_WAIT & (ags_atomic_int_get(&(pulse_devout->sync_flags)))) != 0){
 	  void *empty_buffer;
 	  void *next_empty_buffer;
 	
@@ -1653,7 +1653,7 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
 
 	  g_mutex_unlock(callback_mutex);
 
-	  if(g_atomic_int_get(&(pulse_port->underflow)) > 0){
+	  if(ags_atomic_int_get(&(pulse_port->underflow)) > 0){
 	    n_bytes = 0;
 	    empty_buffer = &(((unsigned char *) pulse_port->empty_buffer)[nth_empty_buffer * count]);
 
@@ -1665,7 +1665,7 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
 	  }
 	
 	  /* feed */
-	  for(i = 0; g_atomic_int_get(&(pulse_port->underflow)) > 0 || remaining > 0; i++){
+	  for(i = 0; ags_atomic_int_get(&(pulse_port->underflow)) > 0 || remaining > 0; i++){
 	    g_rec_mutex_lock(pulse_port_mutex);
 
 	    empty_buffer = &(((unsigned char *) pulse_port->empty_buffer)[nth_empty_buffer * count]);
@@ -1689,8 +1689,8 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
 
 	    memset(next_empty_buffer, 0, count * sizeof(unsigned char));
 
-	    if(g_atomic_int_get(&(pulse_port->underflow)) > 0){
-	      g_atomic_int_dec_and_test(&(pulse_port->underflow));
+	    if(ags_atomic_int_get(&(pulse_port->underflow)) > 0){
+	      ags_atomic_int_decrement(&(pulse_port->underflow));
 	    }
 	  
 	    remaining -= count;
@@ -1710,7 +1710,7 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
 	}
       }
     
-      g_atomic_int_and(&(pulse_devout->sync_flags),
+      ags_atomic_int_and(&(pulse_devout->sync_flags),
 		       (~(AGS_PULSE_DEVOUT_CALLBACK_WAIT |
 			  AGS_PULSE_DEVOUT_CALLBACK_DONE)));
     
@@ -1742,7 +1742,7 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
       empty_run = TRUE;
     }
   }else if(pulse_devin != NULL){
-    if((AGS_PULSE_DEVIN_PASS_THROUGH & (g_atomic_int_get(&(pulse_devin->sync_flags)))) == 0){
+    if((AGS_PULSE_DEVIN_PASS_THROUGH & (ags_atomic_int_get(&(pulse_devin->sync_flags)))) == 0){
       callback_mutex = &(pulse_devin->callback_mutex);
 
       g_rec_mutex_unlock(device_mutex);
@@ -1750,17 +1750,17 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
       /* give back computing time until ready */
       g_mutex_lock(callback_mutex);
     
-      if((AGS_PULSE_DEVIN_CALLBACK_DONE & (g_atomic_int_get(&(pulse_devin->sync_flags)))) == 0){
-	g_atomic_int_or(&(pulse_devin->sync_flags),
+      if((AGS_PULSE_DEVIN_CALLBACK_DONE & (ags_atomic_int_get(&(pulse_devin->sync_flags)))) == 0){
+	ags_atomic_int_or(&(pulse_devin->sync_flags),
 			AGS_PULSE_DEVIN_CALLBACK_WAIT);
       
-	while((AGS_PULSE_DEVIN_CALLBACK_DONE & (g_atomic_int_get(&(pulse_devin->sync_flags)))) == 0 &&
-	      (AGS_PULSE_DEVIN_CALLBACK_WAIT & (g_atomic_int_get(&(pulse_devin->sync_flags)))) != 0){
+	while((AGS_PULSE_DEVIN_CALLBACK_DONE & (ags_atomic_int_get(&(pulse_devin->sync_flags)))) == 0 &&
+	      (AGS_PULSE_DEVIN_CALLBACK_WAIT & (ags_atomic_int_get(&(pulse_devin->sync_flags)))) != 0){
 	  g_cond_wait(&(pulse_devin->callback_cond),
 		      callback_mutex);
 	}
 	
-	g_atomic_int_and(&(pulse_devin->sync_flags),
+	ags_atomic_int_and(&(pulse_devin->sync_flags),
 			 (~(AGS_PULSE_DEVIN_CALLBACK_WAIT |
 			    AGS_PULSE_DEVIN_CALLBACK_DONE)));
 	
@@ -1836,7 +1836,7 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
 	  
       ags_soundcard_unlock_buffer(AGS_SOUNDCARD(pulse_devout), pulse_devout->app_buffer[nth_buffer]);	    
 
-      g_atomic_int_set(&(pulse_port->is_empty),
+      ags_atomic_int_set(&(pulse_port->is_empty),
 		       FALSE);
     }
 
@@ -1846,10 +1846,10 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
 	
       g_mutex_lock(callback_finish_mutex);
 
-      g_atomic_int_or(&(pulse_devout->sync_flags),
+      ags_atomic_int_or(&(pulse_devout->sync_flags),
 		      AGS_PULSE_DEVOUT_CALLBACK_FINISH_DONE);
     
-      if((AGS_PULSE_DEVOUT_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(pulse_devout->sync_flags)))) != 0){
+      if((AGS_PULSE_DEVOUT_CALLBACK_FINISH_WAIT & (ags_atomic_int_get(&(pulse_devout->sync_flags)))) != 0){
 	g_cond_signal(&(pulse_devout->callback_finish_cond));
       }
 
@@ -1901,7 +1901,7 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
 		     (const void **) &(pulse_devin->app_buffer[nth_buffer]),
 		     &count);
       
-      g_atomic_int_set(&(pulse_port->is_empty),
+      ags_atomic_int_set(&(pulse_port->is_empty),
 		       FALSE);
     }
 
@@ -1911,10 +1911,10 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
 	
       g_mutex_lock(callback_finish_mutex);
 
-      g_atomic_int_or(&(pulse_devin->sync_flags),
+      ags_atomic_int_or(&(pulse_devin->sync_flags),
 		      AGS_PULSE_DEVIN_CALLBACK_FINISH_DONE);
     
-      if((AGS_PULSE_DEVIN_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(pulse_devin->sync_flags)))) != 0){
+      if((AGS_PULSE_DEVIN_CALLBACK_FINISH_WAIT & (ags_atomic_int_get(&(pulse_devin->sync_flags)))) != 0){
 	g_cond_signal(&(pulse_devin->callback_finish_cond));
       }
 
@@ -1959,7 +1959,7 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
     }
   }  
   
-  g_atomic_int_dec_and_test(&(pulse_port->queued));
+  ags_atomic_int_decrement(&(pulse_port->queued));
 
   /* unref */
   g_object_unref(audio_loop);
@@ -1984,7 +1984,7 @@ ags_pulse_port_stream_underflow_callback(pa_stream *stream, AgsPulsePort *pulse_
   audio_loop_mutex = AGS_THREAD_GET_OBJ_MUTEX(audio_loop);
 
   /* increase time spent */
-  g_atomic_int_add(&(pulse_port->underflow),
+  ags_atomic_int_add(&(pulse_port->underflow),
 		   1);
 
   /* unref */

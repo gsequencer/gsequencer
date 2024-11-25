@@ -90,7 +90,7 @@ ags_lv2_worker_manager_init(AgsLv2WorkerManager *worker_manager)
 {
   worker_manager->thread_pool = NULL;
 
-  g_atomic_pointer_set(&(worker_manager->worker),
+  ags_atomic_pointer_set(&(worker_manager->worker),
 		       NULL);
   
   /* empty */
@@ -103,7 +103,7 @@ ags_lv2_worker_manager_finalize(GObject *gobject)
 
   lv2_worker_manager = AGS_LV2_WORKER_MANAGER(gobject);
 
-  g_list_free_full(g_atomic_pointer_get(&(lv2_worker_manager->worker)),
+  g_list_free_full(ags_atomic_pointer_get(&(lv2_worker_manager->worker)),
 		   g_object_unref);
   
   if(lv2_worker_manager == ags_lv2_worker_manager){

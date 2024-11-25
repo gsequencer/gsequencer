@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,6 +18,8 @@
  */
 
 #include <ags/audio/task/ags_stop_sequencer.h>
+
+#include <ags/libags.h>
 
 #include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_sequencer_thread.h>
@@ -208,7 +210,7 @@ ags_stop_sequencer_launch(AgsTask *task)
       ags_thread_stop(sequencer_thread);
     }
     
-    sequencer_thread = g_atomic_pointer_get(&(sequencer_thread->next));
+    sequencer_thread = ags_atomic_pointer_get(&(sequencer_thread->next));
   }
 
   g_object_unref(audio_loop);

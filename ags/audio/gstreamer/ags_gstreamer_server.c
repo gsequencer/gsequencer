@@ -287,7 +287,7 @@ ags_gstreamer_server_init(AgsGstreamerServer *gstreamer_server)
   /* server mutex */
   g_rec_mutex_init(&(gstreamer_server->obj_mutex)); 
 
-  g_atomic_int_set(&(gstreamer_server->running),
+  ags_atomic_int_set(&(gstreamer_server->running),
 		   TRUE);
   
   gstreamer_server->thread = NULL;

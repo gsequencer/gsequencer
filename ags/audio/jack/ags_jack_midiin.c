@@ -433,7 +433,7 @@ ags_jack_midiin_init(AgsJackMidiin *jack_midiin)
 
   jack_midiin->flags = 0;
   jack_midiin->connectable_flags = 0;
-  g_atomic_int_set(&(jack_midiin->sync_flags),
+  ags_atomic_int_set(&(jack_midiin->sync_flags),
 		   AGS_JACK_MIDIIN_PASS_THROUGH);
 
   /* jack midiin mutex */
@@ -1340,9 +1340,9 @@ ags_jack_midiin_port_init(AgsSequencer *sequencer,
 			 AGS_JACK_MIDIIN_START_RECORD |
 			 AGS_JACK_MIDIIN_RECORD);
   
-  g_atomic_int_and(&(jack_midiin->sync_flags),
+  ags_atomic_int_and(&(jack_midiin->sync_flags),
 		   (~(AGS_JACK_MIDIIN_PASS_THROUGH)));
-  g_atomic_int_or(&(jack_midiin->sync_flags),
+  ags_atomic_int_or(&(jack_midiin->sync_flags),
 		  AGS_JACK_MIDIIN_INITIAL_CALLBACK);
   
   g_rec_mutex_unlock(jack_midiin_mutex);
@@ -1413,13 +1413,13 @@ ags_jack_midiin_port_record(AgsSequencer *sequencer,
 
   if(jack_client_activated){
     /* signal client */
-    if((AGS_JACK_MIDIIN_INITIAL_CALLBACK & (g_atomic_int_get(&(jack_midiin->sync_flags)))) == 0){
+    if((AGS_JACK_MIDIIN_INITIAL_CALLBACK & (ags_atomic_int_get(&(jack_midiin->sync_flags)))) == 0){
       g_mutex_lock(callback_mutex);
 
-      g_atomic_int_or(&(jack_midiin->sync_flags),
+      ags_atomic_int_or(&(jack_midiin->sync_flags),
 		      AGS_JACK_MIDIIN_CALLBACK_DONE);
     
-      if((AGS_JACK_MIDIIN_CALLBACK_WAIT & (g_atomic_int_get(&(jack_midiin->sync_flags)))) != 0){
+      if((AGS_JACK_MIDIIN_CALLBACK_WAIT & (ags_atomic_int_get(&(jack_midiin->sync_flags)))) != 0){
 	g_cond_signal(&(jack_midiin->callback_cond));
       }
 
@@ -1427,27 +1427,27 @@ ags_jack_midiin_port_record(AgsSequencer *sequencer,
     }
     
     /* wait callback */	
-    if((AGS_JACK_MIDIIN_INITIAL_CALLBACK & (g_atomic_int_get(&(jack_midiin->sync_flags)))) == 0){
+    if((AGS_JACK_MIDIIN_INITIAL_CALLBACK & (ags_atomic_int_get(&(jack_midiin->sync_flags)))) == 0){
       g_mutex_lock(callback_finish_mutex);
     
-      if((AGS_JACK_MIDIIN_CALLBACK_FINISH_DONE & (g_atomic_int_get(&(jack_midiin->sync_flags)))) == 0){
-	g_atomic_int_or(&(jack_midiin->sync_flags),
+      if((AGS_JACK_MIDIIN_CALLBACK_FINISH_DONE & (ags_atomic_int_get(&(jack_midiin->sync_flags)))) == 0){
+	ags_atomic_int_or(&(jack_midiin->sync_flags),
 			AGS_JACK_MIDIIN_CALLBACK_FINISH_WAIT);
     
-	while((AGS_JACK_MIDIIN_CALLBACK_FINISH_DONE & (g_atomic_int_get(&(jack_midiin->sync_flags)))) == 0 &&
-	      (AGS_JACK_MIDIIN_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(jack_midiin->sync_flags)))) != 0){
+	while((AGS_JACK_MIDIIN_CALLBACK_FINISH_DONE & (ags_atomic_int_get(&(jack_midiin->sync_flags)))) == 0 &&
+	      (AGS_JACK_MIDIIN_CALLBACK_FINISH_WAIT & (ags_atomic_int_get(&(jack_midiin->sync_flags)))) != 0){
 	  g_cond_wait(&(jack_midiin->callback_finish_cond),
 		      callback_finish_mutex);
 	}
       }
     
-      g_atomic_int_and(&(jack_midiin->sync_flags),
+      ags_atomic_int_and(&(jack_midiin->sync_flags),
 		       (~(AGS_JACK_MIDIIN_CALLBACK_FINISH_WAIT |
 			  AGS_JACK_MIDIIN_CALLBACK_FINISH_DONE)));
     
       g_mutex_unlock(callback_finish_mutex);
     }else{
-      g_atomic_int_and(&(jack_midiin->sync_flags),
+      ags_atomic_int_and(&(jack_midiin->sync_flags),
 		       (~AGS_JACK_MIDIIN_INITIAL_CALLBACK));
     }
   }
@@ -1503,9 +1503,9 @@ ags_jack_midiin_port_free(AgsSequencer *sequencer)
   jack_midiin->app_buffer_mode = AGS_JACK_MIDIIN_APP_BUFFER_0;
   jack_midiin->flags &= (~(AGS_JACK_MIDIIN_RECORD));
 
-  g_atomic_int_or(&(jack_midiin->sync_flags),
+  ags_atomic_int_or(&(jack_midiin->sync_flags),
 		  AGS_JACK_MIDIIN_PASS_THROUGH);
-  g_atomic_int_and(&(jack_midiin->sync_flags),
+  ags_atomic_int_and(&(jack_midiin->sync_flags),
 		   (~AGS_JACK_MIDIIN_INITIAL_CALLBACK));
 
   g_rec_mutex_unlock(jack_midiin_mutex);
@@ -1513,10 +1513,10 @@ ags_jack_midiin_port_free(AgsSequencer *sequencer)
   /* signal callback */
   g_mutex_lock(callback_mutex);
 
-  g_atomic_int_or(&(jack_midiin->sync_flags),
+  ags_atomic_int_or(&(jack_midiin->sync_flags),
 		  AGS_JACK_MIDIIN_CALLBACK_DONE);
     
-  if((AGS_JACK_MIDIIN_CALLBACK_WAIT & (g_atomic_int_get(&(jack_midiin->sync_flags)))) != 0){
+  if((AGS_JACK_MIDIIN_CALLBACK_WAIT & (ags_atomic_int_get(&(jack_midiin->sync_flags)))) != 0){
     g_cond_signal(&(jack_midiin->callback_cond));
   }
 
@@ -1525,10 +1525,10 @@ ags_jack_midiin_port_free(AgsSequencer *sequencer)
   /* signal thread */
   g_mutex_lock(callback_finish_mutex);
 
-  g_atomic_int_or(&(jack_midiin->sync_flags),
+  ags_atomic_int_or(&(jack_midiin->sync_flags),
 		  AGS_JACK_MIDIIN_CALLBACK_FINISH_DONE);
     
-  if((AGS_JACK_MIDIIN_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(jack_midiin->sync_flags)))) != 0){
+  if((AGS_JACK_MIDIIN_CALLBACK_FINISH_WAIT & (ags_atomic_int_get(&(jack_midiin->sync_flags)))) != 0){
     g_cond_signal(&(jack_midiin->callback_finish_cond));
   }
 

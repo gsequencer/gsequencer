@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -453,7 +453,7 @@ ags_apply_presets_soundcard(AgsApplyPresets *apply_presets,
     }
     
     /* iterate */
-    export_thread = g_atomic_pointer_get(&(export_thread->next));
+    export_thread = ags_atomic_pointer_get(&(export_thread->next));
   }
 
   /* reset soundcard thread frequency */
@@ -468,7 +468,7 @@ ags_apply_presets_soundcard(AgsApplyPresets *apply_presets,
     }
     
     /* iterate */
-    soundcard_thread = g_atomic_pointer_get(&(soundcard_thread->next));
+    soundcard_thread = ags_atomic_pointer_get(&(soundcard_thread->next));
   }
 
   /* reset playback on soundcard */

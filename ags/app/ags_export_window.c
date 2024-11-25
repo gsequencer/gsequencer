@@ -174,7 +174,7 @@ ags_export_window_init(AgsExportWindow *export_window)
   gtk_window_set_hide_on_close((GtkWindow *) export_window,
 			       TRUE);
 
-  g_atomic_int_set(&(export_window->do_stop),
+  ags_atomic_int_set(&(export_window->do_stop),
 		   FALSE);
   
   /* pack */

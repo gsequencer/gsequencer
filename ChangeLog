@@ -3,7 +3,7 @@ ags (7.4.0)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* modified C standard to gnu11
 	* implemented ags_atomic.h
-	* TODO:JK: refactored GSequencer to use ags_atomic.h
+	* refactored GSequencer to use ags_atomic.h
 
 ags (7.3.29)
 

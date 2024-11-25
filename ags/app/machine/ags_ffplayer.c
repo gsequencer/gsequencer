@@ -404,7 +404,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   gtk_box_append(filename_hbox,
 		 (GtkWidget *) ffplayer->open);
 
-  g_atomic_int_set(&(ffplayer->apply_sf2_synth_completed),
+  ags_atomic_int_set(&(ffplayer->apply_sf2_synth_completed),
 		   TRUE);
   
   ffplayer->sf2_loader = NULL;
@@ -1280,7 +1280,7 @@ void
 ags_ffplayer_apply_sf2_synth_launch_callback(AgsTask *task,
 					     AgsFFPlayer *ffplayer)
 {
-  g_atomic_int_set(&(ffplayer->apply_sf2_synth_completed),
+  ags_atomic_int_set(&(ffplayer->apply_sf2_synth_completed),
 		   TRUE);
 }
 
@@ -1513,7 +1513,7 @@ ags_ffplayer_update(AgsFFPlayer *ffplayer)
 						start_input,
 						lower, (guint) key_count);
 
-      g_atomic_int_set(&(ffplayer->apply_sf2_synth_completed),
+      ags_atomic_int_set(&(ffplayer->apply_sf2_synth_completed),
 		       FALSE);
 
       g_signal_connect_after(apply_sf2_synth, "launch",
@@ -1681,7 +1681,7 @@ ags_ffplayer_sf2_loader_completed_timeout(AgsFFPlayer *ffplayer)
       return(TRUE);
     }    
 
-    if(g_atomic_int_get(&(ffplayer->apply_sf2_synth_completed))){
+    if(ags_atomic_int_get(&(ffplayer->apply_sf2_synth_completed))){
       if(ffplayer->position == 0){
 	ffplayer->position = -1;
 

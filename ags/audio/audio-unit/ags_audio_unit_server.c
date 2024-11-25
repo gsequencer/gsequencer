@@ -306,7 +306,7 @@ ags_audio_unit_server_init(AgsAudioUnitServer *audio_unit_server)
   /* server mutex */
   g_rec_mutex_init(&(audio_unit_server->obj_mutex));
   
-  g_atomic_int_set(&(audio_unit_server->running),
+  ags_atomic_int_set(&(audio_unit_server->running),
 		   TRUE);
   audio_unit_server->thread = NULL;
 

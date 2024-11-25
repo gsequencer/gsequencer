@@ -162,7 +162,7 @@ ags_worker_thread_init(AgsWorkerThread *worker_thread)
 	       "frequency", AGS_WORKER_THREAD_DEFAULT_JIFFIE,
 	       NULL);
   
-  g_atomic_int_set(&(worker_thread->status_flags),
+  ags_atomic_int_set(&(worker_thread->status_flags),
 		   0);
 
   /* synchronization */
@@ -277,7 +277,7 @@ ags_worker_thread_test_status_flags(AgsWorkerThread *worker_thread, guint status
     return(FALSE);
   }
 
-  retval = ((status_flags & (g_atomic_int_get(&(worker_thread->status_flags)))) != 0) ? TRUE: FALSE;
+  retval = ((status_flags & (ags_atomic_int_get(&(worker_thread->status_flags)))) != 0) ? TRUE: FALSE;
 
   return(retval);
 }
@@ -298,7 +298,7 @@ ags_worker_thread_set_status_flags(AgsWorkerThread *worker_thread, guint status_
     return;
   }
 
-  g_atomic_int_or(&(worker_thread->status_flags),
+  ags_atomic_int_or(&(worker_thread->status_flags),
 		  status_flags);
 }
 
@@ -318,7 +318,7 @@ ags_worker_thread_unset_status_flags(AgsWorkerThread *worker_thread, guint statu
     return;
   }
 
-  g_atomic_int_and(&(worker_thread->status_flags),
+  ags_atomic_int_and(&(worker_thread->status_flags),
 		   (~status_flags));
 }
 

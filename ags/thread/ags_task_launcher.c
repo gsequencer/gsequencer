@@ -239,9 +239,9 @@ ags_task_launcher_init(AgsTaskLauncher *task_launcher)
   task_launcher->cyclic_task = NULL;
 
   /* wait */
-  g_atomic_int_set(&(task_launcher->is_running),
+  ags_atomic_int_set(&(task_launcher->is_running),
 		   FALSE);
-  g_atomic_int_set(&(task_launcher->wait_count),
+  ags_atomic_int_set(&(task_launcher->wait_count),
 		   0);
   
   g_mutex_init(&(task_launcher->wait_mutex));
@@ -864,7 +864,7 @@ ags_task_launcher_sync_run(AgsTaskLauncher *task_launcher)
 
   g_mutex_lock(&(task_launcher->wait_mutex));
 
-  g_atomic_int_set(&(task_launcher->is_running),
+  ags_atomic_int_set(&(task_launcher->is_running),
 		   TRUE);
 
   g_mutex_unlock(&(task_launcher->wait_mutex));
@@ -902,12 +902,12 @@ ags_task_launcher_sync_run(AgsTaskLauncher *task_launcher)
   
   g_mutex_lock(&(task_launcher->wait_mutex));
 
-  g_atomic_int_set(&(task_launcher->is_running),
+  ags_atomic_int_set(&(task_launcher->is_running),
 		   FALSE);
-  g_atomic_int_set(&(task_launcher->wait_count),
+  ags_atomic_int_set(&(task_launcher->wait_count),
 		   0);
 
-  if(g_atomic_int_get(&(task_launcher->wait_count)) > 0){
+  if(ags_atomic_int_get(&(task_launcher->wait_count)) > 0){
     g_cond_broadcast(&(task_launcher->wait_cond));
   }
   

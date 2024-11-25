@@ -612,7 +612,7 @@ ags_pulse_devin_init(AgsPulseDevin *pulse_devin)
   /* flags */
   pulse_devin->flags = 0;
   pulse_devin->connectable_flags = 0;
-  g_atomic_int_set(&(pulse_devin->sync_flags),
+  ags_atomic_int_set(&(pulse_devin->sync_flags),
 		   AGS_PULSE_DEVIN_PASS_THROUGH);
 
   /* insert devin mutex */
@@ -1950,9 +1950,9 @@ ags_pulse_devin_port_init(AgsSoundcard *soundcard,
 			 AGS_PULSE_DEVIN_START_RECORD |
 			 AGS_PULSE_DEVIN_RECORD);
   
-  g_atomic_int_and(&(pulse_devin->sync_flags),
+  ags_atomic_int_and(&(pulse_devin->sync_flags),
 		   (~(AGS_PULSE_DEVIN_PASS_THROUGH)));
-  g_atomic_int_or(&(pulse_devin->sync_flags),
+  ags_atomic_int_or(&(pulse_devin->sync_flags),
 		  AGS_PULSE_DEVIN_INITIAL_CALLBACK);
 
   g_rec_mutex_unlock(pulse_devin_mutex);
@@ -2046,13 +2046,13 @@ ags_pulse_devin_port_record(AgsSoundcard *soundcard,
 
   if(pulse_client_activated){
     /* signal */
-    if((AGS_PULSE_DEVIN_INITIAL_CALLBACK & (g_atomic_int_get(&(pulse_devin->sync_flags)))) == 0){
+    if((AGS_PULSE_DEVIN_INITIAL_CALLBACK & (ags_atomic_int_get(&(pulse_devin->sync_flags)))) == 0){
       g_mutex_lock(callback_mutex);
 
-      g_atomic_int_or(&(pulse_devin->sync_flags),
+      ags_atomic_int_or(&(pulse_devin->sync_flags),
 		      AGS_PULSE_DEVIN_CALLBACK_DONE);
     
-      if((AGS_PULSE_DEVIN_CALLBACK_WAIT & (g_atomic_int_get(&(pulse_devin->sync_flags)))) != 0){
+      if((AGS_PULSE_DEVIN_CALLBACK_WAIT & (ags_atomic_int_get(&(pulse_devin->sync_flags)))) != 0){
 	g_cond_signal(&(pulse_devin->callback_cond));
       }
 
@@ -2060,27 +2060,27 @@ ags_pulse_devin_port_record(AgsSoundcard *soundcard,
     }
     
     /* wait callback */	
-    if((AGS_PULSE_DEVIN_INITIAL_CALLBACK & (g_atomic_int_get(&(pulse_devin->sync_flags)))) == 0){
+    if((AGS_PULSE_DEVIN_INITIAL_CALLBACK & (ags_atomic_int_get(&(pulse_devin->sync_flags)))) == 0){
       g_mutex_lock(callback_finish_mutex);
     
-      if((AGS_PULSE_DEVIN_CALLBACK_FINISH_DONE & (g_atomic_int_get(&(pulse_devin->sync_flags)))) == 0){
-	g_atomic_int_or(&(pulse_devin->sync_flags),
+      if((AGS_PULSE_DEVIN_CALLBACK_FINISH_DONE & (ags_atomic_int_get(&(pulse_devin->sync_flags)))) == 0){
+	ags_atomic_int_or(&(pulse_devin->sync_flags),
 			AGS_PULSE_DEVIN_CALLBACK_FINISH_WAIT);
     
-	while((AGS_PULSE_DEVIN_CALLBACK_FINISH_DONE & (g_atomic_int_get(&(pulse_devin->sync_flags)))) == 0 &&
-	      (AGS_PULSE_DEVIN_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(pulse_devin->sync_flags)))) != 0){
+	while((AGS_PULSE_DEVIN_CALLBACK_FINISH_DONE & (ags_atomic_int_get(&(pulse_devin->sync_flags)))) == 0 &&
+	      (AGS_PULSE_DEVIN_CALLBACK_FINISH_WAIT & (ags_atomic_int_get(&(pulse_devin->sync_flags)))) != 0){
 	  g_cond_wait(&(pulse_devin->callback_finish_cond),
 		      callback_finish_mutex);
 	}
       }
     
-      g_atomic_int_and(&(pulse_devin->sync_flags),
+      ags_atomic_int_and(&(pulse_devin->sync_flags),
 		       (~(AGS_PULSE_DEVIN_CALLBACK_FINISH_WAIT |
 			  AGS_PULSE_DEVIN_CALLBACK_FINISH_DONE)));
     
       g_mutex_unlock(callback_finish_mutex);
     }else{
-      g_atomic_int_and(&(pulse_devin->sync_flags),
+      ags_atomic_int_and(&(pulse_devin->sync_flags),
 		       (~AGS_PULSE_DEVIN_INITIAL_CALLBACK));
     }
   }
@@ -2144,24 +2144,24 @@ ags_pulse_devin_port_free(AgsSoundcard *soundcard)
   callback_mutex = &(pulse_devin->callback_mutex);
   callback_finish_mutex = &(pulse_devin->callback_finish_mutex);
   
-  //  g_atomic_int_or(&(AGS_THREAD(application_context->main_loop)->flags),
+  //  ags_atomic_int_or(&(AGS_THREAD(application_context->main_loop)->flags),
   //		  AGS_THREAD_TIMING);
   
   pulse_devin->app_buffer_mode = AGS_PULSE_DEVIN_APP_BUFFER_0;
   pulse_devin->flags &= (~(AGS_PULSE_DEVIN_RECORD));
 
-  g_atomic_int_or(&(pulse_devin->sync_flags),
+  ags_atomic_int_or(&(pulse_devin->sync_flags),
 		  AGS_PULSE_DEVIN_PASS_THROUGH);
-  g_atomic_int_and(&(pulse_devin->sync_flags),
+  ags_atomic_int_and(&(pulse_devin->sync_flags),
 		   (~AGS_PULSE_DEVIN_INITIAL_CALLBACK));
 
   /* signal callback */
   g_mutex_lock(callback_mutex);
 
-  g_atomic_int_or(&(pulse_devin->sync_flags),
+  ags_atomic_int_or(&(pulse_devin->sync_flags),
 		  AGS_PULSE_DEVIN_CALLBACK_DONE);
     
-  if((AGS_PULSE_DEVIN_CALLBACK_WAIT & (g_atomic_int_get(&(pulse_devin->sync_flags)))) != 0){
+  if((AGS_PULSE_DEVIN_CALLBACK_WAIT & (ags_atomic_int_get(&(pulse_devin->sync_flags)))) != 0){
     g_cond_signal(&(pulse_devin->callback_cond));
   }
 
@@ -2170,10 +2170,10 @@ ags_pulse_devin_port_free(AgsSoundcard *soundcard)
   /* signal thread */
   g_mutex_lock(callback_finish_mutex);
 
-  g_atomic_int_or(&(pulse_devin->sync_flags),
+  ags_atomic_int_or(&(pulse_devin->sync_flags),
 		  AGS_PULSE_DEVIN_CALLBACK_FINISH_DONE);
     
-  if((AGS_PULSE_DEVIN_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(pulse_devin->sync_flags)))) != 0){
+  if((AGS_PULSE_DEVIN_CALLBACK_FINISH_WAIT & (ags_atomic_int_get(&(pulse_devin->sync_flags)))) != 0){
     g_cond_signal(&(pulse_devin->callback_finish_cond));
   }
 
@@ -2243,7 +2243,7 @@ ags_pulse_devin_port_free(AgsSoundcard *soundcard)
   if(pulse_devin->pulse_port != NULL){
     pulse_port = pulse_devin->pulse_port->data;
 
-    while(!g_atomic_int_get(&(pulse_port->is_empty))) usleep(500000);
+    while(!ags_atomic_int_get(&(pulse_port->is_empty))) usleep(500000);
   }
 
   g_rec_mutex_lock(pulse_devin_mutex);

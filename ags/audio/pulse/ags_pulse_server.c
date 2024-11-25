@@ -289,7 +289,7 @@ ags_pulse_server_init(AgsPulseServer *pulse_server)
   /* server mutex */
   g_rec_mutex_init(&(pulse_server->obj_mutex)); 
 
-  g_atomic_int_set(&(pulse_server->running),
+  ags_atomic_int_set(&(pulse_server->running),
 		   TRUE);
   
   pulse_server->thread = NULL;

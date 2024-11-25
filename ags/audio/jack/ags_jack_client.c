@@ -280,7 +280,7 @@ ags_jack_client_init(AgsJackClient *jack_client)
   jack_client->device = NULL;
   jack_client->port = NULL;
 
-  g_atomic_int_set(&(jack_client->queued),
+  ags_atomic_int_set(&(jack_client->queued),
 		   0);
 
   jack_client->audio_buffer_util = ags_audio_buffer_util_alloc();
@@ -1504,12 +1504,12 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
   /* get application context */
   application_context = ags_application_context_get_instance();
 
-  if(g_atomic_int_get(&(jack_client->queued)) > 0){
+  if(ags_atomic_int_get(&(jack_client->queued)) > 0){
     g_warning("drop JACK callback");
     
     return(0);
   }else{
-    g_atomic_int_inc(&(jack_client->queued));
+    ags_atomic_int_increment(&(jack_client->queued));
   }
 
   /*
@@ -1522,7 +1522,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
   device = device_start;
   
   if(device == NULL){
-    g_atomic_int_dec_and_test(&(jack_client->queued));
+    ags_atomic_int_decrement(&(jack_client->queued));
 
     g_object_unref(audio_loop);
     g_object_unref(task_launcher);
@@ -1559,7 +1559,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
       /* wait callback */      
       no_event = TRUE;
       
-      if((AGS_JACK_MIDIIN_PASS_THROUGH & (g_atomic_int_get(&(jack_midiin->sync_flags)))) == 0){
+      if((AGS_JACK_MIDIIN_PASS_THROUGH & (ags_atomic_int_get(&(jack_midiin->sync_flags)))) == 0){
 	callback_mutex = &(jack_midiin->callback_mutex);
 
 	g_rec_mutex_unlock(device_mutex);
@@ -1567,18 +1567,18 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 	/* give back computing time until ready */
 	g_mutex_lock(callback_mutex);
     
-	if((AGS_JACK_MIDIIN_CALLBACK_DONE & (g_atomic_int_get(&(jack_midiin->sync_flags)))) == 0){
-	  g_atomic_int_or(&(jack_midiin->sync_flags),
+	if((AGS_JACK_MIDIIN_CALLBACK_DONE & (ags_atomic_int_get(&(jack_midiin->sync_flags)))) == 0){
+	  ags_atomic_int_or(&(jack_midiin->sync_flags),
 			  AGS_JACK_MIDIIN_CALLBACK_WAIT);
     
-	  while((AGS_JACK_MIDIIN_CALLBACK_DONE & (g_atomic_int_get(&(jack_midiin->sync_flags)))) == 0 &&
-		(AGS_JACK_MIDIIN_CALLBACK_WAIT & (g_atomic_int_get(&(jack_midiin->sync_flags)))) != 0){
+	  while((AGS_JACK_MIDIIN_CALLBACK_DONE & (ags_atomic_int_get(&(jack_midiin->sync_flags)))) == 0 &&
+		(AGS_JACK_MIDIIN_CALLBACK_WAIT & (ags_atomic_int_get(&(jack_midiin->sync_flags)))) != 0){
 	    g_cond_wait(&(jack_midiin->callback_cond),
 			callback_mutex);
 	  }
 	}
     
-	g_atomic_int_and(&(jack_midiin->sync_flags),
+	ags_atomic_int_and(&(jack_midiin->sync_flags),
 			 (~(AGS_JACK_MIDIIN_CALLBACK_WAIT |
 			    AGS_JACK_MIDIIN_CALLBACK_DONE)));
 	  
@@ -1647,10 +1647,10 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 	
 	  g_mutex_lock(callback_finish_mutex);
 
-	  g_atomic_int_or(&(jack_midiin->sync_flags),
+	  ags_atomic_int_or(&(jack_midiin->sync_flags),
 			  AGS_JACK_MIDIIN_CALLBACK_FINISH_DONE);
     
-	  if((AGS_JACK_MIDIIN_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(jack_midiin->sync_flags)))) != 0){
+	  if((AGS_JACK_MIDIIN_CALLBACK_FINISH_WAIT & (ags_atomic_int_get(&(jack_midiin->sync_flags)))) != 0){
 	    g_cond_signal(&(jack_midiin->callback_finish_cond));
 	  }
 
@@ -1691,7 +1691,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
       /* wait callback */      
       no_event = TRUE;
 
-      if((AGS_JACK_DEVIN_PASS_THROUGH & (g_atomic_int_get(&(jack_devin->sync_flags)))) == 0){
+      if((AGS_JACK_DEVIN_PASS_THROUGH & (ags_atomic_int_get(&(jack_devin->sync_flags)))) == 0){
 	callback_mutex = &(jack_devin->callback_mutex);
 
 	g_rec_mutex_unlock(device_mutex);
@@ -1699,18 +1699,18 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 	/* give back computing time until ready */
 	g_mutex_lock(callback_mutex);
     
-	if((AGS_JACK_DEVIN_CALLBACK_DONE & (g_atomic_int_get(&(jack_devin->sync_flags)))) == 0){
-	  g_atomic_int_or(&(jack_devin->sync_flags),
+	if((AGS_JACK_DEVIN_CALLBACK_DONE & (ags_atomic_int_get(&(jack_devin->sync_flags)))) == 0){
+	  ags_atomic_int_or(&(jack_devin->sync_flags),
 			  AGS_JACK_DEVIN_CALLBACK_WAIT);
     
-	  while((AGS_JACK_DEVIN_CALLBACK_DONE & (g_atomic_int_get(&(jack_devin->sync_flags)))) == 0 &&
-		(AGS_JACK_DEVIN_CALLBACK_WAIT & (g_atomic_int_get(&(jack_devin->sync_flags)))) != 0){
+	  while((AGS_JACK_DEVIN_CALLBACK_DONE & (ags_atomic_int_get(&(jack_devin->sync_flags)))) == 0 &&
+		(AGS_JACK_DEVIN_CALLBACK_WAIT & (ags_atomic_int_get(&(jack_devin->sync_flags)))) != 0){
 	    g_cond_wait(&(jack_devin->callback_cond),
 			callback_mutex);
 	  }
 	}
     
-	g_atomic_int_and(&(jack_devin->sync_flags),
+	ags_atomic_int_and(&(jack_devin->sync_flags),
 			 (~(AGS_JACK_DEVIN_CALLBACK_WAIT |
 			    AGS_JACK_DEVIN_CALLBACK_DONE)));
     
@@ -1828,10 +1828,10 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 	
 	g_mutex_lock(callback_finish_mutex);
 
-	g_atomic_int_or(&(jack_devin->sync_flags),
+	ags_atomic_int_or(&(jack_devin->sync_flags),
 			AGS_JACK_DEVIN_CALLBACK_FINISH_DONE);
     
-	if((AGS_JACK_DEVIN_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(jack_devin->sync_flags)))) != 0){
+	if((AGS_JACK_DEVIN_CALLBACK_FINISH_WAIT & (ags_atomic_int_get(&(jack_devin->sync_flags)))) != 0){
 	  g_cond_signal(&(jack_devin->callback_finish_cond));
 	}
 
@@ -1871,7 +1871,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
       /* wait callback */      
       no_event = TRUE;
 
-      if((AGS_JACK_DEVOUT_PASS_THROUGH & (g_atomic_int_get(&(jack_devout->sync_flags)))) == 0){
+      if((AGS_JACK_DEVOUT_PASS_THROUGH & (ags_atomic_int_get(&(jack_devout->sync_flags)))) == 0){
 	callback_mutex = &(jack_devout->callback_mutex);
 
 	g_rec_mutex_unlock(device_mutex);
@@ -1879,18 +1879,18 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 	/* give back computing time until ready */
 	g_mutex_lock(callback_mutex);
     
-	if((AGS_JACK_DEVOUT_CALLBACK_DONE & (g_atomic_int_get(&(jack_devout->sync_flags)))) == 0){
-	  g_atomic_int_or(&(jack_devout->sync_flags),
+	if((AGS_JACK_DEVOUT_CALLBACK_DONE & (ags_atomic_int_get(&(jack_devout->sync_flags)))) == 0){
+	  ags_atomic_int_or(&(jack_devout->sync_flags),
 			  AGS_JACK_DEVOUT_CALLBACK_WAIT);
     
-	  while((AGS_JACK_DEVOUT_CALLBACK_DONE & (g_atomic_int_get(&(jack_devout->sync_flags)))) == 0 &&
-		(AGS_JACK_DEVOUT_CALLBACK_WAIT & (g_atomic_int_get(&(jack_devout->sync_flags)))) != 0){
+	  while((AGS_JACK_DEVOUT_CALLBACK_DONE & (ags_atomic_int_get(&(jack_devout->sync_flags)))) == 0 &&
+		(AGS_JACK_DEVOUT_CALLBACK_WAIT & (ags_atomic_int_get(&(jack_devout->sync_flags)))) != 0){
 	    g_cond_wait(&(jack_devout->callback_cond),
 			callback_mutex);
 	  }
 	}
     
-	g_atomic_int_and(&(jack_devout->sync_flags),
+	ags_atomic_int_and(&(jack_devout->sync_flags),
 			 (~(AGS_JACK_DEVOUT_CALLBACK_WAIT |
 			    AGS_JACK_DEVOUT_CALLBACK_DONE)));
     
@@ -2008,10 +2008,10 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 	
 	g_mutex_lock(callback_finish_mutex);
 
-	g_atomic_int_or(&(jack_devout->sync_flags),
+	ags_atomic_int_or(&(jack_devout->sync_flags),
 			AGS_JACK_DEVOUT_CALLBACK_FINISH_DONE);
     
-	if((AGS_JACK_DEVOUT_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(jack_devout->sync_flags)))) != 0){
+	if((AGS_JACK_DEVOUT_CALLBACK_FINISH_WAIT & (ags_atomic_int_get(&(jack_devout->sync_flags)))) != 0){
 	  g_cond_signal(&(jack_devout->callback_finish_cond));
 	}
 
@@ -2026,7 +2026,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
   }
 
   g_list_free(device_start);
-  g_atomic_int_dec_and_test(&(jack_client->queued));
+  ags_atomic_int_decrement(&(jack_client->queued));
 
   /* unref */
   g_object_unref(audio_loop);

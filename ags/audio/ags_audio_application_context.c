@@ -1911,7 +1911,7 @@ ags_audio_application_context_prepare(AgsApplicationContext *application_context
     
   g_mutex_unlock(AGS_THREAD_GET_START_MUTEX(audio_loop));
 
-  g_atomic_int_set(&(application_context->is_ready),
+  ags_atomic_int_set(&(application_context->is_ready),
 		   1);
 }
 
@@ -1981,7 +1981,7 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   
   audio_application_context = (AgsAudioApplicationContext *) application_context;
 
-  while(!g_atomic_int_get(&(application_context->is_ready))){
+  while(!ags_atomic_int_get(&(application_context->is_ready))){
     usleep(4);
   }
   

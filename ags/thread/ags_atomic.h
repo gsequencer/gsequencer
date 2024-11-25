@@ -30,10 +30,12 @@ G_BEGIN_DECLS
 #define ags_atomic_boolean_get(ptr) ((gboolean) __atomic_load_n(((volatile gboolean *) ptr), __ATOMIC_RELEASE))
 #define ags_atomic_uint_get(ptr) ((guint) __atomic_load_n(((volatile guint *) ptr), __ATOMIC_RELEASE))
 #define ags_atomic_int_get(ptr) ((gint) __atomic_load_n(((volatile gint *) ptr), __ATOMIC_RELEASE))
+#define ags_atomic_pointer_get(ptr) ((gpointer) __atomic_load_n(((volatile gpointer *) ptr), __ATOMIC_RELEASE))
 
 #define ags_atomic_boolean_set(ptr, bval) (__atomic_store_n((volatile gboolean *) ptr, bval, __ATOMIC_SEQ_CST))
 #define ags_atomic_uint_set(ptr, uval) (__atomic_store_n((volatile guint *) ptr, uval, __ATOMIC_SEQ_CST))
 #define ags_atomic_int_set(ptr, ival) (__atomic_store_n((volatile gint *) ptr, ival, __ATOMIC_SEQ_CST))
+#define ags_atomic_pointer_set(ptr, pval) (__atomic_store_n((volatile gpointer *) ptr, pval, __ATOMIC_SEQ_CST))
 
 #define ags_atomic_uint_or(ptr, uval) ((guint) __atomic_or_fetch((volatile guint *) ptr, uval, __ATOMIC_RELEASE))
 #define ags_atomic_int_or(ptr, ival) ((gint) __atomic_or_fetch((volatile gint *) ptr, ival, __ATOMIC_RELEASE))

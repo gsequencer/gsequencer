@@ -272,7 +272,7 @@ ags_osc_xmlrpc_controller_init(AgsOscXmlrpcController *osc_xmlrpc_controller)
 
   osc_xmlrpc_controller->osc_xmlrpc_server = NULL;
 
-  g_atomic_int_set(&(osc_xmlrpc_controller->do_reset),
+  ags_atomic_int_set(&(osc_xmlrpc_controller->do_reset),
 		   FALSE);
 
   g_mutex_init(&(osc_xmlrpc_controller->delegate_mutex));
@@ -448,7 +448,7 @@ ags_osc_xmlrpc_controller_delegate_timeout(AgsOscXmlrpcController *osc_xmlrpc_co
 
   time_now = g_get_monotonic_time();
 
-  g_atomic_int_set(&(osc_xmlrpc_controller->do_reset),
+  ags_atomic_int_set(&(osc_xmlrpc_controller->do_reset),
 		   FALSE);
     
   g_mutex_unlock(&(osc_xmlrpc_controller->delegate_mutex));

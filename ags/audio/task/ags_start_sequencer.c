@@ -209,7 +209,7 @@ ags_start_sequencer_launch(AgsTask *task)
 				 sequencer_thread);
     }
     
-    sequencer_thread = g_atomic_pointer_get(&(sequencer_thread->next));
+    sequencer_thread = ags_atomic_pointer_get(&(sequencer_thread->next));
   }
 
   /* unref */
