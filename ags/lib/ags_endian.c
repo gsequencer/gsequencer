@@ -32,7 +32,7 @@
 GType
 ags_byte_order_get_type()
 {
-  static volatile gsize g_enum_type_id__volatile;
+  static gsize g_enum_type_id__volatile;
 
   if(g_once_init_enter (&g_enum_type_id__volatile)){
     static const GEnumValue values[] = {

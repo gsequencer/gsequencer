@@ -61,7 +61,7 @@ GMutex interp_coeff_4th_order_mutex;
 GType
 ags_fluid_interpolate_4th_order_util_get_type(void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_fluid_interpolate_4th_order_util = 0;

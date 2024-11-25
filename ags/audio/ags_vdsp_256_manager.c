@@ -26,12 +26,12 @@ void ags_vdsp_256_manager_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_vdsp_256_manager
- * @short_description: Singleton pattern to organize volatile memory
+ * @short_description: Singleton pattern to organize memory
  * @title: AgsVDSP256Manager
  * @section_id:
  * @include: ags/plugin/ags_vdsp_256_manager.h
  *
- * The #AgsVDSP256Manager contains volatile memory for vdsp types.
+ * The #AgsVDSP256Manager contains memory for vdsp types.
  */
 
 static gpointer ags_vdsp_256_manager_parent_class = NULL;
@@ -41,7 +41,7 @@ AgsVDSP256Manager *ags_vdsp_256_manager = NULL;
 GType
 ags_vdsp_256_manager_get_type (void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_vdsp_256_manager = 0;

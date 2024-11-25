@@ -41,7 +41,7 @@ void ags_math_util_free(gpointer ptr);
 GType
 ags_math_util_get_type(void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_math_util = 0;
@@ -2270,7 +2270,7 @@ ags_math_util_find_symbol_all(gchar *str)
   static const GRegex *function_regex = NULL;
   static const GRegex *literal_regex = NULL;
 
-  static const gchar *function_pattern = "(log|exp|sin|cos|tan|asin|acos|atan|floor|ceil|round)|([\\s\\+\\-%\\*\\/\\(\\)\\^\\|\\=])";
+  static const gchar *function_pattern = "(log|exp|sin|cos|tan|asin|acos|atan|floor|ceil|round)|([\\s\\+\\-%\\*\\/\(\\)\\^\\|\\=])";
   static const gchar *literal_pattern = "([a-zA-Z][0-9]*)";
 
   if(str == NULL){
@@ -2572,7 +2572,7 @@ ags_math_util_split_polynomial(gchar *polynomial,
   static const gchar *constants_pattern = "^[\\s]*([ℯ𝜋𝑖∞])";
 
   /* groups: #1 exponent operator, #2 exponent */
-  static const gchar *exponent_pattern = "^[\\s]*(\\^)[\\s]*(\\([^)(]*+(?:(?R)[^)(]*)*+\\))";
+  static const gchar *exponent_pattern = "^[\\s]*(\\^)[\\s]*(\([^)(]*+(?:(?R)[^)(]*)*+\\))";
   
   /* groups: #1 symbol */
   static const gchar *symbol_pattern = "^[\\s]*([a-zA-Z][0-9]*)";
@@ -3128,7 +3128,7 @@ ags_math_util_split_sum(gchar *sum,
   static const gchar *symbol_pattern = "^([a-zA-Z][0-9]*)";
 
   /* groups: #1 exponent operator, #2 exponent */
-  static const gchar *exponent_pattern = "^(\\^)[\\s]*(\\([^)(]*+(?:(?R)[^)(]*)*+\\))";
+  static const gchar *exponent_pattern = "^(\\^)[\\s]*(\([^)(]*+(?:(?R)[^)(]*)*+\\))";
 
   if(sum == NULL){
     goto ags_math_util_split_sum_RETURN_NULL;

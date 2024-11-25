@@ -168,7 +168,7 @@ struct TestDataMeter{
   gchar *security_token;
   gchar *resource_id;
 
-  volatile gint *meter_packet_count;
+  gint *meter_packet_count;
 }meter_data;
 
 gpointer
@@ -490,7 +490,7 @@ ags_functional_osc_xmlrpc_server_test_websocket_message_callback(SoupWebsocketCo
   xmlDoc *response_doc;
   xmlNode *response_root_node;
 
-  volatile gint *meter_packet_count;
+  gint *meter_packet_count;
   guchar *data;
 
   gsize data_length;
@@ -1171,7 +1171,7 @@ ags_functional_osc_xmlrpc_server_test_meter_controller()
 
   gsize response_size;
   int buffer_length;
-  volatile gint meter_packet_count;
+  gint meter_packet_count;
   guint i;
   gboolean retval;
   guint status;

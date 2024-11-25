@@ -37,7 +37,7 @@
 GType
 ags_synth_oscillator_mode_get_type()
 {
-  static volatile gsize g_enum_type_id__volatile;
+  static gsize g_enum_type_id__volatile;
 
   if(g_once_init_enter (&g_enum_type_id__volatile)){
     static const GEnumValue values[] = {
@@ -61,7 +61,7 @@ ags_synth_oscillator_mode_get_type()
 GType
 ags_synth_key_mode_get_type()
 {
-  static volatile gsize g_enum_type_id__volatile;
+  static gsize g_enum_type_id__volatile;
 
   if(g_once_init_enter (&g_enum_type_id__volatile)){
     static const GEnumValue values[] = {
@@ -84,7 +84,7 @@ ags_synth_key_mode_get_type()
 GType
 ags_pitch_type_mode_get_type()
 {
-  static volatile gsize g_enum_type_id__volatile;
+  static gsize g_enum_type_id__volatile;
 
   if(g_once_init_enter (&g_enum_type_id__volatile)){
     static const GEnumValue values[] = {

@@ -65,7 +65,7 @@ const gchar *ags_fx_notation_audio_signal_plugin_name = "ags-fx-notation";
 GType
 ags_fx_notation_audio_signal_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_fx_notation_audio_signal = 0;

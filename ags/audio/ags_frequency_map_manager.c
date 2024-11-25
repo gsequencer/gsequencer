@@ -62,7 +62,7 @@ guint ags_frequency_map_manager_default_buffer_size[] = {
 GType
 ags_frequency_map_manager_get_type (void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_frequency_map_manager = 0;

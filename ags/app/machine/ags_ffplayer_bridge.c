@@ -50,7 +50,7 @@ static AgsConnectableInterface *ags_ffplayer_bridge_parent_connectable_interface
 GType
 ags_ffplayer_bridge_get_type(void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_ffplayer_bridge = 0;

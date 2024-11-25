@@ -86,7 +86,7 @@ struct _AgsOscMeterControllerClass
 
 struct _AgsOscMeterControllerMonitor
 {
-  volatile gint ref_count;
+  gint ref_count;
   
   AgsOscConnection *osc_connection;
 

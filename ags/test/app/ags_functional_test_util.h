@@ -77,10 +77,10 @@ void ags_functional_test_util_init(int *argc, char ***argv,
 GThread* ags_functional_test_util_test_runner_thread();
 
 void ags_functional_test_util_do_run(int argc, char **argv,
-				     AgsFunctionalTestUtilAddTest add_test, volatile gboolean *is_available);
+				     AgsFunctionalTestUtilAddTest add_test, gboolean *is_available);
 
 void ags_functional_test_util_add_test(AgsFunctionalTestUtilAddTest add_test,
-				       volatile gboolean *is_available);
+				       gboolean *is_available);
 
 void ags_functional_test_util_notify_add_test(volatile gboolean *is_available);
 

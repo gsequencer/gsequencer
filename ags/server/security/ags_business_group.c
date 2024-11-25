@@ -34,7 +34,7 @@ void ags_business_group_base_init(AgsBusinessGroupInterface *ginterface);
 GType
 ags_business_group_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_business_group = 0;

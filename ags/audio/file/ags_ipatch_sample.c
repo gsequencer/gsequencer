@@ -102,7 +102,7 @@ static gpointer ags_ipatch_sample_parent_class = NULL;
 GType
 ags_ipatch_sample_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_ipatch_sample = 0;

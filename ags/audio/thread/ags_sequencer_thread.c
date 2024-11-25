@@ -83,7 +83,7 @@ static guint sequencer_thread_signals[LAST_SIGNAL];
 GType
 ags_sequencer_thread_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_sequencer_thread = 0;

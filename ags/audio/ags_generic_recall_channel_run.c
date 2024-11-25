@@ -69,7 +69,7 @@ enum{
 GType
 ags_generic_recall_channel_run_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_generic_recall_channel_run = 0;

@@ -97,13 +97,13 @@ struct _AgsGstreamerPort
     
   void *empty_buffer;
 
-  volatile gboolean is_empty;
-  volatile gint underflow;
-  volatile gboolean restart;
+  gboolean is_empty;
+  gint underflow;
+  gboolean restart;
   
   guint nth_empty_buffer;
   
-  volatile guint queued;
+  guint queued;
 };
 
 struct _AgsGstreamerPortClass

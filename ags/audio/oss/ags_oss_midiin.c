@@ -147,7 +147,7 @@ static gpointer ags_oss_midiin_parent_class = NULL;
 GType
 ags_oss_midiin_get_type (void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_oss_midiin = 0;
@@ -301,7 +301,7 @@ ags_oss_midiin_class_init(AgsOssMidiinClass *oss_midiin)
 GType
 ags_oss_midiin_flags_get_type()
 {
-  static volatile gsize g_flags_type_id__volatile;
+  static gsize g_flags_type_id__volatile;
 
   if(g_once_init_enter (&g_flags_type_id__volatile)){
     static const GFlagsValue values[] = {

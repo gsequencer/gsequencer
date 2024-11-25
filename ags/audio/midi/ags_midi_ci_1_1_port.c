@@ -36,7 +36,7 @@ void ags_midi_ci_1_1_port_finalize(GObject *gobject);
 GType
 ags_midi_ci_1_1_port_get_type(void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_midi_ci_1_1_port = 0;

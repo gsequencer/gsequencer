@@ -207,7 +207,7 @@ static struct sigaction ags_sigact;
 GType
 ags_audio_application_context_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_audio_application_context = 0;

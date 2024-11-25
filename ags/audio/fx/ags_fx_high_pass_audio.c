@@ -53,7 +53,7 @@ const gchar* ags_fx_high_pass_audio_control_port[] = {
 GType
 ags_fx_high_pass_audio_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_fx_high_pass_audio = 0;

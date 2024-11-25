@@ -97,7 +97,7 @@ static gpointer ags_notation_parent_class = NULL;
 GType
 ags_notation_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_notation = 0;
@@ -128,7 +128,7 @@ ags_notation_get_type()
 GType
 ags_notation_flags_get_type()
 {
-  static volatile gsize g_flags_type_id__volatile;
+  static gsize g_flags_type_id__volatile;
 
   if(g_once_init_enter (&g_flags_type_id__volatile)){
     static const GFlagsValue values[] = {

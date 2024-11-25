@@ -56,7 +56,7 @@ guint ags_function_literal_solve_find_max_exponent(gchar *transformed_function);
  * function.
  */
 
-#define AGS_FUNCTION_EXPONENT_PATTERN "^((exp\\()(([0-9]|"	\
+#define AGS_FUNCTION_EXPONENT_PATTERN "^((exp\()(([0-9]|"	\
   AGS_SYMBOLIC_EULER "|"					\
   AGS_SYMBOLIC_PI "|"						\
   AGS_SYMBOLIC_INFINIT "|"					\
@@ -138,7 +138,7 @@ static GMutex regex_mutex;
 GType
 ags_function_get_type(void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_function = 0;

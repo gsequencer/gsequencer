@@ -91,7 +91,7 @@ struct _AgsApplicationContext
   int argc;
   char **argv;
 
-  volatile int is_ready;
+  int is_ready;
   
   GObject *log;
 

@@ -111,7 +111,7 @@ struct _AgsJackDevin
 
   AgsJackDevinFlags flags;
   AgsConnectableFlags connectable_flags;
-  volatile AgsJackDevinSyncFlags sync_flags;
+  AgsJackDevinSyncFlags sync_flags;
   
   GRecMutex obj_mutex;
 

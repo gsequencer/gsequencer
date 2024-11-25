@@ -64,7 +64,7 @@ static gpointer ags_expander_parent_class = NULL;
 GType
 ags_expander_get_type(void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_expander = 0;

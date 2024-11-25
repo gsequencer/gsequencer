@@ -69,7 +69,7 @@ static AgsConnectableInterface *ags_add_audio_parent_connectable_interface;
 GType
 ags_add_audio_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_add_audio = 0;

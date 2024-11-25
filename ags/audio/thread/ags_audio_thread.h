@@ -63,7 +63,7 @@ struct _AgsAudioThread
 {
   AgsThread thread;
 
-  volatile AgsAudioThreadNestedSyncFlags nested_sync_flags;
+  AgsAudioThreadNestedSyncFlags nested_sync_flags;
 
   GObject *default_output_soundcard;
   
@@ -97,8 +97,8 @@ struct _AgsAudioThreadClass
 
 struct _AgsAudioThreadScopeData
 {
-  volatile gboolean fx_done;
-  volatile guint fx_wait;
+  gboolean fx_done;
+  guint fx_wait;
   
   GMutex fx_mutex;
   GCond fx_cond;

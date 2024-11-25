@@ -77,7 +77,7 @@ struct _AgsVDSPArr
 {
   AgsVDSP256Types vdsp_type;
 
-  volatile gboolean locked;
+  gboolean locked;
   
   union{
     AgsVDSPMemInt *vec_int;

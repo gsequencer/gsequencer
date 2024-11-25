@@ -44,7 +44,7 @@ AgsLv2UridManager *ags_lv2_urid_manager = NULL;
 GType
 ags_lv2_urid_manager_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_lv2_urid_manager = 0;

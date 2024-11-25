@@ -126,7 +126,7 @@ static GMutex regex_mutex;
 GType
 ags_osc_node_controller_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_osc_node_controller = 0;

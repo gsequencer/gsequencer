@@ -40,7 +40,7 @@ static gpointer ags_timestamp_parent_class = NULL;
 GType
 ags_timestamp_get_type (void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_timestamp = 0;
@@ -71,7 +71,7 @@ ags_timestamp_get_type (void)
 GType
 ags_timestamp_flags_get_type()
 {
-  static volatile gsize g_flags_type_id__volatile;
+  static gsize g_flags_type_id__volatile;
 
   if(g_once_init_enter (&g_flags_type_id__volatile)){
     static const GFlagsValue values[] = {

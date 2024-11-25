@@ -37,7 +37,7 @@
 GType
 ags_sound_ability_flags_get_type()
 {
-  static volatile gsize g_flags_type_id__volatile;
+  static gsize g_flags_type_id__volatile;
 
   if(g_once_init_enter (&g_flags_type_id__volatile)){
     static const GFlagsValue values[] = {
@@ -60,7 +60,7 @@ ags_sound_ability_flags_get_type()
 GType
 ags_sound_behaviour_flags_get_type()
 {
-  static volatile gsize g_flags_type_id__volatile;
+  static gsize g_flags_type_id__volatile;
 
   if(g_once_init_enter (&g_flags_type_id__volatile)){
     static const GFlagsValue values[] = {
@@ -92,7 +92,7 @@ ags_sound_behaviour_flags_get_type()
 GType
 ags_sound_scope_get_type()
 {
-  static volatile gsize g_enum_type_id__volatile;
+  static gsize g_enum_type_id__volatile;
 
   if(g_once_init_enter (&g_enum_type_id__volatile)){
     static const GEnumValue values[] = {
@@ -116,7 +116,7 @@ ags_sound_scope_get_type()
 GType
 ags_sound_staging_flags_get_type()
 {
-  static volatile gsize g_flags_type_id__volatile;
+  static gsize g_flags_type_id__volatile;
 
   if(g_once_init_enter (&g_flags_type_id__volatile)){
     static const GFlagsValue values[] = {
@@ -151,7 +151,7 @@ ags_sound_staging_flags_get_type()
 GType
 ags_sound_state_flags_get_type()
 {
-  static volatile gsize g_flags_type_id__volatile;
+  static gsize g_flags_type_id__volatile;
 
   if(g_once_init_enter (&g_flags_type_id__volatile)){
     static const GFlagsValue values[] = {
@@ -173,7 +173,7 @@ ags_sound_state_flags_get_type()
 GType
 ags_sound_key_format_get_type()
 {
-  static volatile gsize g_enum_type_id__volatile;
+  static gsize g_enum_type_id__volatile;
 
   if(g_once_init_enter (&g_enum_type_id__volatile)){
     static const GEnumValue values[] = {

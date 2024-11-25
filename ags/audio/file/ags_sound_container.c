@@ -35,7 +35,7 @@ void ags_sound_container_base_init(AgsSoundContainerInterface *ginterface);
 GType
 ags_sound_container_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_sound_container = 0;

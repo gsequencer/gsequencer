@@ -34,7 +34,7 @@ void ags_password_store_base_init(AgsPasswordStoreInterface *ginterface);
 GType
 ags_password_store_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_password_store = 0;

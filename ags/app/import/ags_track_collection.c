@@ -71,7 +71,7 @@ static gpointer ags_track_collection_parent_class = NULL;
 GType
 ags_track_collection_get_type(void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_track_collection = 0;

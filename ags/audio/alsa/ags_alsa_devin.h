@@ -157,7 +157,7 @@ struct _AgsAlsaDevin
 
   void **app_buffer;
 
-  volatile gboolean available;
+  gboolean available;
   
   AgsAlsaDevinBackendBufferMode backend_buffer_mode;
   

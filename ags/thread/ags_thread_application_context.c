@@ -98,7 +98,7 @@ extern AgsApplicationContext *ags_application_context;
 GType
 ags_thread_application_context_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_thread_application_context = 0;
@@ -149,7 +149,7 @@ ags_thread_application_context_get_type()
 GType
 ags_thread_application_context_flags_get_type()
 {
-  static volatile gsize g_flags_type_id__volatile;
+  static gsize g_flags_type_id__volatile;
 
   if(g_once_init_enter (&g_flags_type_id__volatile)){
     static const GFlagsValue values[] = {

@@ -71,7 +71,7 @@ static gpointer ags_sfz_instrument_loader_parent_class = NULL;
 GType
 ags_sfz_instrument_loader_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_sfz_instrument_loader = 0;

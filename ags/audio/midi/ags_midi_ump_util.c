@@ -58,7 +58,7 @@ guint ags_midi_ump_util_get_flex_set_text(AgsMidiUmpUtil *midi_ump_util,
 GType
 ags_midi_ump_util_get_type(void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_midi_ump_util = 0;

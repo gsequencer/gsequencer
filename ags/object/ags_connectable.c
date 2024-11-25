@@ -35,7 +35,7 @@ void ags_connectable_base_init(AgsConnectableInterface *ginterface);
 GType
 ags_connectable_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_connectable = 0;

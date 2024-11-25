@@ -74,7 +74,7 @@ static gpointer ags_osc_websocket_connection_parent_class = NULL;
 GType
 ags_osc_websocket_connection_get_type(void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_osc_websocket_connection = 0;

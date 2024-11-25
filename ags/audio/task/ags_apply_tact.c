@@ -71,7 +71,7 @@ static gpointer ags_apply_tact_parent_class = NULL;
 GType
 ags_apply_tact_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_apply_tact = 0;

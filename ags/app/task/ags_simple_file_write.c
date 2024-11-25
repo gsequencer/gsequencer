@@ -46,7 +46,7 @@ static AgsConnectableInterface *ags_simple_file_write_parent_connectable_interfa
 GType
 ags_simple_file_write_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_simple_file_write = 0;

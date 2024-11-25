@@ -122,7 +122,7 @@ struct _AgsGstreamerDevin
 
   AgsGstreamerDevinFlags flags;
   AgsConnectableFlags connectable_flags;
-  volatile AgsGstreamerDevinSyncFlags sync_flags;
+  AgsGstreamerDevinSyncFlags sync_flags;
   
   GRecMutex obj_mutex;
 

@@ -60,7 +60,7 @@ AgsProgramControlNameKeyManager *ags_program_control_name_key_manager = NULL;
 GType
 ags_program_control_name_key_manager_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_program_control_name_key_manager = 0;

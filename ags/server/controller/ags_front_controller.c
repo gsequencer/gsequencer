@@ -68,7 +68,7 @@ static guint front_controller_signals[LAST_SIGNAL];
 GType
 ags_front_controller_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_front_controller = 0;

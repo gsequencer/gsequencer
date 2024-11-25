@@ -35,7 +35,7 @@ void ags_portlet_base_init(AgsPortletInterface *ginterface);
 GType
 ags_portlet_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_portlet = 0;

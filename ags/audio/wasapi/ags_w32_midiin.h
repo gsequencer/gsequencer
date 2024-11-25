@@ -146,7 +146,7 @@ struct _AgsW32Midiin
 
   guint flags;
   guint connectable_flags;
-  volatile guint sync_flags;
+  guint sync_flags;
 
   GRecMutex obj_mutex;
 

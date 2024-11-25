@@ -44,7 +44,7 @@ static guint seekable_signals[LAST_SIGNAL];
 GType
 ags_seekable_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_seekable = 0;
@@ -64,7 +64,7 @@ ags_seekable_get_type()
 GType
 ags_seek_type_get_type()
 {
-  static volatile gsize g_enum_type_id__volatile;
+  static gsize g_enum_type_id__volatile;
 
   if(g_once_init_enter (&g_enum_type_id__volatile)){
     static const GEnumValue values[] = {
