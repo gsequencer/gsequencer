@@ -408,6 +408,82 @@ ags_stargazer_synth_map_recall(AgsMachine *machine)
   
   position = 0;
 
+  /* ags-fx-playback */
+  start_recall = ags_fx_factory_create(audio,
+				       stargazer_synth->playback_play_container, stargazer_synth->playback_recall_container,
+				       "ags-fx-playback",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       position,
+				       (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
+				       0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* ags-fx-synth */
+  start_recall = ags_fx_factory_create(audio,
+				       stargazer_synth->synth_play_container, stargazer_synth->synth_recall_container,
+				       "ags-fx-stargazer-synth",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       position,
+				       (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
+				       0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* ags-fx-volume */
+  start_recall = ags_fx_factory_create(audio,
+				       stargazer_synth->volume_play_container, stargazer_synth->volume_recall_container,
+				       "ags-fx-volume",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       position,
+				       (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
+				       0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+  
+
+  /* ags-fx-envelope */
+  start_recall = ags_fx_factory_create(audio,
+				       stargazer_synth->envelope_play_container, stargazer_synth->envelope_recall_container,
+				       "ags-fx-envelope",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       position,
+				       (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
+				       0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* ags-fx-buffer */
+  start_recall = ags_fx_factory_create(audio,
+				       stargazer_synth->buffer_play_container, stargazer_synth->buffer_recall_container,
+				       "ags-fx-buffer",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       position,
+				       (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
+				       0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
   /* depending on destination */
   ags_stargazer_synth_input_map_recall(stargazer_synth,
 				       0,
@@ -452,6 +528,75 @@ ags_stargazer_synth_input_map_recall(AgsStargazerSynth *stargazer_synth,
 	       "audio-channels", &audio_channels,
 	       NULL);
   
+  /* ags-fx-playback */
+  start_recall = ags_fx_factory_create(audio,
+				       stargazer_synth->playback_play_container, stargazer_synth->playback_recall_container,
+				       "ags-fx-playback",
+				       NULL,
+				       NULL,
+				       audio_channel_start, audio_channels,
+				       input_pad_start, input_pads,
+				       position,
+				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* ags-fx-synth */
+  start_recall = ags_fx_factory_create(audio,
+				       stargazer_synth->synth_play_container, stargazer_synth->synth_recall_container,
+				       "ags-fx-stargazer-synth",
+				       NULL,
+				       NULL,
+				       audio_channel_start, audio_channels,
+				       input_pad_start, input_pads,
+				       position,
+				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* ags-fx-volume */
+  start_recall = ags_fx_factory_create(audio,
+				       stargazer_synth->volume_play_container, stargazer_synth->volume_recall_container,
+				       "ags-fx-volume",
+				       NULL,
+				       NULL,
+				       audio_channel_start, audio_channels,
+				       input_pad_start, input_pads,
+				       position,
+				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* ags-fx-envelope */
+  start_recall = ags_fx_factory_create(audio,
+				       stargazer_synth->envelope_play_container, stargazer_synth->envelope_recall_container,
+				       "ags-fx-envelope",
+				       NULL,
+				       NULL,
+				       audio_channel_start, audio_channels,
+				       input_pad_start, input_pads,
+				       position,
+				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* ags-fx-buffer */
+  start_recall = ags_fx_factory_create(audio,
+				       stargazer_synth->buffer_play_container, stargazer_synth->buffer_recall_container,
+				       "ags-fx-buffer",
+				       NULL,
+				       NULL,
+				       audio_channel_start, audio_channels,
+				       input_pad_start, input_pads,
+				       position,
+				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 
   stargazer_synth->mapped_input_pad = input_pads;
 }

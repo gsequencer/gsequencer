@@ -51,6 +51,10 @@
         <attribute name="action">app.add_hybrid_fm_synth</attribute>
       </item>
       <item>
+        <attribute name="label" translatable="yes">Stargazer Synth</attribute>
+        <attribute name="action">app.add_stargazer_synth</attribute>
+      </item>
+      <item>
         <attribute name="label" translatable="yes">FPlayer</attribute>
         <attribute name="action">app.add_ffplayer</attribute>
       </item>
