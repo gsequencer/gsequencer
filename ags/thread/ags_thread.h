@@ -26,6 +26,8 @@
 #include <ags/lib/ags_uuid.h>
 #include <ags/lib/ags_time.h>
 
+#include <ags/thread/ags_atomic.h>
+
 #include <time.h>
 
 G_BEGIN_DECLS

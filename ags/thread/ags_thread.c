@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -357,7 +357,7 @@ ags_thread_class_init(AgsThreadClass *thread)
 				   1.0,
 				   AGS_THREAD_DEFAULT_MAX_PRECISION,
 				   1.0,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DELAY,
 				  param_spec);
@@ -501,21 +501,21 @@ ags_thread_init(AgsThread *thread)
   thread->my_flags = 0;
   thread->connectable_flags = 0;
   
-  g_atomic_int_set(&(thread->status_flags),
-		   0);
+  ags_atomic_uint_set(&(thread->status_flags),
+		      0);
 
-  g_atomic_int_set(&(thread->sync_tic_flags),
-		   0);
+  ags_atomic_uint_set(&(thread->sync_tic_flags),
+		      0);
 
-  g_atomic_int_set(&(thread->is_running),
-		   0);
+  ags_atomic_uint_set(&(thread->is_running),
+		      0);
   
   /* uuid */
   thread->uuid = ags_uuid_alloc();
   ags_uuid_generate(thread->uuid);
     
   /* clock */
-  g_atomic_int_set(&(thread->current_sync_tic), 0);
+  ags_atomic_uint_set(&(thread->current_sync_tic), 0);
 
   thread->delay = 1.0;
 
@@ -602,14 +602,14 @@ ags_thread_set_property(GObject *gobject,
     }
     break;
   case PROP_DELAY:
-  {
-    gdouble delay;
+    {
+      gdouble delay;
 
-    delay = g_value_get_double(value);
+      delay = g_value_get_double(value);
 
-    ags_thread_set_delay(thread, delay);
-  }
-  break;
+      ags_thread_set_delay(thread, delay);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -847,7 +847,7 @@ ags_thread_xml_compose(AgsConnectable *connectable)
 
 void
 ags_thread_xml_parse(AgsConnectable *connectable,
-		    xmlNode *node)
+		     xmlNode *node)
 {
   //TODO:JK: implement me
 }
@@ -980,11 +980,11 @@ ags_thread_global_get_use_sync_counter()
 {
   gboolean use_sync_counter;
 
-//  g_rec_mutex_lock(ags_thread_get_class_mutex());
+  //  g_rec_mutex_lock(ags_thread_get_class_mutex());
 
   use_sync_counter = ags_thread_global_use_sync_counter;
 
-//  g_rec_mutex_unlock(ags_thread_get_class_mutex());
+  //  g_rec_mutex_unlock(ags_thread_get_class_mutex());
   
   return(use_sync_counter);
 }
@@ -1106,7 +1106,7 @@ ags_thread_test_status_flags(AgsThread *thread,
     return(FALSE);
   }
   
-  retval = ((status_flags & (g_atomic_int_get(&(thread->status_flags)))) != 0) ? TRUE: FALSE;
+  retval = ((status_flags & (ags_atomic_uint_get(&(thread->status_flags)))) != 0) ? TRUE: FALSE;
     
   return(retval);
 }
@@ -1128,7 +1128,7 @@ ags_thread_set_status_flags(AgsThread *thread,
     return;
   }
 
-  g_atomic_int_or(&(thread->status_flags), status_flags);
+  ags_atomic_uint_or(&(thread->status_flags), status_flags);
 }
 
 /**
@@ -1148,7 +1148,7 @@ ags_thread_unset_status_flags(AgsThread *thread,
     return;
   }
 
-  g_atomic_int_and(&(thread->status_flags), (~status_flags));
+  ags_atomic_uint_and(&(thread->status_flags), (~status_flags));
 }
 
 /**
@@ -1166,7 +1166,7 @@ ags_thread_clear_status_flags(AgsThread *thread)
     return;
   }
 
-  g_atomic_int_set(&(thread->status_flags), 0);
+  ags_atomic_uint_set(&(thread->status_flags), 0);
 }
 
 /**
@@ -1190,7 +1190,7 @@ ags_thread_test_sync_tic_flags(AgsThread *thread,
     return(FALSE);
   }
   
-  retval = ((sync_tic_flags & (g_atomic_int_get(&(thread->sync_tic_flags)))) != 0) ? TRUE: FALSE;
+  retval = ((sync_tic_flags & (ags_atomic_uint_get(&(thread->sync_tic_flags)))) != 0) ? TRUE: FALSE;
     
   return(retval);
 }
@@ -1212,7 +1212,7 @@ ags_thread_set_sync_tic_flags(AgsThread *thread,
     return;
   }
 
-  g_atomic_int_or(&(thread->sync_tic_flags), sync_tic_flags);
+  ags_atomic_uint_or(&(thread->sync_tic_flags), sync_tic_flags);
 }
 
 /**
@@ -1232,7 +1232,7 @@ ags_thread_unset_sync_tic_flags(AgsThread *thread,
     return;
   }
 
-  g_atomic_int_and(&(thread->sync_tic_flags), (~sync_tic_flags));
+  ags_atomic_uint_and(&(thread->sync_tic_flags), (~sync_tic_flags));
 }
 
 /**
@@ -1250,7 +1250,7 @@ ags_thread_clear_sync_tic_flags(AgsThread *thread)
     return;
   }
   
-  g_atomic_int_set(&(thread->sync_tic_flags), 0);
+  ags_atomic_uint_set(&(thread->sync_tic_flags), 0);
 }
 
 /**
@@ -1269,7 +1269,7 @@ ags_thread_set_current_sync_tic(AgsThread *thread, guint current_sync_tic)
     return;
   }
 
-  g_atomic_int_set(&(thread->current_sync_tic), current_sync_tic);
+  ags_atomic_uint_set(&(thread->current_sync_tic), current_sync_tic);
 }
 
 /**
@@ -1291,7 +1291,7 @@ ags_thread_get_current_sync_tic(AgsThread *thread)
     return(G_MAXUINT);
   }
 
-  current_sync_tic = g_atomic_int_get(&(thread->current_sync_tic));
+  current_sync_tic = ags_atomic_uint_get(&(thread->current_sync_tic));
 
   return(current_sync_tic);
 }
@@ -1477,7 +1477,7 @@ ags_thread_set_max_precision(AgsThread *thread, gdouble max_precision)
     thread->tic_delay = floor(thread->delay); // thread->delay;
   }else if(ags_thread_test_flags(thread, AGS_THREAD_INTERMEDIATE_PRE_SYNC)){
     thread->tic_delay = 1.0;
-      }else{
+  }else{
     thread->tic_delay = 0.0;
   }
   
@@ -2249,77 +2249,77 @@ ags_thread_set_current_sync(AgsThread *current, guint current_sync_tic)
   
   switch(current_sync_tic){
   case 0:
-  {
-    next_current_sync_tic = 1;
+    {
+      next_current_sync_tic = 1;
     
-    sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_0;
-    sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_0;
-  }
-  break;
+      sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_0;
+      sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_0;
+    }
+    break;
   case 1:
-  {
-    next_current_sync_tic = 2;
+    {
+      next_current_sync_tic = 2;
 
-    sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_1;
-    sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_1;
-  }
-  break;
+      sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_1;
+      sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_1;
+    }
+    break;
   case 2:
-  {
-    next_current_sync_tic = 3;
+    {
+      next_current_sync_tic = 3;
 
-    sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_2;
-    sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_2;
-  }
-  break;
+      sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_2;
+      sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_2;
+    }
+    break;
   case 3:
-  {
-    next_current_sync_tic = 4;
+    {
+      next_current_sync_tic = 4;
 
-    sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_3;
-    sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_3;
-  }
-  break;
+      sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_3;
+      sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_3;
+    }
+    break;
   case 4:
-  {
-    next_current_sync_tic = 5;
+    {
+      next_current_sync_tic = 5;
 
-    sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_4;
-    sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_4;
-  }
-  break;
+      sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_4;
+      sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_4;
+    }
+    break;
   case 5:
-  {
-    next_current_sync_tic = 6;
+    {
+      next_current_sync_tic = 6;
 
-    sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_5;
-    sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_5;
-  }
-  break;
+      sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_5;
+      sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_5;
+    }
+    break;
   case 6:
-  {
-    next_current_sync_tic = 7;
+    {
+      next_current_sync_tic = 7;
 
-    sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_6;
-    sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_6;
-  }
-  break;
+      sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_6;
+      sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_6;
+    }
+    break;
   case 7:
-  {
-    next_current_sync_tic = 8;
+    {
+      next_current_sync_tic = 8;
 
-    sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_7;
-    sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_7;
-  }
-  break;
+      sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_7;
+      sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_7;
+    }
+    break;
   case 8:
-  {
-    next_current_sync_tic = 0;
+    {
+      next_current_sync_tic = 0;
 
-    sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_8;
-    sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_8;
-  }
-  break;
+      sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_8;
+      sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_8;
+    }
+    break;
   default:
     g_critical("invalid current sync-tic");
   }
@@ -2478,59 +2478,59 @@ ags_thread_real_clock(AgsThread *thread)
   
   switch(current_sync_tic){
   case 0:
-  {
-    sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_0;
-    sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_0;
-  }
-  break;
+    {
+      sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_0;
+      sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_0;
+    }
+    break;
   case 1:
-  {
-    sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_1;
-    sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_1;
-  }
-  break;
+    {
+      sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_1;
+      sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_1;
+    }
+    break;
   case 2:
-  {
-    sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_2;
-    sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_2;
-  }
-  break;
+    {
+      sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_2;
+      sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_2;
+    }
+    break;
   case 3:
-  {
-    sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_3;
-    sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_3;
-  }
-  break;
+    {
+      sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_3;
+      sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_3;
+    }
+    break;
   case 4:
-  {
-    sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_4;
-    sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_4;
-  }
-  break;
+    {
+      sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_4;
+      sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_4;
+    }
+    break;
   case 5:
-  {
-    sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_5;
-    sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_5;
-  }
-  break;
+    {
+      sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_5;
+      sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_5;
+    }
+    break;
   case 6:
-  {
-    sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_6;
-    sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_6;
-  }
-  break;
+    {
+      sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_6;
+      sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_6;
+    }
+    break;
   case 7:
-  {
-    sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_7;
-    sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_7;
-  }
-  break;
+    {
+      sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_7;
+      sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_7;
+    }
+    break;
   case 8:
-  {
-    sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_8;
-    sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_8;
-  }
-  break;
+    {
+      sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_8;
+      sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_8;
+    }
+    break;
   default:
     g_critical("invalid current sync-tic");
   }
@@ -2542,77 +2542,77 @@ ags_thread_real_clock(AgsThread *thread)
   
   switch(main_sync_tic){
   case 0:
-  {
-    next_main_sync_tic = 1;
+    {
+      next_main_sync_tic = 1;
     
-    next_sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_1;
-    next_sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_1;
-  }
-  break;
+      next_sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_1;
+      next_sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_1;
+    }
+    break;
   case 1:
-  {
-    next_main_sync_tic = 2;
+    {
+      next_main_sync_tic = 2;
     
-    next_sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_2;
-    next_sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_2;
-  }
-  break;
+      next_sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_2;
+      next_sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_2;
+    }
+    break;
   case 2:
-  {
-    next_main_sync_tic = 3;
+    {
+      next_main_sync_tic = 3;
     
-    next_sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_3;
-    next_sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_3;
-  }
-  break;
+      next_sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_3;
+      next_sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_3;
+    }
+    break;
   case 3:
-  {
-    next_main_sync_tic = 4;
+    {
+      next_main_sync_tic = 4;
 
-    next_sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_4;
-    next_sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_4;
-  }
-  break;
+      next_sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_4;
+      next_sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_4;
+    }
+    break;
   case 4:
-  {
-    next_main_sync_tic = 5;
+    {
+      next_main_sync_tic = 5;
     
-    next_sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_5;
-    next_sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_5;
-  }
-  break;
+      next_sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_5;
+      next_sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_5;
+    }
+    break;
   case 5:
-  {
-    next_main_sync_tic = 6;
+    {
+      next_main_sync_tic = 6;
     
-    next_sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_6;
-    next_sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_6;
-  }
-  break;
+      next_sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_6;
+      next_sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_6;
+    }
+    break;
   case 6:
-  {
-    next_main_sync_tic = 7;
+    {
+      next_main_sync_tic = 7;
     
-    next_sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_7;
-    next_sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_7;
-  }
-  break;
+      next_sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_7;
+      next_sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_7;
+    }
+    break;
   case 7:
-  {
-    next_main_sync_tic = 8;
+    {
+      next_main_sync_tic = 8;
     
-    next_sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_8;
-    next_sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_8;
-  }
-  break;
+      next_sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_8;
+      next_sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_8;
+    }
+    break;
   case 8:
-  {
-    next_main_sync_tic = 0;
+    {
+      next_main_sync_tic = 0;
     
-    next_sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_0;
-    next_sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_0;
-  }
-  break;
+      next_sync_tic_wait = AGS_THREAD_SYNC_TIC_WAIT_0;
+      next_sync_tic_done = AGS_THREAD_SYNC_TIC_DONE_0;
+    }
+    break;
   default:
     g_critical("invalid main sync-tic");
   }
@@ -2760,11 +2760,11 @@ ags_thread_real_clock(AgsThread *thread)
   if(task_launcher != NULL){
     g_mutex_lock(&(task_launcher->wait_mutex));
   
-    if(g_atomic_int_get(&(task_launcher->is_running))){
+    if(ags_atomic_uint_get(&(task_launcher->is_running))){
       g_atomic_int_inc(&(task_launcher->wait_count));
 
-      while(g_atomic_int_get(&(task_launcher->is_running)) &&
-	    g_atomic_int_get(&(task_launcher->wait_count)) != 0){
+      while(ags_atomic_uint_get(&(task_launcher->is_running)) &&
+	    ags_atomic_uint_get(&(task_launcher->wait_count)) != 0){
 	g_cond_wait(&(task_launcher->wait_cond),
 		    &(task_launcher->wait_mutex));
       }
@@ -3095,12 +3095,12 @@ ags_thread_real_start(AgsThread *thread)
 	 thread->thread != NULL);
 
   if(thread->thread != NULL ||
-     g_atomic_int_get(&(thread->is_running)) > 0){
+     ags_atomic_uint_get(&(thread->is_running)) > 0){
     ags_thread_recover_dead_lock(thread);
   }
   
   if(thread->thread != NULL ||
-     g_atomic_int_get(&(thread->is_running)) > 0){
+     ags_atomic_uint_get(&(thread->is_running)) > 0){
     g_critical("failed to recover dead-lock");
     
     return;
@@ -3335,7 +3335,7 @@ ags_thread_real_recover_dead_lock(AgsThread *thread)
     
     current_time = g_get_monotonic_time();
   }while(current_time < start_time + G_USEC_PER_SEC &&
-	 g_atomic_int_get(&(thread->is_running)) > 0);
+	 ags_atomic_uint_get(&(thread->is_running)) > 0);
 }
 
 /**

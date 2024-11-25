@@ -1191,6 +1191,7 @@ deprecated_libags_thread_h_sources =
 
 libags_thread_h_sources = \
 	$(deprecated_libags_thread_h_sources) \
+	ags/thread/ags_atomic.h \
 	ags/thread/ags_concurrency_provider.h \
 	ags/thread/ags_destroy_worker.h \
 	ags/thread/ags_generic_main_loop.h \
