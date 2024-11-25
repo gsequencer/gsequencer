@@ -2984,7 +2984,9 @@ libgsequencer_machine_h_sources = \
 	ags/app/machine/ags_synth_input_line_callbacks.h \
 	ags/app/machine/ags_synth_input_pad.h \
 	ags/app/machine/ags_spectrometer.h \
-	ags/app/machine/ags_spectrometer_callbacks.h
+	ags/app/machine/ags_spectrometer_callbacks.h \
+	ags/app/machine/ags_stargazer_synth.h \
+	ags/app/machine/ags_stargazer_synth_callbacks.h
 
 if WITH_LIBINSTPATCH
 libgsequencer_machine_h_sources += \
@@ -3111,7 +3113,9 @@ libgsequencer_machine_c_sources = \
 	ags/app/machine/ags_synth_input_line_callbacks.c \
 	ags/app/machine/ags_synth_input_pad.c \
 	ags/app/machine/ags_spectrometer.c \
-	ags/app/machine/ags_spectrometer_callbacks.c
+	ags/app/machine/ags_spectrometer_callbacks.c \
+	ags/app/machine/ags_stargazer_synth.c \
+	ags/app/machine/ags_stargazer_synth_callbacks.c
 
 if WITH_LIBINSTPATCH
 libgsequencer_machine_c_sources += \

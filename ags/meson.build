@@ -1136,6 +1136,8 @@ libgsequencer_sources = files(
   'app/machine/ags_hybrid_fm_synth_callbacks.c',
   'app/machine/ags_hybrid_synth.c',
   'app/machine/ags_hybrid_synth_callbacks.c',
+  'app/machine/ags_stargazer_synth.c',
+  'app/machine/ags_stargazer_synth_callbacks.c',
   'app/machine/ags_ladspa_bridge.c',
   'app/machine/ags_ladspa_bridge_callbacks.c',
   'app/machine/ags_live_dssi_bridge.c',

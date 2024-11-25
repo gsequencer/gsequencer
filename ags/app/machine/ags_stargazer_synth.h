@@ -50,6 +50,27 @@ struct _AgsStargazerSynth
 
   guint flags;
 
+  gchar *name;
+  gchar *xml_type;
+
+  guint mapped_input_pad;
+  guint mapped_output_pad;
+
+  AgsRecallContainer *playback_play_container;
+  AgsRecallContainer *playback_recall_container;
+
+  AgsRecallContainer *synth_play_container;
+  AgsRecallContainer *synth_recall_container;
+
+  AgsRecallContainer *volume_play_container;
+  AgsRecallContainer *volume_recall_container;
+
+  AgsRecallContainer *envelope_play_container;
+  AgsRecallContainer *envelope_recall_container;
+  
+  AgsRecallContainer *buffer_play_container;
+  AgsRecallContainer *buffer_recall_container;
+
   GtkComboBox *synth_0_oscillator;
 
   AgsDial *synth_0_octave;
