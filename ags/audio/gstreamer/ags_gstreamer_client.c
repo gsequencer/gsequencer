@@ -79,9 +79,9 @@ static gpointer ags_gstreamer_client_parent_class = NULL;
 GType
 ags_gstreamer_client_get_type()
 {
-  static gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_gstreamer_client = 0;
 
     static const GTypeInfo ags_gstreamer_client_info = {
@@ -111,18 +111,18 @@ ags_gstreamer_client_get_type()
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_gstreamer_client);
+    g_once_init_leave(&g_define_type_id__static, ags_type_gstreamer_client);
   }
 
-  return g_define_type_id__volatile;
+  return g_define_type_id__static;
 }
 
 GType
 ags_gstreamer_client_flags_get_type()
 {
-  static gsize g_flags_type_id__volatile;
+  static gsize g_flags_type_id__static;
 
-  if(g_once_init_enter (&g_flags_type_id__volatile)){
+  if(g_once_init_enter(&g_flags_type_id__static)){
     static const GFlagsValue values[] = {
       { AGS_GSTREAMER_CLIENT_ACTIVATED, "AGS_GSTREAMER_CLIENT_ACTIVATED", "gstreamer-client-activated" },
       { AGS_GSTREAMER_CLIENT_READY, "AGS_GSTREAMER_CLIENT_READY", "gstreamer-client-ready" },
@@ -131,10 +131,10 @@ ags_gstreamer_client_flags_get_type()
 
     GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsGstreamerClientFlags"), values);
 
-    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+    g_once_init_leave(&g_flags_type_id__static, g_flags_type_id);
   }
   
-  return g_flags_type_id__volatile;
+  return(g_flags_type_id__static);
 }
 
 void

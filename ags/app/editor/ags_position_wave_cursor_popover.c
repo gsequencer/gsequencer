@@ -78,9 +78,9 @@ static gpointer ags_position_wave_cursor_popover_parent_class = NULL;
 GType
 ags_position_wave_cursor_popover_get_type(void)
 {
-  static gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_position_wave_cursor_popover = 0;
 
     static const GTypeInfo ags_position_wave_cursor_popover_info = {
@@ -119,10 +119,10 @@ ags_position_wave_cursor_popover_get_type(void)
 				AGS_TYPE_APPLICABLE,
 				&ags_applicable_interface_info);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_position_wave_cursor_popover);
+    g_once_init_leave(&g_define_type_id__static, ags_type_position_wave_cursor_popover);
   }
 
-  return g_define_type_id__volatile;
+  return g_define_type_id__static;
 }
 
 void

@@ -45,9 +45,9 @@ const gchar *ags_fx_high_pass_channel_processor_plugin_name = "ags-fx-high-pass"
 GType
 ags_fx_high_pass_channel_processor_get_type()
 {
-  static gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_fx_high_pass_channel_processor = 0;
 
     static const GTypeInfo ags_fx_high_pass_channel_processor_info = {
@@ -67,10 +67,10 @@ ags_fx_high_pass_channel_processor_get_type()
 								     &ags_fx_high_pass_channel_processor_info,
 								     0);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_fx_high_pass_channel_processor);
+    g_once_init_leave(&g_define_type_id__static, ags_type_fx_high_pass_channel_processor);
   }
 
-  return g_define_type_id__volatile;
+  return g_define_type_id__static;
 }
 
 void

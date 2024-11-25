@@ -120,9 +120,9 @@ static guint file_signals[LAST_SIGNAL] = { 0 };
 GType
 ags_file_get_type (void)
 {
-  static gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_file = 0;
 
     static const GTypeInfo ags_file_info = {
@@ -142,18 +142,18 @@ ags_file_get_type (void)
 					   &ags_file_info,
 					   0);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_file);
+    g_once_init_leave(&g_define_type_id__static, ags_type_file);
   }
 
-  return g_define_type_id__volatile;
+  return g_define_type_id__static;
 }
 
 GType
 ags_file_flags_get_type()
 {
-  static gsize g_flags_type_id__volatile;
+  static gsize g_flags_type_id__static;
 
-  if(g_once_init_enter (&g_flags_type_id__volatile)){
+  if(g_once_init_enter(&g_flags_type_id__static)){
     static const GFlagsValue values[] = {
       { AGS_FILE_READ, "AGS_FILE_READ", "file-read" },
       { AGS_FILE_READ_AUDIO_SIGNAL, "AGS_FILE_READ_AUDIO_SIGNAL", "file-read-audio-signal" },
@@ -166,10 +166,10 @@ ags_file_flags_get_type()
 
     GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsFileFlags"), values);
 
-    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+    g_once_init_leave(&g_flags_type_id__static, g_flags_type_id);
   }
   
-  return g_flags_type_id__volatile;
+  return(g_flags_type_id__static);
 }
 
 void

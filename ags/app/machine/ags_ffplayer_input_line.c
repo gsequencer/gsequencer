@@ -48,9 +48,9 @@ static AgsConnectableInterface *ags_ffplayer_input_line_parent_connectable_inter
 GType
 ags_ffplayer_input_line_get_type(void)
 {
-  static gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_ffplayer_input_line = 0;
 
     static const GTypeInfo ags_ffplayer_input_line_info = {
@@ -79,10 +79,10 @@ ags_ffplayer_input_line_get_type(void)
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_ffplayer_input_line);
+    g_once_init_leave(&g_define_type_id__static, ags_type_ffplayer_input_line);
   }
 
-  return g_define_type_id__volatile;
+  return g_define_type_id__static;
 }
 
 void

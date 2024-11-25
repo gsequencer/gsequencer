@@ -43,9 +43,9 @@ static guint soundcard_signals[LAST_SIGNAL];
 GType
 ags_soundcard_get_type()
 {
-  static gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_soundcard = 0;
 
     ags_type_soundcard = g_type_register_static_simple(G_TYPE_INTERFACE,
@@ -54,18 +54,18 @@ ags_soundcard_get_type()
 						       (GClassInitFunc) ags_soundcard_class_init,
 						       0, NULL, 0);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_soundcard);
+    g_once_init_leave(&g_define_type_id__static, ags_type_soundcard);
   }
 
-  return g_define_type_id__volatile;
+  return g_define_type_id__static;
 }
 
 GType
 ags_soundcard_format_get_type()
 {
-  static gsize g_enum_type_id__volatile;
+  static gsize g_enum_type_id__static;
 
-  if(g_once_init_enter (&g_enum_type_id__volatile)){
+  if(g_once_init_enter(&g_enum_type_id__static)){
     static const GEnumValue values[] = {
       { AGS_SOUNDCARD_SIGNED_8_BIT, "AGS_SOUNDCARD_SIGNED_8_BIT", "soundcard-signed-8-bit" },
       { AGS_SOUNDCARD_SIGNED_16_BIT, "AGS_SOUNDCARD_SIGNED_16_BIT", "soundcard-signed-16-bit" },
@@ -80,18 +80,18 @@ ags_soundcard_format_get_type()
 
     GType g_enum_type_id = g_enum_register_static(g_intern_static_string("AgsSoundcardFormat"), values);
 
-    g_once_init_leave (&g_enum_type_id__volatile, g_enum_type_id);
+    g_once_init_leave(&g_enum_type_id__static, g_enum_type_id);
   }
   
-  return g_enum_type_id__volatile;
+  return(g_enum_type_id__static);
 }
 
 GType
 ags_soundcard_capability_get_type()
 {
-  static gsize g_flags_type_id__volatile;
+  static gsize g_flags_type_id__static;
 
-  if(g_once_init_enter (&g_flags_type_id__volatile)){
+  if(g_once_init_enter(&g_flags_type_id__static)){
     static const GFlagsValue values[] = {
       { AGS_SOUNDCARD_CAPABILITY_PLAYBACK, "AGS_SOUNDCARD_CAPABILITY_PLAYBACK", "soundcard-capability-playback" },
       { AGS_SOUNDCARD_CAPABILITY_CAPTURE, "AGS_SOUNDCARD_CAPABILITY_CAPTURE", "soundcard-capability-capture" },
@@ -101,10 +101,10 @@ ags_soundcard_capability_get_type()
 
     GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsSoundcardCapability"), values);
 
-    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+    g_once_init_leave(&g_flags_type_id__static, g_flags_type_id);
   }
   
-  return g_flags_type_id__volatile;
+  return(g_flags_type_id__static);
 }
 
 GQuark

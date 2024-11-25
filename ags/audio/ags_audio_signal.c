@@ -143,9 +143,9 @@ static guint audio_signal_signals[LAST_SIGNAL];
 GType
 ags_audio_signal_get_type(void)
 {
-  static gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_audio_signal = 0;
 
     static const GTypeInfo ags_audio_signal_info = {
@@ -175,18 +175,18 @@ ags_audio_signal_get_type(void)
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_audio_signal);
+    g_once_init_leave(&g_define_type_id__static, ags_type_audio_signal);
   }
 
-  return g_define_type_id__volatile;
+  return g_define_type_id__static;
 }
 
 GType
 ags_audio_signal_flags_get_type()
 {
-  static gsize g_flags_type_id__volatile;
+  static gsize g_flags_type_id__static;
 
-  if(g_once_init_enter (&g_flags_type_id__volatile)){
+  if(g_once_init_enter(&g_flags_type_id__static)){
     static const GFlagsValue values[] = {
       { AGS_AUDIO_SIGNAL_TEMPLATE, "AGS_AUDIO_SIGNAL_TEMPLATE", "audio-signal-default-template" },
       { AGS_AUDIO_SIGNAL_RT_TEMPLATE, "AGS_AUDIO_SIGNAL_RT_TEMPLATE", "audio-signal-rt-template" },
@@ -200,18 +200,18 @@ ags_audio_signal_flags_get_type()
 
     GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsAudioSignalFlags"), values);
 
-    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+    g_once_init_leave(&g_flags_type_id__static, g_flags_type_id);
   }
   
-  return g_flags_type_id__volatile;
+  return(g_flags_type_id__static);
 }
 
 GType
 ags_audio_signal_stream_mode_get_type()
 {
-  static gsize g_flags_type_id__volatile;
+  static gsize g_flags_type_id__static;
 
-  if(g_once_init_enter (&g_flags_type_id__volatile)){
+  if(g_once_init_enter(&g_flags_type_id__static)){
     static const GFlagsValue values[] = {
       { AGS_AUDIO_SIGNAL_STREAM_CONTINUES_FEED, "AGS_AUDIO_SIGNAL_STREAM_CONTINUES_FEED", "audio-signal-stream-continues-feed" },
       { AGS_AUDIO_SIGNAL_STREAM_DUAL_BUFFERED, "AGS_AUDIO_SIGNAL_STREAM_DUAL_BUFFERED", "audio-signal-stream-dual-buffered" },
@@ -220,10 +220,10 @@ ags_audio_signal_stream_mode_get_type()
 
     GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsAudioSignalStreamMode"), values);
 
-    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+    g_once_init_leave(&g_flags_type_id__static, g_flags_type_id);
   }
   
-  return g_flags_type_id__volatile;
+  return(g_flags_type_id__static);
 }
 
 void

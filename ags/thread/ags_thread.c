@@ -161,9 +161,9 @@ static gboolean ags_thread_global_use_sync_counter = TRUE;
 GType
 ags_thread_get_type()
 {
-  static gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_thread = 0;
 
     const GTypeInfo ags_thread_info = {
@@ -193,18 +193,18 @@ ags_thread_get_type()
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_thread);
+    g_once_init_leave(&g_define_type_id__static, ags_type_thread);
   }
 
-  return g_define_type_id__volatile;
+  return g_define_type_id__static;
 }
 
 GType
 ags_thread_flags_get_type()
 {
-  static gsize g_flags_type_id__volatile;
+  static gsize g_flags_type_id__static;
 
-  if(g_once_init_enter (&g_flags_type_id__volatile)){
+  if(g_once_init_enter(&g_flags_type_id__static)){
     static const GFlagsValue values[] = {
       { AGS_THREAD_UNREF_ON_EXIT, "AGS_THREAD_UNREF_ON_EXIT", "thread-unref-on-exit" },
       { AGS_THREAD_IMMEDIATE_SYNC, "AGS_THREAD_IMMEDIATE_SYNC", "thread-immediate-sync" },
@@ -218,18 +218,18 @@ ags_thread_flags_get_type()
 
     GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsThreadFlags"), values);
 
-    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+    g_once_init_leave(&g_flags_type_id__static, g_flags_type_id);
   }
   
-  return g_flags_type_id__volatile;
+  return(g_flags_type_id__static);
 }
 
 GType
 ags_thread_status_flags_get_type()
 {
-  static gsize g_flags_type_id__volatile;
+  static gsize g_flags_type_id__static;
 
-  if(g_once_init_enter (&g_flags_type_id__volatile)){
+  if(g_once_init_enter(&g_flags_type_id__static)){
     static const GFlagsValue values[] = {
       { AGS_THREAD_STATUS_RT_SETUP, "AGS_THREAD_STATUS_RT_SETUP", "thread-status-rt-setup" },
       { AGS_THREAD_STATUS_INITIAL_SYNC, "AGS_THREAD_STATUS_INITIAL_SYNC", "thread-status-initial-sync" },
@@ -249,18 +249,18 @@ ags_thread_status_flags_get_type()
 
     GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsThreadStatusFlags"), values);
 
-    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+    g_once_init_leave(&g_flags_type_id__static, g_flags_type_id);
   }
   
-  return g_flags_type_id__volatile;
+  return(g_flags_type_id__static);
 }
 
 GType
 ags_thread_sync_tic_flags_get_type()
 {
-  static gsize g_flags_type_id__volatile;
+  static gsize g_flags_type_id__static;
 
-  if(g_once_init_enter (&g_flags_type_id__volatile)){
+  if(g_once_init_enter(&g_flags_type_id__static)){
     static const GFlagsValue values[] = {
       { AGS_THREAD_SYNC_TIC_WAIT_0, "AGS_THREAD_SYNC_TIC_WAIT_0", "thread-sync-tic-wait-0" },
       { AGS_THREAD_SYNC_TIC_DONE_0, "AGS_THREAD_SYNC_TIC_DONE_0", "thread-sync-tic-done-0" },
@@ -285,10 +285,10 @@ ags_thread_sync_tic_flags_get_type()
 
     GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsThreadSyncTicFlags"), values);
 
-    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+    g_once_init_leave(&g_flags_type_id__static, g_flags_type_id);
   }
   
-  return g_flags_type_id__volatile;
+  return(g_flags_type_id__static);
 }
 
 void

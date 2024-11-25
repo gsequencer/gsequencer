@@ -41,9 +41,9 @@ void ags_math_util_free(gpointer ptr);
 GType
 ags_math_util_get_type(void)
 {
-  static gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_math_util = 0;
 
     ags_type_math_util =
@@ -51,10 +51,10 @@ ags_math_util_get_type(void)
 				   (GBoxedCopyFunc) ags_math_util_copy,
 				   (GBoxedFreeFunc) ags_math_util_free);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_math_util);
+    g_once_init_leave(&g_define_type_id__static, ags_type_math_util);
   }
 
-  return g_define_type_id__volatile;
+  return g_define_type_id__static;
 }
 
 gpointer

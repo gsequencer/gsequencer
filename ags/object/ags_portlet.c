@@ -35,9 +35,9 @@ void ags_portlet_base_init(AgsPortletInterface *ginterface);
 GType
 ags_portlet_get_type()
 {
-  static gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_portlet = 0;
 
     static const GTypeInfo ags_portlet_info = {
@@ -50,10 +50,10 @@ ags_portlet_get_type()
 					      "AgsPortlet", &ags_portlet_info,
 					      0);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_portlet);
+    g_once_init_leave(&g_define_type_id__static, ags_type_portlet);
   }
 
-  return g_define_type_id__volatile;
+  return g_define_type_id__static;
 }
 
 void

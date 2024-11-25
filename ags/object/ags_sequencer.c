@@ -34,9 +34,9 @@ void ags_sequencer_class_init(AgsSequencerInterface *ginterface);
 GType
 ags_sequencer_get_type()
 {
-  static gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_sequencer = 0;
 
     ags_type_sequencer = g_type_register_static_simple(G_TYPE_INTERFACE,
@@ -45,10 +45,10 @@ ags_sequencer_get_type()
 						       (GClassInitFunc) ags_sequencer_class_init,
 						       0, NULL, 0);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_sequencer);
+    g_once_init_leave(&g_define_type_id__static, ags_type_sequencer);
   }
 
-  return g_define_type_id__volatile;
+  return g_define_type_id__static;
 }
 
 GQuark

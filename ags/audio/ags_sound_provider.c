@@ -36,9 +36,9 @@ void ags_sound_provider_class_init(AgsSoundProviderInterface *ginterface);
 GType
 ags_sound_provider_get_type()
 {
-  static gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_sound_provider = 0;
 
     ags_type_sound_provider = g_type_register_static_simple(G_TYPE_INTERFACE,
@@ -47,10 +47,10 @@ ags_sound_provider_get_type()
 							    (GClassInitFunc) ags_sound_provider_class_init,
 							    0, NULL, 0);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_sound_provider);
+    g_once_init_leave(&g_define_type_id__static, ags_type_sound_provider);
   }
 
-  return g_define_type_id__volatile;
+  return g_define_type_id__static;
 }
 
 void

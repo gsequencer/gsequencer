@@ -90,9 +90,9 @@ static gpointer ags_xml_password_store_parent_class = NULL;
 GType
 ags_xml_password_store_get_type()
 {
-  static gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_xml_password_store = 0;
 
     static const GTypeInfo ags_xml_password_store_info = {
@@ -122,10 +122,10 @@ ags_xml_password_store_get_type()
 				AGS_TYPE_PASSWORD_STORE,
 				&ags_password_store_interface_info);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_xml_password_store);
+    g_once_init_leave(&g_define_type_id__static, ags_type_xml_password_store);
   }
 
-  return g_define_type_id__volatile;
+  return g_define_type_id__static;
 }
 
 void

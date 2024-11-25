@@ -61,9 +61,9 @@ static guint file_launch_signals[LAST_SIGNAL];
 GType
 ags_file_launch_get_type (void)
 {
-  static gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_file_launch = 0;
 
     static const GTypeInfo ags_file_launch_info = {
@@ -83,10 +83,10 @@ ags_file_launch_get_type (void)
 						  &ags_file_launch_info,
 						  0);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_file_launch);
+    g_once_init_leave(&g_define_type_id__static, ags_type_file_launch);
   }
 
-  return g_define_type_id__volatile;
+  return g_define_type_id__static;
 }
 
 void

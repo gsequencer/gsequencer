@@ -88,9 +88,9 @@ static gpointer ags_ladspa_plugin_parent_class = NULL;
 GType
 ags_ladspa_plugin_get_type (void)
 {
-  static gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_ladspa_plugin = 0;
 
     static const GTypeInfo ags_ladspa_plugin_info = {
@@ -110,10 +110,10 @@ ags_ladspa_plugin_get_type (void)
 						    &ags_ladspa_plugin_info,
 						    0);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_ladspa_plugin);
+    g_once_init_leave(&g_define_type_id__static, ags_type_ladspa_plugin);
   }
 
-  return g_define_type_id__volatile;
+  return g_define_type_id__static;
 }
 
 void

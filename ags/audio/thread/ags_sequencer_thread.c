@@ -83,9 +83,9 @@ static guint sequencer_thread_signals[LAST_SIGNAL];
 GType
 ags_sequencer_thread_get_type()
 {
-  static gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_sequencer_thread = 0;
 
     static const GTypeInfo ags_sequencer_thread_info = {
@@ -115,10 +115,10 @@ ags_sequencer_thread_get_type()
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_sequencer_thread);
+    g_once_init_leave(&g_define_type_id__static, ags_type_sequencer_thread);
   }
 
-  return g_define_type_id__volatile;
+  return g_define_type_id__static;
 }
 
 void

@@ -55,9 +55,9 @@ enum{
 GType
 ags_fx_two_pass_aliase_audio_get_type()
 {
-  static gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_fx_two_pass_aliase_audio = 0;
 
     static const GTypeInfo ags_fx_two_pass_aliase_audio_info = {
@@ -77,10 +77,10 @@ ags_fx_two_pass_aliase_audio_get_type()
 							       &ags_fx_two_pass_aliase_audio_info,
 							       0);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_fx_two_pass_aliase_audio);
+    g_once_init_leave(&g_define_type_id__static, ags_type_fx_two_pass_aliase_audio);
   }
 
-  return g_define_type_id__volatile;
+  return g_define_type_id__static;
 }
 
 void

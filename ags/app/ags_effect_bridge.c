@@ -86,9 +86,9 @@ static guint effect_bridge_signals[LAST_SIGNAL];
 GType
 ags_effect_bridge_get_type(void)
 {
-  static gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_effect_bridge = 0;
 
     static const GTypeInfo ags_effect_bridge_info = {
@@ -117,10 +117,10 @@ ags_effect_bridge_get_type(void)
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_effect_bridge);
+    g_once_init_leave(&g_define_type_id__static, ags_type_effect_bridge);
   }
 
-  return g_define_type_id__volatile;
+  return g_define_type_id__static;
 }
 
 void

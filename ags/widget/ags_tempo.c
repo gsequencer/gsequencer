@@ -115,9 +115,9 @@ static guint tempo_signals[LAST_SIGNAL];
 GType
 ags_tempo_get_type(void)
 {
-  static gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_tempo = 0;
  
     static const GTypeInfo ags_tempo_info = {
@@ -146,10 +146,10 @@ ags_tempo_get_type(void)
 				GTK_TYPE_ORIENTABLE,
 				&ags_orientable_interface_info);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_tempo);
+    g_once_init_leave(&g_define_type_id__static, ags_type_tempo);
   }
 
-  return g_define_type_id__volatile;
+  return g_define_type_id__static;
 }
 
 void

@@ -110,9 +110,9 @@ static gpointer ags_audio_unit_server_parent_class = NULL;
 GType
 ags_audio_unit_server_get_type()
 {
-  static gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_audio_unit_server = 0;
 
     static const GTypeInfo ags_audio_unit_server_info = {
@@ -152,10 +152,10 @@ ags_audio_unit_server_get_type()
 				AGS_TYPE_SOUND_SERVER,
 				&ags_sound_server_interface_info);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_audio_unit_server);
+    g_once_init_leave(&g_define_type_id__static, ags_type_audio_unit_server);
   }
 
-  return g_define_type_id__volatile;
+  return g_define_type_id__static;
 }
 
 void

@@ -56,9 +56,9 @@ static AgsConnectableInterface *ags_fm_synth_input_line_parent_connectable_inter
 GType
 ags_fm_synth_input_line_get_type()
 {
-  static gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_fm_synth_input_line = 0;
 
     static const GTypeInfo ags_fm_synth_input_line_info = {
@@ -87,10 +87,10 @@ ags_fm_synth_input_line_get_type()
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_fm_synth_input_line);
+    g_once_init_leave(&g_define_type_id__static, ags_type_fm_synth_input_line);
   }
 
-  return g_define_type_id__volatile;
+  return g_define_type_id__static;
 }
 
 void

@@ -39,9 +39,9 @@
 GType
 ags_regex_util_get_type(void)
 {
-  static gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_regex_util = 0;
 
     ags_type_regex_util =
@@ -49,18 +49,18 @@ ags_regex_util_get_type(void)
 				   (GBoxedCopyFunc) ags_regex_util_copy,
 				   (GBoxedFreeFunc) ags_regex_util_free);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_regex_util);
+    g_once_init_leave(&g_define_type_id__static, ags_type_regex_util);
   }
 
-  return g_define_type_id__volatile;
+  return g_define_type_id__static;
 }
 
 GType
 ags_regex_util_compile_flags_get_type()
 {
-  static gsize g_flags_type_id__volatile;
+  static gsize g_flags_type_id__static;
 
-  if(g_once_init_enter (&g_flags_type_id__volatile)){
+  if(g_once_init_enter(&g_flags_type_id__static)){
     static const GFlagsValue values[] = {
       { AGS_REGEX_UTIL_POSIX_EXTENDED_SYNTAX, "AGS_REGEX_UTIL_POSIX_EXTENDED_SYNTAX", "regex-util-posix-extended-syntax" },
       { AGS_REGEX_UTIL_CASE_INSENSITIVE, "AGS_REGEX_UTIL_CASE_INSENSITIVE", "regex-util-case-insensitive" },
@@ -71,18 +71,18 @@ ags_regex_util_compile_flags_get_type()
 
     GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsRegexUtilCompileFlags"), values);
 
-    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+    g_once_init_leave(&g_flags_type_id__static, g_flags_type_id);
   }
   
-  return g_flags_type_id__volatile;
+  return(g_flags_type_id__static);
 }
 
 GType
 ags_regex_util_execute_flags_get_type()
 {
-  static gsize g_flags_type_id__volatile;
+  static gsize g_flags_type_id__static;
 
-  if(g_once_init_enter (&g_flags_type_id__volatile)){
+  if(g_once_init_enter(&g_flags_type_id__static)){
     static const GFlagsValue values[] = {
       { AGS_REGEX_UTIL_NOT_BEGINNING_OF_LINE, "AGS_REGEX_UTIL_NOT_BEGINNING_OF_LINE", "regex-util-not-beginning-of-line" },
       { AGS_REGEX_UTIL_NOT_END_OF_LINE, "AGS_REGEX_UTIL_NOT_END_OF_LINE", "regex-util-end-of-line" },
@@ -94,10 +94,10 @@ ags_regex_util_execute_flags_get_type()
 
     GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsRegexUtilExecuteFlags"), values);
 
-    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+    g_once_init_leave(&g_flags_type_id__static, g_flags_type_id);
   }
   
-  return g_flags_type_id__volatile;
+  return(g_flags_type_id__static);
 }
 
 GQuark
