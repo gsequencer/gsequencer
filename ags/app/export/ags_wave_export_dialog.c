@@ -152,7 +152,7 @@ ags_wave_export_dialog_get_type()
     g_once_init_leave(&g_define_type_id__static, ags_type_wave_export_dialog);
   }
 
-  return g_define_type_id__static;
+  return(g_define_type_id__static);
 }
 
 void

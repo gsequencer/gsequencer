@@ -127,7 +127,7 @@ ags_select_note_popover_get_type(void)
     g_once_init_leave(&g_define_type_id__static, ags_type_select_note_popover);
   }
 
-  return g_define_type_id__static;
+  return(g_define_type_id__static);
 }
 
 void

@@ -85,7 +85,7 @@ ags_toggle_pattern_bit_get_type()
     g_once_init_leave(&g_define_type_id__static, ags_type_toggle_pattern_bit);
   }
 
-  return g_define_type_id__static;
+  return(g_define_type_id__static);
 }
 
 void

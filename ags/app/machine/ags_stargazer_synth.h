@@ -59,8 +59,8 @@ struct _AgsStargazerSynth
   AgsRecallContainer *playback_play_container;
   AgsRecallContainer *playback_recall_container;
 
-  AgsRecallContainer *synth_play_container;
-  AgsRecallContainer *synth_recall_container;
+  AgsRecallContainer *stargazer_synth_play_container;
+  AgsRecallContainer *stargazer_synth_recall_container;
 
   AgsRecallContainer *volume_play_container;
   AgsRecallContainer *volume_recall_container;
@@ -133,6 +133,8 @@ struct _AgsStargazerSynth
 
   GtkDropDown *pitch_type;
   AgsDial *pitch_tuning;
+
+  AgsDial *noise_gain;
 
   GtkCheckButton *tremolo_enabled;
 

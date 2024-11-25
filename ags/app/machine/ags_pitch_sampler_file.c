@@ -93,7 +93,7 @@ ags_pitch_sampler_file_get_type(void)
     g_once_init_leave(&g_define_type_id__static, ags_type_pitch_sampler_file);
   }
 
-  return g_define_type_id__static;
+  return(g_define_type_id__static);
 }
 
 void

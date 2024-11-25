@@ -120,7 +120,7 @@ ags_dssi_plugin_get_type (void)
     g_once_init_leave(&g_define_type_id__static, ags_type_dssi_plugin);
   }
 
-  return g_define_type_id__static;
+  return(g_define_type_id__static);
 }
 
 void

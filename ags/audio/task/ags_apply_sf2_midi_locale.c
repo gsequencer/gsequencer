@@ -89,7 +89,7 @@ ags_apply_sf2_midi_locale_get_type()
     g_once_init_leave(&g_define_type_id__static, ags_type_apply_sf2_midi_locale);
   }
 
-  return g_define_type_id__static;
+  return(g_define_type_id__static);
 }
 
 void

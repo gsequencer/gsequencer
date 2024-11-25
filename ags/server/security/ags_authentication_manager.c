@@ -67,7 +67,7 @@ ags_authentication_manager_get_type (void)
     g_once_init_leave(&g_define_type_id__static, ags_type_authentication_manager);
   }
 
-  return g_define_type_id__static;
+  return(g_define_type_id__static);
 }
 
 void

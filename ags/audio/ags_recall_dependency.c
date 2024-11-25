@@ -88,7 +88,7 @@ ags_recall_dependency_get_type(void)
     g_once_init_leave(&g_define_type_id__static, ags_type_recall_dependency);
   }
 
-  return g_define_type_id__static;
+  return(g_define_type_id__static);
 }
 
 void

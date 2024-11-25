@@ -134,7 +134,7 @@ ags_audio_unit_port_get_type()
     g_once_init_leave(&g_define_type_id__static, ags_type_audio_unit_port);
   }
 
-  return g_define_type_id__static;
+  return(g_define_type_id__static);
 }
 
 GType

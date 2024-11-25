@@ -102,7 +102,7 @@ ags_ladspa_browser_get_type(void)
     g_once_init_leave(&g_define_type_id__static, ags_type_ladspa_browser);
   }
 
-  return g_define_type_id__static;
+  return(g_define_type_id__static);
 }
 
 void

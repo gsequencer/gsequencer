@@ -95,7 +95,7 @@ ags_fx_envelope_audio_get_type()
     g_once_init_leave(&g_define_type_id__static, ags_type_fx_envelope_audio);
   }
 
-  return g_define_type_id__static;
+  return(g_define_type_id__static);
 }
 
 void

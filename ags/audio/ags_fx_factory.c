@@ -463,7 +463,7 @@ ags_fx_factory_get_type(void)
     g_once_init_leave(&g_define_type_id__static, ags_type_fx_factory);
   }
 
-  return g_define_type_id__static;
+  return(g_define_type_id__static);
 }
 
 GType

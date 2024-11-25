@@ -83,7 +83,7 @@ ags_remove_soundcard_get_type()
     g_once_init_leave(&g_define_type_id__static, ags_type_remove_soundcard);
   }
 
-  return g_define_type_id__static;
+  return(g_define_type_id__static);
 }
 
 void

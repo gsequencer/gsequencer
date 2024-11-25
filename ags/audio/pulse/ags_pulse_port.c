@@ -126,7 +126,7 @@ ags_pulse_port_get_type()
     g_once_init_leave(&g_define_type_id__static, ags_type_pulse_port);
   }
 
-  return g_define_type_id__static;
+  return(g_define_type_id__static);
 }
 
 GType

@@ -69,7 +69,7 @@ ags_auth_security_context_get_type()
     g_once_init_leave(&g_define_type_id__static, ags_type_auth_security_context);
   }
 
-  return g_define_type_id__static;
+  return(g_define_type_id__static);
 }
 
 void

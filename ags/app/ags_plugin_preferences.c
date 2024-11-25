@@ -82,7 +82,7 @@ ags_plugin_preferences_get_type(void)
     g_once_init_leave(&g_define_type_id__static, ags_type_plugin_preferences);
   }
 
-  return g_define_type_id__static;
+  return(g_define_type_id__static);
 }
 
 void

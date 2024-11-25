@@ -102,7 +102,7 @@ ags_fx_vst3_channel_get_type()
     g_once_init_leave(&g_define_type_id__static, ags_type_fx_vst3_channel);
   }
 
-  return g_define_type_id__static;
+  return(g_define_type_id__static);
 }
 
 void

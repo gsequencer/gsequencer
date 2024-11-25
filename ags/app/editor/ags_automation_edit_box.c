@@ -81,7 +81,7 @@ ags_automation_edit_box_get_type(void)
     g_once_init_leave(&g_define_type_id__static, ags_type_automation_edit_box);
   }
 
-  return g_define_type_id__static;
+  return(g_define_type_id__static);
 }
 
 void

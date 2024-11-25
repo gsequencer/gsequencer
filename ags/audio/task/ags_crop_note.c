@@ -90,7 +90,7 @@ ags_crop_note_get_type()
     g_once_init_leave(&g_define_type_id__static, ags_type_crop_note);
   }
 
-  return g_define_type_id__static;
+  return(g_define_type_id__static);
 }
 
 void

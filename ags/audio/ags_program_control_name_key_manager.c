@@ -84,7 +84,7 @@ ags_program_control_name_key_manager_get_type()
     g_once_init_leave(&g_define_type_id__static, ags_type_program_control_name_key_manager);
   }
 
-  return g_define_type_id__static;
+  return(g_define_type_id__static);
 }
 
 void

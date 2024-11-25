@@ -100,7 +100,7 @@ ags_export_window_get_type()
     g_once_init_leave(&g_define_type_id__static, ags_type_export_window);
   }
 
-  return g_define_type_id__static;
+  return(g_define_type_id__static);
 }
 
 void

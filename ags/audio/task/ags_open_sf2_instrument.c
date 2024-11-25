@@ -101,7 +101,7 @@ ags_open_sf2_instrument_get_type()
     g_once_init_leave(&g_define_type_id__static, ags_type_open_sf2_instrument);
   }
 
-  return g_define_type_id__static;
+  return(g_define_type_id__static);
 }
 
 void
