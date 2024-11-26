@@ -82,7 +82,7 @@ void ags_functional_test_util_do_run(int argc, char **argv,
 void ags_functional_test_util_add_test(AgsFunctionalTestUtilAddTest add_test,
 				       gboolean *is_available);
 
-void ags_functional_test_util_notify_add_test(volatile gboolean *is_available);
+void ags_functional_test_util_notify_add_test(gboolean *is_available);
 
 void ags_functional_test_util_add_driver(gdouble timeout_s);
 
