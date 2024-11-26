@@ -1,8 +1,10 @@
 ags (7.4.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* modified C standard to gnu11
 	* implemented ags_atomic.h
+	* implemented ags_star_synth_util.c
+	* TODO:JK: implemented ags-fx-star-synth
+	* modified C standard to gnu11
 	* removed all volatile modifiers
 	* refactored GSequencer to use ags_atomic.h
 	* minor improvements

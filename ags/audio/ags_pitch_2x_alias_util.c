@@ -981,6 +981,7 @@ ags_pitch_2x_alias_util_pitch_s8(AgsPitch2xAliasUtil *pitch_2x_alias_util)
   vibrato_lfo_depth = pitch_2x_alias_util->vibrato_lfo_depth;
   vibrato_lfo_freq = pitch_2x_alias_util->vibrato_lfo_freq;
   vibrato_tuning = pitch_2x_alias_util->vibrato_tuning;
+
   offset = pitch_2x_alias_util->offset;
 
   if(pitch_2x_alias_util->vibrato_enabled == FALSE){
@@ -1098,6 +1099,7 @@ ags_pitch_2x_alias_util_pitch_s16(AgsPitch2xAliasUtil *pitch_2x_alias_util)
   vibrato_lfo_depth = pitch_2x_alias_util->vibrato_lfo_depth;
   vibrato_lfo_freq = pitch_2x_alias_util->vibrato_lfo_freq;
   vibrato_tuning = pitch_2x_alias_util->vibrato_tuning;
+
   offset = pitch_2x_alias_util->offset;
 
   if(pitch_2x_alias_util->vibrato_enabled == FALSE){
@@ -1215,6 +1217,7 @@ ags_pitch_2x_alias_util_pitch_s24(AgsPitch2xAliasUtil *pitch_2x_alias_util)
   vibrato_lfo_depth = pitch_2x_alias_util->vibrato_lfo_depth;
   vibrato_lfo_freq = pitch_2x_alias_util->vibrato_lfo_freq;
   vibrato_tuning = pitch_2x_alias_util->vibrato_tuning;
+
   offset = pitch_2x_alias_util->offset;
 
   if(pitch_2x_alias_util->vibrato_enabled == FALSE){
@@ -1332,6 +1335,7 @@ ags_pitch_2x_alias_util_pitch_s32(AgsPitch2xAliasUtil *pitch_2x_alias_util)
   vibrato_lfo_depth = pitch_2x_alias_util->vibrato_lfo_depth;
   vibrato_lfo_freq = pitch_2x_alias_util->vibrato_lfo_freq;
   vibrato_tuning = pitch_2x_alias_util->vibrato_tuning;
+
   offset = pitch_2x_alias_util->offset;
 
   if(pitch_2x_alias_util->vibrato_enabled == FALSE){
@@ -1449,6 +1453,7 @@ ags_pitch_2x_alias_util_pitch_s64(AgsPitch2xAliasUtil *pitch_2x_alias_util)
   vibrato_lfo_depth = pitch_2x_alias_util->vibrato_lfo_depth;
   vibrato_lfo_freq = pitch_2x_alias_util->vibrato_lfo_freq;
   vibrato_tuning = pitch_2x_alias_util->vibrato_tuning;
+
   offset = pitch_2x_alias_util->offset;
 
   if(pitch_2x_alias_util->vibrato_enabled == FALSE){
@@ -1566,6 +1571,7 @@ ags_pitch_2x_alias_util_pitch_float(AgsPitch2xAliasUtil *pitch_2x_alias_util)
   vibrato_lfo_depth = pitch_2x_alias_util->vibrato_lfo_depth;
   vibrato_lfo_freq = pitch_2x_alias_util->vibrato_lfo_freq;
   vibrato_tuning = pitch_2x_alias_util->vibrato_tuning;
+
   offset = pitch_2x_alias_util->offset;
 
   if(pitch_2x_alias_util->vibrato_enabled == FALSE){
@@ -1683,6 +1689,7 @@ ags_pitch_2x_alias_util_pitch_double(AgsPitch2xAliasUtil *pitch_2x_alias_util)
   vibrato_lfo_depth = pitch_2x_alias_util->vibrato_lfo_depth;
   vibrato_lfo_freq = pitch_2x_alias_util->vibrato_lfo_freq;
   vibrato_tuning = pitch_2x_alias_util->vibrato_tuning;
+
   offset = pitch_2x_alias_util->offset;
 
   if(pitch_2x_alias_util->vibrato_enabled == FALSE){
@@ -1800,6 +1807,7 @@ ags_pitch_2x_alias_util_pitch_complex(AgsPitch2xAliasUtil *pitch_2x_alias_util)
   vibrato_lfo_depth = pitch_2x_alias_util->vibrato_lfo_depth;
   vibrato_lfo_freq = pitch_2x_alias_util->vibrato_lfo_freq;
   vibrato_tuning = pitch_2x_alias_util->vibrato_tuning;
+
   offset = pitch_2x_alias_util->offset;
 
   if(pitch_2x_alias_util->vibrato_enabled == FALSE){

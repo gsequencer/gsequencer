@@ -28,7 +28,7 @@
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_sound_enums.h>
-#include <ags/audio/ags_fm_synth_util.h>
+#include <ags/audio/ags_star_synth_util.h>
 #include <ags/audio/ags_noise_util.h>
 #include <ags/audio/ags_common_pitch_util.h>
 #include <ags/audio/ags_chorus_util.h>
@@ -162,8 +162,8 @@ struct _AgsFxStarSynthAudioChannelData
   
   gpointer parent;
 
-  AgsFMSynthUtil *synth_0;
-  AgsFMSynthUtil *synth_1;
+  AgsStarSynthUtil *synth_0;
+  AgsStarSynthUtil *synth_1;
 
   AgsNoiseUtil *noise_util;
 
