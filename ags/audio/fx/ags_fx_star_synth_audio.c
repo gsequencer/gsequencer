@@ -2612,6 +2612,1599 @@ ags_fx_star_synth_audio_set_property(GObject *gobject,
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_star_synth_audio);
 
   switch(prop_id){
+  case PROP_SYNTH_0_OSCILLATOR:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_0_oscillator){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_0_oscillator != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_0_oscillator));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_0_oscillator = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_OCTAVE:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_0_octave){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_0_octave != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_0_octave));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_0_octave = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_KEY:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_0_key){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_0_key != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_0_key));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_0_key = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_PHASE:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_0_phase){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_0_phase != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_0_phase));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_0_phase = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_VOLUME:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_0_volume){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_0_volume != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_0_volume));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_0_volume = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_SYNC_ENABLED:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_0_sync_enabled){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_0_sync_enabled != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_0_sync_enabled));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_0_sync_enabled = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_SYNC_RELATIVE_ATTACK_FACTOR:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_0_sync_relative_attack_factor){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_0_sync_relative_attack_factor != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_0_sync_relative_attack_factor));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_0_sync_relative_attack_factor = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_SYNC_ATTACK_0:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_0_sync_attack_0){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_0_sync_attack_0 != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_0_sync_attack_0));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_0_sync_attack_0 = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_SYNC_PHASE_0:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_0_sync_phase_0){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_0_sync_phase_0 != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_0_sync_phase_0));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_0_sync_phase_0 = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_SYNC_ATTACK_1:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_0_sync_attack_1){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_0_sync_attack_1 != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_0_sync_attack_1));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_0_sync_attack_1 = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_SYNC_PHASE_1:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_0_sync_phase_1){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_0_sync_phase_1 != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_0_sync_phase_1));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_0_sync_phase_1 = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_SYNC_ATTACK_2:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_0_sync_attack_2){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_0_sync_attack_2 != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_0_sync_attack_2));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_0_sync_attack_2 = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_SYNC_PHASE_2:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_0_sync_phase_2){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_0_sync_phase_2 != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_0_sync_phase_2));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_0_sync_phase_2 = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_SYNC_ATTACK_3:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_0_sync_attack_3){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_0_sync_attack_3 != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_0_sync_attack_3));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_0_sync_attack_3 = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_SYNC_PHASE_3:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_0_sync_phase_3){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_0_sync_phase_3 != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_0_sync_phase_3));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_0_sync_phase_3 = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_SYNC_LFO_OSCILLATOR:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_0_sync_lfo_oscillator){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_0_sync_lfo_oscillator != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_0_sync_lfo_oscillator));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_0_sync_lfo_oscillator = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_SYNC_LFO_FREQUENCY:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_0_sync_lfo_frequency){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_0_sync_lfo_frequency != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_0_sync_lfo_frequency));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_0_sync_lfo_frequency = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_LFO_OSCILLATOR:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_0_lfo_oscillator){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_0_lfo_oscillator != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_0_lfo_oscillator));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_0_lfo_oscillator = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_LFO_FREQUENCY:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_0_lfo_frequency){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_0_lfo_frequency != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_0_lfo_frequency));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_0_lfo_frequency = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_LFO_DEPTH:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_0_lfo_depth){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_0_lfo_depth != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_0_lfo_depth));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_0_lfo_depth = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_LFO_TUNING:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_0_lfo_tuning){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_0_lfo_tuning != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_0_lfo_tuning));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_0_lfo_tuning = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_OSCILLATOR:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_1_oscillator){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_1_oscillator != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_1_oscillator));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_1_oscillator = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_OCTAVE:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_1_octave){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_1_octave != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_1_octave));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_1_octave = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_KEY:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_1_key){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_1_key != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_1_key));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_1_key = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_PHASE:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_1_phase){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_1_phase != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_1_phase));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_1_phase = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_VOLUME:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_1_volume){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_1_volume != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_1_volume));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_1_volume = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_SYNC_ENABLED:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_1_sync_enabled){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_1_sync_enabled != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_1_sync_enabled));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_1_sync_enabled = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_SYNC_RELATIVE_ATTACK_FACTOR:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_1_sync_relative_attack_factor){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_1_sync_relative_attack_factor != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_1_sync_relative_attack_factor));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_1_sync_relative_attack_factor = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_SYNC_ATTACK_0:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_1_sync_attack_0){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_1_sync_attack_0 != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_1_sync_attack_0));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_1_sync_attack_0 = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_SYNC_PHASE_0:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_1_sync_phase_0){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_1_sync_phase_0 != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_1_sync_phase_0));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_1_sync_phase_0 = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_SYNC_ATTACK_1:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_1_sync_attack_1){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_1_sync_attack_1 != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_1_sync_attack_1));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_1_sync_attack_1 = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_SYNC_PHASE_1:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_1_sync_phase_1){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_1_sync_phase_1 != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_1_sync_phase_1));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_1_sync_phase_1 = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_SYNC_ATTACK_2:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_1_sync_attack_2){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_1_sync_attack_2 != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_1_sync_attack_2));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_1_sync_attack_2 = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_SYNC_PHASE_2:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_1_sync_phase_2){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_1_sync_phase_2 != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_1_sync_phase_2));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_1_sync_phase_2 = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_SYNC_ATTACK_3:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_1_sync_attack_3){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_1_sync_attack_3 != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_1_sync_attack_3));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_1_sync_attack_3 = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_SYNC_PHASE_3:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_1_sync_phase_3){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_1_sync_phase_3 != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_1_sync_phase_3));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_1_sync_phase_3 = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_SYNC_LFO_OSCILLATOR:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_1_sync_lfo_oscillator){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_1_sync_lfo_oscillator != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_1_sync_lfo_oscillator));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_1_sync_lfo_oscillator = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_SYNC_LFO_FREQUENCY:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_1_sync_lfo_frequency){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_1_sync_lfo_frequency != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_1_sync_lfo_frequency));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_1_sync_lfo_frequency = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_LFO_OSCILLATOR:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_1_lfo_oscillator){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_1_lfo_oscillator != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_1_lfo_oscillator));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_1_lfo_oscillator = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_LFO_FREQUENCY:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_1_lfo_frequency){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_1_lfo_frequency != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_1_lfo_frequency));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_1_lfo_frequency = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_LFO_DEPTH:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_1_lfo_depth){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_1_lfo_depth != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_1_lfo_depth));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_1_lfo_depth = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_LFO_TUNING:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->synth_1_lfo_tuning){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->synth_1_lfo_tuning != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->synth_1_lfo_tuning));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->synth_1_lfo_tuning = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_NOISE_GAIN:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->noise_gain){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->noise_gain != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->noise_gain));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->noise_gain = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_PITCH_TYPE:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->pitch_type){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->pitch_type != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->pitch_type));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->pitch_type = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_PITCH_TUNING:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->pitch_tuning){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->pitch_tuning != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->pitch_tuning));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->pitch_tuning = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_CHORUS_ENABLED:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->chorus_enabled){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->chorus_enabled != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->chorus_enabled));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->chorus_enabled = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_CHORUS_PITCH_TYPE:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->chorus_pitch_type){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->chorus_pitch_type != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->chorus_pitch_type));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->chorus_pitch_type = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_CHORUS_INPUT_VOLUME:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->chorus_input_volume){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->chorus_input_volume != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->chorus_input_volume));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->chorus_input_volume = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_CHORUS_OUTPUT_VOLUME:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->chorus_output_volume){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->chorus_output_volume != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->chorus_output_volume));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->chorus_output_volume = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_CHORUS_LFO_OSCILLATOR:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->chorus_lfo_oscillator){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->chorus_lfo_oscillator != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->chorus_lfo_oscillator));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->chorus_lfo_oscillator = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_CHORUS_LFO_FREQUENCY:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->chorus_lfo_frequency){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->chorus_lfo_frequency != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->chorus_lfo_frequency));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->chorus_lfo_frequency = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_CHORUS_DEPTH:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->chorus_depth){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->chorus_depth != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->chorus_depth));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->chorus_depth = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_CHORUS_MIX:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->chorus_mix){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->chorus_mix != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->chorus_mix));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->chorus_mix = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_CHORUS_DELAY:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->chorus_delay){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->chorus_delay != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->chorus_delay));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->chorus_delay = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_VIBRATO_ENABLED:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->vibrato_enabled){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->vibrato_enabled != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->vibrato_enabled));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->vibrato_enabled = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_VIBRATO_GAIN:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->vibrato_gain){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->vibrato_gain != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->vibrato_gain));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->vibrato_gain = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_VIBRATO_LFO_DEPTH:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->vibrato_lfo_depth){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->vibrato_lfo_depth != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->vibrato_lfo_depth));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->vibrato_lfo_depth = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_VIBRATO_LFO_FREQ:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->vibrato_lfo_freq){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->vibrato_lfo_freq != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->vibrato_lfo_freq));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->vibrato_lfo_freq = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_VIBRATO_TUNING:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_star_synth_audio->vibrato_tuning){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_star_synth_audio->vibrato_tuning != NULL){
+      g_object_unref(G_OBJECT(fx_star_synth_audio->vibrato_tuning));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_star_synth_audio->vibrato_tuning = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -2634,6 +4227,537 @@ ags_fx_star_synth_audio_get_property(GObject *gobject,
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_star_synth_audio);
 
   switch(prop_id){
+  case PROP_SYNTH_0_OSCILLATOR:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_0_oscillator);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_OCTAVE:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_0_octave);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_KEY:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_0_key);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_PHASE:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_0_phase);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_VOLUME:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_0_volume);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_SYNC_ENABLED:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_0_sync_enabled);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_SYNC_RELATIVE_ATTACK_FACTOR:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_0_sync_relative_attack_factor);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_SYNC_ATTACK_0:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_0_sync_attack_0);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_SYNC_PHASE_0:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_0_sync_phase_0);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_SYNC_ATTACK_1:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_0_sync_attack_1);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_SYNC_PHASE_1:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_0_sync_phase_1);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_SYNC_ATTACK_2:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_0_sync_attack_2);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_SYNC_PHASE_2:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_0_sync_phase_2);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_SYNC_ATTACK_3:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_0_sync_attack_3);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_SYNC_PHASE_3:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_0_sync_phase_3);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_SYNC_LFO_OSCILLATOR:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_0_sync_lfo_oscillator);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_SYNC_LFO_FREQUENCY:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_0_sync_lfo_frequency);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_LFO_OSCILLATOR:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_0_lfo_oscillator);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_LFO_FREQUENCY:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_0_lfo_frequency);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_LFO_DEPTH:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_0_lfo_depth);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_0_LFO_TUNING:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_0_lfo_tuning);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_OSCILLATOR:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_1_oscillator);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_OCTAVE:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_1_octave);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_KEY:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_1_key);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_PHASE:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_1_phase);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_VOLUME:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_1_volume);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_SYNC_ENABLED:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_1_sync_enabled);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_SYNC_RELATIVE_ATTACK_FACTOR:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_1_sync_relative_attack_factor);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_SYNC_ATTACK_0:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_1_sync_attack_0);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_SYNC_PHASE_0:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_1_sync_phase_0);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_SYNC_ATTACK_1:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_1_sync_attack_1);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_SYNC_PHASE_1:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_1_sync_phase_1);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_SYNC_ATTACK_2:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_1_sync_attack_2);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_SYNC_PHASE_2:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_1_sync_phase_2);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_SYNC_ATTACK_3:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_1_sync_attack_3);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_SYNC_PHASE_3:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_1_sync_phase_3);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_SYNC_LFO_OSCILLATOR:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_1_sync_lfo_oscillator);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_SYNC_LFO_FREQUENCY:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_1_sync_lfo_frequency);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_LFO_OSCILLATOR:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_1_lfo_oscillator);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_LFO_FREQUENCY:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_1_lfo_frequency);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_LFO_DEPTH:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_1_lfo_depth);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_LFO_TUNING:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->synth_1_lfo_tuning);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_NOISE_GAIN:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->noise_gain);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_PITCH_TYPE:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->pitch_type);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_PITCH_TUNING:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->pitch_tuning);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_CHORUS_ENABLED:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->chorus_enabled);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_CHORUS_PITCH_TYPE:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->chorus_pitch_type);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_CHORUS_INPUT_VOLUME:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->chorus_input_volume);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_CHORUS_OUTPUT_VOLUME:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->chorus_output_volume);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_CHORUS_LFO_OSCILLATOR:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->chorus_lfo_oscillator);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_CHORUS_LFO_FREQUENCY:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->chorus_lfo_frequency);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_CHORUS_DEPTH:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->chorus_depth);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_CHORUS_MIX:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->chorus_mix);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_CHORUS_DELAY:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->chorus_delay);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_VIBRATO_ENABLED:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->vibrato_enabled);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_VIBRATO_GAIN:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->vibrato_gain);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_VIBRATO_LFO_DEPTH:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->vibrato_lfo_depth);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_VIBRATO_LFO_FREQ:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->vibrato_lfo_freq);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_VIBRATO_TUNING:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_star_synth_audio->vibrato_tuning);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -2760,6 +4884,13 @@ ags_fx_star_synth_audio_notify_buffer_size_callback(GObject *gobject,
 	ags_star_synth_util_set_buffer_length(channel_data->star_synth_1,
 					      buffer_size);
 	
+	ags_noise_util_set_buffer_length(channel_data->noise_util,
+					 buffer_size);
+
+	ags_common_pitch_util_set_buffer_length(channel_data->pitch_util,
+						channel_data->pitch_type,
+						buffer_size);
+
 	ags_chorus_util_set_buffer_length(channel_data->chorus_util,
 					  buffer_size);
       }
@@ -2828,6 +4959,13 @@ ags_fx_star_synth_audio_notify_format_callback(GObject *gobject,
 	ags_chorus_util_set_destination(channel_data->chorus_util,
 					destination);
 
+	ags_noise_util_set_format(channel_data->noise_util,
+				  format);
+
+	ags_common_pitch_util_set_format(channel_data->pitch_util,
+					 channel_data->pitch_type,
+					 format);
+
 	ags_chorus_util_set_format(channel_data->chorus_util,
 				   format);
       }
@@ -2882,6 +5020,16 @@ ags_fx_star_synth_audio_notify_samplerate_callback(GObject *gobject,
 	ags_star_synth_util_set_samplerate(channel_data->star_synth_1,
 					   samplerate);
 	
+	ags_noise_util_set_samplerate(channel_data->noise_util,
+				      samplerate);
+
+	ags_common_pitch_util_set_samplerate(channel_data->pitch_util,
+					     channel_data->pitch_type,
+					     samplerate);
+
+	ags_chorus_util_set_samplerate(channel_data->chorus_util,
+				       samplerate);
+
 	ags_chorus_util_set_samplerate(channel_data->chorus_util,
 				       samplerate);
       }
@@ -2972,6 +5120,23 @@ ags_fx_star_synth_audio_set_audio_channels_callback(AgsAudio *audio,
 	  ags_star_synth_util_set_samplerate(channel_data->star_synth_1,
 					     samplerate);
 	  
+	  ags_noise_util_set_buffer_length(channel_data->noise_util,
+					   buffer_size);					 
+	  ags_noise_util_set_format(channel_data->noise_util,
+				    format);					 
+	  ags_noise_util_set_samplerate(channel_data->noise_util,
+					samplerate);
+
+	  ags_common_pitch_util_set_buffer_length(channel_data->pitch_util,
+						  channel_data->pitch_type,
+						  buffer_size);
+	  ags_common_pitch_util_set_format(channel_data->pitch_util,
+					   channel_data->pitch_type,
+					   format);
+	  ags_common_pitch_util_set_samplerate(channel_data->pitch_util,
+					       channel_data->pitch_type,
+					       samplerate);
+
 	  ags_chorus_util_set_buffer_length(channel_data->chorus_util,
 					    buffer_size);
 	  ags_chorus_util_set_format(channel_data->chorus_util,
@@ -3622,6 +5787,16 @@ ags_fx_star_synth_audio_channel_data_alloc()
   /* star synth util */
   channel_data->star_synth_0 = ags_star_synth_util_alloc();
   channel_data->star_synth_1 = ags_star_synth_util_alloc();
+
+  /* noise util */
+  channel_data->noise_util = ags_noise_util_alloc();
+
+  /* pitch util */
+  channel_data->pitch_type = AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL;
+  channel_data->pitch_util = ags_fluid_interpolate_4th_order_util_alloc();
+
+  /* chorus util */
+  channel_data->chorus_util = ags_chorus_util_alloc();
   
   /* chorus util */
   channel_data->chorus_util = ags_chorus_util_alloc();

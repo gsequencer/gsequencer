@@ -1417,6 +1417,21 @@ ags_fx_star_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation
     ags_star_synth_util_set_samplerate(channel_data->star_synth_0,
 				       samplerate);
 
+    ags_star_synth_util_set_vibrato_enabled(channel_data->star_synth_0,
+					    vibrato_enabled);
+
+    ags_star_synth_util_set_vibrato_gain(channel_data->star_synth_0,
+					 vibrato_gain);
+    
+    ags_star_synth_util_set_vibrato_lfo_depth(channel_data->star_synth_0,
+					      vibrato_lfo_depth);
+
+    ags_star_synth_util_set_vibrato_lfo_freq(channel_data->star_synth_0,
+					     vibrato_lfo_freq);
+
+    ags_star_synth_util_set_vibrato_tuning(channel_data->star_synth_0,
+					   vibrato_tuning);
+    
     if(!note_256th_mode){
       ags_star_synth_util_set_frame_count(channel_data->star_synth_0,
 					  floor(((offset_counter - x0) * delay + delay_counter + 1.0) * buffer_size));
@@ -1532,7 +1547,9 @@ ags_fx_star_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation
 		sync_reset = (1.0 - synth_0_sync_relative_attack_factor * ((gdouble) midi_note / 128.0)) * ((synth_0_sync_attack_2 / (2.0 * M_PI)) * freq_period);
 		i_reset = i;
 
-		next_sync = 3;
+		if(synth_0_sync_attack_3 > 0.0){
+		  next_sync = 3;
+		}
 	      }
 	    }
 	    break;
@@ -1659,9 +1676,9 @@ ags_fx_star_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation
 	    }
 	    break;
 	  }
-	}
 
-	g_rec_mutex_unlock(source_stream_mutex);
+	  g_rec_mutex_unlock(source_stream_mutex);
+	}
 
 	if(sync_reset != 0 && i_reset + sync_reset < buffer_size * (guint) floor(i / buffer_size) + buffer_size){
 	  i = i_reset + sync_reset;
@@ -1725,6 +1742,21 @@ ags_fx_star_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation
     ags_star_synth_util_set_samplerate(channel_data->star_synth_1,
 				       samplerate);
 
+    ags_star_synth_util_set_vibrato_enabled(channel_data->star_synth_1,
+					    vibrato_enabled);
+
+    ags_star_synth_util_set_vibrato_gain(channel_data->star_synth_1,
+					 vibrato_gain);
+    
+    ags_star_synth_util_set_vibrato_lfo_depth(channel_data->star_synth_1,
+					      vibrato_lfo_depth);
+
+    ags_star_synth_util_set_vibrato_lfo_freq(channel_data->star_synth_1,
+					     vibrato_lfo_freq);
+
+    ags_star_synth_util_set_vibrato_tuning(channel_data->star_synth_1,
+					   vibrato_tuning);
+
     if(!note_256th_mode){
       ags_star_synth_util_set_frame_count(channel_data->star_synth_1,
 					  floor(((offset_counter - x0) * delay + delay_counter + 1.0) * buffer_size));
@@ -1749,8 +1781,6 @@ ags_fx_star_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation
       ags_star_synth_util_set_offset_256th(channel_data->star_synth_1,
 					   (guint) floor((double) (note_256th_offset_lower - x0_256th) * note_256th_delay * (double) buffer_size));
     }
-
-    g_rec_mutex_unlock(source_stream_mutex);
 
     if(synth_1_sync_enabled){
       guint offset;
@@ -1837,7 +1867,9 @@ ags_fx_star_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation
 		sync_reset = (1.0 - synth_1_sync_relative_attack_factor * ((gdouble) midi_note / 128.0)) * ((synth_1_sync_attack_2 / (2.0 * M_PI)) * freq_period);
 		i_reset = i;
 
-		next_sync = 3;
+		if(synth_1_sync_attack_3 > 0.0){
+		  next_sync = 3;
+		}
 	      }
 	    }
 	    break;
@@ -1964,9 +1996,9 @@ ags_fx_star_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation
 	    }
 	    break;
 	  }
-	}
 
-	g_rec_mutex_unlock(source_stream_mutex);
+	  g_rec_mutex_unlock(source_stream_mutex);
+	}
 
 	if(sync_reset != 0 && i_reset + sync_reset < buffer_size * (guint) floor(i / buffer_size) + buffer_size){
 	  i = i_reset + sync_reset;
@@ -2010,42 +2042,9 @@ ags_fx_star_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation
 	}
 	break;
       }
-    }
     
-    ags_star_synth_util_set_source(channel_data->star_synth_1,
-				   NULL);
-
-    g_rec_mutex_lock(source_stream_mutex);
-    
-    switch(ags_star_synth_util_get_synth_oscillator_mode(channel_data->star_synth_1)){
-    case AGS_SYNTH_OSCILLATOR_SIN:
-      {
-	ags_star_synth_util_compute_sin(channel_data->star_synth_1);
-      }
-      break;
-    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
-      {
-	ags_star_synth_util_compute_sawtooth(channel_data->star_synth_1);
-      }
-      break;
-    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
-      {
-	ags_star_synth_util_compute_triangle(channel_data->star_synth_1);
-      }
-      break;
-    case AGS_SYNTH_OSCILLATOR_SQUARE:
-      {
-	ags_star_synth_util_compute_square(channel_data->star_synth_1);
-      }
-      break;
-    case AGS_SYNTH_OSCILLATOR_IMPULSE:
-      {
-	ags_star_synth_util_compute_impulse(channel_data->star_synth_1);
-      }
-      break;
+      g_rec_mutex_unlock(source_stream_mutex);
     }
-
-    g_rec_mutex_unlock(source_stream_mutex);
 
     ags_star_synth_util_set_source(channel_data->star_synth_1,
 				   NULL);

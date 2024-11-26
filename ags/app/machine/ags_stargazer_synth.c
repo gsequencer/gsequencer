@@ -279,6 +279,9 @@ ags_stargazer_synth_init(AgsStargazerSynth *stargazer_synth)
   stargazer_synth->volume_play_container = ags_recall_container_new();
   stargazer_synth->volume_recall_container = ags_recall_container_new();
 
+  stargazer_synth->tremolo_play_container = ags_recall_container_new();
+  stargazer_synth->tremolo_recall_container = ags_recall_container_new();
+
   stargazer_synth->envelope_play_container = ags_recall_container_new();
   stargazer_synth->envelope_recall_container = ags_recall_container_new();
 

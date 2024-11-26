@@ -49,6 +49,7 @@
 #include <ags/app/machine/ags_fm_syncsynth.h>
 #include <ags/app/machine/ags_hybrid_synth.h>
 #include <ags/app/machine/ags_hybrid_fm_synth.h>
+#include <ags/app/machine/ags_stargazer_synth.h>
 
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <ags/app/machine/ags_ffplayer.h>
@@ -1173,6 +1174,7 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
      AGS_IS_FM_SYNCSYNTH(machine) ||
      AGS_IS_HYBRID_SYNTH(machine) ||
      AGS_IS_HYBRID_FM_SYNTH(machine) ||
+     AGS_IS_STARGAZER_SYNTH(machine) ||
 #ifdef AGS_WITH_LIBINSTPATCH
      AGS_IS_FFPLAYER(machine) ||
      AGS_IS_SF2_SYNTH(machine) ||
@@ -1364,6 +1366,7 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
      AGS_IS_FM_SYNCSYNTH(machine) ||
      AGS_IS_HYBRID_SYNTH(machine) ||
      AGS_IS_HYBRID_FM_SYNTH(machine) ||
+     AGS_IS_STARGAZER_SYNTH(machine) ||
 #ifdef AGS_WITH_LIBINSTPATCH
      AGS_IS_FFPLAYER(machine) ||
      AGS_IS_SF2_SYNTH(machine) ||
