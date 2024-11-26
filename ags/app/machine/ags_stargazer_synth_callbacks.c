@@ -2004,6 +2004,116 @@ ags_stargazer_synth_synth_1_sync_phase_3_callback(AgsDial *dial, AgsStargazerSyn
 }
 
 void
+ags_stargazer_synth_synth_1_sync_lfo_oscillator_callback(GtkComboBox *combo_box, AgsStargazerSynth *stargazer_synth)
+{
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble sync_lfo_oscillator;
+  
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(stargazer_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(stargazer_synth)->audio;
+
+  sync_lfo_oscillator = gtk_combo_box_get_active(combo_box);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "synth-1-sync-lfo-oscillator", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) sync_lfo_oscillator);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+}
+
+void
+ags_stargazer_synth_synth_1_sync_lfo_frequency_callback(GtkSpinButton *spin_button, AgsStargazerSynth *stargazer_synth)
+{
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble sync_lfo_frequency;
+  
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(stargazer_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(stargazer_synth)->audio;
+
+  sync_lfo_frequency = gtk_spin_button_get_value(spin_button);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "synth-1-sync-lfo-frequency", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) sync_lfo_frequency);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+}
+
+void
 ags_stargazer_synth_synth_1_lfo_oscillator_callback(GtkComboBox *combo_box, AgsStargazerSynth *stargazer_synth)
 {
   AgsAudio *audio;
@@ -2224,9 +2334,9 @@ ags_stargazer_synth_synth_1_lfo_tuning_callback(AgsDial *dial, AgsStargazerSynth
 }
 
 void
-ags_stargazer_synth_synth_pitch_type_callback(GObject *gobject,
-					      GParamSpec *pspec,
-					      AgsStargazerSynth *stargazer_synth)
+ags_stargazer_synth_pitch_type_callback(GObject *gobject,
+					GParamSpec *pspec,
+					AgsStargazerSynth *stargazer_synth)
 {
   AgsFxFMSynthAudio *fx_star_synth_audio;
     

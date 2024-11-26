@@ -106,6 +106,9 @@ struct _AgsStargazerSynth
 
   GtkComboBox *synth_1_oscillator;
 
+  GtkComboBox *synth_0_sync_lfo_oscillator;
+  GtkSpinButton *synth_0_sync_lfo_frequency;
+
   AgsDial *synth_1_octave;
   AgsDial *synth_1_key;
 
@@ -133,6 +136,9 @@ struct _AgsStargazerSynth
 
   AgsDial *synth_1_sync_attack_3;
   AgsDial *synth_1_sync_phase_3;
+
+  GtkComboBox *synth_1_sync_lfo_oscillator;
+  GtkSpinButton *synth_1_sync_lfo_frequency;
 
   GtkDropDown *pitch_type;
   AgsDial *pitch_tuning;

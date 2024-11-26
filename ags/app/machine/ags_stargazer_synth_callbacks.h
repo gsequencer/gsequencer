@@ -79,8 +79,8 @@ void ags_stargazer_synth_synth_1_sync_enabled_callback(GtkButton *button, AgsSta
 
 void ags_stargazer_synth_synth_1_sync_relative_attack_factor_callback(AgsDial *dial, AgsStargazerSynth *stargazer_synth);
 
-void ags_stargazer_synth_synth_1_sync_attack_1_callback(AgsDial *dial, AgsStargazerSynth *stargazer_synth);
-void ags_stargazer_synth_synth_1_sync_phase_1_callback(AgsDial *dial, AgsStargazerSynth *stargazer_synth);
+void ags_stargazer_synth_synth_1_sync_attack_0_callback(AgsDial *dial, AgsStargazerSynth *stargazer_synth);
+void ags_stargazer_synth_synth_1_sync_phase_0_callback(AgsDial *dial, AgsStargazerSynth *stargazer_synth);
 
 void ags_stargazer_synth_synth_1_sync_attack_1_callback(AgsDial *dial, AgsStargazerSynth *stargazer_synth);
 void ags_stargazer_synth_synth_1_sync_phase_1_callback(AgsDial *dial, AgsStargazerSynth *stargazer_synth);
@@ -100,9 +100,9 @@ void ags_stargazer_synth_synth_1_lfo_frequency_callback(GtkSpinButton *spin_butt
 void ags_stargazer_synth_synth_1_lfo_depth_callback(AgsDial *dial, AgsStargazerSynth *stargazer_synth);
 void ags_stargazer_synth_synth_1_lfo_tuning_callback(AgsDial *dial, AgsStargazerSynth *stargazer_synth);
 
-void ags_stargazer_synth_synth_pitch_type_callback(GObject *gobject,
-						   GParamSpec *pspec,
-						   AgsStargazerSynth *stargazer_synth);
+void ags_stargazer_synth_pitch_type_callback(GObject *gobject,
+					     GParamSpec *pspec,
+					     AgsStargazerSynth *stargazer_synth);
 void ags_stargazer_synth_pitch_tuning_callback(AgsDial *dial, AgsStargazerSynth *stargazer_synth);
 
 void ags_stargazer_synth_noise_gain_callback(AgsDial *dial, AgsStargazerSynth *stargazer_synth);
