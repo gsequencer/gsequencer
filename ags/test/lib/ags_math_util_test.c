@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -722,7 +722,7 @@ ags_math_util_test_split_polynomial()
     NULL,
   };
 
-  struct _AgsStrvArr polynomial_factor[64] = {
+  static const struct _AgsStrvArr polynomial_factor[64] = {
     {"a", NULL}, /* #000 a */
     {"-a", NULL}, /* #001 -a */
     {"a", "b", NULL}, /* #002 ab */
@@ -771,7 +771,7 @@ ags_math_util_test_split_polynomial()
     NULL,
   };
 
-  struct _AgsStrvArr polynomial_factor_exponent[64] = {
+  static const struct _AgsStrvArr polynomial_factor_exponent[64] = {
     {"1", NULL}, /* #000 a */
     {"1", NULL}, /* #001 -a */
     {"1", "1", NULL}, /* #002 ab */
