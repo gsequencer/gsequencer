@@ -1,3 +1,14 @@
+ags (7.3.29)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed added missing cast
+
+ags (7.3.28)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* reverted many changes to 7.3.5 in ags_core_audio_port.c
+	* minor improvements
+
 ags (7.3.27)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
