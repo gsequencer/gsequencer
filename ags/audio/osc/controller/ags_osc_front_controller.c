@@ -104,9 +104,9 @@ static guint osc_front_controller_signals[LAST_SIGNAL];
 GType
 ags_osc_front_controller_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_osc_front_controller = 0;
 
     static const GTypeInfo ags_osc_front_controller_info = {
@@ -126,18 +126,18 @@ ags_osc_front_controller_get_type()
 							   &ags_osc_front_controller_info,
 							   0);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_osc_front_controller);
+    g_once_init_leave(&g_define_type_id__static, ags_type_osc_front_controller);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 GType
 ags_osc_front_controller_flags_get_type()
 {
-  static volatile gsize g_flags_type_id__volatile;
+  static gsize g_flags_type_id__static;
 
-  if(g_once_init_enter (&g_flags_type_id__volatile)){
+  if(g_once_init_enter(&g_flags_type_id__static)){
     static const GFlagsValue values[] = {
       { AGS_OSC_FRONT_CONTROLLER_DELEGATE_STARTED, "AGS_OSC_FRONT_CONTROLLER_DELEGATE_STARTED", "osc-front-controller-delegate-started" },
       { AGS_OSC_FRONT_CONTROLLER_DELEGATE_RUNNING, "AGS_OSC_FRONT_CONTROLLER_DELEGATE_RUNNING", "osc-front-controller-delegate-running" },
@@ -147,10 +147,10 @@ ags_osc_front_controller_flags_get_type()
 
     GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsOscFrontControllerFlags"), values);
 
-    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+    g_once_init_leave(&g_flags_type_id__static, g_flags_type_id);
   }
   
-  return g_flags_type_id__volatile;
+  return(g_flags_type_id__static);
 }
 
 void
@@ -248,7 +248,7 @@ ags_osc_front_controller_init(AgsOscFrontController *osc_front_controller)
 
   osc_front_controller->delegate_timeout = 0;
 
-  g_atomic_int_set(&(osc_front_controller->do_reset),
+  ags_atomic_int_set(&(osc_front_controller->do_reset),
 		   FALSE);
 
   g_mutex_init(&(osc_front_controller->delegate_mutex));
@@ -383,7 +383,7 @@ ags_osc_front_controller_delegate_thread(void *ptr)
     time_now = g_get_monotonic_time();
     osc_front_controller->delegate_timeout = time_now + (G_TIME_SPAN_SECOND / 30);
     
-    while(!g_atomic_int_get(&(osc_front_controller->do_reset)) &&
+    while(!ags_atomic_int_get(&(osc_front_controller->do_reset)) &&
 	  ((time_now < time_next) &&
 	   (time_now < osc_front_controller->delegate_timeout)) &&
 	  ags_osc_front_controller_test_flags(osc_front_controller, AGS_OSC_FRONT_CONTROLLER_DELEGATE_RUNNING) &&
@@ -395,7 +395,7 @@ ags_osc_front_controller_delegate_thread(void *ptr)
       time_now = g_get_monotonic_time();
     }
 
-    g_atomic_int_set(&(osc_front_controller->do_reset),
+    ags_atomic_int_set(&(osc_front_controller->do_reset),
 		     FALSE);
     
     g_mutex_unlock(&(osc_front_controller->delegate_mutex));

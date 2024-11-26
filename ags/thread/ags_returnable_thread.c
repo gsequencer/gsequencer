@@ -79,9 +79,9 @@ static guint returnable_thread_signals[LAST_SIGNAL];
 GType
 ags_returnable_thread_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_returnable_thread = 0;
 
     static const GTypeInfo ags_returnable_thread_info = {
@@ -101,18 +101,18 @@ ags_returnable_thread_get_type()
 							&ags_returnable_thread_info,
 							0);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_returnable_thread);
+    g_once_init_leave(&g_define_type_id__static, ags_type_returnable_thread);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 GType
 ags_returnable_thread_flags_get_type()
 {
-  static volatile gsize g_flags_type_id__volatile;
+  static gsize g_flags_type_id__static;
 
-  if(g_once_init_enter (&g_flags_type_id__volatile)){
+  if(g_once_init_enter(&g_flags_type_id__static)){
     static const GFlagsValue values[] = {
       { AGS_RETURNABLE_THREAD_IN_USE, "AGS_RETURNABLE_THREAD_IN_USE", "returnable-thread-in-use" },
       { AGS_RETURNABLE_THREAD_RESET, "AGS_RETURNABLE_THREAD_RESET", "returnable-thread-reset" },
@@ -122,10 +122,10 @@ ags_returnable_thread_flags_get_type()
 
     GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsReturnableThreadFlags"), values);
 
-    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+    g_once_init_leave(&g_flags_type_id__static, g_flags_type_id);
   }
   
-  return g_flags_type_id__volatile;
+  return(g_flags_type_id__static);
 }
 
 void
@@ -209,14 +209,14 @@ ags_returnable_thread_init(AgsReturnableThread *returnable_thread)
 	       "frequency", AGS_RETURNABLE_THREAD_DEFAULT_JIFFIE,
 	       NULL);
 
-  g_atomic_int_set(&(returnable_thread->flags),
+  ags_atomic_int_set(&(returnable_thread->flags),
 		   AGS_RETURNABLE_THREAD_RUN_ONCE);
 
   returnable_thread->thread_pool = NULL;
   
   g_rec_mutex_init(&(returnable_thread->reset_mutex));
   
-  g_atomic_pointer_set(&(returnable_thread->safe_data),
+  ags_atomic_pointer_set(&(returnable_thread->safe_data),
 		       NULL);
 
   returnable_thread->handler = 0;
@@ -335,11 +335,11 @@ ags_returnable_thread_run(AgsThread *thread)
   returnable_thread = AGS_RETURNABLE_THREAD(thread);
   
   /* safe run */
-  if((AGS_RETURNABLE_THREAD_IN_USE & (g_atomic_int_get(&(returnable_thread->flags)))) != 0){
+  if((AGS_RETURNABLE_THREAD_IN_USE & (ags_atomic_int_get(&(returnable_thread->flags)))) != 0){
     ags_returnable_thread_safe_run(returnable_thread);
 
-    if((AGS_RETURNABLE_THREAD_RUN_ONCE & (g_atomic_int_get(&(returnable_thread->flags)))) != 0){
-      g_atomic_int_and(&(returnable_thread->flags),
+    if((AGS_RETURNABLE_THREAD_RUN_ONCE & (ags_atomic_int_get(&(returnable_thread->flags)))) != 0){
+      ags_atomic_int_and(&(returnable_thread->flags),
 		       (~AGS_RETURNABLE_THREAD_IN_USE));
 
       /* return to thread pool */
@@ -352,12 +352,12 @@ ags_returnable_thread_run(AgsThread *thread)
       g_rec_mutex_unlock(thread_mutex);
 
       /* give returnable thread back to thread pool */
-      g_atomic_pointer_set(&(returnable_thread->safe_data),
+      ags_atomic_pointer_set(&(returnable_thread->safe_data),
 			   NULL);
       ags_returnable_thread_disconnect_safe_run(returnable_thread);
 
-      g_atomic_pointer_set(&(thread_pool->returnable_thread),
-			   g_list_prepend(g_atomic_pointer_get(&(thread_pool->returnable_thread)),
+      ags_atomic_pointer_set(&(thread_pool->returnable_thread),
+			   g_list_prepend(ags_atomic_pointer_get(&(thread_pool->returnable_thread)),
 					  returnable_thread));      
     }
   }
@@ -411,7 +411,7 @@ ags_returnable_thread_test_flags(AgsReturnableThread *returnable_thread,
     return(FALSE);
   }
   
-  retval = ((flags & (g_atomic_int_get(&(returnable_thread->flags)))) != 0) ? TRUE: FALSE;
+  retval = ((flags & (ags_atomic_int_get(&(returnable_thread->flags)))) != 0) ? TRUE: FALSE;
     
   return(retval);
 }
@@ -433,7 +433,7 @@ ags_returnable_thread_set_flags(AgsReturnableThread *returnable_thread,
     return;
   }
 
-  g_atomic_int_or(&(returnable_thread->flags), flags);
+  ags_atomic_int_or(&(returnable_thread->flags), flags);
 }
 
 /**
@@ -453,7 +453,7 @@ ags_returnable_thread_unset_flags(AgsReturnableThread *returnable_thread,
     return;
   }
 
-  g_atomic_int_and(&(returnable_thread->flags), (~flags));
+  ags_atomic_int_and(&(returnable_thread->flags), (~flags));
 }
 
 /**

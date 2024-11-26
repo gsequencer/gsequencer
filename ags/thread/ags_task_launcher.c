@@ -89,9 +89,9 @@ static guint task_launcher_signals[LAST_SIGNAL];
 GType
 ags_task_launcher_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_task_launcher = 0;
 
     static const GTypeInfo ags_task_launcher_info = {
@@ -121,10 +121,10 @@ ags_task_launcher_get_type()
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_task_launcher);
+    g_once_init_leave(&g_define_type_id__static, ags_type_task_launcher);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 void
@@ -239,9 +239,9 @@ ags_task_launcher_init(AgsTaskLauncher *task_launcher)
   task_launcher->cyclic_task = NULL;
 
   /* wait */
-  g_atomic_int_set(&(task_launcher->is_running),
+  ags_atomic_int_set(&(task_launcher->is_running),
 		   FALSE);
-  g_atomic_int_set(&(task_launcher->wait_count),
+  ags_atomic_int_set(&(task_launcher->wait_count),
 		   0);
   
   g_mutex_init(&(task_launcher->wait_mutex));
@@ -864,7 +864,7 @@ ags_task_launcher_sync_run(AgsTaskLauncher *task_launcher)
 
   g_mutex_lock(&(task_launcher->wait_mutex));
 
-  g_atomic_int_set(&(task_launcher->is_running),
+  ags_atomic_int_set(&(task_launcher->is_running),
 		   TRUE);
 
   g_mutex_unlock(&(task_launcher->wait_mutex));
@@ -902,12 +902,12 @@ ags_task_launcher_sync_run(AgsTaskLauncher *task_launcher)
   
   g_mutex_lock(&(task_launcher->wait_mutex));
 
-  g_atomic_int_set(&(task_launcher->is_running),
+  ags_atomic_int_set(&(task_launcher->is_running),
 		   FALSE);
-  g_atomic_int_set(&(task_launcher->wait_count),
+  ags_atomic_int_set(&(task_launcher->wait_count),
 		   0);
 
-  if(g_atomic_int_get(&(task_launcher->wait_count)) > 0){
+  if(ags_atomic_int_get(&(task_launcher->wait_count)) > 0){
     g_cond_broadcast(&(task_launcher->wait_cond));
   }
   

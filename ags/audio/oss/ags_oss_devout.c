@@ -238,9 +238,9 @@ static gpointer ags_oss_devout_parent_class = NULL;
 GType
 ags_oss_devout_get_type (void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_oss_devout = 0;
 
     static const GTypeInfo ags_oss_devout_info = {
@@ -280,18 +280,18 @@ ags_oss_devout_get_type (void)
 				AGS_TYPE_SOUNDCARD,
 				&ags_soundcard_interface_info);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_oss_devout);
+    g_once_init_leave(&g_define_type_id__static, ags_type_oss_devout);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 GType
 ags_oss_devout_flags_get_type()
 {
-  static volatile gsize g_flags_type_id__volatile;
+  static gsize g_flags_type_id__static;
 
-  if(g_once_init_enter (&g_flags_type_id__volatile)){
+  if(g_once_init_enter(&g_flags_type_id__static)){
     static const GFlagsValue values[] = {
       { AGS_OSS_DEVOUT_INITIALIZED, "AGS_OSS_DEVOUT_INITIALIZED", "oss-devout-initialized" },
       { AGS_OSS_DEVOUT_START_PLAY, "AGS_OSS_DEVOUT_START_PLAY", "oss-devout-start-play" },
@@ -304,10 +304,10 @@ ags_oss_devout_flags_get_type()
 
     GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsOssDevoutFlags"), values);
 
-    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+    g_once_init_leave(&g_flags_type_id__static, g_flags_type_id);
   }
   
-  return g_flags_type_id__volatile;
+  return(g_flags_type_id__static);
 }
 
 void
@@ -680,7 +680,7 @@ ags_oss_devout_init(AgsOssDevout *oss_devout)
     oss_devout->app_buffer[i] = NULL;
   }
 
-  g_atomic_int_set(&(oss_devout->available),
+  ags_atomic_int_set(&(oss_devout->available),
 		   FALSE);
   
   oss_devout->backend_buffer_mode = AGS_OSS_DEVOUT_BACKEND_BUFFER_0;
@@ -2348,7 +2348,7 @@ ags_oss_devout_device_io_func(GIOChannel *source,
 			      GIOCondition condition,
 			      AgsOssDevout *oss_devout)
 {
-  g_atomic_int_set(&(oss_devout->available), TRUE);
+  ags_atomic_int_set(&(oss_devout->available), TRUE);
 
   return(TRUE);
 }
@@ -2463,7 +2463,7 @@ ags_oss_devout_device_play(AgsSoundcard *soundcard,
     g_usleep(1);
   }
 
-  g_atomic_int_set(&(oss_devout->available),
+  ags_atomic_int_set(&(oss_devout->available),
 		   FALSE);
   
   g_rec_mutex_lock(oss_devout_mutex);
@@ -2600,7 +2600,7 @@ ags_oss_devout_device_free(AgsSoundcard *soundcard)
     }
   }
 
-  g_atomic_int_set(&(oss_devout->available), FALSE);
+  ags_atomic_int_set(&(oss_devout->available), FALSE);
 
   g_rec_mutex_unlock(oss_devout_mutex);
 }

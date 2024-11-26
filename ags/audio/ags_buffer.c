@@ -68,9 +68,9 @@ static gpointer ags_buffer_parent_class = NULL;
 GType
 ags_buffer_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_buffer = 0;
 
     static const GTypeInfo ags_buffer_info = {
@@ -90,18 +90,18 @@ ags_buffer_get_type()
 					     &ags_buffer_info,
 					     0);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_buffer);
+    g_once_init_leave(&g_define_type_id__static, ags_type_buffer);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 GType
 ags_buffer_flags_get_type()
 {
-  static volatile gsize g_flags_type_id__volatile;
+  static gsize g_flags_type_id__static;
 
-  if(g_once_init_enter (&g_flags_type_id__volatile)){
+  if(g_once_init_enter(&g_flags_type_id__static)){
     static const GFlagsValue values[] = {
       { AGS_BUFFER_IS_SELECTED, "AGS_BUFFER_IS_SELECTED", "buffer-is-selected" },
       { 0, NULL, NULL }
@@ -109,10 +109,10 @@ ags_buffer_flags_get_type()
 
     GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsBufferFlags"), values);
 
-    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+    g_once_init_leave(&g_flags_type_id__static, g_flags_type_id);
   }
   
-  return g_flags_type_id__volatile;
+  return(g_flags_type_id__static);
 }
 
 void 

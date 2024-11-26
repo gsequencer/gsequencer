@@ -45,7 +45,7 @@ struct _AgsLog
 
   GRecMutex obj_mutex;
   
-  volatile GList *messages;
+  GList *messages;
 };
 
 struct _AgsLogClass

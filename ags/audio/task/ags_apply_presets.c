@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -88,9 +88,9 @@ static gpointer ags_apply_presets_parent_class = NULL;
 GType
 ags_apply_presets_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_apply_presets = 0;
 
     static const GTypeInfo ags_apply_presets_info = {
@@ -110,10 +110,10 @@ ags_apply_presets_get_type()
 						    &ags_apply_presets_info,
 						    0);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_apply_presets);
+    g_once_init_leave(&g_define_type_id__static, ags_type_apply_presets);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 void
@@ -453,7 +453,7 @@ ags_apply_presets_soundcard(AgsApplyPresets *apply_presets,
     }
     
     /* iterate */
-    export_thread = g_atomic_pointer_get(&(export_thread->next));
+    export_thread = ags_atomic_pointer_get(&(export_thread->next));
   }
 
   /* reset soundcard thread frequency */
@@ -468,7 +468,7 @@ ags_apply_presets_soundcard(AgsApplyPresets *apply_presets,
     }
     
     /* iterate */
-    soundcard_thread = g_atomic_pointer_get(&(soundcard_thread->next));
+    soundcard_thread = ags_atomic_pointer_get(&(soundcard_thread->next));
   }
 
   /* reset playback on soundcard */

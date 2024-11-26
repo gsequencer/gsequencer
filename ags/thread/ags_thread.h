@@ -26,6 +26,8 @@
 #include <ags/lib/ags_uuid.h>
 #include <ags/lib/ags_time.h>
 
+#include <ags/thread/ags_atomic.h>
+
 #include <time.h>
 
 G_BEGIN_DECLS
@@ -173,16 +175,16 @@ struct _AgsThread
 
   guint my_flags;
   guint connectable_flags;
-  volatile guint status_flags;
-  volatile guint sync_tic_flags;
+  guint status_flags;
+  guint sync_tic_flags;
 
-  volatile gint is_running;
+  gint is_running;
   
   GRecMutex obj_mutex;
 
   AgsUUID *uuid;
 
-  volatile guint current_sync_tic;
+  guint current_sync_tic;
 
   gdouble delay;
   gdouble tic_delay;

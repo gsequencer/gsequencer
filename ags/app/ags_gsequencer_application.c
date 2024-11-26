@@ -53,9 +53,9 @@ extern AgsApplicationContext *ags_application_context;
 GType
 ags_gsequencer_application_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_gsequencer_application = 0;
 
     static const GTypeInfo ags_gsequencer_application_info = {
@@ -75,10 +75,10 @@ ags_gsequencer_application_get_type()
 							     &ags_gsequencer_application_info,
 							     0);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_gsequencer_application);
+    g_once_init_leave(&g_define_type_id__static, ags_type_gsequencer_application);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 void
@@ -135,6 +135,7 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   GSimpleAction *add_fm_syncsynth_action;
   GSimpleAction *add_hybrid_synth_action;
   GSimpleAction *add_hybrid_fm_synth_action;
+  GSimpleAction *add_stargazer_synth_action;
   GSimpleAction *add_ffplayer_action;
   GSimpleAction *add_sf2_synth_action;
   GSimpleAction *add_pitch_sampler_action;
@@ -529,7 +530,7 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
 			  G_ACTION(add_fm_syncsynth_action));
 
-  /* hybrid_synth */
+  /* hybrid synth */
   add_hybrid_synth_action = g_simple_action_new("add_hybrid_synth",
 						NULL);
   g_signal_connect(add_hybrid_synth_action, "activate",
@@ -537,13 +538,21 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
 			  G_ACTION(add_hybrid_synth_action));
 
-  /* hybrid_fm_synth */
+  /* hybrid fm synth */
   add_hybrid_fm_synth_action = g_simple_action_new("add_hybrid_fm_synth",
 						   NULL);
   g_signal_connect(add_hybrid_fm_synth_action, "activate",
 		   G_CALLBACK(ags_gsequencer_add_hybrid_fm_synth_callback), gsequencer_app);
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
 			  G_ACTION(add_hybrid_fm_synth_action));
+
+  /* stargazer synth */
+  add_stargazer_synth_action = g_simple_action_new("add_stargazer_synth",
+						   NULL);
+  g_signal_connect(add_stargazer_synth_action, "activate",
+		   G_CALLBACK(ags_gsequencer_add_stargazer_synth_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(add_stargazer_synth_action));
 
 #if defined(AGS_WITH_LIBINSTPATCH)
   /* ffplayer */

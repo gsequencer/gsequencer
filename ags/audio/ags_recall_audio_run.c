@@ -71,9 +71,9 @@ static AgsConnectableInterface* ags_recall_audio_run_parent_connectable_interfac
 GType
 ags_recall_audio_run_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_recall_audio_run = 0;
 
     static const GTypeInfo ags_recall_audio_run_info = {
@@ -103,10 +103,10 @@ ags_recall_audio_run_get_type()
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_recall_audio_run);
+    g_once_init_leave(&g_define_type_id__static, ags_type_recall_audio_run);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 void

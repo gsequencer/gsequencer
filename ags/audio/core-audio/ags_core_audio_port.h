@@ -130,10 +130,10 @@ struct _AgsCoreAudioPort
 
   unsigned int midi_port_number;
 
-  volatile gboolean output_running;
-  volatile gboolean input_running;
-  volatile gboolean is_empty;
-  volatile guint queued;
+  gboolean output_running;
+  gboolean input_running;
+  gboolean is_empty;
+  guint queued;
 
 #ifdef AGS_WITH_CORE_AUDIO
   AudioObjectPropertyAddress *output_samplerate_property_address;

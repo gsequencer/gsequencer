@@ -58,9 +58,9 @@ guint ags_midi_ump_util_get_flex_set_text(AgsMidiUmpUtil *midi_ump_util,
 GType
 ags_midi_ump_util_get_type(void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_midi_ump_util = 0;
 
     ags_type_midi_ump_util =
@@ -68,10 +68,10 @@ ags_midi_ump_util_get_type(void)
 				   (GBoxedCopyFunc) ags_midi_ump_util_copy,
 				   (GBoxedFreeFunc) ags_midi_ump_util_free);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_midi_ump_util);
+    g_once_init_leave(&g_define_type_id__static, ags_type_midi_ump_util);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 /**

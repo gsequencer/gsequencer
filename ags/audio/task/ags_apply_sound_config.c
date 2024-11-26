@@ -121,9 +121,9 @@ static gpointer ags_apply_sound_config_parent_class = NULL;
 GType
 ags_apply_sound_config_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_apply_sound_config = 0;
 
     static const GTypeInfo ags_apply_sound_config_info = {
@@ -143,10 +143,10 @@ ags_apply_sound_config_get_type()
 							 &ags_apply_sound_config_info,
 							 0);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_apply_sound_config);
+    g_once_init_leave(&g_define_type_id__static, ags_type_apply_sound_config);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 void
@@ -283,13 +283,13 @@ ags_apply_sound_config_change_max_precision(AgsThread *thread,
 	       "max-precision", max_precision,
 	       NULL);
 
-  current = g_atomic_pointer_get(&(thread->children));
+  current = ags_atomic_pointer_get(&(thread->children));
 
   while(current != NULL){
     ags_apply_sound_config_change_max_precision(current,
 						max_precision);
     
-    current = g_atomic_pointer_get(&(thread->next));
+    current = ags_atomic_pointer_get(&(thread->next));
   }
 }
 
@@ -643,7 +643,7 @@ ags_apply_sound_config_soundcard_presets(AgsTask *task,
 	  while(soundcard_thread != NULL){
 	    AgsThread *next;
     
-	    next = g_atomic_pointer_get(&(soundcard_thread->next));
+	    next = ags_atomic_pointer_get(&(soundcard_thread->next));
     
 	    if(AGS_IS_SOUNDCARD_THREAD(soundcard_thread) &&
 	       AGS_SOUNDCARD_THREAD(soundcard_thread)->soundcard == io_soundcard){
@@ -675,7 +675,7 @@ ags_apply_sound_config_soundcard_presets(AgsTask *task,
 	      break;
 	    }
     
-	    export_thread = g_atomic_pointer_get(&(export_thread->next));
+	    export_thread = ags_atomic_pointer_get(&(export_thread->next));
 	  }
 
 
@@ -1024,7 +1024,7 @@ ags_apply_sound_config_sequencer_presets(AgsTask *task,
 	  while(sequencer_thread != NULL){
 	    AgsThread *next;
     
-	    next = g_atomic_pointer_get(&(sequencer_thread->next));
+	    next = ags_atomic_pointer_get(&(sequencer_thread->next));
     
 	    if(AGS_IS_SEQUENCER_THREAD(sequencer_thread) &&
 	       AGS_SEQUENCER_THREAD(sequencer_thread)->sequencer == io_sequencer){
@@ -1190,7 +1190,7 @@ ags_apply_sound_config_launch(AgsTask *task)
       ags_thread_stop(soundcard_thread);
     }
     
-    soundcard_thread = g_atomic_pointer_get(&(soundcard_thread->next));
+    soundcard_thread = ags_atomic_pointer_get(&(soundcard_thread->next));
   }
 
   export_thread = ags_thread_find_type(audio_loop,
@@ -1201,7 +1201,7 @@ ags_apply_sound_config_launch(AgsTask *task)
       ags_thread_stop(export_thread);
     }
     
-    export_thread = g_atomic_pointer_get(&(export_thread->next));
+    export_thread = ags_atomic_pointer_get(&(export_thread->next));
   }
 
   sequencer_thread = ags_thread_find_type(audio_loop,
@@ -1213,7 +1213,7 @@ ags_apply_sound_config_launch(AgsTask *task)
       ags_thread_stop(sequencer_thread);
     }
     
-    sequencer_thread = g_atomic_pointer_get(&(sequencer_thread->next));
+    sequencer_thread = ags_atomic_pointer_get(&(sequencer_thread->next));
   }
 
   audio = 
@@ -1573,7 +1573,7 @@ ags_apply_sound_config_launch(AgsTask *task)
     while(soundcard_thread != NULL){
       AgsThread *next;
     
-      next = g_atomic_pointer_get(&(soundcard_thread->next));
+      next = ags_atomic_pointer_get(&(soundcard_thread->next));
     
       if(AGS_IS_SOUNDCARD_THREAD(soundcard_thread) &&
 	 AGS_SOUNDCARD_THREAD(soundcard_thread)->soundcard == start_soundcard->data){

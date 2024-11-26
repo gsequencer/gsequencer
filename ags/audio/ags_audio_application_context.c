@@ -207,9 +207,9 @@ static struct sigaction ags_sigact;
 GType
 ags_audio_application_context_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_audio_application_context = 0;
 
     static const GTypeInfo ags_audio_application_context_info = {
@@ -269,10 +269,10 @@ ags_audio_application_context_get_type()
 				AGS_TYPE_SOUND_PROVIDER,
 				&ags_sound_provider_interface_info);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_audio_application_context);
+    g_once_init_leave(&g_define_type_id__static, ags_type_audio_application_context);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 void
@@ -1911,7 +1911,7 @@ ags_audio_application_context_prepare(AgsApplicationContext *application_context
     
   g_mutex_unlock(AGS_THREAD_GET_START_MUTEX(audio_loop));
 
-  g_atomic_int_set(&(application_context->is_ready),
+  ags_atomic_int_set(&(application_context->is_ready),
 		   1);
 }
 
@@ -1981,7 +1981,7 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   
   audio_application_context = (AgsAudioApplicationContext *) application_context;
 
-  while(!g_atomic_int_get(&(application_context->is_ready))){
+  while(!ags_atomic_int_get(&(application_context->is_ready))){
     usleep(4);
   }
   

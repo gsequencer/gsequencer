@@ -66,9 +66,9 @@ static GMutex regex_mutex;
 GType
 ags_solver_polynomial_get_type(void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_solver_polynomial = 0;
 
     static const GTypeInfo ags_solver_polynomial_info = {
@@ -88,10 +88,10 @@ ags_solver_polynomial_get_type(void)
 							&ags_solver_polynomial_info,
 							0);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_solver_polynomial);
+    g_once_init_leave(&g_define_type_id__static, ags_type_solver_polynomial);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 void
@@ -836,7 +836,7 @@ ags_solver_polynomial_parse(AgsSolverPolynomial *solver_polynomial,
   static const gchar *function_pattern = "(log|exp|sin|cos|tan|asin|acos|atan|floor|ceil|round)";
 
   /* groups: #1 exponent operator, #2 exponent */
-  static const gchar *exponent_pattern = "^(\\^)(\\([^)(]*+(?:(?R)[^)(]*)*+\\))";
+  static const gchar *exponent_pattern = "^(\\^)(\([^)(]*+(?:(?R)[^)(]*)*+\\))";
   
   if(!AGS_IS_SOLVER_POLYNOMIAL(solver_polynomial) ||
      polynomial == NULL){

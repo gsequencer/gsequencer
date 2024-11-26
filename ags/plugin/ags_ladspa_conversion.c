@@ -62,9 +62,9 @@ static gpointer ags_ladspa_conversion_parent_class = NULL;
 GType
 ags_ladspa_conversion_get_type(void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_ladspa_conversion = 0;
 
     static const GTypeInfo ags_ladspa_conversion_info = {
@@ -84,18 +84,18 @@ ags_ladspa_conversion_get_type(void)
 							&ags_ladspa_conversion_info,
 							0);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_ladspa_conversion);
+    g_once_init_leave(&g_define_type_id__static, ags_type_ladspa_conversion);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 GType
 ags_ladspa_conversion_flags_get_type()
 {
-  static volatile gsize g_flags_type_id__volatile;
+  static gsize g_flags_type_id__static;
 
-  if(g_once_init_enter (&g_flags_type_id__volatile)){
+  if(g_once_init_enter(&g_flags_type_id__static)){
     static const GFlagsValue values[] = {
       { AGS_LADSPA_CONVERSION_SAMPLERATE, "AGS_LADSPA_CONVERSION_SAMPLERATE", "ladspa-conversion-samplerate" },
       { AGS_LADSPA_CONVERSION_BOUNDED_BELOW, "AGS_LADSPA_CONVERSION_BOUNDED_BELOW", "ladspa-conversion-bounded-below" },
@@ -106,10 +106,10 @@ ags_ladspa_conversion_flags_get_type()
 
     GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsLadspaConversionFlags"), values);
 
-    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+    g_once_init_leave(&g_flags_type_id__static, g_flags_type_id);
   }
   
-  return g_flags_type_id__volatile;
+  return(g_flags_type_id__static);
 }
 
 void

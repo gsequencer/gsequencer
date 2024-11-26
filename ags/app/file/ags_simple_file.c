@@ -57,6 +57,8 @@
 #include <ags/app/machine/ags_hybrid_synth_callbacks.h>
 #include <ags/app/machine/ags_hybrid_fm_synth.h>
 #include <ags/app/machine/ags_hybrid_fm_synth_callbacks.h>
+#include <ags/app/machine/ags_stargazer_synth.h>
+#include <ags/app/machine/ags_stargazer_synth_callbacks.h>
 #include <ags/app/machine/ags_oscillator.h>
 #include <ags/app/machine/ags_fm_oscillator.h>
 
@@ -154,6 +156,7 @@ void ags_simple_file_read_syncsynth_launch(AgsSimpleFile *simple_file, xmlNode *
 void ags_simple_file_read_fm_syncsynth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsFMSyncsynth *fm_syncsynth);
 void ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsHybridSynth *hybrid_synth);
 void ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsHybridFMSynth *hybrid_fm_synth);
+void ags_simple_file_read_stargazer_synth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsStargazerSynth *stargazer_synth);
 void ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsPitchSampler *pitch_sampler);
 void ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsSFZSynth *sfz_synth);
 #ifdef AGS_WITH_LIBINSTPATCH
@@ -314,9 +317,9 @@ static guint simple_file_signals[LAST_SIGNAL] = { 0 };
 GType
 ags_simple_file_get_type(void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_simple_file = 0;
 
     static const GTypeInfo ags_simple_file_info = {
@@ -336,10 +339,10 @@ ags_simple_file_get_type(void)
 						  &ags_simple_file_info,
 						  0);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_simple_file);
+    g_once_init_leave(&g_define_type_id__static, ags_type_simple_file);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 void
@@ -4973,6 +4976,927 @@ ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode 
 }
 
 void
+ags_simple_file_read_stargazer_synth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsStargazerSynth *stargazer_synth)
+{
+  xmlChar *str;
+
+  /* synth-0 */
+  str = xmlGetProp(node,
+		   "synth-0-oscillator");
+
+  if(str != NULL){
+    guint oscillator;
+
+    oscillator = g_ascii_strtoll(str,
+				 NULL,
+				 10);
+
+    gtk_combo_box_set_active(stargazer_synth->synth_0_oscillator,
+			     oscillator);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-0-octave");
+
+  if(str != NULL){
+    gdouble octave;
+
+    octave = ags_file_util_get_double(simple_file->file_util,
+				      str);
+
+    ags_dial_set_value(stargazer_synth->synth_0_octave,
+		       octave);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-0-key");
+
+  if(str != NULL){
+    gdouble key;
+
+    key = ags_file_util_get_double(simple_file->file_util,
+				   str);
+
+    ags_dial_set_value(stargazer_synth->synth_0_key,
+		       key);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-0-phase");
+
+  if(str != NULL){
+    gdouble phase;
+
+    phase = ags_file_util_get_double(simple_file->file_util,
+				     str);
+
+    ags_dial_set_value(stargazer_synth->synth_0_phase,
+		       phase);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-0-volume");
+
+  if(str != NULL){
+    gdouble volume;
+
+    volume = ags_file_util_get_double(simple_file->file_util,
+				      str);
+
+    ags_dial_set_value(stargazer_synth->synth_0_volume,
+		       volume);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-0-sync-enabled");
+
+  if(str != NULL && !g_strcmp0(str, "false") == FALSE){
+    gtk_check_button_set_active(stargazer_synth->synth_0_sync_enabled,
+				TRUE);
+    
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-0-sync-relative-attack-factor");
+
+  if(str != NULL){
+    gdouble sync_relative_attack_factor;
+
+    sync_relative_attack_factor = ags_file_util_get_double(simple_file->file_util,
+							   str);
+
+    ags_dial_set_value(stargazer_synth->synth_0_sync_relative_attack_factor,
+		       sync_relative_attack_factor);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-0-sync-attack-0");
+
+  if(str != NULL){
+    gdouble sync_attack_0;
+
+    sync_attack_0 = ags_file_util_get_double(simple_file->file_util,
+					     str);
+
+    ags_dial_set_value(stargazer_synth->synth_0_sync_attack_0,
+		       sync_attack_0);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-0-sync-phase-0");
+
+  if(str != NULL){
+    gdouble sync_phase_0;
+
+    sync_phase_0 = ags_file_util_get_double(simple_file->file_util,
+					    str);
+
+    ags_dial_set_value(stargazer_synth->synth_0_sync_phase_0,
+		       sync_phase_0);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-0-sync-attack-1");
+
+  if(str != NULL){
+    gdouble sync_attack_1;
+
+    sync_attack_1 = ags_file_util_get_double(simple_file->file_util,
+					     str);
+
+    ags_dial_set_value(stargazer_synth->synth_0_sync_attack_1,
+		       sync_attack_1);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-0-sync-phase-1");
+
+  if(str != NULL){
+    gdouble sync_phase_1;
+
+    sync_phase_1 = ags_file_util_get_double(simple_file->file_util,
+					    str);
+
+    ags_dial_set_value(stargazer_synth->synth_0_sync_phase_1,
+		       sync_phase_1);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-0-sync-attack-2");
+
+  if(str != NULL){
+    gdouble sync_attack_2;
+
+    sync_attack_2 = ags_file_util_get_double(simple_file->file_util,
+					     str);
+
+    ags_dial_set_value(stargazer_synth->synth_0_sync_attack_2,
+		       sync_attack_2);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-0-sync-phase-2");
+
+  if(str != NULL){
+    gdouble sync_phase_2;
+
+    sync_phase_2 = ags_file_util_get_double(simple_file->file_util,
+					    str);
+
+    ags_dial_set_value(stargazer_synth->synth_0_sync_phase_2,
+		       sync_phase_2);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-0-sync-attack-3");
+
+  if(str != NULL){
+    gdouble sync_attack_3;
+
+    sync_attack_3 = ags_file_util_get_double(simple_file->file_util,
+					     str);
+
+    ags_dial_set_value(stargazer_synth->synth_0_sync_attack_3,
+		       sync_attack_3);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-0-sync-phase-3");
+
+  if(str != NULL){
+    gdouble sync_phase_3;
+
+    sync_phase_3 = ags_file_util_get_double(simple_file->file_util,
+					    str);
+
+    ags_dial_set_value(stargazer_synth->synth_0_sync_phase_3,
+		       sync_phase_3);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-0-sync-lfo-oscillator");
+
+  if(str != NULL){
+    guint sync_lfo_oscillator;
+
+    sync_lfo_oscillator = g_ascii_strtoll(str,
+					  NULL,
+					  10);
+
+    gtk_combo_box_set_active(stargazer_synth->synth_0_sync_lfo_oscillator,
+			     sync_lfo_oscillator);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-0-sync-lfo-frequency");
+
+  if(str != NULL){
+    gdouble sync_lfo_frequency;
+
+    sync_lfo_frequency = ags_file_util_get_double(simple_file->file_util,
+						  str);
+
+    gtk_spin_button_set_value(stargazer_synth->synth_0_sync_lfo_frequency,
+			      sync_lfo_frequency);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-0-lfo-oscillator");
+
+  if(str != NULL){
+    guint lfo_oscillator;
+
+    lfo_oscillator = g_ascii_strtoll(str,
+				     NULL,
+				     10);
+
+    gtk_combo_box_set_active(stargazer_synth->synth_0_lfo_oscillator,
+			     lfo_oscillator);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-0-lfo-frequency");
+
+  if(str != NULL){
+    gdouble lfo_frequency;
+
+    lfo_frequency = ags_file_util_get_double(simple_file->file_util,
+					     str);
+
+    gtk_spin_button_set_value(stargazer_synth->synth_0_lfo_frequency,
+			      lfo_frequency);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-0-lfo-depth");
+
+  if(str != NULL){
+    gdouble lfo_depth;
+
+    lfo_depth = ags_file_util_get_double(simple_file->file_util,
+					 str);
+
+    ags_dial_set_value(stargazer_synth->synth_0_lfo_depth,
+		       lfo_depth);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-0-lfo-tuning");
+
+  if(str != NULL){
+    gdouble lfo_tuning;
+
+    lfo_tuning = ags_file_util_get_double(simple_file->file_util,
+					  str);
+
+    ags_dial_set_value(stargazer_synth->synth_0_lfo_tuning,
+		       lfo_tuning);
+      
+    xmlFree(str);
+  }
+
+  /* synth-1 */
+  str = xmlGetProp(node,
+		   "synth-1-oscillator");
+
+  if(str != NULL){
+    guint oscillator;
+
+    oscillator = g_ascii_strtoll(str,
+				 NULL,
+				 10);
+
+    gtk_combo_box_set_active(stargazer_synth->synth_1_oscillator,
+			     oscillator);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-1-octave");
+
+  if(str != NULL){
+    gdouble octave;
+
+    octave = ags_file_util_get_double(simple_file->file_util,
+				      str);
+
+    ags_dial_set_value(stargazer_synth->synth_1_octave,
+		       octave);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-1-key");
+
+  if(str != NULL){
+    gdouble key;
+
+    key = ags_file_util_get_double(simple_file->file_util,
+				   str);
+
+    ags_dial_set_value(stargazer_synth->synth_1_key,
+		       key);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-1-phase");
+
+  if(str != NULL){
+    gdouble phase;
+
+    phase = ags_file_util_get_double(simple_file->file_util,
+				     str);
+
+    ags_dial_set_value(stargazer_synth->synth_1_phase,
+		       phase);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-1-volume");
+
+  if(str != NULL){
+    gdouble volume;
+
+    volume = ags_file_util_get_double(simple_file->file_util,
+				      str);
+
+    ags_dial_set_value(stargazer_synth->synth_1_volume,
+		       volume);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-1-sync-enabled");
+
+  if(str != NULL && !g_strcmp0(str, "false") == FALSE){
+    gtk_check_button_set_active(stargazer_synth->synth_1_sync_enabled,
+				TRUE);
+    
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-1-sync-relative-attack-factor");
+
+  if(str != NULL){
+    gdouble sync_relative_attack_factor;
+
+    sync_relative_attack_factor = ags_file_util_get_double(simple_file->file_util,
+							   str);
+
+    ags_dial_set_value(stargazer_synth->synth_1_sync_relative_attack_factor,
+		       sync_relative_attack_factor);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-1-sync-attack-0");
+
+  if(str != NULL){
+    gdouble sync_attack_0;
+
+    sync_attack_0 = ags_file_util_get_double(simple_file->file_util,
+					     str);
+
+    ags_dial_set_value(stargazer_synth->synth_1_sync_attack_0,
+		       sync_attack_0);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-1-sync-phase-0");
+
+  if(str != NULL){
+    gdouble sync_phase_0;
+
+    sync_phase_0 = ags_file_util_get_double(simple_file->file_util,
+					    str);
+
+    ags_dial_set_value(stargazer_synth->synth_1_sync_phase_0,
+		       sync_phase_0);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-1-sync-attack-1");
+
+  if(str != NULL){
+    gdouble sync_attack_1;
+
+    sync_attack_1 = ags_file_util_get_double(simple_file->file_util,
+					     str);
+
+    ags_dial_set_value(stargazer_synth->synth_1_sync_attack_1,
+		       sync_attack_1);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-1-sync-phase-1");
+
+  if(str != NULL){
+    gdouble sync_phase_1;
+
+    sync_phase_1 = ags_file_util_get_double(simple_file->file_util,
+					    str);
+
+    ags_dial_set_value(stargazer_synth->synth_1_sync_phase_1,
+		       sync_phase_1);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-1-sync-attack-2");
+
+  if(str != NULL){
+    gdouble sync_attack_2;
+
+    sync_attack_2 = ags_file_util_get_double(simple_file->file_util,
+					     str);
+
+    ags_dial_set_value(stargazer_synth->synth_1_sync_attack_2,
+		       sync_attack_2);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-1-sync-phase-2");
+
+  if(str != NULL){
+    gdouble sync_phase_2;
+
+    sync_phase_2 = ags_file_util_get_double(simple_file->file_util,
+					    str);
+
+    ags_dial_set_value(stargazer_synth->synth_1_sync_phase_2,
+		       sync_phase_2);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-1-sync-attack-3");
+
+  if(str != NULL){
+    gdouble sync_attack_3;
+
+    sync_attack_3 = ags_file_util_get_double(simple_file->file_util,
+					     str);
+
+    ags_dial_set_value(stargazer_synth->synth_1_sync_attack_3,
+		       sync_attack_3);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-1-sync-phase-3");
+
+  if(str != NULL){
+    gdouble sync_phase_3;
+
+    sync_phase_3 = ags_file_util_get_double(simple_file->file_util,
+					    str);
+
+    ags_dial_set_value(stargazer_synth->synth_1_sync_phase_3,
+		       sync_phase_3);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-1-sync-lfo-oscillator");
+
+  if(str != NULL){
+    guint sync_lfo_oscillator;
+
+    sync_lfo_oscillator = g_ascii_strtoll(str,
+					  NULL,
+					  10);
+
+    gtk_combo_box_set_active(stargazer_synth->synth_1_sync_lfo_oscillator,
+			     sync_lfo_oscillator);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-1-sync-lfo-frequency");
+
+  if(str != NULL){
+    gdouble sync_lfo_frequency;
+
+    sync_lfo_frequency = ags_file_util_get_double(simple_file->file_util,
+						  str);
+
+    gtk_spin_button_set_value(stargazer_synth->synth_1_sync_lfo_frequency,
+			      sync_lfo_frequency);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-1-lfo-oscillator");
+
+  if(str != NULL){
+    guint lfo_oscillator;
+
+    lfo_oscillator = g_ascii_strtoll(str,
+				     NULL,
+				     10);
+
+    gtk_combo_box_set_active(stargazer_synth->synth_1_lfo_oscillator,
+			     lfo_oscillator);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-1-lfo-frequency");
+
+  if(str != NULL){
+    gdouble lfo_frequency;
+
+    lfo_frequency = ags_file_util_get_double(simple_file->file_util,
+					     str);
+
+    gtk_spin_button_set_value(stargazer_synth->synth_1_lfo_frequency,
+			      lfo_frequency);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-1-lfo-depth");
+
+  if(str != NULL){
+    gdouble lfo_depth;
+
+    lfo_depth = ags_file_util_get_double(simple_file->file_util,
+					 str);
+
+    ags_dial_set_value(stargazer_synth->synth_1_lfo_depth,
+		       lfo_depth);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-1-lfo-tuning");
+
+  if(str != NULL){
+    gdouble lfo_tuning;
+
+    lfo_tuning = ags_file_util_get_double(simple_file->file_util,
+					  str);
+
+    ags_dial_set_value(stargazer_synth->synth_1_lfo_tuning,
+		       lfo_tuning);
+      
+    xmlFree(str);
+  }
+  
+  /* effects */
+  str = xmlGetProp(node,
+		   "pitch-tuning");
+
+  if(str != NULL){
+    gdouble tuning;
+
+    tuning = ags_file_util_get_double(simple_file->file_util,
+				      str);
+
+    ags_dial_set_value(stargazer_synth->pitch_tuning,
+		       tuning);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "noise-gain");
+
+  if(str != NULL){
+    gdouble gain;
+
+    gain = ags_file_util_get_double(simple_file->file_util,
+				    str);
+
+    ags_dial_set_value(stargazer_synth->noise_gain,
+		       gain);
+      
+    xmlFree(str);
+  }
+
+  /* chorus */
+  str = xmlGetProp(node,
+		   "chorus-input-volume");
+
+  if(str != NULL){
+    gdouble input_volume;
+
+    input_volume = ags_file_util_get_double(simple_file->file_util,
+					    str);
+
+    ags_dial_set_value(stargazer_synth->chorus_input_volume,
+		       input_volume);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "chorus-output-volume");
+
+  if(str != NULL){
+    gdouble output_volume;
+
+    output_volume = ags_file_util_get_double(simple_file->file_util,
+					     str);
+
+    ags_dial_set_value(stargazer_synth->chorus_output_volume,
+		       output_volume);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "chorus-lfo-oscillator");
+
+  if(str != NULL){
+    guint lfo_oscillator;
+
+    lfo_oscillator = g_ascii_strtoll(str,
+				     NULL,
+				     10);
+
+    gtk_combo_box_set_active(stargazer_synth->chorus_lfo_oscillator,
+			     lfo_oscillator);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "chorus-lfo-frequency");
+
+  if(str != NULL){
+    gdouble lfo_frequency;
+
+    lfo_frequency = ags_file_util_get_double(simple_file->file_util,
+					     str);
+
+    gtk_spin_button_set_value(stargazer_synth->chorus_lfo_frequency,
+			      lfo_frequency);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "chorus-depth");
+
+  if(str != NULL){
+    gdouble depth;
+
+    depth = ags_file_util_get_double(simple_file->file_util,
+				     str);
+
+    ags_dial_set_value(stargazer_synth->chorus_depth,
+		       depth);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "chorus-mix");
+
+  if(str != NULL){
+    gdouble mix;
+
+    mix = ags_file_util_get_double(simple_file->file_util,
+				   str);
+
+    ags_dial_set_value(stargazer_synth->chorus_mix,
+		       mix);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "chorus-delay");
+
+  if(str != NULL){
+    gdouble delay;
+
+    delay = ags_file_util_get_double(simple_file->file_util,
+				     str);
+
+    ags_dial_set_value(stargazer_synth->chorus_delay,
+		       delay);
+      
+    xmlFree(str);
+  }
+
+  /* ext */
+  str = xmlGetProp(node,
+		   "tremolo-enabled");
+
+  if(str != NULL){
+    gboolean enabled;
+
+    enabled = (!g_ascii_strncasecmp(str, AGS_SIMPLE_FILE_TRUE, 5)) ? TRUE: FALSE;
+
+    gtk_check_button_set_active(stargazer_synth->tremolo_enabled,
+				enabled);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "tremolo-gain");
+
+  if(str != NULL){
+    gdouble gain;
+
+    gain = ags_file_util_get_double(simple_file->file_util,
+				    str);
+
+    ags_dial_set_value(stargazer_synth->tremolo_gain,
+		       gain);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "tremolo-lfo-depth");
+
+  if(str != NULL){
+    gdouble lfo_depth;
+
+    lfo_depth = ags_file_util_get_double(simple_file->file_util,
+					 str);
+
+    ags_dial_set_value(stargazer_synth->tremolo_lfo_depth,
+		       lfo_depth);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "tremolo-lfo-freq");
+
+  if(str != NULL){
+    gdouble lfo_freq;
+
+    lfo_freq = ags_file_util_get_double(simple_file->file_util,
+					str);
+
+    ags_dial_set_value(stargazer_synth->tremolo_lfo_freq,
+		       lfo_freq);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "tremolo-tuning");
+
+  if(str != NULL){
+    gdouble tuning;
+
+    tuning = ags_file_util_get_double(simple_file->file_util,
+				      str);
+
+    ags_dial_set_value(stargazer_synth->tremolo_tuning,
+		       tuning);
+      
+    xmlFree(str);
+  }
+  
+  str = xmlGetProp(node,
+		   "vibrato-enabled");
+
+  if(str != NULL){
+    gboolean enabled;
+
+    enabled = (!g_ascii_strncasecmp(str, AGS_SIMPLE_FILE_TRUE, 5)) ? TRUE: FALSE;
+
+    gtk_check_button_set_active(stargazer_synth->vibrato_enabled,
+				enabled);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "vibrato-gain");
+
+  if(str != NULL){
+    gdouble gain;
+
+    gain = ags_file_util_get_double(simple_file->file_util,
+				    str);
+
+    ags_dial_set_value(stargazer_synth->vibrato_gain,
+		       gain);
+      
+    xmlFree(str);
+  }
+  
+  str = xmlGetProp(node,
+		   "vibrato-lfo-depth");
+
+  if(str != NULL){
+    gdouble lfo_depth;
+
+    lfo_depth = ags_file_util_get_double(simple_file->file_util,
+					 str);
+
+    ags_dial_set_value(stargazer_synth->vibrato_lfo_depth,
+		       lfo_depth);
+      
+    xmlFree(str);
+  }
+  
+  str = xmlGetProp(node,
+		   "vibrato-lfo-freq");
+
+  if(str != NULL){
+    gdouble lfo_freq;
+
+    lfo_freq = ags_file_util_get_double(simple_file->file_util,
+					str);
+
+    ags_dial_set_value(stargazer_synth->vibrato_lfo_freq,
+		       lfo_freq);
+      
+    xmlFree(str);
+  }
+  
+  str = xmlGetProp(node,
+		   "vibrato-tuning");
+
+  if(str != NULL){
+    gdouble tuning;
+
+    tuning = ags_file_util_get_double(simple_file->file_util,
+				      str);
+
+    ags_dial_set_value(stargazer_synth->vibrato_tuning,
+		       tuning);
+      
+    xmlFree(str);
+  }
+}
+
+void
 ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsPitchSampler *pitch_sampler)
 {
   GtkTreeModel *model;
@@ -7873,6 +8797,8 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
     ags_simple_file_read_hybrid_synth_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsHybridSynth *) machine);
   }else if(AGS_IS_HYBRID_FM_SYNTH(machine)){
     ags_simple_file_read_hybrid_fm_synth_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsHybridFMSynth *) machine);
+  }else if(AGS_IS_STARGAZER_SYNTH(machine)){
+    ags_simple_file_read_stargazer_synth_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsStargazerSynth *) machine);
   }else if(AGS_IS_PITCH_SAMPLER(machine)){
     ags_simple_file_read_pitch_sampler_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsPitchSampler *) machine);
   }else if(AGS_IS_SFZ_SYNTH(machine)){
@@ -14307,6 +15233,553 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       "chorus-delay",
+	       str);
+
+    g_free(str);    
+  }else if(AGS_IS_STARGAZER_SYNTH(machine)){
+    AgsStargazerSynth *stargazer_synth;
+
+    stargazer_synth = (AgsStargazerSynth *) machine;
+
+    /* synth-0 */
+    str = g_strdup_printf("%d", gtk_combo_box_get_active(stargazer_synth->synth_0_oscillator));
+    
+    xmlNewProp(node,
+	       "synth-0-oscillator",
+	       str);
+
+    g_free(str);
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->synth_0_octave));
+    
+    xmlNewProp(node,
+	       "synth-0-octave",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->synth_0_key));
+    
+    xmlNewProp(node,
+	       "synth-0-key",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->synth_0_phase));
+    
+    xmlNewProp(node,
+	       "synth-0-phase",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->synth_0_volume));
+    
+    xmlNewProp(node,
+	       "synth-0-volume",
+	       str);
+
+    g_free(str);    
+
+    if(gtk_check_button_get_active(stargazer_synth->synth_0_sync_enabled)){
+      xmlNewProp(node,
+		 "synth-0-sync-enabled",
+		 "true");
+    }
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->synth_0_sync_relative_attack_factor));
+    
+    xmlNewProp(node,
+	       "synth-0-sync-relative-attack-factor",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->synth_0_sync_attack_0));
+    
+    xmlNewProp(node,
+	       "synth-0-sync-attack-0",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->synth_0_sync_phase_0));
+    
+    xmlNewProp(node,
+	       "synth-0-sync-phase-0",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->synth_0_sync_attack_1));
+    
+    xmlNewProp(node,
+	       "synth-0-sync-attack-1",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->synth_0_sync_phase_1));
+    
+    xmlNewProp(node,
+	       "synth-0-sync-phase-1",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->synth_0_sync_attack_2));
+    
+    xmlNewProp(node,
+	       "synth-0-sync-attack-2",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->synth_0_sync_phase_2));
+    
+    xmlNewProp(node,
+	       "synth-0-sync-phase-2",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->synth_0_sync_attack_3));
+    
+    xmlNewProp(node,
+	       "synth-0-sync-attack-3",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->synth_0_sync_phase_3));
+    
+    xmlNewProp(node,
+	       "synth-0-sync-phase-3",
+	       str);
+
+    g_free(str);    
+    
+    str = g_strdup_printf("%d", gtk_combo_box_get_active(stargazer_synth->synth_0_sync_lfo_oscillator));
+    
+    xmlNewProp(node,
+	       "synth-0-sync-lfo-oscillator",
+	       str);
+
+    g_free(str);
+
+    str = g_strdup_printf("%lf",
+			  gtk_spin_button_get_value(stargazer_synth->synth_0_sync_lfo_frequency));
+    
+    xmlNewProp(node,
+	       "synth-0-sync-lfo-frequency",
+	       str);
+
+    g_free(str);    
+    
+    str = g_strdup_printf("%d",
+			  gtk_combo_box_get_active(stargazer_synth->synth_0_lfo_oscillator));
+    
+    xmlNewProp(node,
+	       "synth-0-lfo-oscillator",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  gtk_spin_button_get_value(stargazer_synth->synth_0_lfo_frequency));
+    
+    xmlNewProp(node,
+	       "synth-0-lfo-frequency",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->synth_0_lfo_depth));
+    
+    xmlNewProp(node,
+	       "synth-0-lfo-depth",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->synth_0_lfo_tuning));
+    
+    xmlNewProp(node,
+	       "synth-0-lfo-tuning",
+	       str);
+
+    g_free(str);    
+
+    /* synth-1 */
+    str = g_strdup_printf("%d", gtk_combo_box_get_active(stargazer_synth->synth_1_oscillator));
+    
+    xmlNewProp(node,
+	       "synth-1-oscillator",
+	       str);
+
+    g_free(str);
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->synth_1_octave));
+    
+    xmlNewProp(node,
+	       "synth-1-octave",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->synth_1_key));
+    
+    xmlNewProp(node,
+	       "synth-1-key",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->synth_1_phase));
+    
+    xmlNewProp(node,
+	       "synth-1-phase",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->synth_1_volume));
+    
+    xmlNewProp(node,
+	       "synth-1-volume",
+	       str);
+
+    g_free(str);    
+
+    if(gtk_check_button_get_active(stargazer_synth->synth_1_sync_enabled)){
+      xmlNewProp(node,
+		 "synth-1-sync-enabled",
+		 "true");
+    }
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->synth_1_sync_relative_attack_factor));
+    
+    xmlNewProp(node,
+	       "synth-1-sync-relative-attack-factor",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->synth_1_sync_attack_0));
+    
+    xmlNewProp(node,
+	       "synth-1-sync-attack-0",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->synth_1_sync_phase_0));
+    
+    xmlNewProp(node,
+	       "synth-1-sync-phase-0",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->synth_1_sync_attack_1));
+    
+    xmlNewProp(node,
+	       "synth-1-sync-attack-1",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->synth_1_sync_phase_1));
+    
+    xmlNewProp(node,
+	       "synth-1-sync-phase-1",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->synth_1_sync_attack_2));
+    
+    xmlNewProp(node,
+	       "synth-1-sync-attack-2",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->synth_1_sync_phase_2));
+    
+    xmlNewProp(node,
+	       "synth-1-sync-phase-2",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->synth_1_sync_attack_3));
+    
+    xmlNewProp(node,
+	       "synth-1-sync-attack-3",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->synth_1_sync_phase_3));
+    
+    xmlNewProp(node,
+	       "synth-1-sync-phase-3",
+	       str);
+
+    g_free(str);    
+    
+    str = g_strdup_printf("%d", gtk_combo_box_get_active(stargazer_synth->synth_1_sync_lfo_oscillator));
+    
+    xmlNewProp(node,
+	       "synth-1-sync-lfo-oscillator",
+	       str);
+
+    g_free(str);
+
+    str = g_strdup_printf("%lf",
+			  gtk_spin_button_get_value(stargazer_synth->synth_1_sync_lfo_frequency));
+    
+    xmlNewProp(node,
+	       "synth-1-sync-lfo-frequency",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%d",
+			  gtk_combo_box_get_active(stargazer_synth->synth_1_lfo_oscillator));
+    
+    xmlNewProp(node,
+	       "synth-1-lfo-oscillator",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  gtk_spin_button_get_value(stargazer_synth->synth_1_lfo_frequency));
+    
+    xmlNewProp(node,
+	       "synth-1-lfo-frequency",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->synth_1_lfo_depth));
+    
+    xmlNewProp(node,
+	       "synth-1-lfo-depth",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->synth_1_lfo_tuning));
+    
+    xmlNewProp(node,
+	       "synth-1-lfo-tuning",
+	       str);
+
+    g_free(str);    
+
+    /* effects */
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->pitch_tuning));
+    
+    xmlNewProp(node,
+	       "pitch-tuning",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->noise_gain));
+    
+    xmlNewProp(node,
+	       "noise-gain",
+	       str);
+
+    g_free(str);    
+
+    /* chorus */
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->chorus_input_volume));
+    
+    xmlNewProp(node,
+	       "chorus-input-volume",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->chorus_output_volume));
+    
+    xmlNewProp(node,
+	       "chorus-output-volume",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%d", gtk_combo_box_get_active(stargazer_synth->chorus_lfo_oscillator));
+    
+    xmlNewProp(node,
+	       "chorus-lfo-oscillator",
+	       str);
+
+    g_free(str);
+
+    str = g_strdup_printf("%lf",
+			  gtk_spin_button_get_value(stargazer_synth->chorus_lfo_frequency));
+    
+    xmlNewProp(node,
+	       "chorus-lfo-frequency",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->chorus_depth));
+    
+    xmlNewProp(node,
+	       "chorus-depth",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->chorus_mix));
+    
+    xmlNewProp(node,
+	       "chorus-mix",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->chorus_delay));
+    
+    xmlNewProp(node,
+	       "chorus-delay",
+	       str);
+
+    g_free(str);    
+
+    /* ext */
+    str = g_strdup_printf("%s",
+			  (gtk_check_button_get_active(stargazer_synth->tremolo_enabled) ? "true": "false"));
+    
+    xmlNewProp(node,
+	       "tremolo-enabled",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->tremolo_gain));
+    
+    xmlNewProp(node,
+	       "tremolo-gain",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->tremolo_lfo_depth));
+    
+    xmlNewProp(node,
+	       "tremolo-lfo-depth",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->tremolo_lfo_freq));
+    
+    xmlNewProp(node,
+	       "tremolo-lfo-freq",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->tremolo_tuning));
+    
+    xmlNewProp(node,
+	       "tremolo-tuning",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%s",
+			  (gtk_check_button_get_active(stargazer_synth->vibrato_enabled) ? "true": "false"));
+    
+    xmlNewProp(node,
+	       "vibrato-enabled",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->vibrato_gain));
+    
+    xmlNewProp(node,
+	       "vibrato-gain",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->vibrato_lfo_depth));
+    
+    xmlNewProp(node,
+	       "vibrato-lfo-depth",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->vibrato_lfo_freq));
+    
+    xmlNewProp(node,
+	       "vibrato-lfo-freq",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(stargazer_synth->vibrato_tuning));
+    
+    xmlNewProp(node,
+	       "vibrato-tuning",
 	       str);
 
     g_free(str);    

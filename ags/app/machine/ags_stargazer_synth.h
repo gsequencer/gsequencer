@@ -50,6 +50,30 @@ struct _AgsStargazerSynth
 
   guint flags;
 
+  gchar *name;
+  gchar *xml_type;
+
+  guint mapped_input_pad;
+  guint mapped_output_pad;
+
+  AgsRecallContainer *playback_play_container;
+  AgsRecallContainer *playback_recall_container;
+
+  AgsRecallContainer *star_synth_play_container;
+  AgsRecallContainer *star_synth_recall_container;
+
+  AgsRecallContainer *tremolo_play_container;
+  AgsRecallContainer *tremolo_recall_container;
+
+  AgsRecallContainer *volume_play_container;
+  AgsRecallContainer *volume_recall_container;
+
+  AgsRecallContainer *envelope_play_container;
+  AgsRecallContainer *envelope_recall_container;
+  
+  AgsRecallContainer *buffer_play_container;
+  AgsRecallContainer *buffer_recall_container;
+
   GtkComboBox *synth_0_oscillator;
 
   AgsDial *synth_0_octave;
@@ -82,6 +106,9 @@ struct _AgsStargazerSynth
 
   GtkComboBox *synth_1_oscillator;
 
+  GtkComboBox *synth_0_sync_lfo_oscillator;
+  GtkSpinButton *synth_0_sync_lfo_frequency;
+
   AgsDial *synth_1_octave;
   AgsDial *synth_1_key;
 
@@ -110,8 +137,13 @@ struct _AgsStargazerSynth
   AgsDial *synth_1_sync_attack_3;
   AgsDial *synth_1_sync_phase_3;
 
+  GtkComboBox *synth_1_sync_lfo_oscillator;
+  GtkSpinButton *synth_1_sync_lfo_frequency;
+
   GtkDropDown *pitch_type;
   AgsDial *pitch_tuning;
+
+  AgsDial *noise_gain;
 
   GtkCheckButton *tremolo_enabled;
 

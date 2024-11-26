@@ -57,7 +57,7 @@ struct _AgsAudioUnitServer
   
   GRecMutex obj_mutex;
 
-  volatile gboolean running;
+  gboolean running;
   GThread *thread;
 
   AgsApplicationContext *application_context;

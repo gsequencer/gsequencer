@@ -120,7 +120,7 @@ struct _AgsFifoout
 
   void **app_buffer;
 
-  volatile gboolean available;
+  gboolean available;
   
   guint ring_buffer_size;
   guint nth_ring_buffer;

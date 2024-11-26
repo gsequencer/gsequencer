@@ -101,9 +101,9 @@ static gpointer ags_lv2ui_plugin_parent_class = NULL;
 GType
 ags_lv2ui_plugin_get_type (void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_lv2ui_plugin = 0;
 
     static const GTypeInfo ags_lv2ui_plugin_info = {
@@ -123,18 +123,18 @@ ags_lv2ui_plugin_get_type (void)
 						   &ags_lv2ui_plugin_info,
 						   0);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_lv2ui_plugin);
+    g_once_init_leave(&g_define_type_id__static, ags_type_lv2ui_plugin);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 GType
 ags_lv2ui_plugin_flags_get_type()
 {
-  static volatile gsize g_flags_type_id__volatile;
+  static gsize g_flags_type_id__static;
 
-  if(g_once_init_enter (&g_flags_type_id__volatile)){
+  if(g_once_init_enter(&g_flags_type_id__static)){
     static const GFlagsValue values[] = {
       { AGS_LV2UI_PLUGIN_IS_SYNTHESIZER, "AGS_LV2UI_PLUGIN_IS_SYNTHESIZER", "lv2ui-plugin-is-synthesizer" },
       { AGS_LV2UI_PLUGIN_GTK2, "AGS_LV2UI_PLUGIN_GTK2", "lv2ui-plugin-gtk2" },
@@ -146,10 +146,10 @@ ags_lv2ui_plugin_flags_get_type()
 
     GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsLv2uiPluginFlags"), values);
 
-    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+    g_once_init_leave(&g_flags_type_id__static, g_flags_type_id);
   }
   
-  return g_flags_type_id__volatile;
+  return(g_flags_type_id__static);
 }
 
 void

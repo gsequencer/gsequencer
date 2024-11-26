@@ -1,3 +1,16 @@
+ags (7.4.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsStargazerSynth
+	* implemented ags_star_synth_util.c FM synth supporting vibrato
+	* implemented ags-fx-star-synth FM synth with phase modulation
+	* implemente persistency of AgsStargazerSynth
+	* implemented ags_atomic.h
+	* modified C standard to gnu11
+	* removed all volatile modifiers
+	* refactored GSequencer to use ags_atomic.h
+	* minor improvements
+
 ags (7.3.29)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

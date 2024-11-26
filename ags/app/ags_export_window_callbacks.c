@@ -240,8 +240,8 @@ ags_export_window_update_ui_callback(AgsApplicationContext *application_context,
 {
   if(ags_export_window_test_flags(export_window,
 				  AGS_EXPORT_WINDOW_HAS_STOP_TIMEOUT)){
-    if(g_atomic_int_get(&(export_window->do_stop))){
-      g_atomic_int_set(&(export_window->do_stop),
+    if(ags_atomic_int_get(&(export_window->do_stop))){
+      ags_atomic_int_set(&(export_window->do_stop),
 		       FALSE);
     
       ags_export_window_stop_export(export_window);
@@ -255,6 +255,6 @@ void
 ags_export_window_stop_callback(AgsThread *thread,
 				AgsExportWindow *export_window)
 {
-  g_atomic_int_set(&(export_window->do_stop),
+  ags_atomic_int_set(&(export_window->do_stop),
 		   TRUE);
 }

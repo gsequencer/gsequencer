@@ -56,7 +56,7 @@ struct _AgsExportWindow
   guint flags;
   guint connectable_flags;
 
-  volatile gboolean do_stop;
+  gboolean do_stop;
   
   GtkCheckButton *live_export;
   GtkCheckButton *exclude_sequencer;

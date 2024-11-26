@@ -201,9 +201,9 @@ static gpointer ags_gstreamer_devin_parent_class = NULL;
 GType
 ags_gstreamer_devin_get_type (void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_gstreamer_devin = 0;
 
     static const GTypeInfo ags_gstreamer_devin_info = {
@@ -243,18 +243,18 @@ ags_gstreamer_devin_get_type (void)
 				AGS_TYPE_SOUNDCARD,
 				&ags_soundcard_interface_info);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_gstreamer_devin);
+    g_once_init_leave(&g_define_type_id__static, ags_type_gstreamer_devin);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 GType
 ags_gstreamer_devin_flags_get_type()
 {
-  static volatile gsize g_flags_type_id__volatile;
+  static gsize g_flags_type_id__static;
 
-  if(g_once_init_enter (&g_flags_type_id__volatile)){
+  if(g_once_init_enter(&g_flags_type_id__static)){
     static const GFlagsValue values[] = {
       { AGS_GSTREAMER_DEVIN_INITIALIZED, "AGS_GSTREAMER_DEVIN_INITIALIZED", "gstreamer-devin-initialized" },
       { AGS_GSTREAMER_DEVIN_START_RECORD, "AGS_GSTREAMER_DEVIN_START_RECORD", "gstreamer-devin-start-record" },
@@ -267,10 +267,10 @@ ags_gstreamer_devin_flags_get_type()
 
     GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsGstreamerDevinFlags"), values);
 
-    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+    g_once_init_leave(&g_flags_type_id__static, g_flags_type_id);
   }
   
-  return g_flags_type_id__volatile;
+  return(g_flags_type_id__static);
 }
 
 void
@@ -620,7 +620,7 @@ ags_gstreamer_devin_init(AgsGstreamerDevin *gstreamer_devin)
   /* flags */
   gstreamer_devin->flags = 0;
   gstreamer_devin->connectable_flags = 0;
-  g_atomic_int_set(&(gstreamer_devin->sync_flags),
+  ags_atomic_int_set(&(gstreamer_devin->sync_flags),
 		   AGS_GSTREAMER_DEVIN_PASS_THROUGH);
 
   /* gstreamer devin mutex */
@@ -1980,9 +1980,9 @@ ags_gstreamer_devin_port_init(AgsSoundcard *soundcard,
 			     AGS_GSTREAMER_DEVIN_START_RECORD |
 			     AGS_GSTREAMER_DEVIN_RECORD);
   
-  g_atomic_int_and(&(gstreamer_devin->sync_flags),
+  ags_atomic_int_and(&(gstreamer_devin->sync_flags),
 		   (~(AGS_GSTREAMER_DEVIN_PASS_THROUGH)));
-  g_atomic_int_or(&(gstreamer_devin->sync_flags),
+  ags_atomic_int_or(&(gstreamer_devin->sync_flags),
 		  AGS_GSTREAMER_DEVIN_INITIAL_CALLBACK);
 
   g_rec_mutex_unlock(gstreamer_devin_mutex);
@@ -2090,13 +2090,13 @@ ags_gstreamer_devin_port_record(AgsSoundcard *soundcard,
 
   if(gstreamer_client_activated){
     /* signal */
-    if((AGS_GSTREAMER_DEVIN_INITIAL_CALLBACK & (g_atomic_int_get(&(gstreamer_devin->sync_flags)))) == 0){
+    if((AGS_GSTREAMER_DEVIN_INITIAL_CALLBACK & (ags_atomic_int_get(&(gstreamer_devin->sync_flags)))) == 0){
       g_mutex_lock(callback_mutex);
 
-      g_atomic_int_or(&(gstreamer_devin->sync_flags),
+      ags_atomic_int_or(&(gstreamer_devin->sync_flags),
 		      AGS_GSTREAMER_DEVIN_CALLBACK_DONE);
     
-      if((AGS_GSTREAMER_DEVIN_CALLBACK_WAIT & (g_atomic_int_get(&(gstreamer_devin->sync_flags)))) != 0){
+      if((AGS_GSTREAMER_DEVIN_CALLBACK_WAIT & (ags_atomic_int_get(&(gstreamer_devin->sync_flags)))) != 0){
 	g_cond_signal(&(gstreamer_devin->callback_cond));
       }
 
@@ -2104,27 +2104,27 @@ ags_gstreamer_devin_port_record(AgsSoundcard *soundcard,
     }
     
     /* wait callback */	
-    if((AGS_GSTREAMER_DEVIN_INITIAL_CALLBACK & (g_atomic_int_get(&(gstreamer_devin->sync_flags)))) == 0){
+    if((AGS_GSTREAMER_DEVIN_INITIAL_CALLBACK & (ags_atomic_int_get(&(gstreamer_devin->sync_flags)))) == 0){
       g_mutex_lock(callback_finish_mutex);
     
-      if((AGS_GSTREAMER_DEVIN_CALLBACK_FINISH_DONE & (g_atomic_int_get(&(gstreamer_devin->sync_flags)))) == 0){
-	g_atomic_int_or(&(gstreamer_devin->sync_flags),
+      if((AGS_GSTREAMER_DEVIN_CALLBACK_FINISH_DONE & (ags_atomic_int_get(&(gstreamer_devin->sync_flags)))) == 0){
+	ags_atomic_int_or(&(gstreamer_devin->sync_flags),
 			AGS_GSTREAMER_DEVIN_CALLBACK_FINISH_WAIT);
     
-	while((AGS_GSTREAMER_DEVIN_CALLBACK_FINISH_DONE & (g_atomic_int_get(&(gstreamer_devin->sync_flags)))) == 0 &&
-	      (AGS_GSTREAMER_DEVIN_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(gstreamer_devin->sync_flags)))) != 0){
+	while((AGS_GSTREAMER_DEVIN_CALLBACK_FINISH_DONE & (ags_atomic_int_get(&(gstreamer_devin->sync_flags)))) == 0 &&
+	      (AGS_GSTREAMER_DEVIN_CALLBACK_FINISH_WAIT & (ags_atomic_int_get(&(gstreamer_devin->sync_flags)))) != 0){
 	  g_cond_wait(&(gstreamer_devin->callback_finish_cond),
 		      callback_finish_mutex);
 	}
       }
     
-      g_atomic_int_and(&(gstreamer_devin->sync_flags),
+      ags_atomic_int_and(&(gstreamer_devin->sync_flags),
 		       (~(AGS_GSTREAMER_DEVIN_CALLBACK_FINISH_WAIT |
 			  AGS_GSTREAMER_DEVIN_CALLBACK_FINISH_DONE)));
     
       g_mutex_unlock(callback_finish_mutex);
     }else{
-      g_atomic_int_and(&(gstreamer_devin->sync_flags),
+      ags_atomic_int_and(&(gstreamer_devin->sync_flags),
 		       (~AGS_GSTREAMER_DEVIN_INITIAL_CALLBACK));
     }
   }
@@ -2184,7 +2184,7 @@ ags_gstreamer_devin_port_free(AgsSoundcard *soundcard)
     return;
   }
 
-  //  g_atomic_int_or(&(AGS_THREAD(application_context->main_loop)->flags),
+  //  ags_atomic_int_or(&(AGS_THREAD(application_context->main_loop)->flags),
   //		  AGS_THREAD_TIMING);
 
   callback_mutex = &(gstreamer_devin->callback_mutex);
@@ -2193,18 +2193,18 @@ ags_gstreamer_devin_port_free(AgsSoundcard *soundcard)
   gstreamer_devin->app_buffer_mode = AGS_GSTREAMER_DEVIN_APP_BUFFER_0;
   gstreamer_devin->flags &= (~(AGS_GSTREAMER_DEVIN_RECORD));
 
-  g_atomic_int_or(&(gstreamer_devin->sync_flags),
+  ags_atomic_int_or(&(gstreamer_devin->sync_flags),
 		  AGS_GSTREAMER_DEVIN_PASS_THROUGH);
-  g_atomic_int_and(&(gstreamer_devin->sync_flags),
+  ags_atomic_int_and(&(gstreamer_devin->sync_flags),
 		   (~AGS_GSTREAMER_DEVIN_INITIAL_CALLBACK));
 
   /* signal callback */
   g_mutex_lock(callback_mutex);
 
-  g_atomic_int_or(&(gstreamer_devin->sync_flags),
+  ags_atomic_int_or(&(gstreamer_devin->sync_flags),
 		  AGS_GSTREAMER_DEVIN_CALLBACK_DONE);
     
-  if((AGS_GSTREAMER_DEVIN_CALLBACK_WAIT & (g_atomic_int_get(&(gstreamer_devin->sync_flags)))) != 0){
+  if((AGS_GSTREAMER_DEVIN_CALLBACK_WAIT & (ags_atomic_int_get(&(gstreamer_devin->sync_flags)))) != 0){
     g_cond_signal(&(gstreamer_devin->callback_cond));
   }
 
@@ -2213,10 +2213,10 @@ ags_gstreamer_devin_port_free(AgsSoundcard *soundcard)
   /* signal thread */
   g_mutex_lock(callback_finish_mutex);
 
-  g_atomic_int_or(&(gstreamer_devin->sync_flags),
+  ags_atomic_int_or(&(gstreamer_devin->sync_flags),
 		  AGS_GSTREAMER_DEVIN_CALLBACK_FINISH_DONE);
     
-  if((AGS_GSTREAMER_DEVIN_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(gstreamer_devin->sync_flags)))) != 0){
+  if((AGS_GSTREAMER_DEVIN_CALLBACK_FINISH_WAIT & (ags_atomic_int_get(&(gstreamer_devin->sync_flags)))) != 0){
     g_cond_signal(&(gstreamer_devin->callback_finish_cond));
   }
 

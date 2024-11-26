@@ -70,7 +70,7 @@ ags_log_test_add_message()
   ags_log_add_message(log,
 		      AGS_LOG_TEST_ADD_MESSAGE_START_ENGINE);  
 
-  CU_ASSERT(g_list_find_custom(g_atomic_pointer_get(&(log->messages)),
+  CU_ASSERT(g_list_find_custom(ags_atomic_pointer_get(&(log->messages)),
 			       AGS_LOG_TEST_ADD_MESSAGE_START_ENGINE,
 			       g_strcmp0) != NULL);
   
@@ -78,7 +78,7 @@ ags_log_test_add_message()
   ags_log_add_message(log,
 		      AGS_LOG_TEST_ADD_MESSAGE_LOAD_PLUGINS);  
 
-  CU_ASSERT(g_list_find_custom(g_atomic_pointer_get(&(log->messages)),
+  CU_ASSERT(g_list_find_custom(ags_atomic_pointer_get(&(log->messages)),
 			       AGS_LOG_TEST_ADD_MESSAGE_LOAD_PLUGINS,
 			       g_strcmp0) != NULL);
 
@@ -86,7 +86,7 @@ ags_log_test_add_message()
   ags_log_add_message(log,
 		      AGS_LOG_TEST_ADD_MESSAGE_APPLICATION_READY);  
 
-  CU_ASSERT(g_list_find_custom(g_atomic_pointer_get(&(log->messages)),
+  CU_ASSERT(g_list_find_custom(ags_atomic_pointer_get(&(log->messages)),
 			       AGS_LOG_TEST_ADD_MESSAGE_APPLICATION_READY,
 			       g_strcmp0) != NULL);
 
@@ -94,7 +94,7 @@ ags_log_test_add_message()
   ags_log_add_message(log,
 		      AGS_LOG_TEST_ADD_MESSAGE_STOP_ENGINE);
 
-  CU_ASSERT(g_list_find_custom(g_atomic_pointer_get(&(log->messages)),
+  CU_ASSERT(g_list_find_custom(ags_atomic_pointer_get(&(log->messages)),
 			       AGS_LOG_TEST_ADD_MESSAGE_STOP_ENGINE,
 			       g_strcmp0) != NULL);
 

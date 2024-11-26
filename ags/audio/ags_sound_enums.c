@@ -37,9 +37,9 @@
 GType
 ags_sound_ability_flags_get_type()
 {
-  static volatile gsize g_flags_type_id__volatile;
+  static gsize g_flags_type_id__static;
 
-  if(g_once_init_enter (&g_flags_type_id__volatile)){
+  if(g_once_init_enter(&g_flags_type_id__static)){
     static const GFlagsValue values[] = {
       { AGS_SOUND_ABILITY_PLAYBACK, "AGS_SOUND_ABILITY_PLAYBACK", "sound-ability-playback" },
       { AGS_SOUND_ABILITY_SEQUENCER, "AGS_SOUND_ABILITY_SEQUENCER", "sound-ability-sequencer" },
@@ -51,18 +51,18 @@ ags_sound_ability_flags_get_type()
 
     GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsSoundAbilityFlags"), values);
 
-    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+    g_once_init_leave(&g_flags_type_id__static, g_flags_type_id);
   }
   
-  return g_flags_type_id__volatile;
+  return(g_flags_type_id__static);
 }
 
 GType
 ags_sound_behaviour_flags_get_type()
 {
-  static volatile gsize g_flags_type_id__volatile;
+  static gsize g_flags_type_id__static;
 
-  if(g_once_init_enter (&g_flags_type_id__volatile)){
+  if(g_once_init_enter(&g_flags_type_id__static)){
     static const GFlagsValue values[] = {
       { AGS_SOUND_BEHAVIOUR_PATTERN_MODE, "AGS_SOUND_BEHAVIOUR_PATTERN_MODE", "sound-behaviour-pattern-mode" },
       { AGS_SOUND_BEHAVIOUR_BULK_MODE, "AGS_SOUND_BEHAVIOUR_BULK_MODE", "sound-behaviour-bulk-mode" },
@@ -83,18 +83,18 @@ ags_sound_behaviour_flags_get_type()
 
     GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsSoundBehaviourFlags"), values);
 
-    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+    g_once_init_leave(&g_flags_type_id__static, g_flags_type_id);
   }
   
-  return g_flags_type_id__volatile;
+  return(g_flags_type_id__static);
 }
 
 GType
 ags_sound_scope_get_type()
 {
-  static volatile gsize g_enum_type_id__volatile;
+  static gsize g_enum_type_id__static;
 
-  if(g_once_init_enter (&g_enum_type_id__volatile)){
+  if(g_once_init_enter(&g_enum_type_id__static)){
     static const GEnumValue values[] = {
       { AGS_SOUND_SCOPE_PLAYBACK, "AGS_SOUND_SCOPE_PLAYBACK", "sound-scope-playback" },
       { AGS_SOUND_SCOPE_SEQUENCER, "AGS_SOUND_SCOPE_SEQUENCER", "sound-scope-sequencer" },
@@ -107,18 +107,18 @@ ags_sound_scope_get_type()
 
     GType g_enum_type_id = g_enum_register_static(g_intern_static_string("AgsSoundScope"), values);
 
-    g_once_init_leave (&g_enum_type_id__volatile, g_enum_type_id);
+    g_once_init_leave(&g_enum_type_id__static, g_enum_type_id);
   }
   
-  return g_enum_type_id__volatile;
+  return(g_enum_type_id__static);
 }
 
 GType
 ags_sound_staging_flags_get_type()
 {
-  static volatile gsize g_flags_type_id__volatile;
+  static gsize g_flags_type_id__static;
 
-  if(g_once_init_enter (&g_flags_type_id__volatile)){
+  if(g_once_init_enter(&g_flags_type_id__static)){
     static const GFlagsValue values[] = {
       { AGS_SOUND_STAGING_CHECK_RT_DATA, "AGS_SOUND_STAGING_CHECK_RT_DATA", "sound-staging-check-rt-data" },
       { AGS_SOUND_STAGING_RUN_INIT_PRE, "AGS_SOUND_STAGING_RUN_INIT_PRE", "sound-staging-run-init-pre" },
@@ -142,18 +142,18 @@ ags_sound_staging_flags_get_type()
 
     GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsSoundStagingFlags"), values);
 
-    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+    g_once_init_leave(&g_flags_type_id__static, g_flags_type_id);
   }
   
-  return g_flags_type_id__volatile;
+  return(g_flags_type_id__static);
 }
 
 GType
 ags_sound_state_flags_get_type()
 {
-  static volatile gsize g_flags_type_id__volatile;
+  static gsize g_flags_type_id__static;
 
-  if(g_once_init_enter (&g_flags_type_id__volatile)){
+  if(g_once_init_enter(&g_flags_type_id__static)){
     static const GFlagsValue values[] = {
       { AGS_SOUND_STATE_IS_WAITING, "AGS_SOUND_STATE_IS-WAITING", "sound-state-is-waiting" },
       { AGS_SOUND_STATE_IS_ACTIVE, "AGS_SOUND_STATE_IS_ACTIVE", "sound-state-is-active" },
@@ -164,18 +164,18 @@ ags_sound_state_flags_get_type()
 
     GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsSoundStateFlags"), values);
 
-    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+    g_once_init_leave(&g_flags_type_id__static, g_flags_type_id);
   }
   
-  return g_flags_type_id__volatile;
+  return(g_flags_type_id__static);
 }
 
 GType
 ags_sound_key_format_get_type()
 {
-  static volatile gsize g_enum_type_id__volatile;
+  static gsize g_enum_type_id__static;
 
-  if(g_once_init_enter (&g_enum_type_id__volatile)){
+  if(g_once_init_enter(&g_enum_type_id__static)){
     static const GEnumValue values[] = {
       { AGS_SOUND_KEY_FORMAT_16TH, "AGS_SOUND_KEY_FORMAT_16TH", "sound-key-format-16th" },
       { AGS_SOUND_KEY_FORMAT_256TH, "AGS_SOUND_KEY_FORMAT_256TH", "sound-key-format-256th" },
@@ -184,8 +184,8 @@ ags_sound_key_format_get_type()
 
     GType g_enum_type_id = g_enum_register_static(g_intern_static_string("AgsSoundKeyFormat"), values);
 
-    g_once_init_leave (&g_enum_type_id__volatile, g_enum_type_id);
+    g_once_init_leave(&g_enum_type_id__static, g_enum_type_id);
   }
   
-  return g_enum_type_id__volatile;
+  return(g_enum_type_id__static);
 }

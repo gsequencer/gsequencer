@@ -62,7 +62,7 @@ ags_generic_main_loop_test_clean_suite()
 void
 ags_generic_main_loop_test_thread_run_callback(AgsThread *thread, gpointer user_data)
 {
-  g_atomic_int_inc(&run_count);
+  ags_atomic_int_increment(&run_count);
 }
 
 void
@@ -96,7 +96,7 @@ ags_generic_main_loop_test_run()
 	       "frequency", &frequency,
 	       NULL);
   
-  CU_ASSERT(g_atomic_int_get(&run_count) > (gint) frequency);
+  CU_ASSERT(ags_atomic_int_get(&run_count) > (gint) frequency);
 }
 
 int

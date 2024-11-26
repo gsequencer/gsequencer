@@ -37,9 +37,9 @@ void ags_plugin_base_init(AgsPluginInterface *ginterface);
 GType
 ags_plugin_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_plugin = 0;
 
     static const GTypeInfo ags_plugin_info = {
@@ -52,10 +52,10 @@ ags_plugin_get_type()
 					     "AgsPlugin", &ags_plugin_info,
 					     0);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_plugin);
+    g_once_init_leave(&g_define_type_id__static, ags_type_plugin);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 void

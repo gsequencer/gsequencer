@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,6 +34,7 @@
 #include <ags/app/machine/ags_fm_syncsynth.h>
 #include <ags/app/machine/ags_hybrid_synth.h>
 #include <ags/app/machine/ags_hybrid_fm_synth.h>
+#include <ags/app/machine/ags_stargazer_synth.h>
 
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <ags/app/machine/ags_ffplayer.h>
@@ -649,6 +650,54 @@ ags_machine_util_new_hybrid_fm_synth()
   gtk_widget_show((GtkWidget *) hybrid_fm_synth);
 
   return((GtkWidget *) hybrid_fm_synth);  
+}
+
+/**
+ * ags_machine_util_new_stargazer_synth:
+ * 
+ * Create #AgsStargazerSynth.
+ * 
+ * returns: the newly instantiated #AgsStargazerSynth
+ * 
+ * Since: 3.14.0
+ */
+GtkWidget*
+ags_machine_util_new_stargazer_synth()
+{
+  AgsWindow *window;
+  AgsStargazerSynth *stargazer_synth;
+
+  AgsApplicationContext *application_context;
+  
+  GObject *default_soundcard;
+  
+  application_context = ags_application_context_get_instance();
+
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+  
+  /* create stargazer_synth */
+  stargazer_synth = ags_stargazer_synth_new(G_OBJECT(default_soundcard));
+
+  ags_window_add_machine(window,
+			 AGS_MACHINE(stargazer_synth));
+
+  ags_connectable_connect(AGS_CONNECTABLE(stargazer_synth));
+
+  ags_audio_set_audio_channels(AGS_MACHINE(stargazer_synth)->audio,
+			       1, 0);
+  
+  ags_audio_set_pads(AGS_MACHINE(stargazer_synth)->audio,
+		     AGS_TYPE_INPUT,
+		     128, 0);
+  ags_audio_set_pads(AGS_MACHINE(stargazer_synth)->audio,
+		     AGS_TYPE_OUTPUT,
+		     1, 0);
+
+  gtk_widget_show((GtkWidget *) stargazer_synth);
+
+  return((GtkWidget *) stargazer_synth);  
 }
 
 /**
@@ -1671,6 +1720,10 @@ ags_machine_util_new_by_type_name(gchar *machine_type_name,
 				"AgsHybridFMSynth",
 				16)){
     machine = ags_machine_util_new_hybrid_fm_synth();
+  }else if(!g_ascii_strncasecmp(machine_type_name,
+				"AgsStargazerSynth",
+				17)){
+    machine = ags_machine_util_new_stargazer_synth();
   }else if(!g_ascii_strncasecmp(machine_type_name,
 				"AgsFFPlayer",
 				11)){

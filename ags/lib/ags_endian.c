@@ -32,9 +32,9 @@
 GType
 ags_byte_order_get_type()
 {
-  static volatile gsize g_enum_type_id__volatile;
+  static gsize g_enum_type_id__static;
 
-  if(g_once_init_enter (&g_enum_type_id__volatile)){
+  if(g_once_init_enter(&g_enum_type_id__static)){
     static const GEnumValue values[] = {
       { AGS_BYTE_ORDER_LE, "AGS_BYTE_ORDER_LE", "byte-order-le" },
       { AGS_BYTE_ORDER_BE, "AGS_BYTE_ORDER_BE", "byte-order-be" },
@@ -43,10 +43,10 @@ ags_byte_order_get_type()
 
     GType g_enum_type_id = g_enum_register_static(g_intern_static_string("AgsByteOrder"), values);
 
-    g_once_init_leave (&g_enum_type_id__volatile, g_enum_type_id);
+    g_once_init_leave(&g_enum_type_id__static, g_enum_type_id);
   }
   
-  return g_enum_type_id__volatile;
+  return(g_enum_type_id__static);
 }
 
 /**
