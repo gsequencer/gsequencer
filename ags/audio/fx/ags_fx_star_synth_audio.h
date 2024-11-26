@@ -86,6 +86,9 @@ struct _AgsFxStarSynthAudio
   AgsPort *synth_0_sync_attack_3;
   AgsPort *synth_0_sync_phase_3;
 
+  AgsPort *synth_0_sync_lfo_oscillator;
+  AgsPort *synth_0_sync_lfo_frequency;
+  
   AgsPort *synth_1_oscillator;
   
   AgsPort *synth_1_octave;
@@ -116,6 +119,12 @@ struct _AgsFxStarSynthAudio
   AgsPort *synth_1_sync_attack_3;
   AgsPort *synth_1_sync_phase_3;
 
+  AgsPort *synth_1_sync_lfo_oscillator;
+  AgsPort *synth_1_sync_lfo_frequency;
+
+  AgsPort *pitch_type;
+  AgsPort *pitch_tuning;
+  
   AgsPort *noise_gain;
 
   AgsPort *chorus_enabled;
@@ -138,6 +147,8 @@ struct _AgsFxStarSynthAudio
   AgsPort *vibrato_lfo_depth;
   AgsPort *vibrato_lfo_freq;
   AgsPort *vibrato_tuning;
+
+  AgsFxStarSynthAudioScopeData* scope_data[AGS_SOUND_SCOPE_LAST];
 };
 
 struct _AgsFxStarSynthAudioClass
@@ -162,8 +173,8 @@ struct _AgsFxStarSynthAudioChannelData
   
   gpointer parent;
 
-  AgsStarSynthUtil *synth_0;
-  AgsStarSynthUtil *synth_1;
+  AgsStarSynthUtil *star_synth_0;
+  AgsStarSynthUtil *star_synth_1;
 
   AgsNoiseUtil *noise_util;
 

@@ -271,8 +271,8 @@ ags_stargazer_synth_init(AgsStargazerSynth *stargazer_synth)
   stargazer_synth->playback_play_container = ags_recall_container_new();
   stargazer_synth->playback_recall_container = ags_recall_container_new();
 
-  stargazer_synth->stargazer_synth_play_container = ags_recall_container_new();
-  stargazer_synth->stargazer_synth_recall_container = ags_recall_container_new();
+  stargazer_synth->star_synth_play_container = ags_recall_container_new();
+  stargazer_synth->star_synth_recall_container = ags_recall_container_new();
 
   stargazer_synth->volume_play_container = ags_recall_container_new();
   stargazer_synth->volume_recall_container = ags_recall_container_new();
@@ -2226,6 +2226,8 @@ ags_stargazer_synth_connect(AgsConnectable *connectable)
   
   /* AgsStargazerSynth */
   stargazer_synth = AGS_STARGAZER_SYNTH(connectable);
+
+  //TODO:JK: implement me
 }
 
 void
@@ -2241,6 +2243,8 @@ ags_stargazer_synth_disconnect(AgsConnectable *connectable)
 
   /* AgsStargazerSynth */
   stargazer_synth = AGS_STARGAZER_SYNTH(connectable);
+
+  //TODO:JK: implement me
 }
 
 void
@@ -2346,7 +2350,7 @@ ags_stargazer_synth_map_recall(AgsMachine *machine)
 
   /* ags-fx-synth */
   start_recall = ags_fx_factory_create(audio,
-				       stargazer_synth->stargazer_synth_play_container, stargazer_synth->stargazer_synth_recall_container,
+				       stargazer_synth->star_synth_play_container, stargazer_synth->star_synth_recall_container,
 				       "ags-fx-star-synth",
 				       NULL,
 				       NULL,
@@ -2480,7 +2484,7 @@ ags_stargazer_synth_input_map_recall(AgsStargazerSynth *stargazer_synth,
 
   /* ags-fx-synth */
   start_recall = ags_fx_factory_create(audio,
-				       stargazer_synth->stargazer_synth_play_container, stargazer_synth->stargazer_synth_recall_container,
+				       stargazer_synth->star_synth_play_container, stargazer_synth->star_synth_recall_container,
 				       "ags-fx-star-synth",
 				       NULL,
 				       NULL,
