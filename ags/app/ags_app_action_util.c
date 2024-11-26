@@ -26,6 +26,7 @@
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_composite_editor.h>
 #include <ags/app/ags_export_window.h>
+#include <ags/app/ags_download_window.h>
 #include <ags/app/ags_meta_data_window.h>
 #include <ags/app/ags_preferences.h>
 #include <ags/app/ags_online_help_window.h>
@@ -816,6 +817,57 @@ ags_app_action_util_export()
   gtk_window_present((GtkWindow *) export_window);
 
   ags_gsequencer_application_refresh_window_menu((AgsGSequencerApplication *) ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
+}
+
+void
+ags_app_action_util_download()
+{
+#if defined(AGS_OSX_DMG_ENV)
+  gchar *app_dir = [[NSBundle mainBundle] bundlePath].UTF8String;
+
+  gchar *download_command = g_strdup_printf("%s/Contents/Resources/share/gsequencer/scripts/download_all.command",
+					    app_dir);
+  
+  gchar* argv[3] = {
+    "/usr/bin/open",
+    download_command,
+    NULL
+  };
+
+  GError *error;
+
+  error = NULL;
+  g_spawn_async(NULL,
+		argv,
+		NULL,
+		G_SPAWN_DEFAULT,
+		NULL,
+		NULL,
+		NULL,
+		&error);
+
+  if(error != NULL){
+    g_message("failed to start download_all.command script");
+
+    g_error_free(error);
+  }
+  
+  g_free(download_command);
+#else
+  AgsDownloadWindow *download_window;
+
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+
+  download_window = (AgsDownloadWindow *) ags_ui_provider_get_download_window(AGS_UI_PROVIDER(application_context));
+  gtk_widget_set_visible((GtkWidget *) download_window,
+			 TRUE);
+
+  gtk_window_present((GtkWindow *) download_window);
+
+  ags_gsequencer_application_refresh_window_menu((AgsGSequencerApplication *) ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
+#endif
 }
 
 void

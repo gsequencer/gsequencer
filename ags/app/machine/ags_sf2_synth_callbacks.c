@@ -284,6 +284,10 @@ ags_sf2_synth_synth_pitch_type_callback(GObject *gobject,
   guint selected;
 
   GValue value = G_VALUE_INIT;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(sf2_synth)->flags)) != 0){
+    return;
+  }
   
   selected = gtk_drop_down_get_selected((GtkDropDown *) gobject);
 

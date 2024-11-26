@@ -2018,10 +2018,20 @@ ags_simple_file_read_window(AgsSimpleFile *simple_file, xmlNode *node, AgsWindow
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "format");
+  
   if(str != NULL){
-    format = g_ascii_strtoull(str,
-			      NULL,
-			      10);
+    if(!g_ascii_strncasecmp(str, "float", 6)){
+      format = AGS_SOUNDCARD_FLOAT;
+    }else if(!g_ascii_strncasecmp(str, "double", 7)){
+      format = AGS_SOUNDCARD_DOUBLE;
+    }else if(!g_ascii_strncasecmp(str, "complex", 8)){
+      format = AGS_SOUNDCARD_COMPLEX;
+    }else{
+      format = g_ascii_strtoull(str,
+				NULL,
+				10);
+    }
+    
     free(str);
   }
   
@@ -7810,8 +7820,22 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
 		   "format");
 
   if(str != NULL){
+    AgsSoundcardFormat format;
+
+    if(!g_ascii_strncasecmp(str, "float", 6)){
+      format = AGS_SOUNDCARD_FLOAT;
+    }else if(!g_ascii_strncasecmp(str, "double", 7)){
+      format = AGS_SOUNDCARD_DOUBLE;
+    }else if(!g_ascii_strncasecmp(str, "complex", 8)){
+      format = AGS_SOUNDCARD_COMPLEX;
+    }else{
+      format = g_ascii_strtoull(str,
+				NULL,
+				10);
+    }
+    
     ags_audio_set_format(machine->audio,
-			 (AgsSoundcardFormat) g_ascii_strtoull(str, NULL, 10));
+			 format);
 
     xmlFree(str);
   }
@@ -12939,7 +12963,19 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     }    
   }
 
-  str = g_strdup_printf("%d", machine->audio->format);
+  str = NULL;
+
+  if(machine->audio->format == AGS_SOUNDCARD_FLOAT){
+    str = g_strdup("float");
+  }else if(machine->audio->format == AGS_SOUNDCARD_DOUBLE){
+    str = g_strdup("double");
+  }else if(machine->audio->format == AGS_SOUNDCARD_COMPLEX){
+    str = g_strdup("complex");
+  }else{
+    str = g_strdup_printf("%d",
+			  machine->audio->format);
+  }
+  
   xmlNewProp(node,
 	     (xmlChar *) "format",
 	     (xmlChar *) str);

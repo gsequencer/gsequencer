@@ -589,7 +589,7 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 	    ags_audio_buffer_util_copy_buffer_to_buffer(&(fx_buffer_audio_signal->audio_buffer_util),
 							stream_destination->data, 1, 0,
 							stream_destination_next->data, 1, 0,
-							destination_buffer_size, copy_mode);
+							destination_buffer_size, backlog_copy_mode);
 
 	    ags_audio_buffer_util_clear_buffer(&(fx_buffer_audio_signal->audio_buffer_util),
 					       stream_destination_next->data, 1,

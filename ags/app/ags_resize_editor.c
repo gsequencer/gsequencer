@@ -359,7 +359,7 @@ ags_resize_editor_apply(AgsApplicable *applicable)
   guint audio_channels;
   guint output_pads, input_pads;
   guint samplerate, orig_samplerate;
-  guint format;
+  AgsSoundcardFormat format;
   guint buffer_size;
   
   resize_editor = AGS_RESIZE_EDITOR(applicable);

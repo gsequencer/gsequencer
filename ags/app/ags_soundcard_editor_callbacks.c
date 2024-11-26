@@ -30,9 +30,6 @@ ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
 {
   gchar *str;
 
-  gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->capability),
-			   TRUE);
-  
   str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(combo));
 
   if(str != NULL){
@@ -47,17 +44,6 @@ ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
     if(!g_ascii_strncasecmp(str,
 			    "core-audio",
 			    11)){
-      gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->use_cache),
-			       TRUE);
-      gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->cache_buffer_size),
-			       TRUE);
-
-      gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->buffer_size,
-			       FALSE);
-  
-      gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->samplerate,
-			       FALSE);
-
       ags_soundcard_editor_load_core_audio_card(soundcard_editor);
 
       gtk_widget_show((GtkWidget *) soundcard_editor->port_hbox);
@@ -66,19 +52,6 @@ ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
 				  6)){
       gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->capability),
 			       0);
-      gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->capability),
-			       FALSE);
-      
-      gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->use_cache),
-			       TRUE);
-      gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->cache_buffer_size),
-			       TRUE);
-
-      gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->buffer_size,
-			       FALSE);
-  
-      gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->samplerate,
-			       FALSE);
 
       ags_soundcard_editor_load_pulse_card(soundcard_editor);
 
@@ -86,68 +59,24 @@ ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
     }else if(!g_ascii_strncasecmp(str,
 				  "jack",
 				  5)){
-      gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->use_cache),
-			       FALSE);
-      gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->cache_buffer_size),
-			       FALSE);
-
-      gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->buffer_size,
-			       FALSE);
-  
-      gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->samplerate,
-			       FALSE);
-
       ags_soundcard_editor_load_jack_card(soundcard_editor);
 
       gtk_widget_show((GtkWidget *) soundcard_editor->port_hbox);
     }else if(!g_ascii_strncasecmp(str,
 				  "wasapi",
 				  6)){      
-      gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->use_cache),
-			       FALSE);
-      gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->cache_buffer_size),
-			       FALSE);
-
-      gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->buffer_size,
-			       TRUE);
-  
-      gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->samplerate,
-			       TRUE);
-
       ags_soundcard_editor_load_wasapi_card(soundcard_editor);
 
       //      gtk_widget_hide((GtkWidget *) soundcard_editor->port_hbox);
     }else if(!g_ascii_strncasecmp(str,
 				  "alsa",
 				  5)){
-      gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->use_cache),
-			       FALSE);
-      gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->cache_buffer_size),
-			       FALSE);
-
-      gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->buffer_size,
-			       TRUE);
-  
-      gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->samplerate,
-			       TRUE);
-
       ags_soundcard_editor_load_alsa_card(soundcard_editor);
 
       //      gtk_widget_hide((GtkWidget *) soundcard_editor->port_hbox);
     }else if(!g_ascii_strncasecmp(str,
 				  "oss",
 				  4)){
-      gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->use_cache),
-			       FALSE);
-      gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->cache_buffer_size),
-			       FALSE);
-
-      gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->buffer_size,
-			       TRUE);
-
-      gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->samplerate,
-			       TRUE);
-      
       ags_soundcard_editor_load_oss_card(soundcard_editor);
 
       //      gtk_widget_hide((GtkWidget *) soundcard_editor->port_hbox);
@@ -345,6 +274,12 @@ ags_soundcard_editor_format_changed_callback(GtkComboBox *combo_box,
     break;
   case 4:
     format = AGS_SOUNDCARD_SIGNED_64_BIT;
+    break;
+  case 5:
+    format = AGS_SOUNDCARD_FLOAT;
+    break;
+  case 6:
+    format = AGS_SOUNDCARD_DOUBLE;
     break;
   default:
     g_warning("unsupported format");

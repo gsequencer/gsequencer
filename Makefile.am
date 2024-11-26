@@ -191,8 +191,9 @@ EXTRA_DIST = config.rpath \
 	ags/test/app/examples/ags-loop-008.xml \
 	ags/test/app/examples/ags-loop-010.xml \
 	docs/images/README \
-	gsequencer.share/icons/README \
-	gsequencer.share/images/README
+	gsequencer.share/gsequencer/icons/README \
+	gsequencer.share/gsequencer/images/README \
+	gsequencer.share/gsequencer/scripts/download_all.command
 
 EXTRA_DIST += \
 	ags_license_header \
@@ -914,8 +915,8 @@ libgsequencer_la_CPPFLAGS = -std=gnu99
 endif
 
 libgsequencer_la_CPPFLAGS += $(CPPFLAGS) $(LIBGSEQUENCER_CPPFLAGS)
-libgsequencer_la_CFLAGS = $(PICFLAGS) $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JSON_GLIB_CFLAGS) $(LIBSOUP_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(GTK_UNIX_PRINT_CFLAGS) $(POPPLER_CFLAGS) $(W32API_CFLAGS)
-libgsequencer_la_CXXFLAGS = $(CXXFLAGS) $(libags_vst3_CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JSON_GLIB_CFLAGS) $(LIBSOUP_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(GTK_UNIX_PRINT_CFLAGS) $(POPPLER_CFLAGS) $(W32API_CFLAGS)
+libgsequencer_la_CFLAGS = $(PICFLAGS) $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JSON_GLIB_CFLAGS) $(LIBSOUP_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(GTK_UNIX_PRINT_CFLAGS) $(POPPLER_CFLAGS) $(VTE_CFLAGS) $(W32API_CFLAGS)
+libgsequencer_la_CXXFLAGS = $(CXXFLAGS) $(libags_vst3_CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JSON_GLIB_CFLAGS) $(LIBSOUP_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(GTK_UNIX_PRINT_CFLAGS) $(POPPLER_CFLAGS) $(VTE_CFLAGS) $(W32API_CFLAGS)
 libgsequencer_la_LDFLAGS = $(LDFLAGS) -version-info 0:1:0 -pthread
 libgsequencer_la_LIBADD = -lm
 
@@ -942,7 +943,7 @@ endif
 endif
 
 libgsequencer_la_LIBADD += libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
-libgsequencer_la_LDFLAGS += $(CORE_AUDIO_LIBS) $(WASAPI_LIBS) $(LIBASOUND2_LIBS) $(LIBDSSIALSACOMPAT_LIBS) $(LIBXML2_LIBS) $(FFTW_LIBS) $(SNDFILE_LIBS) $(JACK_LIBS) $(PULSE_LIBS) $(GSTREAMER_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JSON_GLIB_LIBS) $(LIBSOUP_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(GTK_UNIX_PRINT_LIBS) $(POPPLER_LIBS) $(W32API_LIBS)
+libgsequencer_la_LDFLAGS += $(CORE_AUDIO_LIBS) $(WASAPI_LIBS) $(LIBASOUND2_LIBS) $(LIBDSSIALSACOMPAT_LIBS) $(LIBXML2_LIBS) $(FFTW_LIBS) $(SNDFILE_LIBS) $(JACK_LIBS) $(PULSE_LIBS) $(GSTREAMER_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JSON_GLIB_LIBS) $(LIBSOUP_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(GTK_UNIX_PRINT_LIBS) $(POPPLER_LIBS) $(VTE_LIBS) $(W32API_LIBS)
 
 # library libags-vst
 if WITH_VST3
@@ -982,7 +983,7 @@ DISTCLEANFILES += $(defexec_DATA)
 
 gsequencer_CPPFLAGS += $(CPPFLAGS) $(libags_vst3_RELEASE_TYPE)
 
-gsequencer_CFLAGS += $(CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(LIBSOUP_CFLAGS) $(SNDFILE_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JSON_GLIB_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(GTK_UNIX_PRINT_CFLAGS) $(POPPLER_CFLAGS) $(W32API_CFLAGS)
+gsequencer_CFLAGS += $(CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(LIBSOUP_CFLAGS) $(SNDFILE_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JSON_GLIB_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(GTK_UNIX_PRINT_CFLAGS) $(POPPLER_CFLAGS) $(VTE_CFLAGS) $(W32API_CFLAGS)
 gsequencer_LDFLAGS += -pthread
 gsequencer_LDADD = -lm
 
@@ -991,7 +992,7 @@ gsequencer_LDADD += $(libags_vst3_LIBDIR) $(libags_vst3_LIBS) libags_vst.la
 endif
 
 gsequencer_LDADD += libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
-gsequencer_LDFLAGS +=  $(RT_LIBS) $(X11_LIBS) $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_LIBS) $(LIBDSSIALSACOMPAT_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(LIBSOUP_LIBS) $(SNDFILE_LIBS) $(JACK_LIBS) $(PULSE_LIBS) $(GSTREAMER_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JSON_GLIB_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(GTK_UNIX_PRINT_LIBS) $(POPPLER_LIBS) $(W32API_LIBS)
+gsequencer_LDFLAGS +=  $(RT_LIBS) $(X11_LIBS) $(CORE_AUDIO_LIBS) $(WASAPI_LIBS) $(LIBASOUND2_LIBS) $(LIBDSSIALSACOMPAT_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(LIBSOUP_LIBS) $(SNDFILE_LIBS) $(JACK_LIBS) $(PULSE_LIBS) $(GSTREAMER_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JSON_GLIB_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(GTK_UNIX_PRINT_LIBS) $(POPPLER_LIBS) $(VTE_LIBS) $(W32API_LIBS)
 
 if WITH_OSXAPI
 gsequencer_LDFLAGS += -framework Cocoa
@@ -1015,7 +1016,7 @@ endif
 
 midi2xml_CPPFLAGS += $(CPPFLAGS) $(libags_vst3_RELEASE_TYPE)
 
-midi2xml_CFLAGS += $(CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(LIBSOUP_CFLAGS) $(SNDFILE_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JSON_GLIB_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(GTK_UNIX_PRINT_CFLAGS) $(POPPLER_CFLAGS) $(W32API_CFLAGS)
+midi2xml_CFLAGS += $(CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(LIBSOUP_CFLAGS) $(SNDFILE_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JSON_GLIB_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(GTK_UNIX_PRINT_CFLAGS) $(POPPLER_CFLAGS) $(VTE_CFLAGS) $(W32API_CFLAGS)
 midi2xml_LDFLAGS += -pthread
 midi2xml_LDADD = -lm
 
@@ -2571,6 +2572,8 @@ libgsequencer_h_sources = \
 	ags/app/ags_connection_editor_collection_callbacks.h \
 	ags/app/ags_connection_editor_bulk.h \
 	ags/app/ags_connection_editor_bulk_callbacks.h \
+	ags/app/ags_download_window.h \
+	ags/app/ags_download_window_callbacks.h \
 	ags/app/ags_effect_bridge_callbacks.h \
 	ags/app/ags_effect_bridge.h \
 	ags/app/ags_effect_bulk_callbacks.h \
@@ -2701,6 +2704,8 @@ libgsequencer_c_sources = \
 	ags/app/ags_connection_editor_collection_callbacks.c \
 	ags/app/ags_connection_editor_bulk.c \
 	ags/app/ags_connection_editor_bulk_callbacks.c \
+	ags/app/ags_download_window.c \
+	ags/app/ags_download_window_callbacks.c \
 	ags/app/ags_effect_bridge.c \
 	ags/app/ags_effect_bridge_callbacks.c \
 	ags/app/ags_effect_bulk.c \
@@ -3567,21 +3572,22 @@ install-data-local:
 	mkdir -p $(DESTDIR)$(datadir)/icons/hicolor/scalable/apps
 	mkdir -p $(DESTDIR)$(datadir)/gsequencer/images
 	mkdir -p $(DESTDIR)$(datadir)/gsequencer/styles
+	mkdir -p $(DESTDIR)$(datadir)/gsequencer/scripts
 	mkdir -p $(DESTDIR)$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)
 	mkdir -p $(DESTDIR)$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml
 	mkdir -p $(DESTDIR)$(datadir)/mime/packages
 	mkdir -p $(DESTDIR)$(datadir)/metainfo
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/ags.xpm $(DESTDIR)$(datadir)/gsequencer/icons/ags.xpm
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/jumper.png $(DESTDIR)$(datadir)/gsequencer/icons/jumper.png
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/ags.png $(DESTDIR)$(datadir)/gsequencer/icons/ags.png
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/gsequencer-32x32.png $(DESTDIR)$(datadir)/icons/hicolor/32x32/apps/gsequencer.png
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/gsequencer-48x48.png $(DESTDIR)$(datadir)/icons/hicolor/48x48/apps/gsequencer.png
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/gsequencer-64x64.png $(DESTDIR)$(datadir)/icons/hicolor/64x64/apps/gsequencer.png
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/gsequencer-128x128.png $(DESTDIR)$(datadir)/icons/hicolor/128x128/apps/gsequencer.png
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/ags-light.svg $(DESTDIR)$(datadir)/icons/hicolor/scalable/apps/gsequencer.svg
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/images/ags.png $(DESTDIR)$(datadir)/gsequencer/images/ags.png
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/images/gsequencer-800x450.png $(DESTDIR)$(datadir)/gsequencer/images/gsequencer-800x450.png
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/styles/ags.css $(DESTDIR)$(datadir)/gsequencer/styles/ags.css
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/gsequencer/icons/ags.xpm $(DESTDIR)$(datadir)/gsequencer/icons/ags.xpm
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/gsequencer/icons/jumper.png $(DESTDIR)$(datadir)/gsequencer/icons/jumper.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/gsequencer/icons/ags.png $(DESTDIR)$(datadir)/gsequencer/icons/ags.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/gsequencer/icons/gsequencer-32x32.png $(DESTDIR)$(datadir)/icons/hicolor/32x32/apps/gsequencer.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/gsequencer/icons/gsequencer-48x48.png $(DESTDIR)$(datadir)/icons/hicolor/48x48/apps/gsequencer.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/gsequencer/icons/gsequencer-64x64.png $(DESTDIR)$(datadir)/icons/hicolor/64x64/apps/gsequencer.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/gsequencer/icons/gsequencer-128x128.png $(DESTDIR)$(datadir)/icons/hicolor/128x128/apps/gsequencer.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/gsequencer/icons/ags-light.svg $(DESTDIR)$(datadir)/icons/hicolor/scalable/apps/gsequencer.svg
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/gsequencer/images/ags.png $(DESTDIR)$(datadir)/gsequencer/images/ags.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/gsequencer/images/gsequencer-800x450.png $(DESTDIR)$(datadir)/gsequencer/images/gsequencer-800x450.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/gsequencer/styles/ags.css $(DESTDIR)$(datadir)/gsequencer/styles/ags.css
 	install -c -p -m 644 $(top_srcdir)/ags/app/file/ags_simple_file.dtd $(DESTDIR)$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
 	install -c -p -m 644 $(top_srcdir)/ags/audio/midi/ags_midi_file.dtd $(DESTDIR)$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
 	install -c -p -m 644 $(top_srcdir)/ags/audio/osc/ags_osc_file.dtd $(DESTDIR)$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
@@ -3590,6 +3596,7 @@ install-data-local:
 	install -c -p -m 644 $(top_srcdir)/ags-simple.xsl $(DESTDIR)$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
 	install -c -p -m 644 $(top_srcdir)/application-x-gsequencer.xml $(DESTDIR)$(datadir)/mime/packages/gsequencer.xml
 	install -c -p -m 644 $(top_srcdir)/org.nongnu.gsequencer.gsequencer.appdata.xml $(DESTDIR)$(datadir)/metainfo/
+	install -c -p -m 755 $(top_srcdir)/gsequencer.share/gsequencer/scripts/download_all.command $(DESTDIR)$(datadir)/gsequencer/scripts/
 
 fix-local-html:
 	find $(top_builddir)/docs/reference/libags/libags-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../gobject@$(GOBJECT_API_DOC)@g' {} \;

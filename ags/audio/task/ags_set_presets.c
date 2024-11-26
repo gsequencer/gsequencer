@@ -418,7 +418,34 @@ ags_set_presets_audio(AgsSetPresets *set_presets, AgsAudio *audio)
 
   g_rec_mutex_unlock(audio_mutex);
 
+  /* output */
   start_channel = ags_audio_get_output(audio);
+
+  channel = start_channel;
+  
+  if(channel != NULL){
+    g_object_ref(channel);
+  }
+
+  while(channel != NULL){
+    AgsChannel *next;
+
+    ags_set_presets_channel(set_presets,
+			    channel);
+
+    next = ags_channel_next(channel);
+
+    g_object_unref(channel);
+    
+    channel = next;
+  }
+
+  if(start_channel != NULL){
+    g_object_ref(start_channel);
+  }
+
+  /* input */
+  start_channel = ags_audio_get_input(audio);
 
   channel = start_channel;
   

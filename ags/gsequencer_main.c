@@ -56,8 +56,11 @@
 #include <glib.h>
 
 #if defined(AGS_OSX_DMG_ENV)
+#include <AVFoundation/AVFoundation.h>
 #include <Cocoa/Cocoa.h>
+#include <CoreFoundation/CoreFoundation.h>
 #include <Foundation/Foundation.h>
+
 
 #include <uuid/uuid.h>
 #endif
@@ -220,13 +223,15 @@ install_data()
 			    NULL,
 			    NULL,
 			    &error);
-  
+
+#if 1
   error = NULL;
   g_spawn_command_line_sync(free_sounds_cp_cmd,
 			    NULL,
 			    NULL,
 			    NULL,
 			    &error);
+#endif
   
   error = NULL;
   g_spawn_command_line_sync(ags_conf_dirs_mkdir_cmd,

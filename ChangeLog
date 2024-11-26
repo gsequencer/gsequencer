@@ -1,3 +1,166 @@
+ags (7.3.29)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed added missing cast
+
+ags (7.3.28)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* reverted many changes to 7.3.5 in ags_core_audio_port.c
+	* minor improvements
+
+ags (7.3.27)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved debugging messages of CoreAudio
+
+ags (7.3.26)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed compile error
+
+ags (7.3.25)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed typos
+	* minor improvements
+
+ags (7.3.24)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved error detection with CoreAudio
+
+ags (7.3.23)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed misconfigured CoreAudio
+	* modified copy input using memcpy()
+
+ags (7.3.22)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed audio object selector of CoreAudio input
+	* fixed save copy buffer size adjustment in ags_core_audio_port_hw_input_callback()
+
+ags (7.3.21)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved non-interleaved stream
+
+ags (7.3.20)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing buffer size
+
+ags (7.3.19)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* disabled configure format
+
+ags (7.3.18)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved configure format
+
+ags (7.3.17)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved configure format
+
+ags (7.3.16)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved configure format from current format with CoreAudio
+
+ags (7.3.15)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed compiler errors
+
+ags (7.3.14)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed detect non-interleaved buffers with CoreAudio
+
+ags (7.3.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed CoreAudio buffer size
+
+ags (7.3.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* experimental CoreAudio pre-sync functionality
+
+ags (7.3.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* updated user's handbook to explain shift behavior within notation and automation editor
+	* fixed always use AGS_SOUNDCARD_FLOAT on macOS with AgsCoreAudioPort
+
+ags (7.3.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved default format of soundcard editor on macOS
+	* minor bug-fixes
+
+ags (7.3.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved CoreAudio usage of AgsSoundServer::register-soundcard-with-params()
+	* fixed missing initializer of format in ags_core_audio_port_register()
+
+ags (7.3.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* changed CoreAudio input data type from gint16 to gint32
+
+ags (7.3.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* work-around for not proper applying presets with CoreAudio
+
+ags (7.3.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented set floating point format of CoreAudio
+	* fixed set CoreAudio stream format
+	* fixed various format bugs
+
+ags (7.3.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* reenabled copying resources on macOS
+
+ags (7.3.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed meson build
+
+ags (7.3.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved CoreAudio recording
+	* fixed open download script
+
+ags (7.3.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* show download on macOS
+	* modified data type in ags_core_audio_port.c from gint16 to gfloat
+
+ags (7.3.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* removed set sensitive calls to soundcard editor, always allow the user to edit
+
+ags (7.3.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added optional VTE dependency
+	* fixed preferences soundcard order
+	* fixed audio connection hide on close
+
 ags (7.2.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

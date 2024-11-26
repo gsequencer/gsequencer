@@ -38,6 +38,7 @@ void ags_app_action_util_save_as();
 void ags_app_action_util_meta_data();
 
 void ags_app_action_util_export();
+void ags_app_action_util_download();
 
 void ags_app_action_util_smf_import();
 void ags_app_action_util_smf_export();

@@ -17,8 +17,8 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_HYBRID_SYNTH_H__
-#define __AGS_HYBRID_SYNTH_H__
+#ifndef __AGS_STARGAZER_SYNTH_H__
+#define __AGS_STARGAZER_SYNTH_H__
 
 #include <glib.h>
 #include <glib-object.h>
@@ -34,42 +34,21 @@
 
 G_BEGIN_DECLS
 
-#define AGS_TYPE_HYBRID_SYNTH                (ags_hybrid_synth_get_type())
-#define AGS_HYBRID_SYNTH(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_HYBRID_SYNTH, AgsHybridSynth))
-#define AGS_HYBRID_SYNTH_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_HYBRID_SYNTH, AgsHybridSynthClass))
-#define AGS_IS_HYBRID_SYNTH(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_HYBRID_SYNTH))
-#define AGS_IS_HYBRID_SYNTH_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_HYBRID_SYNTH))
-#define AGS_HYBRID_SYNTH_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_HYBRID_SYNTH, AgsHybridSynthClass))
+#define AGS_TYPE_STARGAZER_SYNTH                (ags_stargazer_synth_get_type())
+#define AGS_STARGAZER_SYNTH(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_STARGAZER_SYNTH, AgsStargazerSynth))
+#define AGS_STARGAZER_SYNTH_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_STARGAZER_SYNTH, AgsStargazerSynthClass))
+#define AGS_IS_STARGAZER_SYNTH(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_STARGAZER_SYNTH))
+#define AGS_IS_STARGAZER_SYNTH_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_STARGAZER_SYNTH))
+#define AGS_STARGAZER_SYNTH_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_STARGAZER_SYNTH, AgsStargazerSynthClass))
 
-typedef struct _AgsHybridSynth AgsHybridSynth;
-typedef struct _AgsHybridSynthClass AgsHybridSynthClass;
+typedef struct _AgsStargazerSynth AgsStargazerSynth;
+typedef struct _AgsStargazerSynthClass AgsStargazerSynthClass;
 
-struct _AgsHybridSynth
+struct _AgsStargazerSynth
 {
   AgsMachine machine;
 
   guint flags;
-
-  gchar *name;
-  gchar *xml_type;
-
-  guint mapped_input_pad;
-  guint mapped_output_pad;
-
-  AgsRecallContainer *playback_play_container;
-  AgsRecallContainer *playback_recall_container;
-
-  AgsRecallContainer *synth_play_container;
-  AgsRecallContainer *synth_recall_container;
-
-  AgsRecallContainer *volume_play_container;
-  AgsRecallContainer *volume_recall_container;
-
-  AgsRecallContainer *envelope_play_container;
-  AgsRecallContainer *envelope_recall_container;
-  
-  AgsRecallContainer *buffer_play_container;
-  AgsRecallContainer *buffer_recall_container;
 
   GtkComboBox *synth_0_oscillator;
 
@@ -78,6 +57,12 @@ struct _AgsHybridSynth
 
   AgsDial *synth_0_phase;
   AgsDial *synth_0_volume;
+
+  GtkComboBox *synth_0_lfo_oscillator;
+
+  GtkSpinButton *synth_0_lfo_frequency;
+  AgsDial *synth_0_lfo_depth;
+  AgsDial *synth_0_lfo_tuning;
 
   GtkCheckButton *synth_0_sync_enabled;
   
@@ -92,16 +77,22 @@ struct _AgsHybridSynth
   AgsDial *synth_0_sync_attack_2;
   AgsDial *synth_0_sync_phase_2;
 
-  GtkComboBox *synth_0_sync_lfo_oscillator;
-  GtkSpinButton *synth_0_sync_lfo_frequency;
-  
-  GtkComboBox *synth_1_oscillator;  
+  AgsDial *synth_0_sync_attack_3;
+  AgsDial *synth_0_sync_phase_3;
+
+  GtkComboBox *synth_1_oscillator;
 
   AgsDial *synth_1_octave;
   AgsDial *synth_1_key;
 
   AgsDial *synth_1_phase;
   AgsDial *synth_1_volume;
+
+  GtkComboBox *synth_1_lfo_oscillator;
+
+  GtkSpinButton *synth_1_lfo_frequency;
+  AgsDial *synth_1_lfo_depth;
+  AgsDial *synth_1_lfo_tuning;
 
   GtkCheckButton *synth_1_sync_enabled;
   
@@ -116,26 +107,25 @@ struct _AgsHybridSynth
   AgsDial *synth_1_sync_attack_2;
   AgsDial *synth_1_sync_phase_2;
 
-  GtkComboBox *synth_1_sync_lfo_oscillator;
-  GtkSpinButton *synth_1_sync_lfo_frequency;
-
-  GtkCheckButton *sequencer_enabled;
-  GtkComboBox *sequencer_sign;
+  AgsDial *synth_1_sync_attack_3;
+  AgsDial *synth_1_sync_phase_3;
 
   GtkDropDown *pitch_type;
   AgsDial *pitch_tuning;
 
-  AgsDial *noise_gain;
+  GtkCheckButton *tremolo_enabled;
 
-  GtkCheckButton *low_pass_enabled;
+  AgsDial *tremolo_gain;
+  AgsDial *tremolo_lfo_depth;
+  AgsDial *tremolo_lfo_freq;
+  AgsDial *tremolo_tuning;
 
-  AgsDial *low_pass_q_lin;
-  AgsDial *low_pass_filter_gain;
+  GtkCheckButton *vibrato_enabled;
 
-  GtkCheckButton *high_pass_enabled;
-
-  AgsDial *high_pass_q_lin;
-  AgsDial *high_pass_filter_gain;
+  AgsDial *vibrato_gain; 
+  AgsDial *vibrato_lfo_depth;
+  AgsDial *vibrato_lfo_freq;
+  AgsDial *vibrato_tuning;
 
   GtkCheckButton *chorus_enabled;
 
@@ -150,15 +140,15 @@ struct _AgsHybridSynth
   AgsDial *chorus_delay;
 };
 
-struct _AgsHybridSynthClass
+struct _AgsStargazerSynthClass
 {
   AgsMachineClass machine;
 };
 
-GType ags_hybrid_synth_get_type(void);
+GType ags_stargazer_synth_get_type(void);
 
-AgsHybridSynth* ags_hybrid_synth_new(GObject *soundcard);
+AgsStargazerSynth* ags_stargazer_synth_new(GObject *soundcard);
 
 G_END_DECLS
 
-#endif /*__AGS_HYBRID_SYNTH_H__*/
+#endif /*__AGS_STARGAZER_SYNTH_H__*/

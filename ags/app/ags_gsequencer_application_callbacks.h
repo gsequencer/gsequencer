@@ -48,6 +48,9 @@ void ags_gsequencer_meta_data_callback(GAction *action, GVariant *parameter,
 void ags_gsequencer_export_callback(GAction *action, GVariant *parameter,
 				    AgsGSequencerApplication *gsequencer_app);
 
+void ags_gsequencer_download_callback(GAction *action, GVariant *parameter,
+				      AgsGSequencerApplication *gsequencer_app);
+
 void ags_gsequencer_smf_import_callback(GAction *action, GVariant *parameter,
 					AgsGSequencerApplication *gsequencer_app);
 
@@ -77,6 +80,9 @@ void ags_gsequencer_present_meta_data_window_callback(GAction *action, GVariant 
 
 void ags_gsequencer_present_export_window_callback(GAction *action, GVariant *parameter,
 						   AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_present_download_window_callback(GAction *action, GVariant *parameter,
+						     AgsGSequencerApplication *gsequencer_app);
 
 void ags_gsequencer_present_smf_import_window_callback(GAction *action, GVariant *parameter,
 						       AgsGSequencerApplication *gsequencer_app);

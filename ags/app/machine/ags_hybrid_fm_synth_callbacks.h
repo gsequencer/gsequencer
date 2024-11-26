@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -78,6 +78,9 @@ void ags_hybrid_fm_synth_synth_2_lfo_tuning_callback(AgsDial *dial, AgsHybridFMS
 void ags_hybrid_fm_synth_sequencer_enabled_callback(GtkButton *button, AgsHybridFMSynth *hybrid_fm_synth);
 void ags_hybrid_fm_synth_sequencer_sign_callback(GtkComboBox *combo_box, AgsHybridFMSynth *hybrid_fm_synth);
 
+void ags_hybrid_fm_synth_synth_pitch_type_callback(GObject *gobject,
+						   GParamSpec *pspec,
+						   AgsHybridFMSynth *hybrid_fm_synth);
 void ags_hybrid_fm_synth_pitch_tuning_callback(AgsDial *dial, AgsHybridFMSynth *hybrid_fm_synth);
 
 void ags_hybrid_fm_synth_noise_gain_callback(AgsDial *dial, AgsHybridFMSynth *hybrid_fm_synth);

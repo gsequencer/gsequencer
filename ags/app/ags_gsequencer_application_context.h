@@ -149,6 +149,8 @@ struct _AgsGSequencerApplicationContext
   gchar *paper_size;
 
   GList *visible_window;
+
+  GtkWidget *download_window;
 };
 
 struct _AgsGSequencerApplicationContextClass

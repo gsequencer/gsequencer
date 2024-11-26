@@ -1173,7 +1173,8 @@ ags_connection_editor_dialog_response_callback(GtkWidget *widget, gint response,
     ags_applicable_apply(AGS_APPLICABLE(AGS_CONNECTION_EDITOR_DIALOG(widget)->connection_editor));    
   }
 
-  gtk_window_destroy(GTK_WINDOW(widget));
+  gtk_widget_set_visible(widget,
+			 FALSE);
 }
 
 void
