@@ -1347,6 +1347,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_fluid_interpolate_none_util.h \
 	ags/audio/ags_fluid_util.h \
 	ags/audio/ags_fm_synth_util.h \
+	ags/audio/ags_star_synth_util.h \
 	ags/audio/ags_fourier_transform_util.h \
 	ags/audio/ags_frequency_aliase_util.h \
 	ags/audio/ags_frequency_map.h \
@@ -1450,6 +1451,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_fluid_interpolate_none_util.c \
 	ags/audio/ags_fluid_util.c \
 	ags/audio/ags_fm_synth_util.c \
+	ags/audio/ags_star_synth_util.c \
 	ags/audio/ags_fourier_transform_util.c \
 	ags/audio/ags_frequency_aliase_util.c \
 	ags/audio/ags_frequency_map.c \
@@ -2130,6 +2132,12 @@ libags_audio_fx_h_sources = \
 	ags/audio/fx/ags_fx_sfz_synth_channel_processor.h \
 	ags/audio/fx/ags_fx_sfz_synth_recycling.h \
 	ags/audio/fx/ags_fx_sfz_synth_audio_signal.h \
+	ags/audio/fx/ags_fx_star_synth_audio.h \
+	ags/audio/fx/ags_fx_star_synth_audio_processor.h \
+	ags/audio/fx/ags_fx_star_synth_channel.h \
+	ags/audio/fx/ags_fx_star_synth_channel_processor.h \
+	ags/audio/fx/ags_fx_star_synth_recycling.h \
+	ags/audio/fx/ags_fx_star_synth_audio_signal.h \
 	ags/audio/fx/ags_fx_ladspa_audio.h \
 	ags/audio/fx/ags_fx_ladspa_audio_processor.h \
 	ags/audio/fx/ags_fx_ladspa_channel.h \
@@ -2285,6 +2293,12 @@ libags_audio_fx_c_sources = \
 	ags/audio/fx/ags_fx_sfz_synth_channel_processor.c \
 	ags/audio/fx/ags_fx_sfz_synth_recycling.c \
 	ags/audio/fx/ags_fx_sfz_synth_audio_signal.c \
+	ags/audio/fx/ags_fx_star_synth_audio.c \
+	ags/audio/fx/ags_fx_star_synth_audio_processor.c \
+	ags/audio/fx/ags_fx_star_synth_channel.c \
+	ags/audio/fx/ags_fx_star_synth_channel_processor.c \
+	ags/audio/fx/ags_fx_star_synth_recycling.c \
+	ags/audio/fx/ags_fx_star_synth_audio_signal.c \
 	ags/audio/fx/ags_fx_ladspa_audio.c \
 	ags/audio/fx/ags_fx_ladspa_audio_processor.c \
 	ags/audio/fx/ags_fx_ladspa_channel.c \

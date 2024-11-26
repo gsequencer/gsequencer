@@ -70,6 +70,8 @@ static AgsPluginPort* ags_fx_star_synth_audio_get_synth_0_sync_attack_2_plugin_p
 static AgsPluginPort* ags_fx_star_synth_audio_get_synth_0_sync_phase_2_plugin_port();
 static AgsPluginPort* ags_fx_star_synth_audio_get_synth_0_sync_attack_3_plugin_port();
 static AgsPluginPort* ags_fx_star_synth_audio_get_synth_0_sync_phase_3_plugin_port();
+static AgsPluginPort* ags_fx_star_synth_audio_get_synth_0_sync_lfo_oscillator_plugin_port();
+static AgsPluginPort* ags_fx_star_synth_audio_get_synth_0_sync_lfo_frequency_plugin_port();
 static AgsPluginPort* ags_fx_star_synth_audio_get_synth_0_lfo_oscillator_plugin_port();
 static AgsPluginPort* ags_fx_star_synth_audio_get_synth_0_lfo_frequency_plugin_port();
 static AgsPluginPort* ags_fx_star_synth_audio_get_synth_0_lfo_depth_plugin_port();
@@ -89,6 +91,8 @@ static AgsPluginPort* ags_fx_star_synth_audio_get_synth_1_sync_attack_2_plugin_p
 static AgsPluginPort* ags_fx_star_synth_audio_get_synth_1_sync_phase_2_plugin_port();
 static AgsPluginPort* ags_fx_star_synth_audio_get_synth_1_sync_attack_3_plugin_port();
 static AgsPluginPort* ags_fx_star_synth_audio_get_synth_1_sync_phase_3_plugin_port();
+static AgsPluginPort* ags_fx_star_synth_audio_get_synth_1_sync_lfo_oscillator_plugin_port();
+static AgsPluginPort* ags_fx_star_synth_audio_get_synth_1_sync_lfo_frequency_plugin_port();
 static AgsPluginPort* ags_fx_star_synth_audio_get_synth_1_lfo_oscillator_plugin_port();
 static AgsPluginPort* ags_fx_star_synth_audio_get_synth_1_lfo_frequency_plugin_port();
 static AgsPluginPort* ags_fx_star_synth_audio_get_synth_1_lfo_depth_plugin_port();
@@ -756,161 +760,161 @@ ags_fx_star_synth_audio_class_init(AgsFxStarSynthAudioClass *fx_star_synth_audio
   /**
    * AgsFxStarSynthAudio:synth-1-sync-attack-0:
    *
-   * The synth-0 sync attack-0.
+   * The synth-1 sync attack-0.
    * 
    * Since: 7.4.0
    */
   param_spec = g_param_spec_object("synth-1-sync-attack-0",
-				   i18n_pspec("synth-0 sync attack-0 of recall"),
-				   i18n_pspec("The synth-0's sync attack-0"),
+				   i18n_pspec("synth-1 sync attack-0 of recall"),
+				   i18n_pspec("The synth-1's sync attack-0"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_SYNTH_0_SYNC_ATTACK_0,
+				  PROP_SYNTH_1_SYNC_ATTACK_0,
 				  param_spec);
 
   /**
    * AgsFxStarSynthAudio:synth-1-sync-phase-0:
    *
-   * The synth-0 sync phase-0.
+   * The synth-1 sync phase-0.
    * 
    * Since: 7.4.0
    */
   param_spec = g_param_spec_object("synth-1-sync-phase-0",
-				   i18n_pspec("synth-0 sync phase-0 of recall"),
-				   i18n_pspec("The synth-0's sync phase-0"),
+				   i18n_pspec("synth-1 sync phase-0 of recall"),
+				   i18n_pspec("The synth-1's sync phase-0"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_SYNTH_0_SYNC_PHASE_0,
+				  PROP_SYNTH_1_SYNC_PHASE_0,
 				  param_spec);
 
   /**
    * AgsFxStarSynthAudio:synth-1-sync-attack-1:
    *
-   * The synth-0 sync attack-1.
+   * The synth-1 sync attack-1.
    * 
    * Since: 7.4.0
    */
   param_spec = g_param_spec_object("synth-1-sync-attack-1",
-				   i18n_pspec("synth-0 sync attack-1 of recall"),
-				   i18n_pspec("The synth-0's sync attack-1"),
+				   i18n_pspec("synth-1 sync attack-1 of recall"),
+				   i18n_pspec("The synth-1's sync attack-1"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_SYNTH_0_SYNC_ATTACK_1,
+				  PROP_SYNTH_1_SYNC_ATTACK_1,
 				  param_spec);
 
   /**
    * AgsFxStarSynthAudio:synth-1-sync-phase-1:
    *
-   * The synth-0 sync phase-1.
+   * The synth-1 sync phase-1.
    * 
    * Since: 7.4.0
    */
   param_spec = g_param_spec_object("synth-1-sync-phase-1",
-				   i18n_pspec("synth-0 sync phase-1 of recall"),
-				   i18n_pspec("The synth-0's sync phase-1"),
+				   i18n_pspec("synth-1 sync phase-1 of recall"),
+				   i18n_pspec("The synth-1's sync phase-1"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_SYNTH_0_SYNC_PHASE_1,
+				  PROP_SYNTH_1_SYNC_PHASE_1,
 				  param_spec);
 
   /**
    * AgsFxStarSynthAudio:synth-1-sync-attack-2:
    *
-   * The synth-0 sync attack-2.
+   * The synth-1 sync attack-2.
    * 
    * Since: 7.4.0
    */
   param_spec = g_param_spec_object("synth-1-sync-attack-2",
-				   i18n_pspec("synth-0 sync attack-2 of recall"),
-				   i18n_pspec("The synth-0's sync attack-2"),
+				   i18n_pspec("synth-1 sync attack-2 of recall"),
+				   i18n_pspec("The synth-1's sync attack-2"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_SYNTH_0_SYNC_ATTACK_2,
+				  PROP_SYNTH_1_SYNC_ATTACK_2,
 				  param_spec);
 
   /**
    * AgsFxStarSynthAudio:synth-1-sync-phase-2:
    *
-   * The synth-0 sync phase-2.
+   * The synth-1 sync phase-2.
    * 
    * Since: 7.4.0
    */
   param_spec = g_param_spec_object("synth-1-sync-phase-2",
-				   i18n_pspec("synth-0 sync phase-2 of recall"),
-				   i18n_pspec("The synth-0's sync phase-2"),
+				   i18n_pspec("synth-1 sync phase-2 of recall"),
+				   i18n_pspec("The synth-1's sync phase-2"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_SYNTH_0_SYNC_PHASE_2,
+				  PROP_SYNTH_1_SYNC_PHASE_2,
 				  param_spec);
 
   /**
    * AgsFxStarSynthAudio:synth-1-sync-attack-3:
    *
-   * The synth-0 sync attack-3.
+   * The synth-1 sync attack-3.
    * 
    * Since: 7.4.0
    */
   param_spec = g_param_spec_object("synth-1-sync-attack-3",
-				   i18n_pspec("synth-0 sync attack-3 of recall"),
-				   i18n_pspec("The synth-0's sync attack-3"),
+				   i18n_pspec("synth-1 sync attack-3 of recall"),
+				   i18n_pspec("The synth-1's sync attack-3"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_SYNTH_0_SYNC_ATTACK_3,
+				  PROP_SYNTH_1_SYNC_ATTACK_3,
 				  param_spec);
 
   /**
    * AgsFxStarSynthAudio:synth-1-sync-phase-3:
    *
-   * The synth-0 sync phase-3.
+   * The synth-1 sync phase-3.
    * 
    * Since: 7.4.0
    */
   param_spec = g_param_spec_object("synth-1-sync-phase-3",
-				   i18n_pspec("synth-0 sync phase-3 of recall"),
-				   i18n_pspec("The synth-0's sync phase-3"),
+				   i18n_pspec("synth-1 sync phase-3 of recall"),
+				   i18n_pspec("The synth-1's sync phase-3"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_SYNTH_0_SYNC_PHASE_3,
+				  PROP_SYNTH_1_SYNC_PHASE_3,
 				  param_spec);
 
   /**
    * AgsFxStarSynthAudio:synth-1-sync-lfo-oscillator:
    *
-   * The synth-0 sync LFO oscillator.
+   * The synth-1 sync LFO oscillator.
    * 
    * Since: 7.4.0
    */
   param_spec = g_param_spec_object("synth-1-sync-lfo-oscillator",
-				   i18n_pspec("synth-0 sync LFO oscillator of recall"),
-				   i18n_pspec("The synth-0's sync LFO oscillator"),
+				   i18n_pspec("synth-1 sync LFO oscillator of recall"),
+				   i18n_pspec("The synth-1's sync LFO oscillator"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_SYNTH_0_SYNC_LFO_OSCILLATOR,
+				  PROP_SYNTH_1_SYNC_LFO_OSCILLATOR,
 				  param_spec);
 
   /**
    * AgsFxStarSynthAudio:synth-1-sync-lfo-frequency:
    *
-   * The synth-0 sync LFO frequency.
+   * The synth-1 sync LFO frequency.
    * 
    * Since: 7.4.0
    */
   param_spec = g_param_spec_object("synth-1-sync-lfo-frequency",
-				   i18n_pspec("synth-0 sync LFO frequency of recall"),
-				   i18n_pspec("The synth-0's sync LFO frequency"),
+				   i18n_pspec("synth-1 sync LFO frequency of recall"),
+				   i18n_pspec("The synth-1's sync LFO frequency"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_SYNTH_0_SYNC_LFO_FREQUENCY,
+				  PROP_SYNTH_1_SYNC_LFO_FREQUENCY,
 				  param_spec);
 
   /**
@@ -1275,7 +1279,1306 @@ ags_fx_star_synth_audio_init(AgsFxStarSynthAudio *fx_star_synth_audio)
 
   position = 0;
 
-  //TODO:JK: implement me
+  /* synth-0 oscillator */
+  fx_star_synth_audio->synth_0_oscillator = g_object_new(AGS_TYPE_PORT,
+							 "plugin-name", ags_fx_star_synth_audio_plugin_name,
+							 "specifier", "./synth-0-oscillator[0]",
+							 "control-port", "1/59",
+							 "port-value-is-pointer", FALSE,
+							 "port-value-type", G_TYPE_FLOAT,
+							 "port-value-size", sizeof(gfloat),
+							 "port-value-length", 1,
+							 NULL);
+  
+  fx_star_synth_audio->synth_0_oscillator->port_value.ags_port_float = (gfloat) AGS_SYNTH_OSCILLATOR_SIN;
+
+  g_object_set(fx_star_synth_audio->synth_0_oscillator,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_0_oscillator_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_0_oscillator);
+
+  position++;
+
+  /* synth-0 octave */
+  fx_star_synth_audio->synth_0_octave = g_object_new(AGS_TYPE_PORT,
+						     "plugin-name", ags_fx_star_synth_audio_plugin_name,
+						     "specifier", "./synth-0-octave[0]",
+						     "control-port", "2/59",
+						     "port-value-is-pointer", FALSE,
+						     "port-value-type", G_TYPE_FLOAT,
+						     "port-value-size", sizeof(gfloat),
+						     "port-value-length", 1,
+						     NULL);
+  
+  fx_star_synth_audio->synth_0_octave->port_value.ags_port_float = (gfloat) 0.0;
+
+  g_object_set(fx_star_synth_audio->synth_0_octave,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_0_octave_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_0_octave);
+
+  position++;
+
+  /* synth-0 key */
+  fx_star_synth_audio->synth_0_key = g_object_new(AGS_TYPE_PORT,
+						  "plugin-name", ags_fx_star_synth_audio_plugin_name,
+						  "specifier", "./synth-0-key[0]",
+						  "control-port", "3/59",
+						  "port-value-is-pointer", FALSE,
+						  "port-value-type", G_TYPE_FLOAT,
+						  "port-value-size", sizeof(gfloat),
+						  "port-value-length", 1,
+						  NULL);
+  
+  fx_star_synth_audio->synth_0_key->port_value.ags_port_float = (gfloat) 2.0;
+
+  g_object_set(fx_star_synth_audio->synth_0_key,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_0_key_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_0_key);
+
+  position++;
+
+  /* synth-0 phase */
+  fx_star_synth_audio->synth_0_phase = g_object_new(AGS_TYPE_PORT,
+						    "plugin-name", ags_fx_star_synth_audio_plugin_name,
+						    "specifier", "./synth-0-phase[0]",
+						    "control-port", "4/59",
+						    "port-value-is-pointer", FALSE,
+						    "port-value-type", G_TYPE_FLOAT,
+						    "port-value-size", sizeof(gfloat),
+						    "port-value-length", 1,
+						    NULL);
+  
+  fx_star_synth_audio->synth_0_phase->port_value.ags_port_float = (gfloat) 0.0;
+
+  g_object_set(fx_star_synth_audio->synth_0_phase,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_0_phase_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_0_phase);
+
+  position++;
+
+  /* synth-0 volume */
+  fx_star_synth_audio->synth_0_volume = g_object_new(AGS_TYPE_PORT,
+						     "plugin-name", ags_fx_star_synth_audio_plugin_name,
+						     "specifier", "./synth-0-volume[0]",
+						     "control-port", "5/59",
+						     "port-value-is-pointer", FALSE,
+						     "port-value-type", G_TYPE_FLOAT,
+						     "port-value-size", sizeof(gfloat),
+						     "port-value-length", 1,
+						     NULL);
+  
+  fx_star_synth_audio->synth_0_volume->port_value.ags_port_float = (gfloat) 0.333;
+
+  g_object_set(fx_star_synth_audio->synth_0_volume,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_0_volume_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_0_volume);
+
+  position++;
+
+  /* synth-0 sync enabled */
+  fx_star_synth_audio->synth_0_sync_enabled = g_object_new(AGS_TYPE_PORT,
+							   "plugin-name", ags_fx_star_synth_audio_plugin_name,
+							   "specifier", "./synth-0-sync-enabled[0]",
+							   "control-port", "6/50",
+							   "port-value-is-pointer", FALSE,
+							   "port-value-type", G_TYPE_FLOAT,
+							   "port-value-size", sizeof(gfloat),
+							   "port-value-length", 1,
+							   NULL);
+  
+  fx_star_synth_audio->synth_0_sync_enabled->port_value.ags_port_float = (gfloat) FALSE;
+
+  g_object_set(fx_star_synth_audio->synth_0_sync_enabled,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_0_sync_enabled_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_0_sync_enabled);
+
+  position++;
+
+  /* synth-0 sync relative attack factor */
+  fx_star_synth_audio->synth_0_sync_relative_attack_factor = g_object_new(AGS_TYPE_PORT,
+									  "plugin-name", ags_fx_star_synth_audio_plugin_name,
+									  "specifier", "./synth-0-sync-relative-factor[0]",
+									  "control-port", "7/50",
+									  "port-value-is-pointer", FALSE,
+									  "port-value-type", G_TYPE_FLOAT,
+									  "port-value-size", sizeof(gfloat),
+									  "port-value-length", 1,
+									  NULL);
+  
+  fx_star_synth_audio->synth_0_sync_relative_attack_factor->port_value.ags_port_float = (gfloat) 1.0;
+
+  g_object_set(fx_star_synth_audio->synth_0_sync_relative_attack_factor,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_0_sync_relative_attack_factor_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_0_sync_relative_attack_factor);
+
+  position++;
+
+  /* synth-0 sync attack-0 */
+  fx_star_synth_audio->synth_0_sync_attack_0 = g_object_new(AGS_TYPE_PORT,
+							    "plugin-name", ags_fx_star_synth_audio_plugin_name,
+							    "specifier", "./synth-0-sync-attack-0[0]",
+							    "control-port", "8/50",
+							    "port-value-is-pointer", FALSE,
+							    "port-value-type", G_TYPE_FLOAT,
+							    "port-value-size", sizeof(gfloat),
+							    "port-value-length", 1,
+							    NULL);
+  
+  fx_star_synth_audio->synth_0_sync_attack_0->port_value.ags_port_float = (gfloat) 0.0;
+
+  g_object_set(fx_star_synth_audio->synth_0_sync_attack_0,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_0_sync_attack_0_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_0_sync_attack_0);
+
+  position++;
+
+  /* synth-0 sync phase-0 */
+  fx_star_synth_audio->synth_0_sync_phase_0 = g_object_new(AGS_TYPE_PORT,
+							   "plugin-name", ags_fx_star_synth_audio_plugin_name,
+							   "specifier", "./synth-0-sync-phase-0[0]",
+							   "control-port", "9/50",
+							   "port-value-is-pointer", FALSE,
+							   "port-value-type", G_TYPE_FLOAT,
+							   "port-value-size", sizeof(gfloat),
+							   "port-value-length", 1,
+							   NULL);
+  
+  fx_star_synth_audio->synth_0_sync_phase_0->port_value.ags_port_float = (gfloat) 0.0;
+
+  g_object_set(fx_star_synth_audio->synth_0_sync_phase_0,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_0_sync_phase_0_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_0_sync_phase_0);
+
+  position++;
+
+  /* synth-0 sync attack-1 */
+  fx_star_synth_audio->synth_0_sync_attack_1 = g_object_new(AGS_TYPE_PORT,
+							    "plugin-name", ags_fx_star_synth_audio_plugin_name,
+							    "specifier", "./synth-0-sync-attack-1[0]",
+							    "control-port", "10/50",
+							    "port-value-is-pointer", FALSE,
+							    "port-value-type", G_TYPE_FLOAT,
+							    "port-value-size", sizeof(gfloat),
+							    "port-value-length", 1,
+							    NULL);
+  
+  fx_star_synth_audio->synth_0_sync_attack_1->port_value.ags_port_float = (gfloat) 0.0;
+
+  g_object_set(fx_star_synth_audio->synth_0_sync_attack_1,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_0_sync_attack_1_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_0_sync_attack_1);
+
+  position++;
+
+  /* synth-0 sync phase-1 */
+  fx_star_synth_audio->synth_0_sync_phase_1 = g_object_new(AGS_TYPE_PORT,
+							   "plugin-name", ags_fx_star_synth_audio_plugin_name,
+							   "specifier", "./synth-0-sync-phase-1[0]",
+							   "control-port", "11/50",
+							   "port-value-is-pointer", FALSE,
+							   "port-value-type", G_TYPE_FLOAT,
+							   "port-value-size", sizeof(gfloat),
+							   "port-value-length", 1,
+							   NULL);
+  
+  fx_star_synth_audio->synth_0_sync_phase_1->port_value.ags_port_float = (gfloat) 0.0;
+
+  g_object_set(fx_star_synth_audio->synth_0_sync_phase_1,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_0_sync_phase_1_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_0_sync_phase_1);
+
+  position++;
+
+  /* synth-0 sync attack-2 */
+  fx_star_synth_audio->synth_0_sync_attack_2 = g_object_new(AGS_TYPE_PORT,
+							    "plugin-name", ags_fx_star_synth_audio_plugin_name,
+							    "specifier", "./synth-0-sync-attack-2[0]",
+							    "control-port", "12/50",
+							    "port-value-is-pointer", FALSE,
+							    "port-value-type", G_TYPE_FLOAT,
+							    "port-value-size", sizeof(gfloat),
+							    "port-value-length", 1,
+							    NULL);
+  
+  fx_star_synth_audio->synth_0_sync_attack_2->port_value.ags_port_float = (gfloat) 0.0;
+
+  g_object_set(fx_star_synth_audio->synth_0_sync_attack_2,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_0_sync_attack_2_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_0_sync_attack_2);
+
+  position++;
+
+  /* synth-0 sync phase-2 */
+  fx_star_synth_audio->synth_0_sync_phase_2 = g_object_new(AGS_TYPE_PORT,
+							   "plugin-name", ags_fx_star_synth_audio_plugin_name,
+							   "specifier", "./synth-0-sync-phase-2[0]",
+							   "control-port", "13/50",
+							   "port-value-is-pointer", FALSE,
+							   "port-value-type", G_TYPE_FLOAT,
+							   "port-value-size", sizeof(gfloat),
+							   "port-value-length", 1,
+							   NULL);
+  
+  fx_star_synth_audio->synth_0_sync_phase_2->port_value.ags_port_float = (gfloat) 0.0;
+
+  g_object_set(fx_star_synth_audio->synth_0_sync_phase_2,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_0_sync_phase_2_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_0_sync_phase_2);
+
+  position++;
+
+  /* synth-0 sync attack-3 */
+  fx_star_synth_audio->synth_0_sync_attack_3 = g_object_new(AGS_TYPE_PORT,
+							    "plugin-name", ags_fx_star_synth_audio_plugin_name,
+							    "specifier", "./synth-0-sync-attack-3[0]",
+							    "control-port", "14/50",
+							    "port-value-is-pointer", FALSE,
+							    "port-value-type", G_TYPE_FLOAT,
+							    "port-value-size", sizeof(gfloat),
+							    "port-value-length", 1,
+							    NULL);
+  
+  fx_star_synth_audio->synth_0_sync_attack_3->port_value.ags_port_float = (gfloat) 0.0;
+
+  g_object_set(fx_star_synth_audio->synth_0_sync_attack_3,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_0_sync_attack_3_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_0_sync_attack_3);
+
+  position++;
+
+  /* synth-0 sync phase-3 */
+  fx_star_synth_audio->synth_0_sync_phase_3 = g_object_new(AGS_TYPE_PORT,
+							   "plugin-name", ags_fx_star_synth_audio_plugin_name,
+							   "specifier", "./synth-0-sync-phase-3[0]",
+							   "control-port", "15/50",
+							   "port-value-is-pointer", FALSE,
+							   "port-value-type", G_TYPE_FLOAT,
+							   "port-value-size", sizeof(gfloat),
+							   "port-value-length", 1,
+							   NULL);
+  
+  fx_star_synth_audio->synth_0_sync_phase_3->port_value.ags_port_float = (gfloat) 0.0;
+
+  g_object_set(fx_star_synth_audio->synth_0_sync_phase_3,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_0_sync_phase_3_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_0_sync_phase_3);
+
+  position++;
+
+  /* synth-0 sync LFO oscillator */
+  fx_star_synth_audio->synth_0_sync_lfo_oscillator = g_object_new(AGS_TYPE_PORT,
+								  "plugin-name", ags_fx_star_synth_audio_plugin_name,
+								  "specifier", "./synth-0-sync-lfo-oscillator[0]",
+								  "control-port", "16/50",
+								  "port-value-is-pointer", FALSE,
+								  "port-value-type", G_TYPE_FLOAT,
+								  "port-value-size", sizeof(gfloat),
+								  "port-value-length", 1,
+								  NULL);
+  
+  fx_star_synth_audio->synth_0_sync_lfo_oscillator->port_value.ags_port_float = (gfloat) AGS_SYNTH_OSCILLATOR_SIN;
+
+  g_object_set(fx_star_synth_audio->synth_0_sync_lfo_oscillator,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_0_sync_lfo_oscillator_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_0_sync_lfo_oscillator);
+
+  position++;
+
+  /* synth-0 sync LFO frequency */
+  fx_star_synth_audio->synth_0_sync_lfo_frequency = g_object_new(AGS_TYPE_PORT,
+								 "plugin-name", ags_fx_star_synth_audio_plugin_name,
+								 "specifier", "./synth-0-sync-lfo-frequency[0]",
+								 "control-port", "17/50",
+								 "port-value-is-pointer", FALSE,
+								 "port-value-type", G_TYPE_FLOAT,
+								 "port-value-size", sizeof(gfloat),
+								 "port-value-length", 1,
+								 NULL);
+  
+  fx_star_synth_audio->synth_0_sync_lfo_frequency->port_value.ags_port_float = (gfloat) 10.0;
+
+  g_object_set(fx_star_synth_audio->synth_0_sync_lfo_frequency,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_0_sync_lfo_frequency_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_0_sync_lfo_frequency);
+
+  position++;
+
+  /* synth-0 LFO oscillator */
+  fx_star_synth_audio->synth_0_lfo_oscillator = g_object_new(AGS_TYPE_PORT,
+							     "plugin-name", ags_fx_star_synth_audio_plugin_name,
+							     "specifier", "./synth-0-lfo-oscillator[0]",
+							     "control-port", "18/59",
+							     "port-value-is-pointer", FALSE,
+							     "port-value-type", G_TYPE_FLOAT,
+							     "port-value-size", sizeof(gfloat),
+							     "port-value-length", 1,
+							     NULL);
+  
+  fx_star_synth_audio->synth_0_lfo_oscillator->port_value.ags_port_float = (gfloat) AGS_SYNTH_OSCILLATOR_SIN;
+
+  g_object_set(fx_star_synth_audio->synth_0_lfo_oscillator,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_0_lfo_oscillator_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_0_lfo_oscillator);
+
+  position++;
+
+  /* synth-0 LFO frequency */
+  fx_star_synth_audio->synth_0_lfo_frequency = g_object_new(AGS_TYPE_PORT,
+							    "plugin-name", ags_fx_star_synth_audio_plugin_name,
+							    "specifier", "./synth-0-lfo-frequency[0]",
+							    "control-port", "19/59",
+							    "port-value-is-pointer", FALSE,
+							    "port-value-type", G_TYPE_FLOAT,
+							    "port-value-size", sizeof(gfloat),
+							    "port-value-length", 1,
+							    NULL);
+  
+  fx_star_synth_audio->synth_0_lfo_frequency->port_value.ags_port_float = (gfloat) AGS_STAR_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY;
+
+  g_object_set(fx_star_synth_audio->synth_0_lfo_frequency,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_0_lfo_frequency_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_0_lfo_frequency);
+
+  position++;
+
+  /* synth-0 LFO depth */
+  fx_star_synth_audio->synth_0_lfo_depth = g_object_new(AGS_TYPE_PORT,
+							"plugin-name", ags_fx_star_synth_audio_plugin_name,
+							"specifier", "./synth-0-lfo-depth[0]",
+							"control-port", "20/59",
+							"port-value-is-pointer", FALSE,
+							"port-value-type", G_TYPE_FLOAT,
+							"port-value-size", sizeof(gfloat),
+							"port-value-length", 1,
+							NULL);
+  
+  fx_star_synth_audio->synth_0_lfo_depth->port_value.ags_port_float = (gfloat) AGS_STAR_SYNTH_UTIL_DEFAULT_LFO_DEPTH;
+
+  g_object_set(fx_star_synth_audio->synth_0_lfo_depth,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_0_lfo_depth_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_0_lfo_depth);
+
+  position++;
+
+  /* synth-0 LFO tuning */
+  fx_star_synth_audio->synth_0_lfo_tuning = g_object_new(AGS_TYPE_PORT,
+							 "plugin-name", ags_fx_star_synth_audio_plugin_name,
+							 "specifier", "./synth-0-lfo-tuning[0]",
+							 "control-port", "21/59",
+							 "port-value-is-pointer", FALSE,
+							 "port-value-type", G_TYPE_FLOAT,
+							 "port-value-size", sizeof(gfloat),
+							 "port-value-length", 1,
+							 NULL);
+  
+  fx_star_synth_audio->synth_0_lfo_tuning->port_value.ags_port_float = (gfloat) AGS_STAR_SYNTH_UTIL_DEFAULT_TUNING;
+
+  g_object_set(fx_star_synth_audio->synth_0_lfo_tuning,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_0_lfo_tuning_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_0_lfo_tuning);
+
+  position++;
+
+  /* synth-1 oscillator */
+  fx_star_synth_audio->synth_1_oscillator = g_object_new(AGS_TYPE_PORT,
+							 "plugin-name", ags_fx_star_synth_audio_plugin_name,
+							 "specifier", "./synth-1-oscillator[0]",
+							 "control-port", "22/59",
+							 "port-value-is-pointer", FALSE,
+							 "port-value-type", G_TYPE_FLOAT,
+							 "port-value-size", sizeof(gfloat),
+							 "port-value-length", 1,
+							 NULL);
+  
+  fx_star_synth_audio->synth_1_oscillator->port_value.ags_port_float = (gfloat) AGS_SYNTH_OSCILLATOR_SIN;
+
+  g_object_set(fx_star_synth_audio->synth_1_oscillator,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_1_oscillator_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_1_oscillator);
+
+  position++;
+  
+  /* synth-1 octave */
+  fx_star_synth_audio->synth_1_octave = g_object_new(AGS_TYPE_PORT,
+						     "plugin-name", ags_fx_star_synth_audio_plugin_name,
+						     "specifier", "./synth-1-octave[0]",
+						     "control-port", "23/59",
+						     "port-value-is-pointer", FALSE,
+						     "port-value-type", G_TYPE_FLOAT,
+						     "port-value-size", sizeof(gfloat),
+						     "port-value-length", 1,
+						     NULL);
+  
+  fx_star_synth_audio->synth_1_octave->port_value.ags_port_float = (gfloat) 0.0;
+
+  g_object_set(fx_star_synth_audio->synth_1_octave,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_1_octave_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_1_octave);
+
+  position++;
+
+  /* synth-1 key */
+  fx_star_synth_audio->synth_1_key = g_object_new(AGS_TYPE_PORT,
+						  "plugin-name", ags_fx_star_synth_audio_plugin_name,
+						  "specifier", "./synth-1-key[0]",
+						  "control-port", "24/59",
+						  "port-value-is-pointer", FALSE,
+						  "port-value-type", G_TYPE_FLOAT,
+						  "port-value-size", sizeof(gfloat),
+						  "port-value-length", 1,
+						  NULL);
+  
+  fx_star_synth_audio->synth_1_key->port_value.ags_port_float = (gfloat) 2.0;
+
+  g_object_set(fx_star_synth_audio->synth_1_key,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_1_key_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_1_key);
+
+  position++;
+
+  /* synth-1 phase */
+  fx_star_synth_audio->synth_1_phase = g_object_new(AGS_TYPE_PORT,
+						    "plugin-name", ags_fx_star_synth_audio_plugin_name,
+						    "specifier", "./synth-1-phase[0]",
+						    "control-port", "25/59",
+						    "port-value-is-pointer", FALSE,
+						    "port-value-type", G_TYPE_FLOAT,
+						    "port-value-size", sizeof(gfloat),
+						    "port-value-length", 1,
+						    NULL);
+  
+  fx_star_synth_audio->synth_1_phase->port_value.ags_port_float = (gfloat) 0.0;
+
+  g_object_set(fx_star_synth_audio->synth_1_phase,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_1_phase_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_1_phase);
+
+  position++;
+
+  /* synth-1 volume */
+  fx_star_synth_audio->synth_1_volume = g_object_new(AGS_TYPE_PORT,
+						     "plugin-name", ags_fx_star_synth_audio_plugin_name,
+						     "specifier", "./synth-1-volume[0]",
+						     "control-port", "26/59",
+						     "port-value-is-pointer", FALSE,
+						     "port-value-type", G_TYPE_FLOAT,
+						     "port-value-size", sizeof(gfloat),
+						     "port-value-length", 1,
+						     NULL);
+  
+  fx_star_synth_audio->synth_1_volume->port_value.ags_port_float = (gfloat) 0.333;
+
+  g_object_set(fx_star_synth_audio->synth_1_volume,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_1_volume_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_1_volume);
+
+  position++;
+
+  /* synth-1 sync enabled */
+  fx_star_synth_audio->synth_1_sync_enabled = g_object_new(AGS_TYPE_PORT,
+							   "plugin-name", ags_fx_star_synth_audio_plugin_name,
+							   "specifier", "./synth-1-sync-enabled[0]",
+							   "control-port", "27/59",
+							   "port-value-is-pointer", FALSE,
+							   "port-value-type", G_TYPE_FLOAT,
+							   "port-value-size", sizeof(gfloat),
+							   "port-value-length", 1,
+							   NULL);
+  
+  fx_star_synth_audio->synth_1_sync_enabled->port_value.ags_port_float = (gfloat) FALSE;
+
+  g_object_set(fx_star_synth_audio->synth_1_sync_enabled,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_1_sync_enabled_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_1_sync_enabled);
+
+  position++;
+
+  /* synth-1 sync relative attack factor */
+  fx_star_synth_audio->synth_1_sync_relative_attack_factor = g_object_new(AGS_TYPE_PORT,
+									  "plugin-name", ags_fx_star_synth_audio_plugin_name,
+									  "specifier", "./synth-1-sync-relative-factor[0]",
+									  "control-port", "28/59",
+									  "port-value-is-pointer", FALSE,
+									  "port-value-type", G_TYPE_FLOAT,
+									  "port-value-size", sizeof(gfloat),
+									  "port-value-length", 1,
+									  NULL);
+  
+  fx_star_synth_audio->synth_1_sync_relative_attack_factor->port_value.ags_port_float = (gfloat) 1.0;
+
+  g_object_set(fx_star_synth_audio->synth_1_sync_relative_attack_factor,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_1_sync_relative_attack_factor_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_1_sync_relative_attack_factor);
+
+  position++;
+
+  /* synth-1 sync attack-0 */
+  fx_star_synth_audio->synth_1_sync_attack_0 = g_object_new(AGS_TYPE_PORT,
+							    "plugin-name", ags_fx_star_synth_audio_plugin_name,
+							    "specifier", "./synth-1-sync-attack-0[0]",
+							    "control-port", "29/59",
+							    "port-value-is-pointer", FALSE,
+							    "port-value-type", G_TYPE_FLOAT,
+							    "port-value-size", sizeof(gfloat),
+							    "port-value-length", 1,
+							    NULL);
+  
+  fx_star_synth_audio->synth_1_sync_attack_0->port_value.ags_port_float = (gfloat) 0.0;
+
+  g_object_set(fx_star_synth_audio->synth_1_sync_attack_0,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_1_sync_attack_0_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_1_sync_attack_0);
+
+  position++;
+
+  /* synth-1 sync phase-0 */
+  fx_star_synth_audio->synth_1_sync_phase_0 = g_object_new(AGS_TYPE_PORT,
+							   "plugin-name", ags_fx_star_synth_audio_plugin_name,
+							   "specifier", "./synth-1-sync-phase-0[0]",
+							   "control-port", "30/59",
+							   "port-value-is-pointer", FALSE,
+							   "port-value-type", G_TYPE_FLOAT,
+							   "port-value-size", sizeof(gfloat),
+							   "port-value-length", 1,
+							   NULL);
+  
+  fx_star_synth_audio->synth_1_sync_phase_0->port_value.ags_port_float = (gfloat) 0.0;
+
+  g_object_set(fx_star_synth_audio->synth_1_sync_phase_0,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_1_sync_phase_0_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_1_sync_phase_0);
+
+  position++;
+
+  /* synth-1 sync attack-1 */
+  fx_star_synth_audio->synth_1_sync_attack_1 = g_object_new(AGS_TYPE_PORT,
+							    "plugin-name", ags_fx_star_synth_audio_plugin_name,
+							    "specifier", "./synth-1-sync-attack-1[0]",
+							    "control-port", "31/59",
+							    "port-value-is-pointer", FALSE,
+							    "port-value-type", G_TYPE_FLOAT,
+							    "port-value-size", sizeof(gfloat),
+							    "port-value-length", 1,
+							    NULL);
+  
+  fx_star_synth_audio->synth_1_sync_attack_1->port_value.ags_port_float = (gfloat) 0.0;
+
+  g_object_set(fx_star_synth_audio->synth_1_sync_attack_1,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_1_sync_attack_1_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_1_sync_attack_1);
+
+  position++;
+
+  /* synth-1 sync phase-1 */
+  fx_star_synth_audio->synth_1_sync_phase_1 = g_object_new(AGS_TYPE_PORT,
+							   "plugin-name", ags_fx_star_synth_audio_plugin_name,
+							   "specifier", "./synth-1-sync-phase-1[0]",
+							   "control-port", "32/59",
+							   "port-value-is-pointer", FALSE,
+							   "port-value-type", G_TYPE_FLOAT,
+							   "port-value-size", sizeof(gfloat),
+							   "port-value-length", 1,
+							   NULL);
+  
+  fx_star_synth_audio->synth_1_sync_phase_1->port_value.ags_port_float = (gfloat) 0.0;
+
+  g_object_set(fx_star_synth_audio->synth_1_sync_phase_1,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_1_sync_phase_1_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_1_sync_phase_1);
+
+  position++;
+
+  /* synth-1 sync attack-2 */
+  fx_star_synth_audio->synth_1_sync_attack_2 = g_object_new(AGS_TYPE_PORT,
+							    "plugin-name", ags_fx_star_synth_audio_plugin_name,
+							    "specifier", "./synth-1-sync-attack-2[0]",
+							    "control-port", "33/59",
+							    "port-value-is-pointer", FALSE,
+							    "port-value-type", G_TYPE_FLOAT,
+							    "port-value-size", sizeof(gfloat),
+							    "port-value-length", 1,
+							    NULL);
+  
+  fx_star_synth_audio->synth_1_sync_attack_2->port_value.ags_port_float = (gfloat) 0.0;
+
+  g_object_set(fx_star_synth_audio->synth_1_sync_attack_2,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_1_sync_attack_2_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_1_sync_attack_2);
+
+  position++;
+
+  /* synth-1 sync phase-2 */
+  fx_star_synth_audio->synth_1_sync_phase_2 = g_object_new(AGS_TYPE_PORT,
+							   "plugin-name", ags_fx_star_synth_audio_plugin_name,
+							   "specifier", "./synth-1-sync-phase-2[0]",
+							   "control-port", "34/59",
+							   "port-value-is-pointer", FALSE,
+							   "port-value-type", G_TYPE_FLOAT,
+							   "port-value-size", sizeof(gfloat),
+							   "port-value-length", 1,
+							   NULL);
+  
+  fx_star_synth_audio->synth_1_sync_phase_2->port_value.ags_port_float = (gfloat) 0.0;
+
+  g_object_set(fx_star_synth_audio->synth_1_sync_phase_2,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_1_sync_phase_2_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_1_sync_phase_2);
+
+  position++;
+
+  /* synth-1 sync attack-3 */
+  fx_star_synth_audio->synth_1_sync_attack_3 = g_object_new(AGS_TYPE_PORT,
+							    "plugin-name", ags_fx_star_synth_audio_plugin_name,
+							    "specifier", "./synth-1-sync-attack-3[0]",
+							    "control-port", "35/59",
+							    "port-value-is-pointer", FALSE,
+							    "port-value-type", G_TYPE_FLOAT,
+							    "port-value-size", sizeof(gfloat),
+							    "port-value-length", 1,
+							    NULL);
+  
+  fx_star_synth_audio->synth_1_sync_attack_3->port_value.ags_port_float = (gfloat) 0.0;
+
+  g_object_set(fx_star_synth_audio->synth_1_sync_attack_3,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_1_sync_attack_3_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_1_sync_attack_3);
+
+  position++;
+
+  /* synth-1 sync phase-3 */
+  fx_star_synth_audio->synth_1_sync_phase_3 = g_object_new(AGS_TYPE_PORT,
+							   "plugin-name", ags_fx_star_synth_audio_plugin_name,
+							   "specifier", "./synth-1-sync-phase-3[0]",
+							   "control-port", "36/59",
+							   "port-value-is-pointer", FALSE,
+							   "port-value-type", G_TYPE_FLOAT,
+							   "port-value-size", sizeof(gfloat),
+							   "port-value-length", 1,
+							   NULL);
+  
+  fx_star_synth_audio->synth_1_sync_phase_3->port_value.ags_port_float = (gfloat) 0.0;
+
+  g_object_set(fx_star_synth_audio->synth_1_sync_phase_3,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_1_sync_phase_3_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_1_sync_phase_3);
+
+  position++;
+
+  /* synth-1 sync LFO oscillator */
+  fx_star_synth_audio->synth_1_sync_lfo_oscillator = g_object_new(AGS_TYPE_PORT,
+								  "plugin-name", ags_fx_star_synth_audio_plugin_name,
+								  "specifier", "./synth-1-sync-lfo-oscillator[0]",
+								  "control-port", "37/59",
+								  "port-value-is-pointer", FALSE,
+								  "port-value-type", G_TYPE_FLOAT,
+								  "port-value-size", sizeof(gfloat),
+								  "port-value-length", 1,
+								  NULL);
+  
+  fx_star_synth_audio->synth_1_sync_lfo_oscillator->port_value.ags_port_float = (gfloat) AGS_SYNTH_OSCILLATOR_SIN;
+
+  g_object_set(fx_star_synth_audio->synth_1_sync_lfo_oscillator,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_1_sync_lfo_oscillator_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_1_sync_lfo_oscillator);
+
+  position++;
+
+  /* synth-1 sync LFO frequency */
+  fx_star_synth_audio->synth_1_sync_lfo_frequency = g_object_new(AGS_TYPE_PORT,
+								 "plugin-name", ags_fx_star_synth_audio_plugin_name,
+								 "specifier", "./synth-1-sync-lfo-frequency[0]",
+								 "control-port", "38/59",
+								 "port-value-is-pointer", FALSE,
+								 "port-value-type", G_TYPE_FLOAT,
+								 "port-value-size", sizeof(gfloat),
+								 "port-value-length", 1,
+								 NULL);
+  
+  fx_star_synth_audio->synth_1_sync_lfo_frequency->port_value.ags_port_float = (gfloat) 10.0;
+
+  g_object_set(fx_star_synth_audio->synth_1_sync_lfo_frequency,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_1_sync_lfo_frequency_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_1_sync_lfo_frequency);
+
+  position++;
+
+  /* synth-1 LFO oscillator */
+  fx_star_synth_audio->synth_1_lfo_oscillator = g_object_new(AGS_TYPE_PORT,
+							     "plugin-name", ags_fx_star_synth_audio_plugin_name,
+							     "specifier", "./synth-1-lfo-oscillator[0]",
+							     "control-port", "39/59",
+							     "port-value-is-pointer", FALSE,
+							     "port-value-type", G_TYPE_FLOAT,
+							     "port-value-size", sizeof(gfloat),
+							     "port-value-length", 1,
+							     NULL);
+  
+  fx_star_synth_audio->synth_1_lfo_oscillator->port_value.ags_port_float = (gfloat) AGS_SYNTH_OSCILLATOR_SIN;
+
+  g_object_set(fx_star_synth_audio->synth_1_lfo_oscillator,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_1_lfo_oscillator_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_1_lfo_oscillator);
+
+  position++;
+
+  /* synth-1 LFO frequency */
+  fx_star_synth_audio->synth_1_lfo_frequency = g_object_new(AGS_TYPE_PORT,
+							    "plugin-name", ags_fx_star_synth_audio_plugin_name,
+							    "specifier", "./synth-1-lfo-frequency[0]",
+							    "control-port", "40/59",
+							    "port-value-is-pointer", FALSE,
+							    "port-value-type", G_TYPE_FLOAT,
+							    "port-value-size", sizeof(gfloat),
+							    "port-value-length", 1,
+							    NULL);
+  
+  fx_star_synth_audio->synth_1_lfo_frequency->port_value.ags_port_float = (gfloat) AGS_STAR_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY;
+
+  g_object_set(fx_star_synth_audio->synth_1_lfo_frequency,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_1_lfo_frequency_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_1_lfo_frequency);
+
+  position++;
+
+  /* synth-1 LFO depth */
+  fx_star_synth_audio->synth_1_lfo_depth = g_object_new(AGS_TYPE_PORT,
+							"plugin-name", ags_fx_star_synth_audio_plugin_name,
+							"specifier", "./synth-1-lfo-depth[0]",
+							"control-port", "41/59",
+							"port-value-is-pointer", FALSE,
+							"port-value-type", G_TYPE_FLOAT,
+							"port-value-size", sizeof(gfloat),
+							"port-value-length", 1,
+							NULL);
+  
+  fx_star_synth_audio->synth_1_lfo_depth->port_value.ags_port_float = (gfloat) AGS_STAR_SYNTH_UTIL_DEFAULT_LFO_DEPTH;
+
+  g_object_set(fx_star_synth_audio->synth_1_lfo_depth,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_1_lfo_depth_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_1_lfo_depth);
+
+  position++;
+
+  /* synth-1 LFO tuning */
+  fx_star_synth_audio->synth_1_lfo_tuning = g_object_new(AGS_TYPE_PORT,
+							 "plugin-name", ags_fx_star_synth_audio_plugin_name,
+							 "specifier", "./synth-1-lfo-tuning[0]",
+							 "control-port", "42/59",
+							 "port-value-is-pointer", FALSE,
+							 "port-value-type", G_TYPE_FLOAT,
+							 "port-value-size", sizeof(gfloat),
+							 "port-value-length", 1,
+							 NULL);
+  
+  fx_star_synth_audio->synth_1_lfo_tuning->port_value.ags_port_float = (gfloat) AGS_STAR_SYNTH_UTIL_DEFAULT_TUNING;
+
+  g_object_set(fx_star_synth_audio->synth_1_lfo_tuning,
+	       "plugin-port", ags_fx_star_synth_audio_get_synth_1_lfo_tuning_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->synth_1_lfo_tuning);
+
+  position++;
+
+  /* noise gain */
+  fx_star_synth_audio->noise_gain = g_object_new(AGS_TYPE_PORT,
+						 "plugin-name", ags_fx_star_synth_audio_plugin_name,
+						 "specifier", "./noise-gain[0]",
+						 "control-port", "43/59",
+						 "port-value-is-pointer", FALSE,
+						 "port-value-type", G_TYPE_FLOAT,
+						 "port-value-size", sizeof(gfloat),
+						 "port-value-length", 1,
+						 NULL);
+  
+  fx_star_synth_audio->noise_gain->port_value.ags_port_float = (gfloat) 0.0;
+
+  g_object_set(fx_star_synth_audio->noise_gain,
+	       "plugin-port", ags_fx_star_synth_audio_get_noise_gain_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->noise_gain);
+
+  position++;
+
+  /* pitch type */
+  fx_star_synth_audio->pitch_type = g_object_new(AGS_TYPE_PORT,
+						 "plugin-name", ags_fx_star_synth_audio_plugin_name,
+						 "specifier", "./pitch-type[0]",
+						 "control-port", "44/59",
+						 "port-value-is-pointer", FALSE,
+						 "port-value-type", G_TYPE_FLOAT,
+						 "port-value-size", sizeof(gfloat),
+						 "port-value-length", 1,
+						 NULL);
+  
+  fx_star_synth_audio->pitch_type->port_value.ags_port_float = (gfloat) 0.0;
+
+  g_object_set(fx_star_synth_audio->pitch_type,
+	       "plugin-port", ags_fx_star_synth_audio_get_pitch_type_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->pitch_type);
+
+  position++;
+
+  g_signal_connect_after(fx_star_synth_audio->pitch_type, "safe-write",
+			 G_CALLBACK(ags_fx_star_synth_audio_pitch_type_callback), fx_star_synth_audio);
+
+  /* pitch tuning */
+  fx_star_synth_audio->pitch_tuning = g_object_new(AGS_TYPE_PORT,
+						   "plugin-name", ags_fx_star_synth_audio_plugin_name,
+						   "specifier", "./pitch-tuning[0]",
+						   "control-port", "45/59",
+						   "port-value-is-pointer", FALSE,
+						   "port-value-type", G_TYPE_FLOAT,
+						   "port-value-size", sizeof(gfloat),
+						   "port-value-length", 1,
+						   NULL);
+  
+  fx_star_synth_audio->pitch_tuning->port_value.ags_port_float = (gfloat) 0.0;
+
+  g_object_set(fx_star_synth_audio->pitch_tuning,
+	       "plugin-port", ags_fx_star_synth_audio_get_pitch_tuning_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->pitch_tuning);
+
+  position++;
+
+  /* chorus enabled */
+  fx_star_synth_audio->chorus_enabled = g_object_new(AGS_TYPE_PORT,
+						     "plugin-name", ags_fx_star_synth_audio_plugin_name,
+						     "specifier", "./chorus-enabled[0]",
+						     "control-port", "46/59",
+						     "port-value-is-pointer", FALSE,
+						     "port-value-type", G_TYPE_FLOAT,
+						     "port-value-size", sizeof(gfloat),
+						     "port-value-length", 1,
+						     NULL);
+  
+  fx_star_synth_audio->chorus_enabled->port_value.ags_port_float = (gfloat) TRUE;
+
+  g_object_set(fx_star_synth_audio->chorus_enabled,
+	       "plugin-port", ags_fx_star_synth_audio_get_chorus_enabled_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->chorus_enabled);
+
+  position++;
+
+  /* chorus pitch type */
+  fx_star_synth_audio->chorus_pitch_type = g_object_new(AGS_TYPE_PORT,
+							"plugin-name", ags_fx_star_synth_audio_plugin_name,
+							"specifier", "./chorus-pitch-type[0]",
+							"control-port", "59/59",
+							"port-value-is-pointer", FALSE,
+							"port-value-type", G_TYPE_FLOAT,
+							"port-value-size", sizeof(gfloat),
+							"port-value-length", 1,
+							NULL);
+  
+  fx_star_synth_audio->chorus_pitch_type->port_value.ags_port_float = (gfloat) 0.0;
+
+  g_object_set(fx_star_synth_audio->chorus_pitch_type,
+	       "plugin-port", ags_fx_star_synth_audio_get_chorus_pitch_type_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->chorus_pitch_type);
+
+  position++;
+
+  /* chorus input volume */
+  fx_star_synth_audio->chorus_input_volume = g_object_new(AGS_TYPE_PORT,
+							  "plugin-name", ags_fx_star_synth_audio_plugin_name,
+							  "specifier", "./chorus-input-volume[0]",
+							  "control-port", "48/59",
+							  "port-value-is-pointer", FALSE,
+							  "port-value-type", G_TYPE_FLOAT,
+							  "port-value-size", sizeof(gfloat),
+							  "port-value-length", 1,
+							  NULL);
+  
+  fx_star_synth_audio->chorus_input_volume->port_value.ags_port_float = (gfloat) 1.0;
+
+  g_object_set(fx_star_synth_audio->chorus_input_volume,
+	       "plugin-port", ags_fx_star_synth_audio_get_chorus_input_volume_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->chorus_input_volume);
+
+  position++;
+
+  /* chorus output volume */
+  fx_star_synth_audio->chorus_output_volume = g_object_new(AGS_TYPE_PORT,
+							   "plugin-name", ags_fx_star_synth_audio_plugin_name,
+							   "specifier", "./chorus-output-volume[0]",
+							   "control-port", "49/59",
+							   "port-value-is-pointer", FALSE,
+							   "port-value-type", G_TYPE_FLOAT,
+							   "port-value-size", sizeof(gfloat),
+							   "port-value-length", 1,
+							   NULL);
+  
+  fx_star_synth_audio->chorus_output_volume->port_value.ags_port_float = (gfloat) 1.0;
+
+  g_object_set(fx_star_synth_audio->chorus_output_volume,
+	       "plugin-port", ags_fx_star_synth_audio_get_chorus_output_volume_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->chorus_output_volume);
+
+  position++;
+
+  /* chorus LFO oscillator */
+  fx_star_synth_audio->chorus_lfo_oscillator = g_object_new(AGS_TYPE_PORT,
+							    "plugin-name", ags_fx_star_synth_audio_plugin_name,
+							    "specifier", "./chorus-lfo-oscillator[0]",
+							    "control-port", "59/59",
+							    "port-value-is-pointer", FALSE,
+							    "port-value-type", G_TYPE_FLOAT,
+							    "port-value-size", sizeof(gfloat),
+							    "port-value-length", 1,
+							    NULL);
+  
+  fx_star_synth_audio->chorus_lfo_oscillator->port_value.ags_port_float = (gfloat) AGS_SYNTH_OSCILLATOR_SIN;
+
+  g_object_set(fx_star_synth_audio->chorus_lfo_oscillator,
+	       "plugin-port", ags_fx_star_synth_audio_get_chorus_lfo_oscillator_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->chorus_lfo_oscillator);
+
+  position++;
+
+  /* chorus LFO frequency */
+  fx_star_synth_audio->chorus_lfo_frequency = g_object_new(AGS_TYPE_PORT,
+							   "plugin-name", ags_fx_star_synth_audio_plugin_name,
+							   "specifier", "./chorus-lfo-frequency[0]",
+							   "control-port", "51/59",
+							   "port-value-is-pointer", FALSE,
+							   "port-value-type", G_TYPE_FLOAT,
+							   "port-value-size", sizeof(gfloat),
+							   "port-value-length", 1,
+							   NULL);
+  
+  fx_star_synth_audio->chorus_lfo_frequency->port_value.ags_port_float = (gfloat) 0.01;
+
+  g_object_set(fx_star_synth_audio->chorus_lfo_frequency,
+	       "plugin-port", ags_fx_star_synth_audio_get_chorus_lfo_frequency_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->chorus_lfo_frequency);
+
+  position++;
+
+  /* chorus depth */
+  fx_star_synth_audio->chorus_depth = g_object_new(AGS_TYPE_PORT,
+						   "plugin-name", ags_fx_star_synth_audio_plugin_name,
+						   "specifier", "./chorus-depth[0]",
+						   "control-port", "52/59",
+						   "port-value-is-pointer", FALSE,
+						   "port-value-type", G_TYPE_FLOAT,
+						   "port-value-size", sizeof(gfloat),
+						   "port-value-length", 1,
+						   NULL);
+  
+  fx_star_synth_audio->chorus_depth->port_value.ags_port_float = (gfloat) 0.0;
+
+  g_object_set(fx_star_synth_audio->chorus_depth,
+	       "plugin-port", ags_fx_star_synth_audio_get_chorus_depth_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->chorus_depth);
+
+  position++;
+
+  /* chorus mix */
+  fx_star_synth_audio->chorus_mix = g_object_new(AGS_TYPE_PORT,
+						 "plugin-name", ags_fx_star_synth_audio_plugin_name,
+						 "specifier", "./chorus-mix[0]",
+						 "control-port", "53/59",
+						 "port-value-is-pointer", FALSE,
+						 "port-value-type", G_TYPE_FLOAT,
+						 "port-value-size", sizeof(gfloat),
+						 "port-value-length", 1,
+						 NULL);
+  
+  fx_star_synth_audio->chorus_mix->port_value.ags_port_float = (gfloat) 0.5;
+
+  g_object_set(fx_star_synth_audio->chorus_mix,
+	       "plugin-port", ags_fx_star_synth_audio_get_chorus_mix_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->chorus_mix);
+
+  position++;
+
+  /* chorus delay */
+  fx_star_synth_audio->chorus_delay = g_object_new(AGS_TYPE_PORT,
+						   "plugin-name", ags_fx_star_synth_audio_plugin_name,
+						   "specifier", "./chorus-delay[0]",
+						   "control-port", "54/59",
+						   "port-value-is-pointer", FALSE,
+						   "port-value-type", G_TYPE_FLOAT,
+						   "port-value-size", sizeof(gfloat),
+						   "port-value-length", 1,
+						   NULL);
+  
+  fx_star_synth_audio->chorus_delay->port_value.ags_port_float = (gfloat) 0.0;
+
+  g_object_set(fx_star_synth_audio->chorus_delay,
+	       "plugin-port", ags_fx_star_synth_audio_get_chorus_delay_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->chorus_delay);
+
+  position++;
+
+  /* vibrato enabled */
+  fx_star_synth_audio->vibrato_enabled = g_object_new(AGS_TYPE_PORT,
+						      "plugin-name", ags_fx_star_synth_audio_plugin_name,
+						      "specifier", "./vibrato-enabled[0]",
+						      "control-port", "55/59",
+						      "port-value-is-pointer", FALSE,
+						      "port-value-type", G_TYPE_FLOAT,
+						      "port-value-size", sizeof(gfloat),
+						      "port-value-length", 1,
+						      NULL);
+  
+  fx_star_synth_audio->vibrato_enabled->port_value.ags_port_float = (gfloat) FALSE;
+
+  g_object_set(fx_star_synth_audio->vibrato_enabled,
+	       "plugin-port", ags_fx_star_synth_audio_get_vibrato_enabled_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->vibrato_enabled);
+
+  position++;
+
+  /* vibrato gain */
+  fx_star_synth_audio->vibrato_gain = g_object_new(AGS_TYPE_PORT,
+						   "plugin-name", ags_fx_star_synth_audio_plugin_name,
+						   "specifier", "./vibrato-gain[0]",
+						   "control-port", "56/59",
+						   "port-value-is-pointer", FALSE,
+						   "port-value-type", G_TYPE_FLOAT,
+						   "port-value-size", sizeof(gfloat),
+						   "port-value-length", 1,
+						   NULL);
+  
+  fx_star_synth_audio->vibrato_gain->port_value.ags_port_float = (gfloat) 1.0;
+
+  g_object_set(fx_star_synth_audio->vibrato_gain,
+	       "plugin-port", ags_fx_star_synth_audio_get_vibrato_gain_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->vibrato_gain);
+
+  position++;
+  
+  /* vibrato LFO depth */
+  fx_star_synth_audio->vibrato_lfo_depth = g_object_new(AGS_TYPE_PORT,
+							"plugin-name", ags_fx_star_synth_audio_plugin_name,
+							"specifier", "./vibrato-lfo-depth[0]",
+							"control-port", "57/59",
+							"port-value-is-pointer", FALSE,
+							"port-value-type", G_TYPE_FLOAT,
+							"port-value-size", sizeof(gfloat),
+							"port-value-length", 1,
+							NULL);
+  
+  fx_star_synth_audio->vibrato_lfo_depth->port_value.ags_port_float = (gfloat) 1.0;
+
+  g_object_set(fx_star_synth_audio->vibrato_lfo_depth,
+	       "plugin-port", ags_fx_star_synth_audio_get_vibrato_lfo_depth_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->vibrato_lfo_depth);
+
+  position++;
+  
+  /* vibrato LFO freq */
+  fx_star_synth_audio->vibrato_lfo_freq = g_object_new(AGS_TYPE_PORT,
+						       "plugin-name", ags_fx_star_synth_audio_plugin_name,
+						       "specifier", "./vibrato-lfo-freq[0]",
+						       "control-port", "58/59",
+						       "port-value-is-pointer", FALSE,
+						       "port-value-type", G_TYPE_FLOAT,
+						       "port-value-size", sizeof(gfloat),
+						       "port-value-length", 1,
+						       NULL);
+  
+  fx_star_synth_audio->vibrato_lfo_freq->port_value.ags_port_float = (gfloat) 8.172;
+
+  g_object_set(fx_star_synth_audio->vibrato_lfo_freq,
+	       "plugin-port", ags_fx_star_synth_audio_get_vibrato_lfo_freq_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->vibrato_lfo_freq);
+
+  position++;
+
+  /* vibrato tuning */
+  fx_star_synth_audio->vibrato_tuning = g_object_new(AGS_TYPE_PORT,
+						     "plugin-name", ags_fx_star_synth_audio_plugin_name,
+						     "specifier", "./vibrato-tuning[0]",
+						     "control-port", "59/59",
+						     "port-value-is-pointer", FALSE,
+						     "port-value-type", G_TYPE_FLOAT,
+						     "port-value-size", sizeof(gfloat),
+						     "port-value-length", 1,
+						     NULL);
+  
+  fx_star_synth_audio->vibrato_tuning->port_value.ags_port_float = (gfloat) 0.0;
+
+  g_object_set(fx_star_synth_audio->vibrato_tuning,
+	       "plugin-port", ags_fx_star_synth_audio_get_vibrato_tuning_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_star_synth_audio,
+		      fx_star_synth_audio->vibrato_tuning);
+
+  position++;
   
   /* scope data */
   for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
@@ -2692,7 +3995,7 @@ ags_fx_star_synth_audio_get_synth_0_sync_attack_0_plugin_port()
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
-		      2.0 * M_PI);
+		      12.0 * M_PI);
   }
 
   g_mutex_unlock(&mutex);
@@ -2770,7 +4073,7 @@ ags_fx_star_synth_audio_get_synth_0_sync_attack_1_plugin_port()
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
-		      2.0 * M_PI);
+		      12.0 * M_PI);
   }
 
   g_mutex_unlock(&mutex);
@@ -2848,7 +4151,7 @@ ags_fx_star_synth_audio_get_synth_0_sync_attack_2_plugin_port()
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
-		      2.0 * M_PI);
+		      12.0 * M_PI);
   }
 
   g_mutex_unlock(&mutex);
@@ -2858,6 +4161,84 @@ ags_fx_star_synth_audio_get_synth_0_sync_attack_2_plugin_port()
 
 static AgsPluginPort*
 ags_fx_star_synth_audio_get_synth_0_sync_phase_2_plugin_port()
+{
+  static AgsPluginPort *plugin_port = NULL;
+
+  static GMutex mutex;
+
+  g_mutex_lock(&mutex);
+  
+  if(plugin_port == NULL){
+    plugin_port = ags_plugin_port_new();
+    g_object_ref(plugin_port);
+    
+    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_CONTROL);
+
+    plugin_port->port_index = 0;
+
+    /* range */
+    g_value_init(plugin_port->default_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->lower_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->upper_value,
+		 G_TYPE_FLOAT);
+
+    g_value_set_float(plugin_port->default_value,
+		      0.0);
+    g_value_set_float(plugin_port->lower_value,
+		      0.0);
+    g_value_set_float(plugin_port->upper_value,
+		      2.0 * M_PI);
+  }
+
+  g_mutex_unlock(&mutex);
+    
+  return(plugin_port);
+}
+
+static AgsPluginPort*
+ags_fx_star_synth_audio_get_synth_0_sync_attack_3_plugin_port()
+{
+  static AgsPluginPort *plugin_port = NULL;
+
+  static GMutex mutex;
+
+  g_mutex_lock(&mutex);
+  
+  if(plugin_port == NULL){
+    plugin_port = ags_plugin_port_new();
+    g_object_ref(plugin_port);
+    
+    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_CONTROL);
+
+    plugin_port->port_index = 0;
+
+    /* range */
+    g_value_init(plugin_port->default_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->lower_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->upper_value,
+		 G_TYPE_FLOAT);
+
+    g_value_set_float(plugin_port->default_value,
+		      0.0);
+    g_value_set_float(plugin_port->lower_value,
+		      0.0);
+    g_value_set_float(plugin_port->upper_value,
+		      12.0 * M_PI);
+  }
+
+  g_mutex_unlock(&mutex);
+    
+  return(plugin_port);
+}
+
+static AgsPluginPort*
+ags_fx_star_synth_audio_get_synth_0_sync_phase_3_plugin_port()
 {
   static AgsPluginPort *plugin_port = NULL;
 
@@ -3357,7 +4738,7 @@ ags_fx_star_synth_audio_get_synth_1_sync_attack_0_plugin_port()
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
-		      2.0 * M_PI);
+		      12.0 * M_PI);
   }
 
   g_mutex_unlock(&mutex);
@@ -3435,7 +4816,7 @@ ags_fx_star_synth_audio_get_synth_1_sync_attack_1_plugin_port()
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
-		      2.0 * M_PI);
+		      12.0 * M_PI);
   }
 
   g_mutex_unlock(&mutex);
@@ -3513,7 +4894,7 @@ ags_fx_star_synth_audio_get_synth_1_sync_attack_2_plugin_port()
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
-		      2.0 * M_PI);
+		      12.0 * M_PI);
   }
 
   g_mutex_unlock(&mutex);
@@ -3523,6 +4904,84 @@ ags_fx_star_synth_audio_get_synth_1_sync_attack_2_plugin_port()
 
 static AgsPluginPort*
 ags_fx_star_synth_audio_get_synth_1_sync_phase_2_plugin_port()
+{
+  static AgsPluginPort *plugin_port = NULL;
+
+  static GMutex mutex;
+
+  g_mutex_lock(&mutex);
+  
+  if(plugin_port == NULL){
+    plugin_port = ags_plugin_port_new();
+    g_object_ref(plugin_port);
+    
+    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_CONTROL);
+
+    plugin_port->port_index = 0;
+
+    /* range */
+    g_value_init(plugin_port->default_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->lower_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->upper_value,
+		 G_TYPE_FLOAT);
+
+    g_value_set_float(plugin_port->default_value,
+		      0.0);
+    g_value_set_float(plugin_port->lower_value,
+		      0.0);
+    g_value_set_float(plugin_port->upper_value,
+		      2.0 * M_PI);
+  }
+
+  g_mutex_unlock(&mutex);
+    
+  return(plugin_port);
+}
+
+static AgsPluginPort*
+ags_fx_star_synth_audio_get_synth_1_sync_attack_3_plugin_port()
+{
+  static AgsPluginPort *plugin_port = NULL;
+
+  static GMutex mutex;
+
+  g_mutex_lock(&mutex);
+  
+  if(plugin_port == NULL){
+    plugin_port = ags_plugin_port_new();
+    g_object_ref(plugin_port);
+    
+    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_CONTROL);
+
+    plugin_port->port_index = 0;
+
+    /* range */
+    g_value_init(plugin_port->default_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->lower_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->upper_value,
+		 G_TYPE_FLOAT);
+
+    g_value_set_float(plugin_port->default_value,
+		      0.0);
+    g_value_set_float(plugin_port->lower_value,
+		      0.0);
+    g_value_set_float(plugin_port->upper_value,
+		      12.0 * M_PI);
+  }
+
+  g_mutex_unlock(&mutex);
+    
+  return(plugin_port);
+}
+
+static AgsPluginPort*
+ags_fx_star_synth_audio_get_synth_1_sync_phase_3_plugin_port()
 {
   static AgsPluginPort *plugin_port = NULL;
 

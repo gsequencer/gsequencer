@@ -1833,9 +1833,9 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
       }
       break;
       }
-    }
     
-    g_rec_mutex_unlock(source_stream_mutex);
+      g_rec_mutex_unlock(source_stream_mutex);
+    }
     
     ags_synth_util_set_source(channel_data->synth_1,
 			      NULL);
