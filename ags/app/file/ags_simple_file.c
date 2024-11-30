@@ -4116,6 +4116,45 @@ ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *no
   
   /* effects */
   str = xmlGetProp(node,
+		   "pitch-type");
+
+  if(str != NULL){
+    gchar **iter;
+    
+    guint selected;
+    guint i;
+    
+    const gchar* pitch_type_strv[] = {
+      "fluid-interpolate-none",
+      "fluid-interpolate-linear",
+      "fluid-interpolate-4th-order",
+      "fluid-interpolate-7th-order",
+      "ags-pitch-2x-alias",    
+      "ags-pitch-4x-alias",    
+      "ags-pitch-16x-alias",
+      NULL,
+    };
+
+    iter = (gchar **) pitch_type_strv;
+    
+    selected = 2;
+
+    for(i = 0; iter[0] != NULL; i++, iter++){
+      if(!g_strcmp0(str,
+		    iter[0])){
+	selected = i;
+	
+	break;
+      }
+    }
+    
+    gtk_drop_down_set_selected(hybrid_synth->pitch_type,
+			       selected);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
 		   "pitch-tuning");
 
   if(str != NULL){
@@ -4755,6 +4794,45 @@ ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode 
   }
   
   /* effects */
+  str = xmlGetProp(node,
+		   "pitch-type");
+
+  if(str != NULL){
+    gchar **iter;
+    
+    guint selected;
+    guint i;
+    
+    static const gchar* pitch_type_strv[] = {
+      "fluid-interpolate-none",
+      "fluid-interpolate-linear",
+      "fluid-interpolate-4th-order",
+      "fluid-interpolate-7th-order",
+      "ags-pitch-2x-alias",    
+      "ags-pitch-4x-alias",    
+      "ags-pitch-16x-alias",
+      NULL,
+    };
+
+    iter = (gchar **) pitch_type_strv;
+    
+    selected = 2;
+
+    for(i = 0; iter[0] != NULL; i++, iter++){
+      if(!g_strcmp0(str,
+		    iter[0])){
+	selected = i;
+	
+	break;
+      }
+    }
+    
+    gtk_drop_down_set_selected(hybrid_fm_synth->pitch_type,
+			       selected);
+      
+    xmlFree(str);
+  }
+
   str = xmlGetProp(node,
 		   "pitch-tuning");
 
@@ -5610,6 +5688,45 @@ ags_simple_file_read_stargazer_synth_launch(AgsSimpleFile *simple_file, xmlNode 
   
   /* effects */
   str = xmlGetProp(node,
+		   "pitch-type");
+
+  if(str != NULL){
+    gchar **iter;
+    
+    guint selected;
+    guint i;
+    
+    static const gchar* pitch_type_strv[] = {
+      "fluid-interpolate-none",
+      "fluid-interpolate-linear",
+      "fluid-interpolate-4th-order",
+      "fluid-interpolate-7th-order",
+      "ags-pitch-2x-alias",    
+      "ags-pitch-4x-alias",    
+      "ags-pitch-16x-alias",
+      NULL,
+    };
+
+    iter = (gchar **) pitch_type_strv;
+    
+    selected = 2;
+
+    for(i = 0; iter[0] != NULL; i++, iter++){
+      if(!g_strcmp0(str,
+		    iter[0])){
+	selected = i;
+	
+	break;
+      }
+    }
+    
+    gtk_drop_down_set_selected(stargazer_synth->pitch_type,
+			       selected);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
 		   "pitch-tuning");
 
   if(str != NULL){
@@ -6293,7 +6410,7 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     guint selected;
     guint i;
     
-    const gchar* pitch_type_strv[] = {
+    static const gchar* pitch_type_strv[] = {
       "fluid-interpolate-none",
       "fluid-interpolate-linear",
       "fluid-interpolate-4th-order",
@@ -14462,6 +14579,17 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
   }else if(AGS_IS_HYBRID_SYNTH(machine)){
     AgsHybridSynth *hybrid_synth;
 
+    static const gchar* pitch_type_strv[] = {
+      "fluid-interpolate-none",
+      "fluid-interpolate-linear",
+      "fluid-interpolate-4th-order",
+      "fluid-interpolate-7th-order",
+      "ags-pitch-2x-alias",    
+      "ags-pitch-4x-alias",    
+      "ags-pitch-16x-alias",
+      NULL,
+    };
+
     hybrid_synth = (AgsHybridSynth *) machine;
 
     /* synth-0 */
@@ -14727,6 +14855,12 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     g_free(str);    
 
     /* effects */
+    str = pitch_type_strv[gtk_drop_down_get_selected(hybrid_synth->pitch_type)];
+    
+    xmlNewProp(node,
+	       "pitch-type",
+	       str);
+
     str = g_strdup_printf("%lf",
 			  ags_dial_get_value(hybrid_synth->pitch_tuning));
     
@@ -14859,6 +14993,17 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     g_free(str);    
   }else if(AGS_IS_HYBRID_FM_SYNTH(machine)){
     AgsHybridFMSynth *hybrid_fm_synth;
+    
+    static const gchar* pitch_type_strv[] = {
+      "fluid-interpolate-none",
+      "fluid-interpolate-linear",
+      "fluid-interpolate-4th-order",
+      "fluid-interpolate-7th-order",
+      "ags-pitch-2x-alias",    
+      "ags-pitch-4x-alias",    
+      "ags-pitch-16x-alias",
+      NULL,
+    };
 
     hybrid_fm_synth = (AgsHybridFMSynth *) machine;
 
@@ -15106,6 +15251,12 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     g_free(str);    
     
     /* effects */
+    str = pitch_type_strv[gtk_drop_down_get_selected(hybrid_fm_synth->pitch_type)];
+    
+    xmlNewProp(node,
+	       "pitch-type",
+	       str);
+
     str = g_strdup_printf("%lf",
 			  ags_dial_get_value(hybrid_fm_synth->pitch_tuning));
     
@@ -15238,6 +15389,17 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     g_free(str);    
   }else if(AGS_IS_STARGAZER_SYNTH(machine)){
     AgsStargazerSynth *stargazer_synth;
+
+    static const gchar* pitch_type_strv[] = {
+      "fluid-interpolate-none",
+      "fluid-interpolate-linear",
+      "fluid-interpolate-4th-order",
+      "fluid-interpolate-7th-order",
+      "ags-pitch-2x-alias",    
+      "ags-pitch-4x-alias",    
+      "ags-pitch-16x-alias",
+      NULL,
+    };
 
     stargazer_synth = (AgsStargazerSynth *) machine;
 
@@ -15612,6 +15774,12 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     g_free(str);    
 
     /* effects */
+    str = pitch_type_strv[gtk_drop_down_get_selected(stargazer_synth->pitch_type)];
+    
+    xmlNewProp(node,
+	       "pitch-type",
+	       str);
+
     str = g_strdup_printf("%lf",
 			  ags_dial_get_value(stargazer_synth->pitch_tuning));
     
@@ -15922,7 +16090,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
   }else if(AGS_IS_SFZ_SYNTH(machine)){
     AgsSFZSynth *sfz_synth;
     
-    const gchar* pitch_type_strv[] = {
+    static const gchar* pitch_type_strv[] = {
       "fluid-interpolate-none",
       "fluid-interpolate-linear",
       "fluid-interpolate-4th-order",
@@ -16370,7 +16538,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 
     gint bank, program;
     
-    const gchar* pitch_type_strv[] = {
+    static const gchar* pitch_type_strv[] = {
       "fluid-interpolate-none",
       "fluid-interpolate-linear",
       "fluid-interpolate-4th-order",

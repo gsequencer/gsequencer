@@ -1,3 +1,10 @@
+ags (7.4.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented pitch type persistence using project XML file
+	* fixed stargazer synth LFO oscillator control
+	* fixed stargazer synth pitch type control
+
 ags (7.4.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

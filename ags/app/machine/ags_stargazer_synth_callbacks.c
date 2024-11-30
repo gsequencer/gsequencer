@@ -2338,7 +2338,7 @@ ags_stargazer_synth_pitch_type_callback(GObject *gobject,
 					GParamSpec *pspec,
 					AgsStargazerSynth *stargazer_synth)
 {
-  AgsFxFMSynthAudio *fx_star_synth_audio;
+  AgsFxStarSynthAudio *fx_star_synth_audio;
     
   guint selected;
 
@@ -2357,13 +2357,13 @@ ags_stargazer_synth_pitch_type_callback(GObject *gobject,
 		    (gfloat) selected);
 
   /* play */
-  fx_star_synth_audio = (AgsFxFMSynthAudio *) ags_recall_container_get_recall_audio(stargazer_synth->star_synth_play_container);
+  fx_star_synth_audio = (AgsFxStarSynthAudio *) ags_recall_container_get_recall_audio(stargazer_synth->star_synth_play_container);
 
   ags_port_safe_write(fx_star_synth_audio->pitch_type,
 		      &value);
 
   /* recall */
-  fx_star_synth_audio = (AgsFxFMSynthAudio *) ags_recall_container_get_recall_audio(stargazer_synth->star_synth_recall_container);
+  fx_star_synth_audio = (AgsFxStarSynthAudio *) ags_recall_container_get_recall_audio(stargazer_synth->star_synth_recall_container);
   
   ags_port_safe_write(fx_star_synth_audio->pitch_type,
 		      &value);

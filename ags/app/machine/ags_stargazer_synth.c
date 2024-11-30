@@ -3231,11 +3231,11 @@ ags_stargazer_synth_refresh_port(AgsMachine *machine)
       g_object_unref(port);
     }
 
-    /* synth-0 sync lfo oscillator */
+    /* synth-0 lfo oscillator */
     port = NULL;
 
     g_object_get(recall->data,
-		 "synth-0-sync-lfo-oscillator", &port,
+		 "synth-0-lfo-oscillator", &port,
 		 NULL);
 
     if(port != NULL){
@@ -3253,11 +3253,11 @@ ags_stargazer_synth_refresh_port(AgsMachine *machine)
       g_object_unref(port);
     }
 
-    /* synth-0 sync lfo frequency */
+    /* synth-0 lfo frequency */
     port = NULL;
 
     g_object_get(recall->data,
-		 "synth-0-sync-lfo-frequency", &port,
+		 "synth-0-lfo-frequency", &port,
 		 NULL);
 
     if(port != NULL){
@@ -3655,11 +3655,11 @@ ags_stargazer_synth_refresh_port(AgsMachine *machine)
       g_object_unref(port);
     }
 
-    /* synth-1 sync lfo oscillator */
+    /* synth-1 lfo oscillator */
     port = NULL;
 
     g_object_get(recall->data,
-		 "synth-1-sync-lfo-oscillator", &port,
+		 "synth-1-lfo-oscillator", &port,
 		 NULL);
 
     if(port != NULL){
@@ -3677,11 +3677,11 @@ ags_stargazer_synth_refresh_port(AgsMachine *machine)
       g_object_unref(port);
     }
 
-    /* synth-1 sync lfo frequency */
+    /* synth-1 lfo frequency */
     port = NULL;
 
     g_object_get(recall->data,
-		 "synth-1-sync-lfo-frequency", &port,
+		 "synth-1-lfo-frequency", &port,
 		 NULL);
 
     if(port != NULL){
@@ -3968,6 +3968,28 @@ ags_stargazer_synth_refresh_port(AgsMachine *machine)
       g_object_unref(port);
     }
 
+    /* pitch type */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "pitch-type", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_drop_down_set_selected(stargazer_synth->pitch_type,
+				 (guint) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
     /* pitch tuning */
     port = NULL;
 
@@ -3989,7 +4011,7 @@ ags_stargazer_synth_refresh_port(AgsMachine *machine)
 
       g_object_unref(port);
     }
-
+    
     /* noise gain */
     port = NULL;
 
