@@ -273,7 +273,7 @@ ags_navigation_play_callback(GObject *gobject,
 
   g_list_free(machines_start);
 
-  g_usleep(G_USEC_PER_SEC);
+  //  g_usleep(G_USEC_PER_SEC);
 }
 
 void

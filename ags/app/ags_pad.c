@@ -720,6 +720,25 @@ ags_pad_disconnect(AgsConnectable *connectable)
   
   pad->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
+  /* GtkToggleButton */
+  g_object_disconnect((GObject *) pad->group,
+		      "any_signal::notify::active",
+		      G_CALLBACK(ags_pad_group_callback),
+		      (gpointer) pad,
+		      NULL);
+  
+  g_object_disconnect((GObject *) pad->mute,
+		      "any_signal::notify::active",
+		      G_CALLBACK(ags_pad_mute_callback),
+		      (gpointer) pad,
+		      NULL);
+  
+  g_object_disconnect((GObject *) pad->solo,
+		      "any_signal::notify::active",
+		      G_CALLBACK(ags_pad_solo_callback),
+		      (gpointer) pad,
+		      NULL);
+
   /* AgsLine */
   line =
     start_line = ags_pad_get_line(pad);
