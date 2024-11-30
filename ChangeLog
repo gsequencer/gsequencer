@@ -1,3 +1,9 @@
+ags (7.4.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed stargazer synth missing octave control
+	* implemented missing ags_stargazer_synth_refresh_port()
+
 ags (7.4.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -393,6 +393,13 @@ ags_stargazer_synth_init(AgsStargazerSynth *stargazer_synth)
 
   gtk_adjustment_set_value(adjustment,
 			   0.0);
+  ags_dial_set_radius(stargazer_synth->synth_0_octave,
+		      12);
+  
+  gtk_grid_attach(synth_0_grid,
+		  (GtkWidget *) stargazer_synth->synth_0_octave,
+		  3, 0,
+		  1, 1);
 
   /* OSC 1 - key */
   label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - key"));
@@ -3110,6 +3117,1221 @@ ags_stargazer_synth_refresh_port(AgsMachine *machine)
 
   machine->flags |= AGS_MACHINE_NO_UPDATE;
 
+  if((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    /* synth-0 oscillator */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-oscillator", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_combo_box_set_active(stargazer_synth->synth_0_oscillator,
+			       (gint) g_value_get_float(&value));
+
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 octave */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-octave", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->synth_0_octave,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 key */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-key", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->synth_0_key,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 phase */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-phase", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->synth_0_phase,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 volume */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-volume", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->synth_0_volume,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 sync lfo oscillator */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-sync-lfo-oscillator", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_combo_box_set_active(stargazer_synth->synth_0_lfo_oscillator,
+			       (gint) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 sync lfo frequency */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-sync-lfo-frequency", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_spin_button_set_value(stargazer_synth->synth_0_lfo_frequency,
+				(gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 lfo depth */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-lfo-depth", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->synth_0_lfo_depth,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 lfo tuning */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-lfo-tuning", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->synth_0_lfo_tuning,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 sync enabled */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-sync-enabled", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      if(g_value_get_float(&value) != 0.0){
+	gtk_check_button_set_active(stargazer_synth->synth_0_sync_enabled,
+				    TRUE);
+      }else{
+	gtk_check_button_set_active(stargazer_synth->synth_0_sync_enabled,
+				    FALSE);
+      }
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 sync relative attack factor */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-sync-relative-attack-factor", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->synth_0_sync_relative_attack_factor,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 sync attack 0 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-sync-attack-0", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->synth_0_sync_attack_0,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 sync phase 0 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-sync-phase-0", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->synth_0_sync_phase_0,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 sync attack 1 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-sync-attack-1", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->synth_0_sync_attack_1,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 sync phase 1 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-sync-phase-1", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->synth_0_sync_phase_1,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 sync attack 2 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-sync-attack-2", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->synth_0_sync_attack_2,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 sync phase 2 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-sync-phase-2", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->synth_0_sync_phase_2,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 sync lfo oscillator */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-sync-lfo-oscillator", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_combo_box_set_active(stargazer_synth->synth_0_sync_lfo_oscillator,
+			       (gint) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 sync lfo frequency */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-sync-lfo-frequency", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_spin_button_set_value(stargazer_synth->synth_0_sync_lfo_frequency,
+				(gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 oscillator */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-oscillator", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_combo_box_set_active(stargazer_synth->synth_1_oscillator,
+			       (gint) g_value_get_float(&value));
+
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 octave */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-octave", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->synth_1_octave,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 key */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-key", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->synth_1_key,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 phase */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-phase", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->synth_1_phase,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 volume */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-volume", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->synth_1_volume,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 sync lfo oscillator */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-sync-lfo-oscillator", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_combo_box_set_active(stargazer_synth->synth_1_lfo_oscillator,
+			       (gint) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 sync lfo frequency */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-sync-lfo-frequency", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_spin_button_set_value(stargazer_synth->synth_1_lfo_frequency,
+				(gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 lfo depth */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-lfo-depth", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->synth_1_lfo_depth,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 lfo tuning */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-lfo-tuning", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->synth_1_lfo_tuning,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 sync enabled */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-sync-enabled", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      if(g_value_get_float(&value) != 0.0){
+	gtk_check_button_set_active(stargazer_synth->synth_1_sync_enabled,
+				    TRUE);
+      }else{
+	gtk_check_button_set_active(stargazer_synth->synth_1_sync_enabled,
+				    FALSE);
+      }
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 sync relative attack factor */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-sync-relative-attack-factor", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->synth_1_sync_relative_attack_factor,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 sync attack 0 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-sync-attack-0", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->synth_1_sync_attack_0,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 sync phase 0 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-sync-phase-0", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->synth_1_sync_phase_0,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 sync attack 1 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-sync-attack-1", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->synth_1_sync_attack_1,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 sync phase 1 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-sync-phase-1", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->synth_1_sync_phase_1,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 sync attack 2 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-sync-attack-2", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->synth_1_sync_attack_2,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 sync phase 2 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-sync-phase-2", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->synth_1_sync_phase_2,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 sync lfo oscillator */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-sync-lfo-oscillator", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_combo_box_set_active(stargazer_synth->synth_1_sync_lfo_oscillator,
+			       (gint) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 sync lfo frequency */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-sync-lfo-frequency", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_spin_button_set_value(stargazer_synth->synth_1_sync_lfo_frequency,
+				(gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* pitch tuning */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "pitch-tuning", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->pitch_tuning,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* noise gain */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "noise-gain", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->noise_gain,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* chorus enabled */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "chorus-enabled", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      if(g_value_get_float(&value) != 0.0){
+	gtk_check_button_set_active(stargazer_synth->chorus_enabled,
+				    TRUE);
+      }else{
+	gtk_check_button_set_active(stargazer_synth->chorus_enabled,
+				    FALSE);
+      }
+
+      g_object_unref(port);
+    }
+    
+    /* chorus LFO oscillator */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "chorus-lfo-oscillator", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_combo_box_set_active(stargazer_synth->chorus_lfo_oscillator,
+			       (gint) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* chorus LFO frequency */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "chorus-lfo-frequency", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_spin_button_set_value(stargazer_synth->chorus_lfo_frequency,
+				(gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* chorus depth */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "chorus-depth", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->chorus_depth,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* chorus mix */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "chorus-mix", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->chorus_mix,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* chorus delay */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "chorus-delay", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->chorus_delay,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* vibrato gain */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "vibrato-gain", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->vibrato_gain,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* vibrato LFO depth */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "vibrato-lfo-depth", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->vibrato_lfo_depth,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* vibrato LFO freq */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "vibrato-lfo-freq", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->vibrato_lfo_freq,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* vibrato tuning */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "vibrato-tuning", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->vibrato_tuning,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+  }
+
+  recall = start_recall;
+  
+  if((recall = ags_recall_find_type(recall, AGS_TYPE_FX_TREMOLO_AUDIO)) != NULL){
+    AgsPort *port;
+
+    /* tremolo gain */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "tremolo-gain", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->tremolo_gain,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* tremolo LFO depth */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "tremolo-lfo-depth", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->tremolo_lfo_depth,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* tremolo LFO freq */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "tremolo-lfo-freq", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->tremolo_lfo_freq,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* tremolo tuning */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "tremolo-tuning", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(stargazer_synth->tremolo_tuning,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+  }
+  
   machine->flags &= (~AGS_MACHINE_NO_UPDATE);
 }
 

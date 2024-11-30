@@ -517,7 +517,7 @@ ags_export_window_disconnect(AgsConnectable *connectable)
 		      NULL);
 
   g_object_disconnect(G_OBJECT(export_window->export),
-		      "any_signal::clicked",
+		      "any_signal::notify::active",
 		      G_CALLBACK(ags_export_window_export_callback),
 		      export_window,
 		      NULL);
@@ -1086,7 +1086,7 @@ ags_export_window_start_export(AgsExportWindow *export_window)
 
   g_object_unref(main_loop);
 
-  g_usleep(G_USEC_PER_SEC);
+  //  g_usleep(G_USEC_PER_SEC);
 }
 
 /**
