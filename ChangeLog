@@ -1,3 +1,9 @@
+ags (7.4.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved AgsExportWindow signal handling
+	* improved AgsNavigation signal handling
+
 ags (7.4.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
