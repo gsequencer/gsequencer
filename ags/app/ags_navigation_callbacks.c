@@ -58,7 +58,8 @@ ags_navigation_update_ui_callback(GObject *ui_provider,
 }
 
 void
-ags_navigation_expander_callback(GtkWidget *widget,
+ags_navigation_expander_callback(GObject *gobject,
+				 GParamSpec *pspec,				    
 				 AgsNavigation *navigation)
 {
   gchar *icon_name;
@@ -106,7 +107,8 @@ ags_navigation_bpm_callback(GtkWidget *widget,
 }
 
 void
-ags_navigation_rewind_callback(GtkWidget *widget,
+ags_navigation_rewind_callback(GObject *gobject,
+			       GParamSpec *pspec,				    
 			       AgsNavigation *navigation)
 {
   AgsApplicationContext *application_context;
@@ -148,7 +150,8 @@ ags_navigation_prev_callback(GtkWidget *widget,
 }
 
 void
-ags_navigation_play_callback(GtkWidget *widget,
+ags_navigation_play_callback(GObject *gobject,
+			     GParamSpec *pspec,				    
 			     AgsNavigation *navigation)
 {
   AgsWindow *window;
@@ -269,6 +272,8 @@ ags_navigation_play_callback(GtkWidget *widget,
   }
 
   g_list_free(machines_start);
+
+  g_usleep(G_USEC_PER_SEC);
 }
 
 void
@@ -365,7 +370,8 @@ ags_navigation_next_callback(GtkWidget *widget,
 }
 
 void
-ags_navigation_forward_callback(GtkWidget *widget,
+ags_navigation_forward_callback(GObject *gobject,
+				GParamSpec *pspec,				    
 				AgsNavigation *navigation)
 {
   AgsApplicationContext *application_context;
@@ -386,7 +392,8 @@ ags_navigation_forward_callback(GtkWidget *widget,
 }
 
 void
-ags_navigation_loop_callback(GtkWidget *widget,
+ags_navigation_loop_callback(GObject *gobject,
+			     GParamSpec *pspec,				    
 			     AgsNavigation *navigation)
 {
   AgsWindow *window;
@@ -419,11 +426,11 @@ ags_navigation_loop_callback(GtkWidget *widget,
   
   ags_soundcard_set_loop(AGS_SOUNDCARD(default_soundcard),
 			 loop_left, loop_right,
-			 gtk_check_button_get_active(GTK_CHECK_BUTTON(widget)));
+			 gtk_check_button_get_active(GTK_CHECK_BUTTON(gobject)));
 			 
   g_value_init(&do_loop_value, G_TYPE_BOOLEAN);
   g_value_set_boolean(&do_loop_value,
-		      gtk_check_button_get_active(GTK_CHECK_BUTTON(widget)));
+		      gtk_check_button_get_active(GTK_CHECK_BUTTON(gobject)));
 
   while(machines != NULL){
     AgsMachine *current_machine;
@@ -567,7 +574,8 @@ ags_navigation_position_tact_callback(GtkWidget *widget,
 }
 
 void
-ags_navigation_scroll_callback(GtkWidget *widget,
+ags_navigation_scroll_callback(GObject *gobject,
+			       GParamSpec *pspec,				    
 			       AgsNavigation *navigation)
 {
   AgsCompositeEditor *composite_editor;
@@ -582,7 +590,7 @@ ags_navigation_scroll_callback(GtkWidget *widget,
 
   composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
-  do_scroll = gtk_check_button_get_active(GTK_CHECK_BUTTON(widget));
+  do_scroll = gtk_check_button_get_active(GTK_CHECK_BUTTON(gobject));
 
   if(do_scroll){
     AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->flags |= AGS_NOTATION_EDIT_AUTO_SCROLL;

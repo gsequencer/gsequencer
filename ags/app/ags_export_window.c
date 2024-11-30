@@ -462,7 +462,7 @@ ags_export_window_connect(AgsConnectable *connectable)
   g_signal_connect_after(G_OBJECT(export_window->tact), "value-changed",
 			 G_CALLBACK(ags_export_window_tact_callback), export_window);
 
-  g_signal_connect_after(G_OBJECT(export_window->export), "clicked",
+  g_signal_connect_after(G_OBJECT(export_window->export), "notify::active",
 			 G_CALLBACK(ags_export_window_export_callback), export_window);
 
   export_window->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
@@ -869,31 +869,50 @@ void
 ags_export_window_start_export(AgsExportWindow *export_window)
 {
   AgsWindow *window;
-
+  AgsNavigation *navigation;
+  
+  AgsStartAudio *start_audio;
+  AgsStartSoundcard *start_soundcard;
+  AgsStartSequencer *start_sequencer;
   AgsExportOutput *export_output;
 
   AgsExportThread *export_thread, *current_export_thread;
-  
+
   AgsThread *main_loop;
-  
+
   AgsApplicationContext *application_context;
-  
+
   GObject *default_soundcard;
 
   GList *start_machine, *machine;
   GList *start_export_soundcard, *export_soundcard;
-  GList *task;
-    
+  GList *start_task, *task;
+  GList *start_list;
+
   gboolean live_performance;
-  gboolean success;
+  gboolean initialized_time;
+  gboolean no_soundcard;
   
   g_return_if_fail(AGS_IS_EXPORT_WINDOW(export_window));
 
   application_context = ags_application_context_get_instance();
 
-  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+  no_soundcard = FALSE;
 
-  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+  if((start_list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context))) == NULL){
+    no_soundcard = TRUE;
+  }
+
+  g_list_free_full(start_list,
+		   g_object_unref);
+
+  if(no_soundcard){
+    g_message("No soundcard available");
+    
+    return;
+  }
+
+  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
     
   /* collect */  
   export_thread = (AgsExportThread *) ags_thread_find_type(main_loop,
@@ -910,13 +929,18 @@ ags_export_window_start_export(AgsExportWindow *export_window)
   }
 
   window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+
+  navigation = window->navigation;
   
   machine =
     start_machine = ags_ui_provider_get_machine(AGS_UI_PROVIDER(application_context));
 
-  success = FALSE;
+  start_task = NULL;
   
-  /* start machine */
+  initialized_time = FALSE;
+  
   while(machine != NULL){
     AgsMachine *current_machine;
     
@@ -924,33 +948,70 @@ ags_export_window_start_export(AgsExportWindow *export_window)
 
     if((AGS_MACHINE_IS_SEQUENCER & (current_machine->flags)) != 0 ||
        (AGS_MACHINE_IS_SYNTHESIZER & (current_machine->flags)) != 0){
-      g_message("found machine to play!");
+#ifdef AGS_DEBUG
+      g_message("found machine to play!\n");
+#endif
+      
+      if(!initialized_time){
+	initialized_time = TRUE;
+	navigation->start_tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(default_soundcard));
+      }
 
-      ags_machine_set_run_extended(current_machine,
-				   TRUE,
-				   !gtk_check_button_get_active((GtkCheckButton *) export_window->exclude_sequencer), TRUE, FALSE, FALSE);
-      success = TRUE;
+      if(!gtk_check_button_get_active(navigation->exclude_sequencer)){
+	/* create start task */
+	start_audio = ags_start_audio_new(current_machine->audio,
+					  AGS_SOUND_SCOPE_SEQUENCER);
+	start_task = g_list_prepend(start_task,
+				    start_audio);
+      }
+      
+      /* create start task */
+      start_audio = ags_start_audio_new(current_machine->audio,
+					AGS_SOUND_SCOPE_NOTATION);
+      start_task = g_list_prepend(start_task,
+				  start_audio);
     }else if((AGS_MACHINE_IS_WAVE_PLAYER & (current_machine->flags)) != 0){
-      g_message("found machine to play!");
-
-      ags_machine_set_run_extended(current_machine,
-				   TRUE,
-				   FALSE, TRUE, FALSE, FALSE);
-      success = TRUE;
+#ifdef AGS_DEBUG
+      g_message("found machine to play!\n");
+#endif
+      
+      if(!initialized_time){
+	initialized_time = TRUE;
+	navigation->start_tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(default_soundcard));
+      }
+      
+      /* create start task */
+      start_audio = ags_start_audio_new(current_machine->audio,
+					AGS_SOUND_SCOPE_NOTATION);
+      start_task = g_list_prepend(start_task,
+				  start_audio);
     }
 
     machine = machine->next;
   }
 
-  /* start export thread */
-  if(success){
+  /* create start task */
+  start_export_soundcard = ags_export_window_get_export_soundcard(export_window);
+  
+  if(start_task != NULL){
     gchar *str;
       
     guint tic;
     guint format;
       
     gdouble delay;
-      
+
+    /* start soundcard */
+    start_soundcard = ags_start_soundcard_new();
+    start_task = g_list_prepend(start_task,
+				start_soundcard);
+
+    /* start sequencer */
+    start_sequencer = ags_start_sequencer_new();
+    start_task = g_list_prepend(start_task,
+				start_sequencer);
+
+
     /* create task */
     delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(default_soundcard));
 
@@ -958,7 +1019,6 @@ ags_export_window_start_export(AgsExportWindow *export_window)
     tic = (gtk_spin_button_get_value(export_window->tact) + 1) * (16.0 * delay);
       
     export_soundcard = start_export_soundcard;
-    task = NULL;
       
     while(export_soundcard != NULL){
       gchar *filename;
@@ -995,8 +1055,8 @@ ags_export_window_start_export(AgsExportWindow *export_window)
 		   "format", format,
 		   NULL);
 	
-      task = g_list_prepend(task,
-			    export_output);
+      start_task = g_list_prepend(start_task,
+				  export_output);
 	
       if(AGS_EXPORT_SOUNDCARD(export_soundcard->data)->soundcard == default_soundcard){
 	ags_export_window_set_flags(export_window,
@@ -1010,13 +1070,13 @@ ags_export_window_start_export(AgsExportWindow *export_window)
       
       export_soundcard = export_soundcard->next;
     }
-      
-    /* append AgsStartSoundcard */
-    task = g_list_reverse(task);
+    
+    /* append AgsStartSoundcard and AgsStartSequencer */
+    start_task = g_list_reverse(start_task);
       
     ags_ui_provider_schedule_task_all(AGS_UI_PROVIDER(application_context),
-				      task);
-      
+				      start_task);
+
     ags_navigation_set_seeking_sensitive(window->navigation,
 					 FALSE);
   }
@@ -1025,6 +1085,8 @@ ags_export_window_start_export(AgsExportWindow *export_window)
   g_list_free(start_export_soundcard);
 
   g_object_unref(main_loop);
+
+  g_usleep(G_USEC_PER_SEC);
 }
 
 /**

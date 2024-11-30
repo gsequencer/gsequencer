@@ -136,10 +136,11 @@ ags_export_window_replace_files_response_callback(AgsInputDialog *input_dialog,
 }
 
 void
-ags_export_window_export_callback(GtkWidget *toggle_button,
+ags_export_window_export_callback(GObject *gobject,
+				  GParamSpec *pspec,
 				  AgsExportWindow *export_window)
 {
-  if(gtk_toggle_button_get_active((GtkToggleButton *) toggle_button)){
+  if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gobject))){
     GList *start_export_soundcard, *export_soundcard;
     GList *all_filename;
     GList *start_remove_filename, *remove_filename;

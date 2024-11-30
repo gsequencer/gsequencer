@@ -518,19 +518,19 @@ ags_navigation_connect(AgsConnectable *connectable)
 
   navigation->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
   
-  g_signal_connect((GObject *) navigation->expander, "toggled",
+  g_signal_connect((GObject *) navigation->expander, "notify::active",
 		   G_CALLBACK(ags_navigation_expander_callback), (gpointer) navigation);
 
   g_signal_connect_after((GObject *) navigation->bpm, "value-changed",
 			 G_CALLBACK(ags_navigation_bpm_callback), (gpointer) navigation);
 
-  g_signal_connect((GObject *) navigation->rewind, "clicked",
+  g_signal_connect((GObject *) navigation->rewind, "notify::active",
 		   G_CALLBACK(ags_navigation_rewind_callback), (gpointer) navigation);
 
   g_signal_connect((GObject *) navigation->previous, "clicked",
 		   G_CALLBACK(ags_navigation_prev_callback), (gpointer) navigation);
 
-  g_signal_connect((GObject *) navigation->play, "toggled",
+  g_signal_connect((GObject *) navigation->play, "notify::active",
 		   G_CALLBACK(ags_navigation_play_callback), (gpointer) navigation);
 
   g_signal_connect((GObject *) navigation->stop, "clicked",
@@ -539,10 +539,10 @@ ags_navigation_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) navigation->next, "clicked",
 		   G_CALLBACK(ags_navigation_next_callback), (gpointer) navigation);
 
-  g_signal_connect((GObject *) navigation->forward, "clicked",
+  g_signal_connect((GObject *) navigation->forward, "notify::active",
 		   G_CALLBACK(ags_navigation_forward_callback), (gpointer) navigation);
 
-  g_signal_connect((GObject *) navigation->loop, "toggled",
+  g_signal_connect((GObject *) navigation->loop, "notify::active",
 		   G_CALLBACK(ags_navigation_loop_callback), (gpointer) navigation);
 
   g_signal_connect_after((GObject *) navigation->position_tact, "value-changed",
@@ -551,7 +551,7 @@ ags_navigation_connect(AgsConnectable *connectable)
   //  g_signal_connect((GObject *) navigation->duration_tact, "value-changed",
   //		   G_CALLBACK(ags_navigation_duration_tact_callback), (gpointer) navigation);
 
-  g_signal_connect_after((GObject *) navigation->scroll, "toggled",
+  g_signal_connect_after((GObject *) navigation->scroll, "notify::active",
 			 G_CALLBACK(ags_navigation_scroll_callback), (gpointer) navigation);
 
   /* soundcard */
@@ -683,6 +683,7 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   gdouble absolute_delay;
   gdouble delay_factor;
   gint64 new_offset;
+  gboolean no_soundcard;
 
   application_context = ags_application_context_get_instance();
 
