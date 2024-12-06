@@ -147,7 +147,8 @@ ags_lv2_plugin_test_event_buffer_append_midi()
   void *offset;
   
   uint32_t id;
-
+  guint i;
+  
   id = ags_lv2_uri_map_manager_uri_to_id(NULL,
 					 LV2_EVENT_URI,
 					 LV2_MIDI__MidiEvent);
@@ -194,6 +195,14 @@ ags_lv2_plugin_test_event_buffer_append_midi()
 
   CU_ASSERT(AGS_LV2_EVENT(offset)->type == id &&
 	    ((uint8_t *) (offset + sizeof(LV2_Event)))[1] == AGS_LV2_PLUGIN_TEST_EVENT_BUFFER_APPEND_MIDI_NOTE_2);
+
+  /* */
+  for(i = 0; i < 8192; i++){
+    ags_lv2_plugin_event_buffer_append_midi(event_buffer,
+					    AGS_LV2_PLUGIN_TEST_EVENT_BUFFER_APPEND_MIDI_SIZE,
+					    &seq_event,
+					    3);
+  }
 }
 
 void
@@ -327,7 +336,8 @@ ags_lv2_plugin_test_atom_sequence_append_midi()
   snd_seq_event_t seq_event[3];
 
   uint32_t id;
-
+  guint i;
+  
   id = ags_lv2_urid_manager_map(NULL,
 				LV2_MIDI__MidiEvent);
 
@@ -365,14 +375,21 @@ ags_lv2_plugin_test_atom_sequence_append_midi()
 					   3);
   CU_ASSERT(aev->body.type == id &&
 	    ((uint8_t *) (LV2_ATOM_BODY(&(aev->body))))[1] == AGS_LV2_PLUGIN_TEST_ATOM_SEQUENCE_APPEND_MIDI_NOTE_0);
-  aev += ((3 + 7) & (~7));
+  aev = (LV2_Atom_Event *) ((guchar *) aev) + (8U);
 
   CU_ASSERT(aev->body.type == id &&
 	    ((uint8_t *) (LV2_ATOM_BODY(&(aev->body))))[1] == AGS_LV2_PLUGIN_TEST_ATOM_SEQUENCE_APPEND_MIDI_NOTE_1);
-  aev += ((3 + 7) & (~7));
+  aev = (LV2_Atom_Event *) ((guchar *) aev) + (8U);
   
   CU_ASSERT(aev->body.type == id &&
 	    ((uint8_t *) (LV2_ATOM_BODY(&(aev->body))))[1] == AGS_LV2_PLUGIN_TEST_ATOM_SEQUENCE_APPEND_MIDI_NOTE_2);
+
+  for(i = 0; i < 1024; i++){
+    ags_lv2_plugin_atom_sequence_append_midi(aseq,
+					     AGS_LV2_PLUGIN_TEST_ATOM_SEQUENCE_APPEND_MIDI_SIZE,
+					     &seq_event,
+					     3);
+  }
 }
 
 void

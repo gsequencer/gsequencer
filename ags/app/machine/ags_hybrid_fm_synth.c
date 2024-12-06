@@ -3183,6 +3183,28 @@ ags_hybrid_fm_synth_refresh_port(AgsMachine *machine)
       g_object_unref(port);
     }
 
+    /* pitch type */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "pitch-type", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+      
+      gtk_drop_down_set_selected(hybrid_fm_synth->pitch_type,
+				 (guint) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
     /* pitch tuning */
     port = NULL;
 

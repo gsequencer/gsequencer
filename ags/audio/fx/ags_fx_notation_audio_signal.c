@@ -320,6 +320,8 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
 
     x0_256th = 0;
     x1_256th = 16;
+
+    y = 0;
     
     g_object_get(note->data,
 		 "x0", &x0,
@@ -333,6 +335,10 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
        (note_256th_mode && note_256th_offset_lower >= x0_256th)){
       ags_audio_signal_add_stream(source);
 
+#if 0
+      g_message("x0 = %d, y = %d", x0_256th, y);
+#endif
+      
       if(!note_256th_mode){
 	ags_fx_notation_audio_signal_stream_feed((AgsFxNotationAudioSignal *) recall,
 						 source,

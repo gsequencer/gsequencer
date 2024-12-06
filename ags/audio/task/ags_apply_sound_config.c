@@ -1337,7 +1337,8 @@ ags_apply_sound_config_launch(AgsTask *task)
 
   wasapi_devout_count = 0;
   wasapi_devin_count = 0;
-
+  wasapi_midiin_count = 0;
+  
   soundcard = NULL;
 
   soundcard_group = g_strdup("soundcard");
