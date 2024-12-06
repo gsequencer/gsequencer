@@ -717,31 +717,31 @@ ags_fx_lv2_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notation_audi
 
     if(input_data->key_on > 0){
       input_data->key_on -= 1;
-    }
     
-    if(ags_fx_lv2_audio_test_flags(fx_lv2_audio, AGS_FX_LV2_AUDIO_LIVE_INSTRUMENT)){
-      if(fx_lv2_audio->has_midiin_event_port){
-	ags_lv2_plugin_event_buffer_remove_midi(channel_data->midiin_event_port,
-						AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
-						midi_note);
-      }
+      if(ags_fx_lv2_audio_test_flags(fx_lv2_audio, AGS_FX_LV2_AUDIO_LIVE_INSTRUMENT)){
+	if(fx_lv2_audio->has_midiin_event_port){
+	  ags_lv2_plugin_event_buffer_remove_midi(channel_data->midiin_event_port,
+						  AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
+						  midi_note);
+	}
 
-      if(fx_lv2_audio->has_midiin_atom_port){
-	ags_lv2_plugin_atom_sequence_remove_midi(channel_data->midiin_atom_port,
-						 AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
-						 midi_note);
-      }
-    }else{
-      if(fx_lv2_audio->has_midiin_event_port){
-	ags_lv2_plugin_event_buffer_remove_midi(input_data->midiin_event_port,
-						AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
-						midi_note);
-      }
+	if(fx_lv2_audio->has_midiin_atom_port){
+	  ags_lv2_plugin_atom_sequence_remove_midi(channel_data->midiin_atom_port,
+						   AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
+						   midi_note);
+	}
+      }else{
+	if(fx_lv2_audio->has_midiin_event_port){
+	  ags_lv2_plugin_event_buffer_remove_midi(input_data->midiin_event_port,
+						  AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
+						  midi_note);
+	}
 
-      if(fx_lv2_audio->has_midiin_atom_port){
-	ags_lv2_plugin_atom_sequence_remove_midi(input_data->midiin_atom_port,
-						 AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
-						 midi_note);
+	if(fx_lv2_audio->has_midiin_atom_port){
+	  ags_lv2_plugin_atom_sequence_remove_midi(input_data->midiin_atom_port,
+						   AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
+						   midi_note);
+	}
       }
     }
 

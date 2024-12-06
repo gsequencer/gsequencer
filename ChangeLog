@@ -3,7 +3,7 @@ ags (7.4.4)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed ags_fluid_interpolate_4th_order_util.c potential buffer overflow
 	* fixed ags_fluid_interpolate_7th_order_util.c potential buffer overflow
-	* fixed ags-fx-lv2 unsigned integer with atom port
+	* fixed ags-fx-lv2 unsigned integer with atom port and other improvements
 
 ags (7.4.3)
 
