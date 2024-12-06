@@ -485,6 +485,8 @@ ags_fx_lv2_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_
     AgsFxLv2AudioChannelData *channel_data;
     AgsFxLv2AudioInputData *input_data;
 
+    gboolean success;
+    
     g_rec_mutex_lock(fx_lv2_audio_mutex);
 
     scope_data = fx_lv2_audio->scope_data[sound_scope];
@@ -495,54 +497,55 @@ ags_fx_lv2_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_
 
     input_data->event_buffer->data.note.note = midi_note;
 
+    success = (input_data->key_on == 0) ? TRUE: FALSE;
+    
     g_rec_mutex_unlock(fx_lv2_audio_mutex);
 
 #if 0
     g_message("midi key - %d", midi_note);
 #endif
-    
-    if(delay_counter == 0.0 &&
-       x0 == offset_counter){
+
+    if(success){
       g_rec_mutex_lock(fx_lv2_audio_mutex);
       
-      input_data->key_on += 1;
+      input_data->key_on = input_data->key_on + 1;
 
       g_rec_mutex_unlock(fx_lv2_audio_mutex);
-    }    
 
-    g_rec_mutex_lock(fx_lv2_audio_mutex);
+      g_rec_mutex_lock(fx_lv2_audio_mutex);
     
-    if(is_live_instrument){
-      if(fx_lv2_audio->has_midiin_event_port){
-	ags_lv2_plugin_event_buffer_append_midi(channel_data->midiin_event_port,
-						AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
-						input_data->event_buffer,
-						1);
-      }
+      if(is_live_instrument){
+	if(fx_lv2_audio->has_midiin_event_port){
+	  ags_lv2_plugin_event_buffer_append_midi(channel_data->midiin_event_port,
+						  AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
+						  input_data->event_buffer,
+						  1);
+	}
 
-      if(fx_lv2_audio->has_midiin_atom_port){
-	ags_lv2_plugin_atom_sequence_append_midi(channel_data->midiin_atom_port,
-						 AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
-						 input_data->event_buffer,
-						 1);
-      }
-    }else{
-      if(fx_lv2_audio->has_midiin_event_port){
-	ags_lv2_plugin_event_buffer_append_midi(input_data->midiin_event_port,
-						AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
-						input_data->event_buffer,
-						1);
-      }
+	if(fx_lv2_audio->has_midiin_atom_port){
+	  ags_lv2_plugin_atom_sequence_append_midi(channel_data->midiin_atom_port,
+						   AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
+						   input_data->event_buffer,
+						   1);
+	}
+      }else{
+	if(fx_lv2_audio->has_midiin_event_port){
+	  ags_lv2_plugin_event_buffer_append_midi(input_data->midiin_event_port,
+						  AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
+						  input_data->event_buffer,
+						  1);
+	}
 
-      if(fx_lv2_audio->has_midiin_atom_port){
-	ags_lv2_plugin_atom_sequence_append_midi(input_data->midiin_atom_port,
-						 AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
-						 input_data->event_buffer,
-						 1);
-      }
-    }      
+	if(fx_lv2_audio->has_midiin_atom_port){
+	  ags_lv2_plugin_atom_sequence_append_midi(input_data->midiin_atom_port,
+						   AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
+						   input_data->event_buffer,
+						   1);
+	}
+      }      
 
-    g_rec_mutex_unlock(fx_lv2_audio_mutex);
+      g_rec_mutex_unlock(fx_lv2_audio_mutex);
+    }
     
     if(is_live_instrument){
       g_rec_mutex_lock(fx_lv2_audio_mutex);
@@ -692,7 +695,11 @@ ags_fx_lv2_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notation_audi
 
   fx_lv2_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_lv2_audio);
 
-  midi_note = (y - audio_start_mapping + midi_start_mapping);
+  if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING)){
+    midi_note = (128 - y - 1 - audio_start_mapping + midi_start_mapping);
+  }else{
+    midi_note = (y - audio_start_mapping + midi_start_mapping);
+  }
 
   if(midi_note >= 0 &&
      midi_note < 128){
@@ -708,24 +715,30 @@ ags_fx_lv2_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notation_audi
 
     input_data = channel_data->input_data[midi_note];
 
-    input_data->key_on -= 1;
+    if(input_data->key_on > 0){
+      input_data->key_on -= 1;
+    }
     
     if(ags_fx_lv2_audio_test_flags(fx_lv2_audio, AGS_FX_LV2_AUDIO_LIVE_INSTRUMENT)){
-      if(channel_data->midiin_event_port != NULL){
+      if(fx_lv2_audio->has_midiin_event_port){
 	ags_lv2_plugin_event_buffer_remove_midi(channel_data->midiin_event_port,
 						AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
 						midi_note);
-      }else if(channel_data->midiin_atom_port != NULL){
+      }
+
+      if(fx_lv2_audio->has_midiin_atom_port){
 	ags_lv2_plugin_atom_sequence_remove_midi(channel_data->midiin_atom_port,
 						 AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
 						 midi_note);
       }
     }else{
-      if(input_data->midiin_event_port != NULL){
+      if(fx_lv2_audio->has_midiin_event_port){
 	ags_lv2_plugin_event_buffer_remove_midi(input_data->midiin_event_port,
 						AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
 						midi_note);
-      }else if(input_data->midiin_atom_port != NULL){
+      }
+
+      if(fx_lv2_audio->has_midiin_atom_port){
 	ags_lv2_plugin_atom_sequence_remove_midi(input_data->midiin_atom_port,
 						 AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
 						 midi_note);

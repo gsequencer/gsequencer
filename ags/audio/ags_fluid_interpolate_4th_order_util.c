@@ -1096,11 +1096,13 @@ ags_fluid_interpolate_4th_order_util_pitch_s8(AgsFluidInterpolate4thOrderUtil *f
     
     g_mutex_unlock(&interp_coeff_4th_order_mutex);
     
-    destination[dsp_i * destination_stride] = (coeffs_0 * start_point
-					       + coeffs_1 * source[dsp_phase_index * source_stride]
-					       + coeffs_2 * source[(dsp_phase_index + 1) * source_stride]
-					       + coeffs_3 * source[(dsp_phase_index + 2) * source_stride]);
-
+    if(dsp_phase_index + 2 < buffer_length){
+      destination[dsp_i * destination_stride] = (coeffs_0 * start_point
+						 + coeffs_1 * source[dsp_phase_index * source_stride]
+						 + coeffs_2 * source[(dsp_phase_index + 1) * source_stride]
+						 + coeffs_3 * source[(dsp_phase_index + 2) * source_stride]);
+    }
+    
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
@@ -1136,11 +1138,14 @@ ags_fluid_interpolate_4th_order_util_pitch_s8(AgsFluidInterpolate4thOrderUtil *f
     
     g_mutex_unlock(&interp_coeff_4th_order_mutex);
 
-    destination[dsp_i * destination_stride] = (coeffs_0 * source[(dsp_phase_index - 1) * source_stride]
-					       + coeffs_1 * source[dsp_phase_index * source_stride]
-					       + coeffs_2 * source[(dsp_phase_index + 1) * source_stride]
-					       + coeffs_3 * source[(dsp_phase_index + 2) * source_stride]);
-
+    if(dsp_phase_index - 1 > 0 &&
+       dsp_phase_index + 2 < buffer_length){
+      destination[dsp_i * destination_stride] = (coeffs_0 * source[(dsp_phase_index - 1) * source_stride]
+						 + coeffs_1 * source[dsp_phase_index * source_stride]
+						 + coeffs_2 * source[(dsp_phase_index + 1) * source_stride]
+						 + coeffs_3 * source[(dsp_phase_index + 2) * source_stride]);
+    }
+    
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
@@ -1262,12 +1267,14 @@ ags_fluid_interpolate_4th_order_util_pitch_s16(AgsFluidInterpolate4thOrderUtil *
     coeffs_3 = interp_coeff_4th_order[row][3];
     
     g_mutex_unlock(&interp_coeff_4th_order_mutex);
-    
-    destination[dsp_i * destination_stride] = (coeffs_0 * start_point
-					       + coeffs_1 * source[dsp_phase_index * source_stride]
-					       + coeffs_2 * source[(dsp_phase_index + 1) * source_stride]
-					       + coeffs_3 * source[(dsp_phase_index + 2) * source_stride]);
 
+    if(dsp_phase_index + 2 < buffer_length){
+      destination[dsp_i * destination_stride] = (coeffs_0 * start_point
+						 + coeffs_1 * source[dsp_phase_index * source_stride]
+						 + coeffs_2 * source[(dsp_phase_index + 1) * source_stride]
+						 + coeffs_3 * source[(dsp_phase_index + 2) * source_stride]);
+    }
+    
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
@@ -1303,11 +1310,14 @@ ags_fluid_interpolate_4th_order_util_pitch_s16(AgsFluidInterpolate4thOrderUtil *
     
     g_mutex_unlock(&interp_coeff_4th_order_mutex);
 
-    destination[dsp_i * destination_stride] = (coeffs_0 * source[(dsp_phase_index - 1) * source_stride]
-					       + coeffs_1 * source[dsp_phase_index * source_stride]
-					       + coeffs_2 * source[(dsp_phase_index + 1) * source_stride]
-					       + coeffs_3 * source[(dsp_phase_index + 2) * source_stride]);
-
+    if(dsp_phase_index - 1 > 0 &&
+       dsp_phase_index + 2 < buffer_length){
+      destination[dsp_i * destination_stride] = (coeffs_0 * source[(dsp_phase_index - 1) * source_stride]
+						 + coeffs_1 * source[dsp_phase_index * source_stride]
+						 + coeffs_2 * source[(dsp_phase_index + 1) * source_stride]
+						 + coeffs_3 * source[(dsp_phase_index + 2) * source_stride]);
+    }
+    
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
@@ -1430,11 +1440,13 @@ ags_fluid_interpolate_4th_order_util_pitch_s24(AgsFluidInterpolate4thOrderUtil *
     
     g_mutex_unlock(&interp_coeff_4th_order_mutex);
     
-    destination[dsp_i * destination_stride] = (coeffs_0 * start_point
-					       + coeffs_1 * source[dsp_phase_index * source_stride]
-					       + coeffs_2 * source[(dsp_phase_index + 1) * source_stride]
-					       + coeffs_3 * source[(dsp_phase_index + 2) * source_stride]);
-
+    if(dsp_phase_index + 2 < buffer_length){
+      destination[dsp_i * destination_stride] = (coeffs_0 * start_point
+						 + coeffs_1 * source[dsp_phase_index * source_stride]
+						 + coeffs_2 * source[(dsp_phase_index + 1) * source_stride]
+						 + coeffs_3 * source[(dsp_phase_index + 2) * source_stride]);
+    }
+    
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
@@ -1470,11 +1482,14 @@ ags_fluid_interpolate_4th_order_util_pitch_s24(AgsFluidInterpolate4thOrderUtil *
     
     g_mutex_unlock(&interp_coeff_4th_order_mutex);
 
-    destination[dsp_i * destination_stride] = (coeffs_0 * source[(dsp_phase_index - 1) * source_stride]
-					       + coeffs_1 * source[dsp_phase_index * source_stride]
-					       + coeffs_2 * source[(dsp_phase_index + 1) * source_stride]
-					       + coeffs_3 * source[(dsp_phase_index + 2) * source_stride]);
-
+    if(dsp_phase_index - 1 > 0 &&
+       dsp_phase_index + 2 < buffer_length){
+      destination[dsp_i * destination_stride] = (coeffs_0 * source[(dsp_phase_index - 1) * source_stride]
+						 + coeffs_1 * source[dsp_phase_index * source_stride]
+						 + coeffs_2 * source[(dsp_phase_index + 1) * source_stride]
+						 + coeffs_3 * source[(dsp_phase_index + 2) * source_stride]);
+    }
+    
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
@@ -1597,11 +1612,13 @@ ags_fluid_interpolate_4th_order_util_pitch_s32(AgsFluidInterpolate4thOrderUtil *
     
     g_mutex_unlock(&interp_coeff_4th_order_mutex);
     
-    destination[dsp_i * destination_stride] = (coeffs_0 * start_point
-					       + coeffs_1 * source[dsp_phase_index * source_stride]
-					       + coeffs_2 * source[(dsp_phase_index + 1) * source_stride]
-					       + coeffs_3 * source[(dsp_phase_index + 2) * source_stride]);
-
+    if(dsp_phase_index + 2 < buffer_length){
+      destination[dsp_i * destination_stride] = (coeffs_0 * start_point
+						 + coeffs_1 * source[dsp_phase_index * source_stride]
+						 + coeffs_2 * source[(dsp_phase_index + 1) * source_stride]
+						 + coeffs_3 * source[(dsp_phase_index + 2) * source_stride]);
+    }
+    
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
@@ -1637,11 +1654,14 @@ ags_fluid_interpolate_4th_order_util_pitch_s32(AgsFluidInterpolate4thOrderUtil *
     
     g_mutex_unlock(&interp_coeff_4th_order_mutex);
 
-    destination[dsp_i * destination_stride] = (coeffs_0 * source[(dsp_phase_index - 1) * source_stride]
-					       + coeffs_1 * source[dsp_phase_index * source_stride]
-					       + coeffs_2 * source[(dsp_phase_index + 1) * source_stride]
-					       + coeffs_3 * source[(dsp_phase_index + 2) * source_stride]);
-
+    if(dsp_phase_index - 1 > 0 &&
+       dsp_phase_index + 2 < buffer_length){
+      destination[dsp_i * destination_stride] = (coeffs_0 * source[(dsp_phase_index - 1) * source_stride]
+						 + coeffs_1 * source[dsp_phase_index * source_stride]
+						 + coeffs_2 * source[(dsp_phase_index + 1) * source_stride]
+						 + coeffs_3 * source[(dsp_phase_index + 2) * source_stride]);
+    }
+    
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
@@ -1764,11 +1784,13 @@ ags_fluid_interpolate_4th_order_util_pitch_s64(AgsFluidInterpolate4thOrderUtil *
     
     g_mutex_unlock(&interp_coeff_4th_order_mutex);
     
-    destination[dsp_i * destination_stride] = (coeffs_0 * start_point
-					       + coeffs_1 * source[dsp_phase_index * source_stride]
-					       + coeffs_2 * source[(dsp_phase_index + 1) * source_stride]
-					       + coeffs_3 * source[(dsp_phase_index + 2) * source_stride]);
-
+    if(dsp_phase_index + 2 < buffer_length){
+      destination[dsp_i * destination_stride] = (coeffs_0 * start_point
+						 + coeffs_1 * source[dsp_phase_index * source_stride]
+						 + coeffs_2 * source[(dsp_phase_index + 1) * source_stride]
+						 + coeffs_3 * source[(dsp_phase_index + 2) * source_stride]);
+    }
+    
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
@@ -1804,11 +1826,14 @@ ags_fluid_interpolate_4th_order_util_pitch_s64(AgsFluidInterpolate4thOrderUtil *
     
     g_mutex_unlock(&interp_coeff_4th_order_mutex);
 
-    destination[dsp_i * destination_stride] = (coeffs_0 * source[(dsp_phase_index - 1) * source_stride]
-					       + coeffs_1 * source[dsp_phase_index * source_stride]
-					       + coeffs_2 * source[(dsp_phase_index + 1) * source_stride]
-					       + coeffs_3 * source[(dsp_phase_index + 2) * source_stride]);
-
+    if(dsp_phase_index - 1 > 0 &&
+       dsp_phase_index + 2 < buffer_length){
+      destination[dsp_i * destination_stride] = (coeffs_0 * source[(dsp_phase_index - 1) * source_stride]
+						 + coeffs_1 * source[dsp_phase_index * source_stride]
+						 + coeffs_2 * source[(dsp_phase_index + 1) * source_stride]
+						 + coeffs_3 * source[(dsp_phase_index + 2) * source_stride]);
+    }
+    
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
@@ -1931,11 +1956,13 @@ ags_fluid_interpolate_4th_order_util_pitch_float(AgsFluidInterpolate4thOrderUtil
     
     g_mutex_unlock(&interp_coeff_4th_order_mutex);
     
-    destination[dsp_i * destination_stride] = (coeffs_0 * start_point
-					       + coeffs_1 * source[dsp_phase_index * source_stride]
-					       + coeffs_2 * source[(dsp_phase_index + 1) * source_stride]
-					       + coeffs_3 * source[(dsp_phase_index + 2) * source_stride]);
-
+    if(dsp_phase_index + 2 < buffer_length){
+      destination[dsp_i * destination_stride] = (coeffs_0 * start_point
+						 + coeffs_1 * source[dsp_phase_index * source_stride]
+						 + coeffs_2 * source[(dsp_phase_index + 1) * source_stride]
+						 + coeffs_3 * source[(dsp_phase_index + 2) * source_stride]);
+    }
+    
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
@@ -1971,11 +1998,14 @@ ags_fluid_interpolate_4th_order_util_pitch_float(AgsFluidInterpolate4thOrderUtil
     
     g_mutex_unlock(&interp_coeff_4th_order_mutex);
 
-    destination[dsp_i * destination_stride] = (coeffs_0 * source[(dsp_phase_index - 1) * source_stride]
-					       + coeffs_1 * source[dsp_phase_index * source_stride]
-					       + coeffs_2 * source[(dsp_phase_index + 1) * source_stride]
-					       + coeffs_3 * source[(dsp_phase_index + 2) * source_stride]);
-
+    if(dsp_phase_index - 1 > 0 &&
+       dsp_phase_index + 2 < buffer_length){
+      destination[dsp_i * destination_stride] = (coeffs_0 * source[(dsp_phase_index - 1) * source_stride]
+						 + coeffs_1 * source[dsp_phase_index * source_stride]
+						 + coeffs_2 * source[(dsp_phase_index + 1) * source_stride]
+						 + coeffs_3 * source[(dsp_phase_index + 2) * source_stride]);
+    }
+    
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
@@ -2098,11 +2128,13 @@ ags_fluid_interpolate_4th_order_util_pitch_double(AgsFluidInterpolate4thOrderUti
     
     g_mutex_unlock(&interp_coeff_4th_order_mutex);
     
-    destination[dsp_i * destination_stride] = (coeffs_0 * start_point
-					       + coeffs_1 * source[dsp_phase_index * source_stride]
-					       + coeffs_2 * source[(dsp_phase_index + 1) * source_stride]
-					       + coeffs_3 * source[(dsp_phase_index + 2) * source_stride]);
-
+    if(dsp_phase_index + 2 < buffer_length){
+      destination[dsp_i * destination_stride] = (coeffs_0 * start_point
+						 + coeffs_1 * source[dsp_phase_index * source_stride]
+						 + coeffs_2 * source[(dsp_phase_index + 1) * source_stride]
+						 + coeffs_3 * source[(dsp_phase_index + 2) * source_stride]);
+    }
+    
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
@@ -2138,11 +2170,14 @@ ags_fluid_interpolate_4th_order_util_pitch_double(AgsFluidInterpolate4thOrderUti
     
     g_mutex_unlock(&interp_coeff_4th_order_mutex);
 
-    destination[dsp_i * destination_stride] = (coeffs_0 * source[(dsp_phase_index - 1) * source_stride]
-					       + coeffs_1 * source[dsp_phase_index * source_stride]
-					       + coeffs_2 * source[(dsp_phase_index + 1) * source_stride]
-					       + coeffs_3 * source[(dsp_phase_index + 2) * source_stride]);
-
+    if(dsp_phase_index - 1 > 0 &&
+       dsp_phase_index + 2 < buffer_length){
+      destination[dsp_i * destination_stride] = (coeffs_0 * source[(dsp_phase_index - 1) * source_stride]
+						 + coeffs_1 * source[dsp_phase_index * source_stride]
+						 + coeffs_2 * source[(dsp_phase_index + 1) * source_stride]
+						 + coeffs_3 * source[(dsp_phase_index + 2) * source_stride]);
+    }
+    
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
@@ -2265,12 +2300,14 @@ ags_fluid_interpolate_4th_order_util_pitch_complex(AgsFluidInterpolate4thOrderUt
     
     g_mutex_unlock(&interp_coeff_4th_order_mutex);
     
-    ags_complex_set(destination + (dsp_i * destination_stride),
-		    (coeffs_0 * start_point
-		     + coeffs_1 * ags_complex_get(source + (dsp_phase_index * source_stride))
-		     + coeffs_2 * ags_complex_get(source + ((dsp_phase_index + 1) * source_stride))
-		     + coeffs_3 * ags_complex_get(source + ((dsp_phase_index + 2) * source_stride))));
-
+    if(dsp_phase_index + 2 < buffer_length){
+      ags_complex_set(destination + (dsp_i * destination_stride),
+		      (coeffs_0 * start_point
+		       + coeffs_1 * ags_complex_get(source + (dsp_phase_index * source_stride))
+		       + coeffs_2 * ags_complex_get(source + ((dsp_phase_index + 1) * source_stride))
+		       + coeffs_3 * ags_complex_get(source + ((dsp_phase_index + 2) * source_stride))));
+    }
+    
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
@@ -2306,12 +2343,15 @@ ags_fluid_interpolate_4th_order_util_pitch_complex(AgsFluidInterpolate4thOrderUt
     
     g_mutex_unlock(&interp_coeff_4th_order_mutex);
 
-    ags_complex_set(destination + (dsp_i * destination_stride),
-		    (coeffs_0 * ags_complex_get(source + ((dsp_phase_index - 1) * source_stride))
-		     + coeffs_1 * ags_complex_get(source + (dsp_phase_index * source_stride))
-		     + coeffs_2 * ags_complex_get(source + ((dsp_phase_index + 1) * source_stride))
-		     + coeffs_3 * ags_complex_get(source + ((dsp_phase_index + 2) * source_stride))));
-		    
+    if(dsp_phase_index - 1 > 0 &&
+       dsp_phase_index + 2 < buffer_length){
+      ags_complex_set(destination + (dsp_i * destination_stride),
+		      (coeffs_0 * ags_complex_get(source + ((dsp_phase_index - 1) * source_stride))
+		       + coeffs_1 * ags_complex_get(source + (dsp_phase_index * source_stride))
+		       + coeffs_2 * ags_complex_get(source + ((dsp_phase_index + 1) * source_stride))
+		       + coeffs_3 * ags_complex_get(source + ((dsp_phase_index + 2) * source_stride))));
+    }
+    
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
