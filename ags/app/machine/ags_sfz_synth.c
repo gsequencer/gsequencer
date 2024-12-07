@@ -189,7 +189,7 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
 
   gint position;
 
-  const gchar* pitch_type_strv[] = {
+  gchar* pitch_type_strv[] = {
     "fluid-interpolate-none",
     "fluid-interpolate-linear",
     "fluid-interpolate-4th-order",
@@ -575,7 +575,7 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   gtk_box_append(sfz_synth_pitch_type_hbox,
 		 (GtkWidget *) label);
 
-  sfz_synth->synth_pitch_type = (GtkDropDown *) gtk_drop_down_new_from_strings(pitch_type_strv);
+  sfz_synth->synth_pitch_type = (GtkDropDown *) gtk_drop_down_new_from_strings((const gchar * const *) pitch_type_strv);
 
   gtk_drop_down_set_selected(sfz_synth->synth_pitch_type,
 			     2);

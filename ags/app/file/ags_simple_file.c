@@ -4803,7 +4803,7 @@ ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode 
     guint selected;
     guint i;
     
-    static const gchar* pitch_type_strv[] = {
+    gchar* pitch_type_strv[] = {
       "fluid-interpolate-none",
       "fluid-interpolate-linear",
       "fluid-interpolate-4th-order",
@@ -5696,7 +5696,7 @@ ags_simple_file_read_stargazer_synth_launch(AgsSimpleFile *simple_file, xmlNode 
     guint selected;
     guint i;
     
-    static const gchar* pitch_type_strv[] = {
+    gchar* pitch_type_strv[] = {
       "fluid-interpolate-none",
       "fluid-interpolate-linear",
       "fluid-interpolate-4th-order",
@@ -6410,7 +6410,7 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     guint selected;
     guint i;
     
-    static const gchar* pitch_type_strv[] = {
+    gchar* pitch_type_strv[] = {
       "fluid-interpolate-none",
       "fluid-interpolate-linear",
       "fluid-interpolate-4th-order",
@@ -14579,7 +14579,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
   }else if(AGS_IS_HYBRID_SYNTH(machine)){
     AgsHybridSynth *hybrid_synth;
 
-    static const gchar* pitch_type_strv[] = {
+    gchar* pitch_type_strv[] = {
       "fluid-interpolate-none",
       "fluid-interpolate-linear",
       "fluid-interpolate-4th-order",
@@ -14994,7 +14994,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
   }else if(AGS_IS_HYBRID_FM_SYNTH(machine)){
     AgsHybridFMSynth *hybrid_fm_synth;
     
-    static const gchar* pitch_type_strv[] = {
+    gchar* pitch_type_strv[] = {
       "fluid-interpolate-none",
       "fluid-interpolate-linear",
       "fluid-interpolate-4th-order",
@@ -15390,7 +15390,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
   }else if(AGS_IS_STARGAZER_SYNTH(machine)){
     AgsStargazerSynth *stargazer_synth;
 
-    static const gchar* pitch_type_strv[] = {
+    gchar* pitch_type_strv[] = {
       "fluid-interpolate-none",
       "fluid-interpolate-linear",
       "fluid-interpolate-4th-order",
@@ -16090,7 +16090,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
   }else if(AGS_IS_SFZ_SYNTH(machine)){
     AgsSFZSynth *sfz_synth;
     
-    static const gchar* pitch_type_strv[] = {
+    gchar* pitch_type_strv[] = {
       "fluid-interpolate-none",
       "fluid-interpolate-linear",
       "fluid-interpolate-4th-order",
@@ -16538,7 +16538,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 
     gint bank, program;
     
-    static const gchar* pitch_type_strv[] = {
+    gchar* pitch_type_strv[] = {
       "fluid-interpolate-none",
       "fluid-interpolate-linear",
       "fluid-interpolate-4th-order",

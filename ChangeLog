@@ -1,3 +1,8 @@
+ags (7.4.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* removed static const modifiers from string vectors
+
 ags (7.4.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
