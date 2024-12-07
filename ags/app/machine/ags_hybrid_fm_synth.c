@@ -175,7 +175,7 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
   gint position;
   gdouble gui_scale_factor;
 
-  static const gchar* pitch_type_strv[] = {
+  gchar* pitch_type_strv[] = {
     "fluid-interpolate-none",
     "fluid-interpolate-linear",
     "fluid-interpolate-4th-order",
@@ -1308,7 +1308,7 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
   gtk_box_append(pitch_type_hbox,
 		 (GtkWidget *) label);
 
-  hybrid_fm_synth->pitch_type = (GtkDropDown *) gtk_drop_down_new_from_strings(pitch_type_strv);
+  hybrid_fm_synth->pitch_type = (GtkDropDown *) gtk_drop_down_new_from_strings((const gchar * const *) pitch_type_strv);
 
   gtk_drop_down_set_selected(hybrid_fm_synth->pitch_type,
 			     2);
