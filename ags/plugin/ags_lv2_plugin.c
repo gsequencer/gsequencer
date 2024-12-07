@@ -839,11 +839,11 @@ ags_lv2_plugin_finalize(GObject *gobject)
     guint i;
 
     for(i = 0; lv2_plugin->feature[i] != NULL; i++){
-      free(lv2_plugin->feature[i]->data);
-      free(lv2_plugin->feature[i]);
+      g_free(lv2_plugin->feature[i]->data);
+      g_free(lv2_plugin->feature[i]);
     }
     
-    free(lv2_plugin->feature);
+    g_free(lv2_plugin->feature);
   }
 
   if(lv2_plugin->preset != NULL){
@@ -1009,14 +1009,14 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     total_feature = 8;
     nth = 0;  
 
-    feature = (LV2_Feature **) malloc(total_feature * sizeof(LV2_Feature *));
+    feature = (LV2_Feature **) g_malloc(total_feature * sizeof(LV2_Feature *));
   
     /* URI map feature */  
-    uri_map_feature = (LV2_URI_Map_Feature *) malloc(sizeof(LV2_URI_Map_Feature));
+    uri_map_feature = (LV2_URI_Map_Feature *) g_malloc(sizeof(LV2_URI_Map_Feature));
     uri_map_feature->callback_data = NULL;
     uri_map_feature->uri_to_id = (uint32_t (*)(LV2_URI_Map_Callback_Data, const char *, const char *)) ags_lv2_uri_map_manager_uri_to_id;
   
-    feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+    feature[nth] = (LV2_Feature *) g_malloc(sizeof(LV2_Feature));
     feature[nth]->URI = LV2_URI_MAP_URI;
     feature[nth]->data = uri_map_feature;
 
@@ -1026,11 +1026,11 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     if(ags_lv2_plugin_test_flags(lv2_plugin, AGS_LV2_PLUGIN_NEEDS_WORKER)){
       worker_handle = ags_lv2_worker_manager_pull_worker(ags_lv2_worker_manager_get_instance());
   
-      worker_schedule = (LV2_Worker_Schedule *) malloc(sizeof(LV2_Worker_Schedule));
+      worker_schedule = (LV2_Worker_Schedule *) g_malloc(sizeof(LV2_Worker_Schedule));
       worker_schedule->handle = worker_handle;
       worker_schedule->schedule_work = ags_lv2_worker_schedule_work;
   
-      feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+      feature[nth] = (LV2_Feature *) g_malloc(sizeof(LV2_Feature));
       feature[nth]->URI = LV2_WORKER__schedule;
       feature[nth]->data = worker_schedule;
 
@@ -1040,13 +1040,13 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     /* log feature */
 #if 0
     {
-      log_feature = (LV2_Log_Log *) malloc(sizeof(LV2_Log_Log));
+      log_feature = (LV2_Log_Log *) g_malloc(sizeof(LV2_Log_Log));
   
       log_feature->handle = NULL;
       log_feature->printf = ags_lv2_log_manager_printf;
       log_feature->vprintf = ags_lv2_log_manager_vprintf;
 
-      feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+      feature[nth] = (LV2_Feature *) g_malloc(sizeof(LV2_Feature));
       feature[nth]->URI = LV2_LOG__log;
       feature[nth]->data = log_feature;
 
@@ -1055,46 +1055,46 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
 #endif
     
     /* event feature */
-    event_feature = (LV2_Event_Feature *) malloc(sizeof(LV2_Event_Feature));
+    event_feature = (LV2_Event_Feature *) g_malloc(sizeof(LV2_Event_Feature));
   
     event_feature->callback_data = NULL;
     event_feature->lv2_event_ref = ags_lv2_event_manager_lv2_event_ref;
     event_feature->lv2_event_unref = ags_lv2_event_manager_lv2_event_unref;
   
-    feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+    feature[nth] = (LV2_Feature *) g_malloc(sizeof(LV2_Feature));
     feature[nth]->URI = LV2_EVENT_URI;
     feature[nth]->data = event_feature;
 
     nth++;
     
     /* URID map feature */
-    urid_map = (LV2_URID_Map *) malloc(sizeof(LV2_URID_Map));
+    urid_map = (LV2_URID_Map *) g_malloc(sizeof(LV2_URID_Map));
     urid_map->handle = NULL;
     urid_map->map = (LV2_URID (*)(LV2_URID_Map_Handle, const char *)) ags_lv2_urid_manager_map;
   
-    feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+    feature[nth] = (LV2_Feature *) g_malloc(sizeof(LV2_Feature));
     feature[nth]->URI = LV2_URID_MAP_URI;
     feature[nth]->data = urid_map;
 
     nth++;
   
     /* URID unmap feature */
-    urid_unmap = (LV2_URID_Unmap *) malloc(sizeof(LV2_URID_Unmap));
+    urid_unmap = (LV2_URID_Unmap *) g_malloc(sizeof(LV2_URID_Unmap));
     urid_unmap->handle = NULL;
     urid_unmap->unmap = ags_lv2_urid_manager_unmap;
   
-    feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+    feature[nth] = (LV2_Feature *) g_malloc(sizeof(LV2_Feature));
     feature[nth]->URI = LV2_URID_UNMAP_URI;
     feature[nth]->data = urid_unmap;
 
     nth++;
 
     /* Options interface */
-    options_interface = (LV2_Options_Interface *) malloc(sizeof(LV2_Options_Interface));
+    options_interface = (LV2_Options_Interface *) g_malloc(sizeof(LV2_Options_Interface));
     options_interface->set = (uint32_t (*)(LV2_Handle, const LV2_Options_Option *)) ags_lv2_option_manager_lv2_options_set;
     options_interface->get = ags_lv2_option_manager_lv2_options_get;
   
-    feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+    feature[nth] = (LV2_Feature *) g_malloc(sizeof(LV2_Feature));
     feature[nth]->URI = LV2_OPTIONS__interface;
     feature[nth]->data = options_interface;
 
@@ -1103,7 +1103,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     /* Options options */
     options_feature_position = nth;
     
-    feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+    feature[nth] = (LV2_Feature *) g_malloc(sizeof(LV2_Feature));
     feature[nth]->URI = LV2_OPTIONS__options;
     feature[nth]->data = NULL;
 
@@ -1161,7 +1161,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
   
   if(initial_call){
     /* some options */
-    options = (LV2_Options_Option *) malloc(7 * sizeof(LV2_Options_Option));
+    options = (LV2_Options_Option *) g_malloc(7 * sizeof(LV2_Options_Option));
 
     /* samplerate */
     options[0].context = LV2_OPTIONS_INSTANCE;
@@ -1170,7 +1170,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     options[0].key = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(), 
 							    LV2_PARAMETERS__sampleRate);
 
-    ptr_samplerate = (float *) malloc(sizeof(float));
+    ptr_samplerate = (float *) g_malloc(sizeof(float));
     ptr_samplerate[0] = conf_samplerate;
   
     options[0].size = sizeof(float);
@@ -1186,7 +1186,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     options[1].key = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
 							    LV2_BUF_SIZE__minBlockLength);
 
-    ptr_buffer_size = (float *) malloc(sizeof(float));
+    ptr_buffer_size = (float *) g_malloc(sizeof(float));
     ptr_buffer_size[0] = conf_buffer_size;
   
     options[1].size = sizeof(float);
@@ -1202,7 +1202,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     options[2].key = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
 							    LV2_BUF_SIZE__maxBlockLength);
 
-    ptr_buffer_size = (float *) malloc(sizeof(float));
+    ptr_buffer_size = (float *) g_malloc(sizeof(float));
     ptr_buffer_size[0] = conf_buffer_size;
 
     options[2].size = sizeof(float);
@@ -1218,7 +1218,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     options[3].key = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
 							    LV2_BUF_SIZE__boundedBlockLength);
 
-    ptr_buffer_size = (float *) malloc(sizeof(float));
+    ptr_buffer_size = (float *) g_malloc(sizeof(float));
     ptr_buffer_size[0] = conf_buffer_size;
 
     options[3].size = sizeof(float);
@@ -1234,7 +1234,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     options[4].key = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
 							    LV2_BUF_SIZE__fixedBlockLength);
 
-    ptr_buffer_size = (float *) malloc(sizeof(float));
+    ptr_buffer_size = (float *) g_malloc(sizeof(float));
     ptr_buffer_size[0] = conf_buffer_size;
 
     options[4].size = sizeof(float);
@@ -1266,7 +1266,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
 
   if(instantiate != NULL){
     /* alloc handle */
-    lv2_handle = (LV2_Handle *) malloc(sizeof(LV2_Handle));
+    lv2_handle = (LV2_Handle *) g_malloc(sizeof(LV2_Handle));
 
     lv2_handle[0] = instantiate(plugin_descriptor,
 				rate,
@@ -1542,9 +1542,9 @@ ags_lv2_plugin_event_buffer_alloc(guint buffer_size)
     padded_buffer_size = buffer_size;
   }
     
-  event_buffer = (LV2_Event_Buffer *) malloc(sizeof(LV2_Event_Buffer));
+  event_buffer = (LV2_Event_Buffer *) g_malloc(sizeof(LV2_Event_Buffer));
 
-  data = (void *) malloc(sizeof(LV2_Event) + padded_buffer_size * sizeof(uint8_t));
+  data = (void *) g_malloc(sizeof(LV2_Event) + padded_buffer_size * sizeof(uint8_t));
   memset(data, 0, sizeof(LV2_Event) + padded_buffer_size * sizeof(uint8_t));
   event_buffer->data = data;
 
@@ -1574,7 +1574,7 @@ ags_lv2_plugin_event_buffer_free(gpointer event_buffer)
     return;
   }
 
-  free(event_buffer);
+  g_free(event_buffer);
 }
 
 /**
@@ -1605,8 +1605,8 @@ ags_lv2_plugin_event_buffer_realloc_data(LV2_Event_Buffer *event_buffer,
   }
 
   data = event_buffer->data;
-  data = (void *) realloc(data,
-			  sizeof(LV2_Event) + padded_buffer_size * sizeof(uint8_t));
+  data = (void *) g_realloc(data,
+			    sizeof(LV2_Event) + padded_buffer_size * sizeof(uint8_t));
 
   event_buffer->data = data;
 }
@@ -1634,7 +1634,7 @@ ags_lv2_plugin_event_buffer_concat(LV2_Event_Buffer *event_buffer, ...)
 
   guint i;
 
-  buffer = (LV2_Event_Buffer *) malloc(sizeof(LV2_Event_Buffer));  
+  buffer = (LV2_Event_Buffer *) g_malloc(sizeof(LV2_Event_Buffer));  
   memcpy(buffer, event_buffer, sizeof(LV2_Event_Buffer));
   
   va_start(ap, event_buffer);
@@ -1647,8 +1647,8 @@ ags_lv2_plugin_event_buffer_concat(LV2_Event_Buffer *event_buffer, ...)
       break;
     }
     
-    buffer = (LV2_Event_Buffer *) realloc(buffer,
-					  (i + 1) * sizeof(LV2_Event_Buffer));
+    buffer = (LV2_Event_Buffer *) g_realloc(buffer,
+					    (i + 1) * sizeof(LV2_Event_Buffer));
     offset = buffer;
     offset += (i * sizeof(LV2_Event_Buffer));
     memcpy(offset, current, sizeof(LV2_Event_Buffer));
@@ -1867,8 +1867,12 @@ ags_lv2_plugin_alloc_atom_sequence(guint sequence_size)
   LV2_Atom_Sequence *aseq;
   LV2_Atom_Event *aev;
 
-  aseq = (LV2_Atom_Sequence *) malloc(sizeof(LV2_Atom_Sequence) + sequence_size);
-  memset(aseq, 0, sizeof(LV2_Atom_Sequence) + sequence_size);
+  guint atom_sequence_size;
+  
+  atom_sequence_size = sizeof(LV2_Atom_Sequence);
+  
+  aseq = (LV2_Atom_Sequence *) g_malloc((atom_sequence_size + sequence_size) * sizeof(guchar));
+  memset(aseq, 0, (atom_sequence_size + sequence_size) * sizeof(guchar));
   
   aseq->atom.size = sizeof(LV2_Atom_Sequence_Body);
   aseq->atom.type = ags_lv2_urid_manager_map(NULL,
@@ -1900,7 +1904,7 @@ ags_lv2_plugin_atom_sequence_free(gpointer atom_sequence)
     return;
   }
   
-  free(atom_sequence);
+  g_free(atom_sequence);
 }
 
 /**
