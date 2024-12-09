@@ -1871,8 +1871,8 @@ ags_lv2_plugin_alloc_atom_sequence(guint sequence_size)
   
   atom_sequence_size = sizeof(LV2_Atom_Sequence);
   
-  aseq = (LV2_Atom_Sequence *) g_malloc((atom_sequence_size + sequence_size) * sizeof(guchar));
-  memset(aseq, 0, (atom_sequence_size + sequence_size) * sizeof(guchar));
+  aseq = (LV2_Atom_Sequence *) g_malloc((atom_sequence_size + sequence_size) * sizeof(uint8_t));
+  memset(aseq, 0, (atom_sequence_size + sequence_size) * sizeof(uint8_t));
   
   aseq->atom.size = sizeof(LV2_Atom_Sequence_Body);
   aseq->atom.type = ags_lv2_urid_manager_map(NULL,
@@ -1882,7 +1882,10 @@ ags_lv2_plugin_alloc_atom_sequence(guint sequence_size)
 					     LV2_MIDI__MidiEvent);
   aseq->body.pad = 0;
 
-  aev = (LV2_Atom_Event*) ((char*) LV2_ATOM_CONTENTS(LV2_Atom_Sequence, aseq));
+  aev = (LV2_Atom_Event *) ((uint8_t *) LV2_ATOM_CONTENTS(LV2_Atom_Sequence, aseq));
+
+  aev->time.frames = 0;
+  
   aev->body.size = 0;  
   aev->body.type = 0;
   
@@ -1929,6 +1932,7 @@ ags_lv2_plugin_atom_sequence_append_midi(gpointer atom_sequence,
   AgsLv2UriMapManager *uri_map_manager;
   
   LV2_Atom_Sequence *aseq;
+  
   LV2_Atom_Event *start_aev, *aev;
   
   AgsMidiSmfUtil midi_smf_util;
@@ -1950,20 +1954,19 @@ ags_lv2_plugin_atom_sequence_append_midi(gpointer atom_sequence,
 
   aseq = (LV2_Atom_Sequence *) atom_sequence;
   
-  /* find offset */
+  /* find last */
   aev =
-    start_aev = (LV2_Atom_Event*) ((char*) LV2_ATOM_CONTENTS(LV2_Atom_Sequence, aseq));
+    start_aev = lv2_atom_sequence_begin(&(aseq->body)); // (LV2_Atom_Event*) ((char*) LV2_ATOM_CONTENTS(LV2_Atom_Sequence, aseq));
 
   k = 0;
-  
-  while((guchar *) aev < (((guchar *) aseq) + sizeof(LV2_Atom_Sequence)) + sequence_size){
-    if(aev->body.size <= 0){
-      break;
-    }
-    
-    size = aev->body.size;
-    aev = (LV2_Atom_Event *) ((guchar *) aev) + ((size + 7U) & (~7U));
 
+  //NOTE:JK: might be to replace with aev = lv2_atom_sequence_end(aseq->body, (uint32_t) aseq->atom.size);
+  while(!lv2_atom_sequence_is_end(&(aseq->body),
+				  (uint32_t) aseq->atom.size, 
+				  aev)){
+    /* iterate */
+    aev = lv2_atom_sequence_next(aev);
+    
     k++;
   }
 
@@ -1973,10 +1976,10 @@ ags_lv2_plugin_atom_sequence_append_midi(gpointer atom_sequence,
   success = FALSE;
 
   for(i = 0; i < event_count; i++){
-    if((guchar *) aev >= (((guchar *) aseq) + sizeof(LV2_Atom_Sequence)) + sequence_size){
+    if((uint8_t *) aev + (sizeof(LV2_Atom_Event) + 8) >= (((uint8_t *) aseq) + sizeof(LV2_Atom_Sequence)) + sequence_size){
       success = FALSE;
-      
-      return(success);
+
+      break;
     }
     
     /* decode midi sequencer event */    
@@ -1992,9 +1995,10 @@ ags_lv2_plugin_atom_sequence_append_midi(gpointer atom_sequence,
 
       memcpy(LV2_ATOM_BODY(&(aev->body)), midi_buffer, count * sizeof(char));
 
-      aseq->atom.size += (((count) + 7U) & (~7U));
-      
-      aev = (LV2_Atom_Event *) ((guchar *) aev) + (((count) + 7U) & (~7U));
+      aseq->atom.size += (sizeof(LV2_Atom_Event) + lv2_atom_pad_size(count));
+
+      /* iterate */
+      aev = lv2_atom_sequence_next(aev);
 
       if(i + 1 >= event_count){
 	success = TRUE;
@@ -2010,7 +2014,7 @@ ags_lv2_plugin_atom_sequence_append_midi(gpointer atom_sequence,
   //  g_message("aseq = %d ; aev = %d; sequence_size = %d", aseq, aev, sequence_size);
   
   if(success &&
-     (guchar *) aev < (((guchar *) aseq) + sizeof(LV2_Atom_Sequence)) + sequence_size){
+     (uint8_t *) aev < (((uint8_t *) aseq) + sizeof(LV2_Atom_Sequence)) + sequence_size){
     aev->body.size = 0;  
     aev->body.type = 0;
   }
@@ -2045,6 +2049,7 @@ ags_lv2_plugin_atom_sequence_remove_midi(gpointer atom_sequence,
   guint count, size, current_size;
   guint padded_size;
   guint i;
+  guint k;
   gboolean success;
 
   if(atom_sequence == NULL){
@@ -2053,28 +2058,32 @@ ags_lv2_plugin_atom_sequence_remove_midi(gpointer atom_sequence,
 
   aseq = (LV2_Atom_Sequence *) atom_sequence;
   
-  /* find offset */
+  /* find offset and last */
   aev =
-    start_aev = (LV2_Atom_Event*) ((char*) LV2_ATOM_CONTENTS(LV2_Atom_Sequence, aseq));
+    start_aev = lv2_atom_sequence_begin(&(aseq->body)); // (LV2_Atom_Event*) ((char*) LV2_ATOM_CONTENTS(LV2_Atom_Sequence, aseq));
+
+  k = 0;
 
   success = FALSE;
-  
-  while((guchar *) aev < (((guchar *) aseq) + sizeof(LV2_Atom_Sequence)) + sequence_size){
-    if(aev->body.size <= 0){
-      break;
-    }
 
+  while(!lv2_atom_sequence_is_end(&(aseq->body),
+				  (uint32_t) aseq->atom.size,
+				  aev)){
     if(!success &&
-       (0x7f & ((unsigned char *) LV2_ATOM_BODY(&(aev->body)))[1]) == (0x7f & note)){
+       (0x7f & ((guchar *) LV2_ATOM_BODY(&(aev->body)))[1]) == (0x7f & note)){
       current_aev = aev;
       current_size = aev->body.size;
       
       success = TRUE;
     }
 
-    size = aev->body.size;
-    aev = (LV2_Atom_Event *) ((guchar *) aev) + ((size + 7U) & (~7U));
+    /* iterate */
+    aev = lv2_atom_sequence_next(aev);
+    
+    k++;
   }
+
+  //  g_message("skipped %d", k);
 
   end_aev = aev;
   
@@ -2084,28 +2093,28 @@ ags_lv2_plugin_atom_sequence_remove_midi(gpointer atom_sequence,
     current_aev->body.size = 0;  
     current_aev->body.type = 0;
 
-    if(((guchar *) end_aev - (guchar *) current_aev) - ((current_size + 7U) & (~7U)) >= 0 &&
-       ((guchar *) end_aev - (guchar *) current_aev) - ((current_size + 7U) & (~7U)) < sequence_size){
+    if(((uint8_t *) end_aev - (uint8_t *) current_aev) - (sizeof(LV2_Atom_Event) + lv2_atom_pad_size(current_size)) >= 0 &&
+       ((uint8_t *) end_aev - (uint8_t *) current_aev) - (sizeof(LV2_Atom_Event) + lv2_atom_pad_size(current_size)) < sequence_size){
 #if 0
       g_message("current size %d", ((current_size + 7U) & (~7U)));
-      g_message("current index %d", (guchar *) current_aev - (guchar *) start_aev);
+      g_message("current index %d", (uint8_t *) current_aev - (uint8_t *) start_aev);
       g_message("sequence size %d", sequence_size);
-      g_message("count %d", ((guchar *) end_aev - (guchar *) current_aev) - ((current_size + 7U) & (~7U)));
+      g_message("count %d", ((uint8_t *) end_aev - (uint8_t *) current_aev) - (sizeof(LV2_Atom_Event) + lv2_atom_pad_size(current_size)));
 #endif
       
       memmove(current_aev,
-	      current_aev + ((current_size + 7U) & (~7U)),
-	      ((guchar *) end_aev - (guchar *) current_aev) - ((current_size + 7U) & (~7U)));
+	      current_aev + (sizeof(LV2_Atom_Event) + lv2_atom_pad_size(current_size)),
+	      ((uint8_t *) end_aev - (uint8_t *) current_aev) - (sizeof(LV2_Atom_Event) + lv2_atom_pad_size(current_size)));
     }
 
-    if(((guchar *) end_aev) - ((current_size + 7U) & (~7U)) >= (guchar *) start_aev &&
-       ((guchar *) end_aev) - ((current_size + 7U) & (~7U)) < ((guchar *) aseq + sizeof(LV2_Atom_Sequence)) + sequence_size){
-      memset(end_aev - ((current_size + 7U) & (~7U)),
+    if(((uint8_t *) end_aev) - (sizeof(LV2_Atom_Event) + lv2_atom_pad_size(current_size)) >= (uint8_t *) start_aev &&
+       ((uint8_t *) end_aev) - (sizeof(LV2_Atom_Event) + lv2_atom_pad_size(current_size)) < start_aev + sequence_size){
+      memset(end_aev - (sizeof(LV2_Atom_Event) + lv2_atom_pad_size(current_size)),
 	     0,
-	     ((current_size + 7U) & (~7U)));
+	     (sizeof(LV2_Atom_Event) + lv2_atom_pad_size(current_size)));
     }
     
-    aseq->atom.size -= ((current_size + 7U) & (~7U));    
+    aseq->atom.size -= (sizeof(LV2_Atom_Event) + lv2_atom_pad_size(current_size));
   }
   
   return(success);

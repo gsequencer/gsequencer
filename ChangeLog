@@ -1,3 +1,9 @@
+ags (7.4.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags_lv2_plugin_atom_sequence_append_midi()
+	* improved ags_lv2_plugin_atom_sequence_remove_midi()
+
 ags (7.4.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
