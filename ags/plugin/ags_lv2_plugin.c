@@ -1956,11 +1956,13 @@ ags_lv2_plugin_atom_sequence_append_midi(gpointer atom_sequence,
   
   /* find last */
   aev =
-    start_aev = lv2_atom_sequence_begin(&(aseq->body)); // (LV2_Atom_Event*) ((char*) LV2_ATOM_CONTENTS(LV2_Atom_Sequence, aseq));
+    start_aev = lv2_atom_sequence_begin(&(aseq->body));
 
   k = 0;
 
-  //NOTE:JK: might be to replace with aev = lv2_atom_sequence_end(aseq->body, (uint32_t) aseq->atom.size);
+  //NOTE:JK: might be to replace with below
+  // aev = lv2_atom_sequence_end(aseq->body, (uint32_t) aseq->atom.size);
+  
   while(!lv2_atom_sequence_is_end(&(aseq->body),
 				  (uint32_t) aseq->atom.size, 
 				  aev)){
@@ -1993,8 +1995,12 @@ ags_lv2_plugin_atom_sequence_append_midi(gpointer atom_sequence,
       aev->body.type = ags_lv2_urid_manager_map(NULL,
 						LV2_MIDI__MidiEvent);
 
-      memcpy(LV2_ATOM_BODY(&(aev->body)), midi_buffer, count * sizeof(char));
+      memcpy((uint8_t *) LV2_ATOM_BODY(&(aev->body)), midi_buffer, count * sizeof(uint8_t));
 
+      if(count < lv2_atom_pad_size(count)){
+	memset((uint8_t *) LV2_ATOM_BODY(&(aev->body)) + count, 0, lv2_atom_pad_size(count) - count);
+      }
+      
       aseq->atom.size += (sizeof(LV2_Atom_Event) + lv2_atom_pad_size(count));
 
       /* iterate */
@@ -2060,7 +2066,7 @@ ags_lv2_plugin_atom_sequence_remove_midi(gpointer atom_sequence,
   
   /* find offset and last */
   aev =
-    start_aev = lv2_atom_sequence_begin(&(aseq->body)); // (LV2_Atom_Event*) ((char*) LV2_ATOM_CONTENTS(LV2_Atom_Sequence, aseq));
+    start_aev = lv2_atom_sequence_begin(&(aseq->body));
 
   k = 0;
 
