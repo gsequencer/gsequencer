@@ -1404,7 +1404,7 @@ ags_fx_lv2_audio_unset_flags(AgsFxLv2Audio *fx_lv2_audio, guint flags)
 }
 
 /**
- * ags_fx_lv2_audio_unset_flags:
+ * ags_fx_lv2_audio_forge_midi_message:
  * @fx_lv2_audio: the #AgsFxLv2Audio
  * @channel_data: the #AgsFxLv2AudioChannelData-struct
  * @offset: the offset
