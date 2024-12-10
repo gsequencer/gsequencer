@@ -53,7 +53,7 @@ G_BEGIN_DECLS
 #define AGS_FX_LV2_AUDIO_INPUT_DATA(ptr) ((AgsFxLv2AudioInputData *) (ptr))
 #define AGS_FX_LV2_AUDIO_INPUT_DATA_GET_STRCT_MUTEX(ptr) (&(((AgsFxLv2AudioInputData *)(ptr))->strct_mutex))
 
-#define AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT (8 * 256)
+#define AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT (4096)
 
 typedef struct _AgsFxLv2Audio AgsFxLv2Audio;
 typedef struct _AgsFxLv2AudioScopeData AgsFxLv2AudioScopeData;
@@ -123,8 +123,29 @@ struct _AgsFxLv2AudioChannelData
   gpointer midiin_event_port;
   gpointer midiout_event_port;
   
-  gpointer midiin_atom_port;
-  gpointer midiout_atom_port;
+  LV2_Atom_Forge forge;
+  LV2_Atom_Forge_Frame frame;
+
+  LV2_URID_Map *urid_map;
+  
+  LV2_URID atom_Blank;
+  LV2_URID atom_Object;
+  LV2_URID atom_Sequence;
+  LV2_URID midi_MidiEvent;
+  
+  LV2_URID atom_Float;
+  LV2_URID atom_Int;
+  LV2_URID atom_Long;
+  LV2_URID time_Position;
+  LV2_URID time_bar;
+  LV2_URID time_barBeat;
+  LV2_URID time_beatUnit;
+  LV2_URID time_beatsPerBar;
+  LV2_URID time_beatsPerMinute;
+  LV2_URID time_speed;
+  
+  LV2_Atom_Sequence *midiin_atom_port;
+  LV2_Atom_Sequence *midiout_atom_port;
   
   LV2_Handle *lv2_handle;
 
@@ -168,6 +189,13 @@ void ags_fx_lv2_audio_input_data_free(AgsFxLv2AudioInputData *input_data);
 gboolean ags_fx_lv2_audio_test_flags(AgsFxLv2Audio *fx_lv2_audio, AgsFxLv2AudioFlags flags);
 void ags_fx_lv2_audio_set_flags(AgsFxLv2Audio *fx_lv2_audio, AgsFxLv2AudioFlags flags);
 void ags_fx_lv2_audio_unset_flags(AgsFxLv2Audio *fx_lv2_audio, AgsFxLv2AudioFlags flags);
+
+/* lv2 specific */
+void ags_fx_lv2_audio_forge_midi_message(AgsFxLv2Audio *fx_lv2_audio,
+					 AgsFxLv2AudioChannelData *channel_data,
+					 uint32_t offset,
+					 const uint8_t* const midi_buffer,
+					 uint32_t midi_buffer_size);
 
 /* load/unload */
 void ags_fx_lv2_audio_load_plugin(AgsFxLv2Audio *fx_lv2_audio);
