@@ -31,8 +31,6 @@
 
 #include <ags/audio/fx/ags_fx_lv2_channel.h>
 
-#include <ags/audio/fx/atom_sink.h>
-
 #include <lv2/atom/atom.h>
 #include <lv2/atom/forge.h>
 #include <lv2/core/lv2.h>
@@ -1053,49 +1051,50 @@ ags_fx_lv2_audio_channel_data_alloc()
   channel_data->midiin_event_port = NULL;
   channel_data->midiout_event_port = NULL;
 
-  //  channel_data->frame = ;
+  channel_data->forge_buffer = (uint8_t *) calloc(1, sizeof(LV2_Atom) + sizeof(LV2_Atom_Sequence_Body) + AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT);
+  channel_data->forge_buffer_size = sizeof(LV2_Atom) + sizeof(LV2_Atom_Sequence_Body) + AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT;
+	
+  channel_data->atom_Blank = (uint32_t) ags_lv2_urid_manager_map(NULL, 
+								 LV2_ATOM__Blank);
   
-  channel_data->atom_Blank = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(), 
-								    LV2_ATOM__Blank);
+  channel_data->atom_Object = (uint32_t) ags_lv2_urid_manager_map(NULL, 
+								  LV2_ATOM__Object);
   
-  channel_data->atom_Object = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(), 
-								     LV2_ATOM__Object);
+  channel_data->atom_Sequence = (uint32_t) ags_lv2_urid_manager_map(NULL, 
+								    LV2_ATOM__Sequence);
   
-  channel_data->atom_Sequence = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(), 
-								       LV2_ATOM__Sequence);
+  channel_data->midi_MidiEvent = (uint32_t) ags_lv2_urid_manager_map(NULL, 
+								     LV2_MIDI__MidiEvent);
   
-  channel_data->midi_MidiEvent = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(), 
-									LV2_MIDI__MidiEvent);
+  channel_data->atom_Float = (uint32_t) ags_lv2_urid_manager_map(NULL, 
+								 LV2_ATOM__Float);
   
-  channel_data->atom_Float = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(), 
-								    LV2_ATOM__Float);
+  channel_data->atom_Int = (uint32_t) ags_lv2_urid_manager_map(NULL, 
+							       LV2_ATOM__Int);
   
-  channel_data->atom_Int = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(), 
-								  LV2_ATOM__Int);
+  channel_data->atom_Long = (uint32_t) ags_lv2_urid_manager_map(NULL, 
+								LV2_ATOM__Long);
   
-  channel_data->atom_Long = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(), 
-								   LV2_ATOM__Long);
+  channel_data->time_Position = (uint32_t) ags_lv2_urid_manager_map(NULL, 
+								    LV2_TIME__Position);
   
-  channel_data->time_Position = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(), 
-								       LV2_TIME__Position);
+  channel_data->time_bar = (uint32_t) ags_lv2_urid_manager_map(NULL, 
+							       LV2_TIME__bar);
   
-  channel_data->time_bar = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(), 
-								  LV2_TIME__bar);
+  channel_data->time_barBeat = (uint32_t) ags_lv2_urid_manager_map(NULL, 
+								   LV2_TIME__barBeat);
   
-  channel_data->time_barBeat = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(), 
-								      LV2_TIME__barBeat);
+  channel_data->time_beatUnit = (uint32_t) ags_lv2_urid_manager_map(NULL, 
+								    LV2_TIME__beatUnit);
   
-  channel_data->time_beatUnit = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(), 
-								       LV2_TIME__beatUnit);
+  channel_data->time_beatsPerBar = (uint32_t) ags_lv2_urid_manager_map(NULL, 
+								       LV2_TIME__beatsPerBar);
   
-  channel_data->time_beatsPerBar = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(), 
-									  LV2_TIME__beatsPerBar);
+  channel_data->time_beatsPerMinute = (uint32_t) ags_lv2_urid_manager_map(NULL, 
+									  LV2_TIME__beatsPerMinute);
   
-  channel_data->time_beatsPerMinute = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(), 
-									     LV2_TIME__beatsPerMinute);
-  
-  channel_data->time_speed = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(), 
-								    LV2_TIME__speed);
+  channel_data->time_speed = (uint32_t) ags_lv2_urid_manager_map(NULL, 
+								 LV2_TIME__speed);
   
   channel_data->midiin_atom_port = NULL;
   channel_data->midiout_atom_port = NULL;
@@ -1536,8 +1535,6 @@ ags_fx_lv2_audio_input_data_load_plugin(AgsFxLv2Audio *fx_lv2_audio,
   if(AGS_IS_LV2_PLUGIN(lv2_plugin)){
     LV2_Feature **feature;
     LV2_URID_Map *urid_map;
-
-    LV2_Atom *sink_buffer = (LV2_Atom *) calloc(1, AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT);
     
     input_data->lv2_handle = ags_base_plugin_instantiate((AgsBasePlugin *) lv2_plugin,
 							 samplerate, buffer_size);
@@ -1563,7 +1560,10 @@ ags_fx_lv2_audio_input_data_load_plugin(AgsFxLv2Audio *fx_lv2_audio,
     AGS_FX_LV2_AUDIO_CHANNEL_DATA(input_data->parent)->urid_map = urid_map;
 	  
     lv2_atom_forge_init(&(AGS_FX_LV2_AUDIO_CHANNEL_DATA(input_data->parent)->forge), urid_map);
-    //    lv2_atom_forge_set_sink(&(AGS_FX_LV2_AUDIO_CHANNEL_DATA(input_data->parent)->forge), atom_sink, atom_sink_deref, sink_buffer);
+
+    AGS_FX_LV2_AUDIO_CHANNEL_DATA(input_data->parent)->midiin_atom_port_size = 0;
+    
+    //    lv2_atom_forge_set_sink(&(AGS_FX_LV2_AUDIO_CHANNEL_DATA(input_data->parent)->forge), ags_lv2_midiin_atom_sink, ags_lv2_midiin_atom_sink_deref, input_data->parent);
   }
 }
 
@@ -1685,8 +1685,10 @@ ags_fx_lv2_audio_channel_data_load_plugin(AgsFxLv2Audio *fx_lv2_audio,
   
       if(feature != NULL){
 	while(feature[0] != NULL){
-	  if(feature[0]->URI == LV2_URID_MAP_URI){
+	  if(!g_strcmp0(feature[0]->URI, LV2_URID_MAP_URI)){
 	    urid_map = feature[0]->data;
+
+	    break;
 	  }
     
 	  feature++;
@@ -1696,7 +1698,10 @@ ags_fx_lv2_audio_channel_data_load_plugin(AgsFxLv2Audio *fx_lv2_audio,
       channel_data->urid_map = urid_map;
 	  
       lv2_atom_forge_init(&(channel_data->forge), urid_map);
-      //    lv2_atom_forge_set_sink(&(AGS_FX_LV2_AUDIO_CHANNEL_DATA(input_data->parent)->forge), atom_sink, atom_sink_deref, sink_buffer);
+
+      channel_data->midiin_atom_port_size = 0;
+      
+      //      lv2_atom_forge_set_sink(&(channel_data->forge), ags_lv2_midiin_atom_sink, ags_lv2_midiin_atom_sink_deref, channel_data);
     }
   }
 	
@@ -1922,14 +1927,16 @@ ags_fx_lv2_audio_channel_data_load_port(AgsFxLv2Audio *fx_lv2_audio,
     }
 
     if(has_midiin_atom_port){
-      channel_data->midiin_atom_port = ags_lv2_plugin_alloc_atom_sequence(AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT);
+      channel_data->midiin_atom_port = (uint8_t *) malloc(((guint) floor((sizeof(LV2_Atom) + sizeof(LV2_Atom_Sequence_Body) + AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT) / sizeof(guint64)) + 1) * sizeof(guint64));
       
+      channel_data->midiin_atom_port_size = 0;
+
       if(lv2_plugin != NULL &&
 	 channel_data->lv2_handle != NULL){
 	ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
 				     channel_data->lv2_handle[0],
 				     midiin_atom_port,
-				     channel_data->midiin_atom_port);
+				     (char *) channel_data->midiin_atom_port);
       }
     }
 

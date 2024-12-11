@@ -1733,28 +1733,28 @@ ags_apply_sound_config_launch(AgsTask *task)
 	      break;
 	    }
 	    
-	    if(options[i].key == ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-							     LV2_PARAMETERS__sampleRate)){
+	    if(options[i].key == ags_lv2_urid_manager_map(ags_lv2_urid_manager_get_instance(),
+							  LV2_PARAMETERS__sampleRate)){
 	      ((float *) options[i].value)[0] = (float) samplerate;
 	    }
 	    
-	    if(options[i].key == ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-							     LV2_BUF_SIZE__minBlockLength)){
+	    if(options[i].key == ags_lv2_urid_manager_map(ags_lv2_urid_manager_get_instance(),
+							  LV2_BUF_SIZE__minBlockLength)){
 	      ((float *) options[i].value)[0] = (float) buffer_size;
 	    }
 	    
-	    if(options[i].key == ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-							     LV2_BUF_SIZE__maxBlockLength)){
+	    if(options[i].key == ags_lv2_urid_manager_map(ags_lv2_urid_manager_get_instance(),
+							  LV2_BUF_SIZE__maxBlockLength)){
 	      ((float *) options[i].value)[0] = (float) buffer_size;
 	    }
 	    
-	    if(options[i].key == ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-							     LV2_BUF_SIZE__boundedBlockLength)){
+	    if(options[i].key == ags_lv2_urid_manager_map(ags_lv2_urid_manager_get_instance(),
+							  LV2_BUF_SIZE__boundedBlockLength)){
 	      ((float *) options[i].value)[0] = (float) buffer_size;
 	    }
 
-	    if(options[i].key == ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-							     LV2_BUF_SIZE__fixedBlockLength)){
+	    if(options[i].key == ags_lv2_urid_manager_map(ags_lv2_urid_manager_get_instance(),
+							  LV2_BUF_SIZE__fixedBlockLength)){
 	      ((float *) options[i].value)[0] = (float) buffer_size;
 	    }
 	  }

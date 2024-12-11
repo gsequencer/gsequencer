@@ -21,6 +21,7 @@
 
 #include <ags/plugin/ags_base_plugin.h>
 #include <ags/plugin/ags_lv2_plugin.h>
+#include <ags/plugin/ags_lv2_urid_manager.h>
 
 #include <ags/audio/midi/ags_midi_smf_util.h>
 
@@ -520,9 +521,9 @@ ags_fx_lv2_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_
     g_rec_mutex_lock(fx_lv2_audio_mutex);
 
     input_data->event_buffer->data.note.note = midi_note;
-
-    g_message("midi key - %d", midi_note);
+    
 #if 0
+    g_message("midi key - %d", midi_note);
 #endif
       
     input_data->key_on = input_data->key_on + 1;
@@ -541,10 +542,25 @@ ags_fx_lv2_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_
 	uint32_t offset;
 	uint32_t midi_buffer_size;
 
-	uint32_t capacity = AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT;
+	//	channel_data->frame = (LV2_Atom_Forge_Frame) {0,};
 	
-	lv2_atom_forge_set_buffer(&(channel_data->forge), (uint8_t *) channel_data->midiin_atom_port, capacity);
-	lv2_atom_forge_sequence_head(&(channel_data->forge), &(channel_data->frame), 0);
+	channel_data->frame.parent = NULL;
+	channel_data->frame.ref = (uint32_t) sizeof(LV2_Atom) + sizeof(LV2_Atom_Sequence_Body);
+
+	lv2_atom_forge_set_buffer(&(channel_data->forge), (uint8_t *) channel_data->midiin_atom_port, sizeof(LV2_Atom) + sizeof(LV2_Atom_Sequence_Body) + AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT);
+
+	//	channel_data->forge.offset = channel_data->frame.ref;
+
+	((LV2_Atom*)(channel_data->midiin_atom_port))->size = sizeof(LV2_Atom_Sequence_Body);
+	((LV2_Atom*)(channel_data->midiin_atom_port))->type = ags_lv2_urid_manager_map(NULL,
+										       LV2_ATOM__Sequence);
+
+	((LV2_Atom_Sequence_Body*)(channel_data->midiin_atom_port + sizeof(LV2_Atom)))->unit = ags_lv2_urid_manager_map(NULL,
+															LV2_MIDI__MidiEvent);
+	((LV2_Atom_Sequence_Body*)(channel_data->midiin_atom_port + sizeof(LV2_Atom)))->pad = 0;
+
+	lv2_atom_forge_sequence_head(&(channel_data->forge), &(channel_data->frame), ags_lv2_urid_manager_map(NULL,
+													      LV2_MIDI__MidiEvent));
 	
 	offset = floor(((offset_counter - x0) * delay + delay_counter) * buffer_size);
 	  
@@ -558,6 +574,8 @@ ags_fx_lv2_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_
 					    (const uint8_t* const) midi_buffer,
 					    midi_buffer_size);
 
+	lv2_atom_forge_pop(&(channel_data->forge), &(channel_data->frame));
+	
 	//	  ags_lv2_plugin_atom_sequence_append_midi(input_data->midiin_atom_port,
 	//					   AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
 	//					   input_data->event_buffer,
@@ -577,11 +595,25 @@ ags_fx_lv2_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_
 	uint32_t offset;
 	uint32_t midi_buffer_size;
 
-	uint32_t capacity = AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT;
+	//	channel_data->frame = (LV2_Atom_Forge_Frame) {0,};
 
-	lv2_atom_forge_set_buffer(&(channel_data->forge), (uint8_t *) channel_data->midiin_atom_port, capacity);
+	channel_data->frame.parent = NULL;
+	channel_data->frame.ref = (uint32_t) sizeof(LV2_Atom) + (uint32_t) sizeof(LV2_Atom_Sequence_Body);
+	
+	lv2_atom_forge_set_buffer(&(channel_data->forge), (uint8_t *) channel_data->midiin_atom_port, sizeof(LV2_Atom) + sizeof(LV2_Atom_Sequence_Body) + AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT);
 
-	lv2_atom_forge_sequence_head(&(channel_data->forge), &(channel_data->frame), 0);
+	//	channel_data->forge.offset = channel_data->frame.ref;
+	
+	((LV2_Atom*)(channel_data->midiin_atom_port))->size = sizeof(LV2_Atom_Sequence_Body);
+	((LV2_Atom*)(channel_data->midiin_atom_port))->type = ags_lv2_urid_manager_map(NULL,
+										       LV2_ATOM__Sequence);
+
+	((LV2_Atom_Sequence_Body*)(channel_data->midiin_atom_port + sizeof(LV2_Atom)))->unit = ags_lv2_urid_manager_map(NULL,
+															LV2_MIDI__MidiEvent);
+	((LV2_Atom_Sequence_Body*)(channel_data->midiin_atom_port + sizeof(LV2_Atom)))->pad = 0;
+	
+	lv2_atom_forge_sequence_head(&(channel_data->forge), &(channel_data->frame), ags_lv2_urid_manager_map(NULL,
+													      LV2_MIDI__MidiEvent));
 
 	offset = floor(((offset_counter - x0) * delay + delay_counter) * buffer_size);
 	  
@@ -595,6 +627,8 @@ ags_fx_lv2_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_
 					    (const uint8_t* const) midi_buffer,
 					    midi_buffer_size);
 
+	lv2_atom_forge_pop(&(channel_data->forge), &(channel_data->frame));
+	
 	//	  ags_lv2_plugin_atom_sequence_append_midi(input_data->midiin_atom_port,
 	//					   AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
 	//					   input_data->event_buffer,
@@ -629,7 +663,7 @@ ags_fx_lv2_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_
       g_rec_mutex_unlock(source_stream_mutex);
 
       if(fx_lv2_audio->has_midiin_atom_port){
-	lv2_atom_sequence_clear(channel_data->midiin_atom_port);
+	lv2_atom_sequence_clear((LV2_Atom_Sequence *) (channel_data->midiin_atom_port + 1));
       }
     }else{
       if(input_data->output != NULL){
@@ -658,7 +692,7 @@ ags_fx_lv2_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_
       g_rec_mutex_unlock(source_stream_mutex);
 
       if(fx_lv2_audio->has_midiin_atom_port){
-	lv2_atom_sequence_clear(channel_data->midiin_atom_port);
+	lv2_atom_sequence_clear((LV2_Atom_Sequence *) (channel_data->midiin_atom_port + 1));
       }
     }
     
@@ -799,9 +833,9 @@ ags_fx_lv2_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notation_audi
 	}
 
 	if(fx_lv2_audio->has_midiin_atom_port){
-	  ags_lv2_plugin_atom_sequence_remove_midi(channel_data->midiin_atom_port,
-						   AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
-						   midi_note);
+	  //	  ags_lv2_plugin_atom_sequence_remove_midi(channel_data->midiin_atom_port,
+	  //					   AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
+	  //					   midi_note);
 	}
       }else{
 	if(fx_lv2_audio->has_midiin_event_port){
@@ -811,9 +845,9 @@ ags_fx_lv2_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notation_audi
 	}
 
 	if(fx_lv2_audio->has_midiin_atom_port){
-	  ags_lv2_plugin_atom_sequence_remove_midi(input_data->midiin_atom_port,
-						   AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
-						   midi_note);
+	  //	  ags_lv2_plugin_atom_sequence_remove_midi(input_data->midiin_atom_port,
+	  //					   AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
+	  //					   midi_note);
 	}
       }
     }
