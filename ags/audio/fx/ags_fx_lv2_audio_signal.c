@@ -543,6 +543,8 @@ ags_fx_lv2_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_
 	uint32_t midi_buffer_size;
 
 	//	channel_data->frame = (LV2_Atom_Forge_Frame) {0,};
+
+	lv2_atom_forge_init(&(channel_data->forge), channel_data->urid_map);
 	
 	channel_data->frame.parent = NULL;
 	channel_data->frame.ref = (uint32_t) sizeof(LV2_Atom) + sizeof(LV2_Atom_Sequence_Body);
