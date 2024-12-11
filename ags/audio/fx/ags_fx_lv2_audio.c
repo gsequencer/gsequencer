@@ -1549,7 +1549,7 @@ ags_fx_lv2_audio_input_data_load_plugin(AgsFxLv2Audio *fx_lv2_audio,
   
     if(feature != NULL){
       while(feature[0] != NULL){
-	if(feature[0]->URI == LV2_URID_MAP_URI){
+	if(!g_strcmp0(feature[0]->URI, LV2_URID_MAP_URI)){
 	  urid_map = feature[0]->data;
 	}
     
@@ -1559,7 +1559,7 @@ ags_fx_lv2_audio_input_data_load_plugin(AgsFxLv2Audio *fx_lv2_audio,
 
     AGS_FX_LV2_AUDIO_CHANNEL_DATA(input_data->parent)->urid_map = urid_map;
 	  
-    lv2_atom_forge_init(&(AGS_FX_LV2_AUDIO_CHANNEL_DATA(input_data->parent)->forge), urid_map);
+    //    lv2_atom_forge_init(&(AGS_FX_LV2_AUDIO_CHANNEL_DATA(input_data->parent)->forge), urid_map);
 
     AGS_FX_LV2_AUDIO_CHANNEL_DATA(input_data->parent)->midiin_atom_port_size = 0;
     
@@ -1697,7 +1697,7 @@ ags_fx_lv2_audio_channel_data_load_plugin(AgsFxLv2Audio *fx_lv2_audio,
 
       channel_data->urid_map = urid_map;
 	  
-      lv2_atom_forge_init(&(channel_data->forge), urid_map);
+      //      lv2_atom_forge_init(&(channel_data->forge), urid_map);
 
       channel_data->midiin_atom_port_size = 0;
       
