@@ -50,6 +50,14 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="7.4.8" date="2024-12-11">
+      <description>
+	<p>
+	  Improved Lv2 support and make use of atom forge.
+	</p>
+      </description>
+    </release>
+
     <release version="7.4.0" date="2024-11-26">
       <description>
 	<p>

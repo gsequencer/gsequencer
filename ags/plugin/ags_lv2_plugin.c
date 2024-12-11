@@ -26,6 +26,7 @@
 #include <ags/plugin/ags_lv2_manager.h>
 #include <ags/plugin/ags_lv2_event_manager.h>
 #include <ags/plugin/ags_lv2_uri_map_manager.h>
+#include <ags/plugin/ags_lv2_urid_manager.h>
 #include <ags/plugin/ags_lv2_log_manager.h>
 #include <ags/plugin/ags_lv2_worker_manager.h>
 #include <ags/plugin/ags_lv2_worker.h>
@@ -1009,7 +1010,8 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     total_feature = 8;
     nth = 0;  
 
-    feature = (LV2_Feature **) g_malloc(total_feature * sizeof(LV2_Feature *));
+    feature =
+      lv2_plugin->feature = (LV2_Feature **) g_malloc(total_feature * sizeof(LV2_Feature *));
   
     /* URI map feature */  
     uri_map_feature = (LV2_URI_Map_Feature *) g_malloc(sizeof(LV2_URI_Map_Feature));
@@ -1167,80 +1169,80 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     options[0].context = LV2_OPTIONS_INSTANCE;
     options[0].subject = 0;
     //FIXME:JK: bad cast
-    options[0].key = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(), 
-							    LV2_PARAMETERS__sampleRate);
+    options[0].key = (uint32_t) ags_lv2_urid_manager_map(ags_lv2_urid_manager_get_instance(), 
+							 LV2_PARAMETERS__sampleRate);
 
     ptr_samplerate = (float *) g_malloc(sizeof(float));
     ptr_samplerate[0] = conf_samplerate;
   
     options[0].size = sizeof(float);
     //FIXME:JK: bad cast
-    options[0].type = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-							     LV2_ATOM__Float);
+    options[0].type = (uint32_t) ags_lv2_urid_manager_map(ags_lv2_urid_manager_get_instance(),
+							  LV2_ATOM__Float);
     options[0].value = ptr_samplerate;
   
     /* min-block-length */
     options[1].context = LV2_OPTIONS_INSTANCE;
     options[1].subject = 0;
     //FIXME:JK: bad cast
-    options[1].key = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-							    LV2_BUF_SIZE__minBlockLength);
+    options[1].key = (uint32_t) ags_lv2_urid_manager_map(ags_lv2_urid_manager_get_instance(),
+							 LV2_BUF_SIZE__minBlockLength);
 
     ptr_buffer_size = (float *) g_malloc(sizeof(float));
     ptr_buffer_size[0] = conf_buffer_size;
   
     options[1].size = sizeof(float);
     //FIXME:JK: bad cast
-    options[1].type = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-							     LV2_ATOM__Int);
+    options[1].type = (uint32_t) ags_lv2_urid_manager_map(ags_lv2_urid_manager_get_instance(),
+							  LV2_ATOM__Int);
     options[1].value = ptr_buffer_size;
 
     /* max-block-length */
     options[2].context = LV2_OPTIONS_INSTANCE;
     options[2].subject = 0;
     //FIXME:JK: bad cast
-    options[2].key = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-							    LV2_BUF_SIZE__maxBlockLength);
+    options[2].key = (uint32_t) ags_lv2_urid_manager_map(ags_lv2_urid_manager_get_instance(),
+							 LV2_BUF_SIZE__maxBlockLength);
 
     ptr_buffer_size = (float *) g_malloc(sizeof(float));
     ptr_buffer_size[0] = conf_buffer_size;
 
     options[2].size = sizeof(float);
     //FIXME:JK: bad cast
-    options[2].type = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-							     LV2_ATOM__Int);
+    options[2].type = (uint32_t) ags_lv2_urid_manager_map(ags_lv2_urid_manager_get_instance(),
+							  LV2_ATOM__Int);
     options[2].value = ptr_buffer_size;
 
     /* bounded-block-length */
     options[3].context = LV2_OPTIONS_INSTANCE;
     options[3].subject = 0;
     //FIXME:JK: bad cast
-    options[3].key = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-							    LV2_BUF_SIZE__boundedBlockLength);
+    options[3].key = (uint32_t) ags_lv2_urid_manager_map(ags_lv2_urid_manager_get_instance(),
+							 LV2_BUF_SIZE__boundedBlockLength);
 
     ptr_buffer_size = (float *) g_malloc(sizeof(float));
     ptr_buffer_size[0] = conf_buffer_size;
 
     options[3].size = sizeof(float);
     //FIXME:JK: bad cast
-    options[3].type = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-							     LV2_ATOM__Int);
+    options[3].type = (uint32_t) ags_lv2_urid_manager_map(ags_lv2_urid_manager_get_instance(),
+							  LV2_ATOM__Int);
     options[3].value = ptr_buffer_size;
 
     /* fixed-block-length */
     options[4].context = LV2_OPTIONS_INSTANCE;
     options[4].subject = 0;
     //FIXME:JK: bad cast
-    options[4].key = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-							    LV2_BUF_SIZE__fixedBlockLength);
+    options[4].key = (uint32_t) ags_lv2_urid_manager_map(ags_lv2_urid_manager_get_instance(),
+							 LV2_BUF_SIZE__fixedBlockLength);
 
     ptr_buffer_size = (float *) g_malloc(sizeof(float));
     ptr_buffer_size[0] = conf_buffer_size;
 
     options[4].size = sizeof(float);
     //FIXME:JK: bad cast
-    options[4].type = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-							     LV2_ATOM__Int);
+    options[4].type = (uint32_t) ags_lv2_urid_manager_map(ags_lv2_urid_manager_get_instance(),
+							  LV2_ATOM__Int);
     options[4].value = ptr_buffer_size;
     
     /* instance */
@@ -1871,8 +1873,8 @@ ags_lv2_plugin_alloc_atom_sequence(guint sequence_size)
   
   atom_sequence_size = sizeof(LV2_Atom_Sequence);
   
-  aseq = (LV2_Atom_Sequence *) g_malloc((atom_sequence_size + sequence_size) * sizeof(guchar));
-  memset(aseq, 0, (atom_sequence_size + sequence_size) * sizeof(guchar));
+  aseq = (LV2_Atom_Sequence *) g_malloc(sizeof(LV2_Atom_Sequence) + sequence_size);
+  memset(aseq, 0, (atom_sequence_size + sequence_size) * sizeof(uint8_t));
   
   aseq->atom.size = sizeof(LV2_Atom_Sequence_Body);
   aseq->atom.type = ags_lv2_urid_manager_map(NULL,
@@ -1882,7 +1884,10 @@ ags_lv2_plugin_alloc_atom_sequence(guint sequence_size)
 					     LV2_MIDI__MidiEvent);
   aseq->body.pad = 0;
 
-  aev = (LV2_Atom_Event*) ((char*) LV2_ATOM_CONTENTS(LV2_Atom_Sequence, aseq));
+  aev = lv2_atom_sequence_begin(&(aseq->body));
+
+  aev->time.frames = 0;
+  
   aev->body.size = 0;  
   aev->body.type = 0;
   
@@ -1929,6 +1934,7 @@ ags_lv2_plugin_atom_sequence_append_midi(gpointer atom_sequence,
   AgsLv2UriMapManager *uri_map_manager;
   
   LV2_Atom_Sequence *aseq;
+  
   LV2_Atom_Event *start_aev, *aev;
   
   AgsMidiSmfUtil midi_smf_util;
@@ -1938,7 +1944,6 @@ ags_lv2_plugin_atom_sequence_append_midi(gpointer atom_sequence,
   guint count, size;
   guint padded_size;
   guint i;
-  guint k;
   gboolean success;
 
   if(atom_sequence == NULL){
@@ -1950,33 +1955,20 @@ ags_lv2_plugin_atom_sequence_append_midi(gpointer atom_sequence,
 
   aseq = (LV2_Atom_Sequence *) atom_sequence;
   
-  /* find offset */
+  /* find last */
   aev =
-    start_aev = (LV2_Atom_Event*) ((char*) LV2_ATOM_CONTENTS(LV2_Atom_Sequence, aseq));
+    start_aev = lv2_atom_sequence_begin(&(aseq->body));
 
-  k = 0;
-  
-  while((guchar *) aev < (((guchar *) aseq) + sizeof(LV2_Atom_Sequence)) + sequence_size){
-    if(aev->body.size <= 0){
-      break;
-    }
-    
-    size = aev->body.size;
-    aev = (LV2_Atom_Event *) ((guchar *) aev) + ((size + 7U) & (~7U));
-
-    k++;
-  }
-
-  //  g_message("skipped %d", k);
+  aev = lv2_atom_sequence_end(&(aseq->body), (uint32_t) aseq->atom.size);
   
   /* append midi */
   success = FALSE;
 
   for(i = 0; i < event_count; i++){
-    if((guchar *) aev >= (((guchar *) aseq) + sizeof(LV2_Atom_Sequence)) + sequence_size){
+    if((uint8_t *) aev + (sizeof(LV2_Atom_Event) + 8) >= (((uint8_t *) aseq) + sizeof(LV2_Atom_Sequence)) + sequence_size){
       success = FALSE;
-      
-      return(success);
+
+      break;
     }
     
     /* decode midi sequencer event */    
@@ -1990,11 +1982,16 @@ ags_lv2_plugin_atom_sequence_append_midi(gpointer atom_sequence,
       aev->body.type = ags_lv2_urid_manager_map(NULL,
 						LV2_MIDI__MidiEvent);
 
-      memcpy(LV2_ATOM_BODY(&(aev->body)), midi_buffer, count * sizeof(char));
+      memcpy((uint8_t *) LV2_ATOM_BODY(&(aev->body)), midi_buffer, count * sizeof(uint8_t));
 
-      aseq->atom.size += (((count) + 7U) & (~7U));
+      if(count < lv2_atom_pad_size(count)){
+	memset((uint8_t *) LV2_ATOM_BODY(&(aev->body)) + count, 0, lv2_atom_pad_size(count) - count);
+      }
       
-      aev = (LV2_Atom_Event *) ((guchar *) aev) + (((count) + 7U) & (~7U));
+      aseq->atom.size += (sizeof(LV2_Atom_Event) + lv2_atom_pad_size(count));
+
+      /* iterate */
+      aev = lv2_atom_sequence_next(aev);
 
       if(i + 1 >= event_count){
 	success = TRUE;
@@ -2010,7 +2007,7 @@ ags_lv2_plugin_atom_sequence_append_midi(gpointer atom_sequence,
   //  g_message("aseq = %d ; aev = %d; sequence_size = %d", aseq, aev, sequence_size);
   
   if(success &&
-     (guchar *) aev < (((guchar *) aseq) + sizeof(LV2_Atom_Sequence)) + sequence_size){
+     (uint8_t *) aev < (((uint8_t *) aseq) + sizeof(LV2_Atom_Sequence)) + sequence_size){
     aev->body.size = 0;  
     aev->body.type = 0;
   }
@@ -2053,59 +2050,60 @@ ags_lv2_plugin_atom_sequence_remove_midi(gpointer atom_sequence,
 
   aseq = (LV2_Atom_Sequence *) atom_sequence;
   
-  /* find offset */
+  /* find offset and last */
   aev =
-    start_aev = (LV2_Atom_Event*) ((char*) LV2_ATOM_CONTENTS(LV2_Atom_Sequence, aseq));
+    start_aev = lv2_atom_sequence_begin(&(aseq->body));
 
-  success = FALSE;
+  end_aev = lv2_atom_sequence_end(&(aseq->body), (uint32_t) aseq->atom.size);
   
-  while((guchar *) aev < (((guchar *) aseq) + sizeof(LV2_Atom_Sequence)) + sequence_size){
-    if(aev->body.size <= 0){
-      break;
-    }
+  success = FALSE;
 
+  while((uint8_t *) aev < (uint8_t *) &(aseq->body) + aseq->atom.size &&
+	!lv2_atom_sequence_is_end(&(aseq->body),
+				  (uint32_t) aseq->atom.size,
+				  aev)){
     if(!success &&
-       (0x7f & ((unsigned char *) LV2_ATOM_BODY(&(aev->body)))[1]) == (0x7f & note)){
+       (0x7f & ((guchar *) LV2_ATOM_BODY(&(aev->body)))[1]) == (0x7f & note)){
       current_aev = aev;
       current_size = aev->body.size;
       
       success = TRUE;
+
+      break;
     }
 
-    size = aev->body.size;
-    aev = (LV2_Atom_Event *) ((guchar *) aev) + ((size + 7U) & (~7U));
+    /* iterate */
+    aev = lv2_atom_sequence_next(aev);
   }
 
-  end_aev = aev;
-  
   /* remove midi */
   if(success){
     /* set empty */
     current_aev->body.size = 0;  
     current_aev->body.type = 0;
 
-    if(((guchar *) end_aev - (guchar *) current_aev) - ((current_size + 7U) & (~7U)) >= 0 &&
-       ((guchar *) end_aev - (guchar *) current_aev) - ((current_size + 7U) & (~7U)) < sequence_size){
+    if(((uint8_t *) end_aev - (uint8_t *) current_aev) - (sizeof(LV2_Atom_Event) + lv2_atom_pad_size(current_size)) >= 0 &&
+       ((uint8_t *) end_aev - (uint8_t *) current_aev) - (sizeof(LV2_Atom_Event) + lv2_atom_pad_size(current_size)) < sequence_size){
 #if 0
       g_message("current size %d", ((current_size + 7U) & (~7U)));
-      g_message("current index %d", (guchar *) current_aev - (guchar *) start_aev);
+      g_message("current index %d", (uint8_t *) current_aev - (uint8_t *) start_aev);
       g_message("sequence size %d", sequence_size);
-      g_message("count %d", ((guchar *) end_aev - (guchar *) current_aev) - ((current_size + 7U) & (~7U)));
+      g_message("count %d", ((uint8_t *) end_aev - (uint8_t *) current_aev) - (sizeof(LV2_Atom_Event) + lv2_atom_pad_size(current_size)));
 #endif
       
       memmove(current_aev,
-	      current_aev + ((current_size + 7U) & (~7U)),
-	      ((guchar *) end_aev - (guchar *) current_aev) - ((current_size + 7U) & (~7U)));
+	      current_aev + (sizeof(LV2_Atom_Event) + lv2_atom_pad_size(current_size)),
+	      ((uint8_t *) end_aev - (uint8_t *) current_aev) - (sizeof(LV2_Atom_Event) + lv2_atom_pad_size(current_size)));
     }
 
-    if(((guchar *) end_aev) - ((current_size + 7U) & (~7U)) >= (guchar *) start_aev &&
-       ((guchar *) end_aev) - ((current_size + 7U) & (~7U)) < ((guchar *) aseq + sizeof(LV2_Atom_Sequence)) + sequence_size){
-      memset(end_aev - ((current_size + 7U) & (~7U)),
+    if(((uint8_t *) end_aev) - (sizeof(LV2_Atom_Event) + lv2_atom_pad_size(current_size)) >= (uint8_t *) start_aev &&
+       ((uint8_t *) end_aev) - (sizeof(LV2_Atom_Event) + lv2_atom_pad_size(current_size)) < start_aev + sequence_size){
+      memset(end_aev - (sizeof(LV2_Atom_Event) + lv2_atom_pad_size(current_size)),
 	     0,
-	     ((current_size + 7U) & (~7U)));
+	     (sizeof(LV2_Atom_Event) + lv2_atom_pad_size(current_size)));
     }
     
-    aseq->atom.size -= ((current_size + 7U) & (~7U));    
+    aseq->atom.size -= (sizeof(LV2_Atom_Event) + lv2_atom_pad_size(current_size));
   }
   
   return(success);

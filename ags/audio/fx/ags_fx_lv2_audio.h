@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,6 +29,13 @@
 
 #include <lv2.h>
 
+#include <lv2/atom/atom.h>
+#include <lv2/atom/forge.h>
+#include <lv2/atom/util.h>
+
+#include <stdint.h>
+#include <string.h>
+
 #include <ags/plugin/ags_lv2_plugin.h>
 
 #include <ags/audio/ags_port.h>
@@ -53,7 +60,7 @@ G_BEGIN_DECLS
 #define AGS_FX_LV2_AUDIO_INPUT_DATA(ptr) ((AgsFxLv2AudioInputData *) (ptr))
 #define AGS_FX_LV2_AUDIO_INPUT_DATA_GET_STRCT_MUTEX(ptr) (&(((AgsFxLv2AudioInputData *)(ptr))->strct_mutex))
 
-#define AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT (8 * 256)
+#define AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT (4096)
 
 typedef struct _AgsFxLv2Audio AgsFxLv2Audio;
 typedef struct _AgsFxLv2AudioScopeData AgsFxLv2AudioScopeData;
@@ -123,8 +130,35 @@ struct _AgsFxLv2AudioChannelData
   gpointer midiin_event_port;
   gpointer midiout_event_port;
   
-  gpointer midiin_atom_port;
-  gpointer midiout_atom_port;
+  LV2_Atom_Forge forge;
+  LV2_Atom_Forge_Frame frame;
+
+  uint8_t *forge_buffer;
+  uint32_t forge_buffer_size;
+  
+  LV2_URID_Map *urid_map;
+  
+  LV2_URID atom_Blank;
+  LV2_URID atom_Object;
+  LV2_URID atom_Sequence;
+  LV2_URID midi_MidiEvent;
+  
+  LV2_URID atom_Float;
+  LV2_URID atom_Int;
+  LV2_URID atom_Long;
+  LV2_URID time_Position;
+  LV2_URID time_bar;
+  LV2_URID time_barBeat;
+  LV2_URID time_beatUnit;
+  LV2_URID time_beatsPerBar;
+  LV2_URID time_beatsPerMinute;
+  LV2_URID time_speed;
+  
+  uint8_t *midiin_atom_port;
+  uint32_t midiin_atom_port_size;
+  
+  uint8_t *midiout_atom_port;
+  uint32_t midiout_atom_port_size;
   
   LV2_Handle *lv2_handle;
 
@@ -168,6 +202,41 @@ void ags_fx_lv2_audio_input_data_free(AgsFxLv2AudioInputData *input_data);
 gboolean ags_fx_lv2_audio_test_flags(AgsFxLv2Audio *fx_lv2_audio, AgsFxLv2AudioFlags flags);
 void ags_fx_lv2_audio_set_flags(AgsFxLv2Audio *fx_lv2_audio, AgsFxLv2AudioFlags flags);
 void ags_fx_lv2_audio_unset_flags(AgsFxLv2Audio *fx_lv2_audio, AgsFxLv2AudioFlags flags);
+
+/* lv2 specific */
+void ags_fx_lv2_audio_forge_midi_message(AgsFxLv2Audio *fx_lv2_audio,
+					 AgsFxLv2AudioChannelData *channel_data,
+					 uint32_t offset,
+					 const uint8_t* const midi_buffer,
+					 uint32_t midi_buffer_size);
+
+/**
+   A forge sink that writes to an atom .
+
+   It is assumed that the handle points to an LV2_Atom large enough to store
+   the forge output.  The forged result is in the body of the buffer atom.
+*/
+static LV2_Atom_Forge_Ref
+ags_lv2_midiin_atom_sink(LV2_Atom_Forge_Sink_Handle handle, const void* buf, uint32_t size)
+{
+  AgsFxLv2AudioChannelData *channel_data = (AgsFxLv2AudioChannelData *) handle;
+  LV2_Atom *atom = (LV2_Atom *) (channel_data->midiin_atom_port);
+  const uint32_t offset = lv2_atom_total_size(atom);
+  memcpy((char*) channel_data->midiin_atom_port + offset, buf, size);
+  atom->size += size;
+  return offset;
+}
+
+/**
+   Dereference counterpart to ags_lv2_midiin_atom_sink().
+*/
+static LV2_Atom*
+ags_lv2_midiin_atom_sink_deref(LV2_Atom_Forge_Sink_Handle handle, LV2_Atom_Forge_Ref ref)
+{
+  AgsFxLv2AudioChannelData *channel_data = (AgsFxLv2AudioChannelData *) handle;
+  
+  return((LV2_Atom *)((char *) channel_data->midiin_atom_port + ref));
+}
 
 /* load/unload */
 void ags_fx_lv2_audio_load_plugin(AgsFxLv2Audio *fx_lv2_audio);

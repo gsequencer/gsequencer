@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -150,7 +150,7 @@ ags_fx_lv2_audio_processor_key_on(AgsFxNotationAudioProcessor *fx_notation_audio
   GRecMutex *fx_lv2_audio_mutex;
 
   audio = NULL;
-  
+
   audio_start_mapping = 0;
   midi_start_mapping = 0;
 
@@ -194,23 +194,14 @@ ags_fx_lv2_audio_processor_key_on(AgsFxNotationAudioProcessor *fx_notation_audio
 
       input_data = channel_data->input_data[midi_note];
 
-      if(input_data->key_on == 0){
-	if(fx_lv2_audio->has_midiin_event_port){
-	  ags_lv2_plugin_event_buffer_append_midi(channel_data->midiin_event_port,
-						  AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
-						  input_data->event_buffer,
-						  1);
-	}
-
-	if(fx_lv2_audio->has_midiin_atom_port){
-	  ags_lv2_plugin_atom_sequence_append_midi(channel_data->midiin_atom_port,
-						   AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
-						   input_data->event_buffer,
-						   1);
-	}
-	
-	input_data->key_on = input_data->key_on + 1;	
+      if(fx_lv2_audio->has_midiin_event_port){
+	ags_lv2_plugin_event_buffer_append_midi(channel_data->midiin_event_port,
+						AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
+						input_data->event_buffer,
+						1);
       }
+	
+      input_data->key_on = input_data->key_on + 1;	
       
       g_rec_mutex_unlock(fx_lv2_audio_mutex);
     }else{
@@ -226,24 +217,15 @@ ags_fx_lv2_audio_processor_key_on(AgsFxNotationAudioProcessor *fx_notation_audio
 
       input_data = channel_data->input_data[midi_note];
 
-      if(input_data->key_on > 0){
-	if(fx_lv2_audio->has_midiin_event_port){
-	  ags_lv2_plugin_event_buffer_append_midi(input_data->midiin_event_port,
-						  AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
-						  input_data->event_buffer,
-						  1);
-	}
-      
-	if(fx_lv2_audio->has_midiin_atom_port){
-	  ags_lv2_plugin_atom_sequence_append_midi(input_data->midiin_atom_port,
-						   AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
-						   input_data->event_buffer,
-						   1);
-	}
-
-	input_data->key_on -= 1;
+      if(fx_lv2_audio->has_midiin_event_port){
+	ags_lv2_plugin_event_buffer_append_midi(input_data->midiin_event_port,
+						AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
+						input_data->event_buffer,
+						1);
       }
-      
+
+      input_data->key_on -= 1;
+	
       g_rec_mutex_unlock(fx_lv2_audio_mutex);
     }
   }
