@@ -572,7 +572,7 @@ ags_fx_lv2_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_
 
 	ags_fx_lv2_audio_forge_midi_message(fx_lv2_audio,
 					    channel_data,
-					    offset,
+					    0,
 					    (const uint8_t* const) midi_buffer,
 					    midi_buffer_size);
 
@@ -625,7 +625,7 @@ ags_fx_lv2_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_
 
 	ags_fx_lv2_audio_forge_midi_message(fx_lv2_audio,
 					    channel_data,
-					    offset,
+					    0,
 					    (const uint8_t* const) midi_buffer,
 					    midi_buffer_size);
 
