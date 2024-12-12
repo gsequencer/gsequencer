@@ -210,14 +210,7 @@ void ags_fx_lv2_audio_forge_midi_message(AgsFxLv2Audio *fx_lv2_audio,
 					 const uint8_t* const midi_buffer,
 					 uint32_t midi_buffer_size);
 
-/**
-   A forge sink that writes to an atom .
-
-   It is assumed that the handle points to an LV2_Atom large enough to store
-   the forge output.  The forged result is in the body of the buffer atom.
-*/
-static LV2_Atom_Forge_Ref
-ags_lv2_midiin_atom_sink(LV2_Atom_Forge_Sink_Handle handle, const void* buf, uint32_t size)
+static LV2_Atom_Forge_Ref ags_lv2_midiin_atom_sink(LV2_Atom_Forge_Sink_Handle handle, const void* buf, uint32_t size)
 {
   AgsFxLv2AudioChannelData *channel_data = (AgsFxLv2AudioChannelData *) handle;
   LV2_Atom *atom = (LV2_Atom *) (channel_data->midiin_atom_port);
@@ -227,11 +220,7 @@ ags_lv2_midiin_atom_sink(LV2_Atom_Forge_Sink_Handle handle, const void* buf, uin
   return offset;
 }
 
-/**
-   Dereference counterpart to ags_lv2_midiin_atom_sink().
-*/
-static LV2_Atom*
-ags_lv2_midiin_atom_sink_deref(LV2_Atom_Forge_Sink_Handle handle, LV2_Atom_Forge_Ref ref)
+static LV2_Atom* ags_lv2_midiin_atom_sink_deref(LV2_Atom_Forge_Sink_Handle handle, LV2_Atom_Forge_Ref ref)
 {
   AgsFxLv2AudioChannelData *channel_data = (AgsFxLv2AudioChannelData *) handle;
   
