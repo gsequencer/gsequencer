@@ -1,3 +1,10 @@
+ags (7.4.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsFileDialog to activate GtkEntry while get filename
+	* fixed AgsFileDialog don't allow / as basename
+	* fixed AgsPCMFileDialog don't allow / as basename
+
 ags (7.4.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
