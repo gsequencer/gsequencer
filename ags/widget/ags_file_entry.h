@@ -45,14 +45,32 @@ typedef enum{
   AGS_FILE_ENTRY_EDIT_DROPDOWN              = 1 <<  2,
 }AgsFileEntryFlags;
 
+typedef enum{
+  AGS_FILE_ENTRY_KEY_L_CONTROL       = 1,
+  AGS_FILE_ENTRY_KEY_R_CONTROL       = 1 <<  1,
+  AGS_FILE_ENTRY_KEY_L_SHIFT         = 1 <<  2,
+  AGS_FILE_ENTRY_KEY_R_SHIFT         = 1 <<  3,
+  AGS_FILE_ENTRY_KEY_L_META          = 1 <<  4,
+  AGS_FILE_ENTRY_KEY_R_META          = 1 <<  5,
+}AgsFileEntryKeyMask;
+
 struct _AgsFileEntry
 {
   GtkBox box;
 
   AgsFileEntryFlags flags;
+  AgsFileEntryKeyMask key_mask; 
 
+  guint current_keyval;
+  gint64 keyval_timestamp;
+
+  gchar *im_module;
+  GtkIMContext *im_context;
+  
+  gint cursor_position;
+  
   guint max_filename_length;
-
+  
   gchar *filename;
   gchar *auto_completion_filename;
 
