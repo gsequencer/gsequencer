@@ -80,9 +80,12 @@ struct _AgsFileEntry
 
   gchar *selection_offset_x0;
   gchar *selection_offset_x1;
+
+  gdouble click_x;
+  gdouble click_y;
   
-  gint surface_width;
-  gint surface_height;
+  gint text_width;
+  gint text_height;
   
   gint clip_x0;
   gint clip_x1;

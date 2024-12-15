@@ -293,6 +293,15 @@ ags_file_entry_init(AgsFileEntry *file_entry)
   file_entry->selection_offset_x0 = NULL;
   file_entry->selection_offset_x1 = NULL;
 
+  file_entry->click_x = -1.0;
+  file_entry->click_y = -1.0;
+
+  file_entry->text_width = 0.0;
+  file_entry->text_height = 0.0;
+
+  file_entry->clip_x0 = -1.0;
+  file_entry->clip_x1 = -1.0;
+
   file_entry->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();  
 
   gtk_widget_set_can_focus((GtkWidget *) file_entry->drawing_area,
@@ -653,6 +662,11 @@ ags_file_entry_gesture_click_pressed_callback(GtkGestureClick *event_controller,
 
   gtk_widget_grab_focus((GtkWidget *) file_entry->drawing_area);
 
+  file_entry->click_x = x;
+  file_entry->click_y = y;
+  
+  gtk_widget_queue_draw((GtkWidget *) file_entry->drawing_area);
+  
   return(TRUE);
 }
 
@@ -1091,6 +1105,7 @@ ags_file_entry_draw_callback(GtkWidget *drawing_area,
   gint j;
 
   gdouble x_start, y_start;
+  gdouble x_cursor;    
   gboolean dark_theme;
   gboolean fg_success;
   gboolean bg_success;
@@ -1162,24 +1177,112 @@ ags_file_entry_draw_callback(GtkWidget *drawing_area,
 		  (gdouble) width, (gdouble) height);
   cairo_fill(cr);
 
-  /* cursor */  
+  /* cursor */
   filename_len = strlen(file_entry->filename);
+
+  x_cursor = 0.0;
+
+  /* cursor - reset position */
+  if(file_entry->click_x != -1.0 &&
+     file_entry->click_y != -1.0){
+    filename = file_entry->filename;
+
+    i = 0;
+    j = 0;
+
+    cursor_position = 0;
+    
+    layout = pango_cairo_create_layout(cr);
+      
+    do{
+      gunichar ustr[2];
+
+      gchar *tmp_str;
+
+      glong items_read;
+      glong items_written;
+	
+      ustr[0] = g_utf8_get_char(filename);
+      ustr[1] = 0x0;
+
+      items_read = 0;
+      items_written = 0;
+	
+      error = NULL;
+      tmp_str = g_ucs4_to_utf8(ustr,
+			       -1,
+			       &items_read,
+			       &items_written,
+			       &error);
+
+      if(error != NULL){
+	g_error_free(error);
+      }
+	
+      if(items_written > 0){
+	filename += items_written;
+
+	j += items_written;
+      }else{
+	filename++;
+	j++;
+      }
+	
+      i++;
+
+      pango_layout_set_text(layout,
+			    tmp_str,
+			    -1);
+
+      desc = pango_font_description_from_string(font_name);
+      pango_font_description_set_size(desc,
+				      file_entry->font_size * PANGO_SCALE);
+      pango_layout_set_font_description(layout,
+					desc);
+      pango_font_description_free(desc);    
+
+      pango_layout_get_extents(layout,
+			       &ink_rect,
+			       &logical_rect);
+      
+      g_free(tmp_str);
+
+      if(file_entry->click_x >= x_cursor &&
+	 file_entry->click_x < x_cursor + ((gdouble) logical_rect.width / PANGO_SCALE)){
+	x_cursor += ((gdouble) logical_rect.width / PANGO_SCALE);
+
+	file_entry->cursor_position = j;
+	
+	break;
+      }else{
+	x_cursor += ((gdouble) logical_rect.width / PANGO_SCALE);
+      }
+    }while(filename[0] != '\0' && i < AGS_FILE_ENTRY_DEFAULT_MAX_FILENAME_LENGTH);
+
+    if(j != file_entry->cursor_position){
+      file_entry->cursor_position = j;
+    }
+      
+    g_object_unref(layout);    
+  }
   
+  file_entry->click_x = -1.0;
+  file_entry->click_y = -1.0;
+
+  /* cursor - calculate position */
   cursor_position = file_entry->cursor_position;
 
   if(cursor_position > filename_len){
     cursor_position = filename_len;
   }
 
+  x_cursor = 0.0;
+
   if(cursor_position >= 0){
-    gdouble x_cursor;
-    
     filename = file_entry->filename;
 
     i = 0;
     j = 0;
-
-    x_cursor = 0.0;
 
     layout = pango_cairo_create_layout(cr);
       
@@ -1289,7 +1392,7 @@ ags_file_entry_draw_callback(GtkWidget *drawing_area,
   pango_layout_get_extents(layout,
 			   &ink_rect,
 			   &logical_rect);
-
+  
   cairo_set_source_rgb(cr,
 		       0.0,
 		       0.0,
@@ -1297,6 +1400,15 @@ ags_file_entry_draw_callback(GtkWidget *drawing_area,
   
   x_start = 0.0;
   y_start = 0.0;
+
+  if(width < (logical_rect.width / PANGO_SCALE)){
+    if(x_cursor >= (gdouble) width){
+      x_start = -1.0 * (x_cursor - width + 3.0);
+    }
+  }
+  
+  file_entry->text_width = (logical_rect.width / PANGO_SCALE);
+  file_entry->text_height = (logical_rect.height / PANGO_SCALE);
   
   cairo_move_to(cr,
 		x_start,
