@@ -299,8 +299,8 @@ ags_file_entry_init(AgsFileEntry *file_entry)
   file_entry->text_width = 0.0;
   file_entry->text_height = 0.0;
 
-  file_entry->clip_x0 = -1.0;
-  file_entry->clip_x1 = -1.0;
+  file_entry->clip_x0 = 0.0;
+  file_entry->clip_x1 = 0.0;
 
   file_entry->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();  
 
@@ -1183,8 +1183,8 @@ ags_file_entry_draw_callback(GtkWidget *drawing_area,
   x_cursor = 0.0;
 
   /* cursor - reset position */
-  if(file_entry->click_x != -1.0 &&
-     file_entry->click_y != -1.0){
+  if(file_entry->click_x >= 0.0 &&
+     file_entry->click_y >= 0.0){
     filename = file_entry->filename;
 
     i = 0;
@@ -1247,8 +1247,8 @@ ags_file_entry_draw_callback(GtkWidget *drawing_area,
       
       g_free(tmp_str);
 
-      if(file_entry->click_x >= x_cursor &&
-	 file_entry->click_x < x_cursor + ((gdouble) logical_rect.width / PANGO_SCALE)){
+      if((-1.0 * file_entry->clip_x0) + file_entry->click_x >= x_cursor &&
+	 (-1.0 * file_entry->clip_x0) + file_entry->click_x < x_cursor + ((gdouble) logical_rect.width / PANGO_SCALE)){
 	x_cursor += ((gdouble) logical_rect.width / PANGO_SCALE);
 
 	file_entry->cursor_position = j;
@@ -1348,9 +1348,9 @@ ags_file_entry_draw_callback(GtkWidget *drawing_area,
 			     0.0);
     
 	cairo_move_to(cr,
-		      x_cursor, height / 4.0 + 19.0);
+		      file_entry->clip_x0 + x_cursor, height / 4.0 + 19.0);
 	cairo_line_to(cr,
-		      x_cursor, height / 4.0 - 2.0);
+		      file_entry->clip_x0 + x_cursor, height / 4.0 - 2.0);
     
 	cairo_stroke(cr);
 	  
@@ -1367,9 +1367,9 @@ ags_file_entry_draw_callback(GtkWidget *drawing_area,
 			   0.0);
     
       cairo_move_to(cr,
-		    x_cursor, 0.0);
+		    file_entry->clip_x0 + x_cursor, height / 4.0 + 19.0);
       cairo_line_to(cr,
-		    x_cursor, height);
+		    file_entry->clip_x0 + x_cursor, height / 4.0 - 2.0);
     
       cairo_stroke(cr);
     }
@@ -1402,9 +1402,22 @@ ags_file_entry_draw_callback(GtkWidget *drawing_area,
   y_start = 0.0;
 
   if(width < (logical_rect.width / PANGO_SCALE)){
-    if(x_cursor >= (gdouble) width){
-      x_start = -1.0 * (x_cursor - width + 3.0);
+    if(x_cursor > (gdouble) width){
+      if(x_cursor >= (-1.0 * file_entry->clip_x0) &&
+	 x_cursor < (-1.0 * file_entry->clip_x0) + (gdouble) width){
+	x_start = file_entry->clip_x0;
+      }else{
+	x_start = -1.0 * (x_cursor - width);
+      }
     }
+  }
+  
+  file_entry->clip_x0 = x_start;
+
+  if(x_start + width < logical_rect.width / PANGO_SCALE){
+    file_entry->clip_x1 = (logical_rect.width / PANGO_SCALE) - (x_start + width);
+  }else{
+    file_entry->clip_x1 = 0.0;
   }
   
   file_entry->text_width = (logical_rect.width / PANGO_SCALE);

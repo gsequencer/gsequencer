@@ -84,11 +84,11 @@ struct _AgsFileEntry
   gdouble click_x;
   gdouble click_y;
   
-  gint text_width;
-  gint text_height;
+  gdouble text_width;
+  gdouble text_height;
   
-  gint clip_x0;
-  gint clip_x1;
+  gdouble clip_x0;
+  gdouble clip_x1;
   
   GtkDrawingArea *drawing_area;
 
