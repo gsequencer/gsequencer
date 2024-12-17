@@ -1,3 +1,9 @@
+ags (7.5.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsFileEntry
+	* refactored AgsFileWidget make use of AgsFileEntry
+
 ags (7.4.12)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

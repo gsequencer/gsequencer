@@ -76,6 +76,11 @@ gboolean ags_file_entry_gesture_click_released_callback(GtkGestureClick *event_c
 							gdouble y,
 							AgsFileEntry *file_entry);
 
+gboolean ags_file_entry_motion_callback(GtkEventControllerMotion *event_controller,
+					gdouble x,
+					gdouble y,
+					AgsFileEntry *file_entry);
+
 gboolean ags_file_entry_key_pressed_callback(GtkEventControllerKey *event_controller,
 					     guint keyval,
 					     guint keycode,
@@ -290,8 +295,10 @@ ags_file_entry_init(AgsFileEntry *file_entry)
   file_entry->font_size = 11;
   file_entry->xalign = 0.0;
 
-  file_entry->selection_offset_x0 = NULL;
-  file_entry->selection_offset_x1 = NULL;
+  file_entry->do_selection = FALSE;
+
+  file_entry->selection_offset_x0 = 0.0;
+  file_entry->selection_offset_x1 = 0.0;
 
   file_entry->click_x = -1.0;
   file_entry->click_y = -1.0;
@@ -320,7 +327,7 @@ ags_file_entry_init(AgsFileEntry *file_entry)
 
   /* focus */
   event_controller = gtk_event_controller_focus_new();
-  gtk_widget_add_controller((GtkWidget *) file_entry,
+  gtk_widget_add_controller((GtkWidget *) file_entry->drawing_area,
 			    event_controller);
 
   g_signal_connect_swapped(event_controller, "enter",
@@ -339,6 +346,14 @@ ags_file_entry_init(AgsFileEntry *file_entry)
 
   g_signal_connect(event_controller, "released",
 		   G_CALLBACK(ags_file_entry_gesture_click_released_callback), file_entry);
+
+  /* motion */
+  event_controller = (GtkEventController *) gtk_event_controller_motion_new();
+  gtk_widget_add_controller((GtkWidget *) file_entry->drawing_area,
+			    event_controller);
+
+  g_signal_connect(event_controller, "motion",
+		   G_CALLBACK(ags_file_entry_motion_callback), file_entry);
 
   /* key */
   event_controller = gtk_event_controller_key_new();
@@ -658,12 +673,18 @@ ags_file_entry_gesture_click_pressed_callback(GtkGestureClick *event_controller,
 					      gdouble y,
 					      AgsFileEntry *file_entry)
 {
-  g_message("focus");
+  g_message("focus pressed %f|%f", x, y);
 
   gtk_widget_grab_focus((GtkWidget *) file_entry->drawing_area);
 
   file_entry->click_x = x;
   file_entry->click_y = y;
+
+  file_entry->do_selection = TRUE;
+  file_entry->show_selection = TRUE;
+
+  file_entry->selection_offset_x0 = x;
+  file_entry->selection_offset_x1 = x;
   
   gtk_widget_queue_draw((GtkWidget *) file_entry->drawing_area);
   
@@ -677,10 +698,36 @@ ags_file_entry_gesture_click_released_callback(GtkGestureClick *event_controller
 					       gdouble y,
 					       AgsFileEntry *file_entry)
 {
-  g_message("focus");
+  g_message("focus released %f|%f", x, y);
 
+  file_entry->selection_offset_x1 = x;
+
+  if(!(file_entry->do_selection) &&
+     file_entry->show_selection){
+    file_entry->show_selection = FALSE;
+  }
+
+  file_entry->do_selection = FALSE;
+  
   gtk_widget_grab_focus((GtkWidget *) file_entry->drawing_area);
 
+  return(TRUE);
+}
+
+gboolean
+ags_file_entry_motion_callback(GtkEventControllerMotion *event_controller,
+			       gdouble x,
+			       gdouble y,
+			       AgsFileEntry *file_entry)
+{
+  if(gtk_widget_is_focus((GtkWidget *) file_entry->drawing_area)){
+    g_message("focus motion %f|%f", x, y);
+
+    if(file_entry->do_selection){
+      file_entry->selection_offset_x1 = x;
+    }
+  }
+  
   return(TRUE);
 }
 
@@ -1432,6 +1479,14 @@ ags_file_entry_draw_callback(GtkWidget *drawing_area,
 
   g_object_unref(layout);
 
+  /* selection */
+  if(file_entry->show_selection &&
+     file_entry->selection_offset_x0 != file_entry->selection_offset_x1){
+    cairo_move_to(cr,
+		  x_start + file_entry->selection_offset_x0,
+		  y_start + (logical_rect.height / PANGO_SCALE) / 4.0 + 1.0);
+  }
+  
   /* paint */  
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);

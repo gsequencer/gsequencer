@@ -78,8 +78,11 @@ struct _AgsFileEntry
     
   gdouble xalign;  
 
-  gchar *selection_offset_x0;
-  gchar *selection_offset_x1;
+  gboolean do_selection;
+  gboolean show_selection;
+  
+  gdouble selection_offset_x0;
+  gdouble selection_offset_x1;
 
   gdouble click_x;
   gdouble click_y;
