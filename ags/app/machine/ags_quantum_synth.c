@@ -3974,6 +3974,7 @@ ags_quantum_synth_disconnect(AgsConnectable *connectable)
 		      quantum_synth,
 		      NULL);
 
+  /* pitch */
   g_object_disconnect((GObject *) quantum_synth->pitch_type,
 		      "any_signal::notify::selected",
 		      G_CALLBACK(ags_quantum_synth_pitch_type_callback),
@@ -3985,13 +3986,15 @@ ags_quantum_synth_disconnect(AgsConnectable *connectable)
 		      G_CALLBACK(ags_quantum_synth_pitch_tuning_callback),
 		      quantum_synth,
 		      NULL);
-  
+
+  /* noise */
   g_object_disconnect(quantum_synth->noise_gain,
 		      "any_signal::value-changed",
 		      G_CALLBACK(ags_quantum_synth_noise_gain_callback),
 		      quantum_synth,
 		      NULL);
-    
+
+  /* chorus */
   //  g_object_disconnect(quantum_synth->chorus_enabled,
   //		      "any_signal::toggled",
   //			 G_CALLBACK(ags_quantum_synth_chorus_enabled_callback),
@@ -4040,6 +4043,7 @@ ags_quantum_synth_disconnect(AgsConnectable *connectable)
 		      quantum_synth,
 		      NULL);
 
+  /* tremolo */
   g_object_disconnect((GObject *) quantum_synth->tremolo_enabled,
 		      "any_signal::toggled",
 		      G_CALLBACK(ags_quantum_synth_tremolo_enabled_callback),
@@ -4070,6 +4074,7 @@ ags_quantum_synth_disconnect(AgsConnectable *connectable)
 		      (gpointer) quantum_synth,
 		      NULL);
 
+  /* vibrato */
   g_object_disconnect((GObject *) quantum_synth->vibrato_enabled,
 		      "any_signal::toggled",
 		      G_CALLBACK(ags_quantum_synth_vibrato_enabled_callback),
@@ -4543,6 +4548,434 @@ ags_quantum_synth_refresh_port(AgsMachine *machine)
       g_object_unref(port);
     }
 
+    /* synth-0 seq tuning 0 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-seq-tuning-0", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(quantum_synth->synth_0_seq_tuning_0,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 seq tuning 1 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-seq-tuning-1", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(quantum_synth->synth_0_seq_tuning_1,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 seq tuning 2 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-seq-tuning-2", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(quantum_synth->synth_0_seq_tuning_2,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 seq tuning 3 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-seq-tuning-3", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(quantum_synth->synth_0_seq_tuning_3,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 seq tuning 4 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-seq-tuning-4", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(quantum_synth->synth_0_seq_tuning_4,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 seq tuning 5 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-seq-tuning-5", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(quantum_synth->synth_0_seq_tuning_5,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 seq tuning 6 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-seq-tuning-6", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(quantum_synth->synth_0_seq_tuning_6,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 seq tuning 7 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-seq-tuning-7", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(quantum_synth->synth_0_seq_tuning_7,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 seq tuning pingpong */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-seq-tuning-pingpong", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      if(g_value_get_float(&value) != 0.0){
+	gtk_check_button_set_active(quantum_synth->synth_0_seq_tuning_pingpong,
+				    TRUE);
+      }else{
+	gtk_check_button_set_active(quantum_synth->synth_0_seq_tuning_pingpong,
+				    FALSE);
+      }
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 seq volume 0 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-seq-volume-0", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(quantum_synth->synth_0_seq_volume_0,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 seq volume 1 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-seq-volume-1", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(quantum_synth->synth_0_seq_volume_1,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 seq volume 2 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-seq-volume-2", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(quantum_synth->synth_0_seq_volume_2,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 seq volume 3 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-seq-volume-3", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(quantum_synth->synth_0_seq_volume_3,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 seq volume 4 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-seq-volume-4", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(quantum_synth->synth_0_seq_volume_4,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 seq volume 5 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-seq-volume-5", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(quantum_synth->synth_0_seq_volume_5,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 seq volume 6 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-seq-volume-6", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(quantum_synth->synth_0_seq_volume_6,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 seq volume 7 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-seq-volume-7", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(quantum_synth->synth_0_seq_volume_7,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 seq volume pingpong */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-seq-volume-pingpong", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      if(g_value_get_float(&value) != 0.0){
+	gtk_check_button_set_active(quantum_synth->synth_0_seq_volume_pingpong,
+				    TRUE);
+      }else{
+	gtk_check_button_set_active(quantum_synth->synth_0_seq_volume_pingpong,
+				    FALSE);
+      }
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 volume */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-volume", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(quantum_synth->synth_0_volume,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
     /* synth-0 lfo oscillator */
     port = NULL;
 
@@ -4967,6 +5400,412 @@ ags_quantum_synth_refresh_port(AgsMachine *machine)
       g_object_unref(port);
     }
 
+    /* synth-1 seq tuning 0 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-seq-tuning-0", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(quantum_synth->synth_1_seq_tuning_0,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 seq tuning 1 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-seq-tuning-1", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(quantum_synth->synth_1_seq_tuning_1,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 seq tuning 2 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-seq-tuning-2", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(quantum_synth->synth_1_seq_tuning_2,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 seq tuning 3 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-seq-tuning-3", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(quantum_synth->synth_1_seq_tuning_3,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 seq tuning 4 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-seq-tuning-4", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(quantum_synth->synth_1_seq_tuning_4,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 seq tuning 5 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-seq-tuning-5", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(quantum_synth->synth_1_seq_tuning_5,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 seq tuning 6 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-seq-tuning-6", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(quantum_synth->synth_1_seq_tuning_6,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 seq tuning 7 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-seq-tuning-7", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(quantum_synth->synth_1_seq_tuning_7,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 seq tuning pingpong */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-seq-tuning-pingpong", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      if(g_value_get_float(&value) != 0.0){
+	gtk_check_button_set_active(quantum_synth->synth_1_seq_tuning_pingpong,
+				    TRUE);
+      }else{
+	gtk_check_button_set_active(quantum_synth->synth_1_seq_tuning_pingpong,
+				    FALSE);
+      }
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 seq volume 0 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-seq-volume-0", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(quantum_synth->synth_1_seq_volume_0,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 seq volume 1 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-seq-volume-1", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(quantum_synth->synth_1_seq_volume_1,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 seq volume 2 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-seq-volume-2", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(quantum_synth->synth_1_seq_volume_2,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 seq volume 3 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-seq-volume-3", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(quantum_synth->synth_1_seq_volume_3,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 seq volume 4 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-seq-volume-4", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(quantum_synth->synth_1_seq_volume_4,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 seq volume 5 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-seq-volume-5", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(quantum_synth->synth_1_seq_volume_5,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 seq volume 6 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-seq-volume-6", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(quantum_synth->synth_1_seq_volume_6,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 seq volume 7 */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-seq-volume-7", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(quantum_synth->synth_1_seq_volume_7,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 seq volume pingpong */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-seq-volume-pingpong", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      if(g_value_get_float(&value) != 0.0){
+	gtk_check_button_set_active(quantum_synth->synth_1_seq_volume_pingpong,
+				    TRUE);
+      }else{
+	gtk_check_button_set_active(quantum_synth->synth_1_seq_volume_pingpong,
+				    FALSE);
+      }
+
+      g_object_unref(port);
+    }
+    
     /* synth-1 lfo oscillator */
     port = NULL;
 
