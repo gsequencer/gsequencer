@@ -132,6 +132,9 @@ void ags_gsequencer_add_hybrid_fm_synth_callback(GAction *action, GVariant *para
 void ags_gsequencer_add_stargazer_synth_callback(GAction *action, GVariant *parameter,
 						 AgsGSequencerApplication *gsequencer_app);
 
+void ags_gsequencer_add_quantum_synth_callback(GAction *action, GVariant *parameter,
+					       AgsGSequencerApplication *gsequencer_app);
+
 void ags_gsequencer_add_ffplayer_callback(GAction *action, GVariant *parameter,
 					  AgsGSequencerApplication *gsequencer_app);
 

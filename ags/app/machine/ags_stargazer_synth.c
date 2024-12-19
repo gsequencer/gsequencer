@@ -2554,6 +2554,7 @@ ags_stargazer_synth_disconnect(AgsConnectable *connectable)
   /* AgsStargazerSynth */
   stargazer_synth = AGS_STARGAZER_SYNTH(connectable);
 
+  /* synth 0 */
   g_object_disconnect(stargazer_synth->synth_0_oscillator,
 		      "any_signal::changed",
 		      G_CALLBACK(ags_stargazer_synth_synth_0_oscillator_callback),
@@ -2583,7 +2584,81 @@ ags_stargazer_synth_disconnect(AgsConnectable *connectable)
 		      G_CALLBACK(ags_stargazer_synth_synth_0_volume_callback),
 		      stargazer_synth,
 		      NULL);
-    
+
+  /* sync */
+  g_object_disconnect(stargazer_synth->synth_0_sync_enabled,
+		      "any_signal::toggled",
+		      G_CALLBACK(ags_stargazer_synth_synth_0_sync_enabled_callback),
+		      stargazer_synth,
+		      NULL);
+  
+  g_object_disconnect(stargazer_synth->synth_0_sync_relative_attack_factor,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_stargazer_synth_synth_0_sync_relative_attack_factor_callback),
+		      stargazer_synth,
+		      NULL);
+  
+  g_object_disconnect(stargazer_synth->synth_0_sync_attack_0,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_stargazer_synth_synth_0_sync_attack_0_callback),
+		      stargazer_synth,
+		      NULL);
+  
+  g_object_disconnect(stargazer_synth->synth_0_sync_phase_0,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_stargazer_synth_synth_0_sync_phase_0_callback),
+		      stargazer_synth,
+		      NULL);
+  
+  g_object_disconnect(stargazer_synth->synth_0_sync_attack_1,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_stargazer_synth_synth_0_sync_attack_1_callback),
+		      stargazer_synth,
+		      NULL);
+  
+  g_object_disconnect(stargazer_synth->synth_0_sync_phase_1,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_stargazer_synth_synth_0_sync_phase_1_callback),
+		      stargazer_synth,
+		      NULL);
+  
+  g_object_disconnect(stargazer_synth->synth_0_sync_attack_2,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_stargazer_synth_synth_0_sync_attack_2_callback),
+		      stargazer_synth,
+		      NULL);
+  
+  g_object_disconnect(stargazer_synth->synth_0_sync_phase_2,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_stargazer_synth_synth_0_sync_phase_2_callback),
+		      stargazer_synth,
+		      NULL);
+  
+  g_object_disconnect(stargazer_synth->synth_0_sync_attack_3,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_stargazer_synth_synth_0_sync_attack_3_callback),
+		      stargazer_synth,
+		      NULL);
+  
+  g_object_disconnect(stargazer_synth->synth_0_sync_phase_3,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_stargazer_synth_synth_0_sync_phase_3_callback),
+		      stargazer_synth,
+		      NULL);
+  
+  g_object_disconnect(stargazer_synth->synth_0_sync_lfo_oscillator,
+		      "any_signal::changed",
+		      G_CALLBACK(ags_stargazer_synth_synth_0_sync_lfo_oscillator_callback),
+		      stargazer_synth,
+		      NULL);
+  
+  g_object_disconnect(stargazer_synth->synth_0_sync_lfo_frequency,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_stargazer_synth_synth_0_sync_lfo_frequency_callback),
+		      stargazer_synth,
+		      NULL);
+  
+  /* LFO */
   g_object_disconnect(stargazer_synth->synth_0_lfo_oscillator,
 		      "any_signal::changed",
 		      G_CALLBACK(ags_stargazer_synth_synth_0_lfo_oscillator_callback),
@@ -2608,6 +2683,7 @@ ags_stargazer_synth_disconnect(AgsConnectable *connectable)
 		      stargazer_synth,
 		      NULL);
 
+  /* synth 1 */
   g_object_disconnect(stargazer_synth->synth_1_oscillator,
 		      "any_signal::changed",
 		      G_CALLBACK(ags_stargazer_synth_synth_1_oscillator_callback),
@@ -2637,7 +2713,81 @@ ags_stargazer_synth_disconnect(AgsConnectable *connectable)
 		      G_CALLBACK(ags_stargazer_synth_synth_1_volume_callback),
 		      stargazer_synth,
 		      NULL);
-    
+
+  /* sync */
+  g_object_disconnect(stargazer_synth->synth_1_sync_enabled,
+		      "any_signal::toggled",
+		      G_CALLBACK(ags_stargazer_synth_synth_1_sync_enabled_callback),
+		      stargazer_synth,
+		      NULL);
+  
+  g_object_disconnect(stargazer_synth->synth_1_sync_relative_attack_factor,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_stargazer_synth_synth_1_sync_relative_attack_factor_callback),
+		      stargazer_synth,
+		      NULL);
+  
+  g_object_disconnect(stargazer_synth->synth_1_sync_attack_0,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_stargazer_synth_synth_1_sync_attack_0_callback),
+		      stargazer_synth,
+		      NULL);
+  
+  g_object_disconnect(stargazer_synth->synth_1_sync_phase_0,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_stargazer_synth_synth_1_sync_phase_0_callback),
+		      stargazer_synth,
+		      NULL);
+  
+  g_object_disconnect(stargazer_synth->synth_1_sync_attack_1,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_stargazer_synth_synth_1_sync_attack_1_callback),
+		      stargazer_synth,
+		      NULL);
+  
+  g_object_disconnect(stargazer_synth->synth_1_sync_phase_1,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_stargazer_synth_synth_1_sync_phase_1_callback),
+		      stargazer_synth,
+		      NULL);
+  
+  g_object_disconnect(stargazer_synth->synth_1_sync_attack_2,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_stargazer_synth_synth_1_sync_attack_2_callback),
+		      stargazer_synth,
+		      NULL);
+  
+  g_object_disconnect(stargazer_synth->synth_1_sync_phase_2,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_stargazer_synth_synth_1_sync_phase_2_callback),
+		      stargazer_synth,
+		      NULL);
+  
+  g_object_disconnect(stargazer_synth->synth_1_sync_attack_3,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_stargazer_synth_synth_1_sync_attack_3_callback),
+		      stargazer_synth,
+		      NULL);
+  
+  g_object_disconnect(stargazer_synth->synth_1_sync_phase_3,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_stargazer_synth_synth_1_sync_phase_3_callback),
+		      stargazer_synth,
+		      NULL);
+  
+  g_object_disconnect(stargazer_synth->synth_1_sync_lfo_oscillator,
+		      "any_signal::changed",
+		      G_CALLBACK(ags_stargazer_synth_synth_1_sync_lfo_oscillator_callback),
+		      stargazer_synth,
+		      NULL);
+  
+  g_object_disconnect(stargazer_synth->synth_1_sync_lfo_frequency,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_stargazer_synth_synth_1_sync_lfo_frequency_callback),
+		      stargazer_synth,
+		      NULL);
+  
+  /* LFO */
   g_object_disconnect(stargazer_synth->synth_1_lfo_oscillator,
 		      "any_signal::changed",
 		      G_CALLBACK(ags_stargazer_synth_synth_1_lfo_oscillator_callback),
@@ -2662,6 +2812,7 @@ ags_stargazer_synth_disconnect(AgsConnectable *connectable)
 		      stargazer_synth,
 		      NULL);
 
+  /* pitch */
   g_object_disconnect((GObject *) stargazer_synth->pitch_type,
 		      "any_signal::notify::selected",
 		      G_CALLBACK(ags_stargazer_synth_pitch_type_callback),
@@ -2673,13 +2824,15 @@ ags_stargazer_synth_disconnect(AgsConnectable *connectable)
 		      G_CALLBACK(ags_stargazer_synth_pitch_tuning_callback),
 		      stargazer_synth,
 		      NULL);
-  
+
+  /* noise */
   g_object_disconnect(stargazer_synth->noise_gain,
 		      "any_signal::value-changed",
 		      G_CALLBACK(ags_stargazer_synth_noise_gain_callback),
 		      stargazer_synth,
 		      NULL);
-    
+
+  /* chorus */
   //  g_object_disconnect(stargazer_synth->chorus_enabled,
   //		      "any_signal::toggled",
   //			 G_CALLBACK(ags_stargazer_synth_chorus_enabled_callback),
@@ -2728,6 +2881,7 @@ ags_stargazer_synth_disconnect(AgsConnectable *connectable)
 		      stargazer_synth,
 		      NULL);
 
+  /* tremolo */
   g_object_disconnect((GObject *) stargazer_synth->tremolo_enabled,
 		      "any_signal::toggled",
 		      G_CALLBACK(ags_stargazer_synth_tremolo_enabled_callback),
@@ -2758,6 +2912,7 @@ ags_stargazer_synth_disconnect(AgsConnectable *connectable)
 		      (gpointer) stargazer_synth,
 		      NULL);
 
+  /* vibrato */
   g_object_disconnect((GObject *) stargazer_synth->vibrato_enabled,
 		      "any_signal::toggled",
 		      G_CALLBACK(ags_stargazer_synth_vibrato_enabled_callback),

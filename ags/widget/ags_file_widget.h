@@ -97,7 +97,7 @@ struct _AgsFileWidget
 
   GtkBox *vbox;
 
-  AgsFileEntry *location_entry;
+  GtkEntry *location_entry;
 
   GtkMenuButton *action_menu_button;
   GtkPopoverMenu *action_popover;

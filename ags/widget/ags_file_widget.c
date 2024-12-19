@@ -496,7 +496,7 @@ ags_file_widget_init(AgsFileWidget *file_widget)
   gtk_box_append(hbox,
 		 (GtkWidget *) label);
 
-  file_widget->location_entry = ags_file_entry_new();
+  file_widget->location_entry = (GtkEntry *) gtk_entry_new();
 
   gtk_widget_set_halign((GtkWidget *) file_widget->location_entry,
 			GTK_ALIGN_FILL);
@@ -1241,7 +1241,7 @@ ags_file_widget_location_entry_callback(GtkEntry *location_entry,
   gchar *filename;
   gchar *prev_current_path;
   
-  filename = ags_file_entry_get_filename(file_widget->location_entry);
+  filename = gtk_editable_get_text(GTK_EDITABLE(file_widget->location_entry));
 
   if(filename != NULL){
     prev_current_path = file_widget->current_path;
@@ -3022,7 +3022,9 @@ ags_file_widget_get_filename(AgsFileWidget *file_widget)
   if(ags_file_widget_test_file_action(file_widget, AGS_FILE_WIDGET_SAVE_AS)){
     gchar *str;
 
-    str = ags_file_entry_get_filename(file_widget->location_entry);
+    g_signal_emit_by_name(file_widget->location_entry, "activate");
+    
+    str = gtk_editable_get_text(GTK_EDITABLE(file_widget->location_entry));
     
     filename = g_strdup(str);
   }else{
@@ -3112,7 +3114,9 @@ ags_file_widget_get_filenames(AgsFileWidget *file_widget)
     gchar *filename;
     gchar *str;
 
-    str = ags_file_entry_get_filename(file_widget->location_entry);
+    g_signal_emit_by_name(file_widget->location_entry, "activate");
+
+    str = gtk_editable_get_text(GTK_EDITABLE(file_widget->location_entry));
     
     filename = g_strdup(str);
 
@@ -3296,8 +3300,8 @@ ags_file_widget_real_refresh(AgsFileWidget *file_widget)
 				      G_LIST_MODEL(multi_filename_string_list));
       }
 
-      ags_file_entry_set_filename(file_widget->location_entry,
-				  file_widget->current_path);			  
+      gtk_editable_set_text(GTK_EDITABLE(file_widget->location_entry),
+			    file_widget->current_path);			  
 
       location_string_list = gtk_string_list_new((const gchar * const *) location_strv);
       gtk_drop_down_set_model(file_widget->location_drop_down,
@@ -3393,12 +3397,12 @@ ags_file_widget_real_refresh(AgsFileWidget *file_widget)
       //TODO:JK: implement me
     }else if(g_file_test(file_widget->current_path,
 			 G_FILE_TEST_IS_DIR)){
-      ags_file_entry_set_filename(file_widget->location_entry,
-				  file_widget->current_path);			  
+      gtk_editable_set_text(GTK_EDITABLE(file_widget->location_entry),
+			    file_widget->current_path);			  
     }else if(!g_strcmp0(file_widget->current_path,
 			"recently-used:")){    
-      ags_file_entry_set_filename(file_widget->location_entry,
-				  i18n("Recently used:"));    
+      gtk_editable_set_text(GTK_EDITABLE(file_widget->location_entry),
+			    i18n("Recently used:"));    
     }
   }
   
