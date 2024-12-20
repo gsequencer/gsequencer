@@ -1848,6 +1848,7 @@ ags_seq_synth_util_get_tuning_by_offset(AgsSeqSynthUtil *seq_synth_util,
 {
   guint samplerate;
   gdouble tuning_a, tuning_b;
+  gdouble tuning;
   gdouble seq_tuning_lfo_frequency;
   gboolean seq_tuning_pingpong;
   guint seq_offset;
@@ -1862,10 +1863,22 @@ ags_seq_synth_util_get_tuning_by_offset(AgsSeqSynthUtil *seq_synth_util,
   
   seq_tuning_pingpong = seq_synth_util->seq_tuning_pingpong;
 
-  seq_offset = (guint) floor(offset / (samplerate / seq_tuning_lfo_frequency));
+  seq_offset = 0;
 
-  seq_tuning_offset_end = (guint) floor((double) samplerate / seq_tuning_lfo_frequency);
-  seq_tuning_offset = offset % seq_tuning_offset_end;
+  if(seq_tuning_lfo_frequency != 0.0){
+    seq_offset = (guint) floor(offset / (samplerate / seq_tuning_lfo_frequency));
+  }
+  
+  seq_tuning_offset = 0;
+  seq_tuning_offset_end = 0;
+  
+  if(seq_tuning_lfo_frequency != 0.0){
+    seq_tuning_offset_end = (guint) floor((double) samplerate / seq_tuning_lfo_frequency);
+  }
+
+  if(seq_tuning_offset_end != 0){
+    seq_tuning_offset = offset % seq_tuning_offset_end;
+  }
   
   switch(seq_offset % 8){
   case 0:
@@ -1997,8 +2010,14 @@ ags_seq_synth_util_get_tuning_by_offset(AgsSeqSynthUtil *seq_synth_util,
     }
     break;
   }
+
+  tuning = 0.0;
   
-  return(((seq_tuning_offset) * (tuning_a / seq_tuning_offset_end)) * ((seq_tuning_offset_end - seq_tuning_offset) * (tuning_b / seq_tuning_offset_end)));
+  if(seq_tuning_offset_end != 0){
+    tuning = ((seq_tuning_offset) * (tuning_a / seq_tuning_offset_end)) * ((seq_tuning_offset_end - seq_tuning_offset) * (tuning_b / seq_tuning_offset_end));
+  }
+  
+  return(tuning);
 }
 
 /**
@@ -2018,6 +2037,7 @@ ags_seq_synth_util_get_volume_by_offset(AgsSeqSynthUtil *seq_synth_util,
 {
   guint samplerate;
   gdouble volume_a, volume_b;
+  gdouble volume;
   gdouble seq_volume_lfo_frequency;
   gboolean seq_volume_pingpong;
   guint seq_offset;
@@ -2032,10 +2052,22 @@ ags_seq_synth_util_get_volume_by_offset(AgsSeqSynthUtil *seq_synth_util,
   
   seq_volume_pingpong = seq_synth_util->seq_volume_pingpong;
 
-  seq_offset = (guint) floor(offset / (samplerate / seq_volume_lfo_frequency));
+  seq_offset = 0;
+  
+  if(seq_volume_lfo_frequency != 0.0){
+    seq_offset = (guint) floor(offset / (samplerate / seq_volume_lfo_frequency));
+  }
+  
+  seq_volume_offset = 0;
+  seq_volume_offset_end = 0;
 
-  seq_volume_offset_end = (guint) floor((double) samplerate / seq_volume_lfo_frequency);
-  seq_volume_offset = offset % seq_volume_offset_end;
+  if(seq_volume_lfo_frequency != 0.0){
+    seq_volume_offset_end = (guint) floor((double) samplerate / seq_volume_lfo_frequency);
+  }
+
+  if(seq_volume_offset_end != 0){
+    seq_volume_offset = offset % seq_volume_offset_end;
+  }
   
   switch(seq_offset % 8){
   case 0:
@@ -2167,8 +2199,14 @@ ags_seq_synth_util_get_volume_by_offset(AgsSeqSynthUtil *seq_synth_util,
     }
     break;
   }
+
+  volume = 1.0;
+
+  if(seq_volume_offset_end != 0){
+    volume = ((seq_volume_offset) * (volume_a / seq_volume_offset_end)) * ((seq_volume_offset_end - seq_volume_offset) * (volume_b / seq_volume_offset_end));
+  }
   
-  return(((seq_volume_offset) * (volume_a / seq_volume_offset_end)) * ((seq_volume_offset_end - seq_volume_offset) * (volume_b / seq_volume_offset_end)));
+  return(volume);
 }
 
 /**

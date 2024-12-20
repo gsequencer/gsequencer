@@ -2026,7 +2026,7 @@ ags_fx_seq_synth_audio_init(AgsFxSeqSynthAudio *fx_seq_synth_audio)
   position = 0;
 
   /* synth-0 oscillator */
-  fx_seq_synth_audio->synth_1_oscillator = g_object_new(AGS_TYPE_PORT,
+  fx_seq_synth_audio->synth_0_oscillator = g_object_new(AGS_TYPE_PORT,
 							"plugin-name", ags_fx_seq_synth_audio_plugin_name,
 							"specifier", "./synth-0-oscillator[0]",
 							"control-port", "1/99",
@@ -2322,7 +2322,7 @@ ags_fx_seq_synth_audio_init(AgsFxSeqSynthAudio *fx_seq_synth_audio)
 						    "port-value-length", 1,
 						    NULL);
   
-  fx_seq_synth_audio->synth_0_seq_tuning_pingpong->port_value.ags_port_float = (gfloat) 0.0;
+  fx_seq_synth_audio->synth_0_seq_tuning_pingpong->port_value.ags_port_float = (gfloat) FALSE;
 
   g_object_set(fx_seq_synth_audio->synth_0_seq_tuning_pingpong,
 	       "plugin-port", ags_fx_seq_synth_audio_get_synth_0_seq_tuning_pingpong_plugin_port(),
@@ -2344,7 +2344,7 @@ ags_fx_seq_synth_audio_init(AgsFxSeqSynthAudio *fx_seq_synth_audio)
 						    "port-value-length", 1,
 						    NULL);
   
-  fx_seq_synth_audio->synth_0_seq_tuning_lfo_frequency->port_value.ags_port_float = (gfloat) 0.0;
+  fx_seq_synth_audio->synth_0_seq_tuning_lfo_frequency->port_value.ags_port_float = (gfloat) 6.0;
 
   g_object_set(fx_seq_synth_audio->synth_0_seq_tuning_lfo_frequency,
 	       "plugin-port", ags_fx_seq_synth_audio_get_synth_0_seq_tuning_lfo_frequency_plugin_port(),
@@ -2542,7 +2542,7 @@ ags_fx_seq_synth_audio_init(AgsFxSeqSynthAudio *fx_seq_synth_audio)
 						    "port-value-length", 1,
 						    NULL);
   
-  fx_seq_synth_audio->synth_0_seq_volume_pingpong->port_value.ags_port_float = (gfloat) 0.0;
+  fx_seq_synth_audio->synth_0_seq_volume_pingpong->port_value.ags_port_float = (gfloat) FALSE;
 
   g_object_set(fx_seq_synth_audio->synth_0_seq_volume_pingpong,
 	       "plugin-port", ags_fx_seq_synth_audio_get_synth_0_seq_volume_pingpong_plugin_port(),
@@ -3225,7 +3225,7 @@ ags_fx_seq_synth_audio_init(AgsFxSeqSynthAudio *fx_seq_synth_audio)
 						    "port-value-length", 1,
 						    NULL);
   
-  fx_seq_synth_audio->synth_1_seq_tuning_pingpong->port_value.ags_port_float = (gfloat) 0.0;
+  fx_seq_synth_audio->synth_1_seq_tuning_pingpong->port_value.ags_port_float = (gfloat) FALSE;
 
   g_object_set(fx_seq_synth_audio->synth_1_seq_tuning_pingpong,
 	       "plugin-port", ags_fx_seq_synth_audio_get_synth_1_seq_tuning_pingpong_plugin_port(),
@@ -3236,11 +3236,33 @@ ags_fx_seq_synth_audio_init(AgsFxSeqSynthAudio *fx_seq_synth_audio)
 
   position++;
 
+  /* synth-1 seq tuning LFO frequency */
+  fx_seq_synth_audio->synth_1_seq_tuning_lfo_frequency = g_object_new(AGS_TYPE_PORT,
+						    "plugin-name", ags_fx_seq_synth_audio_plugin_name,
+						    "specifier", "./synth-1-seq-tuning-lfo-frequency[0]",
+						    "control-port", "55/99",
+						    "port-value-is-pointer", FALSE,
+						    "port-value-type", G_TYPE_FLOAT,
+						    "port-value-size", sizeof(gfloat),
+						    "port-value-length", 1,
+						    NULL);
+  
+  fx_seq_synth_audio->synth_1_seq_tuning_lfo_frequency->port_value.ags_port_float = (gfloat) 6.0;
+
+  g_object_set(fx_seq_synth_audio->synth_1_seq_tuning_lfo_frequency,
+	       "plugin-port", ags_fx_seq_synth_audio_get_synth_1_seq_tuning_lfo_frequency_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_seq_synth_audio,
+		      fx_seq_synth_audio->synth_1_seq_tuning_lfo_frequency);
+
+  position++;
+
   /* synth-1 seq volume 0 */
   fx_seq_synth_audio->synth_1_seq_volume_0 = g_object_new(AGS_TYPE_PORT,
 						    "plugin-name", ags_fx_seq_synth_audio_plugin_name,
 						    "specifier", "./synth-1-seq-volume-0[0]",
-						    "control-port", "55/99",
+						    "control-port", "56/99",
 						    "port-value-is-pointer", FALSE,
 						    "port-value-type", G_TYPE_FLOAT,
 						    "port-value-size", sizeof(gfloat),
@@ -3262,7 +3284,7 @@ ags_fx_seq_synth_audio_init(AgsFxSeqSynthAudio *fx_seq_synth_audio)
   fx_seq_synth_audio->synth_1_seq_volume_1 = g_object_new(AGS_TYPE_PORT,
 						    "plugin-name", ags_fx_seq_synth_audio_plugin_name,
 						    "specifier", "./synth-1-seq-volume-1[0]",
-						    "control-port", "56/99",
+						    "control-port", "57/99",
 						    "port-value-is-pointer", FALSE,
 						    "port-value-type", G_TYPE_FLOAT,
 						    "port-value-size", sizeof(gfloat),
@@ -3284,7 +3306,7 @@ ags_fx_seq_synth_audio_init(AgsFxSeqSynthAudio *fx_seq_synth_audio)
   fx_seq_synth_audio->synth_1_seq_volume_2 = g_object_new(AGS_TYPE_PORT,
 						    "plugin-name", ags_fx_seq_synth_audio_plugin_name,
 						    "specifier", "./synth-1-seq-volume-2[0]",
-						    "control-port", "57/99",
+						    "control-port", "58/99",
 						    "port-value-is-pointer", FALSE,
 						    "port-value-type", G_TYPE_FLOAT,
 						    "port-value-size", sizeof(gfloat),
@@ -3306,7 +3328,7 @@ ags_fx_seq_synth_audio_init(AgsFxSeqSynthAudio *fx_seq_synth_audio)
   fx_seq_synth_audio->synth_1_seq_volume_3 = g_object_new(AGS_TYPE_PORT,
 						    "plugin-name", ags_fx_seq_synth_audio_plugin_name,
 						    "specifier", "./synth-1-seq-volume-3[0]",
-						    "control-port", "58/99",
+						    "control-port", "59/99",
 						    "port-value-is-pointer", FALSE,
 						    "port-value-type", G_TYPE_FLOAT,
 						    "port-value-size", sizeof(gfloat),
@@ -3328,7 +3350,7 @@ ags_fx_seq_synth_audio_init(AgsFxSeqSynthAudio *fx_seq_synth_audio)
   fx_seq_synth_audio->synth_1_seq_volume_4 = g_object_new(AGS_TYPE_PORT,
 						    "plugin-name", ags_fx_seq_synth_audio_plugin_name,
 						    "specifier", "./synth-1-seq-volume-4[0]",
-						    "control-port", "59/99",
+						    "control-port", "60/99",
 						    "port-value-is-pointer", FALSE,
 						    "port-value-type", G_TYPE_FLOAT,
 						    "port-value-size", sizeof(gfloat),
@@ -3350,7 +3372,7 @@ ags_fx_seq_synth_audio_init(AgsFxSeqSynthAudio *fx_seq_synth_audio)
   fx_seq_synth_audio->synth_1_seq_volume_5 = g_object_new(AGS_TYPE_PORT,
 						    "plugin-name", ags_fx_seq_synth_audio_plugin_name,
 						    "specifier", "./synth-1-seq-volume-5[0]",
-						    "control-port", "60/99",
+						    "control-port", "61/99",
 						    "port-value-is-pointer", FALSE,
 						    "port-value-type", G_TYPE_FLOAT,
 						    "port-value-size", sizeof(gfloat),
@@ -3372,7 +3394,7 @@ ags_fx_seq_synth_audio_init(AgsFxSeqSynthAudio *fx_seq_synth_audio)
   fx_seq_synth_audio->synth_1_seq_volume_6 = g_object_new(AGS_TYPE_PORT,
 						    "plugin-name", ags_fx_seq_synth_audio_plugin_name,
 						    "specifier", "./synth-1-seq-volume-6[0]",
-						    "control-port", "61/99",
+						    "control-port", "62/99",
 						    "port-value-is-pointer", FALSE,
 						    "port-value-type", G_TYPE_FLOAT,
 						    "port-value-size", sizeof(gfloat),
@@ -3394,7 +3416,7 @@ ags_fx_seq_synth_audio_init(AgsFxSeqSynthAudio *fx_seq_synth_audio)
   fx_seq_synth_audio->synth_1_seq_volume_7 = g_object_new(AGS_TYPE_PORT,
 						    "plugin-name", ags_fx_seq_synth_audio_plugin_name,
 						    "specifier", "./synth-1-seq-volume-7[0]",
-						    "control-port", "62/99",
+						    "control-port", "63/99",
 						    "port-value-is-pointer", FALSE,
 						    "port-value-type", G_TYPE_FLOAT,
 						    "port-value-size", sizeof(gfloat),
@@ -3416,14 +3438,14 @@ ags_fx_seq_synth_audio_init(AgsFxSeqSynthAudio *fx_seq_synth_audio)
   fx_seq_synth_audio->synth_1_seq_volume_pingpong = g_object_new(AGS_TYPE_PORT,
 						    "plugin-name", ags_fx_seq_synth_audio_plugin_name,
 						    "specifier", "./synth-1-seq-volume-pingpong[0]",
-						    "control-port", "63/99",
+						    "control-port", "64/99",
 						    "port-value-is-pointer", FALSE,
 						    "port-value-type", G_TYPE_FLOAT,
 						    "port-value-size", sizeof(gfloat),
 						    "port-value-length", 1,
 						    NULL);
   
-  fx_seq_synth_audio->synth_1_seq_volume_pingpong->port_value.ags_port_float = (gfloat) 0.0;
+  fx_seq_synth_audio->synth_1_seq_volume_pingpong->port_value.ags_port_float = (gfloat) FALSE;
 
   g_object_set(fx_seq_synth_audio->synth_1_seq_volume_pingpong,
 	       "plugin-port", ags_fx_seq_synth_audio_get_synth_1_seq_volume_pingpong_plugin_port(),
@@ -3438,28 +3460,6 @@ ags_fx_seq_synth_audio_init(AgsFxSeqSynthAudio *fx_seq_synth_audio)
   fx_seq_synth_audio->synth_1_seq_volume_lfo_frequency = g_object_new(AGS_TYPE_PORT,
 						    "plugin-name", ags_fx_seq_synth_audio_plugin_name,
 						    "specifier", "./synth-1-seq-volume-lfo-frequency[0]",
-						    "control-port", "64/99",
-						    "port-value-is-pointer", FALSE,
-						    "port-value-type", G_TYPE_FLOAT,
-						    "port-value-size", sizeof(gfloat),
-						    "port-value-length", 1,
-						    NULL);
-  
-  fx_seq_synth_audio->synth_1_seq_volume_lfo_frequency->port_value.ags_port_float = (gfloat) 0.0;
-
-  g_object_set(fx_seq_synth_audio->synth_1_seq_volume_lfo_frequency,
-	       "plugin-port", ags_fx_seq_synth_audio_get_synth_1_seq_volume_lfo_frequency_plugin_port(),
-	       NULL);
-
-  ags_recall_add_port((AgsRecall *) fx_seq_synth_audio,
-		      fx_seq_synth_audio->synth_1_seq_volume_lfo_frequency);
-
-  position++;
-
-  /* synth-1 seq tuning LFO frequency */
-  fx_seq_synth_audio->synth_1_seq_tuning_lfo_frequency = g_object_new(AGS_TYPE_PORT,
-						    "plugin-name", ags_fx_seq_synth_audio_plugin_name,
-						    "specifier", "./synth-1-seq-tuning-lfo-frequency[0]",
 						    "control-port", "65/99",
 						    "port-value-is-pointer", FALSE,
 						    "port-value-type", G_TYPE_FLOAT,
@@ -3467,14 +3467,14 @@ ags_fx_seq_synth_audio_init(AgsFxSeqSynthAudio *fx_seq_synth_audio)
 						    "port-value-length", 1,
 						    NULL);
   
-  fx_seq_synth_audio->synth_1_seq_tuning_lfo_frequency->port_value.ags_port_float = (gfloat) 0.0;
+  fx_seq_synth_audio->synth_1_seq_volume_lfo_frequency->port_value.ags_port_float = (gfloat) 6.0;
 
-  g_object_set(fx_seq_synth_audio->synth_1_seq_tuning_lfo_frequency,
-	       "plugin-port", ags_fx_seq_synth_audio_get_synth_1_seq_tuning_lfo_frequency_plugin_port(),
+  g_object_set(fx_seq_synth_audio->synth_1_seq_volume_lfo_frequency,
+	       "plugin-port", ags_fx_seq_synth_audio_get_synth_1_seq_volume_lfo_frequency_plugin_port(),
 	       NULL);
 
   ags_recall_add_port((AgsRecall *) fx_seq_synth_audio,
-		      fx_seq_synth_audio->synth_1_seq_tuning_lfo_frequency);
+		      fx_seq_synth_audio->synth_1_seq_volume_lfo_frequency);
 
   position++;
 
@@ -4642,6 +4642,276 @@ ags_fx_seq_synth_audio_set_property(GObject *gobject,
       g_rec_mutex_unlock(recall_mutex);	
     }
     break;
+  case PROP_SYNTH_0_SEQ_VOLUME_0:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_seq_synth_audio->synth_0_seq_volume_0){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_seq_synth_audio->synth_0_seq_volume_0 != NULL){
+	g_object_unref(G_OBJECT(fx_seq_synth_audio->synth_0_seq_volume_0));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_seq_synth_audio->synth_0_seq_volume_0 = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_VOLUME_1:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_seq_synth_audio->synth_0_seq_volume_1){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_seq_synth_audio->synth_0_seq_volume_1 != NULL){
+	g_object_unref(G_OBJECT(fx_seq_synth_audio->synth_0_seq_volume_1));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_seq_synth_audio->synth_0_seq_volume_1 = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_VOLUME_2:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_seq_synth_audio->synth_0_seq_volume_2){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_seq_synth_audio->synth_0_seq_volume_2 != NULL){
+	g_object_unref(G_OBJECT(fx_seq_synth_audio->synth_0_seq_volume_2));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_seq_synth_audio->synth_0_seq_volume_2 = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_VOLUME_3:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_seq_synth_audio->synth_0_seq_volume_3){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_seq_synth_audio->synth_0_seq_volume_3 != NULL){
+	g_object_unref(G_OBJECT(fx_seq_synth_audio->synth_0_seq_volume_3));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_seq_synth_audio->synth_0_seq_volume_3 = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_VOLUME_4:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_seq_synth_audio->synth_0_seq_volume_4){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_seq_synth_audio->synth_0_seq_volume_4 != NULL){
+	g_object_unref(G_OBJECT(fx_seq_synth_audio->synth_0_seq_volume_4));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_seq_synth_audio->synth_0_seq_volume_4 = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_VOLUME_5:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_seq_synth_audio->synth_0_seq_volume_5){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_seq_synth_audio->synth_0_seq_volume_5 != NULL){
+	g_object_unref(G_OBJECT(fx_seq_synth_audio->synth_0_seq_volume_5));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_seq_synth_audio->synth_0_seq_volume_5 = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_VOLUME_6:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_seq_synth_audio->synth_0_seq_volume_6){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_seq_synth_audio->synth_0_seq_volume_6 != NULL){
+	g_object_unref(G_OBJECT(fx_seq_synth_audio->synth_0_seq_volume_6));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_seq_synth_audio->synth_0_seq_volume_6 = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_VOLUME_7:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_seq_synth_audio->synth_0_seq_volume_7){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_seq_synth_audio->synth_0_seq_volume_7 != NULL){
+	g_object_unref(G_OBJECT(fx_seq_synth_audio->synth_0_seq_volume_7));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_seq_synth_audio->synth_0_seq_volume_7 = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_VOLUME_PINGPONG:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_seq_synth_audio->synth_0_seq_volume_pingpong){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_seq_synth_audio->synth_0_seq_volume_pingpong != NULL){
+	g_object_unref(G_OBJECT(fx_seq_synth_audio->synth_0_seq_volume_pingpong));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_seq_synth_audio->synth_0_seq_volume_pingpong = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_VOLUME_LFO_FREQUENCY:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_seq_synth_audio->synth_0_seq_volume_lfo_frequency){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_seq_synth_audio->synth_0_seq_volume_lfo_frequency != NULL){
+	g_object_unref(G_OBJECT(fx_seq_synth_audio->synth_0_seq_volume_lfo_frequency));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_seq_synth_audio->synth_0_seq_volume_lfo_frequency = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
   case PROP_SYNTH_0_SYNC_ENABLED:
     {
       AgsPort *port;
@@ -5475,6 +5745,276 @@ ags_fx_seq_synth_audio_set_property(GObject *gobject,
       }
 
       fx_seq_synth_audio->synth_1_seq_tuning_lfo_frequency = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_1_SEQ_VOLUME_0:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_seq_synth_audio->synth_1_seq_volume_0){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_seq_synth_audio->synth_1_seq_volume_0 != NULL){
+	g_object_unref(G_OBJECT(fx_seq_synth_audio->synth_1_seq_volume_0));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_seq_synth_audio->synth_1_seq_volume_0 = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_1_SEQ_VOLUME_1:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_seq_synth_audio->synth_1_seq_volume_1){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_seq_synth_audio->synth_1_seq_volume_1 != NULL){
+	g_object_unref(G_OBJECT(fx_seq_synth_audio->synth_1_seq_volume_1));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_seq_synth_audio->synth_1_seq_volume_1 = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_1_SEQ_VOLUME_2:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_seq_synth_audio->synth_1_seq_volume_2){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_seq_synth_audio->synth_1_seq_volume_2 != NULL){
+	g_object_unref(G_OBJECT(fx_seq_synth_audio->synth_1_seq_volume_2));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_seq_synth_audio->synth_1_seq_volume_2 = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_1_SEQ_VOLUME_3:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_seq_synth_audio->synth_1_seq_volume_3){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_seq_synth_audio->synth_1_seq_volume_3 != NULL){
+	g_object_unref(G_OBJECT(fx_seq_synth_audio->synth_1_seq_volume_3));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_seq_synth_audio->synth_1_seq_volume_3 = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_1_SEQ_VOLUME_4:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_seq_synth_audio->synth_1_seq_volume_4){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_seq_synth_audio->synth_1_seq_volume_4 != NULL){
+	g_object_unref(G_OBJECT(fx_seq_synth_audio->synth_1_seq_volume_4));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_seq_synth_audio->synth_1_seq_volume_4 = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_1_SEQ_VOLUME_5:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_seq_synth_audio->synth_1_seq_volume_5){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_seq_synth_audio->synth_1_seq_volume_5 != NULL){
+	g_object_unref(G_OBJECT(fx_seq_synth_audio->synth_1_seq_volume_5));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_seq_synth_audio->synth_1_seq_volume_5 = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_1_SEQ_VOLUME_6:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_seq_synth_audio->synth_1_seq_volume_6){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_seq_synth_audio->synth_1_seq_volume_6 != NULL){
+	g_object_unref(G_OBJECT(fx_seq_synth_audio->synth_1_seq_volume_6));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_seq_synth_audio->synth_1_seq_volume_6 = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_1_SEQ_VOLUME_7:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_seq_synth_audio->synth_1_seq_volume_7){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_seq_synth_audio->synth_1_seq_volume_7 != NULL){
+	g_object_unref(G_OBJECT(fx_seq_synth_audio->synth_1_seq_volume_7));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_seq_synth_audio->synth_1_seq_volume_7 = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_1_SEQ_VOLUME_PINGPONG:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_seq_synth_audio->synth_1_seq_volume_pingpong){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_seq_synth_audio->synth_1_seq_volume_pingpong != NULL){
+	g_object_unref(G_OBJECT(fx_seq_synth_audio->synth_1_seq_volume_pingpong));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_seq_synth_audio->synth_1_seq_volume_pingpong = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_1_SEQ_VOLUME_LFO_FREQUENCY:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_seq_synth_audio->synth_1_seq_volume_lfo_frequency){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_seq_synth_audio->synth_1_seq_volume_lfo_frequency != NULL){
+	g_object_unref(G_OBJECT(fx_seq_synth_audio->synth_1_seq_volume_lfo_frequency));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_seq_synth_audio->synth_1_seq_volume_lfo_frequency = port;
       
       g_rec_mutex_unlock(recall_mutex);	
     }
@@ -6527,6 +7067,96 @@ ags_fx_seq_synth_audio_get_property(GObject *gobject,
       g_rec_mutex_unlock(recall_mutex);	
     }
     break;
+  case PROP_SYNTH_0_SEQ_VOLUME_0:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_seq_synth_audio->synth_0_seq_volume_0);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_VOLUME_1:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_seq_synth_audio->synth_0_seq_volume_1);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_VOLUME_2:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_seq_synth_audio->synth_0_seq_volume_2);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_VOLUME_3:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_seq_synth_audio->synth_0_seq_volume_3);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_VOLUME_4:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_seq_synth_audio->synth_0_seq_volume_4);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_VOLUME_5:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_seq_synth_audio->synth_0_seq_volume_5);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_VOLUME_6:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_seq_synth_audio->synth_0_seq_volume_6);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_VOLUME_7:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_seq_synth_audio->synth_0_seq_volume_7);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_VOLUME_PINGPONG:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_seq_synth_audio->synth_0_seq_volume_pingpong);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_VOLUME_LFO_FREQUENCY:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_seq_synth_audio->synth_0_seq_volume_lfo_frequency);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
   case PROP_SYNTH_0_SYNC_ENABLED:
     {
       g_rec_mutex_lock(recall_mutex);
@@ -6802,6 +7432,96 @@ ags_fx_seq_synth_audio_get_property(GObject *gobject,
       g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, fx_seq_synth_audio->synth_1_seq_tuning_lfo_frequency);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_1_SEQ_VOLUME_0:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_seq_synth_audio->synth_1_seq_volume_0);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_1_SEQ_VOLUME_1:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_seq_synth_audio->synth_1_seq_volume_1);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_1_SEQ_VOLUME_2:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_seq_synth_audio->synth_1_seq_volume_2);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_1_SEQ_VOLUME_3:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_seq_synth_audio->synth_1_seq_volume_3);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_1_SEQ_VOLUME_4:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_seq_synth_audio->synth_1_seq_volume_4);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_1_SEQ_VOLUME_5:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_seq_synth_audio->synth_1_seq_volume_5);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_1_SEQ_VOLUME_6:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_seq_synth_audio->synth_1_seq_volume_6);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_1_SEQ_VOLUME_7:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_seq_synth_audio->synth_1_seq_volume_7);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_1_SEQ_VOLUME_PINGPONG:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_seq_synth_audio->synth_1_seq_volume_pingpong);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_1_SEQ_VOLUME_LFO_FREQUENCY:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_seq_synth_audio->synth_1_seq_volume_lfo_frequency);
       
       g_rec_mutex_unlock(recall_mutex);	
     }

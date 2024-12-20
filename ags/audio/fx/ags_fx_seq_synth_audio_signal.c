@@ -166,8 +166,8 @@ ags_fx_seq_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
   
   guint sound_scope;
   guint audio_channel;
-  guint audio_seqt_mapping;
-  guint midi_seqt_mapping;
+  guint audio_start_mapping;
+  guint midi_start_mapping;
   gint midi_note;
   guint x0_256th, x1_256th;
   guint64 note_256th_offset_lower;
@@ -280,8 +280,8 @@ ags_fx_seq_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
 
   audio_channel = 0;
   
-  audio_seqt_mapping = 0;
-  midi_seqt_mapping = 0;
+  audio_start_mapping = 0;
+  midi_start_mapping = 0;
 
   format = AGS_SOUNDCARD_DEFAULT_FORMAT;
   samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
@@ -434,18 +434,18 @@ ags_fx_seq_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
   /* process data */
   source_stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(source);
 
-  audio_seqt_mapping = 0;
-  midi_seqt_mapping = 0;
+  audio_start_mapping = 0;
+  midi_start_mapping = 0;
   
   g_object_get(audio,
-	       "audio-seqt-mapping", &audio_seqt_mapping,
-	       "midi-seqt-mapping", &midi_seqt_mapping,
+	       "audio-start-mapping", &audio_start_mapping,
+	       "midi-start-mapping", &midi_start_mapping,
 	       NULL);
 
   if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING)){
-    midi_note = (128 - y - 1 - audio_seqt_mapping + midi_seqt_mapping);
+    midi_note = (128 - y - 1 - audio_start_mapping + midi_start_mapping);
   }else{
-    midi_note = (y - audio_seqt_mapping + midi_seqt_mapping);
+    midi_note = (y - audio_start_mapping + midi_start_mapping);
   }
 
   if(fx_seq_synth_audio != NULL){
@@ -3147,8 +3147,8 @@ ags_fx_seq_synth_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notatio
 
   guint sound_scope;
   guint audio_channel;
-  guint audio_seqt_mapping;
-  guint midi_seqt_mapping;
+  guint audio_start_mapping;
+  guint midi_start_mapping;
   gint midi_note;
 
   GRecMutex *fx_seq_synth_audio_mutex;
@@ -3166,8 +3166,8 @@ ags_fx_seq_synth_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notatio
 
   audio_channel = 0;
 
-  audio_seqt_mapping = 0;
-  midi_seqt_mapping = 0;
+  audio_start_mapping = 0;
+  midi_start_mapping = 0;
 
   g_object_get(fx_notation_audio_signal,
 	       "parent", &fx_seq_synth_recycling,
@@ -3191,13 +3191,13 @@ ags_fx_seq_synth_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notatio
 	       NULL);
 
   g_object_get(audio,
-	       "audio-seqt-mapping", &audio_seqt_mapping,
-	       "midi-seqt-mapping", &midi_seqt_mapping,
+	       "audio-start-mapping", &audio_start_mapping,
+	       "midi-start-mapping", &midi_start_mapping,
 	       NULL);
 
   fx_seq_synth_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_seq_synth_audio);
 
-  midi_note = (y - audio_seqt_mapping + midi_seqt_mapping);
+  midi_note = (y - audio_start_mapping + midi_start_mapping);
 
   if(midi_note >= 0 &&
      midi_note < 128){
