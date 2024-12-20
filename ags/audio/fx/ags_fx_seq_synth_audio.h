@@ -74,6 +74,7 @@ struct _AgsFxSeqSynthAudio
   AgsPort *synth_0_seq_tuning_7;
 
   AgsPort *synth_0_seq_tuning_pingpong;
+  AgsPort *synth_0_seq_tuning_lfo_frequency;
 
   AgsPort *synth_0_seq_volume_0;
   AgsPort *synth_0_seq_volume_1;
@@ -85,12 +86,13 @@ struct _AgsFxSeqSynthAudio
   AgsPort *synth_0_seq_volume_7;
 
   AgsPort *synth_0_seq_volume_pingpong;
+  AgsPort *synth_0_seq_volume_lfo_frequency;
 
   AgsPort *synth_0_lfo_oscillator;
   AgsPort *synth_0_lfo_frequency;
 
   AgsPort *synth_0_lfo_depth;
-  AgsPort *synth_0_lfo_volume;
+  AgsPort *synth_0_lfo_tuning;
 
   AgsPort *synth_0_sync_enabled;
 
@@ -129,6 +131,7 @@ struct _AgsFxSeqSynthAudio
   AgsPort *synth_1_seq_tuning_7;
 
   AgsPort *synth_1_seq_tuning_pingpong;
+  AgsPort *synth_1_seq_tuning_lfo_frequency;
 
   AgsPort *synth_1_seq_volume_0;
   AgsPort *synth_1_seq_volume_1;
@@ -140,6 +143,7 @@ struct _AgsFxSeqSynthAudio
   AgsPort *synth_1_seq_volume_7;
 
   AgsPort *synth_1_seq_volume_pingpong;
+  AgsPort *synth_1_seq_volume_lfo_frequency;
 
   AgsPort *synth_1_lfo_oscillator;
   AgsPort *synth_1_lfo_frequency;

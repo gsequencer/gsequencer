@@ -1055,8 +1055,8 @@ ags_seq_synth_util_get_tuning_by_offset(AgsSeqSynthUtil *seq_synth_util,
   
   samplerate = seq_synth_util->samplerate;
 
-  frequency_a = 440.0;
-  frequency_b = 440.0;
+  tuning_a = 0.0;
+  tuning_b = 0.0;
   
   seq_tuning_lfo_frequency = seq_synth_util->seq_tuning_lfo_frequency;
   
@@ -1075,7 +1075,7 @@ ags_seq_synth_util_get_tuning_by_offset(AgsSeqSynthUtil *seq_synth_util,
 	tuning_b = seq_synth_util->seq_tuning_1;
       }else{
 	if((guint) floor(seq_offset / 8.0) % 2 == 1){
-	  tuning_a = seq_synth_util->seq_tuning_0
+	  tuning_a = seq_synth_util->seq_tuning_0;
 	  tuning_b = seq_synth_util->seq_tuning_1;
 	}else{
 	  tuning_a = seq_synth_util->seq_tuning_0;
@@ -1225,8 +1225,8 @@ ags_seq_synth_util_get_volume_by_offset(AgsSeqSynthUtil *seq_synth_util,
   
   samplerate = seq_synth_util->samplerate;
 
-  frequency_a = 440.0;
-  frequency_b = 440.0;
+  volume_a = 1.0;
+  volume_b = 1.0;
   
   seq_volume_lfo_frequency = seq_synth_util->seq_volume_lfo_frequency;
   
@@ -1245,7 +1245,7 @@ ags_seq_synth_util_get_volume_by_offset(AgsSeqSynthUtil *seq_synth_util,
 	volume_b = seq_synth_util->seq_volume_1;
       }else{
 	if((guint) floor(seq_offset / 8.0) % 2 == 1){
-	  volume_a = seq_synth_util->seq_volume_0
+	  volume_a = seq_synth_util->seq_volume_0;
 	  volume_b = seq_synth_util->seq_volume_1;
 	}else{
 	  volume_a = seq_synth_util->seq_volume_0;
@@ -9516,7 +9516,7 @@ ags_seq_synth_util_compute_triangle_double(AgsSeqSynthUtil *seq_synth_util)
 	  ((((offset + i + 2) + phase) * (frequency * exp2(((((tuning + ags_seq_synth_util_get_tuning_by_offset(seq_synth_util, offset + i + 2)) + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i + 2) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i + 2) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i + 2 + phase) * (frequency * exp2(((((tuning + ags_seq_synth_util_get_tuning_by_offset(seq_synth_util, offset + i + 2)) + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i + 2) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i + 2) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / samplerate)) / 2.0) * 2) - 1.0),
 	  ((((offset + i + 3) + phase) * (frequency * exp2(((((tuning + ags_seq_synth_util_get_tuning_by_offset(seq_synth_util, offset + i + 3)) + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i + 3) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i + 3) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i + 3 + phase) * (frequency * exp2(((((tuning + ags_seq_synth_util_get_tuning_by_offset(seq_synth_util, offset + i + 3)) + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i + 3) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i + 3) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / samplerate)) / 2.0) * 2) - 1.0),
 	  ((((offset + i + 4) + phase) * (frequency * exp2(((((tuning + ags_seq_synth_util_get_tuning_by_offset(seq_synth_util, offset + i + 4)) + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i + 4) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i + 4) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i + 4 + phase) * (frequency * exp2(((((tuning + ags_seq_synth_util_get_tuning_by_offset(seq_synth_util, offset + i + 4)) + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i + 4) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i + 4) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / samplerate)) / 2.0) * 2) - 1.0),
-	  ((((offset + i + 5) + phase) * (frequency * exp2(((((tuning + ags_seq_synth_util_get_tuning_by_offset(seq_synth_util, offset + i + 5)) + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i + 5) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i + 5) * lfo_frequency / samplerate)) / 2.0) * 2) -< 1.0) * lfo_depth)) / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i + 5 + phase) * (frequency * exp2(((((tuning + ags_seq_synth_util_get_tuning_by_offset(seq_synth_util, offset + i + 5)) + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i + 5) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i + 5) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / samplerate)) / 2.0) * 2) - 1.0),
+	  ((((offset + i + 5) + phase) * (frequency * exp2(((((tuning + ags_seq_synth_util_get_tuning_by_offset(seq_synth_util, offset + i + 5)) + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i + 5) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i + 5) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i + 5 + phase) * (frequency * exp2(((((tuning + ags_seq_synth_util_get_tuning_by_offset(seq_synth_util, offset + i + 5)) + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i + 5) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i + 5) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / samplerate)) / 2.0) * 2) - 1.0),
 	  ((((offset + i + 6) + phase) * (frequency * exp2(((((tuning + ags_seq_synth_util_get_tuning_by_offset(seq_synth_util, offset + i + 6)) + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i + 6) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i + 6) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i + 6 + phase) * (frequency * exp2(((((tuning + ags_seq_synth_util_get_tuning_by_offset(seq_synth_util, offset + i + 6)) + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i + 6) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i + 6) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / samplerate)) / 2.0) * 2) - 1.0),
 	  ((((offset + i + 7) + phase) * (frequency * exp2(((((tuning + ags_seq_synth_util_get_tuning_by_offset(seq_synth_util, offset + i + 7)) + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i + 7) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i + 7) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i + 7 + phase) * (frequency * exp2(((((tuning + ags_seq_synth_util_get_tuning_by_offset(seq_synth_util, offset + i + 7)) + 100.0 * (vibrato_gain * sin((offset) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i + 7) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i + 7) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / samplerate)) / 2.0) * 2) - 1.0)
 	};
