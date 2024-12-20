@@ -512,6 +512,806 @@ ags_seq_synth_util_set_volume(AgsSeqSynthUtil *seq_synth_util,
 }
 
 /**
+ * ags_seq_synth_util_get_seq_tuning_0:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * 
+ * Get seq tuning 0 of @seq_synth_util.
+ * 
+ * Returns: the seq tuning 0
+ * 
+ * Since: 7.5.0
+ */
+gdouble
+ags_seq_synth_util_get_seq_tuning_0(AgsSeqSynthUtil *seq_synth_util)
+{
+  if(seq_synth_util == NULL){
+    return(0.0);
+  }
+
+  return(seq_synth_util->seq_tuning_0);
+}
+
+/**
+ * ags_seq_synth_util_set_seq_tuning_0:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * @seq_tuning_0: the seq tuning 0
+ *
+ * Set @seq_tuning_0 of @seq_synth_util.
+ *
+ * Since: 7.5.0
+ */
+void
+ags_seq_synth_util_set_seq_tuning_0(AgsSeqSynthUtil *seq_synth_util,
+				    gdouble seq_tuning_0)
+{
+  if(seq_synth_util == NULL){
+    return;
+  }
+
+  seq_synth_util->seq_tuning_0 = seq_tuning_0;
+}
+
+/**
+ * ags_seq_synth_util_get_seq_tuning_1:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * 
+ * Get seq tuning 1 of @seq_synth_util.
+ * 
+ * Returns: the seq tuning 1
+ * 
+ * Since: 7.5.0
+ */
+gdouble
+ags_seq_synth_util_get_seq_tuning_1(AgsSeqSynthUtil *seq_synth_util)
+{
+  if(seq_synth_util == NULL){
+    return(0.0);
+  }
+
+  return(seq_synth_util->seq_tuning_1);
+}
+
+/**
+ * ags_seq_synth_util_set_seq_tuning_1:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * @seq_tuning_1: the seq tuning 1
+ *
+ * Set @seq_tuning_1 of @seq_synth_util.
+ *
+ * Since: 7.5.0
+ */
+void
+ags_seq_synth_util_set_seq_tuning_1(AgsSeqSynthUtil *seq_synth_util,
+				    gdouble seq_tuning_1)
+{
+  if(seq_synth_util == NULL){
+    return;
+  }
+
+  seq_synth_util->seq_tuning_1 = seq_tuning_1;
+}
+
+/**
+ * ags_seq_synth_util_get_seq_tuning_2:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * 
+ * Get seq tuning 2 of @seq_synth_util.
+ * 
+ * Returns: the seq tuning 2
+ * 
+ * Since: 7.5.0
+ */
+gdouble
+ags_seq_synth_util_get_seq_tuning_2(AgsSeqSynthUtil *seq_synth_util)
+{
+  if(seq_synth_util == NULL){
+    return(0.0);
+  }
+
+  return(seq_synth_util->seq_tuning_2);
+}
+
+/**
+ * ags_seq_synth_util_set_seq_tuning_2:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * @seq_tuning_2: the seq tuning 2
+ *
+ * Set @seq_tuning_2 of @seq_synth_util.
+ *
+ * Since: 7.5.0
+ */
+void
+ags_seq_synth_util_set_seq_tuning_2(AgsSeqSynthUtil *seq_synth_util,
+				    gdouble seq_tuning_2)
+{
+  if(seq_synth_util == NULL){
+    return;
+  }
+
+  seq_synth_util->seq_tuning_2 = seq_tuning_2;
+}
+
+/**
+ * ags_seq_synth_util_get_seq_tuning_3:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * 
+ * Get seq tuning 3 of @seq_synth_util.
+ * 
+ * Returns: the seq tuning 3
+ * 
+ * Since: 7.5.0
+ */
+gdouble
+ags_seq_synth_util_get_seq_tuning_3(AgsSeqSynthUtil *seq_synth_util)
+{
+  if(seq_synth_util == NULL){
+    return(0.0);
+  }
+
+  return(seq_synth_util->seq_tuning_3);
+}
+
+/**
+ * ags_seq_synth_util_set_seq_tuning_3:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * @seq_tuning_3: the seq tuning 3
+ *
+ * Set @seq_tuning_3 of @seq_synth_util.
+ *
+ * Since: 7.5.0
+ */
+void
+ags_seq_synth_util_set_seq_tuning_3(AgsSeqSynthUtil *seq_synth_util,
+				    gdouble seq_tuning_3)
+{
+  if(seq_synth_util == NULL){
+    return;
+  }
+
+  seq_synth_util->seq_tuning_3 = seq_tuning_3;
+}
+
+/**
+ * ags_seq_synth_util_get_seq_tuning_4:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * 
+ * Get seq tuning 4 of @seq_synth_util.
+ * 
+ * Returns: the seq tuning 4
+ * 
+ * Since: 7.5.0
+ */
+gdouble
+ags_seq_synth_util_get_seq_tuning_4(AgsSeqSynthUtil *seq_synth_util)
+{
+  if(seq_synth_util == NULL){
+    return(0.0);
+  }
+
+  return(seq_synth_util->seq_tuning_4);
+}
+
+/**
+ * ags_seq_synth_util_set_seq_tuning_4:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * @seq_tuning_4: the seq tuning 4
+ *
+ * Set @seq_tuning_4 of @seq_synth_util.
+ *
+ * Since: 7.5.0
+ */
+void
+ags_seq_synth_util_set_seq_tuning_4(AgsSeqSynthUtil *seq_synth_util,
+				    gdouble seq_tuning_4)
+{
+  if(seq_synth_util == NULL){
+    return;
+  }
+
+  seq_synth_util->seq_tuning_4 = seq_tuning_4;
+}
+
+/**
+ * ags_seq_synth_util_get_seq_tuning_5:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * 
+ * Get seq tuning 5 of @seq_synth_util.
+ * 
+ * Returns: the seq tuning 5
+ * 
+ * Since: 7.5.0
+ */
+gdouble
+ags_seq_synth_util_get_seq_tuning_5(AgsSeqSynthUtil *seq_synth_util)
+{
+  if(seq_synth_util == NULL){
+    return(0.0);
+  }
+
+  return(seq_synth_util->seq_tuning_5);
+}
+
+/**
+ * ags_seq_synth_util_set_seq_tuning_5:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * @seq_tuning_5: the seq tuning 5
+ *
+ * Set @seq_tuning_5 of @seq_synth_util.
+ *
+ * Since: 7.5.0
+ */
+void
+ags_seq_synth_util_set_seq_tuning_5(AgsSeqSynthUtil *seq_synth_util,
+				    gdouble seq_tuning_5)
+{
+  if(seq_synth_util == NULL){
+    return;
+  }
+
+  seq_synth_util->seq_tuning_5 = seq_tuning_5;
+}
+
+/**
+ * ags_seq_synth_util_get_seq_tuning_6:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * 
+ * Get seq tuning 6 of @seq_synth_util.
+ * 
+ * Returns: the seq tuning 6
+ * 
+ * Since: 7.5.0
+ */
+gdouble
+ags_seq_synth_util_get_seq_tuning_6(AgsSeqSynthUtil *seq_synth_util)
+{
+  if(seq_synth_util == NULL){
+    return(0.0);
+  }
+
+  return(seq_synth_util->seq_tuning_6);
+}
+
+/**
+ * ags_seq_synth_util_set_seq_tuning_6:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * @seq_tuning_6: the seq tuning 6
+ *
+ * Set @seq_tuning_6 of @seq_synth_util.
+ *
+ * Since: 7.5.0
+ */
+void
+ags_seq_synth_util_set_seq_tuning_6(AgsSeqSynthUtil *seq_synth_util,
+				    gdouble seq_tuning_6)
+{
+  if(seq_synth_util == NULL){
+    return;
+  }
+
+  seq_synth_util->seq_tuning_6 = seq_tuning_6;
+}
+
+/**
+ * ags_seq_synth_util_get_seq_tuning_7:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * 
+ * Get seq tuning 7 of @seq_synth_util.
+ * 
+ * Returns: the seq tuning 7
+ * 
+ * Since: 7.5.0
+ */
+gdouble
+ags_seq_synth_util_get_seq_tuning_7(AgsSeqSynthUtil *seq_synth_util)
+{
+  if(seq_synth_util == NULL){
+    return(0.0);
+  }
+
+  return(seq_synth_util->seq_tuning_7);
+}
+
+/**
+ * ags_seq_synth_util_set_seq_tuning_7:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * @seq_tuning_7: the seq tuning 7
+ *
+ * Set @seq_tuning_7 of @seq_synth_util.
+ *
+ * Since: 7.5.0
+ */
+void
+ags_seq_synth_util_set_seq_tuning_7(AgsSeqSynthUtil *seq_synth_util,
+				    gdouble seq_tuning_7)
+{
+  if(seq_synth_util == NULL){
+    return;
+  }
+
+  seq_synth_util->seq_tuning_7 = seq_tuning_7;
+}
+
+/**
+ * ags_seq_synth_util_get_seq_tuning_pingpong:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * 
+ * Get seq tuning pingpong of @seq_synth_util.
+ * 
+ * Returns: the seq tuning pingpong
+ * 
+ * Since: 7.5.0
+ */
+gboolean
+ags_seq_synth_util_get_seq_tuning_pingpong(AgsSeqSynthUtil *seq_synth_util)
+{
+  if(seq_synth_util == NULL){
+    return(FALSE);
+  }
+
+  return(seq_synth_util->seq_tuning_pingpong);
+}
+
+/**
+ * ags_seq_synth_util_set_seq_tuning_pingpong:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * @seq_tuning_pingpong: the seq tuning pingpong
+ *
+ * Set @seq_tuning_pingpong of @seq_synth_util.
+ *
+ * Since: 7.5.0
+ */
+void
+ags_seq_synth_util_set_seq_tuning_pingpong(AgsSeqSynthUtil *seq_synth_util,
+					   gboolean seq_tuning_pingpong)
+{
+  if(seq_synth_util == NULL){
+    return;
+  }
+
+  seq_synth_util->seq_tuning_pingpong = seq_tuning_pingpong;
+}
+
+/**
+ * ags_seq_synth_util_get_seq_tuning_lfo_frequency:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * 
+ * Get seq tuning lfo_frequency of @seq_synth_util.
+ * 
+ * Returns: the seq tuning lfo_frequency
+ * 
+ * Since: 7.5.0
+ */
+gdouble
+ags_seq_synth_util_get_seq_tuning_lfo_frequency(AgsSeqSynthUtil *seq_synth_util)
+{
+  if(seq_synth_util == NULL){
+    return(0.0);
+  }
+
+  return(seq_synth_util->seq_tuning_lfo_frequency);
+}
+
+/**
+ * ags_seq_synth_util_set_seq_tuning_lfo_frequency:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * @seq_tuning_lfo_frequency: the seq tuning lfo_frequency
+ *
+ * Set @seq_tuning_lfo_frequency of @seq_synth_util.
+ *
+ * Since: 7.5.0
+ */
+void
+ags_seq_synth_util_set_seq_tuning_lfo_frequency(AgsSeqSynthUtil *seq_synth_util,
+						gdouble seq_tuning_lfo_frequency)
+{
+  if(seq_synth_util == NULL){
+    return;
+  }
+
+  seq_synth_util->seq_tuning_lfo_frequency = seq_tuning_lfo_frequency;
+}
+
+/**
+ * ags_seq_synth_util_get_seq_volume_0:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * 
+ * Get seq volume 0 of @seq_synth_util.
+ * 
+ * Returns: the seq volume 0
+ * 
+ * Since: 7.5.0
+ */
+gdouble
+ags_seq_synth_util_get_seq_volume_0(AgsSeqSynthUtil *seq_synth_util)
+{
+  if(seq_synth_util == NULL){
+    return(0.0);
+  }
+
+  return(seq_synth_util->seq_volume_0);
+}
+
+/**
+ * ags_seq_synth_util_set_seq_volume_0:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * @seq_volume_0: the seq volume 0
+ *
+ * Set @seq_volume_0 of @seq_synth_util.
+ *
+ * Since: 7.5.0
+ */
+void
+ags_seq_synth_util_set_seq_volume_0(AgsSeqSynthUtil *seq_synth_util,
+				    gdouble seq_volume_0)
+{
+  if(seq_synth_util == NULL){
+    return;
+  }
+
+  seq_synth_util->seq_volume_0 = seq_volume_0;
+}
+
+/**
+ * ags_seq_synth_util_get_seq_volume_1:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * 
+ * Get seq volume 1 of @seq_synth_util.
+ * 
+ * Returns: the seq volume 1
+ * 
+ * Since: 7.5.0
+ */
+gdouble
+ags_seq_synth_util_get_seq_volume_1(AgsSeqSynthUtil *seq_synth_util)
+{
+  if(seq_synth_util == NULL){
+    return(0.0);
+  }
+
+  return(seq_synth_util->seq_volume_1);
+}
+
+/**
+ * ags_seq_synth_util_set_seq_volume_1:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * @seq_volume_1: the seq volume 1
+ *
+ * Set @seq_volume_1 of @seq_synth_util.
+ *
+ * Since: 7.5.0
+ */
+void
+ags_seq_synth_util_set_seq_volume_1(AgsSeqSynthUtil *seq_synth_util,
+				    gdouble seq_volume_1)
+{
+  if(seq_synth_util == NULL){
+    return;
+  }
+
+  seq_synth_util->seq_volume_1 = seq_volume_1;
+}
+
+/**
+ * ags_seq_synth_util_get_seq_volume_2:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * 
+ * Get seq volume 2 of @seq_synth_util.
+ * 
+ * Returns: the seq volume 2
+ * 
+ * Since: 7.5.0
+ */
+gdouble
+ags_seq_synth_util_get_seq_volume_2(AgsSeqSynthUtil *seq_synth_util)
+{
+  if(seq_synth_util == NULL){
+    return(0.0);
+  }
+
+  return(seq_synth_util->seq_volume_2);
+}
+
+/**
+ * ags_seq_synth_util_set_seq_volume_2:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * @seq_volume_2: the seq volume 2
+ *
+ * Set @seq_volume_2 of @seq_synth_util.
+ *
+ * Since: 7.5.0
+ */
+void
+ags_seq_synth_util_set_seq_volume_2(AgsSeqSynthUtil *seq_synth_util,
+				    gdouble seq_volume_2)
+{
+  if(seq_synth_util == NULL){
+    return;
+  }
+
+  seq_synth_util->seq_volume_2 = seq_volume_2;
+}
+
+/**
+ * ags_seq_synth_util_get_seq_volume_3:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * 
+ * Get seq volume 3 of @seq_synth_util.
+ * 
+ * Returns: the seq volume 3
+ * 
+ * Since: 7.5.0
+ */
+gdouble
+ags_seq_synth_util_get_seq_volume_3(AgsSeqSynthUtil *seq_synth_util)
+{
+  if(seq_synth_util == NULL){
+    return(0.0);
+  }
+
+  return(seq_synth_util->seq_volume_3);
+}
+
+/**
+ * ags_seq_synth_util_set_seq_volume_3:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * @seq_volume_3: the seq volume 3
+ *
+ * Set @seq_volume_3 of @seq_synth_util.
+ *
+ * Since: 7.5.0
+ */
+void
+ags_seq_synth_util_set_seq_volume_3(AgsSeqSynthUtil *seq_synth_util,
+				    gdouble seq_volume_3)
+{
+  if(seq_synth_util == NULL){
+    return;
+  }
+
+  seq_synth_util->seq_volume_3 = seq_volume_3;
+}
+
+/**
+ * ags_seq_synth_util_get_seq_volume_4:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * 
+ * Get seq volume 4 of @seq_synth_util.
+ * 
+ * Returns: the seq volume 4
+ * 
+ * Since: 7.5.0
+ */
+gdouble
+ags_seq_synth_util_get_seq_volume_4(AgsSeqSynthUtil *seq_synth_util)
+{
+  if(seq_synth_util == NULL){
+    return(0.0);
+  }
+
+  return(seq_synth_util->seq_volume_4);
+}
+
+/**
+ * ags_seq_synth_util_set_seq_volume_4:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * @seq_volume_4: the seq volume 4
+ *
+ * Set @seq_volume_4 of @seq_synth_util.
+ *
+ * Since: 7.5.0
+ */
+void
+ags_seq_synth_util_set_seq_volume_4(AgsSeqSynthUtil *seq_synth_util,
+				    gdouble seq_volume_4)
+{
+  if(seq_synth_util == NULL){
+    return;
+  }
+
+  seq_synth_util->seq_volume_4 = seq_volume_4;
+}
+
+/**
+ * ags_seq_synth_util_get_seq_volume_5:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * 
+ * Get seq volume 5 of @seq_synth_util.
+ * 
+ * Returns: the seq volume 5
+ * 
+ * Since: 7.5.0
+ */
+gdouble
+ags_seq_synth_util_get_seq_volume_5(AgsSeqSynthUtil *seq_synth_util)
+{
+  if(seq_synth_util == NULL){
+    return(0.0);
+  }
+
+  return(seq_synth_util->seq_volume_5);
+}
+
+/**
+ * ags_seq_synth_util_set_seq_volume_5:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * @seq_volume_5: the seq volume 5
+ *
+ * Set @seq_volume_5 of @seq_synth_util.
+ *
+ * Since: 7.5.0
+ */
+void
+ags_seq_synth_util_set_seq_volume_5(AgsSeqSynthUtil *seq_synth_util,
+				    gdouble seq_volume_5)
+{
+  if(seq_synth_util == NULL){
+    return;
+  }
+
+  seq_synth_util->seq_volume_5 = seq_volume_5;
+}
+
+/**
+ * ags_seq_synth_util_get_seq_volume_6:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * 
+ * Get seq volume 6 of @seq_synth_util.
+ * 
+ * Returns: the seq volume 6
+ * 
+ * Since: 7.5.0
+ */
+gdouble
+ags_seq_synth_util_get_seq_volume_6(AgsSeqSynthUtil *seq_synth_util)
+{
+  if(seq_synth_util == NULL){
+    return(0.0);
+  }
+
+  return(seq_synth_util->seq_volume_6);
+}
+
+/**
+ * ags_seq_synth_util_set_seq_volume_6:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * @seq_volume_6: the seq volume 6
+ *
+ * Set @seq_volume_6 of @seq_synth_util.
+ *
+ * Since: 7.5.0
+ */
+void
+ags_seq_synth_util_set_seq_volume_6(AgsSeqSynthUtil *seq_synth_util,
+				    gdouble seq_volume_6)
+{
+  if(seq_synth_util == NULL){
+    return;
+  }
+
+  seq_synth_util->seq_volume_6 = seq_volume_6;
+}
+
+/**
+ * ags_seq_synth_util_get_seq_volume_7:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * 
+ * Get seq volume 7 of @seq_synth_util.
+ * 
+ * Returns: the seq volume 7
+ * 
+ * Since: 7.5.0
+ */
+gdouble
+ags_seq_synth_util_get_seq_volume_7(AgsSeqSynthUtil *seq_synth_util)
+{
+  if(seq_synth_util == NULL){
+    return(0.0);
+  }
+
+  return(seq_synth_util->seq_volume_7);
+}
+
+/**
+ * ags_seq_synth_util_set_seq_volume_7:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * @seq_volume_7: the seq volume 7
+ *
+ * Set @seq_volume_7 of @seq_synth_util.
+ *
+ * Since: 7.5.0
+ */
+void
+ags_seq_synth_util_set_seq_volume_7(AgsSeqSynthUtil *seq_synth_util,
+				    gdouble seq_volume_7)
+{
+  if(seq_synth_util == NULL){
+    return;
+  }
+
+  seq_synth_util->seq_volume_7 = seq_volume_7;
+}
+
+/**
+ * ags_seq_synth_util_get_seq_volume_pingpong:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * 
+ * Get seq volume pingpong of @seq_synth_util.
+ * 
+ * Returns: the seq volume pingpong
+ * 
+ * Since: 7.5.0
+ */
+gboolean
+ags_seq_synth_util_get_seq_volume_pingpong(AgsSeqSynthUtil *seq_synth_util)
+{
+  if(seq_synth_util == NULL){
+    return(FALSE);
+  }
+
+  return(seq_synth_util->seq_volume_pingpong);
+}
+
+/**
+ * ags_seq_synth_util_set_seq_volume_pingpong:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * @seq_volume_pingpong: the seq volume pingpong
+ *
+ * Set @seq_volume_pingpong of @seq_synth_util.
+ *
+ * Since: 7.5.0
+ */
+void
+ags_seq_synth_util_set_seq_volume_pingpong(AgsSeqSynthUtil *seq_synth_util,
+					   gboolean seq_volume_pingpong)
+{
+  if(seq_synth_util == NULL){
+    return;
+  }
+
+  seq_synth_util->seq_volume_pingpong = seq_volume_pingpong;
+}
+
+/**
+ * ags_seq_synth_util_get_seq_volume_lfo_frequency:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * 
+ * Get seq volume lfo_frequency of @seq_synth_util.
+ * 
+ * Returns: the seq volume lfo_frequency
+ * 
+ * Since: 7.5.0
+ */
+gdouble
+ags_seq_synth_util_get_seq_volume_lfo_frequency(AgsSeqSynthUtil *seq_synth_util)
+{
+  if(seq_synth_util == NULL){
+    return(0.0);
+  }
+
+  return(seq_synth_util->seq_volume_lfo_frequency);
+}
+
+/**
+ * ags_seq_synth_util_set_seq_volume_lfo_frequency:
+ * @seq_synth_util: the #AgsSeqSynthUtil-struct
+ * @seq_volume_lfo_frequency: the seq volume lfo_frequency
+ *
+ * Set @seq_volume_lfo_frequency of @seq_synth_util.
+ *
+ * Since: 7.5.0
+ */
+void
+ags_seq_synth_util_set_seq_volume_lfo_frequency(AgsSeqSynthUtil *seq_synth_util,
+						gdouble seq_volume_lfo_frequency)
+{
+  if(seq_synth_util == NULL){
+    return;
+  }
+
+  seq_synth_util->seq_volume_lfo_frequency = seq_volume_lfo_frequency;
+}
+
+/**
  * ags_seq_synth_util_get_lfo_oscillator_mode:
  * @seq_synth_util: the #AgsSeqSynthUtil-struct
  * 
@@ -565,7 +1365,7 @@ gdouble
 ags_seq_synth_util_get_lfo_frequency(AgsSeqSynthUtil *seq_synth_util)
 {
   if(seq_synth_util == NULL){
-    return(1.0);
+    return(0.0);
   }
 
   return(seq_synth_util->lfo_frequency);

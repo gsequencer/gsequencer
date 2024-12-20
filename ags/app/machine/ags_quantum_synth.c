@@ -284,8 +284,8 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
   quantum_synth->playback_play_container = ags_recall_container_new();
   quantum_synth->playback_recall_container = ags_recall_container_new();
 
-  quantum_synth->star_synth_play_container = ags_recall_container_new();
-  quantum_synth->star_synth_recall_container = ags_recall_container_new();
+  quantum_synth->seq_synth_play_container = ags_recall_container_new();
+  quantum_synth->seq_synth_recall_container = ags_recall_container_new();
 
   quantum_synth->volume_play_container = ags_recall_container_new();
   quantum_synth->volume_recall_container = ags_recall_container_new();
@@ -4203,8 +4203,8 @@ ags_quantum_synth_map_recall(AgsMachine *machine)
 
   /* ags-fx-synth */
   start_recall = ags_fx_factory_create(audio,
-				       quantum_synth->star_synth_play_container, quantum_synth->star_synth_recall_container,
-				       "ags-fx-star-synth",
+				       quantum_synth->seq_synth_play_container, quantum_synth->seq_synth_recall_container,
+				       "ags-fx-seq-synth",
 				       NULL,
 				       NULL,
 				       0, 0,
@@ -4337,8 +4337,8 @@ ags_quantum_synth_input_map_recall(AgsQuantumSynth *quantum_synth,
 
   /* ags-fx-synth */
   start_recall = ags_fx_factory_create(audio,
-				       quantum_synth->star_synth_play_container, quantum_synth->star_synth_recall_container,
-				       "ags-fx-star-synth",
+				       quantum_synth->seq_synth_play_container, quantum_synth->seq_synth_recall_container,
+				       "ags-fx-seq-synth",
 				       NULL,
 				       NULL,
 				       audio_channel_start, audio_channels,
@@ -4434,7 +4434,7 @@ ags_quantum_synth_refresh_port(AgsMachine *machine)
 
   machine->flags |= AGS_MACHINE_NO_UPDATE;
 
-  if((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  if((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     /* synth-0 oscillator */

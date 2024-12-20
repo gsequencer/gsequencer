@@ -59,8 +59,8 @@ struct _AgsQuantumSynth
   AgsRecallContainer *playback_play_container;
   AgsRecallContainer *playback_recall_container;
 
-  AgsRecallContainer *star_synth_play_container;
-  AgsRecallContainer *star_synth_recall_container;
+  AgsRecallContainer *seq_synth_play_container;
+  AgsRecallContainer *seq_synth_recall_container;
 
   AgsRecallContainer *tremolo_play_container;
   AgsRecallContainer *tremolo_recall_container;

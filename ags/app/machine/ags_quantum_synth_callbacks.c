@@ -48,7 +48,7 @@ ags_quantum_synth_synth_0_oscillator_callback(GObject *gobject,
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -103,7 +103,7 @@ ags_quantum_synth_synth_0_octave_callback(AgsDial *dial, AgsQuantumSynth *quantu
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -158,7 +158,7 @@ ags_quantum_synth_synth_0_key_callback(AgsDial *dial, AgsQuantumSynth *quantum_s
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -213,7 +213,7 @@ ags_quantum_synth_synth_0_phase_callback(AgsDial *dial, AgsQuantumSynth *quantum
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -268,7 +268,7 @@ ags_quantum_synth_synth_0_volume_callback(AgsDial *dial, AgsQuantumSynth *quantu
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -323,7 +323,7 @@ ags_quantum_synth_synth_0_seq_tuning_0_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -378,7 +378,7 @@ ags_quantum_synth_synth_0_seq_tuning_1_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -433,7 +433,7 @@ ags_quantum_synth_synth_0_seq_tuning_2_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -488,7 +488,7 @@ ags_quantum_synth_synth_0_seq_tuning_3_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -543,7 +543,7 @@ ags_quantum_synth_synth_0_seq_tuning_4_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -598,7 +598,7 @@ ags_quantum_synth_synth_0_seq_tuning_5_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -653,7 +653,7 @@ ags_quantum_synth_synth_0_seq_tuning_6_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -708,7 +708,7 @@ ags_quantum_synth_synth_0_seq_tuning_7_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -763,7 +763,7 @@ ags_quantum_synth_synth_0_seq_tuning_pingpong_callback(GtkCheckButton *check_but
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -818,7 +818,7 @@ ags_quantum_synth_synth_0_seq_volume_0_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -873,7 +873,7 @@ ags_quantum_synth_synth_0_seq_volume_1_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -928,7 +928,7 @@ ags_quantum_synth_synth_0_seq_volume_2_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -983,7 +983,7 @@ ags_quantum_synth_synth_0_seq_volume_3_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -1038,7 +1038,7 @@ ags_quantum_synth_synth_0_seq_volume_4_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -1093,7 +1093,7 @@ ags_quantum_synth_synth_0_seq_volume_5_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -1148,7 +1148,7 @@ ags_quantum_synth_synth_0_seq_volume_6_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -1203,7 +1203,7 @@ ags_quantum_synth_synth_0_seq_volume_7_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -1258,7 +1258,7 @@ ags_quantum_synth_synth_0_seq_volume_pingpong_callback(GtkCheckButton *check_but
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -1313,7 +1313,7 @@ ags_quantum_synth_synth_0_sync_enabled_callback(GtkButton *button, AgsQuantumSyn
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -1368,7 +1368,7 @@ ags_quantum_synth_synth_0_sync_relative_attack_factor_callback(AgsDial *dial, Ag
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -1423,7 +1423,7 @@ ags_quantum_synth_synth_0_sync_attack_0_callback(AgsDial *dial, AgsQuantumSynth 
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -1478,7 +1478,7 @@ ags_quantum_synth_synth_0_sync_phase_0_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -1533,7 +1533,7 @@ ags_quantum_synth_synth_0_sync_attack_1_callback(AgsDial *dial, AgsQuantumSynth 
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -1588,7 +1588,7 @@ ags_quantum_synth_synth_0_sync_phase_1_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -1643,7 +1643,7 @@ ags_quantum_synth_synth_0_sync_attack_2_callback(AgsDial *dial, AgsQuantumSynth 
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -1698,7 +1698,7 @@ ags_quantum_synth_synth_0_sync_phase_2_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -1753,7 +1753,7 @@ ags_quantum_synth_synth_0_sync_attack_3_callback(AgsDial *dial, AgsQuantumSynth 
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -1808,7 +1808,7 @@ ags_quantum_synth_synth_0_sync_phase_3_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -1865,7 +1865,7 @@ ags_quantum_synth_synth_0_sync_lfo_oscillator_callback(GObject *gobject,
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -1920,7 +1920,7 @@ ags_quantum_synth_synth_0_sync_lfo_frequency_callback(GtkSpinButton *spin_button
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -1977,7 +1977,7 @@ ags_quantum_synth_synth_0_lfo_oscillator_callback(GObject *gobject,
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -2032,7 +2032,7 @@ ags_quantum_synth_synth_0_lfo_frequency_callback(GtkSpinButton *spin_button, Ags
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -2087,7 +2087,7 @@ ags_quantum_synth_synth_0_lfo_depth_callback(AgsDial *dial, AgsQuantumSynth *qua
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -2142,7 +2142,7 @@ ags_quantum_synth_synth_0_lfo_tuning_callback(AgsDial *dial, AgsQuantumSynth *qu
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -2199,7 +2199,7 @@ ags_quantum_synth_synth_1_oscillator_callback(GObject *gobject,
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -2254,7 +2254,7 @@ ags_quantum_synth_synth_1_octave_callback(AgsDial *dial, AgsQuantumSynth *quantu
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -2309,7 +2309,7 @@ ags_quantum_synth_synth_1_key_callback(AgsDial *dial, AgsQuantumSynth *quantum_s
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -2364,7 +2364,7 @@ ags_quantum_synth_synth_1_phase_callback(AgsDial *dial, AgsQuantumSynth *quantum
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -2419,7 +2419,7 @@ ags_quantum_synth_synth_1_volume_callback(AgsDial *dial, AgsQuantumSynth *quantu
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -2474,7 +2474,7 @@ ags_quantum_synth_synth_1_seq_tuning_0_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -2529,7 +2529,7 @@ ags_quantum_synth_synth_1_seq_tuning_1_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -2584,7 +2584,7 @@ ags_quantum_synth_synth_1_seq_tuning_2_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -2639,7 +2639,7 @@ ags_quantum_synth_synth_1_seq_tuning_3_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -2694,7 +2694,7 @@ ags_quantum_synth_synth_1_seq_tuning_4_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -2749,7 +2749,7 @@ ags_quantum_synth_synth_1_seq_tuning_5_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -2804,7 +2804,7 @@ ags_quantum_synth_synth_1_seq_tuning_6_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -2859,7 +2859,7 @@ ags_quantum_synth_synth_1_seq_tuning_7_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -2914,7 +2914,7 @@ ags_quantum_synth_synth_1_seq_tuning_pingpong_callback(GtkCheckButton *check_but
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -2969,7 +2969,7 @@ ags_quantum_synth_synth_1_seq_volume_0_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -3024,7 +3024,7 @@ ags_quantum_synth_synth_1_seq_volume_1_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -3079,7 +3079,7 @@ ags_quantum_synth_synth_1_seq_volume_2_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -3134,7 +3134,7 @@ ags_quantum_synth_synth_1_seq_volume_3_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -3189,7 +3189,7 @@ ags_quantum_synth_synth_1_seq_volume_4_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -3244,7 +3244,7 @@ ags_quantum_synth_synth_1_seq_volume_5_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -3299,7 +3299,7 @@ ags_quantum_synth_synth_1_seq_volume_6_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -3354,7 +3354,7 @@ ags_quantum_synth_synth_1_seq_volume_7_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -3409,7 +3409,7 @@ ags_quantum_synth_synth_1_seq_volume_pingpong_callback(GtkCheckButton *check_but
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -3464,7 +3464,7 @@ ags_quantum_synth_synth_1_sync_enabled_callback(GtkButton *button, AgsQuantumSyn
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -3519,7 +3519,7 @@ ags_quantum_synth_synth_1_sync_relative_attack_factor_callback(AgsDial *dial, Ag
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -3574,7 +3574,7 @@ ags_quantum_synth_synth_1_sync_attack_0_callback(AgsDial *dial, AgsQuantumSynth 
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -3629,7 +3629,7 @@ ags_quantum_synth_synth_1_sync_phase_0_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -3684,7 +3684,7 @@ ags_quantum_synth_synth_1_sync_attack_1_callback(AgsDial *dial, AgsQuantumSynth 
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -3739,7 +3739,7 @@ ags_quantum_synth_synth_1_sync_phase_1_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -3794,7 +3794,7 @@ ags_quantum_synth_synth_1_sync_attack_2_callback(AgsDial *dial, AgsQuantumSynth 
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -3849,7 +3849,7 @@ ags_quantum_synth_synth_1_sync_phase_2_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -3904,7 +3904,7 @@ ags_quantum_synth_synth_1_sync_attack_3_callback(AgsDial *dial, AgsQuantumSynth 
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -3959,7 +3959,7 @@ ags_quantum_synth_synth_1_sync_phase_3_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -4016,7 +4016,7 @@ ags_quantum_synth_synth_1_sync_lfo_oscillator_callback(GObject *gobject,
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -4071,7 +4071,7 @@ ags_quantum_synth_synth_1_sync_lfo_frequency_callback(GtkSpinButton *spin_button
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -4128,7 +4128,7 @@ ags_quantum_synth_synth_1_lfo_oscillator_callback(GObject *gobject,
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -4183,7 +4183,7 @@ ags_quantum_synth_synth_1_lfo_frequency_callback(GtkSpinButton *spin_button, Ags
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -4238,7 +4238,7 @@ ags_quantum_synth_synth_1_lfo_depth_callback(AgsDial *dial, AgsQuantumSynth *qua
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -4293,7 +4293,7 @@ ags_quantum_synth_synth_1_lfo_tuning_callback(AgsDial *dial, AgsQuantumSynth *qu
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -4330,7 +4330,7 @@ ags_quantum_synth_pitch_type_callback(GObject *gobject,
 				      GParamSpec *pspec,
 				      AgsQuantumSynth *quantum_synth)
 {
-  AgsFxStarSynthAudio *fx_star_synth_audio;
+  AgsFxStarSynthAudio *fx_seq_synth_audio;
     
   guint selected;
 
@@ -4349,15 +4349,15 @@ ags_quantum_synth_pitch_type_callback(GObject *gobject,
 		    (gfloat) selected);
 
   /* play */
-  fx_star_synth_audio = (AgsFxStarSynthAudio *) ags_recall_container_get_recall_audio(quantum_synth->star_synth_play_container);
+  fx_seq_synth_audio = (AgsFxStarSynthAudio *) ags_recall_container_get_recall_audio(quantum_synth->seq_synth_play_container);
 
-  ags_port_safe_write(fx_star_synth_audio->pitch_type,
+  ags_port_safe_write(fx_seq_synth_audio->pitch_type,
 		      &value);
 
   /* recall */
-  fx_star_synth_audio = (AgsFxStarSynthAudio *) ags_recall_container_get_recall_audio(quantum_synth->star_synth_recall_container);
+  fx_seq_synth_audio = (AgsFxStarSynthAudio *) ags_recall_container_get_recall_audio(quantum_synth->seq_synth_recall_container);
   
-  ags_port_safe_write(fx_star_synth_audio->pitch_type,
+  ags_port_safe_write(fx_seq_synth_audio->pitch_type,
 		      &value);
 }
 
@@ -4384,7 +4384,7 @@ ags_quantum_synth_pitch_tuning_callback(AgsDial *dial, AgsQuantumSynth *quantum_
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -4439,7 +4439,7 @@ ags_quantum_synth_noise_gain_callback(AgsDial *dial, AgsQuantumSynth *quantum_sy
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -4494,7 +4494,7 @@ ags_quantum_synth_chorus_enabled_callback(GtkButton *button, AgsQuantumSynth *qu
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -4549,7 +4549,7 @@ ags_quantum_synth_chorus_input_volume_callback(AgsDial *dial, AgsQuantumSynth *q
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -4604,7 +4604,7 @@ ags_quantum_synth_chorus_output_volume_callback(AgsDial *dial, AgsQuantumSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -4671,7 +4671,7 @@ ags_quantum_synth_chorus_lfo_frequency_callback(GtkSpinButton *spin_button, AgsQ
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -4726,7 +4726,7 @@ ags_quantum_synth_chorus_depth_callback(AgsDial *dial, AgsQuantumSynth *quantum_
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -4781,7 +4781,7 @@ ags_quantum_synth_chorus_mix_callback(AgsDial *dial, AgsQuantumSynth *quantum_sy
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -4836,7 +4836,7 @@ ags_quantum_synth_chorus_delay_callback(AgsDial *dial, AgsQuantumSynth *quantum_
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -5243,7 +5243,7 @@ ags_quantum_synth_vibrato_enabled_callback(GtkCheckButton *button, AgsQuantumSyn
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -5298,7 +5298,7 @@ ags_quantum_synth_vibrato_gain_callback(AgsDial *dial, AgsQuantumSynth *quantum_
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -5353,7 +5353,7 @@ ags_quantum_synth_vibrato_lfo_depth_callback(AgsDial *dial, AgsQuantumSynth *qua
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -5408,7 +5408,7 @@ ags_quantum_synth_vibrato_lfo_freq_callback(AgsDial *dial, AgsQuantumSynth *quan
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -5463,7 +5463,7 @@ ags_quantum_synth_vibrato_tuning_callback(AgsDial *dial, AgsQuantumSynth *quantu
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;

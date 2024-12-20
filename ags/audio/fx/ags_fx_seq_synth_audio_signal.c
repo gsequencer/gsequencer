@@ -180,12 +180,34 @@ ags_fx_seq_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
 
   gdouble octave;
   gdouble key;  
-
+  
   gboolean vibrato_enabled;
   gdouble vibrato_gain;
   gdouble vibrato_lfo_depth;
   gdouble vibrato_lfo_freq;
   gdouble vibrato_tuning;
+
+  gdouble synth_0_seq_tuning_0;
+  gdouble synth_0_seq_tuning_1;
+  gdouble synth_0_seq_tuning_2;
+  gdouble synth_0_seq_tuning_3;
+  gdouble synth_0_seq_tuning_4;
+  gdouble synth_0_seq_tuning_5;
+  gdouble synth_0_seq_tuning_6;
+  gdouble synth_0_seq_tuning_7;
+  gdouble synth_0_seq_tuning_pingpong;
+  gdouble synth_0_seq_tuning_lfo_frequency;
+
+  gdouble synth_0_seq_volume_0;
+  gdouble synth_0_seq_volume_1;
+  gdouble synth_0_seq_volume_2;
+  gdouble synth_0_seq_volume_3;
+  gdouble synth_0_seq_volume_4;
+  gdouble synth_0_seq_volume_5;
+  gdouble synth_0_seq_volume_6;
+  gdouble synth_0_seq_volume_7;
+  gdouble synth_0_seq_volume_pingpong;
+  gdouble synth_0_seq_volume_lfo_frequency;
 
   gboolean synth_0_sync_enabled;
   gdouble synth_0_sync_relative_attack_factor;
@@ -199,6 +221,28 @@ ags_fx_seq_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
   gdouble synth_0_sync_phase_3;
   guint synth_0_sync_lfo_oscillator;
   gdouble synth_0_sync_lfo_frequency;
+
+  gdouble synth_1_seq_tuning_0;
+  gdouble synth_1_seq_tuning_1;
+  gdouble synth_1_seq_tuning_2;
+  gdouble synth_1_seq_tuning_3;
+  gdouble synth_1_seq_tuning_4;
+  gdouble synth_1_seq_tuning_5;
+  gdouble synth_1_seq_tuning_6;
+  gdouble synth_1_seq_tuning_7;
+  gdouble synth_1_seq_tuning_pingpong;
+  gdouble synth_1_seq_tuning_lfo_frequency;
+
+  gdouble synth_1_seq_volume_0;
+  gdouble synth_1_seq_volume_1;
+  gdouble synth_1_seq_volume_2;
+  gdouble synth_1_seq_volume_3;
+  gdouble synth_1_seq_volume_4;
+  gdouble synth_1_seq_volume_5;
+  gdouble synth_1_seq_volume_6;
+  gdouble synth_1_seq_volume_7;
+  gdouble synth_1_seq_volume_pingpong;
+  gdouble synth_1_seq_volume_lfo_frequency;
 
   gboolean synth_1_sync_enabled;
   gdouble synth_1_sync_relative_attack_factor;
@@ -251,6 +295,28 @@ ags_fx_seq_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
   vibrato_lfo_freq = 8.172;
   vibrato_tuning = 0.0;
 
+  synth_0_seq_tuning_0 = 0.0;
+  synth_0_seq_tuning_1 = 0.0;
+  synth_0_seq_tuning_2 = 0.0;
+  synth_0_seq_tuning_3 = 0.0;
+  synth_0_seq_tuning_4 = 0.0;
+  synth_0_seq_tuning_5 = 0.0;
+  synth_0_seq_tuning_6 = 0.0;
+  synth_0_seq_tuning_7 = 0.0;
+  synth_0_seq_tuning_pingpong = FALSE;
+  synth_0_seq_tuning_lfo_frequency = 6.0;
+
+  synth_0_seq_volume_0 = 0.0;
+  synth_0_seq_volume_1 = 0.0;
+  synth_0_seq_volume_2 = 0.0;
+  synth_0_seq_volume_3 = 0.0;
+  synth_0_seq_volume_4 = 0.0;
+  synth_0_seq_volume_5 = 0.0;
+  synth_0_seq_volume_6 = 0.0;
+  synth_0_seq_volume_7 = 0.0;
+  synth_0_seq_volume_pingpong = FALSE;
+  synth_0_seq_volume_lfo_frequency = 6.0;
+
   synth_0_sync_enabled = FALSE;
 
   synth_0_sync_relative_attack_factor = 1.0;
@@ -269,6 +335,28 @@ ags_fx_seq_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
 
   synth_0_sync_lfo_oscillator = AGS_SYNTH_OSCILLATOR_SIN;
   synth_0_sync_lfo_frequency = 10.0;
+
+  synth_1_seq_tuning_0 = 0.0;
+  synth_1_seq_tuning_1 = 0.0;
+  synth_1_seq_tuning_2 = 0.0;
+  synth_1_seq_tuning_3 = 0.0;
+  synth_1_seq_tuning_4 = 0.0;
+  synth_1_seq_tuning_5 = 0.0;
+  synth_1_seq_tuning_6 = 0.0;
+  synth_1_seq_tuning_7 = 0.0;
+  synth_1_seq_tuning_pingpong = FALSE;
+  synth_1_seq_tuning_lfo_frequency = 6.0;
+
+  synth_1_seq_volume_0 = 0.0;
+  synth_1_seq_volume_1 = 0.0;
+  synth_1_seq_volume_2 = 0.0;
+  synth_1_seq_volume_3 = 0.0;
+  synth_1_seq_volume_4 = 0.0;
+  synth_1_seq_volume_5 = 0.0;
+  synth_1_seq_volume_6 = 0.0;
+  synth_1_seq_volume_7 = 0.0;
+  synth_1_seq_volume_pingpong = FALSE;
+  synth_1_seq_volume_lfo_frequency = 6.0;
 
   synth_1_sync_enabled = FALSE;
 
@@ -461,6 +549,366 @@ ags_fx_seq_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
 
       ags_seq_synth_util_set_volume(channel_data->seq_synth_0,
 				    (gdouble) g_value_get_float(&value));
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq tuning 0 */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-0-seq-tuning-0", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_0_seq_tuning_0 = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq tuning 1 */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-0-seq-tuning-1", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_0_seq_tuning_1 = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq tuning 2 */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-0-seq-tuning-2", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_0_seq_tuning_2 = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq tuning 3 */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-0-seq-tuning-3", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_0_seq_tuning_3 = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq tuning 4 */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-0-seq-tuning-4", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_0_seq_tuning_4 = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq tuning 5 */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-0-seq-tuning-5", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_0_seq_tuning_5 = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq tuning 6 */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-0-seq-tuning-6", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_0_seq_tuning_6 = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq tuning 7 */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-0-seq-tuning-7", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_0_seq_tuning_7 = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq tuning pingpong */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-0-seq-tuning-pingpong", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_0_seq_tuning_pingpong = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq tuning LFO frequency */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-0-seq-tuning-lfo-frequency", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_0_seq_tuning_lfo_frequency = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq volume 0 */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-0-seq-volume-0", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_0_seq_volume_0 = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq volume 1 */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-0-seq-volume-1", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_0_seq_volume_1 = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq volume 2 */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-0-seq-volume-2", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_0_seq_volume_2 = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq volume 3 */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-0-seq-volume-3", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_0_seq_volume_3 = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq volume 4 */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-0-seq-volume-4", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_0_seq_volume_4 = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq volume 5 */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-0-seq-volume-5", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_0_seq_volume_5 = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq volume 6 */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-0-seq-volume-6", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_0_seq_volume_6 = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq volume 7 */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-0-seq-volume-7", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_0_seq_volume_7 = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq volume pingpong */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-0-seq-volume-pingpong", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_0_seq_volume_pingpong = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq volume LFO frequency */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-0-seq-volume-lfo-frequency", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_0_seq_volume_lfo_frequency = (gdouble) g_value_get_float(&value);
       
       g_object_unref(port);
     }
@@ -820,6 +1268,366 @@ ags_fx_seq_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
 
       ags_seq_synth_util_set_volume(channel_data->seq_synth_1,
 				    (gdouble) g_value_get_float(&value));
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-1 seq tuning 0 */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-1-seq-tuning-0", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_1_seq_tuning_0 = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-1 seq tuning 1 */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-1-seq-tuning-1", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_1_seq_tuning_1 = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-1 seq tuning 2 */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-1-seq-tuning-2", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_1_seq_tuning_2 = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-1 seq tuning 3 */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-1-seq-tuning-3", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_1_seq_tuning_3 = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-1 seq tuning 4 */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-1-seq-tuning-4", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_1_seq_tuning_4 = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-1 seq tuning 5 */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-1-seq-tuning-5", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_1_seq_tuning_5 = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-1 seq tuning 6 */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-1-seq-tuning-6", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_1_seq_tuning_6 = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-1 seq tuning 7 */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-1-seq-tuning-7", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_1_seq_tuning_7 = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-1 seq tuning pingpong */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-1-seq-tuning-pingpong", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_1_seq_tuning_pingpong = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-1 seq tuning LFO frequency */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-1-seq-tuning-lfo-frequency", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_1_seq_tuning_lfo_frequency = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-1 seq volume 0 */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-1-seq-volume-0", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_1_seq_volume_0 = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-1 seq volume 1 */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-1-seq-volume-1", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_1_seq_volume_1 = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-1 seq volume 2 */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-1-seq-volume-2", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_1_seq_volume_2 = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-1 seq volume 3 */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-1-seq-volume-3", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_1_seq_volume_3 = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-1 seq volume 4 */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-1-seq-volume-4", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_1_seq_volume_4 = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-1 seq volume 5 */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-1-seq-volume-5", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_1_seq_volume_5 = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-1 seq volume 6 */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-1-seq-volume-6", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_1_seq_volume_6 = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-1 seq volume 7 */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-1-seq-volume-7", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_1_seq_volume_7 = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-1 seq volume pingpong */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-1-seq-volume-pingpong", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_1_seq_volume_pingpong = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-1 seq volume LFO frequency */    
+    g_object_get(fx_seq_synth_audio,
+		 "synth-1-seq-volume-lfo-frequency", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      synth_1_seq_volume_lfo_frequency = (gdouble) g_value_get_float(&value);
       
       g_object_unref(port);
     }
@@ -1417,6 +2225,66 @@ ags_fx_seq_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
     ags_seq_synth_util_set_samplerate(channel_data->seq_synth_0,
 				      samplerate);
 
+    ags_seq_synth_util_set_seq_tuning_0(channel_data->seq_synth_0,
+					synth_0_seq_tuning_0);
+
+    ags_seq_synth_util_set_seq_tuning_1(channel_data->seq_synth_0,
+					synth_0_seq_tuning_1);
+
+    ags_seq_synth_util_set_seq_tuning_2(channel_data->seq_synth_0,
+					synth_0_seq_tuning_2);
+
+    ags_seq_synth_util_set_seq_tuning_3(channel_data->seq_synth_0,
+					synth_0_seq_tuning_3);
+
+    ags_seq_synth_util_set_seq_tuning_4(channel_data->seq_synth_0,
+					synth_0_seq_tuning_4);
+
+    ags_seq_synth_util_set_seq_tuning_5(channel_data->seq_synth_0,
+					synth_0_seq_tuning_5);
+
+    ags_seq_synth_util_set_seq_tuning_6(channel_data->seq_synth_0,
+					synth_0_seq_tuning_6);
+
+    ags_seq_synth_util_set_seq_tuning_7(channel_data->seq_synth_0,
+					synth_0_seq_tuning_7);
+
+    ags_seq_synth_util_set_seq_tuning_pingpong(channel_data->seq_synth_0,
+					       synth_0_seq_tuning_pingpong);
+
+    ags_seq_synth_util_set_seq_tuning_lfo_frequency(channel_data->seq_synth_0,
+						    synth_0_seq_tuning_lfo_frequency);
+
+    ags_seq_synth_util_set_seq_volume_0(channel_data->seq_synth_0,
+					synth_0_seq_volume_0);
+
+    ags_seq_synth_util_set_seq_volume_1(channel_data->seq_synth_0,
+					synth_0_seq_volume_1);
+
+    ags_seq_synth_util_set_seq_volume_2(channel_data->seq_synth_0,
+					synth_0_seq_volume_2);
+
+    ags_seq_synth_util_set_seq_volume_3(channel_data->seq_synth_0,
+					synth_0_seq_volume_3);
+
+    ags_seq_synth_util_set_seq_volume_4(channel_data->seq_synth_0,
+					synth_0_seq_volume_4);
+
+    ags_seq_synth_util_set_seq_volume_5(channel_data->seq_synth_0,
+					synth_0_seq_volume_5);
+
+    ags_seq_synth_util_set_seq_volume_6(channel_data->seq_synth_0,
+					synth_0_seq_volume_6);
+
+    ags_seq_synth_util_set_seq_volume_7(channel_data->seq_synth_0,
+					synth_0_seq_volume_7);
+
+    ags_seq_synth_util_set_seq_volume_pingpong(channel_data->seq_synth_0,
+					       synth_0_seq_volume_pingpong);
+
+    ags_seq_synth_util_set_seq_volume_lfo_frequency(channel_data->seq_synth_0,
+						    synth_0_seq_volume_lfo_frequency);
+
     ags_seq_synth_util_set_vibrato_enabled(channel_data->seq_synth_0,
 					   vibrato_enabled);
 
@@ -1741,6 +2609,66 @@ ags_fx_seq_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
 				  format);
     ags_seq_synth_util_set_samplerate(channel_data->seq_synth_1,
 				      samplerate);
+
+    ags_seq_synth_util_set_seq_tuning_0(channel_data->seq_synth_1,
+					synth_1_seq_tuning_0);
+
+    ags_seq_synth_util_set_seq_tuning_1(channel_data->seq_synth_1,
+					synth_1_seq_tuning_1);
+
+    ags_seq_synth_util_set_seq_tuning_2(channel_data->seq_synth_1,
+					synth_1_seq_tuning_2);
+
+    ags_seq_synth_util_set_seq_tuning_3(channel_data->seq_synth_1,
+					synth_1_seq_tuning_3);
+
+    ags_seq_synth_util_set_seq_tuning_4(channel_data->seq_synth_1,
+					synth_1_seq_tuning_4);
+
+    ags_seq_synth_util_set_seq_tuning_5(channel_data->seq_synth_1,
+					synth_1_seq_tuning_5);
+
+    ags_seq_synth_util_set_seq_tuning_6(channel_data->seq_synth_1,
+					synth_1_seq_tuning_6);
+
+    ags_seq_synth_util_set_seq_tuning_7(channel_data->seq_synth_1,
+					synth_1_seq_tuning_7);
+
+    ags_seq_synth_util_set_seq_tuning_pingpong(channel_data->seq_synth_1,
+					       synth_1_seq_tuning_pingpong);
+
+    ags_seq_synth_util_set_seq_tuning_lfo_frequency(channel_data->seq_synth_1,
+						    synth_1_seq_tuning_lfo_frequency);
+
+    ags_seq_synth_util_set_seq_volume_0(channel_data->seq_synth_1,
+					synth_1_seq_volume_0);
+
+    ags_seq_synth_util_set_seq_volume_1(channel_data->seq_synth_1,
+					synth_1_seq_volume_1);
+
+    ags_seq_synth_util_set_seq_volume_2(channel_data->seq_synth_1,
+					synth_1_seq_volume_2);
+
+    ags_seq_synth_util_set_seq_volume_3(channel_data->seq_synth_1,
+					synth_1_seq_volume_3);
+
+    ags_seq_synth_util_set_seq_volume_4(channel_data->seq_synth_1,
+					synth_1_seq_volume_4);
+
+    ags_seq_synth_util_set_seq_volume_5(channel_data->seq_synth_1,
+					synth_1_seq_volume_5);
+
+    ags_seq_synth_util_set_seq_volume_6(channel_data->seq_synth_1,
+					synth_1_seq_volume_6);
+
+    ags_seq_synth_util_set_seq_volume_7(channel_data->seq_synth_1,
+					synth_1_seq_volume_7);
+
+    ags_seq_synth_util_set_seq_volume_pingpong(channel_data->seq_synth_1,
+					       synth_1_seq_volume_pingpong);
+
+    ags_seq_synth_util_set_seq_volume_lfo_frequency(channel_data->seq_synth_1,
+						    synth_1_seq_volume_lfo_frequency);
 
     ags_seq_synth_util_set_vibrato_enabled(channel_data->seq_synth_1,
 					   vibrato_enabled);

@@ -2,8 +2,8 @@ ags (7.5.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented AgsQuantumSynth
-	* TODO:JK: implemented ags-fx-seq-synth
-	* TODO:JK: implemented ags_seq_synth_util.[ch]
+	* implemented ags-fx-seq-synth
+	* implemented ags_seq_synth_util.[ch]
 	* implemented AgsFileEntry
 	* minor improvements
 
