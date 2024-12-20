@@ -54,7 +54,8 @@ G_BEGIN_DECLS
       .seq_tuning_5 = 0.0,						\
       .seq_tuning_6 = 0.0,						\
       .seq_tuning_7 = 0.0,						\
-      .seq_tuning_pingpong = 0.0,					\
+      .seq_tuning_pingpong = FALSE,					\
+      .seq_tuning_lfo_frequency = 6.0,					\
       .seq_volume_0 = 0.0,						\
       .seq_volume_1 = 0.0,						\
       .seq_volume_2 = 0.0,						\
@@ -63,7 +64,8 @@ G_BEGIN_DECLS
       .seq_volume_5 = 0.0,						\
       .seq_volume_6 = 0.0,						\
       .seq_volume_7 = 0.0,						\
-      .seq_volume_pingpong = 0.0,					\
+      .seq_volume_pingpong = FALSE,					\
+      .seq_volume_lfo_frequency = 6.0,					\
       .lfo_oscillator_mode = AGS_SYNTH_OSCILLATOR_SIN,			\
       .lfo_frequency = AGS_SEQ_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY,	\
       .lfo_depth = AGS_SEQ_SYNTH_UTIL_DEFAULT_LFO_DEPTH,		\
@@ -104,8 +106,9 @@ struct _AgsSeqSynthUtil
   gdouble seq_tuning_6;
   gdouble seq_tuning_7;
 
-  gdouble seq_tuning_pingpong;
-
+  gboolean seq_tuning_pingpong;
+  gdouble seq_tuning_lfo_frequency;
+  
   gdouble seq_volume_0;
   gdouble seq_volume_1;
   gdouble seq_volume_2;
@@ -115,7 +118,8 @@ struct _AgsSeqSynthUtil
   gdouble seq_volume_6;
   gdouble seq_volume_7;
 
-  gdouble seq_volume_pingpong;
+  gboolean seq_volume_pingpong;
+  gdouble seq_volume_lfo_frequency;
   
   guint lfo_oscillator_mode;
 
@@ -216,9 +220,13 @@ gdouble ags_seq_synth_util_get_seq_tuning_7(AgsSeqSynthUtil *seq_synth_util);
 void ags_seq_synth_util_set_seq_tuning_7(AgsSeqSynthUtil *seq_synth_util,
 					 gdouble seq_tuning_7);
 
-gdouble ags_seq_synth_util_get_seq_tuning_pingpong(AgsSeqSynthUtil *seq_synth_util);
+gboolean ags_seq_synth_util_get_seq_tuning_pingpong(AgsSeqSynthUtil *seq_synth_util);
 void ags_seq_synth_util_set_seq_tuning_pingpong(AgsSeqSynthUtil *seq_synth_util,
-						gdouble seq_tuning_pingpong);
+						gboolean seq_tuning_pingpong);
+
+gdouble ags_seq_synth_util_get_seq_tuning_lfo_frequency(AgsSeqSynthUtil *seq_synth_util);
+void ags_seq_synth_util_set_seq_tuning_lfo_frequency(AgsSeqSynthUtil *seq_synth_util,
+						     gdouble seq_tuning_lfo_frequency);
 
 gdouble ags_seq_synth_util_get_seq_volume_0(AgsSeqSynthUtil *seq_synth_util);
 void ags_seq_synth_util_set_seq_volume_0(AgsSeqSynthUtil *seq_synth_util,
@@ -252,9 +260,13 @@ gdouble ags_seq_synth_util_get_seq_volume_7(AgsSeqSynthUtil *seq_synth_util);
 void ags_seq_synth_util_set_seq_volume_7(AgsSeqSynthUtil *seq_synth_util,
 					 gdouble seq_volume_7);
 
-gdouble ags_seq_synth_util_get_seq_volume_pingpong(AgsSeqSynthUtil *seq_synth_util);
+gboolean ags_seq_synth_util_get_seq_volume_pingpong(AgsSeqSynthUtil *seq_synth_util);
 void ags_seq_synth_util_set_seq_volume_pingpong(AgsSeqSynthUtil *seq_synth_util,
-						gdouble seq_volume_pingpong);
+						gboolean seq_volume_pingpong);
+
+gdouble ags_seq_synth_util_get_seq_volume_lfo_frequency(AgsSeqSynthUtil *seq_synth_util);
+void ags_seq_synth_util_set_seq_volume_lfo_frequency(AgsSeqSynthUtil *seq_synth_util,
+						     gdouble seq_volume_lfo_frequency);
 
 guint ags_seq_synth_util_get_lfo_oscillator_mode(AgsSeqSynthUtil *seq_synth_util);
 void ags_seq_synth_util_set_lfo_oscillator_mode(AgsSeqSynthUtil *seq_synth_util,
@@ -307,6 +319,13 @@ void ags_seq_synth_util_set_note_256th_mode(AgsSeqSynthUtil *seq_synth_util,
 guint ags_seq_synth_util_get_offset_256th(AgsSeqSynthUtil *seq_synth_util);
 void ags_seq_synth_util_set_offset_256th(AgsSeqSynthUtil *seq_synth_util,
 					guint offset_256th);
+
+/*  */
+gdouble ags_seq_synth_util_get_tuning_by_offset(AgsSeqSynthUtil *seq_synth_util,
+						guint offset);
+
+gdouble ags_seq_synth_util_get_volume_by_offset(AgsSeqSynthUtil *seq_synth_util,
+						guint offset);
 
 /* seq sin oscillator */
 void ags_seq_synth_util_compute_sin_s8(AgsSeqSynthUtil *seq_synth_util);
