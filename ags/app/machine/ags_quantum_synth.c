@@ -728,6 +728,17 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
 		  (GtkWidget *) quantum_synth->synth_0_seq_tuning_pingpong,
 		  0, 1,
 		  4, 1);
+
+  quantum_synth->synth_0_seq_tuning_lfo_frequency = NULL;
+
+  /* synth 0 LFO frequency */
+  quantum_synth->synth_0_seq_tuning_lfo_frequency = (GtkSpinButton *) gtk_spin_button_new_with_range(0.01, 16.0, 0.01);
+  gtk_spin_button_set_value(quantum_synth->synth_0_seq_tuning_lfo_frequency,
+			    8.0);  
+  gtk_grid_attach(synth_0_seq_grid,
+		  (GtkWidget *) quantum_synth->synth_0_seq_tuning_lfo_frequency,
+		  6, 1,
+		  2, 1);
   
   /* synth 0 seq Nr. 0 */
   quantum_synth->synth_0_seq_volume_0 = (AgsDial *) ags_dial_new();
@@ -943,6 +954,17 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
 		  (GtkWidget *) quantum_synth->synth_0_seq_volume_pingpong,
 		  0, 3,
 		  4, 1);
+
+  quantum_synth->synth_0_seq_volume_lfo_frequency = NULL;
+
+  /* synth 0 LFO frequency */
+  quantum_synth->synth_0_seq_volume_lfo_frequency = (GtkSpinButton *) gtk_spin_button_new_with_range(0.01, 16.0, 0.01);
+  gtk_spin_button_set_value(quantum_synth->synth_0_seq_volume_lfo_frequency,
+			    8.0);  
+  gtk_grid_attach(synth_0_seq_grid,
+		  (GtkWidget *) quantum_synth->synth_0_seq_volume_lfo_frequency,
+		  6, 3,
+		  2, 1);
   
   /* OSC 1 - sync enabled */
   quantum_synth->synth_0_sync_enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("OSC 1 - sync enabled"));
@@ -1785,6 +1807,17 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
 		  0, 1,
 		  4, 1);
   
+  quantum_synth->synth_1_seq_tuning_lfo_frequency = NULL;
+
+  /* synth 1 LFO frequency */
+  quantum_synth->synth_1_seq_tuning_lfo_frequency = (GtkSpinButton *) gtk_spin_button_new_with_range(0.01, 16.0, 0.01);
+  gtk_spin_button_set_value(quantum_synth->synth_1_seq_tuning_lfo_frequency,
+			    8.0);  
+  gtk_grid_attach(synth_1_seq_grid,
+		  (GtkWidget *) quantum_synth->synth_1_seq_tuning_lfo_frequency,
+		  6, 1,
+		  2, 1);
+
   /* synth 1 seq Nr. 0 */
   quantum_synth->synth_1_seq_volume_0 = (AgsDial *) ags_dial_new();
   
@@ -1998,6 +2031,15 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
 		  (GtkWidget *) quantum_synth->synth_1_seq_volume_pingpong,
 		  0, 3,
 		  4, 1);
+
+  /* synth 1 LFO frequency */
+  quantum_synth->synth_1_seq_volume_lfo_frequency = (GtkSpinButton *) gtk_spin_button_new_with_range(0.01, 16.0, 0.01);
+  gtk_spin_button_set_value(quantum_synth->synth_1_seq_volume_lfo_frequency,
+			    8.0);  
+  gtk_grid_attach(synth_1_seq_grid,
+		  (GtkWidget *) quantum_synth->synth_1_seq_volume_lfo_frequency,
+		  6, 3,
+		  2, 1);
 
   /* OSC 2 - sync enabled */
   quantum_synth->synth_1_sync_enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("OSC 2 - sync enabled"));

@@ -2014,7 +2014,7 @@ ags_seq_synth_util_get_tuning_by_offset(AgsSeqSynthUtil *seq_synth_util,
   tuning = 0.0;
   
   if(seq_tuning_offset_end != 0){
-    tuning = ((seq_tuning_offset) * (tuning_a / seq_tuning_offset_end)) * ((seq_tuning_offset_end - seq_tuning_offset) * (tuning_b / seq_tuning_offset_end));
+    tuning = ((seq_tuning_offset) * (tuning_a / seq_tuning_offset_end)) + ((seq_tuning_offset_end - seq_tuning_offset) * (tuning_b / seq_tuning_offset_end));
   }
   
   return(tuning);
@@ -2203,7 +2203,7 @@ ags_seq_synth_util_get_volume_by_offset(AgsSeqSynthUtil *seq_synth_util,
   volume = 1.0;
 
   if(seq_volume_offset_end != 0){
-    volume = ((seq_volume_offset) * (volume_a / seq_volume_offset_end)) * ((seq_volume_offset_end - seq_volume_offset) * (volume_b / seq_volume_offset_end));
+    volume = ((seq_volume_offset) * (volume_a / seq_volume_offset_end)) + ((seq_volume_offset_end - seq_volume_offset) * (volume_b / seq_volume_offset_end));
   }
   
   return(volume);

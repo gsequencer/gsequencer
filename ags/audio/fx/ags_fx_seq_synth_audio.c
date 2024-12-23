@@ -2344,7 +2344,7 @@ ags_fx_seq_synth_audio_init(AgsFxSeqSynthAudio *fx_seq_synth_audio)
 						    "port-value-length", 1,
 						    NULL);
   
-  fx_seq_synth_audio->synth_0_seq_tuning_lfo_frequency->port_value.ags_port_float = (gfloat) 6.0;
+  fx_seq_synth_audio->synth_0_seq_tuning_lfo_frequency->port_value.ags_port_float = (gfloat) 8.0;
 
   g_object_set(fx_seq_synth_audio->synth_0_seq_tuning_lfo_frequency,
 	       "plugin-port", ags_fx_seq_synth_audio_get_synth_0_seq_tuning_lfo_frequency_plugin_port(),
@@ -3247,7 +3247,7 @@ ags_fx_seq_synth_audio_init(AgsFxSeqSynthAudio *fx_seq_synth_audio)
 						    "port-value-length", 1,
 						    NULL);
   
-  fx_seq_synth_audio->synth_1_seq_tuning_lfo_frequency->port_value.ags_port_float = (gfloat) 6.0;
+  fx_seq_synth_audio->synth_1_seq_tuning_lfo_frequency->port_value.ags_port_float = (gfloat) 8.0;
 
   g_object_set(fx_seq_synth_audio->synth_1_seq_tuning_lfo_frequency,
 	       "plugin-port", ags_fx_seq_synth_audio_get_synth_1_seq_tuning_lfo_frequency_plugin_port(),
@@ -3467,7 +3467,7 @@ ags_fx_seq_synth_audio_init(AgsFxSeqSynthAudio *fx_seq_synth_audio)
 						    "port-value-length", 1,
 						    NULL);
   
-  fx_seq_synth_audio->synth_1_seq_volume_lfo_frequency->port_value.ags_port_float = (gfloat) 6.0;
+  fx_seq_synth_audio->synth_1_seq_volume_lfo_frequency->port_value.ags_port_float = (gfloat) 8.0;
 
   g_object_set(fx_seq_synth_audio->synth_1_seq_volume_lfo_frequency,
 	       "plugin-port", ags_fx_seq_synth_audio_get_synth_1_seq_volume_lfo_frequency_plugin_port(),
@@ -9251,7 +9251,7 @@ ags_fx_seq_synth_audio_get_synth_0_seq_tuning_lfo_frequency_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      AGS_SEQ_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY);
+		      8.0);
     g_value_set_float(plugin_port->lower_value,
 		      0.01);
     g_value_set_float(plugin_port->upper_value,
@@ -9369,7 +9369,7 @@ ags_fx_seq_synth_audio_get_synth_0_seq_volume_lfo_frequency_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      AGS_SEQ_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY);
+		      8.0);
     g_value_set_float(plugin_port->lower_value,
 		      0.01);
     g_value_set_float(plugin_port->upper_value,
@@ -10309,7 +10309,7 @@ ags_fx_seq_synth_audio_get_synth_1_seq_tuning_lfo_frequency_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      AGS_SEQ_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY);
+		      8.0);
     g_value_set_float(plugin_port->lower_value,
 		      0.01);
     g_value_set_float(plugin_port->upper_value,
@@ -10427,7 +10427,7 @@ ags_fx_seq_synth_audio_get_synth_1_seq_volume_lfo_frequency_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      AGS_SEQ_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY);
+		      8.0);
     g_value_set_float(plugin_port->lower_value,
 		      0.01);
     g_value_set_float(plugin_port->upper_value,

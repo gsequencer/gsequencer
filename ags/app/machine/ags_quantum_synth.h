@@ -92,6 +92,7 @@ struct _AgsQuantumSynth
   AgsDial *synth_0_seq_tuning_7;
 
   GtkCheckButton *synth_0_seq_tuning_pingpong;
+  GtkSpinButton *synth_0_seq_tuning_lfo_frequency;
   
   AgsDial *synth_0_seq_volume_0;
   AgsDial *synth_0_seq_volume_1;
@@ -103,6 +104,7 @@ struct _AgsQuantumSynth
   AgsDial *synth_0_seq_volume_7;
 
   GtkCheckButton *synth_0_seq_volume_pingpong;
+  GtkSpinButton *synth_0_seq_volume_lfo_frequency;
   
   GtkDropDown *synth_0_lfo_oscillator;
 
@@ -147,8 +149,7 @@ struct _AgsQuantumSynth
   AgsDial *synth_1_seq_tuning_7;
 
   GtkCheckButton *synth_1_seq_tuning_pingpong;
-  GtkCheckButton *synth_1_seq_tuning_linear;
-  GtkCheckButton *synth_1_seq_tuning_interpolate;
+  GtkSpinButton *synth_1_seq_tuning_lfo_frequency;
   
   AgsDial *synth_1_seq_volume_0;
   AgsDial *synth_1_seq_volume_1;
@@ -160,8 +161,7 @@ struct _AgsQuantumSynth
   AgsDial *synth_1_seq_volume_7;
 
   GtkCheckButton *synth_1_seq_volume_pingpong;
-  GtkCheckButton *synth_1_seq_volume_linear;
-  GtkCheckButton *synth_1_seq_volume_interpolate;
+  GtkSpinButton *synth_1_seq_volume_lfo_frequency;
 
   GtkDropDown *synth_1_lfo_oscillator;
 
