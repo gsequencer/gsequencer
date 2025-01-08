@@ -136,10 +136,11 @@ ags_export_window_replace_files_response_callback(AgsInputDialog *input_dialog,
 }
 
 void
-ags_export_window_export_callback(GtkWidget *toggle_button,
+ags_export_window_export_callback(GObject *gobject,
+				  GParamSpec *pspec,
 				  AgsExportWindow *export_window)
 {
-  if(gtk_toggle_button_get_active((GtkToggleButton *) toggle_button)){
+  if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gobject))){
     GList *start_export_soundcard, *export_soundcard;
     GList *all_filename;
     GList *start_remove_filename, *remove_filename;
@@ -240,8 +241,8 @@ ags_export_window_update_ui_callback(AgsApplicationContext *application_context,
 {
   if(ags_export_window_test_flags(export_window,
 				  AGS_EXPORT_WINDOW_HAS_STOP_TIMEOUT)){
-    if(g_atomic_int_get(&(export_window->do_stop))){
-      g_atomic_int_set(&(export_window->do_stop),
+    if(ags_atomic_int_get(&(export_window->do_stop))){
+      ags_atomic_int_set(&(export_window->do_stop),
 		       FALSE);
     
       ags_export_window_stop_export(export_window);
@@ -255,6 +256,6 @@ void
 ags_export_window_stop_callback(AgsThread *thread,
 				AgsExportWindow *export_window)
 {
-  g_atomic_int_set(&(export_window->do_stop),
+  ags_atomic_int_set(&(export_window->do_stop),
 		   TRUE);
 }

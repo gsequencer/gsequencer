@@ -58,27 +58,27 @@ struct _AgsThreadPool
 {
   GObject gobject;
 
-  volatile guint flags;
+  guint flags;
 
-  volatile guint max_unused_threads;
-  volatile guint max_threads;
+  guint max_unused_threads;
+  guint max_threads;
 
   GThread *thread;
 
-  volatile guint queued;
+  guint queued;
 
   GMutex creation_mutex;
   GCond creation_cond;
 
-  volatile gboolean create_threads;
-  volatile gboolean idle;
+  gboolean create_threads;
+  gboolean idle;
 
   GMutex idle_mutex;
   GCond idle_cond;
 
   AgsThread *parent;
 
-  volatile GList *returnable_thread;
+  GList *returnable_thread;
 };
 
 struct _AgsThreadPoolClass

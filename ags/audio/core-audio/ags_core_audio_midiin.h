@@ -119,7 +119,7 @@ struct _AgsCoreAudioMidiin
 
   AgsCoreAudioMidiinFlags flags;
   AgsConnectableFlags connectable_flags;
-  volatile AgsCoreAudioMidiinSyncFlags sync_flags;
+  AgsCoreAudioMidiinSyncFlags sync_flags;
   
   GRecMutex obj_mutex;
   

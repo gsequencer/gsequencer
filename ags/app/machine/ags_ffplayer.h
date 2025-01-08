@@ -87,7 +87,7 @@ struct _AgsFFPlayer
   GtkButton *open;
   GtkWidget *open_dialog;
 
-  volatile int apply_sf2_synth_completed;
+  int apply_sf2_synth_completed;
   
   AgsSF2Loader *sf2_loader;
 

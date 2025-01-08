@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,7 @@
 
 #include <ags/lib/ags_uuid.h>
 
+#include <ags/thread/ags_atomic.h>
 #include <ags/thread/ags_task.h>
 
 G_BEGIN_DECLS
@@ -58,8 +59,8 @@ struct _AgsTaskLauncher
   GList *task;
   GList *cyclic_task;
 
-  volatile gboolean is_running;
-  volatile gint wait_count;
+  gboolean is_running;
+  gint wait_count;
   
   GMutex wait_mutex;
   GCond wait_cond;

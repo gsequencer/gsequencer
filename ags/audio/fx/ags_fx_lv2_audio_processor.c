@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -52,9 +52,9 @@ static gpointer ags_fx_lv2_audio_processor_parent_class = NULL;
 GType
 ags_fx_lv2_audio_processor_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_fx_lv2_audio_processor = 0;
 
     static const GTypeInfo ags_fx_lv2_audio_processor_info = {
@@ -74,10 +74,10 @@ ags_fx_lv2_audio_processor_get_type()
 							     &ags_fx_lv2_audio_processor_info,
 							     0);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_fx_lv2_audio_processor);
+    g_once_init_leave(&g_define_type_id__static, ags_type_fx_lv2_audio_processor);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 void
@@ -150,7 +150,7 @@ ags_fx_lv2_audio_processor_key_on(AgsFxNotationAudioProcessor *fx_notation_audio
   GRecMutex *fx_lv2_audio_mutex;
 
   audio = NULL;
-  
+
   audio_start_mapping = 0;
   midi_start_mapping = 0;
 
@@ -184,6 +184,7 @@ ags_fx_lv2_audio_processor_key_on(AgsFxNotationAudioProcessor *fx_notation_audio
     if(ags_fx_lv2_audio_test_flags(fx_lv2_audio, AGS_FX_LV2_AUDIO_LIVE_INSTRUMENT)){
       AgsFxLv2AudioScopeData *scope_data;
       AgsFxLv2AudioChannelData *channel_data;
+      AgsFxLv2AudioInputData *input_data;
 
       g_rec_mutex_lock(fx_lv2_audio_mutex);
 
@@ -191,17 +192,16 @@ ags_fx_lv2_audio_processor_key_on(AgsFxNotationAudioProcessor *fx_notation_audio
 
       channel_data = scope_data->channel_data[audio_channel];
 
-      if(channel_data->midiin_event_port != NULL){
+      input_data = channel_data->input_data[midi_note];
+
+      if(fx_lv2_audio->has_midiin_event_port){
 	ags_lv2_plugin_event_buffer_append_midi(channel_data->midiin_event_port,
 						AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
-						channel_data->input_data[midi_note]->event_buffer,
+						input_data->event_buffer,
 						1);
-      }else if(channel_data->midiin_atom_port != NULL){
-	ags_lv2_plugin_atom_sequence_append_midi(channel_data->midiin_atom_port,
-						 AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
-						 channel_data->input_data[midi_note]->event_buffer,
-						 1);
       }
+	
+      input_data->key_on = input_data->key_on + 1;	
       
       g_rec_mutex_unlock(fx_lv2_audio_mutex);
     }else{
@@ -217,18 +217,15 @@ ags_fx_lv2_audio_processor_key_on(AgsFxNotationAudioProcessor *fx_notation_audio
 
       input_data = channel_data->input_data[midi_note];
 
-      if(input_data->midiin_event_port != NULL){
+      if(fx_lv2_audio->has_midiin_event_port){
 	ags_lv2_plugin_event_buffer_append_midi(input_data->midiin_event_port,
 						AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
 						input_data->event_buffer,
 						1);
-      }else if(input_data->midiin_atom_port != NULL){
-	ags_lv2_plugin_atom_sequence_append_midi(input_data->midiin_atom_port,
-						 AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
-						 input_data->event_buffer,
-						 1);
       }
-      
+
+      input_data->key_on -= 1;
+	
       g_rec_mutex_unlock(fx_lv2_audio_mutex);
     }
   }

@@ -90,9 +90,9 @@ static guint file_dialog_signals[LAST_SIGNAL];
 GType
 ags_file_dialog_get_type(void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_file_dialog = 0;
 
     static const GTypeInfo ags_file_dialog_info = {
@@ -111,10 +111,10 @@ ags_file_dialog_get_type(void)
 						  "AgsFileDialog", &ags_file_dialog_info,
 						  0);    
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_file_dialog);
+    g_once_init_leave(&g_define_type_id__static, ags_type_file_dialog);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 void
@@ -372,6 +372,7 @@ ags_file_dialog_activate_button_callback(GtkButton *activate_button,
     if(writable_location &&
        basename != NULL &&
        strlen(basename) > 0 &&
+       (!g_strncasecmp(basename, "/", 2)) == FALSE &&
        (!g_strncasecmp(basename, ".", 2)) == FALSE &&
        (!g_strncasecmp(basename, "..", 3)) == FALSE &&
        !g_file_test(filename, G_FILE_TEST_IS_DIR)){

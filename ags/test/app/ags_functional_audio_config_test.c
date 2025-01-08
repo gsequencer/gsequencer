@@ -102,7 +102,7 @@ ags_functional_audio_config_test_add_test()
   
   ags_functional_test_util_quit();
   
-  while(!g_atomic_int_get(&is_terminated)){
+  while(!ags_atomic_int_get(&is_terminated)){
     g_usleep(G_USEC_PER_SEC / 60);
   }
 
@@ -266,9 +266,9 @@ main(int argc, char **argv)
     return CU_get_error();
   }
 
-  g_atomic_int_set(&is_available,
+  ags_atomic_int_set(&is_available,
 		   FALSE);
-  g_atomic_int_set(&is_terminated,
+  ags_atomic_int_set(&is_terminated,
 		   FALSE);
   
   new_argv = (char **) malloc((argc + 3) * sizeof(char *));
@@ -294,7 +294,7 @@ main(int argc, char **argv)
   ags_functional_test_util_do_run(argc, new_argv,
 				  ags_functional_audio_config_test_add_test, &is_available);
 
-  g_atomic_int_set(&is_terminated,
+  ags_atomic_int_set(&is_terminated,
 		   TRUE);
 
   g_thread_join(ags_functional_test_util_test_runner_thread());

@@ -86,7 +86,7 @@ ags_functional_thread_test_init_suite()
   idle->tv_sec = 0;
   idle->tv_nsec = 0;
   
-  g_atomic_pointer_set(&(synchronization_idle),
+  ags_atomic_pointer_set(&(synchronization_idle),
 		       idle);
   
   return(0);
@@ -99,7 +99,7 @@ ags_functional_thread_test_init_suite()
 int
 ags_functional_thread_test_clean_suite()
 {
-  free(g_atomic_pointer_get(&(synchronization_idle)));
+  free(ags_atomic_pointer_get(&(synchronization_idle)));
   
   return(0);
 }

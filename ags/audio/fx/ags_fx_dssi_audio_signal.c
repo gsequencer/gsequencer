@@ -65,9 +65,9 @@ const gchar *ags_fx_dssi_audio_signal_plugin_name = "ags-fx-dssi";
 GType
 ags_fx_dssi_audio_signal_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_fx_dssi_audio_signal = 0;
 
     static const GTypeInfo ags_fx_dssi_audio_signal_info = {
@@ -87,10 +87,10 @@ ags_fx_dssi_audio_signal_get_type()
 							   &ags_fx_dssi_audio_signal_info,
 							   0);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_fx_dssi_audio_signal);
+    g_once_init_leave(&g_define_type_id__static, ags_type_fx_dssi_audio_signal);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 void
@@ -269,6 +269,8 @@ ags_fx_dssi_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
     AgsFxDssiAudioChannelData *channel_data;
     AgsFxDssiAudioInputData *input_data;
 
+    gboolean success;
+
     g_rec_mutex_lock(fx_dssi_audio_mutex);
 
     scope_data = fx_dssi_audio->scope_data[sound_scope];
@@ -279,10 +281,11 @@ ags_fx_dssi_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
 
     input_data->event_buffer->data.note.note = midi_note;
     
+    success = (input_data->key_on == 0) ? TRUE: FALSE;
+
     g_rec_mutex_unlock(fx_dssi_audio_mutex);
 
-    if(delay_counter == 0.0 &&
-       x0 == offset_counter){
+    if(success){
       g_rec_mutex_lock(fx_dssi_audio_mutex);
 
       input_data->key_on += 1;
@@ -448,7 +451,11 @@ ags_fx_dssi_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notation_aud
 
   fx_dssi_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_dssi_audio);
 
-  midi_note = (y - audio_start_mapping + midi_start_mapping);
+  if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING)){
+    midi_note = (128 - y - 1 - audio_start_mapping + midi_start_mapping);
+  }else{
+    midi_note = (y - audio_start_mapping + midi_start_mapping);
+  }
 
   if(midi_note >= 0 &&
      midi_note < 128){
@@ -464,8 +471,10 @@ ags_fx_dssi_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notation_aud
 
     input_data = channel_data->input_data[midi_note];
 
-    input_data->key_on -= 1;
-      
+    if(input_data->key_on > 0){
+      input_data->key_on -= 1;
+    }
+    
     g_rec_mutex_unlock(fx_dssi_audio_mutex);
   }
   

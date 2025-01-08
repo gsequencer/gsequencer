@@ -156,9 +156,9 @@ static guint file_widget_signals[LAST_SIGNAL];
 GType
 ags_file_widget_get_type(void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_file_widget = 0;
 
     static const GTypeInfo ags_file_widget_info = {
@@ -177,10 +177,10 @@ ags_file_widget_get_type(void)
 						  "AgsFileWidget", &ags_file_widget_info,
 						  0);    
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_file_widget);
+    g_once_init_leave(&g_define_type_id__static, ags_type_file_widget);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 void
@@ -3021,6 +3021,10 @@ ags_file_widget_get_filename(AgsFileWidget *file_widget)
   if(ags_file_widget_test_file_action(file_widget, AGS_FILE_WIDGET_SAVE_AS)){
     gchar *str;
 
+    //NOTE:JK: work-around for not updating 
+    g_signal_emit_by_name(file_widget->location_entry,
+			  "activate");
+    
     str = gtk_editable_get_text(GTK_EDITABLE(file_widget->location_entry));
     
     filename = g_strdup(str);
@@ -3110,6 +3114,10 @@ ags_file_widget_get_filenames(AgsFileWidget *file_widget)
   if(ags_file_widget_test_file_action(file_widget, AGS_FILE_WIDGET_SAVE_AS)){
     gchar *filename;
     gchar *str;
+
+    //NOTE:JK: work-around for not updating 
+    g_signal_emit_by_name(file_widget->location_entry,
+			  "activate");
 
     str = gtk_editable_get_text(GTK_EDITABLE(file_widget->location_entry));
     

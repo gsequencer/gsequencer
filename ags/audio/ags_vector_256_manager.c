@@ -41,9 +41,9 @@ AgsVector256Manager *ags_vector_256_manager = NULL;
 GType
 ags_vector_256_manager_get_type (void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_vector_256_manager = 0;
 
     static const GTypeInfo ags_vector_256_manager_info = {
@@ -63,10 +63,10 @@ ags_vector_256_manager_get_type (void)
 							 &ags_vector_256_manager_info,
 							 0);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_vector_256_manager);
+    g_once_init_leave(&g_define_type_id__static, ags_type_vector_256_manager);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 void
@@ -140,7 +140,7 @@ ags_vector_arr_alloc(AgsVector256Types vector_type)
 
   vector_arr->vector_type = vector_type;
   
-  g_atomic_int_set(&(vector_arr->locked),
+  ags_atomic_int_set(&(vector_arr->locked),
 		   FALSE);
 
   switch(vector_type){
@@ -337,7 +337,7 @@ ags_vector_256_manager_try_acquire(AgsVector256Manager *vector_256_manager,
       vector = vector_256_manager->v8s8_arr;
       
       while(vector != NULL){
-	if(g_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
+	if(ags_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
 	  vector_arr = (AgsVectorArr *) vector->data;
 	  
 	  break;
@@ -352,7 +352,7 @@ ags_vector_256_manager_try_acquire(AgsVector256Manager *vector_256_manager,
       vector = vector_256_manager->v8s16_arr;
       
       while(vector != NULL){
-	if(g_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
+	if(ags_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
 	  vector_arr = (AgsVectorArr *) vector->data;
 	  
 	  break;
@@ -367,7 +367,7 @@ ags_vector_256_manager_try_acquire(AgsVector256Manager *vector_256_manager,
       vector = vector_256_manager->v8s32_arr;
       
       while(vector != NULL){
-	if(g_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
+	if(ags_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
 	  vector_arr = (AgsVectorArr *) vector->data;
 	  
 	  break;
@@ -382,7 +382,7 @@ ags_vector_256_manager_try_acquire(AgsVector256Manager *vector_256_manager,
       vector = vector_256_manager->v8s64_arr;
       
       while(vector != NULL){
-	if(g_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
+	if(ags_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
 	  vector_arr = (AgsVectorArr *) vector->data;
 	  
 	  break;
@@ -397,7 +397,7 @@ ags_vector_256_manager_try_acquire(AgsVector256Manager *vector_256_manager,
       vector = vector_256_manager->v8float_arr;
       
       while(vector != NULL){
-	if(g_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
+	if(ags_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
 	  vector_arr = (AgsVectorArr *) vector->data;
 	  
 	  break;
@@ -412,7 +412,7 @@ ags_vector_256_manager_try_acquire(AgsVector256Manager *vector_256_manager,
       vector = vector_256_manager->v8double_arr;
       
       while(vector != NULL){
-	if(g_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
+	if(ags_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
 	  vector_arr = (AgsVectorArr *) vector->data;
 	  
 	  break;
@@ -425,7 +425,7 @@ ags_vector_256_manager_try_acquire(AgsVector256Manager *vector_256_manager,
   };
 
   if(vector_arr != NULL){
-    g_atomic_int_set(&(vector_arr->locked),
+    ags_atomic_int_set(&(vector_arr->locked),
 		     TRUE);
   }
 
@@ -494,7 +494,7 @@ ags_vector_256_manager_try_acquire_dual(AgsVector256Manager *vector_256_manager,
 	vector = vector_256_manager->v8s8_arr;
       
 	while(vector != NULL){
-	  if(g_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
+	  if(ags_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
 	    vector_arr = (AgsVectorArr *) vector->data;
 	  
 	    break;
@@ -509,7 +509,7 @@ ags_vector_256_manager_try_acquire_dual(AgsVector256Manager *vector_256_manager,
 	vector = vector_256_manager->v8s16_arr;
       
 	while(vector != NULL){
-	  if(g_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
+	  if(ags_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
 	    vector_arr = (AgsVectorArr *) vector->data;
 	  
 	    break;
@@ -524,7 +524,7 @@ ags_vector_256_manager_try_acquire_dual(AgsVector256Manager *vector_256_manager,
 	vector = vector_256_manager->v8s32_arr;
       
 	while(vector != NULL){
-	  if(g_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
+	  if(ags_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
 	    vector_arr = (AgsVectorArr *) vector->data;
 	  
 	    break;
@@ -539,7 +539,7 @@ ags_vector_256_manager_try_acquire_dual(AgsVector256Manager *vector_256_manager,
 	vector = vector_256_manager->v8s64_arr;
       
 	while(vector != NULL){
-	  if(g_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
+	  if(ags_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
 	    vector_arr = (AgsVectorArr *) vector->data;
 	  
 	    break;
@@ -554,7 +554,7 @@ ags_vector_256_manager_try_acquire_dual(AgsVector256Manager *vector_256_manager,
 	vector = vector_256_manager->v8float_arr;
       
 	while(vector != NULL){
-	  if(g_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
+	  if(ags_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
 	    vector_arr = (AgsVectorArr *) vector->data;
 	  
 	    break;
@@ -569,7 +569,7 @@ ags_vector_256_manager_try_acquire_dual(AgsVector256Manager *vector_256_manager,
 	vector = vector_256_manager->v8double_arr;
       
 	while(vector != NULL){
-	  if(g_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
+	  if(ags_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
 	    vector_arr = (AgsVectorArr *) vector->data;
 	  
 	    break;
@@ -597,10 +597,10 @@ ags_vector_256_manager_try_acquire_dual(AgsVector256Manager *vector_256_manager,
     vector_arr_a[0] = arr_a;
     vector_arr_b[0] = arr_b;
     
-    g_atomic_int_set(&(arr_a->locked),
+    ags_atomic_int_set(&(arr_a->locked),
 		     TRUE);
 
-    g_atomic_int_set(&(arr_b->locked),
+    ags_atomic_int_set(&(arr_b->locked),
 		     TRUE);
   }
 
@@ -675,7 +675,7 @@ ags_vector_256_manager_try_acquire_triple(AgsVector256Manager *vector_256_manage
 	vector = vector_256_manager->v8s8_arr;
       
 	while(vector != NULL){
-	  if(g_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
+	  if(ags_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
 	    vector_arr = (AgsVectorArr *) vector->data;
 	  
 	    break;
@@ -690,7 +690,7 @@ ags_vector_256_manager_try_acquire_triple(AgsVector256Manager *vector_256_manage
 	vector = vector_256_manager->v8s16_arr;
       
 	while(vector != NULL){
-	  if(g_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
+	  if(ags_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
 	    vector_arr = (AgsVectorArr *) vector->data;
 	  
 	    break;
@@ -705,7 +705,7 @@ ags_vector_256_manager_try_acquire_triple(AgsVector256Manager *vector_256_manage
 	vector = vector_256_manager->v8s32_arr;
       
 	while(vector != NULL){
-	  if(g_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
+	  if(ags_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
 	    vector_arr = (AgsVectorArr *) vector->data;
 	  
 	    break;
@@ -720,7 +720,7 @@ ags_vector_256_manager_try_acquire_triple(AgsVector256Manager *vector_256_manage
 	vector = vector_256_manager->v8s64_arr;
       
 	while(vector != NULL){
-	  if(g_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
+	  if(ags_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
 	    vector_arr = (AgsVectorArr *) vector->data;
 	  
 	    break;
@@ -735,7 +735,7 @@ ags_vector_256_manager_try_acquire_triple(AgsVector256Manager *vector_256_manage
 	vector = vector_256_manager->v8float_arr;
       
 	while(vector != NULL){
-	  if(g_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
+	  if(ags_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
 	    vector_arr = (AgsVectorArr *) vector->data;
 	  
 	    break;
@@ -750,7 +750,7 @@ ags_vector_256_manager_try_acquire_triple(AgsVector256Manager *vector_256_manage
 	vector = vector_256_manager->v8double_arr;
       
 	while(vector != NULL){
-	  if(g_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
+	  if(ags_atomic_int_get(&(AGS_VECTOR_ARR(vector->data)->locked)) == FALSE){
 	    vector_arr = (AgsVectorArr *) vector->data;
 	  
 	    break;
@@ -782,13 +782,13 @@ ags_vector_256_manager_try_acquire_triple(AgsVector256Manager *vector_256_manage
     vector_arr_b[0] = arr_b;
     vector_arr_c[0] = arr_c;
     
-    g_atomic_int_set(&(arr_a->locked),
+    ags_atomic_int_set(&(arr_a->locked),
 		     TRUE);
 
-    g_atomic_int_set(&(arr_b->locked),
+    ags_atomic_int_set(&(arr_b->locked),
 		     TRUE);
 
-    g_atomic_int_set(&(arr_c->locked),
+    ags_atomic_int_set(&(arr_c->locked),
 		     TRUE);
   }
 
@@ -812,7 +812,7 @@ ags_vector_256_manager_release(AgsVector256Manager *vector_256_manager,
 {
   g_return_if_fail(vector_arr != NULL);
   
-  g_atomic_int_set(&(vector_arr->locked),
+  ags_atomic_int_set(&(vector_arr->locked),
 		   FALSE);
 }
 

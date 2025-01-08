@@ -87,9 +87,9 @@ GHashTable *ags_sf2_synth_sf2_loader_completed = NULL;
 GType
 ags_sf2_synth_get_type(void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_sf2_synth = 0;
 
     static const GTypeInfo ags_sf2_synth_info = {
@@ -118,10 +118,10 @@ ags_sf2_synth_get_type(void)
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_sf2_synth);
+    g_once_init_leave(&g_define_type_id__static, ags_type_sf2_synth);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 void
@@ -202,7 +202,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   gint position;
 
-  const gchar* pitch_type_strv[] = {
+  gchar* pitch_type_strv[] = {
     "fluid-interpolate-none",
     "fluid-interpolate-linear",
     "fluid-interpolate-4th-order",
@@ -622,7 +622,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   gtk_box_append(sf2_synth_pitch_type_hbox,
 		 (GtkWidget *) label);
 
-  sf2_synth->synth_pitch_type = (GtkDropDown *) gtk_drop_down_new_from_strings(pitch_type_strv);
+  sf2_synth->synth_pitch_type = (GtkDropDown *) gtk_drop_down_new_from_strings((const gchar * const *) pitch_type_strv);
 
   gtk_drop_down_set_selected(sf2_synth->synth_pitch_type,
 			     2);

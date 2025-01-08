@@ -122,7 +122,7 @@ struct _AgsAudioUnitDevin
 
   AgsAudioUnitDevinFlags flags;
   AgsConnectableFlags connectable_flags;
-  volatile AgsAudioUnitDevinSyncFlags sync_flags;
+  AgsAudioUnitDevinSyncFlags sync_flags;
   
   GRecMutex obj_mutex;
 

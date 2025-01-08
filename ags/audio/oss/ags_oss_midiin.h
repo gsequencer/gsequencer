@@ -147,7 +147,7 @@ struct _AgsOssMidiin
 
   AgsOssMidiinFlags flags;
   AgsConnectableFlags connectable_flags;
-  volatile AgsOssMidiinSyncFlags sync_flags;
+  AgsOssMidiinSyncFlags sync_flags;
 
   GRecMutex obj_mutex;
 

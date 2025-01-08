@@ -113,9 +113,9 @@ static guint osc_xmlrpc_controller_signals[LAST_SIGNAL];
 GType
 ags_osc_xmlrpc_controller_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_osc_xmlrpc_controller = 0;
 
     static const GTypeInfo ags_osc_xmlrpc_controller_info = {
@@ -145,18 +145,18 @@ ags_osc_xmlrpc_controller_get_type()
 				AGS_TYPE_PLUGIN_CONTROLLER,
 				&ags_plugin_controller_interface_info);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_osc_xmlrpc_controller);
+    g_once_init_leave(&g_define_type_id__static, ags_type_osc_xmlrpc_controller);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 GType
 ags_osc_xmlrpc_controller_flags_get_type()
 {
-  static volatile gsize g_flags_type_id__volatile;
+  static gsize g_flags_type_id__static;
 
-  if(g_once_init_enter (&g_flags_type_id__volatile)){
+  if(g_once_init_enter(&g_flags_type_id__static)){
     static const GFlagsValue values[] = {
       { AGS_OSC_XMLRPC_CONTROLLER_DELEGATE_STARTED, "AGS_OSC_XMLRPC_CONTROLLER_DELEGATE_STARTED", "osc_xmlrpc_controller-delegate-started" },
       { AGS_OSC_XMLRPC_CONTROLLER_DELEGATE_RUNNING, "AGS_OSC_XMLRPC_CONTROLLER_DELEGATE_RUNNING", "osc_xmlrpc_controller-delegate-running" },
@@ -166,10 +166,10 @@ ags_osc_xmlrpc_controller_flags_get_type()
 
     GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsOscXmlrpcControllerFlags"), values);
 
-    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+    g_once_init_leave(&g_flags_type_id__static, g_flags_type_id);
   }
   
-  return g_flags_type_id__volatile;
+  return(g_flags_type_id__static);
 }
 
 void
@@ -272,7 +272,7 @@ ags_osc_xmlrpc_controller_init(AgsOscXmlrpcController *osc_xmlrpc_controller)
 
   osc_xmlrpc_controller->osc_xmlrpc_server = NULL;
 
-  g_atomic_int_set(&(osc_xmlrpc_controller->do_reset),
+  ags_atomic_int_set(&(osc_xmlrpc_controller->do_reset),
 		   FALSE);
 
   g_mutex_init(&(osc_xmlrpc_controller->delegate_mutex));
@@ -448,7 +448,7 @@ ags_osc_xmlrpc_controller_delegate_timeout(AgsOscXmlrpcController *osc_xmlrpc_co
 
   time_now = g_get_monotonic_time();
 
-  g_atomic_int_set(&(osc_xmlrpc_controller->do_reset),
+  ags_atomic_int_set(&(osc_xmlrpc_controller->do_reset),
 		   FALSE);
     
   g_mutex_unlock(&(osc_xmlrpc_controller->delegate_mutex));

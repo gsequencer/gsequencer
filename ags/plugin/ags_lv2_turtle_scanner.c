@@ -147,9 +147,9 @@ static GMutex regex_mutex;
 GType
 ags_lv2_turtle_scanner_get_type (void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_lv2_turtle_scanner = 0;
 
     static const GTypeInfo ags_lv2_turtle_scanner_info = {
@@ -169,18 +169,18 @@ ags_lv2_turtle_scanner_get_type (void)
 							 &ags_lv2_turtle_scanner_info,
 							 0);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_lv2_turtle_scanner);
+    g_once_init_leave(&g_define_type_id__static, ags_type_lv2_turtle_scanner);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 GType
 ags_lv2_turtle_scanner_status_flags_get_type()
 {
-  static volatile gsize g_flags_type_id__volatile;
+  static gsize g_flags_type_id__static;
 
-  if(g_once_init_enter (&g_flags_type_id__volatile)){
+  if(g_once_init_enter(&g_flags_type_id__static)){
     static const GFlagsValue values[] = {
       { AGS_LV2_TURTLE_SCANNER_A, "AGS_LV2_TURTLE_SCANNER_IS_SYNTHESIZER", "lv2-turtle-scanner-a" },
       { AGS_LV2_TURTLE_SCANNER_SEEALSO, "AGS_LV2_TURTLE_SCANNER_IS_SYNTHESIZER", "lv2-turtle-scanner-seealso" },
@@ -191,10 +191,10 @@ ags_lv2_turtle_scanner_status_flags_get_type()
 
     GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsLv2TurtleScannerStatusFlags"), values);
 
-    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+    g_once_init_leave(&g_flags_type_id__static, g_flags_type_id);
   }
   
-  return g_flags_type_id__volatile;
+  return(g_flags_type_id__static);
 }
 
 void

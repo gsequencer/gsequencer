@@ -223,9 +223,9 @@ static gpointer ags_oss_devin_parent_class = NULL;
 GType
 ags_oss_devin_get_type (void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_oss_devin = 0;
 
     static const GTypeInfo ags_oss_devin_info = {
@@ -265,18 +265,18 @@ ags_oss_devin_get_type (void)
 				AGS_TYPE_SOUNDCARD,
 				&ags_soundcard_interface_info);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_oss_devin);
+    g_once_init_leave(&g_define_type_id__static, ags_type_oss_devin);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 GType
 ags_oss_devin_flags_get_type()
 {
-  static volatile gsize g_flags_type_id__volatile;
+  static gsize g_flags_type_id__static;
 
-  if(g_once_init_enter (&g_flags_type_id__volatile)){
+  if(g_once_init_enter(&g_flags_type_id__static)){
     static const GFlagsValue values[] = {
       { AGS_OSS_DEVIN_INITIALIZED, "AGS_OSS_DEVIN_INITIALIZED", "oss-devin-initialized" },
       { AGS_OSS_DEVIN_START_RECORD, "AGS_OSS_DEVIN_START_RECORD", "oss-devin-start-record" },
@@ -289,10 +289,10 @@ ags_oss_devin_flags_get_type()
 
     GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsOssDevinFlags"), values);
 
-    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+    g_once_init_leave(&g_flags_type_id__static, g_flags_type_id);
   }
   
-  return g_flags_type_id__volatile;
+  return(g_flags_type_id__static);
 }
 
 void
@@ -660,7 +660,7 @@ ags_oss_devin_init(AgsOssDevin *oss_devin)
     oss_devin->app_buffer[i] = NULL;
   }
 
-  g_atomic_int_set(&(oss_devin->available),
+  ags_atomic_int_set(&(oss_devin->available),
 		   FALSE);
   
   oss_devin->backend_buffer_mode = AGS_OSS_DEVIN_BACKEND_BUFFER_0;
@@ -1995,7 +1995,7 @@ ags_oss_devin_device_record_init(AgsSoundcard *soundcard,
   }
 
   /* allocate ring buffer */
-  g_atomic_int_set(&(oss_devin->available),
+  ags_atomic_int_set(&(oss_devin->available),
 		   FALSE);
   
   for(i = 0; i < AGS_OSS_DEVIN_DEFAULT_BACKEND_BUFFER_SIZE; i++){
@@ -2368,7 +2368,7 @@ ags_oss_devin_device_record(AgsSoundcard *soundcard,
   ags_soundcard_unlock_buffer(soundcard,
 			      oss_devin->app_buffer[oss_devin->app_buffer_mode]);
 
-  g_atomic_int_set(&(oss_devin->available),
+  ags_atomic_int_set(&(oss_devin->available),
 		   FALSE);
   
   if(n_write != oss_devin->pcm_channels * oss_devin->buffer_size * word_size * sizeof (char)){

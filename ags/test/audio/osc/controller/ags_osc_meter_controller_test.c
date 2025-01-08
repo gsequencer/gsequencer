@@ -197,7 +197,7 @@ ags_osc_meter_controller_test_monitor_ref()
 
   ags_osc_meter_controller_monitor_ref(monitor);
 
-  CU_ASSERT(g_atomic_int_get(&(monitor->ref_count)) == 1);
+  CU_ASSERT(ags_atomic_int_get(&(monitor->ref_count)) == 1);
 }
 
 void
@@ -206,14 +206,14 @@ ags_osc_meter_controller_test_monitor_unref()
   AgsOscMeterControllerMonitor *monitor;
   
   monitor = ags_osc_meter_controller_monitor_alloc();
-  g_atomic_int_set(&(monitor->ref_count),
+  ags_atomic_int_set(&(monitor->ref_count),
 		   2);
   
   CU_ASSERT(monitor != NULL);
 
   ags_osc_meter_controller_monitor_unref(monitor);
 
-  CU_ASSERT(g_atomic_int_get(&(monitor->ref_count)) == 1);
+  CU_ASSERT(ags_atomic_int_get(&(monitor->ref_count)) == 1);
 }
 
 void

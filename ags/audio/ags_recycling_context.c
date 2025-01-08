@@ -72,9 +72,9 @@ static gpointer ags_recycling_context_parent_class = NULL;
 GType
 ags_recycling_context_get_type (void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_recycling_context = 0;
 
     static const GTypeInfo ags_recycling_context_info = {
@@ -94,18 +94,18 @@ ags_recycling_context_get_type (void)
 							&ags_recycling_context_info,
 							0);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_recycling_context);
+    g_once_init_leave(&g_define_type_id__static, ags_type_recycling_context);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 GType
 ags_recycling_context_flags_get_type()
 {
-  static volatile gsize g_flags_type_id__volatile;
+  static gsize g_flags_type_id__static;
 
-  if(g_once_init_enter (&g_flags_type_id__volatile)){
+  if(g_once_init_enter(&g_flags_type_id__static)){
     static const GFlagsValue values[] = {
       { AGS_RECYCLING_CONTEXT_CHAINED_TO_OUTPUT, "AGS_RECYCLING_CONTEXT_CHAINED_TO_OUTPUT", "recycling-context-chained-to-output" },
       { AGS_RECYCLING_CONTEXT_CHAINED_TO_INPUT, "AGS_RECYCLING_CONTEXT_CHAINED_TO_INPUT", "recycling-context-chained-to-input" },
@@ -114,10 +114,10 @@ ags_recycling_context_flags_get_type()
 
     GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsRecyclingContextFlags"), values);
 
-    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+    g_once_init_leave(&g_flags_type_id__static, g_flags_type_id);
   }
   
-  return g_flags_type_id__volatile;
+  return(g_flags_type_id__static);
 }
 
 void

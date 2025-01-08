@@ -36,9 +36,9 @@ void ags_char_buffer_util_free(gpointer ptr);
 GType
 ags_char_buffer_util_get_type(void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_char_buffer_util = 0;
 
     ags_type_char_buffer_util =
@@ -46,10 +46,10 @@ ags_char_buffer_util_get_type(void)
 				   (GBoxedCopyFunc) ags_char_buffer_util_copy,
 				   (GBoxedFreeFunc) ags_char_buffer_util_free);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_char_buffer_util);
+    g_once_init_leave(&g_define_type_id__static, ags_type_char_buffer_util);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 gpointer

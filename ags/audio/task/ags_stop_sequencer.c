@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,6 +18,8 @@
  */
 
 #include <ags/audio/task/ags_stop_sequencer.h>
+
+#include <ags/libags.h>
 
 #include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_sequencer_thread.h>
@@ -58,9 +60,9 @@ enum{
 GType
 ags_stop_sequencer_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_stop_sequencer = 0;
 
     static const GTypeInfo ags_stop_sequencer_info = {
@@ -80,10 +82,10 @@ ags_stop_sequencer_get_type()
 						     &ags_stop_sequencer_info,
 						     0);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_stop_sequencer);
+    g_once_init_leave(&g_define_type_id__static, ags_type_stop_sequencer);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 void
@@ -208,7 +210,7 @@ ags_stop_sequencer_launch(AgsTask *task)
       ags_thread_stop(sequencer_thread);
     }
     
-    sequencer_thread = g_atomic_pointer_get(&(sequencer_thread->next));
+    sequencer_thread = ags_atomic_pointer_get(&(sequencer_thread->next));
   }
 
   g_object_unref(audio_loop);

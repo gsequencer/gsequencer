@@ -168,7 +168,7 @@ struct TestDataMeter{
   gchar *security_token;
   gchar *resource_id;
 
-  volatile gint *meter_packet_count;
+  gint *meter_packet_count;
 }meter_data;
 
 gpointer
@@ -490,7 +490,7 @@ ags_functional_osc_xmlrpc_server_test_websocket_message_callback(SoupWebsocketCo
   xmlDoc *response_doc;
   xmlNode *response_root_node;
 
-  volatile gint *meter_packet_count;
+  gint *meter_packet_count;
   guchar *data;
 
   gsize data_length;
@@ -513,7 +513,7 @@ ags_functional_osc_xmlrpc_server_test_websocket_message_callback(SoupWebsocketCo
        !g_ascii_strncasecmp(response_root_node->name,
 			    "ags-osc-over-xmlrpc",
 			    20)){
-      g_atomic_int_inc(meter_packet_count);
+      ags_atomic_int_increment(meter_packet_count);
     }
     
     xmlFreeDoc(response_doc);
@@ -1171,7 +1171,7 @@ ags_functional_osc_xmlrpc_server_test_meter_controller()
 
   gsize response_size;
   int buffer_length;
-  volatile gint meter_packet_count;
+  gint meter_packet_count;
   guint i;
   gboolean retval;
   guint status;
@@ -1336,7 +1336,7 @@ ags_functional_osc_xmlrpc_server_test_meter_controller()
   idle_delay.tv_sec = 0;
   idle_delay.tv_nsec = AGS_NSEC_PER_SEC / 30;
   
-  g_atomic_int_set(&(meter_packet_count),
+  ags_atomic_int_set(&(meter_packet_count),
 		   0);
   i = 0;
 
@@ -1365,9 +1365,9 @@ ags_functional_osc_xmlrpc_server_test_meter_controller()
     ags_time_nanosleep(&idle_delay);
   }
 
-  g_message("Total received packets: %d", g_atomic_int_get(&meter_packet_count));
+  g_message("Total received packets: %d", ags_atomic_int_get(&meter_packet_count));
   
-  CU_ASSERT(g_atomic_int_get(&(meter_packet_count)) >= AGS_FUNCTIONAL_OSC_XMLRPC_SERVER_TEST_METER_PACKET_COUNT);
+  CU_ASSERT(ags_atomic_int_get(&(meter_packet_count)) >= AGS_FUNCTIONAL_OSC_XMLRPC_SERVER_TEST_METER_PACKET_COUNT);
 
   /* disable meter */
   packet = (guchar *) malloc((4 + disable_peak_message_size) * sizeof(guchar));

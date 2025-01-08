@@ -63,12 +63,12 @@ struct _AgsReturnableThread
 {
   AgsThread thread;
 
-  volatile guint flags;
+  guint flags;
 
   GObject *thread_pool;
   
   GRecMutex reset_mutex;
-  volatile void *safe_data;
+  void *safe_data;
 
   gulong handler;
 };

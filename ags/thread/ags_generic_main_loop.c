@@ -69,9 +69,9 @@ enum{
 GType
 ags_generic_main_loop_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_generic_main_loop = 0;
 
     static const GTypeInfo ags_generic_main_loop_info = {
@@ -101,10 +101,10 @@ ags_generic_main_loop_get_type()
 				AGS_TYPE_MAIN_LOOP,
 				&ags_main_loop_interface_info);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_generic_main_loop);
+    g_once_init_leave(&g_define_type_id__static, ags_type_generic_main_loop);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 void
@@ -176,7 +176,7 @@ ags_generic_main_loop_init(AgsGenericMainLoop *generic_main_loop)
   ags_main_loop_set_syncing(AGS_MAIN_LOOP(generic_main_loop), FALSE);
 
   ags_main_loop_set_critical_region(AGS_MAIN_LOOP(generic_main_loop), FALSE);
-  g_atomic_int_set(&(generic_main_loop->critical_region_ref), 0);
+  ags_atomic_int_set(&(generic_main_loop->critical_region_ref), 0);
 }
 
 void
@@ -249,7 +249,7 @@ ags_generic_main_loop_set_syncing(AgsMainLoop *main_loop, gboolean is_syncing)
   generic_main_loop = AGS_GENERIC_MAIN_LOOP(main_loop);
 
   /* set syncing */
-  g_atomic_int_set(&(generic_main_loop->is_syncing), is_syncing);
+  ags_atomic_int_set(&(generic_main_loop->is_syncing), is_syncing);
 }
 
 gboolean
@@ -262,7 +262,7 @@ ags_generic_main_loop_is_syncing(AgsMainLoop *main_loop)
   generic_main_loop = AGS_GENERIC_MAIN_LOOP(main_loop);
 
   /* is syncing */
-  is_syncing = g_atomic_int_get(&(generic_main_loop->is_syncing));
+  is_syncing = ags_atomic_int_get(&(generic_main_loop->is_syncing));
 
   return(is_syncing);
 }
@@ -275,7 +275,7 @@ ags_generic_main_loop_set_critical_region(AgsMainLoop *main_loop, gboolean is_cr
   generic_main_loop = AGS_GENERIC_MAIN_LOOP(main_loop);
 
   /* set critical region */
-  g_atomic_int_set(&(generic_main_loop->is_critical_region), is_critical_region);
+  ags_atomic_int_set(&(generic_main_loop->is_critical_region), is_critical_region);
 }
 
 gboolean
@@ -288,7 +288,7 @@ ags_generic_main_loop_is_critical_region(AgsMainLoop *main_loop)
   generic_main_loop = AGS_GENERIC_MAIN_LOOP(main_loop);
 
   /* is critical region */
-  is_critical_region = g_atomic_int_get(&(generic_main_loop->is_critical_region));
+  is_critical_region = ags_atomic_int_get(&(generic_main_loop->is_critical_region));
 
   return(is_critical_region);
 }
@@ -301,7 +301,7 @@ ags_generic_main_loop_inc_queued_critical_region(AgsMainLoop *main_loop)
   generic_main_loop = AGS_GENERIC_MAIN_LOOP(main_loop);
 
   /* increment critical region */
-  g_atomic_int_inc(&(generic_main_loop->critical_region_ref));
+  ags_atomic_int_increment(&(generic_main_loop->critical_region_ref));
 }
 
 void
@@ -312,7 +312,7 @@ ags_generic_main_loop_dec_queued_critical_region(AgsMainLoop *main_loop)
   generic_main_loop = AGS_GENERIC_MAIN_LOOP(main_loop);
 
   /* decrement critical region */
-  g_atomic_int_dec_and_test(&(generic_main_loop->critical_region_ref));
+  ags_atomic_int_decrement(&(generic_main_loop->critical_region_ref));
 }
 
 guint
@@ -325,7 +325,7 @@ ags_generic_main_loop_test_queued_critical_region(AgsMainLoop *main_loop)
   generic_main_loop = AGS_GENERIC_MAIN_LOOP(main_loop);
 
   /* set critical region */
-  critical_region_ref = g_atomic_int_get(&(generic_main_loop->is_critical_region));
+  critical_region_ref = ags_atomic_int_get(&(generic_main_loop->is_critical_region));
 
   return(critical_region_ref);
 }

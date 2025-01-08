@@ -116,9 +116,9 @@ static GMutex regex_mutex;
 GType
 ags_sfz_file_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_sfz_file = 0;
 
     static const GTypeInfo ags_sfz_file_info = {
@@ -158,10 +158,10 @@ ags_sfz_file_get_type()
 				AGS_TYPE_SOUND_CONTAINER,
 				&ags_sound_container_interface_info);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_sfz_file);
+    g_once_init_leave(&g_define_type_id__static, ags_type_sfz_file);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 void

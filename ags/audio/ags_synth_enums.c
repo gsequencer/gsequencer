@@ -37,9 +37,9 @@
 GType
 ags_synth_oscillator_mode_get_type()
 {
-  static volatile gsize g_enum_type_id__volatile;
+  static gsize g_enum_type_id__static;
 
-  if(g_once_init_enter (&g_enum_type_id__volatile)){
+  if(g_once_init_enter(&g_enum_type_id__static)){
     static const GEnumValue values[] = {
       { AGS_SYNTH_OSCILLATOR_SIN, "AGS_SYNTH_OSCILLATOR_SIN", "synth-oscillator-sin" },
       { AGS_SYNTH_OSCILLATOR_SAWTOOTH, "AGS_SYNTH_OSCILLATOR_SAWTOOTH", "synth-oscillator-sawtooth" },
@@ -52,18 +52,18 @@ ags_synth_oscillator_mode_get_type()
 
     GType g_enum_type_id = g_enum_register_static(g_intern_static_string("AgsSynthOscillatorMode"), values);
 
-    g_once_init_leave (&g_enum_type_id__volatile, g_enum_type_id);
+    g_once_init_leave(&g_enum_type_id__static, g_enum_type_id);
   }
   
-  return g_enum_type_id__volatile;
+  return(g_enum_type_id__static);
 }
 
 GType
 ags_synth_key_mode_get_type()
 {
-  static volatile gsize g_enum_type_id__volatile;
+  static gsize g_enum_type_id__static;
 
-  if(g_once_init_enter (&g_enum_type_id__volatile)){
+  if(g_once_init_enter(&g_enum_type_id__static)){
     static const GEnumValue values[] = {
       { AGS_SYNTH_KEY_1_1, "AGS_SYNTH_KEY_1_1", "synth-key-1-1" },
       { AGS_SYNTH_KEY_2_2, "AGS_SYNTH_KEY_2_2", "synth-key-2-2" },
@@ -75,18 +75,18 @@ ags_synth_key_mode_get_type()
 
     GType g_enum_type_id = g_enum_register_static(g_intern_static_string("AgsSynthKeyMode"), values);
 
-    g_once_init_leave (&g_enum_type_id__volatile, g_enum_type_id);
+    g_once_init_leave(&g_enum_type_id__static, g_enum_type_id);
   }
   
-  return g_enum_type_id__volatile;
+  return(g_enum_type_id__static);
 }
 
 GType
 ags_pitch_type_mode_get_type()
 {
-  static volatile gsize g_enum_type_id__volatile;
+  static gsize g_enum_type_id__static;
 
-  if(g_once_init_enter (&g_enum_type_id__volatile)){
+  if(g_once_init_enter(&g_enum_type_id__static)){
     static const GEnumValue values[] = {
       { AGS_PITCH_TYPE_FLUID_INTERPOLATE_NONE, "AGS_PITCH_TYPE_FLUID_INTERPOLATE_NONE", "pitch-type-fluid-interpolate-none" },
       { AGS_PITCH_TYPE_FLUID_INTERPOLATE_LINEAR, "AGS_PITCH_TYPE_FLUID_INTERPOLATE_LINEAR", "pitch-type-fluid-interpolate-linear" },
@@ -100,8 +100,8 @@ ags_pitch_type_mode_get_type()
 
     GType g_enum_type_id = g_enum_register_static(g_intern_static_string("AgsPitchTypeMode"), values);
 
-    g_once_init_leave (&g_enum_type_id__volatile, g_enum_type_id);
+    g_once_init_leave(&g_enum_type_id__static, g_enum_type_id);
   }
   
-  return g_enum_type_id__volatile;
+  return(g_enum_type_id__static);
 }

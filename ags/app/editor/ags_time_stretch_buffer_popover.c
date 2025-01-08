@@ -78,9 +78,9 @@ static gpointer ags_time_stretch_buffer_popover_parent_class = NULL;
 GType
 ags_time_stretch_buffer_popover_get_type(void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_time_stretch_buffer_popover = 0;
 
     static const GTypeInfo ags_time_stretch_buffer_popover_info = {
@@ -119,10 +119,10 @@ ags_time_stretch_buffer_popover_get_type(void)
 				AGS_TYPE_APPLICABLE,
 				&ags_applicable_interface_info);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_time_stretch_buffer_popover);
+    g_once_init_leave(&g_define_type_id__static, ags_type_time_stretch_buffer_popover);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 void

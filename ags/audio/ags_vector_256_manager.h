@@ -88,7 +88,7 @@ struct _AgsVectorArr
 {
   AgsVector256Types vector_type;
 
-  volatile gboolean locked;
+  gboolean locked;
   
   union{
     AgsVectorMemS8 *vec_s8;

@@ -36,32 +36,38 @@ G_BEGIN_DECLS
 void ags_navigation_update_ui_callback(GObject *ui_provider,
 				       AgsNavigation *navigation);
 
-void ags_navigation_expander_callback(GtkWidget *widget,
+void ags_navigation_expander_callback(GObject *gobject,
+				      GParamSpec *pspec,				    
 				      AgsNavigation *navigation);
 
 void ags_navigation_bpm_callback(GtkWidget *widget,
 				 AgsNavigation *navigation);
 
-void ags_navigation_rewind_callback(GtkWidget *widget,
+void ags_navigation_rewind_callback(GObject *gobject,
+				    GParamSpec *pspec,				    
 				    AgsNavigation *navigation);
 void ags_navigation_prev_callback(GtkWidget *widget,
 				  AgsNavigation *navigation);
-void ags_navigation_play_callback(GtkWidget *widget,
+void ags_navigation_play_callback(GObject *gobject,
+				  GParamSpec *pspec,				    
 				  AgsNavigation *navigation);
 void ags_navigation_stop_callback(GtkWidget *widget,
 				  AgsNavigation *navigation);
 void ags_navigation_next_callback(GtkWidget *widget,
 				  AgsNavigation *navigation);
-void ags_navigation_forward_callback(GtkWidget *widget,
+void ags_navigation_forward_callback(GObject *gobject,
+				     GParamSpec *pspec,				    
 				     AgsNavigation *navigation);
 
-void ags_navigation_loop_callback(GtkWidget *widget,
+void ags_navigation_loop_callback(GObject *gobject,
+				  GParamSpec *pspec,				    
 				  AgsNavigation *navigation);
 
 void ags_navigation_position_tact_callback(GtkWidget *widget,
 					   AgsNavigation *navigation);
 
-void ags_navigation_scroll_callback(GtkWidget *widget,
+void ags_navigation_scroll_callback(GObject *gobject,
+				    GParamSpec *pspec,				    
 				    AgsNavigation *navigation);
 
 void ags_navigation_duration_tact_callback(GtkWidget *widget,
@@ -72,9 +78,6 @@ void ags_navigation_loop_left_tact_callback(GtkWidget *widget,
 
 void ags_navigation_loop_right_tact_callback(GtkWidget *widget,
 					     AgsNavigation *navigation);
-
-void ags_navigation_raster_callback(GtkWidget *widget,
-				    AgsNavigation *navigation);
 
 void ags_navigation_soundcard_stop_callback(GObject *soundcard,
 					    AgsNavigation *navigation);

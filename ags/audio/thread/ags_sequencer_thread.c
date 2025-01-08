@@ -83,9 +83,9 @@ static guint sequencer_thread_signals[LAST_SIGNAL];
 GType
 ags_sequencer_thread_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_sequencer_thread = 0;
 
     static const GTypeInfo ags_sequencer_thread_info = {
@@ -115,10 +115,10 @@ ags_sequencer_thread_get_type()
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_sequencer_thread);
+    g_once_init_leave(&g_define_type_id__static, ags_type_sequencer_thread);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 void
@@ -249,7 +249,7 @@ ags_sequencer_thread_set_property(GObject *gobject,
 	if(AGS_IS_JACK_MIDIIN(sequencer)){
 	  ags_thread_set_flags((AgsThread *) sequencer_thread, AGS_THREAD_INTERMEDIATE_PRE_SYNC);
 
-	  //	  g_atomic_int_and(&(AGS_THREAD(sequencer_thread)->flags),
+	  //	  ags_atomic_int_and(&(AGS_THREAD(sequencer_thread)->flags),
 	  //		   (~AGS_THREAD_INTERMEDIATE_PRE_SYNC));
 	}
       }
@@ -486,28 +486,28 @@ ags_sequencer_thread_real_recover_dead_lock(AgsThread *thread)
 
       callback_finish_mutex = &(core_audio_midiin->callback_finish_mutex);
 
-      g_atomic_int_and(&(core_audio_midiin->sync_flags),
+      ags_atomic_int_and(&(core_audio_midiin->sync_flags),
 		       (~(AGS_CORE_AUDIO_MIDIIN_DO_SYNC)));
 
-      g_atomic_int_or(&(core_audio_midiin->sync_flags),
+      ags_atomic_int_or(&(core_audio_midiin->sync_flags),
 		      (AGS_CORE_AUDIO_MIDIIN_PASS_THROUGH));      
 
       g_mutex_lock(callback_mutex);
 
-      if((AGS_CORE_AUDIO_MIDIIN_CALLBACK_DONE & (g_atomic_int_get(&(core_audio_midiin->sync_flags)))) == 0){
-	g_atomic_int_and(&(core_audio_midiin->sync_flags),
+      if((AGS_CORE_AUDIO_MIDIIN_CALLBACK_DONE & (ags_atomic_int_get(&(core_audio_midiin->sync_flags)))) == 0){
+	ags_atomic_int_and(&(core_audio_midiin->sync_flags),
 			 (~(AGS_CORE_AUDIO_MIDIIN_INITIAL_CALLBACK |
 			    AGS_CORE_AUDIO_MIDIIN_CALLBACK_WAIT)));
-	g_atomic_int_or(&(core_audio_midiin->sync_flags),
+	ags_atomic_int_or(&(core_audio_midiin->sync_flags),
 			AGS_CORE_AUDIO_MIDIIN_CALLBACK_DONE);
 	
 	g_cond_signal(&(core_audio_midiin->callback_cond));
       }else{
-	g_atomic_int_and(&(core_audio_midiin->sync_flags),
+	ags_atomic_int_and(&(core_audio_midiin->sync_flags),
 			 (~(AGS_CORE_AUDIO_MIDIIN_INITIAL_CALLBACK |
 			    AGS_CORE_AUDIO_MIDIIN_CALLBACK_DONE |
 			    AGS_CORE_AUDIO_MIDIIN_CALLBACK_WAIT)));
-	g_atomic_int_or(&(core_audio_midiin->sync_flags),
+	ags_atomic_int_or(&(core_audio_midiin->sync_flags),
 			AGS_CORE_AUDIO_MIDIIN_CALLBACK_DONE);
       }
 
@@ -515,17 +515,17 @@ ags_sequencer_thread_real_recover_dead_lock(AgsThread *thread)
 
       g_mutex_lock(callback_finish_mutex);
 
-      if((AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_DONE & (g_atomic_int_get(&(core_audio_midiin->sync_flags)))) == 0){
-	g_atomic_int_and(&(core_audio_midiin->sync_flags),
+      if((AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_DONE & (ags_atomic_int_get(&(core_audio_midiin->sync_flags)))) == 0){
+	ags_atomic_int_and(&(core_audio_midiin->sync_flags),
 			 (~(AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_WAIT)));
-	g_atomic_int_or(&(core_audio_midiin->sync_flags),
+	ags_atomic_int_or(&(core_audio_midiin->sync_flags),
 			AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_DONE);
 	
 	g_cond_signal(&(core_audio_midiin->callback_finish_cond));
       }else{
-	g_atomic_int_and(&(core_audio_midiin->sync_flags),
+	ags_atomic_int_and(&(core_audio_midiin->sync_flags),
 			 (~(AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_WAIT)));
-	g_atomic_int_or(&(core_audio_midiin->sync_flags),
+	ags_atomic_int_or(&(core_audio_midiin->sync_flags),
 			AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_DONE);
       }
       
@@ -542,24 +542,24 @@ ags_sequencer_thread_real_recover_dead_lock(AgsThread *thread)
 
       callback_finish_mutex = &(jack_midiin->callback_finish_mutex);
 
-      g_atomic_int_or(&(jack_midiin->sync_flags),
+      ags_atomic_int_or(&(jack_midiin->sync_flags),
 		      (AGS_JACK_MIDIIN_PASS_THROUGH));      
 
       g_mutex_lock(callback_mutex);
 
-      if((AGS_JACK_MIDIIN_CALLBACK_DONE & (g_atomic_int_get(&(jack_midiin->sync_flags)))) == 0){
-	g_atomic_int_and(&(jack_midiin->sync_flags),
+      if((AGS_JACK_MIDIIN_CALLBACK_DONE & (ags_atomic_int_get(&(jack_midiin->sync_flags)))) == 0){
+	ags_atomic_int_and(&(jack_midiin->sync_flags),
 			 (~(AGS_JACK_MIDIIN_INITIAL_CALLBACK |
 			    AGS_JACK_MIDIIN_CALLBACK_WAIT)));
-	g_atomic_int_or(&(jack_midiin->sync_flags),
+	ags_atomic_int_or(&(jack_midiin->sync_flags),
 			AGS_JACK_MIDIIN_CALLBACK_DONE);
 	
 	g_cond_signal(&(jack_midiin->callback_cond));
       }else{
-	g_atomic_int_and(&(jack_midiin->sync_flags),
+	ags_atomic_int_and(&(jack_midiin->sync_flags),
 			 (~(AGS_JACK_MIDIIN_INITIAL_CALLBACK |
 			    AGS_JACK_MIDIIN_CALLBACK_WAIT)));
-	g_atomic_int_or(&(jack_midiin->sync_flags),
+	ags_atomic_int_or(&(jack_midiin->sync_flags),
 			AGS_JACK_MIDIIN_CALLBACK_DONE);
       }
 
@@ -567,17 +567,17 @@ ags_sequencer_thread_real_recover_dead_lock(AgsThread *thread)
 
       g_mutex_lock(callback_finish_mutex);
 
-      if((AGS_JACK_MIDIIN_CALLBACK_FINISH_DONE & (g_atomic_int_get(&(jack_midiin->sync_flags)))) == 0){
-	g_atomic_int_and(&(jack_midiin->sync_flags),
+      if((AGS_JACK_MIDIIN_CALLBACK_FINISH_DONE & (ags_atomic_int_get(&(jack_midiin->sync_flags)))) == 0){
+	ags_atomic_int_and(&(jack_midiin->sync_flags),
 			 (~(AGS_JACK_MIDIIN_CALLBACK_FINISH_WAIT)));
-	g_atomic_int_or(&(jack_midiin->sync_flags),
+	ags_atomic_int_or(&(jack_midiin->sync_flags),
 			AGS_JACK_MIDIIN_CALLBACK_FINISH_DONE);
 	
 	g_cond_signal(&(jack_midiin->callback_finish_cond));
       }else{
-	g_atomic_int_and(&(jack_midiin->sync_flags),
+	ags_atomic_int_and(&(jack_midiin->sync_flags),
 			 (~(AGS_JACK_MIDIIN_CALLBACK_FINISH_WAIT)));
-	g_atomic_int_or(&(jack_midiin->sync_flags),
+	ags_atomic_int_or(&(jack_midiin->sync_flags),
 			AGS_JACK_MIDIIN_CALLBACK_FINISH_DONE);
       }
 

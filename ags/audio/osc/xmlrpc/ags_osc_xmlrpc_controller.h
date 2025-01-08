@@ -66,7 +66,7 @@ struct _AgsOscXmlrpcController
   
   GObject *osc_xmlrpc_server;
   
-  volatile gboolean do_reset;
+  gboolean do_reset;
 
   GMutex delegate_mutex;
   GCond delegate_cond;

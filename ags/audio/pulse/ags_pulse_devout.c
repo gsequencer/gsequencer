@@ -207,9 +207,9 @@ static gpointer ags_pulse_devout_parent_class = NULL;
 GType
 ags_pulse_devout_get_type (void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_pulse_devout = 0;
 
     static const GTypeInfo ags_pulse_devout_info = {
@@ -249,18 +249,18 @@ ags_pulse_devout_get_type (void)
 				AGS_TYPE_SOUNDCARD,
 				&ags_soundcard_interface_info);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_pulse_devout);
+    g_once_init_leave(&g_define_type_id__static, ags_type_pulse_devout);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 GType
 ags_pulse_devout_flags_get_type()
 {
-  static volatile gsize g_flags_type_id__volatile;
+  static gsize g_flags_type_id__static;
 
-  if(g_once_init_enter (&g_flags_type_id__volatile)){
+  if(g_once_init_enter(&g_flags_type_id__static)){
     static const GFlagsValue values[] = {
       { AGS_PULSE_DEVOUT_INITIALIZED, "AGS_PULSE_DEVOUT_INITIALIZED", "pulse-devout-initialized" },
       { AGS_PULSE_DEVOUT_START_PLAY, "AGS_PULSE_DEVOUT_START_PLAY", "pulse-devout-start-play" },
@@ -273,10 +273,10 @@ ags_pulse_devout_flags_get_type()
 
     GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsPulseDevoutFlags"), values);
 
-    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+    g_once_init_leave(&g_flags_type_id__static, g_flags_type_id);
   }
   
-  return g_flags_type_id__volatile;
+  return(g_flags_type_id__static);
 }
 
 void
@@ -631,7 +631,7 @@ ags_pulse_devout_init(AgsPulseDevout *pulse_devout)
   /* flags */
   pulse_devout->flags = 0;
   pulse_devout->connectable_flags = 0;
-  g_atomic_int_set(&(pulse_devout->sync_flags),
+  ags_atomic_int_set(&(pulse_devout->sync_flags),
 		   AGS_PULSE_DEVOUT_PASS_THROUGH);
 
   /* devout mutex */
@@ -2053,9 +2053,9 @@ ags_pulse_devout_port_init(AgsSoundcard *soundcard,
 			  AGS_PULSE_DEVOUT_START_PLAY |
 			  AGS_PULSE_DEVOUT_PLAY);
   
-  g_atomic_int_and(&(pulse_devout->sync_flags),
+  ags_atomic_int_and(&(pulse_devout->sync_flags),
 		   (~(AGS_PULSE_DEVOUT_PASS_THROUGH)));
-  g_atomic_int_or(&(pulse_devout->sync_flags),
+  ags_atomic_int_or(&(pulse_devout->sync_flags),
 		  AGS_PULSE_DEVOUT_INITIAL_CALLBACK);
 
   g_rec_mutex_unlock(pulse_devout_mutex);
@@ -2309,13 +2309,13 @@ ags_pulse_devout_port_play(AgsSoundcard *soundcard,
 
     if(pulse_client_activated){
       /* signal */
-      if((AGS_PULSE_DEVOUT_INITIAL_CALLBACK & (g_atomic_int_get(&(pulse_devout->sync_flags)))) == 0){
+      if((AGS_PULSE_DEVOUT_INITIAL_CALLBACK & (ags_atomic_int_get(&(pulse_devout->sync_flags)))) == 0){
 	g_mutex_lock(callback_mutex);
 
-	g_atomic_int_or(&(pulse_devout->sync_flags),
+	ags_atomic_int_or(&(pulse_devout->sync_flags),
 			AGS_PULSE_DEVOUT_CALLBACK_DONE);
     
-	if((AGS_PULSE_DEVOUT_CALLBACK_WAIT & (g_atomic_int_get(&(pulse_devout->sync_flags)))) != 0){
+	if((AGS_PULSE_DEVOUT_CALLBACK_WAIT & (ags_atomic_int_get(&(pulse_devout->sync_flags)))) != 0){
 	  g_cond_signal(&(pulse_devout->callback_cond));
 	}
 
@@ -2323,27 +2323,27 @@ ags_pulse_devout_port_play(AgsSoundcard *soundcard,
       }
     
       /* wait callback */	
-      if((AGS_PULSE_DEVOUT_INITIAL_CALLBACK & (g_atomic_int_get(&(pulse_devout->sync_flags)))) == 0){
+      if((AGS_PULSE_DEVOUT_INITIAL_CALLBACK & (ags_atomic_int_get(&(pulse_devout->sync_flags)))) == 0){
 	g_mutex_lock(callback_finish_mutex);
     
-	if((AGS_PULSE_DEVOUT_CALLBACK_FINISH_DONE & (g_atomic_int_get(&(pulse_devout->sync_flags)))) == 0){
-	  g_atomic_int_or(&(pulse_devout->sync_flags),
+	if((AGS_PULSE_DEVOUT_CALLBACK_FINISH_DONE & (ags_atomic_int_get(&(pulse_devout->sync_flags)))) == 0){
+	  ags_atomic_int_or(&(pulse_devout->sync_flags),
 			  AGS_PULSE_DEVOUT_CALLBACK_FINISH_WAIT);
     
-	  while((AGS_PULSE_DEVOUT_CALLBACK_FINISH_DONE & (g_atomic_int_get(&(pulse_devout->sync_flags)))) == 0 &&
-		(AGS_PULSE_DEVOUT_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(pulse_devout->sync_flags)))) != 0){
+	  while((AGS_PULSE_DEVOUT_CALLBACK_FINISH_DONE & (ags_atomic_int_get(&(pulse_devout->sync_flags)))) == 0 &&
+		(AGS_PULSE_DEVOUT_CALLBACK_FINISH_WAIT & (ags_atomic_int_get(&(pulse_devout->sync_flags)))) != 0){
 	    g_cond_wait(&(pulse_devout->callback_finish_cond),
 			callback_finish_mutex);
 	  }
 	}
     
-	g_atomic_int_and(&(pulse_devout->sync_flags),
+	ags_atomic_int_and(&(pulse_devout->sync_flags),
 			 (~(AGS_PULSE_DEVOUT_CALLBACK_FINISH_WAIT |
 			    AGS_PULSE_DEVOUT_CALLBACK_FINISH_DONE)));
     
 	g_mutex_unlock(callback_finish_mutex);
       }else{
-	g_atomic_int_and(&(pulse_devout->sync_flags),
+	ags_atomic_int_and(&(pulse_devout->sync_flags),
 			 (~AGS_PULSE_DEVOUT_INITIAL_CALLBACK));
       }
     }
@@ -2490,24 +2490,24 @@ ags_pulse_devout_port_free(AgsSoundcard *soundcard)
   callback_mutex = &(pulse_devout->callback_mutex);
   callback_finish_mutex = &(pulse_devout->callback_finish_mutex);
   
-  //  g_atomic_int_or(&(AGS_THREAD(application_context->main_loop)->flags),
+  //  ags_atomic_int_or(&(AGS_THREAD(application_context->main_loop)->flags),
   //		  AGS_THREAD_TIMING);
   
   pulse_devout->app_buffer_mode = AGS_PULSE_DEVOUT_APP_BUFFER_0;
   pulse_devout->flags &= (~(AGS_PULSE_DEVOUT_PLAY));
 
-  g_atomic_int_or(&(pulse_devout->sync_flags),
+  ags_atomic_int_or(&(pulse_devout->sync_flags),
 		  AGS_PULSE_DEVOUT_PASS_THROUGH);
-  g_atomic_int_and(&(pulse_devout->sync_flags),
+  ags_atomic_int_and(&(pulse_devout->sync_flags),
 		   (~AGS_PULSE_DEVOUT_INITIAL_CALLBACK));
 
   /* signal callback */
   g_mutex_lock(callback_mutex);
 
-  g_atomic_int_or(&(pulse_devout->sync_flags),
+  ags_atomic_int_or(&(pulse_devout->sync_flags),
 		  AGS_PULSE_DEVOUT_CALLBACK_DONE);
     
-  if((AGS_PULSE_DEVOUT_CALLBACK_WAIT & (g_atomic_int_get(&(pulse_devout->sync_flags)))) != 0){
+  if((AGS_PULSE_DEVOUT_CALLBACK_WAIT & (ags_atomic_int_get(&(pulse_devout->sync_flags)))) != 0){
     g_cond_signal(&(pulse_devout->callback_cond));
   }
 
@@ -2516,10 +2516,10 @@ ags_pulse_devout_port_free(AgsSoundcard *soundcard)
   /* signal thread */
   g_mutex_lock(callback_finish_mutex);
 
-  g_atomic_int_or(&(pulse_devout->sync_flags),
+  ags_atomic_int_or(&(pulse_devout->sync_flags),
 		  AGS_PULSE_DEVOUT_CALLBACK_FINISH_DONE);
     
-  if((AGS_PULSE_DEVOUT_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(pulse_devout->sync_flags)))) != 0){
+  if((AGS_PULSE_DEVOUT_CALLBACK_FINISH_WAIT & (ags_atomic_int_get(&(pulse_devout->sync_flags)))) != 0){
     g_cond_signal(&(pulse_devout->callback_finish_cond));
   }
 
@@ -2589,7 +2589,7 @@ ags_pulse_devout_port_free(AgsSoundcard *soundcard)
   if(pulse_devout->pulse_port != NULL){
     pulse_port = pulse_devout->pulse_port->data;
 
-    while(!g_atomic_int_get(&(pulse_port->is_empty))) usleep(500000);
+    while(!ags_atomic_int_get(&(pulse_port->is_empty))) usleep(500000);
   }
 
   g_rec_mutex_lock(pulse_devout_mutex);

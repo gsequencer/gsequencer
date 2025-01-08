@@ -33,6 +33,7 @@
 #include <ags/app/machine/ags_fm_syncsynth.h>
 #include <ags/app/machine/ags_hybrid_synth.h>
 #include <ags/app/machine/ags_hybrid_fm_synth.h>
+#include <ags/app/machine/ags_stargazer_synth.h>
 
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <ags/app/machine/ags_ffplayer.h>
@@ -68,9 +69,9 @@ AgsMachineCounterManager *ags_machine_counter_manager = NULL;
 GType
 ags_machine_counter_manager_get_type (void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_machine_counter_manager = 0;
 
     static const GTypeInfo ags_machine_counter_manager_info = {
@@ -90,10 +91,10 @@ ags_machine_counter_manager_get_type (void)
 							      &ags_machine_counter_manager_info,
 							      0);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_machine_counter_manager);
+    g_once_init_leave(&g_define_type_id__static, ags_type_machine_counter_manager);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 void
@@ -201,6 +202,10 @@ ags_machine_counter_manager_load(AgsMachineCounterManager *machine_counter_manag
 
   start_machine_counter = g_list_prepend(start_machine_counter,
 					 ags_machine_counter_new(AGS_TYPE_HYBRID_FM_SYNTH,
+								 NULL, NULL));
+
+  start_machine_counter = g_list_prepend(start_machine_counter,
+					 ags_machine_counter_new(AGS_TYPE_STARGAZER_SYNTH,
 								 NULL, NULL));
 
 #if defined(AGS_WITH_LIBINSTPATCH)

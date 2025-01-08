@@ -770,7 +770,7 @@ defexecdir = $(libdir)
 defexec_DATA =
 
 # library libags
-libags_la_CPPFLAGS = -std=gnu99 $(CPPFLAGS) $(LIBAGS_CPPFLAGS)
+libags_la_CPPFLAGS = -std=gnu11 $(CPPFLAGS) $(LIBAGS_CPPFLAGS)
 libags_la_CFLAGS =  $(PICFLAGS) $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS) $(W32API_CFLAGS)
 libags_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS) $(W32API_CFLAGS)
 libags_la_LDFLAGS = $(LDFLAGS) -version-info 7:0:0 -pthread
@@ -794,7 +794,7 @@ endif
 endif
 
 # library libags-thread
-libags_thread_la_CPPFLAGS = -std=gnu99 $(CPPFLAGS) $(LIBAGS_THREAD_CPPFLAGS)
+libags_thread_la_CPPFLAGS = -std=gnu11 $(CPPFLAGS) $(LIBAGS_THREAD_CPPFLAGS)
 libags_thread_la_CFLAGS = $(PICFLAGS) $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(W32API_CFLAGS)
 libags_thread_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(W32API_CFLAGS)
 libags_thread_la_LDFLAGS = $(LDFLAGS) -version-info 7:0:0 -pthread
@@ -818,7 +818,7 @@ endif
 endif
 
 # library libags-server
-libags_server_la_CPPFLAGS = -std=gnu99 $(CPPFLAGS) $(LIBAGS_SERVER_CPPFLAGS)
+libags_server_la_CPPFLAGS = -std=gnu11 $(CPPFLAGS) $(LIBAGS_SERVER_CPPFLAGS)
 libags_server_la_CFLAGS = $(PICFLAGS) $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(W32API_CFLAGS)
 libags_server_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(W32API_CFLAGS)
 libags_server_la_LDFLAGS = $(LDFLAGS) -version-info 7:0:0 -pthread
@@ -845,7 +845,7 @@ endif
 if WITH_OSXAPI
 libags_audio_la_CPPFLAGS = -x objective-c -framework Cocoa
 else
-libags_audio_la_CPPFLAGS = -std=gnu99
+libags_audio_la_CPPFLAGS = -std=gnu11
 endif
 
 libags_audio_la_CPPFLAGS += $(CPPFLAGS) $(LIBAGS_AUDIO_CPPFLAGS)
@@ -884,7 +884,7 @@ libags_audio_la_LIBADD += -lm
 libags_audio_la_LDFLAGS += $(CORE_AUDIO_LIBS) $(WASAPI_LIBS) $(LIBASOUND2_LIBS) $(LIBDSSIALSACOMPAT_LIBS) $(LIBXML2_LIBS) $(SAMPLERATE_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(FFTW_LIBS) $(GOBJECT_LIBS) $(JSON_GLIB_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(PULSE_LIBS) $(GSTREAMER_LIBS) $(W32API_LIBS)
 
 # library libags-gui
-libags_gui_la_CPPFLAGS = -std=gnu99 $(CPPFLAGS) $(LIBAGS_GUI_CPPFLAGS)
+libags_gui_la_CPPFLAGS = -std=gnu11 $(CPPFLAGS) $(LIBAGS_GUI_CPPFLAGS)
 libags_gui_la_CFLAGS = $(PICFLAGS) $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(GOBJECT_CFLAGS) $(LIBXML2_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(W32API_CFLAGS)
 libags_gui_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(GOBJECT_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(W32API_CFLAGS)
 libags_gui_la_LDFLAGS = $(LDFLAGS) -version-info 7:0:0 -pthread
@@ -911,7 +911,7 @@ endif
 if WITH_OSXAPI
 libgsequencer_la_CPPFLAGS = -x objective-c -framework Cocoa
 else
-libgsequencer_la_CPPFLAGS = -std=gnu99
+libgsequencer_la_CPPFLAGS = -std=gnu11
 endif
 
 libgsequencer_la_CPPFLAGS += $(CPPFLAGS) $(LIBGSEQUENCER_CPPFLAGS)
@@ -975,7 +975,7 @@ else
 if WITH_W32API
 gsequencer_CPPFLAGS = -std=c++20
 else
-gsequencer_CPPFLAGS = -std=gnu99
+gsequencer_CPPFLAGS = -std=gnu11
 endif
 endif
 
@@ -1011,7 +1011,7 @@ midi2xml_SOURCES = ags/midi2xml_main.c
 if WITH_OSXAPI
 midi2xml_CPPFLAGS = -x objective-c -framework Cocoa
 else
-midi2xml_CPPFLAGS = -std=gnu99
+midi2xml_CPPFLAGS = -std=gnu11
 endif
 
 midi2xml_CPPFLAGS += $(CPPFLAGS) $(libags_vst3_RELEASE_TYPE)
@@ -1191,6 +1191,7 @@ deprecated_libags_thread_h_sources =
 
 libags_thread_h_sources = \
 	$(deprecated_libags_thread_h_sources) \
+	ags/thread/ags_atomic.h \
 	ags/thread/ags_concurrency_provider.h \
 	ags/thread/ags_destroy_worker.h \
 	ags/thread/ags_generic_main_loop.h \
@@ -1346,6 +1347,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_fluid_interpolate_none_util.h \
 	ags/audio/ags_fluid_util.h \
 	ags/audio/ags_fm_synth_util.h \
+	ags/audio/ags_star_synth_util.h \
 	ags/audio/ags_fourier_transform_util.h \
 	ags/audio/ags_frequency_aliase_util.h \
 	ags/audio/ags_frequency_map.h \
@@ -1449,6 +1451,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_fluid_interpolate_none_util.c \
 	ags/audio/ags_fluid_util.c \
 	ags/audio/ags_fm_synth_util.c \
+	ags/audio/ags_star_synth_util.c \
 	ags/audio/ags_fourier_transform_util.c \
 	ags/audio/ags_frequency_aliase_util.c \
 	ags/audio/ags_frequency_map.c \
@@ -2129,6 +2132,12 @@ libags_audio_fx_h_sources = \
 	ags/audio/fx/ags_fx_sfz_synth_channel_processor.h \
 	ags/audio/fx/ags_fx_sfz_synth_recycling.h \
 	ags/audio/fx/ags_fx_sfz_synth_audio_signal.h \
+	ags/audio/fx/ags_fx_star_synth_audio.h \
+	ags/audio/fx/ags_fx_star_synth_audio_processor.h \
+	ags/audio/fx/ags_fx_star_synth_channel.h \
+	ags/audio/fx/ags_fx_star_synth_channel_processor.h \
+	ags/audio/fx/ags_fx_star_synth_recycling.h \
+	ags/audio/fx/ags_fx_star_synth_audio_signal.h \
 	ags/audio/fx/ags_fx_ladspa_audio.h \
 	ags/audio/fx/ags_fx_ladspa_audio_processor.h \
 	ags/audio/fx/ags_fx_ladspa_channel.h \
@@ -2284,6 +2293,12 @@ libags_audio_fx_c_sources = \
 	ags/audio/fx/ags_fx_sfz_synth_channel_processor.c \
 	ags/audio/fx/ags_fx_sfz_synth_recycling.c \
 	ags/audio/fx/ags_fx_sfz_synth_audio_signal.c \
+	ags/audio/fx/ags_fx_star_synth_audio.c \
+	ags/audio/fx/ags_fx_star_synth_audio_processor.c \
+	ags/audio/fx/ags_fx_star_synth_channel.c \
+	ags/audio/fx/ags_fx_star_synth_channel_processor.c \
+	ags/audio/fx/ags_fx_star_synth_recycling.c \
+	ags/audio/fx/ags_fx_star_synth_audio_signal.c \
 	ags/audio/fx/ags_fx_ladspa_audio.c \
 	ags/audio/fx/ags_fx_ladspa_audio_processor.c \
 	ags/audio/fx/ags_fx_ladspa_channel.c \
@@ -2983,7 +2998,9 @@ libgsequencer_machine_h_sources = \
 	ags/app/machine/ags_synth_input_line_callbacks.h \
 	ags/app/machine/ags_synth_input_pad.h \
 	ags/app/machine/ags_spectrometer.h \
-	ags/app/machine/ags_spectrometer_callbacks.h
+	ags/app/machine/ags_spectrometer_callbacks.h \
+	ags/app/machine/ags_stargazer_synth.h \
+	ags/app/machine/ags_stargazer_synth_callbacks.h
 
 if WITH_LIBINSTPATCH
 libgsequencer_machine_h_sources += \
@@ -3110,7 +3127,9 @@ libgsequencer_machine_c_sources = \
 	ags/app/machine/ags_synth_input_line_callbacks.c \
 	ags/app/machine/ags_synth_input_pad.c \
 	ags/app/machine/ags_spectrometer.c \
-	ags/app/machine/ags_spectrometer_callbacks.c
+	ags/app/machine/ags_spectrometer_callbacks.c \
+	ags/app/machine/ags_stargazer_synth.c \
+	ags/app/machine/ags_stargazer_synth_callbacks.c
 
 if WITH_LIBINSTPATCH
 libgsequencer_machine_c_sources += \

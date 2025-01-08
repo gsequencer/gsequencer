@@ -158,7 +158,7 @@ struct _AgsAlsaMidiin
   GObject gobject;
 
   AgsAlsaMidiinFlags flags;
-  volatile AgsAlsaMidiinSyncFlags sync_flags;
+  AgsAlsaMidiinSyncFlags sync_flags;
 
   GRecMutex obj_mutex;
 

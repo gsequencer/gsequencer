@@ -151,9 +151,9 @@ static GMutex regex_mutex;
 GType
 ags_osc_meter_controller_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_osc_meter_controller = 0;
 
     static const GTypeInfo ags_osc_meter_controller_info = {
@@ -173,10 +173,10 @@ ags_osc_meter_controller_get_type()
 							   &ags_osc_meter_controller_info,
 							   0);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_osc_meter_controller);
+    g_once_init_leave(&g_define_type_id__static, ags_type_osc_meter_controller);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 void
@@ -764,7 +764,7 @@ ags_osc_meter_controller_monitor_alloc()
 
   monitor = (AgsOscMeterControllerMonitor *) malloc(sizeof(AgsOscMeterControllerMonitor));
 
-  g_atomic_int_set(&(monitor->ref_count), 0);
+  ags_atomic_int_set(&(monitor->ref_count), 0);
   
   monitor->osc_connection = NULL;
 
@@ -817,7 +817,7 @@ ags_osc_meter_controller_monitor_ref(AgsOscMeterControllerMonitor *monitor)
     return;
   }
   
-  g_atomic_int_inc(&(monitor->ref_count));
+  ags_atomic_int_increment(&(monitor->ref_count));
 }
 
 /**
@@ -836,8 +836,8 @@ ags_osc_meter_controller_monitor_unref(AgsOscMeterControllerMonitor *monitor)
     return;
   }
   
-  if(g_atomic_int_dec_and_test(&(monitor->ref_count)) ||
-     g_atomic_int_get(&(monitor->ref_count)) < 0){
+  if(ags_atomic_int_decrement(&(monitor->ref_count)) ||
+     ags_atomic_int_get(&(monitor->ref_count)) < 0){
     ags_osc_meter_controller_monitor_free(monitor);
   }
 }

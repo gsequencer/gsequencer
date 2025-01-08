@@ -79,6 +79,7 @@
 #include <ags/file/ags_file_util.h>
 
 /* thread */
+#include <ags/thread/ags_atomic.h>
 #include <ags/thread/ags_concurrency_provider.h>
 #include <ags/thread/ags_destroy_worker.h>
 #include <ags/thread/ags_generic_main_loop.h>

@@ -58,9 +58,9 @@ static guint worker_thread_signals[LAST_SIGNAL];
 GType
 ags_worker_thread_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_worker_thread = 0;
 
     static const GTypeInfo ags_worker_thread_info = {
@@ -80,18 +80,18 @@ ags_worker_thread_get_type()
 						    &ags_worker_thread_info,
 						    0);    
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_worker_thread);
+    g_once_init_leave(&g_define_type_id__static, ags_type_worker_thread);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 GType
 ags_worker_thread_status_flags_get_type()
 {
-  static volatile gsize g_flags_type_id__volatile;
+  static gsize g_flags_type_id__static;
 
-  if(g_once_init_enter (&g_flags_type_id__volatile)){
+  if(g_once_init_enter(&g_flags_type_id__static)){
     static const GFlagsValue values[] = {
       { AGS_WORKER_THREAD_STATUS_RUNNING, "AGS_WORKER_THREAD_STATUS_RUNNING", "worker-thread-status-running" },
       { AGS_WORKER_THREAD_STATUS_RUN_WAIT, "AGS_WORKER_THREAD_STATUS_RUN_WAIT", "worker-thread-status-run-wait" },
@@ -102,10 +102,10 @@ ags_worker_thread_status_flags_get_type()
 
     GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsWorkerThreadStatusFlags"), values);
 
-    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+    g_once_init_leave(&g_flags_type_id__static, g_flags_type_id);
   }
   
-  return g_flags_type_id__volatile;
+  return(g_flags_type_id__static);
 }
 
 void
@@ -162,7 +162,7 @@ ags_worker_thread_init(AgsWorkerThread *worker_thread)
 	       "frequency", AGS_WORKER_THREAD_DEFAULT_JIFFIE,
 	       NULL);
   
-  g_atomic_int_set(&(worker_thread->status_flags),
+  ags_atomic_int_set(&(worker_thread->status_flags),
 		   0);
 
   /* synchronization */
@@ -277,7 +277,7 @@ ags_worker_thread_test_status_flags(AgsWorkerThread *worker_thread, guint status
     return(FALSE);
   }
 
-  retval = ((status_flags & (g_atomic_int_get(&(worker_thread->status_flags)))) != 0) ? TRUE: FALSE;
+  retval = ((status_flags & (ags_atomic_int_get(&(worker_thread->status_flags)))) != 0) ? TRUE: FALSE;
 
   return(retval);
 }
@@ -298,7 +298,7 @@ ags_worker_thread_set_status_flags(AgsWorkerThread *worker_thread, guint status_
     return;
   }
 
-  g_atomic_int_or(&(worker_thread->status_flags),
+  ags_atomic_int_or(&(worker_thread->status_flags),
 		  status_flags);
 }
 
@@ -318,7 +318,7 @@ ags_worker_thread_unset_status_flags(AgsWorkerThread *worker_thread, guint statu
     return;
   }
 
-  g_atomic_int_and(&(worker_thread->status_flags),
+  ags_atomic_int_and(&(worker_thread->status_flags),
 		   (~status_flags));
 }
 

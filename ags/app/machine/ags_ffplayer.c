@@ -77,9 +77,9 @@ GHashTable *ags_ffplayer_sf2_loader_completed = NULL;
 GType
 ags_ffplayer_get_type(void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_ffplayer = 0;
 
     static const GTypeInfo ags_ffplayer_info = {
@@ -108,10 +108,10 @@ ags_ffplayer_get_type(void)
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_ffplayer);
+    g_once_init_leave(&g_define_type_id__static, ags_type_ffplayer);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 void
@@ -404,7 +404,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   gtk_box_append(filename_hbox,
 		 (GtkWidget *) ffplayer->open);
 
-  g_atomic_int_set(&(ffplayer->apply_sf2_synth_completed),
+  ags_atomic_int_set(&(ffplayer->apply_sf2_synth_completed),
 		   TRUE);
   
   ffplayer->sf2_loader = NULL;
@@ -1280,7 +1280,7 @@ void
 ags_ffplayer_apply_sf2_synth_launch_callback(AgsTask *task,
 					     AgsFFPlayer *ffplayer)
 {
-  g_atomic_int_set(&(ffplayer->apply_sf2_synth_completed),
+  ags_atomic_int_set(&(ffplayer->apply_sf2_synth_completed),
 		   TRUE);
 }
 
@@ -1513,7 +1513,7 @@ ags_ffplayer_update(AgsFFPlayer *ffplayer)
 						start_input,
 						lower, (guint) key_count);
 
-      g_atomic_int_set(&(ffplayer->apply_sf2_synth_completed),
+      ags_atomic_int_set(&(ffplayer->apply_sf2_synth_completed),
 		       FALSE);
 
       g_signal_connect_after(apply_sf2_synth, "launch",
@@ -1681,7 +1681,7 @@ ags_ffplayer_sf2_loader_completed_timeout(AgsFFPlayer *ffplayer)
       return(TRUE);
     }    
 
-    if(g_atomic_int_get(&(ffplayer->apply_sf2_synth_completed))){
+    if(ags_atomic_int_get(&(ffplayer->apply_sf2_synth_completed))){
       if(ffplayer->position == 0){
 	ffplayer->position = -1;
 

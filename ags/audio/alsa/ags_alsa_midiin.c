@@ -145,9 +145,9 @@ static gpointer ags_alsa_midiin_parent_class = NULL;
 GType
 ags_alsa_midiin_get_type (void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_alsa_midiin = 0;
 
     static const GTypeInfo ags_alsa_midiin_info = {
@@ -187,10 +187,10 @@ ags_alsa_midiin_get_type (void)
 				AGS_TYPE_SEQUENCER,
 				&ags_sequencer_interface_info);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_alsa_midiin);
+    g_once_init_leave(&g_define_type_id__static, ags_type_alsa_midiin);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 void
@@ -393,7 +393,7 @@ ags_alsa_midiin_init(AgsAlsaMidiin *alsa_midiin)
   config = ags_config_get_instance();
 
   /* sync flags */
-  g_atomic_int_set(&(alsa_midiin->sync_flags),
+  ags_atomic_int_set(&(alsa_midiin->sync_flags),
 		   (AGS_ALSA_MIDIIN_PASS_THROUGH));
 
   /* device */
@@ -1417,7 +1417,7 @@ ags_alsa_midiin_device_free(AgsSequencer *sequencer)
     alsa_midiin->backend_buffer_size[i] = 0;
   }
 
-  g_atomic_int_or(&(alsa_midiin->sync_flags),
+  ags_atomic_int_or(&(alsa_midiin->sync_flags),
 		  AGS_ALSA_MIDIIN_PASS_THROUGH);
 
   alsa_midiin->note_offset = alsa_midiin->start_note_offset;

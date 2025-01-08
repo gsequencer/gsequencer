@@ -26,12 +26,12 @@ void ags_vdsp_256_manager_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_vdsp_256_manager
- * @short_description: Singleton pattern to organize volatile memory
+ * @short_description: Singleton pattern to organize memory
  * @title: AgsVDSP256Manager
  * @section_id:
  * @include: ags/plugin/ags_vdsp_256_manager.h
  *
- * The #AgsVDSP256Manager contains volatile memory for vdsp types.
+ * The #AgsVDSP256Manager contains memory for vdsp types.
  */
 
 static gpointer ags_vdsp_256_manager_parent_class = NULL;
@@ -41,9 +41,9 @@ AgsVDSP256Manager *ags_vdsp_256_manager = NULL;
 GType
 ags_vdsp_256_manager_get_type (void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_vdsp_256_manager = 0;
 
     static const GTypeInfo ags_vdsp_256_manager_info = {
@@ -63,10 +63,10 @@ ags_vdsp_256_manager_get_type (void)
 						       &ags_vdsp_256_manager_info,
 						       0);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_vdsp_256_manager);
+    g_once_init_leave(&g_define_type_id__static, ags_type_vdsp_256_manager);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 void
@@ -137,7 +137,7 @@ ags_vdsp_arr_alloc(AgsVDSP256Types vdsp_type)
 
   vdsp_arr->vdsp_type = vdsp_type;
   
-  g_atomic_int_set(&(vdsp_arr->locked),
+  ags_atomic_int_set(&(vdsp_arr->locked),
 		   FALSE);
 
   switch(vdsp_type){
@@ -277,7 +277,7 @@ ags_vdsp_256_manager_try_acquire(AgsVDSP256Manager *vdsp_256_manager,
       vdsp = vdsp_256_manager->int_arr;
       
       while(vdsp != NULL){
-	if(g_atomic_int_get(&(AGS_VDSP_ARR(vdsp->data)->locked)) == FALSE){
+	if(ags_atomic_int_get(&(AGS_VDSP_ARR(vdsp->data)->locked)) == FALSE){
 	  vdsp_arr = (AgsVDSPArr *) vdsp->data;
 	  
 	  break;
@@ -292,7 +292,7 @@ ags_vdsp_256_manager_try_acquire(AgsVDSP256Manager *vdsp_256_manager,
       vdsp = vdsp_256_manager->float_arr;
       
       while(vdsp != NULL){
-	if(g_atomic_int_get(&(AGS_VDSP_ARR(vdsp->data)->locked)) == FALSE){
+	if(ags_atomic_int_get(&(AGS_VDSP_ARR(vdsp->data)->locked)) == FALSE){
 	  vdsp_arr = (AgsVDSPArr *) vdsp->data;
 	  
 	  break;
@@ -307,7 +307,7 @@ ags_vdsp_256_manager_try_acquire(AgsVDSP256Manager *vdsp_256_manager,
       vdsp = vdsp_256_manager->double_arr;
       
       while(vdsp != NULL){
-	if(g_atomic_int_get(&(AGS_VDSP_ARR(vdsp->data)->locked)) == FALSE){
+	if(ags_atomic_int_get(&(AGS_VDSP_ARR(vdsp->data)->locked)) == FALSE){
 	  vdsp_arr = (AgsVDSPArr *) vdsp->data;
 	  
 	  break;
@@ -320,7 +320,7 @@ ags_vdsp_256_manager_try_acquire(AgsVDSP256Manager *vdsp_256_manager,
   };
 
   if(vdsp_arr != NULL){
-    g_atomic_int_set(&(vdsp_arr->locked),
+    ags_atomic_int_set(&(vdsp_arr->locked),
 		     TRUE);
   }
 
@@ -375,7 +375,7 @@ ags_vdsp_256_manager_try_acquire_dual(AgsVDSP256Manager *vdsp_256_manager,
 	vdsp = vdsp_256_manager->int_arr;
       
 	while(vdsp != NULL){
-	  if(g_atomic_int_get(&(AGS_VDSP_ARR(vdsp->data)->locked)) == FALSE){
+	  if(ags_atomic_int_get(&(AGS_VDSP_ARR(vdsp->data)->locked)) == FALSE){
 	    vdsp_arr = (AgsVDSPArr *) vdsp->data;
 	  
 	    break;
@@ -390,7 +390,7 @@ ags_vdsp_256_manager_try_acquire_dual(AgsVDSP256Manager *vdsp_256_manager,
 	vdsp = vdsp_256_manager->float_arr;
       
 	while(vdsp != NULL){
-	  if(g_atomic_int_get(&(AGS_VDSP_ARR(vdsp->data)->locked)) == FALSE){
+	  if(ags_atomic_int_get(&(AGS_VDSP_ARR(vdsp->data)->locked)) == FALSE){
 	    vdsp_arr = (AgsVDSPArr *) vdsp->data;
 	  
 	    break;
@@ -405,7 +405,7 @@ ags_vdsp_256_manager_try_acquire_dual(AgsVDSP256Manager *vdsp_256_manager,
 	vdsp = vdsp_256_manager->double_arr;
       
 	while(vdsp != NULL){
-	  if(g_atomic_int_get(&(AGS_VDSP_ARR(vdsp->data)->locked)) == FALSE){
+	  if(ags_atomic_int_get(&(AGS_VDSP_ARR(vdsp->data)->locked)) == FALSE){
 	    vdsp_arr = (AgsVDSPArr *) vdsp->data;
 	  
 	    break;
@@ -433,10 +433,10 @@ ags_vdsp_256_manager_try_acquire_dual(AgsVDSP256Manager *vdsp_256_manager,
     vdsp_arr_a[0] = arr_a;
     vdsp_arr_b[0] = arr_b;
     
-    g_atomic_int_set(&(arr_a->locked),
+    ags_atomic_int_set(&(arr_a->locked),
 		     TRUE);
 
-    g_atomic_int_set(&(arr_b->locked),
+    ags_atomic_int_set(&(arr_b->locked),
 		     TRUE);
   }
 
@@ -495,7 +495,7 @@ ags_vdsp_256_manager_try_acquire_triple(AgsVDSP256Manager *vdsp_256_manager,
 	vdsp = vdsp_256_manager->int_arr;
       
 	while(vdsp != NULL){
-	  if(g_atomic_int_get(&(AGS_VDSP_ARR(vdsp->data)->locked)) == FALSE){
+	  if(ags_atomic_int_get(&(AGS_VDSP_ARR(vdsp->data)->locked)) == FALSE){
 	    vdsp_arr = (AgsVDSPArr *) vdsp->data;
 	  
 	    break;
@@ -510,7 +510,7 @@ ags_vdsp_256_manager_try_acquire_triple(AgsVDSP256Manager *vdsp_256_manager,
 	vdsp = vdsp_256_manager->float_arr;
       
 	while(vdsp != NULL){
-	  if(g_atomic_int_get(&(AGS_VDSP_ARR(vdsp->data)->locked)) == FALSE){
+	  if(ags_atomic_int_get(&(AGS_VDSP_ARR(vdsp->data)->locked)) == FALSE){
 	    vdsp_arr = (AgsVDSPArr *) vdsp->data;
 	  
 	    break;
@@ -525,7 +525,7 @@ ags_vdsp_256_manager_try_acquire_triple(AgsVDSP256Manager *vdsp_256_manager,
 	vdsp = vdsp_256_manager->double_arr;
       
 	while(vdsp != NULL){
-	  if(g_atomic_int_get(&(AGS_VDSP_ARR(vdsp->data)->locked)) == FALSE){
+	  if(ags_atomic_int_get(&(AGS_VDSP_ARR(vdsp->data)->locked)) == FALSE){
 	    vdsp_arr = (AgsVDSPArr *) vdsp->data;
 	  
 	    break;
@@ -557,13 +557,13 @@ ags_vdsp_256_manager_try_acquire_triple(AgsVDSP256Manager *vdsp_256_manager,
     vdsp_arr_b[0] = arr_b;
     vdsp_arr_c[0] = arr_c;
     
-    g_atomic_int_set(&(arr_a->locked),
+    ags_atomic_int_set(&(arr_a->locked),
 		     TRUE);
 
-    g_atomic_int_set(&(arr_b->locked),
+    ags_atomic_int_set(&(arr_b->locked),
 		     TRUE);
 
-    g_atomic_int_set(&(arr_c->locked),
+    ags_atomic_int_set(&(arr_c->locked),
 		     TRUE);
   }
 
@@ -626,7 +626,7 @@ ags_vdsp_256_manager_try_acquire_quad(AgsVDSP256Manager *vdsp_256_manager,
 	vdsp = vdsp_256_manager->int_arr;
       
 	while(vdsp != NULL){
-	  if(g_atomic_int_get(&(AGS_VDSP_ARR(vdsp->data)->locked)) == FALSE){
+	  if(ags_atomic_int_get(&(AGS_VDSP_ARR(vdsp->data)->locked)) == FALSE){
 	    vdsp_arr = (AgsVDSPArr *) vdsp->data;
 	  
 	    break;
@@ -641,7 +641,7 @@ ags_vdsp_256_manager_try_acquire_quad(AgsVDSP256Manager *vdsp_256_manager,
 	vdsp = vdsp_256_manager->float_arr;
       
 	while(vdsp != NULL){
-	  if(g_atomic_int_get(&(AGS_VDSP_ARR(vdsp->data)->locked)) == FALSE){
+	  if(ags_atomic_int_get(&(AGS_VDSP_ARR(vdsp->data)->locked)) == FALSE){
 	    vdsp_arr = (AgsVDSPArr *) vdsp->data;
 	  
 	    break;
@@ -656,7 +656,7 @@ ags_vdsp_256_manager_try_acquire_quad(AgsVDSP256Manager *vdsp_256_manager,
 	vdsp = vdsp_256_manager->double_arr;
       
 	while(vdsp != NULL){
-	  if(g_atomic_int_get(&(AGS_VDSP_ARR(vdsp->data)->locked)) == FALSE){
+	  if(ags_atomic_int_get(&(AGS_VDSP_ARR(vdsp->data)->locked)) == FALSE){
 	    vdsp_arr = (AgsVDSPArr *) vdsp->data;
 	  
 	    break;
@@ -692,16 +692,16 @@ ags_vdsp_256_manager_try_acquire_quad(AgsVDSP256Manager *vdsp_256_manager,
     vdsp_arr_c[0] = arr_c;
     vdsp_arr_d[0] = arr_d;
     
-    g_atomic_int_set(&(arr_a->locked),
+    ags_atomic_int_set(&(arr_a->locked),
 		     TRUE);
 
-    g_atomic_int_set(&(arr_b->locked),
+    ags_atomic_int_set(&(arr_b->locked),
 		     TRUE);
 
-    g_atomic_int_set(&(arr_c->locked),
+    ags_atomic_int_set(&(arr_c->locked),
 		     TRUE);
 
-    g_atomic_int_set(&(arr_d->locked),
+    ags_atomic_int_set(&(arr_d->locked),
 		     TRUE);
   }
 
@@ -725,7 +725,7 @@ ags_vdsp_256_manager_release(AgsVDSP256Manager *vdsp_256_manager,
 {
   g_return_if_fail(vdsp_arr != NULL);
   
-  g_atomic_int_set(&(vdsp_arr->locked),
+  ags_atomic_int_set(&(vdsp_arr->locked),
 		   FALSE);
 }
 

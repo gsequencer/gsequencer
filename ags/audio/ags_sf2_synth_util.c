@@ -45,9 +45,9 @@
 GType
 ags_sf2_synth_util_get_type(void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_sf2_synth_util = 0;
 
     ags_type_sf2_synth_util =
@@ -55,18 +55,18 @@ ags_sf2_synth_util_get_type(void)
 				   (GBoxedCopyFunc) ags_sf2_synth_util_copy,
 				   (GBoxedFreeFunc) ags_sf2_synth_util_free);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_sf2_synth_util);
+    g_once_init_leave(&g_define_type_id__static, ags_type_sf2_synth_util);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 GType
 ags_sf2_synth_util_loop_mode_get_type()
 {
-  static volatile gsize g_enum_type_id__volatile;
+  static gsize g_enum_type_id__static;
 
-  if(g_once_init_enter (&g_enum_type_id__volatile)){
+  if(g_once_init_enter(&g_enum_type_id__static)){
     static const GEnumValue values[] = {
       { AGS_SF2_SYNTH_UTIL_LOOP_NONE, "AGS_SF2_SYNTH_UTIL_LOOP_NONE", "loop-none" },
       { AGS_SF2_SYNTH_UTIL_LOOP_STANDARD, "AGS_SF2_SYNTH_UTIL_LOOP_STANDARD", "loop-standard" },
@@ -77,10 +77,10 @@ ags_sf2_synth_util_loop_mode_get_type()
 
     GType g_enum_type_id = g_enum_register_static(g_intern_static_string("AgsSF2SynthUtilLoopMode"), values);
 
-    g_once_init_leave (&g_enum_type_id__volatile, g_enum_type_id);
+    g_once_init_leave(&g_enum_type_id__static, g_enum_type_id);
   }
   
-  return g_enum_type_id__volatile;
+  return(g_enum_type_id__static);
 }
 
 /**

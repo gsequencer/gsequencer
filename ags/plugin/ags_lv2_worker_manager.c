@@ -43,9 +43,9 @@ AgsLv2WorkerManager *ags_lv2_worker_manager = NULL;
 GType
 ags_lv2_worker_manager_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_lv2_worker_manager = 0;
 
     const GTypeInfo ags_lv2_worker_manager_info = {
@@ -65,10 +65,10 @@ ags_lv2_worker_manager_get_type()
 						      &ags_lv2_worker_manager_info,
 						      0);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_lv2_worker_manager);
+    g_once_init_leave(&g_define_type_id__static, ags_type_lv2_worker_manager);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 void
@@ -90,7 +90,7 @@ ags_lv2_worker_manager_init(AgsLv2WorkerManager *worker_manager)
 {
   worker_manager->thread_pool = NULL;
 
-  g_atomic_pointer_set(&(worker_manager->worker),
+  ags_atomic_pointer_set(&(worker_manager->worker),
 		       NULL);
   
   /* empty */
@@ -103,7 +103,7 @@ ags_lv2_worker_manager_finalize(GObject *gobject)
 
   lv2_worker_manager = AGS_LV2_WORKER_MANAGER(gobject);
 
-  g_list_free_full(g_atomic_pointer_get(&(lv2_worker_manager->worker)),
+  g_list_free_full(ags_atomic_pointer_get(&(lv2_worker_manager->worker)),
 		   g_object_unref);
   
   if(lv2_worker_manager == ags_lv2_worker_manager){

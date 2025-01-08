@@ -71,9 +71,9 @@ static AgsConnectableInterface *ags_channel_thread_parent_connectable_interface;
 GType
 ags_channel_thread_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_channel_thread = 0;
 
     static const GTypeInfo ags_channel_thread_info = {
@@ -103,10 +103,10 @@ ags_channel_thread_get_type()
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_channel_thread);
+    g_once_init_leave(&g_define_type_id__static, ags_type_channel_thread);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 void
@@ -237,7 +237,7 @@ ags_channel_thread_init(AgsChannelThread *channel_thread)
 	       "frequency", frequency,
 	       NULL);
 
-  g_atomic_int_set(&(channel_thread->nested_sync_flags),
+  ags_atomic_int_set(&(channel_thread->nested_sync_flags),
 		   0);
 
   channel_thread->default_output_soundcard = NULL;
@@ -743,7 +743,7 @@ ags_channel_thread_test_nested_sync_flags(AgsChannelThread *channel_thread, AgsC
     return(FALSE);
   }
 
-  retval = ((nested_sync_flags & (g_atomic_int_get(&(channel_thread->nested_sync_flags)))) != 0) ? TRUE: FALSE;
+  retval = ((nested_sync_flags & (ags_atomic_int_get(&(channel_thread->nested_sync_flags)))) != 0) ? TRUE: FALSE;
 
   return(retval);
 }
@@ -764,7 +764,7 @@ ags_channel_thread_set_nested_sync_flags(AgsChannelThread *channel_thread, AgsCh
     return;
   }
 
-  g_atomic_int_or(&(channel_thread->nested_sync_flags),
+  ags_atomic_int_or(&(channel_thread->nested_sync_flags),
 		  nested_sync_flags);
 }
 
@@ -784,7 +784,7 @@ ags_channel_thread_unset_nested_sync_flags(AgsChannelThread *channel_thread, Ags
     return;
   }
 
-  g_atomic_int_and(&(channel_thread->nested_sync_flags),
+  ags_atomic_int_and(&(channel_thread->nested_sync_flags),
 		   (~nested_sync_flags));
 }
 

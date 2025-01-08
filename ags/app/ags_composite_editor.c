@@ -49,6 +49,7 @@
 #include <ags/app/machine/ags_fm_syncsynth.h>
 #include <ags/app/machine/ags_hybrid_synth.h>
 #include <ags/app/machine/ags_hybrid_fm_synth.h>
+#include <ags/app/machine/ags_stargazer_synth.h>
 
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <ags/app/machine/ags_ffplayer.h>
@@ -191,9 +192,9 @@ static guint composite_editor_signals[LAST_SIGNAL];
 GType
 ags_composite_editor_get_type(void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_composite_editor = 0;
 
     static const GTypeInfo ags_composite_editor_info = {
@@ -222,10 +223,10 @@ ags_composite_editor_get_type(void)
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_composite_editor);
+    g_once_init_leave(&g_define_type_id__static, ags_type_composite_editor);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 void
@@ -1173,6 +1174,7 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
      AGS_IS_FM_SYNCSYNTH(machine) ||
      AGS_IS_HYBRID_SYNTH(machine) ||
      AGS_IS_HYBRID_FM_SYNTH(machine) ||
+     AGS_IS_STARGAZER_SYNTH(machine) ||
 #ifdef AGS_WITH_LIBINSTPATCH
      AGS_IS_FFPLAYER(machine) ||
      AGS_IS_SF2_SYNTH(machine) ||
@@ -1364,6 +1366,7 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
      AGS_IS_FM_SYNCSYNTH(machine) ||
      AGS_IS_HYBRID_SYNTH(machine) ||
      AGS_IS_HYBRID_FM_SYNTH(machine) ||
+     AGS_IS_STARGAZER_SYNTH(machine) ||
 #ifdef AGS_WITH_LIBINSTPATCH
      AGS_IS_FFPLAYER(machine) ||
      AGS_IS_SF2_SYNTH(machine) ||

@@ -75,9 +75,9 @@ static AgsConnectableInterface *ags_hybrid_synth_parent_connectable_interface;
 GType
 ags_hybrid_synth_get_type(void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_hybrid_synth = 0;
 
     static const GTypeInfo ags_hybrid_synth_info = {
@@ -106,10 +106,10 @@ ags_hybrid_synth_get_type(void)
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_hybrid_synth);
+    g_once_init_leave(&g_define_type_id__static, ags_type_hybrid_synth);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 void
@@ -174,7 +174,7 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
   gint position;
   gdouble gui_scale_factor;
 
-  const gchar* pitch_type_strv[] = {
+  gchar* pitch_type_strv[] = {
     "fluid-interpolate-none",
     "fluid-interpolate-linear",
     "fluid-interpolate-4th-order",
@@ -288,7 +288,7 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
 
   /* widget */
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   gtk_widget_set_valign((GtkWidget *) vbox,
 			GTK_ALIGN_START);  
@@ -748,8 +748,8 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
 		  13, 2,
 		  1, 1);
 
-  /* OSC 1 LFO */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 LFO"));
+  /* sync OSC 1 LFO */
+  label = (GtkLabel *) gtk_label_new(i18n("sync OSC 1 LFO"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_0_grid,
@@ -778,8 +778,8 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
 		  15, 0,
 		  1, 1);
 
-  /* OSC 1 LFO frequency */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 LFO frequency"));
+  /* sync OSC 1 LFO frequency */
+  label = (GtkLabel *) gtk_label_new(i18n("sync OSC 1 LFO frequency"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_0_grid,
@@ -1217,8 +1217,8 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
 		  13, 2,
 		  1, 1);
 
-  /* OSC 2 LFO */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 LFO"));
+  /* sync OSC 2 LFO */
+  label = (GtkLabel *) gtk_label_new(i18n("sync OSC 2 LFO"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_1_grid,
@@ -1247,8 +1247,8 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
 		  15, 0,
 		  1, 1);
 
-  /* OSC 2 LFO frequency */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 LFO frequency"));
+  /* sync OSC 2 LFO frequency */
+  label = (GtkLabel *) gtk_label_new(i18n("sync OSC 2 LFO frequency"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_1_grid,
@@ -1355,7 +1355,7 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
   gtk_box_append(pitch_type_hbox,
 		 (GtkWidget *) label);
 
-  hybrid_synth->pitch_type = (GtkDropDown *) gtk_drop_down_new_from_strings(pitch_type_strv);
+  hybrid_synth->pitch_type = (GtkDropDown *) gtk_drop_down_new_from_strings((const gchar * const *) pitch_type_strv);
 
   gtk_drop_down_set_selected(hybrid_synth->pitch_type,
 			     2);
@@ -3331,6 +3331,28 @@ ags_hybrid_synth_refresh_port(AgsMachine *machine)
 
       gtk_spin_button_set_value(hybrid_synth->synth_1_sync_lfo_frequency,
 				(gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* pitch type */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "pitch-type", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_drop_down_set_selected(hybrid_synth->pitch_type,
+				 (guint) g_value_get_float(&value));
 
       g_object_unref(port);
     }

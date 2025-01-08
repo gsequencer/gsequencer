@@ -85,9 +85,9 @@ static gpointer ags_indicator_parent_class = NULL;
 GType
 ags_indicator_get_type(void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_indicator = 0;
 
     static const GTypeInfo ags_indicator_info = {
@@ -116,10 +116,10 @@ ags_indicator_get_type(void)
 				GTK_TYPE_ORIENTABLE,
 				&ags_orientable_interface_info);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_indicator);
+    g_once_init_leave(&g_define_type_id__static, ags_type_indicator);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 void

@@ -43,7 +43,8 @@ void ags_export_window_remove_export_soundcard_callback(GtkWidget *button,
 void ags_export_window_tact_callback(GtkWidget *spin_button,
 				     AgsExportWindow *export_window);
 
-void ags_export_window_export_callback(GtkWidget *toggle_button,
+void ags_export_window_export_callback(GObject *gobject,
+				       GParamSpec *pspec,
 				       AgsExportWindow *export_window);
 
 void ags_export_window_update_ui_callback(AgsApplicationContext *application_context,

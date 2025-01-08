@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,6 +18,9 @@
  */
 
 #include <ags/lib/ags_log.h>
+
+//FIXME:JK: argh, the header only
+#include <ags/thread/ags_atomic.h>
 
 #include <stdlib.h>
 
@@ -41,9 +44,9 @@ AgsLog *ags_log = NULL;
 GType
 ags_log_get_type(void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static gsize g_define_type_id__static = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
+  if(g_once_init_enter(&g_define_type_id__static)){
     GType ags_type_log = 0;
 
     static const GTypeInfo ags_log_info = {
@@ -63,10 +66,10 @@ ags_log_get_type(void)
 					  &ags_log_info,
 					  0);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_log);
+    g_once_init_leave(&g_define_type_id__static, ags_type_log);
   }
 
-  return g_define_type_id__volatile;
+  return(g_define_type_id__static);
 }
 
 void
@@ -101,7 +104,7 @@ ags_log_finalize(GObject *gobject)
   log = AGS_LOG(gobject);
 
   /* free messages and list */
-  g_list_free_full(g_atomic_pointer_get(&(log->messages)),
+  g_list_free_full(ags_atomic_pointer_get(&(log->messages)),
 		   g_free);
 
   if(log == ags_log){
@@ -152,8 +155,8 @@ ags_log_add_message(AgsLog *log,
 {
   g_rec_mutex_lock(&(log->obj_mutex));
   
-  g_atomic_pointer_set(&(log->messages),
-		       g_list_prepend(g_atomic_pointer_get(&(log->messages)),
+  ags_atomic_pointer_set(&(log->messages),
+		       g_list_prepend(ags_atomic_pointer_get(&(log->messages)),
 				      g_strdup(str)));
 
   g_rec_mutex_unlock(&(log->obj_mutex));
@@ -172,7 +175,7 @@ ags_log_add_message(AgsLog *log,
 GList*
 ags_log_get_messages(AgsLog *log)
 {
-  return(g_atomic_pointer_get(&(log->messages)));
+  return(ags_atomic_pointer_get(&(log->messages)));
 }
 
 /**

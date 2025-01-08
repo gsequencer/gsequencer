@@ -1,3 +1,86 @@
+ags (7.4.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsFileDialog to activate GtkEntry while get filename
+	* fixed AgsFileDialog don't allow / as basename
+	* fixed AgsPCMFileDialog don't allow / as basename
+
+ags (7.4.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential buffer overflow with ags-fx-lv2
+
+ags (7.4.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added missing symbols
+
+ags (7.4.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* minor improvements to ags-fx-lv2
+
+ags (7.4.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved make use of LV2 atom forge
+	* minor bug-fixes related to Lv2 support
+
+ags (7.4.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags_lv2_plugin_atom_sequence_append_midi()
+	* improved ags_lv2_plugin_atom_sequence_remove_midi()
+
+ags (7.4.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* removed static const modifiers from string vectors
+
+ags (7.4.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed aligned memory in ags_lv2_plugin.c atom port
+
+ags (7.4.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_fluid_interpolate_4th_order_util.c potential buffer overflow
+	* fixed ags_fluid_interpolate_7th_order_util.c potential buffer overflow
+	* fixed ags-fx-lv2 unsigned integer with atom port and other improvements
+
+ags (7.4.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented pitch type persistence using project XML file
+	* fixed stargazer synth LFO oscillator control
+	* fixed stargazer synth pitch type control
+
+ags (7.4.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed stargazer synth missing octave control
+	* implemented missing ags_stargazer_synth_refresh_port()
+
+ags (7.4.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved AgsExportWindow signal handling
+	* improved AgsNavigation signal handling
+
+ags (7.4.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsStargazerSynth
+	* implemented ags_star_synth_util.c FM synth supporting vibrato
+	* implemented ags-fx-star-synth FM synth with phase modulation
+	* implemented persistency of AgsStargazerSynth
+	* implemented ags_atomic.h
+	* modified C standard to gnu11
+	* removed all volatile modifiers
+	* refactored GSequencer to use ags_atomic.h
+	* minor improvements
+
 ags (7.3.29)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

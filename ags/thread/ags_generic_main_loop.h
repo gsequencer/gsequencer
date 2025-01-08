@@ -45,10 +45,10 @@ struct _AgsGenericMainLoop
   
   GRecMutex tree_lock;
 
-  volatile gboolean is_syncing;
+  gboolean is_syncing;
 
-  volatile gboolean is_critical_region;
-  volatile guint critical_region_ref;
+  gboolean is_critical_region;
+  guint critical_region_ref;
 };
 
 struct _AgsGenericMainLoopClass
