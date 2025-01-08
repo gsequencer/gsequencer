@@ -372,6 +372,7 @@ ags_file_dialog_activate_button_callback(GtkButton *activate_button,
     if(writable_location &&
        basename != NULL &&
        strlen(basename) > 0 &&
+       (!g_strncasecmp(basename, "/", 2)) == FALSE &&
        (!g_strncasecmp(basename, ".", 2)) == FALSE &&
        (!g_strncasecmp(basename, "..", 3)) == FALSE &&
        !g_file_test(filename, G_FILE_TEST_IS_DIR)){

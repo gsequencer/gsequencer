@@ -3021,6 +3021,10 @@ ags_file_widget_get_filename(AgsFileWidget *file_widget)
   if(ags_file_widget_test_file_action(file_widget, AGS_FILE_WIDGET_SAVE_AS)){
     gchar *str;
 
+    //NOTE:JK: work-around for not updating 
+    g_signal_emit_by_name(file_widget->location_entry,
+			  "activate");
+    
     str = gtk_editable_get_text(GTK_EDITABLE(file_widget->location_entry));
     
     filename = g_strdup(str);
@@ -3110,6 +3114,10 @@ ags_file_widget_get_filenames(AgsFileWidget *file_widget)
   if(ags_file_widget_test_file_action(file_widget, AGS_FILE_WIDGET_SAVE_AS)){
     gchar *filename;
     gchar *str;
+
+    //NOTE:JK: work-around for not updating 
+    g_signal_emit_by_name(file_widget->location_entry,
+			  "activate");
 
     str = gtk_editable_get_text(GTK_EDITABLE(file_widget->location_entry));
     
