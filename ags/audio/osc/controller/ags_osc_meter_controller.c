@@ -464,7 +464,6 @@ ags_osc_meter_controller_monitor_timeout(AgsOscMeterController *osc_meter_contro
 	ags_osc_connection_write_response(osc_connection,
 					  (GObject *) osc_response);
 	    
-	g_object_run_dispose((GObject *) osc_response);
 	g_object_unref(osc_response);
 	  
 	/* iterate */
@@ -501,7 +500,6 @@ ags_osc_meter_controller_monitor_timeout(AgsOscMeterController *osc_meter_contro
 	  ags_osc_connection_write_response(osc_connection,
 					    (GObject *) osc_response);
 	    
-	  g_object_run_dispose((GObject *) osc_response);
 	  g_object_unref(osc_response);
 
 	  /* iterate */
@@ -532,7 +530,6 @@ ags_osc_meter_controller_monitor_timeout(AgsOscMeterController *osc_meter_contro
 	  ags_osc_connection_write_response(osc_connection,
 					    (GObject *) osc_response);
 	    
-	  g_object_run_dispose((GObject *) osc_response);
 	  g_object_unref(osc_response);
 	    
 	  /* iterate */
@@ -596,7 +593,6 @@ ags_osc_meter_controller_monitor_timeout(AgsOscMeterController *osc_meter_contro
 	  ags_osc_connection_write_response(osc_connection,
 					    (GObject *) osc_response);
 	    
-	  g_object_run_dispose((GObject *) osc_response);
 	  g_object_unref(osc_response);
 	    
 	  /* iterate */
@@ -638,7 +634,6 @@ ags_osc_meter_controller_monitor_timeout(AgsOscMeterController *osc_meter_contro
     /* write response */
     ags_osc_connection_write_response(osc_connection,
 				      (GObject *) osc_response);
-    g_object_run_dispose((GObject *) osc_response);
     g_object_unref(osc_response);
       
     /* iterate */
@@ -3066,21 +3061,24 @@ ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_con
 						  osc_connection,
 						  port)){
       AgsOscMeterControllerMonitor *monitor;
-      
-      /* allocate monitor */
-      monitor = ags_osc_meter_controller_monitor_alloc();
 
-      monitor->osc_connection = osc_connection;
-      g_object_ref(osc_connection);
+      if(osc_connection != NULL &&
+	 port != NULL){
+	/* allocate monitor */
+	monitor = ags_osc_meter_controller_monitor_alloc();
 
-      monitor->path = g_strdup(current_path);
+	monitor->osc_connection = osc_connection;
+	g_object_ref(osc_connection);
 
-      monitor->port = port;
-      g_object_ref(port);
+	monitor->path = g_strdup(current_path);
 
-      /* add monitor */
-      ags_osc_meter_controller_add_monitor(osc_meter_controller,
-					   monitor);
+	monitor->port = port;
+	g_object_ref(port);
+
+	/* add monitor */
+	ags_osc_meter_controller_add_monitor(osc_meter_controller,
+					     monitor);
+      }
     }
 
     g_free(current_path);

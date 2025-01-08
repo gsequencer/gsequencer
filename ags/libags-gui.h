@@ -25,6 +25,7 @@
 #include <ags/widget/ags_expander_set.h>
 #include <ags/widget/ags_expander.h>
 #include <ags/widget/ags_file_dialog.h>
+#include <ags/widget/ags_file_entry.h>
 #include <ags/widget/ags_file_widget.h>
 #include <ags/widget/ags_icon_link.h>
 #include <ags/widget/ags_indicator.h>

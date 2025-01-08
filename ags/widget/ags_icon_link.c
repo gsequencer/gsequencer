@@ -703,6 +703,8 @@ ags_icon_link_real_copy_event(AgsIconLink *icon_link)
  * @icon_link: the #AgsIconLink
  * 
  * Emits ::copy-event event.
+ *
+ * Returns: (transfer none): the icon link
  * 
  * Since: 6.6.0
  */
