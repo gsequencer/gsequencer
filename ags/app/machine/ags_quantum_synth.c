@@ -746,9 +746,9 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
   adjustment = ags_dial_get_adjustment(quantum_synth->synth_0_seq_volume_0);
 
   gtk_adjustment_set_lower(adjustment,
-			   -1200.0);
+			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   1200.0);
+			   1.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -772,9 +772,9 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
   adjustment = ags_dial_get_adjustment(quantum_synth->synth_0_seq_volume_1);
 
   gtk_adjustment_set_lower(adjustment,
-			   -1200.0);
+			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   1200.0);
+			   1.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -782,7 +782,7 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
 
   ags_dial_set_radius(quantum_synth->synth_0_seq_volume_1,
 		      12);
@@ -798,9 +798,9 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
   adjustment = ags_dial_get_adjustment(quantum_synth->synth_0_seq_volume_2);
 
   gtk_adjustment_set_lower(adjustment,
-			   -1200.0);
+			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   1200.0);
+			   1.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -808,7 +808,7 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
 
   ags_dial_set_radius(quantum_synth->synth_0_seq_volume_2,
 		      12);
@@ -824,9 +824,9 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
   adjustment = ags_dial_get_adjustment(quantum_synth->synth_0_seq_volume_3);
 
   gtk_adjustment_set_lower(adjustment,
-			   -1200.0);
+			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   1200.0);
+			   1.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -834,7 +834,7 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
 
   ags_dial_set_radius(quantum_synth->synth_0_seq_volume_3,
 		      12);
@@ -850,9 +850,9 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
   adjustment = ags_dial_get_adjustment(quantum_synth->synth_0_seq_volume_4);
 
   gtk_adjustment_set_lower(adjustment,
-			   -1200.0);
+			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   1200.0);
+			   1.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -860,7 +860,7 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
 
   ags_dial_set_radius(quantum_synth->synth_0_seq_volume_4,
 		      12);
@@ -876,9 +876,9 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
   adjustment = ags_dial_get_adjustment(quantum_synth->synth_0_seq_volume_5);
 
   gtk_adjustment_set_lower(adjustment,
-			   -1200.0);
+			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   1200.0);
+			   1.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -886,7 +886,7 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
 
   ags_dial_set_radius(quantum_synth->synth_0_seq_volume_5,
 		      12);
@@ -902,9 +902,9 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
   adjustment = ags_dial_get_adjustment(quantum_synth->synth_0_seq_volume_6);
 
   gtk_adjustment_set_lower(adjustment,
-			   -1200.0);
+			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   1200.0);
+			   1.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -912,7 +912,7 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
 
   ags_dial_set_radius(quantum_synth->synth_0_seq_volume_6,
 		      12);
@@ -928,9 +928,9 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
   adjustment = ags_dial_get_adjustment(quantum_synth->synth_0_seq_volume_7);
 
   gtk_adjustment_set_lower(adjustment,
-			   -1200.0);
+			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   1200.0);
+			   1.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -938,7 +938,7 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
 
   ags_dial_set_radius(quantum_synth->synth_0_seq_volume_7,
 		      12);
@@ -1824,9 +1824,9 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
   adjustment = ags_dial_get_adjustment(quantum_synth->synth_1_seq_volume_0);
 
   gtk_adjustment_set_lower(adjustment,
-			   -1200.0);
+			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   1200.0);
+			   1.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -1834,7 +1834,7 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
 
   ags_dial_set_radius(quantum_synth->synth_1_seq_volume_0,
 		      12);
@@ -1850,9 +1850,9 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
   adjustment = ags_dial_get_adjustment(quantum_synth->synth_1_seq_volume_1);
 
   gtk_adjustment_set_lower(adjustment,
-			   -1200.0);
+			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   1200.0);
+			   1.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -1860,7 +1860,7 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
 
   ags_dial_set_radius(quantum_synth->synth_1_seq_volume_1,
 		      12);
@@ -1876,16 +1876,16 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
   adjustment = ags_dial_get_adjustment(quantum_synth->synth_1_seq_volume_2);
 
   gtk_adjustment_set_lower(adjustment,
-			   -1200.0);
+			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   1200.0);
+			   1.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
   gtk_adjustment_set_page_increment(adjustment,
 				    0.1);
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
 
   ags_dial_set_radius(quantum_synth->synth_1_seq_volume_2,
 		      12);
@@ -1901,9 +1901,9 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
   adjustment = ags_dial_get_adjustment(quantum_synth->synth_1_seq_volume_3);
 
   gtk_adjustment_set_lower(adjustment,
-			   -1200.0);
+			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   1200.0);
+			   1.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -1911,7 +1911,7 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
 
   ags_dial_set_radius(quantum_synth->synth_1_seq_volume_3,
 		      12);
@@ -1927,9 +1927,9 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
   adjustment = ags_dial_get_adjustment(quantum_synth->synth_1_seq_volume_4);
 
   gtk_adjustment_set_lower(adjustment,
-			   -1200.0);
+			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   1200.0);
+			   1.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -1937,7 +1937,7 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
 
   ags_dial_set_radius(quantum_synth->synth_1_seq_volume_4,
 		      12);
@@ -1953,9 +1953,9 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
   adjustment = ags_dial_get_adjustment(quantum_synth->synth_1_seq_volume_5);
 
   gtk_adjustment_set_lower(adjustment,
-			   -1200.0);
+			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   1200.0);
+			   1.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -1963,7 +1963,7 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
 
   ags_dial_set_radius(quantum_synth->synth_1_seq_volume_5,
 		      12);
@@ -1979,9 +1979,9 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
   adjustment = ags_dial_get_adjustment(quantum_synth->synth_1_seq_volume_6);
 
   gtk_adjustment_set_lower(adjustment,
-			   -1200.0);
+			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   1200.0);
+			   1.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -1989,7 +1989,7 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
 
   ags_dial_set_radius(quantum_synth->synth_1_seq_volume_6,
 		      12);
@@ -2005,9 +2005,9 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
   adjustment = ags_dial_get_adjustment(quantum_synth->synth_1_seq_volume_7);
 
   gtk_adjustment_set_lower(adjustment,
-			   -1200.0);
+			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   1200.0);
+			   1.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -2015,7 +2015,7 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
 
   ags_dial_set_radius(quantum_synth->synth_1_seq_volume_7,
 		      12);

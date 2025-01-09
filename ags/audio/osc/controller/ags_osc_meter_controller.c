@@ -375,13 +375,9 @@ ags_osc_meter_controller_monitor_timeout(AgsOscMeterController *osc_meter_contro
   g_rec_mutex_lock(osc_controller_mutex);
 
   monitor = 
-    start_monitor = g_list_copy(osc_meter_controller->monitor);
-
-  while(monitor != NULL){
-    ags_osc_meter_controller_monitor_ref(monitor->data);
-      
-    monitor = monitor->next;
-  }
+    start_monitor = g_list_copy_deep(osc_meter_controller->monitor,
+				     (GCopyFunc) ags_osc_meter_controller_monitor_ref,
+				     NULL);
     
   g_rec_mutex_unlock(osc_controller_mutex);
 

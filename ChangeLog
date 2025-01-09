@@ -5,6 +5,8 @@ ags (7.5.0)
 	* implemented ags-fx-seq-synth
 	* implemented ags_seq_synth_util.[ch]
 	* implemented AgsFileEntry
+	* fixed ags_star_synth_util.[ch] missing iteration of offset
+	* fixed AgsOscMeterController missing ref/unref monitor
 	* minor improvements
 
 ags (7.4.12)
