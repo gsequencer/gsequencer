@@ -35,7 +35,7 @@
  * @section_id:
  * @include: ags/audio/ags_seq_synth_util.h
  *
- * Utility functions to compute FM synths with vibrato.
+ * Utility functions to compute FM synths with sequencer and vibrato.
  */
 
 GType
