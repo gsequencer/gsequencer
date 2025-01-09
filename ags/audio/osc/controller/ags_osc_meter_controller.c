@@ -827,8 +827,9 @@ ags_osc_meter_controller_monitor_unref(AgsOscMeterControllerMonitor *monitor)
     return;
   }
   
-  if(ags_atomic_int_decrement(&(monitor->ref_count)) ||
-     ags_atomic_int_get(&(monitor->ref_count)) < 0){
+  ags_atomic_int_decrement(&(monitor->ref_count));
+
+  if(ags_atomic_int_get(&(monitor->ref_count)) < 0){
     ags_osc_meter_controller_monitor_free(monitor);
   }
 }
