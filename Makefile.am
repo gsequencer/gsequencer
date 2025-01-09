@@ -2139,7 +2139,7 @@ libags_audio_fx_h_sources = \
 	ags/audio/fx/ags_fx_star_synth_channel.h \
 	ags/audio/fx/ags_fx_star_synth_channel_processor.h \
 	ags/audio/fx/ags_fx_star_synth_recycling.h \
-	ags/audio/fx/ags_fx_seq_synth_audio_signal.h \
+	ags/audio/fx/ags_fx_star_synth_audio_signal.h \
 	ags/audio/fx/ags_fx_seq_synth_audio.h \
 	ags/audio/fx/ags_fx_seq_synth_audio_processor.h \
 	ags/audio/fx/ags_fx_seq_synth_channel.h \
