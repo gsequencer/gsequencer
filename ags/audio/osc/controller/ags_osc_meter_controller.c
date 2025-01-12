@@ -1977,7 +1977,8 @@ ags_osc_meter_controller_monitor_meter_channel(AgsOscMeterController *osc_meter_
   static const size_t max_matches = 3;
   static const size_t index_max_matches = 2;
   
-  if(!AGS_IS_CHANNEL(channel)){
+  if(channel == NULL ||
+     !AGS_IS_CHANNEL(channel)){
     return(NULL);
   }
   
@@ -2024,7 +2025,10 @@ ags_osc_meter_controller_monitor_meter_channel(AgsOscMeterController *osc_meter_
   }
 
   recall_type = g_type_from_name(type_name);
-    
+
+  start_play = NULL;
+  start_recall = NULL;
+  
   g_object_get(channel,
 	       "play", &start_play,
 	       "recall", &start_recall,
@@ -2438,7 +2442,8 @@ ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_c
   guint real_packet_size;
   guint packet_size;
   
-  if(!AGS_IS_RECALL(recall)){
+  if(recall == NULL ||
+     !AGS_IS_RECALL(recall)){
     return(NULL);
   }
 
@@ -2523,6 +2528,8 @@ ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_c
     }
 
     g_mutex_unlock(&regex_mutex);
+
+    start_port = NULL;
     
     g_object_get(recall,
 		 "port", &start_port,
@@ -2685,6 +2692,8 @@ ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_c
 	
 	return(start_response);
       }
+
+      port = start_port;
       
       while(port != NULL){
 	GList *retval;
@@ -2834,7 +2843,10 @@ ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_con
   gint nth_recall;
   gint nth_port;
   
-  if(!AGS_IS_PORT(port)){
+  if(parent == NULL ||
+     !AGS_IS_RECALL(parent) ||
+     port == NULL ||
+     !AGS_IS_PORT(port)){
     return(NULL);
   }
 
@@ -2843,15 +2855,15 @@ ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_con
   application_context = ags_application_context_get_instance();
 
   nth_recall = 0;
+    
+  audio = NULL;
+  channel = NULL;
   
   if(!strncmp(path + path_offset,
 	      ":",
 	      1)){
     guint length;
     guint i;
-    
-    audio = NULL;
-    channel = NULL;
     
     current_path = NULL;    
 
@@ -2865,6 +2877,8 @@ ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_con
 		   "line", &nth_channel,
 		   NULL);      
 
+      start_list = NULL;
+      
       g_object_get(channel,
 		   "play", &start_list,
 		   NULL);
@@ -2891,6 +2905,8 @@ ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_con
       if(list != NULL){
 	nth_recall = i;
       }else{
+	start_list = NULL;
+      
 	g_object_get(channel,
 		     "recall", &start_list,
 		     NULL);
@@ -2913,7 +2929,9 @@ ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_con
 	g_list_free_full(start_list,
 			 g_object_unref);
       
-	nth_recall = i;
+	if(list != NULL){
+	  nth_recall = i;
+	}
       }
 
       g_object_unref(channel);
@@ -2924,6 +2942,8 @@ ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_con
 		   "audio", &audio,
 		   NULL);
 
+      start_list = NULL;
+      
       g_object_get(audio,
 		   "play", &start_list,
 		   NULL);
@@ -2950,6 +2970,8 @@ ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_con
       if(list != NULL){
 	nth_recall = i;
       }else{
+	start_list = NULL;
+      
 	g_object_get(channel,
 		     "recall", &start_list,
 		     NULL);
@@ -2972,12 +2994,20 @@ ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_con
 	g_list_free_full(start_list,
 			 g_object_unref);
       
-	nth_recall = i;
+	if(list != NULL){
+	  nth_recall = i;
+	}
       }
 
       g_object_unref(audio);
+    }else{
+      g_warning("unexpected recall type");
+      
+      return(NULL);
     }
 
+    start_list = NULL;
+    
     g_object_get(parent,
 		 "port", &start_list,
 		 NULL);

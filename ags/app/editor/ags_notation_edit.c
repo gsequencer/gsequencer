@@ -1842,6 +1842,10 @@ ags_notation_edit_gesture_click_pressed_callback(GtkGestureClick *event_controll
   
   gboolean selected_position_cursor, selected_edit, selected_clear, selected_select;
 
+  if((AGS_NOTATION_EDIT_BUTTON_1 & (notation_edit->button_mask)) != 0){
+    return(FALSE);
+  }
+  
   selected_position_cursor = FALSE;
   selected_edit = FALSE;
   selected_clear = FALSE;
@@ -1930,6 +1934,10 @@ ags_notation_edit_gesture_click_released_callback(GtkGestureClick *event_control
   AgsMachine *machine;
   
   gboolean selected_position_cursor, selected_edit, selected_clear, selected_select;
+
+  if((AGS_NOTATION_EDIT_BUTTON_1 & (notation_edit->button_mask)) == 0){
+    return(FALSE);
+  }
   
   selected_position_cursor = FALSE;
   selected_edit = FALSE;
