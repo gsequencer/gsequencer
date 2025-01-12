@@ -50,6 +50,15 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="7.5.0" date="2025-01-10">
+      <description>
+	<p>
+	  Added new instrument, the Quantum Synth a FM synthesizer with pitch and volume sequencer,
+	  phase modulation, tremolo and vibrato.
+	</p>
+      </description>
+    </release>
+
     <release version="7.4.8" date="2024-12-11">
       <description>
 	<p>

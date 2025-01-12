@@ -729,7 +729,12 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
 		  0, 1,
 		  4, 1);
 
-  quantum_synth->synth_0_seq_tuning_lfo_frequency = NULL;
+  /* synth 0 tuning LFO label */
+  label = (GtkLabel *) gtk_label_new(i18n("tuning - LFO"));
+  gtk_grid_attach(synth_0_seq_grid,
+		  (GtkWidget *) label,
+		  4, 1,
+		  2, 1);
 
   /* synth 0 LFO frequency */
   quantum_synth->synth_0_seq_tuning_lfo_frequency = (GtkSpinButton *) gtk_spin_button_new_with_range(0.01, 16.0, 0.01);
@@ -955,8 +960,13 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
 		  0, 3,
 		  4, 1);
 
-  quantum_synth->synth_0_seq_volume_lfo_frequency = NULL;
-
+  /* synth 0 volume LFO label */
+  label = (GtkLabel *) gtk_label_new(i18n("volume - LFO"));
+  gtk_grid_attach(synth_0_seq_grid,
+		  (GtkWidget *) label,
+		  4, 3,
+		  2, 1);
+  
   /* synth 0 LFO frequency */
   quantum_synth->synth_0_seq_volume_lfo_frequency = (GtkSpinButton *) gtk_spin_button_new_with_range(0.01, 16.0, 0.01);
   gtk_spin_button_set_value(quantum_synth->synth_0_seq_volume_lfo_frequency,
@@ -1809,6 +1819,13 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
   
   quantum_synth->synth_1_seq_tuning_lfo_frequency = NULL;
 
+  /* synth 1 tuning LFO label */
+  label = (GtkLabel *) gtk_label_new(i18n("tuning - LFO"));
+  gtk_grid_attach(synth_1_seq_grid,
+		  (GtkWidget *) label,
+		  4, 1,
+		  2, 1);
+
   /* synth 1 LFO frequency */
   quantum_synth->synth_1_seq_tuning_lfo_frequency = (GtkSpinButton *) gtk_spin_button_new_with_range(0.01, 16.0, 0.01);
   gtk_spin_button_set_value(quantum_synth->synth_1_seq_tuning_lfo_frequency,
@@ -2031,6 +2048,13 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
 		  (GtkWidget *) quantum_synth->synth_1_seq_volume_pingpong,
 		  0, 3,
 		  4, 1);
+
+  /* synth 1 volume LFO label */
+  label = (GtkLabel *) gtk_label_new(i18n("volume - LFO"));
+  gtk_grid_attach(synth_1_seq_grid,
+		  (GtkWidget *) label,
+		  4, 3,
+		  2, 1);
 
   /* synth 1 LFO frequency */
   quantum_synth->synth_1_seq_volume_lfo_frequency = (GtkSpinButton *) gtk_spin_button_new_with_range(0.01, 16.0, 0.01);

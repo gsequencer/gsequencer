@@ -1177,6 +1177,10 @@ ags_wave_edit_gesture_click_pressed_callback(GtkGestureClick *event_controller,
 
   gboolean selected_position_cursor, selected_select;
 
+  if((AGS_WAVE_EDIT_BUTTON_1 & (wave_edit->button_mask)) != 0){
+    return(FALSE);
+  }
+  
   selected_position_cursor = FALSE;
   selected_select = FALSE;
 
@@ -1196,7 +1200,7 @@ ags_wave_edit_gesture_click_pressed_callback(GtkGestureClick *event_controller,
   gtk_widget_grab_focus((GtkWidget *) wave_edit->drawing_area);
   
   if(machine != NULL){    
-    wave_edit->button_mask = AGS_WAVE_EDIT_BUTTON_1;
+    wave_edit->button_mask |= AGS_WAVE_EDIT_BUTTON_1;
     
     if(selected_position_cursor){
       wave_edit->mode = AGS_WAVE_EDIT_POSITION_CURSOR;
@@ -1343,6 +1347,10 @@ ags_wave_edit_gesture_click_released_callback(GtkGestureClick *event_controller,
   AgsApplicationContext *application_context;
 
   gboolean selected_position_cursor, selected_select;
+
+  if((AGS_WAVE_EDIT_BUTTON_1 & (wave_edit->button_mask)) == 0){
+    return(FALSE);
+  }
 
   application_context = ags_application_context_get_instance();
   
