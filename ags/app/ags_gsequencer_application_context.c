@@ -5926,6 +5926,17 @@ ags_gsequencer_application_context_update_ui_timeout(AgsGSequencerApplicationCon
 		   "gtk-theme-name", &has_theme,
 		   "gtk-application-prefer-dark-theme", &has_dark_mode,
 		   NULL);
+
+      NSAppearanceName basicAppearance = [appearance bestMatchFromAppearancesWithNames:@[
+            NSAppearanceNameAqua,
+            NSAppearanceNameDarkAqua
+        ]];
+
+      if([basicAppearance isEqualToString:NSAppearanceNameDarkAqua]){
+	theme = "Adwaita:dark";
+
+	dark_mode = TRUE;
+      }
     
       if([interface_style isEqualToString:NSAppearanceNameDarkAqua]){
 	theme = "Adwaita:dark";
