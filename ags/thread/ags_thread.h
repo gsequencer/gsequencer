@@ -175,16 +175,16 @@ struct _AgsThread
 
   guint my_flags;
   guint connectable_flags;
-  guint status_flags;
-  guint sync_tic_flags;
+  _Atomic guint status_flags;
+  _Atomic guint sync_tic_flags;
 
-  gint is_running;
+  _Atomic gint is_running;
   
   GRecMutex obj_mutex;
 
   AgsUUID *uuid;
 
-  guint current_sync_tic;
+  _Atomic guint current_sync_tic;
 
   gdouble delay;
   gdouble tic_delay;

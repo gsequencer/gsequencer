@@ -62,7 +62,7 @@ struct _AgsChannelThread
 {
   AgsThread thread;
 
-  AgsChannelThreadNestedSyncFlags nested_sync_flags;
+  _Atomic AgsChannelThreadNestedSyncFlags nested_sync_flags;
 
   GObject *default_output_soundcard;
     

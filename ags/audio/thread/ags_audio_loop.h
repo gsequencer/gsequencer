@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -72,10 +72,10 @@ struct _AgsAudioLoop
       
   GRecMutex tree_lock;
 
-  gboolean is_syncing;
+  _Atomic gboolean is_syncing;
 
-  gboolean is_critical_region;
-  guint critical_region_ref;
+  _Atomic gboolean is_critical_region;
+  _Atomic guint critical_region_ref;
   
   guint play_channel_ref;
   GList *play_channel; // play AgsChannel

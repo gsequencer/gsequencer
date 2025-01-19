@@ -114,7 +114,7 @@ struct _AgsJackDevout
 
   AgsJackDevoutFlags flags;
   AgsConnectableFlags connectable_flags;
-  AgsJackDevoutSyncFlags sync_flags;
+  _Atomic AgsJackDevoutSyncFlags sync_flags;
   
   GRecMutex obj_mutex;
 

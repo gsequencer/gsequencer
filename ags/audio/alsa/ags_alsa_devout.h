@@ -157,7 +157,7 @@ struct _AgsAlsaDevout
 
   void **app_buffer;
 
-  gboolean available;
+  _Atomic gboolean available;
   
   AgsAlsaDevoutBackendBufferMode backend_buffer_mode;
   

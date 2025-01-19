@@ -62,7 +62,7 @@ struct _AgsOscFrontController
   
   gint64 delegate_timeout;
   
-  gboolean do_reset;
+  _Atomic gboolean do_reset;
 
   GMutex delegate_mutex;
   GCond delegate_cond;

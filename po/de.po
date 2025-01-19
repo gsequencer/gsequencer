@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2025-01-17 10:53+0100\n"
+"POT-Creation-Date: 2025-01-19 19:07+0100\n"
 "PO-Revision-Date: 2021-01-03 08:52+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: Deutsch <jkraehemann@gmail.com>\n"
@@ -388,7 +388,7 @@ msgstr "exportieren"
 #: ags/app/machine/ags_sf2_synth.c:1052 ags/app/machine/ags_sf2_synth.c:1206
 #: ags/app/machine/ags_ffplayer.c:484 ags/app/machine/ags_ffplayer.c:612
 #: ags/app/ags_machine_editor_collection.c:175
-#: ags/app/import/ags_track_mapper.c:239
+#: ags/app/import/ags_track_mapper.c:242
 #: ags/app/ags_connection_editor_listing.c:177
 #: ags/app/ags_connection_editor_collection.c:175
 #: ags/app/ags_machine_editor_listing.c:177
@@ -1401,7 +1401,7 @@ msgstr "starten"
 msgid "capability"
 msgstr "Fähigkeit"
 
-#: ags/app/ags_soundcard_editor.c:363 ags/app/import/ags_track_mapper.c:361
+#: ags/app/ags_soundcard_editor.c:363 ags/app/import/ags_track_mapper.c:368
 msgid "audio channels"
 msgstr "Audio Kanäle"
 
@@ -2046,8 +2046,8 @@ msgstr "eingeschaltet"
 msgid "base key"
 msgstr "Grundton"
 
-#: ags/app/machine/ags_ffplayer.c:375 ags/app/import/ags_track_mapper.c:267
-#: ags/app/import/ags_track_mapper.c:451
+#: ags/app/machine/ags_ffplayer.c:375 ags/app/import/ags_track_mapper.c:270
+#: ags/app/import/ags_track_mapper.c:458
 msgid "instrument"
 msgstr "Instrument"
 
@@ -2096,20 +2096,20 @@ msgstr "Erste Verknüpfung mit Line"
 msgid "line"
 msgstr "Line"
 
-#: ags/app/import/ags_track_mapper.c:280 ags/app/import/ags_track_mapper.c:478
+#: ags/app/import/ags_track_mapper.c:283 ags/app/import/ags_track_mapper.c:485
 msgid "sequence"
 msgstr "Sequenz"
 
-#: ags/app/import/ags_track_mapper.c:292
+#: ags/app/import/ags_track_mapper.c:295
 msgid "soft synth"
 msgstr ""
 
-#: ags/app/import/ags_track_mapper.c:337
+#: ags/app/import/ags_track_mapper.c:344
 #, fuzzy
 msgid "MIDI channel"
 msgstr "Kanal"
 
-#: ags/app/import/ags_track_mapper.c:384
+#: ags/app/import/ags_track_mapper.c:391
 msgid "offset"
 msgstr ""
 

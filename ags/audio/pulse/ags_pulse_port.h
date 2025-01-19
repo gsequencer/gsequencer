@@ -116,13 +116,13 @@ struct _AgsPulsePort
   
   void *empty_buffer;
 
-  gboolean is_empty;
-  gint underflow;
-  gboolean restart;
+  _Atomic gboolean is_empty;
+  _Atomic gint underflow;
+  _Atomic gboolean restart;
   
   guint nth_empty_buffer;
   
-  guint queued;
+  _Atomic guint queued;
 
   AgsAudioBufferUtil *audio_buffer_util;
 };
