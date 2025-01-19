@@ -119,7 +119,7 @@ struct _AgsJackMidiin
 
   AgsJackMidiinFlags flags;
   AgsConnectableFlags connectable_flags;
-  AgsJackMidiinSyncFlags sync_flags;
+  _Atomic AgsJackMidiinSyncFlags sync_flags;
   
   GRecMutex obj_mutex;
 

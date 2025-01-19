@@ -779,8 +779,6 @@ ags_live_lv2_bridge_finalize(GObject *gobject)
   }
 
   if(live_lv2_bridge->lv2_window != NULL){
-    g_object_run_dispose(G_OBJECT(live_lv2_bridge->lv2_window));
-    
     g_object_unref(G_OBJECT(live_lv2_bridge->lv2_window));
   }
   

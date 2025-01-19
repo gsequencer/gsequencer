@@ -25,6 +25,7 @@
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_machine.h>
+#include <ags/app/ags_machine_util.h>
 #include <ags/app/ags_navigation.h>
 
 #include <ags/app/import/ags_track_collection.h>
@@ -45,6 +46,8 @@
 
 #include <ags/app/machine/ags_hybrid_synth.h>
 #include <ags/app/machine/ags_hybrid_fm_synth.h>
+#include <ags/app/machine/ags_stargazer_synth.h>
+#include <ags/app/machine/ags_quantum_synth.h>
 
 #include <math.h>
 
@@ -319,6 +322,10 @@ ags_track_mapper_init(AgsTrackMapper *track_mapper)
 				 "AgsHybridSynth");
   gtk_combo_box_text_append_text(track_mapper->machine_type,
 				 "AgsHybridFMSynth");
+  gtk_combo_box_text_append_text(track_mapper->machine_type,
+				 "AgsStargazerSynth");
+  gtk_combo_box_text_append_text(track_mapper->machine_type,
+				 "AgsQuantumSynth");
   
   gtk_widget_set_valign((GtkWidget *) track_mapper->machine_type,
 			GTK_ALIGN_FILL);
@@ -556,6 +563,8 @@ ags_track_mapper_apply(AgsApplicable *applicable)
   GList *imported_notation;
   
   gchar *machine_type;
+
+  gint channels;
   
   track_mapper = AGS_TRACK_MAPPER(applicable);
 
@@ -573,39 +582,167 @@ ags_track_mapper_apply(AgsApplicable *applicable)
   machine = NULL;
   
   machine_type = gtk_combo_box_text_get_active_text(track_mapper->machine_type);
+
+  channels = gtk_spin_button_get_value_as_int(track_mapper->audio_channels);
   
   if(!g_ascii_strcasecmp(machine_type,
 			 g_type_name(AGS_TYPE_DRUM))){
-    machine = (AgsMachine *) ags_drum_new(default_soundcard);
+    machine = (AgsMachine *) ags_machine_util_new_drum();
+
+    /* set size */
+    ags_audio_set_audio_channels(machine->audio,
+				 channels, 0);
+    ags_audio_set_pads(machine->audio,
+		       AGS_TYPE_OUTPUT,
+		       1, 0);
+    ags_audio_set_pads(machine->audio,
+		       AGS_TYPE_INPUT,
+		       128, 0);
   }else if(!g_ascii_strcasecmp(machine_type,
 			       g_type_name(AGS_TYPE_MATRIX))){
-    machine = (AgsMachine *) ags_matrix_new(default_soundcard);
+    machine = (AgsMachine *) ags_machine_util_new_matrix();
+
+    /* set size */
+    ags_audio_set_audio_channels(machine->audio,
+				 1, 0);
+    ags_audio_set_pads(machine->audio,
+		       AGS_TYPE_OUTPUT,
+		       channels, 0);
+    ags_audio_set_pads(machine->audio,
+		       AGS_TYPE_INPUT,
+		       128, 0);
   }else if(!g_ascii_strcasecmp(machine_type,
 			       g_type_name(AGS_TYPE_SYNCSYNTH))){
-    machine = (AgsMachine *) ags_syncsynth_new(default_soundcard);
+    machine = (AgsMachine *) ags_machine_util_new_syncsynth();
+
+    /* set size */
+    ags_audio_set_audio_channels(machine->audio,
+				 1, 0);
+    ags_audio_set_pads(machine->audio,
+		       AGS_TYPE_OUTPUT,
+		       channels, 0);
+    ags_audio_set_pads(machine->audio,
+		       AGS_TYPE_INPUT,
+		       128, 0);
   }else if(!g_ascii_strcasecmp(machine_type,
 			       g_type_name(AGS_TYPE_FM_SYNCSYNTH))){
-    machine = (AgsMachine *) ags_fm_syncsynth_new(default_soundcard);
+    machine = (AgsMachine *) ags_machine_util_new_fm_syncsynth();
+
+    /* set size */
+    ags_audio_set_audio_channels(machine->audio,
+				 1, 0);
+    ags_audio_set_pads(machine->audio,
+		       AGS_TYPE_OUTPUT,
+		       channels, 0);
+    ags_audio_set_pads(machine->audio,
+		       AGS_TYPE_INPUT,
+		       128, 0);
   }else if(!g_ascii_strcasecmp(machine_type,
 			       g_type_name(AGS_TYPE_PITCH_SAMPLER))){
-    machine = (AgsMachine *) ags_pitch_sampler_new(default_soundcard);
+    machine = (AgsMachine *) ags_machine_util_new_pitch_sampler();
+
+    /* set size */
+    ags_audio_set_audio_channels(machine->audio,
+				 channels, 0);
+    ags_audio_set_pads(machine->audio,
+		       AGS_TYPE_OUTPUT,
+		       1, 0);
+    ags_audio_set_pads(machine->audio,
+		       AGS_TYPE_INPUT,
+		       128, 0);
   }else if(!g_ascii_strcasecmp(machine_type,
 			       g_type_name(AGS_TYPE_SFZ_SYNTH))){
-    machine = (AgsMachine *) ags_sfz_synth_new(default_soundcard);
+    machine = (AgsMachine *) ags_machine_util_new_sfz_synth();
+
+    /* set size */
+    ags_audio_set_audio_channels(machine->audio,
+				 channels, 0);
+    ags_audio_set_pads(machine->audio,
+		       AGS_TYPE_OUTPUT,
+		       1, 0);
+    ags_audio_set_pads(machine->audio,
+		       AGS_TYPE_INPUT,
+		       128, 0);
 #ifdef AGS_WITH_LIBINSTPATCH
   }else if(!g_ascii_strcasecmp(machine_type,
 			       g_type_name(AGS_TYPE_FFPLAYER))){
-    machine = (AgsMachine *) ags_ffplayer_new(default_soundcard);
+    machine = (AgsMachine *) ags_machine_util_new_ffplayer();
+
+    /* set size */
+    ags_audio_set_audio_channels(machine->audio,
+				 channels, 0);
+    ags_audio_set_pads(machine->audio,
+		       AGS_TYPE_OUTPUT,
+		       1, 0);
+    ags_audio_set_pads(machine->audio,
+		       AGS_TYPE_INPUT,
+		       128, 0);
   }else if(!g_ascii_strcasecmp(machine_type,
 			       g_type_name(AGS_TYPE_SF2_SYNTH))){
-    machine = (AgsMachine *) ags_sf2_synth_new(default_soundcard);
+    machine = (AgsMachine *) ags_machine_util_new_sf2_synth();
+
+    /* set size */
+    ags_audio_set_audio_channels(machine->audio,
+				 channels, 0);
+    ags_audio_set_pads(machine->audio,
+		       AGS_TYPE_OUTPUT,
+		       1, 0);
+    ags_audio_set_pads(machine->audio,
+		       AGS_TYPE_INPUT,
+		       128, 0);
 #endif
   }else if(!g_ascii_strcasecmp(machine_type,
 			       g_type_name(AGS_TYPE_HYBRID_SYNTH))){
-    machine = (AgsMachine *) ags_hybrid_synth_new(default_soundcard);
+    machine = (AgsMachine *) ags_machine_util_new_hybrid_synth();
+
+    /* set size */
+    ags_audio_set_audio_channels(machine->audio,
+				 1, 0);
+    ags_audio_set_pads(machine->audio,
+		       AGS_TYPE_OUTPUT,
+		       channels, 0);
+    ags_audio_set_pads(machine->audio,
+		       AGS_TYPE_INPUT,
+		       128, 0);
   }else if(!g_ascii_strcasecmp(machine_type,
 			       g_type_name(AGS_TYPE_HYBRID_FM_SYNTH))){
-    machine = (AgsMachine *) ags_hybrid_fm_synth_new(default_soundcard);
+    machine = (AgsMachine *) ags_machine_util_new_hybrid_fm_synth();
+
+    /* set size */
+    ags_audio_set_audio_channels(machine->audio,
+				 1, 0);
+    ags_audio_set_pads(machine->audio,
+		       AGS_TYPE_OUTPUT,
+		       channels, 0);
+    ags_audio_set_pads(machine->audio,
+		       AGS_TYPE_INPUT,
+		       128, 0);
+  }else if(!g_ascii_strcasecmp(machine_type,
+			       g_type_name(AGS_TYPE_STARGAZER_SYNTH))){
+    machine = (AgsMachine *) ags_machine_util_new_stargazer_synth();
+
+    /* set size */
+    ags_audio_set_audio_channels(machine->audio,
+				 1, 0);
+    ags_audio_set_pads(machine->audio,
+		       AGS_TYPE_OUTPUT,
+		       channels, 0);
+    ags_audio_set_pads(machine->audio,
+		       AGS_TYPE_INPUT,
+		       128, 0);
+  }else if(!g_ascii_strcasecmp(machine_type,
+			       g_type_name(AGS_TYPE_QUANTUM_SYNTH))){
+    machine = (AgsMachine *) ags_machine_util_new_quantum_synth();
+
+    /* set size */
+    ags_audio_set_audio_channels(machine->audio,
+				 1, 0);
+    ags_audio_set_pads(machine->audio,
+		       AGS_TYPE_OUTPUT,
+		       channels, 0);
+    ags_audio_set_pads(machine->audio,
+		       AGS_TYPE_INPUT,
+		       128, 0);
   }else{
     g_warning("unknown machine type");
 
@@ -616,22 +753,6 @@ ags_track_mapper_apply(AgsApplicable *applicable)
   add_audio = ags_add_audio_new(machine->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
-
-  ags_window_add_machine(window,
-			 machine);
-
-  /* connect everything */
-  ags_connectable_connect(AGS_CONNECTABLE(machine));
-
-  /* set size */
-  ags_audio_set_audio_channels(machine->audio,
-			       gtk_spin_button_get_value_as_int(track_mapper->audio_channels), 0);
-  ags_audio_set_pads(machine->audio,
-		     AGS_TYPE_OUTPUT,
-		     1, 0);
-  ags_audio_set_pads(machine->audio,
-		     AGS_TYPE_INPUT,
-		     128, 0);
 
   /* apply notation */
   imported_notation = track_mapper->notation;

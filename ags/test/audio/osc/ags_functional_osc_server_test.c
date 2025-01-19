@@ -73,10 +73,6 @@ void ags_functional_osc_server_test_status_controller();
   "dsp-channels=2\n"						\
   "format=16\n"							\
   "\n"								\
-  "[sequencer-0]\n"						\
-  "backend=alsa\n"						\
-  "device=default\n"						\
-  "\n"								\
   "[recall]\n"							\
   "auto-sense=true\n"						\
   "\n"

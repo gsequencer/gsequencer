@@ -95,6 +95,8 @@ struct _AgsNavigation
 
   GtkCheckButton *scroll;
   GtkCheckButton *exclude_sequencer;
+
+  gint64 play_time;
 };
 
 struct _AgsNavigationClass

@@ -18,9 +18,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 7.5.1\n"
+"Project-Id-Version: gsequencer 7.5.5\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2025-01-11 11:35+0100\n"
+"POT-Creation-Date: 2025-01-19 19:07+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -370,7 +370,7 @@ msgstr ""
 #: ags/app/machine/ags_sf2_synth.c:1052 ags/app/machine/ags_sf2_synth.c:1206
 #: ags/app/machine/ags_ffplayer.c:484 ags/app/machine/ags_ffplayer.c:612
 #: ags/app/ags_machine_editor_collection.c:175
-#: ags/app/import/ags_track_mapper.c:239
+#: ags/app/import/ags_track_mapper.c:242
 #: ags/app/ags_connection_editor_listing.c:177
 #: ags/app/ags_connection_editor_collection.c:175
 #: ags/app/ags_machine_editor_listing.c:177
@@ -1342,7 +1342,7 @@ msgstr ""
 msgid "capability"
 msgstr ""
 
-#: ags/app/ags_soundcard_editor.c:363 ags/app/import/ags_track_mapper.c:361
+#: ags/app/ags_soundcard_editor.c:363 ags/app/import/ags_track_mapper.c:368
 msgid "audio channels"
 msgstr ""
 
@@ -1955,8 +1955,8 @@ msgstr ""
 msgid "base key"
 msgstr ""
 
-#: ags/app/machine/ags_ffplayer.c:375 ags/app/import/ags_track_mapper.c:267
-#: ags/app/import/ags_track_mapper.c:451
+#: ags/app/machine/ags_ffplayer.c:375 ags/app/import/ags_track_mapper.c:270
+#: ags/app/import/ags_track_mapper.c:458
 msgid "instrument"
 msgstr ""
 
@@ -2005,19 +2005,19 @@ msgstr ""
 msgid "line"
 msgstr ""
 
-#: ags/app/import/ags_track_mapper.c:280 ags/app/import/ags_track_mapper.c:478
+#: ags/app/import/ags_track_mapper.c:283 ags/app/import/ags_track_mapper.c:485
 msgid "sequence"
 msgstr ""
 
-#: ags/app/import/ags_track_mapper.c:292
+#: ags/app/import/ags_track_mapper.c:295
 msgid "soft synth"
 msgstr ""
 
-#: ags/app/import/ags_track_mapper.c:337
+#: ags/app/import/ags_track_mapper.c:344
 msgid "MIDI channel"
 msgstr ""
 
-#: ags/app/import/ags_track_mapper.c:384
+#: ags/app/import/ags_track_mapper.c:391
 msgid "offset"
 msgstr ""
 

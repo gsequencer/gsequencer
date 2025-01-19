@@ -122,7 +122,7 @@ struct _AgsPulseDevout
 
   AgsPulseDevoutFlags flags;
   AgsConnectableFlags connectable_flags;
-  AgsPulseDevoutSyncFlags sync_flags;
+  _Atomic AgsPulseDevoutSyncFlags sync_flags;
   
   GRecMutex obj_mutex;
 

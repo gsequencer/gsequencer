@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -91,7 +91,9 @@ void ags_machine_midi_import_callback(GAction *action, GVariant *parameter,
 void ags_machine_open_response_callback(AgsPCMFileDialog *pcm_file_dialog, gint response,
 					AgsMachine *machine);
 
-void ags_machine_play_callback(GtkWidget *toggle_button, AgsMachine *machine);
+void ags_machine_play_callback(GObject *gobject,
+			       GParamSpec *pspec,
+			       AgsMachine *machine);
 
 /* forwarded callbacks */
 void ags_machine_resize_audio_channels_callback(AgsMachine *machine,

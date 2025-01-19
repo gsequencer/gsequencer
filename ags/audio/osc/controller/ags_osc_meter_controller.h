@@ -42,7 +42,7 @@ G_BEGIN_DECLS
 
 #define AGS_OSC_METER_CONTROLLER_DEFAULT_MONITOR_TIMEOUT (1.0 / 30.0)
   
-#define AGS_OSC_METER_CONTROLLER_MONITOR(ptr) ((AgsOscMeterControllerMonitor *)(ptr))
+#define AGS_OSC_METER_CONTROLLER_MONITOR(ptr) ((AgsOscMeterControllerMonitor*)(ptr))
 
 typedef struct _AgsOscMeterController AgsOscMeterController;
 typedef struct _AgsOscMeterControllerClass AgsOscMeterControllerClass;
@@ -86,7 +86,7 @@ struct _AgsOscMeterControllerClass
 
 struct _AgsOscMeterControllerMonitor
 {
-  gint ref_count;
+  _Atomic gint ref_count;
   
   AgsOscConnection *osc_connection;
 

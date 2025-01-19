@@ -915,7 +915,7 @@ ags_port_finalize(GObject *gobject)
   AgsPort *port;
 
   port = AGS_PORT(gobject);
-
+  
   g_free(port->plugin_name);
   g_free(port->specifier);
 

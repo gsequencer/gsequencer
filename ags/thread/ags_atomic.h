@@ -37,23 +37,23 @@ G_BEGIN_DECLS
 #define ags_atomic_int_set(ptr, ival) (__atomic_store_n((gint *) ptr, ival, __ATOMIC_SEQ_CST))
 #define ags_atomic_pointer_set(ptr, pval) (__atomic_store_n((gpointer *) ptr, pval, __ATOMIC_SEQ_CST))
 
-#define ags_atomic_uint_or(ptr, uval) ((guint) __atomic_or_fetch((guint *) ptr, uval, __ATOMIC_RELEASE))
-#define ags_atomic_int_or(ptr, ival) ((gint) __atomic_or_fetch((gint *) ptr, ival, __ATOMIC_RELEASE))
+#define ags_atomic_uint_or(ptr, uval) ((guint) __atomic_fetch_or((guint *) ptr, uval, __ATOMIC_RELEASE))
+#define ags_atomic_int_or(ptr, ival) ((gint) __atomic_fetch_or((gint *) ptr, ival, __ATOMIC_RELEASE))
 
-#define ags_atomic_uint_and(ptr, uval) ((guint) __atomic_and_fetch((guint *) ptr, uval, __ATOMIC_RELEASE))
-#define ags_atomic_int_and(ptr, ival) ((gint) __atomic_and_fetch((gint *) ptr, ival, __ATOMIC_RELEASE))
+#define ags_atomic_uint_and(ptr, uval) ((guint) __atomic_fetch_and((guint *) ptr, uval, __ATOMIC_RELEASE))
+#define ags_atomic_int_and(ptr, ival) ((gint) __atomic_fetch_and((gint *) ptr, ival, __ATOMIC_RELEASE))
 
-#define ags_atomic_uint_increment(ptr) ((guint) __atomic_add_fetch((guint *) ptr, 1, __ATOMIC_RELEASE))
-#define ags_atomic_int_increment(ptr) ((gint) __atomic_add_fetch((gint *) ptr, 1, __ATOMIC_RELEASE))
+#define ags_atomic_uint_increment(ptr) ((guint) __atomic_fetch_add((guint *) ptr, 1, __ATOMIC_RELEASE))
+#define ags_atomic_int_increment(ptr) ((gint) __atomic_fetch_add((gint *) ptr, 1, __ATOMIC_RELEASE))
 
-#define ags_atomic_uint_decrement(ptr) ((guint) __atomic_sub_fetch((guint *) ptr, 1, __ATOMIC_RELEASE))
-#define ags_atomic_int_decrement(ptr) ((gint) __atomic_sub_fetch((gint *) ptr, 1, __ATOMIC_RELEASE))
+#define ags_atomic_uint_decrement(ptr) ((guint) __atomic_fetch_sub((guint *) ptr, 1, __ATOMIC_RELEASE))
+#define ags_atomic_int_decrement(ptr) ((gint) __atomic_fetch_sub((gint *) ptr, 1, __ATOMIC_RELEASE))
 
-#define ags_atomic_uint_add(ptr, uval) ((guint) __atomic_add_fetch((guint *) ptr, uval, __ATOMIC_RELEASE))
-#define ags_atomic_int_add(ptr, ival) ((gint) __atomic_add_fetch((gint *) ptr, ival, __ATOMIC_RELEASE))
+#define ags_atomic_uint_add(ptr, uval) ((guint) __atomic_fetch_add((guint *) ptr, uval, __ATOMIC_RELEASE))
+#define ags_atomic_int_add(ptr, ival) ((gint) __atomic_fetch_add((gint *) ptr, ival, __ATOMIC_RELEASE))
 
-#define ags_atomic_uint_sub(ptr, uval) ((guint) __atomic_sub_fetch((guint *) ptr, uval, __ATOMIC_RELEASE))
-#define ags_atomic_int_sub(ptr, ival) ((gint) __atomic_sub_fetch((gint *) ptr, ival, __ATOMIC_RELEASE))
+#define ags_atomic_uint_sub(ptr, uval) ((guint) __atomic_fetch_sub((guint *) ptr, uval, __ATOMIC_RELEASE))
+#define ags_atomic_int_sub(ptr, ival) ((gint) __atomic_fetch_sub((gint *) ptr, ival, __ATOMIC_RELEASE))
 
 G_END_DECLS
 
