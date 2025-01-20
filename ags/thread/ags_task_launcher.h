@@ -59,8 +59,8 @@ struct _AgsTaskLauncher
   GList *task;
   GList *cyclic_task;
 
-  gboolean is_running;
-  gint wait_count;
+  _Atomic gboolean is_running;
+  _Atomic gint wait_count;
   
   GMutex wait_mutex;
   GCond wait_cond;

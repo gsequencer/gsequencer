@@ -168,10 +168,14 @@ ags_navigation_play_callback(GObject *gobject,
   GList *start_task;
   GList *start_list;  
   
+  gint64 play_time;
   gboolean initialized_time;
   gboolean no_soundcard;
+
+  play_time = g_get_monotonic_time();
   
-  if((AGS_NAVIGATION_BLOCK_PLAY & (navigation->flags)) != 0){
+  if((AGS_NAVIGATION_BLOCK_PLAY & (navigation->flags)) != 0 ||
+     navigation->play_time != -1){
     return;
   }
 
@@ -191,6 +195,8 @@ ags_navigation_play_callback(GObject *gobject,
     
     return;
   }
+
+  navigation->play_time = play_time;
 
   window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
   
@@ -346,6 +352,8 @@ ags_navigation_stop_callback(GtkWidget *widget,
   g_free(timestr);
   ags_soundcard_set_note_offset(AGS_SOUNDCARD(default_soundcard),
 				0);
+
+  navigation->play_time = -1;
 }
 
 void

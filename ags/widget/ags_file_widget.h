@@ -25,6 +25,7 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/widget/ags_file_entry.h>
 #include <ags/widget/ags_icon_link.h>
 
 G_BEGIN_DECLS
@@ -76,9 +77,9 @@ struct _AgsFileWidget
 {
   GtkBox box;
 
-  guint flags;
-  guint file_action;
-  guint file_filter;
+  AgsFileWidgetFlags flags;
+  AgsFileWidgetFileAction file_action;
+  AgsFileWidgetFileFilter file_filter;
   
   gchar *default_bundle;
   

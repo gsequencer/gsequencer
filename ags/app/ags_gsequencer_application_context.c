@@ -5926,41 +5926,43 @@ ags_gsequencer_application_context_update_ui_timeout(AgsGSequencerApplicationCon
 		   "gtk-theme-name", &has_theme,
 		   "gtk-application-prefer-dark-theme", &has_dark_mode,
 		   NULL);
-    
-      if([interface_style isEqualToString:NSAppearanceNameDarkAqua]){
-	theme = "Adwaita:dark";
 
-	dark_mode = TRUE;
-      }else if([interface_style isEqualToString:NSAppearanceNameVibrantDark]){
-	theme = "Adwaita:dark";
+      if([interface_style length] != 0){
+	if([interface_style isEqualToString:NSAppearanceNameDarkAqua]){
+	  theme = "Adwaita:dark";
 
-	dark_mode = TRUE;
-      }else if([interface_style isEqualToString:NSAppearanceNameAccessibilityHighContrastAqua]){
-	theme = "HighContrast";
-      }else if([interface_style isEqualToString:NSAppearanceNameAccessibilityHighContrastDarkAqua]){
-	theme = "HighContrast:dark";
+	  dark_mode = TRUE;
+	}else if([interface_style isEqualToString:NSAppearanceNameVibrantDark]){
+	  theme = "Adwaita:dark";
 
-	dark_mode = TRUE;
-      }else if([interface_style isEqualToString:NSAppearanceNameAccessibilityHighContrastVibrantDark]){
-	theme = "HighContrast:dark";
+	  dark_mode = TRUE;
+	}else if([interface_style isEqualToString:NSAppearanceNameAccessibilityHighContrastAqua]){
+	  theme = "HighContrast";
+	}else if([interface_style isEqualToString:NSAppearanceNameAccessibilityHighContrastDarkAqua]){
+	  theme = "HighContrast:dark";
 
-	dark_mode = TRUE;
-      }
+	  dark_mode = TRUE;
+	}else if([interface_style isEqualToString:NSAppearanceNameAccessibilityHighContrastVibrantDark]){
+	  theme = "HighContrast:dark";
 
-      if((dark_mode &&
-	  (!g_strcmp0(has_theme, "Adwaita:dark") == FALSE) &&
-	  (!g_strcmp0(has_theme, "HighContrast:dark") == FALSE)) ||
-	 (!dark_mode &&
-	  (!g_strcmp0(has_theme, "Adwaita:dark") ||
-	   !g_strcmp0(has_theme, "HighContrast:dark")))){
-	g_message("theme change %s -> theme", has_theme, theme);
+	  dark_mode = TRUE;
+	}
+
+	if((dark_mode &&
+	    (!g_strcmp0(has_theme, "Adwaita:dark") == FALSE) &&
+	    (!g_strcmp0(has_theme, "HighContrast:dark") == FALSE)) ||
+	   (!dark_mode &&
+	    (!g_strcmp0(has_theme, "Adwaita:dark") ||
+	     !g_strcmp0(has_theme, "HighContrast:dark")))){
+	  g_message("theme change %s -> theme", has_theme, theme);
       
-	g_object_set(settings,
-		     "gtk-theme-name", theme,
-		     "gtk-application-prefer-dark-theme", dark_mode,
-		     NULL);
+	  g_object_set(settings,
+		       "gtk-theme-name", theme,
+		       "gtk-application-prefer-dark-theme", dark_mode,
+		       NULL);
 
-	gtk_widget_queue_draw(ags_ui_provider_get_window(AGS_UI_PROVIDER(gsequencer_application_context)));
+	  gtk_widget_queue_draw(ags_ui_provider_get_window(AGS_UI_PROVIDER(gsequencer_application_context)));
+	}
       }
       
       g_free(has_theme);

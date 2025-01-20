@@ -61,7 +61,7 @@ struct _AgsWorkerThread
 {
   AgsThread thread;
 
-  guint status_flags;
+  _Atomic guint status_flags;
 
   GMutex run_mutex;
   GCond run_cond;

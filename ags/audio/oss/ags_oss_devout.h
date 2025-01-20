@@ -151,7 +151,7 @@ struct _AgsOssDevout
 
   void **app_buffer;
 
-  gboolean available;
+  _Atomic gboolean available;
   
   guint backend_buffer_mode;
   

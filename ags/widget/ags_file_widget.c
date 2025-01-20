@@ -503,9 +503,10 @@ ags_file_widget_init(AgsFileWidget *file_widget)
 
   gtk_widget_set_hexpand((GtkWidget *) file_widget->location_entry,
 			 TRUE);  
-  
-  gtk_entry_set_alignment(file_widget->location_entry,
-			  0.0);
+
+  //NOTE:JK: update me
+  //  gtk_entry_set_alignment(file_widget->location_entry,
+  //			  0.0);
   
   gtk_box_append(hbox,
 		 (GtkWidget *) file_widget->location_entry);
@@ -3021,9 +3022,7 @@ ags_file_widget_get_filename(AgsFileWidget *file_widget)
   if(ags_file_widget_test_file_action(file_widget, AGS_FILE_WIDGET_SAVE_AS)){
     gchar *str;
 
-    //NOTE:JK: work-around for not updating 
-    g_signal_emit_by_name(file_widget->location_entry,
-			  "activate");
+    g_signal_emit_by_name(file_widget->location_entry, "activate");
     
     str = gtk_editable_get_text(GTK_EDITABLE(file_widget->location_entry));
     
@@ -3115,9 +3114,7 @@ ags_file_widget_get_filenames(AgsFileWidget *file_widget)
     gchar *filename;
     gchar *str;
 
-    //NOTE:JK: work-around for not updating 
-    g_signal_emit_by_name(file_widget->location_entry,
-			  "activate");
+    g_signal_emit_by_name(file_widget->location_entry, "activate");
 
     str = gtk_editable_get_text(GTK_EDITABLE(file_widget->location_entry));
     

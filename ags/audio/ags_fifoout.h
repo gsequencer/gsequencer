@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2024 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -120,7 +120,7 @@ struct _AgsFifoout
 
   void **app_buffer;
 
-  gboolean available;
+  _Atomic gboolean available;
   
   guint ring_buffer_size;
   guint nth_ring_buffer;

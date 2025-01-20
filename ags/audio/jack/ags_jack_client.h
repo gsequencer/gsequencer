@@ -83,7 +83,7 @@ struct _AgsJackClient
   GList *device;
   GList *port;
   
-  guint queued;
+  _Atomic guint queued;
 
   AgsAudioBufferUtil *audio_buffer_util;
 };

@@ -320,7 +320,7 @@ AgsTaskLauncher *task_launcher;
 
 struct _AddTest{
   AgsFunctionalTestUtilAddTest add_test;
-  gboolean *is_available;
+  _Atomic gboolean *is_available;
 };
 
 struct timespec ags_functional_test_util_default_timeout = {
@@ -600,7 +600,7 @@ ags_functional_test_util_do_run_thread(void *ptr)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
   
-  gboolean *is_available;
+  _Atomic gboolean *is_available;
   
   gsequencer_application_context = (AgsGSequencerApplicationContext *) ags_application_context_get_instance();
 
@@ -628,7 +628,7 @@ ags_functional_test_util_do_run_thread(void *ptr)
 
 void
 ags_functional_test_util_do_run(int argc, char **argv,
-				AgsFunctionalTestUtilAddTest add_test, gboolean *is_available)
+				AgsFunctionalTestUtilAddTest add_test, _Atomic gboolean *is_available)
 {
   AgsWindow *window;
   AgsGSequencerApplication *gsequencer_app;
@@ -718,7 +718,7 @@ ags_functional_test_util_add_test_thread(void *ptr)
 
 void
 ags_functional_test_util_add_test(AgsFunctionalTestUtilAddTest add_test,
-				  gboolean *is_available)
+				  _Atomic gboolean *is_available)
 {
   struct _AddTest *test;
 
@@ -735,10 +735,10 @@ ags_functional_test_util_add_test(AgsFunctionalTestUtilAddTest add_test,
 }
 
 void
-ags_functional_test_util_notify_add_test(gboolean *is_available)
+ags_functional_test_util_notify_add_test(_Atomic gboolean *is_available)
 {
   ags_atomic_int_set(is_available,
-		   TRUE);
+		     TRUE);
 }
 
 gboolean

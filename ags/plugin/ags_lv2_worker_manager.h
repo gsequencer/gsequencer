@@ -50,7 +50,7 @@ struct _AgsLv2WorkerManager
 
   AgsThreadPool *thread_pool;
   
-  GList *worker;
+  _Atomic GList *worker;
 };
 
 struct _AgsLv2WorkerManagerClass

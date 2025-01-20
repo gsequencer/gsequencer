@@ -151,7 +151,7 @@ struct _AgsOssDevin
 
   void **app_buffer;
 
-  gboolean available;
+  _Atomic gboolean available;
   
   AgsOssDevinBackendBufferMode backend_buffer_mode;
   

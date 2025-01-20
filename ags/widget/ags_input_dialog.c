@@ -380,7 +380,7 @@ ags_input_dialog_unset_flags(AgsInputDialog *input_dialog,
 /**
  * ags_input_dialog_set_message:
  * @input_dialog: the #AgsInputDialog
- * @text: the message
+ * @message: the message
  * 
  * Set informal message.
  * 

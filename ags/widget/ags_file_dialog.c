@@ -143,7 +143,7 @@ ags_file_dialog_class_init(AgsFileDialogClass *file_dialog)
 
   /* properties */
   /**
-   * AgsFileWidget:file-widget:
+   * AgsFileDialog:file-widget:
    *
    * The file widget.
    * 
@@ -575,7 +575,7 @@ ags_file_dialog_unset_flags(AgsFileDialog *file_dialog,
 }
 
 /**
- * ags_file_dialog_get_widget:
+ * ags_file_dialog_get_file_widget:
  * @file_dialog: the #AgsFileDialog
  *
  * Get widget of @file_dialog.
@@ -598,7 +598,7 @@ ags_file_dialog_get_file_widget(AgsFileDialog *file_dialog)
  *
  * Get download link of @file_dialog.
  * 
- * Returns: the #GtkLinkButton or %NULL
+ * Returns: (transfer none): the #GtkLinkButton or %NULL
  * 
  * Since: 7.2.8
  */

@@ -1976,6 +1976,10 @@ ags_automation_edit_gesture_click_pressed_callback(GtkGestureClick *event_contro
   gboolean replace_notebook;
   gboolean selected_position_cursor, selected_edit, selected_clear, selected_select;
   
+  if((AGS_AUTOMATION_EDIT_BUTTON_1 & (automation_edit->button_mask)) != 0){
+    return(FALSE);
+  }
+  
   application_context = ags_application_context_get_instance();
 
   selected_position_cursor = FALSE;
@@ -2058,7 +2062,7 @@ ags_automation_edit_gesture_click_pressed_callback(GtkGestureClick *event_contro
   gtk_widget_queue_draw((GtkWidget *) automation_edit);
 
   if(machine != NULL){    
-    automation_edit->button_mask = AGS_AUTOMATION_EDIT_BUTTON_1;
+    automation_edit->button_mask |= AGS_AUTOMATION_EDIT_BUTTON_1;
     
     if(selected_position_cursor){
       automation_edit->mode = AGS_AUTOMATION_EDIT_POSITION_CURSOR;
@@ -2539,6 +2543,10 @@ ags_automation_edit_gesture_click_released_callback(GtkGestureClick *event_contr
   AgsMachine *machine;
 
   AgsApplicationContext *application_context;
+
+  if((AGS_AUTOMATION_EDIT_BUTTON_1 & (automation_edit->button_mask)) == 0){
+    return(FALSE);
+  }
 
   application_context = ags_application_context_get_instance();
   

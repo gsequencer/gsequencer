@@ -1347,6 +1347,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_fluid_interpolate_none_util.h \
 	ags/audio/ags_fluid_util.h \
 	ags/audio/ags_fm_synth_util.h \
+	ags/audio/ags_seq_synth_util.h \
 	ags/audio/ags_star_synth_util.h \
 	ags/audio/ags_fourier_transform_util.h \
 	ags/audio/ags_frequency_aliase_util.h \
@@ -1451,6 +1452,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_fluid_interpolate_none_util.c \
 	ags/audio/ags_fluid_util.c \
 	ags/audio/ags_fm_synth_util.c \
+	ags/audio/ags_seq_synth_util.c \
 	ags/audio/ags_star_synth_util.c \
 	ags/audio/ags_fourier_transform_util.c \
 	ags/audio/ags_frequency_aliase_util.c \
@@ -2138,6 +2140,12 @@ libags_audio_fx_h_sources = \
 	ags/audio/fx/ags_fx_star_synth_channel_processor.h \
 	ags/audio/fx/ags_fx_star_synth_recycling.h \
 	ags/audio/fx/ags_fx_star_synth_audio_signal.h \
+	ags/audio/fx/ags_fx_seq_synth_audio.h \
+	ags/audio/fx/ags_fx_seq_synth_audio_processor.h \
+	ags/audio/fx/ags_fx_seq_synth_channel.h \
+	ags/audio/fx/ags_fx_seq_synth_channel_processor.h \
+	ags/audio/fx/ags_fx_seq_synth_recycling.h \
+	ags/audio/fx/ags_fx_seq_synth_audio_signal.h \
 	ags/audio/fx/ags_fx_ladspa_audio.h \
 	ags/audio/fx/ags_fx_ladspa_audio_processor.h \
 	ags/audio/fx/ags_fx_ladspa_channel.h \
@@ -2299,6 +2307,12 @@ libags_audio_fx_c_sources = \
 	ags/audio/fx/ags_fx_star_synth_channel_processor.c \
 	ags/audio/fx/ags_fx_star_synth_recycling.c \
 	ags/audio/fx/ags_fx_star_synth_audio_signal.c \
+	ags/audio/fx/ags_fx_seq_synth_audio.c \
+	ags/audio/fx/ags_fx_seq_synth_audio_processor.c \
+	ags/audio/fx/ags_fx_seq_synth_channel.c \
+	ags/audio/fx/ags_fx_seq_synth_channel_processor.c \
+	ags/audio/fx/ags_fx_seq_synth_recycling.c \
+	ags/audio/fx/ags_fx_seq_synth_audio_signal.c \
 	ags/audio/fx/ags_fx_ladspa_audio.c \
 	ags/audio/fx/ags_fx_ladspa_audio_processor.c \
 	ags/audio/fx/ags_fx_ladspa_channel.c \
@@ -2512,6 +2526,7 @@ libags_gui_h_sources = \
 	ags/widget/ags_expander.h \
 	ags/widget/ags_expander_set.h \
 	ags/widget/ags_file_dialog.h \
+	ags/widget/ags_file_entry.h \
 	ags/widget/ags_file_widget.h \
 	ags/widget/ags_icon_link.h \
 	ags/widget/ags_indicator.h \
@@ -2541,6 +2556,7 @@ libags_gui_c_sources = \
 	ags/widget/ags_expander.c \
 	ags/widget/ags_expander_set.c \
 	ags/widget/ags_file_dialog.c \
+	ags/widget/ags_file_entry.c \
 	ags/widget/ags_file_widget.c \
 	ags/widget/ags_icon_link.c \
 	ags/widget/ags_indicator.c \
@@ -3000,7 +3016,9 @@ libgsequencer_machine_h_sources = \
 	ags/app/machine/ags_spectrometer.h \
 	ags/app/machine/ags_spectrometer_callbacks.h \
 	ags/app/machine/ags_stargazer_synth.h \
-	ags/app/machine/ags_stargazer_synth_callbacks.h
+	ags/app/machine/ags_stargazer_synth_callbacks.h \
+	ags/app/machine/ags_quantum_synth.h \
+	ags/app/machine/ags_quantum_synth_callbacks.h
 
 if WITH_LIBINSTPATCH
 libgsequencer_machine_h_sources += \
@@ -3129,7 +3147,9 @@ libgsequencer_machine_c_sources = \
 	ags/app/machine/ags_spectrometer.c \
 	ags/app/machine/ags_spectrometer_callbacks.c \
 	ags/app/machine/ags_stargazer_synth.c \
-	ags/app/machine/ags_stargazer_synth_callbacks.c
+	ags/app/machine/ags_stargazer_synth_callbacks.c \
+	ags/app/machine/ags_quantum_synth.c \
+	ags/app/machine/ags_quantum_synth_callbacks.c
 
 if WITH_LIBINSTPATCH
 libgsequencer_machine_c_sources += \

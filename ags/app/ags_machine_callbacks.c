@@ -1337,13 +1337,15 @@ ags_machine_open_response_callback(AgsPCMFileDialog *pcm_file_dialog, gint respo
 }
 
 void
-ags_machine_play_callback(GtkWidget *toggle_button, AgsMachine *machine)
+ags_machine_play_callback(GObject *gobject,
+			  GParamSpec *pspec,
+			  AgsMachine *machine)
 {
   if(machine == NULL){
     return;
   }
 
-  if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(toggle_button))){
+  if(gtk_toggle_button_get_active(machine->play)){
     if((AGS_MACHINE_BLOCK_PLAY & (machine->flags)) != 0){      
       return;
     }

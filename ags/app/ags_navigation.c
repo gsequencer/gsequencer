@@ -405,6 +405,8 @@ ags_navigation_init(AgsNavigation *navigation)
 
   g_signal_connect(application_context, "update-ui",
 		   G_CALLBACK(ags_navigation_update_ui_callback), navigation);
+
+  navigation->play_time = -1;
 }
 
 void

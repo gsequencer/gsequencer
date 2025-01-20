@@ -1214,7 +1214,7 @@ ags_machine_connect(AgsConnectable *connectable)
   }
   
   if(machine->play != NULL){
-    g_signal_connect(G_OBJECT(machine->play), "clicked",
+    g_signal_connect(G_OBJECT(machine->play), "notify::active",
 		     G_CALLBACK(ags_machine_play_callback), (gpointer) machine);
   }
 
@@ -1275,6 +1275,14 @@ ags_machine_disconnect(AgsConnectable *connectable)
 
   if(machine->bridge != NULL){
     ags_connectable_disconnect(AGS_CONNECTABLE(machine->bridge));
+  }
+
+  if(machine->play != NULL){
+    g_object_disconnect(G_OBJECT(machine->play),
+			"any_signal::notify::active",
+			G_CALLBACK(ags_machine_play_callback),
+			(gpointer) machine,
+			NULL);
   }
 
   /* AgsPad - input */

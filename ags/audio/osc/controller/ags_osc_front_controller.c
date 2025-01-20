@@ -358,10 +358,14 @@ ags_osc_front_controller_delegate_thread(void *ptr)
   osc_buffer_util.major = 1;
   osc_buffer_util.minor = 0;
 
+  osc_server = NULL;
+  
   g_object_get(osc_front_controller,
 	       "osc-server", &osc_server,
 	       NULL);
 
+  start_controller = NULL;
+  
   g_object_get(osc_server,
 	       "controller", &start_controller,
 	       NULL);

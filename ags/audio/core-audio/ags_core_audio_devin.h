@@ -130,7 +130,7 @@ struct _AgsCoreAudioDevin
 
   AgsCoreAudioDevinFlags flags;
   AgsConnectableFlags connectable_flags;
-  AgsCoreAudioDevinSyncFlags sync_flags;
+  _Atomic AgsCoreAudioDevinSyncFlags sync_flags;
   
   GRecMutex obj_mutex;
 

@@ -331,7 +331,7 @@ ags_osc_meter_controller_dispose(GObject *gobject)
   
   if(osc_meter_controller->monitor != NULL){
     g_list_free_full(osc_meter_controller->monitor,
-		     (GDestroyNotify) ags_osc_meter_controller_monitor_free);
+		     (GDestroyNotify) ags_osc_meter_controller_monitor_unref);
 
     osc_meter_controller->monitor = NULL;
   }
@@ -349,7 +349,7 @@ ags_osc_meter_controller_finalize(GObject *gobject)
   
   if(osc_meter_controller->monitor != NULL){
     g_list_free_full(osc_meter_controller->monitor,
-		     (GDestroyNotify) ags_osc_meter_controller_monitor_free);
+		     (GDestroyNotify) ags_osc_meter_controller_monitor_unref);
   }
   
   /* call parent */
@@ -377,11 +377,9 @@ ags_osc_meter_controller_monitor_timeout(AgsOscMeterController *osc_meter_contro
   monitor = 
     start_monitor = g_list_copy(osc_meter_controller->monitor);
 
-  while(monitor != NULL){
-    ags_osc_meter_controller_monitor_ref(monitor->data);
-      
-    monitor = monitor->next;
-  }
+  g_list_foreach(start_monitor,
+		 (GFunc) ags_osc_meter_controller_monitor_ref,
+		 NULL);
     
   g_rec_mutex_unlock(osc_controller_mutex);
 
@@ -405,9 +403,16 @@ ags_osc_meter_controller_monitor_timeout(AgsOscMeterController *osc_meter_contro
     guint packet_size;
       
     GRecMutex *port_mutex;
-      
+
+    if(monitor->data == NULL){
+      /* iterate */
+      monitor = monitor->next;
+
+      continue;
+    }
+    
     g_rec_mutex_lock(osc_controller_mutex);
-      
+    
     osc_connection = AGS_OSC_METER_CONTROLLER_MONITOR(monitor->data)->osc_connection;
 
     path = AGS_OSC_METER_CONTROLLER_MONITOR(monitor->data)->path;
@@ -415,6 +420,8 @@ ags_osc_meter_controller_monitor_timeout(AgsOscMeterController *osc_meter_contro
 
     g_rec_mutex_unlock(osc_controller_mutex);
 
+    //    g_message("monitor port 0x%x -> 0x%x", monitor->data, port);
+    
     /*  */
     osc_response = ags_osc_response_new();
       
@@ -464,7 +471,6 @@ ags_osc_meter_controller_monitor_timeout(AgsOscMeterController *osc_meter_contro
 	ags_osc_connection_write_response(osc_connection,
 					  (GObject *) osc_response);
 	    
-	g_object_run_dispose((GObject *) osc_response);
 	g_object_unref(osc_response);
 	  
 	/* iterate */
@@ -501,7 +507,6 @@ ags_osc_meter_controller_monitor_timeout(AgsOscMeterController *osc_meter_contro
 	  ags_osc_connection_write_response(osc_connection,
 					    (GObject *) osc_response);
 	    
-	  g_object_run_dispose((GObject *) osc_response);
 	  g_object_unref(osc_response);
 
 	  /* iterate */
@@ -532,7 +537,6 @@ ags_osc_meter_controller_monitor_timeout(AgsOscMeterController *osc_meter_contro
 	  ags_osc_connection_write_response(osc_connection,
 					    (GObject *) osc_response);
 	    
-	  g_object_run_dispose((GObject *) osc_response);
 	  g_object_unref(osc_response);
 	    
 	  /* iterate */
@@ -596,7 +600,6 @@ ags_osc_meter_controller_monitor_timeout(AgsOscMeterController *osc_meter_contro
 	  ags_osc_connection_write_response(osc_connection,
 					    (GObject *) osc_response);
 	    
-	  g_object_run_dispose((GObject *) osc_response);
 	  g_object_unref(osc_response);
 	    
 	  /* iterate */
@@ -638,7 +641,6 @@ ags_osc_meter_controller_monitor_timeout(AgsOscMeterController *osc_meter_contro
     /* write response */
     ags_osc_connection_write_response(osc_connection,
 				      (GObject *) osc_response);
-    g_object_run_dispose((GObject *) osc_response);
     g_object_unref(osc_response);
       
     /* iterate */
@@ -762,13 +764,14 @@ ags_osc_meter_controller_monitor_alloc()
 {
   AgsOscMeterControllerMonitor *monitor;
 
-  monitor = (AgsOscMeterControllerMonitor *) malloc(sizeof(AgsOscMeterControllerMonitor));
+  monitor = (AgsOscMeterControllerMonitor *) g_malloc(sizeof(AgsOscMeterControllerMonitor));
 
   ags_atomic_int_set(&(monitor->ref_count), 0);
   
   monitor->osc_connection = NULL;
+  
+  monitor->path = NULL;
 
-  monitor->path =  NULL;
   monitor->port = NULL;
 
   return(monitor);
@@ -789,6 +792,8 @@ ags_osc_meter_controller_monitor_free(AgsOscMeterControllerMonitor *monitor)
     return;
   }
 
+  //  g_message("free");
+  
   if(monitor->osc_connection != NULL){
     g_object_unref(monitor->osc_connection);
   }
@@ -799,7 +804,7 @@ ags_osc_meter_controller_monitor_free(AgsOscMeterControllerMonitor *monitor)
     g_object_unref(monitor->port);
   }
   
-  free(monitor);
+  g_free(monitor);
 }
 
 /**
@@ -818,6 +823,8 @@ ags_osc_meter_controller_monitor_ref(AgsOscMeterControllerMonitor *monitor)
   }
   
   ags_atomic_int_increment(&(monitor->ref_count));
+
+  //  g_message("ref %d", monitor->ref_count);
 }
 
 /**
@@ -836,8 +843,11 @@ ags_osc_meter_controller_monitor_unref(AgsOscMeterControllerMonitor *monitor)
     return;
   }
   
-  if(ags_atomic_int_decrement(&(monitor->ref_count)) ||
-     ags_atomic_int_get(&(monitor->ref_count)) < 0){
+  ags_atomic_int_decrement(&(monitor->ref_count));
+
+  //  g_message("unref %d", monitor->ref_count);
+
+  if(ags_atomic_int_get(&(monitor->ref_count)) < 0){
     ags_osc_meter_controller_monitor_free(monitor);
   }
 }
@@ -920,7 +930,8 @@ ags_osc_meter_controller_add_monitor(AgsOscMeterController *osc_meter_controller
 {
   GRecMutex *osc_controller_mutex;
 
-  if(!AGS_IS_OSC_METER_CONTROLLER(osc_meter_controller)){
+  if(!AGS_IS_OSC_METER_CONTROLLER(osc_meter_controller) ||
+     monitor == NULL){
     return;
   }
 
@@ -933,7 +944,8 @@ ags_osc_meter_controller_add_monitor(AgsOscMeterController *osc_meter_controller
   if(g_list_find(osc_meter_controller->monitor, monitor) == NULL){
     ags_osc_meter_controller_monitor_ref(monitor);
     
-    osc_meter_controller->monitor = g_list_prepend(osc_meter_controller->monitor, monitor);
+    osc_meter_controller->monitor = g_list_prepend(osc_meter_controller->monitor,
+						   monitor);
   }
   
   g_rec_mutex_unlock(osc_controller_mutex);
@@ -954,7 +966,8 @@ ags_osc_meter_controller_remove_monitor(AgsOscMeterController *osc_meter_control
 {
   GRecMutex *osc_controller_mutex;
 
-  if(!AGS_IS_OSC_METER_CONTROLLER(osc_meter_controller)){
+  if(!AGS_IS_OSC_METER_CONTROLLER(osc_meter_controller) ||
+     monitor == NULL){
     return;
   }
 
@@ -965,7 +978,8 @@ ags_osc_meter_controller_remove_monitor(AgsOscMeterController *osc_meter_control
   g_rec_mutex_lock(osc_controller_mutex);
 
   if(g_list_find(osc_meter_controller->monitor, monitor) != NULL){
-    osc_meter_controller->monitor = g_list_remove(osc_meter_controller->monitor, monitor);
+    osc_meter_controller->monitor = g_list_remove(osc_meter_controller->monitor,
+						  monitor);
 
     ags_osc_meter_controller_monitor_unref(monitor);
   }
@@ -1540,6 +1554,9 @@ ags_osc_meter_controller_monitor_meter_audio(AgsOscMeterController *osc_meter_co
     }
 
     recall_type = g_type_from_name(type_name);
+
+    start_play = NULL;
+    start_recall = NULL;
     
     g_object_get(audio,
 		 "play", &start_play,
@@ -1985,7 +2002,8 @@ ags_osc_meter_controller_monitor_meter_channel(AgsOscMeterController *osc_meter_
   static const size_t max_matches = 3;
   static const size_t index_max_matches = 2;
   
-  if(!AGS_IS_CHANNEL(channel)){
+  if(channel == NULL ||
+     !AGS_IS_CHANNEL(channel)){
     return(NULL);
   }
   
@@ -2032,7 +2050,10 @@ ags_osc_meter_controller_monitor_meter_channel(AgsOscMeterController *osc_meter_
   }
 
   recall_type = g_type_from_name(type_name);
-    
+
+  start_play = NULL;
+  start_recall = NULL;
+  
   g_object_get(channel,
 	       "play", &start_play,
 	       "recall", &start_recall,
@@ -2401,11 +2422,6 @@ ags_osc_meter_controller_monitor_meter_channel(AgsOscMeterController *osc_meter_
 	recall = recall->next;
       }
     }
-
-    g_list_free_full(start_play,
-		     g_object_unref);
-    g_list_free_full(start_recall,
-		     g_object_unref);
   }else{
     osc_response = ags_osc_response_new();
     start_response = g_list_prepend(start_response,
@@ -2418,8 +2434,18 @@ ags_osc_meter_controller_monitor_meter_channel(AgsOscMeterController *osc_meter_
 		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
 		 NULL);
 
+    g_list_free_full(start_play,
+		     g_object_unref);
+    g_list_free_full(start_recall,
+		     g_object_unref);
+
     return(start_response);
   }
+
+  g_list_free_full(start_play,
+		   g_object_unref);
+  g_list_free_full(start_recall,
+		   g_object_unref);
 
   return(start_response);
 }
@@ -2446,7 +2472,8 @@ ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_c
   guint real_packet_size;
   guint packet_size;
   
-  if(!AGS_IS_RECALL(recall)){
+  if(recall == NULL ||
+     !AGS_IS_RECALL(recall)){
     return(NULL);
   }
 
@@ -2531,6 +2558,8 @@ ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_c
     }
 
     g_mutex_unlock(&regex_mutex);
+
+    start_port = NULL;
     
     g_object_get(recall,
 		 "port", &start_port,
@@ -2693,6 +2722,8 @@ ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_c
 	
 	return(start_response);
       }
+
+      port = start_port;
       
       while(port != NULL){
 	GList *retval;
@@ -2765,10 +2796,7 @@ ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_c
 								    message, message_size,
 								    type_tag,
 								    path, path_offset);
-    }else{
-      g_list_free_full(start_port,
-		       g_object_unref);
-      
+    }else{      
       osc_response = ags_osc_response_new();
       start_response = g_list_prepend(start_response,
 				      osc_response);
@@ -2789,7 +2817,7 @@ ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_c
     }    
 
     g_list_free_full(start_port,
-		     g_object_unref);
+    		     g_object_unref);
   }else{
     osc_response = ags_osc_response_new();
     start_response = g_list_prepend(start_response,
@@ -2842,7 +2870,14 @@ ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_con
   gint nth_recall;
   gint nth_port;
   
-  if(!AGS_IS_PORT(port)){
+  if(osc_meter_controller == NULL ||
+     !AGS_IS_OSC_METER_CONTROLLER(osc_meter_controller) ||
+     osc_connection == NULL ||
+     !AGS_IS_OSC_CONNECTION(osc_connection) ||
+     parent == NULL ||
+     !AGS_IS_RECALL(parent) ||
+     port == NULL ||
+     !AGS_IS_PORT(port)){
     return(NULL);
   }
 
@@ -2851,15 +2886,15 @@ ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_con
   application_context = ags_application_context_get_instance();
 
   nth_recall = 0;
+    
+  audio = NULL;
+  channel = NULL;
   
   if(!strncmp(path + path_offset,
 	      ":",
 	      1)){
     guint length;
     guint i;
-    
-    audio = NULL;
-    channel = NULL;
     
     current_path = NULL;    
 
@@ -2873,6 +2908,8 @@ ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_con
 		   "line", &nth_channel,
 		   NULL);      
 
+      start_list = NULL;
+      
       g_object_get(channel,
 		   "play", &start_list,
 		   NULL);
@@ -2899,6 +2936,8 @@ ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_con
       if(list != NULL){
 	nth_recall = i;
       }else{
+	start_list = NULL;
+      
 	g_object_get(channel,
 		     "recall", &start_list,
 		     NULL);
@@ -2921,7 +2960,9 @@ ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_con
 	g_list_free_full(start_list,
 			 g_object_unref);
       
-	nth_recall = i;
+	if(list != NULL){
+	  nth_recall = i;
+	}
       }
 
       g_object_unref(channel);
@@ -2932,6 +2973,8 @@ ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_con
 		   "audio", &audio,
 		   NULL);
 
+      start_list = NULL;
+      
       g_object_get(audio,
 		   "play", &start_list,
 		   NULL);
@@ -2958,6 +3001,8 @@ ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_con
       if(list != NULL){
 	nth_recall = i;
       }else{
+	start_list = NULL;
+      
 	g_object_get(channel,
 		     "recall", &start_list,
 		     NULL);
@@ -2980,12 +3025,20 @@ ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_con
 	g_list_free_full(start_list,
 			 g_object_unref);
       
-	nth_recall = i;
+	if(list != NULL){
+	  nth_recall = i;
+	}
       }
 
       g_object_unref(audio);
+    }else{
+      g_warning("unexpected recall type");
+      
+      return(NULL);
     }
 
+    start_list = NULL;
+    
     g_object_get(parent,
 		 "port", &start_list,
 		 NULL);
@@ -3066,21 +3119,26 @@ ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_con
 						  osc_connection,
 						  port)){
       AgsOscMeterControllerMonitor *monitor;
-      
-      /* allocate monitor */
-      monitor = ags_osc_meter_controller_monitor_alloc();
 
-      monitor->osc_connection = osc_connection;
-      g_object_ref(osc_connection);
+      if(osc_connection != NULL &&
+	 port != NULL){
+	/* allocate monitor */
+	monitor = ags_osc_meter_controller_monitor_alloc();
 
-      monitor->path = g_strdup(current_path);
+	monitor->osc_connection = osc_connection;
+	g_object_ref(osc_connection);
 
-      monitor->port = port;
-      g_object_ref(port);
+	monitor->path = g_strdup(current_path);
 
-      /* add monitor */
-      ags_osc_meter_controller_add_monitor(osc_meter_controller,
-					   monitor);
+	monitor->port = port;
+	g_object_ref(port);
+
+	//	g_message("add port 0x%x -> 0x%x", monitor, port);
+
+	/* add monitor */
+	ags_osc_meter_controller_add_monitor(osc_meter_controller,
+					     monitor);
+      }
     }
 
     g_free(current_path);
@@ -4411,6 +4469,7 @@ ags_osc_meter_controller_expand_path_recall(AgsRecall *recall,
   static const size_t index_max_matches = 3;
   
   if(recall == NULL ||
+     !AGS_IS_RECALL(recall) ||
      path == NULL){
     return;
   }
@@ -4439,6 +4498,8 @@ ags_osc_meter_controller_expand_path_recall(AgsRecall *recall,
     prefix = g_strndup(path,
 		       path_offset);
   }
+
+  start_port = NULL;
   
   g_object_get(recall,
 	       "port", &start_port,
@@ -4896,7 +4957,8 @@ ags_osc_meter_controller_monitor_meter_disable(AgsOscMeterController *osc_meter_
 	monitor = osc_meter_controller->monitor;
 	current = NULL;
 
-	while((monitor = ags_osc_meter_controller_monitor_find_path(monitor,
+	while(monitor != NULL &&
+	      (monitor = ags_osc_meter_controller_monitor_find_path(monitor,
 								    iter[0])) != NULL){
 	  if(AGS_OSC_METER_CONTROLLER_MONITOR(monitor->data)->osc_connection == osc_connection){
 	    current = monitor->data;
