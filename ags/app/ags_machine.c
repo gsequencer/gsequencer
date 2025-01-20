@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1530,6 +1530,7 @@ ags_machine_reset_pattern_envelope(AgsMachine *machine)
     GValue sustain = G_VALUE_INIT;
     GValue release = G_VALUE_INIT;
     GValue ratio = G_VALUE_INIT;
+    GValue envelope_lfo = G_VALUE_INIT;
 
     GError *error;
     
@@ -1630,6 +1631,15 @@ ags_machine_reset_pattern_envelope(AgsMachine *machine)
 	g_error_free(error);
       }
 
+      error = NULL;
+      ags_preset_get_parameter(current_preset,
+			       "envelope-lfo", &envelope_lfo,
+			       &error);
+      
+      if(error != NULL){
+	g_error_free(error);
+      }
+
       if(success){
 	guint i, i_start, i_stop;
 	guint j, j_start, j_stop;
@@ -1670,6 +1680,17 @@ ags_machine_reset_pattern_envelope(AgsMachine *machine)
 					      k);
 		  
 		  if(note != NULL){
+		    ags_note_set_flags(note,
+				       AGS_NOTE_ENVELOPE);
+
+		    ags_note_unset_flags(note,
+					 AGS_NOTE_ENVELOPE_LFO);
+
+		    if(g_value_get_boolean(&envelope_lfo)){
+		      ags_note_set_flags(note,
+					 AGS_NOTE_ENVELOPE_LFO);
+		    }
+		    
 		    g_object_set(note,
 				 "attack", g_value_get_boxed(&attack),
 				 "decay", g_value_get_boxed(&decay),
@@ -1677,9 +1698,6 @@ ags_machine_reset_pattern_envelope(AgsMachine *machine)
 				 "release", g_value_get_boxed(&release),
 				 "ratio", g_value_get_boxed(&ratio),
 				 NULL);
-		    
-		    ags_note_set_flags(note,
-				       AGS_NOTE_ENVELOPE);
 
 		    g_object_unref(note);
 		  }

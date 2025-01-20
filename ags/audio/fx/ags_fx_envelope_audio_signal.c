@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -552,7 +552,13 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
 	    fx_envelope_audio_signal->envelope_util.buffer_length = current_frame_count;
 
 	    fx_envelope_audio_signal->envelope_util.offset = envelope_start_frame;
-	
+
+	    fx_envelope_audio_signal->envelope_util.lfo_enabled = FALSE;
+	    
+	    if(ags_note_test_flags(AGS_NOTE(note->data), AGS_NOTE_ENVELOPE_LFO)){
+	      fx_envelope_audio_signal->envelope_util.lfo_enabled = TRUE;
+	    }
+	    
 	    ags_envelope_util_compute(&(fx_envelope_audio_signal->envelope_util));
 
 	    g_rec_mutex_unlock(stream_mutex);
@@ -612,6 +618,12 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
 	
 	    fx_envelope_audio_signal->envelope_util.offset = envelope_start_frame;
 
+	    fx_envelope_audio_signal->envelope_util.lfo_enabled = FALSE;
+	    
+	    if(ags_note_test_flags(AGS_NOTE(note->data), AGS_NOTE_ENVELOPE_LFO)){
+	      fx_envelope_audio_signal->envelope_util.lfo_enabled = TRUE;
+	    }
+
 	    ags_envelope_util_compute(&(fx_envelope_audio_signal->envelope_util));
 	    
 	    g_rec_mutex_unlock(stream_mutex);
@@ -670,6 +682,12 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
 	    fx_envelope_audio_signal->envelope_util.buffer_length = current_frame_count;
 	
 	    fx_envelope_audio_signal->envelope_util.offset = envelope_start_frame;
+
+	    fx_envelope_audio_signal->envelope_util.lfo_enabled = FALSE;
+	    
+	    if(ags_note_test_flags(AGS_NOTE(note->data), AGS_NOTE_ENVELOPE_LFO)){
+	      fx_envelope_audio_signal->envelope_util.lfo_enabled = TRUE;
+	    }
 
 	    ags_envelope_util_compute(&(fx_envelope_audio_signal->envelope_util));
 
@@ -733,6 +751,12 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
 	    fx_envelope_audio_signal->envelope_util.buffer_length = current_frame_count;
 	
 	    fx_envelope_audio_signal->envelope_util.offset = envelope_start_frame;
+
+	    fx_envelope_audio_signal->envelope_util.lfo_enabled = FALSE;
+	    
+	    if(ags_note_test_flags(AGS_NOTE(note->data), AGS_NOTE_ENVELOPE_LFO)){
+	      fx_envelope_audio_signal->envelope_util.lfo_enabled = TRUE;
+	    }
 
 	    ags_envelope_util_compute(&(fx_envelope_audio_signal->envelope_util));
 	    

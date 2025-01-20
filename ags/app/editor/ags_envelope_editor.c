@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -615,9 +615,17 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 
   gtk_adjustment_set_value(envelope_editor->ratio->adjustment,
 			   1.0);
-
+  
   gtk_box_append(control,
 		 (GtkWidget *) envelope_editor->ratio);
+
+  /* enable LFO */
+  envelope_editor->enable_envelope_lfo = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enable envelope LFO"));
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) envelope_editor->enable_envelope_lfo,
+		  0, 5,
+		  2, 1);
 }
 
 gboolean
@@ -868,6 +876,17 @@ ags_envelope_editor_apply(AgsApplicable *applicable)
       note_mutex = AGS_NOTE_GET_OBJ_MUTEX(current_note);
 
       /* apply */
+      ags_note_set_flags(current_note,
+			 AGS_NOTE_ENVELOPE);
+
+      ags_note_unset_flags(current_note,
+			   AGS_NOTE_ENVELOPE_LFO);
+
+      if(gtk_check_button_get_active(envelope_editor->enable_envelope_lfo)){
+	ags_note_set_flags(current_note,
+			   AGS_NOTE_ENVELOPE_LFO);
+      }
+      
       g_rec_mutex_lock(note_mutex);
 
       current_note->flags |= AGS_NOTE_ENVELOPE;

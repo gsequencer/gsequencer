@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -54,6 +54,7 @@ typedef struct _AgsNoteClass AgsNoteClass;
  * @AGS_NOTE_IS_SELECTED: is selected
  * @AGS_NOTE_FEED: feed note
  * @AGS_NOTE_ENVELOPE: do envelope
+ * @AGS_NOTE_ENVELOPE_LFO: do envelope
  *
  * Enum values to control the behavior or indicate internal state of #AgsNote by
  * enable/disable as flags.
@@ -66,6 +67,7 @@ typedef enum{
   AGS_NOTE_IS_SELECTED     = 1 <<  4,
   AGS_NOTE_FEED            = 1 <<  5,
   AGS_NOTE_ENVELOPE        = 1 <<  6,
+  AGS_NOTE_ENVELOPE_LFO    = 1 <<  7,
 }AgsNoteFlags;
 
 struct _AgsNote
@@ -112,6 +114,7 @@ struct _AgsNoteClass
 };
 
 GType ags_note_get_type();
+GType ags_note_flags_get_type();
 
 GRecMutex* ags_note_get_obj_mutex(AgsNote *note);
 
