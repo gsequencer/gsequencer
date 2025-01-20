@@ -284,6 +284,7 @@ ags_lv2_conversion_set_flags
 ags_lv2_conversion_unset_flags
 ags_lv2_conversion_new
 ags_note_get_type
+ags_note_flags_get_type
 ags_note_get_obj_mutex
 ags_note_test_flags
 ags_note_set_flags

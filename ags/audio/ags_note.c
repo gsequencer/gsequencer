@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -107,6 +107,32 @@ ags_note_get_type()
   }
 
   return(g_define_type_id__static);
+}
+
+GType
+ags_note_flags_get_type()
+{
+  static gsize g_flags_type_id__static;
+
+  if(g_once_init_enter(&g_flags_type_id__static)){
+    static const GFlagsValue values[] = {
+      { AGS_NOTE_GUI, "AGS_NOTE_GUI", "note-gui" },
+      { AGS_NOTE_RUNTIME, "AGS_NOTE_RUNTIME", "note-runtime" },
+      { AGS_NOTE_HUMAN_READABLE, "AGS_NOTE_HUMAN_READABLE", "note-human-readable" },
+      { AGS_NOTE_DEFAULT_LENGTH, "AGS_NOTE_DEFAULT_LENGTH", "note-default-length" },
+      { AGS_NOTE_IS_SELECTED, "AGS_NOTE_IS_SELECTED", "note-is-selected" },
+      { AGS_NOTE_FEED, "AGS_NOTE_FEED", "note-feed" },
+      { AGS_NOTE_ENVELOPE, "AGS_NOTE_ENVELOPE", "note-envelope" },
+      { AGS_NOTE_ENVELOPE_LFO, "AGS_NOTE_ENVELOPE_LFO", "note-envelope-lfo" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsNoteFlags"), values);
+
+    g_once_init_leave(&g_flags_type_id__static, g_flags_type_id);
+  }
+  
+  return(g_flags_type_id__static);
 }
 
 void 

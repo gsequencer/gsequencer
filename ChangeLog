@@ -1,6 +1,10 @@
 ags (7.6.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented enable envelope LFO button in UI
+	* implemented AGS_NOTE_ENVELOPE_LFO flag
+	* implemented ags_note_flags_get_type()
+	* implemented enabling envelope LFO in ags-fx-envelope
 	* reverted ags_check_system_functional_programs_ui
 
 ags (7.5.5)

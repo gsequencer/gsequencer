@@ -824,6 +824,59 @@ ags_pattern_envelope_ratio_callback(GtkWidget *dial,
 }
 
 void
+ags_pattern_envelope_enable_envelope_lfo_callback(GObject *gobject,
+						  GParamSpec *pspec,				    
+						  AgsPatternEnvelope *pattern_envelope)
+{
+  AgsPreset *preset;
+  
+  AgsComplex *val;  
+
+  gboolean enable_envelope_lfo;
+
+  GValue value = G_VALUE_INIT;
+
+  GError *error;
+  
+  if((AGS_PATTERN_ENVELOPE_NO_UPDATE & (pattern_envelope->flags)) != 0){
+    return;
+  }
+  
+  /* get preset */
+  preset = ags_pattern_envelope_get_active_preset(pattern_envelope);
+  
+  if(preset == NULL){
+    return;
+  }
+  
+  /* get value and update preset */
+  enable_envelope_lfo = gtk_check_button_get_active((GtkCheckButton *) gobject);
+
+  g_value_init(&value,
+	       G_TYPE_BOOLEAN);
+
+  error = NULL;
+  ags_preset_get_parameter(preset,
+			   "enable-envelope-lfo", &value,
+			   &error);
+
+  if(error != NULL){
+    g_message("%s", error->message);
+
+    g_error_free(error);
+    
+    return;
+  }
+  
+  g_value_set_boolean(&value,
+		      enable_envelope_lfo);
+
+  /* add parameter */
+  ags_preset_add_parameter(preset,
+			   "enable-envelope-lfo", &value);
+}
+
+void
 ags_pattern_envelope_preset_move_up_callback(GtkWidget *button,
 					     AgsPatternEnvelope *pattern_envelope)
 {

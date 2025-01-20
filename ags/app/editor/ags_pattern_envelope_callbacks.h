@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -79,6 +79,10 @@ void ags_pattern_envelope_release_y_callback(GtkWidget *range,
 
 void ags_pattern_envelope_ratio_callback(GtkWidget *range,
 					 AgsPatternEnvelope *pattern_envelope);
+
+void ags_pattern_envelope_enable_envelope_lfo_callback(GObject *gobject,
+						       GParamSpec *pspec,				    
+						       AgsPatternEnvelope *pattern_envelope);
 
 /* actions */
 void ags_pattern_envelope_preset_move_up_callback(GtkWidget *button,

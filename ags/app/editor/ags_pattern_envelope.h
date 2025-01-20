@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -38,8 +38,8 @@ G_BEGIN_DECLS
 #define AGS_IS_PATTERN_ENVELOPE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_PATTERN_ENVELOPE))
 #define AGS_PATTERN_ENVELOPE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_PATTERN_ENVELOPE, AgsPatternEnvelopeClass))
 
-#define AGS_PATTERN_ENVELOPE_DEFAULT_VERSION "4.0.0"
-#define AGS_PATTERN_ENVELOPE_DEFAULT_BUILD_ID "Tue Mar 01 12:27:51 UTC 2022"
+#define AGS_PATTERN_ENVELOPE_DEFAULT_VERSION "7.6.0"
+#define AGS_PATTERN_ENVELOPE_DEFAULT_BUILD_ID "Mon Jan 20 21:04:41 UTC 2025"
 
 #define AGS_PATTERN_ENVELOPE_SCALE_WIDTH (250)
 
@@ -101,6 +101,8 @@ struct _AgsPatternEnvelope
   AgsDial *release_y;
 
   AgsDial *ratio;
+
+  GtkCheckButton *enable_envelope_lfo;
 
   GtkDialog *rename;
   

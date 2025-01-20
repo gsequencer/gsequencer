@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -796,6 +796,14 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   gtk_box_append(control,
 		 (GtkWidget *) pattern_envelope->ratio);
 
+  /* enable LFO */
+  pattern_envelope->enable_envelope_lfo = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enable envelope LFO"));
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) pattern_envelope->enable_envelope_lfo,
+		  0, 5,
+		  2, 1);
+
   /* rename dialog */
   pattern_envelope->rename = NULL;
   
@@ -913,6 +921,10 @@ ags_pattern_envelope_connect(AgsConnectable *connectable)
   /* ratio y */
   g_signal_connect((GObject *) pattern_envelope->ratio, "value-changed",
 		   G_CALLBACK(ags_pattern_envelope_ratio_callback), (gpointer) pattern_envelope);
+
+  /* envelope LFO */
+  g_signal_connect((GObject *) pattern_envelope->enable_envelope_lfo, "notify::active",
+		   G_CALLBACK(ags_pattern_envelope_enable_envelope_lfo_callback), (gpointer) pattern_envelope);
   
   /* move up/down preset */
   g_signal_connect((GObject *) pattern_envelope->move_up, "clicked",
@@ -1465,6 +1477,15 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
 
   g_list_free_full(start_preset,
 		   g_object_unref);
+
+  /* preset - envlope LFO */  
+  g_value_init(&value,
+	       G_TYPE_BOOLEAN);
+  g_value_set_boolean(&value,
+		      FALSE);
+
+  ags_preset_add_parameter(preset,
+			   "enable-envelope-lfo", &value);
 }
 
 /**
@@ -1535,6 +1556,7 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
   guint audio_channel_start, audio_channel_end;
   guint pad_start, pad_end;
   guint x_start, x_end;
+  gboolean enable_envelope_lfo;
   
   GValue value = G_VALUE_INIT;
 
@@ -1705,6 +1727,25 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
   gtk_adjustment_set_value(pattern_envelope->ratio->adjustment,
 			   val[0].imag);
 
+  /* envelope LFO */
+  g_value_reset(&value);
+
+  error = NULL;
+  ags_preset_get_parameter(preset,
+			   "enable-envelope-lfo", &value,
+			   &error);
+
+  if(error != NULL){
+    g_warning("%s", error->message);
+
+    g_error_free(error);
+  }else{
+    enable_envelope_lfo = g_value_get_boolean(&value);  
+    
+    gtk_check_button_set_active(pattern_envelope->enable_envelope_lfo,
+				enable_envelope_lfo);
+  }
+  
   /* unset no update */
   pattern_envelope->flags &= (~AGS_PATTERN_ENVELOPE_NO_UPDATE);
 }
