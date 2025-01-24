@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -2374,6 +2374,7 @@ ags_oss_devout_device_play(AgsSoundcard *soundcard,
 
   gint64 poll_timeout;
   guint word_size;
+  gboolean initial_run;
 
   int n_write;
   
@@ -2388,6 +2389,8 @@ ags_oss_devout_device_play(AgsSoundcard *soundcard,
 
   /* lock */
   g_rec_mutex_lock(oss_devout_mutex);
+  
+  initial_run = ((AGS_OSS_DEVOUT_START_PLAY & (oss_devout->flags)) != 0) ? TRUE: FALSE;
   
   /* retrieve word size */
   switch(oss_devout->format){
@@ -2495,10 +2498,12 @@ ags_oss_devout_device_play(AgsSoundcard *soundcard,
   task = NULL;
   
   /* tic soundcard */
-  tic_device = ags_tic_device_new((GObject *) oss_devout);
-  task = g_list_append(task,
-		       tic_device);
-
+  if(!initial_run){
+    tic_device = ags_tic_device_new((GObject *) oss_devout);
+    task = g_list_append(task,
+			 tic_device);
+  }
+  
   /* reset - clear buffer */
   clear_buffer = ags_clear_buffer_new((GObject *) oss_devout);
   task = g_list_append(task,

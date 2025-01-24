@@ -5,6 +5,8 @@ ags (7.6.0)
 	* implemented AGS_NOTE_ENVELOPE_LFO flag
 	* implemented ags_note_flags_get_type()
 	* implemented enabling envelope LFO in ags-fx-envelope
+	* improved call recursive run stage only if default soundcard available and is playing
+	  + fixed race-condition while start playback
 	* reverted ags_check_system_functional_programs_ui
 
 ags (7.5.5)

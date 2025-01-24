@@ -2806,6 +2806,7 @@ ags_alsa_devout_device_play(AgsSoundcard *soundcard,
 
   gint64 poll_timeout;
   guint word_size;
+  gboolean initial_run;
   
   GRecMutex *alsa_devout_mutex;
   
@@ -2819,6 +2820,8 @@ ags_alsa_devout_device_play(AgsSoundcard *soundcard,
   /* lock */
   g_rec_mutex_lock(alsa_devout_mutex);
   
+  initial_run = ((AGS_ALSA_DEVOUT_START_PLAY & (alsa_devout->flags)) != 0) ? TRUE: FALSE;
+
   /* retrieve word size */
   switch(alsa_devout->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
@@ -2960,11 +2963,13 @@ ags_alsa_devout_device_play(AgsSoundcard *soundcard,
   task = NULL;
   
   /* tic soundcard */
-  tic_device = ags_tic_device_new((GObject *) alsa_devout);
+  if(!initial_run){
+    tic_device = ags_tic_device_new((GObject *) alsa_devout);
   
-  task = g_list_prepend(task,
-			tic_device);
-
+    task = g_list_prepend(task,
+			  tic_device);
+  }
+  
   /* reset - clear buffer */
   clear_buffer = ags_clear_buffer_new((GObject *) alsa_devout);
 

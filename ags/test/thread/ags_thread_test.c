@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -124,7 +124,7 @@ ags_thread_test_lock()
   thread = (AgsThread **) malloc(AGS_THREAD_TEST_LOCK_N_THREADS * sizeof(AgsThread*));
   
   for(i = 0; i < AGS_THREAD_TEST_LOCK_N_THREADS; i++){
-    thread[i] = ags_thread_new(NULL);
+    thread[i] = ags_thread_new();
     ags_thread_add_child_extended(main_loop,
 				  thread[i],
 				  TRUE, TRUE);
@@ -166,7 +166,7 @@ ags_thread_test_get_toplevel()
   thread = main_loop;
   
   for(i = 0; i < AGS_THREAD_TEST_GET_TOPLEVEL_N_LEVELS; i++){
-    current = ags_thread_new(NULL);
+    current = ags_thread_new();
     ags_thread_add_child_extended(thread,
 				  current,
 				  TRUE, TRUE);
@@ -186,7 +186,7 @@ ags_thread_test_first()
 
   guint i;
 
-  parent = ags_thread_new(NULL);
+  parent = ags_thread_new();
   ags_thread_add_child_extended(main_loop,
 				parent,
 				TRUE, TRUE);
@@ -194,7 +194,7 @@ ags_thread_test_first()
   thread = (AgsThread **) malloc(AGS_THREAD_TEST_FIRST_N_THREADS * sizeof(AgsThread*));
 
   for(i = 0; i < AGS_THREAD_TEST_FIRST_N_THREADS; i++){
-    thread[i] = ags_thread_new(NULL);
+    thread[i] = ags_thread_new();
     ags_thread_add_child_extended(parent,
 				  thread[i],
 				  TRUE, TRUE);
@@ -216,7 +216,7 @@ ags_thread_test_last()
 
   guint i;
 
-  parent = ags_thread_new(NULL);
+  parent = ags_thread_new();
   ags_thread_add_child_extended(main_loop,
 				parent,
 				TRUE, TRUE);
@@ -224,7 +224,7 @@ ags_thread_test_last()
   thread = (AgsThread **) malloc(AGS_THREAD_TEST_LAST_N_THREADS * sizeof(AgsThread*));
 
   for(i = 0; i < AGS_THREAD_TEST_LAST_N_THREADS; i++){
-    thread[i] = ags_thread_new(NULL);
+    thread[i] = ags_thread_new();
     ags_thread_add_child_extended(parent,
 				  thread[i],
 				  TRUE, TRUE);
@@ -246,7 +246,7 @@ ags_thread_test_remove_child()
 
   guint i;
 
-  parent = ags_thread_new(NULL);
+  parent = ags_thread_new();
   ags_thread_add_child_extended(main_loop,
 				parent,
 				TRUE, TRUE);
@@ -254,7 +254,7 @@ ags_thread_test_remove_child()
   thread = (AgsThread **) malloc(AGS_THREAD_TEST_REMOVE_CHILD_N_THREADS * sizeof(AgsThread*));
 
   for(i = 0; i < AGS_THREAD_TEST_REMOVE_CHILD_N_THREADS; i++){
-    thread[i] = ags_thread_new(NULL);
+    thread[i] = ags_thread_new();
     ags_thread_add_child_extended(parent,
 				  thread[i],
 				  TRUE, TRUE);
@@ -294,7 +294,7 @@ ags_thread_test_add_child()
   guint i;
   gboolean success;
 
-  parent = ags_thread_new(NULL);
+  parent = ags_thread_new();
   ags_thread_add_child_extended(main_loop,
 				parent,
 				TRUE, TRUE);
@@ -302,7 +302,7 @@ ags_thread_test_add_child()
   thread = (AgsThread **) malloc(AGS_THREAD_TEST_ADD_CHILD_N_THREADS * sizeof(AgsThread*));
 
   for(i = 0; i < AGS_THREAD_TEST_ADD_CHILD_N_THREADS; i++){
-    thread[i] = ags_thread_new(NULL);
+    thread[i] = ags_thread_new();
     ags_thread_add_child_extended(parent,
 				  thread[i],
 				  TRUE, TRUE);
@@ -337,9 +337,9 @@ ags_thread_test_is_current_ready()
   AgsThread *parent;
   AgsThread *thread;
 
-  parent = ags_thread_new(NULL);
+  parent = ags_thread_new();
   
-  thread = ags_thread_new(NULL);
+  thread = ags_thread_new();
   ags_thread_add_child_extended(parent,
 				thread,
 				TRUE, TRUE);

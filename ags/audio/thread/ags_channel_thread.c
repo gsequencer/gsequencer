@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,6 +19,7 @@
 
 #include <ags/audio/thread/ags_channel_thread.h>
 
+#include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_playback.h>
 
@@ -210,9 +211,9 @@ void
 ags_channel_thread_init(AgsChannelThread *channel_thread)
 {
   AgsThread *thread;
-
+  
   AgsConfig *config;
-
+  
   gdouble frequency;
   guint samplerate;
   guint buffer_size;
@@ -510,12 +511,20 @@ ags_channel_thread_run(AgsThread *thread)
 
   AgsTaskLauncher *task_launcher;
 
+  AgsApplicationContext *application_context;
+
+  GObject *default_soundcard;
+
   GList *recall_id;
   
   gint sound_scope;
   gboolean processing;
 
   GRecMutex *thread_mutex;
+
+  application_context = ags_application_context_get_instance();
+
+  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
 
   /* real-time setup */
 #ifdef AGS_WITH_RT
@@ -609,63 +618,67 @@ ags_channel_thread_run(AgsThread *thread)
   
     /* 
      * do audio processing
-     */  
-    if(channel_thread->sound_scope >= 0){
-      sound_scope = channel_thread->sound_scope;
+     */
+    if(default_soundcard != NULL &&
+       !ags_soundcard_is_starting(AGS_SOUNDCARD(default_soundcard)) &&
+       ags_soundcard_is_playing(AGS_SOUNDCARD(default_soundcard))){
+      if(channel_thread->sound_scope >= 0){
+	sound_scope = channel_thread->sound_scope;
 
-      if(sound_scope != AGS_SOUND_SCOPE_PLAYBACK ||
-	 ags_playback_get_recall_id(playback, sound_scope) != NULL){    
-	if((recall_id = ags_channel_check_scope(channel, sound_scope)) != NULL){
-	  guint *staging_program;
+	if(sound_scope != AGS_SOUND_SCOPE_PLAYBACK ||
+	   ags_playback_get_recall_id(playback, sound_scope) != NULL){    
+	  if((recall_id = ags_channel_check_scope(channel, sound_scope)) != NULL){
+	    guint *staging_program;
 	
-	  guint staging_program_count;
-	  guint nth;
+	    guint staging_program_count;
+	    guint nth;
 
-	  staging_program = ags_channel_thread_get_staging_program(channel_thread,
-								   &staging_program_count);
+	    staging_program = ags_channel_thread_get_staging_program(channel_thread,
+								     &staging_program_count);
 	
-	  for(nth = 0; nth < staging_program_count; nth++){
-	    ags_channel_recursive_run_stage(channel,
-					    sound_scope, staging_program[nth]);
-	  }
+	    for(nth = 0; nth < staging_program_count; nth++){
+	      ags_channel_recursive_run_stage(channel,
+					      sound_scope, staging_program[nth]);
+	    }
 
-	  g_free(staging_program);
+	    g_free(staging_program);
 	  
-	  g_list_free_full(recall_id,
-			   g_object_unref);
+	    g_list_free_full(recall_id,
+			     g_object_unref);
+	  }
 	}
-      }
-    }else{
-      gint nth_sound_scope;
+      }else{
+	gint nth_sound_scope;
     
-      for(nth_sound_scope = 0; nth_sound_scope < AGS_SOUND_SCOPE_LAST; nth_sound_scope++){
-	if(nth_sound_scope == AGS_SOUND_SCOPE_PLAYBACK ||
-	   ags_playback_get_recall_id(playback, nth_sound_scope) == NULL){
-	  continue;
-	}
-
-	if((recall_id = ags_channel_check_scope(channel, nth_sound_scope)) != NULL){
-	  guint *staging_program;
-	
-	  guint staging_program_count;
-	  guint nth;
-
-	  staging_program = ags_channel_thread_get_staging_program(channel_thread,
-								   &staging_program_count);
-	
-	  for(nth = 0; nth < staging_program_count; nth++){
-	    ags_channel_recursive_run_stage(channel,
-					    nth_sound_scope, staging_program[nth]);
+	for(nth_sound_scope = 0; nth_sound_scope < AGS_SOUND_SCOPE_LAST; nth_sound_scope++){
+	  if(nth_sound_scope == AGS_SOUND_SCOPE_PLAYBACK ||
+	     ags_playback_get_recall_id(playback, nth_sound_scope) == NULL){
+	    continue;
 	  }
 
-	  g_free(staging_program);
+	  if((recall_id = ags_channel_check_scope(channel, nth_sound_scope)) != NULL){
+	    guint *staging_program;
+	
+	    guint staging_program_count;
+	    guint nth;
+
+	    staging_program = ags_channel_thread_get_staging_program(channel_thread,
+								     &staging_program_count);
+	
+	    for(nth = 0; nth < staging_program_count; nth++){
+	      ags_channel_recursive_run_stage(channel,
+					      nth_sound_scope, staging_program[nth]);
+	    }
+
+	    g_free(staging_program);
 	  
-	  g_list_free_full(recall_id,
-			   g_object_unref);
+	    g_list_free_full(recall_id,
+			     g_object_unref);
+	  }
 	}
       }
     }
-
+    
     /* sync */
     g_mutex_lock(&(channel_thread->done_mutex));
   
@@ -685,8 +698,12 @@ ags_channel_thread_run(AgsThread *thread)
     if(playback != NULL){
       g_object_unref(playback);
     }
-  }
+  }  
   
+  if(default_soundcard != NULL){
+    g_object_unref(default_soundcard);
+  }
+
   if(task_launcher != NULL){
     g_object_unref(task_launcher);
   }
