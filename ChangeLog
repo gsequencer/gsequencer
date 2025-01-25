@@ -1,3 +1,8 @@
+ags (7.6.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags_fx_notation_audio_processor_counter_change() 16th pulse
+
 ags (7.6.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
