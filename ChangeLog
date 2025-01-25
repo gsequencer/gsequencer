@@ -1,3 +1,9 @@
+ags (7.6.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved all soundcard backends ::tic()
+	  + fixed race-condition while start playback
+
 ags (7.6.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

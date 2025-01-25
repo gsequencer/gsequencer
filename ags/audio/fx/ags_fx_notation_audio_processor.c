@@ -3504,7 +3504,16 @@ ags_fx_notation_audio_processor_real_counter_change(AgsFxNotationAudioProcessor 
     if(floor(delay) + 1.0 <= delay_counter + 1.0){
       fx_notation_audio_processor->has_16th_pulse = TRUE;
       
+      fx_notation_audio_processor->current_offset_counter = note_offset + 1;
+
       fx_notation_audio_processor->current_delay_counter = 0.0;
+
+      fx_notation_audio_processor->current_tic_counter += 1;
+
+      if(fx_notation_audio_processor->current_tic_counter == (guint) AGS_SOUNDCARD_DEFAULT_PERIOD){
+	/* reset - tic counter i.e. modified delay index within period */
+	fx_notation_audio_processor->current_tic_counter = 0;
+      }
     }
     
     g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
