@@ -2808,11 +2808,15 @@ ags_pulse_devout_tic(AgsSoundcard *soundcard)
     }
 
     pulse_devout->delay_counter += 1.0;
+    
+    g_rec_mutex_unlock(pulse_devout_mutex);
 
-    if(floor(delay) + 1.0 <= delay_counter + 1.0){
+    if(floor(delay) + 1.0 < delay_counter + 1.0){
       ags_soundcard_set_note_offset(soundcard,
 				    note_offset + 1);
             
+      g_rec_mutex_lock(pulse_devout_mutex);
+    
       pulse_devout->note_256th_offset = next_note_256th_offset_lower;
       pulse_devout->note_256th_offset_last = next_note_256th_offset_upper;
 
@@ -2833,10 +2837,14 @@ ags_pulse_devout_tic(AgsSoundcard *soundcard)
       pulse_devout->note_256th_attack_of_16th_pulse = current_note_256th_attack;
       pulse_devout->note_256th_attack_of_16th_pulse_position += i;
     
+      g_rec_mutex_unlock(pulse_devout_mutex);
+    
       ags_soundcard_set_note_offset_absolute(soundcard,
 					     note_offset_absolute + 1);
 
       /* reset - delay counter */
+      g_rec_mutex_lock(pulse_devout_mutex);
+    
       pulse_devout->tic_counter += 1;
 
       if(pulse_devout->tic_counter == (guint) AGS_SOUNDCARD_DEFAULT_PERIOD){
@@ -2849,13 +2857,13 @@ ags_pulse_devout_tic(AgsSoundcard *soundcard)
       pulse_devout->tact_counter += 1.0;
 
       pulse_devout->note_256th_delay_counter = 0.0;
+    
+      g_rec_mutex_unlock(pulse_devout_mutex);
 
       /* 16th pulse */
       ags_soundcard_offset_changed(soundcard,
 				   note_offset + 1);
     }
-    
-    g_rec_mutex_unlock(pulse_devout_mutex);
   }
 }
 

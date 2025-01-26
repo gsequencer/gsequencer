@@ -3501,7 +3501,7 @@ ags_fx_notation_audio_processor_real_counter_change(AgsFxNotationAudioProcessor 
     
     fx_notation_audio_processor->current_delay_counter = delay_counter + 1.0;
 
-    if(floor(delay) + 1.0 <= delay_counter + 1.0){
+    if(floor(delay) + 1.0 < delay_counter + 1.0){
       fx_notation_audio_processor->has_16th_pulse = TRUE;
       
       fx_notation_audio_processor->current_offset_counter = note_offset + 1;
