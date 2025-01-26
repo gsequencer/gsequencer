@@ -1,3 +1,19 @@
+ags (7.6.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed all soundcard backends ::tic() correct delay_counter check
+
+ags (7.6.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved all soundcard backends ::tic()
+	  + fixed race-condition while start playback
+
+ags (7.6.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags_fx_notation_audio_processor_counter_change() 16th pulse
+
 ags (7.6.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

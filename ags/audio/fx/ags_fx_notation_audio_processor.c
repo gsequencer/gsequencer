@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -3459,10 +3459,9 @@ ags_fx_notation_audio_processor_real_counter_change(AgsFxNotationAudioProcessor 
 
   g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
 
-  //  g_message("counter change delay_counter = %f, delay = %f, offset_counter = %d -> next 256th %d-%d", delay_counter, delay, offset_counter, next_note_256th_offset_lower, next_note_256th_offset_upper);
-  
-  if((16 * (note_offset + 1) >= next_note_256th_offset_lower &&
-      16 * (note_offset + 1) <= next_note_256th_offset_upper) ||
+  // g_message("counter change delay_counter = %f, delay = %f, offset_counter = %d -> next 256th %d-%d", delay_counter, delay, offset_counter, next_note_256th_offset_lower, next_note_256th_offset_upper);
+  //NOTE:JK: we check just upper bound hits 16th pulse - fixes race-condition during start playback
+  if(16 * (note_offset + 1) <= next_note_256th_offset_upper ||
      (next_note_256th_offset_lower + 256 < note_256th_offset_lower)){
     //    g_message("16th pulse %d", offset_counter + 1);
     
@@ -3501,6 +3500,21 @@ ags_fx_notation_audio_processor_real_counter_change(AgsFxNotationAudioProcessor 
     fx_notation_audio_processor->has_16th_pulse = FALSE;
     
     fx_notation_audio_processor->current_delay_counter = delay_counter + 1.0;
+
+    if(floor(delay) + 1.0 < delay_counter + 1.0){
+      fx_notation_audio_processor->has_16th_pulse = TRUE;
+      
+      fx_notation_audio_processor->current_offset_counter = note_offset + 1;
+
+      fx_notation_audio_processor->current_delay_counter = 0.0;
+
+      fx_notation_audio_processor->current_tic_counter += 1;
+
+      if(fx_notation_audio_processor->current_tic_counter == (guint) AGS_SOUNDCARD_DEFAULT_PERIOD){
+	/* reset - tic counter i.e. modified delay index within period */
+	fx_notation_audio_processor->current_tic_counter = 0;
+      }
+    }
     
     g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
   }

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -2358,8 +2358,7 @@ ags_pulse_devin_tic(AgsSoundcard *soundcard)
   
   if((note_256th_delay <= 1.0 ||
       pulse_devin->note_256th_delay_counter >= note_256th_delay) &&
-     ((16 * (note_offset + 1) >= next_note_256th_offset_lower &&
-       16 * (note_offset + 1) <= next_note_256th_offset_upper) ||
+     (16 * (note_offset + 1) <= next_note_256th_offset_upper ||
       (next_note_256th_offset_lower + 64 < note_256th_offset_lower))){
     //    g_message("16th pulse: %d (delay = %f)", note_offset + 1, delay);
     
@@ -2463,8 +2462,62 @@ ags_pulse_devin_tic(AgsSoundcard *soundcard)
     }
 
     pulse_devin->delay_counter += 1.0;
-
+    
     g_rec_mutex_unlock(pulse_devin_mutex);
+
+    if(floor(delay) + 1.0 < delay_counter + 1.0){
+      ags_soundcard_set_note_offset(soundcard,
+				    note_offset + 1);
+            
+      g_rec_mutex_lock(pulse_devin_mutex);
+    
+      pulse_devin->note_256th_offset = next_note_256th_offset_lower;
+      pulse_devin->note_256th_offset_last = next_note_256th_offset_upper;
+
+      note_256th_attack_of_16th_pulse = attack;
+      
+      current_note_256th_attack = attack;
+
+      i = 1;
+
+      current_note_256th_attack = ags_soundcard_get_note_256th_attack_at_position(soundcard,
+										  note_256th_attack_of_16th_pulse_position + 1);
+      
+      for(; attack + (guint) floor((double) i * (note_256th_delay * (double) buffer_size)) < (guint) floor(absolute_delay * (double) buffer_size); i++){
+	current_note_256th_attack = ags_soundcard_get_note_256th_attack_at_position(soundcard,
+										    note_256th_attack_of_16th_pulse_position + i);
+      }
+
+      pulse_devin->note_256th_attack_of_16th_pulse = current_note_256th_attack;
+      pulse_devin->note_256th_attack_of_16th_pulse_position += i;
+    
+      g_rec_mutex_unlock(pulse_devin_mutex);
+    
+      ags_soundcard_set_note_offset_absolute(soundcard,
+					     note_offset_absolute + 1);
+
+      /* reset - delay counter */
+      g_rec_mutex_lock(pulse_devin_mutex);
+    
+      pulse_devin->tic_counter += 1;
+
+      if(pulse_devin->tic_counter == (guint) AGS_SOUNDCARD_DEFAULT_PERIOD){
+	/* reset - tic counter i.e. modified delay index within period */
+	pulse_devin->tic_counter = 0;
+      }
+      
+      pulse_devin->delay_counter = 0.0;
+
+      pulse_devin->tact_counter += 1.0;
+
+      pulse_devin->note_256th_delay_counter = 0.0;
+    
+      g_rec_mutex_unlock(pulse_devin_mutex);
+
+      /* 16th pulse */
+      ags_soundcard_offset_changed(soundcard,
+				   note_offset + 1);
+    }
   }
 }
 
