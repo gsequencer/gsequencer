@@ -2026,7 +2026,7 @@ ags_core_audio_devin_port_init(AgsSoundcard *soundcard,
 
   /*  */
   core_audio_devin->tact_counter = 0.0;
-  core_audio_devin->delay_counter = floor(ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(core_audio_devin)));
+  core_audio_devin->delay_counter = 0.0;
   core_audio_devin->tic_counter = 0;
 
   core_audio_devin->note_256th_attack_of_16th_pulse = 0;

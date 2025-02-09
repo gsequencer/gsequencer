@@ -1810,7 +1810,7 @@ ags_wasapi_devin_client_init(AgsSoundcard *soundcard,
 #endif
   
   wasapi_devin->tact_counter = 0.0;
-  wasapi_devin->delay_counter = floor(ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(wasapi_devin)));
+  wasapi_devin->delay_counter = 0.0;
   wasapi_devin->tic_counter = 0;
   
   wasapi_devin->note_256th_attack_of_16th_pulse = 0;

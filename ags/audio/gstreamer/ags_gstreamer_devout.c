@@ -1990,7 +1990,7 @@ ags_gstreamer_devout_port_init(AgsSoundcard *soundcard,
 
   /*  */
   gstreamer_devout->tact_counter = 0.0;
-  gstreamer_devout->delay_counter = floor(ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(gstreamer_devout)));
+  gstreamer_devout->delay_counter = 0.0;
   gstreamer_devout->tic_counter = 0;
 
   gstreamer_devout->note_256th_attack_of_16th_pulse = 0;

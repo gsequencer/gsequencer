@@ -2233,7 +2233,7 @@ ags_oss_devout_device_play_init(AgsSoundcard *soundcard,
 #endif
   
   oss_devout->tact_counter = 0.0;
-  oss_devout->delay_counter = floor(ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(oss_devout)));
+  oss_devout->delay_counter = 0.0;
   oss_devout->tic_counter = 0;
 
   oss_devout->backend_buffer_mode = AGS_OSS_DEVOUT_BACKEND_BUFFER_0;
