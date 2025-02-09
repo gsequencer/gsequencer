@@ -702,7 +702,7 @@ ags_alsa_devin_init(AgsAlsaDevin *alsa_devin)
   
   /* counters */
   alsa_devin->tact_counter = 0.0;
-  alsa_devin->delay_counter = 0;
+  alsa_devin->delay_counter = 0.0;
   alsa_devin->tic_counter = 0;
 
   alsa_devin->start_note_offset = 0;

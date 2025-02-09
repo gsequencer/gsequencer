@@ -2162,7 +2162,7 @@ ags_oss_devin_device_record_init(AgsSoundcard *soundcard,
 #endif
   
   oss_devin->tact_counter = 0.0;
-  oss_devin->delay_counter = floor(ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(oss_devin)));
+  oss_devin->delay_counter = 0.0;
   oss_devin->tic_counter = 0;
 
   oss_devin->backend_buffer_mode = AGS_OSS_DEVIN_BACKEND_BUFFER_0;

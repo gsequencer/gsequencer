@@ -1837,7 +1837,7 @@ ags_wasapi_devout_client_init(AgsSoundcard *soundcard,
   g_rec_mutex_lock(wasapi_devout_mutex);
   
   wasapi_devout->tact_counter = 0.0;
-  wasapi_devout->delay_counter = floor(ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(wasapi_devout)));
+  wasapi_devout->delay_counter = 0.0;
   wasapi_devout->tic_counter = 0;
   
   wasapi_devout->note_256th_attack_of_16th_pulse = 0;

@@ -1968,7 +1968,7 @@ ags_gstreamer_devin_port_init(AgsSoundcard *soundcard,
 
   /*  */
   gstreamer_devin->tact_counter = 0.0;
-  gstreamer_devin->delay_counter = floor(ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(gstreamer_devin)));
+  gstreamer_devin->delay_counter = 0.0;
   gstreamer_devin->tic_counter = 0;
 
   gstreamer_devin->note_256th_attack_of_16th_pulse = 0;

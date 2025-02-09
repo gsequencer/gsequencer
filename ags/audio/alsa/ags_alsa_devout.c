@@ -2548,7 +2548,7 @@ ags_alsa_devout_device_play_init(AgsSoundcard *soundcard,
 #endif
 
   alsa_devout->tact_counter = 0.0;
-  alsa_devout->delay_counter = floor(ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(alsa_devout)));
+  alsa_devout->delay_counter = 0.0;
   alsa_devout->tic_counter = 0;
 
   alsa_devout->backend_buffer_mode = AGS_ALSA_DEVOUT_BACKEND_BUFFER_0;
