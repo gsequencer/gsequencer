@@ -1,3 +1,10 @@
+ags (7.6.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed initial value ags-fx-sf2-synth, ags-fx-sfz-synth,
+	  ags-fx-star-synth and ags-fx-seq-synth of pitch type
+	* fixed AgsQuantumSynth pitch type callback
+
 ags (7.6.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
@@ -26,7 +33,8 @@ ags (7.6.0)
 	* implemented AGS_NOTE_ENVELOPE_LFO flag
 	* implemented ags_note_flags_get_type()
 	* implemented enabling envelope LFO in ags-fx-envelope
-	* improved call recursive run stage only if default soundcard available and is playing
+	* improved call recursive run stage only if default soundcard
+	  available and is playing
 	  + fixed race-condition while start playback
 	* reverted ags_check_system_functional_programs_ui
 
@@ -119,9 +127,12 @@ ags (7.4.5)
 ags (7.4.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed ags_fluid_interpolate_4th_order_util.c potential buffer overflow
-	* fixed ags_fluid_interpolate_7th_order_util.c potential buffer overflow
-	* fixed ags-fx-lv2 unsigned integer with atom port and other improvements
+	* fixed ags_fluid_interpolate_4th_order_util.c potential buffer
+	  overflow
+	* fixed ags_fluid_interpolate_7th_order_util.c potential buffer
+	  overflow
+	* fixed ags-fx-lv2 unsigned integer with atom port and other
+	  improvements
 
 ags (7.4.3)
 
@@ -197,7 +208,8 @@ ags (7.3.22)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed audio object selector of CoreAudio input
-	* fixed save copy buffer size adjustment in ags_core_audio_port_hw_input_callback()
+	* fixed save copy buffer size adjustment in
+	  ags_core_audio_port_hw_input_callback()
 
 ags (7.3.21)
 
@@ -252,7 +264,8 @@ ags (7.3.12)
 ags (7.3.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* updated user's handbook to explain shift behavior within notation and automation editor
+	* updated user's handbook to explain shift behavior within notation and
+	  automation editor
 	* fixed always use AGS_SOUNDCARD_FLOAT on macOS with AgsCoreAudioPort
 
 ags (7.3.10)
@@ -264,7 +277,8 @@ ags (7.3.10)
 ags (7.3.9)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* improved CoreAudio usage of AgsSoundServer::register-soundcard-with-params()
+	* improved CoreAudio usage of AgsSoundServer
+	  ::register-soundcard-with-params()
 	* fixed missing initializer of format in ags_core_audio_port_register()
 
 ags (7.3.8)
@@ -309,7 +323,8 @@ ags (7.3.2)
 ags (7.3.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* removed set sensitive calls to soundcard editor, always allow the user to edit
+	* removed set sensitive calls to soundcard editor, always allow the
+	  user to edit
 
 ags (7.3.0)
 
@@ -322,12 +337,14 @@ ags (7.2.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed file dialog single selection open
-	* improved signal handling of check and toggle buttons, listen to property active
+	* improved signal handling of check and toggle buttons, listen to
+	  property active
 
 ags (7.2.10)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed potential SIGSEGV in ags_export_window.c after removed soundcard editor
+	* fixed potential SIGSEGV in ags_export_window.c after removed
+	  soundcard editor
 
 ags (7.2.9)
 
@@ -354,19 +371,23 @@ ags (7.2.6)
 ags (7.2.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* minor improvements fixed missing presets of ags-fx-synth and ags-fx-fm-synth pitch
+	* minor improvements fixed missing presets of ags-fx-synth and
+	  ags-fx-fm-synth pitch
 
 ags (7.2.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed potential SIGSEGV caused in ags_sfz_synth_util.c use of wrong sample format
+	* fixed potential SIGSEGV caused in ags_sfz_synth_util.c use of wrong
+	  sample format
 
 ags (7.2.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed missing transfer none of audio utility structs source and destination
+	* fixed missing transfer none of audio utility structs source and
+	  destination
 	* fixed ags-fx-synth missing ports
-	* refactored string vector use in ags-fx for port specifier and control port
+	* refactored string vector use in ags-fx for port specifier and
+	  control port
 
 ags (7.2.2)
 
@@ -397,7 +418,8 @@ ags (7.1.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed removed setlocale during XML project file interaction
-	* fixed AgsPerformancePreference super threaded channel callback check button
+	* fixed AgsPerformancePreference super threaded channel callback check
+	  button
 	* fixed AgsOscServerPreferences callbacks check button
 
 ags (7.1.7)
@@ -405,7 +427,8 @@ ags (7.1.7)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented config value update UI timeout refresh rate
 	* lower UI refresh rate
-	* added config group "generic" with key "update-ui-timeout" as double value
+	* added config group "generic" with key "update-ui-timeout" as double
+	  value
 
 ags (7.1.6)
 
@@ -431,7 +454,8 @@ ags (7.1.3)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed potential SIGSEGV with AgsSFZSynthGenerator
 	* fixed potential SIGSEGV with AgsSF2SynthGenerator
-	* fixed AgsHybridSynth and AgsHybridFMSynth q_lin upper and lower range to cents
+	* fixed AgsHybridSynth and AgsHybridFMSynth q_lin upper and lower range
+	  to cents
 	* fixed removed remaining calls to g_object_run_dispose() with widgets
 
 ags (7.1.2)
@@ -439,19 +463,22 @@ ags (7.1.2)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* improved AgsCoreAudioMidiin prefaulted buffer
 	* improved AgsSequencerThread:sequencer property to be readable
-	* fixed AgsSequencerThread AgsSequencer::record_init() to be called always
+	* fixed AgsSequencerThread AgsSequencer::record_init() to be called
+	  always
 
 ags (7.1.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* improved CoreMIDI objective-C block call memset in ags_core_audio_midiin_switch_buffer_flag()
+	* improved CoreMIDI objective-C block call memset in
+	  ags_core_audio_midiin_switch_buffer_flag()
 
 ags (7.1.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented dead-lock recover signal of AgsThread
 	* implemented dead-lock recover of CoreAudio soundcard and sequencer
-	* implemented dead-lock recover of JackAudio Connection soundcard and sequencer
+	* implemented dead-lock recover of JackAudio Connection soundcard and
+	  sequencer
 	* implemented dead-lock recover of Pulseaudio soundcard
 	* extended AgsThread struct adding field is_running
 
@@ -469,7 +496,8 @@ ags (7.0.12)
 ags (7.0.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed potential SIGSEGV with AgsMidiPreferences remove sequencer editor callback
+	* fixed potential SIGSEGV with AgsMidiPreferences remove sequencer
+	  editor callback
 
 ags (7.0.10)
 
@@ -485,19 +513,22 @@ ags (7.0.9)
 ags (7.0.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed ags-fx-notation pre-mature audio signal removal, caused sequencer not accepting keys
+	* fixed ags-fx-notation pre-mature audio signal removal, caused
+	  sequencer not accepting keys
 	* fixed broken test ags_fourier_transform_util_test.c
 
 ags (7.0.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed AgsApplySynth default template's length, fixes silent AgsSyncsynth and AgsFMSyncsynth
+	* fixed AgsApplySynth default template's length, fixes silent
+	  AgsSyncsynth and AgsFMSyncsynth
 	* improved gtk-doc missing xi:include
 
 ags (7.0.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed ags_midi_ump_util_(get,put)_product_instance_id_notification() string length
+	* fixed ags_midi_ump_util_(get,put)_product_instance_id_notification()
+	  string length
 
 ags (7.0.5)
 
@@ -540,32 +571,52 @@ ags (7.0.1)
 ags (7.0.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* NOTE:JK: incompatible ags_audio_buffer_util_get_copy_mode() due to refactoring,
-	  use ags_audio_buffer_util_get_copy_mode_from_format() instead
-	* NOTE:JK: incompatible ags_midi_parser_read_varlength() due to refactoring
+	* NOTE:JK: incompatible ags_audio_buffer_util_get_copy_mode() due to
+	  refactoring, use ags_audio_buffer_util_get_copy_mode_from_format()
+	  instead
+	* NOTE:JK: incompatible ags_midi_parser_read_varlength() due to
+	  refactoring
 	* NOTE:JK: incompatible ags_midi_util_put_pitch_bend() due to bug
 	* NOTE:JK: incompatible ags_midi_util_get_pitch_bend() due to bug
 	* NOTE:JK: incompatible ags_midi_smf_util_put_pitch_bend() due to bug
 	* NOTE:JK: incompatible ags_midi_smf_util_get_pitch_bend() due to bug
-	* NOTE:JK: incompatible ags_midi_ump_util_put_midi1_pitch_bend() due to bug
-	* NOTE:JK: incompatible ags_midi_ump_util_get_midi1_pitch_bend() due to bug
+	* NOTE:JK: incompatible ags_midi_ump_util_put_midi1_pitch_bend() due to
+	  bug
+	* NOTE:JK: incompatible ags_midi_ump_util_get_midi1_pitch_bend() due to
+	  bug
 	* NOTE:JK: incompatible AgsMidiBuilder::pitch-bend() due to bug
-	* NOTE:JK: incompatible ags_fourier_transform_util_compute_stft_s8() due to refactoring
-	* NOTE:JK: incompatible ags_fourier_transform_util_compute_stft_s16() due to refactoring
-	* NOTE:JK: incompatible ags_fourier_transform_util_compute_stft_s24() due to refactoring
-	* NOTE:JK: incompatible ags_fourier_transform_util_compute_stft_s32() due to refactoring
-	* NOTE:JK: incompatible ags_fourier_transform_util_compute_stft_s64() due to refactoring
-	* NOTE:JK: incompatible ags_fourier_transform_util_compute_stft_float() due to refactoring
-	* NOTE:JK: incompatible ags_fourier_transform_util_compute_stft_double() due to refactoring
-	* NOTE:JK: incompatible ags_fourier_transform_util_compute_stft_complex() due to refactoring
-	* NOTE:JK: incompatible ags_fourier_transform_util_inverse_stft_s8() due to refactoring
-	* NOTE:JK: incompatible ags_fourier_transform_util_inverse_stft_s16() due to refactoring
-	* NOTE:JK: incompatible ags_fourier_transform_util_inverse_stft_s24() due to refactoring
-	* NOTE:JK: incompatible ags_fourier_transform_util_inverse_stft_s32() due to refactoring
-	* NOTE:JK: incompatible ags_fourier_transform_util_inverse_stft_s64() due to refactoring
-	* NOTE:JK: incompatible ags_fourier_transform_util_inverse_stft_float() due to refactoring
-	* NOTE:JK: incompatible ags_fourier_transform_util_inverse_stft_double() due to refactoring
-	* NOTE:JK: incompatible ags_fourier_transform_util_inverse_stft_complex() due to refactoring
+	* NOTE:JK: incompatible ags_fourier_transform_util_compute_stft_s8()
+	  due to refactoring
+	* NOTE:JK: incompatible ags_fourier_transform_util_compute_stft_s16()
+	  due to refactoring
+	* NOTE:JK: incompatible ags_fourier_transform_util_compute_stft_s24()
+	  due to refactoring
+	* NOTE:JK: incompatible ags_fourier_transform_util_compute_stft_s32()
+	  due to refactoring
+	* NOTE:JK: incompatible ags_fourier_transform_util_compute_stft_s64()
+	  due to refactoring
+	* NOTE:JK: incompatible ags_fourier_transform_util_compute_stft_float()
+	  due to refactoring
+	* NOTE:JK: incompatible
+	  ags_fourier_transform_util_compute_stft_double() due to refactoring
+	* NOTE:JK: incompatible
+	  ags_fourier_transform_util_compute_stft_complex() due to refactoring
+	* NOTE:JK: incompatible ags_fourier_transform_util_inverse_stft_s8()
+	  due to refactoring
+	* NOTE:JK: incompatible ags_fourier_transform_util_inverse_stft_s16()
+	  due to refactoring
+	* NOTE:JK: incompatible ags_fourier_transform_util_inverse_stft_s24()
+	  due to refactoring
+	* NOTE:JK: incompatible ags_fourier_transform_util_inverse_stft_s32()
+	  due to refactoring
+	* NOTE:JK: incompatible ags_fourier_transform_util_inverse_stft_s64()
+	  due to refactoring
+	* NOTE:JK: incompatible ags_fourier_transform_util_inverse_stft_float()
+	  due to refactoring
+	* NOTE:JK: incompatible
+	  ags_fourier_transform_util_inverse_stft_double() due to refactoring
+	* NOTE:JK: incompatible
+	  ags_fourier_transform_util_inverse_stft_complex() due to refactoring
 	* NOTE:JK: removed ags_envelope_util_get_wah_wah_enabled()
 	* NOTE:JK: removed ags_envelope_util_set_wah_wah_enabled()
 	* NOTE:JK: removed ags_envelope_util_get_wah_wah_lfo_depth()
@@ -593,7 +644,8 @@ ags (7.0.0)
 	* refactored ags/audio/ags_audio_buffer_util.h
 	* refactored AgsAudioBufferUtil breaking ABI
 	* refactored AgsSynthUtil breaking ABI
-	* refactored ags_audio_buffer_util_get_copy_mode_from_format() breaking ABI due to renaming and conflict
+	* refactored ags_audio_buffer_util_get_copy_mode_from_format() breaking
+	  ABI due to renaming and conflict
 	* refactored ags_sf2_synth_util_copy() renamed
 	* refactored ags_sfz_synth_util_copy() renamed
 	* refactored ags_time_stretch_util_get_buffer_length() renamed
@@ -606,8 +658,10 @@ ags (7.0.0)
 	* fixed ags_midi_util_get_pitch_bend() prototype declaration
 	* fixed ags_midi_smf_util_put_pitch_bend() prototype declaration
 	* fixed ags_midi_smf_util_get_pitch_bend() prototype declaration
-	* fixed ags_midi_builder_append_change_pitch_bend() prototype declaration
-	* fixed ags_midi_parser_change_pitch_bend() parse transmitter attribute as 14 bit value
+	* fixed ags_midi_builder_append_change_pitch_bend() prototype
+	  declaration
+	* fixed ags_midi_parser_change_pitch_bend() parse transmitter attribute
+	  as 14 bit value
 
 ags (6.16.23)
 

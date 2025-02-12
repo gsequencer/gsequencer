@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -579,7 +579,7 @@ ags_fx_sfz_synth_audio_init(AgsFxSFZSynthAudio *fx_sfz_synth_audio)
 						      "port-value-length", 1,
 						      NULL);
   
-  fx_sfz_synth_audio->synth_pitch_type->port_value.ags_port_float = (gfloat) 0.0;
+  fx_sfz_synth_audio->synth_pitch_type->port_value.ags_port_float = (gfloat) AGS_PITCH_TYPE_FLUID_INTERPOLATE_4TH_ORDER;
 
   g_object_set(fx_sfz_synth_audio->synth_pitch_type,
 	       "plugin-port", ags_fx_sfz_synth_audio_get_synth_pitch_type_plugin_port(),
