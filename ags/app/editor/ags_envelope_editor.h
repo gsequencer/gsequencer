@@ -38,8 +38,8 @@ G_BEGIN_DECLS
 #define AGS_IS_ENVELOPE_EDITOR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_ENVELOPE_EDITOR))
 #define AGS_ENVELOPE_EDITOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_ENVELOPE_EDITOR, AgsEnvelopeEditorClass))
 
-#define AGS_ENVELOPE_EDITOR_DEFAULT_VERSION "6.4.2"
-#define AGS_ENVELOPE_EDITOR_DEFAULT_BUILD_ID "Sat Feb  3 10:36:15 UTC 2024"
+#define AGS_ENVELOPE_EDITOR_DEFAULT_VERSION "7.6.0"
+#define AGS_ENVELOPE_EDITOR_DEFAULT_BUILD_ID "Mon Jan 20 21:04:41 UTC 2025"
 
 typedef struct _AgsEnvelopeEditor AgsEnvelopeEditor;
 typedef struct _AgsEnvelopeEditorClass AgsEnvelopeEditorClass;
@@ -81,6 +81,8 @@ struct _AgsEnvelopeEditor
   AgsDial *release_y;
 
   AgsDial *ratio;
+
+  GtkCheckButton *enable_envelope_lfo;
 };
 
 struct _AgsEnvelopeEditorClass

@@ -4330,7 +4330,7 @@ ags_quantum_synth_pitch_type_callback(GObject *gobject,
 				      GParamSpec *pspec,
 				      AgsQuantumSynth *quantum_synth)
 {
-  AgsFxStarSynthAudio *fx_seq_synth_audio;
+  AgsFxSeqSynthAudio *fx_seq_synth_audio;
     
   guint selected;
 
@@ -4349,13 +4349,13 @@ ags_quantum_synth_pitch_type_callback(GObject *gobject,
 		    (gfloat) selected);
 
   /* play */
-  fx_seq_synth_audio = (AgsFxStarSynthAudio *) ags_recall_container_get_recall_audio(quantum_synth->seq_synth_play_container);
+  fx_seq_synth_audio = (AgsFxSeqSynthAudio *) ags_recall_container_get_recall_audio(quantum_synth->seq_synth_play_container);
 
   ags_port_safe_write(fx_seq_synth_audio->pitch_type,
 		      &value);
 
   /* recall */
-  fx_seq_synth_audio = (AgsFxStarSynthAudio *) ags_recall_container_get_recall_audio(quantum_synth->seq_synth_recall_container);
+  fx_seq_synth_audio = (AgsFxSeqSynthAudio *) ags_recall_container_get_recall_audio(quantum_synth->seq_synth_recall_container);
   
   ags_port_safe_write(fx_seq_synth_audio->pitch_type,
 		      &value);

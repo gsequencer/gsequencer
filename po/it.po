@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2025-01-19 19:07+0100\n"
+"POT-Creation-Date: 2025-02-12 17:59+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -394,13 +394,13 @@ msgstr ""
 msgid "MIDI card"
 msgstr ""
 
-#: ags/app/ags_sequencer_editor.c:280 ags/app/editor/ags_pattern_envelope.c:819
+#: ags/app/ags_sequencer_editor.c:280 ags/app/editor/ags_pattern_envelope.c:827
 #: ags/app/editor/ags_envelope_editor.c:218 ags/app/ags_soundcard_editor.c:305
 msgid "_Add"
 msgstr ""
 
 #: ags/app/ags_sequencer_editor.c:284 ags/app/ags_sequencer_editor.c:289
-#: ags/app/editor/ags_pattern_envelope.c:824
+#: ags/app/editor/ags_pattern_envelope.c:832
 #: ags/app/editor/ags_envelope_editor.c:222 ags/app/ags_soundcard_editor.c:309
 #: ags/app/ags_soundcard_editor.c:652
 msgid "_Remove"
@@ -561,7 +561,7 @@ msgid "_Cancel"
 msgstr ""
 
 #: ags/app/editor/ags_envelope_editor_callbacks.c:47
-#: ags/app/editor/ags_pattern_envelope_callbacks.c:1049
+#: ags/app/editor/ags_pattern_envelope_callbacks.c:1102
 msgid "preset name"
 msgstr ""
 
@@ -952,11 +952,16 @@ msgstr ""
 msgid "ratio"
 msgstr ""
 
-#: ags/app/editor/ags_pattern_envelope.c:809
+#: ags/app/editor/ags_pattern_envelope.c:800
+#: ags/app/editor/ags_envelope_editor.c:623
+msgid "enable envelope LFO"
+msgstr ""
+
+#: ags/app/editor/ags_pattern_envelope.c:817
 msgid "move up"
 msgstr ""
 
-#: ags/app/editor/ags_pattern_envelope.c:814
+#: ags/app/editor/ags_pattern_envelope.c:822
 msgid "move down"
 msgstr ""
 
