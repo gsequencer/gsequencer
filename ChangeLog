@@ -1,3 +1,8 @@
+ags (7.6.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed fx factory ref count on return value
+
 ags (7.6.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
