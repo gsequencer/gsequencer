@@ -1742,6 +1742,8 @@ ags_base_plugin_instantiate(AgsBasePlugin *base_plugin,
   
   g_return_val_if_fail(AGS_IS_BASE_PLUGIN(base_plugin),
 		       NULL);
+
+  retval = NULL;
   
   g_object_ref(G_OBJECT(base_plugin));
   g_signal_emit(G_OBJECT(base_plugin),
