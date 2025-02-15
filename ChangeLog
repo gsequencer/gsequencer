@@ -1,3 +1,9 @@
+ags (7.6.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ladspa plugin ref count
+	* minor improvements
+
 ags (7.6.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

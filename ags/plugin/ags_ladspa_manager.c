@@ -693,7 +693,7 @@ ags_ladspa_manager_load_file(AgsLadspaManager *ladspa_manager,
 				     plugin_descriptor->Name) == NULL){
 	ladspa_plugin = ags_ladspa_plugin_new(path,
 					      plugin_descriptor->Name,
-					      i);
+					      (guint) i);
 	ags_base_plugin_load_plugin((AgsBasePlugin *) ladspa_plugin);
 	ladspa_manager->ladspa_plugin = g_list_prepend(ladspa_manager->ladspa_plugin,
 						       ladspa_plugin);
