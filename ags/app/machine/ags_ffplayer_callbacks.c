@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -351,7 +351,8 @@ ags_ffplayer_open_clicked_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
   current_path = NULL;
     
 #if defined(AGS_MACOS_SANDBOX)
-  current_path = g_strdup(home_path);
+  current_path = g_strdup_printf("%s/Music",
+				 home_path);
 #endif
 
 #if defined(AGS_FLATPAK_SANDBOX)
@@ -379,6 +380,7 @@ ags_ffplayer_open_clicked_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
 
   ags_file_widget_refresh(file_widget);
 
+#if !defined(AGS_MACOS_SANDBOX)
   ags_file_widget_add_location(file_widget,
 			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_DESKTOP,
 			       NULL);
@@ -386,15 +388,18 @@ ags_ffplayer_open_clicked_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
   ags_file_widget_add_location(file_widget,
 			       AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_DOCUMENTS,
 			       NULL);  
-
+#endif
+  
   ags_file_widget_add_location(file_widget,
 			       AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_MUSIC,
 			       NULL);
 
+#if !defined(AGS_MACOS_SANDBOX)
   ags_file_widget_add_location(file_widget,
 			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_HOME,
 			       NULL);
-
+#endif
+  
   if(g_file_test(sf2_bookmark_filename,
 		 (G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR))){
     ags_file_widget_add_bookmark(file_widget,

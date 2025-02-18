@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2025-02-15 08:27+0100\n"
+"POT-Creation-Date: 2025-02-18 23:30+0100\n"
 "PO-Revision-Date: 2021-01-03 08:52+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: Deutsch <jkraehemann@gmail.com>\n"
@@ -98,63 +98,63 @@ msgstr "Effect: "
 msgid "Ports"
 msgstr "Ports"
 
-#: ags/app/ags_machine_callbacks.c:755
+#: ags/app/ags_machine_callbacks.c:757
 #, fuzzy
 msgid "rename machine"
 msgstr "Audio unbenennen"
 
-#: ags/app/ags_machine_callbacks.c:763
+#: ags/app/ags_machine_callbacks.c:765
 msgid "The name of the machine is displayed on top of it or within editor."
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:766
+#: ags/app/ags_machine_callbacks.c:768
 #, fuzzy
 msgid "machine's name"
 msgstr "Machinen Name: "
 
-#: ags/app/ags_machine_callbacks.c:821
+#: ags/app/ags_machine_callbacks.c:823
 msgid "rename audio"
 msgstr "Audio unbenennen"
 
-#: ags/app/ags_machine_callbacks.c:829
+#: ags/app/ags_machine_callbacks.c:831
 msgid ""
 "The name of an audio object can be used to address it within a OSC message."
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:832
+#: ags/app/ags_machine_callbacks.c:834
 #, fuzzy
 msgid "audio object's name"
 msgstr "Audioverbindung"
 
-#: ags/app/ags_machine_callbacks.c:911
+#: ags/app/ags_machine_callbacks.c:913
 msgid "reposition audio"
 msgstr "Audio neu positionieren"
 
-#: ags/app/ags_machine_callbacks.c:919
+#: ags/app/ags_machine_callbacks.c:921
 msgid ""
 "The position of an audio object can be used to address it within a OSC "
 "message."
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:924
+#: ags/app/ags_machine_callbacks.c:926
 #, fuzzy
 msgid "audio object's position"
 msgstr "Audioverbindung"
 
-#: ags/app/ags_machine_callbacks.c:927 ags/app/editor/ags_automation_meta.c:593
+#: ags/app/ags_machine_callbacks.c:929 ags/app/editor/ags_automation_meta.c:593
 #: ags/app/editor/ags_wave_meta.c:426 ags/app/editor/ags_notation_meta.c:484
 msgid "position"
 msgstr "positionieren"
 
-#: ags/app/ags_machine_callbacks.c:983
+#: ags/app/ags_machine_callbacks.c:985
 msgid "properties"
 msgstr "Einstellungen"
 
-#: ags/app/ags_machine_callbacks.c:1063
+#: ags/app/ags_machine_callbacks.c:1065
 msgid "envelope"
 msgstr "Envelope"
 
-#: ags/app/ags_machine_callbacks.c:1106
+#: ags/app/ags_machine_callbacks.c:1108
 #: ags/app/editor/ags_pattern_envelope.c:276
 #: ags/app/editor/ags_envelope_editor.c:205
 #: ags/app/machine/ags_live_lv2_bridge.c:496
@@ -163,11 +163,11 @@ msgstr "Envelope"
 msgid "preset"
 msgstr "Voreinstellung"
 
-#: ags/app/ags_machine_callbacks.c:1203
+#: ags/app/ags_machine_callbacks.c:1205
 msgid "connections"
 msgstr "Verbindungen"
 
-#: ags/app/ags_link_editor_callbacks.c:114
+#: ags/app/ags_link_editor_callbacks.c:116
 #, fuzzy
 msgid "open audio file"
 msgstr "Öffne Audio-Dateien"
@@ -276,27 +276,27 @@ msgstr "RT-Sicher"
 msgid "GUI scale factor"
 msgstr "GUI Skalierungs faktor"
 
-#: ags/app/ags_pcm_file_dialog.c:237 ags/app/editor/ags_envelope_info.c:250
+#: ags/app/ags_pcm_file_dialog.c:239 ags/app/editor/ags_envelope_info.c:250
 msgid "audio channel"
 msgstr "Audio Kanal"
 
-#: ags/app/ags_pcm_file_dialog.c:260
+#: ags/app/ags_pcm_file_dialog.c:262
 msgid "open in new channel"
 msgstr "In einem neuen Kanal öffnen"
 
-#: ags/app/ags_pcm_file_dialog.c:271
+#: ags/app/ags_pcm_file_dialog.c:273
 #, fuzzy
 msgid "override existing links"
 msgstr "Überschreibe bestehende Verknüpfungen"
 
-#: ags/app/ags_pcm_file_dialog.c:283
+#: ags/app/ags_pcm_file_dialog.c:285
 msgid "download"
 msgstr ""
 
-#: ags/app/ags_pcm_file_dialog.c:291
-#: ags/app/export/ags_midi_export_wizard.c:474
+#: ags/app/ags_pcm_file_dialog.c:293
+#: ags/app/export/ags_midi_export_wizard.c:481
 #: ags/app/export/ags_wave_export_dialog.c:417
-#: ags/app/import/ags_midi_import_wizard.c:465
+#: ags/app/import/ags_midi_import_wizard.c:472
 #: ags/app/ags_export_soundcard.c:336
 msgid "open"
 msgstr "öffnen"
@@ -337,18 +337,18 @@ msgstr "Plugin Datei nicht vorhanden"
 msgid "selector"
 msgstr "auswählen"
 
-#: ags/app/export/ags_wave_export_dialog_callbacks.c:62
+#: ags/app/export/ags_wave_export_dialog_callbacks.c:64
 #, fuzzy
 msgid "export to file"
 msgstr "exportiere in audio daten"
 
-#: ags/app/export/ags_midi_export_wizard.c:460
-#: ags/app/import/ags_midi_import_wizard.c:451
+#: ags/app/export/ags_midi_export_wizard.c:467
+#: ags/app/import/ags_midi_import_wizard.c:458
 msgid "previous"
 msgstr ""
 
-#: ags/app/export/ags_midi_export_wizard.c:467
-#: ags/app/import/ags_midi_import_wizard.c:458
+#: ags/app/export/ags_midi_export_wizard.c:474
+#: ags/app/import/ags_midi_import_wizard.c:465
 msgid "next"
 msgstr ""
 
@@ -1101,10 +1101,10 @@ msgstr "Format"
 msgid "samplerate"
 msgstr "Wiederholrate"
 
-#: ags/app/ags_export_soundcard_callbacks.c:454
-#: ags/app/machine/ags_audiorec_callbacks.c:153
-#: ags/app/machine/ags_drum_input_pad_callbacks.c:81
-#: ags/app/machine/ags_drum_callbacks.c:84
+#: ags/app/ags_export_soundcard_callbacks.c:456
+#: ags/app/machine/ags_audiorec_callbacks.c:155
+#: ags/app/machine/ags_drum_input_pad_callbacks.c:83
+#: ags/app/machine/ags_drum_callbacks.c:86
 #, fuzzy
 msgid "open audio files"
 msgstr "Öffne Audio-Dateien"
@@ -1313,7 +1313,7 @@ msgstr "Kanal grösse anpassen"
 msgid "open file"
 msgstr "Öffne Datei"
 
-#: ags/app/ags_app_action_util.c:665
+#: ags/app/ags_app_action_util.c:670
 #, fuzzy
 msgid "save file as"
 msgstr "Speichern unter"
@@ -1571,9 +1571,9 @@ msgstr "ziehen"
 msgid "selected"
 msgstr "ausgewählt"
 
-#: ags/app/machine/ags_drum_callbacks.c:96
+#: ags/app/machine/ags_drum_callbacks.c:98
 #: ags/app/machine/ags_ffplayer_callbacks.c:276
-#: ags/app/machine/ags_sf2_synth_callbacks.c:97
+#: ags/app/machine/ags_sf2_synth_callbacks.c:99
 msgid "download samples"
 msgstr ""
 
@@ -1756,10 +1756,10 @@ msgstr "schleifen Anfang"
 msgid "loop end"
 msgstr "schleifen Ende"
 
-#: ags/app/machine/ags_sfz_synth_callbacks.c:84
+#: ags/app/machine/ags_sfz_synth_callbacks.c:86
 #: ags/app/machine/ags_ffplayer_callbacks.c:266
-#: ags/app/machine/ags_sf2_synth_callbacks.c:85
-#: ags/app/machine/ags_pitch_sampler_callbacks.c:73
+#: ags/app/machine/ags_sf2_synth_callbacks.c:87
+#: ags/app/machine/ags_pitch_sampler_callbacks.c:75
 #, fuzzy
 msgid "open Soundfont2 file"
 msgstr "Öffne Audio-Dateien"
