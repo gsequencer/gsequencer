@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -39,6 +39,8 @@
 #include <ags/app/machine/ags_drum.h>
 #include <ags/app/machine/ags_matrix.h>
 #include <ags/app/machine/ags_audiorec.h>
+
+#include <ags/ags_api_config.h>
 
 #include <ags/i18n.h>
 

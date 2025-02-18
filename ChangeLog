@@ -1,3 +1,21 @@
+ags (7.6.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved AgsAppActionUtil file widget with macOS sandbox
+	* improved AgsExportSoundcard file widget with macOS sandbox
+	* improved AgsLinkEditor file widget with macOS sandbox
+	* improved AgsMidiImportWizard file widget with macOS sandbox
+	* improved AgsMidiExportWizard file widget with macOS sandbox
+	* improved AgsWaveExportDialog file widget with macOS sandbox
+	* improved AgsPresetEditor file widget with macOS sandbox
+	* improved AgsDrum file widget with macOS sandbox
+	* improved AgsDrumInputPad file widget with macOS sandbox
+	* improved AgsAudiorec file widget with macOS sandbox
+	* improved AgsPitchSampler file widget with macOS sandbox
+	* improved AgsFFPlayer file widget with macOS sandbox
+	* improved AgsSF2Synth file widget with macOS sandbox
+	* improved AgsSFZSynth file widget with macOS sandbox
+
 ags (7.6.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

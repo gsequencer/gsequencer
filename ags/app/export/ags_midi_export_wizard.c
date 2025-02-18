@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,8 @@
 
 #include <ags/app/export/ags_machine_collection.h>
 #include <ags/app/export/ags_machine_mapper.h>
+
+#include <ags/ags_api_config.h>
 
 #include <ags/i18n.h>
 
@@ -381,7 +383,8 @@ ags_midi_export_wizard_init(AgsMidiExportWizard *midi_export_wizard)
   current_path = NULL;
     
 #if defined(AGS_MACOS_SANDBOX)
-  current_path = g_strdup(home_path);
+  current_path = g_strdup_printf("%s/Music",
+				 home_path);
 #endif
 
 #if defined(AGS_FLATPAK_SANDBOX)
@@ -409,22 +412,26 @@ ags_midi_export_wizard_init(AgsMidiExportWizard *midi_export_wizard)
 
   ags_file_widget_refresh(file_widget);
 
+#if !defined(AGS_MACOS_SANDBOX)
   ags_file_widget_add_location(file_widget,
 			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_DESKTOP,
 			       NULL);
-
+  
   ags_file_widget_add_location(file_widget,
 			       AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_DOCUMENTS,
 			       NULL);  
+#endif
 
   ags_file_widget_add_location(file_widget,
 			       AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_MUSIC,
 			       NULL);
 
+#if !defined(AGS_MACOS_SANDBOX)
   ags_file_widget_add_location(file_widget,
 			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_HOME,
 			       NULL);
-
+#endif
+  
   ags_file_widget_set_file_action(file_widget,
 				  AGS_FILE_WIDGET_SAVE_AS);
 
