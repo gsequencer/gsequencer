@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -61,7 +61,7 @@ ags_set_device_test_launch()
 
   AgsSetDevice *set_device;
 
-  devout = ags_alsa_devout_new(NULL);
+  devout = ags_alsa_devout_new();
 
   set_device = ags_set_device_new(devout,
 				  "default");

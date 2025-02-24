@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -63,7 +63,7 @@ ags_set_audio_channels_test_launch()
 
   guint audio_channels;
   
-  devout = ags_alsa_devout_new(NULL);
+  devout = ags_alsa_devout_new();
 
   set_audio_channels = ags_set_audio_channels_new(devout,
 						  6);

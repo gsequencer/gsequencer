@@ -78,7 +78,7 @@ ags_set_buffer_size_test_launch()
 
   guint buffer_size;
   
-  devout = ags_alsa_devout_new(NULL);
+  devout = ags_alsa_devout_new();
   ags_sound_provider_set_default_soundcard(AGS_SOUND_PROVIDER(application_context),
 					   devout);
   ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),

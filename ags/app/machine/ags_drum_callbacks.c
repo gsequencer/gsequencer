@@ -87,6 +87,7 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
 
   drum->open_dialog = pcm_file_dialog;
 
+#if defined(AGS_MACOS_SANDBOX)
   ags_pcm_file_dialog_set_flags(pcm_file_dialog,
 				AGS_PCM_FILE_DIALOG_SHOW_DOWNLOAD_LINK);
 
@@ -96,7 +97,8 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
 			  "https://gsequencer.com/samples.html");
   gtk_button_set_label((GtkButton *) link_button,
 		       i18n("download samples"));
-
+#endif
+  
   file_widget = ags_pcm_file_dialog_get_file_widget(pcm_file_dialog);
 
   home_path = ags_file_widget_get_home_path(file_widget);
@@ -198,9 +200,9 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
   ags_file_widget_set_current_path(file_widget,
 				   current_path);
 
-  g_free(current_path);
-
   ags_file_widget_refresh(file_widget);
+
+  g_free(current_path);
 
 #if !defined(AGS_MACOS_SANDBOX)
   ags_file_widget_add_location(file_widget,

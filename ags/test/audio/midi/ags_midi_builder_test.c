@@ -146,7 +146,7 @@ ags_midi_builder_test_create_default(guint n_tracks)
   
   guint i;
 
-  midi_builder = ags_midi_builder_new(NULL);
+  midi_builder = ags_midi_builder_new();
 
   /* default header */
   ags_midi_builder_append_header(midi_builder,
@@ -179,7 +179,7 @@ ags_midi_builder_test_append_header()
   gint offset, format;
   gint track_count, division;
     
-  midi_builder = ags_midi_builder_new(NULL);
+  midi_builder = ags_midi_builder_new();
 
   /* append header */
   ags_midi_builder_append_header(midi_builder,
@@ -230,7 +230,7 @@ ags_midi_builder_test_append_track()
   gint delta_time;
   gint text_length;
   
-  midi_builder = ags_midi_builder_new(NULL);
+  midi_builder = ags_midi_builder_new();
 
   /* default header */
   ags_midi_builder_append_header(midi_builder,

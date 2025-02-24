@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,7 +32,7 @@
 int ags_fx_lv2_audio_test_init_suite();
 int ags_fx_lv2_audio_test_clean_suite();
 
-void ags_fx_lv2_audio_stub_finalize();
+void ags_fx_lv2_audio_stub_finalize(GObject *gobject);
 
 void ags_fx_lv2_audio_test_new();
 void ags_fx_lv2_audio_test_dispose();

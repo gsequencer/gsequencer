@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -68,7 +68,7 @@ ags_remove_soundcard_test_launch()
   application_context = ags_audio_application_context_new();
   g_object_ref(application_context);
 
-  devout = ags_alsa_devout_new(application_context);
+  devout = ags_alsa_devout_new();
   g_object_ref(devout);
 
   list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));

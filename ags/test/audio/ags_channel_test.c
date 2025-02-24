@@ -267,7 +267,7 @@ ags_channel_test_add_recall_container()
   channel = ags_channel_new(NULL);
 
   /* instantiate recall */
-  recall_container0 = ags_recall_container_new(NULL);
+  recall_container0 = ags_recall_container_new();
   ags_channel_add_recall_container(channel,
 				   recall_container0);
   
@@ -276,7 +276,7 @@ ags_channel_test_add_recall_container()
 			recall_container0) != NULL);
 
   /* instantiate recall */
-  recall_container1 = ags_recall_container_new(NULL);
+  recall_container1 = ags_recall_container_new();
   ags_channel_add_recall_container(channel,
 				   recall_container1);
   
@@ -297,7 +297,7 @@ ags_channel_test_add_recall_id()
   channel = ags_channel_new(NULL);
 
   /* instantiate recall */
-  recall_id0 = ags_recall_id_new(NULL);
+  recall_id0 = ags_recall_id_new();
   ags_channel_add_recall_id(channel,
 			    recall_id0);
   
@@ -306,7 +306,7 @@ ags_channel_test_add_recall_id()
 			recall_id0) != NULL);
 
   /* instantiate recall */
-  recall_id1 = ags_recall_id_new(NULL);
+  recall_id1 = ags_recall_id_new();
   ags_channel_add_recall_id(channel,
 			    recall_id1);
   
@@ -351,7 +351,7 @@ ags_channel_test_duplicate_recall()
   /* instantiate recycling context and recall id */
   recycling_context = ags_recycling_context_new(0);
 
-  recall_id = ags_recall_id_new(NULL);
+  recall_id = ags_recall_id_new();
   recall_id->sound_scope = AGS_SOUND_SCOPE_NOTATION;
   g_object_set(recall_id,
 	       "recycling-context", recycling_context,
@@ -391,7 +391,7 @@ ags_channel_test_duplicate_recall()
 	       "parent", parent_recycling_context,
 	       NULL);
 
-  recall_id = ags_recall_id_new(NULL);
+  recall_id = ags_recall_id_new();
   recall_id->sound_scope = AGS_SOUND_SCOPE_NOTATION;
   g_object_set(recall_id,
 	       "recycling-context", recycling_context,
@@ -437,7 +437,7 @@ ags_channel_test_init_recall()
   /* instantiate recycling context and recall id */
   recycling_context = ags_recycling_context_new(0);
 
-  recall_id = ags_recall_id_new(NULL);
+  recall_id = ags_recall_id_new();
   recall_id->sound_scope = AGS_SOUND_SCOPE_NOTATION;
   g_object_set(recall_id,
 	       "recycling-context", recycling_context,
@@ -492,7 +492,7 @@ ags_channel_test_resolve_recall()
   /* instantiate recycling context and recall id */
   recycling_context = ags_recycling_context_new(0);
 
-  recall_id = ags_recall_id_new(NULL);
+  recall_id = ags_recall_id_new();
   recall_id->sound_scope = AGS_SOUND_SCOPE_NOTATION;
   g_object_set(recall_id,
 	       "recycling-context", recycling_context,

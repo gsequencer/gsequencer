@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2025-02-18 23:30+0100\n"
+"POT-Creation-Date: 2025-02-24 17:03+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1511,7 +1511,7 @@ msgstr ""
 msgid "selected"
 msgstr ""
 
-#: ags/app/machine/ags_drum_callbacks.c:98
+#: ags/app/machine/ags_drum_callbacks.c:99
 #: ags/app/machine/ags_ffplayer_callbacks.c:276
 #: ags/app/machine/ags_sf2_synth_callbacks.c:99
 msgid "download samples"

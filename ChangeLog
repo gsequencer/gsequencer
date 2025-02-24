@@ -1,3 +1,9 @@
+ags (7.6.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed buffer-overflow with recently-used in file widget
+	* fixed unit and functional tests to work with gcc-15
+
 ags (7.6.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -79,7 +79,7 @@ ags_apply_tact_test_launch_scope_recall()
 
   AgsApplyTact *apply_tact;
 
-  devout = ags_alsa_devout_new(NULL);
+  devout = ags_alsa_devout_new();
   g_object_ref(devout);
   
   audio = ags_audio_new(devout);
@@ -125,7 +125,7 @@ ags_apply_tact_test_launch_scope_audio()
 
   AgsApplyTact *apply_tact;
   
-  devout = ags_alsa_devout_new(NULL);
+  devout = ags_alsa_devout_new();
   g_object_ref(devout);
 
   audio = ags_audio_new(NULL);
@@ -202,12 +202,12 @@ ags_apply_tact_test_launch_scope_application_context()
   application_context = ags_audio_application_context_new();
   g_object_ref(application_context);
 
-  devout = ags_alsa_devout_new(application_context);
+  devout = ags_alsa_devout_new();
   ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
 				   g_list_append(NULL, devout));
   g_object_ref(devout);
 
-  midiin = ags_alsa_midiin_new(application_context);
+  midiin = ags_alsa_midiin_new();
   ags_sound_provider_set_sequencer(AGS_SOUND_PROVIDER(application_context),
 				   g_list_append(NULL, midiin));
   g_object_ref(midiin);

@@ -162,7 +162,7 @@ ags_thread_test_get_toplevel()
 
   guint i;
 
-  main_loop = ags_generic_main_loop_new(application_context);
+  main_loop = ags_generic_main_loop_new();
   thread = main_loop;
   
   for(i = 0; i < AGS_THREAD_TEST_GET_TOPLEVEL_N_LEVELS; i++){
