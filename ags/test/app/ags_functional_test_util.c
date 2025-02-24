@@ -2933,8 +2933,7 @@ ags_functional_test_util_export_set_format(guint nth,
 }
 
 void
-ags_functional_test_util_export_do_export(guint nth,
-					  gchar *format)
+ags_functional_test_util_export_do_export()
 {
   //TODO:JK: 
 }

@@ -1019,7 +1019,7 @@ ags_audio_application_context_ref_count_test_playback_audio()
 			      start_audio);
   
   /* start soundcard */
-  start_soundcard = ags_start_soundcard_new(audio_application_context);
+  start_soundcard = ags_start_soundcard_new();
   start_list = g_list_prepend(start_list,
 			      start_soundcard);
 
@@ -1141,7 +1141,7 @@ ags_audio_application_context_ref_count_test_playback_channel()
 			      start_channel);
 
   /* start soundcard */
-  start_soundcard = ags_start_soundcard_new(audio_application_context);
+  start_soundcard = ags_start_soundcard_new();
   start_list = g_list_prepend(start_list,
 			      start_soundcard);
 

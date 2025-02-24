@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -66,7 +66,7 @@ ags_seek_soundcard_test_launch()
 
   AgsSeekSoundcard *seek_soundcard;
 
-  devout = ags_alsa_devout_new(NULL);
+  devout = ags_alsa_devout_new();
 
   seek_soundcard = ags_seek_soundcard_new(devout,
 					  64 * 16,

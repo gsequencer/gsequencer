@@ -185,9 +185,9 @@ ags_drum_input_pad_open_callback(GtkWidget *widget, AgsDrumInputPad *drum_input_
   ags_file_widget_set_current_path(file_widget,
 				   current_path);
 
-  g_free(current_path);
-
   ags_file_widget_refresh(file_widget);
+
+  g_free(current_path);
 
 #if !defined(AGS_MACOS_SANDBOX)
   ags_file_widget_add_location(file_widget,

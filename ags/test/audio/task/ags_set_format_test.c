@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -78,7 +78,7 @@ ags_set_format_test_launch()
 
   guint format;
   
-  devout = ags_alsa_devout_new(NULL);
+  devout = ags_alsa_devout_new();
   ags_sound_provider_set_default_soundcard(AGS_SOUND_PROVIDER(application_context),
 					   devout);
   ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),

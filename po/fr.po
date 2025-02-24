@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2025-02-18 23:30+0100\n"
+"POT-Creation-Date: 2025-02-24 17:03+0100\n"
 "PO-Revision-Date: 2021-01-11 21:07+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: français <jkraehemann@gmail.com>\n"
@@ -1571,7 +1571,7 @@ msgstr "rafler"
 msgid "selected"
 msgstr "sélectionner"
 
-#: ags/app/machine/ags_drum_callbacks.c:98
+#: ags/app/machine/ags_drum_callbacks.c:99
 #: ags/app/machine/ags_ffplayer_callbacks.c:276
 #: ags/app/machine/ags_sf2_synth_callbacks.c:99
 msgid "download samples"
