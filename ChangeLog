@@ -1,3 +1,9 @@
+ags (7.6.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed drum open response callback set flags
+	  AGS_FILE_WIDGET_WITH_MULTI_SELECTION earlier
+
 ags (7.6.9)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

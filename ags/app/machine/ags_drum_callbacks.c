@@ -171,6 +171,10 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
 
   ags_file_widget_read_bookmark(file_widget);
 
+  /* multi-selection */
+  ags_file_widget_set_flags(file_widget,
+  			    AGS_FILE_WIDGET_WITH_MULTI_SELECTION);
+
   /* current path */
   current_path = NULL;
     
@@ -229,9 +233,6 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
     ags_file_widget_add_bookmark(file_widget,
 				 drumkits_bookmark_filename);
   }
-  
-  ags_file_widget_set_flags(file_widget,
-			    AGS_FILE_WIDGET_WITH_MULTI_SELECTION);
   
   ags_pcm_file_dialog_unset_flags(pcm_file_dialog,
 				  AGS_PCM_FILE_DIALOG_SHOW_AUDIO_CHANNEL);
