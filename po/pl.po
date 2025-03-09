@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2025-02-25 07:30+0100\n"
+"POT-Creation-Date: 2025-03-09 23:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -98,63 +98,63 @@ msgstr "efekt: "
 msgid "Ports"
 msgstr "Porty"
 
-#: ags/app/ags_machine_callbacks.c:757
+#: ags/app/ags_machine_callbacks.c:759
 #, fuzzy
 msgid "rename machine"
 msgstr "zmień nazwę pliku audio"
 
-#: ags/app/ags_machine_callbacks.c:765
+#: ags/app/ags_machine_callbacks.c:767
 msgid "The name of the machine is displayed on top of it or within editor."
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:768
+#: ags/app/ags_machine_callbacks.c:770
 #, fuzzy
 msgid "machine's name"
 msgstr "nazwa urządzenia: "
 
-#: ags/app/ags_machine_callbacks.c:823
+#: ags/app/ags_machine_callbacks.c:825
 msgid "rename audio"
 msgstr "zmień nazwę pliku audio"
 
-#: ags/app/ags_machine_callbacks.c:831
+#: ags/app/ags_machine_callbacks.c:833
 msgid ""
 "The name of an audio object can be used to address it within a OSC message."
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:834
+#: ags/app/ags_machine_callbacks.c:836
 #, fuzzy
 msgid "audio object's name"
 msgstr "połączenie audio"
 
-#: ags/app/ags_machine_callbacks.c:913
+#: ags/app/ags_machine_callbacks.c:915
 msgid "reposition audio"
 msgstr "przemieść plik audio"
 
-#: ags/app/ags_machine_callbacks.c:921
+#: ags/app/ags_machine_callbacks.c:923
 msgid ""
 "The position of an audio object can be used to address it within a OSC "
 "message."
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:926
+#: ags/app/ags_machine_callbacks.c:928
 #, fuzzy
 msgid "audio object's position"
 msgstr "połączenie audio"
 
-#: ags/app/ags_machine_callbacks.c:929 ags/app/editor/ags_automation_meta.c:593
+#: ags/app/ags_machine_callbacks.c:931 ags/app/editor/ags_automation_meta.c:593
 #: ags/app/editor/ags_wave_meta.c:426 ags/app/editor/ags_notation_meta.c:484
 msgid "position"
 msgstr "pozycja"
 
-#: ags/app/ags_machine_callbacks.c:985
+#: ags/app/ags_machine_callbacks.c:987
 msgid "properties"
 msgstr "ustawienia"
 
-#: ags/app/ags_machine_callbacks.c:1065
+#: ags/app/ags_machine_callbacks.c:1067
 msgid "envelope"
 msgstr "koperta"
 
-#: ags/app/ags_machine_callbacks.c:1108
+#: ags/app/ags_machine_callbacks.c:1110
 #: ags/app/editor/ags_pattern_envelope.c:276
 #: ags/app/editor/ags_envelope_editor.c:205
 #: ags/app/machine/ags_live_lv2_bridge.c:496
@@ -163,7 +163,7 @@ msgstr "koperta"
 msgid "preset"
 msgstr "ustawienia wstępne"
 
-#: ags/app/ags_machine_callbacks.c:1205
+#: ags/app/ags_machine_callbacks.c:1207
 msgid "connections"
 msgstr "powiązania"
 
