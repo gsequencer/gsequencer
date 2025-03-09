@@ -1,3 +1,9 @@
+ags (7.6.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed install_data() on macOS missing argument to string function
+	* minor improvements
+
 ags (7.6.10)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

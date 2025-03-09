@@ -475,44 +475,46 @@ ags_machine_move_down_callback(GAction *action, GVariant *parameter,
   g_list_free(start_machine_radio_button);    
   
   /* composite editor */
-  start_list = ags_window_get_machine(window);
+  if(move_radio_button){
+    start_list = ags_window_get_machine(window);
   
-  if(start_list != NULL &&
-     g_list_last(start_list)->data != machine){
-    GAction *action;
+    if(start_list != NULL &&
+       g_list_last(start_list)->data != machine){
+      GAction *action;
     
-    gchar *action_name;
+      gchar *action_name;
     
-    ags_machine_selector_popup_remove_machine(machine_selector,
-					      popup_position);
+      ags_machine_selector_popup_remove_machine(machine_selector,
+						popup_position);
     
-    ags_machine_selector_popup_insert_machine(machine_selector,
-					      popup_position + 1,
-					      machine);
+      ags_machine_selector_popup_insert_machine(machine_selector,
+						popup_position + 1,
+						machine);
   
-    if(has_machine_radio_button && position + 1 <= g_list_length(machine_selector->machine_radio_button)){
-      ags_machine_selector_remove_index(machine_selector,
-					position);    
+      if(has_machine_radio_button && position + 1 <= g_list_length(machine_selector->machine_radio_button)){
+	ags_machine_selector_remove_index(machine_selector,
+					  position);    
 
-      ags_machine_selector_insert_index(machine_selector,
-					position + 1,
-					machine);
+	ags_machine_selector_insert_index(machine_selector,
+					  position + 1,
+					  machine);
+      }
+
+      action_name = g_strdup_printf("add-%s",
+				    machine->uid);
+    
+      action = g_action_map_lookup_action(G_ACTION_MAP(machine_selector->action_group),
+					  action_name);
+      g_object_set(action,
+		   "state", g_variant_new_boolean(has_machine_radio_button),
+		   NULL);
+
+      g_free(action_name);
     }
 
-    action_name = g_strdup_printf("add-%s",
-				  machine->uid);
-    
-    action = g_action_map_lookup_action(G_ACTION_MAP(machine_selector->action_group),
-					action_name);
-    g_object_set(action,
-		 "state", g_variant_new_boolean(has_machine_radio_button),
-		 NULL);
-
-    g_free(action_name);
+    g_list_free(start_list);
   }
-
-  g_list_free(start_list);
-
+  
   /* window */
   start_list = ags_window_get_machine(window);
 
