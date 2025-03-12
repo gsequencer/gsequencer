@@ -48,12 +48,27 @@ struct _AgsFxPatternAudioProcessor
   AgsRecallAudioRun recall_audio_run;
 
   gdouble delay_completion;
-  
-  gdouble delay_counter;  
-  guint64 offset_counter;
 
-  gdouble current_delay_counter;  
+  gdouble delay_counter;
+  guint64 offset_counter;
+  
+  gdouble current_delay_counter;
   guint64 current_offset_counter;
+
+  guint tic_counter; // in the range of default period
+  guint current_tic_counter;
+
+  gdouble note_256th_delay;
+
+  guint64 note_256th_offset_lower;
+  guint64 note_256th_offset_upper;
+
+  guint64 note_256th_current_offset_lower;
+  guint64 note_256th_current_offset_upper;
+
+  GList *note_256th;
+
+  gboolean has_16th_pulse;
 };
 
 struct _AgsFxPatternAudioProcessorClass

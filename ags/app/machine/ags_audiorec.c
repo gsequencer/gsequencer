@@ -931,6 +931,10 @@ ags_audiorec_fast_export_run(void *ptr)
 
   data = ags_stream_alloc(audio_channels * buffer_size,
 			  format);
+
+  ags_audio_buffer_util_clear_buffer(NULL,
+				     data, 1,
+				     audio_channels * buffer_size, ags_audio_buffer_util_format_from_soundcard(NULL, format));
   
   for(i = start_frame; i + buffer_size < end_frame; ){
     guint current_buffer_size;
@@ -1001,6 +1005,10 @@ ags_audiorec_fast_export_run(void *ptr)
 			 data,
 			 current_buffer_size,
 			 format);
+
+    ags_audio_buffer_util_clear_buffer(NULL,
+				       data, 1,
+				       audio_channels * buffer_size, ags_audio_buffer_util_format_from_soundcard(NULL, format));
     
     i += current_buffer_size;
   }

@@ -692,17 +692,21 @@ ags_composite_toolbar_port_callback(GtkComboBox *combo_box, AgsCompositeToolbar 
 void
 ags_composite_toolbar_zoom_callback(GtkComboBox *combo_box, AgsCompositeToolbar *composite_toolbar)
 {
-
   AgsCompositeEditor *composite_editor;
 
   AgsApplicationContext *application_context;
 
+  GtkAllocation allocation;
+
+  gdouble gui_scale_factor;
   gdouble old_zoom_factor;
   gdouble zoom_factor, zoom;
   
   application_context = ags_application_context_get_instance();
 
   composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   old_zoom_factor = exp2(6.0 - (double) composite_toolbar->selected_zoom);
   
@@ -755,7 +759,20 @@ ags_composite_toolbar_zoom_callback(GtkComboBox *combo_box, AgsCompositeToolbar 
     }
     
     if(composite_editor->wave_edit != NULL){
-      GList *start_list, *list;
+      GList *start_list, *list;  
+
+      /* zoom */
+      list = 
+	start_list = ags_wave_edit_box_get_wave_edit((AgsWaveEditBox *) AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box);
+      
+      while(list != NULL){
+	ags_wave_edit_reset_vscrollbar((AgsWaveEdit *) list->data);
+	ags_wave_edit_reset_hscrollbar((AgsWaveEdit *) list->data);
+
+	list = list->next;
+      }
+
+      g_list_free(start_list);
       
       gtk_adjustment_set_value(gtk_scrollbar_get_adjustment(composite_editor->wave_edit->hscrollbar),
 			       gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(composite_editor->wave_edit->hscrollbar)) * old_zoom_factor / zoom_factor);
