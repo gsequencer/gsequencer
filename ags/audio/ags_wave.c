@@ -830,6 +830,10 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
 	break;
       }
 
+      samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+
+      current_timestamp = NULL;
+      
       g_object_get(current_start->data,
 		   "samplerate", &samplerate,
 		   "timestamp", &current_timestamp,
@@ -843,29 +847,33 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
 	  
 	  g_object_unref(current_timestamp);
 
-	  if(current_x > x + relative_offset){
+#if 0
+	  if(x + relative_offset < current_x){
 	    break;
 	  }
+#endif
 	}else{
 	  current_x = ags_timestamp_get_unix_time(current_timestamp);
 	  
 	  g_object_unref(current_timestamp);
 
-	  if(current_x > x){
+#if 0
+	  if(x < current_x){
 	    break;
 	  }
+#endif
 	}
 
 	if(use_ags_offset){
-	  if(current_x >= x &&
-	     current_x < x + relative_offset){
+	  if(x >= current_x &&
+	     x < current_x + relative_offset){
 	    retval = current_start;
 	    
 	    break;
 	  }
 	}else{
-	  if(current_x >= x &&
-	     current_x < x + AGS_WAVE_DEFAULT_DURATION){
+	  if(x >= current_x &&
+	     x < current_x + AGS_WAVE_DEFAULT_DURATION){
 	    retval = current_start;
 	    
 	    break;
@@ -888,6 +896,10 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
 	break;
       }
 
+      samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+
+      current_timestamp = NULL;
+
       g_object_get(current_end->data,
 		   "samplerate", &samplerate,
 		   "timestamp", &current_timestamp,
@@ -901,29 +913,33 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
 
 	  g_object_unref(current_timestamp);
 
-	  if(current_x < x){
+#if 0
+	  if(x + relative_offset < current_x){
 	    break;
 	  }
+#endif
 	}else{
 	  current_x = ags_timestamp_get_unix_time(current_timestamp);
 	  
 	  g_object_unref(current_timestamp);
 
-	  if(current_x < x){
+#if 0
+	  if(x < current_x){
 	    break;
 	  }
+#endif
 	}
 
 	if(use_ags_offset){
-	  if(current_x >= x &&
-	     current_x < x + relative_offset){
+	  if(x >= current_x &&
+	     x < current_x + relative_offset){
 	    retval = current_end;
 
 	    break;
 	  }
 	}else{
-	  if(current_x >= x &&
-	     current_x < x + AGS_WAVE_DEFAULT_DURATION){
+	  if(x >= current_x &&
+	     x < current_x + AGS_WAVE_DEFAULT_DURATION){
 	    retval = current_end;
 	    
 	    break;
@@ -939,13 +955,15 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
 		 "line", &current_line,
 		 NULL);
 
-    if(current_line == line){
-      if(timestamp == NULL){
-	retval = current;
+    if(timestamp == NULL){
+      retval = current;
 	
-	break;
-      }
+      break;
     }
+
+    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+
+    current_timestamp = NULL;
     
     g_object_get(current->data,
 		 "samplerate", &samplerate,
@@ -960,8 +978,8 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
 
 	g_object_unref(current_timestamp);
     
-	if(current_x >= x &&
-	   current_x < x + relative_offset &&
+	if(x >= current_x &&
+	   x < current_x + relative_offset &&
 	   current_line == line){
 	  retval = current;
 
@@ -972,8 +990,8 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
 	  
 	g_object_unref(current_timestamp);
 
-	if(current_x >= x &&
-	   current_x < x + AGS_WAVE_DEFAULT_DURATION &&
+	if(x >= current_x &&
+	   x < current_x + relative_offset &&
 	   current_line == line){
 	  retval = current;
 	    
@@ -988,16 +1006,16 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
       break;
     }
 
-    if(current_x < x){
-      current_start = current->next;
-      current_end = current_end->prev;
-    }else if(current_x > x){
+    if(x < current_x){
       current_start = current_start->next;
       current_end = current->prev;
+    }else if(x > current_x){
+      current_start = current->next;
+      current_end = current_end->prev;
     }else{
       current_start = current_start->next;
       //NOTE:JK: we want progression
-      //current_end = current_end->prev;
+      //      current_end = current_end->prev;
     }
 
     length = g_list_position(current_start,
@@ -2430,7 +2448,7 @@ ags_wave_find_region(AgsWave *wave,
   wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
 
   if(x0 > x1){
-    guint tmp_x;
+    guint64 tmp_x;
 
     tmp_x = x0;
 
@@ -3420,6 +3438,27 @@ ags_wave_copy_selection_as_base64(AgsWave *wave)
 	cbuffer_size = 8 * buffer_size * sizeof(guchar);
       }
       break;
+    case AGS_SOUNDCARD_FLOAT:
+      {
+	cbuffer = ags_buffer_util_float_to_char_buffer((gfloat *) buffer->data,
+						       buffer_size);
+	cbuffer_size = 4 * buffer_size * sizeof(guchar);
+      }
+      break;
+    case AGS_SOUNDCARD_DOUBLE:
+      {
+	cbuffer = ags_buffer_util_double_to_char_buffer((gdouble *) buffer->data,
+							buffer_size);
+	cbuffer_size = 8 * buffer_size * sizeof(guchar);
+      }
+      break;
+    case AGS_SOUNDCARD_COMPLEX:
+      {
+	cbuffer = ags_buffer_util_complex_to_char_buffer((AgsComplex *) buffer->data,
+							buffer_size);
+	cbuffer_size = 16 * buffer_size * sizeof(guchar);
+      }
+      break;
     }
 
     g_rec_mutex_unlock(buffer_mutex);
@@ -3435,13 +3474,54 @@ ags_wave_copy_selection_as_base64(AgsWave *wave)
       break;
     }
     
-    offset += sprintf(wave_base64 + offset,
-		      "format=%u samplerate=%u buffer-size=%u x=%lu data-base64=%s\n",
-		      format,
-		      samplerate,
-		      buffer_size,
-		      x,
-		      base64_str);
+    switch(buffer->format){    
+    case AGS_SOUNDCARD_SIGNED_8_BIT:
+    case AGS_SOUNDCARD_SIGNED_16_BIT:
+    case AGS_SOUNDCARD_SIGNED_24_BIT:
+    case AGS_SOUNDCARD_SIGNED_32_BIT:
+    case AGS_SOUNDCARD_SIGNED_64_BIT:
+      {
+	offset += sprintf(wave_base64 + offset,
+			  "format=%u samplerate=%u buffer-size=%u x=%lu data-base64=%s\n",
+			  format,
+			  samplerate,
+			  buffer_size,
+			  x,
+			  base64_str);
+      }
+      break;
+    case AGS_SOUNDCARD_FLOAT:
+      {
+	offset += sprintf(wave_base64 + offset,
+			  "format=float samplerate=%u buffer-size=%u x=%lu data-base64=%s\n",
+			  samplerate,
+			  buffer_size,
+			  x,
+			  base64_str);
+      }
+      break;
+    case AGS_SOUNDCARD_DOUBLE:
+      {
+	offset += sprintf(wave_base64 + offset,
+			  "format=double samplerate=%u buffer-size=%u x=%lu data-base64=%s\n",
+			  format,
+			  samplerate,
+			  buffer_size,
+			  x,
+			  base64_str);
+      }
+      break;
+    case AGS_SOUNDCARD_COMPLEX:
+      {
+	offset += sprintf(wave_base64 + offset,
+			  "format=AgsComplex samplerate=%u buffer-size=%u x=%lu data-base64=%s\n",
+			  samplerate,
+			  buffer_size,
+			  x,
+			  base64_str);
+      }
+      break;
+    }
 
     g_free(base64_str);
     

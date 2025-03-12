@@ -803,38 +803,38 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
 	
 	break;
       }
-    }
 
-    g_rec_mutex_lock(mutex);
+      g_rec_mutex_lock(mutex);
 
-    current_timestamp = ((AgsNotation *) current->data)->timestamp;
+      current_timestamp = ((AgsNotation *) current->data)->timestamp;
     
-    g_rec_mutex_unlock(mutex);
+      g_rec_mutex_unlock(mutex);
 
-    if(current_timestamp != NULL){
-      if(use_ags_offset){
-	current_x = ags_timestamp_get_ags_offset(current_timestamp);
+      if(current_timestamp != NULL){
+	if(use_ags_offset){
+	  current_x = ags_timestamp_get_ags_offset(current_timestamp);
 
-	if(current_x >= x &&
-	   current_x < x + AGS_NOTATION_DEFAULT_OFFSET &&
-	   current_audio_channel == audio_channel){
-	  retval = current;
+	  if(current_x >= x &&
+	     current_x < x + AGS_NOTATION_DEFAULT_OFFSET &&
+	     current_audio_channel == audio_channel){
+	    retval = current;
 	    
-	  break;
+	    break;
+	  }
+	}else{
+	  current_x = ags_timestamp_get_unix_time(current_timestamp);
+	  
+	  if(current_x >= x &&
+	     current_x < x + AGS_NOTATION_DEFAULT_DURATION &&
+	     current_audio_channel == audio_channel){
+	    retval = current;
+	    
+	    break;
+	  }
 	}
       }else{
-	current_x = ags_timestamp_get_unix_time(current_timestamp);
-	  
-	if(current_x >= x &&
-	   current_x < x + AGS_NOTATION_DEFAULT_DURATION &&
-	   current_audio_channel == audio_channel){
-	  retval = current;
-	    
-	  break;
-	}
+	g_warning("inconsistent data");
       }
-    }else{
-      g_warning("inconsistent data");
     }
     
     if(length <= 3){

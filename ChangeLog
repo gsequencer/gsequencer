@@ -1,3 +1,16 @@
+ags (7.6.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented missing base64 clipboard for float, double and AgsComplex
+	* fixed wave form editor selection tool
+	* fixed ags_notation_find_near_timestamp()
+	* fixed ags_automation_find_near_timestamp()
+	* fixed ags_automation_find_near_timestamp_extended()
+	* fixed ags_wave_find_near_timestamp()
+	* fixed time accounting of audio loop and settings by soundcard thread
+	* improved AgsCompositeEditor wave form clipboard
+	* improved reset scrollbars for wave form editor after zoom
+
 ags (7.6.12)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

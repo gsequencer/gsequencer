@@ -1272,40 +1272,40 @@ ags_automation_find_near_timestamp(GList *automation, guint line,
 	
 	break;
       }
-    }
     
-    g_object_get(current->data,
-		 "timestamp", &current_timestamp,
-		 NULL);
+      g_object_get(current->data,
+		   "timestamp", &current_timestamp,
+		   NULL);
 
-    if(current_timestamp != NULL){
-      if(use_ags_offset){
-	current_x = ags_timestamp_get_ags_offset(current_timestamp);
+      if(current_timestamp != NULL){
+	if(use_ags_offset){
+	  current_x = ags_timestamp_get_ags_offset(current_timestamp);
 
-	g_object_unref(current_timestamp);
+	  g_object_unref(current_timestamp);
 	  
-	if(current_x >= x &&
-	   current_x < x + AGS_AUTOMATION_DEFAULT_OFFSET &&
-	  current_line == line){
-	  retval = current;
+	  if(current_x >= x &&
+	     current_x < x + AGS_AUTOMATION_DEFAULT_OFFSET &&
+	     current_line == line){
+	    retval = current;
 	    
-	  break;
+	    break;
+	  }
+	}else{
+	  current_x = ags_timestamp_get_unix_time(current_timestamp);
+
+	  g_object_unref(current_timestamp);
+	  
+	  if(current_x >= x &&
+	     current_x < x + AGS_AUTOMATION_DEFAULT_DURATION &&
+	     current_line == line){
+	    retval = current;
+	    
+	    break;
+	  }
 	}
       }else{
-	current_x = ags_timestamp_get_unix_time(current_timestamp);
-
-	g_object_unref(current_timestamp);
-	  
-	if(current_x >= x &&
-	   current_x < x + AGS_AUTOMATION_DEFAULT_DURATION &&
-	   current_line == line){
-	  retval = current;
-	    
-	  break;
-	}
+	g_warning("inconsistent data");
       }
-    }else{
-      g_warning("inconsistent data");
     }
     
     if(length <= 3){
@@ -1551,49 +1551,49 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
 	
 	break;
       }
-    }
     
-    g_object_get(current->data,
-		 "timestamp", &current_timestamp,
-		 NULL);
+      g_object_get(current->data,
+		   "timestamp", &current_timestamp,
+		   NULL);
 
-    if(current_timestamp != NULL){
-      if(use_ags_offset){
-	current_x = ags_timestamp_get_ags_offset(current_timestamp);
+      if(current_timestamp != NULL){
+	if(use_ags_offset){
+	  current_x = ags_timestamp_get_ags_offset(current_timestamp);
 
-	g_object_unref(current_timestamp);
+	  g_object_unref(current_timestamp);
 	  
-	if(current_x >= x &&
-	   current_x < x + AGS_AUTOMATION_DEFAULT_OFFSET &&
-	   current_line == line &&
-	   current_channel_type == channel_type &&
-	   !g_strcmp0(current_control_name,
-		      control_name)){
-	  retval = current;
+	  if(current_x >= x &&
+	     current_x < x + AGS_AUTOMATION_DEFAULT_OFFSET &&
+	     current_line == line &&
+	     current_channel_type == channel_type &&
+	     !g_strcmp0(current_control_name,
+			control_name)){
+	    retval = current;
 	    
-	  break;
+	    break;
+	  }
+	}else{
+	  current_x = ags_timestamp_get_unix_time(current_timestamp);
+
+	  g_object_unref(current_timestamp);
+	  
+	  if(current_x >= x &&
+	     current_x < x + AGS_AUTOMATION_DEFAULT_DURATION &&
+	     current_line == line &&
+	     current_channel_type == channel_type &&
+	     !g_strcmp0(current_control_name,
+			control_name)){
+	    retval = current;
+	    
+	    break;
+	  }
 	}
       }else{
-	current_x = ags_timestamp_get_unix_time(current_timestamp);
-
-	g_object_unref(current_timestamp);
-	  
-	if(current_x >= x &&
-	   current_x < x + AGS_AUTOMATION_DEFAULT_DURATION &&
-	   current_line == line &&
-	   current_channel_type == channel_type &&
-	   !g_strcmp0(current_control_name,
-		      control_name)){
-	  retval = current;
-	    
-	  break;
-	}
+	g_warning("inconsistent data");
       }
-    }else{
-      g_warning("inconsistent data");
-    }
     
-    g_free(current_control_name);
+      g_free(current_control_name);
+    }
       
     if(position == 0){
       break;

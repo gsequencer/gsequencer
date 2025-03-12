@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -413,10 +413,19 @@ ags_soundcard_thread_start(AgsThread *thread)
 {
   AgsSoundcardThread *soundcard_thread;
 
+  AgsThread *audio_loop;
+
+  AgsApplicationContext *application_context;
+  
   soundcard_thread = AGS_SOUNDCARD_THREAD(thread);
 
+  application_context = ags_application_context_get_instance();
+
+  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));  
+  
   /* disable timing */
-  ags_thread_unset_flags(thread, AGS_THREAD_TIME_ACCOUNTING);
+  ags_thread_unset_flags(audio_loop,
+			 AGS_THREAD_TIME_ACCOUNTING);
     
   AGS_THREAD_CLASS(ags_soundcard_thread_parent_class)->start(thread);
 }
@@ -526,9 +535,17 @@ ags_soundcard_thread_stop(AgsThread *thread)
 {
   AgsSoundcardThread *soundcard_thread;
   
+  AgsThread *audio_loop;
+
+  AgsApplicationContext *application_context;
+
   GObject *soundcard;
     
   soundcard_thread = AGS_SOUNDCARD_THREAD(thread);
+
+  application_context = ags_application_context_get_instance();
+
+  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));  
 
   soundcard = soundcard_thread->soundcard;
   
@@ -567,8 +584,9 @@ ags_soundcard_thread_stop(AgsThread *thread)
     //FIXME:JK: is this safe?
     ags_soundcard_stop(AGS_SOUNDCARD(soundcard));
   }  
-  
-  ags_thread_set_flags(thread, AGS_THREAD_TIME_ACCOUNTING);
+    
+  ags_thread_set_flags(audio_loop,
+		       AGS_THREAD_TIME_ACCOUNTING);
 }
 
 void

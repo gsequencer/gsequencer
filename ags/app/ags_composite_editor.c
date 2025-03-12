@@ -3462,10 +3462,19 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
 
   gchar *buffer;
   char *program;
-  char *type;
-  char *version;
+  char *type, *version, *format;
+  char *current_format;
+  char *buffer_format;
   gchar *tmp_buffer;
 
+  guint current_line;
+  guint64 current_x_boundary;
+  gint tmp_offset;
+  gint tmp_offset_a, tmp_offset_b;
+  gint first_offset_a;
+  gboolean success;
+  guint copy_count, tmp_copy_count;
+  
   gdouble bpm;
   gdouble absolute_delay;
   guint buffer_size;
@@ -3527,7 +3536,9 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
 
   /* get position */
   position_x = 0;
-    
+
+  copy_count = 0;
+  
   if((GtkWidget *) composite_editor->toolbar->selected_tool == (GtkWidget *) composite_editor->toolbar->position){
     AgsWaveEdit *wave_edit;
 
@@ -3581,7 +3592,7 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
   if(program == NULL ||
      type == NULL ||
      version == NULL ||
-     (!strncmp(program, "gsequencer", 10) == FALSE) ||
+     (!strncmp(program, "gsequencer", 10) == FALSE && (!strncmp(program, "ags", 4) == FALSE)) ||
      (!strncmp(version, "6.16.0", 7) == FALSE)){
     if(program != NULL){
       free(program);
@@ -3613,28 +3624,25 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
 
   relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
 
+  first_offset_a = -1;
+
+  tmp_offset_a = 0;
+  tmp_offset = offset;
+  
   do{
     AgsWave *wave;
 		
     GList *start_list_wave, *list_wave;
 
-    char *type, *version, *format;
-    char *buffer_format;
-    char *current_format;
     char *current_data;
     
-    guint current_line;
-    guint64 current_x_boundary;
     guint64 current_timestamp;
     guint current_samplerate;
     guint current_buffer_size;
     guint64 current_x;
 
     gint n_items;
-    gint tmp_offset_a, tmp_offset_b;
     gint i;
-    
-    tmp_offset_a = 0;
       
     n_items = sscanf(buffer + offset,
 		     "program=ags type=%ms version=%ms format=%ms line=%u buffer-format=%ms x-boundary=%lu timestamp=%lu\n",
@@ -3650,6 +3658,8 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
       goto ags_composite_editor_PASTE_BASE64_DATA;
     }
     
+    current_offset = offset;
+    
     tmp_offset_a = snprintf(tmp_buffer,
 			    AGS_WAVE_CLIPBOARD_MAX_SIZE,
 			    "program=ags type=%s version=%s format=%s line=%u buffer-format=%s x-boundary=%lu timestamp=%lu\n",
@@ -3660,21 +3670,31 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
 			    buffer_format,
 			    current_x_boundary,
 			    timestamp_offset);
-    
+
     if(tmp_offset_a <= 0){
       break;
     }
-
-    current_offset = offset;
     
   ags_composite_editor_PASTE_BASE64_DATA:
 
     tmp_offset_b = 0;
 
+    memset(tmp_buffer + tmp_offset_a, 0, (AGS_WAVE_CLIPBOARD_MAX_SIZE - tmp_offset_a) * sizeof(gchar));
+    
+    if(first_offset_a == -1){
+      first_offset_a = tmp_offset_a;
+
+      offset += tmp_offset_a;
+    }
+
+    success = FALSE;
+
+    tmp_copy_count = 0;
+    
     do{
       gint tmp;
       
-      n_items = sscanf(buffer + offset + tmp_offset_a,
+      n_items = sscanf(buffer + offset + tmp_offset_b,
 		       "format=%ms samplerate=%u buffer-size=%u x=%lu data-base64=%ms\n",
 		       &current_format,
 		       &current_samplerate,
@@ -3686,7 +3706,7 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
 	break;
       }
     
-      tmp = snprintf(tmp_buffer,
+      tmp = snprintf(tmp_buffer + tmp_offset_a + tmp_offset_b,
 		     AGS_WAVE_CLIPBOARD_MAX_SIZE,
 		     "format=%s samplerate=%u buffer-size=%u x=%lu data-base64=%s\n",
 		     current_format,
@@ -3699,8 +3719,14 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
 	break;
       }
 
+      success = TRUE;
+
+      tmp_copy_count += current_buffer_size;
+      
       tmp_offset_b += tmp;
-    }while(offset + tmp_offset_a + tmp_offset_b < AGS_WAVE_CLIPBOARD_MAX_SIZE);
+    }while(offset + tmp_offset_b < AGS_WAVE_CLIPBOARD_MAX_SIZE);
+
+    g_message("attempt to paste %d", success);
     
     /* 1st attempt */
     timestamp->timer.ags_offset.offset = (guint64) (relative_offset * floor((double) position_x / (double) relative_offset));
@@ -3731,13 +3757,13 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
 
       if(paste_from_position){
 	ags_wave_insert_base64_from_clipboard_extended(wave,
-						       buffer + current_offset,
-						       TRUE, position_x,
+						       tmp_buffer,
+						       TRUE, position_x + copy_count,
 						       0.0, 0,
 						       match_line, FALSE);
       }else{
 	ags_wave_insert_base64_from_clipboard_extended(wave,
-						       buffer + current_offset,
+						       tmp_buffer,
 						       FALSE, 0,
 						       0.0, 0,
 						       match_line, FALSE);
@@ -3775,13 +3801,13 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
 
       if(paste_from_position){
 	ags_wave_insert_base64_from_clipboard_extended(wave,
-						       buffer + current_offset,
-						       TRUE, position_x,
+						       tmp_buffer,
+						       TRUE, position_x + copy_count,
 						       0.0, 0,
 						       match_line, FALSE);
       }else{
 	ags_wave_insert_base64_from_clipboard_extended(wave,
-						       buffer + current_offset,
+						       tmp_buffer,
 						       FALSE, 0,
 						       0.0, 0,
 						       match_line, FALSE);
@@ -3790,7 +3816,11 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
       i++;
     }
 
-    offset += (tmp_offset_a + tmp_offset_b);
+    if(!success){
+      break;
+    }
+    
+    offset += tmp_offset_b;
   }while(offset < AGS_WAVE_CLIPBOARD_MAX_SIZE);
 
   g_free(tmp_buffer);    
@@ -4160,12 +4190,16 @@ ags_composite_editor_copy(AgsCompositeEditor *composite_editor)
 	current_wave_base64 = ags_wave_copy_selection_as_base64(AGS_WAVE(wave->data));
 
 	if(current_wave_base64 == NULL){
-	  break;
+	  wave = wave->next;
+
+	  continue;
 	}
 	
 	current_offset = strlen(current_wave_base64);
 
 	if(offset + current_offset >= AGS_WAVE_CLIPBOARD_MAX_SIZE){
+	  g_free(current_wave_base64);
+	  
 	  break;
 	}
 
@@ -4174,6 +4208,8 @@ ags_composite_editor_copy(AgsCompositeEditor *composite_editor)
 
 	  offset += current_offset;
 	}
+	
+	g_free(current_wave_base64);
 	
 	wave = wave->next;
       }
@@ -4187,7 +4223,7 @@ ags_composite_editor_copy(AgsCompositeEditor *composite_editor)
     gdk_clipboard_set_text(gdk_display_get_clipboard(gdk_display_get_default()),
 			   wave_base64);
 
-    g_free(wave_base64);
+    //    g_free(wave_base64);
 #endif
   }
 }
@@ -4524,13 +4560,17 @@ ags_composite_editor_cut(AgsCompositeEditor *composite_editor)
 	//	g_message("copy %d", i);
 	current_wave_base64 = ags_wave_cut_selection_as_base64(AGS_WAVE(wave->data));
 
-	if(current_wave_base64 == NULL){
-	  break;
+	if(current_wave_base64 == NULL){	
+	  wave = wave->next;
+
+	  continue;
 	}
 	
 	current_offset = strlen(current_wave_base64);
 
 	if(offset + current_offset >= AGS_WAVE_CLIPBOARD_MAX_SIZE){
+	  g_free(current_wave_base64);
+	  
 	  break;
 	}
 	
@@ -4540,6 +4580,8 @@ ags_composite_editor_cut(AgsCompositeEditor *composite_editor)
 	  offset += current_offset;
 	}
 	
+	g_free(current_wave_base64);
+      
 	wave = wave->next;
       }
 
@@ -4552,7 +4594,7 @@ ags_composite_editor_cut(AgsCompositeEditor *composite_editor)
     gdk_clipboard_set_text(gdk_display_get_clipboard(gdk_display_get_default()),
 			   wave_base64);
 
-    g_free(wave_base64);
+    //    g_free(wave_base64);
     
     gtk_widget_queue_draw(composite_editor->wave_edit->focused_edit);
 #endif
@@ -5753,8 +5795,8 @@ ags_composite_editor_select_region(AgsCompositeEditor *composite_editor,
     x0_offset = (guint64) floorl((long double) x0 / (long double) map_width * (long double) sample_width);
     x1_offset = (guint64) floorl((long double) x1 / (long double) map_width * (long double) sample_width);
 
-    x0_offset = (guint64) (floor(x0_offset / buffer_size) * buffer_size);
-    x1_offset = (guint64) (floor(x1_offset / buffer_size) * buffer_size);
+    //    x0_offset = (guint64) ((guint64) floor((double) x0_offset / (double) buffer_size) * (guint64) buffer_size);
+    //    x1_offset = (guint64) ((guint64) floor((double) x1_offset / (double) buffer_size) * (guint64) buffer_size);
     
     timestamp = ags_timestamp_new();
 
@@ -5769,13 +5811,15 @@ ags_composite_editor_select_region(AgsCompositeEditor *composite_editor,
       wave_edit = g_list_nth(start_wave_edit,
 			     i);
       
-      wave = start_wave;
-      
-      timestamp->timer.ags_offset.offset = relative_offset * floor(x0 / relative_offset);
+      timestamp->timer.ags_offset.offset = relative_offset * (guint64) floor((double) x0_offset / (double) relative_offset);
 
-      while(timestamp->timer.ags_offset.offset < (relative_offset * floor(x1 / relative_offset)) + relative_offset){
+      while(timestamp->timer.ags_offset.offset <= (relative_offset * (guint64) floor((double) x1_offset / (double) relative_offset)) + relative_offset){
+	wave = start_wave;
+      
 	while((wave = ags_wave_find_near_timestamp(wave, i,
 						   timestamp)) != NULL){
+	  //	  g_message("wave add region to selection %lu - %lu", x0_offset, x1_offset);
+	  
 	  ags_wave_add_region_to_selection(wave->data,
 					   x0_offset,
 					   x1_offset,
