@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -682,6 +682,35 @@ ags_machine_selector_popup_remove_machine(AgsMachineSelector *machine_selector,
 }
 
 /**
+ * ags_machine_selector_popup_refresh_machine:
+ * @machine_selector: the #AgsMachineSelector
+ * 
+ * Refresh popup with machine of @machine_selector.
+ * 
+ * Since: 7.6.12
+ */
+void
+ags_machine_selector_popup_refresh_machine(AgsMachineSelector *machine_selector)
+{
+  AgsWindow *window;
+
+  AgsApplicationContext *application_context;
+  
+  GList *start_machine, *machine;
+
+  g_return_if_fail(AGS_IS_MACHINE_SELECTOR(machine_selector));
+
+  application_context = ags_application_context_get_instance();
+
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  machine = 
+    start_machine = ags_window_get_machine(window);
+
+  //TODO:JK: implement me
+}
+
+/**
  * ags_machine_selector_get_machine_radio_button:
  * @machine_selector: the #AgsMachineSelector
  * 
@@ -799,6 +828,35 @@ ags_machine_selector_remove_machine_radio_button(AgsMachineSelector *machine_sel
     gtk_box_remove((GtkBox *) machine_selector->machine_radio_button_box,
 		   (GtkWidget *) machine_radio_button);
   }
+}
+
+/**
+ * ags_machine_selector_refresh_machine_radio_button:
+ * @machine_selector: the #AgsMachineSelector
+ * 
+ * Refresh machine radio button of @machine_selector.
+ *
+ * Since: 7.6.12
+ */
+void
+ags_machine_selector_refresh_machine_radio_button(AgsMachineSelector *machine_selector)
+{
+  AgsWindow *window;
+
+  AgsApplicationContext *application_context;
+  
+  GList *start_machine, *machine;
+
+  g_return_if_fail(AGS_IS_MACHINE_SELECTOR(machine_selector));
+
+  application_context = ags_application_context_get_instance();
+
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  machine = 
+    start_machine = ags_window_get_machine(window);
+
+  //TODO:JK: implement me
 }
 
 void

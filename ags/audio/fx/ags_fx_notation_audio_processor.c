@@ -1564,7 +1564,8 @@ ags_fx_notation_audio_processor_real_play(AgsFxNotationAudioProcessor *fx_notati
   if(note_256th_offset_lower == 0){
     has_16th_pulse = TRUE;
   }
-  
+
+#if 0
   if(has_16th_pulse &&
      note_offset % 4 == 0){
     g_rec_mutex_lock(audio_mutex);
@@ -1615,6 +1616,30 @@ ags_fx_notation_audio_processor_real_play(AgsFxNotationAudioProcessor *fx_notati
   
   note =
     start_note = g_list_copy(fx_notation_audio_processor->note_256th);
+#else
+  g_rec_mutex_lock(audio_mutex);
+    
+  start_notation = g_list_copy_deep(audio->notation,
+				    (GCopyFunc) g_object_ref,
+				    NULL);
+
+  g_rec_mutex_unlock(audio_mutex);
+
+  ags_timestamp_set_ags_offset(timestamp,
+			       AGS_NOTATION_DEFAULT_OFFSET * floor(note_offset / AGS_NOTATION_DEFAULT_OFFSET));
+    
+  /* find near timestamp */
+  notation = ags_notation_find_near_timestamp(start_notation, audio_channel,
+					      timestamp);
+
+  note = 
+    start_note = NULL;
+    
+  if(notation != NULL){
+    note = 
+      start_note = ags_notation_get_note(notation->data);
+  }
+#endif
 
   while(note != NULL){
     AgsNote *current;
@@ -3262,7 +3287,6 @@ ags_fx_notation_audio_processor_real_counter_change(AgsFxNotationAudioProcessor 
 
   GObject *output_soundcard;
 
-  guint buffer_size;
   gdouble delay;
   gdouble delay_counter;
   gdouble absolute_delay;
@@ -3271,11 +3295,12 @@ ags_fx_notation_audio_processor_real_counter_change(AgsFxNotationAudioProcessor 
   gboolean do_loop;
   guint64 loop_left, loop_right;
   guint attack;
-  guint note_256th_attack_lower, note_256th_attack_upper;
   guint i, i_stop;
   guint note_offset;
   guint note_256th_offset_lower;
   guint note_256th_offset_upper;
+  guint note_256th_attack_lower;
+  guint note_256th_attack_upper;
   guint next_note_256th_offset_lower;
   guint next_note_256th_offset_upper;
   guint next_note_256th_attack_lower;
@@ -3295,8 +3320,6 @@ ags_fx_notation_audio_processor_real_counter_change(AgsFxNotationAudioProcessor 
 	       "output-soundcard", &output_soundcard,
 	       "recall-audio", &fx_notation_audio,
 	       NULL);
-
-  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
 
   delay = AGS_SOUNDCARD_DEFAULT_DELAY;
 
@@ -3429,12 +3452,6 @@ ags_fx_notation_audio_processor_real_counter_change(AgsFxNotationAudioProcessor 
     absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
     
     delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(output_soundcard));
-
-    ags_soundcard_get_presets(AGS_SOUNDCARD(output_soundcard),
-			      NULL,
-			      NULL,
-			      &buffer_size,
-			      NULL);
 
     //NOTE:JK: could be handled by ags-fx-notation
     note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));

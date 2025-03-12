@@ -3555,13 +3555,21 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
   /* header */
   tmp_buffer = g_malloc(AGS_WAVE_CLIPBOARD_MAX_SIZE * sizeof(gchar));
 
+  program = NULL;
+
+  type = NULL;
+  
+  version = NULL;
+
+  audio_lines = 0;
+  
   sscanf(buffer,
 	 "program=%ms type=%ms version=%ms audio-lines=%u\n",
 	 &program,
 	 &type,
 	 &version,
 	 &audio_lines);
-
+  
   offset = snprintf(tmp_buffer,
 		    AGS_WAVE_CLIPBOARD_MAX_SIZE,
 		    "program=%s type=%s version=%s audio-lines=%u\n",
@@ -4151,6 +4159,10 @@ ags_composite_editor_copy(AgsCompositeEditor *composite_editor)
 	//	g_message("copy %d", i);
 	current_wave_base64 = ags_wave_copy_selection_as_base64(AGS_WAVE(wave->data));
 
+	if(current_wave_base64 == NULL){
+	  break;
+	}
+	
 	current_offset = strlen(current_wave_base64);
 
 	if(offset + current_offset >= AGS_WAVE_CLIPBOARD_MAX_SIZE){
@@ -4512,6 +4524,10 @@ ags_composite_editor_cut(AgsCompositeEditor *composite_editor)
 	//	g_message("copy %d", i);
 	current_wave_base64 = ags_wave_cut_selection_as_base64(AGS_WAVE(wave->data));
 
+	if(current_wave_base64 == NULL){
+	  break;
+	}
+	
 	current_offset = strlen(current_wave_base64);
 
 	if(offset + current_offset >= AGS_WAVE_CLIPBOARD_MAX_SIZE){

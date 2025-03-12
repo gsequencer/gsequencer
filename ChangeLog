@@ -1,3 +1,12 @@
+ags (7.6.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags-fx-pattern ::counter-change() event
+	* improved ags-fx-notation ::key_on() event
+	* improved AgsCompositeEditor wave form clipboard
+	* TODO:JK: implement ags_machine_selector_popup_refresh_machine()
+	* TODO:JK: implement ags_machine_selector_refresh_machine_radio_button()
+
 ags (7.6.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
