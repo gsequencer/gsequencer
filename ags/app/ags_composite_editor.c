@@ -3461,10 +3461,10 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
   GObject *soundcard;
 
   gchar *buffer;
-  char *program;
-  char *type, *version, *format;
-  char *current_format;
-  char *buffer_format;
+  char program[128];
+  char type[128], version[128], format[128];
+  char current_format[128];
+  char buffer_format[128];
   gchar *tmp_buffer;
 
   guint current_line;
@@ -3473,7 +3473,6 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
   gint tmp_offset_a, tmp_offset_b;
   gint first_offset_a;
   gboolean success;
-  guint copy_count, tmp_copy_count;
   
   gdouble bpm;
   gdouble absolute_delay;
@@ -3537,8 +3536,6 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
   /* get position */
   position_x = 0;
 
-  copy_count = 0;
-  
   if((GtkWidget *) composite_editor->toolbar->selected_tool == (GtkWidget *) composite_editor->toolbar->position){
     AgsWaveEdit *wave_edit;
 
@@ -3566,19 +3563,17 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
   /* header */
   tmp_buffer = g_malloc(AGS_WAVE_CLIPBOARD_MAX_SIZE * sizeof(gchar));
 
-  program = NULL;
-
-  type = NULL;
-  
-  version = NULL;
+  memset(program, 0, 128 * sizeof(char));
+  memset(type, 0, 128 * sizeof(char));
+  memset(version, 0, 128 * sizeof(char));
 
   audio_lines = 0;
   
   sscanf(buffer,
-	 "program=%ms type=%ms version=%ms audio-lines=%u\n",
-	 &program,
-	 &type,
-	 &version,
+	 "program=%127s type=%127s version=%127s audio-lines=%u\n",
+	 program,
+	 type,
+	 version,
 	 &audio_lines);
   
   offset = snprintf(tmp_buffer,
@@ -3589,23 +3584,8 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
 		    version,
 		    audio_lines);
   
-  if(program == NULL ||
-     type == NULL ||
-     version == NULL ||
-     (!strncmp(program, "gsequencer", 10) == FALSE && (!strncmp(program, "ags", 4) == FALSE)) ||
+  if((!strncmp(program, "gsequencer", 10) == FALSE && (!strncmp(program, "ags", 4) == FALSE)) ||
      (!strncmp(version, "6.16.0", 7) == FALSE)){
-    if(program != NULL){
-      free(program);
-    }
-
-    if(type != NULL){
-      free(type);
-    }
-
-    if(version != NULL){
-      free(version);
-    }
-
     g_free(tmp_buffer);  
 
     return;
@@ -3626,15 +3606,12 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
 
   first_offset_a = -1;
 
-  tmp_offset_a = 0;
-  tmp_offset = offset;
-  
   do{
     AgsWave *wave;
 		
     GList *start_list_wave, *list_wave;
 
-    char *current_data;
+    char current_data[256005]; //NOTE:JK: ((192000 / 3) + 1) * 4 + 1
     
     guint64 current_timestamp;
     guint current_samplerate;
@@ -3644,13 +3621,24 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
     gint n_items;
     gint i;
       
+    memset(type, 0, 128 * sizeof(char));
+    memset(version, 0, 128 * sizeof(char));
+    memset(format, 0, 128 * sizeof(char));
+
+    memset(buffer_format, 0, 128 * sizeof(char));
+
+    tmp_offset = 0;
+
+    tmp_offset_a = 0;
+    tmp_offset_b = 0;
+    
     n_items = sscanf(buffer + offset,
-		     "program=ags type=%ms version=%ms format=%ms line=%u buffer-format=%ms x-boundary=%lu timestamp=%lu\n",
-		     &type,
-		     &version,
-		     &format,
+		     "program=ags type=%127s version=%127s format=%127s line=%u buffer-format=%127s x-boundary=%lu timestamp=%lu\n",
+		     type,
+		     version,
+		     format,
 		     &current_line,
-		     &buffer_format,
+		     buffer_format,
 		     &current_x_boundary,
 		     &timestamp_offset);
 
@@ -3677,56 +3665,56 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
     
   ags_composite_editor_PASTE_BASE64_DATA:
 
-    tmp_offset_b = 0;
-
     memset(tmp_buffer + tmp_offset_a, 0, (AGS_WAVE_CLIPBOARD_MAX_SIZE - tmp_offset_a) * sizeof(gchar));
     
     if(first_offset_a == -1){
       first_offset_a = tmp_offset_a;
 
-      offset += tmp_offset_a;
     }
 
-    success = FALSE;
+    offset += tmp_offset_a;
 
-    tmp_copy_count = 0;
+    tmp_offset = tmp_offset_a;
+    
+    success = FALSE;
     
     do{
-      gint tmp;
-      
-      n_items = sscanf(buffer + offset + tmp_offset_b,
-		       "format=%ms samplerate=%u buffer-size=%u x=%lu data-base64=%ms\n",
-		       &current_format,
+      memset(current_format, 0, 128 * sizeof(char));
+
+      memset(current_data, 0, 256005 * sizeof(char));
+
+      n_items = sscanf(buffer + offset,
+		       "format=%127s samplerate=%u buffer-size=%u x=%lu data-base64=%256004s\n",
+		       current_format,
 		       &current_samplerate,
 		       &current_buffer_size,
 		       &current_x,
-		       &current_data);
+		       current_data);
 
       if(n_items != 5){
 	break;
       }
     
-      tmp = snprintf(tmp_buffer + tmp_offset_a + tmp_offset_b,
-		     AGS_WAVE_CLIPBOARD_MAX_SIZE,
-		     "format=%s samplerate=%u buffer-size=%u x=%lu data-base64=%s\n",
-		     current_format,
-		     current_samplerate,
-		     current_buffer_size,
-		     current_x,
-		     current_data);
+      tmp_offset_b = snprintf(tmp_buffer + tmp_offset,
+			      AGS_WAVE_CLIPBOARD_MAX_SIZE - tmp_offset,
+			      "format=%s samplerate=%u buffer-size=%u x=%lu data-base64=%s\n",
+			      current_format,
+			      current_samplerate,
+			      current_buffer_size,
+			      current_x,
+			      current_data);
 
-      if(tmp <= 0){
+      if(tmp_offset_b <= 0){
 	break;
       }
 
-      success = TRUE;
+      offset += tmp_offset_b;
+      tmp_offset += tmp_offset_b;
 
-      tmp_copy_count += current_buffer_size;
-      
-      tmp_offset_b += tmp;
+      success = TRUE;
     }while(offset + tmp_offset_b < AGS_WAVE_CLIPBOARD_MAX_SIZE);
 
-    g_message("attempt to paste %d", success);
+    //    g_message("attempt to paste %d", success);
     
     /* 1st attempt */
     timestamp->timer.ags_offset.offset = (guint64) (relative_offset * floor((double) position_x / (double) relative_offset));
@@ -3758,7 +3746,7 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
       if(paste_from_position){
 	ags_wave_insert_base64_from_clipboard_extended(wave,
 						       tmp_buffer,
-						       TRUE, position_x + copy_count,
+						       TRUE, position_x,
 						       0.0, 0,
 						       match_line, FALSE);
       }else{
@@ -3802,7 +3790,7 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
       if(paste_from_position){
 	ags_wave_insert_base64_from_clipboard_extended(wave,
 						       tmp_buffer,
-						       TRUE, position_x + copy_count,
+						       TRUE, position_x,
 						       0.0, 0,
 						       match_line, FALSE);
       }else{
