@@ -5003,6 +5003,7 @@ ags_wave_insert_base64_from_clipboard_extended(AgsWave *wave,
   gint64 offset;
   guint target_frame_count, frame_count;
   gint n_items;
+  guint total_buffer_read;
   
   gchar *tmp_buffer;
   
@@ -5131,6 +5132,8 @@ ags_wave_insert_base64_from_clipboard_extended(AgsWave *wave,
 	  
 	  relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * wave_samplerate;
 
+	  total_buffer_read = 0;
+	  
 	  do{
 	    current_line = 0;
 	    
@@ -5262,6 +5265,8 @@ ags_wave_insert_base64_from_clipboard_extended(AgsWave *wave,
 	      continue;
 	    }
 
+	    total_buffer_read = (current_x - start_x_val);
+
 	    current_start_x_offset = 0;
 	    
 	    current_attack = 0;
@@ -5287,14 +5292,14 @@ ags_wave_insert_base64_from_clipboard_extended(AgsWave *wave,
 	    }
 
 	    if(match_timestamp &&
-	       !(current_start_x_offset >= timestamp_offset &&
-		 current_start_x_offset < timestamp_offset + relative_offset)){
+	       !(current_position >= timestamp_offset &&
+		 current_position < timestamp_offset + relative_offset)){
 	      g_free(clipboard_cdata);
 	      g_free(clipboard_data);
 	      
 	      continue;
 	    }
-
+	    
 	    /* find first */
 	    frame_count = current_buffer_size;
 
@@ -5495,7 +5500,7 @@ ags_wave_insert_base64_from_clipboard_extended(AgsWave *wave,
 	    
 	    frame_count = current_buffer_size;
 	      
-	    current_position = current_position + current_attack + current_buffer_size;
+	    current_position = current_position + wave_buffer_size;
 	    
 	    if(attack + frame_count > wave_buffer_size){
 	      buffer = ags_wave_find_point(wave,
@@ -5531,7 +5536,7 @@ ags_wave_insert_base64_from_clipboard_extended(AgsWave *wave,
 			     "buffer-size", wave_buffer_size,
 			     "format", wave_format,
 			     NULL);  
-		buffer->x = current_position;
+		buffer->x = current_position + wave_buffer_size;
 	      
 		ags_wave_add_buffer(wave,
 				    buffer,

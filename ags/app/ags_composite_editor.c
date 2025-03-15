@@ -3473,7 +3473,12 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
   gint tmp_offset;
   gint tmp_offset_a, tmp_offset_b;
   gint first_offset_a;
+  guint total_buffer_read;
+  guint current_total_buffer_read;
+  gint nth_wave;
   gboolean success;
+  gboolean initial_run;
+  gboolean premature_end;
   
   gdouble bpm;
   gdouble absolute_delay;
@@ -3488,6 +3493,7 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
   gint current_offset;
   guint64 relative_offset;
   guint64 position_x;
+  guint64 current_position_x;
   guint64 timestamp_offset;
   gint64 first_x, last_x;
   gboolean match_line;
@@ -3537,7 +3543,8 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
   absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(soundcard));
 
   /* get position */
-  position_x = 0;
+  position_x =
+    current_position_x = 0;
 
   if((GtkWidget *) composite_editor->toolbar->selected_tool == (GtkWidget *) composite_editor->toolbar->position){
     AgsWaveEdit *wave_edit;
@@ -3554,7 +3561,8 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
 
     position_x = (guint64) floorl((long double) wave_edit->cursor_position_x / (long double) map_width * (long double) sample_width);
 
-    position_x = (guint64) (floor(position_x / buffer_size) * buffer_size);
+    position_x =
+      current_position_x = (guint64) (floor(position_x / buffer_size) * buffer_size);
       
 #ifdef AGS_DEBUG
     printf("pasting at position: [%u]\n", position_x);
@@ -3609,6 +3617,12 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
 
   first_offset_a = -1;
 
+  total_buffer_read = 0;
+
+  nth_wave = 0;
+  
+  initial_run = TRUE;
+  
   do{
     AgsWave *wave;
 		
@@ -3673,6 +3687,8 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
 
     }
 
+    current_total_buffer_read = 0;
+    
     offset += tmp_offset_a;
 
     tmp_offset = tmp_offset_a;
@@ -3708,17 +3724,28 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
       if(tmp_offset_b <= 0){
 	break;
       }
-
+      
       offset += tmp_offset_b;
       tmp_offset += tmp_offset_b;
-
+      
+      total_buffer_read += current_buffer_size;
+      current_total_buffer_read += current_buffer_size;
+      
       success = TRUE;
     }while(offset + tmp_offset_b < AGS_WAVE_CLIPBOARD_MAX_SIZE);
 
+    premature_end = FALSE;
+
+    if(initial_run){
+      if((position_x % relative_offset) + current_total_buffer_read + buffer_size < relative_offset){
+	premature_end = TRUE;
+      }
+    }
+      
     //    g_message("attempt to paste %d", success);
     
     /* 1st attempt */
-    timestamp->timer.ags_offset.offset = (guint64) (relative_offset * floor((double) position_x / (double) relative_offset));
+    timestamp->timer.ags_offset.offset = (guint64) (relative_offset * floor((double) current_position_x / (double) relative_offset));
     
     /*  */
     i = 0;
@@ -3747,7 +3774,7 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
       if(paste_from_position){
 	ags_wave_insert_base64_from_clipboard_extended(wave,
 						       tmp_buffer,
-						       TRUE, position_x,
+						       TRUE, current_position_x,
 						       0.0, 0,
 						       match_line, FALSE);
       }else{
@@ -3760,8 +3787,8 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
 
       i++;
     }
-    
-    /* 2nd attempt */
+
+    /* 2nd attempt */    
     timestamp->timer.ags_offset.offset += relative_offset;
     
     /*  */
@@ -3791,7 +3818,7 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
       if(paste_from_position){
 	ags_wave_insert_base64_from_clipboard_extended(wave,
 						       tmp_buffer,
-						       TRUE, position_x,
+						       TRUE, current_position_x,
 						       0.0, 0,
 						       match_line, FALSE);
       }else{
@@ -3803,6 +3830,30 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
       }
 
       i++;
+    }
+    
+    if(!premature_end){
+      if(current_total_buffer_read + buffer_size < relative_offset){
+	current_position_x += current_total_buffer_read;
+      }else{
+	current_position_x += relative_offset;
+      }
+      
+      nth_wave++;
+    }else{
+      guint64 tmp_position_x;
+
+      tmp_position_x = current_position_x;
+      
+      current_position_x += current_total_buffer_read;
+
+      if(floor(tmp_position_x / relative_offset) < floor(current_position_x / relative_offset)){
+	nth_wave++;
+      }
+    }
+
+    if(initial_run){
+      initial_run = FALSE;
     }
   }while(offset < buffer_length && offset < AGS_WAVE_CLIPBOARD_MAX_SIZE);
 
