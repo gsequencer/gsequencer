@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -3467,6 +3467,7 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
   char buffer_format[128];
   gchar *tmp_buffer;
 
+  gint64 buffer_length;
   guint current_line;
   guint64 current_x_boundary;
   gint tmp_offset;
@@ -3505,6 +3506,8 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
     return;
   }
 
+  buffer_length = strlen(buffer);
+  
   window = AGS_WINDOW(ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
 
   machine = composite_editor->selected_machine;
@@ -3643,7 +3646,7 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
 		     &timestamp_offset);
 
     if(n_items != 7){
-      goto ags_composite_editor_PASTE_BASE64_DATA;
+      break;
     }
     
     current_offset = offset;
@@ -3662,8 +3665,6 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
     if(tmp_offset_a <= 0){
       break;
     }
-    
-  ags_composite_editor_PASTE_BASE64_DATA:
 
     memset(tmp_buffer + tmp_offset_a, 0, (AGS_WAVE_CLIPBOARD_MAX_SIZE - tmp_offset_a) * sizeof(gchar));
     
@@ -3803,13 +3804,7 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
 
       i++;
     }
-
-    if(!success){
-      break;
-    }
-    
-    offset += tmp_offset_b;
-  }while(offset < AGS_WAVE_CLIPBOARD_MAX_SIZE);
+  }while(offset < buffer_length && offset < AGS_WAVE_CLIPBOARD_MAX_SIZE);
 
   g_free(tmp_buffer);    
   

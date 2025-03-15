@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -3606,8 +3606,12 @@ ags_wave_get_position_for_offset(guint wave_samplerate,
 
   attack = current_x_offset % wave_buffer_size;
 
-  position = x_offset - attack;
+  position = 0;
 
+  if(x_offset > attack){
+    position = x_offset - attack;
+  }
+  
   if(ret_start_x_offset != NULL){
     ret_start_x_offset[0] = start_x_offset;
   }
