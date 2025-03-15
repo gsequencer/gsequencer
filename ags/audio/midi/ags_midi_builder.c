@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -2881,14 +2881,12 @@ ags_midi_builder_append_xml_node_message(AgsMidiBuilder *midi_builder,
   }else if(!xmlStrncmp(event,
 		       "key-signature",
 		       14)){
-    xmlChar *minor;
+    xmlChar minor[128];
 
     gint sf;
     guint mi;
 
     /* keysig */
-    minor = NULL;
-
     sf = 0;
     mi = 1;
 
@@ -2896,8 +2894,10 @@ ags_midi_builder_append_xml_node_message(AgsMidiBuilder *midi_builder,
 		     "timesign");
       
     if(str != NULL){
+      memset(minor, 0, 128 * sizeof(char));
+      
       sscanf(str,
-	     "%d %ms", &sf, &minor);
+	     "%d %127s", &sf, minor);
     }
 
     /* sharp flats */

@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2025-03-12 16:19+0100\n"
+"POT-Creation-Date: 2025-03-15 11:50+0100\n"
 "PO-Revision-Date: 2021-01-03 08:52+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: Deutsch <jkraehemann@gmail.com>\n"
@@ -321,7 +321,7 @@ msgstr "Thread Pool - maximum unbenützte Threads"
 msgid "max precision of threads [Hz]"
 msgstr "Maximale Präzision der Threads [Hz]"
 
-#: ags/app/ags_performance_preferences.c:213
+#: ags/app/ags_performance_preferences.c:217
 msgid "update UI timeout[s]"
 msgstr ""
 

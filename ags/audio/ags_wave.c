@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -3606,8 +3606,12 @@ ags_wave_get_position_for_offset(guint wave_samplerate,
 
   attack = current_x_offset % wave_buffer_size;
 
-  position = x_offset - attack;
+  position = 0;
 
+  if(x_offset > attack){
+    position = x_offset - attack;
+  }
+  
   if(ret_start_x_offset != NULL){
     ret_start_x_offset[0] = start_x_offset;
   }
@@ -4987,8 +4991,8 @@ ags_wave_insert_base64_from_clipboard_extended(AgsWave *wave,
 
   AgsTimestamp *timestamp;
 
-  char *program, *version, *type, *format;
-  char *buffer_format;
+  char program[128], version[128], type[128], format[128];
+  char buffer_format[128];
   guint64 x_boundary;
 
   guint64 timestamp_offset;
@@ -5013,62 +5017,32 @@ ags_wave_insert_base64_from_clipboard_extended(AgsWave *wave,
   tmp_buffer = g_malloc(AGS_WAVE_CLIPBOARD_MAX_SIZE * sizeof(gchar));
     
   /* header */
-  program = NULL;
-  type = NULL;
-  version = NULL;
-  format = NULL;
-
-  line = 0;
-  
-  buffer_format = NULL;
-
   x_boundary = 0;
 
   base64_timestamp_offset = 0;
   
   if(wave_base64 != NULL){
-    program = NULL;
-    type = NULL;
-    version = NULL;
-    format = NULL;
+    memset(type, 0, 128 * sizeof(char));
+    memset(version, 0, 128 * sizeof(char));
+    memset(format, 0, 128 * sizeof(char));
 
-    buffer_format = NULL;
+    memset(buffer_format, 0, 128 * sizeof(char));
 
     x_boundary = 0;
     base64_timestamp_offset = 0;
     
     n_items = sscanf(wave_base64,
-		     "program=%ms type=%ms version=%ms format=%ms line=%u buffer-format=%ms x-boundary=%lu timestamp=%lu\n",
-		     &program,
-		     &type,
-		     &version,
-		     &format,
+		     "program=%127s type=%127s version=%127s format=%127s line=%u buffer-format=%127s x-boundary=%lu timestamp=%lu\n",
+		     program,
+		     type,
+		     version,
+		     format,
 		     &line,
-		     &buffer_format,
+		     buffer_format,
 		     &x_boundary,
 		     &base64_timestamp_offset);
 
     if(n_items != 8){
-      if(program != NULL){
-	free(program);
-      }
-    
-      if(version != NULL){
-	free(version);
-      }
-
-      if(type != NULL){
-	free(type);
-      }
-      
-      if(format != NULL){
-	free(format);
-      }
-
-      if(buffer_format != NULL){
-	free(buffer_format);
-      }
-
       g_free(tmp_buffer);
       
       return;
@@ -5086,32 +5060,7 @@ ags_wave_insert_base64_from_clipboard_extended(AgsWave *wave,
 		      x_boundary,
 		      base64_timestamp_offset);
 
-    if(program == NULL ||
-       type == NULL ||
-       version == NULL ||
-       format == NULL ||
-       buffer_format == NULL ||
-       offset <= 0){      
-      if(program != NULL){
-	free(program);
-      }
-    
-      if(version != NULL){
-	free(version);
-      }
-
-      if(type != NULL){
-	free(type);
-      }
-      
-      if(format != NULL){
-	free(format);
-      }
-
-      if(buffer_format != NULL){
-	free(buffer_format);
-      }
-
+    if(offset <= 0){
       g_free(tmp_buffer);
       
       return;
@@ -5141,9 +5090,9 @@ ags_wave_insert_base64_from_clipboard_extended(AgsWave *wave,
 	  gpointer resampled_clipboard_data;
 	  gpointer data;
 
-	  char *current_format;
+	  char current_format[128];
 
-	  char *base64_str;
+	  char base64_str[256005]; //NOTE:JK: ((192000 / 3) + 1) * 4 + 1
 	  
 	  void *clipboard_data;
 	  guchar *clipboard_cdata;
@@ -5175,13 +5124,6 @@ ags_wave_insert_base64_from_clipboard_extended(AgsWave *wave,
 
 	  if(match_line &&
 	     wave_line != line){
-	    free(program);
-	    free(version);
-	    free(type);
-	    free(format);
-
-	    free(buffer_format);
-
 	    g_free(tmp_buffer);      
 	    
 	    return;
@@ -5192,32 +5134,24 @@ ags_wave_insert_base64_from_clipboard_extended(AgsWave *wave,
 	  do{
 	    current_line = 0;
 	    
-	    current_format = NULL;
-	    
 	    current_samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
 	    current_buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
 
 	    current_x = 0;
-	  
-	    base64_str = NULL;
+
+	    memset(current_format, 0, 128 * sizeof(char));
+
+	    memset(base64_str, 0, 256005 * sizeof(char));
 	  
 	    n_items = sscanf(wave_base64 + offset,
-			     "format=%ms samplerate=%u buffer-size=%u x=%lu data-base64=%ms\n",
-			     &current_format,
+			     "format=%127s samplerate=%u buffer-size=%u x=%lu data-base64=%256004s\n",
+			     current_format,
 			     &current_samplerate,
 			     &current_buffer_size,
 			     &current_x,
-			     &base64_str);
+			     base64_str);
 
-	    if(n_items != 5){
-	      if(current_format != NULL){
-		free(current_format);
-	      }
-
-	      if(base64_str != NULL){
-		free(base64_str);
-	      }
-	      
+	    if(n_items != 5){	      
 	      break;
 	    }
 	    
@@ -5230,16 +5164,7 @@ ags_wave_insert_base64_from_clipboard_extended(AgsWave *wave,
 				  current_x,
 				  base64_str);
 	        
-	    if(tmp_offset <= 0 ||
-	       base64_str == NULL){
-	      if(current_format != NULL){
-		free(current_format);
-	      }
-
-	      if(base64_str != NULL){
-		free(base64_str);
-	      }
-	      
+	    if(tmp_offset <= 0){	      
 	      break;
 	    }
 
@@ -5249,10 +5174,6 @@ ags_wave_insert_base64_from_clipboard_extended(AgsWave *wave,
 	    
 	    clipboard_cdata = g_base64_decode(base64_str,
 					      &clipboard_length);	  
-
-	    if(base64_str != NULL){
-	      free(base64_str);
-	    }
 
 	    word_size = 0;
 	    
@@ -5329,10 +5250,6 @@ ags_wave_insert_base64_from_clipboard_extended(AgsWave *wave,
 	      clipboard_data = ags_buffer_util_char_buffer_to_complex(clipboard_cdata,
 								      clipboard_length);
 	    }else{
-	      if(current_format != NULL){
-		free(current_format);
-	      }
-	      
 	      g_free(clipboard_cdata);
 	  
 	      continue;
@@ -5341,11 +5258,7 @@ ags_wave_insert_base64_from_clipboard_extended(AgsWave *wave,
 	    if(current_buffer_size * word_size != clipboard_length){
 	      g_free(clipboard_cdata);
 	      g_free(clipboard_data);
-	    
-	      if(current_format != NULL){
-		free(current_format);
-	      }
-	  
+	    	  
 	      continue;
 	    }
 
@@ -5378,10 +5291,6 @@ ags_wave_insert_base64_from_clipboard_extended(AgsWave *wave,
 		 current_start_x_offset < timestamp_offset + relative_offset)){
 	      g_free(clipboard_cdata);
 	      g_free(clipboard_data);
-	    
-	      if(current_format != NULL){
-		free(current_format);
-	      }
 	      
 	      continue;
 	    }
@@ -5699,18 +5608,7 @@ ags_wave_insert_base64_from_clipboard_extended(AgsWave *wave,
 							    attack, copy_mode);
 	      }
 	    }
-	    
-	    if(current_format != NULL){
-	      free(current_format);
-	    }
 	  }while(offset + 127 + strlen(base64_str) < AGS_WAVE_CLIPBOARD_MAX_SIZE);
-	  
-	  free(program);
-	  free(version);
-	  free(type);
-	  free(format);
-
-	  free(buffer_format);
 	}
       }
     }
