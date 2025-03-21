@@ -1,3 +1,9 @@
+ags (7.6.17)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed libsoup online references in Ags.conf.in and AgsAudio.conf.in for gi-docgen
+	* fixed https URLs in Ags.conf.in, AgsAudio.conf.in and AgsGui.conf.in
+
 ags (7.6.16)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
