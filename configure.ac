@@ -1,5 +1,5 @@
 #                                               -*- Autoconf -*-
-# Copyright (C) 2005-2024 Joel Kraehemann
+# Copyright (C) 2005-2025 Joel Kraehemann
 #
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -9,9 +9,9 @@
 
 LT_CURRENT=7
 LT_REVISION=6
-LT_AGE=5
+LT_AGE=18
 
-m4_define([ags_version], [7.6.5])
+m4_define([ags_version], [7.6.18])
 
 AC_PREREQ([2.69])
 AC_INIT([gsequencer],m4_defn([ags_version]),[jkraehemann@gmail.com])

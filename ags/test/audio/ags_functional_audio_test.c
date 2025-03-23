@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -218,7 +218,7 @@ ags_functional_audio_test_playback_start_audio(AgsAudio *audio,
   task = g_list_prepend(task,
 			start_audio);
     
-  start_soundcard = ags_start_soundcard_new(audio_application_context);
+  start_soundcard = ags_start_soundcard_new();
   task = g_list_prepend(task,
 			start_soundcard);
     

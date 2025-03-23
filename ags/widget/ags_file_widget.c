@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -464,6 +464,8 @@ ags_file_widget_init(AgsFileWidget *file_widget)
   
   file_widget->default_path = NULL;
 
+  file_widget->current_path = NULL;
+
   gtk_orientable_set_orientation(GTK_ORIENTABLE(file_widget),
 				 GTK_ORIENTATION_VERTICAL);
   
@@ -622,7 +624,7 @@ ags_file_widget_init(AgsFileWidget *file_widget)
   /* recently used */
   file_widget->recently_used_filename = NULL;
 
-  file_widget->recently_used = (gchar **) g_malloc(AGS_FILE_WIDGET_MAX_RECENTLY_USED * sizeof(gchar *));
+  file_widget->recently_used = (gchar **) g_malloc((AGS_FILE_WIDGET_MAX_RECENTLY_USED + 1) * sizeof(gchar *));
 
   for(i = 0; i < AGS_FILE_WIDGET_MAX_RECENTLY_USED; i++){
     file_widget->recently_used[i] = NULL;
@@ -663,14 +665,14 @@ ags_file_widget_init(AgsFileWidget *file_widget)
     file_widget->bookmark_filename = NULL;
   }
 #else
-    file_widget->bookmark_filename = NULL;
+  file_widget->bookmark_filename = NULL;
 #endif
   
-    file_widget->bookmark = g_hash_table_new_full((GHashFunc) g_direct_hash,
+  file_widget->bookmark = g_hash_table_new_full((GHashFunc) g_direct_hash,
 						(GEqualFunc) g_string_equal,
 						g_free,
 						g_free);
-
+  
   file_widget->bookmark_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 						     6);
   gtk_box_append(file_widget->left_vbox,
@@ -2228,6 +2230,7 @@ ags_file_widget_read_recently_used(AgsFileWidget *file_widget)
   root_node = xmlDocGetRootElement(recently_used_doc);
 
   if(root_node != NULL &&
+     root_node->name != NULL &&
      !xmlStrncmp("resources",
 		 root_node->name,
 		 9)){
@@ -2245,7 +2248,8 @@ ags_file_widget_read_recently_used(AgsFileWidget *file_widget)
     
     while(node != NULL){
       if(node->type == XML_ELEMENT_NODE){
-	if(!xmlStrncmp("resource",
+	if(node->name != NULL &&
+	   !xmlStrncmp("resource",
 		       node->name,
 		       8)){
 	  xmlChar *filename;
@@ -2262,6 +2266,10 @@ ags_file_widget_read_recently_used(AgsFileWidget *file_widget)
 	    }
 	    
 	    strv[i] = g_strdup(filename);
+	  }else{
+	    xmlFree(filename);
+	    
+	    break;
 	  }
 	  
 	  xmlFree(filename);
@@ -2887,6 +2895,7 @@ ags_file_widget_read_bookmark(AgsFileWidget *file_widget)
   root_node = xmlDocGetRootElement(bookmark_doc);
 
   if(root_node != NULL &&
+     root_node->name != NULL &&
      !xmlStrncmp("resources",
 		 root_node->name,
 		 10)){
@@ -2895,7 +2904,8 @@ ags_file_widget_read_bookmark(AgsFileWidget *file_widget)
     
     while(node != NULL){
       if(node->type == XML_ELEMENT_NODE){
-	if(!xmlStrncmp("resource",
+	if(node->name != NULL &&
+	   !xmlStrncmp("resource",
 		       node->name,
 		       9)){
 	  xmlChar *filename;
@@ -3211,10 +3221,10 @@ ags_file_widget_real_refresh(AgsFileWidget *file_widget)
   filename_strv = NULL;
 
   start_filename = NULL;
-
+  
   if(file_widget->current_path != NULL &&
-     g_file_test(file_widget->current_path,
-		 G_FILE_TEST_IS_DIR)){
+     g_file_test(file_widget->current_path, G_FILE_TEST_EXISTS) &&
+     g_file_test(file_widget->current_path, G_FILE_TEST_IS_DIR)){    
     error = NULL;
 
     if(g_access(file_widget->current_path, (R_OK | X_OK)) == 0){    

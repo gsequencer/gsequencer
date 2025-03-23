@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -248,10 +248,10 @@ ags_ladspa_plugin_instantiate(AgsBasePlugin *base_plugin,
 {
   LADSPA_Descriptor *ladspa_descriptor;
 
-  gpointer ptr;
+  LADSPA_Handle ret_ptr;
 
-  LADSPA_Handle (*instantiate)(const LADSPA_Descriptor *descriptor,
-			       unsigned long samplerate);
+  LADSPA_Handle (*instantiate)(const struct _LADSPA_Descriptor *descriptor,
+			       unsigned long in_samplerate);
   
   GRecMutex *base_plugin_mutex;
 
@@ -268,14 +268,18 @@ ags_ladspa_plugin_instantiate(AgsBasePlugin *base_plugin,
   g_rec_mutex_unlock(base_plugin_mutex);
 
   /* instantiate */
-  ptr = NULL;
+  ret_ptr = NULL;
 
   if(instantiate != NULL){
-    ptr = instantiate(ladspa_descriptor,
-		      (unsigned long) samplerate);
+    unsigned long l_samplerate;
+
+    l_samplerate = (unsigned long) samplerate;
+    
+    ret_ptr = instantiate(ladspa_descriptor,
+			  l_samplerate);
   }
   
-  return(ptr);
+  return((gpointer) ret_ptr);
 }
 
 void
@@ -284,9 +288,9 @@ ags_ladspa_plugin_connect_port(AgsBasePlugin *base_plugin,
 			       guint port_index,
 			       gpointer data_location)
 {
-  void (*connect_port)(LADSPA_Handle instance,
-		       unsigned long port_index,
-		       LADSPA_Data *data_location);
+  void (*connect_port)(LADSPA_Handle cp_instance,
+		       unsigned long cp_port_index,
+		       LADSPA_Data *cp_data_location);
   
   GRecMutex *base_plugin_mutex;
 
@@ -303,8 +307,14 @@ ags_ladspa_plugin_connect_port(AgsBasePlugin *base_plugin,
   /* connect port */
   if(plugin_handle != NULL &&
      connect_port != NULL){
+    unsigned long l_port_index;
+    
+    //    g_message("connect LADSPA port: %u", port_index);
+
+    l_port_index = (unsigned long) port_index;
+    
     connect_port((LADSPA_Handle) plugin_handle,
-		 (unsigned long) port_index,
+		 l_port_index,
 		 (LADSPA_Data *) data_location);
   }
 }

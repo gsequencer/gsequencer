@@ -738,7 +738,7 @@ ags_audio_test_add_recall_id()
   audio = ags_audio_new(devout);
 
   /* instantiate recall */
-  recall_id = ags_recall_id_new(NULL);
+  recall_id = ags_recall_id_new();
 
   /* add to audio */
   ags_audio_add_recall_id(audio,
@@ -891,7 +891,7 @@ ags_audio_test_duplicate_recall()
   /* instantiate recycling context and recall id */
   recycling_context = ags_recycling_context_new(0);
 
-  recall_id = ags_recall_id_new(NULL);
+  recall_id = ags_recall_id_new();
   recall_id->sound_scope = AGS_SOUND_SCOPE_NOTATION;
   g_object_set(recall_id,
 	       "recycling-context", recycling_context,
@@ -935,7 +935,7 @@ ags_audio_test_duplicate_recall()
 	       "parent", parent_recycling_context,
 	       NULL);
 
-  recall_id = ags_recall_id_new(NULL);
+  recall_id = ags_recall_id_new();
   recall_id->sound_scope = AGS_SOUND_SCOPE_NOTATION;
   g_object_set(recall_id,
 	       "recycling-context", recycling_context,
@@ -1568,7 +1568,7 @@ ags_audio_test_init_recall()
   /* instantiate recycling context and recall id */
   recycling_context = ags_recycling_context_new(0);
 
-  recall_id = ags_recall_id_new(NULL);
+  recall_id = ags_recall_id_new();
   recall_id->sound_scope = AGS_SOUND_SCOPE_NOTATION;
   g_object_set(recall_id,
 	       "recycling-context", recycling_context,
@@ -1614,7 +1614,7 @@ ags_audio_test_resolve_recall()
   /* instantiate recycling context and recall id */
   recycling_context = ags_recycling_context_new(0);
 
-  recall_id = ags_recall_id_new(NULL);
+  recall_id = ags_recall_id_new();
   recall_id->sound_scope = AGS_SOUND_SCOPE_NOTATION;
   g_object_set(recall_id,
 	       "recycling-context", recycling_context,

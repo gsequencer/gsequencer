@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1033,6 +1033,10 @@ ags_fx_factory_create_playback(AgsAudio *audio,
     g_object_unref(start_input);
   }
 
+  g_list_foreach(start_recall,
+		 (GFunc) g_object_ref,
+		 NULL);
+
   return(start_recall);
 }
 
@@ -1443,6 +1447,10 @@ ags_fx_factory_create_buffer(AgsAudio *audio,
   if(start_input != NULL){
     g_object_unref(start_input);
   }
+
+  g_list_foreach(start_recall,
+		 (GFunc) g_object_ref,
+		 NULL);
 
   return(start_recall);
 }
@@ -1875,6 +1883,10 @@ ags_fx_factory_create_volume(AgsAudio *audio,
     g_object_unref(start_input);
   }
 
+  g_list_foreach(start_recall,
+		 (GFunc) g_object_ref,
+		 NULL);
+
   return(start_recall);
 }
 
@@ -2305,6 +2317,10 @@ ags_fx_factory_create_tremolo(AgsAudio *audio,
   if(start_input != NULL){
     g_object_unref(start_input);
   }
+
+  g_list_foreach(start_recall,
+		 (GFunc) g_object_ref,
+		 NULL);
 
   return(start_recall);
 }
@@ -2737,6 +2753,10 @@ ags_fx_factory_create_low_pass(AgsAudio *audio,
     g_object_unref(start_input);
   }
 
+  g_list_foreach(start_recall,
+		 (GFunc) g_object_ref,
+		 NULL);
+
   return(start_recall);
 }
 
@@ -3168,6 +3188,10 @@ ags_fx_factory_create_high_pass(AgsAudio *audio,
     g_object_unref(start_input);
   }
 
+  g_list_foreach(start_recall,
+		 (GFunc) g_object_ref,
+		 NULL);
+
   return(start_recall);
 }
 
@@ -3585,6 +3609,10 @@ ags_fx_factory_create_peak(AgsAudio *audio,
   if(start_input != NULL){
     g_object_unref(start_input);
   }
+
+  g_list_foreach(start_recall,
+		 (GFunc) g_object_ref,
+		 NULL);
 
   return(start_recall);
 }
@@ -4015,6 +4043,10 @@ ags_fx_factory_create_eq10(AgsAudio *audio,
     g_object_unref(start_input);
   }
 
+  g_list_foreach(start_recall,
+		 (GFunc) g_object_ref,
+		 NULL);
+
   return(start_recall);
 }
 
@@ -4444,6 +4476,10 @@ ags_fx_factory_create_analyse(AgsAudio *audio,
     g_object_unref(start_input);
   }
 
+  g_list_foreach(start_recall,
+		 (GFunc) g_object_ref,
+		 NULL);
+
   return(start_recall);
 }
 
@@ -4870,6 +4906,10 @@ ags_fx_factory_create_two_pass_aliase(AgsAudio *audio,
   if(start_input != NULL){
     g_object_unref(start_input);
   }
+
+  g_list_foreach(start_recall,
+		 (GFunc) g_object_ref,
+		 NULL);
 
   return(start_recall);
 }
@@ -5302,6 +5342,10 @@ ags_fx_factory_create_lfo(AgsAudio *audio,
     g_object_unref(start_input);
   }
 
+  g_list_foreach(start_recall,
+		 (GFunc) g_object_ref,
+		 NULL);
+
   return(start_recall);
 }
 
@@ -5730,6 +5774,10 @@ ags_fx_factory_create_envelope(AgsAudio *audio,
   if(start_input != NULL){
     g_object_unref(start_input);
   }
+
+  g_list_foreach(start_recall,
+		 (GFunc) g_object_ref,
+		 NULL);
 
   return(start_recall);
 }
@@ -6160,6 +6208,10 @@ ags_fx_factory_create_wah_wah(AgsAudio *audio,
     g_object_unref(start_input);
   }
 
+  g_list_foreach(start_recall,
+		 (GFunc) g_object_ref,
+		 NULL);
+
   return(start_recall);
 }
 
@@ -6551,6 +6603,10 @@ ags_fx_factory_create_pattern(AgsAudio *audio,
   if(start_input != NULL){
     g_object_unref(start_input);
   }
+
+  g_list_foreach(start_recall,
+		 (GFunc) g_object_ref,
+		 NULL);
 
   return(start_recall);
 }
@@ -6961,6 +7017,10 @@ ags_fx_factory_create_notation(AgsAudio *audio,
   if(start_input != NULL){
     g_object_unref(start_input);
   }
+
+  g_list_foreach(start_recall,
+		 (GFunc) g_object_ref,
+		 NULL);
 
   return(start_recall);
 }
@@ -7410,6 +7470,10 @@ ags_fx_factory_create_synth(AgsAudio *audio,
     g_object_unref(start_input);
   }
 
+  g_list_foreach(start_recall,
+		 (GFunc) g_object_ref,
+		 NULL);
+
   return(start_recall);
 }
 
@@ -7857,6 +7921,10 @@ ags_fx_factory_create_fm_synth(AgsAudio *audio,
   if(start_input != NULL){
     g_object_unref(start_input);
   }
+
+  g_list_foreach(start_recall,
+		 (GFunc) g_object_ref,
+		 NULL);
 
   return(start_recall);
 }
@@ -8306,6 +8374,10 @@ ags_fx_factory_create_sf2_synth(AgsAudio *audio,
     g_object_unref(start_input);
   }
 
+  g_list_foreach(start_recall,
+		 (GFunc) g_object_ref,
+		 NULL);
+
   return(start_recall);
 }
 
@@ -8753,6 +8825,10 @@ ags_fx_factory_create_sfz_synth(AgsAudio *audio,
   if(start_input != NULL){
     g_object_unref(start_input);
   }
+
+  g_list_foreach(start_recall,
+		 (GFunc) g_object_ref,
+		 NULL);
 
   return(start_recall);
 }
@@ -9202,6 +9278,10 @@ ags_fx_factory_create_star_synth(AgsAudio *audio,
     g_object_unref(start_input);
   }
 
+  g_list_foreach(start_recall,
+		 (GFunc) g_object_ref,
+		 NULL);
+
   return(start_recall);
 }
 
@@ -9649,6 +9729,10 @@ ags_fx_factory_create_seq_synth(AgsAudio *audio,
   if(start_input != NULL){
     g_object_unref(start_input);
   }
+
+  g_list_foreach(start_recall,
+		 (GFunc) g_object_ref,
+		 NULL);
 
   return(start_recall);
 }
@@ -10122,6 +10206,10 @@ ags_fx_factory_create_ladspa(AgsAudio *audio,
     g_object_unref(start_input);
   }
 
+  g_list_foreach(start_recall,
+		 (GFunc) g_object_ref,
+		 NULL);
+
   return(start_recall);
 }
 
@@ -10593,6 +10681,10 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
   if(start_input != NULL){
     g_object_unref(start_input);
   }
+
+  g_list_foreach(start_recall,
+		 (GFunc) g_object_ref,
+		 NULL);
 
   return(start_recall);
 }
@@ -11170,6 +11262,10 @@ ags_fx_factory_create_lv2(AgsAudio *audio,
     g_object_unref(start_input);
   }
   
+  g_list_foreach(start_recall,
+		 (GFunc) g_object_ref,
+		 NULL);
+
   return(start_recall);
 }
 
@@ -11746,6 +11842,10 @@ ags_fx_factory_create_vst3(AgsAudio *audio,
   if(start_input != NULL){
     g_object_unref(start_input);
   }
+
+  g_list_foreach(start_recall,
+		 (GFunc) g_object_ref,
+		 NULL);
   
   return(start_recall);
 }

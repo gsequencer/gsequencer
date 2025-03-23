@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -66,7 +66,7 @@ ags_export_output_test_launch()
   
   AgsExportOutput *export_output;
   
-  devout = ags_alsa_devout_new(NULL);
+  devout = ags_alsa_devout_new();
 
   export_thread = ags_export_thread_new(devout,
 					NULL);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -462,7 +462,7 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 	g_list_free_full(start_list,
 			 g_object_unref);
       }else if(path[path_offset + 1] == '"'){
-	gchar *audio_name;
+	char audio_name[1024];
 	gchar *offset;
 
 	guint length;
@@ -490,13 +490,13 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 
 	length = offset - (path + path_offset + 3);
 
-	audio_name = malloc((length + 1) * sizeof(gchar));
-	sscanf(path + path_offset, "%ms", &audio_name);
+	memset(audio_name, 0, 1024 * sizeof(char));
+	sscanf(path + path_offset, "%1023s", audio_name);
 
 	start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
 
 	list = ags_audio_find_name(start_list,
-				   audio_name);
+				   (gchar *) audio_name);
 
 	if(list != NULL){
 	  audio = list->data;

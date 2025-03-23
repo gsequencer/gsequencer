@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,6 +27,8 @@
 #include <ags/app/ags_line_callbacks.h>
 
 #include <math.h>
+
+#include <ags/ags_api_config.h>
 
 #include <ags/i18n.h>
 
@@ -158,7 +160,8 @@ ags_drum_input_pad_open_callback(GtkWidget *widget, AgsDrumInputPad *drum_input_
   current_path = NULL;
     
 #if defined(AGS_MACOS_SANDBOX)
-  current_path = g_strdup(home_path);
+  current_path = g_strdup_printf("%s/Music",
+				 home_path);
 #endif
 
 #if defined(AGS_FLATPAK_SANDBOX)
@@ -182,10 +185,11 @@ ags_drum_input_pad_open_callback(GtkWidget *widget, AgsDrumInputPad *drum_input_
   ags_file_widget_set_current_path(file_widget,
 				   current_path);
 
-  g_free(current_path);
-
   ags_file_widget_refresh(file_widget);
 
+  g_free(current_path);
+
+#if !defined(AGS_MACOS_SANDBOX)
   ags_file_widget_add_location(file_widget,
 			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_DESKTOP,
 			       NULL);
@@ -193,15 +197,18 @@ ags_drum_input_pad_open_callback(GtkWidget *widget, AgsDrumInputPad *drum_input_
   ags_file_widget_add_location(file_widget,
 			       AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_DOCUMENTS,
 			       NULL);  
-
+#endif
+  
   ags_file_widget_add_location(file_widget,
 			       AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_MUSIC,
 			       NULL);
 
+#if !defined(AGS_MACOS_SANDBOX)
   ags_file_widget_add_location(file_widget,
 			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_HOME,
 			       NULL);
-
+#endif
+  
   if(g_file_test(drumkits_bookmark_filename,
 		 (G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR))){
     ags_file_widget_add_bookmark(file_widget,

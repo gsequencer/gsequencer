@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -196,6 +196,10 @@ ags_performance_preferences_init(AgsPerformancePreferences *performance_preferen
 
   performance_preferences->max_precision = (GtkComboBoxText *) gtk_combo_box_text_new();
   gtk_combo_box_text_append_text(performance_preferences->max_precision,
+				 "60");
+  gtk_combo_box_text_append_text(performance_preferences->max_precision,
+				 "75");
+  gtk_combo_box_text_append_text(performance_preferences->max_precision,
 				 "125");
   gtk_combo_box_text_append_text(performance_preferences->max_precision,
 				 "250");
@@ -370,6 +374,8 @@ ags_performance_preferences_apply(AgsApplicable *applicable)
 
       max_precision = AGS_THREAD_DEFAULT_MAX_PRECISION;
     }
+  case 60:
+  case 75:
   case 125:
   case 250:
   case 1000:
@@ -468,22 +474,34 @@ ags_performance_preferences_reset(AgsApplicable *applicable)
 				     10);
 
     switch(max_precision){
-    case 125:
+    case 60:
       {
 	gtk_combo_box_set_active((GtkComboBox *) performance_preferences->max_precision,
 				 0);
       }
       break;
-    case 250:
+    case 75:
       {
 	gtk_combo_box_set_active((GtkComboBox *) performance_preferences->max_precision,
 				 1);
       }
       break;
-    case 1000:
+    case 125:
       {
 	gtk_combo_box_set_active((GtkComboBox *) performance_preferences->max_precision,
 				 2);
+      }
+      break;
+    case 250:
+      {
+	gtk_combo_box_set_active((GtkComboBox *) performance_preferences->max_precision,
+				 3);
+      }
+      break;
+    case 1000:
+      {
+	gtk_combo_box_set_active((GtkComboBox *) performance_preferences->max_precision,
+				 4);
       }
       break;
     default:

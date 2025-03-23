@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -113,12 +113,16 @@ void ags_machine_selector_popup_insert_machine(AgsMachineSelector *machine_selec
 void ags_machine_selector_popup_remove_machine(AgsMachineSelector *machine_selector,
 					       gint position);
 
+void ags_machine_selector_popup_refresh_machine(AgsMachineSelector *machine_selector);
+
 GList* ags_machine_selector_get_machine_radio_button(AgsMachineSelector *machine_selector);
 void ags_machine_selector_insert_machine_radio_button(AgsMachineSelector *machine_selector,
 						      gint position,
 						      AgsMachineRadioButton *machine_radio_button);
 void ags_machine_selector_remove_machine_radio_button(AgsMachineSelector *machine_selector,
 						      AgsMachineRadioButton *machine_radio_button);
+
+void ags_machine_selector_refresh_machine_radio_button(AgsMachineSelector *machine_selector);
 
 void ags_machine_selector_set_edit(AgsMachineSelector *machine_selector, guint edit);
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1226,10 +1226,10 @@ ags_base_plugin_set_plugin_so(AgsBasePlugin *base_plugin,
 }
 
 /**
- * ags_base_plugin_get_base_plugin_dependency:
+ * ags_base_plugin_get_plugin_port:
  * @base_plugin: the #AgsBasePlugin
  * 
- * Get recall dependency.
+ * Get plugin port.
  * 
  * Returns: (element-type AgsAudio.PluginPort) (transfer full): the #GList-struct containig #AgsPluginPort
  * 
@@ -1244,8 +1244,10 @@ ags_base_plugin_get_plugin_port(AgsBasePlugin *base_plugin)
     return(NULL);
   }
 
+  plugin_port = NULL;
+  
   g_object_get(base_plugin,
-	       "recall-dependency", &plugin_port,
+	       "plugin-port", &plugin_port,
 	       NULL);
 
   return(plugin_port);
@@ -1740,6 +1742,8 @@ ags_base_plugin_instantiate(AgsBasePlugin *base_plugin,
   
   g_return_val_if_fail(AGS_IS_BASE_PLUGIN(base_plugin),
 		       NULL);
+
+  retval = NULL;
   
   g_object_ref(G_OBJECT(base_plugin));
   g_signal_emit(G_OBJECT(base_plugin),

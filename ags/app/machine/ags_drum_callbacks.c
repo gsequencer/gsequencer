@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,6 +29,8 @@
 
 #include <stdlib.h>
 #include <math.h>
+
+#include <ags/ags_api_config.h>
 
 #include <ags/i18n.h>
 
@@ -85,6 +87,7 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
 
   drum->open_dialog = pcm_file_dialog;
 
+#if defined(AGS_MACOS_SANDBOX)
   ags_pcm_file_dialog_set_flags(pcm_file_dialog,
 				AGS_PCM_FILE_DIALOG_SHOW_DOWNLOAD_LINK);
 
@@ -94,7 +97,8 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
 			  "https://gsequencer.com/samples.html");
   gtk_button_set_label((GtkButton *) link_button,
 		       i18n("download samples"));
-
+#endif
+  
   file_widget = ags_pcm_file_dialog_get_file_widget(pcm_file_dialog);
 
   home_path = ags_file_widget_get_home_path(file_widget);
@@ -167,11 +171,16 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
 
   ags_file_widget_read_bookmark(file_widget);
 
+  /* multi-selection */
+  ags_file_widget_set_flags(file_widget,
+  			    AGS_FILE_WIDGET_WITH_MULTI_SELECTION);
+
   /* current path */
   current_path = NULL;
     
 #if defined(AGS_MACOS_SANDBOX)
-  current_path = g_strdup(home_path);
+  current_path = g_strdup_printf("%s/Music",
+				 home_path);
 #endif
 
 #if defined(AGS_FLATPAK_SANDBOX)
@@ -195,10 +204,11 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
   ags_file_widget_set_current_path(file_widget,
 				   current_path);
 
-  g_free(current_path);
-
   ags_file_widget_refresh(file_widget);
 
+  g_free(current_path);
+
+#if !defined(AGS_MACOS_SANDBOX)
   ags_file_widget_add_location(file_widget,
 			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_DESKTOP,
 			       NULL);
@@ -206,23 +216,23 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
   ags_file_widget_add_location(file_widget,
 			       AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_DOCUMENTS,
 			       NULL);  
-
+#endif
+  
   ags_file_widget_add_location(file_widget,
 			       AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_MUSIC,
 			       NULL);
 
+#if !defined(AGS_MACOS_SANDBOX)
   ags_file_widget_add_location(file_widget,
 			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_HOME,
 			       NULL);
-
+#endif
+  
   if(g_file_test(drumkits_bookmark_filename,
 		 (G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR))){
     ags_file_widget_add_bookmark(file_widget,
 				 drumkits_bookmark_filename);
   }
-  
-  ags_file_widget_set_flags(file_widget,
-			    AGS_FILE_WIDGET_WITH_MULTI_SELECTION);
   
   ags_pcm_file_dialog_unset_flags(pcm_file_dialog,
 				  AGS_PCM_FILE_DIALOG_SHOW_AUDIO_CHANNEL);

@@ -159,12 +159,13 @@ install_data()
   config_dirs_mkdir_cmd = g_strdup_printf("mkdir -p %s/Library/Containers/%s/Data/.config",
 					  pw->pw_dir, AGS_DEFAULT_BUNDLE_ID);
 
-  default_file_cp_cmd = g_strdup_printf("cp -v %s/Contents/Resources/gsequencer-default.xml.in %s/GSequencer/workspace/default/gsequencer-default.xml",
+  default_file_cp_cmd = g_strdup_printf("cp -v %s/Contents/Resources/gsequencer-default.xml.in %s",
 					app_dir,
-					music_path);
+					default_filename);
   
-  default_file_sed_cmd = g_strdup_printf("sed -i '' 's,@MUSIC_DIR@,%s,g' %s/GSequencer/workspace/default/gsequencer-default.xml",
-					 music_path);
+  default_file_sed_cmd = g_strdup_printf("sed -i '' 's,@MUSIC_DIR@,%s,g' %s",
+					 music_path,
+					 default_filename);
   free_sounds_cp_cmd = g_strdup_printf("cp -rv %s/Contents/Resources/free-sounds %s/GSequencer",
 				       app_dir,
 				       music_path);

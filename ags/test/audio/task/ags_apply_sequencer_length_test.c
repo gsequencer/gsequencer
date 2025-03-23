@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -79,7 +79,7 @@ ags_apply_sequencer_length_test_launch_scope_audio()
   application_context = ags_audio_application_context_new();
   g_object_ref(application_context);
 
-  devout = ags_alsa_devout_new(application_context);
+  devout = ags_alsa_devout_new();
   ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
 				   g_list_append(NULL, devout));
   g_object_ref(devout);
@@ -124,7 +124,7 @@ ags_apply_sequencer_length_test_launch_scope_channel()
   application_context = ags_audio_application_context_new();
   g_object_ref(application_context);
 
-  devout = ags_alsa_devout_new(application_context);
+  devout = ags_alsa_devout_new();
   ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
 				   g_list_append(NULL, devout));
   g_object_ref(devout);
@@ -176,7 +176,7 @@ ags_apply_sequencer_length_test_launch_scope_recall()
   application_context = ags_audio_application_context_new();
   g_object_ref(application_context);
 
-  devout = ags_alsa_devout_new(application_context);
+  devout = ags_alsa_devout_new();
   ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
 				   g_list_append(NULL, devout));
   g_object_ref(devout);

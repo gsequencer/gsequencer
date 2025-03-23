@@ -1263,6 +1263,8 @@ ags_port_get_plugin_port(AgsPort *port)
     return(NULL);
   }
 
+  plugin_port = NULL;
+  
   g_object_get(port,
 	       "plugin-port", &plugin_port,
 	       NULL);

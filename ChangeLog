@@ -1,3 +1,101 @@
+ags (7.6.18)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed multi-channel wave form editor clipboard paste
+
+ags (7.6.17)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed libsoup online references in Ags.conf.in and AgsAudio.conf.in for gi-docgen
+	* fixed https URLs in Ags.conf.in, AgsAudio.conf.in and AgsGui.conf.in
+
+ags (7.6.16)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed wave form editor clipboard
+
+ags (7.6.15)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented 60 and 75 Hz thread max precision in performance preferences
+	* fixed wave form editor clipboard
+	* fixed remaining sscanf() string allocation
+
+ags (7.6.14)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed sscanf() string allocation in ags_composite_editor_paste_wave_async()
+	* fixed sscanf() string allocation in ags_wave_insert_base64_from_clipboard_extended()
+
+ags (7.6.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented missing base64 clipboard for float, double and AgsComplex
+	* fixed wave form editor selection tool
+	* fixed ags_notation_find_near_timestamp()
+	* fixed ags_automation_find_near_timestamp()
+	* fixed ags_automation_find_near_timestamp_extended()
+	* fixed ags_wave_find_near_timestamp()
+	* fixed time accounting of audio loop and settings by soundcard thread
+	* improved AgsCompositeEditor wave form clipboard
+	* improved reset scrollbars for wave form editor after zoom
+
+ags (7.6.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags-fx-pattern ::counter-change() event
+	* improved ags-fx-notation ::key_on() event
+	* improved AgsCompositeEditor wave form clipboard
+	* TODO:JK: implement ags_machine_selector_popup_refresh_machine()
+	* TODO:JK: implement ags_machine_selector_refresh_machine_radio_button()
+
+ags (7.6.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed install_data() on macOS missing argument to string function
+	* minor improvements
+
+ags (7.6.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed drum open response callback set flags
+	  AGS_FILE_WIDGET_WITH_MULTI_SELECTION earlier
+
+ags (7.6.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed buffer-overflow with recently-used in file widget
+	* fixed unit and functional tests to work with gcc-15
+
+ags (7.6.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved AgsAppActionUtil file widget with macOS sandbox
+	* improved AgsExportSoundcard file widget with macOS sandbox
+	* improved AgsLinkEditor file widget with macOS sandbox
+	* improved AgsMidiImportWizard file widget with macOS sandbox
+	* improved AgsMidiExportWizard file widget with macOS sandbox
+	* improved AgsWaveExportDialog file widget with macOS sandbox
+	* improved AgsPresetEditor file widget with macOS sandbox
+	* improved AgsDrum file widget with macOS sandbox
+	* improved AgsDrumInputPad file widget with macOS sandbox
+	* improved AgsAudiorec file widget with macOS sandbox
+	* improved AgsPitchSampler file widget with macOS sandbox
+	* improved AgsFFPlayer file widget with macOS sandbox
+	* improved AgsSF2Synth file widget with macOS sandbox
+	* improved AgsSFZSynth file widget with macOS sandbox
+
+ags (7.6.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ladspa plugin ref count
+	* minor improvements
+
+ags (7.6.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed fx factory ref count on return value
+
 ags (7.6.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

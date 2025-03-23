@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -176,7 +176,7 @@ ags_fx_ladspa_channel_finalize(GObject *gobject)
   }
   
   if(fx_ladspa_channel->ladspa_plugin != NULL){
-    g_object_unref(fx_ladspa_channel->ladspa_plugin);
+    //    g_object_unref(fx_ladspa_channel->ladspa_plugin);
   }
   
   if(fx_ladspa_channel->ladspa_port != NULL){
@@ -585,10 +585,6 @@ ags_fx_ladspa_channel_load_plugin(AgsFxLadspaChannel *fx_ladspa_channel)
     ladspa_plugin =
       fx_ladspa_channel->ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ladspa_manager,
 									       filename, effect);
-
-    if(ladspa_plugin != NULL){
-      g_object_ref(ladspa_plugin);
-    }
   }    
   
   g_rec_mutex_unlock(recall_mutex);
@@ -889,10 +885,10 @@ ags_fx_ladspa_channel_load_port(AgsFxLadspaChannel *fx_ladspa_channel)
 								    samplerate, buffer_size);
 	  }
 
-	  ags_base_plugin_connect_port((AgsBasePlugin *) ladspa_plugin,
-				       input_data->ladspa_handle,
-				       port_index,
-				       &(ladspa_port[nth]->port_value.ags_port_float));
+	  ags_base_plugin_connect_port(AGS_BASE_PLUGIN(ladspa_plugin),
+				       (gpointer) input_data->ladspa_handle,
+				       (guint) port_index,
+				       (gpointer) &(ladspa_port[nth]->port_value.ags_port_ladspa));
 	}
       
 	g_free(plugin_name);
@@ -932,16 +928,16 @@ ags_fx_ladspa_channel_load_port(AgsFxLadspaChannel *fx_ladspa_channel)
 
     for(nth = 0; nth < output_port_count; nth++){
       ags_base_plugin_connect_port((AgsBasePlugin *) ladspa_plugin,
-				   input_data->ladspa_handle,
-				   output_port[nth],
-				   &(input_data->output[nth]));
+				   (gpointer) input_data->ladspa_handle,
+				   (guint) output_port[nth],
+				   (gpointer) (input_data->output + nth));
     }
 
     for(nth = 0; nth < input_port_count; nth++){
       ags_base_plugin_connect_port((AgsBasePlugin *) ladspa_plugin,
-				   input_data->ladspa_handle,
-				   input_port[nth],
-				   &(input_data->input[nth]));
+				   (gpointer) input_data->ladspa_handle,
+				   (guint) input_port[nth],
+				   (gpointer) (input_data->input + nth));
     }
       
     ags_base_plugin_activate((AgsBasePlugin *) ladspa_plugin,
