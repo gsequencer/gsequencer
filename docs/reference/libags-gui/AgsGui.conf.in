@@ -3,9 +3,9 @@ version = "@VERSION@"
 description = "Advanced Gtk+ Sequencer Gui"
 authors = "AGS Development Team"
 license = "GPL-3-or-later"
-browse_url = "http://git.savannah.nongnu.org/cgit/gsequencer.git"
-repository_url = "http://git.savannah.nongnu.org/cgit/gsequencer.git"
-website_url = "http://nongnu.org/gsequencer"
+browse_url = "https://git.savannah.nongnu.org/cgit/gsequencer.git"
+repository_url = "https://git.savannah.nongnu.org/cgit/gsequencer.git"
+website_url = "https://nongnu.org/gsequencer"
 logo_url = "ags.svg"
 dependencies = [
   "GObject-2.0",

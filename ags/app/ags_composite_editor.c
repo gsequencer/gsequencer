@@ -3466,6 +3466,9 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
   char current_format[128];
   char buffer_format[128];
   gchar *tmp_buffer;
+  //FIXME:JK: improve me
+  guint64 position_x_arr[128];
+  guint total_buffer_read_arr[128];
 
   gint64 buffer_length;
   guint current_line;
@@ -3473,7 +3476,6 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
   gint tmp_offset;
   gint tmp_offset_a, tmp_offset_b;
   gint first_offset_a;
-  guint total_buffer_read;
   guint current_total_buffer_read;
   gint nth_wave;
   gboolean success;
@@ -3493,9 +3495,9 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
   gint current_offset;
   guint64 relative_offset;
   guint64 position_x;
-  guint64 current_position_x;
   guint64 timestamp_offset;
   gint64 first_x, last_x;
+  guint nth;
   gboolean match_line;
   gboolean paste_from_position;
 
@@ -3543,8 +3545,7 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
   absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(soundcard));
 
   /* get position */
-  position_x =
-    current_position_x = 0;
+  position_x = 0;
 
   if((GtkWidget *) composite_editor->toolbar->selected_tool == (GtkWidget *) composite_editor->toolbar->position){
     AgsWaveEdit *wave_edit;
@@ -3561,14 +3562,19 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
 
     position_x = (guint64) floorl((long double) wave_edit->cursor_position_x / (long double) map_width * (long double) sample_width);
 
-    position_x =
-      current_position_x = (guint64) (floor(position_x / buffer_size) * buffer_size);
+    position_x = (guint64) (floor(position_x / buffer_size) * buffer_size);
       
 #ifdef AGS_DEBUG
     printf("pasting at position: [%u]\n", position_x);
 #endif
   }else{
     paste_from_position = FALSE;
+  }
+
+  for(nth = 0; nth < 128; nth++){
+    position_x_arr[nth] = position_x;
+
+    total_buffer_read_arr[nth] = 0;
   }
 
   /* header */
@@ -3616,8 +3622,6 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
   relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
 
   first_offset_a = -1;
-
-  total_buffer_read = 0;
 
   nth_wave = 0;
   
@@ -3694,6 +3698,10 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
     tmp_offset = tmp_offset_a;
     
     success = FALSE;
+
+    if(current_line > 127){
+      g_critical("line count exceeded");
+    }
     
     do{
       memset(current_format, 0, 128 * sizeof(char));
@@ -3728,7 +3736,8 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
       offset += tmp_offset_b;
       tmp_offset += tmp_offset_b;
       
-      total_buffer_read += current_buffer_size;
+      total_buffer_read_arr[current_line] += current_buffer_size;
+      
       current_total_buffer_read += current_buffer_size;
       
       success = TRUE;
@@ -3745,7 +3754,7 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
     //    g_message("attempt to paste %d", success);
     
     /* 1st attempt */
-    timestamp->timer.ags_offset.offset = (guint64) (relative_offset * floor((double) current_position_x / (double) relative_offset));
+    timestamp->timer.ags_offset.offset = (guint64) (relative_offset * floor((double) position_x_arr[current_line] / (double) relative_offset));
     
     /*  */
     i = 0;
@@ -3774,7 +3783,7 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
       if(paste_from_position){
 	ags_wave_insert_base64_from_clipboard_extended(wave,
 						       tmp_buffer,
-						       TRUE, current_position_x,
+						       TRUE, position_x_arr[current_line],
 						       0.0, 0,
 						       match_line, FALSE);
       }else{
@@ -3818,7 +3827,7 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
       if(paste_from_position){
 	ags_wave_insert_base64_from_clipboard_extended(wave,
 						       tmp_buffer,
-						       TRUE, current_position_x,
+						       TRUE, position_x_arr[current_line],
 						       0.0, 0,
 						       match_line, FALSE);
       }else{
@@ -3834,20 +3843,20 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
     
     if(!premature_end){
       if(current_total_buffer_read + buffer_size < relative_offset){
-	current_position_x += current_total_buffer_read;
+	position_x_arr[current_line] += current_total_buffer_read;
       }else{
-	current_position_x += relative_offset;
+	position_x_arr[current_line] += relative_offset;
       }
       
       nth_wave++;
     }else{
       guint64 tmp_position_x;
 
-      tmp_position_x = current_position_x;
+      tmp_position_x = position_x_arr[current_line];
       
-      current_position_x += current_total_buffer_read;
+      position_x_arr[current_line] += current_total_buffer_read;
 
-      if(floor(tmp_position_x / relative_offset) < floor(current_position_x / relative_offset)){
+      if(floor(tmp_position_x / relative_offset) < floor(position_x_arr[current_line] / relative_offset)){
 	nth_wave++;
       }
     }
