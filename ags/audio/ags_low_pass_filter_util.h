@@ -42,7 +42,14 @@ G_BEGIN_DECLS
 	.format = AGS_SOUNDCARD_DEFAULT_FORMAT,				\
 	.samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE,			\
 	.cut_off_frequency = 2000.0,					\
-	.filter_gain = 1.0 })
+	.filter_gain = 1.0,						\
+	.no_clip = 0.0,							\
+	.last_freq = 0.015811388,					\
+	.last_gain = 0.0,						\
+	.last_no_clip = 0.0,						\
+	.converted_freq = 0.0,						\
+	.converted_gain = 0.0,						\
+	.converted_no_clip = 0.0 })
 
 typedef struct _AgsLowPassFilterUtil AgsLowPassFilterUtil;
 
@@ -57,9 +64,18 @@ struct _AgsLowPassFilterUtil
   guint buffer_length;
   AgsSoundcardFormat format;
   guint samplerate;
-
+  
   gdouble cut_off_frequency;
   gdouble filter_gain;
+  gdouble no_clip;
+
+  gdouble last_freq;         
+  gdouble last_gain;
+  gdouble last_no_clip;
+
+  gdouble converted_freq;         
+  gdouble converted_gain;
+  gdouble converted_no_clip;
 };
 
 GType ags_low_pass_filter_util_get_type(void);
