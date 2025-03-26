@@ -17,9 +17,59 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*
+ * Copyright (C) 2004-2009 Fons Adriaensen <fons@kokkinizita.net>
+ *  
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
 #include <ags/audio/ags_amplifier_util.h>
 
 #include <ags/audio/ags_audio_buffer_util.h>
+
+void ags_fil_proc_s8(AgsAmplifierUtil *amplifier_util,
+		     guint nth_sect,
+		     gint k, gdouble f, gdouble b, gdouble g);
+void ags_fil_proc_s16(AgsAmplifierUtil *amplifier_util,
+		      guint nth_sect,
+		      gint k, gdouble f, gdouble b, gdouble g);
+void ags_fil_proc_s24(AgsAmplifierUtil *amplifier_util,
+		      guint nth_sect,
+		      gint k, gdouble f, gdouble b, gdouble g);
+void ags_fil_proc_s32(AgsAmplifierUtil *amplifier_util,
+		      guint nth_sect,
+		      gint k, gdouble f, gdouble b, gdouble g);
+void ags_fil_proc_s64(AgsAmplifierUtil *amplifier_util,
+		      guint nth_sect,
+		      gint k, gdouble f, gdouble b, gdouble g);
+void ags_fil_proc_float(AgsAmplifierUtil *amplifier_util,
+			guint nth_sect,
+			gint k, gdouble f, gdouble b, gdouble g);
+void ags_fil_proc_double(AgsAmplifierUtil *amplifier_util,
+			 guint nth_sect,
+			 gint k, gdouble f, gdouble b, gdouble g);
+void ags_fil_proc_complex(AgsAmplifierUtil *amplifier_util,
+			  guint nth_sect,
+			  gint k, gdouble f, gdouble b, gdouble g);
+
+void ags_fil_proc(AgsAmplifierUtil *amplifier_util,
+		  AgsSoundcardFormat format,
+		  guint nth_sect,
+		  gint k, gdouble f, gdouble b, gdouble g);
+
+gdouble exp2ap(gdouble x);
 
 /**
  * SECTION:ags_amplifier_util
@@ -87,6 +137,8 @@ ags_amplifier_util_copy(AgsAmplifierUtil *ptr)
 {
   AgsAmplifierUtil *new_ptr;
 
+  guint i;
+  
   g_return_val_if_fail(ptr != NULL, NULL);
   
   new_ptr = (AgsAmplifierUtil *) g_new(AgsAmplifierUtil,
@@ -120,6 +172,20 @@ ags_amplifier_util_copy(AgsAmplifierUtil *ptr)
 
   new_ptr->filter_gain = ptr->filter_gain;
 
+  for(i = 0; i < AGS_AMPLIFIER_UTIL_AMP_COUNT; i++){
+    new_ptr->proc_sect[i].f = ptr->proc_sect[i].f;
+    new_ptr->proc_sect[i].b = ptr->proc_sect[i].b;
+    new_ptr->proc_sect[i].g = ptr->proc_sect[i].g;
+  
+    new_ptr->proc_sect[i].a = ptr->proc_sect[i].a;
+
+    new_ptr->proc_sect[i].s1 = ptr->proc_sect[i].s1;
+    new_ptr->proc_sect[i].s2 = ptr->proc_sect[i].s2;
+
+    new_ptr->proc_sect[i].z1 = ptr->proc_sect[i].z1;
+    new_ptr->proc_sect[i].z2 = ptr->proc_sect[i].z2;
+  }
+  
   return(new_ptr);
 }
 
@@ -945,6 +1011,811 @@ ags_amplifier_util_set_filter_gain(AgsAmplifierUtil *amplifier_util,
   amplifier_util->filter_gain = filter_gain;
 }
 
+void
+ags_fil_proc_s8(AgsAmplifierUtil *amplifier_util,
+		guint nth_sect,
+		gint k, gdouble f, gdouble b, gdouble g)
+{
+  gint8 *destination;
+  gint8 *source;
+
+  guint destination_stride, source_stride;
+  
+  gdouble s1, s2, d1, d2, a, da, x, y;
+  gboolean  u2 = FALSE;
+
+  destination = (gint8 *) amplifier_util->destination;
+  destination_stride = amplifier_util->destination_stride;
+
+  source = (gint8 *) amplifier_util->source;
+  source_stride = amplifier_util->source_stride;
+
+  s1 = amplifier_util->proc_sect[nth_sect].s1;
+  s2 = amplifier_util->proc_sect[nth_sect].s2;
+  
+  a = amplifier_util->proc_sect[nth_sect].a;
+
+  d1 = 0.0;
+  d2 = 0.0;
+  da = 0.0;
+
+  if(f != amplifier_util->proc_sect[nth_sect].f){
+    if(f < 0.5f * amplifier_util->proc_sect[nth_sect].f){
+      f = 0.5f * amplifier_util->proc_sect[nth_sect].f;
+    }else if (f > 2.0f * amplifier_util->proc_sect[nth_sect].f){
+      f = 2.0f * amplifier_util->proc_sect[nth_sect].f;
+    }
+    
+    amplifier_util->proc_sect[nth_sect].f = f;
+    amplifier_util->proc_sect[nth_sect].s1 = -cosf (6.283185f * f);
+    d1 = (amplifier_util->proc_sect[nth_sect].s1 - s1) / k;           
+    u2 = TRUE;
+  }             
+       
+  if(g != amplifier_util->proc_sect[nth_sect].g){
+    if(g < 0.5f * amplifier_util->proc_sect[nth_sect].g){
+      g = 0.5f * amplifier_util->proc_sect[nth_sect].g;
+    }else if (g > 2.0f * amplifier_util->proc_sect[nth_sect].g){
+      g = 2.0f * amplifier_util->proc_sect[nth_sect].g;
+    }
+    
+    amplifier_util->proc_sect[nth_sect].g = g;
+    amplifier_util->proc_sect[nth_sect].a = 0.5f * (g - 1.0f);
+    da = (amplifier_util->proc_sect[nth_sect].a - a) / k;
+    u2 = TRUE;
+  }
+
+  if(b != amplifier_util->proc_sect[nth_sect].b){
+    if(b < 0.5f * amplifier_util->proc_sect[nth_sect].b){
+      b = 0.5f * amplifier_util->proc_sect[nth_sect].b;
+    }else if(b > 2.0f * amplifier_util->proc_sect[nth_sect].b){
+      b = 2.0f * amplifier_util->proc_sect[nth_sect].b;
+    }
+      
+    amplifier_util->proc_sect[nth_sect].b = b; 
+    u2 = TRUE;
+  }
+
+  if(u2){
+    b *= 7.0 * f / sqrtf(g);         
+    amplifier_util->proc_sect[nth_sect].s2 = (1 - b) / (1 + b);
+    d2 = (amplifier_util->proc_sect[nth_sect].s2 - s2) / k;        
+  }
+
+  while(k--){  
+    s1 += d1;
+    s2 += d2;
+    a += da;
+
+    x = *source;
+    y = x - s2 * amplifier_util->proc_sect[nth_sect].z2;
+
+    *destination -= a * (amplifier_util->proc_sect[nth_sect].z2 + s2 * y - x);                           
+
+    y -= s1 * amplifier_util->proc_sect[nth_sect].z1;
+    amplifier_util->proc_sect[nth_sect].z2 = amplifier_util->proc_sect[nth_sect].z1 + s1 * y;
+    amplifier_util->proc_sect[nth_sect].z1 = y + 1e-10f;
+
+    source += source_stride;
+    destination += destination_stride;
+  }
+}
+
+void
+ags_fil_proc_s16(AgsAmplifierUtil *amplifier_util,
+		 guint nth_sect,
+		 gint k, gdouble f, gdouble b, gdouble g)
+{
+  gint16 *destination;
+  gint16 *source;
+
+  guint destination_stride, source_stride;
+  
+  gdouble s1, s2, d1, d2, a, da, x, y;
+  gboolean  u2 = FALSE;
+
+  destination = (gint16 *) amplifier_util->destination;
+  destination_stride = amplifier_util->destination_stride;
+
+  source = (gint16 *) amplifier_util->source;
+  source_stride = amplifier_util->source_stride;
+
+  s1 = amplifier_util->proc_sect[nth_sect].s1;
+  s2 = amplifier_util->proc_sect[nth_sect].s2;
+  
+  a = amplifier_util->proc_sect[nth_sect].a;
+
+  d1 = 0.0;
+  d2 = 0.0;
+  da = 0.0;
+
+  if(f != amplifier_util->proc_sect[nth_sect].f){
+    if(f < 0.5f * amplifier_util->proc_sect[nth_sect].f){
+      f = 0.5f * amplifier_util->proc_sect[nth_sect].f;
+    }else if (f > 2.0f * amplifier_util->proc_sect[nth_sect].f){
+      f = 2.0f * amplifier_util->proc_sect[nth_sect].f;
+    }
+    
+    amplifier_util->proc_sect[nth_sect].f = f;
+    amplifier_util->proc_sect[nth_sect].s1 = -cosf (6.283185f * f);
+    d1 = (amplifier_util->proc_sect[nth_sect].s1 - s1) / k;           
+    u2 = TRUE;
+  }             
+       
+  if(g != amplifier_util->proc_sect[nth_sect].g){
+    if(g < 0.5f * amplifier_util->proc_sect[nth_sect].g){
+      g = 0.5f * amplifier_util->proc_sect[nth_sect].g;
+    }else if (g > 2.0f * amplifier_util->proc_sect[nth_sect].g){
+      g = 2.0f * amplifier_util->proc_sect[nth_sect].g;
+    }
+    
+    amplifier_util->proc_sect[nth_sect].g = g;
+    amplifier_util->proc_sect[nth_sect].a = 0.5f * (g - 1.0f);
+    da = (amplifier_util->proc_sect[nth_sect].a - a) / k;
+    u2 = TRUE;
+  }
+
+  if(b != amplifier_util->proc_sect[nth_sect].b){
+    if(b < 0.5f * amplifier_util->proc_sect[nth_sect].b){
+      b = 0.5f * amplifier_util->proc_sect[nth_sect].b;
+    }else if(b > 2.0f * amplifier_util->proc_sect[nth_sect].b){
+      b = 2.0f * amplifier_util->proc_sect[nth_sect].b;
+    }
+      
+    amplifier_util->proc_sect[nth_sect].b = b; 
+    u2 = TRUE;
+  }
+
+  if(u2){
+    b *= 7.0 * f / sqrtf(g);         
+    amplifier_util->proc_sect[nth_sect].s2 = (1 - b) / (1 + b);
+    d2 = (amplifier_util->proc_sect[nth_sect].s2 - s2) / k;        
+  }
+
+  while(k--){  
+    s1 += d1;
+    s2 += d2;
+    a += da;
+
+    x = *source;
+    y = x - s2 * amplifier_util->proc_sect[nth_sect].z2;
+
+    *destination -= a * (amplifier_util->proc_sect[nth_sect].z2 + s2 * y - x);                           
+
+    y -= s1 * amplifier_util->proc_sect[nth_sect].z1;
+    amplifier_util->proc_sect[nth_sect].z2 = amplifier_util->proc_sect[nth_sect].z1 + s1 * y;
+    amplifier_util->proc_sect[nth_sect].z1 = y + 1e-10f;
+
+    source += source_stride;
+    destination += destination_stride;
+  }
+}
+
+void
+ags_fil_proc_s24(AgsAmplifierUtil *amplifier_util,
+		 guint nth_sect,
+		 gint k, gdouble f, gdouble b, gdouble g)
+{
+  gint32 *destination;
+  gint32 *source;
+
+  guint destination_stride, source_stride;
+  
+  gdouble s1, s2, d1, d2, a, da, x, y;
+  gboolean  u2 = FALSE;
+
+  destination = (gint32 *) amplifier_util->destination;
+  destination_stride = amplifier_util->destination_stride;
+
+  source = (gint32 *) amplifier_util->source;
+  source_stride = amplifier_util->source_stride;
+
+  s1 = amplifier_util->proc_sect[nth_sect].s1;
+  s2 = amplifier_util->proc_sect[nth_sect].s2;
+  
+  a = amplifier_util->proc_sect[nth_sect].a;
+
+  d1 = 0.0;
+  d2 = 0.0;
+  da = 0.0;
+
+  if(f != amplifier_util->proc_sect[nth_sect].f){
+    if(f < 0.5f * amplifier_util->proc_sect[nth_sect].f){
+      f = 0.5f * amplifier_util->proc_sect[nth_sect].f;
+    }else if (f > 2.0f * amplifier_util->proc_sect[nth_sect].f){
+      f = 2.0f * amplifier_util->proc_sect[nth_sect].f;
+    }
+    
+    amplifier_util->proc_sect[nth_sect].f = f;
+    amplifier_util->proc_sect[nth_sect].s1 = -cosf (6.283185f * f);
+    d1 = (amplifier_util->proc_sect[nth_sect].s1 - s1) / k;           
+    u2 = TRUE;
+  }             
+       
+  if(g != amplifier_util->proc_sect[nth_sect].g){
+    if(g < 0.5f * amplifier_util->proc_sect[nth_sect].g){
+      g = 0.5f * amplifier_util->proc_sect[nth_sect].g;
+    }else if (g > 2.0f * amplifier_util->proc_sect[nth_sect].g){
+      g = 2.0f * amplifier_util->proc_sect[nth_sect].g;
+    }
+    
+    amplifier_util->proc_sect[nth_sect].g = g;
+    amplifier_util->proc_sect[nth_sect].a = 0.5f * (g - 1.0f);
+    da = (amplifier_util->proc_sect[nth_sect].a - a) / k;
+    u2 = TRUE;
+  }
+
+  if(b != amplifier_util->proc_sect[nth_sect].b){
+    if(b < 0.5f * amplifier_util->proc_sect[nth_sect].b){
+      b = 0.5f * amplifier_util->proc_sect[nth_sect].b;
+    }else if(b > 2.0f * amplifier_util->proc_sect[nth_sect].b){
+      b = 2.0f * amplifier_util->proc_sect[nth_sect].b;
+    }
+      
+    amplifier_util->proc_sect[nth_sect].b = b; 
+    u2 = TRUE;
+  }
+
+  if(u2){
+    b *= 7.0 * f / sqrtf(g);         
+    amplifier_util->proc_sect[nth_sect].s2 = (1 - b) / (1 + b);
+    d2 = (amplifier_util->proc_sect[nth_sect].s2 - s2) / k;        
+  }
+
+  while(k--){  
+    s1 += d1;
+    s2 += d2;
+    a += da;
+
+    x = *source;
+    y = x - s2 * amplifier_util->proc_sect[nth_sect].z2;
+
+    *destination -= a * (amplifier_util->proc_sect[nth_sect].z2 + s2 * y - x);                           
+
+    y -= s1 * amplifier_util->proc_sect[nth_sect].z1;
+    amplifier_util->proc_sect[nth_sect].z2 = amplifier_util->proc_sect[nth_sect].z1 + s1 * y;
+    amplifier_util->proc_sect[nth_sect].z1 = y + 1e-10f;
+
+    source += source_stride;
+    destination += destination_stride;
+  }
+}
+
+void
+ags_fil_proc_s32(AgsAmplifierUtil *amplifier_util,
+		 guint nth_sect,
+		 gint k, gdouble f, gdouble b, gdouble g)
+{
+  gint32 *destination;
+  gint32 *source;
+
+  guint destination_stride, source_stride;
+  
+  gdouble s1, s2, d1, d2, a, da, x, y;
+  gboolean  u2 = FALSE;
+
+  destination = (gint32 *) amplifier_util->destination;
+  destination_stride = amplifier_util->destination_stride;
+
+  source = (gint32 *) amplifier_util->source;
+  source_stride = amplifier_util->source_stride;
+
+  s1 = amplifier_util->proc_sect[nth_sect].s1;
+  s2 = amplifier_util->proc_sect[nth_sect].s2;
+  
+  a = amplifier_util->proc_sect[nth_sect].a;
+
+  d1 = 0.0;
+  d2 = 0.0;
+  da = 0.0;
+
+  if(f != amplifier_util->proc_sect[nth_sect].f){
+    if(f < 0.5f * amplifier_util->proc_sect[nth_sect].f){
+      f = 0.5f * amplifier_util->proc_sect[nth_sect].f;
+    }else if (f > 2.0f * amplifier_util->proc_sect[nth_sect].f){
+      f = 2.0f * amplifier_util->proc_sect[nth_sect].f;
+    }
+    
+    amplifier_util->proc_sect[nth_sect].f = f;
+    amplifier_util->proc_sect[nth_sect].s1 = -cosf (6.283185f * f);
+    d1 = (amplifier_util->proc_sect[nth_sect].s1 - s1) / k;           
+    u2 = TRUE;
+  }             
+       
+  if(g != amplifier_util->proc_sect[nth_sect].g){
+    if(g < 0.5f * amplifier_util->proc_sect[nth_sect].g){
+      g = 0.5f * amplifier_util->proc_sect[nth_sect].g;
+    }else if (g > 2.0f * amplifier_util->proc_sect[nth_sect].g){
+      g = 2.0f * amplifier_util->proc_sect[nth_sect].g;
+    }
+    
+    amplifier_util->proc_sect[nth_sect].g = g;
+    amplifier_util->proc_sect[nth_sect].a = 0.5f * (g - 1.0f);
+    da = (amplifier_util->proc_sect[nth_sect].a - a) / k;
+    u2 = TRUE;
+  }
+
+  if(b != amplifier_util->proc_sect[nth_sect].b){
+    if(b < 0.5f * amplifier_util->proc_sect[nth_sect].b){
+      b = 0.5f * amplifier_util->proc_sect[nth_sect].b;
+    }else if(b > 2.0f * amplifier_util->proc_sect[nth_sect].b){
+      b = 2.0f * amplifier_util->proc_sect[nth_sect].b;
+    }
+      
+    amplifier_util->proc_sect[nth_sect].b = b; 
+    u2 = TRUE;
+  }
+
+  if(u2){
+    b *= 7.0 * f / sqrtf(g);         
+    amplifier_util->proc_sect[nth_sect].s2 = (1 - b) / (1 + b);
+    d2 = (amplifier_util->proc_sect[nth_sect].s2 - s2) / k;        
+  }
+
+  while(k--){  
+    s1 += d1;
+    s2 += d2;
+    a += da;
+
+    x = *source;
+    y = x - s2 * amplifier_util->proc_sect[nth_sect].z2;
+
+    *destination -= a * (amplifier_util->proc_sect[nth_sect].z2 + s2 * y - x);                           
+
+    y -= s1 * amplifier_util->proc_sect[nth_sect].z1;
+    amplifier_util->proc_sect[nth_sect].z2 = amplifier_util->proc_sect[nth_sect].z1 + s1 * y;
+    amplifier_util->proc_sect[nth_sect].z1 = y + 1e-10f;
+
+    source += source_stride;
+    destination += destination_stride;
+  }
+}
+
+void
+ags_fil_proc_s64(AgsAmplifierUtil *amplifier_util,
+		 guint nth_sect,
+		 gint k, gdouble f, gdouble b, gdouble g)
+{
+  gint64 *destination;
+  gint64 *source;
+
+  guint destination_stride, source_stride;
+  
+  gdouble s1, s2, d1, d2, a, da, x, y;
+  gboolean  u2 = FALSE;
+
+  destination = (gint64 *) amplifier_util->destination;
+  destination_stride = amplifier_util->destination_stride;
+
+  source = (gint64 *) amplifier_util->source;
+  source_stride = amplifier_util->source_stride;
+
+  s1 = amplifier_util->proc_sect[nth_sect].s1;
+  s2 = amplifier_util->proc_sect[nth_sect].s2;
+  
+  a = amplifier_util->proc_sect[nth_sect].a;
+
+  d1 = 0.0;
+  d2 = 0.0;
+  da = 0.0;
+
+  if(f != amplifier_util->proc_sect[nth_sect].f){
+    if(f < 0.5f * amplifier_util->proc_sect[nth_sect].f){
+      f = 0.5f * amplifier_util->proc_sect[nth_sect].f;
+    }else if (f > 2.0f * amplifier_util->proc_sect[nth_sect].f){
+      f = 2.0f * amplifier_util->proc_sect[nth_sect].f;
+    }
+    
+    amplifier_util->proc_sect[nth_sect].f = f;
+    amplifier_util->proc_sect[nth_sect].s1 = -cosf (6.283185f * f);
+    d1 = (amplifier_util->proc_sect[nth_sect].s1 - s1) / k;           
+    u2 = TRUE;
+  }             
+       
+  if(g != amplifier_util->proc_sect[nth_sect].g){
+    if(g < 0.5f * amplifier_util->proc_sect[nth_sect].g){
+      g = 0.5f * amplifier_util->proc_sect[nth_sect].g;
+    }else if (g > 2.0f * amplifier_util->proc_sect[nth_sect].g){
+      g = 2.0f * amplifier_util->proc_sect[nth_sect].g;
+    }
+    
+    amplifier_util->proc_sect[nth_sect].g = g;
+    amplifier_util->proc_sect[nth_sect].a = 0.5f * (g - 1.0f);
+    da = (amplifier_util->proc_sect[nth_sect].a - a) / k;
+    u2 = TRUE;
+  }
+
+  if(b != amplifier_util->proc_sect[nth_sect].b){
+    if(b < 0.5f * amplifier_util->proc_sect[nth_sect].b){
+      b = 0.5f * amplifier_util->proc_sect[nth_sect].b;
+    }else if(b > 2.0f * amplifier_util->proc_sect[nth_sect].b){
+      b = 2.0f * amplifier_util->proc_sect[nth_sect].b;
+    }
+      
+    amplifier_util->proc_sect[nth_sect].b = b; 
+    u2 = TRUE;
+  }
+
+  if(u2){
+    b *= 7.0 * f / sqrtf(g);         
+    amplifier_util->proc_sect[nth_sect].s2 = (1 - b) / (1 + b);
+    d2 = (amplifier_util->proc_sect[nth_sect].s2 - s2) / k;        
+  }
+
+  while(k--){  
+    s1 += d1;
+    s2 += d2;
+    a += da;
+
+    x = *source;
+    y = x - s2 * amplifier_util->proc_sect[nth_sect].z2;
+
+    *destination -= a * (amplifier_util->proc_sect[nth_sect].z2 + s2 * y - x);                           
+
+    y -= s1 * amplifier_util->proc_sect[nth_sect].z1;
+    amplifier_util->proc_sect[nth_sect].z2 = amplifier_util->proc_sect[nth_sect].z1 + s1 * y;
+    amplifier_util->proc_sect[nth_sect].z1 = y + 1e-10f;
+
+    source += source_stride;
+    destination += destination_stride;
+  }
+}
+
+void
+ags_fil_proc_float(AgsAmplifierUtil *amplifier_util,
+		    guint nth_sect,
+		    gint k, gdouble f, gdouble b, gdouble g)
+{
+  gfloat *destination;
+  gfloat *source;
+
+  guint destination_stride, source_stride;
+  
+  gdouble s1, s2, d1, d2, a, da, x, y;
+  gboolean  u2 = FALSE;
+
+  destination = (gfloat *) amplifier_util->destination;
+  destination_stride = amplifier_util->destination_stride;
+
+  source = (gfloat *) amplifier_util->source;
+  source_stride = amplifier_util->source_stride;
+
+  s1 = amplifier_util->proc_sect[nth_sect].s1;
+  s2 = amplifier_util->proc_sect[nth_sect].s2;
+  
+  a = amplifier_util->proc_sect[nth_sect].a;
+
+  d1 = 0.0;
+  d2 = 0.0;
+  da = 0.0;
+
+  if(f != amplifier_util->proc_sect[nth_sect].f){
+    if(f < 0.5f * amplifier_util->proc_sect[nth_sect].f){
+      f = 0.5f * amplifier_util->proc_sect[nth_sect].f;
+    }else if (f > 2.0f * amplifier_util->proc_sect[nth_sect].f){
+      f = 2.0f * amplifier_util->proc_sect[nth_sect].f;
+    }
+    
+    amplifier_util->proc_sect[nth_sect].f = f;
+    amplifier_util->proc_sect[nth_sect].s1 = -cosf (6.283185f * f);
+    d1 = (amplifier_util->proc_sect[nth_sect].s1 - s1) / k;           
+    u2 = TRUE;
+  }             
+       
+  if(g != amplifier_util->proc_sect[nth_sect].g){
+    if(g < 0.5f * amplifier_util->proc_sect[nth_sect].g){
+      g = 0.5f * amplifier_util->proc_sect[nth_sect].g;
+    }else if (g > 2.0f * amplifier_util->proc_sect[nth_sect].g){
+      g = 2.0f * amplifier_util->proc_sect[nth_sect].g;
+    }
+    
+    amplifier_util->proc_sect[nth_sect].g = g;
+    amplifier_util->proc_sect[nth_sect].a = 0.5f * (g - 1.0f);
+    da = (amplifier_util->proc_sect[nth_sect].a - a) / k;
+    u2 = TRUE;
+  }
+
+  if(b != amplifier_util->proc_sect[nth_sect].b){
+    if(b < 0.5f * amplifier_util->proc_sect[nth_sect].b){
+      b = 0.5f * amplifier_util->proc_sect[nth_sect].b;
+    }else if(b > 2.0f * amplifier_util->proc_sect[nth_sect].b){
+      b = 2.0f * amplifier_util->proc_sect[nth_sect].b;
+    }
+      
+    amplifier_util->proc_sect[nth_sect].b = b; 
+    u2 = TRUE;
+  }
+
+  if(u2){
+    b *= 7.0 * f / sqrtf(g);         
+    amplifier_util->proc_sect[nth_sect].s2 = (1 - b) / (1 + b);
+    d2 = (amplifier_util->proc_sect[nth_sect].s2 - s2) / k;        
+  }
+
+  while(k--){  
+    s1 += d1;
+    s2 += d2;
+    a += da;
+
+    x = *source;
+    y = x - s2 * amplifier_util->proc_sect[nth_sect].z2;
+
+    *destination -= a * (amplifier_util->proc_sect[nth_sect].z2 + s2 * y - x);                           
+
+    y -= s1 * amplifier_util->proc_sect[nth_sect].z1;
+    amplifier_util->proc_sect[nth_sect].z2 = amplifier_util->proc_sect[nth_sect].z1 + s1 * y;
+    amplifier_util->proc_sect[nth_sect].z1 = y + 1e-10f;
+
+    source += source_stride;
+    destination += destination_stride;
+  }
+}
+
+void
+ags_fil_proc_double(AgsAmplifierUtil *amplifier_util,
+		    guint nth_sect,
+		    gint k, gdouble f, gdouble b, gdouble g)
+{
+  gdouble *destination;
+  gdouble *source;
+
+  guint destination_stride, source_stride;
+  
+  gdouble s1, s2, d1, d2, a, da, x, y;
+  gboolean  u2 = FALSE;
+
+  destination = (gdouble *) amplifier_util->destination;
+  destination_stride = amplifier_util->destination_stride;
+
+  source = (gdouble *) amplifier_util->source;
+  source_stride = amplifier_util->source_stride;
+
+  s1 = amplifier_util->proc_sect[nth_sect].s1;
+  s2 = amplifier_util->proc_sect[nth_sect].s2;
+  
+  a = amplifier_util->proc_sect[nth_sect].a;
+
+  d1 = 0.0;
+  d2 = 0.0;
+  da = 0.0;
+
+  if(f != amplifier_util->proc_sect[nth_sect].f){
+    if(f < 0.5f * amplifier_util->proc_sect[nth_sect].f){
+      f = 0.5f * amplifier_util->proc_sect[nth_sect].f;
+    }else if (f > 2.0f * amplifier_util->proc_sect[nth_sect].f){
+      f = 2.0f * amplifier_util->proc_sect[nth_sect].f;
+    }
+    
+    amplifier_util->proc_sect[nth_sect].f = f;
+    amplifier_util->proc_sect[nth_sect].s1 = -cosf (6.283185f * f);
+    d1 = (amplifier_util->proc_sect[nth_sect].s1 - s1) / k;           
+    u2 = TRUE;
+  }             
+       
+  if(g != amplifier_util->proc_sect[nth_sect].g){
+    if(g < 0.5f * amplifier_util->proc_sect[nth_sect].g){
+      g = 0.5f * amplifier_util->proc_sect[nth_sect].g;
+    }else if (g > 2.0f * amplifier_util->proc_sect[nth_sect].g){
+      g = 2.0f * amplifier_util->proc_sect[nth_sect].g;
+    }
+    
+    amplifier_util->proc_sect[nth_sect].g = g;
+    amplifier_util->proc_sect[nth_sect].a = 0.5f * (g - 1.0f);
+    da = (amplifier_util->proc_sect[nth_sect].a - a) / k;
+    u2 = TRUE;
+  }
+
+  if(b != amplifier_util->proc_sect[nth_sect].b){
+    if(b < 0.5f * amplifier_util->proc_sect[nth_sect].b){
+      b = 0.5f * amplifier_util->proc_sect[nth_sect].b;
+    }else if(b > 2.0f * amplifier_util->proc_sect[nth_sect].b){
+      b = 2.0f * amplifier_util->proc_sect[nth_sect].b;
+    }
+      
+    amplifier_util->proc_sect[nth_sect].b = b; 
+    u2 = TRUE;
+  }
+
+  if(u2){
+    b *= 7.0 * f / sqrtf(g);         
+    amplifier_util->proc_sect[nth_sect].s2 = (1 - b) / (1 + b);
+    d2 = (amplifier_util->proc_sect[nth_sect].s2 - s2) / k;        
+  }
+
+  while(k--){  
+    s1 += d1;
+    s2 += d2;
+    a += da;
+
+    x = *source;
+    y = x - s2 * amplifier_util->proc_sect[nth_sect].z2;
+
+    *destination -= a * (amplifier_util->proc_sect[nth_sect].z2 + s2 * y - x);                           
+
+    y -= s1 * amplifier_util->proc_sect[nth_sect].z1;
+    amplifier_util->proc_sect[nth_sect].z2 = amplifier_util->proc_sect[nth_sect].z1 + s1 * y;
+    amplifier_util->proc_sect[nth_sect].z1 = y + 1e-10f;
+
+    source += source_stride;
+    destination += destination_stride;
+  }
+}
+
+void
+ags_fil_proc_complex(AgsAmplifierUtil *amplifier_util,
+		     guint nth_sect,
+		     gint k, gdouble f, gdouble b, gdouble g)
+{
+  AgsComplex *destination;
+  AgsComplex *source;
+
+  guint destination_stride, source_stride;
+
+  double _Complex x, y;
+  gdouble s1, s2, d1, d2, a, da;
+  gboolean  u2 = FALSE;
+
+  destination = (AgsComplex *) amplifier_util->destination;
+  destination_stride = amplifier_util->destination_stride;
+
+  source = (AgsComplex *) amplifier_util->source;
+  source_stride = amplifier_util->source_stride;
+
+  s1 = amplifier_util->proc_sect[nth_sect].s1;
+  s2 = amplifier_util->proc_sect[nth_sect].s2;
+  
+  a = amplifier_util->proc_sect[nth_sect].a;
+
+  d1 = 0.0;
+  d2 = 0.0;
+  da = 0.0;
+
+  if(f != amplifier_util->proc_sect[nth_sect].f){
+    if(f < 0.5f * amplifier_util->proc_sect[nth_sect].f){
+      f = 0.5f * amplifier_util->proc_sect[nth_sect].f;
+    }else if (f > 2.0f * amplifier_util->proc_sect[nth_sect].f){
+      f = 2.0f * amplifier_util->proc_sect[nth_sect].f;
+    }
+    
+    amplifier_util->proc_sect[nth_sect].f = f;
+    amplifier_util->proc_sect[nth_sect].s1 = -cosf (6.283185f * f);
+    d1 = (amplifier_util->proc_sect[nth_sect].s1 - s1) / k;           
+    u2 = TRUE;
+  }             
+       
+  if(g != amplifier_util->proc_sect[nth_sect].g){
+    if(g < 0.5f * amplifier_util->proc_sect[nth_sect].g){
+      g = 0.5f * amplifier_util->proc_sect[nth_sect].g;
+    }else if (g > 2.0f * amplifier_util->proc_sect[nth_sect].g){
+      g = 2.0f * amplifier_util->proc_sect[nth_sect].g;
+    }
+    
+    amplifier_util->proc_sect[nth_sect].g = g;
+    amplifier_util->proc_sect[nth_sect].a = 0.5f * (g - 1.0f);
+    da = (amplifier_util->proc_sect[nth_sect].a - a) / k;
+    u2 = TRUE;
+  }
+
+  if(b != amplifier_util->proc_sect[nth_sect].b){
+    if(b < 0.5f * amplifier_util->proc_sect[nth_sect].b){
+      b = 0.5f * amplifier_util->proc_sect[nth_sect].b;
+    }else if(b > 2.0f * amplifier_util->proc_sect[nth_sect].b){
+      b = 2.0f * amplifier_util->proc_sect[nth_sect].b;
+    }
+      
+    amplifier_util->proc_sect[nth_sect].b = b; 
+    u2 = TRUE;
+  }
+
+  if(u2){
+    b *= 7.0 * f / sqrtf(g);         
+    amplifier_util->proc_sect[nth_sect].s2 = (1 - b) / (1 + b);
+    d2 = (amplifier_util->proc_sect[nth_sect].s2 - s2) / k;        
+  }
+
+  while(k--){  
+    s1 += d1;
+    s2 += d2;
+    a += da;
+
+    x = ags_complex_get(source);
+    y = x - s2 * amplifier_util->proc_sect[nth_sect].z2;
+
+    ags_complex_set(destination,
+		    x - a * (amplifier_util->proc_sect[nth_sect].z2 + s2 * y - x)); 
+
+    y -= s1 * amplifier_util->proc_sect[nth_sect].z1;
+    amplifier_util->proc_sect[nth_sect].z2 = amplifier_util->proc_sect[nth_sect].z1 + s1 * y;
+    amplifier_util->proc_sect[nth_sect].z1 = y + 1e-10f;
+
+    source += source_stride;
+    destination += destination_stride;
+  }
+}
+
+void
+ags_fil_proc(AgsAmplifierUtil *amplifier_util,
+	     AgsSoundcardFormat format,
+	     guint nth_sect,
+	     gint k, gdouble f, gdouble b, gdouble g)
+{
+  if(amplifier_util == NULL ||
+     amplifier_util->destination == NULL ||
+     amplifier_util->source == NULL){
+    return;
+  }
+  
+  switch(amplifier_util->format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+    {
+      ags_fil_proc_s8(amplifier_util,
+		      nth_sect,
+		      k, f, b, g);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      ags_fil_proc_s16(amplifier_util,
+		       nth_sect,
+		       k, f, b, g);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      ags_fil_proc_s24(amplifier_util,
+		       nth_sect,
+		       k, f, b, g);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      ags_fil_proc_s32(amplifier_util,
+		       nth_sect,
+		       k, f, b, g);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+    {
+      ags_fil_proc_s64(amplifier_util,
+		       nth_sect,
+		       k, f, b, g);
+    }
+    break;
+  case AGS_SOUNDCARD_FLOAT:
+    {
+      ags_fil_proc_float(amplifier_util,
+			 nth_sect,
+			 k, f, b, g);
+    }
+    break;
+  case AGS_SOUNDCARD_DOUBLE:
+    {
+      ags_fil_proc_double(amplifier_util,
+			  nth_sect,
+			  k, f, b, g);
+    }
+    break;
+  case AGS_SOUNDCARD_COMPLEX:
+    {
+      ags_fil_proc_complex(amplifier_util,
+			   nth_sect,
+			   k, f, b, g);
+    }
+    break;
+  }
+}
+
+gdouble
+exp2ap(gdouble x)
+{
+  int i;
+
+  i = (int)(floor (x));
+  x -= i;
+
+  return(ldexp(1 + x * (0.6930f + x * (0.2416f + x * (0.0517f + x * 0.0137f))), i));
+}
+
 /**
  * ags_amplifier_util_process_s8:
  * @amplifier_util: the #AgsAmplifierUtil-struct
@@ -956,7 +1827,181 @@ ags_amplifier_util_set_filter_gain(AgsAmplifierUtil *amplifier_util,
 void
 ags_amplifier_util_process_s8(AgsAmplifierUtil *amplifier_util)
 {
-  //TODO:JK: implement me
+  gint8 *aip;
+  gint8 *aop;
+
+  guint source_stride, destination_stride;
+  guint buffer_length;
+  AgsSoundcardFormat format;
+  guint len;
+  gint i, j, k;
+  gint8 *p, sig[48];
+  gdouble t, g, d;
+  gdouble fgain;
+  gdouble sfreq[AGS_AMPLIFIER_UTIL_AMP_COUNT];
+  gdouble sband[AGS_AMPLIFIER_UTIL_AMP_COUNT];
+  gdouble sgain[AGS_AMPLIFIER_UTIL_AMP_COUNT];
+
+  aip = amplifier_util->source;
+  aop = amplifier_util->destination;
+  
+  source_stride = amplifier_util->source_stride;
+  destination_stride = amplifier_util->destination_stride;
+
+  len = 
+    buffer_length = amplifier_util->buffer_length;
+  format = amplifier_util->format;
+  
+  fgain = exp2ap(0.1661 * amplifier_util->filter_gain);
+  
+  for(j = 0; j < AGS_AMPLIFIER_UTIL_AMP_COUNT; j++){
+    switch(j){
+    case 0:
+      t = amplifier_util->amp_0_frequency / amplifier_util->samplerate;
+
+      break;
+    case 1:
+      t = amplifier_util->amp_1_frequency / amplifier_util->samplerate;
+
+      break;
+    case 2:
+      t = amplifier_util->amp_2_frequency / amplifier_util->samplerate;
+
+      break;
+    case 3:
+      t = amplifier_util->amp_3_frequency / amplifier_util->samplerate;
+
+      break;
+    default:
+      g_warning("unknown amp freq");
+    }
+      
+    if(t < 0.0002){
+      t = 0.0002;
+    }
+
+    if(t > 0.4998){
+      t = 0.4998;
+    }
+
+    sfreq [j] = t;        
+
+    switch(j){
+    case 0:
+      sband[j] = amplifier_util->amp_0_bandwidth;
+
+      break;
+    case 1:
+      sband[j] = amplifier_util->amp_1_bandwidth;
+
+      break;
+    case 2:
+      sband[j] = amplifier_util->amp_2_bandwidth;
+
+      break;
+    case 3:
+      sband[j] = amplifier_util->amp_3_bandwidth;
+
+      break;
+    default:
+      g_warning("unknown amp bandwidth");
+    }
+
+    if(amplifier_util->amp_0_frequency > 0.0){
+      switch(j){
+      case 0:
+	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_0_gain);
+
+	break;
+      case 1:
+	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_1_gain);
+
+	break;
+      case 2:
+	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_2_gain);
+
+	break;
+      case 3:
+	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_3_gain);
+
+	break;
+      default:
+	g_warning("unknown amp gain");
+      }
+
+    }else{
+      sgain [j] = 1.0;
+    }
+  }
+
+  while(len){
+    k = (len > 48) ? 32 : len;
+        
+    t = fgain;
+    g = amplifier_util->filter_gain;
+
+    if(t > 1.25 * g){
+      t = 1.25 * g;
+    }else if (t < 0.80 * g){
+      t = 0.80 * g;
+    }
+
+    amplifier_util->filter_gain = t;
+    d = (t - g) / k;
+
+    for(i = 0; i < k; i++){
+      g += d;
+      sig[i] = g * aip[i * source_stride];
+    }
+
+    for(j = 0; j < AGS_AMPLIFIER_UTIL_AMP_COUNT; j++){
+      ags_fil_proc(amplifier_util,
+		   format,
+		   j,
+		   k, sfreq[j], sband[j], sgain[j]);
+    }
+                  
+    j = amplifier_util->fade;
+    g = j / 16.0;
+    p = 0;
+    
+    if(amplifier_util->amp_0_frequency > 0.0){
+      if(j == 16){
+	p = sig;
+      }else ++j;
+    }else{
+      if(j == 0){
+	p = aip;
+      }else{
+	--j;
+      }
+    }
+    
+    amplifier_util->fade = j;
+    
+    if(p){
+      ags_audio_buffer_util_clear_buffer(NULL,
+					 aop, destination_stride,
+					 k, ags_audio_buffer_util_format_from_soundcard(NULL, format));
+      ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
+						  aop, destination_stride, 0,
+						  p, source_stride, 0,
+						  k, ags_audio_buffer_util_get_copy_mode_from_format(NULL, format, format));
+      
+      //      memcpy(aop, p, k * sizeof (float));
+    }else{
+      d = (j / 16.0 - g) / k;
+      
+      for (i = 0; i < k; i++){
+	g += d;
+	aop[i * destination_stride] = g * sig[i] + (1.0 - g) * aip[i * source_stride];
+      }
+    }
+    
+    aip += (k * source_stride);
+    aop += (k * destination_stride);
+    len -= k;
+  }
 }
 
 /**
@@ -970,7 +2015,181 @@ ags_amplifier_util_process_s8(AgsAmplifierUtil *amplifier_util)
 void
 ags_amplifier_util_process_s16(AgsAmplifierUtil *amplifier_util)
 {
-  //TODO:JK: implement me
+  gint16 *aip;
+  gint16 *aop;
+
+  guint source_stride, destination_stride;
+  guint buffer_length;
+  AgsSoundcardFormat format;
+  guint len;
+  gint i, j, k;
+  gint16 *p, sig[48];
+  gdouble t, g, d;
+  gdouble fgain;
+  gdouble sfreq[AGS_AMPLIFIER_UTIL_AMP_COUNT];
+  gdouble sband[AGS_AMPLIFIER_UTIL_AMP_COUNT];
+  gdouble sgain[AGS_AMPLIFIER_UTIL_AMP_COUNT];
+
+  aip = amplifier_util->source;
+  aop = amplifier_util->destination;
+  
+  source_stride = amplifier_util->source_stride;
+  destination_stride = amplifier_util->destination_stride;
+
+  len = 
+    buffer_length = amplifier_util->buffer_length;
+  format = amplifier_util->format;
+  
+  fgain = exp2ap(0.1661 * amplifier_util->filter_gain);
+  
+  for(j = 0; j < AGS_AMPLIFIER_UTIL_AMP_COUNT; j++){
+    switch(j){
+    case 0:
+      t = amplifier_util->amp_0_frequency / amplifier_util->samplerate;
+
+      break;
+    case 1:
+      t = amplifier_util->amp_1_frequency / amplifier_util->samplerate;
+
+      break;
+    case 2:
+      t = amplifier_util->amp_2_frequency / amplifier_util->samplerate;
+
+      break;
+    case 3:
+      t = amplifier_util->amp_3_frequency / amplifier_util->samplerate;
+
+      break;
+    default:
+      g_warning("unknown amp freq");
+    }
+      
+    if(t < 0.0002){
+      t = 0.0002;
+    }
+
+    if(t > 0.4998){
+      t = 0.4998;
+    }
+
+    sfreq [j] = t;        
+
+    switch(j){
+    case 0:
+      sband[j] = amplifier_util->amp_0_bandwidth;
+
+      break;
+    case 1:
+      sband[j] = amplifier_util->amp_1_bandwidth;
+
+      break;
+    case 2:
+      sband[j] = amplifier_util->amp_2_bandwidth;
+
+      break;
+    case 3:
+      sband[j] = amplifier_util->amp_3_bandwidth;
+
+      break;
+    default:
+      g_warning("unknown amp bandwidth");
+    }
+
+    if(amplifier_util->amp_0_frequency > 0.0){
+      switch(j){
+      case 0:
+	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_0_gain);
+
+	break;
+      case 1:
+	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_1_gain);
+
+	break;
+      case 2:
+	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_2_gain);
+
+	break;
+      case 3:
+	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_3_gain);
+
+	break;
+      default:
+	g_warning("unknown amp gain");
+      }
+
+    }else{
+      sgain [j] = 1.0;
+    }
+  }
+
+  while(len){
+    k = (len > 48) ? 32 : len;
+        
+    t = fgain;
+    g = amplifier_util->filter_gain;
+
+    if(t > 1.25 * g){
+      t = 1.25 * g;
+    }else if (t < 0.80 * g){
+      t = 0.80 * g;
+    }
+
+    amplifier_util->filter_gain = t;
+    d = (t - g) / k;
+
+    for(i = 0; i < k; i++){
+      g += d;
+      sig[i] = g * aip[i * source_stride];
+    }
+
+    for(j = 0; j < AGS_AMPLIFIER_UTIL_AMP_COUNT; j++){
+      ags_fil_proc(amplifier_util,
+		   format,
+		   j,
+		   k, sfreq[j], sband[j], sgain[j]);
+    }
+                  
+    j = amplifier_util->fade;
+    g = j / 16.0;
+    p = 0;
+    
+    if(amplifier_util->amp_0_frequency > 0.0){
+      if(j == 16){
+	p = sig;
+      }else ++j;
+    }else{
+      if(j == 0){
+	p = aip;
+      }else{
+	--j;
+      }
+    }
+    
+    amplifier_util->fade = j;
+    
+    if(p){
+      ags_audio_buffer_util_clear_buffer(NULL,
+					 aop, destination_stride,
+					 k, ags_audio_buffer_util_format_from_soundcard(NULL, format));
+      ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
+						  aop, destination_stride, 0,
+						  p, source_stride, 0,
+						  k, ags_audio_buffer_util_get_copy_mode_from_format(NULL, format, format));
+      
+      //      memcpy(aop, p, k * sizeof (float));
+    }else{
+      d = (j / 16.0 - g) / k;
+      
+      for (i = 0; i < k; i++){
+	g += d;
+	aop[i * destination_stride] = g * sig[i] + (1.0 - g) * aip[i * source_stride];
+      }
+    }
+    
+    aip += (k * source_stride);
+    aop += (k * destination_stride);
+    len -= k;
+  }
 }
 
 /**
@@ -984,7 +2203,181 @@ ags_amplifier_util_process_s16(AgsAmplifierUtil *amplifier_util)
 void
 ags_amplifier_util_process_s24(AgsAmplifierUtil *amplifier_util)
 {
-  //TODO:JK: implement me
+  gint32 *aip;
+  gint32 *aop;
+
+  guint source_stride, destination_stride;
+  guint buffer_length;
+  AgsSoundcardFormat format;
+  guint len;
+  gint i, j, k;
+  gint32 *p, sig[48];
+  gdouble t, g, d;
+  gdouble fgain;
+  gdouble sfreq[AGS_AMPLIFIER_UTIL_AMP_COUNT];
+  gdouble sband[AGS_AMPLIFIER_UTIL_AMP_COUNT];
+  gdouble sgain[AGS_AMPLIFIER_UTIL_AMP_COUNT];
+
+  aip = amplifier_util->source;
+  aop = amplifier_util->destination;
+  
+  source_stride = amplifier_util->source_stride;
+  destination_stride = amplifier_util->destination_stride;
+
+  len = 
+    buffer_length = amplifier_util->buffer_length;
+  format = amplifier_util->format;
+  
+  fgain = exp2ap(0.1661 * amplifier_util->filter_gain);
+  
+  for(j = 0; j < AGS_AMPLIFIER_UTIL_AMP_COUNT; j++){
+    switch(j){
+    case 0:
+      t = amplifier_util->amp_0_frequency / amplifier_util->samplerate;
+
+      break;
+    case 1:
+      t = amplifier_util->amp_1_frequency / amplifier_util->samplerate;
+
+      break;
+    case 2:
+      t = amplifier_util->amp_2_frequency / amplifier_util->samplerate;
+
+      break;
+    case 3:
+      t = amplifier_util->amp_3_frequency / amplifier_util->samplerate;
+
+      break;
+    default:
+      g_warning("unknown amp freq");
+    }
+      
+    if(t < 0.0002){
+      t = 0.0002;
+    }
+
+    if(t > 0.4998){
+      t = 0.4998;
+    }
+
+    sfreq [j] = t;        
+
+    switch(j){
+    case 0:
+      sband[j] = amplifier_util->amp_0_bandwidth;
+
+      break;
+    case 1:
+      sband[j] = amplifier_util->amp_1_bandwidth;
+
+      break;
+    case 2:
+      sband[j] = amplifier_util->amp_2_bandwidth;
+
+      break;
+    case 3:
+      sband[j] = amplifier_util->amp_3_bandwidth;
+
+      break;
+    default:
+      g_warning("unknown amp bandwidth");
+    }
+
+    if(amplifier_util->amp_0_frequency > 0.0){
+      switch(j){
+      case 0:
+	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_0_gain);
+
+	break;
+      case 1:
+	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_1_gain);
+
+	break;
+      case 2:
+	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_2_gain);
+
+	break;
+      case 3:
+	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_3_gain);
+
+	break;
+      default:
+	g_warning("unknown amp gain");
+      }
+
+    }else{
+      sgain [j] = 1.0;
+    }
+  }
+
+  while(len){
+    k = (len > 48) ? 32 : len;
+        
+    t = fgain;
+    g = amplifier_util->filter_gain;
+
+    if(t > 1.25 * g){
+      t = 1.25 * g;
+    }else if (t < 0.80 * g){
+      t = 0.80 * g;
+    }
+
+    amplifier_util->filter_gain = t;
+    d = (t - g) / k;
+
+    for(i = 0; i < k; i++){
+      g += d;
+      sig[i] = g * aip[i * source_stride];
+    }
+
+    for(j = 0; j < AGS_AMPLIFIER_UTIL_AMP_COUNT; j++){
+      ags_fil_proc(amplifier_util,
+		   format,
+		   j,
+		   k, sfreq[j], sband[j], sgain[j]);
+    }
+                  
+    j = amplifier_util->fade;
+    g = j / 16.0;
+    p = 0;
+    
+    if(amplifier_util->amp_0_frequency > 0.0){
+      if(j == 16){
+	p = sig;
+      }else ++j;
+    }else{
+      if(j == 0){
+	p = aip;
+      }else{
+	--j;
+      }
+    }
+    
+    amplifier_util->fade = j;
+    
+    if(p){
+      ags_audio_buffer_util_clear_buffer(NULL,
+					 aop, destination_stride,
+					 k, ags_audio_buffer_util_format_from_soundcard(NULL, format));
+      ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
+						  aop, destination_stride, 0,
+						  p, source_stride, 0,
+						  k, ags_audio_buffer_util_get_copy_mode_from_format(NULL, format, format));
+      
+      //      memcpy(aop, p, k * sizeof (float));
+    }else{
+      d = (j / 16.0 - g) / k;
+      
+      for (i = 0; i < k; i++){
+	g += d;
+	aop[i * destination_stride] = g * sig[i] + (1.0 - g) * aip[i * source_stride];
+      }
+    }
+    
+    aip += (k * source_stride);
+    aop += (k * destination_stride);
+    len -= k;
+  }
 }
 
 /**
@@ -998,7 +2391,181 @@ ags_amplifier_util_process_s24(AgsAmplifierUtil *amplifier_util)
 void
 ags_amplifier_util_process_s32(AgsAmplifierUtil *amplifier_util)
 {
-  //TODO:JK: implement me
+  gint32 *aip;
+  gint32 *aop;
+
+  guint source_stride, destination_stride;
+  guint buffer_length;
+  AgsSoundcardFormat format;
+  guint len;
+  gint i, j, k;
+  gint32 *p, sig[48];
+  gdouble t, g, d;
+  gdouble fgain;
+  gdouble sfreq[AGS_AMPLIFIER_UTIL_AMP_COUNT];
+  gdouble sband[AGS_AMPLIFIER_UTIL_AMP_COUNT];
+  gdouble sgain[AGS_AMPLIFIER_UTIL_AMP_COUNT];
+
+  aip = amplifier_util->source;
+  aop = amplifier_util->destination;
+  
+  source_stride = amplifier_util->source_stride;
+  destination_stride = amplifier_util->destination_stride;
+
+  len = 
+    buffer_length = amplifier_util->buffer_length;
+  format = amplifier_util->format;
+  
+  fgain = exp2ap(0.1661 * amplifier_util->filter_gain);
+  
+  for(j = 0; j < AGS_AMPLIFIER_UTIL_AMP_COUNT; j++){
+    switch(j){
+    case 0:
+      t = amplifier_util->amp_0_frequency / amplifier_util->samplerate;
+
+      break;
+    case 1:
+      t = amplifier_util->amp_1_frequency / amplifier_util->samplerate;
+
+      break;
+    case 2:
+      t = amplifier_util->amp_2_frequency / amplifier_util->samplerate;
+
+      break;
+    case 3:
+      t = amplifier_util->amp_3_frequency / amplifier_util->samplerate;
+
+      break;
+    default:
+      g_warning("unknown amp freq");
+    }
+      
+    if(t < 0.0002){
+      t = 0.0002;
+    }
+
+    if(t > 0.4998){
+      t = 0.4998;
+    }
+
+    sfreq [j] = t;        
+
+    switch(j){
+    case 0:
+      sband[j] = amplifier_util->amp_0_bandwidth;
+
+      break;
+    case 1:
+      sband[j] = amplifier_util->amp_1_bandwidth;
+
+      break;
+    case 2:
+      sband[j] = amplifier_util->amp_2_bandwidth;
+
+      break;
+    case 3:
+      sband[j] = amplifier_util->amp_3_bandwidth;
+
+      break;
+    default:
+      g_warning("unknown amp bandwidth");
+    }
+
+    if(amplifier_util->amp_0_frequency > 0.0){
+      switch(j){
+      case 0:
+	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_0_gain);
+
+	break;
+      case 1:
+	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_1_gain);
+
+	break;
+      case 2:
+	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_2_gain);
+
+	break;
+      case 3:
+	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_3_gain);
+
+	break;
+      default:
+	g_warning("unknown amp gain");
+      }
+
+    }else{
+      sgain [j] = 1.0;
+    }
+  }
+
+  while(len){
+    k = (len > 48) ? 32 : len;
+        
+    t = fgain;
+    g = amplifier_util->filter_gain;
+
+    if(t > 1.25 * g){
+      t = 1.25 * g;
+    }else if (t < 0.80 * g){
+      t = 0.80 * g;
+    }
+
+    amplifier_util->filter_gain = t;
+    d = (t - g) / k;
+
+    for(i = 0; i < k; i++){
+      g += d;
+      sig[i] = g * aip[i * source_stride];
+    }
+
+    for(j = 0; j < AGS_AMPLIFIER_UTIL_AMP_COUNT; j++){
+      ags_fil_proc(amplifier_util,
+		   format,
+		   j,
+		   k, sfreq[j], sband[j], sgain[j]);
+    }
+                  
+    j = amplifier_util->fade;
+    g = j / 16.0;
+    p = 0;
+    
+    if(amplifier_util->amp_0_frequency > 0.0){
+      if(j == 16){
+	p = sig;
+      }else ++j;
+    }else{
+      if(j == 0){
+	p = aip;
+      }else{
+	--j;
+      }
+    }
+    
+    amplifier_util->fade = j;
+    
+    if(p){
+      ags_audio_buffer_util_clear_buffer(NULL,
+					 aop, destination_stride,
+					 k, ags_audio_buffer_util_format_from_soundcard(NULL, format));
+      ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
+						  aop, destination_stride, 0,
+						  p, source_stride, 0,
+						  k, ags_audio_buffer_util_get_copy_mode_from_format(NULL, format, format));
+      
+      //      memcpy(aop, p, k * sizeof (float));
+    }else{
+      d = (j / 16.0 - g) / k;
+      
+      for (i = 0; i < k; i++){
+	g += d;
+	aop[i * destination_stride] = g * sig[i] + (1.0 - g) * aip[i * source_stride];
+      }
+    }
+    
+    aip += (k * source_stride);
+    aop += (k * destination_stride);
+    len -= k;
+  }
 }
 
 /**
@@ -1012,7 +2579,181 @@ ags_amplifier_util_process_s32(AgsAmplifierUtil *amplifier_util)
 void
 ags_amplifier_util_process_s64(AgsAmplifierUtil *amplifier_util)
 {
-  //TODO:JK: implement me
+  gint64 *aip;
+  gint64 *aop;
+
+  guint source_stride, destination_stride;
+  guint buffer_length;
+  AgsSoundcardFormat format;
+  guint len;
+  gint i, j, k;
+  gint64 *p, sig[48];
+  gdouble t, g, d;
+  gdouble fgain;
+  gdouble sfreq[AGS_AMPLIFIER_UTIL_AMP_COUNT];
+  gdouble sband[AGS_AMPLIFIER_UTIL_AMP_COUNT];
+  gdouble sgain[AGS_AMPLIFIER_UTIL_AMP_COUNT];
+
+  aip = amplifier_util->source;
+  aop = amplifier_util->destination;
+  
+  source_stride = amplifier_util->source_stride;
+  destination_stride = amplifier_util->destination_stride;
+
+  len = 
+    buffer_length = amplifier_util->buffer_length;
+  format = amplifier_util->format;
+  
+  fgain = exp2ap(0.1661 * amplifier_util->filter_gain);
+  
+  for(j = 0; j < AGS_AMPLIFIER_UTIL_AMP_COUNT; j++){
+    switch(j){
+    case 0:
+      t = amplifier_util->amp_0_frequency / amplifier_util->samplerate;
+
+      break;
+    case 1:
+      t = amplifier_util->amp_1_frequency / amplifier_util->samplerate;
+
+      break;
+    case 2:
+      t = amplifier_util->amp_2_frequency / amplifier_util->samplerate;
+
+      break;
+    case 3:
+      t = amplifier_util->amp_3_frequency / amplifier_util->samplerate;
+
+      break;
+    default:
+      g_warning("unknown amp freq");
+    }
+      
+    if(t < 0.0002){
+      t = 0.0002;
+    }
+
+    if(t > 0.4998){
+      t = 0.4998;
+    }
+
+    sfreq [j] = t;        
+
+    switch(j){
+    case 0:
+      sband[j] = amplifier_util->amp_0_bandwidth;
+
+      break;
+    case 1:
+      sband[j] = amplifier_util->amp_1_bandwidth;
+
+      break;
+    case 2:
+      sband[j] = amplifier_util->amp_2_bandwidth;
+
+      break;
+    case 3:
+      sband[j] = amplifier_util->amp_3_bandwidth;
+
+      break;
+    default:
+      g_warning("unknown amp bandwidth");
+    }
+
+    if(amplifier_util->amp_0_frequency > 0.0){
+      switch(j){
+      case 0:
+	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_0_gain);
+
+	break;
+      case 1:
+	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_1_gain);
+
+	break;
+      case 2:
+	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_2_gain);
+
+	break;
+      case 3:
+	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_3_gain);
+
+	break;
+      default:
+	g_warning("unknown amp gain");
+      }
+
+    }else{
+      sgain [j] = 1.0;
+    }
+  }
+
+  while(len){
+    k = (len > 48) ? 32 : len;
+        
+    t = fgain;
+    g = amplifier_util->filter_gain;
+
+    if(t > 1.25 * g){
+      t = 1.25 * g;
+    }else if (t < 0.80 * g){
+      t = 0.80 * g;
+    }
+
+    amplifier_util->filter_gain = t;
+    d = (t - g) / k;
+
+    for(i = 0; i < k; i++){
+      g += d;
+      sig[i] = g * aip[i * source_stride];
+    }
+
+    for(j = 0; j < AGS_AMPLIFIER_UTIL_AMP_COUNT; j++){
+      ags_fil_proc(amplifier_util,
+		   format,
+		   j,
+		   k, sfreq[j], sband[j], sgain[j]);
+    }
+                  
+    j = amplifier_util->fade;
+    g = j / 16.0;
+    p = 0;
+    
+    if(amplifier_util->amp_0_frequency > 0.0){
+      if(j == 16){
+	p = sig;
+      }else ++j;
+    }else{
+      if(j == 0){
+	p = aip;
+      }else{
+	--j;
+      }
+    }
+    
+    amplifier_util->fade = j;
+    
+    if(p){
+      ags_audio_buffer_util_clear_buffer(NULL,
+					 aop, destination_stride,
+					 k, ags_audio_buffer_util_format_from_soundcard(NULL, format));
+      ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
+						  aop, destination_stride, 0,
+						  p, source_stride, 0,
+						  k, ags_audio_buffer_util_get_copy_mode_from_format(NULL, format, format));
+      
+      //      memcpy(aop, p, k * sizeof (float));
+    }else{
+      d = (j / 16.0 - g) / k;
+      
+      for (i = 0; i < k; i++){
+	g += d;
+	aop[i * destination_stride] = g * sig[i] + (1.0 - g) * aip[i * source_stride];
+      }
+    }
+    
+    aip += (k * source_stride);
+    aop += (k * destination_stride);
+    len -= k;
+  }
 }
 
 /**
@@ -1026,7 +2767,181 @@ ags_amplifier_util_process_s64(AgsAmplifierUtil *amplifier_util)
 void
 ags_amplifier_util_process_float(AgsAmplifierUtil *amplifier_util)
 {
-  //TODO:JK: implement me
+  gfloat *aip;
+  gfloat *aop;
+
+  guint source_stride, destination_stride;
+  guint buffer_length;
+  AgsSoundcardFormat format;
+  guint len;
+  gint i, j, k;
+  gfloat *p, sig[48];
+  gdouble t, g, d;
+  gdouble fgain;
+  gdouble sfreq[AGS_AMPLIFIER_UTIL_AMP_COUNT];
+  gdouble sband[AGS_AMPLIFIER_UTIL_AMP_COUNT];
+  gdouble sgain[AGS_AMPLIFIER_UTIL_AMP_COUNT];
+
+  aip = amplifier_util->source;
+  aop = amplifier_util->destination;
+  
+  source_stride = amplifier_util->source_stride;
+  destination_stride = amplifier_util->destination_stride;
+
+  len = 
+    buffer_length = amplifier_util->buffer_length;
+  format = amplifier_util->format;
+  
+  fgain = exp2ap(0.1661 * amplifier_util->filter_gain);
+  
+  for(j = 0; j < AGS_AMPLIFIER_UTIL_AMP_COUNT; j++){
+    switch(j){
+    case 0:
+      t = amplifier_util->amp_0_frequency / amplifier_util->samplerate;
+
+      break;
+    case 1:
+      t = amplifier_util->amp_1_frequency / amplifier_util->samplerate;
+
+      break;
+    case 2:
+      t = amplifier_util->amp_2_frequency / amplifier_util->samplerate;
+
+      break;
+    case 3:
+      t = amplifier_util->amp_3_frequency / amplifier_util->samplerate;
+
+      break;
+    default:
+      g_warning("unknown amp freq");
+    }
+      
+    if(t < 0.0002){
+      t = 0.0002;
+    }
+
+    if(t > 0.4998){
+      t = 0.4998;
+    }
+
+    sfreq [j] = t;        
+
+    switch(j){
+    case 0:
+      sband[j] = amplifier_util->amp_0_bandwidth;
+
+      break;
+    case 1:
+      sband[j] = amplifier_util->amp_1_bandwidth;
+
+      break;
+    case 2:
+      sband[j] = amplifier_util->amp_2_bandwidth;
+
+      break;
+    case 3:
+      sband[j] = amplifier_util->amp_3_bandwidth;
+
+      break;
+    default:
+      g_warning("unknown amp bandwidth");
+    }
+
+    if(amplifier_util->amp_0_frequency > 0.0){
+      switch(j){
+      case 0:
+	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_0_gain);
+
+	break;
+      case 1:
+	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_1_gain);
+
+	break;
+      case 2:
+	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_2_gain);
+
+	break;
+      case 3:
+	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_3_gain);
+
+	break;
+      default:
+	g_warning("unknown amp gain");
+      }
+
+    }else{
+      sgain [j] = 1.0;
+    }
+  }
+
+  while(len){
+    k = (len > 48) ? 32 : len;
+        
+    t = fgain;
+    g = amplifier_util->filter_gain;
+
+    if(t > 1.25 * g){
+      t = 1.25 * g;
+    }else if (t < 0.80 * g){
+      t = 0.80 * g;
+    }
+
+    amplifier_util->filter_gain = t;
+    d = (t - g) / k;
+
+    for(i = 0; i < k; i++){
+      g += d;
+      sig[i] = g * aip[i * source_stride];
+    }
+
+    for(j = 0; j < AGS_AMPLIFIER_UTIL_AMP_COUNT; j++){
+      ags_fil_proc(amplifier_util,
+		   format,
+		   j,
+		   k, sfreq[j], sband[j], sgain[j]);
+    }
+                  
+    j = amplifier_util->fade;
+    g = j / 16.0;
+    p = 0;
+    
+    if(amplifier_util->amp_0_frequency > 0.0){
+      if(j == 16){
+	p = sig;
+      }else ++j;
+    }else{
+      if(j == 0){
+	p = aip;
+      }else{
+	--j;
+      }
+    }
+    
+    amplifier_util->fade = j;
+    
+    if(p){
+      ags_audio_buffer_util_clear_buffer(NULL,
+					 aop, destination_stride,
+					 k, ags_audio_buffer_util_format_from_soundcard(NULL, format));
+      ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
+						  aop, destination_stride, 0,
+						  p, source_stride, 0,
+						  k, ags_audio_buffer_util_get_copy_mode_from_format(NULL, format, format));
+      
+      //      memcpy(aop, p, k * sizeof (float));
+    }else{
+      d = (j / 16.0 - g) / k;
+      
+      for (i = 0; i < k; i++){
+	g += d;
+	aop[i * destination_stride] = g * sig[i] + (1.0 - g) * aip[i * source_stride];
+      }
+    }
+    
+    aip += (k * source_stride);
+    aop += (k * destination_stride);
+    len -= k;
+  }
 }
 
 /**
@@ -1040,7 +2955,181 @@ ags_amplifier_util_process_float(AgsAmplifierUtil *amplifier_util)
 void
 ags_amplifier_util_process_double(AgsAmplifierUtil *amplifier_util)
 {
-  //TODO:JK: implement me
+  double *aip;
+  double *aop;
+
+  guint source_stride, destination_stride;
+  guint buffer_length;
+  AgsSoundcardFormat format;
+  guint len;
+  gint i, j, k;
+  double *p, sig[48];
+  gdouble t, g, d;
+  gdouble fgain;
+  gdouble sfreq[AGS_AMPLIFIER_UTIL_AMP_COUNT];
+  gdouble sband[AGS_AMPLIFIER_UTIL_AMP_COUNT];
+  gdouble sgain[AGS_AMPLIFIER_UTIL_AMP_COUNT];
+
+  aip = amplifier_util->source;
+  aop = amplifier_util->destination;
+  
+  source_stride = amplifier_util->source_stride;
+  destination_stride = amplifier_util->destination_stride;
+
+  len = 
+    buffer_length = amplifier_util->buffer_length;
+  format = amplifier_util->format;
+  
+  fgain = exp2ap(0.1661 * amplifier_util->filter_gain);
+  
+  for(j = 0; j < AGS_AMPLIFIER_UTIL_AMP_COUNT; j++){
+    switch(j){
+    case 0:
+      t = amplifier_util->amp_0_frequency / amplifier_util->samplerate;
+
+      break;
+    case 1:
+      t = amplifier_util->amp_1_frequency / amplifier_util->samplerate;
+
+      break;
+    case 2:
+      t = amplifier_util->amp_2_frequency / amplifier_util->samplerate;
+
+      break;
+    case 3:
+      t = amplifier_util->amp_3_frequency / amplifier_util->samplerate;
+
+      break;
+    default:
+      g_warning("unknown amp freq");
+    }
+      
+    if(t < 0.0002){
+      t = 0.0002;
+    }
+
+    if(t > 0.4998){
+      t = 0.4998;
+    }
+
+    sfreq [j] = t;        
+
+    switch(j){
+    case 0:
+      sband[j] = amplifier_util->amp_0_bandwidth;
+
+      break;
+    case 1:
+      sband[j] = amplifier_util->amp_1_bandwidth;
+
+      break;
+    case 2:
+      sband[j] = amplifier_util->amp_2_bandwidth;
+
+      break;
+    case 3:
+      sband[j] = amplifier_util->amp_3_bandwidth;
+
+      break;
+    default:
+      g_warning("unknown amp bandwidth");
+    }
+
+    if(amplifier_util->amp_0_frequency > 0.0){
+      switch(j){
+      case 0:
+	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_0_gain);
+
+	break;
+      case 1:
+	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_1_gain);
+
+	break;
+      case 2:
+	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_2_gain);
+
+	break;
+      case 3:
+	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_3_gain);
+
+	break;
+      default:
+	g_warning("unknown amp gain");
+      }
+
+    }else{
+      sgain [j] = 1.0;
+    }
+  }
+
+  while(len){
+    k = (len > 48) ? 32 : len;
+        
+    t = fgain;
+    g = amplifier_util->filter_gain;
+
+    if(t > 1.25 * g){
+      t = 1.25 * g;
+    }else if (t < 0.80 * g){
+      t = 0.80 * g;
+    }
+
+    amplifier_util->filter_gain = t;
+    d = (t - g) / k;
+
+    for(i = 0; i < k; i++){
+      g += d;
+      sig[i] = g * aip[i * source_stride];
+    }
+
+    for(j = 0; j < AGS_AMPLIFIER_UTIL_AMP_COUNT; j++){
+      ags_fil_proc(amplifier_util,
+		   format,
+		   j,
+		   k, sfreq[j], sband[j], sgain[j]);
+    }
+                  
+    j = amplifier_util->fade;
+    g = j / 16.0;
+    p = 0;
+    
+    if(amplifier_util->amp_0_frequency > 0.0){
+      if(j == 16){
+	p = sig;
+      }else ++j;
+    }else{
+      if(j == 0){
+	p = aip;
+      }else{
+	--j;
+      }
+    }
+    
+    amplifier_util->fade = j;
+    
+    if(p){
+      ags_audio_buffer_util_clear_buffer(NULL,
+					 aop, destination_stride,
+					 k, ags_audio_buffer_util_format_from_soundcard(NULL, format));
+      ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
+						  aop, destination_stride, 0,
+						  p, source_stride, 0,
+						  k, ags_audio_buffer_util_get_copy_mode_from_format(NULL, format, format));
+      
+      //      memcpy(aop, p, k * sizeof (float));
+    }else{
+      d = (j / 16.0 - g) / k;
+      
+      for (i = 0; i < k; i++){
+	g += d;
+	aop[i * destination_stride] = g * sig[i] + (1.0 - g) * aip[i * source_stride];
+      }
+    }
+    
+    aip += (k * source_stride);
+    aop += (k * destination_stride);
+    len -= k;
+  }
 }
 
 /**
@@ -1054,7 +3143,183 @@ ags_amplifier_util_process_double(AgsAmplifierUtil *amplifier_util)
 void
 ags_amplifier_util_process_complex(AgsAmplifierUtil *amplifier_util)
 {
-  //TODO:JK: implement me
+  AgsComplex *aip;
+  AgsComplex *aop;
+
+  guint source_stride, destination_stride;
+  guint buffer_length;
+  AgsSoundcardFormat format;
+  guint len;
+  gint i, j, k;
+  AgsComplex *p, sig[48];
+  gdouble t, g, d;
+  gdouble fgain;
+  gdouble sfreq[AGS_AMPLIFIER_UTIL_AMP_COUNT];
+  gdouble sband[AGS_AMPLIFIER_UTIL_AMP_COUNT];
+  gdouble sgain[AGS_AMPLIFIER_UTIL_AMP_COUNT];
+
+  aip = amplifier_util->source;
+  aop = amplifier_util->destination;
+  
+  source_stride = amplifier_util->source_stride;
+  destination_stride = amplifier_util->destination_stride;
+
+  len = 
+    buffer_length = amplifier_util->buffer_length;
+  format = amplifier_util->format;
+  
+  fgain = exp2ap(0.1661 * amplifier_util->filter_gain);
+  
+  for(j = 0; j < AGS_AMPLIFIER_UTIL_AMP_COUNT; j++){
+    switch(j){
+    case 0:
+      t = amplifier_util->amp_0_frequency / amplifier_util->samplerate;
+
+      break;
+    case 1:
+      t = amplifier_util->amp_1_frequency / amplifier_util->samplerate;
+
+      break;
+    case 2:
+      t = amplifier_util->amp_2_frequency / amplifier_util->samplerate;
+
+      break;
+    case 3:
+      t = amplifier_util->amp_3_frequency / amplifier_util->samplerate;
+
+      break;
+    default:
+      g_warning("unknown amp freq");
+    }
+      
+    if(t < 0.0002){
+      t = 0.0002;
+    }
+
+    if(t > 0.4998){
+      t = 0.4998;
+    }
+
+    sfreq [j] = t;        
+
+    switch(j){
+    case 0:
+      sband[j] = amplifier_util->amp_0_bandwidth;
+
+      break;
+    case 1:
+      sband[j] = amplifier_util->amp_1_bandwidth;
+
+      break;
+    case 2:
+      sband[j] = amplifier_util->amp_2_bandwidth;
+
+      break;
+    case 3:
+      sband[j] = amplifier_util->amp_3_bandwidth;
+
+      break;
+    default:
+      g_warning("unknown amp bandwidth");
+    }
+
+    if(amplifier_util->amp_0_frequency > 0.0){
+      switch(j){
+      case 0:
+	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_0_gain);
+
+	break;
+      case 1:
+	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_1_gain);
+
+	break;
+      case 2:
+	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_2_gain);
+
+	break;
+      case 3:
+	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_3_gain);
+
+	break;
+      default:
+	g_warning("unknown amp gain");
+      }
+
+    }else{
+      sgain [j] = 1.0;
+    }
+  }
+
+  while(len){
+    k = (len > 48) ? 32 : len;
+        
+    t = fgain;
+    g = amplifier_util->filter_gain;
+
+    if(t > 1.25 * g){
+      t = 1.25 * g;
+    }else if (t < 0.80 * g){
+      t = 0.80 * g;
+    }
+
+    amplifier_util->filter_gain = t;
+    d = (t - g) / k;
+
+    for(i = 0; i < k; i++){
+      g += d;
+      ags_complex_set(sig + i,
+		      g * ags_complex_get(aip + (i * source_stride)));
+    }
+
+    for(j = 0; j < AGS_AMPLIFIER_UTIL_AMP_COUNT; j++){
+      ags_fil_proc(amplifier_util,
+		   format,
+		   j,
+		   k, sfreq[j], sband[j], sgain[j]);
+    }
+                  
+    j = amplifier_util->fade;
+    g = j / 16.0;
+    p = 0;
+    
+    if(amplifier_util->amp_0_frequency > 0.0){
+      if(j == 16){
+	p = sig;
+      }else ++j;
+    }else{
+      if(j == 0){
+	p = aip;
+      }else{
+	--j;
+      }
+    }
+    
+    amplifier_util->fade = j;
+    
+    if(p){
+      ags_audio_buffer_util_clear_buffer(NULL,
+					 aop, destination_stride,
+					 k, ags_audio_buffer_util_format_from_soundcard(NULL, format));
+      ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
+						  aop, destination_stride, 0,
+						  p, source_stride, 0,
+						  k, ags_audio_buffer_util_get_copy_mode_from_format(NULL, format, format));
+      
+      //      memcpy(aop, p, k * sizeof (float));
+    }else{
+      d = (j / 16.0 - g) / k;
+      
+      for (i = 0; i < k; i++){
+	g += d;
+	ags_complex_set(aop + (i * destination_stride),
+			g * ags_complex_get(sig + i) + (1.0 - g) * ags_complex_get(aip + (i * source_stride)));
+      }
+    }
+    
+    aip += (k * source_stride);
+    aop += (k * destination_stride);
+    len -= k;
+  }
 }
 
 /**

@@ -55,9 +55,27 @@ G_BEGIN_DECLS
       .amp_3_frequency = 4975.0,				\
       .amp_3_bandwidth = 1.0,					\
       .amp_3_gain = 1.0,					\
-      .filter_gain = 1.0   })
+      .filter_gain = 1.0,					\
+      .fade = 0,						\
+      .proc_sect = { 0,} })
 
+typedef struct _AgsAmplifierUtilProc AgsAmplifierUtilProc;
 typedef struct _AgsAmplifierUtil AgsAmplifierUtil;
+
+struct _AgsAmplifierUtilProc
+{
+  gdouble f;
+  gdouble b;
+  gdouble g;
+
+  gdouble a;
+
+  gdouble s1;
+  gdouble s2;
+
+  gdouble z1;
+  gdouble z2;
+};
 
 struct _AgsAmplifierUtil
 {
@@ -88,6 +106,9 @@ struct _AgsAmplifierUtil
   gdouble amp_3_gain;
 
   gdouble filter_gain;
+  gint fade;
+  
+  AgsAmplifierUtilProc proc_sect[AGS_AMPLIFIER_UTIL_AMP_COUNT]; 
 };
 
 GType ags_amplifier_util_get_type(void);
