@@ -1,4 +1,4 @@
-#Copyright (C) 2005-2024 Joel Kraehemann
+#Copyright (C) 2005-2025 Joel Kraehemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -1325,6 +1325,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_sound_enums.h \
 	ags/audio/ags_synth_enums.h \
 	ags/audio/ags_acceleration.h \
+	ags/audio/ags_amplifier_util.h \
 	ags/audio/ags_audio.h \
 	ags/audio/ags_audio_application_context.h \
 	ags/audio/ags_audio_buffer_util.h \
@@ -1360,6 +1361,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_input.h \
 	ags/audio/ags_lfo_synth_util.h \
 	ags/audio/ags_linear_interpolate_util.h \
+	ags/audio/ags_low_pass_filter_util.h \
 	ags/audio/ags_marker.h \
 	ags/audio/ags_midi.h \
 	ags/audio/ags_noise_util.h \
@@ -1430,6 +1432,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_sound_enums.c \
 	ags/audio/ags_synth_enums.c \
 	ags/audio/ags_acceleration.c \
+	ags/audio/ags_amplifier_util.c \
 	ags/audio/ags_audio.c \
 	ags/audio/ags_audio_application_context.c \
 	ags/audio/ags_audio_buffer_util.c \
@@ -1465,6 +1468,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_input.c \
 	ags/audio/ags_lfo_synth_util.c \
 	ags/audio/ags_linear_interpolate_util.c \
+	ags/audio/ags_low_pass_filter_util.c \
 	ags/audio/ags_marker.c \
 	ags/audio/ags_midi.c \
 	ags/audio/ags_noise_util.c \

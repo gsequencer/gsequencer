@@ -1,3 +1,10 @@
+ags (7.7.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: implemented AgsLowPassFilterUtil
+	* TODO:JK: implemented AgsAmplifierUtil
+	* fixed ags-fx-star-synth sync LFO freq 0 and 1 default value
+
 ags (7.6.18)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
