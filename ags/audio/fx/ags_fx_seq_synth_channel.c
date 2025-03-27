@@ -30,7 +30,7 @@ void ags_fx_seq_synth_channel_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_seq_synth_channel
- * @short_description: fx SEQ synth channel
+ * @short_description: fx seq synth channel
  * @title: AgsFxSeqSynthChannel
  * @section_id:
  * @include: ags/audio/fx/ags_fx_seq_synth_channel.h

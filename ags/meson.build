@@ -1,4 +1,4 @@
-# Copyright (C) 2005-2024 Daniel Maksymow, Joël Krähemann
+# Copyright (C) 2005-2025 Daniel Maksymow, Joël Krähemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -335,6 +335,7 @@ libags_audio_sources = files(
   'plugin/ags_lv2_worker_manager.c',
   'plugin/ags_plugin_port.c',
   'audio/ags_acceleration.c',
+  'audio/ags_amplifier_util.c',
   'audio/ags_audio_application_context.c',
   'audio/ags_audio_buffer_util.c',
   'audio/ags_audio.c',
@@ -369,6 +370,7 @@ libags_audio_sources = files(
   'audio/ags_input.c',
   'audio/ags_lfo_synth_util.c',
   'audio/ags_linear_interpolate_util.c',
+  'audio/ags_low_pass_filter_util.c',
   'audio/ags_marker.c',
   'audio/ags_midi.c',
   'audio/ags_noise_util.c',
@@ -1514,6 +1516,7 @@ endif
 
 libags_audio_audio_headers = [
   'audio/ags_acceleration.h',
+  'audio/ags_amplifier_util.h',
   'audio/ags_audio.h',
   'audio/ags_audio_application_context.h',
   'audio/ags_audio_buffer_util.h',
@@ -1547,6 +1550,7 @@ libags_audio_audio_headers = [
   'audio/ags_input.h',
   'audio/ags_linear_interpolate_util.h',
   'audio/ags_lfo_synth_util.h',
+  'audio/ags_low_pass_filter_util.h',
   'audio/ags_midi.h',
   'audio/ags_marker.h',
   'audio/ags_noise_util.h',
