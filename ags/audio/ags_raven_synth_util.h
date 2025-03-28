@@ -59,6 +59,10 @@ G_BEGIN_DECLS
       .lfo_frequency = AGS_RAVEN_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY,	\
       .lfo_depth = AGS_RAVEN_SYNTH_UTIL_DEFAULT_LFO_DEPTH,		\
       .tuning = AGS_RAVEN_SYNTH_UTIL_DEFAULT_TUNING,			\
+      .sync_enabled = FALSE,						\
+      .sync_relative_attack_factor = {0,},				\
+      .sync_phase = {0,},						\
+      .sync_attack = {0,},						\
       .vibrato_enabled = FALSE,						\
       .vibrato_gain = 1.0,						\
       .vibrato_lfo_depth = 1.0,						\

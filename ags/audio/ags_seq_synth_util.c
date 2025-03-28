@@ -5633,7 +5633,7 @@ ags_seq_synth_util_compute_sawtooth_s8(AgsSeqSynthUtil *seq_synth_util)
       break;
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
       {
-	(*source) = (gint8) ((gint16) (source)[0] + (gint16) scale * ((sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_seq_synth_util_get_tuning_by_offset(seq_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) - 1.0) * volume);
+	(*source) = (gint8) ((gint16) (source)[0] + (gint16) scale * (ags_seq_synth_util_get_volume_by_offset(seq_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_seq_synth_util_get_tuning_by_offset(seq_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) - 1.0) * volume);
       }
       break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:
@@ -5643,7 +5643,7 @@ ags_seq_synth_util_compute_sawtooth_s8(AgsSeqSynthUtil *seq_synth_util)
       break;
     case AGS_SYNTH_OSCILLATOR_SQUARE:
       {   
-	(*source) = (gint8) ((gint16) (source)[0] + (gint16) scale * (sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_seq_synth_util_get_tuning_by_offset(seq_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * volume);
+	(*source) = (gint8) ((gint16) (source)[0] + (gint16) scale * (ags_seq_synth_util_get_volume_by_offset(seq_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_seq_synth_util_get_tuning_by_offset(seq_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * volume);
       }
       break;
     case AGS_SYNTH_OSCILLATOR_IMPULSE:

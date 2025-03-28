@@ -94,6 +94,8 @@ ags_raven_synth_util_copy(AgsRavenSynthUtil *ptr)
 {
   AgsRavenSynthUtil *new_ptr;
 
+  guint i;
+  
   g_return_val_if_fail(ptr != NULL, NULL);
 
   new_ptr = (AgsRavenSynthUtil *) g_new(AgsRavenSynthUtil,
@@ -112,12 +114,35 @@ ags_raven_synth_util_copy(AgsRavenSynthUtil *ptr)
   new_ptr->phase = ptr->phase;
   new_ptr->volume = ptr->volume;
 
+  new_ptr->seq_volume_pingpong = ptr->seq_volume_pingpong;
+  new_ptr->seq_volume_lfo_frequency = ptr->seq_volume_lfo_frequency;
+
+  for(i = 0; i < AGS_RAVEN_SYNTH_UTIL_SEQ_COUNT; i++){
+    new_ptr->seq_tuning[i] = ptr->seq_tuning[i];
+  }
+
+  new_ptr->seq_tuning_pingpong = ptr->seq_tuning_pingpong;
+  new_ptr->seq_tuning_lfo_frequency = ptr->seq_tuning_lfo_frequency;
+
+  for(i = 0; i < AGS_RAVEN_SYNTH_UTIL_SEQ_COUNT; i++){
+    new_ptr->seq_volume[i] = ptr->seq_volume[i];
+  }
+  
   new_ptr->lfo_oscillator_mode = ptr->lfo_oscillator_mode;
 
   new_ptr->lfo_frequency = ptr->lfo_frequency;
   new_ptr->lfo_depth = ptr->lfo_depth;
   new_ptr->tuning = ptr->tuning;
 
+  new_ptr->sync_enabled = ptr->sync_enabled;
+
+  for(i = 0; i < AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT; i++){
+    new_ptr->sync_relative_attack_factor[i] = ptr->sync_relative_attack_factor[i];
+
+    new_ptr->sync_attack[i] = ptr->sync_attack[i];
+    new_ptr->sync_phase[i] = ptr->sync_phase[i];
+  }
+  
   new_ptr->vibrato_enabled = ptr->vibrato_enabled;
 
   new_ptr->vibrato_gain = ptr->vibrato_gain;
@@ -1502,12 +1527,136 @@ ags_raven_synth_util_get_volume_by_offset(AgsRavenSynthUtil *raven_synth_util,
 void
 ags_raven_synth_util_compute_sin_s8(AgsRavenSynthUtil *raven_synth_util)
 {
+  gint8 *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;    
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
+  static const gdouble scale = 127.0;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	(*source) = (gint8) ((gint16) (source)[0] + (gint16) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate) * scale * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	(*source) = (gint8) ((gint16) (source)[0] + (gint16) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	(*source) = (gint8) ((gint16) (source)[0] + (gint16) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate)) * scale * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	(*source) = (gint8) ((gint16) (source)[0] + (gint16) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * scale * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	(*source) = (gint8) ((gint16) (source)[0] + (gint16) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * scale * volume);
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -1521,12 +1670,140 @@ ags_raven_synth_util_compute_sin_s8(AgsRavenSynthUtil *raven_synth_util)
 void
 ags_raven_synth_util_compute_sin_s16(AgsRavenSynthUtil *raven_synth_util)
 {
+  gint16 *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
+  static const gdouble scale = 32767.0;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	(*source) = (gint16) ((gint32) (source)[0] + (gint32) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate) * scale * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	(*source) = (gint16) ((gint32) (source)[0] + (gint32) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	(*source) = (gint16) ((gint32) (source)[0] + (gint32) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate)) * scale * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	(*source) = (gint16) ((gint32) (source)[0] + (gint32) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * scale * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	(*source) = (gint16) ((gint32) (source)[0] + (gint32) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * scale * volume);
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -1540,12 +1817,140 @@ ags_raven_synth_util_compute_sin_s16(AgsRavenSynthUtil *raven_synth_util)
 void
 ags_raven_synth_util_compute_sin_s24(AgsRavenSynthUtil *raven_synth_util)
 {
+  gint32 *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
+  static const gdouble scale = 8388607.0;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	(*source) = (gint32) ((gint32) (source)[0] + (gint32) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate) * scale * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	(*source) = (gint32) ((gint32) (source)[0] + (gint32) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	(*source) = (gint32) ((gint32) (source)[0] + (gint32) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate)) * scale * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	(*source) = (gint32) ((gint32) (source)[0] + (gint32) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * scale * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	(*source) = (gint32) ((gint32) (source)[0] + (gint32) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * scale * volume);
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -1559,12 +1964,140 @@ ags_raven_synth_util_compute_sin_s24(AgsRavenSynthUtil *raven_synth_util)
 void
 ags_raven_synth_util_compute_sin_s32(AgsRavenSynthUtil *raven_synth_util)
 {
+  gint32 *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
+  static const gdouble scale = 214748363.0;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	(*source) = (gint32) ((gint64) (source)[0] + (gint64) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate) * scale * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	(*source) = (gint32) ((gint64) (source)[0] + (gint64) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	(*source) = (gint32) ((gint64) (source)[0] + (gint64) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate)) * scale * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	(*source) = (gint32) ((gint64) (source)[0] + (gint64) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * scale * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	(*source) = (gint32) ((gint64) (source)[0] + (gint64) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * scale * volume);
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -1578,12 +2111,140 @@ ags_raven_synth_util_compute_sin_s32(AgsRavenSynthUtil *raven_synth_util)
 void
 ags_raven_synth_util_compute_sin_s64(AgsRavenSynthUtil *raven_synth_util)
 {
+  gint64 *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
+  static const gdouble scale = 9223372036854775807.0;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	(*source) = (gint64) ((gint64) (source)[0] + (gint64) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate) * scale * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	(*source) = (gint64) ((gint64) (source)[0] + (gint64) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	(*source) = (gint64) ((gint64) (source)[0] + (gint64) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate)) * scale * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	(*source) = (gint64) ((gint64) (source)[0] + (gint64) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * scale * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	(*source) = (gint64) ((gint64) (source)[0] + (gint64) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * scale * volume);
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -1597,12 +2258,138 @@ ags_raven_synth_util_compute_sin_s64(AgsRavenSynthUtil *raven_synth_util)
 void
 ags_raven_synth_util_compute_sin_float(AgsRavenSynthUtil *raven_synth_util)
 {
+  gfloat *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	(*source) = (gfloat) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	(*source) = (gfloat) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	(*source) = (gfloat) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	(*source) = (gfloat) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	(*source) = (gfloat) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * volume);
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -1616,12 +2403,138 @@ ags_raven_synth_util_compute_sin_float(AgsRavenSynthUtil *raven_synth_util)
 void
 ags_raven_synth_util_compute_sin_double(AgsRavenSynthUtil *raven_synth_util)
 {
+  gdouble *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	(*source) = (gdouble) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	(*source) = (gdouble) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	(*source) = (gdouble) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	(*source) = (gdouble) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	(*source) = (gdouble) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * volume);
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -1635,12 +2548,143 @@ ags_raven_synth_util_compute_sin_double(AgsRavenSynthUtil *raven_synth_util)
 void
 ags_raven_synth_util_compute_sin_complex(AgsRavenSynthUtil *raven_synth_util)
 {
+  AgsComplex *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	ags_complex_set(source,
+			(double _Complex) ((double _Complex) ags_complex_get(source) + (double _Complex) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate) * volume)));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	ags_complex_set(source,
+			(double _Complex) ((double _Complex) ags_complex_get(source) + (double _Complex) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	ags_complex_set(source,
+			(double _Complex) ((double _Complex) ags_complex_get(source) + (double _Complex) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate)) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	ags_complex_set(source,
+			(double _Complex) ((double _Complex) ags_complex_get(source) + (double _Complex) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	ags_complex_set(source,
+			(double _Complex) ((double _Complex) ags_complex_get(source) + (double _Complex) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * volume));
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -1654,12 +2698,140 @@ ags_raven_synth_util_compute_sin_complex(AgsRavenSynthUtil *raven_synth_util)
 void
 ags_raven_synth_util_compute_sawtooth_s8(AgsRavenSynthUtil *raven_synth_util)
 {
+  gint8 *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
+  static const gdouble scale = 127.0;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	(*source) = (gint8) ((gint16) (source)[0] + (gint16) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((((int) ceil((offset + i) + phase + phase_reset) % (int) ceil(samplerate / frequency)) * 2.0 * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / samplerate) - 1.0) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	(*source) = (gint8) ((gint16) (source)[0] + (gint16) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) - 1.0) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	(*source) = (gint8) ((gint16) (source)[0] + (gint16) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((((int) ceil((offset + i) + phase + phase_reset) % (int) ceil(samplerate / frequency)) * 2.0 * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / samplerate) - 1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	(*source) = (gint8) ((gint16) (source)[0] + (gint16) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	(*source) = (gint8) ((gint16) (source)[0] + (gint16) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((((int) ceil((offset + i) + phase + phase_reset) % (int) ceil(samplerate / frequency)) * 2.0 * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / samplerate) - 1.0) * volume));
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -1673,12 +2845,140 @@ ags_raven_synth_util_compute_sawtooth_s8(AgsRavenSynthUtil *raven_synth_util)
 void
 ags_raven_synth_util_compute_sawtooth_s16(AgsRavenSynthUtil *raven_synth_util)
 {
+  gint16 *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
+  static const gdouble scale = 32767.0;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+						    
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	(*source) = (gint16) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((((int) ceil((offset + i) + phase + phase_reset) % (int) ceil(samplerate / frequency)) * 2.0 * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / samplerate) - 1.0) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	(*source) = (gint16) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) - 1.0) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	(*source) = (gint16) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((((int) ceil((offset + i) + phase + phase_reset) % (int) ceil(samplerate / frequency)) * 2.0 * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / samplerate) - 1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	(*source) = (gint16) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	(*source) = (gint16) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((((int) ceil((offset + i) + phase + phase_reset) % (int) ceil(samplerate / frequency)) * 2.0 * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / samplerate) - 1.0) * volume));
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -1692,12 +2992,140 @@ ags_raven_synth_util_compute_sawtooth_s16(AgsRavenSynthUtil *raven_synth_util)
 void
 ags_raven_synth_util_compute_sawtooth_s24(AgsRavenSynthUtil *raven_synth_util)
 {
+  gint32 *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
+  static const gdouble scale = 8388607.0;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	(*source) = (gint32) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((((int) ceil((offset + i) + phase + phase_reset) % (int) ceil(samplerate / frequency)) * 2.0 * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / samplerate) - 1.0) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	(*source) = (gint32) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) - 1.0) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	(*source) = (gint32) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((((int) ceil((offset + i) + phase + phase_reset) % (int) ceil(samplerate / frequency)) * 2.0 * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / samplerate) - 1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	(*source) = (gint32) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	(*source) = (gint32) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((((int) ceil((offset + i) + phase + phase_reset) % (int) ceil(samplerate / frequency)) * 2.0 * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / samplerate) - 1.0) * volume));
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -1711,12 +3139,140 @@ ags_raven_synth_util_compute_sawtooth_s24(AgsRavenSynthUtil *raven_synth_util)
 void
 ags_raven_synth_util_compute_sawtooth_s32(AgsRavenSynthUtil *raven_synth_util)
 {
+  gint32 *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
+  static const gdouble scale = 214748363.0;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	(*source) = (gint32) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((((int) ceil((offset + i) + phase + phase_reset) % (int) ceil(samplerate / frequency)) * 2.0 * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / samplerate) - 1.0) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	(*source) = (gint32) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) - 1.0) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	(*source) = (gint32) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((((int) ceil((offset + i) + phase + phase_reset) % (int) ceil(samplerate / frequency)) * 2.0 * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / samplerate) - 1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	(*source) = (gint32) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	(*source) = (gint32) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((((int) ceil((offset + i) + phase + phase_reset) % (int) ceil(samplerate / frequency)) * 2.0 * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / samplerate) - 1.0) * volume));
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -1730,12 +3286,140 @@ ags_raven_synth_util_compute_sawtooth_s32(AgsRavenSynthUtil *raven_synth_util)
 void
 ags_raven_synth_util_compute_sawtooth_s64(AgsRavenSynthUtil *raven_synth_util)
 {
+  gint64 *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
+  static const gdouble scale = 9223372036854775807.0;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	(*source) = (gint64) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((((int) ceil((offset + i) + phase + phase_reset) % (int) ceil(samplerate / frequency)) * 2.0 * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / samplerate) - 1.0) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	(*source) = (gint64) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) - 1.0) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	(*source) = (gint64) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((((int) ceil((offset + i) + phase + phase_reset) % (int) ceil(samplerate / frequency)) * 2.0 * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / samplerate) - 1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	(*source) = (gint64) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	(*source) = (gint64) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((((int) ceil((offset + i) + phase + phase_reset) % (int) ceil(samplerate / frequency)) * 2.0 * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / samplerate) - 1.0) * volume));
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -1749,12 +3433,138 @@ ags_raven_synth_util_compute_sawtooth_s64(AgsRavenSynthUtil *raven_synth_util)
 void
 ags_raven_synth_util_compute_sawtooth_float(AgsRavenSynthUtil *raven_synth_util)
 {
+  gfloat *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	(*source) = (gfloat) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((((int) ceil((offset + i) + phase + phase_reset) % (int) ceil(samplerate / frequency)) * 2.0 * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / samplerate) - 1.0) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	(*source) = (gfloat) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) - 1.0) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	(*source) = (gfloat) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((((int) ceil((offset + i) + phase + phase_reset) % (int) ceil(samplerate / frequency)) * 2.0 * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / samplerate) - 1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	(*source) = (gfloat) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	(*source) = (gfloat) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((((int) ceil((offset + i) + phase + phase_reset) % (int) ceil(samplerate / frequency)) * 2.0 * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / samplerate) - 1.0) * volume));
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -1768,12 +3578,138 @@ ags_raven_synth_util_compute_sawtooth_float(AgsRavenSynthUtil *raven_synth_util)
 void
 ags_raven_synth_util_compute_sawtooth_double(AgsRavenSynthUtil *raven_synth_util)
 {
+  gdouble *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	(*source) = (gdouble) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((((int) ceil((offset + i) + phase + phase_reset) % (int) ceil(samplerate / frequency)) * 2.0 * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / samplerate) - 1.0) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	(*source) = (gdouble) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) - 1.0) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	(*source) = (gdouble) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((((int) ceil((offset + i) + phase + phase_reset) % (int) ceil(samplerate / frequency)) * 2.0 * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / samplerate) - 1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	(*source) = (gdouble) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	(*source) = (gdouble) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((((int) ceil((offset + i) + phase + phase_reset) % (int) ceil(samplerate / frequency)) * 2.0 * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / samplerate) - 1.0) * volume));
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -1787,12 +3723,143 @@ ags_raven_synth_util_compute_sawtooth_double(AgsRavenSynthUtil *raven_synth_util
 void
 ags_raven_synth_util_compute_sawtooth_complex(AgsRavenSynthUtil *raven_synth_util)
 {
+  AgsComplex *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	ags_complex_set(source,
+			(double _Complex) (ags_complex_get(source) + (double _Complex) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((((int) ceil((offset + i) + phase + phase_reset) % (int) ceil(samplerate / frequency)) * 2.0 * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / samplerate) - 1.0) * volume)));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	ags_complex_set(source,
+			(double _Complex) (ags_complex_get(source) + (double _Complex) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) - 1.0) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	ags_complex_set(source,
+			(double _Complex) (ags_complex_get(source) + (double _Complex) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((((int) ceil((offset + i) + phase + phase_reset) % (int) ceil(samplerate / frequency)) * 2.0 * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / samplerate) - 1.0)) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	ags_complex_set(source,
+			(double _Complex) (ags_complex_get(source) + (double _Complex) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	ags_complex_set(source,
+			(double _Complex) (ags_complex_get(source) + (double _Complex) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((((int) ceil((offset + i) + phase + phase_reset) % (int) ceil(samplerate / frequency)) * 2.0 * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / samplerate) - 1.0) * volume)));
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -1806,12 +3873,140 @@ ags_raven_synth_util_compute_sawtooth_complex(AgsRavenSynthUtil *raven_synth_uti
 void
 ags_raven_synth_util_compute_triangle_s8(AgsRavenSynthUtil *raven_synth_util)
 {
+  gint8 *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
+  static const gdouble scale = 127.0;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	(*source) = (gint8) ((gint16) (source)[0] + (gint16) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate) * scale * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	(*source) = (gint8) ((gint16) (source)[0] + (gint16) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	(*source) = (gint8) ((gint16) (source)[0] + (gint16) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate)) * scale * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	(*source) = (gint8) ((gint16) (source)[0] + (gint16) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * scale * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	(*source) = (gint8) ((gint16) (source)[0] + (gint16) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * scale * volume);
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -1825,12 +4020,140 @@ ags_raven_synth_util_compute_triangle_s8(AgsRavenSynthUtil *raven_synth_util)
 void
 ags_raven_synth_util_compute_triangle_s16(AgsRavenSynthUtil *raven_synth_util)
 {
+  gint16 *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
+  static const gdouble scale = 32767.0;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	*(source) = (gint16) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((((offset + i) + phase + phase_reset) * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / samplerate * 2.0) - ((int) ((double) ((int) (((offset + i) + phase + phase_reset) * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / samplerate)) / 2.0) * 2) - 1.0) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	(*source) = (gint16) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) - 1.0) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	(*source) = (gint16) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	(*source) = (gint16) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	(*source) = (gint16) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * volume);
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -1844,12 +4167,140 @@ ags_raven_synth_util_compute_triangle_s16(AgsRavenSynthUtil *raven_synth_util)
 void
 ags_raven_synth_util_compute_triangle_s24(AgsRavenSynthUtil *raven_synth_util)
 {
+  gint32 *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
+  static const gdouble scale = 8388607.0;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	*(source) = (gint32) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((((offset + i) + phase + phase_reset) * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / samplerate * 2.0) - ((int) ((double) ((int) (((offset + i) + phase + phase_reset) * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / samplerate)) / 2.0) * 2) - 1.0) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	(*source) = (gint32) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) - 1.0) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	(*source) = (gint32) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	(*source) = (gint32) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	(*source) = (gint32) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * volume);
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -1863,12 +4314,140 @@ ags_raven_synth_util_compute_triangle_s24(AgsRavenSynthUtil *raven_synth_util)
 void
 ags_raven_synth_util_compute_triangle_s32(AgsRavenSynthUtil *raven_synth_util)
 {
+  gint32 *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
+  static const gdouble scale = 214748363.0;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	*(source) = (gint32) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((((offset + i) + phase + phase_reset) * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / samplerate * 2.0) - ((int) ((double) ((int) (((offset + i) + phase + phase_reset) * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / samplerate)) / 2.0) * 2) - 1.0) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	(*source) = (gint32) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) - 1.0) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	(*source) = (gint32) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	(*source) = (gint32) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	(*source) = (gint32) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * volume);
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -1882,12 +4461,140 @@ ags_raven_synth_util_compute_triangle_s32(AgsRavenSynthUtil *raven_synth_util)
 void
 ags_raven_synth_util_compute_triangle_s64(AgsRavenSynthUtil *raven_synth_util)
 {
+  gint64 *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
+  static const gdouble scale = 9223372036854775807.0;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	*(source) = (gint64) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((((offset + i) + phase + phase_reset) * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / samplerate * 2.0) - ((int) ((double) ((int) (((offset + i) + phase + phase_reset) * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / samplerate)) / 2.0) * 2) - 1.0) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	(*source) = (gint64) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) - 1.0) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	(*source) = (gint64) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	(*source) = (gint64) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	(*source) = (gint64) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * volume);
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -1901,12 +4608,138 @@ ags_raven_synth_util_compute_triangle_s64(AgsRavenSynthUtil *raven_synth_util)
 void
 ags_raven_synth_util_compute_triangle_float(AgsRavenSynthUtil *raven_synth_util)
 {
+  gfloat *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	*(source) = (gfloat) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((((offset + i) + phase + phase_reset) * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / samplerate * 2.0) - ((int) ((double) ((int) (((offset + i) + phase + phase_reset) * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / samplerate)) / 2.0) * 2) - 1.0) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	(*source) = (gfloat) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) - 1.0) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	(*source) = (gfloat) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	(*source) = (gfloat) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	(*source) = (gfloat) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * volume);
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -1920,12 +4753,138 @@ ags_raven_synth_util_compute_triangle_float(AgsRavenSynthUtil *raven_synth_util)
 void
 ags_raven_synth_util_compute_triangle_double(AgsRavenSynthUtil *raven_synth_util)
 {
+  gdouble *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	*(source) = (gdouble) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((((offset + i) + phase + phase_reset) * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / samplerate * 2.0) - ((int) ((double) ((int) (((offset + i) + phase + phase_reset) * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / samplerate)) / 2.0) * 2) - 1.0) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	(*source) = (gdouble) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) - 1.0) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	(*source) = (gdouble) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	(*source) = (gdouble) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	(*source) = (gdouble) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * volume);
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -1939,12 +4898,143 @@ ags_raven_synth_util_compute_triangle_double(AgsRavenSynthUtil *raven_synth_util
 void
 ags_raven_synth_util_compute_triangle_complex(AgsRavenSynthUtil *raven_synth_util)
 {
+  AgsComplex *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	ags_complex_set(source,
+			(double _Complex) (ags_complex_get(source) + (double _Complex) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((((offset + i) + phase + phase_reset) * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / samplerate * 2.0) - ((int) ((double) ((int) (((offset + i) + phase + phase_reset) * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / samplerate)) / 2.0) * 2) - 1.0) * volume)));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	ags_complex_set(source,
+			(double _Complex) (ags_complex_get(source) + (double _Complex) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) - 1.0) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	ags_complex_set(source,
+			(double _Complex) (ags_complex_get(source) + (double _Complex) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate)) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	ags_complex_set(source,
+			(double _Complex) (ags_complex_get(source) + (double _Complex) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	ags_complex_set(source,
+			(double _Complex) (ags_complex_get(source) + (double _Complex) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * volume));
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -1958,12 +5048,140 @@ ags_raven_synth_util_compute_triangle_complex(AgsRavenSynthUtil *raven_synth_uti
 void
 ags_raven_synth_util_compute_square_s8(AgsRavenSynthUtil *raven_synth_util)
 {
+  gint8 *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
+  static const gdouble scale = 127.0;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	(*source) = (gint8) ((gint16) (source)[0] + (gint16) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	(*source) = (gint8) ((gint16) (source)[0] + (gint16) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	(*source) = (gint8) ((gint16) (source)[0] + (gint16) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate) >= 0.0 ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	(*source) = (gint8) ((gint16) (source)[0] + (gint16) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) >= 0.0 ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	(*source) = (gint8) ((gint16) (source)[0] + (gint16) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) >= 0.0 ? 1.0: -1.0)) * volume);
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -1977,12 +5195,140 @@ ags_raven_synth_util_compute_square_s8(AgsRavenSynthUtil *raven_synth_util)
 void
 ags_raven_synth_util_compute_square_s16(AgsRavenSynthUtil *raven_synth_util)
 {
+  gint16 *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
+  static const gdouble scale = 32767.0;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	(*source) = (gint16) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	(*source) = (gint16) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	(*source) = (gint16) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate) >= 0.0 ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	(*source) = (gint16) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) >= 0.0 ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	(*source) = (gint16) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) >= 0.0 ? 1.0: -1.0)) * volume);
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -1996,12 +5342,140 @@ ags_raven_synth_util_compute_square_s16(AgsRavenSynthUtil *raven_synth_util)
 void
 ags_raven_synth_util_compute_square_s24(AgsRavenSynthUtil *raven_synth_util)
 {
+  gint32 *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
+  static const gdouble scale = 8388607.0;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	(*source) = (gint32) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	(*source) = (gint32) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	(*source) = (gint32) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate) >= 0.0 ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	(*source) = (gint32) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) >= 0.0 ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	(*source) = (gint32) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) >= 0.0 ? 1.0: -1.0)) * volume);
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -2015,12 +5489,140 @@ ags_raven_synth_util_compute_square_s24(AgsRavenSynthUtil *raven_synth_util)
 void
 ags_raven_synth_util_compute_square_s32(AgsRavenSynthUtil *raven_synth_util)
 {
+  gint32 *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
+  static const gdouble scale = 214748363.0;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	(*source) = (gint32) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	(*source) = (gint32) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	(*source) = (gint32) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate) >= 0.0 ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	(*source) = (gint32) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) >= 0.0 ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	(*source) = (gint32) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) >= 0.0 ? 1.0: -1.0)) * volume);
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -2034,12 +5636,140 @@ ags_raven_synth_util_compute_square_s32(AgsRavenSynthUtil *raven_synth_util)
 void
 ags_raven_synth_util_compute_square_s64(AgsRavenSynthUtil *raven_synth_util)
 {
+  gint64 *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
+  static const gdouble scale = 9223372036854775807.0;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	(*source) = (gint64) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	(*source) = (gint64) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	(*source) = (gint64) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate) >= 0.0 ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	(*source) = (gint64) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) >= 0.0 ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	(*source) = (gint64) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) >= 0.0 ? 1.0: -1.0)) * volume);
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -2053,12 +5783,138 @@ ags_raven_synth_util_compute_square_s64(AgsRavenSynthUtil *raven_synth_util)
 void
 ags_raven_synth_util_compute_square_float(AgsRavenSynthUtil *raven_synth_util)
 {
+  gfloat *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	(*source) = (gfloat) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	(*source) = (gfloat) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	(*source) = (gfloat) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate) >= 0.0 ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	(*source) = (gfloat) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) >= 0.0 ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	(*source) = (gfloat) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) >= 0.0 ? 1.0: -1.0)) * volume);
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -2072,12 +5928,138 @@ ags_raven_synth_util_compute_square_float(AgsRavenSynthUtil *raven_synth_util)
 void
 ags_raven_synth_util_compute_square_double(AgsRavenSynthUtil *raven_synth_util)
 {
+  gint32 *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	(*source) = (gdouble) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	(*source) = (gdouble) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	(*source) = (gdouble) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate) >= 0.0 ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	(*source) = (gdouble) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) >= 0.0 ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	(*source) = (gdouble) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) >= 0.0 ? 1.0: -1.0)) * volume);
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -2091,12 +6073,143 @@ ags_raven_synth_util_compute_square_double(AgsRavenSynthUtil *raven_synth_util)
 void
 ags_raven_synth_util_compute_square_complex(AgsRavenSynthUtil *raven_synth_util)
 {
+  AgsComplex *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	ags_complex_set(source,
+			(double _Complex) (ags_complex_get(source) + (double _Complex) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * volume)));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	ags_complex_set(source,
+			(double _Complex) (ags_complex_get(source) + (double _Complex) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * ((sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0)) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	ags_complex_set(source,
+			(double _Complex) (ags_complex_get(source) + (double _Complex) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate) >= 0.0 ? 1.0: -1.0)) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	ags_complex_set(source,
+			(double _Complex) (ags_complex_get(source) + (double _Complex) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) >= 0.0 ? 1.0: -1.0)) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	ags_complex_set(source,
+			(double _Complex) (ags_complex_get(source) + (double _Complex) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) >= 0.0 ? 1.0: -1.0)) * volume));
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -2110,12 +6223,140 @@ ags_raven_synth_util_compute_square_complex(AgsRavenSynthUtil *raven_synth_util)
 void
 ags_raven_synth_util_compute_impulse_s8(AgsRavenSynthUtil *raven_synth_util)
 {
+  gint8 *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
+  static const gdouble scale = 127.0;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	(*source) = (gint8) ((gint16) (source)[0] + (gint16) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	(*source) = (gint8) ((gint16) (source)[0] + (gint16) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	(*source) = (gint8) ((gint16) (source)[0] + (gint16) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	(*source) = (gint8) ((gint16) (source)[0] + (gint16) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	(*source) = (gint8) ((gint16) (source)[0] + (gint16) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * volume);
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -2129,12 +6370,140 @@ ags_raven_synth_util_compute_impulse_s8(AgsRavenSynthUtil *raven_synth_util)
 void
 ags_raven_synth_util_compute_impulse_s16(AgsRavenSynthUtil *raven_synth_util)
 {
+  gint16 *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
+  static const gdouble scale = 32767.0;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	(*source) = (gint16) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	(*source) = (gint16) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	(*source) = (gint16) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	(*source) = (gint16) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	(*source) = (gint16) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * volume);
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -2148,12 +6517,140 @@ ags_raven_synth_util_compute_impulse_s16(AgsRavenSynthUtil *raven_synth_util)
 void
 ags_raven_synth_util_compute_impulse_s24(AgsRavenSynthUtil *raven_synth_util)
 {
+  gint32 *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
+  static const gdouble scale = 8388607.0;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	(*source) = (gint32) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	(*source) = (gint32) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	(*source) = (gint32) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	(*source) = (gint32) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	(*source) = (gint32) ((gint32) (source)[0] + (gint32) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * volume);
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -2167,12 +6664,140 @@ ags_raven_synth_util_compute_impulse_s24(AgsRavenSynthUtil *raven_synth_util)
 void
 ags_raven_synth_util_compute_impulse_s32(AgsRavenSynthUtil *raven_synth_util)
 {
+  gint32 *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
+  static const gdouble scale = 214748363.0;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	(*source) = (gint32) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	(*source) = (gint32) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	(*source) = (gint32) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	(*source) = (gint32) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	(*source) = (gint32) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * volume);
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -2186,12 +6811,140 @@ ags_raven_synth_util_compute_impulse_s32(AgsRavenSynthUtil *raven_synth_util)
 void
 ags_raven_synth_util_compute_impulse_s64(AgsRavenSynthUtil *raven_synth_util)
 {
+  gint64 *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
+  static const gdouble scale = 9223372036854775807.0;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	(*source) = (gint64) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	(*source) = (gint64) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	(*source) = (gint64) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	(*source) = (gint64) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	(*source) = (gint64) ((gint64) (source)[0] + (gint64) scale * (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * volume);
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -2205,12 +6958,138 @@ ags_raven_synth_util_compute_impulse_s64(AgsRavenSynthUtil *raven_synth_util)
 void
 ags_raven_synth_util_compute_impulse_float(AgsRavenSynthUtil *raven_synth_util)
 {
+  gfloat *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	(*source) = (gfloat) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	(*source) = (gfloat) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	(*source) = (gfloat) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	(*source) = (gfloat) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	(*source) = (gfloat) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * volume);
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -2224,12 +7103,138 @@ ags_raven_synth_util_compute_impulse_float(AgsRavenSynthUtil *raven_synth_util)
 void
 ags_raven_synth_util_compute_impulse_double(AgsRavenSynthUtil *raven_synth_util)
 {
+  gint8 *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	(*source) = (gdouble) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	(*source) = (gdouble) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	(*source) = (gdouble) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	(*source) = (gdouble) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * volume);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	(*source) = (gdouble) ((gdouble) (source)[0] + (gdouble) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * volume);
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
 
 /**
@@ -2243,10 +7248,141 @@ ags_raven_synth_util_compute_impulse_double(AgsRavenSynthUtil *raven_synth_util)
 void
 ags_raven_synth_util_compute_impulse_complex(AgsRavenSynthUtil *raven_synth_util)
 {
+  AgsComplex *source;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  guint lfo_oscillator_mode;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  gboolean sync_enabled;
+  guint sync_counter;
+  guint nth_sync;
+  gdouble freq_440_length;
+  gdouble freq_length;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint offset;
+  guint sync_seq;
+  guint attack_reset;
+  guint phase_reset;
+  gdouble volume;
+  guint i, i_stop;
+
   if(raven_synth_util == NULL ||
      raven_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = raven_synth_util->source;
+  source_stride = raven_synth_util->source_stride;
+
+  buffer_length = raven_synth_util->buffer_length;
+  samplerate = raven_synth_util->samplerate;
+
+  frequency = raven_synth_util->frequency;
+  phase = raven_synth_util->phase;
+  volume = raven_synth_util->volume;
+
+  lfo_oscillator_mode = raven_synth_util->lfo_oscillator_mode;
+
+  lfo_frequency = raven_synth_util->lfo_frequency;
+  lfo_depth = raven_synth_util->lfo_depth;
+  tuning = raven_synth_util->tuning;
+
+  sync_enabled = raven_synth_util->sync_enabled;
+
+  nth_sync = 0;
+
+  freq_440_length = (samplerate / 440.0);
+  freq_length = (samplerate / frequency);
+  
+  vibrato_gain = raven_synth_util->vibrato_gain;
+  vibrato_lfo_depth = raven_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = raven_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = raven_synth_util->vibrato_tuning;
+  
+  offset = raven_synth_util->offset;
+
+  attack_reset = 0;
+  phase_reset = 0;
+
+  sync_seq = 0;
+
+  if(raven_synth_util->sync_attack[0] > 0.0){
+    freq_440_length = (samplerate / 440.0);
+
+    freq_length = (samplerate / frequency);
+    
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
+      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
+      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
+      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+  }
+  
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+
+  sync_counter = 0;
+
+  for(; i < buffer_length;){
+    if(sync_enabled &&
+       sync_seq > 0){
+      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
+      
+      if(offset + i >= attack_reset){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
+      }
+
+      sync_counter++;
+      
+      if(sync_counter >= sync_seq){
+	nth_sync++;
+
+	sync_counter = 0;
+      }
+    }
+    
+    switch(lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	ags_complex_set(source,
+			(double _Complex) (ags_complex_get(source) + (double _Complex) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * volume)));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	ags_complex_set(source,
+			(double _Complex) (ags_complex_get(source) + (double _Complex) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      { 
+	ags_complex_set(source,
+			(double _Complex) (ags_complex_get(source) + (double _Complex) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {   
+	ags_complex_set(source,
+			(double _Complex) (ags_complex_get(source) + (double _Complex) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * volume));
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	ags_complex_set(source,
+			(double _Complex) (ags_complex_get(source) + (double _Complex) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * (sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * volume));
+      }
+      break;
+    }
+    
+    source += source_stride;
+    i++;
+  }
 }
