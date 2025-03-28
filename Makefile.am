@@ -1348,6 +1348,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_fluid_interpolate_none_util.h \
 	ags/audio/ags_fluid_util.h \
 	ags/audio/ags_fm_synth_util.h \
+	ags/audio/ags_raven_synth_util.h \
 	ags/audio/ags_seq_synth_util.h \
 	ags/audio/ags_star_synth_util.h \
 	ags/audio/ags_fourier_transform_util.h \
@@ -1455,6 +1456,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_fluid_interpolate_none_util.c \
 	ags/audio/ags_fluid_util.c \
 	ags/audio/ags_fm_synth_util.c \
+	ags/audio/ags_raven_synth_util.c \
 	ags/audio/ags_seq_synth_util.c \
 	ags/audio/ags_star_synth_util.c \
 	ags/audio/ags_fourier_transform_util.c \
