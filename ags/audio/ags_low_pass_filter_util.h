@@ -35,21 +35,21 @@ G_BEGIN_DECLS
 
 #define AGS_LOW_PASS_FILTER_UTIL_INITIALIZER ((AgsLowPassFilterUtil) {	\
       .source = NULL,							\
-	.source_stride = 1,						\
-	.destination = NULL,						\
-	.destination_stride = 1,					\
-	.buffer_length = 0,						\
-	.format = AGS_SOUNDCARD_DEFAULT_FORMAT,				\
-	.samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE,			\
-	.cut_off_frequency = 2000.0,					\
-	.filter_gain = 1.0,						\
-	.no_clip = 0.0,							\
-	.last_freq = 0.015811388,					\
-	.last_gain = 0.0,						\
-	.last_no_clip = 0.0,						\
-	.converted_freq = 0.0,						\
-	.converted_gain = 0.0,						\
-	.converted_no_clip = 0.0 })
+      .source_stride = 1,						\
+      .destination = NULL,						\
+      .destination_stride = 1,						\
+      .buffer_length = 0,						\
+      .format = AGS_SOUNDCARD_DEFAULT_FORMAT,				\
+      .samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE,			\
+      .cut_off_frequency = 2000.0,					\
+      .filter_gain = 1.0,						\
+      .no_clip = 0.0,							\
+      .last_freq = 0.015811388,						\
+      .last_gain = 0.0,							\
+      .last_no_clip = 0.0,						\
+      .converted_freq = 0.0,						\
+      .converted_gain = 0.0,						\
+      .converted_no_clip = 0.0 })
 
 typedef struct _AgsLowPassFilterUtil AgsLowPassFilterUtil;
 
@@ -120,6 +120,10 @@ void ags_low_pass_filter_util_set_cut_off_frequency(AgsLowPassFilterUtil *low_pa
 gdouble ags_low_pass_filter_util_get_filter_gain(AgsLowPassFilterUtil *low_pass_filter_util);
 void ags_low_pass_filter_util_set_filter_gain(AgsLowPassFilterUtil *low_pass_filter_util,
 					      gdouble filter_gain);
+
+gdouble ags_low_pass_filter_util_get_no_clip(AgsLowPassFilterUtil *low_pass_filter_util);
+void ags_low_pass_filter_util_set_no_clip(AgsLowPassFilterUtil *low_pass_filter_util,
+					  gdouble no_clip);
 
 void ags_low_pass_filter_util_process_s8(AgsLowPassFilterUtil *low_pass_filter_util);
 void ags_low_pass_filter_util_process_s16(AgsLowPassFilterUtil *low_pass_filter_util);

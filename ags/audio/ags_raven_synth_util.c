@@ -1549,7 +1549,8 @@ ags_raven_synth_util_compute_sin_s8(AgsRavenSynthUtil *raven_synth_util)
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -1579,6 +1580,11 @@ ags_raven_synth_util_compute_sin_s8(AgsRavenSynthUtil *raven_synth_util)
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -1591,38 +1597,116 @@ ags_raven_synth_util_compute_sin_s8(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    gboolean sync_attack_success;
+
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
+    
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
   i_stop = buffer_length - (buffer_length % 8);
 
-  sync_counter = 0;
-
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -1692,7 +1776,8 @@ ags_raven_synth_util_compute_sin_s16(AgsRavenSynthUtil *raven_synth_util)
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -1722,6 +1807,11 @@ ags_raven_synth_util_compute_sin_s16(AgsRavenSynthUtil *raven_synth_util)
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -1734,20 +1824,86 @@ ags_raven_synth_util_compute_sin_s16(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -1758,18 +1914,28 @@ ags_raven_synth_util_compute_sin_s16(AgsRavenSynthUtil *raven_synth_util)
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -1839,7 +2005,8 @@ ags_raven_synth_util_compute_sin_s24(AgsRavenSynthUtil *raven_synth_util)
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -1869,6 +2036,11 @@ ags_raven_synth_util_compute_sin_s24(AgsRavenSynthUtil *raven_synth_util)
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -1881,20 +2053,86 @@ ags_raven_synth_util_compute_sin_s24(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -1905,18 +2143,28 @@ ags_raven_synth_util_compute_sin_s24(AgsRavenSynthUtil *raven_synth_util)
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -1986,7 +2234,8 @@ ags_raven_synth_util_compute_sin_s32(AgsRavenSynthUtil *raven_synth_util)
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -2016,6 +2265,11 @@ ags_raven_synth_util_compute_sin_s32(AgsRavenSynthUtil *raven_synth_util)
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -2028,20 +2282,86 @@ ags_raven_synth_util_compute_sin_s32(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -2052,18 +2372,28 @@ ags_raven_synth_util_compute_sin_s32(AgsRavenSynthUtil *raven_synth_util)
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -2133,7 +2463,8 @@ ags_raven_synth_util_compute_sin_s64(AgsRavenSynthUtil *raven_synth_util)
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -2163,6 +2494,11 @@ ags_raven_synth_util_compute_sin_s64(AgsRavenSynthUtil *raven_synth_util)
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -2175,20 +2511,86 @@ ags_raven_synth_util_compute_sin_s64(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -2199,18 +2601,28 @@ ags_raven_synth_util_compute_sin_s64(AgsRavenSynthUtil *raven_synth_util)
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -2280,7 +2692,8 @@ ags_raven_synth_util_compute_sin_float(AgsRavenSynthUtil *raven_synth_util)
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -2308,6 +2721,11 @@ ags_raven_synth_util_compute_sin_float(AgsRavenSynthUtil *raven_synth_util)
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -2320,20 +2738,86 @@ ags_raven_synth_util_compute_sin_float(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -2344,18 +2828,28 @@ ags_raven_synth_util_compute_sin_float(AgsRavenSynthUtil *raven_synth_util)
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -2425,7 +2919,8 @@ ags_raven_synth_util_compute_sin_double(AgsRavenSynthUtil *raven_synth_util)
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -2453,6 +2948,11 @@ ags_raven_synth_util_compute_sin_double(AgsRavenSynthUtil *raven_synth_util)
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -2465,20 +2965,86 @@ ags_raven_synth_util_compute_sin_double(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -2489,18 +3055,28 @@ ags_raven_synth_util_compute_sin_double(AgsRavenSynthUtil *raven_synth_util)
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -2570,7 +3146,8 @@ ags_raven_synth_util_compute_sin_complex(AgsRavenSynthUtil *raven_synth_util)
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -2598,6 +3175,11 @@ ags_raven_synth_util_compute_sin_complex(AgsRavenSynthUtil *raven_synth_util)
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -2610,20 +3192,86 @@ ags_raven_synth_util_compute_sin_complex(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -2634,18 +3282,28 @@ ags_raven_synth_util_compute_sin_complex(AgsRavenSynthUtil *raven_synth_util)
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -2720,7 +3378,8 @@ ags_raven_synth_util_compute_sawtooth_s8(AgsRavenSynthUtil *raven_synth_util)
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -2750,6 +3409,11 @@ ags_raven_synth_util_compute_sawtooth_s8(AgsRavenSynthUtil *raven_synth_util)
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -2762,20 +3426,86 @@ ags_raven_synth_util_compute_sawtooth_s8(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -2786,18 +3516,28 @@ ags_raven_synth_util_compute_sawtooth_s8(AgsRavenSynthUtil *raven_synth_util)
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -2867,7 +3607,8 @@ ags_raven_synth_util_compute_sawtooth_s16(AgsRavenSynthUtil *raven_synth_util)
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -2897,6 +3638,11 @@ ags_raven_synth_util_compute_sawtooth_s16(AgsRavenSynthUtil *raven_synth_util)
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -2909,20 +3655,86 @@ ags_raven_synth_util_compute_sawtooth_s16(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -2933,21 +3745,31 @@ ags_raven_synth_util_compute_sawtooth_s16(AgsRavenSynthUtil *raven_synth_util)
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-						    
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
-    
+	
     switch(lfo_oscillator_mode){
     case AGS_SYNTH_OSCILLATOR_SIN:
       {
@@ -3014,7 +3836,8 @@ ags_raven_synth_util_compute_sawtooth_s24(AgsRavenSynthUtil *raven_synth_util)
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -3044,6 +3867,11 @@ ags_raven_synth_util_compute_sawtooth_s24(AgsRavenSynthUtil *raven_synth_util)
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -3056,20 +3884,86 @@ ags_raven_synth_util_compute_sawtooth_s24(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -3080,18 +3974,28 @@ ags_raven_synth_util_compute_sawtooth_s24(AgsRavenSynthUtil *raven_synth_util)
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -3161,7 +4065,8 @@ ags_raven_synth_util_compute_sawtooth_s32(AgsRavenSynthUtil *raven_synth_util)
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -3191,6 +4096,11 @@ ags_raven_synth_util_compute_sawtooth_s32(AgsRavenSynthUtil *raven_synth_util)
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -3203,20 +4113,86 @@ ags_raven_synth_util_compute_sawtooth_s32(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -3227,18 +4203,28 @@ ags_raven_synth_util_compute_sawtooth_s32(AgsRavenSynthUtil *raven_synth_util)
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -3308,7 +4294,8 @@ ags_raven_synth_util_compute_sawtooth_s64(AgsRavenSynthUtil *raven_synth_util)
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -3338,6 +4325,11 @@ ags_raven_synth_util_compute_sawtooth_s64(AgsRavenSynthUtil *raven_synth_util)
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -3350,20 +4342,86 @@ ags_raven_synth_util_compute_sawtooth_s64(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -3374,18 +4432,28 @@ ags_raven_synth_util_compute_sawtooth_s64(AgsRavenSynthUtil *raven_synth_util)
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -3455,7 +4523,8 @@ ags_raven_synth_util_compute_sawtooth_float(AgsRavenSynthUtil *raven_synth_util)
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -3483,6 +4552,11 @@ ags_raven_synth_util_compute_sawtooth_float(AgsRavenSynthUtil *raven_synth_util)
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -3495,20 +4569,86 @@ ags_raven_synth_util_compute_sawtooth_float(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -3519,18 +4659,28 @@ ags_raven_synth_util_compute_sawtooth_float(AgsRavenSynthUtil *raven_synth_util)
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -3600,7 +4750,8 @@ ags_raven_synth_util_compute_sawtooth_double(AgsRavenSynthUtil *raven_synth_util
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -3628,6 +4779,11 @@ ags_raven_synth_util_compute_sawtooth_double(AgsRavenSynthUtil *raven_synth_util
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -3640,20 +4796,86 @@ ags_raven_synth_util_compute_sawtooth_double(AgsRavenSynthUtil *raven_synth_util
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -3664,18 +4886,28 @@ ags_raven_synth_util_compute_sawtooth_double(AgsRavenSynthUtil *raven_synth_util
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -3745,7 +4977,8 @@ ags_raven_synth_util_compute_sawtooth_complex(AgsRavenSynthUtil *raven_synth_uti
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -3773,6 +5006,11 @@ ags_raven_synth_util_compute_sawtooth_complex(AgsRavenSynthUtil *raven_synth_uti
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -3785,20 +5023,86 @@ ags_raven_synth_util_compute_sawtooth_complex(AgsRavenSynthUtil *raven_synth_uti
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -3809,18 +5113,28 @@ ags_raven_synth_util_compute_sawtooth_complex(AgsRavenSynthUtil *raven_synth_uti
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -3895,7 +5209,8 @@ ags_raven_synth_util_compute_triangle_s8(AgsRavenSynthUtil *raven_synth_util)
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -3925,6 +5240,11 @@ ags_raven_synth_util_compute_triangle_s8(AgsRavenSynthUtil *raven_synth_util)
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -3937,20 +5257,86 @@ ags_raven_synth_util_compute_triangle_s8(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -3961,18 +5347,28 @@ ags_raven_synth_util_compute_triangle_s8(AgsRavenSynthUtil *raven_synth_util)
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -4042,7 +5438,8 @@ ags_raven_synth_util_compute_triangle_s16(AgsRavenSynthUtil *raven_synth_util)
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -4072,6 +5469,11 @@ ags_raven_synth_util_compute_triangle_s16(AgsRavenSynthUtil *raven_synth_util)
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -4084,20 +5486,86 @@ ags_raven_synth_util_compute_triangle_s16(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -4108,18 +5576,28 @@ ags_raven_synth_util_compute_triangle_s16(AgsRavenSynthUtil *raven_synth_util)
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -4189,7 +5667,8 @@ ags_raven_synth_util_compute_triangle_s24(AgsRavenSynthUtil *raven_synth_util)
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -4219,6 +5698,11 @@ ags_raven_synth_util_compute_triangle_s24(AgsRavenSynthUtil *raven_synth_util)
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -4231,20 +5715,86 @@ ags_raven_synth_util_compute_triangle_s24(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -4255,18 +5805,28 @@ ags_raven_synth_util_compute_triangle_s24(AgsRavenSynthUtil *raven_synth_util)
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -4336,7 +5896,8 @@ ags_raven_synth_util_compute_triangle_s32(AgsRavenSynthUtil *raven_synth_util)
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -4366,6 +5927,11 @@ ags_raven_synth_util_compute_triangle_s32(AgsRavenSynthUtil *raven_synth_util)
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -4378,20 +5944,86 @@ ags_raven_synth_util_compute_triangle_s32(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -4402,18 +6034,28 @@ ags_raven_synth_util_compute_triangle_s32(AgsRavenSynthUtil *raven_synth_util)
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -4483,7 +6125,8 @@ ags_raven_synth_util_compute_triangle_s64(AgsRavenSynthUtil *raven_synth_util)
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -4513,6 +6156,11 @@ ags_raven_synth_util_compute_triangle_s64(AgsRavenSynthUtil *raven_synth_util)
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -4525,20 +6173,86 @@ ags_raven_synth_util_compute_triangle_s64(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -4549,18 +6263,28 @@ ags_raven_synth_util_compute_triangle_s64(AgsRavenSynthUtil *raven_synth_util)
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -4630,7 +6354,8 @@ ags_raven_synth_util_compute_triangle_float(AgsRavenSynthUtil *raven_synth_util)
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -4658,6 +6383,11 @@ ags_raven_synth_util_compute_triangle_float(AgsRavenSynthUtil *raven_synth_util)
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -4670,20 +6400,86 @@ ags_raven_synth_util_compute_triangle_float(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -4694,18 +6490,28 @@ ags_raven_synth_util_compute_triangle_float(AgsRavenSynthUtil *raven_synth_util)
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -4775,7 +6581,8 @@ ags_raven_synth_util_compute_triangle_double(AgsRavenSynthUtil *raven_synth_util
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -4803,6 +6610,11 @@ ags_raven_synth_util_compute_triangle_double(AgsRavenSynthUtil *raven_synth_util
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -4815,20 +6627,86 @@ ags_raven_synth_util_compute_triangle_double(AgsRavenSynthUtil *raven_synth_util
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -4839,18 +6717,28 @@ ags_raven_synth_util_compute_triangle_double(AgsRavenSynthUtil *raven_synth_util
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -4920,7 +6808,8 @@ ags_raven_synth_util_compute_triangle_complex(AgsRavenSynthUtil *raven_synth_uti
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -4948,6 +6837,11 @@ ags_raven_synth_util_compute_triangle_complex(AgsRavenSynthUtil *raven_synth_uti
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -4960,20 +6854,86 @@ ags_raven_synth_util_compute_triangle_complex(AgsRavenSynthUtil *raven_synth_uti
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -4984,18 +6944,28 @@ ags_raven_synth_util_compute_triangle_complex(AgsRavenSynthUtil *raven_synth_uti
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -5070,7 +7040,8 @@ ags_raven_synth_util_compute_square_s8(AgsRavenSynthUtil *raven_synth_util)
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -5100,6 +7071,11 @@ ags_raven_synth_util_compute_square_s8(AgsRavenSynthUtil *raven_synth_util)
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -5112,20 +7088,86 @@ ags_raven_synth_util_compute_square_s8(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -5136,18 +7178,28 @@ ags_raven_synth_util_compute_square_s8(AgsRavenSynthUtil *raven_synth_util)
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -5217,7 +7269,8 @@ ags_raven_synth_util_compute_square_s16(AgsRavenSynthUtil *raven_synth_util)
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -5247,6 +7300,11 @@ ags_raven_synth_util_compute_square_s16(AgsRavenSynthUtil *raven_synth_util)
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -5259,20 +7317,86 @@ ags_raven_synth_util_compute_square_s16(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -5283,18 +7407,28 @@ ags_raven_synth_util_compute_square_s16(AgsRavenSynthUtil *raven_synth_util)
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -5364,7 +7498,8 @@ ags_raven_synth_util_compute_square_s24(AgsRavenSynthUtil *raven_synth_util)
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -5394,6 +7529,11 @@ ags_raven_synth_util_compute_square_s24(AgsRavenSynthUtil *raven_synth_util)
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -5406,20 +7546,86 @@ ags_raven_synth_util_compute_square_s24(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -5430,18 +7636,28 @@ ags_raven_synth_util_compute_square_s24(AgsRavenSynthUtil *raven_synth_util)
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -5511,7 +7727,8 @@ ags_raven_synth_util_compute_square_s32(AgsRavenSynthUtil *raven_synth_util)
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -5541,6 +7758,11 @@ ags_raven_synth_util_compute_square_s32(AgsRavenSynthUtil *raven_synth_util)
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -5553,20 +7775,86 @@ ags_raven_synth_util_compute_square_s32(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -5577,18 +7865,28 @@ ags_raven_synth_util_compute_square_s32(AgsRavenSynthUtil *raven_synth_util)
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -5658,7 +7956,8 @@ ags_raven_synth_util_compute_square_s64(AgsRavenSynthUtil *raven_synth_util)
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -5688,6 +7987,11 @@ ags_raven_synth_util_compute_square_s64(AgsRavenSynthUtil *raven_synth_util)
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -5700,20 +8004,86 @@ ags_raven_synth_util_compute_square_s64(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -5724,18 +8094,28 @@ ags_raven_synth_util_compute_square_s64(AgsRavenSynthUtil *raven_synth_util)
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -5805,7 +8185,8 @@ ags_raven_synth_util_compute_square_float(AgsRavenSynthUtil *raven_synth_util)
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -5833,6 +8214,11 @@ ags_raven_synth_util_compute_square_float(AgsRavenSynthUtil *raven_synth_util)
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -5845,20 +8231,86 @@ ags_raven_synth_util_compute_square_float(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -5869,18 +8321,28 @@ ags_raven_synth_util_compute_square_float(AgsRavenSynthUtil *raven_synth_util)
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -5950,7 +8412,8 @@ ags_raven_synth_util_compute_square_double(AgsRavenSynthUtil *raven_synth_util)
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -5978,6 +8441,11 @@ ags_raven_synth_util_compute_square_double(AgsRavenSynthUtil *raven_synth_util)
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -5990,20 +8458,86 @@ ags_raven_synth_util_compute_square_double(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -6014,18 +8548,28 @@ ags_raven_synth_util_compute_square_double(AgsRavenSynthUtil *raven_synth_util)
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -6095,7 +8639,8 @@ ags_raven_synth_util_compute_square_complex(AgsRavenSynthUtil *raven_synth_util)
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -6123,6 +8668,11 @@ ags_raven_synth_util_compute_square_complex(AgsRavenSynthUtil *raven_synth_util)
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -6135,20 +8685,86 @@ ags_raven_synth_util_compute_square_complex(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -6159,18 +8775,28 @@ ags_raven_synth_util_compute_square_complex(AgsRavenSynthUtil *raven_synth_util)
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -6245,7 +8871,8 @@ ags_raven_synth_util_compute_impulse_s8(AgsRavenSynthUtil *raven_synth_util)
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -6275,6 +8902,11 @@ ags_raven_synth_util_compute_impulse_s8(AgsRavenSynthUtil *raven_synth_util)
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -6287,20 +8919,86 @@ ags_raven_synth_util_compute_impulse_s8(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -6311,18 +9009,28 @@ ags_raven_synth_util_compute_impulse_s8(AgsRavenSynthUtil *raven_synth_util)
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -6392,7 +9100,8 @@ ags_raven_synth_util_compute_impulse_s16(AgsRavenSynthUtil *raven_synth_util)
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -6422,6 +9131,11 @@ ags_raven_synth_util_compute_impulse_s16(AgsRavenSynthUtil *raven_synth_util)
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -6434,20 +9148,86 @@ ags_raven_synth_util_compute_impulse_s16(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -6458,18 +9238,28 @@ ags_raven_synth_util_compute_impulse_s16(AgsRavenSynthUtil *raven_synth_util)
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -6539,7 +9329,8 @@ ags_raven_synth_util_compute_impulse_s24(AgsRavenSynthUtil *raven_synth_util)
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -6569,6 +9360,11 @@ ags_raven_synth_util_compute_impulse_s24(AgsRavenSynthUtil *raven_synth_util)
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -6581,20 +9377,86 @@ ags_raven_synth_util_compute_impulse_s24(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -6605,18 +9467,28 @@ ags_raven_synth_util_compute_impulse_s24(AgsRavenSynthUtil *raven_synth_util)
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -6686,7 +9558,8 @@ ags_raven_synth_util_compute_impulse_s32(AgsRavenSynthUtil *raven_synth_util)
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -6716,6 +9589,11 @@ ags_raven_synth_util_compute_impulse_s32(AgsRavenSynthUtil *raven_synth_util)
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -6728,20 +9606,86 @@ ags_raven_synth_util_compute_impulse_s32(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -6752,18 +9696,28 @@ ags_raven_synth_util_compute_impulse_s32(AgsRavenSynthUtil *raven_synth_util)
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -6833,7 +9787,8 @@ ags_raven_synth_util_compute_impulse_s64(AgsRavenSynthUtil *raven_synth_util)
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -6863,6 +9818,11 @@ ags_raven_synth_util_compute_impulse_s64(AgsRavenSynthUtil *raven_synth_util)
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -6875,20 +9835,86 @@ ags_raven_synth_util_compute_impulse_s64(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -6899,18 +9925,28 @@ ags_raven_synth_util_compute_impulse_s64(AgsRavenSynthUtil *raven_synth_util)
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -6980,7 +10016,8 @@ ags_raven_synth_util_compute_impulse_float(AgsRavenSynthUtil *raven_synth_util)
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -7008,6 +10045,11 @@ ags_raven_synth_util_compute_impulse_float(AgsRavenSynthUtil *raven_synth_util)
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -7020,20 +10062,86 @@ ags_raven_synth_util_compute_impulse_float(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -7044,18 +10152,28 @@ ags_raven_synth_util_compute_impulse_float(AgsRavenSynthUtil *raven_synth_util)
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -7125,7 +10243,8 @@ ags_raven_synth_util_compute_impulse_double(AgsRavenSynthUtil *raven_synth_util)
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -7153,6 +10272,11 @@ ags_raven_synth_util_compute_impulse_double(AgsRavenSynthUtil *raven_synth_util)
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -7165,20 +10289,86 @@ ags_raven_synth_util_compute_impulse_double(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -7189,18 +10379,28 @@ ags_raven_synth_util_compute_impulse_double(AgsRavenSynthUtil *raven_synth_util)
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     
@@ -7270,7 +10470,8 @@ ags_raven_synth_util_compute_impulse_complex(AgsRavenSynthUtil *raven_synth_util
   gdouble vibrato_tuning;
   guint offset;
   guint sync_seq;
-  guint attack_reset;
+  guint sync_count;
+  guint sync_attack;
   guint phase_reset;
   gdouble volume;
   guint i, i_stop;
@@ -7298,6 +10499,11 @@ ags_raven_synth_util_compute_impulse_complex(AgsRavenSynthUtil *raven_synth_util
 
   sync_enabled = raven_synth_util->sync_enabled;
 
+  sync_seq = 0;
+  sync_counter = 0;
+  sync_attack = 0;
+
+  sync_count = 0;
   nth_sync = 0;
 
   freq_440_length = (samplerate / 440.0);
@@ -7310,20 +10516,86 @@ ags_raven_synth_util_compute_impulse_complex(AgsRavenSynthUtil *raven_synth_util
   
   offset = raven_synth_util->offset;
 
-  attack_reset = 0;
   phase_reset = 0;
 
-  sync_seq = 0;
-
   if(raven_synth_util->sync_attack[0] > 0.0){
-    freq_440_length = (samplerate / 440.0);
+    gboolean sync_attack_success;
 
-    freq_length = (samplerate / frequency);
+    sync_attack_success = TRUE;
+
+    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+    sync_count++;
     
-    sync_seq = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0])
-      + ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1])
-      + ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2])
-      + ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0){
+	sync_seq += ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_count++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+    
+    sync_counter = offset % sync_seq;
+
+    sync_attack = offset - ((guint) floor((double) offset / (double) sync_seq) * sync_seq);
+
+    nth_sync = (guint) floor((double) offset / (double) sync_seq);
+
+    sync_attack_success = TRUE;
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[1] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[2] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
+
+    if(sync_attack_success){
+      if(raven_synth_util->sync_attack[3] > 0.0 &&
+	 ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]) < sync_attack){
+	sync_counter -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	sync_attack -= ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+
+	nth_sync++;
+      }else{
+	sync_attack_success = FALSE;
+      }
+    }
   }
   
   i = 0;
@@ -7334,18 +10606,28 @@ ags_raven_synth_util_compute_impulse_complex(AgsRavenSynthUtil *raven_synth_util
   for(; i < buffer_length;){
     if(sync_enabled &&
        sync_seq > 0){
-      attack_reset = (nth_sync * sync_seq) + ((raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT]);
-      
-      if(offset + i >= attack_reset){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT];
-      }
-
       sync_counter++;
       
-      if(sync_counter >= sync_seq){
+      if(sync_counter >= sync_attack){
+	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+
 	nth_sync++;
 
 	sync_counter = 0;
+
+	if(sync_count > 0 &&
+	   nth_sync % sync_count == 0){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[0] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[0]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[0]);
+	}else if(sync_count > 1 &&
+		 nth_sync % sync_count == 1){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[1] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[1]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[1]);
+	}else if(sync_count > 2 &&
+		 nth_sync % sync_count == 2){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[2] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[2]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[2]);
+	}else if(sync_count > 3 &&
+		 nth_sync % sync_count == 3){
+	  sync_attack = ((raven_synth_util->sync_relative_attack_factor[3] * (freq_length / (2.0 * M_PI))) + ((1.0 - raven_synth_util->sync_relative_attack_factor[3]) * (freq_440_length / (2.0 * M_PI))) * raven_synth_util->sync_attack[3]);
+	}      
       }
     }
     

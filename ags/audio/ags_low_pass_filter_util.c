@@ -96,7 +96,7 @@ ags_low_pass_filter_util_alloc()
   AgsLowPassFilterUtil *ptr;
 
   ptr = (AgsLowPassFilterUtil *) g_new(AgsLowPassFilterUtil,
-				   1);
+				       1);
 
   ptr[0] = AGS_LOW_PASS_FILTER_UTIL_INITIALIZER;
 
@@ -121,7 +121,7 @@ ags_low_pass_filter_util_copy(AgsLowPassFilterUtil *ptr)
   g_return_val_if_fail(ptr != NULL, NULL);
   
   new_ptr = (AgsLowPassFilterUtil *) g_new(AgsLowPassFilterUtil,
-				       1);
+					   1);
   
   new_ptr->destination = ptr->destination;
   new_ptr->destination_stride = ptr->destination_stride;
@@ -201,7 +201,7 @@ ags_low_pass_filter_util_get_destination(AgsLowPassFilterUtil *low_pass_filter_u
  */
 void
 ags_low_pass_filter_util_set_destination(AgsLowPassFilterUtil *low_pass_filter_util,
-				   gpointer destination)
+					 gpointer destination)
 {
   if(low_pass_filter_util == NULL){
     return;
@@ -241,7 +241,7 @@ ags_low_pass_filter_util_get_destination_stride(AgsLowPassFilterUtil *low_pass_f
  */
 void
 ags_low_pass_filter_util_set_destination_stride(AgsLowPassFilterUtil *low_pass_filter_util,
-					  guint destination_stride)
+						guint destination_stride)
 {
   if(low_pass_filter_util == NULL){
     return;
@@ -281,7 +281,7 @@ ags_low_pass_filter_util_get_source(AgsLowPassFilterUtil *low_pass_filter_util)
  */
 void
 ags_low_pass_filter_util_set_source(AgsLowPassFilterUtil *low_pass_filter_util,
-			      gpointer source)
+				    gpointer source)
 {
   if(low_pass_filter_util == NULL){
     return;
@@ -321,7 +321,7 @@ ags_low_pass_filter_util_get_source_stride(AgsLowPassFilterUtil *low_pass_filter
  */
 void
 ags_low_pass_filter_util_set_source_stride(AgsLowPassFilterUtil *low_pass_filter_util,
-				     guint source_stride)
+					   guint source_stride)
 {
   if(low_pass_filter_util == NULL){
     return;
@@ -361,7 +361,7 @@ ags_low_pass_filter_util_get_buffer_length(AgsLowPassFilterUtil *low_pass_filter
  */
 void
 ags_low_pass_filter_util_set_buffer_length(AgsLowPassFilterUtil *low_pass_filter_util,
-				     guint buffer_length)
+					   guint buffer_length)
 {
   if(low_pass_filter_util == NULL){
     return;
@@ -401,7 +401,7 @@ ags_low_pass_filter_util_get_format(AgsLowPassFilterUtil *low_pass_filter_util)
  */
 void
 ags_low_pass_filter_util_set_format(AgsLowPassFilterUtil *low_pass_filter_util,
-			      AgsSoundcardFormat format)
+				    AgsSoundcardFormat format)
 {
   if(low_pass_filter_util == NULL){
     return;
@@ -441,7 +441,7 @@ ags_low_pass_filter_util_get_samplerate(AgsLowPassFilterUtil *low_pass_filter_ut
  */
 void
 ags_low_pass_filter_util_set_samplerate(AgsLowPassFilterUtil *low_pass_filter_util,
-				  guint samplerate)
+					guint samplerate)
 {
   if(low_pass_filter_util == NULL){
     return;
@@ -481,7 +481,7 @@ ags_low_pass_filter_util_get_cut_off_frequency(AgsLowPassFilterUtil *low_pass_fi
  */
 void
 ags_low_pass_filter_util_set_cut_off_frequency(AgsLowPassFilterUtil *low_pass_filter_util,
-					 gdouble cut_off_frequency)
+					       gdouble cut_off_frequency)
 {
   if(low_pass_filter_util == NULL){
     return;
@@ -521,13 +521,53 @@ ags_low_pass_filter_util_get_filter_gain(AgsLowPassFilterUtil *low_pass_filter_u
  */
 void
 ags_low_pass_filter_util_set_filter_gain(AgsLowPassFilterUtil *low_pass_filter_util,
-				   gdouble filter_gain)
+					 gdouble filter_gain)
 {
   if(low_pass_filter_util == NULL){
     return;
   }
 
   low_pass_filter_util->filter_gain = filter_gain;
+}
+
+/**
+ * ags_low_pass_filter_util_get_no_clip:
+ * @low_pass_filter_util: the #AgsLowPassFilterUtil-struct
+ * 
+ * Get no clip of @low_pass_filter_util.
+ * 
+ * Returns: the gain of filter
+ * 
+ * Since: 7.7.0
+ */
+gdouble
+ags_low_pass_filter_util_get_no_clip(AgsLowPassFilterUtil *low_pass_filter_util)
+{
+  if(low_pass_filter_util == NULL){
+    return(0.0);
+  }
+
+  return(low_pass_filter_util->no_clip);
+}
+
+/**
+ * ags_low_pass_filter_util_set_no_clip:
+ * @low_pass_filter_util: the #AgsLowPassFilterUtil-struct
+ * @no_clip: the no clip
+ *
+ * Set @no_clip of @low_pass_filter_util.
+ *
+ * Since: 7.7.0
+ */
+void
+ags_low_pass_filter_util_set_no_clip(AgsLowPassFilterUtil *low_pass_filter_util,
+				     gdouble no_clip)
+{
+  if(low_pass_filter_util == NULL){
+    return;
+  }
+
+  low_pass_filter_util->no_clip = no_clip;
 }
 
 void
