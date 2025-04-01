@@ -24,7 +24,7 @@
 #include <math.h>
 
 void
-ags_raven_synth_synth_0_oscillator_callback(GtkComboBox *combo_box, AgsRavenSynth *raven_synth)
+ags_raven_synth_synth_0_oscillator_callback(GtkDropDown *drop_down, AgsRavenSynth *raven_synth)
 {
   AgsAudio *audio;
   
@@ -38,7 +38,7 @@ ags_raven_synth_synth_0_oscillator_callback(GtkComboBox *combo_box, AgsRavenSynt
 
   audio = AGS_MACHINE(raven_synth)->audio;
 
-  oscillator = gtk_combo_box_get_active(combo_box);
+  oscillator = gtk_drop_down_get_selected(drop_down);
   
   start_play = ags_audio_get_play(audio);
   start_recall = ags_audio_get_recall(audio);
@@ -299,7 +299,7 @@ ags_raven_synth_synth_0_volume_callback(AgsDial *dial, AgsRavenSynth *raven_synt
 }
 
 void
-ags_raven_synth_synth_0_lfo_oscillator_callback(GtkComboBox *combo_box, AgsRavenSynth *raven_synth)
+ags_raven_synth_synth_0_lfo_oscillator_callback(GtkDropDown *drop_down, AgsRavenSynth *raven_synth)
 {
   AgsAudio *audio;
   
@@ -313,7 +313,7 @@ ags_raven_synth_synth_0_lfo_oscillator_callback(GtkComboBox *combo_box, AgsRaven
 
   audio = AGS_MACHINE(raven_synth)->audio;
 
-  lfo_oscillator = gtk_combo_box_get_active(combo_box);
+  lfo_oscillator = gtk_drop_down_get_selected(drop_down);
   
   start_play = ags_audio_get_play(audio);
   start_recall = ags_audio_get_recall(audio);
@@ -3379,7 +3379,7 @@ ags_raven_synth_low_pass_0_no_clip_callback(AgsDial *dial, AgsRavenSynth *raven_
 }
 
 void
-ags_raven_synth_amplifier_0_amp_0_gain_callback(AgsDial *dial, AgsRavenSynth *raven_synth)
+ags_raven_synth_amplifier_0_amp_0_gain_callback(GtkRange *range, AgsRavenSynth *raven_synth)
 {
   AgsAudio *audio;
   
@@ -3393,7 +3393,7 @@ ags_raven_synth_amplifier_0_amp_0_gain_callback(AgsDial *dial, AgsRavenSynth *ra
 
   audio = AGS_MACHINE(raven_synth)->audio;
 
-  volume = ags_dial_get_value(dial);
+  volume = gtk_range_get_value(range);
   
   start_play = ags_audio_get_play(audio);
   start_recall = ags_audio_get_recall(audio);
@@ -3434,7 +3434,7 @@ ags_raven_synth_amplifier_0_amp_0_gain_callback(AgsDial *dial, AgsRavenSynth *ra
 }
 
 void
-ags_raven_synth_amplifier_0_amp_1_gain_callback(AgsDial *dial, AgsRavenSynth *raven_synth)
+ags_raven_synth_amplifier_0_amp_1_gain_callback(GtkRange *range, AgsRavenSynth *raven_synth)
 {
   AgsAudio *audio;
   
@@ -3448,7 +3448,7 @@ ags_raven_synth_amplifier_0_amp_1_gain_callback(AgsDial *dial, AgsRavenSynth *ra
 
   audio = AGS_MACHINE(raven_synth)->audio;
 
-  volume = ags_dial_get_value(dial);
+  volume = gtk_range_get_value(range);
   
   start_play = ags_audio_get_play(audio);
   start_recall = ags_audio_get_recall(audio);
@@ -3489,7 +3489,7 @@ ags_raven_synth_amplifier_0_amp_1_gain_callback(AgsDial *dial, AgsRavenSynth *ra
 }
 
 void
-ags_raven_synth_amplifier_0_amp_2_gain_callback(AgsDial *dial, AgsRavenSynth *raven_synth)
+ags_raven_synth_amplifier_0_amp_2_gain_callback(GtkRange *range, AgsRavenSynth *raven_synth)
 {
   AgsAudio *audio;
   
@@ -3503,7 +3503,7 @@ ags_raven_synth_amplifier_0_amp_2_gain_callback(AgsDial *dial, AgsRavenSynth *ra
 
   audio = AGS_MACHINE(raven_synth)->audio;
 
-  volume = ags_dial_get_value(dial);
+  volume = gtk_range_get_value(range);
   
   start_play = ags_audio_get_play(audio);
   start_recall = ags_audio_get_recall(audio);
@@ -3544,7 +3544,7 @@ ags_raven_synth_amplifier_0_amp_2_gain_callback(AgsDial *dial, AgsRavenSynth *ra
 }
 
 void
-ags_raven_synth_amplifier_0_amp_3_gain_callback(AgsDial *dial, AgsRavenSynth *raven_synth)
+ags_raven_synth_amplifier_0_amp_3_gain_callback(GtkRange *range, AgsRavenSynth *raven_synth)
 {
   AgsAudio *audio;
   
@@ -3558,7 +3558,7 @@ ags_raven_synth_amplifier_0_amp_3_gain_callback(AgsDial *dial, AgsRavenSynth *ra
 
   audio = AGS_MACHINE(raven_synth)->audio;
 
-  volume = ags_dial_get_value(dial);
+  volume = gtk_range_get_value(range);
   
   start_play = ags_audio_get_play(audio);
   start_recall = ags_audio_get_recall(audio);
@@ -3599,7 +3599,7 @@ ags_raven_synth_amplifier_0_amp_3_gain_callback(AgsDial *dial, AgsRavenSynth *ra
 }
 
 void
-ags_raven_synth_amplifier_0_filter_gain_callback(AgsDial *dial, AgsRavenSynth *raven_synth)
+ags_raven_synth_amplifier_0_filter_gain_callback(GtkRange *range, AgsRavenSynth *raven_synth)
 {
   AgsAudio *audio;
   
@@ -3613,7 +3613,7 @@ ags_raven_synth_amplifier_0_filter_gain_callback(AgsDial *dial, AgsRavenSynth *r
 
   audio = AGS_MACHINE(raven_synth)->audio;
 
-  volume = ags_dial_get_value(dial);
+  volume = gtk_range_get_value(range);
   
   start_play = ags_audio_get_play(audio);
   start_recall = ags_audio_get_recall(audio);
@@ -3654,7 +3654,7 @@ ags_raven_synth_amplifier_0_filter_gain_callback(AgsDial *dial, AgsRavenSynth *r
 }
 
 void
-ags_raven_synth_synth_1_oscillator_callback(GtkComboBox *combo_box, AgsRavenSynth *raven_synth)
+ags_raven_synth_synth_1_oscillator_callback(GtkDropDown *drop_down, AgsRavenSynth *raven_synth)
 {
   AgsAudio *audio;
   
@@ -3668,7 +3668,7 @@ ags_raven_synth_synth_1_oscillator_callback(GtkComboBox *combo_box, AgsRavenSynt
 
   audio = AGS_MACHINE(raven_synth)->audio;
 
-  oscillator = gtk_combo_box_get_active(combo_box);
+  oscillator = gtk_drop_down_get_selected(drop_down);
   
   start_play = ags_audio_get_play(audio);
   start_recall = ags_audio_get_recall(audio);
@@ -3929,7 +3929,7 @@ ags_raven_synth_synth_1_volume_callback(AgsDial *dial, AgsRavenSynth *raven_synt
 }
 
 void
-ags_raven_synth_synth_1_sync_lfo_oscillator_callback(GtkComboBox *combo_box, AgsRavenSynth *raven_synth)
+ags_raven_synth_synth_1_sync_lfo_oscillator_callback(GtkDropDown *drop_down, AgsRavenSynth *raven_synth)
 {
   AgsAudio *audio;
   
@@ -3943,7 +3943,7 @@ ags_raven_synth_synth_1_sync_lfo_oscillator_callback(GtkComboBox *combo_box, Ags
 
   audio = AGS_MACHINE(raven_synth)->audio;
 
-  sync_lfo_oscillator = gtk_combo_box_get_active(combo_box);
+  sync_lfo_oscillator = gtk_drop_down_get_selected(drop_down);
   
   start_play = ags_audio_get_play(audio);
   start_recall = ags_audio_get_recall(audio);
@@ -4039,7 +4039,7 @@ ags_raven_synth_synth_1_sync_lfo_frequency_callback(GtkSpinButton *spin_button, 
 }
 
 void
-ags_raven_synth_synth_1_lfo_oscillator_callback(GtkComboBox *combo_box, AgsRavenSynth *raven_synth)
+ags_raven_synth_synth_1_lfo_oscillator_callback(GtkDropDown *drop_down, AgsRavenSynth *raven_synth)
 {
   AgsAudio *audio;
   
@@ -4053,7 +4053,7 @@ ags_raven_synth_synth_1_lfo_oscillator_callback(GtkComboBox *combo_box, AgsRaven
 
   audio = AGS_MACHINE(raven_synth)->audio;
 
-  lfo_oscillator = gtk_combo_box_get_active(combo_box);
+  lfo_oscillator = gtk_drop_down_get_selected(drop_down);
   
   start_play = ags_audio_get_play(audio);
   start_recall = ags_audio_get_recall(audio);
@@ -7119,7 +7119,7 @@ ags_raven_synth_low_pass_1_no_clip_callback(AgsDial *dial, AgsRavenSynth *raven_
 }
 
 void
-ags_raven_synth_amplifier_1_amp_0_gain_callback(AgsDial *dial, AgsRavenSynth *raven_synth)
+ags_raven_synth_amplifier_1_amp_0_gain_callback(GtkRange *range, AgsRavenSynth *raven_synth)
 {
   AgsAudio *audio;
   
@@ -7133,7 +7133,7 @@ ags_raven_synth_amplifier_1_amp_0_gain_callback(AgsDial *dial, AgsRavenSynth *ra
 
   audio = AGS_MACHINE(raven_synth)->audio;
 
-  volume = ags_dial_get_value(dial);
+  volume = gtk_range_get_value(range);
   
   start_play = ags_audio_get_play(audio);
   start_recall = ags_audio_get_recall(audio);
@@ -7174,7 +7174,7 @@ ags_raven_synth_amplifier_1_amp_0_gain_callback(AgsDial *dial, AgsRavenSynth *ra
 }
 
 void
-ags_raven_synth_amplifier_1_amp_1_gain_callback(AgsDial *dial, AgsRavenSynth *raven_synth)
+ags_raven_synth_amplifier_1_amp_1_gain_callback(GtkRange *range, AgsRavenSynth *raven_synth)
 {
   AgsAudio *audio;
   
@@ -7188,7 +7188,7 @@ ags_raven_synth_amplifier_1_amp_1_gain_callback(AgsDial *dial, AgsRavenSynth *ra
 
   audio = AGS_MACHINE(raven_synth)->audio;
 
-  volume = ags_dial_get_value(dial);
+  volume = gtk_range_get_value(range);
   
   start_play = ags_audio_get_play(audio);
   start_recall = ags_audio_get_recall(audio);
@@ -7229,7 +7229,7 @@ ags_raven_synth_amplifier_1_amp_1_gain_callback(AgsDial *dial, AgsRavenSynth *ra
 }
 
 void
-ags_raven_synth_amplifier_1_amp_2_gain_callback(AgsDial *dial, AgsRavenSynth *raven_synth)
+ags_raven_synth_amplifier_1_amp_2_gain_callback(GtkRange *range, AgsRavenSynth *raven_synth)
 {
   AgsAudio *audio;
   
@@ -7243,7 +7243,7 @@ ags_raven_synth_amplifier_1_amp_2_gain_callback(AgsDial *dial, AgsRavenSynth *ra
 
   audio = AGS_MACHINE(raven_synth)->audio;
 
-  volume = ags_dial_get_value(dial);
+  volume = gtk_range_get_value(range);
   
   start_play = ags_audio_get_play(audio);
   start_recall = ags_audio_get_recall(audio);
@@ -7284,7 +7284,7 @@ ags_raven_synth_amplifier_1_amp_2_gain_callback(AgsDial *dial, AgsRavenSynth *ra
 }
 
 void
-ags_raven_synth_amplifier_1_amp_3_gain_callback(AgsDial *dial, AgsRavenSynth *raven_synth)
+ags_raven_synth_amplifier_1_amp_3_gain_callback(GtkRange *range, AgsRavenSynth *raven_synth)
 {
   AgsAudio *audio;
   
@@ -7298,7 +7298,7 @@ ags_raven_synth_amplifier_1_amp_3_gain_callback(AgsDial *dial, AgsRavenSynth *ra
 
   audio = AGS_MACHINE(raven_synth)->audio;
 
-  volume = ags_dial_get_value(dial);
+  volume = gtk_range_get_value(range);
   
   start_play = ags_audio_get_play(audio);
   start_recall = ags_audio_get_recall(audio);
@@ -7339,7 +7339,7 @@ ags_raven_synth_amplifier_1_amp_3_gain_callback(AgsDial *dial, AgsRavenSynth *ra
 }
 
 void
-ags_raven_synth_amplifier_1_filter_gain_callback(AgsDial *dial, AgsRavenSynth *raven_synth)
+ags_raven_synth_amplifier_1_filter_gain_callback(GtkRange *range, AgsRavenSynth *raven_synth)
 {
   AgsAudio *audio;
   
@@ -7353,7 +7353,7 @@ ags_raven_synth_amplifier_1_filter_gain_callback(AgsDial *dial, AgsRavenSynth *r
 
   audio = AGS_MACHINE(raven_synth)->audio;
 
-  volume = ags_dial_get_value(dial);
+  volume = gtk_range_get_value(range);
   
   start_play = ags_audio_get_play(audio);
   start_recall = ags_audio_get_recall(audio);
@@ -7705,7 +7705,7 @@ ags_raven_synth_chorus_output_volume_callback(AgsDial *dial, AgsRavenSynth *rave
 }
 
 void
-ags_raven_synth_chorus_lfo_oscillator_callback(GtkComboBox *combo_box, AgsRavenSynth *raven_synth)
+ags_raven_synth_chorus_lfo_oscillator_callback(GtkDropDown *drop_down, AgsRavenSynth *raven_synth)
 {
   if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(raven_synth)->flags)) != 0){
     return;

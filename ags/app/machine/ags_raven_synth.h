@@ -74,7 +74,7 @@ struct _AgsRavenSynth
   AgsRecallContainer *buffer_play_container;
   AgsRecallContainer *buffer_recall_container;
 
-  GtkComboBox *synth_0_oscillator;
+  GtkDropDown *synth_0_oscillator;
 
   AgsDial *synth_0_octave;
   AgsDial *synth_0_key;
@@ -82,7 +82,7 @@ struct _AgsRavenSynth
   AgsDial *synth_0_phase;
   AgsDial *synth_0_volume;
 
-  GtkComboBox *synth_0_lfo_oscillator;
+  GtkDropDown *synth_0_lfo_oscillator;
 
   GtkSpinButton *synth_0_lfo_frequency;
   AgsDial *synth_0_lfo_depth;
@@ -146,9 +146,9 @@ struct _AgsRavenSynth
   GtkCheckButton *synth_0_seq_volume_pingpong;
   GtkSpinButton *synth_0_seq_volume_lfo_frequency;
   
-  GtkComboBox *synth_1_oscillator;
+  GtkDropDown *synth_1_oscillator;
 
-  GtkComboBox *synth_0_sync_lfo_oscillator;
+  GtkDropDown *synth_0_sync_lfo_oscillator;
   GtkSpinButton *synth_0_sync_lfo_frequency;
 
   AgsDial *synth_1_octave;
@@ -157,7 +157,7 @@ struct _AgsRavenSynth
   AgsDial *synth_1_phase;
   AgsDial *synth_1_volume;
 
-  GtkComboBox *synth_1_lfo_oscillator;
+  GtkDropDown *synth_1_lfo_oscillator;
 
   GtkSpinButton *synth_1_lfo_frequency;
   AgsDial *synth_1_lfo_depth;
@@ -181,7 +181,7 @@ struct _AgsRavenSynth
   AgsDial *synth_1_sync_attack_3;
   AgsDial *synth_1_sync_phase_3;
 
-  GtkComboBox *synth_1_sync_lfo_oscillator;
+  GtkDropDown *synth_1_sync_lfo_oscillator;
   GtkSpinButton *synth_1_sync_lfo_frequency;
 
   AgsDial *synth_1_seq_tuning_0;
@@ -270,7 +270,7 @@ struct _AgsRavenSynth
   AgsDial *chorus_input_volume;
   AgsDial *chorus_output_volume;
 
-  GtkComboBox *chorus_lfo_oscillator;  
+  GtkDropDown *chorus_lfo_oscillator;  
   GtkSpinButton *chorus_lfo_frequency;
 
   AgsDial *chorus_depth;

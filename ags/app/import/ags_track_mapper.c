@@ -48,6 +48,7 @@
 #include <ags/app/machine/ags_hybrid_fm_synth.h>
 #include <ags/app/machine/ags_stargazer_synth.h>
 #include <ags/app/machine/ags_quantum_synth.h>
+#include <ags/app/machine/ags_raven_synth.h>
 
 #include <math.h>
 
@@ -326,6 +327,8 @@ ags_track_mapper_init(AgsTrackMapper *track_mapper)
 				 "AgsStargazerSynth");
   gtk_combo_box_text_append_text(track_mapper->machine_type,
 				 "AgsQuantumSynth");
+  gtk_combo_box_text_append_text(track_mapper->machine_type,
+				 "AgsRavenSynth");
   
   gtk_widget_set_valign((GtkWidget *) track_mapper->machine_type,
 			GTK_ALIGN_FILL);
@@ -733,6 +736,19 @@ ags_track_mapper_apply(AgsApplicable *applicable)
   }else if(!g_ascii_strcasecmp(machine_type,
 			       g_type_name(AGS_TYPE_QUANTUM_SYNTH))){
     machine = (AgsMachine *) ags_machine_util_new_quantum_synth();
+
+    /* set size */
+    ags_audio_set_audio_channels(machine->audio,
+				 1, 0);
+    ags_audio_set_pads(machine->audio,
+		       AGS_TYPE_OUTPUT,
+		       channels, 0);
+    ags_audio_set_pads(machine->audio,
+		       AGS_TYPE_INPUT,
+		       128, 0);
+  }else if(!g_ascii_strcasecmp(machine_type,
+			       g_type_name(AGS_TYPE_RAVEN_SYNTH))){
+    machine = (AgsMachine *) ags_machine_util_new_raven_synth();
 
     /* set size */
     ags_audio_set_audio_channels(machine->audio,

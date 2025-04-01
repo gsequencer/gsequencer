@@ -192,6 +192,15 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
     NULL,
   };
 
+  gchar* osc_strv[] = {
+    "sine",
+    "sawtooth",
+    "triangle",
+    "square",
+    "impulse",
+    NULL
+  };
+
   application_context = ags_application_context_get_instance();
   
   /* machine counter */
@@ -353,21 +362,10 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  0, 0,
 		  1, 1);
   
-  raven_synth->synth_0_oscillator = (GtkComboBox *) gtk_combo_box_text_new();
+  raven_synth->synth_0_oscillator = (GtkDropDown *) gtk_drop_down_new_from_strings((const char * const *) osc_strv);
 
-  gtk_combo_box_text_append_text((GtkComboBoxText *) raven_synth->synth_0_oscillator,
-				 "sine");
-  gtk_combo_box_text_append_text((GtkComboBoxText *) raven_synth->synth_0_oscillator,
-				 "sawtooth");
-  gtk_combo_box_text_append_text((GtkComboBoxText *) raven_synth->synth_0_oscillator,
-				 "triangle");
-  gtk_combo_box_text_append_text((GtkComboBoxText *) raven_synth->synth_0_oscillator,
-				 "square");
-  gtk_combo_box_text_append_text((GtkComboBoxText *) raven_synth->synth_0_oscillator,
-				 "impulse");
-
-  gtk_combo_box_set_active(raven_synth->synth_0_oscillator,
-			   0);
+  gtk_drop_down_set_selected(raven_synth->synth_0_oscillator,
+			     0);
 
   gtk_grid_attach(synth_0_grid,
 		  (GtkWidget *) raven_synth->synth_0_oscillator,
@@ -929,21 +927,10 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  0, 2,
 		  1, 1);
   
-  raven_synth->synth_0_lfo_oscillator = (GtkComboBox *) gtk_combo_box_text_new();
+  raven_synth->synth_0_sync_lfo_oscillator = (GtkDropDown *) gtk_drop_down_new_from_strings((const char * const *) osc_strv);
 
-  gtk_combo_box_text_append_text((GtkComboBoxText *) raven_synth->synth_0_lfo_oscillator,
-				 "sine");
-  gtk_combo_box_text_append_text((GtkComboBoxText *) raven_synth->synth_0_lfo_oscillator,
-				 "sawtooth");
-  gtk_combo_box_text_append_text((GtkComboBoxText *) raven_synth->synth_0_lfo_oscillator,
-				 "triangle");
-  gtk_combo_box_text_append_text((GtkComboBoxText *) raven_synth->synth_0_lfo_oscillator,
-				 "square");
-  gtk_combo_box_text_append_text((GtkComboBoxText *) raven_synth->synth_0_lfo_oscillator,
-				 "impulse");
-
-  gtk_combo_box_set_active(raven_synth->synth_0_lfo_oscillator,
-			   0);
+  gtk_drop_down_set_selected(raven_synth->synth_0_sync_lfo_oscillator,
+			     0);
 
   gtk_grid_attach(synth_0_grid,
 		  (GtkWidget *) raven_synth->synth_0_lfo_oscillator,
@@ -2161,21 +2148,10 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  0, 0,
 		  1, 1);
   
-  raven_synth->synth_1_oscillator = (GtkComboBox *) gtk_combo_box_text_new();
+  raven_synth->synth_1_oscillator = (GtkDropDown *) gtk_drop_down_new_from_strings((const char * const *) osc_strv);
 
-  gtk_combo_box_text_append_text((GtkComboBoxText *) raven_synth->synth_1_oscillator,
-				 "sine");
-  gtk_combo_box_text_append_text((GtkComboBoxText *) raven_synth->synth_1_oscillator,
-				 "sawtooth");
-  gtk_combo_box_text_append_text((GtkComboBoxText *) raven_synth->synth_1_oscillator,
-				 "triangle");
-  gtk_combo_box_text_append_text((GtkComboBoxText *) raven_synth->synth_1_oscillator,
-				 "square");
-  gtk_combo_box_text_append_text((GtkComboBoxText *) raven_synth->synth_1_oscillator,
-				 "impulse");
-
-  gtk_combo_box_set_active(raven_synth->synth_1_oscillator,
-			   0);
+  gtk_drop_down_set_selected(raven_synth->synth_1_oscillator,
+			     0);
 
   gtk_grid_attach(synth_1_grid,
 		  (GtkWidget *) raven_synth->synth_1_oscillator,
@@ -2321,21 +2297,10 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  0, 2,
 		  1, 1);
   
-  raven_synth->synth_1_lfo_oscillator = (GtkComboBox *) gtk_combo_box_text_new();
+  raven_synth->synth_1_lfo_oscillator = (GtkDropDown *) gtk_drop_down_new_from_strings((const char * const *) osc_strv);
 
-  gtk_combo_box_text_append_text((GtkComboBoxText *) raven_synth->synth_1_lfo_oscillator,
-				 "sine");
-  gtk_combo_box_text_append_text((GtkComboBoxText *) raven_synth->synth_1_lfo_oscillator,
-				 "sawtooth");
-  gtk_combo_box_text_append_text((GtkComboBoxText *) raven_synth->synth_1_lfo_oscillator,
-				 "triangle");
-  gtk_combo_box_text_append_text((GtkComboBoxText *) raven_synth->synth_1_lfo_oscillator,
-				 "square");
-  gtk_combo_box_text_append_text((GtkComboBoxText *) raven_synth->synth_1_lfo_oscillator,
-				 "impulse");
-
-  gtk_combo_box_set_active(raven_synth->synth_1_lfo_oscillator,
-			   0);
+  gtk_drop_down_set_selected(raven_synth->synth_1_lfo_oscillator,
+			     0);
 
   gtk_grid_attach(synth_1_grid,
 		  (GtkWidget *) raven_synth->synth_1_lfo_oscillator,
@@ -4172,21 +4137,10 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  2, 0,
 		  1, 1);
   
-  raven_synth->chorus_lfo_oscillator = (GtkComboBox *) gtk_combo_box_text_new();
+  raven_synth->chorus_lfo_oscillator = (GtkDropDown *) gtk_drop_down_new_from_strings((const char * const *) osc_strv);
 
-  gtk_combo_box_text_append_text((GtkComboBoxText *) raven_synth->chorus_lfo_oscillator,
-				 "sine");
-  gtk_combo_box_text_append_text((GtkComboBoxText *) raven_synth->chorus_lfo_oscillator,
-				 "sawtooth");
-  gtk_combo_box_text_append_text((GtkComboBoxText *) raven_synth->chorus_lfo_oscillator,
-				 "triangle");
-  gtk_combo_box_text_append_text((GtkComboBoxText *) raven_synth->chorus_lfo_oscillator,
-				 "square");
-  gtk_combo_box_text_append_text((GtkComboBoxText *) raven_synth->chorus_lfo_oscillator,
-				 "impulse");
-
-  gtk_combo_box_set_active(raven_synth->chorus_lfo_oscillator,
-			   0);
+  gtk_drop_down_set_selected(raven_synth->chorus_lfo_oscillator,
+			     0);
 
   gtk_grid_attach(chorus_grid,
 		  (GtkWidget *) raven_synth->chorus_lfo_oscillator,
@@ -6447,8 +6401,8 @@ ags_raven_synth_refresh_port(AgsMachine *machine)
       ags_port_safe_read(port,
 			 &value);
 
-      gtk_combo_box_set_active(raven_synth->synth_0_oscillator,
-			       (gint) g_value_get_float(&value));
+      gtk_drop_down_set_selected(raven_synth->synth_0_oscillator,
+				 (gint) g_value_get_float(&value));
 
 
       g_object_unref(port);
@@ -6558,8 +6512,8 @@ ags_raven_synth_refresh_port(AgsMachine *machine)
       ags_port_safe_read(port,
 			 &value);
 
-      gtk_combo_box_set_active(raven_synth->synth_0_lfo_oscillator,
-			       (gint) g_value_get_float(&value));
+      gtk_drop_down_set_selected(raven_synth->synth_0_lfo_oscillator,
+				 (gint) g_value_get_float(&value));
 
       g_object_unref(port);
     }
@@ -7717,8 +7671,8 @@ ags_raven_synth_refresh_port(AgsMachine *machine)
       ags_port_safe_read(port,
 			 &value);
 
-      gtk_combo_box_set_active(raven_synth->synth_1_oscillator,
-			       (gint) g_value_get_float(&value));
+      gtk_drop_down_set_selected(raven_synth->synth_1_oscillator,
+				 (gint) g_value_get_float(&value));
 
 
       g_object_unref(port);
@@ -7828,8 +7782,8 @@ ags_raven_synth_refresh_port(AgsMachine *machine)
       ags_port_safe_read(port,
 			 &value);
 
-      gtk_combo_box_set_active(raven_synth->synth_1_lfo_oscillator,
-			       (gint) g_value_get_float(&value));
+      gtk_drop_down_set_selected(raven_synth->synth_1_lfo_oscillator,
+				 (gint) g_value_get_float(&value));
 
       g_object_unref(port);
     }
@@ -9459,8 +9413,8 @@ ags_raven_synth_refresh_port(AgsMachine *machine)
       ags_port_safe_read(port,
 			 &value);
 
-      gtk_combo_box_set_active(raven_synth->chorus_lfo_oscillator,
-			       (gint) g_value_get_float(&value));
+      gtk_drop_down_set_selected(raven_synth->chorus_lfo_oscillator,
+				 (gint) g_value_get_float(&value));
 
       g_object_unref(port);
     }
