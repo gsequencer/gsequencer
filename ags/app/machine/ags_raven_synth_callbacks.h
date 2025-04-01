@@ -106,6 +106,17 @@ void ags_raven_synth_synth_0_seq_volume_15_callback(AgsDial *dial, AgsRavenSynth
 void ags_raven_synth_synth_0_seq_volume_pingpong_callback(GtkCheckButton *button, AgsRavenSynth *raven_synth);
 void ags_raven_synth_synth_0_seq_volume_lfo_frequency_callback(GtkSpinButton *spin_button, AgsRavenSynth *raven_synth);
 
+void ags_raven_synth_low_pass_0_cut_off_frequency_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
+void ags_raven_synth_low_pass_0_filter_gain_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
+void ags_raven_synth_low_pass_0_no_clip_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
+
+void ags_raven_synth_amplifier_0_amp_0_gain_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
+void ags_raven_synth_amplifier_0_amp_1_gain_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
+void ags_raven_synth_amplifier_0_amp_2_gain_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
+void ags_raven_synth_amplifier_0_amp_3_gain_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
+
+void ags_raven_synth_amplifier_0_filter_gain_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
+
 void ags_raven_synth_synth_1_oscillator_callback(GtkComboBox *combo_box, AgsRavenSynth *raven_synth);
 
 void ags_raven_synth_synth_1_octave_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
@@ -178,9 +189,20 @@ void ags_raven_synth_synth_1_seq_volume_15_callback(AgsDial *dial, AgsRavenSynth
 void ags_raven_synth_synth_1_seq_volume_pingpong_callback(GtkCheckButton *button, AgsRavenSynth *raven_synth);
 void ags_raven_synth_synth_1_seq_volume_lfo_frequency_callback(GtkSpinButton *spin_button, AgsRavenSynth *raven_synth);
 
+void ags_raven_synth_low_pass_1_cut_off_frequency_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
+void ags_raven_synth_low_pass_1_filter_gain_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
+void ags_raven_synth_low_pass_1_no_clip_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
+
+void ags_raven_synth_amplifier_1_amp_0_gain_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
+void ags_raven_synth_amplifier_1_amp_1_gain_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
+void ags_raven_synth_amplifier_1_amp_2_gain_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
+void ags_raven_synth_amplifier_1_amp_3_gain_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
+
+void ags_raven_synth_amplifier_1_filter_gain_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
+
 void ags_raven_synth_pitch_type_callback(GObject *gobject,
-					     GParamSpec *pspec,
-					     AgsRavenSynth *raven_synth);
+					 GParamSpec *pspec,
+					 AgsRavenSynth *raven_synth);
 void ags_raven_synth_pitch_tuning_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
 
 void ags_raven_synth_noise_gain_callback(AgsDial *dial, AgsRavenSynth *raven_synth);

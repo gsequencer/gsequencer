@@ -4,7 +4,7 @@ ags (7.7.0)
 	* implemented AgsLowPassFilterUtil based on Invada Studio LADSPA plugin
 	* implemented AgsAmplifierUtil based on Fil LADSPA plugin
 	* TODO:JK: implement ags-fx-raven-synth
-	* TODO:JK: implement AgsRavenSynth
+	* implemented AgsRavenSynth
 	* implemented ags_raven_synth_util.[ch]
 	* fixed ags-fx-star-synth sync LFO freq 0 and 1 default value
 	* fixed AgsQuantumSynth missing callback of synth_0_seq_tuning_lfo_frequency control

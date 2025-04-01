@@ -3214,6 +3214,446 @@ ags_raven_synth_synth_0_seq_volume_lfo_frequency_callback(GtkSpinButton *spin_bu
 }
 
 void
+ags_raven_synth_low_pass_0_cut_off_frequency_callback(AgsDial *dial, AgsRavenSynth *raven_synth)
+{
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble volume;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(raven_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(raven_synth)->audio;
+
+  volume = ags_dial_get_value(dial);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_RAVEN_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "low-pass-0-cut-off-frequency", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) volume);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+}
+
+void
+ags_raven_synth_low_pass_0_filter_gain_callback(AgsDial *dial, AgsRavenSynth *raven_synth)
+{
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble volume;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(raven_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(raven_synth)->audio;
+
+  volume = ags_dial_get_value(dial);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_RAVEN_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "low-pass-0-filter-gain", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) volume);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+}
+
+void
+ags_raven_synth_low_pass_0_no_clip_callback(AgsDial *dial, AgsRavenSynth *raven_synth)
+{
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble volume;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(raven_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(raven_synth)->audio;
+
+  volume = ags_dial_get_value(dial);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_RAVEN_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "low-pass-0-no-clip", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) volume);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+}
+
+void
+ags_raven_synth_amplifier_0_amp_0_gain_callback(AgsDial *dial, AgsRavenSynth *raven_synth)
+{
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble volume;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(raven_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(raven_synth)->audio;
+
+  volume = ags_dial_get_value(dial);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_RAVEN_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "amplifier-0-amp-0-gain", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) volume);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+}
+
+void
+ags_raven_synth_amplifier_0_amp_1_gain_callback(AgsDial *dial, AgsRavenSynth *raven_synth)
+{
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble volume;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(raven_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(raven_synth)->audio;
+
+  volume = ags_dial_get_value(dial);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_RAVEN_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "amplifier-0-amp-1-gain", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) volume);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+}
+
+void
+ags_raven_synth_amplifier_0_amp_2_gain_callback(AgsDial *dial, AgsRavenSynth *raven_synth)
+{
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble volume;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(raven_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(raven_synth)->audio;
+
+  volume = ags_dial_get_value(dial);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_RAVEN_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "amplifier-0-amp-2-gain", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) volume);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+}
+
+void
+ags_raven_synth_amplifier_0_amp_3_gain_callback(AgsDial *dial, AgsRavenSynth *raven_synth)
+{
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble volume;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(raven_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(raven_synth)->audio;
+
+  volume = ags_dial_get_value(dial);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_RAVEN_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "amplifier-0-amp-3-gain", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) volume);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+}
+
+void
+ags_raven_synth_amplifier_0_filter_gain_callback(AgsDial *dial, AgsRavenSynth *raven_synth)
+{
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble volume;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(raven_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(raven_synth)->audio;
+
+  volume = ags_dial_get_value(dial);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_RAVEN_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "amplifier-0-filter-gain", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) volume);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+}
+
+void
 ags_raven_synth_synth_1_oscillator_callback(GtkComboBox *combo_box, AgsRavenSynth *raven_synth)
 {
   AgsAudio *audio;
@@ -6514,9 +6954,449 @@ ags_raven_synth_synth_1_seq_volume_lfo_frequency_callback(GtkSpinButton *spin_bu
 }
 
 void
+ags_raven_synth_low_pass_1_cut_off_frequency_callback(AgsDial *dial, AgsRavenSynth *raven_synth)
+{
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble volume;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(raven_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(raven_synth)->audio;
+
+  volume = ags_dial_get_value(dial);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_RAVEN_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "low-pass-1-cut-off-frequency", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) volume);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+}
+
+void
+ags_raven_synth_low_pass_1_filter_gain_callback(AgsDial *dial, AgsRavenSynth *raven_synth)
+{
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble volume;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(raven_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(raven_synth)->audio;
+
+  volume = ags_dial_get_value(dial);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_RAVEN_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "low-pass-1-filter-gain", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) volume);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+}
+
+void
+ags_raven_synth_low_pass_1_no_clip_callback(AgsDial *dial, AgsRavenSynth *raven_synth)
+{
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble volume;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(raven_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(raven_synth)->audio;
+
+  volume = ags_dial_get_value(dial);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_RAVEN_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "low-pass-1-no-clip", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) volume);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+}
+
+void
+ags_raven_synth_amplifier_1_amp_0_gain_callback(AgsDial *dial, AgsRavenSynth *raven_synth)
+{
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble volume;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(raven_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(raven_synth)->audio;
+
+  volume = ags_dial_get_value(dial);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_RAVEN_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "amplifier-1-amp-0-gain", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) volume);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+}
+
+void
+ags_raven_synth_amplifier_1_amp_1_gain_callback(AgsDial *dial, AgsRavenSynth *raven_synth)
+{
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble volume;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(raven_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(raven_synth)->audio;
+
+  volume = ags_dial_get_value(dial);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_RAVEN_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "amplifier-1-amp-1-gain", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) volume);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+}
+
+void
+ags_raven_synth_amplifier_1_amp_2_gain_callback(AgsDial *dial, AgsRavenSynth *raven_synth)
+{
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble volume;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(raven_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(raven_synth)->audio;
+
+  volume = ags_dial_get_value(dial);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_RAVEN_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "amplifier-1-amp-2-gain", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) volume);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+}
+
+void
+ags_raven_synth_amplifier_1_amp_3_gain_callback(AgsDial *dial, AgsRavenSynth *raven_synth)
+{
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble volume;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(raven_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(raven_synth)->audio;
+
+  volume = ags_dial_get_value(dial);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_RAVEN_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "amplifier-1-amp-3-gain", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) volume);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+}
+
+void
+ags_raven_synth_amplifier_1_filter_gain_callback(AgsDial *dial, AgsRavenSynth *raven_synth)
+{
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble volume;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(raven_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(raven_synth)->audio;
+
+  volume = ags_dial_get_value(dial);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_RAVEN_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "amplifier-1-filter-gain", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) volume);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+}
+
+void
 ags_raven_synth_pitch_type_callback(GObject *gobject,
-					GParamSpec *pspec,
-					AgsRavenSynth *raven_synth)
+				    GParamSpec *pspec,
+				    AgsRavenSynth *raven_synth)
 {
   AgsFxStarSynthAudio *fx_raven_synth_audio;
     

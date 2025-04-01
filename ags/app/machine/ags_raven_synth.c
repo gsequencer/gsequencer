@@ -4831,6 +4831,32 @@ ags_raven_synth_connect(AgsConnectable *connectable)
   g_signal_connect_after(raven_synth->synth_0_seq_volume_lfo_frequency, "value-changed",
 			 G_CALLBACK(ags_raven_synth_synth_0_seq_volume_lfo_frequency_callback), raven_synth);
 
+  /* low-pass 0 */
+  g_signal_connect_after(raven_synth->low_pass_0_cut_off_frequency, "value-changed",
+			 G_CALLBACK(ags_raven_synth_low_pass_0_cut_off_frequency_callback), raven_synth);
+
+  g_signal_connect_after(raven_synth->low_pass_0_filter_gain, "value-changed",
+			 G_CALLBACK(ags_raven_synth_low_pass_0_filter_gain_callback), raven_synth);
+
+  g_signal_connect_after(raven_synth->low_pass_0_no_clip, "value-changed",
+			 G_CALLBACK(ags_raven_synth_low_pass_0_no_clip_callback), raven_synth);
+
+  /* amplifier 0 */  
+  g_signal_connect_after(raven_synth->amplifier_0_amp_0_gain, "value-changed",
+			 G_CALLBACK(ags_raven_synth_amplifier_0_amp_0_gain_callback), raven_synth);
+
+  g_signal_connect_after(raven_synth->amplifier_0_amp_1_gain, "value-changed",
+			 G_CALLBACK(ags_raven_synth_amplifier_0_amp_1_gain_callback), raven_synth);
+
+  g_signal_connect_after(raven_synth->amplifier_0_amp_2_gain, "value-changed",
+			 G_CALLBACK(ags_raven_synth_amplifier_0_amp_2_gain_callback), raven_synth);
+
+  g_signal_connect_after(raven_synth->amplifier_0_amp_3_gain, "value-changed",
+			 G_CALLBACK(ags_raven_synth_amplifier_0_amp_3_gain_callback), raven_synth);
+
+  g_signal_connect_after(raven_synth->amplifier_0_filter_gain, "value-changed",
+			 G_CALLBACK(ags_raven_synth_amplifier_0_filter_gain_callback), raven_synth);
+  
   /* synth 1 */  
   g_signal_connect_after(raven_synth->synth_1_oscillator, "changed",
 			 G_CALLBACK(ags_raven_synth_synth_1_oscillator_callback), raven_synth);
@@ -5008,6 +5034,32 @@ ags_raven_synth_connect(AgsConnectable *connectable)
   g_signal_connect_after(raven_synth->synth_1_seq_volume_lfo_frequency, "value-changed",
 			 G_CALLBACK(ags_raven_synth_synth_1_seq_volume_lfo_frequency_callback), raven_synth);
 
+  /* low-pass 1 */
+  g_signal_connect_after(raven_synth->low_pass_1_cut_off_frequency, "value-changed",
+			 G_CALLBACK(ags_raven_synth_low_pass_1_cut_off_frequency_callback), raven_synth);
+
+  g_signal_connect_after(raven_synth->low_pass_1_filter_gain, "value-changed",
+			 G_CALLBACK(ags_raven_synth_low_pass_1_filter_gain_callback), raven_synth);
+
+  g_signal_connect_after(raven_synth->low_pass_1_no_clip, "value-changed",
+			 G_CALLBACK(ags_raven_synth_low_pass_1_no_clip_callback), raven_synth);
+
+  /* amplifier 1 */  
+  g_signal_connect_after(raven_synth->amplifier_1_amp_0_gain, "value-changed",
+			 G_CALLBACK(ags_raven_synth_amplifier_1_amp_0_gain_callback), raven_synth);
+
+  g_signal_connect_after(raven_synth->amplifier_1_amp_1_gain, "value-changed",
+			 G_CALLBACK(ags_raven_synth_amplifier_1_amp_1_gain_callback), raven_synth);
+
+  g_signal_connect_after(raven_synth->amplifier_1_amp_2_gain, "value-changed",
+			 G_CALLBACK(ags_raven_synth_amplifier_1_amp_2_gain_callback), raven_synth);
+
+  g_signal_connect_after(raven_synth->amplifier_1_amp_3_gain, "value-changed",
+			 G_CALLBACK(ags_raven_synth_amplifier_1_amp_3_gain_callback), raven_synth);
+
+  g_signal_connect_after(raven_synth->amplifier_1_filter_gain, "value-changed",
+			 G_CALLBACK(ags_raven_synth_amplifier_1_filter_gain_callback), raven_synth);
+
   /* pitch */
   g_signal_connect((GObject *) raven_synth->pitch_type, "notify::selected",
 		   G_CALLBACK(ags_raven_synth_pitch_type_callback), (gpointer) raven_synth);
@@ -5138,6 +5190,31 @@ ags_raven_synth_disconnect(AgsConnectable *connectable)
   g_object_disconnect(raven_synth->synth_0_volume,
 		      "any_signal::value-changed",
 		      G_CALLBACK(ags_raven_synth_synth_0_volume_callback),
+		      raven_synth,
+		      NULL);
+  
+  /* LFO */
+  g_object_disconnect(raven_synth->synth_0_lfo_oscillator,
+		      "any_signal::changed",
+		      G_CALLBACK(ags_raven_synth_synth_0_lfo_oscillator_callback),
+		      raven_synth,
+		      NULL);
+  
+  g_object_disconnect(raven_synth->synth_0_lfo_frequency,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_raven_synth_synth_0_lfo_frequency_callback),
+		      raven_synth,
+		      NULL);
+  
+  g_object_disconnect(raven_synth->synth_0_lfo_depth,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_raven_synth_synth_0_lfo_depth_callback),
+		      raven_synth,
+		      NULL);
+  
+  g_object_disconnect(raven_synth->synth_0_lfo_tuning,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_raven_synth_synth_0_lfo_tuning_callback),
 		      raven_synth,
 		      NULL);
 
@@ -5437,29 +5514,54 @@ ags_raven_synth_disconnect(AgsConnectable *connectable)
 		      G_CALLBACK(ags_raven_synth_synth_0_seq_volume_lfo_frequency_callback),
 		      raven_synth,
 		      NULL);
-  
-  /* LFO */
-  g_object_disconnect(raven_synth->synth_0_lfo_oscillator,
-		      "any_signal::changed",
-		      G_CALLBACK(ags_raven_synth_synth_0_lfo_oscillator_callback),
+
+  /* low-pass 0 */  
+  g_object_disconnect(raven_synth->low_pass_0_cut_off_frequency,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_raven_synth_low_pass_0_cut_off_frequency_callback),
 		      raven_synth,
 		      NULL);
-  
-  g_object_disconnect(raven_synth->synth_0_lfo_frequency,
+
+  g_object_disconnect(raven_synth->low_pass_0_filter_gain,
 		      "any_signal::value-changed",
-		      G_CALLBACK(ags_raven_synth_synth_0_lfo_frequency_callback),
+		      G_CALLBACK(ags_raven_synth_low_pass_0_filter_gain_callback),
 		      raven_synth,
 		      NULL);
-  
-  g_object_disconnect(raven_synth->synth_0_lfo_depth,
+
+  g_object_disconnect(raven_synth->low_pass_0_no_clip,
 		      "any_signal::value-changed",
-		      G_CALLBACK(ags_raven_synth_synth_0_lfo_depth_callback),
+		      G_CALLBACK(ags_raven_synth_low_pass_0_no_clip_callback),
 		      raven_synth,
 		      NULL);
-  
-  g_object_disconnect(raven_synth->synth_0_lfo_tuning,
+
+  /* amplifier 0 */  
+  g_object_disconnect(raven_synth->amplifier_0_amp_0_gain,
 		      "any_signal::value-changed",
-		      G_CALLBACK(ags_raven_synth_synth_0_lfo_tuning_callback),
+		      G_CALLBACK(ags_raven_synth_amplifier_0_amp_0_gain_callback),
+		      raven_synth,
+		      NULL);
+
+  g_object_disconnect(raven_synth->amplifier_0_amp_1_gain,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_raven_synth_amplifier_0_amp_1_gain_callback),
+		      raven_synth,
+		      NULL);
+
+  g_object_disconnect(raven_synth->amplifier_0_amp_2_gain,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_raven_synth_amplifier_0_amp_2_gain_callback),
+		      raven_synth,
+		      NULL);
+
+  g_object_disconnect(raven_synth->amplifier_0_amp_3_gain,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_raven_synth_amplifier_0_amp_3_gain_callback),
+		      raven_synth,
+		      NULL);
+
+  g_object_disconnect(raven_synth->amplifier_0_filter_gain,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_raven_synth_amplifier_0_filter_gain_callback),
 		      raven_synth,
 		      NULL);
 
@@ -5813,6 +5915,56 @@ ags_raven_synth_disconnect(AgsConnectable *connectable)
   g_object_disconnect(raven_synth->synth_1_seq_volume_lfo_frequency,
 		      "any_signal::value-changed",
 		      G_CALLBACK(ags_raven_synth_synth_1_seq_volume_lfo_frequency_callback),
+		      raven_synth,
+		      NULL);
+
+  /* low-pass 1 */  
+  g_object_disconnect(raven_synth->low_pass_1_cut_off_frequency,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_raven_synth_low_pass_1_cut_off_frequency_callback),
+		      raven_synth,
+		      NULL);
+
+  g_object_disconnect(raven_synth->low_pass_1_filter_gain,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_raven_synth_low_pass_1_filter_gain_callback),
+		      raven_synth,
+		      NULL);
+
+  g_object_disconnect(raven_synth->low_pass_1_no_clip,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_raven_synth_low_pass_1_no_clip_callback),
+		      raven_synth,
+		      NULL);
+
+  /* amplifier 1 */  
+  g_object_disconnect(raven_synth->amplifier_1_amp_0_gain,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_raven_synth_amplifier_1_amp_0_gain_callback),
+		      raven_synth,
+		      NULL);
+
+  g_object_disconnect(raven_synth->amplifier_1_amp_1_gain,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_raven_synth_amplifier_1_amp_1_gain_callback),
+		      raven_synth,
+		      NULL);
+
+  g_object_disconnect(raven_synth->amplifier_1_amp_2_gain,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_raven_synth_amplifier_1_amp_2_gain_callback),
+		      raven_synth,
+		      NULL);
+
+  g_object_disconnect(raven_synth->amplifier_1_amp_3_gain,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_raven_synth_amplifier_1_amp_3_gain_callback),
+		      raven_synth,
+		      NULL);
+
+  g_object_disconnect(raven_synth->amplifier_1_filter_gain,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_raven_synth_amplifier_1_filter_gain_callback),
 		      raven_synth,
 		      NULL);
 
