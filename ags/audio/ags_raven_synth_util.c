@@ -953,6 +953,190 @@ ags_raven_synth_util_set_tuning(AgsRavenSynthUtil *raven_synth_util,
 }
 
 /**
+ * ags_raven_synth_util_get_sync_enabled:
+ * @raven_synth_util: the #AgsRavenSynthUtil-struct
+ * 
+ * Get sync enabled of @raven_synth_util.
+ * 
+ * Returns: the sync enabled
+ * 
+ * Since: 7.7.0
+ */
+gboolean
+ags_raven_synth_util_get_sync_enabled(AgsRavenSynthUtil *raven_synth_util)
+{
+  if(raven_synth_util == NULL){
+    return(FALSE);
+  }
+
+  return(raven_synth_util->sync_enabled);
+}
+
+/**
+ * ags_raven_synth_util_set_sync_enabled:
+ * @raven_synth_util: the #AgsRavenSynthUtil-struct
+ * @sync_enabled: the sync enabled
+ *
+ * Set @sync_enabled of @raven_synth_util.
+ *
+ * Since: 7.7.0
+ */
+void
+ags_raven_synth_util_set_sync_enabled(AgsRavenSynthUtil *raven_synth_util,
+				      gboolean sync_enabled)
+{
+  if(raven_synth_util == NULL){
+    return;
+  }
+
+  raven_synth_util->sync_enabled = sync_enabled;
+}
+
+/**
+ * ags_raven_synth_util_get_sync_relative_attack_factor:
+ * @raven_synth_util: the #AgsRavenSynthUtil-struct
+ * @position: the position
+ * 
+ * Get sync relative attack factor at @position of @raven_synth_util.
+ * 
+ * Returns: the sync relative attack factor
+ * 
+ * Since: 7.7.0
+ */
+gdouble
+ags_raven_synth_util_get_sync_relative_attack_factor(AgsRavenSynthUtil *raven_synth_util,
+						     gint position)
+{
+  if(raven_synth_util == NULL ||
+     position < 0 ||
+     position >= AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT){
+    return(1.0);
+  }
+
+  return(raven_synth_util->sync_relative_attack_factor[position]);
+}
+
+/**
+ * ags_raven_synth_util_set_sync_relative_attack_factor:
+ * @raven_synth_util: the #AgsRavenSynthUtil-struct
+ * @position: the position
+ * @sync_relative_attack_factor: the sync relative attack factor
+ *
+ * Set @sync_relative_attack_factor at @position of @raven_synth_util.
+ *
+ * Since: 7.7.0
+ */
+void
+ags_raven_synth_util_set_sync_relative_attack_factor(AgsRavenSynthUtil *raven_synth_util,
+						     gint position,
+						     gdouble sync_relative_attack_factor)
+{
+  if(raven_synth_util == NULL ||
+     position < 0 ||
+     position >= AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT){
+    return;
+  }
+
+  raven_synth_util->sync_relative_attack_factor[position] = sync_relative_attack_factor;
+}
+
+/**
+ * ags_raven_synth_util_get_sync_attack:
+ * @raven_synth_util: the #AgsRavenSynthUtil-struct
+ * @position: the position
+ * 
+ * Get sync attack at @position of @raven_synth_util.
+ * 
+ * Returns: the sync_attack
+ * 
+ * Since: 7.7.0
+ */
+gdouble
+ags_raven_synth_util_get_sync_attack(AgsRavenSynthUtil *raven_synth_util,
+				     gint position)
+{
+  if(raven_synth_util == NULL ||
+     position < 0 ||
+     position >= AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT){
+    return(1.0);
+  }
+
+  return(raven_synth_util->sync_attack[position]);
+}
+
+/**
+ * ags_raven_synth_util_set_sync_attack:
+ * @raven_synth_util: the #AgsRavenSynthUtil-struct
+ * @position: the position
+ * @sync_attack: the sync attack
+ *
+ * Set @sync_attack at @position of @raven_synth_util.
+ *
+ * Since: 7.7.0
+ */
+void
+ags_raven_synth_util_set_sync_attack(AgsRavenSynthUtil *raven_synth_util,
+				     gint position,
+				     gdouble sync_attack)
+{
+  if(raven_synth_util == NULL ||
+     position < 0 ||
+     position >= AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT){
+    return;
+  }
+
+  raven_synth_util->sync_attack[position] = sync_attack;
+}
+
+/**
+ * ags_raven_synth_util_get_sync_phase:
+ * @raven_synth_util: the #AgsRavenSynthUtil-struct
+ * @position: the position
+ * 
+ * Get sync phase at @position of @raven_synth_util.
+ * 
+ * Returns: the sync phase
+ * 
+ * Since: 7.7.0
+ */
+gdouble
+ags_raven_synth_util_get_sync_phase(AgsRavenSynthUtil *raven_synth_util,
+				    gint position)
+{
+  if(raven_synth_util == NULL ||
+     position < 0 ||
+     position >= AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT){
+    return(1.0);
+  }
+
+  return(raven_synth_util->sync_phase[position]);
+}
+
+/**
+ * ags_raven_synth_util_set_sync_phase:
+ * @raven_synth_util: the #AgsRavenSynthUtil-struct
+ * @position: the position
+ * @sync_phase: the sync phase
+ *
+ * Set @sync_phase at @position of @raven_synth_util.
+ *
+ * Since: 7.7.0
+ */
+void
+ags_raven_synth_util_set_sync_phase(AgsRavenSynthUtil *raven_synth_util,
+				    gint position,
+				    gdouble sync_phase)
+{
+  if(raven_synth_util == NULL ||
+     position < 0 ||
+     position >= AGS_RAVEN_SYNTH_UTIL_SYNC_COUNT){
+    return;
+  }
+
+  raven_synth_util->sync_phase[position] = sync_phase;
+}
+
+/**
  * ags_raven_synth_util_get_vibrato_enabled:
  * @raven_synth_util: the #AgsRavenSynthUtil-struct
  * 
