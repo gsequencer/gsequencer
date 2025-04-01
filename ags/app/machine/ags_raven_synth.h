@@ -233,23 +233,23 @@ struct _AgsRavenSynth
   AgsDial *low_pass_0_filter_gain;
   AgsDial *low_pass_0_no_clip;
 
-  AgsDial *amplifier_0_amp_0_gain;
-  AgsDial *amplifier_0_amp_1_gain;
-  AgsDial *amplifier_0_amp_2_gain;
-  AgsDial *amplifier_0_amp_3_gain;
+  GtkScale *amplifier_0_amp_0_gain;
+  GtkScale *amplifier_0_amp_1_gain;
+  GtkScale *amplifier_0_amp_2_gain;
+  GtkScale *amplifier_0_amp_3_gain;
 
-  AgsDial *amplifier_0_filter_gain;
+  GtkScale *amplifier_0_filter_gain;
 
   AgsDial *low_pass_1_cut_off_frequency;
   AgsDial *low_pass_1_filter_gain;
   AgsDial *low_pass_1_no_clip;
 
-  AgsDial *amplifier_1_amp_0_gain;
-  AgsDial *amplifier_1_amp_1_gain;
-  AgsDial *amplifier_1_amp_2_gain;
-  AgsDial *amplifier_1_amp_3_gain;
+  GtkScale *amplifier_1_amp_0_gain;
+  GtkScale *amplifier_1_amp_1_gain;
+  GtkScale *amplifier_1_amp_2_gain;
+  GtkScale *amplifier_1_amp_3_gain;
 
-  AgsDial *amplifier_1_filter_gain;
+  GtkScale *amplifier_1_filter_gain;
   
   GtkCheckButton *tremolo_enabled;
 

@@ -152,8 +152,10 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
   GtkBox *osc_vbox;
   GtkGrid *synth_0_grid;
   GtkGrid *synth_0_seq_grid;
+  GtkGrid *synth_0_effect_grid;
   GtkGrid *synth_1_grid;
   GtkGrid *synth_1_seq_grid;
+  GtkGrid *synth_1_effect_grid;
   GtkGrid *misc_grid;
   GtkBox *pitch_type_hbox;
   GtkBox *effect_vbox;
@@ -1045,8 +1047,8 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 
   gtk_grid_attach(synth_0_grid,
 		  (GtkWidget *) synth_0_seq_grid,
-		  0, 3,
-		  16, 4);
+		  0, 6,
+		  12, 4);
 
   /* synth 0 seq Nr. 0 */
   raven_synth->synth_0_seq_tuning_0 = (AgsDial *) ags_dial_new();
@@ -1718,7 +1720,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
   
   gtk_grid_attach(synth_0_seq_grid,
 		  (GtkWidget *) raven_synth->synth_0_seq_volume_8,
-		  8, 0,
+		  8, 2,
 		  1, 1);
 
   /* synth 0 seq Nr. 9 */
@@ -1744,7 +1746,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
   
   gtk_grid_attach(synth_0_seq_grid,
 		  (GtkWidget *) raven_synth->synth_0_seq_volume_9,
-		  9, 0,
+		  9, 2,
 		  1, 1);
 
   /* synth 0 seq Nr. 10 */
@@ -1770,7 +1772,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
   
   gtk_grid_attach(synth_0_seq_grid,
 		  (GtkWidget *) raven_synth->synth_0_seq_volume_10,
-		  10, 0,
+		  10, 2,
 		  1, 1);
 
   /* synth 0 seq Nr. 11 */
@@ -1796,7 +1798,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
   
   gtk_grid_attach(synth_0_seq_grid,
 		  (GtkWidget *) raven_synth->synth_0_seq_volume_11,
-		  11, 0,
+		  11, 2,
 		  1, 1);
 
   /* synth 0 seq Nr. 12 */
@@ -1822,7 +1824,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
   
   gtk_grid_attach(synth_0_seq_grid,
 		  (GtkWidget *) raven_synth->synth_0_seq_volume_12,
-		  12, 0,
+		  12, 2,
 		  1, 1);
 
   /* synth 0 seq Nr. 13 */
@@ -1848,7 +1850,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
   
   gtk_grid_attach(synth_0_seq_grid,
 		  (GtkWidget *) raven_synth->synth_0_seq_volume_13,
-		  13, 0,
+		  13, 2,
 		  1, 1);
 
   /* synth 0 seq Nr. 14 */
@@ -1874,7 +1876,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
   
   gtk_grid_attach(synth_0_seq_grid,
 		  (GtkWidget *) raven_synth->synth_0_seq_volume_14,
-		  14, 0,
+		  14, 2,
 		  1, 1);
 
   /* synth 0 seq Nr. 15 */
@@ -1900,7 +1902,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
   
   gtk_grid_attach(synth_0_seq_grid,
 		  (GtkWidget *) raven_synth->synth_0_seq_volume_15,
-		  15, 0,
+		  15, 2,
 		  1, 1);
 
   /* synth 0 seq pingpong */
@@ -1925,7 +1927,220 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  (GtkWidget *) raven_synth->synth_0_seq_volume_lfo_frequency,
 		  6, 3,
 		  2, 1);
+
+  /* effect */
+  synth_0_effect_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(synth_0_effect_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(synth_0_effect_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
+  gtk_grid_attach(synth_0_grid,
+		  (GtkWidget *) synth_0_effect_grid,
+		  0, 10,
+		  8, 1);
+
+  /* low-pass 0 cut-off frequency */
+  label = (GtkLabel *) gtk_label_new(i18n("low-pass 0 - cut-off frequency"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(synth_0_effect_grid,
+		  (GtkWidget *) label,
+		  0, 0,
+		  1, 1);
   
+  raven_synth->low_pass_0_cut_off_frequency = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(raven_synth->low_pass_0_cut_off_frequency);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   22000.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    1.0);
+
+  gtk_adjustment_set_value(adjustment,
+			   2000.0);
+  ags_dial_set_radius(raven_synth->low_pass_0_cut_off_frequency,
+		      12);
+  
+  gtk_grid_attach(synth_0_effect_grid,
+		  (GtkWidget *) raven_synth->low_pass_0_cut_off_frequency,
+		  1, 0,
+		  1, 1);
+
+  /* low-pass 0 filter gain */
+  label = (GtkLabel *) gtk_label_new(i18n("low-pass 0 - filter gain"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(synth_0_effect_grid,
+		  (GtkWidget *) label,
+		  0, 1,
+		  1, 1);
+  
+  raven_synth->low_pass_0_filter_gain = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(raven_synth->low_pass_0_filter_gain);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   22000.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    1.0);
+
+  gtk_adjustment_set_value(adjustment,
+			   2000.0);
+  ags_dial_set_radius(raven_synth->low_pass_0_filter_gain,
+		      12);
+  
+  gtk_grid_attach(synth_0_effect_grid,
+		  (GtkWidget *) raven_synth->low_pass_0_filter_gain,
+		  1, 1,
+		  1, 1);
+
+  /* low-pass 0 filter gain */
+  label = (GtkLabel *) gtk_label_new(i18n("low-pass 0 - no clip"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(synth_0_effect_grid,
+		  (GtkWidget *) label,
+		  0, 2,
+		  1, 1);
+  
+  raven_synth->low_pass_0_no_clip = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(raven_synth->low_pass_0_no_clip);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    1.0);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+  ags_dial_set_radius(raven_synth->low_pass_0_no_clip,
+		      12);
+  
+  gtk_grid_attach(synth_0_effect_grid,
+		  (GtkWidget *) raven_synth->low_pass_0_no_clip,
+		  1, 2,
+		  1, 1);
+
+  /* amplifier 0 - amp 0-3 */
+  label = (GtkLabel *) gtk_label_new(i18n("amplifier 0 - amp 1-4"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(synth_0_effect_grid,
+		  (GtkWidget *) label,
+		  2, 2,
+		  1, 1);
+  
+  /* amplifier 0 - amp 0 */
+  raven_synth->amplifier_0_amp_0_gain = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_VERTICAL,
+									      -20.0,
+									      20.0,
+									      1.0);
+  gtk_widget_set_size_request((GtkWidget *) raven_synth->amplifier_0_amp_0_gain,
+			      16, 100);
+
+  gtk_range_set_value((GtkRange *) raven_synth->amplifier_0_amp_0_gain,
+		      0.0);
+  gtk_range_set_inverted((GtkRange *) raven_synth->amplifier_0_amp_0_gain,
+			 TRUE);
+  
+  gtk_grid_attach(synth_0_effect_grid,
+		  (GtkWidget *) raven_synth->amplifier_0_amp_0_gain,
+		  3, 0,
+		  1, 3);
+
+  /* amplifier 0 - amp 1 */
+  raven_synth->amplifier_0_amp_1_gain = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_VERTICAL,
+									      -20.0,
+									      20.0,
+									      1.0);
+  gtk_widget_set_size_request((GtkWidget *) raven_synth->amplifier_0_amp_1_gain,
+			      16, 100);
+
+  gtk_range_set_value((GtkRange *) raven_synth->amplifier_0_amp_1_gain,
+		      0.0);
+  gtk_range_set_inverted((GtkRange *) raven_synth->amplifier_0_amp_1_gain,
+			 TRUE);
+
+  gtk_grid_attach(synth_0_effect_grid,
+		  (GtkWidget *) raven_synth->amplifier_0_amp_1_gain,
+		  4, 0,
+		  1, 3);
+
+  /* amplifier 0 - amp 2 */
+  raven_synth->amplifier_0_amp_2_gain = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_VERTICAL,
+									      -20.0,
+									      20.0,
+									      1.0);
+  gtk_widget_set_size_request((GtkWidget *) raven_synth->amplifier_0_amp_2_gain,
+			      16, 100);
+
+  gtk_range_set_value((GtkRange *) raven_synth->amplifier_0_amp_2_gain,
+		      0.0);
+  gtk_range_set_inverted((GtkRange *) raven_synth->amplifier_0_amp_2_gain,
+			 TRUE);
+
+  gtk_grid_attach(synth_0_effect_grid,
+		  (GtkWidget *) raven_synth->amplifier_0_amp_2_gain,
+		  5, 0,
+		  1, 3);
+
+  /* amplifier 0 - amp 3 */
+  raven_synth->amplifier_0_amp_3_gain = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_VERTICAL,
+									      -20.0,
+									      20.0,
+									      1.0);
+  gtk_widget_set_size_request((GtkWidget *) raven_synth->amplifier_0_amp_3_gain,
+			      16, 100);
+
+  gtk_range_set_value((GtkRange *) raven_synth->amplifier_0_amp_3_gain,
+		      0.0);
+  gtk_range_set_inverted((GtkRange *) raven_synth->amplifier_0_amp_3_gain,
+			 TRUE);
+
+  gtk_grid_attach(synth_0_effect_grid,
+		  (GtkWidget *) raven_synth->amplifier_0_amp_3_gain,
+		  6, 0,
+		  1, 3);
+  
+  /* amplifier 0 - filter gain */
+  label = (GtkLabel *) gtk_label_new(i18n("amplifier 0 - filter gain"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(synth_0_effect_grid,
+		  (GtkWidget *) label,
+		  7, 2,
+		  1, 1);
+
+  raven_synth->amplifier_0_filter_gain = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_VERTICAL,
+									       -20.0,
+									       20.0,
+									       1.0);
+  gtk_widget_set_size_request((GtkWidget *) raven_synth->amplifier_0_filter_gain,
+			      16, 100);
+
+  gtk_range_set_value((GtkRange *) raven_synth->amplifier_0_filter_gain,
+		      0.0);
+  gtk_range_set_inverted((GtkRange *) raven_synth->amplifier_0_filter_gain,
+			 TRUE);
+
+  gtk_grid_attach(synth_0_effect_grid,
+		  (GtkWidget *) raven_synth->amplifier_0_filter_gain,
+		  8, 0,
+		  1, 3);
+
   /* grid */
   synth_1_grid = (GtkGrid *) gtk_grid_new();
 
@@ -2639,8 +2854,8 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 
   gtk_grid_attach(synth_1_grid,
 		  (GtkWidget *) synth_1_seq_grid,
-		  0, 3,
-		  16, 4);
+		  0, 4,
+		  12, 4);
 
   /* synth 1 seq Nr. 0 */
   raven_synth->synth_1_seq_tuning_0 = (AgsDial *) ags_dial_new();
@@ -3059,7 +3274,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  1, 1);
 
   /* synth 1 seq pingpong */
-  raven_synth->synth_1_seq_tuning_pingpong = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("Seq 1 tuning - pingpong"));
+  raven_synth->synth_1_seq_tuning_pingpong = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("Seq 2 tuning - pingpong"));
   gtk_grid_attach(synth_1_seq_grid,
 		  (GtkWidget *) raven_synth->synth_1_seq_tuning_pingpong,
 		  0, 1,
@@ -3312,7 +3527,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
   
   gtk_grid_attach(synth_1_seq_grid,
 		  (GtkWidget *) raven_synth->synth_1_seq_volume_8,
-		  8, 0,
+		  8, 2,
 		  1, 1);
 
   /* synth 1 seq Nr. 9 */
@@ -3338,7 +3553,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
   
   gtk_grid_attach(synth_1_seq_grid,
 		  (GtkWidget *) raven_synth->synth_1_seq_volume_9,
-		  9, 0,
+		  9, 2,
 		  1, 1);
 
   /* synth 1 seq Nr. 10 */
@@ -3364,7 +3579,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
   
   gtk_grid_attach(synth_1_seq_grid,
 		  (GtkWidget *) raven_synth->synth_1_seq_volume_10,
-		  10, 0,
+		  10, 2,
 		  1, 1);
 
   /* synth 1 seq Nr. 11 */
@@ -3390,7 +3605,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
   
   gtk_grid_attach(synth_1_seq_grid,
 		  (GtkWidget *) raven_synth->synth_1_seq_volume_11,
-		  11, 0,
+		  11, 2,
 		  1, 1);
 
   /* synth 1 seq Nr. 12 */
@@ -3416,7 +3631,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
   
   gtk_grid_attach(synth_1_seq_grid,
 		  (GtkWidget *) raven_synth->synth_1_seq_volume_12,
-		  12, 0,
+		  12, 2,
 		  1, 1);
 
   /* synth 1 seq Nr. 13 */
@@ -3442,7 +3657,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
   
   gtk_grid_attach(synth_1_seq_grid,
 		  (GtkWidget *) raven_synth->synth_1_seq_volume_13,
-		  13, 0,
+		  13, 2,
 		  1, 1);
 
   /* synth 1 seq Nr. 14 */
@@ -3468,7 +3683,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
   
   gtk_grid_attach(synth_1_seq_grid,
 		  (GtkWidget *) raven_synth->synth_1_seq_volume_14,
-		  14, 0,
+		  14, 2,
 		  1, 1);
 
   /* synth 1 seq Nr. 15 */
@@ -3494,11 +3709,11 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
   
   gtk_grid_attach(synth_1_seq_grid,
 		  (GtkWidget *) raven_synth->synth_1_seq_volume_15,
-		  15, 0,
+		  15, 2,
 		  1, 1);
 
   /* synth 1 seq pingpong */
-  raven_synth->synth_1_seq_volume_pingpong = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("Seq 1 volume - pingpong"));
+  raven_synth->synth_1_seq_volume_pingpong = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("Seq 2 volume - pingpong"));
   gtk_grid_attach(synth_1_seq_grid,
 		  (GtkWidget *) raven_synth->synth_1_seq_volume_pingpong,
 		  0, 3,
@@ -3519,6 +3734,219 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  (GtkWidget *) raven_synth->synth_1_seq_volume_lfo_frequency,
 		  6, 3,
 		  2, 1);
+
+  /* effect */
+  synth_1_effect_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(synth_1_effect_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(synth_1_effect_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
+  gtk_grid_attach(synth_1_grid,
+		  (GtkWidget *) synth_1_effect_grid,
+		  0, 10,
+		  8, 1);
+
+  /* low-pass 1 cut-off frequency */
+  label = (GtkLabel *) gtk_label_new(i18n("low-pass 1 - cut-off frequency"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(synth_1_effect_grid,
+		  (GtkWidget *) label,
+		  0, 0,
+		  1, 1);
+  
+  raven_synth->low_pass_1_cut_off_frequency = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(raven_synth->low_pass_1_cut_off_frequency);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   22000.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    1.0);
+
+  gtk_adjustment_set_value(adjustment,
+			   2000.0);
+  ags_dial_set_radius(raven_synth->low_pass_1_cut_off_frequency,
+		      12);
+  
+  gtk_grid_attach(synth_1_effect_grid,
+		  (GtkWidget *) raven_synth->low_pass_1_cut_off_frequency,
+		  1, 0,
+		  1, 1);
+
+  /* low-pass 1 filter gain */
+  label = (GtkLabel *) gtk_label_new(i18n("low-pass 1 - filter gain"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(synth_1_effect_grid,
+		  (GtkWidget *) label,
+		  0, 1,
+		  1, 1);
+  
+  raven_synth->low_pass_1_filter_gain = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(raven_synth->low_pass_1_filter_gain);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   22000.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    1.0);
+
+  gtk_adjustment_set_value(adjustment,
+			   2000.0);
+  ags_dial_set_radius(raven_synth->low_pass_1_filter_gain,
+		      12);
+  
+  gtk_grid_attach(synth_1_effect_grid,
+		  (GtkWidget *) raven_synth->low_pass_1_filter_gain,
+		  1, 1,
+		  1, 1);
+
+  /* low-pass 1 filter gain */
+  label = (GtkLabel *) gtk_label_new(i18n("low-pass 1 - no clip"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(synth_1_effect_grid,
+		  (GtkWidget *) label,
+		  0, 2,
+		  1, 1);
+  
+  raven_synth->low_pass_1_no_clip = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(raven_synth->low_pass_1_no_clip);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    1.0);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+  ags_dial_set_radius(raven_synth->low_pass_1_no_clip,
+		      12);
+  
+  gtk_grid_attach(synth_1_effect_grid,
+		  (GtkWidget *) raven_synth->low_pass_1_no_clip,
+		  1, 2,
+		  1, 1);
+
+  /* amplifier 1 - amp 0-3 */
+  label = (GtkLabel *) gtk_label_new(i18n("amplifier 1 - amp 1-4"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(synth_1_effect_grid,
+		  (GtkWidget *) label,
+		  2, 2,
+		  1, 1);
+  
+  /* amplifier 1 - amp 0 */
+  raven_synth->amplifier_1_amp_0_gain = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_VERTICAL,
+									      -20.0,
+									      20.0,
+									      1.0);
+  gtk_widget_set_size_request((GtkWidget *) raven_synth->amplifier_1_amp_0_gain,
+			      16, 100);
+
+  gtk_range_set_value((GtkRange *) raven_synth->amplifier_1_amp_0_gain,
+		      0.0);
+  gtk_range_set_inverted((GtkRange *) raven_synth->amplifier_1_amp_0_gain,
+			 TRUE);
+  
+  gtk_grid_attach(synth_1_effect_grid,
+		  (GtkWidget *) raven_synth->amplifier_1_amp_0_gain,
+		  3, 0,
+		  1, 3);
+
+  /* amplifier 1 - amp 1 */
+  raven_synth->amplifier_1_amp_1_gain = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_VERTICAL,
+									      -20.0,
+									      20.0,
+									      1.0);
+  gtk_widget_set_size_request((GtkWidget *) raven_synth->amplifier_1_amp_1_gain,
+			      16, 100);
+
+  gtk_range_set_value((GtkRange *) raven_synth->amplifier_1_amp_1_gain,
+		      0.0);
+  gtk_range_set_inverted((GtkRange *) raven_synth->amplifier_1_amp_1_gain,
+			 TRUE);
+
+  gtk_grid_attach(synth_1_effect_grid,
+		  (GtkWidget *) raven_synth->amplifier_1_amp_1_gain,
+		  4, 0,
+		  1, 3);
+
+  /* amplifier 1 - amp 2 */
+  raven_synth->amplifier_1_amp_2_gain = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_VERTICAL,
+									      -20.0,
+									      20.0,
+									      1.0);
+  gtk_widget_set_size_request((GtkWidget *) raven_synth->amplifier_1_amp_2_gain,
+			      16, 100);
+
+  gtk_range_set_value((GtkRange *) raven_synth->amplifier_1_amp_2_gain,
+		      0.0);
+  gtk_range_set_inverted((GtkRange *) raven_synth->amplifier_1_amp_2_gain,
+			 TRUE);
+
+  gtk_grid_attach(synth_1_effect_grid,
+		  (GtkWidget *) raven_synth->amplifier_1_amp_2_gain,
+		  5, 0,
+		  1, 3);
+
+  /* amplifier 1 - amp 3 */
+  raven_synth->amplifier_1_amp_3_gain = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_VERTICAL,
+									      -20.0,
+									      20.0,
+									      1.0);
+  gtk_widget_set_size_request((GtkWidget *) raven_synth->amplifier_1_amp_3_gain,
+			      16, 100);
+
+  gtk_range_set_value((GtkRange *) raven_synth->amplifier_1_amp_3_gain,
+		      0.0);
+  gtk_range_set_inverted((GtkRange *) raven_synth->amplifier_1_amp_3_gain,
+			 TRUE);
+
+  gtk_grid_attach(synth_1_effect_grid,
+		  (GtkWidget *) raven_synth->amplifier_1_amp_3_gain,
+		  6, 0,
+		  1, 3);
+  
+  /* amplifier 1 - filter gain */
+  label = (GtkLabel *) gtk_label_new(i18n("amplifier 1 - filter gain"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(synth_1_effect_grid,
+		  (GtkWidget *) label,
+		  7, 2,
+		  1, 1);
+
+  raven_synth->amplifier_1_filter_gain = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_VERTICAL,
+									       -20.0,
+									       20.0,
+									       1.0);
+  gtk_widget_set_size_request((GtkWidget *) raven_synth->amplifier_1_filter_gain,
+			      16, 100);
+
+  gtk_range_set_value((GtkRange *) raven_synth->amplifier_1_filter_gain,
+		      0.0);
+  gtk_range_set_inverted((GtkRange *) raven_synth->amplifier_1_filter_gain,
+			 TRUE);
+
+  gtk_grid_attach(synth_1_effect_grid,
+		  (GtkWidget *) raven_synth->amplifier_1_filter_gain,
+		  8, 0,
+		  1, 3);
   
   /* grid */
   misc_grid = (GtkGrid *) gtk_grid_new();
@@ -8566,8 +8994,8 @@ ags_raven_synth_refresh_port(AgsMachine *machine)
       ags_port_safe_read(port,
 			 &value);
 
-      ags_dial_set_value(raven_synth->amplifier_0_amp_0_gain,
-			 (gdouble) g_value_get_float(&value));
+      gtk_range_set_value((GtkRange *) raven_synth->amplifier_0_amp_0_gain,
+			  (gdouble) g_value_get_float(&value));
 
       g_object_unref(port);
     }
@@ -8588,8 +9016,8 @@ ags_raven_synth_refresh_port(AgsMachine *machine)
       ags_port_safe_read(port,
 			 &value);
 
-      ags_dial_set_value(raven_synth->amplifier_0_amp_1_gain,
-			 (gdouble) g_value_get_float(&value));
+      gtk_range_set_value((GtkRange *) raven_synth->amplifier_0_amp_1_gain,
+			  (gdouble) g_value_get_float(&value));
 
       g_object_unref(port);
     }
@@ -8610,8 +9038,8 @@ ags_raven_synth_refresh_port(AgsMachine *machine)
       ags_port_safe_read(port,
 			 &value);
 
-      ags_dial_set_value(raven_synth->amplifier_0_amp_2_gain,
-			 (gdouble) g_value_get_float(&value));
+      gtk_range_set_value((GtkRange *) raven_synth->amplifier_0_amp_2_gain,
+			  (gdouble) g_value_get_float(&value));
 
       g_object_unref(port);
     }
@@ -8632,8 +9060,8 @@ ags_raven_synth_refresh_port(AgsMachine *machine)
       ags_port_safe_read(port,
 			 &value);
 
-      ags_dial_set_value(raven_synth->amplifier_0_amp_3_gain,
-			 (gdouble) g_value_get_float(&value));
+      gtk_range_set_value((GtkRange *) raven_synth->amplifier_0_amp_3_gain,
+			  (gdouble) g_value_get_float(&value));
 
       g_object_unref(port);
     }
@@ -8654,8 +9082,8 @@ ags_raven_synth_refresh_port(AgsMachine *machine)
       ags_port_safe_read(port,
 			 &value);
 
-      ags_dial_set_value(raven_synth->amplifier_0_filter_gain,
-			 (gdouble) g_value_get_float(&value));
+      gtk_range_set_value((GtkRange *) raven_synth->amplifier_0_filter_gain,
+			  (gdouble) g_value_get_float(&value));
 
       g_object_unref(port);
     }
@@ -8742,8 +9170,8 @@ ags_raven_synth_refresh_port(AgsMachine *machine)
       ags_port_safe_read(port,
 			 &value);
 
-      ags_dial_set_value(raven_synth->amplifier_1_amp_0_gain,
-			 (gdouble) g_value_get_float(&value));
+      gtk_range_set_value((GtkRange *) raven_synth->amplifier_1_amp_0_gain,
+			  (gdouble) g_value_get_float(&value));
 
       g_object_unref(port);
     }
@@ -8764,8 +9192,8 @@ ags_raven_synth_refresh_port(AgsMachine *machine)
       ags_port_safe_read(port,
 			 &value);
 
-      ags_dial_set_value(raven_synth->amplifier_1_amp_1_gain,
-			 (gdouble) g_value_get_float(&value));
+      gtk_range_set_value((GtkRange *) raven_synth->amplifier_1_amp_1_gain,
+			  (gdouble) g_value_get_float(&value));
 
       g_object_unref(port);
     }
@@ -8786,8 +9214,8 @@ ags_raven_synth_refresh_port(AgsMachine *machine)
       ags_port_safe_read(port,
 			 &value);
 
-      ags_dial_set_value(raven_synth->amplifier_1_amp_2_gain,
-			 (gdouble) g_value_get_float(&value));
+      gtk_range_set_value((GtkRange *) raven_synth->amplifier_1_amp_2_gain,
+			  (gdouble) g_value_get_float(&value));
 
       g_object_unref(port);
     }
@@ -8808,8 +9236,8 @@ ags_raven_synth_refresh_port(AgsMachine *machine)
       ags_port_safe_read(port,
 			 &value);
 
-      ags_dial_set_value(raven_synth->amplifier_1_amp_3_gain,
-			 (gdouble) g_value_get_float(&value));
+      gtk_range_set_value((GtkRange *) raven_synth->amplifier_1_amp_3_gain,
+			  (gdouble) g_value_get_float(&value));
 
       g_object_unref(port);
     }
@@ -8830,8 +9258,8 @@ ags_raven_synth_refresh_port(AgsMachine *machine)
       ags_port_safe_read(port,
 			 &value);
 
-      ags_dial_set_value(raven_synth->amplifier_1_filter_gain,
-			 (gdouble) g_value_get_float(&value));
+      gtk_range_set_value((GtkRange *) raven_synth->amplifier_1_filter_gain,
+			  (gdouble) g_value_get_float(&value));
 
       g_object_unref(port);
     }
