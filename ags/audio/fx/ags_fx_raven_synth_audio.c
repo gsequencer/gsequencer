@@ -11634,6 +11634,14 @@ ags_fx_raven_synth_audio_channel_data_alloc()
   channel_data->raven_synth_0 = ags_raven_synth_util_alloc();
   channel_data->raven_synth_1 = ags_raven_synth_util_alloc();
 
+  /* low-pass filter util */
+  channel_data->low_pass_filter_util_0 = ags_low_pass_filter_util_alloc();
+  channel_data->low_pass_filter_util_1 = ags_low_pass_filter_util_alloc();
+
+  /* amplifier util */
+  channel_data->amplifier_util_0 = ags_amplifier_util_alloc();
+  channel_data->amplifier_util_1 = ags_amplifier_util_alloc();
+
   /* noise util */
   channel_data->noise_util = ags_noise_util_alloc();
 

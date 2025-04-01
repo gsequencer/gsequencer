@@ -284,8 +284,8 @@ struct _AgsFxRavenSynthAudioChannelData
   AgsRavenSynthUtil *raven_synth_0;
   AgsRavenSynthUtil *raven_synth_1;
 
-  AgsLowPassFilterUtil *low_pass_filter_0;
-  AgsLowPassFilterUtil *low_pass_filter_1;
+  AgsLowPassFilterUtil *low_pass_filter_util_0;
+  AgsLowPassFilterUtil *low_pass_filter_util_1;
 
   AgsAmplifierUtil *amplifier_util_0;
   AgsAmplifierUtil *amplifier_util_1;

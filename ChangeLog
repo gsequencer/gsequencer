@@ -3,7 +3,7 @@ ags (7.7.0)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented AgsLowPassFilterUtil based on Invada Studio LADSPA plugin
 	* implemented AgsAmplifierUtil based on Fil LADSPA plugin
-	* TODO:JK: implement ags-fx-raven-synth
+	* implemented ags-fx-raven-synth
 	* implemented AgsRavenSynth
 	* implemented ags_raven_synth_util.[ch]
 	* fixed ags-fx-star-synth sync LFO freq 0 and 1 default value

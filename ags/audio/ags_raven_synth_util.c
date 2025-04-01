@@ -3346,6 +3346,66 @@ ags_raven_synth_util_compute_sin_complex(AgsRavenSynthUtil *raven_synth_util)
 }
 
 /**
+ * ags_raven_synth_util_compute_sin:
+ * @raven_synth_util: the #AgsRavenSynthUtil-struct
+ * 
+ * Compute RAVEN sine synth.
+ *
+ * Since: 7.7.0
+ */
+void
+ags_raven_synth_util_compute_sin(AgsRavenSynthUtil *raven_synth_util)
+{
+  if(raven_synth_util == NULL ||
+     raven_synth_util->source == NULL){
+    return;
+  }
+
+  switch(raven_synth_util->format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+    {
+      ags_raven_synth_util_compute_sin_s8(raven_synth_util);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      ags_raven_synth_util_compute_sin_s16(raven_synth_util);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      ags_raven_synth_util_compute_sin_s24(raven_synth_util);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      ags_raven_synth_util_compute_sin_s32(raven_synth_util);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+    {
+      ags_raven_synth_util_compute_sin_s64(raven_synth_util);
+    }
+    break;
+  case AGS_SOUNDCARD_FLOAT:
+    {
+      ags_raven_synth_util_compute_sin_float(raven_synth_util);
+    }
+    break;
+  case AGS_SOUNDCARD_DOUBLE:
+    {
+      ags_raven_synth_util_compute_sin_double(raven_synth_util);
+    }
+    break;
+  case AGS_SOUNDCARD_COMPLEX:
+    {
+      ags_raven_synth_util_compute_sin_complex(raven_synth_util);
+    }
+    break;
+  }
+}
+
+/**
  * ags_raven_synth_util_compute_sawtooth_s8:
  * @raven_synth_util: the #AgsRavenSynthUtil-struct
  * 
@@ -5173,6 +5233,66 @@ ags_raven_synth_util_compute_sawtooth_complex(AgsRavenSynthUtil *raven_synth_uti
     
     source += source_stride;
     i++;
+  }
+}
+
+/**
+ * ags_raven_synth_util_compute_sawtooth:
+ * @raven_synth_util: the #AgsRavenSynthUtil-struct
+ * 
+ * Compute RAVEN sawtooth synth.
+ *
+ * Since: 7.7.0
+ */
+void
+ags_raven_synth_util_compute_sawtooth(AgsRavenSynthUtil *raven_synth_util)
+{
+  if(raven_synth_util == NULL ||
+     raven_synth_util->source == NULL){
+    return;
+  }
+
+  switch(raven_synth_util->format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+    {
+      ags_raven_synth_util_compute_sawtooth_s8(raven_synth_util);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      ags_raven_synth_util_compute_sawtooth_s16(raven_synth_util);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      ags_raven_synth_util_compute_sawtooth_s24(raven_synth_util);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      ags_raven_synth_util_compute_sawtooth_s32(raven_synth_util);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+    {
+      ags_raven_synth_util_compute_sawtooth_s64(raven_synth_util);
+    }
+    break;
+  case AGS_SOUNDCARD_FLOAT:
+    {
+      ags_raven_synth_util_compute_sawtooth_float(raven_synth_util);
+    }
+    break;
+  case AGS_SOUNDCARD_DOUBLE:
+    {
+      ags_raven_synth_util_compute_sawtooth_double(raven_synth_util);
+    }
+    break;
+  case AGS_SOUNDCARD_COMPLEX:
+    {
+      ags_raven_synth_util_compute_sawtooth_complex(raven_synth_util);
+    }
+    break;
   }
 }
 
@@ -7008,6 +7128,66 @@ ags_raven_synth_util_compute_triangle_complex(AgsRavenSynthUtil *raven_synth_uti
 }
 
 /**
+ * ags_raven_synth_util_compute_triangle:
+ * @raven_synth_util: the #AgsRavenSynthUtil-struct
+ * 
+ * Compute RAVEN triangle synth.
+ *
+ * Since: 7.7.0
+ */
+void
+ags_raven_synth_util_compute_triangle(AgsRavenSynthUtil *raven_synth_util)
+{
+  if(raven_synth_util == NULL ||
+     raven_synth_util->source == NULL){
+    return;
+  }
+
+  switch(raven_synth_util->format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+    {
+      ags_raven_synth_util_compute_triangle_s8(raven_synth_util);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      ags_raven_synth_util_compute_triangle_s16(raven_synth_util);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      ags_raven_synth_util_compute_triangle_s24(raven_synth_util);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      ags_raven_synth_util_compute_triangle_s32(raven_synth_util);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+    {
+      ags_raven_synth_util_compute_triangle_s64(raven_synth_util);
+    }
+    break;
+  case AGS_SOUNDCARD_FLOAT:
+    {
+      ags_raven_synth_util_compute_triangle_float(raven_synth_util);
+    }
+    break;
+  case AGS_SOUNDCARD_DOUBLE:
+    {
+      ags_raven_synth_util_compute_triangle_double(raven_synth_util);
+    }
+    break;
+  case AGS_SOUNDCARD_COMPLEX:
+    {
+      ags_raven_synth_util_compute_triangle_complex(raven_synth_util);
+    }
+    break;
+  }
+}
+
+/**
  * ags_raven_synth_util_compute_square_s8:
  * @raven_synth_util: the #AgsRavenSynthUtil-struct
  * 
@@ -8839,6 +9019,66 @@ ags_raven_synth_util_compute_square_complex(AgsRavenSynthUtil *raven_synth_util)
 }
 
 /**
+ * ags_raven_synth_util_compute_square:
+ * @raven_synth_util: the #AgsRavenSynthUtil-struct
+ * 
+ * Compute RAVEN square synth.
+ *
+ * Since: 7.7.0
+ */
+void
+ags_raven_synth_util_compute_square(AgsRavenSynthUtil *raven_synth_util)
+{
+  if(raven_synth_util == NULL ||
+     raven_synth_util->source == NULL){
+    return;
+  }
+
+  switch(raven_synth_util->format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+    {
+      ags_raven_synth_util_compute_square_s8(raven_synth_util);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      ags_raven_synth_util_compute_square_s16(raven_synth_util);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      ags_raven_synth_util_compute_square_s24(raven_synth_util);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      ags_raven_synth_util_compute_square_s32(raven_synth_util);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+    {
+      ags_raven_synth_util_compute_square_s64(raven_synth_util);
+    }
+    break;
+  case AGS_SOUNDCARD_FLOAT:
+    {
+      ags_raven_synth_util_compute_square_float(raven_synth_util);
+    }
+    break;
+  case AGS_SOUNDCARD_DOUBLE:
+    {
+      ags_raven_synth_util_compute_square_double(raven_synth_util);
+    }
+    break;
+  case AGS_SOUNDCARD_COMPLEX:
+    {
+      ags_raven_synth_util_compute_square_complex(raven_synth_util);
+    }
+    break;
+  }
+}
+
+/**
  * ags_raven_synth_util_compute_impulse_s8:
  * @raven_synth_util: the #AgsRavenSynthUtil-struct
  * 
@@ -10666,5 +10906,65 @@ ags_raven_synth_util_compute_impulse_complex(AgsRavenSynthUtil *raven_synth_util
     
     source += source_stride;
     i++;
+  }
+}
+
+/**
+ * ags_raven_synth_util_compute_impulse:
+ * @raven_synth_util: the #AgsRavenSynthUtil-struct
+ * 
+ * Compute RAVEN impulse synth.
+ *
+ * Since: 7.7.0
+ */
+void
+ags_raven_synth_util_compute_impulse(AgsRavenSynthUtil *raven_synth_util)
+{
+  if(raven_synth_util == NULL ||
+     raven_synth_util->source == NULL){
+    return;
+  }
+
+  switch(raven_synth_util->format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+    {
+      ags_raven_synth_util_compute_impulse_s8(raven_synth_util);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      ags_raven_synth_util_compute_impulse_s16(raven_synth_util);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      ags_raven_synth_util_compute_impulse_s24(raven_synth_util);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      ags_raven_synth_util_compute_impulse_s32(raven_synth_util);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+    {
+      ags_raven_synth_util_compute_impulse_s64(raven_synth_util);
+    }
+    break;
+  case AGS_SOUNDCARD_FLOAT:
+    {
+      ags_raven_synth_util_compute_impulse_float(raven_synth_util);
+    }
+    break;
+  case AGS_SOUNDCARD_DOUBLE:
+    {
+      ags_raven_synth_util_compute_impulse_double(raven_synth_util);
+    }
+    break;
+  case AGS_SOUNDCARD_COMPLEX:
+    {
+      ags_raven_synth_util_compute_impulse_complex(raven_synth_util);
+    }
+    break;
   }
 }
