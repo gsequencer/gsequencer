@@ -34,7 +34,9 @@
 
 G_BEGIN_DECLS
 
-void ags_raven_synth_synth_0_oscillator_callback(GtkDropDown *drop_down, AgsRavenSynth *raven_synth);
+void ags_raven_synth_synth_0_oscillator_callback(GObject *gobject,
+						 GParamSpec *pspec,
+						 AgsRavenSynth *raven_synth);
 
 void ags_raven_synth_synth_0_octave_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
 void ags_raven_synth_synth_0_key_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
@@ -42,7 +44,9 @@ void ags_raven_synth_synth_0_key_callback(AgsDial *dial, AgsRavenSynth *raven_sy
 void ags_raven_synth_synth_0_phase_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
 void ags_raven_synth_synth_0_volume_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
 
-void ags_raven_synth_synth_0_lfo_oscillator_callback(GtkDropDown *drop_down, AgsRavenSynth *raven_synth);
+void ags_raven_synth_synth_0_lfo_oscillator_callback(GObject *gobject,
+						     GParamSpec *pspec,
+						     AgsRavenSynth *raven_synth);
 
 void ags_raven_synth_synth_0_lfo_frequency_callback(GtkSpinButton *spin_button, AgsRavenSynth *raven_synth);
 void ags_raven_synth_synth_0_lfo_depth_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
@@ -117,7 +121,9 @@ void ags_raven_synth_amplifier_0_amp_3_gain_callback(GtkRange *range, AgsRavenSy
 
 void ags_raven_synth_amplifier_0_filter_gain_callback(GtkRange *range, AgsRavenSynth *raven_synth);
 
-void ags_raven_synth_synth_1_oscillator_callback(GtkDropDown *drop_down, AgsRavenSynth *raven_synth);
+void ags_raven_synth_synth_1_oscillator_callback(GObject *gobject,
+						 GParamSpec *pspec,
+						 AgsRavenSynth *raven_synth);
 
 void ags_raven_synth_synth_1_octave_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
 void ags_raven_synth_synth_1_key_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
@@ -125,7 +131,9 @@ void ags_raven_synth_synth_1_key_callback(AgsDial *dial, AgsRavenSynth *raven_sy
 void ags_raven_synth_synth_1_phase_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
 void ags_raven_synth_synth_1_volume_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
 
-void ags_raven_synth_synth_1_lfo_oscillator_callback(GtkDropDown *drop_down, AgsRavenSynth *raven_synth);
+void ags_raven_synth_synth_1_lfo_oscillator_callback(GObject *gobject,
+						     GParamSpec *pspec,
+						     AgsRavenSynth *raven_synth);
 
 void ags_raven_synth_synth_1_lfo_frequency_callback(GtkSpinButton *spin_button, AgsRavenSynth *raven_synth);
 void ags_raven_synth_synth_1_lfo_depth_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
@@ -212,7 +220,9 @@ void ags_raven_synth_chorus_enabled_callback(GtkButton *button, AgsRavenSynth *r
 void ags_raven_synth_chorus_input_volume_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
 void ags_raven_synth_chorus_output_volume_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
 
-void ags_raven_synth_chorus_lfo_oscillator_callback(GtkDropDown *drop_down, AgsRavenSynth *raven_synth);
+void ags_raven_synth_chorus_lfo_oscillator_callback(GObject *gobject,
+						    GParamSpec *pspec,
+						    AgsRavenSynth *raven_synth);
 void ags_raven_synth_chorus_lfo_frequency_callback(GtkSpinButton *spin_button, AgsRavenSynth *raven_synth);
 
 void ags_raven_synth_chorus_depth_callback(AgsDial *dial, AgsRavenSynth *raven_synth);

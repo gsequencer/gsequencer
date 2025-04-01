@@ -1193,6 +1193,8 @@ libgsequencer_sources = files(
   'app/machine/ags_pitch_sampler_file_callbacks.c',
   'app/machine/ags_quantum_synth.c',
   'app/machine/ags_quantum_synth_callbacks.c',
+  'app/machine/ags_raven_synth.c',
+  'app/machine/ags_raven_synth_callbacks.c',
   'app/machine/ags_sf2_synth.c',
   'app/machine/ags_sf2_synth_callbacks.c',
   'app/machine/ags_sfz_synth.c',

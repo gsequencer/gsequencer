@@ -7,14 +7,15 @@ ags (7.7.0)
 	* implemented AgsRavenSynth
 	* implemented ags_raven_synth_util.[ch]
 	* fixed ags-fx-star-synth sync LFO freq 0 and 1 default value
-	* fixed AgsQuantumSynth missing callback of synth_0_seq_tuning_lfo_frequency control
-	* fixed AgsQuantumSynth missing callback of synth_0_seq_volume_lfo_frequency control
-	* fixed AgsQuantumSynth missing callback of synth_1_seq_tuning_lfo_frequency control
-	* fixed AgsQuantumSynth missing callback of synth_1_seq_volume_lfo_frequency control
-	* fixed AgsQuantumSynth missing refresh_port() of synth_0_seq_tuning_lfo_frequency control
-	* fixed AgsQuantumSynth missing refresh_port() of synth_0_seq_volume_lfo_frequency control
-	* fixed AgsQuantumSynth missing refresh_port() of synth_1_seq_tuning_lfo_frequency control
-	* fixed AgsQuantumSynth missing refresh_port() of synth_1_seq_volume_lfo_frequency control
+	* fixed AgsQuantumSynth missing callback of control synth_0_seq_tuning_lfo_frequency
+	* fixed AgsQuantumSynth missing callback of control synth_0_seq_volume_lfo_frequency
+	* fixed AgsQuantumSynth missing callback of control synth_1_seq_tuning_lfo_frequency
+	* fixed AgsQuantumSynth missing callback of control synth_1_seq_volume_lfo_frequency
+	* fixed AgsQuantumSynth missing refresh_port() of control synth_0_seq_tuning_lfo_frequency
+	* fixed AgsQuantumSynth missing refresh_port() of control synth_0_seq_volume_lfo_frequency
+	* fixed AgsQuantumSynth missing refresh_port() of control synth_1_seq_tuning_lfo_frequency
+	* fixed AgsQuantumSynth missing refresh_port() of control synth_1_seq_volume_lfo_frequency
+	* minor improvements
 
 ags (7.6.18)
 

@@ -8374,37 +8374,6 @@ ags_simple_file_read_raven_synth_launch(AgsSimpleFile *simple_file, xmlNode *nod
   }
 
   str = xmlGetProp(node,
-		   "synth-0-sync-lfo-oscillator");
-
-  if(str != NULL){
-    guint sync_lfo_oscillator;
-
-    sync_lfo_oscillator = g_ascii_strtoll(str,
-					  NULL,
-					  10);
-
-    gtk_drop_down_set_selected(raven_synth->synth_0_sync_lfo_oscillator,
-			       sync_lfo_oscillator);
-      
-    xmlFree(str);
-  }
-
-  str = xmlGetProp(node,
-		   "synth-0-sync-lfo-frequency");
-
-  if(str != NULL){
-    gdouble sync_lfo_frequency;
-
-    sync_lfo_frequency = ags_file_util_get_double(simple_file->file_util,
-						  str);
-
-    gtk_spin_button_set_value(raven_synth->synth_0_sync_lfo_frequency,
-			      sync_lfo_frequency);
-      
-    xmlFree(str);
-  }
-
-  str = xmlGetProp(node,
 		   "synth-0-lfo-oscillator");
 
   if(str != NULL){
@@ -9262,37 +9231,6 @@ ags_simple_file_read_raven_synth_launch(AgsSimpleFile *simple_file, xmlNode *nod
 
     ags_dial_set_value(raven_synth->synth_1_sync_phase_3,
 		       sync_phase_3);
-      
-    xmlFree(str);
-  }
-
-  str = xmlGetProp(node,
-		   "synth-1-sync-lfo-oscillator");
-
-  if(str != NULL){
-    guint sync_lfo_oscillator;
-
-    sync_lfo_oscillator = g_ascii_strtoll(str,
-					  NULL,
-					  10);
-
-    gtk_drop_down_set_selected(raven_synth->synth_1_sync_lfo_oscillator,
-			       sync_lfo_oscillator);
-      
-    xmlFree(str);
-  }
-
-  str = xmlGetProp(node,
-		   "synth-1-sync-lfo-frequency");
-
-  if(str != NULL){
-    gdouble sync_lfo_frequency;
-
-    sync_lfo_frequency = ags_file_util_get_double(simple_file->file_util,
-						  str);
-
-    gtk_spin_button_set_value(raven_synth->synth_1_sync_lfo_frequency,
-			      sync_lfo_frequency);
       
     xmlFree(str);
   }
@@ -21032,23 +20970,6 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 
     g_free(str);    
     
-    str = g_strdup_printf("%d", gtk_drop_down_get_selected(raven_synth->synth_0_sync_lfo_oscillator));
-    
-    xmlNewProp(node,
-	       "synth-0-sync-lfo-oscillator",
-	       str);
-
-    g_free(str);
-
-    str = g_strdup_printf("%lf",
-			  gtk_spin_button_get_value(raven_synth->synth_0_sync_lfo_frequency));
-    
-    xmlNewProp(node,
-	       "synth-0-sync-lfo-frequency",
-	       str);
-
-    g_free(str);    
-    
     str = g_strdup_printf("%d",
 			  gtk_drop_down_get_selected(raven_synth->synth_0_lfo_oscillator));
     
@@ -21562,23 +21483,6 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 
     g_free(str);    
     
-    str = g_strdup_printf("%d", gtk_drop_down_get_selected(raven_synth->synth_1_sync_lfo_oscillator));
-    
-    xmlNewProp(node,
-	       "synth-1-sync-lfo-oscillator",
-	       str);
-
-    g_free(str);
-
-    str = g_strdup_printf("%lf",
-			  gtk_spin_button_get_value(raven_synth->synth_1_sync_lfo_frequency));
-    
-    xmlNewProp(node,
-	       "synth-1-sync-lfo-frequency",
-	       str);
-
-    g_free(str);    
-
     str = g_strdup_printf("%d",
 			  gtk_drop_down_get_selected(raven_synth->synth_1_lfo_oscillator));
     

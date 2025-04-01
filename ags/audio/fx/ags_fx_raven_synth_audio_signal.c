@@ -3202,8 +3202,7 @@ ags_fx_raven_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notatio
   }
 
   copy_mode_out = ags_audio_buffer_util_get_copy_mode_from_format(&(fx_raven_synth_audio_signal->audio_buffer_util),
-								  ags_audio_buffer_util_format_from_soundcard(&(fx_raven_synth_audio_signal->audio_buffer_util),
-													      format),
+								  audio_buffer_util_format,
 								  AGS_AUDIO_BUFFER_UTIL_FLOAT);
 
   if(midi_note >= 0 &&
@@ -3412,6 +3411,7 @@ ags_fx_raven_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notatio
     ags_raven_synth_util_set_source(channel_data->raven_synth_1,
 				    NULL);
 
+#if 0
     /* low-pass 0 */
     ags_low_pass_filter_util_set_source(channel_data->low_pass_filter_util_0,
 					source->stream_current->data);
@@ -3457,7 +3457,9 @@ ags_fx_raven_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notatio
       
     ags_low_pass_filter_util_set_destination(channel_data->low_pass_filter_util_1,
 					     NULL);
-    
+#endif
+
+#if 0
     /* amplifier 0 */
     ags_amplifier_util_set_source(channel_data->amplifier_util_0,
 				  source->stream_current->data);
@@ -3473,7 +3475,7 @@ ags_fx_raven_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notatio
 				  format);
     
     ags_amplifier_util_process(channel_data->amplifier_util_0);
-
+    
     /* reset source and destination */
     ags_amplifier_util_set_source(channel_data->amplifier_util_0,
 				  NULL);
@@ -3503,6 +3505,7 @@ ags_fx_raven_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notatio
       
     ags_amplifier_util_set_destination(channel_data->amplifier_util_1,
 				       NULL);
+#endif
     
     /* noise */
     if(ags_noise_util_get_volume(channel_data->noise_util) != 0.0){

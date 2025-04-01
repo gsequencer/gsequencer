@@ -24,7 +24,9 @@
 #include <math.h>
 
 void
-ags_raven_synth_synth_0_oscillator_callback(GtkDropDown *drop_down, AgsRavenSynth *raven_synth)
+ags_raven_synth_synth_0_oscillator_callback(GObject *gobject,
+					      GParamSpec *pspec,
+					      AgsRavenSynth *raven_synth)
 {
   AgsAudio *audio;
   
@@ -38,7 +40,7 @@ ags_raven_synth_synth_0_oscillator_callback(GtkDropDown *drop_down, AgsRavenSynt
 
   audio = AGS_MACHINE(raven_synth)->audio;
 
-  oscillator = gtk_drop_down_get_selected(drop_down);
+  oscillator = gtk_drop_down_get_selected((GtkDropDown *) gobject);
   
   start_play = ags_audio_get_play(audio);
   start_recall = ags_audio_get_recall(audio);
@@ -299,7 +301,9 @@ ags_raven_synth_synth_0_volume_callback(AgsDial *dial, AgsRavenSynth *raven_synt
 }
 
 void
-ags_raven_synth_synth_0_lfo_oscillator_callback(GtkDropDown *drop_down, AgsRavenSynth *raven_synth)
+ags_raven_synth_synth_0_lfo_oscillator_callback(GObject *gobject,
+						GParamSpec *pspec,
+						AgsRavenSynth *raven_synth)
 {
   AgsAudio *audio;
   
@@ -313,7 +317,7 @@ ags_raven_synth_synth_0_lfo_oscillator_callback(GtkDropDown *drop_down, AgsRaven
 
   audio = AGS_MACHINE(raven_synth)->audio;
 
-  lfo_oscillator = gtk_drop_down_get_selected(drop_down);
+  lfo_oscillator = gtk_drop_down_get_selected((GtkDropDown *) gobject);
   
   start_play = ags_audio_get_play(audio);
   start_recall = ags_audio_get_recall(audio);
@@ -3654,7 +3658,9 @@ ags_raven_synth_amplifier_0_filter_gain_callback(GtkRange *range, AgsRavenSynth 
 }
 
 void
-ags_raven_synth_synth_1_oscillator_callback(GtkDropDown *drop_down, AgsRavenSynth *raven_synth)
+ags_raven_synth_synth_1_oscillator_callback(GObject *gobject,
+					      GParamSpec *pspec,
+					      AgsRavenSynth *raven_synth)
 {
   AgsAudio *audio;
   
@@ -3668,7 +3674,7 @@ ags_raven_synth_synth_1_oscillator_callback(GtkDropDown *drop_down, AgsRavenSynt
 
   audio = AGS_MACHINE(raven_synth)->audio;
 
-  oscillator = gtk_drop_down_get_selected(drop_down);
+  oscillator = gtk_drop_down_get_selected((GtkDropDown *) gobject);
   
   start_play = ags_audio_get_play(audio);
   start_recall = ags_audio_get_recall(audio);
@@ -4039,7 +4045,9 @@ ags_raven_synth_synth_1_sync_lfo_frequency_callback(GtkSpinButton *spin_button, 
 }
 
 void
-ags_raven_synth_synth_1_lfo_oscillator_callback(GtkDropDown *drop_down, AgsRavenSynth *raven_synth)
+ags_raven_synth_synth_1_lfo_oscillator_callback(GObject *gobject,
+						GParamSpec *pspec,
+						AgsRavenSynth *raven_synth)
 {
   AgsAudio *audio;
   
@@ -4053,7 +4061,7 @@ ags_raven_synth_synth_1_lfo_oscillator_callback(GtkDropDown *drop_down, AgsRaven
 
   audio = AGS_MACHINE(raven_synth)->audio;
 
-  lfo_oscillator = gtk_drop_down_get_selected(drop_down);
+  lfo_oscillator = gtk_drop_down_get_selected((GtkDropDown *) gobject);
   
   start_play = ags_audio_get_play(audio);
   start_recall = ags_audio_get_recall(audio);
@@ -7705,7 +7713,9 @@ ags_raven_synth_chorus_output_volume_callback(AgsDial *dial, AgsRavenSynth *rave
 }
 
 void
-ags_raven_synth_chorus_lfo_oscillator_callback(GtkDropDown *drop_down, AgsRavenSynth *raven_synth)
+ags_raven_synth_chorus_lfo_oscillator_callback(GObject *gobject,
+					       GParamSpec *pspec,
+					       AgsRavenSynth *raven_synth)
 {
   if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(raven_synth)->flags)) != 0){
     return;

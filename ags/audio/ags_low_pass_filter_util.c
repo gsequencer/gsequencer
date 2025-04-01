@@ -660,6 +660,7 @@ ags_low_pass_filter_util_process_s8(AgsLowPassFilterUtil *low_pass_filter_util)
   
   guint source_stride, destination_stride;
   guint samplerate;
+  guint buffer_length;
     
   gdouble samples, gain, no_clip;
   gdouble audio1, audio1_sum;
@@ -679,7 +680,8 @@ ags_low_pass_filter_util_process_s8(AgsLowPassFilterUtil *low_pass_filter_util)
   destination_stride = low_pass_filter_util->destination_stride;
 
   samplerate = low_pass_filter_util->samplerate;
-      
+  buffer_length = low_pass_filter_util->buffer_length;
+  
   param_func = &ags_invada_convert_param;
   
   ags_invada_check_param_change(AGS_INVADA_IFILTER_FREQ, &(low_pass_filter_util->cut_off_frequency), &(low_pass_filter_util->last_freq),   &(low_pass_filter_util->converted_freq), samplerate, param_func);
@@ -695,11 +697,11 @@ ags_low_pass_filter_util_process_s8(AgsLowPassFilterUtil *low_pass_filter_util)
 
   audio1_sum = 0.0;
   
-  for(; i < low_pass_filter_util->buffer_length;){
-    audio1_sum = ((samples - 1.0) * audio1_sum + *(source)) / samples;
+  for(; i < buffer_length; i++){
+    audio1_sum = ((samples - 1.0) * audio1_sum + ((gdouble) source[0])) / samples;
     audio1 = audio1_sum * gain;
     
-    *(destination) = (no_clip > 0.0) ? ags_invada_ino_clip(audio1): audio1;
+    destination[0] = (gint8) ((no_clip > 0.0) ? ags_invada_ino_clip(audio1): audio1);
 
     source += source_stride;
     destination += destination_stride;
@@ -724,6 +726,7 @@ ags_low_pass_filter_util_process_s16(AgsLowPassFilterUtil *low_pass_filter_util)
   
   guint source_stride, destination_stride;
   guint samplerate;
+  guint buffer_length;
     
   gdouble samples, gain, no_clip;
   gdouble audio1, audio1_sum;
@@ -743,6 +746,7 @@ ags_low_pass_filter_util_process_s16(AgsLowPassFilterUtil *low_pass_filter_util)
   destination_stride = low_pass_filter_util->destination_stride;
 
   samplerate = low_pass_filter_util->samplerate;
+  buffer_length = low_pass_filter_util->buffer_length;
       
   param_func = &ags_invada_convert_param;
   
@@ -759,11 +763,11 @@ ags_low_pass_filter_util_process_s16(AgsLowPassFilterUtil *low_pass_filter_util)
 
   audio1_sum = 0.0;
   
-  for(; i < low_pass_filter_util->buffer_length;){
-    audio1_sum = ((samples - 1.0) * audio1_sum + *(source)) / samples;
+  for(; i < buffer_length; i++){
+    audio1_sum = ((samples - 1.0) * audio1_sum + ((gdouble) source[0])) / samples;
     audio1 = audio1_sum * gain;
     
-    *(destination) = (no_clip > 0.0) ? ags_invada_ino_clip(audio1): audio1;
+    destination[0] = (gint16) ((no_clip > 0.0) ? ags_invada_ino_clip(audio1): audio1);
 
     source += source_stride;
     destination += destination_stride;
@@ -788,6 +792,7 @@ ags_low_pass_filter_util_process_s24(AgsLowPassFilterUtil *low_pass_filter_util)
   
   guint source_stride, destination_stride;
   guint samplerate;
+  guint buffer_length;
     
   gdouble samples, gain, no_clip;
   gdouble audio1, audio1_sum;
@@ -807,6 +812,7 @@ ags_low_pass_filter_util_process_s24(AgsLowPassFilterUtil *low_pass_filter_util)
   destination_stride = low_pass_filter_util->destination_stride;
 
   samplerate = low_pass_filter_util->samplerate;
+  buffer_length = low_pass_filter_util->buffer_length;
       
   param_func = &ags_invada_convert_param;
   
@@ -823,11 +829,11 @@ ags_low_pass_filter_util_process_s24(AgsLowPassFilterUtil *low_pass_filter_util)
 
   audio1_sum = 0.0;
   
-  for(; i < low_pass_filter_util->buffer_length;){
-    audio1_sum = ((samples - 1.0) * audio1_sum + *(source)) / samples;
+  for(; i < buffer_length; i++){
+    audio1_sum = ((samples - 1.0) * audio1_sum + ((gdouble) source[0])) / samples;
     audio1 = audio1_sum * gain;
     
-    *(destination) = (no_clip > 0.0) ? ags_invada_ino_clip(audio1): audio1;
+    destination[0] = (gint32) ((no_clip > 0.0) ? ags_invada_ino_clip(audio1): audio1);
 
     source += source_stride;
     destination += destination_stride;
@@ -852,6 +858,7 @@ ags_low_pass_filter_util_process_s32(AgsLowPassFilterUtil *low_pass_filter_util)
   
   guint source_stride, destination_stride;
   guint samplerate;
+  guint buffer_length;
     
   gdouble samples, gain, no_clip;
   gdouble audio1, audio1_sum;
@@ -871,6 +878,7 @@ ags_low_pass_filter_util_process_s32(AgsLowPassFilterUtil *low_pass_filter_util)
   destination_stride = low_pass_filter_util->destination_stride;
 
   samplerate = low_pass_filter_util->samplerate;
+  buffer_length = low_pass_filter_util->buffer_length;
       
   param_func = &ags_invada_convert_param;
   
@@ -887,11 +895,11 @@ ags_low_pass_filter_util_process_s32(AgsLowPassFilterUtil *low_pass_filter_util)
 
   audio1_sum = 0.0;
   
-  for(; i < low_pass_filter_util->buffer_length;){
-    audio1_sum = ((samples - 1.0) * audio1_sum + *(source)) / samples;
+  for(; i < buffer_length; i++){
+    audio1_sum = ((samples - 1.0) * audio1_sum + ((gdouble) source[0])) / samples;
     audio1 = audio1_sum * gain;
     
-    *(destination) = (no_clip > 0.0) ? ags_invada_ino_clip(audio1): audio1;
+    destination[0] = (gint32) ((no_clip > 0.0) ? ags_invada_ino_clip(audio1): audio1);
 
     source += source_stride;
     destination += destination_stride;
@@ -916,6 +924,7 @@ ags_low_pass_filter_util_process_s64(AgsLowPassFilterUtil *low_pass_filter_util)
   
   guint source_stride, destination_stride;
   guint samplerate;
+  guint buffer_length;
     
   gdouble samples, gain, no_clip;
   gdouble audio1, audio1_sum;
@@ -935,6 +944,7 @@ ags_low_pass_filter_util_process_s64(AgsLowPassFilterUtil *low_pass_filter_util)
   destination_stride = low_pass_filter_util->destination_stride;
 
   samplerate = low_pass_filter_util->samplerate;
+  buffer_length = low_pass_filter_util->buffer_length;
       
   param_func = &ags_invada_convert_param;
   
@@ -951,11 +961,11 @@ ags_low_pass_filter_util_process_s64(AgsLowPassFilterUtil *low_pass_filter_util)
 
   audio1_sum = 0.0;
   
-  for(; i < low_pass_filter_util->buffer_length;){
-    audio1_sum = ((samples - 1.0) * audio1_sum + *(source)) / samples;
+  for(; i < buffer_length; i++){
+    audio1_sum = ((samples - 1.0) * audio1_sum + ((gdouble) source[0])) / samples;
     audio1 = audio1_sum * gain;
     
-    *(destination) = (no_clip > 0.0) ? ags_invada_ino_clip(audio1): audio1;
+    destination[0] = (gint64) ((no_clip > 0.0) ? ags_invada_ino_clip(audio1): audio1);
 
     source += source_stride;
     destination += destination_stride;
@@ -980,6 +990,7 @@ ags_low_pass_filter_util_process_float(AgsLowPassFilterUtil *low_pass_filter_uti
   
   guint source_stride, destination_stride;
   guint samplerate;
+  guint buffer_length;
     
   gdouble samples, gain, no_clip;
   gdouble audio1, audio1_sum;
@@ -999,6 +1010,7 @@ ags_low_pass_filter_util_process_float(AgsLowPassFilterUtil *low_pass_filter_uti
   destination_stride = low_pass_filter_util->destination_stride;
 
   samplerate = low_pass_filter_util->samplerate;
+  buffer_length = low_pass_filter_util->buffer_length;
       
   param_func = &ags_invada_convert_param;
   
@@ -1015,11 +1027,11 @@ ags_low_pass_filter_util_process_float(AgsLowPassFilterUtil *low_pass_filter_uti
 
   audio1_sum = 0.0;
   
-  for(; i < low_pass_filter_util->buffer_length;){
-    audio1_sum = ((samples - 1.0) * audio1_sum + *(source)) / samples;
+  for(; i < buffer_length; i++){
+    audio1_sum = ((samples - 1.0) * audio1_sum + ((gdouble) source[0])) / samples;
     audio1 = audio1_sum * gain;
     
-    *(destination) = (no_clip > 0.0) ? ags_invada_ino_clip(audio1): audio1;
+    destination[0] = (gfloat) ((no_clip > 0.0) ? ags_invada_ino_clip(audio1): audio1);
 
     source += source_stride;
     destination += destination_stride;
@@ -1044,6 +1056,7 @@ ags_low_pass_filter_util_process_double(AgsLowPassFilterUtil *low_pass_filter_ut
   
   guint source_stride, destination_stride;
   guint samplerate;
+  guint buffer_length;
     
   gdouble samples, gain, no_clip;
   gdouble audio1, audio1_sum;
@@ -1063,6 +1076,7 @@ ags_low_pass_filter_util_process_double(AgsLowPassFilterUtil *low_pass_filter_ut
   destination_stride = low_pass_filter_util->destination_stride;
 
   samplerate = low_pass_filter_util->samplerate;
+  buffer_length = low_pass_filter_util->buffer_length;
       
   param_func = &ags_invada_convert_param;
   
@@ -1079,11 +1093,11 @@ ags_low_pass_filter_util_process_double(AgsLowPassFilterUtil *low_pass_filter_ut
 
   audio1_sum = 0.0;
   
-  for(; i < low_pass_filter_util->buffer_length;){
-    audio1_sum = ((samples - 1.0) * audio1_sum + *(source)) / samples;
+  for(; i < buffer_length; i++){
+    audio1_sum = ((samples - 1.0) * audio1_sum + ((gdouble) source[0])) / samples;
     audio1 = audio1_sum * gain;
     
-    *(destination) = (no_clip > 0.0) ? ags_invada_ino_clip(audio1): audio1;
+    destination[0] = (gdouble) ((no_clip > 0.0) ? ags_invada_ino_clip(audio1): audio1);
 
     source += source_stride;
     destination += destination_stride;
@@ -1108,6 +1122,7 @@ ags_low_pass_filter_util_process_complex(AgsLowPassFilterUtil *low_pass_filter_u
   
   guint source_stride, destination_stride;
   guint samplerate;
+  guint buffer_length;
     
   gdouble samples, gain, no_clip;
   gdouble audio1, audio1_sum;
@@ -1127,6 +1142,7 @@ ags_low_pass_filter_util_process_complex(AgsLowPassFilterUtil *low_pass_filter_u
   destination_stride = low_pass_filter_util->destination_stride;
 
   samplerate = low_pass_filter_util->samplerate;
+  buffer_length = low_pass_filter_util->buffer_length;
       
   param_func = &ags_invada_convert_param;
   
@@ -1143,7 +1159,7 @@ ags_low_pass_filter_util_process_complex(AgsLowPassFilterUtil *low_pass_filter_u
 
   audio1_sum = 0.0;
   
-  for(; i < low_pass_filter_util->buffer_length;){
+  for(; i < buffer_length; i++){
     double _Complex z;
 
     z = ags_complex_get(source);
@@ -1151,7 +1167,7 @@ ags_low_pass_filter_util_process_complex(AgsLowPassFilterUtil *low_pass_filter_u
     audio1_sum = ((samples - 1.0) * audio1_sum + z) / samples;
     audio1 = audio1_sum * gain;
 
-    z = ((no_clip > 0.0) ? ags_invada_ino_clip(audio1): audio1);
+    z = (double _Complex) ((no_clip > 0.0) ? ags_invada_ino_clip(audio1): audio1);
     
     ags_complex_set(destination,
 		    z);

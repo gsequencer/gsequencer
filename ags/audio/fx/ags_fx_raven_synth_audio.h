@@ -129,9 +129,6 @@ struct _AgsFxRavenSynthAudio
   AgsPort *synth_0_sync_relative_attack_factor_3;
   AgsPort *synth_0_sync_attack_3;
   AgsPort *synth_0_sync_phase_3;
-
-  AgsPort *synth_0_sync_lfo_oscillator;
-  AgsPort *synth_0_sync_lfo_frequency;
   
   AgsPort *synth_1_oscillator;
   
@@ -204,9 +201,6 @@ struct _AgsFxRavenSynthAudio
   AgsPort *synth_1_sync_relative_attack_factor_3;
   AgsPort *synth_1_sync_attack_3;
   AgsPort *synth_1_sync_phase_3;
-
-  AgsPort *synth_1_sync_lfo_oscillator;
-  AgsPort *synth_1_sync_lfo_frequency;
 
   AgsPort *low_pass_0_cut_off_frequency;
   AgsPort *low_pass_0_filter_gain;

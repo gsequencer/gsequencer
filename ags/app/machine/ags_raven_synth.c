@@ -927,9 +927,9 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  0, 2,
 		  1, 1);
   
-  raven_synth->synth_0_sync_lfo_oscillator = (GtkDropDown *) gtk_drop_down_new_from_strings((const char * const *) osc_strv);
+  raven_synth->synth_0_lfo_oscillator = (GtkDropDown *) gtk_drop_down_new_from_strings((const char * const *) osc_strv);
 
-  gtk_drop_down_set_selected(raven_synth->synth_0_sync_lfo_oscillator,
+  gtk_drop_down_set_selected(raven_synth->synth_0_lfo_oscillator,
 			     0);
 
   gtk_grid_attach(synth_0_grid,
@@ -1492,7 +1492,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
 
   ags_dial_set_radius(raven_synth->synth_0_seq_volume_0,
 		      12);
@@ -1690,9 +1690,9 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
   adjustment = ags_dial_get_adjustment(raven_synth->synth_0_seq_volume_8);
 
   gtk_adjustment_set_lower(adjustment,
-			   -1200.0);
+			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   1200.0);
+			   1.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -1700,7 +1700,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
 
   ags_dial_set_radius(raven_synth->synth_0_seq_volume_8,
 		      12);
@@ -1716,9 +1716,9 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
   adjustment = ags_dial_get_adjustment(raven_synth->synth_0_seq_volume_9);
 
   gtk_adjustment_set_lower(adjustment,
-			   -1200.0);
+			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   1200.0);
+			   1.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -1726,7 +1726,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
 
   ags_dial_set_radius(raven_synth->synth_0_seq_volume_9,
 		      12);
@@ -1742,9 +1742,9 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
   adjustment = ags_dial_get_adjustment(raven_synth->synth_0_seq_volume_10);
 
   gtk_adjustment_set_lower(adjustment,
-			   -1200.0);
+			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   1200.0);
+			   1.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -1752,7 +1752,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
 
   ags_dial_set_radius(raven_synth->synth_0_seq_volume_10,
 		      12);
@@ -1768,9 +1768,9 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
   adjustment = ags_dial_get_adjustment(raven_synth->synth_0_seq_volume_11);
 
   gtk_adjustment_set_lower(adjustment,
-			   -1200.0);
+			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   1200.0);
+			   1.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -1778,7 +1778,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
 
   ags_dial_set_radius(raven_synth->synth_0_seq_volume_11,
 		      12);
@@ -1794,9 +1794,9 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
   adjustment = ags_dial_get_adjustment(raven_synth->synth_0_seq_volume_12);
 
   gtk_adjustment_set_lower(adjustment,
-			   -1200.0);
+			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   1200.0);
+			   1.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -1804,7 +1804,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
 
   ags_dial_set_radius(raven_synth->synth_0_seq_volume_12,
 		      12);
@@ -1820,9 +1820,9 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
   adjustment = ags_dial_get_adjustment(raven_synth->synth_0_seq_volume_13);
 
   gtk_adjustment_set_lower(adjustment,
-			   -1200.0);
+			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   1200.0);
+			   1.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -1830,7 +1830,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
 
   ags_dial_set_radius(raven_synth->synth_0_seq_volume_13,
 		      12);
@@ -1846,9 +1846,9 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
   adjustment = ags_dial_get_adjustment(raven_synth->synth_0_seq_volume_14);
 
   gtk_adjustment_set_lower(adjustment,
-			   -1200.0);
+			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   1200.0);
+			   1.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -1856,7 +1856,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
 
   ags_dial_set_radius(raven_synth->synth_0_seq_volume_14,
 		      12);
@@ -1872,9 +1872,9 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
   adjustment = ags_dial_get_adjustment(raven_synth->synth_0_seq_volume_15);
 
   gtk_adjustment_set_lower(adjustment,
-			   -1200.0);
+			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   1200.0);
+			   1.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -1882,7 +1882,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
 
   ags_dial_set_radius(raven_synth->synth_0_seq_volume_15,
 		      12);
@@ -3277,7 +3277,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
 
   ags_dial_set_radius(raven_synth->synth_1_seq_volume_0,
 		      12);
@@ -3475,9 +3475,9 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
   adjustment = ags_dial_get_adjustment(raven_synth->synth_1_seq_volume_8);
 
   gtk_adjustment_set_lower(adjustment,
-			   -1200.0);
+			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   1200.0);
+			   1.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -3485,7 +3485,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
 
   ags_dial_set_radius(raven_synth->synth_1_seq_volume_8,
 		      12);
@@ -3501,9 +3501,9 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
   adjustment = ags_dial_get_adjustment(raven_synth->synth_1_seq_volume_9);
 
   gtk_adjustment_set_lower(adjustment,
-			   -1200.0);
+			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   1200.0);
+			   1.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -3511,7 +3511,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
 
   ags_dial_set_radius(raven_synth->synth_1_seq_volume_9,
 		      12);
@@ -3527,9 +3527,9 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
   adjustment = ags_dial_get_adjustment(raven_synth->synth_1_seq_volume_10);
 
   gtk_adjustment_set_lower(adjustment,
-			   -1200.0);
+			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   1200.0);
+			   1.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -3537,7 +3537,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
 
   ags_dial_set_radius(raven_synth->synth_1_seq_volume_10,
 		      12);
@@ -3553,9 +3553,9 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
   adjustment = ags_dial_get_adjustment(raven_synth->synth_1_seq_volume_11);
 
   gtk_adjustment_set_lower(adjustment,
-			   -1200.0);
+			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   1200.0);
+			   1.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -3563,7 +3563,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
 
   ags_dial_set_radius(raven_synth->synth_1_seq_volume_11,
 		      12);
@@ -3579,9 +3579,9 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
   adjustment = ags_dial_get_adjustment(raven_synth->synth_1_seq_volume_12);
 
   gtk_adjustment_set_lower(adjustment,
-			   -1200.0);
+			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   1200.0);
+			   1.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -3589,7 +3589,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
 
   ags_dial_set_radius(raven_synth->synth_1_seq_volume_12,
 		      12);
@@ -3605,9 +3605,9 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
   adjustment = ags_dial_get_adjustment(raven_synth->synth_1_seq_volume_13);
 
   gtk_adjustment_set_lower(adjustment,
-			   -1200.0);
+			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   1200.0);
+			   1.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -3615,7 +3615,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
 
   ags_dial_set_radius(raven_synth->synth_1_seq_volume_13,
 		      12);
@@ -3631,9 +3631,9 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
   adjustment = ags_dial_get_adjustment(raven_synth->synth_1_seq_volume_14);
 
   gtk_adjustment_set_lower(adjustment,
-			   -1200.0);
+			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   1200.0);
+			   1.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -3641,7 +3641,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
 
   ags_dial_set_radius(raven_synth->synth_1_seq_volume_14,
 		      12);
@@ -3657,9 +3657,9 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
   adjustment = ags_dial_get_adjustment(raven_synth->synth_1_seq_volume_15);
 
   gtk_adjustment_set_lower(adjustment,
-			   -1200.0);
+			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   1200.0);
+			   1.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
@@ -3667,7 +3667,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
 
   ags_dial_set_radius(raven_synth->synth_1_seq_volume_15,
 		      12);
@@ -4609,7 +4609,7 @@ ags_raven_synth_connect(AgsConnectable *connectable)
   /* AgsRavenSynth */
   raven_synth = AGS_RAVEN_SYNTH(connectable);
 
-  g_signal_connect_after(raven_synth->synth_0_oscillator, "changed",
+  g_signal_connect_after(raven_synth->synth_0_oscillator, "notify::selected",
 			 G_CALLBACK(ags_raven_synth_synth_0_oscillator_callback), raven_synth);
   
   g_signal_connect_after(raven_synth->synth_0_octave, "value-changed",
@@ -4624,7 +4624,7 @@ ags_raven_synth_connect(AgsConnectable *connectable)
   g_signal_connect_after(raven_synth->synth_0_volume, "value-changed",
 			 G_CALLBACK(ags_raven_synth_synth_0_volume_callback), raven_synth);
 
-  g_signal_connect_after(raven_synth->synth_0_lfo_oscillator, "changed",
+  g_signal_connect_after(raven_synth->synth_0_lfo_oscillator, "notify::selected",
 			 G_CALLBACK(ags_raven_synth_synth_0_lfo_oscillator_callback), raven_synth);
   
   g_signal_connect_after(raven_synth->synth_0_lfo_frequency, "value-changed",
@@ -4812,7 +4812,7 @@ ags_raven_synth_connect(AgsConnectable *connectable)
 			 G_CALLBACK(ags_raven_synth_amplifier_0_filter_gain_callback), raven_synth);
   
   /* synth 1 */  
-  g_signal_connect_after(raven_synth->synth_1_oscillator, "changed",
+  g_signal_connect_after(raven_synth->synth_1_oscillator, "notify::selected",
 			 G_CALLBACK(ags_raven_synth_synth_1_oscillator_callback), raven_synth);
   
   g_signal_connect_after(raven_synth->synth_1_octave, "value-changed",
@@ -4827,7 +4827,7 @@ ags_raven_synth_connect(AgsConnectable *connectable)
   g_signal_connect_after(raven_synth->synth_1_volume, "value-changed",
 			 G_CALLBACK(ags_raven_synth_synth_1_volume_callback), raven_synth);
 
-  g_signal_connect_after(raven_synth->synth_1_lfo_oscillator, "changed",
+  g_signal_connect_after(raven_synth->synth_1_lfo_oscillator, "notify::selected",
 			 G_CALLBACK(ags_raven_synth_synth_1_lfo_oscillator_callback), raven_synth);
   
   g_signal_connect_after(raven_synth->synth_1_lfo_frequency, "value-changed",
@@ -5035,7 +5035,7 @@ ags_raven_synth_connect(AgsConnectable *connectable)
   g_signal_connect_after(raven_synth->chorus_output_volume, "value-changed",
 			 G_CALLBACK(ags_raven_synth_chorus_output_volume_callback), raven_synth);
   
-  g_signal_connect_after(raven_synth->chorus_lfo_oscillator, "changed",
+  g_signal_connect_after(raven_synth->chorus_lfo_oscillator, "notify::selected",
 			 G_CALLBACK(ags_raven_synth_chorus_lfo_oscillator_callback), raven_synth);
   
   g_signal_connect_after(raven_synth->chorus_lfo_frequency, "value-changed",
@@ -5055,21 +5055,6 @@ ags_raven_synth_connect(AgsConnectable *connectable)
   
   g_signal_connect_after(raven_synth->chorus_output_volume, "value-changed",
 			 G_CALLBACK(ags_raven_synth_chorus_output_volume_callback), raven_synth);
-  
-  g_signal_connect_after(raven_synth->chorus_lfo_oscillator, "changed",
-			 G_CALLBACK(ags_raven_synth_chorus_lfo_oscillator_callback), raven_synth);
-  
-  g_signal_connect_after(raven_synth->chorus_lfo_frequency, "value-changed",
-			 G_CALLBACK(ags_raven_synth_chorus_lfo_frequency_callback), raven_synth);
-  
-  g_signal_connect_after(raven_synth->chorus_depth, "value-changed",
-			 G_CALLBACK(ags_raven_synth_chorus_depth_callback), raven_synth);
-  
-  g_signal_connect_after(raven_synth->chorus_mix, "value-changed",
-			 G_CALLBACK(ags_raven_synth_chorus_mix_callback), raven_synth);
-  
-  g_signal_connect_after(raven_synth->chorus_delay, "value-changed",
-			 G_CALLBACK(ags_raven_synth_chorus_delay_callback), raven_synth);
 
   g_signal_connect_after(raven_synth->tremolo_enabled, "toggled",
 			 G_CALLBACK(ags_raven_synth_tremolo_enabled_callback), raven_synth);
@@ -9371,6 +9356,7 @@ ags_raven_synth_refresh_port(AgsMachine *machine)
     }
 
     /* chorus enabled */
+#if 0
     port = NULL;
 
     g_object_get(recall->data,
@@ -9396,6 +9382,7 @@ ags_raven_synth_refresh_port(AgsMachine *machine)
 
       g_object_unref(port);
     }
+#endif
     
     /* chorus LFO oscillator */
     port = NULL;

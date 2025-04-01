@@ -1090,7 +1090,7 @@ ags_fil_proc_s8(AgsAmplifierUtil *amplifier_util,
     x = *source;
     y = x - s2 * amplifier_util->proc_sect[nth_sect].z2;
 
-    *destination -= a * (amplifier_util->proc_sect[nth_sect].z2 + s2 * y - x);                           
+    destination[0] -= (gint8) (a * (amplifier_util->proc_sect[nth_sect].z2 + s2 * y - x)); 
 
     y -= s1 * amplifier_util->proc_sect[nth_sect].z1;
     amplifier_util->proc_sect[nth_sect].z2 = amplifier_util->proc_sect[nth_sect].z1 + s1 * y;
@@ -1180,7 +1180,7 @@ ags_fil_proc_s16(AgsAmplifierUtil *amplifier_util,
     x = *source;
     y = x - s2 * amplifier_util->proc_sect[nth_sect].z2;
 
-    *destination -= a * (amplifier_util->proc_sect[nth_sect].z2 + s2 * y - x);                           
+    destination[0] -= (gint16) (a * (amplifier_util->proc_sect[nth_sect].z2 + s2 * y - x)); 
 
     y -= s1 * amplifier_util->proc_sect[nth_sect].z1;
     amplifier_util->proc_sect[nth_sect].z2 = amplifier_util->proc_sect[nth_sect].z1 + s1 * y;
@@ -1270,7 +1270,7 @@ ags_fil_proc_s24(AgsAmplifierUtil *amplifier_util,
     x = *source;
     y = x - s2 * amplifier_util->proc_sect[nth_sect].z2;
 
-    *destination -= a * (amplifier_util->proc_sect[nth_sect].z2 + s2 * y - x);                           
+    destination[0] -= (gint32) (a * (amplifier_util->proc_sect[nth_sect].z2 + s2 * y - x));
 
     y -= s1 * amplifier_util->proc_sect[nth_sect].z1;
     amplifier_util->proc_sect[nth_sect].z2 = amplifier_util->proc_sect[nth_sect].z1 + s1 * y;
@@ -1360,7 +1360,7 @@ ags_fil_proc_s32(AgsAmplifierUtil *amplifier_util,
     x = *source;
     y = x - s2 * amplifier_util->proc_sect[nth_sect].z2;
 
-    *destination -= a * (amplifier_util->proc_sect[nth_sect].z2 + s2 * y - x);                           
+    destination[0] -= (gint32) (a * (amplifier_util->proc_sect[nth_sect].z2 + s2 * y - x));
 
     y -= s1 * amplifier_util->proc_sect[nth_sect].z1;
     amplifier_util->proc_sect[nth_sect].z2 = amplifier_util->proc_sect[nth_sect].z1 + s1 * y;
@@ -1450,7 +1450,7 @@ ags_fil_proc_s64(AgsAmplifierUtil *amplifier_util,
     x = *source;
     y = x - s2 * amplifier_util->proc_sect[nth_sect].z2;
 
-    *destination -= a * (amplifier_util->proc_sect[nth_sect].z2 + s2 * y - x);                           
+    destination[0] -= (gint64) (a * (amplifier_util->proc_sect[nth_sect].z2 + s2 * y - x));
 
     y -= s1 * amplifier_util->proc_sect[nth_sect].z1;
     amplifier_util->proc_sect[nth_sect].z2 = amplifier_util->proc_sect[nth_sect].z1 + s1 * y;
@@ -1540,7 +1540,7 @@ ags_fil_proc_float(AgsAmplifierUtil *amplifier_util,
     x = *source;
     y = x - s2 * amplifier_util->proc_sect[nth_sect].z2;
 
-    *destination -= a * (amplifier_util->proc_sect[nth_sect].z2 + s2 * y - x);                           
+    destination[0] -= (gfloat) (a * (amplifier_util->proc_sect[nth_sect].z2 + s2 * y - x));
 
     y -= s1 * amplifier_util->proc_sect[nth_sect].z1;
     amplifier_util->proc_sect[nth_sect].z2 = amplifier_util->proc_sect[nth_sect].z1 + s1 * y;
@@ -1630,7 +1630,7 @@ ags_fil_proc_double(AgsAmplifierUtil *amplifier_util,
     x = *source;
     y = x - s2 * amplifier_util->proc_sect[nth_sect].z2;
 
-    *destination -= a * (amplifier_util->proc_sect[nth_sect].z2 + s2 * y - x);                           
+    destination[0] -= (gdouble) (a * (amplifier_util->proc_sect[nth_sect].z2 + s2 * y - x));
 
     y -= s1 * amplifier_util->proc_sect[nth_sect].z1;
     amplifier_util->proc_sect[nth_sect].z2 = amplifier_util->proc_sect[nth_sect].z1 + s1 * y;
@@ -1951,7 +1951,7 @@ ags_amplifier_util_process_s8(AgsAmplifierUtil *amplifier_util)
 
     for(i = 0; i < k; i++){
       g += d;
-      sig[i] = g * aip[i * source_stride];
+      sig[i] = (gint8) (g * (gdouble) aip[i * source_stride]);
     }
 
     for(j = 0; j < AGS_AMPLIFIER_UTIL_AMP_COUNT; j++){
@@ -1986,7 +1986,9 @@ ags_amplifier_util_process_s8(AgsAmplifierUtil *amplifier_util)
       ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
 						  aop, destination_stride, 0,
 						  p, source_stride, 0,
-						  k, ags_audio_buffer_util_get_copy_mode_from_format(NULL, format, format));
+						  k, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
+												     ags_audio_buffer_util_format_from_soundcard(NULL, format),
+												     ags_audio_buffer_util_format_from_soundcard(NULL, format)));
       
       //      memcpy(aop, p, k * sizeof (float));
     }else{
@@ -1994,7 +1996,7 @@ ags_amplifier_util_process_s8(AgsAmplifierUtil *amplifier_util)
       
       for (i = 0; i < k; i++){
 	g += d;
-	aop[i * destination_stride] = g * sig[i] + (1.0 - g) * aip[i * source_stride];
+	aop[i * destination_stride] = (gint8) (g * (gdouble) sig[i] + (1.0 - g) * (gdouble) aip[i * source_stride]);
       }
     }
     
@@ -2139,7 +2141,7 @@ ags_amplifier_util_process_s16(AgsAmplifierUtil *amplifier_util)
 
     for(i = 0; i < k; i++){
       g += d;
-      sig[i] = g * aip[i * source_stride];
+      sig[i] = (gint16) (g * (gdouble) aip[i * source_stride]);
     }
 
     for(j = 0; j < AGS_AMPLIFIER_UTIL_AMP_COUNT; j++){
@@ -2174,7 +2176,9 @@ ags_amplifier_util_process_s16(AgsAmplifierUtil *amplifier_util)
       ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
 						  aop, destination_stride, 0,
 						  p, source_stride, 0,
-						  k, ags_audio_buffer_util_get_copy_mode_from_format(NULL, format, format));
+						  k, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
+												     ags_audio_buffer_util_format_from_soundcard(NULL, format),
+												     ags_audio_buffer_util_format_from_soundcard(NULL, format)));
       
       //      memcpy(aop, p, k * sizeof (float));
     }else{
@@ -2182,7 +2186,7 @@ ags_amplifier_util_process_s16(AgsAmplifierUtil *amplifier_util)
       
       for (i = 0; i < k; i++){
 	g += d;
-	aop[i * destination_stride] = g * sig[i] + (1.0 - g) * aip[i * source_stride];
+	aop[i * destination_stride] = (gint16) (g * (gdouble) sig[i] + (1.0 - g) * (gdouble) aip[i * source_stride]);
       }
     }
     
@@ -2362,7 +2366,9 @@ ags_amplifier_util_process_s24(AgsAmplifierUtil *amplifier_util)
       ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
 						  aop, destination_stride, 0,
 						  p, source_stride, 0,
-						  k, ags_audio_buffer_util_get_copy_mode_from_format(NULL, format, format));
+						  k, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
+												     ags_audio_buffer_util_format_from_soundcard(NULL, format),
+												     ags_audio_buffer_util_format_from_soundcard(NULL, format)));
       
       //      memcpy(aop, p, k * sizeof (float));
     }else{
@@ -2550,7 +2556,9 @@ ags_amplifier_util_process_s32(AgsAmplifierUtil *amplifier_util)
       ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
 						  aop, destination_stride, 0,
 						  p, source_stride, 0,
-						  k, ags_audio_buffer_util_get_copy_mode_from_format(NULL, format, format));
+						  k, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
+												     ags_audio_buffer_util_format_from_soundcard(NULL, format),
+												     ags_audio_buffer_util_format_from_soundcard(NULL, format)));
       
       //      memcpy(aop, p, k * sizeof (float));
     }else{
@@ -2738,7 +2746,9 @@ ags_amplifier_util_process_s64(AgsAmplifierUtil *amplifier_util)
       ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
 						  aop, destination_stride, 0,
 						  p, source_stride, 0,
-						  k, ags_audio_buffer_util_get_copy_mode_from_format(NULL, format, format));
+						  k, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
+												     ags_audio_buffer_util_format_from_soundcard(NULL, format),
+												     ags_audio_buffer_util_format_from_soundcard(NULL, format)));
       
       //      memcpy(aop, p, k * sizeof (float));
     }else{
@@ -2926,7 +2936,9 @@ ags_amplifier_util_process_float(AgsAmplifierUtil *amplifier_util)
       ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
 						  aop, destination_stride, 0,
 						  p, source_stride, 0,
-						  k, ags_audio_buffer_util_get_copy_mode_from_format(NULL, format, format));
+						  k, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
+												     ags_audio_buffer_util_format_from_soundcard(NULL, format),
+												     ags_audio_buffer_util_format_from_soundcard(NULL, format)));
       
       //      memcpy(aop, p, k * sizeof (float));
     }else{
@@ -3114,7 +3126,9 @@ ags_amplifier_util_process_double(AgsAmplifierUtil *amplifier_util)
       ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
 						  aop, destination_stride, 0,
 						  p, source_stride, 0,
-						  k, ags_audio_buffer_util_get_copy_mode_from_format(NULL, format, format));
+						  k, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
+												     ags_audio_buffer_util_format_from_soundcard(NULL, format),
+												     ags_audio_buffer_util_format_from_soundcard(NULL, format)));
       
       //      memcpy(aop, p, k * sizeof (float));
     }else{
@@ -3303,7 +3317,9 @@ ags_amplifier_util_process_complex(AgsAmplifierUtil *amplifier_util)
       ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
 						  aop, destination_stride, 0,
 						  p, source_stride, 0,
-						  k, ags_audio_buffer_util_get_copy_mode_from_format(NULL, format, format));
+						  k, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
+												     ags_audio_buffer_util_format_from_soundcard(NULL, format),
+												     ags_audio_buffer_util_format_from_soundcard(NULL, format)));
       
       //      memcpy(aop, p, k * sizeof (float));
     }else{

@@ -3507,27 +3507,6 @@ ags_quantum_synth_connect(AgsConnectable *connectable)
   g_signal_connect_after(quantum_synth->chorus_delay, "value-changed",
 			 G_CALLBACK(ags_quantum_synth_chorus_delay_callback), quantum_synth);
 
-  g_signal_connect_after(quantum_synth->chorus_input_volume, "value-changed",
-			 G_CALLBACK(ags_quantum_synth_chorus_input_volume_callback), quantum_synth);
-  
-  g_signal_connect_after(quantum_synth->chorus_output_volume, "value-changed",
-			 G_CALLBACK(ags_quantum_synth_chorus_output_volume_callback), quantum_synth);
-  
-  g_signal_connect_after(quantum_synth->chorus_lfo_oscillator, "notify::selected",
-			 G_CALLBACK(ags_quantum_synth_chorus_lfo_oscillator_callback), quantum_synth);
-  
-  g_signal_connect_after(quantum_synth->chorus_lfo_frequency, "value-changed",
-			 G_CALLBACK(ags_quantum_synth_chorus_lfo_frequency_callback), quantum_synth);
-  
-  g_signal_connect_after(quantum_synth->chorus_depth, "value-changed",
-			 G_CALLBACK(ags_quantum_synth_chorus_depth_callback), quantum_synth);
-  
-  g_signal_connect_after(quantum_synth->chorus_mix, "value-changed",
-			 G_CALLBACK(ags_quantum_synth_chorus_mix_callback), quantum_synth);
-  
-  g_signal_connect_after(quantum_synth->chorus_delay, "value-changed",
-			 G_CALLBACK(ags_quantum_synth_chorus_delay_callback), quantum_synth);
-
   /* tremolo */
   g_signal_connect_after(quantum_synth->tremolo_enabled, "toggled",
 			 G_CALLBACK(ags_quantum_synth_tremolo_enabled_callback), quantum_synth);
@@ -6377,6 +6356,7 @@ ags_quantum_synth_refresh_port(AgsMachine *machine)
     }
 
     /* chorus enabled */
+#if 0
     port = NULL;
 
     g_object_get(recall->data,
@@ -6402,6 +6382,7 @@ ags_quantum_synth_refresh_port(AgsMachine *machine)
 
       g_object_unref(port);
     }
+#endif
     
     /* chorus LFO oscillator */
     port = NULL;

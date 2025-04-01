@@ -148,9 +148,6 @@ struct _AgsRavenSynth
   
   GtkDropDown *synth_1_oscillator;
 
-  GtkDropDown *synth_0_sync_lfo_oscillator;
-  GtkSpinButton *synth_0_sync_lfo_frequency;
-
   AgsDial *synth_1_octave;
   AgsDial *synth_1_key;
 
@@ -180,9 +177,6 @@ struct _AgsRavenSynth
   AgsDial *synth_1_sync_relative_attack_factor_3;
   AgsDial *synth_1_sync_attack_3;
   AgsDial *synth_1_sync_phase_3;
-
-  GtkDropDown *synth_1_sync_lfo_oscillator;
-  GtkSpinButton *synth_1_sync_lfo_frequency;
 
   AgsDial *synth_1_seq_tuning_0;
   AgsDial *synth_1_seq_tuning_1;
