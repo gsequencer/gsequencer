@@ -84,6 +84,7 @@ void ags_raven_synth_synth_0_seq_tuning_14_callback(AgsDial *dial, AgsRavenSynth
 void ags_raven_synth_synth_0_seq_tuning_15_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
 
 void ags_raven_synth_synth_0_seq_tuning_pingpong_callback(GtkCheckButton *button, AgsRavenSynth *raven_synth);
+void ags_raven_synth_synth_0_seq_tuning_lfo_frequency_callback(GtkSpinButton *spin_button, AgsRavenSynth *raven_synth);
 
 void ags_raven_synth_synth_0_seq_volume_0_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
 void ags_raven_synth_synth_0_seq_volume_1_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
@@ -103,6 +104,7 @@ void ags_raven_synth_synth_0_seq_volume_14_callback(AgsDial *dial, AgsRavenSynth
 void ags_raven_synth_synth_0_seq_volume_15_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
 
 void ags_raven_synth_synth_0_seq_volume_pingpong_callback(GtkCheckButton *button, AgsRavenSynth *raven_synth);
+void ags_raven_synth_synth_0_seq_volume_lfo_frequency_callback(GtkSpinButton *spin_button, AgsRavenSynth *raven_synth);
 
 void ags_raven_synth_synth_1_oscillator_callback(GtkComboBox *combo_box, AgsRavenSynth *raven_synth);
 
@@ -154,6 +156,7 @@ void ags_raven_synth_synth_1_seq_tuning_14_callback(AgsDial *dial, AgsRavenSynth
 void ags_raven_synth_synth_1_seq_tuning_15_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
 
 void ags_raven_synth_synth_1_seq_tuning_pingpong_callback(GtkCheckButton *button, AgsRavenSynth *raven_synth);
+void ags_raven_synth_synth_1_seq_tuning_lfo_frequency_callback(GtkSpinButton *spin_button, AgsRavenSynth *raven_synth);
 
 void ags_raven_synth_synth_1_seq_volume_0_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
 void ags_raven_synth_synth_1_seq_volume_1_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
@@ -173,6 +176,7 @@ void ags_raven_synth_synth_1_seq_volume_14_callback(AgsDial *dial, AgsRavenSynth
 void ags_raven_synth_synth_1_seq_volume_15_callback(AgsDial *dial, AgsRavenSynth *raven_synth);
 
 void ags_raven_synth_synth_1_seq_volume_pingpong_callback(GtkCheckButton *button, AgsRavenSynth *raven_synth);
+void ags_raven_synth_synth_1_seq_volume_lfo_frequency_callback(GtkSpinButton *spin_button, AgsRavenSynth *raven_synth);
 
 void ags_raven_synth_pitch_type_callback(GObject *gobject,
 					     GParamSpec *pspec,

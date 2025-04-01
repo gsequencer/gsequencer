@@ -2169,6 +2169,61 @@ ags_raven_synth_synth_0_seq_tuning_pingpong_callback(GtkCheckButton *check_butto
 }
 
 void
+ags_raven_synth_synth_0_seq_tuning_lfo_frequency_callback(GtkSpinButton *spin_button, AgsRavenSynth *raven_synth)
+{
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble lfo_frequency;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(raven_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(raven_synth)->audio;
+
+  lfo_frequency = gtk_spin_button_get_value(spin_button);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "synth-0-seq-tuning-lfo-frequency", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) lfo_frequency);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+}
+
+void
 ags_raven_synth_synth_0_seq_volume_0_callback(AgsDial *dial, AgsRavenSynth *raven_synth)
 {
   AgsAudio *audio;
@@ -3088,6 +3143,61 @@ ags_raven_synth_synth_0_seq_volume_pingpong_callback(GtkCheckButton *check_butto
 
       g_value_set_float(&value,
 			(gfloat) seq_volume_pingpong);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+}
+
+void
+ags_raven_synth_synth_0_seq_volume_lfo_frequency_callback(GtkSpinButton *spin_button, AgsRavenSynth *raven_synth)
+{
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble lfo_frequency;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(raven_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(raven_synth)->audio;
+
+  lfo_frequency = gtk_spin_button_get_value(spin_button);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "synth-0-seq-volume-lfo-frequency", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) lfo_frequency);
 
       ags_port_safe_write(port,
 			  &value);
@@ -5359,6 +5469,61 @@ ags_raven_synth_synth_1_seq_tuning_pingpong_callback(GtkCheckButton *check_butto
 }
 
 void
+ags_raven_synth_synth_1_seq_tuning_lfo_frequency_callback(GtkSpinButton *spin_button, AgsRavenSynth *raven_synth)
+{
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble lfo_frequency;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(raven_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(raven_synth)->audio;
+
+  lfo_frequency = gtk_spin_button_get_value(spin_button);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "synth-1-seq-tuning-lfo-frequency", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) lfo_frequency);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+}
+
+void
 ags_raven_synth_synth_1_seq_volume_0_callback(AgsDial *dial, AgsRavenSynth *raven_synth)
 {
   AgsAudio *audio;
@@ -6278,6 +6443,61 @@ ags_raven_synth_synth_1_seq_volume_pingpong_callback(GtkCheckButton *check_butto
 
       g_value_set_float(&value,
 			(gfloat) seq_volume_pingpong);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+}
+
+void
+ags_raven_synth_synth_1_seq_volume_lfo_frequency_callback(GtkSpinButton *spin_button, AgsRavenSynth *raven_synth)
+{
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble lfo_frequency;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(raven_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(raven_synth)->audio;
+
+  lfo_frequency = gtk_spin_button_get_value(spin_button);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "synth-1-seq-volume-lfo-frequency", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) lfo_frequency);
 
       ags_port_safe_write(port,
 			  &value);
