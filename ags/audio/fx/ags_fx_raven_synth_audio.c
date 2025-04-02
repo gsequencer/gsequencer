@@ -3446,7 +3446,7 @@ ags_fx_raven_synth_audio_init(AgsFxRavenSynthAudio *fx_raven_synth_audio)
 							    "port-value-length", 1,
 							    NULL);
   
-  fx_raven_synth_audio->synth_0_seq_volume_2->port_value.ags_port_float = (gfloat) 0.0;
+  fx_raven_synth_audio->synth_0_seq_volume_2->port_value.ags_port_float = (gfloat) 1.0;
 
   g_object_set(fx_raven_synth_audio->synth_0_seq_volume_2,
 	       "plugin-port", ags_fx_raven_synth_audio_get_synth_seq_volume_plugin_port(),
@@ -3490,7 +3490,7 @@ ags_fx_raven_synth_audio_init(AgsFxRavenSynthAudio *fx_raven_synth_audio)
 							    "port-value-length", 1,
 							    NULL);
   
-  fx_raven_synth_audio->synth_0_seq_volume_4->port_value.ags_port_float = (gfloat) 0.0;
+  fx_raven_synth_audio->synth_0_seq_volume_4->port_value.ags_port_float = (gfloat) 1.0;
 
   g_object_set(fx_raven_synth_audio->synth_0_seq_volume_4,
 	       "plugin-port", ags_fx_raven_synth_audio_get_synth_seq_volume_plugin_port(),
@@ -5448,7 +5448,7 @@ ags_fx_raven_synth_audio_init(AgsFxRavenSynthAudio *fx_raven_synth_audio)
 								    "port-value-length", 1,
 								    NULL);
   
-  fx_raven_synth_audio->low_pass_0_cut_off_frequency->port_value.ags_port_float = (gfloat) 0.0;
+  fx_raven_synth_audio->low_pass_0_cut_off_frequency->port_value.ags_port_float = (gfloat) 2000.0;
 
   g_object_set(fx_raven_synth_audio->low_pass_0_cut_off_frequency,
 	       "plugin-port", ags_fx_raven_synth_audio_get_low_pass_cut_off_frequency_plugin_port(),
@@ -5470,7 +5470,7 @@ ags_fx_raven_synth_audio_init(AgsFxRavenSynthAudio *fx_raven_synth_audio)
 							      "port-value-length", 1,
 							      NULL);
   
-  fx_raven_synth_audio->low_pass_0_filter_gain->port_value.ags_port_float = (gfloat) 0.0;
+  fx_raven_synth_audio->low_pass_0_filter_gain->port_value.ags_port_float = (gfloat) 1.0;
 
   g_object_set(fx_raven_synth_audio->low_pass_0_filter_gain,
 	       "plugin-port", ags_fx_raven_synth_audio_get_low_pass_filter_gain_plugin_port(),
@@ -5514,7 +5514,7 @@ ags_fx_raven_synth_audio_init(AgsFxRavenSynthAudio *fx_raven_synth_audio)
 								    "port-value-length", 1,
 								    NULL);
   
-  fx_raven_synth_audio->low_pass_1_cut_off_frequency->port_value.ags_port_float = (gfloat) 0.0;
+  fx_raven_synth_audio->low_pass_1_cut_off_frequency->port_value.ags_port_float = (gfloat) 2000.0;
 
   g_object_set(fx_raven_synth_audio->low_pass_1_cut_off_frequency,
 	       "plugin-port", ags_fx_raven_synth_audio_get_low_pass_cut_off_frequency_plugin_port(),
@@ -5536,7 +5536,7 @@ ags_fx_raven_synth_audio_init(AgsFxRavenSynthAudio *fx_raven_synth_audio)
 							      "port-value-length", 1,
 							      NULL);
   
-  fx_raven_synth_audio->low_pass_1_filter_gain->port_value.ags_port_float = (gfloat) 0.0;
+  fx_raven_synth_audio->low_pass_1_filter_gain->port_value.ags_port_float = (gfloat) 1.0;
 
   g_object_set(fx_raven_synth_audio->low_pass_1_filter_gain,
 	       "plugin-port", ags_fx_raven_synth_audio_get_low_pass_filter_gain_plugin_port(),
@@ -13489,7 +13489,7 @@ ags_fx_raven_synth_audio_get_low_pass_cut_off_frequency_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      0.015811388);
+		      2000.0);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
@@ -13528,7 +13528,7 @@ ags_fx_raven_synth_audio_get_low_pass_filter_gain_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      0.0);
+		      1.0);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,

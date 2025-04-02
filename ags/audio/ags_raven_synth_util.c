@@ -1590,10 +1590,12 @@ ags_raven_synth_util_get_tuning_by_offset(AgsRavenSynthUtil *raven_synth_util,
   }
 
   tuning = 0.0;
-  
+
+#if 0  
   if(seq_tuning_offset_end != 0){
     tuning = ((seq_tuning_offset) * (tuning_a / seq_tuning_offset_end)) + ((seq_tuning_offset_end - seq_tuning_offset) * (tuning_b / seq_tuning_offset_end));
   }
+#endif
   
   return(tuning);
 }
@@ -1693,9 +1695,11 @@ ags_raven_synth_util_get_volume_by_offset(AgsRavenSynthUtil *raven_synth_util,
 
   volume = 1.0;
 
+#if 0  
   if(seq_volume_offset_end != 0){
     volume = ((seq_volume_offset) * (volume_a / seq_volume_offset_end)) + ((seq_volume_offset_end - seq_volume_offset) * (volume_b / seq_volume_offset_end));
   }
+#endif
   
   return(volume);
 }
@@ -1781,7 +1785,7 @@ ags_raven_synth_util_compute_sin_s8(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -1872,7 +1876,7 @@ ags_raven_synth_util_compute_sin_s8(AgsRavenSynthUtil *raven_synth_util)
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -1938,7 +1942,7 @@ ags_raven_synth_util_compute_sin_s8(AgsRavenSynthUtil *raven_synth_util)
 void
 ags_raven_synth_util_compute_sin_s16(AgsRavenSynthUtil *raven_synth_util)
 {
-  gint16 *source;
+  gint16 *source, *tmp_source;
 
   guint source_stride;
   guint buffer_length;
@@ -1962,7 +1966,7 @@ ags_raven_synth_util_compute_sin_s16(AgsRavenSynthUtil *raven_synth_util)
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -2008,7 +2012,7 @@ ags_raven_synth_util_compute_sin_s16(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -2094,14 +2098,15 @@ ags_raven_synth_util_compute_sin_s16(AgsRavenSynthUtil *raven_synth_util)
   i_stop = buffer_length - (buffer_length % 8);
 
   sync_counter = 0;
-
+  
   for(; i < buffer_length;){
+#if 0    
     if(sync_enabled &&
        sync_seq > 0){
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -2122,31 +2127,32 @@ ags_raven_synth_util_compute_sin_s16(AgsRavenSynthUtil *raven_synth_util)
 	}      
       }
     }
-    
+#endif
+
     switch(lfo_oscillator_mode){
     case AGS_SYNTH_OSCILLATOR_SIN:
       {
-	(*source) = (gint16) ((gint32) (source)[0] + (gint32) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate) * scale * volume));
+	(*source) = (gint16) ((gint32) (source[0]) + (gint32) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate) * scale * volume));
       }
       break;
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
       {
-	(*source) = (gint16) ((gint32) (source)[0] + (gint32) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+	(*source) = (gint16) ((gint32) (source[0]) + (gint32) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate) * scale * volume));
       }
       break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:
       { 
-	(*source) = (gint16) ((gint32) (source)[0] + (gint32) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate)) * scale * volume);
+	(*source) = (gint16) ((gint32) (source[0]) + (gint32) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + (((offset + i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((offset + i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume));
       }
       break;
     case AGS_SYNTH_OSCILLATOR_SQUARE:
       {   
-	(*source) = (gint16) ((gint32) (source)[0] + (gint32) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * scale * volume);
+	(*source) = (gint16) ((gint32) (source[0]) + (gint32) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume));
       }
       break;
     case AGS_SYNTH_OSCILLATOR_IMPULSE:
       {
-	(*source) = (gint16) ((gint32) (source)[0] + (gint32) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)) * scale * volume);
+	(*source) = (gint16) ((gint32) (source[0]) + (gint32) (ags_raven_synth_util_get_volume_by_offset(raven_synth_util, offset + i) * sin((gdouble) ((offset + i) + phase + phase_reset) * 2.0 * M_PI * (frequency * exp2(((((tuning + ags_raven_synth_util_get_tuning_by_offset(raven_synth_util, offset + i)) + 100.0 * (vibrato_gain * sin((offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0))) / samplerate) * vibrato_lfo_depth)) / 100.0) / 12.0) + ((sin((gdouble) (offset + i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume));
       }
       break;
     }
@@ -2191,7 +2197,7 @@ ags_raven_synth_util_compute_sin_s24(AgsRavenSynthUtil *raven_synth_util)
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -2237,7 +2243,7 @@ ags_raven_synth_util_compute_sin_s24(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -2330,7 +2336,7 @@ ags_raven_synth_util_compute_sin_s24(AgsRavenSynthUtil *raven_synth_util)
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -2420,7 +2426,7 @@ ags_raven_synth_util_compute_sin_s32(AgsRavenSynthUtil *raven_synth_util)
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -2466,7 +2472,7 @@ ags_raven_synth_util_compute_sin_s32(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -2559,7 +2565,7 @@ ags_raven_synth_util_compute_sin_s32(AgsRavenSynthUtil *raven_synth_util)
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -2649,7 +2655,7 @@ ags_raven_synth_util_compute_sin_s64(AgsRavenSynthUtil *raven_synth_util)
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -2695,7 +2701,7 @@ ags_raven_synth_util_compute_sin_s64(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -2788,7 +2794,7 @@ ags_raven_synth_util_compute_sin_s64(AgsRavenSynthUtil *raven_synth_util)
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -2878,7 +2884,7 @@ ags_raven_synth_util_compute_sin_float(AgsRavenSynthUtil *raven_synth_util)
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -2922,7 +2928,7 @@ ags_raven_synth_util_compute_sin_float(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -3015,7 +3021,7 @@ ags_raven_synth_util_compute_sin_float(AgsRavenSynthUtil *raven_synth_util)
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -3105,7 +3111,7 @@ ags_raven_synth_util_compute_sin_double(AgsRavenSynthUtil *raven_synth_util)
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -3149,7 +3155,7 @@ ags_raven_synth_util_compute_sin_double(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -3242,7 +3248,7 @@ ags_raven_synth_util_compute_sin_double(AgsRavenSynthUtil *raven_synth_util)
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -3332,7 +3338,7 @@ ags_raven_synth_util_compute_sin_complex(AgsRavenSynthUtil *raven_synth_util)
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -3376,7 +3382,7 @@ ags_raven_synth_util_compute_sin_complex(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -3469,7 +3475,7 @@ ags_raven_synth_util_compute_sin_complex(AgsRavenSynthUtil *raven_synth_util)
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -3624,7 +3630,7 @@ ags_raven_synth_util_compute_sawtooth_s8(AgsRavenSynthUtil *raven_synth_util)
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -3670,7 +3676,7 @@ ags_raven_synth_util_compute_sawtooth_s8(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -3763,7 +3769,7 @@ ags_raven_synth_util_compute_sawtooth_s8(AgsRavenSynthUtil *raven_synth_util)
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -3853,7 +3859,7 @@ ags_raven_synth_util_compute_sawtooth_s16(AgsRavenSynthUtil *raven_synth_util)
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -3899,7 +3905,7 @@ ags_raven_synth_util_compute_sawtooth_s16(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -3992,7 +3998,7 @@ ags_raven_synth_util_compute_sawtooth_s16(AgsRavenSynthUtil *raven_synth_util)
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -4082,7 +4088,7 @@ ags_raven_synth_util_compute_sawtooth_s24(AgsRavenSynthUtil *raven_synth_util)
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -4128,7 +4134,7 @@ ags_raven_synth_util_compute_sawtooth_s24(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -4221,7 +4227,7 @@ ags_raven_synth_util_compute_sawtooth_s24(AgsRavenSynthUtil *raven_synth_util)
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -4311,7 +4317,7 @@ ags_raven_synth_util_compute_sawtooth_s32(AgsRavenSynthUtil *raven_synth_util)
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -4357,7 +4363,7 @@ ags_raven_synth_util_compute_sawtooth_s32(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -4450,7 +4456,7 @@ ags_raven_synth_util_compute_sawtooth_s32(AgsRavenSynthUtil *raven_synth_util)
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -4540,7 +4546,7 @@ ags_raven_synth_util_compute_sawtooth_s64(AgsRavenSynthUtil *raven_synth_util)
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -4586,7 +4592,7 @@ ags_raven_synth_util_compute_sawtooth_s64(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -4679,7 +4685,7 @@ ags_raven_synth_util_compute_sawtooth_s64(AgsRavenSynthUtil *raven_synth_util)
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -4769,7 +4775,7 @@ ags_raven_synth_util_compute_sawtooth_float(AgsRavenSynthUtil *raven_synth_util)
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -4813,7 +4819,7 @@ ags_raven_synth_util_compute_sawtooth_float(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -4906,7 +4912,7 @@ ags_raven_synth_util_compute_sawtooth_float(AgsRavenSynthUtil *raven_synth_util)
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -4996,7 +5002,7 @@ ags_raven_synth_util_compute_sawtooth_double(AgsRavenSynthUtil *raven_synth_util
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -5040,7 +5046,7 @@ ags_raven_synth_util_compute_sawtooth_double(AgsRavenSynthUtil *raven_synth_util
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -5133,7 +5139,7 @@ ags_raven_synth_util_compute_sawtooth_double(AgsRavenSynthUtil *raven_synth_util
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -5223,7 +5229,7 @@ ags_raven_synth_util_compute_sawtooth_complex(AgsRavenSynthUtil *raven_synth_uti
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -5267,7 +5273,7 @@ ags_raven_synth_util_compute_sawtooth_complex(AgsRavenSynthUtil *raven_synth_uti
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -5360,7 +5366,7 @@ ags_raven_synth_util_compute_sawtooth_complex(AgsRavenSynthUtil *raven_synth_uti
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -5515,7 +5521,7 @@ ags_raven_synth_util_compute_triangle_s8(AgsRavenSynthUtil *raven_synth_util)
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -5561,7 +5567,7 @@ ags_raven_synth_util_compute_triangle_s8(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -5654,7 +5660,7 @@ ags_raven_synth_util_compute_triangle_s8(AgsRavenSynthUtil *raven_synth_util)
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -5744,7 +5750,7 @@ ags_raven_synth_util_compute_triangle_s16(AgsRavenSynthUtil *raven_synth_util)
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -5790,7 +5796,7 @@ ags_raven_synth_util_compute_triangle_s16(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -5883,7 +5889,7 @@ ags_raven_synth_util_compute_triangle_s16(AgsRavenSynthUtil *raven_synth_util)
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -5973,7 +5979,7 @@ ags_raven_synth_util_compute_triangle_s24(AgsRavenSynthUtil *raven_synth_util)
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -6019,7 +6025,7 @@ ags_raven_synth_util_compute_triangle_s24(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -6112,7 +6118,7 @@ ags_raven_synth_util_compute_triangle_s24(AgsRavenSynthUtil *raven_synth_util)
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -6202,7 +6208,7 @@ ags_raven_synth_util_compute_triangle_s32(AgsRavenSynthUtil *raven_synth_util)
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -6248,7 +6254,7 @@ ags_raven_synth_util_compute_triangle_s32(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -6341,7 +6347,7 @@ ags_raven_synth_util_compute_triangle_s32(AgsRavenSynthUtil *raven_synth_util)
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -6431,7 +6437,7 @@ ags_raven_synth_util_compute_triangle_s64(AgsRavenSynthUtil *raven_synth_util)
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -6477,7 +6483,7 @@ ags_raven_synth_util_compute_triangle_s64(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -6570,7 +6576,7 @@ ags_raven_synth_util_compute_triangle_s64(AgsRavenSynthUtil *raven_synth_util)
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -6660,7 +6666,7 @@ ags_raven_synth_util_compute_triangle_float(AgsRavenSynthUtil *raven_synth_util)
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -6704,7 +6710,7 @@ ags_raven_synth_util_compute_triangle_float(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -6797,7 +6803,7 @@ ags_raven_synth_util_compute_triangle_float(AgsRavenSynthUtil *raven_synth_util)
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -6887,7 +6893,7 @@ ags_raven_synth_util_compute_triangle_double(AgsRavenSynthUtil *raven_synth_util
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -6931,7 +6937,7 @@ ags_raven_synth_util_compute_triangle_double(AgsRavenSynthUtil *raven_synth_util
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -7024,7 +7030,7 @@ ags_raven_synth_util_compute_triangle_double(AgsRavenSynthUtil *raven_synth_util
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -7114,7 +7120,7 @@ ags_raven_synth_util_compute_triangle_complex(AgsRavenSynthUtil *raven_synth_uti
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -7158,7 +7164,7 @@ ags_raven_synth_util_compute_triangle_complex(AgsRavenSynthUtil *raven_synth_uti
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -7251,7 +7257,7 @@ ags_raven_synth_util_compute_triangle_complex(AgsRavenSynthUtil *raven_synth_uti
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -7406,7 +7412,7 @@ ags_raven_synth_util_compute_square_s8(AgsRavenSynthUtil *raven_synth_util)
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -7452,7 +7458,7 @@ ags_raven_synth_util_compute_square_s8(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -7545,7 +7551,7 @@ ags_raven_synth_util_compute_square_s8(AgsRavenSynthUtil *raven_synth_util)
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -7635,7 +7641,7 @@ ags_raven_synth_util_compute_square_s16(AgsRavenSynthUtil *raven_synth_util)
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -7681,7 +7687,7 @@ ags_raven_synth_util_compute_square_s16(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -7774,7 +7780,7 @@ ags_raven_synth_util_compute_square_s16(AgsRavenSynthUtil *raven_synth_util)
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -7864,7 +7870,7 @@ ags_raven_synth_util_compute_square_s24(AgsRavenSynthUtil *raven_synth_util)
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -7910,7 +7916,7 @@ ags_raven_synth_util_compute_square_s24(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -8003,7 +8009,7 @@ ags_raven_synth_util_compute_square_s24(AgsRavenSynthUtil *raven_synth_util)
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -8093,7 +8099,7 @@ ags_raven_synth_util_compute_square_s32(AgsRavenSynthUtil *raven_synth_util)
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -8139,7 +8145,7 @@ ags_raven_synth_util_compute_square_s32(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -8232,7 +8238,7 @@ ags_raven_synth_util_compute_square_s32(AgsRavenSynthUtil *raven_synth_util)
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -8322,7 +8328,7 @@ ags_raven_synth_util_compute_square_s64(AgsRavenSynthUtil *raven_synth_util)
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -8368,7 +8374,7 @@ ags_raven_synth_util_compute_square_s64(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -8461,7 +8467,7 @@ ags_raven_synth_util_compute_square_s64(AgsRavenSynthUtil *raven_synth_util)
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -8551,7 +8557,7 @@ ags_raven_synth_util_compute_square_float(AgsRavenSynthUtil *raven_synth_util)
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -8595,7 +8601,7 @@ ags_raven_synth_util_compute_square_float(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -8688,7 +8694,7 @@ ags_raven_synth_util_compute_square_float(AgsRavenSynthUtil *raven_synth_util)
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -8778,7 +8784,7 @@ ags_raven_synth_util_compute_square_double(AgsRavenSynthUtil *raven_synth_util)
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -8822,7 +8828,7 @@ ags_raven_synth_util_compute_square_double(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -8915,7 +8921,7 @@ ags_raven_synth_util_compute_square_double(AgsRavenSynthUtil *raven_synth_util)
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -9005,7 +9011,7 @@ ags_raven_synth_util_compute_square_complex(AgsRavenSynthUtil *raven_synth_util)
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -9049,7 +9055,7 @@ ags_raven_synth_util_compute_square_complex(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -9142,7 +9148,7 @@ ags_raven_synth_util_compute_square_complex(AgsRavenSynthUtil *raven_synth_util)
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -9297,7 +9303,7 @@ ags_raven_synth_util_compute_impulse_s8(AgsRavenSynthUtil *raven_synth_util)
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -9343,7 +9349,7 @@ ags_raven_synth_util_compute_impulse_s8(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -9436,7 +9442,7 @@ ags_raven_synth_util_compute_impulse_s8(AgsRavenSynthUtil *raven_synth_util)
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -9526,7 +9532,7 @@ ags_raven_synth_util_compute_impulse_s16(AgsRavenSynthUtil *raven_synth_util)
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -9572,7 +9578,7 @@ ags_raven_synth_util_compute_impulse_s16(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -9665,7 +9671,7 @@ ags_raven_synth_util_compute_impulse_s16(AgsRavenSynthUtil *raven_synth_util)
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -9755,7 +9761,7 @@ ags_raven_synth_util_compute_impulse_s24(AgsRavenSynthUtil *raven_synth_util)
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -9801,7 +9807,7 @@ ags_raven_synth_util_compute_impulse_s24(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -9894,7 +9900,7 @@ ags_raven_synth_util_compute_impulse_s24(AgsRavenSynthUtil *raven_synth_util)
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -9984,7 +9990,7 @@ ags_raven_synth_util_compute_impulse_s32(AgsRavenSynthUtil *raven_synth_util)
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -10030,7 +10036,7 @@ ags_raven_synth_util_compute_impulse_s32(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -10123,7 +10129,7 @@ ags_raven_synth_util_compute_impulse_s32(AgsRavenSynthUtil *raven_synth_util)
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -10213,7 +10219,7 @@ ags_raven_synth_util_compute_impulse_s64(AgsRavenSynthUtil *raven_synth_util)
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -10259,7 +10265,7 @@ ags_raven_synth_util_compute_impulse_s64(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -10352,7 +10358,7 @@ ags_raven_synth_util_compute_impulse_s64(AgsRavenSynthUtil *raven_synth_util)
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -10442,7 +10448,7 @@ ags_raven_synth_util_compute_impulse_float(AgsRavenSynthUtil *raven_synth_util)
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -10486,7 +10492,7 @@ ags_raven_synth_util_compute_impulse_float(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -10579,7 +10585,7 @@ ags_raven_synth_util_compute_impulse_float(AgsRavenSynthUtil *raven_synth_util)
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -10669,7 +10675,7 @@ ags_raven_synth_util_compute_impulse_double(AgsRavenSynthUtil *raven_synth_util)
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -10713,7 +10719,7 @@ ags_raven_synth_util_compute_impulse_double(AgsRavenSynthUtil *raven_synth_util)
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -10806,7 +10812,7 @@ ags_raven_synth_util_compute_impulse_double(AgsRavenSynthUtil *raven_synth_util)
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 
@@ -10896,7 +10902,7 @@ ags_raven_synth_util_compute_impulse_complex(AgsRavenSynthUtil *raven_synth_util
   guint sync_seq;
   guint sync_count;
   guint sync_attack;
-  guint phase_reset;
+  gdouble phase_reset;
   gdouble volume;
   guint i, i_stop;
 
@@ -10940,7 +10946,7 @@ ags_raven_synth_util_compute_impulse_complex(AgsRavenSynthUtil *raven_synth_util
   
   offset = raven_synth_util->offset;
 
-  phase_reset = 0;
+  phase_reset = 0.0;
 
   if(raven_synth_util->sync_attack[0] > 0.0){
     gboolean sync_attack_success;
@@ -11033,7 +11039,7 @@ ags_raven_synth_util_compute_impulse_complex(AgsRavenSynthUtil *raven_synth_util
       sync_counter++;
       
       if(sync_counter >= sync_attack){
-	phase_reset = raven_synth_util->sync_phase[nth_sync % sync_count];
+	phase_reset = (gdouble) raven_synth_util->sync_phase[nth_sync % sync_count];
 
 	nth_sync++;
 

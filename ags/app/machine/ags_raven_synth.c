@@ -1975,13 +1975,13 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
   gtk_adjustment_set_lower(adjustment,
 			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   22000.0);
+			   1.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    1.0);
 
   gtk_adjustment_set_value(adjustment,
-			   2000.0);
+			   1.0);
   ags_dial_set_radius(raven_synth->low_pass_0_filter_gain,
 		      12);
   
@@ -1990,7 +1990,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  1, 1,
 		  1, 1);
 
-  /* low-pass 0 filter gain */
+  /* low-pass 0 no-clip */
   label = (GtkLabel *) gtk_label_new(i18n("low-pass 0 - no clip"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
@@ -3760,13 +3760,13 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
   gtk_adjustment_set_lower(adjustment,
 			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   22000.0);
+			   1.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    1.0);
 
   gtk_adjustment_set_value(adjustment,
-			   2000.0);
+			   1.0);
   ags_dial_set_radius(raven_synth->low_pass_1_filter_gain,
 		      12);
   
@@ -3775,7 +3775,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  1, 1,
 		  1, 1);
 
-  /* low-pass 1 filter gain */
+  /* low-pass 1 no-clip */
   label = (GtkLabel *) gtk_label_new(i18n("low-pass 1 - no clip"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
@@ -6194,7 +6194,7 @@ ags_raven_synth_map_recall(AgsMachine *machine)
 
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
-
+  
   /* ags-fx-buffer */
   start_recall = ags_fx_factory_create(audio,
 				       raven_synth->buffer_play_container, raven_synth->buffer_recall_container,
@@ -6309,7 +6309,7 @@ ags_raven_synth_input_map_recall(AgsRavenSynth *raven_synth,
 
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
-
+  
   /* ags-fx-buffer */
   start_recall = ags_fx_factory_create(audio,
 				       raven_synth->buffer_play_container, raven_synth->buffer_recall_container,

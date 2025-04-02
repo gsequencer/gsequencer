@@ -222,7 +222,7 @@ ags_fx_raven_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notatio
     
   vibrato_enabled = FALSE;
   vibrato_gain = 1.0;
-  vibrato_lfo_depth = 1.0;
+  vibrato_lfo_depth = 0.0;
   vibrato_lfo_freq = 8.172;
   vibrato_tuning = 0.0;
 
@@ -3230,7 +3230,7 @@ ags_fx_raven_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notatio
       g_rec_mutex_unlock(fx_raven_synth_audio_mutex);
     }
 
-    /* star synth 0 */
+    /* raven synth 0 */
     ags_raven_synth_util_set_source(channel_data->raven_synth_0,
 				    source->stream_current->data);
     ags_raven_synth_util_set_source_stride(channel_data->raven_synth_0,
@@ -3283,11 +3283,6 @@ ags_fx_raven_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notatio
 					    (guint) floor((double) (note_256th_offset_lower - x0_256th) * note_256th_delay * (double) buffer_size));
     }
     
-    ags_raven_synth_util_set_frame_count(channel_data->raven_synth_0,
-					 floor(((offset_counter - x0) * delay + delay_counter + 1.0) * buffer_size));
-    ags_raven_synth_util_set_offset(channel_data->raven_synth_0,
-				    floor(((offset_counter - x0) * delay + delay_counter) * buffer_size));
-
     g_rec_mutex_lock(source_stream_mutex);
 
     switch(ags_raven_synth_util_get_synth_oscillator_mode(channel_data->raven_synth_0)){
@@ -3323,7 +3318,7 @@ ags_fx_raven_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notatio
     ags_raven_synth_util_set_source(channel_data->raven_synth_0,
 				    NULL);
     
-    /* star synth 1 */
+    /* raven synth 1 */
     ags_raven_synth_util_set_source(channel_data->raven_synth_1,
 				    source->stream_current->data);
     ags_raven_synth_util_set_source_stride(channel_data->raven_synth_1,
@@ -3506,7 +3501,7 @@ ags_fx_raven_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notatio
     ags_amplifier_util_set_destination(channel_data->amplifier_util_1,
 				       NULL);
 #endif
-    
+
     /* noise */
     if(ags_noise_util_get_volume(channel_data->noise_util) != 0.0){
       ags_noise_util_set_source(channel_data->noise_util,
