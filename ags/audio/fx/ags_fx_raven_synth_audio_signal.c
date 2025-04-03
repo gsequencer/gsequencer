@@ -3406,7 +3406,6 @@ ags_fx_raven_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notatio
     ags_raven_synth_util_set_source(channel_data->raven_synth_1,
 				    NULL);
 
-#if 0
     /* low-pass 0 */
     ags_low_pass_filter_util_set_source(channel_data->low_pass_filter_util_0,
 					source->stream_current->data);
@@ -3452,9 +3451,7 @@ ags_fx_raven_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notatio
       
     ags_low_pass_filter_util_set_destination(channel_data->low_pass_filter_util_1,
 					     NULL);
-#endif
 
-#if 0
     /* amplifier 0 */
     ags_amplifier_util_set_source(channel_data->amplifier_util_0,
 				  source->stream_current->data);
@@ -3500,7 +3497,6 @@ ags_fx_raven_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notatio
       
     ags_amplifier_util_set_destination(channel_data->amplifier_util_1,
 				       NULL);
-#endif
 
     /* noise */
     if(ags_noise_util_get_volume(channel_data->noise_util) != 0.0){

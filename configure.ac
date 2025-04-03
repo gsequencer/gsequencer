@@ -996,7 +996,7 @@ AS_IF([test "x$LIBGSEQUENCER_API_DIR" != x],
 
 gl_INIT
 
-AM_EXTRA_RECURSIVE_TARGETS([ags-docs])
+# AM_EXTRA_RECURSIVE_TARGETS([ags-docs])
 AC_CONFIG_FILES([
 lib/Makefile
 Makefile

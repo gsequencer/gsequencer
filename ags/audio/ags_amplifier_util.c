@@ -37,6 +37,7 @@
 
 #include <ags/audio/ags_amplifier_util.h>
 
+#include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
 void ags_fil_proc_s8(AgsAmplifierUtil *amplifier_util,
@@ -408,6 +409,24 @@ ags_amplifier_util_set_buffer_length(AgsAmplifierUtil *amplifier_util,
     return;
   }
 
+  if(buffer_length == 0){
+    ags_stream_free(amplifier_util->mix_buffer);
+
+    amplifier_util->mix_buffer = NULL;
+  }
+
+  if(buffer_length > 0){
+    if(amplifier_util->mix_buffer == NULL){
+      amplifier_util->mix_buffer = ags_stream_alloc(buffer_length,
+						    amplifier_util->format);
+    }else{
+      ags_stream_free(amplifier_util->mix_buffer);
+
+      amplifier_util->mix_buffer = ags_stream_alloc(buffer_length,
+						    amplifier_util->format);
+    }
+  }
+  
   amplifier_util->buffer_length = buffer_length;
 }
 
@@ -446,6 +465,18 @@ ags_amplifier_util_set_format(AgsAmplifierUtil *amplifier_util,
 {
   if(amplifier_util == NULL){
     return;
+  }
+
+  if(amplifier_util->buffer_length > 0){
+    if(amplifier_util->mix_buffer == NULL){
+      amplifier_util->mix_buffer = ags_stream_alloc(amplifier_util->buffer_length,
+						    format);
+    }else{
+      ags_stream_free(amplifier_util->mix_buffer);
+
+      amplifier_util->mix_buffer = ags_stream_alloc(amplifier_util->buffer_length,
+						    format);
+    }
   }
 
   amplifier_util->format = format;
@@ -1016,16 +1047,15 @@ ags_fil_proc_s8(AgsAmplifierUtil *amplifier_util,
 		guint nth_sect,
 		gint k, gdouble f, gdouble b, gdouble g)
 {
-  gint8 *destination;
+  gint8 *mix_buffer;
   gint8 *source;
 
-  guint destination_stride, source_stride;
+  guint source_stride;
   
   gdouble s1, s2, d1, d2, a, da, x, y;
   gboolean  u2 = FALSE;
 
-  destination = (gint8 *) amplifier_util->destination;
-  destination_stride = amplifier_util->destination_stride;
+  mix_buffer = (gint8 *) amplifier_util->mix_buffer;
 
   source = (gint8 *) amplifier_util->source;
   source_stride = amplifier_util->source_stride;
@@ -1087,17 +1117,17 @@ ags_fil_proc_s8(AgsAmplifierUtil *amplifier_util,
     s2 += d2;
     a += da;
 
-    x = *source;
+    x = (source[0]);
     y = x - s2 * amplifier_util->proc_sect[nth_sect].z2;
 
-    destination[0] -= (gint8) (a * (amplifier_util->proc_sect[nth_sect].z2 + s2 * y - x)); 
+    mix_buffer[0] -= (gint8) (a * (amplifier_util->proc_sect[nth_sect].z2 + s2 * y - x)); 
 
     y -= s1 * amplifier_util->proc_sect[nth_sect].z1;
     amplifier_util->proc_sect[nth_sect].z2 = amplifier_util->proc_sect[nth_sect].z1 + s1 * y;
     amplifier_util->proc_sect[nth_sect].z1 = y + 1e-10f;
 
     source += source_stride;
-    destination += destination_stride;
+    mix_buffer++;
   }
 }
 
@@ -1106,16 +1136,15 @@ ags_fil_proc_s16(AgsAmplifierUtil *amplifier_util,
 		 guint nth_sect,
 		 gint k, gdouble f, gdouble b, gdouble g)
 {
-  gint16 *destination;
+  gint16 *mix_buffer;
   gint16 *source;
 
-  guint destination_stride, source_stride;
+  guint source_stride;
   
   gdouble s1, s2, d1, d2, a, da, x, y;
   gboolean  u2 = FALSE;
 
-  destination = (gint16 *) amplifier_util->destination;
-  destination_stride = amplifier_util->destination_stride;
+  mix_buffer = (gint16 *) amplifier_util->mix_buffer;
 
   source = (gint16 *) amplifier_util->source;
   source_stride = amplifier_util->source_stride;
@@ -1177,17 +1206,17 @@ ags_fil_proc_s16(AgsAmplifierUtil *amplifier_util,
     s2 += d2;
     a += da;
 
-    x = *source;
+    x = (source[0]);
     y = x - s2 * amplifier_util->proc_sect[nth_sect].z2;
 
-    destination[0] -= (gint16) (a * (amplifier_util->proc_sect[nth_sect].z2 + s2 * y - x)); 
+    mix_buffer[0] -= (gint16) (a * (amplifier_util->proc_sect[nth_sect].z2 + s2 * y - x)); 
 
     y -= s1 * amplifier_util->proc_sect[nth_sect].z1;
     amplifier_util->proc_sect[nth_sect].z2 = amplifier_util->proc_sect[nth_sect].z1 + s1 * y;
     amplifier_util->proc_sect[nth_sect].z1 = y + 1e-10f;
 
     source += source_stride;
-    destination += destination_stride;
+    mix_buffer++;
   }
 }
 
@@ -1196,16 +1225,15 @@ ags_fil_proc_s24(AgsAmplifierUtil *amplifier_util,
 		 guint nth_sect,
 		 gint k, gdouble f, gdouble b, gdouble g)
 {
-  gint32 *destination;
+  gint32 *mix_buffer;
   gint32 *source;
 
-  guint destination_stride, source_stride;
+  guint source_stride;
   
   gdouble s1, s2, d1, d2, a, da, x, y;
   gboolean  u2 = FALSE;
 
-  destination = (gint32 *) amplifier_util->destination;
-  destination_stride = amplifier_util->destination_stride;
+  mix_buffer = (gint32 *) amplifier_util->mix_buffer;
 
   source = (gint32 *) amplifier_util->source;
   source_stride = amplifier_util->source_stride;
@@ -1267,17 +1295,17 @@ ags_fil_proc_s24(AgsAmplifierUtil *amplifier_util,
     s2 += d2;
     a += da;
 
-    x = *source;
+    x = (source[0]);
     y = x - s2 * amplifier_util->proc_sect[nth_sect].z2;
 
-    destination[0] -= (gint32) (a * (amplifier_util->proc_sect[nth_sect].z2 + s2 * y - x));
+    mix_buffer[0] -= (gint32) (a * (amplifier_util->proc_sect[nth_sect].z2 + s2 * y - x));
 
     y -= s1 * amplifier_util->proc_sect[nth_sect].z1;
     amplifier_util->proc_sect[nth_sect].z2 = amplifier_util->proc_sect[nth_sect].z1 + s1 * y;
     amplifier_util->proc_sect[nth_sect].z1 = y + 1e-10f;
 
     source += source_stride;
-    destination += destination_stride;
+    mix_buffer++;
   }
 }
 
@@ -1286,16 +1314,15 @@ ags_fil_proc_s32(AgsAmplifierUtil *amplifier_util,
 		 guint nth_sect,
 		 gint k, gdouble f, gdouble b, gdouble g)
 {
-  gint32 *destination;
+  gint32 *mix_buffer;
   gint32 *source;
 
-  guint destination_stride, source_stride;
+  guint source_stride;
   
   gdouble s1, s2, d1, d2, a, da, x, y;
   gboolean  u2 = FALSE;
 
-  destination = (gint32 *) amplifier_util->destination;
-  destination_stride = amplifier_util->destination_stride;
+  mix_buffer = (gint32 *) amplifier_util->mix_buffer;
 
   source = (gint32 *) amplifier_util->source;
   source_stride = amplifier_util->source_stride;
@@ -1357,17 +1384,17 @@ ags_fil_proc_s32(AgsAmplifierUtil *amplifier_util,
     s2 += d2;
     a += da;
 
-    x = *source;
+    x = (source[0]);
     y = x - s2 * amplifier_util->proc_sect[nth_sect].z2;
 
-    destination[0] -= (gint32) (a * (amplifier_util->proc_sect[nth_sect].z2 + s2 * y - x));
+    mix_buffer[0] -= (gint32) (a * (amplifier_util->proc_sect[nth_sect].z2 + s2 * y - x));
 
     y -= s1 * amplifier_util->proc_sect[nth_sect].z1;
     amplifier_util->proc_sect[nth_sect].z2 = amplifier_util->proc_sect[nth_sect].z1 + s1 * y;
     amplifier_util->proc_sect[nth_sect].z1 = y + 1e-10f;
 
     source += source_stride;
-    destination += destination_stride;
+    mix_buffer++;
   }
 }
 
@@ -1376,7 +1403,7 @@ ags_fil_proc_s64(AgsAmplifierUtil *amplifier_util,
 		 guint nth_sect,
 		 gint k, gdouble f, gdouble b, gdouble g)
 {
-  gint64 *destination;
+  gint64 *mix_buffer;
   gint64 *source;
 
   guint destination_stride, source_stride;
@@ -1384,8 +1411,7 @@ ags_fil_proc_s64(AgsAmplifierUtil *amplifier_util,
   gdouble s1, s2, d1, d2, a, da, x, y;
   gboolean  u2 = FALSE;
 
-  destination = (gint64 *) amplifier_util->destination;
-  destination_stride = amplifier_util->destination_stride;
+  mix_buffer = (gint64 *) amplifier_util->mix_buffer;
 
   source = (gint64 *) amplifier_util->source;
   source_stride = amplifier_util->source_stride;
@@ -1447,17 +1473,17 @@ ags_fil_proc_s64(AgsAmplifierUtil *amplifier_util,
     s2 += d2;
     a += da;
 
-    x = *source;
+    x = (source[0]);
     y = x - s2 * amplifier_util->proc_sect[nth_sect].z2;
 
-    destination[0] -= (gint64) (a * (amplifier_util->proc_sect[nth_sect].z2 + s2 * y - x));
+    mix_buffer[0] -= (gint64) (a * (amplifier_util->proc_sect[nth_sect].z2 + s2 * y - x));
 
     y -= s1 * amplifier_util->proc_sect[nth_sect].z1;
     amplifier_util->proc_sect[nth_sect].z2 = amplifier_util->proc_sect[nth_sect].z1 + s1 * y;
     amplifier_util->proc_sect[nth_sect].z1 = y + 1e-10f;
 
     source += source_stride;
-    destination += destination_stride;
+    mix_buffer++;
   }
 }
 
@@ -1466,16 +1492,15 @@ ags_fil_proc_float(AgsAmplifierUtil *amplifier_util,
 		    guint nth_sect,
 		    gint k, gdouble f, gdouble b, gdouble g)
 {
-  gfloat *destination;
+  gfloat *mix_buffer;
   gfloat *source;
 
-  guint destination_stride, source_stride;
+  guint source_stride;
   
   gdouble s1, s2, d1, d2, a, da, x, y;
   gboolean  u2 = FALSE;
 
-  destination = (gfloat *) amplifier_util->destination;
-  destination_stride = amplifier_util->destination_stride;
+  mix_buffer = (gfloat *) amplifier_util->mix_buffer;
 
   source = (gfloat *) amplifier_util->source;
   source_stride = amplifier_util->source_stride;
@@ -1537,17 +1562,17 @@ ags_fil_proc_float(AgsAmplifierUtil *amplifier_util,
     s2 += d2;
     a += da;
 
-    x = *source;
+    x = (source[0]);
     y = x - s2 * amplifier_util->proc_sect[nth_sect].z2;
 
-    destination[0] -= (gfloat) (a * (amplifier_util->proc_sect[nth_sect].z2 + s2 * y - x));
+    mix_buffer[0] -= (gfloat) (a * (amplifier_util->proc_sect[nth_sect].z2 + s2 * y - x));
 
     y -= s1 * amplifier_util->proc_sect[nth_sect].z1;
     amplifier_util->proc_sect[nth_sect].z2 = amplifier_util->proc_sect[nth_sect].z1 + s1 * y;
     amplifier_util->proc_sect[nth_sect].z1 = y + 1e-10f;
 
     source += source_stride;
-    destination += destination_stride;
+    mix_buffer++;
   }
 }
 
@@ -1556,7 +1581,7 @@ ags_fil_proc_double(AgsAmplifierUtil *amplifier_util,
 		    guint nth_sect,
 		    gint k, gdouble f, gdouble b, gdouble g)
 {
-  gdouble *destination;
+  gdouble *mix_buffer;
   gdouble *source;
 
   guint destination_stride, source_stride;
@@ -1564,8 +1589,7 @@ ags_fil_proc_double(AgsAmplifierUtil *amplifier_util,
   gdouble s1, s2, d1, d2, a, da, x, y;
   gboolean  u2 = FALSE;
 
-  destination = (gdouble *) amplifier_util->destination;
-  destination_stride = amplifier_util->destination_stride;
+  mix_buffer = (gdouble *) amplifier_util->mix_buffer;
 
   source = (gdouble *) amplifier_util->source;
   source_stride = amplifier_util->source_stride;
@@ -1627,17 +1651,17 @@ ags_fil_proc_double(AgsAmplifierUtil *amplifier_util,
     s2 += d2;
     a += da;
 
-    x = *source;
+    x = (source[0]);
     y = x - s2 * amplifier_util->proc_sect[nth_sect].z2;
 
-    destination[0] -= (gdouble) (a * (amplifier_util->proc_sect[nth_sect].z2 + s2 * y - x));
+    mix_buffer[0] -= (gdouble) (a * (amplifier_util->proc_sect[nth_sect].z2 + s2 * y - x));
 
     y -= s1 * amplifier_util->proc_sect[nth_sect].z1;
     amplifier_util->proc_sect[nth_sect].z2 = amplifier_util->proc_sect[nth_sect].z1 + s1 * y;
     amplifier_util->proc_sect[nth_sect].z1 = y + 1e-10f;
 
     source += source_stride;
-    destination += destination_stride;
+    mix_buffer++;
   }
 }
 
@@ -1646,17 +1670,16 @@ ags_fil_proc_complex(AgsAmplifierUtil *amplifier_util,
 		     guint nth_sect,
 		     gint k, gdouble f, gdouble b, gdouble g)
 {
-  AgsComplex *destination;
+  AgsComplex *mix_buffer;
   AgsComplex *source;
 
-  guint destination_stride, source_stride;
+  guint source_stride;
 
   double _Complex x, y;
   gdouble s1, s2, d1, d2, a, da;
   gboolean  u2 = FALSE;
 
-  destination = (AgsComplex *) amplifier_util->destination;
-  destination_stride = amplifier_util->destination_stride;
+  mix_buffer = (AgsComplex *) amplifier_util->mix_buffer;
 
   source = (AgsComplex *) amplifier_util->source;
   source_stride = amplifier_util->source_stride;
@@ -1721,7 +1744,7 @@ ags_fil_proc_complex(AgsAmplifierUtil *amplifier_util,
     x = ags_complex_get(source);
     y = x - s2 * amplifier_util->proc_sect[nth_sect].z2;
 
-    ags_complex_set(destination,
+    ags_complex_set(mix_buffer,
 		    x - a * (amplifier_util->proc_sect[nth_sect].z2 + s2 * y - x)); 
 
     y -= s1 * amplifier_util->proc_sect[nth_sect].z1;
@@ -1729,7 +1752,7 @@ ags_fil_proc_complex(AgsAmplifierUtil *amplifier_util,
     amplifier_util->proc_sect[nth_sect].z1 = y + 1e-10f;
 
     source += source_stride;
-    destination += destination_stride;
+    mix_buffer++;
   }
 }
 
@@ -1827,6 +1850,7 @@ exp2ap(gdouble x)
 void
 ags_amplifier_util_process_s8(AgsAmplifierUtil *amplifier_util)
 {
+  gint8 *destination;
   gint8 *aip;
   gint8 *aop;
 
@@ -1843,8 +1867,10 @@ ags_amplifier_util_process_s8(AgsAmplifierUtil *amplifier_util)
   gdouble sgain[AGS_AMPLIFIER_UTIL_AMP_COUNT];
 
   aip = amplifier_util->source;
-  aop = amplifier_util->destination;
+  aop = amplifier_util->mix_buffer;
   
+  destination = amplifier_util->destination;
+
   source_stride = amplifier_util->source_stride;
   destination_stride = amplifier_util->destination_stride;
 
@@ -1981,10 +2007,10 @@ ags_amplifier_util_process_s8(AgsAmplifierUtil *amplifier_util)
     
     if(p){
       ags_audio_buffer_util_clear_buffer(NULL,
-					 aop, destination_stride,
+					 aop, 1,
 					 k, ags_audio_buffer_util_format_from_soundcard(NULL, format));
       ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
-						  aop, destination_stride, 0,
+						  aop, 1, 0,
 						  p, source_stride, 0,
 						  k, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
 												     ags_audio_buffer_util_format_from_soundcard(NULL, format),
@@ -1996,14 +2022,24 @@ ags_amplifier_util_process_s8(AgsAmplifierUtil *amplifier_util)
       
       for (i = 0; i < k; i++){
 	g += d;
-	aop[i * destination_stride] = (gint8) (g * (gdouble) sig[i] + (1.0 - g) * (gdouble) aip[i * source_stride]);
+	aop[i] = (gint8) (g * (gdouble) sig[i] + (1.0 - g) * (gdouble) aip[i * source_stride]);
       }
     }
     
     aip += (k * source_stride);
-    aop += (k * destination_stride);
+    aop += (k);
     len -= k;
   }
+
+  ags_audio_buffer_util_clear_buffer(NULL,
+				     destination, destination_stride,
+				     buffer_length, ags_audio_buffer_util_format_from_soundcard(NULL, format));
+  ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
+					      destination, destination_stride, 0,
+					      aop, 1, 0,
+					      buffer_length, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
+												 ags_audio_buffer_util_format_from_soundcard(NULL, format),
+												 ags_audio_buffer_util_format_from_soundcard(NULL, format)));
 }
 
 /**
@@ -2017,6 +2053,7 @@ ags_amplifier_util_process_s8(AgsAmplifierUtil *amplifier_util)
 void
 ags_amplifier_util_process_s16(AgsAmplifierUtil *amplifier_util)
 {
+  gint16 *destination;
   gint16 *aip;
   gint16 *aop;
 
@@ -2033,7 +2070,9 @@ ags_amplifier_util_process_s16(AgsAmplifierUtil *amplifier_util)
   gdouble sgain[AGS_AMPLIFIER_UTIL_AMP_COUNT];
 
   aip = amplifier_util->source;
-  aop = amplifier_util->destination;
+  aop = amplifier_util->mix_buffer;
+  
+  destination = amplifier_util->destination;
   
   source_stride = amplifier_util->source_stride;
   destination_stride = amplifier_util->destination_stride;
@@ -2171,10 +2210,10 @@ ags_amplifier_util_process_s16(AgsAmplifierUtil *amplifier_util)
     
     if(p){
       ags_audio_buffer_util_clear_buffer(NULL,
-					 aop, destination_stride,
+					 aop, 1,
 					 k, ags_audio_buffer_util_format_from_soundcard(NULL, format));
       ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
-						  aop, destination_stride, 0,
+						  aop, 1, 0,
 						  p, source_stride, 0,
 						  k, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
 												     ags_audio_buffer_util_format_from_soundcard(NULL, format),
@@ -2191,9 +2230,19 @@ ags_amplifier_util_process_s16(AgsAmplifierUtil *amplifier_util)
     }
     
     aip += (k * source_stride);
-    aop += (k * destination_stride);
+    aop += (k);
     len -= k;
   }
+
+  ags_audio_buffer_util_clear_buffer(NULL,
+				     destination, destination_stride,
+				     buffer_length, ags_audio_buffer_util_format_from_soundcard(NULL, format));
+  ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
+					      destination, destination_stride, 0,
+					      aop, 1, 0,
+					      buffer_length, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
+												 ags_audio_buffer_util_format_from_soundcard(NULL, format),
+												 ags_audio_buffer_util_format_from_soundcard(NULL, format)));
 }
 
 /**
@@ -2207,6 +2256,7 @@ ags_amplifier_util_process_s16(AgsAmplifierUtil *amplifier_util)
 void
 ags_amplifier_util_process_s24(AgsAmplifierUtil *amplifier_util)
 {
+  gint32 *destination;
   gint32 *aip;
   gint32 *aop;
 
@@ -2223,7 +2273,9 @@ ags_amplifier_util_process_s24(AgsAmplifierUtil *amplifier_util)
   gdouble sgain[AGS_AMPLIFIER_UTIL_AMP_COUNT];
 
   aip = amplifier_util->source;
-  aop = amplifier_util->destination;
+  aop = amplifier_util->mix_buffer;
+  
+  destination = amplifier_util->destination;
   
   source_stride = amplifier_util->source_stride;
   destination_stride = amplifier_util->destination_stride;
@@ -2361,10 +2413,10 @@ ags_amplifier_util_process_s24(AgsAmplifierUtil *amplifier_util)
     
     if(p){
       ags_audio_buffer_util_clear_buffer(NULL,
-					 aop, destination_stride,
+					 aop, 1,
 					 k, ags_audio_buffer_util_format_from_soundcard(NULL, format));
       ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
-						  aop, destination_stride, 0,
+						  aop, 1, 0,
 						  p, source_stride, 0,
 						  k, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
 												     ags_audio_buffer_util_format_from_soundcard(NULL, format),
@@ -2381,9 +2433,19 @@ ags_amplifier_util_process_s24(AgsAmplifierUtil *amplifier_util)
     }
     
     aip += (k * source_stride);
-    aop += (k * destination_stride);
+    aop += (k);
     len -= k;
   }
+
+  ags_audio_buffer_util_clear_buffer(NULL,
+				     destination, destination_stride,
+				     buffer_length, ags_audio_buffer_util_format_from_soundcard(NULL, format));
+  ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
+					      destination, destination_stride, 0,
+					      aop, 1, 0,
+					      buffer_length, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
+												 ags_audio_buffer_util_format_from_soundcard(NULL, format),
+												 ags_audio_buffer_util_format_from_soundcard(NULL, format)));
 }
 
 /**
@@ -2397,6 +2459,7 @@ ags_amplifier_util_process_s24(AgsAmplifierUtil *amplifier_util)
 void
 ags_amplifier_util_process_s32(AgsAmplifierUtil *amplifier_util)
 {
+  gint32 *destination;
   gint32 *aip;
   gint32 *aop;
 
@@ -2413,7 +2476,9 @@ ags_amplifier_util_process_s32(AgsAmplifierUtil *amplifier_util)
   gdouble sgain[AGS_AMPLIFIER_UTIL_AMP_COUNT];
 
   aip = amplifier_util->source;
-  aop = amplifier_util->destination;
+  aop = amplifier_util->mix_buffer;
+  
+  destination = amplifier_util->destination;
   
   source_stride = amplifier_util->source_stride;
   destination_stride = amplifier_util->destination_stride;
@@ -2551,10 +2616,10 @@ ags_amplifier_util_process_s32(AgsAmplifierUtil *amplifier_util)
     
     if(p){
       ags_audio_buffer_util_clear_buffer(NULL,
-					 aop, destination_stride,
+					 aop, 1,
 					 k, ags_audio_buffer_util_format_from_soundcard(NULL, format));
       ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
-						  aop, destination_stride, 0,
+						  aop, 1, 0,
 						  p, source_stride, 0,
 						  k, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
 												     ags_audio_buffer_util_format_from_soundcard(NULL, format),
@@ -2571,9 +2636,19 @@ ags_amplifier_util_process_s32(AgsAmplifierUtil *amplifier_util)
     }
     
     aip += (k * source_stride);
-    aop += (k * destination_stride);
+    aop += (k);
     len -= k;
   }
+
+  ags_audio_buffer_util_clear_buffer(NULL,
+				     destination, destination_stride,
+				     buffer_length, ags_audio_buffer_util_format_from_soundcard(NULL, format));
+  ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
+					      destination, destination_stride, 0,
+					      aop, 1, 0,
+					      buffer_length, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
+												 ags_audio_buffer_util_format_from_soundcard(NULL, format),
+												 ags_audio_buffer_util_format_from_soundcard(NULL, format)));
 }
 
 /**
@@ -2587,6 +2662,7 @@ ags_amplifier_util_process_s32(AgsAmplifierUtil *amplifier_util)
 void
 ags_amplifier_util_process_s64(AgsAmplifierUtil *amplifier_util)
 {
+  gint64 *destination;
   gint64 *aip;
   gint64 *aop;
 
@@ -2603,7 +2679,9 @@ ags_amplifier_util_process_s64(AgsAmplifierUtil *amplifier_util)
   gdouble sgain[AGS_AMPLIFIER_UTIL_AMP_COUNT];
 
   aip = amplifier_util->source;
-  aop = amplifier_util->destination;
+  aop = amplifier_util->mix_buffer;
+  
+  destination = amplifier_util->destination;
   
   source_stride = amplifier_util->source_stride;
   destination_stride = amplifier_util->destination_stride;
@@ -2741,10 +2819,10 @@ ags_amplifier_util_process_s64(AgsAmplifierUtil *amplifier_util)
     
     if(p){
       ags_audio_buffer_util_clear_buffer(NULL,
-					 aop, destination_stride,
+					 aop, 1,
 					 k, ags_audio_buffer_util_format_from_soundcard(NULL, format));
       ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
-						  aop, destination_stride, 0,
+						  aop, 1, 0,
 						  p, source_stride, 0,
 						  k, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
 												     ags_audio_buffer_util_format_from_soundcard(NULL, format),
@@ -2761,9 +2839,19 @@ ags_amplifier_util_process_s64(AgsAmplifierUtil *amplifier_util)
     }
     
     aip += (k * source_stride);
-    aop += (k * destination_stride);
+    aop += (k);
     len -= k;
   }
+
+  ags_audio_buffer_util_clear_buffer(NULL,
+				     destination, destination_stride,
+				     buffer_length, ags_audio_buffer_util_format_from_soundcard(NULL, format));
+  ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
+					      destination, destination_stride, 0,
+					      aop, 1, 0,
+					      buffer_length, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
+												 ags_audio_buffer_util_format_from_soundcard(NULL, format),
+												 ags_audio_buffer_util_format_from_soundcard(NULL, format)));
 }
 
 /**
@@ -2777,6 +2865,7 @@ ags_amplifier_util_process_s64(AgsAmplifierUtil *amplifier_util)
 void
 ags_amplifier_util_process_float(AgsAmplifierUtil *amplifier_util)
 {
+  gfloat *destination;
   gfloat *aip;
   gfloat *aop;
 
@@ -2793,7 +2882,9 @@ ags_amplifier_util_process_float(AgsAmplifierUtil *amplifier_util)
   gdouble sgain[AGS_AMPLIFIER_UTIL_AMP_COUNT];
 
   aip = amplifier_util->source;
-  aop = amplifier_util->destination;
+  aop = amplifier_util->mix_buffer;
+  
+  destination = amplifier_util->destination;
   
   source_stride = amplifier_util->source_stride;
   destination_stride = amplifier_util->destination_stride;
@@ -2931,10 +3022,10 @@ ags_amplifier_util_process_float(AgsAmplifierUtil *amplifier_util)
     
     if(p){
       ags_audio_buffer_util_clear_buffer(NULL,
-					 aop, destination_stride,
+					 aop, 1,
 					 k, ags_audio_buffer_util_format_from_soundcard(NULL, format));
       ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
-						  aop, destination_stride, 0,
+						  aop, 1, 0,
 						  p, source_stride, 0,
 						  k, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
 												     ags_audio_buffer_util_format_from_soundcard(NULL, format),
@@ -2951,9 +3042,19 @@ ags_amplifier_util_process_float(AgsAmplifierUtil *amplifier_util)
     }
     
     aip += (k * source_stride);
-    aop += (k * destination_stride);
+    aop += (k);
     len -= k;
   }
+
+  ags_audio_buffer_util_clear_buffer(NULL,
+				     destination, destination_stride,
+				     buffer_length, ags_audio_buffer_util_format_from_soundcard(NULL, format));
+  ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
+					      destination, destination_stride, 0,
+					      aop, 1, 0,
+					      buffer_length, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
+												 ags_audio_buffer_util_format_from_soundcard(NULL, format),
+												 ags_audio_buffer_util_format_from_soundcard(NULL, format)));
 }
 
 /**
@@ -2967,6 +3068,7 @@ ags_amplifier_util_process_float(AgsAmplifierUtil *amplifier_util)
 void
 ags_amplifier_util_process_double(AgsAmplifierUtil *amplifier_util)
 {
+  double *destination;
   double *aip;
   double *aop;
 
@@ -2983,7 +3085,9 @@ ags_amplifier_util_process_double(AgsAmplifierUtil *amplifier_util)
   gdouble sgain[AGS_AMPLIFIER_UTIL_AMP_COUNT];
 
   aip = amplifier_util->source;
-  aop = amplifier_util->destination;
+  aop = amplifier_util->mix_buffer;
+  
+  destination = amplifier_util->destination;
   
   source_stride = amplifier_util->source_stride;
   destination_stride = amplifier_util->destination_stride;
@@ -3121,10 +3225,10 @@ ags_amplifier_util_process_double(AgsAmplifierUtil *amplifier_util)
     
     if(p){
       ags_audio_buffer_util_clear_buffer(NULL,
-					 aop, destination_stride,
+					 aop, 1,
 					 k, ags_audio_buffer_util_format_from_soundcard(NULL, format));
       ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
-						  aop, destination_stride, 0,
+						  aop, 1, 0,
 						  p, source_stride, 0,
 						  k, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
 												     ags_audio_buffer_util_format_from_soundcard(NULL, format),
@@ -3141,9 +3245,19 @@ ags_amplifier_util_process_double(AgsAmplifierUtil *amplifier_util)
     }
     
     aip += (k * source_stride);
-    aop += (k * destination_stride);
+    aop += (k);
     len -= k;
   }
+
+  ags_audio_buffer_util_clear_buffer(NULL,
+				     destination, destination_stride,
+				     buffer_length, ags_audio_buffer_util_format_from_soundcard(NULL, format));
+  ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
+					      destination, destination_stride, 0,
+					      aop, 1, 0,
+					      buffer_length, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
+												 ags_audio_buffer_util_format_from_soundcard(NULL, format),
+												 ags_audio_buffer_util_format_from_soundcard(NULL, format)));
 }
 
 /**
@@ -3157,6 +3271,7 @@ ags_amplifier_util_process_double(AgsAmplifierUtil *amplifier_util)
 void
 ags_amplifier_util_process_complex(AgsAmplifierUtil *amplifier_util)
 {
+  AgsComplex *destination;
   AgsComplex *aip;
   AgsComplex *aop;
 
@@ -3173,7 +3288,9 @@ ags_amplifier_util_process_complex(AgsAmplifierUtil *amplifier_util)
   gdouble sgain[AGS_AMPLIFIER_UTIL_AMP_COUNT];
 
   aip = amplifier_util->source;
-  aop = amplifier_util->destination;
+  aop = amplifier_util->mix_buffer;
+  
+  destination = amplifier_util->destination;
   
   source_stride = amplifier_util->source_stride;
   destination_stride = amplifier_util->destination_stride;
@@ -3312,10 +3429,10 @@ ags_amplifier_util_process_complex(AgsAmplifierUtil *amplifier_util)
     
     if(p){
       ags_audio_buffer_util_clear_buffer(NULL,
-					 aop, destination_stride,
+					 aop, 1,
 					 k, ags_audio_buffer_util_format_from_soundcard(NULL, format));
       ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
-						  aop, destination_stride, 0,
+						  aop, 1, 0,
 						  p, source_stride, 0,
 						  k, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
 												     ags_audio_buffer_util_format_from_soundcard(NULL, format),
@@ -3333,9 +3450,19 @@ ags_amplifier_util_process_complex(AgsAmplifierUtil *amplifier_util)
     }
     
     aip += (k * source_stride);
-    aop += (k * destination_stride);
+    aop += (k);
     len -= k;
   }
+
+  ags_audio_buffer_util_clear_buffer(NULL,
+				     destination, destination_stride,
+				     buffer_length, ags_audio_buffer_util_format_from_soundcard(NULL, format));
+  ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
+					      destination, destination_stride, 0,
+					      aop, 1, 0,
+					      buffer_length, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
+												 ags_audio_buffer_util_format_from_soundcard(NULL, format),
+												 ags_audio_buffer_util_format_from_soundcard(NULL, format)));
 }
 
 /**

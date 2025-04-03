@@ -11703,11 +11703,23 @@ ags_fx_raven_synth_audio_notify_buffer_size_callback(GObject *gobject,
 
 	/* set buffer length */
 	ags_raven_synth_util_set_buffer_length(channel_data->raven_synth_0,
-					     buffer_size);
+					       buffer_size);
 	
 	ags_raven_synth_util_set_buffer_length(channel_data->raven_synth_1,
+					       buffer_size);
+
+	ags_low_pass_filter_util_set_buffer_length(channel_data->low_pass_filter_util_0,
+						   buffer_size);
+	
+	ags_low_pass_filter_util_set_buffer_length(channel_data->low_pass_filter_util_1,
+						   buffer_size);
+	
+	ags_amplifier_util_set_buffer_length(channel_data->amplifier_util_0,
 					     buffer_size);
 	
+	ags_amplifier_util_set_buffer_length(channel_data->amplifier_util_1,
+					     buffer_size);
+
 	ags_noise_util_set_buffer_length(channel_data->noise_util,
 					 buffer_size);
 
@@ -11766,9 +11778,21 @@ ags_fx_raven_synth_audio_notify_format_callback(GObject *gobject,
 	channel_data = scope_data->channel_data[j];
 
 	ags_raven_synth_util_set_format(channel_data->raven_synth_0,
-				      format);
+					format);
 
 	ags_raven_synth_util_set_format(channel_data->raven_synth_1,
+					format);
+
+	ags_low_pass_filter_util_set_format(channel_data->low_pass_filter_util_0,
+					    format);
+
+	ags_low_pass_filter_util_set_format(channel_data->low_pass_filter_util_1,
+					    format);
+
+	ags_amplifier_util_set_format(channel_data->amplifier_util_0,
+				      format);
+
+	ags_amplifier_util_set_format(channel_data->amplifier_util_1,
 				      format);
 	
 	/* free chorus destination */
@@ -11839,9 +11863,21 @@ ags_fx_raven_synth_audio_notify_samplerate_callback(GObject *gobject,
 	channel_data = scope_data->channel_data[j];
 
 	ags_raven_synth_util_set_samplerate(channel_data->raven_synth_0,
-					  samplerate);
+					    samplerate);
 
 	ags_raven_synth_util_set_samplerate(channel_data->raven_synth_1,
+					    samplerate);
+	
+	ags_low_pass_filter_util_set_samplerate(channel_data->low_pass_filter_util_0,
+						samplerate);
+
+	ags_low_pass_filter_util_set_samplerate(channel_data->low_pass_filter_util_1,
+						samplerate);
+
+	ags_amplifier_util_set_samplerate(channel_data->amplifier_util_0,
+					  samplerate);
+
+	ags_amplifier_util_set_samplerate(channel_data->amplifier_util_1,
 					  samplerate);
 	
 	ags_noise_util_set_samplerate(channel_data->noise_util,

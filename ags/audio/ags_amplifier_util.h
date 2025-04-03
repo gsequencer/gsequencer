@@ -40,6 +40,7 @@ G_BEGIN_DECLS
       .source_stride = 1,					\
       .destination = NULL,					\
       .destination_stride = 1,					\
+      .mix_buffer = NULL,					\
       .buffer_length = 0,					\
       .format = AGS_SOUNDCARD_DEFAULT_FORMAT,			\
       .samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE,		\
@@ -85,6 +86,8 @@ struct _AgsAmplifierUtil
   gpointer destination;
   guint destination_stride;
 
+  gpointer mix_buffer;
+  
   guint buffer_length;
   AgsSoundcardFormat format;
   guint samplerate;
