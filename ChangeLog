@@ -1,3 +1,8 @@
+ags (7.7.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing volume and tuning sequencer in ags_raven_synth_util.c
+
 ags (7.7.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

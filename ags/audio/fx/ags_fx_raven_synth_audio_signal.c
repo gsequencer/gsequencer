@@ -3497,7 +3497,7 @@ ags_fx_raven_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notatio
       
     ags_amplifier_util_set_destination(channel_data->amplifier_util_1,
 				       NULL);
-
+    
     /* noise */
     if(ags_noise_util_get_volume(channel_data->noise_util) != 0.0){
       ags_noise_util_set_source(channel_data->noise_util,

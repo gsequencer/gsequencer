@@ -1591,11 +1591,9 @@ ags_raven_synth_util_get_tuning_by_offset(AgsRavenSynthUtil *raven_synth_util,
 
   tuning = 0.0;
 
-#if 0  
   if(seq_tuning_offset_end != 0){
     tuning = ((seq_tuning_offset) * (tuning_a / seq_tuning_offset_end)) + ((seq_tuning_offset_end - seq_tuning_offset) * (tuning_b / seq_tuning_offset_end));
   }
-#endif
   
   return(tuning);
 }
@@ -1695,11 +1693,9 @@ ags_raven_synth_util_get_volume_by_offset(AgsRavenSynthUtil *raven_synth_util,
 
   volume = 1.0;
 
-#if 0  
   if(seq_volume_offset_end != 0){
     volume = ((seq_volume_offset) * (volume_a / seq_volume_offset_end)) + ((seq_volume_offset_end - seq_volume_offset) * (volume_b / seq_volume_offset_end));
   }
-#endif
   
   return(volume);
 }
@@ -2100,7 +2096,6 @@ ags_raven_synth_util_compute_sin_s16(AgsRavenSynthUtil *raven_synth_util)
   sync_counter = 0;
   
   for(; i < buffer_length;){
-#if 0    
     if(sync_enabled &&
        sync_seq > 0){
       sync_counter++;
@@ -2127,7 +2122,6 @@ ags_raven_synth_util_compute_sin_s16(AgsRavenSynthUtil *raven_synth_util)
 	}      
       }
     }
-#endif
 
     switch(lfo_oscillator_mode){
     case AGS_SYNTH_OSCILLATOR_SIN:

@@ -44,19 +44,24 @@ G_BEGIN_DECLS
       .buffer_length = 0,					\
       .format = AGS_SOUNDCARD_DEFAULT_FORMAT,			\
       .samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE,		\
+      .amp_0_enabled = 1.0,					\
       .amp_0_frequency = 160.0,					\
-      .amp_0_bandwidth = 1.0,					\
-      .amp_0_gain = 1.0,					\
+      .amp_0_bandwidth = 0.5,					\
+      .amp_0_gain = 0.0,					\
+      .amp_1_enabled = 1.0,					\
       .amp_1_frequency = 386.0,					\
-      .amp_1_bandwidth = 1.0,					\
-      .amp_1_gain = 1.0,					\
+      .amp_1_bandwidth = 0.5,					\
+      .amp_1_gain = 0.0,					\
+      .amp_2_enabled = 1.0,					\
       .amp_2_frequency = 1250.0,				\
-      .amp_2_bandwidth = 1.0,					\
-      .amp_2_gain = 1.0,					\
+      .amp_2_bandwidth = 0.5,					\
+      .amp_2_gain = 0.0,					\
+      .amp_3_enabled = 1.0,					\
       .amp_3_frequency = 4975.0,				\
-      .amp_3_bandwidth = 1.0,					\
-      .amp_3_gain = 1.0,					\
-      .filter_gain = 1.0,					\
+      .amp_3_bandwidth = 0.5,					\
+      .amp_3_gain = 0.0,					\
+      .bypass = 0.0,						\
+      .filter_gain = 0.0,					\
       .fade = 0,						\
       .proc_sect = { 0,} })
 
@@ -92,22 +97,27 @@ struct _AgsAmplifierUtil
   AgsSoundcardFormat format;
   guint samplerate;
 
+  gdouble amp_0_enabled;
   gdouble amp_0_frequency;
   gdouble amp_0_bandwidth;
   gdouble amp_0_gain;
 
+  gdouble amp_1_enabled;
   gdouble amp_1_frequency;
   gdouble amp_1_bandwidth;
   gdouble amp_1_gain;
 
+  gdouble amp_2_enabled;
   gdouble amp_2_frequency;
   gdouble amp_2_bandwidth;
   gdouble amp_2_gain;
 
+  gdouble amp_3_enabled;
   gdouble amp_3_frequency;
   gdouble amp_3_bandwidth;
   gdouble amp_3_gain;
 
+  gdouble bypass;
   gdouble filter_gain;
   gint fade;
   

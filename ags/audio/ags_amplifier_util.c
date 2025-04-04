@@ -1933,30 +1933,45 @@ ags_amplifier_util_process_s8(AgsAmplifierUtil *amplifier_util)
       g_warning("unknown amp bandwidth");
     }
 
-    if(amplifier_util->amp_0_frequency > 0.0){
-      switch(j){
-      case 0:
-	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_0_gain);
-
-	break;
-      case 1:
-	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_1_gain);
-
-	break;
-      case 2:
-	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_2_gain);
-
-	break;
-      case 3:
-	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_3_gain);
-
-	break;
-      default:
-	g_warning("unknown amp gain");
+    switch(j){
+    case 0:
+      {
+	if(amplifier_util->amp_0_enabled > 0.0){
+	  sgain[j] = exp2ap (0.1661 * amplifier_util->amp_0_gain);
+	}else{
+	  sgain[j] = 1.0;
+	}
       }
-
-    }else{
-      sgain [j] = 1.0;
+      break;
+    case 1:
+      {
+	if(amplifier_util->amp_1_enabled > 0.0){
+	  sgain[j] = exp2ap (0.1661 * amplifier_util->amp_1_gain);
+	}else{
+	  sgain[j] = 1.0;
+	}
+      }
+      break;
+    case 2:
+      {
+	if(amplifier_util->amp_2_enabled > 0.0){
+	  sgain[j] = exp2ap (0.1661 * amplifier_util->amp_2_gain);
+	}else{
+	  sgain[j] = 1.0;
+	}
+      }
+      break;
+    case 3:
+      {
+	if(amplifier_util->amp_3_enabled > 0.0){
+	  sgain[j] = exp2ap (0.1661 * amplifier_util->amp_3_gain);
+	}else{
+	  sgain[j] = 1.0;
+	}
+      }
+      break;
+    default:
+      g_warning("unknown amp gain");
     }
   }
 
@@ -1991,7 +2006,7 @@ ags_amplifier_util_process_s8(AgsAmplifierUtil *amplifier_util)
     g = j / 16.0;
     p = 0;
     
-    if(amplifier_util->amp_0_frequency > 0.0){
+    if(amplifier_util->bypass == 0.0){
       if(j == 16){
 	p = sig;
       }else ++j;
@@ -2036,7 +2051,7 @@ ags_amplifier_util_process_s8(AgsAmplifierUtil *amplifier_util)
 				     buffer_length, ags_audio_buffer_util_format_from_soundcard(NULL, format));
   ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
 					      destination, destination_stride, 0,
-					      aop, 1, 0,
+					      amplifier_util->mix_buffer, 1, 0,
 					      buffer_length, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
 												 ags_audio_buffer_util_format_from_soundcard(NULL, format),
 												 ags_audio_buffer_util_format_from_soundcard(NULL, format)));
@@ -2136,30 +2151,45 @@ ags_amplifier_util_process_s16(AgsAmplifierUtil *amplifier_util)
       g_warning("unknown amp bandwidth");
     }
 
-    if(amplifier_util->amp_0_frequency > 0.0){
-      switch(j){
-      case 0:
-	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_0_gain);
-
-	break;
-      case 1:
-	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_1_gain);
-
-	break;
-      case 2:
-	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_2_gain);
-
-	break;
-      case 3:
-	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_3_gain);
-
-	break;
-      default:
-	g_warning("unknown amp gain");
+    switch(j){
+    case 0:
+      {
+	if(amplifier_util->amp_0_enabled > 0.0){
+	  sgain[j] = exp2ap (0.1661 * amplifier_util->amp_0_gain);
+	}else{
+	  sgain[j] = 1.0;
+	}
       }
-
-    }else{
-      sgain [j] = 1.0;
+      break;
+    case 1:
+      {
+	if(amplifier_util->amp_1_enabled > 0.0){
+	  sgain[j] = exp2ap (0.1661 * amplifier_util->amp_1_gain);
+	}else{
+	  sgain[j] = 1.0;
+	}
+      }
+      break;
+    case 2:
+      {
+	if(amplifier_util->amp_2_enabled > 0.0){
+	  sgain[j] = exp2ap (0.1661 * amplifier_util->amp_2_gain);
+	}else{
+	  sgain[j] = 1.0;
+	}
+      }
+      break;
+    case 3:
+      {
+	if(amplifier_util->amp_3_enabled > 0.0){
+	  sgain[j] = exp2ap (0.1661 * amplifier_util->amp_3_gain);
+	}else{
+	  sgain[j] = 1.0;
+	}
+      }
+      break;
+    default:
+      g_warning("unknown amp gain");
     }
   }
 
@@ -2194,7 +2224,7 @@ ags_amplifier_util_process_s16(AgsAmplifierUtil *amplifier_util)
     g = j / 16.0;
     p = 0;
     
-    if(amplifier_util->amp_0_frequency > 0.0){
+    if(amplifier_util->bypass == 0.0){
       if(j == 16){
 	p = sig;
       }else ++j;
@@ -2225,7 +2255,7 @@ ags_amplifier_util_process_s16(AgsAmplifierUtil *amplifier_util)
       
       for (i = 0; i < k; i++){
 	g += d;
-	aop[i * destination_stride] = (gint16) (g * (gdouble) sig[i] + (1.0 - g) * (gdouble) aip[i * source_stride]);
+	aop[i] = (gint16) (g * (gdouble) sig[i] + (1.0 - g) * (gdouble) aip[i * source_stride]);
       }
     }
     
@@ -2239,7 +2269,7 @@ ags_amplifier_util_process_s16(AgsAmplifierUtil *amplifier_util)
 				     buffer_length, ags_audio_buffer_util_format_from_soundcard(NULL, format));
   ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
 					      destination, destination_stride, 0,
-					      aop, 1, 0,
+					      amplifier_util->mix_buffer, 1, 0,
 					      buffer_length, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
 												 ags_audio_buffer_util_format_from_soundcard(NULL, format),
 												 ags_audio_buffer_util_format_from_soundcard(NULL, format)));
@@ -2339,30 +2369,45 @@ ags_amplifier_util_process_s24(AgsAmplifierUtil *amplifier_util)
       g_warning("unknown amp bandwidth");
     }
 
-    if(amplifier_util->amp_0_frequency > 0.0){
-      switch(j){
-      case 0:
-	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_0_gain);
-
-	break;
-      case 1:
-	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_1_gain);
-
-	break;
-      case 2:
-	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_2_gain);
-
-	break;
-      case 3:
-	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_3_gain);
-
-	break;
-      default:
-	g_warning("unknown amp gain");
+    switch(j){
+    case 0:
+      {
+	if(amplifier_util->amp_0_enabled > 0.0){
+	  sgain[j] = exp2ap (0.1661 * amplifier_util->amp_0_gain);
+	}else{
+	  sgain[j] = 1.0;
+	}
       }
-
-    }else{
-      sgain [j] = 1.0;
+      break;
+    case 1:
+      {
+	if(amplifier_util->amp_1_enabled > 0.0){
+	  sgain[j] = exp2ap (0.1661 * amplifier_util->amp_1_gain);
+	}else{
+	  sgain[j] = 1.0;
+	}
+      }
+      break;
+    case 2:
+      {
+	if(amplifier_util->amp_2_enabled > 0.0){
+	  sgain[j] = exp2ap (0.1661 * amplifier_util->amp_2_gain);
+	}else{
+	  sgain[j] = 1.0;
+	}
+      }
+      break;
+    case 3:
+      {
+	if(amplifier_util->amp_3_enabled > 0.0){
+	  sgain[j] = exp2ap (0.1661 * amplifier_util->amp_3_gain);
+	}else{
+	  sgain[j] = 1.0;
+	}
+      }
+      break;
+    default:
+      g_warning("unknown amp gain");
     }
   }
 
@@ -2397,7 +2442,7 @@ ags_amplifier_util_process_s24(AgsAmplifierUtil *amplifier_util)
     g = j / 16.0;
     p = 0;
     
-    if(amplifier_util->amp_0_frequency > 0.0){
+    if(amplifier_util->bypass == 0.0){
       if(j == 16){
 	p = sig;
       }else ++j;
@@ -2428,7 +2473,7 @@ ags_amplifier_util_process_s24(AgsAmplifierUtil *amplifier_util)
       
       for (i = 0; i < k; i++){
 	g += d;
-	aop[i * destination_stride] = g * sig[i] + (1.0 - g) * aip[i * source_stride];
+	aop[i] = g * sig[i] + (1.0 - g) * aip[i * source_stride];
       }
     }
     
@@ -2442,7 +2487,7 @@ ags_amplifier_util_process_s24(AgsAmplifierUtil *amplifier_util)
 				     buffer_length, ags_audio_buffer_util_format_from_soundcard(NULL, format));
   ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
 					      destination, destination_stride, 0,
-					      aop, 1, 0,
+					      amplifier_util->mix_buffer, 1, 0,
 					      buffer_length, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
 												 ags_audio_buffer_util_format_from_soundcard(NULL, format),
 												 ags_audio_buffer_util_format_from_soundcard(NULL, format)));
@@ -2542,30 +2587,45 @@ ags_amplifier_util_process_s32(AgsAmplifierUtil *amplifier_util)
       g_warning("unknown amp bandwidth");
     }
 
-    if(amplifier_util->amp_0_frequency > 0.0){
-      switch(j){
-      case 0:
-	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_0_gain);
-
-	break;
-      case 1:
-	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_1_gain);
-
-	break;
-      case 2:
-	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_2_gain);
-
-	break;
-      case 3:
-	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_3_gain);
-
-	break;
-      default:
-	g_warning("unknown amp gain");
+    switch(j){
+    case 0:
+      {
+	if(amplifier_util->amp_0_enabled > 0.0){
+	  sgain[j] = exp2ap (0.1661 * amplifier_util->amp_0_gain);
+	}else{
+	  sgain[j] = 1.0;
+	}
       }
-
-    }else{
-      sgain [j] = 1.0;
+      break;
+    case 1:
+      {
+	if(amplifier_util->amp_1_enabled > 0.0){
+	  sgain[j] = exp2ap (0.1661 * amplifier_util->amp_1_gain);
+	}else{
+	  sgain[j] = 1.0;
+	}
+      }
+      break;
+    case 2:
+      {
+	if(amplifier_util->amp_2_enabled > 0.0){
+	  sgain[j] = exp2ap (0.1661 * amplifier_util->amp_2_gain);
+	}else{
+	  sgain[j] = 1.0;
+	}
+      }
+      break;
+    case 3:
+      {
+	if(amplifier_util->amp_3_enabled > 0.0){
+	  sgain[j] = exp2ap (0.1661 * amplifier_util->amp_3_gain);
+	}else{
+	  sgain[j] = 1.0;
+	}
+      }
+      break;
+    default:
+      g_warning("unknown amp gain");
     }
   }
 
@@ -2600,7 +2660,7 @@ ags_amplifier_util_process_s32(AgsAmplifierUtil *amplifier_util)
     g = j / 16.0;
     p = 0;
     
-    if(amplifier_util->amp_0_frequency > 0.0){
+    if(amplifier_util->bypass == 0.0){
       if(j == 16){
 	p = sig;
       }else ++j;
@@ -2631,7 +2691,7 @@ ags_amplifier_util_process_s32(AgsAmplifierUtil *amplifier_util)
       
       for (i = 0; i < k; i++){
 	g += d;
-	aop[i * destination_stride] = g * sig[i] + (1.0 - g) * aip[i * source_stride];
+	aop[i] = g * sig[i] + (1.0 - g) * aip[i * source_stride];
       }
     }
     
@@ -2645,7 +2705,7 @@ ags_amplifier_util_process_s32(AgsAmplifierUtil *amplifier_util)
 				     buffer_length, ags_audio_buffer_util_format_from_soundcard(NULL, format));
   ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
 					      destination, destination_stride, 0,
-					      aop, 1, 0,
+					      amplifier_util->mix_buffer, 1, 0,
 					      buffer_length, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
 												 ags_audio_buffer_util_format_from_soundcard(NULL, format),
 												 ags_audio_buffer_util_format_from_soundcard(NULL, format)));
@@ -2745,30 +2805,45 @@ ags_amplifier_util_process_s64(AgsAmplifierUtil *amplifier_util)
       g_warning("unknown amp bandwidth");
     }
 
-    if(amplifier_util->amp_0_frequency > 0.0){
-      switch(j){
-      case 0:
-	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_0_gain);
-
-	break;
-      case 1:
-	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_1_gain);
-
-	break;
-      case 2:
-	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_2_gain);
-
-	break;
-      case 3:
-	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_3_gain);
-
-	break;
-      default:
-	g_warning("unknown amp gain");
+    switch(j){
+    case 0:
+      {
+	if(amplifier_util->amp_0_enabled > 0.0){
+	  sgain[j] = exp2ap (0.1661 * amplifier_util->amp_0_gain);
+	}else{
+	  sgain[j] = 1.0;
+	}
       }
-
-    }else{
-      sgain [j] = 1.0;
+      break;
+    case 1:
+      {
+	if(amplifier_util->amp_1_enabled > 0.0){
+	  sgain[j] = exp2ap (0.1661 * amplifier_util->amp_1_gain);
+	}else{
+	  sgain[j] = 1.0;
+	}
+      }
+      break;
+    case 2:
+      {
+	if(amplifier_util->amp_2_enabled > 0.0){
+	  sgain[j] = exp2ap (0.1661 * amplifier_util->amp_2_gain);
+	}else{
+	  sgain[j] = 1.0;
+	}
+      }
+      break;
+    case 3:
+      {
+	if(amplifier_util->amp_3_enabled > 0.0){
+	  sgain[j] = exp2ap (0.1661 * amplifier_util->amp_3_gain);
+	}else{
+	  sgain[j] = 1.0;
+	}
+      }
+      break;
+    default:
+      g_warning("unknown amp gain");
     }
   }
 
@@ -2803,7 +2878,7 @@ ags_amplifier_util_process_s64(AgsAmplifierUtil *amplifier_util)
     g = j / 16.0;
     p = 0;
     
-    if(amplifier_util->amp_0_frequency > 0.0){
+    if(amplifier_util->bypass == 0.0){
       if(j == 16){
 	p = sig;
       }else ++j;
@@ -2834,7 +2909,7 @@ ags_amplifier_util_process_s64(AgsAmplifierUtil *amplifier_util)
       
       for (i = 0; i < k; i++){
 	g += d;
-	aop[i * destination_stride] = g * sig[i] + (1.0 - g) * aip[i * source_stride];
+	aop[i] = g * sig[i] + (1.0 - g) * aip[i * source_stride];
       }
     }
     
@@ -2848,7 +2923,7 @@ ags_amplifier_util_process_s64(AgsAmplifierUtil *amplifier_util)
 				     buffer_length, ags_audio_buffer_util_format_from_soundcard(NULL, format));
   ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
 					      destination, destination_stride, 0,
-					      aop, 1, 0,
+					      amplifier_util->mix_buffer, 1, 0,
 					      buffer_length, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
 												 ags_audio_buffer_util_format_from_soundcard(NULL, format),
 												 ags_audio_buffer_util_format_from_soundcard(NULL, format)));
@@ -2948,30 +3023,45 @@ ags_amplifier_util_process_float(AgsAmplifierUtil *amplifier_util)
       g_warning("unknown amp bandwidth");
     }
 
-    if(amplifier_util->amp_0_frequency > 0.0){
-      switch(j){
-      case 0:
-	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_0_gain);
-
-	break;
-      case 1:
-	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_1_gain);
-
-	break;
-      case 2:
-	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_2_gain);
-
-	break;
-      case 3:
-	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_3_gain);
-
-	break;
-      default:
-	g_warning("unknown amp gain");
+    switch(j){
+    case 0:
+      {
+	if(amplifier_util->amp_0_enabled > 0.0){
+	  sgain[j] = exp2ap (0.1661 * amplifier_util->amp_0_gain);
+	}else{
+	  sgain[j] = 1.0;
+	}
       }
-
-    }else{
-      sgain [j] = 1.0;
+      break;
+    case 1:
+      {
+	if(amplifier_util->amp_1_enabled > 0.0){
+	  sgain[j] = exp2ap (0.1661 * amplifier_util->amp_1_gain);
+	}else{
+	  sgain[j] = 1.0;
+	}
+      }
+      break;
+    case 2:
+      {
+	if(amplifier_util->amp_2_enabled > 0.0){
+	  sgain[j] = exp2ap (0.1661 * amplifier_util->amp_2_gain);
+	}else{
+	  sgain[j] = 1.0;
+	}
+      }
+      break;
+    case 3:
+      {
+	if(amplifier_util->amp_3_enabled > 0.0){
+	  sgain[j] = exp2ap (0.1661 * amplifier_util->amp_3_gain);
+	}else{
+	  sgain[j] = 1.0;
+	}
+      }
+      break;
+    default:
+      g_warning("unknown amp gain");
     }
   }
 
@@ -3006,7 +3096,7 @@ ags_amplifier_util_process_float(AgsAmplifierUtil *amplifier_util)
     g = j / 16.0;
     p = 0;
     
-    if(amplifier_util->amp_0_frequency > 0.0){
+    if(amplifier_util->bypass == 0.0){
       if(j == 16){
 	p = sig;
       }else ++j;
@@ -3037,7 +3127,7 @@ ags_amplifier_util_process_float(AgsAmplifierUtil *amplifier_util)
       
       for (i = 0; i < k; i++){
 	g += d;
-	aop[i * destination_stride] = g * sig[i] + (1.0 - g) * aip[i * source_stride];
+	aop[i] = g * sig[i] + (1.0 - g) * aip[i * source_stride];
       }
     }
     
@@ -3051,7 +3141,7 @@ ags_amplifier_util_process_float(AgsAmplifierUtil *amplifier_util)
 				     buffer_length, ags_audio_buffer_util_format_from_soundcard(NULL, format));
   ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
 					      destination, destination_stride, 0,
-					      aop, 1, 0,
+					      amplifier_util->mix_buffer, 1, 0,
 					      buffer_length, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
 												 ags_audio_buffer_util_format_from_soundcard(NULL, format),
 												 ags_audio_buffer_util_format_from_soundcard(NULL, format)));
@@ -3151,30 +3241,45 @@ ags_amplifier_util_process_double(AgsAmplifierUtil *amplifier_util)
       g_warning("unknown amp bandwidth");
     }
 
-    if(amplifier_util->amp_0_frequency > 0.0){
-      switch(j){
-      case 0:
-	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_0_gain);
-
-	break;
-      case 1:
-	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_1_gain);
-
-	break;
-      case 2:
-	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_2_gain);
-
-	break;
-      case 3:
-	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_3_gain);
-
-	break;
-      default:
-	g_warning("unknown amp gain");
+    switch(j){
+    case 0:
+      {
+	if(amplifier_util->amp_0_enabled > 0.0){
+	  sgain[j] = exp2ap (0.1661 * amplifier_util->amp_0_gain);
+	}else{
+	  sgain[j] = 1.0;
+	}
       }
-
-    }else{
-      sgain [j] = 1.0;
+      break;
+    case 1:
+      {
+	if(amplifier_util->amp_1_enabled > 0.0){
+	  sgain[j] = exp2ap (0.1661 * amplifier_util->amp_1_gain);
+	}else{
+	  sgain[j] = 1.0;
+	}
+      }
+      break;
+    case 2:
+      {
+	if(amplifier_util->amp_2_enabled > 0.0){
+	  sgain[j] = exp2ap (0.1661 * amplifier_util->amp_2_gain);
+	}else{
+	  sgain[j] = 1.0;
+	}
+      }
+      break;
+    case 3:
+      {
+	if(amplifier_util->amp_3_enabled > 0.0){
+	  sgain[j] = exp2ap (0.1661 * amplifier_util->amp_3_gain);
+	}else{
+	  sgain[j] = 1.0;
+	}
+      }
+      break;
+    default:
+      g_warning("unknown amp gain");
     }
   }
 
@@ -3209,7 +3314,7 @@ ags_amplifier_util_process_double(AgsAmplifierUtil *amplifier_util)
     g = j / 16.0;
     p = 0;
     
-    if(amplifier_util->amp_0_frequency > 0.0){
+    if(amplifier_util->bypass == 0.0){
       if(j == 16){
 	p = sig;
       }else ++j;
@@ -3240,7 +3345,7 @@ ags_amplifier_util_process_double(AgsAmplifierUtil *amplifier_util)
       
       for (i = 0; i < k; i++){
 	g += d;
-	aop[i * destination_stride] = g * sig[i] + (1.0 - g) * aip[i * source_stride];
+	aop[i] = g * sig[i] + (1.0 - g) * aip[i * source_stride];
       }
     }
     
@@ -3254,7 +3359,7 @@ ags_amplifier_util_process_double(AgsAmplifierUtil *amplifier_util)
 				     buffer_length, ags_audio_buffer_util_format_from_soundcard(NULL, format));
   ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
 					      destination, destination_stride, 0,
-					      aop, 1, 0,
+					      amplifier_util->mix_buffer, 1, 0,
 					      buffer_length, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
 												 ags_audio_buffer_util_format_from_soundcard(NULL, format),
 												 ags_audio_buffer_util_format_from_soundcard(NULL, format)));
@@ -3354,30 +3459,45 @@ ags_amplifier_util_process_complex(AgsAmplifierUtil *amplifier_util)
       g_warning("unknown amp bandwidth");
     }
 
-    if(amplifier_util->amp_0_frequency > 0.0){
-      switch(j){
-      case 0:
-	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_0_gain);
-
-	break;
-      case 1:
-	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_1_gain);
-
-	break;
-      case 2:
-	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_2_gain);
-
-	break;
-      case 3:
-	sgain[j] = exp2ap (0.1661 * amplifier_util->amp_3_gain);
-
-	break;
-      default:
-	g_warning("unknown amp gain");
+    switch(j){
+    case 0:
+      {
+	if(amplifier_util->amp_0_enabled > 0.0){
+	  sgain[j] = exp2ap (0.1661 * amplifier_util->amp_0_gain);
+	}else{
+	  sgain[j] = 1.0;
+	}
       }
-
-    }else{
-      sgain [j] = 1.0;
+      break;
+    case 1:
+      {
+	if(amplifier_util->amp_1_enabled > 0.0){
+	  sgain[j] = exp2ap (0.1661 * amplifier_util->amp_1_gain);
+	}else{
+	  sgain[j] = 1.0;
+	}
+      }
+      break;
+    case 2:
+      {
+	if(amplifier_util->amp_2_enabled > 0.0){
+	  sgain[j] = exp2ap (0.1661 * amplifier_util->amp_2_gain);
+	}else{
+	  sgain[j] = 1.0;
+	}
+      }
+      break;
+    case 3:
+      {
+	if(amplifier_util->amp_3_enabled > 0.0){
+	  sgain[j] = exp2ap (0.1661 * amplifier_util->amp_3_gain);
+	}else{
+	  sgain[j] = 1.0;
+	}
+      }
+      break;
+    default:
+      g_warning("unknown amp gain");
     }
   }
 
@@ -3413,7 +3533,7 @@ ags_amplifier_util_process_complex(AgsAmplifierUtil *amplifier_util)
     g = j / 16.0;
     p = 0;
     
-    if(amplifier_util->amp_0_frequency > 0.0){
+    if(amplifier_util->bypass == 0.0){
       if(j == 16){
 	p = sig;
       }else ++j;
@@ -3444,7 +3564,7 @@ ags_amplifier_util_process_complex(AgsAmplifierUtil *amplifier_util)
       
       for (i = 0; i < k; i++){
 	g += d;
-	ags_complex_set(aop + (i * destination_stride),
+	ags_complex_set(aop + (i),
 			g * ags_complex_get(sig + i) + (1.0 - g) * ags_complex_get(aip + (i * source_stride)));
       }
     }
@@ -3459,7 +3579,7 @@ ags_amplifier_util_process_complex(AgsAmplifierUtil *amplifier_util)
 				     buffer_length, ags_audio_buffer_util_format_from_soundcard(NULL, format));
   ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
 					      destination, destination_stride, 0,
-					      aop, 1, 0,
+					      amplifier_util->mix_buffer, 1, 0,
 					      buffer_length, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
 												 ags_audio_buffer_util_format_from_soundcard(NULL, format),
 												 ags_audio_buffer_util_format_from_soundcard(NULL, format)));
