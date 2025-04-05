@@ -1,4 +1,4 @@
-#Copyright (C) 2005-2024 Joel Kraehemann
+#Copyright (C) 2005-2025 Joel Kraehemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -1325,6 +1325,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_sound_enums.h \
 	ags/audio/ags_synth_enums.h \
 	ags/audio/ags_acceleration.h \
+	ags/audio/ags_amplifier_util.h \
 	ags/audio/ags_audio.h \
 	ags/audio/ags_audio_application_context.h \
 	ags/audio/ags_audio_buffer_util.h \
@@ -1347,6 +1348,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_fluid_interpolate_none_util.h \
 	ags/audio/ags_fluid_util.h \
 	ags/audio/ags_fm_synth_util.h \
+	ags/audio/ags_raven_synth_util.h \
 	ags/audio/ags_seq_synth_util.h \
 	ags/audio/ags_star_synth_util.h \
 	ags/audio/ags_fourier_transform_util.h \
@@ -1360,6 +1362,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_input.h \
 	ags/audio/ags_lfo_synth_util.h \
 	ags/audio/ags_linear_interpolate_util.h \
+	ags/audio/ags_low_pass_filter_util.h \
 	ags/audio/ags_marker.h \
 	ags/audio/ags_midi.h \
 	ags/audio/ags_noise_util.h \
@@ -1430,6 +1433,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_sound_enums.c \
 	ags/audio/ags_synth_enums.c \
 	ags/audio/ags_acceleration.c \
+	ags/audio/ags_amplifier_util.c \
 	ags/audio/ags_audio.c \
 	ags/audio/ags_audio_application_context.c \
 	ags/audio/ags_audio_buffer_util.c \
@@ -1452,6 +1456,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_fluid_interpolate_none_util.c \
 	ags/audio/ags_fluid_util.c \
 	ags/audio/ags_fm_synth_util.c \
+	ags/audio/ags_raven_synth_util.c \
 	ags/audio/ags_seq_synth_util.c \
 	ags/audio/ags_star_synth_util.c \
 	ags/audio/ags_fourier_transform_util.c \
@@ -1465,6 +1470,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_input.c \
 	ags/audio/ags_lfo_synth_util.c \
 	ags/audio/ags_linear_interpolate_util.c \
+	ags/audio/ags_low_pass_filter_util.c \
 	ags/audio/ags_marker.c \
 	ags/audio/ags_midi.c \
 	ags/audio/ags_noise_util.c \
@@ -2122,6 +2128,12 @@ libags_audio_fx_h_sources = \
 	ags/audio/fx/ags_fx_fm_synth_channel_processor.h \
 	ags/audio/fx/ags_fx_fm_synth_recycling.h \
 	ags/audio/fx/ags_fx_fm_synth_audio_signal.h \
+	ags/audio/fx/ags_fx_raven_synth_audio.h \
+	ags/audio/fx/ags_fx_raven_synth_audio_processor.h \
+	ags/audio/fx/ags_fx_raven_synth_channel.h \
+	ags/audio/fx/ags_fx_raven_synth_channel_processor.h \
+	ags/audio/fx/ags_fx_raven_synth_recycling.h \
+	ags/audio/fx/ags_fx_raven_synth_audio_signal.h \
 	ags/audio/fx/ags_fx_sf2_synth_audio.h \
 	ags/audio/fx/ags_fx_sf2_synth_audio_processor.h \
 	ags/audio/fx/ags_fx_sf2_synth_channel.h \
@@ -2289,6 +2301,12 @@ libags_audio_fx_c_sources = \
 	ags/audio/fx/ags_fx_fm_synth_channel_processor.c \
 	ags/audio/fx/ags_fx_fm_synth_recycling.c \
 	ags/audio/fx/ags_fx_fm_synth_audio_signal.c \
+	ags/audio/fx/ags_fx_raven_synth_audio.c \
+	ags/audio/fx/ags_fx_raven_synth_audio_processor.c \
+	ags/audio/fx/ags_fx_raven_synth_channel.c \
+	ags/audio/fx/ags_fx_raven_synth_channel_processor.c \
+	ags/audio/fx/ags_fx_raven_synth_recycling.c \
+	ags/audio/fx/ags_fx_raven_synth_audio_signal.c \
 	ags/audio/fx/ags_fx_sf2_synth_audio.c \
 	ags/audio/fx/ags_fx_sf2_synth_audio_processor.c \
 	ags/audio/fx/ags_fx_sf2_synth_channel.c \
@@ -3004,6 +3022,8 @@ libgsequencer_machine_h_sources = \
 	ags/app/machine/ags_pitch_sampler_callbacks.h \
 	ags/app/machine/ags_pitch_sampler_file.h \
 	ags/app/machine/ags_pitch_sampler_file_callbacks.h \
+	ags/app/machine/ags_raven_synth.h \
+	ags/app/machine/ags_raven_synth_callbacks.h \
 	ags/app/machine/ags_sfz_synth.h \
 	ags/app/machine/ags_sfz_synth_callbacks.h \
 	ags/app/machine/ags_synth_callbacks.h \
@@ -3135,6 +3155,8 @@ libgsequencer_machine_c_sources = \
 	ags/app/machine/ags_pitch_sampler_callbacks.c \
 	ags/app/machine/ags_pitch_sampler_file.c \
 	ags/app/machine/ags_pitch_sampler_file_callbacks.c \
+	ags/app/machine/ags_raven_synth.c \
+	ags/app/machine/ags_raven_synth_callbacks.c \
 	ags/app/machine/ags_sfz_synth.c \
 	ags/app/machine/ags_sfz_synth_callbacks.c \
 	ags/app/machine/ags_syncsynth.c \

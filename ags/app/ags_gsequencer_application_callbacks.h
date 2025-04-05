@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -134,6 +134,9 @@ void ags_gsequencer_add_stargazer_synth_callback(GAction *action, GVariant *para
 
 void ags_gsequencer_add_quantum_synth_callback(GAction *action, GVariant *parameter,
 					       AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_add_raven_synth_callback(GAction *action, GVariant *parameter,
+					     AgsGSequencerApplication *gsequencer_app);
 
 void ags_gsequencer_add_ffplayer_callback(GAction *action, GVariant *parameter,
 					  AgsGSequencerApplication *gsequencer_app);

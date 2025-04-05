@@ -8,10 +8,10 @@
 # Process this file with autoconf to produce a configure script.
 
 LT_CURRENT=7
-LT_REVISION=6
-LT_AGE=18
+LT_REVISION=7
+LT_AGE=3
 
-m4_define([ags_version], [7.6.18])
+m4_define([ags_version], [7.7.3])
 
 AC_PREREQ([2.69])
 AC_INIT([gsequencer],m4_defn([ags_version]),[jkraehemann@gmail.com])
@@ -996,7 +996,7 @@ AS_IF([test "x$LIBGSEQUENCER_API_DIR" != x],
 
 gl_INIT
 
-AM_EXTRA_RECURSIVE_TARGETS([ags-docs])
+# AM_EXTRA_RECURSIVE_TARGETS([ags-docs])
 AC_CONFIG_FILES([
 lib/Makefile
 Makefile

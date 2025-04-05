@@ -137,6 +137,7 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   GSimpleAction *add_hybrid_fm_synth_action;
   GSimpleAction *add_stargazer_synth_action;
   GSimpleAction *add_quantum_synth_action;
+  GSimpleAction *add_raven_synth_action;
   GSimpleAction *add_ffplayer_action;
   GSimpleAction *add_sf2_synth_action;
   GSimpleAction *add_pitch_sampler_action;
@@ -562,6 +563,14 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
 		   G_CALLBACK(ags_gsequencer_add_quantum_synth_callback), gsequencer_app);
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
 			  G_ACTION(add_quantum_synth_action));
+
+  /* raven synth */
+  add_raven_synth_action = g_simple_action_new("add_raven_synth",
+						 NULL);
+  g_signal_connect(add_raven_synth_action, "activate",
+		   G_CALLBACK(ags_gsequencer_add_raven_synth_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(add_raven_synth_action));
 
 #if defined(AGS_WITH_LIBINSTPATCH)
   /* ffplayer */

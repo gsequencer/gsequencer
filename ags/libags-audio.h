@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -134,6 +134,7 @@
 #include <ags/audio/ags_sfz_synth_util.h>
 #include <ags/audio/ags_seq_synth_util.h>
 #include <ags/audio/ags_star_synth_util.h>
+#include <ags/audio/ags_raven_synth_util.h>
 #include <ags/audio/ags_track.h>
 #include <ags/audio/ags_tremolo_util.h>
 #include <ags/audio/ags_vector_256_manager.h>
@@ -316,6 +317,12 @@
 #include <ags/audio/fx/ags_fx_star_synth_channel.h>
 #include <ags/audio/fx/ags_fx_star_synth_channel_processor.h>
 #include <ags/audio/fx/ags_fx_star_synth_recycling.h>
+#include <ags/audio/fx/ags_fx_raven_synth_audio.h>
+#include <ags/audio/fx/ags_fx_raven_synth_audio_processor.h>
+#include <ags/audio/fx/ags_fx_raven_synth_audio_signal.h>
+#include <ags/audio/fx/ags_fx_raven_synth_channel.h>
+#include <ags/audio/fx/ags_fx_raven_synth_channel_processor.h>
+#include <ags/audio/fx/ags_fx_raven_synth_recycling.h>
 #include <ags/audio/fx/ags_fx_high_pass_audio.h>
 #include <ags/audio/fx/ags_fx_high_pass_audio_processor.h>
 #include <ags/audio/fx/ags_fx_high_pass_audio_signal.h>

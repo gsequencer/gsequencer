@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,6 +36,7 @@
 #include <ags/app/machine/ags_hybrid_fm_synth.h>
 #include <ags/app/machine/ags_stargazer_synth.h>
 #include <ags/app/machine/ags_quantum_synth.h>
+#include <ags/app/machine/ags_raven_synth.h>
 
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <ags/app/machine/ags_ffplayer.h>
@@ -747,6 +748,54 @@ ags_machine_util_new_quantum_synth()
   gtk_widget_show((GtkWidget *) quantum_synth);
 
   return((GtkWidget *) quantum_synth);  
+}
+
+/**
+ * ags_machine_util_new_raven_synth:
+ * 
+ * Create #AgsRavenSynth.
+ * 
+ * returns: the newly instantiated #AgsRavenSynth
+ * 
+ * Since: 7.5.0
+ */
+GtkWidget*
+ags_machine_util_new_raven_synth()
+{
+  AgsWindow *window;
+  AgsRavenSynth *raven_synth;
+
+  AgsApplicationContext *application_context;
+  
+  GObject *default_soundcard;
+  
+  application_context = ags_application_context_get_instance();
+
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+  
+  /* create raven_synth */
+  raven_synth = ags_raven_synth_new(G_OBJECT(default_soundcard));
+
+  ags_window_add_machine(window,
+			 AGS_MACHINE(raven_synth));
+
+  ags_connectable_connect(AGS_CONNECTABLE(raven_synth));
+
+  ags_audio_set_audio_channels(AGS_MACHINE(raven_synth)->audio,
+			       1, 0);
+  
+  ags_audio_set_pads(AGS_MACHINE(raven_synth)->audio,
+		     AGS_TYPE_INPUT,
+		     128, 0);
+  ags_audio_set_pads(AGS_MACHINE(raven_synth)->audio,
+		     AGS_TYPE_OUTPUT,
+		     1, 0);
+
+  gtk_widget_show((GtkWidget *) raven_synth);
+
+  return((GtkWidget *) raven_synth);  
 }
 
 /**
@@ -1777,6 +1826,10 @@ ags_machine_util_new_by_type_name(gchar *machine_type_name,
 				"AgsQuantumSynth",
 				15)){
     machine = ags_machine_util_new_quantum_synth();
+  }else if(!g_ascii_strncasecmp(machine_type_name,
+				"AgsRavenSynth",
+				13)){
+    machine = ags_machine_util_new_raven_synth();
   }else if(!g_ascii_strncasecmp(machine_type_name,
 				"AgsFFPlayer",
 				11)){
