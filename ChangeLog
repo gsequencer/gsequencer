@@ -1,3 +1,8 @@
+ags (7.7.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags-fx-raven-synth with dedicated synth buffer
+
 ags (7.7.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

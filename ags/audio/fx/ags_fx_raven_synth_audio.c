@@ -21,6 +21,8 @@
 
 #include <ags/plugin/ags_plugin_port.h>
 
+#include <ags/audio/ags_audio_signal.h>
+
 #include <ags/i18n.h>
 
 void ags_fx_raven_synth_audio_class_init(AgsFxRavenSynthAudioClass *fx_raven_synth_audio);
@@ -11655,6 +11657,7 @@ ags_fx_raven_synth_audio_notify_buffer_size_callback(GObject *gobject,
   AgsFxRavenSynthAudio *fx_raven_synth_audio;
 
   guint buffer_size;
+  guint format;
   guint i, j;
   
   GRecMutex *recall_mutex;
@@ -11666,9 +11669,12 @@ ags_fx_raven_synth_audio_notify_buffer_size_callback(GObject *gobject,
 
   /* get buffer size */
   buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+
+  format =  AGS_SOUNDCARD_DEFAULT_FORMAT;
   
   g_object_get(fx_raven_synth_audio,
 	       "buffer-size", &buffer_size,
+	       "format", &format,
 	       NULL);
   
   /* reallocate buffer - apply buffer size */
@@ -11695,12 +11701,31 @@ ags_fx_raven_synth_audio_notify_buffer_size_callback(GObject *gobject,
 	ags_stream_free(destination);
 
 	/* alloc chorus destination */
-	destination = ags_stream_alloc(buffer_size,
-				       ags_chorus_util_get_format(channel_data->chorus_util));
+	destination = NULL;
+
+	if(buffer_size > 0){
+	  destination = ags_stream_alloc(buffer_size,
+					 ags_chorus_util_get_format(channel_data->chorus_util));
+	}
 	
 	ags_chorus_util_set_destination(channel_data->chorus_util,
 					destination);
 
+	/* synth buffer */
+	ags_stream_free(channel_data->synth_buffer_0);
+	ags_stream_free(channel_data->synth_buffer_1);
+
+	channel_data->synth_buffer_0 = NULL;
+	channel_data->synth_buffer_1 = NULL;
+
+	if(buffer_size > 0){
+	  channel_data->synth_buffer_0 = ags_stream_alloc(buffer_size,
+							  format);
+	  
+	  channel_data->synth_buffer_1 = ags_stream_alloc(buffer_size,
+							  format);
+	}
+	
 	/* set buffer length */
 	ags_raven_synth_util_set_buffer_length(channel_data->raven_synth_0,
 					       buffer_size);
@@ -11743,6 +11768,7 @@ ags_fx_raven_synth_audio_notify_format_callback(GObject *gobject,
 {
   AgsFxRavenSynthAudio *fx_raven_synth_audio;
 
+  guint buffer_size;
   guint format;
   guint i, j;
   
@@ -11753,9 +11779,12 @@ ags_fx_raven_synth_audio_notify_format_callback(GObject *gobject,
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_raven_synth_audio);
 
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+
   format =  AGS_SOUNDCARD_DEFAULT_FORMAT;
 
   g_object_get(fx_raven_synth_audio,
+	       "buffer-size", &buffer_size,
 	       "format", &format,
 	       NULL);
 
@@ -11774,7 +11803,7 @@ ags_fx_raven_synth_audio_notify_format_callback(GObject *gobject,
 	AgsFxRavenSynthAudioChannelData *channel_data;
 
 	gpointer destination;
-
+	
 	channel_data = scope_data->channel_data[j];
 
 	ags_raven_synth_util_set_format(channel_data->raven_synth_0,
@@ -11801,12 +11830,32 @@ ags_fx_raven_synth_audio_notify_format_callback(GObject *gobject,
 	ags_stream_free(destination);
 
 	/* alloc chorus destination */
-	destination = ags_stream_alloc(ags_chorus_util_get_buffer_length(channel_data->chorus_util),
-				       format);
+	destination = NULL;
+
+	if(ags_chorus_util_get_buffer_length(channel_data->chorus_util) > 0){
+	  destination = ags_stream_alloc(ags_chorus_util_get_buffer_length(channel_data->chorus_util),
+					 format);
+	}
 	
 	ags_chorus_util_set_destination(channel_data->chorus_util,
 					destination);
 
+	/* synth buffer */
+	ags_stream_free(channel_data->synth_buffer_0);
+	ags_stream_free(channel_data->synth_buffer_1);
+
+	channel_data->synth_buffer_0 = NULL;
+	channel_data->synth_buffer_1 = NULL;
+
+	if(buffer_size > 0){
+	  channel_data->synth_buffer_0 = ags_stream_alloc(buffer_size,
+							  format);
+
+	  channel_data->synth_buffer_1 = ags_stream_alloc(buffer_size,
+							  format);
+	}
+
+	/*  */
 	ags_noise_util_set_format(channel_data->noise_util,
 				  format);
 
@@ -12643,6 +12692,9 @@ ags_fx_raven_synth_audio_channel_data_alloc()
   g_rec_mutex_init(&(channel_data->strct_mutex));
 
   channel_data->parent = NULL;
+
+  channel_data->synth_buffer_0 = NULL;
+  channel_data->synth_buffer_1 = NULL;
 
   /* seq synth util */
   channel_data->raven_synth_0 = ags_raven_synth_util_alloc();

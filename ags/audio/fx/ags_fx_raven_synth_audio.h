@@ -275,6 +275,9 @@ struct _AgsFxRavenSynthAudioChannelData
   
   gpointer parent;
 
+  gpointer synth_buffer_0;
+  gpointer synth_buffer_1;
+  
   AgsRavenSynthUtil *raven_synth_0;
   AgsRavenSynthUtil *raven_synth_1;
 
