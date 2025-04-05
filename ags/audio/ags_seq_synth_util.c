@@ -2259,6 +2259,10 @@ ags_seq_synth_util_compute_sin_s8(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -2673,6 +2677,10 @@ ags_seq_synth_util_compute_sin_s16(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -3086,6 +3094,10 @@ ags_seq_synth_util_compute_sin_s24(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -3499,6 +3511,10 @@ ags_seq_synth_util_compute_sin_s32(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -3912,6 +3928,10 @@ ags_seq_synth_util_compute_sin_s64(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -4323,6 +4343,10 @@ ags_seq_synth_util_compute_sin_float(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -4731,6 +4755,10 @@ ags_seq_synth_util_compute_sin_double(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -5139,6 +5167,10 @@ ags_seq_synth_util_compute_sin_complex(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -5294,6 +5326,10 @@ ags_seq_synth_util_compute_sawtooth_s8(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -5708,6 +5744,10 @@ ags_seq_synth_util_compute_sawtooth_s16(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -6122,6 +6162,10 @@ ags_seq_synth_util_compute_sawtooth_s24(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -6535,6 +6579,10 @@ ags_seq_synth_util_compute_sawtooth_s32(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -6949,6 +6997,10 @@ ags_seq_synth_util_compute_sawtooth_s64(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -7361,6 +7413,10 @@ ags_seq_synth_util_compute_sawtooth_float(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -7769,6 +7825,10 @@ ags_seq_synth_util_compute_sawtooth_double(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -8177,6 +8237,10 @@ ags_seq_synth_util_compute_sawtooth_complex(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -8331,6 +8395,10 @@ ags_seq_synth_util_compute_triangle_s8(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -8745,6 +8813,10 @@ ags_seq_synth_util_compute_triangle_s16(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -9159,6 +9231,10 @@ ags_seq_synth_util_compute_triangle_s24(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -9572,6 +9648,10 @@ ags_seq_synth_util_compute_triangle_s32(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -9986,6 +10066,10 @@ ags_seq_synth_util_compute_triangle_s64(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -10397,6 +10481,10 @@ ags_seq_synth_util_compute_triangle_float(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -10805,6 +10893,10 @@ ags_seq_synth_util_compute_triangle_double(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -11224,6 +11316,10 @@ ags_seq_synth_util_compute_triangle_complex(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -11378,6 +11474,10 @@ ags_seq_synth_util_compute_square_s8(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -11793,6 +11893,10 @@ ags_seq_synth_util_compute_square_s16(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -12207,6 +12311,10 @@ ags_seq_synth_util_compute_square_s24(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -12621,6 +12729,10 @@ ags_seq_synth_util_compute_square_s32(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -13035,6 +13147,10 @@ ags_seq_synth_util_compute_square_s64(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -13447,6 +13563,10 @@ ags_seq_synth_util_compute_square_float(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -13855,6 +13975,10 @@ ags_seq_synth_util_compute_square_double(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -14263,6 +14387,10 @@ ags_seq_synth_util_compute_square_complex(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -14417,6 +14545,10 @@ ags_seq_synth_util_compute_impulse_s8(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -14831,6 +14963,10 @@ ags_seq_synth_util_compute_impulse_s16(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -15245,6 +15381,10 @@ ags_seq_synth_util_compute_impulse_s24(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -15659,6 +15799,10 @@ ags_seq_synth_util_compute_impulse_s32(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -16073,6 +16217,10 @@ ags_seq_synth_util_compute_impulse_s64(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -16485,6 +16633,10 @@ ags_seq_synth_util_compute_impulse_float(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -16893,6 +17045,10 @@ ags_seq_synth_util_compute_impulse_double(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   
@@ -17301,6 +17457,10 @@ ags_seq_synth_util_compute_impulse_complex(AgsSeqSynthUtil *seq_synth_util)
   vibrato_lfo_depth = seq_synth_util->vibrato_lfo_depth;
   vibrato_lfo_freq = seq_synth_util->vibrato_lfo_freq;
   vibrato_tuning = seq_synth_util->vibrato_tuning;
+
+  if(seq_synth_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
   
   offset = seq_synth_util->offset;
   

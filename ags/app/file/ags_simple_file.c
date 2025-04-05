@@ -9296,6 +9296,248 @@ ags_simple_file_read_raven_synth_launch(AgsSimpleFile *simple_file, xmlNode *nod
     xmlFree(str);
   }
   
+  /* low-pass */
+  str = xmlGetProp(node,
+		   "low-pass-0-cut-off-frequency");
+
+  if(str != NULL){
+    gdouble volume;
+
+    volume = ags_file_util_get_double(simple_file->file_util,
+				      str);
+
+    ags_dial_set_value(raven_synth->low_pass_0_cut_off_frequency,
+		       volume);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "low-pass-0-filter-gain");
+
+  if(str != NULL){
+    gdouble volume;
+
+    volume = ags_file_util_get_double(simple_file->file_util,
+				      str);
+
+    ags_dial_set_value(raven_synth->low_pass_0_filter_gain,
+		       volume);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "low-pass-0-no-clip");
+
+  if(str != NULL){
+    gdouble volume;
+
+    volume = ags_file_util_get_double(simple_file->file_util,
+				      str);
+
+    ags_dial_set_value(raven_synth->low_pass_0_no_clip,
+		       volume);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "low-pass-1-cut-off-frequency");
+
+  if(str != NULL){
+    gdouble volume;
+
+    volume = ags_file_util_get_double(simple_file->file_util,
+				      str);
+
+    ags_dial_set_value(raven_synth->low_pass_1_cut_off_frequency,
+		       volume);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "low-pass-1-filter-gain");
+
+  if(str != NULL){
+    gdouble volume;
+
+    volume = ags_file_util_get_double(simple_file->file_util,
+				      str);
+
+    ags_dial_set_value(raven_synth->low_pass_1_filter_gain,
+		       volume);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "low-pass-1-no-clip");
+
+  if(str != NULL){
+    gdouble volume;
+
+    volume = ags_file_util_get_double(simple_file->file_util,
+				      str);
+
+    ags_dial_set_value(raven_synth->low_pass_1_no_clip,
+		       volume);
+      
+    xmlFree(str);
+  }
+
+  /* amplifier */
+  str = xmlGetProp(node,
+		   "amplifier-0-amp-0-gain");
+
+  if(str != NULL){
+    gdouble volume;
+
+    volume = ags_file_util_get_double(simple_file->file_util,
+				      str);
+
+    gtk_range_set_value((GtkRange *) raven_synth->amplifier_0_amp_0_gain,
+			volume);
+      
+    xmlFree(str);
+  }
+  
+  str = xmlGetProp(node,
+		   "amplifier-0-amp-1-gain");
+
+  if(str != NULL){
+    gdouble volume;
+
+    volume = ags_file_util_get_double(simple_file->file_util,
+				      str);
+
+    gtk_range_set_value((GtkRange *) raven_synth->amplifier_0_amp_1_gain,
+			volume);
+      
+    xmlFree(str);
+  }
+  
+  str = xmlGetProp(node,
+		   "amplifier-0-amp-2-gain");
+
+  if(str != NULL){
+    gdouble volume;
+
+    volume = ags_file_util_get_double(simple_file->file_util,
+				      str);
+
+    gtk_range_set_value((GtkRange *) raven_synth->amplifier_0_amp_2_gain,
+			volume);
+      
+    xmlFree(str);
+  }
+  
+  str = xmlGetProp(node,
+		   "amplifier-0-amp-3-gain");
+
+  if(str != NULL){
+    gdouble volume;
+
+    volume = ags_file_util_get_double(simple_file->file_util,
+				      str);
+
+    gtk_range_set_value((GtkRange *) raven_synth->amplifier_0_amp_3_gain,
+			volume);
+      
+    xmlFree(str);
+  }
+  
+  str = xmlGetProp(node,
+		   "amplifier-0-filter-gain");
+
+  if(str != NULL){
+    gdouble volume;
+
+    volume = ags_file_util_get_double(simple_file->file_util,
+				      str);
+
+    gtk_range_set_value((GtkRange *) raven_synth->amplifier_0_filter_gain,
+			volume);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "amplifier-1-amp-0-gain");
+
+  if(str != NULL){
+    gdouble volume;
+
+    volume = ags_file_util_get_double(simple_file->file_util,
+				      str);
+
+    gtk_range_set_value((GtkRange *) raven_synth->amplifier_1_amp_0_gain,
+			volume);
+      
+    xmlFree(str);
+  }
+  
+  str = xmlGetProp(node,
+		   "amplifier-1-amp-1-gain");
+
+  if(str != NULL){
+    gdouble volume;
+
+    volume = ags_file_util_get_double(simple_file->file_util,
+				      str);
+
+    gtk_range_set_value((GtkRange *) raven_synth->amplifier_1_amp_1_gain,
+			volume);
+      
+    xmlFree(str);
+  }
+  
+  str = xmlGetProp(node,
+		   "amplifier-1-amp-2-gain");
+
+  if(str != NULL){
+    gdouble volume;
+
+    volume = ags_file_util_get_double(simple_file->file_util,
+				      str);
+
+    gtk_range_set_value((GtkRange *) raven_synth->amplifier_1_amp_2_gain,
+			volume);
+      
+    xmlFree(str);
+  }
+  
+  str = xmlGetProp(node,
+		   "amplifier-1-amp-3-gain");
+
+  if(str != NULL){
+    gdouble volume;
+
+    volume = ags_file_util_get_double(simple_file->file_util,
+				      str);
+
+    gtk_range_set_value((GtkRange *) raven_synth->amplifier_1_amp_3_gain,
+			volume);
+      
+    xmlFree(str);
+  }
+  
+  str = xmlGetProp(node,
+		   "amplifier-1-filter-gain");
+
+  if(str != NULL){
+    gdouble volume;
+
+    volume = ags_file_util_get_double(simple_file->file_util,
+				      str);
+
+    gtk_range_set_value((GtkRange *) raven_synth->amplifier_1_filter_gain,
+			volume);
+      
+    xmlFree(str);
+  }
+  
   /* effects */
   str = xmlGetProp(node,
 		   "pitch-type");
@@ -21515,6 +21757,153 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       "synth-1-lfo-tuning",
+	       str);
+
+    g_free(str);    
+
+    /* low-pass */
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(raven_synth->low_pass_0_cut_off_frequency));
+    
+    xmlNewProp(node,
+	       "low-pass-0-cut-off-frequency",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(raven_synth->low_pass_0_filter_gain));
+    
+    xmlNewProp(node,
+	       "low-pass-0-filter-gain",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(raven_synth->low_pass_0_no_clip));
+    
+    xmlNewProp(node,
+	       "low-pass-0-no-clip",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(raven_synth->low_pass_1_cut_off_frequency));
+    
+    xmlNewProp(node,
+	       "low-pass-1-cut-off-frequency",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(raven_synth->low_pass_1_filter_gain));
+    
+    xmlNewProp(node,
+	       "low-pass-1-filter-gain",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(raven_synth->low_pass_1_no_clip));
+    
+    xmlNewProp(node,
+	       "low-pass-1-no-clip",
+	       str);
+
+    g_free(str);    
+
+
+    /* amplifier */    
+    str = g_strdup_printf("%lf",
+			  gtk_range_get_value((GtkRange *) raven_synth->amplifier_0_amp_0_gain));
+    
+    xmlNewProp(node,
+	       "amplifier-0-amp-0-gain",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  gtk_range_get_value((GtkRange *) raven_synth->amplifier_0_amp_1_gain));
+    
+    xmlNewProp(node,
+	       "amplifier-0-amp-1-gain",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  gtk_range_get_value((GtkRange *) raven_synth->amplifier_0_amp_2_gain));
+    
+    xmlNewProp(node,
+	       "amplifier-0-amp-2-gain",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  gtk_range_get_value((GtkRange *) raven_synth->amplifier_0_amp_3_gain));
+    
+    xmlNewProp(node,
+	       "amplifier-0-amp-3-gain",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  gtk_range_get_value((GtkRange *) raven_synth->amplifier_0_filter_gain));
+    
+    xmlNewProp(node,
+	       "amplifier-0-filter-gain",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  gtk_range_get_value((GtkRange *) raven_synth->amplifier_1_amp_0_gain));
+    
+    xmlNewProp(node,
+	       "amplifier-1-amp-0-gain",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  gtk_range_get_value((GtkRange *) raven_synth->amplifier_1_amp_1_gain));
+    
+    xmlNewProp(node,
+	       "amplifier-1-amp-1-gain",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  gtk_range_get_value((GtkRange *) raven_synth->amplifier_1_amp_2_gain));
+    
+    xmlNewProp(node,
+	       "amplifier-1-amp-2-gain",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  gtk_range_get_value((GtkRange *) raven_synth->amplifier_1_amp_3_gain));
+    
+    xmlNewProp(node,
+	       "amplifier-1-amp-3-gain",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  gtk_range_get_value((GtkRange *) raven_synth->amplifier_1_filter_gain));
+    
+    xmlNewProp(node,
+	       "amplifier-1-filter-gain",
 	       str);
 
     g_free(str);    

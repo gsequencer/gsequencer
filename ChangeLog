@@ -1,7 +1,16 @@
+ags (7.7.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing persistency of AgsRavenSynth
+	* improved ags_seq_synth_util.c vibrato enabled
+	* improved ags_raven_synth_util.c vibrato enabled
+
 ags (7.7.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* improved ags-fx-raven-synth with dedicated synth buffer
+	* fixed ags_seq_synth_util.c check vibrato_enabled
+	* fixed ags_raven_synth_util.c check vibrato_enabled
 
 ags (7.7.1)
 
