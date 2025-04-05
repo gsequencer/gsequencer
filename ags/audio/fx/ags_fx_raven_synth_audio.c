@@ -12015,6 +12015,12 @@ ags_fx_raven_synth_audio_set_audio_channels_callback(AgsAudio *audio,
 	  channel_data =
 	    scope_data->channel_data[j] = ags_fx_raven_synth_audio_channel_data_alloc();
 
+	  channel_data->synth_buffer_0 = ags_stream_alloc(buffer_size,
+							  format);
+
+	  channel_data->synth_buffer_1 = ags_stream_alloc(buffer_size,
+							  format);
+
 	  ags_raven_synth_util_set_buffer_length(channel_data->raven_synth_0,
 					       buffer_size);
 	  ags_raven_synth_util_set_format(channel_data->raven_synth_0,
