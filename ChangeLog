@@ -1,3 +1,8 @@
+ags (7.7.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags-fx-pattern counter check has 16th pulse
+
 ags (7.7.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
