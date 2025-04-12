@@ -69,6 +69,8 @@ struct _AgsFxPatternAudioProcessor
   GList *note_256th;
 
   gboolean has_16th_pulse;
+
+  guint64 note_offset_absolute_start;
 };
 
 struct _AgsFxPatternAudioProcessorClass

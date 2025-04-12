@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -865,6 +865,7 @@ ags_fx_pattern_audio_processor_run_init_pre(AgsRecall *recall)
 
   gdouble absolute_delay;
   gdouble delay_counter;
+  guint64 note_offset_absolute;
   
   GRecMutex *fx_pattern_audio_processor_mutex;
 
@@ -877,6 +878,8 @@ ags_fx_pattern_audio_processor_run_init_pre(AgsRecall *recall)
   g_object_get(fx_pattern_audio_processor,
 	       "output-soundcard", &output_soundcard,
 	       NULL);
+
+  note_offset_absolute = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(output_soundcard));
 
   absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
 
@@ -901,7 +904,9 @@ ags_fx_pattern_audio_processor_run_init_pre(AgsRecall *recall)
   fx_pattern_audio_processor->note_256th_current_offset_upper = (guint) floor(1.0 / fx_pattern_audio_processor->note_256th_delay);
 
   fx_pattern_audio_processor->has_16th_pulse = TRUE;
-
+  
+  fx_pattern_audio_processor->note_offset_absolute_start = note_offset_absolute;
+  
   g_rec_mutex_unlock(fx_pattern_audio_processor_mutex);
   
   if(output_soundcard != NULL){
@@ -1289,12 +1294,18 @@ ags_fx_pattern_audio_processor_real_play(AgsFxPatternAudioProcessor *fx_pattern_
   AgsNote *note;
   
   AgsFxPatternAudio *fx_pattern_audio;
+
+  GObject *output_soundcard;
   
+  guint64 note_offset_absolute;
+  guint64 note_offset_absolute_start;
   guint64 offset_counter;
+  guint64 loop_end;
   guint audio_channel;
   gfloat bank_index_0;
   gfloat bank_index_1;
-
+  gboolean has_16th_pulse;
+  
   GValue value = {0,};
   
   GRecMutex *fx_pattern_audio_mutex;
@@ -1305,6 +1316,8 @@ ags_fx_pattern_audio_processor_real_play(AgsFxPatternAudioProcessor *fx_pattern_
   audio = NULL;
 
   start_input = NULL;
+
+  output_soundcard = NULL;
   
   fx_pattern_audio = NULL;
 
@@ -1312,6 +1325,7 @@ ags_fx_pattern_audio_processor_real_play(AgsFxPatternAudioProcessor *fx_pattern_
   
   g_object_get(fx_pattern_audio_processor,
 	       "audio", &audio,
+	       "output-soundcard", &output_soundcard,
 	       "recall-audio", &fx_pattern_audio,
 	       "audio-channel", &audio_channel,
 	       NULL);
@@ -1324,13 +1338,25 @@ ags_fx_pattern_audio_processor_real_play(AgsFxPatternAudioProcessor *fx_pattern_
     
   offset_counter = fx_pattern_audio_processor->offset_counter;
 
+  has_16th_pulse = fx_pattern_audio_processor->has_16th_pulse;
+
+  note_offset_absolute_start = fx_pattern_audio_processor->note_offset_absolute_start;
+  
   g_rec_mutex_unlock(fx_pattern_audio_processor_mutex);
 
+  if(!has_16th_pulse){
+    return;
+  }
+
   note = NULL;
+
+  note_offset_absolute = 0;
     
   bank_index_0 = 0.0;
   bank_index_1 = 0.0;
 
+  loop_end = 16;
+  
   if(fx_pattern_audio != NULL){
     AgsPort *port;
 
@@ -1369,7 +1395,27 @@ ags_fx_pattern_audio_processor_real_play(AgsFxPatternAudioProcessor *fx_pattern_
 
       g_object_unref(port);
     }
+
+    /* loop-end */
+    g_object_get(fx_pattern_audio,
+		 "loop-end", &port,
+		 NULL);
+
+    if(port != NULL){
+      g_value_init(&value,
+		   G_TYPE_UINT64);
+    
+      ags_port_safe_read(port,
+			 &value);
+
+      loop_end = g_value_get_uint64(&value);
+      g_value_unset(&value);
+
+      g_object_unref(port);
+    }
   }
+
+  note_offset_absolute = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(output_soundcard));
   
   /* get input */
   input = ags_channel_nth(start_input,
@@ -1401,9 +1447,9 @@ ags_fx_pattern_audio_processor_real_play(AgsFxPatternAudioProcessor *fx_pattern_
     if(ags_pattern_get_bit(current_pattern,
 			   (guint) bank_index_0,
 			   (guint) bank_index_1,
-			   offset_counter)){
+			   ((note_offset_absolute - note_offset_absolute_start) % loop_end))){
       note = ags_pattern_get_note(current_pattern,
-				  offset_counter);
+				  ((note_offset_absolute - note_offset_absolute_start) % loop_end));
 
       ags_fx_pattern_audio_processor_key_on(fx_pattern_audio_processor,
 					    note,
@@ -1661,7 +1707,7 @@ ags_fx_pattern_audio_processor_real_counter_change(AgsFxPatternAudioProcessor *f
     g_rec_mutex_lock(fx_pattern_audio_processor_mutex);
 
     if(do_loop &&
-       offset_counter + 1 == loop_end){
+       offset_counter + 1 >= loop_end){
       fx_pattern_audio_processor->current_offset_counter = loop_start;
 
       fx_pattern_audio_processor->current_delay_counter = 0.0;
