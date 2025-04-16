@@ -1517,7 +1517,9 @@ ags_fx_pattern_audio_processor_real_counter_change(AgsFxPatternAudioProcessor *f
   guint offset_counter;
   gboolean do_loop;
   guint64 loop_start, loop_end;
-  guint note_offset;
+  guint64 note_offset;
+  guint64 note_offset_absolute;
+  guint64 note_offset_absolute_start;
   guint attack;
   guint note_256th_offset_lower;
   guint note_256th_offset_upper;
@@ -1632,6 +1634,8 @@ ags_fx_pattern_audio_processor_real_counter_change(AgsFxPatternAudioProcessor *f
 
   offset_counter = fx_pattern_audio_processor->offset_counter;
 
+  note_offset_absolute_start = fx_pattern_audio_processor->note_offset_absolute_start;
+
   g_rec_mutex_unlock(fx_pattern_audio_processor_mutex);  
 
   absolute_delay = AGS_SOUNDCARD_DEFAULT_DELAY;
@@ -1639,6 +1643,7 @@ ags_fx_pattern_audio_processor_real_counter_change(AgsFxPatternAudioProcessor *f
   attack = 0;
 
   note_offset = 0;
+  note_offset_absolute = 0;
   
   note_256th_offset_lower = 0;
   note_256th_offset_upper = 0;
@@ -1669,6 +1674,7 @@ ags_fx_pattern_audio_processor_real_counter_change(AgsFxPatternAudioProcessor *f
 
     //NOTE:JK: could be handled by ags-fx-pattern
     note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
+    note_offset_absolute = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(output_soundcard));
 
     attack = ags_soundcard_get_attack(AGS_SOUNDCARD(output_soundcard));
 
@@ -1707,7 +1713,8 @@ ags_fx_pattern_audio_processor_real_counter_change(AgsFxPatternAudioProcessor *f
     g_rec_mutex_lock(fx_pattern_audio_processor_mutex);
 
     if(do_loop &&
-       offset_counter + 1 >= loop_end){
+       ((((note_offset_absolute + 1) - note_offset_absolute_start) % loop_end) == 0 ||
+	(offset_counter + 1) >= loop_end)){
       fx_pattern_audio_processor->current_offset_counter = loop_start;
 
       fx_pattern_audio_processor->current_delay_counter = 0.0;

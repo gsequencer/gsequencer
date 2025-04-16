@@ -1,3 +1,8 @@
+ags (7.7.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags-fx-pattern counter change absolute note offset
+
 ags (7.7.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
